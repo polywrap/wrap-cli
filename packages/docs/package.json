@@ -1,0 +1,15 @@
+{
+  "name": "@web3api/docs",
+  "private": false,
+  "version": "0.0.1-alpha.1",
+  "description": "Web3API Docs",
+  "author": "dOrg",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/web3-api/prototype.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
