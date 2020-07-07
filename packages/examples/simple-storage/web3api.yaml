@@ -1,0 +1,16 @@
+description: SimpleStorage Web3API Example
+repository: https://github.com/web3-api/prototype
+mutation:
+  schema:
+    file: ./mutation/schema.graphql
+  module:
+    language: wasm/assemblyscript
+    file: ./mutation/index.ts
+query:
+  schema:
+    file: ./query/schema.graphql
+  module:
+    language: wasm/assemblyscript
+    file: ./mutation/index.ts
+subgraph:
+  file: ./subgraph/subgraph.yaml

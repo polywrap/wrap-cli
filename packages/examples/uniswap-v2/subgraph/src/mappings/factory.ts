@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import { log } from '@web3api/event-mapping'
+import { log } from '@graphprotocol/graph-ts'
 import { UniswapFactory, Pair, Token, Bundle } from '../types/schema'
 import { PairCreated } from '../types/Factory/Factory'
 import { Pair as PairTemplate } from '../types/templates'

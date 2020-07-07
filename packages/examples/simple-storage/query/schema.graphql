@@ -1,0 +1,13 @@
+type Query {
+  getData(
+    input: GetDataInput!
+  ): GetDataOutput!
+}
+
+input GetDataInput {
+  id: ID!
+}
+
+interface GetDataOutput {
+  data: UINT
+}

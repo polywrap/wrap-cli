@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import { BigInt, BigDecimal, store } from '@web3api/event-mapping'
+import { BigInt, BigDecimal, store } from '@graphprotocol/graph-ts'
 import {
   Pair,
   Token,

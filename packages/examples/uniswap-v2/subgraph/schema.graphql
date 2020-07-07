@@ -1,12 +1,6 @@
-type Query {
-  fetchTokenData(
-    address: Address!
-  ): Token!
-}
-
 type UniswapFactory @entity { 
   # factory address
-  id: ID!
+  id: ID! 
 
   # pair info
   pairCount: Int!
@@ -222,6 +216,7 @@ type UniswapDayData @entity {
 
   txCount: BigInt!
 }
+
 
 type PairHourData @entity {
   id: ID!

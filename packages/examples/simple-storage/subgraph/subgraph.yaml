@@ -1,0 +1,25 @@
+specVersion: 0.0.2
+description: SimpleStorage Subgraph Example
+repository: https://github.com/web3-api/prototype
+schema:
+  file: ./subgraph/schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: SimpleStorage
+    network: private
+    source:
+      address: '0xTODO'
+      abi: SimpleStorage
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./index.ts
+      entities:
+        - SimpleStorage
+      abis:
+        - name: SimpleStorage
+          file: ./contracts/abis/SimpleStorage.json
+      eventHandlers:
+        - event: DataSet(address from)
+          handler: handleDataSet
