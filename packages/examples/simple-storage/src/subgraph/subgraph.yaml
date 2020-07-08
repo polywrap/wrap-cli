@@ -2,7 +2,7 @@ specVersion: 0.0.2
 description: SimpleStorage Subgraph Example
 repository: https://github.com/web3-api/prototype
 schema:
-  file: ./subgraph/schema.graphql
+  file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
     name: SimpleStorage
@@ -19,7 +19,7 @@ dataSources:
         - SimpleStorage
       abis:
         - name: SimpleStorage
-          file: ./contracts/abis/SimpleStorage.json
+          file: ../contracts/abis/SimpleStorage.json
       eventHandlers:
         - event: DataSet(address from)
           handler: handleDataSet

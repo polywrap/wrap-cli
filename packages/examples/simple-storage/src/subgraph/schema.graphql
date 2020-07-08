@@ -1,4 +1,4 @@
 type SimpleStorage @entity {
   id: ID!
-  lastSet: Address
+  lastSetBy: Address
 }

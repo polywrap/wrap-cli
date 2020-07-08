@@ -1,0 +1,4 @@
+Subgraph
+- [ ] Generate Subgraph.yaml w/ proper network & addresses
+- [ ] Codegen queries & mutations & subgraph
+- [ ] build queries & mutations & subgraph

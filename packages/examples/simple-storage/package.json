@@ -1,0 +1,12 @@
+{
+  "name": "@web3api/examples-simple-storage",
+  "scripts": {
+    "contracts:build": "",
+    "subgraph:codegen": "cd subgraph && graph codegen --out-dir codegen/",
+    "subgraph:build": "cd subgraph && graph build"
+  },
+  "devDependencies": {
+    "@graphprotocol/graph-cli": "^0.18.0",
+    "@graphprotocol/graph-ts": "^0.18.1"
+  }
+}
