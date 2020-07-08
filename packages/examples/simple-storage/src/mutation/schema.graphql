@@ -10,5 +10,5 @@ input SetDataInput {
 }
 
 interface SetDataOutput {
-  storage: SimpleStorage
+  storage: SimpleStorage!
 }

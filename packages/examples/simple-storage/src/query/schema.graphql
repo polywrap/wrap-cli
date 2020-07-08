@@ -9,5 +9,5 @@ input GetDataInput {
 }
 
 interface GetDataOutput {
-  data: UINT
+  data: BigInt!
 }

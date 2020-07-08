@@ -1,4 +1,3 @@
-import { store } from '@graphprotocol/graph-ts'
 import {
   DataSet as DataSetEvent,
   SimpleStorage
