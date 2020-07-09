@@ -12,5 +12,5 @@ export const run = async (argv: args) => {
     .help()
     .create()
 
-    return await cli.run(argv)
+  return await cli.run(argv)
 }
