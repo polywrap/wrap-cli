@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+var sourceDir = __dirname + '/../build'
+
+require(sourceDir + '/cli/init').run(process.argv)
