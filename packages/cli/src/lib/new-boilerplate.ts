@@ -1,4 +1,4 @@
-import { GluegunFilesystem } from 'gluegun'
+import { GluegunFilesystem } from "gluegun";
 
 export const newBoilerplate = (projectName: string, fs: GluegunFilesystem) => {
   const { dir, write } = fs;
@@ -6,6 +6,6 @@ export const newBoilerplate = (projectName: string, fs: GluegunFilesystem) => {
   dir(`${projectName}/src`);
   dir(`${projectName}/scripts`);
   dir(`${projectName}/tests`);
-  write(`${projectName}/web3api.yaml`, "")
-  write(`${projectName}/package.json`, "")
-}
+  write(`${projectName}/web3api.yaml`, "");
+  write(`${projectName}/package.json`, "");
+};

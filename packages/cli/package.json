@@ -27,10 +27,16 @@
   },
   "homepage": "https://github.com/Web3-API/prototype#readme",
   "dependencies": {
-    "gluegun": "^4.3.1"
+    "@textile/hub": "^0.3.3",
+    "chalk": "^4.1.0",
+    "gluegun": "^4.3.1",
+    "ws": "^7.3.1"
   },
   "devDependencies": {
     "@types/node": "^12.6.9",
     "typescript": "^3.9.6"
+  },
+  "optionalDependencies": {
+    "keytar": "^5.0.1"
   }
 }
