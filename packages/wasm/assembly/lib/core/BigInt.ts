@@ -1,7 +1,9 @@
+import { Bytes } from "./Bytes";
+
 /** An arbitrary size integer represented as an array of bytes. */
 export class BigInt extends Uint8Array {
   static fromI32(x: i32): BigInt {
-    return (ByteArray.fromI32(x) as Uint8Array) as BigInt
+    return (Bytes.fromI32(x) as Uint8Array) as BigInt
   }
 
   /**
@@ -38,7 +40,7 @@ export class BigInt extends Uint8Array {
   }
 
   toI32(): i32 {
-    return ((this as Uint8Array) as ByteArray).toI32()
+    return ((this as Uint8Array) as Bytes).toI32()
   }
 
   toBigDecimal(): BigDecimal {

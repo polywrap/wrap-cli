@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "test": "asp --verbose",
+    "test:ci": "asp --summary"
+  },
+  "devDependencies": {
+    "@as-pect/cli": "4.0.0",
+    "assemblyscript": "0.13.6",
+    "assemblyscript-json": "0.3.2"
+  }
+}
