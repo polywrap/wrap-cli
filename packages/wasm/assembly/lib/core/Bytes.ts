@@ -14,6 +14,15 @@ export class Bytes extends Uint8Array {
     return self
   }
 
+  static fromString(str: string): Bytes {
+    const buffer = String.UTF8.encode(str, false);
+
+    // Workaround for https://github.com/AssemblyScript/assemblyscript/issues/1066
+    if (buffer.byteLength === 0) return new Bytes(0);
+
+    return Uint8Array.wrap(buffer);
+  }
+
   /**
    * Input length must be even.
    */

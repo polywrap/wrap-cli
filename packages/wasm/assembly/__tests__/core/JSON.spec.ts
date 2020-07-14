@@ -5,7 +5,7 @@ import {
   JSON,
   JSONDecoder,
   JSONEncoder
-} from "../";
+} from "../../";
 
 function roundtripTest(jsonString: string, _expectedString: string  = ""): void {
   const expectedString = _expectedString == "" ? jsonString : _expectedString;

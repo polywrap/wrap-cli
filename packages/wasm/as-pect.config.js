@@ -19,14 +19,16 @@ module.exports = {
     "--runtime": ["stub"], // Acceptable values are: full, half, stub (arena), and none,
     "--baseDir": process.cwd()
   },
+  /** Output the binary wasm file: [testname].spec.wasm */
+  outputBinary: false,
   /**
    * A set of regexp that will disclude source files from testing.
    */
   disclude: [/node_modules/],
   /**
-   * Add your required AssemblyScript imports here.
+   * Add your required AssemblyScript imports here in this function.
    */
-  imports: {},
+  imports: require("./assembly/__tests__/host.stub"),
   /**
    * All performance statistics reporting can be configured here.
    */
@@ -53,20 +55,7 @@ module.exports = {
     reportVariance: false,
   },
   /**
-   * Add a custom reporter here if you want one. The following example is in typescript.
-   *
-   * @example
-   * import { TestReporter, TestGroup, TestResult, TestContext } from "as-pect";
-   *
-   * export class CustomReporter extends TestReporter {
-   *   // implement each abstract method here
-   *   public abstract onStart(suite: TestContext): void;
-   *   public abstract onGroupStart(group: TestGroup): void;
-   *   public abstract onGroupFinish(group: TestGroup): void;
-   *   public abstract onTestStart(group: TestGroup, result: TestResult): void;
-   *   public abstract onTestFinish(group: TestGroup, result: TestResult): void;
-   *   public abstract onFinish(suite: TestContext): void;
-   * }
+   * To create your own custom reporter, please check out the Core API.
    */
   // reporter: new CustomReporter(),
 };
