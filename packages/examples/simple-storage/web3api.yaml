@@ -11,6 +11,6 @@ query:
     file: ./query/schema.graphql
   module:
     language: wasm/assemblyscript
-    file: ./mutation/index.ts
+    file: ./query/index.ts
 subgraph:
   file: ./subgraph/subgraph.yaml
