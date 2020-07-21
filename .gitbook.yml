@@ -1,4 +1,4 @@
-root: ./packages/docs/
+root: ./docs/
 
 structure:
   readme: README.md
