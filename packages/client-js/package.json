@@ -1,0 +1,17 @@
+{
+  "name": "@web3api/client",
+  "version": "0.0.1-alpha.1",
+  "scripts": {
+    "test": "jest --passWithNoTests --verbose",
+    "test:ci": "yarn test:env:up && yarn test && yarn test:env:down",
+    "test:env:up": "yarn workspace @web3api/client-test-env up",
+    "test:env:down": "yarn workspace @web3api/client-test-env down"
+  },
+  "dependencies": {
+    "@web3api/wasm": "0.0.1-alpha.1",
+    "graphql-tag": "2.10.4"
+  },
+  "devDependencies": {
+    "@web3api/client-test-env": "0.0.1-alpha.1"
+  }
+}
