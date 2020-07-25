@@ -6,6 +6,9 @@
       "./packages/*"
     ]
   },
+  "scripts": {
+    "test:ci:client-js": "yarn workspace @web3api/client test:ci"
+  },
   "devDependencies": {
     "lerna": "3.22.1"
   }

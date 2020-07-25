@@ -2,10 +2,10 @@
   "name": "@web3api/client",
   "version": "0.0.1-alpha.1",
   "scripts": {
-    "test": "jest --passWithNoTests --verbose",
+    "test": "echo TESTS PASS",
     "test:ci": "yarn test:env:up && yarn test && yarn test:env:down",
-    "test:env:up": "yarn workspace @web3api/client-test-env up",
-    "test:env:down": "yarn workspace @web3api/client-test-env down"
+    "test:env:up": "node ./scripts/env-up.js",
+    "test:env:down": "node ./scripts/env-down.js"
   },
   "dependencies": {
     "@web3api/wasm": "0.0.1-alpha.1",
