@@ -1,1 +1,2 @@
-export * from "./client"
+export * from "./connections"
+export * from "./Web3API"
