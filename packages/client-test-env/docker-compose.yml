@@ -6,3 +6,8 @@ services:
       - '5001:5001'
     logging:
       driver: 'none'
+  ganache:
+    image: 'trufflesuite/ganache-cli'
+    ports:
+      - '8545:8545'
+    command: -l 8000000 --networkId 1576478390085 --deterministic --hostname=0.0.0.0
