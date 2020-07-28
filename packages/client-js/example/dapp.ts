@@ -1,6 +1,6 @@
 import {
   Web3API,
-  // Ethereum,
+  Ethereum,
   IPFS,
   query
 } from "../src"
@@ -11,23 +11,19 @@ const ipfs = new IPFS({
   provider: "localhost:5001"
 })
 
-/*const ethereum = new Ethereum({
-  access: Ethereum.READ_AND_WRITE,
-  providers: {
-    read: "localhost:8545",
-    write: window.ethereum
-  }
-})*/
+const ethereum = new Ethereum({
+  provider: "localhost:8545"
+})
 
 const api = new Web3API({
   uri: "api.protocol.eth",
-  connections: {
-    // ethereum,
+  portals: {
+    ethereum,
     ipfs
   }
 });
 
-const objects = query({
+const response = query({
   api,
   query: gql`
     {
@@ -36,11 +32,11 @@ const objects = query({
   `
 })
 
-objects.forEach((object) => {
+response.data.objects.forEach((object) => {
   console.log(object.property)
 })
 
-const result = query({
+const response = query({
   api,
   query: gql`
     mutation Func($argument: String!) {
@@ -54,4 +50,4 @@ const result = query({
   }
 })
 
-console.log(result.return)
+console.log(response.data.return)

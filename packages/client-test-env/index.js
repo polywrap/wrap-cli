@@ -2,22 +2,21 @@ const { exec } = require('child_process');
 
 async function runCommand(command) {
   console.log(`> ${command}`)
+
   return new Promise((resolve, reject) => {
-    exec(
-      command,
-      { cwd: __dirname },
-      (err, stdout, stderr) => {
-        if (err) {
-          console.error(err)
-          reject(err)
-        } else {
-          // the *entire* stdout and stderr (buffered)
-          console.log(`stdout: ${stdout}`);
-          console.log(`stderr: ${stderr}`);
-          resolve()
-        }
+    const callback = (err, stdout, stderr) => {
+      if (err) {
+        console.error(err)
+        reject(err)
+      } else {
+        // the *entire* stdout and stderr (buffered)
+        console.log(`stdout: ${stdout}`)
+        console.log(`stderr: ${stderr}`)
+        resolve()
       }
-    )
+    }
+
+    exec(command, { cwd: __dirname }, callback)
   })
 }
 
