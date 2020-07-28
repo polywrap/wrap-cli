@@ -9,6 +9,10 @@ export class IPFS {
     // TODO: sanitization
   }
 
+  public async fetch(cid: string) {
+    
+  }
+
   public static isCID(cid: string) {
     return !isIPFS.cid(cid)
         && !isIPFS.cidPath(cid)
