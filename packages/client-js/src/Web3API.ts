@@ -1,15 +1,23 @@
 import {
   Ethereum,
-  IPFS
+  IPFS,
+  Subgraph
 } from "./portals";
-import { Manifest } from "./Manifest";
-import { DocumentNode } from "graphql/language";
-import { buildSchema, GraphQLSchema, execute } from "graphql";
+import { Manifest, ModulePath } from "./Manifest";
+import { Query, QueryResult } from "./types";
+import WASMLoader from "@assemblyscript/loader";
+import {
+  buildSchema,
+  execute,
+  GraphQLSchema,
+  GraphQLObjectType
+} from "graphql";
 import YAML from "js-yaml";
 
 interface IPortals {
   ipfs: IPFS;
   ethereum: Ethereum;
+  subgraph?: Subgraph;
 }
 
 export interface IWeb3APIConfig {
@@ -72,7 +80,7 @@ export class Web3API {
     return this._cid;
   }
 
-  private async fetchAPIManifest(): Promise<Manifest> {
+  public async fetchAPIManifest(): Promise<Manifest> {
     if (this._manifest) {
       return this._manifest;
     }
@@ -88,7 +96,7 @@ export class Web3API {
 
       if (depth === 1 && type === "file" &&
          (name === "web3api.yaml" || name === "web3apy.yml")) {
-        const manifestStr = portals.ipfs.catToString(path);
+        const manifestStr = await portals.ipfs.catToString(path);
         this._manifest = YAML.safeLoad(manifestStr) as Manifest | undefined;
 
         if (this._manifest === undefined) {
@@ -128,10 +136,30 @@ export class Web3API {
 
     const mutationType = this._schema.getMutationType();
     const queryType = this._schema.getQueryType();
-    const entityTypes = this._schema.getTypeMap();
 
     // Wrap all queries & mutations w/ a proxy that
     // loads the module and executes the call
+    if (mutationType) {
+      if (!manifest.mutation) {
+        throw Error("Malformed Manifest: Schema contains mutations but the manifest does not.");
+      }
+
+      this._addResolvers(
+        manifest.mutation.module,
+        mutationType
+      );
+    }
+
+    if (queryType) {
+      if (!manifest.query) {
+        throw Error("Malformed Manifest: Schema contains queries but the manifest does not.");
+      }
+
+      this._addResolvers(
+        manifest.query.module,
+        queryType
+      );
+    }
 
     return this._schema;
   }
@@ -141,33 +169,39 @@ export class Web3API {
     await this.fetchSchema();
   }
 
-  public async query(query: DocumentNode, variables?: { [name: string]: any }) {
+  public async query(query: Query): Promise<QueryResult> {
     const { portals } = this._config;
+    const queryDoc = query.query;
 
-    if (query.definitions.length > 1) {
+    if (queryDoc.definitions.length > 1) {
       throw Error("Multiple async queries is not supported at this time.");
     }
 
-    if (query.definitions.length === 0) {
+    if (queryDoc.definitions.length === 0) {
       throw Error("Empty query.");
     }
 
-    const def = query.definitions[0];
+    const def = queryDoc.definitions[0];
 
     if (def.kind === "SchemaDefinition" ||
         def.kind === "ObjectTypeDefinition") {
+      if (!portals.subgraph) {
+        throw Error("No subgraph portal available.");
+      }
+
       // If an entity is being queried, send to a subgraph
-      return await portals.graph.query(queryDef);
+      return await portals.subgraph.query(query);
     } else if (def.kind === "OperationDefinition") {
       // else, execute query against schema
       const schema = await this.fetchSchema();
 
-      const result = execute({
+      return execute({
         schema,
-        document: query,
-        contextValue: context,
-        variableValues: variables
+        document: queryDoc,
+        variableValues: query.variables
       });
+    } else {
+      throw Error(`Unrecognized query definition kind: "${def.kind}"`);
     }
 
     // TODO: e2e tests where we test
@@ -175,5 +209,41 @@ export class Web3API {
     // - mutation queries
     // - query queries
     // - all WASM integrations (IPFS, ETH, The Graph)
+  }
+
+  private _addResolvers(module: ModulePath, schemaType: GraphQLObjectType<any, any>) {
+    const fields = schemaType.getFields();
+    const fieldNames = Object.keys(fields);
+
+    for (const fieldName of fieldNames) {
+      fields[fieldName].resolve = async (source, args, context, info) => {
+        const { portals } = this._config;
+        const wasm = await portals.ipfs.catToBuffer(
+          `${this._cid}/${module.file}`
+        );
+
+        // TODO: cache the WASM instances
+        const result = await WASMLoader.instantiate(
+          wasm,
+          {
+            // TODO: implement the wrappers for the interfaces
+            ipfs: {
+              _w3_ipfs_cat: () => {
+
+              }
+            }
+          }
+        );
+
+        const func = result.exports[fieldName];
+
+        if (typeof func !== "function") {
+          throw Error(`Export is not a function: ${fieldName}`);
+        }
+
+        // TODO: validate return value against the schema
+        return func(Object.values(args));
+      }
+    }
   }
 }

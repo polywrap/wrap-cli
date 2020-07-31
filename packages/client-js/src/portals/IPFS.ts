@@ -33,13 +33,17 @@ export class IPFS {
   }
 
   public async catToString(cid: string): Promise<string> {
+    return (await this.catToBuffer(cid)).toString();
+  }
+
+  public async catToBuffer(cid: string): Promise<ArrayBuffer> {
     const chunks = [];
 
     for await (const chunk of this.cat(cid)) {
       chunks.push(chunk);
     }
 
-    return Buffer.concat(chunks).toString();
+    return Buffer.concat(chunks);
   }
 
   public static isCID(cid: string) {
