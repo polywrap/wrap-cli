@@ -2,7 +2,10 @@ import {
   Ethereum,
   IPFS
 } from "./portals";
+import { Manifest } from "./Manifest";
 import { DocumentNode } from "graphql/language";
+import { buildSchema } from "graphql";
+import YAML from "js-yaml";
 
 interface IPortals {
   ipfs: IPFS;
@@ -52,17 +55,66 @@ export class Web3API {
       cid = uri;
     }
 
-    // Fetch the API from IPFS
-    const package = await portals.ipfs.fetch(cid);
+    // Get the API's manifest
+    const manifestYaml = await this._getAPIManifest(cid);
 
-    // Convert the query into an execution plan
-    this.buildExecutionPlan(query, variables);
+    if (manifestYaml === undefined) {
+      throw Error(`Unable to find web3api.yaml at ${cid}`);
+    }
 
-    // TODO:
-    // 1 Parse query & build plan
-    // 1 Fetch Web3API package from URI
-    // - - only get relevant parts (future optimization)
-    // 2 Execute query plan
-    // - - load WASM module if necessary
+    const manifest = YAML.safeLoad(manifestYaml) as Manifest | undefined;
+
+    if (manifest === undefined) {
+      throw Error(`Unable to load web3api.yaml\n${manifest}`);
+    }
+
+    // Get the API's schema
+    const schemaStr = await portals.ipfs.catToString(
+      `${cid}/${manifest.schema.file}`
+    );
+
+    // Convert schema into GraphQL Schema object
+    let schema = buildSchema(schemaStr);
+
+    // If there's no Query type, add it to avoid execution errors
+    if (!schema.getQueryType()) {
+      const schemaStrWithQuery = schemaStr + `type Query { dummy: String }`;
+      schema = buildSchema(schemaStrWithQuery);
+    }
+
+    const mutationType = schema.getMutationType();
+    const queryType = schema.getQueryType();
+    const entityTypes = schema.getTypeMap();
+
+    // Wrap all queries & mutations w/ a proxy that
+    // loads the module and executes the call
+
+    // If an entity is being queried, send to a subgraph
+
+    // else, execute query against schema
+
+    // TODO: e2e tests where we test
+    // - subgraph queries
+    // - mutation queries
+    // - query queries
+    // - all WASM integrations (IPFS, ETH, The Graph)
+  }
+
+  private async _getAPIManifest(cid: string): Promise<string | undefined> {
+    const { portals } = this._config;
+
+    // Fetch the API directory from IPFS
+    const apiDirectory = await portals.ipfs.ls(cid);
+
+    for await (const file of apiDirectory) {
+      const { name, depth, type, path } = file;
+
+      if (depth === 1 && type === "file" &&
+         (name === "web3api.yaml" || name === "web3apy.yml")) {
+        return portals.ipfs.catToString(path);
+      }
+    }
+
+    return undefined;
   }
 }

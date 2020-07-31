@@ -23,7 +23,7 @@ const api = new Web3API({
   }
 });
 
-const response = query({
+const response = api.query({
   api,
   query: gql`
     {
