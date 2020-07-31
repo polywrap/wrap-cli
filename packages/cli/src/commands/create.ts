@@ -11,7 +11,7 @@ export default {
     // grab the project name
     const projectName = (parameters.first || "").toString();
     if (isBlank(projectName)) {
-      print.info(`${runtime!.brand} new <projectName>\n`);
+      print.info(`${runtime!.brand} create <projectName>\n`);
       print.error("Project name is required");
       process.exit(5);
     }

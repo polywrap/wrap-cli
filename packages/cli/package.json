@@ -1,31 +1,15 @@
 {
   "name": "@dengine/w3-cli",
   "version": "0.0.1-alpha",
-  "description": "Web3API CLI",
   "bin": {
     "w3": "bin/w3"
   },
   "scripts": {
-    "clean": "rm -rf build",
-    "compile": "tsc -p .",
     "build": "yarn clean && yarn compile",
+    "clean": "rm -rf build",
+    "compile": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Web3-API/prototype.git"
-  },
-  "keywords": [
-    "web3",
-    "ethereum",
-    "smart contracts"
-  ],
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Web3-API/prototype/issues"
-  },
-  "homepage": "https://github.com/Web3-API/prototype#readme",
   "dependencies": {
     "@textile/hub": "^0.3.3",
     "chalk": "^4.1.0",

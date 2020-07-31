@@ -23,7 +23,7 @@ export default {
     const { h, help } = options;
 
     // Show help text if requested
-    if (help || h) {
+    if (help || h || !protocol) {
       print.info(HELP);
       return;
     }
