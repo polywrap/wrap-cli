@@ -4,7 +4,7 @@ import {
 } from "./portals";
 import { Manifest } from "./Manifest";
 import { DocumentNode } from "graphql/language";
-import { buildSchema } from "graphql";
+import { buildSchema, GraphQLSchema, execute } from "graphql";
 import YAML from "js-yaml";
 
 interface IPortals {
@@ -18,6 +18,16 @@ export interface IWeb3APIConfig {
 }
 
 export class Web3API {
+
+  // Web3 API IPFS CID
+  private _cid: string | undefined;
+
+  // Web3 API Manifest
+  private _manifest: Manifest | undefined;
+
+  // Web3 API Schema
+  private _schema: GraphQLSchema | undefined;
+
   constructor(private _config: IWeb3APIConfig) {
     // Sanitize API URI
     this.setUri(this._config.uri);
@@ -29,6 +39,9 @@ export class Web3API {
     }
 
     this._config.uri = uri;
+    this._cid = undefined;
+    this._manifest = undefined;
+    this._schema = undefined;
   }
 
   public getPortal<T extends keyof IPortals>(
@@ -43,65 +56,29 @@ export class Web3API {
     this._config.portals[name] = portal;
   }
 
-  public async query(query: DocumentNode, variables?: { [name: string]: any }) {
+  public async fetchCID(): Promise<string> {
+    if (this._cid) {
+      return this._cid;
+    }
+
     const { uri, portals } = this._config;
 
-    // Get the API's CID
-    let cid;
-
     if (Ethereum.isENSDomain(uri)) {
-      cid = await portals.ethereum.ensToCID(uri);
+      this._cid = await portals.ethereum.ensToCID(uri);
     } else {
-      cid = uri;
+      this._cid = uri;
     }
 
-    // Get the API's manifest
-    const manifestYaml = await this._getAPIManifest(cid);
-
-    if (manifestYaml === undefined) {
-      throw Error(`Unable to find web3api.yaml at ${cid}`);
-    }
-
-    const manifest = YAML.safeLoad(manifestYaml) as Manifest | undefined;
-
-    if (manifest === undefined) {
-      throw Error(`Unable to load web3api.yaml\n${manifest}`);
-    }
-
-    // Get the API's schema
-    const schemaStr = await portals.ipfs.catToString(
-      `${cid}/${manifest.schema.file}`
-    );
-
-    // Convert schema into GraphQL Schema object
-    let schema = buildSchema(schemaStr);
-
-    // If there's no Query type, add it to avoid execution errors
-    if (!schema.getQueryType()) {
-      const schemaStrWithQuery = schemaStr + `type Query { dummy: String }`;
-      schema = buildSchema(schemaStrWithQuery);
-    }
-
-    const mutationType = schema.getMutationType();
-    const queryType = schema.getQueryType();
-    const entityTypes = schema.getTypeMap();
-
-    // Wrap all queries & mutations w/ a proxy that
-    // loads the module and executes the call
-
-    // If an entity is being queried, send to a subgraph
-
-    // else, execute query against schema
-
-    // TODO: e2e tests where we test
-    // - subgraph queries
-    // - mutation queries
-    // - query queries
-    // - all WASM integrations (IPFS, ETH, The Graph)
+    return this._cid;
   }
 
-  private async _getAPIManifest(cid: string): Promise<string | undefined> {
+  private async fetchAPIManifest(): Promise<Manifest> {
+    if (this._manifest) {
+      return this._manifest;
+    }
+
     const { portals } = this._config;
+    const cid = await this.fetchCID();
 
     // Fetch the API directory from IPFS
     const apiDirectory = await portals.ipfs.ls(cid);
@@ -111,10 +88,92 @@ export class Web3API {
 
       if (depth === 1 && type === "file" &&
          (name === "web3api.yaml" || name === "web3apy.yml")) {
-        return portals.ipfs.catToString(path);
+        const manifestStr = portals.ipfs.catToString(path);
+        this._manifest = YAML.safeLoad(manifestStr) as Manifest | undefined;
+
+        if (this._manifest === undefined) {
+          throw Error(`Unable to parse web3api.yaml\n${manifestStr}`);
+        }
+
+        return this._manifest;
       }
     }
 
-    return undefined;
+    throw Error(`Unable to find web3api.yaml at ${cid}`);
+  }
+
+  public async fetchSchema(): Promise<GraphQLSchema> {
+    if (this._schema) {
+      return this._schema;
+    }
+
+    const { portals } = this._config;
+
+    // Get the API's manifest
+    const manifest = await this.fetchAPIManifest();
+
+    // Get the API's schema
+    const schemaStr = await portals.ipfs.catToString(
+      `${this._cid}/${manifest.schema.file}`
+    );
+
+    // Convert schema into GraphQL Schema object
+    this._schema = buildSchema(schemaStr);
+
+    // If there's no Query type, add it to avoid execution errors
+    if (!this._schema.getQueryType()) {
+      const schemaStrWithQuery = schemaStr + `type Query { dummy: String }`;
+      this._schema = buildSchema(schemaStrWithQuery);
+    }
+
+    const mutationType = this._schema.getMutationType();
+    const queryType = this._schema.getQueryType();
+    const entityTypes = this._schema.getTypeMap();
+
+    // Wrap all queries & mutations w/ a proxy that
+    // loads the module and executes the call
+
+    return this._schema;
+  }
+
+  // Prefetch the API resources
+  public async prefetch(): Promise<void> {
+    await this.fetchSchema();
+  }
+
+  public async query(query: DocumentNode, variables?: { [name: string]: any }) {
+    const { portals } = this._config;
+
+    if (query.definitions.length > 1) {
+      throw Error("Multiple async queries is not supported at this time.");
+    }
+
+    if (query.definitions.length === 0) {
+      throw Error("Empty query.");
+    }
+
+    const def = query.definitions[0];
+
+    if (def.kind === "SchemaDefinition" ||
+        def.kind === "ObjectTypeDefinition") {
+      // If an entity is being queried, send to a subgraph
+      return await portals.graph.query(queryDef);
+    } else if (def.kind === "OperationDefinition") {
+      // else, execute query against schema
+      const schema = await this.fetchSchema();
+
+      const result = execute({
+        schema,
+        document: query,
+        contextValue: context,
+        variableValues: variables
+      });
+    }
+
+    // TODO: e2e tests where we test
+    // - subgraph queries
+    // - mutation queries
+    // - query queries
+    // - all WASM integrations (IPFS, ETH, The Graph)
   }
 }
