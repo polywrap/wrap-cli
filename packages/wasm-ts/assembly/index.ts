@@ -11,9 +11,10 @@ export {
 /// Lib Core ///
 ////////////////
 
-export {
+// TODO:
+/*export {
   BigInt
-} from "./lib/core/BigInt";
+} from "./lib/core/BigInt";*/
 
 export {
   Buffer
@@ -30,3 +31,9 @@ export {
   JSONHandler,
   ThrowingJSONHandler
 } from "./lib/core/JSON";
+
+///////////////////////////
+/// ASM Runtime Helpers ///
+///////////////////////////
+
+export const UINT8ARRAY_ID = idof<Uint8Array>();

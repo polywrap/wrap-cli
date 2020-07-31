@@ -20,7 +20,7 @@ export class Bytes extends Uint8Array {
     // Workaround for https://github.com/AssemblyScript/assemblyscript/issues/1066
     if (buffer.byteLength === 0) return new Bytes(0);
 
-    return Uint8Array.wrap(buffer);
+    return Uint8Array.wrap(buffer) as Bytes;
   }
 
   /**
@@ -39,79 +39,80 @@ export class Bytes extends Uint8Array {
     return output
   }
 
-  toHex(): string {
-    return typeConversion.bytesToHex(this)
-  }
+  // TODO:
+  // toHex(): string {
+  //   return typeConversion.bytesToHex(this)
+  // }
 
-  toHexString(): string {
-    return typeConversion.bytesToHex(this)
-  }
+  // toHexString(): string {
+  //   return typeConversion.bytesToHex(this)
+  // }
 
-  toString(): string {
-    return typeConversion.bytesToString(this)
-  }
+  // toString(): string {
+  //   return typeConversion.bytesToString(this)
+  // }
 
-  toBase58(): string {
-    return typeConversion.bytesToBase58(this)
-  }
+  // toBase58(): string {
+  //   return typeConversion.bytesToBase58(this)
+  // }
 
-  /**
-   * Interprets the byte array as a little-endian U32.
-   * Throws in case of overflow.
-   */
+  // /**
+  //  * Interprets the byte array as a little-endian U32.
+  //  * Throws in case of overflow.
+  //  */
 
-  toU32(): u32 {
-    for (let i = 4; i < this.length; i++) {
-      if (this[i] != 0) {
-        assert(false, 'overflow converting ' + this.toHexString() + ' to u32')
-      }
-    }
-    let paddedBytes = new Bytes(4)
-    paddedBytes[0] = 0
-    paddedBytes[1] = 0
-    paddedBytes[2] = 0
-    paddedBytes[3] = 0
-    let minLen = paddedBytes.length < this.length ? paddedBytes.length : this.length
-    for (let i = 0; i < minLen; i++) {
-      paddedBytes[i] = this[i]
-    }
-    let x: u32 = 0
-    x = (x | paddedBytes[3]) << 8
-    x = (x | paddedBytes[2]) << 8
-    x = (x | paddedBytes[1]) << 8
-    x = x | paddedBytes[0]
-    return x
-  }
+  // toU32(): u32 {
+  //   for (let i = 4; i < this.length; i++) {
+  //     if (this[i] != 0) {
+  //       assert(false, 'overflow converting ' + this.toHexString() + ' to u32')
+  //     }
+  //   }
+  //   let paddedBytes = new Bytes(4)
+  //   paddedBytes[0] = 0
+  //   paddedBytes[1] = 0
+  //   paddedBytes[2] = 0
+  //   paddedBytes[3] = 0
+  //   let minLen = paddedBytes.length < this.length ? paddedBytes.length : this.length
+  //   for (let i = 0; i < minLen; i++) {
+  //     paddedBytes[i] = this[i]
+  //   }
+  //   let x: u32 = 0
+  //   x = (x | paddedBytes[3]) << 8
+  //   x = (x | paddedBytes[2]) << 8
+  //   x = (x | paddedBytes[1]) << 8
+  //   x = x | paddedBytes[0]
+  //   return x
+  // }
 
-  /**
-   * Interprets the byte array as a little-endian I32.
-   * Throws in case of overflow.
-   */
+  // /**
+  //  * Interprets the byte array as a little-endian I32.
+  //  * Throws in case of overflow.
+  //  */
 
-  toI32(): i32 {
-    let isNeg = this.length > 0 && this[this.length - 1] >> 7 == 1
-    let padding = isNeg ? 255 : 0
-    for (let i = 4; i < this.length; i++) {
-      if (this[i] != padding) {
-        assert(false, 'overflow converting ' + this.toHexString() + ' to i32')
-      }
-    }
-    let paddedBytes = new Bytes(4)
-    paddedBytes[0] = padding
-    paddedBytes[1] = padding
-    paddedBytes[2] = padding
-    paddedBytes[3] = padding
-    let minLen = paddedBytes.length < this.length ? paddedBytes.length : this.length
-    for (let i = 0; i < minLen; i++) {
-      paddedBytes[i] = this[i]
-    }
-    let x: i32 = 0
-    x = (x | paddedBytes[3]) << 8
-    x = (x | paddedBytes[2]) << 8
-    x = (x | paddedBytes[1]) << 8
-    x = x | paddedBytes[0]
-    return x
-  }
+  // toI32(): i32 {
+  //   let isNeg = this.length > 0 && this[this.length - 1] >> 7 == 1
+  //   let padding = isNeg ? 255 : 0
+  //   for (let i = 4; i < this.length; i++) {
+  //     if (this[i] != padding) {
+  //       assert(false, 'overflow converting ' + this.toHexString() + ' to i32')
+  //     }
+  //   }
+  //   let paddedBytes = new Bytes(4)
+  //   paddedBytes[0] = padding
+  //   paddedBytes[1] = padding
+  //   paddedBytes[2] = padding
+  //   paddedBytes[3] = padding
+  //   let minLen = paddedBytes.length < this.length ? paddedBytes.length : this.length
+  //   for (let i = 0; i < minLen; i++) {
+  //     paddedBytes[i] = this[i]
+  //   }
+  //   let x: i32 = 0
+  //   x = (x | paddedBytes[3]) << 8
+  //   x = (x | paddedBytes[2]) << 8
+  //   x = (x | paddedBytes[1]) << 8
+  //   x = x | paddedBytes[0]
+  //   return x
+  // }
 
   @operator('==')
   equals(other: Bytes): boolean {

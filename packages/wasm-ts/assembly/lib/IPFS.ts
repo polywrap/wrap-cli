@@ -1,6 +1,6 @@
 import {
   _w3_ipfs_add,
-  _w3_ipfs_get
+  _w3_ipfs_cat
 } from "../host/ipfs";
 
 export type IPFSHash = String;
@@ -11,7 +11,7 @@ export class IPFS {
     return _w3_ipfs_add(data);
   }
 
-  static get(path: IPFSHash): IPFSData {
-    return _w3_ipfs_get(path);
+  static cat(cid: IPFSHash): IPFSData {
+    return _w3_ipfs_cat(cid);
   }
 }

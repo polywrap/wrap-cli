@@ -3,8 +3,14 @@ import {
   IPFS,
   Subgraph
 } from "./portals";
-import { Manifest, ModulePath } from "./Manifest";
-import { Query, QueryResult } from "./types";
+import { getHostImports } from "./host";
+import {
+  Query,
+  QueryResult,
+  ASCModule,
+  Manifest,
+  ModulePath
+} from "./types";
 import WASMLoader from "@assemblyscript/loader";
 import {
   buildSchema,
@@ -14,7 +20,7 @@ import {
 } from "graphql";
 import YAML from "js-yaml";
 
-interface IPortals {
+export interface IPortals {
   ipfs: IPFS;
   ethereum: Ethereum;
   subgraph?: Subgraph;
@@ -203,12 +209,6 @@ export class Web3API {
     } else {
       throw Error(`Unrecognized query definition kind: "${def.kind}"`);
     }
-
-    // TODO: e2e tests where we test
-    // - subgraph queries
-    // - mutation queries
-    // - query queries
-    // - all WASM integrations (IPFS, ETH, The Graph)
   }
 
   private _addResolvers(module: ModulePath, schemaType: GraphQLObjectType<any, any>) {
@@ -222,18 +222,10 @@ export class Web3API {
           `${this._cid}/${module.file}`
         );
 
-        // TODO: cache the WASM instances
         const result = await WASMLoader.instantiate(
           wasm,
-          {
-            // TODO: implement the wrappers for the interfaces
-            ipfs: {
-              _w3_ipfs_cat: () => {
-
-              }
-            }
-          }
-        );
+          getHostImports(() => result as ASCModule, portals)
+        ) as any;
 
         const func = result.exports[fieldName];
 

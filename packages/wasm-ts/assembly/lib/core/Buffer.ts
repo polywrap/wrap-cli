@@ -22,6 +22,6 @@ export class Buffer {
   }
 
   static readString(arr: Uint8Array, start: usize, end: usize): string {
-      return String.UTF8.decodeUnsafe(getDataPtr(arr) + start, end - start);
+      return String.UTF8.decodeUnsafe(Buffer.getDataPtr(arr) + start, end - start);
   }
 }

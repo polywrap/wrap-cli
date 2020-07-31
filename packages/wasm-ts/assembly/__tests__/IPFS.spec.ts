@@ -1,6 +1,8 @@
+export { UINT8ARRAY_ID } from "../";
+
 import {
   IPFS,
-  Buffer
+  Buffer,
 } from "../";
 
 describe("IPFS API Sanity Checks", () => {
@@ -14,13 +16,13 @@ describe("IPFS API Sanity Checks", () => {
     expect(hash).toBe(data);
   });
 
-  it("IPFS.get(hash)", () => {
+  it("IPFS.cat(hash)", () => {
     const hash = "QmTEST";
 
-    const data = IPFS.add(
+    const data = IPFS.cat(hash);
+
+    expect(data).toStrictEqual(
       Buffer.fromString(hash)
     );
-
-    expect(data).toBe(hash);
   });
-})
+});

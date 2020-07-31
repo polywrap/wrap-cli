@@ -1,5 +1,6 @@
 const isIPFS = require("is-ipfs");
 const IPFSClient = require("ipfs-http-client");
+import CID from "cids";
 
 export interface IIPFSConfig {
   provider: string;
@@ -19,13 +20,11 @@ export class IPFS {
     this._ipfs = new IPFSClient(provider);
   }
 
-  public ls(cid: string): AsyncIterable<{
-    depth: number;
-    name: string;
-    type: string;
-    path: string;
+  public add(data: Uint8Array): Promise<{
+    path: string,
+    cid: CID,
   }> {
-    return this._ipfs.ls(cid);
+    return this._ipfs.add(data);
   }
 
   public cat(cid: string): AsyncIterable<Buffer> {
@@ -44,6 +43,15 @@ export class IPFS {
     }
 
     return Buffer.concat(chunks);
+  }
+
+  public ls(cid: string): AsyncIterable<{
+    depth: number;
+    name: string;
+    type: string;
+    path: string;
+  }> {
+    return this._ipfs.ls(cid);
   }
 
   public static isCID(cid: string) {
