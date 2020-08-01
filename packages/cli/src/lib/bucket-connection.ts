@@ -3,10 +3,7 @@ import { identifyAccessToken } from "./user-auth-textile";
 
 export const insertProtocol = async (protocolName: string): Promise<PushPathResult> => {
   const keyInfo: KeyInfo = {
-    key: "bxusvy3lxtv7brpfyepjrnlmcde",
-    secret: "",
-    // @ts-ignore
-    type: 1,
+    key: "bxusvy3lxtv7brpfyepjrnlmcde"
   };
 
   const token = await identifyAccessToken(protocolName);
@@ -14,7 +11,7 @@ export const insertProtocol = async (protocolName: string): Promise<PushPathResu
 
   await buckets.getToken(token!);
 
-  const root = await buckets.open("w");
+  const root = await buckets.open("web3api-cli");
 
   if (!root) {
     throw new Error("Failed to open bucket");

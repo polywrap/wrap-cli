@@ -2,7 +2,8 @@
   "name": "@web3api/client",
   "version": "0.0.1-alpha.1",
   "scripts": {
-    "test": "echo TESTS PASS",
+    "test": "jest --passWithNoTests --verbose",
+    "test:watch": "jest --watch --passWithNoTests --verbose",
     "test:ci": "yarn test:env:up && yarn test && yarn test:env:down",
     "test:env:up": "node ./scripts/env-up.js",
     "test:env:down": "node ./scripts/env-down.js"
@@ -21,7 +22,10 @@
     "js-yaml": "3.14.0"
   },
   "devDependencies": {
+    "@types/jest": "26.0.8",
     "@types/js-yaml": "3.11.1",
-    "@web3api/client-test-env": "0.0.1-alpha.1"
+    "@web3api/client-test-env": "0.0.1-alpha.1",
+    "jest": "26.2.2",
+    "ts-jest": "26.1.4"
   }
 }
