@@ -1,13 +1,16 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "rootDir": "src",
+    "outDir": "dist",
+    "target": "es2015",
     "module": "commonjs",
-    "strict": true,
-    "moduleResolution": "node",
-    "outDir": "build",
+    "composite": true,
     "declaration": true,
-    "declarationDir": "build/types",
-    "esModuleInterop": true
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "lib": ["es2015", "es6", "esnext.asynciterable", "dom"]
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/__tests__/**/*.ts"]
 }

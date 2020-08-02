@@ -1,5 +1,5 @@
 import { GluegunToolbox } from "gluegun";
-import { newBoilerplate } from "../lib/new-boilerplate";
+import { generateProject } from "../lib/generators/project-generator";
 
 export default {
   alias: ["c"],
@@ -21,7 +21,7 @@ export default {
       print.newline();
       print.info(`Setting up everything...`);
 
-      newBoilerplate(projectName, filesystem);
+      generateProject(projectName, filesystem);
 
       print.newline();
     } else {
@@ -32,7 +32,7 @@ export default {
       if (overwrite) {
         print.info(`Overwriting ${projectName}...`);
         filesystem.remove(projectName);
-        newBoilerplate(projectName, filesystem);
+        generateProject(projectName, filesystem);
       } else {
         process.exit(8);
       }

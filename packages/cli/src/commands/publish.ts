@@ -1,5 +1,5 @@
 import { GluegunToolbox } from 'gluegun'
-import { insertProtocol } from '../lib/bucket-connection'
+import { insertProtocol } from '../lib/textile/bucket-connection'
 
 var WebSocket = require('ws')
 global.WebSocket = WebSocket

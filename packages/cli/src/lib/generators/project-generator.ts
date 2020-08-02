@@ -1,6 +1,6 @@
 import { GluegunFilesystem } from "gluegun";
 
-export const newBoilerplate = (projectName: string, fs: GluegunFilesystem) => {
+export const generateProject = (projectName: string, fs: GluegunFilesystem) => {
   const { dir, write } = fs;
   dir(projectName);
   dir(`${projectName}/src`);

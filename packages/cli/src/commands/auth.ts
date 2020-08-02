@@ -1,7 +1,7 @@
 import { GluegunToolbox } from "gluegun";
 import chalk from "chalk";
 
-import { saveAccessToken } from "../lib/user-auth-textile";
+import { saveAccessToken } from "../lib/textile/user-auth";
 
 const HELP = `
 ${chalk.dim("Description:")}
