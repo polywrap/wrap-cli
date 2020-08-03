@@ -1,7 +1,5 @@
-import {
-  DataSet as DataSetEvent,
-  SimpleStorage
-} from './codegen/schema'
+import { SimpleStorage } from './generated/schema'
+import { DataSet as DataSetEvent } from './generated/SimpleStorage/SimpleStorage'
 
 function getStorage(id: string): SimpleStorage {
   let storage = SimpleStorage.load(id)

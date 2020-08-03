@@ -2,7 +2,7 @@
 import {
   GetDataInput,
   GetDataOutput
-} from './codegen-v0/schema'
+} from './generated-v0/schema'
 
 export function getData(input: GetDataInput): GetDataOutput {
   /*const data = ethereum.callView(

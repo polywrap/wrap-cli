@@ -2,7 +2,7 @@
   "name": "@web3api/examples-simple-storage",
   "scripts": {
     "contracts:build": "",
-    "subgraph:codegen": "cd subgraph && graph codegen --out-dir codegen/",
+    "subgraph:codegen": "cd subgraph && graph codegen --out-dir generated/",
     "subgraph:build": "cd subgraph && graph build"
   },
   "devDependencies": {

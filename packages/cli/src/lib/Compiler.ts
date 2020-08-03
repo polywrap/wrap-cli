@@ -5,11 +5,18 @@ import { step, withSpinner } from "./helpers/spinner";
 
 import fs from "fs";
 import path from "path";
+import YAML from "js-yaml";
 import * as asc from "assemblyscript/cli/asc";
 
 const fsExtra = require("fs-extra");
-const IPFSClient = require("ipfs-http-client");
+const spawn = require("spawn-command");
 const toolbox = require("gluegun/toolbox");
+const IPFSClient = require("ipfs-http-client");
+
+// We cannot `require.resolve('@graphprotocol/graph-cli')`, because it's not a require-able package
+const graphCli = path.resolve(
+  `${require.resolve("@graphprotocol/graph-ts")}/../../graph-cli/bin/graph`
+);
 
 export interface ICompilerConfig {
   manifestPath: string;
@@ -96,7 +103,7 @@ export class Compiler {
   private async _compileWeb3API(manifest: Manifest, quiet: boolean = false) {
     const run = async (spinner?: any) => {
       const { mutation, query, subgraph } = manifest;
-      const { outputDir } = this._config;
+      const { outputDir, manifestPath } = this._config;
 
       let schema = "";
       const loadSchema = (schemaPath: string) => {
@@ -127,14 +134,25 @@ export class Compiler {
         query.schema.file = './schema.graphql';
       }
 
-      // TODO:
-      /*if (subgraph) {
-        const subgraphManifest = loadSubgraph(subgraph.file);
-        loadSchema(subgraphManifest.schema);
-        buildSubgraph(
-          subgraphManifest, `${outputDir}/subgraph`, spinner
+      if (subgraph) {
+        const subgraphFile = path.join(
+          path.dirname(manifestPath), subgraph.file
         );
-      }*/
+        const str: any = fs.readFileSync(
+          subgraphFile, "utf-8"
+        );
+        const subgraphManifest: any = YAML.safeLoad(str);
+        loadSchema(path.join(
+          path.dirname(subgraphFile), subgraphManifest.schema.file
+        ));
+        const id = await this._compileSubgraph(
+          subgraph.file,
+          `${outputDir}/subgraph`,
+          spinner
+        );
+        subgraph.file = `${outputDir}/subgraph/subgraph.yaml`;
+        subgraph.id = id;
+      }
 
       fs.writeFileSync(
         `${outputDir}/schema.graphql`, schema, "utf-8"
@@ -224,5 +242,51 @@ export class Compiler {
         return 0;
       }
     );
+  }
+
+  private async _compileSubgraph(
+    subgraphPath: string,
+    outputDir: string,
+    spinner: any
+  ): Promise<string> {
+    const args = [
+      "build",
+      subgraphPath,
+      "--output-dir",
+      outputDir
+    ];
+
+    const [exitCode, stdout, stderr] = await new Promise(
+      (resolve, reject) => {
+        // Make sure to set an absolute working directory
+        let cwd = process.cwd();
+        cwd = cwd[0] !== '/' ? path.resolve(__dirname, cwd) : cwd
+    
+        const command = `${graphCli} ${args.join(' ')}`;
+        const child = spawn(command, { cwd });
+        let stdout = ''
+        let stderr = ''
+
+        child.on('error', (error: Error) => {
+          reject(error)
+        })
+    
+        child.stdout.on('data', (data: string) => {
+          stdout += data.toString()
+        });
+    
+        child.stderr.on('data', (data: string) => {
+          stderr += data.toString()
+        });
+    
+        child.on('exit', (exitCode: number) => {
+          resolve([exitCode, stdout, stderr])
+        });
+      }
+    );
+    console.log(exitCode);
+    console.log(stdout);
+    console.error(stderr);
+    return "hey";
   }
 }

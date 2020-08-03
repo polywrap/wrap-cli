@@ -20,5 +20,5 @@ export interface Manifest {
   schema: FilePath;
   mutation?: ClientModule;
   query?: ClientModule;
-  subgraph?: FilePath;
+  subgraph?: FilePath & { id?: string };
 }

@@ -19,7 +19,7 @@ dataSources:
         - SimpleStorage
       abis:
         - name: SimpleStorage
-          file: ../contracts/abis/SimpleStorage.json
+          file: ../contracts/SimpleStorage.json
       eventHandlers:
-        - event: DataSet(address from)
+        - event: DataSet(address)
           handler: handleDataSet

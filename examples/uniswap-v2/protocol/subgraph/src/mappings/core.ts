@@ -12,8 +12,8 @@ import {
   Burn as BurnEvent,
   Swap as SwapEvent,
   Bundle
-} from '../codegen/schema'
-import { Pair as PairContract, Mint, Burn, Swap, Transfer, Sync } from '../codegen/templates/Pair/Pair'
+} from '../generated/schema'
+import { Pair as PairContract, Mint, Burn, Swap, Transfer, Sync } from '../generated/templates/Pair/Pair'
 import { updatePairDayData, updateTokenDayData, updateUniswapDayData, updatePairHourData } from './dayUpdates'
 import { getEthPriceInUSD, findEthPerToken, getTrackedVolumeUSD, getTrackedLiquidityUSD } from './pricing'
 import {
