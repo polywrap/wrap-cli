@@ -1,4 +1,4 @@
-import { Compiler } from "../lib/compiler";
+import { Compiler } from "../lib/Compiler";
 import { fixParameters } from "../lib/helpers/parameters";
 import { GluegunToolbox } from "gluegun";
 import chalk from "chalk";
@@ -71,7 +71,7 @@ export default {
       return;
     }
 
-    if (outputFormat !== 'wasm' || outputFormat !== 'wast') {
+    if (outputFormat && (outputFormat !== 'wasm' || outputFormat !== 'wast')) {
       print.error(`Unrecognized --output-format type: ${outputFormat}`);
       print.info(HELP);
       return;
@@ -89,7 +89,8 @@ export default {
     });
 
     if (watch) {
-      await compiler.watchAndCompile();
+      // TODO:
+      // await compiler.watchAndCompile();
     } else {
       const result = await compiler.compile();
       if (result === false) {

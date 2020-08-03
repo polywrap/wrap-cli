@@ -3,11 +3,12 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "./packages/*"
+      "./packages/*",
+      "./examples/simple-storage/**/*"
     ]
   },
   "scripts": {
-    "test:ci:client-js": "yarn workspace @web3api/client test:ci"
+    "test:ci:client-js": "yarn workspace @web3api/client-js test:ci"
   },
   "devDependencies": {
     "lerna": "3.22.1"

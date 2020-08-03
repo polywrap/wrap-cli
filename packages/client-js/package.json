@@ -1,5 +1,5 @@
 {
-  "name": "@web3api/client",
+  "name": "@web3api/client-js",
   "version": "0.0.1-alpha.1",
   "scripts": {
     "test": "jest --passWithNoTests --verbose",
@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@assemblyscript/loader": "0.14.1",
-    "@web3api/wasm": "0.0.1-alpha.1",
+    "@web3api/wasm-ts": "0.0.1-alpha.1",
     "apollo-link": "1.2.14",
     "apollo-link-http": "1.5.17",
     "cross-fetch": "3.0.5",

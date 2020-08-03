@@ -7,7 +7,7 @@
 ## App Devs
 **Use Web3 APIs...**
 ```typescript
-import { request, query } from '@web3api/client.js';
+import { request, query } from '@web3api/client-js';
 
 // REST
 request('api.1inch.eth/swap?from=’USDC’&to=’ETH’&amount=500');

@@ -1,17 +1,17 @@
-import { ethereum } from '@web3api/ts-mutation'
+//import { ethereum } from '@web3api/wasm-ts'
 import {
   SetDataInput,
   SetDataOutput
 } from './codegen-v0/schema'
 
 export function setData(input: SetDataInput): SetDataOutput {
-  ethereum.sendTransaction( 
+  /*ethereum.sendTransaction( 
     input.id,
     'set',
     [input.value]
-  )
+  )*/
 
-  return {
-    storage: input.id
-  }
+  return new SetDataOutput(
+   input.id
+  )
 }

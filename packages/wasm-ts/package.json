@@ -1,6 +1,7 @@
 {
-  "name": "@web3api/wasm",
+  "name": "@web3api/wasm-ts",
   "version": "0.0.1-alpha.1",
+  "main": "./assembly/index.ts",
   "scripts": {
     "test": "asp --verbose",
     "test:ci": "asp --summary"

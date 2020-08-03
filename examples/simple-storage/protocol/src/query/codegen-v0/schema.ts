@@ -1,6 +1,6 @@
-import {
+/*import {
   BigInt
-} from '@web3api/ts-runtime'
+} from '@web3api/wasm-ts'*/
 
 export class GetDataInput {
   constructor(
@@ -10,6 +10,7 @@ export class GetDataInput {
 
 export class GetDataOutput {
   constructor(
-    public data: BigInt
+    // TODO: BigInt
+    public data: u64
   ) { }
 }

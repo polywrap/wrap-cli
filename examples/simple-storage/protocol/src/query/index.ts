@@ -1,17 +1,17 @@
-import { ethereum } from '@web3api/ts-query'
-import { BigInt } from '@web3api/ts-runtime'
+// import { ethereum, BigInt } from '@web3api/wasm-ts'
 import {
   GetDataInput,
   GetDataOutput
 } from './codegen-v0/schema'
 
 export function getData(input: GetDataInput): GetDataOutput {
-  const data = ethereum.callView(
+  /*const data = ethereum.callView(
     input.id,
     'get'
-  ) as BigInt
+  ) as BigInt*/
+  const data: u64 = 5;
 
-  return {
+  return new GetDataOutput(
     data
-  }
+  )
 }

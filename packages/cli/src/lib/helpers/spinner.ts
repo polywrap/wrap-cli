@@ -9,7 +9,7 @@ const toolbox = require('gluegun/toolbox')
 //   spinner stops with the warning message and returns the `result` value.
 // Otherwise the spinner prints the in-progress message with a check mark
 //   and simply returns the value returned by `f`.
-const withSpinner = async (
+export const withSpinner = async (
   text: string,
   errorText: string,
   warningText: string,
@@ -39,4 +39,16 @@ const withSpinner = async (
     spinner.fail(`${errorText}: ${e.message}`)
     throw e
   }
+}
+
+export const step = (spinner: any, subject: string, text: string) => {
+  if (text) {
+    spinner.stopAndPersist({
+      text: toolbox.print.colors.muted(`${subject} ${text}`),
+    })
+  } else {
+    spinner.stopAndPersist({ text: toolbox.print.colors.muted(subject) })
+  }
+  spinner.start()
+  return spinner
 }
