@@ -26,9 +26,9 @@ router.use((req, res, next) => {
 
 router.get('/providers', (req, res) => {
   res.send({
-    ipfs: `localhost:${process.env.IPFS_PORT}`,
-    ethereum: `localhost:${process.env.ETHEREUM_PORT}`,
-    subgraph: `localhost:${process.env.SUBGRAPH_PORT}`
+    ipfs: `http://localhost:${process.env.IPFS_PORT}`,
+    ethereum: `http://localhost:${process.env.ETHEREUM_PORT}`,
+    subgraph: `http://localhost:${process.env.SUBGRAPH_PORT}`
   });
 });
 

@@ -7,8 +7,8 @@
     "test": "jest --passWithNoTests --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose",
     "test:ci": "yarn test:env:up && yarn test && yarn test:env:down",
-    "test:env:up": "node ./scripts/env-up.js",
-    "test:env:down": "node ./scripts/env-down.js"
+    "test:env:up": "w3 test-env up",
+    "test:env:down": "w3 test-env down"
   },
   "dependencies": {
     "@assemblyscript/loader": "0.14.1",
@@ -26,7 +26,8 @@
   "devDependencies": {
     "@types/jest": "26.0.8",
     "@types/js-yaml": "3.11.1",
-    "@web3api/client-test-env": "0.0.1-alpha.1",
+    "@web3api/cli": "0.0.1-alpha.1",
+    "axios": "0.19.2",
     "jest": "26.2.2",
     "ts-jest": "26.1.4",
     "typescript": "3.9.7"

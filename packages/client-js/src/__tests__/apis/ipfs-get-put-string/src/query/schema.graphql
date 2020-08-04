@@ -1,0 +1,3 @@
+type Query {
+  getString(cid: string!): string!
+}

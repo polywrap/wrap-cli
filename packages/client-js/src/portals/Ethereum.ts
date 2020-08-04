@@ -29,7 +29,7 @@ export class Ethereum {
     const { provider, signer, ens } = _config;
 
     // Sanitize Provider & Signer
-    this.setProvider(provider, signer ? signer : 0);
+    this.setProvider(provider, signer !== undefined ? signer : 0);
 
     // Sanitize ENS address
     if (ens) {
@@ -46,7 +46,7 @@ export class Ethereum {
       this._client = new Web3Provider(provider);
     }
 
-    if (signer) {
+    if (signer !== undefined) {
       this.setSigner(signer);
     }
   }

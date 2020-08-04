@@ -6,64 +6,47 @@ import {
 } from "../";
 import { IPortals } from "../Web3API";
 import { printSchema } from "graphql";
+import axios from "axios";
 
-// TODO: Replace w/ a fetch to the test driver
+// TODO:
+// - build & deploy example we want to use
+// - publish it to random ENS address for this test run
+// - query it
+
 const testValues = {
-  cid: "TODO",
-  manifest: {
-    description: "TODO",
-    repository: "TODO",
-    schema: {
-      file: "TODO"
-    },
-    mutation: {
-      schema: {
-        file: "TODO"
-      },
-      module: {
-        language: "wasm/assemblyscript",
-        file: "TODO"
-      }
-    },
-    query: {
-      schema: {
-        file: "TODO"
-      },
-      module: {
-        language: "wasm/assemblyscript",
-        file: "TODO"
-      }
-    },
-    subgraph: {
-      file: "TODO"
-    }
+  cid: {
+
   },
-  schema: `TODO`
+  manifest: {
+
+  },
+  schema: {
+
+  }
 }
 
 describe("Web3API", () => {
   let portals: IPortals;
-  let ipfs: IPFS;
-  let ethereum: Ethereum;
-  let subgraph: Subgraph;
 
-  beforeAll(() => {
-    ipfs = new IPFS({
-      provider: "localhost:5001"
-    });
+  beforeAll(async () => {
+    // fetch providers from dev server
+    const { data: { ipfs, ethereum, subgraph } } = await axios.get("http://localhost:4040/providers");
 
-    ethereum = new Ethereum({
-      provider: "localhost:8545"
-    });
+    if (!ipfs) {
+      throw Error("Dev server must be running at port 4040");
+    }
 
-    subgraph = new Subgraph({
-      provider: "localhost:8000"
-    });
+    // re-deploy ENS
+    const { data: { ensAddress } } = await axios.get("http://localhost:4040/deploy-ens");
+
+    // build & deploy the protocol
+    // TODO:
+    // w3 build --ipfs ${ipfs} --ens-address ${ensAddress} --ens ${randomName}
 
     portals = {
-      ipfs,
-      ethereum,
-      subgraph
+      ipfs: new IPFS({ provider: ipfs }),
+      ethereum: new Ethereum({ provider: ethereum, ens: ensAddress }),
+      subgraph: new Subgraph({ provider: subgraph })
     };
   });
 
