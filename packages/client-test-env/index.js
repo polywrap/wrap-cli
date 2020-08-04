@@ -1,7 +1,10 @@
 const { exec } = require('child_process');
 
 async function runCommand(command) {
-  console.log(`> ${command}`)
+
+  if (!quiet) {
+    console.log(`> ${command}`)
+  }
 
   return new Promise((resolve, reject) => {
     const callback = (err, stdout, stderr) => {
@@ -9,9 +12,12 @@ async function runCommand(command) {
         console.error(err)
         reject(err)
       } else {
-        // the *entire* stdout and stderr (buffered)
-        console.log(`stdout: ${stdout}`)
-        console.log(`stderr: ${stderr}`)
+        if (!quiet) {
+          // the *entire* stdout and stderr (buffered)
+          console.log(`stdout: ${stdout}`)
+          console.log(`stderr: ${stderr}`)
+        }
+
         resolve()
       }
     }
@@ -20,12 +26,12 @@ async function runCommand(command) {
   })
 }
 
-async function up() {
-  runCommand('docker-compose up -d')
+async function up(quite = false) {
+  await runCommand('docker-compose up -d', quiet)
 }
 
-async function down() {
-  runCommand('docker-compose down')
+async function down(quite = false) {
+  await runCommand('docker-compose down', quiet)
 }
 
 if (require.main === module) {

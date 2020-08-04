@@ -1,0 +1,38 @@
+{
+  "name": "@web3api/dev-server",
+  "version": "0.0.1-alpha.1",
+  "main": "build/index.js",
+  "scripts": {
+    "start": "node ./build/index.js",
+    "build": "babel src -d build"
+  },
+  "dependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.4",
+    "@babel/plugin-transform-async-to-generator": "^7.4.4",
+    "@babel/plugin-transform-regenerator": "^7.4.4",
+    "@babel/plugin-transform-runtime": "^7.4.4",
+    "@babel/plugin-transform-spread": "^7.2.2",
+    "@babel/polyfill": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/runtime": "^7.4.4",
+    "@ensdomains/address-encoder": "^0.1.1",
+    "@ensdomains/dnsregistrar": "^0.3.5",
+    "@ensdomains/dnssec-oracle": "^0.1.2",
+    "@ensdomains/ens": "^0.4.4",
+    "@ensdomains/ens-022": "npm:@ensdomains/ens@0.2.2",
+    "@ensdomains/ethregistrar": "^2.0.4",
+    "@ensdomains/ethregistrar-202": "npm:@ensdomains/ethregistrar@2.0.2",
+    "@ensdomains/resolver": "0.2.4",
+    "@ensdomains/subdomain-registrar": "^0.2.3",
+    "babel-plugin-add-module-exports": "^1.0.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "dotenv": "8.2.0",
+    "express": "4.17.1",
+    "moment": "2.27.0",
+    "table": "5.4.6",
+    "web3-utils": "1.2.11",
+    "web3": "1.2.11"
+  }
+}

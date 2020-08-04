@@ -1,17 +1,18 @@
 {
   "name": "@web3api/cli",
-  "version": "0.0.1-alpha",
+  "version": "0.0.1-alpha.1",
   "bin": {
     "w3": "bin/w3"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf ./build && tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.18.0",
     "@graphprotocol/graph-ts": "0.18.1",
     "@textile/hub": "^0.3.3",
+    "@web3api/client-test-env": "0.0.1-alpha.1",
     "assemblyscript": "0.14.7",
     "chalk": "^4.1.0",
     "fs-extra": "9.0.1",

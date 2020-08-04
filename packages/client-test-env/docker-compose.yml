@@ -1,42 +1,49 @@
 version: '3'
 services:
-  ipfs:
-    build: ipfs
+  dev-server:
+    build: ./
     ports:
-      - '5001:5001'
-    logging:
-      driver: 'none'
+      - '${DEV_SERVER_PORT}:${DEV_SERVER_PORT}'
+    links:
+      - ganache
+    environment:
+      ganache: 'ganache:${ETHEREUM_PORT}'
   ganache:
     image: 'trufflesuite/ganache-cli'
     ports:
-      - '8545:8545'
+      - '${ETHEREUM_PORT}:8545'
     command: -l 8000000 --networkId 1576478390085 --deterministic --hostname=0.0.0.0
-  graph-node:
-    image: graphprotocol/graph-node
+  ipfs:
+    image: 'ipfs/go-ipfs:v0.4.23'
     ports:
-      - '8000:8000'
+      - '${IPFS_PORT}:5001'
+  graph-node:
+    image: graphprotocol/graph-node:v0.18.0
+    ports:
+      - '${SUBGRAPH_PORT}:8000'
       - '8001:8001'
       - '8020:8020'
       - '8030:8030'
       - '8040:8040'
-    depends_on:
+    links:
       - ipfs
       - postgres
+      - ganache
     environment:
       postgres_host: postgres:5432
-      postgres_user: graph-node
-      postgres_pass: let-me-in
-      postgres_db: graph-node
+      postgres_user: postgres
+      postgres_pass: letmein
+      postgres_db: postgres
       ipfs: 'ipfs:5001'
       ethereum: 'private:http://ganache:8545'
+      GRAPH_IPFS_TIMEOUT: '2'
+      GRAPH_MAX_IPFS_FILE_BYTES: '400000'
+      GRAPH_GRAPHQL_MAX_FIRST: '1000'
       RUST_LOG: info
       RUST_BACKTRACE: 1
   postgres:
-    image: postgres
+    build: postgres
     ports:
-      - '5432:5432'
-    command: ["postgres", "-cshared_preload_libraries=pg_stat_statements"]
+      - '5434:5432'
     environment:
-      POSTGRES_USER: graph-node
-      POSTGRES_PASSWORD: let-me-in
-      POSTGRES_DB: graph-node
+      POSTGRES_PASSWORD: letmein

@@ -244,6 +244,7 @@ export class Compiler {
     );
   }
 
+  // TODO: break out into "compiler modules"
   private async _compileSubgraph(
     subgraphPath: string,
     outputDir: string,

@@ -16,7 +16,7 @@ Options:
 
 export default {
   alias: ["b"],
-  description: "Builds a web3api and (optionally) uploads it to IPFS",
+  description: "Builds a Web3API and (optionally) uploads it to IPFS",
   run: async (toolbox: GluegunToolbox) => {
     const { filesystem, parameters, print } = toolbox;
 
