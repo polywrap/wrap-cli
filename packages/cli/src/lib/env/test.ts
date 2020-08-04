@@ -1,9 +1,9 @@
 const testEnv = require("@web3api/client-test-env");
 
-export async function startupTestEnv() {
-  await testEnv.up();
+export async function startupTestEnv(quiet: boolean) {
+  await testEnv.up(quiet);
 }
 
-export async function shutdownTestEnv() {
-  await testEnv.down();
+export async function shutdownTestEnv(quiet: boolean) {
+  await testEnv.down(quiet);
 }

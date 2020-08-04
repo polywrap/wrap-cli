@@ -1,6 +1,7 @@
 {
   "name": "@web3api/client-test-env",
   "version": "0.0.1-alpha.1",
+  "license": "MIT",
   "main": "index.js",
   "scripts": {
     "up": "docker-compose up",

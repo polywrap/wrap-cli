@@ -1,9 +1,14 @@
 {
   "name": "@web3api/examples-simple-storage",
+  "version": "0.0.1-alpha.1",
+  "license": "MIT",
   "scripts": {
+    "codegen": "yarn subgraph:codegen",
+    "build": "w3 build && yarn contracts:build",
+    "test:env:up": "w3 test-env up && yarn contracts:deploy",
+    "test:env:down": "w3 test-env down",
     "contracts:build": "",
-    "subgraph:codegen": "cd subgraph && graph codegen --out-dir generated/",
-    "subgraph:build": "cd subgraph && graph build"
+    "subgraph:codegen": "cd src/subgraph && graph codegen --out-dir generated/"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.18.0",

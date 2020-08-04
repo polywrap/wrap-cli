@@ -1,6 +1,6 @@
 const { exec } = require('child_process');
 
-async function runCommand(command) {
+async function runCommand(command, quiet) {
 
   if (!quiet) {
     console.log(`> ${command}`)
@@ -26,11 +26,11 @@ async function runCommand(command) {
   })
 }
 
-async function up(quite = false) {
+async function up(quiet = false) {
   await runCommand('docker-compose up -d', quiet)
 }
 
-async function down(quite = false) {
+async function down(quiet = false) {
   await runCommand('docker-compose down', quiet)
 }
 

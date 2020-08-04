@@ -36,8 +36,9 @@ export default {
         "Starting test environment...",
         "Failed to start test environment",
         "Warning starting test environment",
-        async apinner => {
-          return startupTestEnv();
+        async spinner => {
+          // TODO: support verbose logging
+          return startupTestEnv(true);
         }
       )
     } else if (command === "down") {
@@ -45,8 +46,8 @@ export default {
         "Shutting down test environment...",
         "Failed to shutdown test environment",
         "Warning shutting down test environment",
-        async apinner => {
-          return await shutdownTestEnv();
+        async spinner => {
+          return await shutdownTestEnv(true);
         }
       )
     } else {

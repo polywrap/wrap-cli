@@ -1,7 +1,9 @@
 {
   "name": "@web3api/client-js",
   "version": "0.0.1-alpha.1",
+  "license": "MIT",
   "scripts": {
+    "build": "rm -rf build && tsc",
     "test": "jest --passWithNoTests --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose",
     "test:ci": "yarn test:env:up && yarn test && yarn test:env:down",
@@ -26,6 +28,7 @@
     "@types/js-yaml": "3.11.1",
     "@web3api/client-test-env": "0.0.1-alpha.1",
     "jest": "26.2.2",
-    "ts-jest": "26.1.4"
+    "ts-jest": "26.1.4",
+    "typescript": "3.9.7"
   }
 }

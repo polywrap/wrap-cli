@@ -223,7 +223,7 @@ export class Web3API {
         );
 
         const result = await WASMLoader.instantiate(
-          wasm,
+          wasm as any,
           getHostImports(() => result as ASCModule, portals)
         ) as any;
 

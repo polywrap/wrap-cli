@@ -24,14 +24,6 @@ export {
   Bytes
 } from "./lib/core/Bytes";
 
-export {
-  JSON,
-  JSONDecoder,
-  JSONEncoder,
-  JSONHandler,
-  ThrowingJSONHandler
-} from "./lib/core/JSON";
-
 ///////////////////////////
 /// ASM Runtime Helpers ///
 ///////////////////////////
