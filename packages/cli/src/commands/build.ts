@@ -1,7 +1,10 @@
 import { Compiler } from "../lib/Compiler";
+import { Publisher } from "../lib/Publisher";
 import { fixParameters } from "../lib/helpers/parameters";
+
 import { GluegunToolbox } from "gluegun";
 import chalk from "chalk";
+import axios from "axios";
 
 const HELP = `
 ${chalk.bold('w3 build')} [options] ${chalk.bold('[<web3api-manifest>]')}
@@ -10,8 +13,9 @@ Options:
   -h, --help                    Show usage information
   -i, --ipfs <node>             Upload build results to an IPFS node
   -o, --output-dir <path>       Output directory for build results (default: build/)
-  -t, --output-format <format>  Output format for WASM modules (wasm, wast) (default: wasm)
+  -f, --output-format <format>  Output format for WASM modules (wasm, wast) (default: wasm)
   -w, --watch                   Regenerate types when web3api files change (default: false)
+  -e, --test-ens <domain>       Publish the package to a test ENS domain locally
 `
 
 export default {
@@ -24,15 +28,17 @@ export default {
       i, ipfs,
       h, help,
       o, outputDir,
-      t, outputFormat,
-      w, watch
+      f, outputFormat,
+      w, watch,
+      e, testEns
     } = parameters.options;
 
     ipfs = ipfs || i;
     help = help || h;
     outputDir = outputDir || o;
-    outputFormat = outputFormat || t;
+    outputFormat = outputFormat || f;
     watch = watch || w;
+    testEns = testEns || e;
 
     let manifestPath;
     try {
@@ -83,7 +89,6 @@ export default {
 
     const compiler = new Compiler({
       manifestPath,
-      ipfs: ipfs ? ipfs : undefined,
       outputDir,
       outputFormat
     });
@@ -95,7 +100,37 @@ export default {
       const result = await compiler.compile();
       if (result === false) {
         process.exitCode = 1;
+        return;
       }
+
+      // publish to IPFS
+      if (ipfs !== undefined) {
+        const publisher = new Publisher({
+          buildPath: outputDir,
+          ipfs
+        });
+
+        const cid = await publisher.publishToIPFS();
+        console.log(`IPFS { ${cid} }`);
+
+        if (testEns) {
+          // ask the dev server to publish the CID to ENS
+          const { data } = await axios.get(
+            "http://localhost:4040/register-ens",
+            {
+              params: {
+                domain: testEns,
+                cid
+              }
+            }
+          );
+
+          console.log("HERERERERE")
+          console.log(data.success)
+        }
+      }
+
+      process.exitCode = 0;
     }
   }
 }

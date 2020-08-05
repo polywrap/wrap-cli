@@ -136,6 +136,6 @@ export class Ethereum {
   }
 
   public static isENSDomain(domain: string) {
-    return ethers.utils.isValidName(domain);
+    return ethers.utils.isValidName(domain) && domain.indexOf('.eth') !== -1;
   }
 }

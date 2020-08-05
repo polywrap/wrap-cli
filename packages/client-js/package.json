@@ -29,6 +29,7 @@
     "@web3api/cli": "0.0.1-alpha.1",
     "axios": "0.19.2",
     "jest": "26.2.2",
+    "spawn-command": "0.0.2-1",
     "ts-jest": "26.1.4",
     "typescript": "3.9.7"
   }

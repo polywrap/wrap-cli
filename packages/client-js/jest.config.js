@@ -2,5 +2,11 @@ module.exports = {
   collectCoverage: true,
   preset: 'ts-jest',
   testEnvironment: 'node',
-  modulePathIgnorePatterns: ['./src/__tests__/apis']
+  testMatch: ["**/?(*.)+(spec|test).[jt]s?(x)"],
+  modulePathIgnorePatterns: ['./src/__tests__/apis'],
+  globals: {
+    'ts-jest': {
+      diagnostics: false
+    }
+  }
 };

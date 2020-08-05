@@ -5,6 +5,8 @@ import {
   Subgraph
 } from "../";
 import { IPortals } from "../Web3API";
+import { runW3CLI, generateName } from "./helpers";
+
 import { printSchema } from "graphql";
 import axios from "axios";
 
@@ -25,8 +27,12 @@ const testValues = {
   }
 }
 
+jest.setTimeout(15000);
+
 describe("Web3API", () => {
   let portals: IPortals;
+  let apiCID: string;
+  let apiENS: string;
 
   beforeAll(async () => {
     // fetch providers from dev server
@@ -39,9 +45,29 @@ describe("Web3API", () => {
     // re-deploy ENS
     const { data: { ensAddress } } = await axios.get("http://localhost:4040/deploy-ens");
 
+    // create a new ENS domain
+    apiENS = `${generateName()}.eth`;
+    console.log(apiENS);
+
     // build & deploy the protocol
-    // TODO:
-    // w3 build --ipfs ${ipfs} --ens-address ${ensAddress} --ens ${randomName}
+    const { exitCode, stdout, stderr } = await runW3CLI([
+      "build",
+      `${__dirname}/apis/ipfs-get-put-string/web3api.yaml`,
+      "--output-dir",
+      `${__dirname}/apis/ipfs-get-put-string/build`,
+      "--ipfs",
+      ipfs,
+      "--test-ens",
+      apiENS
+    ]);
+
+    console.log(stdout)
+    console.log(stderr)
+
+    // get the IPFS CID of the published package
+    const extractCID = /IPFS { (([A-Z]|[a-z]|[0-9])*) }/;
+    const result = stdout.match(extractCID);
+    apiCID = result[1];
 
     portals = {
       ipfs: new IPFS({ provider: ipfs }),
@@ -50,19 +76,19 @@ describe("Web3API", () => {
     };
   });
 
-  it("Fetches CID", async () => {
+  it.only("Fetches CID", async () => {
     const api = new Web3API({
-      uri: "api.tests.eth",
+      uri: apiENS,
       portals
     });
 
     const cid = await api.fetchCID();
-    expect(cid).toBe(testValues.cid);
+    expect(cid).toBe(apiCID);
   })
 
   it("Fetches manifest", async () => {
     const api = new Web3API({
-      uri: "api.tests.eth",
+      uri: apiENS,
       portals
     });
 
@@ -72,7 +98,7 @@ describe("Web3API", () => {
 
   it("Fetches schema", async () => {
     const api = new Web3API({
-      uri: "api.tests.eth",
+      uri: apiENS,
       portals
     });
 

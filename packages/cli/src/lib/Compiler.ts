@@ -11,7 +11,6 @@ import * as asc from "assemblyscript/cli/asc";
 const fsExtra = require("fs-extra");
 const spawn = require("spawn-command");
 const toolbox = require("gluegun/toolbox");
-const IPFSClient = require("ipfs-http-client");
 
 // We cannot `require.resolve('@graphprotocol/graph-cli')`, because it's not a require-able package
 const graphCli = path.resolve(
@@ -20,29 +19,14 @@ const graphCli = path.resolve(
 
 export interface ICompilerConfig {
   manifestPath: string;
-  ipfs?: string;
   outputDir: string;
   outputFormat: string;
 }
 
 export class Compiler {
-  // @ts-ignore
-  private _ipfs: IPFSClient | undefined;
-
   private _manifestDir: string;
 
   constructor(private _config: ICompilerConfig) {
-    if (_config.ipfs) {
-      let url;
-      try {
-        url = new URL(_config.ipfs);
-      } catch (e) {
-        throw Error(`IPFS URL Malformed: ${_config.ipfs}\n${e}`)
-      }
-
-      this._ipfs = new IPFSClient(_config.ipfs);
-    }
-
     this._manifestDir = path.dirname(_config.manifestPath);
   }
 
@@ -105,9 +89,15 @@ export class Compiler {
       const { mutation, query, subgraph } = manifest;
       const { outputDir, manifestPath } = this._config;
 
+      const appendPath = (root: string, subPath: string) => {
+        return path.join(path.dirname(root), subPath)
+      }
+
       let schema = "";
       const loadSchema = (schemaPath: string) => {
-        schema += `${fs.readFileSync(schemaPath, "utf-8")}\n`;
+        schema += `${fs.readFileSync(
+          appendPath(manifestPath, schemaPath), "utf-8"
+        )}\n`;
       }
 
       if (mutation) {
@@ -135,16 +125,14 @@ export class Compiler {
       }
 
       if (subgraph) {
-        const subgraphFile = path.join(
-          path.dirname(manifestPath), subgraph.file
-        );
+        const subgraphFile = appendPath(manifestPath, subgraph.file);
         const str: any = fs.readFileSync(
           subgraphFile, "utf-8"
         );
         const subgraphManifest: any = YAML.safeLoad(str);
-        loadSchema(path.join(
-          path.dirname(subgraphFile), subgraphManifest.schema.file
-        ));
+        loadSchema(
+          appendPath(subgraphFile, subgraphManifest.schema.file)
+        );
         const id = await this._compileSubgraph(
           subgraph.file,
           `${outputDir}/subgraph`,

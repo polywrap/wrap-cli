@@ -10,12 +10,13 @@ require("dotenv").config({ path: './.env' });
 
 const Web3 = require("web3");
 const express = require("express");
-const deployENS = require("./ens/deployENS.js").default;
+const deployENS = require("./ens/deployENS").default;
+const registerENS = require("./ens/registerENS").default;
 
 const app = express();
 const router = express.Router();
 
-let ensAddress = undefined;
+let addresses = { };
 
 // Simple logging
 router.use((req, res, next) => {
@@ -34,24 +35,44 @@ router.get('/providers', (req, res) => {
 
 router.get('/ens', (req, res) => {
   res.send({
-    ensAddress
+    ensAddress: addresses.ensAddress
   });
 });
 
-router.get('/deploy-ens', async (req, res) => {
-  const web3 = new Web3(
+const getWeb3 = () => {
+  return new Web3(
     new Web3.providers.HttpProvider(
       process.env.ganache ? `http://${process.env.ganache}` :
       `http://localhost:${process.env.ETHEREUM_PORT}`
     )
   );
+}
+
+router.get('/deploy-ens', async (req, res) => {
+  const web3 = getWeb3();
   const accounts = await web3.eth.getAccounts();
-  const addresses = await deployENS({ web3, accounts });
-  ensAddress = addresses.ensAddress;
+  addresses = await deployENS({ web3, accounts });
+
   res.send({
-    ensAddress
+    ensAddress: addresses.ensAddress
   });
 });
+
+router.get('/register-ens', async (req, res) => {
+  const web3 = getWeb3();
+  const accounts = await web3.eth.getAccounts();
+  await registerENS({
+    web3,
+    accounts,
+    addresses,
+    domain: req.query.domain,
+    cid: req.query.cid
+  });
+
+  res.send({
+    success: true
+  });
+})
 
 app.use('/', router);
 app.listen(process.env.DEV_SERVER_PORT, () => {

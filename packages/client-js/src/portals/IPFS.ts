@@ -55,8 +55,8 @@ export class IPFS {
   }
 
   public static isCID(cid: string) {
-    return !isIPFS.cid(cid)
-        && !isIPFS.cidPath(cid)
-        && !isIPFS.ipfsPath(cid);
+    return isIPFS.cid(cid)
+        || isIPFS.cidPath(cid)
+        || isIPFS.ipfsPath(cid);
   }
 }

@@ -118,6 +118,22 @@ export function loadContract(modName, contractName) {
   return require(`@ensdomains/${modName}/build/contracts/${contractName}`)
 }
 
+const { sha3 } = require("web3-utils");
+
+export function namehash(name) {
+  let node =
+    '0x0000000000000000000000000000000000000000000000000000000000000000'
+  if (name !== '') {
+    let labels = name.split('.')
+    for (let i = labels.length - 1; i >= 0; i--) {
+      node = sha3(node + sha3(labels[i]).slice(2), {
+        encoding: 'hex'
+      })
+    }
+  }
+  return node.toString()
+}
+
 export function deploy(web3, account, contractJSON, ...args) {
   const contract = new web3.eth.Contract(contractJSON.abi)
   return contract

@@ -17,6 +17,7 @@ services:
     image: 'ipfs/go-ipfs:v0.4.23'
     ports:
       - '${IPFS_PORT}:5001'
+      - '8080:8080'
   graph-node:
     image: graphprotocol/graph-node:v0.18.0
     ports:
