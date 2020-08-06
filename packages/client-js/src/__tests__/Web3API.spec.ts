@@ -1,141 +1,141 @@
-import {
-  Web3API,
-  IPFS,
-  Ethereum,
-  Subgraph
-} from "../";
-import { IPortals } from "../Web3API";
-import { runW3CLI, generateName } from "./helpers";
+// import {
+//   Web3API,
+//   IPFS,
+//   Ethereum,
+//   Subgraph
+// } from "../";
+// import { IPortals } from "../Web3API";
+// import { runW3CLI, generateName } from "./helpers";
 
-import { printSchema } from "graphql";
-import gql from "graphql-tag";
-import axios from "axios";
+// import { printSchema } from "graphql";
+// import gql from "graphql-tag";
+// import axios from "axios";
 
-jest.setTimeout(150000);
+// jest.setTimeout(150000);
 
-describe("Web3API", () => {
-  let portals: IPortals;
-  let apiCID: string;
-  let apiENS: string;
+// describe("Web3API", () => {
+//   let portals: IPortals;
+//   let apiCID: string;
+//   let apiENS: string;
 
-  beforeAll(async () => {
-    // fetch providers from dev server
-    const { data: { ipfs, ethereum, subgraph } } = await axios.get("http://localhost:4040/providers");
+//   beforeAll(async () => {
+//     // fetch providers from dev server
+//     const { data: { ipfs, ethereum, subgraph } } = await axios.get("http://localhost:4040/providers");
 
-    if (!ipfs) {
-      throw Error("Dev server must be running at port 4040");
-    }
+//     if (!ipfs) {
+//       throw Error("Dev server must be running at port 4040");
+//     }
 
-    // re-deploy ENS
-    const { data: { ensAddress } } = await axios.get("http://localhost:4040/deploy-ens");
+//     // re-deploy ENS
+//     const { data: { ensAddress } } = await axios.get("http://localhost:4040/deploy-ens");
 
-    // create a new ENS domain
-    apiENS = `${generateName()}.eth`;
+//     // create a new ENS domain
+//     apiENS = `${generateName()}.eth`;
 
-    // build & deploy the protocol
-    const { exitCode, stdout, stderr } = await runW3CLI([
-      "build",
-      `${__dirname}/apis/ipfs-get-put-string/web3api.yaml`,
-      "--output-dir",
-      `${__dirname}/apis/ipfs-get-put-string/build`,
-      "--ipfs",
-      ipfs,
-      "--test-ens",
-      apiENS
-    ]);
+//     // build & deploy the protocol
+//     const { exitCode, stdout, stderr } = await runW3CLI([
+//       "build",
+//       `${__dirname}/apis/ipfs-get-put-string/web3api.yaml`,
+//       "--output-dir",
+//       `${__dirname}/apis/ipfs-get-put-string/build`,
+//       "--ipfs",
+//       ipfs,
+//       "--test-ens",
+//       apiENS
+//     ]);
 
-    if (exitCode !== 0) {
-      console.error(`w3 exited with code: ${exitCode}`);
-      console.log(`stderr:\n${stderr}`)
-      console.log(`stdout:\n${stdout}`)
-      throw Error("w3 CLI failed");
-    }
+//     if (exitCode !== 0) {
+//       console.error(`w3 exited with code: ${exitCode}`);
+//       console.log(`stderr:\n${stderr}`)
+//       console.log(`stdout:\n${stdout}`)
+//       throw Error("w3 CLI failed");
+//     }
 
-    // get the IPFS CID of the published package
-    const extractCID = /IPFS { (([A-Z]|[a-z]|[0-9])*) }/;
-    const result = stdout.match(extractCID);
-    apiCID = result[1];
+//     // get the IPFS CID of the published package
+//     const extractCID = /IPFS { (([A-Z]|[a-z]|[0-9])*) }/;
+//     const result = stdout.match(extractCID);
+//     apiCID = result[1];
 
-    portals = {
-      ipfs: new IPFS({ provider: ipfs }),
-      ethereum: new Ethereum({ provider: ethereum, ens: ensAddress }),
-      subgraph: new Subgraph({ provider: subgraph })
-    };
-  });
+//     portals = {
+//       ipfs: new IPFS({ provider: ipfs }),
+//       ethereum: new Ethereum({ provider: ethereum, ens: ensAddress }),
+//       subgraph: new Subgraph({ provider: subgraph })
+//     };
+//   });
 
-  it("Fetches CID", async () => {
-    const api = new Web3API({
-      uri: apiENS,
-      portals
-    });
+//   it("Fetches CID", async () => {
+//     const api = new Web3API({
+//       uri: apiENS,
+//       portals
+//     });
 
-    const cid = await api.fetchCID();
-    expect(cid).toBe(apiCID);
-  });
+//     const cid = await api.fetchCID();
+//     expect(cid).toBe(apiCID);
+//   });
 
-  it("Fetches manifest", async () => {
-    const api = new Web3API({
-      uri: apiENS,
-      portals
-    });
+//   it("Fetches manifest", async () => {
+//     const api = new Web3API({
+//       uri: apiENS,
+//       portals
+//     });
 
-    const manifest = await api.fetchAPIManifest();
-    expect(manifest.mutation).toBeTruthy();
-    expect(manifest.query).toBeTruthy();
-  });
+//     const manifest = await api.fetchAPIManifest();
+//     expect(manifest.mutation).toBeTruthy();
+//     expect(manifest.query).toBeTruthy();
+//   });
 
-  it("Fetches schema", async () => {
-    const api = new Web3API({
-      uri: apiENS,
-      portals
-    });
+//   it("Fetches schema", async () => {
+//     const api = new Web3API({
+//       uri: apiENS,
+//       portals
+//     });
 
-    const schema = await api.fetchSchema();
-    expect(printSchema(schema)).toContain('type Mutation {');
-  });
+//     const schema = await api.fetchSchema();
+//     expect(printSchema(schema)).toContain('type Mutation {');
+//   });
 
-  it("Queries subgraph", async () => {
-    // TODO:
-    expect(false).toBe(true);
-  });
+//   it("Queries subgraph", async () => {
+//     // TODO:
+//     expect(false).toBe(true);
+//   });
 
-  it.only("Queries WASM query", async () => {
-    // Upload datat to IPFS
-    const testData = new Uint8Array(Buffer.from("hello world"));
-    const { cid } = await portals.ipfs.add(testData);
-    const ipfsHash = cid.toString();
+//   it.only("Queries WASM query", async () => {
+//     // Upload datat to IPFS
+//     const testData = new Uint8Array(Buffer.from("hello world"));
+//     const { cid } = await portals.ipfs.add(testData);
+//     const ipfsHash = cid.toString();
 
-    // Fetch it using a WASM query
-    const api = new Web3API({
-      uri: apiENS,
-      portals
-    });
+//     // Fetch it using a WASM query
+//     const api = new Web3API({
+//       uri: apiENS,
+//       portals
+//     });
 
-    const res = await api.query({
-      query: gql`
-        {
-          getString(cid: "${ipfsHash}")
-        }
-      `
-    });
+//     const res = await api.query({
+//       query: gql`
+//         {
+//           getString(cid: "${ipfsHash}")
+//         }
+//       `
+//     });
 
-    expect(res.errors).toBeFalsy();
-    expect(res.data.getString).toBe("hello world")
-  });
+//     expect(res.errors).toBeFalsy();
+//     expect(res.data.getString).toBe("hello world")
+//   });
 
-  it("Queries WASM mutation", async () => {
+//   it("Queries WASM mutation", async () => {
 
-  });
+//   });
 
-  it("Uses IPFS from WASM", async () => {
+//   it("Uses IPFS from WASM", async () => {
 
-  });
+//   });
 
-  it("Uses Ethereum from WASM", async () => {
+//   it("Uses Ethereum from WASM", async () => {
 
-  });
+//   });
 
-  it("Uses Subgraph from WASM", async () => {
+//   it("Uses Subgraph from WASM", async () => {
 
-  });
-});
+//   });
+// });
