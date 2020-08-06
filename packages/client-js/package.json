@@ -5,6 +5,7 @@
   "scripts": {
     "build": "rm -rf build && tsc",
     "test": "jest --passWithNoTests --verbose",
+    "test:exp": "node --experimental-worker node_modules/.bin/jest --passWithNoTests --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose",
     "test:ci": "yarn test:env:up && yarn test && yarn test:env:down",
     "test:env:up": "w3 test-env up",
@@ -31,6 +32,7 @@
     "jest": "26.2.2",
     "spawn-command": "0.0.2-1",
     "ts-jest": "26.1.4",
+    "ts-node": "8.10.2",
     "typescript": "3.9.7"
   }
 }

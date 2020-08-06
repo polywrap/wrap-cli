@@ -94,14 +94,10 @@ describe("Web3API", () => {
     expect(printSchema(schema)).toContain('type Mutation {');
   });
 
-  it("Queries subgraph", async () => {
-    // TODO:
-    expect(false).toBe(true);
-  });
-
-  it.only("Queries WASM query", async () => {
+  it("Read Content From IPFS", async () => {
     // Upload datat to IPFS
-    const testData = new Uint8Array(Buffer.from("hello world"));
+    const testString = "hello world";
+    const testData = new Uint8Array(Buffer.from(testString));
     const { cid } = await portals.ipfs.add(testData);
     const ipfsHash = cid.toString();
 
@@ -120,22 +116,46 @@ describe("Web3API", () => {
     });
 
     expect(res.errors).toBeFalsy();
-    expect(res.data.getString).toBe("hello world")
+    expect(res.data.getString).toBe(testString)
   });
 
-  it("Queries WASM mutation", async () => {
+  it("Write Content To IPFS", async () => {
+    const testContent = JSON.stringify({ test: 5 });
+
+    // Fetch it using a WASM query
+    const api = new Web3API({
+      uri: apiENS,
+      portals
+    });
+
+    const res = await api.query({
+      query: gql`
+        mutation PutString($content: String!) {
+          putString(content: $content)
+        }
+      `,
+      variables: {
+        content: testContent
+      }
+    });
+
+    expect(res.errors).toBeFalsy();
+    expect(res.data.putString).toBeTruthy();
+
+    const cat = await portals.ipfs.catToString(res.data.putString);
+    expect(cat).toBe(testContent);
+  });
+
+  it("Calls View in Ethereum", async () => {
 
   });
 
-  it("Uses IPFS from WASM", async () => {
-
+  it("Sends Transaction in Ethereum", async () => {
+    
   });
 
-  it("Uses Ethereum from WASM", async () => {
-
-  });
-
-  it("Uses Subgraph from WASM", async () => {
-
+  it("Queries subgraph", async () => {
+    // TODO:
+    expect(false).toBe(true);
   });
 });
