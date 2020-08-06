@@ -75,7 +75,7 @@ export class Compiler {
     }
   }
 
-  private async _compileWeb3API(manifest: Manifest, quiet: boolean = false) {
+  private async _compileWeb3API(manifest: Manifest, quiet?: boolean, verbose?: boolean) {
     const run = async (spinner?: any) => {
       const { mutation, query, subgraph } = manifest;
       const { outputDir, manifestPath } = this._config;
@@ -87,7 +87,10 @@ export class Compiler {
       let schema = "";
       const loadSchema = (schemaPath: string) => {
         schema += `${fs.readFileSync(
-          appendPath(manifestPath, schemaPath), "utf-8"
+          path.isAbsolute(schemaPath) ?
+            schemaPath :
+            appendPath(manifestPath, schemaPath),
+          "utf-8"
         )}\n`;
       }
 
@@ -97,7 +100,9 @@ export class Compiler {
           mutation.module.file,
           'mutation',
           outputDir,
-          spinner
+          spinner,
+          quiet,
+          verbose
         );
         mutation.module.file = './mutation.wasm';
         mutation.schema.file = './schema.graphql';
@@ -109,7 +114,9 @@ export class Compiler {
           query.module.file,
           'query',
           outputDir,
-          spinner
+          spinner,
+          quiet,
+          verbose
         );
         query.module.file = './query.wasm';
         query.schema.file = './schema.graphql';
@@ -124,13 +131,14 @@ export class Compiler {
         loadSchema(
           appendPath(subgraphFile, subgraphManifest.schema.file)
         );
-        const id = await this._compileSubgraph(
-          subgraph.file,
+        const cid = await this._compileSubgraph(
+          subgraphFile,
           `${outputDir}/subgraph`,
           spinner
         );
-        subgraph.file = `${outputDir}/subgraph/subgraph.yaml`;
-        subgraph.id = id;
+
+        subgraph.id = cid;
+        subgraph.file = `./subgraph/subgraph.yaml`;
       }
 
       fs.writeFileSync(
@@ -164,14 +172,18 @@ export class Compiler {
     modulePath: string,
     moduleName: string,
     outputDir: string,
-    spinner?: any
+    spinner?: any,
+    quiet?: boolean,
+    verbose?: boolean
   ) {
 
-    step(
-      spinner,
-      "Compiling WASM module:",
-      `${modulePath} => ${outputDir}/${moduleName}.wasm`
-    );
+    if (!quiet) {
+      step(
+        spinner,
+        "Compiling WASM module:",
+        `${modulePath} => ${outputDir}/${moduleName}.wasm`
+      );
+    }
 
     const moduleAbsolute = path.join(this._manifestDir, modulePath);
     const baseDir = path.dirname(moduleAbsolute);
@@ -218,8 +230,8 @@ export class Compiler {
     await asc.main(
       args,
       {
-        stdout: process.stdout,
-        stderr: process.stdout
+        stdout: !verbose ? undefined : process.stdout,
+        stderr: process.stderr
       },
       (e: Error | null) => {
         if (e != null) {
@@ -234,13 +246,25 @@ export class Compiler {
   private async _compileSubgraph(
     subgraphPath: string,
     outputDir: string,
-    spinner: any
+    spinner?: any,
+    quiet?: boolean,
+    verbose?: boolean
   ): Promise<string> {
+
+    step(
+      spinner,
+      "Compiling Subgraph...",
+      `${subgraphPath} => ${outputDir}/subgraph.yaml`
+    );
+
     const args = [
       "build",
       subgraphPath,
       "--output-dir",
-      outputDir
+      outputDir,
+      // TODO: remove this hack, calculate ourselves?
+      "--ipfs",
+      "http://localhost:5001"
     ];
 
     const [exitCode, stdout, stderr] = await new Promise(
@@ -271,10 +295,15 @@ export class Compiler {
         });
       }
     );
-    // TODO: get the subgraph ID and return it
-    console.log(exitCode);
-    console.log(stdout);
-    console.error(stderr);
-    return "hey";
+
+    if (verbose || exitCode !== 0 || stderr) {
+      console.log(exitCode);
+      console.log(stdout);
+      console.error(stderr);
+    }
+
+    const extractCID = /Build completed: (([A-Z]|[a-z]|[0-9])*)/;
+    const result = stdout.match(extractCID);
+    return result[1];
   }
 }

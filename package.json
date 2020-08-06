@@ -6,6 +6,10 @@
     "packages": [
       "./packages/*",
       "./examples/simple-storage/**/*"
+    ],
+    "nohoist": [
+      "**/graph-ts",
+      "**/graph-cli"
     ]
   },
   "scripts": {

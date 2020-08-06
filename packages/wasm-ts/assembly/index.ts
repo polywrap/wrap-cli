@@ -11,6 +11,10 @@ export {
   Ethereum
 } from "./lib/Ethereum";
 
+export {
+  Subgraph
+} from "./lib/Subgraph";
+
 ////////////////
 /// Lib Core ///
 ////////////////

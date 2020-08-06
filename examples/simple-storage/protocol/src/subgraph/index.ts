@@ -9,11 +9,12 @@ function getStorage(id: string): SimpleStorage {
     storage.save()
   }
 
-  return storage
+  return storage as SimpleStorage
 }
 
-export function handleDataSet(event: DataSetEvent) {
-  const storage = getStorage(event.address.toHexString())
-  storage.lastSetBy = event.params.from.toHexString()
+export function handleDataSet(event: DataSetEvent): void {
+  var address = event.address.toHexString()
+  const storage = getStorage(address)
+  storage.lastSetBy = event.params.from
   storage.save()
 }

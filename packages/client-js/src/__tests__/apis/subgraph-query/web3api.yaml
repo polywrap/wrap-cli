@@ -10,3 +10,5 @@ query:
   module:
     language: wasm/assemblyscript
     file: ./src/query/index.ts
+subgraph:
+  file: ./src/subgraph/subgraph.yaml

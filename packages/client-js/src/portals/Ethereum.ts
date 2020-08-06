@@ -93,7 +93,7 @@ export class Ethereum {
     return new ethers.Contract(address, abi, this.getSigner());
   }
 
-  public async deployContract(abi: ethers.ContractInterface, bytecode: string, ...args: any[]): Address {
+  public async deployContract(abi: ethers.ContractInterface, bytecode: string, ...args: any[]): Promise<Address> {
     const signer = this.getSigner();
     const factory = new ethers.ContractFactory(abi, bytecode, signer);
     const contract = await factory.deploy(...args);
