@@ -5,11 +5,12 @@
   "workspaces": {
     "packages": [
       "./packages/*",
-      "./examples/simple-storage/**/*"
+      "./examples/simple-storage/*"
     ],
     "nohoist": [
       "**/graph-ts",
-      "**/graph-cli"
+      "**/graph-cli",
+      "**/jest"
     ]
   },
   "scripts": {
