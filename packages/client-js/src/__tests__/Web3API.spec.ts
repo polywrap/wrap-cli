@@ -8,26 +8,10 @@ import { IPortals } from "../Web3API";
 import { runW3CLI, generateName } from "./helpers";
 
 import { printSchema } from "graphql";
+import gql from "graphql-tag";
 import axios from "axios";
 
-// TODO:
-// - build & deploy example we want to use
-// - publish it to random ENS address for this test run
-// - query it
-
-const testValues = {
-  cid: {
-
-  },
-  manifest: {
-
-  },
-  schema: {
-
-  }
-}
-
-jest.setTimeout(15000);
+jest.setTimeout(150000);
 
 describe("Web3API", () => {
   let portals: IPortals;
@@ -47,7 +31,6 @@ describe("Web3API", () => {
 
     // create a new ENS domain
     apiENS = `${generateName()}.eth`;
-    console.log(apiENS);
 
     // build & deploy the protocol
     const { exitCode, stdout, stderr } = await runW3CLI([
@@ -61,8 +44,12 @@ describe("Web3API", () => {
       apiENS
     ]);
 
-    console.log(stdout)
-    console.log(stderr)
+    if (exitCode !== 0) {
+      console.error(`w3 exited with code: ${exitCode}`);
+      console.log(`stderr:\n${stderr}`)
+      console.log(`stdout:\n${stdout}`)
+      throw Error("w3 CLI failed");
+    }
 
     // get the IPFS CID of the published package
     const extractCID = /IPFS { (([A-Z]|[a-z]|[0-9])*) }/;
@@ -76,7 +63,7 @@ describe("Web3API", () => {
     };
   });
 
-  it.only("Fetches CID", async () => {
+  it("Fetches CID", async () => {
     const api = new Web3API({
       uri: apiENS,
       portals
@@ -84,7 +71,7 @@ describe("Web3API", () => {
 
     const cid = await api.fetchCID();
     expect(cid).toBe(apiCID);
-  })
+  });
 
   it("Fetches manifest", async () => {
     const api = new Web3API({
@@ -93,7 +80,8 @@ describe("Web3API", () => {
     });
 
     const manifest = await api.fetchAPIManifest();
-    expect(manifest).toMatchObject(testValues.manifest);
+    expect(manifest.mutation).toBeTruthy();
+    expect(manifest.query).toBeTruthy();
   });
 
   it("Fetches schema", async () => {
@@ -103,15 +91,36 @@ describe("Web3API", () => {
     });
 
     const schema = await api.fetchSchema();
-    expect(printSchema(schema)).toBe(testValues.schema);
+    expect(printSchema(schema)).toContain('type Mutation {');
   });
 
   it("Queries subgraph", async () => {
-
+    // TODO:
+    expect(false).toBe(true);
   });
 
-  it("Queries WASM query", async () => {
+  it.only("Queries WASM query", async () => {
+    // Upload datat to IPFS
+    const testData = new Uint8Array(Buffer.from("hello world"));
+    const { cid } = await portals.ipfs.add(testData);
+    const ipfsHash = cid.toString();
 
+    // Fetch it using a WASM query
+    const api = new Web3API({
+      uri: apiENS,
+      portals
+    });
+
+    const res = await api.query({
+      query: gql`
+        {
+          getString(cid: "${ipfsHash}")
+        }
+      `
+    });
+
+    expect(res.errors).toBeFalsy();
+    expect(res.data.getString).toBe("hello world")
   });
 
   it("Queries WASM mutation", async () => {

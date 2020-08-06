@@ -125,8 +125,9 @@ export default {
             }
           );
 
-          console.log("HERERERERE")
-          console.log(data.success)
+          if (data.success) {
+            console.log(`Resolution Configured [${testEns} => ${cid}]`)
+          }
         }
       }
 

@@ -1,11 +1,12 @@
 import { IPFS } from "../portals";
-import { ASCModule } from "../types";
+import { ASCModule } from "../lib/types";
 
 // TODO: generate these types from the WASM interface (WITX)
 export interface IIPFSImports {
   // TODO: wrap the types in type pointer classes that handle fetching
+  // TODO: have ipfs_cat return a Uint8Array ptr once heap manager is implemented
   _w3_ipfs_add: (dataPtr: number /*Uint8Array*/) => Promise<number /*string*/>,
-  _w3_ipfs_cat: (cidPtr: number /*string*/) => Promise<number /*Uint8Array*/>
+  _w3_ipfs_cat: (cidPtr: number /*string*/) => Promise<number /*string*/>
 }
 
 export function getIpfsImports(getModule: () => ASCModule, ipfs: IPFS): IIPFSImports {
@@ -25,13 +26,12 @@ export function getIpfsImports(getModule: () => ASCModule, ipfs: IPFS): IIPFSImp
       const module = getModule();
       const {
         __getString,
-        __allocArray,
-        __retain,
-        UINT8ARRAY_ID
+        __allocString,
+        __retain
       } = module.exports;
       const cid = __getString(cidPtr);
-      const data = new Uint8Array(await ipfs.catToBuffer(cid));
-      return __retain(__allocArray(UINT8ARRAY_ID, data));
+      const data = await ipfs.catToString(cid);
+      return __retain(__allocString(data));
     }
   }
 }

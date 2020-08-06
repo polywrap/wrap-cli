@@ -8,10 +8,20 @@
 
 require("dotenv").config({ path: './.env' });
 
+import { deployENS } from "./ens/deployENS";
+import { registerENS } from "./ens/registerENS";
+
 const Web3 = require("web3");
 const express = require("express");
-const deployENS = require("./ens/deployENS").default;
-const registerENS = require("./ens/registerENS").default;
+
+const getWeb3 = () => {
+  return new Web3(
+    new Web3.providers.HttpProvider(
+      process.env.ganache ? `http://${process.env.ganache}` :
+      `http://localhost:${process.env.ETHEREUM_PORT}`
+    )
+  );
+}
 
 const app = express();
 const router = express.Router();
@@ -39,28 +49,22 @@ router.get('/ens', (req, res) => {
   });
 });
 
-const getWeb3 = () => {
-  return new Web3(
-    new Web3.providers.HttpProvider(
-      process.env.ganache ? `http://${process.env.ganache}` :
-      `http://localhost:${process.env.ETHEREUM_PORT}`
-    )
-  );
-}
-
 router.get('/deploy-ens', async (req, res) => {
   const web3 = getWeb3();
   const accounts = await web3.eth.getAccounts();
-  addresses = await deployENS({ web3, accounts });
+  addresses = await deployENS(web3, accounts);
 
-  res.send({
-    ensAddress: addresses.ensAddress
-  });
+  res.send(addresses);
 });
 
 router.get('/register-ens', async (req, res) => {
+  if (addresses.ensAddress === undefined) {
+    throw Error("ENS hasn't been deployed, call /deploy-ens");
+  }
+
   const web3 = getWeb3();
   const accounts = await web3.eth.getAccounts();
+
   await registerENS({
     web3,
     accounts,

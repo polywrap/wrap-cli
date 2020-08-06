@@ -4,5 +4,6 @@ import {
 } from "@web3api/wasm-ts";
 
 export function getString(cid: string): string {
-  return Buffer.toString(IPFS.cat(cid));
+  const res = IPFS.cat(cid);
+  return Buffer.toString(res);
 }

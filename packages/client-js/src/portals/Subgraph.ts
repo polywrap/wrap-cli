@@ -1,4 +1,4 @@
-import { Query, QueryResult } from "../types";
+import { Query, QueryResult } from "../lib/types";
 
 import { execute, makePromise } from "apollo-link";
 import { createHttpLink } from "apollo-link-http";

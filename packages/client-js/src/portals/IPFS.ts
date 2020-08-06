@@ -38,7 +38,7 @@ export class IPFS {
   public async catToBuffer(cid: string): Promise<ArrayBuffer> {
     const chunks = [];
 
-    for await (const chunk of this.cat(cid)) {
+    for await (const chunk of await this.cat(cid)) {
       chunks.push(chunk);
     }
 

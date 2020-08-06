@@ -4,13 +4,14 @@ import {
   Subgraph
 } from "./portals";
 import { getHostImports } from "./host";
+import { isPromise } from "./lib/async";
 import {
   Query,
   QueryResult,
   ASCModule,
   Manifest,
   ModulePath
-} from "./types";
+} from "./lib/types";
 import WASMLoader from "@assemblyscript/loader";
 import {
   buildSchema,
@@ -127,8 +128,9 @@ export class Web3API {
     const manifest = await this.fetchAPIManifest();
 
     // Get the API's schema
+    // TODO: make this based on the manifest
     const schemaStr = await portals.ipfs.catToString(
-      `${this._cid}/${manifest.schema.file}`
+      `${this._cid}/schema.graphql`
     );
 
     // Convert schema into GraphQL Schema object
@@ -201,11 +203,17 @@ export class Web3API {
       // else, execute query against schema
       const schema = await this.fetchSchema();
 
-      return execute({
+      let res = execute({
         schema,
         document: queryDoc,
         variableValues: query.variables
       });
+
+      if (isPromise(res)) {
+        res = await res;
+      }
+
+      return res;
     } else {
       throw Error(`Unrecognized query definition kind: "${def.kind}"`);
     }
@@ -218,23 +226,55 @@ export class Web3API {
     for (const fieldName of fieldNames) {
       fields[fieldName].resolve = async (source, args, context, info) => {
         const { portals } = this._config;
+
+        // Load the WASM source
         const wasm = await portals.ipfs.catToBuffer(
           `${this._cid}/${module.file}`
         );
 
+        // Instantiate it
         const result = await WASMLoader.instantiate(
           wasm as any,
           getHostImports(() => result as ASCModule, portals)
         ) as any;
 
-        const func = result.exports[fieldName];
+        // Locate the target function
+        const func = result.instance.exports[fieldName];
 
         if (typeof func !== "function") {
           throw Error(`Export is not a function: ${fieldName}`);
         }
 
+        // TODO: this is very incomplete and hacky, replace with
+        //       proper heap manager.
+
+        const { __allocString, __getString, __retain, __release } = result.instance.exports
+        let mapped = []
+        let toRelease = []
+
+        // Marshall Types
+        const toMarsh = Object.values(args);
+        for (const marshMe of toMarsh) {
+          let result;
+          if (typeof marshMe === "string") {
+            result = __retain(__allocString(marshMe));
+          } else {
+            mapped.push(marshMe);
+            continue;
+          }
+          mapped.push(result);
+          toRelease.push(result);
+        }
+
         // TODO: validate return value against the schema
-        return func(Object.values(args));
+        const toReturn = func(...mapped);
+        const res = __getString(toReturn)
+
+        for (const releaseMe of toRelease) {
+          __release(releaseMe);
+        }
+
+        return res;
       }
     }
   }

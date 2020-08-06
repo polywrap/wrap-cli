@@ -8,14 +8,13 @@ module.exports = function (getModule, memory) {
     _w3_ipfs_cat: (hashPtr) => {
       const {
         __getString,
-        __allocArray,
-        __retain,
-        UINT8ARRAY_ID
+        __allocString,
+        __retain
       } = getModule().exports;
       const str = __getString(hashPtr);
       const strArray = new Uint8Array(Buffer.from(str, 'utf-8'));
-      const ptr = __retain(__allocArray(
-          UINT8ARRAY_ID, strArray
+      const ptr = __retain(__allocString(
+        String.fromCharCode.apply(null, strArray)
       ));
       return ptr;
     },

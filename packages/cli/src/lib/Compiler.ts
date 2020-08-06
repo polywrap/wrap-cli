@@ -47,15 +47,6 @@ export class Compiler {
       // Compile the API
       await this._compileWeb3API(api);
 
-      // TODO:
-      /*if (this._ipfs !== undefined) {
-        const ipfsHash = await this.uploadWeb3APIToIPFS(this._config.outputDir)
-        this.completed(ipfsHash)
-        return ipfsHash
-      } else {
-        this.completed(path.join(this._config.outputDir, 'web3api.yaml'))
-        return true
-      }*/;
       return true;
     } catch (e) {
       toolbox.print.error(e)
@@ -185,6 +176,7 @@ export class Compiler {
     const moduleAbsolute = path.join(this._manifestDir, modulePath);
     const baseDir = path.dirname(moduleAbsolute);
     const libsDirs = [];
+    let w3Wasm = '';
 
     for (
       let dir: string | undefined = path.resolve(baseDir);
@@ -195,6 +187,9 @@ export class Compiler {
     ) {
       if (fs.existsSync(path.join(dir, 'node_modules'))) {
         libsDirs.push(path.join(dir, 'node_modules'));
+        if (fs.existsSync(path.join(dir, 'node_modules/@web3api/wasm-ts'))) {
+          w3Wasm = path.resolve(dir, 'node_modules/@web3api/wasm-ts/assembly/index.ts');
+        }
       }
     }
 
@@ -205,6 +200,7 @@ export class Compiler {
     }
 
     const args = [
+      w3Wasm,
       moduleAbsolute,
       "--baseDir",
       baseDir,
@@ -213,7 +209,9 @@ export class Compiler {
       "--outFile",
       `${outputDir}/${moduleName}.wasm`,
       "--optimize",
-      "--debug"
+      "--debug",
+      "--runtime",
+      "full"
     ];
 
     // compile the module into the output directory
@@ -273,6 +271,7 @@ export class Compiler {
         });
       }
     );
+    // TODO: get the subgraph ID and return it
     console.log(exitCode);
     console.log(stdout);
     console.error(stderr);
