@@ -1,21 +1,24 @@
 import { Compiler } from "../lib/Compiler";
-import { Publisher } from "../lib/Publisher";
 import { fixParameters } from "../lib/helpers/parameters";
+import { publishToIPFS } from "../lib/publishers/ipfs-publisher";
+import { publishToSubgraph } from "../lib/publishers/subgraph-publisher";
 
-import { GluegunToolbox } from "gluegun";
+import path from "path";
 import chalk from "chalk";
 import axios from "axios";
+import { GluegunToolbox } from "gluegun";
 
 const HELP = `
 ${chalk.bold('w3 build')} [options] ${chalk.bold('[<web3api-manifest>]')}
 
 Options:
-  -h, --help                    Show usage information
-  -i, --ipfs <node>             Upload build results to an IPFS node
-  -o, --output-dir <path>       Output directory for build results (default: build/)
-  -f, --output-format <format>  Output format for WASM modules (wasm, wast) (default: wasm)
-  -w, --watch                   Regenerate types when web3api files change (default: false)
-  -e, --test-ens <domain>       Publish the package to a test ENS domain locally
+  -h, --help                         Show usage information
+  -i, --ipfs <node>                  Upload build results to an IPFS node
+  -g, --graph <name,node>            Upload build results to a Graph node under "name" (require: --ipfs)
+  -o, --output-dir <path>            Output directory for build results (default: build/)
+  -f, --output-format <format>       Output format for WASM modules (wasm, wast) (default: wasm)
+  -w, --watch                        Regenerate types when web3api files change (default: false)
+  -e, --test-ens <?address?,domain>  Publish the package to a test ENS domain locally
 `
 
 export default {
@@ -25,16 +28,18 @@ export default {
     const { filesystem, parameters, print } = toolbox;
 
     let {
-      i, ipfs,
       h, help,
+      i, ipfs,
+      g, graph,
       o, outputDir,
       f, outputFormat,
       w, watch,
       e, testEns
     } = parameters.options;
 
-    ipfs = ipfs || i;
     help = help || h;
+    ipfs = ipfs || i;
+    graph = graph || g;
     outputDir = outputDir || o;
     outputFormat = outputFormat || f;
     watch = watch || w;
@@ -65,6 +70,12 @@ export default {
       return;
     }
 
+    if (graph === true) {
+      print.error("--graph option missing <name,node> argument");
+      print.info(HELP);
+      return;
+    }
+
     if (outputDir === true) {
       print.error("--output-dir option missing <path> argument");
       print.info(HELP);
@@ -73,6 +84,12 @@ export default {
 
     if (outputFormat === true) {
       print.error("--output-format option missing <format> argument");
+      print.info(HELP);
+      return;
+    }
+
+    if (graph && !ipfs) {
+      print.error("--graph requires --ipfs <node>");
       print.info(HELP);
       return;
     }
@@ -103,32 +120,76 @@ export default {
         return;
       }
 
+      let uris: string[][] = []
+
       // publish to IPFS
       if (ipfs !== undefined) {
-        const publisher = new Publisher({
-          buildPath: outputDir,
-          ipfs
-        });
+        const cid = await publishToIPFS(outputDir, ipfs);
 
-        const cid = await publisher.publishToIPFS();
-        console.log(`IPFS { ${cid} }`);
+        print.success(`IPFS { ${cid} }`);
+        uris.push(['Web3API IPFS', `ipfs://${cid}`]);
 
         if (testEns) {
+          let address;
+          let domain;
+          if (testEns.indexOf(',') > -1) {
+            const [addr, dom] = testEns.split(',');
+            address = addr;
+            domain = dom;
+          } else {
+            domain = testEns;
+          }
+
+          if (!address) {
+            const { data: { ethereum } } = await axios.get(
+              "http://localhost:4040/providers"
+            );
+            const { data: { ensAddress } } = await axios.get(
+              "http://localhost:4040/deploy-ens"
+            );
+
+            print.success(`ENS Registry Deployed { ${ensAddress} }`);
+            uris.push(['ENS Registry', `${ethereum}/${ensAddress}`]);
+          }
+
           // ask the dev server to publish the CID to ENS
           const { data } = await axios.get(
             "http://localhost:4040/register-ens",
             {
               params: {
-                domain: testEns,
+                domain: domain,
                 cid
               }
             }
           );
 
           if (data.success) {
-            console.log(`Resolution Configured [${testEns} => ${cid}]`)
+            print.success(`ENS Resolution Configured { ${testEns} => ${cid} }`)
+            uris.push(['Web3API ENS', `${testEns} => ${cid}`]);
           }
         }
+      }
+
+      // TODO: order of dependencies is strange between:
+      // ipfs, graph-node, subgraph, graph-cli, and web3api.yaml
+      if (graph !== undefined) {
+        const [name, node] = graph.split(',');
+
+        // TODO: remove this pathing hack
+        const subgraphPath = path.join(
+          path.dirname(manifestPath), 'src/subgraph/subgraph.yaml'
+        );
+
+        const id = await publishToSubgraph(subgraphPath, name, node, ipfs);
+
+        print.success(`Subgraph Deployed { ${id} }`);
+        // TODO: remove this port hack
+        uris.push(['Subgraph GraphiQL', `${node.replace('8020', '8000')}/subgraphs/id/${id}`]);
+      }
+
+      if (uris.length) {
+        print.success("URI Viewers:"); 
+        print.table(uris);
       }
 
       process.exitCode = 0;

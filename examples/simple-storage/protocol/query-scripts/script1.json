@@ -1,0 +1,9 @@
+[
+  {
+    "api": "simplestorage.eth",
+    "query": "setdata.graphql"
+  },
+  {
+    "api": "..."
+  }
+]

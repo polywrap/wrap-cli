@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@web3api/client-js": "0.0.1-alpha.1"
+  }
+}

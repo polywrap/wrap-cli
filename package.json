@@ -16,7 +16,10 @@
     "build": "yarn build:wasm-ts && yarn build:cli && yarn build:client-js",
     "build:cli": "yarn workspace @web3api/cli build",
     "build:client-js": "yarn workspace @web3api/client-js build",
-    "build:wasm-ts": "yarn workspace @web3api/wasm-ts build"
+    "build:wasm-ts": "yarn workspace @web3api/wasm-ts build",
+    "test": "yarn test:wasm-ts && yarn test:client-js",
+    "test:wasm-ts": "yarn workspace @web3api/wasm-ts test",
+    "test:client-js": "yarn workspace @web3api/client-js test"
   },
   "devDependencies": {
     "lerna": "3.22.1"

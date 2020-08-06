@@ -1,5 +1,6 @@
 import { Web3API } from "./Web3API";
 import { Manifest } from "./Manifest";
+import { runGraphCLI } from "./cli/graph-cli";
 import { displayPath } from "./helpers/path";
 import { step, withSpinner } from "./helpers/spinner";
 
@@ -11,11 +12,6 @@ import * as asc from "assemblyscript/cli/asc";
 const fsExtra = require("fs-extra");
 const spawn = require("spawn-command");
 const toolbox = require("gluegun/toolbox");
-
-// We cannot `require.resolve('@graphprotocol/graph-cli')`, because it's not a require-able package
-const graphCli = path.resolve(
-  `${require.resolve("@graphprotocol/graph-ts")}/../../graph-cli/bin/graph`
-);
 
 export interface ICompilerConfig {
   manifestPath: string;
@@ -267,34 +263,7 @@ export class Compiler {
       "http://localhost:5001"
     ];
 
-    const [exitCode, stdout, stderr] = await new Promise(
-      (resolve, reject) => {
-        // Make sure to set an absolute working directory
-        let cwd = process.cwd();
-        cwd = cwd[0] !== '/' ? path.resolve(__dirname, cwd) : cwd
-    
-        const command = `${graphCli} ${args.join(' ')}`;
-        const child = spawn(command, { cwd });
-        let stdout = ''
-        let stderr = ''
-
-        child.on('error', (error: Error) => {
-          reject(error)
-        })
-    
-        child.stdout.on('data', (data: string) => {
-          stdout += data.toString()
-        });
-    
-        child.stderr.on('data', (data: string) => {
-          stderr += data.toString()
-        });
-    
-        child.on('exit', (exitCode: number) => {
-          resolve([exitCode, stdout, stderr])
-        });
-      }
-    );
+    const [exitCode, stdout, stderr] = await runGraphCLI(args);
 
     if (verbose || exitCode !== 0 || stderr) {
       console.log(exitCode);
@@ -304,6 +273,6 @@ export class Compiler {
 
     const extractCID = /Build completed: (([A-Z]|[a-z]|[0-9])*)/;
     const result = stdout.match(extractCID);
-    return result[1];
+    return result && result.length ? result[1] : "";
   }
 }

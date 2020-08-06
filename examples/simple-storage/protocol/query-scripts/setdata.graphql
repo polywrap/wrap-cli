@@ -1,0 +1,3 @@
+{
+  setData(value: "foo")
+}

@@ -22,7 +22,7 @@ export {
 // TODO:
 /*export {
   BigInt
-} from "./lib/core/BigInt";*/
+} from "./lib/core/BigInt";
 
 export {
   Buffer
@@ -30,7 +30,7 @@ export {
 
 export {
   Bytes
-} from "./lib/core/Bytes";
+} from "./lib/core/Bytes";*/
 
 /*export {
   JSON,

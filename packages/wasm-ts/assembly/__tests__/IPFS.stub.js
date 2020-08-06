@@ -19,14 +19,13 @@ module.exports = function (getModule, memory) {
       return ptr;
     },
     _w3_ipfs_add: (dataPtr) => {
-      const { __getArray, __allocString, __retain } = getModule().exports
+      const {
+        __getString,
+        __allocString,
+        __retain
+      } = getModule().exports
 
-      return __retain(__allocString(
-        String.fromCharCode.apply(
-          null,
-          __getArray(dataPtr)
-        )
-      ));
+      return __retain(__allocString(__getString(dataPtr)));
     }
   }
 }
