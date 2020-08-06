@@ -4,8 +4,7 @@
   "license": "MIT",
   "scripts": {
     "build": "rm -rf build && tsc",
-    "test": "jest --passWithNoTests --verbose",
-    "test:exp": "node --experimental-worker node_modules/.bin/jest --passWithNoTests --verbose",
+    "test": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose",
     "test:ci": "yarn test:env:up && yarn test && yarn test:env:down",
     "test:env:up": "w3 test-env up",

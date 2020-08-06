@@ -93,6 +93,37 @@ export class Ethereum {
     return new ethers.Contract(address, abi, this.getSigner());
   }
 
+  public async deployContract(abi: ethers.ContractInterface, bytecode: string, ...args: any[]): Address {
+    const signer = this.getSigner();
+    const factory = new ethers.ContractFactory(abi, bytecode, signer);
+    const contract = await factory.deploy(...args);
+    return contract.address;
+  }
+
+  public async callView(address: Address, method: string, args: string): Promise<string> {
+    const contract = this.getContract(address, [method]);
+    const funcs = Object.keys(contract.interface.functions);
+    if (args[0] !== '[') {
+      args = `[${args}]`
+    }
+    const parsedArgs = JSON.parse(args);
+    const res = await contract[funcs[0]](...parsedArgs);
+    return res.toString();
+  }
+
+  public async sendTransaction(address: Address, method: string, args: string): Promise<string> {
+    const contract = this.getContract(address, [method]);
+    const funcs = Object.keys(contract.interface.functions);
+    if (args[0] !== '[') {
+      args = `[${args}]`
+    }
+    const parsedArgs = JSON.parse(args);
+    const tx = await contract[funcs[0]](...parsedArgs);
+    const res = await tx.wait();
+    // TODO: improve this
+    return res.transactionHash;
+  }
+
   public async ensToCID(domain: string): Promise<string> {
     const ensAddress = this._config.ens || "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
     const ensAbi = [

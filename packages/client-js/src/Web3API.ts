@@ -224,7 +224,7 @@ export class Web3API {
     const fieldNames = Object.keys(fields);
 
     for (const fieldName of fieldNames) {
-      const outputType = fields[fieldName].type.toString().toLowerCase();
+      const outputType = fields[fieldName].type.toString().toLowerCase().replace('!', '');
 
       fields[fieldName].resolve = async (source, args, context, info) => {
         const { portals } = this._config;
@@ -264,10 +264,19 @@ export class Web3API {
 
         // TODO: validate return value against the schema
         let result: any = res.result;
-        if (outputType.replace('!', '') === "string") {
-          result = (await ww.readStringAsync(result)).result;
-        } else {
-          throw Error(`Unsupported return type: ${outputType}`);
+
+        if (result) {
+          if (outputType === "string") {
+            result = (await ww.readStringAsync(result)).result;
+          } else if (outputType === "boolean") {
+            result = result === 1 ? true : false;
+          } else if (outputType === "int") {
+            if (typeof result === "string") {
+              result = Number.parseInt(result);
+            }
+          } else {
+            throw Error(`Unsupported return type: ${outputType}`);
+          }
         }
 
         // TODO: have a pattern around reusing workers instead of spinning

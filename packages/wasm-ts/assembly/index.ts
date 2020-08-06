@@ -7,6 +7,10 @@ export {
   IPFSHash
 } from "./lib/IPFS";
 
+export {
+  Ethereum
+} from "./lib/Ethereum";
+
 ////////////////
 /// Lib Core ///
 ////////////////

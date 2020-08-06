@@ -7,12 +7,12 @@ import {
 import { IPortals } from "../Web3API";
 import { runW3CLI, generateName } from "./helpers";
 
-import { printSchema } from "graphql";
+import gql from "graphql-tag";
 import axios from "axios";
 
 jest.setTimeout(150000);
 
-describe("Web3API", () => {
+describe("IPFS", () => {
   let portals: IPortals;
   let apiCID: string;
   let apiENS: string;
@@ -62,34 +62,55 @@ describe("Web3API", () => {
     };
   });
 
-  it("Fetches CID", async () => {
+  it("Read Content From IPFS", async () => {
+    // Upload datat to IPFS
+    const testString = "hello world";
+    const testData = new Uint8Array(Buffer.from(testString));
+    const { cid } = await portals.ipfs.add(testData);
+    const ipfsHash = cid.toString();
+
+    // Fetch it using a WASM query
     const api = new Web3API({
       uri: apiENS,
       portals
     });
 
-    const cid = await api.fetchCID();
-    expect(cid).toBe(apiCID);
+    const res = await api.query({
+      query: gql`
+        {
+          getString(cid: "${ipfsHash}")
+        }
+      `
+    });
+
+    expect(res.errors).toBeFalsy();
+    expect(res.data.getString).toBe(testString)
   });
 
-  it("Fetches manifest", async () => {
+  it("Write Content To IPFS", async () => {
+    const testContent = JSON.stringify({ test: 5 });
+
+    // Fetch it using a WASM query
     const api = new Web3API({
       uri: apiENS,
       portals
     });
 
-    const manifest = await api.fetchAPIManifest();
-    expect(manifest.mutation).toBeTruthy();
-    expect(manifest.query).toBeTruthy();
-  });
-
-  it("Fetches schema", async () => {
-    const api = new Web3API({
-      uri: apiENS,
-      portals
+    const res = await api.query({
+      query: gql`
+        mutation PutString($content: String!) {
+          putString(content: $content)
+        }
+      `,
+      variables: {
+        content: testContent
+      }
     });
 
-    const schema = await api.fetchSchema();
-    expect(printSchema(schema)).toContain('type Mutation {');
+    expect(res.errors).toBeFalsy();
+    expect(res.data.putString).toBeTruthy();
+
+    const cat = await portals.ipfs.catToString(res.data.putString);
+    expect(cat).toBe(testContent);
   });
 });

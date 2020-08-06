@@ -1,14 +1,6 @@
 type Mutation {
   setData(
-    input: SetDataInput!
-  ): SetDataOutput!
-}
-
-input SetDataInput {
-  id: ID!
-  value: UINT!
-}
-
-interface SetDataOutput {
-  storage: SimpleStorage!
+    address: String!
+    value: Number!
+  )
 }

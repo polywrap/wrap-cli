@@ -5,8 +5,8 @@ import { WasmWorker, WasmCallback } from "../lib/wasm-worker";
 export interface IIPFSImports {
   // TODO: wrap the types in type pointer classes that handle fetching
   // TODO: have ipfs_cat return a Uint8Array ptr once heap manager is implemented
-  _w3_ipfs_add: (dataPtr: number /*Uint8Array*/, cb: WasmCallback) => Promise<void /*string*/>,
-  _w3_ipfs_cat: (cidPtr: number /*string*/, cb: WasmCallback) => Promise<void /*string*/>
+  _w3_ipfs_add(dataPtr: number /*Uint8Array*/, cb: WasmCallback): Promise<void /*string*/>,
+  _w3_ipfs_cat(cidPtr: number /*string*/, cb: WasmCallback): Promise<void /*string*/>
 }
 
 export function getIpfsImports(getWasmWorker: () => WasmWorker, ipfs: IPFS): IIPFSImports {
