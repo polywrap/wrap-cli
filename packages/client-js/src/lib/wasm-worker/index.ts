@@ -1,6 +1,6 @@
 import { ASCImports } from "../types";
 
-import { Worker } from "worker_threads";
+import { Worker, MessageChannel, MessagePort } from "worker_threads";
 import { EventEmitter } from "events";
 import path from "path";
 
@@ -12,8 +12,8 @@ export class WasmWorker extends EventEmitter {
   public destroyed: boolean;
 
   private _worker: Worker;
+  private _secondaryPort: MessagePort;
   private _shared: Int32Array;
-  private _calling: boolean;
   private _head: number;
   private _callbacks: any[];
 
@@ -42,31 +42,17 @@ export class WasmWorker extends EventEmitter {
     });
 
     this.destroyed = false;
-
     this._worker = worker;
     this._shared = new Int32Array(sharedBuffer, 0, 128);
-    this._calling = false;
     this._head = 0;
     this._callbacks = [];
 
+    // Stand up a secondary message channel for all
+    // secondary actions (reading & writing to WASM for ex)
+    const { port1, port2 } = new MessageChannel();
+    this._secondaryPort = port1;
+
     worker.on('message', (m) => {
-      // Read & Write To / From Buffer
-      if (m.type === "buffer") {
-        const cb = this._getCallback(m.id);
-        const lck = new Int32Array(m.buffer, 0, 1);
-        const buf = Buffer.from(m.buffer).slice(4);
-
-        if (cb.buffer) { // is writing
-          cb.buffer.copy(buf);
-          cb.callback(null, cb.buffer);
-        } else { // is reading
-          cb.callback(null, buf);
-        }
-
-        lck[0] = 1;
-        Atomics.notify(lck, 0, Infinity);
-        return;
-      }
 
       // Posting the result of a WASM call
       if (m.type === "result") {
@@ -98,13 +84,11 @@ export class WasmWorker extends EventEmitter {
           // 1 === finished
           this._shared[this._head++] = 1;
           this._shared[this._head++] = error ? -1 : res;
-          this._calling = false;
           Atomics.notify(this._shared, head, Infinity);
         });
 
         // Reset our buffer's head and exec the call
         this._head = 0;
-        this._calling = true;
         fn(...m.args);
         return;
       }
@@ -121,6 +105,21 @@ export class WasmWorker extends EventEmitter {
         return;
       }
     });
+
+    // Send the other end of the channel to the worker
+    worker.postMessage({
+      type: 'spawn-sub-port',
+      port: port2
+    }, [port2]);
+
+    this._secondaryPort.on("message", (message) => {
+      // Posting the result of a secondary action
+      if (message.type === "result") {
+        const cb = this._getCallback(message.id);
+        cb.callback(null, message.result);
+        return;
+      }
+    })
   }
 
   // Call a WASM exported method
@@ -200,7 +199,7 @@ export class WasmWorker extends EventEmitter {
     });
 
     // Post our execution to the worker
-    this._worker.postMessage({
+    this._secondaryPort.postMessage({
       type: 'read-string',
       id,
       pointer
@@ -237,7 +236,7 @@ export class WasmWorker extends EventEmitter {
     });
 
     // Post our execution to the worker
-    this._worker.postMessage({
+    this._secondaryPort.postMessage({
       type: 'write-string',
       id,
       value
@@ -270,61 +269,4 @@ export class WasmWorker extends EventEmitter {
     }
     return cb
   }
-
-  // TODO: idk if we need this...
-  /*write (pointer: number, buffer: any, cb: any) {
-    if (!cb) cb = noop
-    if (this.destroyed) return process.nextTick(cb, new Error('Worker destroyed'))
-
-    const id = this._callbacks.length
-
-    this._callbacks.push({
-      buffer,
-      callback: cb
-    })
-
-    if (this._calling) {
-      const head = this._head
-      this._shared[this._head++] = 3
-      this._shared[this._head++] = id
-      this._shared[this._head++] = pointer
-      this._shared[this._head++] = buffer.length
-      Atomics.notify(this._shared, head, Infinity)
-    } else {
-      this._worker.postMessage({
-        type: 'write',
-        id,
-        pointer,
-        length: buffer.length
-      })
-    }
-  }
-
-  // TODO: idk if we need this...
-  read (pointer: number, length: any, cb: any) {
-    if (this.destroyed) return process.nextTick(cb, new Error('Worker destroyed'))
-
-    const id = this._callbacks.length
-
-    this._callbacks.push({
-      buffer: null,
-      callback: cb
-    })
-
-    if (this._calling) {
-      const head = this._head
-      this._shared[this._head++] = 2
-      this._shared[this._head++] = id
-      this._shared[this._head++] = pointer
-      this._shared[this._head++] = length
-      Atomics.notify(this._shared, head, Infinity)
-    } else {
-      this._worker.postMessage({
-        type: 'read',
-        id,
-        pointer,
-        length
-      })
-    }
-  }*/
 }

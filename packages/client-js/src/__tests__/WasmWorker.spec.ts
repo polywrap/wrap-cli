@@ -30,14 +30,10 @@ describe("Sanity Checking", () => {
       fs.readFileSync(`${__dirname}/apis/ipfs-get-put-string/build/query.wasm`), {
         ipfs: {
           _w3_ipfs_cat: async (ptr, cb) => {
-            /*console.log("HERERERERE")
-            console.log(ptr);
             const read = await aw.readStringAsync(ptr);
-            console.log(read)
-            expect(read.result).toBe(testCID);*/
+            expect(read.result).toBe(testCID);
             const write = await aw.writeStringAsync("Hello World!");
-            cb(write.result, undefined);
-            //cb(1, undefined)
+            cb(write.result)
           },
           _w3_ipfs_add(ptr, cb) {
             cb(0)
@@ -49,13 +45,8 @@ describe("Sanity Checking", () => {
     const testCIDPtr = await aw.writeStringAsync(testCID);
     const call = await aw.callAsync("getString", testCIDPtr.result);
 
-    console.log("COMPLETETETEET");
-    console.log(call.error);
-    console.log(call.result);
-
-    /*const read = await aw.readStringAsync(call.result);
-    console.log(read.result);*/
-
+    const read = await aw.readStringAsync(call.result);
+    expect(read.result).toBe("Hello World!");
     aw.destroy();
   });
 });
