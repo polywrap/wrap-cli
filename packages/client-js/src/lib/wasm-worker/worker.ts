@@ -86,12 +86,38 @@ parentPort.on("message", function (message) {
 
   // Call a WASM method
   if (message.type === "call") {
+
     // Execute the call
     const result = instance.exports[message.method](
       ...message.args
     );
 
     // Return the result back to the host
+    parentPort.postMessage({
+      type: "result",
+      id: message.id,
+      result
+    });
+    return;
+  }
+
+  // Read a string from WASM
+  if (message.type === "read-string") {
+    const { __getString } = instance.exports;
+    const result = __getString(message.pointer);
+    parentPort.postMessage({
+      type: "result",
+      id: message.id,
+      result
+    });
+    return;
+  }
+
+  // Write a string to WASM
+  if (message.type === "write-string") {
+    const { __allocString, __retain } = instance.exports;
+    const result = __retain(__allocString(message.value));
+    // TODO: use types for all of these message payloads
     parentPort.postMessage({
       type: "result",
       id: message.id,

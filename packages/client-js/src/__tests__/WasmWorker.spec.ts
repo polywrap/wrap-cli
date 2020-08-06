@@ -5,9 +5,9 @@ import fs from "fs";
 
 jest.setTimeout(15000)
 
-describe("TEST", () => {
+describe("Sanity Checking", () => {
   beforeAll(async () => {
-    // build & deploy the protocol
+    // build the test wasm module
     const { exitCode, stdout, stderr } = await runW3CLI([
       "build",
       `${__dirname}/apis/ipfs-get-put-string/web3api.yaml`,
@@ -23,41 +23,39 @@ describe("TEST", () => {
     }
   });
 
-  it.only("DOES", async () => {
+  it("works", async () => {
+    const testCID = "QmTEST_HASH";
+
     const aw = new WasmWorker(
       fs.readFileSync(`${__dirname}/apis/ipfs-get-put-string/build/query.wasm`), {
         ipfs: {
-          _w3_ipfs_cat(ptr, cb) {
-            console.log("IN THE CLALBACK!!!!")
+          _w3_ipfs_cat: async (ptr, cb) => {
+            /*console.log("HERERERERE")
             console.log(ptr);
-            cb(1, undefined);
+            const read = await aw.readStringAsync(ptr);
+            console.log(read)
+            expect(read.result).toBe(testCID);*/
+            const write = await aw.writeStringAsync("Hello World!");
+            cb(write.result, undefined);
+            //cb(1, undefined)
           },
           _w3_ipfs_add(ptr, cb) {
-            console.log('HERERER')
-            cb(1, undefined)
-          },
-          // TODO:
-          // - receive values (multiple args of different types)
-          // - return string
-          _w3_ipfs_hello: async (cb) => {
-            console.log('meow');
-            await new Promise((resolve) => {
-              setTimeout(() => {
-                console.log('bark')
-                resolve()
-              }, 2000)
-            })
-            cb(1, undefined)
+            cb(0)
           }
         }
       }
     );
 
-    aw.call("getString", "QmSomething", (err, val) => {
-      console.log("done", err, val);
-      aw.destroy();
-    });
+    const testCIDPtr = await aw.writeStringAsync(testCID);
+    const call = await aw.callAsync("getString", testCIDPtr.result);
 
-    console.log("COMPLETETETEET")
+    console.log("COMPLETETETEET");
+    console.log(call.error);
+    console.log(call.result);
+
+    /*const read = await aw.readStringAsync(call.result);
+    console.log(read.result);*/
+
+    aw.destroy();
   });
 });

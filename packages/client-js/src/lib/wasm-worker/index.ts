@@ -4,6 +4,8 @@ import { Worker } from "worker_threads";
 import { EventEmitter } from "events";
 import path from "path";
 
+type Callback = (error: Error | null, result: number) => void;
+
 function noop () {}
 
 export class WasmWorker extends EventEmitter {
@@ -153,6 +155,24 @@ export class WasmWorker extends EventEmitter {
     })
   }
 
+  public async callAsync(method: string, ...args: any[]): Promise<{
+    error: Error | null,
+    result: number
+  }> {
+    if (args.length && typeof args[args.length - 1] === 'function') {
+      throw Error("No callback argument supported on Async method, await result.");
+    }
+
+    return new Promise((resolve) => {
+      this.call(method, ...args, (error: Error | null, result: number) => {
+        resolve({
+          error,
+          result
+        })
+      })
+    })
+  }
+
   // Destroy this WASM worker
   public destroy () {
     this.destroyed = true
@@ -162,6 +182,80 @@ export class WasmWorker extends EventEmitter {
       const cb = this._getCallback(this._callbacks.length - 1)
       cb.callback(new Error('Worker destroyed'))
     }
+  }
+
+  public readString(pointer: number, cb: Callback) {
+    // Don't continue if we're destroying ourselves
+    if (this.destroyed) {
+      return process.nextTick(cb, new Error('Worker destroyed'))
+    }
+
+    // Get a new callback ID
+    const id = this._callbacks.length;
+
+    // Save the callback at callbacks[id]
+    this._callbacks.push({
+      buffer: null,
+      callback: cb
+    });
+
+    // Post our execution to the worker
+    this._worker.postMessage({
+      type: 'read-string',
+      id,
+      pointer
+    });
+  }
+
+  public async readStringAsync(pointer: number): Promise<{
+    error: Error | null,
+    result: number
+  }> {
+    return new Promise((resolve) => {
+      this.readString(pointer, (error: Error | null, result: number) => {
+        resolve({
+          error,
+          result
+        })
+      })
+    })
+  }
+
+  public writeString(value: string, cb: Callback) {
+    // Don't continue if we're destroying ourselves
+    if (this.destroyed) {
+      return process.nextTick(cb, new Error('Worker destroyed'))
+    }
+
+    // Get a new callback ID
+    const id = this._callbacks.length;
+
+    // Save the callback at callbacks[id]
+    this._callbacks.push({
+      buffer: null,
+      callback: cb
+    });
+
+    // Post our execution to the worker
+    this._worker.postMessage({
+      type: 'write-string',
+      id,
+      value
+    });
+  }
+
+  public async writeStringAsync(value: string): Promise<{
+    error: Error | null,
+    result: number
+  }> {
+    return new Promise((resolve) => {
+      this.writeString(value, (error: Error | null, result: number) => {
+        resolve({
+          error,
+          result
+        })
+      })
+    })
   }
 
   // Fetch a callback given its ID
@@ -178,7 +272,7 @@ export class WasmWorker extends EventEmitter {
   }
 
   // TODO: idk if we need this...
-  write (pointer: number, buffer: any, cb: any) {
+  /*write (pointer: number, buffer: any, cb: any) {
     if (!cb) cb = noop
     if (this.destroyed) return process.nextTick(cb, new Error('Worker destroyed'))
 
@@ -232,5 +326,5 @@ export class WasmWorker extends EventEmitter {
         length
       })
     }
-  }
+  }*/
 }
