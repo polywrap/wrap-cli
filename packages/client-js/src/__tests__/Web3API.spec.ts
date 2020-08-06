@@ -40,7 +40,7 @@ describe("Web3API", () => {
       "--ipfs",
       ipfs,
       "--test-ens",
-      apiENS
+      `${ensAddress},${apiENS}`
     ]);
 
     if (exitCode !== 0) {

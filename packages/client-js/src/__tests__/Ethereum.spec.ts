@@ -42,7 +42,7 @@ describe("Ethereum", () => {
       "--ipfs",
       ipfs,
       "--test-ens",
-      apiENS
+      `${ensAddress},${apiENS}`
     ]);
 
     if (exitCode !== 0) {

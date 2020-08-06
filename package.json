@@ -10,7 +10,8 @@
     "nohoist": [
       "**/graph-ts",
       "**/graph-cli",
-      "**/jest"
+      "**/@testing-library/*",
+      "**/@types/testing-library*"
     ]
   },
   "scripts": {

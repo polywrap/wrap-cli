@@ -40,7 +40,7 @@ describe("IPFS", () => {
       "--ipfs",
       ipfs,
       "--test-ens",
-      apiENS
+      `${ensAddress},${apiENS}`
     ]);
 
     if (exitCode !== 0) {
