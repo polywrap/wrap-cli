@@ -4,7 +4,8 @@ import { Worker, MessageChannel, MessagePort } from "worker_threads";
 import { EventEmitter } from "events";
 import path from "path";
 
-type Callback = (error: Error | null, result: number) => void;
+export type WasmCallback = (result: number, error?: Error) => void;
+export type MessageCallback = (result: any, error?: Error) => void;
 
 function noop () {}
 
@@ -15,7 +16,7 @@ export class WasmWorker extends EventEmitter {
   private _secondaryPort: MessagePort;
   private _shared: Int32Array;
   private _head: number;
-  private _callbacks: any[];
+  private _callbacks: (WasmCallback | MessageCallback)[];
 
   constructor(wasmSource: BufferSource, imports: ASCImports) {
     super();
@@ -57,7 +58,7 @@ export class WasmWorker extends EventEmitter {
       // Posting the result of a WASM call
       if (m.type === "result") {
         const cb = this._getCallback(m.id);
-        cb.callback(null, m.result);
+        cb(m.result, null);
         return;
       }
 
@@ -75,7 +76,7 @@ export class WasmWorker extends EventEmitter {
         // Add a callback to the arguments,
         // letting the import function notify us when
         // it's finished executing
-        m.args.push((res: number, error?: Error) => {
+        const callback: WasmCallback = (result: number, error?: Error) => {
           // Cache the current head, this is the index
           // the worker is waiting to be notified at
           const head = this._head;
@@ -83,9 +84,10 @@ export class WasmWorker extends EventEmitter {
           // TODO: use types for status codes
           // 1 === finished
           this._shared[this._head++] = 1;
-          this._shared[this._head++] = error ? -1 : res;
+          this._shared[this._head++] = error ? -1 : result;
           Atomics.notify(this._shared, head, Infinity);
-        });
+        }
+        m.args.push(callback);
 
         // Reset our buffer's head and exec the call
         this._head = 0;
@@ -116,7 +118,7 @@ export class WasmWorker extends EventEmitter {
       // Posting the result of a secondary action
       if (message.type === "result") {
         const cb = this._getCallback(message.id);
-        cb.callback(null, message.result);
+        cb(message.result, null);
         return;
       }
     })
@@ -133,17 +135,14 @@ export class WasmWorker extends EventEmitter {
 
     // Don't continue if we're destroying ourselves
     if (this.destroyed) {
-      return process.nextTick(cb, new Error('Worker destroyed'))
+      return process.nextTick(cb, -1, new Error('Worker destroyed'))
     }
 
     // Get a new callback ID
     const id = this._callbacks.length;
 
     // Save the callback at callbacks[id]
-    this._callbacks.push({
-      buffer: null,
-      callback: cb
-    });
+    this._callbacks.push(cb);
 
     // Post our execution to the worker
     this._worker.postMessage({
@@ -163,7 +162,7 @@ export class WasmWorker extends EventEmitter {
     }
 
     return new Promise((resolve) => {
-      this.call(method, ...args, (error: Error | null, result: number) => {
+      this.call(method, ...args, (result: number, error: Error | null) => {
         resolve({
           error,
           result
@@ -179,24 +178,21 @@ export class WasmWorker extends EventEmitter {
 
     while (this._callbacks.length) {
       const cb = this._getCallback(this._callbacks.length - 1)
-      cb.callback(new Error('Worker destroyed'))
+      cb(-1, new Error('Worker destroyed'))
     }
   }
 
-  public readString(pointer: number, cb: Callback) {
+  public readString(pointer: number, cb: MessageCallback) {
     // Don't continue if we're destroying ourselves
     if (this.destroyed) {
-      return process.nextTick(cb, new Error('Worker destroyed'))
+      return process.nextTick(cb, -1, new Error('Worker destroyed'))
     }
 
     // Get a new callback ID
     const id = this._callbacks.length;
 
     // Save the callback at callbacks[id]
-    this._callbacks.push({
-      buffer: null,
-      callback: cb
-    });
+    this._callbacks.push(cb);
 
     // Post our execution to the worker
     this._secondaryPort.postMessage({
@@ -208,10 +204,10 @@ export class WasmWorker extends EventEmitter {
 
   public async readStringAsync(pointer: number): Promise<{
     error: Error | null,
-    result: number
+    result: string
   }> {
     return new Promise((resolve) => {
-      this.readString(pointer, (error: Error | null, result: number) => {
+      this.readString(pointer, (result: string, error?: Error) => {
         resolve({
           error,
           result
@@ -220,20 +216,17 @@ export class WasmWorker extends EventEmitter {
     })
   }
 
-  public writeString(value: string, cb: Callback) {
+  public writeString(value: string, cb: WasmCallback) {
     // Don't continue if we're destroying ourselves
     if (this.destroyed) {
-      return process.nextTick(cb, new Error('Worker destroyed'))
+      return process.nextTick(cb, -1, new Error('Worker destroyed'))
     }
 
     // Get a new callback ID
     const id = this._callbacks.length;
 
     // Save the callback at callbacks[id]
-    this._callbacks.push({
-      buffer: null,
-      callback: cb
-    });
+    this._callbacks.push(cb);
 
     // Post our execution to the worker
     this._secondaryPort.postMessage({
@@ -248,7 +241,7 @@ export class WasmWorker extends EventEmitter {
     result: number
   }> {
     return new Promise((resolve) => {
-      this.writeString(value, (error: Error | null, result: number) => {
+      this.writeString(value, (result: number, error?: Error) => {
         resolve({
           error,
           result
@@ -258,7 +251,7 @@ export class WasmWorker extends EventEmitter {
   }
 
   // Fetch a callback given its ID
-  private _getCallback(id: number) {
+  private _getCallback(id: number): WasmCallback {
     const cb = this._callbacks[id]
     this._callbacks[id] = null
     while (

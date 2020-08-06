@@ -8,11 +8,11 @@ import { isPromise } from "./lib/async";
 import {
   Query,
   QueryResult,
-  ASCModule,
   Manifest,
   ModulePath
 } from "./lib/types";
-import WASMLoader from "@assemblyscript/loader";
+import { WasmWorker } from "./lib/wasm-worker";
+
 import {
   buildSchema,
   execute,
@@ -224,6 +224,8 @@ export class Web3API {
     const fieldNames = Object.keys(fields);
 
     for (const fieldName of fieldNames) {
+      const outputType = fields[fieldName].type.toString().toLowerCase();
+
       fields[fieldName].resolve = async (source, args, context, info) => {
         const { portals } = this._config;
 
@@ -233,22 +235,13 @@ export class Web3API {
         );
 
         // Instantiate it
-        const result = await WASMLoader.instantiate(
-          wasm as any,
-          getHostImports(() => result as ASCModule, portals)
-        ) as any;
-
-        // Locate the target function
-        const func = result.instance.exports[fieldName];
-
-        if (typeof func !== "function") {
-          throw Error(`Export is not a function: ${fieldName}`);
-        }
+        const ww: WasmWorker = new WasmWorker(
+          wasm,
+          getHostImports(() => ww, portals)
+        );
 
         // TODO: this is very incomplete and hacky, replace with
         //       proper heap manager.
-
-        const { __allocString, __getString, __retain, __release } = result.instance.exports
         let mapped = []
         let toRelease = []
 
@@ -257,7 +250,7 @@ export class Web3API {
         for (const marshMe of toMarsh) {
           let result;
           if (typeof marshMe === "string") {
-            result = __retain(__allocString(marshMe));
+            result = (await ww.writeStringAsync(marshMe)).result;
           } else {
             mapped.push(marshMe);
             continue;
@@ -266,15 +259,22 @@ export class Web3API {
           toRelease.push(result);
         }
 
-        // TODO: validate return value against the schema
-        const toReturn = func(...mapped);
-        const res = __getString(toReturn)
+        // Execute the call
+        const res = await ww.callAsync(fieldName, ...mapped)
 
-        for (const releaseMe of toRelease) {
-          __release(releaseMe);
+        // TODO: validate return value against the schema
+        let result: any = res.result;
+        if (outputType.replace('!', '') === "string") {
+          result = (await ww.readStringAsync(result)).result;
+        } else {
+          throw Error(`Unsupported return type: ${outputType}`);
         }
 
-        return res;
+        // TODO: have a pattern around reusing workers instead of spinning
+        //       them up each time (measure how long that takes first)
+        ww.destroy();
+
+        return result;
       }
     }
   }

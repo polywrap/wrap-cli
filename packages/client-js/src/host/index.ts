@@ -1,12 +1,13 @@
 import { getIpfsImports } from "./ipfs";
 import { IPortals } from "../Web3API";
-import { ASCModule, ASCImports } from "../lib/types";
+import { ASCImports } from "../lib/types";
+import { WasmWorker } from "../lib/wasm-worker";
 
-export function getHostImports(getModule: () => ASCModule, portals: IPortals): ASCImports {
+export function getHostImports(getWasmWorker: () => WasmWorker, portals: IPortals): ASCImports {
   const imports: ASCImports = { };
 
   if (portals.ipfs) {
-    imports["ipfs"] = { ...getIpfsImports(getModule, portals.ipfs) };
+    imports["ipfs"] = { ...getIpfsImports(getWasmWorker, portals.ipfs) };
   }
 
   return imports;
