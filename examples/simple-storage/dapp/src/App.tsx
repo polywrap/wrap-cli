@@ -1,6 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import gql from "graphql-tag";
 
 import {
   Web3API,
@@ -16,6 +17,17 @@ const api = new Web3API({
     ipfs: new IPFS({ provider: "http://localhost:5001" }),
     subgraph: new Subgraph({ provider: "http://localhost:8020" })
   }
+})
+
+api.query({
+  query: gql`
+    mutation SetData($address: String!, $value: Int!) {
+      setData(
+        address: $address
+        value: $value
+      )
+    }
+  `
 })
 
 function App() {
