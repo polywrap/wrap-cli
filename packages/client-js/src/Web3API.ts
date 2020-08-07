@@ -191,15 +191,7 @@ export class Web3API {
 
     const def = queryDoc.definitions[0];
 
-    if (def.kind === "SchemaDefinition" ||
-        def.kind === "ObjectTypeDefinition") {
-      if (!portals.subgraph) {
-        throw Error("No subgraph portal available.");
-      }
-
-      // If an entity is being queried, send to a subgraph
-      return await portals.subgraph.query(query);
-    } else if (def.kind === "OperationDefinition") {
+    if (def.kind === "OperationDefinition" && def.name) {
       // else, execute query against schema
       const schema = await this.fetchSchema();
 
@@ -214,9 +206,26 @@ export class Web3API {
       }
 
       return res;
-    } else {
+      // TODO: remove this hack when subgraph schema is supported
+    } else /*if (
+        def.kind === "SchemaDefinition" ||
+        def.kind === "ObjectTypeDefinition") */{
+      if (!portals.subgraph) {
+        throw Error("No subgraph portal available.");
+      }
+
+      // TODO: handle this better :P
+      const manifest = await this.fetchAPIManifest();
+
+      if (!manifest.subgraph) {
+        throw Error("The manifest is missing a subgraph");
+      }
+
+      // If an entity is being queried, send to a subgraph
+      return await portals.subgraph.query(manifest.subgraph.id, query);
+    } /*else {
       throw Error(`Unrecognized query definition kind: "${def.kind}"`);
-    }
+    }*/
   }
 
   private _addResolvers(module: ModulePath, schemaType: GraphQLObjectType<any, any>) {

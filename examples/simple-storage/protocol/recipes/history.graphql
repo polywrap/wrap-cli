@@ -1,0 +1,7 @@
+{
+  simpleStorages {
+    id
+    lastSetBy
+    setBy
+  }
+}

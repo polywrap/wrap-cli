@@ -2,7 +2,7 @@ import { runGraphCLI } from "../cli/graph-cli";
 
 export async function publishToSubgraph(
   subgraphPath: string, subgraphName: string,
-  graphNode: string, ipfs: string, quiet?: boolean
+  graphNode: string, ipfs: string, outputDir: string, quiet?: boolean
 ): Promise<string> {
 
   // create the subgraph
@@ -20,6 +20,8 @@ export async function publishToSubgraph(
     graphNode,
     "--ipfs",
     ipfs,
+    "--output-dir",
+    `${outputDir}/subgraph`,
     subgraphName,
     subgraphPath
   ];

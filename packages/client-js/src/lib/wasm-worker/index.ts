@@ -30,9 +30,9 @@ export class WasmWorker extends EventEmitter {
       importNames[namespace] = Object.keys(imports[namespace]);
     })
 
-    const workerFile = process.env.NODE_ENV === 'production'
-      ? 'worker.js'
-      : 'worker.import.js';
+    const workerFile = process.env.WORKER_ENV === 'test'
+      ? 'worker-import.js'
+      : 'worker.js';
   
     const worker = new Worker(path.resolve(__dirname, workerFile), {
       workerData: {

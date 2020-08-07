@@ -15,7 +15,8 @@ export function getSubgraphImports(
     _w3_subgraph_query: async (queryPtr: number, cb: WasmCallback) => {
       const ww = getWasmWorker();
       const query = (await ww.readStringAsync(queryPtr)).result;
-      await subgraph.query({
+      // TODO: test and make this work
+      await subgraph.query("TODO", {
         query: gql(query)
       })
     }

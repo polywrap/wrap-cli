@@ -180,7 +180,7 @@ export default {
           path.dirname(manifestPath), 'src/subgraph/subgraph.yaml'
         );
 
-        const id = await publishToSubgraph(subgraphPath, name, node, ipfs);
+        const id = await publishToSubgraph(subgraphPath, name, node, ipfs, outputDir);
 
         print.success(`Subgraph Deployed { ${id} }`);
         // TODO: remove this port hack

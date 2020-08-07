@@ -123,10 +123,11 @@ export class Compiler {
         const str: any = fs.readFileSync(
           subgraphFile, "utf-8"
         );
-        const subgraphManifest: any = YAML.safeLoad(str);
-        loadSchema(
+        //const subgraphManifest: any = YAML.safeLoad(str);
+        // TODO: hack to get around not having the subgraph types defined
+        /*loadSchema(
           appendPath(subgraphFile, subgraphManifest.schema.file)
-        );
+        );*/
         const cid = await this._compileSubgraph(
           subgraphFile,
           `${outputDir}/subgraph`,

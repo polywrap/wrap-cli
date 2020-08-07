@@ -26,7 +26,16 @@ async function main() {
     YAML.safeDump(manifest)
   );
 
-  console.log("✔️ Manifests Updated");
+  console.log("✔️ Subgraph Manifest Updated");
+
+  const constants = require(`${__dirname}/recipes/constants.json`);
+  constants.SimpleStorageAddr = address;
+  fs.writeFileSync(
+    `${__dirname}/recipes/constants.json`,
+    JSON.stringify(constants, null, 2)
+  );
+
+  console.log("✔️ Recipe Constants Updated");
 }
 
 main()

@@ -58,4 +58,13 @@ export class SimpleStorage extends Entity {
       this.set("lastSetBy", Value.fromBytes(value as Bytes));
     }
   }
+
+  get setBy(): Array<Bytes> {
+    let value = this.get("setBy");
+    return value.toBytesArray();
+  }
+
+  set setBy(value: Array<Bytes>) {
+    this.set("setBy", Value.fromBytesArray(value));
+  }
 }

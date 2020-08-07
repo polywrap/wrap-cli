@@ -1,4 +1,5 @@
 type SimpleStorage @entity {
   id: ID!
   lastSetBy: Bytes
+  setBy: [Bytes!]!
 }

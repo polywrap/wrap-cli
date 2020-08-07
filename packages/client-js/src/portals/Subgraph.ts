@@ -11,11 +11,12 @@ export interface ISubgraphConfig {
 export class Subgraph {
   constructor(private _config: ISubgraphConfig) { }
 
-  public query(query: Query): Promise<QueryResult> {
+  public query(subgraphId: string, query: Query): Promise<QueryResult> {
     const link = createHttpLink({
-      uri: this._config.provider,
+      uri: `${this._config.provider}/subgraphs/id/${subgraphId}`,
       fetch
     });
+    // TODO: get the errors, query typos are getting swallowed
     return makePromise(
       execute(link, query)
     );

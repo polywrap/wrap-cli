@@ -17,6 +17,15 @@ npx w3 build \
 --test-ens simplestorage.eth
 ```
 
+## 3. Test
+```
+yarn test
+```
+or
+```
+npx w3 query ./recipes/e2e.json --test-ens
+```
+
 ## Last but not least, dApp integration...
 🤦
 

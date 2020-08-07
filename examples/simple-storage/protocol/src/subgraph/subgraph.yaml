@@ -8,7 +8,7 @@ dataSources:
     name: SimpleStorage
     network: private
     source:
-      address: '0x254dffcd3277C0b1660F6d42EFbB754edaBAbC2B'
+      address: '0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab'
       abi: SimpleStorage
     mapping:
       kind: ethereum/events
