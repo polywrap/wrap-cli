@@ -62,5 +62,5 @@ A single schema for reading and interacting with smart contract protocols, compl
 * [Smart Contract Event Processing (Subgraph)](./packages/docs/protocol-specification/event-processing.md)  
 * [Multi-Platform Logic Modules](./packages/docs/protocol-specification/multi-platform-logic-modules.md)  
 * [Complex Multi-Step Transactions & Queries](./packages/docs/protocol-specification/complex-transactions-and-queries.md)  
-* [Combining Smart Conract Protocols](./packages/docs/protocol-specification/combine-protocols.md)  
+* [Combining Smart Contract Protocols](./packages/docs/protocol-specification/combine-protocols.md)  
 * [3rd Party Extensions](./packages/docs/protocol-specification/extend-protocols.md)  
