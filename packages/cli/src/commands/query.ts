@@ -99,7 +99,9 @@ export default {
           variables
         })
 
-        console.log(data)
+        print.success('-----------------------------------')
+        print.fancy(JSON.stringify(data, null, 2))
+        print.success('-----------------------------------')
       }
     }
 
