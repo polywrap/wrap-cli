@@ -18,7 +18,7 @@ These WASM modules, paired with a [subgraph](https://thegraph.com/) for historic
 We call this GraphQL schema a [Web3API](https://web3api.dev).  
 
 ## How?  
-Detailed instructions will be available shortly. **[Join early access!](https://web3api.dev)**  
+Detailed user instructions will be available shortly. **[Join early access!](https://web3api.dev)**  
 
 ## Packages  
 | Package | Version | Description |  
@@ -29,4 +29,33 @@ Detailed instructions will be available shortly. **[Join early access!](https://
 | [@web3api/client-test-env](./packages/client-test-env) | pre-alpha | Dockerized Test Env |  
 
 ## Contributing  
+### Prerequisites  
+- `nvm`  
+- `yarn`  
+- `docker`
+- `docker-compose`  
 
+### Installation  
+`nvm install && nvm use`  
+`yarn`  
+
+### Build  
+`yarn build`  
+
+### Test  
+`yarn test:ci`  
+
+or, if client-test-env is already running in the background:  
+`yarn test`  
+
+## Demos  
+
+Each demo below showcases different aspects of Web3API. Please see the demo's README for further details and instructions.  
+
+| Demo | Status |  
+|------|--------|  
+| [Simple Storage](./demos/simple-storage/README.md) | Running |  
+| [Uniswap V2](./demos/uniswap-v2) | Not Running |  
+
+## Contact  
+For all inquiries, please email `jelli@dorg.tech` or create an issue in this repository.  

@@ -77,7 +77,7 @@ describe("IPFS", () => {
 
     const res = await api.query({
       query: gql`
-        {
+        query GetString {
           getString(cid: "${ipfsHash}")
         }
       `

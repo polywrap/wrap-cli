@@ -5,7 +5,7 @@
   "workspaces": {
     "packages": [
       "./packages/*",
-      "./examples/simple-storage/*"
+      "./demos/simple-storage/*"
     ],
     "nohoist": [
       "**/graph-ts",
@@ -15,13 +15,15 @@
     ]
   },
   "scripts": {
-    "build": "yarn build:wasm-ts && yarn build:cli && yarn build:client-js",
+    "build": "yarn build:wasm-ts && yarn build:client-js && yarn build:cli",
     "build:cli": "yarn workspace @web3api/cli build",
     "build:client-js": "yarn workspace @web3api/client-js build",
     "build:wasm-ts": "yarn workspace @web3api/wasm-ts build",
     "test": "yarn test:wasm-ts && yarn test:client-js",
     "test:wasm-ts": "yarn workspace @web3api/wasm-ts test",
-    "test:client-js": "yarn workspace @web3api/client-js test"
+    "test:client-js": "yarn workspace @web3api/client-js test",
+    "test:ci": "yarn test:wasm-ts && yarn test:ci:client-js",
+    "test:ci:client-js": "yarn workspace @web3api/client-js test:ci"
   },
   "devDependencies": {
     "lerna": "3.22.1"
