@@ -1,66 +1,32 @@
-# Web3 API
-![](https://raw.githubusercontent.com/Web3-API/branding/master/img/web3api.png?token=ABKEFUDHBMJG5SMI5O63JSC7ANZ3U)  
-> The power of Web3, the ease of Web2.
+# Web3 API  
+![](https://github.com/Web3-API/branding/blob/master/logo/Web3API_On_Black_BG.jpg?raw=true)  
+> The Power of Web3,
+The Ease of Web2  
 
-**Use any Web3 smart contract protocol with REST or GraphQL, in any language, no smart contract SDKs required**.
+**Web3API is in Pre-Alpha**  
+**[Join Early Access](https://web3api.dev)**
 
-## App Devs
-**Use Web3 APIs...**
-```typescript
-import { request, query } from '@web3api/client-js';
+## What?  
+[Web3API](https://web3api.dev) allows smart contract developers to implement user-friendly, multi-platform, wrappers for their protocols in a language agnostic. Use Web3APIs in your favorite platforms and programming languages:  
+Browser JS, Node.JS, Rust, Python, Go, C/C++, C#, etc  
 
-// REST
-request('api.1inch.eth/swap?from=’USDC’&to=’ETH’&amount=500');
+At core of [Web3API](https://web3api.dev) is a WASM runtime that enables interactions with popular P2P networks:  
+IPFS, Ethereum, Subgraph, etc  
 
-// GraphQL
-query('api.1inch.eth', `{ swap(“USDC”, “ETH”, 500) { slippage } }`);
-```
-**BUIDL** dynamic applications.  
+These WASM modules, paired with a [subgraph](https://thegraph.com/) for historical data querying, combine together to **create a single GraphQL schema that defines the entirety of the protocol.**  
 
-**Forget about** embedding smart contract SDKs & ABIs.  
+We call this GraphQL schema a [Web3API](https://web3api.dev).  
 
-**Focus on** building a better user experience.  
+## How?  
+Detailed instructions will be available shortly. **[Join early access!](https://web3api.dev)**  
 
-## Smart Contract Devs
-**Define Web3 APIs...**
-```graphql
-type Mutation {
-  swap(
-    from: String!
-    to: String!
-    amount: Number!
-  ): SwapInfo!
-}
+## Packages  
+| Package | Version | Description |  
+|---------|---------|-------------|  
+| [@web3api/client-js](./packages/client-js) | pre-alpha | Javascript Client |  
+| [@web3api/cli](./packages/cli) | pre-alpha | CLI |  
+| [@web3api/wasm-ts](./packages/wasm-ts) | pre-alpha | Assemblyscript Runtime |  
+| [@web3api/client-test-env](./packages/client-test-env) | pre-alpha | Dockerized Test Env |  
 
-interface SwapInfo {
-  slippage: Percentage!
-  gasCost: WEI!
-}
+## Contributing  
 
-type Exchange @entity {
-  id: ID! @address("exchange")
-  swaps: [Swap!]! @deriveFrom("exchange")
-}
-
-type Swap @entity {
-  id: ID!
-  exchange: Exchange!
-}
-```
-
-**BUIDL** multi-platform APIs.  
-
-**Forget about** authoring language specific APIs.  
-
-**Focus on** authoring & testing smart contracts.  
-
-## Features
-A single schema for reading and interacting with smart contract protocols, complete with:  
-* [GraphQL Schema](./packages/docs/protocol-specification/graphql-schema.md)  
-* [REST Interface](./packages/docs/protocol-specification/rest-interface.md)  
-* [Smart Contract ABI Binding](./packages/docs/protocol-specification/abi-binding.md)  
-* [Smart Contract Event Processing (Subgraph)](./packages/docs/protocol-specification/event-processing.md)  
-* [Multi-Platform Logic Modules](./packages/docs/protocol-specification/multi-platform-logic-modules.md)  
-* [Complex Multi-Step Transactions & Queries](./packages/docs/protocol-specification/complex-transactions-and-queries.md)  
-* [Combining Smart Contract Protocols](./packages/docs/protocol-specification/combine-protocols.md)  
-* [3rd Party Extensions](./packages/docs/protocol-specification/extend-protocols.md)  
