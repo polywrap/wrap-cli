@@ -7,7 +7,7 @@ The Ease of Web2
 **[Join Early Access](https://web3api.dev)**
 
 ## What?  
-[Web3API](https://web3api.dev) allows smart contract developers to implement user-friendly, multi-platform, wrappers for their protocols in a language agnostic. Use Web3APIs in your favorite platforms and programming languages:  
+[Web3API](https://web3api.dev) allows smart contract developers to implement user-friendly, multi-platform, wrappers for their protocols in a language agnostic way. Use Web3APIs in your favorite platforms and programming languages:  
 Browser JS, Node.JS, Rust, Python, Go, C/C++, C#, etc  
 
 At core of [Web3API](https://web3api.dev) is a WASM runtime that enables interactions with popular P2P networks:  
