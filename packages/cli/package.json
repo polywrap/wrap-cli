@@ -6,7 +6,7 @@
     "w3": "bin/w3"
   },
   "scripts": {
-    "build": "rm -rf ./build && tsc",
+    "build": "rimraf ./build && tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -27,7 +27,8 @@
   },
   "devDependencies": {
     "@types/node": "^12.6.9",
-    "typescript": "^3.9.6"
+    "typescript": "^3.9.6",
+    "rimraf": "3.0.2"
   },
   "optionalDependencies": {
     "keytar": "^5.0.1"
