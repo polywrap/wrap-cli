@@ -246,8 +246,8 @@ interface URITests {
 // undefined means that it fails to resolve
 const URIsToTest: URITests = {
     "myModule.eth": "MyJSModule",
-    "dog.house.package.eth": "cat.house.package",
-    "cat.house.package.v2.eth": "cat.house.package.v2",
+    "dog.house.package.eth": "cat.house.package.eth",
+    "cat.house.package.v2.eth": "cat.house.package.v2.eth",
     "alpha.module1.eth": "alpha.module1.eth",
     "myModule": undefined,
     "cat.dog.eth": undefined,
