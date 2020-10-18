@@ -31,6 +31,14 @@ for (const namespace of Object.keys(importNames)) {
 
   for (const method of importNames[namespace]) {
     imports[namespace][method] = function (...args: any[]) {
+
+      // for each arg, figure out what type:
+        // for each type, load from wasm memory into js memory
+      // figure out return type, allocate shared buffer for return value
+
+      // call into import function, give it the return value buffer
+      // after it's done, allocate memory in wasm for return value
+
       // Notify the host of our impcall
       parentPort.postMessage({
         type: "impcall",
