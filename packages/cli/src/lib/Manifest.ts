@@ -14,9 +14,12 @@ interface ClientModule {
   module: ModulePath;
 }
 
+type ManifestVersion = string;
+
 export interface Manifest {
   description?: string;
   repository?: string;
+  version: ManifestVersion;
   schema: FilePath;
   mutation?: ClientModule;
   query?: ClientModule;

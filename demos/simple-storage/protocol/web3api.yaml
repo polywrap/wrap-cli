@@ -1,4 +1,5 @@
 description: SimpleStorage Web3API Example
+version: 1
 repository: https://github.com/web3-api/prototype
 mutation:
   schema:

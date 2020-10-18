@@ -1,7 +1,8 @@
-import { Manifest } from "./Manifest";
-
 import YAML from "js-yaml";
 import fs from "fs";
+
+import { Manifest } from "./Manifest";
+import { manifestValidation } from "./helpers/validators";
 
 export class Web3API {
   public static load(manifestPath: string): Manifest {
@@ -12,10 +13,12 @@ export class Web3API {
     if (!manifest) {
       throw Error(`Unable to parse manifest: ${manifestPath}`);
     }
-
-    // TODO: add validation
-    // - validate manifest structure
-    // - ensure everything exists
+    console.log('This is manifest ',manifest.description)
+    const valueError = manifestValidation(manifest)
+    console.log(valueError)
+    // if (valueError) {
+    //   throw new Error(valueError)
+    // }
 
     return manifest;
   }
