@@ -1,4 +1,8 @@
-# Plan
+# Plan - New
+- Send WasmWorker thread the types it should marshal (input arguments, import call args, import return, return value)
+- Use https://threads.js.org/ , enabling browser support
+
+# Plan - Old
 ## Shared WASM Heap
 1. Base GraphQL Types Defined
 ```
@@ -21,17 +25,6 @@ get(ptr)
 3. 
 
 3. WasmWorker
-
-
-
-
-
-
-
-
-
-
-
 
 # Goals
 - In-Browser Support

@@ -92,7 +92,7 @@ export class Compiler {
 
       if (mutation) {
         loadSchema(mutation.schema.file);
-        await this._compileWASMModule(
+        await this._compileWasmModule(
           mutation.module.file,
           'mutation',
           outputDir,
@@ -106,7 +106,7 @@ export class Compiler {
 
       if (query) {
         loadSchema(query.schema.file);
-        await this._compileWASMModule(
+        await this._compileWasmModule(
           query.module.file,
           'query',
           outputDir,
@@ -165,7 +165,7 @@ export class Compiler {
     }
   }
 
-  private async _compileWASMModule(
+  private async _compileWasmModule(
     modulePath: string,
     moduleName: string,
     outputDir: string,

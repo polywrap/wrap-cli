@@ -6,10 +6,10 @@ import {
 import { getHostImports } from "./host";
 import { isPromise } from "./lib/async";
 import {
-  Query,
-  QueryResult,
+  GqlQuery,
+  GqlQueryResult,
   Manifest,
-  ModulePath
+  WasmModulePath
 } from "./lib/types";
 import { WasmWorker } from "./lib/wasm-worker";
 
@@ -177,7 +177,7 @@ export class Web3API {
     await this.fetchSchema();
   }
 
-  public async query(query: Query): Promise<QueryResult> {
+  public async query(query: GqlQuery): Promise<GqlQueryResult> {
     const { portals } = this._config;
     const queryDoc = query.query;
 
@@ -228,7 +228,7 @@ export class Web3API {
     }*/
   }
 
-  private _addResolvers(module: ModulePath, schemaType: GraphQLObjectType<any, any>) {
+  private _addResolvers(module: WasmModulePath, schemaType: GraphQLObjectType<any, any>) {
     const fields = schemaType.getFields();
     const fieldNames = Object.keys(fields);
 
@@ -248,6 +248,8 @@ export class Web3API {
           wasm,
           getHostImports(() => ww, portals)
         );
+
+        // TODO: fix input argument marshalling
 
         // TODO: this is very incomplete and hacky, replace with
         //       proper heap manager.
