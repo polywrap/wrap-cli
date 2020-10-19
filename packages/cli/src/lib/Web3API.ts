@@ -13,7 +13,6 @@ export class Web3API {
     if (!manifest) {
       throw Error(`Unable to parse manifest: ${manifestPath}`);
     }
-    console.log('This is manifest ',manifest.description)
     const valueError = manifestValidation(manifest)
     console.log(valueError)
     // if (valueError) {

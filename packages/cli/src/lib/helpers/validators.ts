@@ -1,5 +1,4 @@
 import { Validator } from "jsonschema";
-import { Manifest } from "../Manifest";
 
 const ManifestSchema = {
   id: "/Web3APISchema",
@@ -25,12 +24,12 @@ const ManifestSchema = {
       properties: {
         file: {
           type: "string",
+          required: true,
         },
         id: {
-          type: "string"
-        }
+          type: "string",
+        },
       },
-      required: ["file"],
     },
   },
   required: ["version"],
@@ -39,34 +38,61 @@ const ManifestSchema = {
 
 const ModuleSchema = {
   id: "/ModuleSchema",
-  type: ["string", "object"],
+  type: "object",
   properties: {
     schema: {
-      type: "object",
+      type: ["string", "object"],
       properties: {
         file: {
           type: "string",
+          required: true,
         },
       },
-      required: true,
     },
     module: {
-      type: "object",
+      type: ["string", "object"],
       properties: {
         file: {
           type: "string",
+          required: true,
         },
         language: {
           type: "string",
         },
       },
-      required: ["file"],
     },
   },
 };
 
-export const manifestValidation = (manifest: Manifest) => {
+export const manifestValidation = (manifest: object) => {
   const v = new Validator();
   v.addSchema(ModuleSchema, "/ModuleSchema");
-  return v.validate(manifest, ManifestSchema);
+  const validation = v.validate(manifest, ManifestSchema);
+  if (validation.errors.length > 0) {
+    let { property, message, argument } = validation.errors[0];
+
+    // Property is equal to: instance.subgraph.file
+    // Let's make it an array
+    let propertyMapping: string[] | string = property.split(".");
+
+    // Let's remove the __instance__ word because
+    // the user does not cares about it
+    propertyMapping.shift();
+
+    // If argument is an Array, it means the problem
+    // is regarding some typing, if not it is a missing property
+    const isTypeError = Array.isArray(argument);
+
+    // Let's show a good looking mapping of properties for the user
+    propertyMapping = propertyMapping.join(" -> ");
+
+    const typeErrorMessage = `
+    Property ${propertyMapping} has the following error: ${message}`;
+    const propertyErrorMessage = `
+    Manifest file error: ${message}`;
+
+    const errorMessage = isTypeError ? typeErrorMessage : propertyErrorMessage;
+    throw Error(errorMessage);
+  }
+  return;
 };
