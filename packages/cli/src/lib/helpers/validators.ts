@@ -1,8 +1,40 @@
-import { Validator } from "jsonschema";
+import { validate, JSONSchema4 } from "json-schema";
+import { compile } from "json-schema-to-typescript";
+import { writeFile } from "fs";
 
-const ManifestSchema = {
-  id: "/Web3APISchema",
+const ModuleSchema: JSONSchema4 = {
+  properties: {
+    schema: {
+      type: ["string", "object"],
+      required: ["file"],
+      properties: {
+        file: {
+          type: "string",
+        },
+      },
+      additionalProperties: false,
+    },
+    module: {
+      type: ["string", "object"],
+      required: ["file"],
+      properties: {
+        file: {
+          type: "string",
+        },
+        language: {
+          type: "string",
+        },
+      },
+      additionalProperties: false,
+    },
+  },
+  additionalProperties: false,
+};
+
+const ManifestSchema: JSONSchema4 = {
+  title: "Manifest",
   type: "object",
+  required: ["version"],
   properties: {
     description: {
       type: "string",
@@ -14,85 +46,53 @@ const ManifestSchema = {
       type: "string",
     },
     query: {
-      $ref: "/ModuleSchema",
+      $ref: "#/definitions/ModuleSchema",
     },
     mutation: {
-      $ref: "/ModuleSchema",
+      $ref: "#/definitions/ModuleSchema",
     },
     subgraph: {
       type: "object",
+      required: ["file"],
       properties: {
         file: {
           type: "string",
-          required: true,
         },
         id: {
           type: "string",
         },
       },
+      additionalProperties: false,
     },
   },
-  required: ["version"],
+  definitions: {
+    ModuleSchema,
+  },
   additionalProperties: false,
 };
 
-const ModuleSchema = {
-  id: "/ModuleSchema",
-  type: "object",
-  properties: {
-    schema: {
-      type: ["string", "object"],
-      properties: {
-        file: {
-          type: "string",
-          required: true,
-        },
-      },
-    },
-    module: {
-      type: ["string", "object"],
-      properties: {
-        file: {
-          type: "string",
-          required: true,
-        },
-        language: {
-          type: "string",
-        },
-      },
-    },
-  },
-};
-
 export const manifestValidation = (manifest: object) => {
-  const v = new Validator();
-  v.addSchema(ModuleSchema, "/ModuleSchema");
-  const validation = v.validate(manifest, ManifestSchema);
-  if (validation.errors.length > 0) {
-    let { property, message, argument } = validation.errors[0];
+  const { valid, errors } = validate(manifest, ManifestSchema);
+  if (!valid) {
+    let { property, message } = errors[0];
 
-    // Property is equal to: instance.subgraph.file
+    // Property is equal to: subgraph.file or mutation.module.languange
     // Let's make it an array
     let propertyMapping: string[] | string = property.split(".");
 
-    // Let's remove the __instance__ word because
-    // the user does not cares about it
-    propertyMapping.shift();
-
-    // If argument is an Array, it means the problem
-    // is regarding some typing, if not it is a missing property
-    const isTypeError = Array.isArray(argument);
-
-    // Let's show a good looking mapping of properties for the user
+    // Let's show a good looking mapping of properties for the user (If it's a nested property)
     propertyMapping = propertyMapping.join(" -> ");
 
-    const typeErrorMessage = `
-    Property ${propertyMapping} has the following error: ${message}`;
-    const propertyErrorMessage = `
-    Manifest file error: ${message}`;
-
-    const errorMessage = isTypeError ? typeErrorMessage : propertyErrorMessage;
+    // @TODO: Improve error messages also, should we use the print from gluegun?
+    const errorMessage = `Property ${propertyMapping} has the following error: ${message}`;
     throw Error(errorMessage);
   }
-  return;
+
+  compile(ManifestSchema, "Web3API").then((file) => {
+    // @TODO: Make sure where do we want to generate this file
+    writeFile('./Manifest.ts', file, (error: Error | null) => {
+      if (error) throw Error(error.message)
+      console.log("\nManifest type file created")
+    })
+  });
 };
