@@ -9,6 +9,25 @@ export const manifestValidation = (manifest: object) => {
   if (!valid) {
     let { property, message } = errors[0];
 
+    /*     
+     We should handle three cases or errors:
+     1- When a non-accepted field is added to the manifest
+     2- When the type of the field it's not expected one
+     3- When a required field it's not sent
+    */
+
+    // First case
+    const objectNotDefined = /is not defined in the schema/.test(message);
+    if (objectNotDefined) {
+      const unacceptedVariable = message.match(
+        new RegExp("The property (.*) is not defined")
+      );
+      throw Error(
+        `Field ${
+          unacceptedVariable![1]
+        } is not accepted in the schema. Please check the accepted fields here: LINK_TO_SCHEMA`
+      );
+    }
     // Property is equal to: subgraph.file or mutation.module.languange
     // Let's make it an array
     let propertyMapping: string[] | string = property.split(".");
@@ -16,9 +35,17 @@ export const manifestValidation = (manifest: object) => {
     // Let's show a good looking mapping of properties for the user (If it's a nested property)
     propertyMapping = propertyMapping.join(" -> ");
 
-    // @TODO: Improve error messages also, should we use the print from gluegun?
-    const errorMessage = `Property ${propertyMapping} has the following error: ${message}`;
-    throw Error(errorMessage);
+    // Second case
+    const wrongType = /value found, but (.*) is required/.test(message);
+    if (wrongType) {
+      throw Error(`Property ${propertyMapping} has a type error: ${message}`);
+    }
+
+    // Third case
+    const missingKey = /is missing and it is required/.test(message);
+    if (missingKey) {
+      throw Error(`Missing field: ${propertyMapping}. Please add it to the manifest`);
+    }
   }
 
   compile(ManifestSchema as JSONSchema4, "Web3API").then((file) => {

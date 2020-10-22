@@ -10,14 +10,33 @@ export interface Web3API {
   repository?: string;
   version: string;
   query?: {
-    [k: string]: unknown;
+    schema?:
+      | string
+      | {
+          file: string;
+        };
+    module?:
+      | string
+      | {
+          file: string;
+          language?: string;
+        };
   };
   mutation?: {
-    [k: string]: unknown;
+    schema?:
+      | string
+      | {
+          file: string;
+        };
+    module?:
+      | string
+      | {
+          file: string;
+          language?: string;
+        };
   };
   subgraph?: {
     file: string;
     id?: string;
   };
-  [k: string]: unknown;
 }

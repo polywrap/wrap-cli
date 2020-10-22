@@ -87,37 +87,5 @@
       "additionalProperties": false
     }
   },
-  "definitions": {
-    "moduleSchema": {
-      "properties": {
-        "schema": {
-          "type": ["string", "object"],
-          "required": ["file"],
-          "properties": {
-            "file": {
-              "type": "string",
-              "required": true
-            }
-          },
-          "additionalProperties": false
-        },
-        "module": {
-          "type": ["string", "object"],
-          "required": ["file"],
-          "properties": {
-            "file": {
-              "type": "string",
-              "required": true
-            },
-            "language": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false
-        }
-      },
-      "additionalProperties": false
-    }
-  },
   "additionalProperties": false
 }
