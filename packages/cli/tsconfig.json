@@ -10,7 +10,8 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "strict": true,
-    "lib": ["es2015", "es6", "esnext.asynciterable", "dom"]
+    "lib": ["es2015", "es6", "esnext.asynciterable", "dom"],
+    "resolveJsonModule": true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/__tests__/**/*.ts"]

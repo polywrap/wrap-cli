@@ -5,27 +5,19 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface Manifest {
+export interface Web3API {
   description?: string;
   repository?: string;
   version: string;
-  query?: ModuleSchema;
-  mutation?: ModuleSchema;
+  query?: {
+    [k: string]: unknown;
+  };
+  mutation?: {
+    [k: string]: unknown;
+  };
   subgraph?: {
     file: string;
     id?: string;
   };
-}
-export interface ModuleSchema {
-  schema?:
-    | string
-    | {
-        file: string;
-      };
-  module?:
-    | string
-    | {
-        file: string;
-        language?: string;
-      };
+  [k: string]: unknown;
 }
