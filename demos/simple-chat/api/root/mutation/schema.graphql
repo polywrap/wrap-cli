@@ -1,0 +1,6 @@
+type Mutation {
+  createChat(
+    name: String!
+    admins: [Address!]!
+  ): ID!
+}

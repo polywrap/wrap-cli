@@ -1,0 +1,24 @@
+description: Simple Chat Web3API Example
+repository: https://github.com/web3-api/prototype
+apis:
+  - route: /
+    schema:
+      - file: ./root/mutation/schema.graphql
+      - file: ./root/subgraph/schema.graphql
+    mutation:
+      language: wasm/assemblyscript
+      file: ./root/mutation/index.ts
+  - route: /chat
+    schema:
+      - file: ./chat/mutation/schema.graphql
+      - file: ./chat/query/schema.graphql
+      - file: ./root/subgraph/schema.graphql
+    mutation:
+      language: wasm/assemblyscript
+      file: ./chat/mutation/index.ts
+    query:
+      language: wasm/assemblyscript
+      file: ./chat/query/index.ts
+plugins:
+  - type: subgraph
+    manifest: ./root/subgraph/subgraph.yaml

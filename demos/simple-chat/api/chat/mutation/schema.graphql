@@ -1,0 +1,11 @@
+type Mutation {
+  postMessage(
+    chat: ID!
+    message: PostMessage!
+  ): Message!
+}
+
+input PostMessageInput {
+  content: String!
+  images: [Bytes]
+}
