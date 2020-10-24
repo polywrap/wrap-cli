@@ -1,50 +1,90 @@
-import { validate, JSONSchema4 } from "json-schema";
+import { JSONSchema4 } from "json-schema";
+import { Validator } from "jsonschema";
 import { compile } from "json-schema-to-typescript";
-import { writeFile } from "fs";
+import { writeFile, lstatSync } from "fs";
+import { valid } from "semver";
 
-import ManifestSchema from "./schema.json";
+import schema from "./schema.json";
+
+enum ValidationError {
+  ADDITIONAL_PROPERTY = "additionalProperties",
+  TYPE = "type",
+  REQUIRED = "required",
+  INPUT = "format",
+}
+
+const validator = new Validator();
+
+Validator.prototype.customFormats.file = (file: string) => {
+  return validateFile(file);
+};
+
+Validator.prototype.customFormats.version = (version: string) => {
+  return validateVersion(version);
+};
+
+const validateFile = (path: string) => {
+  try {
+    lstatSync(path).isFile();
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+const validateVersion = (version: string) => {
+  // Valid method returns null or the version (not true or false)
+  return valid(version) ? true : false;
+};
 
 export const manifestValidation = (manifest: object) => {
-  const { valid, errors } = validate(manifest, ManifestSchema as JSONSchema4);
-  if (!valid) {
-    let { property, message } = errors[0];
+  const ManifestSchema = schema["manifest"];
+  // const moduleSchema = schema["definitions"]["moduleSchema"];
 
-    /*     
-     We should handle three cases or errors:
-     1- When a non-accepted field is added to the manifest
-     2- When the type of the field it's not expected one
-     3- When a required field it's not sent
-    */
+  // validator.addSchema(moduleSchema);
+  validator.validate(manifest, ManifestSchema);
 
-    // First case
-    const objectNotDefined = /is not defined in the schema/.test(message);
-    if (objectNotDefined) {
-      const unacceptedVariable = message.match(
-        new RegExp("The property (.*) is not defined")
-      );
-      throw Error(
-        `Field ${
-          unacceptedVariable![1]
-        } is not accepted in the schema. Please check the accepted fields here: LINK_TO_SCHEMA`
-      );
-    }
+  const { errors } = validator.validate(manifest, ManifestSchema);
+  /*     
+   We should handle three cases or errors:
+   1- When a non-accepted field is added to the manifest
+   2- When the type of the field it's not expected one
+   3- When a required field it's not sent
+   4- When version string it's not correct
+   5- When file string it's not an existing file
+  */
+  if (errors.length > 0) {
+    let { path, message, name, argument, instance } = errors[0];
+
     // Property is equal to: subgraph.file or mutation.module.languange
-    // Let's make it an array
-    let propertyMapping: string[] | string = property.split(".");
+    // Let's show a good looking mapping of properties
+    const pathMapping = path.join(" -> ");
 
-    // Let's show a good looking mapping of properties for the user (If it's a nested property)
-    propertyMapping = propertyMapping.join(" -> ");
-
-    // Second case
-    const wrongType = /value found, but (.*) is required/.test(message);
-    if (wrongType) {
-      throw Error(`Property ${propertyMapping} has a type error: ${message}`);
-    }
-
-    // Third case
-    const missingKey = /is missing and it is required/.test(message);
-    if (missingKey) {
-      throw Error(`Missing field: ${propertyMapping}. Please add it to the manifest`);
+    switch (name) {
+      case ValidationError.ADDITIONAL_PROPERTY:
+        throw Error(
+          `Field ${argument} is not accepted in the schema. Please check the accepted fields here: LINK_TO_SCHEMA`
+        );
+      case ValidationError.TYPE:
+        const typeError = path.length === 1 ? `Property ${path[0]}` : `Property ${pathMapping}`;
+        throw Error(`${typeError} has a type error: ${message}`);
+      case ValidationError.REQUIRED:
+        const propertyRequired = path.length === 0 ? `${argument}.` : `${argument} in ${pathMapping}.`;
+        throw Error(
+          `Missing field: ${propertyRequired} Please add it to the manifest`
+        );
+      case ValidationError.INPUT:
+        const isVersionError = argument === "version";
+        const nonExistantFileError = argument === "file";
+        if (isVersionError) {
+          throw Error(
+            "Version format it's not correct. Example of an accepted format: 2.5.1"
+          );
+        } else if (nonExistantFileError) {
+          throw Error(
+            `Property ${pathMapping} has the value ${instance}, which is a file that does not exists`
+          );
+        }
     }
   }
 

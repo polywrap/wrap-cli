@@ -247,7 +247,7 @@ export class Compiler {
     quiet?: boolean,
     verbose?: boolean
   ): Promise<string> {
-
+    console.log()
     step(
       spinner,
       "Compiling Subgraph...",

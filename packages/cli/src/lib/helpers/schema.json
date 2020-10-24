@@ -1,91 +1,94 @@
 {
-  "type": "object",
-  "required": ["version"],
-  "properties": {
-    "description": {
-      "type": "string"
-    },
-    "repository": {
-      "type": "string"
-    },
-    "version": {
-      "type": "string",
-      "required": true
-    },
-    "query": {
-      "properties": {
-        "schema": {
-          "type": ["string", "object"],
-          "required": ["file"],
-          "properties": {
-            "file": {
-              "type": "string",
-              "required": true
+  "manifest": {
+    "id": "Manifest",
+    "type": "object",
+    "required": ["version"],
+    "additionalProperties": false,
+    "properties": {
+      "description": {
+        "type": "string"
+      },
+      "repository": {
+        "type": "string"
+      },
+      "version": {
+        "type": "string",
+        "format": "version"
+      },
+      "query": {
+        "additionalProperties": false,
+        "properties": {
+          "schema": {
+            "type": ["string", "object"],
+            "required": ["file"],
+            "additionalProperties": false,
+            "properties": {
+              "file": {
+                "type": "string",
+                "format": "file"
+              }
             }
           },
-          "additionalProperties": false
-        },
-        "module": {
-          "type": ["string", "object"],
-          "required": ["file"],
-          "properties": {
-            "file": {
-              "type": "string",
-              "required": true
-            },
-            "language": {
-              "type": "string"
+          "module": {
+            "type": ["string", "object"],
+            "required": ["file"],
+            "additionalProperties": false,
+            "properties": {
+              "file": {
+                "type": "string",
+                "format": "file"
+              },
+              "language": {
+                "type": "string"
+              }
             }
-          },
-          "additionalProperties": false
+          }
         }
       },
-      "additionalProperties": false
-    },
-    "mutation": {
-      "properties": {
-        "schema": {
-          "type": ["string", "object"],
-          "required": ["file"],
-          "properties": {
-            "file": {
-              "type": "string",
-              "required": true
+      "mutation": {
+        "additionalProperties": false,
+        "properties": {
+          "schema": {
+            "type": ["string", "object"],
+            "required": ["file"],
+            "additionalProperties": false,
+            "properties": {
+              "file": {
+                "type": "string",
+                "format": "file"
+              }
             }
           },
-          "additionalProperties": false
-        },
-        "module": {
-          "type": ["string", "object"],
-          "required": ["file"],
-          "properties": {
-            "file": {
-              "type": "string",
-              "required": true
-            },
-            "language": {
-              "type": "string"
+          "module": {
+            "type": ["string", "object"],
+            "required": ["file"],
+            "additionalProperties": false,
+            "properties": {
+              "file": {
+                "type": "string",
+                "format": "file"
+              },
+              "language": {
+                "type": "string"
+              }
             }
+          }
+        }
+      },
+      "subgraph": {
+        "type": "object",
+        "required": ["file"],
+        "additionalProperties": false,
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "file"
           },
-          "additionalProperties": false
+          "id": {
+            "type": "string"
+          }
         }
-      },
-      "additionalProperties": false
-    },
-    "subgraph": {
-      "type": "object",
-      "required": ["file"],
-      "properties": {
-        "file": {
-          "type": "string",
-          "required": true
-        },
-        "id": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
+      }
     }
-  },
-  "additionalProperties": false
+  }
 }
