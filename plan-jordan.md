@@ -1,33 +1,7 @@
-# Plan - New
-- Send WasmWorker thread the types it should marshal (input arguments, import call args, import return, return value)
-- Use https://threads.js.org/ , enabling browser support
-
-# Plan - Old
-## Shared WASM Heap
-1. Base GraphQL Types Defined
-```
-String,
-UInt[8, 16, 32, 64, 256]
-Int[8, 16, 32, 64, 256]
-Char => Uint8
-WChar => Uint16
-Byte => Uint8
-Boolean => Uint8
-```
-
-2. AssemblyScriptHeap
-```
-allocate(type): ptr
-set(value)
-get(ptr)
-```
-
-3. 
-
-3. WasmWorker
-
-# Goals
-- In-Browser Support
-- Moloch Web3API (signing, ethereum, ipfs)
-- Fleek Web3API (signing, ipfs?, filecoin?)
-- Clear Specification For: Web3API Packages (Manifest, Schemas, Modules), Web3API Clients (Initialization, Querying)
+# Plan
+## Marshalling
+1. Serialize Input Arguments = GraphQL -> JSON -> MsgPack (verify w/ graphql schema) [client-js]
+2. Deserialize Input Arguments = MsgPack -> WASM-Assemblyscript [wasm-as,wasm-as-codegen]
+3. Serialize Return Value = WASM-Assemblyscript -> MsgPack [wasm-as,wasm-as-codegen]
+4. Deserialize Return Value = MsgPack -> JSON (verify w/ graphql schema) [client-js]
+5. Host Calls = GraphQL? Assemblyscript -> MsgPack?

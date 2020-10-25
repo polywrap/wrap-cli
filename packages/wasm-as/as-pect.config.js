@@ -16,7 +16,7 @@ module.exports = {
     "--binaryFile": ["output.wasm"],
     /** To enable wat file output, use the following flag. The filename is ignored, but required by the compiler. */
     // "--textFile": ["output.wat"],
-    "--runtime": ["full"], // Acceptable values are: full, half, stub (arena), and none,
+    "--runtime": ["stub"], // Acceptable values are: full, half, stub (arena), and none,
     "--baseDir": process.cwd()
   },
   /** Output the binary wasm file: [testname].spec.wasm */
@@ -26,9 +26,9 @@ module.exports = {
    */
   disclude: [/node_modules/],
   /**
-   * Add your required AssemblyScript imports here in this function.
+   * Add your required AssemblyScript imports here.
    */
-  imports: require("./assembly/__tests__/host.stub"),
+  imports: {},
   /**
    * All performance statistics reporting can be configured here.
    */
