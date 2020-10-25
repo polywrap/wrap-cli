@@ -90,7 +90,6 @@ class Sanity {
           (decoder: Decoder): Array<i32> => {
             return decoder.readArray(
               (decoder: Decoder): i32 => {
-                // TODO-J: I think writing & reading ints is messed up...
                 return decoder.readInt32();
               }
             );

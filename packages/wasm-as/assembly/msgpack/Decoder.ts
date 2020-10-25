@@ -59,9 +59,10 @@ export class Decoder implements Read {
   readInt64(): i64 {
     const prefix = this.view.getUint8();
 
-    if (this.isFixedInt(prefix) || this.isNegativeFixedInt(prefix)) {
+    // TODO-J: https://github.com/wapc/as-msgpack/issues/6
+    /*if (this.isFixedInt(prefix) || this.isNegativeFixedInt(prefix)) {
       return <i64>prefix;
-    }
+    }*/
     switch (prefix) {
       case Format.INT8:
         return <i64>this.view.getInt8();
