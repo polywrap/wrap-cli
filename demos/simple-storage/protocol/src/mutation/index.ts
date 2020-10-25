@@ -1,4 +1,4 @@
-import { Ethereum } from '@web3api/wasm-ts'
+import { Ethereum } from '@web3api/wasm-as'
 
 export function setData(address: string, value: u32): string {
   return Ethereum.sendTransaction( 

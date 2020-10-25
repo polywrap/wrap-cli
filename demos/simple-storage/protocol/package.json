@@ -13,7 +13,7 @@
     "@graphprotocol/graph-ts": "^0.18.1",
     "@web3api/cli": "0.0.1-alpha.1",
     "@web3api/client-js": "0.0.1-alpha.1",
-    "@web3api/wasm-ts": "0.0.1-alpha.1",
+    "@web3api/wasm-as": "0.0.1-alpha.1",
     "ethers": "5.0.8",
     "js-yaml": "3.14.0"
   }

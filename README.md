@@ -25,7 +25,7 @@ Detailed user instructions will be available shortly. **[Join early access!](htt
 |---------|---------|-------------|  
 | [@web3api/client-js](./packages/client-js) | pre-alpha | Javascript Client |  
 | [@web3api/cli](./packages/cli) | pre-alpha | CLI |  
-| [@web3api/wasm-ts](./packages/wasm-ts) | pre-alpha | Assemblyscript Runtime |  
+| [@web3api/wasm-as](./packages/wasm-as) | pre-alpha | Assemblyscript Runtime |  
 | [@web3api/client-test-env](./packages/client-test-env) | pre-alpha | Dockerized Test Env |  
 
 ## Contributing  

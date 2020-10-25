@@ -1,5 +1,5 @@
 {
-  "name": "@web3api/wasm-ts",
+  "name": "@web3api/wasm-as",
   "version": "0.0.1-alpha.1",
   "license": "MIT",
   "main": "./assembly/index.ts",

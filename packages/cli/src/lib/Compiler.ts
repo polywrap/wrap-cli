@@ -196,8 +196,8 @@ export class Compiler {
     ) {
       if (fs.existsSync(path.join(dir, 'node_modules'))) {
         libsDirs.push(path.join(dir, 'node_modules'));
-        if (fs.existsSync(path.join(dir, 'node_modules/@web3api/wasm-ts'))) {
-          w3Wasm = path.resolve(dir, 'node_modules/@web3api/wasm-ts/assembly/index.ts');
+        if (fs.existsSync(path.join(dir, 'node_modules/@web3api/wasm-as'))) {
+          w3Wasm = path.resolve(dir, 'node_modules/@web3api/wasm-as/assembly/index.ts');
         }
       }
     }

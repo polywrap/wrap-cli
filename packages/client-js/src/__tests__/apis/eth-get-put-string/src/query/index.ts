@@ -1,4 +1,4 @@
-import { Ethereum } from '@web3api/wasm-ts'
+import { Ethereum } from '@web3api/wasm-as'
 
 export function getData(address: string): u32 {
   const res = Ethereum.callView(
