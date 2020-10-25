@@ -1,9 +1,9 @@
 description: SimpleStorage Web3API Example
-version: "1.0.0"
+version: "0.0.1"
 repository: https://github.com/web3-api/prototype
 mutation:
   schema:
-    file: ./src/mutation/index.ts
+    file: ./src/mutation/schema.graphql
   module:
     language: wasm/assemblyscript
     file: ./src/mutation/index.ts

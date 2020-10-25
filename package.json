@@ -15,9 +15,10 @@
     ]
   },
   "scripts": {
-    "build": "yarn build:wasm-ts && yarn build:client-js && yarn build:cli",
+    "build": "yarn build:wasm-ts && yarn build:manifest-schema && yarn build:client-js && yarn build:cli",
     "build:cli": "yarn workspace @web3api/cli build",
     "build:client-js": "yarn workspace @web3api/client-js build",
+    "build:manifest-schema": "yarn workspace @web3api/manifest-schema build",
     "build:wasm-ts": "yarn workspace @web3api/wasm-ts build",
     "test": "yarn test:wasm-ts && yarn test:client-js",
     "test:wasm-ts": "yarn workspace @web3api/wasm-ts test",

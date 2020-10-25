@@ -1,8 +1,7 @@
 import YAML from "js-yaml";
 import fs from "fs";
-
+import { Web3API as Client} from "@web3api/client-js";
 import { Manifest } from "./Manifest";
-import { manifestValidation } from "./helpers/validators";
 
 export class Web3API {
   public static load(manifestPath: string): Manifest {
@@ -14,7 +13,7 @@ export class Web3API {
       throw Error(`Unable to parse manifest: ${manifestPath}`);
     }
   
-    manifestValidation(manifest)
+    Client.validateManifest(manifest)
 
     return manifest;
   }

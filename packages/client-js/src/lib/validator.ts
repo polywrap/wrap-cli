@@ -4,7 +4,7 @@ import { compile } from "json-schema-to-typescript";
 import { writeFile, lstatSync } from "fs";
 import { valid } from "semver";
 
-import schema from "./schema.json";
+import schema from "@web3api/manifest-schema";
 
 enum ValidationError {
   ADDITIONAL_PROPERTY = "additionalProperties",
