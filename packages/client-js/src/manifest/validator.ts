@@ -6,7 +6,7 @@ import { valid } from "semver";
 
 import schema from "@web3api/manifest-schema";
 
-import { /* saveMigration, */ migrator } from "./migrator";
+import { saveMigration, migrator } from "./migrator";
 
 enum ValidationError {
   ADDITIONAL_PROPERTY = "additionalProperties",
@@ -40,11 +40,9 @@ const validateVersion = (version: string) => {
 };
 
 export const manifestValidation = (manifest: any) => {
-  migrator(manifest);
+  
+  const newVersion = migrator(manifest);
   const ManifestSchema = schema["manifest"];
-  // const moduleSchema = schema["definitions"]["moduleSchema"];
-
-  // validator.addSchema(moduleSchema);
   validator.validate(manifest, ManifestSchema);
 
   const { errors } = validator.validate(manifest, ManifestSchema);
@@ -92,7 +90,9 @@ export const manifestValidation = (manifest: any) => {
     }
   }
 
-  // saveMigration(manifest.version as string, manifest);
+  if (newVersion) {
+    saveMigration(manifest.version as string, manifest);
+  }
 
   compile(ManifestSchema as JSONSchema4, "Web3API").then((file) => {
     // @TODO: Make sure where do we want to generate this file

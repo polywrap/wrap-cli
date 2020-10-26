@@ -30,6 +30,8 @@ const migrate = (newVersion: string) => {
   migrate(higherVersion);
 };
 
+// Let's return true if the migrator needs to save the migration
+// This means the user is building a new version (the highest one)
 export const migrator = (schema: any) => {
   const migrations = Object.keys(storedMigrations);
   if (migrations.length > 0) {
@@ -38,6 +40,9 @@ export const migrator = (schema: any) => {
       const getHigherMigrations = (version: string) => gt(version, schema.version);
       const comingMigration = migrations.filter(getHigherMigrations).shift();
       migrate(comingMigration);
+      return false
     }
+    return true
   }
+  return true
 };
