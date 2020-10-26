@@ -6,6 +6,8 @@ import { valid } from "semver";
 
 import schema from "@web3api/manifest-schema";
 
+import { /* saveMigration, */ migrator } from "./migrator";
+
 enum ValidationError {
   ADDITIONAL_PROPERTY = "additionalProperties",
   TYPE = "type",
@@ -37,7 +39,8 @@ const validateVersion = (version: string) => {
   return valid(version) ? true : false;
 };
 
-export const manifestValidation = (manifest: object) => {
+export const manifestValidation = (manifest: any) => {
+  migrator(manifest);
   const ManifestSchema = schema["manifest"];
   // const moduleSchema = schema["definitions"]["moduleSchema"];
 
@@ -46,7 +49,7 @@ export const manifestValidation = (manifest: object) => {
 
   const { errors } = validator.validate(manifest, ManifestSchema);
   /*     
-   We should handle three cases or errors:
+   We should handle five cases or errors:
    1- When a non-accepted field is added to the manifest
    2- When the type of the field it's not expected one
    3- When a required field it's not sent
@@ -66,10 +69,11 @@ export const manifestValidation = (manifest: object) => {
           `Field ${argument} is not accepted in the schema. Please check the accepted fields here: LINK_TO_SCHEMA`
         );
       case ValidationError.TYPE:
-        const typeError = path.length === 1 ? `Property ${path[0]}` : `Property ${pathMapping}`;
-        throw Error(`${typeError} has a type error: ${message}`);
+        const property = path.length === 1 ? `Property ${path[0]}` : `Property ${pathMapping}`;
+        throw Error(`${property} has a type error: ${message}`);
       case ValidationError.REQUIRED:
-        const propertyRequired = path.length === 0 ? `${argument}.` : `${argument} in ${pathMapping}.`;
+        const propertyRequired =
+          path.length === 0 ? `${argument}.` : `${argument} in ${pathMapping}.`;
         throw Error(
           `Missing field: ${propertyRequired} Please add it to the manifest`
         );
@@ -87,6 +91,8 @@ export const manifestValidation = (manifest: object) => {
         }
     }
   }
+
+  // saveMigration(manifest.version as string, manifest);
 
   compile(ManifestSchema as JSONSchema4, "Web3API").then((file) => {
     // @TODO: Make sure where do we want to generate this file

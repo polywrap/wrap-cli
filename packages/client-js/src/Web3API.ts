@@ -20,7 +20,7 @@ import {
   GraphQLObjectType
 } from "graphql";
 import YAML from "js-yaml";
-import { manifestValidation } from "./lib/validator";
+import { manifestValidation } from "./manifest/validator";
 
 export interface IPortals {
   ipfs: IPFS;
