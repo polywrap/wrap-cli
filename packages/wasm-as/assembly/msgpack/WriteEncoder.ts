@@ -18,29 +18,19 @@ export class WriteEncoder implements Write {
   }
 
   writeInt8(value: i8): void {
-    // TODO-J: https://github.com/wapc/as-msgpack/issues/6
-    // this.writeInt64(<i64>value);
-    this.view.setUint8(<u8>Format.INT8);
-    this.view.setInt8(value);
+    this.writeInt64(<i64>value);
   }
 
   writeInt16(value: i16): void {
-    // TODO-J: https://github.com/wapc/as-msgpack/issues/6
-    // this.writeInt64(<i64>value);
-    this.view.setUint8(<u8>Format.INT16);
-    this.view.setInt16(value);
+    this.writeInt64(<i64>value);
   }
 
   writeInt32(value: i32): void {
-    // TODO-J: https://github.com/wapc/as-msgpack/issues/6
-    // this.writeInt64(<i64>value);
-    this.view.setUint8(<u8>Format.INT32);
-    this.view.setInt32(value);
+    this.writeInt64(<i64>value);
   }
 
   writeInt64(value: i64): void {
-    // TODO-J: https://github.com/wapc/as-msgpack/issues/6
-    /*if (value >= 0 && value < 1 << 7) {
+    if (value >= 0 && value < 1 << 7) {
       this.view.setUint8(<u8>value);
     } else if (value < 0 && value >= -(1 << 5)) {
       this.view.setUint8((<u8>value) | (<u8>Format.NEGATIVE_FIXINT));
@@ -56,35 +46,23 @@ export class WriteEncoder implements Write {
     } else {
       this.view.setUint8(<u8>Format.INT64);
       this.view.setInt64(value);
-    }*/
-    this.view.setUint8(<u8>Format.INT64);
-    this.view.setInt64(value);
+    }
   }
 
   writeUInt8(value: u8): void {
-    // TODO-J: https://github.com/wapc/as-msgpack/issues/6
-    // this.writeUInt64(<u64>value);
-    this.view.setUint8(<u8>Format.UINT8);
-    this.view.setUint8(value);
+    this.writeUInt64(<u64>value);
   }
 
   writeUInt16(value: u16): void {
-    // TODO-J: https://github.com/wapc/as-msgpack/issues/6
-    // this.writeUInt64(<u64>value);
-    this.view.setUint8(<u8>Format.UINT16);
-    this.view.setUint16(value);
+    this.writeUInt64(<u64>value);
   }
 
   writeUInt32(value: u32): void {
-    // TODO-J: https://github.com/wapc/as-msgpack/issues/6
-    // this.writeUInt64(<u64>value);
-    this.view.setUint8(<u8>Format.UINT32);
-    this.view.setUint32(value);
+    this.writeUInt64(<u64>value);
   }
 
   writeUInt64(value: u64): void {
-    // TODO-J: https://github.com/wapc/as-msgpack/issues/6
-    /*if (value < 1 << 7) {
+    if (value < 1 << 7) {
       this.view.setUint8(<u8>value);
     } else if (value <= <u64>u8.MAX_VALUE) {
       this.view.setUint8(<u8>Format.UINT8);
@@ -98,9 +76,7 @@ export class WriteEncoder implements Write {
     } else {
       this.view.setUint8(<u8>Format.UINT64);
       this.view.setUint64(value);
-    }*/
-    this.view.setUint8(<u8>Format.UINT64);
-    this.view.setUint64(value);
+    }
   }
 
   writeFloat32(value: f32): void {

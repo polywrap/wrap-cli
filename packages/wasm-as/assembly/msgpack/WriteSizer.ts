@@ -71,24 +71,17 @@ export class WriteSizer implements Write {
   }
 
   writeInt8(value: i8): void {
-    // TODO-J: https://github.com/wapc/as-msgpack/issues/6
-    // this.writeInt64(<64>value);
-    this.length += 2;
+    this.writeInt64(<i64>value);
   }
   writeInt16(value: i16): void {
-    // TODO-J: https://github.com/wapc/as-msgpack/issues/6
-    // this.writeInt64(<64>value);
-    this.length += 3;
+    this.writeInt64(<i64>value);
   }
   writeInt32(value: i32): void {
-    // TODO-J: https://github.com/wapc/as-msgpack/issues/6
-    // this.writeInt64(<64>value);
-    this.length += 5;
+    this.writeInt64(<i64>value);
   }
 
   writeInt64(value: i64): void {
-    // TODO-J: https://github.com/wapc/as-msgpack/issues/6
-    /*if (value >= -(1 << 5) && value < 1 << 7) {
+    if (value >= -(1 << 5) && value < 1 << 7) {
       this.length++;
     } else if (value < 1 << 7 && value >= -(1 << 7)) {
       this.length += 2;
@@ -98,31 +91,23 @@ export class WriteSizer implements Write {
       this.length += 5;
     } else {
       this.length += 9;
-    }*/
-    this.length += 9;
+    }
   }
 
   writeUInt8(value: u8): void {
-    // TODO-J: https://github.com/wapc/as-msgpack/issues/6
-    // this.writeUInt64(<u64>value);
-    this.length += 2;
+    this.writeUInt64(<u64>value);
   }
 
   writeUInt16(value: u16): void {
-    // TODO-J: https://github.com/wapc/as-msgpack/issues/6
-    // this.writeUInt64(<u64>value);
-    this.length += 3;
+    this.writeUInt64(<u64>value);
   }
 
   writeUInt32(value: u32): void {
-    // TODO-J: https://github.com/wapc/as-msgpack/issues/6
-    // this.writeUInt64(<u64>value);
-    this.length += 5;
+    this.writeUInt64(<u64>value);
   }
 
   writeUInt64(value: u64): void {
-    // TODO-J: https://github.com/wapc/as-msgpack/issues/6
-    /*if (value < 1 << 7) {
+    if (value < 1 << 7) {
       this.length++;
     } else if (value < 1 << 8) {
       this.length += 2;
@@ -132,8 +117,7 @@ export class WriteSizer implements Write {
       this.length += 5;
     } else {
       this.length += 9;
-    }*/
-    this.length += 9;
+    }
   }
 
   writeFloat32(value: f32): void {
