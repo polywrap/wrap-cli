@@ -1,0 +1,12 @@
+type Mutation {
+    setValue(
+        key: String!
+        value: String!
+    ): Boolean!
+}
+
+type Query {
+    getValue(
+        key: String!
+    ): String
+}

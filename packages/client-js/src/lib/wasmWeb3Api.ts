@@ -150,11 +150,11 @@ export class WASMWeb3API implements Web3API {
         const queryDoc = query.query;
 
         if (queryDoc.definitions.length > 1) {
-        throw Error("Multiple async queries is not supported at this time.");
+          throw Error("Multiple async queries is not supported at this time.");
         }
 
         if (queryDoc.definitions.length === 0) {
-        throw Error("Empty query.");
+          throw Error("Empty query.");
         }
 
         const def = queryDoc.definitions[0];
