@@ -1,0 +1,3 @@
+- JS package
+- depends on all WASM-${lang} packages
+- Use the GraphQL codegen package

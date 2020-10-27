@@ -1,0 +1,21 @@
+import { Write, WriteSizer, WriteEncoder } from "@web3api/wasm-as";
+import {
+{{#types}}
+  {{name}}{{^last}},{{/last}}
+{{/types}}
+} from "./";
+
+{{#types}}
+function __write_{{name}}(writer: Write, type: {{name}}) {
+  writer.writeMapSize({{properties.length}});
+  {{#properties}}
+  writer.writeString("{{name}}");
+  {{^complexType}}
+    writer.write{{type}}(type.{{name}});
+  {{/complexType}}
+  {{complexType}}
+    {{writeComplexType}}
+  {{/complexType}}
+  {{/properties}}
+}
+{{/types}}

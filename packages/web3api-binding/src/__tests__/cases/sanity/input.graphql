@@ -1,0 +1,5 @@
+type CustomType {
+  str: String!
+  strOpt: String
+  u8: UInt8
+}
