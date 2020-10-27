@@ -1,49 +1,38 @@
-import { Web3API } from "../../lib/types";
 
-// This is the desired way to create a JS Web3API
-// Do we need to separate Query and Mutate functions if it's a JS Web3API?
-// Allowing persistent state to be held in JS Web3API's is really powerful
+interface ExternalDataStore {
+    [key: string]: string
+}
 
-export class TesterJSModule {
+const dataStore: ExternalDataStore = {};
 
-    private _map: {[key: string]: string};
-
-    constructor() {
-        this._map = {};
-    }
-
-    public setValue(key: string, value: string): boolean {
-        const newValue = this._map[key] === undefined;
-        this._map[key] = value;
+// // Functional equivalent
+// // Assume that this is called once, and an instance is kept alive until the original caller finishes
+export const TesterJSModule = () => {
+    const setValue = (args: {key: string, value: string}): boolean => {
+        const {key, value} = args;
+        const newValue = dataStore[key] === undefined;
+        dataStore[key] = value;
         return newValue;
     }
 
-    public getValue(key: string): Maybe<string> {
-        return this._map[key];
+    const getValue = (args: {key: string}): Maybe<string> => {
+        const {key} = args;
+        return dataStore[key];
     }
 
-}
-
-// Functional equivalent
-// Assume that this is called once, and an instance is kept alive until the original caller finishes
-export const TesterJSModuleFunc: () => any = () => {
-    const _map: {[key: string]: string} = {};
-
     return {
-        setValue(key: string, value: string): boolean {
-            const newValue = _map[key] === undefined;
-            _map[key] = value;
-            return newValue;
+        Mutate: {
+            setValue
         },
-        getValue(key: string): Maybe<string> {
-            return _map[key];
+        Query: {
+            getValue
         }
     }
 }
 
-// Alternatively we can hold Query/Mutations in separate objects:
-TesterJSModule.Query.getValue
-TesterJSModule.Mutation.setValue
+// // Alternatively we can hold Query/Mutations in separate objects:
+// TesterJSModule.Query.getValue
+// TesterJSModule.Mutation.setValue
 
 /* 
 This is addressing WASM -> JS:
