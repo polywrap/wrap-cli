@@ -1,5 +1,5 @@
 import { fetchTestCases, fetchOutputDirectory } from "./utils";
-import { buildSchema, generateCode } from "../";
+import { generateCode, buildSchema, TargetLanguage } from "../";
 
 describe("Web3API Binding Test Suite", () => {
 
@@ -16,10 +16,10 @@ describe("Web3API Binding Test Suite", () => {
       for (const outputLanguage of test.outputLanguages) {
 
         // Verify it binds correctly
-        it(`Binds: ${outputLanguage}`, () => {
+        it(`Binds: ${outputLanguage.name}`, () => {
           const { name, directory } = outputLanguage;
           const expectedOutput = fetchOutputDirectory(directory);
-          const output = generateBindings(outputLanguage, schema);
+          const output = generateCode(name as TargetLanguage, schema);
 
           expect(output).toMatchObject(expectedOutput);
         });

@@ -24,6 +24,8 @@ export class TesterJSModule {
 
 }
 
+
+
 // Functional equivalent
 // Assume that this is called once, and an instance is kept alive until the original caller finishes
 export const TesterJSModuleFunc: () => any = () => {

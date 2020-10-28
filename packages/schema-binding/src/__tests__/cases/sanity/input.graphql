@@ -1,0 +1,7 @@
+"""TODO: Use the graphql-composer to include the header"""
+scalar UInt8
+
+type CustomType {
+  str: String!
+  u8: UInt8
+}

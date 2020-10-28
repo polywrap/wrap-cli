@@ -1,9 +1,18 @@
-import { BaseTypes } from "../../validation";
-import { FieldDefinitionNode, TypeDefinitionNode GraphQLSchema } from "graphql";
+import { BaseTypes, Schema } from "../../";
+import fs from "fs";
+import { printSchemaWithDirectives } from "graphql-tools";
+import {
+  FieldDefinitionNode,
+  TypeDefinitionNode,
+  parse,
+  visit
+} from "graphql";
+const Mustache = require("mustache");
 
 interface TypeProperty {
   type: BaseTypes
   name: string
+  complexType: boolean
 }
 
 interface CustomType {
@@ -23,8 +32,9 @@ interface VisitorState {
   }
 }
 
+
 const visitorEnter = (config: MustacheConfig, state: VisitorState) => ({
-  TypeDefinition: (node: TypeDefinitionNode) => {
+  ObjectTypeDefinition: (node: TypeDefinitionNode) => {
     if (config.types.length) {
       config.types[config.types.length-1].last = false;
     }
@@ -35,7 +45,7 @@ const visitorEnter = (config: MustacheConfig, state: VisitorState) => ({
     });
     state.currentType = {
       name: node.name.value,
-      index: config.types.length
+      index: config.types.length - 1
     };
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
@@ -45,15 +55,27 @@ const visitorEnter = (config: MustacheConfig, state: VisitorState) => ({
 
     const type = config.types[state.currentType?.index];
 
-    // TODO: handle all types NamedTypeNode, ListTypeNode, NonNullTypeNode
+    let typeName: string | undefined;
 
-    if (node.type.kind !== "NamedType") {
-      throw Error("TODO: Invalid property, document info (line number), output surrounding code from document?");
+    if (node.type.kind === "NamedType") {
+      typeName = node.type.name.value;
+    } else if (node.type.kind === "ListType") {
+      // TODO: support lists
+    } else if (node.type.kind === "NonNullType") {
+      if (node.type.type.kind === "NamedType") {
+        typeName = node.type.type.name.value;
+      }
+    }
+
+    if (!typeName) {
+      // TODO: error reporting? Is it necessary?
+      return;
     }
 
     type.properties.push({
       name: node.name.value,
-      type: node.type.name.value as BaseTypes
+      type: typeName as BaseTypes,
+      complexType: false
     });
   }
 });
@@ -61,10 +83,11 @@ const visitorEnter = (config: MustacheConfig, state: VisitorState) => ({
 const visitorLeave = (config: MustacheConfig, state: VisitorState) => ({
   TypeDefinition: (node: TypeDefinitionNode) => {
     state.currentType = undefined;
-  }
+  },
+  FieldDefinition: (node: FieldDefinitionNode) => { }
 });
 
-export function renderFile(schema: GraphQLSchema) {
+export function render(schema: Schema): string {
   const config: MustacheConfig = {
     types: []
   };
@@ -72,11 +95,13 @@ export function renderFile(schema: GraphQLSchema) {
 
   const printedSchema = printSchemaWithDirectives(schema);
   const astNode = parse(printedSchema);
-  const visitor = getVisitor(langauge, schema);
-  const visitorResults = visit(astNode, {
+  visit(astNode, {
     enter: visitorEnter(config, state),
     leave: visitorLeave(config, state)
   });
 
-  mustache.render(template, visitorResults)
+  const template = fs.readFileSync(
+    __dirname + "/type-packing.mustache", 'utf-8'
+  );
+  return Mustache.render(template, config)
 }

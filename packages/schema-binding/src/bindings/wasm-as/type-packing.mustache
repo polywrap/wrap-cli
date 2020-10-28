@@ -10,12 +10,7 @@ function __write_{{name}}(writer: Write, type: {{name}}) {
   writer.writeMapSize({{properties.length}});
   {{#properties}}
   writer.writeString("{{name}}");
-  {{^complexType}}
-    writer.write{{type}}(type.{{name}});
-  {{/complexType}}
-  {{complexType}}
-    {{writeComplexType}}
-  {{/complexType}}
+  writer.write{{type}}(type.{{name}});
   {{/properties}}
 }
 {{/types}}

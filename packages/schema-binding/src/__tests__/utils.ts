@@ -4,7 +4,7 @@ import { OutputDirectory, OutputEntry } from "../";
 
 const root = path.join(__dirname, "./cases");
 
-export type TestCases = Array<{
+type TestCases = {
   name: string;
   directory: string;
   inputSchema: string;
@@ -12,7 +12,9 @@ export type TestCases = Array<{
     name: string;
     directory: string;
   }[];
-}>;
+}[];
+
+export { TestCases };
 
 export function fetchTestCases(): TestCases {
   const cases: TestCases = [];
