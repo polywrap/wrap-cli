@@ -20,7 +20,6 @@ import {
   GraphQLObjectType
 } from "graphql";
 import YAML from "js-yaml";
-import { manifestValidation } from "./manifest/validator";
 
 export interface IPortals {
   ipfs: IPFS;
@@ -227,10 +226,6 @@ export class Web3API {
     } /*else {
       throw Error(`Unrecognized query definition kind: "${def.kind}"`);
     }*/
-  }
-
-  public static validateManifest(manifest: object) {
-    manifestValidation(manifest);
   }
 
   private _addResolvers(module: ModulePath, schemaType: GraphQLObjectType<any, any>) {

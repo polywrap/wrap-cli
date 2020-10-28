@@ -1,12 +1,11 @@
-import { JSONSchema4 } from "json-schema";
 import { Validator } from "jsonschema";
-import { compile } from "json-schema-to-typescript";
-import { writeFile, lstatSync } from "fs";
+import { lstatSync } from "fs";
 import { valid } from "semver";
 
 import schema from "@web3api/manifest-schema";
 
 import { saveMigration, migrator } from "./migrator";
+import { Manifest } from "./Manifest";
 
 enum ValidationError {
   ADDITIONAL_PROPERTY = "additionalProperties",
@@ -39,8 +38,7 @@ const validateVersion = (version: string) => {
   return valid(version) ? true : false;
 };
 
-export const manifestValidation = (manifest: any) => {
-  
+export const manifestValidation = (manifest: Manifest): Manifest => {
   const newVersion = migrator(manifest);
   const ManifestSchema = schema["manifest"];
   validator.validate(manifest, ManifestSchema);
@@ -67,7 +65,8 @@ export const manifestValidation = (manifest: any) => {
           `Field ${argument} is not accepted in the schema. Please check the accepted fields here: LINK_TO_SCHEMA`
         );
       case ValidationError.TYPE:
-        const property = path.length === 1 ? `Property ${path[0]}` : `Property ${pathMapping}`;
+        const property =
+          path.length === 1 ? `Property ${path[0]}` : `Property ${pathMapping}`;
         throw Error(`${property} has a type error: ${message}`);
       case ValidationError.REQUIRED:
         const propertyRequired =
@@ -94,11 +93,5 @@ export const manifestValidation = (manifest: any) => {
     saveMigration(manifest.version as string, manifest);
   }
 
-  compile(ManifestSchema as JSONSchema4, "Web3API").then((file) => {
-    // @TODO: Make sure where do we want to generate this file
-    writeFile("./Manifest.ts", file, (error: Error | null) => {
-      if (error) throw Error(error.message);
-      console.log("\nManifest type file created");
-    });
-  });
+  return manifest;
 };
