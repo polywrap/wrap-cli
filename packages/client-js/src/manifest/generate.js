@@ -10,7 +10,7 @@ const generateManifest = () => {
       writeFileSync(manifestPath, file);
     });
   } catch (e) {
-    console.log("error ", e);
+    console.log("Error generating the Manifest file: ", e);
   }
 };
 
