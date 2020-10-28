@@ -100,25 +100,17 @@ export class Ethereum {
     return contract.address;
   }
 
-  public async callView(address: Address, method: string, args: string): Promise<string> {
+  public async callView(address: Address, method: string, args: string[]): Promise<string> {
     const contract = this.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
-    if (args[0] !== '[') {
-      args = `[${args}]`
-    }
-    const parsedArgs = JSON.parse(args);
-    const res = await contract[funcs[0]](...parsedArgs);
+    const res = await contract[funcs[0]](...args);
     return res.toString();
   }
 
-  public async sendTransaction(address: Address, method: string, args: string): Promise<string> {
+  public async sendTransaction(address: Address, method: string, args: string[]): Promise<string> {
     const contract = this.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
-    if (args[0] !== '[') {
-      args = `[${args}]`
-    }
-    const parsedArgs = JSON.parse(args);
-    const tx = await contract[funcs[0]](...parsedArgs);
+    const tx = await contract[funcs[0]](...args);
     const res = await tx.wait();
     // TODO: improve this
     return res.transactionHash;

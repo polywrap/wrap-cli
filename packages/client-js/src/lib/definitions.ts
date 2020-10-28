@@ -2,6 +2,7 @@ import { Ethereum, IPFS } from "../portals";
 import { ClientModule, Manifest, Web3API, Web3APIDefinition } from "./types";
 import YAML from "js-yaml";
 import { WASMWeb3API } from "./wasmWeb3Api";
+import { JSWeb3API, JSWeb3APIParams } from "./JSWeb3Api";
 
 interface Web3APIWASMModules {
     query: Maybe<ArrayBuffer>;
@@ -167,32 +168,25 @@ export class WASMWeb3APIDefinition implements Web3APIDefinition {
 /**
  * Represents an instance of a JS Web3API Definition.
  */
-export class JSWeb3APIDefinition<T extends Web3API> implements Web3APIDefinition {
-    public name: string;
-    private _factory: Maybe<() => T>;
-    
-    /**
-     * Creates a definition of a JS Web3API.
-     * If just the class is given, the class will be created with no parameters.
-     * Optionally a factory can be specified.
-     * @param _class The class of the JS Web3API
-     * @param factory Optional factory method of creation.
-     */
-    constructor(private _class: new (...args: any[]) => T, factory?: () => T) {
-        if (factory) {
-            this._factory = factory;
-        }
-        this.name = _class.name;
+export class JSWeb3APIDefinition implements Web3APIDefinition {
+
+    constructor(private _schema: string, private _factory: Function) {
     }
 
-    /**
-     * Creates an instance of the JS Class which is the JS Web3API.
-     */
-    public async create(): Promise<T> {
-        if (this._factory) {
-            return this._factory();
+    public async create(): Promise<Web3API> {
+
+        const apiObject = this._factory();
+
+        if (typeof(apiObject) !== 'object') {
+            throw Error(`JS Web3API is not an object.`)
         }
 
-        return new this._class();
+        const apiArguments: JSWeb3APIParams = {
+            rawSchema: this._schema,
+            module: apiObject
+        }
+
+        const api = new JSWeb3API(apiArguments);
+        return api;
     }
 }
