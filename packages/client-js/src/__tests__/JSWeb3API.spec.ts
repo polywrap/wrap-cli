@@ -2,13 +2,14 @@ import { JSWeb3APIDefinition} from '../lib/definitions';
 import * as fs from 'fs';
 import { TesterJSModule } from '../jsModules/Tester/tester';
 import gql from 'graphql-tag';
+import { EthereumJSModule } from '../jsModules/Ethereum/ethereum';
 
 describe("JS Web3API Modules", () => {
 
-    const rawSchema = fs.readFileSync('./src/jsModules/Tester/schema.graphql').toString();
+    const testerSchema = fs.readFileSync('./src/jsModules/Tester/schema.graphql').toString();
 
-    it("can query a JS Web3 API", async () => {
-        const def = new JSWeb3APIDefinition(rawSchema, () => {
+    it("can call a tester JS Web3 API", async () => {
+        const def = new JSWeb3APIDefinition(testerSchema, () => {
             return TesterJSModule();
         });
 
@@ -33,4 +34,15 @@ describe("JS Web3API Modules", () => {
         expect(res.data?.getValue).toStrictEqual(expectedValue);
     });
 
-})
+    const ethereumSchema = fs.readFileSync('./src/jsModules/Ethereum/schema.graphql').toString();
+
+    it("can call the Ethereum JS Web3 API", async () => {
+        const rpcEndPoint = "http://localhost:8545"
+        const def = new JSWeb3APIDefinition(ethereumSchema, () => {
+            return EthereumJSModule({provider: rpcEndPoint});
+        });
+
+        // TODO: test with a real contract?
+    });
+
+});

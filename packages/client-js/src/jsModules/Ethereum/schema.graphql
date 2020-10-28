@@ -1,0 +1,20 @@
+type Mutation {
+  sendTransaction(
+    address: String!
+    method: String!
+    args: [String!]!
+  ): String!
+
+  deployContract(
+    abi: String!
+    bytecode: String!
+  ): String!
+}
+
+type Query {
+  callView(
+    address: String!
+    method: String!
+    args: [String!]!
+  ): String!
+}
