@@ -2,25 +2,31 @@ import { buildSchema, execute, GraphQLObjectType, GraphQLSchema } from "graphql"
 import { executeMaybeAsyncFunction } from "./async";
 import { GqlQuery, GqlQueryResult, Web3API } from "./types";
 
-export interface JSWeb3APIParams<T extends GenericObject> {
+export interface JSWeb3APIMethods {
+    [key: string]: Function
+}
+
+export interface JSWeb3APIModule {
+    Query: JSWeb3APIMethods,
+    Mutate: JSWeb3APIMethods
+}
+
+export interface JSWeb3APIParams {
     rawSchema: string;
-    module: T;
+    module: JSWeb3APIModule;
 }
 
-interface GenericObject {
-    [key: string]: any
-}
 
-export class JSWeb3API<T extends GenericObject> implements Web3API {
-    _config: JSWeb3APIParams<T>;
+export class JSWeb3API implements Web3API {
+    _config: JSWeb3APIParams;
     _schema: GraphQLSchema;
 
-    constructor(config: JSWeb3APIParams<T>) {
+    constructor(config: JSWeb3APIParams) {
         this._config = config;
         this._schema = this.prepareSchema(this._config.rawSchema, this._config.module);
     }
 
-    private prepareSchema(rawSchema: string, module: T): GraphQLSchema {
+    private prepareSchema(rawSchema: string, module: JSWeb3APIModule): GraphQLSchema {
 
         const buildGraphQLSchema = (): GraphQLSchema => {
             // Convert schema into GraphQL Schema object
@@ -44,14 +50,14 @@ export class JSWeb3API<T extends GenericObject> implements Web3API {
         // loads the module and executes the call
         if (mutationType) {   
             this._addResolvers(
-                module,
+                module.Mutate,
                 mutationType
             );
         }
     
         if (queryType) {
             this._addResolvers(
-                module,
+                module.Query,
                 queryType
             );
         }
@@ -59,7 +65,7 @@ export class JSWeb3API<T extends GenericObject> implements Web3API {
         return schema;
     }
 
-    private _addResolvers(module: T, schemaType: GraphQLObjectType<any, any>) {
+    private _addResolvers(module: JSWeb3APIMethods, schemaType: GraphQLObjectType<any, any>) {
       
         const schemaFields = schemaType.getFields();
         const schemaFieldNames = Object.keys(schemaFields);
@@ -76,7 +82,7 @@ export class JSWeb3API<T extends GenericObject> implements Web3API {
         }
     }
 
-    private _getModuleMethod(module: T, method: string): Function {
+    private _getModuleMethod(module: JSWeb3APIMethods, method: string): Function {
         // Find function
         if (!module[method]) {
             throw Error(`Expected member '${method}' to be defined.`);
@@ -102,7 +108,7 @@ export class JSWeb3API<T extends GenericObject> implements Web3API {
 
         const def = queryDoc.definitions[0];
 
-        if (def.kind === "OperationDefinition" && def.name) {
+        if (def.kind === "OperationDefinition" && def.operation) {
             const schema = this._schema;
 
             const res = await executeMaybeAsyncFunction(execute, {
