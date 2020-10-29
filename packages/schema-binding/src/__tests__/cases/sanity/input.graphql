@@ -29,4 +29,5 @@ type CustomType {
   optUOptArray: [UInt]
   optStrOptArray: [String]
   uArrayArray: [[UInt!]!]!
+  uOptArrayOptArray: [[UInt64]]!
 }

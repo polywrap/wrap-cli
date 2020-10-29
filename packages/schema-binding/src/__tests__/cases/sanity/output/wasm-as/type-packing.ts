@@ -4,23 +4,15 @@ import {
 } from "./";
 
 function __write_CustomType(writer: Write, type: CustomType) {
-  writer.writeMapSize(18);
+  writer.writeMapSize(19);
   writer.writeString("str");
   writer.writeString(type.str);
   writer.writeString("optStr");
-  if (type.optStr === null) {
-    writer.writeNil();
-  } else {
-    writer.writeString(type.optStr);
-  }
+  writer.writeNullableString(type.optStr);
   writer.writeString("u");
   writer.writeUInt32(type.u);
   writer.writeString("optU");
-  if (type.optU === null) {
-    writer.writeNil();
-  } else {
-    writer.writeUInt32(type.optU);
-  }
+  writer.writeNullableUInt32(type.optU);
   writer.writeString("u8");
   writer.writeUInt8(type.u8);
   writer.writeString("u16");
@@ -49,24 +41,22 @@ function __write_CustomType(writer: Write, type: CustomType) {
   });
   writer.writeString("optUOptArray");
   writer.writeNullableArray(type.optUOptArray, (writer: Write, item: u32 | null): void => {
-    if (item === null) {
-      writer.writeNil();
-    } else {
-      writer.writeUInt32(item);
-    }
+    writer.writeNullableUInt32(item);
   });
   writer.writeString("optStrOptArray");
   writer.writeNullableArray(type.optStrOptArray, (writer: Write, item: string | null): void => {
-    if (item === null) {
-      writer.writeNil();
-    } else {
-      writer.writeString(item);
-    }
+    writer.writeNullableString(item);
   });
   writer.writeString("uArrayArray");
-  writer.writeArray(type.uArrayArray, (writer: Write, item: u32[]): void => {
+  writer.writeArray(type.uArrayArray, (writer: Write, item: Array<u32>): void => {
     writer.writeArray(item, (writer: Write, item: u32): void => {
       writer.writeUInt32(item);
+    });
+  });
+  writer.writeString("uOptArrayOptArray");
+  writer.writeArray(type.uOptArrayOptArray, (writer: Write, item: Array<u64 | null> | null): void => {
+    writer.writeNullableArray(item, (writer: Write, item: u64 | null): void => {
+      writer.writeNullableUInt64(item);
     });
   });
 }

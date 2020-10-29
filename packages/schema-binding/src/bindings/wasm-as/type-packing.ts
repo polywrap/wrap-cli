@@ -16,6 +16,7 @@ const Mustache = require("mustache");
 class TypeDefinition {
   constructor(
     public name: string,
+    public type?: string,
     public required?: boolean
   ) { }
   public last?: boolean
@@ -27,28 +28,71 @@ class CustomTypeDefinition extends TypeDefinition {
   properties: UnknownTypeDefinition[] = []
 }
 
-class UnknownTypeDefinition extends TypeDefinition {
-  array?: ArrayDefinition
-  scalar?: ScalarDefinition
+abstract class UnknownTypeDefinition extends TypeDefinition {
+  array: ArrayDefinition | null = null
+  scalar: ScalarDefinition | null = null
+
+  public abstract setTypeName(): void;
 }
 
 class ScalarDefinition extends TypeDefinition {
   constructor(
-    public type: string,
     public name: string,
+    public type: string,
     public required?: boolean
   ) {
-    super(name, required);
+    super(name, type, required);
+  }
+}
+
+class PropertyDefinition extends UnknownTypeDefinition {
+  public setTypeName(): void {
+    if (this.array) {
+      this.array.setTypeName();
+    }
   }
 }
 
 class ArrayDefinition extends UnknownTypeDefinition {
   constructor(
-    public type: string,
     public name: string,
+    public type: string,
     public required?: boolean
   ) {
-    super(name, required);
+    super(name, type, required);
+  }
+
+  public get item(): TypeDefinition {
+    if (!this.array && !this.scalar) {
+      throw Error("Array hasn't been configured yet");
+    }
+
+    if (this.array) {
+      return this.array;
+    } else {
+      // @ts-ignore
+      return this.scalar;
+    }
+  }
+
+  public setTypeName(): void {
+    let arrayCount = 1;
+    let baseType = "";
+    let baseTypeFound = false;
+    let array: ArrayDefinition = this;
+
+    while (!baseTypeFound) {
+      if (array.array) {
+        array = array.array;
+        array.setTypeName();
+      } else if (array.scalar) {
+        baseType = array.scalar.type;
+        baseTypeFound = true;
+      }
+    }
+
+    const modifier = this.required ? "" : "?";
+    this.type = modifier + "[" + this.item.type + "]";
   }
 }
 
@@ -85,10 +129,11 @@ const visitorEnter = (config: Config, state: State) => ({
       return;
     }
 
+    const modifier = state.nonNullType ? "" : "?";
+
     property.scalar = new ScalarDefinition(
-      node.name.value, property.name, state.nonNullType
+      property.name, modifier + node.name.value, state.nonNullType
     );
-    state.currentUnknown = property.scalar;
     state.nonNullType = false;
   },
   ListType: (node: ListTypeNode) => {
@@ -102,9 +147,9 @@ const visitorEnter = (config: Config, state: State) => ({
       return;
     }
 
-    // TODO: add [...] around each type on the way up, resulting in [[UInt8]] at the top
+    // Array type names will be set within the visitorLeave
     property.array = new ArrayDefinition(
-      "[]", property.name, state.nonNullType
+      property.name, "TBD", state.nonNullType
     );
     state.currentUnknown = property.array;
     state.nonNullType = false;
@@ -117,7 +162,7 @@ const visitorEnter = (config: Config, state: State) => ({
     }
 
     // Create a new property
-    const property = new UnknownTypeDefinition(
+    const property = new PropertyDefinition(
       node.name.value
     )
 
@@ -129,11 +174,21 @@ const visitorEnter = (config: Config, state: State) => ({
 const visitorLeave = (config: Config, state: State) => ({
   ObjectTypeDefinition: (node: TypeDefinitionNode) => {
     const numTypes = config.types.length;
-    if (numTypes > 0) {
-      config.types[numTypes - 1].last = true;
 
+    if (numTypes > 0) {
+      const latestType = config.types[numTypes - 1];
+
+      // Set the "last" boolean within the type definition
+      latestType.last = true;
+
+      // Unset the previous "last"
       if (numTypes - 2 > -1) {
         config.types[numTypes - 2].last = false;
+      }
+
+      // Ensure all property names are set
+      for (const prop of latestType.properties) {
+        prop.setTypeName();
       }
     }
 
@@ -164,13 +219,10 @@ export function render(schema: Schema): string {
   const template = fs.readFileSync(
     __dirname + "/type-packing.mustache", 'utf-8'
   );
-  const write_scalar = fs.readFileSync(
-    __dirname + "/type-packing.scalar.mustache", "utf-8"
-  );
-  const write_array = fs.readFileSync(
-    __dirname + "/type-packing.array.mustache", "utf-8"
+  const write_array_item = fs.readFileSync(
+    __dirname + "/type-packing.array-item.mustache", "utf-8"
   );
   return Mustache.render(template, config, {
-    write_scalar, write_array
+    write_array_item
   });
 }

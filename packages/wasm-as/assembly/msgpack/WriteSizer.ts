@@ -9,65 +9,8 @@ export class WriteSizer implements Write {
     this.length++;
   }
 
-  writeString(value: string): void {
-    const buf = String.UTF8.encode(value);
-    this.writeStringLength(buf.byteLength);
-    this.length += buf.byteLength;
-  }
-
-  writeStringLength(length: u32): void {
-    if (length < 32) {
-      this.length++;
-    } else if (length <= <u32>u8.MAX_VALUE) {
-      this.length += 2;
-    } else if (length <= <u32>u16.MAX_VALUE) {
-      this.length += 3;
-    } else {
-      this.length += 5;
-    }
-  }
-
   writeBool(value: bool): void {
     this.length++;
-  }
-
-  writeArraySize(length: u32): void {
-    if (length < 16) {
-      this.length++;
-    } else if (length <= <u32>u16.MAX_VALUE) {
-      this.length += 3;
-    } else {
-      this.length += 5;
-    }
-  }
-
-  writeBinLength(length: u32): void {
-    if (length <= <u32>u8.MAX_VALUE) {
-      this.length += 2;
-    } else if (length <= <u32>u16.MAX_VALUE) {
-      this.length += 3;
-    } else {
-      this.length += 5;
-    }
-  }
-
-  writeByteArray(ab: ArrayBuffer): void {
-    if (ab.byteLength == 0) {
-      this.length++; //nil byte
-      return;
-    }
-    this.writeBinLength(ab.byteLength);
-    this.length += ab.byteLength + 1;
-  }
-
-  writeMapSize(length: u32): void {
-    if (length < 16) {
-      this.length++;
-    } else if (length <= <u32>u16.MAX_VALUE) {
-      this.length += 3;
-    } else {
-      this.length += 5;
-    }
   }
 
   writeInt8(value: i8): void {
@@ -128,6 +71,53 @@ export class WriteSizer implements Write {
     this.length += 9;
   }
 
+  writeStringLength(length: u32): void {
+    if (length < 32) {
+      this.length++;
+    } else if (length <= <u32>u8.MAX_VALUE) {
+      this.length += 2;
+    } else if (length <= <u32>u16.MAX_VALUE) {
+      this.length += 3;
+    } else {
+      this.length += 5;
+    }
+  }
+
+  writeString(value: string): void {
+    const buf = String.UTF8.encode(value);
+    this.writeStringLength(buf.byteLength);
+    this.length += buf.byteLength;
+  }
+
+  writeBytesLength(length: u32): void {
+    if (length <= <u32>u8.MAX_VALUE) {
+      this.length += 2;
+    } else if (length <= <u32>u16.MAX_VALUE) {
+      this.length += 3;
+    } else {
+      this.length += 5;
+    }
+  }
+
+  writeBytes(value: ArrayBuffer): void {
+    if (value.byteLength == 0) {
+      this.length++; //nil byte
+      return;
+    }
+    this.writeBytesLength(value.byteLength);
+    this.length += value.byteLength + 1;
+  }
+
+  writeArraySize(length: u32): void {
+    if (length < 16) {
+      this.length++;
+    } else if (length <= <u32>u16.MAX_VALUE) {
+      this.length += 3;
+    } else {
+      this.length += 5;
+    }
+  }
+
   writeArray<T>(a: Array<T>, fn: (sizer: WriteSizer, item: T) => void): void {
     this.writeArraySize(a.length);
     for (let i: i32 = 0; i < a.length; i++) {
@@ -135,15 +125,14 @@ export class WriteSizer implements Write {
     }
   }
 
-  writeNullableArray<T>(
-    a: Array<T> | null,
-    fn: (sizer: Sizer, item: T) => void
-  ): void {
-    if (a === null) {
-      this.writeNil();
-      return;
+  writeMapSize(length: u32): void {
+    if (length < 16) {
+      this.length++;
+    } else if (length <= <u32>u16.MAX_VALUE) {
+      this.length += 3;
+    } else {
+      this.length += 5;
     }
-    this.writeArray(a, fn);
   }
 
   writeMap<K, V>(
@@ -159,6 +148,135 @@ export class WriteSizer implements Write {
       keyFn(this, key);
       valueFn(this, value);
     }
+  }
+
+  writeNullableBool(value: bool | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeBool(value);
+  }
+
+  writeNullableInt8(value: i8 | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeInt8(value);
+  }
+
+  writeNullableInt16(value: i16 | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeInt16(value);
+  }
+
+  writeNullableInt32(value: i32 | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeInt32(value);
+  }
+
+  writeNullableInt64(value: i64 | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeInt64(value);
+  }
+
+  writeNullableUInt8(value: u8 | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeUInt8(value);
+  }
+
+  writeNullableUInt16(value: u16 | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeUInt16(value);
+  }
+
+  writeNullableUInt32(value: u32 | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeUInt32(value);
+  }
+
+  writeNullableUInt64(value: u64 | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeUInt64(value);
+  }
+
+  writeNullableFloat32(value: f32 | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeFloat32(value);
+  }
+
+  writeNullableFloat64(value: f64 | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeFloat64(value);
+  }
+
+  writeNullableString(value: string | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeString(value);
+  }
+
+  writeNullableBytes(value: ArrayBuffer | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeBytes(value);
+  }
+
+
+  writeNullableArray<T>(
+    a: Array<T> | null,
+    fn: (sizer: Sizer, item: T) => void
+  ): void {
+    if (a === null) {
+      this.writeNil();
+      return;
+    }
+    this.writeArray(a, fn);
   }
 
   writeNullableMap<K, V>(

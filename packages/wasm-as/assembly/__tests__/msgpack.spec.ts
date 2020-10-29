@@ -130,7 +130,7 @@ class Sanity {
     writer.writeString("str");
     writer.writeString(this.str);
     writer.writeString("bytes");
-    writer.writeByteArray(this.bytes);
+    writer.writeBytes(this.bytes);
     writer.writeString("array");
     writer.writeArray(this.array, (writer: Write, item: u8) => {
       writer.writeUInt8(item);
@@ -164,7 +164,7 @@ class Sanity {
   }
 }
 
-describe("Sanity", () => {
+describe("MsgPack: Sanity", () => {
   it("Serializes & Deserializes", () => {
     const input = new Sanity();
     input.init();

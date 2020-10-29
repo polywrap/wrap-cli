@@ -11,10 +11,12 @@ function __write_{{name}}(writer: Write, type: {{name}}) {
   {{#properties}}
   writer.writeString("{{name}}");
   {{#scalar}}
-  {{> write_scalar}}
+  writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(type.{{name}});
   {{/scalar}}
   {{#array}}
-  {{> write_array}}
+  writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(type.{{name}}, (writer: Write, item: {{#toWasm}}{{item.type}}{{/toWasm}}): void => {
+    {{> write_array_item}}
+  });
   {{/array}}
   {{/properties}}
 }

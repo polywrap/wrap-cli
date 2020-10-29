@@ -22,7 +22,7 @@ function roundtripTest(jsonString: string, _expectedString: string  = ""): void 
   expect<string>(handler.toString()).toStrictEqual(expectedString);
 }
 
-describe("Round trip", () => {
+describe("JSON: Round trip", () => {
   it("should handle empty object", () => {
     roundtripTest("{}");
   });
