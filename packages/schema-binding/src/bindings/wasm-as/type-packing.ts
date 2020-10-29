@@ -1,97 +1,158 @@
-import { BaseTypes, Schema } from "../../";
+import { Schema } from "../../";
+import * as Mapping from "./mapping";
 import fs from "fs";
 import { printSchemaWithDirectives } from "graphql-tools";
 import {
   FieldDefinitionNode,
   TypeDefinitionNode,
   parse,
-  visit
+  visit,
+  NamedTypeNode,
+  NonNullTypeNode,
+  ListTypeNode
 } from "graphql";
 const Mustache = require("mustache");
 
-interface TypeProperty {
-  type: BaseTypes
-  name: string
-  complexType: boolean
+class TypeDefinition {
+  constructor(
+    public name: string,
+    public required?: boolean
+  ) { }
+  public last?: boolean
+  public toMsgPack = Mapping.toMsgPack
+  public toWasm = Mapping.toWasm
 }
 
-interface CustomType {
-  name: string
-  last: boolean
-  properties: TypeProperty[]
+class CustomTypeDefinition extends TypeDefinition {
+  properties: UnknownTypeDefinition[] = []
 }
 
-interface MustacheConfig {
-  types: CustomType[]
+class UnknownTypeDefinition extends TypeDefinition {
+  array?: ArrayDefinition
+  scalar?: ScalarDefinition
 }
 
-interface VisitorState {
-  currentType?: {
-    name: string;
-    index: number;
+class ScalarDefinition extends TypeDefinition {
+  constructor(
+    public type: string,
+    public name: string,
+    public required?: boolean
+  ) {
+    super(name, required);
   }
 }
 
+class ArrayDefinition extends UnknownTypeDefinition {
+  constructor(
+    public type: string,
+    public name: string,
+    public required?: boolean
+  ) {
+    super(name, required);
+  }
+}
 
-const visitorEnter = (config: MustacheConfig, state: VisitorState) => ({
+interface Config {
+  types: CustomTypeDefinition[]
+}
+
+interface State {
+  currentType?: CustomTypeDefinition
+  currentUnknown?: UnknownTypeDefinition
+  nonNullType?: boolean
+}
+
+const visitorEnter = (config: Config, state: State) => ({
   ObjectTypeDefinition: (node: TypeDefinitionNode) => {
-    if (config.types.length) {
-      config.types[config.types.length-1].last = false;
-    }
-    config.types.push({
-      name: node.name.value,
-      last: true,
-      properties: []
-    });
-    state.currentType = {
-      name: node.name.value,
-      index: config.types.length - 1
-    };
+    // Create a new TypeDefinition
+    const type = new CustomTypeDefinition(
+      node.name.value
+    );
+    config.types.push(type);
+    state.currentType = type;
   },
-  FieldDefinition: (node: FieldDefinitionNode) => {
-    if (!state.currentType) {
+  NonNullType: (node: NonNullTypeNode) => {
+    state.nonNullType = true;
+  },
+  NamedType: (node: NamedTypeNode) => {
+    const property = state.currentUnknown;
+
+    if (!property) {
       return;
     }
 
-    const type = config.types[state.currentType?.index];
+    if (property.scalar) {
+      return;
+    }
 
-    let typeName: string | undefined;
+    property.scalar = new ScalarDefinition(
+      node.name.value, property.name, state.nonNullType
+    );
+    state.currentUnknown = property.scalar;
+    state.nonNullType = false;
+  },
+  ListType: (node: ListTypeNode) => {
+    const property = state.currentUnknown;
 
-    if (node.type.kind === "NamedType") {
-      typeName = node.type.name.value;
-    } else if (node.type.kind === "ListType") {
-      // TODO: support lists
-    } else if (node.type.kind === "NonNullType") {
-      if (node.type.type.kind === "NamedType") {
-        typeName = node.type.type.name.value;
+    if (!property) {
+      return;
+    }
+
+    if (property.scalar) {
+      return;
+    }
+
+    // TODO: add [...] around each type on the way up, resulting in [[UInt8]] at the top
+    property.array = new ArrayDefinition(
+      "[]", property.name, state.nonNullType
+    );
+    state.currentUnknown = property.array;
+    state.nonNullType = false;
+  },
+  FieldDefinition: (node: FieldDefinitionNode) => {
+    const type = state.currentType;
+
+    if (!type) {
+      return;
+    }
+
+    // Create a new property
+    const property = new UnknownTypeDefinition(
+      node.name.value
+    )
+
+    state.currentUnknown = property;
+    type.properties.push(property);
+  }
+});
+
+const visitorLeave = (config: Config, state: State) => ({
+  ObjectTypeDefinition: (node: TypeDefinitionNode) => {
+    const numTypes = config.types.length;
+    if (numTypes > 0) {
+      config.types[numTypes - 1].last = true;
+
+      if (numTypes - 2 > -1) {
+        config.types[numTypes - 2].last = false;
       }
     }
 
-    if (!typeName) {
-      // TODO: error reporting? Is it necessary?
-      return;
-    }
-
-    type.properties.push({
-      name: node.name.value,
-      type: typeName as BaseTypes,
-      complexType: false
-    });
-  }
-});
-
-const visitorLeave = (config: MustacheConfig, state: VisitorState) => ({
-  TypeDefinition: (node: TypeDefinitionNode) => {
     state.currentType = undefined;
   },
-  FieldDefinition: (node: FieldDefinitionNode) => { }
+  FieldDefinition: (node: FieldDefinitionNode) => {
+    state.currentUnknown = undefined;
+  },
+  NonNullType: (node: NonNullTypeNode) => {
+    state.nonNullType = false;
+  },
 });
 
 export function render(schema: Schema): string {
-  const config: MustacheConfig = {
+  const config: Config = {
     types: []
   };
-  const state: VisitorState = { };
+
+  const state: State = { };
 
   const printedSchema = printSchemaWithDirectives(schema);
   const astNode = parse(printedSchema);
@@ -103,5 +164,13 @@ export function render(schema: Schema): string {
   const template = fs.readFileSync(
     __dirname + "/type-packing.mustache", 'utf-8'
   );
-  return Mustache.render(template, config)
+  const write_scalar = fs.readFileSync(
+    __dirname + "/type-packing.scalar.mustache", "utf-8"
+  );
+  const write_array = fs.readFileSync(
+    __dirname + "/type-packing.array.mustache", "utf-8"
+  );
+  return Mustache.render(template, config, {
+    write_scalar, write_array
+  });
 }

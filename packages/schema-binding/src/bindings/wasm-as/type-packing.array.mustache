@@ -1,0 +1,13 @@
+{{#array.required}}
+writer.writeArray(type.{{name}}, (writer: Write, item: {{#array}}{{#toWasm}}{{#scalar}}{{type}}{{/scalar}}{{/toWasm}}{{/array}}): void => {
+{{/array.required}}
+{{^array.required}}
+writer.writeNullableArray(type.{{name}}, (writer: Write, item: {{#toWasm}}{{itemType}}{{/toWasm}}{{#itemOptional}} | null{{/itemOptional}}): void => {
+{{/array.required}}
+  {{#array.scalar}}
+  {{> write_scalar}}
+  {{/array.scalar}}
+  {{#array.array}}
+  {{> write_array}}
+  {{/array.array}}
+});

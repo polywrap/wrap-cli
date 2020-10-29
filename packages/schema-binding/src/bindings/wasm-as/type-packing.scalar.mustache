@@ -1,0 +1,10 @@
+{{#scalar.required}}
+writer.write{{#toMsgPack}}{{scalar.type}}{{/toMsgPack}}(type.{{name}});
+{{/scalar.required}}
+{{^scalar.required}}
+if (type.{{name}} === null) {
+  writer.writeNil();
+} else {
+  writer.write{{#toMsgPack}}{{scalar.type}}{{/toMsgPack}}(type.{{name}});
+}
+{{/scalar.required}}

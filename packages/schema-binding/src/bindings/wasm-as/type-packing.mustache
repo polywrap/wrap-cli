@@ -10,7 +10,12 @@ function __write_{{name}}(writer: Write, type: {{name}}) {
   writer.writeMapSize({{properties.length}});
   {{#properties}}
   writer.writeString("{{name}}");
-  writer.write{{type}}(type.{{name}});
+  {{#scalar}}
+  {{> write_scalar}}
+  {{/scalar}}
+  {{#array}}
+  {{> write_array}}
+  {{/array}}
   {{/properties}}
 }
 {{/types}}
