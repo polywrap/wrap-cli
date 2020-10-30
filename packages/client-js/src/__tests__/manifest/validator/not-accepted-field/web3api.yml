@@ -1,0 +1,16 @@
+version: "0.0.1"
+mutation:
+  schema:
+    file: ./src/schema.graphql
+  module:
+    language: wasm/assemblyscript
+    file: ./src/query-file.ts
+query:
+  schema:
+    file: ./src/schema.graphql
+  module:
+    language: wasm/assemblyscript
+    file: ./src/mutation-file.ts
+not_accepted_field: not_accepted_field
+
+

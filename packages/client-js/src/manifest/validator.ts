@@ -1,5 +1,5 @@
 import { Validator } from "jsonschema";
-import { lstatSync } from "fs";
+import { existsSync } from "fs";
 import { valid } from "semver";
 
 import schema from "@web3api/manifest-schema";
@@ -25,12 +25,8 @@ Validator.prototype.customFormats.version = (version: string) => {
 };
 
 const validateFile = (path: string) => {
-  try {
-    lstatSync(path).isFile();
-    return true;
-  } catch (e) {
-    return false;
-  }
+  const exists = existsSync(__dirname + "/" + path);
+  return exists;
 };
 
 const validateVersion = (version: string) => {
@@ -39,9 +35,7 @@ const validateVersion = (version: string) => {
 };
 
 export const manifestValidation = (manifest: Manifest): Manifest => {
-  const newVersion = migrator(manifest);
   const ManifestSchema = schema["manifest"];
-  validator.validate(manifest, ManifestSchema);
 
   const { errors } = validator.validate(manifest, ManifestSchema);
   /*     
@@ -59,15 +53,9 @@ export const manifestValidation = (manifest: Manifest): Manifest => {
     // Let's show a good looking mapping of properties
     const pathMapping = path.join(" -> ");
 
+    // console.log(errors[0])
+    console.log(name)
     switch (name) {
-      case ValidationError.ADDITIONAL_PROPERTY:
-        throw Error(
-          `Field ${argument} is not accepted in the schema. Please check the accepted fields here: LINK_TO_SCHEMA`
-        );
-      case ValidationError.TYPE:
-        const property =
-          path.length === 1 ? `Property ${path[0]}` : `Property ${pathMapping}`;
-        throw Error(`${property} has a type error: ${message}`);
       case ValidationError.REQUIRED:
         const propertyRequired =
           path.length === 0 ? `${argument}.` : `${argument} in ${pathMapping}.`;
@@ -86,8 +74,17 @@ export const manifestValidation = (manifest: Manifest): Manifest => {
             `Property ${pathMapping} has the value ${instance}, which is a file that does not exists`
           );
         }
+      case ValidationError.ADDITIONAL_PROPERTY:
+        throw Error(
+          `Field ${argument} is not accepted in the schema. Please check the accepted fields here: LINK_TO_SCHEMA`
+        );
+      case ValidationError.TYPE:
+        const property =
+          path.length === 1 ? `Property ${path[0]}` : `Property ${pathMapping}`;
+        throw Error(`${property} has a type error: ${message}`);
     }
   }
+  const newVersion = migrator(manifest);
 
   if (newVersion) {
     saveMigration(manifest.version as string, manifest);
