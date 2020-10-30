@@ -53,8 +53,6 @@ export const manifestValidation = (manifest: Manifest): Manifest => {
     // Let's show a good looking mapping of properties
     const pathMapping = path.join(" -> ");
 
-    // console.log(errors[0])
-    console.log(name)
     switch (name) {
       case ValidationError.REQUIRED:
         const propertyRequired =
@@ -84,8 +82,8 @@ export const manifestValidation = (manifest: Manifest): Manifest => {
         throw Error(`${property} has a type error: ${message}`);
     }
   }
-  const newVersion = migrator(manifest);
 
+  const newVersion = migrator(manifest);
   if (newVersion) {
     saveMigration(manifest.version as string, manifest);
   }
