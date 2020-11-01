@@ -42,7 +42,27 @@ describe("JS Web3API Modules", () => {
             return EthereumJSModule({provider: rpcEndPoint});
         });
 
-        // TODO: test with a real contract?
+        const simpleStorageContract: any = JSON.parse(fs.readFileSync('./src/__tests__/contracts/SimpleStorage.json').toString());
+
+        const api = await def.create();
+
+        const contractABI = JSON.stringify(simpleStorageContract.abi);
+        const contractByteCode = simpleStorageContract.bytecode.object;
+
+        let res: any;
+
+        res = await api.query({
+            query: 
+                gql`mutation {
+                    deployContract(abi: $var1, bytecode: $var2)
+                }`,
+            variables: {
+                "var1": contractABI,
+                "var2": contractByteCode
+            }
+        });
+
+        console.log(res);
     });
 
 });
