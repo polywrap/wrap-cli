@@ -1,11 +1,11 @@
 mutation:
   schema:
-    file: ./src/schema.graphql
+    file: ../schema.graphql
   module:
     language: wasm/assemblyscript
 query:
   schema:
-    file: ./src/schema.graphql
+    file: ../schema.graphql
   module:
     language: wasm/assemblyscript
     file: ./src/mutation-file.ts

@@ -1,4 +1,4 @@
-version: "BAD_FORMAT_VERSION"
+version: "0.0.1"
 mutation:
   schema:
     file: ../schema.graphql
@@ -10,4 +10,3 @@ query:
     file: ../schema.graphql
   module:
     language: wasm/assemblyscript
-    file: ./src/mutation-file.ts

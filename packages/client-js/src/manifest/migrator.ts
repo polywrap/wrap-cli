@@ -29,7 +29,7 @@ const migrate = (newVersion: string) => {
     .shift();
 
   const newManifest = YAML.dump((storedMigrations as Migration)[newVersion]);
-  writeFileSync("./web3api.yaml", newManifest);
+  writeFileSync("./web3api.yml", newManifest);
 
   if (!higherVersion) {
     return;
@@ -43,7 +43,11 @@ export const migrator = (schema: Manifest) => {
   const migrations = Object.keys(storedMigrations);
   if (migrations.length > 0) {
     const latestVersion = migrations.pop();
-    if (compare(schema.version, latestVersion) <= 0) {
+
+    const isOlderVersion = compare(schema.version, latestVersion) === -1;
+    const isSameVersion = compare(schema.version, latestVersion) === 0;
+    if (isSameVersion) return false;
+    else if (isOlderVersion) {
       const getHigherMigrations = (version: string) =>
         gt(version, schema.version);
       const comingMigration = migrations.filter(getHigherMigrations).shift();

@@ -25,7 +25,7 @@ Validator.prototype.customFormats.version = (version: string) => {
 };
 
 const validateFile = (path: string) => {
-  const exists = existsSync(__dirname + "/" + path);
+  const exists = existsSync(path);
   return exists;
 };
 
@@ -60,6 +60,14 @@ export const manifestValidation = (manifest: Manifest): Manifest => {
         throw Error(
           `Missing field: ${propertyRequired} Please add it to the manifest`
         );
+      case ValidationError.ADDITIONAL_PROPERTY:
+        throw Error(
+          `Field ${argument} is not accepted in the schema. Please check the accepted fields here: LINK_TO_SCHEMA`
+        );
+      case ValidationError.TYPE:
+        const property =
+          path.length === 1 ? `Property ${path[0]}` : `Property ${pathMapping}`;
+        throw Error(`${property} has a type error: ${message}`);
       case ValidationError.INPUT:
         const isVersionError = argument === "version";
         const nonExistantFileError = argument === "file";
@@ -72,14 +80,6 @@ export const manifestValidation = (manifest: Manifest): Manifest => {
             `Property ${pathMapping} has the value ${instance}, which is a file that does not exists`
           );
         }
-      case ValidationError.ADDITIONAL_PROPERTY:
-        throw Error(
-          `Field ${argument} is not accepted in the schema. Please check the accepted fields here: LINK_TO_SCHEMA`
-        );
-      case ValidationError.TYPE:
-        const property =
-          path.length === 1 ? `Property ${path[0]}` : `Property ${pathMapping}`;
-        throw Error(`${property} has a type error: ${message}`);
     }
   }
 

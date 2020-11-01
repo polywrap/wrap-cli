@@ -1,13 +1,13 @@
 version: "0.0.1"
 mutation:
   schema:
-    file: ./src/schema.graphql
+    file: ../schema.graphql
   module:
     language: wasm/assemblyscript
-    file: ./src/query-file.ts
+    file: ../query-file.ts
 query:
   schema:
-    file: ./src/schema.graphql
+    file: ../schema.graphql
   module:
     language: wasm/assemblyscript
     file: ./NOT_EXISTANT_FILE
