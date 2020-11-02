@@ -1,7 +1,7 @@
 import { resolveURI, Web3APIModuleResolver } from "./lib/resolver";
-import { GqlQuery, GqlQueryResult, Web3APIDefinition } from "./lib/types";
+import { Client, GqlQuery, GqlQueryResult, Web3APIDefinition } from "./lib/types";
 
-export class Web3APIClient {
+export class Web3APIClient implements Client {
 
     _definitionCache: Map<string, Web3APIDefinition> = new Map<string, Web3APIDefinition>();
 
@@ -10,7 +10,7 @@ export class Web3APIClient {
 
     public async query(uri: string, query: GqlQuery): Promise<GqlQueryResult> {
         const apiDefinition = await this.getWeb3APIDefinition(uri);
-        const instance = await apiDefinition.create();
+        const instance = await apiDefinition.create(this);
         return await instance.query(query);
     }
 

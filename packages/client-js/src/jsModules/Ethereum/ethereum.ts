@@ -1,7 +1,7 @@
 import { IEthereumConfig } from "../..";
 import { Ethereum } from "../../portals";
 
-export const EthereumJSModule = (config: IEthereumConfig) => {
+export const EthereumJSModule = async (config: IEthereumConfig) => {
   const client = new Ethereum(config);
 
   const sendTransaction = async (input: {address: string, method: string, args: string[]}) => {

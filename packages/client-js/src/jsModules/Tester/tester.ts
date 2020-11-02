@@ -7,7 +7,7 @@ const dataStore: ExternalDataStore = {};
 
 // // Functional equivalent
 // // Assume that this is called once, and an instance is kept alive until the original caller finishes
-export const TesterJSModule = () => {
+export const TesterJSModule = async () => {
     const setValue = (args: {key: string, value: string}): boolean => {
         const {key, value} = args;
         const newValue = dataStore[key] === undefined;

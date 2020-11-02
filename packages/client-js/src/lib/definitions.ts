@@ -1,6 +1,6 @@
-import { Manifest, Web3API, Web3APIDefinition } from "./types";
+import { Client, Manifest, Web3API, Web3APIDefinition } from "./types";
 import { WASMWeb3API } from "./wasmWeb3Api";
-import { JSWeb3API, JSWeb3APIParams } from "./JSWeb3Api";
+import { JSWeb3API, JSWeb3APIModule, JSWeb3APIParams } from "./JSWeb3Api";
 
 export interface Web3APIWASMModules {
     query: Maybe<ArrayBuffer>;
@@ -25,15 +25,18 @@ export class WASMWeb3APIDefinition implements Web3APIDefinition {
     /**
      * Creates an instance of the WASM Web 3 API.
      */
-    public async create(): Promise<Web3API> {
-        return new WASMWeb3API({
-            uri: this.config.uri,
-            cid: this.config.cid,
-            manifest: this.config.manifest,
-            rawSchema: this.config.schema,
-            mutateModule: this.config.module.mutate,
-            queryModule: this.config.module.query
-        });
+    public async create(client: Client): Promise<Web3API> {
+        return new WASMWeb3API(
+            client,
+            {
+                uri: this.config.uri,
+                cid: this.config.cid,
+                manifest: this.config.manifest,
+                rawSchema: this.config.schema,
+                mutateModule: this.config.module.mutate,
+                queryModule: this.config.module.query
+            }
+        );
     }
 }
 
@@ -43,12 +46,12 @@ export class WASMWeb3APIDefinition implements Web3APIDefinition {
  */
 export class JSWeb3APIDefinition implements Web3APIDefinition {
 
-    constructor(private _schema: string, private _factory: Function) {
+    constructor(private _schema: string, private _factory: (client: Client) => Promise<JSWeb3APIModule>) {
     }
 
-    public async create(): Promise<Web3API> {
+    public async create(client: Client): Promise<Web3API> {
 
-        const apiObject = this._factory();
+        const apiObject = await this._factory(client);
 
         if (typeof(apiObject) !== 'object') {
             throw Error(`JS Web3API is not an object.`)

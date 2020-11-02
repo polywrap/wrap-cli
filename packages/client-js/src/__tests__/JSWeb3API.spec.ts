@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import { TesterJSModule } from '../jsModules/Tester/tester';
 import gql from 'graphql-tag';
 import { EthereumJSModule } from '../jsModules/Ethereum/ethereum';
+import { Client } from '../lib/types';
 
 
 
@@ -17,7 +18,7 @@ it("can call a tester JS Web3 API", async () => {
     const keyToSet = 'hello';
     const expectedValue = 'world';
     
-    const api = await def.create();
+    const api = await def.create({} as Client);
     const setQuery = gql`mutation {
         setValue(key: "${keyToSet}", value: "${expectedValue}")
     }`;
@@ -45,7 +46,7 @@ it("can call the Ethereum JS Web3 API", async () => {
     
     const simpleStorageContract: any = JSON.parse(fs.readFileSync('./src/__tests__/contracts/SimpleStorage.json').toString());
     
-    const api = await def.create();
+    const api = await def.create({} as Client);
     
     const contractABI = JSON.stringify(simpleStorageContract.abi);
     const contractByteCode = simpleStorageContract.bytecode.object;

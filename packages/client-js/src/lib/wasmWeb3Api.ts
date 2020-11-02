@@ -1,6 +1,6 @@
 import { buildSchema, execute, GraphQLObjectType, GraphQLSchema } from "graphql";
 import { executeMaybeAsyncFunction } from "./async";
-import { GqlQuery, GqlQueryResult, Manifest, WasmImports, Web3API } from "./types";
+import { Client, GqlQuery, GqlQueryResult, Manifest, WasmImports, Web3API } from "./types";
 import { WasmWorker } from "./wasm-worker";
 
 export interface WASMWeb3APIParams {
@@ -16,11 +16,9 @@ export interface WASMWeb3APIParams {
  * Represents an instance of a WASM Web3API.
  */
 export class WASMWeb3API implements Web3API {
-    _config: WASMWeb3APIParams;
     _schema: GraphQLSchema;
 
-    constructor(config: WASMWeb3APIParams) {
-        this._config = config;
+    constructor(private _client: Client, private _config: WASMWeb3APIParams) {
         this._schema = this.prepareSchema();
     }
 
@@ -89,7 +87,9 @@ export class WASMWeb3API implements Web3API {
             const outputType = schemaFields[fieldName].type.toString().toLowerCase().replace('!', '');
 
             const wasmWorkerImports: WasmImports = {
-              
+              "_w3_query": async (uri: string, query: GqlQuery) => {
+                return await this._client.query(uri, query);
+              }
             };
       
             schemaFields[fieldName].resolve = async (source, args, context, info) => {      
