@@ -13,7 +13,7 @@
       },
       "version": {
         "type": "string",
-        "format": "version"
+        "value": "0.0.1"
       },
       "query": {
         "additionalProperties": false,

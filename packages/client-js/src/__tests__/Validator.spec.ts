@@ -86,3 +86,24 @@ describe("Manifest migration ", () => {
     expect(newManifest.version).toBe("0.0.3");
   });
 });
+
+// Notes
+/*
+  - move generate script to othe rpackage
+  - all the other changes I just pushed
+  - in the migrator, it should figure out what version it's going FROM, and what version it's going TO
+  - Call the migrator(s) for that translation
+*/
+
+const migrators = {
+  "0_0_1-alpha.1": {
+    upgrades: {
+      "0_0_1-alpha.0": require("./migrators/0_0_2-0_0_3"),
+    }
+  }
+}
+
+const from = "0_0_1-alpha_0"
+const to = "0_0_2"
+
+// find a path in the migrators
