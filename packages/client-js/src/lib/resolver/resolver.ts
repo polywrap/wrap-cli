@@ -1,4 +1,3 @@
-import { WASMWeb3APIDefinition } from "../definitions";
 import { Web3APIDefinition } from "../types";
 
 /**

@@ -11,7 +11,7 @@ const testerSchema = fs.readFileSync('./src/jsModules/Tester/schema.graphql').to
 const ethereumSchema = fs.readFileSync('./src/jsModules/Ethereum/schema.graphql').toString();
 
 it("can call a tester JS Web3 API", async () => {
-    const def = new JSWeb3APIDefinition(testerSchema, () => {
+    const def = new JSWeb3APIDefinition(testerSchema, async () => {
         return TesterJSModule();
     });
     
@@ -40,7 +40,7 @@ it("can call a tester JS Web3 API", async () => {
 
 it("can call the Ethereum JS Web3 API", async () => {
     const rpcEndPoint = "http://localhost:8545"
-    const def = new JSWeb3APIDefinition(ethereumSchema, () => {
+    const def = new JSWeb3APIDefinition(ethereumSchema, async () => {
         return EthereumJSModule({provider: rpcEndPoint});
     });
     
