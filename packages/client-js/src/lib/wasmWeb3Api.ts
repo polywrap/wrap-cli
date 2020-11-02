@@ -1,5 +1,5 @@
 import { buildSchema, execute, GraphQLObjectType, GraphQLSchema } from "graphql";
-import { executeMaybeAsyncFunction, isPromise } from "./async";
+import { executeMaybeAsyncFunction } from "./async";
 import { GqlQuery, GqlQueryResult, Manifest, WasmImports, Web3API } from "./types";
 import { WasmWorker } from "./wasm-worker";
 

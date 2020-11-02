@@ -1,17 +1,11 @@
-import { IPFSResolver, resolveURI, Web3APIModuleResolver } from "./lib/resolver";
+import { resolveURI, Web3APIModuleResolver } from "./lib/resolver";
 import { GqlQuery, GqlQueryResult, Web3APIDefinition } from "./lib/types";
 
 export class Web3APIClient {
 
-    _resolvers: Web3APIModuleResolver[];
     _definitionCache: Map<string, Web3APIDefinition> = new Map<string, Web3APIDefinition>();
 
-    constructor(resolvers?: Web3APIModuleResolver[]) {
-        if (!resolvers) {
-            this._resolvers = [IPFSResolver];
-        } else {
-            this._resolvers = resolvers;
-        }
+    constructor(private _resolvers: Web3APIModuleResolver[]) {
     }
 
     public async query(uri: string, query: GqlQuery): Promise<GqlQueryResult> {
