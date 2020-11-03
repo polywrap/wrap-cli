@@ -1,21 +1,22 @@
 import { DataView } from "./DataView";
-import { Format } from "./Format";
+import {
+  Format,
+  isFloat32,
+  isFloat64,
+  isFixedInt,
+  isNegativeFixedInt,
+  isFixedMap,
+  isFixedArray,
+  isFixedString
+} from "./Format";
 import { Read } from "./Read";
 import { E_INVALIDLENGTH } from "util/error";
 
-export class Decoder implements Read {
+export class ReadDecoder implements Read {
   private view: DataView;
 
   constructor(ua: ArrayBuffer) {
     this.view = new DataView(ua, 0, ua.byteLength);
-  }
-
-  isNextNil(): bool {
-    if (this.view.peekUint8() == Format.NIL) {
-      this.view.discard(1);
-      return true;
-    }
-    return false;
   }
 
   readBool(): bool {
@@ -37,6 +38,7 @@ export class Decoder implements Read {
       "interger overflow: value = " + value.toString() + "; bits = 8"
     );
   }
+
   readInt16(): i16 {
     const value = this.readInt64();
     if (value <= <i64>i16.MAX_VALUE || value >= <i64>i16.MIN_VALUE) {
@@ -46,6 +48,7 @@ export class Decoder implements Read {
       "interger overflow: value = " + value.toString() + "; bits = 16"
     );
   }
+
   readInt32(): i32 {
     const value = this.readInt64();
     if (value <= <i64>i32.MAX_VALUE || value >= <i64>i32.MIN_VALUE) {
@@ -59,10 +62,10 @@ export class Decoder implements Read {
   readInt64(): i64 {
     const prefix = this.view.getUint8();
 
-    if (this.isFixedInt(prefix)) {
+    if (isFixedInt(prefix)) {
       return <i64>prefix;
     }
-    if (this.isNegativeFixedInt(prefix)) {
+    if (isNegativeFixedInt(prefix)) {
       return <i64>(<i8>prefix);
     }
     switch (prefix) {
@@ -112,9 +115,9 @@ export class Decoder implements Read {
   readUInt64(): u64 {
     const prefix = this.view.getUint8();
 
-    if (this.isFixedInt(prefix)) {
+    if (isFixedInt(prefix)) {
       return <u64>prefix;
-    } else if (this.isNegativeFixedInt(prefix)) {
+    } else if (isNegativeFixedInt(prefix)) {
       throw new Error("bad prefix");
     }
 
@@ -134,7 +137,7 @@ export class Decoder implements Read {
 
   readFloat32(): f32 {
     const prefix = this.view.getUint8();
-    if (this.isFloat32(prefix)) {
+    if (isFloat32(prefix)) {
       return <f32>this.view.getFloat32();
     }
     throw new Error("bad prefix");
@@ -142,24 +145,18 @@ export class Decoder implements Read {
 
   readFloat64(): f64 {
     const prefix = this.view.getUint8();
-    if (this.isFloat64(prefix)) {
+    if (isFloat64(prefix)) {
       return <f64>this.view.getFloat64();
     }
     throw new Error("bad prefix");
   }
 
-  readString(): string {
-    const strLen = this.readStringLength();
-    const stringBytes = this.view.getBytes(strLen);
-    return String.UTF8.decode(stringBytes);
-  }
-
   readStringLength(): u32 {
     const leadByte = this.view.getUint8();
-    if (this.isFixedString(leadByte)) {
+    if (isFixedString(leadByte)) {
       return leadByte & 0x1f;
     }
-    if (this.isFixedArray(leadByte)) {
+    if (isFixedArray(leadByte)) {
       return <u32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
     }
     switch (leadByte) {
@@ -174,12 +171,18 @@ export class Decoder implements Read {
     throw new RangeError(E_INVALIDLENGTH + leadByte.toString());
   }
 
-  readBinLength(): u32 {
+  readString(): string {
+    const strLen = this.readStringLength();
+    const stringBytes = this.view.getBytes(strLen);
+    return String.UTF8.decode(stringBytes);
+  }
+
+  readBytesLength(): u32 {
     if (this.isNextNil()) {
       return 0;
     }
     const leadByte = this.view.getUint8();
-    if (this.isFixedArray(leadByte)) {
+    if (isFixedArray(leadByte)) {
       return <u32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
     }
     switch (leadByte) {
@@ -193,15 +196,15 @@ export class Decoder implements Read {
     throw new RangeError(E_INVALIDLENGTH);
   }
 
-  readByteArray(): ArrayBuffer {
-    const arrLength = this.readBinLength();
+  readBytes(): ArrayBuffer {
+    const arrLength = this.readBytesLength();
     const arrBytes = this.view.getBytes(arrLength);
     return arrBytes;
   }
 
-  readArraySize(): u32 {
+  readArrayLength(): u32 {
     const leadByte = this.view.getUint8();
-    if (this.isFixedArray(leadByte)) {
+    if (isFixedArray(leadByte)) {
       return <u32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
     } else if (leadByte == Format.ARRAY16) {
       return <u32>this.view.getUint16();
@@ -213,9 +216,19 @@ export class Decoder implements Read {
     throw new RangeError(E_INVALIDLENGTH + leadByte.toString());
   }
 
-  readMapSize(): u32 {
+  readArray<T>(fn: (reader: Read) => T): Array<T> {
+    const size = this.readArrayLength();
+    let a = new Array<T>();
+    for (let i: u32 = 0; i < size; i++) {
+      const item = fn(this);
+      a.push(item);
+    }
+    return a;
+  }
+
+  readMapLength(): u32 {
     const leadByte = this.view.getUint8();
-    if (this.isFixedMap(leadByte)) {
+    if (isFixedMap(leadByte)) {
       return <u32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
     } else if (leadByte == Format.MAP16) {
       return <u32>this.view.getUint16();
@@ -225,39 +238,137 @@ export class Decoder implements Read {
     throw new RangeError(E_INVALIDLENGTH);
   }
 
-  isFloat32(u: u8): bool {
-    return u == Format.FLOAT32;
+  readMap<K, V>(
+    keyFn: (reader: Read) => K,
+    valueFn: (reader: Read) => V
+  ): Map<K, V> {
+    const size = this.readMapLength();
+    let m = new Map<K, V>();
+    for (let i: u32 = 0; i < size; i++) {
+      const key = keyFn(this);
+      const value = valueFn(this);
+      m.set(key, value);
+    }
+    return m;
   }
 
-  isFloat64(u: u8): bool {
-    return u == Format.FLOAT64;
+  readNullableBool(): bool | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readBool();
   }
 
-  isFixedInt(u: u8): bool {
-    return u >> 7 == 0;
+  readNullableInt8(): i8 | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readInt8();
   }
 
-  isNegativeFixedInt(u: u8): bool {
-    return (u & 0xe0) == Format.NEGATIVE_FIXINT;
+  readNullableInt16(): i16 | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readInt16();
   }
 
-  isFixedMap(u: u8): bool {
-    return (u & 0xf0) == Format.FIXMAP;
+  readNullableInt32(): i32 | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readInt32();
   }
 
-  isFixedArray(u: u8): bool {
-    return (u & 0xf0) == Format.FIXARRAY;
+  readNullableInt64(): i64 | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readInt64();
   }
 
-  isFixedString(u: u8): bool {
-    return (u & 0xe0) == Format.FIXSTR;
+  readNullableUInt8(): u8 | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readUInt8();
   }
 
-  isNil(u: u8): bool {
-    return u == Format.NIL;
+  readNullableUInt16(): u16 | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readUInt16();
   }
 
-  skip(): void {
+  readNullableUInt32(): u32 | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readUInt32();
+  }
+
+  readNullableUInt64(): u64 | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readUInt64();
+  }
+
+  readNullableFloat32(): f32 | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readFloat32();
+  }
+
+  readNullableFloat64(): f64 | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readFloat64();
+  }
+
+  readNullableString(): string | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readString();
+  }
+
+  readNullableBytes(): ArrayBuffer | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readBytes();
+  }
+
+  readNullableArray<T>(fn: (decoder: Read) => T): Array<T> | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readArray(fn);
+  }
+
+  readNullableMap<K, V>(
+    keyFn: (decoder: Read) => K,
+    valueFn: (decoder: Read) => V
+  ): Map<K, V> | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readMap(keyFn, valueFn);
+  }
+
+  private isNextNil(): bool {
+    if (this.view.peekUint8() == Format.NIL) {
+      this.view.discard(1);
+      return true;
+    }
+    return false;
+  }
+
+  private skip(): void {
     // getSize handles discarding 'msgpack header' info
     let numberOfObjectsToDiscard = this.getSize();
 
@@ -267,21 +378,21 @@ export class Decoder implements Read {
     }
   }
 
-  getSize(): i32 {
+  private getSize(): i32 {
     const leadByte = this.view.getUint8(); // will discard one
     let objectsToDiscard = <i32>0;
     // Handled for fixed values
-    if (this.isNegativeFixedInt(leadByte)) {
+    if (isNegativeFixedInt(leadByte)) {
       // noop, will just discard the leadbyte
-    } else if (this.isFixedInt(leadByte)) {
+    } else if (isFixedInt(leadByte)) {
       // noop, will just discard the leadbyte
-    } else if (this.isFixedString(leadByte)) {
+    } else if (isFixedString(leadByte)) {
       let strLength = leadByte & 0x1f;
       this.view.discard(strLength);
-    } else if (this.isFixedArray(leadByte)) {
+    } else if (isFixedArray(leadByte)) {
       // TODO handle overflow
       objectsToDiscard = <i32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
-    } else if (this.isFixedMap(leadByte)) {
+    } else if (isFixedMap(leadByte)) {
       // TODO handle overflow
       objectsToDiscard =
         2 * <i32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
@@ -381,46 +492,5 @@ export class Decoder implements Read {
     }
 
     return objectsToDiscard;
-  }
-
-  readArray<T>(fn: (decoder: Decoder) => T): Array<T> {
-    const size = this.readArraySize();
-    let a = new Array<T>();
-    for (let i: u32 = 0; i < size; i++) {
-      const item = fn(this);
-      a.push(item);
-    }
-    return a;
-  }
-
-  readNullableArray<T>(fn: (decoder: Decoder) => T): Array<T> | null {
-    if (this.isNextNil()) {
-      return null;
-    }
-    return this.readArray(fn);
-  }
-
-  readMap<K, V>(
-    keyFn: (decoder: Decoder) => K,
-    valueFn: (decoder: Decoder) => V
-  ): Map<K, V> {
-    const size = this.readMapSize();
-    let m = new Map<K, V>();
-    for (let i: u32 = 0; i < size; i++) {
-      const key = keyFn(this);
-      const value = valueFn(this);
-      m.set(key, value);
-    }
-    return m;
-  }
-
-  readNullableMap<K, V>(
-    keyFn: (decoder: Decoder) => K,
-    valueFn: (decoder: Decoder) => V
-  ): Map<K, V> | null {
-    if (this.isNextNil()) {
-      return null;
-    }
-    return this.readMap(keyFn, valueFn);
   }
 }

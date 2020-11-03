@@ -14,3 +14,10 @@
 5. Create JS Web3APIs for Ethereum, IPFS
 6. Add support for custom URI resolvers
 7. Create WASM Web3APIs
+
+## CodeGen
+- Layout the folder structure
+- Refactor the MsgPack AS implementation to be simpler
+- Integrate code-gen into the CLI
+- Create an e2e test, requiring the rest of the pipeline to be implemented
+- Define standard for invoking methods inside module, and invoking methods outside

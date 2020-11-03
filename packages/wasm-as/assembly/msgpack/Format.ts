@@ -40,3 +40,35 @@ export const enum Format {
   MAP32 = 0xdf,
   NEGATIVE_FIXINT = 0xe0,
 }
+
+export function isFloat32(u: u8): bool {
+  return u == Format.FLOAT32;
+}
+
+export function isFloat64(u: u8): bool {
+  return u == Format.FLOAT64;
+}
+
+export function isFixedInt(u: u8): bool {
+  return u >> 7 == 0;
+}
+
+export function isNegativeFixedInt(u: u8): bool {
+  return (u & 0xe0) == Format.NEGATIVE_FIXINT;
+}
+
+export function isFixedMap(u: u8): bool {
+  return (u & 0xf0) == Format.FIXMAP;
+}
+
+export function isFixedArray(u: u8): bool {
+  return (u & 0xf0) == Format.FIXARRAY;
+}
+
+export function isFixedString(u: u8): bool {
+  return (u & 0xe0) == Format.FIXSTR;
+}
+
+export function isNil(u: u8): bool {
+  return u == Format.NIL;
+}

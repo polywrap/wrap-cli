@@ -21,7 +21,7 @@ input = {
 class {{type.name}} {
   // TODO: properties
 
-  read(reader: Decoder): void {
+  read(reader: Read): void {
     // TODO: deserialize
   }
 
@@ -53,7 +53,7 @@ class {{type.name}} {
   }
 
   fromBuffer(buffer: ArrayBuffer): void {
-    const decoder = new Decoder(buffer);
+    const decoder = new ReadDecoder(buffer);
     this.read(decoder);
   }
 }

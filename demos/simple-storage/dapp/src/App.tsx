@@ -10,16 +10,16 @@ import {
   Subgraph
 } from "@web3api/client-js";
 
-const api = new Web3API({
-  uri: "simplestorage.eth",
-  portals: {
-    ethereum: new Ethereum({ provider: (window as any).ethereum }),
-    ipfs: new IPFS({ provider: "http://localhost:5001" }),
-    subgraph: new Subgraph({ provider: "http://localhost:8020" })
-  }
+const client = new Web3APIClient({
+  resolvers: [
+    new Ethereum({ provider: (window as any).ethereum }),
+    new IPFS({ provider: "http://localhost:5001" }),
+    new Subgraph({ provider: "http://localhost:8020" })
+  ]
 })
 
-api.query({
+client.query({
+  uri: "simplestorage.eth",
   query: gql`
     mutation SetData($address: String!, $value: Int!) {
       setData(

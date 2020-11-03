@@ -3,8 +3,12 @@ import {
   CustomType
 } from "./";
 
+function _read_CustomType(writer: Write, type: CustomType) {
+  
+}
+
 function __write_CustomType(writer: Write, type: CustomType) {
-  writer.writeMapSize(19);
+  writer.writeMapSize(21);
   writer.writeString("str");
   writer.writeString(type.str);
   writer.writeString("optStr");
@@ -57,6 +61,24 @@ function __write_CustomType(writer: Write, type: CustomType) {
   writer.writeArray(type.uOptArrayOptArray, (writer: Write, item: Array<u64 | null> | null): void => {
     writer.writeNullableArray(item, (writer: Write, item: u64 | null): void => {
       writer.writeNullableUInt64(item);
+    });
+  });
+  writer.writeString("uArrayOptArrayArray");
+  writer.writeArray(type.uArrayOptArrayArray, (writer: Write, item: Array<Array<u64>> | null): void => {
+    writer.writeNullableArray(item, (writer: Write, item: Array<u64>): void => {
+      writer.writeArray(item, (writer: Write, item: u64): void => {
+        writer.writeUInt64(item);
+      });
+    });
+  });
+  writer.writeString("crazyArray");
+  writer.writeNullableArray(type.crazyArray, (writer: Write, item: Array<Array<Array<u64> | null>> | null): void => {
+    writer.writeNullableArray(item, (writer: Write, item: Array<Array<u64> | null>): void => {
+      writer.writeArray(item, (writer: Write, item: Array<u64> | null): void => {
+        writer.writeNullableArray(item, (writer: Write, item: u64): void => {
+          writer.writeUInt64(item);
+        });
+      });
     });
   });
 }

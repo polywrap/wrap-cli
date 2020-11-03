@@ -30,4 +30,6 @@ type CustomType {
   optStrOptArray: [String]
   uArrayArray: [[UInt!]!]!
   uOptArrayOptArray: [[UInt64]]!
+  uArrayOptArrayArray: [[[UInt64!]!]]!
+  crazyArray: [[[[UInt64!]]!]]
 }

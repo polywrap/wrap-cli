@@ -15,12 +15,12 @@ export interface Write {
   writeString(value: string): void;
   writeBytesLength(length: u32): void;
   writeBytes(ab: ArrayBuffer): void;
-  writeArraySize(length: u32): void;
+  writeArrayLength(length: u32): void;
   writeArray<T>(
     a: Array<T>,
     fn: (writer: Write, item: T) => void
   ): void;
-  writeMapSize(length: u32): void;
+  writeMapLength(length: u32): void;
   writeMap<K, V>(
     m: Map<K, V>,
     keyFn: (writer: Write, key: K) => void,

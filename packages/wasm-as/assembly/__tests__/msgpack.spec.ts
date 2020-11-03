@@ -1,12 +1,13 @@
 import {
-  Decoder,
+  Read,
+  ReadDecoder,
   Write,
   WriteEncoder,
   WriteSizer
 } from "../msgpack";
 
 class Sanity {
-  nil: string | null = "null";
+  nil: Nullable<string> | null = "null";
   int8: i8;
   int16: i16;
   int32: i32;
@@ -15,6 +16,8 @@ class Sanity {
   uint16: u16;
   uint32: u32;
   uint64: u64;
+  optUint32: Nullable<u32>;
+  optUint64: Nullable<u64>;
   float32: f32;
   float64: f64;
   str: string = "";
@@ -32,6 +35,8 @@ class Sanity {
     this.uint16 = 65535;
     this.uint32 = 4294967295;
     this.uint64 = 18446744073709551615;
+    this.optUint32 = new WrappedValue(234234234);
+    this.optUint64 = null;
     this.float32 = 3.40282344818115234375;
     this.float64 = 3124124512.598273468017578125;
     this.str = "Hello, world!";
@@ -42,127 +47,136 @@ class Sanity {
     this.map.set("baz", [12412, -98987]);
   }
 
-  read(reader: Decoder): void {
-    var numFields = reader.readMapSize();
-
-    while (numFields > 0) {
-      numFields--;
-      const field = reader.readString();
-
-      if (field == "nil") {
-        expect(reader.isNextNil()).toBeTruthy();
-        this.nil = null;
-      } else if (field == "int8") {
-        this.int8 = reader.readInt8();
-      } else if (field == "int16") {
-        this.int16 = reader.readInt16();
-      } else if (field == "int32") {
-        this.int32 = reader.readInt32();
-      } else if (field == "int64") {
-        this.int64 = reader.readInt64();
-      } else if (field == "uint8") {
-        this.uint8 = reader.readUInt8();
-      } else if (field == "uint16") {
-        this.uint16 = reader.readUInt16();
-      } else if (field == "uint32") {
-        this.uint32 = reader.readUInt32();
-      } else if (field == "uint64") {
-        this.uint64 = reader.readUInt64();
-      } else if (field == "float32") {
-        this.float32 = reader.readFloat32();
-      } else if (field == "float64") {
-        this.float64 = reader.readFloat64();
-      } else if (field == "str") {
-        this.str = reader.readString();
-      } else if (field == "bytes") {
-        this.bytes = reader.readByteArray();
-      } else if (field == "array") {
-        this.array = reader.readArray(
-          (decoder: Decoder): u8 => {
-            return decoder.readUInt8();
-          }
-        );
-      } else if (field == "map") {
-        this.map = reader.readMap(
-          (decoder: Decoder): string => {
-            return decoder.readString();
-          },
-          (decoder: Decoder): Array<i32> => {
-            return decoder.readArray(
-              (decoder: Decoder): i32 => {
-                return decoder.readInt32();
-              }
-            );
-          }
-        );
-      } else {
-        throw new Error(
-          "Sanity.decode: Unknown field name '" + field + "'"
-        );
-      }
-    }
-  }
-
-  write(writer: Write): void {
-    writer.writeMapSize(15);
-    writer.writeString("nil");
-    writer.writeNil();
-    writer.writeString("int8");
-    writer.writeInt8(this.int8);
-    writer.writeString("int16");
-    writer.writeInt16(this.int16);
-    writer.writeString("int32");
-    writer.writeInt32(this.int32);
-    writer.writeString("int64");
-    writer.writeInt64(this.int64);
-    writer.writeString("uint8");
-    writer.writeUInt8(this.uint8);
-    writer.writeString("uint16");
-    writer.writeUInt16(this.uint16);
-    writer.writeString("uint32");
-    writer.writeUInt32(this.uint32);
-    writer.writeString("uint64");
-    writer.writeUInt64(this.uint64);
-    writer.writeString("float32");
-    writer.writeFloat32(this.float32);
-    writer.writeString("float64");
-    writer.writeFloat64(this.float64);
-    writer.writeString("str");
-    writer.writeString(this.str);
-    writer.writeString("bytes");
-    writer.writeBytes(this.bytes);
-    writer.writeString("array");
-    writer.writeArray(this.array, (writer: Write, item: u8) => {
-      writer.writeUInt8(item);
-    });
-    writer.writeString("map");
-    writer.writeMap(
-      this.map,
-      (writer: Write, key: string): void => {
-        writer.writeString(key);
-      },
-      (writer: Write, value: Array<i32>) => {
-        writer.writeArray(value, (writer: Write, item: i32) => {
-          writer.writeInt32(item);
-        });
-      }
-    );
-  }
-
   toBuffer(): ArrayBuffer {
     const sizer = new WriteSizer();
-    this.write(sizer);
+    __write_Sanity(sizer, this);
     const buffer = new ArrayBuffer(sizer.length);
     const encoder = new WriteEncoder(buffer);
-    this.write(encoder);
+    __write_Sanity(encoder, this);
     return buffer;
   }
 
   fromBuffer(buffer: ArrayBuffer): void {
-    const decoder = new Decoder(buffer);
-    this.read(decoder);
+    const decoder = new ReadDecoder(buffer);
+    __read_Sanity(decoder, this);
   }
 }
+
+function __write_Sanity(writer: Write, type: Sanity): void {
+  writer.writeMapLength(17);
+  writer.writeString("nil");
+  writer.writeNullableString(type.nil);
+  writer.writeString("int8");
+  writer.writeInt8(type.int8);
+  writer.writeString("int16");
+  writer.writeInt16(type.int16);
+  writer.writeString("int32");
+  writer.writeInt32(type.int32);
+  writer.writeString("int64");
+  writer.writeInt64(type.int64);
+  writer.writeString("uint8");
+  writer.writeUInt8(type.uint8);
+  writer.writeString("uint16");
+  writer.writeUInt16(type.uint16);
+  writer.writeString("uint32");
+  writer.writeUInt32(type.uint32);
+  writer.writeString("uint64");
+  writer.writeUInt64(type.uint64);
+  writer.writeString("optUint32");
+  writer.writeNullableUInt32(type.optUint32);
+  writer.writeString("optUint64");
+  writer.writeNullableUInt64(type.optUint64);
+  writer.writeString("float32");
+  writer.writeFloat32(type.float32);
+  writer.writeString("float64");
+  writer.writeFloat64(type.float64);
+  writer.writeString("str");
+  writer.writeString(type.str);
+  writer.writeString("bytes");
+  writer.writeBytes(type.bytes);
+  writer.writeString("array");
+  writer.writeArray(type.array, (writer: Write, item: u8) => {
+    writer.writeUInt8(item);
+  });
+  writer.writeString("map");
+  writer.writeMap(
+     type.map,
+    (writer: Write, key: string): void => {
+      writer.writeString(key);
+    },
+    (writer: Write, value: Array<i32>) => {
+      writer.writeArray(value, (writer: Write, item: i32) => {
+        writer.writeInt32(item);
+      });
+    }
+  );
+}
+
+function __read_Sanity(reader: Read, type: Sanity): void {
+  var numFields = reader.readMapLength();
+
+  while (numFields > 0) {
+    numFields--;
+    const field = reader.readString();
+
+    if (field == "nil") {
+      type.nil = reader.readNullableString();
+    } else if (field == "int8") {
+      type.int8 = reader.readInt8();
+    } else if (field == "int16") {
+      type.int16 = reader.readInt16();
+    } else if (field == "int32") {
+      type.int32 = reader.readInt32();
+    } else if (field == "int64") {
+      type.int64 = reader.readInt64();
+    } else if (field == "uint8") {
+      type.uint8 = reader.readUInt8();
+    } else if (field == "uint16") {
+      type.uint16 = reader.readUInt16();
+    } else if (field == "uint32") {
+      type.uint32 = reader.readUInt32();
+    } else if (field == "uint64") {
+      type.uint64 = reader.readUInt64();
+    } else if (field == "optUint32") {
+      type.optUint32 = reader.readNullableUInt32();
+    } else if (field == "optUint64") {
+      type.optUint64 = reader.readNullableUInt64();
+    } else if (field == "float32") {
+      type.float32 = reader.readFloat32();
+    } else if (field == "float64") {
+      type.float64 = reader.readFloat64();
+    } else if (field == "str") {
+      type.str = reader.readString();
+    } else if (field == "bytes") {
+      type.bytes = reader.readBytes();
+    } else if (field == "array") {
+      type.array = reader.readArray(
+        (reader: Read): u8 => {
+          return reader.readUInt8();
+        }
+      );
+    } else if (field == "map") {
+      type.map = reader.readMap(
+        (reader: Read): string => {
+          return reader.readString();
+        },
+        (reader: Read): Array<i32> => {
+          return reader.readArray(
+            (reader: Read): i32 => {
+              return reader.readInt32();
+            }
+          );
+        }
+      );
+    } else {
+      throw new Error(
+        "Sanity.decode: Unknown field name '" + field + "'"
+      );
+    }
+  }
+}
+
+// TODO: nullable (readNullable?), array, array of arrays
 
 describe("MsgPack: Sanity", () => {
   it("Serializes & Deserializes", () => {

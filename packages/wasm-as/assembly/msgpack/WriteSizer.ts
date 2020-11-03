@@ -108,7 +108,7 @@ export class WriteSizer implements Write {
     this.length += value.byteLength + 1;
   }
 
-  writeArraySize(length: u32): void {
+  writeArrayLength(length: u32): void {
     if (length < 16) {
       this.length++;
     } else if (length <= <u32>u16.MAX_VALUE) {
@@ -119,13 +119,13 @@ export class WriteSizer implements Write {
   }
 
   writeArray<T>(a: Array<T>, fn: (sizer: WriteSizer, item: T) => void): void {
-    this.writeArraySize(a.length);
+    this.writeArrayLength(a.length);
     for (let i: i32 = 0; i < a.length; i++) {
       fn(this, a[i]);
     }
   }
 
-  writeMapSize(length: u32): void {
+  writeMapLength(length: u32): void {
     if (length < 16) {
       this.length++;
     } else if (length <= <u32>u16.MAX_VALUE) {
@@ -140,7 +140,7 @@ export class WriteSizer implements Write {
     keyFn: (sizer: WriteSizer, key: K) => void,
     valueFn: (sizer: WriteSizer, value: V) => void
   ): void {
-    this.writeMapSize(m.size);
+    this.writeMapLength(m.size);
     const keys = m.keys();
     for (let i: i32 = 0; i < keys.length; i++) {
       const key = keys[i];
@@ -156,7 +156,7 @@ export class WriteSizer implements Write {
       return;
     }
 
-    this.writeBool(value);
+    this.writeBool(value.value);
   }
 
   writeNullableInt8(value: i8 | null): void {
@@ -165,7 +165,7 @@ export class WriteSizer implements Write {
       return;
     }
 
-    this.writeInt8(value);
+    this.writeInt8(value.value);
   }
 
   writeNullableInt16(value: i16 | null): void {
@@ -174,7 +174,7 @@ export class WriteSizer implements Write {
       return;
     }
 
-    this.writeInt16(value);
+    this.writeInt16(value.value);
   }
 
   writeNullableInt32(value: i32 | null): void {
@@ -183,7 +183,7 @@ export class WriteSizer implements Write {
       return;
     }
 
-    this.writeInt32(value);
+    this.writeInt32(value.value);
   }
 
   writeNullableInt64(value: i64 | null): void {
@@ -192,7 +192,7 @@ export class WriteSizer implements Write {
       return;
     }
 
-    this.writeInt64(value);
+    this.writeInt64(value.value);
   }
 
   writeNullableUInt8(value: u8 | null): void {
@@ -201,7 +201,7 @@ export class WriteSizer implements Write {
       return;
     }
 
-    this.writeUInt8(value);
+    this.writeUInt8(value.value);
   }
 
   writeNullableUInt16(value: u16 | null): void {
@@ -210,7 +210,7 @@ export class WriteSizer implements Write {
       return;
     }
 
-    this.writeUInt16(value);
+    this.writeUInt16(value.value);
   }
 
   writeNullableUInt32(value: u32 | null): void {
@@ -219,7 +219,7 @@ export class WriteSizer implements Write {
       return;
     }
 
-    this.writeUInt32(value);
+    this.writeUInt32(value.value);
   }
 
   writeNullableUInt64(value: u64 | null): void {
@@ -228,7 +228,7 @@ export class WriteSizer implements Write {
       return;
     }
 
-    this.writeUInt64(value);
+    this.writeUInt64(value.value);
   }
 
   writeNullableFloat32(value: f32 | null): void {
@@ -237,7 +237,7 @@ export class WriteSizer implements Write {
       return;
     }
 
-    this.writeFloat32(value);
+    this.writeFloat32(value.value);
   }
 
   writeNullableFloat64(value: f64 | null): void {
@@ -246,7 +246,7 @@ export class WriteSizer implements Write {
       return;
     }
 
-    this.writeFloat64(value);
+    this.writeFloat64(value.value);
   }
 
   writeNullableString(value: string | null): void {
@@ -255,7 +255,7 @@ export class WriteSizer implements Write {
       return;
     }
 
-    this.writeString(value);
+    this.writeString(value.value);
   }
 
   writeNullableBytes(value: ArrayBuffer | null): void {

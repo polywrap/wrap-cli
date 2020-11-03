@@ -216,6 +216,12 @@ export function render(schema: Schema): string {
     leave: visitorLeave(config, state)
   });
 
+  for (const prop of config.types[0].properties) {
+    if (prop.name === "uArrayOptArrayArray") {
+      //console.log(JSON.stringify(prop, null, 2));
+    }
+  }
+
   const template = fs.readFileSync(
     __dirname + "/type-packing.mustache", 'utf-8'
   );
