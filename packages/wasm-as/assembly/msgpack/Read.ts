@@ -1,3 +1,5 @@
+import { Nullable } from "./Nullable";
+
 export interface Read {
   readBool(): bool;
   readInt8(): i8;
@@ -22,17 +24,17 @@ export interface Read {
     valueFn: (reader: Read) => V
   ): Map<K, V>;
 
-  readNullableBool(): bool | null;
-  readNullableInt8(): i8 | null;
-  readNullableInt16(): i16 | null;
-  readNullableInt32(): i32 | null;
-  readNullableInt64(): i64 | null;
-  readNullableUInt8(): u8 | null;
-  readNullableUInt16(): u16 | null;
-  readNullableUInt32(): u32 | null;
-  readNullableUInt64(): u64 | null;
-  readNullableFloat32(): f32 | null;
-  readNullableFloat64(): f64 | null;
+  readNullableBool(): Nullable<bool>;
+  readNullableInt8(): Nullable<i8>;
+  readNullableInt16(): Nullable<i16>;
+  readNullableInt32(): Nullable<i32>;
+  readNullableInt64(): Nullable<i64>;
+  readNullableUInt8(): Nullable<u8>;
+  readNullableUInt16(): Nullable<u16>;
+  readNullableUInt32(): Nullable<u32>;
+  readNullableUInt64(): Nullable<u64>;
+  readNullableFloat32(): Nullable<f32>;
+  readNullableFloat64(): Nullable<f64>;
   readNullableString(): string | null;
   readNullableBytes(): ArrayBuffer | null;
   readNullableArray<T>(fn: (decoder: Read) => T): Array<T> | null;

@@ -9,6 +9,7 @@ import {
   isFixedArray,
   isFixedString
 } from "./Format";
+import { Nullable } from "./Nullable";
 import { Read } from "./Read";
 import { E_INVALIDLENGTH } from "util/error";
 
@@ -252,81 +253,81 @@ export class ReadDecoder implements Read {
     return m;
   }
 
-  readNullableBool(): bool | null {
+  readNullableBool(): Nullable<bool> {
     if (this.isNextNil()) {
-      return null;
+      return Nullable.fromNull<bool>();
     }
-    return this.readBool();
+    return Nullable.fromValue<bool>(this.readBool());
   }
 
-  readNullableInt8(): i8 | null {
+  readNullableInt8(): Nullable<i8> {
     if (this.isNextNil()) {
-      return null;
+      return Nullable.fromNull<i8>();
     }
-    return this.readInt8();
+    return Nullable.fromValue<i8>(this.readInt8());
   }
 
-  readNullableInt16(): i16 | null {
+  readNullableInt16(): Nullable<i16> {
     if (this.isNextNil()) {
-      return null;
+      return Nullable.fromNull<i16>();
     }
-    return this.readInt16();
+    return Nullable.fromValue<i16>(this.readInt16());
   }
 
-  readNullableInt32(): i32 | null {
+  readNullableInt32(): Nullable<i32> {
     if (this.isNextNil()) {
-      return null;
+      return Nullable.fromNull<i32>();
     }
-    return this.readInt32();
+    return Nullable.fromValue<i32>(this.readInt32());
   }
 
-  readNullableInt64(): i64 | null {
+  readNullableInt64(): Nullable<i64> {
     if (this.isNextNil()) {
-      return null;
+      return Nullable.fromNull<i64>();
     }
-    return this.readInt64();
+    return Nullable.fromValue<i64>(this.readInt64());
   }
 
-  readNullableUInt8(): u8 | null {
+  readNullableUInt8(): Nullable<u8> {
     if (this.isNextNil()) {
-      return null;
+      return Nullable.fromNull<u8>();
     }
-    return this.readUInt8();
+    return Nullable.fromValue<u8>(this.readUInt8());
   }
 
-  readNullableUInt16(): u16 | null {
+  readNullableUInt16(): Nullable<u16> {
     if (this.isNextNil()) {
-      return null;
+      return Nullable.fromNull<u16>();
     }
-    return this.readUInt16();
+    return Nullable.fromValue<u16>(this.readUInt16());
   }
 
-  readNullableUInt32(): u32 | null {
+  readNullableUInt32(): Nullable<u32> {
     if (this.isNextNil()) {
-      return null;
+      return Nullable.fromNull<u32>();
     }
-    return this.readUInt32();
+    return Nullable.fromValue<u32>(this.readUInt32());
   }
 
-  readNullableUInt64(): u64 | null {
+  readNullableUInt64(): Nullable<u64> {
     if (this.isNextNil()) {
-      return null;
+      return Nullable.fromNull<u64>();
     }
-    return this.readUInt64();
+    return Nullable.fromValue<u64>(this.readUInt64());
   }
 
-  readNullableFloat32(): f32 | null {
+  readNullableFloat32(): Nullable<f32> {
     if (this.isNextNil()) {
-      return null;
+      return Nullable.fromNull<f32>();
     }
-    return this.readFloat32();
+    return Nullable.fromValue<f32>(this.readFloat32());
   }
 
-  readNullableFloat64(): f64 | null {
+  readNullableFloat64(): Nullable<f64> {
     if (this.isNextNil()) {
-      return null;
+      return Nullable.fromNull<f64>();
     }
-    return this.readFloat64();
+    return Nullable.fromValue<f64>(this.readFloat64());
   }
 
   readNullableString(): string | null {

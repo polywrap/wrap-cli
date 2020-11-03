@@ -1,5 +1,6 @@
 import { DataView } from "./DataView";
 import { Format } from "./Format";
+import { Nullable } from "./Nullable";
 import { Write } from "./Write";
 
 export class WriteEncoder implements Write {
@@ -178,8 +179,8 @@ export class WriteEncoder implements Write {
     }
   }
 
-  writeNullableBool(value: bool | null): void {
-    if (value === null) {
+  writeNullableBool(value: Nullable<bool>): void {
+    if (value.isNull) {
       this.writeNil();
       return;
     }
@@ -187,8 +188,8 @@ export class WriteEncoder implements Write {
     this.writeBool(value.value);
   }
 
-  writeNullableInt8(value: i8 | null): void {
-    if (value === null) {
+  writeNullableInt8(value: Nullable<i8>): void {
+    if (value.isNull) {
       this.writeNil();
       return;
     }
@@ -196,8 +197,8 @@ export class WriteEncoder implements Write {
     this.writeInt8(value.value);
   }
 
-  writeNullableInt16(value: i16 | null): void {
-    if (value === null) {
+  writeNullableInt16(value: Nullable<i16>): void {
+    if (value.isNull) {
       this.writeNil();
       return;
     }
@@ -205,8 +206,8 @@ export class WriteEncoder implements Write {
     this.writeInt16(value.value);
   }
 
-  writeNullableInt32(value: i32 | null): void {
-    if (value === null) {
+  writeNullableInt32(value: Nullable<i32>): void {
+    if (value.isNull) {
       this.writeNil();
       return;
     }
@@ -214,8 +215,8 @@ export class WriteEncoder implements Write {
     this.writeInt32(value.value);
   }
 
-  writeNullableInt64(value: i64 | null): void {
-    if (value === null) {
+  writeNullableInt64(value: Nullable<i64>): void {
+    if (value.isNull) {
       this.writeNil();
       return;
     }
@@ -223,8 +224,8 @@ export class WriteEncoder implements Write {
     this.writeInt64(value.value);
   }
 
-  writeNullableUInt8(value: u8 | null): void {
-    if (value === null) {
+  writeNullableUInt8(value: Nullable<u8>): void {
+    if (value.isNull) {
       this.writeNil();
       return;
     }
@@ -232,8 +233,8 @@ export class WriteEncoder implements Write {
     this.writeUInt8(value.value);
   }
 
-  writeNullableUInt16(value: u16 | null): void {
-    if (value === null) {
+  writeNullableUInt16(value: Nullable<u16>): void {
+    if (value.isNull) {
       this.writeNil();
       return;
     }
@@ -241,8 +242,8 @@ export class WriteEncoder implements Write {
     this.writeUInt16(value.value);
   }
 
-  writeNullableUInt32(value: u32 | null): void {
-    if (value === null) {
+  writeNullableUInt32(value: Nullable<u32>): void {
+    if (value.isNull) {
       this.writeNil();
       return;
     }
@@ -250,8 +251,8 @@ export class WriteEncoder implements Write {
     this.writeUInt32(value.value);
   }
 
-  writeNullableUInt64(value: u64 | null): void {
-    if (value === null) {
+  writeNullableUInt64(value: Nullable<u64>): void {
+    if (value.isNull) {
       this.writeNil();
       return;
     }
@@ -259,8 +260,8 @@ export class WriteEncoder implements Write {
     this.writeUInt64(value.value);
   }
 
-  writeNullableFloat32(value: f32 | null): void {
-    if (value === null) {
+  writeNullableFloat32(value: Nullable<f32>): void {
+    if (value.isNull) {
       this.writeNil();
       return;
     }
@@ -268,8 +269,8 @@ export class WriteEncoder implements Write {
     this.writeFloat32(value.value);
   }
 
-  writeNullableFloat64(value: f64 | null): void {
-    if (value === null) {
+  writeNullableFloat64(value: Nullable<f64>): void {
+    if (value.isNull) {
       this.writeNil();
       return;
     }
@@ -283,7 +284,7 @@ export class WriteEncoder implements Write {
       return;
     }
 
-    this.writeString(value.value);
+    this.writeString(value);
   }
 
   writeNullableBytes(value: ArrayBuffer | null): void {

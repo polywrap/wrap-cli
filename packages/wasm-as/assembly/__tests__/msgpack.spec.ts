@@ -1,4 +1,5 @@
 import {
+  Nullable,
   Read,
   ReadDecoder,
   Write,
@@ -7,7 +8,7 @@ import {
 } from "../msgpack";
 
 class Sanity {
-  nil: Nullable<string> | null = "null";
+  nil: string | null = "null";
   int8: i8;
   int16: i16;
   int32: i32;
@@ -16,8 +17,8 @@ class Sanity {
   uint16: u16;
   uint32: u32;
   uint64: u64;
-  optUint32: Nullable<u32>;
-  optUint64: Nullable<u64>;
+  optUint32: Nullable<u32> = new Nullable<u32>();
+  optUint64: Nullable<u64> = new Nullable<u64>();
   float32: f32;
   float64: f64;
   str: string = "";
@@ -35,8 +36,8 @@ class Sanity {
     this.uint16 = 65535;
     this.uint32 = 4294967295;
     this.uint64 = 18446744073709551615;
-    this.optUint32 = new WrappedValue(234234234);
-    this.optUint64 = null;
+    this.optUint32 = Nullable.fromValue<u32>(234234234);
+    this.optUint64 = Nullable.fromNull<u64>();
     this.float32 = 3.40282344818115234375;
     this.float64 = 3124124512.598273468017578125;
     this.str = "Hello, world!";

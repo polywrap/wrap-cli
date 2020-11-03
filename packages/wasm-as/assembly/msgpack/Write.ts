@@ -1,3 +1,5 @@
+import { Nullable } from "./Nullable";
+
 export interface Write {
   writeNil(): void;
   writeBool(value: bool): void;
@@ -27,17 +29,17 @@ export interface Write {
     valueFn: (writer: Write, value: V) => void
   ): void;
 
-  writeNullableBool(value: bool | null): void;
-  writeNullableInt8(value: i8 | null): void;
-  writeNullableInt16(value: i16 | null): void;
-  writeNullableInt32(value: i32 | null): void;
-  writeNullableInt64(value: i64 | null): void;
-  writeNullableUInt8(value: u8 | null): void;
-  writeNullableUInt16(value: u16 | null): void;
-  writeNullableUInt32(value: u32 | null): void;
-  writeNullableUInt64(value: u64 | null): void;
-  writeNullableFloat32(value: f32 | null): void;
-  writeNullableFloat64(value: f64 | null): void;
+  writeNullableBool(value: Nullable<bool>): void;
+  writeNullableInt8(value: Nullable<i8>): void;
+  writeNullableInt16(value: Nullable<i16>): void;
+  writeNullableInt32(value: Nullable<i32>): void;
+  writeNullableInt64(value: Nullable<i64>): void;
+  writeNullableUInt8(value: Nullable<u8>): void;
+  writeNullableUInt16(value: Nullable<u16>): void;
+  writeNullableUInt32(value: Nullable<u32>): void;
+  writeNullableUInt64(value: Nullable<u64>): void;
+  writeNullableFloat32(value: Nullable<f32>): void;
+  writeNullableFloat64(value: Nullable<f64>): void;
   writeNullableString(value: string | null): void;
   writeNullableBytes(ab: ArrayBuffer | null): void;
   writeNullableArray<T>(
