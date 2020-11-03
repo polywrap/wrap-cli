@@ -1,0 +1,22 @@
+import { Nullable } from "@web3api/wasm-as";
+import { serialize{{name}} } from "./serialize";
+import { deserialize{{name}} } from "./deserialize";
+
+export class {{name}} {
+  {{#properties}}
+  {{#scalar}}
+  {{name}}: {{#toWasm}}{{type}}{{/toWasm}};
+  {{/scalar}}
+  {{#array}}
+  {{name}}: {{#toWasm}}{{type}}{{/toWasm}};
+  {{/array}}
+  {{/properties}}
+
+  toBuffer(): ArrayBuffer {
+    return serialize{{name}}(this);
+  }
+
+  fromBuffer(buffer: ArrayBuffer): void {
+    deserialize{{name}}(buffer, this);
+  }
+}

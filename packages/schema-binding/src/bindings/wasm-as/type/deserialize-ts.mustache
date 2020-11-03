@@ -1,0 +1,29 @@
+import {
+  Read,
+  ReadDecoder,
+  Nullable
+} from "@web3api/wasm-as";
+import { {{name}} } from "./";
+
+export function deserialize{{name}}(buffer: ArrayBuffer, type: {{name}}) {
+  const reader = new ReadDecoder(buffer);
+  var numFields = reader.readMapLength();
+
+  while (numFields > 0) {
+    numFields--;
+    const field = reader.readString();
+
+    {{#properties}}
+    {{^first}}else {{/first}}if (field == "{{name}}") {
+      {{#scalar}}
+      type.{{name}} = reader.read{{#toMsgPack}}{{type}}{{/toMsgPack}}();
+      {{/scalar}}
+      {{#array}}
+      type.{{name}} = reader.read{{#toMsgPack}}{{type}}{{/toMsgPack}}((reader: Read): {{#toWasm}}{{item.type}}{{/toWasm}} => {
+        {{> deserialize_array}}
+      });
+      {{/array}}
+    }
+    {{/properties}}
+  }
+}

@@ -1,9 +1,4 @@
-import {
-  Nullable,
-  ReadDecoder,
-  WriteEncoder,
-  WriteSizer
-} from "@web3api/wasm-as";
+import { Nullable } from "@web3api/wasm-as";
 import { serializeCustomType } from "./serialize";
 import { deserializeCustomType } from "./deserialize";
 
@@ -11,13 +6,13 @@ export class CustomType {
   str: string;
   optStr: string | null;
   u: u32;
-  optU: Nullable<UInt>;
+  optU: Nullable<u32>;
   u8: u8;
-  u16: u16
+  u16: u16;
   u32: u32;
   u64: u64;
   i: i32;
-  i8: i8
+  i8: i8;
   i16: i16;
   i32: i32;
   i64: i64;
@@ -27,20 +22,14 @@ export class CustomType {
   optStrOptArray: Array<string | null> | null;
   uArrayArray: Array<Array<u32>>;
   uOptArrayOptArray: Array<Array<Nullable<u64>> | null>;
-  uArrayOptArrayArray: Array<Array<Array<u64> | null>>;
-  crazyArray: Array<Array<Array<Array<u64>>> | null> | null;
+  uArrayOptArrayArray: Array<Array<Array<u64>> | null>;
+  crazyArray: Array<Array<Array<Array<u64> | null>> | null> | null;
 
   toBuffer(): ArrayBuffer {
-    const sizer = new WriteSizer();
-    serializeCustomType(sizer, this);
-    const buffer = new ArrayBuffer(sizer.length);
-    const encoder = new WriteEncoder(buffer);
-    serializeCustomType(encoder, this);
-    return buffer;
+    return serializeCustomType(this);
   }
 
   fromBuffer(buffer: ArrayBuffer): void {
-    const decoder = new ReadDecoder(buffer);
-    deserializeCustomType(decoder, this);
+    deserializeCustomType(buffer, this);
   }
 }

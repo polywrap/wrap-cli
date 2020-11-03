@@ -1,12 +1,21 @@
 import {
   Write,
+  WriteSizer,
+  WriteEncoder,
   Nullable
 } from "@web3api/wasm-as";
-import {
-  CustomType
-} from "./";
+import { CustomType } from "./";
 
-export function serializeCustomType(writer: Write, type: CustomType) {
+export function serializeCustomType(type: CustomType): ArrayBuffer {
+  const sizer = new WriteSizer();
+  writeCustomType(sizer, type);
+  const buffer = new ArrayBuffer(sizer.length);
+  const encoder = new WriteEncoder(buffer);
+  writeCustomType(encoder, type);
+  return buffer;
+}
+
+function writeCustomType(writer: Write, type: CustomType) {
   writer.writeMapSize(21);
   writer.writeString("str");
   writer.writeString(type.str);

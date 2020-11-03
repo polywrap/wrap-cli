@@ -1,0 +1,31 @@
+import {
+  Write,
+  WriteSizer,
+  WriteEncoder,
+  Nullable
+} from "@web3api/wasm-as";
+import { {{name}} } from "./";
+
+export function serialize{{name}}(type: {{name}}): ArrayBuffer {
+  const sizer = new WriteSizer();
+  write{{name}}(sizer, type);
+  const buffer = new ArrayBuffer(sizer.length);
+  const encoder = new WriteEncoder(buffer);
+  write{{name}}(encoder, type);
+  return buffer;
+}
+
+function write{{name}}(writer: Write, type: {{name}}) {
+  writer.writeMapSize({{properties.length}});
+  {{#properties}}
+  writer.writeString("{{name}}");
+  {{#scalar}}
+  writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(type.{{name}});
+  {{/scalar}}
+  {{#array}}
+  writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(type.{{name}}, (writer: Write, item: {{#toWasm}}{{item.type}}{{/toWasm}}): void => {
+    {{> serialize_array}}
+  });
+  {{/array}}
+  {{/properties}}
+}

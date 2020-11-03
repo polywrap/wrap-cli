@@ -1,6 +1,5 @@
 import path from "path";
 import { readdirSync, readFileSync, Dirent } from 'fs'
-import { OutputDirectory, OutputEntry } from "../";
 
 const root = path.join(__dirname, "./cases");
 
@@ -56,36 +55,4 @@ export function fetchTestCases(): TestCases {
     .forEach(importCase);
 
   return cases;
-}
-
-export function fetchOutputDirectory(outputDir: string): OutputDirectory {
-
-  const importDirectoryEntry = (dirent: Dirent): OutputEntry => {
-    const direntPath = path.join(outputDir, dirent.name);
-
-    if (dirent.isDirectory()) {
-
-      const entries: OutputEntry[] =
-        readdirSync(outputDir, { withFileTypes: true })
-        .map(dirent => importDirectoryEntry(dirent));
-
-      return {
-        type: "Directory",
-        name: dirent.name,
-        data: entries
-      };
-    } else {
-      return {
-        type: "File",
-        name: dirent.name,
-        data: readFileSync(direntPath, { encoding: "utf-8" })
-      };
-    }
-  }
-
-  const entries: OutputEntry[] =
-    readdirSync(outputDir, { withFileTypes: true })
-      .map(dirent => importDirectoryEntry(dirent));
-
-  return { entries };
 }

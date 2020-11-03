@@ -3,6 +3,6 @@ return reader.read{{#toMsgPack}}{{type}}{{/toMsgPack}}();
 {{/scalar}}
 {{#array}}
 return reader.read{{#toMsgPack}}{{type}}{{/toMsgPack}}((reader: Read): {{#toWasm}}{{item.type}}{{/toWasm}} => {
-  {{> read_array_item}}
+  {{> deserialize_array}}
 });
 {{/array}}

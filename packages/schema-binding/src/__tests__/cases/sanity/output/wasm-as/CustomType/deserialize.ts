@@ -1,12 +1,12 @@
 import {
   Read,
+  ReadDecoder,
   Nullable
 } from "@web3api/wasm-as";
-import {
-  CustomType
-} from "./";
+import { CustomType } from "./";
 
-export function deserializeCustomType(reader: Read, type: CustomType) {
+export function deserializeCustomType(buffer: ArrayBuffer, type: CustomType) {
+  const reader = new ReadDecoder(buffer);
   var numFields = reader.readMapLength();
 
   while (numFields > 0) {

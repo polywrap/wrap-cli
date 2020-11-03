@@ -3,6 +3,6 @@ writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(item);
 {{/scalar}}
 {{#array}}
 writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(item, (writer: Write, item: {{#toWasm}}{{item.type}}{{/toWasm}}): void => {
-  {{> write_array_item}}
+  {{> serialize_array}}
 });
 {{/array}}

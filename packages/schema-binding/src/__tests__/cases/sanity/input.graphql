@@ -33,3 +33,7 @@ type CustomType {
   uArrayOptArrayArray: [[[UInt64!]!]]!
   crazyArray: [[[[UInt64!]]!]]
 }
+
+type AnotherType {
+  prop: String
+}

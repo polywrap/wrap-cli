@@ -1,6 +1,5 @@
 import { Schema } from "../../";
 import * as Mapping from "./mapping";
-import fs from "fs";
 import { printSchemaWithDirectives } from "graphql-tools";
 import {
   FieldDefinitionNode,
@@ -11,9 +10,8 @@ import {
   NonNullTypeNode,
   ListTypeNode
 } from "graphql";
-const Mustache = require("mustache");
 
-class TypeDefinition {
+export class TypeDefinition {
   constructor(
     public name: string,
     public type?: string,
@@ -25,18 +23,18 @@ class TypeDefinition {
   public toWasm = Mapping.toWasm
 }
 
-class CustomTypeDefinition extends TypeDefinition {
+export class CustomTypeDefinition extends TypeDefinition {
   properties: PropertyDefinition[] = []
 }
 
-abstract class UnknownTypeDefinition extends TypeDefinition {
+export abstract class UnknownTypeDefinition extends TypeDefinition {
   array: ArrayDefinition | null = null
   scalar: ScalarDefinition | null = null
 
   public abstract setTypeName(): void;
 }
 
-class ScalarDefinition extends TypeDefinition {
+export class ScalarDefinition extends TypeDefinition {
   constructor(
     public name: string,
     public type: string,
@@ -46,7 +44,7 @@ class ScalarDefinition extends TypeDefinition {
   }
 }
 
-class PropertyDefinition extends UnknownTypeDefinition {
+export class PropertyDefinition extends UnknownTypeDefinition {
   public setTypeName(): void {
     if (this.array) {
       this.array.setTypeName();
@@ -54,7 +52,7 @@ class PropertyDefinition extends UnknownTypeDefinition {
   }
 }
 
-class ArrayDefinition extends UnknownTypeDefinition {
+export class ArrayDefinition extends UnknownTypeDefinition {
   constructor(
     public name: string,
     public type: string,
@@ -96,7 +94,7 @@ class ArrayDefinition extends UnknownTypeDefinition {
   }
 }
 
-interface Config {
+export interface Config {
   types: CustomTypeDefinition[]
 }
 
@@ -204,7 +202,7 @@ const finalizeConfig = (config: Config) => {
   }
 }
 
-export function render(schema: Schema): string {
+export function buildConfig(schema: Schema): Config {
   const config: Config = {
     types: []
   };
@@ -219,18 +217,5 @@ export function render(schema: Schema): string {
   });
   finalizeConfig(config);
 
-  console.log(config.types[0].properties[0])
-
-  const template = fs.readFileSync(
-    __dirname + "/type-packing.mustache", 'utf-8'
-  );
-  const write_array_item = fs.readFileSync(
-    __dirname + "/type-packing.array-item-w.mustache", "utf-8"
-  );
-  const read_array_item = fs.readFileSync(
-    __dirname + "/type-packing.array-item-r.mustache", "utf-8"
-  );
-  return Mustache.render(template, config, {
-    write_array_item, read_array_item
-  });
+  return config;
 }
