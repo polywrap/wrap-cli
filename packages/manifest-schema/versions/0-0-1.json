@@ -13,13 +13,14 @@
       },
       "version": {
         "type": "string",
-        "value": "0.0.1"
+        "pattern": "0.0.1"
       },
       "query": {
         "additionalProperties": false,
+        "required": ["schema"],
         "properties": {
           "schema": {
-            "type": ["string", "object"],
+            "type": ["object"],
             "required": ["file"],
             "additionalProperties": false,
             "properties": {
@@ -30,7 +31,7 @@
             }
           },
           "module": {
-            "type": ["string", "object"],
+            "type": ["object"],
             "required": ["file"],
             "additionalProperties": false,
             "properties": {
@@ -47,9 +48,10 @@
       },
       "mutation": {
         "additionalProperties": false,
+        "required": ["schema"],
         "properties": {
           "schema": {
-            "type": ["string", "object"],
+            "type": ["object"],
             "required": ["file"],
             "additionalProperties": false,
             "properties": {
@@ -60,7 +62,7 @@
             }
           },
           "module": {
-            "type": ["string", "object"],
+            "type": ["object"],
             "required": ["file"],
             "additionalProperties": false,
             "properties": {

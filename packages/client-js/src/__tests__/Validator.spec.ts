@@ -53,14 +53,8 @@ describe("Validate web3api manifest ", () => {
 });
 
 describe("Manifest migration ", () => {
-  afterAll(() => {
-    fs.unlinkSync("./web3api.yml");
-  });
-
   it("Should tell that is a new migration version ", () => {
-    const manifestPath =
-      __dirname + "/manifest/migrator/new-version/web3api.yml";
-
+    const manifestPath = __dirname + "/manifest/migrator/new-version/web3api.yml";
     const manifest = YAML.safeLoad(
       fs.readFileSync(manifestPath, "utf-8")
     ) as Manifest;
@@ -70,8 +64,7 @@ describe("Manifest migration ", () => {
   });
 
   it("Should upgrade manifest ", () => {
-    const manifestPath =
-      __dirname + "/manifest/migrator/old-version/web3api.yml";
+    const manifestPath = __dirname + "/manifest/migrator/old-version/web3api.yml";
     const manifest = YAML.safeLoad(
       fs.readFileSync(manifestPath, "utf-8")
     ) as Manifest;
@@ -89,7 +82,6 @@ describe("Manifest migration ", () => {
 
 // Notes
 /*
-  - move generate script to othe rpackage
   - all the other changes I just pushed
   - in the migrator, it should figure out what version it's going FROM, and what version it's going TO
   - Call the migrator(s) for that translation

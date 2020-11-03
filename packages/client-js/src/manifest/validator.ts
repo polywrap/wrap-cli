@@ -1,11 +1,11 @@
 import { Validator } from "jsonschema";
 import { existsSync } from "fs";
-import { valid } from "semver";
-
 import schema from "@web3api/manifest-schema";
 
 import { saveMigration, migrator } from "./migrator";
-import { Manifest } from "./Manifest";
+import { Manifest } from "./versions/0.0.1-alpha.1"
+
+const packageInformation = require("../../package.json");
 
 enum ValidationError {
   ADDITIONAL_PROPERTY = "additionalProperties",
@@ -21,17 +21,12 @@ Validator.prototype.customFormats.file = (file: string) => {
 };
 
 Validator.prototype.customFormats.version = (version: string) => {
-  return validateVersion(version);
+  return version === packageInformation.version;
 };
 
 const validateFile = (path: string) => {
   const exists = existsSync(path);
   return exists;
-};
-
-const validateVersion = (version: string) => {
-  // Valid method returns null or the version (not true or false)
-  return valid(version) ? true : false;
 };
 
 export const manifestValidation = (manifest: Manifest): Manifest => {
