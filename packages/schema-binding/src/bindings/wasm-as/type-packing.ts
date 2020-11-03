@@ -19,13 +19,14 @@ class TypeDefinition {
     public type?: string,
     public required?: boolean
   ) { }
-  public last?: boolean
+  public last: boolean | null = null
+  public first: boolean | null = null
   public toMsgPack = Mapping.toMsgPack
   public toWasm = Mapping.toWasm
 }
 
 class CustomTypeDefinition extends TypeDefinition {
-  properties: UnknownTypeDefinition[] = []
+  properties: PropertyDefinition[] = []
 }
 
 abstract class UnknownTypeDefinition extends TypeDefinition {
@@ -76,7 +77,6 @@ class ArrayDefinition extends UnknownTypeDefinition {
   }
 
   public setTypeName(): void {
-    let arrayCount = 1;
     let baseType = "";
     let baseTypeFound = false;
     let array: ArrayDefinition = this;
@@ -173,25 +173,6 @@ const visitorEnter = (config: Config, state: State) => ({
 
 const visitorLeave = (config: Config, state: State) => ({
   ObjectTypeDefinition: (node: TypeDefinitionNode) => {
-    const numTypes = config.types.length;
-
-    if (numTypes > 0) {
-      const latestType = config.types[numTypes - 1];
-
-      // Set the "last" boolean within the type definition
-      latestType.last = true;
-
-      // Unset the previous "last"
-      if (numTypes - 2 > -1) {
-        config.types[numTypes - 2].last = false;
-      }
-
-      // Ensure all property names are set
-      for (const prop of latestType.properties) {
-        prop.setTypeName();
-      }
-    }
-
     state.currentType = undefined;
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
@@ -201,6 +182,27 @@ const visitorLeave = (config: Config, state: State) => ({
     state.nonNullType = false;
   },
 });
+
+const finalizeConfig = (config: Config) => {
+  if (config.types.length > 0) {
+    const types = config.types;
+    types[0].first = true;
+    types[types.length - 1].last = true;
+
+    for (const type of types) {
+      if (type.properties.length > 0) {
+        const properties = type.properties;
+        properties[0].first = true;
+        properties[properties.length - 1].last = true;
+
+        // Ensure all property names are set
+        for (const prop of properties) {
+          prop.setTypeName();
+        }
+      }
+    }
+  }
+}
 
 export function render(schema: Schema): string {
   const config: Config = {
@@ -215,20 +217,20 @@ export function render(schema: Schema): string {
     enter: visitorEnter(config, state),
     leave: visitorLeave(config, state)
   });
+  finalizeConfig(config);
 
-  for (const prop of config.types[0].properties) {
-    if (prop.name === "uArrayOptArrayArray") {
-      //console.log(JSON.stringify(prop, null, 2));
-    }
-  }
+  console.log(config.types[0].properties[0])
 
   const template = fs.readFileSync(
     __dirname + "/type-packing.mustache", 'utf-8'
   );
   const write_array_item = fs.readFileSync(
-    __dirname + "/type-packing.array-item.mustache", "utf-8"
+    __dirname + "/type-packing.array-item-w.mustache", "utf-8"
+  );
+  const read_array_item = fs.readFileSync(
+    __dirname + "/type-packing.array-item-r.mustache", "utf-8"
   );
   return Mustache.render(template, config, {
-    write_array_item
+    write_array_item, read_array_item
   });
 }

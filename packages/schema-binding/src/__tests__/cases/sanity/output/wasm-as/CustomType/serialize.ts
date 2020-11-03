@@ -1,13 +1,12 @@
-import { Write, WriteSizer, WriteEncoder } from "@web3api/wasm-as";
+import {
+  Write,
+  Nullable
+} from "@web3api/wasm-as";
 import {
   CustomType
 } from "./";
 
-function _read_CustomType(writer: Write, type: CustomType) {
-  
-}
-
-function __write_CustomType(writer: Write, type: CustomType) {
+export function serializeCustomType(writer: Write, type: CustomType) {
   writer.writeMapSize(21);
   writer.writeString("str");
   writer.writeString(type.str);
@@ -44,7 +43,7 @@ function __write_CustomType(writer: Write, type: CustomType) {
     writer.writeUInt32(item);
   });
   writer.writeString("optUOptArray");
-  writer.writeNullableArray(type.optUOptArray, (writer: Write, item: u32 | null): void => {
+  writer.writeNullableArray(type.optUOptArray, (writer: Write, item: Nullable<u32>): void => {
     writer.writeNullableUInt32(item);
   });
   writer.writeString("optStrOptArray");
@@ -58,8 +57,8 @@ function __write_CustomType(writer: Write, type: CustomType) {
     });
   });
   writer.writeString("uOptArrayOptArray");
-  writer.writeArray(type.uOptArrayOptArray, (writer: Write, item: Array<u64 | null> | null): void => {
-    writer.writeNullableArray(item, (writer: Write, item: u64 | null): void => {
+  writer.writeArray(type.uOptArrayOptArray, (writer: Write, item: Array<Nullable<u64>> | null): void => {
+    writer.writeNullableArray(item, (writer: Write, item: Nullable<u64>): void => {
       writer.writeNullableUInt64(item);
     });
   });

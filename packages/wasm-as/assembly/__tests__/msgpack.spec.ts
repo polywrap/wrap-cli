@@ -50,20 +50,20 @@ class Sanity {
 
   toBuffer(): ArrayBuffer {
     const sizer = new WriteSizer();
-    __write_Sanity(sizer, this);
+    serializeSanity(sizer, this);
     const buffer = new ArrayBuffer(sizer.length);
     const encoder = new WriteEncoder(buffer);
-    __write_Sanity(encoder, this);
+    serializeSanity(encoder, this);
     return buffer;
   }
 
   fromBuffer(buffer: ArrayBuffer): void {
     const decoder = new ReadDecoder(buffer);
-    __read_Sanity(decoder, this);
+    deserializeSanity(decoder, this);
   }
 }
 
-function __write_Sanity(writer: Write, type: Sanity): void {
+function serializeSanity(writer: Write, type: Sanity): void {
   writer.writeMapLength(17);
   writer.writeString("nil");
   writer.writeNullableString(type.nil);
@@ -113,7 +113,7 @@ function __write_Sanity(writer: Write, type: Sanity): void {
   );
 }
 
-function __read_Sanity(reader: Read, type: Sanity): void {
+function deserializeSanity(reader: Read, type: Sanity): void {
   var numFields = reader.readMapLength();
 
   while (numFields > 0) {

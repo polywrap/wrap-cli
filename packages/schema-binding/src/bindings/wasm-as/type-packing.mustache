@@ -1,4 +1,11 @@
-import { Write, WriteSizer, WriteEncoder } from "@web3api/wasm-as";
+import {
+  Read,
+  ReadDecoder,
+  Write,
+  WriteSizer,
+  WriteEncoder,
+  Nullable
+} from "@web3api/wasm-as";
 import {
 {{#types}}
   {{name}}{{^last}},{{/last}}
@@ -19,5 +26,27 @@ function __write_{{name}}(writer: Write, type: {{name}}) {
   });
   {{/array}}
   {{/properties}}
+}
+
+function __read_{{name}}(reader: Read, type: {{name}}) {
+  var numFields = reader.readMapLength();
+
+  while (numFields > 0) {
+    numFields--;
+    const field = reader.readString();
+
+    {{#properties}}
+    {{^first}}else {{/first}}if (field == "{{name}}") {
+      {{#scalar}}
+      type.{{name}} = reader.read{{#toMsgPack}}{{type}}{{/toMsgPack}}();
+      {{/scalar}}
+      {{#array}}
+      type.{{name}} = reader.read{{#toMsgPack}}{{type}}{{/toMsgPack}}((reader: Read): {{#toWasm}}{{item.type}}{{/toWasm}} => {
+        {{> read_array_item}}
+      });
+      {{/array}}
+    }
+    {{/properties}}
+  }
 }
 {{/types}}
