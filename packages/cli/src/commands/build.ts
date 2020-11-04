@@ -18,7 +18,7 @@ Options:
   -o, --output-dir <path>            Output directory for build results (default: build/)
   -f, --output-format <format>       Output format for WASM modules (wasm, wast) (default: wasm)
   -w, --watch                        Regenerate types when web3api files change (default: false)
-  -e, --test-ens <?address?,domain>  Publish the package to a test ENS domain locally
+  -e, --test-ens <[address,]domain>  Publish the package to a test ENS domain locally
 `
 
 export default {
@@ -100,8 +100,12 @@ export default {
       return;
     }
 
-    manifestPath = manifestPath || filesystem.resolve('web3api.yaml');
-    outputDir = outputDir || filesystem.path('build');
+    manifestPath =
+      (manifestPath && filesystem.resolve(manifestPath)) ||
+      filesystem.resolve('web3api.yaml');
+    outputDir =
+      (outputDir && filesystem.resolve(outputDir)) ||
+      filesystem.path('build');
     outputFormat = outputFormat || 'wasm';
 
     const compiler = new Compiler({

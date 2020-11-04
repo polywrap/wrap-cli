@@ -4,7 +4,6 @@ import {
   Ethereum,
   Subgraph
 } from "../";
-import { IPortals } from "../Web3API";
 import { runW3CLI, generateName } from "./helpers";
 
 import { printSchema } from "graphql";
