@@ -6,29 +6,17 @@
  */
 
 export interface Manifest {
-  description?: string;
-  repository?: string;
-  version: string;
-  query?: {
-    schema: {
+  api?: {
+    schema?: {
       file: string;
     };
-    module?: {
+    mutation?: {
       file: string;
-      language?: string;
+      language: string;
     };
-  };
-  mutation?: {
-    schema: {
+    query?: {
       file: string;
+      language: string;
     };
-    module?: {
-      file: string;
-      language?: string;
-    };
-  };
-  subgraph?: {
-    file: string;
-    id?: string;
   };
 }

@@ -88,9 +88,9 @@ describe("Manifest migration ", () => {
 */
 
 const migrators = {
-  "0_0_1-alpha.1": {
+  "0.0.1-alpha.1": {
     upgrades: {
-      "0_0_1-alpha.0": require("./migrators/0_0_2-0_0_3"),
+      "0.0.1-alpha.0": require("./migrators/0.0.2-0.0.3"),
     }
   }
 }

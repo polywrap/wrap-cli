@@ -1,0 +1,54 @@
+{
+  "manifest": {
+    "id": "Manifest",
+    "type": "object",
+    "required": ["version"],
+    "additionalProperties": false,
+    "properties": {
+      "api": {
+        "additionalProperties": false,
+        "properties": {
+          "schema": {
+            "type": ["object"],
+            "required": ["file"],
+            "additionalProperties": false,
+            "properties": {
+              "file": {
+                "type": "string",
+                "format": "file"
+              }
+            }
+          },
+          "mutation": {
+            "type": ["object"],
+            "required": ["file", "language"],
+            "additionalProperties": false,
+            "properties": {
+              "file": {
+                "type": "string",
+                "format": "file"
+              },
+              "language": {
+                "type": "string"
+              }
+            }
+          },
+          "query": {
+            "type": ["object"],
+            "required": ["file", "language"],
+            "additionalProperties": false,
+            "properties": {
+              "file": {
+                "type": "string",
+                "format": "file"
+              },
+              "language": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
