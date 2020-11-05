@@ -1,6 +1,6 @@
 {
   "name": "@web3api/examples-simple-storage",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-prealpha.1",
   "license": "MIT",
   "scripts": {
     "build": "w3 build",
@@ -11,9 +11,9 @@
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.18.0",
     "@graphprotocol/graph-ts": "^0.18.1",
-    "@web3api/cli": "0.0.1-alpha.1",
-    "@web3api/client-js": "0.0.1-alpha.1",
-    "@web3api/wasm-as": "0.0.1-alpha.1",
+    "@web3api/cli": "0.0.1-prealpha.1",
+    "@web3api/client-js": "0.0.1-prealpha.1",
+    "@web3api/wasm-as": "0.0.1-prealpha.1",
     "ethers": "5.0.8",
     "js-yaml": "3.14.0"
   }

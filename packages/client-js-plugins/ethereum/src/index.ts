@@ -1,15 +1,13 @@
+import { Query, Mutation } from "./schema";
+
 import { Signer, ethers } from "ethers";
-import {
-  ExternalProvider,
-  JsonRpcProvider,
-  Web3Provider,
-} from "@ethersproject/providers";
-import { getAddress } from "@ethersproject/address";
+import { ExternalProvider, JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import { Base58 } from "@ethersproject/basex";
+import { getAddress } from "@ethersproject/address";
+import { Web3APIClientPlugin, IResolvers } from "@web3api/client-js-plugin";
 
-type Address = string;
-type AccountIndex = number;
-
+export type Address = string;
+export type AccountIndex = number;
 export type EthereumSigner = Signer | Address | AccountIndex;
 export type EthereumProvider = string | ExternalProvider;
 export type EthereumClient = JsonRpcProvider | Web3Provider;
@@ -20,12 +18,13 @@ export interface IEthereumConfig {
   ens?: Address;
 }
 
-export class Ethereum {
+export class EthereumPlugin extends Web3APIClientPlugin {
 
   // @ts-ignore: initialized within setProvider
   private _client: EthereumClient;
 
   constructor(private _config: IEthereumConfig) {
+    super();
     const { provider, signer, ens } = _config;
 
     // Sanitize Provider & Signer
@@ -35,6 +34,18 @@ export class Ethereum {
     if (ens) {
       this.setENS(ens);
     }
+  }
+
+  // TODO: getUris?
+  public getUri() {
+    return "ethereum.web3api.eth"
+  }
+
+  public getResolvers(): IResolvers {
+    return {
+      Query: Query(this),
+      Mutation: Mutation(this)
+    };
   }
 
   public setProvider(provider: EthereumProvider, signer?: EthereumSigner) {
@@ -116,6 +127,7 @@ export class Ethereum {
     return res.transactionHash;
   }
 
+  // TODO: move this to ENS Web3API?
   public async ensToCID(domain: string): Promise<string> {
     const ensAddress = this._config.ens || "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
     const ensAbi = [

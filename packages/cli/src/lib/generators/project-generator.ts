@@ -39,7 +39,7 @@ const package_json =
     "build": "w3 build"
   },
   "dependencies": {
-    "@web3api/cli": "0.0.1-alpha.1"
+    "@web3api/cli": "0.0.1-prealpha.1"
   }
 }
 `;

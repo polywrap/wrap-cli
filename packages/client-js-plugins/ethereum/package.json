@@ -1,17 +1,16 @@
 {
-  "name": "@web3api/schema-binding",
+  "name": "@web3api/ethereum-plugin-js",
   "version": "0.0.1-prealpha.1",
   "license": "MIT",
   "main": "build/index.js",
   "scripts": {
     "build": "rm -rf build && tsc",
-    "test": "jest --passWithNoTests --runInBand --verbose",
-    "test:watch": "jest --watch --passWithNoTests --verbose"
+    "test": "WORKER_ENV=test jest --passWithNoTests --runInBand --verbose",
+    "test:watch": "WORKER_ENV=test jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "graphql": "15.3.0",
-    "graphql-tools": "7.0.1",
-    "mustache": "4.0.1"
+    "@web3api/client-js-plugin": "0.0.1-prealpha.1",
+    "ethers": "5.0.7"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
