@@ -12,8 +12,7 @@
         "type": "string"
       },
       "version": {
-        "type": "string",
-        "pattern": "0.0.1"
+        "type": "string"
       },
       "query": {
         "additionalProperties": false,
@@ -32,7 +31,7 @@
           },
           "module": {
             "type": ["object"],
-            "required": ["file"],
+            "required": ["file", "language"],
             "additionalProperties": false,
             "properties": {
               "file": {
@@ -63,7 +62,7 @@
           },
           "module": {
             "type": ["object"],
-            "required": ["file"],
+            "required": ["file", "language"],
             "additionalProperties": false,
             "properties": {
               "file": {

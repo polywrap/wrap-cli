@@ -2,20 +2,30 @@
   "manifest": {
     "id": "Manifest",
     "type": "object",
-    "required": ["version"],
+    "required": ["version", "api"],
     "additionalProperties": false,
     "properties": {
+      "version": {
+        "type": "string"
+      },
+      "description": {
+        "type": "string"
+      },
       "api": {
         "additionalProperties": false,
+        "type": ["object"],
         "properties": {
-          "schema": {
-            "type": ["object"],
-            "required": ["file"],
-            "additionalProperties": false,
-            "properties": {
-              "file": {
-                "type": "string",
-                "format": "file"
+          "schemas": {
+            "type": "array",
+            "items": {
+              "required": ["file"],
+              "additionalProperties": false,
+              "type": ["object"],
+              "properties": {
+                "file": {
+                  "type": "string",
+                  "format": "file"
+                }
               }
             }
           },

@@ -6,10 +6,11 @@
  */
 
 export interface Manifest {
-  api?: {
-    schema?: {
+  version: string;
+  api: {
+    schemas?: {
       file: string;
-    };
+    }[];
     mutation?: {
       file: string;
       language: string;

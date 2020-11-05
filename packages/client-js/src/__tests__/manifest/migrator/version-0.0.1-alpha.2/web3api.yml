@@ -1,0 +1,12 @@
+description: Awesome Web3API project
+version: "0.0.1-alpha.2"
+api: 
+  schemas:
+    file: ../mutation/schema.graphql
+    file: ../query/schema.graphql
+  query:
+    language: wasm/assemblyscript
+    file: ../query/index.ts
+  mutation:
+    language: wasm/assemblyscript
+    file: ../mutation/index.ts

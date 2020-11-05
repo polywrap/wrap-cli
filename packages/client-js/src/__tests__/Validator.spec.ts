@@ -87,13 +87,6 @@ describe("Manifest migration ", () => {
   - Call the migrator(s) for that translation
 */
 
-const migrators = {
-  "0.0.1-alpha.1": {
-    upgrades: {
-      "0.0.1-alpha.0": require("./migrators/0.0.2-0.0.3"),
-    }
-  }
-}
 
 const from = "0_0_1-alpha_0"
 const to = "0_0_2"
