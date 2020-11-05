@@ -14,17 +14,17 @@ it("can call a tester JS Web3 API", async () => {
     const def = new JSWeb3APIDefinition(testerSchema, async () => {
         return TesterJSModule();
     });
-    
+
     const keyToSet = 'hello';
     const expectedValue = 'world';
-    
+
     const api = await def.create({} as Client);
     const setQuery = gql`mutation {
         setValue(key: "${keyToSet}", value: "${expectedValue}")
     }`;
-    
+
     let res = await api.query({query: setQuery});
-    
+
     expect(res.data?.setValue).toStrictEqual(true);
     
     const getQuery = gql`query {
