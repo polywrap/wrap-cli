@@ -1,0 +1,13 @@
+type Mutation {
+  """TODO: Allow for custom type CID"""
+  addFile(data: Bytes!): AddResult!
+}
+
+type Query {
+  catFile(cid: String!): Bytes!
+}
+
+interface AddResult {
+  path: String!
+  cid: String!
+}

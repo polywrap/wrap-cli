@@ -4,7 +4,7 @@ import { Signer, ethers } from "ethers";
 import { ExternalProvider, JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import { Base58 } from "@ethersproject/basex";
 import { getAddress } from "@ethersproject/address";
-import { Web3APIClientPlugin, IResolvers } from "@web3api/client-js-plugin";
+import { Web3APIClientPlugin, Resolvers } from "@web3api/client-js-plugin";
 
 export type Address = string;
 export type AccountIndex = number;
@@ -12,7 +12,7 @@ export type EthereumSigner = Signer | Address | AccountIndex;
 export type EthereumProvider = string | ExternalProvider;
 export type EthereumClient = JsonRpcProvider | Web3Provider;
 
-export interface IEthereumConfig {
+export interface EthereumConfig {
   provider: EthereumProvider;
   signer?: EthereumSigner;
   ens?: Address;
@@ -23,7 +23,7 @@ export class EthereumPlugin extends Web3APIClientPlugin {
   // @ts-ignore: initialized within setProvider
   private _client: EthereumClient;
 
-  constructor(private _config: IEthereumConfig) {
+  constructor(private _config: EthereumConfig) {
     super();
     const { provider, signer, ens } = _config;
 
@@ -36,12 +36,17 @@ export class EthereumPlugin extends Web3APIClientPlugin {
     }
   }
 
-  // TODO: getUris?
-  public getUri() {
-    return "ethereum.web3api.eth"
+  public getUris(): RegExp[] {
+    return [
+      // Matches: ethereum.eth
+      // Matches: api.ethereum.web3api.eth
+      /(.*[\.])?ethereum[\.].*/,
+      // Matches: w3://ethereum
+      /w3:\/\/ethereum/
+    ];
   }
 
-  public getResolvers(): IResolvers {
+  public getResolvers(): Resolvers {
     return {
       Query: Query(this),
       Mutation: Mutation(this)

@@ -29,9 +29,6 @@ export class Web3APIClient implements Client {
 
             this._definitionCache.set(uri, definition);
         }
-
-    
         return definition;
     }
-    
 }

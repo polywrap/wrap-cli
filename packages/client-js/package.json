@@ -14,13 +14,8 @@
   "dependencies": {
     "@assemblyscript/loader": "0.14.1",
     "@web3api/wasm-as": "0.0.1-prealpha.1",
-    "apollo-link": "1.2.14",
-    "apollo-link-http": "1.5.17",
-    "cross-fetch": "3.0.5",
     "graphql": "15.3.0",
     "graphql-tag": "2.10.4",
-    "ipfs-http-client": "45.0.0",
-    "is-ipfs": "1.0.3",
     "js-yaml": "3.14.0"
   },
   "devDependencies": {
