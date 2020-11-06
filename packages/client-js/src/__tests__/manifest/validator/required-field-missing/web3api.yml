@@ -8,4 +8,4 @@ query:
     file: ../schema.graphql
   module:
     language: wasm/assemblyscript
-    file: ./src/mutation-file.ts
+    file: ../mutation-file.ts

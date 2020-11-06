@@ -4,14 +4,14 @@ mutation:
   schema:
     file: ../mutation/schema.graphql
   module:
-    language: wasm/assemblyscript
     file: ../mutation/index.ts
+    language: wasm/assemblyscript
 query:
   schema:
     file: ../query/schema.graphql
   module:
-    language: wasm/assemblyscript
     file: ../query/index.ts
+    language: wasm/assemblyscript
 subgraph:
   file: ../subgraph/subgraph.yaml
   id: MY_ID

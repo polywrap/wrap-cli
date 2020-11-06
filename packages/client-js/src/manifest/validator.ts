@@ -2,8 +2,7 @@ import { Validator } from "jsonschema";
 import { existsSync } from "fs";
 import schema from "@web3api/manifest-schema";
 
-import { saveMigration, migrator } from "./migrator";
-import { Manifest } from "./versions/0.0.1-alpha.1"
+import { Manifest } from "./versions/0.0.1-alpha.1";
 
 const packageInformation = require("../../package.json");
 
@@ -68,7 +67,7 @@ export const manifestValidation = (manifest: Manifest): Manifest => {
         const nonExistantFileError = argument === "file";
         if (isVersionError) {
           throw Error(
-            "Version format it's not correct. Example of an accepted format: 2.5.1"
+            `Version format it's not correct. Accepted version: ${packageInformation.version}`
           );
         } else if (nonExistantFileError) {
           throw Error(
@@ -76,11 +75,6 @@ export const manifestValidation = (manifest: Manifest): Manifest => {
           );
         }
     }
-  }
-
-  const newVersion = migrator(manifest);
-  if (newVersion) {
-    saveMigration(manifest.version as string, manifest);
   }
 
   return manifest;

@@ -1,9 +1,10 @@
 import fs from "fs";
 import YAML from "js-yaml";
 
-import { manifestValidation, Manifest, migrator } from "../manifest";
+import { manifestValidation, upgradeManifest } from "../manifest";
+import { Manifest } from "../manifest/versions/0.0.1-alpha.1";
 
-jest.mock("../manifest/migrations.json");
+jest.mock("../../package.json")
 
 describe("Validate web3api manifest ", () => {
   it("Should throw file string does not exist error ", async () => {
@@ -53,42 +54,18 @@ describe("Validate web3api manifest ", () => {
 });
 
 describe("Manifest migration ", () => {
-  it("Should tell that is a new migration version ", () => {
-    const manifestPath = __dirname + "/manifest/migrator/new-version/web3api.yml";
+  it("Should upgrade 0.0.1-alpha.1 to 0.0.1-alpha.2 ", () => {
+    const manifestPath = __dirname + "/manifest/migrator/version-0.0.1-alpha.1/web3api.yml";
+    const newManifestPath = __dirname + "/manifest/migrator/version-0.0.1-alpha.2/web3api.yml";
     const manifest = YAML.safeLoad(
       fs.readFileSync(manifestPath, "utf-8")
     ) as Manifest;
 
-    const isNew = migrator(manifest);
-    expect(isNew).toBe(true);
-  });
-
-  it("Should upgrade manifest ", () => {
-    const manifestPath = __dirname + "/manifest/migrator/old-version/web3api.yml";
-    const manifest = YAML.safeLoad(
-      fs.readFileSync(manifestPath, "utf-8")
-    ) as Manifest;
-
-    const isNew = migrator(manifest);
-    expect(isNew).toBe(false);
-
+    const manifestGenerated = upgradeManifest(manifest, "0.0.1-alpha.2");
     const newManifest = YAML.safeLoad(
-      fs.readFileSync("./web3api.yml", "utf-8")
-    ) as Manifest;
+      fs.readFileSync(newManifestPath, "utf-8")
+    );
 
-    expect(newManifest.version).toBe("0.0.3");
+    expect(manifestGenerated).toEqual(newManifest);
   });
 });
-
-// Notes
-/*
-  - all the other changes I just pushed
-  - in the migrator, it should figure out what version it's going FROM, and what version it's going TO
-  - Call the migrator(s) for that translation
-*/
-
-
-const from = "0_0_1-alpha_0"
-const to = "0_0_2"
-
-// find a path in the migrators

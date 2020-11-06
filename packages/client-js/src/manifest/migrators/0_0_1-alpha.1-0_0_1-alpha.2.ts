@@ -5,9 +5,22 @@ export function migrate(old: OldManifest): NewManifest {
   const NEW_VERSION = "0.0.1-alpha.2";
   const schemas = [];
   let api = {};
+  let information = {};
+
+  if (old.description) {
+    information = {
+      description: old.description,
+    };
+  }
+
+  if (old.repository) {
+    information = {
+      repository: old.repository,
+    };
+  }
 
   if (old.query) {
-    schemas.push(old.query.schema.file);
+    schemas.push({ file: old.query.schema.file });
     if (old.query.module) {
       api = {
         query: {
@@ -19,13 +32,13 @@ export function migrate(old: OldManifest): NewManifest {
   }
 
   if (old.mutation) {
-    schemas.push(old.mutation.schema.file);
+    schemas.push({ file: old.mutation.schema.file });
     if (old.mutation.module) {
       api = {
         ...api,
         mutation: {
-          file: old.query.module.file,
-          language: old.query.module.language,
+          file: old.mutation.module.file,
+          language: old.mutation.module.language,
         },
       };
     }
@@ -39,6 +52,7 @@ export function migrate(old: OldManifest): NewManifest {
   }
 
   const upgrade: NewManifest = {
+    ...information,
     version: NEW_VERSION,
     api,
   };

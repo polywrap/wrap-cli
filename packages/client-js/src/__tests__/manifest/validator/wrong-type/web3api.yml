@@ -1,4 +1,4 @@
-version: 1
+version: 456
 mutation:
   schema:
     file: ../schema.graphql
