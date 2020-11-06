@@ -3,10 +3,11 @@ import { Format } from "./Format";
 import { Nullable } from "./Nullable";
 import { Write } from "./Write";
 
-export class WriteEncoder implements Write {
+export class WriteEncoder extends Write {
   private view: DataView;
 
   constructor(ua: ArrayBuffer) {
+    super();
     this.view = new DataView(ua, 0, ua.byteLength);
   }
 

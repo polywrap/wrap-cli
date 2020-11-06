@@ -72,5 +72,4 @@ export const IPFSResolver = (eth: Ethereum, ipfs: IPFS): Web3APIModuleResolver =
       schema
     });
   }
-
 }

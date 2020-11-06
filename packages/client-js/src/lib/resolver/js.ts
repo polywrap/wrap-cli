@@ -19,18 +19,3 @@ export const ResolveToJSModule: ResolveToJSModuleFunction = (schemaPath: string,
     return new JSWeb3APIDefinition(schema, factory);
   }
 }
-
-/*
-example code:
-
-createPatternResolver("ethereum.eth",
-  ResolveToJSModule(
-    "./src/jsModules/Ethereum/schema.graphql",
-    async (client: Client) => {
-      const rpcEndPoint = "http://localhost:8545";
-      return EthereumJSModule({provider: rpcEndPoint});
-    }
-  )
-)
-
-*/

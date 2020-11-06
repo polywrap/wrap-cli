@@ -13,10 +13,11 @@ import { Nullable } from "./Nullable";
 import { Read } from "./Read";
 import { E_INVALIDLENGTH } from "util/error";
 
-export class ReadDecoder implements Read {
+export class ReadDecoder extends Read {
   private view: DataView;
 
   constructor(ua: ArrayBuffer) {
+    super();
     this.view = new DataView(ua, 0, ua.byteLength);
   }
 

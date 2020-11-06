@@ -1,10 +1,10 @@
 import { Write } from "./Write";
 import { Nullable } from "./Nullable";
 
-export class WriteSizer implements Write {
+export class WriteSizer extends Write {
   length: i32;
 
-  constructor() {}
+  constructor() { super() }
 
   writeNil(): void {
     this.length++;

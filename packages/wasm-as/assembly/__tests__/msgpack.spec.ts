@@ -5,7 +5,7 @@ import {
   Write,
   WriteEncoder,
   WriteSizer
-} from "../msgpack";
+} from "../";
 
 class Sanity {
   nil: string | null = "null";
