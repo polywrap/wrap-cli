@@ -12,7 +12,8 @@
         "type": "string"
       },
       "version": {
-        "type": "string"
+        "type": "string",
+        "format": "version"
       },
       "query": {
         "additionalProperties": false,

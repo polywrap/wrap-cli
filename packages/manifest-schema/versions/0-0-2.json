@@ -6,7 +6,8 @@
     "additionalProperties": false,
     "properties": {
       "version": {
-        "type": "string"
+        "type": "string",
+        "format": "version"
       },
       "description": {
         "type": "string"
@@ -54,6 +55,23 @@
               },
               "language": {
                 "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "ext": {
+        "additionalProperties": false,
+        "type": ["object"],
+        "properties": {
+          "subgraph": {
+            "type": ["object"],
+            "required": ["file"],
+            "properties": {
+              "additionalProperties": false,
+              "file": {
+                "type": "string",
+                "format": "file"
               }
             }
           }
