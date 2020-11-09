@@ -2,7 +2,6 @@ import {
   queryWeb3Api,
   Nullable
 } from "@web3api/wasm-as";
-import { uri } from "../";
 {{#methods.length}}
 import {
   {{#methods}}
@@ -12,7 +11,9 @@ import {
 } from "./serialization";
 {{/methods.length}}
 
-export class {{namespace}}{{type}} {
+export const uri = "{{uri}}";
+
+export class {{name}} {
   {{#methods}}
   public static {{name}}(input: {
     {{#arguments}}

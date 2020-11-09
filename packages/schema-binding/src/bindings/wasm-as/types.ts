@@ -37,6 +37,9 @@ export class PropertyDefinition extends UnknownTypeDefinition {
   public setTypeName(): void {
     if (this.array) {
       this.array.setTypeName();
+      this.type = this.array.type;
+    } else if (this.scalar) {
+      this.type = this.scalar.type;
     }
   }
 }
@@ -64,7 +67,6 @@ export class ArrayDefinition extends UnknownTypeDefinition {
   }
 
   public setTypeName(): void {
-    let baseType = "";
     let baseTypeFound = false;
     let array: ArrayDefinition = this;
 
@@ -73,7 +75,6 @@ export class ArrayDefinition extends UnknownTypeDefinition {
         array = array.array;
         array.setTypeName();
       } else if (array.scalar) {
-        baseType = array.scalar.type;
         baseTypeFound = true;
       }
     }
@@ -83,27 +84,36 @@ export class ArrayDefinition extends UnknownTypeDefinition {
   }
 }
 
-export class ImportDefinition {
+export class ImportedTypeDefinition extends TypeDefinition {
   constructor(
     public uri: string,
-    public namespace: string
-  ) { }
+    public namespace: string,
+    name: string,
+    type: string
+  ) {
+    super(name, type);
+  }
 
-  public types: ImportTypeDefinition[] = []
-}
-
-export class ImportTypeDefinition extends TypeDefinition {
   methods: MethodDefinition[] = []
 }
 
 export class MethodDefinition extends TypeDefinition {
+  constructor(
+    public operation: "query" | "mutation",
+    name: string,
+    type?: string,
+    required?: boolean
+  ) {
+    super(name, type, required);
+  }
+
   arguments: PropertyDefinition[] = []
   return: PropertyDefinition | null = null;
 }
 
 export class Config {
   types: CustomTypeDefinition[] = []
-  imports: ImportDefinition[] = []
+  imports: ImportedTypeDefinition[] = []
 
   public finalize() {
     setFirstLast(this.types);
@@ -117,18 +127,16 @@ export class Config {
     }
 
     for (const importEntry of this.imports) {
-      setFirstLast(importEntry.types);
+      setFirstLast(importEntry.methods);
 
-      for (const type of importEntry.types) {
-        setFirstLast(type.methods);
+      for (const method of importEntry.methods) {
+        setFirstLast(method.arguments);
 
-        for (const method of type.methods) {
-          setFirstLast(method.arguments);
-
-          for (const argument of method.arguments) {
-            argument.setTypeName();
-          }
+        for (const argument of method.arguments) {
+          argument.setTypeName();
         }
+
+        method.return?.setTypeName();
       }
     }
   }

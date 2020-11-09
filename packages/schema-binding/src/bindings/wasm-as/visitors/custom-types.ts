@@ -14,7 +14,8 @@ import {
   NamedTypeNode,
   ListTypeNode,
   FieldDefinitionNode,
-  visit
+  visit,
+  DirectiveNode
 } from "graphql";
 
 interface State {
@@ -25,6 +26,18 @@ interface State {
 
 const visitorEnter = (config: Config, state: State) => ({
   ObjectTypeDefinition: (node: TypeDefinitionNode) => {
+    // Skip non-custom types
+    if (node.name.value === "Query" || node.name.value === "Mutation") {
+      return;
+    }
+
+    // Skip imported types
+    if (node.directives && node.directives.findIndex(
+      (dir: DirectiveNode) => dir.name.value === "imported") > -1
+    ) {
+      return;
+    }
+
     // Create a new TypeDefinition
     const type = new CustomTypeDefinition(
       node.name.value

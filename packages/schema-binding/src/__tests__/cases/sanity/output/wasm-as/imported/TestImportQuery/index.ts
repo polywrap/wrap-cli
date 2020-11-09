@@ -2,13 +2,14 @@ import {
   queryWeb3Api,
   Nullable
 } from "@web3api/wasm-as";
-import { uri } from "../";
 import {
   serializeimportedMethod,
   deserializeimportedMethod
 } from "./serialization";
 
-export class ImportedQuery {
+export const uri = "testimport.uri.eth";
+
+export class TestImportQuery {
   public static importedMethod(input: {
     str: string,
     optStr: string | null,

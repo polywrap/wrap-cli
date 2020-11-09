@@ -14,7 +14,7 @@ export function generateBinding(schema: Schema): OutputDirectory {
     entries.push({
       type: "Directory",
       name: type.name,
-      data: generateFiles('./custom-type', type)
+      data: generateFiles('./templates/custom-type', type)
     });
   }
 
@@ -22,32 +22,18 @@ export function generateBinding(schema: Schema): OutputDirectory {
   if (config.imports.length > 0) {
     const importEntries: OutputEntry[] = [];
 
-    for (const importEntry of config.imports) {
-      const importTypes: OutputEntry[] = [];
-
-      // Generate import type folders
-      for (const importType of importEntry.types) {
-        importTypes.push({
-          type: "Directory",
-          name: importType.name,
-          data: generateFiles('./import/namespace/type', importType)
-        });
-      }
-
-      // Add the root namespace folder, with all sub types
+    // Generate import type folders
+    for (const importType of config.imports) {
       importEntries.push({
         type: "Directory",
-        name: importEntry.namespace,
-        data: [
-          ...generateFiles('./import/namespace', importEntry),
-          ...importTypes
-        ]
+        name: importType.name,
+        data: generateFiles('./templates/imported/type', importType)
       });
     }
 
     entries.push({
       type: "Directory",
-      name: "imports",
+      name: "imported",
       data: importEntries
     });
   }

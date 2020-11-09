@@ -10,14 +10,9 @@ scalar Int16
 scalar Int32
 scalar Int64
 
-directive @import(
+directive @imported(
   namespace: String!
   uri: String!
-  types: [String!]!
-) on OBJECT
-
-directive @imported_type(
-  namespace: String!
   type: String!
 ) on OBJECT
 
@@ -49,22 +44,18 @@ type AnotherType {
   prop: String
 }
 
-@import(
-  namespace: "Imported",
-  uri: "imported.uri.eth",
-  types: ["Query"]
-)
 type Query {
   queryMethod(
     arg: String!
   ): Int!
 }
 
-@imported_type(
-  namespace: "Imported",
+type TestImportQuery @imported(
+  namespace: "TestImport",
+  uri: "testimport.uri.eth",
   type: "Query"
-)
-type ImportedQuery {
+) {
+  """TODO: Support object types as argument & return values"""
   importedMethod(
     str: String!
     optStr: String
@@ -72,5 +63,4 @@ type ImportedQuery {
     optU: UInt
     uArrayArray: [[UInt]]!
   ): String!
-  """TODO: Support object types as argument & return values"""
 }

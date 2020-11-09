@@ -3,8 +3,7 @@ import {
   PropertyDefinition,
   ScalarDefinition,
   Config,
-  ImportDefinition,
-  ImportTypeDefinition,
+  ImportedTypeDefinition,
   MethodDefinition
 } from "../types";
 
@@ -17,11 +16,12 @@ import {
   FieldDefinitionNode,
   InputValueDefinitionNode,
   visit,
-  DirectiveNode
+  DirectiveNode,
+  ValueNode
 } from "graphql";
 
 interface State {
-  currentImport?: ImportTypeDefinition
+  currentImport?: ImportedTypeDefinition
   currentMethod?: MethodDefinition
   currentArgument?: PropertyDefinition
   currentReturn?: PropertyDefinition
@@ -34,125 +34,55 @@ const visitorEnter = (config: Config, state: State) => ({
       return
     }
 
-    // Look for imports
-    const importIndex = node.directives.findIndex(
-      (dir: DirectiveNode) => dir.name.value === "import"
+    // Look for imported
+    const importedIndex = node.directives.findIndex(
+      (dir: DirectiveNode) => dir.name.value === "imported"
     );
 
-    if (importIndex !== -1) {
-      const importDir = node.directives[importIndex];
-
-      if (!importDir.arguments || importDir.arguments.length !== 3) {
-        // TODO: Implement better error handling
-        throw Error("Error: import directive missing arguments");
-      }
-
-      let namespace: string | undefined;
-      let uri: string | undefined;
-
-      for (const importArg of importDir.arguments) {
-        if (importArg.name.value === "namespace") {
-          if (importArg.value.kind === "StringValue") {
-            namespace = importArg.value.value;
-          } else {
-            throw Error("Error: import namespace argument is not a string");
-          }
-        } else if (importArg.name.value === "uri") {
-          // TODO: use a function for "extractString" to reduce code dup
-          if (importArg.value.kind === "StringValue") {
-            uri = importArg.value.value;
-          } else {
-            throw Error("Error: import uri argument is not a string");
-          }
-        }
-      }
-
-      if (!uri || !namespace) {
-        throw Error("Error: import directive missing one of its required arguments (namespace, uri, types)");
-      }
-
-      let foundImportDef = false;
-
-      for (const importDef of config.imports) {
-        if (importDef.namespace === namespace) {
-          importDef.uri = uri;
-          foundImportDef = true;
-          break;
-        }
-      }
-
-      if (!foundImportDef) {
-        config.imports.push(
-          new ImportDefinition(uri, namespace)
-        );
-      }
-
+    if (importedIndex === -1) {
       return;
     }
 
-    // Look for imported_types
-    const importedIndex = node.directives.findIndex(
-      (dir: DirectiveNode) => dir.name.value === "imported_type"
-    );
+    const importedDir = node.directives[importedIndex];
 
-    if (importedIndex !== -1) {
-      const importedDir = node.directives[importedIndex];
-
-      if (!importedDir.arguments || importedDir.arguments.length !== 2) {
-        // TODO: Implement better error handling
-        throw Error("Error: imported_type directive missing arguments");
-      }
-
-      let namespace: string | undefined;
-      let type: string | undefined;
-
-      for (const importArg of importedDir.arguments) {
-        if (importArg.name.value === "namespace") {
-          if (importArg.value.kind === "StringValue") {
-            namespace = importArg.value.value;
-          } else {
-            throw Error("Error: import namespace argument is not a string");
-          }
-        } else if (importArg.name.value === "type") {
-          // TODO: use a function for "extractString" to reduce code dup
-          if (importArg.value.kind === "StringValue") {
-            type = importArg.value.value;
-          } else {
-            throw Error("Error: import type argument is not a string");
-          }
-        }
-      }
-
-      if (!type || !namespace) {
-        throw Error("Error: import directive missing one of its required arguments (namespace, type)");
-      }
-
-      let foundImportDef = false;
-      let importDefinition;
-
-      for (const importDef of config.imports) {
-        if (importDef.namespace === namespace) {
-          importDefinition = importDef;
-          foundImportDef = true;
-          break;
-        }
-      }
-
-      if (!foundImportDef) {
-        importDefinition = new ImportDefinition("", namespace);
-        config.imports.push(importDefinition);
-      }
-
-      if (!importDefinition) {
-        throw Error("This should never happen.");
-      }
-
-      const importedType = new ImportTypeDefinition(node.name.value, node.name.value);
-      importDefinition.types.push(importedType);
-      state.currentImport = importedType;
+    if (!importedDir.arguments || importedDir.arguments.length !== 3) {
+      // TODO: Implement better error handling
+      throw Error("Error: imported_type directive missing arguments");
     }
+
+    let namespace: string | undefined;
+    let uri: string | undefined;
+    let type: string | undefined;
+
+    const extractString = (value: ValueNode, name: string) => {
+      if (value.kind === "StringValue") {
+        return value.value;
+      } else {
+        throw Error(`Error: argument '${name}' must be a string`);
+      }
+    }
+
+    for (const importArg of importedDir.arguments) {
+      if (importArg.name.value === "namespace") {
+        namespace = extractString(importArg.value, "namespace");
+      } else if (importArg.name.value === "uri") {
+        uri = extractString(importArg.value, "uri")
+      } else if (importArg.name.value === "type") {
+        type = extractString(importArg.value, "type")
+      }
+    }
+
+    if (!type || !namespace || !uri) {
+      throw Error("Error: import directive missing one of its required arguments (namespace, uri, type)");
+    }
+
+    const importedType = new ImportedTypeDefinition(
+      uri, namespace, node.name.value, type
+    );
+    config.imports.push(importedType);
+    state.currentImport = importedType;
   },
-  FieldDefinitionNode: (node: FieldDefinitionNode) => {
+  FieldDefinition: (node: FieldDefinitionNode) => {
     const importDef = state.currentImport;
 
     if (!importDef) {
@@ -163,11 +93,14 @@ const visitorEnter = (config: Config, state: State) => ({
       throw Error("Imported types must only have methods");
     }
 
-    const method = new MethodDefinition(node.name.value);
+    const operation = importDef.type === "Query" ? "query" : "mutation";
+    const method = new MethodDefinition(
+      operation, node.name.value
+    );
     importDef.methods.push(method);
     state.currentMethod = method;
   },
-  InputValueDefinitionNode: (node: InputValueDefinitionNode) => {
+  InputValueDefinition: (node: InputValueDefinitionNode) => {
     const method = state.currentMethod;
 
     if (!method) {
@@ -217,6 +150,7 @@ const visitorEnter = (config: Config, state: State) => ({
       argument.array = new ArrayDefinition(
         argument.name, "TBD", state.nonNullType
       );
+      state.currentArgument = argument.array;
       state.nonNullType = false;
     } else if (method) {
       // Return value
@@ -242,11 +176,11 @@ const visitorLeave = (config: Config, state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     state.currentImport = undefined;
   },
-  FieldDefinitionNode: (node: FieldDefinitionNode) => {
+  FieldDefinition: (node: FieldDefinitionNode) => {
     state.currentMethod = undefined;
     state.currentReturn = undefined;
   },
-  InputValueDefinitionNode: (node: InputValueDefinitionNode) => {
+  InputValueDefinition: (node: InputValueDefinitionNode) => {
     state.currentArgument = undefined;
   },
   NonNullType: (node: NonNullTypeNode) => {
