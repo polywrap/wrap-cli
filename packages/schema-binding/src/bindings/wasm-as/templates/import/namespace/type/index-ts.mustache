@@ -1,0 +1,37 @@
+import {
+  queryWeb3Api,
+  Nullable
+} from "@web3api/wasm-as";
+import { uri } from "../";
+{{#methods.length}}
+import {
+  {{#methods}}
+  serialize{{name}},
+  deserialize{{name}}{{^last}},{{/last}}
+  {{/methods}}
+} from "./serialization";
+{{/methods.length}}
+
+export class {{namespace}}{{type}} {
+  {{#methods}}
+  public static {{name}}(input: {
+    {{#arguments}}
+    {{name}}: {{#toWasm}}{{type}}{{/toWasm}}{{^last}},{{/last}}
+    {{/arguments}}
+  }): {{#toWasm}}{{return.type}}{{/toWasm}} {
+    const args = serialize{{name}}(input);
+    const result = queryWeb3Api(
+      uri,
+      `{{operation}} {
+        {{name}}(
+          {{#arguments}}
+          {{name}}: ${{name}}{{^last}},{{/last}}
+          {{/arguments}}
+        )
+      }`,
+      args
+    );
+    return deserialize{{name}}(result);
+  }
+  {{/methods}}
+}

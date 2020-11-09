@@ -1,9 +1,3 @@
-import {
-  Web3API,
-  IPFS,
-  Ethereum,
-  Subgraph
-} from "../";
 import { runW3CLI, generateName } from "./helpers";
 
 import { printSchema } from "graphql";
@@ -12,7 +6,6 @@ import axios from "axios";
 jest.setTimeout(150000);
 
 describe("Web3API", () => {
-  let portals: IPortals;
   let apiCID: string;
   let apiENS: string;
 

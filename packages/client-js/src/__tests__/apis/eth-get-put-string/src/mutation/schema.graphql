@@ -1,3 +1,9 @@
+@import(
+  name: "Ethereum",
+  uri: "ethereum.web3api.eth",
+  module: ["Mutation"]
+)
+
 type Mutation {
   setData(
     address: String!

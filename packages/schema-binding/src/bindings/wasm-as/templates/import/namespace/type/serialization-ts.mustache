@@ -1,0 +1,60 @@
+{{#methods.length}}
+import {
+  Nullable,
+  Write,
+  WriteSizer,
+  WriteEncoder,
+  ReadDecoder
+} from "@web3api/wasm-as";
+
+{{#methods}}
+export function serialize{{name}}(input: {
+  {{#arguments}}
+  {{name}}: {{#toWasm}}{{type}}{{/toWasm}}{{^last}},{{/last}}
+  {{/arguments}}
+}): ArrayBuffer {
+  const sizer = new WriteSizer();
+  write{{name}}(sizer, input);
+  const buffer = new ArrayBuffer(sizer.length);
+  const encoder = new WriteEncoder(buffer);
+  write{{name}}(encoder, input);
+  return buffer;
+}
+
+function write{{name}}(
+  writer: Write,
+  input: {
+    {{#arguments}}
+    {{name}}: {{#toWasm}}{{type}}{{/toWasm}}{{^last}},{{/last}}
+    {{/arguments}}
+  }
+) {
+  writer.writeMapLength({{arguments.length}});
+  {{#arguments}}
+  writer.writeString("{{name}}");
+  {{#scalar}}
+  writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(input.{{name}});
+  {{/scalar}}
+  {{#array}}
+  writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(input.{{name}}, (writer: Write, item: {{#toWasm}}{{item.type}}{{/toWasm}}): void => {
+    {{> serialize_array}}
+  });
+  {{/array}}
+  {{/arguments}}
+}
+
+export function deserialize{{name}}(buffer: ArrayBuffer): {{#toWasm}}{{return.type}}{{/toWasm}} {
+  const reader = new ReadDecoder(buffer);
+  {{#return}}
+  {{#scalar}}
+  return reader.read{{#toMsgPack}}{{type}}{{/toMsgPack}}();
+  {{/scalar}}
+  {{#array}}
+  return reader.read{{#toMsgPack}}{{type}}{{/toMsgPack}}((reader: Read): {{#toWasm}}{{item.type}}{{/toWasm}} => {
+    {{> deserialize_array}}
+  });
+  {{/array}}
+  {{/return}}
+}
+{{/methods}}
+{{/methods.length}}

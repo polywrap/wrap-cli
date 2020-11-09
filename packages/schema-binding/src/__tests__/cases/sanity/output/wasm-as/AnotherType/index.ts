@@ -1,6 +1,8 @@
 import { Nullable } from "@web3api/wasm-as";
-import { serializeAnotherType } from "./serialize";
-import { deserializeAnotherType } from "./deserialize";
+import {
+  serializeAnotherType,
+  deserializeAnotherType
+} from "./serialization";
 
 export class AnotherType {
   prop: string | null;

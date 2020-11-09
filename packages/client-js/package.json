@@ -13,11 +13,12 @@
   },
   "dependencies": {
     "@assemblyscript/loader": "0.14.1",
+    "@msgpack/msgpack": "2.3.0",
     "@web3api/wasm-as": "0.0.1-prealpha.1",
     "graphql": "15.3.0",
     "graphql-tag": "2.10.4",
     "js-yaml": "3.14.0",
-    "@msgpack/msgpack": "2.3.0"
+    "threads": "1.6.3"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",

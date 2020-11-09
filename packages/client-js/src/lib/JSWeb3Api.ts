@@ -16,7 +16,6 @@ export interface JSWeb3APIParams {
     module: JSWeb3APIModule;
 }
 
-
 export class JSWeb3API implements Web3API {
     _config: JSWeb3APIParams;
     _schema: GraphQLSchema;

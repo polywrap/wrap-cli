@@ -1,6 +1,8 @@
 import { Nullable } from "@web3api/wasm-as";
-import { serializeCustomType } from "./serialize";
-import { deserializeCustomType } from "./deserialize";
+import {
+  serializeCustomType,
+  deserializeCustomType
+} from "./serialization";
 
 export class CustomType {
   str: string;

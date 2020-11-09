@@ -7,17 +7,20 @@
 5. Host Calls = GraphQL? Assemblyscript -> MsgPack?
 
 ## Overview
-1. Remove all Ethereum, IPFS, and Graph host imports
-2. Create the host import for querying other Web3APIs _w3_query_api(...)
-3. Add the concept of Web3API Client + Definition + Instance
-4. Support JS & WASM based Web3APIs
-5. Create JS Web3APIs for Ethereum, IPFS
+x. Remove all Ethereum, IPFS, and Graph host imports
+x. Create the host import for querying other Web3APIs _w3_query_api(...)
+x. Add the concept of Web3API Client + Definition + Instance
+x. Support JS & WASM based Web3APIs
+x. Create JS Web3APIs for Ethereum, IPFS
 6. Add support for custom URI resolvers
 7. Create WASM Web3APIs
 
 ## CodeGen
-- Layout the folder structure
-- Refactor the MsgPack AS implementation to be simpler
+x Layout the folder structure
+x Refactor the MsgPack AS implementation to be simpler
 - Integrate code-gen into the CLI
 - Create an e2e test, requiring the rest of the pipeline to be implemented
 - Define standard for invoking methods inside module, and invoking methods outside
+
+## Client
+1. Re-create the WasmWorker: marshal on the thread, send Javascript objects to/from main, marshal into module

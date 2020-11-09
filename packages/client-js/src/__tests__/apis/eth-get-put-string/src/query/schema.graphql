@@ -1,3 +1,8 @@
+@import(
+  namespace: "Ethereum",
+  api: "ethereum.web3api.eth",
+  types: ["Query"]
+)
 type Query {
   getData(
     address: String!

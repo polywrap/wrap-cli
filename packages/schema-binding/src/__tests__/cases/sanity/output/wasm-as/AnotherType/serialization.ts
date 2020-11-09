@@ -1,4 +1,6 @@
 import {
+  Read,
+  ReadDecoder,
   Write,
   WriteSizer,
   WriteEncoder,
@@ -19,4 +21,18 @@ function writeAnotherType(writer: Write, type: AnotherType) {
   writer.writeMapSize(1);
   writer.writeString("prop");
   writer.writeNullableString(type.prop);
+}
+
+export function deserializeAnotherType(buffer: ArrayBuffer, type: AnotherType) {
+  const reader = new ReadDecoder(buffer);
+  var numFields = reader.readMapLength();
+
+  while (numFields > 0) {
+    numFields--;
+    const field = reader.readString();
+
+    if (field == "prop") {
+      type.prop = reader.readNullableString();
+    }
+  }
 }
