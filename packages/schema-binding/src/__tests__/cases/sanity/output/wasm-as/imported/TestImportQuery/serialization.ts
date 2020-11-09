@@ -52,3 +52,32 @@ export function deserializeimportedMethod(buffer: ArrayBuffer): string {
   const reader = new ReadDecoder(buffer);
   return reader.readString();
 }
+
+export function serializeanotherMethod(input: {
+  arg: Array<string>
+}): ArrayBuffer {
+  const sizer = new WriteSizer();
+  writeanotherMethod(sizer, input);
+  const buffer = new ArrayBuffer(sizer.length);
+  const encoder = new WriteEncoder(buffer);
+  writeanotherMethod(encoder, input);
+  return buffer;
+}
+
+function writeanotherMethod(
+  writer: Write,
+  input: {
+    arg: Array<string>
+  }
+) {
+  writer.writeMapLength(1);
+  writer.writeString("arg");
+  writer.writeArray(input.arg, (writer: Write, item: string): void => {
+    writer.writeString(item);
+  });
+}
+
+export function deserializeanotherMethod(buffer: ArrayBuffer): i64 {
+  const reader = new ReadDecoder(buffer);
+  return reader.readInt64();
+}

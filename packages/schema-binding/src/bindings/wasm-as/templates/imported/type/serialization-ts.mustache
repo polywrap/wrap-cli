@@ -56,5 +56,8 @@ export function deserialize{{name}}(buffer: ArrayBuffer): {{#toWasm}}{{return.ty
   {{/array}}
   {{/return}}
 }
+{{^last}}
+
+{{/last}}
 {{/methods}}
 {{/methods.length}}

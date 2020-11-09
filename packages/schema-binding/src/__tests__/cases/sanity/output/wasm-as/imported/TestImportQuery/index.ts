@@ -4,7 +4,9 @@ import {
 } from "@web3api/wasm-as";
 import {
   serializeimportedMethod,
-  deserializeimportedMethod
+  deserializeimportedMethod,
+  serializeanotherMethod,
+  deserializeanotherMethod
 } from "./serialization";
 
 export const uri = "testimport.uri.eth";
@@ -32,5 +34,21 @@ export class TestImportQuery {
       args
     );
     return deserializeimportedMethod(result);
+  }
+
+  public static anotherMethod(input: {
+    arg: Array<string>
+  }): i64 {
+    const args = serializeanotherMethod(input);
+    const result = queryWeb3Api(
+      uri,
+      `query {
+        anotherMethod(
+          arg: $arg
+        )
+      }`,
+      args
+    );
+    return deserializeanotherMethod(result);
   }
 }

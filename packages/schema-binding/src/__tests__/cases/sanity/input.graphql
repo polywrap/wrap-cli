@@ -63,4 +63,8 @@ type TestImportQuery @imported(
     optU: UInt
     uArrayArray: [[UInt]]!
   ): String!
+
+  anotherMethod(
+    arg: [String!]!
+  ): Int64!
 }
