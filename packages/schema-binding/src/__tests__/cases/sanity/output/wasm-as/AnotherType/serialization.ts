@@ -18,7 +18,7 @@ export function serializeAnotherType(type: AnotherType): ArrayBuffer {
 }
 
 function writeAnotherType(writer: Write, type: AnotherType) {
-  writer.writeMapSize(1);
+  writer.writeMapLength(1);
   writer.writeString("prop");
   writer.writeNullableString(type.prop);
 }

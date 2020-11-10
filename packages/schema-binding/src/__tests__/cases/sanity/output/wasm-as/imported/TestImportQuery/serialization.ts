@@ -6,7 +6,7 @@ import {
   ReadDecoder
 } from "@web3api/wasm-as";
 
-export function serializeimportedMethod(input: {
+export function serializeimportedMethodArgs(input: {
   str: string,
   optStr: string | null,
   u: u32,
@@ -14,14 +14,14 @@ export function serializeimportedMethod(input: {
   uArrayArray: Array<Array<Nullable<u32>> | null>
 }): ArrayBuffer {
   const sizer = new WriteSizer();
-  writeimportedMethod(sizer, input);
+  writeimportedMethodArgs(sizer, input);
   const buffer = new ArrayBuffer(sizer.length);
   const encoder = new WriteEncoder(buffer);
-  writeimportedMethod(encoder, input);
+  writeimportedMethodArgs(encoder, input);
   return buffer;
 }
 
-function writeimportedMethod(
+function writeimportedMethodArgs(
   writer: Write,
   input: {
     str: string,
@@ -48,23 +48,23 @@ function writeimportedMethod(
   });
 }
 
-export function deserializeimportedMethod(buffer: ArrayBuffer): string {
+export function deserializeimportedMethodResult(buffer: ArrayBuffer): string {
   const reader = new ReadDecoder(buffer);
   return reader.readString();
 }
 
-export function serializeanotherMethod(input: {
+export function serializeanotherMethodArgs(input: {
   arg: Array<string>
 }): ArrayBuffer {
   const sizer = new WriteSizer();
-  writeanotherMethod(sizer, input);
+  writeanotherMethodArgs(sizer, input);
   const buffer = new ArrayBuffer(sizer.length);
   const encoder = new WriteEncoder(buffer);
-  writeanotherMethod(encoder, input);
+  writeanotherMethodArgs(encoder, input);
   return buffer;
 }
 
-function writeanotherMethod(
+function writeanotherMethodArgs(
   writer: Write,
   input: {
     arg: Array<string>
@@ -77,7 +77,7 @@ function writeanotherMethod(
   });
 }
 
-export function deserializeanotherMethod(buffer: ArrayBuffer): i64 {
+export function deserializeanotherMethodResult(buffer: ArrayBuffer): i64 {
   const reader = new ReadDecoder(buffer);
   return reader.readInt64();
 }

@@ -18,7 +18,7 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
 }
 
 function writeCustomType(writer: Write, type: CustomType) {
-  writer.writeMapSize(21);
+  writer.writeMapLength(21);
   writer.writeString("str");
   writer.writeString(type.str);
   writer.writeString("optStr");

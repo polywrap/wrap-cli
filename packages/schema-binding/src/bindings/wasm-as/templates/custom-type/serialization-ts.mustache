@@ -18,7 +18,7 @@ export function serialize{{name}}(type: {{name}}): ArrayBuffer {
 }
 
 function write{{name}}(writer: Write, type: {{name}}) {
-  writer.writeMapSize({{properties.length}});
+  writer.writeMapLength({{properties.length}});
   {{#properties}}
   writer.writeString("{{name}}");
   {{#scalar}}

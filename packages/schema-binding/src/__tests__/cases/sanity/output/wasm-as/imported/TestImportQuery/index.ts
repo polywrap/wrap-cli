@@ -1,12 +1,12 @@
 import {
-  queryWeb3Api,
+  w3_query,
   Nullable
 } from "@web3api/wasm-as";
 import {
-  serializeimportedMethod,
-  deserializeimportedMethod,
-  serializeanotherMethod,
-  deserializeanotherMethod
+  serializeimportedMethodArgs,
+  deserializeimportedMethodResult,
+  serializeanotherMethodArgs,
+  deserializeanotherMethodResult
 } from "./serialization";
 
 export const uri = "testimport.uri.eth";
@@ -19,8 +19,8 @@ export class TestImportQuery {
     optU: Nullable<u32>,
     uArrayArray: Array<Array<Nullable<u32>> | null>
   }): string {
-    const args = serializeimportedMethod(input);
-    const result = queryWeb3Api(
+    const args = serializeimportedMethodArgs(input);
+    const result = w3_query(
       uri,
       `query {
         importedMethod(
@@ -33,14 +33,14 @@ export class TestImportQuery {
       }`,
       args
     );
-    return deserializeimportedMethod(result);
+    return deserializeimportedMethodResult(result);
   }
 
   public static anotherMethod(input: {
     arg: Array<string>
   }): i64 {
-    const args = serializeanotherMethod(input);
-    const result = queryWeb3Api(
+    const args = serializeanotherMethodArgs(input);
+    const result = w3_query(
       uri,
       `query {
         anotherMethod(
@@ -49,6 +49,6 @@ export class TestImportQuery {
       }`,
       args
     );
-    return deserializeanotherMethod(result);
+    return deserializeanotherMethodResult(result);
   }
 }
