@@ -4,7 +4,7 @@
   "license": "MIT",
   "main": "build/index.js",
   "scripts": {
-    "build": "rm -rf build && yarn build:manifest && tsc",
+    "build": "rimraf build && yarn build:manifest && tsc",
     "build:manifest": "node ./src/scripts/generateManifest.js",
     "test": "WORKER_ENV=test jest --passWithNoTests --runInBand --verbose",
     "test:watch": "WORKER_ENV=test jest --watch --passWithNoTests --verbose",
@@ -35,6 +35,7 @@
     "@web3api/cli": "0.0.1-alpha.1",
     "axios": "0.19.2",
     "jest": "26.2.2",
+    "rimraf": "3.0.2",
     "spawn-command": "0.0.2-1",
     "ts-jest": "26.1.4",
     "ts-node": "8.10.2",
