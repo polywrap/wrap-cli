@@ -11,27 +11,10 @@ export type QueryResult = ExecutionResult
 
 // TODO: remove me when this is automatically generated in the
 //       @web3api/manifest package based on the JSON-Schema
-export interface FilePath {
-  file: string;
-}
-
+//       Check: https://github.com/Web3-API/prototype/issues/60
 export interface ModulePath {
-  language: "wasm/assemblyscript";
+  language: string;
   file: string;
-}
-
-export interface ClientModule {
-  schema: FilePath;
-  module: ModulePath;
-}
-
-export interface Manifest {
-  description?: string;
-  repository?: string;
-  schema: FilePath;
-  mutation?: ClientModule;
-  query?: ClientModule;
-  subgraph?: FilePath & { id?: string };
 }
 
 export interface ASMarshalUtil {

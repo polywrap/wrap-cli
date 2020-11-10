@@ -13,7 +13,7 @@ export interface Manifest {
     schema: {
       file: string;
     };
-    module?: {
+    module: {
       file: string;
       language: string;
     };
@@ -22,7 +22,7 @@ export interface Manifest {
     schema: {
       file: string;
     };
-    module?: {
+    module: {
       file: string;
       language: string;
     };

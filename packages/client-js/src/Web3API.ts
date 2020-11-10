@@ -1,3 +1,12 @@
+import { compare } from "semver";
+import {
+  buildSchema,
+  execute,
+  GraphQLSchema,
+  GraphQLObjectType
+} from "graphql";
+import YAML from "js-yaml";
+
 import {
   Ethereum,
   IPFS,
@@ -8,18 +17,11 @@ import { isPromise } from "./lib/async";
 import {
   Query,
   QueryResult,
-  Manifest,
   ModulePath
 } from "./lib/types";
 import { WasmWorker } from "./lib/wasm-worker";
-
-import {
-  buildSchema,
-  execute,
-  GraphQLSchema,
-  GraphQLObjectType
-} from "graphql";
-import YAML from "js-yaml";
+import ManifestSchemas, { Manifest } from "./manifest/versions"
+import { upgradeManifest } from "./manifest";
 
 export interface IPortals {
   ipfs: IPFS;
@@ -102,12 +104,18 @@ export class Web3API {
       const { name, depth, type, path } = file;
 
       if (depth === 1 && type === "file" &&
-         (name === "web3api.yaml" || name === "web3apy.yml")) {
+         (name === "web3api.yaml" || name === "web3api.yml")) {
         const manifestStr = await portals.ipfs.catToString(path);
         this._manifest = YAML.safeLoad(manifestStr) as Manifest | undefined;
 
         if (this._manifest === undefined) {
           throw Error(`Unable to parse web3api.yaml\n${manifestStr}`);
+        }
+
+        const latestVersion: string = require("../package.json").version
+        const currentManifest: ManifestSchemas = this._manifest;
+        if (compare(latestVersion, currentManifest.version) === -1) {
+          this._manifest = upgradeManifest(currentManifest, latestVersion)
         }
 
         return this._manifest;

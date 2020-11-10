@@ -7,6 +7,7 @@
 
 export interface Manifest {
   version: string;
+  description?: string;
   api: {
     schemas?: {
       file: string;
@@ -18,6 +19,11 @@ export interface Manifest {
     query?: {
       file: string;
       language: string;
+    };
+  };
+  ext?: {
+    subgraph?: {
+      file: string;
     };
   };
 }

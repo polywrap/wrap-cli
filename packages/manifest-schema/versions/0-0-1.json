@@ -17,7 +17,7 @@
       },
       "query": {
         "additionalProperties": false,
-        "required": ["schema"],
+        "required": ["schema", "module"],
         "properties": {
           "schema": {
             "type": ["object"],
@@ -48,7 +48,7 @@
       },
       "mutation": {
         "additionalProperties": false,
-        "required": ["schema"],
+        "required": ["schema", "module"],
         "properties": {
           "schema": {
             "type": ["object"],

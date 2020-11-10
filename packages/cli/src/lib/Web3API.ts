@@ -1,7 +1,6 @@
 import YAML from "js-yaml";
 import fs from "fs";
-import { manifestValidation } from "@web3api/client-js";
-import { Manifest } from "./Manifest";
+import { manifestValidation, Manifest } from "@web3api/client-js";
 
 export class Web3API {
   public static load(manifestPath: string): Manifest {

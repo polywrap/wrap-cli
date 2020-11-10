@@ -7,7 +7,7 @@ const generateManifest = () => {
   try {
     const manifest = schema["manifest"];
     compile(manifest, "Web3API").then((file) => {
-      const manifestPath = __dirname + `/../manifest/versions/${package.version}.d.ts`;
+      const manifestPath = __dirname + `/../manifest/versions/${package.version}.ts`;
       writeFileSync(manifestPath, file);
     });
   } catch (e) {

@@ -67,8 +67,8 @@
           "subgraph": {
             "type": ["object"],
             "required": ["file"],
+            "additionalProperties": false,
             "properties": {
-              "additionalProperties": false,
               "file": {
                 "type": "string",
                 "format": "file"
