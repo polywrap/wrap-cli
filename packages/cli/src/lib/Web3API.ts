@@ -1,6 +1,6 @@
 import YAML from "js-yaml";
 import fs from "fs";
-import { manifestValidation, Manifest } from "@web3api/client-js";
+import { sanitizeAndUpgrade, Manifest } from "@web3api/client-js/manifest";
 
 export class Web3API {
   public static load(manifestPath: string): Manifest {
@@ -12,7 +12,7 @@ export class Web3API {
       throw Error(`Unable to parse manifest: ${manifestPath}`);
     }
   
-    manifestValidation(manifest)
+    manifest = sanitizeAndUpgrade(manifest)
 
     return manifest;
   }

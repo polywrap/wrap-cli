@@ -1,14 +1,18 @@
-import Manifests from "./versions";
+import { AnyManifest } from "./versions";
+import {
+  migrate as migrate_0_0_1_alpha_1_TO_0_0_1_alpha_2
+} from "./migrators/0_0_1-alpha.1-0_0_1-alpha.2";
 
-enum Versions {
+export enum ManifestVersions {
   "0.0.1-alpha.1" = "0.0.1-alpha.1",
   "0.0.1-alpha.2" = "0.0.1-alpha.2",
+  "0.0.1-alpha.3" = "0.0.1-alpha.3"
 }
 
 type Migrator = {
-  [key in Versions]?: {
+  [key in ManifestVersions]?: {
     upgrades: {
-      [key in Versions]?: { migrate: (m: Manifests) => Manifests };
+      [key in ManifestVersions]?: (m: AnyManifest) => AnyManifest;
     };
   };
 };
@@ -16,24 +20,29 @@ type Migrator = {
 export const migrators: Migrator = {
   "0.0.1-alpha.1": {
     upgrades: {
-      "0.0.1-alpha.2": require("./migrators/0_0_1-alpha.1-0_0_1-alpha.2"),
+      "0.0.1-alpha.2": migrate_0_0_1_alpha_1_TO_0_0_1_alpha_2,
     },
   },
 };
 
-export const upgradeManifest = (manifest: Manifests, to: string) => {
-  const from = manifest.version as Versions;
+export const upgradeManifest = (manifest: AnyManifest, to: ManifestVersions) => {
+  const from = manifest.version as ManifestVersions;
+
+  if (!(from in ManifestVersions)) {
+    throw new Error(`Unrecognized manifest version "${manifest.version}"`);
+  }
+
   const currentVersionMigrator = migrators[from];
   if (!currentVersionMigrator) {
     throw new Error(`From version ${from} doesn't exists`);
   }
 
-  const upgradeFile = currentVersionMigrator["upgrades"][to as Versions];
-  if (!upgradeFile) {
+  const upgradeMigrator = currentVersionMigrator.upgrades[to];
+  if (!upgradeMigrator) {
     throw new Error(
       `Version to update ${to} is not available in migrator of version ${from}`
     );
   }
 
-  return upgradeFile.migrate(manifest);
+  return upgradeMigrator(manifest);
 };

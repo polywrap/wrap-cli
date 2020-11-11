@@ -20,8 +20,8 @@ import {
   ModulePath
 } from "./lib/types";
 import { WasmWorker } from "./lib/wasm-worker";
-import ManifestSchemas, { Manifest } from "./manifest/versions"
-import { upgradeManifest } from "./manifest";
+import { AnyManifest, Manifest } from "./manifest/versions"
+import { ManifestVersions, upgradeManifest } from "./manifest";
 
 export interface IPortals {
   ipfs: IPFS;
@@ -112,8 +112,8 @@ export class Web3API {
           throw Error(`Unable to parse web3api.yaml\n${manifestStr}`);
         }
 
-        const latestVersion: string = require("../package.json").version
-        const currentManifest: ManifestSchemas = this._manifest;
+        const latestVersion: ManifestVersions = ManifestVersions["0.0.1-alpha.2"]
+        const currentManifest: AnyManifest = this._manifest;
         if (compare(latestVersion, currentManifest.version) === -1) {
           this._manifest = upgradeManifest(currentManifest, latestVersion)
         }

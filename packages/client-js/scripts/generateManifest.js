@@ -1,7 +1,10 @@
-const schema = require("@web3api/manifest-schema");
-const package = require("../../package.json")
-const compile = require("json-schema-to-typescript").compile;
-const writeFileSync = require("fs").writeFileSync;
+const package = require("../package.json");
+const schemaVersion = package.devDependencies['@web3api/manifest-schema'].version;
+const schema = require(
+  `@web3api/manifest-schema/${schemaVersion}`
+);
+const { compile } = require("json-schema-to-typescript");
+const { writeFileSync } = require("fs");
 
 const generateManifest = () => {
   try {

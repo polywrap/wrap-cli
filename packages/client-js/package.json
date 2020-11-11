@@ -5,7 +5,7 @@
   "main": "build/index.js",
   "scripts": {
     "build": "rimraf build && yarn build:manifest && tsc",
-    "build:manifest": "node ./src/scripts/generateManifest.js",
+    "build:manifest": "node ./scripts/generateManifest.js",
     "test": "WORKER_ENV=test jest --passWithNoTests --runInBand --verbose",
     "test:watch": "WORKER_ENV=test jest --watch --passWithNoTests --verbose",
     "test:ci": "yarn test:env:up && yarn test && yarn test:env:down",
@@ -15,7 +15,6 @@
   "dependencies": {
     "@assemblyscript/loader": "0.14.1",
     "@web3api/wasm-ts": "0.0.1-alpha.1",
-    "@web3api/manifest-schema": "0.0.1-alpha.1",
     "apollo-link": "1.2.14",
     "apollo-link-http": "1.5.17",
     "cross-fetch": "3.0.5",
@@ -26,15 +25,17 @@
     "is-ipfs": "1.0.3",
     "js-yaml": "3.14.0",
     "jsonschema": "1.3.0",
-    "json-schema-to-typescript": "9.1.1",
     "semver": "7.3.2"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
     "@types/js-yaml": "3.11.1",
+    "@types/semver":"^7.3.4",
     "@web3api/cli": "0.0.1-alpha.1",
+    "@web3api/manifest-schema": "0.0.1-alpha.1",
     "axios": "0.19.2",
     "jest": "26.2.2",
+    "json-schema-to-typescript": "9.1.1",
     "rimraf": "3.0.2",
     "spawn-command": "0.0.2-1",
     "ts-jest": "26.1.4",
