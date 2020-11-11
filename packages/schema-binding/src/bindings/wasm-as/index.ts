@@ -51,19 +51,22 @@ export function generateBinding(schema: Schema): OutputDirectory {
   }
 
   // Generate root entry file
-  // TODO:
+  entries.push(...generateFiles('./templates', config));
 
   return {
     entries
   };
 }
 
-function generateFiles(subpath: string, config: any): OutputEntry[] {
+function generateFiles(subpath: string, config: any, subDirectories: boolean = false): OutputEntry[] {
   const output: OutputEntry[] = [];
   const absolutePath = path.join(__dirname, subpath);
   const directory = loadDirectory(absolutePath);
 
-  const processDirectory = (entries: OutputEntry[], output: OutputEntry[]) => {
+  const processDirectory = (
+    entries: OutputEntry[],
+    output: OutputEntry[]
+  ) => {
     // Load all sub-templates
     const subTemplates: any = { };
 
@@ -93,7 +96,7 @@ function generateFiles(subpath: string, config: any): OutputEntry[] {
             data: Mustache.render(dirent.data, config, subTemplates)
           });
         }
-      } else if (dirent.type === "Directory") {
+      } else if (dirent.type === "Directory" && subDirectories) {
         const subOutput: OutputEntry[] = [];
 
         processDirectory(dirent.data as OutputEntry[], subOutput);

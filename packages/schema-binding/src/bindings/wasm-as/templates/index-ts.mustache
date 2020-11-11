@@ -15,7 +15,7 @@ import {
 export function _w3_init(): void {
   {{#queries}}
   {{#methods}}
-  w3_add_call("{{name}}", {{name}}Wrapped)
+  w3_add_call("{{name}}", {{name}}Wrapped);
   {{/methods}}
   {{/queries}}
 }
