@@ -8,20 +8,20 @@ import {
 } from "@web3api/wasm-as";
 
 {{#methods}}
-export function serialize{{name}}(input: {
+export function serialize{{name}}Args(input: {
   {{#arguments}}
   {{name}}: {{#toWasm}}{{type}}{{/toWasm}}{{^last}},{{/last}}
   {{/arguments}}
 }): ArrayBuffer {
   const sizer = new WriteSizer();
-  write{{name}}(sizer, input);
+  write{{name}}Args(sizer, input);
   const buffer = new ArrayBuffer(sizer.length);
   const encoder = new WriteEncoder(buffer);
-  write{{name}}(encoder, input);
+  write{{name}}Args(encoder, input);
   return buffer;
 }
 
-function write{{name}}(
+function write{{name}}Args(
   writer: Write,
   input: {
     {{#arguments}}
@@ -43,7 +43,7 @@ function write{{name}}(
   {{/arguments}}
 }
 
-export function deserialize{{name}}(buffer: ArrayBuffer): {{#toWasm}}{{return.type}}{{/toWasm}} {
+export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#toWasm}}{{return.type}}{{/toWasm}} {
   const reader = new ReadDecoder(buffer);
   {{#return}}
   {{#scalar}}

@@ -9,9 +9,10 @@ import {
   deserializeanotherMethodResult
 } from "./serialization";
 
-export const uri = "testimport.uri.eth";
-
 export class TestImportQuery {
+
+  public static uri: string = "testimport.uri.eth";
+
   public static importedMethod(input: {
     str: string,
     optStr: string | null,

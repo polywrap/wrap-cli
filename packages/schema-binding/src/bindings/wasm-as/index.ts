@@ -34,9 +34,24 @@ export function generateBinding(schema: Schema): OutputDirectory {
     entries.push({
       type: "Directory",
       name: "imported",
-      data: importEntries
+      data: [
+        ...importEntries,
+        ...generateFiles('./templates/imported', config)
+      ]
     });
   }
+
+  // Generate query type folders
+  for (const query of config.queries) {
+    entries.push({
+      type: "Directory",
+      name: query.name,
+      data: generateFiles('./templates/query-type', query)
+    });
+  }
+
+  // Generate root entry file
+  // TODO:
 
   return {
     entries

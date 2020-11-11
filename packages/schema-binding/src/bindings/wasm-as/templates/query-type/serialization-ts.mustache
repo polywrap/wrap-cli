@@ -1,0 +1,76 @@
+import {
+  Read,
+  ReadDecoder,
+  WriteSizer,
+  WriteEncoder,
+  Write
+} from "@web3api/wasm-as";
+
+{{#methods}}
+export function deserialize{{name}}Args(argsBuf: ArrayBuffer): {
+  {{#arguments}}
+  {{name}}: {{#toWasm}}{{type}}{{/toWasm}}{{^last}},{{/last}}
+  {{/arguments}}
+} {
+  const reader = new ReadDecoder(argsBuf);
+  var numFields = reader.readMapLength();
+
+  {{#arguments}}
+  var _{{name}}: {{#toWasm}}{{type}}{{/toWasm}} | undefined;
+  {{/arguments}}
+
+  while (numFields > 0) {
+    numFields--;
+    const field = reader.readString();
+
+    {{#arguments}}
+    {{^first}}else {{/first}}if (field == "{{name}}") {
+      {{#scalar}}
+      _{{name}} = reader.read{{#toMsgPack}}{{type}}{{/toMsgPack}}();
+      {{/scalar}}
+      {{#array}}
+      _{{name}} = reader.read{{#toMsgPack}}{{type}}{{/toMsgPack}}((reader: Read): {{#toWasm}}{{item.type}}{{/toWasm}} => {
+        {{> deserialize_array}}
+      });
+      {{/array}}
+    }
+    {{/arguments}}
+  }
+
+  {{#arguments}}
+  {{#required}}
+  if (!_{{name}}) {
+    throw Error("Missing required argument \"{{name}}: {{type}}\"");
+  }
+  {{/required}}
+  {{/arguments}}
+
+  return {
+    {{#arguments}}
+    {{name}}: _{{name}}
+    {{/arguments}}
+  };
+}
+
+export function serialize{{name}}Result(result: {{#toWasm}}{{return.type}}{{/toWasm}}): ArrayBuffer {
+  const sizer = new WriteSizer();
+  write{{name}}Result(sizer, result);
+  const buffer = new ArrayBuffer(sizer.length);
+  const encoder = new WriteEncoder(buffer);
+  write{{name}}Result(encoder, result);
+  return buffer;
+}
+
+function write{{name}}Result(writer: Write, result: {{#toWasm}}{{return.type}}{{/toWasm}}) {
+  {{#return}}
+  {{#scalar}}
+  writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(result);
+  {{/scalar}}
+  {{#array}}
+  writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(result, (writer: Write, item: {{#toWasm}}{{item.type}}{{/toWasm}}): void => {
+    {{> serialize_array}}
+  });
+  {{/array}}
+  {{/return}}
+}
+{{/methods}}

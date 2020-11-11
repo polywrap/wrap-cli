@@ -1,9 +1,10 @@
 import {
+  Read,
   ReadDecoder,
   WriteSizer,
   WriteEncoder,
   Write
-} from "@web3api/wasm-as"
+} from "@web3api/wasm-as";
 
 export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): {
   arg: string
@@ -23,7 +24,7 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): {
   }
 
   if (!_arg) {
-    throw Error("queryMethod: missing required argument \"arg: String\"");
+    throw Error("Missing required argument \"arg: String\"");
   }
 
   return {
@@ -31,7 +32,7 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): {
   };
 }
 
-export function serializequeryMethodResult(result: string): ArrayBuffer {
+export function serializequeryMethodResult(result: i32): ArrayBuffer {
   const sizer = new WriteSizer();
   writequeryMethodResult(sizer, result);
   const buffer = new ArrayBuffer(sizer.length);
@@ -40,6 +41,6 @@ export function serializequeryMethodResult(result: string): ArrayBuffer {
   return buffer;
 }
 
-function writequeryMethodResult(writer: Write, result: string) {
-  writer.writeString(result);
+function writequeryMethodResult(writer: Write, result: i32) {
+  writer.writeInt32(result);
 }

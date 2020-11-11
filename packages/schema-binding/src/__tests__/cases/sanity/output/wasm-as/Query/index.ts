@@ -8,8 +8,8 @@ import {
 
 export function queryMethodWrapped(argsBuf: ArrayBuffer): ArrayBuffer {
   const args = deserializequeryMethodArgs(argsBuf);
-  const result = queryMethod(
-    args.arg
-  );
+  const result = queryMethod({
+    arg: args.arg
+  });
   return serializequeryMethodResult(result);
 }

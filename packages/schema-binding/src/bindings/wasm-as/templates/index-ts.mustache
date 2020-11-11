@@ -1,0 +1,25 @@
+import {
+  w3_add_call,
+  w3_call
+} from "@web3api/wasm-as";
+{{#queries}}
+{{#methods.length}}
+import {
+  {{#methods}}
+  {{name}}Wrapped{{^last}},{{/last}}
+  {{/methods}}
+} from "./{{name}}";
+{{/methods.length}}
+{{/queries}}
+
+export function _w3_init(): void {
+  {{#queries}}
+  {{#methods}}
+  w3_add_call("{{name}}", {{name}}Wrapped)
+  {{/methods}}
+  {{/queries}}
+}
+
+export function _w3_call(name_size: usize, args_size: usize): bool {
+  return w3_call(name_size, args_size);
+}

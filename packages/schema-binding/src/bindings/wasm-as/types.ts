@@ -14,6 +14,14 @@ export class TypeDefinition {
 
 export class CustomTypeDefinition extends TypeDefinition {
   properties: PropertyDefinition[] = []
+
+  public finalize() {
+    setFirstLast(this.properties);
+
+    for (const prop of this.properties) {
+      prop.setTypeName();
+    }
+  }
 }
 
 export abstract class UnknownTypeDefinition extends TypeDefinition {
@@ -38,8 +46,10 @@ export class PropertyDefinition extends UnknownTypeDefinition {
     if (this.array) {
       this.array.setTypeName();
       this.type = this.array.type;
+      this.required = this.array.required;
     } else if (this.scalar) {
       this.type = this.scalar.type;
+      this.required = this.scalar.required;
     }
   }
 }
@@ -84,19 +94,6 @@ export class ArrayDefinition extends UnknownTypeDefinition {
   }
 }
 
-export class ImportedTypeDefinition extends TypeDefinition {
-  constructor(
-    public uri: string,
-    public namespace: string,
-    name: string,
-    type: string
-  ) {
-    super(name, type);
-  }
-
-  methods: MethodDefinition[] = []
-}
-
 export class MethodDefinition extends TypeDefinition {
   constructor(
     public operation: "query" | "mutation",
@@ -111,33 +108,54 @@ export class MethodDefinition extends TypeDefinition {
   return: PropertyDefinition | null = null;
 }
 
+export class QueryTypeDefinition extends TypeDefinition {
+  methods: MethodDefinition[] = []
+
+  public finalize() {
+    setFirstLast(this.methods);
+
+    for (const method of this.methods) {
+      setFirstLast(method.arguments);
+
+      for (const argument of method.arguments) {
+        argument.setTypeName();
+      }
+
+      method.return?.setTypeName();
+    }
+  }
+}
+
+export class ImportedTypeDefinition extends QueryTypeDefinition {
+  constructor(
+    public uri: string,
+    public namespace: string,
+    name: string,
+    type: string
+  ) {
+    super(name, type);
+  }
+}
+
 export class Config {
   types: CustomTypeDefinition[] = []
   imports: ImportedTypeDefinition[] = []
+  queries: QueryTypeDefinition[] = []
 
   public finalize() {
     setFirstLast(this.types);
-
     for (const type of this.types) {
-      setFirstLast(type.properties);
-
-      for (const prop of type.properties) {
-        prop.setTypeName();
-      }
+      type.finalize();
     }
 
+    setFirstLast(this.imports);
     for (const importEntry of this.imports) {
-      setFirstLast(importEntry.methods);
+      importEntry.finalize();
+    }
 
-      for (const method of importEntry.methods) {
-        setFirstLast(method.arguments);
-
-        for (const argument of method.arguments) {
-          argument.setTypeName();
-        }
-
-        method.return?.setTypeName();
-      }
+    setFirstLast(this.queries);
+    for (const query of this.queries) {
+      query.finalize();
     }
   }
 }

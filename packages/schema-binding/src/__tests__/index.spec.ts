@@ -22,11 +22,13 @@ describe("Web3API Binding Test Suite", () => {
           const expectedOutput = loadDirectory(directory);
           const output = generateCode(name as TargetLanguage, schema);
 
-          output.entries = output.entries.sort((a, b) => {
+          const alphabetical = (a, b) => {
             if (a.name < b.name) { return -1; }
             if (a.name > b.name) { return 1; }
             return 0;
-          });
+          }
+
+          output.entries = output.entries.sort(alphabetical);
 
           expect(output).toMatchObject(expectedOutput);
         });

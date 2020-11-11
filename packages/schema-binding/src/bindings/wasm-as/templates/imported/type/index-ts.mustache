@@ -1,27 +1,28 @@
 import {
-  queryWeb3Api,
+  w3_query,
   Nullable
 } from "@web3api/wasm-as";
 {{#methods.length}}
 import {
   {{#methods}}
-  serialize{{name}},
-  deserialize{{name}}{{^last}},{{/last}}
+  serialize{{name}}Args,
+  deserialize{{name}}Result{{^last}},{{/last}}
   {{/methods}}
 } from "./serialization";
 {{/methods.length}}
 
-export const uri = "{{uri}}";
-
 export class {{name}} {
+
+  public static uri: string = "{{uri}}";
+
   {{#methods}}
   public static {{name}}(input: {
     {{#arguments}}
     {{name}}: {{#toWasm}}{{type}}{{/toWasm}}{{^last}},{{/last}}
     {{/arguments}}
   }): {{#toWasm}}{{return.type}}{{/toWasm}} {
-    const args = serialize{{name}}(input);
-    const result = queryWeb3Api(
+    const args = serialize{{name}}Args(input);
+    const result = w3_query(
       uri,
       `{{operation}} {
         {{name}}(
@@ -32,7 +33,7 @@ export class {{name}} {
       }`,
       args
     );
-    return deserialize{{name}}(result);
+    return deserialize{{name}}Result(result);
   }
   {{^last}}
 

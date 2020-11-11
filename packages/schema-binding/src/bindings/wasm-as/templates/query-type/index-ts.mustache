@@ -1,0 +1,25 @@
+{{#methods.length}}
+import {
+  {{#methods}}
+  {{name}}{{^last}},{{/last}}
+  {{/methods}}
+} from "../../";
+import {
+  {{#methods}}
+  deserialize{{name}}Args,
+  serialize{{name}}Result{{^last}},{{/last}}
+  {{/methods}}
+} from "./serialization";
+{{/methods.length}}
+
+{{#methods}}
+export function {{name}}Wrapped(argsBuf: ArrayBuffer): ArrayBuffer {
+  const args = deserialize{{name}}Args(argsBuf);
+  const result = {{name}}({
+    {{#arguments}}
+    {{name}}: args.{{name}}{{^last}},{{/last}}
+    {{/arguments}}
+  });
+  return serialize{{name}}Result(result);
+}
+{{/methods}}
