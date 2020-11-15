@@ -1,10 +1,10 @@
 import YAML from "js-yaml";
 import fs from "fs";
-import { sanitizeAndUpgrade, Manifest } from "@web3api/client-js/manifest";
+import { sanitizeAndUpgrade, Manifest } from "@web3api/client-js";
 
 export class Web3API {
   public static load(manifestPath: string): Manifest {
-    const manifest = YAML.safeLoad(
+    let manifest = YAML.safeLoad(
       fs.readFileSync(manifestPath, "utf-8")
     ) as Manifest | undefined;
 

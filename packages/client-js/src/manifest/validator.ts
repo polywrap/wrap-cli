@@ -1,10 +1,10 @@
 import { Validator } from "jsonschema";
 import { existsSync } from "fs";
-import schema from "@web3api/manifest-schema";
-
 import { Manifest } from "./versions/0.0.1-alpha.1";
+import { latestVersion } from "./versions";
 
 const packageInformation = require("../../package.json");
+const schema = require("@web3api/manifest-schema");
 
 enum ValidationError {
   ADDITIONAL_PROPERTY = "additionalProperties",
@@ -28,7 +28,7 @@ const validateFile = (path: string) => {
   return exists;
 };
 
-export const manifestValidation = (manifest: Manifest): Manifest => {
+export const sanitizeAndUpgrade = (manifest: Manifest): Manifest => {
   const ManifestSchema = schema["manifest"];
 
   const { errors } = validator.validate(manifest, ManifestSchema);

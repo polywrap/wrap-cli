@@ -34,7 +34,7 @@ export const upgradeManifest = (manifest: AnyManifest, to: ManifestVersions) => 
 
   const currentVersionMigrator = migrators[from];
   if (!currentVersionMigrator) {
-    throw new Error(`From version ${from} doesn't exists`);
+    throw new Error(`From version ${from} migrator does not exists`);
   }
 
   const upgradeMigrator = currentVersionMigrator.upgrades[to];
