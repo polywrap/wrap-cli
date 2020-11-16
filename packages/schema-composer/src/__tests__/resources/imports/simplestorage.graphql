@@ -1,0 +1,14 @@
+type Query {
+  getData(
+    address: String!
+  ): Int!
+}
+
+type Mutation {
+  setData(
+    address: String!
+    value: Int!
+  ): String!
+
+  deployContract: String!
+}
