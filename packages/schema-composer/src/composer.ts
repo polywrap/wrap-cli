@@ -20,13 +20,23 @@ function logError(msg: string) {
   console.error(`${msg}`);
 }
 
+/*
+This is all POC code.
+It's going to be refactored into modules / individual functions once a flow is proven out.
+Until then I don't want to refactor it into modules because it might be the wrong organization
+(want to fully understand the problem space first and see what parts can be discrete)
+*/
 async function tryouts() {
 
   const filepath = './src/__tests__/resources/test1_query.graphql';
+  const loadPath = path.resolve(__dirname, '../' + filepath);
 
-  const queryFile = fs.readFileSync(filepath, 'utf-8');
+  const queryFile = fs.readFileSync(loadPath, 'utf-8');
   const queryFileLines = queryFile.split(/\r?\n/);
 
+  // I'm considering creating a (input line) -> (output line) converter which would take a given input line
+  // and convert it out into 0 or more output lines
+  
   interface FileImportStatement {
     line: number,
     statement: string
