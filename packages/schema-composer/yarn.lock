@@ -2438,7 +2438,7 @@ graphql-tag@^2.11.0:
   resolved "https://registry.yarnpkg.com/graphql-tag/-/graphql-tag-2.11.0.tgz#1deb53a01c46a7eb401d6cb59dec86fa1cccbffd"
   integrity sha512-VmsD5pJqWJnQZMUeRwrDhfgoyqcfwEkvtpANqcoUG8/tOLkwNgU9mzub/Mc78OJMhHjx7gfAMTxzdG43VGg3bA==
 
-graphql-tools@7.0.1:
+graphql-tools@^7.0.1:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/graphql-tools/-/graphql-tools-7.0.1.tgz#30d20cb080c55b4d35f37c92f28f72d006bc5bd9"
   integrity sha512-JraaBDiJgI/Ax9Oo7Bikl87828ezJ3lrIvMAYP8BZ9h0fAkmPf9DkhPPPKCMxwFIAShe7hfYZTW6Pw7vJMzmUQ==
@@ -2468,10 +2468,10 @@ graphql-tools@7.0.1:
     "@graphql-tools/wrap" "^7.0.0"
     tslib "~2.0.1"
 
-graphql@15.3.0:
-  version "15.3.0"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.3.0.tgz#3ad2b0caab0d110e3be4a5a9b2aa281e362b5278"
-  integrity sha512-GTCJtzJmkFLWRfFJuoo9RWWa/FfamUHgiFosxi/X1Ani4AVWbeyBenZTNX6dM+7WSbbFfTo/25eh0LLkwHMw2w==
+graphql@^15.4.0:
+  version "15.4.0"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.4.0.tgz#e459dea1150da5a106486ba7276518b5295a4347"
+  integrity sha512-EB3zgGchcabbsU9cFe1j+yxdzKQKAbGUWRb13DsrsMN1yyfmmIq+2+L5MqVWcDCE4V89R5AyUOi7sMOGxdsYtA==
 
 growly@^1.3.0:
   version "1.3.0"

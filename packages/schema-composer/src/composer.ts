@@ -1,7 +1,10 @@
-//import * as mustache from "mustache";
+import * as mustache from "mustache";
 import * as fs from 'fs';
 import * as path from 'path';
 import chalk = require('chalk');
+
+import * as graphTools from 'graphql-tools';
+import * as graphql from 'graphql';
 
 function templatesDirectory(): string {
   return path.resolve(__dirname, "./templates");
@@ -12,12 +15,140 @@ function getTemplate(templateName: string): string {
 }
 
 const importStatementFinder = /^#import .+$/;
-const importStatementExtractor = /^#import {([a-zA-Z0-9_, ]+?)} in (\w+?) from \"([a-zA-Z0-9_.]+?)\"$/;
+const importStatementExtractor = /^#import {([a-zA-Z0-9_, ]+?)} in (\w+?) from \"([a-zA-Z0-9_.\/]+?)\"$/;
 const importTypeExtractor = /(\w+)/g;
 
+function logDebug(msg: string) {
+  console.log(`${chalk.green("Debug: ")} ${msg}`);
+}
 
 function logError(msg: string) {
   console.error(`${msg}`);
+}
+
+interface ImportedSchema {
+  source: string,
+  schema: string,
+  local: boolean
+}
+
+const importedSchemaCache: { [source: string]: ImportedSchema } = {};
+const getImportedSchema = async (source: string): Promise<ImportedSchema> => {
+  let cache = importedSchemaCache[source];
+  if (cache) {
+    return cache;
+  }
+
+  // Not in cache, go fetch it
+
+  if (source[0] === ".") {
+    // source is a file path, so it's a local import
+    const importPath = path.resolve(__dirname, '..', 'src', '__tests__', 'resources', source);
+    logDebug(`Resolving '${chalk.yellow(source)}' to '${chalk.yellow(importPath)}'`);
+
+    let schema = "";
+    try {
+      schema = fs.readFileSync(importPath).toString();
+    } catch (e) {
+      throw Error(`Unable to find import '${source}' at '${importPath}'`);
+    }
+    
+
+    importedSchemaCache[source] = {
+      source,
+      schema,
+      local: true
+    }
+
+    return getImportedSchema(source);
+  }
+
+  // source must be an ENS
+  // @TODO: actually resolve
+
+  // hack for now
+  source = source.replace('.eth', '.graphql');
+
+  const importPath = path.resolve(__dirname, '..', 'src', '__tests__', 'resources', 'imports', source);
+  logDebug(`Resolving external import '${chalk.yellow(source)}' to '${chalk.yellow(importPath)}'`);
+
+  let schema = "";
+  try {
+    schema = fs.readFileSync(importPath).toString();
+  } catch (e) {
+    throw Error(`Unable to find external import '${source}' at '${importPath}'`);
+  }
+
+  importedSchemaCache[source] = {
+    source,
+    schema,
+    local: true
+  }
+
+  return getImportedSchema(source);
+}
+
+const getTypesFromSchema = async (schema: string, types: string[]) => {
+  const sourceSchema = graphql.parse(schema);
+
+  const builtSchema = graphql.buildSchema(schema);
+  const foundType = builtSchema.getType("Query");
+  if (!foundType) {
+    return;
+  }
+
+  let insideObject = false;
+  const ast = graphql.visit(sourceSchema, {
+    // ObjectTypeDefinition(node) {
+    //   console.log(node.kind);
+    //   if (node.name.value !== "Query") {
+    //     return null
+    //   }
+
+    //   return undefined
+    // },
+    // SchemaDefinition(node) {
+    //   return null;
+    // },
+    enter(node, key, parent, path, ancestors) {
+      if (node.kind === 'ObjectTypeDefinition') {
+        console.log("inside type " + node.name.value);
+        insideObject = true;
+      }
+      if (!insideObject) {
+        return undefined;
+      }
+      if (node.kind === 'NamedType') {
+        const typeNode = node as graphql.NamedTypeNode;
+        console.log(`Found type ${typeNode.name.value}`);
+      }
+
+      return undefined;
+      // @return
+      //   undefined: no action
+      //   false: skip visiting this node
+      //   visitor.BREAK: stop visiting altogether
+      //   null: delete this node
+      //   any value: replace this node with the returned value
+    },
+    leave(node, key, parent, path, ancestors) {
+      // @return
+      //   undefined: no action
+      //   false: no action
+      //   visitor.BREAK: stop visiting altogether
+      //   null: delete this node
+      //   any value: replace this node with the returned value
+      if (node.kind === 'ObjectTypeDefinition') {
+        console.log("leaving type " + node.name.value);
+        insideObject = false;
+      }
+
+      return false;
+    }
+  });
+
+
+  console.log(graphql.print(ast));
 }
 
 /*
@@ -28,8 +159,32 @@ Until then I don't want to refactor it into modules because it might be the wron
 */
 async function tryouts() {
 
+  const merged = graphTools.mergeTypeDefs([`type BigNumber {
+    number: String!
+  }`, `type Query {
+    lengthOfString(
+      name: String!
+    ): Int!
+  }`, `directive @imported(
+    namespace: String!
+    uri: String!
+    type: String!
+  ) on OBJECT
+  directive @imports (
+    types: [String!]!
+  ) on OBJECT`]);
+  console.log(graphql.print(merged));
+  getTypesFromSchema(graphql.print(merged), ['Query']);
+
+
+  if (merged !== undefined) {
+    return;
+  }
+
+  /////
+
   const filepath = './src/__tests__/resources/test1_query.graphql';
-  const loadPath = path.resolve(__dirname, '../' + filepath);
+  const loadPath = path.resolve(__dirname, '..', filepath);
 
   const queryFile = fs.readFileSync(loadPath, 'utf-8');
   const queryFileLines = queryFile.split(/\r?\n/);
@@ -42,6 +197,8 @@ async function tryouts() {
     statement: string
     imports: Maybe<ImportedType[]>
   }
+
+  
 
   const detectedImports: FileImportStatement[] = [];
   
@@ -139,10 +296,42 @@ async function tryouts() {
   console.log(detectedImports);
 
 
-  const directiveTemplate = getTemplate('directives');
-  //console.log(directiveTemplate);
+  let fileOutput = "";
 
-  //mustache.render()
+  // Directives
+  const directiveTemplate = getTemplate('directives');
+  fileOutput += mustache.render(directiveTemplate, {});
+
+  fileOutput += '\n';
+
+  // Imported types
+  const importedTypeTemplate = getTemplate('importedType');
+  for (const importStatement of detectedImports) {
+    if (!importStatement.imports) {
+      logError(`${chalk.red('Internal Error:')} Attempted to reference imports from a type import that wasn't resolved.`);
+      return;
+    }
+
+    for (const importedType of importStatement.imports) {
+
+      // Fetch the contents of the type
+      // For `.eth` packages this means an ENS look up and going to IPFS to pull the contents
+      const importedSchema = await getImportedSchema(importedType.source);
+
+      const schemaContents = "";
+
+      fileOutput += mustache.render(importedTypeTemplate, {
+        qualifiedName: "",
+        namespace: "",
+        type: "",
+        source: "",
+        contents: "",
+      })
+    }
+
+    
+
+  }
 }
 
 async function tryIt() {

@@ -1,5 +1,4 @@
 #import { Query } in SimpleStorage from "simplestorage.eth"
-#import { Fred, Bob } in SimpleStorage from "simplestorage.eth"
 
 type Query {
   lengthOfString(
