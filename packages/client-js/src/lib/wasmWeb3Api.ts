@@ -6,8 +6,8 @@ import { WasmWorker } from "./wasm-worker";
 export interface WASMWeb3APIParams {
     manifest: Manifest;
     rawSchema: string;
-    mutateModule: Maybe<ArrayBuffer>;
-    queryModule: Maybe<ArrayBuffer>;
+    mutateModule?: ArrayBuffer;
+    queryModule?: ArrayBuffer;
     uri: string;
     cid: string;
 }

@@ -1,1 +1,1 @@
-export * from "./TestImportQuery";
+export * from "./TestImport_Query";

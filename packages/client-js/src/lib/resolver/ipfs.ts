@@ -6,7 +6,7 @@ import YAML from "js-yaml";
 
 export const IPFSResolver = (eth: Ethereum, ipfs: IPFS): Web3APIModuleResolver => {
   const getManifest = async (cid: string) => {
-    let manifest: Maybe<Manifest> = null;
+    let manifest: Manifest | undefined;
     const apiContents = await ipfs.ls(cid);
     
     for await (const file of apiContents) {
@@ -15,12 +15,12 @@ export const IPFSResolver = (eth: Ethereum, ipfs: IPFS): Web3APIModuleResolver =
       if (depth === 1 && type === "file" &&
          (name === "web3api.yaml" || name === "web3apy.yml")) {
         const manifestStr = await ipfs.catToString(path);
-        manifest = YAML.safeLoad(manifestStr) as Manifest | null;
+        manifest = YAML.safeLoad(manifestStr) as Manifest;
         return manifest;
       }
     }
 
-    return null;
+    return undefined;
   }
 
   const getSchema = async (cid: string) => {

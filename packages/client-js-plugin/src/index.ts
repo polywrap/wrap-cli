@@ -1,4 +1,4 @@
-export interface IResolvers {
+export interface Resolvers {
   // TODO: tighten up the typing
   Query: {
     [name: string]: (input: any) => any
@@ -10,7 +10,7 @@ export interface IResolvers {
 }
 
 export abstract class Web3APIClientPlugin {
-  abstract getResolvers(): IResolvers;
+  abstract getResolvers(): Resolvers;
 }
 
 // TODO:

@@ -13,7 +13,7 @@ const fsExtra = require("fs-extra");
 const spawn = require("spawn-command");
 const toolbox = require("gluegun/toolbox");
 
-export interface ICompilerConfig {
+export interface CompilerConfig {
   manifestPath: string;
   outputDir: string;
   outputFormat: string;
@@ -22,7 +22,7 @@ export interface ICompilerConfig {
 export class Compiler {
   private _manifestDir: string;
 
-  constructor(private _config: ICompilerConfig) {
+  constructor(private _config: CompilerConfig) {
     this._manifestDir = path.dirname(_config.manifestPath);
   }
 
