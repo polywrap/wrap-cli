@@ -1,7 +1,10 @@
-import { Validator } from "jsonschema";
-import { existsSync } from "fs";
 import { Manifest } from "./versions/0.0.1-alpha.1";
 import { latestVersion } from "./versions";
+import { upgradeManifest, ManifestVersions } from "./migrator";
+
+import { Validator } from "jsonschema";
+import { existsSync } from "fs";
+import { compare } from "semver";
 
 const packageInformation = require("../../package.json");
 const schema = require("@web3api/manifest-schema");
@@ -75,6 +78,10 @@ export const sanitizeAndUpgrade = (manifest: Manifest): Manifest => {
           );
         }
     }
+  }
+
+  if (compare(manifest.version, latestVersion) === -1) {
+    manifest = upgradeManifest(manifest, latestVersion as ManifestVersions);
   }
 
   return manifest;

@@ -41,8 +41,5 @@
     "ts-jest": "26.1.4",
     "ts-node": "8.10.2",
     "typescript": "3.9.7"
-  },
-  "exports": {
-    "./manifest": "./src/manifest"
   }
 }
