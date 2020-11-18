@@ -7,3 +7,9 @@ output = single graphql file
 - import external Web3API dependencies
 - - .externals/Protocol/[web3api.yaml, mutation.wasm, query.wasm, etc]
 - - folder as IPLD, allowing us to understand API dependency paths
+
+
+## Tests
+
+- Follow the test case pattern Jordan uses in schema-bindings package
+- 

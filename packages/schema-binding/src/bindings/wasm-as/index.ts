@@ -1,33 +1,42 @@
-
-import { buildConfig } from "./parsing";
-import { OutputDirectory, OutputEntry, Schema } from "../../";
-import path from "path";
+import { OutputDirectory, OutputEntry } from "../../";
 import { loadDirectory } from "../../utils/fs";
+import * as Functions from "./functions";
+
+import { buildTypeInfo, TypeDefinition } from "@web3api/schema-parser";
+import path from "path";
+
 const Mustache = require("mustache");
 
-export function generateBinding(schema: Schema): OutputDirectory {
+export function generateBinding(schema: string): OutputDirectory {
   const entries: OutputEntry[] = [];
-  const config = buildConfig(schema);
+  const typeInfo = buildTypeInfo(schema, {
+    extendProperties: (t: TypeDefinition): TypeDefinition => {
+      return {
+        ...t,
+        ...Functions
+      } as TypeDefinition;
+    }
+  });
 
-  // Generate custom type folders
-  for (const type of config.types) {
+  // Generate user type folders
+  for (const userType of typeInfo.userTypes) {
     entries.push({
       type: "Directory",
-      name: type.name,
-      data: generateFiles('./templates/custom-type', type)
+      name: userType.name,
+      data: generateFiles('./templates/user-type', userType)
     });
   }
 
-  // Generate import folder
-  if (config.imports.length > 0) {
+  // Generate imported folder
+  if (typeInfo.imports.length > 0) {
     const importEntries: OutputEntry[] = [];
 
-    // Generate import type folders
-    for (const importType of config.imports) {
+    // Generate imported type folders
+    for (const importedType of typeInfo.importedTypes) {
       importEntries.push({
         type: "Directory",
-        name: importType.name,
-        data: generateFiles('./templates/imported/type', importType)
+        name: importedType.name,
+        data: generateFiles('./templates/imported/type', importedType)
       });
     }
 
@@ -36,22 +45,22 @@ export function generateBinding(schema: Schema): OutputDirectory {
       name: "imported",
       data: [
         ...importEntries,
-        ...generateFiles('./templates/imported', config)
+        ...generateFiles('./templates/imported', typeInfo)
       ]
     });
   }
 
   // Generate query type folders
-  for (const query of config.queries) {
+  for (const queryType of typeInfo.queryTypes) {
     entries.push({
       type: "Directory",
-      name: query.name,
-      data: generateFiles('./templates/query-type', query)
+      name: queryType.name,
+      data: generateFiles('./templates/query-type', queryType)
     });
   }
 
   // Generate root entry file
-  entries.push(...generateFiles('./templates', config));
+  entries.push(...generateFiles('./templates', typeInfo));
 
   return {
     entries

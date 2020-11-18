@@ -1,10 +1,10 @@
 import {
   ArrayDefinition,
-  CustomTypeDefinition,
+  UserTypeDefinition,
   PropertyDefinition,
   ScalarDefinition,
-  UnknownTypeDefinition,
-  Config
+  AnyTypeDefinition,
+  TypeInfo
 } from "../types";
 
 import {
@@ -19,12 +19,12 @@ import {
 } from "graphql";
 
 interface State {
-  currentType?: CustomTypeDefinition
-  currentUnknown?: UnknownTypeDefinition
+  currentType?: UserTypeDefinition
+  currentUnknown?: AnyTypeDefinition
   nonNullType?: boolean
 }
 
-const visitorEnter = (config: Config, state: State) => ({
+const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
   ObjectTypeDefinition: (node: TypeDefinitionNode) => {
     // Skip non-custom types
     if (node.name.value === "Query" || node.name.value === "Mutation") {
@@ -39,10 +39,10 @@ const visitorEnter = (config: Config, state: State) => ({
     }
 
     // Create a new TypeDefinition
-    const type = new CustomTypeDefinition(
+    const type = new UserTypeDefinition(
       node.name.value
     );
-    config.types.push(type);
+    typeInfo.userTypes.push(type);
     state.currentType = type;
   },
   NonNullType: (node: NonNullTypeNode) => {
@@ -101,7 +101,7 @@ const visitorEnter = (config: Config, state: State) => ({
   }
 });
 
-const visitorLeave = (config: Config, state: State) => ({
+const visitorLeave = (schemaInfo: TypeInfo, state: State) => ({
   ObjectTypeDefinition: (node: TypeDefinitionNode) => {
     state.currentType = undefined;
   },
@@ -113,11 +113,11 @@ const visitorLeave = (config: Config, state: State) => ({
   },
 });
 
-export function visitCustomTypes(astNode: DocumentNode, config: Config) {
+export function visitUserTypes(astNode: DocumentNode, typeInfo: TypeInfo) {
   const state: State = { };
 
   visit(astNode, {
-    enter: visitorEnter(config, state),
-    leave: visitorLeave(config, state)
+    enter: visitorEnter(typeInfo, state),
+    leave: visitorLeave(typeInfo, state)
   });
 }

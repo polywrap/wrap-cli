@@ -2,8 +2,8 @@ import {
   ArrayDefinition,
   PropertyDefinition,
   ScalarDefinition,
-  Config,
-  QueryTypeDefinition,
+  TypeInfo,
+  ImportedQueryTypeDefinition,
   MethodDefinition
 } from "../types";
 
@@ -15,47 +15,93 @@ import {
   ListTypeNode,
   FieldDefinitionNode,
   InputValueDefinitionNode,
-  visit
+  visit,
+  DirectiveNode,
+  ValueNode
 } from "graphql";
 
 interface State {
-  currentQuery?: QueryTypeDefinition
+  currentImport?: ImportedQueryTypeDefinition
   currentMethod?: MethodDefinition
   currentArgument?: PropertyDefinition
   currentReturn?: PropertyDefinition
   nonNullType?: boolean
 }
 
-const visitorEnter = (config: Config, state: State) => ({
+const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
-    const nodeName = node.name.value;
+    if (!node.directives) {
+      return
+    }
 
-    if (nodeName !== "Query" && nodeName !== "Mutation") {
+    // Look for imported
+    const importedIndex = node.directives.findIndex(
+      (dir: DirectiveNode) => dir.name.value === "imported"
+    );
+
+    if (importedIndex === -1) {
       return;
     }
 
-    const queryDef = new QueryTypeDefinition(
-      nodeName, nodeName
+    if (node.name.value !== "Query" && node.name.value !== "Mutation") {
+      return;
+    }
+
+    const importedDir = node.directives[importedIndex];
+
+    if (!importedDir.arguments || importedDir.arguments.length !== 3) {
+      // TODO: Implement better error handling
+      throw Error("Error: imported_type directive missing arguments");
+    }
+
+    let namespace: string | undefined;
+    let uri: string | undefined;
+    let type: string | undefined;
+
+    const extractString = (value: ValueNode, name: string) => {
+      if (value.kind === "StringValue") {
+        return value.value;
+      } else {
+        throw Error(`Error: argument '${name}' must be a string`);
+      }
+    }
+
+    for (const importArg of importedDir.arguments) {
+      if (importArg.name.value === "namespace") {
+        namespace = extractString(importArg.value, "namespace");
+      } else if (importArg.name.value === "uri") {
+        uri = extractString(importArg.value, "uri")
+      } else if (importArg.name.value === "type") {
+        type = extractString(importArg.value, "type")
+      }
+    }
+
+    if (!type || !namespace || !uri) {
+      throw Error("Error: import directive missing one of its required arguments (namespace, uri, type)");
+    }
+
+    const importedType = new ImportedQueryTypeDefinition(
+      uri, namespace, node.name.value, type
     );
-    config.queries.push(queryDef);
-    state.currentQuery = queryDef;
+    typeInfo.importedQueryTypes.push(importedType);
+    state.currentImport = importedType;
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
-    const queryDef = state.currentQuery;
+    const importDef = state.currentImport;
 
-    if (!queryDef) {
+    if (!importDef) {
       return;
     }
 
     if (!node.arguments || node.arguments.length === 0) {
-      throw Error("Imported types must only have methods");
+      throw Error("Imported Query types must only have methods");
     }
 
-    const operation = queryDef.type === "Query" ? "query" : "mutation";
+    const operation = importDef.type === "Query" ? "query" : "mutation";
     const method = new MethodDefinition(
       operation, node.name.value
     );
-    queryDef.methods.push(method);
+    importDef.methods.push(method);
     state.currentMethod = method;
   },
   InputValueDefinition: (node: InputValueDefinitionNode) => {
@@ -130,9 +176,9 @@ const visitorEnter = (config: Config, state: State) => ({
   },
 });
 
-const visitorLeave = (config: Config, state: State) => ({
+const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
-    state.currentQuery = undefined;
+    state.currentImport = undefined;
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
     state.currentMethod = undefined;
@@ -146,11 +192,11 @@ const visitorLeave = (config: Config, state: State) => ({
   },
 });
 
-export function visitQueryTypes(astNode: DocumentNode, config: Config) {
+export function visitImportedQueryTypes(astNode: DocumentNode, typeInfo: TypeInfo) {
   const state: State = { };
 
   visit(astNode, {
-    enter: visitorEnter(config, state),
-    leave: visitorLeave(config, state)
+    enter: visitorEnter(typeInfo, state),
+    leave: visitorLeave(typeInfo, state)
   });
 }

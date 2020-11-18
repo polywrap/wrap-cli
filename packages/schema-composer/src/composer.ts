@@ -15,7 +15,7 @@ function getTemplate(templateName: string): string {
 }
 
 const importStatementFinder = /^#import .+$/;
-const importStatementExtractor = /^#import {([a-zA-Z0-9_, ]+?)} in (\w+?) from \"([a-zA-Z0-9_.\/]+?)\"$/;
+const importStatementExtractor = /^#import {([a-zA-Z0-9_, ]+?)} into (\w+?) from \"([a-zA-Z0-9_.\/]+?)\"$/;
 const importTypeExtractor = /(\w+)/g;
 
 function logDebug(msg: string) {
@@ -174,12 +174,46 @@ async function tryouts() {
     types: [String!]!
   ) on OBJECT`]);
   console.log(graphql.print(merged));
-  getTypesFromSchema(graphql.print(merged), ['Query']);
+
+  
+  const t = graphTools.mergeTypeDefs([`type Test {
+    number: String!
+    thing: String!
+  }`]);
+
+
+  graphql.visit(t, {
+    enter(node, key, parent, path, ancestors) {
+      console.log(`Enter: ${node.kind}`);
+      return undefined;
+      // @return
+      //   undefined: no action
+      //   false: skip visiting this node
+      //   visitor.BREAK: stop visiting altogether
+      //   null: delete this node
+      //   any value: replace this node with the returned value
+    },
+    leave(node, key, parent, path, ancestors) {
+      // @return
+      //   undefined: no action
+      //   false: no action
+      //   visitor.BREAK: stop visiting altogether
+      //   null: delete this node
+      //   any value: replace this node with the returned value
+      console.log(`Leave: ${node.kind}`)
+
+      return false;
+    }
+  })
+
+  
 
 
   if (merged !== undefined) {
     return;
   }
+
+  getTypesFromSchema(graphql.print(merged), ['Query']);
 
   /////
 
@@ -297,6 +331,7 @@ async function tryouts() {
 
 
   let fileOutput = "";
+  fileOutput;
 
   // Directives
   const directiveTemplate = getTemplate('directives');
@@ -317,8 +352,9 @@ async function tryouts() {
       // Fetch the contents of the type
       // For `.eth` packages this means an ENS look up and going to IPFS to pull the contents
       const importedSchema = await getImportedSchema(importedType.source);
+      importedSchema;
 
-      const schemaContents = "";
+      //const schemaContents = "";
 
       fileOutput += mustache.render(importedTypeTemplate, {
         qualifiedName: "",

@@ -1,4 +1,4 @@
-import { TargetLanguage, Schema } from "./";
+import { TargetLanguage } from "./";
 import { generateBinding } from "./bindings";
 
 export interface OutputEntry {
@@ -11,6 +11,6 @@ export interface OutputDirectory {
   entries: OutputEntry[]
 }
 
-export function generateCode(language: TargetLanguage, schema: Schema): OutputDirectory {
+export function generateCode(language: TargetLanguage, schema: string): OutputDirectory {
   return generateBinding(language, schema);
 }

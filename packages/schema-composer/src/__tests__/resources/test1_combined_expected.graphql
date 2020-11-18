@@ -18,7 +18,7 @@ type SimpleStorage_Query @imported(
   ): Int!
 }
 
-type SimpleStorage_Query @imported(
+type SimpleStorage_Mutation @imported(
   namespace: "SimpleStorage",
   type: "Mutation",
   uri: "simplestorage.eth"

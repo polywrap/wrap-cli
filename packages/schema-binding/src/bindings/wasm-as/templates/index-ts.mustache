@@ -2,7 +2,7 @@ import {
   w3_add_call,
   w3_call
 } from "@web3api/wasm-as";
-{{#queries}}
+{{#queryTypes}}
 {{#methods.length}}
 import {
   {{#methods}}
@@ -10,14 +10,14 @@ import {
   {{/methods}}
 } from "./{{name}}";
 {{/methods.length}}
-{{/queries}}
+{{/queryTypes}}
 
 export function _w3_init(): void {
-  {{#queries}}
+  {{#queryTypes}}
   {{#methods}}
   w3_add_call("{{name}}", {{name}}Wrapped);
   {{/methods}}
-  {{/queries}}
+  {{/queryTypes}}
 }
 
 export function _w3_call(name_size: usize, args_size: usize): bool {

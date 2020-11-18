@@ -1,6 +1,8 @@
-import * as Mapping from "./mapping";
+import { setFirstLast } from "./utils";
 
-export class TypeDefinition {
+type ModifyTypeMethod = (type: TypeDefinition) => TypeDefinition;
+
+export abstract class TypeDefinition {
   constructor(
     public name: string,
     public type?: string,
@@ -8,27 +10,38 @@ export class TypeDefinition {
   ) { }
   public last: boolean | null = null
   public first: boolean | null = null
-  public toMsgPack = Mapping.toMsgPack
-  public toWasm = Mapping.toWasm
+
+  public finalize(modify?: ModifyTypeMethod): void { }
 }
 
-export class CustomTypeDefinition extends TypeDefinition {
+export class ObjectTypeDefinition extends TypeDefinition {
   properties: PropertyDefinition[] = []
 
-  public finalize() {
+  public finalize(modify?: ModifyTypeMethod) {
     setFirstLast(this.properties);
 
-    for (const prop of this.properties) {
-      prop.setTypeName();
+    for (let i = 0; i < this.properties.length; ++i) {
+      this.properties[i] = modify ? modify(this.properties[i]) as PropertyDefinition : this.properties[i];
+      this.properties[i].setTypeName();
+      this.properties[i].finalize(modify);
     }
   }
 }
 
-export abstract class UnknownTypeDefinition extends TypeDefinition {
+export abstract class AnyTypeDefinition extends TypeDefinition {
   array: ArrayDefinition | null = null
   scalar: ScalarDefinition | null = null
 
   public abstract setTypeName(): void;
+
+  public finalize(modify?: ModifyTypeMethod) {
+    if (this.array) {
+      this.array = modify ? modify(this.array) as ArrayDefinition : this.array;
+    }
+    if (this.scalar) {
+      this.scalar = modify ? modify(this.scalar) as ScalarDefinition : this.scalar;
+    }
+  }
 }
 
 export class ScalarDefinition extends TypeDefinition {
@@ -41,7 +54,7 @@ export class ScalarDefinition extends TypeDefinition {
   }
 }
 
-export class PropertyDefinition extends UnknownTypeDefinition {
+export class PropertyDefinition extends AnyTypeDefinition {
   public setTypeName(): void {
     if (this.array) {
       this.array.setTypeName();
@@ -54,7 +67,7 @@ export class PropertyDefinition extends UnknownTypeDefinition {
   }
 }
 
-export class ArrayDefinition extends UnknownTypeDefinition {
+export class ArrayDefinition extends AnyTypeDefinition {
   constructor(
     public name: string,
     public type: string,
@@ -106,27 +119,34 @@ export class MethodDefinition extends TypeDefinition {
 
   arguments: PropertyDefinition[] = []
   return: PropertyDefinition | null = null;
+
+  public finalize(modify?: ModifyTypeMethod) {
+    setFirstLast(this.arguments);
+
+    for (let i = 0; i < this.arguments.length; ++i) {
+      this.arguments[i] = modify ? modify(this.arguments[i]) as PropertyDefinition : this.arguments[i];
+      this.arguments[i].setTypeName();
+      this.arguments[i].finalize(modify);
+    }
+
+    this.return?.setTypeName();
+  }
 }
 
 export class QueryTypeDefinition extends TypeDefinition {
   methods: MethodDefinition[] = []
 
-  public finalize() {
+  public finalize(modify?: ModifyTypeMethod) {
     setFirstLast(this.methods);
 
-    for (const method of this.methods) {
-      setFirstLast(method.arguments);
-
-      for (const argument of method.arguments) {
-        argument.setTypeName();
-      }
-
-      method.return?.setTypeName();
+    for (let i = 0; i < this.methods.length; ++i) {
+      this.methods[i] = modify ? modify(this.methods[i]) as MethodDefinition : this.methods[i];
+      this.methods[i].finalize(modify);
     }
   }
 }
 
-export class ImportedTypeDefinition extends QueryTypeDefinition {
+export class ImportedQueryTypeDefinition extends QueryTypeDefinition {
   constructor(
     public uri: string,
     public namespace: string,
@@ -137,35 +157,13 @@ export class ImportedTypeDefinition extends QueryTypeDefinition {
   }
 }
 
-export class Config {
-  types: CustomTypeDefinition[] = []
-  imports: ImportedTypeDefinition[] = []
-  queries: QueryTypeDefinition[] = []
-
-  public finalize() {
-    setFirstLast(this.types);
-    for (const type of this.types) {
-      type.finalize();
-    }
-
-    setFirstLast(this.imports);
-    for (const importEntry of this.imports) {
-      importEntry.finalize();
-    }
-
-    setFirstLast(this.queries);
-    for (const query of this.queries) {
-      query.finalize();
-    }
-  }
-}
-
-function setFirstLast(arr: {
-  first: boolean | null,
-  last: boolean | null
-}[]) {
-  if (arr.length > 0) {
-    arr[0].first = true;
-    arr[arr.length - 1].last = true;
+export class ImportedObjectTypeDefinition extends ObjectTypeDefinition {
+  constructor(
+    public uri: string,
+    public namespace: string,
+    name: string,
+    type: string
+  ) {
+    super(name, type);
   }
 }

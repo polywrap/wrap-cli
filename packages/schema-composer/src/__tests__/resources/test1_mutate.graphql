@@ -1,4 +1,4 @@
-#import { Mutation } in SimpleStorage from "simplestorage.eth"
+#import { Mutation } into SimpleStorage from "simplestorage.eth"
 
 type Mutation {
   setString(

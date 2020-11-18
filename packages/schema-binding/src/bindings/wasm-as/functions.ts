@@ -1,4 +1,4 @@
-export type MustacheFunction = () => (
+type MustacheFunction = () => (
   value: string, render: (template: string) => string
 ) => string
 
