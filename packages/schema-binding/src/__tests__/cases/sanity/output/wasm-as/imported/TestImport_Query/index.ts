@@ -9,7 +9,7 @@ import {
   deserializeanotherMethodResult
 } from "./serialization";
 
-export class TestImportQuery {
+export class TestImport_Query {
 
   public static uri: string = "testimport.uri.eth";
 

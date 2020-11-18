@@ -3,8 +3,8 @@ import { WASMWeb3API } from "./wasmWeb3Api";
 import { JSWeb3API, JSWeb3APIModule, JSWeb3APIParams } from "./JSWeb3Api";
 
 export interface Web3APIWASMModules {
-    query: Maybe<ArrayBuffer>;
-    mutate: Maybe<ArrayBuffer>;
+    query?: ArrayBuffer;
+    mutate?: ArrayBuffer;
 }
 
 export interface WASMWeb3APIDefinitionParams {

@@ -8,14 +8,14 @@ import fs from "fs";
 const fsExtra = require("fs-extra");
 const toolbox = require("gluegun/toolbox");
 
-export interface ICodeGeneratorConfig {
+export interface CodeGeneratorConfig {
   manifestPath: string;
   outputDir: string;
   language: string;
 }
 
 export class CodeGenerator {
-  constructor(private _config: ICodeGeneratorConfig) { }
+  constructor(private _config: CodeGeneratorConfig) { }
 
   public async generate(): Promise<boolean> {
     try {

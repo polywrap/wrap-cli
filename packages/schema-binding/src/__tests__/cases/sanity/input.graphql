@@ -16,6 +16,10 @@ directive @imported(
   type: String!
 ) on OBJECT
 
+directive @imports(
+  types: [String!]!
+) on OBJECT
+
 type CustomType {
   str: String!
   optStr: String
@@ -44,13 +48,15 @@ type AnotherType {
   prop: String
 }
 
-type Query {
+type Query @imports(
+  types: [ "TestImport_Query" ]
+) {
   queryMethod(
     arg: String!
   ): Int!
 }
 
-type TestImportQuery @imported(
+type TestImport_Query @imported(
   namespace: "TestImport",
   uri: "testimport.uri.eth",
   type: "Query"

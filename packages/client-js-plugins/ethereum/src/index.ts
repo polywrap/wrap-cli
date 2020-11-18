@@ -39,6 +39,7 @@ export class EthereumPlugin extends Web3APIClientPlugin {
   public getUris(): RegExp[] {
     return [
       // Matches: ethereum.eth
+      // Matches: ethereum.web3api.eth
       // Matches: api.ethereum.web3api.eth
       /(.*[\.])?ethereum[\.].*/,
       // Matches: w3://ethereum

@@ -1,9 +1,5 @@
 import { GqlQuery, GqlQueryResult } from ".";
 
-export interface Client {
-  query(uri: string, query: GqlQuery): Promise<GqlQueryResult>;
-}
-
 /**
  * Generic interface of a Web3API.
  * All Web3API's whether they be WASM or JS must conform to this.
