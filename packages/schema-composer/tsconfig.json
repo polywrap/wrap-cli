@@ -6,8 +6,13 @@
     "lib": [
       "es2015",
       "es5",
-      "dom"
+      "dom",
+      "es2015.collection",
+      "es2015.iterable",
+      "es2020.string"
     ],
+    "downlevelIteration": true,
+    "importHelpers": true,
     "moduleResolution": "node",
     "declaration": true,
     "preserveSymlinks": true,
@@ -17,14 +22,17 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
-    "noUnusedLocals": true,
+    //"noUnusedLocals": true,
     "module": "commonjs",
     "sourceMap": true,
     "target": "es5",
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "strict": false
   },
   "include": [
     "./src/**/*"
   ],
-
+  // "exclude": [
+  //   "./src/**/__tests__"
+  // ]
 }

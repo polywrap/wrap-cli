@@ -1,0 +1,7 @@
+#import { Mutation } in SimpleStorage from "simplestorage.eth"
+
+type Mutation {
+  setString(
+    name: String!
+  ): Int!
+}

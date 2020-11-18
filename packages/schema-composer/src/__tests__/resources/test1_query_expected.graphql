@@ -1,0 +1,27 @@
+directive @imported(
+  namespace: String!
+  uri: String!
+  type: String!
+) on OBJECT
+
+directive @imports (
+  types: [String!]!
+)
+
+type SimpleStorage_Query @imported(
+  namespace: "SimpleStorage",
+  type: "Query",
+  uri: "simplestorage.eth"
+) {
+  getData(
+    address: String!
+  ): Int!
+}
+
+type Query @imports(
+  types: [ "SimpleStorage_Query" ]
+) {
+  lengthOfString(
+    name: String!
+  ): Int!
+}
