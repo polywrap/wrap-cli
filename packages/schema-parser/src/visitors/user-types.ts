@@ -1,9 +1,7 @@
 import {
-  ArrayDefinition,
-  PropertyDefinition,
-  ScalarDefinition,
   AnyTypeDefinition,
-  TypeInfo
+  TypeInfo,
+  TypeDefinition, createTypeDefinition, createObjectTypeDefinition, ObjectTypeDefinition
 } from "../types";
 
 import {
@@ -18,7 +16,7 @@ import {
 } from "graphql";
 
 interface State {
-  currentType?: UserTypeDefinition
+  currentType?: ObjectTypeDefinition
   currentUnknown?: AnyTypeDefinition
   nonNullType?: boolean
 }
@@ -38,9 +36,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     }
 
     // Create a new TypeDefinition
-    const type = new UserTypeDefinition(
-      node.name.value
-    );
+    const type = createObjectTypeDefinition(node.name.value);
     typeInfo.userTypes.push(type);
     state.currentType = type;
   },
