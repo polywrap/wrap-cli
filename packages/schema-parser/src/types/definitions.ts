@@ -1,4 +1,4 @@
-export enum NodeType {
+export enum TypeDefinitionKind {
   Generic,
   Object,
   Any,
@@ -15,14 +15,14 @@ export interface TypeDefinition {
   name: string,
   type: Maybe<string>,
   required: Maybe<boolean>
-  kind: NodeType
+  kind: TypeDefinitionKind
 }
 export function createTypeDefinition(name: string, type?: string, required?: boolean): TypeDefinition {
   return {
     name,
     type,
     required,
-    kind: NodeType.Generic
+    kind: TypeDefinitionKind.Generic
   }
 }
 
@@ -35,7 +35,7 @@ export function createObjectTypeDefinition(name: string, type?: string, required
     type,
     required,
     properties: [],
-    kind: NodeType.Object
+    kind: TypeDefinitionKind.Object
   }
 }
 
@@ -50,7 +50,7 @@ export function createAnyTypeDefinition(name: string, type?: string, required?: 
     required,
     array: array ? array : null,
     scalar: scalar ? scalar : null,
-    kind: NodeType.Any
+    kind: TypeDefinitionKind.Any
   }
 }
 
@@ -62,7 +62,7 @@ export function createScalarDefinition(name: string, type?: string, required?: b
     name,
     type,
     required,
-    kind: NodeType.Any
+    kind: TypeDefinitionKind.Any
   }
 }
 
@@ -76,7 +76,7 @@ export function createPropertyDefinition(name: string, type?: string, required?:
     required,
     array: array ? array : null,
     scalar: scalar ? scalar : null,
-    kind: NodeType.Property
+    kind: TypeDefinitionKind.Property
   }
 }
 
@@ -90,7 +90,7 @@ export function createArrayDefinition(name: string, type?: string, required?: bo
     required,
     array: array ? array : null,
     scalar: scalar ? scalar : null,
-    kind: NodeType.Array,
+    kind: TypeDefinitionKind.Array,
     item: undefined
   }
 }
@@ -109,7 +109,7 @@ export function createMethodDefinition(operation: "query" | "mutation", name: st
     arguments: args ? args : [],
     return: returnDef ? returnDef : null,
     operation,
-    kind: NodeType.Method
+    kind: TypeDefinitionKind.Method
   }
 }
 
@@ -122,7 +122,7 @@ export function createQueryTypeDefinition(name: string, type?: string, required?
     type,
     required,
     methods: [],
-    kind: NodeType.Query
+    kind: TypeDefinitionKind.Query
   }
 }
 
@@ -138,7 +138,7 @@ export function createImportedQueryTypeDefinition(uri: string, namespace: string
     uri,
     namespace,
     methods: [],
-    kind: NodeType.ImportedQuery
+    kind: TypeDefinitionKind.ImportedQuery
   }
 }
 
@@ -154,6 +154,6 @@ export function createImportedObjectTypeDefinition(uri: string, namespace: strin
     uri,
     namespace,
     properties: [],
-    kind: NodeType.ImportedObject
+    kind: TypeDefinitionKind.ImportedObject
   }
 }

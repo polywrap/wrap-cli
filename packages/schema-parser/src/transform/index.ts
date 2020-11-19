@@ -2,28 +2,12 @@ import { ImportedObjectTypeDefinition, ImportedQueryTypeDefinition, ObjectTypeDe
 import { transformImportedObject, transformImportedQuery, transformObject, transformQuery } from "./transformers";
 
 
-export type PredicateReturn = any;
-export type GenericTransformPredicate = (definition: TypeDefinition) => PredicateReturn;
+/**
+ * A Predicate should return any *ADDITIONAL* fields to add
+ */
+export type GenericTransformPredicate = (definition: TypeDefinition) => any;
 
-// export type TypedTransformPredicate<T extends TypeDefinition> = (definition: T) => any;
-// export type TypedTransformPredicates = {
-//   //Generic?: TypedTransformPredicate<TypeDefinition>,
-//   Object?: TypedTransformPredicate<ObjectTypeDefinition>,
-//   Any?: TypedTransformPredicate<AnyTypeDefinition>,
-//   Scalar?: TypedTransformPredicate<ScalarDefinition>,
-//   Array?: TypedTransformPredicate<ArrayDefinition>,
-//   Property?: TypedTransformPredicate<PropertyDefinition>,
-//   Method?: TypedTransformPredicate<MethodDefinition>,
-//   Query?: TypedTransformPredicate<QueryTypeDefinition>,
-//   ImportedQuery?: TypedTransformPredicate<ImportedQueryTypeDefinition>,
-//   ImportedObject?: TypedTransformPredicate<ImportedObjectTypeDefinition>,
-// }
-
-export function transform(info: TypeInfo, predicate: GenericTransformPredicate) {
-  transformGeneric(info, predicate);
-}
-
-function transformGeneric(info: TypeInfo, predicate: GenericTransformPredicate) {
+export function transformTypeInfo(info: TypeInfo, predicate: GenericTransformPredicate): void {
   const transformedUserTypes: ObjectTypeDefinition[] = [];
   for (const type of info.userTypes) {
     const t = transformObject(type, predicate);

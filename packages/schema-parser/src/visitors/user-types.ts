@@ -1,7 +1,6 @@
 import {
   AnyTypeDefinition,
-  TypeInfo,
-  TypeDefinition, createTypeDefinition, createObjectTypeDefinition, ObjectTypeDefinition, createScalarDefinition, createArrayDefinition, createPropertyDefinition, populatePropertyTypes
+  TypeInfo, createObjectTypeDefinition, ObjectTypeDefinition, createScalarDefinition, createArrayDefinition, createPropertyDefinition
 } from "../types";
 
 import {

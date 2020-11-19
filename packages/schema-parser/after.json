@@ -1,0 +1,1085 @@
+{
+  "userTypes": [
+    {
+      "name": "CustomType",
+      "properties": [
+        {
+          "name": "str",
+          "type": "String",
+          "required": true,
+          "array": null,
+          "scalar": {
+            "name": "str",
+            "type": "String",
+            "required": true,
+            "kind": 2,
+            "randomField": 1337
+          },
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "optStr",
+          "type": "?String",
+          "required": false,
+          "array": null,
+          "scalar": {
+            "name": "optStr",
+            "type": "?String",
+            "required": false,
+            "kind": 2,
+            "randomField": 1337
+          },
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "u",
+          "type": "UInt",
+          "required": true,
+          "array": null,
+          "scalar": {
+            "name": "u",
+            "type": "UInt",
+            "required": true,
+            "kind": 2,
+            "randomField": 1337
+          },
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "optU",
+          "type": "?UInt",
+          "required": false,
+          "array": null,
+          "scalar": {
+            "name": "optU",
+            "type": "?UInt",
+            "required": false,
+            "kind": 2,
+            "randomField": 1337
+          },
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "u8",
+          "type": "UInt8",
+          "required": true,
+          "array": null,
+          "scalar": {
+            "name": "u8",
+            "type": "UInt8",
+            "required": true,
+            "kind": 2,
+            "randomField": 1337
+          },
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "u16",
+          "type": "UInt16",
+          "required": true,
+          "array": null,
+          "scalar": {
+            "name": "u16",
+            "type": "UInt16",
+            "required": true,
+            "kind": 2,
+            "randomField": 1337
+          },
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "u32",
+          "type": "UInt32",
+          "required": true,
+          "array": null,
+          "scalar": {
+            "name": "u32",
+            "type": "UInt32",
+            "required": true,
+            "kind": 2,
+            "randomField": 1337
+          },
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "u64",
+          "type": "UInt64",
+          "required": true,
+          "array": null,
+          "scalar": {
+            "name": "u64",
+            "type": "UInt64",
+            "required": true,
+            "kind": 2,
+            "randomField": 1337
+          },
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "i",
+          "type": "Int",
+          "required": true,
+          "array": null,
+          "scalar": {
+            "name": "i",
+            "type": "Int",
+            "required": true,
+            "kind": 2,
+            "randomField": 1337
+          },
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "i8",
+          "type": "Int8",
+          "required": true,
+          "array": null,
+          "scalar": {
+            "name": "i8",
+            "type": "Int8",
+            "required": true,
+            "kind": 2,
+            "randomField": 1337
+          },
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "i16",
+          "type": "Int16",
+          "required": true,
+          "array": null,
+          "scalar": {
+            "name": "i16",
+            "type": "Int16",
+            "required": true,
+            "kind": 2,
+            "randomField": 1337
+          },
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "i32",
+          "type": "Int32",
+          "required": true,
+          "array": null,
+          "scalar": {
+            "name": "i32",
+            "type": "Int32",
+            "required": true,
+            "kind": 2,
+            "randomField": 1337
+          },
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "i64",
+          "type": "Int64",
+          "required": true,
+          "array": null,
+          "scalar": {
+            "name": "i64",
+            "type": "Int64",
+            "required": true,
+            "kind": 2,
+            "randomField": 1337
+          },
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "uArray",
+          "type": "[UInt]",
+          "required": true,
+          "array": {
+            "name": "uArray",
+            "type": "[UInt]",
+            "required": true,
+            "array": null,
+            "scalar": {
+              "name": "uArray",
+              "type": "UInt",
+              "required": true,
+              "kind": 2,
+              "randomField": 1337
+            },
+            "kind": 4,
+            "item": {
+              "name": "uArray",
+              "type": "UInt",
+              "required": true,
+              "kind": 2,
+              "randomField": 1337
+            },
+            "randomField": 1337
+          },
+          "scalar": null,
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "uOptArray",
+          "type": "?[UInt]",
+          "required": false,
+          "array": {
+            "name": "uOptArray",
+            "type": "?[UInt]",
+            "required": false,
+            "array": null,
+            "scalar": {
+              "name": "uOptArray",
+              "type": "UInt",
+              "required": true,
+              "kind": 2,
+              "randomField": 1337
+            },
+            "kind": 4,
+            "item": {
+              "name": "uOptArray",
+              "type": "UInt",
+              "required": true,
+              "kind": 2,
+              "randomField": 1337
+            },
+            "randomField": 1337
+          },
+          "scalar": null,
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "optUOptArray",
+          "type": "?[?UInt]",
+          "required": false,
+          "array": {
+            "name": "optUOptArray",
+            "type": "?[?UInt]",
+            "required": false,
+            "array": null,
+            "scalar": {
+              "name": "optUOptArray",
+              "type": "?UInt",
+              "required": false,
+              "kind": 2,
+              "randomField": 1337
+            },
+            "kind": 4,
+            "item": {
+              "name": "optUOptArray",
+              "type": "?UInt",
+              "required": false,
+              "kind": 2,
+              "randomField": 1337
+            },
+            "randomField": 1337
+          },
+          "scalar": null,
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "optStrOptArray",
+          "type": "?[?String]",
+          "required": false,
+          "array": {
+            "name": "optStrOptArray",
+            "type": "?[?String]",
+            "required": false,
+            "array": null,
+            "scalar": {
+              "name": "optStrOptArray",
+              "type": "?String",
+              "required": false,
+              "kind": 2,
+              "randomField": 1337
+            },
+            "kind": 4,
+            "item": {
+              "name": "optStrOptArray",
+              "type": "?String",
+              "required": false,
+              "kind": 2,
+              "randomField": 1337
+            },
+            "randomField": 1337
+          },
+          "scalar": null,
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "uArrayArray",
+          "type": "[[UInt]]",
+          "required": true,
+          "array": {
+            "name": "uArrayArray",
+            "type": "[[UInt]]",
+            "required": true,
+            "array": {
+              "name": "uArrayArray",
+              "type": "[UInt]",
+              "required": true,
+              "array": null,
+              "scalar": {
+                "name": "uArrayArray",
+                "type": "UInt",
+                "required": true,
+                "kind": 2,
+                "randomField": 1337
+              },
+              "kind": 4,
+              "item": {
+                "name": "uArrayArray",
+                "type": "UInt",
+                "required": true,
+                "kind": 2,
+                "randomField": 1337
+              },
+              "randomField": 1337
+            },
+            "scalar": null,
+            "kind": 4,
+            "item": {
+              "name": "uArrayArray",
+              "type": "[UInt]",
+              "required": true,
+              "array": null,
+              "scalar": {
+                "name": "uArrayArray",
+                "type": "UInt",
+                "required": true,
+                "kind": 2,
+                "randomField": 1337
+              },
+              "kind": 4,
+              "item": {
+                "name": "uArrayArray",
+                "type": "UInt",
+                "required": true,
+                "kind": 2,
+                "randomField": 1337
+              },
+              "randomField": 1337
+            },
+            "randomField": 1337
+          },
+          "scalar": null,
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "uOptArrayOptArray",
+          "type": "[?[?UInt64]]",
+          "required": true,
+          "array": {
+            "name": "uOptArrayOptArray",
+            "type": "[?[?UInt64]]",
+            "required": true,
+            "array": {
+              "name": "uOptArrayOptArray",
+              "type": "?[?UInt64]",
+              "required": false,
+              "array": null,
+              "scalar": {
+                "name": "uOptArrayOptArray",
+                "type": "?UInt64",
+                "required": false,
+                "kind": 2,
+                "randomField": 1337
+              },
+              "kind": 4,
+              "item": {
+                "name": "uOptArrayOptArray",
+                "type": "?UInt64",
+                "required": false,
+                "kind": 2,
+                "randomField": 1337
+              },
+              "randomField": 1337
+            },
+            "scalar": null,
+            "kind": 4,
+            "item": {
+              "name": "uOptArrayOptArray",
+              "type": "?[?UInt64]",
+              "required": false,
+              "array": null,
+              "scalar": {
+                "name": "uOptArrayOptArray",
+                "type": "?UInt64",
+                "required": false,
+                "kind": 2,
+                "randomField": 1337
+              },
+              "kind": 4,
+              "item": {
+                "name": "uOptArrayOptArray",
+                "type": "?UInt64",
+                "required": false,
+                "kind": 2,
+                "randomField": 1337
+              },
+              "randomField": 1337
+            },
+            "randomField": 1337
+          },
+          "scalar": null,
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "uArrayOptArrayArray",
+          "type": "[?[[UInt64]]]",
+          "required": true,
+          "array": {
+            "name": "uArrayOptArrayArray",
+            "type": "[?[[UInt64]]]",
+            "required": true,
+            "array": {
+              "name": "uArrayOptArrayArray",
+              "type": "?[[UInt64]]",
+              "required": false,
+              "array": {
+                "name": "uArrayOptArrayArray",
+                "type": "[UInt64]",
+                "required": true,
+                "array": null,
+                "scalar": {
+                  "name": "uArrayOptArrayArray",
+                  "type": "UInt64",
+                  "required": true,
+                  "kind": 2,
+                  "randomField": 1337
+                },
+                "kind": 4,
+                "item": {
+                  "name": "uArrayOptArrayArray",
+                  "type": "UInt64",
+                  "required": true,
+                  "kind": 2,
+                  "randomField": 1337
+                },
+                "randomField": 1337
+              },
+              "scalar": null,
+              "kind": 4,
+              "item": {
+                "name": "uArrayOptArrayArray",
+                "type": "[UInt64]",
+                "required": true,
+                "array": null,
+                "scalar": {
+                  "name": "uArrayOptArrayArray",
+                  "type": "UInt64",
+                  "required": true,
+                  "kind": 2,
+                  "randomField": 1337
+                },
+                "kind": 4,
+                "item": {
+                  "name": "uArrayOptArrayArray",
+                  "type": "UInt64",
+                  "required": true,
+                  "kind": 2,
+                  "randomField": 1337
+                },
+                "randomField": 1337
+              },
+              "randomField": 1337
+            },
+            "scalar": null,
+            "kind": 4,
+            "item": {
+              "name": "uArrayOptArrayArray",
+              "type": "?[[UInt64]]",
+              "required": false,
+              "array": {
+                "name": "uArrayOptArrayArray",
+                "type": "[UInt64]",
+                "required": true,
+                "array": null,
+                "scalar": {
+                  "name": "uArrayOptArrayArray",
+                  "type": "UInt64",
+                  "required": true,
+                  "kind": 2,
+                  "randomField": 1337
+                },
+                "kind": 4,
+                "item": {
+                  "name": "uArrayOptArrayArray",
+                  "type": "UInt64",
+                  "required": true,
+                  "kind": 2,
+                  "randomField": 1337
+                },
+                "randomField": 1337
+              },
+              "scalar": null,
+              "kind": 4,
+              "item": {
+                "name": "uArrayOptArrayArray",
+                "type": "[UInt64]",
+                "required": true,
+                "array": null,
+                "scalar": {
+                  "name": "uArrayOptArrayArray",
+                  "type": "UInt64",
+                  "required": true,
+                  "kind": 2,
+                  "randomField": 1337
+                },
+                "kind": 4,
+                "item": {
+                  "name": "uArrayOptArrayArray",
+                  "type": "UInt64",
+                  "required": true,
+                  "kind": 2,
+                  "randomField": 1337
+                },
+                "randomField": 1337
+              },
+              "randomField": 1337
+            },
+            "randomField": 1337
+          },
+          "scalar": null,
+          "kind": 5,
+          "randomField": 1337
+        },
+        {
+          "name": "crazyArray",
+          "type": "?[?[[?[UInt64]]]]",
+          "required": false,
+          "array": {
+            "name": "crazyArray",
+            "type": "?[?[[?[UInt64]]]]",
+            "required": false,
+            "array": {
+              "name": "crazyArray",
+              "type": "?[[?[UInt64]]]",
+              "required": false,
+              "array": {
+                "name": "crazyArray",
+                "type": "[?[UInt64]]",
+                "required": true,
+                "array": {
+                  "name": "crazyArray",
+                  "type": "?[UInt64]",
+                  "required": false,
+                  "array": null,
+                  "scalar": {
+                    "name": "crazyArray",
+                    "type": "UInt64",
+                    "required": true,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "kind": 4,
+                  "item": {
+                    "name": "crazyArray",
+                    "type": "UInt64",
+                    "required": true,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "randomField": 1337
+                },
+                "scalar": null,
+                "kind": 4,
+                "item": {
+                  "name": "crazyArray",
+                  "type": "?[UInt64]",
+                  "required": false,
+                  "array": null,
+                  "scalar": {
+                    "name": "crazyArray",
+                    "type": "UInt64",
+                    "required": true,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "kind": 4,
+                  "item": {
+                    "name": "crazyArray",
+                    "type": "UInt64",
+                    "required": true,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "randomField": 1337
+                },
+                "randomField": 1337
+              },
+              "scalar": null,
+              "kind": 4,
+              "item": {
+                "name": "crazyArray",
+                "type": "[?[UInt64]]",
+                "required": true,
+                "array": {
+                  "name": "crazyArray",
+                  "type": "?[UInt64]",
+                  "required": false,
+                  "array": null,
+                  "scalar": {
+                    "name": "crazyArray",
+                    "type": "UInt64",
+                    "required": true,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "kind": 4,
+                  "item": {
+                    "name": "crazyArray",
+                    "type": "UInt64",
+                    "required": true,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "randomField": 1337
+                },
+                "scalar": null,
+                "kind": 4,
+                "item": {
+                  "name": "crazyArray",
+                  "type": "?[UInt64]",
+                  "required": false,
+                  "array": null,
+                  "scalar": {
+                    "name": "crazyArray",
+                    "type": "UInt64",
+                    "required": true,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "kind": 4,
+                  "item": {
+                    "name": "crazyArray",
+                    "type": "UInt64",
+                    "required": true,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "randomField": 1337
+                },
+                "randomField": 1337
+              },
+              "randomField": 1337
+            },
+            "scalar": null,
+            "kind": 4,
+            "item": {
+              "name": "crazyArray",
+              "type": "?[[?[UInt64]]]",
+              "required": false,
+              "array": {
+                "name": "crazyArray",
+                "type": "[?[UInt64]]",
+                "required": true,
+                "array": {
+                  "name": "crazyArray",
+                  "type": "?[UInt64]",
+                  "required": false,
+                  "array": null,
+                  "scalar": {
+                    "name": "crazyArray",
+                    "type": "UInt64",
+                    "required": true,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "kind": 4,
+                  "item": {
+                    "name": "crazyArray",
+                    "type": "UInt64",
+                    "required": true,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "randomField": 1337
+                },
+                "scalar": null,
+                "kind": 4,
+                "item": {
+                  "name": "crazyArray",
+                  "type": "?[UInt64]",
+                  "required": false,
+                  "array": null,
+                  "scalar": {
+                    "name": "crazyArray",
+                    "type": "UInt64",
+                    "required": true,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "kind": 4,
+                  "item": {
+                    "name": "crazyArray",
+                    "type": "UInt64",
+                    "required": true,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "randomField": 1337
+                },
+                "randomField": 1337
+              },
+              "scalar": null,
+              "kind": 4,
+              "item": {
+                "name": "crazyArray",
+                "type": "[?[UInt64]]",
+                "required": true,
+                "array": {
+                  "name": "crazyArray",
+                  "type": "?[UInt64]",
+                  "required": false,
+                  "array": null,
+                  "scalar": {
+                    "name": "crazyArray",
+                    "type": "UInt64",
+                    "required": true,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "kind": 4,
+                  "item": {
+                    "name": "crazyArray",
+                    "type": "UInt64",
+                    "required": true,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "randomField": 1337
+                },
+                "scalar": null,
+                "kind": 4,
+                "item": {
+                  "name": "crazyArray",
+                  "type": "?[UInt64]",
+                  "required": false,
+                  "array": null,
+                  "scalar": {
+                    "name": "crazyArray",
+                    "type": "UInt64",
+                    "required": true,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "kind": 4,
+                  "item": {
+                    "name": "crazyArray",
+                    "type": "UInt64",
+                    "required": true,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "randomField": 1337
+                },
+                "randomField": 1337
+              },
+              "randomField": 1337
+            },
+            "randomField": 1337
+          },
+          "scalar": null,
+          "kind": 5,
+          "randomField": 1337
+        }
+      ],
+      "kind": 1,
+      "randomField": 1337
+    },
+    {
+      "name": "AnotherType",
+      "properties": [
+        {
+          "name": "prop",
+          "type": "?String",
+          "required": false,
+          "array": null,
+          "scalar": {
+            "name": "prop",
+            "type": "?String",
+            "required": false,
+            "kind": 2,
+            "randomField": 1337
+          },
+          "kind": 5,
+          "randomField": 1337
+        }
+      ],
+      "kind": 1,
+      "randomField": 1337
+    }
+  ],
+  "importObjectTypes": [],
+  "importedQueryTypes": [
+    {
+      "name": "TestImport_Query",
+      "type": "Query",
+      "uri": "testimport.uri.eth",
+      "namespace": "TestImport",
+      "methods": [
+        {
+          "name": "importedMethod",
+          "arguments": [
+            {
+              "name": "str",
+              "type": "String",
+              "required": true,
+              "array": null,
+              "scalar": {
+                "name": "str",
+                "type": "String",
+                "required": true,
+                "kind": 2,
+                "randomField": 1337
+              },
+              "kind": 5,
+              "randomField": 1337
+            },
+            {
+              "name": "optStr",
+              "type": "?String",
+              "required": false,
+              "array": null,
+              "scalar": {
+                "name": "optStr",
+                "type": "?String",
+                "required": false,
+                "kind": 2,
+                "randomField": 1337
+              },
+              "kind": 5,
+              "randomField": 1337
+            },
+            {
+              "name": "u",
+              "type": "UInt",
+              "required": true,
+              "array": null,
+              "scalar": {
+                "name": "u",
+                "type": "UInt",
+                "required": true,
+                "kind": 2,
+                "randomField": 1337
+              },
+              "kind": 5,
+              "randomField": 1337
+            },
+            {
+              "name": "optU",
+              "type": "?UInt",
+              "required": false,
+              "array": null,
+              "scalar": {
+                "name": "optU",
+                "type": "?UInt",
+                "required": false,
+                "kind": 2,
+                "randomField": 1337
+              },
+              "kind": 5,
+              "randomField": 1337
+            },
+            {
+              "name": "uArrayArray",
+              "type": "[?[?UInt]]",
+              "required": true,
+              "array": {
+                "name": "uArrayArray",
+                "type": "[?[?UInt]]",
+                "required": true,
+                "array": {
+                  "name": "uArrayArray",
+                  "type": "?[?UInt]",
+                  "required": false,
+                  "array": null,
+                  "scalar": {
+                    "name": "uArrayArray",
+                    "type": "?UInt",
+                    "required": false,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "kind": 4,
+                  "item": {
+                    "name": "uArrayArray",
+                    "type": "?UInt",
+                    "required": false,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "randomField": 1337
+                },
+                "scalar": null,
+                "kind": 4,
+                "item": {
+                  "name": "uArrayArray",
+                  "type": "?[?UInt]",
+                  "required": false,
+                  "array": null,
+                  "scalar": {
+                    "name": "uArrayArray",
+                    "type": "?UInt",
+                    "required": false,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "kind": 4,
+                  "item": {
+                    "name": "uArrayArray",
+                    "type": "?UInt",
+                    "required": false,
+                    "kind": 2,
+                    "randomField": 1337
+                  },
+                  "randomField": 1337
+                },
+                "randomField": 1337
+              },
+              "scalar": null,
+              "kind": 5,
+              "randomField": 1337
+            }
+          ],
+          "return": {
+            "name": "importedMethod",
+            "type": "String",
+            "required": true,
+            "array": null,
+            "scalar": {
+              "name": "importedMethod",
+              "type": "String",
+              "required": true,
+              "kind": 2,
+              "randomField": 1337
+            },
+            "kind": 5,
+            "randomField": 1337
+          },
+          "operation": "query",
+          "kind": 6,
+          "randomField": 1337
+        },
+        {
+          "name": "anotherMethod",
+          "arguments": [
+            {
+              "name": "arg",
+              "type": "[String]",
+              "required": true,
+              "array": {
+                "name": "arg",
+                "type": "[String]",
+                "required": true,
+                "array": null,
+                "scalar": {
+                  "name": "arg",
+                  "type": "String",
+                  "required": true,
+                  "kind": 2,
+                  "randomField": 1337
+                },
+                "kind": 4,
+                "item": {
+                  "name": "arg",
+                  "type": "String",
+                  "required": true,
+                  "kind": 2,
+                  "randomField": 1337
+                },
+                "randomField": 1337
+              },
+              "scalar": null,
+              "kind": 5,
+              "randomField": 1337
+            }
+          ],
+          "return": {
+            "name": "anotherMethod",
+            "type": "Int64",
+            "required": true,
+            "array": null,
+            "scalar": {
+              "name": "anotherMethod",
+              "type": "Int64",
+              "required": true,
+              "kind": 2,
+              "randomField": 1337
+            },
+            "kind": 5,
+            "randomField": 1337
+          },
+          "operation": "query",
+          "kind": 6,
+          "randomField": 1337
+        }
+      ],
+      "kind": 8,
+      "randomField": 1337
+    }
+  ],
+  "queryTypes": [
+    {
+      "name": "Query",
+      "type": "Query",
+      "methods": [
+        {
+          "name": "queryMethod",
+          "arguments": [
+            {
+              "name": "arg",
+              "type": "String",
+              "required": true,
+              "array": null,
+              "scalar": {
+                "name": "arg",
+                "type": "String",
+                "required": true,
+                "kind": 2,
+                "randomField": 1337
+              },
+              "kind": 5,
+              "randomField": 1337
+            }
+          ],
+          "return": {
+            "name": "queryMethod",
+            "type": "Int",
+            "required": true,
+            "array": null,
+            "scalar": {
+              "name": "queryMethod",
+              "type": "Int",
+              "required": true,
+              "kind": 2,
+              "randomField": 1337
+            },
+            "kind": 5,
+            "randomField": 1337
+          },
+          "operation": "query",
+          "kind": 6,
+          "randomField": 1337
+        }
+      ],
+      "kind": 7,
+      "randomField": 1337
+    }
+  ]
+}

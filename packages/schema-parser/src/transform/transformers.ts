@@ -3,11 +3,11 @@ import { ArrayDefinition, ImportedObjectTypeDefinition, ImportedQueryTypeDefinit
 import { finalizeObjectType, finalizeQueryType } from "../visitors/utils";
 
 export function transformObject(obj: ObjectTypeDefinition, predicate: GenericTransformPredicate): any {
-  let transformed = obj;
-  const addedFields: any = predicate(obj);
+  const transformed = Object.assign({}, obj);
+  const addedFields: any = predicate(transformed);
 
   if (addedFields && typeof addedFields === "object") {
-    transformed = Object.assign({}, obj, addedFields);
+    Object.assign(transformed, addedFields);
   }
 
   const transformedProperties: any[] = [];
@@ -26,11 +26,11 @@ export function transformImportedObject(obj: ImportedObjectTypeDefinition, predi
 }
 
 export function transformQuery(query: QueryTypeDefinition, predicate: GenericTransformPredicate): any {
-  let transformed = query;
-  const addedFields: any = predicate(query);
+  const transformed = Object.assign({}, query);
+  const addedFields: any = predicate(transformed);
 
   if (addedFields && typeof addedFields === "object") {
-    transformed = Object.assign({}, query, addedFields);
+    Object.assign(transformed, addedFields);
   }
 
   const transformedMethods: any[] = [];
@@ -49,29 +49,32 @@ export function transformImportedQuery(query: ImportedQueryTypeDefinition, predi
 }
 
 function transformMethod(method: MethodDefinition, predicate: GenericTransformPredicate): any {
-  let transformed = method;
-  const addedFields: any = predicate(method);
+  const transformed = Object.assign({}, method);
+  const addedFields: any = predicate(transformed);
 
   if (addedFields && typeof addedFields === "object") {
-    transformed = Object.assign({}, method, addedFields);
+    Object.assign(transformed, addedFields);
   }
 
   const transformedArgs: any[] = [];
   for (const arg of transformed.arguments) {
     transformedArgs.push(transformProperty(arg, predicate));
   }
+  transformed.arguments = transformedArgs;
 
   if (transformed.return) {
     transformed.return = transformProperty(transformed.return, predicate);
   }
+
+  return transformed;
 }
 
 function transformProperty(property: PropertyDefinition, predicate: GenericTransformPredicate): any {
-  let transformed = property;
-  const addedFields: any = predicate(property);
+  const transformed = Object.assign({}, property);
+  const addedFields: any = predicate(transformed);
 
   if (addedFields && typeof addedFields === "object") {
-    transformed = Object.assign({}, property, addedFields);
+    Object.assign(transformed, addedFields);
   }
 
   if (transformed.array) {
@@ -86,11 +89,11 @@ function transformProperty(property: PropertyDefinition, predicate: GenericTrans
 }
 
 function transformArray(array: ArrayDefinition, predicate: GenericTransformPredicate): any {
-  let transformed = array;
-  const addedFields: any = predicate(array);
+  const transformed = Object.assign({}, array);
+  const addedFields: any = predicate(transformed);
 
   if (addedFields && typeof addedFields === "object") {
-    transformed = Object.assign({}, array, addedFields);
+    Object.assign(transformed, addedFields);
   }
 
   if (transformed.array) {
@@ -109,11 +112,11 @@ function transformScalar(scalar: ScalarDefinition, predicate: GenericTransformPr
 }
 
 function transformGeneric(type: TypeDefinition, predicate: GenericTransformPredicate): any {
-  let transformed = type;
-  const addedFields: any = predicate(type);
+  const transformed = Object.assign({}, type);
+  const addedFields: any = predicate(transformed);
 
   if (addedFields && typeof addedFields === "object") {
-    transformed = Object.assign({}, type, addedFields);
+    Object.assign(transformed, addedFields);
   }
 
   return transformed;

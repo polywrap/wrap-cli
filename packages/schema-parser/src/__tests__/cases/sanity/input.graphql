@@ -1,3 +1,76 @@
-type Query {
+"""TODO: Use the graphql-composer to include the header"""
+scalar UInt
+scalar UInt8
+scalar UInt16
+scalar UInt32
+scalar UInt64
+scalar Int
+scalar Int8
+scalar Int16
+scalar Int32
+scalar Int64
 
+directive @imported(
+  namespace: String!
+  uri: String!
+  type: String!
+) on OBJECT
+
+directive @imports(
+  types: [String!]!
+) on OBJECT
+
+type CustomType {
+  str: String!
+  optStr: String
+  u: UInt!
+  optU: UInt
+  u8: UInt8!
+  u16: UInt16!
+  u32: UInt32!
+  u64: UInt64!
+  i: Int!
+  i8: Int8!
+  i16: Int16!
+  i32: Int32!
+  i64: Int64!
+  uArray: [UInt!]!
+  uOptArray: [UInt!]
+  optUOptArray: [UInt]
+  optStrOptArray: [String]
+  uArrayArray: [[UInt!]!]!
+  uOptArrayOptArray: [[UInt64]]!
+  uArrayOptArrayArray: [[[UInt64!]!]]!
+  crazyArray: [[[[UInt64!]]!]]
+}
+
+type AnotherType {
+  prop: String
+}
+
+type Query @imports(
+  types: [ "TestImport_Query" ]
+) {
+  queryMethod(
+    arg: String!
+  ): Int!
+}
+
+type TestImport_Query @imported(
+  namespace: "TestImport",
+  uri: "testimport.uri.eth",
+  type: "Query"
+) {
+  """TODO: Support object types as argument & return values"""
+  importedMethod(
+    str: String!
+    optStr: String
+    u: UInt!
+    optU: UInt
+    uArrayArray: [[UInt]]!
+  ): String!
+
+  anotherMethod(
+    arg: [String!]!
+  ): Int64!
 }

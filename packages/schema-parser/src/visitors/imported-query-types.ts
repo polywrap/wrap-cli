@@ -43,7 +43,10 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       return;
     }
 
-    if (node.name.value !== "Query" && node.name.value !== "Mutation") {
+    const queryIdentifier = "Query";
+    const mutationIdentifier = "Mutation";
+
+    if (node.name.value.substr(-queryIdentifier.length) !== queryIdentifier && node.name.value.substr(-mutationIdentifier.length) !== mutationIdentifier) {
       return;
     }
 
