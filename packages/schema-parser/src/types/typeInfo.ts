@@ -17,7 +17,7 @@ export class TypeInfo {
   public finalize() {
     const extendProperties = this._config?.extendProperties;
 
-    setFirstLast(this.userTypes);
+    //setFirstLast(this.userTypes);
     for (let i = 0; i < this.userTypes.length; ++i) {
       if (extendProperties) {
         this.userTypes[i] = extendProperties(this.userTypes[i]) as ObjectTypeDefinition;
@@ -25,7 +25,7 @@ export class TypeInfo {
       this.userTypes[i].finalize(extendProperties);
     }
 
-    setFirstLast(this.importObjectTypes);
+    //setFirstLast(this.importObjectTypes);
     for (let i = 0; i < this.importObjectTypes.length; ++i) {
       if (extendProperties) {
         this.importObjectTypes[i] = extendProperties(this.importObjectTypes[i]) as ImportedObjectTypeDefinition;
@@ -33,7 +33,7 @@ export class TypeInfo {
       this.importObjectTypes[i].finalize(extendProperties);
     }
 
-    setFirstLast(this.importedQueryTypes);
+    //setFirstLast(this.importedQueryTypes);
     for (let i = 0; i < this.importedQueryTypes.length; ++i) {
       if (extendProperties) {
         this.importedQueryTypes[i] = extendProperties(this.importedQueryTypes[i]) as ImportedQueryTypeDefinition;
@@ -41,7 +41,7 @@ export class TypeInfo {
       this.importedQueryTypes[i].finalize(extendProperties);
     }
 
-    setFirstLast(this.queryTypes);
+    //setFirstLast(this.queryTypes);
     for (let i = 0; i < this.queryTypes.length; ++i) {
       if (extendProperties) {
         this.queryTypes[i] = extendProperties(this.queryTypes[i]) as QueryTypeDefinition;

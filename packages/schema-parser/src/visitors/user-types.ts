@@ -1,6 +1,5 @@
 import {
   ArrayDefinition,
-  UserTypeDefinition,
   PropertyDefinition,
   ScalarDefinition,
   AnyTypeDefinition,
