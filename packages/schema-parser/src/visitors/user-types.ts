@@ -1,7 +1,13 @@
 import {
-  AnyTypeDefinition,
-  TypeInfo, createObjectTypeDefinition, ObjectTypeDefinition, createScalarDefinition, createArrayDefinition, createPropertyDefinition
-} from "../types";
+  TypeInfo,
+  AnyDefinition,
+  ObjectDefinition,
+  createObjectDefinition,
+  createScalarDefinition,
+  createArrayDefinition,
+  createPropertyDefinition
+} from "../typeInfo";
+import { finalizeObjectType } from "./utils";
 
 import {
   DocumentNode,
@@ -13,11 +19,10 @@ import {
   visit,
   DirectiveNode
 } from "graphql";
-import { finalizeObjectType } from "./utils";
 
 interface State {
-  currentType?: ObjectTypeDefinition
-  currentUnknown?: AnyTypeDefinition
+  currentType?: ObjectDefinition
+  currentUnknown?: AnyDefinition
   nonNullType?: boolean
 }
 
@@ -36,7 +41,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     }
 
     // Create a new TypeDefinition
-    const type = createObjectTypeDefinition(node.name.value);
+    const type = createObjectDefinition(node.name.value);
     typeInfo.userTypes.push(type);
     state.currentType = type;
   },

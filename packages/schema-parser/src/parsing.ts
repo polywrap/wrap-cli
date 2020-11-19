@@ -1,4 +1,4 @@
-import { TypeInfo } from "./types";
+import { TypeInfo, createTypeInfo } from "./typeInfo";
 import { printSchemaWithDirectives } from "graphql-tools";
 import { parse, buildSchema } from "graphql";
 
@@ -13,12 +13,11 @@ export function buildTypeInfo(schema: string): TypeInfo {
   const printedSchema = printSchemaWithDirectives(builtSchema);
   const astNode = parse(printedSchema);
 
-  const info = new TypeInfo();
+  const info = createTypeInfo();
   visitUserTypes(astNode, info);
   visitImportedQueryTypes(astNode, info);
   visitImportedObjectTypes(astNode, info);
   visitQueryTypes(astNode, info);
-  info.finalize();
 
   return info;
 }

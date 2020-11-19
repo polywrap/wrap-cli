@@ -1,8 +1,13 @@
 import {
   PropertyDefinition,
   TypeInfo,
-  ImportedObjectTypeDefinition, createImportedObjectTypeDefinition, createPropertyDefinition, createScalarDefinition, createArrayDefinition
-} from "../types";
+  ImportedObjectDefinition,
+  createImportedObjectDefinition,
+  createPropertyDefinition,
+  createScalarDefinition,
+  createArrayDefinition
+} from "../typeInfo";
+import { finalizeObjectType } from "./utils";
 
 import {
   DocumentNode,
@@ -15,10 +20,9 @@ import {
   DirectiveNode,
   ValueNode
 } from "graphql";
-import { finalizeObjectType } from "./utils";
 
 interface State {
-  currentImport?: ImportedObjectTypeDefinition
+  currentImport?: ImportedObjectDefinition
   currentProperty?: PropertyDefinition
   nonNullType?: boolean
 }
@@ -78,7 +82,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       throw Error("Error: import directive missing one of its required arguments (namespace, uri, type)");
     }
 
-    const importedType = createImportedObjectTypeDefinition(uri, namespace, node.name.value, type);
+    const importedType = createImportedObjectDefinition(uri, namespace, node.name.value, type);
 
     typeInfo.importObjectTypes.push(importedType);
     state.currentImport = importedType;

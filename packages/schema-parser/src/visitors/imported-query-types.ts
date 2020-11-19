@@ -1,9 +1,15 @@
 import {
   PropertyDefinition,
   TypeInfo,
-  ImportedQueryTypeDefinition,
-  MethodDefinition, createImportedQueryTypeDefinition, createMethodDefinition, createPropertyDefinition, createScalarDefinition, createArrayDefinition
-} from "../types";
+  ImportedQueryDefinition,
+  MethodDefinition,
+  createImportedQueryDefinition,
+  createMethodDefinition,
+  createPropertyDefinition,
+  createScalarDefinition,
+  createArrayDefinition
+} from "../typeInfo";
+import { finalizeQueryType } from "./utils";
 
 import {
   DocumentNode,
@@ -18,10 +24,8 @@ import {
   ValueNode
 } from "graphql";
 
-import { finalizeQueryType } from "./utils";
-
 interface State {
-  currentImport?: ImportedQueryTypeDefinition
+  currentImport?: ImportedQueryDefinition
   currentMethod?: MethodDefinition
   currentArgument?: PropertyDefinition
   currentReturn?: PropertyDefinition
@@ -83,7 +87,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       throw Error("Error: import directive missing one of its required arguments (namespace, uri, type)");
     }
 
-    const importedType = createImportedQueryTypeDefinition(uri, namespace, node.name.value, type);
+    const importedType = createImportedQueryDefinition(uri, namespace, node.name.value, type);
     typeInfo.importedQueryTypes.push(importedType);
     state.currentImport = importedType;
   },

@@ -1,20 +1,26 @@
-import { ArrayDefinition, ObjectTypeDefinition, PropertyDefinition, TypeDefinition } from "..";
-import { MethodDefinition, QueryTypeDefinition } from "../types";
+import {
+  ArrayDefinition,
+  ObjectDefinition,
+  PropertyDefinition,
+  GenericDefinition,
+  MethodDefinition,
+  QueryDefinition
+} from "../";
 
-export function finalizeObjectType(obj: ObjectTypeDefinition) {
+export function finalizeObjectType(obj: ObjectDefinition) {
   for (const property of obj.properties) {
     populatePropertyType(property);
   }
 }
 
-export function finalizeQueryType(query: QueryTypeDefinition) {
+export function finalizeQueryType(query: QueryDefinition) {
   for (const method of query.methods) {
     finalizeMethodType(method);
   }
 }
 
 function populatePropertyType(property: PropertyDefinition) {
-  let propertyType: Maybe<TypeDefinition>;
+  let propertyType: Maybe<GenericDefinition>;
   if (property.array) {
     populateArrayType(property.array);
     propertyType = property.array;
@@ -28,7 +34,6 @@ function populatePropertyType(property: PropertyDefinition) {
   property.type = propertyType.type;
   property.required = propertyType.required
 }
-
 
 function populateArrayType(array: ArrayDefinition) {
   let baseTypeFound = false;
@@ -66,4 +71,3 @@ function finalizeMethodType(method: MethodDefinition) {
     populatePropertyType(method.return);
   }
 }
-

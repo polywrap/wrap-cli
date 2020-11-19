@@ -1,9 +1,15 @@
 import {
   TypeInfo,
   PropertyDefinition,
-  QueryTypeDefinition,
-  MethodDefinition, createQueryTypeDefinition, createMethodDefinition, createPropertyDefinition, createScalarDefinition, createArrayDefinition,
-} from "../types";
+  QueryDefinition,
+  MethodDefinition,
+  createQueryDefinition,
+  createMethodDefinition,
+  createPropertyDefinition,
+  createScalarDefinition,
+  createArrayDefinition
+} from "../typeInfo";
+import { finalizeQueryType } from "./utils";
 
 import {
   DocumentNode,
@@ -16,10 +22,8 @@ import {
   visit
 } from "graphql";
 
-import { finalizeQueryType } from "./utils";
-
 interface State {
-  currentQuery?: QueryTypeDefinition
+  currentQuery?: QueryDefinition
   currentMethod?: MethodDefinition
   currentArgument?: PropertyDefinition
   currentReturn?: PropertyDefinition
@@ -34,7 +38,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       return;
     }
 
-    const query = createQueryTypeDefinition(nodeName, nodeName);
+    const query = createQueryDefinition(nodeName, nodeName);
     typeInfo.queryTypes.push(query);
     state.currentQuery = query;
   },

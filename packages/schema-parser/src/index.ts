@@ -1,2 +1,2 @@
 export * from "./parsing";
-export * from "./types";
+export * from "./typeInfo";

@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import { createSetFirstLastPredicate } from '../../../helpers';
 import { buildTypeInfo } from '../../../parsing';
 import { GenericTransformPredicate, transformTypeInfo } from '../../../transform';
-import { TypeDefinition } from '../../../types';
+import { TypeDefinition } from '../../../typeInfo';
 
 
 // @TODO: Refactor into a real test
