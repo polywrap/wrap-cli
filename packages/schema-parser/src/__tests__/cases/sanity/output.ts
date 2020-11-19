@@ -5,6 +5,9 @@ import { buildTypeInfo } from '../../../parsing';
 import { GenericTransformPredicate, transformTypeInfo } from '../../../transform';
 import { TypeDefinition } from '../../../types';
 
+
+// @TODO: Refactor into a real test
+
 const schemaContents = fs.readFileSync('./src/__tests__/cases/sanity/input.graphql').toString();
 
 const tInfo = buildTypeInfo(schemaContents);
@@ -34,3 +37,6 @@ transformTypeInfo(tInfo, addSomeRandomField);
 fs.writeFileSync('./after.json', JSON.stringify(tInfo, undefined, 2));
 
 (tInfo.userTypes[0] as any).myFunction();
+// Prints:
+//    Hello world
+//    my name was CustomType
