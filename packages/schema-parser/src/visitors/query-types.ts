@@ -1,10 +1,8 @@
 import {
   TypeInfo,
-  ArrayDefinition,
   PropertyDefinition,
-  ScalarDefinition,
   QueryTypeDefinition,
-  MethodDefinition
+  MethodDefinition, createQueryTypeDefinition, createMethodDefinition, createPropertyDefinition, createScalarDefinition, createArrayDefinition,
 } from "../types";
 
 import {
@@ -17,6 +15,8 @@ import {
   InputValueDefinitionNode,
   visit
 } from "graphql";
+
+import { finalizeQueryType } from "./utils";
 
 interface State {
   currentQuery?: QueryTypeDefinition
@@ -34,16 +34,14 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       return;
     }
 
-    const queryDef = new QueryTypeDefinition(
-      nodeName, nodeName
-    );
-    typeInfo.queryTypes.push(queryDef);
-    state.currentQuery = queryDef;
+    const query = createQueryTypeDefinition(nodeName, nodeName);
+    typeInfo.queryTypes.push(query);
+    state.currentQuery = query;
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
-    const queryDef = state.currentQuery;
+    const query = state.currentQuery;
 
-    if (!queryDef) {
+    if (!query) {
       return;
     }
 
@@ -51,11 +49,9 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       throw Error("Imported types must only have methods");
     }
 
-    const operation = queryDef.type === "Query" ? "query" : "mutation";
-    const method = new MethodDefinition(
-      operation, node.name.value
-    );
-    queryDef.methods.push(method);
+    const operation = query.type === "Query" ? "query" : "mutation";
+    const method = createMethodDefinition(operation, node.name.value);
+    query.methods.push(method);
     state.currentMethod = method;
   },
   InputValueDefinition: (node: InputValueDefinitionNode) => {
@@ -65,7 +61,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       return;
     }
 
-    const argument = new PropertyDefinition(node.name.value);
+    const argument = createPropertyDefinition(node.name.value);
     method.arguments.push(argument);
     state.currentArgument = argument;
   },
@@ -79,23 +75,17 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     if (method && argument) {
       // Argument value
-      argument.scalar = new ScalarDefinition(
-        argument.name, modifier + node.name.value, state.nonNullType
-      );
+      argument.scalar = createScalarDefinition(argument.name, modifier + node.name.value, state.nonNullType);
       state.nonNullType = false;
     } else if (method) {
       // Return value
       if (!method.return) {
-        method.return = new PropertyDefinition(
-          method.name
-        );
+        method.return = createPropertyDefinition(method.name);
         state.currentReturn = method.return;
       } else if (!state.currentReturn) {
         state.currentReturn = method.return;
       }
-      state.currentReturn.scalar = new ScalarDefinition(
-        method.name, modifier + node.name.value, state.nonNullType
-      );
+      state.currentReturn.scalar = createScalarDefinition(method.name, modifier + node.name.value, state.nonNullType);
       state.nonNullType = false;
     }
   },
@@ -105,25 +95,19 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     if (method && argument) {
       // Argument value
-      argument.array = new ArrayDefinition(
-        argument.name, "TBD", state.nonNullType
-      );
+      argument.array = createArrayDefinition(argument.name, "TBD", state.nonNullType);
       state.currentArgument = argument.array;
       state.nonNullType = false;
     } else if (method) {
       // Return value
       if (!method.return) {
-        method.return = new PropertyDefinition(
-          method.name
-        );
+        method.return = createPropertyDefinition(method.name);
         state.currentReturn = method.return;
       } else if (!state.currentReturn) {
         state.currentReturn = method.return;
       }
 
-      state.currentReturn.array = new ArrayDefinition(
-        method.name, "TBD", state.nonNullType
-      );
+      state.currentReturn.array = createArrayDefinition(method.name, "TBD", state.nonNullType);
       state.currentReturn = state.currentReturn.array;
       state.nonNullType = false;
     }
@@ -132,6 +116,9 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
 const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
+    if (state.currentQuery) {
+      finalizeQueryType(state.currentQuery);
+    }
     state.currentQuery = undefined;
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
@@ -143,7 +130,7 @@ const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
   },
   NonNullType: (node: NonNullTypeNode) => {
     state.nonNullType = false;
-  },
+  }
 });
 
 export function visitQueryTypes(astNode: DocumentNode, typeInfo: TypeInfo) {

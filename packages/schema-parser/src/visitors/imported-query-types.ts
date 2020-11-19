@@ -1,10 +1,8 @@
 import {
-  ArrayDefinition,
   PropertyDefinition,
-  ScalarDefinition,
   TypeInfo,
   ImportedQueryTypeDefinition,
-  MethodDefinition
+  MethodDefinition, createImportedQueryTypeDefinition, createMethodDefinition, createPropertyDefinition, createScalarDefinition, createArrayDefinition
 } from "../types";
 
 import {
@@ -19,6 +17,8 @@ import {
   DirectiveNode,
   ValueNode
 } from "graphql";
+
+import { finalizeQueryType } from "./utils";
 
 interface State {
   currentImport?: ImportedQueryTypeDefinition
@@ -80,9 +80,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       throw Error("Error: import directive missing one of its required arguments (namespace, uri, type)");
     }
 
-    const importedType = new ImportedQueryTypeDefinition(
-      uri, namespace, node.name.value, type
-    );
+    const importedType = createImportedQueryTypeDefinition(uri, namespace, node.name.value, type);
     typeInfo.importedQueryTypes.push(importedType);
     state.currentImport = importedType;
   },
@@ -98,9 +96,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     }
 
     const operation = importDef.type === "Query" ? "query" : "mutation";
-    const method = new MethodDefinition(
-      operation, node.name.value
-    );
+    const method = createMethodDefinition(operation, node.name.value);
     importDef.methods.push(method);
     state.currentMethod = method;
   },
@@ -111,7 +107,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       return;
     }
 
-    const argument = new PropertyDefinition(node.name.value);
+    const argument = createPropertyDefinition(node.name.value);
     method.arguments.push(argument);
     state.currentArgument = argument;
   },
@@ -124,24 +120,22 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     const modifier = state.nonNullType ? "" : "?";
 
     if (method && argument) {
+
       // Argument value
-      argument.scalar = new ScalarDefinition(
-        argument.name, modifier + node.name.value, state.nonNullType
-      );
+      argument.scalar = createScalarDefinition(argument.name, modifier + node.name.value, state.nonNullType);
+
       state.nonNullType = false;
     } else if (method) {
+
       // Return value
       if (!method.return) {
-        method.return = new PropertyDefinition(
-          method.name
-        );
+        method.return = createPropertyDefinition(method.name);
+
         state.currentReturn = method.return;
       } else if (!state.currentReturn) {
         state.currentReturn = method.return;
       }
-      state.currentReturn.scalar = new ScalarDefinition(
-        method.name, modifier + node.name.value, state.nonNullType
-      );
+      state.currentReturn.scalar = createScalarDefinition(method.name, modifier + node.name.value, state.nonNullType);
       state.nonNullType = false;
     }
   },
@@ -151,25 +145,19 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     if (method && argument) {
       // Argument value
-      argument.array = new ArrayDefinition(
-        argument.name, "TBD", state.nonNullType
-      );
+      argument.array = createArrayDefinition(argument.name, "TBD", state.nonNullType);
       state.currentArgument = argument.array;
       state.nonNullType = false;
     } else if (method) {
       // Return value
       if (!method.return) {
-        method.return = new PropertyDefinition(
-          method.name
-        );
+        method.return = createPropertyDefinition(method.name);
         state.currentReturn = method.return;
       } else if (!state.currentReturn) {
         state.currentReturn = method.return;
       }
 
-      state.currentReturn.array = new ArrayDefinition(
-        method.name, "TBD", state.nonNullType
-      );
+      state.currentReturn.array = createArrayDefinition(method.name, "TBD", state.nonNullType);
       state.currentReturn = state.currentReturn.array;
       state.nonNullType = false;
     }
@@ -178,6 +166,9 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
 const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
+    if (state.currentImport) {
+      finalizeQueryType(state.currentImport);
+    }
     state.currentImport = undefined;
   },
   FieldDefinition: (node: FieldDefinitionNode) => {

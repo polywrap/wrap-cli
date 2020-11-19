@@ -1,10 +1,7 @@
 import {
-  ArrayDefinition,
   PropertyDefinition,
-  ScalarDefinition,
   TypeInfo,
-  ImportedQueryTypeDefinition,
-  MethodDefinition, ImportedObjectTypeDefinition
+  ImportedObjectTypeDefinition, createImportedObjectTypeDefinition, createPropertyDefinition, createScalarDefinition, createArrayDefinition
 } from "../types";
 
 import {
@@ -14,11 +11,11 @@ import {
   NamedTypeNode,
   ListTypeNode,
   FieldDefinitionNode,
-  InputValueDefinitionNode,
   visit,
   DirectiveNode,
   ValueNode
 } from "graphql";
+import { finalizeObjectType } from "./utils";
 
 interface State {
   currentImport?: ImportedObjectTypeDefinition
@@ -78,9 +75,8 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       throw Error("Error: import directive missing one of its required arguments (namespace, uri, type)");
     }
 
-    const importedType = new ImportedObjectTypeDefinition(
-      uri, namespace, node.name.value, type
-    );
+    const importedType = createImportedObjectTypeDefinition(uri, namespace, node.name.value, type);
+
     typeInfo.importObjectTypes.push(importedType);
     state.currentImport = importedType;
   },
@@ -95,7 +91,8 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       throw Error("Imported types cannot have methods.");
     }
 
-    const property = new PropertyDefinition(node.name.value);
+    const property = createPropertyDefinition(node.name.value);
+
     state.currentProperty = property;
     state.currentImport?.properties.push(property);
   },
@@ -111,9 +108,8 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       return;
     }
 
-    property.scalar = new ScalarDefinition(
-      property.name, modifier + node.name.value, state.nonNullType
-    )
+    property.scalar = createScalarDefinition(property.name, modifier + node.name.value, state.nonNullType);
+    
     state.nonNullType = false;
   },
   ListType: (node: ListTypeNode) => {
@@ -121,9 +117,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       return;
     }
 
-    state.currentProperty.array = new ArrayDefinition(
-      state.currentProperty.name, "TBD", state.nonNullType
-    )
+    state.currentProperty.array = createArrayDefinition(state.currentProperty.name, "TBD", state.nonNullType);
 
     state.nonNullType = false;
   },
@@ -131,6 +125,9 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
 const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
+    if (state.currentImport) {
+      finalizeObjectType(state.currentImport);
+    }
     state.currentImport = undefined;
   },
   NonNullType: (node: NonNullTypeNode) => {

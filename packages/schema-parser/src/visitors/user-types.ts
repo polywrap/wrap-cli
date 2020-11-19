@@ -1,7 +1,7 @@
 import {
   AnyTypeDefinition,
   TypeInfo,
-  TypeDefinition, createTypeDefinition, createObjectTypeDefinition, ObjectTypeDefinition
+  TypeDefinition, createTypeDefinition, createObjectTypeDefinition, ObjectTypeDefinition, createScalarDefinition, createArrayDefinition, createPropertyDefinition, populatePropertyTypes
 } from "../types";
 
 import {
@@ -56,9 +56,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     const modifier = state.nonNullType ? "" : "?";
 
-    property.scalar = new ScalarDefinition(
-      property.name, modifier + node.name.value, state.nonNullType
-    );
+    property.scalar = createScalarDefinition(property.name, modifier + node.name.value, state.nonNullType);
     state.nonNullType = false;
   },
   ListType: (node: ListTypeNode) => {
@@ -72,10 +70,10 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       return;
     }
 
-    // Array type names will be set within the visitorLeave
-    property.array = new ArrayDefinition(
+    property.array = createArrayDefinition(
       property.name, "TBD", state.nonNullType
     );
+
     state.currentUnknown = property.array;
     state.nonNullType = false;
   },
@@ -87,9 +85,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     }
 
     // Create a new property
-    const property = new PropertyDefinition(
-      node.name.value
-    )
+    const property = createPropertyDefinition(node.name.value);
 
     state.currentUnknown = property;
     type.properties.push(property);
@@ -98,6 +94,9 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
 const visitorLeave = (schemaInfo: TypeInfo, state: State) => ({
   ObjectTypeDefinition: (node: TypeDefinitionNode) => {
+    if (state.currentType) {
+      populatePropertyTypes(state.currentType);
+    }
     state.currentType = undefined;
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
