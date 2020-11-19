@@ -22,7 +22,6 @@ export class TypeInfo {
       if (extendProperties) {
         this.userTypes[i] = extendProperties(this.userTypes[i]) as ObjectTypeDefinition;
       }
-      this.userTypes[i].finalize(extendProperties);
     }
 
     //setFirstLast(this.importObjectTypes);
@@ -30,7 +29,6 @@ export class TypeInfo {
       if (extendProperties) {
         this.importObjectTypes[i] = extendProperties(this.importObjectTypes[i]) as ImportedObjectTypeDefinition;
       }
-      this.importObjectTypes[i].finalize(extendProperties);
     }
 
     //setFirstLast(this.importedQueryTypes);
@@ -38,7 +36,6 @@ export class TypeInfo {
       if (extendProperties) {
         this.importedQueryTypes[i] = extendProperties(this.importedQueryTypes[i]) as ImportedQueryTypeDefinition;
       }
-      this.importedQueryTypes[i].finalize(extendProperties);
     }
 
     //setFirstLast(this.queryTypes);
@@ -46,7 +43,6 @@ export class TypeInfo {
       if (extendProperties) {
         this.queryTypes[i] = extendProperties(this.queryTypes[i]) as QueryTypeDefinition;
       }
-      this.queryTypes[i].finalize(extendProperties);
     }
   }
 }

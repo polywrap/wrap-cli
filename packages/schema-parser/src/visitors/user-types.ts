@@ -14,6 +14,7 @@ import {
   visit,
   DirectiveNode
 } from "graphql";
+import { finalizeObjectType } from "./utils";
 
 interface State {
   currentType?: ObjectTypeDefinition
@@ -95,7 +96,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 const visitorLeave = (schemaInfo: TypeInfo, state: State) => ({
   ObjectTypeDefinition: (node: TypeDefinitionNode) => {
     if (state.currentType) {
-      populatePropertyTypes(state.currentType);
+      finalizeObjectType(state.currentType);
     }
     state.currentType = undefined;
   },

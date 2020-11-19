@@ -7,7 +7,13 @@ export function finalizeObjectType(obj: ObjectTypeDefinition) {
   }
 }
 
-export function populatePropertyType(property: PropertyDefinition) {
+export function finalizeQueryType(query: QueryTypeDefinition) {
+  for (const method of query.methods) {
+    finalizeMethodType(method);
+  }
+}
+
+function populatePropertyType(property: PropertyDefinition) {
   let propertyType: Maybe<TypeDefinition>;
   if (property.array) {
     populateArrayType(property.array);
@@ -24,7 +30,7 @@ export function populatePropertyType(property: PropertyDefinition) {
 }
 
 
-export function populateArrayType(array: ArrayDefinition) {
+function populateArrayType(array: ArrayDefinition) {
   let baseTypeFound = false;
 
   let currentArray = array;
@@ -51,7 +57,7 @@ export function populateArrayType(array: ArrayDefinition) {
   array.type = modifier + "[" + array.item.type + "]";
 }
 
-export function finalizeMethodType(method: MethodDefinition) {
+function finalizeMethodType(method: MethodDefinition) {
   for (const arg of method.arguments) {
     populatePropertyType(arg);
   }
@@ -61,8 +67,3 @@ export function finalizeMethodType(method: MethodDefinition) {
   }
 }
 
-export function finalizeQueryType(query: QueryTypeDefinition) {
-  for (const method of query.methods) {
-    finalizeMethodType(method);
-  }
-}
