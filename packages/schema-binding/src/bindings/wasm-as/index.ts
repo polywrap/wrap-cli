@@ -31,12 +31,20 @@ export function generateBinding(schema: string): OutputDirectory {
     const importEntries: OutputEntry[] = [];
 
     // Generate imported query type folders
-    // TODO: support imported objects & imported query types
-    for (const importedType of typeInfo.importedQueryTypes) {
+    for (const importedQueryType of typeInfo.importedQueryTypes) {
       importEntries.push({
         type: "Directory",
-        name: importedType.name,
-        data: generateFiles('./templates/imported/type', importedType)
+        name: importedQueryType.name,
+        data: generateFiles('./templates/imported/query-type', importedQueryType)
+      });
+    }
+
+    // Generate imported object type folders
+    for (const importedObectType of typeInfo.importedObjectTypes) {
+      importEntries.push({
+        type: "Directory",
+        name: importedObectType.name,
+        data: generateFiles('./templates/imported/object-type', importedObectType)
       });
     }
 

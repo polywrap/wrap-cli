@@ -1,6 +1,6 @@
 import { fetchTestCases } from "./cases";
 import { loadDirectory } from "../utils/fs";
-import { generateCode, TargetLanguage } from "../";
+import { generateCode, OutputEntry, TargetLanguage } from "../";
 
 describe("Web3API Binding Test Suite", () => {
 
@@ -25,7 +25,16 @@ describe("Web3API Binding Test Suite", () => {
             return 0;
           }
 
-          output.entries = output.entries.sort(alphabetical);
+          const sort = (array: OutputEntry[]): OutputEntry[] => {
+            array.forEach((entry) => {
+              if (typeof entry.data !== "string")
+                entry.data = sort(entry.data)
+            });
+
+            return array.sort(alphabetical);
+          }
+
+          output.entries = sort(output.entries);
 
           expect(output).toMatchObject(expectedOutput);
         });

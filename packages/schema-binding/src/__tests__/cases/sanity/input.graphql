@@ -74,3 +74,11 @@ type TestImport_Query @imported(
     arg: [String!]!
   ): Int64!
 }
+
+type TestImport_Object @imported(
+  namespace: "TestImport",
+  uri: "testimport.uri.eth",
+  type: "Object"
+) {
+  prop: String!
+}
