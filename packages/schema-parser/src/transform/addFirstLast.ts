@@ -2,11 +2,19 @@ import { TypeInfoTransforms } from ".";
 import {
   MethodDefinition,
   ObjectDefinition,
-  QueryDefinition
+  QueryDefinition,
+  TypeInfo
 } from "../typeInfo";
 
 export const addFirstLast: TypeInfoTransforms = {
   enter: {
+    TypeInfo: (typeInfo: TypeInfo) => ({
+      ...typeInfo,
+      userTypes: setFirstLast(typeInfo.userTypes),
+      queryTypes: setFirstLast(typeInfo.queryTypes),
+      importedObjectTypes: setFirstLast(typeInfo.importedObjectTypes),
+      importedQueryTypes: setFirstLast(typeInfo.importedQueryTypes)
+    }),
     ObjectDefinition: (def: ObjectDefinition) => ({
       ...def,
       properties: setFirstLast(def.properties)

@@ -1,7 +1,7 @@
 import { parseSchema } from "../";
 import { fetchTestCases } from "./cases";
 
-describe("Web3API Schema Binding Test Cases", () => {
+describe("Web3API Schema Parser Test Cases", () => {
   const cases = fetchTestCases();
 
   for (const test of cases) {

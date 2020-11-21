@@ -20,6 +20,8 @@ export interface TypeInfoTransforms {
 }
 
 export interface TypeInfoTransformer {
+  TypeInfo?:
+    (typeInfo: TypeInfo) => TypeInfo
   GenericDefinition?:
     (def: GenericDefinition) => GenericDefinition;
   ObjectDefinition?:
@@ -43,7 +45,11 @@ export interface TypeInfoTransformer {
 }
 
 export function performTransforms(typeInfo: TypeInfo, transforms: TypeInfoTransforms): TypeInfo {
-  const result = Object.assign({}, typeInfo);
+  let result = Object.assign({}, typeInfo);
+
+  if (transforms.enter && transforms.enter.TypeInfo) {
+    result = transforms.enter.TypeInfo(result);
+  }
 
   for (let i = 0; i < result.userTypes.length; ++i) {
     result.userTypes[i] = visitObjectDefinition(
@@ -67,6 +73,10 @@ export function performTransforms(typeInfo: TypeInfo, transforms: TypeInfoTransf
     result.importedQueryTypes[i] = visitImportedQueryDefinition(
       result.importedQueryTypes[i], transforms
     );
+  }
+
+  if (transforms.leave && transforms.leave.TypeInfo) {
+    result = transforms.leave.TypeInfo(result);
   }
 
   return result;
