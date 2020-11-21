@@ -17,15 +17,15 @@ export function isKind(type: GenericDefinition, kind: DefinitionKind) {
 
 export interface GenericDefinition {
   name: string;
-  type: Maybe<string>;
-  required: Maybe<boolean>;
+  type: string | null;
+  required: boolean | null;
   kind: DefinitionKind;
 }
 export function createGenericDefinition(name: string, type?: string, required?: boolean): GenericDefinition {
   return {
     name,
-    type,
-    required,
+    type: type ? type : null,
+    required: required ? required : null,
     kind: DefinitionKind.Generic
   }
 }
@@ -36,16 +36,16 @@ export interface ObjectDefinition extends GenericDefinition {
 export function createObjectDefinition(name: string, type?: string, required?: boolean): ObjectDefinition {
   return {
     name,
-    type,
-    required,
+    type: type ? type : null,
+    required: required ? required : null,
     properties: [],
     kind: DefinitionKind.Object
   }
 }
 
 export interface AnyDefinition extends GenericDefinition {
-  array: Maybe<ArrayDefinition>;
-  scalar: Maybe<ScalarDefinition>;
+  array: ArrayDefinition | null;
+  scalar: ScalarDefinition | null;
 }
 export function createAnyDefinition(
   name: string,
@@ -56,8 +56,8 @@ export function createAnyDefinition(
 ): AnyDefinition {
   return {
     name,
-    type,
-    required,
+    type: type ? type : null,
+    required: required ? required : null,
     array: array ? array : null,
     scalar: scalar ? scalar : null,
     kind: DefinitionKind.Any
@@ -70,9 +70,30 @@ export interface ScalarDefinition extends GenericDefinition {
 export function createScalarDefinition(name: string, type?: string, required?: boolean): ScalarDefinition {
   return {
     name,
-    type,
-    required,
+    type: type ? type : null,
+    required: required ? required : null,
     kind: DefinitionKind.Any
+  }
+}
+
+export interface ArrayDefinition extends AnyDefinition {
+  item: GenericDefinition | null;
+}
+export function createArrayDefinition(
+  name: string,
+  type?: string,
+  required?: boolean,
+  array?: ArrayDefinition,
+  scalar?: ScalarDefinition
+): ArrayDefinition {
+  return {
+    name,
+    type: type ? type : null,
+    required: required ? required : null,
+    array: array ? array : null,
+    scalar: scalar ? scalar : null,
+    kind: DefinitionKind.Array,
+    item: null
   }
 }
 
@@ -88,32 +109,29 @@ export function createPropertyDefinition(
 ): PropertyDefinition {
   return {
     name,
-    type,
-    required,
+    type: type ? type : null,
+    required: required ? required : null,
     array: array ? array : null,
     scalar: scalar ? scalar : null,
     kind: DefinitionKind.Property
   }
 }
 
-export interface ArrayDefinition extends AnyDefinition {
-  item: Maybe<GenericDefinition>;
-}
-export function createArrayDefinition(
-  name: string,
-  type?: string,
-  required?: boolean,
-  array?: ArrayDefinition,
-  scalar?: ScalarDefinition
-): ArrayDefinition {
+export function createScalarPropertyDefinition(name: string, type: string, required: boolean): PropertyDefinition {
   return {
-    name,
-    type,
-    required,
-    array: array ? array : null,
-    scalar: scalar ? scalar : null,
-    kind: DefinitionKind.Array,
-    item: undefined
+    ...createPropertyDefinition(
+      name, type, required, undefined,
+      createScalarDefinition(name, type, required)
+    )
+  }
+}
+
+export function createArrayPropertyDefinition(name: string, type: string, required: boolean, item: PropertyDefinition): ArrayDefinition {
+  return {
+    ...createArrayDefinition(
+      name, type, required, undefined
+    ),
+    item
   }
 }
 
@@ -121,7 +139,7 @@ export type Operation = "query" | "mutation";
 
 export interface MethodDefinition extends GenericDefinition {
   arguments: PropertyDefinition[];
-  return: Maybe<PropertyDefinition>;
+  return: PropertyDefinition | null;
   operation: Operation;
 }
 
@@ -135,8 +153,8 @@ export function createMethodDefinition(
 ): MethodDefinition {
   return {
     name,
-    type,
-    required,
+    type: type ? type : null,
+    required: required ? required : null,
     arguments: args ? args : [],
     return: returnDef ? returnDef : null,
     operation,
@@ -150,8 +168,8 @@ export interface QueryDefinition extends GenericDefinition {
 export function createQueryDefinition(name: string, type?: string, required?: boolean): QueryDefinition {
   return {
     name,
-    type,
-    required,
+    type: type ? type : null,
+    required: required ? required : null,
     methods: [],
     kind: DefinitionKind.Query
   }
@@ -170,8 +188,8 @@ export function createImportedQueryDefinition(
 ): ImportedQueryDefinition {
   return {
     name,
-    type,
-    required,
+    type: type ? type : null,
+    required: required ? required : null,
     uri,
     namespace,
     methods: [],
@@ -192,8 +210,8 @@ export function createImportedObjectDefinition(
 ): ImportedObjectDefinition {
   return {
     name,
-    type,
-    required,
+    type: type ? type : null,
+    required: required ? required : null,
     uri,
     namespace,
     properties: [],

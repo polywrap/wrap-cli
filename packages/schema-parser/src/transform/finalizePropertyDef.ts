@@ -1,26 +1,21 @@
+import { TypeInfoTransforms } from ".";
 import {
   ArrayDefinition,
-  ObjectDefinition,
-  PropertyDefinition,
   GenericDefinition,
-  MethodDefinition,
-  QueryDefinition
-} from "../";
+  PropertyDefinition
+} from "../typeInfo";
 
-export function finalizeObjectType(obj: ObjectDefinition) {
-  for (const property of obj.properties) {
-    populatePropertyType(property);
-  }
-}
-
-export function finalizeQueryType(query: QueryDefinition) {
-  for (const method of query.methods) {
-    finalizeMethodType(method);
+export const finalizePropertyDef: TypeInfoTransforms = {
+  enter: {
+    PropertyDefinition: (def: PropertyDefinition) => {
+      populatePropertyType(def);
+      return def;
+    }
   }
 }
 
 function populatePropertyType(property: PropertyDefinition) {
-  let propertyType: Maybe<GenericDefinition>;
+  let propertyType: GenericDefinition | undefined;
   if (property.array) {
     populateArrayType(property.array);
     propertyType = property.array;
@@ -62,12 +57,3 @@ function populateArrayType(array: ArrayDefinition) {
   array.type = modifier + "[" + array.item.type + "]";
 }
 
-function finalizeMethodType(method: MethodDefinition) {
-  for (const arg of method.arguments) {
-    populatePropertyType(arg);
-  }
-
-  if (method.return) {
-    populatePropertyType(method.return);
-  }
-}

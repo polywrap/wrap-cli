@@ -7,7 +7,6 @@ import {
   createArrayDefinition,
   createPropertyDefinition
 } from "../typeInfo";
-import { finalizeObjectType } from "./utils";
 
 import {
   DocumentNode,
@@ -99,9 +98,6 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
 const visitorLeave = (schemaInfo: TypeInfo, state: State) => ({
   ObjectTypeDefinition: (node: TypeDefinitionNode) => {
-    if (state.currentType) {
-      finalizeObjectType(state.currentType);
-    }
     state.currentType = undefined;
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
@@ -112,7 +108,7 @@ const visitorLeave = (schemaInfo: TypeInfo, state: State) => ({
   },
 });
 
-export function visitUserTypes(astNode: DocumentNode, typeInfo: TypeInfo) {
+export function extractUserTypes(astNode: DocumentNode, typeInfo: TypeInfo) {
   const state: State = { };
 
   visit(astNode, {

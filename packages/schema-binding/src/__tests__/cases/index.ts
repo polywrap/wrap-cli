@@ -1,9 +1,9 @@
 import path from "path";
 import { readdirSync, readFileSync, Dirent } from 'fs'
 
-const root = path.join(__dirname, "./cases");
+const root = path.join(__dirname, "./");
 
-type TestCases = {
+export type TestCases = {
   name: string;
   directory: string;
   inputSchema: string;
@@ -13,7 +13,6 @@ type TestCases = {
   }[];
 }[];
 
-export { TestCases };
 
 export function fetchTestCases(): TestCases {
   const cases: TestCases = [];

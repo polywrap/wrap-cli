@@ -1,6 +1,6 @@
-import { fetchTestCases } from "./utils";
+import { fetchTestCases } from "./cases";
 import { loadDirectory } from "../utils/fs";
-import { generateCode, buildSchema, TargetLanguage } from "../";
+import { generateCode, parseSchema, TargetLanguage } from "../";
 
 describe("Web3API Binding Test Suite", () => {
 
@@ -11,7 +11,7 @@ describe("Web3API Binding Test Suite", () => {
     describe(`Case: ${test.name}`, () => {
 
       // Given an input schema
-      const schema = buildSchema(test.inputSchema);
+      const schema = parseSchema(test.inputSchema);
 
       // For each language
       for (const outputLanguage of test.outputLanguages) {

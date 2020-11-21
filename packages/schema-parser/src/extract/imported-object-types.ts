@@ -7,7 +7,6 @@ import {
   createScalarDefinition,
   createArrayDefinition
 } from "../typeInfo";
-import { finalizeObjectType } from "./utils";
 
 import {
   DocumentNode,
@@ -116,7 +115,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     }
 
     property.scalar = createScalarDefinition(property.name, modifier + node.name.value, state.nonNullType);
-    
+
     state.nonNullType = false;
   },
   ListType: (node: ListTypeNode) => {
@@ -132,9 +131,6 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
 const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
-    if (state.currentImport) {
-      finalizeObjectType(state.currentImport);
-    }
     state.currentImport = undefined;
   },
   NonNullType: (node: NonNullTypeNode) => {
@@ -142,7 +138,7 @@ const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
   },
 });
 
-export function visitImportedObjectTypes(astNode: DocumentNode, typeInfo: TypeInfo) {
+export function extractImportedObjectTypes(astNode: DocumentNode, typeInfo: TypeInfo) {
   const state: State = { };
 
   visit(astNode, {
