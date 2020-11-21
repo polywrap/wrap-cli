@@ -40,6 +40,10 @@ function populateArrayType(array: ArrayDefinition) {
       populateArrayType(currentArray);
     } else if (currentArray.scalar) {
       baseTypeFound = true;
+    } else {
+      throw Error(
+        `This should never happen, ArrayDefinition is malformed.\n${JSON.stringify(array, null, 2)}`
+      );
     }
   }
 

@@ -88,6 +88,10 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       return;
     }
 
+    if (node.arguments && node.arguments.length > 0) {
+      throw Error(`Imported types cannot have methods. See type "${type.name}"`);
+    }
+
     // Create a new property
     const property = createPropertyDefinition(node.name.value);
 

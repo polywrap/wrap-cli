@@ -38,18 +38,24 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     }
 
     // Look for imported
+    const importedDirective = "imported";
     const importedIndex = node.directives.findIndex(
-      (dir: DirectiveNode) => dir.name.value === "imported"
+      (dir: DirectiveNode) => dir.name.value === importedDirective
     );
 
     if (importedIndex === -1) {
       return;
     }
 
-    const queryIdentifier = "Query";
-    const mutationIdentifier = "Mutation";
+    const typeName = node.name.value;
 
-    if (node.name.value.substr(-queryIdentifier.length) !== queryIdentifier && node.name.value.substr(-mutationIdentifier.length) !== mutationIdentifier) {
+    const queryIdentifier = "_Query";
+    const queryTest = typeName.substr(-queryIdentifier.length);
+    const mutationIdentifier = "_Mutation";
+    const mutationTest = typeName.substr(-queryIdentifier.length);
+
+    if (queryTest !== queryIdentifier && mutationTest !== mutationIdentifier) {
+      // Ignore imported types that aren't query types
       return;
     }
 
@@ -57,7 +63,9 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     if (!importedDir.arguments || importedDir.arguments.length !== 3) {
       // TODO: Implement better error handling
-      throw Error("Error: imported_type directive missing arguments");
+      throw Error(
+        `The ${importedDirective} directive has incorrect arguments. See type "${typeName}"`
+      );
     }
 
     let namespace: string | undefined;
@@ -86,7 +94,9 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       throw Error("Error: import directive missing one of its required arguments (namespace, uri, type)");
     }
 
-    const importedType = createImportedQueryDefinition(uri, namespace, node.name.value, type);
+    const importedType = createImportedQueryDefinition(
+      uri, namespace, typeName, type
+    );
     typeInfo.importedQueryTypes.push(importedType);
     state.currentImport = importedType;
   },
@@ -98,7 +108,9 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     }
 
     if (!node.arguments || node.arguments.length === 0) {
-      throw Error("Imported Query types must only have methods");
+      throw Error(
+        `Imported Query types must only have methods. See property: ${node.name.value}`
+      );
     }
 
     const operation = importDef.type === "Query" ? "query" : "mutation";
@@ -126,13 +138,13 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     const modifier = state.nonNullType ? "" : "?";
 
     if (method && argument) {
-
       // Argument value
-      argument.scalar = createScalarDefinition(argument.name, modifier + node.name.value, state.nonNullType);
+      argument.scalar = createScalarDefinition(
+        argument.name, modifier + node.name.value, state.nonNullType
+      );
 
       state.nonNullType = false;
     } else if (method) {
-
       // Return value
       if (!method.return) {
         method.return = createPropertyDefinition(method.name);
@@ -141,7 +153,9 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       } else if (!state.currentReturn) {
         state.currentReturn = method.return;
       }
-      state.currentReturn.scalar = createScalarDefinition(method.name, modifier + node.name.value, state.nonNullType);
+      state.currentReturn.scalar = createScalarDefinition(
+        method.name, modifier + node.name.value, state.nonNullType
+      );
       state.nonNullType = false;
     }
   },
@@ -151,7 +165,9 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     if (method && argument) {
       // Argument value
-      argument.array = createArrayDefinition(argument.name, "TBD", state.nonNullType);
+      argument.array = createArrayDefinition(
+        argument.name, "TBD", state.nonNullType
+      );
       state.currentArgument = argument.array;
       state.nonNullType = false;
     } else if (method) {
@@ -163,7 +179,9 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
         state.currentReturn = method.return;
       }
 
-      state.currentReturn.array = createArrayDefinition(method.name, "TBD", state.nonNullType);
+      state.currentReturn.array = createArrayDefinition(
+        method.name, "TBD", state.nonNullType
+      );
       state.currentReturn = state.currentReturn.array;
       state.nonNullType = false;
     }

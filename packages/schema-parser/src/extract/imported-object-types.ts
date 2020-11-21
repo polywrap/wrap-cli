@@ -83,7 +83,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     const importedType = createImportedObjectDefinition(uri, namespace, node.name.value, type);
 
-    typeInfo.importObjectTypes.push(importedType);
+    typeInfo.importedObjectTypes.push(importedType);
     state.currentImport = importedType;
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
@@ -93,38 +93,47 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       return;
     }
 
-    if (node.arguments) {
-      throw Error("Imported types cannot have methods.");
+    if (node.arguments && node.arguments.length > 0) {
+      throw Error(`Imported types cannot have methods. See type "${importDef.name}"`);
     }
 
     const property = createPropertyDefinition(node.name.value);
 
     state.currentProperty = property;
-    state.currentImport?.properties.push(property);
+    importDef.properties.push(property);
   },
   NonNullType: (node: NonNullTypeNode) => {
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    const modifier = state.nonNullType ? "" : "?";
-
     const property = state.currentProperty;
 
     if (!property) {
       return;
     }
 
-    property.scalar = createScalarDefinition(property.name, modifier + node.name.value, state.nonNullType);
+    const modifier = state.nonNullType ? "" : "?";
 
+    property.scalar = createScalarDefinition(
+      property.name, modifier + node.name.value, state.nonNullType
+    );
     state.nonNullType = false;
   },
   ListType: (node: ListTypeNode) => {
-    if (!state.currentProperty) {
+    const property = state.currentProperty;
+
+    if (!property) {
       return;
     }
 
-    state.currentProperty.array = createArrayDefinition(state.currentProperty.name, "TBD", state.nonNullType);
+    if (property.scalar) {
+      return;
+    }
 
+    property.array = createArrayDefinition(
+      property.name, "TBD", state.nonNullType
+    );
+    state.currentProperty = property.array;
     state.nonNullType = false;
   },
 });
@@ -132,6 +141,9 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     state.currentImport = undefined;
+  },
+  FieldDefinition: (node: FieldDefinitionNode) => {
+    state.currentProperty = undefined;
   },
   NonNullType: (node: NonNullTypeNode) => {
     state.nonNullType = false;

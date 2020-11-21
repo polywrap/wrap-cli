@@ -13,7 +13,6 @@ export type TestCases = {
   }[];
 }[];
 
-
 export function fetchTestCases(): TestCases {
   const cases: TestCases = [];
 
