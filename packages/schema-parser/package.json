@@ -2,7 +2,10 @@
   "name": "@web3api/schema-parser",
   "version": "0.0.1-prealpha.1",
   "license": "MIT",
-  "main": "build/index.js",
+  "main": "build",
+  "files": [
+    "build"
+  ],
   "scripts": {
     "build": "rimraf ./build && tsc",
     "test": "jest --passWithNoTests --runInBand --verbose",

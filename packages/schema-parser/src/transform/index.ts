@@ -14,6 +14,9 @@ import {
   isKind
 } from "../typeInfo";
 
+export * from "./extendType";
+export * from "./addFirstLast";
+
 export interface TypeInfoTransforms {
   enter?: TypeInfoTransformer;
   leave?: TypeInfoTransformer;

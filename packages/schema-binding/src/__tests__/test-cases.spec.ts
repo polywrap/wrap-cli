@@ -1,6 +1,6 @@
 import { fetchTestCases } from "./cases";
 import { loadDirectory } from "../utils/fs";
-import { generateCode, parseSchema, TargetLanguage } from "../";
+import { generateCode, TargetLanguage } from "../";
 
 describe("Web3API Binding Test Suite", () => {
 
@@ -10,9 +10,6 @@ describe("Web3API Binding Test Suite", () => {
 
     describe(`Case: ${test.name}`, () => {
 
-      // Given an input schema
-      const schema = parseSchema(test.inputSchema);
-
       // For each language
       for (const outputLanguage of test.outputLanguages) {
 
@@ -20,7 +17,7 @@ describe("Web3API Binding Test Suite", () => {
         it(`Binds: ${outputLanguage.name}`, () => {
           const { name, directory } = outputLanguage;
           const expectedOutput = loadDirectory(directory);
-          const output = generateCode(name as TargetLanguage, schema);
+          const output = generateCode(name as TargetLanguage, test.inputSchema);
 
           const alphabetical = (a, b) => {
             if (a.name < b.name) { return -1; }

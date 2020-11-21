@@ -2,20 +2,19 @@ import { OutputDirectory, OutputEntry } from "../../";
 import { loadDirectory } from "../../utils/fs";
 import * as Functions from "./functions";
 
-import { buildTypeInfo, TypeDefinition } from "@web3api/schema-parser";
+import {
+  parseSchema,
+  extendType,
+  addFirstLast
+} from "@web3api/schema-parser";
 import path from "path";
 
 const Mustache = require("mustache");
 
 export function generateBinding(schema: string): OutputDirectory {
   const entries: OutputEntry[] = [];
-  const typeInfo = buildTypeInfo(schema, {
-    extendProperties: (t: TypeDefinition): TypeDefinition => {
-      return {
-        ...t,
-        ...Functions
-      } as TypeDefinition;
-    }
+  const typeInfo = parseSchema(schema, {
+    transforms: [extendType(Functions), addFirstLast]
   });
 
   // Generate user type folders
@@ -28,11 +27,12 @@ export function generateBinding(schema: string): OutputDirectory {
   }
 
   // Generate imported folder
-  if (typeInfo.imports.length > 0) {
+  if (typeInfo.importedQueryTypes.length > 0 || typeInfo.importedObjectTypes.length > 0) {
     const importEntries: OutputEntry[] = [];
 
-    // Generate imported type folders
-    for (const importedType of typeInfo.importedTypes) {
+    // Generate imported query type folders
+    // TODO: support imported objects & imported query types
+    for (const importedType of typeInfo.importedQueryTypes) {
       importEntries.push({
         type: "Directory",
         name: importedType.name,
