@@ -8,8 +8,7 @@ import {
   addFirstLast
 } from "@web3api/schema-parser";
 import path from "path";
-
-const Mustache = require("mustache");
+import Mustache from "mustache";
 
 export function generateBinding(schema: string): OutputDirectory {
   const entries: OutputEntry[] = [];

@@ -9,16 +9,14 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@types/chalk": "^2.2.0",
-    "@types/mustache": "^4.0.1",
-    "chalk": "^4.1.0",
+    "@web3api/schema-parser": "0.0.1-prealpha.1",
     "graphql": "^15.4.0",
-    "graphql-tools": "^7.0.1",
     "mustache": "^4.0.1",
     "tslib": "^2.0.3"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
+    "@types/mustache": "^4.0.1",
     "jest": "26.2.2",
     "rimraf": "3.0.2",
     "ts-jest": "26.1.4",

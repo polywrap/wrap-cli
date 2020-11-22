@@ -1,7 +1,0 @@
-#import { Query } into SimpleStorage from "simplestorage.eth"
-
-type Query {
-  lengthOfString(
-    name: String!
-  ): Int!
-}

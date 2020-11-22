@@ -6,6 +6,7 @@ import { finalizePropertyDef } from "./transform/finalizePropertyDef";
 import { printSchemaWithDirectives } from "graphql-tools";
 import { parse, buildSchema } from "graphql";
 
+export { TypeInfo };
 export * from "./transform";
 
 interface ParserOptions {

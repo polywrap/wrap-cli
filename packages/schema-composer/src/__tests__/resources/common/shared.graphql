@@ -1,3 +1,0 @@
-type BigNumber {
-  number: String!
-}

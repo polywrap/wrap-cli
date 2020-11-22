@@ -4,15 +4,12 @@
     "outDir": "build",
     "esModuleInterop": true,
     "lib": [
+      "es2020.string",
       "es2015",
       "es5",
-      "dom",
-      "es2015.collection",
-      "es2015.iterable",
-      "es2020.string"
+      "dom"
     ],
     "downlevelIteration": true,
-    "importHelpers": true,
     "moduleResolution": "node",
     "declaration": true,
     "preserveSymlinks": true,
@@ -26,8 +23,7 @@
     "module": "commonjs",
     "sourceMap": true,
     "target": "es5",
-    "strictNullChecks": true,
-    "strict": false
+    "strictNullChecks": true
   },
   "include": [
     "./src/**/*"
