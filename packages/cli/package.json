@@ -12,25 +12,25 @@
   "dependencies": {
     "@graphprotocol/graph-cli": "0.18.0",
     "@graphprotocol/graph-ts": "0.18.1",
-    "@textile/hub": "^0.3.3",
+    "@textile/hub": "0.3.3",
     "@web3api/client-js": "0.0.1-prealpha.1",
     "@web3api/client-test-env": "0.0.1-prealpha.1",
     "assemblyscript": "0.14.7",
     "axios": "0.19.2",
-    "chalk": "^4.1.0",
+    "chalk": "4.1.0",
     "fs-extra": "9.0.1",
-    "gluegun": "^4.3.1",
+    "gluegun": "4.3.1",
     "ipfs-http-client": "45.0.0",
     "js-yaml": "3.14.0",
     "spawn-command": "0.0.2-1",
-    "ws": "^7.3.1"
+    "ws": "7.3.1"
   },
   "devDependencies": {
-    "@types/node": "^12.6.9",
-    "typescript": "^3.9.6",
+    "@types/node": "12.6.9",
+    "typescript": "3.9.6",
     "rimraf": "3.0.2"
   },
   "optionalDependencies": {
-    "keytar": "^5.0.1"
+    "keytar": "5.0.1"
   }
 }

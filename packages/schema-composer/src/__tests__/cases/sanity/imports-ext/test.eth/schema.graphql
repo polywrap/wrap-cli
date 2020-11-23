@@ -19,60 +19,10 @@ directive @imported(
 directive @imports(
   types: [String!]!
 ) on OBJECT
+
 ### Web3API Header END ###
 
-#import { Query, CustomType } into Namespace from "test.eth"
-#import { CommonType } from "../imports-local/common.graphql"
-
-type Query @imports(
-  types: [
-    "Namespace_Query",
-    "Namespace_CustomType"
-  ]
-) {
-  method1(
-    str: String!
-    optStr: String
-    u: UInt!
-    uArrayArray: [[UInt]]!
-  ): String!
-
-  method2(
-    arg: [String!]!
-  ): [Int64!]!
-}
-
-type CustomQueryType {
-  str: String!
-  optStr: String
-  u: UInt!
-  optU: UInt
-  u8: UInt8!
-  u64: UInt64!
-  i: Int!
-  i8: Int8!
-  i64: Int64!
-  uArray: [UInt!]!
-  uOptArray: [UInt!]
-  optStrOptArray: [String]
-  crazyArray: [[[[UInt64!]]!]]
-}
-
-type AnotherQueryType {
-  prop: String
-}
-
-type CommonType {
-  prop: UInt8!
-}
-
-### Imported Queries START ###
-
-type Namespace_Query @imported(
-  namespace: "Namespace",
-  uri: "test.eth",
-  type: "Query"
-) {
+type Query {
   method1(
     str: String!
     optStr: String
@@ -86,15 +36,21 @@ type Namespace_Query @imported(
   ): [Int64!]!
 }
 
-### Imported Queries END ###
+type Mutation {
+  method1(
+    str: String!
+    optStr: String
+    u: UInt!
+    optU: UInt
+    uArrayArray: [[UInt]]!
+  ): String!
 
-### Imported Objects START ###
+  method2(
+    arg: [String!]!
+  ): [Int64!]!
+}
 
-type Namespace_CustomType @imported(
-  namespace: "Namespace",
-  uri: "test.eth",
-  type: "CustomType"
-) {
+type CustomType {
   str: String!
   optStr: String
   u: UInt!
@@ -117,5 +73,3 @@ type Namespace_CustomType @imported(
   uArrayOptArrayArray: [[[UInt64!]!]]!
   crazyArray: [[[[UInt64!]]!]]
 }
-
-### Imported Objects END ###

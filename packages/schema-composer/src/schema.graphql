@@ -21,9 +21,6 @@ directive @imports(
 ) on OBJECT
 ### Web3API Header END ###
 
-#import { Query, CustomType } into Namespace from "test.eth"
-#import { CommonType } from "../imports-local/common.graphql"
-
 type Query @imports(
   types: [
     "Namespace_Query",
@@ -62,6 +59,45 @@ type AnotherQueryType {
   prop: String
 }
 
+type Mutation @imports(
+  types: [
+    "Namespace_Query",
+    "Namespace_Mutation",
+    "Namespace_CustomType"
+  ]
+) {
+  method1(
+    str: String!
+    optStr: String
+    u: UInt!
+    uArrayArray: [[UInt]]!
+  ): String!
+
+  method2(
+    arg: [String!]!
+  ): [Int64!]!
+}
+
+type CustomMutationType {
+  str: String!
+  optStr: String
+  u: UInt!
+  optU: UInt
+  u8: UInt8!
+  u64: UInt64!
+  i: Int!
+  i8: Int8!
+  i64: Int64!
+  uArray: [UInt!]!
+  uOptArray: [UInt!]
+  optStrOptArray: [String]
+  crazyArray: [[[[UInt64!]]!]]
+}
+
+type AnotherMutationType {
+  prop: String
+}
+
 type CommonType {
   prop: UInt8!
 }
@@ -72,6 +108,24 @@ type Namespace_Query @imported(
   namespace: "Namespace",
   uri: "test.eth",
   type: "Query"
+) {
+  method1(
+    str: String!
+    optStr: String
+    u: UInt!
+    optU: UInt
+    uArrayArray: [[UInt]]!
+  ): String!
+
+  method2(
+    arg: [String!]!
+  ): [Int64!]!
+}
+
+type Namespace_Mutation @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "Mutation"
 ) {
   method1(
     str: String!

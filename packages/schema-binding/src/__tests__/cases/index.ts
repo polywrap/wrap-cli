@@ -1,5 +1,5 @@
 import path from "path";
-import { readdirSync, readFileSync, Dirent } from 'fs'
+import { readdirSync, readFileSync, Dirent } from "fs";
 
 const root = path.join(__dirname, "./");
 

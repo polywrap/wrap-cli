@@ -51,12 +51,12 @@ export const toWasm: MustacheFunction = () => {
       case "UInt32": return applyNullable("u32", nullable);
       case "UInt64": return applyNullable("u64", nullable);
       case "String": return applyNullable("string", nullable);
-      default: return name;
+      default: return applyNullable(name, nullable);
     }
   }
 }
 
-const toWasmArray = (name: string, nullable: boolean) => {
+const toWasmArray = (name: string, nullable: boolean): string => {
   const result = name.match(/(\[)([?[\]A-Za-z1-9]+)(\])/);
 
   if (!result || result.length !== 4) {

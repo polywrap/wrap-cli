@@ -1,4 +1,4 @@
-const template =
+const template: string =
 `### Web3API Header START ###
 scalar UInt
 scalar UInt8
@@ -20,7 +20,6 @@ directive @imported(
 directive @imports(
   types: [String!]!
 ) on OBJECT
-
 ### Web3API Header END ###
 
 {{schema}}

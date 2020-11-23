@@ -1,0 +1,140 @@
+### Web3API Header START ###
+scalar UInt
+scalar UInt8
+scalar UInt16
+scalar UInt32
+scalar UInt64
+scalar Int
+scalar Int8
+scalar Int16
+scalar Int32
+scalar Int64
+
+directive @imported(
+  namespace: String!
+  uri: String!
+  type: String!
+) on OBJECT
+
+directive @imports(
+  types: [String!]!
+) on OBJECT
+### Web3API Header END ###
+
+#import { Query, Mutation, CustomType } into Namespace from "test.eth"
+#import { CommonType } from "../imports-local/common.graphql"
+
+type Mutation @imports(
+  types: [
+    "Namespace_Query",
+    "Namespace_Mutation",
+    "Namespace_CustomType"
+  ]
+) {
+  method1(
+    str: String!
+    optStr: String
+    u: UInt!
+    uArrayArray: [[UInt]]!
+  ): String!
+
+  method2(
+    arg: [String!]!
+  ): [Int64!]!
+}
+
+type CustomMutationType {
+  str: String!
+  optStr: String
+  u: UInt!
+  optU: UInt
+  u8: UInt8!
+  u64: UInt64!
+  i: Int!
+  i8: Int8!
+  i64: Int64!
+  uArray: [UInt!]!
+  uOptArray: [UInt!]
+  optStrOptArray: [String]
+  crazyArray: [[[[UInt64!]]!]]
+}
+
+type AnotherMutationType {
+  prop: String
+}
+
+type CommonType {
+  prop: UInt8!
+}
+
+### Imported Queries START ###
+
+type Namespace_Query @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "Query"
+) {
+  method1(
+    str: String!
+    optStr: String
+    u: UInt!
+    optU: UInt
+    uArrayArray: [[UInt]]!
+  ): String!
+
+  method2(
+    arg: [String!]!
+  ): [Int64!]!
+}
+
+type Namespace_Mutation @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "Mutation"
+) {
+  method1(
+    str: String!
+    optStr: String
+    u: UInt!
+    optU: UInt
+    uArrayArray: [[UInt]]!
+  ): String!
+
+  method2(
+    arg: [String!]!
+  ): [Int64!]!
+}
+
+### Imported Queries END ###
+
+### Imported Objects START ###
+
+type Namespace_CustomType @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "CustomType"
+) {
+  str: String!
+  optStr: String
+  u: UInt!
+  optU: UInt
+  u8: UInt8!
+  u16: UInt16!
+  u32: UInt32!
+  u64: UInt64!
+  i: Int!
+  i8: Int8!
+  i16: Int16!
+  i32: Int32!
+  i64: Int64!
+  uArray: [UInt!]!
+  uOptArray: [UInt!]
+  optUOptArray: [UInt]
+  optStrOptArray: [String]
+  uArrayArray: [[UInt!]!]!
+  uOptArrayOptArray: [[UInt64]]!
+  uArrayOptArrayArray: [[[UInt64!]!]]!
+  crazyArray: [[[[UInt64!]]!]]
+}
+
+### Imported Objects END ###
