@@ -4,7 +4,7 @@
   "license": "MIT",
   "main": "./assembly/index.ts",
   "scripts": {
-    "build": "asc ./assembly/index.ts --outFile ./build/index.wasm -d ./build/index.d.ts",
+    "build": "asc ./assembly/index.ts -o ./build/index.wasm -d ./build/index.d.ts",
     "test": "asp --verbose",
     "test:ci": "asp --summary"
   },

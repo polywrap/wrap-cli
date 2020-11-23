@@ -109,7 +109,7 @@ function generateFiles(subpath: string, config: any, subDirectories: boolean = f
           output.push({
             type: "File",
             name: name.replace('-', '.'),
-            data: Mustache.render(dirent.data, config, subTemplates)
+            data: Mustache.render(dirent.data as string, config, subTemplates)
           });
         }
       } else if (dirent.type === "Directory" && subDirectories) {

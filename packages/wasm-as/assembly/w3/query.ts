@@ -26,23 +26,23 @@ export function w3_query(
 ): ArrayBuffer {
   const uriBuf = String.UTF8.encode(uri);
   const queryBuf = String.UTF8.encode(query);
-  const result = __w3_query(
+  const success = __w3_query(
     changetype<i32>(uriBuf), uriBuf.byteLength,
     changetype<i32>(queryBuf), queryBuf.byteLength,
     changetype<i32>(args), args.byteLength
   );
 
-  if (!result) {
+  if (!success) {
     const errorLen = __w3_query_error_len();
     const messageBuf = new ArrayBuffer(changetype<i32>(errorLen));
     __w3_query_error(changetype<i32>(messageBuf));
-    const message = String.UTF8.decode(message);
+    const message = String.UTF8.decode(messageBuf);
     throw new Error(message);
   }
 
   const resultLen = __w3_query_result_len();
-  const result = new ArrayBuffer(changetype<i32>(resultLen));
-  __w3_query_result(changetype<i32>(result));
+  const resultBuffer = new ArrayBuffer(changetype<i32>(resultLen));
+  __w3_query_result(changetype<i32>(resultBuffer));
 
-  return result;
+  return resultBuffer;
 }

@@ -29,7 +29,7 @@ export function w3_call(name_size: usize, args_size: usize): bool {
   );
 
   const name = String.UTF8.decode(nameBuf);
-  const fn = calls.has(name) ? calls.get(name) : undefined;
+  const fn = calls.has(name) ? calls.get(name) : null;
   if (fn) {
     const result = fn(argsBuf);
     __w3_call_result(
