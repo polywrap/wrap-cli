@@ -177,8 +177,6 @@ function deserializeSanity(reader: Read, type: Sanity): void {
   }
 }
 
-// TODO: nullable (readNullable?), array, array of arrays
-
 describe("MsgPack: Sanity", () => {
   it("Serializes & Deserializes", () => {
     const input = new Sanity();

@@ -63,7 +63,8 @@ type Mutation @imports(
   types: [
     "Namespace_Query",
     "Namespace_Mutation",
-    "Namespace_CustomType"
+    "Namespace_CustomType",
+    "JustMutation_Mutation"
   ]
 ) {
   method1(
@@ -136,6 +137,16 @@ type Namespace_Mutation @imported(
   ): String!
 
   method2(
+    arg: [String!]!
+  ): [Int64!]!
+}
+
+type JustMutation_Mutation @imported(
+  namespace: "JustMutation",
+  uri: "just.mutation.eth",
+  type: "Mutation"
+) {
+  method(
     arg: [String!]!
   ): [Int64!]!
 }

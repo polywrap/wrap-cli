@@ -1,4 +1,4 @@
-import { TypeInfo, createTypeInfo } from "./typeInfo";
+import { TypeInfo, createTypeInfo, combineTypeInfo } from "./typeInfo";
 import { extractors, SchemaExtractor } from "./extract";
 import { TypeInfoTransforms, performTransforms } from "./transform";
 import { finalizePropertyDef } from "./transform/finalizePropertyDef";
@@ -6,7 +6,7 @@ import { finalizePropertyDef } from "./transform/finalizePropertyDef";
 import { printSchemaWithDirectives } from "graphql-tools";
 import { parse, buildSchema } from "graphql";
 
-export { TypeInfo };
+export { TypeInfo, combineTypeInfo };
 export * from "./transform";
 
 interface ParserOptions {

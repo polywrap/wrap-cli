@@ -1,4 +1,3 @@
-"""TODO: Use the graphql-composer to include the header"""
 scalar UInt
 scalar UInt8
 scalar UInt16

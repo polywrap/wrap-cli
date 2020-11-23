@@ -12,9 +12,6 @@ import {
 import {
   template as headerTemplate,
 } from "./templates/header.mustache";
-import {
-  template as schemaTemplate
-} from "./templates/schema.mustache";
 import * as Functions from "./templates/functions";
 
 import {
@@ -34,7 +31,10 @@ export function resolveImports(
   schemaPath: string,
   mutation: boolean,
   resolvers: SchemaResolvers
-): string {
+): {
+  schema: string,
+  typeInfo: TypeInfo
+} {
   const importKeywordCapture = /^[#]*["{3}]*import[ \n\t]/gm;
   const externalImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*into[ \n\t]*(\w+?)[ \n\t]*from[ \n\t]*[\"'`]([a-zA-Z0-9_.\/]+?)[\"'`]/g;
   const localImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*from[ \n\t]*[\"'`]([a-zA-Z0-9_~\-:.\/]+?)[\"'`]/g;
@@ -84,10 +84,10 @@ export function resolveImports(
     newSchema, externalImportsToResolve, mutation
   );
 
-  return addHeader(Mustache.render(schemaTemplate, {
+  return {
     schema: newSchema,
     typeInfo: subTypeInfo
-  })).replace(/[\n]{2,}/gm, '\n\n'); // Remove needless whitespace
+  };
 }
 
 function resolveExternalImports(
@@ -196,7 +196,7 @@ function resolveLocalImports(
   }
 }
 
-function addHeader(schema: string): string {
+export function addHeader(schema: string): string {
   return Mustache.render(headerTemplate, { schema });
 }
 
