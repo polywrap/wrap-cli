@@ -21,9 +21,6 @@ directive @imports(
 ) on OBJECT
 ### Web3API Header END ###
 
-#import { Query, CustomType } into Namespace from "test.eth"
-#import { CommonType } from "../imports-local/common.graphql"
-
 type Query @imports(
   types: [
     "Namespace_Query",

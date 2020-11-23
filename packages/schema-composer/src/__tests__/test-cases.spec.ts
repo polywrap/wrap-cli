@@ -12,5 +12,3 @@ describe("Web3API Schema Composer Test Cases", () => {
     });
   }
 });
-
-// TODO: make sure importing a dependencies dependency works
