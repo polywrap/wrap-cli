@@ -10,20 +10,6 @@ export interface SchemaResolvers {
   local: SchemaResolver;
 }
 
-export interface ComposerOptions {
-  schemas: {
-    query?: SchemaFile;
-    mutation?: SchemaFile;
-  },
-  resolvers: SchemaResolvers;
-}
-
-export interface ComposerOutput {
-  query?: string;
-  mutation?: string;
-  combined?: string;
-}
-
 export interface ExternalImport {
   importedTypes: string[];
   namespace: string;

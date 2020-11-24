@@ -19,7 +19,7 @@ x Layout the folder structure
 x Refactor the MsgPack AS implementation to be simpler
 - Integrate code-gen into the CLI
 - Create an e2e test, requiring the rest of the pipeline to be implemented
-- Define standard for invoking methods inside module, and invoking methods outside
+x Define standard for invoking methods inside module, and invoking methods outside
 
 ## Client
 1. Re-create the WasmWorker: marshal on the thread, send Javascript objects to/from main, marshal into module

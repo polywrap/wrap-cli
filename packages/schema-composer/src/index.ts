@@ -1,6 +1,6 @@
 import {
-  ComposerOptions,
-  ComposerOutput
+  SchemaFile,
+  SchemaResolvers
 } from "./types";
 import {
   resolveImports,
@@ -14,15 +14,24 @@ import Mustache from "mustache";
 import {
   TypeInfo,
   combineTypeInfo
-} from "@web3api/schema-parser/build";
+} from "@web3api/schema-parser";
 
 // Remove mustache's built-in HTML escaping
 Mustache.escape = (value) => value;
 
-export {
-  ComposerOptions,
-  ComposerOutput
-};
+export interface ComposerOptions {
+  schemas: {
+    query?: SchemaFile;
+    mutation?: SchemaFile;
+  },
+  resolvers: SchemaResolvers;
+}
+
+export interface ComposerOutput {
+  query?: string;
+  mutation?: string;
+  combined?: string;
+}
 
 export function composeSchema(
   options: ComposerOptions

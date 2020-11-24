@@ -1,5 +1,3 @@
-#!import { Mutation } into Ethereum from "ethereum.web3api.eth"
-
 type Mutation {
   setData(
     address: String!
