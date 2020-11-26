@@ -1,0 +1,6 @@
+description: Graph Node Web3API
+repository: https://github.com/web3-api/prototype
+abstract: true
+query:
+  schema:
+    file: ./query.graphql

@@ -1,7 +1,7 @@
 import { EthereumPlugin } from "./";
 
 export const Mutation = (ethereum: EthereumPlugin) => ({
-  sendTransaction: async (input: { address: string, method: string, args: string[]}) => {
+  sendTransaction: async (input: { address: string, method: string, args: string[] }) => {
     return ethereum.sendTransaction(
       input.address,
       input.method,

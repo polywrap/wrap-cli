@@ -14,6 +14,8 @@
   "dependencies": {
     "@assemblyscript/loader": "0.14.1",
     "@msgpack/msgpack": "2.3.0",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.1",
+    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.1",
     "@web3api/wasm-as": "0.0.1-prealpha.1",
     "graphql": "15.3.0",
     "graphql-tag": "2.10.4",

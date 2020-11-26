@@ -1,6 +1,6 @@
 import { Query } from "./schema";
 
-import { Web3APIClientPlugin, Resolvers } from "@web3api/client-js-plugin";
+import { Web3APIClientPlugin, Resolvers } from "@web3api/client-js";
 import { execute, makePromise } from "apollo-link";
 import { createHttpLink } from "apollo-link-http";
 import fetch from "cross-fetch";
@@ -13,16 +13,6 @@ export interface GraphNodeConfig {
 export class GraphNodePlugin extends Web3APIClientPlugin {
   constructor(private _config: GraphNodeConfig) {
     super();
-  }
-
-  public getUris(): RegExp[] {
-    return [
-      // Matches: graphnode.eth
-      // Matches: api.graphnode.web3api.eth
-      /(.*[\.])?graphnode[\.].*/,
-      // Matches: w3://graphnode
-      /w3:\/\/graphnode/
-    ];
   }
 
   public getResolvers(): Resolvers {

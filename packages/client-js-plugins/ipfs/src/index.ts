@@ -1,6 +1,6 @@
 import { Query, Mutation } from "./schema";
 
-import { Web3APIClientPlugin, Resolvers } from "@web3api/client-js-plugin";
+import { Web3APIClientPlugin, Resolvers } from "@web3api/client-js";
 import CID from "cids";
 
 const isIPFS = require("is-ipfs");
@@ -18,16 +18,6 @@ export class IpfsPlugin extends Web3APIClientPlugin {
   constructor(private _config: IpfsConfig) {
     super();
     this.setProvider(_config.provider);
-  }
-
-  public getUris(): RegExp[] {
-    return [
-      // Matches: ipfs.eth
-      // Matches: api.ipfs.web3api.eth
-      /(.*[\.])?ipfs[\.].*/,
-      // Matches: w3://ipfs
-      /w3:\/\/ipfs/
-    ];
   }
 
   public getResolvers(): Resolvers {

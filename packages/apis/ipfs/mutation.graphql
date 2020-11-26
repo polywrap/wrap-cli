@@ -3,11 +3,7 @@ type Mutation {
   addFile(data: Bytes!): AddResult!
 }
 
-type Query {
-  catFile(cid: String!): Bytes!
-}
-
-interface AddResult {
+type AddResult {
   path: String!
   cid: String!
 }

@@ -10,11 +10,3 @@ type Mutation {
     bytecode: String!
   ): String!
 }
-
-type Query {
-  callView(
-    address: String!
-    method: String!
-    args: [String!]!
-  ): String!
-}

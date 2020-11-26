@@ -1,3 +1,5 @@
+export * from "./core";
+
 export interface ExecuteOptions {
   module: "query" | "mutation";
   method: string;
@@ -17,11 +19,11 @@ export abstract class Web3Api {
   ): Promise<ExecuteResult>;
 }
 
-export class Web3ApiPlugin extends Web3Api {
+export class PluginWeb3Api extends Web3Api {
 
 }
 
-export class Web3ApiWasm extends Web3Api {
+export class WasmWeb3Api extends Web3Api {
 
 }
 

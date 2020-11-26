@@ -8,13 +8,18 @@ import {
   Web3Api,
   Web3ApiCache,
   fetchWeb3Api,
-  addCorePlugins
+  getCorePluginRedirects
 } from "./web3api";
 import { Web3ApiClientPlugin } from "./plugin";
 
-// TODO: accept additional URIs along with each plugin
+export interface UriRedirect {
+  from: string | RegExp;
+  to: string | (() => Web3ApiClientPlugin);
+}
+
 export interface ClientConfig {
-  plugins: Web3ApiClientPlugin[]
+  redirects: UriRedirect[],
+  env?: () => Record<string, any>
 }
 
 export interface QueryOptions {
@@ -28,8 +33,14 @@ export class Web3ApiClient {
   private _apiCache = new Web3ApiCache();
 
   constructor(private _config: ClientConfig) {
+    const { redirects, env } = this._config;
+
     // Add all core plugins
-    this._config.plugins = addCorePlugins(this._config.plugins);
+    redirects.push(
+      ...getCorePluginRedirects(
+        env || (() => ({ }))
+      )
+    );
   }
 
   public async query(options: QueryOptions): Promise<QueryResult> {
@@ -60,7 +71,7 @@ export class Web3ApiClient {
 
     if (!api) {
       api = await fetchWeb3Api(
-        uri, this._config.plugins
+        uri, this._config.redirects
       );
 
       if (!api) {

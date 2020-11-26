@@ -4,7 +4,7 @@ import { Signer, ethers } from "ethers";
 import { ExternalProvider, JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import { Base58 } from "@ethersproject/basex";
 import { getAddress } from "@ethersproject/address";
-import { Web3APIClientPlugin, Resolvers } from "@web3api/client-js-plugin";
+import { Web3APIClientPlugin, Resolvers } from "@web3api/client-js";
 
 export type Address = string;
 export type AccountIndex = number;
@@ -34,17 +34,6 @@ export class EthereumPlugin extends Web3APIClientPlugin {
     if (ens) {
       this.setENS(ens);
     }
-  }
-
-  public getUris(): RegExp[] {
-    return [
-      // Matches: ethereum.eth
-      // Matches: ethereum.web3api.eth
-      // Matches: api.ethereum.web3api.eth
-      /(.*[\.])?ethereum[\.].*/,
-      // Matches: w3://ethereum
-      /w3:\/\/ethereum/
-    ];
   }
 
   public getResolvers(): Resolvers {

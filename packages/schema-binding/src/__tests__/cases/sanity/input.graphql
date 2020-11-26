@@ -55,6 +55,8 @@ type Query @imports(
   ): Int!
 }
 
+#import { Query } into TestImport from "testimport.uri.eth"
+
 type TestImport_Query @imported(
   namespace: "TestImport",
   uri: "testimport.uri.eth",

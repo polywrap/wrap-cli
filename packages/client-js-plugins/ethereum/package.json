@@ -9,7 +9,7 @@
     "test:watch": "WORKER_ENV=test jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@web3api/client-js-plugin": "0.0.1-prealpha.1",
+    "@web3api/client-js": "0.0.1-prealpha.1",
     "ethers": "5.0.7"
   },
   "devDependencies": {

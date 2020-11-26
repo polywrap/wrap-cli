@@ -12,5 +12,4 @@ export interface Resolvers {
 
 export abstract class Web3ApiClientPlugin {
   abstract getResolvers(): Resolvers;
-  abstract getUris(): RegExp[];
 }

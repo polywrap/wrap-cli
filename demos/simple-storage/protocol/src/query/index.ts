@@ -1,7 +1,7 @@
-import { Ethereum } from '@web3api/wasm-as'
+import { Ethereum_Query, IPFS_Mutation } from 'w3/imported'
 
 export function getData(address: string): u32 {
-  const res = Ethereum.callView(
+  const res = Ethereum_Query.callView(
     address,
     'function get() view returns (uint256)',
     ""
