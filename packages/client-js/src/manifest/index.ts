@@ -1,3 +1,3 @@
 export * from "./migrator";
 export * from "./validator";
-export { Manifest, latestVersion } from "./versions";
+export { Manifest, latestFormat } from "./formats";

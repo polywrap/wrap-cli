@@ -20,8 +20,8 @@ import {
   ModulePath
 } from "./lib/types";
 import { WasmWorker } from "./lib/wasm-worker";
-import { AnyManifest, Manifest } from "./manifest/versions"
-import { ManifestVersions, upgradeManifest, latestVersion } from "./manifest";
+import { AnyManifest, Manifest } from "./manifest/formats"
+import { ManifestFormats, upgradeManifest, latestFormat } from "./manifest";
 
 export interface IPortals {
   ipfs: IPFS;
@@ -113,8 +113,8 @@ export class Web3API {
         }
 
         const currentManifest: AnyManifest = this._manifest;
-        if (compare(latestVersion, currentManifest.version) === -1) {
-          this._manifest = upgradeManifest(currentManifest, latestVersion as ManifestVersions)
+        if (compare(latestFormat, currentManifest.format) === -1) {
+          this._manifest = upgradeManifest(currentManifest, latestFormat as ManifestFormats);
         }
 
         return this._manifest;

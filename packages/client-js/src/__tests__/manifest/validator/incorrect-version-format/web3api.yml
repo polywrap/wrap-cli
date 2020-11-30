@@ -1,4 +1,4 @@
-version: "BAD_FORMAT_VERSION"
+format: "BAD_FORMAT_VERSION"
 mutation:
   schema:
     file: ../schema.graphql

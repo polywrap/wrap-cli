@@ -4,18 +4,18 @@ import YAML from "js-yaml";
 import {
   sanitizeAndUpgrade,
   upgradeManifest,
-  ManifestVersions,
+  ManifestFormats,
 } from "../manifest";
-import { Manifest } from "../manifest/versions/0.0.1-alpha.1";
+import { Manifest } from "../manifest/formats/0.0.1-alpha.1";
 
 describe("Validate web3api manifest ", () => {
   it("Should throw file string does not exist error ", async () => {
     const manifestPath =
-      __dirname + "/manifest/validator/file-string-doesnt-exist/web3api.yml";
+      __dirname + "/manifest/validator/file-string-malformed/web3api.yml";
     const manifest = YAML.safeLoad(fs.readFileSync(manifestPath, "utf-8"));
 
     expect(() => sanitizeAndUpgrade(manifest as Manifest)).toThrowError(
-      /a file that does not exists/
+      /is not a valid file path. Please use unix style relative paths./
     );
   });
   it("Should throw incorrect version format error ", async () => {
@@ -24,7 +24,7 @@ describe("Validate web3api manifest ", () => {
     const manifest = YAML.safeLoad(fs.readFileSync(manifestPath, "utf-8"));
 
     expect(() => sanitizeAndUpgrade(manifest as Manifest)).toThrowError(
-      /Version format it's not correct/
+      /The manifest's format is not correct./
     );
   });
   it("Should throw not accepted field error ", async () => {
@@ -58,16 +58,16 @@ describe("Validate web3api manifest ", () => {
 describe("Manifest migration ", () => {
   it("Should upgrade 0.0.1-alpha.1 to 0.0.1-alpha.2 ", () => {
     const manifestPath =
-      __dirname + "/manifest/migrator/version-0.0.1-alpha.1/web3api.yml";
+      __dirname + "/manifest/migrator/format-0.0.1-alpha.1/web3api.yml";
     const newManifestPath =
-      __dirname + "/manifest/migrator/version-0.0.1-alpha.2/web3api.yml";
+      __dirname + "/manifest/migrator/format-0.0.1-alpha.2/web3api.yml";
     const manifest = YAML.safeLoad(
       fs.readFileSync(manifestPath, "utf-8")
     ) as Manifest;
 
     const manifestGenerated = upgradeManifest(
       manifest,
-      "0.0.1-alpha.2" as ManifestVersions
+      "0.0.1-alpha.2" as ManifestFormats
     );
     const newManifest = YAML.safeLoad(
       fs.readFileSync(newManifestPath, "utf-8")
@@ -76,36 +76,36 @@ describe("Manifest migration ", () => {
     expect(manifestGenerated).toEqual(newManifest);
   });
 
-  it("Should throw error because is unrecognized version ", () => {
+  it("Should throw error because is unrecognized format ", () => {
     const manifestPath =
-      __dirname + "/manifest/migrator/unrecognized-version/web3api.yml";
+      __dirname + "/manifest/migrator/unrecognized-format/web3api.yml";
     const manifest = YAML.safeLoad(
       fs.readFileSync(manifestPath, "utf-8")
     ) as Manifest;
     expect(() =>
-      upgradeManifest(manifest, "0.0.1-alpha.2" as ManifestVersions)
-    ).toThrowError(/Unrecognized manifest version/);
+      upgradeManifest(manifest, "0.0.1-alpha.2" as ManifestFormats)
+    ).toThrowError(/Unrecognized manifest format/);
   });
 
-  it("Should throw error because is from version does not has migrator ", () => {
+  it("Should throw error because the from format does not have a migrator", () => {
     const manifestPath =
-      __dirname + "/manifest/migrator/version-0.0.1-alpha.2/web3api.yml";
+      __dirname + "/manifest/migrator/format-0.0.1-alpha.2/web3api.yml";
     const manifest = YAML.safeLoad(
       fs.readFileSync(manifestPath, "utf-8")
     ) as Manifest;
     expect(() =>
-      upgradeManifest(manifest, "0.0.1-alpha.3" as ManifestVersions)
-    ).toThrowError(/From version 0.0.1-alpha.2 migrator does not exists/);
+      upgradeManifest(manifest, "0.0.1-alpha.3" as ManifestFormats)
+    ).toThrowError(/From format 0.0.1-alpha.2 migrator does not exists/);
   });
 
-  it("Should throw error because to version does not exists in migrator ", () => {
+  it("Should throw error because to format does not exists in the migrator", () => {
     const manifestPath =
-      __dirname + "/manifest/migrator/version-0.0.1-alpha.1/web3api.yml";
+      __dirname + "/manifest/migrator/format-0.0.1-alpha.1/web3api.yml";
     const manifest = YAML.safeLoad(
       fs.readFileSync(manifestPath, "utf-8")
     ) as Manifest;
     expect(() =>
-      upgradeManifest(manifest, "0.0.1-alpha.3" as ManifestVersions)
-    ).toThrowError(/Version to update 0.0.1-alpha.3 is not available in migrator of version 0.0.1-alpha.1/);
+      upgradeManifest(manifest, "0.0.1-alpha.3" as ManifestFormats)
+    ).toThrowError(/Format to update 0.0.1-alpha.3 is not available in migrator of format 0.0.1-alpha.1/);
   });
 });

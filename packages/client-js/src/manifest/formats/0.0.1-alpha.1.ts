@@ -6,9 +6,9 @@
  */
 
 export interface Manifest {
+  format: string;
   description?: string;
   repository?: string;
-  version: string;
   query?: {
     schema: {
       file: string;

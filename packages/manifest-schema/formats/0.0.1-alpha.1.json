@@ -2,18 +2,18 @@
   "manifest": {
     "id": "Manifest",
     "type": "object",
-    "required": ["version"],
+    "required": ["format"],
     "additionalProperties": false,
     "properties": {
+      "format": {
+        "type": "string",
+        "format": "manifestFormat"
+      },
       "description": {
         "type": "string"
       },
       "repository": {
         "type": "string"
-      },
-      "version": {
-        "type": "string",
-        "format": "version"
       },
       "query": {
         "additionalProperties": false,

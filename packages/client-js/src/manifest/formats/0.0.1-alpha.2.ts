@@ -6,7 +6,7 @@
  */
 
 export interface Manifest {
-  version: string;
+  format: string;
   description?: string;
   api: {
     schemas?: {

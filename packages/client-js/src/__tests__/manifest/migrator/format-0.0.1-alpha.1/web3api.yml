@@ -1,5 +1,5 @@
 description: Awesome Web3API project
-version: "0.0.1-alpha.1"
+format: "0.0.1-alpha.1"
 mutation:
   schema:
     file: ../mutation/schema.graphql

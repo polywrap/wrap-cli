@@ -1,7 +1,7 @@
-version: "0.0.1-alpha.1"
+format: "0.0.1-alpha.1"
 mutation:
   schema:
-    file: ../schema.graphql
+    file: .../schema.graphql
   module:
     language: wasm/assemblyscript
     file: ../query-file.ts

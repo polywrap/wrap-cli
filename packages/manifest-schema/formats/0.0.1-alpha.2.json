@@ -2,12 +2,12 @@
   "manifest": {
     "id": "Manifest",
     "type": "object",
-    "required": ["version", "api"],
+    "required": ["format", "api"],
     "additionalProperties": false,
     "properties": {
-      "version": {
+      "format": {
         "type": "string",
-        "format": "version"
+        "format": "manifestFormat"
       },
       "description": {
         "type": "string"
