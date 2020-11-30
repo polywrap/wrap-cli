@@ -3,7 +3,7 @@ import { Web3ApiClient } from "./";
 export type Resolver = (
   input: Record<string, any>,
   client: Web3ApiClient
-) => Record<string, any>;
+) => Promise<Record<string, any>>;
 
 export interface Resolvers {
   Query: Record<string, Resolver>;

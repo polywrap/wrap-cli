@@ -103,7 +103,7 @@ export function extractExecuteOptions(
   return {
     module,
     method,
-    arguments: args,
+    input: args,
     results
   }
 }
