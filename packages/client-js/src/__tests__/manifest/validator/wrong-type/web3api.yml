@@ -1,0 +1,13 @@
+format: 456
+mutation:
+  schema:
+    file: ../schema.graphql
+  module:
+    language: wasm/assemblyscript
+    file: ../query-file.ts
+query:
+  schema:
+    file: ../schema.graphql
+  module:
+    language: wasm/assemblyscript
+    file: ./src/mutation-file.ts

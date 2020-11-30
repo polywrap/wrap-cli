@@ -1,21 +1,18 @@
-import { Manifest } from "./Manifest";
-
 import YAML from "js-yaml";
 import fs from "fs";
+import { sanitizeAndUpgrade, Manifest } from "@web3api/client-js";
 
 export class Web3API {
   public static load(manifestPath: string): Manifest {
-    const manifest = YAML.safeLoad(
+    let manifest = YAML.safeLoad(
       fs.readFileSync(manifestPath, "utf-8")
     ) as Manifest | undefined;
 
     if (!manifest) {
       throw Error(`Unable to parse manifest: ${manifestPath}`);
     }
-
-    // TODO: add validation
-    // - validate manifest structure
-    // - ensure everything exists
+  
+    manifest = sanitizeAndUpgrade(manifest)
 
     return manifest;
   }

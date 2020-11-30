@@ -1,0 +1,96 @@
+{
+  "manifest": {
+    "id": "Manifest",
+    "type": "object",
+    "required": ["format"],
+    "additionalProperties": false,
+    "properties": {
+      "format": {
+        "type": "string",
+        "format": "manifestFormat"
+      },
+      "description": {
+        "type": "string"
+      },
+      "repository": {
+        "type": "string"
+      },
+      "query": {
+        "additionalProperties": false,
+        "required": ["schema", "module"],
+        "properties": {
+          "schema": {
+            "type": ["object"],
+            "required": ["file"],
+            "additionalProperties": false,
+            "properties": {
+              "file": {
+                "type": "string",
+                "format": "file"
+              }
+            }
+          },
+          "module": {
+            "type": ["object"],
+            "required": ["file", "language"],
+            "additionalProperties": false,
+            "properties": {
+              "file": {
+                "type": "string",
+                "format": "file"
+              },
+              "language": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "mutation": {
+        "additionalProperties": false,
+        "required": ["schema", "module"],
+        "properties": {
+          "schema": {
+            "type": ["object"],
+            "required": ["file"],
+            "additionalProperties": false,
+            "properties": {
+              "file": {
+                "type": "string",
+                "format": "file"
+              }
+            }
+          },
+          "module": {
+            "type": ["object"],
+            "required": ["file", "language"],
+            "additionalProperties": false,
+            "properties": {
+              "file": {
+                "type": "string",
+                "format": "file"
+              },
+              "language": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "subgraph": {
+        "type": "object",
+        "required": ["file"],
+        "additionalProperties": false,
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "file"
+          },
+          "id": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

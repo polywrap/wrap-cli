@@ -20,7 +20,8 @@
     "noUnusedLocals": true,
     "module": "commonjs",
     "sourceMap": true,
-    "target": "es5"
+    "target": "es5",
+    "resolveJsonModule": true
   },
   "include": [
     "./src/**/*"

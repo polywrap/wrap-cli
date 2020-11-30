@@ -1,16 +1,14 @@
 import { Web3API } from "./Web3API";
-import { Manifest } from "./Manifest";
 import { runGraphCLI } from "./cli/graph-cli";
 import { displayPath } from "./helpers/path";
 import { step, withSpinner } from "./helpers/spinner";
 
+import { Manifest } from "@web3api/client-js";
+import * as asc from "assemblyscript/cli/asc";
 import fs from "fs";
 import path from "path";
-import YAML from "js-yaml";
-import * as asc from "assemblyscript/cli/asc";
 
 const fsExtra = require("fs-extra");
-const spawn = require("spawn-command");
 const toolbox = require("gluegun/toolbox");
 
 export interface ICompilerConfig {

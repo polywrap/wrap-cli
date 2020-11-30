@@ -1,3 +1,12 @@
+import { compare } from "semver";
+import {
+  buildSchema,
+  execute,
+  GraphQLSchema,
+  GraphQLObjectType
+} from "graphql";
+import YAML from "js-yaml";
+
 import {
   Ethereum,
   IPFS,
@@ -7,19 +16,11 @@ import { getHostImports } from "./host";
 import { isPromise } from "./lib/async";
 import {
   Query,
-  QueryResult,
-  Manifest,
-  ModulePath
+  QueryResult
 } from "./lib/types";
 import { WasmWorker } from "./lib/wasm-worker";
-
-import {
-  buildSchema,
-  execute,
-  GraphQLSchema,
-  GraphQLObjectType
-} from "graphql";
-import YAML from "js-yaml";
+import { AnyManifest, Manifest } from "./manifest/formats"
+import { ManifestFormats, upgradeManifest, latestFormat } from "./manifest";
 
 export interface IPortals {
   ipfs: IPFS;
@@ -102,12 +103,17 @@ export class Web3API {
       const { name, depth, type, path } = file;
 
       if (depth === 1 && type === "file" &&
-         (name === "web3api.yaml" || name === "web3apy.yml")) {
+         (name === "web3api.yaml" || name === "web3api.yml")) {
         const manifestStr = await portals.ipfs.catToString(path);
         this._manifest = YAML.safeLoad(manifestStr) as Manifest | undefined;
 
         if (this._manifest === undefined) {
           throw Error(`Unable to parse web3api.yaml\n${manifestStr}`);
+        }
+
+        const currentManifest: AnyManifest = this._manifest;
+        if (compare(latestFormat, currentManifest.format) === -1) {
+          this._manifest = upgradeManifest(currentManifest, latestFormat as ManifestFormats);
         }
 
         return this._manifest;
@@ -153,7 +159,7 @@ export class Web3API {
       }
 
       this._addResolvers(
-        manifest.mutation.module,
+        manifest.mutation.module.file,
         mutationType
       );
     }
@@ -164,7 +170,7 @@ export class Web3API {
       }
 
       this._addResolvers(
-        manifest.query.module,
+        manifest.query.module.file,
         queryType
       );
     }
@@ -228,7 +234,7 @@ export class Web3API {
     }*/
   }
 
-  private _addResolvers(module: ModulePath, schemaType: GraphQLObjectType<any, any>) {
+  private _addResolvers(modulePath: string, schemaType: GraphQLObjectType<any, any>) {
     const fields = schemaType.getFields();
     const fieldNames = Object.keys(fields);
 
@@ -240,7 +246,7 @@ export class Web3API {
 
         // Load the WASM source
         const wasm = await portals.ipfs.catToBuffer(
-          `${this._cid}/${module.file}`
+          `${this._cid}/${modulePath}`
         );
 
         // Instantiate it
