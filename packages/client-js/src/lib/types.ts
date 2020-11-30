@@ -9,14 +9,6 @@ export interface Query {
 
 export type QueryResult = ExecutionResult
 
-// TODO: remove me when this is automatically generated in the
-//       @web3api/manifest package based on the JSON-Schema
-//       Check: https://github.com/Web3-API/prototype/issues/60
-export interface ModulePath {
-  language: string;
-  file: string;
-}
-
 export interface ASMarshalUtil {
   UINT8ARRAY_ID: number
 }

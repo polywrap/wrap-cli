@@ -16,8 +16,7 @@ import { getHostImports } from "./host";
 import { isPromise } from "./lib/async";
 import {
   Query,
-  QueryResult,
-  ModulePath
+  QueryResult
 } from "./lib/types";
 import { WasmWorker } from "./lib/wasm-worker";
 import { AnyManifest, Manifest } from "./manifest/formats"
@@ -160,7 +159,7 @@ export class Web3API {
       }
 
       this._addResolvers(
-        manifest.mutation.module,
+        manifest.mutation.module.file,
         mutationType
       );
     }
@@ -171,7 +170,7 @@ export class Web3API {
       }
 
       this._addResolvers(
-        manifest.query.module,
+        manifest.query.module.file,
         queryType
       );
     }
@@ -235,7 +234,7 @@ export class Web3API {
     }*/
   }
 
-  private _addResolvers(module: ModulePath, schemaType: GraphQLObjectType<any, any>) {
+  private _addResolvers(modulePath: string, schemaType: GraphQLObjectType<any, any>) {
     const fields = schemaType.getFields();
     const fieldNames = Object.keys(fields);
 
@@ -247,7 +246,7 @@ export class Web3API {
 
         // Load the WASM source
         const wasm = await portals.ipfs.catToBuffer(
-          `${this._cid}/${module.file}`
+          `${this._cid}/${modulePath}`
         );
 
         // Instantiate it
