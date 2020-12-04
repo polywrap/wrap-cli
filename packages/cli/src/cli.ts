@@ -1,7 +1,7 @@
 import { build } from "gluegun";
 
 interface args {
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export const run = async (argv: args) => {
