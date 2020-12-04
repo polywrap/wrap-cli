@@ -3,6 +3,7 @@ import { print } from "gluegun";
 
 const requireKeytar = () => {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require("keytar");
   } catch (e) {
     throw new Error(

@@ -19,6 +19,8 @@
     "build:cli": "yarn workspace @web3api/cli build",
     "build:client-js": "yarn workspace @web3api/client-js build",
     "build:wasm-as": "yarn workspace @web3api/wasm-as build",
+    "lint:code": "lerna run lint:code",
+    "lint:code:ci": "lerna run --parallel lint:code",
     "test": "yarn test:wasm-as && yarn test:client-js",
     "test:wasm-as": "yarn workspace @web3api/wasm-as test",
     "test:client-js": "yarn workspace @web3api/client-js test",
@@ -28,6 +30,10 @@
   },
   "devDependencies": {
     "lerna": "3.22.1",
-    "rimraf": "3.0.2"
+    "rimraf": "3.0.2",
+    "@typescript-eslint/eslint-plugin": "^4.9.0",
+    "@typescript-eslint/parser": "^4.9.0",
+    "eslint": "^7.14.0",
+    "eslint-plugin-import": "^2.22.1",
   }
 }
