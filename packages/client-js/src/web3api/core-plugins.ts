@@ -2,24 +2,23 @@ import { UriRedirect } from "../client";
 import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
 
-export function getCorePluginRedirects(env: () => any): UriRedirect[] {
+export function getCorePluginRedirects(): UriRedirect[] {
+  // NOTE: These are high-level primitives for core plugins,
+  //       over time, we will further de-abstract these core plugins
   return [
     // IPFS is required for downloading Web3API packages
     {
       from: "ipfs.web3api.eth",
       to: () => new IpfsPlugin({
-        provider:
-          env()["ipfs.web3api.eth"]?.provider ||
-          "https://ipfs.infura.io"
+        provider: "https://ipfs.infura.io"
       })
     },
     // ENS is required for resolving domain to IPFS hashes
     {
       from: "ethereum.web3api.eth",
       to: () => new EthereumPlugin({
-        provider:
-          env()["ethereum.web3api.eth"]?.provider ||
-          "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6"
+        // TODO: move away from centralized gateway
+        provider: "https://eth-mainnet.gateway.pokt.network/v1/5fc677007c6654002ed13350"
       })
     }
   ]

@@ -3,25 +3,22 @@ import logo from './logo.svg';
 import './App.css';
 import gql from "graphql-tag";
 
-import {
-  Web3API,
-  Ethereum,
-  IPFS,
-  Subgraph
-} from "@web3api/client-js";
+import { Web3APIClient } from "@web3api/client-js";
 
 const client = new Web3APIClient({
-  resolvers: [
-    new Ethereum({ provider: (window as any).ethereum }),
-    new IPFS({ provider: "http://localhost:5001" }),
-    new Subgraph({ provider: "http://localhost:8020" })
+  redirects: [
+    {
+      from: "ethereum.web3api.eth",
+      to: new EthereumPlugin(window.ethereum)
+    }
   ]
-})
+});
 
+// Error: api.uniswap.eth requires an implementation for ethereum.web3api.eth, but none was found
 client.query({
-  uri: "simplestorage.eth",
+  uri: "api.uniswap.eth", // requires ethereum.web3api.eth
   query: gql`
-    mutation SetData($address: String!, $value: Int!) {
+    mutation {
       setData(
         address: $address
         value: $value
@@ -29,6 +26,18 @@ client.query({
     }
   `
 })
+
+
+
+
+
+
+
+
+
+
+
+
 
 function App() {
   return (

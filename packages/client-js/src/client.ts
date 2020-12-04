@@ -18,14 +18,13 @@ export interface UriRedirect {
 }
 
 export interface ClientConfig {
-  redirects: UriRedirect[],
-  env?: () => Record<string, any>
+  redirects: UriRedirect[]
 }
 
 export interface QueryOptions {
   uri: string;
   query: string | QueryDocument;
-  variables: Record<string, any>
+  variables?: Record<string, any>
 }
 
 export class Web3ApiClient {
@@ -33,17 +32,17 @@ export class Web3ApiClient {
   private _apiCache = new Web3ApiCache();
 
   constructor(private _config: ClientConfig) {
-    const { redirects, env } = this._config;
+    const { redirects } = this._config;
 
     // Add all core plugins
     redirects.push(
-      ...getCorePluginRedirects(
-        env || (() => ({ }))
-      )
+      ...getCorePluginRedirects()
     );
   }
 
-  public async query(options: QueryOptions): Promise<QueryResult> {
+  public async query<TData = Record<string, any>>(
+    options: QueryOptions
+  ): Promise<QueryResult<TData>> {
     try {
       const { uri, query, variables } = options;
       const api = await this.loadWeb3Api(uri);
@@ -71,7 +70,7 @@ export class Web3ApiClient {
 
     if (!api) {
       api = await fetchWeb3Api(
-        uri, this._config.redirects
+        uri, this._config.redirects, this
       );
 
       if (!api) {

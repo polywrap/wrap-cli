@@ -2,18 +2,18 @@ import { ExecuteOptions } from "../web3api"
 
 import {
   DocumentNode,
+  ExecutionResult,
   GraphQLError,
   SelectionSetNode,
-  ValueNode
+  ValueNode,
 } from "graphql";
 import gql from "graphql-tag";
 
 export type QueryDocument = DocumentNode;
 
-export type QueryResult<T> = {
-  data: T;
-  errors?: ReadonlyArray<GraphQLError>;
-}
+export type QueryResult<
+  TData = Record<string, any>
+> = ExecutionResult<TData>
 
 export function createQueryDocument(query: string): QueryDocument {
   return gql(query);
@@ -21,7 +21,7 @@ export function createQueryDocument(query: string): QueryDocument {
 
 export function extractExecuteOptions(
   doc: QueryDocument,
-  variables: Record<string, any>
+  variables?: Record<string, any>
 ): ExecuteOptions {
   if (doc.definitions.length === 0) {
     throw Error(
@@ -108,9 +108,14 @@ export function extractExecuteOptions(
   }
 }
 
-function extractValue(node: ValueNode, variables: Record<string, any>): any {
+function extractValue(node: ValueNode, variables?: Record<string, any>): any {
   if (node.kind === "Variable") {
     // Get the argument's value from the variables object
+    if (!variables) {
+      throw Error(
+        `Variables were not specified, tried to resolve variable from query. Name: ${node.name.value}\n`
+      );
+    }
     return variables[node.name.value];
   } else if (
     node.kind === "StringValue" ||
