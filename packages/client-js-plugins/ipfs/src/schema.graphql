@@ -1,3 +1,7 @@
+type Query {
+  catFile(cid: String!): Bytes!
+}
+
 type Mutation {
   """TODO: Allow for custom type CID"""
   addFile(data: Bytes!): AddResult!

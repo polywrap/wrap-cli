@@ -1,4 +1,4 @@
-description: Graph Node Web3API
+description: Web3API Resolver Standard
 repository: https://github.com/web3-api/prototype
 abstract: true
 query:

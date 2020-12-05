@@ -1,15 +1,18 @@
-import { Web3ApiClient } from "../client";
-import {
-  ExecuteOptions,
-  ExecuteResult
-} from "./execute";
+import { Web3ApiClient } from "../Web3ApiClient";
 
-export { Manifest } from "./manifest";
+export { Manifest } from "./Manifest";
 
-export {
-  ExecuteOptions,
-  ExecuteResult
-};
+export interface ExecuteOptions {
+  module: "query" | "mutation";
+  method: string;
+  input: Record<string, any>;
+  results?: Record<string, any>;
+}
+
+export interface ExecuteResult {
+  result: Record<string, any>;
+  error?: Error;
+}
 
 export abstract class Web3Api {
 
@@ -26,3 +29,6 @@ export class Web3ApiCache extends Map<string, Web3Api> { }
 // TODO: logging (client.logLevel === Log.Info && log.logInfo("message..."))
 // - logging used to verify call stacks of various client implementations
 // TODO: support lazy fetching of files within Web3Api class
+
+// TODO: client.sanitizeRedirects() -> iterate through all redirects, make sure we can resolve all of them (will call getImplementations...)
+// TODO: client.getImplementations(uri) -> iterate through all known Web3API's and find all implementations

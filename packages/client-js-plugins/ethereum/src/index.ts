@@ -1,10 +1,18 @@
 import { Query, Mutation } from "./schema";
 
+import {
+  QueryClient,
+  Web3ApiClientPlugin,
+  Resolvers
+} from "@web3api/client-js";
+
 import { Signer, ethers } from "ethers";
-import { ExternalProvider, JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
-import { Base58 } from "@ethersproject/basex";
+import {
+  ExternalProvider,
+  JsonRpcProvider,
+  Web3Provider
+} from "@ethersproject/providers";
 import { getAddress } from "@ethersproject/address";
-import { Web3APIClientPlugin, Resolvers } from "@web3api/client-js";
 
 export type Address = string;
 export type AccountIndex = number;
@@ -15,28 +23,25 @@ export type EthereumClient = JsonRpcProvider | Web3Provider;
 export interface EthereumConfig {
   provider: EthereumProvider;
   signer?: EthereumSigner;
-  ens?: Address;
 }
 
-export class EthereumPlugin extends Web3APIClientPlugin {
+export class EthereumPlugin extends Web3ApiClientPlugin {
 
   // @ts-ignore: initialized within setProvider
   private _client: EthereumClient;
 
   constructor(private _config: EthereumConfig) {
-    super();
-    const { provider, signer, ens } = _config;
+    super({
+      implements: ["ethereum.web3api.eth"]
+    });
+    const { provider, signer } = _config;
 
     // Sanitize Provider & Signer
     this.setProvider(provider, signer !== undefined ? signer : 0);
-
-    // Sanitize ENS address
-    if (ens) {
-      this.setENS(ens);
-    }
   }
 
-  public getResolvers(): Resolvers {
+  // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
+  public getResolvers(client: QueryClient): Resolvers {
     return {
       Query: Query(this),
       Mutation: Mutation(this)
@@ -73,10 +78,6 @@ export class EthereumPlugin extends Web3APIClientPlugin {
     } else {
       this._config.signer = signer;
     }
-  }
-
-  public setENS(ens: Address) {
-    this._config.ens = getAddress(ens);
   }
 
   public getSigner(): ethers.Signer {
@@ -120,52 +121,5 @@ export class EthereumPlugin extends Web3APIClientPlugin {
     const res = await tx.wait();
     // TODO: improve this
     return res.transactionHash;
-  }
-
-  // TODO: move this to ENS Web3API?
-  public async ensToCID(domain: string): Promise<string> {
-    const ensAddress = this._config.ens || "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
-    const ensAbi = [
-      "function resolver(bytes32 node) external view returns (address)"
-    ];
-    const resolverAbi = [
-      "function contenthash(bytes32 nodehash) view returns (bytes)",
-      "function content(bytes32 nodehash) view returns (bytes32)",
-    ];
-    const ensContract = this.getContract(ensAddress, ensAbi);
-    const domainNode = ethers.utils.namehash(domain);
-
-    // Get the node's resolver address
-    const resolverAddress = await ensContract.resolver(domainNode);
-
-    const resolverContract = this.getContract(resolverAddress, resolverAbi);
-
-    // Get the CID stored at this domain
-    let hash;
-    try {
-      hash = await resolverContract.contenthash(domainNode);
-    } catch (e) {
-      try {
-        // Fallback, contenthash doesn't exist, try content
-        hash = await resolverContract.content(domainNode);
-      } catch (err) {
-        // The resolver contract is unknown...
-        throw Error(`Incompatible resolver ABI at address ${resolverAddress}`);
-      }
-    }
-
-    if (hash === "0x") {
-      return ""
-    }
-
-    if (hash.substring(0, 10) === "0xe3010170" && ethers.utils.isHexString(hash, 38)) {
-      return Base58.encode(ethers.utils.hexDataSlice(hash, 4));
-    } else {
-      throw Error(`Unkown CID format, CID hash: ${hash}`);
-    }
-  }
-
-  public static isENSDomain(domain: string) {
-    return ethers.utils.isValidName(domain) && domain.indexOf('.eth') !== -1;
   }
 }

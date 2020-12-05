@@ -1,6 +1,7 @@
 import {
-  QueryDocument,
+  QueryArgs,
   QueryResult,
+  QueryClient,
   createQueryDocument,
   extractExecuteOptions
 } from "./graphql";
@@ -21,13 +22,7 @@ export interface ClientConfig {
   redirects: UriRedirect[]
 }
 
-export interface QueryOptions {
-  uri: string;
-  query: string | QueryDocument;
-  variables?: Record<string, any>
-}
-
-export class Web3ApiClient {
+export class Web3ApiClient implements QueryClient {
 
   private _apiCache = new Web3ApiCache();
 
@@ -40,11 +35,11 @@ export class Web3ApiClient {
     );
   }
 
-  public async query<TData = Record<string, any>>(
-    options: QueryOptions
+  public async query<TData = Record<string, unknown>>(
+    args: QueryArgs
   ): Promise<QueryResult<TData>> {
     try {
-      const { uri, query, variables } = options;
+      const { uri, query, variables } = args;
       const api = await this.loadWeb3Api(uri);
 
       // Convert the query string into a query document

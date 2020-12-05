@@ -1,0 +1,5 @@
+type Query {
+  getFile(
+    path: String!
+  ): Bytes # TODO: make Bytes a supported scalar
+}

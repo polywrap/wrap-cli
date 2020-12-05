@@ -3,7 +3,6 @@ import { ExecuteOptions } from "../web3api"
 import {
   DocumentNode,
   ExecutionResult,
-  GraphQLError,
   SelectionSetNode,
   ValueNode,
 } from "graphql";
@@ -11,9 +10,23 @@ import gql from "graphql-tag";
 
 export type QueryDocument = DocumentNode;
 
+export interface QueryArgs {
+  uri: string;
+  query: string | QueryDocument;
+  variables?: Record<string, unknown>
+}
+
 export type QueryResult<
-  TData = Record<string, any>
+  TData = Record<string, unknown>
 > = ExecutionResult<TData>
+
+export type QueryMethod<TData = Record<string, unknown>> = (
+  args: QueryArgs
+) => Promise<QueryResult<TData>>;
+
+export interface QueryClient {
+  query: QueryMethod;
+}
 
 export function createQueryDocument(query: string): QueryDocument {
   return gql(query);
@@ -21,7 +34,7 @@ export function createQueryDocument(query: string): QueryDocument {
 
 export function extractExecuteOptions(
   doc: QueryDocument,
-  variables?: Record<string, any>
+  variables?: Record<string, unknown>
 ): ExecuteOptions {
   if (doc.definitions.length === 0) {
     throw Error(
@@ -82,7 +95,7 @@ export function extractExecuteOptions(
 
   // Get all arguments
   const selectionArgs = selection.arguments;
-  let args: Record<string, any> = {};
+  let args: Record<string, unknown> = {};
 
   if (selectionArgs) {
     for (const arg of selectionArgs) {
@@ -94,7 +107,7 @@ export function extractExecuteOptions(
 
   // Get the results the query is asking for
   const selectionResults = selection.selectionSet;
-  let results: Record<string, any> = {};
+  let results: Record<string, unknown> = {};
 
   if (selectionResults) {
     results = extractSelections(selectionResults);
@@ -108,7 +121,7 @@ export function extractExecuteOptions(
   }
 }
 
-function extractValue(node: ValueNode, variables?: Record<string, any>): any {
+function extractValue(node: ValueNode, variables?: Record<string, unknown>): unknown {
   if (node.kind === "Variable") {
     // Get the argument's value from the variables object
     if (!variables) {
@@ -138,7 +151,7 @@ function extractValue(node: ValueNode, variables?: Record<string, any>): any {
     return result;
   } else if (node.kind === "ObjectValue") {
     const length = node.fields.length;
-    const result: Record<string, any> = { };
+    const result: Record<string, unknown> = { };
 
     for (let i = 0; i < length; ++i) {
       const field = node.fields[i];
@@ -151,8 +164,8 @@ function extractValue(node: ValueNode, variables?: Record<string, any>): any {
   }
 }
 
-function extractSelections(node: SelectionSetNode): Record<string, any> {
-  const result: Record<string, any> = {};
+function extractSelections(node: SelectionSetNode): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
 
   for (const selection of node.selections) {
     if (selection.kind !== "Field") {

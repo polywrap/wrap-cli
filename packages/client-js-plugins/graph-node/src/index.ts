@@ -15,6 +15,7 @@ export class GraphNodePlugin extends Web3APIClientPlugin {
     super();
   }
 
+  // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
   public getResolvers(): Resolvers {
     return {
       Query: Query(this),

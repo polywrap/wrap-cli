@@ -1,9 +1,6 @@
-description: IPFS Web3API
+description: URI Resolver Standard
 repository: https://github.com/web3-api/prototype
 abstract: true
-mutation:
-  schema:
-    file: ./mutation.graphql
 query:
   schema:
     file: ./query.graphql

@@ -24,4 +24,4 @@ export const Query = (ethereum: EthereumPlugin) => ({
       input.args
     );
   }
-})
+});

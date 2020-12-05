@@ -1,15 +1,3 @@
-export interface ExecuteOptions {
-  module: "query" | "mutation";
-  method: string;
-  input: Record<string, any>;
-  results?: Record<string, any>;
-}
-
-export interface ExecuteResult {
-  result: Record<string, any>;
-  error?: Error;
-}
-
 export function filterExecuteResult(result: Record<string, any>, filter: Record<string, any>): Record<string, any> {
   const filtered: Record<string, any> = { };
 

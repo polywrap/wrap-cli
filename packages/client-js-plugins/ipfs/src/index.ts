@@ -1,6 +1,11 @@
-import { Query, Mutation } from "./schema";
+import { Query, Mutation } from "./resolvers";
 
-import { Web3APIClientPlugin, Resolvers } from "@web3api/client-js";
+import {
+  Web3ApiClient,
+  Web3APIClientPlugin,
+  Resolvers
+} from "@web3api/client-js";
+
 import CID from "cids";
 
 const isIPFS = require("is-ipfs");
@@ -16,11 +21,18 @@ export class IpfsPlugin extends Web3APIClientPlugin {
   private _ipfs: IpfsClient;
 
   constructor(private _config: IpfsConfig) {
-    super();
+    super({
+      implements: [
+        "ipfs.web3api.eth",
+        "uri-resolver.core.web3api.eth",
+        "api-resolver.core.web3api.eth"
+      ]
+    });
     this.setProvider(_config.provider);
   }
 
-  public getResolvers(): Resolvers {
+  // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
+  public getResolvers(client: Web3ApiClient): Resolvers {
     return {
       Query: Query(this),
       Mutation: Mutation(this)

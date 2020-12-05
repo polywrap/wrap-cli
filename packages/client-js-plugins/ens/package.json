@@ -1,0 +1,23 @@
+{
+  "name": "@web3api/ens-plugin-js",
+  "version": "0.0.1-prealpha.1",
+  "license": "MIT",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "rimraf ./build && tsc",
+    "test": "WORKER_ENV=test jest --passWithNoTests --runInBand --verbose",
+    "test:watch": "WORKER_ENV=test jest --watch --passWithNoTests --verbose"
+  },
+  "dependencies": {
+    "@web3api/client-js": "0.0.1-prealpha.1",
+    "ethers": "5.0.7"
+  },
+  "devDependencies": {
+    "@types/jest": "26.0.8",
+    "jest": "26.2.2",
+    "rimraf": "3.0.2",
+    "ts-jest": "26.1.4",
+    "ts-node": "8.10.2",
+    "typescript": "3.9.7"
+  }
+}
