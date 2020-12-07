@@ -8,14 +8,17 @@ import {
 import {
   Web3Api,
   Web3ApiCache,
-  fetchWeb3Api,
+  resolveWeb3Api,
   getCorePluginRedirects
 } from "./web3api";
-import { Web3ApiClientPlugin } from "./plugin";
+import {
+  Uri,
+  Web3ApiPlugin
+} from "./";
 
 export interface UriRedirect {
-  from: string | RegExp;
-  to: string | (() => Web3ApiClientPlugin);
+  from: Uri | RegExp;
+  to: Uri | (() => Web3ApiPlugin);
 }
 
 export interface ClientConfig {
@@ -35,8 +38,11 @@ export class Web3ApiClient implements QueryClient {
     );
   }
 
-  public async query<TData = Record<string, unknown>>(
-    args: QueryArgs
+  public async query<
+    TData extends Record<string, unknown> = Record<string, unknown>,
+    TVariables extends Record<string, unknown> = Record<string, unknown>
+  >(
+    args: QueryArgs<TVariables>
   ): Promise<QueryResult<TData>> {
     try {
       const { uri, query, variables } = args;
@@ -54,17 +60,17 @@ export class Web3ApiClient implements QueryClient {
       );
 
       // Execute the query
-      return api.execute(executeOptions, this);
+      return await api.execute<TData>(executeOptions, this);
     } catch (error) {
-      return { error };
+      return { errors: error };
     }
   }
 
-  private async loadWeb3Api(uri: string): Promise<Web3Api> {
-    let api = this._apiCache.get(uri);
+  private async loadWeb3Api(uri: Uri): Promise<Web3Api> {
+    let api = this._apiCache.get(uri.uri);
 
     if (!api) {
-      api = await fetchWeb3Api(
+      api = await resolveWeb3Api(
         uri, this._config.redirects, this
       );
 
@@ -72,7 +78,7 @@ export class Web3ApiClient implements QueryClient {
         throw Error(`Unable to resolve Web3API at uri: ${uri}`);
       }
 
-      this._apiCache.set(uri, api);
+      this._apiCache.set(uri.uri, api);
     }
 
     return api;

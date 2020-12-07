@@ -1,9 +1,10 @@
-import { Query, Mutation } from "./schema";
+import { Query, Mutation } from "./resolvers";
 
 import {
+  Uri,
+  Resolvers,
   QueryClient,
-  Web3ApiClientPlugin,
-  Resolvers
+  Web3ApiPlugin
 } from "@web3api/client-js";
 
 import { ethers } from "ethers";
@@ -16,12 +17,12 @@ export interface EnsConfig {
   address?: Address;
 }
 
-export class EnsPlugin extends Web3ApiClientPlugin {
+export class EnsPlugin extends Web3ApiPlugin {
 
   constructor(private _config: EnsConfig) {
     super({
-      import: ["ethereum.web3api.eth"],
-      implement: ["uri-resolver.core.web3api.eth"]
+      import: [new Uri("ens://ethereum.web3api.eth"],
+      implement: [new Uri("ens://uri-resolver.core.web3api.eth")]
     });
 
     // Sanitize address
@@ -51,11 +52,15 @@ export class EnsPlugin extends Web3ApiClientPlugin {
       contenthash: "function contenthash(bytes32 nodehash) view returns (bytes)",
       content: "function content(bytes32 nodehash) view returns (bytes32)"
     };
+
+    // Remove the ENS URI scheme
+    domain = domain.replace("ens://", "");
+
     const domainNode = ethers.utils.namehash(domain);
 
     const callView = async (address: string, method: string, args: string[]): Promise<string> => {
       const { data } = await client.query({
-        uri: "ethereum.web3api.eth",
+        uri: new Uri("ens://ethereum.web3api.eth"),
         query: `query {
           callView(
             address: "${address}",

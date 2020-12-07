@@ -1,0 +1,1 @@
+TODO: remove the (client-js <> client-js-plugins) circular dependency by allowing the plugins to build directly from the core. client-js will consume the core + the required client-js-plugins

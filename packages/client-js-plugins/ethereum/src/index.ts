@@ -1,8 +1,8 @@
-import { Query, Mutation } from "./schema";
+import { Query, Mutation } from "./resolvers";
 
 import {
   QueryClient,
-  Web3ApiClientPlugin,
+  Web3ApiPlugin,
   Resolvers
 } from "@web3api/client-js";
 
@@ -25,14 +25,14 @@ export interface EthereumConfig {
   signer?: EthereumSigner;
 }
 
-export class EthereumPlugin extends Web3ApiClientPlugin {
+export class EthereumPlugin extends Web3ApiPlugin {
 
   // @ts-ignore: initialized within setProvider
   private _client: EthereumClient;
 
   constructor(private _config: EthereumConfig) {
     super({
-      implements: ["ethereum.web3api.eth"]
+      implements: ["ens://ethereum.web3api.eth"]
     });
     const { provider, signer } = _config;
 

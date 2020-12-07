@@ -4,9 +4,10 @@ import {
   Web3Api,
   Manifest
 } from "./";
-import { filterExecuteResult } from "./execute";
-import * as getFile from "./queries/getFile";
-import { Web3ApiClient } from "../";
+import { filterExecuteResult } from "./filter-result";
+import * as ApiResolver from "./core-apis/api-resolver";
+import { Uri } from "../Uri";
+import { Web3ApiClient } from "../Web3ApiClient";
 
 import {
   parseSchema,
@@ -27,7 +28,7 @@ export class WasmWeb3Api extends Web3Api {
   } = { };
 
   constructor(
-    uri: string,
+    uri: Uri,
     private _manifest: Manifest,
     private _resolver: string
   ) {

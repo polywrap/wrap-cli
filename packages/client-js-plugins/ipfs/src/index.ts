@@ -2,7 +2,7 @@ import { Query, Mutation } from "./resolvers";
 
 import {
   Web3ApiClient,
-  Web3APIClientPlugin,
+  Web3ApiPlugin,
   Resolvers
 } from "@web3api/client-js";
 
@@ -15,7 +15,7 @@ export interface IpfsConfig {
   provider: string;
 }
 
-export class IpfsPlugin extends Web3APIClientPlugin {
+export class IpfsPlugin extends Web3ApiPlugin {
 
   // @ts-ignore: initialized within setProvider
   private _ipfs: IpfsClient;
@@ -23,9 +23,9 @@ export class IpfsPlugin extends Web3APIClientPlugin {
   constructor(private _config: IpfsConfig) {
     super({
       implements: [
-        "ipfs.web3api.eth",
-        "uri-resolver.core.web3api.eth",
-        "api-resolver.core.web3api.eth"
+        "ens://ipfs.web3api.eth",
+        "ens://uri-resolver.core.web3api.eth",
+        "ens://api-resolver.core.web3api.eth"
       ]
     });
     this.setProvider(_config.provider);

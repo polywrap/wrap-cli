@@ -23,26 +23,3 @@ x Define standard for invoking methods inside module, and invoking methods outsi
 
 ## Client
 1. Re-create the WasmWorker: marshal on the thread, send Javascript objects to/from main, marshal into module
-
-```typescript
-const ethereum = new EthereumProviderPlugin(jsEthProvider);
-
-const client = new Web3APIClient({
-  redirects: {
-    "ethereum.web3api.eth": ethereum,
-    "w3://ethereum": ethereum,
-    "nodes.w3": "api.ethereum.infura.eth"
-  }
-});
-
-const client = new Web3APIClient({
-  redirects: [
-    {
-      from: "ethereum.web3api.eth",
-      to: ethereum
-    },
-    "w3://ethereum": ethereum,
-    "nodes.w3": "api.ethereum.infura.eth"
-  ]
-});
-```

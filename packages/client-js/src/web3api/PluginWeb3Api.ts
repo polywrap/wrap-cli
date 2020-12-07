@@ -3,19 +3,26 @@ import {
   ExecuteResult,
   Web3Api
 } from "./";
-import { filterExecuteResult } from "./execute";
+import { filterExecuteResult } from "./filter-result";
 import {
+  Uri,
   Web3ApiClient,
-  Web3ApiClientPlugin
+  Web3ApiPlugin
 } from "../";
 
 export class PluginWeb3Api extends Web3Api {
 
+  private _instance: Web3ApiPlugin | undefined;
+
   constructor(
-    uri: string,
-    private _plugin: Web3ApiClientPlugin
+    uri: Uri,
+    private _plugin: () => Web3ApiPlugin
   ) {
     super(uri);
+  }
+
+  private getInstance(): Web3ApiPlugin {
+    return this._instance || this._plugin();
   }
 
   public async execute(
@@ -23,7 +30,7 @@ export class PluginWeb3Api extends Web3Api {
     client: Web3ApiClient
   ): Promise<ExecuteResult> {
     const { module, method, input, results } = options;
-    const resolvers = this._plugin.getResolvers();
+    const resolvers = this.getInstance().getSchemaResolvers(client);
 
     const root: "Query" | "Mutation" =
       module === "query" ? "Query" : "Mutation";

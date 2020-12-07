@@ -1,6 +1,6 @@
-import { Query } from "./schema";
+import { Query } from "./resolvers";
 
-import { Web3APIClientPlugin, Resolvers } from "@web3api/client-js";
+import { Web3ApiPlugin, Resolvers } from "@web3api/client-js";
 import { execute, makePromise } from "apollo-link";
 import { createHttpLink } from "apollo-link-http";
 import fetch from "cross-fetch";
@@ -10,7 +10,7 @@ export interface GraphNodeConfig {
   provider: string;
 }
 
-export class GraphNodePlugin extends Web3APIClientPlugin {
+export class GraphNodePlugin extends Web3ApiPlugin {
   constructor(private _config: GraphNodeConfig) {
     super();
   }

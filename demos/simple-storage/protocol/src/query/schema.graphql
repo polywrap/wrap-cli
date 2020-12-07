@@ -1,4 +1,4 @@
-#import { Query } into Ethereum from "ethereum.web3api.eth"
+#import { Query } into Ethereum from "ens://ethereum.web3api.eth"
 
 type Query {
   getData(

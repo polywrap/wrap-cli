@@ -1,16 +1,19 @@
-import { Web3Api } from "./";
-import { PluginWeb3Api } from "./plugin-web3api";
-import { WasmWeb3Api } from "./wasm-web3api";
-import { deserializeManifest } from "./manifest";
-import * as tryResolveUri from "./queries/tryResolveUri";
+import * as UriResolver from "./core-apis/uri-resolver";
 import {
+  deserializeManifest,
+  PluginWeb3Api,
+  WasmWeb3Api,
+  Web3Api
+} from "./";
+import {
+  Uri,
   UriRedirect,
-  Web3ApiClient
-} from "../client";
-import { Web3ApiClientPlugin } from "../plugin";
+  Web3ApiClient,
+  Web3ApiPlugin
+} from "../";
 
 export async function resolveWeb3Api(
-  uri: string,
+  uri: Uri,
   redirects: UriRedirect[],
   client: Web3ApiClient
 ): Promise<Web3Api> {
@@ -19,8 +22,8 @@ export async function resolveWeb3Api(
 
   // Keep track of past URIs to avoid infinite loops
   const uriHistory: { uri: string; source: string; }[] = [{
-    uri: resolvedUri,
-    source: "HEAD"
+    uri: resolvedUri.uri,
+    source: "ROOT"
   }];
 
   const trackUriRedirect = (uri: string, source: string) => {
@@ -33,27 +36,36 @@ export async function resolveWeb3Api(
     }
   }
 
-  // Iterate through all redirects. If anything matches (string match or regex match),
-  // apply the redirect. If the redirect `to` is a Plugin, return a PluginWeb3Api instance.
+  // Iterate through all redirects. If anything matches
+  // apply the redirect. If the redirect `to` is a Plugin,
+  // return a PluginWeb3Api instance.
   for (const redirect of redirects) {
-    let tryRedirect: (testUri: string) => string | (() => Web3ApiClientPlugin);;
 
-    if (typeof redirect.from === "string") {
-      tryRedirect = (testUri: string) => testUri === redirect.from ? redirect.to : testUri;
+    const from = redirect.from;
+
+    if (!from) {
+      throw Error(`Redirect missing the from property.\nEncountered while resolving ${uri.uri}`);
+    }
+
+    // Determine what type of comparison to use (string compare or regex match)
+    let tryRedirect: (testUri: Uri) => Uri | (() => Web3ApiPlugin);
+
+    if (Uri.isUri(from)) {
+      tryRedirect = (testUri: Uri) => testUri.uri === from.uri ? redirect.to : testUri;
     } else {
-      tryRedirect = (testUri: string) => testUri.match(redirect.from) ? redirect.to : testUri;
+      tryRedirect = (testUri: Uri) => testUri.uri.match(from) ? redirect.to : testUri;
     }
 
     const uriOrPlugin = tryRedirect(resolvedUri);
 
-    if (typeof uriOrPlugin === "string") {
-      if (uriOrPlugin !== resolvedUri) {
-        trackUriRedirect(uriOrPlugin, redirect.from.toString());
+    if (Uri.isUri(uriOrPlugin)) {
+      if (uriOrPlugin.uri !== resolvedUri.uri) {
+        trackUriRedirect(uriOrPlugin.uri, redirect.from.toString());
         resolvedUri = uriOrPlugin;
       }
     } else {
       // We've found a plugin, return an instance of it
-      return new PluginWeb3Api(resolvedUri, uriOrPlugin());
+      return new PluginWeb3Api(resolvedUri, uriOrPlugin);
     }
   }
 
@@ -61,17 +73,18 @@ export async function resolveWeb3Api(
 
   // The final URI has been resolved, let's now resolve the Web3API package
   const uriResolverImplementations = [
-    "ipfs.web3api.eth",
-    "ens.web3api.eth"
+    "ens://ipfs.web3api.eth",
+    "ens://ens.web3api.eth"
   ];
 
   for (let i = 0; i < uriResolverImplementations.length; ++i) {
     const uriResolver = uriResolverImplementations[i];
 
-    const { data, errors } = await client.query<tryResolveUri.Result>({
-      uri: uriResolver,
-      query: tryResolveUri.query(resolvedUri)
-    });
+    // TODO: implement the concept of "supportedScheme"
+    // TODO: implement recursive loading of URI-Resolver implementations?
+    const { data, errors } = await UriResolver.Query.tryResolveUri(
+      client, uriResolver
+    );
 
     // Throw errors so the caller (client) can handle them
     if (errors?.length) {

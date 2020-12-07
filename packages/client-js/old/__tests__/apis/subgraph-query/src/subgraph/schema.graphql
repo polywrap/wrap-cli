@@ -1,4 +1,0 @@
-type SimpleStorage @entity {
-  id: ID!
-  lastSetBy: Bytes
-}

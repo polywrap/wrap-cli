@@ -10,7 +10,7 @@ export const Query = (ipfs: IpfsPlugin) => ({
   catFile: async (input: { cid: string }) => {
     return await ipfs.cat(input.cid);
   },
-  // api-resolver.core.web3api.eth
+  // ens://api-resolver.core.web3api.eth
   getFile: async (input: { path: string }) => {
     try {
       return await ipfs.catToBuffer(input.path);
@@ -18,9 +18,9 @@ export const Query = (ipfs: IpfsPlugin) => ({
       return undefined;
     }
   },
-  // uri-resolver.core.web3api.eth
-  supportedUri: async (input: { uri: string }) => {
-    return IpfsPlugin.isCID(input.uri);
+  // ens://uri-resolver.core.web3api.eth
+  supportedScheme: async (input: { scheme: string }) => {
+    return input.scheme === "ipfs";
   },
   tryResolveUri: async (input: { uri: string }) => {
     if (IpfsPlugin.isCID(input.uri)) {

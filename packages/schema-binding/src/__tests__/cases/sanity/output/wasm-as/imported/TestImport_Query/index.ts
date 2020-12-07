@@ -31,7 +31,7 @@ export class TestImport_Query {
           optU: $optU,
           uArrayArray: $uArrayArray
         )
-      }`, // TODO: remove arguments, make this string 2 strings (operation, method)
+      }`,
       args
     );
     return deserializeimportedMethodResult(result);

@@ -1,0 +1,14 @@
+type Query {
+  supportedScheme(
+    scheme: String!
+  ): Boolean!
+
+  tryResolveUri(
+    uri: String!
+  ): MaybeUriOrManifest!
+}
+
+type MaybeUriOrManifest {
+  uri: String
+  manifest: String
+}

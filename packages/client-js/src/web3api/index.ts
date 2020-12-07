@@ -1,6 +1,13 @@
-import { Web3ApiClient } from "../Web3ApiClient";
+import {
+  Uri,
+  Web3ApiClient
+} from "../";
 
-export { Manifest } from "./Manifest";
+export * from "./Manifest";
+export * from "./PluginWeb3Api";
+export * from "./WasmWeb3Api";
+export * from "./uri-resolution";
+export * from "./core-plugins";
 
 export interface ExecuteOptions {
   module: "query" | "mutation";
@@ -9,19 +16,23 @@ export interface ExecuteOptions {
   results?: Record<string, any>;
 }
 
-export interface ExecuteResult {
-  result: Record<string, any>;
-  error?: Error;
+export interface ExecuteResult<
+  TData = Record<string, unknown>
+> {
+  data?: TData | null;
+  errors?: Error[];
 }
 
 export abstract class Web3Api {
 
-  constructor(protected _uri: string) { }
+  constructor(protected _uri: Uri) { }
 
-  public async abstract execute(
+  public async abstract execute<
+    TData = Record<string, unknown>
+  >(
     options: ExecuteOptions,
     client: Web3ApiClient
-  ): Promise<ExecuteResult>;
+  ): Promise<ExecuteResult<TData>>;
 }
 
 export class Web3ApiCache extends Map<string, Web3Api> { }
