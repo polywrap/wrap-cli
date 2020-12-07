@@ -1,15 +1,14 @@
-import { Web3API } from "./Web3API";
-import { runGraphCLI } from "./cli/graph-cli";
-import { displayPath } from "./helpers/path";
-import { step, withSpinner } from "./helpers/spinner";
+import {Web3API} from './Web3API';
+import {runGraphCLI} from './cli/graph-cli';
+import {displayPath} from './helpers/path';
+import {step, withSpinner} from './helpers/spinner';
 
-import { Manifest } from "@web3api/client-js";
-import * as asc from "assemblyscript/cli/asc";
-import fs from "fs";
-import path from "path";
-
-const fsExtra = require("fs-extra");
-const toolbox = require("gluegun/toolbox");
+import {Manifest} from '@web3api/client-js';
+import {print} from 'gluegun';
+import * as asc from 'assemblyscript/cli/asc';
+import fs from 'fs';
+import path from 'path';
+import fsExtra from 'fs-extra';
 
 export interface ICompilerConfig {
   manifestPath: string;
@@ -20,8 +19,8 @@ export interface ICompilerConfig {
 export class Compiler {
   private _manifestDir: string;
 
-  constructor(private _config: ICompilerConfig) {
-    this._manifestDir = path.dirname(_config.manifestPath);
+  constructor(private config: ICompilerConfig) {
+    this._manifestDir = path.dirname(config.manifestPath);
   }
 
   public async compile(): Promise<boolean> {
@@ -30,7 +29,7 @@ export class Compiler {
       const api = await this._loadWeb3API();
 
       // Init & clean build directory
-      const { outputDir } = this._config;
+      const {outputDir} = this.config;
 
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir);
@@ -43,102 +42,78 @@ export class Compiler {
 
       return true;
     } catch (e) {
-      toolbox.print.error(e)
-      return false
+      print.error(e);
+      return false;
     }
   }
 
-  private async _loadWeb3API(quiet: boolean = false): Promise<Manifest> {
+  private async _loadWeb3API(quiet = false): Promise<Manifest> {
     const run = () => {
-      return Web3API.load(this._config.manifestPath);
-    }
+      return Web3API.load(this.config.manifestPath);
+    };
 
     if (quiet) {
       return run();
     } else {
-      const manifestPath = displayPath(this._config.manifestPath);
+      const manifestPath = displayPath(this.config.manifestPath);
 
       return await withSpinner(
         `Load web3api from ${manifestPath}`,
         `Failed to load web3api from ${manifestPath}`,
         `Warnings loading web3api from ${manifestPath}`,
-        async spinner => {
+        async () => {
           return run();
-        },
-      )
+        }
+      );
     }
   }
 
   private async _compileWeb3API(manifest: Manifest, quiet?: boolean, verbose?: boolean) {
-    const run = async (spinner?: any) => {
-      const { mutation, query, subgraph } = manifest;
-      const { outputDir, manifestPath } = this._config;
+    const run = async (spinner?: ReturnType<typeof print['spin']>) => {
+      const {mutation, query, subgraph} = manifest;
+      const {outputDir, manifestPath} = this.config;
 
       const appendPath = (root: string, subPath: string) => {
-        return path.join(path.dirname(root), subPath)
-      }
+        return path.join(path.dirname(root), subPath);
+      };
 
-      let schema = "";
+      let schema = '';
       const loadSchema = (schemaPath: string) => {
         schema += `${fs.readFileSync(
-          path.isAbsolute(schemaPath) ?
-            schemaPath :
-            appendPath(manifestPath, schemaPath),
-          "utf-8"
+          path.isAbsolute(schemaPath) ? schemaPath : appendPath(manifestPath, schemaPath),
+          'utf-8'
         )}\n`;
-      }
+      };
 
       if (mutation) {
         loadSchema(mutation.schema.file);
-        await this._compileWASMModule(
-          mutation.module.file,
-          'mutation',
-          outputDir,
-          spinner,
-          quiet,
-          verbose
-        );
+        await this._compileWASMModule(mutation.module.file, 'mutation', outputDir, spinner, quiet, verbose);
         mutation.module.file = './mutation.wasm';
         mutation.schema.file = './schema.graphql';
       }
 
       if (query) {
         loadSchema(query.schema.file);
-        await this._compileWASMModule(
-          query.module.file,
-          'query',
-          outputDir,
-          spinner,
-          quiet,
-          verbose
-        );
+        await this._compileWASMModule(query.module.file, 'query', outputDir, spinner, quiet, verbose);
         query.module.file = './query.wasm';
         query.schema.file = './schema.graphql';
       }
 
       if (subgraph) {
         const subgraphFile = appendPath(manifestPath, subgraph.file);
-        const str: any = fs.readFileSync(
-          subgraphFile, "utf-8"
-        );
+        // const str = fs.readFileSync(subgraphFile, 'utf-8');
         //const subgraphManifest: any = YAML.safeLoad(str);
         // TODO: hack to get around not having the subgraph types defined
         /*loadSchema(
           appendPath(subgraphFile, subgraphManifest.schema.file)
         );*/
-        const cid = await this._compileSubgraph(
-          subgraphFile,
-          `${outputDir}/subgraph`,
-          spinner
-        );
+        const cid = await this._compileSubgraph(subgraphFile, `${outputDir}/subgraph`, spinner);
 
         subgraph.id = cid;
         subgraph.file = `./subgraph/subgraph.yaml`;
       }
 
-      fs.writeFileSync(
-        `${outputDir}/schema.graphql`, schema, "utf-8"
-      );
+      fs.writeFileSync(`${outputDir}/schema.graphql`, schema, 'utf-8');
 
       Web3API.dump(manifest, `${outputDir}/web3api.yaml`);
 
@@ -147,7 +122,7 @@ export class Compiler {
       // - WASM exports <> GraphQL Schema
       // - Schemas
       // - Subgraph
-    }
+    };
 
     if (quiet) {
       return run();
@@ -156,10 +131,10 @@ export class Compiler {
         'Compile Web3API',
         'Failed to compile Web3API',
         'Warnings while compiling Web3API',
-        async spinner => {
+        async (spinner) => {
           return run(spinner);
         }
-      )
+      );
     }
   }
 
@@ -167,17 +142,12 @@ export class Compiler {
     modulePath: string,
     moduleName: string,
     outputDir: string,
-    spinner?: any,
+    spinner?: ReturnType<typeof print['spin']>,
     quiet?: boolean,
     verbose?: boolean
   ) {
-
-    if (!quiet) {
-      step(
-        spinner,
-        "Compiling WASM module:",
-        `${modulePath} => ${outputDir}/${moduleName}.wasm`
-      );
+    if (!quiet && spinner) {
+      step(spinner, 'Compiling WASM module:', `${modulePath} => ${outputDir}/${moduleName}.wasm`);
     }
 
     const moduleAbsolute = path.join(this._manifestDir, modulePath);
@@ -201,24 +171,22 @@ export class Compiler {
     }
 
     if (libsDirs.length === 0) {
-      throw Error(
-        `could not locate \`node_modules\` in parent directories of subgraph manifest`,
-      )
+      throw Error(`could not locate \`node_modules\` in parent directories of subgraph manifest`);
     }
 
     const args = [
       w3Wasm,
       moduleAbsolute,
-      "--baseDir",
+      '--baseDir',
       baseDir,
-      "--lib",
+      '--lib',
       libsDirs.join(','),
-      "--outFile",
+      '--outFile',
       `${outputDir}/${moduleName}.wasm`,
-      "--optimize",
-      "--debug",
-      "--runtime",
-      "full"
+      '--optimize',
+      '--debug',
+      '--runtime',
+      'full',
     ];
 
     // compile the module into the output directory
@@ -226,7 +194,7 @@ export class Compiler {
       args,
       {
         stdout: !verbose ? undefined : process.stdout,
-        stderr: process.stderr
+        stderr: process.stderr,
       },
       (e: Error | null) => {
         if (e != null) {
@@ -241,25 +209,22 @@ export class Compiler {
   private async _compileSubgraph(
     subgraphPath: string,
     outputDir: string,
-    spinner?: any,
+    spinner?: ReturnType<typeof print['spin']>,
     quiet?: boolean,
     verbose?: boolean
   ): Promise<string> {
-
-    step(
-      spinner,
-      "Compiling Subgraph...",
-      `${subgraphPath} => ${outputDir}/subgraph.yaml`
-    );
+    if (spinner) {
+      step(spinner, 'Compiling Subgraph...', `${subgraphPath} => ${outputDir}/subgraph.yaml`);
+    }
 
     const args = [
-      "build",
+      'build',
       subgraphPath,
-      "--output-dir",
+      '--output-dir',
       outputDir,
       // TODO: remove this hack, calculate ourselves?
-      "--ipfs",
-      "http://localhost:5001"
+      '--ipfs',
+      'http://localhost:5001',
     ];
 
     const [exitCode, stdout, stderr] = await runGraphCLI(args);
@@ -272,6 +237,6 @@ export class Compiler {
 
     const extractCID = /Build completed: (([A-Z]|[a-z]|[0-9])*)/;
     const result = stdout.match(extractCID);
-    return result && result.length ? result[1] : "";
+    return result && result.length ? result[1] : '';
   }
 }

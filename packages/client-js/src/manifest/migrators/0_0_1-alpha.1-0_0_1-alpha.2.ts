@@ -1,8 +1,8 @@
-import { Manifest as OldManifest } from "../formats/0.0.1-alpha.1";
-import { Manifest as NewManifest } from "../formats/0.0.1-alpha.2";
+import {Manifest as OldManifest} from '../formats/0.0.1-alpha.1';
+import {Manifest as NewManifest} from '../formats/0.0.1-alpha.2';
 
 export function migrate(old: OldManifest): NewManifest {
-  const NEW_FORMAT = "0.0.1-alpha.2";
+  const NEW_FORMAT = '0.0.1-alpha.2';
   const schemas = [];
   let api = {};
   let information = {};
@@ -20,7 +20,7 @@ export function migrate(old: OldManifest): NewManifest {
   }
 
   if (old.query) {
-    schemas.push({ file: old.query.schema.file });
+    schemas.push({file: old.query.schema.file});
     if (old.query.module) {
       api = {
         query: {
@@ -32,7 +32,7 @@ export function migrate(old: OldManifest): NewManifest {
   }
 
   if (old.mutation) {
-    schemas.push({ file: old.mutation.schema.file });
+    schemas.push({file: old.mutation.schema.file});
     if (old.mutation.module) {
       api = {
         ...api,

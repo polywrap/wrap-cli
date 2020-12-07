@@ -1,29 +1,27 @@
-import { runGraphCLI } from "../cli/graph-cli";
+import {runGraphCLI} from '../cli/graph-cli';
 
 export async function publishToSubgraph(
-  subgraphPath: string, subgraphName: string,
-  graphNode: string, ipfs: string, outputDir: string, quiet?: boolean
+  subgraphPath: string,
+  subgraphName: string,
+  graphNode: string,
+  ipfs: string,
+  outputDir: string,
+  quiet?: boolean
 ): Promise<string> {
-
   // create the subgraph
-  await runGraphCLI([
-    "create",
-    "--node",
-    graphNode,
-    subgraphName
-  ]);
+  await runGraphCLI(['create', '--node', graphNode, subgraphName]);
 
   // deploy the subgraph
   const args = [
-    "deploy",
-    "--node",
+    'deploy',
+    '--node',
     graphNode,
-    "--ipfs",
+    '--ipfs',
     ipfs,
-    "--output-dir",
+    '--output-dir',
     `${outputDir}/subgraph`,
     subgraphName,
-    subgraphPath
+    subgraphPath,
   ];
 
   const [exitCode, stdout, stderr] = await runGraphCLI(args);
@@ -36,5 +34,5 @@ export async function publishToSubgraph(
 
   const extractCID = /Build completed: (([A-Z]|[a-z]|[0-9])*)/;
   const result = stdout.match(extractCID);
-  return result && result.length ? result[1] : "";
+  return result && result.length ? result[1] : '';
 }

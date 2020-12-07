@@ -1,15 +1,15 @@
 export class Buffer {
   static fromString(str: string): Uint8Array {
-      const buffer = String.UTF8.encode(str, false);
+    const buffer = String.UTF8.encode(str, false);
 
-      // Workaround for https://github.com/AssemblyScript/assemblyscript/issues/1066
-      if (buffer.byteLength === 0) return new Uint8Array(0);
+    // Workaround for https://github.com/AssemblyScript/assemblyscript/issues/1066
+    if (buffer.byteLength === 0) return new Uint8Array(0);
 
-      return Uint8Array.wrap(buffer);
+    return Uint8Array.wrap(buffer);
   }
 
   static toString(arr: Uint8Array): string {
-      return String.UTF8.decode(arr.buffer, false);
+    return String.UTF8.decode(arr.buffer, false);
   }
 
   /**
@@ -18,10 +18,10 @@ export class Buffer {
    * @see https://docs.assemblyscript.org/details/memory#internals
    */
   static getDataPtr(arr: Uint8Array): usize {
-      return changetype<usize>(arr.buffer) + arr.byteOffset;
+    return changetype<usize>(arr.buffer) + arr.byteOffset;
   }
 
   static readString(arr: Uint8Array, start: usize, end: usize): string {
-      return String.UTF8.decodeUnsafe(Buffer.getDataPtr(arr) + start, end - start);
+    return String.UTF8.decodeUnsafe(Buffer.getDataPtr(arr) + start, end - start);
   }
 }

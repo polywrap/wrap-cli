@@ -6,12 +6,12 @@ export class Bytes extends Uint8Array {
    * Returns bytes in little-endian order.
    */
   static fromI32(x: i32): Bytes {
-    let self = new Bytes(4)
-    self[0] = x as u8
-    self[1] = (x >> 8) as u8
-    self[2] = (x >> 16) as u8
-    self[3] = (x >> 24) as u8
-    return self
+    const self = new Bytes(4);
+    self[0] = x as u8;
+    self[1] = (x >> 8) as u8;
+    self[2] = (x >> 16) as u8;
+    self[3] = (x >> 24) as u8;
+    return self;
   }
 
   static fromString(str: string): Bytes {
@@ -27,16 +27,16 @@ export class Bytes extends Uint8Array {
    * Input length must be even.
    */
   static fromHexString(hex: string): Bytes {
-    assert(hex.length % 2 == 0, 'input ' + hex + ' has odd length')
+    assert(hex.length % 2 == 0, 'input ' + hex + ' has odd length');
     // Skip possible `0x` prefix.
     if (hex.length >= 2 && hex[0] == '0' && hex[1] == 'x') {
-      hex = hex.substr(2)
+      hex = hex.substr(2);
     }
-    let output = new Bytes(hex.length / 2)
+    const output = new Bytes(hex.length / 2);
     for (let i = 0; i < hex.length; i += 2) {
-      output[i / 2] = I8.parseInt(hex.substr(i, 2), 16)
+      output[i / 2] = I8.parseInt(hex.substr(i, 2), 16);
     }
-    return output
+    return output;
   }
 
   // TODO:
@@ -117,18 +117,18 @@ export class Bytes extends Uint8Array {
   @operator('==')
   equals(other: Bytes): boolean {
     if (this.length != other.length) {
-      return false
+      return false;
     }
     for (let i = 0; i < this.length; i++) {
       if (this[i] != other[i]) {
-        return false
+        return false;
       }
     }
-    return true
+    return true;
   }
 
   @operator('!=')
   notEqual(other: Bytes): boolean {
-    return !(this == other)
+    return !(this == other);
   }
 }

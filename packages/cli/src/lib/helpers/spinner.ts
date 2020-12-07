@@ -1,4 +1,13 @@
-const toolbox = require('gluegun/toolbox')
+import {print} from 'gluegun';
+
+type SpinnerResult<TResult> = {
+  warning?: string;
+  result: TResult;
+};
+
+export type SpinnerFunction<TResult> = (
+  spinner: ReturnType<typeof print['spin']>
+) => Promise<SpinnerResult<TResult> | TResult>;
 
 // Executes the function `f` in a command-line spinner, using the
 // provided captions for in-progress, error and failed messages.
@@ -9,46 +18,51 @@ const toolbox = require('gluegun/toolbox')
 //   spinner stops with the warning message and returns the `result` value.
 // Otherwise the spinner prints the in-progress message with a check mark
 //   and simply returns the value returned by `f`.
-export const withSpinner = async (
+export const withSpinner = async <TResult>(
   text: string,
   errorText: string,
   warningText: string,
-  execute: (spinner: any) => Promise<any>
-) => {
-  let spinner = toolbox.print.spin(text)
+  execute: SpinnerFunction<TResult>
+): Promise<TResult> => {
+  const spinner = print.spin(text);
   try {
-    let result = await execute(spinner)
+    const result = await execute(spinner);
     if (typeof result === 'object') {
-      let hasWarning = Object.keys(result).indexOf('warning') >= 0
-      let hasResult = Object.keys(result).indexOf('result') >= 0
+      const hasWarning = Object.keys(result).indexOf('warning') >= 0;
+      const hasResult = Object.keys(result).indexOf('result') >= 0;
       if (hasWarning && hasResult) {
-        if (result.warning !== null) {
-          spinner.warn(`${warningText}: ${result.warning}`)
+        const spinnerResult: SpinnerResult<TResult> = result as SpinnerResult<TResult>;
+        if (spinnerResult.warning !== null) {
+          spinner.warn(`${warningText}: ${spinnerResult.warning}`);
         }
-        spinner.succeed(text)
-        return result.result
+        spinner.succeed(text);
+        return spinnerResult.result;
       } else {
-        spinner.succeed(text)
-        return result
+        spinner.succeed(text);
+        return result as TResult;
       }
     } else {
-      spinner.succeed(text)
-      return result
+      spinner.succeed(text);
+      return result;
     }
   } catch (e) {
-    spinner.fail(`${errorText}: ${e.message}`)
-    throw e
+    spinner.fail(`${errorText}: ${e.message}`);
+    throw e;
   }
-}
+};
 
-export const step = (spinner: any, subject: string, text: string) => {
+export const step = (
+  spinner: ReturnType<typeof print['spin']>,
+  subject: string,
+  text: string
+): ReturnType<typeof print['spin']> => {
   if (text) {
     spinner.stopAndPersist({
-      text: toolbox.print.colors.muted(`${subject} ${text}`),
-    })
+      text: print.colors.muted(`${subject} ${text}`),
+    });
   } else {
-    spinner.stopAndPersist({ text: toolbox.print.colors.muted(subject) })
+    spinner.stopAndPersist({text: print.colors.muted(subject)});
   }
-  spinner.start()
-  return spinner
-}
+  spinner.start();
+  return spinner;
+};

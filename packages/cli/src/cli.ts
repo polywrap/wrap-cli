@@ -1,15 +1,15 @@
-import { build } from "gluegun";
+import {build, GluegunToolbox} from 'gluegun';
 
-interface args {
-  [key: string]: unknown
-}
+type Args = {
+  [key: string]: unknown;
+};
 
-export const run = async (argv: args) => {
+export const run = async (argv: Args): Promise<GluegunToolbox> => {
   const cli = build('w3')
     .src(__dirname)
-    .plugins(`${process.cwd()}/node_modules`, { matching: 'w3-*', hidden: true })
+    .plugins(`${process.cwd()}/node_modules`, {matching: 'w3-*', hidden: true})
     .help()
-    .create()
+    .create();
 
-  return await cli.run(argv)
-}
+  return await cli.run(argv);
+};

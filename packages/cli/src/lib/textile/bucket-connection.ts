@@ -1,9 +1,10 @@
-import { Buckets, PushPathResult, KeyInfo } from "@textile/hub";
-import { identifyAccessToken } from "../textile/user-auth";
+import {identifyAccessToken} from '../textile/user-auth';
+
+import {Buckets, PushPathResult, KeyInfo} from '@textile/hub';
 
 export const insertProtocol = async (protocolName: string): Promise<PushPathResult> => {
   const keyInfo: KeyInfo = {
-    key: "bxusvy3lxtv7brpfyepjrnlmcde"
+    key: 'bxusvy3lxtv7brpfyepjrnlmcde',
   };
 
   const token = await identifyAccessToken(protocolName);
@@ -11,15 +12,15 @@ export const insertProtocol = async (protocolName: string): Promise<PushPathResu
 
   await buckets.getToken(token!);
 
-  const root = await buckets.open("web3api-cli");
+  const root = await buckets.open('web3api-cli');
 
   if (!root) {
-    throw new Error("Failed to open bucket");
+    throw new Error('Failed to open bucket');
   }
 
   return await buckets.pushPath(
     root.key,
-    "index.html",
+    'index.html',
     Buffer.from(`<body><h1>${protocolName} has been deployed :-) !</h1></body>`)
   );
 };

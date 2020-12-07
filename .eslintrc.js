@@ -26,7 +26,15 @@ module.exports = {
     "prettier/prettier": ["error"],
     "@typescript-eslint/naming-convention": ["error", 
       {selector: "default", format: ['camelCase']},
-      {selector: ["classProperty", "objectLiteralProperty", "classMethod", "parameter"], format: ['camelCase'], leadingUnderscore: "allow"},
+      {
+        selector: [
+          "classProperty", "parameterProperty", "objectLiteralProperty",
+          "classMethod", "parameter"
+        ],
+        format: ['camelCase'], leadingUnderscore: "allow"
+      },
+      //web3 api host methods doesn't satisfy neither camel or snake
+      {selector: ["objectLiteralMethod", "typeMethod"], filter: {regex: "^_w3_.*", match: true}, format: null},
       //variable must be in camel or upper case
       {selector: "variable", format: ["camelCase", "UPPER_CASE"], leadingUnderscore: "allow"},
       //classes and types must be in PascalCase
@@ -66,11 +74,18 @@ module.exports = {
       "devDependencies": false,
       "optionalDependencies": true,
       "peerDependencies": false
-    }]
+    }],
+    "import/order": [
+      "error",
+       {
+         "groups": [["index", "sibling", "parent", "internal"], ["external", "builtin"], "object"],
+         "newlines-between": "always"
+        }
+      ]
   },
   "overrides": [
     {
-      "files": ["**/__test__/**/*.ts"],
+      "files": ["*.spec.ts"],
       "rules": {
         "import/no-extraneous-dependencies": "off"
       }

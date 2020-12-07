@@ -1,7 +1,5 @@
-import {
-  IPFS
-} from "@web3api/wasm-ts";
+import {IPFS} from '@web3api/wasm-ts';
 
 export function putString(input: string): string {
-  return IPFS.add(input)
+  return IPFS.add(input);
 }
