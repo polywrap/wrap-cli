@@ -21,6 +21,7 @@
     "build:wasm-as": "yarn workspace @web3api/wasm-as build",
     "build:wasm-ts": "yarn workspace @web3api/wasm-ts build",
     "lint": "lerna run lint",
+    "lint:fix": "lerna run lint -- --fix",
     "lint:ci": "lerna run --parallel lint",
     "test": "yarn test:wasm-as && yarn test:client-js",
     "test:wasm-as": "yarn workspace @web3api/wasm-as test",
