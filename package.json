@@ -19,6 +19,9 @@
     "build:cli": "yarn workspace @web3api/cli build",
     "build:client-js": "yarn workspace @web3api/client-js build",
     "build:wasm-ts": "yarn workspace @web3api/wasm-ts build",
+    "lint": "lerna run lint",
+    "lint:fix": "lerna run lint -- --fix",
+    "lint:ci": "lerna run --parallel lint",
     "test": "yarn test:wasm-ts && yarn test:client-js",
     "test:wasm-ts": "yarn workspace @web3api/wasm-ts test",
     "test:client-js": "yarn workspace @web3api/client-js test",
@@ -26,6 +29,13 @@
     "test:ci:client-js": "yarn workspace @web3api/client-js test:ci"
   },
   "devDependencies": {
-    "lerna": "3.22.1"
+    "@typescript-eslint/eslint-plugin": "4.9.0",
+    "@typescript-eslint/parser": "4.9.0",
+    "eslint": "7.14.0",
+    "eslint-config-prettier": "6.15.0",
+    "eslint-plugin-import": "2.22.1",
+    "eslint-plugin-prettier": "3.2.0",
+    "lerna": "3.22.1",
+    "prettier": "2.2.1"
   }
 }

@@ -6,6 +6,7 @@
   "scripts": {
     "build": "rimraf build && yarn build:manifest && tsc",
     "build:manifest": "node ./scripts/generateManifest.js",
+    "lint": "eslint --color --ext .ts src/",
     "test": "WORKER_ENV=test jest --passWithNoTests --runInBand --verbose",
     "test:watch": "WORKER_ENV=test jest --watch --passWithNoTests --verbose",
     "test:ci": "yarn test:env:up && yarn test && yarn test:env:down",

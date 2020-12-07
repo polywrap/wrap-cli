@@ -48,6 +48,12 @@ Detailed user instructions will be available shortly. **[Join early access!](htt
 or, if client-test-env is already running in the background:  
 `yarn test`  
 
+### Lint
+`yarn lint`
+
+To autofix lint errors:
+`yarn lint:fix`
+
 ## Demos  
 
 Each demo below showcases different aspects of Web3API. Please see the demo's README for further details and instructions.  

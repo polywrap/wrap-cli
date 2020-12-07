@@ -7,6 +7,7 @@
   },
   "scripts": {
     "build": "rimraf ./build && tsc",
+    "lint": "eslint --color --ext .ts src/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

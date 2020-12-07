@@ -5,6 +5,7 @@
   "main": "./assembly/index.ts",
   "scripts": {
     "build": "asc ./assembly/index.ts --outFile ./build/index.wasm -d ./build/index.d.ts",
+    "lint": "eslint --color --ext .ts assembly/",
     "test": "asp --verbose",
     "test:ci": "asp --summary"
   },
