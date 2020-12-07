@@ -52,7 +52,7 @@ or, if client-test-env is already running in the background:
 `yarn lint`
 
 To autofix lint errors:
-`yarn lint --fix`
+`yarn lint:fix`
 
 ## Demos  
 
