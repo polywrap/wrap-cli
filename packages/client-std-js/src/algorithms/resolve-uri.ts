@@ -1,22 +1,23 @@
-import * as UriResolver from "./core-apis/uri-resolver";
 import {
-  deserializeManifest,
-  PluginWeb3Api,
-  WasmWeb3Api,
-  Web3Api
-} from "./";
-import {
+  Api,
   Uri,
   UriRedirect,
-  Web3ApiClient,
-  Web3ApiPlugin
-} from "../";
+  QueryClient,
+  Plugin
+} from "../types";
 
-export async function resolveWeb3Api(
+import * as UriResolver from "./core-apis/uri-resolver";
+import {
+  deserializeManifest
+} from ".";
+
+export async function resolveUri(
   uri: Uri,
   redirects: UriRedirect[],
-  client: Web3ApiClient
-): Promise<Web3Api> {
+  client: QueryClient,
+  createPlugin: (...),
+  createApi: (...)
+): Promise<Api> {
 
   let resolvedUri = uri;
 
@@ -48,7 +49,7 @@ export async function resolveWeb3Api(
     }
 
     // Determine what type of comparison to use (string compare or regex match)
-    let tryRedirect: (testUri: Uri) => Uri | (() => Web3ApiPlugin);
+    let tryRedirect: (testUri: Uri) => Uri | (() => Plugin);
 
     if (Uri.isUri(from)) {
       tryRedirect = (testUri: Uri) => testUri.uri === from.uri ? redirect.to : testUri;
@@ -70,8 +71,8 @@ export async function resolveWeb3Api(
   }
 
   // TODO: support URI resolver extensions, not just IPFS & ENS
-
   // The final URI has been resolved, let's now resolve the Web3API package
+  // TODO: remove this! Go through all known plugins and get the ones that implement resolution
   const uriResolverImplementations = [
     "ens://ipfs.web3api.eth",
     "ens://ens.web3api.eth"

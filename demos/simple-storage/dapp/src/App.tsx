@@ -9,14 +9,13 @@ const client = new Web3APIClient({
   redirects: [
     {
       from: new Uri("ens://ethereum.web3api.eth"),
-      to: new EthereumPlugin(window.ethereum)
+      to: new EthereumPlugin(window.ethereum) // JS plugin OR another URI
     }
   ]
 });
 
-// Error: api.uniswap.eth requires an implementation for ethereum.web3api.eth, but none was found
 client.query({
-  uri: "ens://api.uniswap.eth", // requires ethereum.web3api.eth
+  uri: "ens://api.uniswap.eth",
   query: gql`
     mutation {
       setData(

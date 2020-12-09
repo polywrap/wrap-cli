@@ -5,8 +5,8 @@
   "main": "build/index.js",
   "scripts": {
     "build": "rimraf ./build && tsc",
-    "test": "WORKER_ENV=test jest --passWithNoTests --runInBand --verbose",
-    "test:watch": "WORKER_ENV=test jest --watch --passWithNoTests --verbose",
+    "test": "jest --passWithNoTests --runInBand --verbose",
+    "test:watch": "jest --watch --passWithNoTests --verbose",
     "test:ci": "yarn test:env:up && yarn test && yarn test:env:down",
     "test:env:up": "w3 test-env up",
     "test:env:down": "w3 test-env down"
@@ -18,8 +18,6 @@
     "@web3api/ipfs-plugin-js": "0.0.1-prealpha.1",
     "@web3api/schema-parser": "0.0.1-prealpha.1",
     "@web3api/wasm-as": "0.0.1-prealpha.1",
-    "graphql": "15.3.0",
-    "graphql-tag": "2.10.4",
     "js-yaml": "3.14.0",
     "threads": "1.6.3"
   },

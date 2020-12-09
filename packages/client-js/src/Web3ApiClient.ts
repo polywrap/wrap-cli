@@ -1,3 +1,5 @@
+import { getCorePluginRedirects } from "./core-plugins";
+
 import {
   QueryArgs,
   QueryResult,
@@ -9,17 +11,8 @@ import {
   Web3Api,
   Web3ApiCache,
   resolveWeb3Api,
-  getCorePluginRedirects
 } from "./web3api";
-import {
-  Uri,
-  Web3ApiPlugin
-} from "./";
-
-export interface UriRedirect {
-  from: Uri | RegExp;
-  to: Uri | (() => Web3ApiPlugin);
-}
+import { Uri, Plugin } from "@web3api/client-lib-js";
 
 export interface ClientConfig {
   redirects: UriRedirect[]

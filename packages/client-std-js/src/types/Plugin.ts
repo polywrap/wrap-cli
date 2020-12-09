@@ -1,24 +1,26 @@
-import { QueryClient } from "./graphql";
-import { Uri } from "./";
+import {
+  Uri,
+  QueryClient
+} from ".";
 
-export type Method = (
+export type QueryMethod = (
   input: Record<string, any>,
   client: QueryClient
 ) => Promise<Record<string, any>>;
 
-export interface SchemaResolvers {
-  Query: Record<string, Method>;
-  Mutation: Record<string, Method>;
+export interface QueryResolvers {
+  Query: Record<string, QueryMethod>;
+  Mutation: Record<string, QueryMethod>;
 }
 
-export interface ClientPluginConfig {
+export interface PluginConfig {
   import?: Uri[];
   implement?: Uri[];
 }
 
-export abstract class Web3ApiPlugin {
+export abstract class Plugin {
 
-  constructor(protected _config: ClientPluginConfig) { }
+  constructor(protected _config: PluginConfig) { }
 
   public isImplemented(uri: Uri): boolean {
     return this._config.implement !== undefined &&
@@ -33,5 +35,5 @@ export abstract class Web3ApiPlugin {
     return this._config.import || [];
   }
 
-  abstract getSchemaResolvers(client: QueryClient): SchemaResolvers;
+  abstract getQueryResolvers(client: QueryClient): QueryResolvers;
 }

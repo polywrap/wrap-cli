@@ -30,7 +30,7 @@ export class PluginWeb3Api extends Web3Api {
     client: Web3ApiClient
   ): Promise<ExecuteResult> {
     const { module, method, input, results } = options;
-    const resolvers = this.getInstance().getSchemaResolvers(client);
+    const resolvers = this.getInstance().getQueryResolvers(client);
 
     const root: "Query" | "Mutation" =
       module === "query" ? "Query" : "Mutation";

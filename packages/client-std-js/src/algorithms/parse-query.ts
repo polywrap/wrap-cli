@@ -1,15 +1,17 @@
-import { QueryDocument } from "./";
-import { ExecuteOptions } from "../web3api";
+import {
+  InvokeApiOptions,
+  QueryDocument
+} from "../types";
 
 import {
   SelectionSetNode,
   ValueNode
 } from "graphql";
 
-export function extractExecuteOptions(
+export function parseQuery(
   doc: QueryDocument,
   variables?: Record<string, unknown>
-): ExecuteOptions {
+): InvokeApiOptions {
   if (doc.definitions.length === 0) {
     throw Error(
       "Empty query document found."

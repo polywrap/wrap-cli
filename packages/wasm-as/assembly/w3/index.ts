@@ -1,2 +1,2 @@
-export * from "./call";
+export * from "./invoke";
 export * from "./query";

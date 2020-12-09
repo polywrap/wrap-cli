@@ -1,12 +1,16 @@
-import { Uri } from "../";
-import { ExecuteResult } from "../web3api";
+import {
+  Uri,
+  InvokeApiResult
+} from ".";
 
 import { DocumentNode } from "graphql";
 import gql from "graphql-tag";
 
-export * from "./query-parser";
-
 export type QueryDocument = DocumentNode;
+
+export function createQueryDocument(query: string): QueryDocument {
+  return gql(query);
+}
 
 export interface QueryArgs<
   TVariables extends Record<string, unknown> = Record<string, unknown>
@@ -18,16 +22,10 @@ export interface QueryArgs<
 
 export type QueryResult<
   TData = Record<string, unknown>
-> = ExecuteResult<TData>
-
-export type QueryMethod<TData = Record<string, unknown>> = (
-  args: QueryArgs
-) => Promise<QueryResult<TData>>;
+> = InvokeApiResult<TData>
 
 export interface QueryClient {
-  query: QueryMethod;
-}
-
-export function createQueryDocument(query: string): QueryDocument {
-  return gql(query);
+  query: <TData = Record<string, unknown>>(
+    args: QueryArgs
+  ) => Promise<QueryResult<TData>>;
 }
