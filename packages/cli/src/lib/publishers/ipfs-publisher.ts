@@ -1,8 +1,8 @@
 // TODO: add own
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import IPFSClient from 'ipfs-http-client';
-const {globSource} = IPFSClient;
+import IPFSClient from "ipfs-http-client";
+const { globSource } = IPFSClient;
 
 export async function publishToIPFS(buildPath: string, ipfs: string): Promise<string> {
   try {
@@ -20,10 +20,10 @@ export async function publishToIPFS(buildPath: string, ipfs: string): Promise<st
     wrapWithDirectory: false,
   };
 
-  let rootCID = '';
+  let rootCID = "";
 
   for await (const file of client.addAll(globSource(buildPath, globOptions), addOptions)) {
-    if (file.path.indexOf('/') === -1) {
+    if (file.path.indexOf("/") === -1) {
       rootCID = file.cid.toString();
     }
   }

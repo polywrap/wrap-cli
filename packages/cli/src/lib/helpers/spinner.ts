@@ -1,4 +1,4 @@
-import {print} from 'gluegun';
+import { print } from "gluegun";
 
 type SpinnerResult<TResult> = {
   warning?: string;
@@ -6,7 +6,7 @@ type SpinnerResult<TResult> = {
 };
 
 export type SpinnerFunction<TResult> = (
-  spinner: ReturnType<typeof print['spin']>
+  spinner: ReturnType<typeof print["spin"]>
 ) => Promise<SpinnerResult<TResult> | TResult>;
 
 // Executes the function `f` in a command-line spinner, using the
@@ -27,9 +27,9 @@ export const withSpinner = async <TResult>(
   const spinner = print.spin(text);
   try {
     const result = await execute(spinner);
-    if (typeof result === 'object') {
-      const hasWarning = Object.keys(result).indexOf('warning') >= 0;
-      const hasResult = Object.keys(result).indexOf('result') >= 0;
+    if (typeof result === "object") {
+      const hasWarning = Object.keys(result).indexOf("warning") >= 0;
+      const hasResult = Object.keys(result).indexOf("result") >= 0;
       if (hasWarning && hasResult) {
         const spinnerResult: SpinnerResult<TResult> = result as SpinnerResult<TResult>;
         if (spinnerResult.warning !== null) {
@@ -52,16 +52,16 @@ export const withSpinner = async <TResult>(
 };
 
 export const step = (
-  spinner: ReturnType<typeof print['spin']>,
+  spinner: ReturnType<typeof print["spin"]>,
   subject: string,
   text: string
-): ReturnType<typeof print['spin']> => {
+): ReturnType<typeof print["spin"]> => {
   if (text) {
     spinner.stopAndPersist({
       text: print.colors.muted(`${subject} ${text}`),
     });
   } else {
-    spinner.stopAndPersist({text: print.colors.muted(subject)});
+    spinner.stopAndPersist({ text: print.colors.muted(subject) });
   }
   spinner.start();
   return spinner;

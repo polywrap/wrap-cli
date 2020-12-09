@@ -1,3 +1,3 @@
-export * from './portals';
-export * from './Web3API';
-export * from './manifest';
+export * from "./portals";
+export * from "./Web3API";
+export * from "./manifest";

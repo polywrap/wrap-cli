@@ -1,8 +1,8 @@
-import {Query, QueryResult} from '../lib/types';
+import { Query, QueryResult } from "../lib/types";
 
-import {execute, makePromise} from 'apollo-link';
-import {createHttpLink} from 'apollo-link-http';
-import fetch from 'cross-fetch';
+import { execute, makePromise } from "apollo-link";
+import { createHttpLink } from "apollo-link-http";
+import fetch from "cross-fetch";
 
 export interface ISubgraphConfig {
   provider: string;

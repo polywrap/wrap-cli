@@ -1,4 +1,4 @@
-import {_w3_ipfs_add, _w3_ipfs_cat} from '../host/ipfs';
+import { _w3_ipfs_add, _w3_ipfs_cat } from "../host/ipfs";
 
 export type IPFSHash = string;
 export type IPFSData = string; // TODO: Uint8Array

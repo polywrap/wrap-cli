@@ -1,14 +1,14 @@
-import {Ethereum, IPFS, Subgraph} from './portals';
-import {getHostImports} from './host';
-import {isPromise} from './lib/async';
-import {Query, QueryResult} from './lib/types';
-import {WasmWorker} from './lib/wasm-worker';
-import {AnyManifest, Manifest} from './manifest/formats';
-import {ManifestFormats, upgradeManifest, latestFormat} from './manifest';
+import { Ethereum, IPFS, Subgraph } from "./portals";
+import { getHostImports } from "./host";
+import { isPromise } from "./lib/async";
+import { Query, QueryResult } from "./lib/types";
+import { WasmWorker } from "./lib/wasm-worker";
+import { AnyManifest, Manifest } from "./manifest/formats";
+import { ManifestFormats, upgradeManifest, latestFormat } from "./manifest";
 
-import YAML from 'js-yaml';
-import {buildSchema, execute, GraphQLSchema, GraphQLObjectType} from 'graphql';
-import {compare} from 'semver';
+import YAML from "js-yaml";
+import { buildSchema, execute, GraphQLSchema, GraphQLObjectType } from "graphql";
+import { compare } from "semver";
 
 export interface IPortals {
   ipfs: IPFS;
@@ -60,7 +60,7 @@ export class Web3API {
       return this._cid;
     }
 
-    const {uri, portals} = this._config;
+    const { uri, portals } = this._config;
 
     if (Ethereum.isENSDomain(uri)) {
       this._cid = await portals.ethereum.ensToCID(uri);
@@ -76,16 +76,16 @@ export class Web3API {
       return this._manifest;
     }
 
-    const {portals} = this._config;
+    const { portals } = this._config;
     const cid = await this.fetchCID();
 
     // Fetch the API directory from IPFS
     const apiDirectory = await portals.ipfs.ls(cid);
 
     for await (const file of apiDirectory) {
-      const {name, depth, type, path} = file;
+      const { name, depth, type, path } = file;
 
-      if (depth === 1 && type === 'file' && (name === 'web3api.yaml' || name === 'web3api.yml')) {
+      if (depth === 1 && type === "file" && (name === "web3api.yaml" || name === "web3api.yml")) {
         const manifestStr = await portals.ipfs.catToString(path);
         this._manifest = YAML.safeLoad(manifestStr) as Manifest | undefined;
 
@@ -110,7 +110,7 @@ export class Web3API {
       return this._schema;
     }
 
-    const {portals} = this._config;
+    const { portals } = this._config;
 
     // Get the API's manifest
     const manifest = await this.fetchAPIManifest();
@@ -135,7 +135,7 @@ export class Web3API {
     // loads the module and executes the call
     if (mutationType) {
       if (!manifest.mutation) {
-        throw Error('Malformed Manifest: Schema contains mutations but the manifest does not.');
+        throw Error("Malformed Manifest: Schema contains mutations but the manifest does not.");
       }
 
       this._addResolvers(manifest.mutation.module.file, mutationType);
@@ -143,7 +143,7 @@ export class Web3API {
 
     if (queryType) {
       if (!manifest.query) {
-        throw Error('Malformed Manifest: Schema contains queries but the manifest does not.');
+        throw Error("Malformed Manifest: Schema contains queries but the manifest does not.");
       }
 
       this._addResolvers(manifest.query.module.file, queryType);
@@ -158,20 +158,20 @@ export class Web3API {
   }
 
   public async query(query: Query): Promise<QueryResult> {
-    const {portals} = this._config;
+    const { portals } = this._config;
     const queryDoc = query.query;
 
     if (queryDoc.definitions.length > 1) {
-      throw Error('Multiple async queries is not supported at this time.');
+      throw Error("Multiple async queries is not supported at this time.");
     }
 
     if (queryDoc.definitions.length === 0) {
-      throw Error('Empty query.');
+      throw Error("Empty query.");
     }
 
     const def = queryDoc.definitions[0];
 
-    if (def.kind === 'OperationDefinition' && def.name) {
+    if (def.kind === "OperationDefinition" && def.name) {
       // else, execute query against schema
       const schema = await this.fetchSchema();
 
@@ -191,14 +191,14 @@ export class Web3API {
         def.kind === "SchemaDefinition" ||
         def.kind === "ObjectTypeDefinition") */ else {
       if (!portals.subgraph) {
-        throw Error('No subgraph portal available.');
+        throw Error("No subgraph portal available.");
       }
 
       // TODO: handle this better :P
       const manifest = await this.fetchAPIManifest();
 
       if (!manifest.subgraph) {
-        throw Error('The manifest is missing a subgraph');
+        throw Error("The manifest is missing a subgraph");
       }
 
       // If an entity is being queried, send to a subgraph
@@ -213,10 +213,10 @@ export class Web3API {
     const fieldNames = Object.keys(fields);
 
     for (const fieldName of fieldNames) {
-      const outputType = fields[fieldName].type.toString().toLowerCase().replace('!', '');
+      const outputType = fields[fieldName].type.toString().toLowerCase().replace("!", "");
 
       fields[fieldName].resolve = async (source, args) => {
-        const {portals} = this._config;
+        const { portals } = this._config;
 
         // Load the WASM source
         const wasm = await portals.ipfs.catToBuffer(`${this._cid}/${modulePath}`);
@@ -236,7 +236,7 @@ export class Web3API {
         const toMarsh = Object.values(args);
         for (const marshMe of toMarsh) {
           let result;
-          if (typeof marshMe === 'string') {
+          if (typeof marshMe === "string") {
             result = (await ww.writeStringAsync(marshMe)).result;
           } else {
             result = undefined;
@@ -254,12 +254,12 @@ export class Web3API {
         let result: number | string | boolean = res.result;
 
         if (result) {
-          if (outputType === 'string') {
+          if (outputType === "string") {
             result = (await ww.readStringAsync(result)).result;
-          } else if (outputType === 'boolean') {
+          } else if (outputType === "boolean") {
             result = result === 1 ? true : false;
-          } else if (outputType === 'int') {
-            if (typeof result === 'string') {
+          } else if (outputType === "int") {
+            if (typeof result === "string") {
               result = Number.parseInt(result);
             }
           } else {

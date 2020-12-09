@@ -1,10 +1,10 @@
-import CID from 'cids';
+import CID from "cids";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import isIPFS from 'is-ipfs';
+import isIPFS from "is-ipfs";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import IPFSClient from 'ipfs-http-client';
+import IPFSClient from "ipfs-http-client";
 
 export interface IIPFSConfig {
   provider: string;

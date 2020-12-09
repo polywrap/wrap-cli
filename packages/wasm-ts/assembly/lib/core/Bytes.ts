@@ -27,9 +27,9 @@ export class Bytes extends Uint8Array {
    * Input length must be even.
    */
   static fromHexString(hex: string): Bytes {
-    assert(hex.length % 2 == 0, 'input ' + hex + ' has odd length');
+    assert(hex.length % 2 == 0, "input " + hex + " has odd length");
     // Skip possible `0x` prefix.
-    if (hex.length >= 2 && hex[0] == '0' && hex[1] == 'x') {
+    if (hex.length >= 2 && hex[0] == "0" && hex[1] == "x") {
       hex = hex.substr(2);
     }
     const output = new Bytes(hex.length / 2);
@@ -114,7 +114,7 @@ export class Bytes extends Uint8Array {
   //   return x
   // }
 
-  @operator('==')
+  @operator("==")
   equals(other: Bytes): boolean {
     if (this.length != other.length) {
       return false;
@@ -127,7 +127,7 @@ export class Bytes extends Uint8Array {
     return true;
   }
 
-  @operator('!=')
+  @operator("!=")
   notEqual(other: Bytes): boolean {
     return !(this == other);
   }

@@ -1,6 +1,6 @@
-import {Signer, ethers, providers, utils} from 'ethers';
+import { Signer, ethers, providers, utils } from "ethers";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import {Base58} from '@ethersproject/basex';
+import { Base58 } from "@ethersproject/basex";
 
 type Address = string;
 type AccountIndex = number;
@@ -21,7 +21,7 @@ export class Ethereum {
   private _client: EthereumClient;
 
   constructor(private _config: IEthereumConfig) {
-    const {provider, signer, ens} = _config;
+    const { provider, signer, ens } = _config;
 
     // Sanitize Provider & Signer
     this.setProvider(provider, signer !== undefined ? signer : 0);
@@ -33,13 +33,13 @@ export class Ethereum {
   }
 
   public static isENSDomain(domain: string): boolean {
-    return utils.isValidName(domain) && domain.indexOf('.eth') !== -1;
+    return utils.isValidName(domain) && domain.indexOf(".eth") !== -1;
   }
 
   public setProvider(provider: EthereumProvider, signer?: EthereumSigner): void {
     this._config.provider = provider;
 
-    if (typeof provider === 'string') {
+    if (typeof provider === "string") {
       this._client = new providers.JsonRpcProvider(provider);
     } else {
       this._client = new providers.Web3Provider(provider);
@@ -51,7 +51,7 @@ export class Ethereum {
   }
 
   public setSigner(signer: EthereumSigner): void {
-    if (typeof signer === 'string') {
+    if (typeof signer === "string") {
       this._config.signer = utils.getAddress(signer);
     } else if (Signer.isSigner(signer)) {
       this._config.signer = signer;
@@ -73,13 +73,13 @@ export class Ethereum {
   }
 
   public getSigner(): ethers.Signer {
-    const {signer} = this._config;
+    const { signer } = this._config;
 
     if (this._config.signer === undefined) {
-      throw Error('Signer is undefined, this should never happen.');
+      throw Error("Signer is undefined, this should never happen.");
     }
 
-    if (typeof signer === 'string' || typeof signer === 'number') {
+    if (typeof signer === "string" || typeof signer === "number") {
       return this._client.getSigner(signer);
     } else if (Signer.isSigner(signer)) {
       return signer;
@@ -102,7 +102,7 @@ export class Ethereum {
   public async callView(address: Address, method: string, args: string): Promise<string> {
     const contract = this.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
-    if (args[0] !== '[') {
+    if (args[0] !== "[") {
       args = `[${args}]`;
     }
     const parsedArgs = JSON.parse(args);
@@ -113,7 +113,7 @@ export class Ethereum {
   public async sendTransaction(address: Address, method: string, args: string): Promise<string> {
     const contract = this.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
-    if (args[0] !== '[') {
+    if (args[0] !== "[") {
       args = `[${args}]`;
     }
     const parsedArgs = JSON.parse(args);
@@ -124,11 +124,11 @@ export class Ethereum {
   }
 
   public async ensToCID(domain: string): Promise<string> {
-    const ensAddress = this._config.ens || '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e';
-    const ensAbi = ['function resolver(bytes32 node) external view returns (address)'];
+    const ensAddress = this._config.ens || "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
+    const ensAbi = ["function resolver(bytes32 node) external view returns (address)"];
     const resolverAbi = [
-      'function contenthash(bytes32 nodehash) view returns (bytes)',
-      'function content(bytes32 nodehash) view returns (bytes32)',
+      "function contenthash(bytes32 nodehash) view returns (bytes)",
+      "function content(bytes32 nodehash) view returns (bytes32)",
     ];
     const ensContract = this.getContract(ensAddress, ensAbi);
     const domainNode = ethers.utils.namehash(domain);
@@ -152,11 +152,11 @@ export class Ethereum {
       }
     }
 
-    if (hash === '0x') {
-      return '';
+    if (hash === "0x") {
+      return "";
     }
 
-    if (hash.substring(0, 10) === '0xe3010170' && ethers.utils.isHexString(hash, 38)) {
+    if (hash.substring(0, 10) === "0xe3010170" && ethers.utils.isHexString(hash, 38)) {
       return Base58.encode(ethers.utils.hexDataSlice(hash, 4));
     } else {
       throw Error(`Unkown CID format, CID hash: ${hash}`);

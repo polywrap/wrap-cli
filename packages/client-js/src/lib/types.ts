@@ -1,5 +1,5 @@
-import {DocumentNode} from 'graphql/language';
-import {ExecutionResult} from 'graphql/execution';
+import { DocumentNode } from "graphql/language";
+import { ExecutionResult } from "graphql/execution";
 //import { ResultObject, ASUtil } from "@assemblyscript/loader";
 
 export interface Query {

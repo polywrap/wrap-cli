@@ -1,10 +1,10 @@
-import {fixParameters} from '../lib/helpers/parameters';
+import { fixParameters } from "../lib/helpers/parameters";
 
-import {Ethereum, IPFS, Subgraph, Web3API} from '@web3api/client-js';
-import axios from 'axios';
-import {GluegunToolbox} from 'gluegun';
-import gql from 'graphql-tag';
-import path from 'path';
+import { Ethereum, IPFS, Subgraph, Web3API } from "@web3api/client-js";
+import axios from "axios";
+import { GluegunToolbox } from "gluegun";
+import gql from "graphql-tag";
+import path from "path";
 
 // const HELP = `
 // ${chalk.bold('w3 query')} [options] ${chalk.bold('[<recipe-script>]')}
@@ -14,12 +14,12 @@ import path from 'path';
 // `;
 
 export default {
-  alias: ['q'],
-  description: 'Query Web3APIs using recipe scripts',
+  alias: ["q"],
+  description: "Query Web3APIs using recipe scripts",
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const {filesystem, parameters, print} = toolbox;
-    let {testEns} = parameters.options;
-    const {t} = parameters.options;
+    const { filesystem, parameters, print } = toolbox;
+    let { testEns } = parameters.options;
+    const { t } = parameters.options;
 
     testEns = testEns || t;
     let recipePath: string | undefined;
@@ -36,11 +36,11 @@ export default {
     }
 
     const {
-      data: {ipfs, ethereum, subgraph},
-    } = await axios.get('http://localhost:4040/providers');
+      data: { ipfs, ethereum, subgraph },
+    } = await axios.get("http://localhost:4040/providers");
     const {
-      data: {ensAddress},
-    } = await axios.get('http://localhost:4040/ens');
+      data: { ensAddress },
+    } = await axios.get("http://localhost:4040/ens");
 
     const recipe = JSON.parse(filesystem.read(recipePath as string) as string);
     const dir = path.dirname(recipePath as string);
@@ -52,9 +52,9 @@ export default {
         api = new Web3API({
           uri: task.api,
           portals: {
-            ipfs: new IPFS({provider: ipfs}),
-            ethereum: new Ethereum({provider: ethereum, ens: ensAddress}),
-            subgraph: new Subgraph({provider: subgraph}),
+            ipfs: new IPFS({ provider: ipfs }),
+            ethereum: new Ethereum({ provider: ethereum, ens: ensAddress }),
+            subgraph: new Subgraph({ provider: subgraph }),
           },
         });
       }
@@ -73,29 +73,29 @@ export default {
         let variables: Record<string, string> = {};
 
         if (task.variables) {
-          variables = {...task.variables};
+          variables = { ...task.variables };
 
           Object.keys(variables).forEach((key: string) => {
-            if (typeof variables[key] === 'string') {
-              if (variables[key][0] === '$') {
-                variables[key] = constants[variables[key].replace('$', '')] as string;
+            if (typeof variables[key] === "string") {
+              if (variables[key][0] === "$") {
+                variables[key] = constants[variables[key].replace("$", "")] as string;
               }
             }
           });
         }
 
         if (!api) {
-          throw Error('API needs to be initialized');
+          throw Error("API needs to be initialized");
         }
 
-        const {data} = await api.query({
+        const { data } = await api.query({
           query: gql(query),
           variables,
         });
 
-        print.success('-----------------------------------');
+        print.success("-----------------------------------");
         print.fancy(JSON.stringify(data, null, 2));
-        print.success('-----------------------------------');
+        print.success("-----------------------------------");
       }
     }
 

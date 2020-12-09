@@ -1,14 +1,14 @@
-import {Web3API} from './Web3API';
-import {runGraphCLI} from './cli/graph-cli';
-import {displayPath} from './helpers/path';
-import {step, withSpinner} from './helpers/spinner';
+import { Web3API } from "./Web3API";
+import { runGraphCLI } from "./cli/graph-cli";
+import { displayPath } from "./helpers/path";
+import { step, withSpinner } from "./helpers/spinner";
 
-import {Manifest} from '@web3api/client-js';
-import {print} from 'gluegun';
-import * as asc from 'assemblyscript/cli/asc';
-import fs from 'fs';
-import path from 'path';
-import fsExtra from 'fs-extra';
+import { Manifest } from "@web3api/client-js";
+import { print } from "gluegun";
+import * as asc from "assemblyscript/cli/asc";
+import fs from "fs";
+import path from "path";
+import fsExtra from "fs-extra";
 
 export interface ICompilerConfig {
   manifestPath: string;
@@ -29,7 +29,7 @@ export class Compiler {
       const api = await this._loadWeb3API();
 
       // Init & clean build directory
-      const {outputDir} = this.config;
+      const { outputDir } = this.config;
 
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir);
@@ -69,34 +69,34 @@ export class Compiler {
   }
 
   private async _compileWeb3API(manifest: Manifest, quiet?: boolean, verbose?: boolean) {
-    const run = async (spinner?: ReturnType<typeof print['spin']>) => {
-      const {mutation, query, subgraph} = manifest;
-      const {outputDir, manifestPath} = this.config;
+    const run = async (spinner?: ReturnType<typeof print["spin"]>) => {
+      const { mutation, query, subgraph } = manifest;
+      const { outputDir, manifestPath } = this.config;
 
       const appendPath = (root: string, subPath: string) => {
         return path.join(path.dirname(root), subPath);
       };
 
-      let schema = '';
+      let schema = "";
       const loadSchema = (schemaPath: string) => {
         schema += `${fs.readFileSync(
           path.isAbsolute(schemaPath) ? schemaPath : appendPath(manifestPath, schemaPath),
-          'utf-8'
+          "utf-8"
         )}\n`;
       };
 
       if (mutation) {
         loadSchema(mutation.schema.file);
-        await this._compileWASMModule(mutation.module.file, 'mutation', outputDir, spinner, quiet, verbose);
-        mutation.module.file = './mutation.wasm';
-        mutation.schema.file = './schema.graphql';
+        await this._compileWASMModule(mutation.module.file, "mutation", outputDir, spinner, quiet, verbose);
+        mutation.module.file = "./mutation.wasm";
+        mutation.schema.file = "./schema.graphql";
       }
 
       if (query) {
         loadSchema(query.schema.file);
-        await this._compileWASMModule(query.module.file, 'query', outputDir, spinner, quiet, verbose);
-        query.module.file = './query.wasm';
-        query.schema.file = './schema.graphql';
+        await this._compileWASMModule(query.module.file, "query", outputDir, spinner, quiet, verbose);
+        query.module.file = "./query.wasm";
+        query.schema.file = "./schema.graphql";
       }
 
       if (subgraph) {
@@ -113,7 +113,7 @@ export class Compiler {
         subgraph.file = `./subgraph/subgraph.yaml`;
       }
 
-      fs.writeFileSync(`${outputDir}/schema.graphql`, schema, 'utf-8');
+      fs.writeFileSync(`${outputDir}/schema.graphql`, schema, "utf-8");
 
       Web3API.dump(manifest, `${outputDir}/web3api.yaml`);
 
@@ -128,9 +128,9 @@ export class Compiler {
       return run();
     } else {
       return await withSpinner(
-        'Compile Web3API',
-        'Failed to compile Web3API',
-        'Warnings while compiling Web3API',
+        "Compile Web3API",
+        "Failed to compile Web3API",
+        "Warnings while compiling Web3API",
         async (spinner) => {
           return run(spinner);
         }
@@ -142,18 +142,18 @@ export class Compiler {
     modulePath: string,
     moduleName: string,
     outputDir: string,
-    spinner?: ReturnType<typeof print['spin']>,
+    spinner?: ReturnType<typeof print["spin"]>,
     quiet?: boolean,
     verbose?: boolean
   ) {
     if (!quiet && spinner) {
-      step(spinner, 'Compiling WASM module:', `${modulePath} => ${outputDir}/${moduleName}.wasm`);
+      step(spinner, "Compiling WASM module:", `${modulePath} => ${outputDir}/${moduleName}.wasm`);
     }
 
     const moduleAbsolute = path.join(this._manifestDir, modulePath);
     const baseDir = path.dirname(moduleAbsolute);
     const libsDirs = [];
-    let w3Wasm = '';
+    let w3Wasm = "";
 
     for (
       let dir: string | undefined = path.resolve(baseDir);
@@ -162,10 +162,10 @@ export class Compiler {
       // Continue with the parent directory, terminate after the root dir
       dir = path.dirname(dir) === dir ? undefined : path.dirname(dir)
     ) {
-      if (fs.existsSync(path.join(dir, 'node_modules'))) {
-        libsDirs.push(path.join(dir, 'node_modules'));
-        if (fs.existsSync(path.join(dir, 'node_modules/@web3api/wasm-ts'))) {
-          w3Wasm = path.resolve(dir, 'node_modules/@web3api/wasm-ts/assembly/index.ts');
+      if (fs.existsSync(path.join(dir, "node_modules"))) {
+        libsDirs.push(path.join(dir, "node_modules"));
+        if (fs.existsSync(path.join(dir, "node_modules/@web3api/wasm-ts"))) {
+          w3Wasm = path.resolve(dir, "node_modules/@web3api/wasm-ts/assembly/index.ts");
         }
       }
     }
@@ -177,16 +177,16 @@ export class Compiler {
     const args = [
       w3Wasm,
       moduleAbsolute,
-      '--baseDir',
+      "--baseDir",
       baseDir,
-      '--lib',
-      libsDirs.join(','),
-      '--outFile',
+      "--lib",
+      libsDirs.join(","),
+      "--outFile",
       `${outputDir}/${moduleName}.wasm`,
-      '--optimize',
-      '--debug',
-      '--runtime',
-      'full',
+      "--optimize",
+      "--debug",
+      "--runtime",
+      "full",
     ];
 
     // compile the module into the output directory
@@ -209,22 +209,22 @@ export class Compiler {
   private async _compileSubgraph(
     subgraphPath: string,
     outputDir: string,
-    spinner?: ReturnType<typeof print['spin']>,
+    spinner?: ReturnType<typeof print["spin"]>,
     quiet?: boolean,
     verbose?: boolean
   ): Promise<string> {
     if (spinner) {
-      step(spinner, 'Compiling Subgraph...', `${subgraphPath} => ${outputDir}/subgraph.yaml`);
+      step(spinner, "Compiling Subgraph...", `${subgraphPath} => ${outputDir}/subgraph.yaml`);
     }
 
     const args = [
-      'build',
+      "build",
       subgraphPath,
-      '--output-dir',
+      "--output-dir",
       outputDir,
       // TODO: remove this hack, calculate ourselves?
-      '--ipfs',
-      'http://localhost:5001',
+      "--ipfs",
+      "http://localhost:5001",
     ];
 
     const [exitCode, stdout, stderr] = await runGraphCLI(args);
@@ -237,6 +237,6 @@ export class Compiler {
 
     const extractCID = /Build completed: (([A-Z]|[a-z]|[0-9])*)/;
     const result = stdout.match(extractCID);
-    return result && result.length ? result[1] : '';
+    return result && result.length ? result[1] : "";
   }
 }

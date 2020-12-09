@@ -1,10 +1,10 @@
-import {Libp2pCryptoIdentity} from '@textile/threads-core';
-import {print} from 'gluegun';
+import { Libp2pCryptoIdentity } from "@textile/threads-core";
+import { print } from "gluegun";
 
 const requireKeytar = () => {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    return require('keytar');
+    return require("keytar");
   } catch (e) {
     throw new Error(
       `
@@ -21,7 +21,7 @@ The original error was: ${e.message}
 export const identifyAccessToken = async (protocolName: string): Promise<Libp2pCryptoIdentity | undefined> => {
   try {
     const keytar = requireKeytar();
-    const token = await keytar.getPassword('web3api-auth', protocolName);
+    const token = await keytar.getPassword("web3api-auth", protocolName);
     if (!token) {
       print.error(
         `Token not found.
@@ -33,13 +33,13 @@ Please make sure you are authenticated. Run w3 auth --help for more information`
     return identityToken;
   } catch (e) {
     switch (process.platform) {
-      case 'win32':
+      case "win32":
         print.warning(`Could not get access token from Windows Credential Vault: ${e.message}`);
         break;
-      case 'darwin':
+      case "darwin":
         print.warning(`Could not get access token from macOS Keychain: ${e.message}`);
         break;
-      case 'linux':
+      case "linux":
         print.warning(
           `Could not get access token from libsecret (usually gnome-keyring or ksecretservice): ${e.message}`
         );
@@ -57,14 +57,14 @@ export const saveAccessToken = async (protocolName?: string): Promise<void> => {
     const keytar = requireKeytar();
     const identity = await Libp2pCryptoIdentity.fromRandom();
     const accessToken = identity.toString();
-    await keytar.setPassword('web3api-auth', protocolName, accessToken);
+    await keytar.setPassword("web3api-auth", protocolName, accessToken);
   } catch (e) {
     switch (process.platform) {
-      case 'win32':
+      case "win32":
         throw new Error(`Error storing access token in Windows Credential Vault: ${e.message}`);
-      case 'darwin':
+      case "darwin":
         throw new Error(`Error storing access token in macOS Keychain: ${e.message}`);
-      case 'linux':
+      case "linux":
         throw new Error(
           `Error storing access token with libsecret (usually gnome-keyring or ksecretservice): ${e.message}`
         );

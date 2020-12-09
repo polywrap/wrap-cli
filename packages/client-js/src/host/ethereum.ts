@@ -1,5 +1,5 @@
-import {Ethereum} from '../portals';
-import {WasmWorker, WasmCallback} from '../lib/wasm-worker';
+import { Ethereum } from "../portals";
+import { WasmWorker, WasmCallback } from "../lib/wasm-worker";
 
 export interface IEthereumImports {
   _w3_eth_callView(addressPtr: number, methodPtr: number, argsPtr: number, cb: WasmCallback): Promise<void /*string*/>;

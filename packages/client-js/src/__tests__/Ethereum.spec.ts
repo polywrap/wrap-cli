@@ -1,14 +1,14 @@
-import {Web3API, IPFS, Ethereum, Subgraph} from '../';
-import {IPortals} from '../Web3API';
-import {runW3CLI, generateName} from './helpers';
+import { Web3API, IPFS, Ethereum, Subgraph } from "../";
+import { IPortals } from "../Web3API";
+import { runW3CLI, generateName } from "./helpers";
 
-import fs from 'fs';
-import gql from 'graphql-tag';
-import axios from 'axios';
+import fs from "fs";
+import gql from "graphql-tag";
+import axios from "axios";
 
 jest.setTimeout(150000);
 
-describe('Ethereum', () => {
+describe("Ethereum", () => {
   let portals: IPortals;
   let apiCID: string;
   let apiENS: string;
@@ -17,30 +17,30 @@ describe('Ethereum', () => {
   beforeAll(async () => {
     // fetch providers from dev server
     const {
-      data: {ipfs, ethereum, subgraph},
-    } = await axios.get('http://localhost:4040/providers');
+      data: { ipfs, ethereum, subgraph },
+    } = await axios.get("http://localhost:4040/providers");
 
     if (!ipfs) {
-      throw Error('Dev server must be running at port 4040');
+      throw Error("Dev server must be running at port 4040");
     }
 
     // re-deploy ENS
     const {
-      data: {ensAddress},
-    } = await axios.get('http://localhost:4040/deploy-ens');
+      data: { ensAddress },
+    } = await axios.get("http://localhost:4040/deploy-ens");
 
     // create a new ENS domain
     apiENS = `${generateName()}.eth`;
 
     // build & deploy the protocol
-    const {exitCode, stdout, stderr} = await runW3CLI([
-      'build',
+    const { exitCode, stdout, stderr } = await runW3CLI([
+      "build",
       `${__dirname}/apis/eth-get-put-string/web3api.yaml`,
-      '--output-dir',
+      "--output-dir",
       `${__dirname}/apis/eth-get-put-string/build`,
-      '--ipfs',
+      "--ipfs",
       ipfs,
-      '--test-ens',
+      "--test-ens",
       `${ensAddress},${apiENS}`,
     ]);
 
@@ -48,7 +48,7 @@ describe('Ethereum', () => {
       console.error(`w3 exited with code: ${exitCode}`);
       console.log(`stderr:\n${stderr}`);
       console.log(`stdout:\n${stdout}`);
-      throw Error('w3 CLI failed');
+      throw Error("w3 CLI failed");
     }
 
     // get the IPFS CID of the published package
@@ -63,9 +63,9 @@ describe('Ethereum', () => {
     });
 
     portals = {
-      ipfs: new IPFS({provider: ipfs}),
+      ipfs: new IPFS({ provider: ipfs }),
       ethereum: eth,
-      subgraph: new Subgraph({provider: subgraph}),
+      subgraph: new Subgraph({ provider: subgraph }),
     };
 
     // deploy an example version of the contract
@@ -76,7 +76,7 @@ describe('Ethereum', () => {
     address = await eth.deployContract(abi.abi, bytecode);
   });
 
-  it('Deploy Contract', async () => {
+  it("Deploy Contract", async () => {
     const api = new Web3API({
       uri: apiENS,
       portals,
@@ -91,10 +91,10 @@ describe('Ethereum', () => {
     });
 
     expect(res.errors).toBeFalsy();
-    expect(res.data.deployContract.indexOf('0x')).toBeGreaterThan(-1);
+    expect(res.data.deployContract.indexOf("0x")).toBeGreaterThan(-1);
   });
 
-  it('Set & Get', async () => {
+  it("Set & Get", async () => {
     const testValue = 777;
     const api = new Web3API({
       uri: apiENS,
@@ -114,7 +114,7 @@ describe('Ethereum', () => {
     });
 
     expect(res.errors).toBeFalsy();
-    expect(res.data.setData.indexOf('0x')).toBeGreaterThan(-1);
+    expect(res.data.setData.indexOf("0x")).toBeGreaterThan(-1);
 
     const res2 = await api.query({
       query: gql`

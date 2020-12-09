@@ -1,5 +1,5 @@
-import {IPFS} from '../portals';
-import {WasmWorker, WasmCallback} from '../lib/wasm-worker';
+import { IPFS } from "../portals";
+import { WasmWorker, WasmCallback } from "../lib/wasm-worker";
 
 // TODO: generate these types from the WASM interface (WITX)
 export interface IIPFSImports {
@@ -14,7 +14,7 @@ export function getIpfsImports(getWasmWorker: () => WasmWorker, ipfs: IPFS): IIP
     _w3_ipfs_add: async (dataPtr: number, cb: WasmCallback) => {
       const ww = getWasmWorker();
       const read = await ww.readStringAsync(dataPtr);
-      const {cid} = await ipfs.add(Buffer.from(read.result));
+      const { cid } = await ipfs.add(Buffer.from(read.result));
       const write = await ww.writeStringAsync(cid.toString());
       cb(write.result);
     },

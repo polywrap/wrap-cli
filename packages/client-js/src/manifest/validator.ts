@@ -1,20 +1,20 @@
-import {Manifest} from './formats/0.0.1-alpha.1';
-import {latestFormat} from './formats';
-import {upgradeManifest, ManifestFormats} from './migrator';
+import { Manifest } from "./formats/0.0.1-alpha.1";
+import { latestFormat } from "./formats";
+import { upgradeManifest, ManifestFormats } from "./migrator";
 
 // eslint-disable-next-line import/no-extraneous-dependencies
-import schema from '@web3api/manifest-schema';
-import {Validator} from 'jsonschema';
-import {compare} from 'semver';
+import schema from "@web3api/manifest-schema";
+import { Validator } from "jsonschema";
+import { compare } from "semver";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
-const packageInformation = require('../../package.json');
+const packageInformation = require("../../package.json");
 
 enum ValidationError {
-  ADDITIONAL_PROPERTY = 'additionalProperties',
-  TYPE = 'type',
-  REQUIRED = 'required',
-  INPUT = 'format',
+  ADDITIONAL_PROPERTY = "additionalProperties",
+  TYPE = "type",
+  REQUIRED = "required",
+  INPUT = "format",
 }
 
 const validator = new Validator();
@@ -39,9 +39,9 @@ const validateFormat = (format: string) => {
 };
 
 export const sanitizeAndUpgrade = (manifest: Manifest): Manifest => {
-  const manifestSchema = schema['manifest'];
+  const manifestSchema = schema["manifest"];
 
-  const {errors} = validator.validate(manifest, manifestSchema);
+  const { errors } = validator.validate(manifest, manifestSchema);
   /*
    We should handle five cases or errors:
    1- When a non-accepted field is added to the manifest
@@ -51,8 +51,8 @@ export const sanitizeAndUpgrade = (manifest: Manifest): Manifest => {
    5- When file string is not an existing file
   */
   if (errors.length > 0) {
-    const {path, message, name, argument, instance} = errors[0];
-    const pathMapping = path.join(' -> ');
+    const { path, message, name, argument, instance } = errors[0];
+    const pathMapping = path.join(" -> ");
 
     switch (name) {
       case ValidationError.REQUIRED: {
@@ -68,8 +68,8 @@ export const sanitizeAndUpgrade = (manifest: Manifest): Manifest => {
         throw Error(`${property} has a type error: ${message}`);
       }
       case ValidationError.INPUT: {
-        const isFormatVersionError = argument === 'manifestFormat';
-        const isFileError = argument === 'file';
+        const isFormatVersionError = argument === "manifestFormat";
+        const isFileError = argument === "file";
         if (isFormatVersionError) {
           throw Error(`The manifest's format is not correct. Accepted format version: ${packageInformation.version}`);
         } else if (isFileError) {

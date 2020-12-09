@@ -1,8 +1,8 @@
-import {ASCImports} from '../types';
+import { ASCImports } from "../types";
 
-import {Worker, MessageChannel, MessagePort} from 'worker_threads';
-import {EventEmitter} from 'events';
-import path from 'path';
+import { Worker, MessageChannel, MessagePort } from "worker_threads";
+import { EventEmitter } from "events";
+import path from "path";
 
 export type WasmCallback = (result: number, error?: Error) => void;
 export type MessageCallback = (result: string, error?: Error) => void;
@@ -31,7 +31,7 @@ export class WasmWorker extends EventEmitter {
       importNames[namespace] = Object.keys(imports[namespace]);
     });
 
-    const workerFile = process.env.WORKER_ENV === 'test' ? 'worker-import.js' : 'worker.js';
+    const workerFile = process.env.WORKER_ENV === "test" ? "worker-import.js" : "worker.js";
 
     const worker = new Worker(path.resolve(__dirname, workerFile), {
       workerData: {
@@ -49,25 +49,25 @@ export class WasmWorker extends EventEmitter {
 
     // Stand up a secondary message channel for all
     // secondary actions (reading & writing to WASM for ex)
-    const {port1, port2} = new MessageChannel();
+    const { port1, port2 } = new MessageChannel();
     this._secondaryPort = port1;
 
-    worker.on('message', (m) => {
+    worker.on("message", (m) => {
       // Posting the result of a WASM call
-      if (m.type === 'result') {
+      if (m.type === "result") {
         const cb = this._getCallback(m.id);
         cb(m.result, null);
         return;
       }
 
       // Execute an import method from WASM
-      if (m.type === 'impcall') {
+      if (m.type === "impcall") {
         // Locate the import being called
         const fn = imports[m.namespace][m.method];
 
-        if (!fn || typeof fn !== 'function') {
+        if (!fn || typeof fn !== "function") {
           const error = new Error(`HOST: impcall failed to locate import. ${m.namespace}.${m.method}`);
-          this.emit('error', error);
+          this.emit("error", error);
           return;
         }
 
@@ -93,15 +93,15 @@ export class WasmWorker extends EventEmitter {
         return;
       }
 
-      if (m.type === 'log') {
+      if (m.type === "log") {
         console.log(m.log);
         return;
       }
 
       // If an error occurs within the worker
-      if (m.type === 'error') {
+      if (m.type === "error") {
         const error = new Error(m.error);
-        this.emit('error', error);
+        this.emit("error", error);
         return;
       }
     });
@@ -109,15 +109,15 @@ export class WasmWorker extends EventEmitter {
     // Send the other end of the channel to the worker
     worker.postMessage(
       {
-        type: 'spawn-sub-port',
+        type: "spawn-sub-port",
         port: port2,
       },
       [port2]
     );
 
-    this._secondaryPort.on('message', (message) => {
+    this._secondaryPort.on("message", (message) => {
       // Posting the result of a secondary action
-      if (message.type === 'result') {
+      if (message.type === "result") {
         const cb = this._getCallback(message.id);
         cb(message.result, null);
         return;
@@ -129,11 +129,11 @@ export class WasmWorker extends EventEmitter {
   public call(method: string, ...args: unknown[]): void {
     // Get the callback appended to the arguments
     // if it exists
-    const cb = args.length && typeof args[args.length - 1] === 'function' ? (args.pop() as WasmCallback) : noop;
+    const cb = args.length && typeof args[args.length - 1] === "function" ? (args.pop() as WasmCallback) : noop;
 
     // Don't continue if we're destroying ourselves
     if (this.destroyed) {
-      return process.nextTick(cb, -1, new Error('Worker destroyed'));
+      return process.nextTick(cb, -1, new Error("Worker destroyed"));
     }
 
     // Get a new callback ID
@@ -144,7 +144,7 @@ export class WasmWorker extends EventEmitter {
 
     // Post our execution to the worker
     this._worker.postMessage({
-      type: 'call',
+      type: "call",
       id,
       method,
       args,
@@ -158,8 +158,8 @@ export class WasmWorker extends EventEmitter {
     error: Error | null;
     result: number;
   }> {
-    if (args.length && typeof args[args.length - 1] === 'function') {
-      throw Error('No callback argument supported on Async method, await result.');
+    if (args.length && typeof args[args.length - 1] === "function") {
+      throw Error("No callback argument supported on Async method, await result.");
     }
 
     return new Promise((resolve) => {
@@ -179,14 +179,14 @@ export class WasmWorker extends EventEmitter {
 
     while (this._callbacks.length) {
       const cb = this._getCallback(this._callbacks.length - 1);
-      cb(-1, new Error('Worker destroyed'));
+      cb(-1, new Error("Worker destroyed"));
     }
   }
 
   public readString(pointer: number, cb: MessageCallback): void {
     // Don't continue if we're destroying ourselves
     if (this.destroyed) {
-      return process.nextTick(cb, -1, new Error('Worker destroyed'));
+      return process.nextTick(cb, -1, new Error("Worker destroyed"));
     }
 
     // Get a new callback ID
@@ -197,7 +197,7 @@ export class WasmWorker extends EventEmitter {
 
     // Post our execution to the worker
     this._secondaryPort.postMessage({
-      type: 'read-string',
+      type: "read-string",
       id,
       pointer,
     });
@@ -222,7 +222,7 @@ export class WasmWorker extends EventEmitter {
   public writeString(value: string, cb: WasmCallback): void {
     // Don't continue if we're destroying ourselves
     if (this.destroyed) {
-      return process.nextTick(cb, -1, new Error('Worker destroyed'));
+      return process.nextTick(cb, -1, new Error("Worker destroyed"));
     }
 
     // Get a new callback ID
@@ -233,7 +233,7 @@ export class WasmWorker extends EventEmitter {
 
     // Post our execution to the worker
     this._secondaryPort.postMessage({
-      type: 'write-string',
+      type: "write-string",
       id,
       value,
     });

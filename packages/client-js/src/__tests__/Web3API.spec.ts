@@ -1,13 +1,13 @@
-import {Web3API, IPFS, Ethereum, Subgraph} from '../';
-import {IPortals} from '../Web3API';
-import {runW3CLI, generateName} from './helpers';
+import { Web3API, IPFS, Ethereum, Subgraph } from "../";
+import { IPortals } from "../Web3API";
+import { runW3CLI, generateName } from "./helpers";
 
-import {printSchema} from 'graphql';
-import axios from 'axios';
+import { printSchema } from "graphql";
+import axios from "axios";
 
 jest.setTimeout(150000);
 
-describe('Web3API', () => {
+describe("Web3API", () => {
   let portals: IPortals;
   let apiCID: string;
   let apiENS: string;
@@ -15,30 +15,30 @@ describe('Web3API', () => {
   beforeAll(async () => {
     // fetch providers from dev server
     const {
-      data: {ipfs, ethereum, subgraph},
-    } = await axios.get('http://localhost:4040/providers');
+      data: { ipfs, ethereum, subgraph },
+    } = await axios.get("http://localhost:4040/providers");
 
     if (!ipfs) {
-      throw Error('Dev server must be running at port 4040');
+      throw Error("Dev server must be running at port 4040");
     }
 
     // re-deploy ENS
     const {
-      data: {ensAddress},
-    } = await axios.get('http://localhost:4040/deploy-ens');
+      data: { ensAddress },
+    } = await axios.get("http://localhost:4040/deploy-ens");
 
     // create a new ENS domain
     apiENS = `${generateName()}.eth`;
 
     // build & deploy the protocol
-    const {exitCode, stdout, stderr} = await runW3CLI([
-      'build',
+    const { exitCode, stdout, stderr } = await runW3CLI([
+      "build",
       `${__dirname}/apis/ipfs-get-put-string/web3api.yaml`,
-      '--output-dir',
+      "--output-dir",
       `${__dirname}/apis/ipfs-get-put-string/build`,
-      '--ipfs',
+      "--ipfs",
       ipfs,
-      '--test-ens',
+      "--test-ens",
       `${ensAddress},${apiENS}`,
     ]);
 
@@ -46,7 +46,7 @@ describe('Web3API', () => {
       console.error(`w3 exited with code: ${exitCode}`);
       console.log(`stderr:\n${stderr}`);
       console.log(`stdout:\n${stdout}`);
-      throw Error('w3 CLI failed');
+      throw Error("w3 CLI failed");
     }
 
     // get the IPFS CID of the published package
@@ -55,13 +55,13 @@ describe('Web3API', () => {
     apiCID = result[1];
 
     portals = {
-      ipfs: new IPFS({provider: ipfs}),
-      ethereum: new Ethereum({provider: ethereum, ens: ensAddress}),
-      subgraph: new Subgraph({provider: subgraph}),
+      ipfs: new IPFS({ provider: ipfs }),
+      ethereum: new Ethereum({ provider: ethereum, ens: ensAddress }),
+      subgraph: new Subgraph({ provider: subgraph }),
     };
   });
 
-  it('Fetches CID', async () => {
+  it("Fetches CID", async () => {
     const api = new Web3API({
       uri: apiENS,
       portals,
@@ -71,7 +71,7 @@ describe('Web3API', () => {
     expect(cid).toBe(apiCID);
   });
 
-  it('Fetches manifest', async () => {
+  it("Fetches manifest", async () => {
     const api = new Web3API({
       uri: apiENS,
       portals,
@@ -82,13 +82,13 @@ describe('Web3API', () => {
     expect(manifest.query).toBeTruthy();
   });
 
-  it('Fetches schema', async () => {
+  it("Fetches schema", async () => {
     const api = new Web3API({
       uri: apiENS,
       portals,
     });
 
     const schema = await api.fetchSchema();
-    expect(printSchema(schema)).toContain('type Mutation {');
+    expect(printSchema(schema)).toContain("type Mutation {");
   });
 });

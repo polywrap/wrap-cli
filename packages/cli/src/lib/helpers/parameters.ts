@@ -25,16 +25,16 @@
 // parameters array and returns the result of that.
 //
 export const fixParameters = (
-  parameters: {options: Record<string, unknown>; array: string[]},
+  parameters: { options: Record<string, unknown>; array: string[] },
   booleanOptions: Record<string, unknown>
 ): string[] => {
   const unexpectedStringOptions = Object.keys(booleanOptions)
-    .filter((key) => typeof booleanOptions[key] === 'string')
-    .map((key) => ({key, value: booleanOptions[key]})) as {key: string; value: string}[];
+    .filter((key) => typeof booleanOptions[key] === "string")
+    .map((key) => ({ key, value: booleanOptions[key] })) as { key: string; value: string }[];
 
   const optionNames = unexpectedStringOptions
-    .map(({key}) => `--` + key.replace(/([A-Z])/, '-$1').toLowerCase())
-    .join(', ');
+    .map(({ key }) => `--` + key.replace(/([A-Z])/, "-$1").toLowerCase())
+    .join(", ");
 
   if (unexpectedStringOptions.length > 1) {
     throw new Error(`Unexpected value provided for one or more of ${optionNames}. See --help for more information.`);

@@ -1,15 +1,15 @@
-import {Compiler} from '../lib/Compiler';
-import {fixParameters} from '../lib/helpers/parameters';
-import {publishToIPFS} from '../lib/publishers/ipfs-publisher';
-import {publishToSubgraph} from '../lib/publishers/subgraph-publisher';
+import { Compiler } from "../lib/Compiler";
+import { fixParameters } from "../lib/helpers/parameters";
+import { publishToIPFS } from "../lib/publishers/ipfs-publisher";
+import { publishToSubgraph } from "../lib/publishers/subgraph-publisher";
 
-import path from 'path';
-import chalk from 'chalk';
-import axios from 'axios';
-import {GluegunToolbox} from 'gluegun';
+import path from "path";
+import chalk from "chalk";
+import axios from "axios";
+import { GluegunToolbox } from "gluegun";
 
 const HELP = `
-${chalk.bold('w3 build')} [options] ${chalk.bold('[<web3api-manifest>]')}
+${chalk.bold("w3 build")} [options] ${chalk.bold("[<web3api-manifest>]")}
 
 Options:
   -h, --help                         Show usage information
@@ -22,13 +22,13 @@ Options:
 `;
 
 export default {
-  alias: ['b'],
-  description: 'Builds a Web3API and (optionally) uploads it to IPFS',
+  alias: ["b"],
+  description: "Builds a Web3API and (optionally) uploads it to IPFS",
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const {filesystem, parameters, print} = toolbox;
+    const { filesystem, parameters, print } = toolbox;
 
-    let {help, ipfs, graph, outputDir, outputFormat, watch, testEns} = parameters.options;
-    const {h, i, g, o, f, w, e} = parameters.options;
+    let { help, ipfs, graph, outputDir, outputFormat, watch, testEns } = parameters.options;
+    const { h, i, g, o, f, w, e } = parameters.options;
 
     help = help || h;
     ipfs = ipfs || i;
@@ -58,44 +58,44 @@ export default {
     }
 
     if (ipfs === true) {
-      print.error('--ipfs option missing <node> argument');
+      print.error("--ipfs option missing <node> argument");
       print.info(HELP);
       return;
     }
 
     if (graph === true) {
-      print.error('--graph option missing <name,node> argument');
+      print.error("--graph option missing <name,node> argument");
       print.info(HELP);
       return;
     }
 
     if (outputDir === true) {
-      print.error('--output-dir option missing <path> argument');
+      print.error("--output-dir option missing <path> argument");
       print.info(HELP);
       return;
     }
 
     if (outputFormat === true) {
-      print.error('--output-format option missing <format> argument');
+      print.error("--output-format option missing <format> argument");
       print.info(HELP);
       return;
     }
 
     if (graph && !ipfs) {
-      print.error('--graph requires --ipfs <node>');
+      print.error("--graph requires --ipfs <node>");
       print.info(HELP);
       return;
     }
 
-    if (outputFormat && (outputFormat !== 'wasm' || outputFormat !== 'wast')) {
+    if (outputFormat && (outputFormat !== "wasm" || outputFormat !== "wast")) {
       print.error(`Unrecognized --output-format type: ${outputFormat}`);
       print.info(HELP);
       return;
     }
 
-    manifestPath = manifestPath || filesystem.resolve('web3api.yaml');
-    outputDir = outputDir || filesystem.path('build');
-    outputFormat = outputFormat || 'wasm';
+    manifestPath = manifestPath || filesystem.resolve("web3api.yaml");
+    outputDir = outputDir || filesystem.path("build");
+    outputFormat = outputFormat || "wasm";
 
     const compiler = new Compiler({
       manifestPath,
@@ -120,13 +120,13 @@ export default {
         const cid = await publishToIPFS(outputDir, ipfs);
 
         print.success(`IPFS { ${cid} }`);
-        uris.push(['Web3API IPFS', `ipfs://${cid}`]);
+        uris.push(["Web3API IPFS", `ipfs://${cid}`]);
 
         if (testEns) {
           let address: string | undefined;
           let domain: string;
-          if (testEns.indexOf(',') > -1) {
-            const [addr, dom] = testEns.split(',');
+          if (testEns.indexOf(",") > -1) {
+            const [addr, dom] = testEns.split(",");
             address = addr;
             domain = dom;
           } else {
@@ -136,18 +136,18 @@ export default {
 
           if (!address) {
             const {
-              data: {ethereum},
-            } = await axios.get('http://localhost:4040/providers');
+              data: { ethereum },
+            } = await axios.get("http://localhost:4040/providers");
             const {
-              data: {ensAddress},
-            } = await axios.get('http://localhost:4040/deploy-ens');
+              data: { ensAddress },
+            } = await axios.get("http://localhost:4040/deploy-ens");
 
             print.success(`ENS Registry Deployed { ${ensAddress} }`);
-            uris.push(['ENS Registry', `${ethereum}/${ensAddress}`]);
+            uris.push(["ENS Registry", `${ethereum}/${ensAddress}`]);
           }
 
           // ask the dev server to publish the CID to ENS
-          const {data} = await axios.get('http://localhost:4040/register-ens', {
+          const { data } = await axios.get("http://localhost:4040/register-ens", {
             params: {
               domain: domain,
               cid,
@@ -156,7 +156,7 @@ export default {
 
           if (data.success) {
             print.success(`ENS Resolution Configured { ${testEns} => ${cid} }`);
-            uris.push(['Web3API ENS', `${testEns} => ${cid}`]);
+            uris.push(["Web3API ENS", `${testEns} => ${cid}`]);
           }
         }
       }
@@ -164,20 +164,20 @@ export default {
       // TODO: order of dependencies is strange between:
       // ipfs, graph-node, subgraph, graph-cli, and web3api.yaml
       if (graph !== undefined) {
-        const [name, node] = graph.split(',');
+        const [name, node] = graph.split(",");
 
         // TODO: remove this pathing hack
-        const subgraphPath = path.join(path.dirname(manifestPath), 'src/subgraph/subgraph.yaml');
+        const subgraphPath = path.join(path.dirname(manifestPath), "src/subgraph/subgraph.yaml");
 
         const id = await publishToSubgraph(subgraphPath, name, node, ipfs, outputDir);
 
         print.success(`Subgraph Deployed { ${id} }`);
         // TODO: remove this port hack
-        uris.push(['Subgraph GraphiQL', `${node.replace('8020', '8000')}/subgraphs/id/${id}`]);
+        uris.push(["Subgraph GraphiQL", `${node.replace("8020", "8000")}/subgraphs/id/${id}`]);
       }
 
       if (uris.length) {
-        print.success('URI Viewers:');
+        print.success("URI Viewers:");
         print.table(uris);
       }
 
