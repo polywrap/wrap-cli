@@ -1,22 +1,23 @@
 import { EnsPlugin } from "./";
 
-import { QueryClient } from "@web3api/client-js";
+import { Client, QueryResolver } from "@web3api/core-js";
 
-export const Query = (ens: EnsPlugin, client: QueryClient) => ({
+export const Query = (ens: EnsPlugin, client: Client): QueryResolver => ({
   // ens://uri-resolver.core.web3api.eth
   supportedScheme: async (input: { uri: string }) => {
-    return input.uri === "ens";
+    return { data: input.uri === "ens" };
   },
   tryResolveUri: async (input: { uri: string }) => {
     try {
-      return {
-        uri: await ens.ensToCID(input.uri, client)
-      }
+      return { data: {
+        uri: await ens.ensToCID(input.uri, client),
+        manifest: null
+      }}
     } catch (e) {
       // TODO: logging
     }
 
     // Nothing found
-    return { };
+    return { uri: null, manifest: null};
   }
 });

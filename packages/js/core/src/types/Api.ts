@@ -1,6 +1,6 @@
 import {
   Uri,
-  QueryClient
+  Client
 } from ".";
 
 export interface InvokeApiOptions {
@@ -25,7 +25,7 @@ export abstract class Api {
     TData = Record<string, unknown>
   >(
     options: InvokeApiOptions,
-    client: QueryClient
+    client: Client
   ): Promise<InvokeApiResult<TData>>;
 }
 

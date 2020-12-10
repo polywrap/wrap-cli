@@ -1,10 +1,11 @@
 import { Query, Mutation } from "./resolvers";
 
 import {
-  QueryClient,
-  Web3ApiPlugin,
-  Resolvers
-} from "@web3api/client-js";
+  Client,
+  Plugin,
+  Uri,
+  QueryResolvers
+} from "@web3api/core-js";
 
 import { Signer, ethers } from "ethers";
 import {
@@ -25,14 +26,14 @@ export interface EthereumConfig {
   signer?: EthereumSigner;
 }
 
-export class EthereumPlugin extends Web3ApiPlugin {
+export class EthereumPlugin extends Plugin {
 
   // @ts-ignore: initialized within setProvider
   private _client: EthereumClient;
 
   constructor(private _config: EthereumConfig) {
     super({
-      implements: ["ens://ethereum.web3api.eth"]
+      implemented: [new Uri("ens://ethereum.web3api.eth")]
     });
     const { provider, signer } = _config;
 
@@ -41,7 +42,7 @@ export class EthereumPlugin extends Web3ApiPlugin {
   }
 
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
-  public getResolvers(client: QueryClient): Resolvers {
+  public getQueryResolvers(client: Client): QueryResolvers {
     return {
       Query: Query(this),
       Mutation: Mutation(this)

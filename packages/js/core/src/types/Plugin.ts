@@ -1,39 +1,42 @@
 import {
   Uri,
-  QueryClient
-} from ".";
+  Client,
+  InvokeApiResult
+} from "./";
 
 export type QueryMethod = (
-  input: Record<string, any>,
-  client: QueryClient
-) => Promise<Record<string, any>>;
+  input: Record<string, unknown>,
+  client: Client
+) => Promise<InvokeApiResult<unknown>>;
+
+export type QueryResolver = Record<string, QueryMethod>;
 
 export interface QueryResolvers {
-  Query: Record<string, QueryMethod>;
-  Mutation: Record<string, QueryMethod>;
+  Query: QueryResolver;
+  Mutation: QueryResolver;
 }
 
 export interface PluginConfig {
-  import?: Uri[];
-  implement?: Uri[];
+  imported?: Uri[];
+  implemented?: Uri[];
 }
 
 export abstract class Plugin {
 
-  constructor(protected _config: PluginConfig) { }
+  constructor(protected _pluginConfig: PluginConfig) { }
 
   public isImplemented(uri: Uri): boolean {
-    return this._config.implement !== undefined &&
-           this._config.implement.findIndex((item) => item.uri === uri.uri) > -1;
+    return this._pluginConfig.implemented !== undefined &&
+           this._pluginConfig.implemented.findIndex((item) => item.uri === uri.uri) > -1;
   }
 
-  public implements(): Uri[] {
-    return this._config.implement || [];
+  public implements(): readonly Uri[] {
+    return this._pluginConfig.implemented || [];
   }
 
-  public imports(): Uri[] {
-    return this._config.import || [];
+  public imports(): readonly Uri[] {
+    return this._pluginConfig.imported || [];
   }
 
-  abstract getQueryResolvers(client: QueryClient): QueryResolvers;
+  abstract getQueryResolvers(client: Client): QueryResolvers;
 }

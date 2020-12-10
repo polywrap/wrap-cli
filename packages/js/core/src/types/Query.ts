@@ -1,7 +1,7 @@
 import {
   Uri,
   InvokeApiResult
-} from ".";
+} from "./";
 
 import { DocumentNode } from "graphql";
 import gql from "graphql-tag";
@@ -24,11 +24,9 @@ export type QueryResult<
   TData = Record<string, unknown>
 > = InvokeApiResult<TData>
 
-export interface QueryClient {
-  query: <
-    TData extends Record<string, unknown> = Record<string, unknown>,
-    TVariables extends Record<string, unknown> = Record<string, unknown>
-  >(
-    args: QueryArgs<TVariables>
-  ) => Promise<QueryResult<TData>>;
-}
+export type SendQueryMethod = <
+  TData extends Record<string, unknown> = Record<string, unknown>,
+  TVariables extends Record<string, unknown> = Record<string, unknown>
+>(
+  args: QueryArgs<TVariables>
+) => Promise<QueryResult<TData>>;

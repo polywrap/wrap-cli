@@ -1,6 +1,6 @@
 import { Query } from "./resolvers";
 
-import { Web3ApiPlugin, Resolvers } from "@web3api/client-js";
+import { Plugin, QueryResolvers } from "@web3api/core-js";
 import { execute, makePromise } from "apollo-link";
 import { createHttpLink } from "apollo-link-http";
 import fetch from "cross-fetch";
@@ -10,13 +10,13 @@ export interface GraphNodeConfig {
   provider: string;
 }
 
-export class GraphNodePlugin extends Web3ApiPlugin {
+export class GraphNodePlugin extends Plugin {
   constructor(private _config: GraphNodeConfig) {
-    super();
+    super({ });
   }
 
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
-  public getResolvers(): Resolvers {
+  public getQueryResolvers(): QueryResolvers {
     return {
       Query: Query(this),
       Mutation: { }

@@ -1,10 +1,14 @@
 import { GraphNodePlugin } from ".";
 
-export const Query = (graphnode: GraphNodePlugin) => ({
+import { QueryResolver } from "@web3api/core-js";
+
+export const Query = (graphnode: GraphNodePlugin): QueryResolver => ({
   querySubgraph: async (input: { subgraphId: string, query: string }) => {
-    return await graphnode.query(
-      input.subgraphId,
-      input.query
-    );
+    return {
+      data: await graphnode.query(
+        input.subgraphId,
+        input.query
+      )
+    }
   }
 })

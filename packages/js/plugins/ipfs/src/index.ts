@@ -1,10 +1,11 @@
 import { Query, Mutation } from "./resolvers";
 
 import {
-  Web3ApiClient,
-  Web3ApiPlugin,
-  Resolvers
-} from "@web3api/client-js";
+  Client,
+  Plugin,
+  QueryResolvers,
+  Uri
+} from "@web3api/core-js";
 
 import CID from "cids";
 
@@ -15,24 +16,24 @@ export interface IpfsConfig {
   provider: string;
 }
 
-export class IpfsPlugin extends Web3ApiPlugin {
+export class IpfsPlugin extends Plugin {
 
   // @ts-ignore: initialized within setProvider
   private _ipfs: IpfsClient;
 
   constructor(private _config: IpfsConfig) {
     super({
-      implements: [
-        "ens://ipfs.web3api.eth",
-        "ens://uri-resolver.core.web3api.eth",
-        "ens://api-resolver.core.web3api.eth"
+      implemented: [
+        new Uri("ens://ipfs.web3api.eth"),
+        new Uri("ens://uri-resolver.core.web3api.eth"),
+        new Uri("ens://api-resolver.core.web3api.eth")
       ]
     });
-    this.setProvider(_config.provider);
+    this.setProvider(this._config.provider);
   }
 
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
-  public getResolvers(client: Web3ApiClient): Resolvers {
+  public getQueryResolvers(client: Client): QueryResolvers {
     return {
       Query: Query(this),
       Mutation: Mutation(this)

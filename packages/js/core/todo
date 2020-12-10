@@ -1,8 +1,4 @@
 TODO:
-remove the (client-js <> client-js-plugins) circular dependency by allowing the plugins to build
-directly from the core. client-js will consume the core + the required client-js-plugins
-
-TODO:
 make GraphQL in & out happen within the client. All internals should use module + method + args
 (including WASM code). This will reduce the amount of parsing needed when calling between modules.
 The arguments don't matter because null arguments are handled by decerialization logic.

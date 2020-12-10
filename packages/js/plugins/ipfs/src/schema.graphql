@@ -1,3 +1,5 @@
+# TODO: add declaration for "implement"ing uri-resolver & api-resolver
+
 type Query {
   catFile(cid: String!): Bytes!
 }

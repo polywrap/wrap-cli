@@ -1,11 +1,11 @@
-import { Query, Mutation } from "./resolvers";
+import { Query } from "./resolvers";
 
 import {
   Uri,
-  Resolvers,
-  QueryClient,
-  Web3ApiPlugin
-} from "@web3api/client-js";
+  Client,
+  Plugin,
+  QueryResolvers
+} from "@web3api/core-js";
 
 import { ethers } from "ethers";
 import { Base58 } from "@ethersproject/basex";
@@ -17,12 +17,12 @@ export interface EnsConfig {
   address?: Address;
 }
 
-export class EnsPlugin extends Web3ApiPlugin {
+export class EnsPlugin extends Plugin {
 
   constructor(private _config: EnsConfig) {
     super({
-      import: [new Uri("ens://ethereum.web3api.eth"],
-      implement: [new Uri("ens://uri-resolver.core.web3api.eth")]
+      imported: [new Uri("ens://ethereum.web3api.eth")],
+      implemented: [new Uri("ens://uri-resolver.core.web3api.eth")]
     });
 
     // Sanitize address
@@ -32,10 +32,10 @@ export class EnsPlugin extends Web3ApiPlugin {
   }
 
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
-  public getResolvers(client: QueryClient): Resolvers {
+  public getQueryResolvers(client: Client): QueryResolvers {
     return {
       Query: Query(this, client),
-      Mutation: Mutation(this, client)
+      Mutation: { }
     };
   }
 
@@ -43,7 +43,7 @@ export class EnsPlugin extends Web3ApiPlugin {
     this._config.address = getAddress(address);
   }
 
-  public async ensToCID(domain: string, client: QueryClient): Promise<string> {
+  public async ensToCID(domain: string, client: Client): Promise<string> {
     const ensAddress = this._config.address || "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
     const ensAbi = {
       resolver: "function resolver(bytes32 node) external view returns (address)"
@@ -59,18 +59,30 @@ export class EnsPlugin extends Web3ApiPlugin {
     const domainNode = ethers.utils.namehash(domain);
 
     const callView = async (address: string, method: string, args: string[]): Promise<string> => {
-      const { data } = await client.query({
+      const { data, errors } = await client.query({
         uri: new Uri("ens://ethereum.web3api.eth"),
         query: `query {
           callView(
             address: "${address}",
             method: "${method}",
             args: ${args}
-          ) { result }
+          )
         }`
       });
 
-      return data.result;
+      if (errors) {
+        throw errors;
+      }
+
+      if (data && data.callView) {
+        if (typeof data.callView !== "string") {
+          throw Error(`Malformed data returned from Ethereum.callView: ${data.callView}`);
+        }
+
+        return data.callView;
+      }
+
+      throw Error(`Ethereum.callView returned nothing.\nData: ${data}\nErrors: ${errors}`);
     }
 
     // Get the node's resolver address

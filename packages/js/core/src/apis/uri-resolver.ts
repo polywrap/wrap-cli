@@ -1,31 +1,31 @@
 // TODO: auto-generate this from "core-apis/uri-resolver/schema.graphql"
 import {
   Uri,
-  QueryClient
+  Client
 } from "../";
 
 export const Query = {
-  supportedScheme: (client: QueryClient, uri: Uri, protocol: string) => (
-    client.query<{ supportedScheme: boolean }, { protocol: string }>({
-      uri,
+  supportedScheme: (client: Client, api: Uri, scheme: string) => (
+    client.query<{ supportedScheme: boolean }, { scheme: string }>({
+      uri: api,
       query: `query {
         supportedScheme(
-          protocol: $protocol
+          scheme: $scheme
         )
       }`,
       variables: {
-        protocol
+        scheme
       }
     })
   ),
-  tryResolveUri: (client: QueryClient, uri: Uri) => (
+  tryResolveUri: (client: Client, api: Uri, uri: Uri) => (
     client.query<{
       uri?: string,
       manifest?: string
     }, {
       uri: string
     }>({
-      uri,
+      uri: api,
       query: `query {
         tryResolveUri(
           uri: $uri

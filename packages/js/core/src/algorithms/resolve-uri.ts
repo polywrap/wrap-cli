@@ -3,16 +3,14 @@ import {
   deserializeManifest,
   Manifest,
   Plugin,
-  QueryClient,
-  Uri,
-  UriRedirect
+  Client,
+  Uri
 } from "../types";
 import * as UriResolver from "../apis/uri-resolver";
 
 export async function resolveUri(
   uri: Uri,
-  redirects: UriRedirect[],
-  client: QueryClient,
+  client: Client,
   createPluginApi: (uri: Uri, plugin: () => Plugin) => Api,
   createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api
 ): Promise<Api> {
@@ -34,6 +32,8 @@ export async function resolveUri(
       );
     }
   }
+
+  const redirects = client.redirects();
 
   // Iterate through all redirects. If anything matches
   // apply the redirect. If the redirect `to` is a Plugin,
@@ -68,7 +68,6 @@ export async function resolveUri(
     }
   }
 
-  // TODO: support URI resolver extensions, not just IPFS & ENS
   // The final URI has been resolved, let's now resolve the Web3API package
   // TODO: remove this! Go through all known plugins and get the ones that implement resolution
   const uriResolverImplementations = [
@@ -79,32 +78,53 @@ export async function resolveUri(
   for (let i = 0; i < uriResolverImplementations.length; ++i) {
     const uriResolver = uriResolverImplementations[i];
 
-    // TODO: implement the concept of "supportedScheme"
+    {
+      const { data, errors } = await UriResolver.Query.supportedScheme(
+        client, uriResolver, resolvedUri.scheme
+      );
+
+      // Throw errors so the caller (client) can handle them
+      if (errors?.length) {
+        throw errors;
+      }
+
+      // If nothing was returned, or the scheme is unsupported, continue
+      if (!data || !data.supportedScheme) {
+        continue;
+      }
+    }
+
     // TODO: implement recursive loading of URI-Resolver implementations?
-    const { data, errors } = await UriResolver.Query.tryResolveUri(
-      client, uriResolver
-    );
+    let newUri: string | undefined;
+    let manifestStr: string | undefined;
+    {
+      const { data, errors } = await UriResolver.Query.tryResolveUri(
+        client, uriResolver, resolvedUri
+      );
 
-    // Throw errors so the caller (client) can handle them
-    if (errors?.length) {
-      throw errors;
+      // Throw errors so the caller (client) can handle them
+      if (errors?.length) {
+        throw errors;
+      }
+
+      // If nothing was returned, the URI is not supported
+      if (!data || (!data.uri && !data.manifest)) {
+        continue;
+      }
+      newUri = data.uri;
+      manifestStr = data.manifest;
     }
 
-    // If nothing was returned, the URI is not supported
-    if (!data || (!data.uri && !data.manifest)) {
-      continue;
-    }
-
-    if (data.uri) {
+    if (newUri) {
       // Use the new URI, and reset our index
-      trackUriRedirect(data.uri, uriResolver.uri);
-      resolvedUri = new Uri(data.uri);
+      trackUriRedirect(newUri, uriResolver.uri);
+      resolvedUri = new Uri(newUri);
       i = 0;
       continue;
-    } else if (data.manifest) {
+    } else if (manifestStr) {
       // We've found our manifest at the current URI resolver
       // meaning the URI resolver can also be used as an API resolver
-      const manifest = deserializeManifest(data.manifest);
+      const manifest = deserializeManifest(manifestStr);
       return createApi(resolvedUri, manifest, uriResolver);
     }
   }

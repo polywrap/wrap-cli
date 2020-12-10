@@ -3,13 +3,12 @@ import { getDefaultRedirects } from "./default-redirects";
 import {
   QueryArgs,
   QueryResult,
-  QueryClient,
   createQueryDocument,
   extractExecuteOptions
 } from "./graphql";
 import {
-  Web3Api,
-  Web3ApiCache,
+  Api,
+  ApiCache,
   resolveWeb3Api,
 } from "./web3api";
 import { Uri, Plugin } from "@web3api/client-lib-js";
@@ -18,7 +17,7 @@ export interface ClientConfig {
   redirects: UriRedirect[]
 }
 
-export class Web3ApiClient implements QueryClient {
+export class Web3ApiClient implements Client {
 
   private _apiCache = new Web3ApiCache();
 
