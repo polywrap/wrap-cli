@@ -1,5 +1,5 @@
 {
-  "name": "@web3api/client-lib-js",
+  "name": "@web3api/core-js",
   "version": "0.0.1-prealpha.1",
   "license": "MIT",
   "main": "build/index.js",

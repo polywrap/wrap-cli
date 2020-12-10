@@ -1,22 +1,20 @@
 import {
   Api,
-  Uri,
-  UriRedirect,
+  deserializeManifest,
+  Manifest,
+  Plugin,
   QueryClient,
-  Plugin
+  Uri,
+  UriRedirect
 } from "../types";
-
-import * as UriResolver from "./core-apis/uri-resolver";
-import {
-  deserializeManifest
-} from ".";
+import * as UriResolver from "../apis/uri-resolver";
 
 export async function resolveUri(
   uri: Uri,
   redirects: UriRedirect[],
   client: QueryClient,
-  createPlugin: (...),
-  createApi: (...)
+  createPluginApi: (uri: Uri, plugin: () => Plugin) => Api,
+  createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api
 ): Promise<Api> {
 
   let resolvedUri = uri;
@@ -66,7 +64,7 @@ export async function resolveUri(
       }
     } else {
       // We've found a plugin, return an instance of it
-      return new PluginWeb3Api(resolvedUri, uriOrPlugin);
+      return createPluginApi(resolvedUri, uriOrPlugin);
     }
   }
 
@@ -74,8 +72,8 @@ export async function resolveUri(
   // The final URI has been resolved, let's now resolve the Web3API package
   // TODO: remove this! Go through all known plugins and get the ones that implement resolution
   const uriResolverImplementations = [
-    "ens://ipfs.web3api.eth",
-    "ens://ens.web3api.eth"
+    new Uri("ens://ipfs.web3api.eth"),
+    new Uri("ens://ens.web3api.eth")
   ];
 
   for (let i = 0; i < uriResolverImplementations.length; ++i) {
@@ -99,14 +97,15 @@ export async function resolveUri(
 
     if (data.uri) {
       // Use the new URI, and reset our index
-      trackUriRedirect(data.uri, uriResolver);
-      resolvedUri = data.uri;
+      trackUriRedirect(data.uri, uriResolver.uri);
+      resolvedUri = new Uri(data.uri);
       i = 0;
       continue;
     } else if (data.manifest) {
       // We've found our manifest at the current URI resolver
+      // meaning the URI resolver can also be used as an API resolver
       const manifest = deserializeManifest(data.manifest);
-      return new WasmWeb3Api(resolvedUri, manifest, uriResolver);
+      return createApi(resolvedUri, manifest, uriResolver);
     }
   }
 

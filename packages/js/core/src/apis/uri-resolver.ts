@@ -1,11 +1,11 @@
 // TODO: auto-generate this from "core-apis/uri-resolver/schema.graphql"
 import {
   Uri,
-  Web3ApiClient
-} from "../../";
+  QueryClient
+} from "../";
 
 export const Query = {
-  supportedScheme: (client: Web3ApiClient, uri: Uri, protocol: string) => (
+  supportedScheme: (client: QueryClient, uri: Uri, protocol: string) => (
     client.query<{ supportedScheme: boolean }, { protocol: string }>({
       uri,
       query: `query {
@@ -18,7 +18,7 @@ export const Query = {
       }
     })
   ),
-  tryResolveUri: (client: Web3ApiClient, uri: Uri) => (
+  tryResolveUri: (client: QueryClient, uri: Uri) => (
     client.query<{
       uri?: string,
       manifest?: string

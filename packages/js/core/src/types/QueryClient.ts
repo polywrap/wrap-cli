@@ -25,7 +25,10 @@ export type QueryResult<
 > = InvokeApiResult<TData>
 
 export interface QueryClient {
-  query: <TData = Record<string, unknown>>(
-    args: QueryArgs
+  query: <
+    TData extends Record<string, unknown> = Record<string, unknown>,
+    TVariables extends Record<string, unknown> = Record<string, unknown>
+  >(
+    args: QueryArgs<TVariables>
   ) => Promise<QueryResult<TData>>;
 }
