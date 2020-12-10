@@ -35,7 +35,7 @@ export class CodeGenerator {
       // Compose the schema
       // TODO:
       // - take all schemas
-      // - pass them to the schema-composer
+      // - pass them to the schema-compose
       // - - aggregate all schemas
       // - - add all missing scalar declarations
       // - - validation?

@@ -19,7 +19,7 @@ import {
   parseSchema,
   extendType,
   addFirstLast
-} from "@web3api/schema-parser";
+} from "@web3api/schema-parse";
 
 import Mustache from "mustache";
 

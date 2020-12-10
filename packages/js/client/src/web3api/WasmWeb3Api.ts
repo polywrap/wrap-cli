@@ -14,7 +14,7 @@ import {
   TypeInfo,
   QueryDefinition,
   MethodDefinition
-} from "@web3api/schema-parser";
+} from "@web3api/schema-parse";
 import { TypeInfo, TypeInfo } from "graphql";
 
 export class WasmWeb3Api extends Web3Api {

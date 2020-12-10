@@ -5,7 +5,7 @@ import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
 import { EnsPlugin } from "@web3api/ens-plugin-js";
 import { Uri } from "@web3api/client-lib-js";
 
-export function getCorePluginRedirects(): UriRedirect[] {
+export function getDefaultRedirects(): UriRedirect[] {
   // NOTE: These are high-level primitives for core plugins,
   //       over time, we will further de-abstract these core plugins
   return [

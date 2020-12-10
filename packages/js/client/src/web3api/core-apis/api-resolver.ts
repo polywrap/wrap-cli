@@ -2,7 +2,7 @@
 import {
   Uri,
   Web3ApiClient
-} from "../../";
+} from "../..";
 
 export const Query = {
   getFile: (client: Web3ApiClient, uri: Uri, path: string) => (

@@ -1,4 +1,4 @@
-import { getCorePluginRedirects } from "./core-plugins";
+import { getDefaultRedirects } from "./default-redirects";
 
 import {
   QueryArgs,
@@ -25,9 +25,9 @@ export class Web3ApiClient implements QueryClient {
   constructor(private _config: ClientConfig) {
     const { redirects } = this._config;
 
-    // Add all core plugins
+    // Add all default redirects (IPFS, ETH, ENS)
     redirects.push(
-      ...getCorePluginRedirects()
+      ...getDefaultRedirects()
     );
   }
 

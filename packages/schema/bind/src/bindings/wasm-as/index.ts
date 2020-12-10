@@ -6,7 +6,7 @@ import {
   parseSchema,
   extendType,
   addFirstLast
-} from "@web3api/schema-parser";
+} from "@web3api/schema-parse";
 import path from "path";
 import Mustache from "mustache";
 

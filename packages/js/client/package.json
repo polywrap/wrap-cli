@@ -16,7 +16,7 @@
     "@msgpack/msgpack": "2.3.0",
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.1",
     "@web3api/ipfs-plugin-js": "0.0.1-prealpha.1",
-    "@web3api/schema-parser": "0.0.1-prealpha.1",
+    "@web3api/schema-parse": "0.0.1-prealpha.1",
     "@web3api/wasm-as": "0.0.1-prealpha.1",
     "js-yaml": "3.14.0",
     "threads": "1.6.3"
