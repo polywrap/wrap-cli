@@ -4,15 +4,13 @@ import WASMLoader from "@assemblyscript/loader";
 interface IWorkerData {
   sharedBuffer: SharedArrayBuffer;
   wasmSource: BufferSource;
-  importNames: { [namespace: string]: string[] }
+  importNames: { [namespace: string]: string[] };
 }
 
+type Message = { type: "read-string"; id: string; pointer: number; value: string };
+
 // Fetch worker data passed from host
-const {
-  sharedBuffer,
-  wasmSource,
-  importNames
-} = workerData as IWorkerData;
+const { sharedBuffer, wasmSource, importNames } = workerData as IWorkerData;
 
 let secondaryPort: MessagePort | undefined = undefined;
 
@@ -22,26 +20,27 @@ const shared = new Int32Array(sharedBuffer, 0, 128);
 // Initialize our host import wrappers
 const imports: {
   [namespace: string]: {
-    [method: string]: (...args: any[]) => void
-  }
-} = { }
+    [method: string]: (...args: unknown[]) => void;
+  };
+} = {};
 
 for (const namespace of Object.keys(importNames)) {
-  imports[namespace] = { };
+  imports[namespace] = {};
 
   for (const method of importNames[namespace]) {
-    imports[namespace][method] = function (...args: any[]) {
+    imports[namespace][method] = function (...args: unknown[]) {
       // Notify the host of our impcall
       parentPort.postMessage({
         type: "impcall",
         namespace,
         method,
-        args
+        args,
       });
 
       // Wait for the call to finish
-      let head = 0;
+      const head = 0;
 
+      // eslint-disable-next-line no-constant-condition
       while (true) {
         Atomics.wait(shared, head, 0, 500);
 
@@ -60,39 +59,36 @@ for (const namespace of Object.keys(importNames)) {
           return shared[head + 1];
         }
       }
-    }
+    };
   }
 }
 
 // Instantiate our WASM module
-// @ts-ignore
-let instance: any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let instance: any;
 
 try {
   instance = WASMLoader.instantiateSync(wasmSource, imports);
 } catch (error) {
+  instance = undefined;
   parentPort.postMessage({
     type: "error",
-    error: error.message
+    error: error.message,
   });
 }
 
 // "Master" port for messages from the host
 parentPort.on("message", function (message) {
-
   // Call a WASM method
   if (message.type === "call") {
-
     // Execute the call
-    const result = instance.exports[message.method](
-      ...message.args
-    );
+    const result = instance.exports[message.method](...message.args);
 
     // Return the result back to the host
     parentPort.postMessage({
       type: "result",
       id: message.id,
-      result
+      result,
     });
     return;
   }
@@ -106,7 +102,7 @@ parentPort.on("message", function (message) {
   }
 });
 
-function handleSecondaryMessage(message: any) {
+function handleSecondaryMessage(message: Message) {
   // Read a string from WASM
   if (message.type === "read-string") {
     const { __getString } = instance.exports;
@@ -114,7 +110,7 @@ function handleSecondaryMessage(message: any) {
     secondaryPort.postMessage({
       type: "result",
       id: message.id,
-      result
+      result,
     });
     return;
   }
@@ -127,7 +123,7 @@ function handleSecondaryMessage(message: any) {
     secondaryPort.postMessage({
       type: "result",
       id: message.id,
-      result
+      result,
     });
     return;
   }
@@ -135,7 +131,7 @@ function handleSecondaryMessage(message: any) {
 
 function spawnSecondaryPort(port: MessagePort) {
   if (secondaryPort) {
-    throw Error("The secondary port has been spawned twice.")
+    throw Error("The secondary port has been spawned twice.");
   }
 
   secondaryPort = port;

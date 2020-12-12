@@ -2,18 +2,11 @@
 /// Lib ///
 ///////////
 
-export {
-  IPFS,
-  IPFSHash
-} from "./lib/IPFS";
+export { IPFS, IPFSHash } from "./lib/IPFS";
 
-export {
-  Ethereum
-} from "./lib/Ethereum";
+export { Ethereum } from "./lib/Ethereum";
 
-export {
-  Subgraph
-} from "./lib/Subgraph";
+export { Subgraph } from "./lib/Subgraph";
 
 ////////////////
 /// Lib Core ///

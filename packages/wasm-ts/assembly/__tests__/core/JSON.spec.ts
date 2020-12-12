@@ -72,7 +72,7 @@
 //       '"\\u041f\\u043e\\u043b\\u0442\\u043e\\u0440\\u0430 \\u0417\\u0435\\u043c\\u043b\\u0435\\u043a\\u043e\\u043f\\u0430"',
 //       '"Полтора Землекопа"'
 //     );
-   
+
 //   });
 
 //   it("should multiple keys", () => {
@@ -114,7 +114,7 @@
 //   return JSON.parse(input).toString();
 // }
 
-// describe("JSON.parse", () => {      
+// describe("JSON.parse", () => {
 //   beforeAll(() => {
 //     primObj = JSON.Value.Object();
 //     primArr = <JSON.Arr>JSON.from<i32[]>([42]);
@@ -159,7 +159,7 @@
 //       expect(parseToString("[[42]]")).toStrictEqual(outterArr.toString());
 //     });
 //   });
-  
+
 //   describe("Objects", () => {
 //     it("should handle empty objects", () => {
 //       expect(parseToString("{}")).toStrictEqual(JSON.Value.Object().toString());
@@ -168,8 +168,8 @@
 //     it("should handle primitive values", () => {
 //       expect(
 //         parseToString(`{
-//                       "number": 42, 
-//                       "boolean": true, 
+//                       "number": 42,
+//                       "boolean": true,
 //                       "string": "Hello"
 //                     }`)).toStrictEqual(primObj.toString());
 //     });
@@ -180,13 +180,13 @@
 //       expect(
 //         JSON.parse(`{
 //                       "innerObject": {
-//                           "number": 42, 
-//                           "boolean": true, 
-//                           "string": "Hello" 
+//                           "number": 42,
+//                           "boolean": true,
+//                           "string": "Hello"
 //                       }
 //                     }`)).toStrictEqual(outerObj);
 //     });
-    
+
 //     it("should handle arrays", () => {
 //       const obj = JSON.Value.Object();
 //       obj.set("arr", primArr);

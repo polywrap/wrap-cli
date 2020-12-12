@@ -1,11 +1,14 @@
-export type MaybeAsync<T> = Promise<T> | T
+export type MaybeAsync<T> = Promise<T> | T;
 
-export const isPromise = (test: any) => test && typeof test.then === 'function'
+export const isPromise = (test: unknown): boolean => test && typeof (test as Promise<never>).then === "function";
 
-export const executeMaybeAsyncFunction = async (func: any, ...args: any[]) => {
-  let result = func(...args)
+export const executeMaybeAsyncFunction = async <TResult, TArgs extends []>(
+  func: (...args: TArgs) => TResult | Promise<TResult>,
+  ...args: TArgs
+): Promise<TResult> => {
+  let result = func(...args);
   if (isPromise(result)) {
-    result = await result
+    result = await result;
   }
-  return result
-}
+  return result;
+};

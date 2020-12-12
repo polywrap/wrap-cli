@@ -1,8 +1,6 @@
 export { UINT8ARRAY_ID } from "../";
 
-import {
-  IPFS
-} from "../";
+import { IPFS } from "../";
 
 describe("IPFS API Sanity Checks", () => {
   it("IPFS.add(data)", () => {

@@ -1,9 +1,4 @@
-import {
-  Web3API,
-  IPFS,
-  Ethereum,
-  Subgraph
-} from "../";
+import { Web3API, IPFS, Ethereum, Subgraph } from "../";
 import { IPortals } from "../Web3API";
 import { runW3CLI, generateName } from "./helpers";
 
@@ -19,14 +14,18 @@ describe("Web3API", () => {
 
   beforeAll(async () => {
     // fetch providers from dev server
-    const { data: { ipfs, ethereum, subgraph } } = await axios.get("http://localhost:4040/providers");
+    const {
+      data: { ipfs, ethereum, subgraph },
+    } = await axios.get("http://localhost:4040/providers");
 
     if (!ipfs) {
       throw Error("Dev server must be running at port 4040");
     }
 
     // re-deploy ENS
-    const { data: { ensAddress } } = await axios.get("http://localhost:4040/deploy-ens");
+    const {
+      data: { ensAddress },
+    } = await axios.get("http://localhost:4040/deploy-ens");
 
     // create a new ENS domain
     apiENS = `${generateName()}.eth`;
@@ -40,13 +39,13 @@ describe("Web3API", () => {
       "--ipfs",
       ipfs,
       "--test-ens",
-      `${ensAddress},${apiENS}`
+      `${ensAddress},${apiENS}`,
     ]);
 
     if (exitCode !== 0) {
       console.error(`w3 exited with code: ${exitCode}`);
-      console.log(`stderr:\n${stderr}`)
-      console.log(`stdout:\n${stdout}`)
+      console.log(`stderr:\n${stderr}`);
+      console.log(`stdout:\n${stdout}`);
       throw Error("w3 CLI failed");
     }
 
@@ -58,14 +57,14 @@ describe("Web3API", () => {
     portals = {
       ipfs: new IPFS({ provider: ipfs }),
       ethereum: new Ethereum({ provider: ethereum, ens: ensAddress }),
-      subgraph: new Subgraph({ provider: subgraph })
+      subgraph: new Subgraph({ provider: subgraph }),
     };
   });
 
   it("Fetches CID", async () => {
     const api = new Web3API({
       uri: apiENS,
-      portals
+      portals,
     });
 
     const cid = await api.fetchCID();
@@ -75,7 +74,7 @@ describe("Web3API", () => {
   it("Fetches manifest", async () => {
     const api = new Web3API({
       uri: apiENS,
-      portals
+      portals,
     });
 
     const manifest = await api.fetchAPIManifest();
@@ -86,10 +85,10 @@ describe("Web3API", () => {
   it("Fetches schema", async () => {
     const api = new Web3API({
       uri: apiENS,
-      portals
+      portals,
     });
 
     const schema = await api.fetchSchema();
-    expect(printSchema(schema)).toContain('type Mutation {');
+    expect(printSchema(schema)).toContain("type Mutation {");
   });
 });

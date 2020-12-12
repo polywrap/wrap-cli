@@ -1,9 +1,4 @@
-import {
-  Web3API,
-  IPFS,
-  Ethereum,
-  Subgraph
-} from "../";
+import { Web3API, IPFS, Ethereum, Subgraph } from "../";
 import { IPortals } from "../Web3API";
 import { runW3CLI, generateName } from "./helpers";
 
@@ -19,14 +14,18 @@ describe("IPFS", () => {
 
   beforeAll(async () => {
     // fetch providers from dev server
-    const { data: { ipfs, ethereum, subgraph } } = await axios.get("http://localhost:4040/providers");
+    const {
+      data: { ipfs, ethereum, subgraph },
+    } = await axios.get("http://localhost:4040/providers");
 
     if (!ipfs) {
       throw Error("Dev server must be running at port 4040");
     }
 
     // re-deploy ENS
-    const { data: { ensAddress } } = await axios.get("http://localhost:4040/deploy-ens");
+    const {
+      data: { ensAddress },
+    } = await axios.get("http://localhost:4040/deploy-ens");
 
     // create a new ENS domain
     apiENS = `${generateName()}.eth`;
@@ -40,25 +39,26 @@ describe("IPFS", () => {
       "--ipfs",
       ipfs,
       "--test-ens",
-      `${ensAddress},${apiENS}`
+      `${ensAddress},${apiENS}`,
     ]);
 
     if (exitCode !== 0) {
       console.error(`w3 exited with code: ${exitCode}`);
-      console.log(`stderr:\n${stderr}`)
-      console.log(`stdout:\n${stdout}`)
+      console.log(`stderr:\n${stderr}`);
+      console.log(`stdout:\n${stdout}`);
       throw Error("w3 CLI failed");
     }
 
     // get the IPFS CID of the published package
     const extractCID = /IPFS { (([A-Z]|[a-z]|[0-9])*) }/;
     const result = stdout.match(extractCID);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     apiCID = result[1];
 
     portals = {
       ipfs: new IPFS({ provider: ipfs }),
       ethereum: new Ethereum({ provider: ethereum, ens: ensAddress }),
-      subgraph: new Subgraph({ provider: subgraph })
+      subgraph: new Subgraph({ provider: subgraph }),
     };
   });
 
@@ -72,7 +72,7 @@ describe("IPFS", () => {
     // Fetch it using a WASM query
     const api = new Web3API({
       uri: apiENS,
-      portals
+      portals,
     });
 
     const res = await api.query({
@@ -80,11 +80,11 @@ describe("IPFS", () => {
         query GetString {
           getString(cid: "${ipfsHash}")
         }
-      `
+      `,
     });
 
     expect(res.errors).toBeFalsy();
-    expect(res.data.getString).toBe(testString)
+    expect(res.data.getString).toBe(testString);
   });
 
   it("Write Content To IPFS", async () => {
@@ -93,7 +93,7 @@ describe("IPFS", () => {
     // Fetch it using a WASM query
     const api = new Web3API({
       uri: apiENS,
-      portals
+      portals,
     });
 
     const res = await api.query({
@@ -103,8 +103,8 @@ describe("IPFS", () => {
         }
       `,
       variables: {
-        content: testContent
-      }
+        content: testContent,
+      },
     });
 
     expect(res.errors).toBeFalsy();

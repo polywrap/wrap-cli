@@ -3,6 +3,7 @@
   "version": "0.0.1-alpha.1",
   "license": "MIT",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "up": "docker-compose up",
     "down": "docker-compose down"

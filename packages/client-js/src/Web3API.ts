@@ -1,26 +1,14 @@
-import { compare } from "semver";
-import {
-  buildSchema,
-  execute,
-  GraphQLSchema,
-  GraphQLObjectType
-} from "graphql";
-import YAML from "js-yaml";
-
-import {
-  Ethereum,
-  IPFS,
-  Subgraph
-} from "./portals";
+import { Ethereum, IPFS, Subgraph } from "./portals";
 import { getHostImports } from "./host";
 import { isPromise } from "./lib/async";
-import {
-  Query,
-  QueryResult
-} from "./lib/types";
+import { Query, QueryResult } from "./lib/types";
 import { WasmWorker } from "./lib/wasm-worker";
-import { AnyManifest, Manifest } from "./manifest/formats"
+import { AnyManifest, Manifest } from "./manifest/formats";
 import { ManifestFormats, upgradeManifest, latestFormat } from "./manifest";
+
+import YAML from "js-yaml";
+import { buildSchema, execute, GraphQLSchema, GraphQLObjectType } from "graphql";
+import { compare } from "semver";
 
 export interface IPortals {
   ipfs: IPFS;
@@ -34,7 +22,6 @@ export interface IWeb3APIConfig {
 }
 
 export class Web3API {
-
   // Web3 API IPFS CID
   private _cid: string | undefined;
 
@@ -49,7 +36,7 @@ export class Web3API {
     this.setUri(this._config.uri);
   }
 
-  public setUri(uri: string) {
+  public setUri(uri: string): void {
     if (!IPFS.isCID(uri) && !Ethereum.isENSDomain(uri)) {
       throw Error(`The Web3API URI provided is neither a ENS domain or an IPFS multihash: ${uri}`);
     }
@@ -60,15 +47,11 @@ export class Web3API {
     this._schema = undefined;
   }
 
-  public getPortal<T extends keyof IPortals>(
-    name: T
-  ) {
+  public getPortal<T extends keyof IPortals>(name: T): IPortals[T] {
     return this._config.portals[name];
   }
 
-  public setPortal<T extends keyof IPortals>(
-    name: T, portal: IPortals[T]
-  ) {
+  public setPortal<T extends keyof IPortals>(name: T, portal: IPortals[T]): void {
     this._config.portals[name] = portal;
   }
 
@@ -102,8 +85,7 @@ export class Web3API {
     for await (const file of apiDirectory) {
       const { name, depth, type, path } = file;
 
-      if (depth === 1 && type === "file" &&
-         (name === "web3api.yaml" || name === "web3api.yml")) {
+      if (depth === 1 && type === "file" && (name === "web3api.yaml" || name === "web3api.yml")) {
         const manifestStr = await portals.ipfs.catToString(path);
         this._manifest = YAML.safeLoad(manifestStr) as Manifest | undefined;
 
@@ -135,9 +117,7 @@ export class Web3API {
 
     // Get the API's schema
     // TODO: make this based on the manifest
-    const schemaStr = await portals.ipfs.catToString(
-      `${this._cid}/schema.graphql`
-    );
+    const schemaStr = await portals.ipfs.catToString(`${this._cid}/schema.graphql`);
 
     // Convert schema into GraphQL Schema object
     this._schema = buildSchema(schemaStr);
@@ -158,10 +138,7 @@ export class Web3API {
         throw Error("Malformed Manifest: Schema contains mutations but the manifest does not.");
       }
 
-      this._addResolvers(
-        manifest.mutation.module.file,
-        mutationType
-      );
+      this._addResolvers(manifest.mutation.module.file, mutationType);
     }
 
     if (queryType) {
@@ -169,10 +146,7 @@ export class Web3API {
         throw Error("Malformed Manifest: Schema contains queries but the manifest does not.");
       }
 
-      this._addResolvers(
-        manifest.query.module.file,
-        queryType
-      );
+      this._addResolvers(manifest.query.module.file, queryType);
     }
 
     return this._schema;
@@ -204,7 +178,7 @@ export class Web3API {
       let res = execute({
         schema,
         document: queryDoc,
-        variableValues: query.variables
+        variableValues: query.variables,
       });
 
       if (isPromise(res)) {
@@ -213,9 +187,9 @@ export class Web3API {
 
       return res;
       // TODO: remove this hack when subgraph schema is supported
-    } else /*if (
+    } /*if (
         def.kind === "SchemaDefinition" ||
-        def.kind === "ObjectTypeDefinition") */{
+        def.kind === "ObjectTypeDefinition") */ else {
       if (!portals.subgraph) {
         throw Error("No subgraph portal available.");
       }
@@ -234,20 +208,18 @@ export class Web3API {
     }*/
   }
 
-  private _addResolvers(modulePath: string, schemaType: GraphQLObjectType<any, any>) {
+  private _addResolvers(modulePath: string, schemaType: GraphQLObjectType<unknown, unknown>) {
     const fields = schemaType.getFields();
     const fieldNames = Object.keys(fields);
 
     for (const fieldName of fieldNames) {
-      const outputType = fields[fieldName].type.toString().toLowerCase().replace('!', '');
+      const outputType = fields[fieldName].type.toString().toLowerCase().replace("!", "");
 
-      fields[fieldName].resolve = async (source, args, context, info) => {
+      fields[fieldName].resolve = async (source, args) => {
         const { portals } = this._config;
 
         // Load the WASM source
-        const wasm = await portals.ipfs.catToBuffer(
-          `${this._cid}/${modulePath}`
-        );
+        const wasm = await portals.ipfs.catToBuffer(`${this._cid}/${modulePath}`);
 
         // Instantiate it
         const ww: WasmWorker = new WasmWorker(
@@ -257,8 +229,8 @@ export class Web3API {
 
         // TODO: this is very incomplete and hacky, replace with
         //       proper heap manager.
-        let mapped = []
-        let toRelease = []
+        const mapped = [];
+        const toRelease = [];
 
         // Marshall Types
         const toMarsh = Object.values(args);
@@ -267,6 +239,7 @@ export class Web3API {
           if (typeof marshMe === "string") {
             result = (await ww.writeStringAsync(marshMe)).result;
           } else {
+            result = undefined;
             mapped.push(marshMe);
             continue;
           }
@@ -275,10 +248,10 @@ export class Web3API {
         }
 
         // Execute the call
-        const res = await ww.callAsync(fieldName, ...mapped)
+        const res = await ww.callAsync(fieldName, ...mapped);
 
         // TODO: validate return value against the schema
-        let result: any = res.result;
+        let result: number | string | boolean = res.result;
 
         if (result) {
           if (outputType === "string") {
@@ -299,7 +272,7 @@ export class Web3API {
         ww.destroy();
 
         return result;
-      }
+      };
     }
   }
 }

@@ -1,18 +1,13 @@
-import { Signer, ethers } from "ethers";
-import {
-  ExternalProvider,
-  JsonRpcProvider,
-  Web3Provider,
-} from "@ethersproject/providers";
-import { getAddress } from "@ethersproject/address";
+import { Signer, ethers, providers, utils } from "ethers";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Base58 } from "@ethersproject/basex";
 
 type Address = string;
 type AccountIndex = number;
 
 export type EthereumSigner = Signer | Address | AccountIndex;
-export type EthereumProvider = string | ExternalProvider;
-export type EthereumClient = JsonRpcProvider | Web3Provider;
+export type EthereumProvider = string | providers.ExternalProvider;
+export type EthereumClient = providers.JsonRpcProvider | providers.Web3Provider;
 
 export interface IEthereumConfig {
   provider: EthereumProvider;
@@ -21,7 +16,7 @@ export interface IEthereumConfig {
 }
 
 export class Ethereum {
-
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore: initialized within setProvider
   private _client: EthereumClient;
 
@@ -37,13 +32,17 @@ export class Ethereum {
     }
   }
 
-  public setProvider(provider: EthereumProvider, signer?: EthereumSigner) {
+  public static isENSDomain(domain: string): boolean {
+    return utils.isValidName(domain) && domain.indexOf(".eth") !== -1;
+  }
+
+  public setProvider(provider: EthereumProvider, signer?: EthereumSigner): void {
     this._config.provider = provider;
 
     if (typeof provider === "string") {
-      this._client = new JsonRpcProvider(provider);
+      this._client = new providers.JsonRpcProvider(provider);
     } else {
-      this._client = new Web3Provider(provider);
+      this._client = new providers.Web3Provider(provider);
     }
 
     if (signer !== undefined) {
@@ -51,26 +50,26 @@ export class Ethereum {
     }
   }
 
-  public setSigner(signer: EthereumSigner) {
+  public setSigner(signer: EthereumSigner): void {
     if (typeof signer === "string") {
-      this._config.signer = getAddress(signer);
+      this._config.signer = utils.getAddress(signer);
     } else if (Signer.isSigner(signer)) {
       this._config.signer = signer;
 
       if (signer.provider !== this._config.provider) {
         throw Error(
           `Signer's connected provider does not match the config's ` +
-          `provider. Please call "setProvider(...)" before calling `+
-          `"setSigner(...)" if a different provider is desired.`
-        )
+            `provider. Please call "setProvider(...)" before calling ` +
+            `"setSigner(...)" if a different provider is desired.`
+        );
       }
     } else {
       this._config.signer = signer;
     }
   }
 
-  public setENS(ens: Address) {
-    this._config.ens = getAddress(ens);
+  public setENS(ens: Address): void {
+    this._config.ens = utils.getAddress(ens);
   }
 
   public getSigner(): ethers.Signer {
@@ -93,7 +92,7 @@ export class Ethereum {
     return new ethers.Contract(address, abi, this.getSigner());
   }
 
-  public async deployContract(abi: ethers.ContractInterface, bytecode: string, ...args: any[]): Promise<Address> {
+  public async deployContract(abi: ethers.ContractInterface, bytecode: string, ...args: unknown[]): Promise<Address> {
     const signer = this.getSigner();
     const factory = new ethers.ContractFactory(abi, bytecode, signer);
     const contract = await factory.deploy(...args);
@@ -103,8 +102,8 @@ export class Ethereum {
   public async callView(address: Address, method: string, args: string): Promise<string> {
     const contract = this.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
-    if (args[0] !== '[') {
-      args = `[${args}]`
+    if (args[0] !== "[") {
+      args = `[${args}]`;
     }
     const parsedArgs = JSON.parse(args);
     const res = await contract[funcs[0]](...parsedArgs);
@@ -114,8 +113,8 @@ export class Ethereum {
   public async sendTransaction(address: Address, method: string, args: string): Promise<string> {
     const contract = this.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
-    if (args[0] !== '[') {
-      args = `[${args}]`
+    if (args[0] !== "[") {
+      args = `[${args}]`;
     }
     const parsedArgs = JSON.parse(args);
     const tx = await contract[funcs[0]](...parsedArgs);
@@ -126,9 +125,7 @@ export class Ethereum {
 
   public async ensToCID(domain: string): Promise<string> {
     const ensAddress = this._config.ens || "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
-    const ensAbi = [
-      "function resolver(bytes32 node) external view returns (address)"
-    ];
+    const ensAbi = ["function resolver(bytes32 node) external view returns (address)"];
     const resolverAbi = [
       "function contenthash(bytes32 nodehash) view returns (bytes)",
       "function content(bytes32 nodehash) view returns (bytes32)",
@@ -156,7 +153,7 @@ export class Ethereum {
     }
 
     if (hash === "0x") {
-      return ""
+      return "";
     }
 
     if (hash.substring(0, 10) === "0xe3010170" && ethers.utils.isHexString(hash, 38)) {
@@ -164,9 +161,5 @@ export class Ethereum {
     } else {
       throw Error(`Unkown CID format, CID hash: ${hash}`);
     }
-  }
-
-  public static isENSDomain(domain: string) {
-    return ethers.utils.isValidName(domain) && domain.indexOf('.eth') !== -1;
   }
 }

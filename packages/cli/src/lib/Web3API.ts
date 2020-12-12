@@ -4,20 +4,18 @@ import { sanitizeAndUpgrade, Manifest } from "@web3api/client-js";
 
 export class Web3API {
   public static load(manifestPath: string): Manifest {
-    let manifest = YAML.safeLoad(
-      fs.readFileSync(manifestPath, "utf-8")
-    ) as Manifest | undefined;
+    let manifest = YAML.safeLoad(fs.readFileSync(manifestPath, "utf-8")) as Manifest | undefined;
 
     if (!manifest) {
       throw Error(`Unable to parse manifest: ${manifestPath}`);
     }
-  
-    manifest = sanitizeAndUpgrade(manifest)
+
+    manifest = sanitizeAndUpgrade(manifest);
 
     return manifest;
   }
 
-  public static dump(manifest: Manifest, manifestPath: string) {
+  public static dump(manifest: Manifest, manifestPath: string): void {
     const str = YAML.safeDump(manifest);
 
     if (!str) {
