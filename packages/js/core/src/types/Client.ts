@@ -1,9 +1,8 @@
 import {
-  SendQueryMethod,
-  UriRedirect
+  UriRedirect,
+  QueryHandler
 } from "./";
 
-export interface Client {
-  query: SendQueryMethod;
+export interface Client extends QueryHandler {
   redirects: () => readonly UriRedirect[];
 }

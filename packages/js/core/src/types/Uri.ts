@@ -1,3 +1,14 @@
+/*
+https://tools.ietf.org/html/rfc3986#section-3
+
+Valid URIs:
+w3://ipfs/QmHASH
+w3://ens/sub.domain.eth
+w3://fs/directory/file.ext
+w3://uns/domain.crypto
+
+TODO: modify + tests
+*/
 export class Uri {
   public readonly scheme: string;
 

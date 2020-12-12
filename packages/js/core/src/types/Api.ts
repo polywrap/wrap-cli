@@ -3,24 +3,71 @@ import {
   Client
 } from ".";
 
+export type ApiModules = "query" | "mutation";
+
+/** Options required for an API invocation. */
 export interface InvokeApiOptions {
-  module: "query" | "mutation";
+  /** Module to be called into. */
+  module: ApiModules;
+
+  /** Method to be executed. */
   method: string;
-  input: Record<string, any>;
-  results?: Record<string, any>;
+
+  /**
+   * Input arguments for the method, structured as a map,
+   * removing the chance of incorrectly ordering arguments.
+   */
+  input: Record<string, unknown>;
+
+  /**
+   * Filters the [[InvokeApiResult]] data properties. The key
+   * of this map is the property's name, while the value is
+   * either true (meaning select this prop), or a nested named map,
+   * allowing for the filtering of nested objects.
+   */
+  resultFilter?: Record<string, unknown>;
 }
 
+/**
+ * Result of an API invocation.
+ * 
+ * @template TData Type of the invoke result data.
+ */
 export interface InvokeApiResult<
-  TData = Record<string, unknown>
+  TData = unknown
 > {
-  data?: TData | null;
+  /**
+   * Invoke result data. The type of this value is the return type
+   * of the method. If undefined, it means something went wrong.
+   * Errors should be populated with information as to what happened.
+   * Null is used to represent an intentionally null result.
+   */
+  data?: TData;
+
+  /** Errors encountered during the invocation. */
   errors?: Error[];
 }
 
+/**
+ * The API definition, which can be used to spawn
+ * many invocations of this particular API. Internally
+ * this class may do things like caching WASM bytecode, spawning
+ * worker threads, or indexing into resolvers to find the requested method.
+ */
 export abstract class Api {
 
+  /**
+   * @param _uri The API's URI
+   */
   constructor(protected _uri: Uri) { }
 
+  /**
+   * Invoke the API based on the provided [[InvokeApiOptions]]
+   * 
+   * @param options Options for this invocation.
+   * @param client The client instance requesting this invocation.
+   * This client will be used for any sub-queries that occur.
+   */
   public async abstract invoke<
     TData = Record<string, unknown>
   >(
@@ -29,4 +76,5 @@ export abstract class Api {
   ): Promise<InvokeApiResult<TData>>;
 }
 
+/** Cache of API definitions, mapping the API's URI to its definition */
 export class ApiCache extends Map<string, Api> { }

@@ -1,7 +1,7 @@
 import { getDefaultRedirects } from "./default-redirects";
 
 import {
-  QueryArgs,
+  QueryOptions,
   QueryResult,
   createQueryDocument,
   extractExecuteOptions
@@ -34,7 +34,7 @@ export class Web3ApiClient implements Client {
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>
   >(
-    args: QueryArgs<TVariables>
+    options: QueryOptions<TVariables>
   ): Promise<QueryResult<TData>> {
     try {
       const { uri, query, variables } = args;

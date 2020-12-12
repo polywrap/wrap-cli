@@ -8,6 +8,7 @@ import {
   ValueNode
 } from "graphql";
 
+// TODO: support multiple parallel queries
 export function parseQuery(
   doc: QueryDocument,
   variables?: Record<string, unknown>
@@ -69,32 +70,32 @@ export function parseQuery(
 
   const method = selection.name.value;
 
-  // Get all arguments
+  // Get all input arguments
   const selectionArgs = selection.arguments;
-  let args: Record<string, unknown> = {};
+  let input: Record<string, unknown> = {};
 
   if (selectionArgs) {
     for (const arg of selectionArgs) {
       const name = arg.name.value;
       const valueDef = arg.value;
-      args[name] = extractValue(valueDef, variables);
+      input[name] = extractValue(valueDef, variables);
     }
   }
 
   // Get the results the query is asking for
   const selectionResults = selection.selectionSet;
-  let results: Record<string, unknown> = {};
+  let resultFilter: Record<string, unknown> = {};
 
   if (selectionResults) {
-    results = extractSelections(selectionResults);
+    resultFilter = extractSelections(selectionResults);
   }
 
   return {
     module,
     method,
-    input: args,
-    results
-  }
+    input,
+    resultFilter
+  };
 }
 
 function extractValue(node: ValueNode, variables?: Record<string, unknown>): unknown {
