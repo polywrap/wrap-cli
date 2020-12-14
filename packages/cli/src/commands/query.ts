@@ -34,13 +34,16 @@ export default {
     let recipePath;
     try {
       const params = toolbox.parameters;
-      [recipePath] = fixParameters({
-        options: params.options,
-        array: params.array
-      }, {
-        t,
-        testEns,
-      });
+      [recipePath] = fixParameters(
+        {
+          options: params.options,
+          array: params.array,
+        },
+        {
+          t,
+          testEns,
+        }
+      );
     } catch (e) {
       print.error(e.message);
       process.exitCode = 1;
