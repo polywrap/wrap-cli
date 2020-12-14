@@ -1,4 +1,4 @@
-import testEnv from "@web3api/client-test-env";
+const testEnv = require("@web3api/client-test-env");
 
 export async function startupTestEnv(quiet: boolean): Promise<void> {
   await testEnv.up(quiet);
