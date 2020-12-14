@@ -21,6 +21,8 @@
     "chalk": "4.1.0",
     "fs-extra": "9.0.1",
     "gluegun": "4.3.1",
+    "graphql": "15.3.0",
+    "graphql-tag": "2.11.0",
     "ipfs-http-client": "45.0.0",
     "js-yaml": "3.14.0",
     "spawn-command": "0.0.2-1",

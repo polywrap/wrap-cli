@@ -33,7 +33,11 @@ export default {
 
     let recipePath;
     try {
-      ;[recipePath] = fixParameters(toolbox.parameters, {
+      const params = toolbox.parameters;
+      [recipePath] = fixParameters({
+        options: params.options,
+        array: params.array
+      }, {
         t,
         testEns,
       });

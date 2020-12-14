@@ -47,7 +47,11 @@ export default {
 
     let manifestPath;
     try {
-      ;[manifestPath] = fixParameters(toolbox.parameters, {
+      const params = toolbox.parameters;
+      [manifestPath] = fixParameters({
+        options: params.options,
+        array: params.array
+      }, {
         h,
         help,
         w,

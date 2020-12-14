@@ -3,23 +3,25 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  lint:
-    name: "Lint"
+  CI:
+    name: "CI"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
       - name: Read .nvmrc
         run: echo ::set-output name=NVMRC::$(cat .nvmrc)
         id: nvm
-      
-      - name: Set up Node.js
+
+      - name: Setup Node.js
         uses: actions/setup-node@master
         with:
           node-version: '${{ steps.nvm.outputs.NVMRC }}'
 
-      - uses: actions/cache@v2
+      - name: Check for cached node_modules
+        uses: actions/cache@v2
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: |
@@ -31,5 +33,11 @@ jobs:
         if: steps.cache-deps.outputs.cache-hit != 'true'
         run: yarn install --nonInteractive --frozen-lockfile
 
-      - name: Lint code
+      - name: Lint
         run: yarn run lint:ci
+
+      - name: Build
+        run: yarn build
+
+      - name: Test
+        run: yarn test:ci
