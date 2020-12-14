@@ -24,10 +24,17 @@ export default {
     testEns = testEns || t;
     let recipePath: string | undefined;
     try {
-      [recipePath] = fixParameters(toolbox.parameters, {
-        t,
-        testEns,
-      });
+      const params = toolbox.parameters;
+      [recipePath] = fixParameters(
+        {
+          options: params.options,
+          array: params.array,
+        },
+        {
+          t,
+          testEns,
+        }
+      );
     } catch (e) {
       recipePath = undefined;
       print.error(e.message);

@@ -25,7 +25,7 @@
 // parameters array and returns the result of that.
 //
 export const fixParameters = (
-  parameters: { options: Record<string, unknown>; array: string[] },
+  parameters: { options: Record<string, unknown>; array?: string[] },
   booleanOptions: Record<string, unknown>
 ): string[] => {
   const unexpectedStringOptions = Object.keys(booleanOptions)
@@ -39,10 +39,10 @@ export const fixParameters = (
   if (unexpectedStringOptions.length > 1) {
     throw new Error(`Unexpected value provided for one or more of ${optionNames}. See --help for more information.`);
   } else if (unexpectedStringOptions.length == 1) {
-    const params = parameters.array;
+    const params = parameters.array || [];
     params.unshift(unexpectedStringOptions[0].value);
     return params;
   } else {
-    return parameters.array;
+    return parameters.array || [];
   }
 };
