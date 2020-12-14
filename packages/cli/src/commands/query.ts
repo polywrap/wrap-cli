@@ -25,13 +25,16 @@ export default {
     let recipePath: string | undefined;
     try {
       const params = toolbox.parameters;
-      [recipePath] = fixParameters({
-        options: params.options,
-        array: params.array
-      }, {
-        t,
-        testEns,
-      });
+      [recipePath] = fixParameters(
+        {
+          options: params.options,
+          array: params.array,
+        },
+        {
+          t,
+          testEns,
+        }
+      );
     } catch (e) {
       recipePath = undefined;
       print.error(e.message);
