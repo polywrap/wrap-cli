@@ -1,10 +1,10 @@
-import { Query } from "./resolvers";
+import { query } from "./resolvers";
 
 import {
   Uri,
   Client,
   Plugin,
-  QueryResolvers
+  PluginModules
 } from "@web3api/core-js";
 
 import { ethers } from "ethers";
@@ -32,10 +32,9 @@ export class EnsPlugin extends Plugin {
   }
 
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
-  public getQueryResolvers(client: Client): QueryResolvers {
+  public getModules(client: Client): PluginModules {
     return {
-      Query: Query(this, client),
-      Mutation: { }
+      query: query(this, client)
     };
   }
 

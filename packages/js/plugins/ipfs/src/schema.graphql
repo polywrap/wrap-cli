@@ -1,4 +1,5 @@
-# TODO: add declaration for "implement"ing uri-resolver & api-resolver
+#implement { Query } from "w3://ens/api-resolver.core.web3api.eth"
+#implement { Query } from "w3://ens/uri-resolver.core.web3api.eth"
 
 type Query {
   catFile(cid: String!): Bytes!

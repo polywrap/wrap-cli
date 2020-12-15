@@ -1,65 +1,58 @@
 import { IpfsPlugin } from "./";
 
-import { QueryResolver } from "@web3api/core-js";
+import { PluginModule } from "@web3api/core-js";
 
 // TODO: generate types from the schema
-export const Mutation = (ipfs: IpfsPlugin): QueryResolver => ({
+export const mutation = (ipfs: IpfsPlugin): PluginModule => ({
   addFile: async (input: { data: Uint8Array }) => {
-    try {
-      const result = await ipfs.add(input.data);
-      return { data: {
-        addFile: result
-      }};
-    } catch (e) {
-      return { errors: [e] };
-    }
+    const { path, cid } = await ipfs.add(input.data);
+    return {
+      path,
+      cid
+    };
   }
-})
+});
 
-export const Query = (ipfs: IpfsPlugin): QueryResolver => ({
+export const query = (ipfs: IpfsPlugin): PluginModule => ({
   catFile: async (input: { cid: string }) => {
-    try {
-      return { data: await ipfs.cat(input.cid) };
-    } catch (e) {
-      return { errors: [e] };
-    }
+    return await ipfs.cat(input.cid);
   },
-  // ens://api-resolver.core.web3api.eth
+  // w3://ens/api-resolver.core.web3api.eth
   getFile: async (input: { path: string }) => {
     try {
-      return { data: await ipfs.catToBuffer(input.path) };
+      return await ipfs.catToBuffer(input.path);
     } catch (e) { 
-      return { data: null };
+      return null;
     }
   },
-  // ens://uri-resolver.core.web3api.eth
-  supportedScheme: async (input: { scheme: string }) => {
-    return { data: input.scheme === "ipfs" };
+  // w3://ens/uri-resolver.core.web3api.eth
+  supportedUriAuthority: async (input: { authority: string }) => {
+    return input.authority === "ipfs";
   },
-  tryResolveUri: async (input: { uri: string }) => {
-    if (IpfsPlugin.isCID(input.uri)) {
+  tryResolveUriPath: async (input: { path: string }) => {
+    if (IpfsPlugin.isCID(input.path)) {
       // Try fetching uri/web3api.yaml
       try {
-        return { data: {
-          manifest: await ipfs.catToString(`${input.uri}/web3api.yaml`),
+        return {
+          manifest: await ipfs.catToString(`${input.path}/web3api.yaml`),
           uri: null
-        }};
+        };
       } catch (e) {
         // TODO: logging
       }
 
       // Try fetching uri/web3api.yml
       try {
-        return { data: {
-          manifest: await ipfs.catToString(`${input.uri}/web3api.yml`),
+        return {
+          manifest: await ipfs.catToString(`${input.path}/web3api.yml`),
           uri: null
-        }};
+        };
       } catch (e) {
         // TODO: logging
       }
     }
 
     // Nothing found
-    return { data: { manifest: null, uri: null } };
+    return { manifest: null, uri: null };
   }
 });

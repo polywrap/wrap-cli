@@ -71,16 +71,16 @@ export async function resolveUri(
   // The final URI has been resolved, let's now resolve the Web3API package
   // TODO: remove this! Go through all known plugins and get the ones that implement resolution
   const uriResolverImplementations = [
-    new Uri("ens://ipfs.web3api.eth"),
-    new Uri("ens://ens.web3api.eth")
+    new Uri("ens/ipfs.web3api.eth"),
+    new Uri("ens/ens.web3api.eth")
   ];
 
   for (let i = 0; i < uriResolverImplementations.length; ++i) {
     const uriResolver = uriResolverImplementations[i];
 
     {
-      const { data, errors } = await UriResolver.Query.supportedScheme(
-        client, uriResolver, resolvedUri.scheme
+      const { data, errors } = await UriResolver.Query.supportedUriAuthority(
+        client, uriResolver, resolvedUri.authority
       );
 
       // Throw errors so the caller (client) can handle them
@@ -89,7 +89,7 @@ export async function resolveUri(
       }
 
       // If nothing was returned, or the scheme is unsupported, continue
-      if (!data || !data.supportedScheme) {
+      if (!data || !data.supportedUriAuthority) {
         continue;
       }
     }
@@ -98,8 +98,8 @@ export async function resolveUri(
     let newUri: string | undefined;
     let manifestStr: string | undefined;
     {
-      const { data, errors } = await UriResolver.Query.tryResolveUri(
-        client, uriResolver, resolvedUri
+      const { data, errors } = await UriResolver.Query.tryResolveUriPath(
+        client, uriResolver, resolvedUri.path
       );
 
       // Throw errors so the caller (client) can handle them
@@ -108,11 +108,13 @@ export async function resolveUri(
       }
 
       // If nothing was returned, the URI is not supported
-      if (!data || (!data.uri && !data.manifest)) {
+      if (!data || !data.tryResolveUriPath ||
+         (!data.tryResolveUriPath.uri && !data.tryResolveUriPath.manifest)) {
         continue;
       }
-      newUri = data.uri;
-      manifestStr = data.manifest;
+
+      newUri = data.tryResolveUriPath.uri;
+      manifestStr = data.tryResolveUriPath.manifest;
     }
 
     if (newUri) {

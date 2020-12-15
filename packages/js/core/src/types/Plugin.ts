@@ -1,7 +1,6 @@
 import {
   Uri,
   Client,
-  InvokeApiResult,
   ApiModules
 } from "./";
 
@@ -16,7 +15,7 @@ import {
 export type PluginMethod = (
   input: Record<string, unknown>,
   client: Client
-) => Promise<InvokeApiResult<unknown>>;
+) => Promise<unknown>;
 
 /**
  * A plugin "module" is a named map of [[PluginMethod | invocable methods]].

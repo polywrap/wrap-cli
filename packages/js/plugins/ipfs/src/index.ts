@@ -1,9 +1,9 @@
-import { Query, Mutation } from "./resolvers";
+import { query, mutation } from "./resolvers";
 
 import {
   Client,
   Plugin,
-  QueryResolvers,
+  PluginModules,
   Uri
 } from "@web3api/core-js";
 
@@ -33,10 +33,10 @@ export class IpfsPlugin extends Plugin {
   }
 
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
-  public getQueryResolvers(client: Client): QueryResolvers {
+  public getModules(client: Client): PluginModules {
     return {
-      Query: Query(this),
-      Mutation: Mutation(this)
+      query: query(this),
+      mutation: mutation(this)
     };
   }
 

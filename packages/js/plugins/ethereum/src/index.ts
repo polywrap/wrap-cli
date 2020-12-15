@@ -1,10 +1,10 @@
-import { Query, Mutation } from "./resolvers";
+import { query, mutation } from "./resolvers";
 
 import {
   Client,
   Plugin,
   Uri,
-  QueryResolvers
+  PluginModules
 } from "@web3api/core-js";
 
 import { Signer, ethers } from "ethers";
@@ -42,10 +42,10 @@ export class EthereumPlugin extends Plugin {
   }
 
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
-  public getQueryResolvers(client: Client): QueryResolvers {
+  public getModules(client: Client): PluginModules {
     return {
-      Query: Query(this),
-      Mutation: Mutation(this)
+      query: query(this),
+      mutation: mutation(this)
     };
   }
 

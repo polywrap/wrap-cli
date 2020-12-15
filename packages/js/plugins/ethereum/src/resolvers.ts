@@ -1,35 +1,29 @@
 import { EthereumPlugin } from ".";
 
-import { QueryResolver } from "@web3api/core-js";
+import { PluginModule } from "@web3api/core-js";
 
-export const Mutation = (ethereum: EthereumPlugin): QueryResolver => ({
+export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
   sendTransaction: async (input: { address: string, method: string, args: string[] }) => {
-    return {
-      data: await ethereum.sendTransaction(
-        input.address,
-        input.method,
-        input.args
-      )
-    }
+    return await ethereum.sendTransaction(
+      input.address,
+      input.method,
+      input.args
+    )
   },
 
   deployContract: async (input: { abi: string, bytecode: string }) => {
-    return {
-      data: await ethereum.deployContract(
-        input.abi, input.bytecode
-      )
-    }
+    return await ethereum.deployContract(
+      input.abi, input.bytecode
+    )
   }
-})
+});
 
-export const Query = (ethereum: EthereumPlugin): QueryResolver => ({
+export const query = (ethereum: EthereumPlugin): PluginModule => ({
   callView: async (input: { address: string, method: string, args: string[]}) => {
-    return {
-      data: await ethereum.sendTransaction(
-        input.address,
-        input.method,
-        input.args
-      )
-    }
+    return await ethereum.sendTransaction(
+      input.address,
+      input.method,
+      input.args
+    )
   }
 });

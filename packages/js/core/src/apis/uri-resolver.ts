@@ -5,34 +5,36 @@ import {
 } from "../";
 
 export const Query = {
-  supportedScheme: (client: Client, api: Uri, scheme: string) => (
-    client.query<{ supportedScheme: boolean }, { scheme: string }>({
+  supportedUriAuthority: (client: Client, api: Uri, authority: string) => (
+    client.query<{ supportedUriAuthority: boolean }, { authority: string }>({
       uri: api,
       query: `query {
-        supportedScheme(
-          scheme: $scheme
+        supportedUriAuthority(
+          authority: $authority
         )
       }`,
       variables: {
-        scheme
+        authority
       }
     })
   ),
-  tryResolveUri: (client: Client, api: Uri, uri: Uri) => (
+  tryResolveUriPath: (client: Client, api: Uri, path: string) => (
     client.query<{
-      uri?: string,
-      manifest?: string
+      tryResolveUriPath: {
+        uri?: string,
+        manifest?: string
+      }
     }, {
-      uri: string
+      path: string
     }>({
       uri: api,
       query: `query {
-        tryResolveUri(
-          uri: $uri
+        tryResolveUriPath(
+          path: $path
         ) { uri, manifest }
       }`,
       variables: {
-        uri: uri.uri
+        path
       }
     })
   )

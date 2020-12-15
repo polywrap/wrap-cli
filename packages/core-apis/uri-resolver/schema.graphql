@@ -1,10 +1,10 @@
 type Query {
-  supportedScheme(
-    scheme: String!
+  supportedUriAuthority(
+    authority: String!
   ): Boolean!
 
-  tryResolveUri(
-    uri: String!
+  tryResolveUriPath(
+    path: String!
   ): MaybeUriOrManifest!
 }
 
