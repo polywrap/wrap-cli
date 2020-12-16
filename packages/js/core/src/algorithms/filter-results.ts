@@ -1,12 +1,22 @@
-export function filterResults(result: Record<string, any>, filter: Record<string, any>): Record<string, any> {
+export function filterResults(result: unknown, filter: Record<string, any>): unknown {
+
+  if (typeof result !== 'object') {
+    throw Error("The result given is not an object. Filters can only be given on results that are of 'object' type.");
+  }
+
+  if (!result) {
+    return result;
+  }
+
   const filtered: Record<string, any> = { };
+  const res: any = result;
 
   for (const key of Object.keys(filter)) {
-    if (result[key]) {
+    if (res[key]) {
       if (typeof filter[key] === "boolean") {
-        filtered[key] = result[key];
+        filtered[key] = res[key];
       } else {
-        filtered[key] = filterResults(result[key], filter[key]);
+        filtered[key] = filterResults(res[key], filter[key]);
       }
     }
   }

@@ -1,17 +1,22 @@
 import { getDefaultRedirects } from "./default-redirects";
-
 import {
-  QueryOptions,
-  QueryResult,
-  createQueryDocument,
-  extractExecuteOptions
-} from "./graphql";
+  PluginWeb3Api,
+  WasmWeb3Api
+} from "./web3api";
+
 import {
   Api,
   ApiCache,
-  resolveWeb3Api,
-} from "./web3api";
-import { Uri, Plugin } from "@web3api/client-lib-js";
+  Client,
+  createQueryDocument,
+  parseQuery,
+  Plugin,
+  QueryApiOptions,
+  QueryApiResult,
+  Uri,
+  UriRedirect,
+  resolveUri
+} from "@web3api/core-js";
 
 export interface ClientConfig {
   redirects: UriRedirect[]
@@ -19,7 +24,7 @@ export interface ClientConfig {
 
 export class Web3ApiClient implements Client {
 
-  private _apiCache = new Web3ApiCache();
+  private _apiCache = new ApiCache();
 
   constructor(private _config: ClientConfig) {
     const { redirects } = this._config;
@@ -30,14 +35,18 @@ export class Web3ApiClient implements Client {
     );
   }
 
+  public redirects(): readonly UriRedirect[] {
+    return this._config.redirects;
+  }
+
   public async query<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>
   >(
-    options: QueryOptions<TVariables>
-  ): Promise<QueryResult<TData>> {
+    options: QueryApiOptions<TVariables>
+  ): Promise<QueryApiResult<TData>> {
     try {
-      const { uri, query, variables } = args;
+      const { uri, query, variables } = options;
       const api = await this.loadWeb3Api(uri);
 
       // Convert the query string into a query document
@@ -46,24 +55,37 @@ export class Web3ApiClient implements Client {
         createQueryDocument(query) :
         query;
 
-      // Extract the ExecuteOptions from the query document
-      const executeOptions = extractExecuteOptions(
+      // Parse the query to understand what's being invoked
+      const invokeOptions = parseQuery(
         queryDocument, variables
       );
 
-      // Execute the query
-      return await api.execute<TData>(executeOptions, this);
+      // TODO: support multiple async queries
+      // Process all API invocations
+      const result = await api.invoke<TData>(invokeOptions[0], this);
+      const data = {} as any;
+      data[invokeOptions[0].method] = result.data;
+
+      return {
+        data,
+        errors: result.errors
+      }
     } catch (error) {
       return { errors: error };
     }
   }
 
-  private async loadWeb3Api(uri: Uri): Promise<Web3Api> {
+  private async loadWeb3Api(uri: Uri): Promise<Api> {
     let api = this._apiCache.get(uri.uri);
 
     if (!api) {
-      api = await resolveWeb3Api(
-        uri, this._config.redirects, this
+      api = await resolveUri(
+        uri,
+        this,
+        (uri: Uri, plugin: () => Plugin) =>
+          new PluginWeb3Api(uri, plugin),
+        (uri: Uri, manifest: Manifest, apiResolver: Uri) =>
+          new WasmWeb3Api(uri, manfest, apiResolver)
       );
 
       if (!api) {

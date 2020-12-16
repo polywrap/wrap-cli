@@ -12,7 +12,7 @@ import {
 export function parseQuery(
   doc: QueryDocument,
   variables?: Record<string, unknown>
-): InvokeApiOptions {
+): InvokeApiOptions[] {
   if (doc.definitions.length === 0) {
     throw Error(
       "Empty query document found."
@@ -90,12 +90,13 @@ export function parseQuery(
     resultFilter = extractSelections(selectionResults);
   }
 
-  return {
+  // TODO: support multiple async queries
+  return [{
     module,
     method,
     input,
     resultFilter
-  };
+  }];
 }
 
 function extractValue(node: ValueNode, variables?: Record<string, unknown>): unknown {

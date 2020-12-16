@@ -1,55 +1,72 @@
 import {
-  ExecuteOptions,
-  ExecuteResult,
-  Web3Api
-} from "./";
-import { filterExecuteResult } from "./filter-result";
-import {
-  Uri,
-  Web3ApiClient,
-  Web3ApiPlugin
-} from "../";
+  Api,
+  Client,
+  filterResults,
+  InvokeApiOptions,
+  InvokeApiResult,
+  Plugin,
+  Uri
+} from "@web3api/core-js";
 
-export class PluginWeb3Api extends Web3Api {
+export class PluginWeb3Api extends Api {
 
-  private _instance: Web3ApiPlugin | undefined;
+  private _instance: Plugin | undefined;
 
   constructor(
     uri: Uri,
-    private _plugin: () => Web3ApiPlugin
+    private _plugin: () => Plugin
   ) {
     super(uri);
   }
 
-  private getInstance(): Web3ApiPlugin {
+  private getInstance(): Plugin {
     return this._instance || this._plugin();
   }
 
-  public async execute(
-    options: ExecuteOptions,
-    client: Web3ApiClient
-  ): Promise<ExecuteResult> {
-    const { module, method, input, results } = options;
-    const resolvers = this.getInstance().getQueryResolvers(client);
+  public async invoke<
+    TData = Record<string, unknown>
+  >(
+    options: InvokeApiOptions, client: Client
+  ): Promise<InvokeApiResult<TData>> {
+    const { module, method, input, resultFilter } = options;
+    const modules = this.getInstance().getModules(client);
 
-    const root: "Query" | "Mutation" =
-      module === "query" ? "Query" : "Mutation";
+    const pluginModule = modules[module];
 
-    if (!resolvers[root][method]) {
+    if (!pluginModule) {
       return {
-        result: { },
-        error: new Error(
-        `Web3API method not found in plugin's resolvers.` +
-        `Operation: ${root}\nMethod: ${method}\nURI: ${this._uri}\nPlugin Resolvers: ${resolvers}`
-        )
+        errors: [new Error(
+          `Web3API module not found in plugin.` +
+          `Module: ${module}\n` +
+          `Plugin Modules: ${JSON.stringify(modules, null, 2)}\n` +
+          `URI: ${this._uri}`
+        )]
       };
     }
 
-    const result = await resolvers[root][method](input, client);
-
-    if (results) {
+    if (!pluginModule[method]) {
       return {
-        result: filterExecuteResult(result, results)
+        errors: [new Error(
+          `Web3API method not found in the plugin's modules.` +
+          `Module: ${module}\nMethod: ${method}\n` +
+          `Plugin Modules: ${JSON.stringify(modules, null, 2)}\n` +
+          `URI: ${this._uri}`
+        )]
+      };
+    }
+
+    let result;
+
+    try {
+      result = await pluginModule[method](input, client) as TData;
+    } catch (e) {
+
+    }
+
+    if (result !== undefined) {
+      // TODO: catch filterResults exception, append it to errors, add our own error saying "error filtering result on method ..."
+      return {
+        data: resultFilter ? filterResults(result, resultFilter) : result
       }
     } else {
       return { result }
