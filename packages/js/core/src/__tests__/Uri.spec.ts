@@ -1,6 +1,6 @@
 import { Uri } from "../";
 
-describe("Uri Formatting", () => {
+describe("Uri", () => {
   it("Inserts a w3:// scheme when one is not present", () => {
     const uri = new Uri("/authority-v2/path.to.thing.root/sub/path");
 

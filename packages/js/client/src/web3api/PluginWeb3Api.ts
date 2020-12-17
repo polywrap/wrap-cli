@@ -1,6 +1,7 @@
 import {
   Api,
   Client,
+  executeMaybeAsyncFunction,
   filterResults,
   InvokeApiOptions,
   InvokeApiResult,
@@ -31,45 +32,53 @@ export class PluginWeb3Api extends Api {
     const { module, method, input, resultFilter } = options;
     const modules = this.getInstance().getModules(client);
 
-    const pluginModule = modules[module];
-
-    if (!pluginModule) {
-      return {
-        errors: [new Error(
-          `Web3API module not found in plugin.` +
-          `Module: ${module}\n` +
-          `Plugin Modules: ${JSON.stringify(modules, null, 2)}\n` +
-          `URI: ${this._uri}`
-        )]
-      };
-    }
-
-    if (!pluginModule[method]) {
-      return {
-        errors: [new Error(
-          `Web3API method not found in the plugin's modules.` +
-          `Module: ${module}\nMethod: ${method}\n` +
-          `Plugin Modules: ${JSON.stringify(modules, null, 2)}\n` +
-          `URI: ${this._uri}`
-        )]
-      };
-    }
-
-    let result;
-
     try {
-      result = await pluginModule[method](input, client) as TData;
-    } catch (e) {
+      const pluginModule = modules[module];
 
-    }
-
-    if (result !== undefined) {
-      // TODO: catch filterResults exception, append it to errors, add our own error saying "error filtering result on method ..."
-      return {
-        data: resultFilter ? filterResults(result, resultFilter) : result
+      if (!pluginModule) {
+        throw new Error(`PluginWeb3Api: module "${module}" not found.`);
       }
-    } else {
-      return { result }
+
+      if (!pluginModule[method]) {
+        throw new Error(`PluginWeb3Api: method "${method}" not found.`);
+      }
+
+      let result = await executeMaybeAsyncFunction(
+        pluginModule[method],
+        input,
+        client
+      ) as TData;
+
+      if (result !== undefined) {
+        let data = result as unknown;
+
+        if (resultFilter) {
+          data = filterResults(result, resultFilter);
+        }
+
+        return {
+          data: data as TData
+        }
+      } else {
+        return {  };
+      }
+    } catch (e) {
+      let errors;
+      if (Array.isArray(e)) {
+        errors = [...e];
+      } else {
+        errors = [e];
+      }
+
+      errors.push(new Error(
+        `PluginWeb3Api: invocation exception encountered.\n` +
+        `uri: ${this._uri.uri}\nmodule: ${module}\n` +
+        `method: ${method}\nresultFilter: ${resultFilter}` +
+        `input: ${JSON.stringify(input, null, 2)}` +
+        `modules: ${JSON.stringify(modules, null, 2)}\n`
+      ))
+
+      return { errors };
     }
   }
 }

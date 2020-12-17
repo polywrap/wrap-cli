@@ -1,11 +1,15 @@
 export function filterResults(result: unknown, filter: Record<string, any>): unknown {
 
-  if (typeof result !== 'object') {
-    throw Error("The result given is not an object. Filters can only be given on results that are of 'object' type.");
-  }
-
   if (!result) {
     return result;
+  }
+
+  if (typeof result !== 'object') {
+    throw Error(
+      `The result given is not an object. ` +
+      `Filters can only be given on results that are of 'object' type.\n` +
+      `Filter: ${JSON.stringify(filter, null, 2)}`
+    );
   }
 
   const filtered: Record<string, any> = { };
@@ -18,6 +22,8 @@ export function filterResults(result: unknown, filter: Record<string, any>): unk
       } else {
         filtered[key] = filterResults(res[key], filter[key]);
       }
+    } else {
+      filtered[key] = undefined;
     }
   }
 

@@ -1,7 +1,8 @@
 import {
   Uri,
   Client,
-  ApiModules
+  ApiModules,
+  MaybeAsync
 } from "./";
 
 /**
@@ -15,7 +16,7 @@ import {
 export type PluginMethod = (
   input: Record<string, unknown>,
   client: Client
-) => Promise<unknown>;
+) => MaybeAsync<unknown>;
 
 /**
  * A plugin "module" is a named map of [[PluginMethod | invocable methods]].
@@ -57,13 +58,13 @@ export abstract class Plugin {
            this._pluginConfig.implemented.findIndex((item) => item.uri === uri.uri) > -1;
   }
 
-  /** Get all APIs this plugin implements. */
-  public implements(): readonly Uri[] {
+  /** Get all APIs this plugin implemented. */
+  public implemented(): readonly Uri[] {
     return this._pluginConfig.implemented || [];
   }
 
   /** Get all API dependencies imported by this plugin. */
-  public imports(): readonly Uri[] {
+  public imported(): readonly Uri[] {
     return this._pluginConfig.imported || [];
   }
 
@@ -73,5 +74,5 @@ export abstract class Plugin {
    * @param client The client instance requesting the modules.
    * This client will be used for any sub-queries that occur.
    */
-  abstract getModules(client: Client): PluginModules;
+  public abstract getModules(client: Client): PluginModules;
 }
