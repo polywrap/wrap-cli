@@ -1,0 +1,19 @@
+Schema Pipeline:
+1. Composition:
+  - import all local schemas
+  - import all external schemas
+  - add any GraphQL type headers to the schema so it'll build
+
+  * Make sure error handling is prop, because this isn't being handled right now
+    * file not found for local import
+    * duplicate namespace name for different URIs
+    * Type not found in the file that's being imported
+    * file not found for external import
+    * duplicate types that may conflict
+    * make sure you can't import a mutation inside of a query schema
+    * nested dependencies work (Cat_Animal_Breed) where Animal_Breed is inside of cat.graphql, and Breed came from "animal.eth"
+
+2. Parse
+  - Parse the valid schema into a TypeInfo struct
+3. Bind
+  - Take the schema's TypeInfo, and generate binding code
