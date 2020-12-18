@@ -8,6 +8,7 @@ import {
 } from "../types";
 import * as UriResolver from "../apis/uri-resolver";
 
+// TODO: add a description of the algorithm
 export async function resolveUri(
   uri: Uri,
   client: Client,
@@ -69,7 +70,7 @@ export async function resolveUri(
   }
 
   // The final URI has been resolved, let's now resolve the Web3API package
-  // TODO: remove this! Go through all known plugins and get the ones that implement resolution
+  // TODO: remove this! Go through all known redirects and get the ones that implement uri-resolver & api-resoler
   const uriResolverImplementations = [
     new Uri("ens/ipfs.web3api.eth"),
     new Uri("ens/ens.web3api.eth")

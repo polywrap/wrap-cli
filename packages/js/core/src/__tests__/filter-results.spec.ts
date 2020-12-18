@@ -2,9 +2,6 @@ import {
   filterResults
 } from "../";
 
-// TODO: works with a normal object (1, 2, 2)
-// TODO: fails if you try to filter a value prop
-
 describe("filterResults", () => {
 
   it("works in the typical case", () => {
