@@ -5,6 +5,12 @@ describe("Uri", () => {
     const uri = new Uri("/authority-v2/path.to.thing.root/sub/path");
 
     expect(uri.uri).toEqual("w3://authority-v2/path.to.thing.root/sub/path")
+    expect(uri.authority).toEqual("authority-v2");
+    expect(uri.path).toEqual("path.to.thing.root/sub/path");
+  });
+
+  it("isUri fails when given something that's not a URI", () => {
+    expect(Uri.isUri("not a Uri object" as any)).toBeFalsy();
   });
 
   it("Fails if an authority is not present", () => {

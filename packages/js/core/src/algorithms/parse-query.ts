@@ -8,7 +8,6 @@ import {
   ValueNode
 } from "graphql";
 
-// TODO: support multiple parallel queries
 export function parseQuery(
   doc: QueryDocument,
   variables?: Record<string, unknown>
@@ -19,84 +18,82 @@ export function parseQuery(
     );
   }
 
-  if (doc.definitions.length > 1) {
-    throw Error(
-      "Multiple simultaneous queries not yet supported."
-    );
-  }
+  const invokeOptions: InvokeApiOptions[] = [];
 
-  const def = doc.definitions[0];
+  for (const def of doc.definitions) {
 
-  if (def.kind !== "OperationDefinition") {
-    throw Error(
-      `Unrecognized root level definition type: ${def.kind}\n` +
-      "Please use a 'query' or 'mutation' operations."
-    );
-  }
+    if (def.kind !== "OperationDefinition") {
+      throw Error(
+        `Unrecognized root level definition type: ${def.kind}\n` +
+        "Please use a 'query' or 'mutation' operations."
+      );
+    }
 
-  // Get the module name (query or mutation)
-  const module = def.operation;
+    // Get the module name (query or mutation)
+    const module = def.operation;
 
-  if (module === "subscription") {
-    throw Error(
-      "Subscription queries are not yet supported."
-    );
-  }
+    if (module === "subscription") {
+      throw Error(
+        "Subscription queries are not yet supported."
+      );
+    }
 
-  // Get the method name
-  const selectionSet = def.selectionSet;
-  const selections = selectionSet.selections;
+    // Get the method name
+    const selectionSet = def.selectionSet;
+    const selections = selectionSet.selections;
 
-  if (selections.length === 0) {
-    throw Error(
-      "Empty selection set found. Please include the name of a method you'd like to query."
-    );
-  }
+    if (selections.length === 0) {
+      throw Error(
+        "Empty selection set found. Please include the name of a method you'd like to query."
+      );
+    }
 
-  if (selections.length > 1) {
-    throw Error(
-      "Multiple simultaneous queries not yet supported"
-    );
-  }
+    for (const selection of selections) {
 
-  const selection = selections[0];
+      if (selection.kind !== "Field") {
+        throw Error(
+          `Unsupported selection type found: ${selection.kind}\n` +
+          "Please query a method."
+        );
+      }
 
-  if (selection.kind !== "Field") {
-    throw Error(
-      `Unsupported selection type found: ${selection.kind}\n` +
-      "Please query a method."
-    );
-  }
+      const method = selection.name.value;
 
-  const method = selection.name.value;
+      // Get all input arguments
+      const selectionArgs = selection.arguments;
+      let input: Record<string, unknown> = {};
 
-  // Get all input arguments
-  const selectionArgs = selection.arguments;
-  let input: Record<string, unknown> = {};
+      if (selectionArgs) {
+        for (const arg of selectionArgs) {
+          const name = arg.name.value;
 
-  if (selectionArgs) {
-    for (const arg of selectionArgs) {
-      const name = arg.name.value;
-      const valueDef = arg.value;
-      input[name] = extractValue(valueDef, variables);
+          if (input[name]) {
+            throw Error(`Duplicate input argument found: ${name}`);
+          }
+
+          const valueDef = arg.value;
+          input[name] = extractValue(valueDef, variables);
+        }
+      }
+
+      // Get the results the query is asking for
+      const selectionResults = selection.selectionSet;
+      let resultFilter: Record<string, unknown> = {};
+    
+      if (selectionResults) {
+        resultFilter = extractSelections(selectionResults);
+      }
+
+      invokeOptions.push({
+        module,
+        method,
+        input,
+        resultFilter
+      });
     }
   }
 
-  // Get the results the query is asking for
-  const selectionResults = selection.selectionSet;
-  let resultFilter: Record<string, unknown> = {};
-
-  if (selectionResults) {
-    resultFilter = extractSelections(selectionResults);
-  }
-
-  // TODO: support multiple async queries
-  return [{
-    module,
-    method,
-    input,
-    resultFilter
-  }];
+  return invokeOptions;
 }
 
 function extractValue(node: ValueNode, variables?: Record<string, unknown>): unknown {
@@ -107,15 +104,22 @@ function extractValue(node: ValueNode, variables?: Record<string, unknown>): unk
         `Variables were not specified, tried to resolve variable from query. Name: ${node.name.value}\n`
       );
     }
+
+    if (!variables[node.name.value]) {
+      throw Error(`Missing variable: ${node.name.value}`);
+    }
+
     return variables[node.name.value];
   } else if (
     node.kind === "StringValue" ||
-    node.kind === "BooleanValue" ||
-    node.kind === "IntValue" ||
-    node.kind === "FloatValue" ||
-    node.kind === "EnumValue"
+    node.kind === "EnumValue" ||
+    node.kind === "BooleanValue"
   ) {
     return node.value;
+  } else if (node.kind === "IntValue") {
+    return Number.parseInt(node.value);
+  } else if (node.kind === "FloatValue") {
+    return Number.parseFloat(node.value);
   } else if (node.kind === "NullValue") {
     return null;
   } else if (node.kind === "ListValue") {
@@ -148,11 +152,15 @@ function extractSelections(node: SelectionSetNode): Record<string, unknown> {
   for (const selection of node.selections) {
     if (selection.kind !== "Field") {
       throw Error(
-        "Unsupported result selection type found: ${result.kind}"
+        `Unsupported result selection type found: ${selection.kind}`
       );
     }
 
     const name = selection.name.value;
+
+    if (result[name]) {
+      throw Error(`Duplicate result selections found: ${name}`);
+    }
 
     if (selection.selectionSet) {
       result[name] = extractSelections(selection.selectionSet);
