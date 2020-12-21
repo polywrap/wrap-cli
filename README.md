@@ -1,21 +1,20 @@
 # Web3 API  
 ![](https://github.com/Web3-API/branding/blob/master/logo/Web3API_On_Black_BG.jpg?raw=true)  
-> The Power of Web3,
-The Ease of Web2  
+**The Power of Web3,
+The Ease of Web2**  
+*The Universal Integration Standard for Web3*  
 
 **Web3API is in Pre-Alpha**  
 **[Join Early Access](https://web3api.dev)**
 
 ## What?  
-[Web3API](https://web3api.dev) allows smart contract developers to implement user-friendly, multi-platform, wrappers for their protocols in a language agnostic way. Use Web3APIs in your favorite platforms and programming languages:  
-Browser JS, Node.JS, Rust, Python, Go, C/C++, C#, etc  
+[Web3API](https://web3api.dev) is a developer toolchain that brings the ease of Web2 to Web3. This project aims to make integrating Web3 protocols into your apps seamlessly, without sacrificing decentralization.  
 
-At core of [Web3API](https://web3api.dev) is a WASM runtime that enables interactions with popular P2P networks:  
-IPFS, Ethereum, Subgraph, etc  
+In addition, Web3API is built with multi-platform support in mind. The Web3API standard allows Web3 protocols to run on all types of devices in your favorite programming language (Rust, Javascript, Python, Go, C, C#, etc).  
 
-These WASM modules, paired with a [subgraph](https://thegraph.com/) for historical data querying, combine together to **create a single GraphQL schema that defines the entirety of the protocol.**  
+Our goal is to build a fluid and efficient environment that will bring Web2 developers and enterprises into the Web3 space. We are taking the one-dimensional and fragmented developer environment of Web3 and bringing standardization, composability, and multi-platform support.  
 
-We call this GraphQL schema a [Web3API](https://web3api.dev).  
+Here is a [video explainer](http://video.web3api.eth.link) for the visual learners.  
 
 ## How?  
 Detailed user instructions will be available shortly. **[Join early access!](https://web3api.dev)**  
