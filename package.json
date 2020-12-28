@@ -15,7 +15,7 @@
     ]
   },
   "scripts": {
-    "build": "yarn build:wasm-as && yarn build:client-js && yarn build:cli",
+    "build": "lerna run build --no-private",
     "build:cli": "yarn workspace @web3api/cli build",
     "build:client-js": "yarn workspace @web3api/client-js build",
     "build:wasm-as": "yarn workspace @web3api/wasm-as build",
