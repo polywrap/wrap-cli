@@ -47,12 +47,19 @@ export default {
 
     let manifestPath;
     try {
-      ;[manifestPath] = fixParameters(toolbox.parameters, {
-        h,
-        help,
-        w,
-        watch,
-      });
+      const params = toolbox.parameters;
+      [manifestPath] = fixParameters(
+        {
+          options: params.options,
+          array: params.array,
+        },
+        {
+          h,
+          help,
+          w,
+          watch,
+        }
+      );
     } catch (e) {
       print.error(e.message);
       process.exitCode = 1;
