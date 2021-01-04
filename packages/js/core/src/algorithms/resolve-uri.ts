@@ -1,11 +1,4 @@
-import {
-  Api,
-  deserializeManifest,
-  Manifest,
-  Plugin,
-  Client,
-  Uri
-} from "../types";
+import { Api, deserializeManifest, Manifest, Plugin, Client, Uri } from "../types";
 import * as UriResolver from "../apis/uri-resolver";
 
 // TODO: add a description of the algorithm
@@ -15,24 +8,23 @@ export async function resolveUri(
   createPluginApi: (uri: Uri, plugin: () => Plugin) => Api,
   createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api
 ): Promise<Api> {
-
   let resolvedUri = uri;
 
   // Keep track of past URIs to avoid infinite loops
-  const uriHistory: { uri: string; source: string; }[] = [{
-    uri: resolvedUri.uri,
-    source: "ROOT"
-  }];
+  const uriHistory: { uri: string; source: string }[] = [
+    {
+      uri: resolvedUri.uri,
+      source: "ROOT",
+    },
+  ];
 
   const trackUriRedirect = (uri: string, source: string) => {
     const dupIdx = uriHistory.findIndex((item) => item.uri === uri);
     uriHistory.push({ uri, source });
     if (dupIdx > -1) {
-      throw Error(
-        `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${uriHistory}`
-      );
+      throw Error(`Infinite loop while resolving URI "${uri}".\nResolution Stack: ${uriHistory}`);
     }
-  }
+  };
 
   const redirects = client.redirects();
 
@@ -40,7 +32,6 @@ export async function resolveUri(
   // apply the redirect. If the redirect `to` is a Plugin,
   // return a PluginWeb3Api instance.
   for (const redirect of redirects) {
-
     const from = redirect.from;
 
     if (!from) {
@@ -51,9 +42,9 @@ export async function resolveUri(
     let tryRedirect: (testUri: Uri) => Uri | (() => Plugin);
 
     if (Uri.isUri(from)) {
-      tryRedirect = (testUri: Uri) => testUri.uri === from.uri ? redirect.to : testUri;
+      tryRedirect = (testUri: Uri) => (testUri.uri === from.uri ? redirect.to : testUri);
     } else {
-      tryRedirect = (testUri: Uri) => testUri.uri.match(from) ? redirect.to : testUri;
+      tryRedirect = (testUri: Uri) => (testUri.uri.match(from) ? redirect.to : testUri);
     }
 
     const uriOrPlugin = tryRedirect(resolvedUri);
@@ -71,17 +62,16 @@ export async function resolveUri(
 
   // The final URI has been resolved, let's now resolve the Web3API package
   // TODO: remove this! Go through all known redirects and get the ones that implement uri-resolver & api-resoler
-  const uriResolverImplementations = [
-    new Uri("ens/ipfs.web3api.eth"),
-    new Uri("ens/ens.web3api.eth")
-  ];
+  const uriResolverImplementations = [new Uri("ens/ipfs.web3api.eth"), new Uri("ens/ens.web3api.eth")];
 
   for (let i = 0; i < uriResolverImplementations.length; ++i) {
     const uriResolver = uriResolverImplementations[i];
 
     {
       const { data, errors } = await UriResolver.Query.supportedUriAuthority(
-        client, uriResolver, resolvedUri.authority
+        client,
+        uriResolver,
+        resolvedUri.authority
       );
 
       // Throw errors so the caller (client) can handle them
@@ -99,9 +89,7 @@ export async function resolveUri(
     let newUri: string | undefined;
     let manifestStr: string | undefined;
     {
-      const { data, errors } = await UriResolver.Query.tryResolveUriPath(
-        client, uriResolver, resolvedUri.path
-      );
+      const { data, errors } = await UriResolver.Query.tryResolveUriPath(client, uriResolver, resolvedUri.path);
 
       // Throw errors so the caller (client) can handle them
       if (errors?.length) {
@@ -109,12 +97,13 @@ export async function resolveUri(
       }
 
       // If nothing was returned, the URI is not supported
-      if (!data || !data.tryResolveUriPath ||
-         (!data.tryResolveUriPath.uri && !data.tryResolveUriPath.manifest)) {
+      if (!data || !data.tryResolveUriPath || (!data.tryResolveUriPath.uri && !data.tryResolveUriPath.manifest)) {
         continue;
       }
 
+      // eslint-disable-next-line prefer-const
       newUri = data.tryResolveUriPath.uri;
+      // eslint-disable-next-line prefer-const
       manifestStr = data.tryResolveUriPath.manifest;
     }
 

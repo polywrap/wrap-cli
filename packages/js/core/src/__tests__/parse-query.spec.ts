@@ -1,13 +1,9 @@
 // TODO: multiple-queries
 
-import {
-  createQueryDocument,
-  InvokeApiOptions
-} from "../types";
+import { createQueryDocument, InvokeApiOptions } from "../types";
 import { parseQuery } from "../algorithms";
 
 describe("parseQuery", () => {
-
   it("works in the typical case", () => {
     const doc = createQueryDocument(`
       mutation {
@@ -35,8 +31,10 @@ describe("parseQuery", () => {
     `);
 
     const result = parseQuery(doc, {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       var_1: "var 1",
-      var_2: 55
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      var_2: 55,
     });
 
     const expected: InvokeApiOptions = {
@@ -51,41 +49,43 @@ describe("parseQuery", () => {
         arg6: {
           prop: "hey",
           obj: {
-            prop: 5
-          }
+            prop: 5,
+          },
         },
         var1: "var 1",
-        var2: 55
+        var2: 55,
       },
       resultFilter: {
         someResult: {
           prop1: true,
-          prop2: true
-        }
-      }
+          prop2: true,
+        },
+      },
     };
 
     expect(result).toMatchObject([expected]);
   });
 
   it("fails when given an empty document", () => {
-    const doc = createQueryDocument('{ prop }');
+    const doc = createQueryDocument("{ prop }");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (doc.definitions as any) = [];
     expect(() => parseQuery(doc)).toThrowError(/Empty query document found/);
   });
 
   it("fails when a query operations isn't specified", () => {
-    const doc = createQueryDocument('fragment Something on Type { something }');
+    const doc = createQueryDocument("fragment Something on Type { something }");
     expect(() => parseQuery(doc)).toThrowError(/Unrecognized root level definition type/);
   });
 
   it("fails when given a subscription operation type, which is currently unsupported", () => {
-    const doc = createQueryDocument('subscription { something }');
+    const doc = createQueryDocument("subscription { something }");
     expect(() => parseQuery(doc)).toThrowError(/Subscription queries are not yet supported/);
   });
 
   it("fails when method is missing", () => {
     const doc = createQueryDocument(`query { something }`);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (doc.definitions[0] as any).selectionSet.selections = [];
     expect(() => parseQuery(doc)).toThrowError(/Empty selection set found/);
   });
@@ -129,8 +129,7 @@ describe("parseQuery", () => {
       }
     `);
 
-    expect(() => parseQuery(doc, { arg2: "not arg1" }))
-      .toThrowError(/Missing variable/);
+    expect(() => parseQuery(doc, { arg2: "not arg1" })).toThrowError(/Missing variable/);
   });
 
   it("fails when duplicate input arguments are provided", () => {

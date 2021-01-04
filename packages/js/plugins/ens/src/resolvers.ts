@@ -11,13 +11,13 @@ export const query = (ens: EnsPlugin, client: Client): PluginModule => ({
     try {
       return {
         uri: await ens.ensToCID(input.uri, client),
-        manifest: null
-      }
+        manifest: null,
+      };
     } catch (e) {
       // TODO: logging
     }
 
     // Nothing found
     return { uri: null, manifest: null };
-  }
+  },
 });

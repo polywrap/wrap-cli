@@ -1,20 +1,9 @@
-import {
-  SchemaFile,
-  SchemaResolvers
-} from "./types";
-import {
-  resolveImports,
-  addHeader
-} from "./resolve";
-import {
-  template as schemaTemplate
-} from "./templates/schema.mustache";
+import { SchemaFile, SchemaResolvers } from "./types";
+import { resolveImports, addHeader } from "./resolve";
+import { template as schemaTemplate } from "./templates/schema.mustache";
 
 import Mustache from "mustache";
-import {
-  TypeInfo,
-  combineTypeInfo
-} from "@web3api/schema-parse";
+import { TypeInfo, combineTypeInfo } from "@web3api/schema-parse";
 
 // Remove mustache's built-in HTML escaping
 Mustache.escape = (value) => value;
@@ -23,7 +12,7 @@ export interface ComposerOptions {
   schemas: {
     query?: SchemaFile;
     mutation?: SchemaFile;
-  },
+  };
   resolvers: SchemaResolvers;
 }
 
@@ -33,29 +22,23 @@ export interface ComposerOutput {
   combined?: string;
 }
 
-export function composeSchema(
-  options: ComposerOptions
-): ComposerOutput {
+export function composeSchema(options: ComposerOptions): ComposerOutput {
   const { schemas, resolvers } = options;
   const { query, mutation } = schemas;
   const results: {
-    query?: { schema: string; typeInfo: TypeInfo }
-    mutation?: { schema: string; typeInfo: TypeInfo }
-  } = { }
+    query?: { schema: string; typeInfo: TypeInfo };
+    mutation?: { schema: string; typeInfo: TypeInfo };
+  } = {};
 
   if (query && query.schema && query.absolutePath !== undefined) {
-    results.query = resolveImports(
-      query.schema, query.absolutePath, false, resolvers
-    );
+    results.query = resolveImports(query.schema, query.absolutePath, false, resolvers);
   }
 
   if (mutation && mutation.schema && mutation.absolutePath !== undefined) {
-    results.mutation = resolveImports(
-      mutation.schema, mutation.absolutePath, true, resolvers
-    );
+    results.mutation = resolveImports(mutation.schema, mutation.absolutePath, true, resolvers);
   }
 
-  let result: ComposerOutput = {};
+  const result: ComposerOutput = {};
 
   if (results.query) {
     result.query = renderSchema(results.query.schema, results.query.typeInfo);
@@ -67,9 +50,7 @@ export function composeSchema(
 
   if (results.query && results.mutation) {
     const typeInfo = combineTypeInfo([results.query.typeInfo, results.mutation.typeInfo]);
-    result.combined = renderSchema(
-      results.query.schema + results.mutation.schema, typeInfo
-    );
+    result.combined = renderSchema(results.query.schema + results.mutation.schema, typeInfo);
   }
 
   return result;
@@ -79,7 +60,7 @@ function renderSchema(schema: string, typeInfo: TypeInfo) {
   return addHeader(
     Mustache.render(schemaTemplate, {
       schema,
-      typeInfo
+      typeInfo,
     })
-  ).replace(/[\n]{2,}/gm, '\n\n'); // Remove needless whitespace
+  ).replace(/[\n]{2,}/gm, "\n\n"); // Remove needless whitespace
 }

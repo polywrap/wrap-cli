@@ -6,28 +6,19 @@ import {
   InvokeApiOptions,
   InvokeApiResult,
   Plugin,
-  Uri
+  Uri,
 } from "@web3api/core-js";
 
 export class PluginWeb3Api extends Api {
-
   private _instance: Plugin | undefined;
 
-  constructor(
-    uri: Uri,
-    private _plugin: () => Plugin
-  ) {
+  constructor(uri: Uri, private _plugin: () => Plugin) {
     super(uri);
   }
 
-  private getInstance(): Plugin {
-    return this._instance || this._plugin();
-  }
-
-  public async invoke<
-    TData = Record<string, unknown>
-  >(
-    options: InvokeApiOptions, client: Client
+  public async invoke<TData = Record<string, unknown>>(
+    options: InvokeApiOptions,
+    client: Client
   ): Promise<InvokeApiResult<TData>> {
     const { module, method, input, resultFilter } = options;
     const modules = this.getInstance().getModules(client);
@@ -43,11 +34,7 @@ export class PluginWeb3Api extends Api {
         throw new Error(`PluginWeb3Api: method "${method}" not found.`);
       }
 
-      let result = await executeMaybeAsyncFunction(
-        pluginModule[method],
-        input,
-        client
-      ) as TData;
+      const result = (await executeMaybeAsyncFunction(pluginModule[method], input, client)) as TData;
 
       if (result !== undefined) {
         let data = result as unknown;
@@ -57,10 +44,10 @@ export class PluginWeb3Api extends Api {
         }
 
         return {
-          data: data as TData
-        }
+          data: data as TData,
+        };
       } else {
-        return {  };
+        return {};
       }
     } catch (e) {
       let errors;
@@ -70,15 +57,21 @@ export class PluginWeb3Api extends Api {
         errors = [e];
       }
 
-      errors.push(new Error(
-        `PluginWeb3Api: invocation exception encountered.\n` +
-        `uri: ${this._uri.uri}\nmodule: ${module}\n` +
-        `method: ${method}\nresultFilter: ${resultFilter}` +
-        `input: ${JSON.stringify(input, null, 2)}` +
-        `modules: ${JSON.stringify(modules, null, 2)}\n`
-      ))
+      errors.push(
+        new Error(
+          `PluginWeb3Api: invocation exception encountered.\n` +
+            `uri: ${this._uri.uri}\nmodule: ${module}\n` +
+            `method: ${method}\nresultFilter: ${resultFilter}` +
+            `input: ${JSON.stringify(input, null, 2)}` +
+            `modules: ${JSON.stringify(modules, null, 2)}\n`
+        )
+      );
 
       return { errors };
     }
+  }
+
+  private getInstance(): Plugin {
+    return this._instance || this._plugin();
   }
 }

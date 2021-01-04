@@ -1,18 +1,15 @@
 import { TypeInfoTransforms } from ".";
-import {
-  ArrayDefinition,
-  GenericDefinition,
-  PropertyDefinition
-} from "../typeInfo";
+import { ArrayDefinition, GenericDefinition, PropertyDefinition } from "../typeInfo";
 
 export const finalizePropertyDef: TypeInfoTransforms = {
   enter: {
-    PropertyDefinition: (def: PropertyDefinition) => {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    PropertyDefinition: (def: PropertyDefinition): PropertyDefinition => {
       populatePropertyType(def);
       return def;
-    }
-  }
-}
+    },
+  },
+};
 
 function populatePropertyType(property: PropertyDefinition) {
   let propertyType: GenericDefinition | undefined;
@@ -27,7 +24,7 @@ function populatePropertyType(property: PropertyDefinition) {
   }
 
   property.type = propertyType.type;
-  property.required = propertyType.required
+  property.required = propertyType.required;
 }
 
 function populateArrayType(array: ArrayDefinition) {
@@ -41,9 +38,7 @@ function populateArrayType(array: ArrayDefinition) {
     } else if (currentArray.scalar) {
       baseTypeFound = true;
     } else {
-      throw Error(
-        `This should never happen, ArrayDefinition is malformed.\n${JSON.stringify(array, null, 2)}`
-      );
+      throw Error(`This should never happen, ArrayDefinition is malformed.\n${JSON.stringify(array, null, 2)}`);
     }
   }
 
@@ -60,4 +55,3 @@ function populateArrayType(array: ArrayDefinition) {
   const modifier = array.required ? "" : "?";
   array.type = modifier + "[" + array.item.type + "]";
 }
-

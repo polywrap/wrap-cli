@@ -1,11 +1,17 @@
 // TODO: auto-generate this from "core-apis/uri-resolver/schema.graphql"
-import {
-  Uri,
-  Client
-} from "../";
+import { Uri, Client, QueryApiResult } from "../";
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const Query = {
-  supportedUriAuthority: (client: Client, api: Uri, authority: string) => (
+  supportedUriAuthority: (
+    client: Client,
+    api: Uri,
+    authority: string
+  ): Promise<
+    QueryApiResult<{
+      supportedUriAuthority: boolean;
+    }>
+  > =>
     client.query<{ supportedUriAuthority: boolean }, { authority: string }>({
       uri: api,
       query: `query {
@@ -14,19 +20,32 @@ export const Query = {
         )
       }`,
       variables: {
-        authority
-      }
-    })
-  ),
-  tryResolveUriPath: (client: Client, api: Uri, path: string) => (
-    client.query<{
+        authority,
+      },
+    }),
+  tryResolveUriPath: (
+    client: Client,
+    api: Uri,
+    path: string
+  ): Promise<
+    QueryApiResult<{
       tryResolveUriPath: {
-        uri?: string,
-        manifest?: string
+        uri?: string;
+        manifest?: string;
+      };
+    }>
+  > =>
+    client.query<
+      {
+        tryResolveUriPath: {
+          uri?: string;
+          manifest?: string;
+        };
+      },
+      {
+        path: string;
       }
-    }, {
-      path: string
-    }>({
+    >({
       uri: api,
       query: `query {
         tryResolveUriPath(
@@ -34,8 +53,7 @@ export const Query = {
         ) { uri, manifest }
       }`,
       variables: {
-        path
-      }
-    })
-  )
-}
+        path,
+      },
+    }),
+};

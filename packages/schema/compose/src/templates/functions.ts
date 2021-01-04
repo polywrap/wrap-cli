@@ -1,6 +1,4 @@
-type MustacheFunction = () => (
-  value: string, render: (template: string) => string
-) => string
+type MustacheFunction = () => (value: string, render: (template: string) => string) => string;
 
 export const toGraphQL: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
@@ -17,8 +15,8 @@ export const toGraphQL: MustacheFunction = () => {
     }
 
     return applyNullable(name, nullable);
-  }
-}
+  };
+};
 
 const toGraphQLArray = (name: string, nullable: boolean): string => {
   const result = name.match(/(\[)([?[\]A-Za-z1-9]+)(\])/);
@@ -29,12 +27,12 @@ const toGraphQLArray = (name: string, nullable: boolean): string => {
 
   const graphqlType = toGraphQL()(result[2], (str) => str);
   return applyNullable(`[${graphqlType}]`, nullable);
-}
+};
 
 const applyNullable = (name: string, nullable: boolean): string => {
   if (!nullable) {
-    return name + '!';
+    return name + "!";
   } else {
     return name;
   }
-}
+};

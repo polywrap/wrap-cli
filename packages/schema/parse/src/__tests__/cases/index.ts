@@ -7,18 +7,19 @@ import { readdirSync, readFileSync, Dirent } from "fs";
 const root = path.join(__dirname, "./");
 
 const outputs = {
-  sanity: require('./sanity/output').output
-}
+  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+  sanity: require("./sanity/output").output,
+};
 
 export type TestCases = {
   name: string;
   input: string;
-  output: TypeInfo
+  output: TypeInfo;
 }[];
 
 export function fetchTestCases(): TestCases {
   const cases: TestCases = [];
-  const compiler = create();
+  const _compiler = create();
 
   const importCase = (dirent: Dirent) => {
     // The case must be a folder
@@ -27,10 +28,7 @@ export function fetchTestCases(): TestCases {
     }
 
     // Fetch the input schema
-    const inputSchema = readFileSync(
-      path.join(root, dirent.name, 'input.graphql'),
-      { encoding: "utf-8" }
-    );
+    const inputSchema = readFileSync(path.join(root, dirent.name, "input.graphql"), { encoding: "utf-8" });
 
     // Fetch the output TypeInfo
     const outputTypeInfo = outputs[dirent.name];
@@ -42,12 +40,11 @@ export function fetchTestCases(): TestCases {
     cases.push({
       name: dirent.name,
       input: inputSchema,
-      output: outputTypeInfo
+      output: outputTypeInfo,
     });
-  }
+  };
 
-  readdirSync(root, { withFileTypes: true })
-    .forEach(importCase);
+  readdirSync(root, { withFileTypes: true }).forEach(importCase);
 
   return cases;
 }

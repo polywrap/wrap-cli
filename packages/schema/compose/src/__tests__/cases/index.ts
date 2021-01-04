@@ -1,7 +1,4 @@
-import {
-  ComposerOutput,
-  ComposerOptions
-} from "../../";
+import { ComposerOutput, ComposerOptions } from "../../";
 
 import path from "path";
 import { readdirSync, readFileSync, Dirent, existsSync } from "fs";
@@ -23,7 +20,7 @@ export function fetchTestCases(): TestCases {
       return;
     }
 
-    const fetchIfExists = (subpath: string, absolute: boolean = false): string | undefined => {
+    const fetchIfExists = (subpath: string, absolute = false): string | undefined => {
       let filePath: string;
 
       if (absolute) {
@@ -37,7 +34,7 @@ export function fetchTestCases(): TestCases {
       } else {
         return undefined;
       }
-    }
+    };
 
     // Fetch the input schemas
     const queryInput = fetchIfExists("input/query.graphql");
@@ -50,40 +47,43 @@ export function fetchTestCases(): TestCases {
 
     const resolveExternal = (uri: string): string => {
       return fetchIfExists(`imports-ext/${uri}/schema.graphql`);
-    }
+    };
 
     const resolveLocal = (path: string): string => {
       return fetchIfExists(path, true);
-    }
+    };
 
     cases.push({
       name: dirent.name,
       input: {
         schemas: {
-          query: queryInput ? {
-            schema: queryInput,
-            absolutePath: path.join(root, dirent.name, "input/query.graphql")
-          } : undefined,
-          mutation: mutationInput ? {
-            schema: mutationInput,
-            absolutePath: path.join(root, dirent.name, "input/mutation.graphql")
-          } : undefined
+          query: queryInput
+            ? {
+                schema: queryInput,
+                absolutePath: path.join(root, dirent.name, "input/query.graphql"),
+              }
+            : undefined,
+          mutation: mutationInput
+            ? {
+                schema: mutationInput,
+                absolutePath: path.join(root, dirent.name, "input/mutation.graphql"),
+              }
+            : undefined,
         },
         resolvers: {
           external: resolveExternal,
-          local: resolveLocal
-        }
+          local: resolveLocal,
+        },
       },
       output: {
         query: queryOutput,
         mutation: mutationOutput,
-        combined: schemaOutput
-      }
+        combined: schemaOutput,
+      },
     });
-  }
+  };
 
-  readdirSync(root, { withFileTypes: true })
-    .forEach(importCase);
+  readdirSync(root, { withFileTypes: true }).forEach(importCase);
 
   return cases;
 }

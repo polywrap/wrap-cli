@@ -1,7 +1,4 @@
-import {
-  Uri,
-  Client
-} from ".";
+import { Uri, Client } from ".";
 
 export type ApiModules = "query" | "mutation";
 
@@ -30,12 +27,10 @@ export interface InvokeApiOptions {
 
 /**
  * Result of an API invocation.
- * 
+ *
  * @template TData Type of the invoke result data.
  */
-export interface InvokeApiResult<
-  TData = unknown
-> {
+export interface InvokeApiResult<TData = unknown> {
   /**
    * Invoke result data. The type of this value is the return type
    * of the method. If undefined, it means something went wrong.
@@ -55,26 +50,23 @@ export interface InvokeApiResult<
  * worker threads, or indexing into resolvers to find the requested method.
  */
 export abstract class Api {
-
   /**
    * @param _uri The API's URI
    */
-  constructor(protected _uri: Uri) { }
+  constructor(protected _uri: Uri) {}
 
   /**
    * Invoke the API based on the provided [[InvokeApiOptions]]
-   * 
+   *
    * @param options Options for this invocation.
    * @param client The client instance requesting this invocation.
    * This client will be used for any sub-queries that occur.
    */
-  public async abstract invoke<
-    TData = Record<string, unknown>
-  >(
+  public abstract async invoke<TData = Record<string, unknown>>(
     options: InvokeApiOptions,
     client: Client
   ): Promise<InvokeApiResult<TData>>;
 }
 
 /** Cache of API definitions, mapping the API's URI to its definition */
-export class ApiCache extends Map<string, Api> { }
+export class ApiCache extends Map<string, Api> {}

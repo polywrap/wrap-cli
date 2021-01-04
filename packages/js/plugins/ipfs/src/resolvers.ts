@@ -8,9 +8,9 @@ export const mutation = (ipfs: IpfsPlugin): PluginModule => ({
     const { path, cid } = await ipfs.add(input.data);
     return {
       path,
-      cid
+      cid,
     };
-  }
+  },
 });
 
 export const query = (ipfs: IpfsPlugin): PluginModule => ({
@@ -21,7 +21,7 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
   getFile: async (input: { path: string }) => {
     try {
       return await ipfs.catToBuffer(input.path);
-    } catch (e) { 
+    } catch (e) {
       return null;
     }
   },
@@ -35,7 +35,7 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
       try {
         return {
           manifest: await ipfs.catToString(`${input.path}/web3api.yaml`),
-          uri: null
+          uri: null,
         };
       } catch (e) {
         // TODO: logging
@@ -45,7 +45,7 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
       try {
         return {
           manifest: await ipfs.catToString(`${input.path}/web3api.yml`),
-          uri: null
+          uri: null,
         };
       } catch (e) {
         // TODO: logging
@@ -54,5 +54,5 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
 
     // Nothing found
     return { manifest: null, uri: null };
-  }
+  },
 });

@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 // Get Invoke Arguments
 @external("w3", "__w3_invoke_args")
 export declare function __w3_invoke_args(name_ptr: i32, args_ptr: i32): void;

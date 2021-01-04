@@ -4,13 +4,15 @@ import { Nullable } from "./Nullable";
 export class WriteSizer extends Write {
   length: i32;
 
-  constructor() { super() }
+  constructor() {
+    super();
+  }
 
   writeNil(): void {
     this.length++;
   }
 
-  writeBool(value: bool): void {
+  writeBool(_value: bool): void {
     this.length++;
   }
 
@@ -64,11 +66,11 @@ export class WriteSizer extends Write {
     }
   }
 
-  writeFloat32(value: f32): void {
+  writeFloat32(_value: f32): void {
     this.length += 5;
   }
 
-  writeFloat64(value: f64): void {
+  writeFloat64(_value: f64): void {
     this.length += 9;
   }
 
@@ -138,16 +140,16 @@ export class WriteSizer extends Write {
 
   writeMap<K, V>(
     m: Map<K, V>,
-    keyFn: (sizer: WriteSizer, key: K) => void,
-    valueFn: (sizer: WriteSizer, value: V) => void
+    key_fn: (sizer: WriteSizer, key: K) => void,
+    value_fn: (sizer: WriteSizer, value: V) => void
   ): void {
     this.writeMapLength(m.size);
     const keys = m.keys();
     for (let i: i32 = 0; i < keys.length; i++) {
       const key = keys[i];
       const value = m.get(key);
-      keyFn(this, key);
-      valueFn(this, value);
+      key_fn(this, key);
+      value_fn(this, value);
     }
   }
 
@@ -268,11 +270,7 @@ export class WriteSizer extends Write {
     this.writeBytes(value);
   }
 
-
-  writeNullableArray<T>(
-    a: Array<T> | null,
-    fn: (sizer: Sizer, item: T) => void
-  ): void {
+  writeNullableArray<T>(a: Array<T> | null, fn: (sizer: Sizer, item: T) => void): void {
     if (a === null) {
       this.writeNil();
       return;
@@ -282,13 +280,13 @@ export class WriteSizer extends Write {
 
   writeNullableMap<K, V>(
     m: Map<K, V> | null,
-    keyFn: (sizer: WriteSizer, key: K) => void,
-    valueFn: (sizer: WriteSizer, value: V) => void
+    key_fn: (sizer: WriteSizer, key: K) => void,
+    value_fn: (sizer: WriteSizer, value: V) => void
   ): void {
     if (m === null) {
       this.writeNil();
       return;
     }
-    this.writeMap(m, keyFn, valueFn);
+    this.writeMap(m, key_fn, value_fn);
   }
 }

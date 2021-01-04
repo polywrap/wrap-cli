@@ -1,5 +1,4 @@
-const template: string =
-`{{schema}}
+const template = `{{schema}}
 {{#typeInfo}}
 {{#userTypes}}
 type {{name}} {

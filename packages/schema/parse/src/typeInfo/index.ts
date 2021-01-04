@@ -3,7 +3,7 @@ import {
   QueryDefinition,
   ImportedQueryDefinition,
   ImportedObjectDefinition,
-  GenericDefinition
+  GenericDefinition,
 } from "./definitions";
 
 export * from "./definitions";
@@ -21,8 +21,8 @@ export function createTypeInfo(): TypeInfo {
     userTypes: [],
     queryTypes: [],
     importedObjectTypes: [],
-    importedQueryTypes: []
-  }
+    importedQueryTypes: [],
+  };
 }
 
 export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
@@ -30,12 +30,13 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
     userTypes: [],
     queryTypes: [],
     importedObjectTypes: [],
-    importedQueryTypes: []
+    importedQueryTypes: [],
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const compareImportedType = (a: any, b: any) => {
     return a.uri === b.uri && a.name === b.name;
-  }
+  };
 
   for (const typeInfo of typeInfos) {
     for (const userType of typeInfo.userTypes) {
@@ -47,19 +48,11 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
     }
 
     for (const importedObjectType of typeInfo.importedObjectTypes) {
-      tryInsert(
-        combined.importedObjectTypes,
-        importedObjectType,
-        compareImportedType
-      );
+      tryInsert(combined.importedObjectTypes, importedObjectType, compareImportedType);
     }
 
     for (const importedQueryType of typeInfo.importedQueryTypes) {
-      tryInsert(
-        combined.importedQueryTypes,
-        importedQueryType,
-        compareImportedType
-      );
+      tryInsert(combined.importedQueryTypes, importedQueryType, compareImportedType);
     }
   }
 
@@ -71,20 +64,18 @@ const tryInsert = (
   value: GenericDefinition,
   compare: (a: GenericDefinition, b: GenericDefinition) => boolean = (a, b) => a.name === b.name
 ) => {
-  const index = dest.findIndex((item: GenericDefinition) =>
-    compare(item, value)
-  );
+  const index = dest.findIndex((item: GenericDefinition) => compare(item, value));
 
   if (index > -1) {
     // See if they're the same, error if they aren't
     if (!deepEqual(dest[index], value)) {
       throw Error(
         `combineTypeInfo found two types by the same name that are not equivalent.\n` +
-        `Name: "${value.name}"\nObject A: ${JSON.stringify(dest[index])}\n` +
-        `Object B: ${JSON.stringify(value)}`
+          `Name: "${value.name}"\nObject A: ${JSON.stringify(dest[index])}\n` +
+          `Object B: ${JSON.stringify(value)}`
       );
     }
   } else {
     dest.push(value);
   }
-}
+};

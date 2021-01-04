@@ -1,11 +1,13 @@
-export type MaybeAsync<T> = Promise<T> | T
+export type MaybeAsync<T> = Promise<T> | T;
 
-export const isPromise = (test: any) => test && typeof test.then === 'function'
+export const isPromise = <T extends unknown>(test?: MaybeAsync<T>): test is Promise<T> =>
+  !!test && typeof (test as Promise<T>).then === "function";
 
-export const executeMaybeAsyncFunction = async (func: any, ...args: any[]) => {
-  let result = func(...args)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+export const executeMaybeAsyncFunction = async (func: any, ...args: any[]): Promise<any> => {
+  let result = func(...args);
   if (isPromise(result)) {
-    result = await result
+    result = await result;
   }
-  return result
-}
+  return result;
+};

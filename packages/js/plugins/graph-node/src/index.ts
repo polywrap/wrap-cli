@@ -12,26 +12,24 @@ export interface GraphNodeConfig {
 
 export class GraphNodePlugin extends Plugin {
   constructor(private _config: GraphNodeConfig) {
-    super({ });
+    super({});
   }
 
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
   public getModules(): PluginModules {
     return {
-      query: query(this)
+      query: query(this),
     };
   }
 
   public async query(subgraphId: string, query: string): Promise<string> {
     const link = createHttpLink({
       uri: `${this._config.provider}/subgraphs/id/${subgraphId}`,
-      fetch
+      fetch,
     });
 
     // TODO: get the errors, query typos are getting swallowed
-    const result = await makePromise(
-      execute(link, { query: gql(query) })
-    );
+    const result = await makePromise(execute(link, { query: gql(query) }));
 
     return JSON.stringify(result);
   }

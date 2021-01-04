@@ -1,12 +1,7 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { query } from "./resolvers";
 
-import {
-  Uri,
-  Client,
-  Plugin,
-  PluginModules
-} from "@web3api/core-js";
-
+import { Uri, Client, Plugin, PluginModules } from "@web3api/core-js";
 import { ethers } from "ethers";
 import { Base58 } from "@ethersproject/basex";
 import { getAddress } from "@ethersproject/address";
@@ -18,11 +13,10 @@ export interface EnsConfig {
 }
 
 export class EnsPlugin extends Plugin {
-
   constructor(private _config: EnsConfig) {
     super({
       imported: [new Uri("ens://ethereum.web3api.eth")],
-      implemented: [new Uri("ens://uri-resolver.core.web3api.eth")]
+      implemented: [new Uri("ens://uri-resolver.core.web3api.eth")],
     });
 
     // Sanitize address
@@ -31,25 +25,29 @@ export class EnsPlugin extends Plugin {
     }
   }
 
+  public static isENSDomain(domain: string): boolean {
+    return ethers.utils.isValidName(domain) && domain.indexOf(".eth") !== -1;
+  }
+
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
   public getModules(client: Client): PluginModules {
     return {
-      query: query(this, client)
+      query: query(this, client),
     };
   }
 
-  public setAddress(address: Address) {
+  public setAddress(address: Address): void {
     this._config.address = getAddress(address);
   }
 
   public async ensToCID(domain: string, client: Client): Promise<string> {
     const ensAddress = this._config.address || "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
     const ensAbi = {
-      resolver: "function resolver(bytes32 node) external view returns (address)"
+      resolver: "function resolver(bytes32 node) external view returns (address)",
     };
     const resolverAbi = {
       contenthash: "function contenthash(bytes32 nodehash) view returns (bytes)",
-      content: "function content(bytes32 nodehash) view returns (bytes32)"
+      content: "function content(bytes32 nodehash) view returns (bytes32)",
     };
 
     // Remove the ENS URI scheme
@@ -66,7 +64,7 @@ export class EnsPlugin extends Plugin {
             method: "${method}",
             args: ${args}
           )
-        }`
+        }`,
       });
 
       if (errors) {
@@ -82,7 +80,7 @@ export class EnsPlugin extends Plugin {
       }
 
       throw Error(`Ethereum.callView returned nothing.\nData: ${data}\nErrors: ${errors}`);
-    }
+    };
 
     // Get the node's resolver address
     const resolverAddress = await callView(ensAddress, ensAbi.resolver, [domainNode]);
@@ -102,7 +100,7 @@ export class EnsPlugin extends Plugin {
     }
 
     if (hash === "0x") {
-      return ""
+      return "";
     }
 
     if (hash.substring(0, 10) === "0xe3010170" && ethers.utils.isHexString(hash, 38)) {
@@ -110,9 +108,5 @@ export class EnsPlugin extends Plugin {
     } else {
       throw Error(`Unkown CID format, CID hash: ${hash}`);
     }
-  }
-
-  public static isENSDomain(domain: string) {
-    return ethers.utils.isValidName(domain) && domain.indexOf('.eth') !== -1;
   }
 }

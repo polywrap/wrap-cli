@@ -1,31 +1,26 @@
-import {
-  Client,
-  Plugin,
-  PluginModules,
-  Uri
-} from "../";
+import { Client, Plugin, PluginModules, Uri } from "../";
 
 class TestPlugin extends Plugin {
   constructor() {
     super({
       imported: [new Uri("host/path")],
-      implemented: [new Uri("host2/path2")]
+      implemented: [new Uri("host2/path2")],
     });
   }
 
-  public getModules(client: Client): PluginModules {
+  public getModules(_client: Client): PluginModules {
     return {
       query: {
-        testQuery: (input: any, client: Client): number => {
+        testQuery: (_input: unknown, _client: Client): number => {
           return 5;
-        }
+        },
       },
       mutation: {
-        testMutation: (input: any, client: Client): Promise<boolean> => {
+        testMutation: (_input: unknown, _client: Client): Promise<boolean> => {
           return Promise.resolve(true);
-        }
-      }
-    }
+        },
+      },
+    };
   }
 }
 
@@ -35,7 +30,7 @@ class EmptyPlugin extends Plugin {
   }
 
   getModules() {
-    return {}
+    return {};
   }
 }
 

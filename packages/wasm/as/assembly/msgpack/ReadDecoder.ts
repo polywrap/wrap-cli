@@ -7,10 +7,11 @@ import {
   isNegativeFixedInt,
   isFixedMap,
   isFixedArray,
-  isFixedString
+  isFixedString,
 } from "./Format";
 import { Nullable } from "./Nullable";
 import { Read } from "./Read";
+
 import { E_INVALIDLENGTH } from "util/error";
 
 export class ReadDecoder extends Read {
@@ -36,9 +37,7 @@ export class ReadDecoder extends Read {
     if (value <= <i64>i8.MAX_VALUE || value >= <i64>i8.MIN_VALUE) {
       return <i8>value;
     }
-    throw new Error(
-      "interger overflow: value = " + value.toString() + "; bits = 8"
-    );
+    throw new Error("interger overflow: value = " + value.toString() + "; bits = 8");
   }
 
   readInt16(): i16 {
@@ -46,9 +45,7 @@ export class ReadDecoder extends Read {
     if (value <= <i64>i16.MAX_VALUE || value >= <i64>i16.MIN_VALUE) {
       return <i16>value;
     }
-    throw new Error(
-      "interger overflow: value = " + value.toString() + "; bits = 16"
-    );
+    throw new Error("interger overflow: value = " + value.toString() + "; bits = 16");
   }
 
   readInt32(): i32 {
@@ -56,9 +53,7 @@ export class ReadDecoder extends Read {
     if (value <= <i64>i32.MAX_VALUE || value >= <i64>i32.MIN_VALUE) {
       return <i32>value;
     }
-    throw new Error(
-      "interger overflow: value = " + value.toString() + "; bits = 32"
-    );
+    throw new Error("interger overflow: value = " + value.toString() + "; bits = 32");
   }
 
   readInt64(): i64 {
@@ -89,9 +84,7 @@ export class ReadDecoder extends Read {
     if (value <= <u64>u8.MAX_VALUE || value >= <u64>u8.MIN_VALUE) {
       return <u8>value;
     }
-    throw new Error(
-      "unsigned interger overflow: value = " + value.toString() + "; bits = 8"
-    );
+    throw new Error("unsigned interger overflow: value = " + value.toString() + "; bits = 8");
   }
 
   readUInt16(): u16 {
@@ -99,9 +92,7 @@ export class ReadDecoder extends Read {
     if (value <= <u64>u16.MAX_VALUE || value >= <u64>u16.MIN_VALUE) {
       return <u16>value;
     }
-    throw new Error(
-      "unsigned interger overflow: value = " + value.toString() + "; bits = 16"
-    );
+    throw new Error("unsigned interger overflow: value = " + value.toString() + "; bits = 16");
   }
 
   readUInt32(): u32 {
@@ -109,9 +100,7 @@ export class ReadDecoder extends Read {
     if (value <= <u64>u32.MAX_VALUE || value >= <u64>u32.MIN_VALUE) {
       return <u32>value;
     }
-    throw new Error(
-      "unsigned interger overflow: value = " + value.toString() + "; bits = 32"
-    );
+    throw new Error("unsigned interger overflow: value = " + value.toString() + "; bits = 32");
   }
 
   readUInt64(): u64 {
@@ -220,7 +209,7 @@ export class ReadDecoder extends Read {
 
   readArray<T>(fn: (reader: Read) => T): Array<T> {
     const size = this.readArrayLength();
-    let a = new Array<T>();
+    const a = new Array<T>();
     for (let i: u32 = 0; i < size; i++) {
       const item = fn(this);
       a.push(item);
@@ -240,15 +229,12 @@ export class ReadDecoder extends Read {
     throw new RangeError(E_INVALIDLENGTH);
   }
 
-  readMap<K, V>(
-    keyFn: (reader: Read) => K,
-    valueFn: (reader: Read) => V
-  ): Map<K, V> {
+  readMap<K, V>(key_fn: (reader: Read) => K, value_fn: (reader: Read) => V): Map<K, V> {
     const size = this.readMapLength();
-    let m = new Map<K, V>();
+    const m = new Map<K, V>();
     for (let i: u32 = 0; i < size; i++) {
-      const key = keyFn(this);
-      const value = valueFn(this);
+      const key = key_fn(this);
+      const value = value_fn(this);
       m.set(key, value);
     }
     return m;
@@ -352,14 +338,11 @@ export class ReadDecoder extends Read {
     return this.readArray(fn);
   }
 
-  readNullableMap<K, V>(
-    keyFn: (decoder: Read) => K,
-    valueFn: (decoder: Read) => V
-  ): Map<K, V> | null {
+  readNullableMap<K, V>(key_fn: (decoder: Read) => K, value_fn: (decoder: Read) => V): Map<K, V> | null {
     if (this.isNextNil()) {
       return null;
     }
-    return this.readMap(keyFn, valueFn);
+    return this.readMap(key_fn, value_fn);
   }
 
   private isNextNil(): bool {
@@ -389,15 +372,14 @@ export class ReadDecoder extends Read {
     } else if (isFixedInt(leadByte)) {
       // noop, will just discard the leadbyte
     } else if (isFixedString(leadByte)) {
-      let strLength = leadByte & 0x1f;
+      const strLength = leadByte & 0x1f;
       this.view.discard(strLength);
     } else if (isFixedArray(leadByte)) {
       // TODO handle overflow
       objectsToDiscard = <i32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
     } else if (isFixedMap(leadByte)) {
       // TODO handle overflow
-      objectsToDiscard =
-        2 * <i32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
+      objectsToDiscard = 2 * <i32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
     } else {
       switch (leadByte) {
         case Format.NIL:
@@ -487,9 +469,7 @@ export class ReadDecoder extends Read {
           objectsToDiscard = 2 * <i32>this.view.getUint32();
           break;
         default:
-          throw new TypeError(
-            "invalid prefix, bad encoding for val: " + leadByte.toString()
-          );
+          throw new TypeError("invalid prefix, bad encoding for val: " + leadByte.toString());
       }
     }
 

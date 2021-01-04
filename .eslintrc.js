@@ -9,7 +9,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: "es2019",
     tsconfigRootDir: __dirname,
-    project: ['./packages/*/tsconfig.json', './demos/*/tsconfig.json'],
+    project: ['./packages/**/tsconfig.json', './demos/*/tsconfig.json'],
   },
   plugins: [
     "eslint-plugin-import",
@@ -67,7 +67,8 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": "error",
     "@typescript-eslint/no-require-imports": "error",
     "@typescript-eslint/no-unused-vars": ["error", {
-      "varsIgnorePattern": "^_"
+      "varsIgnorePattern": "^_",
+      "argsIgnorePattern": "^_",
     }],
     "@typescript-eslint/no-floating-promises": "error",
     "import/no-extraneous-dependencies": ["error", {
@@ -85,7 +86,7 @@ module.exports = {
   },
   "overrides": [
     {
-      "files": ["*.spec.ts"],
+      "files": ["**/__tests__/**/*.ts", "*.spec.ts"],
       "rules": {
         "import/no-extraneous-dependencies": "off"
       }

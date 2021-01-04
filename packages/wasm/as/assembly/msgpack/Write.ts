@@ -18,15 +18,12 @@ export abstract class Write {
   abstract writeBytesLength(length: u32): void;
   abstract writeBytes(ab: ArrayBuffer): void;
   abstract writeArrayLength(length: u32): void;
-  abstract writeArray<T>(
-    a: Array<T>,
-    fn: (writer: Write, item: T) => void
-  ): void;
+  abstract writeArray<T>(a: Array<T>, fn: (writer: Write, item: T) => void): void;
   abstract writeMapLength(length: u32): void;
   abstract writeMap<K, V>(
     m: Map<K, V>,
-    keyFn: (writer: Write, key: K) => void,
-    valueFn: (writer: Write, value: V) => void
+    key_fn: (writer: Write, key: K) => void,
+    value_fn: (writer: Write, value: V) => void
   ): void;
 
   abstract writeNullableBool(value: Nullable<bool>): void;
@@ -42,13 +39,10 @@ export abstract class Write {
   abstract writeNullableFloat64(value: Nullable<f64>): void;
   abstract writeNullableString(value: string | null): void;
   abstract writeNullableBytes(ab: ArrayBuffer | null): void;
-  abstract writeNullableArray<T>(
-    a: Array<T> | null,
-    fn: (writer: Write, item: T) => void
-  ): void;
+  abstract writeNullableArray<T>(a: Array<T> | null, fn: (writer: Write, item: T) => void): void;
   abstract writeNullableMap<K, V>(
     m: Map<K, V> | null,
-    keyFn: (writer: Write, key: K) => void,
-    valueFn: (writer: Write, value: V) => void
+    key_fn: (writer: Write, key: K) => void,
+    value_fn: (writer: Write, value: V) => void
   ): void;
 }

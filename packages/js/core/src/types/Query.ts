@@ -12,9 +12,7 @@ export function createQueryDocument(query: string): QueryDocument {
 }
 
 /** Options required for an API query. */
-export interface QueryApiOptions<
-  TVariables extends Record<string, unknown> = Record<string, unknown>
-> {
+export interface QueryApiOptions<TVariables extends Record<string, unknown> = Record<string, unknown>> {
   /** The API's URI */
   uri: Uri;
 
@@ -27,18 +25,16 @@ export interface QueryApiOptions<
   /**
    * Variables referenced within the query string via GraphQL's '$variable' syntax.
    */
-  variables?: TVariables
+  variables?: TVariables;
 }
 
 /**
  * The result of an API query, which is the aggregate
  * of one or more [[InvokeApiResult | invocation results]].
- * 
+ *
  * @template TData Type of the query result data.
  */
-export interface QueryApiResult<
-  TData extends Record<string, unknown> = Record<string, unknown>
-> {
+export interface QueryApiResult<TData extends Record<string, unknown> = Record<string, unknown>> {
   /**
    * Query result data. The type of this value is a named map,
    * where the key is the method's name, and value is the [[InvokeApiResult]]'s data.

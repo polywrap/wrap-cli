@@ -1,7 +1,7 @@
+import { saveAccessToken } from "../lib/textile/user-auth";
+
 import { GluegunToolbox } from "gluegun";
 import chalk from "chalk";
-
-import { saveAccessToken } from "../lib/textile/user-auth";
 
 const HELP = `
 ${chalk.dim("Description:")}
@@ -16,7 +16,7 @@ ${chalk.dim("Options:")}
 
 export default {
   description: "Create access token to deploy protocol to IPFS",
-  run: async (toolbox: GluegunToolbox) => {
+  run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { print, parameters } = toolbox;
     const { first, options } = parameters;
     const protocol = first;

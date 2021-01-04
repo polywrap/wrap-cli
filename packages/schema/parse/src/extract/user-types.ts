@@ -5,7 +5,7 @@ import {
   createObjectDefinition,
   createScalarDefinition,
   createArrayDefinition,
-  createPropertyDefinition
+  createPropertyDefinition,
 } from "../typeInfo";
 
 import {
@@ -16,13 +16,13 @@ import {
   ListTypeNode,
   FieldDefinitionNode,
   visit,
-  DirectiveNode
+  DirectiveNode,
 } from "graphql";
 
 interface State {
-  currentType?: ObjectDefinition
-  currentUnknown?: AnyDefinition
-  nonNullType?: boolean
+  currentType?: ObjectDefinition;
+  currentUnknown?: AnyDefinition;
+  nonNullType?: boolean;
 }
 
 const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
@@ -33,9 +33,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     }
 
     // Skip imported types
-    if (node.directives && node.directives.findIndex(
-      (dir: DirectiveNode) => dir.name.value === "imported") > -1
-    ) {
+    if (node.directives && node.directives.findIndex((dir: DirectiveNode) => dir.name.value === "imported") > -1) {
       return;
     }
 
@@ -44,7 +42,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     typeInfo.userTypes.push(type);
     state.currentType = type;
   },
-  NonNullType: (node: NonNullTypeNode) => {
+  NonNullType: (_node: NonNullTypeNode) => {
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
@@ -63,7 +61,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     property.scalar = createScalarDefinition(property.name, modifier + node.name.value, state.nonNullType);
     state.nonNullType = false;
   },
-  ListType: (node: ListTypeNode) => {
+  ListType: (_node: ListTypeNode) => {
     const property = state.currentUnknown;
 
     if (!property) {
@@ -74,9 +72,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       return;
     }
 
-    property.array = createArrayDefinition(
-      property.name, "TBD", state.nonNullType
-    );
+    property.array = createArrayDefinition(property.name, "TBD", state.nonNullType);
 
     state.currentUnknown = property.array;
     state.nonNullType = false;
@@ -97,26 +93,26 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     state.currentUnknown = property;
     type.properties.push(property);
-  }
+  },
 });
 
 const visitorLeave = (schemaInfo: TypeInfo, state: State) => ({
-  ObjectTypeDefinition: (node: TypeDefinitionNode) => {
+  ObjectTypeDefinition: (_node: TypeDefinitionNode) => {
     state.currentType = undefined;
   },
-  FieldDefinition: (node: FieldDefinitionNode) => {
+  FieldDefinition: (_node: FieldDefinitionNode) => {
     state.currentUnknown = undefined;
   },
-  NonNullType: (node: NonNullTypeNode) => {
+  NonNullType: (_node: NonNullTypeNode) => {
     state.nonNullType = false;
   },
 });
 
-export function extractUserTypes(astNode: DocumentNode, typeInfo: TypeInfo) {
-  const state: State = { };
+export function extractUserTypes(astNode: DocumentNode, typeInfo: TypeInfo): void {
+  const state: State = {};
 
   visit(astNode, {
     enter: visitorEnter(typeInfo, state),
-    leave: visitorLeave(typeInfo, state)
+    leave: visitorLeave(typeInfo, state),
   });
 }

@@ -1,10 +1,11 @@
-import { GluegunToolbox } from "gluegun";
 import { generateProject } from "../lib/generators/project-generator";
+
+import { GluegunToolbox } from "gluegun";
 
 export default {
   alias: ["c"],
   description: "Create a new project with w3 CLI",
-  run: async (toolbox: GluegunToolbox) => {
+  run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { parameters, strings, print, runtime, prompt, filesystem } = toolbox;
     const { isBlank } = strings;
 
@@ -26,9 +27,7 @@ export default {
       print.newline();
     } else {
       print.info(`Directory with name ${projectName} already exists`);
-      const overwrite = await prompt.confirm(
-        "Do you want to overwrite this directory?"
-      );
+      const overwrite = await prompt.confirm("Do you want to overwrite this directory?");
       if (overwrite) {
         print.info(`Overwriting ${projectName}...`);
         filesystem.remove(projectName);

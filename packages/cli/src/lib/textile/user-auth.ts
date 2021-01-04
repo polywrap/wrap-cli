@@ -3,7 +3,7 @@ import { print } from "gluegun";
 
 const requireKeytar = () => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
     return require("keytar");
   } catch (e) {
     throw new Error(
@@ -18,9 +18,7 @@ The original error was: ${e.message}
   }
 };
 
-export const identifyAccessToken = async (
-  protocolName: string
-): Promise<Libp2pCryptoIdentity | undefined> => {
+export const identifyAccessToken = async (protocolName: string): Promise<Libp2pCryptoIdentity | undefined> => {
   try {
     const keytar = requireKeytar();
     const token = await keytar.getPassword("web3api-auth", protocolName);
@@ -36,14 +34,10 @@ Please make sure you are authenticated. Run w3 auth --help for more information`
   } catch (e) {
     switch (process.platform) {
       case "win32":
-        print.warning(
-          `Could not get access token from Windows Credential Vault: ${e.message}`
-        );
+        print.warning(`Could not get access token from Windows Credential Vault: ${e.message}`);
         break;
       case "darwin":
-        print.warning(
-          `Could not get access token from macOS Keychain: ${e.message}`
-        );
+        print.warning(`Could not get access token from macOS Keychain: ${e.message}`);
         break;
       case "linux":
         print.warning(
@@ -51,16 +45,14 @@ Please make sure you are authenticated. Run w3 auth --help for more information`
         );
         break;
       default:
-        print.warning(
-          `Could not get access token from OS secret storage service: ${e.message}`
-        );
+        print.warning(`Could not get access token from OS secret storage service: ${e.message}`);
         break;
     }
     return;
   }
 };
 
-export const saveAccessToken = async (protocolName?: string) => {
+export const saveAccessToken = async (protocolName?: string): Promise<void> => {
   try {
     const keytar = requireKeytar();
     const identity = await Libp2pCryptoIdentity.fromRandom();
@@ -69,9 +61,7 @@ export const saveAccessToken = async (protocolName?: string) => {
   } catch (e) {
     switch (process.platform) {
       case "win32":
-        throw new Error(
-          `Error storing access token in Windows Credential Vault: ${e.message}`
-        );
+        throw new Error(`Error storing access token in Windows Credential Vault: ${e.message}`);
       case "darwin":
         throw new Error(`Error storing access token in macOS Keychain: ${e.message}`);
       case "linux":
@@ -79,9 +69,7 @@ export const saveAccessToken = async (protocolName?: string) => {
           `Error storing access token with libsecret (usually gnome-keyring or ksecretservice): ${e.message}`
         );
       default:
-        throw new Error(
-          `Error storing access token in OS secret storage service: ${e.message}`
-        );
+        throw new Error(`Error storing access token in OS secret storage service: ${e.message}`);
     }
   }
 };

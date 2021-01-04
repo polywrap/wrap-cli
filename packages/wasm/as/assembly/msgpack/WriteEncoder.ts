@@ -167,16 +167,16 @@ export class WriteEncoder extends Write {
 
   writeMap<K, V>(
     m: Map<K, V>,
-    keyFn: (encoder: Write, key: K) => void,
-    valueFn: (encoder: Write, value: V) => void
+    key_fn: (encoder: Write, key: K) => void,
+    value_fn: (encoder: Write, value: V) => void
   ): void {
     this.writeMapLength(m.size);
     const keys = m.keys();
     for (let i: i32 = 0; i < keys.length; i++) {
       const key = keys[i];
       const value = m.get(key);
-      keyFn(this, key);
-      valueFn(this, value);
+      key_fn(this, key);
+      value_fn(this, value);
     }
   }
 
@@ -297,10 +297,7 @@ export class WriteEncoder extends Write {
     this.writeBytes(value);
   }
 
-  writeNullableArray<T>(
-    a: Array<T> | null,
-    fn: (encoder: Write, item: T) => void
-  ): void {
+  writeNullableArray<T>(a: Array<T> | null, fn: (encoder: Write, item: T) => void): void {
     if (a === null) {
       this.writeNil();
       return;
@@ -310,13 +307,13 @@ export class WriteEncoder extends Write {
 
   writeNullableMap<K, V>(
     m: Map<K, V> | null,
-    keyFn: (encoder: Write, key: K) => void,
-    valueFn: (encoder: Write, value: V) => void
+    key_fn: (encoder: Write, key: K) => void,
+    value_fn: (encoder: Write, value: V) => void
   ): void {
     if (m === null) {
       this.writeNil();
       return;
     }
-    this.writeMap(m, keyFn, valueFn);
+    this.writeMap(m, key_fn, value_fn);
   }
 }

@@ -1,6 +1,4 @@
-type MustacheFunction = () => (
-  value: string, render: (template: string) => string
-) => string
+type MustacheFunction = () => (value: string, render: (template: string) => string) => string;
 
 export const toMsgPack: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
@@ -21,8 +19,8 @@ export const toMsgPack: MustacheFunction = () => {
       default:
         return modifier + name;
     }
-  }
-}
+  };
+};
 
 export const toWasm: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
@@ -40,21 +38,33 @@ export const toWasm: MustacheFunction = () => {
     }
 
     switch (name) {
-      case "Int": return applyNullable("i32", nullable);
-      case "Int8": return applyNullable("i8", nullable);
-      case "Int16": return applyNullable("i16", nullable);
-      case "Int32": return applyNullable("i32", nullable);
-      case "Int64": return applyNullable("i64", nullable);
-      case "UInt": return applyNullable("u32", nullable);
-      case "UInt8": return applyNullable("u8", nullable);
-      case "UInt16": return applyNullable("u16", nullable);
-      case "UInt32": return applyNullable("u32", nullable);
-      case "UInt64": return applyNullable("u64", nullable);
-      case "String": return applyNullable("string", nullable);
-      default: return applyNullable(name, nullable);
+      case "Int":
+        return applyNullable("i32", nullable);
+      case "Int8":
+        return applyNullable("i8", nullable);
+      case "Int16":
+        return applyNullable("i16", nullable);
+      case "Int32":
+        return applyNullable("i32", nullable);
+      case "Int64":
+        return applyNullable("i64", nullable);
+      case "UInt":
+        return applyNullable("u32", nullable);
+      case "UInt8":
+        return applyNullable("u8", nullable);
+      case "UInt16":
+        return applyNullable("u16", nullable);
+      case "UInt32":
+        return applyNullable("u32", nullable);
+      case "UInt64":
+        return applyNullable("u64", nullable);
+      case "String":
+        return applyNullable("string", nullable);
+      default:
+        return applyNullable(name, nullable);
     }
-  }
-}
+  };
+};
 
 const toWasmArray = (name: string, nullable: boolean): string => {
   const result = name.match(/(\[)([?[\]A-Za-z1-9]+)(\])/);
@@ -65,7 +75,7 @@ const toWasmArray = (name: string, nullable: boolean): string => {
 
   const wasmType = toWasm()(result[2], (str) => str);
   return applyNullable("Array<" + wasmType + ">", nullable);
-}
+};
 
 const applyNullable = (name: string, nullable: boolean): string => {
   if (nullable) {
@@ -77,4 +87,4 @@ const applyNullable = (name: string, nullable: boolean): string => {
   } else {
     return name;
   }
-}
+};

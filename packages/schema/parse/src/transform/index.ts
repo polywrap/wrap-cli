@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/naming-convention */
 import {
   TypeInfo,
   GenericDefinition,
@@ -11,7 +13,7 @@ import {
   ImportedQueryDefinition,
   ImportedObjectDefinition,
   DefinitionKind,
-  isKind
+  isKind,
 } from "../typeInfo";
 
 export * from "./extendType";
@@ -23,28 +25,17 @@ export interface TypeInfoTransforms {
 }
 
 export interface TypeInfoTransformer {
-  TypeInfo?:
-    (typeInfo: TypeInfo) => TypeInfo
-  GenericDefinition?:
-    (def: GenericDefinition) => GenericDefinition;
-  ObjectDefinition?:
-    (def: ObjectDefinition) => ObjectDefinition;
-  AnyDefinition?:
-    (def: AnyDefinition) => AnyDefinition;
-  ScalarDefinition?:
-    (def: ScalarDefinition) => ScalarDefinition;
-  PropertyDefinition?:
-    (def: PropertyDefinition) => PropertyDefinition;
-  ArrayDefinition?:
-    (def: ArrayDefinition) => ArrayDefinition;
-  MethodDefinition?:
-    (def: MethodDefinition) => MethodDefinition;
-  QueryDefinition?:
-    (def: QueryDefinition) => QueryDefinition;
-  ImportedQueryDefinition?:
-    (def: ImportedQueryDefinition) => ImportedQueryDefinition;
-  ImportedObjectDefinition?:
-    (def: ImportedObjectDefinition) => ImportedObjectDefinition;
+  TypeInfo?: (typeInfo: TypeInfo) => TypeInfo;
+  GenericDefinition?: (def: GenericDefinition) => GenericDefinition;
+  ObjectDefinition?: (def: ObjectDefinition) => ObjectDefinition;
+  AnyDefinition?: (def: AnyDefinition) => AnyDefinition;
+  ScalarDefinition?: (def: ScalarDefinition) => ScalarDefinition;
+  PropertyDefinition?: (def: PropertyDefinition) => PropertyDefinition;
+  ArrayDefinition?: (def: ArrayDefinition) => ArrayDefinition;
+  MethodDefinition?: (def: MethodDefinition) => MethodDefinition;
+  QueryDefinition?: (def: QueryDefinition) => QueryDefinition;
+  ImportedQueryDefinition?: (def: ImportedQueryDefinition) => ImportedQueryDefinition;
+  ImportedObjectDefinition?: (def: ImportedObjectDefinition) => ImportedObjectDefinition;
 }
 
 export function performTransforms(typeInfo: TypeInfo, transforms: TypeInfoTransforms): TypeInfo {
@@ -55,27 +46,19 @@ export function performTransforms(typeInfo: TypeInfo, transforms: TypeInfoTransf
   }
 
   for (let i = 0; i < result.userTypes.length; ++i) {
-    result.userTypes[i] = visitObjectDefinition(
-      result.userTypes[i], transforms
-    );
+    result.userTypes[i] = visitObjectDefinition(result.userTypes[i], transforms);
   }
 
   for (let i = 0; i < result.queryTypes.length; ++i) {
-    result.queryTypes[i] = visitQueryDefinition(
-      result.queryTypes[i], transforms
-    );
+    result.queryTypes[i] = visitQueryDefinition(result.queryTypes[i], transforms);
   }
 
   for (let i = 0; i < result.importedObjectTypes.length; ++i) {
-    result.importedObjectTypes[i] = visitImportedObjectDefinition(
-      result.importedObjectTypes[i], transforms
-    );
+    result.importedObjectTypes[i] = visitImportedObjectDefinition(result.importedObjectTypes[i], transforms);
   }
 
   for (let i = 0; i < result.importedQueryTypes.length; ++i) {
-    result.importedQueryTypes[i] = visitImportedQueryDefinition(
-      result.importedQueryTypes[i], transforms
-    );
+    result.importedQueryTypes[i] = visitImportedQueryDefinition(result.importedQueryTypes[i], transforms);
   }
 
   if (transforms.leave && transforms.leave.TypeInfo) {
@@ -90,9 +73,7 @@ function visitObjectDefinition(def: ObjectDefinition, transforms: TypeInfoTransf
   result = transformType(result, transforms.enter);
 
   for (let i = 0; i < result.properties.length; ++i) {
-    result.properties[i] = visitPropertyDefinition(
-      result.properties[i], transforms
-    );
+    result.properties[i] = visitPropertyDefinition(result.properties[i], transforms);
   }
 
   return transformType(result, transforms.leave);
@@ -103,15 +84,11 @@ function visitAnyDefinition(def: AnyDefinition, transforms: TypeInfoTransforms):
   result = transformType(result, transforms.enter);
 
   if (result.array) {
-    result.array = visitArrayDefinition(
-      result.array, transforms
-    );
+    result.array = visitArrayDefinition(result.array, transforms);
   }
 
   if (result.scalar) {
-    result.scalar = visitScalarDefinition(
-      result.scalar, transforms
-    );
+    result.scalar = visitScalarDefinition(result.scalar, transforms);
   }
 
   return result;
@@ -151,15 +128,11 @@ function visitMethodDefinition(def: MethodDefinition, transforms: TypeInfoTransf
   result = transformType(result, transforms.enter);
 
   for (let i = 0; i < result.arguments.length; ++i) {
-    result.arguments[i] = visitPropertyDefinition(
-      result.arguments[i], transforms
-    );
+    result.arguments[i] = visitPropertyDefinition(result.arguments[i], transforms);
   }
 
   if (result.return) {
-    result.return = visitPropertyDefinition(
-      result.return, transforms
-    );
+    result.return = visitPropertyDefinition(result.return, transforms);
   }
 
   return transformType(result, transforms.leave);
@@ -170,19 +143,23 @@ function visitQueryDefinition(def: QueryDefinition, transforms: TypeInfoTransfor
   result = transformType(result, transforms.enter);
 
   for (let i = 0; i < result.methods.length; ++i) {
-    result.methods[i] = visitMethodDefinition(
-      result.methods[i], transforms
-    );
+    result.methods[i] = visitMethodDefinition(result.methods[i], transforms);
   }
 
   return transformType(result, transforms.leave);
 }
 
-function visitImportedQueryDefinition(def: ImportedQueryDefinition, transforms: TypeInfoTransforms): ImportedQueryDefinition {
+function visitImportedQueryDefinition(
+  def: ImportedQueryDefinition,
+  transforms: TypeInfoTransforms
+): ImportedQueryDefinition {
   return visitQueryDefinition(def, transforms) as ImportedQueryDefinition;
 }
 
-function visitImportedObjectDefinition(def: ImportedObjectDefinition, transforms: TypeInfoTransforms): ImportedObjectDefinition {
+function visitImportedObjectDefinition(
+  def: ImportedObjectDefinition,
+  transforms: TypeInfoTransforms
+): ImportedObjectDefinition {
   return visitObjectDefinition(def, transforms) as ImportedObjectDefinition;
 }
 
@@ -205,7 +182,7 @@ function transformType<TDefinition extends GenericDefinition>(
     MethodDefinition,
     QueryDefinition,
     ImportedQueryDefinition,
-    ImportedObjectDefinition
+    ImportedObjectDefinition,
   } = transform;
 
   if (GenericDefinition && isKind(result, DefinitionKind.Generic)) {

@@ -5,7 +5,7 @@ import {
   createImportedObjectDefinition,
   createPropertyDefinition,
   createScalarDefinition,
-  createArrayDefinition
+  createArrayDefinition,
 } from "../typeInfo";
 
 import {
@@ -17,25 +17,23 @@ import {
   FieldDefinitionNode,
   visit,
   DirectiveNode,
-  ValueNode
+  ValueNode,
 } from "graphql";
 
 interface State {
-  currentImport?: ImportedObjectDefinition
-  currentProperty?: PropertyDefinition
-  nonNullType?: boolean
+  currentImport?: ImportedObjectDefinition;
+  currentProperty?: PropertyDefinition;
+  nonNullType?: boolean;
 }
 
 const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     if (!node.directives) {
-      return
+      return;
     }
 
     // Look for imported
-    const importedIndex = node.directives.findIndex(
-      (dir: DirectiveNode) => dir.name.value === "imported"
-    );
+    const importedIndex = node.directives.findIndex((dir: DirectiveNode) => dir.name.value === "imported");
 
     if (importedIndex === -1) {
       return;
@@ -44,7 +42,10 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     const queryIdentifier = "Query";
     const mutationIdentifier = "Mutation";
 
-    if (node.name.value.substr(-queryIdentifier.length) === queryIdentifier || node.name.value.substr(-mutationIdentifier.length) === mutationIdentifier) {
+    if (
+      node.name.value.substr(-queryIdentifier.length) === queryIdentifier ||
+      node.name.value.substr(-mutationIdentifier.length) === mutationIdentifier
+    ) {
       return;
     }
 
@@ -65,15 +66,15 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       } else {
         throw Error(`Error: argument '${name}' must be a string`);
       }
-    }
+    };
 
     for (const importArg of importedDir.arguments) {
       if (importArg.name.value === "namespace") {
         namespace = extractString(importArg.value, "namespace");
       } else if (importArg.name.value === "uri") {
-        uri = extractString(importArg.value, "uri")
+        uri = extractString(importArg.value, "uri");
       } else if (importArg.name.value === "type") {
-        type = extractString(importArg.value, "type")
+        type = extractString(importArg.value, "type");
       }
     }
 
@@ -102,7 +103,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     state.currentProperty = property;
     importDef.properties.push(property);
   },
-  NonNullType: (node: NonNullTypeNode) => {
+  NonNullType: (_node: NonNullTypeNode) => {
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
@@ -114,12 +115,10 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     const modifier = state.nonNullType ? "" : "?";
 
-    property.scalar = createScalarDefinition(
-      property.name, modifier + node.name.value, state.nonNullType
-    );
+    property.scalar = createScalarDefinition(property.name, modifier + node.name.value, state.nonNullType);
     state.nonNullType = false;
   },
-  ListType: (node: ListTypeNode) => {
+  ListType: (_node: ListTypeNode) => {
     const property = state.currentProperty;
 
     if (!property) {
@@ -130,31 +129,29 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       return;
     }
 
-    property.array = createArrayDefinition(
-      property.name, "TBD", state.nonNullType
-    );
+    property.array = createArrayDefinition(property.name, "TBD", state.nonNullType);
     state.currentProperty = property.array;
     state.nonNullType = false;
   },
 });
 
 const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
-  ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
+  ObjectTypeDefinition: (_node: ObjectTypeDefinitionNode) => {
     state.currentImport = undefined;
   },
-  FieldDefinition: (node: FieldDefinitionNode) => {
+  FieldDefinition: (_node: FieldDefinitionNode) => {
     state.currentProperty = undefined;
   },
-  NonNullType: (node: NonNullTypeNode) => {
+  NonNullType: (_node: NonNullTypeNode) => {
     state.nonNullType = false;
   },
 });
 
-export function extractImportedObjectTypes(astNode: DocumentNode, typeInfo: TypeInfo) {
-  const state: State = { };
+export function extractImportedObjectTypes(astNode: DocumentNode, typeInfo: TypeInfo): void {
+  const state: State = {};
 
   visit(astNode, {
     enter: visitorEnter(typeInfo, state),
-    leave: visitorLeave(typeInfo, state)
+    leave: visitorLeave(typeInfo, state),
   });
 }
