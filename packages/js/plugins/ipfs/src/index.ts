@@ -24,9 +24,9 @@ export class IpfsPlugin extends Plugin {
   constructor(private _config: IpfsConfig) {
     super({
       implemented: [
-        new Uri("ens://ipfs.web3api.eth"),
-        new Uri("ens://uri-resolver.core.web3api.eth"),
-        new Uri("ens://api-resolver.core.web3api.eth")
+        new Uri("ens/ipfs.web3api.eth"),
+        new Uri("ens/uri-resolver.core.web3api.eth"),
+        new Uri("ens/api-resolver.core.web3api.eth")
       ]
     });
     this.setProvider(this._config.provider);
