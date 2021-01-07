@@ -1,51 +1,40 @@
 import {
   Uri,
   UriRedirect,
-  PluginFactory
+  PluginPackage
 } from "../types";
-
-// TODO:
-// - Plugin
-// - Manifest
-// - - schema = schema = graphql document | string
-// - - implements = ["...", "...", "..."]
-// - - imports = ["...", "..."]
-
-// Redirect
-// uri => { PluginFactory, PluginManifest }
-
 
 export function getImplementations(
   abstractApi: Uri,
   redirects: UriRedirect[]
-): (Uri | PluginFactory)[] {
+): (Uri | PluginPackage)[] {
 
-  const result: (Uri | PluginFactory)[] = [];
+  const result: (Uri | PluginPackage)[] = [];
 
   for (const redirect of redirects) {
 
     // Explicit check
     if (Uri.isUri(redirect.from)) {
       if (Uri.equals(redirect.from, abstractApi)) {
-        // TODO: add redirect.to
+        result.push(redirect.to);
       }
     }
     // Regex check
     else if (abstractApi.matches(redirect.from)) {
-      // TODO: add redirect.to
+      result.push(redirect.to);
     }
-    // Plugin implements check
+    // Plugin implemented check
     else if (!Uri.isUri(redirect.to)) {
-      const { implements } = redirect.to.manifest;
-      const implementsApi = implements.findIndex(
-        (uri) => uri.equals(abstractApi)
+      const { implemented } = redirect.to.manifest;
+      const implementedApi = implemented.findIndex(
+        (uri) => Uri.equals(uri, abstractApi)
       ) > -1;
 
-      if (implementsApi) {
-        result.push(redirect.to.factory);
+      if (implementedApi) {
+        result.push(redirect.to);
       }
     }
   }
 
-  return [];
+  return result;
 }

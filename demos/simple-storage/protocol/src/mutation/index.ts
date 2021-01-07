@@ -1,4 +1,4 @@
-import { Ethereum_Mutation, } from 'w3/imports'
+import { Ethereum_Mutation, } from 'w3/imported'
 
 export function setData(address: CustomType, value: u32): string {
   return Ethereum_Mutation.sendTransaction( 

@@ -6,14 +6,11 @@ import {
 
 export const Query = {
   getFile: (client: Client, uri: Uri, path: string) => (
-    client.query<{ getFile: ArrayBuffer }, { path: string }>({
+    client.invoke<ArrayBuffer>({
       uri,
-      query: `query {
-        getFile(
-          path: $path
-        )
-      }`,
-      variables: {
+      module: "query",
+      method: "getFile",
+      input: {
         path
       }
     })

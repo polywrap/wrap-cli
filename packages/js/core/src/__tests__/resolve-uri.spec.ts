@@ -7,28 +7,14 @@
 // TODO:
 // For core API's have the URI be: w3://w3/uri-resolver
 
-// TODO:
-/*
-- static implements for plugins (should be modulelevel, not instance level)
-- solidify difference between redirects and implementations (confusing right now)
-
-- as the "key", list the name of the URI,
-- forwards you to another URI as a redirects, or an "implements"
-- have multiple implements
-*/
-
 import { resolveUri } from "../algorithms";
 import { Uri, UriRedirect } from "../types";
 
 describe("resolveUri", () => {
 
-  // TODO:
-  // - create PluginFactory type () => Plugin
-  // - have the to: be a factory + the implements
-
   // TODODODODOD
   /*
-    redirects: uri => uri | { pluginfactory, implements }
+    redirects: uri => uri | { pluginfactory, implemented }
 
     {
       from: "w3/uri-resolver",
@@ -36,29 +22,16 @@ describe("resolveUri", () => {
     },
     {
       from: "ens/ipfs.web3api.eth",
-      to: () => new IpfsPlugin("...")
-    },
-    {
-      from: "ens/ipfs.web3api.eth",
       to: {
-        create: () => new IpfsPlugin("..."),
-        implements: IpfsPlugin.implements()
+        factory: () => new IpfsPlugin(),
+        manifest: {
+          schema: IpfsPlugin.Schema(),
+          implemented: IpfsPlugin.implemented(),
+          imported: IpfsPlugin.Imported()
+        }
       }
     }
   */
-
-  // getImplementations => for (redirects) redirect.match(uri)
-
-  const redirects: UriRedirect[] = [
-    {
-      from: new Uri("w3://authority/my-uri-resolver"),
-      to: {
-        implements: MyUriResolver.Implements(),
-        factory: () => new MyUriResolver()
-      }
-    }
-  ]
-
 
 
   it("works in the typical case", () => {

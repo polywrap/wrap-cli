@@ -1,6 +1,7 @@
 import {
   InvokeApiOptions,
-  QueryDocument
+  QueryDocument,
+  Uri
 } from "../types";
 
 import {
@@ -9,6 +10,7 @@ import {
 } from "graphql";
 
 export function parseQuery(
+  uri: Uri,
   doc: QueryDocument,
   variables?: Record<string, unknown>
 ): InvokeApiOptions[] {
@@ -85,6 +87,7 @@ export function parseQuery(
       }
 
       invokeOptions.push({
+        uri,
         module,
         method,
         input,

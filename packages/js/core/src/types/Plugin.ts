@@ -1,9 +1,23 @@
 import {
   Uri,
   Client,
-  ApiModules,
-  MaybeAsync
-} from "./";
+  InvokableModules,
+  MaybeAsync,
+  SchemaDocument
+} from ".";
+
+/** The plugin's configuration */
+export interface PluginManifest {
+
+  /** The API's schema */
+  schema: SchemaDocument;
+
+  /** All API dependencies imported by this plugin. */
+  imported: Uri[];
+
+  /** All abstract APIs implemented by this plugin. */
+  implemented: Uri[];
+}
 
 /**
  * Invocable plugin method.
@@ -26,47 +40,16 @@ export type PluginModule = Record<string, PluginMethod>;
 
 /** @ignore */
 type PluginModulesType = {
-  [module in ApiModules]?: PluginModule;
+  [module in InvokableModules]?: PluginModule;
 };
 
 /** The plugin's query "modules" */
 export interface PluginModules extends PluginModulesType { }
 
-/** The plugin's configuration */
-export interface PluginConfig {
-  /** All API dependencies imports by this plugin. */
-  imports?: Uri[];
-
-  /** All abstract APIs implements by this plugin. */
-  implements?: Uri[];
-}
-
 /**
  * The plugin instance.
 */
 export abstract class Plugin {
-
-  constructor(protected _pluginConfig: PluginConfig) { }
-
-  /**
-   * Check to see if the provided API is implemented by this plugin.
-   * 
-   * @param uri The API to check for in the `implements` array.
-   */
-  public isImplemented(uri: Uri): boolean {
-    return this._pluginConfig.implements !== undefined &&
-           this._pluginConfig.implements.findIndex((item) => item.uri === uri.uri) > -1;
-  }
-
-  /** Get all APIs this plugin implements */
-  public implements(): readonly Uri[] {
-    return this._pluginConfig.implements || [];
-  }
-
-  /** Get all API dependencies imports by this plugin. */
-  public imports(): readonly Uri[] {
-    return this._pluginConfig.imports || [];
-  }
 
   /**
    * Get an instance of this plugin's modules.
@@ -75,4 +58,11 @@ export abstract class Plugin {
    * This client will be used for any sub-queries that occur.
    */
   public abstract getModules(client: Client): PluginModules;
+}
+
+export type PluginFactory = () => Plugin;
+
+export interface PluginPackage {
+  factory: PluginFactory;
+  manifest: PluginManifest;
 }

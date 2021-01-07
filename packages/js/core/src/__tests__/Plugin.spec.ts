@@ -2,17 +2,26 @@ import {
   Client,
   Plugin,
   PluginModules,
-  Uri
-} from "../";
+  PluginManifest,
+  Uri,
+  createSchemaDocument
+} from "..";
+
+const testPluginManifest: PluginManifest = {
+  schema: createSchemaDocument(`
+    type Query {
+      testQuery(): Number!
+    }
+
+    type Mutation {
+      testMutation(): Boolean!
+    }
+  `),
+  imported: [new Uri("host/path")],
+  implemented: [new Uri("host2/path2")]
+}
 
 class TestPlugin extends Plugin {
-  constructor() {
-    super({
-      imported: [new Uri("host/path")],
-      implemented: [new Uri("host2/path2")]
-    });
-  }
-
   public getModules(client: Client): PluginModules {
     return {
       query: {
@@ -29,37 +38,13 @@ class TestPlugin extends Plugin {
   }
 }
 
-class EmptyPlugin extends Plugin {
-  constructor() {
-    super({});
-  }
-
-  getModules() {
-    return {}
-  }
-}
-
 describe("Plugin", () => {
   const plugin = new TestPlugin();
-  const empty = new EmptyPlugin();
 
-  it("isImplemented", () => {
-    expect(plugin.isImplemented(new Uri("host2/path2"))).toBeTruthy();
-  });
+  it("sanity", () => {
+    const modules = plugin.getModules({} as any);
 
-  it("implemented", () => {
-    expect(plugin.implemented()).toMatchObject([new Uri("host2/path2")]);
-  });
-
-  it("imported", () => {
-    expect(plugin.imported()).toMatchObject([new Uri("host/path")]);
-  });
-
-  it("empty plugin returns an empty implemented array", () => {
-    expect(empty.implemented()).toMatchObject([]);
-  });
-
-  it("empty plugin returns an empty imported array", () => {
-    expect(empty.imported()).toMatchObject([]);
+    expect(modules.mutation).toBeTruthy();
+    expect(modules.mutation.testMutation).toBeTruthy();
   });
 });

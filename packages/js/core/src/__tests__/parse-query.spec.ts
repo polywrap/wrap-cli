@@ -1,10 +1,13 @@
 import {
   createQueryDocument,
-  InvokeApiOptions
-} from "../types";
-import { parseQuery } from "../algorithms";
+  parseQuery,
+  InvokeApiOptions,
+  Uri
+} from "../";
 
 describe("parseQuery", () => {
+
+  const dummy = new Uri("w3://dumb/dummy");
 
   it("works in the typical case", () => {
     const doc = createQueryDocument(`
@@ -32,12 +35,13 @@ describe("parseQuery", () => {
       }
     `);
 
-    const result = parseQuery(doc, {
+    const result = parseQuery(dummy, doc, {
       var_1: "var 1",
       var_2: 55
     });
 
     const expected: InvokeApiOptions = {
+      uri: dummy,
       module: "mutation",
       method: "someMethod",
       input: {
@@ -105,12 +109,13 @@ describe("parseQuery", () => {
       }
     `);
 
-    const result = parseQuery(doc, {
+    const result = parseQuery(dummy, doc, {
       var_1: "var 1",
       var_2: 55
     });
 
     const method1: InvokeApiOptions = {
+      uri: dummy,
       module: "mutation",
       method: "someMethod",
       input: {
@@ -133,6 +138,7 @@ describe("parseQuery", () => {
       }
     };
     const method2: InvokeApiOptions = {
+      uri: dummy,
       module: "mutation",
       method: "anotherMethod",
       input: {
@@ -166,28 +172,28 @@ describe("parseQuery", () => {
   it("fails when given an empty document", () => {
     const doc = createQueryDocument('{ prop }');
     (doc.definitions as any) = [];
-    expect(() => parseQuery(doc)).toThrowError(/Empty query document found/);
+    expect(() => parseQuery(dummy, doc)).toThrowError(/Empty query document found/);
   });
 
   it("fails when a query operations isn't specified", () => {
     const doc = createQueryDocument('fragment Something on Type { something }');
-    expect(() => parseQuery(doc)).toThrowError(/Unrecognized root level definition type/);
+    expect(() => parseQuery(dummy, doc)).toThrowError(/Unrecognized root level definition type/);
   });
 
   it("fails when given a subscription operation type, which is currently unsupported", () => {
     const doc = createQueryDocument('subscription { something }');
-    expect(() => parseQuery(doc)).toThrowError(/Subscription queries are not yet supported/);
+    expect(() => parseQuery(dummy, doc)).toThrowError(/Subscription queries are not yet supported/);
   });
 
   it("fails when method is missing", () => {
     const doc = createQueryDocument(`query { something }`);
     (doc.definitions[0] as any).selectionSet.selections = [];
-    expect(() => parseQuery(doc)).toThrowError(/Empty selection set found/);
+    expect(() => parseQuery(dummy, doc)).toThrowError(/Empty selection set found/);
   });
 
   it("fails when a fragment spread is used within an operations", () => {
     const doc = createQueryDocument(`query { ...NamedFragment }`);
-    expect(() => parseQuery(doc)).toThrowError(/Unsupported selection type found: FragmentSpread/);
+    expect(() => parseQuery(dummy, doc)).toThrowError(/Unsupported selection type found: FragmentSpread/);
   });
 
   it("fails when a fragment spread is used on result values", () => {
@@ -200,7 +206,7 @@ describe("parseQuery", () => {
         }
       }
     `);
-    expect(() => parseQuery(doc)).toThrowError(/Unsupported result selection type found: FragmentSpread/);
+    expect(() => parseQuery(dummy, doc)).toThrowError(/Unsupported result selection type found: FragmentSpread/);
   });
 
   it("fails when variables were not specified", () => {
@@ -212,7 +218,7 @@ describe("parseQuery", () => {
       }
     `);
 
-    expect(() => parseQuery(doc)).toThrowError(/Variables were not specified/);
+    expect(() => parseQuery(dummy, doc)).toThrowError(/Variables were not specified/);
   });
 
   it("fails when variables is missing", () => {
@@ -224,7 +230,7 @@ describe("parseQuery", () => {
       }
     `);
 
-    expect(() => parseQuery(doc, { arg2: "not arg1" }))
+    expect(() => parseQuery(dummy, doc, { arg2: "not arg1" }))
       .toThrowError(/Missing variable/);
   });
 
@@ -238,7 +244,7 @@ describe("parseQuery", () => {
       }
     `);
 
-    expect(() => parseQuery(doc)).toThrowError(/Duplicate input argument found/);
+    expect(() => parseQuery(dummy, doc)).toThrowError(/Duplicate input argument found/);
   });
 
   it("fails when duplicate result selections found", () => {
@@ -253,6 +259,6 @@ describe("parseQuery", () => {
       }
     `);
 
-    expect(() => parseQuery(doc)).toThrowError(/Duplicate result selections found/);
+    expect(() => parseQuery(dummy, doc)).toThrowError(/Duplicate result selections found/);
   });
 });

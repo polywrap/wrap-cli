@@ -6,34 +6,21 @@ import {
 
 export const Query = {
   supportedUriAuthority: (client: Client, api: Uri, authority: string) => (
-    client.query<{ supportedUriAuthority: boolean }, { authority: string }>({
+    client.invoke<boolean>({
       uri: api,
-      query: `query {
-        supportedUriAuthority(
-          authority: $authority
-        )
-      }`,
-      variables: {
+      module: "query",
+      method: `supportedUriAuthority`,
+      input: {
         authority
       }
     })
   ),
   tryResolveUriPath: (client: Client, api: Uri, path: string) => (
-    client.query<{
-      tryResolveUriPath: {
-        uri?: string,
-        manifest?: string
-      }
-    }, {
-      path: string
-    }>({
+    client.invoke<boolean>({
       uri: api,
-      query: `query {
-        tryResolveUriPath(
-          path: $path
-        ) { uri, manifest }
-      }`,
-      variables: {
+      module: "query",
+      method: `tryResolveUriPath`,
+      input: {
         path
       }
     })
