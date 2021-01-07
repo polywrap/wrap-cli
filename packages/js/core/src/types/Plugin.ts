@@ -34,11 +34,11 @@ export interface PluginModules extends PluginModulesType { }
 
 /** The plugin's configuration */
 export interface PluginConfig {
-  /** All API dependencies imported by this plugin. */
-  imported?: Uri[];
+  /** All API dependencies imports by this plugin. */
+  imports?: Uri[];
 
-  /** All abstract APIs implemented by this plugin. */
-  implemented?: Uri[];
+  /** All abstract APIs implements by this plugin. */
+  implements?: Uri[];
 }
 
 /**
@@ -51,21 +51,21 @@ export abstract class Plugin {
   /**
    * Check to see if the provided API is implemented by this plugin.
    * 
-   * @param uri The API to check for in the `implemented` array.
+   * @param uri The API to check for in the `implements` array.
    */
   public isImplemented(uri: Uri): boolean {
-    return this._pluginConfig.implemented !== undefined &&
-           this._pluginConfig.implemented.findIndex((item) => item.uri === uri.uri) > -1;
+    return this._pluginConfig.implements !== undefined &&
+           this._pluginConfig.implements.findIndex((item) => item.uri === uri.uri) > -1;
   }
 
-  /** Get all APIs this plugin implemented. */
-  public implemented(): readonly Uri[] {
-    return this._pluginConfig.implemented || [];
+  /** Get all APIs this plugin implements */
+  public implements(): readonly Uri[] {
+    return this._pluginConfig.implements || [];
   }
 
-  /** Get all API dependencies imported by this plugin. */
-  public imported(): readonly Uri[] {
-    return this._pluginConfig.imported || [];
+  /** Get all API dependencies imports by this plugin. */
+  public imports(): readonly Uri[] {
+    return this._pluginConfig.imports || [];
   }
 
   /**

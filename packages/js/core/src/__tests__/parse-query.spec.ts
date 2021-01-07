@@ -1,5 +1,3 @@
-// TODO: multiple-queries
-
 import {
   createQueryDocument,
   InvokeApiOptions
@@ -66,6 +64,103 @@ describe("parseQuery", () => {
     };
 
     expect(result).toMatchObject([expected]);
+  });
+
+  it("works with multiple queries", () => {
+    const methods = `
+      someMethod(
+        arg1: 4
+        arg2: ["hey", "there", [5.5]]
+        arg3: {
+          prop: "hey"
+          obj: {
+            prop: 5
+          }
+        }
+        var1: $var_1
+        var2: $var_2
+      ) {
+        someResult {
+          prop1
+          prop2
+        }
+      }
+
+      anotherMethod(
+        arg: "hey"
+        var: $var_1
+      ) {
+        result_1
+        result_2 {
+          prop
+        }
+      }
+    `;
+    const doc = createQueryDocument(`
+      mutation {
+        ${methods}
+      }
+      query {
+        ${methods}
+      }
+    `);
+
+    const result = parseQuery(doc, {
+      var_1: "var 1",
+      var_2: 55
+    });
+
+    const method1: InvokeApiOptions = {
+      module: "mutation",
+      method: "someMethod",
+      input: {
+        arg1: 4,
+        arg2: ["hey", "there", [5.5]],
+        arg3: {
+          prop: "hey",
+          obj: {
+            prop: 5
+          }
+        },
+        var1: "var 1",
+        var2: 55
+      },
+      resultFilter: {
+        someResult: {
+          prop1: true,
+          prop2: true
+        }
+      }
+    };
+    const method2: InvokeApiOptions = {
+      module: "mutation",
+      method: "anotherMethod",
+      input: {
+        arg: "hey",
+        var: "var 1"
+      },
+      resultFilter: {
+        result_1: true,
+        result_2: {
+          prop: true
+        }
+      }
+    };
+
+    const expected: InvokeApiOptions[] = [
+      method1,
+      method2,
+      {
+        ...method1,
+        module: "query"
+      },
+      {
+        ...method2,
+        module: "query"
+      }
+    ];
+
+    expect(result).toMatchObject(expected);
   });
 
   it("fails when given an empty document", () => {

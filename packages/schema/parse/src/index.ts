@@ -19,6 +19,7 @@ export function parseSchema(
   options?: ParserOptions
 ): TypeInfo {
 
+  // TODO: can we get rid of buildSchema & printSchemaWithDirectives?
   const builtSchema = buildSchema(schema);
   const printedSchema = printSchemaWithDirectives(builtSchema);
   const astNode = parse(printedSchema);

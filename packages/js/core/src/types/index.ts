@@ -3,6 +3,7 @@ export * from "./Client";
 export * from "./Manifest";
 export * from "./MaybeAsync";
 export * from "./Plugin";
+export * from "./PluginFactory";
 export * from "./Query";
 export * from "./Uri";
 export * from "./UriRedirect";

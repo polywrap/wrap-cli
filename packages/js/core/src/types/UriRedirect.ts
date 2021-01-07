@@ -1,6 +1,6 @@
 import {
   Uri,
-  Plugin
+  PluginPackage
 } from ".";
 
 /**
@@ -11,5 +11,5 @@ export interface UriRedirect {
   from: Uri | RegExp;
 
   /** The destination URI, or plugin, that will now handle the invocation. */
-  to: Uri | (() => Plugin);
+  to: Uri | PluginPackage;
 }
