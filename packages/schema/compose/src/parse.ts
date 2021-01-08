@@ -9,6 +9,17 @@ import Path from "path";
 export function parseExternalImports(imports: RegExpMatchArray[], mutation: boolean): ExternalImport[] {
   const externalImports: ExternalImport[] = [];
 
+  const importedTypeCount = (importedTypes: string[]) =>
+    importedTypes.reduce((a: any, b: string) => ({ ...a,
+      [b]: (a[b] || 0) + 1
+    }), {});
+
+  const importedTypeDuplicates = (importedTypes: string[]) => {
+    const counts = importedTypeCount(importedTypes);
+    return Object.keys(counts)
+      .filter((a) => counts[a] > 1);
+  }
+
   for (const importStatement of imports) {
 
     if (importStatement.length !== 4) {
@@ -21,6 +32,14 @@ export function parseExternalImports(imports: RegExpMatchArray[], mutation: bool
     const importedTypes = importStatement[1].split(',')
       .map((str) => str.replace(/\s+/g, "")) // Trim all whitespace
       .filter(Boolean); // Remove empty strings
+
+    const importFromName = importStatement[3]
+
+    // Make sure the developer does not import the same dependency more than once
+    const duplicateimportedTypes = importedTypeDuplicates(importedTypes);
+    if (duplicateimportedTypes.length > 0) {
+      throw Error(`Duplicate type found: ${duplicateimportedTypes} \nIn import: ${importFromName}`);
+    }
 
     // Make sure the developer does not try to import a dependencies dependency
     const index = importedTypes.findIndex((str) => str.indexOf('_') > -1);
@@ -54,7 +73,7 @@ export function parseExternalImports(imports: RegExpMatchArray[], mutation: bool
     const counts = namespaceCounts(imports);
     return Object.keys(counts)
       .filter((a) => counts[a] > 1);
-  }
+  } 
 
   const duplicateNamespaces = namespaceDuplicates(externalImports);
   if (duplicateNamespaces.length > 0) {
