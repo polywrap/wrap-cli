@@ -13,18 +13,8 @@ export function getImplementations(
 
   for (const redirect of redirects) {
 
-    // Explicit check
-    if (Uri.isUri(redirect.from)) {
-      if (Uri.equals(redirect.from, abstractApi)) {
-        result.push(redirect.to);
-      }
-    }
-    // Regex check
-    else if (abstractApi.matches(redirect.from)) {
-      result.push(redirect.to);
-    }
     // Plugin implemented check
-    else if (!Uri.isUri(redirect.to)) {
+    if (!Uri.isUri(redirect.to)) {
       const { implemented } = redirect.to.manifest;
       const implementedApi = implemented.findIndex(
         (uri) => Uri.equals(uri, abstractApi)
@@ -33,6 +23,16 @@ export function getImplementations(
       if (implementedApi) {
         result.push(redirect.to);
       }
+    }
+    // Explicit check
+    else if (Uri.isUri(redirect.from)) {
+      if (Uri.equals(redirect.from, abstractApi)) {
+        result.push(redirect.to);
+      }
+    }
+    // Regex check
+    else if (abstractApi.matches(redirect.from)) {
+      result.push(redirect.to);
     }
   }
 
