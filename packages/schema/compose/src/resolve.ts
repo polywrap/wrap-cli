@@ -13,6 +13,7 @@ import {
   template as headerTemplate,
 } from "./templates/header.mustache";
 import * as Functions from "./templates/functions";
+import { ObjectTypeDefinitionNode, parse, visit } from 'graphql'
 
 import {
   TypeInfo,
@@ -44,6 +45,15 @@ export function resolveImports(
   const localImportStatments = [...schema.matchAll(localImportCapture)];
   const totalStatements = externalImportStatements.length + localImportStatments.length;
 
+  const schemaTypes: string[] = []
+  const schemaAST = parse(schema)
+  visit(schemaAST, {
+    enter: {
+      ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
+        schemaTypes.push(node.name.value)
+    }
+  }})
+
   if (keywords.length !== totalStatements) {
     throw Error(
       `Invalid import statement found, please use one of the following syntaxes...\n${SYNTAX_REFERENCE}`
@@ -73,7 +83,8 @@ export function resolveImports(
   resolveLocalImports(
     localImportsToResolve,
     resolvers.local,
-    subTypeInfo
+    subTypeInfo,
+    schemaTypes
   );
 
   // Remove all import statements
@@ -152,10 +163,12 @@ function resolveExternalImports(
 function resolveLocalImports(
   importsToResolve: LocalImport[],
   resolveSchema: SchemaResolver,
-  typeInfo: TypeInfo
+  typeInfo: TypeInfo,
+  schemaTypes: string[],
 ) {
   for (const importToResolve of importsToResolve) {
     const { userTypes, path } = importToResolve;
+
     let schema = resolveSchema(path);
 
     if (!schema) {
@@ -171,6 +184,8 @@ function resolveLocalImports(
     const localTypeInfo = parseSchema(schema, {
       transforms: [extendType(Functions), addFirstLast]
     });
+
+    const conflictingTypes: string[] = []
 
     for (const userType of userTypes) {
       if (userType === "Query" || userType === "Mutation") {
@@ -192,6 +207,16 @@ function resolveLocalImports(
           ...type
         });
       }
+
+      if(schemaTypes.includes(userType)) {
+        conflictingTypes.push(userType)
+      }
+    }
+
+    if(conflictingTypes.length) {
+      throw new Error(`Conflicting type definitions: ${conflictingTypes.map(
+        conflictingType => `\n- ${conflictingType}`)}`
+      )
     }
   }
 }
