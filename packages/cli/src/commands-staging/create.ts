@@ -27,7 +27,9 @@ export default {
       print.newline();
     } else {
       print.info(`Directory with name ${projectName} already exists`);
-      const overwrite = await prompt.confirm("Do you want to overwrite this directory?");
+      const overwrite = await prompt.confirm(
+        "Do you want to overwrite this directory?"
+      );
       if (overwrite) {
         print.info(`Overwriting ${projectName}...`);
         filesystem.remove(projectName);

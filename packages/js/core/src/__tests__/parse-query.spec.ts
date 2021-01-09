@@ -1,12 +1,6 @@
-import {
-  createQueryDocument,
-  parseQuery,
-  InvokeApiOptions,
-  Uri
-} from "../";
+import { createQueryDocument, parseQuery, InvokeApiOptions, Uri } from "../";
 
 describe("parseQuery", () => {
-
   const dummy = new Uri("w3://dumb/dummy");
 
   it("works in the typical case", () => {
@@ -24,8 +18,8 @@ describe("parseQuery", () => {
               prop: 5
             }
           }
-          var1: $var_1
-          var2: $var_2
+          var1: $varOne
+          var2: $varTwo
         ) {
           someResult {
             prop1
@@ -36,9 +30,9 @@ describe("parseQuery", () => {
     `);
 
     const result = parseQuery(dummy, doc, {
-      var_1: "var 1",
+      varOne: "var 1",
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      var_2: 55,
+      varTwo: 55,
     });
 
     const expected: InvokeApiOptions = {
@@ -82,8 +76,8 @@ describe("parseQuery", () => {
             prop: 5
           }
         }
-        var1: $var_1
-        var2: $var_2
+        var1: $varOne
+        var2: $varTwo
       ) {
         someResult {
           prop1
@@ -93,10 +87,10 @@ describe("parseQuery", () => {
 
       anotherMethod(
         arg: "hey"
-        var: $var_1
+        var: $varOne
       ) {
-        result_1
-        result_2 {
+        resultOne
+        resultTwo {
           prop
         }
       }
@@ -111,8 +105,8 @@ describe("parseQuery", () => {
     `);
 
     const result = parseQuery(dummy, doc, {
-      var_1: "var 1",
-      var_2: 55
+      varOne: "var 1",
+      varTwo: 55,
     });
 
     const method1: InvokeApiOptions = {
@@ -125,18 +119,18 @@ describe("parseQuery", () => {
         arg3: {
           prop: "hey",
           obj: {
-            prop: 5
-          }
+            prop: 5,
+          },
         },
         var1: "var 1",
-        var2: 55
+        var2: 55,
       },
       resultFilter: {
         someResult: {
           prop1: true,
-          prop2: true
-        }
-      }
+          prop2: true,
+        },
+      },
     };
     const method2: InvokeApiOptions = {
       uri: dummy,
@@ -144,14 +138,14 @@ describe("parseQuery", () => {
       method: "anotherMethod",
       input: {
         arg: "hey",
-        var: "var 1"
+        var: "var 1",
       },
       resultFilter: {
-        result_1: true,
-        result_2: {
-          prop: true
-        }
-      }
+        resultOne: true,
+        resultTwo: {
+          prop: true,
+        },
+      },
     };
 
     const expected: InvokeApiOptions[] = [
@@ -159,12 +153,12 @@ describe("parseQuery", () => {
       method2,
       {
         ...method1,
-        module: "query"
+        module: "query",
       },
       {
         ...method2,
-        module: "query"
-      }
+        module: "query",
+      },
     ];
 
     expect(result).toMatchObject(expected);
@@ -174,29 +168,39 @@ describe("parseQuery", () => {
     const doc = createQueryDocument("{ prop }");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (doc.definitions as any) = [];
-    expect(() => parseQuery(dummy, doc)).toThrowError(/Empty query document found/);
+    expect(() => parseQuery(dummy, doc)).toThrowError(
+      /Empty query document found/
+    );
   });
 
   it("fails when a query operations isn't specified", () => {
-    const doc = createQueryDocument('fragment Something on Type { something }');
-    expect(() => parseQuery(dummy, doc)).toThrowError(/Unrecognized root level definition type/);
+    const doc = createQueryDocument("fragment Something on Type { something }");
+    expect(() => parseQuery(dummy, doc)).toThrowError(
+      /Unrecognized root level definition type/
+    );
   });
 
   it("fails when given a subscription operation type, which is currently unsupported", () => {
-    const doc = createQueryDocument('subscription { something }');
-    expect(() => parseQuery(dummy, doc)).toThrowError(/Subscription queries are not yet supported/);
+    const doc = createQueryDocument("subscription { something }");
+    expect(() => parseQuery(dummy, doc)).toThrowError(
+      /Subscription queries are not yet supported/
+    );
   });
 
   it("fails when method is missing", () => {
     const doc = createQueryDocument(`query { something }`);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (doc.definitions[0] as any).selectionSet.selections = [];
-    expect(() => parseQuery(dummy, doc)).toThrowError(/Empty selection set found/);
+    expect(() => parseQuery(dummy, doc)).toThrowError(
+      /Empty selection set found/
+    );
   });
 
   it("fails when a fragment spread is used within an operations", () => {
     const doc = createQueryDocument(`query { ...NamedFragment }`);
-    expect(() => parseQuery(dummy, doc)).toThrowError(/Unsupported selection type found: FragmentSpread/);
+    expect(() => parseQuery(dummy, doc)).toThrowError(
+      /Unsupported selection type found: FragmentSpread/
+    );
   });
 
   it("fails when a fragment spread is used on result values", () => {
@@ -209,7 +213,9 @@ describe("parseQuery", () => {
         }
       }
     `);
-    expect(() => parseQuery(dummy, doc)).toThrowError(/Unsupported result selection type found: FragmentSpread/);
+    expect(() => parseQuery(dummy, doc)).toThrowError(
+      /Unsupported result selection type found: FragmentSpread/
+    );
   });
 
   it("fails when variables were not specified", () => {
@@ -221,7 +227,9 @@ describe("parseQuery", () => {
       }
     `);
 
-    expect(() => parseQuery(dummy, doc)).toThrowError(/Variables were not specified/);
+    expect(() => parseQuery(dummy, doc)).toThrowError(
+      /Variables were not specified/
+    );
   });
 
   it("fails when variables is missing", () => {
@@ -233,8 +241,11 @@ describe("parseQuery", () => {
       }
     `);
 
-    expect(() => parseQuery(dummy, doc, { arg2: "not arg1" }))
-      .toThrowError(/Missing variable/);
+    expect(() =>
+      parseQuery(dummy, doc, {
+        arg2: "not arg1",
+      })
+    ).toThrowError(/Missing variable/);
   });
 
   it("fails when duplicate input arguments are provided", () => {
@@ -247,7 +258,9 @@ describe("parseQuery", () => {
       }
     `);
 
-    expect(() => parseQuery(dummy, doc)).toThrowError(/Duplicate input argument found/);
+    expect(() => parseQuery(dummy, doc)).toThrowError(
+      /Duplicate input argument found/
+    );
   });
 
   it("fails when duplicate result selections found", () => {
@@ -262,6 +275,8 @@ describe("parseQuery", () => {
       }
     `);
 
-    expect(() => parseQuery(dummy, doc)).toThrowError(/Duplicate result selections found/);
+    expect(() => parseQuery(dummy, doc)).toThrowError(
+      /Duplicate result selections found/
+    );
   });
 });

@@ -2,7 +2,10 @@
 const IPFSClient = require("ipfs-http-client");
 const { globSource } = IPFSClient;
 
-export async function publishToIPFS(buildPath: string, ipfs: string): Promise<string> {
+export async function publishToIPFS(
+  buildPath: string,
+  ipfs: string
+): Promise<string> {
   let url;
   try {
     url = new URL(ipfs);
@@ -23,7 +26,10 @@ export async function publishToIPFS(buildPath: string, ipfs: string): Promise<st
 
   let rootCID = "";
 
-  for await (const file of client.addAll(globSource(buildPath, globOptions), addOptions)) {
+  for await (const file of client.addAll(
+    globSource(buildPath, globOptions),
+    addOptions
+  )) {
     if (file.path.indexOf("/") === -1) {
       rootCID = file.cid.toString();
     }

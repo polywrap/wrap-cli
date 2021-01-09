@@ -78,11 +78,11 @@ module.exports = {
     }],
     "import/order": [
       "error",
-       {
-         "groups": [["index", "sibling", "parent", "internal"], ["external", "builtin"], "object"],
-         "newlines-between": "always"
-        }
-      ]
+      {
+        "groups": [["index", "sibling", "parent", "internal"], ["external", "builtin"], "object"],
+        "newlines-between": "always"
+      }
+    ]
   },
   "overrides": [
     {

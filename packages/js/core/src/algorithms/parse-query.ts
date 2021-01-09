@@ -1,13 +1,6 @@
-import {
-  InvokeApiOptions,
-  QueryDocument,
-  Uri
-} from "../types";
+import { InvokeApiOptions, QueryDocument, Uri } from "../types";
 
-import {
-  SelectionSetNode,
-  ValueNode
-} from "graphql";
+import { SelectionSetNode, ValueNode } from "graphql";
 
 export function parseQuery(
   uri: Uri,
@@ -23,7 +16,8 @@ export function parseQuery(
   for (const def of doc.definitions) {
     if (def.kind !== "OperationDefinition") {
       throw Error(
-        `Unrecognized root level definition type: ${def.kind}\n` + "Please use a 'query' or 'mutation' operations."
+        `Unrecognized root level definition type: ${def.kind}\n` +
+          "Please use a 'query' or 'mutation' operations."
       );
     }
 
@@ -39,12 +33,17 @@ export function parseQuery(
     const selections = selectionSet.selections;
 
     if (selections.length === 0) {
-      throw Error("Empty selection set found. Please include the name of a method you'd like to query.");
+      throw Error(
+        "Empty selection set found. Please include the name of a method you'd like to query."
+      );
     }
 
     for (const selection of selections) {
       if (selection.kind !== "Field") {
-        throw Error(`Unsupported selection type found: ${selection.kind}\n` + "Please query a method.");
+        throw Error(
+          `Unsupported selection type found: ${selection.kind}\n` +
+            "Please query a method."
+        );
       }
 
       const method = selection.name.value;
@@ -87,11 +86,16 @@ export function parseQuery(
   return invokeOptions;
 }
 
-function extractValue(node: ValueNode, variables?: Record<string, unknown>): unknown {
+function extractValue(
+  node: ValueNode,
+  variables?: Record<string, unknown>
+): unknown {
   if (node.kind === "Variable") {
     // Get the argument's value from the variables object
     if (!variables) {
-      throw Error(`Variables were not specified, tried to resolve variable from query. Name: ${node.name.value}\n`);
+      throw Error(
+        `Variables were not specified, tried to resolve variable from query. Name: ${node.name.value}\n`
+      );
     }
 
     if (!variables[node.name.value]) {
@@ -99,7 +103,11 @@ function extractValue(node: ValueNode, variables?: Record<string, unknown>): unk
     }
 
     return variables[node.name.value];
-  } else if (node.kind === "StringValue" || node.kind === "EnumValue" || node.kind === "BooleanValue") {
+  } else if (
+    node.kind === "StringValue" ||
+    node.kind === "EnumValue" ||
+    node.kind === "BooleanValue"
+  ) {
     return node.value;
   } else if (node.kind === "IntValue") {
     return Number.parseInt(node.value);

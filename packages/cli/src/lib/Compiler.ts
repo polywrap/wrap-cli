@@ -72,7 +72,11 @@ export class Compiler {
     }
   }
 
-  private async _compileWeb3API(manifest: Manifest, quiet?: boolean, verbose?: boolean) {
+  private async _compileWeb3API(
+    manifest: Manifest,
+    quiet?: boolean,
+    verbose?: boolean
+  ) {
     const run = async (spinner?: any) => {
       const { mutation, query, subgraph } = manifest;
       const { outputDir, manifestPath } = this._config;
@@ -84,21 +88,37 @@ export class Compiler {
       let schema = "";
       const loadSchema = (schemaPath: string) => {
         schema += `${fs.readFileSync(
-          path.isAbsolute(schemaPath) ? schemaPath : appendPath(manifestPath, schemaPath),
+          path.isAbsolute(schemaPath)
+            ? schemaPath
+            : appendPath(manifestPath, schemaPath),
           "utf-8"
         )}\n`;
       };
 
       if (mutation) {
         loadSchema(mutation.schema.file);
-        await this._compileWasmModule(mutation.module.file, "mutation", outputDir, spinner, quiet, verbose);
+        await this._compileWasmModule(
+          mutation.module.file,
+          "mutation",
+          outputDir,
+          spinner,
+          quiet,
+          verbose
+        );
         mutation.module.file = "./mutation.wasm";
         mutation.schema.file = "./schema.graphql";
       }
 
       if (query) {
         loadSchema(query.schema.file);
-        await this._compileWasmModule(query.module.file, "query", outputDir, spinner, quiet, verbose);
+        await this._compileWasmModule(
+          query.module.file,
+          "query",
+          outputDir,
+          spinner,
+          quiet,
+          verbose
+        );
         query.module.file = "./query.wasm";
         query.schema.file = "./schema.graphql";
       }
@@ -111,7 +131,11 @@ export class Compiler {
         /*loadSchema(
           appendPath(subgraphFile, subgraphManifest.schema.file)
         );*/
-        const cid = await this._compileSubgraph(subgraphFile, `${outputDir}/subgraph`, spinner);
+        const cid = await this._compileSubgraph(
+          subgraphFile,
+          `${outputDir}/subgraph`,
+          spinner
+        );
 
         subgraph.id = cid;
         subgraph.file = `./subgraph/subgraph.yaml`;
@@ -151,7 +175,11 @@ export class Compiler {
     verbose?: boolean
   ) {
     if (!quiet) {
-      step(spinner, "Compiling WASM module:", `${modulePath} => ${outputDir}/${moduleName}.wasm`);
+      step(
+        spinner,
+        "Compiling WASM module:",
+        `${modulePath} => ${outputDir}/${moduleName}.wasm`
+      );
     }
 
     const moduleAbsolute = path.join(this._manifestDir, modulePath);
@@ -169,13 +197,18 @@ export class Compiler {
       if (fs.existsSync(path.join(dir, "node_modules"))) {
         libsDirs.push(path.join(dir, "node_modules"));
         if (fs.existsSync(path.join(dir, "node_modules/@web3api/wasm-as"))) {
-          w3Wasm = path.resolve(dir, "node_modules/@web3api/wasm-as/assembly/index.ts");
+          w3Wasm = path.resolve(
+            dir,
+            "node_modules/@web3api/wasm-as/assembly/index.ts"
+          );
         }
       }
     }
 
     if (libsDirs.length === 0) {
-      throw Error(`could not locate \`node_modules\` in parent directories of subgraph manifest`);
+      throw Error(
+        `could not locate \`node_modules\` in parent directories of subgraph manifest`
+      );
     }
 
     const args = [
@@ -217,7 +250,11 @@ export class Compiler {
     quiet?: boolean,
     verbose?: boolean
   ): Promise<string> {
-    step(spinner, "Compiling Subgraph...", `${subgraphPath} => ${outputDir}/subgraph.yaml`);
+    step(
+      spinner,
+      "Compiling Subgraph...",
+      `${subgraphPath} => ${outputDir}/subgraph.yaml`
+    );
 
     const args = [
       "build",

@@ -25,7 +25,8 @@ export function getDefaultRedirects(): UriRedirect[] {
       to: () =>
         new EthereumPlugin({
           // TODO: move away from centralized gateway
-          provider: "https://eth-mainnet.gateway.pokt.network/v1/5fc677007c6654002ed13350",
+          provider:
+            "https://eth-mainnet.gateway.pokt.network/v1/5fc677007c6654002ed13350",
         }),
     },
   ];

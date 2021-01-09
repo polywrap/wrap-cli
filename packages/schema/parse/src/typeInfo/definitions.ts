@@ -21,7 +21,11 @@ export interface GenericDefinition {
   required: boolean | null;
   kind: DefinitionKind;
 }
-export function createGenericDefinition(name: string, type?: string, required?: boolean): GenericDefinition {
+export function createGenericDefinition(
+  name: string,
+  type?: string,
+  required?: boolean
+): GenericDefinition {
   return {
     name,
     type: type ? type : null,
@@ -33,7 +37,11 @@ export function createGenericDefinition(name: string, type?: string, required?: 
 export interface ObjectDefinition extends GenericDefinition {
   properties: PropertyDefinition[];
 }
-export function createObjectDefinition(name: string, type?: string, required?: boolean): ObjectDefinition {
+export function createObjectDefinition(
+  name: string,
+  type?: string,
+  required?: boolean
+): ObjectDefinition {
   return {
     name,
     type: type ? type : null,
@@ -65,7 +73,11 @@ export function createAnyDefinition(
 }
 
 export type ScalarDefinition = GenericDefinition;
-export function createScalarDefinition(name: string, type?: string, required?: boolean): ScalarDefinition {
+export function createScalarDefinition(
+  name: string,
+  type?: string,
+  required?: boolean
+): ScalarDefinition {
   return {
     name,
     type: type ? type : null,
@@ -87,8 +99,14 @@ export function createArrayDefinition(
     name,
     type: type ? type : null,
     required: required ? required : null,
-    array: item && isKind(item, DefinitionKind.Array) ? (item as ArrayDefinition) : null,
-    scalar: item && isKind(item, DefinitionKind.Scalar) ? (item as ScalarDefinition) : null,
+    array:
+      item && isKind(item, DefinitionKind.Array)
+        ? (item as ArrayDefinition)
+        : null,
+    scalar:
+      item && isKind(item, DefinitionKind.Scalar)
+        ? (item as ScalarDefinition)
+        : null,
     kind: DefinitionKind.Array,
     item: item ? item : null,
   };
@@ -112,8 +130,18 @@ export function createPropertyDefinition(
   };
 }
 
-export function createScalarPropertyDefinition(name: string, type: string, required: boolean): PropertyDefinition {
-  return createPropertyDefinition(name, type, required, undefined, createScalarDefinition(name, type, required));
+export function createScalarPropertyDefinition(
+  name: string,
+  type: string,
+  required: boolean
+): PropertyDefinition {
+  return createPropertyDefinition(
+    name,
+    type,
+    required,
+    undefined,
+    createScalarDefinition(name, type, required)
+  );
 }
 
 export function createArrayPropertyDefinition(
@@ -122,7 +150,13 @@ export function createArrayPropertyDefinition(
   required: boolean,
   item: GenericDefinition
 ): PropertyDefinition {
-  return createPropertyDefinition(name, type, required, createArrayDefinition(name, type, required, item), undefined);
+  return createPropertyDefinition(
+    name,
+    type,
+    required,
+    createArrayDefinition(name, type, required, item),
+    undefined
+  );
 }
 
 export type Operation = "query" | "mutation";
@@ -155,7 +189,11 @@ export function createMethodDefinition(
 export interface QueryDefinition extends GenericDefinition {
   methods: MethodDefinition[];
 }
-export function createQueryDefinition(name: string, type?: string, required?: boolean): QueryDefinition {
+export function createQueryDefinition(
+  name: string,
+  type?: string,
+  required?: boolean
+): QueryDefinition {
   return {
     name,
     type: type ? type : null,

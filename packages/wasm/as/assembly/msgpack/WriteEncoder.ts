@@ -297,7 +297,10 @@ export class WriteEncoder extends Write {
     this.writeBytes(value);
   }
 
-  writeNullableArray<T>(a: Array<T> | null, fn: (encoder: Write, item: T) => void): void {
+  writeNullableArray<T>(
+    a: Array<T> | null,
+    fn: (encoder: Write, item: T) => void
+  ): void {
     if (a === null) {
       this.writeNil();
       return;

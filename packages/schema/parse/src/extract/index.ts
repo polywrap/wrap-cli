@@ -6,7 +6,10 @@ import { extractImportedQueryTypes } from "./imported-query-types";
 
 import { DocumentNode } from "graphql";
 
-export type SchemaExtractor = (astNode: DocumentNode, typeInfo: TypeInfo) => void;
+export type SchemaExtractor = (
+  astNode: DocumentNode,
+  typeInfo: TypeInfo
+) => void;
 
 export const extractors: SchemaExtractor[] = [
   extractUserTypes,

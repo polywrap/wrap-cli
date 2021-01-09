@@ -1,14 +1,7 @@
-import {
-  Uri,
-  Client,
-  InvokableModules,
-  MaybeAsync,
-  SchemaDocument
-} from ".";
+import { Uri, Client, InvokableModules, MaybeAsync, SchemaDocument } from ".";
 
 /** The plugin's configuration */
 export interface PluginManifest {
-
   /** The API's schema */
   schema: SchemaDocument;
 
@@ -27,7 +20,10 @@ export interface PluginManifest {
  * @param client The client instance requesting this invocation.
  * This client will be used for any sub-queries that occur.
  */
-export type PluginMethod = (input: Record<string, unknown>, client: Client) => MaybeAsync<unknown>;
+export type PluginMethod = (
+  input: Record<string, unknown>,
+  client: Client
+) => MaybeAsync<unknown>;
 
 /**
  * A plugin "module" is a named map of [[PluginMethod | invocable methods]].
@@ -47,7 +43,6 @@ export type PluginModules = PluginModulesType;
  * The plugin instance.
  */
 export abstract class Plugin {
-
   /**
    * Get an instance of this plugin's modules.
    *

@@ -27,8 +27,16 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
 
-    // eslint-disable-next-line prefer-const
-    let { h, help, i, ipfs, g, graph, o, outputDir, f, outputFormat, w, watch, e, testEns } = parameters.options;
+    const { h, i, g, o, f, w, e } = parameters.options;
+    let {
+      help,
+      ipfs,
+      graph,
+      outputDir,
+      outputFormat,
+      watch,
+      testEns,
+    } = parameters.options;
 
     help = help || h;
     ipfs = ipfs || i;
@@ -100,8 +108,11 @@ export default {
       return;
     }
 
-    manifestPath = (manifestPath && filesystem.resolve(manifestPath)) || filesystem.resolve("web3api.yaml");
-    outputDir = (outputDir && filesystem.resolve(outputDir)) || filesystem.path("build");
+    manifestPath =
+      (manifestPath && filesystem.resolve(manifestPath)) ||
+      filesystem.resolve("web3api.yaml");
+    outputDir =
+      (outputDir && filesystem.resolve(outputDir)) || filesystem.path("build");
     outputFormat = outputFormat || "wasm";
 
     const compiler = new Compiler({
@@ -154,12 +165,15 @@ export default {
           }
 
           // ask the dev server to publish the CID to ENS
-          const { data } = await axios.get("http://localhost:4040/register-ens", {
-            params: {
-              domain: domain,
-              cid,
-            },
-          });
+          const { data } = await axios.get(
+            "http://localhost:4040/register-ens",
+            {
+              params: {
+                domain: domain,
+                cid,
+              },
+            }
+          );
 
           if (data.success) {
             print.success(`ENS Resolution Configured { ${testEns} => ${cid} }`);
@@ -174,13 +188,25 @@ export default {
         const [name, node] = graph.split(",");
 
         // TODO: remove this pathing hack
-        const subgraphPath = path.join(path.dirname(manifestPath), "src/subgraph/subgraph.yaml");
+        const subgraphPath = path.join(
+          path.dirname(manifestPath),
+          "src/subgraph/subgraph.yaml"
+        );
 
-        const id = await publishToSubgraph(subgraphPath, name, node, ipfs, outputDir);
+        const id = await publishToSubgraph(
+          subgraphPath,
+          name,
+          node,
+          ipfs,
+          outputDir
+        );
 
         print.success(`Subgraph Deployed { ${id} }`);
         // TODO: remove this port hack
-        uris.push(["Subgraph GraphiQL", `${node.replace("8020", "8000")}/subgraphs/id/${id}`]);
+        uris.push([
+          "Subgraph GraphiQL",
+          `${node.replace("8020", "8000")}/subgraphs/id/${id}`,
+        ]);
       }
 
       if (uris.length) {

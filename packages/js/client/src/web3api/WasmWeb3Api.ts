@@ -2,7 +2,12 @@ import { ExecuteOptions, ExecuteResult, Web3Api, Manifest } from "./";
 import { Uri } from "../Uri";
 import { Web3ApiClient } from "../Web3ApiClient";
 
-import { parseSchema, TypeInfo, QueryDefinition, MethodDefinition } from "@web3api/schema-parse";
+import {
+  parseSchema,
+  TypeInfo,
+  QueryDefinition,
+  MethodDefinition,
+} from "@web3api/schema-parse";
 import { TypeInfo, TypeInfo } from "graphql";
 
 export class WasmWeb3Api extends Web3Api {
@@ -14,11 +19,18 @@ export class WasmWeb3Api extends Web3Api {
     mutation?: ArrayBuffer;
   } = {};
 
-  constructor(uri: Uri, private _manifest: Manifest, private _resolver: string) {
+  constructor(
+    uri: Uri,
+    private _manifest: Manifest,
+    private _resolver: string
+  ) {
     super(uri);
   }
 
-  public async execute(options: ExecuteOptions, client: Web3ApiClient): Promise<ExecuteResult> {
+  public async execute(
+    options: ExecuteOptions,
+    client: Web3ApiClient
+  ): Promise<ExecuteResult> {
     const { module, method } = options;
 
     // Fetch the schema
@@ -27,17 +39,22 @@ export class WasmWeb3Api extends Web3Api {
     // Get the schema's type info
     const typeInfo = this.getTypeInfo(schema);
 
-    const root: "Query" | "Mutation" = module === "query" ? "Query" : "Mutation";
+    const root: "Query" | "Mutation" =
+      module === "query" ? "Query" : "Mutation";
 
     // Ensure the schema contains the method being asked for
-    const queryIdx = typeInfo.queryTypes.findIndex((item: QueryDefinition) => item.name === root);
+    const queryIdx = typeInfo.queryTypes.findIndex(
+      (item: QueryDefinition) => item.name === root
+    );
 
     if (queryIdx === -1) {
       throw Error(`Unable to find query type by the name of "${root}".`);
     }
 
     const queryInfo = typeInfo.queryTypes[queryIdx];
-    const methodIdx = queryInfo.methods.findIndex((item: MethodDefinition) => item.name === method);
+    const methodIdx = queryInfo.methods.findIndex(
+      (item: MethodDefinition) => item.name === method
+    );
 
     if (methodIdx === -1) {
       throw Error(`Unable to find method "${method}" on query type "${root}".`);
@@ -82,13 +99,17 @@ export class WasmWeb3Api extends Web3Api {
 
     // If nothing is returned, the schema was not found
     if (!data || !data.bytes) {
-      throw Error(`Schema was not found.\nURI: ${this._uri}\nSubpath: ${this._manifest.schema.file}`);
+      throw Error(
+        `Schema was not found.\nURI: ${this._uri}\nSubpath: ${this._manifest.schema.file}`
+      );
     }
 
     this._schema = String.fromCharCode.apply(null, data.bytes);
 
     if (!this._schema) {
-      throw Error(`Decoding the schema's bytes array failed.\nBytes: ${data.bytes}`);
+      throw Error(
+        `Decoding the schema's bytes array failed.\nBytes: ${data.bytes}`
+      );
     }
 
     return this._schema;
@@ -102,7 +123,10 @@ export class WasmWeb3Api extends Web3Api {
     return this._typeInfo;
   }
 
-  private async getWasmModule(module: "query" | "mutation", client: Web3ApiClient): Promise<ArrayBuffer> {
+  private async getWasmModule(
+    module: "query" | "mutation",
+    client: Web3ApiClient
+  ): Promise<ArrayBuffer> {
     if (this._wasm[module] !== undefined) {
       return this._wasm[module];
     }
@@ -110,7 +134,9 @@ export class WasmWeb3Api extends Web3Api {
     const moduleManifest = this._manifest[module];
 
     if (!moduleManifest) {
-      throw Error(`Package manifest does not contain a definition for module "${module}"`);
+      throw Error(
+        `Package manifest does not contain a definition for module "${module}"`
+      );
     }
 
     const { data, errors } = await client.query<getFile.Result>({
@@ -124,7 +150,9 @@ export class WasmWeb3Api extends Web3Api {
 
     // If nothing is returned, the module was not found
     if (!data || !data.bytes) {
-      throw Error(`Module was not found.\nURI: ${this._uri}\nSubpath: ${moduleManifest.module.file}`);
+      throw Error(
+        `Module was not found.\nURI: ${this._uri}\nSubpath: ${moduleManifest.module.file}`
+      );
     }
 
     return data.bytes;

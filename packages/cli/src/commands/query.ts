@@ -72,7 +72,9 @@ export default {
       }
 
       if (task.constants) {
-        constants = JSON.parse(filesystem.read(path.join(dir, task.constants)) as string);
+        constants = JSON.parse(
+          filesystem.read(path.join(dir, task.constants)) as string
+        );
       }
 
       if (task.query) {

@@ -28,13 +28,20 @@ export function fetchTestCases(): TestCases {
     }
 
     // Fetch the input schema
-    const inputSchema = readFileSync(path.join(root, dirent.name, "input.graphql"), { encoding: "utf-8" });
+    const inputSchema = readFileSync(
+      path.join(root, dirent.name, "input.graphql"),
+      {
+        encoding: "utf-8",
+      }
+    );
 
     // Fetch the output TypeInfo
     const outputTypeInfo = outputs[dirent.name];
 
     if (!outputTypeInfo) {
-      throw Error(`Test case output TypeInfo is missing for case "${dirent.name}"`);
+      throw Error(
+        `Test case output TypeInfo is missing for case "${dirent.name}"`
+      );
     }
 
     cases.push({
@@ -44,7 +51,9 @@ export function fetchTestCases(): TestCases {
     });
   };
 
-  readdirSync(root, { withFileTypes: true }).forEach(importCase);
+  readdirSync(root, {
+    withFileTypes: true,
+  }).forEach(importCase);
 
   return cases;
 }

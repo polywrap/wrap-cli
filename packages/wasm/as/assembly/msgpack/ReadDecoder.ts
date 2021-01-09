@@ -37,7 +37,9 @@ export class ReadDecoder extends Read {
     if (value <= <i64>i8.MAX_VALUE || value >= <i64>i8.MIN_VALUE) {
       return <i8>value;
     }
-    throw new Error("interger overflow: value = " + value.toString() + "; bits = 8");
+    throw new Error(
+      "interger overflow: value = " + value.toString() + "; bits = 8"
+    );
   }
 
   readInt16(): i16 {
@@ -45,7 +47,9 @@ export class ReadDecoder extends Read {
     if (value <= <i64>i16.MAX_VALUE || value >= <i64>i16.MIN_VALUE) {
       return <i16>value;
     }
-    throw new Error("interger overflow: value = " + value.toString() + "; bits = 16");
+    throw new Error(
+      "interger overflow: value = " + value.toString() + "; bits = 16"
+    );
   }
 
   readInt32(): i32 {
@@ -53,7 +57,9 @@ export class ReadDecoder extends Read {
     if (value <= <i64>i32.MAX_VALUE || value >= <i64>i32.MIN_VALUE) {
       return <i32>value;
     }
-    throw new Error("interger overflow: value = " + value.toString() + "; bits = 32");
+    throw new Error(
+      "interger overflow: value = " + value.toString() + "; bits = 32"
+    );
   }
 
   readInt64(): i64 {
@@ -84,7 +90,9 @@ export class ReadDecoder extends Read {
     if (value <= <u64>u8.MAX_VALUE || value >= <u64>u8.MIN_VALUE) {
       return <u8>value;
     }
-    throw new Error("unsigned interger overflow: value = " + value.toString() + "; bits = 8");
+    throw new Error(
+      "unsigned interger overflow: value = " + value.toString() + "; bits = 8"
+    );
   }
 
   readUInt16(): u16 {
@@ -92,7 +100,9 @@ export class ReadDecoder extends Read {
     if (value <= <u64>u16.MAX_VALUE || value >= <u64>u16.MIN_VALUE) {
       return <u16>value;
     }
-    throw new Error("unsigned interger overflow: value = " + value.toString() + "; bits = 16");
+    throw new Error(
+      "unsigned interger overflow: value = " + value.toString() + "; bits = 16"
+    );
   }
 
   readUInt32(): u32 {
@@ -100,7 +110,9 @@ export class ReadDecoder extends Read {
     if (value <= <u64>u32.MAX_VALUE || value >= <u64>u32.MIN_VALUE) {
       return <u32>value;
     }
-    throw new Error("unsigned interger overflow: value = " + value.toString() + "; bits = 32");
+    throw new Error(
+      "unsigned interger overflow: value = " + value.toString() + "; bits = 32"
+    );
   }
 
   readUInt64(): u64 {
@@ -229,7 +241,10 @@ export class ReadDecoder extends Read {
     throw new RangeError(E_INVALIDLENGTH);
   }
 
-  readMap<K, V>(key_fn: (reader: Read) => K, value_fn: (reader: Read) => V): Map<K, V> {
+  readMap<K, V>(
+    key_fn: (reader: Read) => K,
+    value_fn: (reader: Read) => V
+  ): Map<K, V> {
     const size = this.readMapLength();
     const m = new Map<K, V>();
     for (let i: u32 = 0; i < size; i++) {
@@ -338,7 +353,10 @@ export class ReadDecoder extends Read {
     return this.readArray(fn);
   }
 
-  readNullableMap<K, V>(key_fn: (decoder: Read) => K, value_fn: (decoder: Read) => V): Map<K, V> | null {
+  readNullableMap<K, V>(
+    key_fn: (decoder: Read) => K,
+    value_fn: (decoder: Read) => V
+  ): Map<K, V> | null {
     if (this.isNextNil()) {
       return null;
     }
@@ -379,7 +397,8 @@ export class ReadDecoder extends Read {
       objectsToDiscard = <i32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
     } else if (isFixedMap(leadByte)) {
       // TODO handle overflow
-      objectsToDiscard = 2 * <i32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
+      objectsToDiscard =
+        2 * <i32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
     } else {
       switch (leadByte) {
         case Format.NIL:
@@ -469,7 +488,9 @@ export class ReadDecoder extends Read {
           objectsToDiscard = 2 * <i32>this.view.getUint32();
           break;
         default:
-          throw new TypeError("invalid prefix, bad encoding for val: " + leadByte.toString());
+          throw new TypeError(
+            "invalid prefix, bad encoding for val: " + leadByte.toString()
+          );
       }
     }
 

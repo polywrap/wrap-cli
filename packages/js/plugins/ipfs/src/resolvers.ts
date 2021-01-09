@@ -18,8 +18,7 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
     return await ipfs.cat(input.cid);
   },
   // w3/api-resolver
-  tryResolveUri: async (input: { authority: string, path: string }) => {
-
+  tryResolveUri: async (input: { authority: string; path: string }) => {
     if (input.authority === "ipfs") {
       return null;
     }
@@ -52,8 +51,8 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
   getFile: async (input: { path: string }) => {
     try {
       return await ipfs.catToBuffer(input.path);
-    } catch (e) { 
+    } catch (e) {
       return null;
     }
-  }
+  },
 });

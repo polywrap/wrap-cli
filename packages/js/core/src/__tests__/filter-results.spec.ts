@@ -46,7 +46,9 @@ describe("filterResults", () => {
         prop1: {},
       },
     };
-    expect(() => filterResults(result, filter)).toThrowError(/The result given is not an object./);
+    expect(() => filterResults(result, filter)).toThrowError(
+      /The result given is not an object./
+    );
   });
 
   it("throws if you try to filter a value", () => {
@@ -55,7 +57,9 @@ describe("filterResults", () => {
       rootA: true,
     };
 
-    expect(() => filterResults(result, filter)).toThrowError(/The result given is not an object./);
+    expect(() => filterResults(result, filter)).toThrowError(
+      /The result given is not an object./
+    );
   });
 
   it("throws if you try to filter something that isn't there", () => {

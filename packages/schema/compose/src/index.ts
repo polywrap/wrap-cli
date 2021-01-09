@@ -31,11 +31,21 @@ export function composeSchema(options: ComposerOptions): ComposerOutput {
   } = {};
 
   if (query && query.schema && query.absolutePath !== undefined) {
-    results.query = resolveImports(query.schema, query.absolutePath, false, resolvers);
+    results.query = resolveImports(
+      query.schema,
+      query.absolutePath,
+      false,
+      resolvers
+    );
   }
 
   if (mutation && mutation.schema && mutation.absolutePath !== undefined) {
-    results.mutation = resolveImports(mutation.schema, mutation.absolutePath, true, resolvers);
+    results.mutation = resolveImports(
+      mutation.schema,
+      mutation.absolutePath,
+      true,
+      resolvers
+    );
   }
 
   const result: ComposerOutput = {};
@@ -45,12 +55,21 @@ export function composeSchema(options: ComposerOptions): ComposerOutput {
   }
 
   if (results.mutation) {
-    result.mutation = renderSchema(results.mutation.schema, results.mutation.typeInfo);
+    result.mutation = renderSchema(
+      results.mutation.schema,
+      results.mutation.typeInfo
+    );
   }
 
   if (results.query && results.mutation) {
-    const typeInfo = combineTypeInfo([results.query.typeInfo, results.mutation.typeInfo]);
-    result.combined = renderSchema(results.query.schema + results.mutation.schema, typeInfo);
+    const typeInfo = combineTypeInfo([
+      results.query.typeInfo,
+      results.mutation.typeInfo,
+    ]);
+    result.combined = renderSchema(
+      results.query.schema + results.mutation.schema,
+      typeInfo
+    );
   }
 
   return result;

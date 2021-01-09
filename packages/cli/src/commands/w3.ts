@@ -8,7 +8,9 @@ export default {
     if (parameters.first !== undefined) {
       print.error(`w3 ${parameters.first} is not a command`);
     } else {
-      print.success(`Type ${print.colors.blue("w3 help")} to view common commands`);
+      print.success(
+        `Type ${print.colors.blue("w3 help")} to view common commands`
+      );
     }
   },
 };

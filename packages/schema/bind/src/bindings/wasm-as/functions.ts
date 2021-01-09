@@ -1,4 +1,7 @@
-type MustacheFunction = () => (value: string, render: (template: string) => string) => string;
+type MustacheFunction = () => (
+  value: string,
+  render: (template: string) => string
+) => string;
 
 export const toMsgPack: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {

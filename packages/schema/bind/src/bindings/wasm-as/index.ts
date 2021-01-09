@@ -22,7 +22,10 @@ export function generateBinding(schema: string): OutputDirectory {
   }
 
   // Generate imported folder
-  if (typeInfo.importedQueryTypes.length > 0 || typeInfo.importedObjectTypes.length > 0) {
+  if (
+    typeInfo.importedQueryTypes.length > 0 ||
+    typeInfo.importedObjectTypes.length > 0
+  ) {
     const importEntries: OutputEntry[] = [];
 
     // Generate imported query type folders
@@ -30,7 +33,10 @@ export function generateBinding(schema: string): OutputDirectory {
       importEntries.push({
         type: "Directory",
         name: importedQueryType.name,
-        data: generateFiles("./templates/imported/query-type", importedQueryType),
+        data: generateFiles(
+          "./templates/imported/query-type",
+          importedQueryType
+        ),
       });
     }
 
@@ -39,14 +45,20 @@ export function generateBinding(schema: string): OutputDirectory {
       importEntries.push({
         type: "Directory",
         name: importedObectType.name,
-        data: generateFiles("./templates/imported/object-type", importedObectType),
+        data: generateFiles(
+          "./templates/imported/object-type",
+          importedObectType
+        ),
       });
     }
 
     entries.push({
       type: "Directory",
       name: "imported",
-      data: [...importEntries, ...generateFiles("./templates/imported", typeInfo)],
+      data: [
+        ...importEntries,
+        ...generateFiles("./templates/imported", typeInfo),
+      ],
     });
   }
 
@@ -67,8 +79,11 @@ export function generateBinding(schema: string): OutputDirectory {
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function generateFiles(subpath: string, config: any, subDirectories = false): OutputEntry[] {
+function generateFiles(
+  subpath: string,
+  config: unknown,
+  subDirectories = false
+): OutputEntry[] {
   const output: OutputEntry[] = [];
   const absolutePath = path.join(__dirname, subpath);
   const directory = loadDirectory(absolutePath);

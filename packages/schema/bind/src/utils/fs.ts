@@ -8,9 +8,9 @@ export function loadDirectory(dir: string): OutputDirectory {
     const direntPath = path.join(root, dirent.name);
 
     if (dirent.isDirectory()) {
-      const entries: OutputEntry[] = readdirSync(direntPath, { withFileTypes: true }).map((dirent) =>
-        importDirectoryEntry(direntPath, dirent)
-      );
+      const entries: OutputEntry[] = readdirSync(direntPath, {
+        withFileTypes: true,
+      }).map((dirent) => importDirectoryEntry(direntPath, dirent));
 
       return {
         type: "Directory",
@@ -26,9 +26,9 @@ export function loadDirectory(dir: string): OutputDirectory {
     }
   };
 
-  const entries: OutputEntry[] = readdirSync(dir, { withFileTypes: true }).map((dirent) =>
-    importDirectoryEntry(dir, dirent)
-  );
+  const entries: OutputEntry[] = readdirSync(dir, {
+    withFileTypes: true,
+  }).map((dirent) => importDirectoryEntry(dir, dirent));
 
   return { entries };
 }

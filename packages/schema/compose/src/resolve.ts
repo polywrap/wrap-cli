@@ -1,10 +1,21 @@
 /* eslint-disable no-useless-escape */
-import { ExternalImport, LocalImport, SchemaResolver, SchemaResolvers, SYNTAX_REFERENCE } from "./types";
+import {
+  ExternalImport,
+  LocalImport,
+  SchemaResolver,
+  SchemaResolvers,
+  SYNTAX_REFERENCE,
+} from "./types";
 import { parseExternalImports, parseLocalImports } from "./parse";
 import { template as headerTemplate } from "./templates/header.mustache";
 import * as Functions from "./templates/functions";
 
-import { TypeInfo, parseSchema, extendType, addFirstLast } from "@web3api/schema-parse";
+import {
+  TypeInfo,
+  parseSchema,
+  extendType,
+  addFirstLast,
+} from "@web3api/schema-parse";
 import Mustache from "mustache";
 
 // Remove mustache's built-in HTML escaping
@@ -26,15 +37,24 @@ export function resolveImports(
   const keywords = [...schema.matchAll(importKeywordCapture)];
   const externalImportStatements = [...schema.matchAll(externalImportCapture)];
   const localImportStatments = [...schema.matchAll(localImportCapture)];
-  const totalStatements = externalImportStatements.length + localImportStatments.length;
+  const totalStatements =
+    externalImportStatements.length + localImportStatments.length;
 
   if (keywords.length !== totalStatements) {
-    throw Error(`Invalid import statement found, please use one of the following syntaxes...\n${SYNTAX_REFERENCE}`);
+    throw Error(
+      `Invalid import statement found, please use one of the following syntaxes...\n${SYNTAX_REFERENCE}`
+    );
   }
 
-  const externalImportsToResolve: ExternalImport[] = parseExternalImports(externalImportStatements, mutation);
+  const externalImportsToResolve: ExternalImport[] = parseExternalImports(
+    externalImportStatements,
+    mutation
+  );
 
-  const localImportsToResolve: LocalImport[] = parseLocalImports(localImportStatments, schemaPath);
+  const localImportsToResolve: LocalImport[] = parseLocalImports(
+    localImportStatments,
+    schemaPath
+  );
 
   const subTypeInfo: TypeInfo = {
     userTypes: [],
@@ -43,14 +63,24 @@ export function resolveImports(
     importedQueryTypes: [],
   };
 
-  resolveExternalImports(externalImportsToResolve, resolvers.external, subTypeInfo);
+  resolveExternalImports(
+    externalImportsToResolve,
+    resolvers.external,
+    subTypeInfo
+  );
   resolveLocalImports(localImportsToResolve, resolvers.local, subTypeInfo);
 
   // Remove all import statements
-  let newSchema = schema.replace(externalImportCapture, "").replace(localImportCapture, "");
+  let newSchema = schema
+    .replace(externalImportCapture, "")
+    .replace(localImportCapture, "");
 
   // Add the @imports directive
-  newSchema = addQueryImportsDirective(newSchema, externalImportsToResolve, mutation);
+  newSchema = addQueryImportsDirective(
+    newSchema,
+    externalImportsToResolve,
+    mutation
+  );
 
   return {
     schema: newSchema,
@@ -77,7 +107,9 @@ function resolveExternalImports(
 
     for (const importedType of importedTypes) {
       if (importedType === "Query" || importedType === "Mutation") {
-        const type = extTypeInfo.queryTypes.find((type) => type.name === importedType);
+        const type = extTypeInfo.queryTypes.find(
+          (type) => type.name === importedType
+        );
 
         if (!type) {
           throw Error(
@@ -93,7 +125,9 @@ function resolveExternalImports(
           namespace,
         });
       } else {
-        const type = extTypeInfo.userTypes.find((type) => type.name === importedType);
+        const type = extTypeInfo.userTypes.find(
+          (type) => type.name === importedType
+        );
 
         if (!type) {
           throw Error(
@@ -113,7 +147,11 @@ function resolveExternalImports(
   }
 }
 
-function resolveLocalImports(importsToResolve: LocalImport[], resolveSchema: SchemaResolver, typeInfo: TypeInfo) {
+function resolveLocalImports(
+  importsToResolve: LocalImport[],
+  resolveSchema: SchemaResolver,
+  typeInfo: TypeInfo
+) {
   for (const importToResolve of importsToResolve) {
     const { userTypes, path } = importToResolve;
     let schema = resolveSchema(path);
@@ -134,9 +172,13 @@ function resolveLocalImports(importsToResolve: LocalImport[], resolveSchema: Sch
 
     for (const userType of userTypes) {
       if (userType === "Query" || userType === "Mutation") {
-        throw Error(`Importing query types from local schemas is prohibited. Tried to import from ${path}.`);
+        throw Error(
+          `Importing query types from local schemas is prohibited. Tried to import from ${path}.`
+        );
       } else {
-        const type = localTypeInfo.userTypes.find((type) => type.name === userType);
+        const type = localTypeInfo.userTypes.find(
+          (type) => type.name === userType
+        );
 
         if (!type) {
           throw Error(
@@ -158,17 +200,27 @@ export function addHeader(schema: string): string {
   return Mustache.render(headerTemplate, { schema });
 }
 
-function addQueryImportsDirective(schema: string, externalImports: ExternalImport[], mutation: boolean): string {
+function addQueryImportsDirective(
+  schema: string,
+  externalImports: ExternalImport[],
+  mutation: boolean
+): string {
   // Append the @imports(...) directive to the query type
-  const typeCapture = mutation ? /type[ \n\t]*Mutation[ \n\t]*{/g : /type[ \n\t]*Query[ \n\t]*{/g;
+  const typeCapture = mutation
+    ? /type[ \n\t]*Mutation[ \n\t]*{/g
+    : /type[ \n\t]*Query[ \n\t]*{/g;
 
   // Aggregate all imported type names (namespaced)
   const externalTypeNames: string[] = [];
   externalImports.forEach((ext) =>
-    externalTypeNames.push(...ext.importedTypes.map((type) => `${ext.namespace}_${type}`))
+    externalTypeNames.push(
+      ...ext.importedTypes.map((type) => `${ext.namespace}_${type}`)
+    )
   );
 
-  const importedTypes = `${externalTypeNames.map((type) => `\"${type}\"`).join(",\n    ")}`;
+  const importedTypes = `${externalTypeNames
+    .map((type) => `\"${type}\"`)
+    .join(",\n    ")}`;
   const replacementQueryStr = `type ${mutation ? "Mutation" : "Query"} @imports(
   types: [
     ${importedTypes}

@@ -1,5 +1,10 @@
 import { TypeInfoTransforms } from ".";
-import { MethodDefinition, ObjectDefinition, QueryDefinition, TypeInfo } from "../typeInfo";
+import {
+  MethodDefinition,
+  ObjectDefinition,
+  QueryDefinition,
+  TypeInfo,
+} from "../typeInfo";
 
 export const addFirstLast: TypeInfoTransforms = {
   enter: {

@@ -39,7 +39,9 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     // Look for imported
     const importedDirective = "imported";
-    const importedIndex = node.directives.findIndex((dir: DirectiveNode) => dir.name.value === importedDirective);
+    const importedIndex = node.directives.findIndex(
+      (dir: DirectiveNode) => dir.name.value === importedDirective
+    );
 
     if (importedIndex === -1) {
       return;
@@ -61,7 +63,9 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     if (!importedDir.arguments || importedDir.arguments.length !== 3) {
       // TODO: Implement better error handling
-      throw Error(`The ${importedDirective} directive has incorrect arguments. See type "${typeName}"`);
+      throw Error(
+        `The ${importedDirective} directive has incorrect arguments. See type "${typeName}"`
+      );
     }
 
     let namespace: string | undefined;
@@ -87,10 +91,17 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     }
 
     if (!type || !namespace || !uri) {
-      throw Error("Error: import directive missing one of its required arguments (namespace, uri, type)");
+      throw Error(
+        "Error: import directive missing one of its required arguments (namespace, uri, type)"
+      );
     }
 
-    const importedType = createImportedQueryDefinition(uri, namespace, typeName, type);
+    const importedType = createImportedQueryDefinition(
+      uri,
+      namespace,
+      typeName,
+      type
+    );
     typeInfo.importedQueryTypes.push(importedType);
     state.currentImport = importedType;
   },
@@ -102,7 +113,9 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     }
 
     if (!node.arguments || node.arguments.length === 0) {
-      throw Error(`Imported Query types must only have methods. See property: ${node.name.value}`);
+      throw Error(
+        `Imported Query types must only have methods. See property: ${node.name.value}`
+      );
     }
 
     const operation = importDef.type === "Query" ? "query" : "mutation";
@@ -131,7 +144,11 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     if (method && argument) {
       // Argument value
-      argument.scalar = createScalarDefinition(argument.name, modifier + node.name.value, state.nonNullType);
+      argument.scalar = createScalarDefinition(
+        argument.name,
+        modifier + node.name.value,
+        state.nonNullType
+      );
 
       state.nonNullType = false;
     } else if (method) {
@@ -143,7 +160,11 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       } else if (!state.currentReturn) {
         state.currentReturn = method.return;
       }
-      state.currentReturn.scalar = createScalarDefinition(method.name, modifier + node.name.value, state.nonNullType);
+      state.currentReturn.scalar = createScalarDefinition(
+        method.name,
+        modifier + node.name.value,
+        state.nonNullType
+      );
       state.nonNullType = false;
     }
   },
@@ -153,7 +174,11 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     if (method && argument) {
       // Argument value
-      argument.array = createArrayDefinition(argument.name, "TBD", state.nonNullType);
+      argument.array = createArrayDefinition(
+        argument.name,
+        "TBD",
+        state.nonNullType
+      );
       state.currentArgument = argument.array;
       state.nonNullType = false;
     } else if (method) {
@@ -165,7 +190,11 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
         state.currentReturn = method.return;
       }
 
-      state.currentReturn.array = createArrayDefinition(method.name, "TBD", state.nonNullType);
+      state.currentReturn.array = createArrayDefinition(
+        method.name,
+        "TBD",
+        state.nonNullType
+      );
       state.currentReturn = state.currentReturn.array;
       state.nonNullType = false;
     }
@@ -188,7 +217,10 @@ const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
   },
 });
 
-export function extractImportedQueryTypes(astNode: DocumentNode, typeInfo: TypeInfo): void {
+export function extractImportedQueryTypes(
+  astNode: DocumentNode,
+  typeInfo: TypeInfo
+): void {
   const state: State = {};
 
   visit(astNode, {

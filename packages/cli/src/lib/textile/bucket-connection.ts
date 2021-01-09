@@ -2,7 +2,9 @@ import { identifyAccessToken } from "../textile/user-auth";
 
 import { Buckets, PushPathResult, KeyInfo } from "@textile/hub";
 
-export const insertProtocol = async (protocolName: string): Promise<PushPathResult> => {
+export const insertProtocol = async (
+  protocolName: string
+): Promise<PushPathResult> => {
   const keyInfo: KeyInfo = {
     key: "bxusvy3lxtv7brpfyepjrnlmcde",
   };

@@ -42,7 +42,8 @@ export class Web3ApiClient implements Client {
       const api = await this.loadWeb3Api(uri);
 
       // Convert the query string into a query document
-      const queryDocument = typeof query === "string" ? createQueryDocument(query) : query;
+      const queryDocument =
+        typeof query === "string" ? createQueryDocument(query) : query;
 
       // Parse the query to understand what's being invoked
       const invokeOptions = parseQuery(queryDocument, variables);
@@ -71,7 +72,8 @@ export class Web3ApiClient implements Client {
         uri,
         this,
         (uri: Uri, plugin: () => Plugin) => new PluginWeb3Api(uri, plugin),
-        (uri: Uri, manifest: Manifest, apiResolver: Uri) => new WasmWeb3Api(uri, manfest, apiResolver)
+        (uri: Uri, manifest: Manifest, apiResolver: Uri) =>
+          new WasmWeb3Api(uri, manfest, apiResolver)
       );
 
       if (!api) {

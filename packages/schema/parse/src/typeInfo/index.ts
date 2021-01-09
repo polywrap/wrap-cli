@@ -25,6 +25,8 @@ export function createTypeInfo(): TypeInfo {
   };
 }
 
+type ImportedDefinition = ImportedObjectDefinition | ImportedQueryDefinition;
+
 export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
   const combined: TypeInfo = {
     userTypes: [],
@@ -33,8 +35,10 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
     importedQueryTypes: [],
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const compareImportedType = (a: any, b: any) => {
+  const compareImportedType = (
+    a: ImportedDefinition,
+    b: ImportedDefinition
+  ) => {
     return a.uri === b.uri && a.name === b.name;
   };
 
@@ -48,11 +52,19 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
     }
 
     for (const importedObjectType of typeInfo.importedObjectTypes) {
-      tryInsert(combined.importedObjectTypes, importedObjectType, compareImportedType);
+      tryInsert(
+        combined.importedObjectTypes,
+        importedObjectType,
+        compareImportedType
+      );
     }
 
     for (const importedQueryType of typeInfo.importedQueryTypes) {
-      tryInsert(combined.importedQueryTypes, importedQueryType, compareImportedType);
+      tryInsert(
+        combined.importedQueryTypes,
+        importedQueryType,
+        compareImportedType
+      );
     }
   }
 
@@ -62,9 +74,12 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
 const tryInsert = (
   dest: GenericDefinition[],
   value: GenericDefinition,
-  compare: (a: GenericDefinition, b: GenericDefinition) => boolean = (a, b) => a.name === b.name
+  compare: (a: GenericDefinition, b: GenericDefinition) => boolean = (a, b) =>
+    a.name === b.name
 ) => {
-  const index = dest.findIndex((item: GenericDefinition) => compare(item, value));
+  const index = dest.findIndex((item: GenericDefinition) =>
+    compare(item, value)
+  );
 
   if (index > -1) {
     // See if they're the same, error if they aren't

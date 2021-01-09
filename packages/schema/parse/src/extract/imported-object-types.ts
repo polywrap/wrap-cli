@@ -33,7 +33,9 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     }
 
     // Look for imported
-    const importedIndex = node.directives.findIndex((dir: DirectiveNode) => dir.name.value === "imported");
+    const importedIndex = node.directives.findIndex(
+      (dir: DirectiveNode) => dir.name.value === "imported"
+    );
 
     if (importedIndex === -1) {
       return;
@@ -79,10 +81,17 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     }
 
     if (!type || !namespace || !uri) {
-      throw Error("Error: import directive missing one of its required arguments (namespace, uri, type)");
+      throw Error(
+        "Error: import directive missing one of its required arguments (namespace, uri, type)"
+      );
     }
 
-    const importedType = createImportedObjectDefinition(uri, namespace, node.name.value, type);
+    const importedType = createImportedObjectDefinition(
+      uri,
+      namespace,
+      node.name.value,
+      type
+    );
 
     typeInfo.importedObjectTypes.push(importedType);
     state.currentImport = importedType;
@@ -95,7 +104,9 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     }
 
     if (node.arguments && node.arguments.length > 0) {
-      throw Error(`Imported types cannot have methods. See type "${importDef.name}"`);
+      throw Error(
+        `Imported types cannot have methods. See type "${importDef.name}"`
+      );
     }
 
     const property = createPropertyDefinition(node.name.value);
@@ -115,7 +126,11 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     const modifier = state.nonNullType ? "" : "?";
 
-    property.scalar = createScalarDefinition(property.name, modifier + node.name.value, state.nonNullType);
+    property.scalar = createScalarDefinition(
+      property.name,
+      modifier + node.name.value,
+      state.nonNullType
+    );
     state.nonNullType = false;
   },
   ListType: (_node: ListTypeNode) => {
@@ -129,7 +144,11 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       return;
     }
 
-    property.array = createArrayDefinition(property.name, "TBD", state.nonNullType);
+    property.array = createArrayDefinition(
+      property.name,
+      "TBD",
+      state.nonNullType
+    );
     state.currentProperty = property.array;
     state.nonNullType = false;
   },
@@ -147,7 +166,10 @@ const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
   },
 });
 
-export function extractImportedObjectTypes(astNode: DocumentNode, typeInfo: TypeInfo): void {
+export function extractImportedObjectTypes(
+  astNode: DocumentNode,
+  typeInfo: TypeInfo
+): void {
   const state: State = {};
 
   visit(astNode, {

@@ -4,7 +4,7 @@ import {
   PluginModules,
   PluginManifest,
   Uri,
-  createSchemaDocument
+  createSchemaDocument,
 } from "..";
 
 const testPluginManifest: PluginManifest = {
@@ -18,11 +18,11 @@ const testPluginManifest: PluginManifest = {
     }
   `),
   imported: [new Uri("host/path")],
-  implemented: [new Uri("host2/path2")]
-}
+  implemented: [new Uri("host2/path2")],
+};
 
 class TestPlugin extends Plugin {
-  public getModules(client: Client): PluginModules {
+  public getModules(_client: Client): PluginModules {
     return {
       query: {
         testQuery: (_input: unknown, _client: Client): number => {
@@ -42,8 +42,9 @@ describe("Plugin", () => {
   const plugin = new TestPlugin();
 
   it("sanity", () => {
-    const modules = plugin.getModules({} as any);
+    const modules = plugin.getModules({} as Client);
 
+    expect(testPluginManifest.implemented.length).toBe(1);
     expect(modules.mutation).toBeTruthy();
     expect(modules.mutation.testMutation).toBeTruthy();
   });

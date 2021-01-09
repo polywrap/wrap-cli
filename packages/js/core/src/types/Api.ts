@@ -1,8 +1,4 @@
-import {
-  Client,
-  InvokeApiOptions,
-  InvokeApiResult
-} from ".";
+import { Client, InvokeApiOptions, InvokeApiResult } from ".";
 
 /**
  * The API definition, which can be used to spawn

@@ -23,7 +23,9 @@ describe("Uri", () => {
   });
 
   it("Fails if scheme is not at the beginning", () => {
-    expect(() => new Uri("path/w3://something")).toThrowError(/The w3:\/\/ scheme must/);
+    expect(() => new Uri("path/w3://something")).toThrowError(
+      /The w3:\/\/ scheme must/
+    );
   });
 
   it("Fails with an empty string", () => {
@@ -42,6 +44,10 @@ describe("Uri", () => {
     const config: UriConfig = {} as UriConfig;
 
     expect(Uri.isValidUri("w3://valid/uri", config)).toBeTruthy();
-    expect(config).toMatchObject({ uri: "w3://valid/uri", authority: "valid", path: "uri" });
+    expect(config).toMatchObject({
+      uri: "w3://valid/uri",
+      authority: "valid",
+      path: "uri",
+    });
   });
 });

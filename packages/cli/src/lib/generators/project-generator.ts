@@ -1,6 +1,9 @@
 import { GluegunFilesystem } from "gluegun";
 
-export const generateProject = (projectName: string, fs: GluegunFilesystem): void => {
+export const generateProject = (
+  projectName: string,
+  fs: GluegunFilesystem
+): void => {
   const { dir, write } = fs;
   dir(projectName);
   dir(`${projectName}/src`);

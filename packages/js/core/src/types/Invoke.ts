@@ -4,7 +4,6 @@ export type InvokableModules = "query" | "mutation";
 
 /** Options required for an API invocation. */
 export interface InvokeApiOptions {
-
   /** The API's URI */
   uri: Uri;
 
@@ -31,12 +30,10 @@ export interface InvokeApiOptions {
 
 /**
  * Result of an API invocation.
- * 
+ *
  * @template TData Type of the invoke result data.
  */
-export interface InvokeApiResult<
-  TData = unknown
-> {
+export interface InvokeApiResult<TData = unknown> {
   /**
    * Invoke result data. The type of this value is the return type
    * of the method. If undefined, it means something went wrong.
@@ -50,9 +47,7 @@ export interface InvokeApiResult<
 }
 
 export interface InvokeHandler {
-  invoke<
-    TData = unknown
-  >(
+  invoke<TData = unknown>(
     options: InvokeApiOptions
-  ): Promise<InvokeApiResult<TData>>
+  ): Promise<InvokeApiResult<TData>>;
 }

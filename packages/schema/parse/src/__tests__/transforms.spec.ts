@@ -67,7 +67,11 @@ describe("Web3API Schema TypeInfo Transformations", () => {
 
   it("extendType", () => {
     const typeInfo = parseSchema(schema, {
-      transforms: [extendType({ foo: "bar" })],
+      transforms: [
+        extendType({
+          foo: "bar",
+        }),
+      ],
     });
     const expected: TypeInfo = {
       userTypes: [

@@ -1,5 +1,9 @@
 import { TypeInfoTransforms } from ".";
-import { ArrayDefinition, GenericDefinition, PropertyDefinition } from "../typeInfo";
+import {
+  ArrayDefinition,
+  GenericDefinition,
+  PropertyDefinition,
+} from "../typeInfo";
 
 export const finalizePropertyDef: TypeInfoTransforms = {
   enter: {
@@ -38,7 +42,13 @@ function populateArrayType(array: ArrayDefinition) {
     } else if (currentArray.scalar) {
       baseTypeFound = true;
     } else {
-      throw Error(`This should never happen, ArrayDefinition is malformed.\n${JSON.stringify(array, null, 2)}`);
+      throw Error(
+        `This should never happen, ArrayDefinition is malformed.\n${JSON.stringify(
+          array,
+          null,
+          2
+        )}`
+      );
     }
   }
 

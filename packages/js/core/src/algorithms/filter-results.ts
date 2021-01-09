@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export function filterResults(result: unknown, filter: Record<string, any>): unknown {
+export function filterResults(
+  result: unknown,
+  filter: Record<string, any>
+): unknown {
   if (!result) {
     return result;
   }

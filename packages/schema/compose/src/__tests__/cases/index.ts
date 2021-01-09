@@ -20,7 +20,10 @@ export function fetchTestCases(): TestCases {
       return;
     }
 
-    const fetchIfExists = (subpath: string, absolute = false): string | undefined => {
+    const fetchIfExists = (
+      subpath: string,
+      absolute = false
+    ): string | undefined => {
       let filePath: string;
 
       if (absolute) {
@@ -60,13 +63,21 @@ export function fetchTestCases(): TestCases {
           query: queryInput
             ? {
                 schema: queryInput,
-                absolutePath: path.join(root, dirent.name, "input/query.graphql"),
+                absolutePath: path.join(
+                  root,
+                  dirent.name,
+                  "input/query.graphql"
+                ),
               }
             : undefined,
           mutation: mutationInput
             ? {
                 schema: mutationInput,
-                absolutePath: path.join(root, dirent.name, "input/mutation.graphql"),
+                absolutePath: path.join(
+                  root,
+                  dirent.name,
+                  "input/mutation.graphql"
+                ),
               }
             : undefined,
         },

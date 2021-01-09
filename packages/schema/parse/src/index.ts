@@ -13,16 +13,13 @@ interface ParserOptions {
   transforms?: TypeInfoTransforms[];
 }
 
-export function parseSchema(
-  schema: string,
-  options?: ParserOptions
-): TypeInfo {
-
+export function parseSchema(schema: string, options?: ParserOptions): TypeInfo {
   const astNode = parse(schema);
 
   let info = createTypeInfo();
 
-  const extracts = options && options.extractors ? options.extractors : extractors;
+  const extracts =
+    options && options.extractors ? options.extractors : extractors;
 
   for (const extract of extracts) {
     extract(astNode, info);

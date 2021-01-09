@@ -37,16 +37,12 @@ export class Uri {
     this._config = Uri.parseUri(uri);
   }
 
-  public toString(): string {
-    return this._config.uri;
-  }
-
   public static equals(a: Uri, b: Uri): boolean {
     return a.uri === b.uri;
   }
 
-  public static isUri(value: object): value is Uri {
-    return (value as Uri).uri !== undefined;
+  public static isUri(value: unknown): value is Uri {
+    return typeof value === "object" && (value as Uri).uri !== undefined;
   }
 
   public static isValidUri(uri: string, parsed?: UriConfig): boolean {
@@ -85,7 +81,9 @@ export class Uri {
 
     // If the w3:// is not in the beginning, throw an error
     if (w3SchemeIdx > -1 && w3SchemeIdx !== 0) {
-      throw Error("The w3:// scheme must be at the beginning of the URI string");
+      throw Error(
+        "The w3:// scheme must be at the beginning of the URI string"
+      );
     }
 
     // Extract the authoriy & path
@@ -111,5 +109,9 @@ export class Uri {
       authority: result[1],
       path: result[2],
     };
+  }
+
+  public toString(): string {
+    return this._config.uri;
   }
 }

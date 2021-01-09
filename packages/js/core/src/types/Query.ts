@@ -1,9 +1,6 @@
 import { Uri } from "./";
 
-import {
-  DocumentNode,
-  parse
-} from "graphql";
+import { DocumentNode, parse } from "graphql";
 import gql from "graphql-tag";
 
 /** GraphQL SchemaDocument */
@@ -23,7 +20,9 @@ export function createQueryDocument(query: string): QueryDocument {
 }
 
 /** Options required for an API query. */
-export interface QueryApiOptions<TVariables extends Record<string, unknown> = Record<string, unknown>> {
+export interface QueryApiOptions<
+  TVariables extends Record<string, unknown> = Record<string, unknown>
+> {
   /** The API's URI */
   uri: Uri;
 
@@ -45,7 +44,9 @@ export interface QueryApiOptions<TVariables extends Record<string, unknown> = Re
  *
  * @template TData Type of the query result data.
  */
-export interface QueryApiResult<TData extends Record<string, unknown> = Record<string, unknown>> {
+export interface QueryApiResult<
+  TData extends Record<string, unknown> = Record<string, unknown>
+> {
   /**
    * Query result data. The type of this value is a named map,
    * where the key is the method's name, and value is the [[InvokeApiResult]]'s data.

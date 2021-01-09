@@ -2,7 +2,10 @@ import { ExternalImport, LocalImport, SYNTAX_REFERENCE } from "./types";
 
 import Path from "path";
 
-export function parseExternalImports(imports: RegExpMatchArray[], mutation: boolean): ExternalImport[] {
+export function parseExternalImports(
+  imports: RegExpMatchArray[],
+  mutation: boolean
+): ExternalImport[] {
   const externalImports: ExternalImport[] = [];
 
   for (const importStatement of imports) {
@@ -44,8 +47,13 @@ export function parseExternalImports(imports: RegExpMatchArray[], mutation: bool
 
   // Make sure namespaces are unique
   const namespaceCounts = (imports: ExternalImport[]) =>
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    imports.reduce((a: any, b: ExternalImport) => ({ ...a, [b.namespace]: (a[b.namespace] || 0) + 1 }), {});
+    imports.reduce(
+      (a: Record<string, number>, b: ExternalImport) => ({
+        ...a,
+        [b.namespace]: (a[b.namespace] || 0) + 1,
+      }),
+      {}
+    );
 
   const namespaceDuplicates = (imports: ExternalImport[]) => {
     const counts = namespaceCounts(imports);
@@ -60,7 +68,10 @@ export function parseExternalImports(imports: RegExpMatchArray[], mutation: bool
   return externalImports;
 }
 
-export function parseLocalImports(imports: RegExpMatchArray[], schemaPath: string): LocalImport[] {
+export function parseLocalImports(
+  imports: RegExpMatchArray[],
+  schemaPath: string
+): LocalImport[] {
   const localImports: LocalImport[] = [];
 
   for (const importStatement of imports) {
@@ -94,8 +105,13 @@ export function parseLocalImports(imports: RegExpMatchArray[], schemaPath: strin
 
   // Make sure types are unique
   const userTypeCount = (userTypes: string[]) =>
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    userTypes.reduce((a: any, b: string) => ({ ...a, [b]: (a[b] || 0) + 1 }), {});
+    userTypes.reduce(
+      (a: Record<string, number>, b: string) => ({
+        ...a,
+        [b]: (a[b] || 0) + 1,
+      }),
+      {}
+    );
 
   const userTypeDuplicates = (imports: LocalImport[]) => {
     const userTypes: string[] = [];

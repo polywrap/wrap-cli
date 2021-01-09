@@ -1,4 +1,11 @@
-import { Nullable, Read, ReadDecoder, Write, WriteEncoder, WriteSizer } from "../";
+import {
+  Nullable,
+  Read,
+  ReadDecoder,
+  Write,
+  WriteEncoder,
+  WriteSizer,
+} from "../";
 
 class Sanity {
   nil: string | null = "null";

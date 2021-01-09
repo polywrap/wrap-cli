@@ -29,8 +29,18 @@ export const output: TypeInfo = {
         createScalarPropertyDefinition("i16", "Int16", true),
         createScalarPropertyDefinition("i32", "Int32", true),
         createScalarPropertyDefinition("i64", "Int64", true),
-        createArrayPropertyDefinition("uArray", "[UInt]", true, createScalarDefinition("uArray", "UInt", true)),
-        createArrayPropertyDefinition("uOptArray", "?[UInt]", false, createScalarDefinition("uOptArray", "UInt", true)),
+        createArrayPropertyDefinition(
+          "uArray",
+          "[UInt]",
+          true,
+          createScalarDefinition("uArray", "UInt", true)
+        ),
+        createArrayPropertyDefinition(
+          "uOptArray",
+          "?[UInt]",
+          false,
+          createScalarDefinition("uOptArray", "UInt", true)
+        ),
         createArrayPropertyDefinition(
           "optUOptArray",
           "?[?UInt]",
@@ -47,7 +57,12 @@ export const output: TypeInfo = {
           "uArrayArray",
           "[[UInt]]",
           true,
-          createArrayDefinition("uArrayArray", "[UInt]", true, createScalarDefinition("uArrayArray", "UInt", true))
+          createArrayDefinition(
+            "uArrayArray",
+            "[UInt]",
+            true,
+            createScalarDefinition("uArrayArray", "UInt", true)
+          )
         ),
         createArrayPropertyDefinition(
           "uOptArrayOptArray",
@@ -118,13 +133,23 @@ export const output: TypeInfo = {
   ],
   importedObjectTypes: [
     {
-      ...createImportedObjectDefinition("testimport.uri.eth", "TestImport", "TestImport_Object", "Object"),
+      ...createImportedObjectDefinition(
+        "testimport.uri.eth",
+        "TestImport",
+        "TestImport_Object",
+        "Object"
+      ),
       properties: [createScalarPropertyDefinition("prop", "String", true)],
     },
   ],
   importedQueryTypes: [
     {
-      ...createImportedQueryDefinition("testimport.uri.eth", "TestImport", "TestImport_Query", "Query"),
+      ...createImportedQueryDefinition(
+        "testimport.uri.eth",
+        "TestImport",
+        "TestImport_Query",
+        "Query"
+      ),
       methods: [
         {
           ...createMethodDefinition("query", "importedMethod"),
@@ -145,14 +170,27 @@ export const output: TypeInfo = {
               )
             ),
           ],
-          return: createScalarPropertyDefinition("importedMethod", "String", true),
+          return: createScalarPropertyDefinition(
+            "importedMethod",
+            "String",
+            true
+          ),
         },
         {
           ...createMethodDefinition("query", "anotherMethod"),
           arguments: [
-            createArrayPropertyDefinition("arg", "[String]", true, createScalarDefinition("arg", "String", true)),
+            createArrayPropertyDefinition(
+              "arg",
+              "[String]",
+              true,
+              createScalarDefinition("arg", "String", true)
+            ),
           ],
-          return: createScalarPropertyDefinition("anotherMethod", "Int64", true),
+          return: createScalarPropertyDefinition(
+            "anotherMethod",
+            "Int64",
+            true
+          ),
         },
       ],
     },

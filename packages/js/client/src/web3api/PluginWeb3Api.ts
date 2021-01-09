@@ -34,7 +34,11 @@ export class PluginWeb3Api extends Api {
         throw new Error(`PluginWeb3Api: method "${method}" not found.`);
       }
 
-      const result = (await executeMaybeAsyncFunction(pluginModule[method], input, client)) as TData;
+      const result = (await executeMaybeAsyncFunction(
+        pluginModule[method],
+        input,
+        client
+      )) as TData;
 
       if (result !== undefined) {
         let data = result as unknown;

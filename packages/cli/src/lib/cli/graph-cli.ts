@@ -8,7 +8,9 @@ const spawn = require("spawn-command");
 
 export function runGraphCLI(args: string[]): Promise<[number, string, string]> {
   // We cannot `require.resolve('@graphprotocol/graph-cli')`, because it's not a require-able package
-  const graphCli = path.resolve(`${require.resolve("@graphprotocol/graph-ts")}/../../graph-cli/bin/graph`);
+  const graphCli = path.resolve(
+    `${require.resolve("@graphprotocol/graph-ts")}/../../graph-cli/bin/graph`
+  );
 
   return new Promise((resolve, reject) => {
     // Make sure to set an absolute working directory

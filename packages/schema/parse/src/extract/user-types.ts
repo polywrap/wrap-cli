@@ -33,7 +33,12 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     }
 
     // Skip imported types
-    if (node.directives && node.directives.findIndex((dir: DirectiveNode) => dir.name.value === "imported") > -1) {
+    if (
+      node.directives &&
+      node.directives.findIndex(
+        (dir: DirectiveNode) => dir.name.value === "imported"
+      ) > -1
+    ) {
       return;
     }
 
@@ -58,7 +63,11 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     const modifier = state.nonNullType ? "" : "?";
 
-    property.scalar = createScalarDefinition(property.name, modifier + node.name.value, state.nonNullType);
+    property.scalar = createScalarDefinition(
+      property.name,
+      modifier + node.name.value,
+      state.nonNullType
+    );
     state.nonNullType = false;
   },
   ListType: (_node: ListTypeNode) => {
@@ -72,7 +81,11 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       return;
     }
 
-    property.array = createArrayDefinition(property.name, "TBD", state.nonNullType);
+    property.array = createArrayDefinition(
+      property.name,
+      "TBD",
+      state.nonNullType
+    );
 
     state.currentUnknown = property.array;
     state.nonNullType = false;
@@ -85,7 +98,9 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     }
 
     if (node.arguments && node.arguments.length > 0) {
-      throw Error(`Imported types cannot have methods. See type "${type.name}"`);
+      throw Error(
+        `Imported types cannot have methods. See type "${type.name}"`
+      );
     }
 
     // Create a new property
@@ -108,7 +123,10 @@ const visitorLeave = (schemaInfo: TypeInfo, state: State) => ({
   },
 });
 
-export function extractUserTypes(astNode: DocumentNode, typeInfo: TypeInfo): void {
+export function extractUserTypes(
+  astNode: DocumentNode,
+  typeInfo: TypeInfo
+): void {
   const state: State = {};
 
   visit(astNode, {

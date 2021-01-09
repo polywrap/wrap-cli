@@ -3,7 +3,11 @@ import { query, mutation } from "./resolvers";
 
 import { Client, Plugin, Uri, PluginModules } from "@web3api/core-js";
 import { Signer, ethers } from "ethers";
-import { ExternalProvider, JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
+import {
+  ExternalProvider,
+  JsonRpcProvider,
+  Web3Provider,
+} from "@ethersproject/providers";
 import { getAddress } from "@ethersproject/address";
 
 export type Address = string;
@@ -40,7 +44,10 @@ export class EthereumPlugin extends Plugin {
     };
   }
 
-  public setProvider(provider: EthereumProvider, signer?: EthereumSigner): void {
+  public setProvider(
+    provider: EthereumProvider,
+    signer?: EthereumSigner
+  ): void {
     this._config.provider = provider;
 
     if (typeof provider === "string") {
@@ -84,7 +91,9 @@ export class EthereumPlugin extends Plugin {
     } else if (Signer.isSigner(signer)) {
       return signer;
     } else {
-      throw Error(`Signer is an unrecognized type, this should never happen. \n${signer}`);
+      throw Error(
+        `Signer is an unrecognized type, this should never happen. \n${signer}`
+      );
     }
   }
 
@@ -92,21 +101,33 @@ export class EthereumPlugin extends Plugin {
     return new ethers.Contract(address, abi, this.getSigner());
   }
 
-  public async deployContract(abi: ethers.ContractInterface, bytecode: string, ...args: unknown[]): Promise<Address> {
+  public async deployContract(
+    abi: ethers.ContractInterface,
+    bytecode: string,
+    ...args: unknown[]
+  ): Promise<Address> {
     const signer = this.getSigner();
     const factory = new ethers.ContractFactory(abi, bytecode, signer);
     const contract = await factory.deploy(...args);
     return contract.address;
   }
 
-  public async callView(address: Address, method: string, args: string[]): Promise<string> {
+  public async callView(
+    address: Address,
+    method: string,
+    args: string[]
+  ): Promise<string> {
     const contract = this.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
     const res = await contract[funcs[0]](...args);
     return res.toString();
   }
 
-  public async sendTransaction(address: Address, method: string, args: string[]): Promise<string> {
+  public async sendTransaction(
+    address: Address,
+    method: string,
+    args: string[]
+  ): Promise<string> {
     const contract = this.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
     const tx = await contract[funcs[0]](...args);

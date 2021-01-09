@@ -55,8 +55,12 @@ export default {
       return;
     }
 
-    manifestPath = (manifestPath && filesystem.resolve(manifestPath)) || filesystem.resolve("web3api.yaml");
-    outputDir = (outputDir && filesystem.resolve(outputDir)) || filesystem.resolve("src/generated");
+    manifestPath =
+      (manifestPath && filesystem.resolve(manifestPath)) ||
+      filesystem.resolve("web3api.yaml");
+    outputDir =
+      (outputDir && filesystem.resolve(outputDir)) ||
+      filesystem.resolve("src/generated");
     language = language || undefined;
 
     const generator = new CodeGenerator({
