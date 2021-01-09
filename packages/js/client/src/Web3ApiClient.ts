@@ -7,12 +7,14 @@ import {
   Client,
   createQueryDocument,
   parseQuery,
-  Plugin,
+  PluginPackage,
   QueryApiOptions,
   QueryApiResult,
   Uri,
   UriRedirect,
   resolveUri,
+  InvokeApiOptions,
+  InvokeApiResult,
 } from "@web3api/core-js";
 
 export interface ClientConfig {
@@ -46,21 +48,85 @@ export class Web3ApiClient implements Client {
         typeof query === "string" ? createQueryDocument(query) : query;
 
       // Parse the query to understand what's being invoked
-      const invokeOptions = parseQuery(queryDocument, variables);
+      const invokeOptions = parseQuery(uri, queryDocument, variables);
 
-      // TODO: support multiple async queries
-      // Process all API invocations
-      const result = await api.invoke<TData>(invokeOptions[0], this);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const data = {} as any;
-      data[invokeOptions[0].method] = result.data;
+      // Execute all invocations in parallel
+      const parallelInvocations: Promise<{ method: string; result: InvokeApiResult<unknown>; }>[] = [];
+
+      for (const invocation of invokeOptions) {
+        parallelInvocations.push(
+          api.invoke(invocation, this)
+            .then(result => ({
+              method: invocation.method,
+              result
+            })
+          )
+        );
+      }
+
+      // Await the invocations
+      const invocations = await Promise.all(parallelInvocations);
+
+      // Aggregate all invocation results
+      let methods: string[] = [];
+      const resultDatas: unknown[] = [];
+      const errors: Error[] = [];
+
+      for (const invocation of invocations) {
+        methods.push(invocation.method);
+        resultDatas.push(invocation.result.data);
+        if (invocation.result.errors) {
+          errors.push(...invocation.result.errors);
+        }
+      }
+
+      // Helper for appending "_#" to repeated names
+      const makeRepeatedUnique = (names: string[]): string[] => {
+        let counts: { [key: string]: number } = {}
+      
+        return names.reduce((acc, name) => {
+          let count = counts[name] = (counts[name] || 0) + 1
+          let uniq = count > 1 ? `${name}_${count - 1}` : name
+          acc.push(uniq)
+          return acc
+        }, [] as string[])
+      }
+
+      methods = makeRepeatedUnique(methods);
+
+      // Build are data map, where each method maps to its data
+      const data: Record<string, unknown> = { };
+
+      for (let i = 0; i < methods.length; ++i) {
+        data[methods[i]] = resultDatas[i];
+      }
 
       return {
-        data,
-        errors: result.errors,
+        data: data as TData,
+        errors,
       };
     } catch (error) {
-      return { errors: error };
+      if (error.length) {
+        return { errors: error };
+      } else {
+        return { errors: [error] };
+      }
+    }
+  }
+
+  public async invoke<TData = unknown>(
+    options: InvokeApiOptions
+  ): Promise<InvokeApiResult<TData>> {
+    try {
+      const { uri } = options;
+      const api = await this.loadWeb3Api(uri);
+      return await api.invoke<TData>(options, this);
+    } catch (error) {
+      if (error.length) {
+        return { errors: error };
+      } else {
+        return { errors: [error] };
+      }
     }
   }
 
@@ -71,7 +137,7 @@ export class Web3ApiClient implements Client {
       api = await resolveUri(
         uri,
         this,
-        (uri: Uri, plugin: () => Plugin) => new PluginWeb3Api(uri, plugin),
+        (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
         (uri: Uri, manifest: Manifest, apiResolver: Uri) =>
           new WasmWeb3Api(uri, manfest, apiResolver)
       );
