@@ -7,10 +7,11 @@ import {
   isNegativeFixedInt,
   isFixedMap,
   isFixedArray,
-  isFixedString
+  isFixedString,
 } from "./Format";
 import { Nullable } from "./Nullable";
 import { Read } from "./Read";
+
 import { E_INVALIDLENGTH } from "util/error";
 
 export class ReadDecoder extends Read {
@@ -220,7 +221,7 @@ export class ReadDecoder extends Read {
 
   readArray<T>(fn: (reader: Read) => T): Array<T> {
     const size = this.readArrayLength();
-    let a = new Array<T>();
+    const a = new Array<T>();
     for (let i: u32 = 0; i < size; i++) {
       const item = fn(this);
       a.push(item);
@@ -241,14 +242,14 @@ export class ReadDecoder extends Read {
   }
 
   readMap<K, V>(
-    keyFn: (reader: Read) => K,
-    valueFn: (reader: Read) => V
+    key_fn: (reader: Read) => K,
+    value_fn: (reader: Read) => V
   ): Map<K, V> {
     const size = this.readMapLength();
-    let m = new Map<K, V>();
+    const m = new Map<K, V>();
     for (let i: u32 = 0; i < size; i++) {
-      const key = keyFn(this);
-      const value = valueFn(this);
+      const key = key_fn(this);
+      const value = value_fn(this);
       m.set(key, value);
     }
     return m;
@@ -353,13 +354,13 @@ export class ReadDecoder extends Read {
   }
 
   readNullableMap<K, V>(
-    keyFn: (decoder: Read) => K,
-    valueFn: (decoder: Read) => V
+    key_fn: (decoder: Read) => K,
+    value_fn: (decoder: Read) => V
   ): Map<K, V> | null {
     if (this.isNextNil()) {
       return null;
     }
-    return this.readMap(keyFn, valueFn);
+    return this.readMap(key_fn, value_fn);
   }
 
   private isNextNil(): bool {
@@ -389,7 +390,7 @@ export class ReadDecoder extends Read {
     } else if (isFixedInt(leadByte)) {
       // noop, will just discard the leadbyte
     } else if (isFixedString(leadByte)) {
-      let strLength = leadByte & 0x1f;
+      const strLength = leadByte & 0x1f;
       this.view.discard(strLength);
     } else if (isFixedArray(leadByte)) {
       // TODO handle overflow

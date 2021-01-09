@@ -6,7 +6,7 @@ import {
   createScalarPropertyDefinition,
   ObjectDefinition,
   PropertyDefinition,
-  TypeInfo
+  TypeInfo,
 } from "../typeInfo";
 
 const schema = `
@@ -23,7 +23,7 @@ type AnotherType {
 describe("Web3API Schema TypeInfo Transformations", () => {
   it("addFirstLast", () => {
     const typeInfo = parseSchema(schema, {
-      transforms: [addFirstLast]
+      transforms: [addFirstLast],
     });
     const expected: TypeInfo = {
       userTypes: [
@@ -33,16 +33,16 @@ describe("Web3API Schema TypeInfo Transformations", () => {
             {
               ...createScalarPropertyDefinition("prop1", "String", true),
               first: true,
-              last: null
+              last: null,
             } as PropertyDefinition,
             {
               ...createScalarPropertyDefinition("prop2", "String", true),
               first: null,
-              last: true
-            }
+              last: true,
+            },
           ],
           first: true,
-          last: null
+          last: null,
         } as ObjectDefinition,
         {
           ...createObjectDefinition("AnotherType"),
@@ -50,16 +50,16 @@ describe("Web3API Schema TypeInfo Transformations", () => {
             {
               ...createScalarPropertyDefinition("prop", "String", true),
               first: true,
-              last: true
-            } as PropertyDefinition
+              last: true,
+            } as PropertyDefinition,
           ],
           first: null,
-          last: true
-        } as ObjectDefinition
+          last: true,
+        } as ObjectDefinition,
       ],
       queryTypes: [],
       importedObjectTypes: [],
-      importedQueryTypes: []
+      importedQueryTypes: [],
     };
 
     expect(typeInfo).toMatchObject(expected);
@@ -67,7 +67,11 @@ describe("Web3API Schema TypeInfo Transformations", () => {
 
   it("extendType", () => {
     const typeInfo = parseSchema(schema, {
-      transforms: [extendType({ foo: "bar" })]
+      transforms: [
+        extendType({
+          foo: "bar",
+        }),
+      ],
     });
     const expected: TypeInfo = {
       userTypes: [
@@ -76,29 +80,29 @@ describe("Web3API Schema TypeInfo Transformations", () => {
           properties: [
             {
               ...createScalarPropertyDefinition("prop1", "String", true),
-              foo: "bar"
+              foo: "bar",
             } as PropertyDefinition,
             {
               ...createScalarPropertyDefinition("prop2", "String", true),
-              foo: "bar"
-            }
+              foo: "bar",
+            },
           ],
-          foo: "bar"
+          foo: "bar",
         } as ObjectDefinition,
         {
           ...createObjectDefinition("AnotherType"),
           properties: [
             {
               ...createScalarPropertyDefinition("prop", "String", true),
-              foo: "bar"
-            } as PropertyDefinition
+              foo: "bar",
+            } as PropertyDefinition,
           ],
-          foo: "bar"
-        } as ObjectDefinition
+          foo: "bar",
+        } as ObjectDefinition,
       ],
       queryTypes: [],
       importedObjectTypes: [],
-      importedQueryTypes: []
+      importedQueryTypes: [],
     };
 
     expect(typeInfo).toMatchObject(expected);

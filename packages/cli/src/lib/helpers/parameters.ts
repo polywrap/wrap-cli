@@ -30,16 +30,19 @@ export const fixParameters = (
 ): string[] => {
   const unexpectedStringOptions = Object.keys(booleanOptions)
     .filter((key) => typeof booleanOptions[key] === "string")
-    .map((key) => ({ key, value: booleanOptions[key] })) as { key: string; value: string }[];
+    .map((key) => ({ key, value: booleanOptions[key] })) as {
+    key: string;
+    value: string;
+  }[];
 
-  let optionNames = unexpectedStringOptions
-    .map(({ key }) => `--` + key.replace(/([A-Z])/, '-$1').toLowerCase())
-    .join(', ')
+  const optionNames = unexpectedStringOptions
+    .map(({ key }) => `--` + key.replace(/([A-Z])/, "-$1").toLowerCase())
+    .join(", ");
 
   if (unexpectedStringOptions.length > 1) {
     throw new Error(
       `Unexpected value provided for one or more of ${optionNames}. See --help for more information.`
-    )
+    );
   } else if (unexpectedStringOptions.length == 1) {
     const params = parameters.array || [];
     params.unshift(unexpectedStringOptions[0].value);
@@ -47,4 +50,4 @@ export const fixParameters = (
   } else {
     return parameters.array || [];
   }
-}
+};

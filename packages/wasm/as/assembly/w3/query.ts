@@ -1,4 +1,7 @@
+/* eslint-disable */
+
 // Query API
+
 @external("w3", "__w3_query")
 export declare function __w3_query(
   uri_ptr: i32, uri_len: usize,

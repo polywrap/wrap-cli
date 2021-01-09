@@ -4,7 +4,7 @@ import { Client, PluginModule } from "@web3api/core-js";
 
 export const query = (ens: EnsPlugin, client: Client): PluginModule => ({
   // w3/api-resolver
-  tryResolveUri: async (input: { authority: string, path: string }) => {
+  tryResolveUri: async (input: { authority: string; path: string }) => {
     if (input.authority !== "ens") {
       return null;
     }
@@ -12,8 +12,8 @@ export const query = (ens: EnsPlugin, client: Client): PluginModule => ({
     try {
       return {
         uri: await ens.ensToCID(input.path, client),
-        manifest: null
-      }
+        manifest: null,
+      };
     } catch (e) {
       // TODO: logging
     }
@@ -21,7 +21,7 @@ export const query = (ens: EnsPlugin, client: Client): PluginModule => ({
     // Nothing found
     return { uri: null, manifest: null };
   },
-  getFile: (input: { path: string }) => {
+  getFile: (_input: { path: string }) => {
     return null;
-  }
+  },
 });

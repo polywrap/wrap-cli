@@ -1,11 +1,4 @@
-import {
-  ExecuteOptions,
-  ExecuteResult,
-  Web3Api,
-  Manifest
-} from "./";
-import { filterExecuteResult } from "./filter-result";
-import * as ApiResolver from "./core-apis/api-resolver";
+import { ExecuteOptions, ExecuteResult, Web3Api, Manifest } from "./";
 import { Uri } from "../Uri";
 import { Web3ApiClient } from "../Web3ApiClient";
 
@@ -13,19 +6,18 @@ import {
   parseSchema,
   TypeInfo,
   QueryDefinition,
-  MethodDefinition
+  MethodDefinition,
 } from "@web3api/schema-parse";
 import { TypeInfo, TypeInfo } from "graphql";
 
 export class WasmWeb3Api extends Web3Api {
-
   private _schema?: string;
   private _typeInfo?: TypeInfo;
 
   private _wasm: {
     query?: ArrayBuffer;
     mutation?: ArrayBuffer;
-  } = { };
+  } = {};
 
   constructor(
     uri: Uri,
@@ -39,7 +31,7 @@ export class WasmWeb3Api extends Web3Api {
     options: ExecuteOptions,
     client: Web3ApiClient
   ): Promise<ExecuteResult> {
-    const { module, method, input, results } = options;
+    const { module, method } = options;
 
     // Fetch the schema
     const schema = await this.getSchema(client);
@@ -70,10 +62,10 @@ export class WasmWeb3Api extends Web3Api {
 
     // We use this method type for serializing the arguments,
     // and deserializing the return value
-    const methodInfo = queryInfo.methods[methodIdx];
+    const _methodInfo = queryInfo.methods[methodIdx];
 
     // Fetch the WASM module
-    const wasm = this.getWasmModule(module, client);
+    const _wasm = this.getWasmModule(module, client);
 
     // ...
 
@@ -98,9 +90,7 @@ export class WasmWeb3Api extends Web3Api {
 
     const { data, errors } = await client.query<getFile.Result>({
       uri: this._resolver,
-      query: getFile.query(
-        `${this._uri}/${this._manifest.schema.file}`
-      )
+      query: getFile.query(`${this._uri}/${this._manifest.schema.file}`),
     });
 
     if (errors?.length) {
@@ -133,7 +123,10 @@ export class WasmWeb3Api extends Web3Api {
     return this._typeInfo;
   }
 
-  private async getWasmModule(module: "query" | "mutation", client: Web3ApiClient): Promise<ArrayBuffer> {
+  private async getWasmModule(
+    module: "query" | "mutation",
+    client: Web3ApiClient
+  ): Promise<ArrayBuffer> {
     if (this._wasm[module] !== undefined) {
       return this._wasm[module];
     }
@@ -148,9 +141,7 @@ export class WasmWeb3Api extends Web3Api {
 
     const { data, errors } = await client.query<getFile.Result>({
       uri: this._resolver,
-      query: getFile.query(
-        `${this._uri}/${moduleManifest.module.file}`
-      )
+      query: getFile.query(`${this._uri}/${moduleManifest.module.file}`),
     });
 
     if (errors?.length) {

@@ -4,7 +4,7 @@ import {
   Manifest,
   Client,
   Uri,
-  PluginPackage
+  PluginPackage,
 } from "../types";
 import * as ApiResolver from "../apis/api-resolver";
 import { getImplementations } from "./get-implementations";
@@ -15,24 +15,32 @@ export async function resolveUri(
   createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
   createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api
 ): Promise<Api> {
-
   let resolvedUri = uri;
 
   // Keep track of past URIs to avoid infinite loops
-  const uriHistory: { uri: string; source: string; }[] = [{
-    uri: resolvedUri.uri,
-    source: "ROOT"
-  }];
+  const uriHistory: { uri: string; source: string }[] = [
+    {
+      uri: resolvedUri.uri,
+      source: "ROOT",
+    },
+  ];
 
   const trackUriRedirect = (uri: string, source: string) => {
     const dupIdx = uriHistory.findIndex((item) => item.uri === uri);
-    uriHistory.push({ uri, source });
+    uriHistory.push({
+      uri,
+      source,
+    });
     if (dupIdx > -1) {
       throw Error(
-        `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${JSON.stringify(uriHistory, null, 2)}`
+        `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${JSON.stringify(
+          uriHistory,
+          null,
+          2
+        )}`
       );
     }
-  }
+  };
 
   const redirects = client.redirects();
 
@@ -40,17 +48,17 @@ export async function resolveUri(
   // apply the redirect. If the redirect `to` is a Plugin,
   // return a PluginWeb3Api instance.
   for (const redirect of redirects) {
-
     const from = redirect.from;
 
     if (!from) {
-      throw Error(`Redirect missing the from property.\nEncountered while resolving ${uri.uri}`);
+      throw Error(
+        `Redirect missing the from property.\nEncountered while resolving ${uri.uri}`
+      );
     }
 
     // Determine what type of comparison to use
-    const tryRedirect = (testUri: Uri): Uri | PluginPackage => (
-      Uri.equals(testUri, from) ? redirect.to : testUri
-    );
+    const tryRedirect = (testUri: Uri): Uri | PluginPackage =>
+      Uri.equals(testUri, from) ? redirect.to : testUri;
 
     const uriOrPlugin = tryRedirect(resolvedUri);
 
@@ -74,26 +82,24 @@ export async function resolveUri(
   for (let i = 0; i < uriResolverImplementations.length; ++i) {
     const uriResolver = uriResolverImplementations[i];
 
-    let newUri: string | undefined;
-    let manifestStr: string | undefined;
-    {
-      const { data, errors } = await ApiResolver.Query.tryResolveUri(
-        client, uriResolver, resolvedUri
-      );
+    const { data, errors } = await ApiResolver.Query.tryResolveUri(
+      client,
+      uriResolver,
+      resolvedUri
+    );
 
-      // Throw errors so the caller (client) can handle them
-      if (errors?.length) {
-        throw errors;
-      }
-
-      // If nothing was returned, the URI is not supported
-      if (!data || (!data.uri && !data.manifest)) {
-        continue;
-      }
-
-      newUri = data.uri;
-      manifestStr = data.manifest;
+    // Throw errors so the caller (client) can handle them
+    if (errors?.length) {
+      throw errors;
     }
+
+    // If nothing was returned, the URI is not supported
+    if (!data || (!data.uri && !data.manifest)) {
+      continue;
+    }
+
+    const newUri = data.uri;
+    const manifestStr = data.manifest;
 
     if (newUri) {
       // Use the new URI, and reset our index

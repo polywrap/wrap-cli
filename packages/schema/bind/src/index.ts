@@ -9,9 +9,12 @@ export interface OutputEntry {
 }
 
 export interface OutputDirectory {
-  entries: OutputEntry[]
+  entries: OutputEntry[];
 }
 
-export function bindSchema(language: TargetLanguage, schema: string): OutputDirectory {
+export function bindSchema(
+  language: TargetLanguage,
+  schema: string
+): OutputDirectory {
   return generateBinding(language, schema);
 }

@@ -5,9 +5,9 @@ import fs from "fs";
 
 export class Web3API {
   public static load(manifestPath: string): Manifest {
-    const manifest = YAML.safeLoad(
-      fs.readFileSync(manifestPath, "utf-8")
-    ) as Manifest | undefined;
+    const manifest = YAML.safeLoad(fs.readFileSync(manifestPath, "utf-8")) as
+      | Manifest
+      | undefined;
 
     if (!manifest) {
       throw Error(`Unable to parse manifest: ${manifestPath}`);
@@ -20,7 +20,7 @@ export class Web3API {
     return manifest;
   }
 
-  public static dump(manifest: Manifest, manifestPath: string) {
+  public static dump(manifest: Manifest, manifestPath: string): void {
     const str = YAML.safeDump(manifest);
 
     if (!str) {

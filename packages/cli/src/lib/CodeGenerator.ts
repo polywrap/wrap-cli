@@ -1,11 +1,11 @@
 import { Web3API } from "./Web3API";
 import { Manifest } from "./Manifest";
 import { displayPath } from "./helpers/path";
-import { step, withSpinner } from "./helpers/spinner";
+import { withSpinner } from "./helpers/spinner";
 
 import fs from "fs";
 
-const fsExtra = require("fs-extra");
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const toolbox = require("gluegun/toolbox");
 
 export interface CodeGeneratorConfig {
@@ -15,12 +15,12 @@ export interface CodeGeneratorConfig {
 }
 
 export class CodeGenerator {
-  constructor(private _config: CodeGeneratorConfig) { }
+  constructor(private _config: CodeGeneratorConfig) {}
 
   public async generate(): Promise<boolean> {
     try {
       // Load the API
-      const api = await this._loadWeb3API();
+      const _api = await this._loadWeb3API();
 
       // Init & clean output directory
       const { outputDir } = this._config;
@@ -50,10 +50,10 @@ export class CodeGenerator {
     }
   }
 
-  private async _loadWeb3API(quiet: boolean = false): Promise<Manifest> {
+  private async _loadWeb3API(quiet = false): Promise<Manifest> {
     const run = () => {
       return Web3API.load(this._config.manifestPath);
-    }
+    };
 
     if (quiet) {
       return run();
@@ -64,10 +64,10 @@ export class CodeGenerator {
         `Load web3api from ${manifestPath}`,
         `Failed to load web3api from ${manifestPath}`,
         `Warnings loading web3api from ${manifestPath}`,
-        async spinner => {
+        async (_spinner) => {
           return run();
-        },
-      )
+        }
+      );
     }
   }
 }

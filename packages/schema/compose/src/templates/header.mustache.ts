@@ -1,5 +1,4 @@
-const template: string =
-`### Web3API Header START ###
+const template = `### Web3API Header START ###
 scalar UInt
 scalar UInt8
 scalar UInt16

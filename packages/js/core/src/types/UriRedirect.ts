@@ -1,7 +1,4 @@
-import {
-  Uri,
-  PluginPackage
-} from ".";
+import { Uri, PluginPackage } from ".";
 
 /**
  * Redirect from one URI, or a set of URIs, to a new URI or a plugin.

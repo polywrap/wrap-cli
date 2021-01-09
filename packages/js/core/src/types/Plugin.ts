@@ -1,14 +1,7 @@
-import {
-  Uri,
-  Client,
-  InvokableModules,
-  MaybeAsync,
-  SchemaDocument
-} from ".";
+import { Uri, Client, InvokableModules, MaybeAsync, SchemaDocument } from ".";
 
 /** The plugin's configuration */
 export interface PluginManifest {
-
   /** The API's schema */
   schema: SchemaDocument;
 
@@ -21,7 +14,7 @@ export interface PluginManifest {
 
 /**
  * Invocable plugin method.
- * 
+ *
  * @param input Input arguments for the method, structured as
  * a map, removing the chance of incorrectly ordering arguments.
  * @param client The client instance requesting this invocation.
@@ -44,16 +37,15 @@ type PluginModulesType = {
 };
 
 /** The plugin's query "modules" */
-export interface PluginModules extends PluginModulesType { }
+export type PluginModules = PluginModulesType;
 
 /**
  * The plugin instance.
-*/
+ */
 export abstract class Plugin {
-
   /**
    * Get an instance of this plugin's modules.
-   * 
+   *
    * @param client The client instance requesting the modules.
    * This client will be used for any sub-queries that occur.
    */

@@ -1,8 +1,5 @@
 import { getDefaultRedirects } from "./default-redirects";
-import {
-  PluginWeb3Api,
-  WasmWeb3Api
-} from "./web3api";
+import { PluginWeb3Api, WasmWeb3Api } from "./web3api";
 
 import {
   Api,
@@ -15,24 +12,21 @@ import {
   QueryApiResult,
   Uri,
   UriRedirect,
-  resolveUri
+  resolveUri,
 } from "@web3api/core-js";
 
 export interface ClientConfig {
-  redirects: UriRedirect[]
+  redirects: UriRedirect[];
 }
 
 export class Web3ApiClient implements Client {
-
   private _apiCache = new ApiCache();
 
   constructor(private _config: ClientConfig) {
     const { redirects } = this._config;
 
     // Add all default redirects (IPFS, ETH, ENS)
-    redirects.push(
-      ...getDefaultRedirects()
-    );
+    redirects.push(...getDefaultRedirects());
   }
 
   public redirects(): readonly UriRedirect[] {
@@ -42,34 +36,29 @@ export class Web3ApiClient implements Client {
   public async query<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>
-  >(
-    options: QueryApiOptions<TVariables>
-  ): Promise<QueryApiResult<TData>> {
+  >(options: QueryApiOptions<TVariables>): Promise<QueryApiResult<TData>> {
     try {
       const { uri, query, variables } = options;
       const api = await this.loadWeb3Api(uri);
 
       // Convert the query string into a query document
-      let queryDocument =
-        typeof query === "string" ?
-        createQueryDocument(query) :
-        query;
+      const queryDocument =
+        typeof query === "string" ? createQueryDocument(query) : query;
 
       // Parse the query to understand what's being invoked
-      const invokeOptions = parseQuery(
-        queryDocument, variables
-      );
+      const invokeOptions = parseQuery(queryDocument, variables);
 
       // TODO: support multiple async queries
       // Process all API invocations
       const result = await api.invoke<TData>(invokeOptions[0], this);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const data = {} as any;
       data[invokeOptions[0].method] = result.data;
 
       return {
         data,
-        errors: result.errors
-      }
+        errors: result.errors,
+      };
     } catch (error) {
       return { errors: error };
     }
@@ -82,8 +71,7 @@ export class Web3ApiClient implements Client {
       api = await resolveUri(
         uri,
         this,
-        (uri: Uri, plugin: () => Plugin) =>
-          new PluginWeb3Api(uri, plugin),
+        (uri: Uri, plugin: () => Plugin) => new PluginWeb3Api(uri, plugin),
         (uri: Uri, manifest: Manifest, apiResolver: Uri) =>
           new WasmWeb3Api(uri, manfest, apiResolver)
       );

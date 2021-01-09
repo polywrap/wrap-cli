@@ -3,7 +3,7 @@ import { print } from "gluegun";
 
 const requireKeytar = () => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
     return require("keytar");
   } catch (e) {
     throw new Error(
@@ -60,7 +60,7 @@ Please make sure you are authenticated. Run w3 auth --help for more information`
   }
 };
 
-export const saveAccessToken = async (protocolName?: string) => {
+export const saveAccessToken = async (protocolName?: string): Promise<void> => {
   try {
     const keytar = requireKeytar();
     const identity = await Libp2pCryptoIdentity.fromRandom();
@@ -73,7 +73,9 @@ export const saveAccessToken = async (protocolName?: string) => {
           `Error storing access token in Windows Credential Vault: ${e.message}`
         );
       case "darwin":
-        throw new Error(`Error storing access token in macOS Keychain: ${e.message}`);
+        throw new Error(
+          `Error storing access token in macOS Keychain: ${e.message}`
+        );
       case "linux":
         throw new Error(
           `Error storing access token with libsecret (usually gnome-keyring or ksecretservice): ${e.message}`

@@ -1,9 +1,6 @@
 import { Uri } from "./";
 
-import {
-  DocumentNode,
-  parse
-} from "graphql";
+import { DocumentNode, parse } from "graphql";
 import gql from "graphql-tag";
 
 /** GraphQL SchemaDocument */
@@ -38,13 +35,13 @@ export interface QueryApiOptions<
   /**
    * Variables referenced within the query string via GraphQL's '$variable' syntax.
    */
-  variables?: TVariables
+  variables?: TVariables;
 }
 
 /**
  * The result of an API query, which is the aggregate
  * of one or more [[InvokeApiResult | invocation results]].
- * 
+ *
  * @template TData Type of the query result data.
  */
 export interface QueryApiResult<

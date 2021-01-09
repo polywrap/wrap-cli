@@ -1,13 +1,6 @@
-import {
-  InvokeApiOptions,
-  QueryDocument,
-  Uri
-} from "../types";
+import { InvokeApiOptions, QueryDocument, Uri } from "../types";
 
-import {
-  SelectionSetNode,
-  ValueNode
-} from "graphql";
+import { SelectionSetNode, ValueNode } from "graphql";
 
 export function parseQuery(
   uri: Uri,
@@ -15,19 +8,16 @@ export function parseQuery(
   variables?: Record<string, unknown>
 ): InvokeApiOptions[] {
   if (doc.definitions.length === 0) {
-    throw Error(
-      "Empty query document found."
-    );
+    throw Error("Empty query document found.");
   }
 
   const invokeOptions: InvokeApiOptions[] = [];
 
   for (const def of doc.definitions) {
-
     if (def.kind !== "OperationDefinition") {
       throw Error(
         `Unrecognized root level definition type: ${def.kind}\n` +
-        "Please use a 'query' or 'mutation' operations."
+          "Please use a 'query' or 'mutation' operations."
       );
     }
 
@@ -35,9 +25,7 @@ export function parseQuery(
     const module = def.operation;
 
     if (module === "subscription") {
-      throw Error(
-        "Subscription queries are not yet supported."
-      );
+      throw Error("Subscription queries are not yet supported.");
     }
 
     // Get the method name
@@ -51,11 +39,10 @@ export function parseQuery(
     }
 
     for (const selection of selections) {
-
       if (selection.kind !== "Field") {
         throw Error(
           `Unsupported selection type found: ${selection.kind}\n` +
-          "Please query a method."
+            "Please query a method."
         );
       }
 
@@ -63,7 +50,7 @@ export function parseQuery(
 
       // Get all input arguments
       const selectionArgs = selection.arguments;
-      let input: Record<string, unknown> = {};
+      const input: Record<string, unknown> = {};
 
       if (selectionArgs) {
         for (const arg of selectionArgs) {
@@ -81,7 +68,7 @@ export function parseQuery(
       // Get the results the query is asking for
       const selectionResults = selection.selectionSet;
       let resultFilter: Record<string, unknown> = {};
-    
+
       if (selectionResults) {
         resultFilter = extractSelections(selectionResults);
       }
@@ -91,7 +78,7 @@ export function parseQuery(
         module,
         method,
         input,
-        resultFilter
+        resultFilter,
       });
     }
   }
@@ -99,7 +86,10 @@ export function parseQuery(
   return invokeOptions;
 }
 
-function extractValue(node: ValueNode, variables?: Record<string, unknown>): unknown {
+function extractValue(
+  node: ValueNode,
+  variables?: Record<string, unknown>
+): unknown {
   if (node.kind === "Variable") {
     // Get the argument's value from the variables object
     if (!variables) {
@@ -136,7 +126,7 @@ function extractValue(node: ValueNode, variables?: Record<string, unknown>): unk
     return result;
   } else if (node.kind === "ObjectValue") {
     const length = node.fields.length;
-    const result: Record<string, unknown> = { };
+    const result: Record<string, unknown> = {};
 
     for (let i = 0; i < length; ++i) {
       const field = node.fields[i];
@@ -145,7 +135,7 @@ function extractValue(node: ValueNode, variables?: Record<string, unknown>): unk
 
     return result;
   } else {
-    throw Error(`Unsupported value node: ${node}`)
+    throw Error(`Unsupported value node: ${node}`);
   }
 }
 
@@ -154,9 +144,7 @@ function extractSelections(node: SelectionSetNode): Record<string, unknown> {
 
   for (const selection of node.selections) {
     if (selection.kind !== "Field") {
-      throw Error(
-        `Unsupported result selection type found: ${selection.kind}`
-      );
+      throw Error(`Unsupported result selection type found: ${selection.kind}`);
     }
 
     const name = selection.name.value;

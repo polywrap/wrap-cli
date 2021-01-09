@@ -1,8 +1,4 @@
-import {
-  Client,
-  InvokeApiOptions,
-  InvokeApiResult
-} from ".";
+import { Client, InvokeApiOptions, InvokeApiResult } from ".";
 
 /**
  * The API definition, which can be used to spawn
@@ -11,21 +7,18 @@ import {
  * worker threads, or indexing into resolvers to find the requested method.
  */
 export abstract class Api {
-
   /**
    * Invoke the API based on the provided [[InvokeApiOptions]]
-   * 
+   *
    * @param options Options for this invocation.
    * @param client The client instance requesting this invocation.
    * This client will be used for any sub-queries that occur.
    */
-  public async abstract invoke<
-    TData = Record<string, unknown>
-  >(
+  public abstract async invoke<TData = Record<string, unknown>>(
     options: InvokeApiOptions,
     client: Client
   ): Promise<InvokeApiResult<TData>>;
 }
 
 /** Cache of API definitions, mapping the API's URI to its definition */
-export class ApiCache extends Map<string, Api> { }
+export class ApiCache extends Map<string, Api> {}

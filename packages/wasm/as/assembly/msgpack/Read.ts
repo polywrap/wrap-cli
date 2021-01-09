@@ -20,8 +20,8 @@ export abstract class Read {
   abstract readArray<T>(fn: (reader: Read) => T): Array<T>;
   abstract readMapLength(): u32;
   abstract readMap<K, V>(
-    keyFn: (reader: Read) => K,
-    valueFn: (reader: Read) => V
+    key_fn: (reader: Read) => K,
+    value_fn: (reader: Read) => V
   ): Map<K, V>;
 
   abstract readNullableBool(): Nullable<bool>;
@@ -39,7 +39,7 @@ export abstract class Read {
   abstract readNullableBytes(): ArrayBuffer | null;
   abstract readNullableArray<T>(fn: (decoder: Read) => T): Array<T> | null;
   abstract readNullableMap<K, V>(
-    keyFn: (reader: Read) => K,
-    valueFn: (reader: Read) => V
+    key_fn: (reader: Read) => K,
+    value_fn: (reader: Read) => V
   ): Map<K, V> | null;
 }

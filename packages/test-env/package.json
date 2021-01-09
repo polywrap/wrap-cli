@@ -4,6 +4,7 @@
   "license": "MIT",
   "private": true,
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "up": "docker-compose up",
     "down": "docker-compose down"

@@ -13,5 +13,5 @@ describe("Nullable: Sanity", () => {
 
     const sameValue = Nullable.fromValue(value.value);
     expect(sameValue == value).toBe(true);
-  })
-})
+  });
+});

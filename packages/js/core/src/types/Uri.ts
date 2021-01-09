@@ -11,7 +11,7 @@ export interface UriConfig {
  * w3://ens/sub.dimain.eth
  * w3://fs/directory/file.txt
  * w3://uns/domain.crypto
- * 
+ *
  * Breaking down the various parts of the URI, as it applies
  * to [the URI standard](https://tools.ietf.org/html/rfc3986#section-3):
  * **w3://** - URI Scheme: differentiates Web3API URIs.
@@ -37,16 +37,12 @@ export class Uri {
     this._config = Uri.parseUri(uri);
   }
 
-  public toString(): string {
-    return this._config.uri;
-  }
-
   public static equals(a: Uri, b: Uri): boolean {
     return a.uri === b.uri;
   }
 
-  public static isUri(value: object): value is Uri {
-    return (value as Uri).uri !== undefined
+  public static isUri(value: unknown): value is Uri {
+    return typeof value === "object" && (value as Uri).uri !== undefined;
   }
 
   public static isValidUri(uri: string, parsed?: UriConfig): boolean {
@@ -54,7 +50,7 @@ export class Uri {
       const result = Uri.parseUri(uri);
 
       if (parsed) {
-        parsed = Object.assign(parsed, result)
+        parsed = Object.assign(parsed, result);
       }
 
       return true;
@@ -64,7 +60,6 @@ export class Uri {
   }
 
   public static parseUri(uri: string): UriConfig {
-
     if (!uri) {
       throw Error("The provided URI is empty");
     }
@@ -77,7 +72,7 @@ export class Uri {
     }
 
     // Check for the w3:// scheme, add if it isn't there
-    const w3SchemeIdx = processed.indexOf('w3://');
+    const w3SchemeIdx = processed.indexOf("w3://");
 
     // If it's missing the w3:// scheme, add it
     if (w3SchemeIdx === -1) {
@@ -86,7 +81,9 @@ export class Uri {
 
     // If the w3:// is not in the beginning, throw an error
     if (w3SchemeIdx > -1 && w3SchemeIdx !== 0) {
-      throw Error("The w3:// scheme must be at the beginning of the URI string");
+      throw Error(
+        "The w3:// scheme must be at the beginning of the URI string"
+      );
     }
 
     // Extract the authoriy & path
@@ -100,17 +97,21 @@ export class Uri {
     if (!result || result.length !== 3) {
       throw Error(
         `URI is malformed, here are some examples of valid URIs:\n` +
-        `w3://ipfs/QmHASH\n` +
-        `w3://ens/domain.eth\n` +
-        `ens/domain.eth\n\n` +
-        `Invalid URI Received: ${uri}`
+          `w3://ipfs/QmHASH\n` +
+          `w3://ens/domain.eth\n` +
+          `ens/domain.eth\n\n` +
+          `Invalid URI Received: ${uri}`
       );
     }
 
     return {
       uri: processed,
       authority: result[1],
-      path: result[2]
+      path: result[2],
     };
+  }
+
+  public toString(): string {
+    return this._config.uri;
   }
 }

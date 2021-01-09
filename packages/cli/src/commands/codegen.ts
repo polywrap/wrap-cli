@@ -1,12 +1,11 @@
 import { CodeGenerator } from "../lib/CodeGenerator";
 import { fixParameters } from "../lib/helpers/parameters";
 
-import path from "path";
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 
 const HELP = `
-${chalk.bold('w3 codegen')} [options] ${chalk.bold('[<web3api-manifest>]')}
+${chalk.bold("w3 codegen")} [options] ${chalk.bold("[<web3api-manifest>]")}
 
 Options:
   -h, --help                 Show usage information
@@ -17,14 +16,11 @@ Options:
 export default {
   alias: ["c"],
   description: "Generates code based on the Web3APIs schema",
-  run: async (toolbox: GluegunToolbox) => {
+  run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
 
-    let {
-      h, help,
-      o, outputDir,
-      l, language
-    } = parameters.options;
+    // eslint-disable-next-line prefer-const
+    let { h, help, o, outputDir, l, language } = parameters.options;
 
     help = help || h;
     outputDir = outputDir || o;
@@ -34,7 +30,7 @@ export default {
     try {
       [manifestPath] = fixParameters(toolbox.parameters, {
         h,
-        help
+        help,
       });
     } catch (e) {
       print.error(e.message);
@@ -70,7 +66,7 @@ export default {
     const generator = new CodeGenerator({
       manifestPath,
       outputDir,
-      language
+      language,
     });
 
     const result = await generator.generate();
@@ -80,5 +76,5 @@ export default {
     }
 
     process.exitCode = 0;
-  }
-}
+  },
+};

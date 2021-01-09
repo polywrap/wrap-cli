@@ -4,7 +4,7 @@ import {
   ReadDecoder,
   Write,
   WriteEncoder,
-  WriteSizer
+  WriteSizer,
 } from "../";
 
 class Sanity {
@@ -21,7 +21,7 @@ class Sanity {
   optUint64: Nullable<u64> = new Nullable<u64>();
   float32: f32;
   float64: f64;
-  str: string = "";
+  str = "";
   bytes: ArrayBuffer = new ArrayBuffer(1);
   array: Array<u8> = new Array<u8>();
   map: Map<string, Array<i32>> = new Map<string, Array<i32>>();
@@ -32,7 +32,7 @@ class Sanity {
     this.int16 = -32768;
     this.int32 = -2147483648;
     this.int64 = -9223372036854775808;
-    this.uint8= 255;
+    this.uint8 = 255;
     this.uint16 = 65535;
     this.uint32 = 4294967295;
     this.uint64 = 18446744073709551615;
@@ -101,7 +101,7 @@ function serializeSanity(writer: Write, type: Sanity): void {
   });
   writer.writeString("map");
   writer.writeMap(
-     type.map,
+    type.map,
     (writer: Write, key: string): void => {
       writer.writeString(key);
     },
@@ -114,7 +114,7 @@ function serializeSanity(writer: Write, type: Sanity): void {
 }
 
 function deserializeSanity(reader: Read, type: Sanity): void {
-  var numFields = reader.readMapLength();
+  let numFields = reader.readMapLength();
 
   while (numFields > 0) {
     numFields--;
@@ -170,9 +170,7 @@ function deserializeSanity(reader: Read, type: Sanity): void {
         }
       );
     } else {
-      throw new Error(
-        "Sanity.decode: Unknown field name '" + field + "'"
-      );
+      throw new Error("Sanity.decode: Unknown field name '" + field + "'");
     }
   }
 }

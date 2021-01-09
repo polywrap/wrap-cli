@@ -1,26 +1,21 @@
+/* eslint-disable no-useless-escape */
 import {
   ExternalImport,
   LocalImport,
   SchemaResolver,
   SchemaResolvers,
-  SYNTAX_REFERENCE
+  SYNTAX_REFERENCE,
 } from "./types";
-import {
-  parseExternalImports,
-  parseLocalImports
-} from "./parse";
-import {
-  template as headerTemplate,
-} from "./templates/header.mustache";
+import { parseExternalImports, parseLocalImports } from "./parse";
+import { template as headerTemplate } from "./templates/header.mustache";
 import * as Functions from "./templates/functions";
 
 import {
   TypeInfo,
   parseSchema,
   extendType,
-  addFirstLast
+  addFirstLast,
 } from "@web3api/schema-parse";
-
 import Mustache from "mustache";
 
 // Remove mustache's built-in HTML escaping
@@ -32,8 +27,8 @@ export function resolveImports(
   mutation: boolean,
   resolvers: SchemaResolvers
 ): {
-  schema: string,
-  typeInfo: TypeInfo
+  schema: string;
+  typeInfo: TypeInfo;
 } {
   const importKeywordCapture = /^[#]*["{3}]*import[ \n\t]/gm;
   const externalImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*into[ \n\t]*(\w+?)[ \n\t]*from[ \n\t]*[\"'`]([a-zA-Z0-9_.\/]+?)[\"'`]/g;
@@ -42,7 +37,8 @@ export function resolveImports(
   const keywords = [...schema.matchAll(importKeywordCapture)];
   const externalImportStatements = [...schema.matchAll(externalImportCapture)];
   const localImportStatments = [...schema.matchAll(localImportCapture)];
-  const totalStatements = externalImportStatements.length + localImportStatments.length;
+  const totalStatements =
+    externalImportStatements.length + localImportStatments.length;
 
   if (keywords.length !== totalStatements) {
     throw Error(
@@ -51,18 +47,20 @@ export function resolveImports(
   }
 
   const externalImportsToResolve: ExternalImport[] = parseExternalImports(
-    externalImportStatements, mutation
+    externalImportStatements,
+    mutation
   );
 
   const localImportsToResolve: LocalImport[] = parseLocalImports(
-    localImportStatments, schemaPath
+    localImportStatments,
+    schemaPath
   );
 
   const subTypeInfo: TypeInfo = {
     userTypes: [],
     queryTypes: [],
     importedObjectTypes: [],
-    importedQueryTypes: []
+    importedQueryTypes: [],
   };
 
   resolveExternalImports(
@@ -70,23 +68,23 @@ export function resolveImports(
     resolvers.external,
     subTypeInfo
   );
-  resolveLocalImports(
-    localImportsToResolve,
-    resolvers.local,
-    subTypeInfo
-  );
+  resolveLocalImports(localImportsToResolve, resolvers.local, subTypeInfo);
 
   // Remove all import statements
-  let newSchema = schema.replace(externalImportCapture, "").replace(localImportCapture, "");
+  let newSchema = schema
+    .replace(externalImportCapture, "")
+    .replace(localImportCapture, "");
 
   // Add the @imports directive
   newSchema = addQueryImportsDirective(
-    newSchema, externalImportsToResolve, mutation
+    newSchema,
+    externalImportsToResolve,
+    mutation
   );
 
   return {
     schema: newSchema,
-    typeInfo: subTypeInfo
+    typeInfo: subTypeInfo,
   };
 }
 
@@ -97,14 +95,14 @@ function resolveExternalImports(
 ): void {
   for (const importToResolve of importsToResolve) {
     const { uri, namespace, importedTypes } = importToResolve;
-    let schema = resolveSchema(uri);
+    const schema = resolveSchema(uri);
 
     if (!schema) {
       throw Error(`Unable to resolve schema at "${uri}"`);
     }
 
     const extTypeInfo = parseSchema(schema, {
-      transforms: [extendType(Functions), addFirstLast]
+      transforms: [extendType(Functions), addFirstLast],
     });
 
     for (const importedType of importedTypes) {
@@ -115,16 +113,16 @@ function resolveExternalImports(
 
         if (!type) {
           throw Error(
-            `Cannot find type "${importedType}" in the schema at ${uri}.\nFound: [ ${
-              extTypeInfo.queryTypes.map((type) => type.name + ' ')
-            }]`
+            `Cannot find type "${importedType}" in the schema at ${uri}.\nFound: [ ${extTypeInfo.queryTypes.map(
+              (type) => type.name + " "
+            )}]`
           );
         }
 
         typeInfo.importedQueryTypes.push({
           ...type,
           uri,
-          namespace
+          namespace,
         });
       } else {
         const type = extTypeInfo.userTypes.find(
@@ -133,16 +131,16 @@ function resolveExternalImports(
 
         if (!type) {
           throw Error(
-            `Cannot find type "${importedType}" in the schema at ${uri}.\nFound: [ ${
-              extTypeInfo.userTypes.map((type) => type.name + ' ')
-            }]`
+            `Cannot find type "${importedType}" in the schema at ${uri}.\nFound: [ ${extTypeInfo.userTypes.map(
+              (type) => type.name + " "
+            )}]`
           );
         }
 
         typeInfo.importedObjectTypes.push({
           ...type,
           uri,
-          namespace
+          namespace,
         });
       }
     }
@@ -169,12 +167,14 @@ function resolveLocalImports(
 
     // Parse the schema so we can extract types
     const localTypeInfo = parseSchema(schema, {
-      transforms: [extendType(Functions), addFirstLast]
+      transforms: [extendType(Functions), addFirstLast],
     });
 
     for (const userType of userTypes) {
       if (userType === "Query" || userType === "Mutation") {
-        throw Error(`Importing query types from local schemas is prohibited. Tried to import from ${path}.`)
+        throw Error(
+          `Importing query types from local schemas is prohibited. Tried to import from ${path}.`
+        );
       } else {
         const type = localTypeInfo.userTypes.find(
           (type) => type.name === userType
@@ -182,14 +182,14 @@ function resolveLocalImports(
 
         if (!type) {
           throw Error(
-            `Cannot find type "${userType}" in the schema at ${path}.\nFound: [ ${
-              localTypeInfo.userTypes.map((type) => type.name + ' ')
-            }]`
+            `Cannot find type "${userType}" in the schema at ${path}.\nFound: [ ${localTypeInfo.userTypes.map(
+              (type) => type.name + " "
+            )}]`
           );
         }
 
         typeInfo.userTypes.push({
-          ...type
+          ...type,
         });
       }
     }
@@ -200,29 +200,32 @@ export function addHeader(schema: string): string {
   return Mustache.render(headerTemplate, { schema });
 }
 
-function addQueryImportsDirective(schema: string, externalImports: ExternalImport[], mutation: boolean): string {
+function addQueryImportsDirective(
+  schema: string,
+  externalImports: ExternalImport[],
+  mutation: boolean
+): string {
   // Append the @imports(...) directive to the query type
-  const typeCapture = mutation ?
-    /type[ \n\t]*Mutation[ \n\t]*{/g :
-    /type[ \n\t]*Query[ \n\t]*{/g;
+  const typeCapture = mutation
+    ? /type[ \n\t]*Mutation[ \n\t]*{/g
+    : /type[ \n\t]*Query[ \n\t]*{/g;
 
   // Aggregate all imported type names (namespaced)
   const externalTypeNames: string[] = [];
   externalImports.forEach((ext) =>
     externalTypeNames.push(
-      ...ext.importedTypes.map((type) =>
-        `${ext.namespace}_${type}`
-      )
+      ...ext.importedTypes.map((type) => `${ext.namespace}_${type}`)
     )
   );
 
-  let importedTypes = `${externalTypeNames.map(type => `\"${type}\"`).join(',\n    ')}`;
-  const replacementQueryStr =
-  `type ${mutation ? "Mutation" : "Query"} @imports(
+  const importedTypes = `${externalTypeNames
+    .map((type) => `\"${type}\"`)
+    .join(",\n    ")}`;
+  const replacementQueryStr = `type ${mutation ? "Mutation" : "Query"} @imports(
   types: [
     ${importedTypes}
   ]
-) {`
+) {`;
 
   return schema.replace(typeCapture, replacementQueryStr);
 }
