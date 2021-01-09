@@ -1,6 +1,7 @@
 import { query, mutation } from "./resolvers";
+import { manifest } from "./manifest";
 
-import { Client, Plugin, PluginModules, Uri } from "@web3api/core-js";
+import { Client, Plugin, PluginManifest, PluginModules } from "@web3api/core-js";
 import CID from "cids";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
@@ -18,13 +19,12 @@ export class IpfsPlugin extends Plugin {
   private _ipfs: IpfsClient;
 
   constructor(private _config: IpfsConfig) {
-    super({
-      implemented: [
-        new Uri("ens/ipfs.web3api.eth"),
-        new Uri("w3/api-resolver"),
-      ],
-    });
+    super();
     this.setProvider(this._config.provider);
+  }
+
+  public static manifest(): PluginManifest {
+    return manifest;
   }
 
   public static isCID(cid: string): boolean {

@@ -1,7 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { query } from "./resolvers";
+import { manifest } from "./manifest";
 
-import { Uri, Client, Plugin, PluginModules } from "@web3api/core-js";
+import { Uri, Client, Plugin, PluginManifest, PluginModules } from "@web3api/core-js";
 import { ethers } from "ethers";
 import { Base58 } from "@ethersproject/basex";
 import { getAddress } from "@ethersproject/address";
@@ -14,15 +15,16 @@ export interface EnsConfig {
 
 export class EnsPlugin extends Plugin {
   constructor(private _config: EnsConfig) {
-    super({
-      imported: [new Uri("ens/ethereum.web3api.eth")],
-      implemented: [new Uri("w3/api-resolver")],
-    });
+    super();
 
     // Sanitize address
     if (this._config.address) {
       this.setAddress(this._config.address);
     }
+  }
+
+  public static manifest(): PluginManifest {
+    return manifest;
   }
 
   public static isENSDomain(domain: string): boolean {

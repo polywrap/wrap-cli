@@ -6,14 +6,15 @@ import {
   InvokeApiOptions,
   InvokeApiResult,
   Plugin,
-  Uri,
+  PluginPackage,
+  Uri
 } from "@web3api/core-js";
 
 export class PluginWeb3Api extends Api {
   private _instance: Plugin | undefined;
 
-  constructor(uri: Uri, private _plugin: () => Plugin) {
-    super(uri);
+  constructor(private _uri: Uri, private _plugin: PluginPackage) {
+    super();
   }
 
   public async invoke<TData = Record<string, unknown>>(
@@ -76,6 +77,6 @@ export class PluginWeb3Api extends Api {
   }
 
   private getInstance(): Plugin {
-    return this._instance || this._plugin();
+    return this._instance || this._plugin.factory();
   }
 }
