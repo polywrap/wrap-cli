@@ -1,4 +1,9 @@
 import {
+  WasmState,
+  WasmThread
+} from "./WasmThread";
+
+import {
   InvokeApiOptions,
   InvokeApiResult,
   Api,
@@ -14,6 +19,7 @@ import {
   QueryDefinition,
   MethodDefinition,
 } from "@web3api/schema-parse";
+import { spawn, Thread, Worker } from "threads";
 
 export class WasmWeb3Api extends Api {
   private _schema?: string;
@@ -38,7 +44,7 @@ export class WasmWeb3Api extends Api {
     options: InvokeApiOptions,
     client: Client
   ): Promise<InvokeApiResult<TData>> {
-    const { module, method } = options;
+    const { module, method, input } = options;
 
     // Fetch the schema
     const schema = await this.getSchema(client);
@@ -74,9 +80,20 @@ export class WasmWeb3Api extends Api {
     const methodInfo = queryInfo.methods[methodIdx];
 
     // Fetch the WASM module
-    const wasm = this.getWasmModule(module, client);
+    const wasm = await this.getWasmModule(module, client);
 
-    // ...
+    // TODO: use a pool of workers
+    // TODO: use transferable buffers
+
+    const thread = await spawn<WasmThread>(
+      new Worker("./WasmThread")
+    );
+
+    const state = await thread.start(
+      wasm, method, input, methodInfo
+    );
+
+    Thread.terminate(thread);
 
     // TODO:
     // x fetch schema
