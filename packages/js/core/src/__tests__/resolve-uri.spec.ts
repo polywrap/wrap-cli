@@ -136,7 +136,10 @@ describe("resolveUri", () => {
       createApi
     );
 
-    const apiIdentity = await result.invoke({} as InvokeApiOptions, {} as Client);
+    const apiIdentity = await result.invoke(
+      {} as InvokeApiOptions,
+      {} as Client
+    );
 
     expect(apiIdentity).toMatchObject({
       uri: new Uri("ens/test.eth"),
@@ -155,7 +158,10 @@ describe("resolveUri", () => {
       createApi
     );
 
-    const apiIdentity = await result.invoke({} as InvokeApiOptions, {} as Client);
+    const apiIdentity = await result.invoke(
+      {} as InvokeApiOptions,
+      {} as Client
+    );
 
     expect(apiIdentity).toMatchObject({
       uri: new Uri("my/something-different"),
@@ -174,7 +180,10 @@ describe("resolveUri", () => {
       createApi
     );
 
-    const apiIdentity = await result.invoke({} as InvokeApiOptions, {} as Client);
+    const apiIdentity = await result.invoke(
+      {} as InvokeApiOptions,
+      {} as Client
+    );
 
     expect(apiIdentity).toMatchObject({
       uri: new Uri("ens/ens"),
@@ -193,7 +202,10 @@ describe("resolveUri", () => {
       createApi
     );
 
-    const apiIdentity = await result.invoke({} as InvokeApiOptions, {} as Client);
+    const apiIdentity = await result.invoke(
+      {} as InvokeApiOptions,
+      {} as Client
+    );
 
     expect(apiIdentity).toMatchObject({
       uri: new Uri("my/something-different"),
