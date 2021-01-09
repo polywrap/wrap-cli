@@ -1,6 +1,4 @@
-import {
-  filterResults
-} from "../";
+import { filterResults } from "../";
 
 describe("filterResults", () => {
 

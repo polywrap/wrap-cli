@@ -1,9 +1,9 @@
 import {
   UriRedirect,
-  QueryHandler
+  QueryHandler,
+  InvokeHandler
 } from "./";
 
-// TODO: extend 'InvokeHandler'. Query -> Invoke, Request -> Invoke
-export interface Client extends QueryHandler {
+export interface Client extends QueryHandler, InvokeHandler {
   redirects: () => readonly UriRedirect[];
 }

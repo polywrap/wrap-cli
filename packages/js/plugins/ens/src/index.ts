@@ -21,8 +21,8 @@ export class EnsPlugin extends Plugin {
 
   constructor(private _config: EnsConfig) {
     super({
-      imported: [new Uri("ens://ethereum.web3api.eth")],
-      implemented: [new Uri("ens://uri-resolver.core.web3api.eth")]
+      imported: [new Uri("ens/ethereum.web3api.eth")],
+      implemented: [new Uri("w3/api-resolver")]
     });
 
     // Sanitize address

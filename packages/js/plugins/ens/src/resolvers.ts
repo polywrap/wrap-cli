@@ -3,14 +3,15 @@ import { EnsPlugin } from "./";
 import { Client, PluginModule } from "@web3api/core-js";
 
 export const query = (ens: EnsPlugin, client: Client): PluginModule => ({
-  // w3://ens/uri-resolver.core.web3api.eth
-  supportedUriAuthority: async (input: { authority: string }) => {
-    return input.authority === "ens";
-  },
-  tryResolveUriPath: async (input: { uri: string }) => {
+  // w3/api-resolver
+  tryResolveUri: async (input: { authority: string, path: string }) => {
+    if (input.authority !== "ens") {
+      return null;
+    }
+
     try {
       return {
-        uri: await ens.ensToCID(input.uri, client),
+        uri: await ens.ensToCID(input.path, client),
         manifest: null
       }
     } catch (e) {
@@ -19,5 +20,8 @@ export const query = (ens: EnsPlugin, client: Client): PluginModule => ({
 
     // Nothing found
     return { uri: null, manifest: null };
+  },
+  getFile: (input: { path: string }) => {
+    return null;
   }
 });

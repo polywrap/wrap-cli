@@ -3,8 +3,7 @@ import { extractors, SchemaExtractor } from "./extract";
 import { TypeInfoTransforms, performTransforms } from "./transform";
 import { finalizePropertyDef } from "./transform/finalizePropertyDef";
 
-import { printSchemaWithDirectives } from "graphql-tools";
-import { parse, buildSchema } from "graphql";
+import { parse } from "graphql";
 
 export { TypeInfo, combineTypeInfo };
 export * from "./transform";
@@ -19,9 +18,7 @@ export function parseSchema(
   options?: ParserOptions
 ): TypeInfo {
 
-  const builtSchema = buildSchema(schema);
-  const printedSchema = printSchemaWithDirectives(builtSchema);
-  const astNode = parse(printedSchema);
+  const astNode = parse(schema);
 
   let info = createTypeInfo();
 

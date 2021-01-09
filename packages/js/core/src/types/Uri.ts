@@ -37,6 +37,14 @@ export class Uri {
     this._config = Uri.parseUri(uri);
   }
 
+  public toString(): string {
+    return this._config.uri;
+  }
+
+  public static equals(a: Uri, b: Uri): boolean {
+    return a.uri === b.uri;
+  }
+
   public static isUri(value: object): value is Uri {
     return (value as Uri).uri !== undefined
   }

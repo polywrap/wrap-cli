@@ -8,3 +8,7 @@ type Mutation {
 
   deployContract: String!
 }
+
+type CustomType {
+  prop: String!
+}

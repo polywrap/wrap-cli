@@ -2,17 +2,17 @@ import {
   Api,
   deserializeManifest,
   Manifest,
-  Plugin,
   Client,
-  Uri
+  Uri,
+  PluginPackage
 } from "../types";
-import * as UriResolver from "../apis/uri-resolver";
+import * as ApiResolver from "../apis/api-resolver";
+import { getImplementations } from "./get-implementations";
 
-// TODO: add a description of the algorithm
 export async function resolveUri(
   uri: Uri,
   client: Client,
-  createPluginApi: (uri: Uri, plugin: () => Plugin) => Api,
+  createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
   createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api
 ): Promise<Api> {
 
@@ -29,7 +29,7 @@ export async function resolveUri(
     uriHistory.push({ uri, source });
     if (dupIdx > -1) {
       throw Error(
-        `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${uriHistory}`
+        `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${JSON.stringify(uriHistory, null, 2)}`
       );
     }
   }
@@ -47,14 +47,10 @@ export async function resolveUri(
       throw Error(`Redirect missing the from property.\nEncountered while resolving ${uri.uri}`);
     }
 
-    // Determine what type of comparison to use (string compare or regex match)
-    let tryRedirect: (testUri: Uri) => Uri | (() => Plugin);
-
-    if (Uri.isUri(from)) {
-      tryRedirect = (testUri: Uri) => testUri.uri === from.uri ? redirect.to : testUri;
-    } else {
-      tryRedirect = (testUri: Uri) => testUri.uri.match(from) ? redirect.to : testUri;
-    }
+    // Determine what type of comparison to use
+    const tryRedirect = (testUri: Uri): Uri | PluginPackage => (
+      Uri.equals(testUri, from) ? redirect.to : testUri
+    );
 
     const uriOrPlugin = tryRedirect(resolvedUri);
 
@@ -70,37 +66,19 @@ export async function resolveUri(
   }
 
   // The final URI has been resolved, let's now resolve the Web3API package
-  // TODO: remove this! Go through all known redirects and get the ones that implement uri-resolver & api-resoler
-  const uriResolverImplementations = [
-    new Uri("ens/ipfs.web3api.eth"),
-    new Uri("ens/ens.web3api.eth")
-  ];
+  const uriResolverImplementations = getImplementations(
+    new Uri("w3/api-resolver"),
+    redirects
+  );
 
   for (let i = 0; i < uriResolverImplementations.length; ++i) {
     const uriResolver = uriResolverImplementations[i];
 
-    {
-      const { data, errors } = await UriResolver.Query.supportedUriAuthority(
-        client, uriResolver, resolvedUri.authority
-      );
-
-      // Throw errors so the caller (client) can handle them
-      if (errors?.length) {
-        throw errors;
-      }
-
-      // If nothing was returned, or the scheme is unsupported, continue
-      if (!data || !data.supportedUriAuthority) {
-        continue;
-      }
-    }
-
-    // TODO: implement recursive loading of URI-Resolver implementations?
     let newUri: string | undefined;
     let manifestStr: string | undefined;
     {
-      const { data, errors } = await UriResolver.Query.tryResolveUriPath(
-        client, uriResolver, resolvedUri.path
+      const { data, errors } = await ApiResolver.Query.tryResolveUri(
+        client, uriResolver, resolvedUri
       );
 
       // Throw errors so the caller (client) can handle them
@@ -109,29 +87,29 @@ export async function resolveUri(
       }
 
       // If nothing was returned, the URI is not supported
-      if (!data || !data.tryResolveUriPath ||
-         (!data.tryResolveUriPath.uri && !data.tryResolveUriPath.manifest)) {
+      if (!data || (!data.uri && !data.manifest)) {
         continue;
       }
 
-      newUri = data.tryResolveUriPath.uri;
-      manifestStr = data.tryResolveUriPath.manifest;
+      newUri = data.uri;
+      manifestStr = data.manifest;
     }
 
     if (newUri) {
       // Use the new URI, and reset our index
-      trackUriRedirect(newUri, uriResolver.uri);
-      resolvedUri = new Uri(newUri);
+      const convertedUri = new Uri(newUri);
+      trackUriRedirect(convertedUri.uri, uriResolver.uri);
+      resolvedUri = convertedUri;
       i = 0;
       continue;
     } else if (manifestStr) {
       // We've found our manifest at the current URI resolver
       // meaning the URI resolver can also be used as an API resolver
       const manifest = deserializeManifest(manifestStr);
-      return createApi(resolvedUri, manifest, uriResolver);
+      return createApi(uri, manifest, uriResolver);
     }
   }
 
   // We've failed to resolve the URI
-  throw Error(`No Web3API found at URI: ${uri}`);
+  throw Error(`No Web3API found at URI: ${uri.uri}`);
 }
