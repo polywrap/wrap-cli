@@ -1,8 +1,16 @@
-#implement { Query } from "w3://ens/api-resolver.core.web3api.eth"
-#implement { Query } from "w3://ens/uri-resolver.core.web3api.eth"
+#import { Query } into ApiResolver from "w3/api-resolver"
 
-type Query {
+type Query implements ApiResolver_Query {
   catFile(cid: String!): Bytes!
+
+  tryResolveUri(
+    authority: String!
+    path: String!
+  ): ApiResolver_MaybeUriOrManifest
+
+  getFile(
+    path: String!
+  ): Bytes # TODO: make Bytes a supported scalar
 }
 
 type Mutation {

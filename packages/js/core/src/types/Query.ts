@@ -1,7 +1,18 @@
 import { Uri } from "./";
 
-import { DocumentNode } from "graphql";
+import {
+  DocumentNode,
+  parse
+} from "graphql";
 import gql from "graphql-tag";
+
+/** GraphQL SchemaDocument */
+export type SchemaDocument = DocumentNode;
+
+/** Create a GraphQL SchemaDocument by parsing a string */
+export function createSchemaDocument(schema: string): SchemaDocument {
+  return parse(schema);
+}
 
 /** GraphQL QueryDocument */
 export type QueryDocument = DocumentNode;

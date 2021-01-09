@@ -1,8 +1,19 @@
-import { InvokeApiOptions, QueryDocument } from "../types";
+import {
+  InvokeApiOptions,
+  QueryDocument,
+  Uri
+} from "../types";
 
-import { SelectionSetNode, ValueNode } from "graphql";
+import {
+  SelectionSetNode,
+  ValueNode
+} from "graphql";
 
-export function parseQuery(doc: QueryDocument, variables?: Record<string, unknown>): InvokeApiOptions[] {
+export function parseQuery(
+  uri: Uri,
+  doc: QueryDocument,
+  variables?: Record<string, unknown>
+): InvokeApiOptions[] {
   if (doc.definitions.length === 0) {
     throw Error("Empty query document found.");
   }
@@ -64,6 +75,7 @@ export function parseQuery(doc: QueryDocument, variables?: Record<string, unknow
       }
 
       invokeOptions.push({
+        uri,
         module,
         method,
         input,

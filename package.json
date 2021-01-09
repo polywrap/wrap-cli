@@ -27,7 +27,7 @@
     "test:client-js": "yarn workspace @web3api/client-js test",
     "test:ci": "yarn test:wasm-as && yarn test:ci:client-js",
     "test:ci:client-js": "yarn workspace @web3api/client-js test:ci",
-    "clean": "rimraf ./**/node_modules ./**/build"
+    "clean": "rimraf ./**/node_modules ./**/build ./**/coverage"
   },
   "devDependencies": {
     "lerna": "3.22.1",  

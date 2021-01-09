@@ -3,16 +3,28 @@ import { Uri, Client } from "../";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const Query = {
-  getFile: (client: Client, uri: Uri, path: string): ReturnType<typeof client["query"]> =>
-    client.query<{ getFile: ArrayBuffer }, { path: string }>({
-      uri,
-      query: `query {
-        getFile(
-          path: $path
-        )
-      }`,
-      variables: {
-        path,
-      },
-    }),
-};
+  tryResolveUri: (client: Client, api: Uri, uri: Uri) => (
+    client.invoke<{
+      uri?: string,
+      manifest?: string
+    }>({
+      uri: api,
+      module: "query",
+      method: `tryResolveUri`,
+      input: {
+        authority: uri.authority,
+        path: uri.path
+      }
+    })
+  ),
+  getFile: (client: Client, api: Uri, path: string) => (
+    client.invoke<ArrayBuffer>({
+      uri: api,
+      module: "query",
+      method: "getFile",
+      input: {
+        path
+      }
+    })
+  )
+}

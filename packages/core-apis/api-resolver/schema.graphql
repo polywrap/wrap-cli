@@ -1,5 +1,15 @@
 type Query {
+  tryResolveUri(
+    authority: String!
+    path: String!
+  ): MaybeUriOrManifest
+
   getFile(
     path: String!
   ): Bytes # TODO: make Bytes a supported scalar
+}
+
+type MaybeUriOrManifest {
+  uri: String
+  manifest: String
 }

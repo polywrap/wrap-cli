@@ -4,5 +4,6 @@ export * from "./Manifest";
 export * from "./MaybeAsync";
 export * from "./Plugin";
 export * from "./Query";
+export * from "./Invoke";
 export * from "./Uri";
 export * from "./UriRedirect";
