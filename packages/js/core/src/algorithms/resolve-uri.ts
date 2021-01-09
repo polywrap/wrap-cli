@@ -9,7 +9,6 @@ import {
 import * as ApiResolver from "../apis/api-resolver";
 import { getImplementations } from "./get-implementations";
 
-// TODO: add description
 export async function resolveUri(
   uri: Uri,
   client: Client,
@@ -30,7 +29,7 @@ export async function resolveUri(
     uriHistory.push({ uri, source });
     if (dupIdx > -1) {
       throw Error(
-        `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${uriHistory}`
+        `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${JSON.stringify(uriHistory, null, 2)}`
       );
     }
   }

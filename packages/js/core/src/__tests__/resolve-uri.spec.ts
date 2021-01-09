@@ -56,28 +56,51 @@ describe("resolveUri", () => {
     query: {
       tryResolveUri: (input: { authority: string, path: string }, client: any) => {
         return {
-          manifest: `{ "version": "hey" }`
+          manifest: input.authority === "ipfs" ? `{ "version": "hey" }` : undefined
         }
       }
     }
   }
 
-  it("works in the typical case", async () => {
-    const redirects: UriRedirect[] = [
-      {
-        from: new Uri("w3/api-resolver"),
-        to: new Uri("ens/ens")
-      },
-      {
-        from: new Uri("w3/api-resolver"),
-        to: new Uri("ens/ipfs")
+  const pluginApi: PluginModules = {
+    query: {
+      tryResolveUri: (input: { authority: string, path: string }, client: any) => {
+        return {
+          manifest: input.authority === "my" ? `{ "version": "foo" }` : undefined
+        }
       }
-    ];
+    }
+  }
 
-    const apis: Record<string, PluginModules> = {
-      "w3://ens/ens": ensApi,
-      "w3://ens/ipfs": ipfsApi
-    };
+  const redirects: UriRedirect[] = [
+    {
+      from: new Uri("w3/api-resolver"),
+      to: new Uri("ens/ens")
+    },
+    {
+      from: new Uri("w3/api-resolver"),
+      to: new Uri("ens/ipfs")
+    },
+    {
+      from: new Uri("ens/my-plugin"),
+      to: {
+        factory: () => ({ } as any),
+        manifest: {
+          schema: { } as any,
+          implemented: [new Uri("w3/api-resolver")],
+          imported: []
+        }
+      }
+    }
+  ];
+
+  const apis: Record<string, PluginModules> = {
+    "w3://ens/ens": ensApi,
+    "w3://ens/ipfs": ipfsApi,
+    "w3://ens/my-plugin": pluginApi
+  };
+
+  it("works in the typical case", async () => {
 
     const result = await resolveUri(
       new Uri("ens/test.eth"),
@@ -94,16 +117,86 @@ describe("resolveUri", () => {
       apiResolver: new Uri("ens/ipfs")
     });
   });
+
+  it("uses a plugin that implements api-resolver", async () => {
+
+    const result = await resolveUri(
+      new Uri("my/something-different"),
+      client(redirects, apis),
+      createPluginApi,
+      createApi
+    );
+
+    const apiIdentity = result.invoke({} as any, {} as any);
+
+    expect(apiIdentity).toMatchObject({
+      uri: new Uri("my/something-different"),
+      manifest: { version: "foo" },
+      apiResolver: new Uri("ens/my-plugin")
+    });
+  });
+
+  it("works when direct query a Web3API that implements the api-resolver", async () => {
+
+    const result = await resolveUri(
+      new Uri("ens/ens"),
+      client(redirects, apis),
+      createPluginApi,
+      createApi
+    );
+
+    const apiIdentity = result.invoke({} as any, {} as any);
+
+    expect(apiIdentity).toMatchObject({
+      uri: new Uri("ens/ens"),
+      manifest: { version: "hey" },
+      apiResolver: new Uri("ens/ipfs")
+    });
+  });
+
+  it("works when direct query a plugin Web3API that implements the api-resolver", async () => {
+
+    const result = await resolveUri(
+      new Uri("my/something-different"),
+      client(redirects, apis),
+      createPluginApi,
+      createApi
+    );
+
+    const apiIdentity = result.invoke({} as any, {} as any);
+
+    expect(apiIdentity).toMatchObject({
+      uri: new Uri("my/something-different"),
+      manifest: { version: "foo" },
+      apiResolver: new Uri("ens/my-plugin")
+    });
+  });
+
+  it("throws when circular redirect loops are found", async () => {
+    const circular: UriRedirect[] = [
+      ...redirects,
+      {
+        from: new Uri("some/api"),
+        to: new Uri("ens/api")
+      },
+      {
+        from: new Uri("ens/api"),
+        to: new Uri("some/api")
+      },
+    ];
+
+    expect.assertions(1);
+
+    return resolveUri(
+      new Uri("some/api"),
+      client(circular, apis),
+      createPluginApi,
+      createApi
+    ).catch(e => expect(e.message).toMatch(/Infinite loop while resolving URI/));
+  });
 });
 
 // TODO:
-// x multiple api-resolvers
-// new plugin that's a URI resolver
-// new web3api URI that's a URI resolver
-// nested web3api that's a URI resolver available through another URI authority ([ens => crypto], [crypto => new])
-// circular redirect loops
 // plugin that has a URI which is being redirected
 // plugin which has from = uri-resolver, then have another redirect uri-resolver to something else (could easily break...)
-
-// TODO:
-// For core API's have the URI be: w3://w3/uri-resolver
+// nested web3api that's a URI resolver available through another URI authority ([ens => crypto], [crypto => new])
