@@ -5,9 +5,23 @@ import {
 } from "../";
 
 export const Query = {
-  getFile: (client: Client, uri: Uri, path: string) => (
+  tryResolveUri: (client: Client, api: Uri, uri: Uri) => (
+    client.invoke<{
+      uri?: string,
+      manifest?: string
+    }>({
+      uri: api,
+      module: "query",
+      method: `tryResolveUri`,
+      input: {
+        authority: uri.authority,
+        path: uri.path
+      }
+    })
+  ),
+  getFile: (client: Client, api: Uri, path: string) => (
     client.invoke<ArrayBuffer>({
-      uri,
+      uri: api,
       module: "query",
       method: "getFile",
       input: {

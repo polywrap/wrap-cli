@@ -25,7 +25,6 @@ export class IpfsPlugin extends Plugin {
     super({
       implemented: [
         new Uri("ens/ipfs.web3api.eth"),
-        new Uri("w3/uri-resolver"),
         new Uri("w3/api-resolver")
       ]
     });

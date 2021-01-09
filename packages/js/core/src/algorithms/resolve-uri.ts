@@ -6,7 +6,7 @@ import {
   Uri,
   PluginPackage
 } from "../types";
-import * as UriResolver from "../apis/uri-resolver";
+import * as ApiResolver from "../apis/api-resolver";
 import { getImplementations } from "./get-implementations";
 
 // TODO: add description
@@ -68,34 +68,18 @@ export async function resolveUri(
 
   // The final URI has been resolved, let's now resolve the Web3API package
   const uriResolverImplementations = getImplementations(
-    new Uri("w3/uri-resolver"),
+    new Uri("w3/api-resolver"),
     redirects
   );
 
   for (let i = 0; i < uriResolverImplementations.length; ++i) {
     const uriResolver = uriResolverImplementations[i];
 
-    {
-      const { data, errors } = await UriResolver.Query.supportedUriAuthority(
-        client, uriResolver, resolvedUri.authority
-      );
-
-      // Throw errors so the caller (client) can handle them
-      if (errors?.length) {
-        throw errors;
-      }
-
-      // If nothing was returned, or the scheme is unsupported, continue
-      if (!data) {
-        continue;
-      }
-    }
-
     let newUri: string | undefined;
     let manifestStr: string | undefined;
     {
-      const { data, errors } = await UriResolver.Query.tryResolveUriPath(
-        client, uriResolver, resolvedUri.path
+      const { data, errors } = await ApiResolver.Query.tryResolveUri(
+        client, uriResolver, resolvedUri
       );
 
       // Throw errors so the caller (client) can handle them

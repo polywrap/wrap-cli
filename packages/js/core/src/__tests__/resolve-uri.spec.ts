@@ -44,12 +44,9 @@ describe("resolveUri", () => {
 
   const ensApi: PluginModules = {
     query: {
-      supportedUriAuthority: (input: { authority: string }, client: any): boolean => {
-        return input.authority === "ens"
-      },
-      tryResolveUriPath: (input: { path: string }, client: any) => {
+      tryResolveUri: (input: { authority: string, path: string }, client: any) => {
         return {
-          uri: "ipfs/QmHash"
+          uri: input.authority === "ens" ? "ipfs/QmHash" : undefined
         }
       }
     }
@@ -57,10 +54,7 @@ describe("resolveUri", () => {
 
   const ipfsApi: PluginModules = {
     query: {
-      supportedUriAuthority: (input: { authority: string }, client: any): boolean => {
-        return input.authority === "ipfs"
-      },
-      tryResolveUriPath: (input: { path: string }, client: any) => {
+      tryResolveUri: (input: { authority: string, path: string }, client: any) => {
         return {
           manifest: `{ "version": "hey" }`
         }
@@ -71,11 +65,11 @@ describe("resolveUri", () => {
   it("works in the typical case", async () => {
     const redirects: UriRedirect[] = [
       {
-        from: new Uri("w3/uri-resolver"),
+        from: new Uri("w3/api-resolver"),
         to: new Uri("ens/ens")
       },
       {
-        from: new Uri("w3/uri-resolver"),
+        from: new Uri("w3/api-resolver"),
         to: new Uri("ens/ipfs")
       }
     ];
@@ -103,7 +97,7 @@ describe("resolveUri", () => {
 });
 
 // TODO:
-// multiple uri-resolver + api-resolvers
+// x multiple api-resolvers
 // new plugin that's a URI resolver
 // new web3api URI that's a URI resolver
 // nested web3api that's a URI resolver available through another URI authority ([ens => crypto], [crypto => new])

@@ -18,18 +18,12 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
     return await ipfs.cat(input.cid);
   },
   // w3/api-resolver
-  getFile: async (input: { path: string }) => {
-    try {
-      return await ipfs.catToBuffer(input.path);
-    } catch (e) { 
+  tryResolveUri: async (input: { authority: string, path: string }) => {
+
+    if (input.authority === "ipfs") {
       return null;
     }
-  },
-  // w3/uri-resolver
-  supportedUriAuthority: async (input: { authority: string }) => {
-    return input.authority === "ipfs";
-  },
-  tryResolveUriPath: async (input: { path: string }) => {
+
     if (IpfsPlugin.isCID(input.path)) {
       // Try fetching uri/web3api.yaml
       try {
@@ -54,5 +48,12 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
 
     // Nothing found
     return { manifest: null, uri: null };
+  },
+  getFile: async (input: { path: string }) => {
+    try {
+      return await ipfs.catToBuffer(input.path);
+    } catch (e) { 
+      return null;
+    }
   }
 });
