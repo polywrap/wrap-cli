@@ -14,7 +14,7 @@ export abstract class Api {
    * @param client The client instance requesting this invocation.
    * This client will be used for any sub-queries that occur.
    */
-  public abstract async invoke<TData = Record<string, unknown>>(
+  public abstract async invoke<TData = unknown>(
     options: InvokeApiOptions,
     client: Client
   ): Promise<InvokeApiResult<TData>>;

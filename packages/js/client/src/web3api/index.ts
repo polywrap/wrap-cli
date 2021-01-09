@@ -1,7 +1,5 @@
-export * from "./Manifest";
 export * from "./PluginWeb3Api";
 export * from "./WasmWeb3Api";
-export * from "./uri-resolution";
 
 // TODO: logging (client.logLevel === Log.Info && log.logInfo("message..."))
 // - logging used to verify call stacks of various client implementations

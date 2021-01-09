@@ -1,16 +1,21 @@
-import { ExecuteOptions, ExecuteResult, Web3Api, Manifest } from "./";
-import { Uri } from "../Uri";
-import { Web3ApiClient } from "../Web3ApiClient";
-
+import {
+  InvokeApiOptions,
+  InvokeApiResult,
+  Api,
+  Manifest,
+  Uri,
+  Client,
+  ApiResolver,
+  InvokableModules
+} from "@web3api/core-js";
 import {
   parseSchema,
   TypeInfo,
   QueryDefinition,
   MethodDefinition,
 } from "@web3api/schema-parse";
-import { TypeInfo, TypeInfo } from "graphql";
 
-export class WasmWeb3Api extends Web3Api {
+export class WasmWeb3Api extends Api {
   private _schema?: string;
   private _typeInfo?: TypeInfo;
 
@@ -20,17 +25,19 @@ export class WasmWeb3Api extends Web3Api {
   } = {};
 
   constructor(
-    uri: Uri,
+    private _uri: Uri,
     private _manifest: Manifest,
-    private _resolver: string
+    private _apiResolver: Uri
   ) {
-    super(uri);
+    super();
   }
 
-  public async execute(
-    options: ExecuteOptions,
-    client: Web3ApiClient
-  ): Promise<ExecuteResult> {
+  public async invoke<
+    TData = unknown
+  >(
+    options: InvokeApiOptions,
+    client: Client
+  ): Promise<InvokeApiResult<TData>> {
     const { module, method } = options;
 
     // Fetch the schema
@@ -42,7 +49,7 @@ export class WasmWeb3Api extends Web3Api {
     const root: "Query" | "Mutation" =
       module === "query" ? "Query" : "Mutation";
 
-    // Ensure the schema contains the method being asked for
+    // Ensure the schema contains the query module being asked for
     const queryIdx = typeInfo.queryTypes.findIndex(
       (item: QueryDefinition) => item.name === root
     );
@@ -52,6 +59,8 @@ export class WasmWeb3Api extends Web3Api {
     }
 
     const queryInfo = typeInfo.queryTypes[queryIdx];
+
+    // Ensure the query module contains the method being asked for
     const methodIdx = queryInfo.methods.findIndex(
       (item: MethodDefinition) => item.name === method
     );
@@ -62,10 +71,10 @@ export class WasmWeb3Api extends Web3Api {
 
     // We use this method type for serializing the arguments,
     // and deserializing the return value
-    const _methodInfo = queryInfo.methods[methodIdx];
+    const methodInfo = queryInfo.methods[methodIdx];
 
     // Fetch the WASM module
-    const _wasm = this.getWasmModule(module, client);
+    const wasm = this.getWasmModule(module, client);
 
     // ...
 
@@ -83,32 +92,33 @@ export class WasmWeb3Api extends Web3Api {
     // - return result
   }
 
-  private async getSchema(client: Web3ApiClient): Promise<string> {
+  private async getSchema(client: Client): Promise<string> {
     if (this._schema) {
       return this._schema;
     }
 
-    const { data, errors } = await client.query<getFile.Result>({
-      uri: this._resolver,
-      query: getFile.query(`${this._uri}/${this._manifest.schema.file}`),
-    });
+    const { data, errors } = await ApiResolver.Query.getFile(
+      client,
+      this._apiResolver,
+      `${this._uri.uri}/${this._manifest.schema.file}`
+    );
 
     if (errors?.length) {
       throw errors;
     }
 
     // If nothing is returned, the schema was not found
-    if (!data || !data.bytes) {
+    if (!data) {
       throw Error(
         `Schema was not found.\nURI: ${this._uri}\nSubpath: ${this._manifest.schema.file}`
       );
     }
 
-    this._schema = String.fromCharCode.apply(null, data.bytes);
+    this._schema = String.fromCharCode.apply(null, data);
 
     if (!this._schema) {
       throw Error(
-        `Decoding the schema's bytes array failed.\nBytes: ${data.bytes}`
+        `Decoding the schema's bytes array failed.\nBytes: ${data}`
       );
     }
 
@@ -124,11 +134,11 @@ export class WasmWeb3Api extends Web3Api {
   }
 
   private async getWasmModule(
-    module: "query" | "mutation",
-    client: Web3ApiClient
+    module: InvokableModules,
+    client: Client
   ): Promise<ArrayBuffer> {
     if (this._wasm[module] !== undefined) {
-      return this._wasm[module];
+      return this._wasm[module] as ArrayBuffer;
     }
 
     const moduleManifest = this._manifest[module];
@@ -139,22 +149,24 @@ export class WasmWeb3Api extends Web3Api {
       );
     }
 
-    const { data, errors } = await client.query<getFile.Result>({
-      uri: this._resolver,
-      query: getFile.query(`${this._uri}/${moduleManifest.module.file}`),
-    });
+    const { data, errors } = await ApiResolver.Query.getFile(
+      client,
+      this._apiResolver,
+      `${this._uri}/${moduleManifest.module.file}`
+    );
 
     if (errors?.length) {
       throw errors;
     }
 
     // If nothing is returned, the module was not found
-    if (!data || !data.bytes) {
+    if (!data) {
       throw Error(
         `Module was not found.\nURI: ${this._uri}\nSubpath: ${moduleManifest.module.file}`
       );
     }
 
-    return data.bytes;
+    this._wasm[module] = data;
+    return data;
   }
 }

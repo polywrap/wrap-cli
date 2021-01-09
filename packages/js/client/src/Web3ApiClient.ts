@@ -15,6 +15,7 @@ import {
   resolveUri,
   InvokeApiOptions,
   InvokeApiResult,
+  Manifest,
 } from "@web3api/core-js";
 
 export interface ClientConfig {
@@ -139,7 +140,7 @@ export class Web3ApiClient implements Client {
         this,
         (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
         (uri: Uri, manifest: Manifest, apiResolver: Uri) =>
-          new WasmWeb3Api(uri, manfest, apiResolver)
+          new WasmWeb3Api(uri, manifest, apiResolver)
       );
 
       if (!api) {
