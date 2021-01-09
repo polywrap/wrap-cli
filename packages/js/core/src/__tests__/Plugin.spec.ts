@@ -10,11 +10,11 @@ import {
 const testPluginManifest: PluginManifest = {
   schema: createSchemaDocument(`
     type Query {
-      testQuery(): Number!
+      testQuery: Number!
     }
 
     type Mutation {
-      testMutation(): Boolean!
+      testMutation: Boolean!
     }
   `),
   imported: [new Uri("host/path")],

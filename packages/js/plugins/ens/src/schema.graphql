@@ -1,1 +1,1 @@
-#implement { Query } from "w3://ens/uri-resolver.core.web3api.eth"
+#implement { Query } from "w3/uri-resolver"

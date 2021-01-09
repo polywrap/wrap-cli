@@ -1,19 +1,16 @@
 import {
   getImplementations,
-  Uri
+  Uri,
+  UriRedirect
 } from "../";
 
 describe("getImplementations", () => {
 
   it("works in the typical case", () => {
-    const implementations = [
+    const implementations: UriRedirect[] = [
       {
         from: new Uri("authority/some-abstract-interface"),
         to: new Uri("one/1")
-      },
-      {
-        from: /some-abstract-interface/,
-        to: new Uri("two/2")
       },
       {
         from: new Uri("authority/some-abstract-interface"),
@@ -36,28 +33,13 @@ describe("getImplementations", () => {
             imported: [new Uri("something/else-2")]
           }
         }
-      },
-      {
-        from: /another\/one/,
-        to: {
-          factory: () => ({} as any),
-          manifest: {
-            schema: {} as any,
-            implemented: [new Uri("authority/some-abstract-interface")],
-            imported: []
-          }
-        }
-      },
+      }
     ];
 
-    const others = [
+    const others: UriRedirect[] = [
       {
         from: new Uri("some-other/other"),
         to: new Uri("other/other")
-      },
-      {
-        from: /somee-abstract-interface/,
-        to: new Uri("two/22")
       },
       {
         from: new Uri("some-other/other1"),
@@ -80,7 +62,7 @@ describe("getImplementations", () => {
       ]
     );
 
-    const values = implementations.map((item) => item.to);
+    const values = implementations.map((item) => Uri.isUri(item.to) ? item.to : item.from);
     expect(result).toMatchObject(values);
   });
 });

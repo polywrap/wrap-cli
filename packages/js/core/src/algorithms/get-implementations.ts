@@ -1,15 +1,14 @@
 import {
   Uri,
-  UriRedirect,
-  PluginPackage
+  UriRedirect
 } from "../types";
 
 export function getImplementations(
   abstractApi: Uri,
-  redirects: UriRedirect[]
-): (Uri | PluginPackage)[] {
+  redirects: readonly UriRedirect[]
+): Uri[] {
 
-  const result: (Uri | PluginPackage)[] = [];
+  const result: Uri[] = [];
 
   for (const redirect of redirects) {
 
@@ -21,7 +20,7 @@ export function getImplementations(
       ) > -1;
 
       if (implementedApi) {
-        result.push(redirect.to);
+        result.push(redirect.from);
       }
     }
     // Explicit check
@@ -29,10 +28,6 @@ export function getImplementations(
       if (Uri.equals(redirect.from, abstractApi)) {
         result.push(redirect.to);
       }
-    }
-    // Regex check
-    else if (abstractApi.matches(redirect.from)) {
-      result.push(redirect.to);
     }
   }
 

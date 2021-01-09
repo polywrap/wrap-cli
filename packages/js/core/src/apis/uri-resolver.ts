@@ -16,7 +16,10 @@ export const Query = {
     })
   ),
   tryResolveUriPath: (client: Client, api: Uri, path: string) => (
-    client.invoke<boolean>({
+    client.invoke<{
+      uri?: string,
+      manifest?: string
+    }>({
       uri: api,
       module: "query",
       method: `tryResolveUriPath`,

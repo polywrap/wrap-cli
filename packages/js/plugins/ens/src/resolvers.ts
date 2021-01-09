@@ -3,7 +3,7 @@ import { EnsPlugin } from "./";
 import { Client, PluginModule } from "@web3api/core-js";
 
 export const query = (ens: EnsPlugin, client: Client): PluginModule => ({
-  // w3://ens/uri-resolver.core.web3api.eth
+  // w3/uri-resolver
   supportedUriAuthority: async (input: { authority: string }) => {
     return input.authority === "ens";
   },

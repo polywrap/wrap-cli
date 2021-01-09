@@ -41,11 +41,6 @@ export class Uri {
     return a.uri === b.uri;
   }
 
-  public matches(regex: RegExp): boolean {
-    const match = this.uri.match(regex);
-    return match !== null && match.length > 0;
-  }
-
   public static isUri(value: object): value is Uri {
     return (value as Uri).uri !== undefined
   }
