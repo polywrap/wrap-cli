@@ -1,5 +1,5 @@
 import {
-  w3_query,
+  w3_subquery,
   Nullable
 } from "@web3api/wasm-as";
 import {
@@ -21,7 +21,7 @@ export class TestImport_Query {
     uArrayArray: Array<Array<Nullable<u32>> | null>
   }): string {
     const args = serializeimportedMethodArgs(input);
-    const result = w3_query(
+    const result = w3_subquery(
       uri,
       `query {
         importedMethod(
@@ -41,7 +41,7 @@ export class TestImport_Query {
     arg: Array<string>
   }): i64 {
     const args = serializeanotherMethodArgs(input);
-    const result = w3_query(
+    const result = w3_subquery(
       uri,
       `query {
         anotherMethod(

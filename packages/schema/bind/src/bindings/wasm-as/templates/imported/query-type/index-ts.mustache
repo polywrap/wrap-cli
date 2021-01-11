@@ -1,5 +1,5 @@
 import {
-  w3_query,
+  w3_subquery,
   Nullable
 } from "@web3api/wasm-as";
 {{#methods.length}}
@@ -22,7 +22,7 @@ export class {{name}} {
     {{/arguments}}
   }): {{#toWasm}}{{return.type}}{{/toWasm}} {
     const args = serialize{{name}}Args(input);
-    const result = w3_query(
+    const result = w3_subquery(
       uri,
       `{{operation}} {
         {{name}}(

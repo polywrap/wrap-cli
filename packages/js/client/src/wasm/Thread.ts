@@ -1,24 +1,70 @@
+import {
+  W3Exports,
+  W3Imports,
+  HostDispatcher,
+  ThreadMethods,
+  usize
+} from "./types";
+
 import { expose } from "threads/worker";
 import { encode } from "@msgpack/msgpack";
 
-export interface ThreadState {
+const imports = (hostDispatch: HostDispatcher): W3Imports => ({
+  w3: {
+    __w3_subquery: (
+      uriPtr: usize, uriLen: usize,
+      queryPtr: usize, queryLen: usize,
+      argsPtr: usize, argsLen: usize
+    ): boolean => {
+      // TODO: read uri, query, and args. Then send the subquery and
+      //       only return when its' finished
+      // Args: uri_ptr: i32, uri_len: usize, query_ptr/len, args_ptr/len
+      // Ret: bool
+      // TODO:
+      // observable.next({ type: "__w3_subquery", data: { uri, query, args } });
+      // Atomics.wait(threadId, 1);
+      // wait for w3_subquery_result to have finished
+      return true;
+    },
+    __w3_subquery_result_len: (): usize => {
+      // TODO: return size of result buffer
+      // Ret: usize
+      return 0;
+    },
+    __w3_subquery_result: (ptr: usize): void => {
+      // TODO: fill the wasm buffer with the result buffer
+      // Args: ptr: i32
+    },
+    __w3_subquery_error_len: (): usize => {
+      // TODO: return size of error buffer
+      // Ret: usize
+      return 0;
+    },
+    __w3_subquery_error: (ptr: usize): void => {
+      // TODO: fill the wasm buffer with the error
+      // Arg: ptr: i32
+    },
+    __w3_invoke_args: (namePtr: usize, argsPtr: usize): void => {
+      // TODO: fill the wasm name + args buffer with method + input
+      // Arg: name_ptr: i32, args_ptr: i32
+    },
+    __w3_invoke_result: (ptr: usize, len: usize): void => {
+      // TODO: store the invoke result
+      // Arg: name_ptr: i32, len: usize
+    },
+    __w3_invoke_error: (ptr: usize, len: usize): void => {
+      // TODO: store the invoke error
+      // // Arg: ptr: i32, len: usize
+    }
+  }
+})
 
-}
-
-const state: ThreadState = {
-
-}
-
-interface Web3ApiExports {
-  _w3_init: () => void;
-}
-
-const methods = {
+const methods: ThreadMethods = {
   start: (
     wasm: ArrayBuffer,
     method: string,
     input: Record<string, unknown> | ArrayBuffer
-  ): ThreadState => {
+  ): HostDispatcher => {
 
     let msgpack: ArrayBuffer;
 
@@ -31,46 +77,9 @@ const methods = {
     }
 
     const module = new WebAssembly.Module(wasm);
-    const source = new WebAssembly.Instance(module, {
-      w3: {
-        __w3_query: () => {
-          // TODO: read uri, query, and args. Then send the subquery and
-          //       only return when its' finished
-          // Args: uri_ptr: i32, uri_len: usize, query_ptr/len, args_ptr/len
-          // Ret: bool
-        },
-        __w3_query_result_len: () => {
-          // TODO: return size of result buffer
-          // Ret: usize
-        },
-        __w3_query_result: () => {
-          // TODO: fill the wasm buffer with the result buffer
-          // Args: ptr: i32
-        },
-        __w3_query_error_len: () => {
-          // TODO: return size of error buffer
-          // Ret: usize
-        },
-        __w3_query_error: () => {
-          // TODO: fill the wasm buffer with the error
-          // Arg: ptr: i32
-        },
-        __w3_invoke_args: () => {
-          // TODO: fill the wasm name + args buffer with method + input
-          // Arg: name_ptr: i32, args_ptr: i32
-        },
-        __w3_invoke_result: () => {
-          // TODO: store the invoke result
-          // Arg: name_ptr: i32, len: usize
-        },
-        __w3_invoke_error: () => {
-          // TODO: store the invoke error
-          // // Arg: ptr: i32, len: usize
-        }
-      }
-    });
+    const source = new WebAssembly.Instance(module, );
 
-    const exports = source.exports as Web3ApiExports;
+    const exports = source.exports as W3Exports;
 
     if (!exports._w3_init) {
       // TODO: Throw an error
@@ -86,9 +95,17 @@ const methods = {
     // - call method w/ imports
 
     return { };
+  },
+  subQueryResult: (result: ArrayBuffer) => {
+    // TODO:
+    // serialize & set result (transferable)
+    // set flag
+  },
+  subQueryError: (error: string): void => {
+    // TODO:
+    // serialize & store error
+    // set flag
   }
 }
 
-export type ThreadMethods = typeof methods;
-
-expose(methods);
+expose(methods as Record<string, any>);
