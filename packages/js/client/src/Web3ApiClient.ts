@@ -1,5 +1,6 @@
 import { getDefaultRedirects } from "./default-redirects";
-import { PluginWeb3Api, WasmWeb3Api } from "./web3api";
+import { PluginWeb3Api } from "./plugin/PluginWeb3Api";
+import { WasmWeb3Api } from "./wasm/WasmWeb3Api";
 
 import {
   Api,

@@ -1,7 +1,7 @@
 import {
-  WasmState,
-  WasmThread
-} from "./WasmThread";
+  ThreadState,
+  ThreadMethods
+} from "./Thread";
 
 import {
   InvokeApiOptions,
@@ -85,7 +85,7 @@ export class WasmWeb3Api extends Api {
     // TODO: use a pool of workers
     // TODO: use transferable buffers
 
-    const thread = await spawn<WasmThread>(
+    const thread = await spawn<ThreadMethods>(
       new Worker("./WasmThread")
     );
 
