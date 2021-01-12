@@ -5,6 +5,7 @@ import {
   usize,
   HostAction
 } from "./types";
+import { memcpy } from "./utils";
 
 import { Observable, SubscriptionObserver } from "observable-fns";
 import { expose } from "threads/worker";
@@ -63,8 +64,11 @@ const imports = (
       return state.subquery.error.length;
     },
     __w3_subquery_error: (ptr: usize): void => {
-      // TODO: fill the wasm buffer with the error
-      write(memory, ptr, state.subquery.error);
+      // TODO: test this
+      const heap = new Uint8Array(memory.buffer);
+      const encode = new TextEncoder();
+      const error = encode.encode(state.subquery.error);
+      memcpy(error, 0, heap, ptr, error.length);
     },
     __w3_invoke_args: (methodPtr: usize, argsPtr: usize): void => {
       // TODO: fill the wasm name + args buffer with method + input
