@@ -8,7 +8,9 @@ import {
   createPropertyDefinition,
   createScalarDefinition,
   createArrayDefinition,
+  createObjectDefinition
 } from "../typeInfo";
+import { isObjectType } from "./utils";
 
 import {
   DocumentNode,
@@ -78,11 +80,19 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     if (method && argument) {
       // Argument value
-      argument.scalar = createScalarDefinition(
-        argument.name,
-        modifier + node.name.value,
-        state.nonNullType
-      );
+      if (
+        isObjectType(
+          node.name.value,
+          typeInfo.userTypes.concat(typeInfo.importedObjectTypes)
+        )
+      ) {
+        const type = modifier + node.name.value;
+        argument.object = createObjectDefinition(argument.name, type, state.nonNullType);
+        argument.type = type;
+      } else {
+        argument.scalar = createScalarDefinition(argument.name, modifier + node.name.value, state.nonNullType);
+      }
+
       state.nonNullType = false;
     } else if (method) {
       // Return value
@@ -92,11 +102,30 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       } else if (!state.currentReturn) {
         state.currentReturn = method.return;
       }
-      state.currentReturn.scalar = createScalarDefinition(
-        method.name,
-        modifier + node.name.value,
-        state.nonNullType
-      );
+
+      if (
+        isObjectType(
+          node.name.value,
+          typeInfo.userTypes.concat(typeInfo.importedObjectTypes)
+        )
+      ) {
+        const type = modifier + node.name.value;
+        state.currentReturn.object = createObjectDefinition(
+          method.name,
+          type,
+          state.nonNullType
+        );
+        state.currentReturn.required = state.nonNullType
+          ? state.nonNullType
+          : null;
+        state.currentReturn.type = type;
+      } else {
+        state.currentReturn.scalar = createScalarDefinition(
+          method.name,
+          modifier + node.name.value,
+          state.nonNullType
+        );
+      }
       state.nonNullType = false;
     }
   },
