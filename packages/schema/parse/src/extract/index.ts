@@ -13,7 +13,7 @@ export type SchemaExtractor = (
 
 export const extractors: SchemaExtractor[] = [
   extractUserTypes,
-  extractQueryTypes,
   extractImportedObjectTypes,
+  extractQueryTypes,
   extractImportedQueryTypes,
 ];
