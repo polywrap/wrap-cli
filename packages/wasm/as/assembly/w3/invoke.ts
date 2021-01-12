@@ -2,7 +2,7 @@
 
 // Get Invoke Arguments
 @external("w3", "__w3_invoke_args")
-export declare function __w3_invoke_args(name_ptr: usize, args_ptr: usize): void;
+export declare function __w3_invoke_args(method_ptr: usize, args_ptr: usize): void;
 
 // Set Invoke Result
 @external("w3", "__w3_invoke_result")
@@ -17,21 +17,21 @@ type InvokeFunction = (argsBuf: ArrayBuffer) => ArrayBuffer;
 
 const invokes = new Map<string, InvokeFunction>();
 
-export function w3_add_invoke(name: string, fn: InvokeFunction): void {
-  invokes.set(name, fn);
+export function w3_add_invoke(method: string, fn: InvokeFunction): void {
+  invokes.set(method, fn);
 }
 
 // Helper for handling _w3_invoke
-export function w3_invoke(name_size: usize, args_size: usize): bool {
-  const nameBuf = new ArrayBuffer(changetype<usize>(name_size));
+export function w3_invoke(method_size: usize, args_size: usize): bool {
+  const methodBuf = new ArrayBuffer(changetype<usize>(method_size));
   const argsBuf = new ArrayBuffer(changetype<usize>(args_size));
   __w3_invoke_args(
-    changetype<usize>(nameBuf),
+    changetype<usize>(methodBuf),
     changetype<usize>(argsBuf)
   );
 
-  const name = String.UTF8.decode(nameBuf);
-  const fn = invokes.has(name) ? invokes.get(name) : null;
+  const method = String.UTF8.decode(methodBuf);
+  const fn = invokes.has(method) ? invokes.get(method) : null;
   if (fn) {
     const result = fn(argsBuf);
     __w3_invoke_result(
@@ -41,7 +41,7 @@ export function w3_invoke(name_size: usize, args_size: usize): bool {
     return true;
   } else {
     const message = String.UTF8.encode(
-      `Could not find invoke function "${name}"`
+      `Could not find invoke function "${method}"`
     );
     __w3_invoke_error(
       changetype<usize>(message),

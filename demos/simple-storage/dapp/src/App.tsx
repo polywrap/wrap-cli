@@ -16,12 +16,12 @@ const client = new Web3APIClient({
 });
 
 client.query({
-  uri: "ens://api.uniswap.eth",
+  uri: "ens/api.uniswap.eth",
   query: gql`
     mutation {
-      setData(
-        address: $address
-        value: $value
+      swap(
+        to: $to
+        from: $from
       )
     }
   `

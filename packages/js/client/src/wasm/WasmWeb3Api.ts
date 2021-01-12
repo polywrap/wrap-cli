@@ -1,7 +1,5 @@
-import {
-  ThreadState,
-  ThreadMethods
-} from "./Thread";
+import { HostDispatcher } from "./types";
+import { ThreadMethods } from "./thread";
 
 import {
   InvokeApiOptions,
@@ -86,12 +84,14 @@ export class WasmWeb3Api extends Api {
     // TODO: use transferable buffers
 
     const thread = await spawn<ThreadMethods>(
-      new Worker("./WasmThread")
+      new Worker("./thread")
     );
 
-    const state = await thread.start(
-      wasm, method, input, methodInfo
+    const dispatcher = thread.start(
+      wasm, method, input
     );
+
+
 
     Thread.terminate(thread);
 
@@ -101,8 +101,6 @@ export class WasmWeb3Api extends Api {
     // x module (caps) has method
     // x fetch module (mutation or query)
     ///// in other thread /////
-    // - get argument types
-    // - serialize input to msgpack
     // - exec method on module w/ input arguments in worker
     // - deserialize arguments
     /////

@@ -10,6 +10,6 @@ export function _w3_init(): void {
   w3_add_invoke("queryMethod", queryMethodWrapped);
 }
 
-export function _w3_invoke(name_size: usize, args_size: usize): bool {
-  return w3_invoke(name_size, args_size);
+export function _w3_invoke(method_size: usize, args_size: usize): bool {
+  return w3_invoke(method_size, args_size);
 }
