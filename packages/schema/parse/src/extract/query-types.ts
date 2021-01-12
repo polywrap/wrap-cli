@@ -10,7 +10,7 @@ import {
   createArrayDefinition,
   createObjectDefinition,
 } from "../typeInfo";
-import { isObjectType } from "./utils";
+import { getObjectDefinition } from "./utils";
 
 import {
   DocumentNode,
@@ -80,17 +80,17 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     if (method && argument) {
       // Argument value
-      if (
-        isObjectType(
-          node.name.value,
-          typeInfo.userTypes.concat(typeInfo.importedObjectTypes)
-        )
-      ) {
+      const objectDefinition = getObjectDefinition(
+        node.name.value,
+        typeInfo.userTypes.concat(typeInfo.importedObjectTypes)
+      );
+      if (objectDefinition) {
         const type = modifier + node.name.value;
         argument.object = createObjectDefinition(
           argument.name,
           type,
-          state.nonNullType
+          state.nonNullType,
+          objectDefinition.properties
         );
         argument.type = type;
       } else {
@@ -111,17 +111,17 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
         state.currentReturn = method.return;
       }
 
-      if (
-        isObjectType(
-          node.name.value,
-          typeInfo.userTypes.concat(typeInfo.importedObjectTypes)
-        )
-      ) {
+      const objectDefinition = getObjectDefinition(
+        node.name.value,
+        typeInfo.userTypes.concat(typeInfo.importedObjectTypes)
+      );
+      if (objectDefinition) {
         const type = modifier + node.name.value;
         state.currentReturn.object = createObjectDefinition(
           method.name,
           type,
-          state.nonNullType
+          state.nonNullType,
+          objectDefinition.properties
         );
         state.currentReturn.required = state.nonNullType
           ? state.nonNullType

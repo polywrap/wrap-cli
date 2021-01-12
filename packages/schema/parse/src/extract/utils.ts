@@ -1,14 +1,12 @@
 import { ObjectDefinition } from "../typeInfo";
 
-export function isObjectType(
+export function getObjectDefinition(
   value: string,
   objects: ObjectDefinition[]
-): boolean {
+): ObjectDefinition | void {
   for (const object of objects) {
     if (object.name === value) {
-      return true;
+      return object;
     }
   }
-
-  return false;
 }

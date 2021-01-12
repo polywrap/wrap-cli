@@ -232,7 +232,6 @@ export const output: TypeInfo = {
           return: createObjectPropertyDefinition("userObjectMethod", "UserObject", true, [
             createScalarPropertyDefinition("fieldA", "?String", false),
             createScalarPropertyDefinition("fieldB", "Int", true),
-
           ])
         }
       ]
