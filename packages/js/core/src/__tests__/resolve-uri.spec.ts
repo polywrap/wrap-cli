@@ -4,15 +4,15 @@ import {
   InvokeApiOptions,
   InvokeApiResult,
   Manifest,
-  SchemaDocument,
   Plugin,
   PluginModules,
   PluginPackage,
   QueryApiOptions,
   QueryApiResult,
-  resolveUri,
+  SchemaDocument,
   Uri,
   UriRedirect,
+  resolveUri,
 } from "../";
 
 describe("resolveUri", () => {
@@ -238,6 +238,31 @@ describe("resolveUri", () => {
       createApi
     ).catch((e) =>
       expect(e.message).toMatch(/Infinite loop while resolving URI/)
+    );
+  });
+
+  it("throws when redirect missing the from property", async () => {
+    const missingFromProperty: UriRedirect[] = [
+      ...redirects,
+      {
+        from: new Uri("some/api"),
+        to: new Uri("ens/api"),
+      },
+      {
+        from: null,
+        to: new Uri("another/api"),
+      },
+    ];
+
+    expect.assertions(1);
+
+    return resolveUri(
+      new Uri("some/api"),
+      client(missingFromProperty, apis),
+      createPluginApi,
+      createApi
+    ).catch((e) =>
+      expect(e.message).toMatch("Redirect missing the from property.\nEncountered while resolving w3://some/api")
     );
   });
 });
