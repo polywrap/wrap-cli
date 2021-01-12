@@ -40,13 +40,14 @@ export interface ObjectDefinition extends GenericDefinition {
 export function createObjectDefinition(
   name: string,
   type?: string,
-  required?: boolean
+  required?: boolean,
+  properties?: PropertyDefinition[]
 ): ObjectDefinition {
   return {
     name,
     type: type ? type : null,
     required: required ? required : null,
-    properties: [],
+    properties: properties ? properties : [],
     kind: DefinitionKind.Object,
   };
 }
@@ -62,7 +63,7 @@ export function createAnyDefinition(
   required?: boolean,
   array?: ArrayDefinition,
   scalar?: ScalarDefinition,
-  object?: ObjectDefinition,
+  object?: ObjectDefinition
 ): AnyDefinition {
   return {
     name,
@@ -123,7 +124,7 @@ export function createPropertyDefinition(
   required?: boolean,
   array?: ArrayDefinition,
   scalar?: ScalarDefinition,
-  object?: ObjectDefinition,
+  object?: ObjectDefinition
 ): PropertyDefinition {
   return {
     name,
@@ -148,7 +149,7 @@ export function createObjectPropertyDefinition(
     required,
     undefined,
     undefined,
-    createObjectDefinition(name, type, required)
+    createObjectDefinition(name, type, required, properties)
   );
 }
 

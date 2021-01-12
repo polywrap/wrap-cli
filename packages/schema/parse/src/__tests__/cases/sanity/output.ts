@@ -9,6 +9,7 @@ import {
   createArrayPropertyDefinition,
   createScalarDefinition,
   createArrayDefinition,
+  createObjectPropertyDefinition,
 } from "../../../typeInfo";
 
 export const output: TypeInfo = {
@@ -116,8 +117,17 @@ export const output: TypeInfo = {
     },
     {
       ...createObjectDefinition("AnotherType"),
-      properties: [createScalarPropertyDefinition("prop", "?String", false)],
+      properties: [
+        createScalarPropertyDefinition("prop", "?String", false),
+      ]
     },
+    {
+      ...createObjectDefinition("UserObject"),
+      properties: [
+        createScalarPropertyDefinition("fieldA", "?String", false),
+        createScalarPropertyDefinition("fieldB", "Int", true),
+      ]
+    }
   ],
   queryTypes: [
     {
@@ -125,11 +135,34 @@ export const output: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition("query", "queryMethod"),
-          arguments: [createScalarPropertyDefinition("arg", "String", true)],
-          return: createScalarPropertyDefinition("queryMethod", "Int", true),
+          arguments: [
+            createScalarPropertyDefinition("arg", "String", true)
+          ],
+          return: createScalarPropertyDefinition("queryMethod", "Int", true)
         },
-      ],
-    },
+        {
+          ...createMethodDefinition("query", "importedObjectMethod"),
+          arguments: [
+            createObjectPropertyDefinition(
+              "importedObject",
+              "?TestImport_Object",
+              false,
+              [
+                createScalarPropertyDefinition("prop", "String", true)
+              ]
+            )
+          ],
+          return: createObjectPropertyDefinition(
+            "importedObjectMethod",
+            "TestImport_Object",
+            true,
+            [
+              createScalarPropertyDefinition("prop", "String", true)
+            ]
+          )
+        }
+      ]
+    }
   ],
   importedObjectTypes: [
     {
@@ -186,13 +219,23 @@ export const output: TypeInfo = {
               createScalarDefinition("arg", "String", true)
             ),
           ],
-          return: createScalarPropertyDefinition(
-            "anotherMethod",
-            "Int64",
-            true
-          ),
+          return: createScalarPropertyDefinition("anotherMethod", "Int64", true)
         },
-      ],
-    },
-  ],
-};
+        {
+          ...createMethodDefinition("query", "userObjectMethod"),
+          arguments: [
+            createObjectPropertyDefinition("userObject", "?UserObject", false, [
+              createScalarPropertyDefinition("fieldA", "?String", false),
+              createScalarPropertyDefinition("fieldB", "Int", true),
+            ])
+          ],
+          return: createObjectPropertyDefinition("userObjectMethod", "UserObject", true, [
+            createScalarPropertyDefinition("fieldA", "?String", false),
+            createScalarPropertyDefinition("fieldB", "Int", true),
+
+          ])
+        }
+      ]
+    }
+  ]
+}

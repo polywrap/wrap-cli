@@ -8,7 +8,7 @@ import {
   createPropertyDefinition,
   createScalarDefinition,
   createArrayDefinition,
-  createObjectDefinition
+  createObjectDefinition,
 } from "../typeInfo";
 import { isObjectType } from "./utils";
 
@@ -87,10 +87,18 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
         )
       ) {
         const type = modifier + node.name.value;
-        argument.object = createObjectDefinition(argument.name, type, state.nonNullType);
+        argument.object = createObjectDefinition(
+          argument.name,
+          type,
+          state.nonNullType
+        );
         argument.type = type;
       } else {
-        argument.scalar = createScalarDefinition(argument.name, modifier + node.name.value, state.nonNullType);
+        argument.scalar = createScalarDefinition(
+          argument.name,
+          modifier + node.name.value,
+          state.nonNullType
+        );
       }
 
       state.nonNullType = false;
