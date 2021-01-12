@@ -1,1 +1,2 @@
-export * as ApiResolver from "./api-resolver";
+import * as ApiResolver from "./api-resolver";
+export { ApiResolver };

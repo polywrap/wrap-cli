@@ -5,7 +5,12 @@ import {
   usize,
   HostAction
 } from "./types";
-import { memcpy } from "./utils";
+import {
+  readBytes,
+  readString,
+  writeBytes,
+  writeString
+} from "./utils";
 
 import { Observable, SubscriptionObserver } from "observable-fns";
 import { expose } from "threads/worker";
@@ -22,15 +27,28 @@ interface State {
     result?: ArrayBuffer;
     error?: string;
   };
+  threadMutexes?: SharedArrayBuffer;
+  threadId?: number;
 }
 
 const state: State = {
   invoke: { },
-  subquery: { }
+  subquery: { },
+}
+
+const abort = (
+  observer: SubscriptionObserver<HostAction>,
+  message: string
+) => {
+  observer.next({
+    type: "Abort",
+    message
+  });
+  observer.complete();
 }
 
 const imports = (
-  hostDispatch: SubscriptionObserver<HostAction>,
+  observer: SubscriptionObserver<HostAction>,
   memory: WebAssembly.Memory
 ): W3Imports => ({
   w3: {
@@ -39,49 +57,91 @@ const imports = (
       queryPtr: usize, queryLen: usize,
       argsPtr: usize, argsLen: usize
     ): boolean => {
-      // TODO: read uri, query, and args. Then send the subquery and
-      //       only return when its' finished
-      // Args: uri_ptr: i32, uri_len: usize, query_ptr/len, args_ptr/len
-      // Ret: bool
-      // TODO:
-      // observable.next({ type: "__w3_subquery", data: { uri, query, args } });
-      // Atomics.wait(threadId, 1);
-      // wait for w3_subquery_result to have finished
-      return true;
+      const uri = readString(memory.buffer, uriPtr, uriLen);
+      const query = readString(memory.buffer, queryPtr, queryLen);
+      const args = readBytes(memory.buffer, argsPtr, argsLen);
+
+      observer.next({
+        type: "SubQuery",
+        uri,
+        query,
+        args
+      });
+
+      if (!state.threadId || !state.threadMutexes) {
+        abort(
+          observer,
+          `__w3_subquery: thread unitialized.\nthreadId: ${state.threadId}\nthreadMutexes: ${state.threadMutexes}`
+        );
+        return false;
+      }
+
+      // Pause the thread, unpausing every 500ms to enable pending
+      // events to be processed.
+      // TODO: might not be needed, test this.
+      while (!state.subquery.error && !state.subquery.result) {
+        Atomics.wait(
+          new Int32Array(state.threadMutexes),
+          state.threadId,
+          1,
+          500
+        );
+      }
+
+      return !state.subquery.error;
     },
+    // Give WASM the size of the result
     __w3_subquery_result_len: (): usize => {
-      // TODO: return size of result buffer
-      // TODO: error reporting
+      if (!state.subquery.result) {
+        abort(observer, "__w3_subquery_result_len: subquery.result is not set");
+        return 0;
+      }
       return state.subquery.result.byteLength;
     },
+    // Copy the subquery result into WASM
     __w3_subquery_result: (ptr: usize): void => {
-      // TODO: fill the wasm buffer with the result buffer
-      write(memory, ptr, state.subquery.result);
+      if (!state.subquery.result) {
+        abort(observer, "__w3_subquery_result: subquery.result is not set");
+        return;
+      }
+      writeBytes(state.subquery.result, memory.buffer, ptr);
     },
+    // Give WASM the size of the error
     __w3_subquery_error_len: (): usize => {
-      // TODO: return size of error buffer
-      // TODO: error reporting
+      if (!state.subquery.error) {
+        abort(observer, "__w3_subquery_error_len: subquery.error is not set");
+        return 0;
+      }
       return state.subquery.error.length;
     },
+    // Copy the subquery error into WASM
     __w3_subquery_error: (ptr: usize): void => {
-      // TODO: test this
-      const heap = new Uint8Array(memory.buffer);
-      const encode = new TextEncoder();
-      const error = encode.encode(state.subquery.error);
-      memcpy(error, 0, heap, ptr, error.length);
+      if (!state.subquery.error) {
+        abort(observer, "__w3_subquery_error: subquery.error is not set");
+        return;
+      }
+      writeString(state.subquery.error, memory.buffer, ptr);
     },
+    // Copy the invocation's method & args into WASM
     __w3_invoke_args: (methodPtr: usize, argsPtr: usize): void => {
-      // TODO: fill the wasm name + args buffer with method + input
-      write(memory, methodPtr, state.method);
-      write(memory, argsPtr, state.args);
+      if (!state.method) {
+        abort(observer, "__w3_invoke_args: method is not set");
+        return;
+      }
+      if (!state.args) {
+        abort(observer, "__w3_invoke_args: args is not set");
+        return;
+      }
+      writeString(state.method, memory.buffer, methodPtr);
+      writeBytes(state.args, memory.buffer, argsPtr);
     },
+    // Store the invocation's result
     __w3_invoke_result: (ptr: usize, len: usize): void => {
-      // TODO: store the invoke result
-      state.invoke.result = read(memory, ptr, len);
+      state.invoke.result = readBytes(memory.buffer, ptr, len);
     },
+    // Store the invocation's error
     __w3_invoke_error: (ptr: usize, len: usize): void => {
-      // TODO: store the invoke error
-      state.invoke.error = read(memory, ptr, len);
+      state.invoke.error = readString(memory.buffer, ptr, len);
     }
   },
   env: {
@@ -93,16 +153,14 @@ const methods = {
   start: (
     wasm: ArrayBuffer,
     method: string,
-    input: Record<string, unknown> | ArrayBuffer
+    input: Record<string, unknown> | ArrayBuffer,
+    threadMutexes: SharedArrayBuffer,
+    threadId: number
   ): HostDispatcher => new Observable(observer => {
 
-    const abort = (message: string) => {
-      observer.next({
-        type: "Abort",
-        message
-      });
-      observer.complete();
-    }
+    // Store thread mutexes & ID, used for pausing the thread's execution
+    state.threadMutexes = threadMutexes;
+    state.threadId = threadId;
 
     // Store the method we're invoking
     state.method = method;
@@ -125,7 +183,7 @@ const methods = {
 
     const hasExport = (name: string, exports: Record<string, unknown>): boolean => {
       if (!exports[name]) {
-        abort(`A required export was not found: ${name}`);
+        abort(observer, `A required export was not found: ${name}`);
         return false;
       }
 
@@ -152,7 +210,7 @@ const methods = {
 
     if (!result) {
       if (!state.invoke.result) {
-        abort(`Invoke result is missing.`);
+        abort(observer, `Invoke result is missing.`);
         return;
       }
 
@@ -163,7 +221,7 @@ const methods = {
       });
     } else {
       if (!state.invoke.error) {
-        abort(`Invoke error is missing.`);
+        abort(observer, `Invoke error is missing.`);
         return;
       }
 

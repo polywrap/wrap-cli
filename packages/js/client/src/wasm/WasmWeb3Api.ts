@@ -1,4 +1,4 @@
-import { HostDispatcher } from "./types";
+import { HostAction } from "./types";
 import { ThreadMethods } from "./thread";
 
 import {
@@ -18,6 +18,10 @@ import {
   MethodDefinition,
 } from "@web3api/schema-parse";
 import { spawn, Thread, Worker } from "threads";
+
+const maxThreads: number = 500;
+let threadsActive: number = 0;
+const threadMutexes = new SharedArrayBuffer(maxThreads);
 
 export class WasmWeb3Api extends Api {
   private _schema?: string;
@@ -53,6 +57,9 @@ export class WasmWeb3Api extends Api {
     const root: "Query" | "Mutation" =
       module === "query" ? "Query" : "Mutation";
 
+    // TODO: this error checking may not be needed, as it's handled by the thread
+    //       if that's the case, we have no need for the schema's TypeInfo, which is good
+
     // Ensure the schema contains the query module being asked for
     const queryIdx = typeInfo.queryTypes.findIndex(
       (item: QueryDefinition) => item.name === root
@@ -73,38 +80,76 @@ export class WasmWeb3Api extends Api {
       throw Error(`Unable to find method "${method}" on query type "${root}".`);
     }
 
-    // We use this method type for serializing the arguments,
-    // and deserializing the return value
-    const methodInfo = queryInfo.methods[methodIdx];
-
     // Fetch the WASM module
     const wasm = await this.getWasmModule(module, client);
 
-    // TODO: use a pool of workers
     // TODO: use transferable buffers
+
+    // TODO: come up with a better future-proof solution
+    while (threadsActive >= maxThreads) {
+      // Wait for another thread to become available
+      await new Promise((resolve) => setTimeout(() => resolve(), 500));
+    }
+
+    const threadId = threadsActive++;
+    const threadMutexesView = new Int8Array(threadMutexes);
+    threadMutexesView[threadId] = 0;
 
     const thread = await spawn<ThreadMethods>(
       new Worker("./thread")
     );
 
     const dispatcher = thread.start(
-      wasm, method, input
+      wasm, method, input, threadMutexes, threadId
     );
 
+    let abortMessage: string;
+    let queryResult: ArrayBuffer;
+    let queryError: string;
 
+    await new Promise((resolve) => {
+      dispatcher.subscribe(async (action: HostAction) => {
+        switch (action.type) {
+          case "Abort": {
+            abortMessage = action.message;
+            resolve();
+            break;
+          }
+          case "LogQueryError": {
+            queryError = action.error;
+            resolve();
+            break;
+          }
+          case "LogQueryResult": {
+            queryResult = action.result;
+            resolve();
+            break;
+          }
+          case "SubQuery": {
+            const { data, error } = await client.invoke({
+              uri: new Uri(action.uri),
+              module: action.module,
+              method: action.query,
+              input: action.input
+            });
+
+            // TODO: refactor...
+            // - __w3_subquery -> __w3_subinvoke(uri, module, method, input)
+            // - plugin invoke -> deserialize msgpack buffer
+
+            // TODO: perform subquery, set result/error, continue thread
+            break;
+          }
+        }
+      });
+    });
 
     Thread.terminate(thread);
+    threadsActive--;
 
-    // TODO:
-    // x fetch schema
-    // x parse schema
-    // x module (caps) has method
-    // x fetch module (mutation or query)
-    ///// in other thread /////
-    // - exec method on module w/ input arguments in worker
-    // - deserialize arguments
-    /////
-    // - return result
+    // TODO: do something w/ the thread error, query result/error
+
+    return result;
   }
 
   private async getSchema(client: Client): Promise<string> {
