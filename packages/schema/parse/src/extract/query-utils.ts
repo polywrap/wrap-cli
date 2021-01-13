@@ -45,6 +45,7 @@ export function extractNamedType(
         state.nonNullType,
         objectDefinition.properties
       );
+      argument.object.kind = objectDefinition.kind;
       argument.type = type;
     } else {
       argument.scalar = createScalarDefinition(
@@ -77,6 +78,7 @@ export function extractNamedType(
         state.nonNullType,
         objectDefinition.properties
       );
+      state.currentReturn.object.kind = objectDefinition.kind;
       state.currentReturn.required = state.nonNullType
         ? state.nonNullType
         : null;

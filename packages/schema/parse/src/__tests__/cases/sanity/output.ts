@@ -10,6 +10,7 @@ import {
   createScalarDefinition,
   createArrayDefinition,
   createObjectPropertyDefinition,
+  DefinitionKind,
 } from "../../../typeInfo";
 
 export const output: TypeInfo = {
@@ -139,19 +140,41 @@ export const output: TypeInfo = {
         {
           ...createMethodDefinition("query", "importedObjectMethod"),
           arguments: [
-            createObjectPropertyDefinition(
-              "importedObject",
-              "?TestImport_Object",
-              false,
+            {
+              ...createObjectPropertyDefinition(
+                "importedObject",
+                "?TestImport_Object",
+                false,
+                [createScalarPropertyDefinition("prop", "String", true)]
+              ),
+              object: {
+                ...createObjectDefinition(
+                  "importedObject",
+                  "?TestImport_Object",
+                  false,
+                  [createScalarPropertyDefinition("prop", "String", true)]
+                ),
+                kind: DefinitionKind.ImportedObject
+              }
+            }
+          ],
+          return: {
+            ...createObjectPropertyDefinition(
+              "importedObjectMethod",
+              "TestImport_Object",
+              true,
               [createScalarPropertyDefinition("prop", "String", true)]
             ),
-          ],
-          return: createObjectPropertyDefinition(
-            "importedObjectMethod",
-            "TestImport_Object",
-            true,
-            [createScalarPropertyDefinition("prop", "String", true)]
-          ),
+            object: {
+              ...createObjectDefinition(
+                "importedObjectMethod",
+                "TestImport_Object",
+                true,
+                [createScalarPropertyDefinition("prop", "String", true)]
+              ),
+              kind: DefinitionKind.ImportedObject
+            }
+          }
         },
       ],
     },
