@@ -63,6 +63,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     if (!importedDir.arguments || importedDir.arguments.length !== 3) {
       // TODO: Implement better error handling
+      // https://github.com/Web3-API/prototype/issues/15
       throw Error(
         `The ${importedDirective} directive has incorrect arguments. See type "${typeName}"`
       );

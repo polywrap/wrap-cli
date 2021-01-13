@@ -32,6 +32,7 @@ export class EnsPlugin extends Plugin {
   }
 
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
+  // https://github.com/Web3-API/prototype/issues/101
   public getModules(client: Client): PluginModules {
     return {
       query: query(this, client),

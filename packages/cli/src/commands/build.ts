@@ -13,9 +13,11 @@ Options:
   -h, --help                         Show usage information
   -i, --ipfs <node>                  Upload build results to an IPFS node
   -o, --output-dir <path>            Output directory for build results (default: build/)
-  -w, --watch                        Regenerate types when web3api files change (default: false)
   -e, --test-ens <[address,]domain>  Publish the package to a test ENS domain locally
 `;
+
+// TODO: add to the above options when implemented
+// -w, --watch                        Regenerate types when web3api files change (default: false)
 
 export default {
   alias: ["b"],
@@ -89,7 +91,7 @@ export default {
     });
 
     if (watch) {
-      // TODO:
+      // TODO: https://github.com/Web3-API/prototype/issues/98
       // await compiler.watchAndCompile();
     } else {
       const result = await compiler.compile();

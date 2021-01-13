@@ -15,7 +15,7 @@ export const query = (ens: EnsPlugin, client: Client): PluginModule => ({
         manifest: null,
       };
     } catch (e) {
-      // TODO: logging
+      // TODO: logging https://github.com/Web3-API/prototype/issues/33
     }
 
     // Nothing found

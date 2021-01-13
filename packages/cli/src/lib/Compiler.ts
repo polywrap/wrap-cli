@@ -133,11 +133,6 @@ export class Compiler {
       fs.writeFileSync(`${outputDir}/schema.graphql`, schema, "utf-8");
 
       Web3APIManifest.dump(manifest, `${outputDir}/web3api.yaml`);
-
-      // TODO: add validation
-      // - WASM modules
-      // - WASM exports <> GraphQL Schema
-      // - Schemas
     };
 
     if (quiet) {
