@@ -1,5 +1,6 @@
 import {
   Api,
+  ApiResolver,
   Client,
   InvokeApiOptions,
   InvokeApiResult,
@@ -30,7 +31,7 @@ describe("resolveUri", () => {
     },
     invoke: (options: InvokeApiOptions): Promise<InvokeApiResult> => {
       return Promise.resolve({
-        data: apis[options.uri.uri][options.module][options.method](
+        data: apis[options.uri.uri]?.[options.module]?.[options.method](
           options.input,
           {} as Client
         ),
@@ -127,6 +128,17 @@ describe("resolveUri", () => {
     "w3://ens/ipfs": ipfsApi,
     "w3://ens/my-plugin": pluginApi,
   };
+
+  it("sanity", () => {
+    const api = new Uri("w3://ens/ens");
+    const file = new Uri("w3/some-file");
+    const path = "w3/some-path";
+    const query = ApiResolver.Query;
+    const uri = new Uri("w3/some-uri");
+
+    expect(query.tryResolveUri(client(redirects, apis), api, uri)).toBeDefined();
+    expect(query.getFile(client(redirects, apis), file, path)).toBeDefined();
+  });
 
   it("works in the typical case", async () => {
     const result = await resolveUri(
