@@ -60,7 +60,7 @@ type Query @imports(
   ): Int!
 
   importedObjectMethod(
-    importedObject: TestImport_Object
+    importedObject: TestImport_Object!
   ): TestImport_Object!
 }
 

@@ -143,15 +143,15 @@ export const output: TypeInfo = {
             {
               ...createObjectPropertyDefinition(
                 "importedObject",
-                "?TestImport_Object",
-                false,
+                "TestImport_Object",
+                true,
                 [createScalarPropertyDefinition("prop", "String", true)]
               ),
               object: {
                 ...createObjectDefinition(
                   "importedObject",
-                  "?TestImport_Object",
-                  false,
+                  "TestImport_Object",
+                  true,
                   [createScalarPropertyDefinition("prop", "String", true)]
                 ),
                 kind: DefinitionKind.ImportedObject
