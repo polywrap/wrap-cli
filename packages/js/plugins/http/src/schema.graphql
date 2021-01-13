@@ -1,21 +1,30 @@
-type Response {
-    status: Integer!
-    statusText: String!
-    headers: [Header!]
-    data: String!
-}
-
 type Header {
     key: String!
     value: String!
 }
 
-type Request {
-    url: String!
+type UrlParam {
+    key: String!
+    value: String!
+}
+
+type Response {
+    status: Integer!
+    statusText: String!
     headers: [Header!]
+    body: String!
+}
+
+type Request {
+    headers: [Header!]
+    urlParams: [UrlParam!]
+    body: String
 }
 
 type Query {
-    get(request: Request): Response!
-    post(request: Request): Response!
+    get(url: String!, request: Request): Response!
+}
+
+type Mutation {
+    post(url: String!, request: Request): Response!
 }
