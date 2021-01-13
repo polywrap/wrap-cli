@@ -15,19 +15,6 @@ async function main() {
 
   console.log(`✔️ SimpleStorage live at: ${address}`)
 
-  const manifest = YAML.safeLoad(
-    fs.readFileSync(`${__dirname}/src/subgraph/subgraph.yaml`)
-  );
-
-  manifest.dataSources[0].source.address = address;
-
-  fs.writeFileSync(
-    `${__dirname}/src/subgraph/subgraph.yaml`,
-    YAML.safeDump(manifest)
-  );
-
-  console.log("✔️ Subgraph Manifest Updated");
-
   const constants = require(`${__dirname}/recipes/constants.json`);
   constants.SimpleStorageAddr = address;
   fs.writeFileSync(

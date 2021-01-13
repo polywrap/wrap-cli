@@ -28,8 +28,5 @@
   {
     "query": "./get.graphql",
     "variables": { "address": "$SimpleStorageAddr" }
-  },
-  {
-    "query": "./history.graphql"
   }
 ]

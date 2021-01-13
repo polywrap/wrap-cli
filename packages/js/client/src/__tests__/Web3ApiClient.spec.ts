@@ -59,7 +59,7 @@ describe("Web3ApiClient", () => {
 
   it("sanity", async () => {
     const api = await buildAndDeployApi(
-      `${__dirname}/apis/SimpleStorage`,
+      `${__dirname}/apis/simple-storage`,
       ipfsProvider,
       ensAddress
     );

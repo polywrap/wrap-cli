@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Web3API } from "./Web3API";
-import { Manifest } from "./Manifest";
-import { runGraphCLI } from "./cli/graph-cli";
 import { displayPath } from "./helpers/path";
 import { step, withSpinner } from "./helpers/spinner";
 
 import fs from "fs";
 import path from "path";
 import * as asc from "assemblyscript/cli/asc";
+import { Manifest } from "@web3api/client-js";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const fsExtra = require("fs-extra");
@@ -78,7 +77,7 @@ export class Compiler {
     verbose?: boolean
   ) {
     const run = async (spinner?: any) => {
-      const { mutation, query, subgraph } = manifest;
+      const { mutation, query } = manifest;
       const { outputDir, manifestPath } = this._config;
 
       const appendPath = (root: string, subPath: string) => {
@@ -106,7 +105,6 @@ export class Compiler {
           verbose
         );
         mutation.module.file = "./mutation.wasm";
-        mutation.schema.file = "./schema.graphql";
       }
 
       if (query) {
@@ -123,24 +121,6 @@ export class Compiler {
         query.schema.file = "./schema.graphql";
       }
 
-      if (subgraph) {
-        const subgraphFile = appendPath(manifestPath, subgraph.file);
-        const _str = fs.readFileSync(subgraphFile, "utf-8");
-        //const subgraphManifest: any = YAML.safeLoad(str);
-        // TODO: hack to get around not having the subgraph types defined
-        /*loadSchema(
-          appendPath(subgraphFile, subgraphManifest.schema.file)
-        );*/
-        const cid = await this._compileSubgraph(
-          subgraphFile,
-          `${outputDir}/subgraph`,
-          spinner
-        );
-
-        subgraph.id = cid;
-        subgraph.file = `./subgraph/subgraph.yaml`;
-      }
-
       fs.writeFileSync(`${outputDir}/schema.graphql`, schema, "utf-8");
 
       Web3API.dump(manifest, `${outputDir}/web3api.yaml`);
@@ -149,7 +129,6 @@ export class Compiler {
       // - WASM modules
       // - WASM exports <> GraphQL Schema
       // - Schemas
-      // - Subgraph
     };
 
     if (quiet) {
@@ -207,7 +186,7 @@ export class Compiler {
 
     if (libsDirs.length === 0) {
       throw Error(
-        `could not locate \`node_modules\` in parent directories of subgraph manifest`
+        `could not locate \`node_modules\` in parent directories of web3api manifest`
       );
     }
 
@@ -240,42 +219,5 @@ export class Compiler {
         return 0;
       }
     );
-  }
-
-  // TODO: break out into "compiler modules"
-  private async _compileSubgraph(
-    subgraphPath: string,
-    outputDir: string,
-    spinner?: any,
-    quiet?: boolean,
-    verbose?: boolean
-  ): Promise<string> {
-    step(
-      spinner,
-      "Compiling Subgraph...",
-      `${subgraphPath} => ${outputDir}/subgraph.yaml`
-    );
-
-    const args = [
-      "build",
-      subgraphPath,
-      "--output-dir",
-      outputDir,
-      // TODO: remove this hack, calculate ourselves?
-      "--ipfs",
-      "http://localhost:5001",
-    ];
-
-    const [exitCode, stdout, stderr] = await runGraphCLI(args);
-
-    if (verbose || exitCode !== 0 || stderr) {
-      console.log(exitCode);
-      console.log(stdout);
-      console.error(stderr);
-    }
-
-    const extractCID = /Build completed: (([A-Z]|[a-z]|[0-9])*)/;
-    const result = stdout.match(extractCID);
-    return result && result.length ? result[1] : "";
   }
 }

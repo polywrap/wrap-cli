@@ -43,6 +43,8 @@ export class CodeGenerator {
       // Generate the schema bindings
       // TODO: give composite schema to language bindings (use map)
 
+      // TODO: generate code before build
+
       return true;
     } catch (e) {
       toolbox.print.error(e);

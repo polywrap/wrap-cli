@@ -2,7 +2,7 @@ import { fixParameters } from "../lib/helpers/parameters";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { Ethereum, IPFS, Subgraph, Web3API } from "@web3api/client-js";
+import { Ethereum, IPFS, Web3API } from "@web3api/client-js";
 import axios from "axios";
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
@@ -48,7 +48,7 @@ export default {
     }
 
     const {
-      data: { ipfs, ethereum, subgraph },
+      data: { ipfs, ethereum },
     } = await axios.get("http://localhost:4040/providers");
     const {
       data: { ensAddress },
@@ -66,7 +66,6 @@ export default {
           portals: {
             ipfs: new IPFS({ provider: ipfs }),
             ethereum: new Ethereum({ provider: ethereum, ens: ensAddress }),
-            subgraph: new Subgraph({ provider: subgraph }),
           },
         });
       }

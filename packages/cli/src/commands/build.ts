@@ -1,9 +1,7 @@
 import { Compiler } from "../lib/Compiler";
 import { fixParameters } from "../lib/helpers/parameters";
 import { publishToIPFS } from "../lib/publishers/ipfs-publisher";
-import { publishToSubgraph } from "../lib/publishers/subgraph-publisher";
 
-import path from "path";
 import chalk from "chalk";
 import axios from "axios";
 import { GluegunToolbox } from "gluegun";
@@ -14,7 +12,6 @@ ${chalk.bold("w3 build")} [options] ${chalk.bold("[<web3api-manifest>]")}
 Options:
   -h, --help                         Show usage information
   -i, --ipfs <node>                  Upload build results to an IPFS node
-  -g, --graph <name,node>            Upload build results to a Graph node under "name" (require: --ipfs)
   -o, --output-dir <path>            Output directory for build results (default: build/)
   -f, --output-format <format>       Output format for WASM modules (wasm, wast) (default: wasm)
   -w, --watch                        Regenerate types when web3api files change (default: false)
@@ -31,7 +28,6 @@ export default {
     let {
       help,
       ipfs,
-      graph,
       outputDir,
       outputFormat,
       watch,
@@ -40,7 +36,6 @@ export default {
 
     help = help || h;
     ipfs = ipfs || i;
-    graph = graph || g;
     outputDir = outputDir || o;
     outputFormat = outputFormat || f;
     watch = watch || w;
@@ -78,12 +73,6 @@ export default {
       return;
     }
 
-    if (graph === true) {
-      print.error("--graph option missing <name,node> argument");
-      print.info(HELP);
-      return;
-    }
-
     if (outputDir === true) {
       print.error("--output-dir option missing <path> argument");
       print.info(HELP);
@@ -92,12 +81,6 @@ export default {
 
     if (outputFormat === true) {
       print.error("--output-format option missing <format> argument");
-      print.info(HELP);
-      return;
-    }
-
-    if (graph && !ipfs) {
-      print.error("--graph requires --ipfs <node>");
       print.info(HELP);
       return;
     }
@@ -180,33 +163,6 @@ export default {
             uris.push(["Web3API ENS", `${testEns} => ${cid}`]);
           }
         }
-      }
-
-      // TODO: order of dependencies is strange between:
-      // ipfs, graph-node, subgraph, graph-cli, and web3api.yaml
-      if (graph !== undefined) {
-        const [name, node] = graph.split(",");
-
-        // TODO: remove this pathing hack
-        const subgraphPath = path.join(
-          path.dirname(manifestPath),
-          "src/subgraph/subgraph.yaml"
-        );
-
-        const id = await publishToSubgraph(
-          subgraphPath,
-          name,
-          node,
-          ipfs,
-          outputDir
-        );
-
-        print.success(`Subgraph Deployed { ${id} }`);
-        // TODO: remove this port hack
-        uris.push([
-          "Subgraph GraphiQL",
-          `${node.replace("8020", "8000")}/subgraphs/id/${id}`,
-        ]);
       }
 
       if (uris.length) {
