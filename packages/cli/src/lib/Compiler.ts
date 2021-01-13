@@ -3,12 +3,20 @@ import { Web3APIManifest } from "./Web3APIManifest";
 import { displayPath } from "./helpers/path";
 import { step, withSpinner } from "./helpers/spinner";
 
-import fs from "fs";
+import fs, { readFileSync } from "fs";
 import path from "path";
 import * as asc from "assemblyscript/cli/asc";
-import { Manifest, Uri, resolveUri, Web3ApiClient } from "@web3api/client-js";
-import { bindSchema } from "@web3api/schema-bind";
-import { composeSchema } from "@web3api/schema-compose";
+import {
+  Manifest,
+  Uri,
+  Web3ApiClient,
+  UriRedirect
+} from "@web3api/client-js";
+import { bindSchema, writeDirectory } from "@web3api/schema-bind";
+import { composeSchema, ComposerOutput } from "@web3api/schema-compose";
+import { EnsPlugin } from "@web3api/ens-plugin-js";
+import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
+import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const fsExtra = require("fs-extra");
@@ -18,7 +26,9 @@ const toolbox = require("gluegun/toolbox");
 export interface CompilerConfig {
   manifestPath: string;
   outputDir: string;
-  testEnv?: boolean;
+  ensAddress?: string;
+  ethProvider?: string;
+  ipfsProvider?: string;
 }
 
 export class Compiler {
@@ -70,68 +80,48 @@ export class Compiler {
     verbose?: boolean
   ) {
     const run = async (spinner?: any) => {
-      const { mutation, query } = manifest;
-      const { outputDir, manifestPath } = this._config;
+      const { outputDir } = this._config;
 
       // Init & clean build directory
       this._cleanDir(this._config.outputDir);
 
       // Load & compose the schemas
-      const querySchemaPath = query?.schema.file;
-      const mutationSchemaPath = mutation?.schema.file;
+      const composed = await this._composeSchemas(manifest);
 
-      const composed = composeSchema({
-        schemas: {
-          query: querySchemaPath ? {
-            schema: this._loadSchemaFile(querySchemaPath),
-            absolutePath: querySchemaPath
-          } : undefined,
-          mutation: mutationSchemaPath ? {
-            schema: this._loadSchemaFile(mutationSchemaPath),
-            absolutePath: mutationSchemaPath
-          } : undefined
-        },
-        resolvers: {
-          external: (uri: string) => {
-            return this._tryFetchSchema(
-              uri,
-              manifest,
-              !!this._config.testEnv
-            );
-          },
-          local: (path: string) => {
-            return Promise.resolve(this._loadSchemaFile(path));
-          }
+      const buildModule = async (moduleName: "mutation" | "query") => {
+        const module = manifest[moduleName];
+
+        if (!module) {
+          return;
         }
-      });
 
-      if (mutation) {
+        if (composed[moduleName]) {
+          throw Error(`Missing schema definition for the module "${moduleName}"`);
+        }
+
+        // Generate code next to the module entry point file
+        const emittedFiles = this._generateCode(
+          module.module.file,
+          composed[moduleName] as string
+        );
+
         await this._compileWasmModule(
-          mutation.module.file,
-          "mutation",
+          module.module.file,
+          moduleName,
           outputDir,
           spinner,
           quiet,
           verbose
         );
-        mutation.module.file = "./mutation.wasm";
+        module.module.file = `./${moduleName}.wasm`;
+        module.schema.file = "./schema.graphql";
       }
 
-      if (query) {
-        await this._compileWasmModule(
-          query.module.file,
-          "query",
-          outputDir,
-          spinner,
-          quiet,
-          verbose
-        );
-        query.module.file = "./query.wasm";
-        query.schema.file = "./schema.graphql";
-      }
+      await buildModule("mutation");
+      await buildModule("query");
 
-      fs.writeFileSync(`${outputDir}/schema.graphql`, schema, "utf-8");
-
+      // Output the schema & manifest files
+      fs.writeFileSync(`${outputDir}/schema.graphql`, composed.combined, "utf-8");
       Web3APIManifest.dump(manifest, `${outputDir}/web3api.yaml`);
     };
 
@@ -223,24 +213,71 @@ export class Compiler {
         return 0;
       }
     );
+
+    const wasmSource = readFileSync(`${outputDir}/${moduleName}.wasm`);
+    const mod = await WebAssembly.compile(wasmSource);
+    const instance = await WebAssembly.instantiate(mod);
+
+    if (!instance.exports._w3_init) {
+      throw Error(
+        `WASM module is missing the _w3_init export. ` +
+        `Please add "export * from 'w3';" to the top of your index.ts`
+      );
+    }
+
+    if (!instance.exports._w3_invoke) {
+      throw Error(
+        `WASM module is missing the _w3_invoke export. ` +
+        `Please add "export * from 'w3';" to the top of your index.ts`
+      );
+    }
   }
 
-  private _loadSchemaFile(schemaPath: string) {
-    return fs.readFileSync(
-      path.isAbsolute(schemaPath)
-        ? schemaPath
-        : this._appendPath(
-            this._config.manifestPath,
-            schemaPath
-          ),
-      "utf-8"
-    )
+  private _generateCode(entryPoint: string, schema: string): string[] {
+    const absolute = path.isAbsolute(entryPoint)
+    ? entryPoint
+    : this._appendPath(
+        this._config.manifestPath,
+        entryPoint
+      );
+    const directory = `${path.dirname(absolute)}/w3`;
+    this._cleanDir(directory);
+    const output = bindSchema("wasm-as", schema);
+    return writeDirectory(directory, output);
   }
 
-  private async _tryFetchSchema(
+  private async _composeSchemas(manifest: Manifest): Promise<ComposerOutput> {
+    const querySchemaPath = manifest.query?.schema.file;
+    const mutationSchemaPath = manifest.mutation?.schema.file;
+
+    return composeSchema({
+      schemas: {
+        query: querySchemaPath ? {
+          schema: this._fetchLocalSchema(querySchemaPath),
+          absolutePath: querySchemaPath
+        } : undefined,
+        mutation: mutationSchemaPath ? {
+          schema: this._fetchLocalSchema(mutationSchemaPath),
+          absolutePath: mutationSchemaPath
+        } : undefined
+      },
+      resolvers: {
+        external: (uri: string) => (
+          this._fetchExternalSchema(
+            uri,
+            manifest
+          )
+        ),
+        local: (path: string) => (
+          Promise.resolve(this._fetchLocalSchema(path))
+        )
+      }
+    });
+  }
+
+  private async _fetchExternalSchema(
     uri: string,
-    manifest: Manifest,
-    testEnv: boolean
+    manifest: Manifest
   ): Promise<string> {
     // Check to see if we have any import redirects that match
     if (manifest.import_redirects) {
@@ -249,20 +286,77 @@ export class Compiler {
         const uriParsed = new Uri(uri);
 
         if (Uri.equals(redirectUri, uriParsed)) {
-          return this._loadSchemaFile(redirect.schema);
+          return this._fetchLocalSchema(redirect.schema);
         }
       }
     }
 
-    // Try to fetch from test env if it exists
-    if (this._config.testEnv) {
-      const client = new Web3ApiClient({
-        redirects: 
-      })
+    const { ensAddress, ethProvider, ipfsProvider } = this._config;
+
+    // If custom providers are supplied, try fetching the URI
+    // with them added to the client first
+    if (ensAddress || ethProvider || ipfsProvider) {
+      const redirects: UriRedirect[] = [];
+
+      if (ensAddress) {
+        redirects.push({
+          from: new Uri("w3://ens/ens.web3api.eth"),
+          to: {
+            factory: () => new EnsPlugin({ address: ensAddress }),
+            manifest: EnsPlugin.manifest()
+          }
+        });
+      }
+
+      if (ethProvider) {
+        redirects.push({
+          from: new Uri("w3://ens/ethereum.web3api.eth"),
+          to: {
+            factory: () => new EthereumPlugin({ provider: ethProvider }),
+            manifest: EthereumPlugin.manifest()
+          }
+        });
+      }
+
+      if (ipfsProvider) {
+        redirects.push({
+          from: new Uri("w3://ens/ipfs.web3api.eth"),
+          to: {
+            factory: () => new IpfsPlugin({ provider: ipfsProvider }),
+            manifest: IpfsPlugin.manifest()
+          }
+        });
+      }
+
+      const client = new Web3ApiClient({ redirects });
+      const schema = await client.fetchSchema(uri);
+
+      if (schema) {
+        return schema;
+      }
     }
-    // TODO: fetch from test-net, fetch from mainnet
-    // TODO: need an easy way of configuring a testnet client (for dapps too)
-    // TODO: pass in the client to the compiler from the command? Client[testnet, mainnet]?
+
+    // Try fetching the schema with a vanilla Web3API client
+    const client = new Web3ApiClient();
+    const schema = await client.fetchSchema(uri);
+
+    if (schema) {
+      return schema;
+    } else {
+      throw Error(`Unable to fetch schema at URI "${uri}"`);
+    }
+  }
+
+  private _fetchLocalSchema(schemaPath: string) {
+    return fs.readFileSync(
+      path.isAbsolute(schemaPath)
+        ? schemaPath
+        : this._appendPath(
+            this._config.manifestPath,
+            schemaPath
+          ),
+      "utf-8"
+    );
   }
 
   private _appendPath(root: string, subPath: string) {

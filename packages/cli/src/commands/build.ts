@@ -11,9 +11,9 @@ ${chalk.bold("w3 build")} [options] ${chalk.bold("[<web3api-manifest>]")}
 
 Options:
   -h, --help                         Show usage information
-  -i, --ipfs <node>                  Upload build results to an IPFS node
+  -i, --ipfs [<node>]                Upload build results to an IPFS node (default: dev-server's node)
   -o, --output-dir <path>            Output directory for build results (default: build/)
-  -e, --test-ens <[address,]domain>  Publish the package to a test ENS domain locally
+  -e, --test-ens <[address,]domain>  Publish the package to a test ENS domain locally (requires --ipfs)
 `;
 
 // TODO: add to the above options when implemented
@@ -66,98 +66,140 @@ export default {
       return;
     }
 
-    if (ipfs === true) {
-      print.error("--ipfs option missing <node> argument");
-      print.info(HELP);
-      return;
-    }
-
     if (outputDir === true) {
       print.error("--output-dir option missing <path> argument");
       print.info(HELP);
       return;
     }
 
+    if (testEns === true) {
+      print.error("--test-ens option missing <[address,]domain> argument");
+      print.info(HELP);
+      return;
+    }
+
+    if (testEns && !ipfs) {
+      print.error("--test-ens option requires the --ipfs [<node>] option");
+      print.info(HELP);
+      return;
+    }
+
+    // Resolve manifest & output directories
     manifestPath =
       (manifestPath && filesystem.resolve(manifestPath)) ||
       filesystem.resolve("web3api.yaml");
     outputDir =
       (outputDir && filesystem.resolve(outputDir)) || filesystem.path("build");
 
+    let ipfsProvider: string | undefined;
+    let ethProvider: string | undefined;
+    let ensAddress: string | undefined;
+    let ensDomain: string | undefined;
+
+    if (typeof ipfs === "string") {
+      // Custom IPFS provider
+      ipfsProvider = ipfs;
+    } else if (ipfs) {
+      // Dev-server IPFS provider
+      // TODO: handle the case where the dev server isn't found
+      const { data: { ipfs, ethereum } } = await axios.get(
+        "http://localhost:4040/providers"
+      );
+      ipfsProvider = ipfs;
+      ethProvider = ethereum;
+    }
+
+    if (typeof testEns == "string") {
+      // Fetch the ENS domain, and optionally the address
+      if (testEns.indexOf(",") > -1) {
+        const [addr, dom] = testEns.split(",");
+        ensAddress = addr;
+        ensDomain = dom;
+      } else {
+        ensDomain = testEns;
+      }
+
+      // If not address was provided, fetch it from the server
+      // or deploy a new instance
+      if (!ensAddress) {
+        const getEns = await axios.get(
+          "http://localhost:4040/ens"
+        );
+
+        if (!getEns.data.ensAddress) {
+          const deployEns = await axios.get(
+            "http://localhost:4040/deploy-ens"
+          );
+          ensAddress = deployEns.data.ensAddress;
+        } else {
+          ensAddress = getEns.data.ensAddress;
+        }
+      }
+    }
+
     const compiler = new Compiler({
       manifestPath,
       outputDir,
-      testEnv: !!testEns
+      ensAddress,
+      ethProvider,
+      ipfsProvider
     });
 
-    if (watch) {
+    let result = false;
+
+    /*if (watch) {
       // TODO: https://github.com/Web3-API/prototype/issues/98
-      // await compiler.watchAndCompile();
-    } else {
-      const result = await compiler.compile();
+      // compiler.watchAndCompile();
+    } else*/ {
+      result = await compiler.compile();
       if (result === false) {
         process.exitCode = 1;
         return;
       }
+    }
 
-      const uris: string[][] = [];
+    const uris: string[][] = [];
 
-      // publish to IPFS
-      if (ipfs !== undefined) {
-        const cid = await publishToIPFS(outputDir, ipfs);
+    // publish to IPFS
+    if (ipfs) {
+      const cid = await publishToIPFS(outputDir, ipfs);
 
-        print.success(`IPFS { ${cid} }`);
-        uris.push(["Web3API IPFS", `ipfs://${cid}`]);
+      print.success(`IPFS { ${cid} }`);
+      uris.push(["Web3API IPFS", `ipfs://${cid}`]);
 
-        if (testEns) {
-          let address;
-          let domain;
-          if (testEns.indexOf(",") > -1) {
-            const [addr, dom] = testEns.split(",");
-            address = addr;
-            domain = dom;
-          } else {
-            address = null;
-            domain = testEns;
+      if (testEns) {
+        if (!ensAddress) {
+          uris.push(["ENS Registry", `${ethProvider}/${ensAddress}`]);
+        }
+  
+        // ask the dev server to publish the CID to ENS
+        const { data } = await axios.get(
+          "http://localhost:4040/register-ens",
+          {
+            params: {
+              domain: ensDomain,
+              cid,
+            },
           }
-
-          // TODO: don't redeploy ENS each time, instead try to fetch its address
-          if (!address) {
-            const {
-              data: { ethereum },
-            } = await axios.get("http://localhost:4040/providers");
-            const {
-              data: { ensAddress },
-            } = await axios.get("http://localhost:4040/deploy-ens");
-
-            print.success(`ENS Registry Deployed { ${ensAddress} }`);
-            uris.push(["ENS Registry", `${ethereum}/${ensAddress}`]);
-          }
-
-          // ask the dev server to publish the CID to ENS
-          const { data } = await axios.get(
-            "http://localhost:4040/register-ens",
-            {
-              params: {
-                domain: domain,
-                cid,
-              },
-            }
+        );
+  
+        if (data.success) {
+          uris.push(["Web3API ENS", `${testEns} => ${cid}`]);
+        } else {
+          print.error(
+            `ENS Resolution Failed { ${testEns} => ${cid} }\n` +
+            `Ethereum Provider: ${ethProvider}\n` +
+            `ENS Address: ${ensAddress}`
           );
-
-          if (data.success) {
-            print.success(`ENS Resolution Configured { ${testEns} => ${cid} }`);
-            uris.push(["Web3API ENS", `${testEns} => ${cid}`]);
-          }
         }
       }
-
-      if (uris.length) {
-        print.success("URI Viewers:");
-        print.table(uris);
-      }
-
-      process.exitCode = 0;
     }
+
+    if (uris.length) {
+      print.success("URI Viewers:");
+      print.table(uris);
+    }
+
+    process.exitCode = 0;
   },
 };

@@ -1,11 +1,23 @@
 import { generateBinding } from "./bindings";
 
+export * from "./utils/fs";
+
 export type TargetLanguage = "wasm-as";
 
-export interface OutputEntry {
-  type: "File" | "Directory";
+export type OutputEntry =
+  FileEntry |
+  DirectoryEntry;
+
+export interface FileEntry {
+  type: "File";
   name: string;
-  data: string | OutputEntry[];
+  data: string;
+}
+
+export interface DirectoryEntry {
+  type: "Directory";
+  name: string;
+  data: OutputEntry[];
 }
 
 export interface OutputDirectory {
