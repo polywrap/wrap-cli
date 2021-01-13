@@ -130,7 +130,7 @@ export class Web3ApiClient implements Client {
     }
   }
 
-  private async loadWeb3Api(uri: Uri): Promise<Api> {
+  public async loadWeb3Api(uri: Uri): Promise<Api> {
     let api = this._apiCache.get(uri.uri);
 
     if (!api) {

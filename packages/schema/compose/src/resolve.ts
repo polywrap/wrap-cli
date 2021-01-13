@@ -31,7 +31,7 @@ export async function resolveImports(
   typeInfo: TypeInfo;
 }> {
   const importKeywordCapture = /^[#]*["{3}]*import[ \n\t]/gm;
-  const externalImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*into[ \n\t]*(\w+?)[ \n\t]*from[ \n\t]*[\"'`]([a-zA-Z0-9_.\/]+?)[\"'`]/g;
+  const externalImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*into[ \n\t]*(\w+?)[ \n\t]*from[ \n\t]*[\"'`]([a-zA-Z0-9_~.:\/]+?)[\"'`]/g;
   const localImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*from[ \n\t]*[\"'`]([a-zA-Z0-9_~\-:.\/]+?)[\"'`]/g;
 
   const keywords = [...schema.matchAll(importKeywordCapture)];
@@ -42,7 +42,7 @@ export async function resolveImports(
 
   if (keywords.length !== totalStatements) {
     throw Error(
-      `Invalid import statement found, please use one of the following syntaxes...\n${SYNTAX_REFERENCE}`
+      `Invalid import statement found in file ${schemaPath}.\nPlease use one of the following syntaxes...\n${SYNTAX_REFERENCE}`
     );
   }
 

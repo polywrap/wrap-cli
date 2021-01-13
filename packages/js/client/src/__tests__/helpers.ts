@@ -2952,15 +2952,3 @@ export const generateName = (): string => {
   const name = name1[getRandomInt(0, name1.length + 1)] + name2[getRandomInt(0, name2.length + 1)];
   return name;
 };
-© 2021 GitHub, Inc.
-Terms
-Privacy
-Security
-Status
-Help
-Contact GitHub
-Pricing
-API
-Training
-Blog
-About

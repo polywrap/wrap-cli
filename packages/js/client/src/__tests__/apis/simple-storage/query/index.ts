@@ -1,4 +1,4 @@
-import { Ethereum_Query } from "w3/imported";
+import { Ethereum_Query } from "./w3/imported";
 
 export function getData(address: string): u32 {
   const res = Ethereum_Query.callView({

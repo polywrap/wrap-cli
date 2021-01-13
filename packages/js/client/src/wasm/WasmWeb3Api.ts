@@ -194,7 +194,7 @@ export class WasmWeb3Api extends Api {
     }
   }
 
-  private async getSchema(client: Client): Promise<string> {
+  public async getSchema(client: Client): Promise<string> {
     if (this._schema) {
       return this._schema;
     }

@@ -82,7 +82,7 @@ export async function resolveUri(
   for (let i = 0; i < uriResolverImplementations.length; ++i) {
     const uriResolver = uriResolverImplementations[i];
 
-    const { data, error } = await ApiResolver.Query.tryResolveUri(
+    const { data } = await ApiResolver.Query.tryResolveUri(
       client,
       uriResolver,
       resolvedUri

@@ -95,7 +95,7 @@ export class Compiler {
           return;
         }
 
-        if (composed[moduleName]) {
+        if (!composed[moduleName]) {
           throw Error(`Missing schema definition for the module "${moduleName}"`);
         }
 
@@ -328,23 +328,23 @@ export class Compiler {
         });
       }
 
-      const client = new Web3ApiClient({ redirects });
-      const schema = await client.fetchSchema(uri);
+      try {
+        const client = new Web3ApiClient({ redirects });
+        const api = await client.loadWeb3Api(new Uri(uri));
+        const schema = await api.getSchema(client);
 
-      if (schema) {
-        return schema;
+        if (schema) {
+          return schema;
+        }
+      } catch(e) {
+        // Do nothing, try using the default client below
       }
     }
 
     // Try fetching the schema with a vanilla Web3API client
     const client = new Web3ApiClient();
-    const schema = await client.fetchSchema(uri);
-
-    if (schema) {
-      return schema;
-    } else {
-      throw Error(`Unable to fetch schema at URI "${uri}"`);
-    }
+    const api = await client.loadWeb3Api(new Uri(uri));
+    return await api.getSchema(client);
   }
 
   private _fetchLocalSchema(schemaPath: string) {

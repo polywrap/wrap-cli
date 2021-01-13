@@ -85,6 +85,10 @@ export class PluginWeb3Api extends Api {
     }
   }
 
+  public async getSchema(client: Client): Promise<string> {
+    return Promise.resolve(this._plugin.manifest.schema);
+  }
+
   private getInstance(): Plugin {
     return this._instance || this._plugin.factory();
   }

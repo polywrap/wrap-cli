@@ -18,6 +18,11 @@ export abstract class Api {
     options: InvokeApiOptions,
     client: Client
   ): Promise<InvokeApiResult<unknown>>;
+
+  /** Get the API's schema */
+  public abstract async getSchema(
+    client: Client
+  ): Promise<string>;
 }
 
 /** Cache of API definitions, mapping the API's URI to its definition */
