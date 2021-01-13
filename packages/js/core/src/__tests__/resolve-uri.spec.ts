@@ -277,6 +277,37 @@ describe("resolveUri", () => {
       expect(e.message).toMatch("Redirect missing the from property.\nEncountered while resolving w3://some/api")
     );
   });
+
+  it("works when a Web3API redirects to a Plugin", async () => {
+    const uriToPlugin: UriRedirect[] = [
+      ...redirects,
+      {
+        from: new Uri("some/api"),
+        to: {
+          factory: () => ({} as Plugin),
+          manifest: {
+            schema: {} as SchemaDocument,
+            implemented: [new Uri("w3/api-resolver")],
+            imported: [],
+          },
+        },
+      },
+    ];
+
+    const result = await resolveUri(
+      new Uri("some/api"),
+      client(uriToPlugin, apis),
+      createPluginApi,
+      createApi
+    );
+
+    const apiIdentity = await result.invoke(
+      {} as InvokeApiOptions,
+      {} as Client
+    );
+
+    expect(apiIdentity.errors?.length === 0);
+  });
 });
 
 // TODO:
