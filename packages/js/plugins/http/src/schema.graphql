@@ -9,10 +9,11 @@ type UrlParam {
 }
 
 type Response {
-    status: Integer!
-    statusText: String!
+    status: Integer
+    statusText: String
     headers: [Header!]
-    body: String!
+    body: String
+    error: String
 }
 
 type Request {
