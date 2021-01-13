@@ -88,11 +88,6 @@ export async function resolveUri(
       resolvedUri
     );
 
-    // Throw errors so the caller (client) can handle them
-    if (error) {
-      throw error;
-    }
-
     // If nothing was returned, the URI is not supported
     if (!data || (!data.uri && !data.manifest)) {
       continue;

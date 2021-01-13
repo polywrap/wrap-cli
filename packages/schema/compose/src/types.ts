@@ -1,4 +1,4 @@
-export type SchemaResolver = (uriOrPath: string) => string;
+export type SchemaResolver = (uriOrPath: string) => Promise<string>;
 
 export interface SchemaFile {
   schema: string;

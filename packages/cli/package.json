@@ -11,12 +11,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.18.0",
-    "@graphprotocol/graph-ts": "0.18.1",
-    "@textile/hub": "0.3.3",
-    "@textile/threads-core": "^0.3.1",
     "@web3api/client-js": "0.0.1-prealpha.1",
     "@web3api/client-test-env": "0.0.1-prealpha.1",
+    "@web3api/schema-compose": "0.0.1-prealpha.1",
+    "@web3api/schema-bind": "0.0.1-prealpha.1",
     "assemblyscript": "0.14.7",
     "axios": "0.19.2",
     "chalk": "4.1.0",

@@ -13,7 +13,6 @@ Options:
   -h, --help                         Show usage information
   -i, --ipfs <node>                  Upload build results to an IPFS node
   -o, --output-dir <path>            Output directory for build results (default: build/)
-  -f, --output-format <format>       Output format for WASM modules (wasm, wast) (default: wasm)
   -w, --watch                        Regenerate types when web3api files change (default: false)
   -e, --test-ens <[address,]domain>  Publish the package to a test ENS domain locally
 `;
@@ -24,12 +23,11 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
 
-    const { h, i, g, o, f, w, e } = parameters.options;
+    const { h, i, o, f, w, e } = parameters.options;
     let {
       help,
       ipfs,
       outputDir,
-      outputFormat,
       watch,
       testEns,
     } = parameters.options;
@@ -37,7 +35,6 @@ export default {
     help = help || h;
     ipfs = ipfs || i;
     outputDir = outputDir || o;
-    outputFormat = outputFormat || f;
     watch = watch || w;
     testEns = testEns || e;
 
@@ -79,29 +76,16 @@ export default {
       return;
     }
 
-    if (outputFormat === true) {
-      print.error("--output-format option missing <format> argument");
-      print.info(HELP);
-      return;
-    }
-
-    if (outputFormat && (outputFormat !== "wasm" || outputFormat !== "wast")) {
-      print.error(`Unrecognized --output-format type: ${outputFormat}`);
-      print.info(HELP);
-      return;
-    }
-
     manifestPath =
       (manifestPath && filesystem.resolve(manifestPath)) ||
       filesystem.resolve("web3api.yaml");
     outputDir =
       (outputDir && filesystem.resolve(outputDir)) || filesystem.path("build");
-    outputFormat = outputFormat || "wasm";
 
     const compiler = new Compiler({
       manifestPath,
       outputDir,
-      outputFormat,
+      testEnv: !!testEns
     });
 
     if (watch) {
@@ -135,6 +119,7 @@ export default {
             domain = testEns;
           }
 
+          // TODO: don't redeploy ENS each time, instead try to fetch its address
           if (!address) {
             const {
               data: { ethereum },

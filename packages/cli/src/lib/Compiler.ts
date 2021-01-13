@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Web3API } from "./Web3API";
+import { Web3APIManifest } from "./Web3APIManifest";
 import { displayPath } from "./helpers/path";
 import { step, withSpinner } from "./helpers/spinner";
 
 import fs from "fs";
 import path from "path";
 import * as asc from "assemblyscript/cli/asc";
-import { Manifest } from "@web3api/client-js";
+import { Manifest, Uri, resolveUri, Web3ApiClient } from "@web3api/client-js";
+import { bindSchema } from "@web3api/schema-bind";
+import { composeSchema } from "@web3api/schema-compose";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const fsExtra = require("fs-extra");
@@ -16,7 +18,7 @@ const toolbox = require("gluegun/toolbox");
 export interface CompilerConfig {
   manifestPath: string;
   outputDir: string;
-  outputFormat: string;
+  testEnv?: boolean;
 }
 
 export class Compiler {
@@ -28,20 +30,11 @@ export class Compiler {
 
   public async compile(): Promise<boolean> {
     try {
-      // Load the API
-      const api = await this._loadWeb3API();
-
-      // Init & clean build directory
-      const { outputDir } = this._config;
-
-      if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir);
-      }
-
-      fsExtra.emptyDirSync(outputDir);
+      // Load the manifest
+      const manifest = await this._loadManifest();
 
       // Compile the API
-      await this._compileWeb3API(api);
+      await this._compileWeb3API(manifest);
 
       return true;
     } catch (e) {
@@ -50,9 +43,9 @@ export class Compiler {
     }
   }
 
-  private async _loadWeb3API(quiet = false): Promise<Manifest> {
+  private async _loadManifest(quiet = false): Promise<Manifest> {
     const run = () => {
-      return Web3API.load(this._config.manifestPath);
+      return Web3APIManifest.load(this._config.manifestPath);
     };
 
     if (quiet) {
@@ -80,22 +73,39 @@ export class Compiler {
       const { mutation, query } = manifest;
       const { outputDir, manifestPath } = this._config;
 
-      const appendPath = (root: string, subPath: string) => {
-        return path.join(path.dirname(root), subPath);
-      };
+      // Init & clean build directory
+      this._cleanDir(this._config.outputDir);
 
-      let schema = "";
-      const loadSchema = (schemaPath: string) => {
-        schema += `${fs.readFileSync(
-          path.isAbsolute(schemaPath)
-            ? schemaPath
-            : appendPath(manifestPath, schemaPath),
-          "utf-8"
-        )}\n`;
-      };
+      // Load & compose the schemas
+      const querySchemaPath = query?.schema.file;
+      const mutationSchemaPath = mutation?.schema.file;
+
+      const composed = composeSchema({
+        schemas: {
+          query: querySchemaPath ? {
+            schema: this._loadSchemaFile(querySchemaPath),
+            absolutePath: querySchemaPath
+          } : undefined,
+          mutation: mutationSchemaPath ? {
+            schema: this._loadSchemaFile(mutationSchemaPath),
+            absolutePath: mutationSchemaPath
+          } : undefined
+        },
+        resolvers: {
+          external: (uri: string) => {
+            return this._tryFetchSchema(
+              uri,
+              manifest,
+              !!this._config.testEnv
+            );
+          },
+          local: (path: string) => {
+            return Promise.resolve(this._loadSchemaFile(path));
+          }
+        }
+      });
 
       if (mutation) {
-        loadSchema(mutation.schema.file);
         await this._compileWasmModule(
           mutation.module.file,
           "mutation",
@@ -108,7 +118,6 @@ export class Compiler {
       }
 
       if (query) {
-        loadSchema(query.schema.file);
         await this._compileWasmModule(
           query.module.file,
           "query",
@@ -123,7 +132,7 @@ export class Compiler {
 
       fs.writeFileSync(`${outputDir}/schema.graphql`, schema, "utf-8");
 
-      Web3API.dump(manifest, `${outputDir}/web3api.yaml`);
+      Web3APIManifest.dump(manifest, `${outputDir}/web3api.yaml`);
 
       // TODO: add validation
       // - WASM modules
@@ -219,5 +228,57 @@ export class Compiler {
         return 0;
       }
     );
+  }
+
+  private _loadSchemaFile(schemaPath: string) {
+    return fs.readFileSync(
+      path.isAbsolute(schemaPath)
+        ? schemaPath
+        : this._appendPath(
+            this._config.manifestPath,
+            schemaPath
+          ),
+      "utf-8"
+    )
+  }
+
+  private async _tryFetchSchema(
+    uri: string,
+    manifest: Manifest,
+    testEnv: boolean
+  ): Promise<string> {
+    // Check to see if we have any import redirects that match
+    if (manifest.import_redirects) {
+      for (const redirect of manifest.import_redirects) {
+        const redirectUri = new Uri(redirect.uri);
+        const uriParsed = new Uri(uri);
+
+        if (Uri.equals(redirectUri, uriParsed)) {
+          return this._loadSchemaFile(redirect.schema);
+        }
+      }
+    }
+
+    // Try to fetch from test env if it exists
+    if (this._config.testEnv) {
+      const client = new Web3ApiClient({
+        redirects: 
+      })
+    }
+    // TODO: fetch from test-net, fetch from mainnet
+    // TODO: need an easy way of configuring a testnet client (for dapps too)
+    // TODO: pass in the client to the compiler from the command? Client[testnet, mainnet]?
+  }
+
+  private _appendPath(root: string, subPath: string) {
+    return path.join(path.dirname(root), subPath);
+  }
+
+  private _cleanDir(dir: string) {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir);
+    }
+
+    fsExtra.emptyDirSync(dir);
   }
 }

@@ -21,15 +21,15 @@ import Mustache from "mustache";
 // Remove mustache's built-in HTML escaping
 Mustache.escape = (value) => value;
 
-export function resolveImports(
+export async function resolveImports(
   schema: string,
   schemaPath: string,
   mutation: boolean,
   resolvers: SchemaResolvers
-): {
+): Promise<{
   schema: string;
   typeInfo: TypeInfo;
-} {
+}> {
   const importKeywordCapture = /^[#]*["{3}]*import[ \n\t]/gm;
   const externalImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*into[ \n\t]*(\w+?)[ \n\t]*from[ \n\t]*[\"'`]([a-zA-Z0-9_.\/]+?)[\"'`]/g;
   const localImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*from[ \n\t]*[\"'`]([a-zA-Z0-9_~\-:.\/]+?)[\"'`]/g;
@@ -63,12 +63,16 @@ export function resolveImports(
     importedQueryTypes: [],
   };
 
-  resolveExternalImports(
+  await resolveExternalImports(
     externalImportsToResolve,
     resolvers.external,
     subTypeInfo
   );
-  resolveLocalImports(localImportsToResolve, resolvers.local, subTypeInfo);
+  await resolveLocalImports(
+    localImportsToResolve,
+    resolvers.local,
+    subTypeInfo
+  );
 
   // Remove all import statements
   let newSchema = schema
@@ -88,14 +92,14 @@ export function resolveImports(
   };
 }
 
-function resolveExternalImports(
+async function resolveExternalImports(
   importsToResolve: ExternalImport[],
   resolveSchema: SchemaResolver,
   typeInfo: TypeInfo
-): void {
+): Promise<void> {
   for (const importToResolve of importsToResolve) {
     const { uri, namespace, importedTypes } = importToResolve;
-    const schema = resolveSchema(uri);
+    const schema = await resolveSchema(uri);
 
     if (!schema) {
       throw Error(`Unable to resolve schema at "${uri}"`);
@@ -147,14 +151,14 @@ function resolveExternalImports(
   }
 }
 
-function resolveLocalImports(
+async function resolveLocalImports(
   importsToResolve: LocalImport[],
   resolveSchema: SchemaResolver,
   typeInfo: TypeInfo
-) {
+): Promise<void> {
   for (const importToResolve of importsToResolve) {
     const { userTypes, path } = importToResolve;
-    let schema = resolveSchema(path);
+    let schema = await resolveSchema(path);
 
     if (!schema) {
       throw Error(`Unable to resolve schema at "${path}"`);

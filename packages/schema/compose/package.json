@@ -12,8 +12,7 @@
   "dependencies": {
     "@web3api/schema-parse": "0.0.1-prealpha.1",
     "graphql": "15.4.0",
-    "mustache": "4.0.1",
-    "tslib": "2.0.3"
+    "mustache": "4.0.1"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",

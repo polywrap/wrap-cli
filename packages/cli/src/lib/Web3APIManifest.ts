@@ -1,9 +1,8 @@
-import { Manifest } from "./Manifest";
-
-import YAML from "js-yaml";
 import fs from "fs";
+import YAML from "js-yaml";
+import { Manifest } from "@web3api/client-js";
 
-export class Web3API {
+export class Web3APIManifest {
   public static load(manifestPath: string): Manifest {
     const manifest = YAML.safeLoad(fs.readFileSync(manifestPath, "utf-8")) as
       | Manifest
