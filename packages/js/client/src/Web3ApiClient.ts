@@ -77,8 +77,8 @@ export class Web3ApiClient implements Client {
       for (const invocation of invocations) {
         methods.push(invocation.method);
         resultDatas.push(invocation.result.data);
-        if (invocation.result.errors) {
-          errors.push(...invocation.result.errors);
+        if (invocation.result.error) {
+          errors.push(invocation.result.error);
         }
       }
 
@@ -122,13 +122,9 @@ export class Web3ApiClient implements Client {
     try {
       const { uri } = options;
       const api = await this.loadWeb3Api(uri);
-      return await api.invoke<TData>(options, this);
+      return await api.invoke(options, this) as TData;
     } catch (error) {
-      if (error.length) {
-        return { errors: error };
-      } else {
-        return { errors: [error] };
-      }
+      return { error: error };
     }
   }
 

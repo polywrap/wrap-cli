@@ -21,7 +21,8 @@ import { spawn, Thread, Worker } from "threads";
 
 const maxThreads: number = 500;
 let threadsActive: number = 0;
-const threadMutexes = new SharedArrayBuffer(maxThreads);
+const threadMutexesBuffer = new SharedArrayBuffer(maxThreads);
+const threadMutexes = new Int32Array(threadMutexesBuffer);
 
 export class WasmWeb3Api extends Api {
   private _schema?: string;
@@ -40,12 +41,10 @@ export class WasmWeb3Api extends Api {
     super();
   }
 
-  public async invoke<
-    TData = unknown
-  >(
+  public async invoke(
     options: InvokeApiOptions,
     client: Client
-  ): Promise<InvokeApiResult<TData>> {
+  ): Promise<InvokeApiResult<ArrayBuffer>> {
     const { module, method, input } = options;
 
     // Fetch the schema
@@ -66,7 +65,9 @@ export class WasmWeb3Api extends Api {
     );
 
     if (queryIdx === -1) {
-      throw Error(`Unable to find query type by the name of "${root}".`);
+      throw Error(
+        `WasmWeb3Api: Unable to find query type by the name of "${root}".`
+      );
     }
 
     const queryInfo = typeInfo.queryTypes[queryIdx];
@@ -77,13 +78,13 @@ export class WasmWeb3Api extends Api {
     );
 
     if (methodIdx === -1) {
-      throw Error(`Unable to find method "${method}" on query type "${root}".`);
+      throw Error(
+        `WasmWeb3Api: Unable to find method "${method}" on query type "${root}".`
+      );
     }
 
     // Fetch the WASM module
     const wasm = await this.getWasmModule(module, client);
-
-    // TODO: use transferable buffers
 
     // TODO: come up with a better future-proof solution
     while (threadsActive >= maxThreads) {
@@ -92,52 +93,66 @@ export class WasmWeb3Api extends Api {
     }
 
     const threadId = threadsActive++;
-    const threadMutexesView = new Int8Array(threadMutexes);
-    threadMutexesView[threadId] = 0;
+    Atomics.store(
+      threadMutexes,
+      threadId,
+      0
+    );
 
     const thread = await spawn<ThreadMethods>(
       new Worker("./thread")
     );
 
     const dispatcher = thread.start(
-      wasm, method, input, threadMutexes, threadId
+      wasm,
+      method,
+      input,
+      threadMutexesBuffer,
+      threadId
     );
 
-    let abortMessage: string;
-    let queryResult: ArrayBuffer;
-    let queryError: string;
+    let state: "Abort" | "LogQueryError" | "LogQueryResult" | undefined;
+    let abortMessage: string | undefined;
+    let queryResult: ArrayBuffer | undefined;
+    let queryError: string | undefined;
 
     await new Promise((resolve) => {
       dispatcher.subscribe(async (action: HostAction) => {
         switch (action.type) {
           case "Abort": {
             abortMessage = action.message;
+            state = action.type;
             resolve();
             break;
           }
           case "LogQueryError": {
             queryError = action.error;
+            state = action.type;
             resolve();
             break;
           }
           case "LogQueryResult": {
             queryResult = action.result;
+            state = action.type;
             resolve();
             break;
           }
-          case "SubQuery": {
+          case "SubInvoke": {
             const { data, error } = await client.invoke({
               uri: new Uri(action.uri),
-              module: action.module,
-              method: action.query,
+              module: action.module as InvokableModules,
+              method: action.method,
               input: action.input
             });
 
-            // TODO: refactor...
-            // - __w3_subquery -> __w3_subinvoke(uri, module, method, input)
-            // - plugin invoke -> deserialize msgpack buffer
+            if (!error) {
+              thread.subInvokeResult(data);
+            } else {
+              thread.subInvokeError(`${error.name}: ${error.message}`);
+            }
 
-            // TODO: perform subquery, set result/error, continue thread
+            Atomics.store(threadMutexes, threadId, 1);
+            Atomics.notify(threadMutexes, threadId, Infinity);
             break;
           }
         }
@@ -147,9 +162,36 @@ export class WasmWeb3Api extends Api {
     Thread.terminate(thread);
     threadsActive--;
 
-    // TODO: do something w/ the thread error, query result/error
+    if (!state) {
+      throw Error("WasmWeb3Api: query state was never set.");
+    }
 
-    return result;
+    switch (state) {
+      case "Abort": {
+        return {
+          error: new Error(
+            `WasmWeb3Api: Thread aborted execution.\nMessage: ${abortMessage}`
+          )
+        };
+      }
+      case "LogQueryError": {
+        return {
+          error: new Error(
+            `WasmWeb3Api: invocation exception encourtered.\n` +
+            `uri: ${this._uri.uri}\nmodule: ${module}\n` +
+            `method: ${method}\n` +
+            `input: ${JSON.stringify(input, null, 2)}\n` +
+            `exception: ${queryError}`
+          )
+        };
+      }
+      case "LogQueryResult": {
+        return { data: queryResult };
+      }
+      default: {
+        throw Error(`WasmWeb3Api: Unknown state "${state}"`);
+      }
+    }
   }
 
   private async getSchema(client: Client): Promise<string> {
@@ -157,20 +199,20 @@ export class WasmWeb3Api extends Api {
       return this._schema;
     }
 
-    const { data, errors } = await ApiResolver.Query.getFile(
+    const { data, error } = await ApiResolver.Query.getFile(
       client,
       this._apiResolver,
       `${this._uri.uri}/${this._manifest.schema.file}`
     );
 
-    if (errors?.length) {
-      throw errors;
+    if (error) {
+      throw error;
     }
 
     // If nothing is returned, the schema was not found
     if (!data) {
       throw Error(
-        `Schema was not found.\nURI: ${this._uri}\nSubpath: ${this._manifest.schema.file}`
+        `WasmWeb3Api: Schema was not found.\nURI: ${this._uri}\nSubpath: ${this._manifest.schema.file}`
       );
     }
 
@@ -178,7 +220,7 @@ export class WasmWeb3Api extends Api {
 
     if (!this._schema) {
       throw Error(
-        `Decoding the schema's bytes array failed.\nBytes: ${data}`
+        `WasmWeb3Api: Decoding the schema's bytes array failed.\nBytes: ${data}`
       );
     }
 
@@ -209,14 +251,14 @@ export class WasmWeb3Api extends Api {
       );
     }
 
-    const { data, errors } = await ApiResolver.Query.getFile(
+    const { data, error } = await ApiResolver.Query.getFile(
       client,
       this._apiResolver,
       `${this._uri}/${moduleManifest.module.file}`
     );
 
-    if (errors?.length) {
-      throw errors;
+    if (error) {
+      throw error;
     }
 
     // If nothing is returned, the module was not found

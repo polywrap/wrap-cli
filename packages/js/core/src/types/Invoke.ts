@@ -43,7 +43,7 @@ export interface InvokeApiResult<TData = unknown> {
   data?: TData;
 
   /** Errors encountered during the invocation. */
-  errors?: Error[];
+  error?: Error;
 }
 
 export interface InvokeHandler {

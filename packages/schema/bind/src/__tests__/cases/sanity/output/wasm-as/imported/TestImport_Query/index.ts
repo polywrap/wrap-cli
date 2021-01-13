@@ -1,5 +1,5 @@
 import {
-  w3_subquery,
+  w3_subinvoke,
   Nullable
 } from "@web3api/wasm-as";
 import {
@@ -21,17 +21,10 @@ export class TestImport_Query {
     uArrayArray: Array<Array<Nullable<u32>> | null>
   }): string {
     const args = serializeimportedMethodArgs(input);
-    const result = w3_subquery(
+    const result = w3_subinvoke(
       uri,
-      `query {
-        importedMethod(
-          str: $str,
-          optStr: $optStr,
-          u: $u,
-          optU: $optU,
-          uArrayArray: $uArrayArray
-        )
-      }`,
+      "query",
+      "importedMethod",
       args
     );
     return deserializeimportedMethodResult(result);
@@ -41,13 +34,10 @@ export class TestImport_Query {
     arg: Array<string>
   }): i64 {
     const args = serializeanotherMethodArgs(input);
-    const result = w3_subquery(
+    const result = w3_subinvoke(
       uri,
-      `query {
-        anotherMethod(
-          arg: $arg
-        )
-      }`,
+      "query",
+      "anotherMethod",
       args
     );
     return deserializeanotherMethodResult(result);

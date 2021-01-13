@@ -12,36 +12,38 @@ export interface W3Exports {
 
 export interface W3Imports {
   w3: {
-    __w3_subquery: (
+    __w3_subinvoke: (
       uriPtr: usize, uriLen: usize,
-      queryPtr: usize, queryLen: usize,
-      argsPtr: usize, argsLen: usize
+      modulePtr: usize, moduleLen: usize,
+      methodPtr: usize, methodLen: usize,
+      inputPtr: usize, inputLen: usize
     ) => boolean;
-    __w3_subquery_result_len: () => usize;
-    __w3_subquery_result: (ptr: usize) => void;
-    __w3_subquery_error_len: () => usize;
-    __w3_subquery_error: (ptr: usize) => void;
+    __w3_subinvoke_result_len: () => usize;
+    __w3_subinvoke_result: (ptr: usize) => void;
+    __w3_subinvoke_error_len: () => usize;
+    __w3_subinvoke_error: (ptr: usize) => void;
     __w3_invoke_args: (methodPtr: usize, argsPtr: usize) => void;
     __w3_invoke_result: (ptr: usize, len: usize) => void;
     __w3_invoke_error: (ptr: usize, len: usize) => void;
   };
 
   // Needed to comply with WebAssembly's typings
-  [key: string]: Record<string, ImportValue>;
+  [key: string]: Record<string, Function | WebAssembly.Memory>;
 }
 
 // Host (main thread) actions
 export type HostAction =
-  SubQueryAction |
+  SubInvokeAction |
   AbortAction |
   LogQueryResultAction |
   LogQueryErrorAction;
 
-export interface SubQueryAction {
-  readonly type: "SubQuery";
+export interface SubInvokeAction {
+  readonly type: "SubInvoke";
   readonly uri: string;
-  readonly query: string;
-  readonly args: ArrayBuffer;
+  readonly module: string;
+  readonly method: string;
+  readonly input: ArrayBuffer;
 }
 
 export interface AbortAction {

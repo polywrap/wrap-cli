@@ -82,15 +82,15 @@ export async function resolveUri(
   for (let i = 0; i < uriResolverImplementations.length; ++i) {
     const uriResolver = uriResolverImplementations[i];
 
-    const { data, errors } = await ApiResolver.Query.tryResolveUri(
+    const { data, error } = await ApiResolver.Query.tryResolveUri(
       client,
       uriResolver,
       resolvedUri
     );
 
     // Throw errors so the caller (client) can handle them
-    if (errors?.length) {
-      throw errors;
+    if (error) {
+      throw error;
     }
 
     // If nothing was returned, the URI is not supported

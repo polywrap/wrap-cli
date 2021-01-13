@@ -23,7 +23,7 @@ interface State {
     result?: ArrayBuffer;
     error?: string;
   };
-  subquery: {
+  subinvoke: {
     result?: ArrayBuffer;
     error?: string;
   };
@@ -33,7 +33,7 @@ interface State {
 
 const state: State = {
   invoke: { },
-  subquery: { },
+  subinvoke: { },
 }
 
 const abort = (
@@ -52,26 +52,29 @@ const imports = (
   memory: WebAssembly.Memory
 ): W3Imports => ({
   w3: {
-    __w3_subquery: (
+    __w3_subinvoke: (
       uriPtr: usize, uriLen: usize,
-      queryPtr: usize, queryLen: usize,
-      argsPtr: usize, argsLen: usize
+      modulePtr: usize, moduleLen: usize,
+      methodPtr: usize, methodLen: usize,
+      inputPtr: usize, inputLen: usize
     ): boolean => {
       const uri = readString(memory.buffer, uriPtr, uriLen);
-      const query = readString(memory.buffer, queryPtr, queryLen);
-      const args = readBytes(memory.buffer, argsPtr, argsLen);
+      const module = readString(memory.buffer, modulePtr, moduleLen);
+      const method = readString(memory.buffer, methodPtr, methodLen);
+      const input = readBytes(memory.buffer, inputPtr, inputLen);
 
       observer.next({
-        type: "SubQuery",
+        type: "SubInvoke",
         uri,
-        query,
-        args
+        module,
+        method,
+        input
       });
 
       if (!state.threadId || !state.threadMutexes) {
         abort(
           observer,
-          `__w3_subquery: thread unitialized.\nthreadId: ${state.threadId}\nthreadMutexes: ${state.threadMutexes}`
+          `__w3_subinvoke: thread uninitialized.\nthreadId: ${state.threadId}\nthreadMutexes: ${state.threadMutexes}`
         );
         return false;
       }
@@ -79,7 +82,7 @@ const imports = (
       // Pause the thread, unpausing every 500ms to enable pending
       // events to be processed.
       // TODO: might not be needed, test this.
-      while (!state.subquery.error && !state.subquery.result) {
+      while (!state.subinvoke.error && !state.subinvoke.result) {
         Atomics.wait(
           new Int32Array(state.threadMutexes),
           state.threadId,
@@ -88,39 +91,39 @@ const imports = (
         );
       }
 
-      return !state.subquery.error;
+      return !state.subinvoke.error;
     },
     // Give WASM the size of the result
-    __w3_subquery_result_len: (): usize => {
-      if (!state.subquery.result) {
-        abort(observer, "__w3_subquery_result_len: subquery.result is not set");
+    __w3_subinvoke_result_len: (): usize => {
+      if (!state.subinvoke.result) {
+        abort(observer, "__w3_subinvoke_result_len: subinvoke.result is not set");
         return 0;
       }
-      return state.subquery.result.byteLength;
+      return state.subinvoke.result.byteLength;
     },
-    // Copy the subquery result into WASM
-    __w3_subquery_result: (ptr: usize): void => {
-      if (!state.subquery.result) {
-        abort(observer, "__w3_subquery_result: subquery.result is not set");
+    // Copy the subinvoke result into WASM
+    __w3_subinvoke_result: (ptr: usize): void => {
+      if (!state.subinvoke.result) {
+        abort(observer, "__w3_subinvoke_result: subinvoke.result is not set");
         return;
       }
-      writeBytes(state.subquery.result, memory.buffer, ptr);
+      writeBytes(state.subinvoke.result, memory.buffer, ptr);
     },
     // Give WASM the size of the error
-    __w3_subquery_error_len: (): usize => {
-      if (!state.subquery.error) {
-        abort(observer, "__w3_subquery_error_len: subquery.error is not set");
+    __w3_subinvoke_error_len: (): usize => {
+      if (!state.subinvoke.error) {
+        abort(observer, "__w3_subinvoke_error_len: subinvoke.error is not set");
         return 0;
       }
-      return state.subquery.error.length;
+      return state.subinvoke.error.length;
     },
-    // Copy the subquery error into WASM
-    __w3_subquery_error: (ptr: usize): void => {
-      if (!state.subquery.error) {
-        abort(observer, "__w3_subquery_error: subquery.error is not set");
+    // Copy the subinvoke error into WASM
+    __w3_subinvoke_error: (ptr: usize): void => {
+      if (!state.subinvoke.error) {
+        abort(observer, "__w3_subinvoke_error: subinvoke.error is not set");
         return;
       }
-      writeString(state.subquery.error, memory.buffer, ptr);
+      writeString(state.subinvoke.error, memory.buffer, ptr);
     },
     // Copy the invocation's method & args into WASM
     __w3_invoke_args: (methodPtr: usize, argsPtr: usize): void => {
@@ -234,16 +237,16 @@ const methods = {
 
     observer.complete();
   }),
-  subQueryResult: (result: Record<string, unknown> | ArrayBuffer) => {
+  subInvokeResult: (result: unknown | ArrayBuffer) => {
     if (result instanceof ArrayBuffer) {
-      state.subquery.result = result;
+      state.subinvoke.result = result;
     } else {
       // We must serialize the result object into msgpack
-      state.subquery.result = encode(result);
+      state.subinvoke.result = encode(result);
     }
   },
-  subQueryError: (error: string): void => {
-    state.subquery.error = error;
+  subInvokeError: (error: string): void => {
+    state.subinvoke.error = error;
   }
 };
 
