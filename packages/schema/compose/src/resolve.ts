@@ -7,13 +7,13 @@ import {
 } from "./types";
 import {
   parseExternalImports,
-  parseLocalImports
+  parseLocalImports,
+  parseSchemaUserDefinedTypes
 } from "./parse";
 import {
   template as headerTemplate,
 } from "./templates/header.mustache";
 import * as Functions from "./templates/functions";
-import { ObjectTypeDefinitionNode, parse, visit } from 'graphql'
 
 import {
   TypeInfo,
@@ -45,20 +45,13 @@ export function resolveImports(
   const localImportStatments = [...schema.matchAll(localImportCapture)];
   const totalStatements = externalImportStatements.length + localImportStatments.length;
 
-  const schemaTypes: string[] = []
-  const schemaAST = parse(schema)
-  visit(schemaAST, {
-    enter: {
-      ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
-        schemaTypes.push(node.name.value)
-    }
-  }})
-
   if (keywords.length !== totalStatements) {
     throw Error(
       `Invalid import statement found, please use one of the following syntaxes...\n${SYNTAX_REFERENCE}`
     );
   }
+
+  const schemaUserDefinedTypes = parseSchemaUserDefinedTypes(schema)
 
   const externalImportsToResolve: ExternalImport[] = parseExternalImports(
     externalImportStatements, mutation
@@ -84,7 +77,7 @@ export function resolveImports(
     localImportsToResolve,
     resolvers.local,
     subTypeInfo,
-    schemaTypes
+    schemaUserDefinedTypes
   );
 
   // Remove all import statements
@@ -164,7 +157,7 @@ function resolveLocalImports(
   importsToResolve: LocalImport[],
   resolveSchema: SchemaResolver,
   typeInfo: TypeInfo,
-  schemaTypes: string[],
+  schemaUserTypes: string[],
 ) {
   for (const importToResolve of importsToResolve) {
     const { userTypes, path } = importToResolve;
@@ -208,7 +201,7 @@ function resolveLocalImports(
         });
       }
 
-      if(schemaTypes.includes(userType)) {
+      if(schemaUserTypes.includes(userType)) {
         conflictingTypes.push(userType)
       }
     }
