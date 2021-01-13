@@ -24,6 +24,10 @@ export interface Manifest {
       language: string;
     };
   };
+  import_redirects?: {
+    uri: string;
+    schema: string;
+  }[];
 }
 
 // TODO: replace w/ Cesar's work

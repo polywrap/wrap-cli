@@ -1,4 +1,5 @@
 export * from "./Web3ApiClient";
+export * from "@web3api/core-js";
 
 // TODO: logging (client.logLevel === Log.Info && log.logInfo("message..."))
 // - logging used to verify call stacks of various client implementations

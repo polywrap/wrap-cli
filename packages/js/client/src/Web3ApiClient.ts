@@ -26,7 +26,9 @@ export interface ClientConfig {
 export class Web3ApiClient implements Client {
   private _apiCache = new ApiCache();
 
-  constructor(private _config: ClientConfig) {
+  constructor(private _config: ClientConfig = {
+    redirects: []
+  }) {
     const { redirects } = this._config;
 
     // Add all default redirects (IPFS, ETH, ENS)
