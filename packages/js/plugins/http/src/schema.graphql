@@ -1,0 +1,21 @@
+type Response {
+    status: Integer!
+    statusText: String!
+    headers: [Header!]
+    data: String!
+}
+
+type Header {
+    key: String!
+    value: String!
+}
+
+type Request {
+    url: String!
+    headers: [Header!]
+}
+
+type Query {
+    get(request: Request): Response!
+    post(request: Request): Response!
+}
