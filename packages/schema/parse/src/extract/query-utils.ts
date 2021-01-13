@@ -9,14 +9,9 @@ import {
   createObjectDefinition,
   createScalarDefinition,
   createArrayDefinition,
-  createMethodDefinition,
 } from "../typeInfo";
 
-import {
-  FieldDefinitionNode,
-  InputValueDefinitionNode,
-  NamedTypeNode,
-} from "graphql";
+import { InputValueDefinitionNode, NamedTypeNode } from "graphql";
 
 export interface State {
   currentQuery?: QueryDefinition;
@@ -25,26 +20,6 @@ export interface State {
   currentReturn?: PropertyDefinition;
   nonNullType?: boolean;
   currentImport?: ImportedQueryDefinition;
-}
-
-export function extractFieldDefinition(
-  node: FieldDefinitionNode,
-  state: State
-): void {
-  const query = state.currentQuery;
-
-  if (!query) {
-    return;
-  }
-
-  if (!node.arguments || node.arguments.length === 0) {
-    throw Error("Imported types must only have methods");
-  }
-
-  const operation = query.type === "Query" ? "query" : "mutation";
-  const method = createMethodDefinition(operation, node.name.value);
-  query.methods.push(method);
-  state.currentMethod = method;
 }
 
 export function extractNamedType(
