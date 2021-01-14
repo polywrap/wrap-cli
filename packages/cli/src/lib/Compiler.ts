@@ -38,13 +38,16 @@ export class Compiler {
     this._manifestDir = path.dirname(_config.manifestPath);
   }
 
-  public async compile(): Promise<boolean> {
+  public async compile(
+    quiet?: boolean,
+    verbose?: boolean
+  ): Promise<boolean> {
     try {
       // Load the manifest
       const manifest = await this._loadManifest();
 
       // Compile the API
-      await this._compileWeb3API(manifest);
+      await this._compileWeb3API(manifest, quiet, verbose);
 
       return true;
     } catch (e) {
@@ -169,12 +172,6 @@ export class Compiler {
     ) {
       if (fs.existsSync(path.join(dir, "node_modules"))) {
         libsDirs.push(path.join(dir, "node_modules"));
-        if (fs.existsSync(path.join(dir, "node_modules/@web3api/wasm-as"))) {
-          w3Wasm = path.resolve(
-            dir,
-            "node_modules/@web3api/wasm-as/assembly/index.ts"
-          );
-        }
       }
     }
 
@@ -185,18 +182,16 @@ export class Compiler {
     }
 
     const args = [
-      w3Wasm,
-      moduleAbsolute,
-      "--baseDir",
-      baseDir,
-      "--lib",
+      path.join(baseDir, "w3/entry.ts"),
+      "--path",
       libsDirs.join(","),
       "--outFile",
       `${outputDir}/${moduleName}.wasm`,
       "--optimize",
       "--debug",
+      "--importMemory",
       "--runtime",
-      "full",
+      "none"
     ];
 
     // compile the module into the output directory
@@ -216,19 +211,35 @@ export class Compiler {
 
     const wasmSource = readFileSync(`${outputDir}/${moduleName}.wasm`);
     const mod = await WebAssembly.compile(wasmSource);
-    const instance = await WebAssembly.instantiate(mod);
+    const memory = new WebAssembly.Memory({ initial: 1 });
+    const instance = await WebAssembly.instantiate(mod, {
+      env: {
+        memory,
+        abort: (msg: string, file: string, line: number, column: number) => {
+          console.log(`Abort: ${msg}\n${file}\n[${line},${column}]`);
+        }
+      },
+      w3: {
+        __w3_subinvoke: () => { },
+        __w3_subinvoke_result_len: () => { },
+        __w3_subinvoke_result: () => { },
+        __w3_subinvoke_error_len: () => { },
+        __w3_subinvoke_error: () => { },
+        __w3_invoke_args: () => { },
+        __w3_invoke_result: () => { },
+        __w3_invoke_error: () => { }
+      }
+    });
 
     if (!instance.exports._w3_init) {
       throw Error(
-        `WASM module is missing the _w3_init export. ` +
-        `Please add "export * from 'w3';" to the top of your index.ts`
+        "WASM module is missing the _w3_init export. This should never happen..."
       );
     }
 
     if (!instance.exports._w3_invoke) {
       throw Error(
-        `WASM module is missing the _w3_invoke export. ` +
-        `Please add "export * from 'w3';" to the top of your index.ts`
+        "WASM module is missing the _w3_invoke export. This should never happen..."
       );
     }
   }

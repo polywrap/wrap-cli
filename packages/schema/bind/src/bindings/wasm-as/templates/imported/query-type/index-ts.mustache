@@ -6,7 +6,8 @@ import {
 import {
   {{#methods}}
   serialize{{name}}Args,
-  deserialize{{name}}Result{{^last}},{{/last}}
+  deserialize{{name}}Result,
+  Input_{{name}}{{^last}},{{/last}}
   {{/methods}}
 } from "./serialization";
 {{/methods.length}}
@@ -16,14 +17,10 @@ export class {{name}} {
   public static uri: string = "{{uri}}";
 
   {{#methods}}
-  public static {{name}}(input: {
-    {{#arguments}}
-    {{name}}: {{#toWasm}}{{type}}{{/toWasm}}{{^last}},{{/last}}
-    {{/arguments}}
-  }): {{#toWasm}}{{return.type}}{{/toWasm}} {
+  public static {{name}}(input: Input_{{name}}): {{#toWasm}}{{return.type}}{{/toWasm}} {
     const args = serialize{{name}}Args(input);
     const result = w3_subinvoke(
-      uri,
+      "{{uri}}",
       "{{operation}}",
       "{{name}}",
       args

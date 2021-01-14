@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "graphql": "15.3.0",
-    "graphql-tag": "2.10.4"
+    "graphql-tag": "2.10.4",
+    "js-yaml": "3.14.0"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",

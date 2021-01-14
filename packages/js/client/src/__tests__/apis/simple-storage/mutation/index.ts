@@ -1,11 +1,12 @@
 import { Ethereum_Mutation } from "./w3/imported";
+import { Input_setData } from "./w3/index";
 
-export function setData(address: string, value: u32): string {
+export function setData(input: Input_setData): string {
   return Ethereum_Mutation.sendTransaction({
-    address,
+    address: input.address,
     method: "function set(uint256 value)",
-    args: [value.toString()]
-  });
+    args: [input.value.toString()]
+  });;
 }
 
 export function deployContract(): string {

@@ -2,18 +2,18 @@
 
 // Get Invoke Arguments
 @external("w3", "__w3_invoke_args")
-export declare function __w3_invoke_args(method_ptr: usize, args_ptr: usize): void;
+export declare function __w3_invoke_args(method_ptr: u32, args_ptr: u32): void;
 
 // Set Invoke Result
 @external("w3", "__w3_invoke_result")
-export declare function __w3_invoke_result(ptr: usize, len: usize): void;
+export declare function __w3_invoke_result(ptr: u32, len: u32): void;
 
 // Set Invoke Error
 @external("w3", "__w3_invoke_error")
-export declare function __w3_invoke_error(ptr: usize, len: usize): void;
+export declare function __w3_invoke_error(ptr: u32, len: u32): void;
 
 // Keep track of all invokable functions
-type InvokeFunction = (argsBuf: ArrayBuffer) => ArrayBuffer;
+export type InvokeFunction = (argsBuf: ArrayBuffer) => ArrayBuffer;
 
 const invokes = new Map<string, InvokeFunction>();
 
@@ -22,12 +22,12 @@ export function w3_add_invoke(method: string, fn: InvokeFunction): void {
 }
 
 // Helper for handling _w3_invoke
-export function w3_invoke(method_size: usize, args_size: usize): bool {
-  const methodBuf = new ArrayBuffer(changetype<usize>(method_size));
-  const argsBuf = new ArrayBuffer(changetype<usize>(args_size));
+export function w3_invoke(method_size: u32, args_size: u32): bool {
+  const methodBuf = new ArrayBuffer(changetype<u32>(method_size));
+  const argsBuf = new ArrayBuffer(changetype<u32>(args_size));
   __w3_invoke_args(
-    changetype<usize>(methodBuf),
-    changetype<usize>(argsBuf)
+    changetype<u32>(methodBuf),
+    changetype<u32>(argsBuf)
   );
 
   const method = String.UTF8.decode(methodBuf);
@@ -35,7 +35,7 @@ export function w3_invoke(method_size: usize, args_size: usize): bool {
   if (fn) {
     const result = fn(argsBuf);
     __w3_invoke_result(
-      changetype<usize>(result),
+      changetype<u32>(result),
       result.byteLength
     );
     return true;
@@ -44,7 +44,7 @@ export function w3_invoke(method_size: usize, args_size: usize): bool {
       `Could not find invoke function "${method}"`
     );
     __w3_invoke_error(
-      changetype<usize>(message),
+      changetype<u32>(message),
       message.byteLength
     );
     return false;

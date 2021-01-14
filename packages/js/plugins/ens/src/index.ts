@@ -56,8 +56,9 @@ export class EnsPlugin extends Plugin {
       content: "function content(bytes32 nodehash) view returns (bytes32)",
     };
 
-    // Remove the ENS URI scheme
-    domain = domain.replace("ens://", "");
+    // Remove the ENS URI scheme & authority
+    domain = domain.replace("w3://", "");
+    domain = domain.replace("ens/", "");
 
     const domainNode = ethers.utils.namehash(domain);
 
@@ -67,17 +68,22 @@ export class EnsPlugin extends Plugin {
       args: string[]
     ): Promise<string> => {
       const { data, errors } = await client.query({
-        uri: new Uri("ens://ethereum.web3api.eth"),
+        uri: new Uri("ens/ethereum.web3api.eth"),
         query: `query {
           callView(
-            address: "${address}",
-            method: "${method}",
-            args: ${args}
+            address: $address,
+            method: $method,
+            args: $args
           )
         }`,
+        variables: {
+          address,
+          method,
+          args
+        }
       });
 
-      if (errors) {
+      if (errors && errors.length) {
         throw errors;
       }
 

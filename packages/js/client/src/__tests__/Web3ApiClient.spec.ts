@@ -10,6 +10,8 @@ import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 import { EnsPlugin } from "@web3api/ens-plugin-js";
 import axios from "axios";
 
+jest.setTimeout(30000);
+
 describe("Web3ApiClient", () => {
   let ipfsProvider: string;
   let ensAddress: string;

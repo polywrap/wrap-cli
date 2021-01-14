@@ -11,8 +11,7 @@ import {
 } from "./Format";
 import { Nullable } from "./Nullable";
 import { Read } from "./Read";
-
-import { E_INVALIDLENGTH } from "util/error";
+import { E_INVALIDLENGTH } from "./utils";
 
 export class ReadDecoder extends Read {
   private view: DataView;
@@ -34,8 +33,8 @@ export class ReadDecoder extends Read {
 
   readInt8(): i8 {
     const value = this.readInt64();
-    if (value <= <i64>i8.MAX_VALUE || value >= <i64>i8.MIN_VALUE) {
-      return <i8>value;
+    if (value <= i64(i8.MAX_VALUE) || value >= i64(i8.MIN_VALUE)) {
+      return i8(value);
     }
     throw new Error(
       "interger overflow: value = " + value.toString() + "; bits = 8"
@@ -44,8 +43,8 @@ export class ReadDecoder extends Read {
 
   readInt16(): i16 {
     const value = this.readInt64();
-    if (value <= <i64>i16.MAX_VALUE || value >= <i64>i16.MIN_VALUE) {
-      return <i16>value;
+    if (value <= i64(i16.MAX_VALUE) || value >= i64(i16.MIN_VALUE)) {
+      return i16(value);
     }
     throw new Error(
       "interger overflow: value = " + value.toString() + "; bits = 16"
@@ -54,8 +53,8 @@ export class ReadDecoder extends Read {
 
   readInt32(): i32 {
     const value = this.readInt64();
-    if (value <= <i64>i32.MAX_VALUE || value >= <i64>i32.MIN_VALUE) {
-      return <i32>value;
+    if (value <= i64(i32.MAX_VALUE) || value >= i64(i32.MIN_VALUE)) {
+      return i32(value);
     }
     throw new Error(
       "interger overflow: value = " + value.toString() + "; bits = 32"
@@ -66,18 +65,18 @@ export class ReadDecoder extends Read {
     const prefix = this.view.getUint8();
 
     if (isFixedInt(prefix)) {
-      return <i64>prefix;
+      return i64(prefix);
     }
     if (isNegativeFixedInt(prefix)) {
-      return <i64>(<i8>prefix);
+      return i64(i8(prefix));
     }
     switch (prefix) {
       case Format.INT8:
-        return <i64>this.view.getInt8();
+        return i64(this.view.getInt8());
       case Format.INT16:
-        return <i64>this.view.getInt16();
+        return i64(this.view.getInt16());
       case Format.INT32:
-        return <i64>this.view.getInt32();
+        return i64(this.view.getInt32());
       case Format.INT64:
         return this.view.getInt64();
       default:
@@ -87,8 +86,8 @@ export class ReadDecoder extends Read {
 
   readUInt8(): u8 {
     const value = this.readUInt64();
-    if (value <= <u64>u8.MAX_VALUE || value >= <u64>u8.MIN_VALUE) {
-      return <u8>value;
+    if (value <= u64(u8.MAX_VALUE) || value >= u64(u8.MIN_VALUE)) {
+      return u8(value);
     }
     throw new Error(
       "unsigned interger overflow: value = " + value.toString() + "; bits = 8"
@@ -97,8 +96,8 @@ export class ReadDecoder extends Read {
 
   readUInt16(): u16 {
     const value = this.readUInt64();
-    if (value <= <u64>u16.MAX_VALUE || value >= <u64>u16.MIN_VALUE) {
-      return <u16>value;
+    if (value <= u64(u16.MAX_VALUE) || value >= u64(u16.MIN_VALUE)) {
+      return u16(value);
     }
     throw new Error(
       "unsigned interger overflow: value = " + value.toString() + "; bits = 16"
@@ -107,8 +106,8 @@ export class ReadDecoder extends Read {
 
   readUInt32(): u32 {
     const value = this.readUInt64();
-    if (value <= <u64>u32.MAX_VALUE || value >= <u64>u32.MIN_VALUE) {
-      return <u32>value;
+    if (value <= u64(u32.MAX_VALUE) || value >= u64(u32.MIN_VALUE)) {
+      return u32(value);
     }
     throw new Error(
       "unsigned interger overflow: value = " + value.toString() + "; bits = 32"
@@ -119,18 +118,18 @@ export class ReadDecoder extends Read {
     const prefix = this.view.getUint8();
 
     if (isFixedInt(prefix)) {
-      return <u64>prefix;
+      return u64(prefix);
     } else if (isNegativeFixedInt(prefix)) {
       throw new Error("bad prefix");
     }
 
     switch (prefix) {
       case Format.UINT8:
-        return <u64>this.view.getUint8();
+        return u64(this.view.getUint8());
       case Format.UINT16:
-        return <u64>this.view.getUint16();
+        return u64(this.view.getUint16());
       case Format.UINT32:
-        return <u64>this.view.getUint32();
+        return u64(this.view.getUint32());
       case Format.UINT64:
         return this.view.getUint64();
       default:

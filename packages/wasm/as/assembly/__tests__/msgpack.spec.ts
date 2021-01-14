@@ -21,7 +21,7 @@ class Sanity {
   optUint64: Nullable<u64> = new Nullable<u64>();
   float32: f32;
   float64: f64;
-  str = "";
+  str: string = "";
   bytes: ArrayBuffer = new ArrayBuffer(1);
   array: Array<u8> = new Array<u8>();
   map: Map<string, Array<i32>> = new Map<string, Array<i32>>();

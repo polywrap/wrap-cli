@@ -18,6 +18,7 @@ import {
   MethodDefinition,
 } from "@web3api/schema-parse";
 import { spawn, Thread, Worker } from "threads";
+import path from "path";
 
 const maxThreads: number = 500;
 let threadsActive: number = 0;
@@ -199,10 +200,19 @@ export class WasmWeb3Api extends Api {
       return this._schema;
     }
 
+    const module = this._manifest.query || this._manifest.mutation;
+
+    if (!module) {
+      // TODO: this won't work for abstract APIs
+      throw Error(
+        `WasmWeb3Api: No module was found.`
+      );
+    }
+
     const { data, error } = await ApiResolver.Query.getFile(
       client,
       this._apiResolver,
-      `${this._uri.uri}/${this._manifest.schema.file}`
+      path.join(this._uri.path, module.schema.file)
     );
 
     if (error) {
@@ -212,11 +222,12 @@ export class WasmWeb3Api extends Api {
     // If nothing is returned, the schema was not found
     if (!data) {
       throw Error(
-        `WasmWeb3Api: Schema was not found.\nURI: ${this._uri}\nSubpath: ${this._manifest.schema.file}`
+        `WasmWeb3Api: Schema was not found.\nURI: ${this._uri}\nSubpath: ${module.schema.file}`
       );
     }
 
-    this._schema = String.fromCharCode.apply(null, data);
+    const decoder = new TextDecoder();
+    this._schema = decoder.decode(data);
 
     if (!this._schema) {
       throw Error(
@@ -254,7 +265,7 @@ export class WasmWeb3Api extends Api {
     const { data, error } = await ApiResolver.Query.getFile(
       client,
       this._apiResolver,
-      `${this._uri}/${moduleManifest.module.file}`
+      path.join(this._uri.path, moduleManifest.module.file)
     );
 
     if (error) {

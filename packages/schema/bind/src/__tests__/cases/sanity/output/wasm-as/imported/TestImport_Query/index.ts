@@ -5,24 +5,20 @@ import {
 import {
   serializeimportedMethodArgs,
   deserializeimportedMethodResult,
+  Input_importedMethod,
   serializeanotherMethodArgs,
-  deserializeanotherMethodResult
+  deserializeanotherMethodResult,
+  Input_anotherMethod
 } from "./serialization";
 
 export class TestImport_Query {
 
   public static uri: string = "testimport.uri.eth";
 
-  public static importedMethod(input: {
-    str: string,
-    optStr: string | null,
-    u: u32,
-    optU: Nullable<u32>,
-    uArrayArray: Array<Array<Nullable<u32>> | null>
-  }): string {
+  public static importedMethod(input: Input_importedMethod): string {
     const args = serializeimportedMethodArgs(input);
     const result = w3_subinvoke(
-      uri,
+      "testimport.uri.eth",
       "query",
       "importedMethod",
       args
@@ -30,12 +26,10 @@ export class TestImport_Query {
     return deserializeimportedMethodResult(result);
   }
 
-  public static anotherMethod(input: {
-    arg: Array<string>
-  }): i64 {
+  public static anotherMethod(input: Input_anotherMethod): i64 {
     const args = serializeanotherMethodArgs(input);
     const result = w3_subinvoke(
-      uri,
+      "testimport.uri.eth",
       "query",
       "anotherMethod",
       args

@@ -24,7 +24,11 @@ export interface ClientConfig {
 }
 
 export class Web3ApiClient implements Client {
-  private _apiCache = new ApiCache();
+  // TODO: the API cache needs to be more like a routing table.
+  // It should help us keep track of what URI's map to what APIs,
+  // and handle cases where the are multiple jumps. For exmaple, if
+  // A => B => C, then the cache should have A => C, and B => C.
+  private _apiCache: ApiCache = new Map<string, Api>();
 
   constructor(private _config: ClientConfig = {
     redirects: []

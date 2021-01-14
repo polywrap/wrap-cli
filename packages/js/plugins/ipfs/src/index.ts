@@ -59,7 +59,9 @@ export class IpfsPlugin extends Plugin {
   }
 
   public async catToString(cid: string): Promise<string> {
-    return (await this.catToBuffer(cid)).toString();
+    const buffer = await this.catToBuffer(cid);
+    const decoder = new TextDecoder();
+    return decoder.decode(buffer);
   }
 
   public async catToBuffer(cid: string): Promise<Uint8Array> {

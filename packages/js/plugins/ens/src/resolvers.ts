@@ -11,7 +11,7 @@ export const query = (ens: EnsPlugin, client: Client): PluginModule => ({
 
     try {
       return {
-        uri: await ens.ensToCID(input.path, client),
+        uri: `ipfs/${await ens.ensToCID(input.path, client)}`,
         manifest: null,
       };
     } catch (e) {

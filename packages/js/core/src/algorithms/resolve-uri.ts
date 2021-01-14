@@ -107,7 +107,7 @@ export async function resolveUri(
       // We've found our manifest at the current URI resolver
       // meaning the URI resolver can also be used as an API resolver
       const manifest = deserializeManifest(manifestStr);
-      return createApi(uri, manifest, uriResolver);
+      return createApi(resolvedUri, manifest, uriResolver);
     }
   }
 

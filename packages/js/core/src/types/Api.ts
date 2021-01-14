@@ -26,4 +26,4 @@ export abstract class Api {
 }
 
 /** Cache of API definitions, mapping the API's URI to its definition */
-export class ApiCache extends Map<string, Api> {}
+export type ApiCache = Map<string, Api>;

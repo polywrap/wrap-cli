@@ -2,7 +2,7 @@ import {
   W3Exports,
   W3Imports,
   HostDispatcher,
-  usize,
+  u32,
   HostAction
 } from "./types";
 import {
@@ -53,10 +53,10 @@ const imports = (
 ): W3Imports => ({
   w3: {
     __w3_subinvoke: (
-      uriPtr: usize, uriLen: usize,
-      modulePtr: usize, moduleLen: usize,
-      methodPtr: usize, methodLen: usize,
-      inputPtr: usize, inputLen: usize
+      uriPtr: u32, uriLen: u32,
+      modulePtr: u32, moduleLen: u32,
+      methodPtr: u32, methodLen: u32,
+      inputPtr: u32, inputLen: u32
     ): boolean => {
       const uri = readString(memory.buffer, uriPtr, uriLen);
       const module = readString(memory.buffer, modulePtr, moduleLen);
@@ -71,7 +71,7 @@ const imports = (
         input
       });
 
-      if (!state.threadId || !state.threadMutexes) {
+      if (state.threadId === undefined || state.threadMutexes === undefined) {
         abort(
           observer,
           `__w3_subinvoke: thread uninitialized.\nthreadId: ${state.threadId}\nthreadMutexes: ${state.threadMutexes}`
@@ -94,7 +94,7 @@ const imports = (
       return !state.subinvoke.error;
     },
     // Give WASM the size of the result
-    __w3_subinvoke_result_len: (): usize => {
+    __w3_subinvoke_result_len: (): u32 => {
       if (!state.subinvoke.result) {
         abort(observer, "__w3_subinvoke_result_len: subinvoke.result is not set");
         return 0;
@@ -102,7 +102,7 @@ const imports = (
       return state.subinvoke.result.byteLength;
     },
     // Copy the subinvoke result into WASM
-    __w3_subinvoke_result: (ptr: usize): void => {
+    __w3_subinvoke_result: (ptr: u32): void => {
       if (!state.subinvoke.result) {
         abort(observer, "__w3_subinvoke_result: subinvoke.result is not set");
         return;
@@ -110,7 +110,7 @@ const imports = (
       writeBytes(state.subinvoke.result, memory.buffer, ptr);
     },
     // Give WASM the size of the error
-    __w3_subinvoke_error_len: (): usize => {
+    __w3_subinvoke_error_len: (): u32 => {
       if (!state.subinvoke.error) {
         abort(observer, "__w3_subinvoke_error_len: subinvoke.error is not set");
         return 0;
@@ -118,7 +118,7 @@ const imports = (
       return state.subinvoke.error.length;
     },
     // Copy the subinvoke error into WASM
-    __w3_subinvoke_error: (ptr: usize): void => {
+    __w3_subinvoke_error: (ptr: u32): void => {
       if (!state.subinvoke.error) {
         abort(observer, "__w3_subinvoke_error: subinvoke.error is not set");
         return;
@@ -126,7 +126,7 @@ const imports = (
       writeString(state.subinvoke.error, memory.buffer, ptr);
     },
     // Copy the invocation's method & args into WASM
-    __w3_invoke_args: (methodPtr: usize, argsPtr: usize): void => {
+    __w3_invoke_args: (methodPtr: u32, argsPtr: u32): void => {
       if (!state.method) {
         abort(observer, "__w3_invoke_args: method is not set");
         return;
@@ -139,16 +139,20 @@ const imports = (
       writeBytes(state.args, memory.buffer, argsPtr);
     },
     // Store the invocation's result
-    __w3_invoke_result: (ptr: usize, len: usize): void => {
+    __w3_invoke_result: (ptr: u32, len: u32): void => {
       state.invoke.result = readBytes(memory.buffer, ptr, len);
     },
     // Store the invocation's error
-    __w3_invoke_error: (ptr: usize, len: usize): void => {
+    __w3_invoke_error: (ptr: u32, len: u32): void => {
       state.invoke.error = readString(memory.buffer, ptr, len);
     }
   },
   env: {
-    memory
+    memory,
+    abort: (msg: string, file: string, line: number, column: number) => {
+      abort(observer, `WASM Abort: ${msg}\nFile: ${file}\n[${line},${column}]`);
+      return;
+    }
   }
 });
 

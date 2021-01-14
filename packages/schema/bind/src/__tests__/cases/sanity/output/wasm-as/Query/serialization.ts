@@ -6,13 +6,16 @@ import {
   Write
 } from "@web3api/wasm-as";
 
-export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): {
-  arg: string
-} {
+export class Input_queryMethod {
+  arg: string;
+}
+
+export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMethod {
   const reader = new ReadDecoder(argsBuf);
   var numFields = reader.readMapLength();
 
-  var _arg: string | undefined;
+  var _arg: string = "";
+  var _argSet: boolean = false;
 
   while (numFields > 0) {
     numFields--;
@@ -20,10 +23,11 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): {
 
     if (field == "arg") {
       _arg = reader.readString();
+      _argSet = true;
     }
   }
 
-  if (!_arg) {
+  if (!_argSet) {
     throw Error("Missing required argument \"arg: String\"");
   }
 
@@ -41,6 +45,6 @@ export function serializequeryMethodResult(result: i32): ArrayBuffer {
   return buffer;
 }
 
-function writequeryMethodResult(writer: Write, result: i32) {
+function writequeryMethodResult(writer: Write, result: i32): void {
   writer.writeInt32(result);
 }
