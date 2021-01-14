@@ -66,7 +66,7 @@ export class Web3ApiClient implements Client {
             ...invocation,
             decode: true
           })
-            .then(result => ({
+          .then(result => ({
               method: invocation.method,
               result
             })

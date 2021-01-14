@@ -1,6 +1,6 @@
 [
   {
-    "api": "simplestorage.eth",
+    "api": "ens/simplestorage.eth",
     "constants": "./constants.json"
   },
   {
@@ -22,7 +22,7 @@
     "query": "./set.graphql",
     "variables": {
       "address": "$SimpleStorageAddr",
-      "value": 56789
+      "value": 569
     }
   },
   {

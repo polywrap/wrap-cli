@@ -24,6 +24,7 @@ const Worker = require("web-worker");
 export const maxTransferBytes: number = 256; // do not change
 export const maxThreads: number = 128;
 let threadsActive: number = 0;
+let threadAvailable: number = 0;
 const threadMutexesBuffer = new SharedArrayBuffer(maxThreads * Int32Array.BYTES_PER_ELEMENT);
 const threadMutexes = new Int32Array(threadMutexesBuffer, 0, maxThreads);
 
@@ -95,7 +96,14 @@ export class WasmWeb3Api extends Api {
       await new Promise((resolve) => setTimeout(() => resolve(), 500));
     }
 
-    const threadId = threadsActive++;
+    threadsActive++;
+    const threadId = threadAvailable++;
+
+    // Wrap the queue
+    if (threadAvailable >= maxThreads) {
+      threadAvailable = 0;
+    }
+
     Atomics.store(
       threadMutexes,
       threadId,
@@ -244,6 +252,7 @@ export class WasmWeb3Api extends Api {
 
     await awaitCompletion;
 
+    Atomics.store(threadMutexes, threadId, 0);
     worker.terminate();
     threadsActive--;
 

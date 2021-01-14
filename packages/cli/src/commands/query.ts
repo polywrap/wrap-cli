@@ -2,16 +2,19 @@ import { fixParameters } from "../lib/helpers/parameters";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { Ethereum, IPFS, Web3API } from "@web3api/client-js";
 import axios from "axios";
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 import gql from "graphql-tag";
 import path from "path";
+import { Uri, UriRedirect, Web3ApiClient } from "@web3api/client-js"
+import { EnsPlugin } from "@web3api/ens-plugin-js";
+import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
+import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const HELP = `
-${chalk.bold("w3 query")} [options] ${chalk.bold("[<recipe-script>]")}
+${chalk.bold("w3 query")} [options] ${chalk.bold("<recipe-script>")}
 
 Options:
   -t, --test-ens  Use the development server's ENS instance
@@ -47,6 +50,12 @@ export default {
       return;
     }
 
+    if (!recipePath) {
+      print.error("Required argument <recipe-script> is missing");
+      print.info(HELP);
+      return;
+    }
+
     const {
       data: { ipfs, ethereum },
     } = await axios.get("http://localhost:4040/providers");
@@ -54,20 +63,40 @@ export default {
       data: { ensAddress },
     } = await axios.get("http://localhost:4040/ens");
 
+    const redirects: UriRedirect[] = [
+      {
+        from: new Uri("w3://ens/ethereum.web3api.eth"),
+        to: {
+          factory: () => new EthereumPlugin({ provider: ethereum }),
+          manifest: EthereumPlugin.manifest()
+        }
+      },
+      {
+        from: new Uri("w3://ens/ipfs.web3api.eth"),
+        to: {
+          factory: () => new IpfsPlugin({ provider: ipfs }),
+          manifest: IpfsPlugin.manifest()
+        }
+      },
+      {
+        from: new Uri("w3://ens/ens.web3api.eth"),
+        to: {
+          factory: () => new EnsPlugin({ address: ensAddress }),
+          manifest: EnsPlugin.manifest()
+        }
+      }
+    ];
+
+    const client = new Web3ApiClient({ redirects });
+
     const recipe = JSON.parse(filesystem.read(recipePath) as string);
     const dir = path.dirname(recipePath);
+    let uri = "";
 
-    let api: Web3API | undefined = undefined;
     let constants: Record<string, string> = {};
     for (const task of recipe) {
       if (task.api) {
-        api = new Web3API({
-          uri: task.api,
-          portals: {
-            ipfs: new IPFS({ provider: ipfs }),
-            ethereum: new Ethereum({ provider: ethereum, ens: ensAddress }),
-          },
-        });
+        uri = task.api;
       }
 
       if (task.constants) {
@@ -97,18 +126,34 @@ export default {
           });
         }
 
-        if (!api) {
+        if (!uri) {
           throw Error("API needs to be initialized");
         }
 
-        const { data } = await api.query({
+        print.warning("-----------------------------------");
+        print.fancy(query);
+        print.fancy(JSON.stringify(variables, null, 2));
+        print.warning("-----------------------------------");
+
+        const { data, errors } = await client.query({
+          uri: new Uri(uri),
           query: gql(query),
           variables,
         });
 
-        print.success("-----------------------------------");
-        print.fancy(JSON.stringify(data, null, 2));
-        print.success("-----------------------------------");
+        if (data && data !== { }) {
+          print.success("-----------------------------------");
+          print.fancy(JSON.stringify(data, null, 2));
+          print.success("-----------------------------------");
+        }
+
+        if (errors) {
+          for (const error of errors) {
+            print.error("-----------------------------------");
+            print.fancy(error.message);
+            print.error("-----------------------------------");
+          }
+        }
       }
     }
 
