@@ -11,9 +11,10 @@ import {
   writeBytes,
   writeString
 } from "./utils";
+import { maxThreads } from "./WasmWeb3Api";
 
 import { Observable, SubscriptionObserver } from "observable-fns";
-import { expose } from "threads/worker";
+import { expose } from "threads";
 import { encode } from "@msgpack/msgpack";
 
 interface State {
@@ -27,7 +28,7 @@ interface State {
     result?: ArrayBuffer;
     error?: string;
   };
-  threadMutexes?: SharedArrayBuffer;
+  threadMutexes?: Int32Array;
   threadId?: number;
 }
 
@@ -58,6 +59,14 @@ const imports = (
       methodPtr: u32, methodLen: u32,
       inputPtr: u32, inputLen: u32
     ): boolean => {
+      if (state.threadId === undefined || state.threadMutexes === undefined) {
+        abort(
+          observer,
+          `__w3_subinvoke: thread uninitialized.\nthreadId: ${state.threadId}\nthreadMutexes: ${state.threadMutexes}`
+        );
+        return false;
+      }
+
       const uri = readString(memory.buffer, uriPtr, uriLen);
       const module = readString(memory.buffer, modulePtr, moduleLen);
       const method = readString(memory.buffer, methodPtr, methodLen);
@@ -71,25 +80,22 @@ const imports = (
         input
       });
 
-      if (state.threadId === undefined || state.threadMutexes === undefined) {
-        abort(
-          observer,
-          `__w3_subinvoke: thread uninitialized.\nthreadId: ${state.threadId}\nthreadMutexes: ${state.threadMutexes}`
-        );
-        return false;
-      }
-
-      // Pause the thread, unpausing every 500ms to enable pending
-      // events to be processed.
-      // TODO: might not be needed, test this.
+      // Pause the thread
       while (!state.subinvoke.error && !state.subinvoke.result) {
         Atomics.wait(
-          new Int32Array(state.threadMutexes),
+          state.threadMutexes,
           state.threadId,
-          1,
+          0,
           500
         );
       }
+
+      // Reset our lock to 0
+      Atomics.store(
+        new Int32Array(state.threadMutexes),
+        state.threadId,
+        0
+      );
 
       return !state.subinvoke.error;
     },
@@ -161,12 +167,12 @@ const methods = {
     wasm: ArrayBuffer,
     method: string,
     input: Record<string, unknown> | ArrayBuffer,
-    threadMutexes: SharedArrayBuffer,
+    threadMutexesBuffer: SharedArrayBuffer,
     threadId: number
   ): HostDispatcher => new Observable(observer => {
 
     // Store thread mutexes & ID, used for pausing the thread's execution
-    state.threadMutexes = threadMutexes;
+    state.threadMutexes = new Int32Array(threadMutexesBuffer, 0, maxThreads);
     state.threadId = threadId;
 
     // Store the method we're invoking

@@ -20,10 +20,10 @@ import {
 import { spawn, Thread, Worker } from "threads";
 import path from "path";
 
-const maxThreads: number = 500;
+export const maxThreads: number = 128;
 let threadsActive: number = 0;
-const threadMutexesBuffer = new SharedArrayBuffer(maxThreads);
-const threadMutexes = new Int32Array(threadMutexesBuffer);
+const threadMutexesBuffer = new SharedArrayBuffer(maxThreads * Int32Array.BYTES_PER_ELEMENT);
+const threadMutexes = new Int32Array(threadMutexesBuffer, 0, maxThreads);
 
 export class WasmWeb3Api extends Api {
   private _schema?: string;
@@ -154,6 +154,10 @@ export class WasmWeb3Api extends Api {
 
             Atomics.store(threadMutexes, threadId, 1);
             Atomics.notify(threadMutexes, threadId, Infinity);
+
+            // TODO: edit this, using SharedArrayBuffer for
+            // the result & error
+
             break;
           }
         }
