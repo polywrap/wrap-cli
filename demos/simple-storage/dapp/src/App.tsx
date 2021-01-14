@@ -1,48 +1,94 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import gql from "graphql-tag";
 
-import { Uri, Web3APIClient } from "@web3api/client-js";
-import { EthereumPlugin } from "@web3api/ethereum-plugin-js"
-
-const client = new Web3APIClient({
-  redirects: [
-    {
-      from: new Uri("w3://ens/ethereum.web3api.eth"),
-      to: new EthereumPlugin(window.ethereum) // JS plugin OR another URI
-    }
-  ]
-});
-
-client.query({
-  uri: "ens/api.uniswap.eth",
-  query: gql`
-    mutation {
-      swap(
-        to: $to
-        from: $from
-      )
-    }
-  `
-})
+import { Uri, UriRedirect, Web3ApiClient } from "@web3api/client-js";
+import { EnsPlugin } from "@web3api/ens-plugin-js";
+import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
+import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 
 function App() {
+  const [contract, setContract] = React.useState<string | undefined>(undefined);
+  const [client, setClient] = React.useState<Web3ApiClient | undefined>(undefined);
+
+  async function setupClient() {
+    const ethereum = (window as any).ethereum;
+    if (ethereum && ethereum.enable) {
+      await ethereum.enable();
+    }
+
+    const redirects: UriRedirect[] = [
+      {
+        from: new Uri("w3://ens/ethereum.web3api.eth"),
+        to: {
+          factory: () => new EthereumPlugin({ provider: ethereum }),
+          manifest: EthereumPlugin.manifest()
+        }
+      },
+      {
+        from: new Uri("w3://ens/ipfs.web3api.eth"),
+        to: {
+          factory: () => new IpfsPlugin({ provider: 'https://ipfs.fleek.co/api/v0' }),
+          manifest: IpfsPlugin.manifest()
+        }
+      },
+      {
+        from: new Uri("w3://ens/ens.web3api.eth"),
+        to: {
+          factory: () => new EnsPlugin({ }),
+          manifest: EnsPlugin.manifest()
+        }
+      }
+    ];
+    setClient(new Web3ApiClient({ redirects }));
+  }
+
+  const deployContract = async () => {
+    if (!client) {
+      await setupClient();
+
+      if (!client) {
+        return;
+      }
+    }
+
+    console.log("querying")
+
+    const { data, errors } = await client.query({
+      uri: new Uri("ens/simplestorage.web3api.eth"),
+      query: `mutation { deployContract }`
+    });
+
+    console.log(data)
+    console.log(errors)
+
+    if (errors) {
+      console.error(errors);
+    }
+
+    if (data) {
+      setContract(
+        data.deployContract as string
+      );
+    }
+  }
+
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.tsx</code> and save to reload.
+          Web3API: SimpleStorage Demo
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        {!contract ?
+          (<button onClick={deployContract}>
+            Deploy Contract
+          </button>) :
+          <p>SimpleStorage Contract: {contract}</p>
+        }
+        <button>
+          Set Storage
+        </button>
       </header>
     </div>
   );

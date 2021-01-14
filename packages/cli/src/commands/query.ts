@@ -63,6 +63,8 @@ export default {
       data: { ensAddress },
     } = await axios.get("http://localhost:4040/ens");
 
+    // TODO: move this into its own package, since it's being used everywhere?
+    // maybe have it exported from test-env.
     const redirects: UriRedirect[] = [
       {
         from: new Uri("w3://ens/ethereum.web3api.eth"),
