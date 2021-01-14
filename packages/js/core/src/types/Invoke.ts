@@ -26,6 +26,12 @@ export interface InvokeApiOptions {
    * allowing for the filtering of nested objects.
    */
   resultFilter?: Record<string, unknown>;
+
+  /**
+   * If set to true, the invoke function will decode all msgpack results
+   * into JavaScript objects.
+   */
+  decode?: boolean;
 }
 
 /**

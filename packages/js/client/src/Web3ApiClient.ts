@@ -49,7 +49,6 @@ export class Web3ApiClient implements Client {
   >(options: QueryApiOptions<TVariables>): Promise<QueryApiResult<TData>> {
     try {
       const { uri, query, variables } = options;
-      const api = await this.loadWeb3Api(uri);
 
       // Convert the query string into a query document
       const queryDocument =
@@ -63,7 +62,10 @@ export class Web3ApiClient implements Client {
 
       for (const invocation of invokeOptions) {
         parallelInvocations.push(
-          api.invoke(invocation, this)
+          this.invoke({
+            ...invocation,
+            decode: true
+          })
             .then(result => ({
               method: invocation.method,
               result
@@ -111,7 +113,7 @@ export class Web3ApiClient implements Client {
 
       return {
         data: data as TData,
-        errors,
+        errors: errors.length === 0 ? undefined : errors,
       };
     } catch (error) {
       if (error.length) {

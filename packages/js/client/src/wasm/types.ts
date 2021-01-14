@@ -1,5 +1,3 @@
-import { Observable } from "observable-fns";
-
 export type u32 = number;
 
 export interface W3Exports {
@@ -36,12 +34,20 @@ export interface W3Imports {
   [key: string]: Record<string, Function | WebAssembly.Memory>;
 }
 
+export enum ThreadWakeStatus {
+  SUBINVOKE_RESULT = 1,
+  SUBINVOKE_ERROR = 2,
+  SUBINVOKE_DONE = 3
+}
+
 // Host (main thread) actions
 export type HostAction =
   SubInvokeAction |
   AbortAction |
   LogQueryResultAction |
-  LogQueryErrorAction;
+  LogQueryErrorAction |
+  LogInfoAction |
+  TransferCompleteAction;
 
 export interface SubInvokeAction {
   readonly type: "SubInvoke";
@@ -66,4 +72,11 @@ export interface LogQueryErrorAction {
   readonly error: string;
 }
 
-export type HostDispatcher = Observable<HostAction>
+export interface LogInfoAction {
+  readonly type: "LogInfo";
+  readonly message: string;
+}
+
+export interface TransferCompleteAction {
+  readonly type: "TransferComplete";
+}

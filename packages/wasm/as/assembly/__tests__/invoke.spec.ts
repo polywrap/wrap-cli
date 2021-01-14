@@ -1,5 +1,6 @@
 import {
-  w3_add_invoke
+  w3_add_invoke,
+  w3_invoke
 } from "../";
 
 function methodName(input: ArrayBuffer): ArrayBuffer {
@@ -9,5 +10,6 @@ function methodName(input: ArrayBuffer): ArrayBuffer {
 describe("Invoke: Sanity", () => {
   it("Compiles", () => {
     w3_add_invoke("methodName", methodName);
+    w3_invoke(1, 1);
   });
 });

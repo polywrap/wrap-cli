@@ -1,5 +1,4 @@
-import { HostAction } from "./types";
-import { ThreadMethods } from "./thread";
+import { HostAction, ThreadWakeStatus } from "./types";
 
 import {
   InvokeApiOptions,
@@ -17,9 +16,12 @@ import {
   QueryDefinition,
   MethodDefinition,
 } from "@web3api/schema-parse";
-import { spawn, Thread, Worker } from "threads";
 import path from "path";
+import * as MsgPack from "@msgpack/msgpack";
 
+const Worker = require("web-worker");
+
+export const maxTransferBytes: number = 256; // do not change
 export const maxThreads: number = 128;
 let threadsActive: number = 0;
 const threadMutexesBuffer = new SharedArrayBuffer(maxThreads * Int32Array.BYTES_PER_ELEMENT);
@@ -45,8 +47,8 @@ export class WasmWeb3Api extends Api {
   public async invoke(
     options: InvokeApiOptions,
     client: Client
-  ): Promise<InvokeApiResult<ArrayBuffer>> {
-    const { module, method, input } = options;
+  ): Promise<InvokeApiResult<unknown | ArrayBuffer>> {
+    const { module, method, input, decode } = options;
 
     // Fetch the schema
     const schema = await this.getSchema(client);
@@ -100,25 +102,74 @@ export class WasmWeb3Api extends Api {
       0
     );
 
-    const thread = await spawn<ThreadMethods>(
-      new Worker("./thread")
-    );
+    // Spawn the worker thread
+    let modulePath = 'thread.js';
+    if (process.env.TEST) {
+      modulePath = 'thread-loader.js';
+    }
 
-    const dispatcher = thread.start(
-      wasm,
-      method,
-      input,
-      threadMutexesBuffer,
-      threadId
-    );
+    const worker = new Worker(path.join(__dirname, modulePath));
+
+    // Our transfer buffer, used to send data to the thread atomically.
+    // The first byte in the transfer array specifies how many bytes are in the array (max 255).
+    const transferBuffer = new SharedArrayBuffer(maxTransferBytes * Uint8Array.BYTES_PER_ELEMENT);
+    const transfer = new Uint8Array(transferBuffer, 0, maxTransferBytes);
 
     let state: "Abort" | "LogQueryError" | "LogQueryResult" | undefined;
     let abortMessage: string | undefined;
     let queryResult: ArrayBuffer | undefined;
     let queryError: string | undefined;
 
-    await new Promise((resolve) => {
-      dispatcher.subscribe(async (action: HostAction) => {
+    const awaitCompletion = new Promise((resolve) => {
+
+      let transferPending = false;
+      const transferData = async (data: ArrayBuffer, status: number) => {
+
+        let progress = 0;
+        const totalBytes = data.byteLength;
+        const dataView = new Uint8Array(data);
+
+        while (progress < totalBytes) {
+
+          // Reset the transfer buffer
+          transfer.fill(0);
+
+          // Calculate how many bytes we can send
+          const bytesLeft = totalBytes - progress;
+          const bytesToSend = Math.min(bytesLeft, (maxTransferBytes - 1));
+
+          // Set the first byte to the number of bytes we're sending
+          transfer.set([bytesToSend]);
+
+          // Copy our data in
+          transfer.set(
+            dataView.slice(progress, progress + bytesToSend), 1
+          );
+
+          transferPending = true;
+          progress += bytesToSend;
+
+          // Notify the thread that we've sent data, giving it a specific
+          // status code
+          Atomics.store(threadMutexes, threadId, status);
+          Atomics.notify(threadMutexes, threadId, Infinity);
+
+          // Wait until the transferPending flag has been reset
+          while (transferPending) {
+            await new Promise((resolve) => setTimeout(
+              () => resolve(), 100
+            ));
+          }
+        }
+
+        Atomics.store(threadMutexes, threadId, ThreadWakeStatus.SUBINVOKE_DONE);
+        Atomics.notify(threadMutexes, threadId, Infinity);
+      };
+
+      worker.addEventListener('message', async (event: { data: HostAction }) => {
+
+        const action = event.data;
+
         switch (action.type) {
           case "Abort": {
             abortMessage = action.message;
@@ -138,8 +189,15 @@ export class WasmWeb3Api extends Api {
             resolve();
             break;
           }
+          // TODO: replace with proper logging
+          case "LogInfo": {
+            console.log(action.message);
+            break;
+          }
           case "SubInvoke": {
-            const { data, error } = await client.invoke({
+            const { data, error } = await client.invoke<
+              unknown | ArrayBuffer
+            >({
               uri: new Uri(action.uri),
               module: action.module as InvokableModules,
               method: action.method,
@@ -147,24 +205,46 @@ export class WasmWeb3Api extends Api {
             });
 
             if (!error) {
-              thread.subInvokeResult(data);
+              let msgpack: ArrayBuffer;
+              if (data instanceof ArrayBuffer) {
+                msgpack = data;
+              } else {
+                msgpack = MsgPack.encode(data);
+              }
+
+              // transfer the result
+              await transferData(msgpack, ThreadWakeStatus.SUBINVOKE_RESULT);
             } else {
-              thread.subInvokeError(`${error.name}: ${error.message}`);
+              const encoder = new TextEncoder();
+              const bytes = encoder.encode(`${error.name}: ${error.message}`);
+
+              // transfer the error
+              await transferData(bytes, ThreadWakeStatus.SUBINVOKE_ERROR);
             }
 
-            Atomics.store(threadMutexes, threadId, 1);
-            Atomics.notify(threadMutexes, threadId, Infinity);
-
-            // TODO: edit this, using SharedArrayBuffer for
-            // the result & error
-
+            break;
+          }
+          case "TransferComplete": {
+            transferPending = false;
             break;
           }
         }
       });
     });
 
-    Thread.terminate(thread);
+    // Start the thread
+    worker.postMessage({
+      wasm,
+      method,
+      input,
+      threadMutexesBuffer,
+      threadId,
+      transferBuffer
+    });
+
+    await awaitCompletion;
+
+    worker.terminate();
     threadsActive--;
 
     if (!state) {
@@ -191,7 +271,11 @@ export class WasmWeb3Api extends Api {
         };
       }
       case "LogQueryResult": {
-        return { data: queryResult };
+        if (decode) {
+          return { data: MsgPack.decode(queryResult as ArrayBuffer) };
+        } else {
+          return { data: queryResult };
+        }
       }
       default: {
         throw Error(`WasmWeb3Api: Unknown state "${state}"`);

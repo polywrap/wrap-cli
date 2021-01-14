@@ -216,7 +216,7 @@ export class Compiler {
       env: {
         memory,
         abort: (msg: string, file: string, line: number, column: number) => {
-          console.log(`Abort: ${msg}\n${file}\n[${line},${column}]`);
+          console.error(`Abort: ${msg}\n${file}\n[${line},${column}]`);
         }
       },
       w3: {
