@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 import { Compiler } from "../lib/Compiler";
 import { fixParameters } from "../lib/helpers/parameters";
 import { publishToIPFS } from "../lib/publishers/ipfs-publisher";
@@ -25,14 +26,8 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
 
-    const { h, i, o, f, w, e } = parameters.options;
-    let {
-      help,
-      ipfs,
-      outputDir,
-      watch,
-      testEns,
-    } = parameters.options;
+    const { h, i, o, w, e } = parameters.options;
+    let { help, ipfs, outputDir, watch, testEns } = parameters.options;
 
     help = help || h;
     ipfs = ipfs || i;
@@ -102,9 +97,9 @@ export default {
     } else if (ipfs) {
       // Dev-server IPFS provider
       // TODO: handle the case where the dev server isn't found
-      const { data: { ipfs, ethereum } } = await axios.get(
-        "http://localhost:4040/providers"
-      );
+      const {
+        data: { ipfs, ethereum },
+      } = await axios.get("http://localhost:4040/providers");
       ipfsProvider = ipfs;
       ethProvider = ethereum;
     }
@@ -122,14 +117,10 @@ export default {
       // If not address was provided, fetch it from the server
       // or deploy a new instance
       if (!ensAddress) {
-        const getEns = await axios.get(
-          "http://localhost:4040/ens"
-        );
+        const getEns = await axios.get("http://localhost:4040/ens");
 
         if (!getEns.data.ensAddress) {
-          const deployEns = await axios.get(
-            "http://localhost:4040/deploy-ens"
-          );
+          const deployEns = await axios.get("http://localhost:4040/deploy-ens");
           ensAddress = deployEns.data.ensAddress;
         } else {
           ensAddress = getEns.data.ensAddress;
@@ -142,7 +133,7 @@ export default {
       outputDir,
       ensAddress,
       ethProvider,
-      ipfsProvider
+      ipfsProvider,
     });
 
     let result = false;
@@ -171,25 +162,22 @@ export default {
         if (!ensAddress) {
           uris.push(["ENS Registry", `${ethProvider}/${ensAddress}`]);
         }
-  
+
         // ask the dev server to publish the CID to ENS
-        const { data } = await axios.get(
-          "http://localhost:4040/register-ens",
-          {
-            params: {
-              domain: ensDomain,
-              cid,
-            },
-          }
-        );
-  
+        const { data } = await axios.get("http://localhost:4040/register-ens", {
+          params: {
+            domain: ensDomain,
+            cid,
+          },
+        });
+
         if (data.success) {
           uris.push(["Web3API ENS", `${testEns} => ${cid}`]);
         } else {
           print.error(
             `ENS Resolution Failed { ${testEns} => ${cid} }\n` +
-            `Ethereum Provider: ${ethProvider}\n` +
-            `ENS Address: ${ensAddress}`
+              `Ethereum Provider: ${ethProvider}\n` +
+              `ENS Address: ${ensAddress}`
           );
         }
       }

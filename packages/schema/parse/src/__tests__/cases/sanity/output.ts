@@ -204,9 +204,7 @@ export const output: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition("mutation", "importedMethod"),
-          arguments: [
-            createScalarPropertyDefinition("str", "String", true),
-          ],
+          arguments: [createScalarPropertyDefinition("str", "String", true)],
           return: createScalarPropertyDefinition(
             "importedMethod",
             "String",

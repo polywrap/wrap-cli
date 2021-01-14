@@ -1,8 +1,4 @@
-import {
-  E_INDEXOUTOFRANGE,
-  E_INVALIDLENGTH,
-  BLOCK_MAXSIZE
-} from "./utils";
+import { E_INDEXOUTOFRANGE, E_INVALIDLENGTH, BLOCK_MAXSIZE } from "./utils";
 
 export class DataView {
   @unsafe

@@ -4,9 +4,7 @@ export * from "./utils/fs";
 
 export type TargetLanguage = "wasm-as";
 
-export type OutputEntry =
-  FileEntry |
-  DirectoryEntry;
+export type OutputEntry = FileEntry | DirectoryEntry;
 
 export interface FileEntry {
   type: "File";

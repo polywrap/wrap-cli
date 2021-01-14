@@ -1,7 +1,12 @@
 import { query, mutation } from "./resolvers";
 import { manifest } from "./manifest";
 
-import { Client, Plugin, PluginManifest, PluginModules } from "@web3api/core-js";
+import {
+  Client,
+  Plugin,
+  PluginManifest,
+  PluginModules,
+} from "@web3api/core-js";
 import CID from "cids";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
@@ -69,7 +74,7 @@ export class IpfsPlugin extends Plugin {
     for await (const chunk of this._ipfs.cat(cid)) {
       chunks.push(chunk);
     }
-    const result = Buffer.concat(chunks);
+    const result = chunks.length > 1 ? Buffer.concat(chunks) : chunks[0];
     const u8Array = new Uint8Array(result.byteLength);
     u8Array.set(result);
     return u8Array;

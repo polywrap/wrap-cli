@@ -11,10 +11,14 @@ export interface W3Exports {
 export interface W3Imports {
   w3: {
     __w3_subinvoke: (
-      uriPtr: u32, uriLen: u32,
-      modulePtr: u32, moduleLen: u32,
-      methodPtr: u32, methodLen: u32,
-      inputPtr: u32, inputLen: u32
+      uriPtr: u32,
+      uriLen: u32,
+      modulePtr: u32,
+      moduleLen: u32,
+      methodPtr: u32,
+      methodLen: u32,
+      inputPtr: u32,
+      inputLen: u32
     ) => boolean;
     __w3_subinvoke_result_len: () => u32;
     __w3_subinvoke_result: (ptr: u32) => void;
@@ -37,17 +41,17 @@ export interface W3Imports {
 export enum ThreadWakeStatus {
   SUBINVOKE_RESULT = 1,
   SUBINVOKE_ERROR = 2,
-  SUBINVOKE_DONE = 3
+  SUBINVOKE_DONE = 3,
 }
 
 // Host (main thread) actions
 export type HostAction =
-  SubInvokeAction |
-  AbortAction |
-  LogQueryResultAction |
-  LogQueryErrorAction |
-  LogInfoAction |
-  TransferCompleteAction;
+  | SubInvokeAction
+  | AbortAction
+  | LogQueryResultAction
+  | LogQueryErrorAction
+  | LogInfoAction
+  | TransferCompleteAction;
 
 export interface SubInvokeAction {
   readonly type: "SubInvoke";

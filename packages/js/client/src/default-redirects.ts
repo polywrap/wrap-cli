@@ -11,29 +11,32 @@ export function getDefaultRedirects(): UriRedirect[] {
     {
       from: new Uri("w3://ens/ipfs.web3api.eth"),
       to: {
-        factory: () => new IpfsPlugin({
-          provider: "https://ipfs.infura.io",
-        }),
-        manifest: IpfsPlugin.manifest()
-      }
+        factory: () =>
+          new IpfsPlugin({
+            provider: "https://ipfs.infura.io",
+          }),
+        manifest: IpfsPlugin.manifest(),
+      },
     },
     // ENS is required for resolving domain to IPFS hashes
     {
       from: new Uri("w3://ens/ens.web3api.eth"),
       to: {
-        factory: () => new EnsPlugin({ }),
-        manifest: EnsPlugin.manifest()
-      }
+        factory: () => new EnsPlugin({}),
+        manifest: EnsPlugin.manifest(),
+      },
     },
     {
       from: new Uri("w3://ens/ethereum.web3api.eth"),
       to: {
-        factory: () => new EthereumPlugin({
-          // TODO: move away from centralized gateway
-          provider: "https://eth-mainnet.gateway.pokt.network/v1/5fc677007c6654002ed13350",
-        }),
-        manifest: EthereumPlugin.manifest()
-      }
+        factory: () =>
+          new EthereumPlugin({
+            // TODO: move away from centralized gateway
+            provider:
+              "https://eth-mainnet.gateway.pokt.network/v1/5fc677007c6654002ed13350",
+          }),
+        manifest: EthereumPlugin.manifest(),
+      },
     },
   ];
 }

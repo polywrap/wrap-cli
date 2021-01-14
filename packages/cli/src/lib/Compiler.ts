@@ -1,4 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/no-empty-function */
+
 import { Web3APIManifest } from "./Web3APIManifest";
 import { displayPath } from "./helpers/path";
 import { step, withSpinner } from "./helpers/spinner";
@@ -6,12 +9,7 @@ import { step, withSpinner } from "./helpers/spinner";
 import fs, { readFileSync } from "fs";
 import path from "path";
 import * as asc from "assemblyscript/cli/asc";
-import {
-  Manifest,
-  Uri,
-  Web3ApiClient,
-  UriRedirect
-} from "@web3api/client-js";
+import { Manifest, Uri, Web3ApiClient, UriRedirect } from "@web3api/client-js";
 import { bindSchema, writeDirectory } from "@web3api/schema-bind";
 import { composeSchema, ComposerOutput } from "@web3api/schema-compose";
 import { EnsPlugin } from "@web3api/ens-plugin-js";
@@ -38,10 +36,7 @@ export class Compiler {
     this._manifestDir = path.dirname(_config.manifestPath);
   }
 
-  public async compile(
-    quiet?: boolean,
-    verbose?: boolean
-  ): Promise<boolean> {
+  public async compile(quiet?: boolean, verbose?: boolean): Promise<boolean> {
     try {
       // Load the manifest
       const manifest = await this._loadManifest();
@@ -99,14 +94,13 @@ export class Compiler {
         }
 
         if (!composed[moduleName]) {
-          throw Error(`Missing schema definition for the module "${moduleName}"`);
+          throw Error(
+            `Missing schema definition for the module "${moduleName}"`
+          );
         }
 
         // Generate code next to the module entry point file
-        const emittedFiles = this._generateCode(
-          module.module.file,
-          composed[moduleName] as string
-        );
+        this._generateCode(module.module.file, composed[moduleName] as string);
 
         await this._compileWasmModule(
           module.module.file,
@@ -118,13 +112,17 @@ export class Compiler {
         );
         module.module.file = `./${moduleName}.wasm`;
         module.schema.file = "./schema.graphql";
-      }
+      };
 
       await buildModule("mutation");
       await buildModule("query");
 
       // Output the schema & manifest files
-      fs.writeFileSync(`${outputDir}/schema.graphql`, composed.combined, "utf-8");
+      fs.writeFileSync(
+        `${outputDir}/schema.graphql`,
+        composed.combined,
+        "utf-8"
+      );
       Web3APIManifest.dump(manifest, `${outputDir}/web3api.yaml`);
     };
 
@@ -161,7 +159,6 @@ export class Compiler {
     const moduleAbsolute = path.join(this._manifestDir, modulePath);
     const baseDir = path.dirname(moduleAbsolute);
     const libsDirs = [];
-    let w3Wasm = "";
 
     for (
       let dir: string | undefined = path.resolve(baseDir);
@@ -191,7 +188,7 @@ export class Compiler {
       "--debug",
       "--importMemory",
       "--runtime",
-      "none"
+      "none",
     ];
 
     // compile the module into the output directory
@@ -217,18 +214,18 @@ export class Compiler {
         memory,
         abort: (msg: string, file: string, line: number, column: number) => {
           console.error(`Abort: ${msg}\n${file}\n[${line},${column}]`);
-        }
+        },
       },
       w3: {
-        __w3_subinvoke: () => { },
-        __w3_subinvoke_result_len: () => { },
-        __w3_subinvoke_result: () => { },
-        __w3_subinvoke_error_len: () => { },
-        __w3_subinvoke_error: () => { },
-        __w3_invoke_args: () => { },
-        __w3_invoke_result: () => { },
-        __w3_invoke_error: () => { }
-      }
+        __w3_subinvoke: () => {},
+        __w3_subinvoke_result_len: () => {},
+        __w3_subinvoke_result: () => {},
+        __w3_subinvoke_error_len: () => {},
+        __w3_subinvoke_error: () => {},
+        __w3_invoke_args: () => {},
+        __w3_invoke_result: () => {},
+        __w3_invoke_error: () => {},
+      },
     });
 
     if (!instance.exports._w3_init) {
@@ -246,11 +243,8 @@ export class Compiler {
 
   private _generateCode(entryPoint: string, schema: string): string[] {
     const absolute = path.isAbsolute(entryPoint)
-    ? entryPoint
-    : this._appendPath(
-        this._config.manifestPath,
-        entryPoint
-      );
+      ? entryPoint
+      : this._appendPath(this._config.manifestPath, entryPoint);
     const directory = `${path.dirname(absolute)}/w3`;
     this._cleanDir(directory);
     const output = bindSchema("wasm-as", schema);
@@ -263,26 +257,23 @@ export class Compiler {
 
     return composeSchema({
       schemas: {
-        query: querySchemaPath ? {
-          schema: this._fetchLocalSchema(querySchemaPath),
-          absolutePath: querySchemaPath
-        } : undefined,
-        mutation: mutationSchemaPath ? {
-          schema: this._fetchLocalSchema(mutationSchemaPath),
-          absolutePath: mutationSchemaPath
-        } : undefined
+        query: querySchemaPath
+          ? {
+              schema: this._fetchLocalSchema(querySchemaPath),
+              absolutePath: querySchemaPath,
+            }
+          : undefined,
+        mutation: mutationSchemaPath
+          ? {
+              schema: this._fetchLocalSchema(mutationSchemaPath),
+              absolutePath: mutationSchemaPath,
+            }
+          : undefined,
       },
       resolvers: {
-        external: (uri: string) => (
-          this._fetchExternalSchema(
-            uri,
-            manifest
-          )
-        ),
-        local: (path: string) => (
-          Promise.resolve(this._fetchLocalSchema(path))
-        )
-      }
+        external: (uri: string) => this._fetchExternalSchema(uri, manifest),
+        local: (path: string) => Promise.resolve(this._fetchLocalSchema(path)),
+      },
     });
   }
 
@@ -314,8 +305,8 @@ export class Compiler {
           from: new Uri("w3://ens/ens.web3api.eth"),
           to: {
             factory: () => new EnsPlugin({ address: ensAddress }),
-            manifest: EnsPlugin.manifest()
-          }
+            manifest: EnsPlugin.manifest(),
+          },
         });
       }
 
@@ -324,8 +315,8 @@ export class Compiler {
           from: new Uri("w3://ens/ethereum.web3api.eth"),
           to: {
             factory: () => new EthereumPlugin({ provider: ethProvider }),
-            manifest: EthereumPlugin.manifest()
-          }
+            manifest: EthereumPlugin.manifest(),
+          },
         });
       }
 
@@ -334,8 +325,8 @@ export class Compiler {
           from: new Uri("w3://ens/ipfs.web3api.eth"),
           to: {
             factory: () => new IpfsPlugin({ provider: ipfsProvider }),
-            manifest: IpfsPlugin.manifest()
-          }
+            manifest: IpfsPlugin.manifest(),
+          },
         });
       }
 
@@ -347,7 +338,7 @@ export class Compiler {
         if (schema) {
           return schema;
         }
-      } catch(e) {
+      } catch (e) {
         // Do nothing, try using the default client below
       }
     }
@@ -362,10 +353,7 @@ export class Compiler {
     return fs.readFileSync(
       path.isAbsolute(schemaPath)
         ? schemaPath
-        : this._appendPath(
-            this._config.manifestPath,
-            schemaPath
-          ),
+        : this._appendPath(this._config.manifestPath, schemaPath),
       "utf-8"
     );
   }

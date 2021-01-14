@@ -3,14 +3,9 @@ import {
   W3Imports,
   HostAction,
   u32,
-  ThreadWakeStatus
+  ThreadWakeStatus,
 } from "./types";
-import {
-  readBytes,
-  readString,
-  writeBytes,
-  writeString
-} from "./utils";
+import { readBytes, readString, writeBytes, writeString } from "./utils";
 import { maxThreads, maxTransferBytes } from "./WasmWeb3Api";
 
 import { encode } from "@msgpack/msgpack";
@@ -32,36 +27,39 @@ interface State {
 }
 
 const state: State = {
-  invoke: { },
-  subinvoke: { },
-}
+  invoke: {},
+  subinvoke: {},
+};
 
-const abort = (
-  message: string
-) => {
+const abort = (message: string) => {
   dispatchAction({
     type: "Abort",
-    message
+    message,
   });
-}
+};
 
 const dispatchAction = (action: HostAction) => {
   // @ts-ignore webworker postMessage
   postMessage(action);
-}
+};
 
-const imports = (
-  memory: WebAssembly.Memory
-): W3Imports => ({
+const imports = (memory: WebAssembly.Memory): W3Imports => ({
   w3: {
     __w3_subinvoke: (
-      uriPtr: u32, uriLen: u32,
-      modulePtr: u32, moduleLen: u32,
-      methodPtr: u32, methodLen: u32,
-      inputPtr: u32, inputLen: u32
+      uriPtr: u32,
+      uriLen: u32,
+      modulePtr: u32,
+      moduleLen: u32,
+      methodPtr: u32,
+      methodLen: u32,
+      inputPtr: u32,
+      inputLen: u32
     ): boolean => {
-
-      if (state.threadId === undefined || state.threadMutexes === undefined || state.transfer === undefined) {
+      if (
+        state.threadId === undefined ||
+        state.threadMutexes === undefined ||
+        state.transfer === undefined
+      ) {
         abort(
           `__w3_subinvoke: thread uninitialized.\nthreadId: ${state.threadId}\nthreadMutexes: ${state.threadMutexes}`
         );
@@ -85,7 +83,7 @@ const imports = (
         uri,
         module,
         method,
-        input
+        input,
       });
 
       // Pause the thread
@@ -93,12 +91,15 @@ const imports = (
 
       // Get the code & reset to 0
       const status: ThreadWakeStatus = Atomics.exchange(
-        state.threadMutexes, state.threadId, 0
+        state.threadMutexes,
+        state.threadId,
+        0
       );
 
-      if (status === ThreadWakeStatus.SUBINVOKE_ERROR ||
-          status === ThreadWakeStatus.SUBINVOKE_RESULT) {
-
+      if (
+        status === ThreadWakeStatus.SUBINVOKE_ERROR ||
+        status === ThreadWakeStatus.SUBINVOKE_RESULT
+      ) {
         let transferStatus: ThreadWakeStatus = status;
         let numBytes = Atomics.load(state.transfer, 0);
         let data = new Uint8Array(numBytes);
@@ -122,7 +123,11 @@ const imports = (
           // for another chunk of data
           if (transferStatus !== ThreadWakeStatus.SUBINVOKE_DONE) {
             Atomics.wait(state.threadMutexes, state.threadId, 0);
-            transferStatus = Atomics.exchange(state.threadMutexes, state.threadId, 0);
+            transferStatus = Atomics.exchange(
+              state.threadMutexes,
+              state.threadId,
+              0
+            );
             numBytes = Atomics.load(state.transfer, 0);
           } else {
             break;
@@ -139,9 +144,7 @@ const imports = (
           return true;
         }
       } else {
-        abort(
-          `__w3_subinvoke: Unknown wake status ${status}`
-        );
+        abort(`__w3_subinvoke: Unknown wake status ${status}`);
         return false;
       }
       return false;
@@ -198,33 +201,38 @@ const imports = (
     // Store the invocation's error
     __w3_invoke_error: (ptr: u32, len: u32): void => {
       state.invoke.error = readString(memory.buffer, ptr, len);
-    }
+    },
   },
   env: {
     memory,
     abort: (msg: string, file: string, line: number, column: number) => {
       abort(`WASM Abort: ${msg}\nFile: ${file}\n[${line},${column}]`);
       return;
-    }
-  }
+    },
+  },
 });
 
 // @ts-ignore
-addEventListener("message", (input: {
-  data: {
-    wasm: ArrayBuffer,
-    method: string,
-    input: Record<string, unknown> | ArrayBuffer,
-    threadMutexesBuffer: SharedArrayBuffer,
-    threadId: number,
-    transferBuffer: SharedArrayBuffer
-  }
-}) => {
-
+addEventListener(
+  "message",
+  (input: {
+    data: {
+      wasm: ArrayBuffer;
+      method: string;
+      input: Record<string, unknown> | ArrayBuffer;
+      threadMutexesBuffer: SharedArrayBuffer;
+      threadId: number;
+      transferBuffer: SharedArrayBuffer;
+    };
+  }) => {
     const data = input.data;
 
     // Store thread mutexes & ID, used for pausing the thread's execution
-    state.threadMutexes = new Int32Array(data.threadMutexesBuffer, 0, maxThreads);
+    state.threadMutexes = new Int32Array(
+      data.threadMutexesBuffer,
+      0,
+      maxThreads
+    );
     state.threadId = data.threadId;
 
     // Store transfer buffer
@@ -243,20 +251,21 @@ addEventListener("message", (input: {
 
     const module = new WebAssembly.Module(data.wasm);
     const memory = new WebAssembly.Memory({ initial: 1 });
-    const source = new WebAssembly.Instance(
-      module, imports(memory)
-    );
+    const source = new WebAssembly.Instance(module, imports(memory));
 
     const exports = source.exports as W3Exports;
 
-    const hasExport = (name: string, exports: Record<string, unknown>): boolean => {
+    const hasExport = (
+      name: string,
+      exports: Record<string, unknown>
+    ): boolean => {
       if (!exports[name]) {
         abort(`A required export was not found: ${name}`);
         return false;
       }
 
       return true;
-    }
+    };
 
     // Make sure _w3_init exists
     if (!hasExport("_w3_init", exports)) {
@@ -285,7 +294,7 @@ addEventListener("message", (input: {
       // __w3_invoke_result has already been called
       dispatchAction({
         type: "LogQueryResult",
-        result: state.invoke.result
+        result: state.invoke.result,
       });
     } else {
       if (!state.invoke.error) {
@@ -296,7 +305,8 @@ addEventListener("message", (input: {
       // __w3_invoke_error has already been called
       dispatchAction({
         type: "LogQueryError",
-        error: state.invoke.error
+        error: state.invoke.error,
       });
     }
-});
+  }
+);

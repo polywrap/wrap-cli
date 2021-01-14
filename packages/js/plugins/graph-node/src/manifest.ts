@@ -5,5 +5,5 @@ export const manifest: PluginManifest = {
   // https://github.com/Web3-API/prototype/issues/101
   schema: "type Query { dummy: String }",
   implemented: [],
-  imported: []
+  imported: [],
 };

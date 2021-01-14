@@ -7,7 +7,7 @@ import {
   Dirent,
   writeFileSync,
   mkdirSync,
-  existsSync
+  existsSync,
 } from "fs";
 
 // TODO: make this all async, making it run faster
@@ -41,7 +41,10 @@ export function readDirectory(dir: string): OutputDirectory {
   return { entries };
 }
 
-export function writeDirectory(outputDir: string, dir: OutputDirectory): string[] {
+export function writeDirectory(
+  outputDir: string,
+  dir: OutputDirectory
+): string[] {
   const paths: string[] = [];
 
   const outputDirectoryEntry = (root: string, entry: OutputEntry) => {
@@ -58,7 +61,7 @@ export function writeDirectory(outputDir: string, dir: OutputDirectory): string[
         outputDirectoryEntry(entryPath, subEntry);
       }
     }
-  }
+  };
 
   for (const entry of dir.entries) {
     outputDirectoryEntry(outputDir, entry);

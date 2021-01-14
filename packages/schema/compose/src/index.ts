@@ -22,7 +22,9 @@ export interface ComposerOutput {
   combined?: string;
 }
 
-export async function composeSchema(options: ComposerOptions): Promise<ComposerOutput> {
+export async function composeSchema(
+  options: ComposerOptions
+): Promise<ComposerOutput> {
   const { schemas, resolvers } = options;
   const { query, mutation } = schemas;
   const results: {

@@ -7,7 +7,7 @@ import {
   InvokeApiResult,
   Plugin,
   PluginPackage,
-  Uri
+  Uri,
 } from "@web3api/core-js";
 import { decode } from "@msgpack/msgpack";
 
@@ -75,12 +75,12 @@ export class PluginWeb3Api extends Api {
       return {
         error: new Error(
           `PluginWeb3Api: invocation exception encountered.\n` +
-          `uri: ${this._uri.uri}\nmodule: ${module}\n` +
-          `method: ${method}\nresultFilter: ${resultFilter}\n` +
-          `input: ${JSON.stringify(jsInput, null, 2)}\n` +
-          `modules: ${JSON.stringify(modules, null, 2)}\n` +
-          `exception: ${e.message}`
-        )
+            `uri: ${this._uri.uri}\nmodule: ${module}\n` +
+            `method: ${method}\nresultFilter: ${resultFilter}\n` +
+            `input: ${JSON.stringify(jsInput, null, 2)}\n` +
+            `modules: ${JSON.stringify(modules, null, 2)}\n` +
+            `exception: ${e.message}`
+        ),
       };
     }
   }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import YAML from "js-yaml";
 
 // TODO: replace w/ Cesar's work in master branch

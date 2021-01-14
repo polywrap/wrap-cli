@@ -7,6 +7,9 @@ import { EnsPlugin } from "@web3api/ens-plugin-js";
 import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
 import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 
+// Needed for bundling the @web3api/client-js web worker
+process.env.WORKER_PREFIX= 'workerize-loader!';
+
 function App() {
   const [contract, setContract] = React.useState<string | undefined>(undefined);
   const [client, setClient] = React.useState<Web3ApiClient | undefined>(undefined);
@@ -28,7 +31,7 @@ function App() {
       {
         from: new Uri("w3://ens/ipfs.web3api.eth"),
         to: {
-          factory: () => new IpfsPlugin({ provider: 'https://ipfs.fleek.co/api/v0' }),
+          factory: () => new IpfsPlugin({ provider: 'https://ipfs.io/api/v0/' }),
           manifest: IpfsPlugin.manifest()
         }
       },

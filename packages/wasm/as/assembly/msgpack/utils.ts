@@ -4,5 +4,5 @@ export class BLOCK {
 }
 export const BLOCK_OVERHEAD: usize = offsetof<BLOCK>();
 export const BLOCK_MAXSIZE: usize = (1 << 30) - BLOCK_OVERHEAD;
-export const E_INDEXOUTOFRANGE: string = "Index out of range";
-export const E_INVALIDLENGTH: string = "Invalid length";
+export const E_INDEXOUTOFRANGE = "Index out of range";
+export const E_INVALIDLENGTH = "Invalid length";

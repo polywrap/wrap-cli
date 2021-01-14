@@ -1,8 +1,4 @@
-import {
-  Web3ApiClient,
-  Uri,
-  UriRedirect
-} from "../";
+import { Web3ApiClient, Uri, UriRedirect } from "../";
 import { buildAndDeployApi } from "./helpers";
 
 import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
@@ -19,7 +15,9 @@ describe("Web3ApiClient", () => {
 
   beforeAll(async () => {
     // fetch providers from dev server
-    const { data: { ipfs, ethereum } } = await axios.get("http://localhost:4040/providers");
+    const {
+      data: { ipfs, ethereum },
+    } = await axios.get("http://localhost:4040/providers");
 
     if (!ipfs) {
       throw Error("Dev server must be running at port 4040");
@@ -39,23 +37,23 @@ describe("Web3ApiClient", () => {
         from: new Uri("w3://ens/ethereum.web3api.eth"),
         to: {
           factory: () => new EthereumPlugin({ provider: ethereum }),
-          manifest: EthereumPlugin.manifest()
-        }
+          manifest: EthereumPlugin.manifest(),
+        },
       },
       {
         from: new Uri("w3://ens/ipfs.web3api.eth"),
         to: {
           factory: () => new IpfsPlugin({ provider: ipfs }),
-          manifest: IpfsPlugin.manifest()
-        }
+          manifest: IpfsPlugin.manifest(),
+        },
       },
       {
         from: new Uri("w3://ens/ens.web3api.eth"),
         to: {
           factory: () => new EnsPlugin({ address: ensAddress }),
-          manifest: EnsPlugin.manifest()
-        }
-      }
+          manifest: EnsPlugin.manifest(),
+        },
+      },
     ];
   });
 
@@ -71,14 +69,14 @@ describe("Web3ApiClient", () => {
     const client = new Web3ApiClient({ redirects });
 
     const deploy = await client.query<{
-      deployContract: string
+      deployContract: string;
     }>({
       uri: ensUri,
       query: `
         mutation {
           deployContract
         }
-      `
+      `,
     });
 
     expect(deploy.errors).toBeFalsy();
@@ -103,8 +101,8 @@ describe("Web3ApiClient", () => {
         }
       `,
       variables: {
-        value: 55
-      }
+        value: 55,
+      },
     });
 
     expect(set.errors).toBeFalsy();
@@ -112,7 +110,7 @@ describe("Web3ApiClient", () => {
     expect(set.data?.setData.indexOf("0x")).toBeGreaterThan(-1);
 
     const get = await client.query<{
-      getData: number
+      getData: number;
     }>({
       uri: ensUri,
       query: `
@@ -121,7 +119,7 @@ describe("Web3ApiClient", () => {
             address: "${address}"
           )
         }
-      `
+      `,
     });
 
     expect(get.errors).toBeFalsy();

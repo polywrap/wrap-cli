@@ -1,9 +1,6 @@
-import {
-  w3_add_invoke,
-  w3_invoke
-} from "../";
+import { w3_add_invoke, w3_invoke } from "../";
 
-function methodName(input: ArrayBuffer): ArrayBuffer {
+function methodName(_input: ArrayBuffer): ArrayBuffer {
   return new ArrayBuffer(0);
 }
 

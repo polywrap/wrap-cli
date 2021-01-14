@@ -27,7 +27,7 @@ export const toMsgPack: MustacheFunction = () => {
 
 export const toWasmInit: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
-    let name = render(value);
+    const name = render(value);
 
     if (name[0] === "?") {
       const nullType = toWasm()(value, render);

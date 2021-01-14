@@ -2,7 +2,12 @@
 import { query, mutation } from "./resolvers";
 import { manifest } from "./manifest";
 
-import { Client, Plugin, PluginManifest, PluginModules } from "@web3api/core-js";
+import {
+  Client,
+  Plugin,
+  PluginManifest,
+  PluginModules,
+} from "@web3api/core-js";
 import { Signer, ethers } from "ethers";
 import {
   ExternalProvider,
