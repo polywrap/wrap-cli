@@ -10,9 +10,7 @@ type UrlParam {
 
 enum ResponseType {
     TEXT
-    JSON
-    ARRAYBUFFER
-    BLOB
+    BINARY
 }
 
 type Response {
