@@ -8,24 +8,31 @@ type UrlParam {
     value: String!
 }
 
+enum ResponseType {
+    TEXT
+    JSON
+    ARRAYBUFFER
+    BLOB
+}
+
 type Response {
-    status: Integer
-    statusText: String
+    status: Integer!
+    statusText: String!
     headers: [Header!]
     body: String
-    error: String
 }
 
 type Request {
     headers: [Header!]
     urlParams: [UrlParam!]
+    responseType: ResponseType!
     body: String
 }
 
 type Query {
-    get(url: String!, request: Request): Response!
+    get(url: String!, request: Request): Response
 }
 
 type Mutation {
-    post(url: String!, request: Request): Response!
+    post(url: String!, request: Request): Response
 }
