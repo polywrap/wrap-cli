@@ -2,20 +2,20 @@
 import { query, mutation } from "./resolvers";
 import { Request, Response } from "./data"
 import { fromAxiosResponse, toAxiosRequestConfig } from "./util"
-// import { manifest } from "./manifest"
+import { manifest } from "./manifest"
 
 import axios from "axios"
 
-import { Client, Plugin, PluginModules } from "@web3api/core-js";
+import { Client, Plugin, PluginModules, PluginManifest } from "@web3api/core-js";
 
 export class HttpPlugin extends Plugin {
     constructor() {
         super();
     }
 
-    // public static manifest(): PluginManifest {
-    //     return manifest;
-    // }
+    public static manifest(): PluginManifest {
+        return manifest;
+    }
 
     public getModules(_client: Client): PluginModules {
         return {
