@@ -1,29 +1,36 @@
+// eslint-disable-next-line @typescript-eslint/naming-convention,@typescript-eslint/no-var-requires,@typescript-eslint/no-require-imports
 const IPFSClient = require("ipfs-http-client");
 const { globSource } = IPFSClient;
 
-export async function publishToIPFS(buildPath: string, ipfs: string): Promise<string> {
+export async function publishToIPFS(
+  buildPath: string,
+  ipfs: string
+): Promise<string> {
   let url;
   try {
     url = new URL(ipfs);
   } catch (e) {
-    throw Error(`IPFS URL Malformed: ${ipfs}\n${e}`)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    url = null;
+    throw Error(`IPFS URL Malformed: ${ipfs}\n${e}`);
   }
 
   const client = new IPFSClient(ipfs);
   const globOptions = {
-    recursive: true
+    recursive: true,
   };
 
   const addOptions = {
-    wrapWithDirectory: false
+    wrapWithDirectory: false,
   };
 
-  let rootCID = '';
+  let rootCID = "";
 
   for await (const file of client.addAll(
-    globSource(buildPath, globOptions), addOptions
+    globSource(buildPath, globOptions),
+    addOptions
   )) {
-    if (file.path.indexOf('/') === -1) {
+    if (file.path.indexOf("/") === -1) {
       rootCID = file.cid.toString();
     }
   }

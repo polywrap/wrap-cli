@@ -12,5 +12,6 @@ query:
   module:
     language: wasm/assemblyscript
     file: ./src/query/index.ts
-subgraph:
-  file: ./src/subgraph/subgraph.yaml
+import_redirects:
+  - uri: w3://ens/ethereum.web3api.eth
+    schema: ../../../packages/js/plugins/ethereum/src/schema.graphql

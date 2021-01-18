@@ -1,0 +1,34 @@
+import {
+  w3_subinvoke,
+  Nullable
+} from "@web3api/wasm-as";
+{{#methods.length}}
+import {
+  {{#methods}}
+  serialize{{name}}Args,
+  deserialize{{name}}Result,
+  Input_{{name}}{{^last}},{{/last}}
+  {{/methods}}
+} from "./serialization";
+{{/methods.length}}
+
+export class {{name}} {
+
+  public static uri: string = "{{uri}}";
+
+  {{#methods}}
+  public static {{name}}(input: Input_{{name}}): {{#toWasm}}{{return.type}}{{/toWasm}} {
+    const args = serialize{{name}}Args(input);
+    const result = w3_subinvoke(
+      "{{uri}}",
+      "{{operation}}",
+      "{{name}}",
+      args
+    );
+    return deserialize{{name}}Result(result);
+  }
+  {{^last}}
+
+  {{/last}}
+  {{/methods}}
+}

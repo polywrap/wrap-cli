@@ -1,11 +1,11 @@
-const { Ethereum } = require("@web3api/client-js");
+const { EthereumPlugin } = require("@web3api/ethereum-plugin-js");
 const fs = require("fs");
 const YAML = require("js-yaml");
 
 async function main() {
   const contractAbi = require(`${__dirname}/src/contracts/SimpleStorage.json`);
 
-  const eth = new Ethereum({
+  const eth = new EthereumPlugin({
     provider: "http://localhost:8545"
   });
 
@@ -14,19 +14,6 @@ async function main() {
   );
 
   console.log(`✔️ SimpleStorage live at: ${address}`)
-
-  const manifest = YAML.safeLoad(
-    fs.readFileSync(`${__dirname}/src/subgraph/subgraph.yaml`)
-  );
-
-  manifest.dataSources[0].source.address = address;
-
-  fs.writeFileSync(
-    `${__dirname}/src/subgraph/subgraph.yaml`,
-    YAML.safeDump(manifest)
-  );
-
-  console.log("✔️ Subgraph Manifest Updated");
 
   const constants = require(`${__dirname}/recipes/constants.json`);
   constants.SimpleStorageAddr = address;

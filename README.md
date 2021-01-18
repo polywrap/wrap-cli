@@ -7,26 +7,17 @@ The Ease of Web2
 **[Join Early Access](https://web3api.dev)**
 
 ## What?  
-[Web3API](https://web3api.dev) allows smart contract developers to implement user-friendly, multi-platform, wrappers for their protocols in a language agnostic way. Use Web3APIs in your favorite platforms and programming languages:  
-Browser JS, Node.JS, Rust, Python, Go, C/C++, C#, etc  
-
-At core of [Web3API](https://web3api.dev) is a WASM runtime that enables interactions with popular P2P networks:  
-IPFS, Ethereum, Subgraph, etc  
-
-These WASM modules, paired with a [subgraph](https://thegraph.com/) for historical data querying, combine together to **create a single GraphQL schema that defines the entirety of the protocol.**  
-
-We call this GraphQL schema a [Web3API](https://web3api.dev).  
+Web3API brings the ease of Web2 to Web3. It aims to make integrating Web3 protocols into applications seamless, without sacrificing decentralization.
 
 ## How?  
-Detailed user instructions will be available shortly. **[Join early access!](https://web3api.dev)**  
+> For the visual learners, here is a [video](http://video.web3api.eth.link/).  
 
-## Packages  
-| Package | Version | Description |  
-|---------|---------|-------------|  
-| [@web3api/client-js](./packages/client-js) | pre-alpha | Javascript Client |  
-| [@web3api/cli](./packages/cli) | pre-alpha | CLI |  
-| [@web3api/wasm-ts](./packages/wasm-ts) | pre-alpha | Assemblyscript Runtime |  
-| [@web3api/client-test-env](./packages/client-test-env) | pre-alpha | Dockerized Test Env |  
+Web3API accomplishes this through a WebAssembly (WASM) standard and a developer toolchain that streamlines Web3 protocol integrations. All logic that was once bundled into JavaScript SDKs (among other languages) is now within lightweight, secure, and portable WASM modules called Web3APIs.
+
+See the specification for [more information](https://github.com/Web3-API/specification/blob/main/spec/intro/1_Introduction.md).
+
+## Getting Started
+Developer documentation coming soon!
 
 ## Contributing  
 ### Prerequisites  
@@ -48,6 +39,12 @@ Detailed user instructions will be available shortly. **[Join early access!](htt
 or, if client-test-env is already running in the background:  
 `yarn test`  
 
+### Lint
+`yarn lint`
+
+To autofix lint errors:
+`yarn lint:fix`
+
 ## Demos  
 
 Each demo below showcases different aspects of Web3API. Please see the demo's README for further details and instructions.  
@@ -55,7 +52,6 @@ Each demo below showcases different aspects of Web3API. Please see the demo's RE
 | Demo | Status |  
 |------|--------|  
 | [Simple Storage](./demos/simple-storage/README.md) | Running |  
-| [Uniswap V2](./demos/uniswap-v2) | Not Running |  
 
 ## Contact  
-For all inquiries, please email `jelli@dorg.tech` or create an issue in this repository.  
+For all inquiries, please fill out our [contact form](https://airtable.com/shrzxezSAlpoUUZNV), or create an issue in this repository.  

@@ -1,0 +1,8 @@
+{{#scalar}}
+writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(item);
+{{/scalar}}
+{{#array}}
+writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(item, (writer: Write, item: {{#toWasm}}{{item.type}}{{/toWasm}}): void => {
+  {{> serialize_array}}
+});
+{{/array}}

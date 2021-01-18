@@ -1,0 +1,19 @@
+{{#queryTypes}}
+{{#methods.length}}
+import {
+  {{#methods}}
+  Input_{{name}}{{^last}},{{/last}}
+  {{/methods}}
+} from "./{{name}}";
+{{/methods.length}}
+{{/queryTypes}}
+
+{{#queryTypes}}
+{{#methods.length}}
+export {
+  {{#methods}}
+  Input_{{name}}{{^last}},{{/last}}
+  {{/methods}}
+};
+{{/methods.length}}
+{{/queryTypes}}
