@@ -48,7 +48,7 @@ describe('creating axios config', () => {
     test('with url params', () => {
         const config = toAxiosRequestConfig({
             urlParams: [{key: "tag", value: "data"}],
-            responseType: "ARRAYBUFFER",
+            responseType: "BINARY",
             body: "body-content"
         });
         

@@ -65,7 +65,7 @@ describe('test http plugin get method', () => {
             urlParams: [
                 {key: "q", value: "test-param"}
             ],
-            responseType: "ARRAYBUFFER",
+            responseType: "BINARY",
         })
 
         expect(axios.get).lastCalledWith(
@@ -153,7 +153,7 @@ describe('test http plugin post method', () => {
                 {key: "q", value: "test-param"}
             ],
             body: "{request: 1001}",
-            responseType: "ARRAYBUFFER",
+            responseType: "BINARY",
         })
 
         expect(axios.post).lastCalledWith(

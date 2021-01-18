@@ -8,7 +8,7 @@ export class UrlParam {
     value: string;
 }
 
-export type ResponseType = "TEXT" | "JSON" | "ARRAYBUFFER"
+export type ResponseType = "TEXT" | "BINARY"
 
 export class Request {
     headers?: Header[];

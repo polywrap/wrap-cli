@@ -47,13 +47,8 @@ export function toAxiosRequestConfig(request: Request): AxiosRequestConfig {
     }, {})
 
     let config: AxiosRequestConfig = {
-        // @ts-ignore
-        responseType: request.responseType.toLocaleLowerCase(),
+        responseType: request.responseType == "BINARY" ? "arraybuffer" : "text",
     }
-
-    // if (request.body) {
-    //     config = {...config, data: request.body}
-    // }
 
     if (urlParams) {
         config = {...config, params: urlParams}
