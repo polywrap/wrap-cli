@@ -46,8 +46,6 @@ export function extractNamedType(
         objectDefinition.properties
       );
       argument.object.kind = objectDefinition.kind;
-      argument.type = type;
-      argument.required = argument.object.required;
     } else {
       argument.scalar = createScalarDefinition(
         argument.name,
