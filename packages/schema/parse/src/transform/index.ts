@@ -52,9 +52,9 @@ export function performTransforms(
     result = transforms.enter.TypeInfo(result);
   }
 
-  for (let i = 0; i < result.userTypes.length; ++i) {
-    result.userTypes[i] = visitObjectDefinition(
-      result.userTypes[i],
+  for (let i = 0; i < result.objectTypes.length; ++i) {
+    result.objectTypes[i] = visitObjectDefinition(
+      result.objectTypes[i],
       transforms
     );
   }

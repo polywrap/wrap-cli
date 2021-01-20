@@ -26,7 +26,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
       transforms: [addFirstLast],
     });
     const expected: TypeInfo = {
-      userTypes: [
+      objectTypes: [
         {
           ...createObjectDefinition("MyType"),
           properties: [
@@ -74,7 +74,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
       ],
     });
     const expected: TypeInfo = {
-      userTypes: [
+      objectTypes: [
         {
           ...createObjectDefinition("MyType"),
           properties: [

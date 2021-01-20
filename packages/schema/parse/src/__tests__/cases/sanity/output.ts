@@ -14,7 +14,7 @@ import {
 } from "../../../typeInfo";
 
 export const output: TypeInfo = {
-  userTypes: [
+  objectTypes: [
     {
       ...createObjectDefinition("CustomType"),
       properties: [

@@ -12,12 +12,12 @@ export function generateBinding(schema: string): OutputDirectory {
     transforms: [extendType(Functions), addFirstLast],
   });
 
-  // Generate user type folders
-  for (const userType of typeInfo.userTypes) {
+  // Generate object type folders
+  for (const objectType of typeInfo.objectTypes) {
     entries.push({
       type: "Directory",
-      name: userType.name,
-      data: generateFiles("./templates/user-type", userType),
+      name: objectType.name,
+      data: generateFiles("./templates/object-type", objectType),
     });
   }
 

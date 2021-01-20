@@ -17,7 +17,7 @@ export interface ExternalImport {
 }
 
 export interface LocalImport {
-  userTypes: string[];
+  objectTypes: string[];
   path: string;
 }
 

@@ -57,7 +57,7 @@ export async function resolveImports(
   );
 
   const subTypeInfo: TypeInfo = {
-    userTypes: [],
+    objectTypes: [],
     queryTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
@@ -129,13 +129,13 @@ async function resolveExternalImports(
           namespace,
         });
       } else {
-        const type = extTypeInfo.userTypes.find(
+        const type = extTypeInfo.objectTypes.find(
           (type) => type.name === importedType
         );
 
         if (!type) {
           throw Error(
-            `Cannot find type "${importedType}" in the schema at ${uri}.\nFound: [ ${extTypeInfo.userTypes.map(
+            `Cannot find type "${importedType}" in the schema at ${uri}.\nFound: [ ${extTypeInfo.objectTypes.map(
               (type) => type.name + " "
             )}]`
           );
@@ -157,7 +157,7 @@ async function resolveLocalImports(
   typeInfo: TypeInfo
 ): Promise<void> {
   for (const importToResolve of importsToResolve) {
-    const { userTypes, path } = importToResolve;
+    const { objectTypes, path } = importToResolve;
     let schema = await resolveSchema(path);
 
     if (!schema) {
@@ -174,25 +174,25 @@ async function resolveLocalImports(
       transforms: [extendType(Functions), addFirstLast],
     });
 
-    for (const userType of userTypes) {
-      if (userType === "Query" || userType === "Mutation") {
+    for (const objectType of objectTypes) {
+      if (objectType === "Query" || objectType === "Mutation") {
         throw Error(
           `Importing query types from local schemas is prohibited. Tried to import from ${path}.`
         );
       } else {
-        const type = localTypeInfo.userTypes.find(
-          (type) => type.name === userType
+        const type = localTypeInfo.objectTypes.find(
+          (type) => type.name === objectType
         );
 
         if (!type) {
           throw Error(
-            `Cannot find type "${userType}" in the schema at ${path}.\nFound: [ ${localTypeInfo.userTypes.map(
+            `Cannot find type "${objectType}" in the schema at ${path}.\nFound: [ ${localTypeInfo.objectTypes.map(
               (type) => type.name + " "
             )}]`
           );
         }
 
-        typeInfo.userTypes.push({
+        typeInfo.objectTypes.push({
           ...type,
         });
       }

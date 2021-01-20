@@ -35,7 +35,7 @@ export function extractNamedType(
     // Argument value
     const objectDefinition = getObjectDefinition(
       node.name.value,
-      typeInfo.userTypes.concat(typeInfo.importedObjectTypes)
+      typeInfo.objectTypes.concat(typeInfo.importedObjectTypes)
     );
     if (objectDefinition) {
       const type = modifier + node.name.value;
@@ -67,7 +67,7 @@ export function extractNamedType(
 
     const objectDefinition = getObjectDefinition(
       node.name.value,
-      typeInfo.userTypes.concat(typeInfo.importedObjectTypes)
+      typeInfo.objectTypes.concat(typeInfo.importedObjectTypes)
     );
     if (objectDefinition) {
       const type = modifier + node.name.value;
