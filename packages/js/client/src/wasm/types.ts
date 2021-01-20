@@ -1,14 +1,20 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/ban-types */
+
 export type u32 = number;
 
 export interface W3Exports {
-  _w3_init: () => void;
-  _w3_invoke: (nameLen: u32, argsLen: u32) => boolean;
-
   // Needed to comply with WebAssembly's typings
   [key: string]: unknown;
+
+  _w3_init: () => void;
+  _w3_invoke: (nameLen: u32, argsLen: u32) => boolean;
 }
 
 export interface W3Imports {
+  // Needed to comply with WebAssembly's typings
+  [key: string]: Record<string, Function | WebAssembly.Memory>;
+
   w3: {
     __w3_subinvoke: (
       uriPtr: u32,
@@ -33,9 +39,6 @@ export interface W3Imports {
     memory: WebAssembly.Memory;
     abort: (msg: string, file: string, line: number, column: number) => void;
   };
-
-  // Needed to comply with WebAssembly's typings
-  [key: string]: Record<string, Function | WebAssembly.Memory>;
 }
 
 export enum ThreadWakeStatus {

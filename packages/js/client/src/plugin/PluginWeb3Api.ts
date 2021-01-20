@@ -85,7 +85,7 @@ export class PluginWeb3Api extends Api {
     }
   }
 
-  public async getSchema(client: Client): Promise<string> {
+  public async getSchema(_client: Client): Promise<string> {
     return Promise.resolve(this._plugin.manifest.schema);
   }
 
