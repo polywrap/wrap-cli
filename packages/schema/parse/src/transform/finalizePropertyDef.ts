@@ -22,6 +22,8 @@ function populatePropertyType(property: PropertyDefinition) {
     propertyType = property.array;
   } else if (property.scalar) {
     propertyType = property.scalar;
+  } else if (property.object) {
+    propertyType = property.object;
   } else {
     // Error case
     return;

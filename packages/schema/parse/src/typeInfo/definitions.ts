@@ -40,13 +40,14 @@ export interface ObjectDefinition extends GenericDefinition {
 export function createObjectDefinition(
   name: string,
   type?: string,
-  required?: boolean
+  required?: boolean,
+  properties?: PropertyDefinition[]
 ): ObjectDefinition {
   return {
     name,
     type: type ? type : null,
     required: required ? required : null,
-    properties: [],
+    properties: properties ? properties : [],
     kind: DefinitionKind.Object,
   };
 }
@@ -54,13 +55,15 @@ export function createObjectDefinition(
 export interface AnyDefinition extends GenericDefinition {
   array: ArrayDefinition | null;
   scalar: ScalarDefinition | null;
+  object: ObjectDefinition | null;
 }
 export function createAnyDefinition(
   name: string,
   type?: string,
   required?: boolean,
   array?: ArrayDefinition,
-  scalar?: ScalarDefinition
+  scalar?: ScalarDefinition,
+  object?: ObjectDefinition
 ): AnyDefinition {
   return {
     name,
@@ -69,6 +72,7 @@ export function createAnyDefinition(
     array: array ? array : null,
     scalar: scalar ? scalar : null,
     kind: DefinitionKind.Any,
+    object: object ? object : null,
   };
 }
 
@@ -108,6 +112,7 @@ export function createArrayDefinition(
         ? (item as ScalarDefinition)
         : null,
     kind: DefinitionKind.Array,
+    object: null,
     item: item ? item : null,
   };
 }
@@ -118,7 +123,8 @@ export function createPropertyDefinition(
   type?: string,
   required?: boolean,
   array?: ArrayDefinition,
-  scalar?: ScalarDefinition
+  scalar?: ScalarDefinition,
+  object?: ObjectDefinition
 ): PropertyDefinition {
   return {
     name,
@@ -127,7 +133,24 @@ export function createPropertyDefinition(
     array: array ? array : null,
     scalar: scalar ? scalar : null,
     kind: DefinitionKind.Property,
+    object: object ? object : null,
   };
+}
+
+export function createObjectPropertyDefinition(
+  name: string,
+  type: string,
+  required: boolean,
+  properties: PropertyDefinition[]
+): PropertyDefinition {
+  return createPropertyDefinition(
+    name,
+    type,
+    required,
+    undefined,
+    undefined,
+    createObjectDefinition(name, type, required, properties)
+  );
 }
 
 export function createScalarPropertyDefinition(

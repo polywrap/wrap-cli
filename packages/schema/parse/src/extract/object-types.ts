@@ -44,7 +44,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     // Create a new TypeDefinition
     const type = createObjectDefinition(node.name.value);
-    typeInfo.userTypes.push(type);
+    typeInfo.objectTypes.push(type);
     state.currentType = type;
   },
   NonNullType: (_node: NonNullTypeNode) => {
@@ -123,7 +123,7 @@ const visitorLeave = (schemaInfo: TypeInfo, state: State) => ({
   },
 });
 
-export function extractUserTypes(
+export function extractObjectTypes(
   astNode: DocumentNode,
   typeInfo: TypeInfo
 ): void {

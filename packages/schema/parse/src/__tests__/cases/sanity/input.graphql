@@ -47,12 +47,25 @@ type AnotherType {
   prop: String
 }
 
+type UserObject {
+  fieldA: String
+  fieldB: Int!
+}
+
 type Query @imports(
   types: [ "TestImport_Query" ]
 ) {
   queryMethod(
     arg: String!
   ): Int!
+
+  userObjectMethod(
+    userObject: UserObject
+  ): UserObject!
+
+  importedObjectMethod(
+    importedObject: TestImport_Object!
+  ): TestImport_Object!
 }
 
 type TestImport_Query @imported(
@@ -60,7 +73,6 @@ type TestImport_Query @imported(
   uri: "testimport.uri.eth",
   type: "Query"
 ) {
-  """TODO: Support object types as argument & return values"""
   importedMethod(
     str: String!
     optStr: String
