@@ -2,17 +2,15 @@
   "name": "@web3api/examples-simple-storage",
   "version": "0.0.1-prealpha.1",
   "license": "MIT",
+  "private": true,
   "scripts": {
     "build": "w3 build",
     "test:env:up": "w3 test-env up && yarn contracts:deploy",
-    "test:env:down": "w3 test-env down",
-    "subgraph:codegen": "cd src/subgraph && graph codegen --out-dir generated/"
+    "test:env:down": "w3 test-env down"
   },
   "devDependencies": {
-    "@graphprotocol/graph-cli": "^0.18.0",
-    "@graphprotocol/graph-ts": "^0.18.1",
     "@web3api/cli": "0.0.1-prealpha.1",
-    "@web3api/client-js": "0.0.1-prealpha.1",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.1",
     "@web3api/wasm-as": "0.0.1-prealpha.1",
     "ethers": "5.0.8",
     "js-yaml": "3.14.0"

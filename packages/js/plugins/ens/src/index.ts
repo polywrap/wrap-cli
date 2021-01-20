@@ -1,7 +1,14 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { query } from "./resolvers";
+import { manifest } from "./manifest";
 
-import { Uri, Client, Plugin, PluginModules } from "@web3api/core-js";
+import {
+  Uri,
+  Client,
+  Plugin,
+  PluginManifest,
+  PluginModules,
+} from "@web3api/core-js";
 import { ethers } from "ethers";
 import { Base58 } from "@ethersproject/basex";
 import { getAddress } from "@ethersproject/address";
@@ -14,10 +21,7 @@ export interface EnsConfig {
 
 export class EnsPlugin extends Plugin {
   constructor(private _config: EnsConfig) {
-    super({
-      imported: [new Uri("ens/ethereum.web3api.eth")],
-      implemented: [new Uri("w3/api-resolver")],
-    });
+    super();
 
     // Sanitize address
     if (this._config.address) {
@@ -25,11 +29,16 @@ export class EnsPlugin extends Plugin {
     }
   }
 
+  public static manifest(): PluginManifest {
+    return manifest;
+  }
+
   public static isENSDomain(domain: string): boolean {
     return ethers.utils.isValidName(domain) && domain.indexOf(".eth") !== -1;
   }
 
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
+  // https://github.com/Web3-API/prototype/issues/101
   public getModules(client: Client): PluginModules {
     return {
       query: query(this, client),
@@ -53,8 +62,9 @@ export class EnsPlugin extends Plugin {
       content: "function content(bytes32 nodehash) view returns (bytes32)",
     };
 
-    // Remove the ENS URI scheme
-    domain = domain.replace("ens://", "");
+    // Remove the ENS URI scheme & authority
+    domain = domain.replace("w3://", "");
+    domain = domain.replace("ens/", "");
 
     const domainNode = ethers.utils.namehash(domain);
 
@@ -64,17 +74,22 @@ export class EnsPlugin extends Plugin {
       args: string[]
     ): Promise<string> => {
       const { data, errors } = await client.query({
-        uri: new Uri("ens://ethereum.web3api.eth"),
+        uri: new Uri("ens/ethereum.web3api.eth"),
         query: `query {
           callView(
-            address: "${address}",
-            method: "${method}",
-            args: ${args}
+            address: $address,
+            method: $method,
+            args: $args
           )
         }`,
+        variables: {
+          address,
+          method,
+          args,
+        },
       });
 
-      if (errors) {
+      if (errors && errors.length) {
         throw errors;
       }
 

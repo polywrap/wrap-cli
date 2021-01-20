@@ -1,7 +1,13 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { query, mutation } from "./resolvers";
+import { manifest } from "./manifest";
 
-import { Client, Plugin, Uri, PluginModules } from "@web3api/core-js";
+import {
+  Client,
+  Plugin,
+  PluginManifest,
+  PluginModules,
+} from "@web3api/core-js";
 import { Signer, ethers } from "ethers";
 import {
   ExternalProvider,
@@ -27,16 +33,19 @@ export class EthereumPlugin extends Plugin {
   private _client: EthereumClient;
 
   constructor(private _config: EthereumConfig) {
-    super({
-      implemented: [new Uri("ens://ethereum.web3api.eth")],
-    });
+    super();
     const { provider, signer } = _config;
 
     // Sanitize Provider & Signer
     this.setProvider(provider, signer !== undefined ? signer : 0);
   }
 
+  public static manifest(): PluginManifest {
+    return manifest;
+  }
+
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
+  // https://github.com/Web3-API/prototype/issues/101
   public getModules(_client: Client): PluginModules {
     return {
       query: query(this),

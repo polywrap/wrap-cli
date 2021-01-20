@@ -52,7 +52,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     const queryIdentifier = "_Query";
     const queryTest = typeName.substr(-queryIdentifier.length);
     const mutationIdentifier = "_Mutation";
-    const mutationTest = typeName.substr(-queryIdentifier.length);
+    const mutationTest = typeName.substr(-mutationIdentifier.length);
 
     if (queryTest !== queryIdentifier && mutationTest !== mutationIdentifier) {
       // Ignore imported types that aren't query types
@@ -63,6 +63,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     if (!importedDir.arguments || importedDir.arguments.length !== 3) {
       // TODO: Implement better error handling
+      // https://github.com/Web3-API/prototype/issues/15
       throw Error(
         `The ${importedDirective} directive has incorrect arguments. See type "${typeName}"`
       );

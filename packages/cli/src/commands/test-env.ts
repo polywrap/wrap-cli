@@ -37,7 +37,6 @@ export default {
         "Failed to start test environment",
         "Warning starting test environment",
         async (_spinner) => {
-          // TODO: support verbose logging
           return startupTestEnv(true);
         }
       );

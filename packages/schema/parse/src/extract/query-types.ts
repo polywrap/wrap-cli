@@ -48,10 +48,6 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       return;
     }
 
-    if (!node.arguments || node.arguments.length === 0) {
-      throw Error("Imported types must only have methods");
-    }
-
     const operation = query.type === "Query" ? "query" : "mutation";
     const method = createMethodDefinition(operation, node.name.value);
     query.methods.push(method);

@@ -1,4 +1,4 @@
-// TODO: auto-generate this from "core-apis/api-resolver/schema.graphql"
+// TODO: https://github.com/Web3-API/prototype/issues/101
 import { Uri, Client, InvokeApiResult } from "../";
 
 interface MaybeUriOrManifest {

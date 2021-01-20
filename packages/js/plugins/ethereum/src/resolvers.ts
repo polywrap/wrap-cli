@@ -26,10 +26,6 @@ export const query = (ethereum: EthereumPlugin): PluginModule => ({
     method: string;
     args: string[];
   }) => {
-    return await ethereum.sendTransaction(
-      input.address,
-      input.method,
-      input.args
-    );
+    return await ethereum.callView(input.address, input.method, input.args);
   },
 });

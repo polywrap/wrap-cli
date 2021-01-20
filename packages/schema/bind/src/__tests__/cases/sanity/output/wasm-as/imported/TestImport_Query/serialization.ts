@@ -6,13 +6,15 @@ import {
   ReadDecoder
 } from "@web3api/wasm-as";
 
-export function serializeimportedMethodArgs(input: {
-  str: string,
-  optStr: string | null,
-  u: u32,
-  optU: Nullable<u32>,
-  uArrayArray: Array<Array<Nullable<u32>> | null>
-}): ArrayBuffer {
+export class Input_importedMethod {
+  str: string;
+  optStr: string | null;
+  u: u32;
+  optU: Nullable<u32>;
+  uArrayArray: Array<Array<Nullable<u32>> | null>;
+}
+
+export function serializeimportedMethodArgs(input: Input_importedMethod): ArrayBuffer {
   const sizer = new WriteSizer();
   writeimportedMethodArgs(sizer, input);
   const buffer = new ArrayBuffer(sizer.length);
@@ -23,14 +25,8 @@ export function serializeimportedMethodArgs(input: {
 
 function writeimportedMethodArgs(
   writer: Write,
-  input: {
-    str: string,
-    optStr: string | null,
-    u: u32,
-    optU: Nullable<u32>,
-    uArrayArray: Array<Array<Nullable<u32>> | null>
-  }
-) {
+  input: Input_importedMethod
+): void {
   writer.writeMapLength(5);
   writer.writeString("str");
   writer.writeString(input.str);
@@ -53,9 +49,11 @@ export function deserializeimportedMethodResult(buffer: ArrayBuffer): string {
   return reader.readString();
 }
 
-export function serializeanotherMethodArgs(input: {
-  arg: Array<string>
-}): ArrayBuffer {
+export class Input_anotherMethod {
+  arg: Array<string>;
+}
+
+export function serializeanotherMethodArgs(input: Input_anotherMethod): ArrayBuffer {
   const sizer = new WriteSizer();
   writeanotherMethodArgs(sizer, input);
   const buffer = new ArrayBuffer(sizer.length);
@@ -66,10 +64,8 @@ export function serializeanotherMethodArgs(input: {
 
 function writeanotherMethodArgs(
   writer: Write,
-  input: {
-    arg: Array<string>
-  }
-) {
+  input: Input_anotherMethod
+): void {
   writer.writeMapLength(1);
   writer.writeString("arg");
   writer.writeArray(input.arg, (writer: Write, item: string): void => {

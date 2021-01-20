@@ -9,7 +9,6 @@ export const generateProject = (
   dir(`${projectName}/src`);
   dir(`${projectName}/src/mutation`);
   dir(`${projectName}/src/query`);
-  dir(`${projectName}/src/subgraph`);
   dir(`${projectName}/scripts`);
   dir(`${projectName}/tests`);
   write(`${projectName}/web3api.yaml`, WEB3API_YML);
@@ -30,8 +29,6 @@ query:
   module:
     language: wasm/assemblyscript
     file: ./query/index.ts
-subgraph:
-  file: ./subgraph/subgraph.yaml
 `;
 
 const PACKAGE_JSON = `{

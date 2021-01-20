@@ -1,5 +1,5 @@
 import { OutputDirectory, OutputEntry } from "../../";
-import { loadDirectory } from "../../utils/fs";
+import { readDirectory } from "../../utils/fs";
 import * as Functions from "./functions";
 
 import { parseSchema, extendType, addFirstLast } from "@web3api/schema-parse";
@@ -86,7 +86,7 @@ function generateFiles(
 ): OutputEntry[] {
   const output: OutputEntry[] = [];
   const absolutePath = path.join(__dirname, subpath);
-  const directory = loadDirectory(absolutePath);
+  const directory = readDirectory(absolutePath);
 
   const processDirectory = (entries: OutputEntry[], output: OutputEntry[]) => {
     // Load all sub-templates
