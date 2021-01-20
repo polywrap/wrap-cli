@@ -8,25 +8,18 @@
       "./demos/simple-storage/*"
     ],
     "nohoist": [
-      "**/graph-ts",
-      "**/graph-cli",
       "**/@testing-library/*",
       "**/@types/testing-library*"
     ]
   },
   "scripts": {
-    "build": "lerna run build --no-private",
-    "build:cli": "yarn workspace @web3api/cli build",
-    "build:client-js": "yarn workspace @web3api/client-js build",
-    "build:wasm-as": "yarn workspace @web3api/wasm-as build",
+    "build": "lerna run build --no-private --ignore @web3api/cli && yarn build:cli",
+    "build:cli": "lerna run build --scope @web3api/cli",
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint -- --fix",
-    "lint:ci": "lerna run --parallel lint",
-    "test": "yarn test:wasm-as && yarn test:client-js",
-    "test:wasm-as": "yarn workspace @web3api/wasm-as test",
-    "test:client-js": "yarn workspace @web3api/client-js test",
-    "test:ci": "yarn test:wasm-as && yarn test:ci:client-js",
-    "test:ci:client-js": "yarn workspace @web3api/client-js test:ci",
+    "lint:ci": "lerna run lint --parallel",
+    "test": "lerna run test --no-private",
+    "test:ci": "lerna run test:ci --no-private --parallel",
     "clean": "rimraf ./**/node_modules ./**/build ./**/coverage"
   },
   "devDependencies": {

@@ -57,6 +57,8 @@ export interface QueryApiResult<
    * Errors should be populated with information as to what happened.
    * Null is used to represent an intentionally null result.
    */
+  // TODO: is it correct to have this optionally undefined? Should it instead be { } for "undefined" cases?
+  //       axios follows this pattern, does GraphQL/Apollo?
   data?: TData;
 
   /** Errors encountered during the query. */

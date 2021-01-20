@@ -1,29 +1,4 @@
 // Workaround for https://github.com/infinitered/gluegun/pull/464.
-//
-// There is currently no way in Gluegun to define command-line options
-// that take no arguments (like `--watch`). As a consequence, boolean
-// options like `--watch` will consume the immediately following argument,
-// leading to confusing behavior.
-//
-// E.g. `graph deploy --watch subgraph/name
-//
-// Will result in
-// ```
-// toolbox.parameters.options === { watch: 'subgraph/name' }
-// toolbox.parameters.first === undefined
-// toolbox.parameters.array === []
-// ```
-// where what we really want is
-// ```
-// toolbox.parameters.options === { watch: true }
-// toolbox.parameters.first = 'subgraph/name'
-// toolbox.parameters.array = ['subgraph/name']
-// ```
-//
-// The `fixParameters` function checks if any of the provided boolean
-// options has a string value; if so, it pushes it to the front of the
-// parameters array and returns the result of that.
-//
 export const fixParameters = (
   parameters: { options: Record<string, unknown>; array?: string[] },
   booleanOptions: Record<string, unknown>

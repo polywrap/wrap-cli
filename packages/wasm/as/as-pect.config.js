@@ -28,7 +28,13 @@ module.exports = {
   /**
    * Add your required AssemblyScript imports here.
    */
-  imports: {},
+  imports: {
+    w3: {
+      __w3_invoke_args: () => { },
+      __w3_invoke_result: () => { },
+      __w3_invoke_error: () => { }
+    }
+  },
   /**
    * All performance statistics reporting can be configured here.
    */

@@ -260,5 +260,24 @@ export const output: TypeInfo = {
         },
       ],
     },
+    {
+      ...createImportedQueryDefinition(
+        "testimport.uri.eth",
+        "TestImport",
+        "TestImport_Mutation",
+        "Mutation"
+      ),
+      methods: [
+        {
+          ...createMethodDefinition("mutation", "importedMethod"),
+          arguments: [createScalarPropertyDefinition("str", "String", true)],
+          return: createScalarPropertyDefinition(
+            "importedMethod",
+            "String",
+            true
+          ),
+        },
+      ],
+    },
   ],
 };

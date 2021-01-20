@@ -82,16 +82,11 @@ export async function resolveUri(
   for (let i = 0; i < uriResolverImplementations.length; ++i) {
     const uriResolver = uriResolverImplementations[i];
 
-    const { data, errors } = await ApiResolver.Query.tryResolveUri(
+    const { data } = await ApiResolver.Query.tryResolveUri(
       client,
       uriResolver,
       resolvedUri
     );
-
-    // Throw errors so the caller (client) can handle them
-    if (errors?.length) {
-      throw errors;
-    }
 
     // If nothing was returned, the URI is not supported
     if (!data || (!data.uri && !data.manifest)) {
@@ -112,7 +107,7 @@ export async function resolveUri(
       // We've found our manifest at the current URI resolver
       // meaning the URI resolver can also be used as an API resolver
       const manifest = deserializeManifest(manifestStr);
-      return createApi(uri, manifest, uriResolver);
+      return createApi(resolvedUri, manifest, uriResolver);
     }
   }
 

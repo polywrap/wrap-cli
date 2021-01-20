@@ -22,7 +22,9 @@ export interface ComposerOutput {
   combined?: string;
 }
 
-export function composeSchema(options: ComposerOptions): ComposerOutput {
+export async function composeSchema(
+  options: ComposerOptions
+): Promise<ComposerOutput> {
   const { schemas, resolvers } = options;
   const { query, mutation } = schemas;
   const results: {
@@ -31,7 +33,7 @@ export function composeSchema(options: ComposerOptions): ComposerOutput {
   } = {};
 
   if (query && query.schema && query.absolutePath !== undefined) {
-    results.query = resolveImports(
+    results.query = await resolveImports(
       query.schema,
       query.absolutePath,
       false,
@@ -40,7 +42,7 @@ export function composeSchema(options: ComposerOptions): ComposerOutput {
   }
 
   if (mutation && mutation.schema && mutation.absolutePath !== undefined) {
-    results.mutation = resolveImports(
+    results.mutation = await resolveImports(
       mutation.schema,
       mutation.absolutePath,
       true,

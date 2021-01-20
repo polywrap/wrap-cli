@@ -86,6 +86,16 @@ type TestImport_Query @imported(
   ): UserObject!
 }
 
+type TestImport_Mutation @imported(
+  namespace: "TestImport",
+  uri: "testimport.uri.eth",
+  type: "Mutation"
+) {
+  importedMethod(
+    str: String!
+  ): String!
+}
+
 type TestImport_Object @imported(
   namespace: "TestImport",
   uri: "testimport.uri.eth",

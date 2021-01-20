@@ -3,7 +3,7 @@
 // Endpoints:
 //   /providers  list all portal providers
 //   /ens        get ens address
-//   /mock-ens   deploy ENS contracts
+//   /deploy-ens   deploy ENS contracts
 ///////////////////////////////////////////
 
 require("dotenv").config({ path: './.env' });
@@ -38,8 +38,7 @@ router.use((req, res, next) => {
 router.get('/providers', (req, res) => {
   res.send({
     ipfs: `http://localhost:${process.env.IPFS_PORT}`,
-    ethereum: `http://localhost:${process.env.ETHEREUM_PORT}`,
-    subgraph: `http://localhost:${process.env.SUBGRAPH_PORT}`
+    ethereum: `http://localhost:${process.env.ETHEREUM_PORT}`
   });
 });
 

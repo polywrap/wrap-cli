@@ -17,7 +17,7 @@ export interface InvokeApiOptions {
    * Input arguments for the method, structured as a map,
    * removing the chance of incorrectly ordering arguments.
    */
-  input: Record<string, unknown>;
+  input: Record<string, unknown> | ArrayBuffer;
 
   /**
    * Filters the [[InvokeApiResult]] data properties. The key
@@ -26,6 +26,12 @@ export interface InvokeApiOptions {
    * allowing for the filtering of nested objects.
    */
   resultFilter?: Record<string, unknown>;
+
+  /**
+   * If set to true, the invoke function will decode all msgpack results
+   * into JavaScript objects.
+   */
+  decode?: boolean;
 }
 
 /**
@@ -43,7 +49,7 @@ export interface InvokeApiResult<TData = unknown> {
   data?: TData;
 
   /** Errors encountered during the invocation. */
-  errors?: Error[];
+  error?: Error;
 }
 
 export interface InvokeHandler {

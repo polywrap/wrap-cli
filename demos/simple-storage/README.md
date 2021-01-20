@@ -18,7 +18,6 @@ node ./deploy-contracts.js
 ```
 npx w3 build \
 --ipfs http://localhost:5001 \
---graph simplestorage,http://localhost:8020 \
 --test-ens simplestorage.eth
 ```
 
