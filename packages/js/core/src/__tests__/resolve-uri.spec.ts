@@ -308,6 +308,38 @@ describe("resolveUri", () => {
 
     expect(apiIdentity.errors?.length === 0);
   });
+
+  it("throw when URI does not resolve to an API", async () => {
+
+    const faultyIpfsApi: PluginModules = {
+      query: {
+        tryResolveUri: (
+          input: { authority: string; path: string },
+          _client: Client
+        ) => {
+          return {
+            manifest: null
+          };
+        },
+      },
+    };
+
+    const uri = new Uri("some/api");
+
+    expect.assertions(1);
+
+    await resolveUri(
+      uri,
+      client(redirects, {
+        ...apis,
+        "w3://ens/ipfs": faultyIpfsApi
+      }),
+      createPluginApi,
+      createApi
+    ).catch((e) =>
+      expect(e.message).toMatch(`No Web3API found at URI: ${uri.uri}`)
+    );
+  });
 });
 
 // TODO:
