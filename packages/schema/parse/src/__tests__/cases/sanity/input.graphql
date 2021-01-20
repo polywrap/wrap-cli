@@ -59,6 +59,10 @@ type Query @imports(
     arg: String!
   ): Int!
 
+  userObjectMethod(
+    userObject: UserObject
+  ): UserObject!
+
   importedObjectMethod(
     importedObject: TestImport_Object!
   ): TestImport_Object!
@@ -80,10 +84,6 @@ type TestImport_Query @imported(
   anotherMethod(
     arg: [String!]!
   ): Int64!
-
-  userObjectMethod(
-    userObject: UserObject
-  ): UserObject!
 }
 
 type TestImport_Mutation @imported(

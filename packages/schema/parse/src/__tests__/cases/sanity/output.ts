@@ -1,15 +1,15 @@
 import {
   TypeInfo,
+  createScalarDefinition,
+  createArrayDefinition,
   createObjectDefinition,
   createQueryDefinition,
   createMethodDefinition,
-  createImportedObjectDefinition,
-  createImportedQueryDefinition,
   createScalarPropertyDefinition,
   createArrayPropertyDefinition,
-  createScalarDefinition,
-  createArrayDefinition,
   createObjectPropertyDefinition,
+  createImportedObjectDefinition,
+  createImportedQueryDefinition,
   DefinitionKind,
 } from "../../../typeInfo";
 
@@ -138,6 +138,24 @@ export const output: TypeInfo = {
           return: createScalarPropertyDefinition("queryMethod", "Int", true),
         },
         {
+          ...createMethodDefinition("query", "userObjectMethod"),
+          arguments: [
+            createObjectPropertyDefinition("userObject", "?UserObject", false, [
+              createScalarPropertyDefinition("fieldA", "?String", false),
+              createScalarPropertyDefinition("fieldB", "Int", true),
+            ]),
+          ],
+          return: createObjectPropertyDefinition(
+            "userObjectMethod",
+            "UserObject",
+            true,
+            [
+              createScalarPropertyDefinition("fieldA", "?String", false),
+              createScalarPropertyDefinition("fieldB", "Int", true),
+            ]
+          ),
+        },
+        {
           ...createMethodDefinition("query", "importedObjectMethod"),
           arguments: [
             {
@@ -239,25 +257,7 @@ export const output: TypeInfo = {
             "Int64",
             true
           ),
-        },
-        {
-          ...createMethodDefinition("query", "userObjectMethod"),
-          arguments: [
-            createObjectPropertyDefinition("userObject", "?UserObject", false, [
-              createScalarPropertyDefinition("fieldA", "?String", false),
-              createScalarPropertyDefinition("fieldB", "Int", true),
-            ]),
-          ],
-          return: createObjectPropertyDefinition(
-            "userObjectMethod",
-            "UserObject",
-            true,
-            [
-              createScalarPropertyDefinition("fieldA", "?String", false),
-              createScalarPropertyDefinition("fieldB", "Int", true),
-            ]
-          ),
-        },
+        }
       ],
     },
     {

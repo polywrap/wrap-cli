@@ -8,7 +8,7 @@ import {
   extractListType,
   extractNamedType,
   State,
-} from "./query-utils";
+} from "./query-types-utils";
 
 import {
   DocumentNode,
