@@ -24,9 +24,17 @@ export interface ClientConfig {
 }
 
 export class Web3ApiClient implements Client {
-  private _apiCache = new ApiCache();
+  // TODO: the API cache needs to be more like a routing table.
+  // It should help us keep track of what URI's map to what APIs,
+  // and handle cases where the are multiple jumps. For exmaple, if
+  // A => B => C, then the cache should have A => C, and B => C.
+  private _apiCache: ApiCache = new Map<string, Api>();
 
-  constructor(private _config: ClientConfig) {
+  constructor(
+    private _config: ClientConfig = {
+      redirects: [],
+    }
+  ) {
     const { redirects } = this._config;
 
     // Add all default redirects (IPFS, ETH, ENS)
@@ -43,7 +51,6 @@ export class Web3ApiClient implements Client {
   >(options: QueryApiOptions<TVariables>): Promise<QueryApiResult<TData>> {
     try {
       const { uri, query, variables } = options;
-      const api = await this.loadWeb3Api(uri);
 
       // Convert the query string into a query document
       const queryDocument =
@@ -53,16 +60,20 @@ export class Web3ApiClient implements Client {
       const invokeOptions = parseQuery(uri, queryDocument, variables);
 
       // Execute all invocations in parallel
-      const parallelInvocations: Promise<{ method: string; result: InvokeApiResult<unknown>; }>[] = [];
+      const parallelInvocations: Promise<{
+        method: string;
+        result: InvokeApiResult<unknown>;
+      }>[] = [];
 
       for (const invocation of invokeOptions) {
         parallelInvocations.push(
-          api.invoke(invocation, this)
-            .then(result => ({
-              method: invocation.method,
-              result
-            })
-          )
+          this.invoke({
+            ...invocation,
+            decode: true,
+          }).then((result) => ({
+            method: invocation.method,
+            result,
+          }))
         );
       }
 
@@ -77,27 +88,27 @@ export class Web3ApiClient implements Client {
       for (const invocation of invocations) {
         methods.push(invocation.method);
         resultDatas.push(invocation.result.data);
-        if (invocation.result.errors) {
-          errors.push(...invocation.result.errors);
+        if (invocation.result.error) {
+          errors.push(invocation.result.error);
         }
       }
 
       // Helper for appending "_#" to repeated names
       const makeRepeatedUnique = (names: string[]): string[] => {
-        let counts: { [key: string]: number } = {}
-      
+        const counts: { [key: string]: number } = {};
+
         return names.reduce((acc, name) => {
-          let count = counts[name] = (counts[name] || 0) + 1
-          let uniq = count > 1 ? `${name}_${count - 1}` : name
-          acc.push(uniq)
-          return acc
-        }, [] as string[])
-      }
+          const count = (counts[name] = (counts[name] || 0) + 1);
+          const uniq = count > 1 ? `${name}_${count - 1}` : name;
+          acc.push(uniq);
+          return acc;
+        }, [] as string[]);
+      };
 
       methods = makeRepeatedUnique(methods);
 
       // Build are data map, where each method maps to its data
-      const data: Record<string, unknown> = { };
+      const data: Record<string, unknown> = {};
 
       for (let i = 0; i < methods.length; ++i) {
         data[methods[i]] = resultDatas[i];
@@ -105,7 +116,7 @@ export class Web3ApiClient implements Client {
 
       return {
         data: data as TData,
-        errors,
+        errors: errors.length === 0 ? undefined : errors,
       };
     } catch (error) {
       if (error.length) {
@@ -122,17 +133,13 @@ export class Web3ApiClient implements Client {
     try {
       const { uri } = options;
       const api = await this.loadWeb3Api(uri);
-      return await api.invoke<TData>(options, this);
+      return (await api.invoke(options, this)) as TData;
     } catch (error) {
-      if (error.length) {
-        return { errors: error };
-      } else {
-        return { errors: [error] };
-      }
+      return { error: error };
     }
   }
 
-  private async loadWeb3Api(uri: Uri): Promise<Api> {
+  public async loadWeb3Api(uri: Uri): Promise<Api> {
     let api = this._apiCache.get(uri.uri);
 
     if (!api) {

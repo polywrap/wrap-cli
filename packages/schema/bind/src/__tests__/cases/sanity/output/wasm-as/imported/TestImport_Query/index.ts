@@ -1,53 +1,37 @@
 import {
-  w3_subquery,
+  w3_subinvoke,
   Nullable
 } from "@web3api/wasm-as";
 import {
   serializeimportedMethodArgs,
   deserializeimportedMethodResult,
+  Input_importedMethod,
   serializeanotherMethodArgs,
-  deserializeanotherMethodResult
+  deserializeanotherMethodResult,
+  Input_anotherMethod
 } from "./serialization";
 
 export class TestImport_Query {
 
   public static uri: string = "testimport.uri.eth";
 
-  public static importedMethod(input: {
-    str: string,
-    optStr: string | null,
-    u: u32,
-    optU: Nullable<u32>,
-    uArrayArray: Array<Array<Nullable<u32>> | null>
-  }): string {
+  public static importedMethod(input: Input_importedMethod): string {
     const args = serializeimportedMethodArgs(input);
-    const result = w3_subquery(
-      uri,
-      `query {
-        importedMethod(
-          str: $str,
-          optStr: $optStr,
-          u: $u,
-          optU: $optU,
-          uArrayArray: $uArrayArray
-        )
-      }`,
+    const result = w3_subinvoke(
+      "testimport.uri.eth",
+      "query",
+      "importedMethod",
       args
     );
     return deserializeimportedMethodResult(result);
   }
 
-  public static anotherMethod(input: {
-    arg: Array<string>
-  }): i64 {
+  public static anotherMethod(input: Input_anotherMethod): i64 {
     const args = serializeanotherMethodArgs(input);
-    const result = w3_subquery(
-      uri,
-      `query {
-        anotherMethod(
-          arg: $arg
-        )
-      }`,
+    const result = w3_subinvoke(
+      "testimport.uri.eth",
+      "query",
+      "anotherMethod",
       args
     );
     return deserializeanotherMethodResult(result);

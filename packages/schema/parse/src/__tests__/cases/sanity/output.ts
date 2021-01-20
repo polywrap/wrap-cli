@@ -1,18 +1,20 @@
 import {
   TypeInfo,
+  createScalarDefinition,
+  createArrayDefinition,
   createObjectDefinition,
   createQueryDefinition,
   createMethodDefinition,
-  createImportedObjectDefinition,
-  createImportedQueryDefinition,
   createScalarPropertyDefinition,
   createArrayPropertyDefinition,
-  createScalarDefinition,
-  createArrayDefinition,
+  createObjectPropertyDefinition,
+  createImportedObjectDefinition,
+  createImportedQueryDefinition,
+  DefinitionKind,
 } from "../../../typeInfo";
 
 export const output: TypeInfo = {
-  userTypes: [
+  objectTypes: [
     {
       ...createObjectDefinition("CustomType"),
       properties: [
@@ -118,6 +120,13 @@ export const output: TypeInfo = {
       ...createObjectDefinition("AnotherType"),
       properties: [createScalarPropertyDefinition("prop", "?String", false)],
     },
+    {
+      ...createObjectDefinition("UserObject"),
+      properties: [
+        createScalarPropertyDefinition("fieldA", "?String", false),
+        createScalarPropertyDefinition("fieldB", "Int", true),
+      ],
+    },
   ],
   queryTypes: [
     {
@@ -127,6 +136,63 @@ export const output: TypeInfo = {
           ...createMethodDefinition("query", "queryMethod"),
           arguments: [createScalarPropertyDefinition("arg", "String", true)],
           return: createScalarPropertyDefinition("queryMethod", "Int", true),
+        },
+        {
+          ...createMethodDefinition("query", "userObjectMethod"),
+          arguments: [
+            createObjectPropertyDefinition("userObject", "?UserObject", false, [
+              createScalarPropertyDefinition("fieldA", "?String", false),
+              createScalarPropertyDefinition("fieldB", "Int", true),
+            ]),
+          ],
+          return: createObjectPropertyDefinition(
+            "userObjectMethod",
+            "UserObject",
+            true,
+            [
+              createScalarPropertyDefinition("fieldA", "?String", false),
+              createScalarPropertyDefinition("fieldB", "Int", true),
+            ]
+          ),
+        },
+        {
+          ...createMethodDefinition("query", "importedObjectMethod"),
+          arguments: [
+            {
+              ...createObjectPropertyDefinition(
+                "importedObject",
+                "TestImport_Object",
+                true,
+                [createScalarPropertyDefinition("prop", "String", true)]
+              ),
+              object: {
+                ...createObjectDefinition(
+                  "importedObject",
+                  "TestImport_Object",
+                  true,
+                  [createScalarPropertyDefinition("prop", "String", true)]
+                ),
+                kind: DefinitionKind.ImportedObject
+              }
+            }
+          ],
+          return: {
+            ...createObjectPropertyDefinition(
+              "importedObjectMethod",
+              "TestImport_Object",
+              true,
+              [createScalarPropertyDefinition("prop", "String", true)]
+            ),
+            object: {
+              ...createObjectDefinition(
+                "importedObjectMethod",
+                "TestImport_Object",
+                true,
+                [createScalarPropertyDefinition("prop", "String", true)]
+              ),
+              kind: DefinitionKind.ImportedObject
+            }
+          }
         },
       ],
     },
@@ -189,6 +255,25 @@ export const output: TypeInfo = {
           return: createScalarPropertyDefinition(
             "anotherMethod",
             "Int64",
+            true
+          ),
+        }
+      ],
+    },
+    {
+      ...createImportedQueryDefinition(
+        "testimport.uri.eth",
+        "TestImport",
+        "TestImport_Mutation",
+        "Mutation"
+      ),
+      methods: [
+        {
+          ...createMethodDefinition("mutation", "importedMethod"),
+          arguments: [createScalarPropertyDefinition("str", "String", true)],
+          return: createScalarPropertyDefinition(
+            "importedMethod",
+            "String",
             true
           ),
         },

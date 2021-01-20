@@ -1,9 +1,17 @@
 import { OutputDirectory, OutputEntry } from "../";
 
 import path from "path";
-import { readdirSync, readFileSync, Dirent } from "fs";
+import {
+  readdirSync,
+  readFileSync,
+  Dirent,
+  writeFileSync,
+  mkdirSync,
+  existsSync,
+} from "fs";
 
-export function loadDirectory(dir: string): OutputDirectory {
+// TODO: make this all async, making it run faster
+export function readDirectory(dir: string): OutputDirectory {
   const importDirectoryEntry = (root: string, dirent: Dirent): OutputEntry => {
     const direntPath = path.join(root, dirent.name);
 
@@ -31,4 +39,33 @@ export function loadDirectory(dir: string): OutputDirectory {
   }).map((dirent) => importDirectoryEntry(dir, dirent));
 
   return { entries };
+}
+
+export function writeDirectory(
+  outputDir: string,
+  dir: OutputDirectory
+): string[] {
+  const paths: string[] = [];
+
+  const outputDirectoryEntry = (root: string, entry: OutputEntry) => {
+    const entryPath = path.join(root, entry.name);
+    paths.push(entryPath);
+
+    if (entry.type === "File") {
+      writeFileSync(entryPath, entry.data);
+    } else {
+      for (const subEntry of entry.data) {
+        if (!existsSync(entryPath)) {
+          mkdirSync(entryPath);
+        }
+        outputDirectoryEntry(entryPath, subEntry);
+      }
+    }
+  };
+
+  for (const entry of dir.entries) {
+    outputDirectoryEntry(outputDir, entry);
+  }
+
+  return paths;
 }

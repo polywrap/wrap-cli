@@ -82,7 +82,7 @@ export function parseLocalImports(
       );
     }
 
-    const userTypes = importStatement[1]
+    const importTypes = importStatement[1]
       .split(",")
       .map((str) => str.replace(/\s+/g, "")) // Trim all whitespace
       .filter(Boolean); // Remove empty strings
@@ -90,7 +90,7 @@ export function parseLocalImports(
     const path = Path.join(Path.dirname(schemaPath), importPath);
 
     // Make sure the developer does not try to import a dependencies dependency
-    const index = userTypes.findIndex((str) => str.indexOf("_") > -1);
+    const index = importTypes.findIndex((str) => str.indexOf("_") > -1);
     if (index > -1) {
       throw Error(
         `User defined types with '_' in their name are forbidden. This is used for Web3API import namespacing.`
@@ -98,14 +98,14 @@ export function parseLocalImports(
     }
 
     localImports.push({
-      userTypes,
+      objectTypes: importTypes,
       path,
     });
   }
 
   // Make sure types are unique
-  const userTypeCount = (userTypes: string[]) =>
-    userTypes.reduce(
+  const importTypeCount = (importTypes: string[]) =>
+    importTypes.reduce(
       (a: Record<string, number>, b: string) => ({
         ...a,
         [b]: (a[b] || 0) + 1,
@@ -113,16 +113,16 @@ export function parseLocalImports(
       {}
     );
 
-  const userTypeDuplicates = (imports: LocalImport[]) => {
-    const userTypes: string[] = [];
-    imports.forEach((i) => userTypes.push(...i.userTypes));
-    const counts = userTypeCount(userTypes);
+  const importTypeDuplicates = (imports: LocalImport[]) => {
+    const importTypes: string[] = [];
+    imports.forEach((i) => importTypes.push(...i.objectTypes));
+    const counts = importTypeCount(importTypes);
     return Object.keys(counts).filter((a) => counts[a] > 1);
   };
 
-  const duplicateUserTypes = userTypeDuplicates(localImports);
-  if (duplicateUserTypes.length > 0) {
-    throw Error(`Duplicate type found: ${duplicateUserTypes}`);
+  const duplicateImportTypes = importTypeDuplicates(localImports);
+  if (duplicateImportTypes.length > 0) {
+    throw Error(`Duplicate type found: ${duplicateImportTypes}`);
   }
 
   return localImports;

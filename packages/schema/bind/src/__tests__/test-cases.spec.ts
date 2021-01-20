@@ -1,5 +1,5 @@
 import { fetchTestCases } from "./cases";
-import { loadDirectory } from "../utils/fs";
+import { readDirectory } from "../utils/fs";
 import { bindSchema, OutputEntry, TargetLanguage } from "../";
 
 describe("Web3API Binding Test Suite", () => {
@@ -12,7 +12,7 @@ describe("Web3API Binding Test Suite", () => {
         // Verify it binds correctly
         it(`Binds: ${outputLanguage.name}`, () => {
           const { name, directory } = outputLanguage;
-          const expectedOutput = loadDirectory(directory);
+          const expectedOutput = readDirectory(directory);
           const output = bindSchema(name as TargetLanguage, test.inputSchema);
 
           const alphabetical = (a, b) => {

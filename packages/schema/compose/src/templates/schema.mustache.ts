@@ -1,13 +1,13 @@
 const template = `{{schema}}
 {{#typeInfo}}
-{{#userTypes}}
+{{#objectTypes}}
 type {{name}} {
   {{#properties}}
   {{name}}: {{#toGraphQL}}{{type}}{{/toGraphQL}}
   {{/properties}}
 }
 
-{{/userTypes}}
+{{/objectTypes}}
 ### Imported Queries START ###
 
 {{#importedQueryTypes}}

@@ -8,5 +8,5 @@ type Query implements ApiResolver_Query {
 
   getFile(
     path: String!
-  ): Bytes # TODO: make Bytes a supported scalar
+  ): Bytes # TODO: https://github.com/Web3-API/prototype/issues/100
 }

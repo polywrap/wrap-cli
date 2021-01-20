@@ -21,17 +21,17 @@ import Mustache from "mustache";
 // Remove mustache's built-in HTML escaping
 Mustache.escape = (value) => value;
 
-export function resolveImports(
+export async function resolveImports(
   schema: string,
   schemaPath: string,
   mutation: boolean,
   resolvers: SchemaResolvers
-): {
+): Promise<{
   schema: string;
   typeInfo: TypeInfo;
-} {
+}> {
   const importKeywordCapture = /^[#]*["{3}]*import[ \n\t]/gm;
-  const externalImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*into[ \n\t]*(\w+?)[ \n\t]*from[ \n\t]*[\"'`]([a-zA-Z0-9_.\/]+?)[\"'`]/g;
+  const externalImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*into[ \n\t]*(\w+?)[ \n\t]*from[ \n\t]*[\"'`]([a-zA-Z0-9_~.:\/]+?)[\"'`]/g;
   const localImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*from[ \n\t]*[\"'`]([a-zA-Z0-9_~\-:.\/]+?)[\"'`]/g;
 
   const keywords = [...schema.matchAll(importKeywordCapture)];
@@ -42,7 +42,7 @@ export function resolveImports(
 
   if (keywords.length !== totalStatements) {
     throw Error(
-      `Invalid import statement found, please use one of the following syntaxes...\n${SYNTAX_REFERENCE}`
+      `Invalid import statement found in file ${schemaPath}.\nPlease use one of the following syntaxes...\n${SYNTAX_REFERENCE}`
     );
   }
 
@@ -57,18 +57,22 @@ export function resolveImports(
   );
 
   const subTypeInfo: TypeInfo = {
-    userTypes: [],
+    objectTypes: [],
     queryTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
   };
 
-  resolveExternalImports(
+  await resolveExternalImports(
     externalImportsToResolve,
     resolvers.external,
     subTypeInfo
   );
-  resolveLocalImports(localImportsToResolve, resolvers.local, subTypeInfo);
+  await resolveLocalImports(
+    localImportsToResolve,
+    resolvers.local,
+    subTypeInfo
+  );
 
   // Remove all import statements
   let newSchema = schema
@@ -88,14 +92,14 @@ export function resolveImports(
   };
 }
 
-function resolveExternalImports(
+async function resolveExternalImports(
   importsToResolve: ExternalImport[],
   resolveSchema: SchemaResolver,
   typeInfo: TypeInfo
-): void {
+): Promise<void> {
   for (const importToResolve of importsToResolve) {
     const { uri, namespace, importedTypes } = importToResolve;
-    const schema = resolveSchema(uri);
+    const schema = await resolveSchema(uri);
 
     if (!schema) {
       throw Error(`Unable to resolve schema at "${uri}"`);
@@ -125,13 +129,13 @@ function resolveExternalImports(
           namespace,
         });
       } else {
-        const type = extTypeInfo.userTypes.find(
+        const type = extTypeInfo.objectTypes.find(
           (type) => type.name === importedType
         );
 
         if (!type) {
           throw Error(
-            `Cannot find type "${importedType}" in the schema at ${uri}.\nFound: [ ${extTypeInfo.userTypes.map(
+            `Cannot find type "${importedType}" in the schema at ${uri}.\nFound: [ ${extTypeInfo.objectTypes.map(
               (type) => type.name + " "
             )}]`
           );
@@ -147,14 +151,14 @@ function resolveExternalImports(
   }
 }
 
-function resolveLocalImports(
+async function resolveLocalImports(
   importsToResolve: LocalImport[],
   resolveSchema: SchemaResolver,
   typeInfo: TypeInfo
-) {
+): Promise<void> {
   for (const importToResolve of importsToResolve) {
-    const { userTypes, path } = importToResolve;
-    let schema = resolveSchema(path);
+    const { objectTypes, path } = importToResolve;
+    let schema = await resolveSchema(path);
 
     if (!schema) {
       throw Error(`Unable to resolve schema at "${path}"`);
@@ -170,25 +174,25 @@ function resolveLocalImports(
       transforms: [extendType(Functions), addFirstLast],
     });
 
-    for (const userType of userTypes) {
-      if (userType === "Query" || userType === "Mutation") {
+    for (const objectType of objectTypes) {
+      if (objectType === "Query" || objectType === "Mutation") {
         throw Error(
           `Importing query types from local schemas is prohibited. Tried to import from ${path}.`
         );
       } else {
-        const type = localTypeInfo.userTypes.find(
-          (type) => type.name === userType
+        const type = localTypeInfo.objectTypes.find(
+          (type) => type.name === objectType
         );
 
         if (!type) {
           throw Error(
-            `Cannot find type "${userType}" in the schema at ${path}.\nFound: [ ${localTypeInfo.userTypes.map(
+            `Cannot find type "${objectType}" in the schema at ${path}.\nFound: [ ${localTypeInfo.objectTypes.map(
               (type) => type.name + " "
             )}]`
           );
         }
 
-        typeInfo.userTypes.push({
+        typeInfo.objectTypes.push({
           ...type,
         });
       }

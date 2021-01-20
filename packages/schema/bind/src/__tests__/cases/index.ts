@@ -24,33 +24,28 @@ export function fetchTestCases(): TestCases {
 
     // Fetch the input schema
     const inputSchema = readFileSync(
-      path.join(root, dirent.name, 'input.graphql'),
+      path.join(root, dirent.name, "input.graphql"),
       { encoding: "utf-8" }
     );
 
     // Fetch the output languages
-    const outputDir = path.join(root, dirent.name, 'output');
-    const outputLanguages = readdirSync(
-      outputDir, { withFileTypes: true }
-    ).filter(
-      (item: Dirent) => item.isDirectory()
-    ).map(
-      (item: Dirent) => ({
+    const outputDir = path.join(root, dirent.name, "output");
+    const outputLanguages = readdirSync(outputDir, { withFileTypes: true })
+      .filter((item: Dirent) => item.isDirectory())
+      .map((item: Dirent) => ({
         name: item.name,
-        directory: path.join(outputDir, item.name)
-      })
-    );
+        directory: path.join(outputDir, item.name),
+      }));
 
     cases.push({
       name: dirent.name,
       directory: outputDir,
       inputSchema,
-      outputLanguages
+      outputLanguages,
     });
-  }
+  };
 
-  readdirSync(root, { withFileTypes: true })
-    .forEach(importCase);
+  readdirSync(root, { withFileTypes: true }).forEach(importCase);
 
   return cases;
 }

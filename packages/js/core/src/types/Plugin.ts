@@ -1,9 +1,9 @@
-import { Uri, Client, InvokableModules, MaybeAsync, SchemaDocument } from ".";
+import { Uri, Client, InvokableModules, MaybeAsync } from ".";
 
 /** The plugin's configuration */
 export interface PluginManifest {
   /** The API's schema */
-  schema: SchemaDocument;
+  schema: string;
 
   /** All API dependencies imported by this plugin. */
   imported: Uri[];

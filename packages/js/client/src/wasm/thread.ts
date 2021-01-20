@@ -1,14 +1,17 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable no-constant-condition */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import {
   W3Exports,
   W3Imports,
-  HostDispatcher,
-  usize,
-  HostAction
+  HostAction,
+  u32,
+  ThreadWakeStatus,
 } from "./types";
-import { memcpy } from "./utils";
+import { readBytes, readString, writeBytes, writeString } from "./utils";
+import { maxThreads, maxTransferBytes } from "./WasmWeb3Api";
 
-import { Observable, SubscriptionObserver } from "observable-fns";
-import { expose } from "threads/worker";
 import { encode } from "@msgpack/msgpack";
 
 interface State {
@@ -18,119 +21,255 @@ interface State {
     result?: ArrayBuffer;
     error?: string;
   };
-  subquery: {
+  subinvoke: {
     result?: ArrayBuffer;
     error?: string;
   };
+  threadMutexes?: Int32Array;
+  threadId?: number;
+  transfer?: Uint8Array;
 }
 
 const state: State = {
-  invoke: { },
-  subquery: { }
-}
+  invoke: {},
+  subinvoke: {},
+};
 
-const imports = (
-  hostDispatch: SubscriptionObserver<HostAction>,
-  memory: WebAssembly.Memory
-): W3Imports => ({
+const abort = (message: string) => {
+  dispatchAction({
+    type: "Abort",
+    message,
+  });
+};
+
+const dispatchAction = (action: HostAction) => {
+  // @ts-ignore webworker postMessage
+  postMessage(action);
+};
+
+const imports = (memory: WebAssembly.Memory): W3Imports => ({
   w3: {
-    __w3_subquery: (
-      uriPtr: usize, uriLen: usize,
-      queryPtr: usize, queryLen: usize,
-      argsPtr: usize, argsLen: usize
+    __w3_subinvoke: (
+      uriPtr: u32,
+      uriLen: u32,
+      modulePtr: u32,
+      moduleLen: u32,
+      methodPtr: u32,
+      methodLen: u32,
+      inputPtr: u32,
+      inputLen: u32
     ): boolean => {
-      // TODO: read uri, query, and args. Then send the subquery and
-      //       only return when its' finished
-      // Args: uri_ptr: i32, uri_len: usize, query_ptr/len, args_ptr/len
-      // Ret: bool
-      // TODO:
-      // observable.next({ type: "__w3_subquery", data: { uri, query, args } });
-      // Atomics.wait(threadId, 1);
-      // wait for w3_subquery_result to have finished
-      return true;
+      if (
+        state.threadId === undefined ||
+        state.threadMutexes === undefined ||
+        state.transfer === undefined
+      ) {
+        abort(
+          `__w3_subinvoke: thread uninitialized.\nthreadId: ${state.threadId}\nthreadMutexes: ${state.threadMutexes}`
+        );
+        return false;
+      }
+
+      // Reset our state
+      state.subinvoke.result = undefined;
+      state.subinvoke.error = undefined;
+
+      const uri = readString(memory.buffer, uriPtr, uriLen);
+      const module = readString(memory.buffer, modulePtr, moduleLen);
+      const method = readString(memory.buffer, methodPtr, methodLen);
+      const input = readBytes(memory.buffer, inputPtr, inputLen);
+
+      // Reset our thread's status
+      Atomics.store(state.threadMutexes, state.threadId, 0);
+
+      dispatchAction({
+        type: "SubInvoke",
+        uri,
+        module,
+        method,
+        input,
+      });
+
+      // Pause the thread
+      Atomics.wait(state.threadMutexes, state.threadId, 0);
+
+      // Get the code & reset to 0
+      const status: ThreadWakeStatus = Atomics.exchange(
+        state.threadMutexes,
+        state.threadId,
+        0
+      );
+
+      if (
+        status === ThreadWakeStatus.SUBINVOKE_ERROR ||
+        status === ThreadWakeStatus.SUBINVOKE_RESULT
+      ) {
+        let transferStatus: ThreadWakeStatus = status;
+        let numBytes = Atomics.load(state.transfer, 0);
+        let data = new Uint8Array(numBytes);
+        let progress = 0;
+
+        while (true) {
+          const newLength = progress + numBytes;
+
+          if (data.byteLength < newLength) {
+            data = new Uint8Array(data, 0, newLength);
+          }
+
+          for (let i = 1; i <= numBytes; ++i) {
+            data[progress + (i - 1)] = Atomics.load(state.transfer, i);
+          }
+
+          progress += numBytes;
+          dispatchAction({ type: "TransferComplete" });
+
+          // If the main thread hasn't said we're done yet, wait
+          // for another chunk of data
+          if (transferStatus !== ThreadWakeStatus.SUBINVOKE_DONE) {
+            Atomics.wait(state.threadMutexes, state.threadId, 0);
+            transferStatus = Atomics.exchange(
+              state.threadMutexes,
+              state.threadId,
+              0
+            );
+            numBytes = Atomics.load(state.transfer, 0);
+          } else {
+            break;
+          }
+        }
+
+        // Transfer is complete, copy result to desired location
+        if (status === ThreadWakeStatus.SUBINVOKE_ERROR) {
+          const decoder = new TextDecoder();
+          state.subinvoke.error = decoder.decode(data);
+          return false;
+        } else if (status === ThreadWakeStatus.SUBINVOKE_RESULT) {
+          state.subinvoke.result = data.buffer;
+          return true;
+        }
+      } else {
+        abort(`__w3_subinvoke: Unknown wake status ${status}`);
+        return false;
+      }
+      return false;
     },
-    __w3_subquery_result_len: (): usize => {
-      // TODO: return size of result buffer
-      // TODO: error reporting
-      return state.subquery.result.byteLength;
+    // Give WASM the size of the result
+    __w3_subinvoke_result_len: (): u32 => {
+      if (!state.subinvoke.result) {
+        abort("__w3_subinvoke_result_len: subinvoke.result is not set");
+        return 0;
+      }
+      return state.subinvoke.result.byteLength;
     },
-    __w3_subquery_result: (ptr: usize): void => {
-      // TODO: fill the wasm buffer with the result buffer
-      write(memory, ptr, state.subquery.result);
+    // Copy the subinvoke result into WASM
+    __w3_subinvoke_result: (ptr: u32): void => {
+      if (!state.subinvoke.result) {
+        abort("__w3_subinvoke_result: subinvoke.result is not set");
+        return;
+      }
+      writeBytes(state.subinvoke.result, memory.buffer, ptr);
     },
-    __w3_subquery_error_len: (): usize => {
-      // TODO: return size of error buffer
-      // TODO: error reporting
-      return state.subquery.error.length;
+    // Give WASM the size of the error
+    __w3_subinvoke_error_len: (): u32 => {
+      if (!state.subinvoke.error) {
+        abort("__w3_subinvoke_error_len: subinvoke.error is not set");
+        return 0;
+      }
+      return state.subinvoke.error.length;
     },
-    __w3_subquery_error: (ptr: usize): void => {
-      // TODO: test this
-      const heap = new Uint8Array(memory.buffer);
-      const encode = new TextEncoder();
-      const error = encode.encode(state.subquery.error);
-      memcpy(error, 0, heap, ptr, error.length);
+    // Copy the subinvoke error into WASM
+    __w3_subinvoke_error: (ptr: u32): void => {
+      if (!state.subinvoke.error) {
+        abort("__w3_subinvoke_error: subinvoke.error is not set");
+        return;
+      }
+      writeString(state.subinvoke.error, memory.buffer, ptr);
     },
-    __w3_invoke_args: (methodPtr: usize, argsPtr: usize): void => {
-      // TODO: fill the wasm name + args buffer with method + input
-      write(memory, methodPtr, state.method);
-      write(memory, argsPtr, state.args);
+    // Copy the invocation's method & args into WASM
+    __w3_invoke_args: (methodPtr: u32, argsPtr: u32): void => {
+      if (!state.method) {
+        abort("__w3_invoke_args: method is not set");
+        return;
+      }
+      if (!state.args) {
+        abort("__w3_invoke_args: args is not set");
+        return;
+      }
+      writeString(state.method, memory.buffer, methodPtr);
+      writeBytes(state.args, memory.buffer, argsPtr);
     },
-    __w3_invoke_result: (ptr: usize, len: usize): void => {
-      // TODO: store the invoke result
-      state.invoke.result = read(memory, ptr, len);
+    // Store the invocation's result
+    __w3_invoke_result: (ptr: u32, len: u32): void => {
+      state.invoke.result = readBytes(memory.buffer, ptr, len);
     },
-    __w3_invoke_error: (ptr: usize, len: usize): void => {
-      // TODO: store the invoke error
-      state.invoke.error = read(memory, ptr, len);
-    }
+    // Store the invocation's error
+    __w3_invoke_error: (ptr: u32, len: u32): void => {
+      state.invoke.error = readString(memory.buffer, ptr, len);
+    },
   },
   env: {
-    memory
-  }
+    memory,
+    abort: (msg: string, file: string, line: number, column: number) => {
+      abort(`WASM Abort: ${msg}\nFile: ${file}\n[${line},${column}]`);
+      return;
+    },
+  },
 });
 
-const methods = {
-  start: (
-    wasm: ArrayBuffer,
-    method: string,
-    input: Record<string, unknown> | ArrayBuffer
-  ): HostDispatcher => new Observable(observer => {
+// @ts-ignore
+addEventListener(
+  "message",
+  (input: {
+    data: {
+      wasm: ArrayBuffer;
+      method: string;
+      input: Record<string, unknown> | ArrayBuffer;
+      threadMutexesBuffer: SharedArrayBuffer;
+      threadId: number;
+      transferBuffer: SharedArrayBuffer;
+    };
+  }) => {
+    const data = input.data;
 
-    const abort = (message: string) => {
-      observer.next({
-        type: "Abort",
-        message
-      });
-      observer.complete();
-    }
+    // Store thread mutexes & ID, used for pausing the thread's execution
+    state.threadMutexes = new Int32Array(
+      data.threadMutexesBuffer,
+      0,
+      maxThreads
+    );
+    state.threadId = data.threadId;
+
+    // Store transfer buffer
+    state.transfer = new Uint8Array(data.transferBuffer, 0, maxTransferBytes);
 
     // Store the method we're invoking
-    state.method = method;
+    state.method = data.method;
 
-    if (input instanceof ArrayBuffer) {
+    if (data.input instanceof ArrayBuffer) {
       // No need to serialize
-      state.args = input;
+      state.args = data.input;
     } else {
       // We must serialize the input object into msgpack
-      state.args = encode(input);
+      state.args = encode(data.input);
     }
 
-    const module = new WebAssembly.Module(wasm);
+    const module = new WebAssembly.Module(data.wasm);
     const memory = new WebAssembly.Memory({ initial: 1 });
-    const source = new WebAssembly.Instance(
-      module, imports(observer, memory)
-    );
+    const source = new WebAssembly.Instance(module, imports(memory));
 
     const exports = source.exports as W3Exports;
 
-    const hasExport = (name: string, exports: Record<string, unknown>): boolean => {
+    const hasExport = (
+      name: string,
+      exports: Record<string, unknown>
+    ): boolean => {
       if (!exports[name]) {
         abort(`A required export was not found: ${name}`);
         return false;
       }
 
       return true;
-    }
+    };
 
     // Make sure _w3_init exists
     if (!hasExport("_w3_init", exports)) {
@@ -150,16 +289,16 @@ const methods = {
       state.args.byteLength
     );
 
-    if (!result) {
+    if (result) {
       if (!state.invoke.result) {
         abort(`Invoke result is missing.`);
         return;
       }
 
       // __w3_invoke_result has already been called
-      observer.next({
+      dispatchAction({
         type: "LogQueryResult",
-        result: state.invoke.result
+        result: state.invoke.result,
       });
     } else {
       if (!state.invoke.error) {
@@ -168,27 +307,10 @@ const methods = {
       }
 
       // __w3_invoke_error has already been called
-      observer.next({
+      dispatchAction({
         type: "LogQueryError",
-        error: state.invoke.error
+        error: state.invoke.error,
       });
     }
-
-    observer.complete();
-  }),
-  subQueryResult: (result: Record<string, unknown> | ArrayBuffer) => {
-    if (result instanceof ArrayBuffer) {
-      state.subquery.result = result;
-    } else {
-      // We must serialize the result object into msgpack
-      state.subquery.result = encode(result);
-    }
-  },
-  subQueryError: (error: string): void => {
-    state.subquery.error = error;
   }
-};
-
-export type ThreadMethods = typeof methods;
-
-expose(methods as Record<string, any>);
+);

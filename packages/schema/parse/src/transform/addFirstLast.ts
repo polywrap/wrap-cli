@@ -10,7 +10,7 @@ export const addFirstLast: TypeInfoTransforms = {
   enter: {
     TypeInfo: (typeInfo: TypeInfo) => ({
       ...typeInfo,
-      userTypes: setFirstLast(typeInfo.userTypes),
+      objectTypes: setFirstLast(typeInfo.objectTypes),
       queryTypes: setFirstLast(typeInfo.queryTypes),
       importedObjectTypes: setFirstLast(typeInfo.importedObjectTypes),
       importedQueryTypes: setFirstLast(typeInfo.importedQueryTypes),

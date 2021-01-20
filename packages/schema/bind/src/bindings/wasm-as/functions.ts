@@ -25,6 +25,43 @@ export const toMsgPack: MustacheFunction = () => {
   };
 };
 
+export const toWasmInit: MustacheFunction = () => {
+  return (value: string, render: (template: string) => string) => {
+    const name = render(value);
+
+    if (name[0] === "?") {
+      const nullType = toWasm()(value, render);
+      const nullable = "Nullable";
+
+      if (nullType.substr(0, nullable.length) === nullable) {
+        return `new ${nullType}()`;
+      }
+    }
+
+    if (name[0] === "[") {
+      return "[]";
+    }
+
+    switch (name) {
+      case "Int":
+      case "Int8":
+      case "Int16":
+      case "Int32":
+      case "Int64":
+      case "UInt":
+      case "UInt8":
+      case "UInt16":
+      case "UInt32":
+      case "UInt64":
+        return "0";
+      case "String":
+        return `""`;
+      default:
+        return `new ${name}()`;
+    }
+  };
+};
+
 export const toWasm: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
     let name = render(value);

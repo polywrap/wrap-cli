@@ -1,5 +1,5 @@
 import { OutputDirectory, OutputEntry } from "../../";
-import { loadDirectory } from "../../utils/fs";
+import { readDirectory } from "../../utils/fs";
 import * as Functions from "./functions";
 
 import { parseSchema, extendType, addFirstLast } from "@web3api/schema-parse";
@@ -12,12 +12,12 @@ export function generateBinding(schema: string): OutputDirectory {
     transforms: [extendType(Functions), addFirstLast],
   });
 
-  // Generate user type folders
-  for (const userType of typeInfo.userTypes) {
+  // Generate object type folders
+  for (const objectType of typeInfo.objectTypes) {
     entries.push({
       type: "Directory",
-      name: userType.name,
-      data: generateFiles("./templates/user-type", userType),
+      name: objectType.name,
+      data: generateFiles("./templates/object-type", objectType),
     });
   }
 
@@ -86,7 +86,7 @@ function generateFiles(
 ): OutputEntry[] {
   const output: OutputEntry[] = [];
   const absolutePath = path.join(__dirname, subpath);
-  const directory = loadDirectory(absolutePath);
+  const directory = readDirectory(absolutePath);
 
   const processDirectory = (entries: OutputEntry[], output: OutputEntry[]) => {
     // Load all sub-templates

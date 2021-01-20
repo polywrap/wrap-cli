@@ -7,8 +7,9 @@ import {
   InvokeApiResult,
   Plugin,
   PluginPackage,
-  Uri
+  Uri,
 } from "@web3api/core-js";
+import { decode } from "@msgpack/msgpack";
 
 export class PluginWeb3Api extends Api {
   private _instance: Plugin | undefined;
@@ -17,27 +18,43 @@ export class PluginWeb3Api extends Api {
     super();
   }
 
-  public async invoke<TData = Record<string, unknown>>(
+  public async invoke<TData = unknown>(
     options: InvokeApiOptions,
     client: Client
   ): Promise<InvokeApiResult<TData>> {
     const { module, method, input, resultFilter } = options;
     const modules = this.getInstance().getModules(client);
+    const pluginModule = modules[module];
+
+    if (!pluginModule) {
+      throw new Error(`PluginWeb3Api: module "${module}" not found.`);
+    }
+
+    if (!pluginModule[method]) {
+      throw new Error(`PluginWeb3Api: method "${method}" not found.`);
+    }
+
+    let jsInput: Record<string, unknown>;
+
+    // If the input is a msgpack buffer, deserialize it
+    if (input instanceof ArrayBuffer) {
+      const result = decode(input);
+
+      if (typeof result !== "object") {
+        throw new Error(
+          `PluginWeb3Api: decoded MsgPack input did not result in an object.\nResult: ${result}`
+        );
+      }
+
+      jsInput = result as Record<string, unknown>;
+    } else {
+      jsInput = input;
+    }
 
     try {
-      const pluginModule = modules[module];
-
-      if (!pluginModule) {
-        throw new Error(`PluginWeb3Api: module "${module}" not found.`);
-      }
-
-      if (!pluginModule[method]) {
-        throw new Error(`PluginWeb3Api: method "${method}" not found.`);
-      }
-
       const result = (await executeMaybeAsyncFunction(
         pluginModule[method],
-        input,
+        jsInput,
         client
       )) as TData;
 
@@ -55,25 +72,21 @@ export class PluginWeb3Api extends Api {
         return {};
       }
     } catch (e) {
-      let errors;
-      if (Array.isArray(e)) {
-        errors = [...e];
-      } else {
-        errors = [e];
-      }
-
-      errors.push(
-        new Error(
+      return {
+        error: new Error(
           `PluginWeb3Api: invocation exception encountered.\n` +
             `uri: ${this._uri.uri}\nmodule: ${module}\n` +
-            `method: ${method}\nresultFilter: ${resultFilter}` +
-            `input: ${JSON.stringify(input, null, 2)}` +
-            `modules: ${JSON.stringify(modules, null, 2)}\n`
-        )
-      );
-
-      return { errors };
+            `method: ${method}\nresultFilter: ${resultFilter}\n` +
+            `input: ${JSON.stringify(jsInput, null, 2)}\n` +
+            `modules: ${JSON.stringify(modules, null, 2)}\n` +
+            `exception: ${e.message}`
+        ),
+      };
     }
+  }
+
+  public async getSchema(_client: Client): Promise<string> {
+    return Promise.resolve(this._plugin.manifest.schema);
   }
 
   private getInstance(): Plugin {

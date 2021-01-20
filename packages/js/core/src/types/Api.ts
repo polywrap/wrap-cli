@@ -14,11 +14,14 @@ export abstract class Api {
    * @param client The client instance requesting this invocation.
    * This client will be used for any sub-queries that occur.
    */
-  public abstract async invoke<TData = unknown>(
+  public abstract async invoke(
     options: InvokeApiOptions,
     client: Client
-  ): Promise<InvokeApiResult<TData>>;
+  ): Promise<InvokeApiResult<unknown>>;
+
+  /** Get the API's schema */
+  public abstract async getSchema(client: Client): Promise<string>;
 }
 
 /** Cache of API definitions, mapping the API's URI to its definition */
-export class ApiCache extends Map<string, Api> {}
+export type ApiCache = Map<string, Api>;

@@ -11,14 +11,14 @@ export * from "./definitions";
 import deepEqual from "deep-equal";
 
 export interface TypeInfo {
-  userTypes: ObjectDefinition[];
+  objectTypes: ObjectDefinition[];
   queryTypes: QueryDefinition[];
   importedObjectTypes: ImportedObjectDefinition[];
   importedQueryTypes: ImportedQueryDefinition[];
 }
 export function createTypeInfo(): TypeInfo {
   return {
-    userTypes: [],
+    objectTypes: [],
     queryTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
@@ -29,7 +29,7 @@ type ImportedDefinition = ImportedObjectDefinition | ImportedQueryDefinition;
 
 export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
   const combined: TypeInfo = {
-    userTypes: [],
+    objectTypes: [],
     queryTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
@@ -43,8 +43,8 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
   };
 
   for (const typeInfo of typeInfos) {
-    for (const userType of typeInfo.userTypes) {
-      tryInsert(combined.userTypes, userType);
+    for (const objectType of typeInfo.objectTypes) {
+      tryInsert(combined.objectTypes, objectType);
     }
 
     for (const queryType of typeInfo.queryTypes) {

@@ -1,9 +1,8 @@
-import { BLOCK_MAXSIZE } from "rt/common";
-import { E_INDEXOUTOFRANGE, E_INVALIDLENGTH } from "util/error";
+import { E_INDEXOUTOFRANGE, E_INVALIDLENGTH, BLOCK_MAXSIZE } from "./utils";
 
 export class DataView {
   @unsafe
-  readonly dataStart: usize;
+  readonly dataStart: u32;
   readonly buffer: ArrayBuffer;
   readonly byteLength: i32;
   private byteOffset: i32;
@@ -19,7 +18,7 @@ export class DataView {
     )
       throw new RangeError(E_INVALIDLENGTH);
     this.buffer = buffer; // retains
-    const dataStart = changetype<usize>(buffer);
+    const dataStart = changetype<u32>(buffer);
     this.dataStart = dataStart;
     this.byteLength = byte_length;
     this.byteOffset = byte_offset;

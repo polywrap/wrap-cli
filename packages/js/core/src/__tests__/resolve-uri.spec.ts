@@ -154,7 +154,7 @@ describe("resolveUri", () => {
     );
 
     expect(apiIdentity).toMatchObject({
-      uri: new Uri("ens/test.eth"),
+      uri: new Uri("ipfs/QmHash"),
       manifest: {
         version: "hey",
       },
@@ -198,7 +198,7 @@ describe("resolveUri", () => {
     );
 
     expect(apiIdentity).toMatchObject({
-      uri: new Uri("ens/ens"),
+      uri: new Uri("ipfs/QmHash"),
       manifest: {
         version: "hey",
       },

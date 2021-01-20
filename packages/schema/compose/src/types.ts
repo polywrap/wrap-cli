@@ -1,4 +1,4 @@
-export type SchemaResolver = (uriOrPath: string) => string;
+export type SchemaResolver = (uriOrPath: string) => Promise<string>;
 
 export interface SchemaFile {
   schema: string;
@@ -17,7 +17,7 @@ export interface ExternalImport {
 }
 
 export interface LocalImport {
-  userTypes: string[];
+  objectTypes: string[];
   path: string;
 }
 

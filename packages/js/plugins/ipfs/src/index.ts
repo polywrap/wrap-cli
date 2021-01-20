@@ -1,7 +1,12 @@
 import { query, mutation } from "./resolvers";
 import { manifest } from "./manifest";
 
-import { Client, Plugin, PluginManifest, PluginModules } from "@web3api/core-js";
+import {
+  Client,
+  Plugin,
+  PluginManifest,
+  PluginModules,
+} from "@web3api/core-js";
 import CID from "cids";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
@@ -32,6 +37,7 @@ export class IpfsPlugin extends Plugin {
   }
 
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
+  // https://github.com/Web3-API/prototype/issues/101
   public getModules(_client: Client): PluginModules {
     return {
       query: query(this),
@@ -58,7 +64,9 @@ export class IpfsPlugin extends Plugin {
   }
 
   public async catToString(cid: string): Promise<string> {
-    return (await this.catToBuffer(cid)).toString();
+    const buffer = await this.catToBuffer(cid);
+    const decoder = new TextDecoder();
+    return decoder.decode(buffer);
   }
 
   public async catToBuffer(cid: string): Promise<Uint8Array> {
@@ -66,7 +74,7 @@ export class IpfsPlugin extends Plugin {
     for await (const chunk of this._ipfs.cat(cid)) {
       chunks.push(chunk);
     }
-    const result = Buffer.concat(chunks);
+    const result = chunks.length > 1 ? Buffer.concat(chunks) : chunks[0];
     const u8Array = new Uint8Array(result.byteLength);
     u8Array.set(result);
     return u8Array;

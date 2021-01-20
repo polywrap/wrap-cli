@@ -2,7 +2,12 @@
 import { query, mutation } from "./resolvers";
 import { manifest } from "./manifest";
 
-import { Client, Plugin, PluginManifest, PluginModules } from "@web3api/core-js";
+import {
+  Client,
+  Plugin,
+  PluginManifest,
+  PluginModules,
+} from "@web3api/core-js";
 import { Signer, ethers } from "ethers";
 import {
   ExternalProvider,
@@ -40,6 +45,7 @@ export class EthereumPlugin extends Plugin {
   }
 
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
+  // https://github.com/Web3-API/prototype/issues/101
   public getModules(_client: Client): PluginModules {
     return {
       query: query(this),
