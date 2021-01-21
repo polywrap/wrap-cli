@@ -1,12 +1,10 @@
+import { TypeInfo, createObjectDefinition } from "../typeInfo";
 import {
-  TypeInfo,
-  AnyDefinition,
-  ObjectDefinition,
-  createObjectDefinition,
-  createScalarDefinition,
-  createArrayDefinition,
-  createPropertyDefinition,
-} from "../typeInfo";
+  extractFieldDefinition,
+  extractListType,
+  extractNamedType,
+  State,
+} from "./object-types-utils";
 
 import {
   DocumentNode,
@@ -18,12 +16,6 @@ import {
   visit,
   DirectiveNode,
 } from "graphql";
-
-interface State {
-  currentType?: ObjectDefinition;
-  currentUnknown?: AnyDefinition;
-  nonNullType?: boolean;
-}
 
 const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
   ObjectTypeDefinition: (node: TypeDefinitionNode) => {
@@ -51,63 +43,13 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    const property = state.currentUnknown;
-
-    if (!property) {
-      return;
-    }
-
-    if (property.scalar) {
-      return;
-    }
-
-    const modifier = state.nonNullType ? "" : "?";
-
-    property.scalar = createScalarDefinition(
-      property.name,
-      modifier + node.name.value,
-      state.nonNullType
-    );
-    state.nonNullType = false;
+    extractNamedType(node, state);
   },
   ListType: (_node: ListTypeNode) => {
-    const property = state.currentUnknown;
-
-    if (!property) {
-      return;
-    }
-
-    if (property.scalar) {
-      return;
-    }
-
-    property.array = createArrayDefinition(
-      property.name,
-      "TBD",
-      state.nonNullType
-    );
-
-    state.currentUnknown = property.array;
-    state.nonNullType = false;
+    extractListType(state);
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
-    const type = state.currentType;
-
-    if (!type) {
-      return;
-    }
-
-    if (node.arguments && node.arguments.length > 0) {
-      throw Error(
-        `Imported types cannot have methods. See type "${type.name}"`
-      );
-    }
-
-    // Create a new property
-    const property = createPropertyDefinition(node.name.value);
-
-    state.currentUnknown = property;
-    type.properties.push(property);
+    extractFieldDefinition(node, state);
   },
 });
 
@@ -116,7 +58,7 @@ const visitorLeave = (schemaInfo: TypeInfo, state: State) => ({
     state.currentType = undefined;
   },
   FieldDefinition: (_node: FieldDefinitionNode) => {
-    state.currentUnknown = undefined;
+    state.currentProperty = undefined;
   },
   NonNullType: (_node: NonNullTypeNode) => {
     state.nonNullType = false;
