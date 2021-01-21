@@ -8,11 +8,6 @@ type UrlParam {
     value: String!
 }
 
-enum ResponseType {
-    TEXT
-    BINARY
-}
-
 type Response {
     status: Integer!
     statusText: String!
@@ -23,9 +18,16 @@ type Response {
 type Request {
     headers: [Header!]
     urlParams: [UrlParam!]
-    responseType: ResponseType!
+    responseType: String! #ResponseType
     body: String
 }
+
+# Enum types curently not supported 
+#
+# enum ResponseType {
+#     TEXT
+#     BINARY
+# }
 
 type Query {
     get(url: String!, request: Request): Response
