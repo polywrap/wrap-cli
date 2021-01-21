@@ -114,6 +114,35 @@ export const output: TypeInfo = {
             )
           )
         ),
+        createArrayPropertyDefinition(
+          "objectArray",
+          "[UserObject]",
+          true,
+          createObjectDefinition("objectArray", "UserObject", true)
+        ),
+        createArrayPropertyDefinition(
+          "objectArrayArray",
+          "[[UserObject]]",
+          true,
+          createArrayDefinition(
+            "objectArrayArray",
+            "[UserObject]",
+            true,
+            createObjectDefinition("objectArrayArray", "UserObject", true)
+          )
+        ),
+        createObjectPropertyDefinition(
+          "nestedObject",
+          "UserObject",
+          true,
+          []
+        ),
+        createObjectPropertyDefinition(
+          "optNestedObject",
+          "?UserObject",
+          false,
+          []
+        )
       ],
     },
     {
@@ -141,6 +170,11 @@ export const output: TypeInfo = {
           ...createMethodDefinition("query", "userObjectMethod"),
           arguments: [
             createObjectPropertyDefinition("userObject", "?UserObject", false, []),
+            createArrayPropertyDefinition("arrayObject", "[UserObject]", true, createObjectDefinition(
+              "arrayObject",
+              "UserObject",
+              true
+            )),
           ],
           return: createObjectPropertyDefinition(
             "userObjectMethod",

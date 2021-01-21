@@ -41,6 +41,11 @@ type CustomType {
   uOptArrayOptArray: [[UInt64]]!
   uArrayOptArrayArray: [[[UInt64!]!]]!
   crazyArray: [[[[UInt64!]]!]]
+  objectArray: [UserObject!]!
+  objectArrayArray: [[UserObject!]!]!
+  nestedObject: UserObject!
+  optNestedObject: UserObject
+
 }
 
 type AnotherType {
@@ -61,6 +66,7 @@ type Query @imports(
 
   userObjectMethod(
     userObject: UserObject
+    arrayObject: [UserObject!]!
   ): UserObject!
 
   importedObjectMethod(
