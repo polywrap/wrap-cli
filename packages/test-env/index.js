@@ -1,11 +1,25 @@
 const { exec } = require('child_process');
 
-const composeFiles = [
-  'docker-compose.base.yml', 
-  'docker-compose.dev-server-ganache.yml', 
-  'docker-compose.ganache-cli.yml', 
-  'docker-compose.ipfs.yml',
-]
+const composeFiles = {
+  base: 'docker-compose.base.yml',
+  ganacheCli: ['docker-compose.dev-server-ganache.yml', 'docker-compose.ganache-cli.yml'],
+  ipfs: 'docker-compose.ipfs.yml',
+}
+
+function getComposeFilesToUse(ganacheCli = true, ipfs = true) {
+  let composeFilesToUse = [composeFiles.base];
+
+  if (ganacheCli === true) {
+    composeFiles.ganacheCli.forEach(function (value) {
+      composeFilesToUse.push(value);
+    })
+  }
+  if (ipfs === true) {
+    composeFilesToUse.push(composeFiles.ipfs);
+  }
+
+  return composeFilesToUse;
+}
 
 async function runCommand(command, quiet) {
 
@@ -33,12 +47,12 @@ async function runCommand(command, quiet) {
   })
 }
 
-async function up(quiet = false) {
-  await runCommand(`docker-compose -f ${composeFiles.join(' -f ')} up -d`, quiet)
+async function up(quiet = false, ganacheCli = true, ipfs = true) {
+  await runCommand(`docker-compose -f ${getComposeFilesToUse(ganacheCli, ipfs).join(' -f ')} up -d`, quiet)
 }
 
-async function down(quiet = false) {
-  await runCommand(`docker-compose -f ${composeFiles.join(' -f ')} down`, quiet)
+async function down(quiet = false, ganacheCli = true, ipfs = true) {
+  await runCommand(`docker-compose -f ${getComposeFilesToUse(ganacheCli, ipfs).join(' -f ')} down`, quiet)
 }
 
 if (require.main === module) {
