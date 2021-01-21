@@ -18,7 +18,7 @@ type Response {
 type Request {
     headers: [Header!]
     urlParams: [UrlParam!]
-    responseType: String! #ResponseType
+    responseType: String! # "TEXT" || "BINARY"
     body: String
 }
 
