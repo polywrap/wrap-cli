@@ -1,178 +1,183 @@
-import axios, { AxiosResponse, AxiosRequestConfig } from "axios"
-import {HttpPlugin} from "../../index"
+import { HttpPlugin } from "../../index";
 
-jest.mock('axios')
+import axios, { AxiosResponse, AxiosRequestConfig } from "axios";
 
-describe('test http plugin get method', () => {
-    
-    let plugin: HttpPlugin = new HttpPlugin();
+// mock axios
+jest.mock("axios");
+const mockedAxios = jest.requireMock<jest.Mocked<typeof axios>>("axios");
 
-    test('valid request: text response type', async() => {
-        // @ts-ignore
-        axios.get.mockResolvedValueOnce({
-            headers: {["Content-Type"]: "application/json; charset=utf-8"},
-            status: 200,
-            statusText: "Ok",
-            data: "{result: 1001}",
-            config: {
-                responseType: "text"
-            }
-        } as AxiosResponse)
+describe("test http plugin", () => {
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
 
-        const response = await plugin.get("/api/test", {
-            headers: [
-                {key: "Accept", value: "application/json"}, 
-                {key: "X-Test-Header", value: "test-header-value"}
-            ],
-            urlParams: [
-                {key: "q", value: "test-param"}
-            ],
-            responseType: "TEXT",
-        })
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-        expect(axios.get).lastCalledWith(
-            "/api/test", 
-            {
-                headers: {"Accept": "application/json", "X-Test-Header": "test-header-value"},
-                params: {"q": "test-param"},
-                responseType: "text",
-            } as AxiosRequestConfig,
-        )
-        
-        expect(response.status).toBe(200)
-        expect(response.statusText).toBe("Ok")
-        expect(response.headers).toStrictEqual([{key: "Content-Type", value: "application/json; charset=utf-8"}])
-        expect(response.body).toBe("{result: 1001}")
-    })
+  describe("get method", () => {
+    const plugin: HttpPlugin = new HttpPlugin();
 
-    test('valid request: arraybuffer response type', async() => {
-        // @ts-ignore
-        axios.get.mockResolvedValueOnce({
-            headers: {["Content-Type"]: "application/json; charset=utf-8"},
-            status: 200,
-            statusText: "Ok",
-            data: Buffer.from("{result: 1001}"),
-            config: {
-                responseType: "arraybuffer"
-            }
-        } as AxiosResponse)
+    test("valid request: text response type", async () => {
+      mockedAxios.get.mockResolvedValueOnce({
+        headers: { ["Content-Type"]: "application/json; charset=utf-8" },
+        status: 200,
+        statusText: "Ok",
+        data: "{result: 1001}",
+        config: {
+          responseType: "text",
+        },
+      } as AxiosResponse);
 
-        const response = await plugin.get("/api/test", {
-            headers: [
-                {key: "Accept", value: "application/json"}, 
-                {key: "X-Test-Header", value: "test-header-value"}
-            ],
-            urlParams: [
-                {key: "q", value: "test-param"}
-            ],
-            responseType: "BINARY",
-        })
+      const response = await plugin.get("/api/test", {
+        headers: [
+          { key: "Accept", value: "application/json" },
+          { key: "X-Test-Header", value: "test-header-value" },
+        ],
+        urlParams: [{ key: "q", value: "test-param" }],
+        responseType: "TEXT",
+      });
 
-        expect(axios.get).lastCalledWith(
-            "/api/test", 
-            {
-                headers: {"Accept": "application/json", "X-Test-Header": "test-header-value"},
-                params: {"q": "test-param"},
-                responseType: "arraybuffer",
-            } as AxiosRequestConfig,
-        )
-        
-        expect(response.status).toBe(200)
-        expect(response.statusText).toBe("Ok")
-        expect(response.headers).toStrictEqual([{key: "Content-Type", value: "application/json; charset=utf-8"}])
-        expect(atob(response.body)).toBe("{result: 1001}")
-    })
+      expect(mockedAxios.get).lastCalledWith("/api/test", {
+        headers: {
+          ["Accept"]: "application/json",
+          ["X-Test-Header"]: "test-header-value",
+        },
+        params: { q: "test-param" },
+        responseType: "text",
+      } as AxiosRequestConfig);
 
-    test('failed request', async() => {
-        // TODO
-    })
-})
+      expect(response.status).toBe(200);
+      expect(response.statusText).toBe("Ok");
+      expect(response.headers).toStrictEqual([
+        { key: "Content-Type", value: "application/json; charset=utf-8" },
+      ]);
+      expect(response.body).toBe("{result: 1001}");
+    });
 
-describe('test http plugin post method', () => {
-    
-    let plugin: HttpPlugin = new HttpPlugin();
+    test("valid request: arraybuffer response type", async () => {
+      mockedAxios.get.mockResolvedValueOnce({
+        headers: { ["Content-Type"]: "application/json; charset=utf-8" },
+        status: 200,
+        statusText: "Ok",
+        data: Buffer.from("{result: 1001}"),
+        config: {
+          responseType: "arraybuffer",
+        },
+      } as AxiosResponse);
 
-    test('valid request with headers', async() => {
-        // @ts-ignore
-        axios.post.mockResolvedValueOnce({
-            headers: {["Content-Type"]: "application/json; charset=utf-8"},
-            status: 200,
-            statusText: "Ok",
-            data: "{response: 1001}",
-            config: {
-                responseType: "text"
-            }
-        } as AxiosResponse)
+      const response = await plugin.get("/api/test", {
+        headers: [
+          { key: "Accept", value: "application/json" },
+          { key: "X-Test-Header", value: "test-header-value" },
+        ],
+        urlParams: [{ key: "q", value: "test-param" }],
+        responseType: "BINARY",
+      });
 
-        const response = await plugin.post("/api/test", {
-            headers: [
-                {key: "Accept", value: "application/json"}, 
-                {key: "X-Test-Header", value: "test-header-value"}
-            ],
-            urlParams: [
-                {key: "q", value: "test-param"}
-            ],
-            body: "{request: 1001}",
-            responseType: "TEXT",
-        })
+      expect(mockedAxios.get).lastCalledWith("/api/test", {
+        headers: {
+          ["Accept"]: "application/json",
+          ["X-Test-Header"]: "test-header-value",
+        },
+        params: { q: "test-param" },
+        responseType: "arraybuffer",
+      } as AxiosRequestConfig);
 
-        expect(axios.post).lastCalledWith(
-            "/api/test",
-            "{request: 1001}", 
-            {
-                headers: {"Accept": "application/json", "X-Test-Header": "test-header-value"},
-                params: {"q": "test-param"},
-                responseType: "text",
-            } as AxiosRequestConfig,
-        )
-        
-        expect(response.status).toBe(200)
-        expect(response.statusText).toBe("Ok")
-        expect(response.headers).toStrictEqual([{key: "Content-Type", value: "application/json; charset=utf-8"}])
-        expect(response.body).toBe("{response: 1001}")
-    })
+      expect(response.status).toBe(200);
+      expect(response.statusText).toBe("Ok");
+      expect(response.headers).toStrictEqual([
+        { key: "Content-Type", value: "application/json; charset=utf-8" },
+      ]);
+      expect(atob(response.body)).toBe("{result: 1001}");
+    });
 
-    test('valid request with url params', async() => {
-        // @ts-ignore
-        axios.post.mockResolvedValueOnce({
-            headers: {["Content-Type"]: "application/json; charset=utf-8"},
-            status: 200,
-            statusText: "Ok",
-            data: Buffer.from("{response: 1001}"),
-            config: {
-                responseType: "arraybuffer"
-            }
-        } as AxiosResponse)
+    test("failed request", async () => {
+      // TODO
+    });
+  });
 
-        const response = await plugin.post("/api/test", {
-            headers: [
-                {key: "Accept", value: "application/json"}, 
-                {key: "X-Test-Header", value: "test-header-value"}
-            ],
-            urlParams: [
-                {key: "q", value: "test-param"}
-            ],
-            body: "{request: 1001}",
-            responseType: "BINARY",
-        })
+  describe("post method", () => {
+    const plugin: HttpPlugin = new HttpPlugin();
 
-        expect(axios.post).lastCalledWith(
-            "/api/test",
-            "{request: 1001}", 
-            {
-                headers: {"Accept": "application/json", "X-Test-Header": "test-header-value"},
-                params: {"q": "test-param"},
-                responseType: "arraybuffer",
-            } as AxiosRequestConfig,
-        )
-        
-        expect(response.status).toBe(200)
-        expect(response.statusText).toBe("Ok")
-        expect(response.headers).toStrictEqual([{key: "Content-Type", value: "application/json; charset=utf-8"}])
-        expect(atob(response.body)).toBe("{response: 1001}")
-    })
+    test("valid request with headers", async () => {
+      mockedAxios.post.mockResolvedValueOnce({
+        headers: { ["Content-Type"]: "application/json; charset=utf-8" },
+        status: 200,
+        statusText: "Ok",
+        data: "{response: 1001}",
+        config: {
+          responseType: "text",
+        },
+      } as AxiosResponse);
 
-    test('failed request', async() => {
-        // TODO
-    })
-})
+      const response = await plugin.post("/api/test", {
+        headers: [
+          { key: "Accept", value: "application/json" },
+          { key: "X-Test-Header", value: "test-header-value" },
+        ],
+        urlParams: [{ key: "q", value: "test-param" }],
+        body: "{request: 1001}",
+        responseType: "TEXT",
+      });
+
+      expect(mockedAxios.post).lastCalledWith("/api/test", "{request: 1001}", {
+        headers: {
+          ["Accept"]: "application/json",
+          ["X-Test-Header"]: "test-header-value",
+        },
+        params: { q: "test-param" },
+        responseType: "text",
+      } as AxiosRequestConfig);
+
+      expect(response.status).toBe(200);
+      expect(response.statusText).toBe("Ok");
+      expect(response.headers).toStrictEqual([
+        { key: "Content-Type", value: "application/json; charset=utf-8" },
+      ]);
+      expect(response.body).toBe("{response: 1001}");
+    });
+
+    test("valid request with url params", async () => {
+      mockedAxios.post.mockResolvedValueOnce({
+        headers: { ["Content-Type"]: "application/json; charset=utf-8" },
+        status: 200,
+        statusText: "Ok",
+        data: Buffer.from("{response: 1001}"),
+        config: {
+          responseType: "arraybuffer",
+        },
+      } as AxiosResponse);
+
+      const response = await plugin.post("/api/test", {
+        headers: [
+          { key: "Accept", value: "application/json" },
+          { key: "X-Test-Header", value: "test-header-value" },
+        ],
+        urlParams: [{ key: "q", value: "test-param" }],
+        body: "{request: 1001}",
+        responseType: "BINARY",
+      });
+
+      expect(mockedAxios.post).lastCalledWith("/api/test", "{request: 1001}", {
+        headers: {
+          ["Accept"]: "application/json",
+          ["X-Test-Header"]: "test-header-value",
+        },
+        params: { q: "test-param" },
+        responseType: "arraybuffer",
+      } as AxiosRequestConfig);
+
+      expect(response.status).toBe(200);
+      expect(response.statusText).toBe("Ok");
+      expect(response.headers).toStrictEqual([
+        { key: "Content-Type", value: "application/json; charset=utf-8" },
+      ]);
+      expect(atob(response.body)).toBe("{response: 1001}");
+    });
+
+    test("failed request", async () => {
+      // TODO
+    });
+  });
+});
