@@ -1,14 +1,13 @@
 import {
   PropertyDefinition,
-  TypeInfo,
   ImportedQueryDefinition,
   MethodDefinition,
   createPropertyDefinition,
   QueryDefinition,
-  ObjectDefinition,
   createObjectDefinition,
   createScalarDefinition,
   createArrayDefinition,
+  isScalar,
 } from "../typeInfo";
 
 import { InputValueDefinitionNode, NamedTypeNode } from "graphql";
@@ -22,32 +21,21 @@ export interface State {
   currentImport?: ImportedQueryDefinition;
 }
 
-export function extractNamedType(
-  node: NamedTypeNode,
-  state: State,
-  typeInfo: TypeInfo
-): void {
+export function extractNamedType(node: NamedTypeNode, state: State): void {
   const argument = state.currentArgument;
   const method = state.currentMethod;
   const modifier = state.nonNullType ? "" : "?";
 
   if (method && argument) {
     // Argument value
-    const objectDefinition = getObjectDefinition(
-      node.name.value,
-      typeInfo.objectTypes.concat(typeInfo.importedObjectTypes)
-    );
-    if (objectDefinition) {
-      const type = modifier + node.name.value;
-      argument.object = createObjectDefinition(
-        argument.name,
-        type,
-        state.nonNullType,
-        objectDefinition.properties
-      );
-      argument.object.kind = objectDefinition.kind;
-    } else {
+    if (isScalar(node.name.value)) {
       argument.scalar = createScalarDefinition(
+        argument.name,
+        modifier + node.name.value,
+        state.nonNullType
+      );
+    } else {
+      argument.object = createObjectDefinition(
         argument.name,
         modifier + node.name.value,
         state.nonNullType
@@ -65,25 +53,14 @@ export function extractNamedType(
       state.currentReturn = method.return;
     }
 
-    const objectDefinition = getObjectDefinition(
-      node.name.value,
-      typeInfo.objectTypes.concat(typeInfo.importedObjectTypes)
-    );
-    if (objectDefinition) {
-      const type = modifier + node.name.value;
-      state.currentReturn.object = createObjectDefinition(
-        method.name,
-        type,
-        state.nonNullType,
-        objectDefinition.properties
-      );
-      state.currentReturn.object.kind = objectDefinition.kind;
-      state.currentReturn.required = state.nonNullType
-        ? state.nonNullType
-        : null;
-      state.currentReturn.type = type;
-    } else {
+    if (isScalar(node.name.value)) {
       state.currentReturn.scalar = createScalarDefinition(
+        method.name,
+        modifier + node.name.value,
+        state.nonNullType
+      );
+    } else {
+      state.currentReturn.object = createObjectDefinition(
         method.name,
         modifier + node.name.value,
         state.nonNullType
@@ -138,15 +115,4 @@ export function extractInputValueDefinition(
   const argument = createPropertyDefinition(node.name.value);
   method.arguments.push(argument);
   state.currentArgument = argument;
-}
-
-export function getObjectDefinition(
-  value: string,
-  objects: ObjectDefinition[]
-): ObjectDefinition | void {
-  for (const object of objects) {
-    if (object.name === value) {
-      return object;
-    }
-  }
 }

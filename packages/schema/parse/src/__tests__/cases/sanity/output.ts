@@ -140,19 +140,13 @@ export const output: TypeInfo = {
         {
           ...createMethodDefinition("query", "userObjectMethod"),
           arguments: [
-            createObjectPropertyDefinition("userObject", "?UserObject", false, [
-              createScalarPropertyDefinition("fieldA", "?String", false),
-              createScalarPropertyDefinition("fieldB", "Int", true),
-            ]),
+            createObjectPropertyDefinition("userObject", "?UserObject", false, []),
           ],
           return: createObjectPropertyDefinition(
             "userObjectMethod",
             "UserObject",
             true,
-            [
-              createScalarPropertyDefinition("fieldA", "?String", false),
-              createScalarPropertyDefinition("fieldB", "Int", true),
-            ]
+            []
           ),
         },
         {
@@ -163,16 +157,15 @@ export const output: TypeInfo = {
                 "importedObject",
                 "TestImport_Object",
                 true,
-                [createScalarPropertyDefinition("prop", "String", true)]
+                []
               ),
               object: {
                 ...createObjectDefinition(
                   "importedObject",
                   "TestImport_Object",
                   true,
-                  [createScalarPropertyDefinition("prop", "String", true)]
+                  []
                 ),
-                kind: DefinitionKind.ImportedObject
               }
             }
           ],
@@ -181,16 +174,15 @@ export const output: TypeInfo = {
               "importedObjectMethod",
               "TestImport_Object",
               true,
-              [createScalarPropertyDefinition("prop", "String", true)]
+              []
             ),
             object: {
               ...createObjectDefinition(
                 "importedObjectMethod",
                 "TestImport_Object",
                 true,
-                [createScalarPropertyDefinition("prop", "String", true)]
+                []
               ),
-              kind: DefinitionKind.ImportedObject
             }
           }
         },

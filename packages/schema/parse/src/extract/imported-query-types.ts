@@ -123,7 +123,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    extractNamedType(node, state, typeInfo);
+    extractNamedType(node, state);
   },
   ListType: (_node: ListTypeNode) => {
     extractListType(state);

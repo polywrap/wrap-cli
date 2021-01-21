@@ -1,7 +1,9 @@
 import {
   createArrayDefinition,
+  createObjectDefinition,
   createPropertyDefinition,
   createScalarDefinition,
+  isScalar,
   ObjectDefinition,
   PropertyDefinition,
 } from "../typeInfo";
@@ -49,11 +51,20 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
 
   const modifier = state.nonNullType ? "" : "?";
 
-  property.scalar = createScalarDefinition(
-    property.name,
-    modifier + node.name.value,
-    state.nonNullType
-  );
+  if (isScalar(node.name.value)) {
+    property.scalar = createScalarDefinition(
+      property.name,
+      modifier + node.name.value,
+      state.nonNullType
+    );
+  } else {
+    property.object = createObjectDefinition(
+      property.name,
+      modifier + node.name.value,
+      state.nonNullType
+    );
+  }
+
   state.nonNullType = false;
 }
 
