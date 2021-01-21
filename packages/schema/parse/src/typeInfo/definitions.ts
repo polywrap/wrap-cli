@@ -112,7 +112,10 @@ export function createArrayDefinition(
         ? (item as ScalarDefinition)
         : null,
     kind: DefinitionKind.Array,
-    object: null,
+    object:
+      item && isKind(item, DefinitionKind.Object)
+        ? (item as ObjectDefinition)
+        : null,
     item: item ? item : null,
   };
 }
