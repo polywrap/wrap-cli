@@ -22,7 +22,7 @@ export const toGraphQL: MustacheFunction = () => {
 };
 
 const toGraphQLArray = (name: string, nullable: boolean): string => {
-  const result = name.match(/(\[)([?[\]A-Za-z1-9]+)(\])/);
+  const result = name.match(/(\[)([?[\]A-Za-z1-9_]+)(\])/);
 
   if (!result || result.length !== 4) {
     throw Error(`Invalid Array: ${name}`);

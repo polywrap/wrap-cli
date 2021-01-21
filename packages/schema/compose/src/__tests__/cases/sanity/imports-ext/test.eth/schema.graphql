@@ -72,4 +72,45 @@ type CustomType {
   uOptArrayOptArray: [[UInt64]]!
   uArrayOptArrayArray: [[[UInt64!]!]]!
   crazyArray: [[[[UInt64!]]!]]
+  nestedLocalObject: LocalNestedObjectType!
+  duplicatedNestedLocalObject: LocalNestedObjectType
+  localObjectArray: [LocalArrayObjectType]!
+  nestedImportedObject: Imported_ImportedNestedObjectType!
+  importedObjectArray: [Imported_ImportedArrayObjectType]!
+}
+
+type LocalNestedObjectType {
+  nestedObject: LocalNestedNestedObjectType!
+}
+
+type LocalNestedNestedObjectType {
+  prop: String!
+}
+
+type LocalArrayObjectType {
+  prop: String!
+}
+
+type Imported_ImportedNestedObjectType @imported(
+  namespace: "Imported",
+  uri: "imported.eth",
+  type: "ImportedNestedObjectType"
+) {
+  nestedObject: Imported_ImportedNestedNestedObjectType!
+}
+
+type Imported_ImportedNestedNestedObjectType @imported(
+  namespace: "Imported",
+  uri: "imported.eth",
+  type: "ImportedNestedNestedObjectType"
+) {
+  prop: String!
+}
+
+type Imported_ImportedArrayObjectType @imported(
+  namespace: "Imported",
+  uri: "imported.eth",
+  type: "ImportedArrayObjectType"
+) {
+  prop: String!
 }

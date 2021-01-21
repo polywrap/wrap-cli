@@ -15,6 +15,9 @@ import {
   parseSchema,
   extendType,
   addFirstLast,
+  ObjectDefinition,
+  ArrayDefinition,
+  AnyDefinition,
 } from "@web3api/schema-parse";
 import Mustache from "mustache";
 
@@ -141,6 +144,13 @@ async function resolveExternalImports(
           );
         }
 
+        resolveImportedObjectProperties(
+          type,
+          typeInfo,
+          extTypeInfo,
+          uri,
+          namespace
+        );
         typeInfo.importedObjectTypes.push({
           ...type,
           uri,
@@ -148,6 +158,110 @@ async function resolveExternalImports(
         });
       }
     }
+  }
+}
+
+function resolveImportedObjectProperties(
+  object: ObjectDefinition,
+  typeInfo: TypeInfo,
+  extTypeInfo: TypeInfo,
+  uri: string,
+  namespace: string
+): void {
+  for (const property of object.properties) {
+    let object: ObjectDefinition | undefined;
+    if (property.object) {
+      object = property.object;
+    } else if (property.array) {
+      const baseType = getArrayBaseType(property.array);
+      if (baseType.object) {
+        object = baseType.object;
+      }
+    }
+
+    if (object) {
+      const parsedType = parseType(property.type as string);
+
+      if (!isAlreadyResolved(parsedType[0], typeInfo)) {
+        const importedObjectDefinition = getImportedObjectDefinition(
+          parsedType[0],
+          extTypeInfo
+        );
+        typeInfo.importedObjectTypes.push({
+          ...importedObjectDefinition,
+          uri,
+          namespace,
+        });
+
+        resolveImportedObjectProperties(
+          importedObjectDefinition,
+          typeInfo,
+          extTypeInfo,
+          uri,
+          namespace
+        );
+      }
+
+      updatePropertyTypeNamespace(property, parsedType[0], namespace);
+    }
+  }
+}
+
+function isAlreadyResolved(type: string, typeInfo: TypeInfo): boolean {
+  for (const importedObject of typeInfo.importedObjectTypes) {
+    if (importedObject.name === type) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function getImportedObjectDefinition(
+  type: string,
+  extTypeInfo: TypeInfo
+): ObjectDefinition {
+  for (const objectType of extTypeInfo.objectTypes) {
+    if (objectType.name === type) {
+      return objectType;
+    }
+  }
+
+  for (const objectType of extTypeInfo.importedObjectTypes) {
+    if (objectType.name === type) {
+      return objectType;
+    }
+  }
+
+  throw new Error(`Type ${type} is not defined`);
+}
+
+function updatePropertyTypeNamespace(
+  property: AnyDefinition,
+  type: string,
+  namespace: string
+): void {
+  property.type = (property.type as string).replace(
+    /[A-Za-z1-9_]+/,
+    namespace + "_" + type
+  );
+}
+
+function parseType(type: string): RegExpMatchArray {
+  const typeMatch = type.match(/([A-Za-z1-9_]+)/);
+
+  if (!typeMatch) {
+    throw new Error("No object type found");
+  }
+
+  return typeMatch;
+}
+
+function getArrayBaseType(array: ArrayDefinition): ArrayDefinition {
+  if (array.array) {
+    return getArrayBaseType(array.array);
+  } else {
+    return array;
   }
 }
 
