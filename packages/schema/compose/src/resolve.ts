@@ -18,6 +18,8 @@ import {
   ObjectDefinition,
   ArrayDefinition,
   AnyDefinition,
+  QueryDefinition,
+  PropertyDefinition,
 } from "@web3api/schema-parse";
 import Mustache from "mustache";
 
@@ -126,6 +128,13 @@ async function resolveExternalImports(
           );
         }
 
+        resolveExternalQueryObjects(
+          type,
+          typeInfo,
+          extTypeInfo,
+          uri,
+          namespace
+        );
         typeInfo.importedQueryTypes.push({
           ...type,
           uri,
@@ -144,7 +153,7 @@ async function resolveExternalImports(
           );
         }
 
-        resolveImportedObjectProperties(
+        resolveExternalObjectObjects(
           type,
           typeInfo,
           extTypeInfo,
@@ -161,7 +170,37 @@ async function resolveExternalImports(
   }
 }
 
-function resolveImportedObjectProperties(
+function resolveExternalQueryObjects(
+  query: QueryDefinition,
+  typeInfo: TypeInfo,
+  extTypeInfo: TypeInfo,
+  uri: string,
+  namespace: string
+): void {
+  for (const method of query.methods) {
+    for (const argument of method.arguments) {
+      resolveImportedObjectProperties(
+        argument,
+        typeInfo,
+        extTypeInfo,
+        uri,
+        namespace
+      );
+    }
+
+    if (method.return) {
+      resolveImportedObjectProperties(
+        method.return,
+        typeInfo,
+        extTypeInfo,
+        uri,
+        namespace
+      );
+    }
+  }
+}
+
+function resolveExternalObjectObjects(
   object: ObjectDefinition,
   typeInfo: TypeInfo,
   extTypeInfo: TypeInfo,
@@ -169,42 +208,77 @@ function resolveImportedObjectProperties(
   namespace: string
 ): void {
   for (const property of object.properties) {
-    let object: ObjectDefinition | undefined;
-    if (property.object) {
-      object = property.object;
-    } else if (property.array) {
-      const baseType = getArrayBaseType(property.array);
-      if (baseType.object) {
-        object = baseType.object;
-      }
-    }
+    resolveImportedObjectProperties(
+      property,
+      typeInfo,
+      extTypeInfo,
+      uri,
+      namespace
+    );
+  }
+}
 
-    if (object) {
-      const parsedType = parseType(property.type as string);
+function resolveImportedObjectProperties(
+  property: PropertyDefinition,
+  typeInfo: TypeInfo,
+  extTypeInfo: TypeInfo,
+  uri: string,
+  namespace: string
+): void {
+  const object = getPropertyObject(property);
 
-      if (!isAlreadyResolved(parsedType[0], typeInfo)) {
-        const importedObjectDefinition = getImportedObjectDefinition(
-          parsedType[0],
-          extTypeInfo
-        );
-        typeInfo.importedObjectTypes.push({
-          ...importedObjectDefinition,
-          uri,
-          namespace,
-        });
+  if (!object) {
+    return;
+  }
 
-        resolveImportedObjectProperties(
-          importedObjectDefinition,
-          typeInfo,
-          extTypeInfo,
-          uri,
-          namespace
-        );
-      }
+  const type = parseType(property.type as string)[0];
+  if (isAlreadyResolved(type, typeInfo)) {
+    return;
+  }
 
-      updatePropertyTypeNamespace(property, parsedType[0], namespace);
+  const importedObjectDefinition = getImportedObjectDefinition(
+    type,
+    extTypeInfo
+  );
+  typeInfo.importedObjectTypes.push({
+    ...importedObjectDefinition,
+    uri,
+    namespace,
+  });
+
+  resolveExternalObjectObjects(
+    importedObjectDefinition,
+    typeInfo,
+    extTypeInfo,
+    uri,
+    namespace
+  );
+
+  updatePropertyTypeNamespace(property, type, namespace);
+}
+
+function getPropertyObject(property: AnyDefinition): ObjectDefinition | void {
+  let object: ObjectDefinition | undefined;
+  if (property.object) {
+    object = property.object;
+  } else if (property.array) {
+    const baseType = getArrayBaseType(property.array);
+    if (baseType.object) {
+      object = baseType.object;
     }
   }
+
+  return object;
+}
+
+function parseType(type: string): RegExpMatchArray {
+  const typeMatch = type.match(/([A-Za-z1-9_]+)/);
+
+  if (!typeMatch) {
+    throw new Error("No object type found");
+  }
+
+  return typeMatch;
 }
 
 function isAlreadyResolved(type: string, typeInfo: TypeInfo): boolean {
@@ -245,16 +319,6 @@ function updatePropertyTypeNamespace(
     /[A-Za-z1-9_]+/,
     namespace + "_" + type
   );
-}
-
-function parseType(type: string): RegExpMatchArray {
-  const typeMatch = type.match(/([A-Za-z1-9_]+)/);
-
-  if (!typeMatch) {
-    throw new Error("No object type found");
-  }
-
-  return typeMatch;
 }
 
 function getArrayBaseType(array: ArrayDefinition): ArrayDefinition {

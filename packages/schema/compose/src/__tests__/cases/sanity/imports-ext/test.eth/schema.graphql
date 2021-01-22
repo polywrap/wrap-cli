@@ -48,6 +48,16 @@ type Mutation {
   method2(
     arg: [String!]!
   ): [Int64!]!
+
+  localObjects(
+    nestedLocalObject: LocalMethodArgNestedObjectType
+    localObjectArray: [LocalMethodArrayObjectType!]
+  ): LocalMethodReturnNestedObjectType
+
+  importedObjects(
+    nestedLocalObject: Imported_ImportedMethodArgNestedObjectType
+    localObjectArray: [Imported_ImportedMethodArrayObjectType!]
+  ): Imported_ImportedMethodReturnNestedObjectType
 }
 
 type CustomType {
@@ -91,6 +101,26 @@ type LocalArrayObjectType {
   prop: String!
 }
 
+type LocalMethodArgNestedObjectType {
+  nestedObject: LocalMethodArgNestedNestedObjectType!
+}
+
+type LocalMethodArgNestedNestedObjectType {
+  prop: String!
+}
+
+type LocalMethodReturnNestedObjectType {
+  nestedObject: LocalMethodReturnNestedNestedObjectType!
+}
+
+type LocalMethodReturnNestedNestedObjectType {
+  prop: String!
+}
+
+type LocalMethodArrayObjectType {
+  prop: String!
+}
+
 type Imported_ImportedNestedObjectType @imported(
   namespace: "Imported",
   uri: "imported.eth",
@@ -111,6 +141,46 @@ type Imported_ImportedArrayObjectType @imported(
   namespace: "Imported",
   uri: "imported.eth",
   type: "ImportedArrayObjectType"
+) {
+  prop: String!
+}
+
+type Imported_ImportedMethodArgNestedObjectType @imported(
+  namespace: "Imported",
+  uri: "imported.eth",
+  type: "ImportedMethodArgNestedObjectType"
+) {
+  nestedObject: Imported_ImportedNestedNestedObjectType!
+}
+
+type Imported_ImportedMethodArgNestedNestedObjectType @imported(
+  namespace: "Imported",
+  uri: "imported.eth",
+  type: "ImportedMethodArgNestedNestedObjectType"
+) {
+  prop: String!
+}
+
+type Imported_ImportedMethodArrayObjectType @imported(
+  namespace: "Imported",
+  uri: "imported.eth",
+  type: "ImportedMethodReturnArrayObjectType"
+) {
+  prop: String!
+}
+
+type Imported_ImportedMethodReturnNestedObjectType @imported(
+  namespace: "Imported",
+  uri: "imported.eth",
+  type: "ImportedMethodReturnNestedObjectType"
+) {
+  nestedObject: Imported_ImportedNestedNestedObjectType!
+}
+
+type Imported_ImportedMethodReturnNestedNestedObjectType @imported(
+  namespace: "Imported",
+  uri: "imported.eth",
+  type: "ImportedMethodReturnNestedNestedObjectType"
 ) {
   prop: String!
 }
