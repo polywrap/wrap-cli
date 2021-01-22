@@ -10,7 +10,6 @@ import {
   createObjectPropertyDefinition,
   createImportedObjectDefinition,
   createImportedQueryDefinition,
-  DefinitionKind,
 } from "../../../typeInfo";
 
 export const output: TypeInfo = {
@@ -114,6 +113,35 @@ export const output: TypeInfo = {
             )
           )
         ),
+        createArrayPropertyDefinition(
+          "objectArray",
+          "[UserObject]",
+          true,
+          createObjectDefinition("objectArray", "UserObject", true)
+        ),
+        createArrayPropertyDefinition(
+          "objectArrayArray",
+          "[[UserObject]]",
+          true,
+          createArrayDefinition(
+            "objectArrayArray",
+            "[UserObject]",
+            true,
+            createObjectDefinition("objectArrayArray", "UserObject", true)
+          )
+        ),
+        createObjectPropertyDefinition(
+          "nestedObject",
+          "UserObject",
+          true,
+          []
+        ),
+        createObjectPropertyDefinition(
+          "optNestedObject",
+          "?UserObject",
+          false,
+          []
+        )
       ],
     },
     {
@@ -140,59 +168,19 @@ export const output: TypeInfo = {
         {
           ...createMethodDefinition("query", "userObjectMethod"),
           arguments: [
-            createObjectPropertyDefinition("userObject", "?UserObject", false, [
-              createScalarPropertyDefinition("fieldA", "?String", false),
-              createScalarPropertyDefinition("fieldB", "Int", true),
-            ]),
+            createObjectPropertyDefinition("userObject", "?UserObject", false, []),
+            createArrayPropertyDefinition("arrayObject", "[UserObject]", true, createObjectDefinition(
+              "arrayObject",
+              "UserObject",
+              true
+            )),
           ],
           return: createObjectPropertyDefinition(
             "userObjectMethod",
             "UserObject",
             true,
-            [
-              createScalarPropertyDefinition("fieldA", "?String", false),
-              createScalarPropertyDefinition("fieldB", "Int", true),
-            ]
+            []
           ),
-        },
-        {
-          ...createMethodDefinition("query", "importedObjectMethod"),
-          arguments: [
-            {
-              ...createObjectPropertyDefinition(
-                "importedObject",
-                "TestImport_Object",
-                true,
-                [createScalarPropertyDefinition("prop", "String", true)]
-              ),
-              object: {
-                ...createObjectDefinition(
-                  "importedObject",
-                  "TestImport_Object",
-                  true,
-                  [createScalarPropertyDefinition("prop", "String", true)]
-                ),
-                kind: DefinitionKind.ImportedObject
-              }
-            }
-          ],
-          return: {
-            ...createObjectPropertyDefinition(
-              "importedObjectMethod",
-              "TestImport_Object",
-              true,
-              [createScalarPropertyDefinition("prop", "String", true)]
-            ),
-            object: {
-              ...createObjectDefinition(
-                "importedObjectMethod",
-                "TestImport_Object",
-                true,
-                [createScalarPropertyDefinition("prop", "String", true)]
-              ),
-              kind: DefinitionKind.ImportedObject
-            }
-          }
         },
       ],
     },
@@ -257,7 +245,44 @@ export const output: TypeInfo = {
             "Int64",
             true
           ),
-        }
+        },
+        {
+          ...createMethodDefinition("query", "importedObjectMethod"),
+          arguments: [
+            {
+              ...createObjectPropertyDefinition(
+                "importedObject",
+                "TestImport_Object",
+                true,
+                []
+              ),
+              object: {
+                ...createObjectDefinition(
+                  "importedObject",
+                  "TestImport_Object",
+                  true,
+                  []
+                ),
+              }
+            }
+          ],
+          return: {
+            ...createObjectPropertyDefinition(
+              "importedObjectMethod",
+              "TestImport_Object",
+              true,
+              []
+            ),
+            object: {
+              ...createObjectDefinition(
+                "importedObjectMethod",
+                "TestImport_Object",
+                true,
+                []
+              ),
+            }
+          }
+        },
       ],
     },
     {

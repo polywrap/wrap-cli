@@ -112,7 +112,10 @@ export function createArrayDefinition(
         ? (item as ScalarDefinition)
         : null,
     kind: DefinitionKind.Array,
-    object: null,
+    object:
+      item && isKind(item, DefinitionKind.Object)
+        ? (item as ObjectDefinition)
+        : null,
     item: item ? item : null,
   };
 }
@@ -137,19 +140,17 @@ export function createPropertyDefinition(
   };
 }
 
-export function createObjectPropertyDefinition(
+export function createArrayPropertyDefinition(
   name: string,
   type: string,
   required: boolean,
-  properties: PropertyDefinition[]
+  item: GenericDefinition
 ): PropertyDefinition {
   return createPropertyDefinition(
     name,
     type,
     required,
-    undefined,
-    undefined,
-    createObjectDefinition(name, type, required, properties)
+    createArrayDefinition(name, type, required, item)
   );
 }
 
@@ -167,18 +168,19 @@ export function createScalarPropertyDefinition(
   );
 }
 
-export function createArrayPropertyDefinition(
+export function createObjectPropertyDefinition(
   name: string,
   type: string,
   required: boolean,
-  item: GenericDefinition
+  properties: PropertyDefinition[]
 ): PropertyDefinition {
   return createPropertyDefinition(
     name,
     type,
     required,
-    createArrayDefinition(name, type, required, item),
-    undefined
+    undefined,
+    undefined,
+    createObjectDefinition(name, type, required, properties)
   );
 }
 

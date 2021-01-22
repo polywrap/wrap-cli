@@ -1,12 +1,14 @@
 import {
-  PropertyDefinition,
   TypeInfo,
   ImportedObjectDefinition,
   createImportedObjectDefinition,
-  createPropertyDefinition,
-  createScalarDefinition,
-  createArrayDefinition,
 } from "../typeInfo";
+import {
+  extractFieldDefinition,
+  extractListType,
+  extractNamedType,
+  State,
+} from "./object-types-utils";
 
 import {
   DocumentNode,
@@ -20,13 +22,10 @@ import {
   ValueNode,
 } from "graphql";
 
-interface State {
-  currentImport?: ImportedObjectDefinition;
-  currentProperty?: PropertyDefinition;
-  nonNullType?: boolean;
-}
-
-const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
+const visitorEnter = (
+  importedObjectTypes: ImportedObjectDefinition[],
+  state: State
+) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     if (!node.directives) {
       return;
@@ -94,70 +93,26 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       type
     );
 
-    typeInfo.importedObjectTypes.push(importedType);
-    state.currentImport = importedType;
-  },
-  FieldDefinition: (node: FieldDefinitionNode) => {
-    const importDef = state.currentImport;
-
-    if (!importDef) {
-      return;
-    }
-
-    if (node.arguments && node.arguments.length > 0) {
-      throw Error(
-        `Imported types cannot have methods. See type "${importDef.name}"`
-      );
-    }
-
-    const property = createPropertyDefinition(node.name.value);
-
-    state.currentProperty = property;
-    importDef.properties.push(property);
+    importedObjectTypes.push(importedType);
+    state.currentType = importedType;
   },
   NonNullType: (_node: NonNullTypeNode) => {
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    const property = state.currentProperty;
-
-    if (!property) {
-      return;
-    }
-
-    const modifier = state.nonNullType ? "" : "?";
-
-    property.scalar = createScalarDefinition(
-      property.name,
-      modifier + node.name.value,
-      state.nonNullType
-    );
-    state.nonNullType = false;
+    extractNamedType(node, state);
   },
   ListType: (_node: ListTypeNode) => {
-    const property = state.currentProperty;
-
-    if (!property) {
-      return;
-    }
-
-    if (property.scalar) {
-      return;
-    }
-
-    property.array = createArrayDefinition(
-      property.name,
-      "TBD",
-      state.nonNullType
-    );
-    state.currentProperty = property.array;
-    state.nonNullType = false;
+    extractListType(state);
+  },
+  FieldDefinition: (node: FieldDefinitionNode) => {
+    extractFieldDefinition(node, state);
   },
 });
 
-const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
+const visitorLeave = (state: State) => ({
   ObjectTypeDefinition: (_node: ObjectTypeDefinitionNode) => {
-    state.currentImport = undefined;
+    state.currentType = undefined;
   },
   FieldDefinition: (_node: FieldDefinitionNode) => {
     state.currentProperty = undefined;
@@ -174,7 +129,7 @@ export function extractImportedObjectTypes(
   const state: State = {};
 
   visit(astNode, {
-    enter: visitorEnter(typeInfo, state),
-    leave: visitorLeave(typeInfo, state),
+    enter: visitorEnter(typeInfo.importedObjectTypes, state),
+    leave: visitorLeave(state),
   });
 }
