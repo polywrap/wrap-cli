@@ -10,7 +10,6 @@ import {
   createObjectPropertyDefinition,
   createImportedObjectDefinition,
   createImportedQueryDefinition,
-  DefinitionKind,
 } from "../../../typeInfo";
 
 export const output: TypeInfo = {
