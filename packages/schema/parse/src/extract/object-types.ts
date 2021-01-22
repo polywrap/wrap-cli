@@ -1,4 +1,8 @@
-import { TypeInfo, createObjectDefinition } from "../typeInfo";
+import {
+  TypeInfo,
+  ObjectDefinition,
+  createObjectDefinition
+} from "../typeInfo";
 import {
   extractFieldDefinition,
   extractListType,
@@ -17,7 +21,7 @@ import {
   DirectiveNode,
 } from "graphql";
 
-const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
+const visitorEnter = (objectTypes: ObjectDefinition[], state: State) => ({
   ObjectTypeDefinition: (node: TypeDefinitionNode) => {
     // Skip non-custom types
     if (node.name.value === "Query" || node.name.value === "Mutation") {
@@ -36,7 +40,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     // Create a new TypeDefinition
     const type = createObjectDefinition(node.name.value);
-    typeInfo.objectTypes.push(type);
+    objectTypes.push(type);
     state.currentType = type;
   },
   NonNullType: (_node: NonNullTypeNode) => {
@@ -53,7 +57,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
   },
 });
 
-const visitorLeave = (schemaInfo: TypeInfo, state: State) => ({
+const visitorLeave = (state: State) => ({
   ObjectTypeDefinition: (_node: TypeDefinitionNode) => {
     state.currentType = undefined;
   },
@@ -72,7 +76,7 @@ export function extractObjectTypes(
   const state: State = {};
 
   visit(astNode, {
-    enter: visitorEnter(typeInfo, state),
-    leave: visitorLeave(typeInfo, state),
+    enter: visitorEnter(typeInfo.objectTypes, state),
+    leave: visitorLeave(state),
   });
 }

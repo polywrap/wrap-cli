@@ -1,5 +1,6 @@
 import {
   TypeInfo,
+  QueryDefinition,
   createQueryDefinition,
   createMethodDefinition,
 } from "../typeInfo";
@@ -21,7 +22,7 @@ import {
   visit,
 } from "graphql";
 
-const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
+const visitorEnter = (queryTypes: QueryDefinition[], state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const nodeName = node.name.value;
 
@@ -30,7 +31,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     }
 
     const query = createQueryDefinition(nodeName, nodeName);
-    typeInfo.queryTypes.push(query);
+    queryTypes.push(query);
     state.currentQuery = query;
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
@@ -59,7 +60,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
   },
 });
 
-const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
+const visitorLeave = (state: State) => ({
   ObjectTypeDefinition: (_node: ObjectTypeDefinitionNode) => {
     state.currentQuery = undefined;
   },
@@ -82,7 +83,7 @@ export function extractQueryTypes(
   const state: State = {};
 
   visit(astNode, {
-    enter: visitorEnter(typeInfo, state),
-    leave: visitorLeave(typeInfo, state),
+    enter: visitorEnter(typeInfo.queryTypes, state),
+    leave: visitorLeave(state),
   });
 }

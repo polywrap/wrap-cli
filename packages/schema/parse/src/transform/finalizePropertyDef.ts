@@ -25,8 +25,7 @@ function populatePropertyType(property: PropertyDefinition) {
   } else if (property.object) {
     propertyType = property.object;
   } else {
-    // Error case
-    return;
+    throw Error("Property type is undefined, this should never happen.");
   }
 
   property.type = propertyType.type;
