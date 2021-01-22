@@ -232,27 +232,25 @@ function resolveImportedObjectProperties(
   }
 
   const type = parseType(property.type as string)[0];
-  if (isAlreadyResolved(type, typeInfo)) {
-    return;
+  if (!isAlreadyResolved(type, typeInfo)) {
+    const importedObjectDefinition = getImportedObjectDefinition(
+      type,
+      extTypeInfo
+    );
+    typeInfo.importedObjectTypes.push({
+      ...importedObjectDefinition,
+      uri,
+      namespace,
+    });
+
+    resolveExternalObjectObjects(
+      importedObjectDefinition,
+      typeInfo,
+      extTypeInfo,
+      uri,
+      namespace
+    );
   }
-
-  const importedObjectDefinition = getImportedObjectDefinition(
-    type,
-    extTypeInfo
-  );
-  typeInfo.importedObjectTypes.push({
-    ...importedObjectDefinition,
-    uri,
-    namespace,
-  });
-
-  resolveExternalObjectObjects(
-    importedObjectDefinition,
-    typeInfo,
-    extTypeInfo,
-    uri,
-    namespace
-  );
 
   updatePropertyTypeNamespace(property, type, namespace);
 }
