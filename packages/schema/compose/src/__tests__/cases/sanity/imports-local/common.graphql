@@ -1,3 +1,13 @@
 type CommonType {
   prop: UInt8!
+  nestedObject: NestedType!
+  objectArray: [[ArrayObject]]!
+}
+
+type NestedType {
+  prop: String!
+}
+
+type ArrayObject {
+  prop: String!
 }

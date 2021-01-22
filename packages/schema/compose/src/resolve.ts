@@ -368,12 +368,55 @@ async function resolveLocalImports(
           );
         }
 
+        resolveLocalObjectTypeObjects(type, typeInfo, localTypeInfo);
         typeInfo.objectTypes.push({
           ...type,
         });
       }
     }
   }
+}
+
+function resolveLocalObjectTypeObjects(
+  object: ObjectDefinition,
+  typeInfo: TypeInfo,
+  localTypeInfo: TypeInfo
+): void {
+  for (const property of object.properties) {
+    resolveUserObjectProperties(property, typeInfo, localTypeInfo);
+  }
+}
+
+function resolveUserObjectProperties(
+  property: PropertyDefinition,
+  typeInfo: TypeInfo,
+  localTypeInfo: TypeInfo
+): void {
+  const object = getPropertyObject(property);
+  if (!object) {
+    return;
+  }
+
+  const type = parseType(property.type as string)[0];
+  if (!isAlreadyResolved(type, typeInfo)) {
+    const objectDefinition = getLocalObjectDefinition(type, localTypeInfo);
+    typeInfo.objectTypes.push(objectDefinition);
+
+    resolveLocalObjectTypeObjects(objectDefinition, typeInfo, localTypeInfo);
+  }
+}
+
+function getLocalObjectDefinition(
+  type: string,
+  localTypeInfo: TypeInfo
+): ObjectDefinition {
+  for (const objectType of localTypeInfo.objectTypes) {
+    if (objectType.name === type) {
+      return objectType;
+    }
+  }
+
+  throw new Error(`Type ${type} is not defined`);
 }
 
 export function addHeader(schema: string): string {
