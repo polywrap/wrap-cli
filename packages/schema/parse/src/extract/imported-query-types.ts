@@ -2,7 +2,7 @@ import {
   TypeInfo,
   ImportedQueryDefinition,
   createImportedQueryDefinition,
-  createMethodDefinition
+  createMethodDefinition,
 } from "../typeInfo";
 import {
   extractInputValueDefinition,
@@ -24,7 +24,10 @@ import {
   ValueNode,
 } from "graphql";
 
-const visitorEnter = (importedQueryTypes: ImportedQueryDefinition[], state: State) => ({
+const visitorEnter = (
+  importedQueryTypes: ImportedQueryDefinition[],
+  state: State
+) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     if (!node.directives) {
       return;

@@ -1,7 +1,7 @@
 import {
   TypeInfo,
   ImportedObjectDefinition,
-  createImportedObjectDefinition
+  createImportedObjectDefinition,
 } from "../typeInfo";
 import {
   extractFieldDefinition,
@@ -22,7 +22,10 @@ import {
   ValueNode,
 } from "graphql";
 
-const visitorEnter = (importedObjectTypes: ImportedObjectDefinition[], state: State) => ({
+const visitorEnter = (
+  importedObjectTypes: ImportedObjectDefinition[],
+  state: State
+) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     if (!node.directives) {
       return;

@@ -1,7 +1,7 @@
 import {
   TypeInfo,
   ObjectDefinition,
-  createObjectDefinition
+  createObjectDefinition,
 } from "../typeInfo";
 import {
   extractFieldDefinition,
