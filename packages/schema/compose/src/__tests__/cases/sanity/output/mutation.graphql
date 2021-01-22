@@ -101,6 +101,16 @@ type Namespace_Mutation @imported(
   method2(
     arg: [String!]!
   ): [Int64!]!
+
+  localObjects(
+    nestedLocalObject: Namespace_LocalMethodArgNestedObjectType
+    localObjectArray: [Namespace_LocalMethodArrayObjectType!]
+  ): Namespace_LocalMethodReturnNestedObjectType
+
+  importedObjects(
+    nestedLocalObject: Namespace_Imported_ImportedMethodArgNestedObjectType
+    localObjectArray: [Namespace_Imported_ImportedMethodArrayObjectType!]
+  ): Namespace_Imported_ImportedMethodReturnNestedObjectType
 }
 
 type JustMutation_Mutation @imported(
@@ -116,6 +126,118 @@ type JustMutation_Mutation @imported(
 ### Imported Queries END ###
 
 ### Imported Objects START ###
+
+type Namespace_LocalMethodArgNestedObjectType @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "LocalMethodArgNestedObjectType"
+) {
+  nestedObject: Namespace_LocalMethodArgNestedNestedObjectType!
+}
+
+type Namespace_LocalMethodArgNestedNestedObjectType @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "LocalMethodArgNestedNestedObjectType"
+) {
+  prop: String!
+}
+
+type Namespace_LocalMethodArrayObjectType @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "LocalMethodArrayObjectType"
+) {
+  prop: String!
+}
+
+type Namespace_LocalMethodReturnNestedObjectType @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "LocalMethodReturnNestedObjectType"
+) {
+  nestedObject: Namespace_LocalMethodReturnNestedNestedObjectType!
+}
+
+type Namespace_LocalMethodReturnNestedNestedObjectType @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "LocalMethodReturnNestedNestedObjectType"
+) {
+  prop: String!
+}
+
+type Namespace_Imported_ImportedMethodArgNestedObjectType @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "Imported_ImportedMethodArgNestedObjectType"
+) {
+  nestedObject: Namespace_Imported_ImportedNestedNestedObjectType!
+}
+
+type Namespace_Imported_ImportedNestedNestedObjectType @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "Imported_ImportedNestedNestedObjectType"
+) {
+  prop: String!
+}
+
+type Namespace_Imported_ImportedMethodArrayObjectType @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "Imported_ImportedMethodArrayObjectType"
+) {
+  prop: String!
+}
+
+type Namespace_Imported_ImportedMethodReturnNestedObjectType @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "Imported_ImportedMethodReturnNestedObjectType"
+) {
+  nestedObject: Namespace_Imported_ImportedNestedNestedObjectType!
+}
+
+type Namespace_LocalNestedObjectType @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "LocalNestedObjectType"
+) {
+  nestedObject: Namespace_LocalNestedNestedObjectType!
+}
+
+type Namespace_LocalNestedNestedObjectType @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "LocalNestedNestedObjectType"
+) {
+  prop: String!
+}
+
+type Namespace_LocalArrayObjectType @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "LocalArrayObjectType"
+) {
+  prop: String!
+}
+
+type Namespace_Imported_ImportedNestedObjectType @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "Imported_ImportedNestedObjectType"
+) {
+  nestedObject: Namespace_Imported_ImportedNestedNestedObjectType!
+}
+
+type Namespace_Imported_ImportedArrayObjectType @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "Imported_ImportedArrayObjectType"
+) {
+  prop: String!
+}
 
 type Namespace_CustomType @imported(
   namespace: "Namespace",
@@ -143,6 +265,11 @@ type Namespace_CustomType @imported(
   uOptArrayOptArray: [[UInt64]]!
   uArrayOptArrayArray: [[[UInt64!]!]]!
   crazyArray: [[[[UInt64!]]!]]
+  nestedLocalObject: Namespace_LocalNestedObjectType!
+  duplicatedNestedLocalObject: Namespace_LocalNestedObjectType
+  localObjectArray: [Namespace_LocalArrayObjectType]!
+  nestedImportedObject: Namespace_Imported_ImportedNestedObjectType!
+  importedObjectArray: [Namespace_Imported_ImportedArrayObjectType]!
 }
 
 ### Imported Objects END ###
