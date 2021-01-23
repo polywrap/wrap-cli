@@ -24,7 +24,11 @@ directive @imports(
 type Query @imports(
   types: [
     "Namespace_Query",
-    "Namespace_CustomType"
+    "Namespace_NestedObjectType",
+    "Namespace_Imported_NestedObjectType",
+    "Namespace_CustomType",
+    "Namespace_ObjectType",
+    "Namespace_Imported_ObjectType"
   ]
 ) {
   method1(
@@ -53,6 +57,8 @@ type CustomQueryType {
   uOptArray: [UInt!]
   optStrOptArray: [String]
   crazyArray: [[[[UInt64!]]!]]
+  commonType: CommonType!
+  customType: Namespace_CustomType!
 }
 
 type AnotherQueryType {
@@ -64,6 +70,10 @@ type Mutation @imports(
     "Namespace_Query",
     "Namespace_Mutation",
     "Namespace_CustomType",
+    "Namespace_NestedObjectType",
+    "Namespace_ObjectType",
+    "Namespace_Imported_NestedObjectType",
+    "Namespace_Imported_ObjectType",
     "JustMutation_Mutation"
   ]
 ) {
@@ -93,6 +103,8 @@ type CustomMutationType {
   uOptArray: [UInt!]
   optStrOptArray: [String]
   crazyArray: [[[[UInt64!]]!]]
+  commonType: CommonType!
+  customType: Namespace_CustomType!
 }
 
 type AnotherMutationType {
@@ -151,14 +163,14 @@ type Namespace_Mutation @imported(
   ): [Int64!]!
 
   localObjects(
-    nestedLocalObject: Namespace_LocalMethodArgNestedObjectType
-    localObjectArray: [Namespace_LocalMethodArrayObjectType!]
-  ): Namespace_LocalMethodReturnNestedObjectType
+    nestedLocalObject: Namespace_NestedObjectType
+    localObjectArray: [Namespace_NestedObjectType!]
+  ): Namespace_NestedObjectType
 
   importedObjects(
-    nestedLocalObject: Namespace_Imported_ImportedMethodArgNestedObjectType
-    localObjectArray: [Namespace_Imported_ImportedMethodArrayObjectType!]
-  ): Namespace_Imported_ImportedMethodReturnNestedObjectType
+    nestedLocalObject: Namespace_Imported_NestedObjectType
+    localObjectArray: [Namespace_Imported_NestedObjectType!]
+  ): Namespace_Imported_NestedObjectType
 }
 
 type JustMutation_Mutation @imported(
@@ -175,50 +187,34 @@ type JustMutation_Mutation @imported(
 
 ### Imported Objects START ###
 
-type Namespace_LocalNestedObjectType @imported(
+type Namespace_NestedObjectType @imported(
   namespace: "Namespace",
   uri: "test.eth",
-  type: "LocalNestedObjectType"
+  type: "NestedObjectType"
 ) {
-  nestedObject: Namespace_LocalNestedNestedObjectType!
+  nestedObject: Namespace_ObjectType!
 }
 
-type Namespace_LocalNestedNestedObjectType @imported(
+type Namespace_ObjectType @imported(
   namespace: "Namespace",
   uri: "test.eth",
-  type: "LocalNestedNestedObjectType"
-) {
-  prop: String!
-}
-
-type Namespace_LocalArrayObjectType @imported(
-  namespace: "Namespace",
-  uri: "test.eth",
-  type: "LocalArrayObjectType"
+  type: "ObjectType"
 ) {
   prop: String!
 }
 
-type Namespace_Imported_ImportedNestedObjectType @imported(
+type Namespace_Imported_NestedObjectType @imported(
   namespace: "Namespace",
   uri: "test.eth",
-  type: "Imported_ImportedNestedObjectType"
+  type: "Imported_NestedObjectType"
 ) {
-  nestedObject: Namespace_Imported_ImportedNestedNestedObjectType!
+  nestedObject: Namespace_Imported_ObjectType!
 }
 
-type Namespace_Imported_ImportedNestedNestedObjectType @imported(
+type Namespace_Imported_ObjectType @imported(
   namespace: "Namespace",
   uri: "test.eth",
-  type: "Imported_ImportedNestedNestedObjectType"
-) {
-  prop: String!
-}
-
-type Namespace_Imported_ImportedArrayObjectType @imported(
-  namespace: "Namespace",
-  uri: "test.eth",
-  type: "Imported_ImportedArrayObjectType"
+  type: "Imported_ObjectType"
 ) {
   prop: String!
 }
@@ -249,75 +245,12 @@ type Namespace_CustomType @imported(
   uOptArrayOptArray: [[UInt64]]!
   uArrayOptArrayArray: [[[UInt64!]!]]!
   crazyArray: [[[[UInt64!]]!]]
-  nestedLocalObject: Namespace_LocalNestedObjectType!
-  duplicatedNestedLocalObject: Namespace_LocalNestedObjectType
-  localObjectArray: [Namespace_LocalArrayObjectType]!
-  nestedImportedObject: Namespace_Imported_ImportedNestedObjectType!
-  importedObjectArray: [Namespace_Imported_ImportedArrayObjectType]!
-}
-
-type Namespace_LocalMethodArgNestedObjectType @imported(
-  namespace: "Namespace",
-  uri: "test.eth",
-  type: "LocalMethodArgNestedObjectType"
-) {
-  nestedObject: Namespace_LocalMethodArgNestedNestedObjectType!
-}
-
-type Namespace_LocalMethodArgNestedNestedObjectType @imported(
-  namespace: "Namespace",
-  uri: "test.eth",
-  type: "LocalMethodArgNestedNestedObjectType"
-) {
-  prop: String!
-}
-
-type Namespace_LocalMethodArrayObjectType @imported(
-  namespace: "Namespace",
-  uri: "test.eth",
-  type: "LocalMethodArrayObjectType"
-) {
-  prop: String!
-}
-
-type Namespace_LocalMethodReturnNestedObjectType @imported(
-  namespace: "Namespace",
-  uri: "test.eth",
-  type: "LocalMethodReturnNestedObjectType"
-) {
-  nestedObject: Namespace_LocalMethodReturnNestedNestedObjectType!
-}
-
-type Namespace_LocalMethodReturnNestedNestedObjectType @imported(
-  namespace: "Namespace",
-  uri: "test.eth",
-  type: "LocalMethodReturnNestedNestedObjectType"
-) {
-  prop: String!
-}
-
-type Namespace_Imported_ImportedMethodArgNestedObjectType @imported(
-  namespace: "Namespace",
-  uri: "test.eth",
-  type: "Imported_ImportedMethodArgNestedObjectType"
-) {
-  nestedObject: Namespace_Imported_ImportedNestedNestedObjectType!
-}
-
-type Namespace_Imported_ImportedMethodArrayObjectType @imported(
-  namespace: "Namespace",
-  uri: "test.eth",
-  type: "Imported_ImportedMethodArrayObjectType"
-) {
-  prop: String!
-}
-
-type Namespace_Imported_ImportedMethodReturnNestedObjectType @imported(
-  namespace: "Namespace",
-  uri: "test.eth",
-  type: "Imported_ImportedMethodReturnNestedObjectType"
-) {
-  nestedObject: Namespace_Imported_ImportedNestedNestedObjectType!
+  optObject: Namespace_ObjectType
+  nestedObject: Namespace_NestedObjectType!
+  optNestedObject: Namespace_NestedObjectType
+  optNestedObjectArray: [Namespace_NestedObjectType]!
+  importedNestedObject: Namespace_Imported_NestedObjectType!
+  optImportedNestedObjectArray: [Namespace_Imported_NestedObjectType]!
 }
 
 ### Imported Objects END ###

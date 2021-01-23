@@ -87,7 +87,7 @@ export function performTransforms(
   return result;
 }
 
-function visitObjectDefinition(
+export function visitObjectDefinition(
   def: ObjectDefinition,
   transforms: TypeInfoTransforms
 ): ObjectDefinition {
@@ -104,7 +104,7 @@ function visitObjectDefinition(
   return transformType(result, transforms.leave);
 }
 
-function visitAnyDefinition(
+export function visitAnyDefinition(
   def: AnyDefinition,
   transforms: TypeInfoTransforms
 ): AnyDefinition {
@@ -119,10 +119,14 @@ function visitAnyDefinition(
     result.scalar = visitScalarDefinition(result.scalar, transforms);
   }
 
+  if (result.object) {
+    result.object = visitObjectDefinition(result.object, transforms);
+  }
+
   return result;
 }
 
-function visitScalarDefinition(
+export function visitScalarDefinition(
   def: ScalarDefinition,
   transforms: TypeInfoTransforms
 ): ScalarDefinition {
@@ -131,7 +135,7 @@ function visitScalarDefinition(
   return transformType(result, transforms.leave);
 }
 
-function visitArrayDefinition(
+export function visitArrayDefinition(
   def: ArrayDefinition,
   transforms: TypeInfoTransforms
 ): ArrayDefinition {
@@ -148,7 +152,7 @@ function visitArrayDefinition(
   return transformType(result, transforms.leave);
 }
 
-function visitPropertyDefinition(
+export function visitPropertyDefinition(
   def: PropertyDefinition,
   transforms: TypeInfoTransforms
 ): PropertyDefinition {
@@ -160,7 +164,7 @@ function visitPropertyDefinition(
   return transformType(result, transforms.leave);
 }
 
-function visitMethodDefinition(
+export function visitMethodDefinition(
   def: MethodDefinition,
   transforms: TypeInfoTransforms
 ): MethodDefinition {
@@ -181,7 +185,7 @@ function visitMethodDefinition(
   return transformType(result, transforms.leave);
 }
 
-function visitQueryDefinition(
+export function visitQueryDefinition(
   def: QueryDefinition,
   transforms: TypeInfoTransforms
 ): QueryDefinition {
@@ -195,21 +199,21 @@ function visitQueryDefinition(
   return transformType(result, transforms.leave);
 }
 
-function visitImportedQueryDefinition(
+export function visitImportedQueryDefinition(
   def: ImportedQueryDefinition,
   transforms: TypeInfoTransforms
 ): ImportedQueryDefinition {
   return visitQueryDefinition(def, transforms) as ImportedQueryDefinition;
 }
 
-function visitImportedObjectDefinition(
+export function visitImportedObjectDefinition(
   def: ImportedObjectDefinition,
   transforms: TypeInfoTransforms
 ): ImportedObjectDefinition {
   return visitObjectDefinition(def, transforms) as ImportedObjectDefinition;
 }
 
-function transformType<TDefinition extends GenericDefinition>(
+export function transformType<TDefinition extends GenericDefinition>(
   type: TDefinition,
   transform?: TypeInfoTransformer
 ): TDefinition {

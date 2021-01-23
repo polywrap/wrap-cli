@@ -36,7 +36,12 @@ type Query {
   ): [Int64!]!
 }
 
-type Mutation {
+type Mutation @imports(
+  types: [
+    "Imported_NestedObjectType",
+    "Imported_ObjectType"
+  ]
+) {
   method1(
     str: String!
     optStr: String
@@ -50,14 +55,14 @@ type Mutation {
   ): [Int64!]!
 
   localObjects(
-    nestedLocalObject: LocalMethodArgNestedObjectType
-    localObjectArray: [LocalMethodArrayObjectType!]
-  ): LocalMethodReturnNestedObjectType
+    nestedLocalObject: NestedObjectType
+    localObjectArray: [NestedObjectType!]
+  ): NestedObjectType
 
   importedObjects(
-    nestedLocalObject: Imported_ImportedMethodArgNestedObjectType
-    localObjectArray: [Imported_ImportedMethodArrayObjectType!]
-  ): Imported_ImportedMethodReturnNestedObjectType
+    nestedLocalObject: Imported_NestedObjectType
+    localObjectArray: [Imported_NestedObjectType!]
+  ): Imported_NestedObjectType
 }
 
 type CustomType {
@@ -82,105 +87,35 @@ type CustomType {
   uOptArrayOptArray: [[UInt64]]!
   uArrayOptArrayArray: [[[UInt64!]!]]!
   crazyArray: [[[[UInt64!]]!]]
-  nestedLocalObject: LocalNestedObjectType!
-  duplicatedNestedLocalObject: LocalNestedObjectType
-  localObjectArray: [LocalArrayObjectType]!
-  nestedImportedObject: Imported_ImportedNestedObjectType!
-  importedObjectArray: [Imported_ImportedArrayObjectType]!
+  object: ObjectType!
+  optObject: ObjectType
+  nestedObject: NestedObjectType!
+  optNestedObject: NestedObjectType
+  optNestedObjectArray: [NestedObjectType]!
+  importedNestedObject: Imported_NestedObjectType!
+  optImportedNestedObjectArray: [Imported_NestedObjectType]!
 }
 
-type LocalNestedObjectType {
-  nestedObject: LocalNestedNestedObjectType!
+type NestedObjectType {
+  nestedObject: ObjectType!
 }
 
-type LocalNestedNestedObjectType {
+type ObjectType {
   prop: String!
 }
 
-type LocalArrayObjectType {
-  prop: String!
-}
-
-type LocalMethodArgNestedObjectType {
-  nestedObject: LocalMethodArgNestedNestedObjectType!
-}
-
-type LocalMethodArgNestedNestedObjectType {
-  prop: String!
-}
-
-type LocalMethodReturnNestedObjectType {
-  nestedObject: LocalMethodReturnNestedNestedObjectType!
-}
-
-type LocalMethodReturnNestedNestedObjectType {
-  prop: String!
-}
-
-type LocalMethodArrayObjectType {
-  prop: String!
-}
-
-type Imported_ImportedNestedObjectType @imported(
+type Imported_NestedObjectType @imported(
   namespace: "Imported",
   uri: "imported.eth",
-  type: "ImportedNestedObjectType"
+  type: "NestedObjectType"
 ) {
-  nestedObject: Imported_ImportedNestedNestedObjectType!
+  nestedObject: Imported_ObjectType!
 }
 
-type Imported_ImportedNestedNestedObjectType @imported(
+type Imported_ObjectType @imported(
   namespace: "Imported",
   uri: "imported.eth",
-  type: "ImportedNestedNestedObjectType"
-) {
-  prop: String!
-}
-
-type Imported_ImportedArrayObjectType @imported(
-  namespace: "Imported",
-  uri: "imported.eth",
-  type: "ImportedArrayObjectType"
-) {
-  prop: String!
-}
-
-type Imported_ImportedMethodArgNestedObjectType @imported(
-  namespace: "Imported",
-  uri: "imported.eth",
-  type: "ImportedMethodArgNestedObjectType"
-) {
-  nestedObject: Imported_ImportedNestedNestedObjectType!
-}
-
-type Imported_ImportedMethodArgNestedNestedObjectType @imported(
-  namespace: "Imported",
-  uri: "imported.eth",
-  type: "ImportedMethodArgNestedNestedObjectType"
-) {
-  prop: String!
-}
-
-type Imported_ImportedMethodArrayObjectType @imported(
-  namespace: "Imported",
-  uri: "imported.eth",
-  type: "ImportedMethodReturnArrayObjectType"
-) {
-  prop: String!
-}
-
-type Imported_ImportedMethodReturnNestedObjectType @imported(
-  namespace: "Imported",
-  uri: "imported.eth",
-  type: "ImportedMethodReturnNestedObjectType"
-) {
-  nestedObject: Imported_ImportedNestedNestedObjectType!
-}
-
-type Imported_ImportedMethodReturnNestedNestedObjectType @imported(
-  namespace: "Imported",
-  uri: "imported.eth",
-  type: "ImportedMethodReturnNestedNestedObjectType"
+  type: "ObjectType"
 ) {
   prop: String!
 }
