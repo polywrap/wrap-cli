@@ -39,7 +39,7 @@ const visitorEnter = (objectTypes: ObjectDefinition[], state: State) => ({
     }
 
     // Create a new TypeDefinition
-    const type = createObjectDefinition(node.name.value);
+    const type = createObjectDefinition({ type: node.name.value });
     objectTypes.push(type);
     state.currentType = type;
   },

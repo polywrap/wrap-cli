@@ -127,23 +127,17 @@ async function resolveExternalImports(
       importedObjectTypes: Record<string, ImportedObjectDefinition>
     ): TypeInfoTransforms => ({
       enter: {
+        // TODO: try visiting PropertyDefinition instead
+        // TODO: make sure parsing works with imports of import
+        // TODO: make sure visiting works as expected
         ObjectDefinition: (def: ObjectDefinition) => {
 
-          // Skip objects that we've already processed
-          if ((def as ImportedObjectDefinition).uri) {
-            return def;
-          }
-
-          if (!def.type) {
-            throw Error(
-              `ObjectDefinition type is null, this should never happen.\n${JSON.stringify(def, null, 2)}`
-            );
-          }
+          const namespacedType = appendNamespace(namespace, def.type.replace('?', ''));
 
           const importedObject: ImportedObjectDefinition = {
             ...def,
-            name: appendNamespace(namespace, def.type.replace('?', '')),
-            type: null,
+            type: namespacedType,
+            name: null,
             required: null,
             uri,
             namespace
@@ -157,7 +151,7 @@ async function resolveExternalImports(
             }
           }
 
-          return importedObject;
+          return def;
         }
       }
     });

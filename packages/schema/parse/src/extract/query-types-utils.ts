@@ -7,7 +7,7 @@ import {
   createObjectDefinition,
   createScalarDefinition,
   createArrayDefinition,
-  isScalar,
+  isScalarType,
 } from "../typeInfo";
 
 import { InputValueDefinitionNode, NamedTypeNode } from "graphql";
@@ -24,47 +24,48 @@ export interface State {
 export function extractNamedType(node: NamedTypeNode, state: State): void {
   const argument = state.currentArgument;
   const method = state.currentMethod;
-  const modifier = state.nonNullType ? "" : "?";
 
   if (method && argument) {
     // Argument value
-    if (isScalar(node.name.value)) {
-      argument.scalar = createScalarDefinition(
-        argument.name,
-        modifier + node.name.value,
-        state.nonNullType
-      );
+    if (isScalarType(node.name.value)) {
+      argument.scalar = createScalarDefinition({
+        name: argument.name,
+        type: node.name.value,
+        required: state.nonNullType
+      });
     } else {
-      argument.object = createObjectDefinition(
-        argument.name,
-        modifier + node.name.value,
-        state.nonNullType
-      );
+      argument.object = createObjectDefinition({
+        name: argument.name,
+        type: node.name.value,
+        required: state.nonNullType
+      });
     }
 
     state.nonNullType = false;
   } else if (method) {
     // Return value
     if (!method.return) {
-      method.return = createPropertyDefinition(method.name);
+      method.return = createPropertyDefinition({ type: "N/A" });
 
       state.currentReturn = method.return;
     } else if (!state.currentReturn) {
       state.currentReturn = method.return;
     }
 
-    if (isScalar(node.name.value)) {
-      state.currentReturn.scalar = createScalarDefinition(
-        method.name,
-        modifier + node.name.value,
-        state.nonNullType
-      );
+    if (isScalarType(node.name.value)) {
+      state.currentReturn.scalar = createScalarDefinition({
+        name: method.name,
+        type: node.name.value,
+        required: state.nonNullType
+      });
+      state.currentReturn.type = state.currentReturn.scalar.type;
     } else {
-      state.currentReturn.object = createObjectDefinition(
-        method.name,
-        modifier + node.name.value,
-        state.nonNullType
-      );
+      state.currentReturn.object = createObjectDefinition({
+        name: method.name,
+        type: node.name.value,
+        required: state.nonNullType
+      });
+      state.currentReturn.type = state.currentReturn.object.type;
     }
     state.nonNullType = false;
   }
@@ -76,27 +77,27 @@ export function extractListType(state: State): void {
 
   if (method && argument) {
     // Argument value
-    argument.array = createArrayDefinition(
-      argument.name,
-      "TBD",
-      state.nonNullType
-    );
+    argument.array = createArrayDefinition({
+      name: argument.name,
+      type: "N/A",
+      required: state.nonNullType
+    });
     state.currentArgument = argument.array;
     state.nonNullType = false;
   } else if (method) {
     // Return value
     if (!method.return) {
-      method.return = createPropertyDefinition(method.name);
+      method.return = createPropertyDefinition({ type: "N/A" });
       state.currentReturn = method.return;
     } else if (!state.currentReturn) {
       state.currentReturn = method.return;
     }
 
-    state.currentReturn.array = createArrayDefinition(
-      method.name,
-      "TBD",
-      state.nonNullType
-    );
+    state.currentReturn.array = createArrayDefinition({
+      name: method.name,
+      type: "N/A",
+      required: state.nonNullType
+    });
     state.currentReturn = state.currentReturn.array;
     state.nonNullType = false;
   }
@@ -112,7 +113,10 @@ export function extractInputValueDefinition(
     return;
   }
 
-  const argument = createPropertyDefinition(node.name.value);
+  const argument = createPropertyDefinition({
+    type: "N/A",
+    name: node.name.value
+  });
   method.arguments.push(argument);
   state.currentArgument = argument;
 }

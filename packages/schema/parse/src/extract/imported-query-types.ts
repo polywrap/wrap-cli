@@ -93,12 +93,11 @@ const visitorEnter = (
       );
     }
 
-    const importedType = createImportedQueryDefinition(
+    const importedType = createImportedQueryDefinition({
       uri,
       namespace,
-      typeName,
       type
-    );
+    });
     importedQueryTypes.push(importedType);
     state.currentImport = importedType;
   },
@@ -115,8 +114,7 @@ const visitorEnter = (
       );
     }
 
-    const operation = importDef.type === "Query" ? "query" : "mutation";
-    const method = createMethodDefinition(operation, node.name.value);
+    const method = createMethodDefinition({ type: importDef.type, name: node.name.value });
     importDef.methods.push(method);
     state.currentMethod = method;
   },

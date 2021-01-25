@@ -9,7 +9,7 @@
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color --ext .ts src/",
-    "test": "jest --passWithNoTests --runInBand --verbose",
+    "test": "jest ./src/__tests__/transforms.spec.ts --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },

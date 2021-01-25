@@ -7,7 +7,8 @@ import {
 } from "./definitions";
 
 export * from "./definitions";
-export * from "./scalars";
+export * from "./scalar";
+export * from "./operation";
 
 import deepEqual from "deep-equal";
 

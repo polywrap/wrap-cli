@@ -86,12 +86,11 @@ const visitorEnter = (
       );
     }
 
-    const importedType = createImportedObjectDefinition(
+    const importedType = createImportedObjectDefinition({
       uri,
       namespace,
-      node.name.value,
       type
-    );
+    });
 
     importedObjectTypes.push(importedType);
     state.currentType = importedType;

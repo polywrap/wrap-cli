@@ -1,3 +1,6 @@
+import { ScalarType, isScalarType } from "./scalar";
+import { OperationType, isOperationType } from "./operation";
+
 export enum DefinitionKind {
   Generic = 0,
   Object = 1 << 0,
@@ -16,20 +19,20 @@ export function isKind(type: GenericDefinition, kind: DefinitionKind): boolean {
 }
 
 export interface GenericDefinition {
-  name: string;
-  type: string | null;
+  type: string;
+  name: string | null;
   required: boolean | null;
   kind: DefinitionKind;
 }
-export function createGenericDefinition(
-  name: string,
-  type?: string,
+export function createGenericDefinition(args: {
+  type: string,
+  name?: string | null,
   required?: boolean
-): GenericDefinition {
+}): GenericDefinition {
   return {
-    name,
-    type: type ? type : null,
-    required: required ? required : null,
+    type: args.type,
+    name: args.name ? args.name : null,
+    required: args.required ? args.required : null,
     kind: DefinitionKind.Generic,
   };
 }
@@ -37,17 +40,15 @@ export function createGenericDefinition(
 export interface ObjectDefinition extends GenericDefinition {
   properties: PropertyDefinition[];
 }
-export function createObjectDefinition(
-  name: string,
-  type?: string,
+export function createObjectDefinition(args: {
+  type: string,
+  name?: string | null,
   required?: boolean,
   properties?: PropertyDefinition[]
-): ObjectDefinition {
+}): ObjectDefinition {
   return {
-    name,
-    type: type ? type : null,
-    required: required ? required : null,
-    properties: properties ? properties : [],
+    ...createGenericDefinition(args),
+    properties: args.properties ? args.properties : [],
     kind: DefinitionKind.Object,
   };
 }
@@ -57,35 +58,37 @@ export interface AnyDefinition extends GenericDefinition {
   scalar: ScalarDefinition | null;
   object: ObjectDefinition | null;
 }
-export function createAnyDefinition(
-  name: string,
-  type?: string,
+export function createAnyDefinition(args: {
+  type: string,
+  name?: string | null,
   required?: boolean,
   array?: ArrayDefinition,
   scalar?: ScalarDefinition,
   object?: ObjectDefinition
-): AnyDefinition {
+}): AnyDefinition {
   return {
-    name,
-    type: type ? type : null,
-    required: required ? required : null,
-    array: array ? array : null,
-    scalar: scalar ? scalar : null,
+    ...createGenericDefinition(args),
+    array: args.array ? args.array : null,
+    scalar: args.scalar ? args.scalar : null,
+    object: args.object ? args.object : null,
     kind: DefinitionKind.Any,
-    object: object ? object : null,
   };
 }
 
-export type ScalarDefinition = GenericDefinition;
-export function createScalarDefinition(
-  name: string,
-  type?: string,
+export interface ScalarDefinition extends GenericDefinition {
+  type: ScalarType;
+}
+export function createScalarDefinition(args: {
+  type: string,
+  name?: string | null,
   required?: boolean
-): ScalarDefinition {
+}): ScalarDefinition {
+  if (!isScalarType(args.type)) {
+    throw Error(`createScalarDefinition: Unrecognized scalar type provided "${args.type}"`);
+  }
   return {
-    name,
-    type: type ? type : null,
-    required: required ? required : null,
+    ...createGenericDefinition(args),
+    type: args.type,
     kind: DefinitionKind.Scalar,
   };
 }
@@ -93,136 +96,122 @@ export function createScalarDefinition(
 export interface ArrayDefinition extends AnyDefinition {
   item: GenericDefinition | null;
 }
-export function createArrayDefinition(
-  name: string,
-  type?: string,
+export function createArrayDefinition(args: {
+  type: string,
+  name?: string | null,
   required?: boolean,
   item?: GenericDefinition
-): ArrayDefinition {
+}): ArrayDefinition {
   return {
-    name,
-    type: type ? type : null,
-    required: required ? required : null,
-    array:
-      item && isKind(item, DefinitionKind.Array)
-        ? (item as ArrayDefinition)
-        : null,
-    scalar:
-      item && isKind(item, DefinitionKind.Scalar)
-        ? (item as ScalarDefinition)
-        : null,
+    ...createAnyDefinition({
+      ...args,
+      array:
+        args.item && isKind(args.item, DefinitionKind.Array)
+          ? (args.item as ArrayDefinition)
+          : undefined,
+      scalar:
+        args.item && isKind(args.item, DefinitionKind.Scalar)
+          ? (args.item as ScalarDefinition)
+          : undefined,
+      object:
+        args.item && isKind(args.item, DefinitionKind.Object)
+          ? (args.item as ObjectDefinition)
+          : undefined,
+    }),
+    item: args.item ? args.item : null,
     kind: DefinitionKind.Array,
-    object:
-      item && isKind(item, DefinitionKind.Object)
-        ? (item as ObjectDefinition)
-        : null,
-    item: item ? item : null,
   };
 }
 
 export type PropertyDefinition = AnyDefinition;
-export function createPropertyDefinition(
-  name: string,
-  type?: string,
+export function createPropertyDefinition(args: {
+  type: string,
+  name?: string | null,
   required?: boolean,
   array?: ArrayDefinition,
   scalar?: ScalarDefinition,
   object?: ObjectDefinition
-): PropertyDefinition {
+}): PropertyDefinition {
   return {
-    name,
-    type: type ? type : null,
-    required: required ? required : null,
-    array: array ? array : null,
-    scalar: scalar ? scalar : null,
+    ...createAnyDefinition(args),
     kind: DefinitionKind.Property,
-    object: object ? object : null,
   };
 }
 
-export function createArrayPropertyDefinition(
-  name: string,
+export function createArrayPropertyDefinition(args: {
   type: string,
-  required: boolean,
-  item: GenericDefinition
-): PropertyDefinition {
-  return createPropertyDefinition(
-    name,
-    type,
-    required,
-    createArrayDefinition(name, type, required, item)
-  );
+  name?: string | null,
+  required?: boolean,
+  item?: GenericDefinition
+}): PropertyDefinition {
+  return createPropertyDefinition({
+    ...args,
+    array: createArrayDefinition(args)
+  });
 }
 
-export function createScalarPropertyDefinition(
-  name: string,
+export function createScalarPropertyDefinition(args: {
   type: string,
-  required: boolean
-): PropertyDefinition {
-  return createPropertyDefinition(
-    name,
-    type,
-    required,
-    undefined,
-    createScalarDefinition(name, type, required)
-  );
+  name?: string | null,
+  required?: boolean
+}): PropertyDefinition {
+  return createPropertyDefinition({
+    ...args,
+    scalar: createScalarDefinition(args)
+  });
 }
 
-export function createObjectPropertyDefinition(
-  name: string,
+export function createObjectPropertyDefinition(args: {
   type: string,
-  required: boolean,
-  properties: PropertyDefinition[]
-): PropertyDefinition {
-  return createPropertyDefinition(
-    name,
-    type,
-    required,
-    undefined,
-    undefined,
-    createObjectDefinition(name, type, required, properties)
-  );
+  name?: string | null,
+  required?: boolean,
+  properties?: PropertyDefinition[]
+}): PropertyDefinition {
+  return createPropertyDefinition({
+    ...args,
+    object: createObjectDefinition(args)
+  });
 }
-
-export type Operation = "query" | "mutation";
 
 export interface MethodDefinition extends GenericDefinition {
+  type: OperationType;
   arguments: PropertyDefinition[];
   return: PropertyDefinition | null;
-  operation: Operation;
 }
-
-export function createMethodDefinition(
-  operation: Operation,
-  name: string,
-  type?: string,
-  required?: boolean,
-  args?: PropertyDefinition[],
-  returnDef?: PropertyDefinition
-): MethodDefinition {
+export function createMethodDefinition(args: {
+  type: string,
+  name?: string | null,
+  arguments?: PropertyDefinition[],
+  return?: PropertyDefinition
+}): MethodDefinition {
+  if (!isOperationType(args.type)) {
+    throw Error(`createMethodDefinition: Unrecognized operation type provided "${args.type}"`);
+  }
   return {
-    name,
-    type: type ? type : null,
-    required: required ? required : null,
-    arguments: args ? args : [],
-    return: returnDef ? returnDef : null,
-    operation,
+    ...createGenericDefinition(args),
+    type: args.type,
+    required: true,
+    arguments: args.arguments ? args.arguments : [],
+    return: args.return ? args.return : null,
     kind: DefinitionKind.Method,
   };
 }
 
 export interface QueryDefinition extends GenericDefinition {
+  type: OperationType;
   methods: MethodDefinition[];
 }
-export function createQueryDefinition(
-  name: string,
-  type?: string,
+export function createQueryDefinition(args: {
+  type: string,
   required?: boolean
-): QueryDefinition {
+}): QueryDefinition {
+  const lowercase = args.type.toLowerCase();
+  if (!isOperationType(lowercase)) {
+    throw Error(`createQueryDefinition: Unrecognized operation type provided "${args.type}"`);
+  }
   return {
-    name,
-    type: type ? type : null,
-    required: required ? required : null,
+    ...createGenericDefinition(args),
+    type: lowercase,
     methods: [],
     kind: DefinitionKind.Query,
   };
@@ -232,20 +221,16 @@ export interface ImportedQueryDefinition extends QueryDefinition {
   uri: string;
   namespace: string;
 }
-export function createImportedQueryDefinition(
+export function createImportedQueryDefinition(args: {
   uri: string,
   namespace: string,
-  name: string,
-  type?: string,
+  type: string,
   required?: boolean
-): ImportedQueryDefinition {
+}): ImportedQueryDefinition {
   return {
-    name,
-    type: type ? type : null,
-    required: required ? required : null,
-    uri,
-    namespace,
-    methods: [],
+    ...createQueryDefinition(args),
+    uri: args.uri,
+    namespace: args.namespace,
     kind: DefinitionKind.ImportedQuery,
   };
 }
@@ -254,20 +239,17 @@ export interface ImportedObjectDefinition extends ObjectDefinition {
   uri: string;
   namespace: string;
 }
-export function createImportedObjectDefinition(
+export function createImportedObjectDefinition(args: {
+  type: string,
+  name?: string,
+  required?: boolean,
   uri: string,
   namespace: string,
-  name: string,
-  type?: string,
-  required?: boolean
-): ImportedObjectDefinition {
+}): ImportedObjectDefinition {
   return {
-    name,
-    type: type ? type : null,
-    required: required ? required : null,
-    uri,
-    namespace,
-    properties: [],
+    ...createObjectDefinition(args),
+    uri: args.uri,
+    namespace: args.namespace,
     kind: DefinitionKind.ImportedObject,
   };
 }
