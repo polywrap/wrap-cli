@@ -1,4 +1,8 @@
-import { TypeInfo, createImportedObjectDefinition } from "../typeInfo";
+import {
+  TypeInfo,
+  ImportedObjectDefinition,
+  createImportedObjectDefinition,
+} from "../typeInfo";
 import {
   extractFieldDefinition,
   extractListType,
@@ -18,7 +22,10 @@ import {
   ValueNode,
 } from "graphql";
 
-const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
+const visitorEnter = (
+  importedObjectTypes: ImportedObjectDefinition[],
+  state: State
+) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     if (!node.directives) {
       return;
@@ -86,7 +93,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       type
     );
 
-    typeInfo.importedObjectTypes.push(importedType);
+    importedObjectTypes.push(importedType);
     state.currentType = importedType;
   },
   NonNullType: (_node: NonNullTypeNode) => {
@@ -103,7 +110,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
   },
 });
 
-const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
+const visitorLeave = (state: State) => ({
   ObjectTypeDefinition: (_node: ObjectTypeDefinitionNode) => {
     state.currentType = undefined;
   },
@@ -122,7 +129,7 @@ export function extractImportedObjectTypes(
   const state: State = {};
 
   visit(astNode, {
-    enter: visitorEnter(typeInfo, state),
-    leave: visitorLeave(typeInfo, state),
+    enter: visitorEnter(typeInfo.importedObjectTypes, state),
+    leave: visitorLeave(state),
   });
 }

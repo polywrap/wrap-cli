@@ -10,7 +10,6 @@ import {
   createObjectPropertyDefinition,
   createImportedObjectDefinition,
   createImportedQueryDefinition,
-  DefinitionKind,
 } from "../../../typeInfo";
 
 export const output: TypeInfo = {
@@ -183,43 +182,6 @@ export const output: TypeInfo = {
             []
           ),
         },
-        {
-          ...createMethodDefinition("query", "importedObjectMethod"),
-          arguments: [
-            {
-              ...createObjectPropertyDefinition(
-                "importedObject",
-                "TestImport_Object",
-                true,
-                []
-              ),
-              object: {
-                ...createObjectDefinition(
-                  "importedObject",
-                  "TestImport_Object",
-                  true,
-                  []
-                ),
-              }
-            }
-          ],
-          return: {
-            ...createObjectPropertyDefinition(
-              "importedObjectMethod",
-              "TestImport_Object",
-              true,
-              []
-            ),
-            object: {
-              ...createObjectDefinition(
-                "importedObjectMethod",
-                "TestImport_Object",
-                true,
-                []
-              ),
-            }
-          }
-        },
       ],
     },
   ],
@@ -283,7 +245,44 @@ export const output: TypeInfo = {
             "Int64",
             true
           ),
-        }
+        },
+        {
+          ...createMethodDefinition("query", "importedObjectMethod"),
+          arguments: [
+            {
+              ...createObjectPropertyDefinition(
+                "importedObject",
+                "TestImport_Object",
+                true,
+                []
+              ),
+              object: {
+                ...createObjectDefinition(
+                  "importedObject",
+                  "TestImport_Object",
+                  true,
+                  []
+                ),
+              }
+            }
+          ],
+          return: {
+            ...createObjectPropertyDefinition(
+              "importedObjectMethod",
+              "TestImport_Object",
+              true,
+              []
+            ),
+            object: {
+              ...createObjectDefinition(
+                "importedObjectMethod",
+                "TestImport_Object",
+                true,
+                []
+              ),
+            }
+          }
+        },
       ],
     },
     {

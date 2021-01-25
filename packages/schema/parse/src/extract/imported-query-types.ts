@@ -1,5 +1,6 @@
 import {
   TypeInfo,
+  ImportedQueryDefinition,
   createImportedQueryDefinition,
   createMethodDefinition,
 } from "../typeInfo";
@@ -23,7 +24,10 @@ import {
   ValueNode,
 } from "graphql";
 
-const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
+const visitorEnter = (
+  importedQueryTypes: ImportedQueryDefinition[],
+  state: State
+) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     if (!node.directives) {
       return;
@@ -95,7 +99,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       typeName,
       type
     );
-    typeInfo.importedQueryTypes.push(importedType);
+    importedQueryTypes.push(importedType);
     state.currentImport = importedType;
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
@@ -130,7 +134,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
   },
 });
 
-const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
+const visitorLeave = (state: State) => ({
   ObjectTypeDefinition: (_node: ObjectTypeDefinitionNode) => {
     state.currentImport = undefined;
   },
@@ -153,7 +157,7 @@ export function extractImportedQueryTypes(
   const state: State = {};
 
   visit(astNode, {
-    enter: visitorEnter(typeInfo, state),
-    leave: visitorLeave(typeInfo, state),
+    enter: visitorEnter(typeInfo.importedQueryTypes, state),
+    leave: visitorLeave(state),
   });
 }
