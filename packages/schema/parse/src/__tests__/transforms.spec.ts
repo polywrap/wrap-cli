@@ -11,7 +11,9 @@ import {
   QueryDefinition,
   createMethodDefinition,
   MethodDefinition,
-  createScalarDefinition
+  createScalarDefinition,
+  createImportedQueryDefinition,
+  ImportedQueryDefinition
 } from "../typeInfo";
 
 const schema1 = `
@@ -45,6 +47,20 @@ type Mutation {
     arg1: String!
     arg2: String
     arg3: Boolean
+  ): String!
+}
+
+type TestImport_Query @imported(
+  namespace: "TestImport",
+  uri: "testimport.uri.eth",
+  type: "Query"
+) {
+  importedMethod(
+    str: String!
+  ): String!
+
+  anotherMethod(
+    str: String!
   ): String!
 }
 `;
@@ -245,7 +261,68 @@ describe("Web3API Schema TypeInfo Transformations", () => {
         } as QueryDefinition,
       ],
       importedObjectTypes: [],
-      importedQueryTypes: [],
+      importedQueryTypes: [
+        {
+          ...createImportedQueryDefinition({
+            uri: "testimport.uri.eth",
+            namespace: "TestImport",
+            nativeType: "Query",
+            type: "TestImport_Query"
+          }),
+          methods: [
+            {
+              ...createMethodDefinition({
+                type: "query",
+                name: "importedMethod",
+                arguments: [
+                  {
+                    ...createScalarPropertyDefinition({
+                      type: "String",
+                      name: "str",
+                      required: true,
+                    }),
+                    first: true,
+                    last: true
+                  } as PropertyDefinition
+                ],
+                return: createScalarPropertyDefinition({
+                  type: "String",
+                  name: "importedMethod",
+                  required: true
+                })
+              }),
+              first: true,
+              last: null
+            } as MethodDefinition,
+            {
+              ...createMethodDefinition({
+                type: "query",
+                name: "anotherMethod",
+                arguments: [
+                  {
+                    ...createScalarPropertyDefinition({
+                      type: "String",
+                      name: "str",
+                      required: true,
+                    }),
+                    first: true,
+                    last: true
+                  } as PropertyDefinition
+                ],
+                return: createScalarPropertyDefinition({
+                  type: "String",
+                  name: "anotherMethod",
+                  required: true
+                })
+              }),
+              first: null,
+              last: true
+            } as MethodDefinition,
+          ],
+          first: true,
+          last: true
+        } as ImportedQueryDefinition,
+      ],
     };
 
     expect(typeInfo).toMatchObject(expected);

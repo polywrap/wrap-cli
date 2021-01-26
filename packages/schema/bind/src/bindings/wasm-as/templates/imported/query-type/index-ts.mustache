@@ -12,16 +12,16 @@ import {
 } from "./serialization";
 {{/methods.length}}
 
-export class {{name}} {
+export class {{type}} {
 
   public static uri: string = "{{uri}}";
 
   {{#methods}}
-  public static {{name}}(input: Input_{{name}}): {{#toWasm}}{{return.type}}{{/toWasm}} {
+  public static {{name}}(input: Input_{{name}}): {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
     const args = serialize{{name}}Args(input);
     const result = w3_subinvoke(
       "{{uri}}",
-      "{{operation}}",
+      "{{nativeType}}",
       "{{name}}",
       args
     );

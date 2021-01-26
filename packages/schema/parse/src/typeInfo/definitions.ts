@@ -234,12 +234,16 @@ export function createImportedQueryDefinition(args: {
   namespace: string,
   nativeType: string,
 }): ImportedQueryDefinition {
+  const lowercase = args.nativeType.toLowerCase();
+  if (!isOperationType(lowercase)) {
+    throw Error(`createQueryDefinition: Unrecognized operation type provided "${args.type}"`);
+  }
   return {
     ...createGenericDefinition(args),
     methods: [],
     uri: args.uri,
     namespace: args.namespace,
-    nativeType: args.nativeType,
+    nativeType: lowercase,
     kind: DefinitionKind.ImportedQuery,
   };
 }

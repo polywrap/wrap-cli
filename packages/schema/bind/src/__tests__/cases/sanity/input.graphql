@@ -33,6 +33,8 @@ type CustomType {
   i16: Int16!
   i32: Int32!
   i64: Int64!
+  boolean: Boolean!
+  optBoolean: Boolean
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optUOptArray: [UInt]
@@ -55,14 +57,11 @@ type Query @imports(
   ): Int!
 }
 
-#import { Query } into TestImport from "testimport.uri.eth"
-
 type TestImport_Query @imported(
   namespace: "TestImport",
   uri: "testimport.uri.eth",
   type: "Query"
 ) {
-  """TODO: Support object types as argument & return values"""
   importedMethod(
     str: String!
     optStr: String

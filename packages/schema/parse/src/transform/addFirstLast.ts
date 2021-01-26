@@ -4,6 +4,7 @@ import {
   ObjectDefinition,
   QueryDefinition,
   TypeInfo,
+  ImportedQueryDefinition,
 } from "../typeInfo";
 
 export const addFirstLast: TypeInfoTransforms = {
@@ -27,6 +28,10 @@ export const addFirstLast: TypeInfoTransforms = {
       ...def,
       methods: setFirstLast(def.methods),
     }),
+    ImportedQueryDefinition: (def: ImportedQueryDefinition) => ({
+      ...def,
+      methods: setFirstLast(def.methods)
+    })
   },
 };
 

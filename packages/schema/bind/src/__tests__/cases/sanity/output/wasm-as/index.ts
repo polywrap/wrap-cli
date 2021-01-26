@@ -1,6 +1,6 @@
 import {
   Input_queryMethod
-} from "./Query";
+} from "./query";
 
 export {
   Input_queryMethod

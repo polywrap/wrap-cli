@@ -18,6 +18,7 @@ import {
 
 export * from "./extendType";
 export * from "./addFirstLast";
+export * from "./toGraphQLType";
 
 export interface TypeInfoTransforms {
   enter?: TypeInfoTransformer;
@@ -203,7 +204,14 @@ export function visitImportedQueryDefinition(
   def: ImportedQueryDefinition,
   transforms: TypeInfoTransforms
 ): ImportedQueryDefinition {
-  return visitQueryDefinition(def, transforms) as ImportedQueryDefinition;
+  let result = Object.assign({}, def);
+  result = transformType(result, transforms.enter);
+
+  for (let i = 0; i < result.methods.length; ++i) {
+    result.methods[i] = visitMethodDefinition(result.methods[i], transforms);
+  }
+
+  return transformType(result, transforms.leave);
 }
 
 export function visitImportedObjectDefinition(

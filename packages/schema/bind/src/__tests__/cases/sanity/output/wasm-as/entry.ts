@@ -4,7 +4,7 @@ import {
 } from "@web3api/wasm-as";
 import {
   queryMethodWrapped
-} from "./Query/wrapped";
+} from "./query/wrapped";
 
 export function _w3_init(): void {
   w3_add_invoke("queryMethod", queryMethodWrapped);

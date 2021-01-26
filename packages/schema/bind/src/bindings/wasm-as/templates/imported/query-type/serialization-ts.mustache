@@ -10,7 +10,7 @@ import {
 {{#methods}}
 export class Input_{{name}} {
   {{#arguments}}
-  {{name}}: {{#toWasm}}{{type}}{{/toWasm}};
+  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/arguments}}
 }
 
@@ -31,24 +31,24 @@ function write{{name}}Args(
   {{#arguments}}
   writer.writeString("{{name}}");
   {{#scalar}}
-  writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(input.{{name}});
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{name}});
   {{/scalar}}
   {{#array}}
-  writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(input.{{name}}, (writer: Write, item: {{#toWasm}}{{item.type}}{{/toWasm}}): void => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{name}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
     {{> serialize_array}}
   });
   {{/array}}
   {{/arguments}}
 }
 
-export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#toWasm}}{{return.type}}{{/toWasm}} {
+export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
   const reader = new ReadDecoder(buffer);
   {{#return}}
   {{#scalar}}
-  return reader.read{{#toMsgPack}}{{type}}{{/toMsgPack}}();
+  return reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
   {{/scalar}}
   {{#array}}
-  return reader.read{{#toMsgPack}}{{type}}{{/toMsgPack}}((reader: Read): {{#toWasm}}{{item.type}}{{/toWasm}} => {
+  return reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}} => {
     {{> deserialize_array}}
   });
   {{/array}}
