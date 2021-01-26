@@ -1,5 +1,6 @@
 import { ScalarType, isScalarType } from "./scalar";
 import { OperationType, isOperationType } from "./operation";
+import { QueryType, isQueryType } from "./query";
 
 export enum DefinitionKind {
   Generic = 0,
@@ -199,20 +200,20 @@ export function createMethodDefinition(args: {
 }
 
 export interface QueryDefinition extends GenericDefinition {
-  type: OperationType;
+  type: QueryType;
   methods: MethodDefinition[];
 }
 export function createQueryDefinition(args: {
   type: string,
   required?: boolean
 }): QueryDefinition {
-  const lowercase = args.type.toLowerCase();
-  if (!isOperationType(lowercase)) {
-    throw Error(`createQueryDefinition: Unrecognized operation type provided "${args.type}"`);
+  if (!isQueryType(args.type)) {
+    throw Error(`createQueryDefinition: Unrecognized query type provided "${args.type}"`);
   }
+
   return {
     ...createGenericDefinition(args),
-    type: lowercase,
+    type: args.type,
     methods: [],
     kind: DefinitionKind.Query,
   };
@@ -234,16 +235,16 @@ export function createImportedQueryDefinition(args: {
   namespace: string,
   nativeType: string,
 }): ImportedQueryDefinition {
-  const lowercase = args.nativeType.toLowerCase();
-  if (!isOperationType(lowercase)) {
-    throw Error(`createQueryDefinition: Unrecognized operation type provided "${args.type}"`);
+  if (!isQueryType(args.nativeType)) {
+    throw Error(`createImportedQueryDefinition: Unrecognized query type provided "${args.nativeType}"`);
   }
+
   return {
     ...createGenericDefinition(args),
     methods: [],
     uri: args.uri,
     namespace: args.namespace,
-    nativeType: lowercase,
+    nativeType: args.nativeType,
     kind: DefinitionKind.ImportedQuery,
   };
 }

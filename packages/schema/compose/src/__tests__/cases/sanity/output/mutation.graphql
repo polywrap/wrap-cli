@@ -25,11 +25,11 @@ type Mutation @imports(
   types: [
     "Namespace_Query",
     "Namespace_Mutation",
-    "Namespace_CustomType",
     "Namespace_NestedObjectType",
     "Namespace_ObjectType",
     "Namespace_Imported_NestedObjectType",
     "Namespace_Imported_ObjectType",
+    "Namespace_CustomType",
     "JustMutation_Mutation"
   ]
 ) {
@@ -67,18 +67,18 @@ type AnotherMutationType {
   prop: String
 }
 
+type CommonType {
+  prop: UInt8!
+  nestedObject: NestedType!
+  objectArray: [[ArrayObject]]!
+}
+
 type NestedType {
   prop: String!
 }
 
 type ArrayObject {
   prop: String!
-}
-
-type CommonType {
-  prop: UInt8!
-  nestedObject: NestedType!
-  objectArray: [[ArrayObject]]!
 }
 
 ### Imported Queries START ###
@@ -201,6 +201,7 @@ type Namespace_CustomType @imported(
   uOptArrayOptArray: [[UInt64]]!
   uArrayOptArrayArray: [[[UInt64!]!]]!
   crazyArray: [[[[UInt64!]]!]]
+  object: Namespace_ObjectType!
   optObject: Namespace_ObjectType
   nestedObject: Namespace_NestedObjectType!
   optNestedObject: Namespace_NestedObjectType

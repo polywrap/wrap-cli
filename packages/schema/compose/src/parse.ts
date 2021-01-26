@@ -65,6 +65,18 @@ export function parseExternalImports(
     throw Error(`Duplicate namespaces found: ${duplicateNamespaces}`);
   }
 
+  // Make sure all uris have the same namespace
+  const uriToNamespace: Record<string, string> = { };
+  for (const ext of externalImports) {
+    if (uriToNamespace[ext.uri]) {
+      if (uriToNamespace[ext.uri] !== ext.namespace) {
+        throw Error(`Imports from a single URI must be imported into the same namespace.\nURI: ${ext.uri}\nNamespace 1: ${ext.namespace}\nNamespace 2: ${uriToNamespace[ext.uri]}`);
+      }
+    } else {
+      uriToNamespace[ext.uri] = ext.namespace;
+    }
+  }
+
   return externalImports;
 }
 

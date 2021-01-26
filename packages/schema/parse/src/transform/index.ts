@@ -16,6 +16,7 @@ import {
   isKind,
 } from "../typeInfo";
 
+export * from "./finalizePropertyDef";
 export * from "./extendType";
 export * from "./addFirstLast";
 export * from "./toGraphQLType";

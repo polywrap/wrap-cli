@@ -25,13 +25,13 @@ function anyToGraphQL(any: AnyDefinition): string {
 
 function toGraphQL(def: GenericDefinition): string {
   switch (def.kind) {
-    case DefinitionKind.Any:
-    case DefinitionKind.Property:
-      return anyToGraphQL(def as AnyDefinition)
     case DefinitionKind.Object:
     case DefinitionKind.Scalar:
     case DefinitionKind.ImportedObject:
       return applyRequired(def.type, def.required)
+    case DefinitionKind.Any:
+    case DefinitionKind.Property:
+      return anyToGraphQL(def as AnyDefinition);
     case DefinitionKind.Array:
       const array = def as ArrayDefinition;
 
@@ -49,13 +49,15 @@ function toGraphQL(def: GenericDefinition): string {
         throw Error(`toGraphQL: MethodDefinition's return type is undefined.\n${JSON.stringify(method, null, 2)}`);
       }
 
-      return `${method.name}(
-        ${method.arguments.forEach(
-          arg => `${arg.name}: ${toGraphQL(arg)}`
-        )}
-      ): ${toGraphQL(method.return)}`;
+      const result =
+`${method.name}(
+  ${method.arguments.map(
+    arg => `${arg.name}: ${toGraphQL(arg)}`
+  ).join('\n    ')}
+): ${toGraphQL(method.return)}`;
+      return result;
     case DefinitionKind.Query:
-      return def.type === "query" ? "Query" : "Mutation";
+      return def.type;
     case DefinitionKind.ImportedQuery:
       return def.type;
     default:
