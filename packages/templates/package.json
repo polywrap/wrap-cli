@@ -1,7 +1,7 @@
 {
   "name": "@web3api/templates",
   "private": false,
-  "version": "pre-alpha",
+  "version": "0.0.1-alpha.1",
   "description": "Web3API Templates",
   "license": "MIT",
   "publishConfig": {

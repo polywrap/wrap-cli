@@ -95,10 +95,6 @@ export default {
     if (!filesystem.exists(projectName)) {
       print.newline();
       print.info(`Setting up everything...`);
-
-      generateProject(type, lang, projectName, filesystem);
-
-      print.newline();
     } else {
       print.info(`Directory with name ${projectName} already exists`);
       const overwrite = await prompt.confirm(
@@ -107,11 +103,19 @@ export default {
       if (overwrite) {
         print.info(`Overwriting ${projectName}...`);
         filesystem.remove(projectName);
-        generateProject(type, lang, projectName, filesystem);
       } else {
         process.exit(8);
       }
     }
-    print.info(`🔥 You are ready to turn your Protocol into a Web3API 🔥`);
+
+    generateProject(type, lang, projectName, filesystem)
+      .then(() => {
+        print.newline();
+
+        print.info(`🔥 You are ready to turn your Protocol into a Web3API 🔥`);
+      })
+      .catch((err) => {
+        print.error(`Command failed: ${err.command}`);
+      });
   },
 };
