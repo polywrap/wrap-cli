@@ -2,7 +2,7 @@ import { execSync } from "child_process";
 import { GluegunFilesystem } from "gluegun";
 
 export const generateProject = (type: string, lang: string, projectName: string, fs: GluegunFilesystem): void => {
-  const { dir, remove, move } = fs;
+  const { dir } = fs;
   dir(projectName);
   execSync(`
     cd ${projectName}
