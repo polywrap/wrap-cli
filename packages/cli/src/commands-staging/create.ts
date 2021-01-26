@@ -37,7 +37,7 @@ export default {
 
     help = help || h;
     type = type || t || "api";
-    lang = lang || l || "assemblyscript";
+    lang = lang || l;
 
     let projectName;
     try {
@@ -81,6 +81,8 @@ export default {
       print.error(`Unrecognized --lang: ${lang}`);
       print.info(HELP);
       return;
+    } else if (!lang) {
+      lang = supportedLangs[type][0];
     }
 
     if (isBlank(projectName)) {
