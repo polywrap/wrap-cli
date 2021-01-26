@@ -56,6 +56,8 @@ export const toWasmInit: MustacheFunction = () => {
         return "0";
       case "String":
         return `""`;
+      case "Boolean":
+        return false;
       default:
         return `new ${name}()`;
     }
@@ -100,6 +102,8 @@ export const toWasm: MustacheFunction = () => {
         return applyNullable("u64", nullable);
       case "String":
         return applyNullable("string", nullable);
+      case "Boolean":
+        return applyNullable("bool", nullable);
       default:
         return applyNullable(name, nullable);
     }

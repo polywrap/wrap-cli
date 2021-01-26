@@ -10,7 +10,8 @@ import {
   createQueryDefinition,
   QueryDefinition,
   createMethodDefinition,
-  MethodDefinition
+  MethodDefinition,
+  createScalarDefinition
 } from "../typeInfo";
 
 const schema1 = `
@@ -32,11 +33,11 @@ type Query {
 
   method2(
     arg1: String!
-  ): String!
+  ): String
 
   method3(
     arg1: String!
-  ): String!
+  ): Boolean
 }
 
 type Mutation {
@@ -140,7 +141,12 @@ describe("Web3API Schema TypeInfo Transformations", () => {
                     first: null,
                     last: true
                   } as PropertyDefinition,
-                ]
+                ],
+                return: createScalarPropertyDefinition({
+                  type: "String",
+                  name: "method1",
+                  required: true
+                })
               }),
               first: true,
               last: null
@@ -161,13 +167,13 @@ describe("Web3API Schema TypeInfo Transformations", () => {
               ],
               return: createScalarPropertyDefinition({
                 type: "String",
-                required: true
+                name: "method2"
               })
             }),
             {
               ...createMethodDefinition({
                 type: "query",
-                name: "method2",
+                name: "method3",
                 arguments: [
                   {
                     ...createScalarPropertyDefinition({
@@ -178,7 +184,12 @@ describe("Web3API Schema TypeInfo Transformations", () => {
                     first: true,
                     last: true
                   } as PropertyDefinition,
-                ]
+                ],
+                return: createScalarPropertyDefinition({
+                  type: "Boolean",
+                  name: "method3",
+                  required: false
+                })
               }),
               first: null,
               last: true
@@ -218,7 +229,12 @@ describe("Web3API Schema TypeInfo Transformations", () => {
                     first: null,
                     last: true
                   } as PropertyDefinition,
-                ]
+                ],
+                return: createScalarPropertyDefinition({
+                  type: "String",
+                  name: "method1",
+                  required: true
+                })
               }),
               first: true,
               last: true

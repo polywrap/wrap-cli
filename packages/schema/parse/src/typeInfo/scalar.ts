@@ -10,6 +10,7 @@ interface SupportedScalars {
   Int32: "Int32",
   Int64: "Int64",
   String: "String",
+  Boolean: "Boolean",
 };
 
 const testInstance: SupportedScalars = {
@@ -24,6 +25,7 @@ const testInstance: SupportedScalars = {
   Int32: "Int32",
   Int64: "Int64",
   String: "String",
+  Boolean: "Boolean",
 }
 
 export type ScalarType = keyof SupportedScalars;

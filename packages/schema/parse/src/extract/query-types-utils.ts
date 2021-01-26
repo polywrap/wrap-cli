@@ -45,7 +45,7 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
   } else if (method) {
     // Return value
     if (!method.return) {
-      method.return = createPropertyDefinition({ type: "N/A" });
+      method.return = createPropertyDefinition({ type: "N/A", name: method.name });
 
       state.currentReturn = method.return;
     } else if (!state.currentReturn) {
@@ -54,15 +54,15 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
 
     if (isScalarType(node.name.value)) {
       state.currentReturn.scalar = createScalarDefinition({
-        name: method.name,
         type: node.name.value,
+        name: method.name,
         required: state.nonNullType
       });
       state.currentReturn.type = state.currentReturn.scalar.type;
     } else {
       state.currentReturn.object = createObjectDefinition({
-        name: method.name,
         type: node.name.value,
+        name: method.name,
         required: state.nonNullType
       });
       state.currentReturn.type = state.currentReturn.object.type;
@@ -87,15 +87,15 @@ export function extractListType(state: State): void {
   } else if (method) {
     // Return value
     if (!method.return) {
-      method.return = createPropertyDefinition({ type: "N/A" });
+      method.return = createPropertyDefinition({ type: "N/A", name: method.name });
       state.currentReturn = method.return;
     } else if (!state.currentReturn) {
       state.currentReturn = method.return;
     }
 
     state.currentReturn.array = createArrayDefinition({
-      name: method.name,
       type: "N/A",
+      name: method.name,
       required: state.nonNullType
     });
     state.currentReturn = state.currentReturn.array;

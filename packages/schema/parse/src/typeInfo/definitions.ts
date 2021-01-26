@@ -10,7 +10,7 @@ export enum DefinitionKind {
   Property = (1 << 4) | DefinitionKind.Any,
   Method = 1 << 5,
   Query = 1 << 6,
-  ImportedQuery = (1 << 7) | DefinitionKind.Query,
+  ImportedQuery = (1 << 7),
   ImportedObject = (1 << 8) | DefinitionKind.Object,
 }
 
@@ -180,16 +180,17 @@ export interface MethodDefinition extends GenericDefinition {
 }
 export function createMethodDefinition(args: {
   type: string,
-  name?: string | null,
+  name: string,
   arguments?: PropertyDefinition[],
   return?: PropertyDefinition
 }): MethodDefinition {
-  if (!isOperationType(args.type)) {
+  const lowercase = args.type.toLowerCase();
+  if (!isOperationType(lowercase)) {
     throw Error(`createMethodDefinition: Unrecognized operation type provided "${args.type}"`);
   }
   return {
     ...createGenericDefinition(args),
-    type: args.type,
+    type: lowercase,
     required: true,
     arguments: args.arguments ? args.arguments : [],
     return: args.return ? args.return : null,
@@ -217,39 +218,46 @@ export function createQueryDefinition(args: {
   };
 }
 
-export interface ImportedQueryDefinition extends QueryDefinition {
+interface ImportedDefinition {
   uri: string;
   namespace: string;
+  nativeType: string;
+}
+
+export interface ImportedQueryDefinition extends GenericDefinition, ImportedDefinition {
+  methods: MethodDefinition[];
 }
 export function createImportedQueryDefinition(args: {
+  type: string,
+  required?: boolean,
   uri: string,
   namespace: string,
-  type: string,
-  required?: boolean
+  nativeType: string,
 }): ImportedQueryDefinition {
   return {
-    ...createQueryDefinition(args),
+    ...createGenericDefinition(args),
+    methods: [],
     uri: args.uri,
     namespace: args.namespace,
+    nativeType: args.nativeType,
     kind: DefinitionKind.ImportedQuery,
   };
 }
 
-export interface ImportedObjectDefinition extends ObjectDefinition {
-  uri: string;
-  namespace: string;
-}
+export interface ImportedObjectDefinition extends ObjectDefinition, ImportedDefinition { }
 export function createImportedObjectDefinition(args: {
   type: string,
   name?: string,
   required?: boolean,
   uri: string,
   namespace: string,
+  nativeType: string,
 }): ImportedObjectDefinition {
   return {
     ...createObjectDefinition(args),
     uri: args.uri,
     namespace: args.namespace,
+    nativeType: args.nativeType,
     kind: DefinitionKind.ImportedObject,
   };
 }
