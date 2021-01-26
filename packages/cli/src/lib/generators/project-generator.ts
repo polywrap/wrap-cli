@@ -146,7 +146,7 @@ export const generateProject = (
                 reject(error);
               });
           })
-          .catch((ex) => {
+          .catch(() => {
             reject({
               command: `copy ${root}/node_modules/@web3api/templates/${type}/${lang} ${root}`,
             });
