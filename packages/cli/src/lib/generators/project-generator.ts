@@ -51,6 +51,23 @@ function checkIfOnline(useYarn: boolean) {
   });
 }
 
+const executeCommand = (command: string, args: string[], root: string): Promise<boolean | { command: string }> => {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, { stdio: "inherit", cwd: root });
+    child.on("close", (code) => {
+      if (code !== 0) {
+        // Return the failed command
+        reject({
+          command: `${command} ${args.join(" ")}`,
+        });
+        return;
+      }
+
+      resolve(true);
+    });
+  });
+};
+
 export const generateProject = (
   type: string,
   lang: string,
@@ -58,7 +75,7 @@ export const generateProject = (
   fs: GluegunFilesystem
 ): Promise<boolean | { command: string }> => {
   return new Promise((resolve, reject) => {
-    const { dir } = fs;
+    const { dir, copyAsync } = fs;
     dir(projectName);
 
     let command = "";
@@ -104,17 +121,39 @@ export const generateProject = (
       ].concat(dependencies);
     }
 
-    const child = spawn(command, args, { stdio: "inherit", cwd: root });
-    child.on("close", (code) => {
-      if (code !== 0) {
-        // Return the failed command
-        reject({
-          command: `${command} ${args.join(" ")}`,
-        });
-        return;
-      }
+    executeCommand(command, args, root)
+      .then(() => {
+        copyAsync(`${root}/node_modules/@web3api/templates/${type}/${lang}`, `${root}`, {
+          overwrite: true,
+        })
+          .then(() => {
+            // Now need to remove `@web3api/templates` from packages
+            if (useYarn) {
+              command = "yarnpkg";
+              args = ["remove"];
 
-      resolve(true);
-    });
+              [].push.apply(args, dependencies);
+            } else {
+              command = "npm";
+              args = ["uninstall", "--loglevel", "error"].concat(dependencies);
+            }
+
+            executeCommand(command, args, root)
+              .then(() => {
+                resolve(true);
+              })
+              .catch((error) => {
+                reject(error);
+              });
+          })
+          .catch((ex) => {
+            reject({
+              command: `copy ${root}/node_modules/@web3api/templates/${type}/${lang} ${root}`,
+            });
+          });
+      })
+      .catch((error) => {
+        reject(error);
+      });
   });
 };
