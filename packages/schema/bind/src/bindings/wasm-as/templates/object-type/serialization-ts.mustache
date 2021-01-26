@@ -7,17 +7,22 @@ import {
   Nullable
 } from "@web3api/wasm-as";
 import { {{type}} } from "./";
+import * as Objects from "../";
 
 export function serialize{{type}}(type: {{type}}): ArrayBuffer {
+  const objects: ArrayBuffer[] = [
+    {{#properties}}{{#object}}type.{{name}}.toBuffer(),{{/object}}{{/properties}}
+  ];
   const sizer = new WriteSizer();
-  write{{type}}(sizer, type);
+  write{{type}}(sizer, type, objects);
   const buffer = new ArrayBuffer(sizer.length);
   const encoder = new WriteEncoder(buffer);
-  write{{type}}(encoder, type);
+  write{{type}}(encoder, type, objects);
   return buffer;
 }
 
-function write{{type}}(writer: Write, type: {{type}}) {
+function write{{type}}(writer: Write, type: {{type}}, objects: ArrayBuffer[]) {
+  let objectsIdx = 0;
   writer.writeMapLength({{properties.length}});
   {{#properties}}
   writer.writeString("{{name}}");
@@ -29,6 +34,9 @@ function write{{type}}(writer: Write, type: {{type}}) {
     {{> serialize_array}}
   });
   {{/array}}
+  {{#object}}
+  writer.writeBytes(objects[objectsIdx++]);
+  {{/object}}
   {{/properties}}
 }
 
@@ -50,6 +58,10 @@ export function deserialize{{type}}(buffer: ArrayBuffer, type: {{type}}) {
         {{> deserialize_array}}
       });
       {{/array}}
+      {{#object}}
+      type.{{name}} = new Objects.{{type}}();
+      type.{{name}}.fromBuffer(reader.readBytes());
+      {{/object}}
     }
     {{/properties}}
   }

@@ -17,3 +17,14 @@ export {
 };
 {{/methods.length}}
 {{/queryTypes}}
+
+{{#objectTypes}}
+export * from "./{{type}}";
+{{/objectTypes}}
+
+{{#importedQueryTypes}}
+export * from "./imported/{{type}}";
+{{/importedQueryTypes}}
+{{#importedObjectTypes}}
+export * from "./imported/{{type}}";
+{{/importedObjectTypes}}

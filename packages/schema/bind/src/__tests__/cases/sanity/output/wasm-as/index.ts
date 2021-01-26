@@ -5,3 +5,9 @@ import {
 export {
   Input_queryMethod
 };
+
+export * from "./CustomType";
+export * from "./AnotherType";
+
+export * from "./imported/TestImport_Query";
+export * from "./imported/TestImport_Object";

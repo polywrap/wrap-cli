@@ -47,6 +47,7 @@ type CustomType {
 
 type AnotherType {
   prop: String
+  circular: CustomType!
 }
 
 type Query @imports(

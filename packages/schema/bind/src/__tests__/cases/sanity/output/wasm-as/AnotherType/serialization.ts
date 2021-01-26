@@ -7,20 +7,27 @@ import {
   Nullable
 } from "@web3api/wasm-as";
 import { AnotherType } from "./";
+import * as Objects from "../";
 
 export function serializeAnotherType(type: AnotherType): ArrayBuffer {
+  const objects: ArrayBuffer[] = [
+    type.circular.toBuffer(),
+  ];
   const sizer = new WriteSizer();
-  writeAnotherType(sizer, type);
+  writeAnotherType(sizer, type, objects);
   const buffer = new ArrayBuffer(sizer.length);
   const encoder = new WriteEncoder(buffer);
-  writeAnotherType(encoder, type);
+  writeAnotherType(encoder, type, objects);
   return buffer;
 }
 
-function writeAnotherType(writer: Write, type: AnotherType) {
-  writer.writeMapLength(1);
+function writeAnotherType(writer: Write, type: AnotherType, objects: ArrayBuffer[]) {
+  let objectsIdx = 0;
+  writer.writeMapLength(2);
   writer.writeString("prop");
   writer.writeNullableString(type.prop);
+  writer.writeString("circular");
+  writer.writeBytes(objects[objectsIdx++]);
 }
 
 export function deserializeAnotherType(buffer: ArrayBuffer, type: AnotherType) {
@@ -33,6 +40,10 @@ export function deserializeAnotherType(buffer: ArrayBuffer, type: AnotherType) {
 
     if (field == "prop") {
       type.prop = reader.readNullableString();
+    }
+    else if (field == "circular") {
+      type.circular = new Objects.CustomType();
+      type.circular.fromBuffer(reader.readBytes());
     }
   }
 }

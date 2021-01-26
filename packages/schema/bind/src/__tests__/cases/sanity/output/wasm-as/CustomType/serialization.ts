@@ -7,17 +7,22 @@ import {
   Nullable
 } from "@web3api/wasm-as";
 import { CustomType } from "./";
+import * as Objects from "../";
 
 export function serializeCustomType(type: CustomType): ArrayBuffer {
+  const objects: ArrayBuffer[] = [
+    
+  ];
   const sizer = new WriteSizer();
-  writeCustomType(sizer, type);
+  writeCustomType(sizer, type, objects);
   const buffer = new ArrayBuffer(sizer.length);
   const encoder = new WriteEncoder(buffer);
-  writeCustomType(encoder, type);
+  writeCustomType(encoder, type, objects);
   return buffer;
 }
 
-function writeCustomType(writer: Write, type: CustomType) {
+function writeCustomType(writer: Write, type: CustomType, objects: ArrayBuffer[]) {
+  let objectsIdx = 0;
   writer.writeMapLength(23);
   writer.writeString("str");
   writer.writeString(type.str);
