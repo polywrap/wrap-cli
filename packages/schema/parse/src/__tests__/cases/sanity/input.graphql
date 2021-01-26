@@ -41,6 +41,10 @@ type CustomType {
   uOptArrayOptArray: [[UInt64]]!
   uArrayOptArrayArray: [[[UInt64!]!]]!
   crazyArray: [[[[UInt64!]]!]]
+  objectArray: [UserObject!]!
+  objectArrayArray: [[UserObject!]!]!
+  nestedObject: UserObject!
+  optNestedObject: UserObject
 }
 
 type AnotherType {
@@ -61,11 +65,8 @@ type Query @imports(
 
   userObjectMethod(
     userObject: UserObject
+    arrayObject: [UserObject!]!
   ): UserObject!
-
-  importedObjectMethod(
-    importedObject: TestImport_Object!
-  ): TestImport_Object!
 }
 
 type TestImport_Query @imported(
@@ -84,6 +85,10 @@ type TestImport_Query @imported(
   anotherMethod(
     arg: [String!]!
   ): Int64!
+
+  importedObjectMethod(
+    importedObject: TestImport_Object!
+  ): TestImport_Object!
 }
 
 type TestImport_Mutation @imported(
@@ -102,4 +107,14 @@ type TestImport_Object @imported(
   type: "Object"
 ) {
   prop: String!
+  nested: TestImport_NestedObject!
+}
+
+type TestImport_NestedObject @imported(
+  namespace: "TestImport",,
+  uri: "testimport.uri.eth",
+  type: "NestedObject"
+) {
+  foo: [String!]!
+  circular: TestImport_Object!
 }

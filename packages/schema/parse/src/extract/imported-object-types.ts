@@ -1,12 +1,14 @@
 import {
-  PropertyDefinition,
   TypeInfo,
   ImportedObjectDefinition,
   createImportedObjectDefinition,
-  createPropertyDefinition,
-  createScalarDefinition,
-  createArrayDefinition,
 } from "../typeInfo";
+import {
+  extractFieldDefinition,
+  extractListType,
+  extractNamedType,
+  State,
+} from "./object-types-utils";
 
 import {
   DocumentNode,
@@ -20,13 +22,10 @@ import {
   ValueNode,
 } from "graphql";
 
-interface State {
-  currentImport?: ImportedObjectDefinition;
-  currentProperty?: PropertyDefinition;
-  nonNullType?: boolean;
-}
-
-const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
+const visitorEnter = (
+  importedObjectTypes: ImportedObjectDefinition[],
+  state: State
+) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     if (!node.directives) {
       return;
@@ -41,13 +40,15 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       return;
     }
 
-    const queryIdentifier = "Query";
-    const mutationIdentifier = "Mutation";
+    const typeName = node.name.value;
 
-    if (
-      node.name.value.substr(-queryIdentifier.length) === queryIdentifier ||
-      node.name.value.substr(-mutationIdentifier.length) === mutationIdentifier
-    ) {
+    const queryIdentifier = "_Query";
+    const queryTest = typeName.substr(-queryIdentifier.length);
+    const mutationIdentifier = "_Mutation";
+    const mutationTest = typeName.substr(-mutationIdentifier.length);
+
+    if (queryTest === queryIdentifier || mutationTest === mutationIdentifier) {
+      // Ignore query & mutation types
       return;
     }
 
@@ -56,12 +57,12 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     if (!importedDir.arguments || importedDir.arguments.length !== 3) {
       // TODO: Implement better error handling
       // https://github.com/Web3-API/prototype/issues/15
-      throw Error("Error: imported_type directive missing arguments");
+      throw Error("Error: imported directive missing arguments");
     }
 
     let namespace: string | undefined;
     let uri: string | undefined;
-    let type: string | undefined;
+    let nativeType: string | undefined;
 
     const extractString = (value: ValueNode, name: string) => {
       if (value.kind === "StringValue") {
@@ -77,87 +78,43 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       } else if (importArg.name.value === "uri") {
         uri = extractString(importArg.value, "uri");
       } else if (importArg.name.value === "type") {
-        type = extractString(importArg.value, "type");
+        nativeType = extractString(importArg.value, "type");
       }
     }
 
-    if (!type || !namespace || !uri) {
+    if (!nativeType || !namespace || !uri) {
       throw Error(
         "Error: import directive missing one of its required arguments (namespace, uri, type)"
       );
     }
 
-    const importedType = createImportedObjectDefinition(
+    const importedType = createImportedObjectDefinition({
+      type: typeName,
       uri,
       namespace,
-      node.name.value,
-      type
-    );
+      nativeType,
+    });
 
-    typeInfo.importedObjectTypes.push(importedType);
-    state.currentImport = importedType;
-  },
-  FieldDefinition: (node: FieldDefinitionNode) => {
-    const importDef = state.currentImport;
-
-    if (!importDef) {
-      return;
-    }
-
-    if (node.arguments && node.arguments.length > 0) {
-      throw Error(
-        `Imported types cannot have methods. See type "${importDef.name}"`
-      );
-    }
-
-    const property = createPropertyDefinition(node.name.value);
-
-    state.currentProperty = property;
-    importDef.properties.push(property);
+    importedObjectTypes.push(importedType);
+    state.currentType = importedType;
   },
   NonNullType: (_node: NonNullTypeNode) => {
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    const property = state.currentProperty;
-
-    if (!property) {
-      return;
-    }
-
-    const modifier = state.nonNullType ? "" : "?";
-
-    property.scalar = createScalarDefinition(
-      property.name,
-      modifier + node.name.value,
-      state.nonNullType
-    );
-    state.nonNullType = false;
+    extractNamedType(node, state);
   },
   ListType: (_node: ListTypeNode) => {
-    const property = state.currentProperty;
-
-    if (!property) {
-      return;
-    }
-
-    if (property.scalar) {
-      return;
-    }
-
-    property.array = createArrayDefinition(
-      property.name,
-      "TBD",
-      state.nonNullType
-    );
-    state.currentProperty = property.array;
-    state.nonNullType = false;
+    extractListType(state);
+  },
+  FieldDefinition: (node: FieldDefinitionNode) => {
+    extractFieldDefinition(node, state);
   },
 });
 
-const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
+const visitorLeave = (state: State) => ({
   ObjectTypeDefinition: (_node: ObjectTypeDefinitionNode) => {
-    state.currentImport = undefined;
+    state.currentType = undefined;
   },
   FieldDefinition: (_node: FieldDefinitionNode) => {
     state.currentProperty = undefined;
@@ -174,7 +131,7 @@ export function extractImportedObjectTypes(
   const state: State = {};
 
   visit(astNode, {
-    enter: visitorEnter(typeInfo, state),
-    leave: visitorLeave(typeInfo, state),
+    enter: visitorEnter(typeInfo.importedObjectTypes, state),
+    leave: visitorLeave(state),
   });
 }

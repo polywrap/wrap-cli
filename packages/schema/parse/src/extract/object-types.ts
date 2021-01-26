@@ -1,12 +1,14 @@
 import {
   TypeInfo,
-  AnyDefinition,
   ObjectDefinition,
   createObjectDefinition,
-  createScalarDefinition,
-  createArrayDefinition,
-  createPropertyDefinition,
 } from "../typeInfo";
+import {
+  extractFieldDefinition,
+  extractListType,
+  extractNamedType,
+  State,
+} from "./object-types-utils";
 
 import {
   DocumentNode,
@@ -19,13 +21,7 @@ import {
   DirectiveNode,
 } from "graphql";
 
-interface State {
-  currentType?: ObjectDefinition;
-  currentUnknown?: AnyDefinition;
-  nonNullType?: boolean;
-}
-
-const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
+const visitorEnter = (objectTypes: ObjectDefinition[], state: State) => ({
   ObjectTypeDefinition: (node: TypeDefinitionNode) => {
     // Skip non-custom types
     if (node.name.value === "Query" || node.name.value === "Mutation") {
@@ -43,80 +39,30 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     }
 
     // Create a new TypeDefinition
-    const type = createObjectDefinition(node.name.value);
-    typeInfo.objectTypes.push(type);
+    const type = createObjectDefinition({ type: node.name.value });
+    objectTypes.push(type);
     state.currentType = type;
   },
   NonNullType: (_node: NonNullTypeNode) => {
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    const property = state.currentUnknown;
-
-    if (!property) {
-      return;
-    }
-
-    if (property.scalar) {
-      return;
-    }
-
-    const modifier = state.nonNullType ? "" : "?";
-
-    property.scalar = createScalarDefinition(
-      property.name,
-      modifier + node.name.value,
-      state.nonNullType
-    );
-    state.nonNullType = false;
+    extractNamedType(node, state);
   },
   ListType: (_node: ListTypeNode) => {
-    const property = state.currentUnknown;
-
-    if (!property) {
-      return;
-    }
-
-    if (property.scalar) {
-      return;
-    }
-
-    property.array = createArrayDefinition(
-      property.name,
-      "TBD",
-      state.nonNullType
-    );
-
-    state.currentUnknown = property.array;
-    state.nonNullType = false;
+    extractListType(state);
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
-    const type = state.currentType;
-
-    if (!type) {
-      return;
-    }
-
-    if (node.arguments && node.arguments.length > 0) {
-      throw Error(
-        `Imported types cannot have methods. See type "${type.name}"`
-      );
-    }
-
-    // Create a new property
-    const property = createPropertyDefinition(node.name.value);
-
-    state.currentUnknown = property;
-    type.properties.push(property);
+    extractFieldDefinition(node, state);
   },
 });
 
-const visitorLeave = (schemaInfo: TypeInfo, state: State) => ({
+const visitorLeave = (state: State) => ({
   ObjectTypeDefinition: (_node: TypeDefinitionNode) => {
     state.currentType = undefined;
   },
   FieldDefinition: (_node: FieldDefinitionNode) => {
-    state.currentUnknown = undefined;
+    state.currentProperty = undefined;
   },
   NonNullType: (_node: NonNullTypeNode) => {
     state.nonNullType = false;
@@ -130,7 +76,7 @@ export function extractObjectTypes(
   const state: State = {};
 
   visit(astNode, {
-    enter: visitorEnter(typeInfo, state),
-    leave: visitorLeave(typeInfo, state),
+    enter: visitorEnter(typeInfo.objectTypes, state),
+    leave: visitorLeave(state),
   });
 }

@@ -2,21 +2,26 @@ import { OutputDirectory, OutputEntry } from "../../";
 import { readDirectory } from "../../utils/fs";
 import * as Functions from "./functions";
 
-import { parseSchema, extendType, addFirstLast } from "@web3api/schema-parse";
+import {
+  parseSchema,
+  extendType,
+  addFirstLast,
+  toGraphQLType,
+} from "@web3api/schema-parse";
 import path from "path";
 import Mustache from "mustache";
 
 export function generateBinding(schema: string): OutputDirectory {
   const entries: OutputEntry[] = [];
   const typeInfo = parseSchema(schema, {
-    transforms: [extendType(Functions), addFirstLast],
+    transforms: [extendType(Functions), addFirstLast, toGraphQLType],
   });
 
   // Generate object type folders
   for (const objectType of typeInfo.objectTypes) {
     entries.push({
       type: "Directory",
-      name: objectType.name,
+      name: objectType.type,
       data: generateFiles("./templates/object-type", objectType),
     });
   }
@@ -32,7 +37,7 @@ export function generateBinding(schema: string): OutputDirectory {
     for (const importedQueryType of typeInfo.importedQueryTypes) {
       importEntries.push({
         type: "Directory",
-        name: importedQueryType.name,
+        name: importedQueryType.type,
         data: generateFiles(
           "./templates/imported/query-type",
           importedQueryType
@@ -44,7 +49,7 @@ export function generateBinding(schema: string): OutputDirectory {
     for (const importedObectType of typeInfo.importedObjectTypes) {
       importEntries.push({
         type: "Directory",
-        name: importedObectType.name,
+        name: importedObectType.type,
         data: generateFiles(
           "./templates/imported/object-type",
           importedObectType
@@ -66,7 +71,7 @@ export function generateBinding(schema: string): OutputDirectory {
   for (const queryType of typeInfo.queryTypes) {
     entries.push({
       type: "Directory",
-      name: queryType.name,
+      name: queryType.type,
       data: generateFiles("./templates/query-type", queryType),
     });
   }

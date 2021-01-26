@@ -19,8 +19,10 @@ class Sanity {
   uint16: u16;
   uint32: u32;
   uint64: u64;
+  boolean: bool;
   optUint32: Nullable<u32> = new Nullable<u32>();
   optUint64: Nullable<u64> = new Nullable<u64>();
+  optBool: Nullable<bool> = new Nullable<bool>();
   float32: f32;
   float64: f64;
   str: string = "";
@@ -38,8 +40,10 @@ class Sanity {
     this.uint16 = 65535;
     this.uint32 = 4294967295;
     this.uint64 = 18446744073709551615;
+    this.boolean = true;
     this.optUint32 = Nullable.fromValue<u32>(234234234);
     this.optUint64 = Nullable.fromNull<u64>();
+    this.optBool = Nullable.fromValue<bool>(true);
     this.float32 = 3.40282344818115234375;
     this.float64 = 3124124512.598273468017578125;
     this.str = "Hello, world!";
@@ -66,7 +70,7 @@ class Sanity {
 }
 
 function serializeSanity(writer: Write, type: Sanity): void {
-  writer.writeMapLength(17);
+  writer.writeMapLength(19);
   writer.writeString("nil");
   writer.writeNullableString(type.nil);
   writer.writeString("int8");
@@ -85,10 +89,14 @@ function serializeSanity(writer: Write, type: Sanity): void {
   writer.writeUInt32(type.uint32);
   writer.writeString("uint64");
   writer.writeUInt64(type.uint64);
+  writer.writeString("boolean");
+  writer.writeBool(type.boolean);
   writer.writeString("optUint32");
   writer.writeNullableUInt32(type.optUint32);
   writer.writeString("optUint64");
   writer.writeNullableUInt64(type.optUint64);
+  writer.writeString("optBool");
+  writer.writeNullableBool(type.optBool);
   writer.writeString("float32");
   writer.writeFloat32(type.float32);
   writer.writeString("float64");
@@ -140,10 +148,14 @@ function deserializeSanity(reader: Read, type: Sanity): void {
       type.uint32 = reader.readUInt32();
     } else if (field == "uint64") {
       type.uint64 = reader.readUInt64();
+    } else if (field == "boolean") {
+      type.boolean = reader.readBool();
     } else if (field == "optUint32") {
       type.optUint32 = reader.readNullableUInt32();
     } else if (field == "optUint64") {
       type.optUint64 = reader.readNullableUInt64();
+    } else if (field == "optBool") {
+      type.optBool = reader.readNullableBool();
     } else if (field == "float32") {
       type.float32 = reader.readFloat32();
     } else if (field == "float64") {

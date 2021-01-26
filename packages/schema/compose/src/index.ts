@@ -3,7 +3,13 @@ import { resolveImports, addHeader } from "./resolve";
 import { template as schemaTemplate } from "./templates/schema.mustache";
 
 import Mustache from "mustache";
-import { TypeInfo, combineTypeInfo } from "@web3api/schema-parse";
+import {
+  TypeInfo,
+  combineTypeInfo,
+  addFirstLast,
+  toGraphQLType,
+  performTransforms,
+} from "@web3api/schema-parse";
 
 // Remove mustache's built-in HTML escaping
 Mustache.escape = (value) => value;
@@ -78,6 +84,10 @@ export async function composeSchema(
 }
 
 function renderSchema(schema: string, typeInfo: TypeInfo) {
+  // Prepare the TypeInfo for the renderer
+  typeInfo = performTransforms(typeInfo, addFirstLast);
+  typeInfo = performTransforms(typeInfo, toGraphQLType);
+
   return addHeader(
     Mustache.render(schemaTemplate, {
       schema,
