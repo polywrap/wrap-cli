@@ -2,7 +2,12 @@ import { OutputDirectory, OutputEntry } from "../../";
 import { readDirectory } from "../../utils/fs";
 import * as Functions from "./functions";
 
-import { parseSchema, extendType, addFirstLast, toGraphQLType } from "@web3api/schema-parse";
+import {
+  parseSchema,
+  extendType,
+  addFirstLast,
+  toGraphQLType,
+} from "@web3api/schema-parse";
 import path from "path";
 import Mustache from "mustache";
 

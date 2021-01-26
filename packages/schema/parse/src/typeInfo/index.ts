@@ -88,7 +88,7 @@ const tryInsert = (
     if (destType !== valueType) {
       throw Error(
         `combineTypeInfo found two types by the same type that are not equivalent.\n` +
-        `Type: "${value.type}"\nObject A: ${destType}\nObject B: ${valueType}`
+          `Type: "${value.type}"\nObject A: ${destType}\nObject B: ${valueType}`
       );
     }
   } else {

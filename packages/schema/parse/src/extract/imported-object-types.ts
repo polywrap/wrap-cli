@@ -92,7 +92,7 @@ const visitorEnter = (
       type: typeName,
       uri,
       namespace,
-      nativeType
+      nativeType,
     });
 
     importedObjectTypes.push(importedType);

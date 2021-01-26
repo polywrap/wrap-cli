@@ -32,7 +32,10 @@ export function extractFieldDefinition(
     );
   }
 
-  const property = createPropertyDefinition({ type: "N/A", name: node.name.value });
+  const property = createPropertyDefinition({
+    type: "N/A",
+    name: node.name.value,
+  });
 
   state.currentProperty = property;
   importDef.properties.push(property);
@@ -53,13 +56,13 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
     property.scalar = createScalarDefinition({
       name: property.name,
       type: node.name.value,
-      required: state.nonNullType
+      required: state.nonNullType,
     });
   } else {
     property.object = createObjectDefinition({
       name: property.name,
       type: node.name.value,
-      required: state.nonNullType
+      required: state.nonNullType,
     });
   }
 
@@ -80,7 +83,7 @@ export function extractListType(state: State): void {
   property.array = createArrayDefinition({
     name: property.name,
     type: "N/A",
-    required: state.nonNullType
+    required: state.nonNullType,
   });
   state.currentProperty = property.array;
   state.nonNullType = false;

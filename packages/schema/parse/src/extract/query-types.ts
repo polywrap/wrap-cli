@@ -41,7 +41,10 @@ const visitorEnter = (queryTypes: QueryDefinition[], state: State) => ({
       return;
     }
 
-    const method = createMethodDefinition({ type: query.type, name: node.name.value });
+    const method = createMethodDefinition({
+      type: query.type,
+      name: node.name.value,
+    });
     query.methods.push(method);
     state.currentMethod = method;
   },

@@ -15,7 +15,7 @@ export const finalizePropertyDef: TypeInfoTransforms = {
   },
 };
 
-export function populatePropertyType(property: PropertyDefinition) {
+export function populatePropertyType(property: PropertyDefinition): void {
   let propertyType: GenericDefinition | undefined;
   if (property.array) {
     populateArrayType(property.array);

@@ -8,7 +8,7 @@ import {
   combineTypeInfo,
   addFirstLast,
   toGraphQLType,
-  performTransforms
+  performTransforms,
 } from "@web3api/schema-parse";
 
 // Remove mustache's built-in HTML escaping

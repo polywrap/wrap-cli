@@ -31,13 +31,13 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
       argument.scalar = createScalarDefinition({
         name: argument.name,
         type: node.name.value,
-        required: state.nonNullType
+        required: state.nonNullType,
       });
     } else {
       argument.object = createObjectDefinition({
         name: argument.name,
         type: node.name.value,
-        required: state.nonNullType
+        required: state.nonNullType,
       });
     }
 
@@ -45,7 +45,10 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
   } else if (method) {
     // Return value
     if (!method.return) {
-      method.return = createPropertyDefinition({ type: "N/A", name: method.name });
+      method.return = createPropertyDefinition({
+        type: "N/A",
+        name: method.name,
+      });
 
       state.currentReturn = method.return;
     } else if (!state.currentReturn) {
@@ -56,14 +59,14 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
       state.currentReturn.scalar = createScalarDefinition({
         type: node.name.value,
         name: method.name,
-        required: state.nonNullType
+        required: state.nonNullType,
       });
       state.currentReturn.type = state.currentReturn.scalar.type;
     } else {
       state.currentReturn.object = createObjectDefinition({
         type: node.name.value,
         name: method.name,
-        required: state.nonNullType
+        required: state.nonNullType,
       });
       state.currentReturn.type = state.currentReturn.object.type;
     }
@@ -80,14 +83,17 @@ export function extractListType(state: State): void {
     argument.array = createArrayDefinition({
       name: argument.name,
       type: "N/A",
-      required: state.nonNullType
+      required: state.nonNullType,
     });
     state.currentArgument = argument.array;
     state.nonNullType = false;
   } else if (method) {
     // Return value
     if (!method.return) {
-      method.return = createPropertyDefinition({ type: "N/A", name: method.name });
+      method.return = createPropertyDefinition({
+        type: "N/A",
+        name: method.name,
+      });
       state.currentReturn = method.return;
     } else if (!state.currentReturn) {
       state.currentReturn = method.return;
@@ -96,7 +102,7 @@ export function extractListType(state: State): void {
     state.currentReturn.array = createArrayDefinition({
       type: "N/A",
       name: method.name,
-      required: state.nonNullType
+      required: state.nonNullType,
     });
     state.currentReturn = state.currentReturn.array;
     state.nonNullType = false;
@@ -115,7 +121,7 @@ export function extractInputValueDefinition(
 
   const argument = createPropertyDefinition({
     type: "N/A",
-    name: node.name.value
+    name: node.name.value,
   });
   method.arguments.push(argument);
   state.currentArgument = argument;

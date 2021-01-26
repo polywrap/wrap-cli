@@ -30,8 +30,8 @@ export const addFirstLast: TypeInfoTransforms = {
     }),
     ImportedQueryDefinition: (def: ImportedQueryDefinition) => ({
       ...def,
-      methods: setFirstLast(def.methods)
-    })
+      methods: setFirstLast(def.methods),
+    }),
   },
 };
 

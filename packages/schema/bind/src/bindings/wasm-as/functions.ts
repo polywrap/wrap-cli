@@ -130,7 +130,6 @@ const toWasmArray = (type: string, nullable: boolean): string => {
   return applyNullable("Array<" + wasmType + ">", nullable);
 };
 
-
 const applyNullable = (type: string, nullable: boolean): string => {
   if (nullable) {
     if (type.indexOf("Array") === 0 || type.indexOf("string") === 0) {

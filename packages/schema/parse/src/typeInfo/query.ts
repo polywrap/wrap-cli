@@ -1,12 +1,12 @@
 interface SupportedQueries {
   Mutation: "Mutation";
   Query: "Query";
-};
+}
 
 const testInstance: SupportedQueries = {
   Mutation: "Mutation",
   Query: "Query",
-}
+};
 
 export type QueryType = keyof SupportedQueries;
 

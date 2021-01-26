@@ -1,17 +1,17 @@
 interface SupportedScalars {
-  UInt: "UInt",
-  UInt8: "UInt8",
-  UInt16: "UInt16",
-  UInt32: "UInt32",
-  UInt64: "UInt64",
-  Int: "Int",
-  Int8: "Int8",
-  Int16: "Int16",
-  Int32: "Int32",
-  Int64: "Int64",
-  String: "String",
-  Boolean: "Boolean",
-};
+  UInt: "UInt";
+  UInt8: "UInt8";
+  UInt16: "UInt16";
+  UInt32: "UInt32";
+  UInt64: "UInt64";
+  Int: "Int";
+  Int8: "Int8";
+  Int16: "Int16";
+  Int32: "Int32";
+  Int64: "Int64";
+  String: "String";
+  Boolean: "Boolean";
+}
 
 const testInstance: SupportedScalars = {
   UInt: "UInt",
@@ -26,7 +26,7 @@ const testInstance: SupportedScalars = {
   Int64: "Int64",
   String: "String",
   Boolean: "Boolean",
-}
+};
 
 export type ScalarType = keyof SupportedScalars;
 

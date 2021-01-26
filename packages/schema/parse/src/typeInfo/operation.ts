@@ -1,12 +1,12 @@
 interface SupportedOperations {
   mutation: "mutation";
   query: "query";
-};
+}
 
 const testInstance: SupportedOperations = {
   mutation: "mutation",
   query: "query",
-}
+};
 
 export type OperationType = keyof SupportedOperations;
 

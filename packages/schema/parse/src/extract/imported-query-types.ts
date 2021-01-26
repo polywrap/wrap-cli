@@ -97,7 +97,7 @@ const visitorEnter = (
       type: typeName,
       uri,
       namespace,
-      nativeType
+      nativeType,
     });
     importedQueryTypes.push(importedType);
     state.currentImport = importedType;
@@ -115,7 +115,10 @@ const visitorEnter = (
       );
     }
 
-    const method = createMethodDefinition({ type: importDef.nativeType, name: node.name.value });
+    const method = createMethodDefinition({
+      type: importDef.nativeType,
+      name: node.name.value,
+    });
     importDef.methods.push(method);
     state.currentMethod = method;
   },
