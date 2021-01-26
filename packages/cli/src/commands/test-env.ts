@@ -10,6 +10,9 @@ ${chalk.bold("w3 test-env")} [command]
 Commands:
   up    Startup the test env
   down  Shutdown the test env
+
+Options:
+  -d, --directory             Directory of docker file(s)
 `;
 
 export default {
@@ -18,6 +21,10 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters } = toolbox;
     const command = parameters.first;
+    const { d } = parameters.options;
+    let { directory } = parameters.options;
+
+    directory = d || directory || filesystem.cwd();
 
     if (!command) {
       print.error("No command given");
@@ -37,7 +44,7 @@ export default {
         "Failed to start test environment",
         "Warning starting test environment",
         async (_spinner) => {
-          return startupTestEnv(true, filesystem.cwd());
+          return startupTestEnv(true, directory);
         }
       );
     } else if (command === "down") {
@@ -46,7 +53,7 @@ export default {
         "Failed to shutdown test environment",
         "Warning shutting down test environment",
         async (_spinner) => {
-          return await shutdownTestEnv(true, filesystem.cwd());
+          return await shutdownTestEnv(true, directory);
         }
       );
     } else {
