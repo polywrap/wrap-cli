@@ -1,8 +1,8 @@
 import { generateProject } from "../lib/generators/project-generator";
+import { fixParameters } from "../lib/helpers/parameters";
 
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
-import { fixParameters } from "../lib/helpers/parameters";
 
 const supportedLangs: { [key: string]: string[] } = {
   app: ["react"],
@@ -39,7 +39,7 @@ export default {
     type = type || t || "api";
     lang = lang || l;
 
-    let projectName;
+    let projectName = "";
     try {
       const params = toolbox.parameters;
       [projectName] = fixParameters(

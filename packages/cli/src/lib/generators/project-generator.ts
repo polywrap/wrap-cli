@@ -7,7 +7,7 @@ export const generateProject = (
   projectName: string,
   fs: GluegunFilesystem
 ): void => {
-  const { dir, remove, move } = fs;
+  const { dir } = fs;
   dir(projectName);
   execSync(`
     cd ${projectName}
