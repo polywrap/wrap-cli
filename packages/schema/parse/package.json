@@ -14,7 +14,6 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "deep-equal": "2.0.4",
     "graphql": "15.4.0"
   },
   "devDependencies": {

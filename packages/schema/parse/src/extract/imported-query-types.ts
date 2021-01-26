@@ -1,5 +1,6 @@
 import {
   TypeInfo,
+  ImportedQueryDefinition,
   createImportedQueryDefinition,
   createMethodDefinition,
 } from "../typeInfo";
@@ -23,7 +24,10 @@ import {
   ValueNode,
 } from "graphql";
 
-const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
+const visitorEnter = (
+  importedQueryTypes: ImportedQueryDefinition[],
+  state: State
+) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     if (!node.directives) {
       return;
@@ -63,7 +67,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
 
     let namespace: string | undefined;
     let uri: string | undefined;
-    let type: string | undefined;
+    let nativeType: string | undefined;
 
     const extractString = (value: ValueNode, name: string) => {
       if (value.kind === "StringValue") {
@@ -79,23 +83,23 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       } else if (importArg.name.value === "uri") {
         uri = extractString(importArg.value, "uri");
       } else if (importArg.name.value === "type") {
-        type = extractString(importArg.value, "type");
+        nativeType = extractString(importArg.value, "type");
       }
     }
 
-    if (!type || !namespace || !uri) {
+    if (!nativeType || !namespace || !uri) {
       throw Error(
         "Error: import directive missing one of its required arguments (namespace, uri, type)"
       );
     }
 
-    const importedType = createImportedQueryDefinition(
+    const importedType = createImportedQueryDefinition({
+      type: typeName,
       uri,
       namespace,
-      typeName,
-      type
-    );
-    typeInfo.importedQueryTypes.push(importedType);
+      nativeType,
+    });
+    importedQueryTypes.push(importedType);
     state.currentImport = importedType;
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
@@ -111,8 +115,10 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       );
     }
 
-    const operation = importDef.type === "Query" ? "query" : "mutation";
-    const method = createMethodDefinition(operation, node.name.value);
+    const method = createMethodDefinition({
+      type: importDef.nativeType,
+      name: node.name.value,
+    });
     importDef.methods.push(method);
     state.currentMethod = method;
   },
@@ -130,7 +136,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
   },
 });
 
-const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
+const visitorLeave = (state: State) => ({
   ObjectTypeDefinition: (_node: ObjectTypeDefinitionNode) => {
     state.currentImport = undefined;
   },
@@ -153,7 +159,7 @@ export function extractImportedQueryTypes(
   const state: State = {};
 
   visit(astNode, {
-    enter: visitorEnter(typeInfo, state),
-    leave: visitorLeave(typeInfo, state),
+    enter: visitorEnter(typeInfo.importedQueryTypes, state),
+    leave: visitorLeave(state),
   });
 }

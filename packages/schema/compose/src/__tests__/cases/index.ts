@@ -48,12 +48,12 @@ export function fetchTestCases(): TestCases {
     const mutationOutput = fetchIfExists("output/mutation.graphql");
     const schemaOutput = fetchIfExists("output/schema.graphql");
 
-    const resolveExternal = (uri: string): string => {
-      return fetchIfExists(`imports-ext/${uri}/schema.graphql`);
+    const resolveExternal = (uri: string): Promise<string> => {
+      return Promise.resolve(fetchIfExists(`imports-ext/${uri}/schema.graphql`) || "");
     };
 
-    const resolveLocal = (path: string): string => {
-      return fetchIfExists(path, true);
+    const resolveLocal = (path: string): Promise<string> => {
+      return Promise.resolve(fetchIfExists(path, true) || "");
     };
 
     cases.push({

@@ -1,9 +1,9 @@
 const template = `{{schema}}
 {{#typeInfo}}
 {{#objectTypes}}
-type {{name}} {
+type {{type}} {
   {{#properties}}
-  {{name}}: {{#toGraphQL}}{{type}}{{/toGraphQL}}
+  {{name}}: {{toGraphQLType}}
   {{/properties}}
 }
 
@@ -11,17 +11,17 @@ type {{name}} {
 ### Imported Queries START ###
 
 {{#importedQueryTypes}}
-type {{namespace}}_{{name}} @imported(
+type {{type}} @imported(
   namespace: "{{namespace}}",
   uri: "{{uri}}",
-  type: "{{name}}"
+  type: "{{nativeType}}"
 ) {
   {{#methods}}
   {{name}}(
     {{#arguments}}
-    {{name}}: {{#toGraphQL}}{{type}}{{/toGraphQL}}
+    {{name}}: {{toGraphQLType}}
     {{/arguments}}
-  ): {{#return}}{{#toGraphQL}}{{type}}{{/toGraphQL}}{{/return}}
+  ): {{#return}}{{toGraphQLType}}{{/return}}
   {{^last}}
 
   {{/last}}
@@ -34,13 +34,13 @@ type {{namespace}}_{{name}} @imported(
 ### Imported Objects START ###
 
 {{#importedObjectTypes}}
-type {{namespace}}_{{name}} @imported(
+type {{type}} @imported(
   namespace: "{{namespace}}",
   uri: "{{uri}}",
-  type: "{{name}}"
+  type: "{{nativeType}}"
 ) {
   {{#properties}}
-  {{name}}: {{#toGraphQL}}{{type}}{{/toGraphQL}}
+  {{name}}: {{toGraphQLType}}
   {{/properties}}
 }
 

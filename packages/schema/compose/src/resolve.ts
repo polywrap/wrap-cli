@@ -1,4 +1,7 @@
 /* eslint-disable no-useless-escape */
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/ban-types */
+
 import {
   ExternalImport,
   LocalImport,
@@ -8,23 +11,31 @@ import {
 } from "./types";
 import { parseExternalImports, parseLocalImports } from "./parse";
 import { template as headerTemplate } from "./templates/header.mustache";
-import * as Functions from "./templates/functions";
 
 import {
   TypeInfo,
   parseSchema,
-  extendType,
-  addFirstLast,
   ObjectDefinition,
-  ArrayDefinition,
-  AnyDefinition,
+  ImportedObjectDefinition,
   QueryDefinition,
+  TypeInfoTransforms,
+  visitObjectDefinition,
+  visitQueryDefinition,
+  ImportedQueryDefinition,
+  DefinitionKind,
   PropertyDefinition,
+  populatePropertyType,
+  visitImportedQueryDefinition,
+  visitImportedObjectDefinition,
 } from "@web3api/schema-parse";
 import Mustache from "mustache";
 
 // Remove mustache's built-in HTML escaping
 Mustache.escape = (value) => value;
+
+export function addHeader(schema: string): string {
+  return Mustache.render(headerTemplate, { schema });
+}
 
 export async function resolveImports(
   schema: string,
@@ -68,7 +79,7 @@ export async function resolveImports(
     importedQueryTypes: [],
   };
 
-  await resolveExternalImports(
+  const externalImports = await resolveExternalImports(
     externalImportsToResolve,
     resolvers.external,
     subTypeInfo
@@ -85,11 +96,7 @@ export async function resolveImports(
     .replace(localImportCapture, "");
 
   // Add the @imports directive
-  newSchema = addQueryImportsDirective(
-    newSchema,
-    externalImportsToResolve,
-    mutation
-  );
+  newSchema = addQueryImportsDirective(newSchema, externalImports, mutation);
 
   return {
     schema: newSchema,
@@ -97,234 +104,292 @@ export async function resolveImports(
   };
 }
 
+interface Namespaced {
+  __namespaced?: boolean;
+}
+
+type ImportMap = Record<
+  string,
+  (ImportedObjectDefinition | ImportedQueryDefinition) & Namespaced
+>;
+
+// A transformation that converts all object definitions into
+// imported object definitions
+const extractObjectImportDependencies = (
+  objectImportsFound: ImportMap,
+  rootTypeInfo: TypeInfo,
+  namespace: string,
+  uri: string
+): TypeInfoTransforms => ({
+  enter: {
+    ObjectDefinition: (def: ObjectDefinition & Namespaced) => {
+      if (def.__namespaced) {
+        return def;
+      }
+
+      const namespaceType = appendNamespace(namespace, def.type);
+
+      if (!objectImportsFound[namespaceType]) {
+        // Find this type's ObjectDefinition in the root type info
+        let idx = rootTypeInfo.objectTypes.findIndex(
+          (obj) => obj.type === def.type
+        );
+        let obj = undefined;
+
+        if (idx === -1) {
+          idx = rootTypeInfo.importedObjectTypes.findIndex(
+            (obj) => obj.type === def.type
+          );
+        } else {
+          obj = rootTypeInfo.objectTypes[idx];
+        }
+
+        if (idx === -1) {
+          throw Error(
+            `extractObjectImportDependencies: Cannot find the dependent type within the root type info.\n` +
+              `Type: ${def.type}\nTypeInfo: ${JSON.stringify(
+                rootTypeInfo
+              )}\n${namespace}\n${JSON.stringify(
+                Object.keys(objectImportsFound)
+              )}`
+          );
+        } else if (obj === undefined) {
+          obj = rootTypeInfo.importedObjectTypes[idx];
+        }
+
+        // Create the new ImportedObjectDefinition
+        const importedObject: ImportedObjectDefinition & Namespaced = {
+          ...obj,
+          name: null,
+          required: null,
+          type: namespaceType,
+          __namespaced: true,
+          kind: DefinitionKind.ImportedObject,
+          uri,
+          namespace,
+          nativeType: def.type,
+        };
+
+        // Keep track of it
+        objectImportsFound[importedObject.type] = importedObject;
+
+        // Traverse this newly added object
+        visitObjectDefinition(importedObject, {
+          ...extractObjectImportDependencies(
+            objectImportsFound,
+            rootTypeInfo,
+            namespace,
+            uri
+          ),
+          leave: {
+            PropertyDefinition: (def: PropertyDefinition) => {
+              populatePropertyType(def);
+              return def;
+            },
+          },
+        });
+      }
+
+      return def;
+    },
+  },
+});
+
+const namespaceObjects = (namespace: string): TypeInfoTransforms => ({
+  enter: {
+    ObjectDefinition: (def: ObjectDefinition & Namespaced) => {
+      if (def.__namespaced) {
+        return def;
+      }
+
+      return {
+        ...def,
+        type: appendNamespace(namespace, def.type),
+        __namespaced: true,
+      };
+    },
+  },
+  leave: {
+    PropertyDefinition: (def: PropertyDefinition) => {
+      populatePropertyType(def);
+      return def;
+    },
+  },
+});
+
+function appendNamespace(namespace: string, str: string) {
+  return `${namespace}_${str}`;
+}
+
+function addQueryImportsDirective(
+  schema: string,
+  externalImports: string[],
+  mutation: boolean
+): string {
+  if (!externalImports.length) {
+    return schema;
+  }
+
+  // Append the @imports(...) directive to the query type
+  const typeCapture = mutation
+    ? /type[ \n\t]*Mutation[ \n\t]*{/g
+    : /type[ \n\t]*Query[ \n\t]*{/g;
+
+  const importedTypes = `${externalImports
+    .map((type) => `\"${type}\"`)
+    .join(",\n    ")}`;
+  const replacementQueryStr = `type ${mutation ? "Mutation" : "Query"} @imports(
+  types: [
+    ${importedTypes}
+  ]
+) {`;
+
+  return schema.replace(typeCapture, replacementQueryStr);
+}
+
 async function resolveExternalImports(
   importsToResolve: ExternalImport[],
   resolveSchema: SchemaResolver,
   typeInfo: TypeInfo
-): Promise<void> {
+): Promise<string[]> {
+  // Keep track of all imported object type names
+  const typesToImport: ImportMap = {};
+
   for (const importToResolve of importsToResolve) {
     const { uri, namespace, importedTypes } = importToResolve;
+
+    // Resolve the schema
     const schema = await resolveSchema(uri);
 
     if (!schema) {
       throw Error(`Unable to resolve schema at "${uri}"`);
     }
 
-    const extTypeInfo = parseSchema(schema, {
-      transforms: [extendType(Functions), addFirstLast],
-    });
+    // Parse the schema into TypeInfo
+    const extTypeInfo = parseSchema(schema);
 
+    // For each imported type to resolve
     for (const importedType of importedTypes) {
+      let extTypes: (QueryDefinition | ObjectDefinition)[] = [];
+      let visitorFunc: Function;
+      let trueTypeKind: DefinitionKind;
+
+      // If it's a query type
       if (importedType === "Query" || importedType === "Mutation") {
-        const type = extTypeInfo.queryTypes.find(
-          (type) => type.name === importedType
+        extTypes = extTypeInfo.queryTypes;
+        visitorFunc = visitQueryDefinition;
+        trueTypeKind = DefinitionKind.ImportedQuery;
+      } else if (
+        importedType.endsWith("_Query") ||
+        importedType.endsWith("_Mutation")
+      ) {
+        throw Error(
+          `Cannot import an import's imported query type. Tried to import ${importedType} from ${uri}.`
         );
-
-        if (!type) {
-          throw Error(
-            `Cannot find type "${importedType}" in the schema at ${uri}.\nFound: [ ${extTypeInfo.queryTypes.map(
-              (type) => type.name + " "
-            )}]`
-          );
-        }
-
-        resolveExternalQueryObjects(
-          type,
-          typeInfo,
-          extTypeInfo,
-          uri,
-          namespace
-        );
-        typeInfo.importedQueryTypes.push({
-          ...type,
-          uri,
-          namespace,
-        });
       } else {
-        const type = extTypeInfo.objectTypes.find(
-          (type) => type.name === importedType
+        extTypes =
+          extTypeInfo.objectTypes.findIndex(
+            (def) => def.type === importedType
+          ) > -1
+            ? extTypeInfo.objectTypes
+            : extTypeInfo.importedObjectTypes;
+        visitorFunc = visitObjectDefinition;
+        trueTypeKind = DefinitionKind.ImportedObject;
+      }
+
+      // Find the type's definition in the schema's TypeInfo
+      const type = extTypes.find((type) => type.type === importedType);
+
+      if (!type) {
+        throw Error(
+          `Cannot find type "${importedType}" in the schema at ${uri}.\nFound: [ ${extTypes.map(
+            (type) => type.type + " "
+          )}]`
         );
+      }
 
-        if (!type) {
-          throw Error(
-            `Cannot find type "${importedType}" in the schema at ${uri}.\nFound: [ ${extTypeInfo.objectTypes.map(
-              (type) => type.name + " "
-            )}]`
-          );
-        }
+      const namespacedType = appendNamespace(namespace, importedType);
 
-        resolveExternalObjectObjects(
-          type,
-          typeInfo,
+      // Continue if we've already imported this type
+      if (typesToImport[namespacedType]) {
+        continue;
+      }
+
+      // Append the base type to our TypeInfo
+      typesToImport[namespacedType] = {
+        ...type,
+        name: null,
+        required: null,
+        type: namespacedType,
+        kind: trueTypeKind,
+        namespace,
+        __namespaced: true,
+        uri,
+        nativeType: type.type,
+      };
+
+      // Extract all object dependencies
+      visitorFunc(
+        type,
+        extractObjectImportDependencies(
+          typesToImport,
           extTypeInfo,
-          uri,
-          namespace
-        );
-        typeInfo.importedObjectTypes.push({
-          ...type,
-          uri,
           namespace,
-        });
+          uri
+        )
+      );
+    }
+
+    // Add all imported types into the aggregate TypeInfo
+    for (const importName of Object.keys(typesToImport)) {
+      const importType = typesToImport[importName];
+      let destArray: ImportedObjectDefinition[] | ImportedQueryDefinition[];
+      let append;
+
+      if (importType.kind === DefinitionKind.ImportedObject) {
+        destArray = typeInfo.importedObjectTypes;
+        append = () => {
+          const importDef = importType as ImportedObjectDefinition;
+          // Namespace all object types
+          typeInfo.importedObjectTypes.push(
+            visitImportedObjectDefinition(
+              importDef,
+              namespaceObjects(namespace)
+            )
+          );
+        };
+      } else if (importType.kind === DefinitionKind.ImportedQuery) {
+        destArray = typeInfo.importedQueryTypes;
+        append = () => {
+          const importDef = importType as ImportedQueryDefinition;
+          // Namespace all object types
+          typeInfo.importedQueryTypes.push(
+            visitImportedQueryDefinition(importDef, namespaceObjects(namespace))
+          );
+        };
+      } else {
+        throw Error(
+          `resolveExternalImports: This should never happen, unknown kind.\n${JSON.stringify(
+            importType,
+            null,
+            2
+          )}`
+        );
+      }
+
+      const found =
+        destArray.findIndex(
+          (def: ImportedObjectDefinition | ImportedQueryDefinition) =>
+            def.type === importType.type
+        ) > -1;
+
+      if (!found) {
+        append();
       }
     }
   }
-}
 
-function resolveExternalQueryObjects(
-  query: QueryDefinition,
-  typeInfo: TypeInfo,
-  extTypeInfo: TypeInfo,
-  uri: string,
-  namespace: string
-): void {
-  for (const method of query.methods) {
-    for (const argument of method.arguments) {
-      resolveImportedObjectProperties(
-        argument,
-        typeInfo,
-        extTypeInfo,
-        uri,
-        namespace
-      );
-    }
-
-    if (method.return) {
-      resolveImportedObjectProperties(
-        method.return,
-        typeInfo,
-        extTypeInfo,
-        uri,
-        namespace
-      );
-    }
-  }
-}
-
-function resolveExternalObjectObjects(
-  object: ObjectDefinition,
-  typeInfo: TypeInfo,
-  extTypeInfo: TypeInfo,
-  uri: string,
-  namespace: string
-): void {
-  for (const property of object.properties) {
-    resolveImportedObjectProperties(
-      property,
-      typeInfo,
-      extTypeInfo,
-      uri,
-      namespace
-    );
-  }
-}
-
-function resolveImportedObjectProperties(
-  property: PropertyDefinition,
-  typeInfo: TypeInfo,
-  extTypeInfo: TypeInfo,
-  uri: string,
-  namespace: string
-): void {
-  const object = getPropertyObject(property);
-
-  if (!object) {
-    return;
-  }
-
-  const type = parseType(property.type as string)[0];
-  if (!isAlreadyResolved(type, typeInfo)) {
-    const importedObjectDefinition = getImportedObjectDefinition(
-      type,
-      extTypeInfo
-    );
-    typeInfo.importedObjectTypes.push({
-      ...importedObjectDefinition,
-      uri,
-      namespace,
-    });
-
-    resolveExternalObjectObjects(
-      importedObjectDefinition,
-      typeInfo,
-      extTypeInfo,
-      uri,
-      namespace
-    );
-  }
-
-  updatePropertyTypeNamespace(property, type, namespace);
-}
-
-function getPropertyObject(property: AnyDefinition): ObjectDefinition | void {
-  let object: ObjectDefinition | undefined;
-  if (property.object) {
-    object = property.object;
-  } else if (property.array) {
-    const baseType = getArrayBaseType(property.array);
-    if (baseType.object) {
-      object = baseType.object;
-    }
-  }
-
-  return object;
-}
-
-function parseType(type: string): RegExpMatchArray {
-  const typeMatch = type.match(/([A-Za-z1-9_]+)/);
-
-  if (!typeMatch) {
-    throw new Error("No object type found");
-  }
-
-  return typeMatch;
-}
-
-function isAlreadyResolved(type: string, typeInfo: TypeInfo): boolean {
-  for (const importedObject of typeInfo.importedObjectTypes) {
-    if (importedObject.name === type) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-function getImportedObjectDefinition(
-  type: string,
-  extTypeInfo: TypeInfo
-): ObjectDefinition {
-  for (const objectType of extTypeInfo.objectTypes) {
-    if (objectType.name === type) {
-      return objectType;
-    }
-  }
-
-  for (const objectType of extTypeInfo.importedObjectTypes) {
-    if (objectType.name === type) {
-      return objectType;
-    }
-  }
-
-  throw new Error(`Type ${type} is not defined`);
-}
-
-function updatePropertyTypeNamespace(
-  property: AnyDefinition,
-  type: string,
-  namespace: string
-): void {
-  property.type = (property.type as string).replace(
-    /[A-Za-z1-9_]+/,
-    namespace + "_" + type
-  );
-}
-
-function getArrayBaseType(array: ArrayDefinition): ArrayDefinition {
-  if (array.array) {
-    return getArrayBaseType(array.array);
-  } else {
-    return array;
-  }
+  return Promise.resolve(Object.keys(typesToImport));
 }
 
 async function resolveLocalImports(
@@ -334,6 +399,8 @@ async function resolveLocalImports(
 ): Promise<void> {
   for (const importToResolve of importsToResolve) {
     const { objectTypes, path } = importToResolve;
+
+    // Resolve the schema
     let schema = await resolveSchema(path);
 
     if (!schema) {
@@ -345,10 +412,11 @@ async function resolveLocalImports(
       schema = addHeader(schema);
     }
 
-    // Parse the schema so we can extract types
-    const localTypeInfo = parseSchema(schema, {
-      transforms: [extendType(Functions), addFirstLast],
-    });
+    // Parse the schema into TypeInfo
+    const localTypeInfo = parseSchema(schema);
+
+    // Keep track of all imported object type names
+    const typesToImport: Record<string, ObjectDefinition> = {};
 
     for (const objectType of objectTypes) {
       if (objectType === "Query" || objectType === "Mutation") {
@@ -357,98 +425,60 @@ async function resolveLocalImports(
         );
       } else {
         const type = localTypeInfo.objectTypes.find(
-          (type) => type.name === objectType
+          (type) => type.type === objectType
         );
 
         if (!type) {
           throw Error(
             `Cannot find type "${objectType}" in the schema at ${path}.\nFound: [ ${localTypeInfo.objectTypes.map(
-              (type) => type.name + " "
+              (type) => type.type + " "
             )}]`
           );
         }
 
-        resolveLocalObjectTypeObjects(type, typeInfo, localTypeInfo);
-        typeInfo.objectTypes.push({
-          ...type,
+        typesToImport[type.type] = type;
+
+        visitObjectDefinition(type, {
+          enter: {
+            ObjectDefinition: (def: ObjectDefinition) => {
+              // Skip objects that we've already processed
+              if (typesToImport[def.type]) {
+                return def;
+              }
+
+              // Find the ObjectDefinition
+              const idx = localTypeInfo.objectTypes.findIndex(
+                (obj) => obj.type === def.type
+              );
+
+              if (idx === -1) {
+                throw Error(
+                  `resolveLocalImports: Cannot find the ObjectDefinition within the TypeInfo.\n` +
+                    `Type: ${def.type}\nTypeInfo: ${JSON.stringify(
+                      localTypeInfo
+                    )}`
+                );
+              }
+
+              typesToImport[def.type] = {
+                ...localTypeInfo.objectTypes[idx],
+                name: null,
+                required: null,
+              };
+              return def;
+            },
+          },
         });
       }
     }
-  }
-}
 
-function resolveLocalObjectTypeObjects(
-  object: ObjectDefinition,
-  typeInfo: TypeInfo,
-  localTypeInfo: TypeInfo
-): void {
-  for (const property of object.properties) {
-    resolveUserObjectProperties(property, typeInfo, localTypeInfo);
-  }
-}
-
-function resolveUserObjectProperties(
-  property: PropertyDefinition,
-  typeInfo: TypeInfo,
-  localTypeInfo: TypeInfo
-): void {
-  const object = getPropertyObject(property);
-  if (!object) {
-    return;
-  }
-
-  const type = parseType(property.type as string)[0];
-  if (!isAlreadyResolved(type, typeInfo)) {
-    const objectDefinition = getLocalObjectDefinition(type, localTypeInfo);
-    typeInfo.objectTypes.push(objectDefinition);
-
-    resolveLocalObjectTypeObjects(objectDefinition, typeInfo, localTypeInfo);
-  }
-}
-
-function getLocalObjectDefinition(
-  type: string,
-  localTypeInfo: TypeInfo
-): ObjectDefinition {
-  for (const objectType of localTypeInfo.objectTypes) {
-    if (objectType.name === type) {
-      return objectType;
+    // Add all imported types into the aggregate TypeInfo
+    for (const importType of Object.keys(typesToImport)) {
+      if (
+        typeInfo.objectTypes.findIndex((def) => def.type === importType) === -1
+      ) {
+        typeInfo.objectTypes.push(typesToImport[importType]);
+      }
     }
   }
-
-  throw new Error(`Type ${type} is not defined`);
-}
-
-export function addHeader(schema: string): string {
-  return Mustache.render(headerTemplate, { schema });
-}
-
-function addQueryImportsDirective(
-  schema: string,
-  externalImports: ExternalImport[],
-  mutation: boolean
-): string {
-  // Append the @imports(...) directive to the query type
-  const typeCapture = mutation
-    ? /type[ \n\t]*Mutation[ \n\t]*{/g
-    : /type[ \n\t]*Query[ \n\t]*{/g;
-
-  // Aggregate all imported type names (namespaced)
-  const externalTypeNames: string[] = [];
-  externalImports.forEach((ext) =>
-    externalTypeNames.push(
-      ...ext.importedTypes.map((type) => `${ext.namespace}_${type}`)
-    )
-  );
-
-  const importedTypes = `${externalTypeNames
-    .map((type) => `\"${type}\"`)
-    .join(",\n    ")}`;
-  const replacementQueryStr = `type ${mutation ? "Mutation" : "Query"} @imports(
-  types: [
-    ${importedTypes}
-  ]
-) {`;
-
-  return schema.replace(typeCapture, replacementQueryStr);
 }
