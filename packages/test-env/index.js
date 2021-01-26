@@ -1,12 +1,5 @@
 const { exec } = require('child_process');
 
-const composeFiles = [
-  'docker-compose.base.yml', 
-  'docker-compose.dev-server-ganache.yml', 
-  'docker-compose.ganache-cli.yml', 
-  'docker-compose.ipfs.yml',
-]
-
 async function runCommand(command, quiet) {
 
   if (!quiet) {
@@ -34,11 +27,11 @@ async function runCommand(command, quiet) {
 }
 
 async function up(quiet = false) {
-  await runCommand(`docker-compose -f ${composeFiles.join(' -f ')} up -d`, quiet)
+  await runCommand('docker-compose up -d', quiet)
 }
 
 async function down(quiet = false) {
-  await runCommand(`docker-compose -f ${composeFiles.join(' -f ')} down`, quiet)
+  await runCommand('docker-compose down', quiet)
 }
 
 if (require.main === module) {
