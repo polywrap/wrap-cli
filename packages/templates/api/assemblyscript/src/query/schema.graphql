@@ -1,0 +1,5 @@
+type Query {
+  getData(
+    address: String!
+  ): Int!
+}
