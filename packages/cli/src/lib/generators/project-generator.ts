@@ -20,7 +20,7 @@ function getProxy() {
   } else {
     try {
       // Trying to read https-proxy from .npmrc
-      let httpsProxy = execSync("npm config get https-proxy").toString().trim();
+      const httpsProxy = execSync("npm config get https-proxy").toString().trim();
       return httpsProxy !== "null" ? httpsProxy : undefined;
     } catch (e) {
       return;
@@ -56,19 +56,19 @@ export const generateProject = (
   lang: string,
   projectName: string,
   fs: GluegunFilesystem
-): Promise<any> => {
+): Promise<boolean | { command: string }> => {
   return new Promise((resolve, reject) => {
-    const { dir, cwd } = fs;
+    const { dir } = fs;
     dir(projectName);
 
-    let command: string = "";
+    let command = "";
     let args: string[] = [];
 
     const useYarn = shouldUseYarn();
     const isOnline = checkIfOnline(useYarn);
 
     const root = path.resolve(projectName);
-    const dependencies: any = ["react"];
+    const dependencies: never[] = ["@web3api/templates" as never];
 
     if (useYarn) {
       command = "yarnpkg";
@@ -107,6 +107,7 @@ export const generateProject = (
     const child = spawn(command, args, { stdio: "inherit", cwd: root });
     child.on("close", (code) => {
       if (code !== 0) {
+        // Return the failed command
         reject({
           command: `${command} ${args.join(" ")}`,
         });
