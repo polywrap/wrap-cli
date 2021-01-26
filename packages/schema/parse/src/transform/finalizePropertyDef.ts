@@ -15,7 +15,7 @@ export const finalizePropertyDef: TypeInfoTransforms = {
   },
 };
 
-function populatePropertyType(property: PropertyDefinition) {
+export function populatePropertyType(property: PropertyDefinition): void {
   let propertyType: GenericDefinition | undefined;
   if (property.array) {
     populateArrayType(property.array);
@@ -65,6 +65,5 @@ function populateArrayType(array: ArrayDefinition) {
     throw Error("Array isn't valid.");
   }
 
-  const modifier = array.required ? "" : "?";
-  array.type = modifier + "[" + array.item.type + "]";
+  array.type = "[" + array.item.type + "]";
 }

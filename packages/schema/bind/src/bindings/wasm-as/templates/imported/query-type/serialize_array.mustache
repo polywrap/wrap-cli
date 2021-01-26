@@ -1,8 +1,8 @@
 {{#scalar}}
-writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(item);
+writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(item);
 {{/scalar}}
 {{#array}}
-writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(item, (writer: Write, item: {{#toWasm}}{{item.type}}{{/toWasm}}): void => {
+writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(item, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
   {{> serialize_array}}
 });
 {{/array}}

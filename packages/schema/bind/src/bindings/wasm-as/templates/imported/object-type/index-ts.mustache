@@ -1,27 +1,27 @@
 import { Nullable } from "@web3api/wasm-as";
 import {
-  serialize{{name}},
-  deserialize{{name}}
+  serialize{{type}},
+  deserialize{{type}}
 } from "./serialization";
 
-export class {{name}} {
+export class {{type}} {
 
   public static uri: string = "{{uri}}";
 
   {{#properties}}
   {{#scalar}}
-  {{name}}: {{#toWasm}}{{type}}{{/toWasm}};
+  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/scalar}}
   {{#array}}
-  {{name}}: {{#toWasm}}{{type}}{{/toWasm}};
+  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/array}}
   {{/properties}}
 
   toBuffer(): ArrayBuffer {
-    return serialize{{name}}(this);
+    return serialize{{type}}(this);
   }
 
   fromBuffer(buffer: ArrayBuffer): void {
-    deserialize{{name}}(buffer, this);
+    deserialize{{type}}(buffer, this);
   }
 }

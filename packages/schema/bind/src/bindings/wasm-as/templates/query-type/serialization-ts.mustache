@@ -9,7 +9,7 @@ import {
 {{#methods}}
 export class Input_{{name}} {
   {{#arguments}}
-  {{name}}: {{#toWasm}}{{type}}{{/toWasm}};
+  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/arguments}}
 }
 
@@ -19,7 +19,7 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
   var numFields = reader.readMapLength();
 
   {{#arguments}}
-  var _{{name}}: {{#toWasm}}{{type}}{{/toWasm}} = {{#toWasmInit}}{{type}}{{/toWasmInit}};
+  var _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
   {{#required}}
   var _{{name}}Set: boolean = false;
   {{/required}}
@@ -32,10 +32,10 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
     {{#arguments}}
     {{^first}}else {{/first}}if (field == "{{name}}") {
       {{#scalar}}
-      _{{name}} = reader.read{{#toMsgPack}}{{type}}{{/toMsgPack}}();
+      _{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
       {{/scalar}}
       {{#array}}
-      _{{name}} = reader.read{{#toMsgPack}}{{type}}{{/toMsgPack}}((reader: Read): {{#toWasm}}{{item.type}}{{/toWasm}} => {
+      _{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}} => {
         {{> deserialize_array}}
       });
       {{/array}}
@@ -62,7 +62,7 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
   };
 }
 
-export function serialize{{name}}Result(result: {{#toWasm}}{{return.type}}{{/toWasm}}): ArrayBuffer {
+export function serialize{{name}}Result(result: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}): ArrayBuffer {
   const sizer = new WriteSizer();
   write{{name}}Result(sizer, result);
   const buffer = new ArrayBuffer(sizer.length);
@@ -71,13 +71,13 @@ export function serialize{{name}}Result(result: {{#toWasm}}{{return.type}}{{/toW
   return buffer;
 }
 
-function write{{name}}Result(writer: Write, result: {{#toWasm}}{{return.type}}{{/toWasm}}): void {
+function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}): void {
   {{#return}}
   {{#scalar}}
-  writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(result);
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(result);
   {{/scalar}}
   {{#array}}
-  writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(result, (writer: Write, item: {{#toWasm}}{{item.type}}{{/toWasm}}): void => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(result, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
     {{> serialize_array}}
   });
   {{/array}}

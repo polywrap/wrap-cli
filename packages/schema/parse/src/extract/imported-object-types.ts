@@ -40,13 +40,15 @@ const visitorEnter = (
       return;
     }
 
-    const queryIdentifier = "Query";
-    const mutationIdentifier = "Mutation";
+    const typeName = node.name.value;
 
-    if (
-      node.name.value.substr(-queryIdentifier.length) === queryIdentifier ||
-      node.name.value.substr(-mutationIdentifier.length) === mutationIdentifier
-    ) {
+    const queryIdentifier = "_Query";
+    const queryTest = typeName.substr(-queryIdentifier.length);
+    const mutationIdentifier = "_Mutation";
+    const mutationTest = typeName.substr(-mutationIdentifier.length);
+
+    if (queryTest === queryIdentifier || mutationTest === mutationIdentifier) {
+      // Ignore query & mutation types
       return;
     }
 
@@ -55,12 +57,12 @@ const visitorEnter = (
     if (!importedDir.arguments || importedDir.arguments.length !== 3) {
       // TODO: Implement better error handling
       // https://github.com/Web3-API/prototype/issues/15
-      throw Error("Error: imported_type directive missing arguments");
+      throw Error("Error: imported directive missing arguments");
     }
 
     let namespace: string | undefined;
     let uri: string | undefined;
-    let type: string | undefined;
+    let nativeType: string | undefined;
 
     const extractString = (value: ValueNode, name: string) => {
       if (value.kind === "StringValue") {
@@ -76,22 +78,22 @@ const visitorEnter = (
       } else if (importArg.name.value === "uri") {
         uri = extractString(importArg.value, "uri");
       } else if (importArg.name.value === "type") {
-        type = extractString(importArg.value, "type");
+        nativeType = extractString(importArg.value, "type");
       }
     }
 
-    if (!type || !namespace || !uri) {
+    if (!nativeType || !namespace || !uri) {
       throw Error(
         "Error: import directive missing one of its required arguments (namespace, uri, type)"
       );
     }
 
-    const importedType = createImportedObjectDefinition(
+    const importedType = createImportedObjectDefinition({
+      type: typeName,
       uri,
       namespace,
-      node.name.value,
-      type
-    );
+      nativeType,
+    });
 
     importedObjectTypes.push(importedType);
     state.currentType = importedType;

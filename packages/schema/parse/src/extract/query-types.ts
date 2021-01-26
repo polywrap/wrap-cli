@@ -30,7 +30,7 @@ const visitorEnter = (queryTypes: QueryDefinition[], state: State) => ({
       return;
     }
 
-    const query = createQueryDefinition(nodeName, nodeName);
+    const query = createQueryDefinition({ type: nodeName });
     queryTypes.push(query);
     state.currentQuery = query;
   },
@@ -41,8 +41,10 @@ const visitorEnter = (queryTypes: QueryDefinition[], state: State) => ({
       return;
     }
 
-    const operation = query.type === "Query" ? "query" : "mutation";
-    const method = createMethodDefinition(operation, node.name.value);
+    const method = createMethodDefinition({
+      type: query.type,
+      name: node.name.value,
+    });
     query.methods.push(method);
     state.currentMethod = method;
   },

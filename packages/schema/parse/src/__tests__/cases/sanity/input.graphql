@@ -45,7 +45,6 @@ type CustomType {
   objectArrayArray: [[UserObject!]!]!
   nestedObject: UserObject!
   optNestedObject: UserObject
-
 }
 
 type AnotherType {
@@ -108,4 +107,14 @@ type TestImport_Object @imported(
   type: "Object"
 ) {
   prop: String!
+  nested: TestImport_NestedObject!
+}
+
+type TestImport_NestedObject @imported(
+  namespace: "TestImport",,
+  uri: "testimport.uri.eth",
+  type: "NestedObject"
+) {
+  foo: [String!]!
+  circular: TestImport_Object!
 }

@@ -7,9 +7,8 @@ import {
 } from "./definitions";
 
 export * from "./definitions";
-export * from "./scalars";
-
-import deepEqual from "deep-equal";
+export * from "./scalar";
+export * from "./operation";
 
 export interface TypeInfo {
   objectTypes: ObjectDefinition[];
@@ -40,7 +39,7 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
     a: ImportedDefinition,
     b: ImportedDefinition
   ) => {
-    return a.uri === b.uri && a.name === b.name;
+    return a.uri === b.uri && a.nativeType === b.nativeType;
   };
 
   for (const typeInfo of typeInfos) {
@@ -76,7 +75,7 @@ const tryInsert = (
   dest: GenericDefinition[],
   value: GenericDefinition,
   compare: (a: GenericDefinition, b: GenericDefinition) => boolean = (a, b) =>
-    a.name === b.name
+    a.type === b.type
 ) => {
   const index = dest.findIndex((item: GenericDefinition) =>
     compare(item, value)
@@ -84,11 +83,12 @@ const tryInsert = (
 
   if (index > -1) {
     // See if they're the same, error if they aren't
-    if (!deepEqual(dest[index], value)) {
+    const destType = JSON.stringify(dest[index]);
+    const valueType = JSON.stringify(value);
+    if (destType !== valueType) {
       throw Error(
-        `combineTypeInfo found two types by the same name that are not equivalent.\n` +
-          `Name: "${value.name}"\nObject A: ${JSON.stringify(dest[index])}\n` +
-          `Object B: ${JSON.stringify(value)}`
+        `combineTypeInfo found two types by the same type that are not equivalent.\n` +
+          `Type: "${value.type}"\nObject A: ${destType}\nObject B: ${valueType}`
       );
     }
   } else {

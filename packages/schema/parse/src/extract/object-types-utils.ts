@@ -3,7 +3,7 @@ import {
   createObjectDefinition,
   createPropertyDefinition,
   createScalarDefinition,
-  isScalar,
+  isScalarType,
   ObjectDefinition,
   PropertyDefinition,
 } from "../typeInfo";
@@ -32,7 +32,10 @@ export function extractFieldDefinition(
     );
   }
 
-  const property = createPropertyDefinition(node.name.value);
+  const property = createPropertyDefinition({
+    type: "N/A",
+    name: node.name.value,
+  });
 
   state.currentProperty = property;
   importDef.properties.push(property);
@@ -49,20 +52,18 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
     return;
   }
 
-  const modifier = state.nonNullType ? "" : "?";
-
-  if (isScalar(node.name.value)) {
-    property.scalar = createScalarDefinition(
-      property.name,
-      modifier + node.name.value,
-      state.nonNullType
-    );
+  if (isScalarType(node.name.value)) {
+    property.scalar = createScalarDefinition({
+      name: property.name,
+      type: node.name.value,
+      required: state.nonNullType,
+    });
   } else {
-    property.object = createObjectDefinition(
-      property.name,
-      modifier + node.name.value,
-      state.nonNullType
-    );
+    property.object = createObjectDefinition({
+      name: property.name,
+      type: node.name.value,
+      required: state.nonNullType,
+    });
   }
 
   state.nonNullType = false;
@@ -79,11 +80,11 @@ export function extractListType(state: State): void {
     return;
   }
 
-  property.array = createArrayDefinition(
-    property.name,
-    "TBD",
-    state.nonNullType
-  );
+  property.array = createArrayDefinition({
+    name: property.name,
+    type: "N/A",
+    required: state.nonNullType,
+  });
   state.currentProperty = property.array;
   state.nonNullType = false;
 }

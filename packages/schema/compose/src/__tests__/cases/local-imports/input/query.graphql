@@ -1,8 +1,6 @@
-#import { Query, Mutation, CustomType } into Namespace from "test.eth"
-#import { Mutation } into JustMutation from "just.mutation.eth"
 #import { CommonType } from "../imports-local/common.graphql"
 
-type Mutation {
+type Query {
   method1(
     str: String!
     optStr: String
@@ -15,7 +13,7 @@ type Mutation {
   ): [Int64!]!
 }
 
-type CustomMutationType {
+type CustomQueryType {
   str: String!
   optStr: String
   u: UInt!
@@ -30,9 +28,8 @@ type CustomMutationType {
   optStrOptArray: [String]
   crazyArray: [[[[UInt64!]]!]]
   commonType: CommonType!
-  customType: Namespace_CustomType!
 }
 
-type AnotherMutationType {
+type AnotherQueryType {
   prop: String
 }
