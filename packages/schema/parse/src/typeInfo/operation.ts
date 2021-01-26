@@ -1,15 +1,12 @@
-interface SupportedOperations {
-  mutation: "mutation";
-  query: "query";
-}
-
-const testInstance: SupportedOperations = {
+const operationTypes = {
   mutation: "mutation",
   query: "query",
 };
 
-export type OperationType = keyof SupportedOperations;
+export type OperationTypes = typeof operationTypes;
+
+export type OperationType = keyof OperationTypes;
 
 export function isOperationType(type: string): type is OperationType {
-  return type in testInstance;
+  return type in operationTypes;
 }

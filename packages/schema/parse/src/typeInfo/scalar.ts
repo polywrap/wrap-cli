@@ -1,19 +1,4 @@
-interface SupportedScalars {
-  UInt: "UInt";
-  UInt8: "UInt8";
-  UInt16: "UInt16";
-  UInt32: "UInt32";
-  UInt64: "UInt64";
-  Int: "Int";
-  Int8: "Int8";
-  Int16: "Int16";
-  Int32: "Int32";
-  Int64: "Int64";
-  String: "String";
-  Boolean: "Boolean";
-}
-
-const testInstance: SupportedScalars = {
+const scalarTypes = {
   UInt: "UInt",
   UInt8: "UInt8",
   UInt16: "UInt16",
@@ -28,8 +13,10 @@ const testInstance: SupportedScalars = {
   Boolean: "Boolean",
 };
 
-export type ScalarType = keyof SupportedScalars;
+export type ScalarTypes = typeof scalarTypes;
+
+export type ScalarType = keyof ScalarTypes;
 
 export function isScalarType(type: string): type is ScalarType {
-  return type in testInstance;
+  return type in scalarTypes;
 }

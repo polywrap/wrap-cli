@@ -1,15 +1,12 @@
-interface SupportedQueries {
-  Mutation: "Mutation";
-  Query: "Query";
-}
-
-const testInstance: SupportedQueries = {
+const queryTypes = {
   Mutation: "Mutation",
   Query: "Query",
 };
 
-export type QueryType = keyof SupportedQueries;
+export type QueryTypes = typeof queryTypes;
+
+export type QueryType = keyof QueryTypes;
 
 export function isQueryType(type: string): type is QueryType {
-  return type in testInstance;
+  return type in queryTypes;
 }
