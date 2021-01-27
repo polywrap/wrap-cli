@@ -12,19 +12,19 @@ Commands:
   down  Shutdown the test env
 
 Options:
-  -d, --directory             Directory of docker file(s)
+  -d, --directory             Directory of docker file(s) for custom environment
 `;
 
 export default {
   alias: ["t"],
   description: "Manage a test environment for Web3API",
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { filesystem, parameters } = toolbox;
+    const { parameters } = toolbox;
     const command = parameters.first;
     const { d } = parameters.options;
     let { directory } = parameters.options;
 
-    directory = d || directory || filesystem.cwd();
+    directory = d || directory;
 
     if (!command) {
       print.error("No command given");
