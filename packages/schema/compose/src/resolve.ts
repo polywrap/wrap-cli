@@ -7,7 +7,8 @@ import {
 } from "./types";
 import {
   parseExternalImports,
-  parseLocalImports
+  parseLocalImports,
+  parseSchemaUserDefinedTypes
 } from "./parse";
 import {
   template as headerTemplate,
@@ -50,6 +51,8 @@ export function resolveImports(
     );
   }
 
+  const schemaUserDefinedTypes = parseSchemaUserDefinedTypes(schema)
+
   const externalImportsToResolve: ExternalImport[] = parseExternalImports(
     externalImportStatements, mutation
   );
@@ -73,7 +76,8 @@ export function resolveImports(
   resolveLocalImports(
     localImportsToResolve,
     resolvers.local,
-    subTypeInfo
+    subTypeInfo,
+    schemaUserDefinedTypes
   );
 
   // Remove all import statements
@@ -152,10 +156,12 @@ function resolveExternalImports(
 function resolveLocalImports(
   importsToResolve: LocalImport[],
   resolveSchema: SchemaResolver,
-  typeInfo: TypeInfo
+  typeInfo: TypeInfo,
+  schemaUserTypes: string[],
 ) {
   for (const importToResolve of importsToResolve) {
     const { userTypes, path } = importToResolve;
+
     let schema = resolveSchema(path);
 
     if (!schema) {
@@ -171,6 +177,8 @@ function resolveLocalImports(
     const localTypeInfo = parseSchema(schema, {
       transforms: [extendType(Functions), addFirstLast]
     });
+
+    const conflictingTypes: string[] = []
 
     for (const userType of userTypes) {
       if (userType === "Query" || userType === "Mutation") {
@@ -192,6 +200,16 @@ function resolveLocalImports(
           ...type
         });
       }
+
+      if(schemaUserTypes.includes(userType)) {
+        conflictingTypes.push(userType)
+      }
+    }
+
+    if(conflictingTypes.length) {
+      throw new Error(`Conflicting type definitions: ${conflictingTypes.map(
+        conflictingType => `\n- ${conflictingType}`)}`
+      )
     }
   }
 }
