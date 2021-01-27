@@ -1,8 +1,10 @@
-import { GluegunToolbox, print } from "gluegun";
 import { shutdownTestEnv, startupTestEnv } from "../lib/env/test";
 
-import chalk from "chalk";
 import { withSpinner } from "../lib/helpers/spinner";
+
+import { GluegunToolbox, print } from "gluegun";
+
+import chalk from "chalk";
 
 const HELP = `
 ${chalk.bold("w3 test-env")} [command]
