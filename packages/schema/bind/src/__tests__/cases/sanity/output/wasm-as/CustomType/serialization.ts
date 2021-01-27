@@ -11,7 +11,8 @@ import * as Objects from "../";
 
 export function serializeCustomType(type: CustomType): ArrayBuffer {
   const objects: (ArrayBuffer | null)[] = [
-    type.object.toBuffer(),type.optObject?.toBuffer(),
+    type.object.toBuffer(),
+    type.optObject ? type.optObject.toBuffer() : null,
   ];
   const sizer = new WriteSizer();
   writeCustomType(sizer, type, objects);
@@ -21,7 +22,7 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
   return buffer;
 }
 
-function writeCustomType(writer: Write, type: CustomType, objects: (ArrayBuffer | null)[]) {
+function writeCustomType(writer: Write, type: CustomType, objects: (ArrayBuffer | null)[]): void {
   let objectsIdx = 0;
   writer.writeMapLength(27);
   writer.writeString("str");
@@ -114,7 +115,7 @@ function writeCustomType(writer: Write, type: CustomType, objects: (ArrayBuffer 
   });
 }
 
-export function deserializeCustomType(buffer: ArrayBuffer, type: CustomType) {
+export function deserializeCustomType(buffer: ArrayBuffer, type: CustomType): void {
   const reader = new ReadDecoder(buffer);
   var numFields = reader.readMapLength();
 

@@ -17,7 +17,7 @@ export function serialize{{type}}(type: {{type}}): ArrayBuffer {
   return buffer;
 }
 
-function write{{type}}(writer: Write, type: {{type}}) {
+function write{{type}}(writer: Write, type: {{type}}): void {
   writer.writeMapLength({{properties.length}});
   {{#properties}}
   writer.writeString("{{name}}");
@@ -32,7 +32,7 @@ function write{{type}}(writer: Write, type: {{type}}) {
   {{/properties}}
 }
 
-export function deserialize{{type}}(buffer: ArrayBuffer, type: {{type}}) {
+export function deserialize{{type}}(buffer: ArrayBuffer, type: {{type}}): void {
   const reader = new ReadDecoder(buffer);
   var numFields = reader.readMapLength();
 

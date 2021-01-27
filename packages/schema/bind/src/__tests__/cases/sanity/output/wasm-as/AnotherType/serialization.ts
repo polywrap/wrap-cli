@@ -21,7 +21,7 @@ export function serializeAnotherType(type: AnotherType): ArrayBuffer {
   return buffer;
 }
 
-function writeAnotherType(writer: Write, type: AnotherType, objects: (ArrayBuffer | null)[]) {
+function writeAnotherType(writer: Write, type: AnotherType, objects: (ArrayBuffer | null)[]): void {
   let objectsIdx = 0;
   writer.writeMapLength(2);
   writer.writeString("prop");
@@ -30,7 +30,7 @@ function writeAnotherType(writer: Write, type: AnotherType, objects: (ArrayBuffe
   writer.writeNullableBytes(objects[objectsIdx++]);
 }
 
-export function deserializeAnotherType(buffer: ArrayBuffer, type: AnotherType) {
+export function deserializeAnotherType(buffer: ArrayBuffer, type: AnotherType): void {
   const reader = new ReadDecoder(buffer);
   var numFields = reader.readMapLength();
 

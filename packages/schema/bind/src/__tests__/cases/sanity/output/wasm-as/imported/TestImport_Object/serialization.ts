@@ -17,13 +17,13 @@ export function serializeTestImport_Object(type: TestImport_Object): ArrayBuffer
   return buffer;
 }
 
-function writeTestImport_Object(writer: Write, type: TestImport_Object) {
+function writeTestImport_Object(writer: Write, type: TestImport_Object): void {
   writer.writeMapLength(1);
   writer.writeString("prop");
   writer.writeString(type.prop);
 }
 
-export function deserializeTestImport_Object(buffer: ArrayBuffer, type: TestImport_Object) {
+export function deserializeTestImport_Object(buffer: ArrayBuffer, type: TestImport_Object): void {
   const reader = new ReadDecoder(buffer);
   var numFields = reader.readMapLength();
 
