@@ -3,6 +3,7 @@ import {
   serialize{{type}},
   deserialize{{type}}
 } from "./serialization";
+import * as Objects from "../../";
 
 export class {{type}} {
 
@@ -15,6 +16,9 @@ export class {{type}} {
   {{#array}}
   {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/array}}
+  {{#object}}
+  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
+  {{/object}}
   {{/properties}}
 
   toBuffer(): ArrayBuffer {

@@ -1,0 +1,14 @@
+{{#required}}
+const object = {{#toWasmInit}}{{type}}{{/toWasmInit}};
+object.fromBuffer(reader.readBytes());
+{{/required}}
+{{^required}}
+var bytes = reader.readNullableBytes();
+var object: {{#toWasm}}{{type}}{{/toWasm}};
+if (bytes) {
+  object = {{#toWasmInit}}{{type}}{{/toWasmInit}};
+  object.fromBuffer(bytes);
+} else {
+  object = null;
+}
+{{/required}}
