@@ -8,11 +8,13 @@ import {
 } from "@web3api/wasm-as";
 
 {{#methods}}
-export function serialize{{name}}Args(input: {
+export class Input_{{name}} {
   {{#arguments}}
-  {{name}}: {{#toWasm}}{{type}}{{/toWasm}}{{^last}},{{/last}}
+  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/arguments}}
-}): ArrayBuffer {
+}
+
+export function serialize{{name}}Args(input: Input_{{name}}): ArrayBuffer {
   const sizer = new WriteSizer();
   write{{name}}Args(sizer, input);
   const buffer = new ArrayBuffer(sizer.length);
@@ -23,34 +25,30 @@ export function serialize{{name}}Args(input: {
 
 function write{{name}}Args(
   writer: Write,
-  input: {
-    {{#arguments}}
-    {{name}}: {{#toWasm}}{{type}}{{/toWasm}}{{^last}},{{/last}}
-    {{/arguments}}
-  }
-) {
+  input: Input_{{name}}
+): void {
   writer.writeMapLength({{arguments.length}});
   {{#arguments}}
   writer.writeString("{{name}}");
   {{#scalar}}
-  writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(input.{{name}});
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{name}});
   {{/scalar}}
   {{#array}}
-  writer.write{{#toMsgPack}}{{type}}{{/toMsgPack}}(input.{{name}}, (writer: Write, item: {{#toWasm}}{{item.type}}{{/toWasm}}): void => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{name}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
     {{> serialize_array}}
   });
   {{/array}}
   {{/arguments}}
 }
 
-export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#toWasm}}{{return.type}}{{/toWasm}} {
+export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
   const reader = new ReadDecoder(buffer);
   {{#return}}
   {{#scalar}}
-  return reader.read{{#toMsgPack}}{{type}}{{/toMsgPack}}();
+  return reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
   {{/scalar}}
   {{#array}}
-  return reader.read{{#toMsgPack}}{{type}}{{/toMsgPack}}((reader: Read): {{#toWasm}}{{item.type}}{{/toWasm}} => {
+  return reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}} => {
     {{> deserialize_array}}
   });
   {{/array}}

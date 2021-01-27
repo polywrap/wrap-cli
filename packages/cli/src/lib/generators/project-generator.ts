@@ -1,20 +1,21 @@
 import { GluegunFilesystem } from "gluegun";
 
-export const generateProject = (projectName: string, fs: GluegunFilesystem) => {
+export const generateProject = (
+  projectName: string,
+  fs: GluegunFilesystem
+): void => {
   const { dir, write } = fs;
   dir(projectName);
   dir(`${projectName}/src`);
   dir(`${projectName}/src/mutation`);
   dir(`${projectName}/src/query`);
-  dir(`${projectName}/src/subgraph`);
   dir(`${projectName}/scripts`);
   dir(`${projectName}/tests`);
-  write(`${projectName}/web3api.yaml`, web3api_yml);
-  write(`${projectName}/package.json`, package_json);
+  write(`${projectName}/web3api.yaml`, WEB3API_YML);
+  write(`${projectName}/package.json`, PACKAGE_JSON);
 };
 
-const web3api_yml =
-`description: TODO
+const WEB3API_YML = `description: TODO
 repository: TODO
 mutation:
   schema:
@@ -28,12 +29,9 @@ query:
   module:
     language: wasm/assemblyscript
     file: ./query/index.ts
-subgraph:
-  file: ./subgraph/subgraph.yaml
 `;
 
-const package_json =
-`{
+const PACKAGE_JSON = `{
   "name": "TODO",
   "scripts": {
     "build": "w3 build"

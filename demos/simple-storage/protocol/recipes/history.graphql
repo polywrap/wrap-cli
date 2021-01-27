@@ -1,7 +1,0 @@
-{
-  simpleStorages {
-    id
-    lastSetBy
-    setBy
-  }
-}

@@ -1,25 +1,19 @@
-import {
-  w3_add_invoke,
-  w3_invoke
-} from "@web3api/wasm-as";
 {{#queryTypes}}
 {{#methods.length}}
 import {
   {{#methods}}
-  {{name}}Wrapped{{^last}},{{/last}}
+  Input_{{name}}{{^last}},{{/last}}
   {{/methods}}
-} from "./{{name}}";
+} from "./{{type}}";
 {{/methods.length}}
 {{/queryTypes}}
 
-export function _w3_init(): void {
-  {{#queryTypes}}
+{{#queryTypes}}
+{{#methods.length}}
+export {
   {{#methods}}
-  w3_add_invoke("{{name}}", {{name}}Wrapped);
+  Input_{{name}}{{^last}},{{/last}}
   {{/methods}}
-  {{/queryTypes}}
-}
-
-export function _w3_invoke(name_size: usize, args_size: usize): bool {
-  return w3_invoke(name_size, args_size);
-}
+};
+{{/methods.length}}
+{{/queryTypes}}

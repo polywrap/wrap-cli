@@ -1,8 +1,0 @@
-{{#scalar}}
-return reader.read{{#toMsgPack}}{{type}}{{/toMsgPack}}();
-{{/scalar}}
-{{#array}}
-return reader.read{{#toMsgPack}}{{type}}{{/toMsgPack}}((reader: Read): {{#toWasm}}{{item.type}}{{/toWasm}} => {
-  {{> deserialize_array}}
-});
-{{/array}}

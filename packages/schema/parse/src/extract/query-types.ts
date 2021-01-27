@@ -1,14 +1,15 @@
 import {
   TypeInfo,
-  PropertyDefinition,
   QueryDefinition,
-  MethodDefinition,
   createQueryDefinition,
   createMethodDefinition,
-  createPropertyDefinition,
-  createScalarDefinition,
-  createArrayDefinition
 } from "../typeInfo";
+import {
+  extractInputValueDefinition,
+  extractListType,
+  extractNamedType,
+  State,
+} from "./query-types-utils";
 
 import {
   DocumentNode,
@@ -18,18 +19,10 @@ import {
   ListTypeNode,
   FieldDefinitionNode,
   InputValueDefinitionNode,
-  visit
+  visit,
 } from "graphql";
 
-interface State {
-  currentQuery?: QueryDefinition
-  currentMethod?: MethodDefinition
-  currentArgument?: PropertyDefinition
-  currentReturn?: PropertyDefinition
-  nonNullType?: boolean
-}
-
-const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
+const visitorEnter = (queryTypes: QueryDefinition[], state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const nodeName = node.name.value;
 
@@ -37,8 +30,8 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       return;
     }
 
-    const query = createQueryDefinition(nodeName, nodeName);
-    typeInfo.queryTypes.push(query);
+    const query = createQueryDefinition({ type: nodeName });
+    queryTypes.push(query);
     state.currentQuery = query;
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
@@ -48,96 +41,51 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       return;
     }
 
-    if (!node.arguments || node.arguments.length === 0) {
-      throw Error("Imported types must only have methods");
-    }
-
-    const operation = query.type === "Query" ? "query" : "mutation";
-    const method = createMethodDefinition(operation, node.name.value);
+    const method = createMethodDefinition({
+      type: query.type,
+      name: node.name.value,
+    });
     query.methods.push(method);
     state.currentMethod = method;
   },
   InputValueDefinition: (node: InputValueDefinitionNode) => {
-    const method = state.currentMethod;
-
-    if (!method) {
-      return;
-    }
-
-    const argument = createPropertyDefinition(node.name.value);
-    method.arguments.push(argument);
-    state.currentArgument = argument;
+    extractInputValueDefinition(node, state);
   },
-  NonNullType: (node: NonNullTypeNode) => {
+  NonNullType: (_node: NonNullTypeNode) => {
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    const argument = state.currentArgument;
-    const method = state.currentMethod;
-    const modifier = state.nonNullType ? "" : "?";
-
-    if (method && argument) {
-      // Argument value
-      argument.scalar = createScalarDefinition(argument.name, modifier + node.name.value, state.nonNullType);
-      state.nonNullType = false;
-    } else if (method) {
-      // Return value
-      if (!method.return) {
-        method.return = createPropertyDefinition(method.name);
-        state.currentReturn = method.return;
-      } else if (!state.currentReturn) {
-        state.currentReturn = method.return;
-      }
-      state.currentReturn.scalar = createScalarDefinition(method.name, modifier + node.name.value, state.nonNullType);
-      state.nonNullType = false;
-    }
+    extractNamedType(node, state);
   },
-  ListType: (node: ListTypeNode) => {
-    const argument = state.currentArgument;
-    const method = state.currentMethod;
-
-    if (method && argument) {
-      // Argument value
-      argument.array = createArrayDefinition(argument.name, "TBD", state.nonNullType);
-      state.currentArgument = argument.array;
-      state.nonNullType = false;
-    } else if (method) {
-      // Return value
-      if (!method.return) {
-        method.return = createPropertyDefinition(method.name);
-        state.currentReturn = method.return;
-      } else if (!state.currentReturn) {
-        state.currentReturn = method.return;
-      }
-
-      state.currentReturn.array = createArrayDefinition(method.name, "TBD", state.nonNullType);
-      state.currentReturn = state.currentReturn.array;
-      state.nonNullType = false;
-    }
+  ListType: (_node: ListTypeNode) => {
+    extractListType(state);
   },
 });
 
-const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
-  ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
+const visitorLeave = (state: State) => ({
+  ObjectTypeDefinition: (_node: ObjectTypeDefinitionNode) => {
     state.currentQuery = undefined;
   },
-  FieldDefinition: (node: FieldDefinitionNode) => {
+  FieldDefinition: (_node: FieldDefinitionNode) => {
     state.currentMethod = undefined;
     state.currentReturn = undefined;
   },
-  InputValueDefinition: (node: InputValueDefinitionNode) => {
+  InputValueDefinition: (_node: InputValueDefinitionNode) => {
     state.currentArgument = undefined;
   },
-  NonNullType: (node: NonNullTypeNode) => {
+  NonNullType: (_node: NonNullTypeNode) => {
     state.nonNullType = false;
-  }
+  },
 });
 
-export function extractQueryTypes(astNode: DocumentNode, typeInfo: TypeInfo) {
-  const state: State = { };
+export function extractQueryTypes(
+  astNode: DocumentNode,
+  typeInfo: TypeInfo
+): void {
+  const state: State = {};
 
   visit(astNode, {
-    enter: visitorEnter(typeInfo, state),
-    leave: visitorLeave(typeInfo, state)
+    enter: visitorEnter(typeInfo.queryTypes, state),
+    leave: visitorLeave(state),
   });
 }

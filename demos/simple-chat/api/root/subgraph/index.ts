@@ -1,1 +1,0 @@
-map(chat: Event) => store.set(...)

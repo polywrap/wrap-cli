@@ -3,43 +3,48 @@ import {
   QueryDefinition,
   ImportedQueryDefinition,
   ImportedObjectDefinition,
-  GenericDefinition
+  GenericDefinition,
 } from "./definitions";
 
 export * from "./definitions";
-
-import deepEqual from "deep-equal";
+export * from "./scalar";
+export * from "./operation";
 
 export interface TypeInfo {
-  userTypes: ObjectDefinition[];
+  objectTypes: ObjectDefinition[];
   queryTypes: QueryDefinition[];
   importedObjectTypes: ImportedObjectDefinition[];
   importedQueryTypes: ImportedQueryDefinition[];
 }
 export function createTypeInfo(): TypeInfo {
   return {
-    userTypes: [],
+    objectTypes: [],
     queryTypes: [],
     importedObjectTypes: [],
-    importedQueryTypes: []
-  }
+    importedQueryTypes: [],
+  };
 }
+
+type ImportedDefinition = ImportedObjectDefinition | ImportedQueryDefinition;
 
 export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
   const combined: TypeInfo = {
-    userTypes: [],
+    objectTypes: [],
     queryTypes: [],
     importedObjectTypes: [],
-    importedQueryTypes: []
+    importedQueryTypes: [],
   };
 
-  const compareImportedType = (a: any, b: any) => {
-    return a.uri === b.uri && a.name === b.name;
-  }
+  const compareImportedType = (
+    a: ImportedDefinition,
+    b: ImportedDefinition
+  ) => {
+    return a.uri === b.uri && a.nativeType === b.nativeType;
+  };
 
   for (const typeInfo of typeInfos) {
-    for (const userType of typeInfo.userTypes) {
-      tryInsert(combined.userTypes, userType);
+    for (const objectType of typeInfo.objectTypes) {
+      tryInsert(combined.objectTypes, objectType);
     }
 
     for (const queryType of typeInfo.queryTypes) {
@@ -69,7 +74,8 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
 const tryInsert = (
   dest: GenericDefinition[],
   value: GenericDefinition,
-  compare: (a: GenericDefinition, b: GenericDefinition) => boolean = (a, b) => a.name === b.name
+  compare: (a: GenericDefinition, b: GenericDefinition) => boolean = (a, b) =>
+    a.type === b.type
 ) => {
   const index = dest.findIndex((item: GenericDefinition) =>
     compare(item, value)
@@ -77,14 +83,15 @@ const tryInsert = (
 
   if (index > -1) {
     // See if they're the same, error if they aren't
-    if (!deepEqual(dest[index], value)) {
+    const destType = JSON.stringify(dest[index]);
+    const valueType = JSON.stringify(value);
+    if (destType !== valueType) {
       throw Error(
-        `combineTypeInfo found two types by the same name that are not equivalent.\n` +
-        `Name: "${value.name}"\nObject A: ${JSON.stringify(dest[index])}\n` +
-        `Object B: ${JSON.stringify(value)}`
+        `combineTypeInfo found two types by the same type that are not equivalent.\n` +
+          `Type: "${value.type}"\nObject A: ${destType}\nObject B: ${valueType}`
       );
     }
   } else {
     dest.push(value);
   }
-}
+};

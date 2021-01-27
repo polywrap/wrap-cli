@@ -1,0 +1,24 @@
+import { Nullable } from "@web3api/wasm-as";
+import {
+  serialize{{type}},
+  deserialize{{type}}
+} from "./serialization";
+
+export class {{type}} {
+  {{#properties}}
+  {{#scalar}}
+  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
+  {{/scalar}}
+  {{#array}}
+  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
+  {{/array}}
+  {{/properties}}
+
+  toBuffer(): ArrayBuffer {
+    return serialize{{type}}(this);
+  }
+
+  fromBuffer(buffer: ArrayBuffer): void {
+    deserialize{{type}}(buffer, this);
+  }
+}

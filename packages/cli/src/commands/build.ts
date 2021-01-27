@@ -1,58 +1,55 @@
+/* eslint-disable prefer-const */
 import { Compiler } from "../lib/Compiler";
 import { fixParameters } from "../lib/helpers/parameters";
 import { publishToIPFS } from "../lib/publishers/ipfs-publisher";
-import { publishToSubgraph } from "../lib/publishers/subgraph-publisher";
 
-import path from "path";
 import chalk from "chalk";
 import axios from "axios";
 import { GluegunToolbox } from "gluegun";
 
 const HELP = `
-${chalk.bold('w3 build')} [options] ${chalk.bold('[<web3api-manifest>]')}
+${chalk.bold("w3 build")} [options] ${chalk.bold("[<web3api-manifest>]")}
 
 Options:
   -h, --help                         Show usage information
-  -i, --ipfs <node>                  Upload build results to an IPFS node
-  -g, --graph <name,node>            Upload build results to a Graph node under "name" (require: --ipfs)
+  -i, --ipfs [<node>]                Upload build results to an IPFS node (default: dev-server's node)
   -o, --output-dir <path>            Output directory for build results (default: build/)
-  -f, --output-format <format>       Output format for WASM modules (wasm, wast) (default: wasm)
-  -w, --watch                        Regenerate types when web3api files change (default: false)
-  -e, --test-ens <[address,]domain>  Publish the package to a test ENS domain locally
-`
+  -e, --test-ens <[address,]domain>  Publish the package to a test ENS domain locally (requires --ipfs)
+`;
+
+// TODO: add to the above options when implemented
+// -w, --watch                        Regenerate types when web3api files change (default: false)
 
 export default {
   alias: ["b"],
   description: "Builds a Web3API and (optionally) uploads it to IPFS",
-  run: async (toolbox: GluegunToolbox) => {
+  run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
 
-    let {
-      h, help,
-      i, ipfs,
-      g, graph,
-      o, outputDir,
-      f, outputFormat,
-      w, watch,
-      e, testEns
-    } = parameters.options;
+    const { h, i, o, w, e } = parameters.options;
+    let { help, ipfs, outputDir, watch, testEns } = parameters.options;
 
     help = help || h;
     ipfs = ipfs || i;
-    graph = graph || g;
     outputDir = outputDir || o;
-    outputFormat = outputFormat || f;
     watch = watch || w;
     testEns = testEns || e;
 
     let manifestPath;
     try {
-      ;[manifestPath] = fixParameters(toolbox.parameters, {
-        h,
-        help,
-        w,
-        watch,
-      });
+      const params = toolbox.parameters;
+      [manifestPath] = fixParameters(
+        {
+          options: params.options,
+          array: params.array,
+        },
+        {
+          h,
+          help,
+          w,
+          watch,
+        }
+      );
     } catch (e) {
       print.error(e.message);
       process.exitCode = 1;
@@ -64,139 +61,133 @@ export default {
       return;
     }
 
-    if (ipfs === true) {
-      print.error("--ipfs option missing <node> argument");
-      print.info(HELP);
-      return;
-    }
-
-    if (graph === true) {
-      print.error("--graph option missing <name,node> argument");
-      print.info(HELP);
-      return;
-    }
-
     if (outputDir === true) {
       print.error("--output-dir option missing <path> argument");
       print.info(HELP);
       return;
     }
 
-    if (outputFormat === true) {
-      print.error("--output-format option missing <format> argument");
+    if (testEns === true) {
+      print.error("--test-ens option missing <[address,]domain> argument");
       print.info(HELP);
       return;
     }
 
-    if (graph && !ipfs) {
-      print.error("--graph requires --ipfs <node>");
+    if (testEns && !ipfs) {
+      print.error("--test-ens option requires the --ipfs [<node>] option");
       print.info(HELP);
       return;
     }
 
-    if (outputFormat && (outputFormat !== 'wasm' || outputFormat !== 'wast')) {
-      print.error(`Unrecognized --output-format type: ${outputFormat}`);
-      print.info(HELP);
-      return;
-    }
-
+    // Resolve manifest & output directories
     manifestPath =
       (manifestPath && filesystem.resolve(manifestPath)) ||
-      filesystem.resolve('web3api.yaml');
+      filesystem.resolve("web3api.yaml");
     outputDir =
-      (outputDir && filesystem.resolve(outputDir)) ||
-      filesystem.path('build');
-    outputFormat = outputFormat || 'wasm';
+      (outputDir && filesystem.resolve(outputDir)) || filesystem.path("build");
+
+    let ipfsProvider: string | undefined;
+    let ethProvider: string | undefined;
+    let ensAddress: string | undefined;
+    let ensDomain: string | undefined;
+
+    if (typeof ipfs === "string") {
+      // Custom IPFS provider
+      ipfsProvider = ipfs;
+    } else if (ipfs) {
+      // Dev-server IPFS provider
+      // TODO: handle the case where the dev server isn't found
+      const {
+        data: { ipfs, ethereum },
+      } = await axios.get("http://localhost:4040/providers");
+      ipfsProvider = ipfs;
+      ethProvider = ethereum;
+    }
+
+    if (typeof testEns == "string") {
+      // Fetch the ENS domain, and optionally the address
+      if (testEns.indexOf(",") > -1) {
+        const [addr, dom] = testEns.split(",");
+        ensAddress = addr;
+        ensDomain = dom;
+      } else {
+        ensDomain = testEns;
+      }
+
+      // If not address was provided, fetch it from the server
+      // or deploy a new instance
+      if (!ensAddress) {
+        const getEns = await axios.get("http://localhost:4040/ens");
+
+        if (!getEns.data.ensAddress) {
+          const deployEns = await axios.get("http://localhost:4040/deploy-ens");
+          ensAddress = deployEns.data.ensAddress;
+        } else {
+          ensAddress = getEns.data.ensAddress;
+        }
+      }
+    }
 
     const compiler = new Compiler({
       manifestPath,
       outputDir,
-      outputFormat
+      ensAddress,
+      ethProvider,
+      ipfsProvider,
     });
 
-    if (watch) {
-      // TODO:
-      // await compiler.watchAndCompile();
-    } else {
-      const result = await compiler.compile();
+    let result = false;
+
+    /*if (watch) {
+      // TODO: https://github.com/Web3-API/prototype/issues/98
+      // compiler.watchAndCompile();
+    } else*/ {
+      result = await compiler.compile();
       if (result === false) {
         process.exitCode = 1;
         return;
       }
+    }
 
-      let uris: string[][] = []
+    const uris: string[][] = [];
 
-      // publish to IPFS
-      if (ipfs !== undefined) {
-        const cid = await publishToIPFS(outputDir, ipfs);
+    // publish to IPFS
+    if (ipfs) {
+      const cid = await publishToIPFS(outputDir, ipfs);
 
-        print.success(`IPFS { ${cid} }`);
-        uris.push(['Web3API IPFS', `ipfs://${cid}`]);
+      print.success(`IPFS { ${cid} }`);
+      uris.push(["Web3API IPFS", `ipfs://${cid}`]);
 
-        if (testEns) {
-          let address;
-          let domain;
-          if (testEns.indexOf(',') > -1) {
-            const [addr, dom] = testEns.split(',');
-            address = addr;
-            domain = dom;
-          } else {
-            domain = testEns;
-          }
+      if (testEns) {
+        if (!ensAddress) {
+          uris.push(["ENS Registry", `${ethProvider}/${ensAddress}`]);
+        }
 
-          if (!address) {
-            const { data: { ethereum } } = await axios.get(
-              "http://localhost:4040/providers"
-            );
-            const { data: { ensAddress } } = await axios.get(
-              "http://localhost:4040/deploy-ens"
-            );
+        // ask the dev server to publish the CID to ENS
+        const { data } = await axios.get("http://localhost:4040/register-ens", {
+          params: {
+            domain: ensDomain,
+            cid,
+          },
+        });
 
-            print.success(`ENS Registry Deployed { ${ensAddress} }`);
-            uris.push(['ENS Registry', `${ethereum}/${ensAddress}`]);
-          }
-
-          // ask the dev server to publish the CID to ENS
-          const { data } = await axios.get(
-            "http://localhost:4040/register-ens",
-            {
-              params: {
-                domain: domain,
-                cid
-              }
-            }
+        if (data.success) {
+          uris.push(["Web3API ENS", `${testEns} => ${cid}`]);
+        } else {
+          print.error(
+            `ENS Resolution Failed { ${testEns} => ${cid} }\n` +
+              `Ethereum Provider: ${ethProvider}\n` +
+              `ENS Address: ${ensAddress}`
           );
-
-          if (data.success) {
-            print.success(`ENS Resolution Configured { ${testEns} => ${cid} }`)
-            uris.push(['Web3API ENS', `${testEns} => ${cid}`]);
-          }
         }
       }
-
-      // TODO: order of dependencies is strange between:
-      // ipfs, graph-node, subgraph, graph-cli, and web3api.yaml
-      if (graph !== undefined) {
-        const [name, node] = graph.split(',');
-
-        // TODO: remove this pathing hack
-        const subgraphPath = path.join(
-          path.dirname(manifestPath), 'src/subgraph/subgraph.yaml'
-        );
-
-        const id = await publishToSubgraph(subgraphPath, name, node, ipfs, outputDir);
-
-        print.success(`Subgraph Deployed { ${id} }`);
-        // TODO: remove this port hack
-        uris.push(['Subgraph GraphiQL', `${node.replace('8020', '8000')}/subgraphs/id/${id}`]);
-      }
-
-      if (uris.length) {
-        print.success("URI Viewers:"); 
-        print.table(uris);
-      }
-
-      process.exitCode = 0;
     }
-  }
-}
+
+    if (uris.length) {
+      print.success("URI Viewers:");
+      print.table(uris);
+    }
+
+    process.exitCode = 0;
+  },
+};

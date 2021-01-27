@@ -1,7 +1,15 @@
 import { Uri } from "./";
 
-import { DocumentNode } from "graphql";
+import { DocumentNode, parse } from "graphql";
 import gql from "graphql-tag";
+
+/** GraphQL SchemaDocument */
+export type SchemaDocument = DocumentNode;
+
+/** Create a GraphQL SchemaDocument by parsing a string */
+export function createSchemaDocument(schema: string): SchemaDocument {
+  return parse(schema);
+}
 
 /** GraphQL QueryDocument */
 export type QueryDocument = DocumentNode;
@@ -27,13 +35,13 @@ export interface QueryApiOptions<
   /**
    * Variables referenced within the query string via GraphQL's '$variable' syntax.
    */
-  variables?: TVariables
+  variables?: TVariables;
 }
 
 /**
  * The result of an API query, which is the aggregate
  * of one or more [[InvokeApiResult | invocation results]].
- * 
+ *
  * @template TData Type of the query result data.
  */
 export interface QueryApiResult<
@@ -49,6 +57,8 @@ export interface QueryApiResult<
    * Errors should be populated with information as to what happened.
    * Null is used to represent an intentionally null result.
    */
+  // TODO: is it correct to have this optionally undefined? Should it instead be { } for "undefined" cases?
+  //       axios follows this pattern, does GraphQL/Apollo?
   data?: TData;
 
   /** Errors encountered during the query. */

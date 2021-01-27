@@ -6,17 +6,8 @@ export class Nullable<T> {
   private _value: T;
   private _nil: bool;
 
-  get value(): T {
-    return this._value
-  }
-
-  set value(arg: T) {
-    this._value = arg;
-    this._nil = false;
-  }
-
-  get isNull(): boolean {
-    return this._nil;
+  constructor() {
+    this.toNull();
   }
 
   static fromValue<T>(value: T): Nullable<T> {
@@ -29,21 +20,13 @@ export class Nullable<T> {
     return new Nullable<T>();
   }
 
-  constructor() {
-    this.toNull();
-  }
-
-  toNull(): void {
-    this._nil = true;
-  }
-
   @inline
   @operator("==")
   protected eq(rhs: Nullable<T>): bool {
     if (this._nil) {
       return this._nil == rhs._nil;
     } else {
-      return !(rhs._nil || this._value != rhs._value)
+      return !(rhs._nil || this._value != rhs._value);
     }
   }
 
@@ -51,5 +34,22 @@ export class Nullable<T> {
   @operator("!=")
   protected neq(rhs: Nullable<T>): bool {
     return !this.eq(rhs);
+  }
+
+  get value(): T {
+    return this._value;
+  }
+
+  set value(arg: T) {
+    this._value = arg;
+    this._nil = false;
+  }
+
+  get isNull(): bool {
+    return this._nil;
+  }
+
+  toNull(): void {
+    this._nil = true;
   }
 }

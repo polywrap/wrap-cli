@@ -25,8 +25,8 @@ export abstract class Write {
   abstract writeMapLength(length: u32): void;
   abstract writeMap<K, V>(
     m: Map<K, V>,
-    keyFn: (writer: Write, key: K) => void,
-    valueFn: (writer: Write, value: V) => void
+    key_fn: (writer: Write, key: K) => void,
+    value_fn: (writer: Write, value: V) => void
   ): void;
 
   abstract writeNullableBool(value: Nullable<bool>): void;
@@ -48,7 +48,7 @@ export abstract class Write {
   ): void;
   abstract writeNullableMap<K, V>(
     m: Map<K, V> | null,
-    keyFn: (writer: Write, key: K) => void,
-    valueFn: (writer: Write, value: V) => void
+    key_fn: (writer: Write, key: K) => void,
+    value_fn: (writer: Write, value: V) => void
   ): void;
 }

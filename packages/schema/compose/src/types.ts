@@ -1,4 +1,4 @@
-export type SchemaResolver = (uriOrPath: string) => string;
+export type SchemaResolver = (uriOrPath: string) => Promise<string>;
 
 export interface SchemaFile {
   schema: string;
@@ -17,10 +17,10 @@ export interface ExternalImport {
 }
 
 export interface LocalImport {
-  userTypes: string[];
+  objectTypes: string[];
   path: string;
 }
 
 export const SYNTAX_REFERENCE =
-`External Import: import { Type, Query } into Namespace from "external.uri"\n` +
-`Local Import: import { Type } from "./local/path/file.graphql"`;
+  `External Import: import { Type, Query } into Namespace from "external.uri"\n` +
+  `Local Import: import { Type } from "./local/path/file.graphql"`;

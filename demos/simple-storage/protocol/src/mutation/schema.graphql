@@ -3,8 +3,8 @@
 type Mutation {
   setData(
     address: String!
-    value: CustomType!
-  ): CustomType!
+    value: UInt32!
+  ): String!
 
   deployContract: String!
 }

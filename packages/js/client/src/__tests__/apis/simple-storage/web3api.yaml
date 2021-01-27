@@ -1,0 +1,16 @@
+format: 0.0.1-alpha.1
+mutation:
+  schema:
+    file: ./mutation/schema.graphql
+  module:
+    language: wasm/assemblyscript
+    file: ./mutation/index.ts
+query:
+  schema:
+    file: ./query/schema.graphql
+  module:
+    language: wasm/assemblyscript
+    file: ./query/index.ts
+import_redirects:
+  - uri: w3://ens/ethereum.web3api.eth
+    schema: ../../../../../plugins/ethereum/src/schema.graphql

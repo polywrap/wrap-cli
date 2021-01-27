@@ -1,15 +1,17 @@
 import { query, mutation } from "./resolvers";
+import { manifest } from "./manifest";
 
 import {
   Client,
   Plugin,
+  PluginManifest,
   PluginModules,
-  Uri
 } from "@web3api/core-js";
-
 import CID from "cids";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const isIPFS = require("is-ipfs");
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
 const IpfsClient = require("ipfs-http-client");
 
 export interface IpfsConfig {
@@ -17,37 +19,42 @@ export interface IpfsConfig {
 }
 
 export class IpfsPlugin extends Plugin {
-
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore: initialized within setProvider
   private _ipfs: IpfsClient;
 
   constructor(private _config: IpfsConfig) {
-    super({
-      implemented: [
-        new Uri("ens://ipfs.web3api.eth"),
-        new Uri("ens://uri-resolver.core.web3api.eth"),
-        new Uri("ens://api-resolver.core.web3api.eth")
-      ]
-    });
+    super();
     this.setProvider(this._config.provider);
   }
 
+  public static manifest(): PluginManifest {
+    return manifest;
+  }
+
+  public static isCID(cid: string): boolean {
+    return isIPFS.cid(cid) || isIPFS.cidPath(cid) || isIPFS.ipfsPath(cid);
+  }
+
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
-  public getModules(client: Client): PluginModules {
+  // https://github.com/Web3-API/prototype/issues/101
+  public getModules(_client: Client): PluginModules {
     return {
       query: query(this),
-      mutation: mutation(this)
+      mutation: mutation(this),
     };
   }
 
-  public setProvider(provider: string) {
+  public setProvider(provider: string): void {
     this._config.provider = provider;
     this._ipfs = new IpfsClient(provider);
   }
 
-  public async add(data: Uint8Array): Promise<{
-    path: string,
-    cid: CID,
+  public async add(
+    data: Uint8Array
+  ): Promise<{
+    path: string;
+    cid: CID;
   }> {
     return await this._ipfs.add(data);
   }
@@ -57,32 +64,30 @@ export class IpfsPlugin extends Plugin {
   }
 
   public async catToString(cid: string): Promise<string> {
-    return (await this.catToBuffer(cid)).toString();
+    const buffer = await this.catToBuffer(cid);
+    const decoder = new TextDecoder();
+    return decoder.decode(buffer);
   }
 
   public async catToBuffer(cid: string): Promise<Uint8Array> {
-    const chunks = []
+    const chunks = [];
     for await (const chunk of this._ipfs.cat(cid)) {
-      chunks.push(chunk)
+      chunks.push(chunk);
     }
-    const result = Buffer.concat(chunks);
+    const result = chunks.length > 1 ? Buffer.concat(chunks) : chunks[0];
     const u8Array = new Uint8Array(result.byteLength);
     u8Array.set(result);
     return u8Array;
   }
 
-  public ls(cid: string): AsyncIterable<{
+  public ls(
+    cid: string
+  ): AsyncIterable<{
     depth: number;
     name: string;
     type: string;
     path: string;
   }> {
     return this._ipfs.ls(cid);
-  }
-
-  public static isCID(cid: string) {
-    return isIPFS.cid(cid)
-        || isIPFS.cidPath(cid)
-        || isIPFS.ipfsPath(cid);
   }
 }

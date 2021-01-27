@@ -2,7 +2,9 @@
   "name": "@web3api/client-test-env",
   "version": "0.0.1-prealpha.1",
   "license": "MIT",
+  "private": true,
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "up": "docker-compose up",
     "down": "docker-compose down"

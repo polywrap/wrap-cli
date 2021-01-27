@@ -1,8 +1,7 @@
 import { ExternalImport, LocalImport, SYNTAX_REFERENCE } from "./types";
+import { getDuplicates } from "./utils";
 
 import Path from "path";
-import { ObjectTypeDefinitionNode, parse, visit } from "graphql";
-import { getDuplicates } from "./utils";
 
 export function parseExternalImports(
   imports: RegExpMatchArray[],
@@ -58,11 +57,28 @@ export function parseExternalImports(
   }
 
   // Make sure namespaces are unique
-
   const namespaces = externalImports.map((extImport) => extImport.namespace);
   const duplicateNamespaces = getDuplicates(namespaces);
   if (duplicateNamespaces.length > 0) {
     throw Error(`Duplicate namespaces found: ${duplicateNamespaces}`);
+  }
+
+  // Make sure all uris have the same namespace
+  const uriToNamespace: Record<string, string> = {};
+  for (const ext of externalImports) {
+    if (uriToNamespace[ext.uri]) {
+      if (uriToNamespace[ext.uri] !== ext.namespace) {
+        throw Error(
+          `Imports from a single URI must be imported into the same namespace.\nURI: ${
+            ext.uri
+          }\nNamespace 1: ${ext.namespace}\nNamespace 2: ${
+            uriToNamespace[ext.uri]
+          }`
+        );
+      }
+    } else {
+      uriToNamespace[ext.uri] = ext.namespace;
+    }
   }
 
   return externalImports;
@@ -82,7 +98,7 @@ export function parseLocalImports(
       );
     }
 
-    const userTypes = importStatement[1]
+    const importTypes = importStatement[1]
       .split(",")
       .map((str) => str.replace(/\s+/g, "")) // Trim all whitespace
       .filter(Boolean); // Remove empty strings
@@ -90,7 +106,7 @@ export function parseLocalImports(
     const path = Path.join(Path.dirname(schemaPath), importPath);
 
     // Make sure the developer does not try to import a dependencies dependency
-    const index = userTypes.findIndex((str) => str.indexOf("_") > -1);
+    const index = importTypes.findIndex((str) => str.indexOf("_") > -1);
     if (index > -1) {
       throw Error(
         `User defined types with '_' in their name are forbidden. This is used for Web3API import namespacing.`
@@ -98,49 +114,18 @@ export function parseLocalImports(
     }
 
     localImports.push({
-      userTypes,
+      objectTypes: importTypes,
       path,
     });
   }
 
   // Make sure types are unique
-
-  const userTypesNames = localImports.reduce<string[]>(
-    (accumulator, localImport) => accumulator.concat(localImport.userTypes),
-    []
-  );
-  const duplicateUserTypes = getDuplicates(userTypesNames);
-  if (duplicateUserTypes.length > 0) {
-    throw Error(`Duplicate type found: ${duplicateUserTypes}`);
+  const localImportNames: string[] = [];
+  localImports.forEach((imp) => localImportNames.push(...imp.objectTypes));
+  const duplicateImportTypes = getDuplicates(localImportNames);
+  if (duplicateImportTypes.length > 0) {
+    throw Error(`Duplicate type found: ${duplicateImportTypes}`);
   }
 
   return localImports;
-}
-
-export function parseSchemaUserDefinedTypes(schema: string) {
-  const userTypes: string[] = [];
-  const userTypesWithUnderscores: string[] = [];
-  const schemaAST = parse(schema);
-
-  visit(schemaAST, {
-    enter: {
-      ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
-        if (node.name.value.includes("_")) {
-          userTypesWithUnderscores.push(node.name.value);
-        }
-
-        userTypes.push(node.name.value);
-      },
-    },
-  });
-
-  if (userTypesWithUnderscores.length) {
-    throw new Error(
-      `User defined type names cannot contain underscores: ${userTypesWithUnderscores.map(
-        (userType) => `\n- ${userType}`
-      )}`
-    );
-  }
-
-  return userTypes;
 }

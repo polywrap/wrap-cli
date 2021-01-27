@@ -18,7 +18,7 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
 }
 
 function writeCustomType(writer: Write, type: CustomType) {
-  writer.writeMapLength(21);
+  writer.writeMapLength(23);
   writer.writeString("str");
   writer.writeString(type.str);
   writer.writeString("optStr");
@@ -45,6 +45,10 @@ function writeCustomType(writer: Write, type: CustomType) {
   writer.writeInt32(type.i32);
   writer.writeString("i64");
   writer.writeInt64(type.i64);
+  writer.writeString("boolean");
+  writer.writeBool(type.boolean);
+  writer.writeString("optBoolean");
+  writer.writeNullableBool(type.optBoolean);
   writer.writeString("uArray");
   writer.writeArray(type.uArray, (writer: Write, item: u32): void => {
     writer.writeUInt32(item);
@@ -139,6 +143,12 @@ export function deserializeCustomType(buffer: ArrayBuffer, type: CustomType) {
     }
     else if (field == "i64") {
       type.i64 = reader.readInt64();
+    }
+    else if (field == "boolean") {
+      type.boolean = reader.readBool();
+    }
+    else if (field == "optBoolean") {
+      type.optBoolean = reader.readNullableBool();
     }
     else if (field == "uArray") {
       type.uArray = reader.readArray((reader: Read): u32 => {

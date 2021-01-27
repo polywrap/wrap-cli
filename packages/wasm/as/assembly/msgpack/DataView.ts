@@ -1,27 +1,27 @@
-import { BLOCK_MAXSIZE } from "rt/common";
-import { E_INDEXOUTOFRANGE, E_INVALIDLENGTH } from "util/error";
+import { E_INDEXOUTOFRANGE, E_INVALIDLENGTH, BLOCK_MAXSIZE } from "./utils";
 
 export class DataView {
+  @unsafe
+  readonly dataStart: u32;
   readonly buffer: ArrayBuffer;
-  @unsafe readonly dataStart: usize;
-  private byteOffset: i32;
   readonly byteLength: i32;
+  private byteOffset: i32;
 
   constructor(
     buffer: ArrayBuffer,
-    byteOffset: i32 = 0,
-    byteLength: i32 = buffer.byteLength
+    byte_offset: i32 = 0,
+    byte_length: i32 = buffer.byteLength
   ) {
     if (
-      i32(<u32>byteLength > <u32>BLOCK_MAXSIZE) |
-      i32(<u32>byteOffset + byteLength > <u32>buffer.byteLength)
+      i32(<u32>byte_length > <u32>BLOCK_MAXSIZE) |
+      i32(<u32>byte_offset + byte_length > <u32>buffer.byteLength)
     )
       throw new RangeError(E_INVALIDLENGTH);
     this.buffer = buffer; // retains
-    var dataStart = changetype<usize>(buffer);
+    const dataStart = changetype<u32>(buffer);
     this.dataStart = dataStart;
-    this.byteLength = byteLength;
-    this.byteOffset = byteOffset;
+    this.byteLength = byte_length;
+    this.byteOffset = byte_offset;
   }
 
   getBytes(length: i32): ArrayBuffer {
@@ -58,7 +58,9 @@ export class DataView {
   getFloat32(): f32 {
     if (this.byteOffset + 4 > this.byteLength)
       throw new RangeError(E_INDEXOUTOFRANGE);
-    const result = reinterpret<f32>(bswap(load<u32>(this.dataStart + this.byteOffset)));
+    const result = reinterpret<f32>(
+      bswap(load<u32>(this.dataStart + this.byteOffset))
+    );
     this.byteOffset += 4;
     return result;
   }
@@ -66,7 +68,9 @@ export class DataView {
   getFloat64(): f64 {
     if (this.byteOffset + 8 > this.byteLength)
       throw new RangeError(E_INDEXOUTOFRANGE);
-    const result = reinterpret<f64>(bswap(load<u64>(this.dataStart + this.byteOffset)));
+    const result = reinterpret<f64>(
+      bswap(load<u64>(this.dataStart + this.byteOffset))
+    );
     this.byteOffset += 8;
     return result;
   }
@@ -122,14 +126,20 @@ export class DataView {
   setFloat32(value: f32): void {
     if (this.byteOffset + 4 > this.byteLength)
       throw new RangeError(E_INDEXOUTOFRANGE);
-    store<u32>(this.dataStart + this.byteOffset, bswap(reinterpret<u32>(value)));
+    store<u32>(
+      this.dataStart + this.byteOffset,
+      bswap(reinterpret<u32>(value))
+    );
     this.byteOffset += 4;
   }
 
   setFloat64(value: f64): void {
     if (this.byteOffset + 8 > this.byteLength)
       throw new RangeError(E_INDEXOUTOFRANGE);
-    store<u64>(this.dataStart + this.byteOffset, bswap(reinterpret<u64>(value)));
+    store<u64>(
+      this.dataStart + this.byteOffset,
+      bswap(reinterpret<u64>(value))
+    );
     this.byteOffset += 8;
   }
 
