@@ -14,7 +14,7 @@ export class {{type}} {
   {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/array}}
   {{#object}}
-  {{name}}: {{#toWasm}}Objects.{{toGraphQLType}}{{/toWasm}};
+  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/object}}
   {{/properties}}
 

@@ -10,7 +10,7 @@ import { AnotherType } from "./";
 import * as Objects from "../";
 
 export function serializeAnotherType(type: AnotherType): ArrayBuffer {
-  const objects: ArrayBuffer[] = [
+  const objects: (ArrayBuffer | null)[] = [
     type.circular.toBuffer(),
   ];
   const sizer = new WriteSizer();
@@ -21,13 +21,13 @@ export function serializeAnotherType(type: AnotherType): ArrayBuffer {
   return buffer;
 }
 
-function writeAnotherType(writer: Write, type: AnotherType, objects: ArrayBuffer[]) {
+function writeAnotherType(writer: Write, type: AnotherType, objects: (ArrayBuffer | null)[]) {
   let objectsIdx = 0;
   writer.writeMapLength(2);
   writer.writeString("prop");
   writer.writeNullableString(type.prop);
   writer.writeString("circular");
-  writer.writeBytes(objects[objectsIdx++]);
+  writer.writeNullableBytes(objects[objectsIdx++]);
 }
 
 export function deserializeAnotherType(buffer: ArrayBuffer, type: AnotherType) {

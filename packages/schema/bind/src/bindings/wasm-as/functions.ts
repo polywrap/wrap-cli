@@ -41,7 +41,7 @@ export const toWasmInit: MustacheFunction = () => {
       const nullable = "Nullable";
 
       if (nullType.substr(0, nullable.length) === nullable) {
-        return `new ${nullType}()`;
+        return `new Objects.${type}()`;
       } else {
         return "null";
       }
@@ -68,7 +68,7 @@ export const toWasmInit: MustacheFunction = () => {
       case "Boolean":
         return "false";
       default:
-        return `new ${type}()`;
+        return `new Objects.${type}()`;
     }
   };
 };
@@ -114,7 +114,7 @@ export const toWasm: MustacheFunction = () => {
       case "Boolean":
         return applyNullable("bool", nullable);
       default:
-        return applyNullable(type, nullable);
+        return applyNullable("Objects." + type, nullable);
     }
   };
 };

@@ -10,7 +10,7 @@ import { {{type}} } from "./";
 import * as Objects from "../";
 
 export function serialize{{type}}(type: {{type}}): ArrayBuffer {
-  const objects: ArrayBuffer[] = [
+  const objects: (ArrayBuffer | null)[] = [
     {{#properties}}{{#object}}type.{{name}}.toBuffer(),{{/object}}{{/properties}}
   ];
   const sizer = new WriteSizer();
@@ -21,7 +21,7 @@ export function serialize{{type}}(type: {{type}}): ArrayBuffer {
   return buffer;
 }
 
-function write{{type}}(writer: Write, type: {{type}}, objects: ArrayBuffer[]) {
+function write{{type}}(writer: Write, type: {{type}}, objects: (ArrayBuffer | null)[]) {
   let objectsIdx = 0;
   writer.writeMapLength({{properties.length}});
   {{#properties}}
@@ -35,7 +35,7 @@ function write{{type}}(writer: Write, type: {{type}}, objects: ArrayBuffer[]) {
   });
   {{/array}}
   {{#object}}
-  writer.writeBytes(objects[objectsIdx++]);
+  writer.writeNullableBytes(objects[objectsIdx++]);
   {{/object}}
   {{/properties}}
 }
@@ -59,7 +59,7 @@ export function deserialize{{type}}(buffer: ArrayBuffer, type: {{type}}) {
       });
       {{/array}}
       {{#object}}
-      type.{{name}} = new Objects.{{type}}();
+      type.{{name}} = {{#toWasmInit}}{{type}}{{/toWasmInit}};
       type.{{name}}.fromBuffer(reader.readBytes());
       {{/object}}
     }
