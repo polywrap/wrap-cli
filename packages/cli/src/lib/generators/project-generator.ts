@@ -20,7 +20,9 @@ function getProxy() {
   } else {
     try {
       // Trying to read https-proxy from .npmrc
-      const httpsProxy = execSync("npm config get https-proxy").toString().trim();
+      const httpsProxy = execSync("npm config get https-proxy")
+        .toString()
+        .trim();
       return httpsProxy !== "null" ? httpsProxy : undefined;
     } catch (e) {
       return;
@@ -41,7 +43,7 @@ function checkIfOnline(useYarn: boolean) {
       if (err != null && (proxy = getProxy())) {
         // If a proxy is defined, we likely can't resolve external hostnames.
         // Try to resolve the proxy name as an indication of a connection.
-        dns.lookup(url.parse(proxy).hostname!, (proxyErr) => {
+        dns.lookup(url.parse(proxy).hostname || "", (proxyErr) => {
           resolve(proxyErr == null);
         });
       } else {
@@ -51,7 +53,11 @@ function checkIfOnline(useYarn: boolean) {
   });
 }
 
-const executeCommand = (command: string, args: string[], root: string): Promise<boolean | { command: string }> => {
+const executeCommand = (
+  command: string,
+  args: string[],
+  root: string
+): Promise<boolean | { command: string }> => {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, { stdio: "inherit", cwd: root });
     child.on("close", (code) => {
@@ -123,9 +129,13 @@ export const generateProject = (
 
     executeCommand(command, args, root)
       .then(() => {
-        copyAsync(`${root}/node_modules/@web3api/templates/${type}/${lang}`, `${root}`, {
-          overwrite: true,
-        })
+        copyAsync(
+          `${root}/node_modules/@web3api/templates/${type}/${lang}`,
+          `${root}`,
+          {
+            overwrite: true,
+          }
+        )
           .then(() => {
             // Now need to remove `@web3api/templates` from packages
             if (useYarn) {
