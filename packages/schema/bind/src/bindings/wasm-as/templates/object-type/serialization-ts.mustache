@@ -11,7 +11,7 @@ import * as Objects from "../";
 
 export function serialize{{type}}(type: {{type}}): ArrayBuffer {
   const objects: (ArrayBuffer | null)[] = [
-    {{#properties}}{{#object}}type.{{name}}.toBuffer(),{{/object}}{{/properties}}
+    {{#properties}}{{#object}}type.{{name}}{{^required}}?{{/required}}.toBuffer(),{{/object}}{{/properties}}
   ];
   const sizer = new WriteSizer();
   write{{type}}(sizer, type, objects);
@@ -59,8 +59,8 @@ export function deserialize{{type}}(buffer: ArrayBuffer, type: {{type}}) {
       });
       {{/array}}
       {{#object}}
-      type.{{name}} = {{#toWasmInit}}{{type}}{{/toWasmInit}};
-      type.{{name}}.fromBuffer(reader.readBytes());
+      {{> deserialize_object }}
+      type.{{name}} = object;
       {{/object}}
     }
     {{/properties}}

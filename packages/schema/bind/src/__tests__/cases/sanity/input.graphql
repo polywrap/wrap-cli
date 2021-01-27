@@ -43,6 +43,10 @@ type CustomType {
   uOptArrayOptArray: [[UInt64]]!
   uArrayOptArrayArray: [[[UInt64!]!]]!
   crazyArray: [[[[UInt64!]]!]]
+  object: AnotherType!
+  optObject: AnotherType
+  objectArray: [AnotherType!]!
+  optObjectArray: [AnotherType]
 }
 
 type AnotherType {

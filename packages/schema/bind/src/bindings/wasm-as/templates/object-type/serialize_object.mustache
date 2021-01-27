@@ -1,0 +1,6 @@
+{{#required}}
+writer.writeBytes(item.toBuffer());
+{{/required}}
+{{^required}}
+writer.writeNullableBytes(item ? item.toBuffer() : null);
+{{/required}}

@@ -29,6 +29,10 @@ export class CustomType {
   uOptArrayOptArray: Array<Array<Nullable<u64>> | null>;
   uArrayOptArrayArray: Array<Array<Array<u64>> | null>;
   crazyArray: Array<Array<Array<Array<u64> | null>> | null> | null;
+  object: Objects.AnotherType;
+  optObject: Nullable<Objects.AnotherType>;
+  objectArray: Array<Objects.AnotherType>;
+  optObjectArray: Array<Nullable<Objects.AnotherType>> | null;
 
   toBuffer(): ArrayBuffer {
     return serializeCustomType(this);

@@ -42,8 +42,9 @@ export function deserializeAnotherType(buffer: ArrayBuffer, type: AnotherType) {
       type.prop = reader.readNullableString();
     }
     else if (field == "circular") {
-      type.circular = new Objects.CustomType();
-      type.circular.fromBuffer(reader.readBytes());
+      const object = new Objects.CustomType();
+      object.fromBuffer(reader.readBytes());
+      type.circular = object;
     }
   }
 }
