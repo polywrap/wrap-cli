@@ -34,7 +34,7 @@ function writeTestImport_Object(writer: Write, type: TestImport_Object, objects:
     writer.writeBytes(item.toBuffer());
   });
   writer.writeString("optObjectArray");
-  writer.writeNullableArray(type.optObjectArray, (writer: Write, item: Nullable<Objects.TestImport_AnotherObject>): void => {
+  writer.writeNullableArray(type.optObjectArray, (writer: Write, item: Objects.TestImport_AnotherObject | null): void => {
     writer.writeNullableBytes(item ? item.toBuffer() : null);
   });
 }
@@ -54,7 +54,7 @@ export function deserializeTestImport_Object(buffer: ArrayBuffer, type: TestImpo
     }
     else if (field == "optObject") {
       var bytes = reader.readNullableBytes();
-      var object: Nullable<Objects.TestImport_AnotherObject>;
+      var object: Objects.TestImport_AnotherObject | null;
       if (bytes) {
         object = new Objects.TestImport_AnotherObject();
         object.fromBuffer(bytes);
@@ -71,9 +71,9 @@ export function deserializeTestImport_Object(buffer: ArrayBuffer, type: TestImpo
       });
     }
     else if (field == "optObjectArray") {
-      type.optObjectArray = reader.readNullableArray((reader: Read): Nullable<Objects.TestImport_AnotherObject> => {
+      type.optObjectArray = reader.readNullableArray((reader: Read): Objects.TestImport_AnotherObject | null => {
         var bytes = reader.readNullableBytes();
-        var object: Nullable<Objects.TestImport_AnotherObject>;
+        var object: Objects.TestImport_AnotherObject | null;
         if (bytes) {
           object = new Objects.TestImport_AnotherObject();
           object.fromBuffer(bytes);

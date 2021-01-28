@@ -60,6 +60,13 @@ type Query @imports(
   queryMethod(
     arg: String!
   ): Int!
+
+  objectMethod(
+    object: AnotherType!,
+    optObject: AnotherType,
+    objectArray: [AnotherType!]!,
+    optObjectArray: [AnotherType]
+  ): AnotherType
 }
 
 type TestImport_Query @imported(

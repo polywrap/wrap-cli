@@ -10,9 +10,9 @@ export class TestImport_Object {
   public static uri: string = "testimport.uri.eth";
 
   object: Objects.TestImport_AnotherObject;
-  optObject: Nullable<Objects.TestImport_AnotherObject>;
+  optObject: Objects.TestImport_AnotherObject | null;
   objectArray: Array<Objects.TestImport_AnotherObject>;
-  optObjectArray: Array<Nullable<Objects.TestImport_AnotherObject>> | null;
+  optObjectArray: Array<Objects.TestImport_AnotherObject | null> | null;
 
   toBuffer(): ArrayBuffer {
     return serializeTestImport_Object(this);

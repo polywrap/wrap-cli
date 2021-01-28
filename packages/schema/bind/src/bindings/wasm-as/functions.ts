@@ -1,3 +1,5 @@
+import { isMsgPackType } from "./types";
+
 type MustacheFunction = () => (
   value: string,
   render: (template: string) => string
@@ -41,8 +43,6 @@ export const toWasmInit: MustacheFunction = () => {
       const nullable = "Nullable";
 
       if (nullType.substr(0, nullable.length) === nullable) {
-        return `new Objects.${type}()`;
-      } else {
         return "null";
       }
     }
@@ -132,7 +132,11 @@ const toWasmArray = (type: string, nullable: boolean): string => {
 
 const applyNullable = (type: string, nullable: boolean): string => {
   if (nullable) {
-    if (type.indexOf("Array") === 0 || type.indexOf("string") === 0) {
+    if (
+      type.indexOf("Array") === 0 ||
+      type.indexOf("string") === 0 ||
+      !isMsgPackType(type)
+    ) {
       return `${type} | null`;
     } else {
       return `Nullable<${type}>`;

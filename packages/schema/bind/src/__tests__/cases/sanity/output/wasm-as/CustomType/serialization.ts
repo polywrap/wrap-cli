@@ -110,7 +110,7 @@ function writeCustomType(writer: Write, type: CustomType, objects: (ArrayBuffer 
     writer.writeBytes(item.toBuffer());
   });
   writer.writeString("optObjectArray");
-  writer.writeNullableArray(type.optObjectArray, (writer: Write, item: Nullable<Objects.AnotherType>): void => {
+  writer.writeNullableArray(type.optObjectArray, (writer: Write, item: Objects.AnotherType | null): void => {
     writer.writeNullableBytes(item ? item.toBuffer() : null);
   });
 }
@@ -229,7 +229,7 @@ export function deserializeCustomType(buffer: ArrayBuffer, type: CustomType): vo
     }
     else if (field == "optObject") {
       var bytes = reader.readNullableBytes();
-      var object: Nullable<Objects.AnotherType>;
+      var object: Objects.AnotherType | null;
       if (bytes) {
         object = new Objects.AnotherType();
         object.fromBuffer(bytes);
@@ -246,9 +246,9 @@ export function deserializeCustomType(buffer: ArrayBuffer, type: CustomType): vo
       });
     }
     else if (field == "optObjectArray") {
-      type.optObjectArray = reader.readNullableArray((reader: Read): Nullable<Objects.AnotherType> => {
+      type.optObjectArray = reader.readNullableArray((reader: Read): Objects.AnotherType | null => {
         var bytes = reader.readNullableBytes();
-        var object: Nullable<Objects.AnotherType>;
+        var object: Objects.AnotherType | null;
         if (bytes) {
           object = new Objects.AnotherType();
           object.fromBuffer(bytes);
