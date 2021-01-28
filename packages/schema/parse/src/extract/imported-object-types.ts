@@ -9,7 +9,7 @@ import {
   extractNamedType,
   State,
 } from "./object-types-utils";
-import { extractImportedDirectiveArgs } from "./directive-arguments";
+import { extractImportedDirectiveArgs } from "./directive-utils";
 
 import {
   DocumentNode,

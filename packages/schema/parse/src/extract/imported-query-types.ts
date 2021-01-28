@@ -10,7 +10,7 @@ import {
   extractNamedType,
   State,
 } from "./query-types-utils";
-import { extractImportedDirectiveArgs } from "./directive-arguments";
+import { extractImportedDirectiveArgs } from "./directive-utils";
 
 import {
   DocumentNode,
