@@ -1,0 +1,6 @@
+mutation SetData($address: String!, $value: Int!) {
+  setData(
+    address: $address
+    value: $value
+  )
+}

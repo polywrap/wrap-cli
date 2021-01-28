@@ -5,11 +5,11 @@ import { GluegunToolbox, print } from "gluegun";
 import chalk from "chalk";
 
 const HELP = `
-${chalk.bold("w3 test-env")} [command]
+${chalk.bold("w3 test-env")} command
 
 Commands:
-  up    Startup the test env
-  down  Shutdown the test env
+  ${chalk.bold("up")}    Startup the test env
+  ${chalk.bold("down")}  Shutdown the test env
 `;
 
 export default {
