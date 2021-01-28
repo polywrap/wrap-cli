@@ -5,44 +5,44 @@ import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 
 const supportedLangs: { [key: string]: string[] } = {
-  app: ["react"],
   api: ["assemblyscript"],
+  app: ["react"],
 };
 
 const HELP = `
-${chalk.bold("w3 create")} [options] ${chalk.bold("<project-name>")}
+${chalk.bold("w3 create")} command <project-name> [options]
+
+Commands:
+  ${chalk.bold("api")} <lang>  Create a Web3API project
+    langs: ${supportedLangs.api.join(", ")}
+  ${chalk.bold("app")} <lang>            Create a Web3API application
+    langs: ${supportedLangs.app.join(", ")}
 
 Options:
-  -h, --help                         Show usage information
-  -t, --type <type>                  Select project type (app, api) (default: api)
-  -l, --lang <lang>                  Select project language
-                                      app: ${supportedLangs.app.join(", ")}
-                                      api: ${supportedLangs.api.join(", ")}
+  -h, --help               Show usage information
+  -o, --output-dir <path>  Output directory for the new project
 `;
 
 export default {
   alias: ["c"],
   description: "Create a new project with w3 CLI",
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { parameters, strings, print, runtime, prompt, filesystem } = toolbox;
+    const { parameters, strings, print, prompt, filesystem } = toolbox;
     const { isBlank } = strings;
 
-    if (!runtime) {
-      print.error("Internal error");
-      process.exit(8);
-    }
-
-    let { help, type, lang } = parameters.options;
-    const { h, t, l } = parameters.options;
+    // Options
+    let { help, outputDir } = parameters.options;
+    const { h, o } = parameters.options;
 
     help = help || h;
-    type = type || t || "api";
-    lang = lang || l;
+    outputDir = outputDir || o;
 
-    let projectName = "";
+    let type = "";
+    let lang = "";
+    let name = "";
     try {
-      const params = toolbox.parameters;
-      [projectName] = fixParameters(
+      const params = parameters;
+      [type, lang, name] = fixParameters(
         {
           options: params.options,
           array: params.array,
@@ -63,56 +63,70 @@ export default {
       return;
     }
 
-    if (type === true) {
-      print.error("--type option missing <type> argument");
-      print.info(HELP);
-      return;
-    } else if (type && type !== "app" && type !== "api") {
-      print.error(`Unrecognized --type: ${type}`);
+    if (!type) {
+      print.error("Please provide a command");
       print.info(HELP);
       return;
     }
 
-    if (lang === true) {
-      print.error("--lang option missing <lang> argument");
+    if (!lang) {
+      print.error("Please provide a language");
       print.info(HELP);
       return;
-    } else if (type && lang && !supportedLangs[type].includes(lang)) {
-      print.error(`Unrecognized --lang: ${lang}`);
-      print.info(HELP);
-      return;
-    } else if (!lang) {
-      lang = supportedLangs[type][0];
     }
 
-    if (isBlank(projectName)) {
-      print.error("Project name is required");
+    if (!name) {
+      print.error("Please provide a project name");
       print.info(HELP);
       return;
     }
+
+    if (!supportedLangs[type]) {
+      print.error(`Unrecognized command "${type}"`);
+      print.info(HELP);
+      return;
+    }
+
+    if (supportedLangs[type].indexOf(lang) === -1) {
+      print.error(`Unrecognized language "${lang}"`);
+      print.info(HELP);
+      return;
+    }
+
+    if (outputDir === true) {
+      print.error("--output-dir option missing <path> argument");
+      print.info(HELP);
+      return;
+    }
+
+    const projectDir = outputDir ? `${outputDir}/${name}` : name;
 
     // check if project already exists
-    if (!filesystem.exists(projectName)) {
+    if (!filesystem.exists(projectDir)) {
       print.newline();
-      print.info(`Setting up everything...`);
+      print.info(`Setting everything up...`);
     } else {
-      print.info(`Directory with name ${projectName} already exists`);
+      print.info(`Directory with name ${projectDir} already exists`);
       const overwrite = await prompt.confirm(
         "Do you want to overwrite this directory?"
       );
       if (overwrite) {
-        print.info(`Overwriting ${projectName}...`);
-        filesystem.remove(projectName);
+        print.info(`Overwriting ${projectDir}...`);
+        filesystem.remove(projectDir);
       } else {
         process.exit(8);
       }
     }
 
-    generateProject(type, lang, projectName, filesystem)
+    generateProject(type, lang, projectDir, filesystem)
       .then(() => {
         print.newline();
 
-        print.info(`🔥 You are ready to turn your Protocol into a Web3API 🔥`);
+        if (type === "api") {
+          print.info(`🔥 You are ready to turn your protocol into a Web3API 🔥`);
+        } else if (type === "app") {
+          print.info(`🔥 You are ready to build a dApp using Web3API 🔥`);
+        }
       })
       .catch((err) => {
         print.error(`Command failed: ${err.command}`);
