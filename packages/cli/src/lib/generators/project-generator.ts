@@ -91,7 +91,7 @@ export const generateProject = (
     const isOnline = checkIfOnline(useYarn);
 
     const root = path.resolve(projectName);
-    const dependencies: never[] = ["@web3api/templates" as never];
+    const dependencies: string[] = ["@web3api/templates"];
 
     if (useYarn) {
       command = "yarnpkg";
@@ -101,7 +101,7 @@ export const generateProject = (
         args.push("--offline");
       }
 
-      [].push.apply(args, dependencies);
+      args.push(...dependencies);
 
       // Explicitly set cwd() to work around issues like
       // https://github.com/facebook/create-react-app/issues/3326.
@@ -140,9 +140,7 @@ export const generateProject = (
             // Now need to remove `@web3api/templates` from packages
             if (useYarn) {
               command = "yarnpkg";
-              args = ["remove"];
-
-              [].push.apply(args, dependencies);
+              args = ["remove"].concat(dependencies);
             } else {
               command = "npm";
               args = ["uninstall", "--loglevel", "error"].concat(dependencies);
