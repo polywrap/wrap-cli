@@ -10,6 +10,7 @@ import {
   extractNamedType,
   State,
 } from "./query-types-utils";
+import { extractImportedDirectiveArgs } from "./directive-arguments";
 
 import {
   DocumentNode,
@@ -21,7 +22,6 @@ import {
   InputValueDefinitionNode,
   visit,
   DirectiveNode,
-  ValueNode,
 } from "graphql";
 
 const visitorEnter = (
@@ -57,41 +57,9 @@ const visitorEnter = (
 
     const importedDir = node.directives[importedIndex];
 
-    if (!importedDir.arguments || importedDir.arguments.length !== 3) {
-      // TODO: Implement better error handling
-      // https://github.com/Web3-API/prototype/issues/15
-      throw Error(
-        `The ${importedDirective} directive has incorrect arguments. See type "${typeName}"`
-      );
-    }
-
-    let namespace: string | undefined;
-    let uri: string | undefined;
-    let nativeType: string | undefined;
-
-    const extractString = (value: ValueNode, name: string) => {
-      if (value.kind === "StringValue") {
-        return value.value;
-      } else {
-        throw Error(`Error: argument '${name}' must be a string`);
-      }
-    };
-
-    for (const importArg of importedDir.arguments) {
-      if (importArg.name.value === "namespace") {
-        namespace = extractString(importArg.value, "namespace");
-      } else if (importArg.name.value === "uri") {
-        uri = extractString(importArg.value, "uri");
-      } else if (importArg.name.value === "type") {
-        nativeType = extractString(importArg.value, "type");
-      }
-    }
-
-    if (!nativeType || !namespace || !uri) {
-      throw Error(
-        "Error: import directive missing one of its required arguments (namespace, uri, type)"
-      );
-    }
+    const { namespace, uri, type: nativeType } = extractImportedDirectiveArgs(
+      importedDir
+    );
 
     const importedType = createImportedQueryDefinition({
       type: typeName,
