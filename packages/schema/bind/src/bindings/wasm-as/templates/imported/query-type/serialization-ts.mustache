@@ -6,6 +6,7 @@ import {
   WriteEncoder,
   ReadDecoder
 } from "@web3api/wasm-as";
+import * as Objects from "../../";
 
 {{#methods}}
 export class Input_{{name}} {
@@ -15,18 +16,30 @@ export class Input_{{name}} {
 }
 
 export function serialize{{name}}Args(input: Input_{{name}}): ArrayBuffer {
+  const objects: (ArrayBuffer | null)[] = [
+    {{#arguments}}{{#object}}
+    {{#required}}
+    input.{{name}}.toBuffer(),
+    {{/required}}
+    {{^required}}
+    input.{{name}} ? input.{{name}}.toBuffer() : null,
+    {{/required}}
+    {{/object}}{{/arguments}}
+  ];
   const sizer = new WriteSizer();
-  write{{name}}Args(sizer, input);
+  write{{name}}Args(sizer, input, objects);
   const buffer = new ArrayBuffer(sizer.length);
   const encoder = new WriteEncoder(buffer);
-  write{{name}}Args(encoder, input);
+  write{{name}}Args(encoder, input, objects);
   return buffer;
 }
 
 function write{{name}}Args(
   writer: Write,
-  input: Input_{{name}}
+  input: Input_{{name}},
+  objects: (ArrayBuffer | null)[]
 ): void {
+  let objectsIdx = 0;
   writer.writeMapLength({{arguments.length}});
   {{#arguments}}
   writer.writeString("{{name}}");
@@ -38,6 +51,9 @@ function write{{name}}Args(
     {{> serialize_array}}
   });
   {{/array}}
+  {{#object}}
+  writer.writeNullableBytes(objects[objectsIdx++]);
+  {{/object}}
   {{/arguments}}
 }
 
@@ -52,6 +68,11 @@ export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#return}}{{#to
     {{> deserialize_array}}
   });
   {{/array}}
+  {{#object}}
+  {{> deserialize_object}}
+
+  return object;
+  {{/object}}
   {{/return}}
 }
 {{^last}}

@@ -80,7 +80,11 @@ type TestImport_Query @imported(
     u: UInt!
     optU: UInt
     uArrayArray: [[UInt]]!
-  ): String!
+    object: TestImport_Object!
+    optObject: TestImport_Object
+    objectArray: [TestImport_Object!]!
+    optObjectArray: [TestImport_Object]
+  ): TestImport_Object
 
   anotherMethod(
     arg: [String!]!
