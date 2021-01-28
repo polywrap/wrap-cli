@@ -10,7 +10,7 @@ import {
   deserializeanotherMethodResult,
   Input_anotherMethod
 } from "./serialization";
-import * as Objects from "../../";
+import * as Objects from "../..";
 
 export class TestImport_Query {
 

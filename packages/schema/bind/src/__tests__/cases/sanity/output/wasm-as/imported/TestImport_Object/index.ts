@@ -3,7 +3,7 @@ import {
   serializeTestImport_Object,
   deserializeTestImport_Object
 } from "./serialization";
-import * as Objects from "../../";
+import * as Objects from "../..";
 
 export class TestImport_Object {
 

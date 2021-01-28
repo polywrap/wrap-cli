@@ -6,7 +6,7 @@ import {
   WriteEncoder,
   Write
 } from "@web3api/wasm-as";
-import * as Objects from "../";
+import * as Objects from "..";
 
 export class Input_queryMethod {
   arg: string;

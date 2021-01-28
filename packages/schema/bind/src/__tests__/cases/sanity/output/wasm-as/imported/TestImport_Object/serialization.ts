@@ -7,7 +7,7 @@ import {
   Nullable
 } from "@web3api/wasm-as";
 import { TestImport_Object } from "./";
-import * as Objects from "../../";
+import * as Objects from "../..";
 
 export function serializeTestImport_Object(type: TestImport_Object): ArrayBuffer {
   const objects: (ArrayBuffer | null)[] = [

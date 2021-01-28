@@ -3,7 +3,7 @@ import {
   serializeCustomType,
   deserializeCustomType
 } from "./serialization";
-import * as Objects from "../";
+import * as Objects from "..";
 
 export class CustomType {
   str: string;

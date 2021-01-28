@@ -7,7 +7,7 @@ import {
   Nullable
 } from "@web3api/wasm-as";
 import { CustomType } from "./";
-import * as Objects from "../";
+import * as Objects from "..";
 
 export function serializeCustomType(type: CustomType): ArrayBuffer {
   const objects: (ArrayBuffer | null)[] = [

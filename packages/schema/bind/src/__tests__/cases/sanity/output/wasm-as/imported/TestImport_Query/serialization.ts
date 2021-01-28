@@ -5,7 +5,7 @@ import {
   WriteEncoder,
   ReadDecoder
 } from "@web3api/wasm-as";
-import * as Objects from "../../";
+import * as Objects from "../..";
 
 export class Input_importedMethod {
   str: string;
