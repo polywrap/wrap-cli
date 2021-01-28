@@ -27,8 +27,7 @@ export default {
   alias: ["c"],
   description: "Create a new project with w3 CLI",
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { parameters, strings, print, prompt, filesystem } = toolbox;
-    const { isBlank } = strings;
+    const { parameters, print, prompt, filesystem } = toolbox;
 
     // Options
     let { help, outputDir } = parameters.options;
@@ -123,7 +122,9 @@ export default {
         print.newline();
 
         if (type === "api") {
-          print.info(`🔥 You are ready to turn your protocol into a Web3API 🔥`);
+          print.info(
+            `🔥 You are ready to turn your protocol into a Web3API 🔥`
+          );
         } else if (type === "app") {
           print.info(`🔥 You are ready to build a dApp using Web3API 🔥`);
         }
