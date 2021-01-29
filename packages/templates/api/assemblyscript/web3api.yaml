@@ -1,5 +1,6 @@
 description: SimpleStorage Web3API Example
 repository: https://github.com/web3-api/prototype
+format: 0.0.1-alpha.1
 mutation:
   schema:
     file: ./src/mutation/schema.graphql

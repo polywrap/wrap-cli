@@ -12,9 +12,7 @@ export class Web3APIManifest {
       throw Error(`Unable to parse manifest: ${manifestPath}`);
     }
 
-    // TODO: add validation
-    // - validate manifest structure
-    // - ensure everything exists
+    manifest = sanitizeAndUpgrade(manifest);
 
     return manifest;
   }

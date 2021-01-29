@@ -1,0 +1,82 @@
+{
+  "manifest": {
+    "id": "Manifest",
+    "type": "object",
+    "required": ["format", "api"],
+    "additionalProperties": false,
+    "properties": {
+      "format": {
+        "type": "string",
+        "format": "manifestFormat"
+      },
+      "description": {
+        "type": "string"
+      },
+      "api": {
+        "additionalProperties": false,
+        "type": ["object"],
+        "properties": {
+          "schemas": {
+            "type": "array",
+            "items": {
+              "required": ["file"],
+              "additionalProperties": false,
+              "type": ["object"],
+              "properties": {
+                "file": {
+                  "type": "string",
+                  "format": "file"
+                }
+              }
+            }
+          },
+          "mutation": {
+            "type": ["object"],
+            "required": ["file", "language"],
+            "additionalProperties": false,
+            "properties": {
+              "file": {
+                "type": "string",
+                "format": "file"
+              },
+              "language": {
+                "type": "string"
+              }
+            }
+          },
+          "query": {
+            "type": ["object"],
+            "required": ["file", "language"],
+            "additionalProperties": false,
+            "properties": {
+              "file": {
+                "type": "string",
+                "format": "file"
+              },
+              "language": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "ext": {
+        "additionalProperties": false,
+        "type": ["object"],
+        "properties": {
+          "subgraph": {
+            "type": ["object"],
+            "required": ["file"],
+            "additionalProperties": false,
+            "properties": {
+              "file": {
+                "type": "string",
+                "format": "file"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
