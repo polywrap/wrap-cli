@@ -10,9 +10,9 @@ const defaultTemplate = "web3api.gen.js";
 const defaultManifest = "web3api.yaml";
 
 const HELP = `
-${chalk.bold("w3 codegen")} ${chalk.bold("[<template-file>]")}
+${chalk.bold("w3 codegen")} ${chalk.bold("[<template-file>]")} [options]
 
-template-file:
+Template file:
   Path to input template file (default: ${defaultTemplate})
 
 Options:

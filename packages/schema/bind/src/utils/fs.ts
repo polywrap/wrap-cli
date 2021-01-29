@@ -53,7 +53,7 @@ export function writeDirectory(
 
     if (entry.type === "File") {
       writeFileSync(entryPath, entry.data);
-    } else {
+    } else if (entry.type === "Directory") {
       for (const subEntry of entry.data) {
         if (!existsSync(entryPath)) {
           mkdirSync(entryPath);
