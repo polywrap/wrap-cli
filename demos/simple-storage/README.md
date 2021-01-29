@@ -23,5 +23,5 @@ npx w3 build \
 
 ## 4. Test The Web3API Using A Query Recipe
 ```
-npx w3 query ./recipes/e2e.json --test-ens
+npx w3 test-recipes ./recipes/e2e.json --port 4040
 ```

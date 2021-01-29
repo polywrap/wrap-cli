@@ -14,21 +14,21 @@ import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const HELP = `
-${chalk.bold("w3 query")} [options] ${chalk.bold("<recipe-script>")}
+${chalk.bold("w3 test-recipes")} [options] ${chalk.bold("<recipe-script>")}
 
 Options:
-  -t, --test-ens  Use the development server's ENS instance
+  -p, --port  Development server's port
 `;
 
 export default {
-  alias: ["q"],
-  description: "Query Web3APIs using recipe scripts",
+  alias: ["t"],
+  description: "Test Web3APIs using recipe scripts",
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
     // eslint-disable-next-line prefer-const
-    let { t, testEns } = parameters.options;
+    let { p, port } = parameters.options;
 
-    testEns = testEns || t;
+    port = port || p;
 
     let recipePath;
     try {
@@ -39,8 +39,8 @@ export default {
           array: params.array,
         },
         {
-          t,
-          testEns,
+          p,
+          port,
         }
       );
     } catch (e) {
@@ -58,10 +58,10 @@ export default {
 
     const {
       data: { ipfs, ethereum },
-    } = await axios.get("http://localhost:4040/providers");
+    } = await axios.get(`http://localhost:${port}/providers`);
     const {
       data: { ensAddress },
-    } = await axios.get("http://localhost:4040/ens");
+    } = await axios.get(`http://localhost:${port}/ens`);
 
     // TODO: move this into its own package, since it's being used everywhere?
     // maybe have it exported from test-env.
