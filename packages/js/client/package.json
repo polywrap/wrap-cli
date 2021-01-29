@@ -20,12 +20,15 @@
     "@web3api/ipfs-plugin-js": "0.0.1-prealpha.1",
     "@web3api/schema-parse": "0.0.1-prealpha.1",
     "graphql": "^15.4.0",
+    "jsonschema": "1.4.0",
     "js-yaml": "3.14.0",
+    "semver": "7.3.4",
     "web-worker": "1.0.0"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
     "@types/js-yaml": "3.11.1",
+    "@types/semver": "^7.3.4",
     "@web3api/cli": "0.0.1-prealpha.1",
     "axios": "0.19.2",
     "jest": "26.2.2",
