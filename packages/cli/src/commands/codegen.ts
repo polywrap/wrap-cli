@@ -1,12 +1,12 @@
 /* eslint-disable prefer-const */
 import { fixParameters } from "../lib/helpers/parameters";
-import { generateCode } from "../lib/generators/code-generator";
+import { CodeGenerator } from "../lib/generators/CodeGenerator";
 
 import chalk from "chalk";
 import axios from "axios";
 import { GluegunToolbox } from "gluegun";
 
-const defaultTemplate = "web3api.gen.js";
+const defaultTemplate = "web3api.gen";
 const defaultManifest = "web3api.yaml";
 
 const HELP = `
@@ -99,14 +99,16 @@ export default {
       (manifestPath && filesystem.resolve(manifestPath)) ||
       filesystem.resolve(defaultManifest);
     outputDir =
-      (outputDir && filesystem.resolve(outputDir)) || filesystem.path("build");
+      (outputDir && filesystem.resolve(outputDir)) || filesystem.path("types");
 
-    await generateCode(templateFile, {
+    const codeGenerator = new CodeGenerator(templateFile, {
       manifestPath,
       ipfsProvider,
       ethProvider,
       ensAddress,
       outputDir,
     });
+
+    await codeGenerator.generateCode();
   },
 };
