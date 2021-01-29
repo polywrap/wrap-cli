@@ -1,6 +1,6 @@
 const { exec } = require('child_process');
 
-async function runCommand(command, quiet, directory) {
+async function runCommand(command, quiet, directory, ci) {
 
   if (!quiet) {
     console.log(`> ${command}`)
@@ -22,16 +22,16 @@ async function runCommand(command, quiet, directory) {
       }
     }
 
-    exec(command, { cwd: directory !== "" ? directory : __dirname }, callback)
+    exec(command, { cwd: ci === true ? __dirname : directory }, callback)
   })
 }
 
-async function up(quiet = false, directory = "") {
-  await runCommand('docker-compose up -d', quiet, directory)
+async function up(quiet = false, directory = "", ci = false) {
+  await runCommand('docker-compose up -d', quiet, directory, ci)
 }
 
-async function down(quiet = false, directory = "") {
-  await runCommand('docker-compose down', quiet, directory)
+async function down(quiet = false, directory = "", ci = false) {
+  await runCommand('docker-compose down', quiet, directory, ci)
 }
 
 if (require.main === module) {

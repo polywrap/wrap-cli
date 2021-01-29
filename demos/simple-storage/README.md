@@ -6,7 +6,7 @@ cd ./protocol
 
 ## 1. Setup Test Env
 ```
-npx w3 test-env up -d ./test-docker
+npx w3 test-env up
 ```
 
 ## 2. Build & Deploy SimpleStorage Contract

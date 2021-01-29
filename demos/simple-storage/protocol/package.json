@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "build": "w3 build",
-    "test:env:up": "w3 test-env up && yarn contracts:deploy",
-    "test:env:down": "w3 test-env down"
+    "test:env:up": "w3 test-env up --ci && yarn contracts:deploy",
+    "test:env:down": "w3 test-env down --ci "
   },
   "devDependencies": {
     "@web3api/cli": "0.0.1-prealpha.1",

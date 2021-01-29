@@ -9,8 +9,8 @@
     "test": "TEST=true jest --passWithNoTests --runInBand --verbose",
     "test:watch": "TEST=true jest --watch --passWithNoTests --verbose",
     "test:ci": "TEST=true yarn test:env:up && yarn test && yarn test:env:down",
-    "test:env:up": "w3 test-env up",
-    "test:env:down": "w3 test-env down"
+    "test:env:up": "w3 test-env up --ci",
+    "test:env:down": "w3 test-env down --ci"
   },
   "dependencies": {
     "@msgpack/msgpack": "2.3.0",
