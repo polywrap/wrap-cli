@@ -2,8 +2,9 @@ import {
   AnyManifest,
   ManifestFormats
 } from "./";
-import schema_0_0_1_alpha_1 from "@web3api/manifest-schema/formats/0.0.1-alpha.1.json";
-import schema_0_0_1_alpha_2 from "@web3api/manifest-schema/formats/0.0.1-alpha.2.json";
+import schema_0_0_1_prealpha_1 from "@web3api/manifest-schema/formats/0.0.1-prealpha.1.json";
+// TODO: Uncomment when a new version exists
+// import schema_0_0_1_alpha_2 from "@web3api/manifest-schema/formats/0.0.1-prealpha.2.json";
 
 import { Validator, Schema } from "jsonschema";
 
@@ -15,17 +16,22 @@ enum ValidationError {
 }
 
 const manifestSchemas: { [key in ManifestFormats]: Schema | undefined } = {
-  "0.0.1-prealpha.1": schema_0_0_1_alpha_1.manifest,
-  "0.0.1-prealpha.2": schema_0_0_1_alpha_2.manifest
+  "0.0.1-prealpha.1": schema_0_0_1_prealpha_1,
+  // TODO: Uncomment when a new version exists
+  // "0.0.1-prealpha.2": schema_0_0_1_prealpha_2
 }
 
 const validator = new Validator();
 
-Validator.prototype.customFormats.file = (file: string) => {
+Validator.prototype.customFormats.file = (file: unknown) => {
   return validateFile(file);
 };
 
-function validateFile(path: string): boolean {
+function validateFile(path: unknown): boolean {
+  if (typeof path !== "string") {
+    return false;
+  }
+
   // eslint-disable-next-line no-useless-escape
   const validPathMatch = path.match(/^((\.\/|..\/)[^\/ ]*)+\/?$/gm);
 
@@ -36,11 +42,15 @@ function validateFile(path: string): boolean {
   }
 };
 
-Validator.prototype.customFormats.manifestFormat = (format: string) => {
+Validator.prototype.customFormats.manifestFormat = (format: unknown) => {
   return validateFormat(format);
 };
 
-function validateFormat(format: string): boolean {
+function validateFormat(format: unknown): boolean {
+  if (typeof format !== "string") {
+    return false;
+  }
+
   return manifestSchemas[format as ManifestFormats] !== undefined;
 };
 
@@ -72,7 +82,7 @@ export function validateManifest (manifest: AnyManifest) {
       }
       case ValidationError.ADDITIONAL_PROPERTY:
         throw Error(
-          `Field ${argument} is not accepted in the schema. Please check the accepted fields here: LINK_TO_SCHEMA`
+          `Field ${argument} is not accepted in the schema. Please check the accepted fields here: TODO - LINK_TO_SCHEMA`
         );
       case ValidationError.TYPE: {
         const property = path.length === 1 ? `Property ${path[0]}` : `Property ${pathMapping}`;

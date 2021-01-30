@@ -3,16 +3,18 @@ import {
   Manifest,
   ManifestFormats
 } from "./formats";
-import {
+// TODO: uncomment when new version is created
+/*import {
   migrate as migrate_0_0_1_prealpha_1_TO_0_0_1_prealpha_2
-} from "./migrators/0_0_1-alpha.1-0_0_1-alpha.2";
+} from "./migrators/0_0_1-alpha.1-0_0_1-alpha.2";*/
 
 type Migrator = {
   [key in ManifestFormats]?: (m: AnyManifest) => Manifest;
 };
 
 export const migrators: Migrator = {
-  "0.0.1-prealpha.1": migrate_0_0_1_prealpha_1_TO_0_0_1_prealpha_2
+  // TODO: uncomment when new version is created
+  // "0.0.1-prealpha.1": migrate_0_0_1_prealpha_1_TO_0_0_1_prealpha_2
 };
 
 export const migrateManifest = (manifest: AnyManifest, to: ManifestFormats): Manifest => {

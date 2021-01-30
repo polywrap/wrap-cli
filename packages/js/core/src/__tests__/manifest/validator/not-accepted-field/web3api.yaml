@@ -1,4 +1,4 @@
-format: 456
+format: 0.0.1-prealpha.1
 mutation:
   schema:
     file: ../schema.graphql
@@ -10,4 +10,7 @@ query:
     file: ../schema.graphql
   module:
     language: wasm/assemblyscript
-    file: ./src/mutation.ts
+    file: ../mutation.ts
+not_accepted_field: not_accepted_field
+
+

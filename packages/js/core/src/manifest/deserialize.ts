@@ -24,7 +24,7 @@ export function deserializeManifest(
     throw Error(`Unable to parse manifest: ${manifest}`);
   }
 
-  if (!options!.noValidate) {
+  if (!options || !options.noValidate) {
     validateManifest(anyManifest)
   }
 

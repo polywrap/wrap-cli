@@ -9,26 +9,30 @@ export interface Manifest {
   format: string;
   description?: string;
   repository?: string;
-  query?: {
-    schema: {
-      file: string;
-    };
-    module: {
-      file: string;
-      language: string;
-    };
-  };
   mutation?: {
     schema: {
       file: string;
     };
     module: {
-      file: string;
       language: string;
+      file: string;
     };
   };
-  subgraph?: {
-    file: string;
-    id?: string;
+  query?: {
+    schema: {
+      file: string;
+    };
+    module: {
+      language: string;
+      file: string;
+    };
   };
+  import_redirects?:
+    | []
+    | [
+        {
+          uri: string;
+          schema: string;
+        }
+      ];
 }

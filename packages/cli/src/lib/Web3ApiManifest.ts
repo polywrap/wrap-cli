@@ -1,20 +1,16 @@
 import fs from "fs";
 import YAML from "js-yaml";
-import { Manifest, sanitizeAndUpgrade } from "@web3api/core-js";
+import { Manifest, deserializeManifest } from "@web3api/core-js";
 
 export class Web3ApiManifest {
   public static load(manifestPath: string): Manifest {
-    const manifest = YAML.safeLoad(fs.readFileSync(manifestPath, "utf-8")) as
-      | Manifest
-      | undefined;
+    const manifest = fs.readFileSync(manifestPath, "utf-8");
 
     if (!manifest) {
-      throw Error(`Unable to parse manifest: ${manifestPath}`);
+      throw Error(`Unable to load manifest: ${manifestPath}`);
     }
 
-    manifest = sanitizeAndUpgrade(manifest);
-
-    return manifest;
+    return deserializeManifest(manifest);
   }
 
   public static dump(manifest: Manifest, manifestPath: string): void {

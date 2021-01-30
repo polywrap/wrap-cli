@@ -15,7 +15,8 @@ export async function resolveUri(
   uri: Uri,
   client: Client,
   createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
-  createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api
+  createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api,
+  noValidate?: boolean
 ): Promise<Api> {
   let resolvedUri = uri;
 
@@ -108,7 +109,7 @@ export async function resolveUri(
     } else if (manifestStr) {
       // We've found our manifest at the current URI resolver
       // meaning the URI resolver can also be used as an API resolver
-      const manifest = deserializeManifest(manifestStr);
+      const manifest = deserializeManifest(manifestStr, { noValidate });
       return createApi(resolvedUri, manifest, uriResolver);
     }
   }
