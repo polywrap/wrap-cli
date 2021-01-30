@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Web3APIManifest } from "./Web3APIManifest";
+import { Web3ApiManifest } from "./Web3ApiManifest";
 import { displayPath } from "./helpers/path";
 import { step, withSpinner } from "./helpers/spinner";
 
@@ -53,7 +53,7 @@ export class Compiler {
 
   private async _loadManifest(quiet = false): Promise<Manifest> {
     const run = () => {
-      return Web3APIManifest.load(this._config.manifestPath);
+      return Web3ApiManifest.load(this._config.manifestPath);
     };
 
     if (quiet) {
@@ -123,7 +123,7 @@ export class Compiler {
         composed.combined,
         "utf-8"
       );
-      Web3APIManifest.dump(manifest, `${outputDir}/web3api.yaml`);
+      Web3ApiManifest.dump(manifest, `${outputDir}/web3api.yaml`);
     };
 
     if (quiet) {
