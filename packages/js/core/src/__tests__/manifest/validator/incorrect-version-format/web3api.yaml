@@ -1,0 +1,13 @@
+format: "BAD_FORMAT_VERSION"
+mutation:
+  schema:
+    file: ../schema.graphql
+  module:
+    language: wasm/assemblyscript
+    file: ../query.ts
+query:
+  schema:
+    file: ../schema.graphql
+  module:
+    language: wasm/assemblyscript
+    file: ../mutation.ts

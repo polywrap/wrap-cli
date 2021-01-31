@@ -1,7 +1,8 @@
 # Web3 API  
 ![](https://github.com/Web3-API/branding/blob/master/logo/Web3API_On_Black_BG.jpg?raw=true)  
-> The Power of Web3,
-The Ease of Web2  
+**Power of Web3,
+Ease of Web2**  
+*The Web3 Universal Integration Standard*  
 
 **Web3API is in Pre-Alpha**  
 **[Join Early Access](https://web3api.dev)**
