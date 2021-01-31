@@ -1,5 +1,6 @@
 {
   "name": "@web3api/manifest-schema",
   "version": "0.0.1-prealpha.1",
-  "license": "MIT"
+  "license": "MIT",
+  "main": "./package.json"
 }

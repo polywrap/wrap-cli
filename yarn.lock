@@ -5697,9 +5697,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000844, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001035, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001173:
-  version "1.0.30001180"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001180.tgz#67abcd6d1edf48fa5e7d1e84091d1d65ab76e33b"
-  integrity sha512-n8JVqXuZMVSPKiPiypjFtDTXc4jWIdjxull0f92WLo7e1MSi3uJ3NvveakSh/aCl1QKFAvIz3vIj0v+0K+FrXw==
+  version "1.0.30001181"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001181.tgz#4f0e5184e1ea7c3bf2727e735cbe7ca9a451d673"
+  integrity sha512-m5ul/ARCX50JB8BSNM+oiPmQrR5UmngaQ3QThTTp5HcIIQGP/nPBs82BYLE+tigzm3VW+F4BJIhUyaVtEweelQ==
 
 capture-exit@^2.0.0:
   version "2.0.0"
@@ -7333,9 +7333,9 @@ electron-fetch@^1.7.2:
     encoding "^0.1.13"
 
 electron-to-chromium@^1.3.378, electron-to-chromium@^1.3.47, electron-to-chromium@^1.3.634:
-  version "1.3.648"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.648.tgz#b05926eca1843c04b283e682a1fc6c10af7e9dda"
-  integrity sha512-4POzwyQ80tkDiBwkxn7IpfzioimrjRSFX1sCQ3pLZsYJ5ERYmwzdq0hZZ3nFP7Z6GtmnSn3xwWDm8FPlMeOoEQ==
+  version "1.3.649"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.649.tgz#3aa8be052d4d268ede45d8e98d0cd60ffefad607"
+  integrity sha512-ojGDupQ3UMkvPWcTICe4JYe17+o9OLiFMPoduoR72Zp2ILt1mRVeqnxBEd6s/ptekrnsFU+0A4lStfBe/wyG/A==
 
 elliptic@6.5.3, elliptic@^6.4.0, elliptic@^6.5.2, elliptic@^6.5.3:
   version "6.5.3"
@@ -11988,9 +11988,9 @@ keccak@^3.0.0:
     node-gyp-build "^4.2.0"
 
 keypair@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/keypair/-/keypair-1.0.1.tgz#7603719270afb6564ed38a22087a06fc9aa4ea1b"
-  integrity sha1-dgNxknCvtlZO04oiCHoG/Jqk6hs=
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/keypair/-/keypair-1.0.2.tgz#9aab2dea3355d22364e0156ef6a4282487c8fdee"
+  integrity sha512-7zRr8fKOWp/N8xfZyZV6WG1CUvKNiNahSDI4vjJnPJD60lHtIg62dpv60yCgcM2PP8QKv4S2UkZl+8MsYmQRpw==
 
 keyv@^3.0.0:
   version "3.1.0"
@@ -15982,9 +15982,9 @@ regjsparser@^0.1.4:
     jsesc "~0.5.0"
 
 regjsparser@^0.6.4:
-  version "0.6.6"
-  resolved "https://registry.yarnpkg.com/regjsparser/-/regjsparser-0.6.6.tgz#6d8c939d1a654f78859b08ddcc4aa777f3fa800a"
-  integrity sha512-jjyuCp+IEMIm3N1H1LLTJW1EISEJV9+5oHdEyrt43Pg9cDSb6rrLZei2cVWpl0xTjmmlpec/lEQGYgM7xfpGCQ==
+  version "0.6.7"
+  resolved "https://registry.yarnpkg.com/regjsparser/-/regjsparser-0.6.7.tgz#c00164e1e6713c2e3ee641f1701c4b7aa0a7f86c"
+  integrity sha512-ib77G0uxsA2ovgiYbCVGx4Pv3PSttAx2vIwidqQzbL2U5S4Q+j00HdSAneSBuyVcMvEnTXMjiGgB+DlXozVhpQ==
   dependencies:
     jsesc "~0.5.0"
 
