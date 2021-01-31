@@ -1,11 +1,8 @@
-import {
-  AnyManifest,
-  ManifestFormats
-} from "./";
-import schema_0_0_1_prealpha_1 from "@web3api/manifest-schema/formats/0.0.1-prealpha.1.json";
+import { AnyManifest, ManifestFormats } from "./";
+
 // TODO: Uncomment when a new version exists
 // import schema_0_0_1_alpha_2 from "@web3api/manifest-schema/formats/0.0.1-prealpha.2.json";
-
+import schema_0_0_1_prealpha_1 from "@web3api/manifest-schema/formats/0.0.1-prealpha.1.json";
 import { Validator, Schema } from "jsonschema";
 
 enum ValidationError {
@@ -19,7 +16,7 @@ const manifestSchemas: { [key in ManifestFormats]: Schema | undefined } = {
   "0.0.1-prealpha.1": schema_0_0_1_prealpha_1,
   // TODO: Uncomment when a new version exists
   // "0.0.1-prealpha.2": schema_0_0_1_prealpha_2
-}
+};
 
 const validator = new Validator();
 
@@ -40,7 +37,7 @@ function validateFile(path: unknown): boolean {
   } else {
     return false;
   }
-};
+}
 
 Validator.prototype.customFormats.manifestFormat = (format: unknown) => {
   return validateFormat(format);
@@ -52,9 +49,9 @@ function validateFormat(format: unknown): boolean {
   }
 
   return manifestSchemas[format as ManifestFormats] !== undefined;
-};
+}
 
-export function validateManifest (manifest: AnyManifest) {
+export function validateManifest(manifest: AnyManifest): void {
   const schema = manifestSchemas[manifest.format as ManifestFormats];
 
   if (!schema) {
@@ -77,15 +74,19 @@ export function validateManifest (manifest: AnyManifest) {
 
     switch (name) {
       case ValidationError.REQUIRED: {
-        const propertyRequired = path.length === 0 ? `${argument}.` : `${argument} in ${pathMapping}.`;
-        throw Error(`Missing field: ${propertyRequired} Please add it to the manifest`);
+        const propertyRequired =
+          path.length === 0 ? `${argument}.` : `${argument} in ${pathMapping}.`;
+        throw Error(
+          `Missing field: ${propertyRequired} Please add it to the manifest`
+        );
       }
       case ValidationError.ADDITIONAL_PROPERTY:
         throw Error(
           `Field ${argument} is not accepted in the schema. Please check the accepted fields here: TODO - LINK_TO_SCHEMA`
         );
       case ValidationError.TYPE: {
-        const property = path.length === 1 ? `Property ${path[0]}` : `Property ${pathMapping}`;
+        const property =
+          path.length === 1 ? `Property ${path[0]}` : `Property ${pathMapping}`;
         throw Error(`${property} has a type error: ${message}`);
       }
       case ValidationError.INPUT: {
@@ -93,7 +94,11 @@ export function validateManifest (manifest: AnyManifest) {
         const isFileError = argument === "file";
 
         if (isFormatVersionError) {
-          throw Error(`The manifest's format is not correct. Given: ${manifest.format}\nAccepted formats: ${Object.keys(manifestSchemas)}`);
+          throw Error(
+            `The manifest's format is not correct. Given: ${
+              manifest.format
+            }\nAccepted formats: ${Object.keys(manifestSchemas)}`
+          );
         } else if (isFileError) {
           throw Error(
             `Property ${pathMapping} has the value "${instance}", which is not a valid file path.` +
@@ -113,4 +118,4 @@ export function validateManifest (manifest: AnyManifest) {
         );
     }
   }
-};
+}

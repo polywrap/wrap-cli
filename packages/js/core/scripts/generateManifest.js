@@ -11,7 +11,10 @@ const generateManifest = () => {
       .then((file) => {
         const manifestPath =
           __dirname + `/../src/manifest/formats/${package.version}.ts`;
-        writeFileSync(manifestPath, file);
+        writeFileSync(
+          manifestPath,
+          `/* eslint-disable @typescript-eslint/naming-convention */\n${file}`
+        );
       })
       .catch((e) => console.error(e));
   } catch (e) {

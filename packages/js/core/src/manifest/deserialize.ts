@@ -1,12 +1,7 @@
-import {
-  AnyManifest,
-  Manifest,
-  latest,
-  migrateManifest
-} from "./"
-import { compare } from "semver";
+import { AnyManifest, Manifest, latest, migrateManifest } from "./";
 import { validateManifest } from "./validate";
 
+import { compare } from "semver";
 import YAML from "js-yaml";
 
 export interface DeserializeOptions {
@@ -17,7 +12,6 @@ export function deserializeManifest(
   manifest: string,
   options?: DeserializeOptions
 ): Manifest {
-
   const anyManifest = YAML.safeLoad(manifest) as AnyManifest | undefined;
 
   if (!anyManifest) {
@@ -25,7 +19,7 @@ export function deserializeManifest(
   }
 
   if (!options || !options.noValidate) {
-    validateManifest(anyManifest)
+    validateManifest(anyManifest);
   }
 
   if (compare(anyManifest.format, latest) === -1) {
