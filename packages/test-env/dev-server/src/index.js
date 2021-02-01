@@ -3,7 +3,7 @@
 // Endpoints:
 //   /providers  list all portal providers
 //   /ens        get ens address
-//   /mock-ens   deploy ENS contracts
+//   /deploy-ens   deploy ENS contracts
 ///////////////////////////////////////////
 
 require("dotenv").config({ path: './.env' });

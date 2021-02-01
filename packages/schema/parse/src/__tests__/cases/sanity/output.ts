@@ -1,215 +1,326 @@
 import {
   TypeInfo,
+  createScalarDefinition,
+  createArrayDefinition,
   createObjectDefinition,
   createQueryDefinition,
   createMethodDefinition,
-  createImportedObjectDefinition,
-  createImportedQueryDefinition,
   createScalarPropertyDefinition,
   createArrayPropertyDefinition,
-  createScalarDefinition,
-  createArrayDefinition,
+  createObjectPropertyDefinition,
+  createImportedObjectDefinition,
+  createImportedQueryDefinition,
 } from "../../../typeInfo";
 
 export const output: TypeInfo = {
-  userTypes: [
+  objectTypes: [
     {
-      ...createObjectDefinition("CustomType"),
+      ...createObjectDefinition({ type: "CustomType" }),
       properties: [
-        createScalarPropertyDefinition("str", "String", true),
-        createScalarPropertyDefinition("optStr", "?String", false),
-        createScalarPropertyDefinition("u", "UInt", true),
-        createScalarPropertyDefinition("optU", "?UInt", false),
-        createScalarPropertyDefinition("u8", "UInt8", true),
-        createScalarPropertyDefinition("u16", "UInt16", true),
-        createScalarPropertyDefinition("u32", "UInt32", true),
-        createScalarPropertyDefinition("u64", "UInt64", true),
-        createScalarPropertyDefinition("i", "Int", true),
-        createScalarPropertyDefinition("i8", "Int8", true),
-        createScalarPropertyDefinition("i16", "Int16", true),
-        createScalarPropertyDefinition("i32", "Int32", true),
-        createScalarPropertyDefinition("i64", "Int64", true),
-        createArrayPropertyDefinition(
-          "uArray",
-          "[UInt]",
-          true,
-          createScalarDefinition("uArray", "UInt", true)
-        ),
-        createArrayPropertyDefinition(
-          "uOptArray",
-          "?[UInt]",
-          false,
-          createScalarDefinition("uOptArray", "UInt", true)
-        ),
-        createArrayPropertyDefinition(
-          "optUOptArray",
-          "?[?UInt]",
-          false,
-          createScalarDefinition("optUOptArray", "?UInt", false)
-        ),
-        createArrayPropertyDefinition(
-          "optStrOptArray",
-          "?[?String]",
-          false,
-          createScalarDefinition("optStrOptArray", "?String", false)
-        ),
-        createArrayPropertyDefinition(
-          "uArrayArray",
-          "[[UInt]]",
-          true,
-          createArrayDefinition(
-            "uArrayArray",
-            "[UInt]",
-            true,
-            createScalarDefinition("uArrayArray", "UInt", true)
-          )
-        ),
-        createArrayPropertyDefinition(
-          "uOptArrayOptArray",
-          "[?[?UInt64]]",
-          true,
-          createArrayDefinition(
-            "uOptArrayOptArray",
-            "?[?UInt64]",
-            false,
-            createScalarDefinition("uOptArrayOptArray", "?UInt64", false)
-          )
-        ),
-        createArrayPropertyDefinition(
-          "uArrayOptArrayArray",
-          "[?[[UInt64]]]",
-          true,
-          createArrayDefinition(
-            "uArrayOptArrayArray",
-            "?[[UInt64]]",
-            false,
-            createArrayDefinition(
-              "uArrayOptArrayArray",
-              "[UInt64]",
-              true,
-              createScalarDefinition("uArrayOptArrayArray", "UInt64", true)
-            )
-          )
-        ),
-        createArrayPropertyDefinition(
-          "crazyArray",
-          "?[?[[?[UInt64]]]]",
-          false,
-          createArrayDefinition(
-            "crazyArray",
-            "?[[?[UInt64]]]",
-            false,
-            createArrayDefinition(
-              "crazyArray",
-              "[?[UInt64]]",
-              true,
-              createArrayDefinition(
-                "crazyArray",
-                "?[UInt64]",
-                false,
-                createScalarDefinition("crazyArray", "UInt64", true)
-              )
-            )
-          )
-        ),
+        createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
+        createScalarPropertyDefinition({ name: "optStr", type: "String", required: false }),
+        createScalarPropertyDefinition({ name: "u", type: "UInt", required: true }),
+        createScalarPropertyDefinition({ name: "optU", type: "UInt", required: false }),
+        createScalarPropertyDefinition({ name: "u8", type: "UInt8", required: true }),
+        createScalarPropertyDefinition({ name: "u16", type: "UInt16", required: true }),
+        createScalarPropertyDefinition({ name: "u32", type: "UInt32", required: true }),
+        createScalarPropertyDefinition({ name: "u64", type: "UInt64", required: true }),
+        createScalarPropertyDefinition({ name: "i", type: "Int", required: true }),
+        createScalarPropertyDefinition({ name: "i8", type: "Int8", required: true }),
+        createScalarPropertyDefinition({ name: "i16", type: "Int16", required: true }),
+        createScalarPropertyDefinition({ name: "i32", type: "Int32", required: true }),
+        createScalarPropertyDefinition({ name: "i64", type: "Int64", required: true }),
+        createArrayPropertyDefinition({
+          name: "uArray",
+          type: "[UInt]",
+          required: true,
+          item: createScalarDefinition({ name: "uArray", type: "UInt", required: true })
+        }),
+        createArrayPropertyDefinition({
+          name: "uOptArray",
+          type: "[UInt]",
+          required: false,
+          item: createScalarDefinition({ name: "uOptArray", type: "UInt", required: true })
+        }),
+        createArrayPropertyDefinition({
+          name: "optUOptArray",
+          type: "[UInt]",
+          required: false,
+          item: createScalarDefinition({ name: "optUOptArray", type: "UInt", required: false })
+        }),
+        createArrayPropertyDefinition({
+          name: "optStrOptArray",
+          type: "[String]",
+          required: false,
+          item: createScalarDefinition({ name: "optStrOptArray", type: "String", required: false })
+        }),
+        createArrayPropertyDefinition({
+          name: "uArrayArray",
+          type: "[[UInt]]",
+          required: true,
+          item: createArrayDefinition({
+            name: "uArrayArray",
+            type: "[UInt]",
+            required: true,
+            item: createScalarDefinition({ name: "uArrayArray", type: "UInt", required: true })
+          })
+        }),
+        createArrayPropertyDefinition({
+          name: "uOptArrayOptArray",
+          type: "[[UInt64]]",
+          required: true,
+          item: createArrayDefinition({
+            name: "uOptArrayOptArray",
+            type: "[UInt64]",
+            required: false,
+            item: createScalarDefinition({ name: "uOptArrayOptArray", type: "UInt64", required: false })
+          })
+        }),
+        createArrayPropertyDefinition({
+          name: "uArrayOptArrayArray",
+          type: "[[[UInt64]]]",
+          required: true,
+          item: createArrayDefinition({
+            name: "uArrayOptArrayArray",
+            type: "[[UInt64]]",
+            required: false,
+            item: createArrayDefinition({
+              name: "uArrayOptArrayArray",
+              type: "[UInt64]",
+              required: true,
+              item: createScalarDefinition({ name: "uArrayOptArrayArray", type: "UInt64", required: true })
+            })
+          })
+        }),
+        createArrayPropertyDefinition({
+          name: "crazyArray",
+          type: "[[[[UInt64]]]]",
+          required: false,
+          item: createArrayDefinition({
+            name: "crazyArray",
+            type: "[[[UInt64]]]",
+            required: false,
+            item: createArrayDefinition({
+              name: "crazyArray",
+              type: "[[UInt64]]",
+              required: true,
+              item: createArrayDefinition({
+                name: "crazyArray",
+                type: "[UInt64]",
+                required: false,
+                item: createScalarDefinition({ name: "crazyArray", type: "UInt64", required: true })
+              })
+            })
+          })
+        }),
+        createArrayPropertyDefinition({
+          name: "objectArray",
+          type: "[UserObject]",
+          required: true,
+          item: createObjectDefinition({ name: "objectArray", type: "UserObject", required: true })
+        }),
+        createArrayPropertyDefinition({
+          name: "objectArrayArray",
+          type: "[[UserObject]]",
+          required: true,
+          item: createArrayDefinition({
+            name: "objectArrayArray",
+            type: "[UserObject]",
+            required: true,
+            item: createObjectDefinition({ name: "objectArrayArray", type: "UserObject", required: true })
+          })
+        }),
+        createObjectPropertyDefinition({
+          name: "nestedObject",
+          type: "UserObject",
+          required: true
+        }),
+        createObjectPropertyDefinition({
+          name: "optNestedObject",
+          type: "UserObject",
+        })
       ],
     },
     {
-      ...createObjectDefinition("AnotherType"),
-      properties: [createScalarPropertyDefinition("prop", "?String", false)],
+      ...createObjectDefinition({ type: "AnotherType" }),
+      properties: [createScalarPropertyDefinition({ name: "prop", type: "String" })],
+    },
+    {
+      ...createObjectDefinition({ type: "UserObject" }),
+      properties: [
+        createScalarPropertyDefinition({ name: "fieldA", type: "String", required: false }),
+        createScalarPropertyDefinition({ name: "fieldB", type: "Int", required: true }),
+      ],
     },
   ],
   queryTypes: [
     {
-      ...createQueryDefinition("Query", "Query"),
+      ...createQueryDefinition({ type: "Query" }),
       methods: [
         {
-          ...createMethodDefinition("query", "queryMethod"),
-          arguments: [createScalarPropertyDefinition("arg", "String", true)],
-          return: createScalarPropertyDefinition("queryMethod", "Int", true),
+          ...createMethodDefinition({ type: "query", name: "queryMethod" }),
+          arguments: [createScalarPropertyDefinition({ name: "arg", type: "String", required: true })],
+          return: createScalarPropertyDefinition({ name: "queryMethod", type: "Int", required: true }),
+        },
+        {
+          ...createMethodDefinition({ type: "query", name: "userObjectMethod" }),
+          arguments: [
+            createObjectPropertyDefinition({ name: "userObject", type: "UserObject" }),
+            createArrayPropertyDefinition({ name: "arrayObject", type: "[UserObject]", required: true, item: createObjectDefinition({
+              type: "UserObject",
+              name: "arrayObject",
+              required: true
+            })}),
+          ],
+          return: createObjectPropertyDefinition({
+            name: "userObjectMethod",
+            type: "UserObject",
+            required: true
+          }),
         },
       ],
     },
   ],
   importedObjectTypes: [
     {
-      ...createImportedObjectDefinition(
-        "testimport.uri.eth",
-        "TestImport",
-        "TestImport_Object",
-        "Object"
-      ),
-      properties: [createScalarPropertyDefinition("prop", "String", true)],
+      ...createImportedObjectDefinition({
+        uri: "testimport.uri.eth",
+        namespace: "TestImport",
+        type: "TestImport_Object",
+        nativeType: "Object"
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
+        createObjectPropertyDefinition({ name: "nested", type: "TestImport_NestedObject", required: true })
+      ],
     },
+    {
+      ...createImportedObjectDefinition({
+        uri: "testimport.uri.eth",
+        namespace: "TestImport",
+        type: "TestImport_NestedObject",
+        nativeType: "NestedObject"
+      }),
+      properties: [
+        createArrayPropertyDefinition({
+          name: "foo",
+          type: "[String]",
+          required: true,
+          item: createScalarDefinition({
+            name: "foo",
+            type: "String",
+            required: true,
+          }),
+        }),
+        createObjectPropertyDefinition({
+          name: "circular",
+          type: "TestImport_Object",
+          required: true,
+        })
+      ],
+    }
   ],
   importedQueryTypes: [
     {
-      ...createImportedQueryDefinition(
-        "testimport.uri.eth",
-        "TestImport",
-        "TestImport_Query",
-        "Query"
-      ),
+      ...createImportedQueryDefinition({
+        uri: "testimport.uri.eth",
+        namespace: "TestImport",
+        type: "TestImport_Query",
+        nativeType: "Query"
+      }),
       methods: [
         {
-          ...createMethodDefinition("query", "importedMethod"),
+          ...createMethodDefinition({ type: "query", name: "importedMethod" }),
           arguments: [
-            createScalarPropertyDefinition("str", "String", true),
-            createScalarPropertyDefinition("optStr", "?String", false),
-            createScalarPropertyDefinition("u", "UInt", true),
-            createScalarPropertyDefinition("optU", "?UInt", false),
-            createArrayPropertyDefinition(
-              "uArrayArray",
-              "[?[?UInt]]",
-              true,
-              createArrayDefinition(
-                "uArrayArray",
-                "?[?UInt]",
-                false,
-                createScalarDefinition("uArrayArray", "?UInt", false)
-              )
-            ),
+            createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
+            createScalarPropertyDefinition({ name: "optStr", type: "String", required: false }),
+            createScalarPropertyDefinition({ name: "u", type: "UInt", required: true }),
+            createScalarPropertyDefinition({ name: "optU", type: "UInt", required: false }),
+            createArrayPropertyDefinition({
+              name: "uArrayArray",
+              type: "[[UInt]]",
+              required: true,
+              item: createArrayDefinition({
+                name: "uArrayArray",
+                type: "[UInt]",
+                required: false,
+                item: createScalarDefinition({ name: "uArrayArray", type: "UInt", required: false })
+              })
+            }),
           ],
-          return: createScalarPropertyDefinition(
-            "importedMethod",
-            "String",
-            true
-          ),
+          return: createScalarPropertyDefinition({
+            name: "importedMethod",
+            type: "String",
+            required: true
+          }),
         },
         {
-          ...createMethodDefinition("query", "anotherMethod"),
+          ...createMethodDefinition({ type: "query", name: "anotherMethod" }),
           arguments: [
-            createArrayPropertyDefinition(
-              "arg",
-              "[String]",
-              true,
-              createScalarDefinition("arg", "String", true)
-            ),
+            createArrayPropertyDefinition({
+              name: "arg",
+              type: "[String]",
+              required: true,
+              item: createScalarDefinition({ name: "arg", type: "String", required: true })
+            }),
           ],
-          return: createScalarPropertyDefinition(
-            "anotherMethod",
-            "Int64",
-            true
-          ),
+          return: createScalarPropertyDefinition({
+            name: "anotherMethod",
+            type: "Int64",
+            required: true
+          }),
+        },
+        {
+          ...createMethodDefinition({ type: "query", name: "importedObjectMethod" }),
+          arguments: [
+            {
+              ...createObjectPropertyDefinition({
+                name: "importedObject",
+                type: "TestImport_Object",
+                required: true
+              }),
+              object: {
+                ...createObjectDefinition({
+                  name: "importedObject",
+                  type: "TestImport_Object",
+                  required: true
+                }),
+              }
+            }
+          ],
+          return: {
+            ...createObjectPropertyDefinition({
+              name: "importedObjectMethod",
+              type: "TestImport_Object",
+              required: true
+            }),
+            object: {
+              ...createObjectDefinition({
+                name: "importedObjectMethod",
+                type: "TestImport_Object",
+                required: true
+              }),
+            }
+          }
         },
       ],
     },
     {
-      ...createImportedQueryDefinition(
-        "testimport.uri.eth",
-        "TestImport",
-        "TestImport_Mutation",
-        "Mutation"
-      ),
+      ...createImportedQueryDefinition({
+        uri: "testimport.uri.eth",
+        namespace: "TestImport",
+        type: "TestImport_Mutation",
+        nativeType: "Mutation"
+      }),
       methods: [
         {
-          ...createMethodDefinition("mutation", "importedMethod"),
-          arguments: [createScalarPropertyDefinition("str", "String", true)],
-          return: createScalarPropertyDefinition(
-            "importedMethod",
-            "String",
-            true
-          ),
+          ...createMethodDefinition({ type: "mutation", name: "importedMethod" }),
+          arguments: [createScalarPropertyDefinition({ name: "str", type: "String", required: true })],
+          return: createScalarPropertyDefinition({
+            name: "importedMethod",
+            type: "String",
+            required: true
+          }),
         },
       ],
     },

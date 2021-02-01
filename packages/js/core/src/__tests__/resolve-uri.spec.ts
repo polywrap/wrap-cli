@@ -1,18 +1,19 @@
 import {
   Api,
+  ApiResolver,
   Client,
   InvokeApiOptions,
   InvokeApiResult,
   Manifest,
-  SchemaDocument,
   Plugin,
   PluginModules,
   PluginPackage,
   QueryApiOptions,
   QueryApiResult,
-  resolveUri,
+  SchemaDocument,
   Uri,
   UriRedirect,
+  resolveUri,
 } from "../";
 
 describe("resolveUri", () => {
@@ -21,19 +22,24 @@ describe("resolveUri", () => {
     apis: Record<string, PluginModules>
   ): Client => ({
     redirects: () => redirects,
-    query: (_options: QueryApiOptions): Promise<QueryApiResult> => {
+    query: <
+      TData extends Record<string, unknown> = Record<string, unknown>,
+      TVariables extends Record<string, unknown> = Record<string, unknown>
+    >(_options: QueryApiOptions<TVariables>): Promise<QueryApiResult<TData>> => {
       return Promise.resolve({
-        data: {
+        data: ({
           foo: "foo",
-        },
+        } as Record<string, unknown>) as TData
       });
     },
-    invoke: (options: InvokeApiOptions): Promise<InvokeApiResult> => {
+    invoke: <TData = unknown>(
+      options: InvokeApiOptions
+    ): Promise<InvokeApiResult<TData>> => {
       return Promise.resolve({
-        data: apis[options.uri.uri][options.module][options.method](
-          options.input,
+        data: apis[options.uri.uri]?.[options.module]?.[options.method](
+          options.input as Record<string, unknown>,
           {} as Client
-        ),
+        ) as TData,
       });
     },
   });
@@ -45,6 +51,8 @@ describe("resolveUri", () => {
           uri,
           plugin,
         } as InvokeApiResult),
+        getSchema: (_client: Client): Promise<string> =>
+          Promise.resolve("")
     };
   };
 
@@ -56,6 +64,8 @@ describe("resolveUri", () => {
           manifest,
           apiResolver,
         } as InvokeApiResult),
+      getSchema: (_client: Client): Promise<string> =>
+        Promise.resolve("")
     };
   };
 
@@ -80,7 +90,7 @@ describe("resolveUri", () => {
       ) => {
         return {
           manifest:
-            input.authority === "ipfs" ? `{ "version": "hey" }` : undefined,
+            input.authority === "ipfs" ? "format: 0.0.1-prealpha.1\ndog: cat" : undefined,
         };
       },
     },
@@ -94,7 +104,7 @@ describe("resolveUri", () => {
       ) => {
         return {
           manifest:
-            input.authority === "my" ? `{ "version": "foo" }` : undefined,
+            input.authority === "my" ? "format: 0.0.1-prealpha.1" : undefined,
         };
       },
     },
@@ -114,7 +124,7 @@ describe("resolveUri", () => {
       to: {
         factory: () => ({} as Plugin),
         manifest: {
-          schema: {} as SchemaDocument,
+          schema: "",
           implemented: [new Uri("w3/api-resolver")],
           imported: [],
         },
@@ -128,12 +138,24 @@ describe("resolveUri", () => {
     "w3://ens/my-plugin": pluginApi,
   };
 
+  it("sanity", () => {
+    const api = new Uri("w3://ens/ens");
+    const file = new Uri("w3/some-file");
+    const path = "w3/some-path";
+    const query = ApiResolver.Query;
+    const uri = new Uri("w3/some-uri");
+
+    expect(query.tryResolveUri(client(redirects, apis), api, uri)).toBeDefined();
+    expect(query.getFile(client(redirects, apis), file, path)).toBeDefined();
+  });
+
   it("works in the typical case", async () => {
     const result = await resolveUri(
       new Uri("ens/test.eth"),
       client(redirects, apis),
       createPluginApi,
-      createApi
+      createApi,
+      true
     );
 
     const apiIdentity = await result.invoke(
@@ -144,7 +166,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
       manifest: {
-        version: "hey",
+        format: "0.0.1-prealpha.1"
       },
       apiResolver: new Uri("ens/ipfs"),
     });
@@ -155,7 +177,8 @@ describe("resolveUri", () => {
       new Uri("my/something-different"),
       client(redirects, apis),
       createPluginApi,
-      createApi
+      createApi,
+      true
     );
 
     const apiIdentity = await result.invoke(
@@ -166,7 +189,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("my/something-different"),
       manifest: {
-        version: "foo",
+        format: "0.0.1-prealpha.1"
       },
       apiResolver: new Uri("ens/my-plugin"),
     });
@@ -177,7 +200,8 @@ describe("resolveUri", () => {
       new Uri("ens/ens"),
       client(redirects, apis),
       createPluginApi,
-      createApi
+      createApi,
+      true
     );
 
     const apiIdentity = await result.invoke(
@@ -188,7 +212,8 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
       manifest: {
-        version: "hey",
+        format: "0.0.1-prealpha.1",
+        dog: "cat"
       },
       apiResolver: new Uri("ens/ipfs"),
     });
@@ -199,7 +224,8 @@ describe("resolveUri", () => {
       new Uri("my/something-different"),
       client(redirects, apis),
       createPluginApi,
-      createApi
+      createApi,
+      true
     );
 
     const apiIdentity = await result.invoke(
@@ -210,7 +236,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("my/something-different"),
       manifest: {
-        version: "foo",
+        format: "0.0.1-prealpha.1"
       },
       apiResolver: new Uri("ens/my-plugin"),
     });
@@ -235,9 +261,101 @@ describe("resolveUri", () => {
       new Uri("some/api"),
       client(circular, apis),
       createPluginApi,
-      createApi
+      createApi,
+      true
     ).catch((e) =>
       expect(e.message).toMatch(/Infinite loop while resolving URI/)
+    );
+  });
+
+  it("throws when redirect missing the from property", async () => {
+    const missingFromProperty: UriRedirect[] = [
+      ...redirects,
+      {
+        from: new Uri("some/api"),
+        to: new Uri("ens/api"),
+      },
+      {
+        from: null,
+        to: new Uri("another/api"),
+      },
+    ];
+
+    expect.assertions(1);
+
+    return resolveUri(
+      new Uri("some/api"),
+      client(missingFromProperty, apis),
+      createPluginApi,
+      createApi,
+      true
+    ).catch((e) =>
+      expect(e.message).toMatch("Redirect missing the from property.\nEncountered while resolving w3://some/api")
+    );
+  });
+
+  it("works when a Web3API redirects to a Plugin", async () => {
+    const uriToPlugin: UriRedirect[] = [
+      ...redirects,
+      {
+        from: new Uri("some/api"),
+        to: {
+          factory: () => ({} as Plugin),
+          manifest: {
+            schema: "",
+            implemented: [new Uri("w3/api-resolver")],
+            imported: [],
+          },
+        },
+      },
+    ];
+
+    const result = await resolveUri(
+      new Uri("some/api"),
+      client(uriToPlugin, apis),
+      createPluginApi,
+      createApi,
+      true
+    );
+
+    const apiIdentity = await result.invoke(
+      {} as InvokeApiOptions,
+      {} as Client
+    );
+
+    expect(apiIdentity.error).toBeUndefined();
+  });
+
+  it("throw when URI does not resolve to an API", async () => {
+
+    const faultyIpfsApi: PluginModules = {
+      query: {
+        tryResolveUri: (
+          input: { authority: string; path: string },
+          _client: Client
+        ) => {
+          return {
+            manifest: null
+          };
+        },
+      },
+    };
+
+    const uri = new Uri("some/api");
+
+    expect.assertions(1);
+
+    await resolveUri(
+      uri,
+      client(redirects, {
+        ...apis,
+        "w3://ens/ipfs": faultyIpfsApi
+      }),
+      createPluginApi,
+      createApi,
+      true
+    ).catch((e) =>
+      expect(e.message).toMatch(`No Web3API found at URI: ${uri.uri}`)
     );
   });
 });

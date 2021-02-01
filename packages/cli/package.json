@@ -10,6 +10,7 @@
     "lint": "eslint --color --ext .ts src/"
   },
   "dependencies": {
+    "@web3api/core-js": "0.0.1-prealpha.1",
     "@web3api/client-js": "0.0.1-prealpha.1",
     "@web3api/client-test-env": "0.0.1-prealpha.1",
     "@web3api/schema-compose": "0.0.1-prealpha.1",

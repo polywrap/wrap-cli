@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable no-constant-condition */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import {
   W3Exports,
   W3Imports,

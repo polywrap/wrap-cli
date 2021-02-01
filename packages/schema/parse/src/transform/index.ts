@@ -16,8 +16,10 @@ import {
   isKind,
 } from "../typeInfo";
 
+export * from "./finalizePropertyDef";
 export * from "./extendType";
 export * from "./addFirstLast";
+export * from "./toGraphQLType";
 
 export interface TypeInfoTransforms {
   enter?: TypeInfoTransformer;
@@ -52,9 +54,9 @@ export function performTransforms(
     result = transforms.enter.TypeInfo(result);
   }
 
-  for (let i = 0; i < result.userTypes.length; ++i) {
-    result.userTypes[i] = visitObjectDefinition(
-      result.userTypes[i],
+  for (let i = 0; i < result.objectTypes.length; ++i) {
+    result.objectTypes[i] = visitObjectDefinition(
+      result.objectTypes[i],
       transforms
     );
   }
@@ -87,7 +89,7 @@ export function performTransforms(
   return result;
 }
 
-function visitObjectDefinition(
+export function visitObjectDefinition(
   def: ObjectDefinition,
   transforms: TypeInfoTransforms
 ): ObjectDefinition {
@@ -104,7 +106,7 @@ function visitObjectDefinition(
   return transformType(result, transforms.leave);
 }
 
-function visitAnyDefinition(
+export function visitAnyDefinition(
   def: AnyDefinition,
   transforms: TypeInfoTransforms
 ): AnyDefinition {
@@ -119,10 +121,14 @@ function visitAnyDefinition(
     result.scalar = visitScalarDefinition(result.scalar, transforms);
   }
 
+  if (result.object) {
+    result.object = visitObjectDefinition(result.object, transforms);
+  }
+
   return result;
 }
 
-function visitScalarDefinition(
+export function visitScalarDefinition(
   def: ScalarDefinition,
   transforms: TypeInfoTransforms
 ): ScalarDefinition {
@@ -131,7 +137,7 @@ function visitScalarDefinition(
   return transformType(result, transforms.leave);
 }
 
-function visitArrayDefinition(
+export function visitArrayDefinition(
   def: ArrayDefinition,
   transforms: TypeInfoTransforms
 ): ArrayDefinition {
@@ -148,7 +154,7 @@ function visitArrayDefinition(
   return transformType(result, transforms.leave);
 }
 
-function visitPropertyDefinition(
+export function visitPropertyDefinition(
   def: PropertyDefinition,
   transforms: TypeInfoTransforms
 ): PropertyDefinition {
@@ -160,7 +166,7 @@ function visitPropertyDefinition(
   return transformType(result, transforms.leave);
 }
 
-function visitMethodDefinition(
+export function visitMethodDefinition(
   def: MethodDefinition,
   transforms: TypeInfoTransforms
 ): MethodDefinition {
@@ -181,7 +187,7 @@ function visitMethodDefinition(
   return transformType(result, transforms.leave);
 }
 
-function visitQueryDefinition(
+export function visitQueryDefinition(
   def: QueryDefinition,
   transforms: TypeInfoTransforms
 ): QueryDefinition {
@@ -195,21 +201,28 @@ function visitQueryDefinition(
   return transformType(result, transforms.leave);
 }
 
-function visitImportedQueryDefinition(
+export function visitImportedQueryDefinition(
   def: ImportedQueryDefinition,
   transforms: TypeInfoTransforms
 ): ImportedQueryDefinition {
-  return visitQueryDefinition(def, transforms) as ImportedQueryDefinition;
+  let result = Object.assign({}, def);
+  result = transformType(result, transforms.enter);
+
+  for (let i = 0; i < result.methods.length; ++i) {
+    result.methods[i] = visitMethodDefinition(result.methods[i], transforms);
+  }
+
+  return transformType(result, transforms.leave);
 }
 
-function visitImportedObjectDefinition(
+export function visitImportedObjectDefinition(
   def: ImportedObjectDefinition,
   transforms: TypeInfoTransforms
 ): ImportedObjectDefinition {
   return visitObjectDefinition(def, transforms) as ImportedObjectDefinition;
 }
 
-function transformType<TDefinition extends GenericDefinition>(
+export function transformType<TDefinition extends GenericDefinition>(
   type: TDefinition,
   transform?: TypeInfoTransformer
 ): TDefinition {

@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 import { HostAction, ThreadWakeStatus } from "./types";
 
 import {
@@ -10,12 +14,6 @@ import {
   ApiResolver,
   InvokableModules,
 } from "@web3api/core-js";
-import {
-  parseSchema,
-  TypeInfo,
-  QueryDefinition,
-  MethodDefinition,
-} from "@web3api/schema-parse";
 import path from "path";
 import * as MsgPack from "@msgpack/msgpack";
 
@@ -32,7 +30,6 @@ const threadMutexes = new Int32Array(threadMutexesBuffer, 0, maxThreads);
 
 export class WasmWeb3Api extends Api {
   private _schema?: string;
-  private _typeInfo?: TypeInfo;
 
   private _wasm: {
     query?: ArrayBuffer;
@@ -52,42 +49,6 @@ export class WasmWeb3Api extends Api {
     client: Client
   ): Promise<InvokeApiResult<unknown | ArrayBuffer>> {
     const { module, method, input, decode } = options;
-
-    // Fetch the schema
-    const schema = await this.getSchema(client);
-
-    // Get the schema's type info
-    const typeInfo = this.getTypeInfo(schema);
-
-    const root: "Query" | "Mutation" =
-      module === "query" ? "Query" : "Mutation";
-
-    // TODO: this error checking may not be needed, as it's handled by the thread
-    //       if that's the case, we have no need for the schema's TypeInfo, which is good
-
-    // Ensure the schema contains the query module being asked for
-    const queryIdx = typeInfo.queryTypes.findIndex(
-      (item: QueryDefinition) => item.name === root
-    );
-
-    if (queryIdx === -1) {
-      throw Error(
-        `WasmWeb3Api: Unable to find query type by the name of "${root}".`
-      );
-    }
-
-    const queryInfo = typeInfo.queryTypes[queryIdx];
-
-    // Ensure the query module contains the method being asked for
-    const methodIdx = queryInfo.methods.findIndex(
-      (item: MethodDefinition) => item.name === method
-    );
-
-    if (methodIdx === -1) {
-      throw Error(
-        `WasmWeb3Api: Unable to find method "${method}" on query type "${root}".`
-      );
-    }
 
     // Fetch the WASM module
     const wasm = await this.getWasmModule(module, client);
@@ -328,14 +289,6 @@ export class WasmWeb3Api extends Api {
     }
 
     return this._schema;
-  }
-
-  private getTypeInfo(schema: string): TypeInfo {
-    if (!this._typeInfo) {
-      this._typeInfo = parseSchema(schema);
-    }
-
-    return this._typeInfo;
   }
 
   private async getWasmModule(

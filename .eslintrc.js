@@ -5,7 +5,7 @@ module.exports = {
     node: true,
     mocha: true
   },
-  ignorePatterns: ["w3/**"],
+  ignorePatterns: ["**/w3/**/*.ts", "**/__tests__/**/*.*"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: "es2019",

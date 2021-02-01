@@ -24,7 +24,11 @@ directive @imports(
 type Query @imports(
   types: [
     "Namespace_Query",
-    "Namespace_CustomType"
+    "Namespace_CustomType",
+    "Namespace_ObjectType",
+    "Namespace_NestedObjectType",
+    "Namespace_Imported_NestedObjectType",
+    "Namespace_Imported_ObjectType"
   ]
 ) {
   method1(
@@ -53,6 +57,8 @@ type CustomQueryType {
   uOptArray: [UInt!]
   optStrOptArray: [String]
   crazyArray: [[[[UInt64!]]!]]
+  commonType: CommonType!
+  customType: Namespace_CustomType!
 }
 
 type AnotherQueryType {
@@ -61,6 +67,16 @@ type AnotherQueryType {
 
 type CommonType {
   prop: UInt8!
+  nestedObject: NestedType!
+  objectArray: [[ArrayObject]]!
+}
+
+type NestedType {
+  prop: String!
+}
+
+type ArrayObject {
+  prop: String!
 }
 
 ### Imported Queries START ###
@@ -113,6 +129,45 @@ type Namespace_CustomType @imported(
   uOptArrayOptArray: [[UInt64]]!
   uArrayOptArrayArray: [[[UInt64!]!]]!
   crazyArray: [[[[UInt64!]]!]]
+  object: Namespace_ObjectType!
+  optObject: Namespace_ObjectType
+  nestedObject: Namespace_NestedObjectType!
+  optNestedObject: Namespace_NestedObjectType
+  optNestedObjectArray: [Namespace_NestedObjectType]!
+  importedNestedObject: Namespace_Imported_NestedObjectType!
+  optImportedNestedObjectArray: [Namespace_Imported_NestedObjectType]!
+}
+
+type Namespace_ObjectType @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "ObjectType"
+) {
+  prop: String!
+}
+
+type Namespace_NestedObjectType @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "NestedObjectType"
+) {
+  nestedObject: Namespace_ObjectType!
+}
+
+type Namespace_Imported_NestedObjectType @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "Imported_NestedObjectType"
+) {
+  nestedObject: Namespace_Imported_ObjectType!
+}
+
+type Namespace_Imported_ObjectType @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "Imported_ObjectType"
+) {
+  prop: String!
 }
 
 ### Imported Objects END ###

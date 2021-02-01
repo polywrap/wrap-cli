@@ -18,6 +18,8 @@ export class CustomType {
   i16: i16;
   i32: i32;
   i64: i64;
+  boolean: bool;
+  optBoolean: Nullable<bool>;
   uArray: Array<u32>;
   uOptArray: Array<u32> | null;
   optUOptArray: Array<Nullable<u32>> | null;

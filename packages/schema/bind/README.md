@@ -21,6 +21,7 @@ MessagePack encoded data is sent between module boundaries. Decoding of the mess
 | Int32 | int 32 | 32-bit signed integer. |
 | Int64 | int 64 | 64-bit signed integer. |
 | String | fixstr or str 8/16/32 | UTF-8 string. |
+| Boolean | bool | true or false stored as 1 byte. |
 
 ## Usage
 TODO

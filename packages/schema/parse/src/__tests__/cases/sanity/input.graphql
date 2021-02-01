@@ -41,10 +41,19 @@ type CustomType {
   uOptArrayOptArray: [[UInt64]]!
   uArrayOptArrayArray: [[[UInt64!]!]]!
   crazyArray: [[[[UInt64!]]!]]
+  objectArray: [UserObject!]!
+  objectArrayArray: [[UserObject!]!]!
+  nestedObject: UserObject!
+  optNestedObject: UserObject
 }
 
 type AnotherType {
   prop: String
+}
+
+type UserObject {
+  fieldA: String
+  fieldB: Int!
 }
 
 type Query @imports(
@@ -53,6 +62,11 @@ type Query @imports(
   queryMethod(
     arg: String!
   ): Int!
+
+  userObjectMethod(
+    userObject: UserObject
+    arrayObject: [UserObject!]!
+  ): UserObject!
 }
 
 type TestImport_Query @imported(
@@ -60,7 +74,6 @@ type TestImport_Query @imported(
   uri: "testimport.uri.eth",
   type: "Query"
 ) {
-  """TODO: Support object types as argument & return values"""
   importedMethod(
     str: String!
     optStr: String
@@ -72,6 +85,10 @@ type TestImport_Query @imported(
   anotherMethod(
     arg: [String!]!
   ): Int64!
+
+  importedObjectMethod(
+    importedObject: TestImport_Object!
+  ): TestImport_Object!
 }
 
 type TestImport_Mutation @imported(
@@ -90,4 +107,14 @@ type TestImport_Object @imported(
   type: "Object"
 ) {
   prop: String!
+  nested: TestImport_NestedObject!
+}
+
+type TestImport_NestedObject @imported(
+  namespace: "TestImport",,
+  uri: "testimport.uri.eth",
+  type: "NestedObject"
+) {
+  foo: [String!]!
+  circular: TestImport_Object!
 }
