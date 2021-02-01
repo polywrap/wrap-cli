@@ -91,10 +91,6 @@ describe("test http plugin", () => {
       ]);
       expect(Buffer.from(response.body, 'base64').toString()).toBe("{result: 1001}");
     });
-
-    test("failed request", async () => {
-      // TODO
-    });
   });
 
   describe("post method", () => {
@@ -174,10 +170,6 @@ describe("test http plugin", () => {
         { key: "Content-Type", value: "application/json; charset=utf-8" },
       ]);
       expect(Buffer.from(response.body, 'base64').toString()).toBe("{response: 1001}");
-    });
-
-    test("failed request", async () => {
-      // TODO
     });
   });
 });
