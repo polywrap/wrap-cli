@@ -34,7 +34,7 @@ describe("converting axios response", () => {
     ]);
     expect(response.status).toBe(200);
     expect(response.statusText).toBe("Ok");
-    expect(response.body).toBe(btoa("body-content"));
+    expect(response.body).toBe(Buffer.from("body-content").toString('base64'));
   });
 });
 

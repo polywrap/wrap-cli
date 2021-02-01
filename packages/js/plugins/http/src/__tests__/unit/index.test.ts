@@ -89,7 +89,7 @@ describe("test http plugin", () => {
       expect(response.headers).toStrictEqual([
         { key: "Content-Type", value: "application/json; charset=utf-8" },
       ]);
-      expect(atob(response.body)).toBe("{result: 1001}");
+      expect(Buffer.from(response.body, 'base64').toString()).toBe("{result: 1001}");
     });
 
     test("failed request", async () => {
@@ -173,7 +173,7 @@ describe("test http plugin", () => {
       expect(response.headers).toStrictEqual([
         { key: "Content-Type", value: "application/json; charset=utf-8" },
       ]);
-      expect(atob(response.body)).toBe("{response: 1001}");
+      expect(Buffer.from(response.body, 'base64').toString()).toBe("{response: 1001}");
     });
 
     test("failed request", async () => {
