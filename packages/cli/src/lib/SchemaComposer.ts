@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Web3APIManifest } from "./Web3APIManifest";
+import { Web3ApiManifest } from "./Web3APIManifest";
 import { displayPath } from "./helpers/path";
 import { withSpinner } from "./helpers/spinner";
 import { BuildConfig } from "./Compiler";
@@ -20,7 +20,7 @@ export class SchemaComposer {
 
   public async loadManifest(quiet = false): Promise<Manifest> {
     const run = () => {
-      return Web3APIManifest.load(this._config.manifestPath);
+      return Web3ApiManifest.load(this._config.manifestPath);
     };
 
     if (quiet) {
