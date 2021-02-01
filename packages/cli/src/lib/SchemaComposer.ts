@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Web3ApiManifest } from "./Web3APIManifest";
+import { Web3ApiManifest } from "./Web3ApiManifest";
 import { displayPath } from "./helpers/path";
 import { withSpinner } from "./helpers/spinner";
 import { BuildConfig } from "./Compiler";
