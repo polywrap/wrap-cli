@@ -21,10 +21,10 @@ export function serialize{{type}}(type: {{type}}): ArrayBuffer {
     {{/object}}{{/properties}}
   ];
   const sizer = new WriteSizer();
-  write{{type}}(sizer, type);
+  write{{type}}(sizer, type, objects);
   const buffer = new ArrayBuffer(sizer.length);
   const encoder = new WriteEncoder(buffer);
-  write{{type}}(encoder, type);
+  write{{type}}(encoder, type, objects);
   return buffer;
 }
 

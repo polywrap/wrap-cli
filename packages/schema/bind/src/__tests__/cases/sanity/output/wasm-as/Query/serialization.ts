@@ -50,6 +50,7 @@ export function serializequeryMethodResult(result: i32): ArrayBuffer {
 function writequeryMethodResult(writer: Write, result: i32): void {
   writer.writeInt32(result);
 }
+
 export class Input_objectMethod {
   object: Objects.AnotherType;
   optObject: Objects.AnotherType | null;
@@ -63,21 +64,29 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
 
   var _object: Objects.AnotherType = new Objects.AnotherType();
   var _objectSet: boolean = false;
-  var _optObject: Objects.AnotherType | null = new Objects.AnotherType();
+  var _optObject: Objects.AnotherType | null = null;
   var _objectArray: Array<Objects.AnotherType> = [];
   var _objectArraySet: boolean = false;
-  var _optObjectArray: Array<Objects.AnotherType | null> | null = [];
+  var _optObjectArray: Array<Objects.AnotherType | null> | null = null;
 
   while (numFields > 0) {
     numFields--;
     const field = reader.readString();
 
     if (field == "object") {
-      _object.fromBuffer(reader.readBytes());
+      const object = new Objects.AnotherType();
+      object.fromBuffer(reader.readBytes());
+      _object = object;
       _objectSet = true;
     }
     else if (field == "optObject") {
-      _optObject.fromBuffer(reader.readBytes());
+      const bytes = reader.readNullableBytes();
+      var object: Objects.AnotherType | null = null;
+      if (bytes) {
+        object = new Objects.AnotherType();
+        object.fromBuffer(bytes);
+      }
+      _optObject = object;
     }
     else if (field == "objectArray") {
       _objectArray = reader.readArray((reader: Read): Objects.AnotherType => {
@@ -89,13 +98,11 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
     }
     else if (field == "optObjectArray") {
       _optObjectArray = reader.readNullableArray((reader: Read): Objects.AnotherType | null => {
-        var bytes = reader.readNullableBytes();
-        var object: Objects.AnotherType | null;
+        const bytes = reader.readNullableBytes();
+        var object: Objects.AnotherType | null = null;
         if (bytes) {
           object = new Objects.AnotherType();
           object.fromBuffer(bytes);
-        } else {
-          object = null;
         }
         return object;
       });

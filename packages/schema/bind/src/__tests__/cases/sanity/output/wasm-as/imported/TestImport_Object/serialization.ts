@@ -15,10 +15,10 @@ export function serializeTestImport_Object(type: TestImport_Object): ArrayBuffer
     type.optObject ? type.optObject.toBuffer() : null,
   ];
   const sizer = new WriteSizer();
-  writeTestImport_Object(sizer, type);
+  writeTestImport_Object(sizer, type, objects);
   const buffer = new ArrayBuffer(sizer.length);
   const encoder = new WriteEncoder(buffer);
-  writeTestImport_Object(encoder, type);
+  writeTestImport_Object(encoder, type, objects);
   return buffer;
 }
 
@@ -53,13 +53,11 @@ export function deserializeTestImport_Object(buffer: ArrayBuffer, type: TestImpo
       type.object = object;
     }
     else if (field == "optObject") {
-      var bytes = reader.readNullableBytes();
-      var object: Objects.TestImport_AnotherObject | null;
+      const bytes = reader.readNullableBytes();
+      var object: Objects.TestImport_AnotherObject | null = null;
       if (bytes) {
         object = new Objects.TestImport_AnotherObject();
         object.fromBuffer(bytes);
-      } else {
-        object = null;
       }
       type.optObject = object;
     }
@@ -72,13 +70,11 @@ export function deserializeTestImport_Object(buffer: ArrayBuffer, type: TestImpo
     }
     else if (field == "optObjectArray") {
       type.optObjectArray = reader.readNullableArray((reader: Read): Objects.TestImport_AnotherObject | null => {
-        var bytes = reader.readNullableBytes();
-        var object: Objects.TestImport_AnotherObject | null;
+        const bytes = reader.readNullableBytes();
+        var object: Objects.TestImport_AnotherObject | null = null;
         if (bytes) {
           object = new Objects.TestImport_AnotherObject();
           object.fromBuffer(bytes);
-        } else {
-          object = null;
         }
         return object;
       });

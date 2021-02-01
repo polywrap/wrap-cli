@@ -69,13 +69,11 @@ function writeimportedMethodArgs(
 
 export function deserializeimportedMethodResult(buffer: ArrayBuffer): Objects.TestImport_Object | null {
   const reader = new ReadDecoder(buffer);
-  var bytes = reader.readNullableBytes();
-  var object: Objects.TestImport_Object | null;
+  const bytes = reader.readNullableBytes();
+  var object: Objects.TestImport_Object | null = null;
   if (bytes) {
     object = new Objects.TestImport_Object();
     object.fromBuffer(bytes);
-  } else {
-    object = null;
   }
 
   return object;

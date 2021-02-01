@@ -13,10 +13,10 @@ export function serializeTestImport_AnotherObject(type: TestImport_AnotherObject
   const objects: (ArrayBuffer | null)[] = [
   ];
   const sizer = new WriteSizer();
-  writeTestImport_AnotherObject(sizer, type);
+  writeTestImport_AnotherObject(sizer, type, objects);
   const buffer = new ArrayBuffer(sizer.length);
   const encoder = new WriteEncoder(buffer);
-  writeTestImport_AnotherObject(encoder, type);
+  writeTestImport_AnotherObject(encoder, type, objects);
   return buffer;
 }
 

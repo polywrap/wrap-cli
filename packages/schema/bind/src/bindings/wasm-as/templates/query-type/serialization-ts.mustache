@@ -7,8 +7,8 @@ import {
   Write
 } from "@web3api/wasm-as";
 import * as Objects from "..";
-
 {{#methods}}
+
 export class Input_{{name}} {
   {{#arguments}}
   {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
@@ -42,7 +42,8 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
       });
       {{/array}}
       {{#object}}
-      _{{name}}.fromBuffer(reader.readBytes());
+      {{> deserialize_object}}
+      _{{name}} = object;
       {{/object}}
       {{#required}}
       _{{name}}Set = true;

@@ -62,9 +62,9 @@ type Query @imports(
   ): Int!
 
   objectMethod(
-    object: AnotherType!,
-    optObject: AnotherType,
-    objectArray: [AnotherType!]!,
+    object: AnotherType!
+    optObject: AnotherType
+    objectArray: [AnotherType!]!
     optObjectArray: [AnotherType]
   ): AnotherType
 }

@@ -228,13 +228,11 @@ export function deserializeCustomType(buffer: ArrayBuffer, type: CustomType): vo
       type.object = object;
     }
     else if (field == "optObject") {
-      var bytes = reader.readNullableBytes();
-      var object: Objects.AnotherType | null;
+      const bytes = reader.readNullableBytes();
+      var object: Objects.AnotherType | null = null;
       if (bytes) {
         object = new Objects.AnotherType();
         object.fromBuffer(bytes);
-      } else {
-        object = null;
       }
       type.optObject = object;
     }
@@ -247,13 +245,11 @@ export function deserializeCustomType(buffer: ArrayBuffer, type: CustomType): vo
     }
     else if (field == "optObjectArray") {
       type.optObjectArray = reader.readNullableArray((reader: Read): Objects.AnotherType | null => {
-        var bytes = reader.readNullableBytes();
-        var object: Objects.AnotherType | null;
+        const bytes = reader.readNullableBytes();
+        var object: Objects.AnotherType | null = null;
         if (bytes) {
           object = new Objects.AnotherType();
           object.fromBuffer(bytes);
-        } else {
-          object = null;
         }
         return object;
       });
