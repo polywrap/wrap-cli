@@ -22,24 +22,33 @@ export function parseSchema(
 ): TypeInfo {
   const astNode = parse(schema);
 
+  // Validate GraphQL Schema
   if (options.validate) {
-    const validations =
-      options && options.validators ? options.validators : validators;
+    const validates = options.validators || validators;
+    const errors: Error[] = [];
 
-    for (const validation of validations) {
-      validation(astNode);
+    for (const validate of validates) {
+      try {
+        validate(astNode);
+      } catch (e) {
+        errors.push(e);
+      }
+    }
+
+    if (errors.length) {
+      throw errors;
     }
   }
 
+  // Extract & Build TypeInfo
   let info = createTypeInfo();
-
-  const extracts =
-    options && options.extractors ? options.extractors : extractors;
+  const extracts = options.extractors || extractors;
 
   for (const extract of extracts) {
     extract(astNode, info);
   }
 
+  // Finalize & Transform TypeInfo
   info = performTransforms(info, finalizePropertyDef);
 
   if (options && options.transforms) {

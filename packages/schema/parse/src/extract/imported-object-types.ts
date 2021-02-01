@@ -9,7 +9,7 @@ import {
   extractNamedType,
   State,
 } from "./object-types-utils";
-import { extractImportedDirectiveArgs } from "./directive-utils";
+import { extractImportedDefinition } from "./imported-types-utils";
 
 import {
   DocumentNode,
@@ -19,7 +19,6 @@ import {
   ListTypeNode,
   FieldDefinitionNode,
   visit,
-  DirectiveNode,
 } from "graphql";
 
 const visitorEnter = (
@@ -27,44 +26,18 @@ const visitorEnter = (
   state: State
 ) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
-    if (!node.directives) {
+    const imported = extractImportedDefinition(node);
+
+    if (!imported) {
       return;
     }
-
-    // Look for imported
-    const importedIndex = node.directives.findIndex(
-      (dir: DirectiveNode) => dir.name.value === "imported"
-    );
-
-    if (importedIndex === -1) {
-      return;
-    }
-
-    const typeName = node.name.value;
-
-    const queryIdentifier = "_Query";
-    const queryTest = typeName.substr(-queryIdentifier.length);
-    const mutationIdentifier = "_Mutation";
-    const mutationTest = typeName.substr(-mutationIdentifier.length);
-
-    if (queryTest === queryIdentifier || mutationTest === mutationIdentifier) {
-      // Ignore query & mutation types
-      return;
-    }
-
-    const importedDir = node.directives[importedIndex];
-
-    const { namespace, uri, type: nativeType } = extractImportedDirectiveArgs(
-      importedDir
-    );
 
     const importedType = createImportedObjectDefinition({
-      type: typeName,
-      uri,
-      namespace,
-      nativeType,
+      type: node.name.value,
+      uri: imported.uri,
+      namespace: imported.namespace,
+      nativeType: imported.nativeType,
     });
-
     importedObjectTypes.push(importedType);
     state.currentType = importedType;
   },

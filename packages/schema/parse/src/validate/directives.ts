@@ -1,12 +1,20 @@
-import { visit, DocumentNode, ASTNode } from "graphql";
+import { ImportedDefinition } from "../typeInfo";
 
-export const supportedDirectives = (astNode: DocumentNode): void => {
+import {
+  visit,
+  DirectiveNode,
+  DocumentNode,
+  ASTNode,
+  ObjectTypeDefinitionNode,
+} from "graphql";
+
+export function supportedDirectives(astNode: DocumentNode): void {
   const supportedDirectives = ["imported", "imports"];
   const unsupportedUsages: string[] = [];
 
   visit(astNode, {
     enter: {
-      Directive: (node) => {
+      Directive: (node: DirectiveNode) => {
         const name = node.name.value;
 
         if (!supportedDirectives.includes(name)) {
@@ -23,12 +31,12 @@ export const supportedDirectives = (astNode: DocumentNode): void => {
       )}`
     );
   }
-};
+}
 
-export const importsDirective = (astNode: DocumentNode): void => {
+export function importsDirective(astNode: DocumentNode): void {
   visit(astNode, {
     enter: {
-      ObjectTypeDefinition: (node) => {
+      ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
         const badUsageLocations: string[] = [];
 
         const importsAllowedObjectTypes = ["Query", "Mutation"];
@@ -46,16 +54,30 @@ export const importsDirective = (astNode: DocumentNode): void => {
 
         if (badUsageLocations.length) {
           throw new Error(
-            `@imports directive should only be used on QUERY or MUTATION type definitions, 
-            but it is being used on the following ObjectTypeDefinitions: ${badUsageLocations.map(
-              (b) => `\n- ${b}`
-            )}`
+            `@imports directive should only be used on QUERY or MUTATION type definitions, ` +
+              `but it is being used on the following ObjectTypeDefinitions: ${badUsageLocations.map(
+                (b) => `\n- ${b}`
+              )}`
           );
         }
       },
-      Directive: (node) => {
+      Directive: (
+        node: DirectiveNode,
+        key: string | number | undefined,
+        parent: ASTNode | undefined,
+        path: ReadonlyArray<string | number>
+      ) => {
         if (node.name.value !== "imports") {
           return;
+        }
+
+        if (parent && parent.kind && parent.kind !== "ObjectTypeDefinition") {
+          throw new Error(
+            `@imports directive should only be used on QUERY or MUTATION type definitions, ` +
+              `but it is being used in the following location: ${path.join(
+                " -> "
+              )}`
+          );
         }
 
         const args = node.arguments || [];
@@ -99,18 +121,38 @@ export const importsDirective = (astNode: DocumentNode): void => {
       },
     },
   });
-};
+}
 
-export const importedDirective = (astNode: ASTNode): void => {
+export function importedDirective(astNode: ASTNode): void {
   visit(astNode, {
     enter: {
-      Directive: (node) => {
+      Directive: (
+        node: DirectiveNode,
+        key: string | number | undefined,
+        parent: ASTNode | undefined,
+        path: ReadonlyArray<string | number>
+      ) => {
         if (node.name.value !== "imported") {
           return;
         }
 
+        if (parent && parent.kind && parent.kind !== "ObjectTypeDefinition") {
+          throw new Error(
+            `@imports directive should only be used on object type definitions, ` +
+              `but it is being used in the following location: ${path.join(
+                " -> "
+              )}`
+          );
+        }
+
+        const imported: ImportedDefinition = {
+          uri: "",
+          namespace: "",
+          nativeType: "",
+        };
+
         const args = node.arguments || [];
-        const expectedArguments = ["namespace", "uri", "type"];
+        const expectedArguments = Object.keys(imported);
         const actualArguments = args.map((arg) => arg.name.value);
 
         const missingArguments = expectedArguments.filter(
@@ -127,10 +169,12 @@ export const importedDirective = (astNode: ASTNode): void => {
         );
 
         if (extraArguments.length) {
-          throw new Error(`@imported directive takes only 3 arguments: "namespace", "uri" and "type". But found:
+          throw new Error(`@imported directive takes only 3 arguments: ${expectedArguments.join(
+            ", "
+          )}. But found:
           ${extraArguments.map((arg) => `\n- ${arg}`)}`);
         }
       },
     },
   });
-};
+}

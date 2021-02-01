@@ -225,7 +225,7 @@ export function createQueryDefinition(args: {
   };
 }
 
-interface ImportedDefinition {
+export interface ImportedDefinition {
   uri: string;
   namespace: string;
   nativeType: string;
