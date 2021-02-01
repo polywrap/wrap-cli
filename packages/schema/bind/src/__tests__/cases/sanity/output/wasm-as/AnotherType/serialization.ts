@@ -7,10 +7,10 @@ import {
   Nullable
 } from "@web3api/wasm-as";
 import { AnotherType } from "./";
-import * as Objects from "../";
+import * as Objects from "..";
 
 export function serializeAnotherType(type: AnotherType): ArrayBuffer {
-  const objects: ArrayBuffer[] = [
+  const objects: (ArrayBuffer | null)[] = [
     type.circular.toBuffer(),
   ];
   const sizer = new WriteSizer();
@@ -21,16 +21,16 @@ export function serializeAnotherType(type: AnotherType): ArrayBuffer {
   return buffer;
 }
 
-function writeAnotherType(writer: Write, type: AnotherType, objects: ArrayBuffer[]) {
+function writeAnotherType(writer: Write, type: AnotherType, objects: (ArrayBuffer | null)[]): void {
   let objectsIdx = 0;
   writer.writeMapLength(2);
   writer.writeString("prop");
   writer.writeNullableString(type.prop);
   writer.writeString("circular");
-  writer.writeBytes(objects[objectsIdx++]);
+  writer.writeNullableBytes(objects[objectsIdx++]);
 }
 
-export function deserializeAnotherType(buffer: ArrayBuffer, type: AnotherType) {
+export function deserializeAnotherType(buffer: ArrayBuffer, type: AnotherType): void {
   const reader = new ReadDecoder(buffer);
   var numFields = reader.readMapLength();
 
@@ -42,8 +42,9 @@ export function deserializeAnotherType(buffer: ArrayBuffer, type: AnotherType) {
       type.prop = reader.readNullableString();
     }
     else if (field == "circular") {
-      type.circular = new Objects.CustomType();
-      type.circular.fromBuffer(reader.readBytes());
+      const object = new Objects.CustomType();
+      object.fromBuffer(reader.readBytes());
+      type.circular = object;
     }
   }
 }

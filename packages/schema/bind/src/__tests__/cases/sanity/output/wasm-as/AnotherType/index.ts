@@ -3,7 +3,7 @@ import {
   serializeAnotherType,
   deserializeAnotherType
 } from "./serialization";
-import * as Objects from "../";
+import * as Objects from "..";
 
 export class AnotherType {
   prop: string | null;

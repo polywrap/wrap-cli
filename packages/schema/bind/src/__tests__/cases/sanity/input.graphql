@@ -43,6 +43,10 @@ type CustomType {
   uOptArrayOptArray: [[UInt64]]!
   uArrayOptArrayArray: [[[UInt64!]!]]!
   crazyArray: [[[[UInt64!]]!]]
+  object: AnotherType!
+  optObject: AnotherType
+  objectArray: [AnotherType!]!
+  optObjectArray: [AnotherType]
 }
 
 type AnotherType {
@@ -56,6 +60,13 @@ type Query @imports(
   queryMethod(
     arg: String!
   ): Int!
+
+  objectMethod(
+    object: AnotherType!
+    optObject: AnotherType
+    objectArray: [AnotherType!]!
+    optObjectArray: [AnotherType]
+  ): AnotherType
 }
 
 type TestImport_Query @imported(
@@ -69,7 +80,11 @@ type TestImport_Query @imported(
     u: UInt!
     optU: UInt
     uArrayArray: [[UInt]]!
-  ): String!
+    object: TestImport_Object!
+    optObject: TestImport_Object
+    objectArray: [TestImport_Object!]!
+    optObjectArray: [TestImport_Object]
+  ): TestImport_Object
 
   anotherMethod(
     arg: [String!]!
@@ -80,6 +95,17 @@ type TestImport_Object @imported(
   namespace: "TestImport",
   uri: "testimport.uri.eth",
   type: "Object"
+) {
+  object: TestImport_AnotherObject!
+  optObject: TestImport_AnotherObject
+  objectArray: [TestImport_AnotherObject!]!
+  optObjectArray: [TestImport_AnotherObject]
+}
+
+type TestImport_AnotherObject @imported(
+  namespace: "TestImport",
+  uri: "testimport.uri.eth",
+  type: "AnotherObject"
 ) {
   prop: String!
 }

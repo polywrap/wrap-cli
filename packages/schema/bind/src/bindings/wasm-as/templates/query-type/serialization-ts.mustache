@@ -1,3 +1,4 @@
+import { Nullable } from "@web3api/wasm-as";
 import {
   Read,
   ReadDecoder,
@@ -5,8 +6,9 @@ import {
   WriteEncoder,
   Write
 } from "@web3api/wasm-as";
-
+import * as Objects from "..";
 {{#methods}}
+
 export class Input_{{name}} {
   {{#arguments}}
   {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
@@ -39,6 +41,10 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
         {{> deserialize_array}}
       });
       {{/array}}
+      {{#object}}
+      {{> deserialize_object}}
+      _{{name}} = object;
+      {{/object}}
       {{#required}}
       _{{name}}Set = true;
       {{/required}}
@@ -49,7 +55,7 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
   {{#arguments}}
   {{#required}}
   if (!_{{name}}Set) {
-    throw Error("Missing required argument \"{{name}}: {{type}}\"");
+    throw Error("Missing required argument '{{name}}: {{type}}'");
   }
   {{/required}}
   {{/arguments}}
@@ -81,6 +87,14 @@ function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}}{{toGr
     {{> serialize_array}}
   });
   {{/array}}
+  {{#object}}
+  {{#required}}
+  writer.writeBytes(result.toBuffer());
+  {{/required}}
+  {{^required}}
+  writer.writeNullableBytes(result ? result.toBuffer() : null);
+  {{/required}}
+  {{/object}}
   {{/return}}
 }
 {{/methods}}

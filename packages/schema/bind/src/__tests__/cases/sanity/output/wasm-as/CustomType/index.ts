@@ -3,7 +3,7 @@ import {
   serializeCustomType,
   deserializeCustomType
 } from "./serialization";
-import * as Objects from "../";
+import * as Objects from "..";
 
 export class CustomType {
   str: string;
@@ -29,6 +29,10 @@ export class CustomType {
   uOptArrayOptArray: Array<Array<Nullable<u64>> | null>;
   uArrayOptArrayArray: Array<Array<Array<u64>> | null>;
   crazyArray: Array<Array<Array<Array<u64> | null>> | null> | null;
+  object: Objects.AnotherType;
+  optObject: Objects.AnotherType | null;
+  objectArray: Array<Objects.AnotherType>;
+  optObjectArray: Array<Objects.AnotherType | null> | null;
 
   toBuffer(): ArrayBuffer {
     return serializeCustomType(this);

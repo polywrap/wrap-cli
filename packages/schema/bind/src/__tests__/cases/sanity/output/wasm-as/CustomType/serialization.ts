@@ -7,11 +7,12 @@ import {
   Nullable
 } from "@web3api/wasm-as";
 import { CustomType } from "./";
-import * as Objects from "../";
+import * as Objects from "..";
 
 export function serializeCustomType(type: CustomType): ArrayBuffer {
-  const objects: ArrayBuffer[] = [
-    
+  const objects: (ArrayBuffer | null)[] = [
+    type.object.toBuffer(),
+    type.optObject ? type.optObject.toBuffer() : null,
   ];
   const sizer = new WriteSizer();
   writeCustomType(sizer, type, objects);
@@ -21,9 +22,9 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
   return buffer;
 }
 
-function writeCustomType(writer: Write, type: CustomType, objects: ArrayBuffer[]) {
+function writeCustomType(writer: Write, type: CustomType, objects: (ArrayBuffer | null)[]): void {
   let objectsIdx = 0;
-  writer.writeMapLength(23);
+  writer.writeMapLength(27);
   writer.writeString("str");
   writer.writeString(type.str);
   writer.writeString("optStr");
@@ -100,9 +101,21 @@ function writeCustomType(writer: Write, type: CustomType, objects: ArrayBuffer[]
       });
     });
   });
+  writer.writeString("object");
+  writer.writeNullableBytes(objects[objectsIdx++]);
+  writer.writeString("optObject");
+  writer.writeNullableBytes(objects[objectsIdx++]);
+  writer.writeString("objectArray");
+  writer.writeArray(type.objectArray, (writer: Write, item: Objects.AnotherType): void => {
+    writer.writeBytes(item.toBuffer());
+  });
+  writer.writeString("optObjectArray");
+  writer.writeNullableArray(type.optObjectArray, (writer: Write, item: Objects.AnotherType | null): void => {
+    writer.writeNullableBytes(item ? item.toBuffer() : null);
+  });
 }
 
-export function deserializeCustomType(buffer: ArrayBuffer, type: CustomType) {
+export function deserializeCustomType(buffer: ArrayBuffer, type: CustomType): void {
   const reader = new ReadDecoder(buffer);
   var numFields = reader.readMapLength();
 
@@ -207,6 +220,38 @@ export function deserializeCustomType(buffer: ArrayBuffer, type: CustomType) {
             });
           });
         });
+      });
+    }
+    else if (field == "object") {
+      const object = new Objects.AnotherType();
+      object.fromBuffer(reader.readBytes());
+      type.object = object;
+    }
+    else if (field == "optObject") {
+      const bytes = reader.readNullableBytes();
+      var object: Objects.AnotherType | null = null;
+      if (bytes) {
+        object = new Objects.AnotherType();
+        object.fromBuffer(bytes);
+      }
+      type.optObject = object;
+    }
+    else if (field == "objectArray") {
+      type.objectArray = reader.readArray((reader: Read): Objects.AnotherType => {
+        const object = new Objects.AnotherType();
+        object.fromBuffer(reader.readBytes());
+        return object;
+      });
+    }
+    else if (field == "optObjectArray") {
+      type.optObjectArray = reader.readNullableArray((reader: Read): Objects.AnotherType | null => {
+        const bytes = reader.readNullableBytes();
+        var object: Objects.AnotherType | null = null;
+        if (bytes) {
+          object = new Objects.AnotherType();
+          object.fromBuffer(bytes);
+        }
+        return object;
       });
     }
   }

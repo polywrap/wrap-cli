@@ -1,3 +1,5 @@
+import { isMsgPackType } from "./types";
+
 type MustacheFunction = () => (
   value: string,
   render: (template: string) => string
@@ -39,10 +41,12 @@ export const toWasmInit: MustacheFunction = () => {
     } else {
       const nullType = toWasm()(value, render);
       const nullable = "Nullable";
+      const nullOptional = "| null";
 
-      if (nullType.substr(0, nullable.length) === nullable) {
-        return `new ${nullType}()`;
-      } else {
+      if (
+        nullType.substr(0, nullable.length) === nullable ||
+        nullType.substr(-nullOptional.length) === nullOptional
+      ) {
         return "null";
       }
     }
@@ -68,7 +72,7 @@ export const toWasmInit: MustacheFunction = () => {
       case "Boolean":
         return "false";
       default:
-        return `new ${type}()`;
+        return `new Objects.${type}()`;
     }
   };
 };
@@ -114,7 +118,7 @@ export const toWasm: MustacheFunction = () => {
       case "Boolean":
         return applyNullable("bool", nullable);
       default:
-        return applyNullable(type, nullable);
+        return applyNullable("Objects." + type, nullable);
     }
   };
 };
@@ -132,7 +136,11 @@ const toWasmArray = (type: string, nullable: boolean): string => {
 
 const applyNullable = (type: string, nullable: boolean): string => {
   if (nullable) {
-    if (type.indexOf("Array") === 0 || type.indexOf("string") === 0) {
+    if (
+      type.indexOf("Array") === 0 ||
+      type.indexOf("string") === 0 ||
+      !isMsgPackType(type)
+    ) {
       return `${type} | null`;
     } else {
       return `Nullable<${type}>`;

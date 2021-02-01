@@ -7,17 +7,29 @@ import {
   Nullable
 } from "@web3api/wasm-as";
 import { {{type}} } from "./";
+import * as Objects from "../..";
 
 export function serialize{{type}}(type: {{type}}): ArrayBuffer {
+  const objects: (ArrayBuffer | null)[] = [
+    {{#properties}}{{#object}}
+    {{#required}}
+    type.{{name}}.toBuffer(),
+    {{/required}}
+    {{^required}}
+    type.{{name}} ? type.{{name}}.toBuffer() : null,
+    {{/required}}
+    {{/object}}{{/properties}}
+  ];
   const sizer = new WriteSizer();
-  write{{type}}(sizer, type);
+  write{{type}}(sizer, type, objects);
   const buffer = new ArrayBuffer(sizer.length);
   const encoder = new WriteEncoder(buffer);
-  write{{type}}(encoder, type);
+  write{{type}}(encoder, type, objects);
   return buffer;
 }
 
-function write{{type}}(writer: Write, type: {{type}}) {
+function write{{type}}(writer: Write, type: {{type}}, objects: (ArrayBuffer | null)[]): void {
+  let objectsIdx = 0;
   writer.writeMapLength({{properties.length}});
   {{#properties}}
   writer.writeString("{{name}}");
@@ -29,10 +41,13 @@ function write{{type}}(writer: Write, type: {{type}}) {
     {{> serialize_array}}
   });
   {{/array}}
+  {{#object}}
+  writer.writeNullableBytes(objects[objectsIdx++]);
+  {{/object}}
   {{/properties}}
 }
 
-export function deserialize{{type}}(buffer: ArrayBuffer, type: {{type}}) {
+export function deserialize{{type}}(buffer: ArrayBuffer, type: {{type}}): void {
   const reader = new ReadDecoder(buffer);
   var numFields = reader.readMapLength();
 
@@ -50,6 +65,10 @@ export function deserialize{{type}}(buffer: ArrayBuffer, type: {{type}}) {
         {{> deserialize_array}}
       });
       {{/array}}
+      {{#object}}
+      {{> deserialize_object }}
+      type.{{name}} = object;
+      {{/object}}
     }
     {{/properties}}
   }
