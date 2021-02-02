@@ -1,5 +1,6 @@
 {
     "name": "@web3api/http-plugin-js",
+    "description": "HTTP plugin enabling invocating http methods through web3api",
     "version": "0.0.1-prealpha.1",
     "license": "MIT",
     "main": "build/index.js",
