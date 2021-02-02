@@ -13,17 +13,17 @@ interface ParserOptions {
   extractors?: SchemaExtractor[];
   transforms?: TypeInfoTransforms[];
   validators?: SchemaValidator[];
-  validate?: boolean;
+  noValidate?: boolean;
 }
 
 export function parseSchema(
   schema: string,
-  options: ParserOptions = { validate: true }
+  options: ParserOptions = { }
 ): TypeInfo {
   const astNode = parse(schema);
 
   // Validate GraphQL Schema
-  if (options.validate) {
+  if (!options.noValidate) {
     const validates = options.validators || validators;
     const errors: Error[] = [];
 

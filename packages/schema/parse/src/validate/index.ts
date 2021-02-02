@@ -9,3 +9,7 @@ export const validators: SchemaValidator[] = [
   directiveValidators.importedDirective,
   directiveValidators.importsDirective,
 ];
+
+export {
+  directiveValidators
+};
