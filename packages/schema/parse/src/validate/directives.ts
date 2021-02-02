@@ -1,124 +1,214 @@
-import { visit, DocumentNode, DirectiveNode, StringValueNode } from "graphql";
+import { ImportedDefinition } from "../typeInfo";
 
-type ImportsArguments = string[];
-type ImportedArguments = { namespace: string; uri: string; type: string };
+import {
+  visit,
+  DirectiveNode,
+  DocumentNode,
+  ASTNode,
+  ObjectTypeDefinitionNode,
+} from "graphql";
 
-const validateImportsUsage = (astNode: DocumentNode) => {
-  const badUsageLocations: string[] = [];
+export function supportedDirectives(astNode: DocumentNode): void {
+  const supportedDirectives = ["imported", "imports"];
+  const unsupportedUsages: string[] = [];
 
   visit(astNode, {
-    ObjectTypeDefinition: (node) => {
-      const importsAllowedObjectTypes = ["Query", "Mutation"];
-      const directives =
-        node.directives &&
-        node.directives.map((directive) => directive.name.value);
+    enter: {
+      Directive: (node: DirectiveNode) => {
+        const name = node.name.value;
 
-      if (
-        directives &&
-        directives.includes("imports") &&
-        !importsAllowedObjectTypes.includes(node.name.value)
-      ) {
-        badUsageLocations.push(node.name.value);
-      }
+        if (!supportedDirectives.includes(name)) {
+          unsupportedUsages.push(name);
+        }
+      },
     },
   });
 
-  if (badUsageLocations.length) {
+  if (unsupportedUsages.length) {
     throw new Error(
-      `@imports directive should only be used on QUERY or MUTATION type definitions, but it is being used on the following ObjectTypeDefinitions: ${badUsageLocations.map(
-        (b) => `\n-${b}`
+      `Found the following usages of unsupported directives:${unsupportedUsages.map(
+        (u) => `\n@${u}`
       )}`
     );
   }
-};
+}
 
-const validateAndExtractImportsArguments = (
-  node: DirectiveNode
-): ImportsArguments => {
-  const args = node.arguments || [];
-  const types = args.find((arg) => arg.name.value === "types");
+export function importsDirective(astNode: DocumentNode): void {
+  let lastNodeVisited = "";
 
-  if (!types) {
-    throw new Error(
-      "@imports directive requires argument 'types' of type [String!]! but it was not provided"
-    );
-  }
+  const ObjectTypeDefinition = (node: ObjectTypeDefinitionNode) => {
+    lastNodeVisited = node.kind;
+    const badUsageLocations: string[] = [];
 
-  if (types.value.kind === "ListValue") {
-    const values = types.value.values;
+    const importsAllowedObjectTypes = ["Query", "Mutation"];
+    const directives =
+      node.directives &&
+      node.directives.map((directive) => directive.name.value);
 
-    if (!values.length) {
+    if (
+      directives &&
+      directives.includes("imports") &&
+      !importsAllowedObjectTypes.includes(node.name.value)
+    ) {
+      badUsageLocations.push(node.name.value);
+    }
+
+    if (badUsageLocations.length) {
       throw new Error(
-        `@imports directive's 'types' argument of type [String!]! requires at least one value`
+        `@imports directive should only be used on QUERY or MUTATION type definitions, ` +
+          `but it is being used on the following ObjectTypeDefinitions:${badUsageLocations.map(
+            (b) => `\n${b}`
+          )}`
+      );
+    }
+  };
+
+  const Directive = (
+    node: DirectiveNode,
+    key: string | number | undefined,
+    parent: ASTNode | undefined,
+    path: ReadonlyArray<string | number>
+  ) => {
+    if (node.name.value !== "imports") {
+      return;
+    }
+
+    if (lastNodeVisited !== "ObjectTypeDefinition") {
+      throw new Error(
+        `@imports directive should only be used on QUERY or MUTATION type definitions, ` +
+          `but it is being used in the following location: ${path.join(" -> ")}`
       );
     }
 
-    const nonStringValues = values.filter(
-      (value) => value.kind !== "StringValue"
+    const args = node.arguments || [];
+    const typesArgument = args.find((arg) => arg.name.value === "types");
+
+    if (!args.length || !typesArgument) {
+      throw new Error(
+        `@imports directive requires argument 'types' of type [String!]!`
+      );
+    }
+
+    if (args.length > 1) {
+      throw new Error(
+        `@imports directive takes only one argument 'types', but found: ${args
+          .filter((arg) => arg.name.value !== "types")
+          .map((arg) => `\n- ${arg.name.value}`)}`
+      );
+    }
+
+    if (typesArgument.value.kind === "ListValue") {
+      const values = typesArgument.value.values;
+
+      if (!values.length) {
+        throw new Error(
+          `@imports directive's 'types' argument of type [String!]! requires at least one value`
+        );
+      }
+
+      const nonStringValues = values.filter(
+        (value) => value.kind !== "StringValue"
+      );
+
+      if (nonStringValues.length) {
+        throw new Error(
+          `@imports directive's 'types' List values must be of type String, but found: \n${nonStringValues.map(
+            (nonStringValue) => `\n -${nonStringValue.kind}`
+          )}`
+        );
+      }
+    }
+  };
+
+  visit(astNode, {
+    enter: (
+      node: ASTNode,
+      key: string | number | undefined,
+      parent: ASTNode | undefined,
+      path: ReadonlyArray<string | number>
+    ) => {
+      if (node.kind === "ObjectTypeDefinition") {
+        ObjectTypeDefinition(node as ObjectTypeDefinitionNode);
+      } else if (node.kind === "Directive") {
+        Directive(node as DirectiveNode, key, parent, path);
+      }
+
+      if (node.kind !== "Name") {
+        lastNodeVisited = node.kind;
+      }
+    },
+  });
+}
+
+export function importedDirective(astNode: ASTNode): void {
+  let lastNodeVisited = "";
+
+  const Directive = (
+    node: DirectiveNode,
+    key: string | number | undefined,
+    parent: ASTNode | undefined,
+    path: ReadonlyArray<string | number>
+  ) => {
+    if (node.name.value !== "imported") {
+      return;
+    }
+
+    if (lastNodeVisited !== "ObjectTypeDefinition") {
+      throw new Error(
+        `@imports directive should only be used on object type definitions, ` +
+          `but it is being used in the following location: ${path.join(" -> ")}`
+      );
+    }
+
+    const imported: ImportedDefinition = {
+      uri: "",
+      namespace: "",
+      nativeType: "",
+    };
+
+    const args = node.arguments || [];
+    const expectedArguments = Object.keys(imported);
+    const actualArguments = args.map((arg) => arg.name.value);
+
+    const missingArguments = expectedArguments.filter(
+      (expected) => !actualArguments.includes(expected)
     );
 
-    if (nonStringValues.length) {
+    if (missingArguments.length) {
       throw new Error(
-        `@imports directive's 'types' List values must be of type String, but found: \n${nonStringValues.map(
-          (nonStringValue) => `\n -${nonStringValue.kind}`
+        `@imported directive is missing the following arguments:${missingArguments.map(
+          (arg) => `\n- ${arg}`
         )}`
       );
     }
 
-    return values.map((value: StringValueNode) => value.value);
-  } else {
-    throw new Error(`@imports directive's 'types' must be of type [String!]!`);
-  }
-};
+    const extraArguments = actualArguments.filter(
+      (actual) => !expectedArguments.includes(actual)
+    );
 
-const validateAndExtractImportedArguments = (
-  node: DirectiveNode
-): ImportedArguments => {
-  const args = node.arguments || [];
-  const expectedArguments = ["namespace", "uri", "type"] as const;
+    if (extraArguments.length) {
+      throw new Error(
+        `@imported directive takes only 3 arguments: ${expectedArguments.join(
+          ", "
+        )}. But found:${extraArguments.map((arg) => `\n- ${arg}`)}`
+      );
+    }
+  };
 
-  return expectedArguments.reduce(
-    (prev, expectedArg) => {
-      const foundArgument = args.find((arg) => arg.name.value === expectedArg);
-
-      if (!foundArgument) {
-        throw new Error(
-          `@imported directive's '${foundArgument}' argument is required but was not provided`
-        );
-      }
-
-      if (foundArgument.value.kind !== "StringValue") {
-        throw new Error(
-          `@imported directive's '${foundArgument.name.value}' should be of type String but found ${foundArgument.value.kind}`
-        );
-      }
-
-      return { ...prev, [expectedArg]: foundArgument.value.value };
-    },
-    { namespace: "", uri: "", type: "" }
-  );
-};
-
-export const directives = {
-  imports: {
-    validate: validateImportsUsage,
-    arguments: validateAndExtractImportsArguments,
-  },
-  imported: {
-    validate: () => {},
-    arguments: validateAndExtractImportedArguments,
-  },
-};
-
-export const validateDirectives = (astNode: DocumentNode) => {
   visit(astNode, {
-    enter: {
-      Directive: (node) => {
-        directives[node.name.value as keyof typeof directives].validate(
-          astNode
-        );
-        directives[node.name.value as keyof typeof directives].arguments(node);
-      },
+    enter: (
+      node: ASTNode,
+      key: string | number | undefined,
+      parent: ASTNode | undefined,
+      path: ReadonlyArray<string | number>
+    ) => {
+      if (node.kind === "Directive") {
+        Directive(node as DirectiveNode, key, parent, path);
+      }
+
+      if (node.kind !== "Name") {
+        lastNodeVisited = node.kind;
+      }
     },
   });
 }

@@ -10,9 +10,9 @@ scalar Int32
 scalar Int64
 
 directive @imported(
-  namespace: String!
   uri: String!
-  type: String!
+  namespace: String!
+  nativeType: String!
 ) on OBJECT
 
 directive @imports(
@@ -70,9 +70,9 @@ type Query @imports(
 }
 
 type TestImport_Query @imported(
-  namespace: "TestImport",
   uri: "testimport.uri.eth",
-  type: "Query"
+  namespace: "TestImport",
+  nativeType: "Query"
 ) {
   importedMethod(
     str: String!
@@ -92,9 +92,9 @@ type TestImport_Query @imported(
 }
 
 type TestImport_Mutation @imported(
-  namespace: "TestImport",
   uri: "testimport.uri.eth",
-  type: "Mutation"
+  namespace: "TestImport",
+  nativeType: "Mutation"
 ) {
   importedMethod(
     str: String!
@@ -102,18 +102,18 @@ type TestImport_Mutation @imported(
 }
 
 type TestImport_Object @imported(
-  namespace: "TestImport",
   uri: "testimport.uri.eth",
-  type: "Object"
+  namespace: "TestImport",
+  nativeType: "Object"
 ) {
   prop: String!
   nested: TestImport_NestedObject!
 }
 
 type TestImport_NestedObject @imported(
-  namespace: "TestImport",,
   uri: "testimport.uri.eth",
-  type: "NestedObject"
+  namespace: "TestImport",
+  nativeType: "NestedObject"
 ) {
   foo: [String!]!
   circular: TestImport_Object!

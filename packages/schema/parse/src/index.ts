@@ -2,6 +2,7 @@ import { TypeInfo, createTypeInfo } from "./typeInfo";
 import { extractors, SchemaExtractor } from "./extract";
 import { TypeInfoTransforms, performTransforms } from "./transform";
 import { finalizePropertyDef } from "./transform/finalizePropertyDef";
+import { validators, SchemaValidator } from "./validate";
 
 import { parse } from "graphql";
 
@@ -11,20 +12,43 @@ export * from "./transform";
 interface ParserOptions {
   extractors?: SchemaExtractor[];
   transforms?: TypeInfoTransforms[];
+  validators?: SchemaValidator[];
+  noValidate?: boolean;
 }
 
-export function parseSchema(schema: string, options?: ParserOptions): TypeInfo {
+export function parseSchema(
+  schema: string,
+  options: ParserOptions = {}
+): TypeInfo {
   const astNode = parse(schema);
 
-  let info = createTypeInfo();
+  // Validate GraphQL Schema
+  if (!options.noValidate) {
+    const validates = options.validators || validators;
+    const errors: Error[] = [];
 
-  const extracts =
-    options && options.extractors ? options.extractors : extractors;
+    for (const validate of validates) {
+      try {
+        validate(astNode);
+      } catch (e) {
+        errors.push(e);
+      }
+    }
+
+    if (errors.length) {
+      throw errors;
+    }
+  }
+
+  // Extract & Build TypeInfo
+  let info = createTypeInfo();
+  const extracts = options.extractors || extractors;
 
   for (const extract of extracts) {
     extract(astNode, info);
   }
 
+  // Finalize & Transform TypeInfo
   info = performTransforms(info, finalizePropertyDef);
 
   if (options && options.transforms) {

@@ -11,7 +11,6 @@ import {
   QueryDefinition,
   createMethodDefinition,
   MethodDefinition,
-  createScalarDefinition,
   createImportedQueryDefinition,
   ImportedQueryDefinition
 } from "../typeInfo";
@@ -51,9 +50,9 @@ type Mutation {
 }
 
 type TestImport_Query @imported(
-  namespace: "TestImport",
   uri: "testimport.uri.eth",
-  type: "Query"
+  namespace: "TestImport",
+  nativeType: "Query"
 ) {
   importedMethod(
     str: String!
