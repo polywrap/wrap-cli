@@ -34,7 +34,7 @@ export function supportedDirectives(astNode: DocumentNode): void {
 }
 
 export function importsDirective(astNode: DocumentNode): void {
-  let lastNodeVisited: string = "";
+  let lastNodeVisited = "";
 
   const ObjectTypeDefinition = (node: ObjectTypeDefinitionNode) => {
     lastNodeVisited = node.kind;
@@ -76,9 +76,7 @@ export function importsDirective(astNode: DocumentNode): void {
     if (lastNodeVisited !== "ObjectTypeDefinition") {
       throw new Error(
         `@imports directive should only be used on QUERY or MUTATION type definitions, ` +
-          `but it is being used in the following location: ${path.join(
-            " -> "
-          )}`
+          `but it is being used in the following location: ${path.join(" -> ")}`
       );
     }
 
@@ -143,7 +141,7 @@ export function importsDirective(astNode: DocumentNode): void {
 }
 
 export function importedDirective(astNode: ASTNode): void {
-  let lastNodeVisited: string = "";
+  let lastNodeVisited = "";
 
   const Directive = (
     node: DirectiveNode,
@@ -158,9 +156,7 @@ export function importedDirective(astNode: ASTNode): void {
     if (lastNodeVisited !== "ObjectTypeDefinition") {
       throw new Error(
         `@imports directive should only be used on object type definitions, ` +
-          `but it is being used in the following location: ${path.join(
-            " -> "
-          )}`
+          `but it is being used in the following location: ${path.join(" -> ")}`
       );
     }
 
@@ -179,9 +175,11 @@ export function importedDirective(astNode: ASTNode): void {
     );
 
     if (missingArguments.length) {
-      throw new Error(`@imported directive is missing the following arguments:${missingArguments.map(
-        (arg) => `\n- ${arg}`
-      )}`);
+      throw new Error(
+        `@imported directive is missing the following arguments:${missingArguments.map(
+          (arg) => `\n- ${arg}`
+        )}`
+      );
     }
 
     const extraArguments = actualArguments.filter(
@@ -189,10 +187,11 @@ export function importedDirective(astNode: ASTNode): void {
     );
 
     if (extraArguments.length) {
-      throw new Error(`@imported directive takes only 3 arguments: ${expectedArguments.join(
-        ", "
-      )}. But found:
-      ${extraArguments.map((arg) => `\n- ${arg}`)}`);
+      throw new Error(
+        `@imported directive takes only 3 arguments: ${expectedArguments.join(
+          ", "
+        )}. But found:${extraArguments.map((arg) => `\n- ${arg}`)}`
+      );
     }
   };
 

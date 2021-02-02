@@ -18,7 +18,7 @@ interface ParserOptions {
 
 export function parseSchema(
   schema: string,
-  options: ParserOptions = { }
+  options: ParserOptions = {}
 ): TypeInfo {
   const astNode = parse(schema);
 

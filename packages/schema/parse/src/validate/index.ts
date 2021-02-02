@@ -10,6 +10,4 @@ export const validators: SchemaValidator[] = [
   directiveValidators.importsDirective,
 ];
 
-export {
-  directiveValidators
-};
+export { directiveValidators };
