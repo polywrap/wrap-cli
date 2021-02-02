@@ -3,8 +3,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import { Web3ApiManifest } from "./Web3ApiManifest";
-import { displayPath } from "./helpers/path";
 import { step, withSpinner } from "./helpers/spinner";
+import { loadManifest } from "./helpers/manifest";
 import { SchemaComposer } from "./SchemaComposer";
 
 import fs, { readFileSync } from "fs";
@@ -18,7 +18,7 @@ const fsExtra = require("fs-extra");
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const toolbox = require("gluegun/toolbox");
 
-export interface BuildConfig {
+export interface CompilerConfig {
   manifestPath: string;
   outputDir: string;
   ensAddress?: string;
@@ -30,7 +30,7 @@ export class Compiler {
   private _manifestDir: string;
   private _schemaComposer: SchemaComposer;
 
-  constructor(private _config: BuildConfig) {
+  constructor(private _config: CompilerConfig) {
     this._manifestDir = path.dirname(_config.manifestPath);
     this._schemaComposer = new SchemaComposer(_config);
   }
@@ -38,7 +38,7 @@ export class Compiler {
   public async compile(quiet?: boolean, verbose?: boolean): Promise<boolean> {
     try {
       // Load the manifest
-      const manifest = await this._schemaComposer.loadManifest();
+      const manifest = await loadManifest(this._config.manifestPath);
 
       // Compile the API
       await this._compileWeb3API(manifest, quiet, verbose);
@@ -47,27 +47,6 @@ export class Compiler {
     } catch (e) {
       toolbox.print.error(e);
       return false;
-    }
-  }
-
-  private async _loadManifest(quiet = false): Promise<Manifest> {
-    const run = () => {
-      return Web3ApiManifest.load(this._config.manifestPath);
-    };
-
-    if (quiet) {
-      return run();
-    } else {
-      const manifestPath = displayPath(this._config.manifestPath);
-
-      return await withSpinner(
-        `Load web3api from ${manifestPath}`,
-        `Failed to load web3api from ${manifestPath}`,
-        `Warnings loading web3api from ${manifestPath}`,
-        async (_spinner) => {
-          return run();
-        }
-      );
     }
   }
 

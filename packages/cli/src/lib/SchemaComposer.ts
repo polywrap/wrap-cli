@@ -2,11 +2,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Web3ApiManifest } from "./Web3ApiManifest";
-import { displayPath } from "./helpers/path";
-import { withSpinner } from "./helpers/spinner";
-import { BuildConfig } from "./Compiler";
-
 import fs from "fs";
 import path from "path";
 import { Manifest, Uri, Web3ApiClient, UriRedirect } from "@web3api/client-js";
@@ -15,29 +10,16 @@ import { EnsPlugin } from "@web3api/ens-plugin-js";
 import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
 import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 
+export interface SchemaConfig {
+  manifestPath: string;
+  outputDir: string;
+  ensAddress?: string;
+  ethProvider?: string;
+  ipfsProvider?: string;
+}
+
 export class SchemaComposer {
-  constructor(private _config: BuildConfig) {}
-
-  public async loadManifest(quiet = false): Promise<Manifest> {
-    const run = () => {
-      return Web3ApiManifest.load(this._config.manifestPath);
-    };
-
-    if (quiet) {
-      return run();
-    } else {
-      const manifestPath = displayPath(this._config.manifestPath);
-
-      return await withSpinner(
-        `Load web3api from ${manifestPath}`,
-        `Failed to load web3api from ${manifestPath}`,
-        `Warnings loading web3api from ${manifestPath}`,
-        async (_spinner) => {
-          return run();
-        }
-      );
-    }
-  }
+  constructor(private _config: SchemaConfig) {}
 
   public async composeSchemas(manifest: Manifest): Promise<ComposerOutput> {
     const querySchemaPath = manifest.query?.schema.file;

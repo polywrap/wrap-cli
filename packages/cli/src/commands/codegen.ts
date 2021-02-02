@@ -6,21 +6,21 @@ import chalk from "chalk";
 import axios from "axios";
 import { GluegunToolbox } from "gluegun";
 
-const defaultTemplate = "web3api.gen";
+const defaultGenerationFile = "web3api.gen.js";
 const defaultManifest = "web3api.yaml";
 
 const HELP = `
-${chalk.bold("w3 codegen")} ${chalk.bold("[<template-file>]")} [options]
+${chalk.bold("w3 codegen")} ${chalk.bold("[<generation-file>]")} [options]
 
-Template file:
-  Path to input template file (default: ${defaultTemplate})
+Generation file:
+  Path to the generation file (default: ${defaultGenerationFile})
 
 Options:
   -h, --help                              Show usage information
   -m, --manifest-path <path>              Path to the Web3API manifest file (default: ${defaultManifest})
   -i, --ipfs [<node>]                     IPFS node to load external schemas (default: dev-server's node)
   -o, --output-dir <path>                 Output directory for generated types (default: types/)
-  -e, --ens [<address>]                   ENS address
+  -e, --ens [<address>]                   ENS address to lookup external schemas (default: 0x0000...2e1e)
 `;
 
 export default {
@@ -38,10 +38,10 @@ export default {
     outputDir = outputDir || o;
     ens = ens || e;
 
-    let templateFile;
+    let generationFile;
     try {
       const params = toolbox.parameters;
-      [templateFile] = fixParameters(
+      [generationFile] = fixParameters(
         {
           options: params.options,
           array: params.array,
@@ -83,26 +83,30 @@ export default {
       ipfsProvider = ipfs;
     } else if (ipfs) {
       // Dev-server IPFS provider
-      // TODO: handle the case where the dev server isn't found
-      const {
-        data: { ipfs, ethereum },
-      } = await axios.get("http://localhost:4040/providers");
-      ipfsProvider = ipfs;
-      ethProvider = ethereum;
+      try {
+        const {
+          data: { ipfs, ethereum },
+        } = await axios.get("http://localhost:4040/providers");
+        ipfsProvider = ipfs;
+        ethProvider = ethereum;
+      } catch (e) {
+        // Dev server not found
+      }
     }
 
-    // Resolve template file & output directories
-    templateFile =
-      (templateFile && filesystem.resolve(templateFile)) ||
-      filesystem.resolve(defaultTemplate);
+    // Resolve generation file & output directories
+    generationFile =
+      (generationFile && filesystem.resolve(generationFile)) ||
+      filesystem.resolve(defaultGenerationFile);
     manifestPath =
       (manifestPath && filesystem.resolve(manifestPath)) ||
       filesystem.resolve(defaultManifest);
     outputDir =
       (outputDir && filesystem.resolve(outputDir)) || filesystem.path("types");
 
-    const codeGenerator = new CodeGenerator(templateFile, {
+    const codeGenerator = new CodeGenerator({
       manifestPath,
+      generationFile,
       ipfsProvider,
       ethProvider,
       ensAddress,

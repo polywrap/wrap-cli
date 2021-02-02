@@ -1,5 +1,5 @@
-import { BuildConfig } from "../Compiler";
 import { SchemaComposer } from "../SchemaComposer";
+import { loadManifest } from "../helpers/manifest";
 
 import chalk from "chalk";
 import fs, { readFileSync } from "fs";
@@ -12,9 +12,18 @@ import {
 } from "@web3api/schema-bind";
 import { TypeInfo, parseSchema } from "@web3api/schema-parse";
 
+export interface CodeGeneratorConfig {
+  manifestPath: string;
+  generationFile: string;
+  outputDir: string;
+  ensAddress?: string;
+  ethProvider?: string;
+  ipfsProvider?: string;
+}
+
 export class CodeGenerator {
   private _schema: string | undefined = "";
-  constructor(private _templateFile: string, private _config: BuildConfig) {}
+  constructor(private _config: CodeGeneratorConfig) {}
 
   public async generateCode(): Promise<boolean> {
     // Make sure that the output dir exists, if not create a new one
@@ -24,20 +33,23 @@ export class CodeGenerator {
 
     // Compose schema from manifest
     const schemaComposer = new SchemaComposer(this._config);
-    const manifest = await schemaComposer.loadManifest();
+    const manifest = await loadManifest(this._config.manifestPath);
     const composedSchema = await schemaComposer.composeSchemas(manifest);
-    const typeInfo = parseSchema(composedSchema.combined!);
+    const typeInfo = parseSchema(composedSchema.combined || "");
     this._schema = composedSchema.combined;
 
-    // Check the template file if it has the proper run() method
+    // Check the generation file if it has the proper run() method
     // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
-    const { run } = await require(this._templateFile);
+    const generator = await require(this._config.generationFile);
+    if (!generator) {
+      console.log(chalk.red("The generation file provided is wrong."));
+      return false;
+    }
 
+    const { run } = generator;
     if (!run) {
       console.log(
-        chalk.red(
-          "The template file provided is wrong or doesn't have the 'run' method."
-        )
+        chalk.red("The generation file provided doesn't have the 'run' method.")
       );
       return false;
     }
@@ -64,7 +76,7 @@ export class CodeGenerator {
 
   public generate(templatePath: string, typeInfo: TypeInfo): string {
     templatePath = path.join(
-      path.dirname(this._config.manifestPath),
+      path.dirname(this._config.generationFile),
       templatePath
     );
 
