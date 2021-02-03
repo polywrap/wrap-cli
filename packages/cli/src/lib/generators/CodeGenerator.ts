@@ -79,8 +79,8 @@ export class CodeGenerator {
 
       await run(output, {
         typeInfo,
-        generate: (templatePath: string, typeInfo: TypeInfo) =>
-          this._generateType(templatePath, typeInfo, spinner, quiet),
+        generate: (templatePath: string, config: unknown) =>
+          this._generateType(templatePath, config, spinner, quiet),
       });
 
       output.entries = await Promise.all(
@@ -108,7 +108,7 @@ export class CodeGenerator {
 
   private _generateType(
     templatePath: string,
-    typeInfo: TypeInfo,
+    config: unknown,
     spinner?: any,
     quiet?: boolean
   ): string {
@@ -124,7 +124,7 @@ export class CodeGenerator {
     const template = readFileSync(templatePath);
 
     let content = Mustache.render(template.toString(), {
-      typeInfo,
+      config,
       schema: this._schema,
     });
 
