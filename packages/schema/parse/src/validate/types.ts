@@ -1,25 +1,35 @@
-import { extractUserTypeDefinitions } from "./types-utils";
+import {
+  extractUserTypeDefinitions,
+  setOperationTypeUsages,
+  Usage,
+} from "./types-utils";
 
 import { DocumentNode, visit } from "graphql";
 
-const nativeTypes = ["Int", "Float", "String", "Boolean", "ID"];
-const operationTypes = ["Query", "Mutation", "Subscription"];
-
-interface Usage {
-  name: string;
-  type: string;
-}
+const NATIVE_TYPES = ["Int", "Float", "String", "Boolean", "ID"];
 
 export function validateTypes(astNode: DocumentNode): void {
   const userDefinedTypes = extractUserTypeDefinitions(astNode);
-  const supportedTypes = nativeTypes.concat(userDefinedTypes);
-  const operationUsages: Usage[] = [];
+  const supportedTypes = NATIVE_TYPES.concat(userDefinedTypes);
   const unsupportedUsages: Usage[] = [];
+  const argumentOperationUsages: Usage[] = [];
 
   visit(astNode, {
     enter: {
       FieldDefinition: (fieldDefinitionNode) => {
         const fieldName = fieldDefinitionNode.name.value;
+
+        fieldDefinitionNode.arguments?.forEach((argument) => {
+          visit(argument.type, {
+            NamedType: (namedTypeNode) =>
+              setOperationTypeUsages(
+                namedTypeNode,
+                argument.name.value,
+                argumentOperationUsages
+              ),
+          });
+        });
+
         visit(fieldDefinitionNode.type, {
           NamedType: (namedTypeNode) => {
             const typeName = namedTypeNode.name.value;
@@ -28,13 +38,11 @@ export function validateTypes(astNode: DocumentNode): void {
               unsupportedUsages.push({ type: typeName, name: fieldName });
             }
 
-            const isOperation = operationTypes.some((operationType) =>
-              typeName.endsWith(`_${operationType}`)
+            setOperationTypeUsages(
+              namedTypeNode,
+              fieldDefinitionNode.name.value,
+              unsupportedUsages
             );
-
-            if (isOperation) {
-              operationUsages.push({ type: typeName, name: fieldName });
-            }
           },
         });
       },
@@ -43,16 +51,16 @@ export function validateTypes(astNode: DocumentNode): void {
 
   if (unsupportedUsages.length) {
     throw new Error(
-      `Found the following usages of unsupported types for fields:${unsupportedUsages.map(
+      `Found the following usages of unsupported or operation types for fields:${unsupportedUsages.map(
         ({ type, name }) => `\n- Field: "${name}", Type: "${type}"`
       )}`
     );
   }
 
-  if (operationUsages.length) {
+  if (argumentOperationUsages.length) {
     throw new Error(
-      `Fields cannot be of type Query, Mutation or Subscription. Found:${operationUsages.map(
-        ({ type, name }) => `\n- Field: "${name}", Type: "${type}"`
+      `Field arguments cannot be of type Query, Mutation or Subscription. Found:${argumentOperationUsages.map(
+        ({ type, name }) => `\n- Argument: "${name}", Type: "${type}"`
       )}`
     );
   }
