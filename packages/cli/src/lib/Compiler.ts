@@ -38,7 +38,7 @@ export class Compiler {
   public async compile(quiet?: boolean, verbose?: boolean): Promise<boolean> {
     try {
       // Load the manifest
-      const manifest = await loadManifest(this._config.manifestPath);
+      const manifest = await loadManifest(this._config.manifestPath, quiet);
 
       // Compile the API
       await this._compileWeb3API(manifest, quiet, verbose);

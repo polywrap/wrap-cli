@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { SchemaComposer } from "../SchemaComposer";
 import { loadManifest } from "../helpers/manifest";
+import { step, withSpinner } from "../helpers/spinner";
 
-import chalk from "chalk";
 import fs, { readFileSync } from "fs";
 import path from "path";
 import Mustache from "mustache";
@@ -10,7 +12,11 @@ import {
   OutputEntry,
   writeDirectory,
 } from "@web3api/schema-bind";
+import { Manifest } from "@web3api/client-js";
 import { TypeInfo, parseSchema } from "@web3api/schema-parse";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+const toolbox = require("gluegun/toolbox");
 
 export interface CodeGeneratorConfig {
   manifestPath: string;
@@ -25,56 +31,91 @@ export class CodeGenerator {
   private _schema: string | undefined = "";
   constructor(private _config: CodeGeneratorConfig) {}
 
-  public async generateCode(): Promise<boolean> {
-    // Make sure that the output dir exists, if not create a new one
-    if (!fs.existsSync(this._config.outputDir)) {
-      fs.mkdirSync(this._config.outputDir);
-    }
+  public async generate(quiet?: boolean): Promise<boolean> {
+    try {
+      // Load the manifest
+      const manifest = await loadManifest(this._config.manifestPath, quiet);
 
-    // Compose schema from manifest
-    const schemaComposer = new SchemaComposer(this._config);
-    const manifest = await loadManifest(this._config.manifestPath);
-    const composedSchema = await schemaComposer.composeSchemas(manifest);
-    const typeInfo = parseSchema(composedSchema.combined || "");
-    this._schema = composedSchema.combined;
+      // Compile the API
+      await this._generateCode(manifest, quiet);
 
-    // Check the generation file if it has the proper run() method
-    // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
-    const generator = await require(this._config.generationFile);
-    if (!generator) {
-      console.log(chalk.red("The generation file provided is wrong."));
+      return true;
+    } catch (e) {
+      toolbox.print.error(e);
       return false;
     }
-
-    const { run } = generator;
-    if (!run) {
-      console.log(
-        chalk.red("The generation file provided doesn't have the 'run' method.")
-      );
-      return false;
-    }
-
-    const output: OutputDirectory = {
-      entries: [],
-    };
-
-    await run(output, {
-      typeInfo,
-      generate: (templatePath: string, typeInfo: TypeInfo) =>
-        this.generate(templatePath, typeInfo),
-    });
-
-    output.entries = await Promise.all(
-      output.entries.map((entry) => this.generateFile(entry, typeInfo))
-    );
-
-    writeDirectory(this._config.outputDir, output);
-
-    console.log(`🔥 Types were generated successfully 🔥`);
-    return true;
   }
 
-  public generate(templatePath: string, typeInfo: TypeInfo): string {
+  private async _generateCode(manifest: Manifest, quiet?: boolean) {
+    const run = async (spinner?: any) => {
+      // Make sure that the output dir exists, if not create a new one
+      if (!fs.existsSync(this._config.outputDir)) {
+        fs.mkdirSync(this._config.outputDir);
+      }
+
+      // Compose schema from manifest
+      const schemaComposer = new SchemaComposer(this._config);
+      const composedSchema = await schemaComposer.composeSchemas(manifest);
+      const typeInfo = parseSchema(composedSchema.combined || "");
+      this._schema = composedSchema.combined;
+
+      // Check the generation file if it has the proper run() method
+      // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
+      const generator = await require(this._config.generationFile);
+      if (!generator) {
+        throw Error("The generation file provided is wrong.");
+      }
+
+      const { run } = generator;
+      if (!run) {
+        throw Error(
+          "The generation file provided doesn't have the 'run' method."
+        );
+      }
+
+      const output: OutputDirectory = {
+        entries: [],
+      };
+
+      await run(output, {
+        typeInfo,
+        generate: (templatePath: string, typeInfo: TypeInfo) =>
+          this._generateType(templatePath, typeInfo, spinner, quiet),
+      });
+
+      output.entries = await Promise.all(
+        output.entries.map((entry) =>
+          this._generateFile(entry, typeInfo, spinner, quiet)
+        )
+      );
+
+      writeDirectory(this._config.outputDir, output);
+    };
+
+    if (quiet) {
+      await run();
+    } else {
+      await withSpinner(
+        "Generate types",
+        "Failed to generate types",
+        "Warnings while generating types",
+        async (spinner) => {
+          return run(spinner);
+        }
+      );
+    }
+  }
+
+  private _generateType(
+    templatePath: string,
+    typeInfo: TypeInfo,
+    spinner?: any,
+    quiet?: boolean
+  ): string {
+    if (!quiet) {
+      step(spinner, `Generating types from ${templatePath}`);
+    }
+
     templatePath = path.join(
       path.dirname(this._config.generationFile),
       templatePath
@@ -95,18 +136,20 @@ ${content}
     return content;
   }
 
-  public async generateFile(
+  private async _generateFile(
     entry: OutputEntry,
-    typeInfo: TypeInfo
+    typeInfo: TypeInfo,
+    spinner?: any,
+    quiet?: boolean
   ): Promise<OutputEntry> {
     if (entry.type === "Directory") {
       entry.data = await Promise.all(
-        entry.data.map((subEntry) => this.generateFile(subEntry, typeInfo))
+        entry.data.map((subEntry) => this._generateFile(subEntry, typeInfo))
       );
     } else if (entry.type === "Template") {
       entry = {
         ...entry,
-        data: this.generate(entry.data, typeInfo),
+        data: this._generateType(entry.data, typeInfo, spinner, quiet),
         type: "File",
       };
     }

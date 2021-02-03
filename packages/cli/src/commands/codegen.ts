@@ -7,7 +7,7 @@ import axios from "axios";
 import { GluegunToolbox } from "gluegun";
 
 const defaultGenerationFile = "web3api.gen.js";
-const defaultManifest = "web3api.yaml";
+const defaultManifest = ["web3api.yaml", "web3api.yml"];
 
 const HELP = `
 ${chalk.bold("w3 codegen")} ${chalk.bold("[<generation-file>]")} [options]
@@ -17,7 +17,9 @@ Generation file:
 
 Options:
   -h, --help                              Show usage information
-  -m, --manifest-path <path>              Path to the Web3API manifest file (default: ${defaultManifest})
+  -m, --manifest-path <path>              Path to the Web3API manifest file (default: ${defaultManifest.join(
+    " | "
+  )})
   -i, --ipfs [<node>]                     IPFS node to load external schemas (default: dev-server's node)
   -o, --output-dir <path>                 Output directory for generated types (default: types/)
   -e, --ens [<address>]                   ENS address to lookup external schemas (default: 0x0000...2e1e)
@@ -100,7 +102,8 @@ export default {
       filesystem.resolve(defaultGenerationFile);
     manifestPath =
       (manifestPath && filesystem.resolve(manifestPath)) ||
-      filesystem.resolve(defaultManifest);
+      filesystem.resolve(defaultManifest[0]) ||
+      filesystem.resolve(defaultManifest[1]);
     outputDir =
       (outputDir && filesystem.resolve(outputDir)) || filesystem.path("types");
 
@@ -113,6 +116,9 @@ export default {
       outputDir,
     });
 
-    await codeGenerator.generateCode();
+    if (await codeGenerator.generate()) {
+      print.success(`🔥 Types were generated successfully 🔥`);
+      process.exitCode = 0;
+    }
   },
 };

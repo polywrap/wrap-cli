@@ -44,7 +44,7 @@ export const withSpinner = async (
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const step = (spinner: any, subject: string, text: string): any => {
+export const step = (spinner: any, subject: string, text?: string): any => {
   if (text) {
     spinner.stopAndPersist({
       text: toolbox.print.colors.muted(`${subject} ${text}`),
