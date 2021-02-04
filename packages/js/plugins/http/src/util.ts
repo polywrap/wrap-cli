@@ -1,4 +1,4 @@
-import { Request, Response, Header } from "./data";
+import { Request, Response, Header } from "./types";
 
 import { AxiosResponse, AxiosRequestConfig } from "axios";
 

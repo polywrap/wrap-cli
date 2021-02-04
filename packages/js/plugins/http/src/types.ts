@@ -1,3 +1,6 @@
+// TODO: Generate this from the schema.graphql file
+// https://github.com/Web3-API/prototype/issues/101
+
 export class Header {
   key: string;
   value: string;

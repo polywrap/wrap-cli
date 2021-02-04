@@ -1,7 +1,7 @@
 import { Web3ApiClient } from "@web3api/client-js"
 import { Uri } from "@web3api/core-js"
 import { HttpPlugin } from "../..";
-import { Response } from "../../data";
+import { Response } from "../../types";
 import nock from "nock"
 
 const defaultReplyHeaders = {

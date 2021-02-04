@@ -1,54 +1,54 @@
-### HTTP Plugin
+# HTTP Plugin
 
-Http plugin curently supports two different methods `GET` and `POST`. Similar to calling axios, when defining request you need to specify response type.
+Http plugin curently supports two different methods `GET` and `POST`. Similar to calling axios, when defining request you need to specify a response type. Headers and query parameters may also be defined.
 
-If `"TEXT"` is selected this indicates that server will respond with textual response that will be just fowarded by HTTP plugin.
+## Response Types
 
-If `"BINARY"` is selected this indicates that server will respond with binary data (in axios this is _arraybuffer_) and than HTTP plugin will encode this bytes as **base64** string and return it.
+`TEXT` - The server will respond with text, the HTTP plugin will return the text as-is.
 
-When creating request it is also possible to define request headers and query parameters.
+`BINARY` - The server will respond with binary data (_ArrayBuffer_), the HTTP plugin will encode as a **base64** string and return it.
 
-#### GET request
+## GET request
 
-Below is sample invocation of `GET` request with custom request headers and query parameters (`urlParams`).
+Below is sample invocation of the `GET` request with custom request headers and query parameters (`urlParams`).
 
 ```ts
 const response = await web3ApiClient.query<{ get: Response }>({
-    uri: new Uri("w3://ens/http.web3api.eth"),
-    query: `
-        query {
-            get(
-                url: "http://www.example.com/api"
-                request: {
-                    responseType: TEXT
-                    urlParams: [{key: "query", value: "foo"}]
-                    headers: [{key: "X-Request-Header", value: "req-foo"}]
-                }
-            )
+uri: new Uri("w3://ens/http.web3api.eth"),
+  query: `
+    query {
+      get(
+        url: "http://www.example.com/api"
+        request: {
+          responseType: TEXT
+          urlParams: [{key: "query", value: "foo"}]
+          headers: [{key: "X-Request-Header", value: "req-foo"}]
         }
-    `
+      )
+    }
+  `
 })
 ```
 
-#### POST request
+## POST request
 
-Below is sample invocation of `POST` request with custom request headers and query parameters (`urlParams`). It is also possible to set request body as shown below.
+Below is sample invocation of the `POST` request with custom request headers and query parameters (`urlParams`). It is also possible to set request body as shown below.
 
 ```ts
 const response = await web3ApiClient.query<{ get: Response }>({
-    uri: new Uri("w3://ens/http.web3api.eth"),
-    query: `
-        mutation {
-            post(
-                url: "http://www.example.com/api"
-                request: {
-                    responseType: TEXT
-                    urlParams: [{key: "query", value: "foo"}]
-                    headers: [{key: "X-Request-Header", value: "req-foo"}]
-                    body: "{data: 'test-request'}"
-                }
-            )
+  uri: new Uri("w3://ens/http.web3api.eth"),
+  query: `
+    mutation {
+      post(
+        url: "http://www.example.com/api"
+        request: {
+          responseType: TEXT
+          urlParams: [{key: "query", value: "foo"}]
+          headers: [{key: "X-Request-Header", value: "req-foo"}]
+          body: "{data: 'test-request'}"
         }
-    `
+      )
+    }
+  `
 })
 ```

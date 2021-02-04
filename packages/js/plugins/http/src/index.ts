@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { query, mutation } from "./resolvers";
-import { Request, Response } from "./data";
+import { Request, Response } from "./types";
 import { fromAxiosResponse, toAxiosRequestConfig } from "./util";
 import { manifest } from "./manifest";
 

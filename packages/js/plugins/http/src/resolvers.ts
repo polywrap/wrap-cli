@@ -1,5 +1,5 @@
 import { HttpPlugin } from ".";
-import { Request } from "./data";
+import { Request } from "./types";
 
 import { PluginModule } from "@web3api/core-js";
 
