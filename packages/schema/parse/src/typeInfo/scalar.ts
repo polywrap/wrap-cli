@@ -20,3 +20,5 @@ export type ScalarType = keyof ScalarTypes;
 export function isScalarType(type: string): type is ScalarType {
   return type in scalarTypes;
 }
+
+export const scalarTypeNames = Object.keys(scalarTypes);
