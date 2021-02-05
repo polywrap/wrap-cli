@@ -12,7 +12,6 @@ import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 
 export interface SchemaConfig {
   manifestPath: string;
-  outputDir: string;
   ensAddress?: string;
   ethProvider?: string;
   ipfsProvider?: string;

@@ -8,4 +8,5 @@ module.exports = {
       diagnostics: false,
     },
   },
+  setupFilesAfterEnv: ["./jest.setup.js"],
 };

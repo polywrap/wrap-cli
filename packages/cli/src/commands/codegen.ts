@@ -102,8 +102,9 @@ export default {
       filesystem.resolve(defaultGenerationFile);
     manifestPath =
       (manifestPath && filesystem.resolve(manifestPath)) ||
-      filesystem.resolve(defaultManifest[0]) ||
-      filesystem.resolve(defaultManifest[1]);
+      ((await filesystem.existsAsync(defaultManifest[0]))
+        ? filesystem.resolve(defaultManifest[0])
+        : filesystem.resolve(defaultManifest[1]));
     outputDir =
       (outputDir && filesystem.resolve(outputDir)) || filesystem.path("types");
 
@@ -119,6 +120,8 @@ export default {
     if (await codeGenerator.generate()) {
       print.success(`🔥 Types were generated successfully 🔥`);
       process.exitCode = 0;
+    } else {
+      process.exitCode = 1;
     }
   },
 };

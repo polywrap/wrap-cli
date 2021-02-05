@@ -79,7 +79,7 @@ export class CodeGenerator {
 
       await run(output, {
         typeInfo,
-        generate: (templatePath: string, config: unknown) =>
+        generate: (templatePath: string, config: any) =>
           this._generateType(templatePath, config, spinner, quiet),
       });
 
@@ -108,7 +108,7 @@ export class CodeGenerator {
 
   private _generateType(
     templatePath: string,
-    config: unknown,
+    config: any,
     spinner?: any,
     quiet?: boolean
   ): string {
@@ -122,9 +122,10 @@ export class CodeGenerator {
     );
 
     const template = readFileSync(templatePath);
-
+    const types =
+      typeof config === "object" && config !== null ? config : { config };
     let content = Mustache.render(template.toString(), {
-      config,
+      ...types,
       schema: this._schema,
     });
 
