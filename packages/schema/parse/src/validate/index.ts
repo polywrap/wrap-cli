@@ -1,4 +1,5 @@
 import * as directiveValidators from "./directives";
+import * as typeValidators from "./types";
 
 import { DocumentNode } from "graphql";
 
@@ -8,6 +9,8 @@ export const validators: SchemaValidator[] = [
   directiveValidators.supportedDirectives,
   directiveValidators.importedDirective,
   directiveValidators.importsDirective,
+  typeValidators.typeDefinitions,
+  typeValidators.propertyTypes,
 ];
 
-export { directiveValidators };
+export { directiveValidators, typeValidators };

@@ -9,6 +9,7 @@ import {
 export * from "./definitions";
 export * from "./scalar";
 export * from "./operation";
+export * from "./query";
 
 export interface TypeInfo {
   objectTypes: ObjectDefinition[];
