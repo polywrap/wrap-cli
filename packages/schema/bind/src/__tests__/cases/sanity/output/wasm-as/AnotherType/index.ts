@@ -9,11 +9,11 @@ export class AnotherType {
   prop: string | null;
   circular: Objects.CustomType;
 
-  toBuffer(): ArrayBuffer {
-    return serializeAnotherType(this);
+  static toBuffer(type: AnotherType): ArrayBuffer {
+    return serializeAnotherType(type);
   }
 
-  fromBuffer(buffer: ArrayBuffer): void {
-    deserializeAnotherType(buffer, this);
+  static fromBuffer(buffer: ArrayBuffer): AnotherType {
+    return deserializeAnotherType(buffer);
   }
 }

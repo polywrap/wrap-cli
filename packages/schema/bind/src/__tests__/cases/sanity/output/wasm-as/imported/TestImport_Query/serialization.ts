@@ -21,8 +21,8 @@ export class Input_importedMethod {
 
 export function serializeimportedMethodArgs(input: Input_importedMethod): ArrayBuffer {
   const objects: (ArrayBuffer | null)[] = [
-    input.object.toBuffer(),
-    input.optObject ? input.optObject.toBuffer() : null,
+    Objects.TestImport_Object.toBuffer(input.object),
+    input.optObject ? Objects.TestImport_Object.toBuffer(input.optObject) : null,
   ];
   const sizer = new WriteSizer();
   writeimportedMethodArgs(sizer, input, objects);
@@ -59,11 +59,11 @@ function writeimportedMethodArgs(
   writer.writeNullableBytes(objects[objectsIdx++]);
   writer.writeString("objectArray");
   writer.writeArray(input.objectArray, (writer: Write, item: Objects.TestImport_Object): void => {
-    writer.writeBytes(item.toBuffer());
+    writer.writeBytes(Objects.TestImport_Object.toBuffer(item));
   });
   writer.writeString("optObjectArray");
   writer.writeNullableArray(input.optObjectArray, (writer: Write, item: Objects.TestImport_Object | null): void => {
-    writer.writeNullableBytes(item ? item.toBuffer() : null);
+    writer.writeNullableBytes(item ? Objects.TestImport_Object.toBuffer(item) : null);
   });
 }
 
@@ -72,10 +72,8 @@ export function deserializeimportedMethodResult(buffer: ArrayBuffer): Objects.Te
   const bytes = reader.readNullableBytes();
   var object: Objects.TestImport_Object | null = null;
   if (bytes) {
-    object = new Objects.TestImport_Object();
-    object.fromBuffer(bytes);
+    object = Objects.TestImport_Object.fromBuffer(bytes);
   }
-
   return object;
 }
 

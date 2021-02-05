@@ -21,9 +21,19 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
   var numFields = reader.readMapLength();
 
   {{#arguments}}
+  {{^object}}
   var _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+  {{/object}}
+  {{#object}}
   {{#required}}
-  var _{{name}}Set: boolean = false;
+  var _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} | null = null;
+  {{/required}}
+  {{^required}}
+  var _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+  {{/required}}
+  {{/object}}
+  {{#required}}
+  var _{{name}}Set: bool = false;
   {{/required}}
   {{/arguments}}
 
@@ -54,8 +64,13 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
 
   {{#arguments}}
   {{#required}}
+  {{^object}}
   if (!_{{name}}Set) {
-    throw Error("Missing required argument '{{name}}: {{type}}'");
+  {{/object}}
+  {{#object}}
+  if (!_{{name}} || !_{{name}}Set) {
+  {{/object}}
+    throw Error("Missing required argument: '{{name}}: {{type}}'");
   }
   {{/required}}
   {{/arguments}}
@@ -89,10 +104,10 @@ function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}}{{toGr
   {{/array}}
   {{#object}}
   {{#required}}
-  writer.writeBytes(result.toBuffer());
+  writer.writeBytes(Objects.{{type}}.toBuffer(result));
   {{/required}}
   {{^required}}
-  writer.writeNullableBytes(result ? result.toBuffer() : null);
+  writer.writeNullableBytes(result ? Objects.{{type}}.toBuffer(result) : null);
   {{/required}}
   {{/object}}
   {{/return}}

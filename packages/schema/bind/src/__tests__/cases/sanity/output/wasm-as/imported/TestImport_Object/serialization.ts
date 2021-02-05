@@ -11,8 +11,8 @@ import * as Objects from "../..";
 
 export function serializeTestImport_Object(type: TestImport_Object): ArrayBuffer {
   const objects: (ArrayBuffer | null)[] = [
-    type.object.toBuffer(),
-    type.optObject ? type.optObject.toBuffer() : null,
+    Objects.TestImport_AnotherObject.toBuffer(type.object),
+    type.optObject ? Objects.TestImport_AnotherObject.toBuffer(type.optObject) : null,
   ];
   const sizer = new WriteSizer();
   writeTestImport_Object(sizer, type, objects);
@@ -31,53 +31,72 @@ function writeTestImport_Object(writer: Write, type: TestImport_Object, objects:
   writer.writeNullableBytes(objects[objectsIdx++]);
   writer.writeString("objectArray");
   writer.writeArray(type.objectArray, (writer: Write, item: Objects.TestImport_AnotherObject): void => {
-    writer.writeBytes(item.toBuffer());
+    writer.writeBytes(Objects.TestImport_AnotherObject.toBuffer(item));
   });
   writer.writeString("optObjectArray");
   writer.writeNullableArray(type.optObjectArray, (writer: Write, item: Objects.TestImport_AnotherObject | null): void => {
-    writer.writeNullableBytes(item ? item.toBuffer() : null);
+    writer.writeNullableBytes(item ? Objects.TestImport_AnotherObject.toBuffer(item) : null);
   });
 }
 
-export function deserializeTestImport_Object(buffer: ArrayBuffer, type: TestImport_Object): void {
+export function deserializeTestImport_Object(buffer: ArrayBuffer): TestImport_Object {
   const reader = new ReadDecoder(buffer);
   var numFields = reader.readMapLength();
+
+  var _object: Objects.TestImport_AnotherObject | null = null;
+  var _objectSet: bool = false;
+  var _optObject: Objects.TestImport_AnotherObject | null = null;
+  var _objectArray: Array<Objects.TestImport_AnotherObject> = [];
+  var _objectArraySet: bool = false;
+  var _optObjectArray: Array<Objects.TestImport_AnotherObject | null> | null = null;
 
   while (numFields > 0) {
     numFields--;
     const field = reader.readString();
 
     if (field == "object") {
-      const object = new Objects.TestImport_AnotherObject();
-      object.fromBuffer(reader.readBytes());
-      type.object = object;
+      const object = Objects.TestImport_AnotherObject.fromBuffer(reader.readBytes());
+      _object = object;
+      _objectSet = true;
     }
     else if (field == "optObject") {
       const bytes = reader.readNullableBytes();
       var object: Objects.TestImport_AnotherObject | null = null;
       if (bytes) {
-        object = new Objects.TestImport_AnotherObject();
-        object.fromBuffer(bytes);
+        object = Objects.TestImport_AnotherObject.fromBuffer(bytes);
       }
-      type.optObject = object;
+      _optObject = object;
     }
     else if (field == "objectArray") {
-      type.objectArray = reader.readArray((reader: Read): Objects.TestImport_AnotherObject => {
-        const object = new Objects.TestImport_AnotherObject();
-        object.fromBuffer(reader.readBytes());
+      _objectArray = reader.readArray((reader: Read): Objects.TestImport_AnotherObject => {
+        const object = Objects.TestImport_AnotherObject.fromBuffer(reader.readBytes());
         return object;
       });
+      _objectArraySet = true;
     }
     else if (field == "optObjectArray") {
-      type.optObjectArray = reader.readNullableArray((reader: Read): Objects.TestImport_AnotherObject | null => {
+      _optObjectArray = reader.readNullableArray((reader: Read): Objects.TestImport_AnotherObject | null => {
         const bytes = reader.readNullableBytes();
         var object: Objects.TestImport_AnotherObject | null = null;
         if (bytes) {
-          object = new Objects.TestImport_AnotherObject();
-          object.fromBuffer(bytes);
+          object = Objects.TestImport_AnotherObject.fromBuffer(bytes);
         }
         return object;
       });
     }
   }
+
+  if (!_object || !_objectSet) {
+    throw Error("Missing required property: 'object: TestImport_AnotherObject'");
+  }
+  if (!_objectArraySet) {
+    throw Error("Missing required property: 'objectArray: [TestImport_AnotherObject]'");
+  }
+
+  return {
+    object: _object,
+    optObject: _optObject,
+    objectArray: _objectArray,
+    optObjectArray: _optObjectArray
+  };
 }

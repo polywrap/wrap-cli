@@ -34,11 +34,11 @@ export class CustomType {
   objectArray: Array<Objects.AnotherType>;
   optObjectArray: Array<Objects.AnotherType | null> | null;
 
-  toBuffer(): ArrayBuffer {
-    return serializeCustomType(this);
+  static toBuffer(type: CustomType): ArrayBuffer {
+    return serializeCustomType(type);
   }
 
-  fromBuffer(buffer: ArrayBuffer): void {
-    deserializeCustomType(buffer, this);
+  static fromBuffer(buffer: ArrayBuffer): CustomType {
+    return deserializeCustomType(buffer);
   }
 }

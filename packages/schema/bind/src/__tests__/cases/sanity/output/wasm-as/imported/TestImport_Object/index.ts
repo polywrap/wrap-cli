@@ -14,11 +14,11 @@ export class TestImport_Object {
   objectArray: Array<Objects.TestImport_AnotherObject>;
   optObjectArray: Array<Objects.TestImport_AnotherObject | null> | null;
 
-  toBuffer(): ArrayBuffer {
-    return serializeTestImport_Object(this);
+  static toBuffer(type: TestImport_Object): ArrayBuffer {
+    return serializeTestImport_Object(type);
   }
 
-  fromBuffer(buffer: ArrayBuffer): void {
-    deserializeTestImport_Object(buffer, this);
+  static fromBuffer(buffer: ArrayBuffer): TestImport_Object {
+    return deserializeTestImport_Object(buffer);
   }
 }

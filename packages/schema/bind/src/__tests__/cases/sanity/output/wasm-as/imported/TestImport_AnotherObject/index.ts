@@ -11,11 +11,11 @@ export class TestImport_AnotherObject {
 
   prop: string;
 
-  toBuffer(): ArrayBuffer {
-    return serializeTestImport_AnotherObject(this);
+  static toBuffer(type: TestImport_AnotherObject): ArrayBuffer {
+    return serializeTestImport_AnotherObject(type);
   }
 
-  fromBuffer(buffer: ArrayBuffer): void {
-    deserializeTestImport_AnotherObject(buffer, this);
+  static fromBuffer(buffer: ArrayBuffer): TestImport_AnotherObject {
+    return deserializeTestImport_AnotherObject(buffer);
   }
 }

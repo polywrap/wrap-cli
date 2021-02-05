@@ -1,12 +1,10 @@
 {{#required}}
-const object = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
-object.fromBuffer(reader.readBytes());
+const object = Objects.{{type}}.fromBuffer(reader.readBytes());
 {{/required}}
 {{^required}}
 const bytes = reader.readNullableBytes();
 var object: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = null;
 if (bytes) {
-  object = new Objects.{{type}}();
-  object.fromBuffer(bytes);
+  object = Objects.{{type}}.fromBuffer(bytes);
 }
 {{/required}}

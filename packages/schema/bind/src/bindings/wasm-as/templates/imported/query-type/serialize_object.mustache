@@ -1,6 +1,6 @@
 {{#required}}
-writer.writeBytes(item.toBuffer());
+writer.writeBytes(Objects.{{type}}.toBuffer(item));
 {{/required}}
 {{^required}}
-writer.writeNullableBytes(item ? item.toBuffer() : null);
+writer.writeNullableBytes(item ? Objects.{{type}}.toBuffer(item) : null);
 {{/required}}

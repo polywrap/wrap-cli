@@ -19,10 +19,10 @@ export function serialize{{name}}Args(input: Input_{{name}}): ArrayBuffer {
   const objects: (ArrayBuffer | null)[] = [
     {{#arguments}}{{#object}}
     {{#required}}
-    input.{{name}}.toBuffer(),
+    Objects.{{type}}.toBuffer(input.{{name}}),
     {{/required}}
     {{^required}}
-    input.{{name}} ? input.{{name}}.toBuffer() : null,
+    input.{{name}} ? Objects.{{type}}.toBuffer(input.{{name}}) : null,
     {{/required}}
     {{/object}}{{/arguments}}
   ];
@@ -70,7 +70,6 @@ export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#return}}{{#to
   {{/array}}
   {{#object}}
   {{> deserialize_object}}
-
   return object;
   {{/object}}
   {{/return}}

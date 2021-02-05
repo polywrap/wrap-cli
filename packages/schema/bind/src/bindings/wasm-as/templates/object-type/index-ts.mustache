@@ -7,22 +7,14 @@ import * as Objects from "..";
 
 export class {{type}} {
   {{#properties}}
-  {{#scalar}}
   {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
-  {{/scalar}}
-  {{#array}}
-  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
-  {{/array}}
-  {{#object}}
-  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
-  {{/object}}
   {{/properties}}
 
-  toBuffer(): ArrayBuffer {
-    return serialize{{type}}(this);
+  static toBuffer(type: {{type}}): ArrayBuffer {
+    return serialize{{type}}(type);
   }
 
-  fromBuffer(buffer: ArrayBuffer): void {
-    deserialize{{type}}(buffer, this);
+  static fromBuffer(buffer: ArrayBuffer): {{type}} {
+    return deserialize{{type}}(buffer);
   }
 }

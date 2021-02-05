@@ -27,16 +27,28 @@ function writeTestImport_AnotherObject(writer: Write, type: TestImport_AnotherOb
   writer.writeString(type.prop);
 }
 
-export function deserializeTestImport_AnotherObject(buffer: ArrayBuffer, type: TestImport_AnotherObject): void {
+export function deserializeTestImport_AnotherObject(buffer: ArrayBuffer): TestImport_AnotherObject {
   const reader = new ReadDecoder(buffer);
   var numFields = reader.readMapLength();
+
+  var _prop: string = "";
+  var _propSet: bool = false;
 
   while (numFields > 0) {
     numFields--;
     const field = reader.readString();
 
     if (field == "prop") {
-      type.prop = reader.readString();
+      _prop = reader.readString();
+      _propSet = true;
     }
   }
+
+  if (!_propSet) {
+    throw Error("Missing required property: 'prop: String'");
+  }
+
+  return {
+    prop: _prop
+  };
 }
