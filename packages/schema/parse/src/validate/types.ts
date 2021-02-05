@@ -2,13 +2,13 @@ import {
   isScalarType,
   scalarTypeNames,
   isQueryType,
-  queryTypeNames
-} from "../typeInfo"
+  queryTypeNames,
+} from "../typeInfo";
 
 import { DocumentNode, StringValueNode, visit } from "graphql";
 
 export function typeDefinitions(astNode: DocumentNode): void {
-  const objectTypes: Record<string, boolean> = { };
+  const objectTypes: Record<string, boolean> = {};
 
   visit(astNode, {
     enter: {
@@ -16,16 +16,16 @@ export function typeDefinitions(astNode: DocumentNode): void {
       InterfaceTypeDefinition: (node) => {
         throw Error(
           "Interface type definitions are not supported.\n" +
-          `Found: interface ${node.name.value} { ... }\n` +
-          `Please Use: type ${node.name.value} { ... }`
+            `Found: interface ${node.name.value} { ... }\n` +
+            `Please Use: type ${node.name.value} { ... }`
         );
       },
       // No Inputs
       InputObjectTypeDefinition: (node) => {
         throw Error(
           "Input type definitions are not supported.\n" +
-          `Found: input ${node.name.value} { ... }\n` +
-          `Please Use: type ${node.name.value} { ... }`
+            `Found: input ${node.name.value} { ... }\n` +
+            `Please Use: type ${node.name.value} { ... }`
         );
       },
       ObjectTypeDefinition: (node) => {
@@ -57,22 +57,22 @@ export function typeDefinitions(astNode: DocumentNode): void {
       UnionTypeDefinition: (node) => {
         throw Error(
           "Union type definitions are not supported.\n" +
-          `Found: union ${node.name.value}`
+            `Found: union ${node.name.value}`
         );
-      }
-    }
-  })
+      },
+    },
+  });
 }
 
 export function propertyTypes(astNode: DocumentNode): void {
   let currentObject: string | undefined;
   let currentImportType: string | undefined;
   let currentField: string | undefined;
-  const objectTypes: Record<string, boolean> = { };
+  const objectTypes: Record<string, boolean> = {};
   const fieldTypes: {
-    object: string,
-    field: string,
-    type: string
+    object: string;
+    field: string;
+    type: string;
   }[] = [];
 
   visit(astNode, {
@@ -103,7 +103,7 @@ export function propertyTypes(astNode: DocumentNode): void {
           fieldTypes.push({
             object: currentObject,
             field: currentField,
-            type: node.name.value
+            type: node.name.value,
           });
         }
       },
@@ -112,11 +112,13 @@ export function propertyTypes(astNode: DocumentNode): void {
         if (typeName && !isQueryType(typeName)) {
           // Arguments not supported on non-query types
           throw Error(
-            `Methods can only be defined on query types (${queryTypeNames.join(", ")}).\n` +
-            `Found: type ${typeName} { ${currentField}(${node.name.value}) }`
+            `Methods can only be defined on query types (${queryTypeNames.join(
+              ", "
+            )}).\n` +
+              `Found: type ${typeName} { ${currentField}(${node.name.value}) }`
           );
         }
-      }
+      },
     },
     leave: {
       ObjectTypeDefinition: () => {
@@ -125,8 +127,8 @@ export function propertyTypes(astNode: DocumentNode): void {
       },
       FieldDefinition: () => {
         currentField = undefined;
-      }
-    }
+      },
+    },
   });
 
   // Ensure all property types are either a
