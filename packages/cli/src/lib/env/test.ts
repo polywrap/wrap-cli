@@ -2,16 +2,16 @@ import * as testEnv from "@web3api/client-test-env";
 
 export async function startupTestEnv(
   quiet: boolean,
-  directory: string,
+  configFilePath: string,
   ci: boolean
 ): Promise<void> {
-  await testEnv.up(quiet, directory, ci);
+  await testEnv.up(quiet, configFilePath, ci);
 }
 
 export async function shutdownTestEnv(
   quiet: boolean,
-  directory: string,
+  configFilePath: string,
   ci: boolean
 ): Promise<void> {
-  await testEnv.down(quiet, directory, ci);
+  await testEnv.down(quiet, configFilePath, ci);
 }

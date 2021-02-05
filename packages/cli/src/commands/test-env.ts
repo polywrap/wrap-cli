@@ -4,8 +4,10 @@ import { withSpinner } from "../lib/helpers/spinner";
 import { filesystem, GluegunToolbox, print } from "gluegun";
 import chalk from "chalk";
 
+const configFileName = "web3api.env.yaml";
+
 const HELP = `
-${chalk.bold("w3 test-env")} [command] ${chalk.bold("[<docker-directory>]")}
+${chalk.bold("w3 test-env")} [command]
 
 Commands:
   up    Startup the test env
@@ -21,7 +23,7 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { parameters } = toolbox;
     const command = parameters.first;
-    const dockerDirectory = parameters.second || filesystem.cwd();
+    const configFilePath = filesystem.cwd() + `/${configFileName}`;
     const { c } = parameters.options;
     let { ci } = parameters.options;
     ci = ci || c;
@@ -38,8 +40,8 @@ export default {
       return;
     }
 
-    if (toolbox.filesystem.exists(dockerDirectory) !== "dir") {
-      print.error("Provided docker directory is not a directory");
+    if (filesystem.exists(configFilePath) !== "file") {
+      print.error(`No ${configFileName} file found at ${configFilePath}`);
       process.exitCode = 1;
       return;
     }
@@ -50,7 +52,7 @@ export default {
         "Failed to start test environment",
         "Warning starting test environment",
         async (_spinner) => {
-          return startupTestEnv(true, dockerDirectory, ci);
+          return startupTestEnv(true, configFilePath, ci);
         }
       );
     } else if (command === "down") {
@@ -59,7 +61,7 @@ export default {
         "Failed to shutdown test environment",
         "Warning shutting down test environment",
         async (_spinner) => {
-          return await shutdownTestEnv(true, dockerDirectory, ci);
+          return await shutdownTestEnv(true, configFilePath, ci);
         }
       );
     } else {
