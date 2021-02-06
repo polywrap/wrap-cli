@@ -13,9 +13,9 @@ export const composedSchema = {
     "scalar Int64\n" +
     "\n" +
     "directive @imported(\n" +
-    "  namespace: String!\n" +
     "  uri: String!\n" +
-    "  type: String!\n" +
+    "  namespace: String!\n" +
+    "  nativeType: String!\n" +
     ") on OBJECT\n" +
     "\n" +
     "directive @imports(\n" +
@@ -48,9 +48,9 @@ export const composedSchema = {
     "scalar Int64\n" +
     "\n" +
     "directive @imported(\n" +
-    "  namespace: String!\n" +
     "  uri: String!\n" +
-    "  type: String!\n" +
+    "  namespace: String!\n" +
+    "  nativeType: String!\n" +
     ") on OBJECT\n" +
     "\n" +
     "directive @imports(\n" +
@@ -85,9 +85,9 @@ export const composedSchema = {
     "scalar Int64\n" +
     "\n" +
     "directive @imported(\n" +
-    "  namespace: String!\n" +
     "  uri: String!\n" +
-    "  type: String!\n" +
+    "  namespace: String!\n" +
+    "  nativeType: String!\n" +
     ") on OBJECT\n" +
     "\n" +
     "directive @imports(\n" +

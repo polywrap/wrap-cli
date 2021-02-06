@@ -57,9 +57,9 @@ scalar Int32
 scalar Int64
 
 directive @imported(
-  namespace: String!
   uri: String!
-  type: String!
+  namespace: String!
+  nativeType: String!
 ) on OBJECT
 
 directive @imports(
