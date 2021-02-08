@@ -1,5 +1,11 @@
 const { exec } = require('child_process');
 
+const dockerComposeFiles = {
+  devserver: "devserver.yml",
+  ganache: "ganache.yml",
+  ipfs: "ipfs.yml",
+}
+
 async function runCommand(command, quiet, ci) {
 
   if (!quiet) {
@@ -27,12 +33,16 @@ async function runCommand(command, quiet, ci) {
 }
 
 async function up(quiet = false, configFilePath = "", ci = false) {
-  let fileCommand = ci === false? ` -f ${configFilePath}`: "";
+  let fileCommand = ci === false ?
+    ` -f ${configFilePath}` :
+    ` -f ${dockerComposeFiles.devserver} -f ${dockerComposeFiles.ganache} -f ${dockerComposeFiles.ipfs}`;
   await runCommand(`docker-compose${fileCommand} up -d`, quiet, ci)
 }
 
 async function down(quiet = false, configFilePath = "", ci = false) {
-  let fileCommand = ci === false? ` -f ${configFilePath}`: "";
+  let fileCommand = ci === false ?
+    ` -f ${configFilePath}` :
+    ` -f ${dockerComposeFiles.devserver} -f ${dockerComposeFiles.ganache} -f ${dockerComposeFiles.ipfs}`;
   await runCommand(`docker-compose${fileCommand} down`, quiet, ci)
 }
 
