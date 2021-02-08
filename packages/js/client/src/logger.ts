@@ -6,26 +6,26 @@ export enum LogLevel {
 }
 
 export interface ILogger {
-  debug(message: string, ...args: unknown[]): void;
-  info(message: string, ...args: unknown[]): void;
-  warn(message: string, ...args: unknown[]): void;
-  error(message: string, ...args: unknown[]): void;
+  debug(message: string): void;
+  info(message: string): void;
+  warn(message: string): void;
+  error(message: string): void;
 }
 
 export class DefaultLogger implements ILogger {
-  public debug(message: string, ...args: unknown[]): void {
-    console.debug(message, args);
+  public debug(message: string): void {
+    console.debug(message);
   }
 
-  public info(message: string, ...args: unknown[]): void {
-    console.log(message, args);
+  public info(message: string): void {
+    console.log(message);
   }
 
-  public warn(message: string, ...args: unknown[]): void {
-    console.warn(message, args);
+  public warn(message: string): void {
+    console.warn(message);
   }
 
-  public error(message: string, ...args: unknown[]): void {
-    console.error(message, args);
+  public error(message: string): void {
+    console.error(message);
   }
 }
