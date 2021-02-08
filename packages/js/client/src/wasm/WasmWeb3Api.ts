@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 import { HostAction, ThreadWakeStatus } from "./types";
+import { ILogger } from "../logger";
 
 import {
   InvokeApiOptions,
@@ -31,6 +32,8 @@ const threadMutexes = new Int32Array(threadMutexesBuffer, 0, maxThreads);
 export class WasmWeb3Api extends Api {
   private _schema?: string;
 
+  private _logger: ILogger;
+
   private _wasm: {
     query?: ArrayBuffer;
     mutation?: ArrayBuffer;
@@ -39,9 +42,12 @@ export class WasmWeb3Api extends Api {
   constructor(
     private _uri: Uri,
     private _manifest: Manifest,
-    private _apiResolver: Uri
+    private _apiResolver: Uri,
+    _logger: ILogger
   ) {
     super();
+
+    this._logger = _logger;
   }
 
   public async invoke(
@@ -139,12 +145,14 @@ export class WasmWeb3Api extends Api {
             case "Abort": {
               abortMessage = action.message;
               state = action.type;
+              this._logger.error(abortMessage);
               resolve();
               break;
             }
             case "LogQueryError": {
               queryError = action.error;
               state = action.type;
+              this._logger.error(queryError);
               resolve();
               break;
             }
@@ -154,9 +162,8 @@ export class WasmWeb3Api extends Api {
               resolve();
               break;
             }
-            // TODO: replace with proper logging
             case "LogInfo": {
-              console.log(action.message);
+              this._logger.info(action.message);
               break;
             }
             case "SubInvoke": {

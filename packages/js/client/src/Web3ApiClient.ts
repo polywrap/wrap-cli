@@ -1,6 +1,7 @@
 import { getDefaultRedirects } from "./default-redirects";
 import { PluginWeb3Api } from "./plugin/PluginWeb3Api";
 import { WasmWeb3Api } from "./wasm/WasmWeb3Api";
+import { DefaultLogger, ILogger } from "./logger";
 
 import {
   Api,
@@ -21,6 +22,7 @@ import {
 
 export interface ClientConfig {
   redirects: UriRedirect[];
+  logger?: ILogger;
 }
 
 export class Web3ApiClient implements Client {
@@ -29,13 +31,18 @@ export class Web3ApiClient implements Client {
   // and handle cases where the are multiple jumps. For exmaple, if
   // A => B => C, then the cache should have A => C, and B => C.
   private _apiCache: ApiCache = new Map<string, Api>();
+  private _logger: ILogger = new DefaultLogger();
 
   constructor(
     private _config: ClientConfig = {
       redirects: [],
+      logger: null,
     }
   ) {
-    const { redirects } = this._config;
+    const { redirects, logger } = this._config;
+    if (logger) {
+      this._logger = logger;
+    }
 
     // Add all default redirects (IPFS, ETH, ENS)
     redirects.push(...getDefaultRedirects());
@@ -148,7 +155,7 @@ export class Web3ApiClient implements Client {
         this,
         (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
         (uri: Uri, manifest: Manifest, apiResolver: Uri) =>
-          new WasmWeb3Api(uri, manifest, apiResolver)
+          new WasmWeb3Api(uri, manifest, apiResolver, this._logger)
       );
 
       if (!api) {
