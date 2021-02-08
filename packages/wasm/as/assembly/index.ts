@@ -9,3 +9,4 @@ export {
 
 export * from "./invoke";
 export * from "./subinvoke";
+export * from "./log";
