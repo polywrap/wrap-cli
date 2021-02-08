@@ -1,4 +1,8 @@
-import { shutdownTestEnv, startupTestEnv } from "../lib/env/test";
+import {
+  shutdownTestEnv,
+  startupTestEnv,
+  supportedModules,
+} from "../lib/env/test";
 import { withSpinner } from "../lib/helpers/spinner";
 
 import { filesystem, GluegunToolbox, print } from "gluegun";
@@ -7,14 +11,16 @@ import chalk from "chalk";
 const configFileName = "web3api.env.yaml";
 
 const HELP = `
-${chalk.bold("w3 test-env")} command
+${chalk.bold("w3 test-env")} command [modules]
 
 Commands:
 ${chalk.bold("up")}    Startup the test env
 ${chalk.bold("down")}  Shutdown the test env
 
 Options:
-  -c, --ci                         Use test-env package
+  -c, --ci                         Use full test-env package
+
+Supported modules: ${supportedModules}
 `;
 
 export default {
@@ -23,6 +29,7 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { parameters } = toolbox;
     const command = parameters.first;
+    const modules = parameters.array?.slice(1) || new Array<string>();
     const configFilePath = filesystem.cwd() + `/${configFileName}`;
     const { c } = parameters.options;
     let { ci } = parameters.options;
@@ -52,7 +59,7 @@ export default {
         "Failed to start test environment",
         "Warning starting test environment",
         async (_spinner) => {
-          return startupTestEnv(true, configFilePath, ci);
+          return startupTestEnv(true, configFilePath, ci, modules);
         }
       );
     } else if (command === "down") {
@@ -61,7 +68,7 @@ export default {
         "Failed to shutdown test environment",
         "Warning shutting down test environment",
         async (_spinner) => {
-          return await shutdownTestEnv(true, configFilePath, ci);
+          return await shutdownTestEnv(true, configFilePath, ci, modules);
         }
       );
     } else {

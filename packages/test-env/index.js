@@ -1,12 +1,37 @@
-const { exec } = require('child_process');
+const { exec } = require("child_process");
 
-const dockerComposeFiles = {
-  devserver: "devserver.yml",
-  ganache: "ganache.yml",
-  ipfs: "ipfs.yml",
+const modulesToDockerComposeFiles = new Map([
+  ["devserver", "devserver.yaml"],
+  ["ganache", "ganache.yaml"],
+  ["ipfs", "ipfs.yaml"],
+]);
+
+function getFileCommand(configFilePath = "", ci = false, modules = []) {
+  let fileCommand = "";
+  if (ci === true) {
+    fileCommand =
+      ` -f ${modulesToDockerComposeFiles.get("devserver")}` +
+      ` -f ${modulesToDockerComposeFiles.get("ganache")}` +
+      ` -f ${modulesToDockerComposeFiles.get("ipfs")}`;
+  }
+  else if (modules.length > 0) {
+    let filePath = "";
+    modules.forEach(function (module) {
+      filePath = modulesToDockerComposeFiles.get(module);
+      if (!filePath) {
+        throw `File path of ${filePath} for module ${module} not found`;
+      }
+      fileCommand =
+        fileCommand.concat(` -f ${filePath}`);
+    })
+  }
+  else {
+    fileCommand = ci === ` -f ${configFilePath}`;
+  }
+  return fileCommand;
 }
 
-async function runCommand(command, quiet, ci) {
+async function runCommand(command, quiet) {
 
   if (!quiet) {
     console.log(`> ${command}`)
@@ -32,17 +57,13 @@ async function runCommand(command, quiet, ci) {
   })
 }
 
-async function up(quiet = false, configFilePath = "", ci = false) {
-  let fileCommand = ci === false ?
-    ` -f ${configFilePath}` :
-    ` -f ${dockerComposeFiles.devserver} -f ${dockerComposeFiles.ganache} -f ${dockerComposeFiles.ipfs}`;
+async function up(quiet = false, configFilePath = "", ci = false, modules = []) {
+  let fileCommand = getFileCommand(configFilePath, ci, modules);
   await runCommand(`docker-compose${fileCommand} up -d`, quiet, ci)
 }
 
-async function down(quiet = false, configFilePath = "", ci = false) {
-  let fileCommand = ci === false ?
-    ` -f ${configFilePath}` :
-    ` -f ${dockerComposeFiles.devserver} -f ${dockerComposeFiles.ganache} -f ${dockerComposeFiles.ipfs}`;
+async function down(quiet = false, configFilePath = "", ci = false, modules = []) {
+  let fileCommand = getFileCommand(configFilePath, ci, modules);
   await runCommand(`docker-compose${fileCommand} down`, quiet, ci)
 }
 
@@ -54,6 +75,7 @@ if (require.main === module) {
 } else {
   module.exports = {
     up,
-    down
+    down,
+    modulesToDockerComposeFiles
   }
 }
