@@ -40,7 +40,7 @@ export default {
       return;
     }
 
-    if (filesystem.exists(configFilePath) !== "file") {
+    if (!ci && filesystem.exists(configFilePath) !== "file") {
       print.error(`No ${configFileName} file found at ${configFilePath}`);
       process.exitCode = 1;
       return;
