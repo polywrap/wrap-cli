@@ -26,6 +26,7 @@
   "devDependencies": {
     "@types/jest": "26.0.8",
     "@types/js-yaml": "3.11.1",
+    "@types/semver": "^7.3.4",
     "@web3api/cli": "0.0.1-prealpha.1",
     "axios": "0.19.2",
     "jest": "26.2.2",

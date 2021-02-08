@@ -1,0 +1,10 @@
+#import { Mutation } into Ethereum from "w3://ens/ethereum.web3api.eth"
+
+type Mutation {
+  setData(
+    address: String!
+    value: UInt32!
+  ): String!
+
+  deployContract: String!
+}

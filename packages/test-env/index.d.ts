@@ -1,9 +1,9 @@
-export function up(
+export declare function up(
   quiet: boolean,
   configFilePath: string,
   ci: boolean
 ): Promise<void>;
-export function down(
+export declare function down(
   quiet: boolean,
   configFilePath: string,
   ci: boolean

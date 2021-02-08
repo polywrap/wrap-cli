@@ -11,9 +11,9 @@ scalar Int32
 scalar Int64
 
 directive @imported(
-  namespace: String!
   uri: String!
-  type: String!
+  namespace: String!
+  nativeType: String!
 ) on OBJECT
 
 directive @imports(
@@ -82,9 +82,9 @@ type ArrayObject {
 ### Imported Queries START ###
 
 type Namespace_Query @imported(
-  namespace: "Namespace",
   uri: "test.eth",
-  type: "Query"
+  namespace: "Namespace",
+  nativeType: "Query"
 ) {
   method1(
     str: String!
@@ -104,9 +104,9 @@ type Namespace_Query @imported(
 ### Imported Objects START ###
 
 type Namespace_CustomType @imported(
-  namespace: "Namespace",
   uri: "test.eth",
-  type: "CustomType"
+  namespace: "Namespace",
+  nativeType: "CustomType"
 ) {
   str: String!
   optStr: String
@@ -139,33 +139,33 @@ type Namespace_CustomType @imported(
 }
 
 type Namespace_ObjectType @imported(
-  namespace: "Namespace",
   uri: "test.eth",
-  type: "ObjectType"
+  namespace: "Namespace",
+  nativeType: "ObjectType"
 ) {
   prop: String!
 }
 
 type Namespace_NestedObjectType @imported(
-  namespace: "Namespace",
   uri: "test.eth",
-  type: "NestedObjectType"
+  namespace: "Namespace",
+  nativeType: "NestedObjectType"
 ) {
   nestedObject: Namespace_ObjectType!
 }
 
 type Namespace_Imported_NestedObjectType @imported(
-  namespace: "Namespace",
   uri: "test.eth",
-  type: "Imported_NestedObjectType"
+  namespace: "Namespace",
+  nativeType: "Imported_NestedObjectType"
 ) {
   nestedObject: Namespace_Imported_ObjectType!
 }
 
 type Namespace_Imported_ObjectType @imported(
-  namespace: "Namespace",
   uri: "test.eth",
-  type: "Imported_ObjectType"
+  namespace: "Namespace",
+  nativeType: "Imported_ObjectType"
 ) {
   prop: String!
 }

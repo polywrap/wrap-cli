@@ -7,11 +7,11 @@ import chalk from "chalk";
 const configFileName = "web3api.env.yaml";
 
 const HELP = `
-${chalk.bold("w3 test-env")} [command]
+${chalk.bold("w3 test-env")} command
 
 Commands:
-  up    Startup the test env
-  down  Shutdown the test env
+${chalk.bold("up")}    Startup the test env
+${chalk.bold("down")}  Shutdown the test env
 
 Options:
   -c, --ci                         Use test-env package
