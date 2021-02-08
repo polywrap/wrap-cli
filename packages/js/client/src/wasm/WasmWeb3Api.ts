@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 import { HostAction, ThreadWakeStatus } from "./types";
-import { ILogger } from "../logger";
+import { ILogger, LogLevel } from "../logger";
 
 import {
   InvokeApiOptions,
@@ -162,8 +162,20 @@ export class WasmWeb3Api extends Api {
               resolve();
               break;
             }
-            case "LogInfo": {
-              this._logger.info(action.message);
+            case "Log": {
+              switch (action.logLevel) {
+                case LogLevel.DEBUG:
+                  this._logger.debug(action.message);
+                  break;
+                case LogLevel.INFO:
+                  this._logger.info(action.message);
+                  break;
+                case LogLevel.WARN:
+                  this._logger.warn(action.message);
+                  break;
+                case LogLevel.ERROR:
+                  this._logger.error(action.message);
+              }
               break;
             }
             case "SubInvoke": {

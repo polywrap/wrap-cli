@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/ban-types */
 
+import { LogLevel } from "../logger";
+
 export type u32 = number;
 
 export interface W3Exports {
@@ -33,6 +35,12 @@ export interface W3Imports {
     __w3_invoke_args: (methodPtr: u32, argsPtr: u32) => void;
     __w3_invoke_result: (ptr: u32, len: u32) => void;
     __w3_invoke_error: (ptr: u32, len: u32) => void;
+    __w3_log: (
+      logLevelPtr: u32,
+      logLevelLen: u32,
+      messagePtr: u32,
+      messageLen: u32
+    ) => void;
   };
 
   env: {
@@ -53,7 +61,7 @@ export type HostAction =
   | AbortAction
   | LogQueryResultAction
   | LogQueryErrorAction
-  | LogInfoAction
+  | LogAction
   | TransferCompleteAction;
 
 export interface SubInvokeAction {
@@ -79,9 +87,10 @@ export interface LogQueryErrorAction {
   readonly error: string;
 }
 
-export interface LogInfoAction {
-  readonly type: "LogInfo";
+export interface LogAction {
+  readonly type: "Log";
   readonly message: string;
+  readonly logLevel: LogLevel;
 }
 
 export interface TransferCompleteAction {
