@@ -7,16 +7,19 @@ import { GluegunToolbox } from "gluegun";
 const supportedLangs: { [key: string]: string[] } = {
   api: ["assemblyscript"],
   app: ["react"],
+  plugin: ["typescript"],
 };
 
 const HELP = `
 ${chalk.bold("w3 create")} command <project-name> [options]
 
 Commands:
-  ${chalk.bold("api")} <lang>  Create a Web3API project
+  ${chalk.bold("api")} <lang>     Create a Web3API project
     langs: ${supportedLangs.api.join(", ")}
-  ${chalk.bold("app")} <lang>            Create a Web3API application
+  ${chalk.bold("app")} <lang>     Create a Web3API application
     langs: ${supportedLangs.app.join(", ")}
+  ${chalk.bold("plugin")} <lang>  Create a Web3API application
+    langs: ${supportedLangs.plugin.join(", ")}
 
 Options:
   -h, --help               Show usage information
@@ -127,6 +130,8 @@ export default {
           );
         } else if (type === "app") {
           print.info(`🔥 You are ready to build a dApp using Web3API 🔥`);
+        } else if (type === "plugin") {
+          print.info(`🔥 You are ready to build a plugin into a Web3API 🔥`);
         }
       })
       .catch((err) => {
