@@ -1,16 +1,15 @@
-import React, { useContext } from "react";
+import React, { useContext, useCallback } from "react";
 import { UriRedirect, Web3ApiClient, Uri } from "@web3api/client-js";
 
+import {
+  Web3ApiContextInterface,
+  INITIAL_STATE,
+  web3ApiState,
+  ActionTypes,
+} from "./handler";
 interface Web3ApiProviderArguments {
   redirects: UriRedirect[];
   children: React.ReactNode;
-}
-
-interface Web3ApiContextInterface {
-  data: any;
-  loading: boolean;
-  error: any;
-  client?: any;
 }
 
 interface Web3ApiProvider {
@@ -22,17 +21,24 @@ interface Web3ApiProvider {
 
 const PROVIDERS: Web3ApiProvider = {};
 
-const INITIAL_STATE = {
-  data: null,
-  loading: false,
-  error: null,
-};
-const web3ApiQuery = (client: Web3ApiClient) => {
-  return {
-    data: null,
-    loading: false,
-    error: null,
-  };
+const web3ApiQuery = (client: Web3ApiClient, options?: any) => {
+  const { state, dispatch } = web3ApiState();
+
+  if (!options) {
+    return INITIAL_STATE;
+  }
+
+  const execute = useCallback(async () => {
+    const { data, errors } = await client.query(options);
+    return { data, errors };
+  }, [options]);
+
+  dispatch({
+    type: ActionTypes.UPDATE_EXECUTE,
+    execute,
+  });
+
+  return state;
 };
 
 export function createWeb3ApiRoot(
@@ -49,9 +55,8 @@ export function createWeb3ApiRoot(
   const { Provider } = PROVIDERS[key].context;
 
   return ({ redirects, children }) => {
-    PROVIDERS[key].client = new Web3ApiClient({ redirects });
-    const data = web3ApiQuery(PROVIDERS[key].client);
-
+    const client = (PROVIDERS[key].client = new Web3ApiClient({ redirects }));
+    const data = web3ApiQuery(client);
     return <Provider value={data}>{children}</Provider>;
   };
 }
@@ -74,17 +79,17 @@ type QueryExecutionParams = {
   query: string;
   variables?: any;
 };
+
 interface QueryArguments {
   key: string;
-  params: QueryExecutionParams;
+  options: QueryExecutionParams;
 }
 
 export const useWeb3ApiQuery = ({
   key = DEFAULT_PROVIDER,
-  params,
+  options,
 }: QueryArguments): Web3ApiContextInterface => {
   const provider = getWeb3ApiContext(key);
-  // @TODO: figure best way to pass parameters of query
-  // provider.triggerQuery(params);
+  web3ApiQuery(PROVIDERS[key].client, options);
   return useContext(provider);
 };
