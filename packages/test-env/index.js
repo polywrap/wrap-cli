@@ -27,11 +27,13 @@ async function runCommand(command, quiet, ci) {
 }
 
 async function up(quiet = false, configFilePath = "", ci = false) {
-  await runCommand(`docker-compose -f ${configFilePath} up -d`, quiet, ci)
+  let fileCommand = ci === false? ` -f ${configFilePath}`: "";
+  await runCommand(`docker-compose${fileCommand} up -d`, quiet, ci)
 }
 
 async function down(quiet = false, configFilePath = "", ci = false) {
-  await runCommand(`docker-compose -f ${configFilePath} down`, quiet, ci)
+  let fileCommand = ci === false? ` -f ${configFilePath}`: "";
+  await runCommand(`docker-compose${fileCommand} down`, quiet, ci)
 }
 
 if (require.main === module) {
