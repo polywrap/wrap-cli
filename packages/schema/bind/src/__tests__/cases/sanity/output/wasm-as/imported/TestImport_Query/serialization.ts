@@ -20,24 +20,18 @@ export class Input_importedMethod {
 }
 
 export function serializeimportedMethodArgs(input: Input_importedMethod): ArrayBuffer {
-  const objects: (ArrayBuffer | null)[] = [
-    Objects.TestImport_Object.toBuffer(input.object),
-    input.optObject ? Objects.TestImport_Object.toBuffer(input.optObject) : null,
-  ];
   const sizer = new WriteSizer();
-  writeimportedMethodArgs(sizer, input, objects);
+  writeimportedMethodArgs(sizer, input);
   const buffer = new ArrayBuffer(sizer.length);
   const encoder = new WriteEncoder(buffer);
-  writeimportedMethodArgs(encoder, input, objects);
+  writeimportedMethodArgs(encoder, input);
   return buffer;
 }
 
-function writeimportedMethodArgs(
+export function writeimportedMethodArgs(
   writer: Write,
-  input: Input_importedMethod,
-  objects: (ArrayBuffer | null)[]
+  input: Input_importedMethod
 ): void {
-  let objectsIdx = 0;
   writer.writeMapLength(9);
   writer.writeString("str");
   writer.writeString(input.str);
@@ -54,25 +48,32 @@ function writeimportedMethodArgs(
     });
   });
   writer.writeString("object");
-  writer.writeNullableBytes(objects[objectsIdx++]);
+  Objects.TestImport_Object.write(writer, input.object);
   writer.writeString("optObject");
-  writer.writeNullableBytes(objects[objectsIdx++]);
+  if (input.optObject) {
+    Objects.TestImport_Object.write(writer, input.optObject);
+  } else {
+    writer.writeNil();
+  }
   writer.writeString("objectArray");
   writer.writeArray(input.objectArray, (writer: Write, item: Objects.TestImport_Object): void => {
-    writer.writeBytes(Objects.TestImport_Object.toBuffer(item));
+    Objects.TestImport_Object.write(writer, item);
   });
   writer.writeString("optObjectArray");
   writer.writeNullableArray(input.optObjectArray, (writer: Write, item: Objects.TestImport_Object | null): void => {
-    writer.writeNullableBytes(item ? Objects.TestImport_Object.toBuffer(item) : null);
+    if (item) {
+      Objects.TestImport_Object.write(writer, item);
+    } else {
+      writer.writeNil();
+    }
   });
 }
 
 export function deserializeimportedMethodResult(buffer: ArrayBuffer): Objects.TestImport_Object | null {
   const reader = new ReadDecoder(buffer);
-  const bytes = reader.readNullableBytes();
   var object: Objects.TestImport_Object | null = null;
-  if (bytes) {
-    object = Objects.TestImport_Object.fromBuffer(bytes);
+  if (!reader.isNextNil()) {
+    object = Objects.TestImport_Object.read(reader);
   }
   return object;
 }
@@ -82,22 +83,18 @@ export class Input_anotherMethod {
 }
 
 export function serializeanotherMethodArgs(input: Input_anotherMethod): ArrayBuffer {
-  const objects: (ArrayBuffer | null)[] = [
-  ];
   const sizer = new WriteSizer();
-  writeanotherMethodArgs(sizer, input, objects);
+  writeanotherMethodArgs(sizer, input);
   const buffer = new ArrayBuffer(sizer.length);
   const encoder = new WriteEncoder(buffer);
-  writeanotherMethodArgs(encoder, input, objects);
+  writeanotherMethodArgs(encoder, input);
   return buffer;
 }
 
-function writeanotherMethodArgs(
+export function writeanotherMethodArgs(
   writer: Write,
-  input: Input_anotherMethod,
-  objects: (ArrayBuffer | null)[]
+  input: Input_anotherMethod
 ): void {
-  let objectsIdx = 0;
   writer.writeMapLength(1);
   writer.writeString("arg");
   writer.writeArray(input.arg, (writer: Write, item: string): void => {

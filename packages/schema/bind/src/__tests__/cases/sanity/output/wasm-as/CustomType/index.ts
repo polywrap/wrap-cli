@@ -1,7 +1,13 @@
-import { Nullable } from "@web3api/wasm-as";
+import {
+  Read,
+  Write,
+  Nullable
+} from "@web3api/wasm-as";
 import {
   serializeCustomType,
-  deserializeCustomType
+  deserializeCustomType,
+  writeCustomType,
+  readCustomType
 } from "./serialization";
 import * as Objects from "..";
 
@@ -40,5 +46,13 @@ export class CustomType {
 
   static fromBuffer(buffer: ArrayBuffer): CustomType {
     return deserializeCustomType(buffer);
+  }
+
+  static write(writer: Write, type: CustomType): void {
+    writeCustomType(writer, type);
+  }
+
+  static read(reader: Read): CustomType {
+    return readCustomType(reader);
   }
 }

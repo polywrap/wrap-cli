@@ -70,7 +70,7 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
   {{#object}}
   if (!_{{name}} || !_{{name}}Set) {
   {{/object}}
-    throw Error("Missing required argument: '{{name}}: {{type}}'");
+    throw new Error("Missing required argument: '{{name}}: {{type}}'");
   }
   {{/required}}
   {{/arguments}}
@@ -92,7 +92,7 @@ export function serialize{{name}}Result(result: {{#return}}{{#toWasm}}{{toGraphQ
   return buffer;
 }
 
-function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}): void {
+export function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}): void {
   {{#return}}
   {{#scalar}}
   writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(result);
@@ -104,10 +104,14 @@ function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}}{{toGr
   {{/array}}
   {{#object}}
   {{#required}}
-  writer.writeBytes(Objects.{{type}}.toBuffer(result));
+  Objects.{{type}}.write(writer, result);
   {{/required}}
   {{^required}}
-  writer.writeNullableBytes(result ? Objects.{{type}}.toBuffer(result) : null);
+  if (result) {
+    Objects.{{type}}.write(writer, result);
+  } else {
+    writer.writeNil();
+  }
   {{/required}}
   {{/object}}
   {{/return}}

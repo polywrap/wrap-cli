@@ -16,30 +16,18 @@ export class Input_{{name}} {
 }
 
 export function serialize{{name}}Args(input: Input_{{name}}): ArrayBuffer {
-  const objects: (ArrayBuffer | null)[] = [
-    {{#arguments}}{{#object}}
-    {{#required}}
-    Objects.{{type}}.toBuffer(input.{{name}}),
-    {{/required}}
-    {{^required}}
-    input.{{name}} ? Objects.{{type}}.toBuffer(input.{{name}}) : null,
-    {{/required}}
-    {{/object}}{{/arguments}}
-  ];
   const sizer = new WriteSizer();
-  write{{name}}Args(sizer, input, objects);
+  write{{name}}Args(sizer, input);
   const buffer = new ArrayBuffer(sizer.length);
   const encoder = new WriteEncoder(buffer);
-  write{{name}}Args(encoder, input, objects);
+  write{{name}}Args(encoder, input);
   return buffer;
 }
 
-function write{{name}}Args(
+export function write{{name}}Args(
   writer: Write,
-  input: Input_{{name}},
-  objects: (ArrayBuffer | null)[]
+  input: Input_{{name}}
 ): void {
-  let objectsIdx = 0;
   writer.writeMapLength({{arguments.length}});
   {{#arguments}}
   writer.writeString("{{name}}");
@@ -52,7 +40,16 @@ function write{{name}}Args(
   });
   {{/array}}
   {{#object}}
-  writer.writeNullableBytes(objects[objectsIdx++]);
+  {{#required}}
+  Objects.{{type}}.write(writer, input.{{name}});
+  {{/required}}
+  {{^required}}
+  if (input.{{name}}) {
+    Objects.{{type}}.write(writer, input.{{name}});
+  } else {
+    writer.writeNil();
+  }
+  {{/required}}
   {{/object}}
   {{/arguments}}
 }

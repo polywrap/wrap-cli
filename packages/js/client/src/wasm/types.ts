@@ -33,11 +33,18 @@ export interface W3Imports {
     __w3_invoke_args: (methodPtr: u32, argsPtr: u32) => void;
     __w3_invoke_result: (ptr: u32, len: u32) => void;
     __w3_invoke_error: (ptr: u32, len: u32) => void;
+    __w3_abort: (
+      msgPtr: u32,
+      msgLen: u32,
+      filePtr: u32,
+      fileLen: u32,
+      line: u32,
+      column: u32
+    ) => void;
   };
 
   env: {
     memory: WebAssembly.Memory;
-    abort: (msg: string, file: string, line: number, column: number) => void;
   };
 }
 

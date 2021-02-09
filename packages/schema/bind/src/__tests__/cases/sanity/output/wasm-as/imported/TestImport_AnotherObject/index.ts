@@ -1,7 +1,13 @@
-import { Nullable } from "@web3api/wasm-as";
+import {
+  Read,
+  Write,
+  Nullable
+} from "@web3api/wasm-as";
 import {
   serializeTestImport_AnotherObject,
-  deserializeTestImport_AnotherObject
+  deserializeTestImport_AnotherObject,
+  writeTestImport_AnotherObject,
+  readTestImport_AnotherObject
 } from "./serialization";
 import * as Objects from "../..";
 
@@ -17,5 +23,13 @@ export class TestImport_AnotherObject {
 
   static fromBuffer(buffer: ArrayBuffer): TestImport_AnotherObject {
     return deserializeTestImport_AnotherObject(buffer);
+  }
+
+  static write(writer: Write, type: TestImport_AnotherObject): void {
+    writeTestImport_AnotherObject(writer, type);
+  }
+
+  static read(reader: Read): TestImport_AnotherObject {
+    return readTestImport_AnotherObject(reader);
   }
 }

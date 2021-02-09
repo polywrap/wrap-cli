@@ -10,18 +10,15 @@ import { TestImport_AnotherObject } from "./";
 import * as Objects from "../..";
 
 export function serializeTestImport_AnotherObject(type: TestImport_AnotherObject): ArrayBuffer {
-  const objects: (ArrayBuffer | null)[] = [
-  ];
   const sizer = new WriteSizer();
-  writeTestImport_AnotherObject(sizer, type, objects);
+  writeTestImport_AnotherObject(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
   const encoder = new WriteEncoder(buffer);
-  writeTestImport_AnotherObject(encoder, type, objects);
+  writeTestImport_AnotherObject(encoder, type);
   return buffer;
 }
 
-function writeTestImport_AnotherObject(writer: Write, type: TestImport_AnotherObject, objects: (ArrayBuffer | null)[]): void {
-  let objectsIdx = 0;
+export function writeTestImport_AnotherObject(writer: Write, type: TestImport_AnotherObject): void {
   writer.writeMapLength(1);
   writer.writeString("prop");
   writer.writeString(type.prop);
@@ -29,6 +26,10 @@ function writeTestImport_AnotherObject(writer: Write, type: TestImport_AnotherOb
 
 export function deserializeTestImport_AnotherObject(buffer: ArrayBuffer): TestImport_AnotherObject {
   const reader = new ReadDecoder(buffer);
+  return readTestImport_AnotherObject(reader);
+}
+
+export function readTestImport_AnotherObject(reader: Read): TestImport_AnotherObject {
   var numFields = reader.readMapLength();
 
   var _prop: string = "";
@@ -45,7 +46,7 @@ export function deserializeTestImport_AnotherObject(buffer: ArrayBuffer): TestIm
   }
 
   if (!_propSet) {
-    throw Error("Missing required property: 'prop: String'");
+    throw new Error("Missing required property: 'prop: String'");
   }
 
   return {

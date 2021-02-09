@@ -9,7 +9,7 @@ export function setData(input: Input_setData): SetDataResult {
   });
 
   return {
-    txRecript: hash,
+    txReceipt: hash,
     value: input.options.value
   };
 }

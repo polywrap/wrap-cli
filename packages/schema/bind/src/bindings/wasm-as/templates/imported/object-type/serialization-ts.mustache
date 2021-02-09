@@ -10,26 +10,15 @@ import { {{type}} } from "./";
 import * as Objects from "../..";
 
 export function serialize{{type}}(type: {{type}}): ArrayBuffer {
-  const objects: (ArrayBuffer | null)[] = [
-    {{#properties}}{{#object}}
-    {{#required}}
-    Objects.{{type}}.toBuffer(type.{{name}}),
-    {{/required}}
-    {{^required}}
-    type.{{name}} ? Objects.{{type}}.toBuffer(type.{{name}}) : null,
-    {{/required}}
-    {{/object}}{{/properties}}
-  ];
   const sizer = new WriteSizer();
-  write{{type}}(sizer, type, objects);
+  write{{type}}(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
   const encoder = new WriteEncoder(buffer);
-  write{{type}}(encoder, type, objects);
+  write{{type}}(encoder, type);
   return buffer;
 }
 
-function write{{type}}(writer: Write, type: {{type}}, objects: (ArrayBuffer | null)[]): void {
-  let objectsIdx = 0;
+export function write{{type}}(writer: Write, type: {{type}}): void {
   writer.writeMapLength({{properties.length}});
   {{#properties}}
   writer.writeString("{{name}}");
@@ -42,13 +31,26 @@ function write{{type}}(writer: Write, type: {{type}}, objects: (ArrayBuffer | nu
   });
   {{/array}}
   {{#object}}
-  writer.writeNullableBytes(objects[objectsIdx++]);
+  {{#required}}
+  Objects.{{type}}.write(writer, type.{{name}});
+  {{/required}}
+  {{^required}}
+  if (type.{{name}}) {
+    Objects.{{type}}.write(writer, type.{{name}});
+  } else {
+    writer.writeNil();
+  }
+  {{/required}}
   {{/object}}
   {{/properties}}
 }
 
 export function deserialize{{type}}(buffer: ArrayBuffer): {{type}} {
   const reader = new ReadDecoder(buffer);
+  return read{{type}}(reader);
+}
+
+export function read{{type}}(reader: Read): {{type}} {
   var numFields = reader.readMapLength();
 
   {{#properties}}
@@ -101,7 +103,7 @@ export function deserialize{{type}}(buffer: ArrayBuffer): {{type}} {
   {{#object}}
   if (!_{{name}} || !_{{name}}Set) {
   {{/object}}
-    throw Error("Missing required property: '{{name}}: {{type}}'");
+    throw new Error("Missing required property: '{{name}}: {{type}}'");
   }
   {{/required}}
   {{/properties}}

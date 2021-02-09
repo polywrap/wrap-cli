@@ -30,7 +30,7 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
   }
 
   if (!_argSet) {
-    throw Error("Missing required argument: 'arg: String'");
+    throw new Error("Missing required argument: 'arg: String'");
   }
 
   return {
@@ -47,7 +47,7 @@ export function serializequeryMethodResult(result: i32): ArrayBuffer {
   return buffer;
 }
 
-function writequeryMethodResult(writer: Write, result: i32): void {
+export function writequeryMethodResult(writer: Write, result: i32): void {
   writer.writeInt32(result);
 }
 
@@ -74,31 +74,29 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
     const field = reader.readString();
 
     if (field == "object") {
-      const object = Objects.AnotherType.fromBuffer(reader.readBytes());
+      const object = Objects.AnotherType.read(reader);
       _object = object;
       _objectSet = true;
     }
     else if (field == "optObject") {
-      const bytes = reader.readNullableBytes();
       var object: Objects.AnotherType | null = null;
-      if (bytes) {
-        object = Objects.AnotherType.fromBuffer(bytes);
+      if (!reader.isNextNil()) {
+        object = Objects.AnotherType.read(reader);
       }
       _optObject = object;
     }
     else if (field == "objectArray") {
       _objectArray = reader.readArray((reader: Read): Objects.AnotherType => {
-        const object = Objects.AnotherType.fromBuffer(reader.readBytes());
+        const object = Objects.AnotherType.read(reader);
         return object;
       });
       _objectArraySet = true;
     }
     else if (field == "optObjectArray") {
       _optObjectArray = reader.readNullableArray((reader: Read): Objects.AnotherType | null => {
-        const bytes = reader.readNullableBytes();
         var object: Objects.AnotherType | null = null;
-        if (bytes) {
-          object = Objects.AnotherType.fromBuffer(bytes);
+        if (!reader.isNextNil()) {
+          object = Objects.AnotherType.read(reader);
         }
         return object;
       });
@@ -106,10 +104,10 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
   }
 
   if (!_object || !_objectSet) {
-    throw Error("Missing required argument: 'object: AnotherType'");
+    throw new Error("Missing required argument: 'object: AnotherType'");
   }
   if (!_objectArraySet) {
-    throw Error("Missing required argument: 'objectArray: [AnotherType]'");
+    throw new Error("Missing required argument: 'objectArray: [AnotherType]'");
   }
 
   return {
@@ -129,6 +127,10 @@ export function serializeobjectMethodResult(result: Objects.AnotherType | null):
   return buffer;
 }
 
-function writeobjectMethodResult(writer: Write, result: Objects.AnotherType | null): void {
-  writer.writeNullableBytes(result ? Objects.AnotherType.toBuffer(result) : null);
+export function writeobjectMethodResult(writer: Write, result: Objects.AnotherType | null): void {
+  if (result) {
+    Objects.AnotherType.write(writer, result);
+  } else {
+    writer.writeNil();
+  }
 }

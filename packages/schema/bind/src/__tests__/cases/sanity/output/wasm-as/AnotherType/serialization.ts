@@ -10,28 +10,28 @@ import { AnotherType } from "./";
 import * as Objects from "..";
 
 export function serializeAnotherType(type: AnotherType): ArrayBuffer {
-  const objects: (ArrayBuffer | null)[] = [
-    Objects.CustomType.toBuffer(type.circular),
-  ];
   const sizer = new WriteSizer();
-  writeAnotherType(sizer, type, objects);
+  writeAnotherType(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
   const encoder = new WriteEncoder(buffer);
-  writeAnotherType(encoder, type, objects);
+  writeAnotherType(encoder, type);
   return buffer;
 }
 
-function writeAnotherType(writer: Write, type: AnotherType, objects: (ArrayBuffer | null)[]): void {
-  let objectsIdx = 0;
+export function writeAnotherType(writer: Write, type: AnotherType): void {
   writer.writeMapLength(2);
   writer.writeString("prop");
   writer.writeNullableString(type.prop);
   writer.writeString("circular");
-  writer.writeNullableBytes(objects[objectsIdx++]);
+  Objects.CustomType.write(writer, type.circular);
 }
 
 export function deserializeAnotherType(buffer: ArrayBuffer): AnotherType {
   const reader = new ReadDecoder(buffer);
+  return readAnotherType(reader);
+}
+
+export function readAnotherType(reader: Read): AnotherType {
   var numFields = reader.readMapLength();
 
   var _prop: string | null = null;
@@ -46,14 +46,14 @@ export function deserializeAnotherType(buffer: ArrayBuffer): AnotherType {
       _prop = reader.readNullableString();
     }
     else if (field == "circular") {
-      const object = Objects.CustomType.fromBuffer(reader.readBytes());
+      const object = Objects.CustomType.read(reader);
       _circular = object;
       _circularSet = true;
     }
   }
 
   if (!_circular || !_circularSet) {
-    throw Error("Missing required property: 'circular: CustomType'");
+    throw new Error("Missing required property: 'circular: CustomType'");
   }
 
   return {

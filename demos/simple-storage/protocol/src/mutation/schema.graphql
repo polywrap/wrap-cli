@@ -2,18 +2,18 @@
 
 type Mutation {
   setData(
-    options: Options!
+    options: SetDataOptions!
   ): SetDataResult!
 
   deployContract: String!
 }
 
-type Options {
+type SetDataOptions {
   address: String!
   value: UInt32!
 }
 
 type SetDataResult {
+  txReceipt: String!
   value: UInt32!
-  txRecript: String!
 }

@@ -10,20 +10,15 @@ import { CustomType } from "./";
 import * as Objects from "..";
 
 export function serializeCustomType(type: CustomType): ArrayBuffer {
-  const objects: (ArrayBuffer | null)[] = [
-    Objects.AnotherType.toBuffer(type.object),
-    type.optObject ? Objects.AnotherType.toBuffer(type.optObject) : null,
-  ];
   const sizer = new WriteSizer();
-  writeCustomType(sizer, type, objects);
+  writeCustomType(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
   const encoder = new WriteEncoder(buffer);
-  writeCustomType(encoder, type, objects);
+  writeCustomType(encoder, type);
   return buffer;
 }
 
-function writeCustomType(writer: Write, type: CustomType, objects: (ArrayBuffer | null)[]): void {
-  let objectsIdx = 0;
+export function writeCustomType(writer: Write, type: CustomType): void {
   writer.writeMapLength(27);
   writer.writeString("str");
   writer.writeString(type.str);
@@ -102,21 +97,33 @@ function writeCustomType(writer: Write, type: CustomType, objects: (ArrayBuffer 
     });
   });
   writer.writeString("object");
-  writer.writeNullableBytes(objects[objectsIdx++]);
+  Objects.AnotherType.write(writer, type.object);
   writer.writeString("optObject");
-  writer.writeNullableBytes(objects[objectsIdx++]);
+  if (type.optObject) {
+    Objects.AnotherType.write(writer, type.optObject);
+  } else {
+    writer.writeNil();
+  }
   writer.writeString("objectArray");
   writer.writeArray(type.objectArray, (writer: Write, item: Objects.AnotherType): void => {
-    writer.writeBytes(Objects.AnotherType.toBuffer(item));
+    Objects.AnotherType.write(writer, item);
   });
   writer.writeString("optObjectArray");
   writer.writeNullableArray(type.optObjectArray, (writer: Write, item: Objects.AnotherType | null): void => {
-    writer.writeNullableBytes(item ? Objects.AnotherType.toBuffer(item) : null);
+    if (item) {
+      Objects.AnotherType.write(writer, item);
+    } else {
+      writer.writeNil();
+    }
   });
 }
 
 export function deserializeCustomType(buffer: ArrayBuffer): CustomType {
   const reader = new ReadDecoder(buffer);
+  return readCustomType(reader);
+}
+
+export function readCustomType(reader: Read): CustomType {
   var numFields = reader.readMapLength();
 
   var _str: string = "";
@@ -285,31 +292,29 @@ export function deserializeCustomType(buffer: ArrayBuffer): CustomType {
       });
     }
     else if (field == "object") {
-      const object = Objects.AnotherType.fromBuffer(reader.readBytes());
+      const object = Objects.AnotherType.read(reader);
       _object = object;
       _objectSet = true;
     }
     else if (field == "optObject") {
-      const bytes = reader.readNullableBytes();
       var object: Objects.AnotherType | null = null;
-      if (bytes) {
-        object = Objects.AnotherType.fromBuffer(bytes);
+      if (!reader.isNextNil()) {
+        object = Objects.AnotherType.read(reader);
       }
       _optObject = object;
     }
     else if (field == "objectArray") {
       _objectArray = reader.readArray((reader: Read): Objects.AnotherType => {
-        const object = Objects.AnotherType.fromBuffer(reader.readBytes());
+        const object = Objects.AnotherType.read(reader);
         return object;
       });
       _objectArraySet = true;
     }
     else if (field == "optObjectArray") {
       _optObjectArray = reader.readNullableArray((reader: Read): Objects.AnotherType | null => {
-        const bytes = reader.readNullableBytes();
         var object: Objects.AnotherType | null = null;
-        if (bytes) {
-          object = Objects.AnotherType.fromBuffer(bytes);
+        if (!reader.isNextNil()) {
+          object = Objects.AnotherType.read(reader);
         }
         return object;
       });
@@ -317,58 +322,58 @@ export function deserializeCustomType(buffer: ArrayBuffer): CustomType {
   }
 
   if (!_strSet) {
-    throw Error("Missing required property: 'str: String'");
+    throw new Error("Missing required property: 'str: String'");
   }
   if (!_uSet) {
-    throw Error("Missing required property: 'u: UInt'");
+    throw new Error("Missing required property: 'u: UInt'");
   }
   if (!_u8Set) {
-    throw Error("Missing required property: 'u8: UInt8'");
+    throw new Error("Missing required property: 'u8: UInt8'");
   }
   if (!_u16Set) {
-    throw Error("Missing required property: 'u16: UInt16'");
+    throw new Error("Missing required property: 'u16: UInt16'");
   }
   if (!_u32Set) {
-    throw Error("Missing required property: 'u32: UInt32'");
+    throw new Error("Missing required property: 'u32: UInt32'");
   }
   if (!_u64Set) {
-    throw Error("Missing required property: 'u64: UInt64'");
+    throw new Error("Missing required property: 'u64: UInt64'");
   }
   if (!_iSet) {
-    throw Error("Missing required property: 'i: Int'");
+    throw new Error("Missing required property: 'i: Int'");
   }
   if (!_i8Set) {
-    throw Error("Missing required property: 'i8: Int8'");
+    throw new Error("Missing required property: 'i8: Int8'");
   }
   if (!_i16Set) {
-    throw Error("Missing required property: 'i16: Int16'");
+    throw new Error("Missing required property: 'i16: Int16'");
   }
   if (!_i32Set) {
-    throw Error("Missing required property: 'i32: Int32'");
+    throw new Error("Missing required property: 'i32: Int32'");
   }
   if (!_i64Set) {
-    throw Error("Missing required property: 'i64: Int64'");
+    throw new Error("Missing required property: 'i64: Int64'");
   }
   if (!_booleanSet) {
-    throw Error("Missing required property: 'boolean: Boolean'");
+    throw new Error("Missing required property: 'boolean: Boolean'");
   }
   if (!_uArraySet) {
-    throw Error("Missing required property: 'uArray: [UInt]'");
+    throw new Error("Missing required property: 'uArray: [UInt]'");
   }
   if (!_uArrayArraySet) {
-    throw Error("Missing required property: 'uArrayArray: [[UInt]]'");
+    throw new Error("Missing required property: 'uArrayArray: [[UInt]]'");
   }
   if (!_uOptArrayOptArraySet) {
-    throw Error("Missing required property: 'uOptArrayOptArray: [[UInt64]]'");
+    throw new Error("Missing required property: 'uOptArrayOptArray: [[UInt64]]'");
   }
   if (!_uArrayOptArrayArraySet) {
-    throw Error("Missing required property: 'uArrayOptArrayArray: [[[UInt64]]]'");
+    throw new Error("Missing required property: 'uArrayOptArrayArray: [[[UInt64]]]'");
   }
   if (!_object || !_objectSet) {
-    throw Error("Missing required property: 'object: AnotherType'");
+    throw new Error("Missing required property: 'object: AnotherType'");
   }
   if (!_objectArraySet) {
-    throw Error("Missing required property: 'objectArray: [AnotherType]'");
+    throw new Error("Missing required property: 'objectArray: [AnotherType]'");
   }
 
   return {

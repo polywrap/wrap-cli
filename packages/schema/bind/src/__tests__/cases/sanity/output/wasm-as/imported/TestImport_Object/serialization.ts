@@ -10,37 +10,44 @@ import { TestImport_Object } from "./";
 import * as Objects from "../..";
 
 export function serializeTestImport_Object(type: TestImport_Object): ArrayBuffer {
-  const objects: (ArrayBuffer | null)[] = [
-    Objects.TestImport_AnotherObject.toBuffer(type.object),
-    type.optObject ? Objects.TestImport_AnotherObject.toBuffer(type.optObject) : null,
-  ];
   const sizer = new WriteSizer();
-  writeTestImport_Object(sizer, type, objects);
+  writeTestImport_Object(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
   const encoder = new WriteEncoder(buffer);
-  writeTestImport_Object(encoder, type, objects);
+  writeTestImport_Object(encoder, type);
   return buffer;
 }
 
-function writeTestImport_Object(writer: Write, type: TestImport_Object, objects: (ArrayBuffer | null)[]): void {
-  let objectsIdx = 0;
+export function writeTestImport_Object(writer: Write, type: TestImport_Object): void {
   writer.writeMapLength(4);
   writer.writeString("object");
-  writer.writeNullableBytes(objects[objectsIdx++]);
+  Objects.TestImport_AnotherObject.write(writer, type.object);
   writer.writeString("optObject");
-  writer.writeNullableBytes(objects[objectsIdx++]);
+  if (type.optObject) {
+    Objects.TestImport_AnotherObject.write(writer, type.optObject);
+  } else {
+    writer.writeNil();
+  }
   writer.writeString("objectArray");
   writer.writeArray(type.objectArray, (writer: Write, item: Objects.TestImport_AnotherObject): void => {
-    writer.writeBytes(Objects.TestImport_AnotherObject.toBuffer(item));
+    Objects.TestImport_AnotherObject.write(writer, item);
   });
   writer.writeString("optObjectArray");
   writer.writeNullableArray(type.optObjectArray, (writer: Write, item: Objects.TestImport_AnotherObject | null): void => {
-    writer.writeNullableBytes(item ? Objects.TestImport_AnotherObject.toBuffer(item) : null);
+    if (item) {
+      Objects.TestImport_AnotherObject.write(writer, item);
+    } else {
+      writer.writeNil();
+    }
   });
 }
 
 export function deserializeTestImport_Object(buffer: ArrayBuffer): TestImport_Object {
   const reader = new ReadDecoder(buffer);
+  return readTestImport_Object(reader);
+}
+
+export function readTestImport_Object(reader: Read): TestImport_Object {
   var numFields = reader.readMapLength();
 
   var _object: Objects.TestImport_AnotherObject | null = null;
@@ -55,31 +62,29 @@ export function deserializeTestImport_Object(buffer: ArrayBuffer): TestImport_Ob
     const field = reader.readString();
 
     if (field == "object") {
-      const object = Objects.TestImport_AnotherObject.fromBuffer(reader.readBytes());
+      const object = Objects.TestImport_AnotherObject.read(reader);
       _object = object;
       _objectSet = true;
     }
     else if (field == "optObject") {
-      const bytes = reader.readNullableBytes();
       var object: Objects.TestImport_AnotherObject | null = null;
-      if (bytes) {
-        object = Objects.TestImport_AnotherObject.fromBuffer(bytes);
+      if (!reader.isNextNil()) {
+        object = Objects.TestImport_AnotherObject.read(reader);
       }
       _optObject = object;
     }
     else if (field == "objectArray") {
       _objectArray = reader.readArray((reader: Read): Objects.TestImport_AnotherObject => {
-        const object = Objects.TestImport_AnotherObject.fromBuffer(reader.readBytes());
+        const object = Objects.TestImport_AnotherObject.read(reader);
         return object;
       });
       _objectArraySet = true;
     }
     else if (field == "optObjectArray") {
       _optObjectArray = reader.readNullableArray((reader: Read): Objects.TestImport_AnotherObject | null => {
-        const bytes = reader.readNullableBytes();
         var object: Objects.TestImport_AnotherObject | null = null;
-        if (bytes) {
-          object = Objects.TestImport_AnotherObject.fromBuffer(bytes);
+        if (!reader.isNextNil()) {
+          object = Objects.TestImport_AnotherObject.read(reader);
         }
         return object;
       });
@@ -87,10 +92,10 @@ export function deserializeTestImport_Object(buffer: ArrayBuffer): TestImport_Ob
   }
 
   if (!_object || !_objectSet) {
-    throw Error("Missing required property: 'object: TestImport_AnotherObject'");
+    throw new Error("Missing required property: 'object: TestImport_AnotherObject'");
   }
   if (!_objectArraySet) {
-    throw Error("Missing required property: 'objectArray: [TestImport_AnotherObject]'");
+    throw new Error("Missing required property: 'objectArray: [TestImport_AnotherObject]'");
   }
 
   return {

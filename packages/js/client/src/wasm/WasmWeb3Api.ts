@@ -56,7 +56,9 @@ export class WasmWeb3Api extends Api {
     // TODO: come up with a better future-proof solution
     while (threadsActive >= maxThreads) {
       // Wait for another thread to become available
-      await new Promise((resolve) => setTimeout(() => resolve(), 500));
+      await new Promise((resolve: (value?: unknown) => void) =>
+        setTimeout(() => resolve(), 500)
+      );
     }
 
     threadsActive++;
@@ -91,7 +93,7 @@ export class WasmWeb3Api extends Api {
     let queryResult: ArrayBuffer | undefined;
     let queryError: string | undefined;
 
-    const awaitCompletion = new Promise((resolve) => {
+    const awaitCompletion = new Promise((resolve: (value?: unknown) => void) => {
       let transferPending = false;
       const transferData = async (data: ArrayBuffer, status: number) => {
         let progress = 0;
@@ -122,7 +124,9 @@ export class WasmWeb3Api extends Api {
 
           // Wait until the transferPending flag has been reset
           while (transferPending) {
-            await new Promise((resolve) => setTimeout(() => resolve(), 100));
+            await new Promise((resolve: (value?: unknown) => void) =>
+              setTimeout(() => resolve(), 100)
+            );
           }
         }
 
@@ -156,7 +160,6 @@ export class WasmWeb3Api extends Api {
             }
             // TODO: replace with proper logging
             case "LogInfo": {
-              console.log(action.message);
               break;
             }
             case "SubInvoke": {
@@ -239,7 +242,11 @@ export class WasmWeb3Api extends Api {
       }
       case "LogQueryResult": {
         if (decode) {
-          return { data: MsgPack.decode(queryResult as ArrayBuffer) };
+          try {
+            return { data: MsgPack.decode(queryResult as ArrayBuffer) };
+          } catch (err) {
+            throw Error(`WasmWeb3Api: Failed to decode query result.\nResult: ${JSON.stringify(queryResult)}\nError: ${err}`);
+          }
         } else {
           return { data: queryResult };
         }
