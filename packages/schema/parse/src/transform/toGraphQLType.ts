@@ -18,6 +18,8 @@ function anyToGraphQL(any: AnyDefinition): string {
     return toGraphQL(any.array);
   } else if (any.scalar) {
     return toGraphQL(any.scalar);
+  } else if (any.enum) {
+    return toGraphQL(any.enum);
   } else {
     throw Error(
       `anyToGraphQL: Any type is invalid.\n${JSON.stringify(any, null, 2)}`
@@ -28,6 +30,8 @@ function anyToGraphQL(any: AnyDefinition): string {
 function toGraphQL(def: GenericDefinition): string {
   switch (def.kind) {
     case DefinitionKind.Object:
+    case DefinitionKind.Enum:
+    case DefinitionKind.ImportedEnum:
     case DefinitionKind.Scalar:
     case DefinitionKind.ImportedObject:
       return applyRequired(def.type, def.required);

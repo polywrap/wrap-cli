@@ -9,6 +9,7 @@ import {
   extractNamedType,
   State,
 } from "./object-types-utils";
+import { TypeDefinitions } from "./type-definitions";
 
 import {
   DocumentNode,
@@ -21,7 +22,11 @@ import {
   DirectiveNode,
 } from "graphql";
 
-const visitorEnter = (objectTypes: ObjectDefinition[], state: State) => ({
+const visitorEnter = (
+  objectTypes: ObjectDefinition[],
+  typeDefinitions: TypeDefinitions,
+  state: State
+) => ({
   ObjectTypeDefinition: (node: TypeDefinitionNode) => {
     // Skip non-custom types
     if (node.name.value === "Query" || node.name.value === "Mutation") {
@@ -47,7 +52,7 @@ const visitorEnter = (objectTypes: ObjectDefinition[], state: State) => ({
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    extractNamedType(node, state);
+    extractNamedType(node, state, typeDefinitions);
   },
   ListType: (_node: ListTypeNode) => {
     extractListType(state);
@@ -71,12 +76,13 @@ const visitorLeave = (state: State) => ({
 
 export function extractObjectTypes(
   astNode: DocumentNode,
-  typeInfo: TypeInfo
+  typeInfo: TypeInfo,
+  typeDefinitions: TypeDefinitions
 ): void {
   const state: State = {};
 
   visit(astNode, {
-    enter: visitorEnter(typeInfo.objectTypes, state),
+    enter: visitorEnter(typeInfo.objectTypes, typeDefinitions, state),
     leave: visitorLeave(state),
   });
 }
