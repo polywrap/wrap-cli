@@ -4,6 +4,7 @@ const modulesToDockerComposeFiles = new Map([
   ["devserver", "devserver.yaml"],
   ["ganache", "ganache.yaml"],
   ["ipfs", "ipfs.yaml"],
+  ["graphnode", "graphnode.yaml"],
 ]);
 
 function getFileCommand(configFilePath = "", ci = false, modules = []) {

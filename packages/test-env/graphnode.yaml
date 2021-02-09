@@ -1,0 +1,20 @@
+version: '3'
+services:
+  graphnode:
+    image: 'graphprotocol/graph-node'
+    environment:
+    - POSTGRES_HOST=${POSTGRES_HOST}
+    - POSTGRES_PORT=${POSTGRES_PORT}
+    - POSTGRES_PASS=${POSTGRES_PASS}
+    - IPFS=http://localhost:${IPFS_PORT}
+    - ETHEREUM=mainnet:http://localhost:${ETHEREUM_PORT}/
+    links:
+      - ganache
+      - ipfs
+  postgres:
+    image: 'postgres'
+    environment:
+    - POSTGRES_HOST=${POSTGRES_HOST}
+    - POSTGRES_PORT=${POSTGRES_PORT}
+    - POSTGRES_PASS=${POSTGRES_PASS}
+    restart: always
