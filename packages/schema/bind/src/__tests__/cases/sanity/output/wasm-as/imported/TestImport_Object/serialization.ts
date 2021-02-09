@@ -19,7 +19,9 @@ export function serializeTestImport_Object(type: TestImport_Object): ArrayBuffer
 }
 
 function writeTestImport_Object(writer: Write, type: TestImport_Object): void {
-  writer.writeMapLength(4);
+  writer.writeMapLength(5);
+  writer.writeString("prop");
+  writer.writeString(type.prop);
   writer.writeString("enum");
   writer.writeInt32(type.enum);
   writer.writeString("optEnum");
@@ -34,7 +36,7 @@ function writeTestImport_Object(writer: Write, type: TestImport_Object): void {
   });
 }
 
-export function deserializeTestImport_Object(buffer: ArrayBuffer, type: TestImport_Object) {
+export function deserializeTestImport_Object(buffer: ArrayBuffer, type: TestImport_Object): void {
   const reader = new ReadDecoder(buffer);
   var numFields = reader.readMapLength();
 

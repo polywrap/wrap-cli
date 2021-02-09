@@ -50,10 +50,6 @@ enum CustomEnum {
   BYTES
 }
 
-type AnotherType {
-  prop: String
-}
-
 type Query @imports(
   types: [ "TestImport_Query" ]
 ) {
@@ -85,24 +81,17 @@ type TestImport_Object @imported(
   namespace: "Object",
   nativeType: "Object"
 ) {
+  prop: String!
   enum: TestImport_Enum!
   optEnum: TestImport_Enum
   enumArray: [TestImport_Enum!]!
   optEnumArray: [TestImport_Enum]
 }
 
-type TestImport_AnotherObject @imported(
-  uri: "testimport.uri.eth",
-  namespace: "TestImport",
-  nativeType: "AnotherObject"
-) {
-  prop: String!
-}
-
 enum TestImport_Enum @imported(
   namespace: "TestImport",
   uri: "testimport.uri.eth",
-  type: "Enum"
+  nativeType: "Enum"
 ) {
   STRING
   BYTES

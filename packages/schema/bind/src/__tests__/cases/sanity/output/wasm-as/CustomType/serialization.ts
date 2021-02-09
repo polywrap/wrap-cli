@@ -18,7 +18,7 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
   return buffer;
 }
 
-function writeCustomType(writer: Write, type: CustomType) {
+function writeCustomType(writer: Write, type: CustomType): void {
   writer.writeMapLength(23);
   writer.writeString("str");
   writer.writeString(type.str);
@@ -98,7 +98,7 @@ function writeCustomType(writer: Write, type: CustomType) {
   });
 }
 
-export function deserializeCustomType(buffer: ArrayBuffer, type: CustomType) {
+export function deserializeCustomType(buffer: ArrayBuffer, type: CustomType): void {
   const reader = new ReadDecoder(buffer);
   var numFields = reader.readMapLength();
 
