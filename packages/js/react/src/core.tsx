@@ -1,12 +1,13 @@
-import React, { useContext, useCallback } from "react";
-import { UriRedirect, Web3ApiClient, Uri } from "@web3api/client-js";
-
 import {
   Web3ApiContextInterface,
   INITIAL_STATE,
   web3ApiState,
   ActionTypes,
 } from "./handler";
+
+import React, { useEffect } from "react";
+import { UriRedirect, Web3ApiClient, Uri } from "@web3api/client-js";
+
 interface Web3ApiProviderArguments {
   redirects: UriRedirect[];
   children: React.ReactNode;
@@ -21,22 +22,30 @@ interface Web3ApiProvider {
 
 const PROVIDERS: Web3ApiProvider = {};
 
-const web3ApiQuery = (client: Web3ApiClient, options?: any) => {
+const web3ApiQuery = (
+  client: Web3ApiClient,
+  options?: QueryExecutionParams
+) => {
   const { state, dispatch } = web3ApiState();
 
   if (!options) {
-    return INITIAL_STATE;
+    return state;
   }
 
-  const execute = useCallback(async () => {
+  const execute = async () => {
+    dispatch({ type: ActionTypes.UPDATE_LOADING, loading: true });
     const { data, errors } = await client.query(options);
+    dispatch({ type: ActionTypes.UPDATE_INFO, data, errors });
+    dispatch({ type: ActionTypes.UPDATE_LOADING, loading: false });
     return { data, errors };
-  }, [options]);
+  };
 
-  dispatch({
-    type: ActionTypes.UPDATE_EXECUTE,
-    execute,
-  });
+  useEffect(() => {
+    dispatch({
+      type: ActionTypes.UPDATE_EXECUTE,
+      execute,
+    });
+  }, [dispatch]);
 
   return state;
 };
@@ -48,14 +57,14 @@ export function createWeb3ApiRoot(
     throw new Error("A Web3Api root already exists with the name " + key);
   }
 
-  PROVIDERS[key].context = React.createContext<Web3ApiContextInterface>(
-    INITIAL_STATE
-  );
-
-  const { Provider } = PROVIDERS[key].context;
-
   return ({ redirects, children }) => {
-    const client = (PROVIDERS[key].client = new Web3ApiClient({ redirects }));
+    const client = new Web3ApiClient({ redirects });
+    const context = React.createContext<Web3ApiContextInterface>(INITIAL_STATE);
+    PROVIDERS[key] = {
+      context,
+      client,
+    };
+    const { Provider } = context;
     const data = web3ApiQuery(client);
     return <Provider value={data}>{children}</Provider>;
   };
@@ -80,16 +89,13 @@ type QueryExecutionParams = {
   variables?: any;
 };
 
-interface QueryArguments {
-  key: string;
-  options: QueryExecutionParams;
+interface QueryArguments extends QueryExecutionParams {
+  key?: string;
 }
 
 export const useWeb3ApiQuery = ({
   key = DEFAULT_PROVIDER,
-  options,
+  ...options
 }: QueryArguments): Web3ApiContextInterface => {
-  const provider = getWeb3ApiContext(key);
-  web3ApiQuery(PROVIDERS[key].client, options);
-  return useContext(provider);
+  return web3ApiQuery(PROVIDERS[key].client, options);
 };

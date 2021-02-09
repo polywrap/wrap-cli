@@ -2,10 +2,10 @@
   "name": "@web3api/react",
   "version": "0.0.1-prealpha.1",
   "license": "MIT",
-  "main": "build/index.js",
+  "main": "build/core.js",
   "scripts": {
-    "build": "rimraf ./build && tsc",
-    "lint": "eslint --color --ext .ts src/",
+    "build": "rimraf ./build && tsc --project tsconfig.build.json",
+    "lint": "eslint --color --ext 'src/**/*.{ts|tsx}'",
     "test": "TEST=true jest --passWithNoTests --runInBand --verbose",
     "test:watch": "TEST=true jest --watch --passWithNoTests --verbose",
     "test:ci": "TEST=true yarn test:env:up && yarn test && yarn test:env:down",

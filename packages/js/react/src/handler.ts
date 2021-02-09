@@ -1,16 +1,22 @@
-import { useReducer } from "react";
+import { useReducer, useMemo } from "react";
 
 export interface Web3ApiContextInterface {
-  data: any;
+  data?: Record<string, unknown>;
   loading: boolean;
-  errors: any;
-  execute: Function;
+  errors?: Error[];
+  execute: any;
 }
 
-function updateData(data: any) {
+interface Info {
+  data?: Record<string, unknown>;
+  errors?: Error[];
+}
+
+function updateInfo({ data, errors }: Info) {
   return <const>{
-    type: ActionTypes.UPDATE_DATA,
+    type: ActionTypes.UPDATE_INFO,
     data,
+    errors,
   };
 }
 function updateLoading(loading: boolean) {
@@ -19,13 +25,8 @@ function updateLoading(loading: boolean) {
     loading,
   };
 }
-function updateErrors(errors: any) {
-  return <const>{
-    type: ActionTypes.UPDATE_ERRORS,
-    errors,
-  };
-}
-function updateExecute(execute: any) {
+
+function updateExecute(execute: Function) {
   return <const>{
     type: ActionTypes.UPDATE_EXECUTE,
     execute,
@@ -33,37 +34,28 @@ function updateExecute(execute: any) {
 }
 
 export type HandleAction = ReturnType<
-  | typeof updateData
-  | typeof updateLoading
-  | typeof updateErrors
-  | typeof updateExecute
+  typeof updateInfo | typeof updateLoading | typeof updateExecute
 >;
 
 export enum ActionTypes {
-  UPDATE_DATA = "UPDATE_DATA",
-  UPDATE_ERRORS = "UPDATE_ERRORS",
+  UPDATE_INFO = "UPDATE_INFO",
   UPDATE_LOADING = "UPDATE_LOADING",
   UPDATE_EXECUTE = "UPDATE_EXECUTE",
 }
 
 export const INITIAL_STATE = {
-  data: null,
+  data: undefined,
   loading: false,
-  errors: null,
+  errors: undefined,
   execute: () => undefined,
 };
 
 const reducer = (state: Web3ApiContextInterface, action: HandleAction) => {
   switch (action.type) {
-    case ActionTypes.UPDATE_DATA:
+    case ActionTypes.UPDATE_INFO:
       state = {
         ...state,
         data: action.data,
-      };
-      return state;
-    case ActionTypes.UPDATE_ERRORS:
-      state = {
-        ...state,
         errors: action.errors,
       };
       return state;
@@ -86,5 +78,7 @@ const reducer = (state: Web3ApiContextInterface, action: HandleAction) => {
 
 export const web3ApiState = () => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-  return { state, dispatch };
+  return useMemo(() => {
+    return { state, dispatch };
+  }, [state, dispatch]);
 };

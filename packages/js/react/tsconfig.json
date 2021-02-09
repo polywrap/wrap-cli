@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
+    "outDir": "build",
     "module": "esnext",
     "lib": ["dom", "esnext"],
     "importHelpers": true,
