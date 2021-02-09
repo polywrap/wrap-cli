@@ -114,12 +114,13 @@ export default {
           throw Error(`Failed to read query ${query}`);
         }
 
-        let variables: Record<string, unknown> = { }
+        let variables: Record<string, unknown> = {};
 
         if (task.variables) {
-
-          const resolveConstants = (vars: Record<string, unknown>): Record<string, unknown> => {
-            const output: Record<string, unknown> = { };
+          const resolveConstants = (
+            vars: Record<string, unknown>
+          ): Record<string, unknown> => {
+            const output: Record<string, unknown> = {};
 
             Object.keys(vars).forEach((key: string) => {
               const value = vars[key];
@@ -128,14 +129,16 @@ export default {
                   output[key] = constants[value.replace("$", "")];
                 }
               } else if (typeof value === "object") {
-                output[key] = resolveConstants(value as Record<string, unknown>);
+                output[key] = resolveConstants(
+                  value as Record<string, unknown>
+                );
               } else {
-                output[key] = vars[key]
+                output[key] = vars[key];
               }
             });
 
             return output;
-          }
+          };
 
           variables = resolveConstants(task.variables);
         }

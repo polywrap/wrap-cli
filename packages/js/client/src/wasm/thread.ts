@@ -217,10 +217,10 @@ const imports = (memory: WebAssembly.Memory): W3Imports => ({
       const msg = readString(memory.buffer, msgPtr, msgLen);
       const file = readString(memory.buffer, filePtr, fileLen);
       abort(`__w3_abort: ${msg}\nFile: ${file}\nLocation: [${line},${column}]`);
-    }
+    },
   },
   env: {
-    memory
+    memory,
   },
 });
 

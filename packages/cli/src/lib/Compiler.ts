@@ -186,7 +186,8 @@ export class Compiler {
       `${outputDir}/${moduleName}.wasm`,
       "--use",
       `abort=${path.relative(
-        process.cwd(), path.join(baseDir, 'w3/entry/w3Abort')
+        process.cwd(),
+        path.join(baseDir, "w3/entry/w3Abort")
       )}`,
       "--optimize",
       "--debug",
@@ -226,7 +227,7 @@ export class Compiler {
         __w3_invoke_args: () => {},
         __w3_invoke_result: () => {},
         __w3_invoke_error: () => {},
-        __w3_abort: () => {}
+        __w3_abort: () => {},
       },
     });
 

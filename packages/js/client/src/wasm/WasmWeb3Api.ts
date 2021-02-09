@@ -93,113 +93,124 @@ export class WasmWeb3Api extends Api {
     let queryResult: ArrayBuffer | undefined;
     let queryError: string | undefined;
 
-    const awaitCompletion = new Promise((resolve: (value?: unknown) => void) => {
-      let transferPending = false;
-      const transferData = async (data: ArrayBuffer, status: number) => {
-        let progress = 0;
-        const totalBytes = data.byteLength;
-        const dataView = new Uint8Array(data);
+    const awaitCompletion = new Promise(
+      (resolve: (value?: unknown) => void) => {
+        let transferPending = false;
+        const transferData = async (data: ArrayBuffer, status: number) => {
+          let progress = 0;
+          const totalBytes = data.byteLength;
+          const dataView = new Uint8Array(data);
 
-        while (progress < totalBytes) {
-          // Reset the transfer buffer
-          transfer.fill(0);
+          while (progress < totalBytes) {
+            // Reset the transfer buffer
+            transfer.fill(0);
 
-          // Calculate how many bytes we can send
-          const bytesLeft = totalBytes - progress;
-          const bytesToSend = Math.min(bytesLeft, maxTransferBytes - 1);
+            // Calculate how many bytes we can send
+            const bytesLeft = totalBytes - progress;
+            const bytesToSend = Math.min(bytesLeft, maxTransferBytes - 1);
 
-          // Set the first byte to the number of bytes we're sending
-          transfer.set([bytesToSend]);
+            // Set the first byte to the number of bytes we're sending
+            transfer.set([bytesToSend]);
 
-          // Copy our data in
-          transfer.set(dataView.slice(progress, progress + bytesToSend), 1);
+            // Copy our data in
+            transfer.set(dataView.slice(progress, progress + bytesToSend), 1);
 
-          transferPending = true;
-          progress += bytesToSend;
+            transferPending = true;
+            progress += bytesToSend;
 
-          // Notify the thread that we've sent data, giving it a specific
-          // status code
-          Atomics.store(threadMutexes, threadId, status);
-          Atomics.notify(threadMutexes, threadId, Infinity);
+            // Notify the thread that we've sent data, giving it a specific
+            // status code
+            Atomics.store(threadMutexes, threadId, status);
+            Atomics.notify(threadMutexes, threadId, Infinity);
 
-          // Wait until the transferPending flag has been reset
-          while (transferPending) {
-            await new Promise((resolve: (value?: unknown) => void) =>
-              setTimeout(() => resolve(), 100)
-            );
+            // Wait until the transferPending flag has been reset
+            while (transferPending) {
+              await new Promise((resolve: (value?: unknown) => void) =>
+                setTimeout(() => resolve(), 100)
+              );
+            }
           }
-        }
 
-        Atomics.store(threadMutexes, threadId, ThreadWakeStatus.SUBINVOKE_DONE);
-        Atomics.notify(threadMutexes, threadId, Infinity);
-      };
+          Atomics.store(
+            threadMutexes,
+            threadId,
+            ThreadWakeStatus.SUBINVOKE_DONE
+          );
+          Atomics.notify(threadMutexes, threadId, Infinity);
+        };
 
-      worker.addEventListener(
-        "message",
-        async (event: { data: HostAction }) => {
-          const action = event.data;
+        worker.addEventListener(
+          "message",
+          async (event: { data: HostAction }) => {
+            const action = event.data;
 
-          switch (action.type) {
-            case "Abort": {
-              abortMessage = action.message;
-              state = action.type;
-              resolve();
-              break;
-            }
-            case "LogQueryError": {
-              queryError = action.error;
-              state = action.type;
-              resolve();
-              break;
-            }
-            case "LogQueryResult": {
-              queryResult = action.result;
-              state = action.type;
-              resolve();
-              break;
-            }
-            // TODO: replace with proper logging
-            case "LogInfo": {
-              break;
-            }
-            case "SubInvoke": {
-              const { data, error } = await client.invoke<
-                unknown | ArrayBuffer
-              >({
-                uri: new Uri(action.uri),
-                module: action.module as InvokableModules,
-                method: action.method,
-                input: action.input,
-              });
+            switch (action.type) {
+              case "Abort": {
+                abortMessage = action.message;
+                state = action.type;
+                resolve();
+                break;
+              }
+              case "LogQueryError": {
+                queryError = action.error;
+                state = action.type;
+                resolve();
+                break;
+              }
+              case "LogQueryResult": {
+                queryResult = action.result;
+                state = action.type;
+                resolve();
+                break;
+              }
+              // TODO: replace with proper logging
+              case "LogInfo": {
+                break;
+              }
+              case "SubInvoke": {
+                const { data, error } = await client.invoke<
+                  unknown | ArrayBuffer
+                >({
+                  uri: new Uri(action.uri),
+                  module: action.module as InvokableModules,
+                  method: action.method,
+                  input: action.input,
+                });
 
-              if (!error) {
-                let msgpack: ArrayBuffer;
-                if (data instanceof ArrayBuffer) {
-                  msgpack = data;
+                if (!error) {
+                  let msgpack: ArrayBuffer;
+                  if (data instanceof ArrayBuffer) {
+                    msgpack = data;
+                  } else {
+                    msgpack = MsgPack.encode(data);
+                  }
+
+                  // transfer the result
+                  await transferData(
+                    msgpack,
+                    ThreadWakeStatus.SUBINVOKE_RESULT
+                  );
                 } else {
-                  msgpack = MsgPack.encode(data);
+                  const encoder = new TextEncoder();
+                  const bytes = encoder.encode(
+                    `${error.name}: ${error.message}`
+                  );
+
+                  // transfer the error
+                  await transferData(bytes, ThreadWakeStatus.SUBINVOKE_ERROR);
                 }
 
-                // transfer the result
-                await transferData(msgpack, ThreadWakeStatus.SUBINVOKE_RESULT);
-              } else {
-                const encoder = new TextEncoder();
-                const bytes = encoder.encode(`${error.name}: ${error.message}`);
-
-                // transfer the error
-                await transferData(bytes, ThreadWakeStatus.SUBINVOKE_ERROR);
+                break;
               }
-
-              break;
-            }
-            case "TransferComplete": {
-              transferPending = false;
-              break;
+              case "TransferComplete": {
+                transferPending = false;
+                break;
+              }
             }
           }
-        }
-      );
-    });
+        );
+      }
+    );
 
     // Start the thread
     worker.postMessage({
@@ -245,7 +256,11 @@ export class WasmWeb3Api extends Api {
           try {
             return { data: MsgPack.decode(queryResult as ArrayBuffer) };
           } catch (err) {
-            throw Error(`WasmWeb3Api: Failed to decode query result.\nResult: ${JSON.stringify(queryResult)}\nError: ${err}`);
+            throw Error(
+              `WasmWeb3Api: Failed to decode query result.\nResult: ${JSON.stringify(
+                queryResult
+              )}\nError: ${err}`
+            );
           }
         } else {
           return { data: queryResult };
