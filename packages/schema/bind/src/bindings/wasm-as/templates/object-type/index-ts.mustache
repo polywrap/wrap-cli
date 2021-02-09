@@ -6,12 +6,7 @@ import {
 
 export class {{type}} {
   {{#properties}}
-  {{#scalar}}
   {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
-  {{/scalar}}
-  {{#array}}
-  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
-  {{/array}}
   {{/properties}}
 
   toBuffer(): ArrayBuffer {

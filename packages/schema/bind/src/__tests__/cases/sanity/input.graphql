@@ -13,7 +13,7 @@ directive @imported(
   uri: String!
   namespace: String!
   nativeType: String!
-) on OBJECT
+) on OBJECT | ENUM
 
 directive @imports(
   types: [String!]!
@@ -43,6 +43,11 @@ type CustomType {
   uOptArrayOptArray: [[UInt64]]!
   uArrayOptArrayArray: [[[UInt64!]!]]!
   crazyArray: [[[[UInt64!]]!]]
+}
+
+enum CustomEnum {
+  STRING
+  BYTES
 }
 
 type AnotherType {
@@ -77,8 +82,28 @@ type TestImport_Query @imported(
 
 type TestImport_Object @imported(
   uri: "testimport.uri.eth",
-  namespace: "TestImport",
+  namespace: "Object",
   nativeType: "Object"
 ) {
+  enum: TestImport_Enum!
+  optEnum: TestImport_Enum
+  enumArray: [TestImport_Enum!]!
+  optEnumArray: [TestImport_Enum]
+}
+
+type TestImport_AnotherObject @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "AnotherObject"
+) {
   prop: String!
+}
+
+enum TestImport_Enum @imported(
+  namespace: "TestImport",
+  uri: "testimport.uri.eth",
+  type: "Enum"
+) {
+  STRING
+  BYTES
 }

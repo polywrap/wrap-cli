@@ -7,6 +7,7 @@ import {
   Nullable
 } from "@web3api/wasm-as";
 import { TestImport_Object } from "./";
+import * as Enums from "../../enums";
 
 export function serializeTestImport_Object(type: TestImport_Object): ArrayBuffer {
   const sizer = new WriteSizer();
@@ -17,10 +18,20 @@ export function serializeTestImport_Object(type: TestImport_Object): ArrayBuffer
   return buffer;
 }
 
-function writeTestImport_Object(writer: Write, type: TestImport_Object) {
-  writer.writeMapLength(1);
-  writer.writeString("prop");
-  writer.writeString(type.prop);
+function writeTestImport_Object(writer: Write, type: TestImport_Object): void {
+  writer.writeMapLength(4);
+  writer.writeString("enum");
+  writer.writeInt32(type.enum);
+  writer.writeString("optEnum");
+  writer.writeNullableInt32(type.optEnum);
+  writer.writeString("enumArray");
+  writer.writeArray(type.enumArray, (writer: Write, item: Enums.TestImport_Enum): void => {
+    writer.writeInt32(item);
+  });
+  writer.writeString("optEnumArray");
+  writer.writeNullableArray(type.optEnumArray, (writer: Write, item: Nullable<Enums.TestImport_Enum>): void => {
+    writer.writeNullableInt32(item);
+  });
 }
 
 export function deserializeTestImport_Object(buffer: ArrayBuffer, type: TestImport_Object) {
@@ -33,6 +44,22 @@ export function deserializeTestImport_Object(buffer: ArrayBuffer, type: TestImpo
 
     if (field == "prop") {
       type.prop = reader.readString();
+    }
+    else if (field == "enum") {
+      type.enum = reader.readInt32();
+    }
+    else if (field == "optEnum") {
+      type.optEnum = reader.readNullableInt32();
+    }
+    else if (field == "enumArray") {
+      type.enumArray = reader.readArray((reader: Read): Enums.TestImport_Enum => {
+        return reader.readInt32();
+      });
+    }
+    else if (field == "optEnumArray") {
+      type.optEnumArray = reader.readNullableArray((reader: Read): Nullable<Enums.TestImport_Enum> => {
+        return reader.readNullableInt32();
+      });
     }
   }
 }

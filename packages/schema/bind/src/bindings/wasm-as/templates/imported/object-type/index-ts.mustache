@@ -3,18 +3,14 @@ import {
   serialize{{type}},
   deserialize{{type}}
 } from "./serialization";
+import * as Enums from "../../enums";
 
 export class {{type}} {
 
   public static uri: string = "{{uri}}";
 
   {{#properties}}
-  {{#scalar}}
   {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
-  {{/scalar}}
-  {{#array}}
-  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
-  {{/array}}
   {{/properties}}
 
   toBuffer(): ArrayBuffer {

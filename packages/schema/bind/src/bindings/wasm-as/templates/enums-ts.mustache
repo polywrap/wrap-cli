@@ -1,0 +1,10 @@
+export * from "./imported/enums";
+
+{{#enumTypes}}
+export enum {{type}} {
+  {{#values}}
+  {{.}},
+  {{/values}}
+}
+
+{{/enumTypes}}

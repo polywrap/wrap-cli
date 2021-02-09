@@ -7,6 +7,7 @@ import {
   Nullable
 } from "@web3api/wasm-as";
 import { CustomType } from "./";
+import * as Enums from "../enums";
 
 export function serializeCustomType(type: CustomType): ArrayBuffer {
   const sizer = new WriteSizer();

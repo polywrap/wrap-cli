@@ -7,6 +7,7 @@ import {
   Nullable
 } from "@web3api/wasm-as";
 import { {{type}} } from "./";
+import * as Enums from "../enums";
 
 export function serialize{{type}}(type: {{type}}): ArrayBuffer {
   const sizer = new WriteSizer();
@@ -29,6 +30,14 @@ function write{{type}}(writer: Write, type: {{type}}) {
     {{> serialize_array}}
   });
   {{/array}}
+  {{#enum}}
+  {{#required}}
+  writer.writeInt32(type.{{name}});
+  {{/required}}
+  {{^required}}
+  writer.writeNullableInt32(type.{{name}});
+  {{/required}}
+  {{/enum}}
   {{/properties}}
 }
 
@@ -50,6 +59,9 @@ export function deserialize{{type}}(buffer: ArrayBuffer, type: {{type}}) {
         {{> deserialize_array}}
       });
       {{/array}}
+      {{#enum}}
+      {{#required}}type.{{name}} = reader.readInt32();{{/required}}{{^required}}type.{{name}} = reader.readNullableInt32();{{/required}}
+      {{/enum}}
     }
     {{/properties}}
   }

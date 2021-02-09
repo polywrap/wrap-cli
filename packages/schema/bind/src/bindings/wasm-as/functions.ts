@@ -1,3 +1,5 @@
+import { isMsgPackType } from "./types";
+
 type MustacheFunction = () => (
   value: string,
   render: (template: string) => string
@@ -90,37 +92,53 @@ export const toWasm: MustacheFunction = () => {
 
     switch (type) {
       case "Int":
-        return applyNullable("i32", nullable);
+        type = "i32";
+        break;
       case "Int8":
-        return applyNullable("i8", nullable);
+        type = "i8";
+        break;
       case "Int16":
-        return applyNullable("i16", nullable);
+        type = "i16";
+        break;
       case "Int32":
-        return applyNullable("i32", nullable);
+        type = "i32";
+        break;
       case "Int64":
-        return applyNullable("i64", nullable);
+        type = "i64";
+        break;
       case "UInt":
-        return applyNullable("u32", nullable);
-      case "UInt8":
-        return applyNullable("u8", nullable);
-      case "UInt16":
-        return applyNullable("u16", nullable);
       case "UInt32":
-        return applyNullable("u32", nullable);
+        type = "u32";
+        break;
+      case "UInt8":
+        type = "u8";
+        break;
+      case "UInt16":
+        type = "u16";
+        break;
       case "UInt64":
-        return applyNullable("u64", nullable);
+        type = "u64";
+        break;
       case "String":
-        return applyNullable("string", nullable);
+        type = "string";
+        break;
       case "Boolean":
-        return applyNullable("bool", nullable);
+        type = "bool";
+        break;
       default:
-        return applyNullable(type, nullable);
+        if (type.includes("enum_")) {
+          type = type.replace("enum_", "Enums.");
+        } else {
+          type = `Objects.${type}`;
+        }
     }
+
+    return applyNullable(type, nullable);
   };
 };
 
 const toWasmArray = (type: string, nullable: boolean): string => {
-  const result = type.match(/(\[)([[\]A-Za-z1-9_!]+)(\])/);
+  const result = type.match(/(\[)([[\]A-Za-z1-9_.!]+)(\])/);
 
   if (!result || result.length !== 4) {
     throw Error(`Invalid Array: ${type}`);
@@ -132,7 +150,11 @@ const toWasmArray = (type: string, nullable: boolean): string => {
 
 const applyNullable = (type: string, nullable: boolean): string => {
   if (nullable) {
-    if (type.indexOf("Array") === 0 || type.indexOf("string") === 0) {
+    if (
+      type.indexOf("Array") === 0 ||
+      type.indexOf("string") === 0 ||
+      (!type.includes("Enums.") && !isMsgPackType(type))
+    ) {
       return `${type} | null`;
     } else {
       return `Nullable<${type}>`;
