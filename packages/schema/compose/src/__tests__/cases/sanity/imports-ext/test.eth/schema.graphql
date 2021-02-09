@@ -132,7 +132,7 @@ type Imported_ObjectType @imported(
 enum Imported_Enum @imported(
   namespace: "Imported",
   uri: "imported.eth",
-  type: "ImportedEnum"
+  nativeType: "ImportedEnum"
 ) {
   STRING
   BYTES
