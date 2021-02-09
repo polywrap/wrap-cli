@@ -43,6 +43,10 @@ type CustomType {
   uOptArrayOptArray: [[UInt64]]!
   uArrayOptArrayArray: [[[UInt64!]!]]!
   crazyArray: [[[[UInt64!]]!]]
+  enum: CustomEnum!
+  optEnum: CustomEnum
+  enumArray: [CustomEnum!]!
+  optEnumArray: [CustomEnum]
 }
 
 enum CustomEnum {

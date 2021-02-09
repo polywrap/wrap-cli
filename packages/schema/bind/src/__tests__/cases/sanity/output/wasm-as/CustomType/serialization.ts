@@ -19,7 +19,7 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
 }
 
 function writeCustomType(writer: Write, type: CustomType): void {
-  writer.writeMapLength(23);
+  writer.writeMapLength(27);
   writer.writeString("str");
   writer.writeString(type.str);
   writer.writeString("optStr");
@@ -95,6 +95,18 @@ function writeCustomType(writer: Write, type: CustomType): void {
         });
       });
     });
+  });
+  writer.writeString("enum");
+  writer.writeInt32(type.enum);
+  writer.writeString("optEnum");
+  writer.writeNullableInt32(type.optEnum);
+  writer.writeString("enumArray");
+  writer.writeArray(type.enumArray, (writer: Write, item: Enums.CustomEnum): void => {
+    writer.writeInt32(item);
+  });
+  writer.writeString("optEnumArray");
+  writer.writeNullableArray(type.optEnumArray, (writer: Write, item: Nullable<Enums.CustomEnum>): void => {
+    writer.writeNullableInt32(item);
   });
 }
 
@@ -203,6 +215,22 @@ export function deserializeCustomType(buffer: ArrayBuffer, type: CustomType): vo
             });
           });
         });
+      });
+    }
+    else if (field == "enum") {
+      type.enum = reader.readInt32();
+    }
+    else if (field == "optEnum") {
+      type.optEnum = reader.readNullableInt32();
+    }
+    else if (field == "enumArray") {
+      type.enumArray = reader.readArray((reader: Read): Enums.CustomEnum => {
+        return reader.readInt32();
+      });
+    }
+    else if (field == "optEnumArray") {
+      type.optEnumArray = reader.readNullableArray((reader: Read): Nullable<Enums.CustomEnum> => {
+        return reader.readNullableInt32();
       });
     }
   }

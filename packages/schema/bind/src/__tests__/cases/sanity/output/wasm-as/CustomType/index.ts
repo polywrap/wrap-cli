@@ -3,6 +3,7 @@ import {
   serializeCustomType,
   deserializeCustomType
 } from "./serialization";
+import * as Enums from "../enums";
 
 export class CustomType {
   str: string;
@@ -28,6 +29,10 @@ export class CustomType {
   uOptArrayOptArray: Array<Array<Nullable<u64>> | null>;
   uArrayOptArrayArray: Array<Array<Array<u64>> | null>;
   crazyArray: Array<Array<Array<Array<u64> | null>> | null> | null;
+  enum: Enums.CustomEnum;
+  optEnum: Nullable<Enums.CustomEnum>;
+  enumArray: Array<Enums.CustomEnum>;
+  optEnumArray: Array<Nullable<Enums.CustomEnum>> | null;
 
   toBuffer(): ArrayBuffer {
     return serializeCustomType(this);
