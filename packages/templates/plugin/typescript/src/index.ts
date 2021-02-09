@@ -23,11 +23,13 @@ export class SamplePlugin extends Plugin {
     };
   }
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   public async sampleQuery(query: string): Promise<string> {
     // Todo: Add query processing part here
     return this._config.defaultValue;
   }
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   public async sampleMutation(data: Uint8Array): Promise<string> {
     // Todo: Add mutation processing part here
     return this._config.defaultValue;
