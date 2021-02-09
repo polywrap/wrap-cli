@@ -1,12 +1,11 @@
 import {
   createArrayDefinition,
-  createObjectDefinition,
   createPropertyDefinition,
-  createScalarDefinition,
-  isScalarType,
   ObjectDefinition,
   PropertyDefinition,
 } from "../typeInfo";
+import { TypeDefinitions } from "./type-definitions";
+import { setPropertyType } from "./utils";
 
 import { FieldDefinitionNode, NamedTypeNode } from "graphql";
 
@@ -41,7 +40,11 @@ export function extractFieldDefinition(
   importDef.properties.push(property);
 }
 
-export function extractNamedType(node: NamedTypeNode, state: State): void {
+export function extractNamedType(
+  node: NamedTypeNode,
+  state: State,
+  typeDefinitions: TypeDefinitions
+): void {
   const property = state.currentProperty;
 
   if (!property) {
@@ -52,19 +55,15 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
     return;
   }
 
-  if (isScalarType(node.name.value)) {
-    property.scalar = createScalarDefinition({
-      name: property.name,
+  setPropertyType(
+    property,
+    property.name as string,
+    {
       type: node.name.value,
       required: state.nonNullType,
-    });
-  } else {
-    property.object = createObjectDefinition({
-      name: property.name,
-      type: node.name.value,
-      required: state.nonNullType,
-    });
-  }
+    },
+    typeDefinitions
+  );
 
   state.nonNullType = false;
 }

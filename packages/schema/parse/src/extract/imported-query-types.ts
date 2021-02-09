@@ -11,6 +11,7 @@ import {
   State,
 } from "./query-types-utils";
 import { extractImportedDefinition } from "./imported-types-utils";
+import { TypeDefinitions } from "./type-definitions";
 
 import {
   DocumentNode,
@@ -25,7 +26,8 @@ import {
 
 const visitorEnter = (
   importedQueryTypes: ImportedQueryDefinition[],
-  state: State
+  state: State,
+  typeDefinitions: TypeDefinitions
 ) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const imported = extractImportedDefinition(node, true);
@@ -70,7 +72,7 @@ const visitorEnter = (
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    extractNamedType(node, state);
+    extractNamedType(node, state, typeDefinitions);
   },
   ListType: (_node: ListTypeNode) => {
     extractListType(state);
@@ -95,12 +97,13 @@ const visitorLeave = (state: State) => ({
 
 export function extractImportedQueryTypes(
   astNode: DocumentNode,
-  typeInfo: TypeInfo
+  typeInfo: TypeInfo,
+  typeDefinitions: TypeDefinitions
 ): void {
   const state: State = {};
 
   visit(astNode, {
-    enter: visitorEnter(typeInfo.importedQueryTypes, state),
+    enter: visitorEnter(typeInfo.importedQueryTypes, state, typeDefinitions),
     leave: visitorLeave(state),
   });
 }

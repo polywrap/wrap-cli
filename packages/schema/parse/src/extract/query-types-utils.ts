@@ -4,11 +4,10 @@ import {
   MethodDefinition,
   createPropertyDefinition,
   QueryDefinition,
-  createObjectDefinition,
-  createScalarDefinition,
   createArrayDefinition,
-  isScalarType,
 } from "../typeInfo";
+import { TypeDefinitions } from "./type-definitions";
+import { setPropertyType } from "./utils";
 
 import { InputValueDefinitionNode, NamedTypeNode } from "graphql";
 
@@ -21,25 +20,25 @@ export interface State {
   currentImport?: ImportedQueryDefinition;
 }
 
-export function extractNamedType(node: NamedTypeNode, state: State): void {
+export function extractNamedType(
+  node: NamedTypeNode,
+  state: State,
+  typeDefinitions: TypeDefinitions
+): void {
   const argument = state.currentArgument;
   const method = state.currentMethod;
 
   if (method && argument) {
     // Argument value
-    if (isScalarType(node.name.value)) {
-      argument.scalar = createScalarDefinition({
-        name: argument.name,
+    setPropertyType(
+      argument,
+      argument.name as string,
+      {
         type: node.name.value,
         required: state.nonNullType,
-      });
-    } else {
-      argument.object = createObjectDefinition({
-        name: argument.name,
-        type: node.name.value,
-        required: state.nonNullType,
-      });
-    }
+      },
+      typeDefinitions
+    );
 
     state.nonNullType = false;
   } else if (method) {
@@ -55,21 +54,16 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
       state.currentReturn = method.return;
     }
 
-    if (isScalarType(node.name.value)) {
-      state.currentReturn.scalar = createScalarDefinition({
+    setPropertyType(
+      state.currentReturn,
+      method.name as string,
+      {
         type: node.name.value,
-        name: method.name,
         required: state.nonNullType,
-      });
-      state.currentReturn.type = state.currentReturn.scalar.type;
-    } else {
-      state.currentReturn.object = createObjectDefinition({
-        type: node.name.value,
-        name: method.name,
-        required: state.nonNullType,
-      });
-      state.currentReturn.type = state.currentReturn.object.type;
-    }
+      },
+      typeDefinitions
+    );
+
     state.nonNullType = false;
   }
 }

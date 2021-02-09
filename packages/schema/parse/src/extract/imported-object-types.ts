@@ -10,6 +10,7 @@ import {
   State,
 } from "./object-types-utils";
 import { extractImportedDefinition } from "./imported-types-utils";
+import { TypeDefinitions } from "./type-definitions";
 
 import {
   DocumentNode,
@@ -23,6 +24,7 @@ import {
 
 const visitorEnter = (
   importedObjectTypes: ImportedObjectDefinition[],
+  typeDefinitions: TypeDefinitions,
   state: State
 ) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
@@ -45,7 +47,7 @@ const visitorEnter = (
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    extractNamedType(node, state);
+    extractNamedType(node, state, typeDefinitions);
   },
   ListType: (_node: ListTypeNode) => {
     extractListType(state);
@@ -69,12 +71,13 @@ const visitorLeave = (state: State) => ({
 
 export function extractImportedObjectTypes(
   astNode: DocumentNode,
-  typeInfo: TypeInfo
+  typeInfo: TypeInfo,
+  typeDefinitions: TypeDefinitions
 ): void {
   const state: State = {};
 
   visit(astNode, {
-    enter: visitorEnter(typeInfo.importedObjectTypes, state),
+    enter: visitorEnter(typeInfo.importedObjectTypes, typeDefinitions, state),
     leave: visitorLeave(state),
   });
 }

@@ -10,6 +10,7 @@ import {
   extractNamedType,
   State,
 } from "./query-types-utils";
+import { TypeDefinitions } from "./type-definitions";
 
 import {
   DocumentNode,
@@ -22,7 +23,11 @@ import {
   visit,
 } from "graphql";
 
-const visitorEnter = (queryTypes: QueryDefinition[], state: State) => ({
+const visitorEnter = (
+  queryTypes: QueryDefinition[],
+  state: State,
+  typeDefinitions: TypeDefinitions
+) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const nodeName = node.name.value;
 
@@ -55,7 +60,7 @@ const visitorEnter = (queryTypes: QueryDefinition[], state: State) => ({
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    extractNamedType(node, state);
+    extractNamedType(node, state, typeDefinitions);
   },
   ListType: (_node: ListTypeNode) => {
     extractListType(state);
@@ -80,12 +85,13 @@ const visitorLeave = (state: State) => ({
 
 export function extractQueryTypes(
   astNode: DocumentNode,
-  typeInfo: TypeInfo
+  typeInfo: TypeInfo,
+  typeDefinitions: TypeDefinitions
 ): void {
   const state: State = {};
 
   visit(astNode, {
-    enter: visitorEnter(typeInfo.queryTypes, state),
+    enter: visitorEnter(typeInfo.queryTypes, state, typeDefinitions),
     leave: visitorLeave(state),
   });
 }

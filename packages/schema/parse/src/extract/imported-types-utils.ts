@@ -1,9 +1,9 @@
 import { ImportedDefinition } from "../typeInfo";
 
-import { DirectiveNode, ObjectTypeDefinitionNode } from "graphql";
+import { DirectiveNode, TypeDefinitionNode } from "graphql";
 
 export function extractImportedDefinition(
-  node: ObjectTypeDefinitionNode,
+  node: TypeDefinitionNode,
   queryTypes = false
 ): ImportedDefinition | undefined {
   if (!node.directives) {
