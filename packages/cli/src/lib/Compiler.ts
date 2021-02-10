@@ -193,7 +193,7 @@ export class Compiler {
       "--debug",
       "--importMemory",
       "--runtime",
-      "none",
+      "stub",
     ];
 
     // compile the module into the output directory
