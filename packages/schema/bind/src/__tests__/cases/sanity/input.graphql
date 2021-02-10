@@ -105,7 +105,7 @@ type TestImport_Object @imported(
 type TestImport_AnotherObject @imported(
   namespace: "TestImport",
   uri: "testimport.uri.eth",
-  type: "AnotherObject"
+  nativeType: "AnotherObject"
 ) {
   prop: String!
 }

@@ -10,10 +10,10 @@ type Mutation {
 
 type SetDataOptions {
   address: String!
-  value: UInt32!
+  value: UInt8!
 }
 
 type SetDataResult {
   txReceipt: String!
-  value: UInt32!
+  value: UInt8!
 }
