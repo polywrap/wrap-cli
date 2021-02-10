@@ -1,4 +1,4 @@
-import { isMsgPackType } from "./types";
+import { isBaseType } from "./types";
 
 type MustacheFunction = () => (
   value: string,
@@ -138,7 +138,7 @@ const applyNullable = (type: string, nullable: boolean): string => {
     if (
       type.indexOf("Array") === 0 ||
       type.indexOf("string") === 0 ||
-      !isMsgPackType(type)
+      !isBaseType(type)
     ) {
       return `${type} | null`;
     } else {
