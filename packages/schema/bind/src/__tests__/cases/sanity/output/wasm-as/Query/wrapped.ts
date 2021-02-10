@@ -9,7 +9,12 @@ import {
 export function queryMethodWrapped(argsBuf: ArrayBuffer): ArrayBuffer {
   const args = deserializequeryMethodArgs(argsBuf);
   const result = queryMethod({
-    arg: args.arg
+    str: args.str,
+    optStr: args.optStr,
+    en: args.en,
+    optEnum: args.optEnum,
+    enumArray: args.enumArray,
+    optEnumArray: args.optEnumArray
   });
   return serializequeryMethodResult(result);
 }

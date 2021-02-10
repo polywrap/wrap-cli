@@ -58,7 +58,12 @@ type Query @imports(
   types: [ "TestImport_Query" ]
 ) {
   queryMethod(
-    arg: String!
+    str: String!
+    optStr: String
+    en: CustomEnum!
+    optEnum: CustomEnum
+    enumArray: [CustomEnum!]!
+    optEnumArray: [CustomEnum]
   ): Int!
 }
 

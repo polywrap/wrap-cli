@@ -70,7 +70,11 @@ export const toWasmInit: MustacheFunction = () => {
       case "Boolean":
         return "false";
       default:
-        return `new ${type}()`;
+        if (type.includes("enum_")) {
+          return 0;
+        } else {
+          return `new ${type}()`;
+        }
     }
   };
 };
