@@ -5,6 +5,7 @@ import {
   WriteEncoder,
   ReadDecoder
 } from "@web3api/wasm-as";
+import * as Enums from "../../enums";
 
 export class Input_importedMethod {
   str: string;
@@ -12,6 +13,10 @@ export class Input_importedMethod {
   u: u32;
   optU: Nullable<u32>;
   uArrayArray: Array<Array<Nullable<u32>> | null>;
+  en: Enums.TestImport_Enum;
+  optEnum: Nullable<Enums.TestImport_Enum>;
+  enumArray: Array<Enums.TestImport_Enum>;
+  optEnumArray: Array<Nullable<Enums.TestImport_Enum>> | null;
 }
 
 export function serializeimportedMethodArgs(input: Input_importedMethod): ArrayBuffer {
@@ -27,7 +32,7 @@ function writeimportedMethodArgs(
   writer: Write,
   input: Input_importedMethod
 ): void {
-  writer.writeMapLength(5);
+  writer.writeMapLength(9);
   writer.writeString("str");
   writer.writeString(input.str);
   writer.writeString("optStr");
@@ -41,6 +46,18 @@ function writeimportedMethodArgs(
     writer.writeNullableArray(item, (writer: Write, item: Nullable<u32>): void => {
       writer.writeNullableUInt32(item);
     });
+  });
+  writer.writeString("en");
+  writer.writeInt32(input.en);
+  writer.writeString("optEnum");
+  writer.writeNullableInt32(input.optEnum);
+  writer.writeString("enumArray");
+  writer.writeArray(input.enumArray, (writer: Write, item: Enums.TestImport_Enum): void => {
+    writer.writeInt32(item);
+  });
+  writer.writeString("optEnumArray");
+  writer.writeNullableArray(input.optEnumArray, (writer: Write, item: Nullable<Enums.TestImport_Enum>): void => {
+    writer.writeNullableInt32(item);
   });
 }
 

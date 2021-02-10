@@ -6,3 +6,6 @@ return reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): 
   {{> deserialize_array}}
 });
 {{/array}}
+{{#enum}}
+{{#required}}return reader.readInt32();{{/required}}{{^required}}return reader.readNullableInt32();{{/required}}
+{{/enum}}

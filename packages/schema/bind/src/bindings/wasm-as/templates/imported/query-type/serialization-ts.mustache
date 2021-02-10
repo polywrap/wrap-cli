@@ -6,6 +6,7 @@ import {
   WriteEncoder,
   ReadDecoder
 } from "@web3api/wasm-as";
+import * as Enums from "../../enums";
 
 {{#methods}}
 export class Input_{{name}} {
@@ -38,6 +39,9 @@ function write{{name}}Args(
     {{> serialize_array}}
   });
   {{/array}}
+  {{#enum}}
+  {{#required}}writer.writeInt32(input.{{name}});{{/required}}{{^required}}writer.writeNullableInt32(input.{{name}});{{/required}}
+  {{/enum}}
   {{/arguments}}
 }
 
@@ -52,6 +56,9 @@ export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#return}}{{#to
     {{> deserialize_array}}
   });
   {{/array}}
+  {{#enum}}
+  {{#required}}return reader.readInt32();{{/required}}{{^required}}return reader.readNullableInt32();{{/required}}
+  {{/enum}}
   {{/return}}
 }
 {{^last}}

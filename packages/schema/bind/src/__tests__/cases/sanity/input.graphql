@@ -78,6 +78,10 @@ type TestImport_Query @imported(
     u: UInt!
     optU: UInt
     uArrayArray: [[UInt]]!
+    en: TestImport_Enum!
+    optEnum: TestImport_Enum
+    enumArray: [TestImport_Enum!]!
+    optEnumArray: [TestImport_Enum]
   ): String!
 
   anotherMethod(

@@ -10,6 +10,7 @@ import {
   deserializeanotherMethodResult,
   Input_anotherMethod
 } from "./serialization";
+import * as Enums from "../../enums";
 
 export class TestImport_Query {
 
