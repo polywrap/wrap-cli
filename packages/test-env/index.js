@@ -27,7 +27,8 @@ function getFileCommand(configFilePath = "", ci = false, modules = []) {
     })
   }
   else {
-    fileCommand = ci === ` -f ${configFilePath}`;
+    fileCommand = ` -f ${__dirname}/${modulesToDockerComposeFiles.get("devserver")}` +
+      ` -f ${configFilePath} `;
   }
   return fileCommand;
 }
