@@ -35,12 +35,7 @@ export interface W3Imports {
     __w3_invoke_args: (methodPtr: u32, argsPtr: u32) => void;
     __w3_invoke_result: (ptr: u32, len: u32) => void;
     __w3_invoke_error: (ptr: u32, len: u32) => void;
-    __w3_log: (
-      logLevelPtr: u32,
-      logLevelLen: u32,
-      messagePtr: u32,
-      messageLen: u32
-    ) => void;
+    __w3_log: (logLevel: u32, messagePtr: u32, messageLen: u32) => void;
   };
 
   env: {
