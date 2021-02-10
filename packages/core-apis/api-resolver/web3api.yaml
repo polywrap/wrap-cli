@@ -1,4 +1,5 @@
 description: Web3API Resolver Standard
+format: 0.0.1-prealpha.1
 repository: https://github.com/web3-api/prototype
 abstract: true
 query:

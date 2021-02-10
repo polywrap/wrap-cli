@@ -10,9 +10,9 @@ scalar Int32
 scalar Int64
 
 directive @imported(
-  namespace: String!
   uri: String!
-  type: String!
+  namespace: String!
+  nativeType: String!
 ) on OBJECT
 
 directive @imports(
@@ -70,9 +70,9 @@ type Query @imports(
 }
 
 type TestImport_Query @imported(
-  namespace: "TestImport",
   uri: "testimport.uri.eth",
-  type: "Query"
+  namespace: "TestImport",
+  nativeType: "Query"
 ) {
   importedMethod(
     str: String!
@@ -92,9 +92,9 @@ type TestImport_Query @imported(
 }
 
 type TestImport_Object @imported(
-  namespace: "TestImport",
   uri: "testimport.uri.eth",
-  type: "Object"
+  namespace: "TestImport",
+  nativeType: "Object"
 ) {
   object: TestImport_AnotherObject!
   optObject: TestImport_AnotherObject
