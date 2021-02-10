@@ -17,7 +17,7 @@
     "@web3api/ens-plugin-js": "0.0.1-prealpha.1",
     "@web3api/ipfs-plugin-js": "0.0.1-prealpha.1",
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.1",
-    "assemblyscript": "0.18.7",
+    "assemblyscript": "0.17.14",
     "axios": "0.19.2",
     "chalk": "4.1.0",
     "fs-extra": "9.0.1",

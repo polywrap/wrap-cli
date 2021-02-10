@@ -11,6 +11,6 @@
   },
   "devDependencies": {
     "@as-pect/cli": "5.0.1",
-    "assemblyscript": "0.18.7"
+    "assemblyscript": "0.17.14"
   }
 }
