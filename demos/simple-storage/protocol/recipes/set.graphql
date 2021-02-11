@@ -1,6 +1,11 @@
-mutation SetData($address: String!, $value: Int!) {
+mutation {
   setData(
-    address: $address
-    value: $value
-  )
+    options: {
+      address: $address
+      value: $value
+    }
+  ) {
+    value
+    txReceipt
+  }
 }
