@@ -20,7 +20,7 @@ export class TestImport_Object {
   optObject: Objects.TestImport_AnotherObject | null;
   objectArray: Array<Objects.TestImport_AnotherObject>;
   optObjectArray: Array<Objects.TestImport_AnotherObject | null> | null;
-  enum: Enums.TestImport_Enum;
+  en: Enums.TestImport_Enum;
   optEnum: Nullable<Enums.TestImport_Enum>;
   enumArray: Array<Enums.TestImport_Enum>;
   optEnumArray: Array<Nullable<Enums.TestImport_Enum>> | null;

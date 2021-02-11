@@ -126,7 +126,7 @@ type TestImport_AnotherObject @imported(
   nativeType: "AnotherObject"
 ) {
   prop: String!
-  enum: TestImport_Enum!
+  en: TestImport_Enum!
   optEnum: TestImport_Enum
   enumArray: [TestImport_Enum!]!
   optEnumArray: [TestImport_Enum]

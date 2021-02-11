@@ -40,7 +40,7 @@ export class CustomType {
   optObject: Objects.AnotherType | null;
   objectArray: Array<Objects.AnotherType>;
   optObjectArray: Array<Objects.AnotherType | null> | null;
-  enum: Enums.CustomEnum;
+  en: Enums.CustomEnum;
   optEnum: Nullable<Enums.CustomEnum>;
   enumArray: Array<Enums.CustomEnum>;
   optEnumArray: Array<Nullable<Enums.CustomEnum>> | null;
