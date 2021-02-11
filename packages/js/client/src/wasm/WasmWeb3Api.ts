@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 import { HostAction, ThreadWakeStatus } from "./types";
+import { sleep } from "./utils";
 
 import {
   InvokeApiOptions,
@@ -56,9 +57,7 @@ export class WasmWeb3Api extends Api {
     // TODO: come up with a better future-proof solution
     while (threadsActive >= maxThreads) {
       // Wait for another thread to become available
-      await new Promise((resolve: (value?: unknown) => void) =>
-        setTimeout(() => resolve(), 500)
-      );
+      await sleep(500);
     }
 
     threadsActive++;
@@ -125,9 +124,7 @@ export class WasmWeb3Api extends Api {
 
             // Wait until the transferPending flag has been reset
             while (transferPending) {
-              await new Promise((resolve: (value?: unknown) => void) =>
-                setTimeout(() => resolve(), 100)
-              );
+              await sleep(100);
             }
           }
 
