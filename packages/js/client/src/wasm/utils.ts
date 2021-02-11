@@ -67,7 +67,5 @@ export function readString(
 }
 
 export async function sleep(ms: number): Promise<void> {
-  return new Promise((resolve: () => void) =>
-    setTimeout(() => resolve(), ms)
-  )
+  return new Promise((resolve: () => void) => setTimeout(() => resolve(), ms));
 }
