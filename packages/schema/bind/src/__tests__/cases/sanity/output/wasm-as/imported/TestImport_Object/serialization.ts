@@ -41,8 +41,8 @@ export function writeTestImport_Object(writer: Write, type: TestImport_Object): 
       writer.writeNil();
     }
   });
-  writer.writeString("enum");
-  writer.writeInt32(type.enum);
+  writer.writeString("en");
+  writer.writeInt32(type.en);
   writer.writeString("optEnum");
   writer.writeNullableInt32(type.optEnum);
   writer.writeString("enumArray");
@@ -76,7 +76,6 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
   var _enumArraySet: bool = false;
   var _optEnumArray: Array<Nullable<Enums.TestImport_Enum>> | null = null;
 
-
   while (numFields > 0) {
     numFields--;
     const field = reader.readString();
@@ -109,7 +108,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
         return object;
       });
     }
-    else if (field == "enum") {
+    else if (field == "en") {
       _en = reader.readInt32();
       _enSet = true;
     }
@@ -134,6 +133,12 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
   }
   if (!_objectArraySet) {
     throw new Error("Missing required property: 'objectArray: [TestImport_AnotherObject]'");
+  }
+  if (!_enSet) {
+    throw new Error("Missing required property: 'en: TestImport_Enum'");
+  }
+  if (!_enumArraySet) {
+    throw new Error("Missing required property: 'enumArray: [TestImport_Enum]'");
   }
 
   return {

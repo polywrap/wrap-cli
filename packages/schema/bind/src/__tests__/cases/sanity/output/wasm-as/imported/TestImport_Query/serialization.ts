@@ -37,7 +37,7 @@ export function writeimportedMethodArgs(
   writer: Write,
   input: Input_importedMethod
 ): void {
-  writer.writeMapLength(9);
+  writer.writeMapLength(13);
   writer.writeString("str");
   writer.writeString(input.str);
   writer.writeString("optStr");

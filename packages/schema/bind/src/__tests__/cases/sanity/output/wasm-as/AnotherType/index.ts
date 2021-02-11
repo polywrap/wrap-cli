@@ -9,6 +9,7 @@ import {
   writeAnotherType,
   readAnotherType
 } from "./serialization";
+import * as Enums from "../enums";
 import * as Objects from "..";
 
 export class AnotherType {

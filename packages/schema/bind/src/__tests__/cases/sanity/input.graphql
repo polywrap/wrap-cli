@@ -47,7 +47,7 @@ type CustomType {
   optObject: AnotherType
   objectArray: [AnotherType!]!
   optObjectArray: [AnotherType]
-  enum: CustomEnum!
+  en: CustomEnum!
   optEnum: CustomEnum
   enumArray: [CustomEnum!]!
   optEnumArray: [CustomEnum]
@@ -118,6 +118,10 @@ type TestImport_Object @imported(
   optObject: TestImport_AnotherObject
   objectArray: [TestImport_AnotherObject!]!
   optObjectArray: [TestImport_AnotherObject]
+  en: TestImport_Enum!
+  optEnum: TestImport_Enum
+  enumArray: [TestImport_Enum!]!
+  optEnumArray: [TestImport_Enum]
 }
 
 type TestImport_AnotherObject @imported(
@@ -126,10 +130,6 @@ type TestImport_AnotherObject @imported(
   nativeType: "AnotherObject"
 ) {
   prop: String!
-  en: TestImport_Enum!
-  optEnum: TestImport_Enum
-  enumArray: [TestImport_Enum!]!
-  optEnumArray: [TestImport_Enum]
 }
 
 enum TestImport_Enum @imported(

@@ -7,6 +7,7 @@ import {
   Nullable
 } from "@web3api/wasm-as";
 import { AnotherType } from "./";
+import * as Enums from "../enums";
 import * as Objects from "..";
 
 export function serializeAnotherType(type: AnotherType): ArrayBuffer {

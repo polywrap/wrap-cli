@@ -20,7 +20,7 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
 }
 
 export function writeCustomType(writer: Write, type: CustomType): void {
-  writer.writeMapLength(27);
+  writer.writeMapLength(31);
   writer.writeString("str");
   writer.writeString(type.str);
   writer.writeString("optStr");
@@ -117,8 +117,8 @@ export function writeCustomType(writer: Write, type: CustomType): void {
       writer.writeNil();
     }
   });
-  writer.writeString("enum");
-  writer.writeInt32(type.enum);
+  writer.writeString("en");
+  writer.writeInt32(type.en);
   writer.writeString("optEnum");
   writer.writeNullableInt32(type.optEnum);
   writer.writeString("enumArray");
@@ -186,7 +186,7 @@ export function readCustomType(reader: Read): CustomType {
   var _optObjectArray: Array<Objects.AnotherType | null> | null = null;
   var _en: Enums.CustomEnum = 0;
   var _enSet: bool = false;
-  var _optEnum: Nullable<Enums.CustomEnum> = Nullable.fromNull();
+  var _optEnum: Nullable<Enums.CustomEnum> = new Nullable<Enums.CustomEnum>();
   var _enumArray: Array<Enums.CustomEnum> = [];
   var _enumArraySet: bool = false;
   var _optEnumArray: Array<Nullable<Enums.CustomEnum>> | null = null;
@@ -338,7 +338,7 @@ export function readCustomType(reader: Read): CustomType {
         return object;
       });
     }
-    else if (field == "enum") {
+    else if (field == "en") {
       _en = reader.readInt32();
       _enSet = true;
     }

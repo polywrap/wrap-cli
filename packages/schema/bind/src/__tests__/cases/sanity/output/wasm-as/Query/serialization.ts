@@ -23,13 +23,13 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
   var numFields = reader.readMapLength();
 
   var _str: string = "";
-  var _strSet: boolean = false;
+  var _strSet: bool = false;
   var _optStr: string | null = null;
   var _en: Enums.CustomEnum = 0;
-  var _enSet: boolean = false;
+  var _enSet: bool = false;
   var _optEnum: Nullable<Enums.CustomEnum> = new Nullable<Enums.CustomEnum>();
   var _enumArray: Array<Enums.CustomEnum> = [];
-  var _enumArraySet: boolean = false;
+  var _enumArraySet: bool = false;
   var _optEnumArray: Array<Nullable<Enums.CustomEnum>> | null = null;
 
   while (numFields > 0) {
@@ -64,13 +64,13 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
   }
 
   if (!_strSet) {
-    throw new Error("Missing required argument 'str: String\'");
+    throw new Error("Missing required argument: 'str: String'");
   }
   if (!_enSet) {
-    throw new Error("Missing required argument 'en: CustomEnum'");
+    throw new Error("Missing required argument: 'en: CustomEnum'");
   }
   if (!_enumArraySet) {
-    throw new Error("Missing required argument 'enumArray: [CustomEnum]'");
+    throw new Error("Missing required argument: 'enumArray: [CustomEnum]'");
   }
 
   return {
