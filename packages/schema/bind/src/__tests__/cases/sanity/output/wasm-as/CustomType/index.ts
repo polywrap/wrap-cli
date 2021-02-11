@@ -25,6 +25,7 @@ export class CustomType {
   i16: i16;
   i32: i32;
   i64: i64;
+  bytes: ArrayBuffer;
   boolean: bool;
   optBoolean: Nullable<bool>;
   uArray: Array<u32>;
