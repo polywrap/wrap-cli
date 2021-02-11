@@ -1,9 +1,16 @@
-import { Nullable } from "@web3api/wasm-as";
+import {
+  Read,
+  Write,
+  Nullable
+} from "@web3api/wasm-as";
 import {
   serializeCustomType,
-  deserializeCustomType
+  deserializeCustomType,
+  writeCustomType,
+  readCustomType
 } from "./serialization";
 import * as Enums from "../enums";
+import * as Objects from "..";
 
 export class CustomType {
   str: string;
@@ -29,16 +36,28 @@ export class CustomType {
   uOptArrayOptArray: Array<Array<Nullable<u64>> | null>;
   uArrayOptArrayArray: Array<Array<Array<u64>> | null>;
   crazyArray: Array<Array<Array<Array<u64> | null>> | null> | null;
+  object: Objects.AnotherType;
+  optObject: Objects.AnotherType | null;
+  objectArray: Array<Objects.AnotherType>;
+  optObjectArray: Array<Objects.AnotherType | null> | null;
   enum: Enums.CustomEnum;
   optEnum: Nullable<Enums.CustomEnum>;
   enumArray: Array<Enums.CustomEnum>;
   optEnumArray: Array<Nullable<Enums.CustomEnum>> | null;
 
-  toBuffer(): ArrayBuffer {
-    return serializeCustomType(this);
+  static toBuffer(type: CustomType): ArrayBuffer {
+    return serializeCustomType(type);
   }
 
-  fromBuffer(buffer: ArrayBuffer): void {
-    deserializeCustomType(buffer, this);
+  static fromBuffer(buffer: ArrayBuffer): CustomType {
+    return deserializeCustomType(buffer);
+  }
+
+  static write(writer: Write, type: CustomType): void {
+    writeCustomType(writer, type);
+  }
+
+  static read(reader: Read): CustomType {
+    return readCustomType(reader);
   }
 }

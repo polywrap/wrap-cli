@@ -206,13 +206,21 @@ const imports = (memory: WebAssembly.Memory): W3Imports => ({
     __w3_invoke_error: (ptr: u32, len: u32): void => {
       state.invoke.error = readString(memory.buffer, ptr, len);
     },
+    __w3_abort: (
+      msgPtr: u32,
+      msgLen: u32,
+      filePtr: u32,
+      fileLen: u32,
+      line: u32,
+      column: u32
+    ): void => {
+      const msg = readString(memory.buffer, msgPtr, msgLen);
+      const file = readString(memory.buffer, filePtr, fileLen);
+      abort(`__w3_abort: ${msg}\nFile: ${file}\nLocation: [${line},${column}]`);
+    },
   },
   env: {
     memory,
-    abort: (msg: string, file: string, line: number, column: number) => {
-      abort(`WASM Abort: ${msg}\nFile: ${file}\n[${line},${column}]`);
-      return;
-    },
   },
 });
 

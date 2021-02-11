@@ -1,4 +1,4 @@
-const msgPackTypes = {
+const baseTypes = {
   u8: "u8",
   u16: "u16",
   u32: "u32",
@@ -7,13 +7,14 @@ const msgPackTypes = {
   i16: "i16",
   i32: "i32",
   i64: "i64",
+  string: "string",
   bool: "bool",
 };
 
-export type MsgPackTypes = typeof msgPackTypes;
+export type BaseTypes = typeof baseTypes;
 
-export type MsgPackType = keyof MsgPackTypes;
+export type BaseType = keyof BaseTypes;
 
-export function isMsgPackType(type: string): type is MsgPackType {
-  return type in msgPackTypes;
+export function isBaseType(type: string): type is BaseType {
+  return type in baseTypes;
 }

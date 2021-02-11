@@ -1,3 +1,4 @@
+import { Nullable } from "@web3api/wasm-as";
 import {
   Read,
   ReadDecoder,
@@ -7,8 +8,9 @@ import {
   Nullable
 } from "@web3api/wasm-as";
 import * as Enums from "../enums";
-
+import * as Objects from "..";
 {{#methods}}
+
 export class Input_{{name}} {
   {{#arguments}}
   {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
@@ -21,9 +23,19 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
   var numFields = reader.readMapLength();
 
   {{#arguments}}
+  {{^object}}
   var _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+  {{/object}}
+  {{#object}}
   {{#required}}
-  var _{{name}}Set: boolean = false;
+  var _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} | null = null;
+  {{/required}}
+  {{^required}}
+  var _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+  {{/required}}
+  {{/object}}
+  {{#required}}
+  var _{{name}}Set: bool = false;
   {{/required}}
   {{/arguments}}
 
@@ -44,6 +56,10 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
       {{#enum}}
       {{#required}}_{{name}} = reader.readInt32();{{/required}}{{^required}}_{{name}} = reader.readNullableInt32();{{/required}}
       {{/enum}}
+      {{#object}}
+      {{> deserialize_object}}
+      _{{name}} = object;
+      {{/object}}
       {{#required}}
       _{{name}}Set = true;
       {{/required}}
@@ -53,8 +69,13 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
 
   {{#arguments}}
   {{#required}}
+  {{^object}}
   if (!_{{name}}Set) {
-    throw Error("Missing required argument \"{{name}}: {{type}}\"");
+  {{/object}}
+  {{#object}}
+  if (!_{{name}} || !_{{name}}Set) {
+  {{/object}}
+    throw new Error("Missing required argument: '{{name}}: {{type}}'");
   }
   {{/required}}
   {{/arguments}}
@@ -76,7 +97,7 @@ export function serialize{{name}}Result(result: {{#return}}{{#toWasm}}{{toGraphQ
   return buffer;
 }
 
-function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}): void {
+export function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}): void {
   {{#return}}
   {{#scalar}}
   writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(result);
@@ -94,6 +115,18 @@ function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}}{{toGr
   writer.writeNullableInt32(result);
   {{/required}}
   {{/enum}}
+  {{#object}}
+  {{#required}}
+  Objects.{{type}}.write(writer, result);
+  {{/required}}
+  {{^required}}
+  if (result) {
+    Objects.{{type}}.write(writer, result);
+  } else {
+    writer.writeNil();
+  }
+  {{/required}}
+  {{/object}}
   {{/return}}
 }
 {{/methods}}

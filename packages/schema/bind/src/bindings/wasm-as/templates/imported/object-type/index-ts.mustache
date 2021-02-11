@@ -1,9 +1,16 @@
-import { Nullable } from "@web3api/wasm-as";
+import {
+  Read,
+  Write,
+  Nullable
+} from "@web3api/wasm-as";
 import {
   serialize{{type}},
-  deserialize{{type}}
+  deserialize{{type}},
+  write{{type}},
+  read{{type}}
 } from "./serialization";
 import * as Enums from "../../enums";
+import * as Objects from "../..";
 
 export class {{type}} {
 
@@ -13,11 +20,19 @@ export class {{type}} {
   {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/properties}}
 
-  toBuffer(): ArrayBuffer {
-    return serialize{{type}}(this);
+  static toBuffer(type: {{type}}): ArrayBuffer {
+    return serialize{{type}}(type);
   }
 
-  fromBuffer(buffer: ArrayBuffer): void {
-    deserialize{{type}}(buffer, this);
+  static fromBuffer(buffer: ArrayBuffer): {{type}} {
+    return deserialize{{type}}(buffer);
+  }
+
+  static write(writer: Write, type: {{type}}): void {
+    write{{type}}(writer, type);
+  }
+
+  static read(reader: Read): {{type}} {
+    return read{{type}}(reader);
   }
 }

@@ -43,6 +43,10 @@ type CustomType {
   uOptArrayOptArray: [[UInt64]]!
   uArrayOptArrayArray: [[[UInt64!]!]]!
   crazyArray: [[[[UInt64!]]!]]
+  object: AnotherType!
+  optObject: AnotherType
+  objectArray: [AnotherType!]!
+  optObjectArray: [AnotherType]
   enum: CustomEnum!
   optEnum: CustomEnum
   enumArray: [CustomEnum!]!
@@ -52,6 +56,11 @@ type CustomType {
 enum CustomEnum {
   STRING
   BYTES
+}
+
+type AnotherType {
+  prop: String
+  circular: CustomType!
 }
 
 type Query @imports(
@@ -65,6 +74,13 @@ type Query @imports(
     enumArray: [CustomEnum!]!
     optEnumArray: [CustomEnum]
   ): Int!
+
+  objectMethod(
+    object: AnotherType!
+    optObject: AnotherType
+    objectArray: [AnotherType!]!
+    optObjectArray: [AnotherType]
+  ): AnotherType
 }
 
 type TestImport_Query @imported(
@@ -78,11 +94,15 @@ type TestImport_Query @imported(
     u: UInt!
     optU: UInt
     uArrayArray: [[UInt]]!
+    object: TestImport_Object!
+    optObject: TestImport_Object
+    objectArray: [TestImport_Object!]!
+    optObjectArray: [TestImport_Object]
     en: TestImport_Enum!
     optEnum: TestImport_Enum
     enumArray: [TestImport_Enum!]!
     optEnumArray: [TestImport_Enum]
-  ): String!
+  ): TestImport_Object
 
   anotherMethod(
     arg: [String!]!
@@ -93,6 +113,17 @@ type TestImport_Object @imported(
   uri: "testimport.uri.eth",
   namespace: "Object",
   nativeType: "Object"
+) {
+  object: TestImport_AnotherObject!
+  optObject: TestImport_AnotherObject
+  objectArray: [TestImport_AnotherObject!]!
+  optObjectArray: [TestImport_AnotherObject]
+}
+
+type TestImport_AnotherObject @imported(
+  namespace: "TestImport",
+  uri: "testimport.uri.eth",
+  nativeType: "AnotherObject"
 ) {
   prop: String!
   enum: TestImport_Enum!

@@ -14,3 +14,6 @@ writer.writeInt32(item);
 writer.writeNullableInt32(item);
 {{/required}}
 {{/enum}}
+{{#object}}
+{{> serialize_object}}
+{{/object}}

@@ -1,4 +1,4 @@
-import { isMsgPackType } from "./types";
+import { isBaseType } from "./types";
 
 type MustacheFunction = () => (
   value: string,
@@ -41,11 +41,12 @@ export const toWasmInit: MustacheFunction = () => {
     } else {
       const nullType = toWasm()(value, render);
       const nullable = "Nullable";
+      const nullOptional = "| null";
 
-      if (nullType.substr(0, nullable.length) === nullable) {
-        return `new ${nullType}()`;
-      } else {
+      if (nullType.substr(-nullOptional.length) === nullOptional) {
         return "null";
+      } else if (nullType.substr(0, nullable.length) === nullable) {
+        return `new ${nullType}()`;
       }
     }
 
@@ -71,7 +72,7 @@ export const toWasmInit: MustacheFunction = () => {
         return "false";
       default:
         if (type.includes("enum_")) {
-          return 0;
+          return "0";
         } else {
           return `new ${type}()`;
         }
@@ -157,7 +158,7 @@ const applyNullable = (type: string, nullable: boolean): string => {
     if (
       type.indexOf("Array") === 0 ||
       type.indexOf("string") === 0 ||
-      (!type.includes("Enums.") && !isMsgPackType(type))
+      (!type.includes("Enums.") && !isBaseType(type))
     ) {
       return `${type} | null`;
     } else {
