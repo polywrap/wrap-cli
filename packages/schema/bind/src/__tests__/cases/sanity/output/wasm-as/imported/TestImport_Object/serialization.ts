@@ -110,7 +110,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
     }
     else if (field == "en") {
       const value = reader.readString();
-      if (!(value in Enums.TestImport_Enum)) {
+      if (!(Enums.TestImport_Enum.includes(value))) {
         throw new Error("invalid value");
       }
       _en = value;
@@ -118,7 +118,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
     }
     else if (field == "optEnum") {
       const value = reader.readNullableString();
-      if (value && !(value in Enums.TestImport_Enum)) {
+      if (value && !(Enums.TestImport_Enum.includes(value))) {
         throw new Error("invalid value");
       }
       _optEnum = value;
@@ -126,7 +126,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
     else if (field == "enumArray") {
       _enumArray = reader.readArray((reader: Read): string => {
         const value = reader.readString();
-        if (!(value in Enums.TestImport_Enum)) {
+        if (!(Enums.TestImport_Enum.includes(value))) {
           throw new Error("invalid value");
         }
         return value;
@@ -136,7 +136,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
     else if (field == "optEnumArray") {
       _optEnumArray = reader.readNullableArray((reader: Read): string | null => {
         const value = reader.readNullableString();
-        if (value && !(value in Enums.TestImport_Enum)) {
+        if (value && !(Enums.TestImport_Enum.includes(value))) {
           throw new Error("invalid value");
         }
         return value;

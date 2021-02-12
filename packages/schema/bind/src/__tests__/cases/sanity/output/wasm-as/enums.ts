@@ -1,7 +1,7 @@
 export * from "./imported/enums";
 
-export const CustomEnum = {
-  STRING: "STRING",
-  BYTES: "BYTES",
-}
+export const CustomEnum: Array<string> = [
+  "STRING",
+  "BYTES",
+]
 

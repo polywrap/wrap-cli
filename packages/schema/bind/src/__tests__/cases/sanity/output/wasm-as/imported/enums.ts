@@ -1,5 +1,5 @@
-export const TestImport_Enum = {
-  STRING: "STRING",
-  BYTES: "BYTES",
-}
+export const TestImport_Enum: Array<string> = [
+  "STRING",
+  "BYTES",
+]
 

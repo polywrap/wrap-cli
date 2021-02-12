@@ -3,10 +3,10 @@ export * from "./imported/enums";
 {{/importedEnumTypes}}
 
 {{#enumTypes}}
-export const {{type}} = {
+export const {{type}}: Array<string> = [
   {{#values}}
-  {{.}}: "{{.}}",
+  "{{.}}",
   {{/values}}
-}
+]
 
 {{/enumTypes}}

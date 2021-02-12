@@ -377,16 +377,32 @@ describe("Web3ApiClient", () => {
       query: `
         query {
           method1(
+            en: INVALID
+          )
+        }
+      `,
+    });
+
+    expect(method1a.errors).toBeTruthy();
+    expect(method1a.errors[0].message).toMatch(
+      /__w3_abort: invalid value/gm
+    );
+
+    const method1b = await client.query<any>({
+      uri: ensUri,
+      query: `
+        query {
+          method1(
             en: OPTION2
           )
         }
       `,
     });
 
-    expect(method1a.errors).toBeFalsy();
-    expect(method1a.data).toBeTruthy();
-    expect(method1a.data).toMatchObject({
-      method1: 1
+    expect(method1b.errors).toBeFalsy();
+    expect(method1b.data).toBeTruthy();
+    expect(method1b.data).toMatchObject({
+      method1: "OPTION2"
     });
 
     const method2a = await client.query<any>({
@@ -394,7 +410,7 @@ describe("Web3ApiClient", () => {
       query: `
         query {
           method2(
-            enumArray: [0, 0, 3, 1]
+            enumArray: [OPTION1, OPTION1, OPTION3]
           )
         }
       `,
@@ -404,8 +420,9 @@ describe("Web3ApiClient", () => {
     expect(method2a.data).toBeTruthy();
     expect(method2a.data).toMatchObject({
       method2: [
-        0,
-        2,
+        "OPTION1",
+        "OPTION1",
+        "OPTION3"
       ]
     });
   });

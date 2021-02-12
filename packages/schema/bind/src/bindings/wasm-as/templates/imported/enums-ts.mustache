@@ -1,8 +1,8 @@
 {{#importedEnumTypes}}
-export const {{type}} = {
+export const {{type}}: Array<string> = [
   {{#values}}
-  {{.}}: "{{.}}",
+  "{{.}}",
   {{/values}}
-}
+]
 
 {{/importedEnumTypes}}
