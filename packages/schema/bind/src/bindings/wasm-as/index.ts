@@ -17,7 +17,9 @@ export function generateBinding(schema: string): OutputDirectory {
     transforms: [extendType(Functions), addFirstLast, toGraphQLType],
   });
 
-  const subTemplates = loadSubTemplates();
+  const absolutePath = path.join(__dirname, "./templates");
+  const directory = readDirectory(absolutePath);
+  const subTemplates = loadSubTemplates(directory.entries);
 
   // Generate object type folders
   for (const objectType of typeInfo.objectTypes) {
@@ -99,6 +101,8 @@ function generateFiles(
   const directory = readDirectory(absolutePath);
 
   const processDirectory = (entries: OutputEntry[], output: OutputEntry[]) => {
+    subTemplates = loadSubTemplates(entries, subTemplates);
+
     // Generate all files, recurse all directories
     for (const dirent of entries) {
       if (dirent.type === "File") {
@@ -131,13 +135,15 @@ function generateFiles(
   return output;
 }
 
-function loadSubTemplates(): Record<string, string> {
-  const absolutePath = path.join(__dirname, "./templates");
+function loadSubTemplates(
+  entries: OutputEntry[],
+  existingSubTemplates?: Record<string, string>
+): Record<string, string> {
+  const subTemplates: Record<string, string> = existingSubTemplates
+    ? existingSubTemplates
+    : {};
 
-  const directory = readDirectory(absolutePath);
-  const subTemplates: Record<string, string> = {};
-
-  for (const file of directory.entries) {
+  for (const file of entries) {
     if (file.type !== "File") {
       continue;
     }
