@@ -262,8 +262,6 @@ addEventListener(
       state.args = encode(data.input);
     }
 
-    console.log(`RECEIVED: ${data.wasm}`);
-
     const module = new WebAssembly.Module(data.wasm);
     const memory = new WebAssembly.Memory({ initial: 1 });
     const source = new WebAssembly.Instance(module, imports(memory));

@@ -20,7 +20,7 @@ export async function setupWeb3ApiClient(): Promise<Web3ApiClient> {
     {
       from: new Uri("w3://ens/ipfs.web3api.eth"),
       to: {
-        factory: () => new IpfsPlugin({ provider: 'https://ipfs.io/api/v0/' }),
+        factory: () => new IpfsPlugin({ provider: 'https://ipfs.io' }),
         manifest: IpfsPlugin.manifest()
       }
     },

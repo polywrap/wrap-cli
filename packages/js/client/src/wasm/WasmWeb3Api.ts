@@ -215,8 +215,6 @@ export class WasmWeb3Api extends Api {
       }
     );
 
-    console.log(`POSTING ${wasm.byteLength}`);
-
     // Start the thread
     worker.postMessage({
       wasm,

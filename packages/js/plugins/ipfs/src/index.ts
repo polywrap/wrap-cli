@@ -12,7 +12,7 @@ import CID from "cids";
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const isIPFS = require("is-ipfs");
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
-const IpfsClient = require("ipfs-http-client");
+const IpfsClient = require("ipfs-http-client-lite");
 
 export interface IpfsConfig {
   provider: string;
@@ -47,7 +47,7 @@ export class IpfsPlugin extends Plugin {
 
   public setProvider(provider: string): void {
     this._config.provider = provider;
-    this._ipfs = new IpfsClient(provider);
+    this._ipfs = IpfsClient(provider);
   }
 
   public async add(
@@ -70,31 +70,7 @@ export class IpfsPlugin extends Plugin {
   }
 
   public async catToBuffer(cid: string): Promise<Uint8Array> {
-    const chunks: Uint8Array[] = [];
-    let size = 0;
-    for await (const result of this._ipfs.cat(cid)) {
-      const chunk = result as Uint8Array;
-      chunks.push(chunk);
-      size += chunk.byteLength;
-    }
-
-    if (chunks.length === 0) {
-      throw Error(`IpfsPlugin.catToBuffer: No data returned at CID '${cid}'`);
-    }
-
-    if (chunks.length === 1) {
-      return chunks[0];
-    } else {
-      const aggregated = new Uint8Array(size);
-      let index = 0;
-
-      for (const chunk of chunks) {
-        aggregated.set(chunk, index);
-        index += chunk.byteLength;
-      }
-
-      return aggregated;
-    }
+    return this._ipfs.cat(cid);
   }
 
   public ls(
