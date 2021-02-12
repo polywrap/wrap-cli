@@ -2,7 +2,12 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-import { HostAction, ThreadWakeStatus } from "./types";
+import {
+  HostAction,
+  ThreadWakeStatus,
+  maxThreads,
+  maxTransferBytes
+} from "./types";
 import { sleep } from "./utils";
 
 import {
@@ -20,8 +25,6 @@ import * as MsgPack from "@msgpack/msgpack";
 
 const Worker = require("web-worker");
 
-export const maxTransferBytes = 256; // do not change
-export const maxThreads = 128;
 let threadsActive = 0;
 let threadAvailable = 0;
 const threadMutexesBuffer = new SharedArrayBuffer(
@@ -71,14 +74,17 @@ export class WasmWeb3Api extends Api {
     Atomics.store(threadMutexes, threadId, 0);
 
     // Spawn the worker thread
-    let modulePath = "thread.js";
-    if (process.env.TEST) {
-      modulePath = "thread-loader.js";
+    let modulePath = "./thread.js";
+
+    if (typeof process === "object" && typeof window === "undefined") {
+      modulePath = `${__dirname}/thread.js`;
+
+      if (process.env.TEST) {
+        modulePath = `${__dirname}/thread-loader.js`;
+      }
     }
 
-    const prefix = process.env.WORKER_PREFIX || `${__dirname}/`;
-
-    const worker = new Worker(`${prefix}./${modulePath}`);
+    const worker = new Worker(modulePath);
 
     // Our transfer buffer, used to send data to the thread atomically.
     // The first byte in the transfer array specifies how many bytes are in the array (max 255).
@@ -208,6 +214,8 @@ export class WasmWeb3Api extends Api {
         );
       }
     );
+
+    console.log(`POSTING ${wasm.byteLength}`);
 
     // Start the thread
     worker.postMessage({

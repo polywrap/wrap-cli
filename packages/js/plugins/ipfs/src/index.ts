@@ -70,14 +70,31 @@ export class IpfsPlugin extends Plugin {
   }
 
   public async catToBuffer(cid: string): Promise<Uint8Array> {
-    const chunks = [];
-    for await (const chunk of this._ipfs.cat(cid)) {
+    const chunks: Uint8Array[] = [];
+    let size = 0;
+    for await (const result of this._ipfs.cat(cid)) {
+      const chunk = result as Uint8Array;
       chunks.push(chunk);
+      size += chunk.byteLength;
     }
-    const result = chunks.length > 1 ? Buffer.concat(chunks) : chunks[0];
-    const u8Array = new Uint8Array(result.byteLength);
-    u8Array.set(result);
-    return u8Array;
+
+    if (chunks.length === 0) {
+      throw Error(`IpfsPlugin.catToBuffer: No data returned at CID '${cid}'`);
+    }
+
+    if (chunks.length === 1) {
+      return chunks[0];
+    } else {
+      const aggregated = new Uint8Array(size);
+      let index = 0;
+
+      for (const chunk of chunks) {
+        aggregated.set(chunk, index);
+        index += chunk.byteLength;
+      }
+
+      return aggregated;
+    }
   }
 
   public ls(

@@ -8,9 +8,10 @@ import {
   HostAction,
   u32,
   ThreadWakeStatus,
+  maxThreads,
+  maxTransferBytes
 } from "./types";
 import { readBytes, readString, writeBytes, writeString } from "./utils";
-import { maxThreads, maxTransferBytes } from "./WasmWeb3Api";
 
 import { encode } from "@msgpack/msgpack";
 
@@ -260,6 +261,8 @@ addEventListener(
       // We must serialize the input object into msgpack
       state.args = encode(data.input);
     }
+
+    console.log(`RECEIVED: ${data.wasm}`);
 
     const module = new WebAssembly.Module(data.wasm);
     const memory = new WebAssembly.Memory({ initial: 1 });
