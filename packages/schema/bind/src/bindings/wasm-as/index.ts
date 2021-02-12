@@ -17,12 +17,14 @@ export function generateBinding(schema: string): OutputDirectory {
     transforms: [extendType(Functions), addFirstLast, toGraphQLType],
   });
 
+  const subTemplates = loadSubTemplates();
+
   // Generate object type folders
   for (const objectType of typeInfo.objectTypes) {
     entries.push({
       type: "Directory",
       name: objectType.type,
-      data: generateFiles("./templates/object-type", objectType),
+      data: generateFiles("./templates/object-type", objectType, subTemplates),
     });
   }
 
@@ -40,7 +42,8 @@ export function generateBinding(schema: string): OutputDirectory {
         name: importedQueryType.type,
         data: generateFiles(
           "./templates/imported/query-type",
-          importedQueryType
+          importedQueryType,
+          subTemplates
         ),
       });
     }
@@ -52,7 +55,8 @@ export function generateBinding(schema: string): OutputDirectory {
         name: importedObectType.type,
         data: generateFiles(
           "./templates/imported/object-type",
-          importedObectType
+          importedObectType,
+          subTemplates
         ),
       });
     }
@@ -62,7 +66,7 @@ export function generateBinding(schema: string): OutputDirectory {
       name: "imported",
       data: [
         ...importEntries,
-        ...generateFiles("./templates/imported", typeInfo),
+        ...generateFiles("./templates/imported", typeInfo, subTemplates),
       ],
     });
   }
@@ -72,12 +76,12 @@ export function generateBinding(schema: string): OutputDirectory {
     entries.push({
       type: "Directory",
       name: queryType.type,
-      data: generateFiles("./templates/query-type", queryType),
+      data: generateFiles("./templates/query-type", queryType, subTemplates),
     });
   }
 
   // Generate root entry file
-  entries.push(...generateFiles("./templates", typeInfo));
+  entries.push(...generateFiles("./templates", typeInfo, subTemplates));
 
   return {
     entries,
@@ -87,6 +91,7 @@ export function generateBinding(schema: string): OutputDirectory {
 function generateFiles(
   subpath: string,
   config: unknown,
+  subTemplates: Record<string, string>,
   subDirectories = false
 ): OutputEntry[] {
   const output: OutputEntry[] = [];
@@ -94,22 +99,6 @@ function generateFiles(
   const directory = readDirectory(absolutePath);
 
   const processDirectory = (entries: OutputEntry[], output: OutputEntry[]) => {
-    // Load all sub-templates
-    const subTemplates: Record<string, string> = {};
-
-    for (const file of entries) {
-      if (file.type !== "File") {
-        continue;
-      }
-
-      const name = path.parse(file.name).name;
-
-      // sub-templates contain '_' in their file names
-      if (name.indexOf("_") > -1) {
-        subTemplates[name] = file.data as string;
-      }
-    }
-
     // Generate all files, recurse all directories
     for (const dirent of entries) {
       if (dirent.type === "File") {
@@ -140,4 +129,26 @@ function generateFiles(
   processDirectory(directory.entries, output);
 
   return output;
+}
+
+function loadSubTemplates(): Record<string, string> {
+  const absolutePath = path.join(__dirname, "./templates");
+
+  const directory = readDirectory(absolutePath);
+  const subTemplates: Record<string, string> = {};
+
+  for (const file of directory.entries) {
+    if (file.type !== "File") {
+      continue;
+    }
+
+    const name = path.parse(file.name).name;
+
+    // sub-templates contain '_' in their file names
+    if (name.indexOf("_") > -1) {
+      subTemplates[name] = file.data as string;
+    }
+  }
+
+  return subTemplates;
 }
