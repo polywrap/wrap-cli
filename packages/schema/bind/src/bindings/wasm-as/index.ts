@@ -6,7 +6,7 @@ import {
   parseSchema,
   extendType,
   addFirstLast,
-  toPrefixedGraphQLType,
+  toGraphQLType,
 } from "@web3api/schema-parse";
 import path from "path";
 import Mustache from "mustache";
@@ -14,7 +14,7 @@ import Mustache from "mustache";
 export function generateBinding(schema: string): OutputDirectory {
   const entries: OutputEntry[] = [];
   const typeInfo = parseSchema(schema, {
-    transforms: [extendType(Functions), addFirstLast, toPrefixedGraphQLType],
+    transforms: [extendType(Functions), addFirstLast, toGraphQLType],
   });
 
   // Generate object type folders

@@ -11,15 +11,15 @@ function applyRequired(type: string, required: boolean | null): string {
   return `${type}${required ? "!" : ""}`;
 }
 
-function anyToGraphQL(any: AnyDefinition, prefixed: boolean): string {
+function anyToGraphQL(any: AnyDefinition): string {
   if (any.object) {
-    return toGraphQL(any.object, prefixed);
+    return toGraphQL(any.object);
   } else if (any.array) {
-    return toGraphQL(any.array, prefixed);
+    return toGraphQL(any.array);
   } else if (any.scalar) {
-    return toGraphQL(any.scalar, prefixed);
+    return toGraphQL(any.scalar);
   } else if (any.enum) {
-    return toGraphQL(any.enum, prefixed);
+    return toGraphQL(any.enum);
   } else {
     throw Error(
       `anyToGraphQL: Any type is invalid.\n${JSON.stringify(any, null, 2)}`
@@ -27,7 +27,7 @@ function anyToGraphQL(any: AnyDefinition, prefixed: boolean): string {
   }
 }
 
-function toGraphQL(def: GenericDefinition, prefixed = false): string {
+function toGraphQL(def: GenericDefinition): string {
   switch (def.kind) {
     case DefinitionKind.Object:
     case DefinitionKind.Scalar:
@@ -38,7 +38,7 @@ function toGraphQL(def: GenericDefinition, prefixed = false): string {
       return applyRequired("String", def.required);
     case DefinitionKind.Any:
     case DefinitionKind.Property:
-      return anyToGraphQL(def as AnyDefinition, prefixed);
+      return anyToGraphQL(def as AnyDefinition);
     case DefinitionKind.Array: {
       const array = def as ArrayDefinition;
 
@@ -52,10 +52,7 @@ function toGraphQL(def: GenericDefinition, prefixed = false): string {
         );
       }
 
-      return applyRequired(
-        `[${toGraphQL(array.item, prefixed)}]`,
-        array.required
-      );
+      return applyRequired(`[${toGraphQL(array.item)}]`, array.required);
     }
     case DefinitionKind.Method: {
       const method = def as MethodDefinition;
@@ -72,9 +69,9 @@ function toGraphQL(def: GenericDefinition, prefixed = false): string {
 
       const result = `${method.name}(
   ${method.arguments
-    .map((arg) => `${arg.name}: ${toGraphQL(arg, prefixed)}`)
+    .map((arg) => `${arg.name}: ${toGraphQL(arg)}`)
     .join("\n    ")}
-): ${toGraphQL(method.return, prefixed)}`;
+): ${toGraphQL(method.return)}`;
       return result;
     }
     case DefinitionKind.Query:
@@ -92,24 +89,11 @@ function toGraphQL(def: GenericDefinition, prefixed = false): string {
   }
 }
 
-function toPrefixedGraphQL(def: GenericDefinition): string {
-  return toGraphQL(def, true);
-}
-
 export const toGraphQLType: TypeInfoTransforms = {
   enter: {
     GenericDefinition: (def: GenericDefinition) => ({
       ...def,
       toGraphQLType: () => toGraphQL(def),
-    }),
-  },
-};
-
-export const toPrefixedGraphQLType: TypeInfoTransforms = {
-  enter: {
-    GenericDefinition: (def: GenericDefinition) => ({
-      ...def,
-      toGraphQLType: () => toPrefixedGraphQL(def),
     }),
   },
 };
