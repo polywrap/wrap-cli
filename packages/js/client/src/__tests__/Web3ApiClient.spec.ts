@@ -361,4 +361,53 @@ describe("Web3ApiClient", () => {
       );
     }
   });
+
+  it("enum-types", async () => {
+    const api = await buildAndDeployApi(
+      `${__dirname}/apis/enum-types`,
+      ipfsProvider,
+      ensAddress
+    );
+    const ensUri = new Uri(`ens/${api.ensDomain}`);
+
+    const client = new Web3ApiClient({ redirects });
+
+    const method1a = await client.query<any>({
+      uri: ensUri,
+      query: `
+        query {
+          method1(
+            en: OPTION2
+          )
+        }
+      `,
+    });
+
+    expect(method1a.errors).toBeFalsy();
+    expect(method1a.data).toBeTruthy();
+    expect(method1a.data).toMatchObject({
+      method1: 1
+    });
+
+    const method2a = await client.query<any>({
+      uri: ensUri,
+      query: `
+        query {
+          method2(
+            enumArray: [0, 0, 3, 1]
+          )
+        }
+      `,
+    });
+
+    expect(method2a.errors).toBeFalsy();
+    expect(method2a.data).toBeTruthy();
+    expect(method2a.data).toMatchObject({
+      method2: [
+        0,
+        2,
+      ]
+    });
+  });
+
 });
