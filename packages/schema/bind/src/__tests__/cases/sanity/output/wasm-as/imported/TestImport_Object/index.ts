@@ -20,10 +20,10 @@ export class TestImport_Object {
   optObject: Objects.TestImport_AnotherObject | null;
   objectArray: Array<Objects.TestImport_AnotherObject>;
   optObjectArray: Array<Objects.TestImport_AnotherObject | null> | null;
-  en: Enums.TestImport_Enum;
-  optEnum: Nullable<Enums.TestImport_Enum>;
-  enumArray: Array<Enums.TestImport_Enum>;
-  optEnumArray: Array<Nullable<Enums.TestImport_Enum>> | null;
+  en: string;
+  optEnum: string | null;
+  enumArray: Array<string>;
+  optEnumArray: Array<string | null> | null;
 
   static toBuffer(type: TestImport_Object): ArrayBuffer {
     return serializeTestImport_Object(type);

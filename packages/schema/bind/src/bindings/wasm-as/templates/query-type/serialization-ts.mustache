@@ -53,7 +53,8 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
       });
       {{/array}}
       {{#enum}}
-      {{#required}}_{{name}} = reader.readInt32();{{/required}}{{^required}}_{{name}} = reader.readNullableInt32();{{/required}}
+      {{> deserialize_enum}}
+      _{{name}} = value;
       {{/enum}}
       {{#object}}
       {{> deserialize_object}}
@@ -108,10 +109,10 @@ export function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}
   {{/array}}
   {{#enum}}
   {{#required}}
-  writer.writeInt32(result);
+  writer.writeString(result);
   {{/required}}
   {{^required}}
-  writer.writeNullableInt32(result);
+  writer.writeNullableString(result);
   {{/required}}
   {{/enum}}
   {{#object}}

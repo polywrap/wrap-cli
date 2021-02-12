@@ -18,10 +18,10 @@ export class Input_importedMethod {
   optObject: Objects.TestImport_Object | null;
   objectArray: Array<Objects.TestImport_Object>;
   optObjectArray: Array<Objects.TestImport_Object | null> | null;
-  en: Enums.TestImport_Enum;
-  optEnum: Nullable<Enums.TestImport_Enum>;
-  enumArray: Array<Enums.TestImport_Enum>;
-  optEnumArray: Array<Nullable<Enums.TestImport_Enum>> | null;
+  en: string;
+  optEnum: string | null;
+  enumArray: Array<string>;
+  optEnumArray: Array<string | null> | null;
 }
 
 export function serializeimportedMethodArgs(input: Input_importedMethod): ArrayBuffer {
@@ -73,16 +73,16 @@ export function writeimportedMethodArgs(
     }
   });
   writer.writeString("en");
-  writer.writeInt32(input.en);
+  writer.writeString(input.en);
   writer.writeString("optEnum");
-  writer.writeNullableInt32(input.optEnum);
+  writer.writeNullableString(input.optEnum);
   writer.writeString("enumArray");
-  writer.writeArray(input.enumArray, (writer: Write, item: Enums.TestImport_Enum): void => {
-    writer.writeInt32(item);
+  writer.writeArray(input.enumArray, (writer: Write, item: string): void => {
+    writer.writeString(item);
   });
   writer.writeString("optEnumArray");
-  writer.writeNullableArray(input.optEnumArray, (writer: Write, item: Nullable<Enums.TestImport_Enum>): void => {
-    writer.writeNullableInt32(item);
+  writer.writeNullableArray(input.optEnumArray, (writer: Write, item: string | null): void => {
+    writer.writeNullableString(item);
   });
 }
 

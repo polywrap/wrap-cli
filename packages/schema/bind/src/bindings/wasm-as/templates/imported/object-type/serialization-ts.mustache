@@ -45,10 +45,10 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   {{/object}}
   {{#enum}}
   {{#required}}
-  writer.writeInt32(type.{{name}});
+  writer.writeString(type.{{name}});
   {{/required}}
   {{^required}}
-  writer.writeNullableInt32(type.{{name}});
+  writer.writeNullableString(type.{{name}});
   {{/required}}
   {{/enum}}
   {{/properties}}
@@ -94,7 +94,8 @@ export function read{{type}}(reader: Read): {{type}} {
       });
       {{/array}}
       {{#enum}}
-      {{#required}}_{{name}} = reader.readInt32();{{/required}}{{^required}}_{{name}} = reader.readNullableInt32();{{/required}}
+      {{> deserialize_enum}}
+      _{{name}} = value;
       {{/enum}}
       {{#object}}
       {{> deserialize_object }}

@@ -1,5 +1,5 @@
-export enum TestImport_Enum {
-  STRING,
-  BYTES,
+export const TestImport_Enum = {
+  STRING: "STRING",
+  BYTES: "BYTES",
 }
 

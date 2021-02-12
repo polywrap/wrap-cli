@@ -35,11 +35,7 @@ function toGraphQL(def: GenericDefinition, prefixed = false): string {
       return applyRequired(def.type, def.required);
     case DefinitionKind.Enum:
     case DefinitionKind.ImportedEnum:
-      if (prefixed) {
-        return applyRequired(`enum_${def.type}`, def.required);
-      }
-
-      return applyRequired(def.type, def.required);
+      return applyRequired("String", def.required);
     case DefinitionKind.Any:
     case DefinitionKind.Property:
       return anyToGraphQL(def as AnyDefinition, prefixed);

@@ -41,7 +41,12 @@ export function write{{name}}Args(
   });
   {{/array}}
   {{#enum}}
-  {{#required}}writer.writeInt32(input.{{name}});{{/required}}{{^required}}writer.writeNullableInt32(input.{{name}});{{/required}}
+  {{#required}}
+  writer.writeString(input.{{name}});
+  {{/required}}
+  {{^required}}
+  writer.writeNullableString(input.{{name}});
+  {{/required}}
   {{/enum}}
   {{#object}}
   {{#required}}
@@ -70,7 +75,8 @@ export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#return}}{{#to
   });
   {{/array}}
   {{#enum}}
-  {{#required}}return reader.readInt32();{{/required}}{{^required}}return reader.readNullableInt32();{{/required}}
+  {{> deserialize_enum}}
+  return value;
   {{/enum}}
   {{#object}}
   {{> deserialize_object}}

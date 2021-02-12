@@ -1,7 +1,7 @@
 {{#importedEnumTypes}}
-export enum {{type}} {
+export const {{type}} = {
   {{#values}}
-  {{.}},
+  {{.}}: "{{.}}",
   {{/values}}
 }
 

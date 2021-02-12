@@ -3,6 +3,8 @@ import {
   Input_objectMethod
 } from "./Query";
 
+export * from "./enums";
+
 export {
   Input_queryMethod,
   Input_objectMethod

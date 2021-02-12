@@ -12,10 +12,10 @@ import * as Objects from "..";
 export class Input_queryMethod {
   str: string;
   optStr: string | null;
-  en: Enums.CustomEnum;
-  optEnum: Nullable<Enums.CustomEnum>;
-  enumArray: Array<Enums.CustomEnum>;
-  optEnumArray: Array<Nullable<Enums.CustomEnum>> | null;
+  en: string;
+  optEnum: string | null;
+  enumArray: Array<string>;
+  optEnumArray: Array<string | null> | null;
 }
 
 export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMethod {
@@ -25,12 +25,12 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
   var _str: string = "";
   var _strSet: bool = false;
   var _optStr: string | null = null;
-  var _en: Enums.CustomEnum = 0;
+  var _en: string = "";
   var _enSet: bool = false;
-  var _optEnum: Nullable<Enums.CustomEnum> = new Nullable<Enums.CustomEnum>();
-  var _enumArray: Array<Enums.CustomEnum> = [];
+  var _optEnum: string | null = null;
+  var _enumArray: Array<string> = [];
   var _enumArraySet: bool = false;
-  var _optEnumArray: Array<Nullable<Enums.CustomEnum>> | null = null;
+  var _optEnumArray: Array<string | null> | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -44,21 +44,37 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
       _optStr = reader.readNullableString();
     }
     else if (field == "en") {
-      _en = reader.readInt32();
+      const value = reader.readString();
+      if (!(value in Enums.CustomEnum)) {
+        throw new Error("invalid value");
+      }
+      _en = value;
       _enSet = true;
     }
     else if (field == "optEnum") {
-      _optEnum = reader.readNullableInt32();
+      const value = reader.readNullableString();
+      if (value && !(value in Enums.CustomEnum)) {
+        throw new Error("invalid value");
+      }
+      _optEnum = value;
     }
     else if (field == "enumArray") {
-      _enumArray = reader.readArray((reader: Read): Enums.CustomEnum => {
-        return reader.readInt32();
+      _enumArray = reader.readArray((reader: Read): string => {
+        const value = reader.readString();
+        if (!(value in Enums.CustomEnum)) {
+          throw new Error("invalid value");
+        }
+        return value;
       });
       _enumArraySet = true;
     }
     else if (field == "optEnumArray") {
-      _optEnumArray = reader.readNullableArray((reader: Read): Nullable<Enums.CustomEnum> => {
-        return reader.readNullableInt32();
+      _optEnumArray = reader.readNullableArray((reader: Read): string | null => {
+        const value = reader.readNullableString();
+        if (value && !(value in Enums.CustomEnum)) {
+          throw new Error("invalid value");
+        }
+        return value;
       });
     }
   }

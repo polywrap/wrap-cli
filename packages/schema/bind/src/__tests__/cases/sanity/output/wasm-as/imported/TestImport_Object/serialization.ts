@@ -42,16 +42,16 @@ export function writeTestImport_Object(writer: Write, type: TestImport_Object): 
     }
   });
   writer.writeString("en");
-  writer.writeInt32(type.en);
+  writer.writeString(type.en);
   writer.writeString("optEnum");
-  writer.writeNullableInt32(type.optEnum);
+  writer.writeNullableString(type.optEnum);
   writer.writeString("enumArray");
-  writer.writeArray(type.enumArray, (writer: Write, item: Enums.TestImport_Enum): void => {
-    writer.writeInt32(item);
+  writer.writeArray(type.enumArray, (writer: Write, item: string): void => {
+    writer.writeString(item);
   });
   writer.writeString("optEnumArray");
-  writer.writeNullableArray(type.optEnumArray, (writer: Write, item: Nullable<Enums.TestImport_Enum>): void => {
-    writer.writeNullableInt32(item);
+  writer.writeNullableArray(type.optEnumArray, (writer: Write, item: string | null): void => {
+    writer.writeNullableString(item);
   });
 }
 
@@ -69,12 +69,12 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
   var _objectArray: Array<Objects.TestImport_AnotherObject> = [];
   var _objectArraySet: bool = false;
   var _optObjectArray: Array<Objects.TestImport_AnotherObject | null> | null = null;
-  var _en: Enums.TestImport_Enum = 0;
+  var _en: string = "";
   var _enSet: bool = false;
-  var _optEnum: Nullable<Enums.TestImport_Enum> = new Nullable<Enums.TestImport_Enum>();
-  var _enumArray: Array<Enums.TestImport_Enum> = [];
+  var _optEnum: string | null = null;
+  var _enumArray: Array<string> = [];
   var _enumArraySet: bool = false;
-  var _optEnumArray: Array<Nullable<Enums.TestImport_Enum>> | null = null;
+  var _optEnumArray: Array<string | null> | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -109,21 +109,37 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
       });
     }
     else if (field == "en") {
-      _en = reader.readInt32();
+      const value = reader.readString();
+      if (!(value in Enums.TestImport_Enum)) {
+        throw new Error("invalid value");
+      }
+      _en = value;
       _enSet = true;
     }
     else if (field == "optEnum") {
-      _optEnum = reader.readNullableInt32();
+      const value = reader.readNullableString();
+      if (value && !(value in Enums.TestImport_Enum)) {
+        throw new Error("invalid value");
+      }
+      _optEnum = value;
     }
     else if (field == "enumArray") {
-      _enumArray = reader.readArray((reader: Read): Enums.TestImport_Enum => {
-        return reader.readInt32();
+      _enumArray = reader.readArray((reader: Read): string => {
+        const value = reader.readString();
+        if (!(value in Enums.TestImport_Enum)) {
+          throw new Error("invalid value");
+        }
+        return value;
       });
       _enumArraySet = true;
     }
     else if (field == "optEnumArray") {
-      _optEnumArray = reader.readNullableArray((reader: Read): Nullable<Enums.TestImport_Enum> => {
-        return reader.readNullableInt32();
+      _optEnumArray = reader.readNullableArray((reader: Read): string | null => {
+        const value = reader.readNullableString();
+        if (value && !(value in Enums.TestImport_Enum)) {
+          throw new Error("invalid value");
+        }
+        return value;
       });
     }
   }

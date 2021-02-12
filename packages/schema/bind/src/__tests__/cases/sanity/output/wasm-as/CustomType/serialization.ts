@@ -118,16 +118,16 @@ export function writeCustomType(writer: Write, type: CustomType): void {
     }
   });
   writer.writeString("en");
-  writer.writeInt32(type.en);
+  writer.writeString(type.en);
   writer.writeString("optEnum");
-  writer.writeNullableInt32(type.optEnum);
+  writer.writeNullableString(type.optEnum);
   writer.writeString("enumArray");
-  writer.writeArray(type.enumArray, (writer: Write, item: Enums.CustomEnum): void => {
-    writer.writeInt32(item);
+  writer.writeArray(type.enumArray, (writer: Write, item: string): void => {
+    writer.writeString(item);
   });
   writer.writeString("optEnumArray");
-  writer.writeNullableArray(type.optEnumArray, (writer: Write, item: Nullable<Enums.CustomEnum>): void => {
-    writer.writeNullableInt32(item);
+  writer.writeNullableArray(type.optEnumArray, (writer: Write, item: string | null): void => {
+    writer.writeNullableString(item);
   });
 }
 
@@ -184,12 +184,12 @@ export function readCustomType(reader: Read): CustomType {
   var _objectArray: Array<Objects.AnotherType> = [];
   var _objectArraySet: bool = false;
   var _optObjectArray: Array<Objects.AnotherType | null> | null = null;
-  var _en: Enums.CustomEnum = 0;
+  var _en: string = "";
   var _enSet: bool = false;
-  var _optEnum: Nullable<Enums.CustomEnum> = new Nullable<Enums.CustomEnum>();
-  var _enumArray: Array<Enums.CustomEnum> = [];
+  var _optEnum: string | null = null;
+  var _enumArray: Array<string> = [];
   var _enumArraySet: bool = false;
-  var _optEnumArray: Array<Nullable<Enums.CustomEnum>> | null = null;
+  var _optEnumArray: Array<string | null> | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -339,21 +339,37 @@ export function readCustomType(reader: Read): CustomType {
       });
     }
     else if (field == "en") {
-      _en = reader.readInt32();
+      const value = reader.readString();
+      if (!(value in Enums.CustomEnum)) {
+        throw new Error("invalid value");
+      }
+      _en = value;
       _enSet = true;
     }
     else if (field == "optEnum") {
-      _optEnum = reader.readNullableInt32();
+      const value = reader.readNullableString();
+      if (value && !(value in Enums.CustomEnum)) {
+        throw new Error("invalid value");
+      }
+      _optEnum = value;
     }
     else if (field == "enumArray") {
-      _enumArray = reader.readArray((reader: Read): Enums.CustomEnum => {
-        return reader.readInt32();
+      _enumArray = reader.readArray((reader: Read): string => {
+        const value = reader.readString();
+        if (!(value in Enums.CustomEnum)) {
+          throw new Error("invalid value");
+        }
+        return value;
       });
       _enumArraySet = true;
     }
     else if (field == "optEnumArray") {
-      _optEnumArray = reader.readNullableArray((reader: Read): Nullable<Enums.CustomEnum> => {
-        return reader.readNullableInt32();
+      _optEnumArray = reader.readNullableArray((reader: Read): string | null => {
+        const value = reader.readNullableString();
+        if (value && !(value in Enums.CustomEnum)) {
+          throw new Error("invalid value");
+        }
+        return value;
       });
     }
   }

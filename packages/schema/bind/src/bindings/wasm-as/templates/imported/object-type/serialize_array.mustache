@@ -7,12 +7,7 @@ writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(item, (writer: Write, 
 });
 {{/array}}
 {{#enum}}
-{{#required}}
-writer.writeInt32(item);
-{{/required}}
-{{^required}}
-writer.writeNullableInt32(item);
-{{/required}}
+{{> serialize_enum}}
 {{/enum}}
 {{#object}}
 {{> serialize_object}}

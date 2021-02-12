@@ -1,0 +1,6 @@
+{{#required}}
+writer.writeString(item);
+{{/required}}
+{{^required}}
+writer.writeNullableString(item);
+{{/required}}

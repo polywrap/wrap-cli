@@ -3,9 +3,9 @@ export * from "./imported/enums";
 {{/importedEnumTypes}}
 
 {{#enumTypes}}
-export enum {{type}} {
+export const {{type}} = {
   {{#values}}
-  {{.}},
+  {{.}}: "{{.}}",
   {{/values}}
 }
 
