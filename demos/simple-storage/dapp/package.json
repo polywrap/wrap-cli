@@ -6,7 +6,8 @@
     "@web3api/client-js": "0.0.1-prealpha.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1"
+    "react-scripts": "3.4.1",
+    "react-lottie": "1.2.3"
   },
   "devDependencies": {
     "@testing-library/react": "^9.3.2",
@@ -14,6 +15,7 @@
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
+    "@types/react-lottie": "1.2.5",
     "eslint": "6.6.0",
     "typescript": "3.7.2"
   },
