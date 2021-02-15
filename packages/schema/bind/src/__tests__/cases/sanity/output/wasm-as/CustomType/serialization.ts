@@ -46,6 +46,8 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.writeInt32(type.i32);
   writer.writeString("i64");
   writer.writeInt64(type.i64);
+  writer.writeString("bytes");
+  writer.writeBytes(type.bytes);
   writer.writeString("boolean");
   writer.writeBool(type.boolean);
   writer.writeString("optBoolean");
@@ -225,6 +227,9 @@ export function readCustomType(reader: Read): CustomType {
     else if (field == "i64") {
       _i64 = reader.readInt64();
       _i64Set = true;
+    }
+    else if (field == "bytes") {
+      type.bytes = reader.readBytes();
     }
     else if (field == "boolean") {
       _boolean = reader.readBool();
