@@ -20,7 +20,8 @@
     "module": "commonjs",
     "sourceMap": true,
     "target": "es5",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "strictNullChecks": true
   },
   "include": [
     "./src/**/*"
