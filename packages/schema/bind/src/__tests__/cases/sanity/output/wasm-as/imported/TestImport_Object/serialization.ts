@@ -111,7 +111,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
     else if (field == "en") {
       const value = reader.readString();
       if (!(Enums.TestImport_Enum.includes(value))) {
-        throw new Error("invalid value");
+        throw new Error("Invalid value for enum 'TestImport_Enum'");
       }
       _en = value;
       _enSet = true;
@@ -119,7 +119,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
     else if (field == "optEnum") {
       const value = reader.readNullableString();
       if (value && !(Enums.TestImport_Enum.includes(value))) {
-        throw new Error("invalid value");
+        throw new Error("Invalid value for enum 'TestImport_Enum'");
       }
       _optEnum = value;
     }
@@ -127,7 +127,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
       _enumArray = reader.readArray((reader: Read): string => {
         const value = reader.readString();
         if (!(Enums.TestImport_Enum.includes(value))) {
-          throw new Error("invalid value");
+          throw new Error("Invalid value for enum 'TestImport_Enum'");
         }
         return value;
       });
@@ -137,7 +137,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
       _optEnumArray = reader.readNullableArray((reader: Read): string | null => {
         const value = reader.readNullableString();
         if (value && !(Enums.TestImport_Enum.includes(value))) {
-          throw new Error("invalid value");
+          throw new Error("Invalid value for enum 'TestImport_Enum'");
         }
         return value;
       });

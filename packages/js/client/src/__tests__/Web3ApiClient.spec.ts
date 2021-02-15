@@ -385,7 +385,7 @@ describe("Web3ApiClient", () => {
 
     expect(method1a.errors).toBeTruthy();
     expect(method1a.errors[0].message).toMatch(
-      /__w3_abort: invalid value/gm
+      /__w3_abort: Invalid value for enum 'Enum'/gm
     );
 
     const method1b = await client.query<any>({

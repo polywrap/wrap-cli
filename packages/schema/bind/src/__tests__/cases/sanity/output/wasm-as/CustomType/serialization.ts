@@ -341,7 +341,7 @@ export function readCustomType(reader: Read): CustomType {
     else if (field == "en") {
       const value = reader.readString();
       if (!(Enums.CustomEnum.includes(value))) {
-        throw new Error("invalid value");
+        throw new Error("Invalid value for enum 'CustomEnum'");
       }
       _en = value;
       _enSet = true;
@@ -349,7 +349,7 @@ export function readCustomType(reader: Read): CustomType {
     else if (field == "optEnum") {
       const value = reader.readNullableString();
       if (value && !(Enums.CustomEnum.includes(value))) {
-        throw new Error("invalid value");
+        throw new Error("Invalid value for enum 'CustomEnum'");
       }
       _optEnum = value;
     }
@@ -357,7 +357,7 @@ export function readCustomType(reader: Read): CustomType {
       _enumArray = reader.readArray((reader: Read): string => {
         const value = reader.readString();
         if (!(Enums.CustomEnum.includes(value))) {
-          throw new Error("invalid value");
+          throw new Error("Invalid value for enum 'CustomEnum'");
         }
         return value;
       });
@@ -367,7 +367,7 @@ export function readCustomType(reader: Read): CustomType {
       _optEnumArray = reader.readNullableArray((reader: Read): string | null => {
         const value = reader.readNullableString();
         if (value && !(Enums.CustomEnum.includes(value))) {
-          throw new Error("invalid value");
+          throw new Error("Invalid value for enum 'CustomEnum'");
         }
         return value;
       });

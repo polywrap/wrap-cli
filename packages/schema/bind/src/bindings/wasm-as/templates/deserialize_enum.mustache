@@ -1,12 +1,12 @@
 {{#required}}
 const value = reader.readString();
 if (!(Enums.{{type}}.includes(value))) {
-  throw new Error("invalid value");
+  throw new Error("Invalid value for enum '{{type}}'");
 }
 {{/required}}
 {{^required}}
 const value = reader.readNullableString();
 if (value && !(Enums.{{type}}.includes(value))) {
-  throw new Error("invalid value");
+  throw new Error("Invalid value for enum '{{type}}'");
 }
 {{/required}}
