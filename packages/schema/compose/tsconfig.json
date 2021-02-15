@@ -1,31 +1,4 @@
 {
-  "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "build",
-    "esModuleInterop": true,
-    "lib": [
-      "es2020.string",
-      "es2015",
-      "es5",
-      "dom"
-    ],
-    "downlevelIteration": true,
-    "moduleResolution": "node",
-    "declaration": true,
-    "preserveSymlinks": true,
-    "preserveWatchOutput": true,
-    "pretty": false,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "module": "commonjs",
-    "sourceMap": true,
-    "target": "es5",
-    "strictNullChecks": true
-  },
-  "include": [
-    "./src/**/*"
-  ]
+  "extends": "../../../tsconfig"
 }
+
