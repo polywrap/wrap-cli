@@ -54,6 +54,7 @@ type CustomQueryType {
   i: Int!
   i8: Int8!
   i64: Int64!
+  bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optStrOptArray: [String]
@@ -122,6 +123,7 @@ type Namespace_CustomType @imported(
   i16: Int16!
   i32: Int32!
   i64: Int64!
+  bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optUOptArray: [UInt]
