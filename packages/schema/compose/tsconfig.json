@@ -1,4 +1,12 @@
 {
-  "extends": "../../../tsconfig"
+  "extends": "../../../tsconfig",
+  "compilerOptions": {
+    "lib": [
+      "es2020.string",
+      "es2015",
+      "es5",
+      "dom"
+    ],
+  },
 }
 
