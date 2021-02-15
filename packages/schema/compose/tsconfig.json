@@ -10,5 +10,9 @@
     "downlevelIteration": true,
     "outDir": "build"
   },
+  "include": [
+    "./src/**/*.ts"
+  ],
+  "exclude": []
 }
 
