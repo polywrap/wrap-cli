@@ -16,7 +16,7 @@ export abstract class Write {
   abstract writeStringLength(length: u32): void;
   abstract writeString(value: string): void;
   abstract writeBytesLength(length: u32): void;
-  abstract writeBytes(ab: ArrayBuffer): void;
+  abstract writeBytes(value: ArrayBuffer): void;
   abstract writeArrayLength(length: u32): void;
   abstract writeArray<T>(
     a: Array<T>,
@@ -41,7 +41,7 @@ export abstract class Write {
   abstract writeNullableFloat32(value: Nullable<f32>): void;
   abstract writeNullableFloat64(value: Nullable<f64>): void;
   abstract writeNullableString(value: string | null): void;
-  abstract writeNullableBytes(ab: ArrayBuffer | null): void;
+  abstract writeNullableBytes(value: ArrayBuffer | null): void;
   abstract writeNullableArray<T>(
     a: Array<T> | null,
     fn: (writer: Write, item: T) => void
