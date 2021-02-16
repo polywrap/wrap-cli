@@ -96,14 +96,12 @@ describe("Web3ApiClient", () => {
         mutation {
           setData(
             address: "${address}"
-            value: $value,
-            bytesValue: $bytesValue
+            value: $value
           )
         }
       `,
       variables: {
         value: 55,
-        bytesValue: [1, 2, 3, 4],
       },
     });
 
@@ -362,5 +360,36 @@ describe("Web3ApiClient", () => {
         /__w3_abort: Missing required property: 'root: InfiniteRoot'/gm
       );
     }
+
+    const method5 = await client.query<{
+      method5: {
+        prop: string,
+        nested: {
+          prop: string
+        }
+      }
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          method5(
+            arg: {
+              prop: [49, 50, 51, 52]
+            }
+          )
+        }
+      `,
+    });
+
+    expect(method5.errors).toBeFalsy();
+    expect(method5.data).toBeTruthy();
+    expect(method5.data).toMatchObject({
+      method5: {
+        prop: '1234',
+        nested: {
+          prop: 'nested prop'
+        }
+      }
+    });
   });
 });

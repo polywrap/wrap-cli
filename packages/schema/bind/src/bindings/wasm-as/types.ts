@@ -9,6 +9,7 @@ const baseTypes = {
   i64: "i64",
   string: "string",
   bool: "bool",
+  bytes: "bytes",
 };
 
 export type BaseTypes = typeof baseTypes;
