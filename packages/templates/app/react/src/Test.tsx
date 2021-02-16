@@ -3,10 +3,9 @@ import logo from "./logo.svg";
 import "./App.css";
 
 import {
-  Web3ApiProvider,
   useWeb3ApiQuery,
-  getWeb3ApiContext,
   createWeb3ApiRoot,
+  Web3ApiProvider,
 } from "@web3api/react";
 import { Uri, UriRedirect } from "@web3api/client-js";
 import { EnsPlugin } from "@web3api/ens-plugin-js";
@@ -58,20 +57,24 @@ function Test() {
     const {
       execute: deployContract,
       data,
+      loading,
       errors: deployContractErrors,
     } = useWeb3ApiQuery({
+      key: "simpleStorage",
       uri: new Uri("ens/simplestorage.web3api.eth"),
       query: `mutation { deployContract }`,
     });
 
-    const {
-      execute: swap,
-      data: swapData,
-      errors: swapErrors,
-    } = useWeb3ApiQuery({
-      uri: new Uri("ens/simplestorage.web3api.eth"),
-      query: `mutation { swap }`,
-    });
+    console.log("Loading... ", loading);
+
+    // const {
+    //   execute: swap,
+    //   data: swapData,
+    //   errors: swapErrors,
+    // } = useWeb3ApiQuery({
+    //   uri: new Uri("ens/simplestorage.web3api.eth"),
+    //   query: `mutation { swap }`,
+    // });
 
     return (
       <>
@@ -93,14 +96,14 @@ function Test() {
 
   return (
     <SimpleStorageProvider redirects={redirects}>
-      <OneInchProvider redirects={redirects}>
-        <div className="App">
-          <header className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <ActionComponent />
-          </header>
-        </div>
-      </OneInchProvider>
+      {/* <OneInchProvider redirects={redirects}> */}
+      <div className="App">
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <ActionComponent />
+        </header>
+      </div>
+      {/* </OneInchProvider> */}
     </SimpleStorageProvider>
   );
 }
