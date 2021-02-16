@@ -51,6 +51,8 @@ export const INITIAL_STATE = {
 };
 
 const reducer = (state: Web3ApiContextInterface, action: HandleAction) => {
+  // remove all the actions and pass the parameters partially
+  // so we define which one are going to be updated
   switch (action.type) {
     case ActionTypes.UPDATE_INFO:
       state = {

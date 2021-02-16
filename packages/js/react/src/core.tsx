@@ -33,6 +33,7 @@ const web3ApiQuery = (
   }
 
   const execute = async () => {
+    // Let's convert this into one dispatch
     dispatch({ type: ActionTypes.UPDATE_LOADING, loading: true });
     const { data, errors } = await client.query(options);
     dispatch({ type: ActionTypes.UPDATE_INFO, data, errors });
@@ -73,15 +74,6 @@ export function createWeb3ApiRoot(
 const DEFAULT_PROVIDER = "main";
 
 export const Web3ApiProvider = createWeb3ApiRoot(DEFAULT_PROVIDER);
-
-export const getWeb3ApiContext = (
-  key: string = DEFAULT_PROVIDER
-): React.Context<Web3ApiContextInterface> => {
-  if (!PROVIDERS[key]) {
-    throw new Error("A Web3Api Provider does not exists with key " + key);
-  }
-  return PROVIDERS[key].context;
-};
 
 type QueryExecutionParams = {
   uri: Uri;
