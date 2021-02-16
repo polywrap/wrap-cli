@@ -120,7 +120,7 @@ export class Compiler {
       // Output the schema & manifest files
       fs.writeFileSync(
         `${outputDir}/schema.graphql`,
-        composed.combined,
+        composed.combined || '',
         "utf-8"
       );
       Web3ApiManifest.dump(manifest, `${outputDir}/web3api.yaml`);
