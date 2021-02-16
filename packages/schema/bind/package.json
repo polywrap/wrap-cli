@@ -16,6 +16,7 @@
     "mustache": "4.0.1"
   },
   "devDependencies": {
+    "@web3api/test-cases": "0.0.1-prealpha.1",
     "@types/jest": "26.0.8",
     "@types/mustache": "4.0.1",
     "copyfiles": "2.4.1",

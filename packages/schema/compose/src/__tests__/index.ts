@@ -1,9 +1,9 @@
-import { ComposerOutput, ComposerOptions } from "../../";
+import { ComposerOutput, ComposerOptions } from "..";
 
 import path from "path";
 import { readdirSync, readFileSync, Dirent, existsSync } from "fs";
 
-const root = path.join(__dirname, "./");
+const root = path.join(__dirname, "../../../../test-cases/cases/compose");
 
 export type TestCases = {
   name: string;

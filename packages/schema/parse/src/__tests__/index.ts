@@ -1,14 +1,14 @@
-import { TypeInfo } from "../../typeInfo";
+import { TypeInfo } from "../typeInfo";
 
 import { create } from "ts-node";
 import path from "path";
 import { readdirSync, readFileSync, Dirent } from "fs";
 
-const root = path.join(__dirname, "./");
+const root = path.join(__dirname, "../../../../test-cases/cases/parse");
 
 const outputs = {
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-  sanity: require("./sanity/output").output,
+  sanity: require("../../../../test-cases/cases/parse/sanity/output").output,
 };
 
 export type TestCases = {

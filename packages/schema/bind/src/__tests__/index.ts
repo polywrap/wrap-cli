@@ -1,7 +1,7 @@
 import path from "path";
 import { readdirSync, readFileSync, Dirent } from "fs";
 
-const root = path.join(__dirname, "./");
+const root = path.join(__dirname, "../../../../test-cases/cases/bind");
 
 export type TestCases = {
   name: string;

@@ -10,7 +10,7 @@ import {
   createObjectPropertyDefinition,
   createImportedObjectDefinition,
   createImportedQueryDefinition,
-} from "../../../typeInfo";
+} from "../../../../schema/parse/src/typeInfo";
 
 export const output: TypeInfo = {
   objectTypes: [
