@@ -1,18 +1,15 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import { setupWeb3ApiClient } from "./web3api/setupClient";
-import { Web3ApiClient, Uri } from "@web3api/client-js";
+import React from 'react';
 import Lottie from "react-lottie";
+import { Web3ApiClient } from "@web3api/client-js";
+
+import { setupWeb3ApiClient } from "./web3api/setupClient";
+import {
+  setData,
+  SetDataResult,
+  deployContract
+} from "./web3api/simplestorage";
 import Web3ApiAnimation from "./lottie/Web3API_Icon_Cycle.json";
-import Web3ApiSolution from "./lottie/Protocols_and_devices.json";
-
-const simpleStorageUri = new Uri("ens/simplestorage.web3api.eth");
-
-interface SetDataResult {
-  txReceipt: string,
-  value: number
-};
 
 function App() {
   const [client, setClient] = React.useState<Web3ApiClient | undefined>(undefined);
@@ -33,70 +30,6 @@ function App() {
     return newClient;
   }
 
-  const deployContract = async () => {
-    const client = await getClient();
-
-    const { data, errors } = await client.query<{
-      deployContract: string
-    }>({
-      uri: simpleStorageUri,
-      query: `mutation { deployContract }`
-    });
-
-    if (errors || !data) {
-      console.error(errors);
-      return;
-    }
-
-    setContract(
-      data.deployContract as string
-    );
-  }
-
-  const setData = async (value: number) => {
-    const client = await getClient();
-
-    const { data, errors } = await client.query<{
-      setData: SetDataResult
-    }>({
-      uri: simpleStorageUri,
-      query: `mutation {
-        setData(options: {
-          address: "${contract}"
-          value: ${value}
-        })
-      }`
-    });
-
-    if (errors || !data) {
-      console.error(errors);
-      return;
-    }
-
-    addSet(data.setData);
-    setValue(data.setData.value);
-  }
-
-  const getData = async () => {
-    const client = await getClient();
-
-    const { data, errors } = await client.query<{
-      getData: number
-    }>({
-      uri: simpleStorageUri,
-      query: `query {
-        getData(address: "${contract}")
-      }`
-    });
-
-    if (errors || !data) {
-      console.error(errors);
-      return;
-    }
-
-    setValue(data.getData);
-  }
-
   const logoLottieOptions = {
     loop: true,
     autoplay: true,
@@ -107,28 +40,42 @@ function App() {
 
   return (
     <div className="App">
-      <header></header>
-      <body className="App-body">
-        <Lottie
-          options={logoLottieOptions}
-          isClickToPauseDisabled={true}
-          height={"100px"}
-        />
+      <header className="App-body">
+        <a target="_blank" href="https://web3api.dev/">
+          <Lottie
+            options={logoLottieOptions}
+            isClickToPauseDisabled={true}
+            height={"100px"}
+            width={"100px"}
+          />
+        </a>
         Pre-Alpha
-          <h3>Web3API Demo:<br/><a target="_blank" href={"https://app.ens.domains/name/simplestorage.eth"}>
-            simplestorage.eth
-          </a></h3><br/>
+          <h3>Web3API Demo:<br/><a target="_blank" href={"https://app.ens.domains/name/api.simplestorage.eth"}>
+            api.simplestorage.eth
+          </a>
+          <a target="_blank" href="https://bafybeihsk2ivvcrye7bqtdukxjtmfevfxgidebqqopoqdfpucbgzyy2edu.ipfs.dweb.link/">
+            &nbsp;(IPFS)
+          </a></h3><br/><br/>
         {!contract ?
           <>
-            Let's get started...<br/>
-            <button onClick={deployContract}>
+            Let's get started...<br/><br/>
+            🔌 Set Metamask to Rinkeby<br/>
+            <button onClick={async () =>
+              deployContract(
+                await getClient()
+              ).then(address =>
+                setContract(address)
+              ).catch(err =>
+                console.error(err)
+              )
+            }>
               🚀Deploy SimpleStorage.sol
             </button>
             <div className="Code-Block">
               <text className="Code-Class">Client</text>.
               <text className="Code-Prop">query</text>{"({"}<br/>
               <text className="Code-Value">&nbsp;&nbsp;&nbsp;&nbsp;uri: </text>
-              <text className="Code-String">"w3://ens/simplestorage.eth"</text><br/>
+              <text className="Code-String">"w3://ens/api.simplestorage.eth"</text><br/>
               <text className="Code-Value">&nbsp;&nbsp;&nbsp;&nbsp;query: </text>
               <text className="Code-String">{"\"mutation { deployContract }\""}</text><br/>
               {")}"}
@@ -157,14 +104,25 @@ function App() {
                 setInputValue(Number(e.target.value))
             }
           />
-          <button onClick={async () => (setData(inputValue))}>
+          <button onClick={async () =>
+            setData(
+              contract,
+              inputValue,
+              await getClient()
+            ).then((result) => {
+              addSet(result);
+              setValue(result.value);
+            }).catch(err =>
+              console.error(err)
+            )
+          }>
             📝 Set Value
           </button>
           <div className="Code-Block">
               <text className="Code-Class">Client</text>.
               <text className="Code-Prop">query</text>{"({"}<br/>
               <text className="Code-Value">{tab()}uri: </text>
-              <text className="Code-String">"w3://ens/simplestorage.eth"</text><br/>
+              <text className="Code-String">"w3://ens/api.simplestorage.eth"</text><br/>
               <text className="Code-Value">{tab()}query: </text>
               <text className="Code-String">{"`mutation {"}</text><br/>
               <text className="Code-String">
@@ -196,7 +154,7 @@ function App() {
           </p>
         </>
         }
-      </body>
+      </header>
     </div>
   );
 }
