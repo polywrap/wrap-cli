@@ -12,9 +12,9 @@ type {{type}} {
 
 {{#importedQueryTypes}}
 type {{type}} @imported(
-  namespace: "{{namespace}}",
   uri: "{{uri}}",
-  type: "{{nativeType}}"
+  namespace: "{{namespace}}",
+  nativeType: "{{nativeType}}"
 ) {
   {{#methods}}
   {{name}}(
@@ -35,9 +35,9 @@ type {{type}} @imported(
 
 {{#importedObjectTypes}}
 type {{type}} @imported(
-  namespace: "{{namespace}}",
   uri: "{{uri}}",
-  type: "{{nativeType}}"
+  namespace: "{{namespace}}",
+  nativeType: "{{nativeType}}"
 ) {
   {{#properties}}
   {{name}}: {{toGraphQLType}}

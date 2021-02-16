@@ -11,9 +11,9 @@ scalar Int32
 scalar Int64
 
 directive @imported(
-  namespace: String!
   uri: String!
-  type: String!
+  namespace: String!
+  nativeType: String!
 ) on OBJECT
 
 directive @imports(
@@ -105,17 +105,17 @@ type ObjectType {
 }
 
 type Imported_NestedObjectType @imported(
-  namespace: "Imported",
   uri: "imported.eth",
-  type: "NestedObjectType"
+  namespace: "Imported",
+  nativeType: "NestedObjectType"
 ) {
   nestedObject: Imported_ObjectType!
 }
 
 type Imported_ObjectType @imported(
-  namespace: "Imported",
   uri: "imported.eth",
-  type: "ObjectType"
+  namespace: "Imported",
+  nativeType: "ObjectType"
 ) {
   prop: String!
 }

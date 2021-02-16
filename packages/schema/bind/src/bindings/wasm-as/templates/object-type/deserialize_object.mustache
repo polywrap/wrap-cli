@@ -1,0 +1,9 @@
+{{#required}}
+const object = Objects.{{type}}.read(reader);
+{{/required}}
+{{^required}}
+var object: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = null;
+if (!reader.isNextNil()) {
+  object = Objects.{{type}}.read(reader);
+}
+{{/required}}

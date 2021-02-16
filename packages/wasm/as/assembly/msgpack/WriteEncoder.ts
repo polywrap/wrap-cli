@@ -136,7 +136,7 @@ export class WriteEncoder extends Write {
 
   writeArrayLength(length: u32): void {
     if (length < 16) {
-      this.view.setInt8((<u8>length) | (<u8>Format.FIXARRAY));
+      this.view.setUint8((<u8>length) | (<u8>Format.FIXARRAY));
     } else if (length <= <u32>u16.MAX_VALUE) {
       this.view.setUint8(<u8>Format.ARRAY16);
       this.view.setUint16(<u16>length);
@@ -155,7 +155,7 @@ export class WriteEncoder extends Write {
 
   writeMapLength(length: u32): void {
     if (length < 16) {
-      this.view.setInt8((<u8>length) | (<u8>Format.FIXMAP));
+      this.view.setUint8((<u8>length) | (<u8>Format.FIXMAP));
     } else if (length <= <u32>u16.MAX_VALUE) {
       this.view.setUint8(<u8>Format.MAP16);
       this.view.setUint16(<u16>length);

@@ -7,6 +7,7 @@ import {
   Nullable
 } from "@web3api/wasm-as";
 import { CustomType } from "./";
+import * as Objects from "..";
 
 export function serializeCustomType(type: CustomType): ArrayBuffer {
   const sizer = new WriteSizer();
@@ -17,8 +18,8 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
   return buffer;
 }
 
-function writeCustomType(writer: Write, type: CustomType) {
-  writer.writeMapLength(23);
+export function writeCustomType(writer: Write, type: CustomType): void {
+  writer.writeMapLength(27);
   writer.writeString("str");
   writer.writeString(type.str);
   writer.writeString("optStr");
@@ -95,106 +96,192 @@ function writeCustomType(writer: Write, type: CustomType) {
       });
     });
   });
+  writer.writeString("object");
+  Objects.AnotherType.write(writer, type.object);
+  writer.writeString("optObject");
+  if (type.optObject) {
+    Objects.AnotherType.write(writer, type.optObject);
+  } else {
+    writer.writeNil();
+  }
+  writer.writeString("objectArray");
+  writer.writeArray(type.objectArray, (writer: Write, item: Objects.AnotherType): void => {
+    Objects.AnotherType.write(writer, item);
+  });
+  writer.writeString("optObjectArray");
+  writer.writeNullableArray(type.optObjectArray, (writer: Write, item: Objects.AnotherType | null): void => {
+    if (item) {
+      Objects.AnotherType.write(writer, item);
+    } else {
+      writer.writeNil();
+    }
+  });
 }
 
-export function deserializeCustomType(buffer: ArrayBuffer, type: CustomType) {
+export function deserializeCustomType(buffer: ArrayBuffer): CustomType {
   const reader = new ReadDecoder(buffer);
+  return readCustomType(reader);
+}
+
+export function readCustomType(reader: Read): CustomType {
   var numFields = reader.readMapLength();
+
+  var _str: string = "";
+  var _strSet: bool = false;
+  var _optStr: string | null = null;
+  var _u: u32 = 0;
+  var _uSet: bool = false;
+  var _optU: Nullable<u32> = new Nullable<u32>();
+  var _u8: u8 = 0;
+  var _u8Set: bool = false;
+  var _u16: u16 = 0;
+  var _u16Set: bool = false;
+  var _u32: u32 = 0;
+  var _u32Set: bool = false;
+  var _u64: u64 = 0;
+  var _u64Set: bool = false;
+  var _i: i32 = 0;
+  var _iSet: bool = false;
+  var _i8: i8 = 0;
+  var _i8Set: bool = false;
+  var _i16: i16 = 0;
+  var _i16Set: bool = false;
+  var _i32: i32 = 0;
+  var _i32Set: bool = false;
+  var _i64: i64 = 0;
+  var _i64Set: bool = false;
+  var _boolean: bool = false;
+  var _booleanSet: bool = false;
+  var _optBoolean: Nullable<bool> = new Nullable<bool>();
+  var _uArray: Array<u32> = [];
+  var _uArraySet: bool = false;
+  var _uOptArray: Array<u32> | null = null;
+  var _optUOptArray: Array<Nullable<u32>> | null = null;
+  var _optStrOptArray: Array<string | null> | null = null;
+  var _uArrayArray: Array<Array<u32>> = [];
+  var _uArrayArraySet: bool = false;
+  var _uOptArrayOptArray: Array<Array<Nullable<u64>> | null> = [];
+  var _uOptArrayOptArraySet: bool = false;
+  var _uArrayOptArrayArray: Array<Array<Array<u64>> | null> = [];
+  var _uArrayOptArrayArraySet: bool = false;
+  var _crazyArray: Array<Array<Array<Array<u64> | null>> | null> | null = null;
+  var _object: Objects.AnotherType | null = null;
+  var _objectSet: bool = false;
+  var _optObject: Objects.AnotherType | null = null;
+  var _objectArray: Array<Objects.AnotherType> = [];
+  var _objectArraySet: bool = false;
+  var _optObjectArray: Array<Objects.AnotherType | null> | null = null;
 
   while (numFields > 0) {
     numFields--;
     const field = reader.readString();
 
     if (field == "str") {
-      type.str = reader.readString();
+      _str = reader.readString();
+      _strSet = true;
     }
     else if (field == "optStr") {
-      type.optStr = reader.readNullableString();
+      _optStr = reader.readNullableString();
     }
     else if (field == "u") {
-      type.u = reader.readUInt32();
+      _u = reader.readUInt32();
+      _uSet = true;
     }
     else if (field == "optU") {
-      type.optU = reader.readNullableUInt32();
+      _optU = reader.readNullableUInt32();
     }
     else if (field == "u8") {
-      type.u8 = reader.readUInt8();
+      _u8 = reader.readUInt8();
+      _u8Set = true;
     }
     else if (field == "u16") {
-      type.u16 = reader.readUInt16();
+      _u16 = reader.readUInt16();
+      _u16Set = true;
     }
     else if (field == "u32") {
-      type.u32 = reader.readUInt32();
+      _u32 = reader.readUInt32();
+      _u32Set = true;
     }
     else if (field == "u64") {
-      type.u64 = reader.readUInt64();
+      _u64 = reader.readUInt64();
+      _u64Set = true;
     }
     else if (field == "i") {
-      type.i = reader.readInt32();
+      _i = reader.readInt32();
+      _iSet = true;
     }
     else if (field == "i8") {
-      type.i8 = reader.readInt8();
+      _i8 = reader.readInt8();
+      _i8Set = true;
     }
     else if (field == "i16") {
-      type.i16 = reader.readInt16();
+      _i16 = reader.readInt16();
+      _i16Set = true;
     }
     else if (field == "i32") {
-      type.i32 = reader.readInt32();
+      _i32 = reader.readInt32();
+      _i32Set = true;
     }
     else if (field == "i64") {
-      type.i64 = reader.readInt64();
+      _i64 = reader.readInt64();
+      _i64Set = true;
     }
     else if (field == "boolean") {
-      type.boolean = reader.readBool();
+      _boolean = reader.readBool();
+      _booleanSet = true;
     }
     else if (field == "optBoolean") {
-      type.optBoolean = reader.readNullableBool();
+      _optBoolean = reader.readNullableBool();
     }
     else if (field == "uArray") {
-      type.uArray = reader.readArray((reader: Read): u32 => {
+      _uArray = reader.readArray((reader: Read): u32 => {
         return reader.readUInt32();
       });
+      _uArraySet = true;
     }
     else if (field == "uOptArray") {
-      type.uOptArray = reader.readNullableArray((reader: Read): u32 => {
+      _uOptArray = reader.readNullableArray((reader: Read): u32 => {
         return reader.readUInt32();
       });
     }
     else if (field == "optUOptArray") {
-      type.optUOptArray = reader.readNullableArray((reader: Read): Nullable<u32> => {
+      _optUOptArray = reader.readNullableArray((reader: Read): Nullable<u32> => {
         return reader.readNullableUInt32();
       });
     }
     else if (field == "optStrOptArray") {
-      type.optStrOptArray = reader.readNullableArray((reader: Read): string | null => {
+      _optStrOptArray = reader.readNullableArray((reader: Read): string | null => {
         return reader.readNullableString();
       });
     }
     else if (field == "uArrayArray") {
-      type.uArrayArray = reader.readArray((reader: Read): Array<u32> => {
+      _uArrayArray = reader.readArray((reader: Read): Array<u32> => {
         return reader.readArray((reader: Read): u32 => {
           return reader.readUInt32();
         });
       });
+      _uArrayArraySet = true;
     }
     else if (field == "uOptArrayOptArray") {
-      type.uOptArrayOptArray = reader.readArray((reader: Read): Array<Nullable<u64>> | null => {
+      _uOptArrayOptArray = reader.readArray((reader: Read): Array<Nullable<u64>> | null => {
         return reader.readNullableArray((reader: Read): Nullable<u64> => {
           return reader.readNullableUInt64();
         });
       });
+      _uOptArrayOptArraySet = true;
     }
     else if (field == "uArrayOptArrayArray") {
-      type.uArrayOptArrayArray = reader.readArray((reader: Read): Array<Array<u64>> | null => {
+      _uArrayOptArrayArray = reader.readArray((reader: Read): Array<Array<u64>> | null => {
         return reader.readNullableArray((reader: Read): Array<u64> => {
           return reader.readArray((reader: Read): u64 => {
             return reader.readUInt64();
           });
         });
       });
+      _uArrayOptArrayArraySet = true;
     }
     else if (field == "crazyArray") {
-      type.crazyArray = reader.readNullableArray((reader: Read): Array<Array<Array<u64> | null>> | null => {
+      _crazyArray = reader.readNullableArray((reader: Read): Array<Array<Array<u64> | null>> | null => {
         return reader.readNullableArray((reader: Read): Array<Array<u64> | null> => {
           return reader.readArray((reader: Read): Array<u64> | null => {
             return reader.readNullableArray((reader: Read): u64 => {
@@ -204,5 +291,118 @@ export function deserializeCustomType(buffer: ArrayBuffer, type: CustomType) {
         });
       });
     }
+    else if (field == "object") {
+      const object = Objects.AnotherType.read(reader);
+      _object = object;
+      _objectSet = true;
+    }
+    else if (field == "optObject") {
+      var object: Objects.AnotherType | null = null;
+      if (!reader.isNextNil()) {
+        object = Objects.AnotherType.read(reader);
+      }
+      _optObject = object;
+    }
+    else if (field == "objectArray") {
+      _objectArray = reader.readArray((reader: Read): Objects.AnotherType => {
+        const object = Objects.AnotherType.read(reader);
+        return object;
+      });
+      _objectArraySet = true;
+    }
+    else if (field == "optObjectArray") {
+      _optObjectArray = reader.readNullableArray((reader: Read): Objects.AnotherType | null => {
+        var object: Objects.AnotherType | null = null;
+        if (!reader.isNextNil()) {
+          object = Objects.AnotherType.read(reader);
+        }
+        return object;
+      });
+    }
   }
+
+  if (!_strSet) {
+    throw new Error("Missing required property: 'str: String'");
+  }
+  if (!_uSet) {
+    throw new Error("Missing required property: 'u: UInt'");
+  }
+  if (!_u8Set) {
+    throw new Error("Missing required property: 'u8: UInt8'");
+  }
+  if (!_u16Set) {
+    throw new Error("Missing required property: 'u16: UInt16'");
+  }
+  if (!_u32Set) {
+    throw new Error("Missing required property: 'u32: UInt32'");
+  }
+  if (!_u64Set) {
+    throw new Error("Missing required property: 'u64: UInt64'");
+  }
+  if (!_iSet) {
+    throw new Error("Missing required property: 'i: Int'");
+  }
+  if (!_i8Set) {
+    throw new Error("Missing required property: 'i8: Int8'");
+  }
+  if (!_i16Set) {
+    throw new Error("Missing required property: 'i16: Int16'");
+  }
+  if (!_i32Set) {
+    throw new Error("Missing required property: 'i32: Int32'");
+  }
+  if (!_i64Set) {
+    throw new Error("Missing required property: 'i64: Int64'");
+  }
+  if (!_booleanSet) {
+    throw new Error("Missing required property: 'boolean: Boolean'");
+  }
+  if (!_uArraySet) {
+    throw new Error("Missing required property: 'uArray: [UInt]'");
+  }
+  if (!_uArrayArraySet) {
+    throw new Error("Missing required property: 'uArrayArray: [[UInt]]'");
+  }
+  if (!_uOptArrayOptArraySet) {
+    throw new Error("Missing required property: 'uOptArrayOptArray: [[UInt64]]'");
+  }
+  if (!_uArrayOptArrayArraySet) {
+    throw new Error("Missing required property: 'uArrayOptArrayArray: [[[UInt64]]]'");
+  }
+  if (!_object || !_objectSet) {
+    throw new Error("Missing required property: 'object: AnotherType'");
+  }
+  if (!_objectArraySet) {
+    throw new Error("Missing required property: 'objectArray: [AnotherType]'");
+  }
+
+  return {
+    str: _str,
+    optStr: _optStr,
+    u: _u,
+    optU: _optU,
+    u8: _u8,
+    u16: _u16,
+    u32: _u32,
+    u64: _u64,
+    i: _i,
+    i8: _i8,
+    i16: _i16,
+    i32: _i32,
+    i64: _i64,
+    boolean: _boolean,
+    optBoolean: _optBoolean,
+    uArray: _uArray,
+    uOptArray: _uOptArray,
+    optUOptArray: _optUOptArray,
+    optStrOptArray: _optStrOptArray,
+    uArrayArray: _uArrayArray,
+    uOptArrayOptArray: _uOptArrayOptArray,
+    uArrayOptArrayArray: _uArrayOptArrayArray,
+    crazyArray: _crazyArray,
+    object: _object,
+    optObject: _optObject,
+    objectArray: _objectArray,
+    optObjectArray: _optObjectArray
+  };
 }

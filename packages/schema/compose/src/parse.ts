@@ -1,4 +1,5 @@
 import { ExternalImport, LocalImport, SYNTAX_REFERENCE } from "./types";
+import { getDuplicates } from "./utils";
 
 import Path from "path";
 
@@ -20,6 +21,16 @@ export function parseExternalImports(
       .split(",")
       .map((str) => str.replace(/\s+/g, "")) // Trim all whitespace
       .filter(Boolean); // Remove empty strings
+
+    const importFromName = importStatement[3];
+
+    // Make sure the developer does not import the same dependency more than once
+    const duplicateimportedTypes = getDuplicates(importedTypes);
+    if (duplicateimportedTypes.length > 0) {
+      throw Error(
+        `Duplicate type found: ${duplicateimportedTypes} \nIn import: ${importFromName}`
+      );
+    }
 
     // Make sure the developer does not try to import a dependencies dependency
     const index = importedTypes.findIndex((str) => str.indexOf("_") > -1);
@@ -46,21 +57,8 @@ export function parseExternalImports(
   }
 
   // Make sure namespaces are unique
-  const namespaceCounts = (imports: ExternalImport[]) =>
-    imports.reduce(
-      (a: Record<string, number>, b: ExternalImport) => ({
-        ...a,
-        [b.namespace]: (a[b.namespace] || 0) + 1,
-      }),
-      {}
-    );
-
-  const namespaceDuplicates = (imports: ExternalImport[]) => {
-    const counts = namespaceCounts(imports);
-    return Object.keys(counts).filter((a) => counts[a] > 1);
-  };
-
-  const duplicateNamespaces = namespaceDuplicates(externalImports);
+  const namespaces = externalImports.map((extImport) => extImport.namespace);
+  const duplicateNamespaces = getDuplicates(namespaces);
   if (duplicateNamespaces.length > 0) {
     throw Error(`Duplicate namespaces found: ${duplicateNamespaces}`);
   }
@@ -122,23 +120,9 @@ export function parseLocalImports(
   }
 
   // Make sure types are unique
-  const importTypeCount = (importTypes: string[]) =>
-    importTypes.reduce(
-      (a: Record<string, number>, b: string) => ({
-        ...a,
-        [b]: (a[b] || 0) + 1,
-      }),
-      {}
-    );
-
-  const importTypeDuplicates = (imports: LocalImport[]) => {
-    const importTypes: string[] = [];
-    imports.forEach((i) => importTypes.push(...i.objectTypes));
-    const counts = importTypeCount(importTypes);
-    return Object.keys(counts).filter((a) => counts[a] > 1);
-  };
-
-  const duplicateImportTypes = importTypeDuplicates(localImports);
+  const localImportNames: string[] = [];
+  localImports.forEach((imp) => localImportNames.push(...imp.objectTypes));
+  const duplicateImportTypes = getDuplicates(localImportNames);
   if (duplicateImportTypes.length > 0) {
     throw Error(`Duplicate type found: ${duplicateImportTypes}`);
   }
