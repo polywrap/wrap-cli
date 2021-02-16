@@ -5,7 +5,7 @@ export function setData(input: Input_setData): string {
   return Ethereum_Mutation.sendTransaction({
     address: input.address,
     method: "function set(uint256 value)",
-    args: [input.value.toString()],
+    args: [input.value.toString(), input.bytesValue.toString()],
   });
 }
 

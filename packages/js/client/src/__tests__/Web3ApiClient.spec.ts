@@ -96,12 +96,14 @@ describe("Web3ApiClient", () => {
         mutation {
           setData(
             address: "${address}"
-            value: $value
+            value: $value,
+            bytesValue: $bytesValue
           )
         }
       `,
       variables: {
         value: 55,
+        bytesValue: [1, 2, 3, 4],
       },
     });
 

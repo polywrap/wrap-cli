@@ -71,7 +71,7 @@ export const toWasmInit: MustacheFunction = () => {
       case "Boolean":
         return "false";
       case "Bytes":
-        return `[]`;
+        return `new ArrayBuffer(0)`;
       default:
         return `new Objects.${type}()`;
     }

@@ -4,6 +4,7 @@ type Mutation {
   setData(
     address: String!
     value: Int!
+    bytesValue: Bytes!
   ): String!
 
   deployContract: String!
