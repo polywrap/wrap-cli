@@ -12,7 +12,7 @@ import CID from "cids";
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const isIPFS = require("is-ipfs");
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
-const IpfsClient = require("ipfs-http-client");
+const IpfsClient = require("ipfs-http-client-lite");
 
 export interface IpfsConfig {
   provider: string;
@@ -47,7 +47,7 @@ export class IpfsPlugin extends Plugin {
 
   public setProvider(provider: string): void {
     this._config.provider = provider;
-    this._ipfs = new IpfsClient(provider);
+    this._ipfs = IpfsClient(provider);
   }
 
   public async add(
@@ -70,14 +70,7 @@ export class IpfsPlugin extends Plugin {
   }
 
   public async catToBuffer(cid: string): Promise<Uint8Array> {
-    const chunks = [];
-    for await (const chunk of this._ipfs.cat(cid)) {
-      chunks.push(chunk);
-    }
-    const result = chunks.length > 1 ? Buffer.concat(chunks) : chunks[0];
-    const u8Array = new Uint8Array(result.byteLength);
-    u8Array.set(result);
-    return u8Array;
+    return this._ipfs.cat(cid);
   }
 
   public ls(

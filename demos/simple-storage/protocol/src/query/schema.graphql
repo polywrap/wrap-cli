@@ -3,5 +3,5 @@
 type Query {
   getData(
     address: String!
-  ): Int!
+  ): UInt32!
 }
