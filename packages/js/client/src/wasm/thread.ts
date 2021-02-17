@@ -9,7 +9,7 @@ import {
   u32,
   ThreadWakeStatus,
   maxThreads,
-  maxTransferBytes
+  maxTransferBytes,
 } from "./types";
 import { readBytes, readString, writeBytes, writeString } from "./utils";
 

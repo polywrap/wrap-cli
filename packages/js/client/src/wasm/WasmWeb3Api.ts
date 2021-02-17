@@ -6,7 +6,7 @@ import {
   HostAction,
   ThreadWakeStatus,
   maxThreads,
-  maxTransferBytes
+  maxTransferBytes,
 } from "./types";
 import { sleep } from "./utils";
 

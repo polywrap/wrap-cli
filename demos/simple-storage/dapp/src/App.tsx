@@ -38,28 +38,60 @@ function App() {
 
   const tab = () => (<>&nbsp;&nbsp;&nbsp;&nbsp;</>);
 
+  const link = (url: string, children: () => JSX.Element) => (
+    <a target="_blank" rel="noopener noreferrer" href={url}>
+      {children()}
+    </a>
+  );
+
+  const emoji = (symbol: string) => (
+    <span role="img" aria-label={symbol}>
+      {symbol}
+    </span>
+  );
+
+  const codeSyntax = (type: string) => (
+    (children: () => JSX.Element) => (
+      <text className={type}>{children()}</text>
+    )
+  )
+
+  const syntax = {
+    class: codeSyntax("Code-Class"),
+    prop: codeSyntax("Code-Prop"),
+    value: codeSyntax("Code-Value"),
+    string: codeSyntax("Code-String"),
+    variable: codeSyntax("Code-Variable")
+  };
+
   return (
     <div className="App">
       <header className="App-body">
-        <a target="_blank" href="https://web3api.dev/">
+        {link("https://web3api.dev/", () => (
           <Lottie
             options={logoLottieOptions}
             isClickToPauseDisabled={true}
             height={"100px"}
             width={"100px"}
           />
-        </a>
+        ))}
         Pre-Alpha
-          <h3>Web3API Demo:<br/><a target="_blank" href={"https://app.ens.domains/name/api.simplestorage.eth"}>
-            api.simplestorage.eth
-          </a>
-          <a target="_blank" href="https://bafybeihsk2ivvcrye7bqtdukxjtmfevfxgidebqqopoqdfpucbgzyy2edu.ipfs.dweb.link/">
-            &nbsp;(IPFS)
-          </a></h3><br/><br/>
+          <h3>
+            Web3API Demo:
+            <br/>
+            {link("https://app.ens.domains/name/api.simplestorage.eth", () => (
+              <>api.simplestorage.eth"</>
+            ))}
+            {link("https://bafybeihsk2ivvcrye7bqtdukxjtmfevfxgidebqqopoqdfpucbgzyy2edu.ipfs.dweb.link/", () => (
+              <>&nbsp;(IPFS)</>
+            ))}
+          </h3>
+          <br/>
+          <br/>
         {!contract ?
           <>
             Let's get started...<br/><br/>
-            🔌 Set Metamask to Rinkeby<br/>
+            {emoji("🔌")} Set Metamask to Rinkeby<br/>
             <button onClick={async () =>
               deployContract(
                 await getClient()
@@ -69,24 +101,25 @@ function App() {
                 console.error(err)
               )
             }>
-              🚀Deploy SimpleStorage.sol
+              {emoji("🚀")} Deploy SimpleStorage.sol
             </button>
             <div className="Code-Block">
-              <text className="Code-Class">Client</text>.
-              <text className="Code-Prop">query</text>{"({"}<br/>
-              <text className="Code-Value">&nbsp;&nbsp;&nbsp;&nbsp;uri: </text>
-              <text className="Code-String">"w3://ens/api.simplestorage.eth"</text><br/>
-              <text className="Code-Value">&nbsp;&nbsp;&nbsp;&nbsp;query: </text>
-              <text className="Code-String">{"\"mutation { deployContract }\""}</text><br/>
+              {syntax.class(() => <>Web3Api</>)}.
+              {syntax.prop(() => <>query</>)}
+              {"({"}<br/>
+              {syntax.value(() => <>&nbsp;&nbsp;&nbsp;&nbsp;uri: </>)}
+              {syntax.string(() => <>"w3://ens/api.simplestorage.eth"</>)},<br/>
+              {syntax.value(() => <>&nbsp;&nbsp;&nbsp;&nbsp;query: </>)}
+              {syntax.string(() => <>{"\"mutation { deployContract }\""}</>)}
               {")}"}
             </div>
             <br/>
           </> :
           <>
             <p>
-              ✔️ Deployed SimpleStorage (<a target="_blank" href={`https://rinkeby.etherscan.io/address/${contract}`}>
-                {contract.substr(0, 7)}...
-              </a>)
+              {emoji("✔️")} Deployed SimpleStorage ({link(`https://rinkeby.etherscan.io/address/${contract}`, () => (
+                <>{contract.substr(0, 7)}...</>
+              ))})
             </p>
             <br/>
           </>
@@ -116,39 +149,42 @@ function App() {
               console.error(err)
             )
           }>
-            📝 Set Value
+            {emoji("📝")} Set Value
           </button>
           <div className="Code-Block">
-              <text className="Code-Class">Client</text>.
-              <text className="Code-Prop">query</text>{"({"}<br/>
-              <text className="Code-Value">{tab()}uri: </text>
-              <text className="Code-String">"w3://ens/api.simplestorage.eth"</text><br/>
-              <text className="Code-Value">{tab()}query: </text>
-              <text className="Code-String">{"`mutation {"}</text><br/>
-              <text className="Code-String">
-                {tab()}{tab()}{"setData(options: {"}
-              </text><br/>
-              <text className="Code-String">
-                {tab()}{tab()}{tab()}{`address: "${contract.substr(0, 7)}..."`}
-              </text><br/>
-              <text className="Code-String">
-                {tab()}{tab()}{tab()}{`value: ${inputValue}`}
-              </text><br/>
-              <text className="Code-String">
+              {syntax.class(() => <>Web3Api</>)}.
+              {syntax.prop(() => <>query</>)}{"({"}<br/>
+              {syntax.value(() => <>{tab()}uri: </>)}
+              {syntax.string(() => <>"w3://ens/api.simplestorage.eth"</>)},<br/>
+              {syntax.value(() => <>{tab()}query: </>)}
+              {syntax.string(() => <>{"`mutation {"}</>)}<br/>
+              {syntax.string(() => <>{tab()}{tab()}{"setData(options: {"}</>)}<br/>
+              {syntax.string(() => <>
+                {tab()}{tab()}{tab()}{"address: "}{syntax.variable(() => <>
+                  "{contract.substr(0, 7)}..."</>
+                )}
+              </>)}<br/>
+              {syntax.string(() => <>
+                {tab()}{tab()}{tab()}{"value: "}{syntax.variable(() => <>
+                  {inputValue}
+                </>)}<br/>
+              </>)}
+              {syntax.string(() => <>
                 {tab()}{tab()}{"})"}
-              </text><br/>
-              <text className="Code-String">
+              </>)}<br/>
+              {syntax.string(() => <>
                 {tab()}{"}`"}
-              </text><br/>
+              </>)}<br/>
               {"})"}
             </div>
           <p>
             {sets.length ? <>Storage History:<br/></> : <></>}
             {sets.map((set, index) => (
               <>
-                #{index} | value: {set.value} | tx: <a target="_blank" href={`https://rinkeby.etherscan.io/tx/${set.txReceipt}`}>
-                  {set.txReceipt.substr(0, 7)}...
-                </a><br/>
+                #{index} | value: {set.value} | tx: {link(`https://rinkeby.etherscan.io/tx/${set.txReceipt}`, () => (
+                  <>{set.txReceipt.substr(0, 7)}...</>
+                ))}
+                <br/>
               </>
             )).reverse()}
           </p>
