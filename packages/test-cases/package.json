@@ -4,7 +4,6 @@
     "license": "MIT",
     "main": "build/index.js",
     "scripts": {
-      "lint": "eslint --color --ext .ts cases/",
       "test": "jest --passWithNoTests --runInBand --verbose",
       "test:ci": "jest --passWithNoTests --runInBand --verbose",
       "test:watch": "jest --watch --passWithNoTests --verbose"
