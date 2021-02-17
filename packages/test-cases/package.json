@@ -2,7 +2,7 @@
     "name": "@web3api/test-cases",
     "version": "0.0.1-prealpha.1",
     "license": "MIT",
-    "main": "build/index.js",
+    "main": "index.ts",
     "scripts": {
       "test": "jest --passWithNoTests --runInBand --verbose",
       "test:ci": "jest --passWithNoTests --runInBand --verbose",

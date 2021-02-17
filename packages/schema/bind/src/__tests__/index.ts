@@ -1,7 +1,8 @@
 import path from "path";
 import { readdirSync, readFileSync, Dirent } from "fs";
+import {GetPathToBindTestFiles} from "@web3api/test-cases"
 
-const root = path.join(__dirname, "../../../../test-cases/cases/bind");
+const root = GetPathToBindTestFiles();
 
 export type TestCases = {
   name: string;

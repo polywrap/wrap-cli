@@ -4,6 +4,7 @@ import { buildAndDeployApi } from "./helpers";
 import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
 import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 import { EnsPlugin } from "@web3api/ens-plugin-js";
+import { GetPathToClientTestFiles } from "@web3api/test-cases";
 import axios from "axios";
 
 jest.setTimeout(30000);
@@ -58,8 +59,11 @@ describe("Web3ApiClient", () => {
   });
 
   it("simple-storage", async () => {
+    console.log("------------------")
+    console.log(GetPathToClientTestFiles())
+    console.log("------------------")
     const api = await buildAndDeployApi(
-      `${__dirname}/apis/simple-storage`,
+      `${GetPathToClientTestFiles()}/simple-storage`,
       ipfsProvider,
       ensAddress
     );
@@ -129,7 +133,7 @@ describe("Web3ApiClient", () => {
 
   it("object-types", async () => {
     const api = await buildAndDeployApi(
-      `${__dirname}/apis/object-types`,
+      `${GetPathToClientTestFiles()}/object-types`,
       ipfsProvider,
       ensAddress
     );
