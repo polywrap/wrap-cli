@@ -59,9 +59,6 @@ describe("Web3ApiClient", () => {
   });
 
   it("simple-storage", async () => {
-    console.log("------------------")
-    console.log(GetPathToClientTestFiles())
-    console.log("------------------")
     const api = await buildAndDeployApi(
       `${GetPathToClientTestFiles()}/simple-storage`,
       ipfsProvider,
