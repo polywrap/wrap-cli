@@ -120,7 +120,7 @@ export default {
   },
 };
 
-async function runCommand(command: string, quiet = false) {
+async function runCommand(command: string, quiet = true) {
   if (!quiet) {
     console.log(`> ${command}`);
   }
