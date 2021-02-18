@@ -7,29 +7,32 @@ export interface Web3ApiContextInterface {
   execute: any;
 }
 
-interface Info {
+interface Load {
+  loading: boolean;
+}
+
+interface Info extends Partial<Load> {
   data?: Record<string, unknown>;
   errors?: Error[];
 }
 
-function updateInfo({ data, errors }: Info) {
+function updateInfo(payload: Info) {
   return <const>{
     type: ActionTypes.UPDATE_INFO,
-    data,
-    errors,
+    payload,
   };
 }
-function updateLoading(loading: boolean) {
+function updateLoading(payload: Load) {
   return <const>{
     type: ActionTypes.UPDATE_LOADING,
-    loading,
+    payload,
   };
 }
 
-function updateExecute(execute: Function) {
+function updateExecute(payload: { execute: () => any }) {
   return <const>{
     type: ActionTypes.UPDATE_EXECUTE,
-    execute,
+    payload,
   };
 }
 
@@ -50,33 +53,10 @@ export const INITIAL_STATE = {
   execute: () => undefined,
 };
 
-const reducer = (state: Web3ApiContextInterface, action: HandleAction) => {
-  // remove all the actions and pass the parameters partially
-  // so we define which one are going to be updated
-  switch (action.type) {
-    case ActionTypes.UPDATE_INFO:
-      state = {
-        ...state,
-        data: action.data,
-        errors: action.errors,
-      };
-      return state;
-    case ActionTypes.UPDATE_LOADING:
-      state = {
-        ...state,
-        loading: action.loading,
-      };
-      return state;
-    case ActionTypes.UPDATE_EXECUTE:
-      state = {
-        ...state,
-        execute: action.execute,
-      };
-      return state;
-    default:
-      return state;
-  }
-};
+const reducer = (state: Web3ApiContextInterface, action: HandleAction) => ({
+  ...state,
+  ...action.payload,
+});
 
 export const web3ApiState = () => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
