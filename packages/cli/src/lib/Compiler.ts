@@ -7,6 +7,7 @@ import { step, withSpinner, outputManifest } from "./helpers";
 
 import { bindSchema, writeDirectory } from "@web3api/schema-bind";
 import path from "path";
+import chokidar from "chokidar";
 import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
@@ -36,8 +37,50 @@ export class Compiler {
     }
   }
 
-  private async _compileWeb3Api(verbose?: boolean) {
-    const { outputDir, project, schemaComposer } = this._config;
+  public async watchAndCompile(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      const manifestPath = displayPath(this._config.manifestPath);
+      const manifestDir = path.dirname(manifestPath);
+
+      chokidar
+        .watch(manifestDir, {
+          ignored: ["**/build/**", "**/node_modules/**"],
+          ignoreInitial: true,
+        })
+        .on("all", (eventType, path) => {
+          console.log("watch event", eventType, path);
+        });
+    });
+  }
+
+  private async _loadManifest(quiet = false): Promise<Manifest> {
+    const run = () => {
+      return Web3ApiManifest.load(this._config.manifestPath);
+    };
+
+    if (quiet) {
+      return run();
+    } else {
+      const manifestPath = displayPath(this._config.manifestPath);
+
+      return await withSpinner(
+        `Load web3api from ${manifestPath}`,
+        `Failed to load web3api from ${manifestPath}`,
+        `Warnings loading web3api from ${manifestPath}`,
+        async (_spinner) => {
+          return run();
+        }
+      );
+    }
+  }
+
+  private async _compileWeb3API(
+    manifest: Manifest,
+    quiet?: boolean,
+    verbose?: boolean
+  ) {
+    const run = async (spinner?: any) => {
+      const { outputDir } = this._config;
 
     const run = async (spinner?: Ora): Promise<void> => {
       // Init & clean build directory
