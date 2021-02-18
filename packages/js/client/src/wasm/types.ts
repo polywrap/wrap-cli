@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/ban-types */
 
+export const maxTransferBytes = 256; // do not change
+export const maxThreads = 128;
+
 export type u32 = number;
 
 export interface W3Exports {
