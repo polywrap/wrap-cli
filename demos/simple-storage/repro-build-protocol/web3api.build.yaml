@@ -1,0 +1,8 @@
+image: 
+  name: build-env
+env:
+  sources:
+    - ./src
+    - ./package.json
+  outputDir: ./build
+  script: ./script.sh

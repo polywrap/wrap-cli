@@ -1,0 +1,11 @@
+mutation {
+  setData(
+    options: {
+      address: $address
+      value: $value
+    }
+  ) {
+    value
+    txReceipt
+  }
+}
