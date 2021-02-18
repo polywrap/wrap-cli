@@ -17,6 +17,7 @@
     "graphql": "15.4.0"
   },
   "devDependencies": {
+    "@web3api/test-cases": "0.0.1-prealpha.1",
     "@types/deep-equal": "1.0.1",
     "@types/jest": "26.0.8",
     "jest": "26.2.2",
