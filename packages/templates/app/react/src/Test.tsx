@@ -16,7 +16,83 @@ import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 process.env.WORKER_PREFIX = "workerize-loader!";
 
 const SimpleStorageProvider = createWeb3ApiRoot("simpleStorage");
-const OneInchProvider = createWeb3ApiRoot("1inch");
+// const OneInchProvider = createWeb3ApiRoot("1inch");
+
+const useSetData = (contract: string) => {
+  console.log("this is the contract! ", contract);
+  const {
+    execute: setData,
+    data: setDataInfo,
+    errors: setDataErrors,
+    loading: loadingSetData,
+  } = useWeb3ApiQuery({
+    key: "simpleStorage",
+    uri: new Uri("ens/api.simplestorage.eth"),
+    query: `mutation {
+      setData(options: {
+        address: "${contract}"
+        value: 5
+      })
+    }`,
+  });
+
+  return { setData, setDataInfo, setDataErrors, loadingSetData };
+};
+
+const ActionComponent = () => {
+  useEffect(() => {
+    (async () => {
+      const ethereum = (window as any).ethereum;
+      if (ethereum && ethereum.enable) {
+        await ethereum.enable();
+      }
+    })();
+  }, []);
+
+  const {
+    execute: deployContract,
+    data: deployData,
+    loading: loadingDeploy,
+    errors: deployContractErrors,
+  } = useWeb3ApiQuery({
+    key: "simpleStorage",
+    uri: new Uri("ens/api.simplestorage.eth"),
+    query: `mutation { deployContract }`,
+  });
+
+  const { setData, loadingSetData } = useSetData(
+    deployData?.deployContract as string
+  );
+
+  return (
+    <>
+      <p>Web3API: SimpleStorage Demo</p>
+      {loadingDeploy ? (
+        <div>Processing your request...</div>
+      ) : (
+        <>
+          {!deployData ? (
+            <button onClick={deployContract}>Deploy Contract</button>
+          ) : (
+            <>
+              <p>
+                SimpleStorage Contract: {deployData.deployContract as string}
+              </p>
+              <button onClick={setData}>Set the storage to 5!</button>
+              {loadingSetData ? <p> Setting data to 5...</p> : null}
+            </>
+          )}
+          {deployContractErrors && (
+            <div>
+              There's an error:{" "}
+              {deployContractErrors.map((e) => e.message).join(", ")}
+            </div>
+          )}
+        </>
+      )}
+    </>
+  );
+};
 
 function Test() {
   const ethereum = (window as any).ethereum;
@@ -32,7 +108,7 @@ function Test() {
     {
       from: new Uri("w3://ens/ipfs.web3api.eth"),
       to: {
-        factory: () => new IpfsPlugin({ provider: "https://ipfs.io/api/v0/" }),
+        factory: () => new IpfsPlugin({ provider: "https://ipfs.io" }),
         manifest: IpfsPlugin.manifest(),
       },
     },
@@ -44,55 +120,6 @@ function Test() {
       },
     },
   ];
-
-  const ActionComponent = () => {
-    useEffect(() => {
-      (async () => {
-        if (ethereum && ethereum.enable) {
-          await ethereum.enable();
-        }
-      })();
-    }, []);
-
-    const {
-      execute: deployContract,
-      data,
-      loading,
-      errors: deployContractErrors,
-    } = useWeb3ApiQuery({
-      key: "simpleStorage",
-      uri: new Uri("ens/simplestorage.web3api.eth"),
-      query: `mutation { deployContract }`,
-    });
-
-    console.log("Loading... ", loading);
-
-    // const {
-    //   execute: swap,
-    //   data: swapData,
-    //   errors: swapErrors,
-    // } = useWeb3ApiQuery({
-    //   uri: new Uri("ens/simplestorage.web3api.eth"),
-    //   query: `mutation { swap }`,
-    // });
-
-    return (
-      <>
-        <p>Web3API: SimpleStorage Demo</p>
-        {!data ? (
-          <button onClick={deployContract}>Deploy Contract</button>
-        ) : (
-          <p>SimpleStorage Contract: {data.deployContract as string}</p>
-        )}
-        {deployContractErrors && (
-          <div>
-            There's an error:{" "}
-            {deployContractErrors.map((e) => e.message).join(", ")}
-          </div>
-        )}
-      </>
-    );
-  };
 
   return (
     <SimpleStorageProvider redirects={redirects}>

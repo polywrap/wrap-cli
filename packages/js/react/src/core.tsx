@@ -2,7 +2,6 @@ import {
   Web3ApiContextInterface,
   INITIAL_STATE,
   web3ApiState,
-  ActionTypes,
 } from "./handler";
 
 import React, { useEffect } from "react";
@@ -33,20 +32,15 @@ const web3ApiQuery = (
   }
 
   const execute = async () => {
-    dispatch({ type: ActionTypes.UPDATE_LOADING, payload: { loading: true } });
+    dispatch({ type: "UPDATE", payload: { loading: true } });
     const { data, errors } = await client.query(options);
-    dispatch({
-      type: ActionTypes.UPDATE_INFO,
-      payload: { data, errors, loading: false },
-    });
+    dispatch({ type: "UPDATE", payload: { data, errors, loading: false } });
     return { data, errors };
   };
 
   useEffect(() => {
-    dispatch({
-      type: ActionTypes.UPDATE_EXECUTE,
-      payload: { execute },
-    });
+    console.log("indeed");
+    dispatch({ type: "UPDATE", payload: { execute } });
   }, [dispatch]);
 
   return state;

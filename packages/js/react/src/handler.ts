@@ -4,47 +4,17 @@ export interface Web3ApiContextInterface {
   data?: Record<string, unknown>;
   loading: boolean;
   errors?: Error[];
-  execute: any;
+  execute: () => undefined | Promise<{ data: any; errors?: Error[] }>;
 }
 
-interface Load {
-  loading: boolean;
-}
-
-interface Info extends Partial<Load> {
-  data?: Record<string, unknown>;
-  errors?: Error[];
-}
-
-function updateInfo(payload: Info) {
+function update(payload: Partial<Web3ApiContextInterface>) {
   return <const>{
-    type: ActionTypes.UPDATE_INFO,
-    payload,
-  };
-}
-function updateLoading(payload: Load) {
-  return <const>{
-    type: ActionTypes.UPDATE_LOADING,
+    type: "UPDATE",
     payload,
   };
 }
 
-function updateExecute(payload: { execute: () => any }) {
-  return <const>{
-    type: ActionTypes.UPDATE_EXECUTE,
-    payload,
-  };
-}
-
-export type HandleAction = ReturnType<
-  typeof updateInfo | typeof updateLoading | typeof updateExecute
->;
-
-export enum ActionTypes {
-  UPDATE_INFO = "UPDATE_INFO",
-  UPDATE_LOADING = "UPDATE_LOADING",
-  UPDATE_EXECUTE = "UPDATE_EXECUTE",
-}
+export type HandleAction = ReturnType<typeof update>;
 
 export const INITIAL_STATE = {
   data: undefined,
