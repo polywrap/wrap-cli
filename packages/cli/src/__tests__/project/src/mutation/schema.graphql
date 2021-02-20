@@ -1,0 +1,5 @@
+type Mutation {
+  setData(address: String!, value: UInt32!): String!
+
+  deployContract: String!
+}
