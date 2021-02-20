@@ -1,0 +1,7 @@
+format: 0.0.1-prealpha.1
+query:
+  schema:
+    file: ./query/schema.graphql
+  module:
+    language: wasm/assemblyscript
+    file: ./query/index.ts

@@ -146,11 +146,16 @@ export class Compiler {
       libsDirs.join(","),
       "--outFile",
       `${outputDir}/${moduleName}.wasm`,
+      "--use",
+      `abort=${path.relative(
+        process.cwd(),
+        path.join(baseDir, "w3/entry/w3Abort")
+      )}`,
       "--optimize",
       "--debug",
       "--importMemory",
       "--runtime",
-      "none",
+      "stub",
     ];
 
     // compile the module into the output directory
@@ -174,9 +179,6 @@ export class Compiler {
     const instance = await WebAssembly.instantiate(mod, {
       env: {
         memory,
-        abort: (msg: string, file: string, line: number, column: number) => {
-          console.error(`Abort: ${msg}\n${file}\n[${line},${column}]`);
-        },
       },
       w3: {
         __w3_subinvoke: () => {},
@@ -187,6 +189,7 @@ export class Compiler {
         __w3_invoke_args: () => {},
         __w3_invoke_result: () => {},
         __w3_invoke_error: () => {},
+        __w3_abort: () => {},
       },
     });
 

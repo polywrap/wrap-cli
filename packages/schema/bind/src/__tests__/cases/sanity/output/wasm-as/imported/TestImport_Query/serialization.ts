@@ -5,6 +5,7 @@ import {
   WriteEncoder,
   ReadDecoder
 } from "@web3api/wasm-as";
+import * as Objects from "../..";
 
 export class Input_importedMethod {
   str: string;
@@ -12,6 +13,10 @@ export class Input_importedMethod {
   u: u32;
   optU: Nullable<u32>;
   uArrayArray: Array<Array<Nullable<u32>> | null>;
+  object: Objects.TestImport_Object;
+  optObject: Objects.TestImport_Object | null;
+  objectArray: Array<Objects.TestImport_Object>;
+  optObjectArray: Array<Objects.TestImport_Object | null> | null;
 }
 
 export function serializeimportedMethodArgs(input: Input_importedMethod): ArrayBuffer {
@@ -23,11 +28,11 @@ export function serializeimportedMethodArgs(input: Input_importedMethod): ArrayB
   return buffer;
 }
 
-function writeimportedMethodArgs(
+export function writeimportedMethodArgs(
   writer: Write,
   input: Input_importedMethod
 ): void {
-  writer.writeMapLength(5);
+  writer.writeMapLength(9);
   writer.writeString("str");
   writer.writeString(input.str);
   writer.writeString("optStr");
@@ -42,11 +47,35 @@ function writeimportedMethodArgs(
       writer.writeNullableUInt32(item);
     });
   });
+  writer.writeString("object");
+  Objects.TestImport_Object.write(writer, input.object);
+  writer.writeString("optObject");
+  if (input.optObject) {
+    Objects.TestImport_Object.write(writer, input.optObject);
+  } else {
+    writer.writeNil();
+  }
+  writer.writeString("objectArray");
+  writer.writeArray(input.objectArray, (writer: Write, item: Objects.TestImport_Object): void => {
+    Objects.TestImport_Object.write(writer, item);
+  });
+  writer.writeString("optObjectArray");
+  writer.writeNullableArray(input.optObjectArray, (writer: Write, item: Objects.TestImport_Object | null): void => {
+    if (item) {
+      Objects.TestImport_Object.write(writer, item);
+    } else {
+      writer.writeNil();
+    }
+  });
 }
 
-export function deserializeimportedMethodResult(buffer: ArrayBuffer): string {
+export function deserializeimportedMethodResult(buffer: ArrayBuffer): Objects.TestImport_Object | null {
   const reader = new ReadDecoder(buffer);
-  return reader.readString();
+  var object: Objects.TestImport_Object | null = null;
+  if (!reader.isNextNil()) {
+    object = Objects.TestImport_Object.read(reader);
+  }
+  return object;
 }
 
 export class Input_anotherMethod {
@@ -62,7 +91,7 @@ export function serializeanotherMethodArgs(input: Input_anotherMethod): ArrayBuf
   return buffer;
 }
 
-function writeanotherMethodArgs(
+export function writeanotherMethodArgs(
   writer: Write,
   input: Input_anotherMethod
 ): void {

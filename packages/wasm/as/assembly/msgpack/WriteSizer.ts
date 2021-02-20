@@ -272,7 +272,7 @@ export class WriteSizer extends Write {
 
   writeNullableArray<T>(
     a: Array<T> | null,
-    fn: (sizer: Sizer, item: T) => void
+    fn: (sizer: Write, item: T) => void
   ): void {
     if (a === null) {
       this.writeNil();
