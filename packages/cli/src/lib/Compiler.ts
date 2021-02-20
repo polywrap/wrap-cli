@@ -39,16 +39,35 @@ export class Compiler {
 
   public async watchAndCompile(): Promise<boolean> {
     return new Promise((resolve, reject) => {
+      this.compile();
+
       const manifestPath = displayPath(this._config.manifestPath);
       const manifestDir = path.dirname(manifestPath);
+      let timeout: NodeJS.Timeout | null = null;
+
+      const eventText = {
+        add: "File added",
+        addDir: "Folder added",
+        change: "File changed",
+        unlink: "File removed",
+        unlinkDir: "Folder removed",
+      };
 
       chokidar
         .watch(manifestDir, {
-          ignored: ["**/build/**", "**/node_modules/**"],
+          ignored: ["**/build/**", "**/node_modules/**", "**/w3/**"],
           ignoreInitial: true,
         })
         .on("all", (eventType, path) => {
-          console.log("watch event", eventType, path);
+          if (timeout) {
+            clearTimeout(timeout);
+          }
+
+          timeout = setTimeout(() => {
+            console.log(`${eventText[eventType]}: `, path);
+            this.compile();
+            timeout = null;
+          }, 1000);
         });
     });
   }
