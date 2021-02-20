@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
+import { CodeGenerator, Project, SchemaComposer } from "../lib";
 import { fixParameters } from "../lib/helpers/parameters";
-import { CodeGenerator } from "../lib/generators/CodeGenerator";
 
 import chalk from "chalk";
 import axios from "axios";
@@ -108,12 +108,21 @@ export default {
     outputDir =
       (outputDir && filesystem.resolve(outputDir)) || filesystem.path("types");
 
-    const codeGenerator = new CodeGenerator({
+    const project = new Project({
       manifestPath,
-      generationFile,
+    });
+
+    const schemaComposer = new SchemaComposer({
+      project,
       ipfsProvider,
       ethProvider,
       ensAddress,
+    });
+
+    const codeGenerator = new CodeGenerator({
+      project,
+      schemaComposer,
+      generationFile,
       outputDir,
     });
 

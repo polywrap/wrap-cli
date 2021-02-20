@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { CodeGenerator } from "../lib/generators/CodeGenerator";
+import { SchemaComposer, Project, CodeGenerator } from "../lib";
 
 describe("CodeGenerator validation", () => {
   const manifestPath = path.join(__dirname, "project", "web3api.yaml");
@@ -8,8 +8,16 @@ describe("CodeGenerator validation", () => {
   const outputDir = path.join(__dirname, "project", "types");
 
   it("Should fail with invalid manifest path", async () => {
-    const generator = new CodeGenerator({
+    const project = new Project({
       manifestPath: "invalidManifest",
+      quiet: true
+    });
+    const schemaComposer = new SchemaComposer({
+      project
+    });
+    const generator = new CodeGenerator({
+      project,
+      schemaComposer,
       generationFile,
       outputDir,
     });
@@ -19,8 +27,16 @@ describe("CodeGenerator validation", () => {
   });
 
   it("Should fail with invalid generation file", async () => {
-    const generator = new CodeGenerator({
+    const project = new Project({
       manifestPath,
+      quiet: true
+    });
+    const schemaComposer = new SchemaComposer({
+      project
+    });
+    const generator = new CodeGenerator({
+      project,
+      schemaComposer,
       generationFile: path.join(__dirname, "project", "web3api-norun.gen.js"),
       outputDir,
     });
@@ -34,8 +50,16 @@ describe("CodeGenerator validation", () => {
       fs.rmdirSync(outputDir, { recursive: true });
     }
 
-    const generator = new CodeGenerator({
+    const project = new Project({
       manifestPath,
+      quiet: true
+    });
+    const schemaComposer = new SchemaComposer({
+      project
+    });
+    const generator = new CodeGenerator({
+      project,
+      schemaComposer,
       generationFile,
       outputDir,
     });

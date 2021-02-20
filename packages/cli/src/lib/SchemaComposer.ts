@@ -1,30 +1,80 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import fs from "fs";
-import path from "path";
+import { Project } from "./Project";
+
 import { Manifest, Uri, Web3ApiClient, UriRedirect } from "@web3api/client-js";
 import { composeSchema, ComposerOutput } from "@web3api/schema-compose";
 import { EnsPlugin } from "@web3api/ens-plugin-js";
 import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
 import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
+import fs from "fs";
+import path from "path";
+import * as gluegun from "gluegun";
 
 export interface SchemaConfig {
-  manifestPath: string;
+  project: Project;
+
+  // TODO: add this to the project configuration
+  //       and make it configurable
   ensAddress?: string;
   ethProvider?: string;
   ipfsProvider?: string;
 }
 
 export class SchemaComposer {
-  constructor(private _config: SchemaConfig) {}
+  private _client: Web3ApiClient;
+  private _composerOutput: ComposerOutput | undefined;
 
-  public async composeSchemas(manifest: Manifest): Promise<ComposerOutput> {
+  constructor(private _config: SchemaConfig) {
+    const { ensAddress, ethProvider, ipfsProvider } = this._config;
+    const redirects: UriRedirect[] = [];
+
+    if (ensAddress) {
+      redirects.push({
+        from: new Uri("w3://ens/ens.web3api.eth"),
+        to: {
+          factory: () => new EnsPlugin({ address: ensAddress }),
+          manifest: EnsPlugin.manifest(),
+        },
+      });
+    }
+
+    if (ethProvider) {
+      redirects.push({
+        from: new Uri("w3://ens/ethereum.web3api.eth"),
+        to: {
+          factory: () => new EthereumPlugin({ provider: ethProvider }),
+          manifest: EthereumPlugin.manifest(),
+        },
+      });
+    }
+
+    if (ipfsProvider) {
+      redirects.push({
+        from: new Uri("w3://ens/ipfs.web3api.eth"),
+        to: {
+          factory: () => new IpfsPlugin({ provider: ipfsProvider }),
+          manifest: IpfsPlugin.manifest(),
+        },
+      });
+    }
+
+    this._client = new Web3ApiClient({ redirects });
+  }
+
+  public async getComposedSchemas(): Promise<ComposerOutput> {
+    if (this._composerOutput) {
+      return Promise.resolve(this._composerOutput);
+    }
+
+    const { project } = this._config;
+
+    const manifest = await project.getManifest();
     const querySchemaPath = manifest.query?.schema.file;
     const mutationSchemaPath = manifest.mutation?.schema.file;
 
-    return composeSchema({
+    this._composerOutput = await composeSchema({
       schemas: {
         query: querySchemaPath
           ? {
@@ -44,6 +94,8 @@ export class SchemaComposer {
         local: (path: string) => Promise.resolve(this._fetchLocalSchema(path)),
       },
     });
+
+    return this._composerOutput;
   }
 
   private async _fetchExternalSchema(
@@ -62,67 +114,20 @@ export class SchemaComposer {
       }
     }
 
-    const { ensAddress, ethProvider, ipfsProvider } = this._config;
-
-    // If custom providers are supplied, try fetching the URI
-    // with them added to the client first
-    if (ensAddress || ethProvider || ipfsProvider) {
-      const redirects: UriRedirect[] = [];
-
-      if (ensAddress) {
-        redirects.push({
-          from: new Uri("w3://ens/ens.web3api.eth"),
-          to: {
-            factory: () => new EnsPlugin({ address: ensAddress }),
-            manifest: EnsPlugin.manifest(),
-          },
-        });
-      }
-
-      if (ethProvider) {
-        redirects.push({
-          from: new Uri("w3://ens/ethereum.web3api.eth"),
-          to: {
-            factory: () => new EthereumPlugin({ provider: ethProvider }),
-            manifest: EthereumPlugin.manifest(),
-          },
-        });
-      }
-
-      if (ipfsProvider) {
-        redirects.push({
-          from: new Uri("w3://ens/ipfs.web3api.eth"),
-          to: {
-            factory: () => new IpfsPlugin({ provider: ipfsProvider }),
-            manifest: IpfsPlugin.manifest(),
-          },
-        });
-      }
-
-      try {
-        const client = new Web3ApiClient({ redirects });
-        const api = await client.loadWeb3Api(new Uri(uri));
-        const schema = await api.getSchema(client);
-
-        if (schema) {
-          return schema;
-        }
-      } catch (e) {
-        // Do nothing, try using the default client below
-      }
+    try {
+      const api = await this._client.loadWeb3Api(new Uri(uri));
+      return await api.getSchema(this._client);
+    } catch (e) {
+      gluegun.print.error(e);
+      throw e;
     }
-
-    // Try fetching the schema with a vanilla Web3API client
-    const client = new Web3ApiClient();
-    const api = await client.loadWeb3Api(new Uri(uri));
-    return await api.getSchema(client);
   }
 
   private _fetchLocalSchema(schemaPath: string) {
     return fs.readFileSync(
       path.isAbsolute(schemaPath)
         ? schemaPath
-        : this._appendPath(this._config.manifestPath, schemaPath),
+        : this._appendPath(this._config.project.manifestPath, schemaPath),
       "utf-8"
     );
   }
