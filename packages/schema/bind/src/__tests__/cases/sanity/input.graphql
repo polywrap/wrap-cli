@@ -35,6 +35,7 @@ type CustomType {
   i32: Int32!
   i64: Int64!
   bytes: Bytes!
+  optBytes: Bytes
   boolean: Boolean!
   optBoolean: Boolean
   uArray: [UInt!]!

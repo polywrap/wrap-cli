@@ -8,8 +8,7 @@ const baseTypes = {
   i32: "i32",
   i64: "i64",
   string: "string",
-  bool: "bool",
-  bytes: "bytes",
+  bool: "bool"
 };
 
 export type BaseTypes = typeof baseTypes;

@@ -19,7 +19,7 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
 }
 
 export function writeCustomType(writer: Write, type: CustomType): void {
-  writer.writeMapLength(28);
+  writer.writeMapLength(29);
   writer.writeString("str");
   writer.writeString(type.str);
   writer.writeString("optStr");
@@ -48,6 +48,8 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.writeInt64(type.i64);
   writer.writeString("bytes");
   writer.writeBytes(type.bytes);
+  writer.writeString("optBytes");
+  writer.writeNullableBytes(type.optBytes);
   writer.writeString("boolean");
   writer.writeBool(type.boolean);
   writer.writeString("optBoolean");
@@ -154,6 +156,7 @@ export function readCustomType(reader: Read): CustomType {
   var _i64Set: bool = false;
   var _bytes: ArrayBuffer = new ArrayBuffer(0);
   var _bytesSet: bool = false;
+  var _optBytes: ArrayBuffer | null = null;
   var _boolean: bool = false;
   var _booleanSet: bool = false;
   var _optBoolean: Nullable<bool> = new Nullable<bool>();
@@ -233,6 +236,9 @@ export function readCustomType(reader: Read): CustomType {
     else if (field == "bytes") {
       _bytes = reader.readBytes();
       _bytesSet = true;
+    }
+    else if (field == "optBytes") {
+      _optBytes = reader.readNullableBytes();
     }
     else if (field == "boolean") {
       _boolean = reader.readBool();
@@ -402,6 +408,7 @@ export function readCustomType(reader: Read): CustomType {
     i32: _i32,
     i64: _i64,
     bytes: _bytes,
+    optBytes: _optBytes,
     boolean: _boolean,
     optBoolean: _optBoolean,
     uArray: _uArray,
