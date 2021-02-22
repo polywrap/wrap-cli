@@ -10,9 +10,9 @@ type {{type}} {
 {{/objectTypes}}
 {{#enumTypes}}
 enum {{type}} {
-  {{#values}}
-  {{ . }}
-  {{/values}}
+  {{#constants}}
+  {{.}}
+  {{/constants}}
 }
 
 {{/enumTypes}}
@@ -60,9 +60,9 @@ enum {{type}} @imported(
   uri: "{{uri}}",
   type: "{{nativeType}}"
 ) {
-  {{#values}}
+  {{#constants}}
   {{.}}
-  {{/values}}
+  {{/constants}}
 }
 
 {{/importedEnumTypes}}

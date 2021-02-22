@@ -5,9 +5,13 @@ import {
   isScalarType,
   PropertyDefinition,
 } from "../typeInfo";
-import { isEnumType } from "../typeInfo/enum";
-import { isObjectType } from "../typeInfo/object";
 import { TypeDefinitions } from "./type-definitions";
+
+export function contains(item: string, items: string[]): boolean {
+  return items.findIndex(
+    (el: string) => el === item
+  ) !== -1;
+}
 
 export function setPropertyType(
   property: PropertyDefinition,
@@ -21,13 +25,13 @@ export function setPropertyType(
       type: type.type,
       required: type.required,
     });
-  } else if (isEnumType(type.type, typeDefinitions.enumTypes)) {
+  } else if (contains(type.type, typeDefinitions.enumTypes)) {
     property.enum = createEnumDefinition({
       name: name,
       type: type.type,
       required: type.required,
     });
-  } else if (isObjectType(type.type, typeDefinitions.objectTypes)) {
+  } else if (contains(type.type, typeDefinitions.objectTypes)) {
     property.object = createObjectDefinition({
       name: name,
       type: type.type,

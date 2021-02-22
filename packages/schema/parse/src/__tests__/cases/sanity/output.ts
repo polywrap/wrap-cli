@@ -189,7 +189,7 @@ export const output: TypeInfo = {
   enumTypes: [
     createEnumDefinition({
       type: "CustomEnum",
-      values: ["TEXT", "BINARY"]
+      constants: ["TEXT", "BINARY"]
     })
   ],
   importedEnumTypes: [
@@ -198,7 +198,7 @@ export const output: TypeInfo = {
       uri: "testimport.uri.eth",
       namespace: "TestImport",
       nativeType: "Enum",
-      values: ["TEXT", "BYTES"]
+      constants: ["TEXT", "BYTES"]
     })
   ],
   queryTypes: [

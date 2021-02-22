@@ -19,16 +19,16 @@ const visitorEnter = (enumTypes: EnumDefinition[]) => ({
       return;
     }
 
-    const values: string[] = [];
+    const constants: string[] = [];
     if (node.values) {
       for (const value of node.values) {
-        values.push(value.name.value);
+        constants.push(value.name.value);
       }
     }
 
     const enumType = createEnumDefinition({
       type: node.name.value,
-      values: values,
+      constants,
     });
     enumTypes.push(enumType);
   },
