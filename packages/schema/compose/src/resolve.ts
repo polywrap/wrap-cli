@@ -126,6 +126,9 @@ type ImportMap = Record<
     Namespaced
 >;
 
+type EnumOrObject = ObjectDefinition | EnumDefinition;
+type ImportedEnumOrObject = ImportedObjectDefinition | ImportedEnumDefinition;
+
 // A transformation that converts all object definitions into
 // imported object definitions
 const extractObjectImportDependencies = (
@@ -134,9 +137,6 @@ const extractObjectImportDependencies = (
   namespace: string,
   uri: string
 ): TypeInfoTransforms => {
-
-  type EnumOrObject = ObjectDefinition | EnumDefinition;
-  type ImportedEnumOrObject = ImportedObjectDefinition | ImportedEnumDefinition;
 
   const findImport = (
     def: GenericDefinition,
@@ -559,60 +559,44 @@ async function resolveLocalImports(
 
         typesToImport[type.type] = type;
 
+        const findImport = (
+          def: GenericDefinition,
+          rootTypes: EnumOrObject[]
+        ) => {
+          // Skip objects that we've already processed
+          if (typesToImport[def.type]) {
+            return def;
+          }
+
+          // Find the ObjectDefinition
+          const idx = rootTypes.findIndex(
+            (obj) => obj.type === def.type
+          );
+
+          if (idx === -1) {
+            throw Error(
+              `resolveLocalImports: Cannot find the requested type within the TypeInfo.\n` +
+                `Type: ${def.type}\nTypeInfo: ${JSON.stringify(
+                  localTypeInfo
+                )}`
+            );
+          }
+
+          typesToImport[def.type] = {
+            ...rootTypes[idx],
+            name: null,
+            required: null,
+          };
+          return def;
+        }
+
         visitorFunc(type, {
           enter: {
             ObjectDefinition: (def: ObjectDefinition) => {
-              // Skip objects that we've already processed
-              if (typesToImport[def.type]) {
-                return def;
-              }
-
-              // Find the ObjectDefinition
-              const idx = localTypeInfo.objectTypes.findIndex(
-                (obj) => obj.type === def.type
-              );
-
-              if (idx === -1) {
-                throw Error(
-                  `resolveLocalImports: Cannot find the ObjectDefinition within the TypeInfo.\n` +
-                    `Type: ${def.type}\nTypeInfo: ${JSON.stringify(
-                      localTypeInfo
-                    )}`
-                );
-              }
-
-              typesToImport[def.type] = {
-                ...localTypeInfo.objectTypes[idx],
-                name: null,
-                required: null,
-              };
-              return def;
+              return findImport(def, localTypeInfo.objectTypes);
             },
             EnumDefinition: (def: EnumDefinition) => {
-              if (typesToImport[def.type]) {
-                return def;
-              }
-
-              // Find the EnumDefinition
-              const idx = localTypeInfo.enumTypes.findIndex(
-                (obj) => obj.type === def.type
-              );
-
-              if (idx === -1) {
-                throw Error(
-                  `resolveLocalImports: Cannot find the EnumDefinition within the TypeInfo.\n` +
-                    `Type: ${def.type}\nTypeInfo: ${JSON.stringify(
-                      localTypeInfo
-                    )}`
-                );
-              }
-
-              typesToImport[def.type] = {
-                ...localTypeInfo.enumTypes[idx],
-                name: null,
-                required: null,
-              };
-              return def;
+              return findImport(def, localTypeInfo.enumTypes);
             },
           },
         });
