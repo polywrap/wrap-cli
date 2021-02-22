@@ -8,6 +8,7 @@ import { parse } from "graphql";
 
 export * from "./typeInfo";
 export * from "./transform";
+export * from "./header";
 
 interface ParserOptions {
   extractors?: SchemaExtractor[];

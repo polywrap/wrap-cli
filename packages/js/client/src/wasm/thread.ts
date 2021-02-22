@@ -8,9 +8,10 @@ import {
   HostAction,
   u32,
   ThreadWakeStatus,
+  maxThreads,
+  maxTransferBytes,
 } from "./types";
 import { readBytes, readString, writeBytes, writeString } from "./utils";
-import { maxThreads, maxTransferBytes } from "./WasmWeb3Api";
 
 import { encode } from "@msgpack/msgpack";
 

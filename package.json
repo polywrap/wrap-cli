@@ -9,7 +9,8 @@
     ],
     "nohoist": [
       "**/@testing-library/*",
-      "**/@types/testing-library*"
+      "**/@types/testing-library*",
+      "**/@types/react-lottie"
     ]
   },
   "scripts": {
@@ -20,7 +21,8 @@
     "lint:ci": "lerna run lint --parallel",
     "test": "lerna run test --no-private",
     "test:ci": "lerna run test:ci --no-private --parallel",
-    "clean": "rimraf ./**/node_modules ./**/build ./**/coverage"
+    "clean": "rimraf ./**/node_modules ./**/build ./**/coverage",
+    "reset": "yarn clean && yarn && yarn build"
   },
   "devDependencies": {
     "lerna": "3.22.1",  

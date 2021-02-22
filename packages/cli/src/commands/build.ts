@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import { Compiler } from "../lib/Compiler";
+import { Compiler, Project, SchemaComposer } from "../lib";
 import { fixParameters } from "../lib/helpers/parameters";
 import { publishToIPFS } from "../lib/publishers/ipfs-publisher";
 
@@ -128,12 +128,21 @@ export default {
       }
     }
 
-    const compiler = new Compiler({
+    const project = new Project({
       manifestPath,
-      outputDir,
+    });
+
+    const schemaComposer = new SchemaComposer({
+      project,
       ensAddress,
       ethProvider,
       ipfsProvider,
+    });
+
+    const compiler = new Compiler({
+      project,
+      outputDir,
+      schemaComposer,
     });
 
     let result = false;

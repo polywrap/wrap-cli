@@ -43,7 +43,8 @@ export function readDirectory(dir: string): OutputDirectory {
 
 export function writeDirectory(
   outputDir: string,
-  dir: OutputDirectory
+  dir: OutputDirectory,
+  renderTemplate?: (path: string) => string
 ): string[] {
   const paths: string[] = [];
 
@@ -51,14 +52,36 @@ export function writeDirectory(
     const entryPath = path.join(root, entry.name);
     paths.push(entryPath);
 
-    if (entry.type === "File") {
-      writeFileSync(entryPath, entry.data);
-    } else {
-      for (const subEntry of entry.data) {
-        if (!existsSync(entryPath)) {
-          mkdirSync(entryPath);
+    switch (entry.type) {
+      case "File": {
+        writeFileSync(entryPath, entry.data);
+        break;
+      }
+      case "Directory": {
+        for (const subEntry of entry.data) {
+          if (!existsSync(entryPath)) {
+            mkdirSync(entryPath);
+          }
+          outputDirectoryEntry(entryPath, subEntry);
         }
-        outputDirectoryEntry(entryPath, subEntry);
+        break;
+      }
+      case "Template": {
+        if (!renderTemplate) {
+          throw Error(
+            `outputDirectoryEntry: No renderTemplate function provided. Found template ${entry.name}`
+          );
+        }
+
+        writeFileSync(entryPath, renderTemplate(entry.data));
+        break;
+      }
+      default: {
+        throw Error(
+          `outputDirectoryEntry: Unknown entry type. Entry: ${JSON.stringify(
+            entry
+          )}`
+        );
       }
     }
   };
