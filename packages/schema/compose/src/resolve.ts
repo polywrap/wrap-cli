@@ -137,7 +137,6 @@ const extractObjectImportDependencies = (
   namespace: string,
   uri: string
 ): TypeInfoTransforms => {
-
   const findImport = (
     def: GenericDefinition,
     namespaceType: string,
@@ -146,15 +145,11 @@ const extractObjectImportDependencies = (
     kind: DefinitionKind
   ): ImportedEnumOrObject & Namespaced => {
     // Find this type's ObjectDefinition in the root type info
-    let idx = rootTypes.findIndex(
-      (obj) => obj.type === def.type
-    );
+    let idx = rootTypes.findIndex((obj) => obj.type === def.type);
     let obj = undefined;
 
     if (idx === -1) {
-      idx = importedTypes.findIndex(
-        (obj) => obj.type === def.type
-      );
+      idx = importedTypes.findIndex((obj) => obj.type === def.type);
     } else {
       obj = rootTypes[idx];
     }
@@ -182,7 +177,7 @@ const extractObjectImportDependencies = (
       namespace,
       nativeType: def.type,
     };
-  }
+  };
 
   return {
     enter: {
@@ -249,7 +244,7 @@ const extractObjectImportDependencies = (
       },
     },
   };
-}
+};
 
 const namespaceTypes = (namespace: string): TypeInfoTransforms => ({
   enter: {
@@ -569,16 +564,12 @@ async function resolveLocalImports(
           }
 
           // Find the ObjectDefinition
-          const idx = rootTypes.findIndex(
-            (obj) => obj.type === def.type
-          );
+          const idx = rootTypes.findIndex((obj) => obj.type === def.type);
 
           if (idx === -1) {
             throw Error(
               `resolveLocalImports: Cannot find the requested type within the TypeInfo.\n` +
-                `Type: ${def.type}\nTypeInfo: ${JSON.stringify(
-                  localTypeInfo
-                )}`
+                `Type: ${def.type}\nTypeInfo: ${JSON.stringify(localTypeInfo)}`
             );
           }
 
@@ -588,7 +579,7 @@ async function resolveLocalImports(
             required: null,
           };
           return def;
-        }
+        };
 
         visitorFunc(type, {
           enter: {
