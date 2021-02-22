@@ -18,7 +18,7 @@ Commands:
     langs: ${supportedLangs.api.join(", ")}
   ${chalk.bold("app")} <lang>     Create a Web3API application
     langs: ${supportedLangs.app.join(", ")}
-  ${chalk.bold("plugin")} <lang>  Create a Web3API application
+  ${chalk.bold("plugin")} <lang>  Create a Web3API plugin
     langs: ${supportedLangs.plugin.join(", ")}
 
 Options:
