@@ -108,7 +108,7 @@ export class WriteSizer extends Write {
       return;
     }
     this.writeBytesLength(value.byteLength);
-    this.length += value.byteLength + 1;
+    this.length += value.byteLength;
   }
 
   writeArrayLength(length: u32): void {

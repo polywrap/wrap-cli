@@ -6,12 +6,9 @@ export async function publishToIPFS(
   buildPath: string,
   ipfs: string
 ): Promise<string> {
-  let url;
   try {
-    url = new URL(ipfs);
+    new URL(ipfs);
   } catch (e) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    url = null;
     throw Error(`IPFS URL Malformed: ${ipfs}\n${e}`);
   }
 

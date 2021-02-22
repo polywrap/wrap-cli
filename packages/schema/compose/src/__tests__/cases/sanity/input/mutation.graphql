@@ -25,6 +25,7 @@ type CustomMutationType {
   i: Int!
   i8: Int8!
   i64: Int64!
+  bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optStrOptArray: [String]

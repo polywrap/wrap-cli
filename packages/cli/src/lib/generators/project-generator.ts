@@ -5,7 +5,7 @@ import url from "url";
 import chalk from "chalk";
 import path from "path";
 
-function shouldUseYarn() {
+export function shouldUseYarn(): boolean {
   try {
     execSync("yarnpkg --version", { stdio: "ignore" });
     return true;
@@ -25,7 +25,7 @@ function getProxy() {
         .trim();
       return httpsProxy !== "null" ? httpsProxy : undefined;
     } catch (e) {
-      return;
+      return undefined;
     }
   }
 }

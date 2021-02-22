@@ -70,6 +70,8 @@ export const toWasmInit: MustacheFunction = () => {
         return `""`;
       case "Boolean":
         return "false";
+      case "Bytes":
+        return `new ArrayBuffer(0)`;
       default:
         return `new Objects.${type}()`;
     }
@@ -116,6 +118,8 @@ export const toWasm: MustacheFunction = () => {
         return applyNullable("string", nullable);
       case "Boolean":
         return applyNullable("bool", nullable);
+      case "Bytes":
+        return applyNullable("ArrayBuffer", nullable);
       default:
         return applyNullable("Objects." + type, nullable);
     }
