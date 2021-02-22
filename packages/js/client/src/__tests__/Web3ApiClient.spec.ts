@@ -392,4 +392,39 @@ describe("Web3ApiClient", () => {
       }
     });
   });
+
+  it("bytes-type", async () => {
+    const api = await buildAndDeployApi(
+      `${__dirname}/apis/bytes-type`,
+      ipfsProvider,
+      ensAddress
+    );
+    const ensUri = new Uri(`ens/${api.ensDomain}`);
+
+    const client = new Web3ApiClient({ redirects });
+
+    const response = await client.query<{
+      bytesMethod: Buffer
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          bytesMethod(
+            arg: {
+              prop: $buffer
+            }
+          )
+        }
+      `,
+      variables: {
+        buffer: Buffer.from("Argument Value")
+      }
+    });
+
+    expect(response.errors).toBeFalsy();
+    expect(response.data).toBeTruthy();
+    expect(response.data).toMatchObject({
+      bytesMethod: Buffer.from("Argument Value Sanity!").buffer
+    });
+  });
 });
