@@ -48,6 +48,12 @@ export class Compiler {
       // Get the fully composed schema
       const composed = await schemaComposer.getComposedSchemas();
 
+      if (!composed.combined) {
+        throw Error(
+          "compileWeb3Api: Schema composer failed to return a combined schema."
+        );
+      }
+
       const buildModule = async (moduleName: "mutation" | "query") => {
         const module = manifest[moduleName];
 

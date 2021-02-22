@@ -1,4 +1,4 @@
-### Web3API Header START ###
+export const header = `### Web3API Header START ###
 scalar UInt
 scalar UInt8
 scalar UInt16
@@ -20,11 +20,5 @@ directive @imported(
 directive @imports(
   types: [String!]!
 ) on OBJECT
-
 ### Web3API Header END ###
-
-type Mutation {
-  method(
-    arg: [String!]!
-  ): [Int64!]!
-}
+`;
