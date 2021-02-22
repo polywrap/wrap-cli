@@ -2,11 +2,7 @@ import React, { useEffect } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 
-import {
-  useWeb3ApiQuery,
-  createWeb3ApiRoot,
-  Web3ApiProvider,
-} from "@web3api/react";
+import { useWeb3ApiQuery, createWeb3ApiRoot } from "@web3api/react";
 import { Uri, UriRedirect } from "@web3api/client-js";
 import { EnsPlugin } from "@web3api/ens-plugin-js";
 import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
@@ -17,27 +13,6 @@ process.env.WORKER_PREFIX = "workerize-loader!";
 
 const SimpleStorageProvider = createWeb3ApiRoot("simpleStorage");
 // const OneInchProvider = createWeb3ApiRoot("1inch");
-
-const useSetData = (contract: string) => {
-  console.log("this is the contract! ", contract);
-  const {
-    execute: setData,
-    data: setDataInfo,
-    errors: setDataErrors,
-    loading: loadingSetData,
-  } = useWeb3ApiQuery({
-    key: "simpleStorage",
-    uri: new Uri("ens/api.simplestorage.eth"),
-    query: `mutation {
-      setData(options: {
-        address: "${contract}"
-        value: 5
-      })
-    }`,
-  });
-
-  return { setData, setDataInfo, setDataErrors, loadingSetData };
-};
 
 const ActionComponent = () => {
   useEffect(() => {
@@ -60,9 +35,26 @@ const ActionComponent = () => {
     query: `mutation { deployContract }`,
   });
 
-  const { setData, loadingSetData } = useSetData(
-    deployData?.deployContract as string
-  );
+  const { execute: setData, loading: loadingSetData } = useWeb3ApiQuery({
+    key: "simpleStorage",
+    uri: new Uri("ens/api.simplestorage.eth"),
+    query: `mutation {
+      setData(options: {
+        address: "${deployData?.deployContract}"
+        value: 5
+      })
+    }`,
+  });
+
+  const { execute: getStorageData } = useWeb3ApiQuery({
+    key: "simpleStorage",
+    uri: new Uri("ens/api.simplestorage.eth"),
+    query: `query {
+      getData(
+        address: "${deployData?.deployContract}"
+      )
+    }`,
+  });
 
   return (
     <>
@@ -80,6 +72,14 @@ const ActionComponent = () => {
               </p>
               <button onClick={setData}>Set the storage to 5!</button>
               {loadingSetData ? <p> Setting data to 5...</p> : null}
+              <button
+                onClick={async () => {
+                  const result = await getStorageData();
+                  console.log(result?.data);
+                }}
+              >
+                Check storage
+              </button>
             </>
           )}
           {deployContractErrors && (
