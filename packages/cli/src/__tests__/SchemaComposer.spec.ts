@@ -1,6 +1,6 @@
 import path from "path";
 import { loadManifest } from "../lib/helpers/manifest";
-import { SchemaComposer } from "../lib/SchemaComposer";
+import { SchemaComposer, Project } from "../lib";
 import { composedSchema } from "./project/sample";
 
 describe("SchemaComposer validation", () => {
@@ -12,10 +12,13 @@ describe("SchemaComposer validation", () => {
   });
 
   it("Should load & compose schema properly", async () => {
-    const composer = new SchemaComposer({
-      manifestPath,
+    const project = new Project({
+      manifestPath
     });
-    const schema = await composer.composeSchemas(manifest);
+    const composer = new SchemaComposer({
+      project
+    });
+    const schema = await composer.getComposedSchemas();
     expect(schema).toEqual(composedSchema);
   });
 });

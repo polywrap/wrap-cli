@@ -1,4 +1,4 @@
-query GetData($address: String!) {
+query {
   getData(
     address: $address
   )
