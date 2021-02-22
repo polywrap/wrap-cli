@@ -4,7 +4,7 @@ import {
   web3ApiState,
 } from "./handler";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { UriRedirect, Web3ApiClient, Uri } from "@web3api/client-js";
 
 interface Web3ApiProviderArguments {
@@ -27,9 +27,7 @@ const web3ApiQuery = (
 ) => {
   const { state, dispatch } = web3ApiState();
 
-  if (!options) {
-    return state;
-  }
+  if (!options) return state;
 
   const execute = async () => {
     dispatch({ type: "UPDATE", payload: { loading: true } });
@@ -38,12 +36,10 @@ const web3ApiQuery = (
     return { data, errors };
   };
 
-  useEffect(() => {
-    console.log("indeed");
-    dispatch({ type: "UPDATE", payload: { execute } });
-  }, [dispatch]);
-
-  return state;
+  return {
+    ...state,
+    execute,
+  };
 };
 
 export function createWeb3ApiRoot(
@@ -85,7 +81,6 @@ export const useWeb3ApiQuery = ({
   ...options
 }: QueryArguments): Web3ApiContextInterface => {
   if (!PROVIDERS[key]) {
-    // Maybe this error message is too long?
     throw new Error(
       `You are trying to use Web3ApiQuery hook with key: ${key} and it doesn't exists, you should pass the same key you used when created the Web3ApiRoot (Or none, if you just used Web3ApiProvider)`
     );

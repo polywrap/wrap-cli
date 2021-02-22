@@ -4,7 +4,6 @@ export interface Web3ApiContextInterface {
   data?: Record<string, unknown>;
   loading: boolean;
   errors?: Error[];
-  execute: () => undefined | Promise<{ data: any; errors?: Error[] }>;
 }
 
 function update(payload: Partial<Web3ApiContextInterface>) {
@@ -20,7 +19,6 @@ export const INITIAL_STATE = {
   data: undefined,
   loading: false,
   errors: undefined,
-  execute: () => undefined,
 };
 
 const reducer = (state: Web3ApiContextInterface, action: HandleAction) => ({
