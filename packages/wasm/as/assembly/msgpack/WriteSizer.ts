@@ -108,7 +108,7 @@ export class WriteSizer extends Write {
       return;
     }
     this.writeBytesLength(value.byteLength);
-    this.length += value.byteLength + 1;
+    this.length += value.byteLength;
   }
 
   writeArrayLength(length: u32): void {
@@ -272,7 +272,7 @@ export class WriteSizer extends Write {
 
   writeNullableArray<T>(
     a: Array<T> | null,
-    fn: (sizer: Sizer, item: T) => void
+    fn: (sizer: Write, item: T) => void
   ): void {
     if (a === null) {
       this.writeNil();

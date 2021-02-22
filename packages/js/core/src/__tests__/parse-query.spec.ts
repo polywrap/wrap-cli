@@ -16,6 +16,7 @@ describe("parseQuery", () => {
             prop: "hey"
             obj: {
               prop: 5
+              var: $varOne
             }
           }
           var1: $varOne
@@ -49,6 +50,7 @@ describe("parseQuery", () => {
           prop: "hey",
           obj: {
             prop: 5,
+            var: "var 1"
           },
         },
         var1: "var 1",

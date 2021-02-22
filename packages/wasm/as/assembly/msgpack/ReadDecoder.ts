@@ -362,7 +362,7 @@ export class ReadDecoder extends Read {
     return this.readMap(key_fn, value_fn);
   }
 
-  private isNextNil(): bool {
+  isNextNil(): bool {
     if (this.view.peekUint8() == Format.NIL) {
       this.view.discard(1);
       return true;

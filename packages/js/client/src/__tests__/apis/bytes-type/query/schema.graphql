@@ -1,0 +1,9 @@
+type Query {
+  bytesMethod(
+    arg: Args!
+  ): Bytes!
+}
+
+type Args {
+  prop: Bytes!
+}

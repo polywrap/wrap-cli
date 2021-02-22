@@ -10,12 +10,13 @@ import {
   deserializeanotherMethodResult,
   Input_anotherMethod
 } from "./serialization";
+import * as Objects from "../..";
 
 export class TestImport_Query {
 
   public static uri: string = "testimport.uri.eth";
 
-  public static importedMethod(input: Input_importedMethod): string {
+  public static importedMethod(input: Input_importedMethod): Objects.TestImport_Object | null {
     const args = serializeimportedMethodArgs(input);
     const result = w3_subinvoke(
       "testimport.uri.eth",

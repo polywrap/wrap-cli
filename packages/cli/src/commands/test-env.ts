@@ -15,7 +15,7 @@ Commands:
 export default {
   alias: ["t"],
   description: "Manage a test environment for Web3API",
-  run: async (toolbox: GluegunToolbox): Promise<void> => {
+  run: async (toolbox: GluegunToolbox): Promise<unknown> => {
     const { parameters } = toolbox;
     const command = parameters.first;
 
@@ -37,7 +37,7 @@ export default {
         "Failed to start test environment",
         "Warning starting test environment",
         async (_spinner) => {
-          return startupTestEnv(true);
+          await startupTestEnv(true);
         }
       );
     } else if (command === "down") {
@@ -46,7 +46,7 @@ export default {
         "Failed to shutdown test environment",
         "Warning shutting down test environment",
         async (_spinner) => {
-          return await shutdownTestEnv(true);
+          await shutdownTestEnv(true);
         }
       );
     } else {

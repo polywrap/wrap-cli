@@ -33,6 +33,7 @@ export const output: TypeInfo = {
         createScalarPropertyDefinition({ name: "i16", type: "Int16", required: true }),
         createScalarPropertyDefinition({ name: "i32", type: "Int32", required: true }),
         createScalarPropertyDefinition({ name: "i64", type: "Int64", required: true }),
+        createScalarPropertyDefinition({ name: "bytes", type: "Bytes", required: true }),
         createArrayPropertyDefinition({
           name: "uArray",
           type: "[UInt]",

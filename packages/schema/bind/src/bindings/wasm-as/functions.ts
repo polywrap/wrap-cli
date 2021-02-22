@@ -1,3 +1,5 @@
+import { isBaseType } from "./types";
+
 type MustacheFunction = () => (
   value: string,
   render: (template: string) => string
@@ -39,11 +41,12 @@ export const toWasmInit: MustacheFunction = () => {
     } else {
       const nullType = toWasm()(value, render);
       const nullable = "Nullable";
+      const nullOptional = "| null";
 
-      if (nullType.substr(0, nullable.length) === nullable) {
-        return `new ${nullType}()`;
-      } else {
+      if (nullType.substr(-nullOptional.length) === nullOptional) {
         return "null";
+      } else if (nullType.substr(0, nullable.length) === nullable) {
+        return `new ${nullType}()`;
       }
     }
 
@@ -67,8 +70,10 @@ export const toWasmInit: MustacheFunction = () => {
         return `""`;
       case "Boolean":
         return "false";
+      case "Bytes":
+        return `new ArrayBuffer(0)`;
       default:
-        return `new ${type}()`;
+        return `new Objects.${type}()`;
     }
   };
 };
@@ -113,8 +118,10 @@ export const toWasm: MustacheFunction = () => {
         return applyNullable("string", nullable);
       case "Boolean":
         return applyNullable("bool", nullable);
+      case "Bytes":
+        return applyNullable("ArrayBuffer", nullable);
       default:
-        return applyNullable(type, nullable);
+        return applyNullable("Objects." + type, nullable);
     }
   };
 };
@@ -132,7 +139,11 @@ const toWasmArray = (type: string, nullable: boolean): string => {
 
 const applyNullable = (type: string, nullable: boolean): string => {
   if (nullable) {
-    if (type.indexOf("Array") === 0 || type.indexOf("string") === 0) {
+    if (
+      type.indexOf("Array") === 0 ||
+      type.indexOf("string") === 0 ||
+      !isBaseType(type)
+    ) {
       return `${type} | null`;
     } else {
       return `Nullable<${type}>`;

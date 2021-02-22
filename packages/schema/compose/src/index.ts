@@ -78,6 +78,10 @@ export async function composeSchema(
       results.query.schema + results.mutation.schema,
       typeInfo
     );
+  } else if (results.query) {
+    result.combined = results.query.schema;
+  } else if (results.mutation) {
+    result.combined = results.mutation.schema;
   }
 
   return result;

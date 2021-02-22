@@ -118,6 +118,7 @@ export class EthereumPlugin extends Plugin {
     const signer = this.getSigner();
     const factory = new ethers.ContractFactory(abi, bytecode, signer);
     const contract = await factory.deploy(...args);
+    await contract.deployTransaction.wait();
     return contract.address;
   }
 

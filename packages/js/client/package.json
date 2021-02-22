@@ -3,12 +3,16 @@
   "version": "0.0.1-prealpha.1",
   "license": "MIT",
   "main": "build/index.js",
+  "bin": {
+    "web3api-worker-install": "bin/web3api-worker-install"
+  },
   "scripts": {
-    "build": "rimraf ./build && tsc --project tsconfig.build.json",
+    "build": "rimraf ./build && tsc --project tsconfig.build.json && npx webpack --config webpack.config.js",
     "lint": "eslint --color --ext .ts src/",
     "test": "TEST=true jest --passWithNoTests --runInBand --verbose",
     "test:watch": "TEST=true jest --watch --passWithNoTests --verbose",
-    "test:ci": "TEST=true yarn test:env:up && yarn test && yarn test:env:down",
+    "test:ci": "TEST=true yarn test:env:up && yarn test",
+    "posttest:ci": "yarn test:env:down",
     "test:env:up": "w3 test-env up",
     "test:env:down": "w3 test-env down"
   },
@@ -34,6 +38,10 @@
     "spawn-command": "0.0.2-1",
     "ts-jest": "26.1.4",
     "ts-node": "8.10.2",
-    "typescript": "3.9.7"
+    "typescript": "3.9.7",
+    "ts-loader": "8.0.17",
+    "webpack": "4.44.2",
+    "webpack-cli": "4.5.0",
+    "worker-plugin": "5.0.0"
   }
 }

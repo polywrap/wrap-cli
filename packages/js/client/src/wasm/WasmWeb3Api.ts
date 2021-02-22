@@ -2,7 +2,13 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-import { HostAction, ThreadWakeStatus } from "./types";
+import {
+  HostAction,
+  ThreadWakeStatus,
+  maxThreads,
+  maxTransferBytes,
+} from "./types";
+import { sleep } from "./utils";
 
 import {
   InvokeApiOptions,
@@ -19,8 +25,6 @@ import * as MsgPack from "@msgpack/msgpack";
 
 const Worker = require("web-worker");
 
-export const maxTransferBytes = 256; // do not change
-export const maxThreads = 128;
 let threadsActive = 0;
 let threadAvailable = 0;
 const threadMutexesBuffer = new SharedArrayBuffer(
@@ -56,7 +60,7 @@ export class WasmWeb3Api extends Api {
     // TODO: come up with a better future-proof solution
     while (threadsActive >= maxThreads) {
       // Wait for another thread to become available
-      await new Promise((resolve) => setTimeout(() => resolve(), 500));
+      await sleep(500);
     }
 
     threadsActive++;
@@ -70,14 +74,17 @@ export class WasmWeb3Api extends Api {
     Atomics.store(threadMutexes, threadId, 0);
 
     // Spawn the worker thread
-    let modulePath = "thread.js";
-    if (process.env.TEST) {
-      modulePath = "thread-loader.js";
+    let modulePath = "./thread.js";
+
+    if (typeof process === "object" && typeof window === "undefined") {
+      modulePath = `${__dirname}/thread.js`;
+
+      if (process.env.TEST) {
+        modulePath = `${__dirname}/thread-loader.js`;
+      }
     }
 
-    const prefix = process.env.WORKER_PREFIX || `${__dirname}/`;
-
-    const worker = new Worker(`${prefix}./${modulePath}`);
+    const worker = new Worker(modulePath);
 
     // Our transfer buffer, used to send data to the thread atomically.
     // The first byte in the transfer array specifies how many bytes are in the array (max 255).
@@ -91,112 +98,122 @@ export class WasmWeb3Api extends Api {
     let queryResult: ArrayBuffer | undefined;
     let queryError: string | undefined;
 
-    const awaitCompletion = new Promise((resolve) => {
-      let transferPending = false;
-      const transferData = async (data: ArrayBuffer, status: number) => {
-        let progress = 0;
-        const totalBytes = data.byteLength;
-        const dataView = new Uint8Array(data);
+    const awaitCompletion = new Promise(
+      (resolve: (value?: unknown) => void) => {
+        let transferPending = false;
+        const transferData = async (data: ArrayBuffer, status: number) => {
+          let progress = 0;
+          const totalBytes = data.byteLength;
+          const dataView = new Uint8Array(data);
 
-        while (progress < totalBytes) {
-          // Reset the transfer buffer
-          transfer.fill(0);
+          while (progress < totalBytes) {
+            // Reset the transfer buffer
+            transfer.fill(0);
 
-          // Calculate how many bytes we can send
-          const bytesLeft = totalBytes - progress;
-          const bytesToSend = Math.min(bytesLeft, maxTransferBytes - 1);
+            // Calculate how many bytes we can send
+            const bytesLeft = totalBytes - progress;
+            const bytesToSend = Math.min(bytesLeft, maxTransferBytes - 1);
 
-          // Set the first byte to the number of bytes we're sending
-          transfer.set([bytesToSend]);
+            // Set the first byte to the number of bytes we're sending
+            transfer.set([bytesToSend]);
 
-          // Copy our data in
-          transfer.set(dataView.slice(progress, progress + bytesToSend), 1);
+            // Copy our data in
+            transfer.set(dataView.slice(progress, progress + bytesToSend), 1);
 
-          transferPending = true;
-          progress += bytesToSend;
+            transferPending = true;
+            progress += bytesToSend;
 
-          // Notify the thread that we've sent data, giving it a specific
-          // status code
-          Atomics.store(threadMutexes, threadId, status);
-          Atomics.notify(threadMutexes, threadId, Infinity);
+            // Notify the thread that we've sent data, giving it a specific
+            // status code
+            Atomics.store(threadMutexes, threadId, status);
+            Atomics.notify(threadMutexes, threadId, Infinity);
 
-          // Wait until the transferPending flag has been reset
-          while (transferPending) {
-            await new Promise((resolve) => setTimeout(() => resolve(), 100));
+            // Wait until the transferPending flag has been reset
+            while (transferPending) {
+              await sleep(100);
+            }
           }
-        }
 
-        Atomics.store(threadMutexes, threadId, ThreadWakeStatus.SUBINVOKE_DONE);
-        Atomics.notify(threadMutexes, threadId, Infinity);
-      };
+          Atomics.store(
+            threadMutexes,
+            threadId,
+            ThreadWakeStatus.SUBINVOKE_DONE
+          );
+          Atomics.notify(threadMutexes, threadId, Infinity);
+        };
 
-      worker.addEventListener(
-        "message",
-        async (event: { data: HostAction }) => {
-          const action = event.data;
+        worker.addEventListener(
+          "message",
+          async (event: { data: HostAction }) => {
+            const action = event.data;
 
-          switch (action.type) {
-            case "Abort": {
-              abortMessage = action.message;
-              state = action.type;
-              resolve();
-              break;
-            }
-            case "LogQueryError": {
-              queryError = action.error;
-              state = action.type;
-              resolve();
-              break;
-            }
-            case "LogQueryResult": {
-              queryResult = action.result;
-              state = action.type;
-              resolve();
-              break;
-            }
-            // TODO: replace with proper logging
-            case "LogInfo": {
-              console.log(action.message);
-              break;
-            }
-            case "SubInvoke": {
-              const { data, error } = await client.invoke<
-                unknown | ArrayBuffer
-              >({
-                uri: new Uri(action.uri),
-                module: action.module as InvokableModules,
-                method: action.method,
-                input: action.input,
-              });
+            switch (action.type) {
+              case "Abort": {
+                abortMessage = action.message;
+                state = action.type;
+                resolve();
+                break;
+              }
+              case "LogQueryError": {
+                queryError = action.error;
+                state = action.type;
+                resolve();
+                break;
+              }
+              case "LogQueryResult": {
+                queryResult = action.result;
+                state = action.type;
+                resolve();
+                break;
+              }
+              // TODO: replace with proper logging
+              case "LogInfo": {
+                break;
+              }
+              case "SubInvoke": {
+                const { data, error } = await client.invoke<
+                  unknown | ArrayBuffer
+                >({
+                  uri: new Uri(action.uri),
+                  module: action.module as InvokableModules,
+                  method: action.method,
+                  input: action.input,
+                });
 
-              if (!error) {
-                let msgpack: ArrayBuffer;
-                if (data instanceof ArrayBuffer) {
-                  msgpack = data;
+                if (!error) {
+                  let msgpack: ArrayBuffer;
+                  if (data instanceof ArrayBuffer) {
+                    msgpack = data;
+                  } else {
+                    msgpack = MsgPack.encode(data);
+                  }
+
+                  // transfer the result
+                  await transferData(
+                    msgpack,
+                    ThreadWakeStatus.SUBINVOKE_RESULT
+                  );
                 } else {
-                  msgpack = MsgPack.encode(data);
+                  const encoder = new TextEncoder();
+                  const bytes = encoder.encode(
+                    `${error.name}: ${error.message}`
+                  );
+
+                  // transfer the error
+                  await transferData(bytes, ThreadWakeStatus.SUBINVOKE_ERROR);
                 }
 
-                // transfer the result
-                await transferData(msgpack, ThreadWakeStatus.SUBINVOKE_RESULT);
-              } else {
-                const encoder = new TextEncoder();
-                const bytes = encoder.encode(`${error.name}: ${error.message}`);
-
-                // transfer the error
-                await transferData(bytes, ThreadWakeStatus.SUBINVOKE_ERROR);
+                break;
               }
-
-              break;
-            }
-            case "TransferComplete": {
-              transferPending = false;
-              break;
+              case "TransferComplete": {
+                transferPending = false;
+                break;
+              }
             }
           }
-        }
-      );
-    });
+        );
+      }
+    );
 
     // Start the thread
     worker.postMessage({
@@ -239,7 +256,15 @@ export class WasmWeb3Api extends Api {
       }
       case "LogQueryResult": {
         if (decode) {
-          return { data: MsgPack.decode(queryResult as ArrayBuffer) };
+          try {
+            return { data: MsgPack.decode(queryResult as ArrayBuffer) };
+          } catch (err) {
+            throw Error(
+              `WasmWeb3Api: Failed to decode query result.\nResult: ${JSON.stringify(
+                queryResult
+              )}\nError: ${err}`
+            );
+          }
         } else {
           return { data: queryResult };
         }
