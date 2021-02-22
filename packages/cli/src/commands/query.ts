@@ -14,7 +14,7 @@ import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const HELP = `
-${chalk.bold("w3 test-recipes")} [options] ${chalk.bold("<recipe-script>")}
+${chalk.bold("w3 query")} [options] ${chalk.bold("<recipe-script>")}
 
 Options:
   -p, --port  Development server's port
@@ -22,7 +22,7 @@ Options:
 
 export default {
   alias: ["t"],
-  description: "Test Web3APIs using recipe scripts",
+  description: "Query Web3APIs using simple JSON recipe files",
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
     // eslint-disable-next-line prefer-const
