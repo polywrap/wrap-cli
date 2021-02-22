@@ -49,7 +49,9 @@ export class Compiler {
       const composed = await schemaComposer.getComposedSchemas();
 
       if (!composed.combined) {
-        throw Error("compileWeb3Api: Schema composer failed to return a combined schema.");
+        throw Error(
+          "compileWeb3Api: Schema composer failed to return a combined schema."
+        );
       }
 
       const buildModule = async (moduleName: "mutation" | "query") => {
