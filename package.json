@@ -9,7 +9,8 @@
     ],
     "nohoist": [
       "**/@testing-library/*",
-      "**/@types/testing-library*"
+      "**/@types/testing-library*",
+      "**/@types/react-lottie"
     ]
   },
   "scripts": {

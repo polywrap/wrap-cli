@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-require-imports
-const toolbox = require("gluegun/toolbox");
+import * as gluegun from "gluegun";
+import { Ora } from "ora";
 
 // Executes the function `f` in a command-line spinner, using the
 // provided captions for in-progress, error and failed messages.
@@ -15,20 +14,21 @@ export const withSpinner = async (
   text: string,
   errorText: string,
   warningText: string,
-  execute: (spinner: any) => Promise<any>
-): Promise<any> => {
-  const spinner = toolbox.print.spin(text);
+  execute: (spinner: Ora) => Promise<unknown>
+): Promise<unknown> => {
+  const spinner = gluegun.print.spin(text);
   try {
     const result = await execute(spinner);
-    if (typeof result === "object") {
-      const hasWarning = Object.keys(result).indexOf("warning") >= 0;
-      const hasResult = Object.keys(result).indexOf("result") >= 0;
+    if (result && typeof result === "object") {
+      const res = result as Record<string, unknown>;
+      const hasWarning = !!res.warning;
+      const hasResult = !!res.result;
       if (hasWarning && hasResult) {
-        if (result.warning !== null) {
-          spinner.warn(`${warningText}: ${result.warning}`);
+        if (res.warning !== null) {
+          spinner.warn(`${warningText}: ${res.warning}`);
         }
         spinner.succeed(text);
-        return result.result;
+        return res.result;
       } else {
         spinner.succeed(text);
         return result;
@@ -43,14 +43,13 @@ export const withSpinner = async (
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const step = (spinner: any, subject: string, text: string): any => {
+export const step = (spinner: Ora, subject: string, text?: string): unknown => {
   if (text) {
     spinner.stopAndPersist({
-      text: toolbox.print.colors.muted(`${subject} ${text}`),
+      text: gluegun.print.colors.muted(`${subject} ${text}`),
     });
   } else {
-    spinner.stopAndPersist({ text: toolbox.print.colors.muted(subject) });
+    spinner.stopAndPersist({ text: gluegun.print.colors.muted(subject) });
   }
   spinner.start();
   return spinner;
