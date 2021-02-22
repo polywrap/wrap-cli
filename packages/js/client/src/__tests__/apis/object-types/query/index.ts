@@ -3,6 +3,7 @@ import {
   Input_method2,
   Input_method3,
   Input_method4,
+  Input_method5,
   Result,
   Arg2
 } from "./w3";
@@ -52,6 +53,15 @@ export function method3(input: Input_method3): (Result | null)[] {
 export function method4(input: Input_method4): Result {
   return {
     prop: "prop",
+    nested: {
+      prop: "nested prop"
+    }
+  };
+}
+
+export function method5(input: Input_method5): Result {
+  return {
+    prop: String.UTF8.decode(input.arg.prop),
     nested: {
       prop: "nested prop"
     }

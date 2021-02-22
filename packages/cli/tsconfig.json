@@ -1,17 +1,18 @@
 {
+  "extends": "../../tsconfig",
   "compilerOptions": {
-    "rootDir": "src",
     "outDir": "build",
-    "declarationDir": "build/types",
-    "target": "es5",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "declaration": true,
-    "sourceMap": true,
+    "lib": [
+      "es2015",
+      "es5",
+      "dom",
+      "ESNext.AsyncIterable"
+    ],
     "esModuleInterop": true,
-    "strict": true,
-    "lib": ["es2015", "es6", "esnext.asynciterable", "dom"]
+    "declarationDir": "build/types"
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["src/**/__tests__/**/*.ts"]
+  "include": [
+    "./src/**/*.ts"
+  ],
+  "exclude": []
 }

@@ -19,7 +19,7 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
 }
 
 export function writeCustomType(writer: Write, type: CustomType): void {
-  writer.writeMapLength(27);
+  writer.writeMapLength(29);
   writer.writeString("str");
   writer.writeString(type.str);
   writer.writeString("optStr");
@@ -46,6 +46,10 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.writeInt32(type.i32);
   writer.writeString("i64");
   writer.writeInt64(type.i64);
+  writer.writeString("bytes");
+  writer.writeBytes(type.bytes);
+  writer.writeString("optBytes");
+  writer.writeNullableBytes(type.optBytes);
   writer.writeString("boolean");
   writer.writeBool(type.boolean);
   writer.writeString("optBoolean");
@@ -150,6 +154,9 @@ export function readCustomType(reader: Read): CustomType {
   var _i32Set: bool = false;
   var _i64: i64 = 0;
   var _i64Set: bool = false;
+  var _bytes: ArrayBuffer = new ArrayBuffer(0);
+  var _bytesSet: bool = false;
+  var _optBytes: ArrayBuffer | null = null;
   var _boolean: bool = false;
   var _booleanSet: bool = false;
   var _optBoolean: Nullable<bool> = new Nullable<bool>();
@@ -225,6 +232,13 @@ export function readCustomType(reader: Read): CustomType {
     else if (field == "i64") {
       _i64 = reader.readInt64();
       _i64Set = true;
+    }
+    else if (field == "bytes") {
+      _bytes = reader.readBytes();
+      _bytesSet = true;
+    }
+    else if (field == "optBytes") {
+      _optBytes = reader.readNullableBytes();
     }
     else if (field == "boolean") {
       _boolean = reader.readBool();
@@ -354,6 +368,9 @@ export function readCustomType(reader: Read): CustomType {
   if (!_i64Set) {
     throw new Error("Missing required property: 'i64: Int64'");
   }
+  if (!_bytesSet) {
+    throw new Error("Missing required property: 'bytes: Bytes'");
+  }
   if (!_booleanSet) {
     throw new Error("Missing required property: 'boolean: Boolean'");
   }
@@ -390,6 +407,8 @@ export function readCustomType(reader: Read): CustomType {
     i16: _i16,
     i32: _i32,
     i64: _i64,
+    bytes: _bytes,
+    optBytes: _optBytes,
     boolean: _boolean,
     optBoolean: _optBoolean,
     uArray: _uArray,

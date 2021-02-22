@@ -1,0 +1,7 @@
+type Query {
+  sampleQuery(query: String!): String!
+}
+
+type Mutation {
+  sampleMutation(data: Bytes!): SampleResult!
+}

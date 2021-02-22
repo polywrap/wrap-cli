@@ -11,6 +11,7 @@ const scalarTypes = {
   Int64: "Int64",
   String: "String",
   Boolean: "Boolean",
+  Bytes: "Bytes",
 };
 
 export type ScalarTypes = typeof scalarTypes;
