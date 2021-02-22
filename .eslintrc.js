@@ -25,7 +25,7 @@ module.exports = {
   ],
   rules: {
     "prettier/prettier": ["error"],
-    "@typescript-eslint/naming-convention": ["error", 
+    "@typescript-eslint/naming-convention": ["error",
       {selector: "default", format: ['camelCase']},
       {
         selector: [

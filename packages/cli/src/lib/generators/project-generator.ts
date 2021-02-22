@@ -25,7 +25,7 @@ function getProxy() {
         .trim();
       return httpsProxy !== "null" ? httpsProxy : undefined;
     } catch (e) {
-      return;
+      return undefined;
     }
   }
 }
