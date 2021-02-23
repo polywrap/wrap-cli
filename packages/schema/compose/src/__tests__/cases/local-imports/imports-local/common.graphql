@@ -2,6 +2,7 @@ type CommonType {
   prop: UInt8!
   nestedObject: NestedType!
   objectArray: [[ArrayObject]]!
+  enum: CommonEnum!
 }
 
 type NestedType {
@@ -10,4 +11,9 @@ type NestedType {
 
 type ArrayObject {
   prop: String!
+}
+
+enum CommonEnum {
+  STRING
+  BYTES
 }

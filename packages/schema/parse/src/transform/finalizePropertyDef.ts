@@ -24,6 +24,8 @@ export function populatePropertyType(property: PropertyDefinition): void {
     propertyType = property.scalar;
   } else if (property.object) {
     propertyType = property.object;
+  } else if (property.enum) {
+    propertyType = property.enum;
   } else {
     throw Error("Property type is undefined, this should never happen.");
   }
@@ -40,7 +42,11 @@ function populateArrayType(array: ArrayDefinition) {
     if (currentArray.array) {
       currentArray = currentArray.array;
       populateArrayType(currentArray);
-    } else if (currentArray.scalar || currentArray.object) {
+    } else if (
+      currentArray.scalar ||
+      currentArray.object ||
+      currentArray.enum
+    ) {
       baseTypeFound = true;
     } else {
       throw Error(
@@ -57,6 +63,8 @@ function populateArrayType(array: ArrayDefinition) {
     array.item = array.array;
   } else if (array.scalar) {
     array.item = array.scalar;
+  } else if (array.enum) {
+    array.item = array.enum;
   } else {
     array.item = array.object;
   }

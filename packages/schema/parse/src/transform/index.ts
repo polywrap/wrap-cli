@@ -14,6 +14,8 @@ import {
   ImportedObjectDefinition,
   DefinitionKind,
   isKind,
+  EnumDefinition,
+  ImportedEnumDefinition,
 } from "../typeInfo";
 
 export * from "./finalizePropertyDef";
@@ -32,10 +34,14 @@ export interface TypeInfoTransformer {
   ObjectDefinition?: (def: ObjectDefinition) => ObjectDefinition;
   AnyDefinition?: (def: AnyDefinition) => AnyDefinition;
   ScalarDefinition?: (def: ScalarDefinition) => ScalarDefinition;
+  EnumDefinition?: (def: EnumDefinition) => EnumDefinition;
   PropertyDefinition?: (def: PropertyDefinition) => PropertyDefinition;
   ArrayDefinition?: (def: ArrayDefinition) => ArrayDefinition;
   MethodDefinition?: (def: MethodDefinition) => MethodDefinition;
   QueryDefinition?: (def: QueryDefinition) => QueryDefinition;
+  ImportedEnumDefinition?: (
+    def: ImportedEnumDefinition
+  ) => ImportedEnumDefinition;
   ImportedQueryDefinition?: (
     def: ImportedQueryDefinition
   ) => ImportedQueryDefinition;
@@ -52,6 +58,10 @@ export function performTransforms(
 
   if (transforms.enter && transforms.enter.TypeInfo) {
     result = transforms.enter.TypeInfo(result);
+  }
+
+  for (let i = 0; i < result.enumTypes.length; ++i) {
+    result.enumTypes[i] = visitEnumDefinition(result.enumTypes[i], transforms);
   }
 
   for (let i = 0; i < result.objectTypes.length; ++i) {
@@ -78,6 +88,13 @@ export function performTransforms(
   for (let i = 0; i < result.importedQueryTypes.length; ++i) {
     result.importedQueryTypes[i] = visitImportedQueryDefinition(
       result.importedQueryTypes[i],
+      transforms
+    );
+  }
+
+  for (let i = 0; i < result.importedEnumTypes.length; ++i) {
+    result.importedEnumTypes[i] = visitImportedEnumDefinition(
+      result.importedEnumTypes[i],
       transforms
     );
   }
@@ -125,6 +142,10 @@ export function visitAnyDefinition(
     result.object = visitObjectDefinition(result.object, transforms);
   }
 
+  if (result.enum) {
+    result.enum = visitEnumDefinition(result.enum, transforms);
+  }
+
   return result;
 }
 
@@ -132,6 +153,15 @@ export function visitScalarDefinition(
   def: ScalarDefinition,
   transforms: TypeInfoTransforms
 ): ScalarDefinition {
+  let result = Object.assign({}, def);
+  result = transformType(result, transforms.enter);
+  return transformType(result, transforms.leave);
+}
+
+export function visitEnumDefinition(
+  def: EnumDefinition,
+  transforms: TypeInfoTransforms
+): EnumDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
   return transformType(result, transforms.leave);
@@ -222,6 +252,13 @@ export function visitImportedObjectDefinition(
   return visitObjectDefinition(def, transforms) as ImportedObjectDefinition;
 }
 
+export function visitImportedEnumDefinition(
+  def: ImportedEnumDefinition,
+  transforms: TypeInfoTransforms
+): ImportedEnumDefinition {
+  return visitEnumDefinition(def, transforms) as ImportedEnumDefinition;
+}
+
 export function transformType<TDefinition extends GenericDefinition>(
   type: TDefinition,
   transform?: TypeInfoTransformer
@@ -236,10 +273,12 @@ export function transformType<TDefinition extends GenericDefinition>(
     ObjectDefinition,
     AnyDefinition,
     ScalarDefinition,
+    EnumDefinition,
     ArrayDefinition,
     PropertyDefinition,
     MethodDefinition,
     QueryDefinition,
+    ImportedEnumDefinition,
     ImportedQueryDefinition,
     ImportedObjectDefinition,
   } = transform;
@@ -256,6 +295,9 @@ export function transformType<TDefinition extends GenericDefinition>(
   if (ScalarDefinition && isKind(result, DefinitionKind.Scalar)) {
     result = Object.assign(result, ScalarDefinition(result as any));
   }
+  if (EnumDefinition && isKind(result, DefinitionKind.Enum)) {
+    result = Object.assign(result, EnumDefinition(result as any));
+  }
   if (ArrayDefinition && isKind(result, DefinitionKind.Array)) {
     result = Object.assign(result, ArrayDefinition(result as any));
   }
@@ -270,6 +312,9 @@ export function transformType<TDefinition extends GenericDefinition>(
   }
   if (ImportedQueryDefinition && isKind(result, DefinitionKind.ImportedQuery)) {
     result = Object.assign(result, ImportedQueryDefinition(result as any));
+  }
+  if (ImportedEnumDefinition && isKind(result, DefinitionKind.ImportedEnum)) {
+    result = Object.assign(result, ImportedEnumDefinition(result as any));
   }
   if (
     ImportedObjectDefinition &&

@@ -9,10 +9,11 @@ import {
   extractNamedType,
   State,
 } from "./object-types-utils";
+import { Blackboard } from "./Blackboard";
 
 import {
   DocumentNode,
-  TypeDefinitionNode,
+  ObjectTypeDefinitionNode,
   NonNullTypeNode,
   NamedTypeNode,
   ListTypeNode,
@@ -21,8 +22,12 @@ import {
   DirectiveNode,
 } from "graphql";
 
-const visitorEnter = (objectTypes: ObjectDefinition[], state: State) => ({
-  ObjectTypeDefinition: (node: TypeDefinitionNode) => {
+const visitorEnter = (
+  objectTypes: ObjectDefinition[],
+  state: State,
+  blackboard: Blackboard
+) => ({
+  ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     // Skip non-custom types
     if (node.name.value === "Query" || node.name.value === "Mutation") {
       return;
@@ -47,7 +52,7 @@ const visitorEnter = (objectTypes: ObjectDefinition[], state: State) => ({
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    extractNamedType(node, state);
+    extractNamedType(node, state, blackboard);
   },
   ListType: (_node: ListTypeNode) => {
     extractListType(state);
@@ -58,7 +63,7 @@ const visitorEnter = (objectTypes: ObjectDefinition[], state: State) => ({
 });
 
 const visitorLeave = (state: State) => ({
-  ObjectTypeDefinition: (_node: TypeDefinitionNode) => {
+  ObjectTypeDefinition: (_node: ObjectTypeDefinitionNode) => {
     state.currentType = undefined;
   },
   FieldDefinition: (_node: FieldDefinitionNode) => {
@@ -71,12 +76,13 @@ const visitorLeave = (state: State) => ({
 
 export function extractObjectTypes(
   astNode: DocumentNode,
-  typeInfo: TypeInfo
+  typeInfo: TypeInfo,
+  blackboard: Blackboard
 ): void {
   const state: State = {};
 
   visit(astNode, {
-    enter: visitorEnter(typeInfo.objectTypes, state),
+    enter: visitorEnter(typeInfo.objectTypes, state, blackboard),
     leave: visitorLeave(state),
   });
 }

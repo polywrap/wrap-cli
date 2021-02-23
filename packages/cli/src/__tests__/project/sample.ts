@@ -17,7 +17,7 @@ export const composedSchema = {
     "  uri: String!\n" +
     "  namespace: String!\n" +
     "  nativeType: String!\n" +
-    ") on OBJECT\n" +
+    ") on OBJECT | ENUM\n" +
     "\n" +
     "directive @imports(\n" +
     "  types: [String!]!\n" +
@@ -53,7 +53,7 @@ export const composedSchema = {
     "  uri: String!\n" +
     "  namespace: String!\n" +
     "  nativeType: String!\n" +
-    ") on OBJECT\n" +
+    ") on OBJECT | ENUM\n" +
     "\n" +
     "directive @imports(\n" +
     "  types: [String!]!\n" +
@@ -91,7 +91,7 @@ export const composedSchema = {
     "  uri: String!\n" +
     "  namespace: String!\n" +
     "  nativeType: String!\n" +
-    ") on OBJECT\n" +
+    ") on OBJECT | ENUM\n" +
     "\n" +
     "directive @imports(\n" +
     "  types: [String!]!\n" +
