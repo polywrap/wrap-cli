@@ -32,7 +32,6 @@ function toGraphQL(def: GenericDefinition, prefixed = false): string {
     case DefinitionKind.Object:
     case DefinitionKind.Scalar:
     case DefinitionKind.ImportedObject:
-      return applyRequired(def.type, def.required);
     case DefinitionKind.Enum:
     case DefinitionKind.ImportedEnum:
       if (prefixed) {
