@@ -38,7 +38,7 @@ export class Compiler {
     }
   }
 
-  public async watchAndCompile() {
+  public async watchAndCompile(): Promise<void> {
     const keyPressListener = () => {
       readline.emitKeypressEvents(process.stdin);
       process.stdin.on("keypress", (str, key) => {
