@@ -12,27 +12,27 @@ export interface CustomType {
 
 export class Blackboard {
 
-  private _namedTypes?: CustomType[];
+  private _customTypes?: CustomType[];
 
   constructor(private _astNode: DocumentNode) {}
 
   getCustomTypes(): CustomType[] {
-    if (this._namedTypes) {
-      return this._namedTypes;
+    if (this._customTypes) {
+      return this._customTypes;
     }
 
-    const namedTypes: CustomType[] = [];
+    const customTypes: CustomType[] = [];
 
     visit(this._astNode, {
       enter: {
         ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
-          namedTypes.push({
+          customTypes.push({
             name: node.name.value,
             type: "object"
           });
         },
         EnumTypeDefinition: (node: EnumTypeDefinitionNode) => {
-          namedTypes.push({
+          customTypes.push({
             name: node.name.value,
             type: "enum"
           });
@@ -40,7 +40,7 @@ export class Blackboard {
       }
     });
 
-    this._namedTypes = namedTypes;
-    return this._namedTypes;
+    this._customTypes = customTypes;
+    return this._customTypes;
   }
 }
