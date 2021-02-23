@@ -42,10 +42,10 @@ export class CustomType {
   optObject: Objects.AnotherType | null;
   objectArray: Array<Objects.AnotherType>;
   optObjectArray: Array<Objects.AnotherType | null> | null;
-  en: string;
-  optEnum: string | null;
-  enumArray: Array<string>;
-  optEnumArray: Array<string | null> | null;
+  en: Enums.CustomEnum;
+  optEnum: Nullable<Enums.CustomEnum>;
+  enumArray: Array<Enums.CustomEnum>;
+  optEnumArray: Array<Nullable<Enums.CustomEnum>> | null;
 
   static toBuffer(type: CustomType): ArrayBuffer {
     return serializeCustomType(type);

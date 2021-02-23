@@ -45,10 +45,10 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   {{/object}}
   {{#enum}}
   {{#required}}
-  writer.writeString(type.{{name}});
+  writer.writeInt32(type.{{name}});
   {{/required}}
   {{^required}}
-  writer.writeNullableString(type.{{name}});
+  writer.writeNullableInt32(type.{{name}});
   {{/required}}
   {{/enum}}
   {{/properties}}

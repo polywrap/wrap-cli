@@ -1,7 +1,3 @@
-export * from "./imported/enums";
+export * from "./CustomEnum";
 
-export const CustomEnum: Array<string> = [
-  "STRING",
-  "BYTES",
-]
-
+export * from "./imported/TestImport_Enum";

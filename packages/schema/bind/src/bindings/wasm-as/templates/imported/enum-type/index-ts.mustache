@@ -1,0 +1,15 @@
+export enum {{type}} {
+  {{#constants}}
+  {{.}},
+  {{/constants}}
+}
+
+export function match{{type}}ByValue(value: i32): {{type}} {
+  {{#constants}}
+  if ({{type}}.{{.}} == value) {
+    return {{type}}.{{.}};
+  }
+  {{/constants}}
+
+  throw new Error("Invalid value for enum '{{type}}'");
+}

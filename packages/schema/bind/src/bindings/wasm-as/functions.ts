@@ -74,7 +74,7 @@ export const toWasmInit: MustacheFunction = () => {
         return `new ArrayBuffer(0)`;
       default:
         if (type.includes("Enum_")) {
-          return `""`;
+          return "0";
         } else {
           return `new ${type}()`;
         }
@@ -137,7 +137,7 @@ export const toWasm: MustacheFunction = () => {
         break;
       default:
         if (type.includes("Enum_")) {
-          type = "string";
+          type = `Enums.${type.replace("Enum_", "")}`;
         } else {
           type = `Objects.${type}`;
         }
@@ -163,7 +163,7 @@ const applyNullable = (type: string, nullable: boolean): string => {
     if (
       type.indexOf("Array") === 0 ||
       type.indexOf("string") === 0 ||
-      !isBaseType(type)
+      (!type.includes("Enums.") && !isBaseType(type))
     ) {
       return `${type} | null`;
     } else {

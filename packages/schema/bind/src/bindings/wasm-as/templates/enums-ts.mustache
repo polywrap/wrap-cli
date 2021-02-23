@@ -1,12 +1,7 @@
-{{#importedEnumTypes}}
-export * from "./imported/enums";
-{{/importedEnumTypes}}
-
 {{#enumTypes}}
-export const {{type}}: Array<string> = [
-  {{#constants}}
-  "{{.}}",
-  {{/constants}}
-]
-
+export * from "./{{type}}";
 {{/enumTypes}}
+
+{{#importedEnumTypes}}
+export * from "./imported/{{type}}";
+{{/importedEnumTypes}}

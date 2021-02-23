@@ -109,10 +109,10 @@ export function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}
   {{/array}}
   {{#enum}}
   {{#required}}
-  writer.writeString(result);
+  writer.writeInt32(result);
   {{/required}}
   {{^required}}
-  writer.writeNullableString(result);
+  writer.writeNullableInt32(result);
   {{/required}}
   {{/enum}}
   {{#object}}

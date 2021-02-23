@@ -42,10 +42,10 @@ export function write{{name}}Args(
   {{/array}}
   {{#enum}}
   {{#required}}
-  writer.writeString(input.{{name}});
+  writer.writeInt32(input.{{name}});
   {{/required}}
   {{^required}}
-  writer.writeNullableString(input.{{name}});
+  writer.writeNullableInt32(input.{{name}});
   {{/required}}
   {{/enum}}
   {{#object}}

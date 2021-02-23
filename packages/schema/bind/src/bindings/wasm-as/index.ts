@@ -50,6 +50,19 @@ export function generateBinding(schema: string): OutputDirectory {
       });
     }
 
+    // Generate imported enum type folders
+    for (const importedEnumType of typeInfo.importedEnumTypes) {
+      importEntries.push({
+        type: "Directory",
+        name: importedEnumType.type,
+        data: generateFiles(
+          "./templates/imported/enum-type",
+          importedEnumType,
+          subTemplates
+        ),
+      });
+    }
+
     // Generate imported object type folders
     for (const importedObectType of typeInfo.importedObjectTypes) {
       importEntries.push({
@@ -79,6 +92,15 @@ export function generateBinding(schema: string): OutputDirectory {
       type: "Directory",
       name: queryType.type,
       data: generateFiles("./templates/query-type", queryType, subTemplates),
+    });
+  }
+
+  // Generate enum type folders
+  for (const enumType of typeInfo.enumTypes) {
+    entries.push({
+      type: "Directory",
+      name: enumType.type,
+      data: generateFiles("./templates/enum-type", enumType, subTemplates),
     });
   }
 
