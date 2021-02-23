@@ -32,4 +32,8 @@ export class Project {
 
     return Promise.resolve(this._manifest);
   }
+
+  clearManifest(): void {
+    this._manifest = undefined;
+  }
 }

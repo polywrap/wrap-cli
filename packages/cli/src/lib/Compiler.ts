@@ -38,7 +38,7 @@ export class Compiler {
     }
   }
 
-  public async watchAndCompile(): Promise<void> {
+  public async watchAndCompile(verbose?: boolean): Promise<void> {
     const keyPressListener = () => {
       readline.emitKeypressEvents(process.stdin);
       process.stdin.on("keypress", (str, key) => {
@@ -54,12 +54,10 @@ export class Compiler {
       process.stdin.resume();
     };
 
-    await this.compile();
-    toolbox.print.info(`Press Ctrl + C or ESC or q to exit`);
+    await this.compile(verbose);
+    gluegun.print.info(`Press Ctrl + C or ESC or q to exit`);
     keyPressListener();
 
-    const manifestPath = displayPath(this._config.manifestPath);
-    const manifestDir = path.dirname(manifestPath);
     let events: Array<{ event: string; path: string }> = [];
 
     const eventText = {
@@ -70,7 +68,7 @@ export class Compiler {
       unlinkDir: "Folder removed",
     };
 
-    const watcher = chokidar.watch(manifestDir, {
+    const watcher = chokidar.watch(this._config.project.manifestDir, {
       ignored: ["**/build/**", "**/node_modules/**", "**/w3/**"],
       ignoreInitial: true,
     });
@@ -93,13 +91,14 @@ export class Compiler {
         clearInterval(interval);
 
         events.forEach((event) => {
-          toolbox.print.info(`${event.event}: ${event.path}`);
+          gluegun.print.info(`${event.event}: ${event.path}`);
         });
+        events = [];
 
-        await this.compile();
+        this._config.project.clearManifest();
+        await this.compile(verbose);
         keyPressListener();
 
-        events = [];
         interval = setInterval(intervalHandler, 1000);
       }
     };
@@ -107,41 +106,14 @@ export class Compiler {
     interval = setInterval(intervalHandler, 1000);
   }
 
-  private async _loadManifest(quiet = false): Promise<Manifest> {
-    const run = () => {
-      return Web3ApiManifest.load(this._config.manifestPath);
-    };
-
-    if (quiet) {
-      return run();
-    } else {
-      const manifestPath = displayPath(this._config.manifestPath);
-
-      return await withSpinner(
-        `Load web3api from ${manifestPath}`,
-        `Failed to load web3api from ${manifestPath}`,
-        `Warnings loading web3api from ${manifestPath}`,
-        async (_spinner) => {
-          return run();
-        }
-      );
-    }
-  }
-
-  private async _compileWeb3API(
-    manifest: Manifest,
-    quiet?: boolean,
-    verbose?: boolean
-  ) {
-    const run = async (spinner?: any) => {
-      const { outputDir } = this._config;
+  private async _compileWeb3Api(verbose?: boolean) {
+    const { outputDir, project, schemaComposer } = this._config;
 
     const run = async (spinner?: Ora): Promise<void> => {
       // Init & clean build directory
       this._cleanDir(this._config.outputDir);
 
       const manifest = await project.getManifest();
-
       // Get the fully composed schema
       const composed = await schemaComposer.getComposedSchemas();
 
