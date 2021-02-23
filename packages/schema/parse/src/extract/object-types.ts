@@ -13,7 +13,7 @@ import { Blackboard } from "./Blackboard";
 
 import {
   DocumentNode,
-  TypeDefinitionNode,
+  ObjectTypeDefinitionNode,
   NonNullTypeNode,
   NamedTypeNode,
   ListTypeNode,
@@ -27,7 +27,7 @@ const visitorEnter = (
   state: State,
   blackboard: Blackboard
 ) => ({
-  ObjectTypeDefinition: (node: TypeDefinitionNode) => {
+  ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     // Skip non-custom types
     if (node.name.value === "Query" || node.name.value === "Mutation") {
       return;
@@ -63,7 +63,7 @@ const visitorEnter = (
 });
 
 const visitorLeave = (state: State) => ({
-  ObjectTypeDefinition: (_node: TypeDefinitionNode) => {
+  ObjectTypeDefinition: (_node: ObjectTypeDefinitionNode) => {
     state.currentType = undefined;
   },
   FieldDefinition: (_node: FieldDefinitionNode) => {
