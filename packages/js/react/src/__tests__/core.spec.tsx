@@ -1,3 +1,5 @@
+import { buildAndDeployApi } from "./helpers";
+
 import React from "react";
 import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import { UriRedirect, Uri } from "@web3api/client-js";
@@ -7,7 +9,7 @@ import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 import { EnsPlugin } from "@web3api/ens-plugin-js";
 import { Web3ApiProvider, useWeb3ApiQuery } from "@web3api/react";
 
-jest.setTimeout(30000);
+jest.setTimeout(300000);
 
 describe("Web3Api Wrapper", () => {
   let ipfsProvider: string;
@@ -44,7 +46,7 @@ describe("Web3Api Wrapper", () => {
       {
         from: new Uri("w3://ens/ipfs.web3api.eth"),
         to: {
-          factory: () => new IpfsPlugin({ provider: ipfsProvider }),
+          factory: () => new IpfsPlugin({ provider: ipfs }),
           manifest: IpfsPlugin.manifest(),
         },
       },
@@ -59,6 +61,20 @@ describe("Web3Api Wrapper", () => {
   });
 
   it("Deploys simple storage contract", async () => {
+    // console.log("vbbefore");
+    // console.log(__dirname);
+    // console.log(ipfsProvider);
+    // console.log(ensAddress);
+    // const api = await buildAndDeployApi(
+    //   `${__dirname}/apis/simple-storage`,
+    //   ipfsProvider,
+    //   ensAddress
+    // );
+    // console.log("after");
+
+    // const ensUri = new Uri(`ens/${api.ensDomain}`);
+    // const ipfsUri = new Uri(`ipfs/${api.ipfsCid}`);
+
     const Provider = ({ children }: { children: React.ReactNode }) => {
       return (
         <Web3ApiProvider redirects={redirects}>{children}</Web3ApiProvider>
@@ -66,10 +82,13 @@ describe("Web3Api Wrapper", () => {
     };
 
     const DeployComponent = () => {
-      const { execute: deployContract, data } = useWeb3ApiQuery({
+      const { execute: deployContract, data, errors } = useWeb3ApiQuery({
         uri: new Uri("ens/api.simplestorage.eth"),
         query: `mutation { deployContract }`,
       });
+
+      console.log("heres the data ", data);
+      console.log("heres the errors ", errors);
 
       return data && data.deployContract ? (
         <p>{data.deployContract as string}</p>
@@ -84,14 +103,16 @@ describe("Web3Api Wrapper", () => {
       </Provider>
     );
 
+    console.log(screen);
+
     fireEvent.click(screen.getByText("Deploy"));
     await waitFor(() => screen.getByText(/0x/));
     expect(screen.getByText(/0x/)).toBeTruthy();
   });
 
-  it("Storage should be equal zero (0)", () => {});
+  // it("Storage should be equal zero (0)", () => {});
 
-  it("Should update storage data to five ", () => {});
+  // it("Should update storage data to five ", () => {});
 
-  it("Storage should be equal to five (5)", () => {});
+  // it("Storage should be equal to five (5)", () => {});
 });
