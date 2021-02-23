@@ -106,7 +106,7 @@ function generateFiles(
 
       // sub-templates contain '_' in their file names
       if (name.indexOf("_") > -1) {
-        subTemplates[name] = file.data as string;
+        subTemplates[name] = file.data;
       }
     }
 
@@ -120,7 +120,7 @@ function generateFiles(
           output.push({
             type: "File",
             name: name.replace("-", "."),
-            data: Mustache.render(dirent.data as string, config, subTemplates),
+            data: Mustache.render(dirent.data, config, subTemplates),
           });
         }
       } else if (dirent.type === "Directory" && subDirectories) {

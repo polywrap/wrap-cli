@@ -55,9 +55,16 @@ export function extractNamedType(
     return;
   }
 
+  if (!property.name) {
+    throw Error(
+      "extractNamedType: Invalid state. Uninitialized currentProperty, name not found.\n" +
+      `Method: ${JSON.stringify(property, null, 2)}\nState: ${JSON.stringify(state, null, 2)}`
+    );
+  }
+
   setPropertyType(
     property,
-    property.name as string,
+    property.name,
     {
       type: node.name.value,
       required: state.nonNullType,
