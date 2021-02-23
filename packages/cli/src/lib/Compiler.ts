@@ -8,6 +8,7 @@ import { step, withSpinner, outputManifest } from "./helpers";
 import { bindSchema, writeDirectory } from "@web3api/schema-bind";
 import path from "path";
 import chokidar from "chokidar";
+import readline from "readline";
 import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
@@ -37,39 +38,73 @@ export class Compiler {
     }
   }
 
-  public async watchAndCompile(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      this.compile();
+  public async watchAndCompile() {
+    const keyPressListener = () => {
+      readline.emitKeypressEvents(process.stdin);
+      process.stdin.on("keypress", (str, key) => {
+        if (
+          key.name == "escape" ||
+          key.name == "q" ||
+          (key.name == "c" && key.ctrl)
+        ) {
+          process.kill(process.pid, "SIGINT");
+        }
+      });
+      if (process.stdin.setRawMode) process.stdin.setRawMode(true);
+      process.stdin.resume();
+    };
 
-      const manifestPath = displayPath(this._config.manifestPath);
-      const manifestDir = path.dirname(manifestPath);
-      let timeout: NodeJS.Timeout | null = null;
+    await this.compile();
+    toolbox.print.info(`Press Ctrl + C or ESC or q to exit`);
+    keyPressListener();
 
-      const eventText = {
-        add: "File added",
-        addDir: "Folder added",
-        change: "File changed",
-        unlink: "File removed",
-        unlinkDir: "Folder removed",
-      };
+    const manifestPath = displayPath(this._config.manifestPath);
+    const manifestDir = path.dirname(manifestPath);
+    let events: Array<{ event: string; path: string }> = [];
 
-      chokidar
-        .watch(manifestDir, {
-          ignored: ["**/build/**", "**/node_modules/**", "**/w3/**"],
-          ignoreInitial: true,
-        })
-        .on("all", (eventType, path) => {
-          if (timeout) {
-            clearTimeout(timeout);
-          }
+    const eventText = {
+      add: "File added",
+      addDir: "Folder added",
+      change: "File changed",
+      unlink: "File removed",
+      unlinkDir: "Folder removed",
+    };
 
-          timeout = setTimeout(() => {
-            console.log(`${eventText[eventType]}: `, path);
-            this.compile();
-            timeout = null;
-          }, 1000);
-        });
+    const watcher = chokidar.watch(manifestDir, {
+      ignored: ["**/build/**", "**/node_modules/**", "**/w3/**"],
+      ignoreInitial: true,
     });
+
+    watcher.on("all", (eventType, path) => {
+      if (
+        !events.some((e) => e.path == path && e.event == eventText[eventType])
+      ) {
+        events.push({
+          event: eventText[eventType],
+          path,
+        });
+      }
+    });
+
+    let interval: ReturnType<typeof setInterval>;
+
+    const intervalHandler = async () => {
+      if (events.length > 0) {
+        clearInterval(interval);
+
+        events.forEach((event) => {
+          toolbox.print.info(`${event.event}: ${event.path}`);
+        });
+
+        await this.compile();
+        keyPressListener();
+
+        events = [];
+        interval = setInterval(intervalHandler, 1000);
+      }
+    };
+
+    interval = setInterval(intervalHandler, 1000);
   }
 
   private async _loadManifest(quiet = false): Promise<Manifest> {
