@@ -2,7 +2,7 @@ import {
   DocumentNode,
   visit,
   ObjectTypeDefinitionNode,
-  EnumTypeDefinitionNode
+  EnumTypeDefinitionNode,
 } from "graphql";
 
 export interface CustomType {
@@ -11,7 +11,6 @@ export interface CustomType {
 }
 
 export class Blackboard {
-
   private _customTypes?: CustomType[];
 
   constructor(private _astNode: DocumentNode) {}
@@ -28,16 +27,16 @@ export class Blackboard {
         ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
           customTypes.push({
             name: node.name.value,
-            type: "object"
+            type: "object",
           });
         },
         EnumTypeDefinition: (node: EnumTypeDefinitionNode) => {
           customTypes.push({
             name: node.name.value,
-            type: "enum"
+            type: "enum",
           });
         },
-      }
+      },
     });
 
     this._customTypes = customTypes;

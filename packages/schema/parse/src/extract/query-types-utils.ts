@@ -29,11 +29,14 @@ export function extractNamedType(
   const method = state.currentMethod;
 
   if (method && argument) {
-
     if (!argument.name) {
       throw Error(
         "extractNamedType: Invalid state. Uninitialized currentArgument, name not found.\n" +
-        `Argument: ${JSON.stringify(argument, null, 2)}\nState: ${JSON.stringify(state, null, 2)}`
+          `Argument: ${JSON.stringify(
+            argument,
+            null,
+            2
+          )}\nState: ${JSON.stringify(state, null, 2)}`
       );
     }
 
@@ -65,7 +68,11 @@ export function extractNamedType(
     if (!method.name) {
       throw Error(
         "extractNamedType: Invalid state. Uninitialized currentMethod, name not found.\n" +
-        `Method: ${JSON.stringify(method, null, 2)}\nState: ${JSON.stringify(state, null, 2)}`
+          `Method: ${JSON.stringify(method, null, 2)}\nState: ${JSON.stringify(
+            state,
+            null,
+            2
+          )}`
       );
     }
 

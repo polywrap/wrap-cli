@@ -58,7 +58,11 @@ export function extractNamedType(
   if (!property.name) {
     throw Error(
       "extractNamedType: Invalid state. Uninitialized currentProperty, name not found.\n" +
-      `Method: ${JSON.stringify(property, null, 2)}\nState: ${JSON.stringify(state, null, 2)}`
+        `Method: ${JSON.stringify(property, null, 2)}\nState: ${JSON.stringify(
+          state,
+          null,
+          2
+        )}`
     );
   }
 
