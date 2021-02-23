@@ -64,13 +64,6 @@ export function performTransforms(
     result.enumTypes[i] = visitEnumDefinition(result.enumTypes[i], transforms);
   }
 
-  for (let i = 0; i < result.importedEnumTypes.length; ++i) {
-    result.importedEnumTypes[i] = visitImportedEnumDefinition(
-      result.importedEnumTypes[i],
-      transforms
-    );
-  }
-
   for (let i = 0; i < result.objectTypes.length; ++i) {
     result.objectTypes[i] = visitObjectDefinition(
       result.objectTypes[i],
@@ -95,6 +88,13 @@ export function performTransforms(
   for (let i = 0; i < result.importedQueryTypes.length; ++i) {
     result.importedQueryTypes[i] = visitImportedQueryDefinition(
       result.importedQueryTypes[i],
+      transforms
+    );
+  }
+
+  for (let i = 0; i < result.importedEnumTypes.length; ++i) {
+    result.importedEnumTypes[i] = visitImportedEnumDefinition(
+      result.importedEnumTypes[i],
       transforms
     );
   }
@@ -231,15 +231,6 @@ export function visitQueryDefinition(
   return transformType(result, transforms.leave);
 }
 
-export function visitImportedEnumDefinition(
-  def: ImportedEnumDefinition,
-  transforms: TypeInfoTransforms
-): ImportedEnumDefinition {
-  let result = Object.assign({}, def);
-  result = transformType(result, transforms.enter);
-  return transformType(result, transforms.leave);
-}
-
 export function visitImportedQueryDefinition(
   def: ImportedQueryDefinition,
   transforms: TypeInfoTransforms
@@ -259,6 +250,13 @@ export function visitImportedObjectDefinition(
   transforms: TypeInfoTransforms
 ): ImportedObjectDefinition {
   return visitObjectDefinition(def, transforms) as ImportedObjectDefinition;
+}
+
+export function visitImportedEnumDefinition(
+  def: ImportedEnumDefinition,
+  transforms: TypeInfoTransforms
+): ImportedEnumDefinition {
+  return visitEnumDefinition(def, transforms) as ImportedEnumDefinition;
 }
 
 export function transformType<TDefinition extends GenericDefinition>(

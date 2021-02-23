@@ -9,6 +9,7 @@ scalar Int8
 scalar Int16
 scalar Int32
 scalar Int64
+scalar Bytes
 
 directive @imported(
   uri: String!
@@ -57,6 +58,7 @@ type CustomMutationType {
   i: Int!
   i8: Int8!
   i64: Int64!
+  bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optStrOptArray: [String]
@@ -195,6 +197,7 @@ type Namespace_CustomType @imported(
   i16: Int16!
   i32: Int32!
   i64: Int64!
+  bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optUOptArray: [UInt]

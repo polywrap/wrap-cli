@@ -113,7 +113,7 @@ function generateFiles(
           output.push({
             type: "File",
             name: name.replace("-", "."),
-            data: Mustache.render(dirent.data as string, config, subTemplates),
+            data: Mustache.render(dirent.data, config, subTemplates),
           });
         }
       } else if (dirent.type === "Directory" && subDirectories) {

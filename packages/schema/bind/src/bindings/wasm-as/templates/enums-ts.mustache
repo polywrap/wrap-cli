@@ -4,9 +4,9 @@ export * from "./imported/enums";
 
 {{#enumTypes}}
 export const {{type}}: Array<string> = [
-  {{#values}}
+  {{#constants}}
   "{{.}}",
-  {{/values}}
+  {{/constants}}
 ]
 
 {{/enumTypes}}

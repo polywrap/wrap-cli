@@ -9,7 +9,7 @@ import { DocumentNode, EnumTypeDefinitionNode, visit } from "graphql";
 
 const visitorEnter = (importedEnumTypes: ImportedEnumDefinition[]) => ({
   EnumTypeDefinition: (node: EnumTypeDefinitionNode) => {
-    const values: string[] = [];
+    const constants: string[] = [];
     const imported = extractImportedDefinition(node);
 
     if (!imported) {
@@ -18,13 +18,13 @@ const visitorEnter = (importedEnumTypes: ImportedEnumDefinition[]) => ({
 
     if (node.values) {
       for (const value of node.values) {
-        values.push(value.name.value);
+        constants.push(value.name.value);
       }
     }
 
     const enumType = createImportedEnumDefinition({
       type: node.name.value,
-      values: values,
+      constants,
       uri: imported.uri,
       namespace: imported.namespace,
       nativeType: imported.nativeType,

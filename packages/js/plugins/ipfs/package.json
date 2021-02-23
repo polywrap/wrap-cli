@@ -13,7 +13,7 @@
   "dependencies": {
     "@web3api/core-js": "0.0.1-prealpha.1",
     "cids": "^1.1.4",
-    "ipfs-http-client": "45.0.0",
+    "ipfs-http-client-lite": "0.3.0",
     "is-ipfs": "1.0.3"
   },
   "devDependencies": {

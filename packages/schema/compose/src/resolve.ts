@@ -126,6 +126,9 @@ type ImportMap = Record<
     Namespaced
 >;
 
+type EnumOrObject = ObjectDefinition | EnumDefinition;
+type ImportedEnumOrObject = ImportedObjectDefinition | ImportedEnumDefinition;
+
 // A transformation that converts all object definitions into
 // imported object definitions
 const extractObjectImportDependencies = (
@@ -133,129 +136,115 @@ const extractObjectImportDependencies = (
   rootTypeInfo: TypeInfo,
   namespace: string,
   uri: string
-): TypeInfoTransforms => ({
-  enter: {
-    ObjectDefinition: (def: ObjectDefinition & Namespaced) => {
-      if (def.__namespaced) {
-        return def;
-      }
+): TypeInfoTransforms => {
+  const findImport = (
+    def: GenericDefinition,
+    namespaceType: string,
+    rootTypes: EnumOrObject[],
+    importedTypes: ImportedEnumOrObject[],
+    kind: DefinitionKind
+  ): ImportedEnumOrObject & Namespaced => {
+    // Find this type's ObjectDefinition in the root type info
+    let idx = rootTypes.findIndex((obj) => obj.type === def.type);
+    let obj = undefined;
 
-      const namespaceType = appendNamespace(namespace, def.type);
+    if (idx === -1) {
+      idx = importedTypes.findIndex((obj) => obj.type === def.type);
+    } else {
+      obj = rootTypes[idx];
+    }
 
-      if (!importsFound[namespaceType]) {
-        // Find this type's ObjectDefinition in the root type info
-        let idx = rootTypeInfo.objectTypes.findIndex(
-          (obj) => obj.type === def.type
-        );
-        let obj = undefined;
+    if (idx === -1) {
+      throw Error(
+        `extractObjectImportDependencies: Cannot find the dependent type within the root type info.\n` +
+          `Type: ${def.type}\nTypeInfo: ${JSON.stringify(
+            rootTypeInfo
+          )}\n${namespace}\n${JSON.stringify(Object.keys(importsFound))}`
+      );
+    } else if (obj === undefined) {
+      obj = importedTypes[idx];
+    }
 
-        if (idx === -1) {
-          idx = rootTypeInfo.importedObjectTypes.findIndex(
-            (obj) => obj.type === def.type
-          );
-        } else {
-          obj = rootTypeInfo.objectTypes[idx];
+    // Create the new ImportedObjectDefinition
+    return {
+      ...obj,
+      name: null,
+      required: null,
+      type: namespaceType,
+      __namespaced: true,
+      kind,
+      uri,
+      namespace,
+      nativeType: def.type,
+    };
+  };
+
+  return {
+    enter: {
+      ObjectDefinition: (def: ObjectDefinition & Namespaced) => {
+        if (def.__namespaced) {
+          return def;
         }
 
-        if (idx === -1) {
-          throw Error(
-            `extractObjectImportDependencies: Cannot find the dependent type within the root type info.\n` +
-              `Type: ${def.type}\nTypeInfo: ${JSON.stringify(
-                rootTypeInfo
-              )}\n${namespace}\n${JSON.stringify(Object.keys(importsFound))}`
-          );
-        } else if (obj === undefined) {
-          obj = rootTypeInfo.importedObjectTypes[idx];
-        }
+        const namespaceType = appendNamespace(namespace, def.type);
 
-        // Create the new ImportedObjectDefinition
-        const importedObject: ImportedObjectDefinition & Namespaced = {
-          ...obj,
-          name: null,
-          required: null,
-          type: namespaceType,
-          __namespaced: true,
-          kind: DefinitionKind.ImportedObject,
-          uri,
-          namespace,
-          nativeType: def.type,
-        };
+        if (!importsFound[namespaceType]) {
+          // Find the import
+          const importFound = findImport(
+            def,
+            namespaceType,
+            rootTypeInfo.objectTypes,
+            rootTypeInfo.importedObjectTypes,
+            DefinitionKind.ImportedObject
+          ) as ImportedObjectDefinition;
 
-        // Keep track of it
-        importsFound[importedObject.type] = importedObject;
+          // Keep track of it
+          importsFound[importFound.type] = importFound;
 
-        // Traverse this newly added object
-        visitObjectDefinition(importedObject, {
-          ...extractObjectImportDependencies(
-            importsFound,
-            rootTypeInfo,
-            namespace,
-            uri
-          ),
-          leave: {
-            PropertyDefinition: (def: PropertyDefinition) => {
-              populatePropertyType(def);
-              return def;
+          // Traverse this newly added object
+          visitObjectDefinition(importFound, {
+            ...extractObjectImportDependencies(
+              importsFound,
+              rootTypeInfo,
+              namespace,
+              uri
+            ),
+            leave: {
+              PropertyDefinition: (def: PropertyDefinition) => {
+                populatePropertyType(def);
+                return def;
+              },
             },
-          },
-        });
-      }
+          });
+        }
 
-      return def;
-    },
-    EnumDefinition: (def: EnumDefinition & Namespaced) => {
-      if (def.__namespaced) {
         return def;
-      }
-
-      const namespaceType = appendNamespace(namespace, def.type);
-      if (!importsFound[namespaceType]) {
-        let idx = rootTypeInfo.enumTypes.findIndex(
-          (en) => en.type === def.type
-        );
-        let en = undefined;
-
-        if (idx === -1) {
-          idx = rootTypeInfo.importedEnumTypes.findIndex(
-            (en) => en.type === def.type
-          );
-        } else {
-          en = rootTypeInfo.enumTypes[idx];
+      },
+      EnumDefinition: (def: EnumDefinition & Namespaced) => {
+        if (def.__namespaced) {
+          return def;
         }
 
-        if (idx === -1) {
-          throw Error(
-            `extractObjectImportDependencies: Cannot find the dependent type within the root type info.\n` +
-              `Type: ${def.type}\nTypeInfo: ${JSON.stringify(
-                rootTypeInfo
-              )}\n${namespace}\n${JSON.stringify(Object.keys(importsFound))}`
-          );
-        } else if (en === undefined) {
-          en = rootTypeInfo.importedEnumTypes[idx];
+        const namespaceType = appendNamespace(namespace, def.type);
+        if (!importsFound[namespaceType]) {
+          // Find the import
+          const importFound = findImport(
+            def,
+            namespaceType,
+            rootTypeInfo.enumTypes,
+            rootTypeInfo.importedEnumTypes,
+            DefinitionKind.ImportedEnum
+          ) as ImportedEnumDefinition;
+
+          // Keep track of it
+          importsFound[importFound.type] = importFound;
         }
 
-        // Create the new ImportedEnumDefinition
-        const importedEnum: ImportedEnumDefinition & Namespaced = {
-          ...en,
-          name: null,
-          required: null,
-          type: namespaceType,
-          __namespaced: true,
-          kind: DefinitionKind.ImportedEnum,
-          uri,
-          namespace,
-          nativeType: def.type,
-          values: en.values,
-        };
-
-        // Keep track of it
-        importsFound[importedEnum.type] = importedEnum;
-      }
-
-      return def;
+        return def;
+      },
     },
-  },
-});
+  };
+};
 
 const namespaceTypes = (namespace: string): TypeInfoTransforms => ({
   enter: {
@@ -565,60 +554,40 @@ async function resolveLocalImports(
 
         typesToImport[type.type] = type;
 
+        const findImport = (
+          def: GenericDefinition,
+          rootTypes: EnumOrObject[]
+        ) => {
+          // Skip objects that we've already processed
+          if (typesToImport[def.type]) {
+            return def;
+          }
+
+          // Find the ObjectDefinition
+          const idx = rootTypes.findIndex((obj) => obj.type === def.type);
+
+          if (idx === -1) {
+            throw Error(
+              `resolveLocalImports: Cannot find the requested type within the TypeInfo.\n` +
+                `Type: ${def.type}\nTypeInfo: ${JSON.stringify(localTypeInfo)}`
+            );
+          }
+
+          typesToImport[def.type] = {
+            ...rootTypes[idx],
+            name: null,
+            required: null,
+          };
+          return def;
+        };
+
         visitorFunc(type, {
           enter: {
             ObjectDefinition: (def: ObjectDefinition) => {
-              // Skip objects that we've already processed
-              if (typesToImport[def.type]) {
-                return def;
-              }
-
-              // Find the ObjectDefinition
-              const idx = localTypeInfo.objectTypes.findIndex(
-                (obj) => obj.type === def.type
-              );
-
-              if (idx === -1) {
-                throw Error(
-                  `resolveLocalImports: Cannot find the ObjectDefinition within the TypeInfo.\n` +
-                    `Type: ${def.type}\nTypeInfo: ${JSON.stringify(
-                      localTypeInfo
-                    )}`
-                );
-              }
-
-              typesToImport[def.type] = {
-                ...localTypeInfo.objectTypes[idx],
-                name: null,
-                required: null,
-              };
-              return def;
+              return findImport(def, localTypeInfo.objectTypes);
             },
             EnumDefinition: (def: EnumDefinition) => {
-              if (typesToImport[def.type]) {
-                return def;
-              }
-
-              // Find the EnumDefinition
-              const idx = localTypeInfo.enumTypes.findIndex(
-                (obj) => obj.type === def.type
-              );
-
-              if (idx === -1) {
-                throw Error(
-                  `resolveLocalImports: Cannot find the EnumDefinition within the TypeInfo.\n` +
-                    `Type: ${def.type}\nTypeInfo: ${JSON.stringify(
-                      localTypeInfo
-                    )}`
-                );
-              }
-
-              typesToImport[def.type] = {
-                ...localTypeInfo.enumTypes[idx],
-                name: null,
-                required: null,
-              };
-              return def;
+              return findImport(def, localTypeInfo.enumTypes);
             },
           },
         });

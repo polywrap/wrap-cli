@@ -6,8 +6,8 @@ import {
   QueryDefinition,
   createArrayDefinition,
 } from "../typeInfo";
-import { TypeDefinitions } from "./type-definitions";
-import { setPropertyType } from "./utils";
+import { setPropertyType } from "./property-utils";
+import { Blackboard } from "./Blackboard";
 
 import { InputValueDefinitionNode, NamedTypeNode } from "graphql";
 
@@ -23,21 +23,32 @@ export interface State {
 export function extractNamedType(
   node: NamedTypeNode,
   state: State,
-  typeDefinitions: TypeDefinitions
+  blackboard: Blackboard
 ): void {
   const argument = state.currentArgument;
   const method = state.currentMethod;
 
   if (method && argument) {
+    if (!argument.name) {
+      throw Error(
+        "extractNamedType: Invalid state. Uninitialized currentArgument, name not found.\n" +
+          `Argument: ${JSON.stringify(
+            argument,
+            null,
+            2
+          )}\nState: ${JSON.stringify(state, null, 2)}`
+      );
+    }
+
     // Argument value
     setPropertyType(
       argument,
-      argument.name as string,
+      argument.name,
       {
         type: node.name.value,
         required: state.nonNullType,
       },
-      typeDefinitions
+      blackboard
     );
 
     state.nonNullType = false;
@@ -54,14 +65,25 @@ export function extractNamedType(
       state.currentReturn = method.return;
     }
 
+    if (!method.name) {
+      throw Error(
+        "extractNamedType: Invalid state. Uninitialized currentMethod, name not found.\n" +
+          `Method: ${JSON.stringify(method, null, 2)}\nState: ${JSON.stringify(
+            state,
+            null,
+            2
+          )}`
+      );
+    }
+
     setPropertyType(
       state.currentReturn,
-      method.name as string,
+      method.name,
       {
         type: node.name.value,
         required: state.nonNullType,
       },
-      typeDefinitions
+      blackboard
     );
 
     state.nonNullType = false;

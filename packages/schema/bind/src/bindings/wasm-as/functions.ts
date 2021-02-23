@@ -70,6 +70,8 @@ export const toWasmInit: MustacheFunction = () => {
         return `""`;
       case "Boolean":
         return "false";
+      case "Bytes":
+        return `new ArrayBuffer(0)`;
       default:
         if (type.includes("Enum_")) {
           return `""`;
@@ -129,6 +131,9 @@ export const toWasm: MustacheFunction = () => {
         break;
       case "Boolean":
         type = "bool";
+        break;
+      case "Bytes":
+        type = "ArrayBuffer";
         break;
       default:
         if (type.includes("Enum_")) {

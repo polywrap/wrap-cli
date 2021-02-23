@@ -102,19 +102,19 @@ export function createScalarDefinition(args: {
 }
 
 export interface EnumDefinition extends GenericDefinition {
-  values: string[];
+  constants: string[];
 }
 export function createEnumDefinition(args: {
   type: string;
   name?: string | null;
   required?: boolean;
-  values?: string[];
+  constants?: string[];
 }): EnumDefinition {
   return {
     ...createGenericDefinition(args),
     type: args.type,
     kind: DefinitionKind.Enum,
-    values: args.values ? args.values : [],
+    constants: args.constants ? args.constants : [],
   };
 }
 
@@ -195,7 +195,7 @@ export function createEnumPropertyDefinition(args: {
   type: string;
   name?: string | null;
   required?: boolean;
-  values?: string[];
+  constants?: string[];
 }): PropertyDefinition {
   return createPropertyDefinition({
     ...args,
@@ -275,7 +275,7 @@ export interface ImportedEnumDefinition
     ImportedDefinition {}
 export function createImportedEnumDefinition(args: {
   type: string;
-  values: string[];
+  constants: string[];
   name?: string;
   required?: boolean;
   uri: string;
