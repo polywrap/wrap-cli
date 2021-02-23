@@ -6,8 +6,8 @@ import {
   QueryDefinition,
   createArrayDefinition,
 } from "../typeInfo";
-import { TypeDefinitions } from "./type-definitions";
-import { setPropertyType } from "./utils";
+import { setPropertyType } from "./property-utils";
+import { Blackboard } from "./Blackboard";
 
 import { InputValueDefinitionNode, NamedTypeNode } from "graphql";
 
@@ -23,7 +23,7 @@ export interface State {
 export function extractNamedType(
   node: NamedTypeNode,
   state: State,
-  typeDefinitions: TypeDefinitions
+  blackboard: Blackboard
 ): void {
   const argument = state.currentArgument;
   const method = state.currentMethod;
@@ -37,7 +37,7 @@ export function extractNamedType(
         type: node.name.value,
         required: state.nonNullType,
       },
-      typeDefinitions
+      blackboard
     );
 
     state.nonNullType = false;
@@ -61,7 +61,7 @@ export function extractNamedType(
         type: node.name.value,
         required: state.nonNullType,
       },
-      typeDefinitions
+      blackboard
     );
 
     state.nonNullType = false;

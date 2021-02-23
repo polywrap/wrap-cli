@@ -3,7 +3,7 @@ import { extractors, SchemaExtractor } from "./extract";
 import { TypeInfoTransforms, performTransforms } from "./transform";
 import { finalizePropertyDef } from "./transform/finalizePropertyDef";
 import { validators, SchemaValidator } from "./validate";
-import { extractTypeDefinitions } from "./extract/type-definitions";
+import { Blackboard } from "./extract/Blackboard";
 
 import { parse } from "graphql";
 
@@ -42,13 +42,15 @@ export function parseSchema(
     }
   }
 
+  // Create a blackboard for shared metadata
+  const blackboard = new Blackboard(astNode);
+
   // Extract & Build TypeInfo
   let info = createTypeInfo();
   const extracts = options.extractors || extractors;
-  const typeDefinitions = extractTypeDefinitions(astNode);
 
   for (const extract of extracts) {
-    extract(astNode, info, typeDefinitions);
+    extract(astNode, info, blackboard);
   }
 
   // Finalize & Transform TypeInfo
