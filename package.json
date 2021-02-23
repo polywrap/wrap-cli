@@ -16,6 +16,7 @@
   "scripts": {
     "build": "lerna run build --no-private --ignore @web3api/cli && yarn build:cli",
     "build:cli": "lerna run build --scope @web3api/cli",
+    "build:react": "lerna run build --scope @web3api/react",
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint -- --fix",
     "lint:ci": "lerna run lint --parallel",
@@ -25,7 +26,7 @@
     "reset": "yarn clean && yarn && yarn build"
   },
   "devDependencies": {
-    "lerna": "3.22.1",  
+    "lerna": "3.22.1",
     "rimraf": "3.0.2",
     "@typescript-eslint/eslint-plugin": "4.11.1",
     "@typescript-eslint/parser": "4.11.1",

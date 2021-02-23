@@ -2,7 +2,7 @@
   "name": "@web3api/react",
   "version": "0.0.1-prealpha.1",
   "license": "MIT",
-  "main": "build/core.js",
+  "main": "build/index.js",
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color --ext 'src/**/*.{ts|tsx}'",

@@ -27,7 +27,12 @@ const web3ApiQuery = (
 ) => {
   const { state, dispatch } = web3ApiState();
 
-  if (!options) return state;
+  if (!options) {
+    return {
+      ...state,
+      execute: async () => ({ data: null }),
+    };
+  }
 
   const execute = async () => {
     dispatch({ type: "UPDATE", payload: { loading: true } });
@@ -79,7 +84,9 @@ interface QueryArguments extends QueryExecutionParams {
 export const useWeb3ApiQuery = ({
   key = DEFAULT_PROVIDER,
   ...options
-}: QueryArguments): Web3ApiContextInterface => {
+}: QueryArguments): Web3ApiContextInterface & {
+  execute: () => Promise<{ data: any; errors?: Error[] }>;
+} => {
   if (!PROVIDERS[key]) {
     throw new Error(
       `You are trying to use Web3ApiQuery hook with key: ${key} and it doesn't exists, you should pass the same key you used when created the Web3ApiRoot (Or none, if you just used Web3ApiProvider)`
