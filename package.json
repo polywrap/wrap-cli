@@ -20,7 +20,7 @@
     "lint:fix": "lerna run lint -- --fix",
     "lint:ci": "lerna run lint --parallel",
     "test": "lerna run test --no-private",
-    "test:ci": "lerna run test:ci --no-private --parallel",
+    "test:ci": "lerna run test:ci --no-private",
     "clean": "rimraf ./**/node_modules ./**/build ./**/coverage",
     "reset": "yarn clean && yarn && yarn build"
   },
