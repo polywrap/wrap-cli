@@ -1,12 +1,12 @@
-name: Create Release Pull Request
+name: Release-PR
 on:
-  pull_request_review_comment:
+  issue_comment:
     types: [created]
 
 jobs:
-  createPullRequest:
+  Release-PR:
     if: |
-      github.event_name == 'pull_request_review_comment' &&
+      github.event.issue.pull_request &&
       github.event.comment.author_association == 'OWNER' &&
       startsWith(github.event.comment.body, '/create release')
     runs-on: ubuntu-latest
