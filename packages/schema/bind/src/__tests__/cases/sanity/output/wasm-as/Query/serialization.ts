@@ -45,7 +45,7 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
     }
     else if (field == "en") {
       let value: Enums.CustomEnum;
-      if (reader.isNextInt32()) {
+      if (reader.isNextEnumValue()) {
         value = Enums.matchCustomEnumByValue(reader.readInt32());
       } else {
         value = Enums.matchCustomEnumByKey(reader.readString());
@@ -56,7 +56,7 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
     else if (field == "optEnum") {
       let value: Nullable<Enums.CustomEnum>;
       if (!reader.isNextNil()) {
-        if (reader.isNextInt32()) {
+        if (reader.isNextEnumValue()) {
           value = Nullable.fromValue(Enums.matchCustomEnumByValue(reader.readInt32()));
         } else {
           value = Nullable.fromValue(Enums.matchCustomEnumByKey(reader.readString()));
@@ -69,7 +69,7 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
     else if (field == "enumArray") {
       _enumArray = reader.readArray((reader: Read): Enums.CustomEnum => {
         let value: Enums.CustomEnum;
-        if (reader.isNextInt32()) {
+        if (reader.isNextEnumValue()) {
           value = Enums.matchCustomEnumByValue(reader.readInt32());
         } else {
           value = Enums.matchCustomEnumByKey(reader.readString());
@@ -82,7 +82,7 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
       _optEnumArray = reader.readNullableArray((reader: Read): Nullable<Enums.CustomEnum> => {
         let value: Nullable<Enums.CustomEnum>;
         if (!reader.isNextNil()) {
-          if (reader.isNextInt32()) {
+          if (reader.isNextEnumValue()) {
             value = Nullable.fromValue(Enums.matchCustomEnumByValue(reader.readInt32()));
           } else {
             value = Nullable.fromValue(Enums.matchCustomEnumByKey(reader.readString()));

@@ -110,7 +110,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
     }
     else if (field == "en") {
       let value: Enums.TestImport_Enum;
-      if (reader.isNextInt32()) {
+      if (reader.isNextEnumValue()) {
         value = Enums.matchTestImport_EnumByValue(reader.readInt32());
       } else {
         value = Enums.matchTestImport_EnumByKey(reader.readString());
@@ -121,7 +121,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
     else if (field == "optEnum") {
       let value: Nullable<Enums.TestImport_Enum>;
       if (!reader.isNextNil()) {
-        if (reader.isNextInt32()) {
+        if (reader.isNextEnumValue()) {
           value = Nullable.fromValue(Enums.matchTestImport_EnumByValue(reader.readInt32()));
         } else {
           value = Nullable.fromValue(Enums.matchTestImport_EnumByKey(reader.readString()));
@@ -134,7 +134,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
     else if (field == "enumArray") {
       _enumArray = reader.readArray((reader: Read): Enums.TestImport_Enum => {
         let value: Enums.TestImport_Enum;
-        if (reader.isNextInt32()) {
+        if (reader.isNextEnumValue()) {
           value = Enums.matchTestImport_EnumByValue(reader.readInt32());
         } else {
           value = Enums.matchTestImport_EnumByKey(reader.readString());
@@ -147,7 +147,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
       _optEnumArray = reader.readNullableArray((reader: Read): Nullable<Enums.TestImport_Enum> => {
         let value: Nullable<Enums.TestImport_Enum>;
         if (!reader.isNextNil()) {
-          if (reader.isNextInt32()) {
+          if (reader.isNextEnumValue()) {
             value = Nullable.fromValue(Enums.matchTestImport_EnumByValue(reader.readInt32()));
           } else {
             value = Nullable.fromValue(Enums.matchTestImport_EnumByKey(reader.readString()));

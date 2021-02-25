@@ -114,7 +114,7 @@ type TestImport_Query @imported(
 
 type TestImport_Object @imported(
   uri: "testimport.uri.eth",
-  namespace: "Object",
+  namespace: "TestImport",
   nativeType: "Object"
 ) {
   object: TestImport_AnotherObject!
