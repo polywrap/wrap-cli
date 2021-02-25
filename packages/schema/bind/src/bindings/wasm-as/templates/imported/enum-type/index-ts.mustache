@@ -13,3 +13,13 @@ export function match{{type}}ByValue(value: i32): {{type}} {
 
   throw new Error("Invalid value for enum '{{type}}'");
 }
+
+export function match{{type}}ByKey(key: string): {{type}} {
+  {{#constants}}
+  if (key == "{{.}}") {
+    return {{type}}.{{.}};
+  }
+  {{/constants}}
+
+  throw new Error("Invalid key for enum '{{type}}'");
+}
