@@ -443,14 +443,14 @@ describe("Web3ApiClient", () => {
       query: `
         query {
           method1(
-            en: INVALID
+            en: 5
           )
         }
       `,
     });
 
     expect(method1a.errors).toBeTruthy();
-    expect(method1a.errors[0].message).toMatch(
+    expect((method1a.errors as Error[])[0].message).toMatch(
       /__w3_abort: Invalid value for enum 'Enum'/gm
     );
 
@@ -459,7 +459,7 @@ describe("Web3ApiClient", () => {
       query: `
         query {
           method1(
-            en: OPTION2
+            en: 2
           )
         }
       `,
@@ -468,15 +468,32 @@ describe("Web3ApiClient", () => {
     expect(method1b.errors).toBeFalsy();
     expect(method1b.data).toBeTruthy();
     expect(method1b.data).toMatchObject({
-      method1: "OPTION2"
+      method1: 2
     });
+
+    const method1c = await client.query<any>({
+      uri: ensUri,
+      query: `
+        query {
+          method1(
+            en: INVALID
+          )
+        }
+      `,
+    });
+
+    expect(method1c.errors).toBeTruthy();
+    // @ts-ignore
+    expect(method1c.errors[0].message).toMatch(
+      /__w3_abort: Invalid key for enum 'Enum'/gm
+    );
 
     const method2a = await client.query<any>({
       uri: ensUri,
       query: `
         query {
           method2(
-            enumArray: [OPTION1, OPTION1, OPTION3]
+            enumArray: [OPTION1, 0, OPTION3]
           )
         }
       `,
@@ -486,9 +503,9 @@ describe("Web3ApiClient", () => {
     expect(method2a.data).toBeTruthy();
     expect(method2a.data).toMatchObject({
       method2: [
-        "OPTION1",
-        "OPTION1",
-        "OPTION3"
+        0,
+        0,
+        2
       ]
     });
   });

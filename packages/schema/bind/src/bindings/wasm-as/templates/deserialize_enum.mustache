@@ -1,10 +1,19 @@
 {{#required}}
-const value = Enums.match{{type}}ByValue(reader.readInt32());
+let value: Enums.{{type}};
+if (reader.isNextEnumValue()) {
+  value = Enums.match{{type}}ByValue(reader.readInt32());
+} else {
+  value = Enums.match{{type}}ByKey(reader.readString());
+}
 {{/required}}
 {{^required}}
 let value: Nullable<Enums.{{type}}>;
 if (!reader.isNextNil()) {
-  value = Nullable.fromValue(Enums.match{{type}}ByValue(reader.readInt32()));
+  if (reader.isNextEnumValue()) {
+    value = Nullable.fromValue(Enums.match{{type}}ByValue(reader.readInt32()));
+  } else {
+    value = Nullable.fromValue(Enums.match{{type}}ByKey(reader.readString()));
+  }
 } else {
   value = Nullable.fromNull<Enums.{{type}}>();
 }

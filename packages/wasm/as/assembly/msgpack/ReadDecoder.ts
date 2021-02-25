@@ -79,9 +79,6 @@ export class ReadDecoder extends Read {
         return i64(this.view.getInt32());
       case Format.INT64:
         return this.view.getInt64();
-      case 167:
-        // throw new Error(this.view.getInt32().toString());
-        return i64(this.view.getInt32());
       default:
         throw new Error("bad prefix for int: " + prefix.toString());
     }
@@ -368,6 +365,14 @@ export class ReadDecoder extends Read {
   isNextNil(): bool {
     if (this.view.peekUint8() == Format.NIL) {
       this.view.discard(1);
+      return true;
+    }
+    return false;
+  }
+
+  isNextEnumValue(): bool {
+    // Enum integer value is in range 0 - 127
+    if (this.view.peekUint8() <= 127) {
       return true;
     }
     return false;
