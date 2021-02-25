@@ -65,7 +65,7 @@ jobs:
             ### Bug Fixes
 
             - [ ] TODO
-          labels: "Type: Release"
+          labels: "Web3API-Release"
           branch: "release/${{ steps.version.outputs.VERSION }}"
           request-to-parent: false
 
