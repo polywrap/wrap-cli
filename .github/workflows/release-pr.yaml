@@ -13,7 +13,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        ref: github.event.pull_request.base.ref
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
 
       - name: Read .nvmrc into NVMRC
         run: echo ::set-output name=NVMRC::$(cat .nvmrc)
