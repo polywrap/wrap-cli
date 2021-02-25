@@ -1,13 +1,11 @@
 {{#required}}
-const input = reader.readInt32();
-const value = Enums.match{{type}}ByValue(input);
+const value = Enums.match{{type}}ByValue(reader.readInt32());
 {{/required}}
 {{^required}}
-const input = reader.readNullableInt32();
 let value: Nullable<Enums.{{type}}>;
-if (input) {
-  value = Nullable.fromValue(Enums.match{{type}}ByValue(input));
+if (!reader.isNextNil()) {
+  value = Nullable.fromValue(Enums.match{{type}}ByValue(reader.readInt32()));
 } else {
-  value = Nullable.fromNull();
+  value = Nullable.fromNull<Enums.{{type}}>();
 }
 {{/required}}

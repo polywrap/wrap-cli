@@ -44,37 +44,33 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
       _optStr = reader.readNullableString();
     }
     else if (field == "en") {
-      const input = reader.readInt32();
-      const value = Enums.matchCustomEnumByValue(input);
+      const value = Enums.matchCustomEnumByValue(reader.readInt32());
       _en = value;
       _enSet = true;
     }
     else if (field == "optEnum") {
-      const input = reader.readNullableInt32();
       let value: Nullable<Enums.CustomEnum>;
-      if (input) {
-        value = Nullable.fromValue(Enums.matchCustomEnumByValue(input));
+      if (!reader.isNextNil()) {
+        value = Nullable.fromValue(Enums.matchCustomEnumByValue(reader.readInt32()));
       } else {
-        value = Nullable.fromNull();
+        value = Nullable.fromNull<Enums.CustomEnum>();
       }
       _optEnum = value;
     }
     else if (field == "enumArray") {
       _enumArray = reader.readArray((reader: Read): Enums.CustomEnum => {
-        const input = reader.readInt32();
-        const value = Enums.matchCustomEnumByValue(input);
+        const value = Enums.matchCustomEnumByValue(reader.readInt32());
         return value;
       });
       _enumArraySet = true;
     }
     else if (field == "optEnumArray") {
       _optEnumArray = reader.readNullableArray((reader: Read): Nullable<Enums.CustomEnum> => {
-        const input = reader.readNullableInt32();
         let value: Nullable<Enums.CustomEnum>;
-        if (input) {
-          value = Nullable.fromValue(Enums.matchCustomEnumByValue(input));
+        if (!reader.isNextNil()) {
+          value = Nullable.fromValue(Enums.matchCustomEnumByValue(reader.readInt32()));
         } else {
-          value = Nullable.fromNull();
+          value = Nullable.fromNull<Enums.CustomEnum>();
         }
         return value;
       });

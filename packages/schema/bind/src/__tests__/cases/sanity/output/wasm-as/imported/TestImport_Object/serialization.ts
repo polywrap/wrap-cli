@@ -109,37 +109,33 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
       });
     }
     else if (field == "en") {
-      const input = reader.readInt32();
-      const value = Enums.matchTestImport_EnumByValue(input);
+      const value = Enums.matchTestImport_EnumByValue(reader.readInt32());
       _en = value;
       _enSet = true;
     }
     else if (field == "optEnum") {
-      const input = reader.readNullableInt32();
       let value: Nullable<Enums.TestImport_Enum>;
-      if (input) {
-        value = Nullable.fromValue(Enums.matchTestImport_EnumByValue(input));
+      if (!reader.isNextNil()) {
+        value = Nullable.fromValue(Enums.matchTestImport_EnumByValue(reader.readInt32()));
       } else {
-        value = Nullable.fromNull();
+        value = Nullable.fromNull<Enums.TestImport_Enum>();
       }
       _optEnum = value;
     }
     else if (field == "enumArray") {
       _enumArray = reader.readArray((reader: Read): Enums.TestImport_Enum => {
-        const input = reader.readInt32();
-        const value = Enums.matchTestImport_EnumByValue(input);
+        const value = Enums.matchTestImport_EnumByValue(reader.readInt32());
         return value;
       });
       _enumArraySet = true;
     }
     else if (field == "optEnumArray") {
       _optEnumArray = reader.readNullableArray((reader: Read): Nullable<Enums.TestImport_Enum> => {
-        const input = reader.readNullableInt32();
         let value: Nullable<Enums.TestImport_Enum>;
-        if (input) {
-          value = Nullable.fromValue(Enums.matchTestImport_EnumByValue(input));
+        if (!reader.isNextNil()) {
+          value = Nullable.fromValue(Enums.matchTestImport_EnumByValue(reader.readInt32()));
         } else {
-          value = Nullable.fromNull();
+          value = Nullable.fromNull<Enums.TestImport_Enum>();
         }
         return value;
       });
