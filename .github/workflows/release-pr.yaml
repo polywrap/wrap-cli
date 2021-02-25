@@ -1,0 +1,74 @@
+name: Create Release Pull Request
+on:
+  pull_request_review_comment:
+    types: [created]
+
+jobs:
+  createPullRequest:
+    if: |
+      github.event_name == 'pull_request_review_comment' &&
+      github.event.comment.author_association == 'OWNER' &&
+      startsWith(github.event.comment.body, '/create release')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        ref: github.event.pull_request.base.ref
+
+      - name: Read .nvmrc into NVMRC
+        run: echo ::set-output name=NVMRC::$(cat .nvmrc)
+        id: nvm
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '${{ steps.nvm.outputs.NVMRC }}'
+
+      - name: Install dependencies
+        run: yarn install --nonInteractive --frozen-lockfile
+
+      - name: Set Git Identity
+        run: |
+          git config --global user.name 'release-bot'
+          git config --global user.email 'release-bot@users.noreply.github.com'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Apply VERSION & Commit
+        run: yarn run version:apply --yes
+
+      - name: Read VERSION into VERSION
+        run: echo ::set-output name=VERSION::$(cat VERSION)
+        id: version
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update v${{ steps.version.outputs.VERSION }}"
+          committer: GitHub <noreply@github.com>
+          author: "${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
+          title: 'v${{ steps.version.outputs.VERSION }}'
+          body: |
+            ## v${{ steps.version.outputs.VERSION }}
+
+            ### Breaking Changes
+
+            - [ ] TODO
+
+            ### Features
+
+            - [ ] TODO
+
+            ### Bug Fixes
+
+            - [ ] TODO
+          labels: "Type: Release"
+          branch: "release/${{ steps.version.outputs.VERSION }}"
+          request-to-parent: false
+
+      - name: Check outputs
+        run: |
+          echo "Pull Request Number - ${{ env.PULL_REQUEST_NUMBER }}"
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pr_number }}"

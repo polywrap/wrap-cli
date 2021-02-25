@@ -21,7 +21,9 @@
     "lint:ci": "lerna run lint --parallel",
     "test": "lerna run test --no-private",
     "test:ci": "lerna run test:ci --no-private --parallel",
-    "clean": "rimraf ./**/node_modules ./**/build ./**/coverage"
+    "clean": "rimraf ./**/node_modules ./**/build ./**/coverage",
+    "version:apply": "lerna version $(cat VERSION) --no-git-tag-version",
+    "postversion:apply": "git add . && git commit -m \"chore(release): publish `cat ./VERSION`\""
   },
   "devDependencies": {
     "lerna": "3.22.1",  

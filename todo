@@ -1,0 +1,8 @@
+[x] when branch prealpha PR merged
+[ ]  get the new version from root version file (if version is less than or equal, error)
+[ ]  update the package.json files of all packages
+[ ]  publish JavaScript Packages
+[ ]    lerna publish npmjs.com
+[ ]    github tag
+[ ]  publish Web3APIs
+[ ]    Fleek + ENS
