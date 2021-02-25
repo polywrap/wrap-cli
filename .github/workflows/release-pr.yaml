@@ -8,7 +8,7 @@ jobs:
     if: |
       github.event.issue.pull_request &&
       github.event.comment.author_association == 'OWNER' &&
-      startsWith(github.event.comment.body, '/create release')
+      startsWith(github.event.comment.body, '/release-pr')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
