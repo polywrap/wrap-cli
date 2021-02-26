@@ -96,16 +96,68 @@ directive @imports(
 ) on OBJECT
 ### Web3API Header END ###
 
-type Query {
-  getData(address: String!): Int!
+type Query @imports(
+  types: [
+    "Ethereum_Query"
+  ]
+) {
+  getData(
+    address: String!
+  ): UInt32!
 }
-type Mutation {
-  setData(address: String!, value: UInt32!): String!
+
+type Mutation @imports(
+  types: [
+    "Ethereum_Mutation"
+  ]
+) {
+  setData(
+    options: SetDataOptions!
+  ): SetDataResult!
 
   deployContract: String!
 }
 
+type SetDataOptions {
+  address: String!
+  value: UInt32!
+}
+
+type SetDataResult {
+  txReceipt: String!
+  value: UInt32!
+}
+
 ### Imported Queries START ###
+
+type Ethereum_Query @imported(
+  uri: "w3://ens/ethereum.web3api.eth",
+  namespace: "Ethereum",
+  nativeType: "Query"
+) {
+  callView(
+    address: String!
+    method: String!
+    args: [String!]!
+  ): String!
+}
+
+type Ethereum_Mutation @imported(
+  uri: "w3://ens/ethereum.web3api.eth",
+  namespace: "Ethereum",
+  nativeType: "Mutation"
+) {
+  sendTransaction(
+    address: String!
+    method: String!
+    args: [String!]!
+  ): String!
+
+  deployContract(
+    abi: String!
+    bytecode: String!
+  ): String!
+}
 
 ### Imported Queries END ###
 
