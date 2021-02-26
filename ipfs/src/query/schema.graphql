@@ -1,7 +1,5 @@
-#import { Query } into Ethereum from "w3://ens/ethereum.web3api.eth"
+#import { Query } into Http from "w3://ens/http.web3api.eth"
 
 type Query {
-  getData(
-    address: String!
-  ): Int!
+  catFile(cid: String!): Bytes!
 }

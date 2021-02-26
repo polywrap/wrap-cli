@@ -6,13 +6,7 @@
 npx w3 test-env up
 ```
 
-## 2. Build & Deploy SimpleStorage Contract
-
-```
-node ./deploy-contracts.js
-```
-
-## 3. Build & Deploy The Web3API
+## 2. Build & Deploy The Web3API
 
 ```
 npx w3 build \
@@ -21,7 +15,7 @@ npx w3 build \
 --test-ens simplestorage.eth
 ```
 
-## 4. Test The Web3API Using A Query Recipe
+## 3. Test The Web3API Using A Query Recipe
 
 ```
 npx w3 query ./recipes/e2e.json --test-ens

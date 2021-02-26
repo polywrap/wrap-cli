@@ -1,5 +1,5 @@
-query GetData($address: String!) {
-  getData(
-    address: $address
+query GetData($cid: String!) {
+  catFile(
+    cid: $cid
   )
 }
