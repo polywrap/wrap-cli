@@ -15,4 +15,4 @@ query:
     file: ./src/query/index.ts
 import_redirects:
   - uri: w3://ens/ethereum.web3api.eth
-    schema: ../../../packages/js/plugins/ethereum/src/schema.graphql
+    schema: ../../../packages/js/plugins/ethereum/schema.graphql

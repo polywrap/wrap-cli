@@ -1,8 +1,19 @@
 {
   "name": "@web3api/wasm-as",
+  "description": "Web3API Assemblyscript Runtime",
   "version": "0.0.1-prealpha.1",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/web3-api/monorepo.git"
+  },
   "main": "./assembly/index.ts",
+  "files": [
+    "build",
+    "assembly",
+    "tsconfig.json",
+    "as-pect.config.js"
+  ],
   "scripts": {
     "build": "asc ./assembly/index.ts -o ./build/index.wasm -d ./build/index.d.ts",
     "lint": "eslint --color --ext .ts assembly/",
@@ -12,5 +23,9 @@
   "devDependencies": {
     "@as-pect/cli": "5.0.1",
     "assemblyscript": "0.17.14"
+  },
+  "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
+  "publishConfig": {
+    "access": "public"
   }
 }

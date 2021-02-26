@@ -1,8 +1,17 @@
 {
   "name": "@web3api/graph-node-plugin-js",
+  "description": "Web3API Graph Node Javascript Plugin",
   "version": "0.0.1-prealpha.1",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/web3-api/monorepo.git"
+  },
   "main": "build/index.js",
+  "files": [
+    "build",
+    "schema.graphql"
+  ],
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color --ext .ts src/",
@@ -11,7 +20,7 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@web3api/core-js": "^0.0.1-prealpha.1",
+    "@web3api/core-js": "0.0.1-prealpha.1",
     "apollo-link": "1.2.14",
     "apollo-link-http": "1.5.17",
     "cross-fetch": "3.0.5",
@@ -24,5 +33,9 @@
     "ts-jest": "26.1.4",
     "ts-node": "8.10.2",
     "typescript": "3.9.7"
+  },
+  "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
+  "publishConfig": {
+    "access": "public"
   }
 }
