@@ -8,6 +8,14 @@ type {{type}} {
 }
 
 {{/objectTypes}}
+{{#enumTypes}}
+enum {{type}} {
+  {{#constants}}
+  {{.}}
+  {{/constants}}
+}
+
+{{/enumTypes}}
 ### Imported Queries START ###
 
 {{#importedQueryTypes}}
@@ -45,6 +53,19 @@ type {{type}} @imported(
 }
 
 {{/importedObjectTypes}}
+
+{{#importedEnumTypes}}
+enum {{type}} @imported(
+  namespace: "{{namespace}}",
+  uri: "{{uri}}",
+  type: "{{nativeType}}"
+) {
+  {{#constants}}
+  {{.}}
+  {{/constants}}
+}
+
+{{/importedEnumTypes}}
 ### Imported Objects END ###{{/typeInfo}}`;
 
 export { template };
