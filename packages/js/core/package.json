@@ -1,8 +1,16 @@
 {
   "name": "@web3api/core-js",
+  "description": "Web3API Javascript Core",
   "version": "0.0.1-prealpha.1",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/web3-api/monorepo.git"
+  },
   "main": "build/index.js",
+  "files": [
+    "build"
+  ],
   "scripts": {
     "build": "rimraf ./build && yarn build:manifest && tsc --project tsconfig.build.json",
     "build:manifest": "node ./scripts/generateManifest.js",
@@ -15,8 +23,8 @@
     "@web3api/manifest-schema": "0.0.1-prealpha.1",
     "graphql": "15.3.0",
     "graphql-tag": "2.10.4",
-    "jsonschema": "1.4.0",
     "js-yaml": "3.14.0",
+    "jsonschema": "1.4.0",
     "semver": "7.3.4"
   },
   "devDependencies": {
@@ -27,5 +35,9 @@
     "ts-jest": "26.1.4",
     "ts-node": "8.10.2",
     "typescript": "3.9.7"
+  },
+  "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
+  "publishConfig": {
+    "access": "public"
   }
 }

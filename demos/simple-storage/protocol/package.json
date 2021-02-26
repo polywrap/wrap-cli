@@ -1,12 +1,17 @@
 {
-  "name": "@web3api/examples-simple-storage",
+  "name": "@web3api/demo-simple-storage",
+  "description": "Web3API SimpleStorage Demo",
+  "private": true,
   "version": "0.0.1-prealpha.1",
   "license": "MIT",
-  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/web3-api/monorepo.git"
+  },
   "scripts": {
-    "build": "w3 build",
-    "test:env:up": "w3 test-env up && yarn contracts:deploy",
-    "test:env:down": "w3 test-env down"
+    "build": "npx w3 build",
+    "test:env:up": "npx w3 test-env up && yarn contracts:deploy",
+    "test:env:down": "npx w3 test-env down"
   },
   "devDependencies": {
     "@web3api/cli": "0.0.1-prealpha.1",

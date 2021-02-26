@@ -1,10 +1,10 @@
-name: CI
+name: JS-CI
 
 on: [push, pull_request]
 
 jobs:
   CI:
-    name: "CI"
+    name: JS-CI
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
