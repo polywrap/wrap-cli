@@ -1,0 +1,5 @@
+query GetData($address: String!) {
+  getData(
+    address: $address
+  )
+}
