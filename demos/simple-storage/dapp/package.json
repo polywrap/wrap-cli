@@ -2,14 +2,14 @@
   "name": "@web3api/demo-simple-storage-dapp",
   "description": "Web3API SimpleStorage dApp Demo",
   "private": true,
-  "version": "0.0.1-prealpha.2",
+  "version": "0.0.1-prealpha.3",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/web3-api/monorepo.git"
   },
   "dependencies": {
-    "@web3api/client-js": "0.0.1-prealpha.2",
+    "@web3api/client-js": "0.0.1-prealpha.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-lottie": "1.2.3",
