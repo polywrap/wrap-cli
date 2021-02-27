@@ -1,7 +1,8 @@
 {
-  "name": "@web3api/sample-plugin-js",
+  "name": "templates-plugin-typescript",
+  "description": "Web3API Plugin Typescript Template",
+  "private": true,
   "version": "0.0.1-prealpha.1",
-  "license": "MIT",
   "main": "build/index.js",
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.json",
