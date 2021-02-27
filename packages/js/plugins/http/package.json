@@ -24,8 +24,8 @@
     "axios": "0.21.1"
   },
   "devDependencies": {
-    "@web3api/client-js": "0.0.1-prealpha.1",
     "@types/jest": "26.0.8",
+    "@web3api/client-js": "0.0.1-prealpha.1",
     "jest": "26.2.2",
     "nock": "13.0.7",
     "rimraf": "3.0.2",
