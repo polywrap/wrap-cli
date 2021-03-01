@@ -28,7 +28,7 @@
     "lint:fix": "lerna run lint -- --fix",
     "lint:ci": "lerna run lint --parallel",
     "test": "lerna run test --no-private",
-    "test:ci": "lerna run test:ci --no-private --parallel",
+    "test:ci": "lerna run test:ci --no-private",
     "version:apply": "npx lerna version $(cat VERSION) --exact --no-git-tag-version --yes",
     "postversion:apply": "git add . && git commit -m \"build(release): migrate to `cat ./VERSION`\"",
     "publish:npm": "lerna publish from-package --no-private --yes --registry https://registry.npmjs.org/ --no-verify-access"
