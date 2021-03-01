@@ -137,22 +137,7 @@ export const generateProject = (
           }
         )
           .then(() => {
-            // Now need to remove `@web3api/templates` from packages
-            if (useYarn) {
-              command = "yarnpkg";
-              args = ["remove"].concat(dependencies);
-            } else {
-              command = "npm";
-              args = ["uninstall", "--loglevel", "error"].concat(dependencies);
-            }
-
-            executeCommand(command, args, root)
-              .then(() => {
-                resolve(true);
-              })
-              .catch((error) => {
-                reject(error);
-              });
+            resolve(true);
           })
           .catch(() => {
             reject({
