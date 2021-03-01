@@ -1,15 +1,15 @@
 import { buildAndDeployApi } from "./helpers";
 
-import React from "react";
 import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import { UriRedirect, Uri } from "@web3api/client-js";
-import axios from "axios";
 import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
 import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 import { EnsPlugin } from "@web3api/ens-plugin-js";
 import { Web3ApiProvider, useWeb3ApiQuery } from "@web3api/react";
+import axios from "axios";
+import React from "react";
 
-jest.setTimeout(300000);
+jest.setTimeout(30000);
 
 describe("Web3Api Wrapper", () => {
   let ipfsProvider: string;
@@ -32,7 +32,7 @@ describe("Web3Api Wrapper", () => {
     const { data } = await axios.get("http://localhost:4040/deploy-ens");
 
     ensAddress = data.ensAddress;
-
+    console.log("Before redirect ENS Address ", ensAddress);
     // Test env redirects for ethereum, ipfs, and ENS.
     // Will be used to fetch APIs.
     redirects = [
@@ -61,34 +61,13 @@ describe("Web3Api Wrapper", () => {
   });
 
   it("Deploys simple storage contract", async () => {
-    // console.log("vbbefore");
-    // console.log(__dirname);
-    // console.log(ipfsProvider);
-    // console.log(ensAddress);
-    // const api = await buildAndDeployApi(
-    //   `${__dirname}/apis/simple-storage`,
-    //   ipfsProvider,
-    //   ensAddress
-    // );
-    // console.log("after");
-
-    // const ensUri = new Uri(`ens/${api.ensDomain}`);
-    // const ipfsUri = new Uri(`ipfs/${api.ipfsCid}`);
-
-    const Provider = ({ children }: { children: React.ReactNode }) => {
-      return (
-        <Web3ApiProvider redirects={redirects}>{children}</Web3ApiProvider>
-      );
-    };
-
-    const DeployComponent = () => {
+    const DeployComponent = ({ ensUri }: { ensUri: Uri }) => {
       const { execute: deployContract, data, errors } = useWeb3ApiQuery({
-        uri: new Uri("ens/api.simplestorage.eth"),
+        uri: ensUri,
         query: `mutation { deployContract }`,
       });
 
-      console.log("heres the data ", data);
-      console.log("heres the errors ", errors);
+      console.log("Error ", errors);
 
       return data && data.deployContract ? (
         <p>{data.deployContract as string}</p>
@@ -97,13 +76,27 @@ describe("Web3Api Wrapper", () => {
       );
     };
 
+    const Provider = ({ children }: { children: React.ReactNode }) => {
+      return (
+        <Web3ApiProvider redirects={redirects}>{children}</Web3ApiProvider>
+      );
+    };
+
+    const api = await buildAndDeployApi(
+      `${__dirname}/simple-storage-api`,
+      ipfsProvider,
+      ensAddress
+    );
+    console.log("after deployment");
+
+    console.log(api);
+    const ensUri = new Uri(`ens/${api.ensDomain}`);
+
     render(
       <Provider>
-        <DeployComponent />
+        <DeployComponent ensUri={ensUri} />
       </Provider>
     );
-
-    console.log(screen);
 
     fireEvent.click(screen.getByText("Deploy"));
     await waitFor(() => screen.getByText(/0x/));

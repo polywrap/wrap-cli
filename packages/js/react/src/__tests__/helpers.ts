@@ -55,7 +55,6 @@ export async function buildAndDeployApi(
   const apiEns = `${generateName()}.eth`;
 
   // build & deploy the protocol
-  console.log("before run web3cli");
   const { exitCode, stdout, stderr } = await runW3CLI([
     "build",
     `${apiAbsPath}/web3api.yaml`,
@@ -66,8 +65,7 @@ export async function buildAndDeployApi(
     "--test-ens",
     `${ensAddress},${apiEns}`,
   ]);
-  console.log("after run web3cli");
-  console.log("exit code: ", exitCode);
+
   if (exitCode !== 0) {
     console.error(`w3 exited with code: ${exitCode}`);
     console.log(`stderr:\n${stderr}`);
