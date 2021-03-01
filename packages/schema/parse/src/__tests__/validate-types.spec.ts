@@ -118,6 +118,51 @@ type Bar {
 }
 `;
 
+const infiniteTypes1 = `
+type A {
+  prop: B!
+}
+
+type B {
+  prop: A!
+}
+`
+
+const infiniteTypes2 = `
+type A {
+  prop: B!
+}
+
+type B {
+  prop: C!
+}
+
+type C {
+  prop: A!
+}
+`
+
+const infiniteTypes3 = `
+type A {
+  prop: B!
+  root: D!
+}
+
+type B {
+  prop: C!
+}
+
+type C {
+  prop: A!
+  root: D!
+}
+
+type D {
+  prop: B!
+  root: A!
+}
+`
+
 describe("Web3API Schema Type Validation", () => {
   it("typeDefinitions", () => {
     const exec = (schema: string) => () => parseSchema(schema, {
@@ -177,5 +222,23 @@ describe("Web3API Schema Type Validation", () => {
     expect(exec(propertyTypes7)).toThrow(
       /Methods can only be defined on query types \(Mutation, Query\)\.\nFound: type Queryy { method\(prop\) }/gm
     );
+  })
+
+  it("Infinite recursions", () => {
+    const exec = (schema: string) => () => parseSchema(schema, {
+      validators: [typeValidators.infiniteRecursions]
+    })
+
+    expect(exec(infiniteTypes1)).toThrow(
+      /Graphql cycles are not supported. \nFound: \n- { B -\[prop\]-> A -\[prop\]-> B }/gm
+    )
+
+    expect(exec(infiniteTypes2)).toThrow(
+      /Graphql cycles are not supported. \nFound: \n- { C -\[prop\]-> A -\[prop\]-> B -\[prop\]-> C }/gm
+    )
+
+    expect(exec(infiniteTypes3)).toThrow(
+      /Graphql cycles are not supported. \nFound: \n- { D -\[prop\]-> B -\[prop\]-> C -\[prop\]-> A -\[root\]-> D }/gm
+    )
   })
 });

@@ -6,6 +6,7 @@ import {
 } from "../typeInfo";
 
 import { DocumentNode, StringValueNode, visit } from "graphql";
+import { getSchemaCycles } from "@namestys/graphql-schema-cycles";
 
 export function typeDefinitions(astNode: DocumentNode): void {
   const objectTypes: Record<string, boolean> = {};
@@ -147,5 +148,17 @@ export function propertyTypes(astNode: DocumentNode): void {
         `Unknown property type found: type ${field.object} { ${field.field}: ${field.type} }`
       );
     }
+  }
+}
+
+export function infiniteRecursions(astNode: DocumentNode): void {
+  const { cycleStrings, foundCycle } = getSchemaCycles(astNode);
+
+  if (foundCycle) {
+    throw Error(
+      `Graphql cycles are not supported. \nFound: ${cycleStrings.map(
+        (cycle) => `\n- ${cycle}`
+      )}`
+    );
   }
 }
