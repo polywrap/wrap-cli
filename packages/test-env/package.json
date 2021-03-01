@@ -1,12 +1,20 @@
 {
   "name": "@web3api/client-test-env",
-  "version": "0.0.1-prealpha.1",
+  "description": "Web3API Client Test Env",
+  "version": "0.0.1-prealpha.3",
   "license": "MIT",
-  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/web3-api/monorepo.git"
+  },
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
     "up": "docker-compose up",
     "down": "docker-compose down"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a"
 }

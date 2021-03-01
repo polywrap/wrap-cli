@@ -1,7 +1,8 @@
 {
-  "name": "@web3api/sample-plugin-js",
-  "version": "0.0.1-prealpha.1",
-  "license": "MIT",
+  "name": "templates-plugin-typescript",
+  "description": "Web3API Plugin Typescript Template",
+  "private": true,
+  "version": "0.0.1-prealpha.3",
   "main": "build/index.js",
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.json",
@@ -11,7 +12,7 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@web3api/core-js": "^0.0.1-prealpha.1"
+    "@web3api/core-js": "0.0.1-prealpha.3"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",

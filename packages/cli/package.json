@@ -1,7 +1,16 @@
 {
   "name": "@web3api/cli",
-  "version": "0.0.1-prealpha.1",
+  "description": "Web3API CLI",
+  "version": "0.0.1-prealpha.3",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/web3-api/monorepo.git"
+  },
+  "files": [
+    "build",
+    "bin"
+  ],
   "bin": {
     "w3": "bin/w3"
   },
@@ -13,15 +22,15 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@web3api/core-js": "0.0.1-prealpha.1",
-    "@web3api/client-js": "0.0.1-prealpha.1",
-    "@web3api/client-test-env": "0.0.1-prealpha.1",
-    "@web3api/schema-compose": "0.0.1-prealpha.1",
-    "@web3api/schema-bind": "0.0.1-prealpha.1",
-    "@web3api/schema-parse": "0.0.1-prealpha.1",
-    "@web3api/ens-plugin-js": "0.0.1-prealpha.1",
-    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.1",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.1",
+    "@web3api/client-js": "0.0.1-prealpha.3",
+    "@web3api/client-test-env": "0.0.1-prealpha.3",
+    "@web3api/core-js": "0.0.1-prealpha.3",
+    "@web3api/ens-plugin-js": "0.0.1-prealpha.3",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.3",
+    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.3",
+    "@web3api/schema-bind": "0.0.1-prealpha.3",
+    "@web3api/schema-compose": "0.0.1-prealpha.3",
+    "@web3api/schema-parse": "0.0.1-prealpha.3",
     "assemblyscript": "0.17.14",
     "axios": "0.19.2",
     "chalk": "4.1.0",
@@ -42,5 +51,9 @@
     "rimraf": "3.0.2",
     "ts-jest": "26.1.4",
     "typescript": "3.9.6"
+  },
+  "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
+  "publishConfig": {
+    "access": "public"
   }
 }

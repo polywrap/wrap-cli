@@ -1,6 +1,7 @@
 {
   "name": "@web3api/dev-server",
-  "version": "0.0.1-prealpha.1",
+  "version": "0.0.1-prealpha.3",
+  "private": true,
   "main": "build/index.js",
   "scripts": {
     "start": "node ./build/index.js",
@@ -25,7 +26,7 @@
     "dotenv": "8.2.0",
     "eth-ens-namehash": "2.0.8",
     "express": "4.17.1",
-    "web3-utils": "1.2.11",
-    "web3": "1.2.11"
+    "web3": "1.2.11",
+    "web3-utils": "1.2.11"
   }
 }

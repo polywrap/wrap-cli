@@ -114,14 +114,14 @@ export function parseLocalImports(
     }
 
     localImports.push({
-      objectTypes: importTypes,
+      importedTypes: importTypes,
       path,
     });
   }
 
   // Make sure types are unique
   const localImportNames: string[] = [];
-  localImports.forEach((imp) => localImportNames.push(...imp.objectTypes));
+  localImports.forEach((imp) => localImportNames.push(...imp.importedTypes));
   const duplicateImportTypes = getDuplicates(localImportNames);
   if (duplicateImportTypes.length > 0) {
     throw Error(`Duplicate type found: ${duplicateImportTypes}`);

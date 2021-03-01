@@ -1,12 +1,11 @@
 import {
   createArrayDefinition,
-  createObjectDefinition,
   createPropertyDefinition,
-  createScalarDefinition,
-  isScalarType,
   ObjectDefinition,
   PropertyDefinition,
 } from "../typeInfo";
+import { setPropertyType } from "./property-utils";
+import { Blackboard } from "./Blackboard";
 
 import { FieldDefinitionNode, NamedTypeNode } from "graphql";
 
@@ -41,7 +40,11 @@ export function extractFieldDefinition(
   importDef.properties.push(property);
 }
 
-export function extractNamedType(node: NamedTypeNode, state: State): void {
+export function extractNamedType(
+  node: NamedTypeNode,
+  state: State,
+  blackboard: Blackboard
+): void {
   const property = state.currentProperty;
 
   if (!property) {
@@ -52,19 +55,26 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
     return;
   }
 
-  if (isScalarType(node.name.value)) {
-    property.scalar = createScalarDefinition({
-      name: property.name,
-      type: node.name.value,
-      required: state.nonNullType,
-    });
-  } else {
-    property.object = createObjectDefinition({
-      name: property.name,
-      type: node.name.value,
-      required: state.nonNullType,
-    });
+  if (!property.name) {
+    throw Error(
+      "extractNamedType: Invalid state. Uninitialized currentProperty, name not found.\n" +
+        `Method: ${JSON.stringify(property, null, 2)}\nState: ${JSON.stringify(
+          state,
+          null,
+          2
+        )}`
+    );
   }
+
+  setPropertyType(
+    property,
+    property.name,
+    {
+      type: node.name.value,
+      required: state.nonNullType,
+    },
+    blackboard
+  );
 
   state.nonNullType = false;
 }
