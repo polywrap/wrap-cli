@@ -93,7 +93,7 @@ ${HELP}`);
 
     const { code, output } = await run(
       "npx",
-      ["w3", "build", `${projectRoot}/invalid-web3api-1.yaml`],
+      ["w3", "build", "invalid-web3api-1.yaml"],
       projectRoot,
       errorHandler
     );
@@ -113,7 +113,7 @@ ${HELP}`);
 
     const { code, output } = await run(
       "npx",
-      ["w3", "build", `${projectRoot}/invalid-web3api-2.yaml`],
+      ["w3", "build", "invalid-web3api-2.yaml"],
       projectRoot,
       errorHandler
     );
