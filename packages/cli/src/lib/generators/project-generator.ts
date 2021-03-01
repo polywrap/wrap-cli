@@ -93,6 +93,15 @@ export const generateProject = (
     const root = path.resolve(projectName);
     const dependencies: string[] = ["@web3api/templates"];
 
+    fs.write(
+      `${root}/package.json`,
+      `
+{
+  "name": "template"
+}
+    `
+    );
+
     if (useYarn) {
       command = "yarnpkg";
       args = ["add", "--exact"];
