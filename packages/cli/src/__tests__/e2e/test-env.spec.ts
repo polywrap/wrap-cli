@@ -65,7 +65,7 @@ ${HELP}`);
 ✔ Starting test environment...
 `);
     }
-  });
+  }, 30000);
 
   test("Should successfully shut down test environment", async () => {
     const projectRoot = path.resolve(__dirname, "../project/");
