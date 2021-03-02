@@ -1,0 +1,18 @@
+format: 0.0.1-prealpha.1
+description: Test Manifest
+repository: https://github.com
+mutation:
+  schema:
+    file: ./src/mutation/schema.graphql
+  module:
+    language: wasm/assemblyscript
+    file: ./src/mutation/index.ts
+query:
+  schema:
+    file: ./src/query/schema.graphql
+  module:
+    language: wasm/assemblyscript
+    file: ./src/query/index.ts
+import_redirects:
+  - uri: w3://ens/ethereum.web3api.eth
+    schema: ../../../../js/plugins/ethereum/src/schema.graphql

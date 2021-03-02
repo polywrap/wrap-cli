@@ -1,9 +1,17 @@
 {
   "name": "@web3api/client-js",
-  "version": "0.0.1-prealpha.1",
+  "description": "Web3API Javascript Client",
+  "version": "0.0.1-prealpha.4",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/web3-api/monorepo.git"
+  },
   "main": "build/index.js",
-  "private": "true",
+  "files": [
+    "build",
+    "bin"
+  ],
   "bin": {
     "web3api-worker-install": "bin/web3api-worker-install"
   },
@@ -12,18 +20,18 @@
     "lint": "eslint --color --ext .ts src/",
     "test": "TEST=true jest --passWithNoTests --runInBand --verbose",
     "test:watch": "TEST=true jest --watch --passWithNoTests --verbose",
-    "test:ci": "TEST=true yarn test:env:up && yarn test && yarn test:env:down",
+    "test:ci": "TEST=true yarn test:env:up && yarn test",
+    "posttest:ci": "yarn test:env:down",
     "test:env:up": "w3 test-env up",
     "test:env:down": "w3 test-env down"
   },
   "dependencies": {
     "@msgpack/msgpack": "2.3.0",
-    "@web3api/core-js": "0.0.1-prealpha.1",
-    "@web3api/ens-plugin-js": "0.0.1-prealpha.1",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.1",
-    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.1",
-    "@web3api/schema-parse": "0.0.1-prealpha.1",
-    "assemblyscript": "0.18.10",
+    "@web3api/core-js": "0.0.1-prealpha.4",
+    "@web3api/ens-plugin-js": "0.0.1-prealpha.4",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.4",
+    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.4",
+    "@web3api/schema-parse": "0.0.1-prealpha.4",
     "graphql": "^15.4.0",
     "js-yaml": "3.14.0",
     "web-worker": "1.0.0"
@@ -32,18 +40,22 @@
     "@types/jest": "26.0.8",
     "@types/js-yaml": "3.11.1",
     "@types/semver": "^7.3.4",
-    "@web3api/cli": "0.0.1-prealpha.1",
     "@web3api/test-cases": "0.0.1-prealpha.1",
+    "@web3api/cli": "0.0.1-prealpha.4",
     "axios": "0.19.2",
     "jest": "26.2.2",
     "rimraf": "3.0.2",
     "spawn-command": "0.0.2-1",
     "ts-jest": "26.1.4",
+    "ts-loader": "8.0.17",
     "ts-node": "8.10.2",
     "typescript": "3.9.7",
-    "ts-loader": "8.0.17",
     "webpack": "4.44.2",
     "webpack-cli": "4.5.0",
     "worker-plugin": "5.0.0"
+  },
+  "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
+  "publishConfig": {
+    "access": "public"
   }
 }

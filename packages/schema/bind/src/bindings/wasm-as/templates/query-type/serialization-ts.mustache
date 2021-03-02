@@ -1,12 +1,12 @@
-import { Nullable } from "@web3api/wasm-as";
 import {
   Read,
   ReadDecoder,
   WriteSizer,
   WriteEncoder,
-  Write
+  Write,
+  Nullable
 } from "@web3api/wasm-as";
-import * as Objects from "..";
+import * as Types from "..";
 {{#methods}}
 
 export class Input_{{name}} {
@@ -51,6 +51,10 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
         {{> deserialize_array}}
       });
       {{/array}}
+      {{#enum}}
+      {{> deserialize_enum}}
+      _{{name}} = value;
+      {{/enum}}
       {{#object}}
       {{> deserialize_object}}
       _{{name}} = object;
@@ -102,13 +106,21 @@ export function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}
     {{> serialize_array}}
   });
   {{/array}}
+  {{#enum}}
+  {{#required}}
+  writer.writeInt32(result);
+  {{/required}}
+  {{^required}}
+  writer.writeNullableInt32(result);
+  {{/required}}
+  {{/enum}}
   {{#object}}
   {{#required}}
-  Objects.{{type}}.write(writer, result);
+  Types.{{type}}.write(writer, result);
   {{/required}}
   {{^required}}
   if (result) {
-    Objects.{{type}}.write(writer, result);
+    Types.{{type}}.write(writer, result);
   } else {
     writer.writeNil();
   }

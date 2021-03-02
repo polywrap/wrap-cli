@@ -1,9 +1,9 @@
 import { ImportedDefinition } from "../typeInfo";
 
-import { DirectiveNode, ObjectTypeDefinitionNode } from "graphql";
+import { DirectiveNode, TypeDefinitionNode } from "graphql";
 
 export function extractImportedDefinition(
-  node: ObjectTypeDefinitionNode,
+  node: TypeDefinitionNode,
   queryTypes = false
 ): ImportedDefinition | undefined {
   if (!node.directives) {
@@ -16,7 +16,7 @@ export function extractImportedDefinition(
   );
 
   if (importedIndex === -1) {
-    return;
+    return undefined;
   }
 
   const typeName = node.name.value;
@@ -29,12 +29,12 @@ export function extractImportedDefinition(
   if (queryTypes) {
     // Ignore everything that isn't a query type
     if (queryTest !== queryIdentifier && mutationTest !== mutationIdentifier) {
-      return;
+      return undefined;
     }
   } else {
     // Ignore query types
     if (queryTest === queryIdentifier || mutationTest === mutationIdentifier) {
-      return;
+      return undefined;
     }
   }
 

@@ -1,11 +1,16 @@
 {
   "name": "root",
+  "description": "Web3API Monorepo",
   "license": "MIT",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/web3-api/monorepo.git"
+  },
   "workspaces": {
     "packages": [
       "./packages/**/*",
-      "./demos/simple-storage/*"
+      "./demos/**/*"
     ],
     "nohoist": [
       "**/@testing-library/*",
@@ -14,6 +19,8 @@
     ]
   },
   "scripts": {
+    "reset": "yarn clean && yarn && yarn build",
+    "clean": "rimraf ./**/node_modules ./**/build ./**/coverage",
     "build": "lerna run build --no-private --ignore @web3api/cli && yarn build:cli",
     "build:cli": "lerna run build --scope @web3api/cli",
     "lint": "lerna run lint",
@@ -21,7 +28,9 @@
     "lint:ci": "lerna run lint --parallel",
     "test": "lerna run test --no-private",
     "test:ci": "lerna run test:ci --no-private --parallel",
-    "clean": "rimraf ./**/node_modules ./**/build ./**/coverage"
+    "version:apply": "npx lerna version $(cat VERSION) --exact --no-git-tag-version --yes",
+    "postversion:apply": "git add . && git commit -m \"build(release): migrate to `cat ./VERSION`\"",
+    "publish:npm": "lerna publish from-package --no-private --yes --registry https://registry.npmjs.org/ --no-verify-access"
   },
   "devDependencies": {
     "lerna": "3.22.1",  

@@ -5,7 +5,7 @@ import url from "url";
 import chalk from "chalk";
 import path from "path";
 
-function shouldUseYarn() {
+export function shouldUseYarn(): boolean {
   try {
     execSync("yarnpkg --version", { stdio: "ignore" });
     return true;
@@ -25,7 +25,7 @@ function getProxy() {
         .trim();
       return httpsProxy !== "null" ? httpsProxy : undefined;
     } catch (e) {
-      return;
+      return undefined;
     }
   }
 }
@@ -93,6 +93,15 @@ export const generateProject = (
     const root = path.resolve(projectName);
     const dependencies: string[] = ["@web3api/templates"];
 
+    fs.write(
+      `${root}/package.json`,
+      `
+{
+  "name": "template"
+}
+    `
+    );
+
     if (useYarn) {
       command = "yarnpkg";
       args = ["add", "--exact"];
@@ -137,22 +146,7 @@ export const generateProject = (
           }
         )
           .then(() => {
-            // Now need to remove `@web3api/templates` from packages
-            if (useYarn) {
-              command = "yarnpkg";
-              args = ["remove"].concat(dependencies);
-            } else {
-              command = "npm";
-              args = ["uninstall", "--loglevel", "error"].concat(dependencies);
-            }
-
-            executeCommand(command, args, root)
-              .then(() => {
-                resolve(true);
-              })
-              .catch((error) => {
-                reject(error);
-              });
+            resolve(true);
           })
           .catch(() => {
             reject({
