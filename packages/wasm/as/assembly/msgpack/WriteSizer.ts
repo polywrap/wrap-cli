@@ -121,7 +121,7 @@ export class WriteSizer extends Write {
     }
   }
 
-  writeArray<T>(a: Array<T>, fn: (sizer: WriteSizer, item: T) => void): void {
+  writeArray<T>(a: Array<T>, fn: (sizer: Write, item: T) => void): void {
     this.writeArrayLength(a.length);
     for (let i: i32 = 0; i < a.length; i++) {
       fn(this, a[i]);
