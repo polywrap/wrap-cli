@@ -7,8 +7,7 @@ import {
   Nullable
 } from "@web3api/wasm-as";
 import { {{type}} } from "./";
-import * as Enums from "../enums";
-import * as Objects from "..";
+import * as Types from "..";
 
 export function serialize{{type}}(type: {{type}}): ArrayBuffer {
   const sizer = new WriteSizer();
@@ -33,11 +32,11 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   {{/array}}
   {{#object}}
   {{#required}}
-  Objects.{{type}}.write(writer, type.{{name}});
+  Types.{{type}}.write(writer, type.{{name}});
   {{/required}}
   {{^required}}
   if (type.{{name}}) {
-    Objects.{{type}}.write(writer, type.{{name}});
+    Types.{{type}}.write(writer, type.{{name}});
   } else {
     writer.writeNil();
   }

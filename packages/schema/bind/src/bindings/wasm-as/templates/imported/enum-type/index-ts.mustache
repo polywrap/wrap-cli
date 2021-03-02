@@ -4,14 +4,14 @@ export enum {{type}} {
   {{/constants}}
 }
 
-export function match{{type}}ByValue(value: i32): {{type}} {
-  {{#constants}}
-  if ({{type}}.{{.}} == value) {
-    return {{type}}.{{.}};
+export function match{{type}}ByValue(value: u32): {{type}} {
+  switch (value) {
+    {{#constants}}
+    case {{type}}.{{.}}: return {{type}}.{{.}};
+    {{/constants}}
+    default:
+      throw new Error("Invalid value for enum '{{type}}': " + value.toString());
   }
-  {{/constants}}
-
-  throw new Error("Invalid value for enum '{{type}}'");
 }
 
 export function match{{type}}ByKey(key: string): {{type}} {
@@ -21,5 +21,5 @@ export function match{{type}}ByKey(key: string): {{type}} {
   }
   {{/constants}}
 
-  throw new Error("Invalid key for enum '{{type}}'");
+  throw new Error("Invalid key for enum '{{type}}': " + key);
 }

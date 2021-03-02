@@ -8,8 +8,6 @@ import {
 {{/methods.length}}
 {{/queryTypes}}
 
-export * from "./enums";
-
 {{#queryTypes}}
 {{#methods.length}}
 export {
@@ -23,6 +21,9 @@ export {
 {{#objectTypes}}
 export * from "./{{type}}";
 {{/objectTypes}}
+{{#enumTypes}}
+export * from "./{{type}}";
+{{/enumTypes}}
 
 {{#importedQueryTypes}}
 export * from "./imported/{{type}}";
@@ -30,3 +31,6 @@ export * from "./imported/{{type}}";
 {{#importedObjectTypes}}
 export * from "./imported/{{type}}";
 {{/importedObjectTypes}}
+{{#importedEnumTypes}}
+export * from "./imported/{{type}}";
+{{/importedEnumTypes}}

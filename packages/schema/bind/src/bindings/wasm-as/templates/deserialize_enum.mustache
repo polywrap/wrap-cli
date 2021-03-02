@@ -1,20 +1,20 @@
 {{#required}}
-let value: Enums.{{type}};
+let value: Types.{{type}};
 if (reader.isNextEnumValue()) {
-  value = Enums.match{{type}}ByValue(reader.readInt32());
+  value = Types.match{{type}}ByValue(reader.readInt32());
 } else {
-  value = Enums.match{{type}}ByKey(reader.readString());
+  value = Types.match{{type}}ByKey(reader.readString());
 }
 {{/required}}
 {{^required}}
-let value: Nullable<Enums.{{type}}>;
+let value: Nullable<Types.{{type}}>;
 if (!reader.isNextNil()) {
   if (reader.isNextEnumValue()) {
-    value = Nullable.fromValue(Enums.match{{type}}ByValue(reader.readInt32()));
+    value = Nullable.fromValue(Types.match{{type}}ByValue(reader.readInt32()));
   } else {
-    value = Nullable.fromValue(Enums.match{{type}}ByKey(reader.readString()));
+    value = Nullable.fromValue(Types.match{{type}}ByKey(reader.readString()));
   }
 } else {
-  value = Nullable.fromNull<Enums.{{type}}>();
+  value = Nullable.fromNull<Types.{{type}}>();
 }
 {{/required}}

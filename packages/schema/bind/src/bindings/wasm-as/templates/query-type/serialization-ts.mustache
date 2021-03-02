@@ -6,8 +6,7 @@ import {
   Write,
   Nullable
 } from "@web3api/wasm-as";
-import * as Enums from "../enums";
-import * as Objects from "..";
+import * as Types from "..";
 {{#methods}}
 
 export class Input_{{name}} {
@@ -117,11 +116,11 @@ export function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}
   {{/enum}}
   {{#object}}
   {{#required}}
-  Objects.{{type}}.write(writer, result);
+  Types.{{type}}.write(writer, result);
   {{/required}}
   {{^required}}
   if (result) {
-    Objects.{{type}}.write(writer, result);
+    Types.{{type}}.write(writer, result);
   } else {
     writer.writeNil();
   }

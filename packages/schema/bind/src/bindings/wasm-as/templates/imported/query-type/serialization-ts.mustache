@@ -6,8 +6,7 @@ import {
   WriteEncoder,
   ReadDecoder
 } from "@web3api/wasm-as";
-import * as Enums from "../../enums";
-import * as Objects from "../..";
+import * as Types from "../..";
 
 {{#methods}}
 export class Input_{{name}} {
@@ -50,11 +49,11 @@ export function write{{name}}Args(
   {{/enum}}
   {{#object}}
   {{#required}}
-  Objects.{{type}}.write(writer, input.{{name}});
+  Types.{{type}}.write(writer, input.{{name}});
   {{/required}}
   {{^required}}
   if (input.{{name}}) {
-    Objects.{{type}}.write(writer, input.{{name}});
+    Types.{{type}}.write(writer, input.{{name}});
   } else {
     writer.writeNil();
   }

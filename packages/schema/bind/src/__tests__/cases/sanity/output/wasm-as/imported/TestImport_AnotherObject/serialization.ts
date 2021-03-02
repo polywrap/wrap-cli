@@ -7,8 +7,7 @@ import {
   Nullable
 } from "@web3api/wasm-as";
 import { TestImport_AnotherObject } from "./";
-import * as Enums from "../../enums";
-import * as Objects from "../..";
+import * as Types from "../..";
 
 export function serializeTestImport_AnotherObject(type: TestImport_AnotherObject): ArrayBuffer {
   const sizer = new WriteSizer();

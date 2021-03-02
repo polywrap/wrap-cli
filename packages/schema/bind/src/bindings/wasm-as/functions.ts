@@ -85,6 +85,7 @@ export const toWasmInit: MustacheFunction = () => {
 export const toWasm: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
+    let isEnum = false;
 
     let nullable = false;
     if (type[type.length - 1] === "!") {
@@ -137,13 +138,14 @@ export const toWasm: MustacheFunction = () => {
         break;
       default:
         if (type.includes("Enum_")) {
-          type = `Enums.${type.replace("Enum_", "")}`;
+          type = `Types.${type.replace("Enum_", "")}`;
+          isEnum = true;
         } else {
-          type = `Objects.${type}`;
+          type = `Types.${type}`;
         }
     }
 
-    return applyNullable(type, nullable);
+    return applyNullable(type, nullable, isEnum);
   };
 };
 
@@ -155,15 +157,15 @@ const toWasmArray = (type: string, nullable: boolean): string => {
   }
 
   const wasmType = toWasm()(result[2], (str) => str);
-  return applyNullable("Array<" + wasmType + ">", nullable);
+  return applyNullable("Array<" + wasmType + ">", nullable, false);
 };
 
-const applyNullable = (type: string, nullable: boolean): string => {
+const applyNullable = (type: string, nullable: boolean, isEnum: boolean): string => {
   if (nullable) {
     if (
       type.indexOf("Array") === 0 ||
       type.indexOf("string") === 0 ||
-      (!type.includes("Enums.") && !isBaseType(type))
+      (!isEnum && !isBaseType(type))
     ) {
       return `${type} | null`;
     } else {

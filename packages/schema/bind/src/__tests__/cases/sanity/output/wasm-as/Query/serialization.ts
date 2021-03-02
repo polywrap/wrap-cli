@@ -6,16 +6,15 @@ import {
   Write,
   Nullable
 } from "@web3api/wasm-as";
-import * as Enums from "../enums";
-import * as Objects from "..";
+import * as Types from "..";
 
 export class Input_queryMethod {
   str: string;
   optStr: string | null;
-  en: Enums.CustomEnum;
-  optEnum: Nullable<Enums.CustomEnum>;
-  enumArray: Array<Enums.CustomEnum>;
-  optEnumArray: Array<Nullable<Enums.CustomEnum>> | null;
+  en: Types.CustomEnum;
+  optEnum: Nullable<Types.CustomEnum>;
+  enumArray: Array<Types.CustomEnum>;
+  optEnumArray: Array<Nullable<Types.CustomEnum>> | null;
 }
 
 export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMethod {
@@ -25,12 +24,12 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
   var _str: string = "";
   var _strSet: bool = false;
   var _optStr: string | null = null;
-  var _en: Enums.CustomEnum = 0;
+  var _en: Types.CustomEnum = 0;
   var _enSet: bool = false;
-  var _optEnum: Nullable<Enums.CustomEnum> = new Nullable<Enums.CustomEnum>();
-  var _enumArray: Array<Enums.CustomEnum> = [];
+  var _optEnum: Nullable<Types.CustomEnum> = new Nullable<Types.CustomEnum>();
+  var _enumArray: Array<Types.CustomEnum> = [];
   var _enumArraySet: bool = false;
-  var _optEnumArray: Array<Nullable<Enums.CustomEnum>> | null = null;
+  var _optEnumArray: Array<Nullable<Types.CustomEnum>> | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -44,51 +43,51 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
       _optStr = reader.readNullableString();
     }
     else if (field == "en") {
-      let value: Enums.CustomEnum;
+      let value: Types.CustomEnum;
       if (reader.isNextEnumValue()) {
-        value = Enums.matchCustomEnumByValue(reader.readInt32());
+        value = Types.matchCustomEnumByValue(reader.readInt32());
       } else {
-        value = Enums.matchCustomEnumByKey(reader.readString());
+        value = Types.matchCustomEnumByKey(reader.readString());
       }
       _en = value;
       _enSet = true;
     }
     else if (field == "optEnum") {
-      let value: Nullable<Enums.CustomEnum>;
+      let value: Nullable<Types.CustomEnum>;
       if (!reader.isNextNil()) {
         if (reader.isNextEnumValue()) {
-          value = Nullable.fromValue(Enums.matchCustomEnumByValue(reader.readInt32()));
+          value = Nullable.fromValue(Types.matchCustomEnumByValue(reader.readInt32()));
         } else {
-          value = Nullable.fromValue(Enums.matchCustomEnumByKey(reader.readString()));
+          value = Nullable.fromValue(Types.matchCustomEnumByKey(reader.readString()));
         }
       } else {
-        value = Nullable.fromNull<Enums.CustomEnum>();
+        value = Nullable.fromNull<Types.CustomEnum>();
       }
       _optEnum = value;
     }
     else if (field == "enumArray") {
-      _enumArray = reader.readArray((reader: Read): Enums.CustomEnum => {
-        let value: Enums.CustomEnum;
+      _enumArray = reader.readArray((reader: Read): Types.CustomEnum => {
+        let value: Types.CustomEnum;
         if (reader.isNextEnumValue()) {
-          value = Enums.matchCustomEnumByValue(reader.readInt32());
+          value = Types.matchCustomEnumByValue(reader.readInt32());
         } else {
-          value = Enums.matchCustomEnumByKey(reader.readString());
+          value = Types.matchCustomEnumByKey(reader.readString());
         }
         return value;
       });
       _enumArraySet = true;
     }
     else if (field == "optEnumArray") {
-      _optEnumArray = reader.readNullableArray((reader: Read): Nullable<Enums.CustomEnum> => {
-        let value: Nullable<Enums.CustomEnum>;
+      _optEnumArray = reader.readNullableArray((reader: Read): Nullable<Types.CustomEnum> => {
+        let value: Nullable<Types.CustomEnum>;
         if (!reader.isNextNil()) {
           if (reader.isNextEnumValue()) {
-            value = Nullable.fromValue(Enums.matchCustomEnumByValue(reader.readInt32()));
+            value = Nullable.fromValue(Types.matchCustomEnumByValue(reader.readInt32()));
           } else {
-            value = Nullable.fromValue(Enums.matchCustomEnumByKey(reader.readString()));
+            value = Nullable.fromValue(Types.matchCustomEnumByKey(reader.readString()));
           }
         } else {
-          value = Nullable.fromNull<Enums.CustomEnum>();
+          value = Nullable.fromNull<Types.CustomEnum>();
         }
         return value;
       });
@@ -129,51 +128,51 @@ export function writequeryMethodResult(writer: Write, result: i32): void {
 }
 
 export class Input_objectMethod {
-  object: Objects.AnotherType;
-  optObject: Objects.AnotherType | null;
-  objectArray: Array<Objects.AnotherType>;
-  optObjectArray: Array<Objects.AnotherType | null> | null;
+  object: Types.AnotherType;
+  optObject: Types.AnotherType | null;
+  objectArray: Array<Types.AnotherType>;
+  optObjectArray: Array<Types.AnotherType | null> | null;
 }
 
 export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectMethod {
   const reader = new ReadDecoder(argsBuf);
   var numFields = reader.readMapLength();
 
-  var _object: Objects.AnotherType | null = null;
+  var _object: Types.AnotherType | null = null;
   var _objectSet: bool = false;
-  var _optObject: Objects.AnotherType | null = null;
-  var _objectArray: Array<Objects.AnotherType> = [];
+  var _optObject: Types.AnotherType | null = null;
+  var _objectArray: Array<Types.AnotherType> = [];
   var _objectArraySet: bool = false;
-  var _optObjectArray: Array<Objects.AnotherType | null> | null = null;
+  var _optObjectArray: Array<Types.AnotherType | null> | null = null;
 
   while (numFields > 0) {
     numFields--;
     const field = reader.readString();
 
     if (field == "object") {
-      const object = Objects.AnotherType.read(reader);
+      const object = Types.AnotherType.read(reader);
       _object = object;
       _objectSet = true;
     }
     else if (field == "optObject") {
-      var object: Objects.AnotherType | null = null;
+      var object: Types.AnotherType | null = null;
       if (!reader.isNextNil()) {
-        object = Objects.AnotherType.read(reader);
+        object = Types.AnotherType.read(reader);
       }
       _optObject = object;
     }
     else if (field == "objectArray") {
-      _objectArray = reader.readArray((reader: Read): Objects.AnotherType => {
-        const object = Objects.AnotherType.read(reader);
+      _objectArray = reader.readArray((reader: Read): Types.AnotherType => {
+        const object = Types.AnotherType.read(reader);
         return object;
       });
       _objectArraySet = true;
     }
     else if (field == "optObjectArray") {
-      _optObjectArray = reader.readNullableArray((reader: Read): Objects.AnotherType | null => {
-        var object: Objects.AnotherType | null = null;
+      _optObjectArray = reader.readNullableArray((reader: Read): Types.AnotherType | null => {
+        var object: Types.AnotherType | null = null;
         if (!reader.isNextNil()) {
-          object = Objects.AnotherType.read(reader);
+          object = Types.AnotherType.read(reader);
         }
         return object;
       });
@@ -195,7 +194,7 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
   };
 }
 
-export function serializeobjectMethodResult(result: Objects.AnotherType | null): ArrayBuffer {
+export function serializeobjectMethodResult(result: Types.AnotherType | null): ArrayBuffer {
   const sizer = new WriteSizer();
   writeobjectMethodResult(sizer, result);
   const buffer = new ArrayBuffer(sizer.length);
@@ -204,9 +203,9 @@ export function serializeobjectMethodResult(result: Objects.AnotherType | null):
   return buffer;
 }
 
-export function writeobjectMethodResult(writer: Write, result: Objects.AnotherType | null): void {
+export function writeobjectMethodResult(writer: Write, result: Types.AnotherType | null): void {
   if (result) {
-    Objects.AnotherType.write(writer, result);
+    Types.AnotherType.write(writer, result);
   } else {
     writer.writeNil();
   }

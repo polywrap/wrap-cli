@@ -3,15 +3,13 @@ export enum TestImport_Enum {
   BYTES,
 }
 
-export function matchTestImport_EnumByValue(value: i32): TestImport_Enum {
-  if (TestImport_Enum.STRING == value) {
-    return TestImport_Enum.STRING;
+export function matchTestImport_EnumByValue(value: u32): TestImport_Enum {
+  switch (value) {
+    case TestImport_Enum.STRING: return TestImport_Enum.STRING;
+    case TestImport_Enum.BYTES: return TestImport_Enum.BYTES;
+    default:
+      throw new Error("Invalid value for enum 'TestImport_Enum': " + value.toString());
   }
-  if (TestImport_Enum.BYTES == value) {
-    return TestImport_Enum.BYTES;
-  }
-
-  throw new Error("Invalid value for enum 'TestImport_Enum'");
 }
 
 export function matchTestImport_EnumByKey(key: string): TestImport_Enum {
@@ -22,5 +20,5 @@ export function matchTestImport_EnumByKey(key: string): TestImport_Enum {
     return TestImport_Enum.BYTES;
   }
 
-  throw new Error("Invalid key for enum 'TestImport_Enum'");
+  throw new Error("Invalid key for enum 'TestImport_Enum': " + key);
 }

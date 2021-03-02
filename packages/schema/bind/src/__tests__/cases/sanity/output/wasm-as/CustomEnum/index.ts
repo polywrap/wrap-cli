@@ -3,15 +3,13 @@ export enum CustomEnum {
   BYTES,
 }
 
-export function matchCustomEnumByValue(value: i32): CustomEnum {
-  if (CustomEnum.STRING == value) {
-    return CustomEnum.STRING;
+export function matchCustomEnumByValue(value: u32): CustomEnum {
+  switch (value) {
+    case CustomEnum.STRING: return CustomEnum.STRING;
+    case CustomEnum.BYTES: return CustomEnum.BYTES;
+    default:
+      throw new Error("Invalid value for enum 'CustomEnum': " + value.toString());
   }
-  if (CustomEnum.BYTES == value) {
-    return CustomEnum.BYTES;
-  }
-
-  throw new Error("Invalid value for enum 'CustomEnum'");
 }
 
 export function matchCustomEnumByKey(key: string): CustomEnum {
@@ -22,5 +20,5 @@ export function matchCustomEnumByKey(key: string): CustomEnum {
     return CustomEnum.BYTES;
   }
 
-  throw new Error("Invalid key for enum 'CustomEnum'");
+  throw new Error("Invalid key for enum 'CustomEnum': " + key);
 }

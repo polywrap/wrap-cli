@@ -451,7 +451,7 @@ describe("Web3ApiClient", () => {
 
     expect(method1a.errors).toBeTruthy();
     expect((method1a.errors as Error[])[0].message).toMatch(
-      /__w3_abort: Invalid value for enum 'Enum'/gm
+      /__w3_abort: Invalid value for enum 'Enum': 5/gm
     );
 
     const method1b = await client.query<any>({
@@ -460,6 +460,7 @@ describe("Web3ApiClient", () => {
         query {
           method1(
             en: 2
+            optEnum: 1
           )
         }
       `,
@@ -476,7 +477,8 @@ describe("Web3ApiClient", () => {
       query: `
         query {
           method1(
-            en: INVALID
+            en: 1
+            optEnum: INVALID
           )
         }
       `,
@@ -485,7 +487,7 @@ describe("Web3ApiClient", () => {
     expect(method1c.errors).toBeTruthy();
     // @ts-ignore
     expect(method1c.errors[0].message).toMatch(
-      /__w3_abort: Invalid key for enum 'Enum'/gm
+      /__w3_abort: Invalid key for enum 'Enum': INVALID/gm
     );
 
     const method2a = await client.query<any>({
