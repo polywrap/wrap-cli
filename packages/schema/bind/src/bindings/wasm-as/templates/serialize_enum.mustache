@@ -1,0 +1,6 @@
+{{#required}}
+writer.writeInt32(item);
+{{/required}}
+{{^required}}
+writer.writeNullableInt32(item);
+{{/required}}

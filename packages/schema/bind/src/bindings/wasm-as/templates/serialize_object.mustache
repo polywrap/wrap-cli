@@ -1,9 +1,9 @@
 {{#required}}
-Objects.{{type}}.write(writer, item);
+Types.{{type}}.write(writer, item);
 {{/required}}
 {{^required}}
 if (item) {
-  Objects.{{type}}.write(writer, item);
+  Types.{{type}}.write(writer, item);
 } else {
   writer.writeNil();
 }
