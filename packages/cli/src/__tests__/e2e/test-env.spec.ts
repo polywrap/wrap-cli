@@ -60,7 +60,7 @@ ${HELP}`);
     expect(clearStyle(output)).toEqual(`- Starting test environment...
 ✔ Starting test environment...
 `);
-  }, 15000);
+  }, 20000);
 
   test("Should successfully shut down test environment", async () => {
     const errorHandler = jest.fn();
@@ -77,5 +77,5 @@ ${HELP}`);
     expect(clearStyle(output)).toEqual(`- Shutting down test environment...
 ✔ Shutting down test environment...
 `);
-  }, 15000);
+  }, 20000);
 });

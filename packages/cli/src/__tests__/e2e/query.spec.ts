@@ -1,13 +1,12 @@
-import chalk from "chalk";
 import path from "path";
-import { run } from "./utils";
+import { clearStyle, run } from "./utils";
 
-const HELP = `${chalk["reset"](`
-w3 query [options] <recipe-script>`)}
+const HELP = `
+w3 query [options] <recipe-script>
 
-${chalk["reset"](`Options:
+Options:
   -t, --test-ens  Use the development server's ENS instance
-`)}
+
 `;
 
 describe("e2e tests for query command", () => {
@@ -25,13 +24,12 @@ describe("e2e tests for query command", () => {
 
     expect(code).toEqual(0);
     expect(errorHandler).not.toBeCalled();
-    expect(output).toEqual(`${chalk["red"](
-      "Required argument <recipe-script> is missing"
-    )}
+    expect(clearStyle(output))
+      .toEqual(`Required argument <recipe-script> is missing
 ${HELP}`);
   });
 
-  test("Should successfully return response if docker is running", async () => {
+  test("Should successfully return response", async () => {
     const errorHandler = jest.fn();
 
     const { code: testenvCode } = await run(
@@ -80,9 +78,7 @@ ${HELP}`);
       expect(errorHandler).not.toBeCalled();
 
       const constants = require(`${projectRoot}/recipes/constants.json`);
-      expect(output).toEqual(`${chalk["yellow"](
-        "-----------------------------------"
-      )}
+      expect(clearStyle(output)).toEqual(`-----------------------------------
 mutation {
   setData(
     options: {
@@ -99,16 +95,16 @@ mutation {
   "address": "${constants.SimpleStorageAddr}",
   "value": 569
 }
-${chalk["yellow"]("-----------------------------------")}
-${chalk["green"]("-----------------------------------")}
+-----------------------------------
+-----------------------------------
 {
   "setData": {
     "txReceipt": "0xc6a64d3e6dfaafd02b8ce8f12786aeb7682adddd0c7a205bb8661eec7b9ceb4a",
     "value": 569
   }
 }
-${chalk["green"]("-----------------------------------")}
+-----------------------------------
 `);
     }
-  }, 60000);
+  }, 120000);
 });
