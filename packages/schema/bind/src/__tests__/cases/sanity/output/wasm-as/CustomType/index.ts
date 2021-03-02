@@ -9,7 +9,7 @@ import {
   writeCustomType,
   readCustomType
 } from "./serialization";
-import * as Objects from "..";
+import * as Types from "..";
 
 export class CustomType {
   str: string;
@@ -37,10 +37,14 @@ export class CustomType {
   uOptArrayOptArray: Array<Array<Nullable<u64>> | null>;
   uArrayOptArrayArray: Array<Array<Array<u64>> | null>;
   crazyArray: Array<Array<Array<Array<u64> | null>> | null> | null;
-  object: Objects.AnotherType;
-  optObject: Objects.AnotherType | null;
-  objectArray: Array<Objects.AnotherType>;
-  optObjectArray: Array<Objects.AnotherType | null> | null;
+  object: Types.AnotherType;
+  optObject: Types.AnotherType | null;
+  objectArray: Array<Types.AnotherType>;
+  optObjectArray: Array<Types.AnotherType | null> | null;
+  en: Types.CustomEnum;
+  optEnum: Nullable<Types.CustomEnum>;
+  enumArray: Array<Types.CustomEnum>;
+  optEnumArray: Array<Nullable<Types.CustomEnum>> | null;
 
   static toBuffer(type: CustomType): ArrayBuffer {
     return serializeCustomType(type);

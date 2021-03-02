@@ -6,6 +6,9 @@ writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(item, (writer: Write, 
   {{> serialize_array}}
 });
 {{/array}}
+{{#enum}}
+{{> serialize_enum}}
+{{/enum}}
 {{#object}}
 {{> serialize_object}}
 {{/object}}

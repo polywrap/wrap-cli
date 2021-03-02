@@ -9,7 +9,7 @@ import {
   writeTestImport_AnotherObject,
   readTestImport_AnotherObject
 } from "./serialization";
-import * as Objects from "../..";
+import * as Types from "../..";
 
 export class TestImport_AnotherObject {
 
