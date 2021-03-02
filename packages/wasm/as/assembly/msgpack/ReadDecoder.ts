@@ -373,10 +373,12 @@ export class ReadDecoder extends Read {
 
   isNextString(): bool {
     const format = this.view.peekUint8();
-    return isFixedString(format) ||
+    return (
+      isFixedString(format) ||
       format == Format.STR8 ||
       format == Format.STR16 ||
-      format == Format.STR32;
+      format == Format.STR32
+    );
   }
 
   private skip(): void {
