@@ -145,14 +145,14 @@ export const generateProject = (
             overwrite: true,
           }
         )
-        .then(() => {
-          resolve(true);
-        })
-        .catch(() => {
-          reject({
-            command: `copy ${root}/node_modules/@web3api/templates/${type}/${lang} ${root}`,
+          .then(() => {
+            resolve(true);
+          })
+          .catch(() => {
+            reject({
+              command: `copy ${root}/node_modules/@web3api/templates/${type}/${lang} ${root}`,
+            });
           });
-        });
       })
       .catch((error) => {
         reject(error);
