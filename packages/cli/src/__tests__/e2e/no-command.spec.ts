@@ -2,13 +2,14 @@ import path from "path";
 import { run, clearStyle } from "./utils";
 
 describe("e2e tests for no command", () => {
+  const projectRoot = path.resolve(__dirname, "../project/");
+  
   test("Should throw error for unrecognized command", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "unknown"],
+      "../../../bin/w3",
+      ["unknown"],
       projectRoot,
       errorHandler
     );
@@ -19,12 +20,11 @@ describe("e2e tests for no command", () => {
   });
 
   test("Should let the user to type w3 help", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3"],
+      "../../../bin/w3",
+      [],
       projectRoot,
       errorHandler
     );

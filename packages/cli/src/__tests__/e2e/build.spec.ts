@@ -13,13 +13,14 @@ Options:
 `;
 
 describe("e2e tests for build command", () => {
+  const projectRoot = path.resolve(__dirname, "../project/");
+
   test("Should show help text", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "build", "--help"],
+      "../../../bin/w3",
+      ["build", "--help"],
       projectRoot,
       errorHandler
     );
@@ -30,12 +31,11 @@ describe("e2e tests for build command", () => {
   });
 
   test("Should throw error for invalid params - outputDir", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "build", "--output-dir"],
+      "../../../bin/w3",
+      ["build", "--output-dir"],
       projectRoot,
       errorHandler
     );
@@ -48,12 +48,11 @@ ${HELP}`);
   });
 
   test("Should throw error for invalid params - testEns", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "build", "--test-ens"],
+      "../../../bin/w3",
+      ["build", "--test-ens"],
       projectRoot,
       errorHandler
     );
@@ -66,12 +65,11 @@ ${HELP}`);
   });
 
   test("Should throw error for invalid params - ipfs", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "build", "--test-ens", "test.eth"],
+      "../../../bin/w3",
+      ["build", "--test-ens", "test.eth"],
       projectRoot,
       errorHandler
     );
@@ -84,12 +82,11 @@ ${HELP}`);
   });
 
   test("Should throw error for invalid web3api - invalid route", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "build", "invalid-web3api-1.yaml"],
+      "../../../bin/w3",
+      ["build", "invalid-web3api-1.yaml"],
       projectRoot,
       errorHandler
     );
@@ -104,12 +101,11 @@ ${HELP}`);
   });
 
   test("Should throw error for invalid web3api - invalid field", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "build", "invalid-web3api-2.yaml"],
+      "../../../bin/w3",
+      ["build", "invalid-web3api-2.yaml"],
       projectRoot,
       errorHandler
     );
@@ -122,12 +118,11 @@ ${HELP}`);
   });
 
   test("Successfully build the project", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "build"],
+      "../../../bin/w3",
+      ["build"],
       projectRoot,
       errorHandler
     );

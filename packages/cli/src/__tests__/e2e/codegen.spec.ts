@@ -20,13 +20,14 @@ Options:
 `;
 
 describe("e2e tests for codegen command", () => {
+  const projectRoot = path.resolve(__dirname, "../project/");
+
   test("Should show help text", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "codegen", "--help"],
+      "../../../bin/w3",
+      ["codegen", "--help"],
       projectRoot,
       errorHandler
     );
@@ -37,12 +38,11 @@ describe("e2e tests for codegen command", () => {
   });
 
   test("Should throw error for invalid params - outputDir", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "codegen", "--output-dir"],
+      "../../../bin/w3",
+      ["codegen", "--output-dir"],
       projectRoot,
       errorHandler
     );
@@ -55,12 +55,11 @@ ${HELP}`);
   });
 
   test("Should throw error for invalid params - ens", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "codegen", "--ens"],
+      "../../../bin/w3",
+      ["codegen", "--ens"],
       projectRoot,
       errorHandler
     );
@@ -73,12 +72,11 @@ ${HELP}`);
   });
 
   test("Should throw error for invalid generation file - wrong file", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "codegen", `web3api-invalid.gen.js`],
+      "../../../bin/w3",
+      ["codegen", `web3api-invalid.gen.js`],
       projectRoot,
       errorHandler
     );
@@ -92,12 +90,11 @@ ${HELP}`);
   });
 
   test("Should throw error for invalid generation file - no run() method", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "codegen", `web3api-norun.gen.js`],
+      "../../../bin/w3",
+      ["codegen", `web3api-norun.gen.js`],
       projectRoot,
       errorHandler
     );
@@ -111,15 +108,14 @@ ${HELP}`);
   });
 
   test("Should successfully generate types", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const rimraf = require("rimraf");
     rimraf.sync(`${projectRoot}/types`);
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "codegen"],
+      "../../../bin/w3",
+      ["codegen"],
       projectRoot,
       errorHandler
     );

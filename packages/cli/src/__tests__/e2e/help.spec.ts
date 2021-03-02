@@ -12,13 +12,14 @@ const HELP = `
 `;
 
 describe("e2e tests for no help", () => {
+  const projectRoot = path.resolve(__dirname, "../project/");
+  
   test("Should display the help content", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "help"],
+      "../../../bin/w3",
+      ["help"],
       projectRoot,
       errorHandler
     );

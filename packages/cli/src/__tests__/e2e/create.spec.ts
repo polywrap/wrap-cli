@@ -20,13 +20,14 @@ Options:
 `;
 
 describe("e2e tests for create command", () => {
+  const projectRoot = path.resolve(__dirname, "../project");
+  
   test("Should show help text", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "create", "--help"],
+      "../../../bin/w3",
+      ["create", "--help"],
       projectRoot,
       errorHandler
     );
@@ -37,12 +38,11 @@ describe("e2e tests for create command", () => {
   });
 
   test("Should throw error for missing parameter - type", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "create"],
+      "../../../bin/w3",
+      ["create"],
       projectRoot,
       errorHandler
     );
@@ -54,12 +54,11 @@ ${HELP}`);
   });
 
   test("Should throw error for missing parameter - lang", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "create", "type"],
+      "../../../bin/w3",
+      ["create", "type"],
       projectRoot,
       errorHandler
     );
@@ -71,12 +70,11 @@ ${HELP}`);
   });
 
   test("Should throw error for missing parameter - name", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "create", "type", "lang"],
+      "../../../bin/w3",
+      ["create", "type", "lang"],
       projectRoot,
       errorHandler
     );
@@ -88,12 +86,11 @@ ${HELP}`);
   });
 
   test("Should throw error for invalid parameter - type", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "create", "unknown", "app", "name"],
+      "../../../bin/w3",
+      ["create", "unknown", "app", "name"],
       projectRoot,
       errorHandler
     );
@@ -105,12 +102,11 @@ ${HELP}`);
   });
 
   test("Should throw error for invalid parameter - lang", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "create", "api", "unknown", "name"],
+      "../../../bin/w3",
+      ["create", "api", "unknown", "name"],
       projectRoot,
       errorHandler
     );
@@ -122,12 +118,11 @@ ${HELP}`);
   });
 
   test("Should throw error for invalid parameter - output-dir", async () => {
-    const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
     const { code, output } = await run(
-      "npx",
-      ["w3", "create", "api", "assemblyscript", "name", "-o"],
+      "../../../bin/w3",
+      ["create", "api", "assemblyscript", "name", "-o"],
       projectRoot,
       errorHandler
     );
@@ -139,8 +134,7 @@ ${HELP}`);
 ${HELP}`);
   });
 
-  test.only("Should successfully generate project", async () => {
-    const projectRoot = path.resolve(__dirname, "../project");
+  test("Should successfully generate project", async () => {
     const errorHandler = jest.fn();
 
     const rimraf = require("rimraf");
@@ -148,7 +142,7 @@ ${HELP}`);
 
     const { code, output } = await run(
       "../../../bin/w3",
-      ["create", "api", "assemblyscript", "test", "-o", "./test"],
+      ["create", "api", "assemblyscript", "test", "-o", `${projectRoot}/test`],
       projectRoot,
       errorHandler
     );
