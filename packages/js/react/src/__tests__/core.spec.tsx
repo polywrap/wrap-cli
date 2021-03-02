@@ -1,101 +1,55 @@
-import { buildAndDeployApi } from "./helpers";
+import { SimpleStorageContainer } from "./dapp/SimpleStorage";
 
-import { render, fireEvent, screen, waitFor } from "@testing-library/react";
-import { UriRedirect, Uri } from "@web3api/client-js";
-import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
-import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
-import { EnsPlugin } from "@web3api/ens-plugin-js";
-import { Web3ApiProvider, useWeb3ApiQuery } from "@web3api/react";
-import axios from "axios";
 import React from "react";
+import { render, fireEvent, screen, waitFor } from "@testing-library/react";
+import {
+  UriRedirect,
+  Uri,
+  initTestEnvironment,
+  buildAndDeployApi,
+} from "@web3api/client-js";
 
 jest.setTimeout(30000);
 
 describe("Web3Api Wrapper", () => {
-  let ipfsProvider: string;
-  let ensAddress: string;
   let redirects: UriRedirect[];
+  let api: {
+    ensDomain: string;
+    ipfsCid: string;
+  };
 
   beforeAll(async () => {
-    // fetch providers from dev server
     const {
-      data: { ipfs, ethereum },
-    } = await axios.get("http://localhost:4040/providers");
+      ipfs,
+      data,
+      redirects: testRedirects,
+    } = await initTestEnvironment();
 
-    if (!ipfs) {
-      throw Error("Dev server must be running at port 4040");
-    }
-
-    ipfsProvider = ipfs;
-
-    // re-deploy ENS
-    const { data } = await axios.get("http://localhost:4040/deploy-ens");
-
-    ensAddress = data.ensAddress;
-
-    // Test env redirects for ethereum, ipfs, and ENS.
-    // Will be used to fetch APIs.
-    redirects = [
-      {
-        from: new Uri("w3://ens/ethereum.web3api.eth"),
-        to: {
-          factory: () => new EthereumPlugin({ provider: ethereum }),
-          manifest: EthereumPlugin.manifest(),
-        },
-      },
-      {
-        from: new Uri("w3://ens/ipfs.web3api.eth"),
-        to: {
-          factory: () => new IpfsPlugin({ provider: ipfs }),
-          manifest: IpfsPlugin.manifest(),
-        },
-      },
-      {
-        from: new Uri("w3://ens/ens.web3api.eth"),
-        to: {
-          factory: () => new EnsPlugin({ address: ensAddress }),
-          manifest: EnsPlugin.manifest(),
-        },
-      },
-    ];
+    redirects = testRedirects;
+    api = await buildAndDeployApi(
+      `${__dirname}/simple-storage-api`,
+      ipfs,
+      data.ensAddress
+    );
   });
 
-  it("Deploys simple storage contract", async () => {
-    const DeployComponent = ({ ensUri }: { ensUri: Uri }) => {
-      const { execute: deployContract, data } = useWeb3ApiQuery({
-        uri: ensUri,
-        query: `mutation { deployContract }`,
-      });
-
-      return data && data.deployContract ? (
-        <p>{data.deployContract as string}</p>
-      ) : (
-        <button onClick={deployContract}>
-          Deploy
-        </button>
-      );
-    };
-
-    const api = await buildAndDeployApi(
-      `${__dirname}/simple-storage-api`,
-      ipfsProvider,
-      ensAddress
-    );
-
+  it("Deploys, read and write on Smart Contract ", async () => {
     const ensUri = new Uri(`ens/${api.ensDomain}`);
 
-    render(
-      <Web3ApiProvider redirects={redirects}>
-        <DeployComponent ensUri={ensUri} />
-      </Web3ApiProvider>
-    );
+    render(<SimpleStorageContainer redirects={redirects} ensUri={ensUri} />);
 
     fireEvent.click(screen.getByText("Deploy"));
     await waitFor(() => screen.getByText(/0x/));
     expect(screen.getByText(/0x/)).toBeTruthy();
-  });
 
-  // it("Storage should be equal zero (0)", () => {});
+    // check storage is 0
+    fireEvent.click(screen.getByText("Check storage"));
+    await waitFor(() => screen.getByText("0"));
+    expect(screen.getByText("0")).toBeTruthy();
+
+    // update storage to five
+    // check storage is 5
+  });
 
   // it("Should update storage data to five ", () => {});
 
