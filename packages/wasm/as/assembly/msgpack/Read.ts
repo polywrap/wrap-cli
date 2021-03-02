@@ -1,4 +1,5 @@
 import { Nullable } from "./Nullable";
+import { Format } from "./Format";
 
 export abstract class Read {
   abstract readBool(): bool;
@@ -44,5 +45,5 @@ export abstract class Read {
   ): Map<K, V> | null;
 
   abstract isNextNil(): bool;
-  abstract isNextEnumValue(): bool;
+  abstract isNextString(): bool;
 }

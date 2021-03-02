@@ -44,10 +44,11 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
     }
     else if (field == "en") {
       let value: Types.CustomEnum;
-      if (reader.isNextEnumValue()) {
-        value = Types.matchCustomEnumByValue(reader.readInt32());
+      if (reader.isNextString()) {
+        value = Types.getCustomEnumValue(reader.readString());
       } else {
-        value = Types.matchCustomEnumByKey(reader.readString());
+        value = reader.readInt32();
+        Types.sanitizeCustomEnumValue(value);
       }
       _en = value;
       _enSet = true;
@@ -55,10 +56,15 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
     else if (field == "optEnum") {
       let value: Nullable<Types.CustomEnum>;
       if (!reader.isNextNil()) {
-        if (reader.isNextEnumValue()) {
-          value = Nullable.fromValue(Types.matchCustomEnumByValue(reader.readInt32()));
+        if (reader.isNextString()) {
+          value = Nullable.fromValue(
+            Types.getCustomEnumValue(reader.readString())
+          );
         } else {
-          value = Nullable.fromValue(Types.matchCustomEnumByKey(reader.readString()));
+          value = Nullable.fromValue(
+            reader.readInt32()
+          );
+          Types.sanitizeCustomEnumValue(value.value);
         }
       } else {
         value = Nullable.fromNull<Types.CustomEnum>();
@@ -68,10 +74,11 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
     else if (field == "enumArray") {
       _enumArray = reader.readArray((reader: Read): Types.CustomEnum => {
         let value: Types.CustomEnum;
-        if (reader.isNextEnumValue()) {
-          value = Types.matchCustomEnumByValue(reader.readInt32());
+        if (reader.isNextString()) {
+          value = Types.getCustomEnumValue(reader.readString());
         } else {
-          value = Types.matchCustomEnumByKey(reader.readString());
+          value = reader.readInt32();
+          Types.sanitizeCustomEnumValue(value);
         }
         return value;
       });
@@ -81,10 +88,15 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
       _optEnumArray = reader.readNullableArray((reader: Read): Nullable<Types.CustomEnum> => {
         let value: Nullable<Types.CustomEnum>;
         if (!reader.isNextNil()) {
-          if (reader.isNextEnumValue()) {
-            value = Nullable.fromValue(Types.matchCustomEnumByValue(reader.readInt32()));
+          if (reader.isNextString()) {
+            value = Nullable.fromValue(
+              Types.getCustomEnumValue(reader.readString())
+            );
           } else {
-            value = Nullable.fromValue(Types.matchCustomEnumByKey(reader.readString()));
+            value = Nullable.fromValue(
+              reader.readInt32()
+            );
+            Types.sanitizeCustomEnumValue(value.value);
           }
         } else {
           value = Nullable.fromNull<Types.CustomEnum>();

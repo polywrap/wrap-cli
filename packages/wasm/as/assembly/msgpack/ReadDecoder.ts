@@ -363,19 +363,20 @@ export class ReadDecoder extends Read {
   }
 
   isNextNil(): bool {
-    if (this.view.peekUint8() == Format.NIL) {
+    const format = this.view.peekUint8();
+    if (format == Format.NIL) {
       this.view.discard(1);
       return true;
     }
     return false;
   }
 
-  isNextEnumValue(): bool {
-    // Enum integer value is in range 0 - 127
-    if (this.view.peekUint8() <= 127) {
-      return true;
-    }
-    return false;
+  isNextString(): bool {
+    const format = this.view.peekUint8();
+    return isFixedString(format) ||
+      format == Format.STR8 ||
+      format == Format.STR16 ||
+      format == Format.STR32;
   }
 
   private skip(): void {

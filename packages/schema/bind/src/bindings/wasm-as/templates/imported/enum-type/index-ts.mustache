@@ -2,19 +2,17 @@ export enum {{type}} {
   {{#constants}}
   {{.}},
   {{/constants}}
+  _MAX_
 }
 
-export function match{{type}}ByValue(value: u32): {{type}} {
-  switch (value) {
-    {{#constants}}
-    case {{type}}.{{.}}: return {{type}}.{{.}};
-    {{/constants}}
-    default:
-      throw new Error("Invalid value for enum '{{type}}': " + value.toString());
+export function sanitize{{type}}Value(value: i32): void {
+  const valid = value >= 0 && value < {{type}}._MAX_;
+  if (!valid) {
+    throw new Error("Invalid value for enum '{{type}}': " + value.toString());
   }
 }
 
-export function match{{type}}ByKey(key: string): {{type}} {
+export function get{{type}}Value(key: string): {{type}} {
   {{#constants}}
   if (key == "{{.}}") {
     return {{type}}.{{.}};
@@ -22,4 +20,16 @@ export function match{{type}}ByKey(key: string): {{type}} {
   {{/constants}}
 
   throw new Error("Invalid key for enum '{{type}}': " + key);
+}
+
+export function get{{type}}Key(value: {{type}}): string {
+  sanitize{{type}}Value(value);
+
+  switch (value) {
+    {{#constants}}
+    case {{type}}.{{.}}: return "{{.}}";
+    {{/constants}}
+    default:
+      throw new Error("Invalid value for enum '{{type}}': " + value.toString());
+  }
 }

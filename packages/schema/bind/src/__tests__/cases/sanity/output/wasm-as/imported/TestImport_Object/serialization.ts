@@ -109,10 +109,11 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
     }
     else if (field == "en") {
       let value: Types.TestImport_Enum;
-      if (reader.isNextEnumValue()) {
-        value = Types.matchTestImport_EnumByValue(reader.readInt32());
+      if (reader.isNextString()) {
+        value = Types.getTestImport_EnumValue(reader.readString());
       } else {
-        value = Types.matchTestImport_EnumByKey(reader.readString());
+        value = reader.readInt32();
+        Types.sanitizeTestImport_EnumValue(value);
       }
       _en = value;
       _enSet = true;
@@ -120,10 +121,15 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
     else if (field == "optEnum") {
       let value: Nullable<Types.TestImport_Enum>;
       if (!reader.isNextNil()) {
-        if (reader.isNextEnumValue()) {
-          value = Nullable.fromValue(Types.matchTestImport_EnumByValue(reader.readInt32()));
+        if (reader.isNextString()) {
+          value = Nullable.fromValue(
+            Types.getTestImport_EnumValue(reader.readString())
+          );
         } else {
-          value = Nullable.fromValue(Types.matchTestImport_EnumByKey(reader.readString()));
+          value = Nullable.fromValue(
+            reader.readInt32()
+          );
+          Types.sanitizeTestImport_EnumValue(value.value);
         }
       } else {
         value = Nullable.fromNull<Types.TestImport_Enum>();
@@ -133,10 +139,11 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
     else if (field == "enumArray") {
       _enumArray = reader.readArray((reader: Read): Types.TestImport_Enum => {
         let value: Types.TestImport_Enum;
-        if (reader.isNextEnumValue()) {
-          value = Types.matchTestImport_EnumByValue(reader.readInt32());
+        if (reader.isNextString()) {
+          value = Types.getTestImport_EnumValue(reader.readString());
         } else {
-          value = Types.matchTestImport_EnumByKey(reader.readString());
+          value = reader.readInt32();
+          Types.sanitizeTestImport_EnumValue(value);
         }
         return value;
       });
@@ -146,10 +153,15 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
       _optEnumArray = reader.readNullableArray((reader: Read): Nullable<Types.TestImport_Enum> => {
         let value: Nullable<Types.TestImport_Enum>;
         if (!reader.isNextNil()) {
-          if (reader.isNextEnumValue()) {
-            value = Nullable.fromValue(Types.matchTestImport_EnumByValue(reader.readInt32()));
+          if (reader.isNextString()) {
+            value = Nullable.fromValue(
+              Types.getTestImport_EnumValue(reader.readString())
+            );
           } else {
-            value = Nullable.fromValue(Types.matchTestImport_EnumByKey(reader.readString()));
+            value = Nullable.fromValue(
+              reader.readInt32()
+            );
+            Types.sanitizeTestImport_EnumValue(value.value);
           }
         } else {
           value = Nullable.fromNull<Types.TestImport_Enum>();

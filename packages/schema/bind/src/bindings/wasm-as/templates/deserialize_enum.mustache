@@ -1,18 +1,24 @@
 {{#required}}
 let value: Types.{{type}};
-if (reader.isNextEnumValue()) {
-  value = Types.match{{type}}ByValue(reader.readInt32());
+if (reader.isNextString()) {
+  value = Types.get{{type}}Value(reader.readString());
 } else {
-  value = Types.match{{type}}ByKey(reader.readString());
+  value = reader.readInt32();
+  Types.sanitize{{type}}Value(value);
 }
 {{/required}}
 {{^required}}
 let value: Nullable<Types.{{type}}>;
 if (!reader.isNextNil()) {
-  if (reader.isNextEnumValue()) {
-    value = Nullable.fromValue(Types.match{{type}}ByValue(reader.readInt32()));
+  if (reader.isNextString()) {
+    value = Nullable.fromValue(
+      Types.get{{type}}Value(reader.readString())
+    );
   } else {
-    value = Nullable.fromValue(Types.match{{type}}ByKey(reader.readString()));
+    value = Nullable.fromValue(
+      reader.readInt32()
+    );
+    Types.sanitize{{type}}Value(value.value);
   }
 } else {
   value = Nullable.fromNull<Types.{{type}}>();
