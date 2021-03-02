@@ -16,7 +16,7 @@ interface TestEnvironment {
   };
 }
 
-export const initTestEnvironment = async (): TestEnvironment => {
+export const initTestEnvironment = async (): Promise<TestEnvironment> => {
   // fetch providers from dev server
   const {
     data: { ipfs, ethereum },
