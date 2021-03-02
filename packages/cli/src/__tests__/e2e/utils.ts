@@ -1,6 +1,6 @@
 import { spawn } from "child_process";
 
-const run = (
+export const run = (
   command: string,
   args: string[],
   projectRoot: string,
@@ -41,4 +41,9 @@ const run = (
   });
 };
 
-export default run;
+export const clearStyle = (styled: string) => {
+  return styled.replace(
+    /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+    ""
+  );
+};

@@ -1,15 +1,14 @@
-import chalk from "chalk";
 import path from "path";
 import { defaultGenerationFile, defaultManifest } from "../../commands/codegen";
-import run from "./run";
+import { clearStyle, run } from "./utils";
 
-const HELP = `${chalk["reset"](`
-w3 codegen [<generation-file>] [options]`)}
+const HELP = `
+w3 codegen [<generation-file>] [options]
 
-${chalk["reset"](`Generation file:
-  Path to the generation file (default: ${defaultGenerationFile})`)}
+Generation file:
+  Path to the generation file (default: ${defaultGenerationFile})
 
-${chalk["reset"](`Options:
+Options:
   -h, --help                              Show usage information
   -m, --manifest-path <path>              Path to the Web3API manifest file (default: ${defaultManifest.join(
     " | "
@@ -17,7 +16,7 @@ ${chalk["reset"](`Options:
   -i, --ipfs [<node>]                     IPFS node to load external schemas (default: dev-server's node)
   -o, --output-dir <path>                 Output directory for generated types (default: types/)
   -e, --ens [<address>]                   ENS address to lookup external schemas (default: 0x0000...2e1e)
-`)}
+
 `;
 
 describe("e2e tests for codegen command", () => {
@@ -34,7 +33,7 @@ describe("e2e tests for codegen command", () => {
 
     expect(code).toEqual(0);
     expect(errorHandler).not.toBeCalled();
-    expect(output).toEqual(HELP);
+    expect(clearStyle(output)).toEqual(HELP);
   });
 
   test("Should throw error for invalid params - outputDir", async () => {
@@ -50,9 +49,8 @@ describe("e2e tests for codegen command", () => {
 
     expect(code).toEqual(0);
     expect(errorHandler).not.toBeCalled();
-    expect(output).toEqual(`${chalk["red"](
-      "--output-dir option missing <path> argument"
-    )}
+    expect(clearStyle(output))
+      .toEqual(`--output-dir option missing <path> argument
 ${HELP}`);
   });
 
@@ -69,9 +67,8 @@ ${HELP}`);
 
     expect(code).toEqual(0);
     expect(errorHandler).not.toBeCalled();
-    expect(output).toEqual(`${chalk["red"](
-      "--ens option missing <[address,]domain> argument"
-    )}
+    expect(clearStyle(output))
+      .toEqual(`--ens option missing <[address,]domain> argument
 ${HELP}`);
   });
 
@@ -88,7 +85,7 @@ ${HELP}`);
 
     expect(code).toEqual(1);
     expect(errorHandler).not.toBeCalled();
-    expect(output).toContain(`- Generate types
+    expect(clearStyle(output)).toContain(`- Generate types
 - Load web3api from web3api.yaml
 ✔ Load web3api from web3api.yaml
 ✖ Failed to generate types: Cannot find module '${projectRoot}/web3api-invalid.gen.js'`);
@@ -107,9 +104,41 @@ ${HELP}`);
 
     expect(code).toEqual(1);
     expect(errorHandler).not.toBeCalled();
-    expect(output).toContain(`- Generate types
+    expect(clearStyle(output)).toContain(`- Generate types
 - Load web3api from web3api.yaml
 ✔ Load web3api from web3api.yaml
 ✖ Failed to generate types: The generation file provided doesn't have the 'run' method.`);
+  });
+
+  test("Should successfully generate types", async () => {
+    const projectRoot = path.resolve(__dirname, "../project/");
+    const errorHandler = jest.fn();
+
+    const rimraf = require("rimraf");
+    rimraf.sync(`${projectRoot}/types`);
+
+    const { code, output } = await run(
+      "npx",
+      ["w3", "codegen"],
+      projectRoot,
+      errorHandler
+    );
+
+    expect(code).toEqual(0);
+    expect(errorHandler).not.toBeCalled();
+    expect(clearStyle(output)).toEqual(`- Generate types
+- Load web3api from web3api.yaml
+✔ Load web3api from web3api.yaml
+  Generating types from ./templates/schema.mustache
+- Generate types
+  Generating types from ./templates/schema.mustache
+- Generate types
+  Generating types from ./templates/schema.mustache
+- Generate types
+✔ Generate types
+🔥 Types were generated successfully 🔥
+`);
+
+    rimraf.sync(`${projectRoot}/types`);
   });
 });
