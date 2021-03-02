@@ -9,11 +9,11 @@ import {
   writeAnotherType,
   readAnotherType
 } from "./serialization";
-import * as Objects from "..";
+import * as Types from "..";
 
 export class AnotherType {
   prop: string | null;
-  circular: Objects.CustomType;
+  circular: Types.CustomType;
 
   static toBuffer(type: AnotherType): ArrayBuffer {
     return serializeAnotherType(type);

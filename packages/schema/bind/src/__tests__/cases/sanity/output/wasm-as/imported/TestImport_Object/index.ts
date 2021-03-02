@@ -9,16 +9,20 @@ import {
   writeTestImport_Object,
   readTestImport_Object
 } from "./serialization";
-import * as Objects from "../..";
+import * as Types from "../..";
 
 export class TestImport_Object {
 
   public static uri: string = "testimport.uri.eth";
 
-  object: Objects.TestImport_AnotherObject;
-  optObject: Objects.TestImport_AnotherObject | null;
-  objectArray: Array<Objects.TestImport_AnotherObject>;
-  optObjectArray: Array<Objects.TestImport_AnotherObject | null> | null;
+  object: Types.TestImport_AnotherObject;
+  optObject: Types.TestImport_AnotherObject | null;
+  objectArray: Array<Types.TestImport_AnotherObject>;
+  optObjectArray: Array<Types.TestImport_AnotherObject | null> | null;
+  en: Types.TestImport_Enum;
+  optEnum: Nullable<Types.TestImport_Enum>;
+  enumArray: Array<Types.TestImport_Enum>;
+  optEnumArray: Array<Nullable<Types.TestImport_Enum>> | null;
 
   static toBuffer(type: TestImport_Object): ArrayBuffer {
     return serializeTestImport_Object(type);
