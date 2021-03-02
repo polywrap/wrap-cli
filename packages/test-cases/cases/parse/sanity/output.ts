@@ -10,6 +10,9 @@ import {
   createObjectPropertyDefinition,
   createImportedObjectDefinition,
   createImportedQueryDefinition,
+  createEnumDefinition,
+  createEnumPropertyDefinition,
+  createImportedEnumDefinition
 } from "../../../../schema/parse/src/typeInfo";
 
 export const output: TypeInfo = {
