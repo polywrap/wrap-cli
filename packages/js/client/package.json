@@ -1,7 +1,7 @@
 {
   "name": "@web3api/client-js",
   "description": "Web3API Javascript Client",
-  "version": "0.0.1-prealpha.3",
+  "version": "0.0.1-prealpha.4",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -27,11 +27,11 @@
   },
   "dependencies": {
     "@msgpack/msgpack": "2.3.0",
-    "@web3api/core-js": "0.0.1-prealpha.3",
-    "@web3api/ens-plugin-js": "0.0.1-prealpha.3",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.3",
-    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.3",
-    "@web3api/schema-parse": "0.0.1-prealpha.3",
+    "@web3api/core-js": "0.0.1-prealpha.4",
+    "@web3api/ens-plugin-js": "0.0.1-prealpha.4",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.4",
+    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.4",
+    "@web3api/schema-parse": "0.0.1-prealpha.4",
     "graphql": "^15.4.0",
     "js-yaml": "3.14.0",
     "web-worker": "1.0.0"
@@ -40,7 +40,7 @@
     "@types/jest": "26.0.8",
     "@types/js-yaml": "3.11.1",
     "@types/semver": "^7.3.4",
-    "@web3api/cli": "0.0.1-prealpha.3",
+    "@web3api/cli": "0.0.1-prealpha.4",
     "axios": "0.19.2",
     "jest": "26.2.2",
     "rimraf": "3.0.2",
