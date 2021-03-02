@@ -1,5 +1,53 @@
+import { Uri } from "..";
+
 import path from "path";
 import spawn from "spawn-command";
+import axios from "axios";
+import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
+import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
+import { EnsPlugin } from "@web3api/ens-plugin-js";
+
+export const initTestEnvironment = async () => {
+  // fetch providers from dev server
+  const {
+    data: { ipfs, ethereum },
+  } = await axios.get("http://localhost:4040/providers");
+
+  if (!ipfs) {
+    throw Error("Dev server must be running at port 4040");
+  }
+
+  // re-deploy ENS
+  const { data } = await axios.get("http://localhost:4040/deploy-ens");
+
+  // Test env redirects for ethereum, ipfs, and ENS.
+  // Will be used to fetch APIs.
+  const redirects = [
+    {
+      from: new Uri("w3://ens/ethereum.web3api.eth"),
+      to: {
+        factory: () => new EthereumPlugin({ provider: ethereum }),
+        manifest: EthereumPlugin.manifest(),
+      },
+    },
+    {
+      from: new Uri("w3://ens/ipfs.web3api.eth"),
+      to: {
+        factory: () => new IpfsPlugin({ provider: ipfs }),
+        manifest: IpfsPlugin.manifest(),
+      },
+    },
+    {
+      from: new Uri("w3://ens/ens.web3api.eth"),
+      to: {
+        factory: () => new EnsPlugin({ address: data.ensAddress }),
+        manifest: EnsPlugin.manifest(),
+      },
+    },
+  ];
+
+  return { ipfs, ethereum, redirects, data };
+};
 
 export const runW3CLI = async (
   args: string[]
