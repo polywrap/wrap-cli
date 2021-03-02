@@ -78,7 +78,7 @@ ${HELP}`);
       expect(errorHandler).not.toBeCalled();
 
       const constants = require(`${projectRoot}/recipes/constants.json`);
-      expect(clearStyle(output)).toEqual(`-----------------------------------
+      expect(clearStyle(output)).toContain(`-----------------------------------
 mutation {
   setData(
     options: {
@@ -99,12 +99,20 @@ mutation {
 -----------------------------------
 {
   "setData": {
-    "txReceipt": "0xc6a64d3e6dfaafd02b8ce8f12786aeb7682adddd0c7a205bb8661eec7b9ceb4a",
+    "txReceipt": "0x`);
+      expect(clearStyle(output)).toContain(`",
     "value": 569
   }
 }
 -----------------------------------
 `);
+
+      await run(
+        "../../../bin/w3",
+        ["test-env", "down"],
+        projectRoot,
+        errorHandler
+      );
     }
   }, 120000);
 });
