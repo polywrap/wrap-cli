@@ -62,11 +62,12 @@ ${HELP}`);
     if (!code) {
       expect(errorHandler).not.toBeCalled();
       expect(output).toEqual(`- Starting test environment...
-✔ Starting test environment...`);
+✔ Starting test environment...
+`);
     }
   });
 
-  test("Should successfully start test environment", async () => {
+  test("Should successfully shut down test environment", async () => {
     const projectRoot = path.resolve(__dirname, "../project/");
     const errorHandler = jest.fn();
 
@@ -82,7 +83,8 @@ ${HELP}`);
     if (!code) {
       expect(errorHandler).not.toBeCalled();
       expect(output).toEqual(`- Shutting down test environment...
-✔ Shutting down test environment...`);
+✔ Shutting down test environment...
+`);
     }
   });
 });
