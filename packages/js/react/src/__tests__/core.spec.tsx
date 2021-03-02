@@ -32,7 +32,7 @@ describe("Web3Api Wrapper", () => {
     const { data } = await axios.get("http://localhost:4040/deploy-ens");
 
     ensAddress = data.ensAddress;
-    console.log("Before redirect ENS Address ", ensAddress);
+
     // Test env redirects for ethereum, ipfs, and ENS.
     // Will be used to fetch APIs.
     redirects = [
@@ -62,23 +62,17 @@ describe("Web3Api Wrapper", () => {
 
   it("Deploys simple storage contract", async () => {
     const DeployComponent = ({ ensUri }: { ensUri: Uri }) => {
-      const { execute: deployContract, data, errors } = useWeb3ApiQuery({
+      const { execute: deployContract, data } = useWeb3ApiQuery({
         uri: ensUri,
         query: `mutation { deployContract }`,
       });
 
-      console.log("Error ", errors);
-
       return data && data.deployContract ? (
         <p>{data.deployContract as string}</p>
       ) : (
-        <button onClick={deployContract}>Deploy</button>
-      );
-    };
-
-    const Provider = ({ children }: { children: React.ReactNode }) => {
-      return (
-        <Web3ApiProvider redirects={redirects}>{children}</Web3ApiProvider>
+        <button onClick={deployContract}>
+          Deploy
+        </button>
       );
     };
 
@@ -87,15 +81,13 @@ describe("Web3Api Wrapper", () => {
       ipfsProvider,
       ensAddress
     );
-    console.log("after deployment");
 
-    console.log(api);
     const ensUri = new Uri(`ens/${api.ensDomain}`);
 
     render(
-      <Provider>
+      <Web3ApiProvider redirects={redirects}>
         <DeployComponent ensUri={ensUri} />
-      </Provider>
+      </Web3ApiProvider>
     );
 
     fireEvent.click(screen.getByText("Deploy"));
