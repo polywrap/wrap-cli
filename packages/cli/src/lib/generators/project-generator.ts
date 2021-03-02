@@ -93,6 +93,15 @@ export const generateProject = (
     const root = path.resolve(projectName);
     const dependencies: string[] = ["@web3api/templates"];
 
+    fs.write(
+      `${root}/package.json`,
+      `
+{
+  "name": "template"
+}
+    `
+    );
+
     if (useYarn) {
       command = "yarnpkg";
       args = ["add", "--exact"];
@@ -136,29 +145,14 @@ export const generateProject = (
             overwrite: true,
           }
         )
-          .then(() => {
-            // Now need to remove `@web3api/templates` from packages
-            if (useYarn) {
-              command = "yarnpkg";
-              args = ["remove"].concat(dependencies);
-            } else {
-              command = "npm";
-              args = ["uninstall", "--loglevel", "error"].concat(dependencies);
-            }
-
-            executeCommand(command, args, root)
-              .then(() => {
-                resolve(true);
-              })
-              .catch((error) => {
-                reject(error);
-              });
-          })
-          .catch(() => {
-            reject({
-              command: `copy ${root}/node_modules/@web3api/templates/${type}/${lang} ${root}`,
-            });
+        .then(() => {
+          resolve(true);
+        })
+        .catch(() => {
+          reject({
+            command: `copy ${root}/node_modules/@web3api/templates/${type}/${lang} ${root}`,
           });
+        });
       })
       .catch((error) => {
         reject(error);
