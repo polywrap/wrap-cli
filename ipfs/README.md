@@ -11,8 +11,8 @@ npx w3 test-env up
 ```
 npx w3 build \
 --ipfs http://localhost:5001 \
---graph simplestorage,http://localhost:8020 \
---test-ens simplestorage.eth
+--graph ipfs,http://localhost:8020 \
+--test-ens ipfs.eth
 ```
 
 ## 3. Test The Web3API Using A Query Recipe

@@ -1,5 +1,0 @@
-query GetData($cid: String!) {
-  catFile(
-    cid: $cid
-  )
-}

@@ -1,10 +1,10 @@
 [
   {
-    "api": "ens/simplestorage.eth",
+    "api": "ens/ipfs.eth",
     "constants": "./constants.json"
   },
   {
-    "query": "./get.graphql",
-    "variables": { "cid": "$SimpleStorageAddr" }
+    "query": "./set.graphql",
+    "variables": { "cid": "$SampleCid", "ipfsUrl": "$IpfsUrl" }
   }
 ]

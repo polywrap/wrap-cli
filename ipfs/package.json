@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "w3 build",
-    "test:env:up": "w3 test-env up && yarn contracts:deploy",
+    "test:env:up": "w3 test-env up",
     "test:env:down": "w3 test-env down"
   },
   "devDependencies": {
