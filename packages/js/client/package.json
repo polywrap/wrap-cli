@@ -32,8 +32,10 @@
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.3",
     "@web3api/ipfs-plugin-js": "0.0.1-prealpha.3",
     "@web3api/schema-parse": "0.0.1-prealpha.3",
+    "axios": "0.19.2",
     "graphql": "^15.4.0",
     "js-yaml": "3.14.0",
+    "spawn-command": "0.0.2-1",
     "web-worker": "1.0.0"
   },
   "devDependencies": {
@@ -41,10 +43,8 @@
     "@types/js-yaml": "3.11.1",
     "@types/semver": "^7.3.4",
     "@web3api/cli": "0.0.1-prealpha.3",
-    "axios": "0.19.2",
     "jest": "26.2.2",
     "rimraf": "3.0.2",
-    "spawn-command": "0.0.2-1",
     "ts-jest": "26.1.4",
     "ts-loader": "8.0.17",
     "ts-node": "8.10.2",

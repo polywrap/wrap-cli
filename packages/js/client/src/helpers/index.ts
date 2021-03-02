@@ -1,4 +1,4 @@
-import { Uri } from "..";
+import { Uri, UriRedirect } from "..";
 
 import path from "path";
 import spawn from "spawn-command";
@@ -7,7 +7,16 @@ import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
 import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 import { EnsPlugin } from "@web3api/ens-plugin-js";
 
-export const initTestEnvironment = async () => {
+interface TestEnvironment {
+  ipfs: string;
+  ethereum: string;
+  redirects: UriRedirect[];
+  data: {
+    ensAddress: string;
+  };
+}
+
+export const initTestEnvironment = async (): TestEnvironment => {
   // fetch providers from dev server
   const {
     data: { ipfs, ethereum },
