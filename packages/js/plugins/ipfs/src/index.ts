@@ -65,7 +65,7 @@ export class IpfsPlugin extends Plugin {
 
   public async catToString(cid: string): Promise<string> {
     const buffer = await this.cat(cid);
-    return buffer.toString('utf-8');
+    return buffer.toString("utf-8");
   }
 
   public ls(
