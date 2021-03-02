@@ -1,5 +1,4 @@
 import { Nullable } from "./Nullable";
-import { Format } from "./Format";
 
 export abstract class Read {
   abstract readBool(): bool;

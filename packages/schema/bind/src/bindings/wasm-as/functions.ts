@@ -76,7 +76,7 @@ export const toWasmInit: MustacheFunction = () => {
         if (type.includes("Enum_")) {
           return "0";
         } else {
-          return `new ${type}()`;
+          return `new Types.${type}()`;
         }
     }
   };
