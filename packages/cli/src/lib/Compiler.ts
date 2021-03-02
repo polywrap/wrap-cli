@@ -7,8 +7,6 @@ import { step, withSpinner, outputManifest } from "./helpers";
 
 import { bindSchema, writeDirectory } from "@web3api/schema-bind";
 import path from "path";
-import chokidar from "chokidar";
-import readline from "readline";
 import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
@@ -38,72 +36,9 @@ export class Compiler {
     }
   }
 
-  public async watchAndCompile(verbose?: boolean): Promise<void> {
-    const keyPressListener = () => {
-      readline.emitKeypressEvents(process.stdin);
-      process.stdin.on("keypress", (str, key) => {
-        if (
-          key.name == "escape" ||
-          key.name == "q" ||
-          (key.name == "c" && key.ctrl)
-        ) {
-          process.kill(process.pid, "SIGINT");
-        }
-      });
-      if (process.stdin.setRawMode) process.stdin.setRawMode(true);
-      process.stdin.resume();
-    };
-
-    await this.compile(verbose);
-    gluegun.print.info(`Press Ctrl + C or ESC or q to exit`);
-    keyPressListener();
-
-    let events: Array<{ event: string; path: string }> = [];
-
-    const eventText = {
-      add: "File added",
-      addDir: "Folder added",
-      change: "File changed",
-      unlink: "File removed",
-      unlinkDir: "Folder removed",
-    };
-
-    const watcher = chokidar.watch(this._config.project.manifestDir, {
-      ignored: ["**/build/**", "**/node_modules/**", "**/w3/**"],
-      ignoreInitial: true,
-    });
-
-    watcher.on("all", (eventType, path) => {
-      if (
-        !events.some((e) => e.path == path && e.event == eventText[eventType])
-      ) {
-        events.push({
-          event: eventText[eventType],
-          path,
-        });
-      }
-    });
-
-    let interval: ReturnType<typeof setInterval>;
-
-    const intervalHandler = async () => {
-      if (events.length > 0) {
-        clearInterval(interval);
-
-        events.forEach((event) => {
-          gluegun.print.info(`${event.event}: ${event.path}`);
-        });
-        events = [];
-
-        this._config.project.clearManifest();
-        await this.compile(verbose);
-        keyPressListener();
-
-        interval = setInterval(intervalHandler, 1000);
-      }
-    };
-
-    interval = setInterval(intervalHandler, 1000);
+  public clearCache(): void {
+    this._config.project.clearCache();
+    this._config.schemaComposer.clearCache();
   }
 
   private async _compileWeb3Api(verbose?: boolean) {
