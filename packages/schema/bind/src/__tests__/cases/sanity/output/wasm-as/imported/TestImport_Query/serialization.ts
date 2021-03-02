@@ -5,7 +5,7 @@ import {
   WriteEncoder,
   ReadDecoder
 } from "@web3api/wasm-as";
-import * as Objects from "../..";
+import * as Types from "../..";
 
 export class Input_importedMethod {
   str: string;
@@ -13,10 +13,14 @@ export class Input_importedMethod {
   u: u32;
   optU: Nullable<u32>;
   uArrayArray: Array<Array<Nullable<u32>> | null>;
-  object: Objects.TestImport_Object;
-  optObject: Objects.TestImport_Object | null;
-  objectArray: Array<Objects.TestImport_Object>;
-  optObjectArray: Array<Objects.TestImport_Object | null> | null;
+  object: Types.TestImport_Object;
+  optObject: Types.TestImport_Object | null;
+  objectArray: Array<Types.TestImport_Object>;
+  optObjectArray: Array<Types.TestImport_Object | null> | null;
+  en: Types.TestImport_Enum;
+  optEnum: Nullable<Types.TestImport_Enum>;
+  enumArray: Array<Types.TestImport_Enum>;
+  optEnumArray: Array<Nullable<Types.TestImport_Enum>> | null;
 }
 
 export function serializeimportedMethodArgs(input: Input_importedMethod): ArrayBuffer {
@@ -32,7 +36,7 @@ export function writeimportedMethodArgs(
   writer: Write,
   input: Input_importedMethod
 ): void {
-  writer.writeMapLength(9);
+  writer.writeMapLength(13);
   writer.writeString("str");
   writer.writeString(input.str);
   writer.writeString("optStr");
@@ -48,32 +52,44 @@ export function writeimportedMethodArgs(
     });
   });
   writer.writeString("object");
-  Objects.TestImport_Object.write(writer, input.object);
+  Types.TestImport_Object.write(writer, input.object);
   writer.writeString("optObject");
   if (input.optObject) {
-    Objects.TestImport_Object.write(writer, input.optObject);
+    Types.TestImport_Object.write(writer, input.optObject);
   } else {
     writer.writeNil();
   }
   writer.writeString("objectArray");
-  writer.writeArray(input.objectArray, (writer: Write, item: Objects.TestImport_Object): void => {
-    Objects.TestImport_Object.write(writer, item);
+  writer.writeArray(input.objectArray, (writer: Write, item: Types.TestImport_Object): void => {
+    Types.TestImport_Object.write(writer, item);
   });
   writer.writeString("optObjectArray");
-  writer.writeNullableArray(input.optObjectArray, (writer: Write, item: Objects.TestImport_Object | null): void => {
+  writer.writeNullableArray(input.optObjectArray, (writer: Write, item: Types.TestImport_Object | null): void => {
     if (item) {
-      Objects.TestImport_Object.write(writer, item);
+      Types.TestImport_Object.write(writer, item);
     } else {
       writer.writeNil();
     }
   });
+  writer.writeString("en");
+  writer.writeInt32(input.en);
+  writer.writeString("optEnum");
+  writer.writeNullableInt32(input.optEnum);
+  writer.writeString("enumArray");
+  writer.writeArray(input.enumArray, (writer: Write, item: Types.TestImport_Enum): void => {
+    writer.writeInt32(item);
+  });
+  writer.writeString("optEnumArray");
+  writer.writeNullableArray(input.optEnumArray, (writer: Write, item: Nullable<Types.TestImport_Enum>): void => {
+    writer.writeNullableInt32(item);
+  });
 }
 
-export function deserializeimportedMethodResult(buffer: ArrayBuffer): Objects.TestImport_Object | null {
+export function deserializeimportedMethodResult(buffer: ArrayBuffer): Types.TestImport_Object | null {
   const reader = new ReadDecoder(buffer);
-  var object: Objects.TestImport_Object | null = null;
+  var object: Types.TestImport_Object | null = null;
   if (!reader.isNextNil()) {
-    object = Objects.TestImport_Object.read(reader);
+    object = Types.TestImport_Object.read(reader);
   }
   return object;
 }
