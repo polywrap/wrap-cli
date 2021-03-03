@@ -9,13 +9,10 @@ export function setData(input: Input_setData): string {
   });
 }
 
-export function setResolver({
-  contractAddress,
-  resolverAddress,
-}: Input_setResolver): string {
+export function setResolver(input: Input_setResolver): string {
   return Ethereum_Mutation.sendTransaction({
-    address: contractAddress,
+    address: input.contractAddress,
     method: "function resolver(bytes32 node) constant returns (Resolver)",
-    args: [resolverAddress.value.toString()],
+    args: [input.resolverAddress],
   });
 }
