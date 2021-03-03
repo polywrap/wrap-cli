@@ -41,14 +41,13 @@ ${HELP}`);
     expect(errorHandler).not.toBeCalled();
     expect(testenvCode).toEqual(0);
 
-    const { code: deployCode } = await run(
+    await run(
       "node",
       ["./deploy-contracts.js"],
       projectRoot,
       errorHandler
     );
 
-    expect(deployCode).toEqual(0);
     expect(errorHandler).not.toBeCalled();
 
     const { code: buildCode } = await run(
