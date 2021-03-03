@@ -36,7 +36,7 @@ export class Web3ApiClient implements Client {
   constructor(
     private _config: ClientConfig = {
       redirects: [],
-      logger: null,
+      logger: undefined,
     }
   ) {
     const { redirects, logger } = this._config;
