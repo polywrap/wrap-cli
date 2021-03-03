@@ -1,0 +1,18 @@
+{
+  "name": "ens-web3api",
+  "description": "ENS Web3API",
+  "private": true,
+  "version": "0.0.1-prealpha.5",
+  "scripts": {
+    "build": "npx w3 build",
+    "test:env:up": "npx w3 test-env up && yarn contracts:deploy",
+    "test:env:down": "npx w3 test-env down"
+  },
+  "devDependencies": {
+    "@web3api/cli": "0.0.1-prealpha.5",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.5",
+    "@web3api/wasm-as": "0.0.1-prealpha.5",
+    "ethers": "5.0.8",
+    "js-yaml": "3.14.0"
+  }
+}
