@@ -4,11 +4,10 @@ import {
   MethodDefinition,
   createPropertyDefinition,
   QueryDefinition,
-  createObjectDefinition,
-  createScalarDefinition,
   createArrayDefinition,
-  isScalarType,
 } from "../typeInfo";
+import { setPropertyType } from "./property-utils";
+import { Blackboard } from "./Blackboard";
 
 import { InputValueDefinitionNode, NamedTypeNode } from "graphql";
 
@@ -21,25 +20,36 @@ export interface State {
   currentImport?: ImportedQueryDefinition;
 }
 
-export function extractNamedType(node: NamedTypeNode, state: State): void {
+export function extractNamedType(
+  node: NamedTypeNode,
+  state: State,
+  blackboard: Blackboard
+): void {
   const argument = state.currentArgument;
   const method = state.currentMethod;
 
   if (method && argument) {
-    // Argument value
-    if (isScalarType(node.name.value)) {
-      argument.scalar = createScalarDefinition({
-        name: argument.name,
-        type: node.name.value,
-        required: state.nonNullType,
-      });
-    } else {
-      argument.object = createObjectDefinition({
-        name: argument.name,
-        type: node.name.value,
-        required: state.nonNullType,
-      });
+    if (!argument.name) {
+      throw Error(
+        "extractNamedType: Invalid state. Uninitialized currentArgument, name not found.\n" +
+          `Argument: ${JSON.stringify(
+            argument,
+            null,
+            2
+          )}\nState: ${JSON.stringify(state, null, 2)}`
+      );
     }
+
+    // Argument value
+    setPropertyType(
+      argument,
+      argument.name,
+      {
+        type: node.name.value,
+        required: state.nonNullType,
+      },
+      blackboard
+    );
 
     state.nonNullType = false;
   } else if (method) {
@@ -55,21 +65,27 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
       state.currentReturn = method.return;
     }
 
-    if (isScalarType(node.name.value)) {
-      state.currentReturn.scalar = createScalarDefinition({
-        type: node.name.value,
-        name: method.name,
-        required: state.nonNullType,
-      });
-      state.currentReturn.type = state.currentReturn.scalar.type;
-    } else {
-      state.currentReturn.object = createObjectDefinition({
-        type: node.name.value,
-        name: method.name,
-        required: state.nonNullType,
-      });
-      state.currentReturn.type = state.currentReturn.object.type;
+    if (!method.name) {
+      throw Error(
+        "extractNamedType: Invalid state. Uninitialized currentMethod, name not found.\n" +
+          `Method: ${JSON.stringify(method, null, 2)}\nState: ${JSON.stringify(
+            state,
+            null,
+            2
+          )}`
+      );
     }
+
+    setPropertyType(
+      state.currentReturn,
+      method.name,
+      {
+        type: node.name.value,
+        required: state.nonNullType,
+      },
+      blackboard
+    );
+
     state.nonNullType = false;
   }
 }

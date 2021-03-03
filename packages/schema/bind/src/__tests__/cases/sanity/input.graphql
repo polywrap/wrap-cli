@@ -8,12 +8,13 @@ scalar Int8
 scalar Int16
 scalar Int32
 scalar Int64
+scalar Bytes
 
 directive @imported(
   uri: String!
   namespace: String!
   nativeType: String!
-) on OBJECT
+) on OBJECT | ENUM
 
 directive @imports(
   types: [String!]!
@@ -33,6 +34,8 @@ type CustomType {
   i16: Int16!
   i32: Int32!
   i64: Int64!
+  bytes: Bytes!
+  optBytes: Bytes
   boolean: Boolean!
   optBoolean: Boolean
   uArray: [UInt!]!
@@ -47,6 +50,15 @@ type CustomType {
   optObject: AnotherType
   objectArray: [AnotherType!]!
   optObjectArray: [AnotherType]
+  en: CustomEnum!
+  optEnum: CustomEnum
+  enumArray: [CustomEnum!]!
+  optEnumArray: [CustomEnum]
+}
+
+enum CustomEnum {
+  STRING
+  BYTES
 }
 
 type AnotherType {
@@ -58,7 +70,12 @@ type Query @imports(
   types: [ "TestImport_Query" ]
 ) {
   queryMethod(
-    arg: String!
+    str: String!
+    optStr: String
+    en: CustomEnum!
+    optEnum: CustomEnum
+    enumArray: [CustomEnum!]!
+    optEnumArray: [CustomEnum]
   ): Int!
 
   objectMethod(
@@ -84,6 +101,10 @@ type TestImport_Query @imported(
     optObject: TestImport_Object
     objectArray: [TestImport_Object!]!
     optObjectArray: [TestImport_Object]
+    en: TestImport_Enum!
+    optEnum: TestImport_Enum
+    enumArray: [TestImport_Enum!]!
+    optEnumArray: [TestImport_Enum]
   ): TestImport_Object
 
   anotherMethod(
@@ -100,6 +121,10 @@ type TestImport_Object @imported(
   optObject: TestImport_AnotherObject
   objectArray: [TestImport_AnotherObject!]!
   optObjectArray: [TestImport_AnotherObject]
+  en: TestImport_Enum!
+  optEnum: TestImport_Enum
+  enumArray: [TestImport_Enum!]!
+  optEnumArray: [TestImport_Enum]
 }
 
 type TestImport_AnotherObject @imported(
@@ -108,4 +133,13 @@ type TestImport_AnotherObject @imported(
   nativeType: "AnotherObject"
 ) {
   prop: String!
+}
+
+enum TestImport_Enum @imported(
+  namespace: "TestImport",
+  uri: "testimport.uri.eth",
+  nativeType: "Enum"
+) {
+  STRING
+  BYTES
 }

@@ -3,6 +3,9 @@
 
 import { LogLevel } from "../logger";
 
+export const maxTransferBytes = 256; // do not change
+export const maxThreads = 128;
+
 export type u32 = number;
 
 export interface W3Exports {

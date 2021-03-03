@@ -58,7 +58,7 @@ function App() {
     console.log("querying")
 
     const { data, errors } = await client.query({
-      uri: new Uri("ens/simplestorage.web3api.eth"),
+      uri: new Uri("ens/api.simplestorage.eth"),
       query: `mutation { deployContract }`
     });
 

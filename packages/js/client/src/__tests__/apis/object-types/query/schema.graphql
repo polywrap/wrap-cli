@@ -15,6 +15,10 @@ type Query {
   method4(
     arg: InfiniteRoot!
   ): Result!
+
+  method5(
+    arg: Arg3!
+  ): Result!
 }
 
 type Arg1 {
@@ -25,6 +29,10 @@ type Arg1 {
 type Arg2 {
   prop: String!
   circular: Circular!
+}
+
+type Arg3 {
+  prop: Bytes!
 }
 
 type Result {

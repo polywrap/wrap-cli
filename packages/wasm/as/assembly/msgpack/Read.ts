@@ -44,4 +44,5 @@ export abstract class Read {
   ): Map<K, V> | null;
 
   abstract isNextNil(): bool;
+  abstract isNextString(): bool;
 }

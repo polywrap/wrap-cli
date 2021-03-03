@@ -7,12 +7,14 @@ export enum DefinitionKind {
   Object = 1 << 0,
   Any = 1 << 1,
   Scalar = 1 << 2,
-  Array = (1 << 3) | DefinitionKind.Any,
-  Property = (1 << 4) | DefinitionKind.Any,
-  Method = 1 << 5,
-  Query = 1 << 6,
-  ImportedQuery = 1 << 7,
-  ImportedObject = (1 << 8) | DefinitionKind.Object,
+  Enum = 1 << 3,
+  Array = (1 << 4) | DefinitionKind.Any,
+  Property = (1 << 5) | DefinitionKind.Any,
+  Method = 1 << 6,
+  Query = 1 << 7,
+  ImportedQuery = 1 << 8,
+  ImportedEnum = 1 << 9,
+  ImportedObject = (1 << 10) | DefinitionKind.Object,
 }
 
 export function isKind(type: GenericDefinition, kind: DefinitionKind): boolean {
@@ -58,6 +60,7 @@ export interface AnyDefinition extends GenericDefinition {
   array: ArrayDefinition | null;
   scalar: ScalarDefinition | null;
   object: ObjectDefinition | null;
+  enum: EnumDefinition | null;
 }
 export function createAnyDefinition(args: {
   type: string;
@@ -66,12 +69,14 @@ export function createAnyDefinition(args: {
   array?: ArrayDefinition;
   scalar?: ScalarDefinition;
   object?: ObjectDefinition;
+  enum?: EnumDefinition;
 }): AnyDefinition {
   return {
     ...createGenericDefinition(args),
     array: args.array ? args.array : null,
     scalar: args.scalar ? args.scalar : null,
     object: args.object ? args.object : null,
+    enum: args.enum ? args.enum : null,
     kind: DefinitionKind.Any,
   };
 }
@@ -93,6 +98,23 @@ export function createScalarDefinition(args: {
     ...createGenericDefinition(args),
     type: args.type,
     kind: DefinitionKind.Scalar,
+  };
+}
+
+export interface EnumDefinition extends GenericDefinition {
+  constants: string[];
+}
+export function createEnumDefinition(args: {
+  type: string;
+  name?: string | null;
+  required?: boolean;
+  constants?: string[];
+}): EnumDefinition {
+  return {
+    ...createGenericDefinition(args),
+    type: args.type,
+    kind: DefinitionKind.Enum,
+    constants: args.constants ? args.constants : [],
   };
 }
 
@@ -120,6 +142,10 @@ export function createArrayDefinition(args: {
         args.item && isKind(args.item, DefinitionKind.Object)
           ? (args.item as ObjectDefinition)
           : undefined,
+      enum:
+        args.item && isKind(args.item, DefinitionKind.Enum)
+          ? (args.item as EnumDefinition)
+          : undefined,
     }),
     item: args.item ? args.item : null,
     kind: DefinitionKind.Array,
@@ -134,6 +160,7 @@ export function createPropertyDefinition(args: {
   array?: ArrayDefinition;
   scalar?: ScalarDefinition;
   object?: ObjectDefinition;
+  enum?: EnumDefinition;
 }): PropertyDefinition {
   return {
     ...createAnyDefinition(args),
@@ -161,6 +188,18 @@ export function createScalarPropertyDefinition(args: {
   return createPropertyDefinition({
     ...args,
     scalar: createScalarDefinition(args),
+  });
+}
+
+export function createEnumPropertyDefinition(args: {
+  type: string;
+  name?: string | null;
+  required?: boolean;
+  constants?: string[];
+}): PropertyDefinition {
+  return createPropertyDefinition({
+    ...args,
+    enum: createEnumDefinition(args),
   });
 }
 
@@ -229,6 +268,27 @@ export interface ImportedDefinition {
   uri: string;
   namespace: string;
   nativeType: string;
+}
+
+export interface ImportedEnumDefinition
+  extends EnumDefinition,
+    ImportedDefinition {}
+export function createImportedEnumDefinition(args: {
+  type: string;
+  constants: string[];
+  name?: string;
+  required?: boolean;
+  uri: string;
+  namespace: string;
+  nativeType: string;
+}): ImportedEnumDefinition {
+  return {
+    ...createEnumDefinition(args),
+    uri: args.uri,
+    namespace: args.namespace,
+    nativeType: args.nativeType,
+    kind: DefinitionKind.ImportedEnum,
+  };
 }
 
 export interface ImportedQueryDefinition

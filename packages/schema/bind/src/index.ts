@@ -4,7 +4,7 @@ export * from "./utils/fs";
 
 export type TargetLanguage = "wasm-as";
 
-export type OutputEntry = FileEntry | DirectoryEntry;
+export type OutputEntry = FileEntry | DirectoryEntry | TemplateEntry;
 
 export interface FileEntry {
   type: "File";
@@ -16,6 +16,12 @@ export interface DirectoryEntry {
   type: "Directory";
   name: string;
   data: OutputEntry[];
+}
+
+export interface TemplateEntry {
+  type: "Template";
+  name: string;
+  data: string;
 }
 
 export interface OutputDirectory {

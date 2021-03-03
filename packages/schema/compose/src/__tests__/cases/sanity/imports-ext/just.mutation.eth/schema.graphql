@@ -9,12 +9,13 @@ scalar Int8
 scalar Int16
 scalar Int32
 scalar Int64
+scalar Bytes
 
 directive @imported(
   uri: String!
   namespace: String!
   nativeType: String!
-) on OBJECT
+) on OBJECT | ENUM
 
 directive @imports(
   types: [String!]!

@@ -69,6 +69,7 @@ export function propertyTypes(astNode: DocumentNode): void {
   let currentImportType: string | undefined;
   let currentField: string | undefined;
   const objectTypes: Record<string, boolean> = {};
+  const enumTypes: Record<string, boolean> = {};
   const fieldTypes: {
     object: string;
     field: string;
@@ -80,6 +81,9 @@ export function propertyTypes(astNode: DocumentNode): void {
       ObjectTypeDefinition: (node) => {
         currentObject = node.name.value;
         objectTypes[node.name.value] = true;
+      },
+      EnumTypeDefinition: (node) => {
+        enumTypes[node.name.value] = true;
       },
       Directive: (node) => {
         if (node.name.value === "imported") {
@@ -132,9 +136,13 @@ export function propertyTypes(astNode: DocumentNode): void {
   });
 
   // Ensure all property types are either a
-  // supported scalar or an object type definition
+  // supported scalar, enum or an object type definition
   for (const field of fieldTypes) {
-    if (!isScalarType(field.type) && !objectTypes[field.type]) {
+    if (
+      !isScalarType(field.type) &&
+      !objectTypes[field.type] &&
+      !enumTypes[field.type]
+    ) {
       throw Error(
         `Unknown property type found: type ${field.object} { ${field.field}: ${field.type} }`
       );

@@ -1,13 +1,12 @@
 {
   "name": "@web3api/docs",
-  "private": false,
   "version": "0.0.1-prealpha.1",
   "description": "Web3API Docs",
-  "author": "dOrg",
+  "author": "Web3API",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/web3-api/prototype.git"
+    "url": "https://github.com/web3-api/monorepo.git"
   },
   "publishConfig": {
     "access": "public"

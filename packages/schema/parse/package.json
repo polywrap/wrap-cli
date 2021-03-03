@@ -1,8 +1,13 @@
 {
   "name": "@web3api/schema-parse",
-  "version": "0.0.1-prealpha.1",
+  "description": "Web3API Schema Parsing",
+  "version": "0.0.1-prealpha.4",
   "license": "MIT",
-  "main": "build",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/web3-api/monorepo.git"
+  },
+  "main": "build/index.js",
   "files": [
     "build"
   ],
@@ -24,5 +29,9 @@
     "ts-jest": "26.1.4",
     "ts-node": "8.10.2",
     "typescript": "3.9.7"
+  },
+  "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
+  "publishConfig": {
+    "access": "public"
   }
 }

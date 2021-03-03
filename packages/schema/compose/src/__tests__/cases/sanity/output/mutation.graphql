@@ -9,12 +9,13 @@ scalar Int8
 scalar Int16
 scalar Int32
 scalar Int64
+scalar Bytes
 
 directive @imported(
   uri: String!
   namespace: String!
   nativeType: String!
-) on OBJECT
+) on OBJECT | ENUM
 
 directive @imports(
   types: [String!]!
@@ -30,6 +31,8 @@ type Mutation @imports(
     "Namespace_Imported_NestedObjectType",
     "Namespace_Imported_ObjectType",
     "Namespace_CustomType",
+    "Namespace_CustomEnum",
+    "Namespace_Imported_Enum",
     "JustMutation_Mutation"
   ]
 ) {
@@ -55,6 +58,7 @@ type CustomMutationType {
   i: Int!
   i8: Int8!
   i64: Int64!
+  bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optStrOptArray: [String]
@@ -193,6 +197,7 @@ type Namespace_CustomType @imported(
   i16: Int16!
   i32: Int32!
   i64: Int64!
+  bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optUOptArray: [UInt]
@@ -208,6 +213,28 @@ type Namespace_CustomType @imported(
   optNestedObjectArray: [Namespace_NestedObjectType]!
   importedNestedObject: Namespace_Imported_NestedObjectType!
   optImportedNestedObjectArray: [Namespace_Imported_NestedObjectType]!
+  enum: Namespace_CustomEnum!
+  optEnum: Namespace_CustomEnum
+  importedEnum: Namespace_Imported_Enum!
+  optImportedEnum: Namespace_Imported_Enum
+}
+
+enum Namespace_CustomEnum @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "CustomEnum"
+) {
+  STRING
+  BYTES
+}
+
+enum Namespace_Imported_Enum @imported(
+  namespace: "Namespace",
+  uri: "test.eth",
+  type: "Imported_Enum"
+) {
+  STRING
+  BYTES
 }
 
 ### Imported Objects END ###

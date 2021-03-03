@@ -10,6 +10,9 @@ import {
   createObjectPropertyDefinition,
   createImportedObjectDefinition,
   createImportedQueryDefinition,
+  createEnumDefinition,
+  createEnumPropertyDefinition,
+  createImportedEnumDefinition,
 } from "../../../typeInfo";
 
 export const output: TypeInfo = {
@@ -30,6 +33,7 @@ export const output: TypeInfo = {
         createScalarPropertyDefinition({ name: "i16", type: "Int16", required: true }),
         createScalarPropertyDefinition({ name: "i32", type: "Int32", required: true }),
         createScalarPropertyDefinition({ name: "i64", type: "Int64", required: true }),
+        createScalarPropertyDefinition({ name: "bytes", type: "Bytes", required: true }),
         createArrayPropertyDefinition({
           name: "uArray",
           type: "[UInt]",
@@ -138,6 +142,35 @@ export const output: TypeInfo = {
         createObjectPropertyDefinition({
           name: "optNestedObject",
           type: "UserObject",
+        }),
+        createEnumPropertyDefinition({
+          name: "optEnum",
+          type: "CustomEnum",
+        }),
+        createEnumPropertyDefinition({
+          name: "enum",
+          type: "CustomEnum",
+          required: true
+        }),
+        createArrayPropertyDefinition({
+          name: "enumArray",
+          type: "[CustomEnum]",
+          required: true,
+          item: createEnumDefinition({
+            name: "enumArray",
+            type: "CustomEnum",
+            required: true,
+          })
+        }),
+        createArrayPropertyDefinition({
+          name: "optEnumArray",
+          type: "[CustomEnum]",
+          required: false,
+          item: createEnumDefinition({
+            name: "optEnumArray",
+            type: "CustomEnum",
+            required: false
+          })
         })
       ],
     },
@@ -152,6 +185,21 @@ export const output: TypeInfo = {
         createScalarPropertyDefinition({ name: "fieldB", type: "Int", required: true }),
       ],
     },
+  ],
+  enumTypes: [
+    createEnumDefinition({
+      type: "CustomEnum",
+      constants: ["TEXT", "BINARY"]
+    })
+  ],
+  importedEnumTypes: [
+    createImportedEnumDefinition({
+      type: "TestImport_Enum",
+      uri: "testimport.uri.eth",
+      namespace: "TestImport",
+      nativeType: "Enum",
+      constants: ["TEXT", "BYTES"]
+    })
   ],
   queryTypes: [
     {
@@ -175,6 +223,22 @@ export const output: TypeInfo = {
           return: createObjectPropertyDefinition({
             name: "userObjectMethod",
             type: "UserObject",
+            required: true
+          }),
+        },
+        {
+          ...createMethodDefinition({ type: "query", name: "enumMethod" }),
+          arguments: [
+            createEnumPropertyDefinition({ name: "enum", type: "CustomEnum" }),
+            createArrayPropertyDefinition({ name: "arrayEnum", type: "[CustomEnum]", required: true, item: createEnumDefinition({
+              type: "CustomEnum",
+              name: "arrayEnum",
+              required: true
+            })}),
+          ],
+          return: createEnumPropertyDefinition({
+            name: "enumMethod",
+            type: "CustomEnum",
             required: true
           }),
         },
@@ -301,6 +365,32 @@ export const output: TypeInfo = {
                 required: true
               }),
             }
+          }
+        },
+        {
+          ...createMethodDefinition({ type: "query", name: "importedEnumMethod" }),
+          arguments: [
+            {
+              ...createEnumPropertyDefinition({
+                name: "enum",
+                type: "TestImport_Enum",
+                required: true
+              }),
+            },
+            {
+              ...createEnumPropertyDefinition({
+                name: "optEnum",
+                type: "TestImport_Enum",
+                required: false
+              }),
+            }
+          ],
+          return: {
+            ...createEnumPropertyDefinition({
+              name: "importedEnumMethod",
+              type: "TestImport_Enum",
+              required: true
+            }),
           }
         },
       ],

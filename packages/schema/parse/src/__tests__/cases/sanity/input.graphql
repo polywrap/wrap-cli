@@ -8,16 +8,22 @@ scalar Int8
 scalar Int16
 scalar Int32
 scalar Int64
+scalar Bytes
 
 directive @imported(
   uri: String!
   namespace: String!
   nativeType: String!
-) on OBJECT
+) on OBJECT | ENUM
 
 directive @imports(
   types: [String!]!
 ) on OBJECT
+
+enum CustomEnum {
+  TEXT
+  BINARY
+}
 
 type CustomType {
   str: String!
@@ -33,6 +39,7 @@ type CustomType {
   i16: Int16!
   i32: Int32!
   i64: Int64!
+  bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optUOptArray: [UInt]
@@ -45,6 +52,10 @@ type CustomType {
   objectArrayArray: [[UserObject!]!]!
   nestedObject: UserObject!
   optNestedObject: UserObject
+  optEnum: CustomEnum
+  enum: CustomEnum!
+  enumArray: [CustomEnum!]!,
+  optEnumArray: [CustomEnum]
 }
 
 type AnotherType {
@@ -67,6 +78,11 @@ type Query @imports(
     userObject: UserObject
     arrayObject: [UserObject!]!
   ): UserObject!
+
+  enumMethod(
+    enum: CustomEnum,
+    arrayEnum: [CustomEnum!]!
+  ): CustomEnum!
 }
 
 type TestImport_Query @imported(
@@ -89,6 +105,11 @@ type TestImport_Query @imported(
   importedObjectMethod(
     importedObject: TestImport_Object!
   ): TestImport_Object!
+
+  importedEnumMethod(
+    enum: TestImport_Enum!
+    optEnum: TestImport_Enum
+  ): TestImport_Enum!
 }
 
 type TestImport_Mutation @imported(
@@ -117,4 +138,13 @@ type TestImport_NestedObject @imported(
 ) {
   foo: [String!]!
   circular: TestImport_Object!
+}
+
+enum TestImport_Enum @imported(
+  namespace: "TestImport",
+  uri: "testimport.uri.eth",
+  nativeType: "Enum"
+) {
+  TEXT
+  BYTES
 }
