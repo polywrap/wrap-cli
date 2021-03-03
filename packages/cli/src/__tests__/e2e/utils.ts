@@ -17,7 +17,8 @@ export const run = (
     if (child.stdout) {
       child.stdout.setEncoding("utf8");
       child.stdout.on("data", (data) => {
-        process.stdout.write(data, (_err) => {});
+        // Uncomment for full output
+        // process.stdout.write(data, (_err) => {});
         mergedOut += data;
       });
     }

@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "build": "w3 build",
+    "contracts:deploy": "node ./deploy-contracts.js",
     "test:env:up": "w3 test-env up && yarn contracts:deploy",
     "test:env:down": "w3 test-env down"
   },

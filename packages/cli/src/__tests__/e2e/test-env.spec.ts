@@ -60,6 +60,13 @@ ${HELP}`);
     expect(clearStyle(output)).toEqual(`- Starting test environment...
 ✔ Starting test environment...
 `);
+
+    await run(
+      "../../../bin/w3",
+      ["test-env", "down"],
+      projectRoot,
+      errorHandler
+    );
   }, 20000);
 
   test("Should successfully shut down test environment", async () => {

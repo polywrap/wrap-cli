@@ -39,46 +39,46 @@ ${HELP}`);
       errorHandler
     );
     expect(errorHandler).not.toBeCalled();
+    expect(testenvCode).toEqual(0);
 
-    if (!testenvCode) {
-      const { code: deployCode } = await run(
-        "node",
-        ["./deploy-contracts.js"],
-        projectRoot,
-        errorHandler
-      );
+    const { code: deployCode } = await run(
+      "node",
+      ["./deploy-contracts.js"],
+      projectRoot,
+      errorHandler
+    );
 
-      expect(deployCode).toEqual(0);
-      expect(errorHandler).not.toBeCalled();
+    expect(deployCode).toEqual(0);
+    expect(errorHandler).not.toBeCalled();
 
-      const { code: buildCode } = await run(
-        "../../../bin/w3",
-        [
-          "build",
-          "--ipfs",
-          "http://localhost:5001",
-          "--test-ens",
-          "simplestorage.eth",
-        ],
-        projectRoot,
-        errorHandler
-      );
+    const { code: buildCode } = await run(
+      "../../../bin/w3",
+      [
+        "build",
+        "--ipfs",
+        "http://localhost:5001",
+        "--test-ens",
+        "simplestorage.eth",
+      ],
+      projectRoot,
+      errorHandler
+    );
 
-      expect(buildCode).toEqual(0);
-      expect(errorHandler).not.toBeCalled();
+    expect(buildCode).toEqual(0);
+    expect(errorHandler).not.toBeCalled();
 
-      const { code, output } = await run(
-        "../../../bin/w3",
-        ["query", "./recipes/e2e.json", "--test-ens"],
-        projectRoot,
-        errorHandler
-      );
+    const { code, output } = await run(
+      "../../../bin/w3",
+      ["query", "./recipes/e2e.json", "--test-ens"],
+      projectRoot,
+      errorHandler
+    );
 
-      expect(code).toEqual(0);
-      expect(errorHandler).not.toBeCalled();
+    expect(code).toEqual(0);
+    expect(errorHandler).not.toBeCalled();
 
-      const constants = require(`${projectRoot}/recipes/constants.json`);
-      expect(clearStyle(output)).toContain(`-----------------------------------
+    const constants = require(`${projectRoot}/recipes/constants.json`);
+    expect(clearStyle(output)).toContain(`-----------------------------------
 mutation {
   setData(
     options: {
@@ -107,12 +107,11 @@ mutation {
 -----------------------------------
 `);
 
-      await run(
-        "../../../bin/w3",
-        ["test-env", "down"],
-        projectRoot,
-        errorHandler
-      );
-    }
+    await run(
+      "../../../bin/w3",
+      ["test-env", "down"],
+      projectRoot,
+      errorHandler
+    );
   }, 120000);
 });
