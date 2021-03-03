@@ -9,6 +9,7 @@ Options:
   -i, --ipfs [<node>]                Upload build results to an IPFS node (default: dev-server's node)
   -o, --output-dir <path>            Output directory for build results (default: build/)
   -e, --test-ens <[address,]domain>  Publish the package to a test ENS domain locally (requires --ipfs)
+  -w, --watch                        Automatically rebuild when changes are made (default: false)
 
 `;
 

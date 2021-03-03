@@ -106,13 +106,6 @@ mutation {
 }
 -----------------------------------
 `);
-
-      await run(
-        "../../../bin/w3",
-        ["test-env", "down"],
-        projectRoot,
-        errorHandler
-      );
     }
   }, 120000);
 });
