@@ -1,5 +1,5 @@
 import { composeSchema } from "../";
-import { fetchTestCases } from "./cases";
+import { fetchTestCases } from "./index";
 
 describe("Web3API Schema Composer Test Cases", () => {
   const cases = fetchTestCases();
