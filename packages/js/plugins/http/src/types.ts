@@ -13,7 +13,7 @@ export class UrlParam {
 
 // even though in schema enum is used, this will be converted to string
 // so this is a reason to define ResponseType as string here
-export type ResponseType = "TEXT" | "BINARY"
+export type ResponseType = "TEXT" | "BINARY";
 
 export class Request {
   headers?: Header[];
