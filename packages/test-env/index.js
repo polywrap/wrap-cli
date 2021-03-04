@@ -35,7 +35,7 @@ async function up(quiet = false) {
     waitPort({
       host: 'localhost',
       port: process.env.DEV_SERVER_PORT || 4040,
-      quiet: true
+      output: 'silent'
     })
     .then((open) => {
       if (open) {
