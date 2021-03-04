@@ -1,12 +1,17 @@
 import { Ethereum_Mutation } from "./w3/imported";
-import { Input_setData } from "./w3";
+import { Input_setData, SetDataResult } from "./w3";
 
-export function setData(input: Input_setData): string {
-  return Ethereum_Mutation.sendTransaction({
-    address: input.address,
+export function setData(input: Input_setData): SetDataResult {
+  const hash = Ethereum_Mutation.sendTransaction({
+    address: input.options.address,
     method: "function set(uint256 value)",
-    args: [input.value.toString()]
+    args: [input.options.value.toString()]
   });
+
+  return {
+    txReceipt: hash,
+    value: input.options.value
+  };
 }
 
 export function deployContract(): string {
