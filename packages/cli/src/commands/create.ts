@@ -4,7 +4,7 @@ import { fixParameters } from "../lib/helpers/parameters";
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 
-const supportedLangs: { [key: string]: string[] } = {
+export const supportedLangs: { [key: string]: string[] } = {
   api: ["assemblyscript"],
   app: ["react"],
   plugin: ["typescript"],
