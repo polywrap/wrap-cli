@@ -67,7 +67,7 @@ ${HELP}`);
       projectRoot,
       errorHandler
     );
-  }, 20000);
+  }, 30000);
 
   test("Should successfully shut down test environment", async () => {
     const errorHandler = jest.fn();

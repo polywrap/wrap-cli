@@ -1,46 +1,63 @@
 import path from "path";
-import spawn from "spawn-command";
+import { spawn } from "child_process";
 
-export const runW3CLI = async (
-  args: string[]
+export const run = (
+  command: string,
+  args: string[],
+  projectRoot: string
 ): Promise<{
-  exitCode: number;
+  exitCode: number | null;
   stdout: string;
   stderr: string;
 }> => {
-  const [exitCode, stdout, stderr] = await new Promise((resolve, reject) => {
-    // Make sure to set an absolute working directory
-    let cwd = process.cwd();
-    cwd = cwd[0] !== "/" ? path.resolve(__dirname, cwd) : cwd;
-
-    const command = `npx w3 ${args.join(" ")}`;
-    const child = spawn(command, { cwd });
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, { cwd: projectRoot });
 
     let stdout = "";
     let stderr = "";
 
-    child.on("error", (error: Error) => {
-      reject(error);
-    });
+    if (child.stdout) {
+      child.stdout.setEncoding("utf8");
+      child.stdout.on("data", (data: string) => {
+        stdout += data;
+      });
+    }
 
-    child.stdout.on("data", (data: string) => {
-      stdout += data.toString();
-    });
+    if (child.stderr) {
+      child.stderr.setEncoding("utf8");
+      child.stderr.on("data", (data: string) => {
+        stderr += data;
+      });
+    }
 
-    child.stderr.on("data", (data: string) => {
-      stderr += data.toString();
-    });
-
-    child.on("exit", (exitCode: number) => {
-      resolve([exitCode, stdout, stderr]);
-    });
+    child
+      .on("close", (exitCode: number | null) => {
+        resolve({
+          exitCode,
+          stderr,
+          stdout
+        });
+      })
+      .on("error", (err: Error) => {
+        reject(err);
+      });
   });
+};
 
-  return {
-    exitCode,
-    stdout,
-    stderr,
-  };
+export const runW3CLI = async (
+  args: string[]
+): Promise<{
+  exitCode: number | null;
+  stdout: string;
+  stderr: string;
+}> => {
+  // Make sure to set an absolute working directory
+  let cwd = process.cwd();
+  cwd = cwd[0] !== "/" ? path.resolve(__dirname, cwd) : cwd;
+
+  const command = path.resolve(__dirname, "../../node_modules/.bin/w3");
+
+  return await run(command, args, cwd);
 };
 
 export async function buildAndDeployApi(
