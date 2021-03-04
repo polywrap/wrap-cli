@@ -62,7 +62,7 @@ describe("Web3ApiClient", () => {
         },
       },
     ];
-  });
+  }, 50000);
 
   afterAll(async () => {
     // Teardown the test environment
