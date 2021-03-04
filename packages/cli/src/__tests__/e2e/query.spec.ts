@@ -112,5 +112,5 @@ mutation {
       projectRoot,
       errorHandler
     );
-  }, 120000);
+  }, 240000);
 });
