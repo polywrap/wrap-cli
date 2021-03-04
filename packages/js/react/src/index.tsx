@@ -97,7 +97,6 @@ export const useWeb3ApiQuery = ({
   }
 
   const client = PROVIDERS[key].client;
-  // This should never happen
   if (!client) {
     return { ...INITIAL_STATE, execute: async () => ({ data: null }) };
   }

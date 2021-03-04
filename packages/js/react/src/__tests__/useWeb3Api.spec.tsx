@@ -1,12 +1,5 @@
-import {
-  useWeb3ApiQuery,
-  Web3ApiProvider,
-  QueryExecutionParams,
-  createWeb3ApiRoot,
-  DEFAULT_PROVIDER,
-} from "..";
+import { useWeb3ApiQuery, Web3ApiProvider, QueryExecutionParams } from "..";
 
-import React from "react";
 import {
   renderHook,
   act,

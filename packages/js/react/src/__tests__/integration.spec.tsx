@@ -1,3 +1,4 @@
+import { createWeb3ApiRoot } from "..";
 import { SimpleStorageContainer } from "./dapp/SimpleStorage";
 
 import React from "react";
@@ -8,7 +9,6 @@ import {
   initTestEnvironment,
   buildAndDeployApi,
 } from "@web3api/client-js";
-import { Web3ApiProvider, createWeb3ApiRoot } from "..";
 
 jest.setTimeout(30000);
 
@@ -56,15 +56,8 @@ describe("Web3Api Wrapper", () => {
 
   it("Should throw error because two providers with same key has been rendered ", () => {
     const CustomWeb3ApiProvider = createWeb3ApiRoot("test");
-    const SecondCustomWeb3ApiProvider = createWeb3ApiRoot("test");
-    const Web3ApiProvider = () =>
-      render(
-        <CustomWeb3ApiProvider redirects={redirects}>
-          <SecondCustomWeb3ApiProvider redirects={redirects}>
-            <div />
-          </SecondCustomWeb3ApiProvider>
-        </CustomWeb3ApiProvider>
-      );
-    expect(Web3ApiProvider).toThrow();
+    expect(() => createWeb3ApiRoot("test")).toThrowError(
+      /A Web3Api root already exists with the name/
+    );
   });
 });
