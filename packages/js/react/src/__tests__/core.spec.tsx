@@ -8,11 +8,13 @@ import {
   initTestEnvironment,
   buildAndDeployApi,
 } from "@web3api/client-js";
+import { Web3ApiProvider, createWeb3ApiRoot } from "..";
 
 jest.setTimeout(30000);
 
 describe("Web3Api Wrapper", () => {
   let redirects: UriRedirect[];
+  let ensUri: Uri;
   let api: {
     ensDomain: string;
     ipfsCid: string;
@@ -31,11 +33,10 @@ describe("Web3Api Wrapper", () => {
       ipfs,
       data.ensAddress
     );
+    ensUri = new Uri(`ens/${api.ensDomain}`);
   });
 
   it("Deploys, read and write on Smart Contract ", async () => {
-    const ensUri = new Uri(`ens/${api.ensDomain}`);
-
     render(<SimpleStorageContainer redirects={redirects} ensUri={ensUri} />);
 
     fireEvent.click(screen.getByText("Deploy"));
@@ -47,11 +48,23 @@ describe("Web3Api Wrapper", () => {
     await waitFor(() => screen.getByText("0"));
     expect(screen.getByText("0")).toBeTruthy();
 
-    // update storage to five
-    // check storage is 5
+    // update storage to five and check it
+    fireEvent.click(screen.getByText("Set the storage to 5!"));
+    await waitFor(() => screen.getByText("5"));
+    expect(screen.getByText("5")).toBeTruthy();
   });
 
-  // it("Should update storage data to five ", () => {});
-
-  // it("Storage should be equal to five (5)", () => {});
+  it("Should throw error because two providers with same key has been rendered ", () => {
+    const CustomWeb3ApiProvider = createWeb3ApiRoot("test");
+    const SecondCustomWeb3ApiProvider = createWeb3ApiRoot("test");
+    const Web3ApiProvider = () =>
+      render(
+        <CustomWeb3ApiProvider redirects={redirects}>
+          <SecondCustomWeb3ApiProvider redirects={redirects}>
+            <div />
+          </SecondCustomWeb3ApiProvider>
+        </CustomWeb3ApiProvider>
+      );
+    expect(Web3ApiProvider).toThrow();
+  });
 });

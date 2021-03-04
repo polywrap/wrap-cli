@@ -1,5 +1,12 @@
-import { useWeb3ApiQuery, Web3ApiProvider } from "..";
+import {
+  useWeb3ApiQuery,
+  Web3ApiProvider,
+  QueryExecutionParams,
+  createWeb3ApiRoot,
+  DEFAULT_PROVIDER,
+} from "..";
 
+import React from "react";
 import {
   renderHook,
   act,
@@ -43,6 +50,52 @@ describe("useWeb3ApiQuery hook", () => {
     };
   });
 
+  const assertMutationWorks = async (
+    query: QueryExecutionParams,
+    expectedResult: number
+  ) => {
+    const setDataStorageHook = () => useWeb3ApiQuery(query);
+
+    const {
+      result: seStorageData,
+      waitForNextUpdate: waitForDataStorageUpdate,
+    } = renderHook(setDataStorageHook, WrapperProvider);
+
+    act(() => {
+      seStorageData.current.execute();
+    });
+
+    await waitForDataStorageUpdate();
+
+    const newResult = await queryStorageData(contractAddress, uri);
+    expect(newResult).toBe(expectedResult);
+  };
+
+  const queryStorageData = async (contract: string, uri: Uri) => {
+    const getStorageDataQuery = {
+      uri,
+      query: `query {
+        getData(
+          address: "${contract}"
+        )
+      }`,
+    };
+
+    const getDataStorageHook = () => useWeb3ApiQuery(getStorageDataQuery);
+
+    const {
+      result: storageData,
+      waitForNextUpdate: waitForDataStorage,
+    } = renderHook(getDataStorageHook, WrapperProvider);
+
+    act(() => {
+      storageData.current.execute();
+    });
+
+    await waitForDataStorage();
+    return storageData.current.data?.getData;
+  };
+
   it("Deployment should work", async () => {
     const deployQuery = {
       uri,
@@ -73,7 +126,48 @@ describe("useWeb3ApiQuery hook", () => {
   });
 
   it("Should retrieve initial storage data which is 0 ", async () => {
+    const data = await queryStorageData(contractAddress, uri);
+    expect(data).toBe(0);
+  });
+
+  it("Should update storage data to five with hard coded value", async () => {
+    const setStorageDataQuery = {
+      uri,
+      query: `
+        mutation {
+          setData(
+            address: "${contractAddress}"
+            value: 5
+          )
+        }
+      `,
+    };
+
+    await assertMutationWorks(setStorageDataQuery, 5);
+  });
+
+  it("Should update storage data to five by setting value through  ", async () => {
+    const setStorageDataQuery = {
+      uri,
+      query: `
+        mutation {
+          setData(
+            address: "${contractAddress}"
+            value: $value
+          )
+        }
+      `,
+      variables: {
+        value: 5,
+      },
+    };
+
+    await assertMutationWorks(setStorageDataQuery, 5);
+  });
+
+  it("Should throw error because there's no provider with expected key ", async () => {
     const getStorageDataQuery = {
+      key: "Non existent Web3API Provider",
       uri,
       query: `query {
         getData(
@@ -81,18 +175,10 @@ describe("useWeb3ApiQuery hook", () => {
         )
       }`,
     };
+
     const getDataStorageHook = () => useWeb3ApiQuery(getStorageDataQuery);
-
-    const {
-      result: storageData,
-      waitForNextUpdate: waitForDataStorage,
-    } = renderHook(getDataStorageHook, WrapperProvider);
-
-    act(() => {
-      storageData.current.execute();
-    });
-
-    await waitForDataStorage();
-    expect(storageData.current.data?.getData).toBe(0);
+    expect(getDataStorageHook).toThrowError(
+      /You are trying to use Web3ApiQuery hook with key: Non existent Web3API Provider and it doesn't exists/
+    );
   });
 });

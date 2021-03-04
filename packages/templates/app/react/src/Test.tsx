@@ -12,7 +12,7 @@ import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 process.env.WORKER_PREFIX = "workerize-loader!";
 
 const SimpleStorageProvider = createWeb3ApiRoot("simpleStorage");
-// const OneInchProvider = createWeb3ApiRoot("1inch");
+// const OneInchProvider = createWeb3ApiRoot("ta");
 
 const ActionComponent = () => {
   useEffect(() => {

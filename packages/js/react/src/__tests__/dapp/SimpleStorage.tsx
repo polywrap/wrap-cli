@@ -14,10 +14,10 @@ const SimpleStorage = ({ uri }: { uri: Uri }) => {
   const { execute: setData } = useWeb3ApiQuery({
     uri,
     query: `mutation {
-      setData(options: {
+      setData(
         address: "${deployData?.deployContract}"
         value: 5
-      })
+      )
     }`,
   });
 
@@ -30,6 +30,11 @@ const SimpleStorage = ({ uri }: { uri: Uri }) => {
     }`,
   });
 
+  const updateStorageData = async () => {
+    await setData();
+    await getStorageData();
+  };
+
   return (
     <>
       {!deployData ? (
@@ -37,13 +42,9 @@ const SimpleStorage = ({ uri }: { uri: Uri }) => {
       ) : (
         <>
           <p>SimpleStorage Contract: {deployData.deployContract}</p>
-          <button onClick={setData}>Set the storage to 5!</button>
+          <button onClick={updateStorageData}>Set the storage to 5!</button>
           <button onClick={getStorageData}>Check storage</button>
-          <div>
-            {currentStorage?.getData !== undefined
-              ? currentStorage?.getData
-              : null}{" "}
-          </div>
+          <div>{currentStorage?.getData} </div>
         </>
       )}
     </>
