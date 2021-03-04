@@ -1,6 +1,6 @@
 {
   "name": "@web3api/react",
-  "version": "0.0.1-prealpha.3",
+  "version": "0.0.1-prealpha.5",
   "license": "MIT",
   "main": "build/index.js",
   "scripts": {
@@ -16,10 +16,10 @@
     "install:web3api": "npx web3api-worker-install ./"
   },
   "dependencies": {
-    "@web3api/client-js": "0.0.1-prealpha.3"
+    "@web3api/client-js": "0.0.1-prealpha.5"
   },
   "devDependencies": {
-    "@web3api/cli": "0.0.1-prealpha.3",
+    "@web3api/cli": "0.0.1-prealpha.5",
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^5.1.0",
     "@types/jest": "26.0.8",
