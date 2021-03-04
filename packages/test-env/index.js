@@ -1,4 +1,5 @@
 const { exec } = require('child_process');
+const waitPort = require('wait-port');
 
 async function runCommand(command, quiet) {
 
@@ -28,10 +29,26 @@ async function runCommand(command, quiet) {
 
 async function up(quiet = false) {
   await runCommand('docker-compose up -d', quiet)
-  // Sleep for a few seconds to make sure all services are running
-  await new Promise((resolve) =>
-    setTimeout(() => resolve(), 5000)
-  )
+
+  // Wait for the development server to be online
+  await new Promise((resolve, reject) => {
+    waitPort({
+      host: 'localhost',
+      port: process.env.DEV_SERVER_PORT || 4040,
+      quiet: true
+    })
+    .then((open) => {
+      if (open) {
+        resolve();
+      }
+      else {
+        reject('The port did not open before the timeout...');
+      }
+    })
+    .catch((err) => {
+      reject(`An unknown error occured while waiting for the port: ${err}`);
+    });
+  });
 }
 
 async function down(quiet = false) {
