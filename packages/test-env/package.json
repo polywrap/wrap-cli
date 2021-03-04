@@ -13,9 +13,6 @@
     "up": "docker-compose up",
     "down": "docker-compose down"
   },
-  "dependencies": {
-    "wait-port": "0.2.9"
-  },
   "publishConfig": {
     "access": "public"
   },
