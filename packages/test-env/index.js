@@ -28,10 +28,18 @@ async function runCommand(command, quiet) {
 
 async function up(quiet = false) {
   await runCommand('docker-compose up -d', quiet)
+  // Sleep for a few seconds to make sure all services are running
+  await new Promise((resolve) =>
+    setTimeout(() => resolve(), 5000)
+  )
 }
 
 async function down(quiet = false) {
   await runCommand('docker-compose down', quiet)
+  // Sleep for a few seconds to make sure all services are torn down
+  await new Promise((resolve) =>
+    setTimeout(() => resolve(), 5000)
+  )
 }
 
 if (require.main === module) {
