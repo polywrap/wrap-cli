@@ -89,6 +89,20 @@ export async function buildAndDeployApi(
   };
 }
 
+export async function testEnvUp(): Promise<void> {
+  await runW3CLI([
+    "test-env",
+    "up"
+  ]);
+}
+
+export async function testEnvDown(): Promise<void> {
+  await runW3CLI([
+    "test-env",
+    "down"
+  ]);
+}
+
 const getRandomInt = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min)) + min;
 };

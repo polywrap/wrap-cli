@@ -20,10 +20,7 @@
     "lint": "eslint --color --ext .ts src/",
     "test": "TEST=true jest --passWithNoTests --runInBand --verbose",
     "test:watch": "TEST=true jest --watch --passWithNoTests --verbose",
-    "test:ci": "TEST=true yarn test:env:up && yarn test",
-    "posttest:ci": "yarn test:env:down",
-    "test:env:up": "w3 test-env up",
-    "test:env:down": "w3 test-env down"
+    "test:ci": "yarn test"
   },
   "dependencies": {
     "@msgpack/msgpack": "2.3.0",
