@@ -8,7 +8,7 @@ import {
 import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
 import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 import { EnsPlugin } from "@web3api/ens-plugin-js";
-import { GetPathToClientTestFiles } from "@web3api/test-cases";
+import { GetPathToTestApis } from "@web3api/test-cases";
 import axios from "axios";
 
 jest.setTimeout(50000);
@@ -72,7 +72,7 @@ describe("Web3ApiClient", () => {
 
   it("simple-storage", async () => {
     const api = await buildAndDeployApi(
-      `${GetPathToClientTestFiles()}/simple-storage`,
+      `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
       ensAddress
     );
@@ -142,7 +142,7 @@ describe("Web3ApiClient", () => {
 
   it("object-types", async () => {
     const api = await buildAndDeployApi(
-      `${GetPathToClientTestFiles()}/object-types`,
+      `${GetPathToTestApis()}/object-types`,
       ipfsProvider,
       ensAddress
     );
@@ -408,7 +408,7 @@ describe("Web3ApiClient", () => {
 
   it("bytes-type", async () => {
     const api = await buildAndDeployApi(
-      `${__dirname}/apis/bytes-type`,
+      `${GetPathToTestApis()}/bytes-type`,
       ipfsProvider,
       ensAddress
     );
@@ -443,7 +443,7 @@ describe("Web3ApiClient", () => {
 
   it("enum-types", async () => {
     const api = await buildAndDeployApi(
-      `${__dirname}/apis/enum-types`,
+      `${GetPathToTestApis()}/enum-types`,
       ipfsProvider,
       ensAddress
     );
