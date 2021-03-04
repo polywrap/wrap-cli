@@ -1,4 +1,4 @@
-import { Request, Response, Header, ResponseType } from "./types";
+import { Request, Response, Header } from "./types";
 
 import { AxiosResponse, AxiosRequestConfig } from "axios";
 
@@ -50,8 +50,7 @@ export function toAxiosRequestConfig(request: Request): AxiosRequestConfig {
   }, {});
 
   let config: AxiosRequestConfig = {
-    // @ts-ignore
-    responseType: request.responseType == ResponseType[ResponseType.BINARY] ? "arraybuffer" : "text",
+    responseType: request.responseType == "BINARY" ? "arraybuffer" : "text",
   };
 
   if (urlParams) {
