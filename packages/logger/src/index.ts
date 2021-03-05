@@ -1,6 +1,6 @@
-import { initTracer as initJaegerTracer } from "jaeger-client";
+import { initTracer as initJaegerTracer, JaegerTracer } from "jaeger-client";
 
-const initTracer = (serviceName: string) => {
+const initTracer = (serviceName: string): JaegerTracer => {
   const config = {
     serviceName: serviceName,
     sampler: {
