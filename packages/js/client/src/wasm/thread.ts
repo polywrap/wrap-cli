@@ -114,7 +114,9 @@ const imports = (memory: WebAssembly.Memory): W3Imports => ({
           const newLength = progress + numBytes;
 
           if (data.byteLength < newLength) {
-            data = new Uint8Array(data, 0, newLength);
+            const oldData = data;
+            data = new Uint8Array(newLength);
+            data.set(oldData);
           }
 
           for (let i = 1; i <= numBytes; ++i) {
