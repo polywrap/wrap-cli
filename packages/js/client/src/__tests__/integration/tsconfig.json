@@ -1,5 +1,5 @@
 {
-  "extends": "../../../../../tsconfig.json",
+  "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
     "baseUrl": "../../../node_modules",
@@ -9,7 +9,7 @@
       "@synthetixio/synpress/support",
       "cypress-wait-until",
       "@testing-library/cypress"
-    ]
+    ],
   },
   "include": ["**/*.*"]
 }

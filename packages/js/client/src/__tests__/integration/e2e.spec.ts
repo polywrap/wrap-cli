@@ -1,7 +1,5 @@
-/* eslint-disable cypress/no-unnecessary-waiting */
-/* eslint-disable ui-testing/no-hard-wait */
-describe("First", () => {
-  it("loads app", () => {
+describe("Simple Storage demo e2e ", () => {
+  it("Deploy contract, update and read storage ", () => {
     cy.visit("/");
     cy.get(".App");
 

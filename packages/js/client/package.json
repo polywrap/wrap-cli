@@ -21,11 +21,11 @@
     "test": "TEST=true jest --passWithNoTests --runInBand --verbose",
     "test:watch": "TEST=true jest --watch --passWithNoTests --verbose",
     "test:ci": "TEST=true yarn test:env:up && yarn test",
-    "pretest:integration": "cd ../../../demos/simple-storage/dapp && yarn build",
-    "test:integration": "start-server-and-test 'serve ../../../demos/simple-storage/dapp/build' http://localhost:5000 'synpress run --'",
     "posttest:ci": "yarn test:env:down",
     "test:env:up": "w3 test-env up",
     "test:env:down": "w3 test-env down",
+    "pretest:integration": "cd ../../../demos/simple-storage/dapp && yarn build",
+    "test:integration": "start-server-and-test 'serve ../../../demos/simple-storage/dapp/build' http://localhost:5000 'synpress run --configFile ./src/__tests__/integration/config.json'",
     "start:demo": "serve ../../../demos/simple-storage/dapp/build"
   },
   "dependencies": {
@@ -40,6 +40,7 @@
     "web-worker": "1.0.0"
   },
   "devDependencies": {
+    "@synthetixio/synpress": "^0.7.2",
     "@types/jest": "26.0.8",
     "@types/js-yaml": "3.11.1",
     "@types/semver": "^7.3.4",
@@ -47,10 +48,9 @@
     "axios": "0.19.2",
     "jest": "26.2.2",
     "rimraf": "3.0.2",
+    "serve": "^11.3.2",
     "spawn-command": "0.0.2-1",
     "start-server-and-test": "1.12.0",
-    "serve": "^11.3.2",
-    "@synthetixio/synpress": "^0.7.2",
     "ts-jest": "26.1.4",
     "ts-loader": "8.0.17",
     "ts-node": "8.10.2",
