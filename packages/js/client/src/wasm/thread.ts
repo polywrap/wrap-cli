@@ -80,6 +80,9 @@ const imports = (memory: WebAssembly.Memory): W3Imports => ({
       const method = readString(memory.buffer, methodPtr, methodLen);
       const input = readBytes(memory.buffer, inputPtr, inputLen);
 
+      console.log("SUBINVOKE", uri, module, method)
+      console.log("SUBINVOKE", uri, module, method)
+
       // Reset our thread's status
       Atomics.store(state.threadMutexes, state.threadId, 0);
 
@@ -91,8 +94,10 @@ const imports = (memory: WebAssembly.Memory): W3Imports => ({
         input,
       });
 
+      console.log("SUBINVOKE", "WAIT")
       // Pause the thread
       Atomics.wait(state.threadMutexes, state.threadId, 0);
+      console.log("SUBINVOKE", "RESUMED")
 
       // Get the code & reset to 0
       const status: ThreadWakeStatus = Atomics.exchange(
@@ -109,6 +114,8 @@ const imports = (memory: WebAssembly.Memory): W3Imports => ({
         let numBytes = Atomics.load(state.transfer, 0);
         let data = new Uint8Array(numBytes);
         let progress = 0;
+
+        console.log("STATUS", ThreadWakeStatus[status])
 
         while (true) {
           const newLength = progress + numBytes;

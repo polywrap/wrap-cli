@@ -101,12 +101,15 @@ export class WasmWeb3Api extends Api {
     const awaitCompletion = new Promise(
       (resolve: (value?: unknown) => void) => {
         let transferPending = false;
-        const transferData = async (data: ArrayBuffer, status: number) => {
+        const transferData = async (data: ArrayBuffer, status: ThreadWakeStatus) => {
           let progress = 0;
           const totalBytes = data.byteLength;
           const dataView = new Uint8Array(data);
 
+          console.log("transfering data", totalBytes, ThreadWakeStatus[status])
+
           while (progress < totalBytes) {
+            console.log("while", progress, totalBytes, ThreadWakeStatus[status])
             // Reset the transfer buffer
             transfer.fill(0);
 
@@ -168,9 +171,11 @@ export class WasmWeb3Api extends Api {
               }
               // TODO: replace with proper logging
               case "LogInfo": {
+                console.log("LogInfo:", action.message);
                 break;
               }
               case "SubInvoke": {
+                console.log("CLIENT-SUBINVOKE", action.uri, action.module, action.method)
                 const { data, error } = await client.invoke<
                   unknown | ArrayBuffer
                 >({
@@ -179,6 +184,8 @@ export class WasmWeb3Api extends Api {
                   method: action.method,
                   input: action.input,
                 });
+
+                console.log("CLIENT-SUBINVOKE-Res", data, error)
 
                 if (!error) {
                   let msgpack: ArrayBuffer;
@@ -206,6 +213,7 @@ export class WasmWeb3Api extends Api {
                 break;
               }
               case "TransferComplete": {
+                console.log("TRANSFER COMPLETE")
                 transferPending = false;
                 break;
               }
