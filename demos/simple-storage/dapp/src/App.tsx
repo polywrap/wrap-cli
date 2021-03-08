@@ -25,6 +25,7 @@ function App() {
   const getClient = async () => {
     console.log("we are getting client");
     console.log("this is the client ", client);
+    console.log((window as any).ethereum);
     if (client) {
       console.log(client);
       return client;
