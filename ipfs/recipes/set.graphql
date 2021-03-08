@@ -1,0 +1,6 @@
+mutation SetData($cid: String!, $ipfsUrl: String!) {
+  catFile(
+    ipfsUrl: $ipfsUrl
+    cid: $cid
+  )
+}

@@ -1,0 +1,5 @@
+#import { Mutation } into Http from "w3://ens/http.web3api.eth"
+
+type Mutation {
+  catFile(ipfsUrl: String!, cid: String!): Bytes!
+}
