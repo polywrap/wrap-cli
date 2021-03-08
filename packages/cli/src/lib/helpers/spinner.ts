@@ -16,7 +16,10 @@ export const withSpinner = async (
   warningText: string,
   execute: (spinner: Ora) => Promise<unknown>
 ): Promise<unknown> => {
-  const spinner = gluegun.print.spin(text);
+  const spinner = gluegun.print.spin({
+    text,
+    stream: process.stdout,
+  });
   try {
     const result = await execute(spinner);
     if (result && typeof result === "object") {

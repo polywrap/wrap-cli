@@ -36,6 +36,11 @@ export class Compiler {
     }
   }
 
+  public clearCache(): void {
+    this._config.project.clearCache();
+    this._config.schemaComposer.clearCache();
+  }
+
   private async _compileWeb3Api(verbose?: boolean) {
     const { outputDir, project, schemaComposer } = this._config;
 
@@ -44,7 +49,6 @@ export class Compiler {
       this._cleanDir(this._config.outputDir);
 
       const manifest = await project.getManifest();
-
       // Get the fully composed schema
       const composed = await schemaComposer.getComposedSchemas();
 
