@@ -11,9 +11,6 @@ export const query = (http: HttpPlugin): PluginModule => ({
 
 export const mutation = (http: HttpPlugin): PluginModule => ({
   post: async (input: { url: string; request: Request }) => {
-    console.log("http-plug", input.url, input.request)
-    const res = await http.post(input.url, input.request);
-    console.log("result", res)
-    return res
+    return await http.post(input.url, input.request);
   },
 });

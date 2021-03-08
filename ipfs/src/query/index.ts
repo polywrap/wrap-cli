@@ -1,14 +1,14 @@
-import { Http_Mutation } from "./w3/imported";
-import { Input_catFile } from "./w3";
+import { Http_Query, Http_ResponseType } from "./w3/imported";
+import { Input_catToString } from "./w3";
 
-export function catFile(input: Input_catFile): ArrayBuffer {
+export function catToString(input: Input_catToString): String {
   const url = input.ipfsUrl + "/api/v0/cat?arg=" + input.cid;
-  const catResponse = Http_Mutation.post({
+  const catResponse = Http_Query.get({
     url: url,
     request: {
       headers: [],
       urlParams: [{key: "arg", value: input.cid}],
-      responseType: "BINARY",
+      responseType: Http_ResponseType.TEXT,
       body: "",
     }
   });
@@ -17,5 +17,5 @@ export function catFile(input: Input_catFile): ArrayBuffer {
     throw new Error(`Failed to cat file: ${catResponse.status} ${catResponse.statusText}`);
   }
 
-  return String.UTF8.encode(catResponse.body);
+  return catResponse.body;
 }
