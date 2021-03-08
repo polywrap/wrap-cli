@@ -98,6 +98,10 @@ export class SchemaComposer {
     return this._composerOutput;
   }
 
+  public clearCache(): void {
+    this._composerOutput = undefined;
+  }
+
   private async _fetchExternalSchema(
     uri: string,
     manifest: Manifest

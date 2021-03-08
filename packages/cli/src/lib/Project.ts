@@ -25,11 +25,15 @@ export class Project {
     return !!this._config.quiet;
   }
 
-  async getManifest(): Promise<Manifest> {
+  public async getManifest(): Promise<Manifest> {
     if (!this._manifest) {
       this._manifest = await loadManifest(this.manifestPath, this.quiet);
     }
 
     return Promise.resolve(this._manifest);
+  }
+
+  public clearCache(): void {
+    this._manifest = undefined;
   }
 }
