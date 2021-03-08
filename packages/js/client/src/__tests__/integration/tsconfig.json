@@ -2,7 +2,7 @@
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
-    "baseUrl": "../../../node_modules",
+    "baseUrl": "../../../../../../node_modules",
     "types": [
       "cypress",
       "@types/puppeteer-core",
