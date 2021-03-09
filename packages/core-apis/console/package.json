@@ -4,16 +4,16 @@
   "private": true,
   "version": "0.0.1-prealpha.5",
   "scripts": {
-    "build": "npx w3 build",
-    "test:env:up": "npx w3 test-env up",
-    "test:env:down": "npx w3 test-env down"
+    "build": "w3 build",
+    "deploy": "w3 build --ipfs http://127.0.0.1:5001 --test-ens console.eth",
+    "test": "w3 query ./recipes/e2e.json",
+    "test:ci": "yarn test:env:up && yarn deploy && yarn test && yarn test:env:down",
+    "test:env:up": "w3 test-env up",
+    "test:env:down": "w3 test-env down"
   },
   "devDependencies": {
     "@web3api/cli": "0.0.1-prealpha.5",
     "@web3api/wasm-as": "0.0.1-prealpha.5",
     "js-yaml": "3.14.0"
-  },
-  "dependencies": {
-    "@web3api/logger-plugin-js": "^0.0.1-prealpha.5"
   }
 }
