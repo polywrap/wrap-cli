@@ -11,6 +11,7 @@ import { Uri, UriRedirect, Web3ApiClient } from "@web3api/client-js";
 import { EnsPlugin } from "@web3api/ens-plugin-js";
 import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
 import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
+import { LoggerPlugin } from "@web3api/logger-plugin-js";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const HELP = `
@@ -85,6 +86,13 @@ export default {
         to: {
           factory: () => new EnsPlugin({ address: ensAddress }),
           manifest: EnsPlugin.manifest(),
+        },
+      },
+      {
+        from: new Uri("w3://logger/logger"),
+        to: {
+          factory: () => new LoggerPlugin(),
+          manifest: LoggerPlugin.manifest(),
         },
       },
     ];

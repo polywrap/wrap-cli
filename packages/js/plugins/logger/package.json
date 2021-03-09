@@ -10,7 +10,7 @@
     "build",
     "schema.graphql"
   ],
-  "version": "0.0.1-prealpha.5",
+  "version": "0.0.1-prealpha.4",
   "main": "build/index.js",
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.json",
@@ -20,7 +20,7 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@web3api/core-js": "0.0.1-prealpha.5"
+    "@web3api/core-js": "0.0.1-prealpha.4"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",

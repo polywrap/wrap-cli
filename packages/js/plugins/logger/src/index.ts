@@ -3,11 +3,7 @@ import { manifest } from "./manifest";
 
 import { Plugin, PluginManifest, PluginModules } from "@web3api/core-js";
 
-export interface SamplePluginConfig {
-  defaultValue: string;
-}
-
-export class ConsolePlugin extends Plugin {
+export class LoggerPlugin extends Plugin {
   constructor() {
     super();
   }
