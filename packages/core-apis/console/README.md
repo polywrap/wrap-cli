@@ -15,7 +15,7 @@ Calls log on logger plugin at uri `w3://w3/logger`. Default logger logs to conso
 
 In schema:
 ```graph
-#import { Query } into Console  from "w3://w3/logger"
+#import { Query } into Console  from "w3://ens/console.eth"
 
 type Query {
   customMethod(): Boolean!
