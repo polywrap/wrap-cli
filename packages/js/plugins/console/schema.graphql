@@ -1,0 +1,15 @@
+enum LogLevel {
+  ALL,
+  DEBUG,
+  INFO,
+  WARN,
+  ERROR,
+  FATAL
+}
+
+type Query {
+  log(
+    level: LogLevel!
+    message: String!
+  ): Boolean!
+}
