@@ -22,7 +22,7 @@ describe("log method", () => {
       query: `
         query {
           log(
-            logLevel: ${LogLevel.DEBUG}
+            level: ${LogLevel.DEBUG}
             message: "Test message"
           )
         }
