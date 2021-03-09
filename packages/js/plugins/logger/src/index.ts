@@ -18,7 +18,9 @@ export class LoggerPlugin extends Plugin {
     };
   }
 
-  public async log(level: string, message: string): Promise<void> {
+  public async log(level: string, message: string): Promise<boolean> {
     console.info(message);
+
+    return true;
   }
 }
