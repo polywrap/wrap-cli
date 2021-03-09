@@ -1,7 +1,6 @@
 {
   "name": "@web3api/logger-plugin-js",
   "description": "Web3API Javascript Logger Plugin",
-  "private": true,
   "license": "MIT",
   "repository": {
     "type": "git",
