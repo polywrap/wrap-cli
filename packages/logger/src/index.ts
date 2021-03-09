@@ -4,8 +4,8 @@ const initTracer = (serviceName: string): JaegerTracer => {
   const config = {
     serviceName: serviceName,
     sampler: {
-      type: "const",
-      param: 1,
+      type: "probabilistic",
+      param: 0.001,
     },
     reporter: {
       logSpans: true,
@@ -14,10 +14,10 @@ const initTracer = (serviceName: string): JaegerTracer => {
   const options = {
     logger: {
       info: (msg: string) => {
-        console.log("INFO ", msg);
+        console.log("Logger: INFO ", msg);
       },
       error: (msg: string) => {
-        console.log("ERROR", msg);
+        console.log("Logger: ERROR ", msg);
       },
     },
   };
