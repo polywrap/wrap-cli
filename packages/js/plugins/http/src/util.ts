@@ -41,7 +41,6 @@ export function fromAxiosResponse(
  * @param request
  */
 export function toAxiosRequestConfig(request: Request): AxiosRequestConfig {
-  console.log(request)
   const urlParams = request.urlParams?.reduce((params, p) => {
     return { ...params, [p.key]: p.value };
   }, {});
@@ -51,8 +50,7 @@ export function toAxiosRequestConfig(request: Request): AxiosRequestConfig {
   }, {});
 
   let config: AxiosRequestConfig = {
-    // @ts-ignore
-    responseType: request.responseType == ResponseType[ResponseType.BINARY] ? "arraybuffer" : "text",
+    responseType: request.responseType == ResponseType.BINARY ? "arraybuffer" : "text",
   };
 
   if (urlParams) {
