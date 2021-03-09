@@ -1,7 +1,16 @@
 {
-  "name": "@web3api/logger",
-  "description": "Web3API Plugin for logging to console",
+  "name": "@web3api/logger-plugin-js",
+  "description": "Web3API Javascript Logger Plugin",
   "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/web3-api/monorepo.git"
+  },
+  "files": [
+    "build",
+    "schema.graphql"
+  ],
   "version": "0.0.1-prealpha.5",
   "main": "build/index.js",
   "scripts": {
@@ -21,5 +30,9 @@
     "ts-jest": "26.1.4",
     "ts-node": "8.10.2",
     "typescript": "3.9.7"
+  },
+  "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
+  "publishConfig": {
+    "access": "public"
   }
 }
