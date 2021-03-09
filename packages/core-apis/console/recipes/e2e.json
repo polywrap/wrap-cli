@@ -4,7 +4,7 @@
     "constants": "./constants.json"
   },
   {
-    "query": "./info.graphql",
+    "query": "./log.graphql",
     "variables": { "message": "$message" }
   }
 ]

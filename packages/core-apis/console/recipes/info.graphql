@@ -1,5 +1,0 @@
-query Log($message: String!) {
-  info(
-    message: $message
-  )
-}
