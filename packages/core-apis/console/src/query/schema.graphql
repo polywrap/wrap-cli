@@ -1,0 +1,7 @@
+#import { Query, LogLevel } into Logger from "w3://logger/logger"
+
+type Query {
+  info(
+    message: String!
+  ): Boolean!
+}
