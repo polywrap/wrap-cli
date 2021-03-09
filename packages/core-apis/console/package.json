@@ -1,6 +1,6 @@
 {
   "name": "@web3api/console",
-  "description": "Web3API Assemblyscript Template",
+  "description": "Web3API for logging",
   "private": true,
   "version": "0.0.1-prealpha.5",
   "scripts": {
