@@ -1,5 +1,19 @@
 #import { Query, ResponseType } into Http from "w3://ens/http.web3api.eth"
 
 type Query {
+  
   catToString(ipfsUrl: String!, cid: String!): String!
+  catFile(ipfsUrl: String!, cid: String!): Bytes!
+
+  tryResolveUri(ipfsUrl: String!, authority: String!, path: String!): String!
+  getFile(ipfsUrl: String!, path: String!): Bytes!
+}
+
+type Mutation {
+  addFile(data: Bytes!): AddResult!
+}
+
+type AddResult {
+  path: String!
+  cid: String!
 }

@@ -6,5 +6,9 @@
   {
     "query": "./catToString.graphql",
     "variables": { "cid": "$SampleCid", "ipfsUrl": "$IpfsUrl" }
+  },
+  {
+    "query": "./catFile.graphql",
+    "variables": { "cid": "$SampleCid", "ipfsUrl": "$IpfsUrl" }
   }
 ]

@@ -1,5 +1,13 @@
 import { Http_Query, Http_ResponseType } from "./w3/imported";
-import { Input_catToString } from "./w3";
+import { 
+  Input_catToString,
+  Input_catFile,
+  Input_tryResolveUri,
+  Input_getFile,
+  Input_addFile,
+  AddResult
+} from "./w3";
+import {Buffer} from "buffer"
 
 export function catToString(input: Input_catToString): String {
   const url = input.ipfsUrl + "/api/v0/cat?arg=" + input.cid;
@@ -18,4 +26,31 @@ export function catToString(input: Input_catToString): String {
   }
 
   return catResponse.body;
+}
+
+export function catFile(input: Input_catFile): ArrayBuffer {
+  const url = input.ipfsUrl + "/api/v0/cat?arg=" + input.cid;
+  const catResponse = Http_Query.get({
+    url: url,
+    request: {
+      headers: [],
+      urlParams: [{key: "arg", value: input.cid}],
+      responseType: Http_ResponseType.BINARY,
+      body: "",
+    }
+  });
+  const b = Buffer.from(catResponse.body, "base64")
+  return new Uint32Array(b, b.byteLength, b.byteLength / Uint32Array.BYTES_PER_ELEMENT);
+}
+
+export function tryResolveUri(input: Input_tryResolveUri): string {
+  return "";
+}
+
+export function getFile(input: Input_getFile): ArrayBuffer {
+  return new ArrayBuffer(3);
+}
+
+export function addFile(input: Input_addFile): AddResult {
+  return {cid: "", path: ""};
 }

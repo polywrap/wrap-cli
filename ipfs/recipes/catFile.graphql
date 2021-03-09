@@ -1,4 +1,4 @@
-mutation SetData($cid: String!, $ipfsUrl: String!) {
+query {
   catFile(
     ipfsUrl: $ipfsUrl
     cid: $cid
