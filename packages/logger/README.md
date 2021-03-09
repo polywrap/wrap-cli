@@ -35,10 +35,7 @@ span.log({
   event: "string-format",
   value: helloStr,
 });
-console.log(helloStr);
 
 span.log({ event: "print-string" });
 span.finish();
-
-tracer.close(() => process.exit());
 ```

@@ -19,6 +19,7 @@ import {
   Manifest,
   sanitizeUriRedirects,
 } from "@web3api/core-js";
+import initTracer, { Tracer, Span } from "@web3api/logger";
 
 export interface ClientConfig<TUri = string> {
   redirects: UriRedirect<TUri>[];
@@ -32,20 +33,24 @@ export class Web3ApiClient implements Client {
   private _apiCache: ApiCache = new Map<string, Api>();
   private _config: ClientConfig<Uri>;
 
-  constructor(config?: ClientConfig) {
-    if (config) {
-      this._config = {
-        ...config,
-        redirects: sanitizeUriRedirects(config.redirects),
-      };
-    } else {
-      this._config = {
-        redirects: [],
-      };
-    }
+  private _logger: Tracer;
+  private _span: Span;
+
+  constructor(config: ClientConfig, private _showLogging: boolean = false) {
+    this._config = {
+      ...config,
+      redirects: sanitizeUriRedirects(config.redirects),
+    };
 
     // Add all default redirects (IPFS, ETH, ENS)
     this._config.redirects.push(...getDefaultRedirects());
+
+    if (this._showLogging) {
+      this._logger = initTracer("web3api-client");
+      this._span = this._logger.startSpan("Web3ApiClient");
+
+      this._span.log({ event: "created" });
+    }
   }
 
   public redirects(): readonly UriRedirect<Uri>[] {
@@ -156,5 +161,13 @@ export class Web3ApiClient implements Client {
     }
 
     return api;
+  }
+
+  public enableLogging(): void {
+    this._quiet = false;
+  }
+
+  public disableLogging(): void {
+    this._quiet = true;
   }
 }

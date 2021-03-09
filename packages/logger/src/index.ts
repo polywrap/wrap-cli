@@ -1,6 +1,7 @@
-import { initTracer as initJaegerTracer, JaegerTracer } from "jaeger-client";
+import { initTracer as initJaegerTracer } from "jaeger-client";
+import * as opentracing from "opentracing";
 
-const initTracer = (serviceName: string): JaegerTracer => {
+const initTracer = (serviceName: string): opentracing.Tracer => {
   const config = {
     serviceName: serviceName,
     sampler: {
@@ -14,10 +15,10 @@ const initTracer = (serviceName: string): JaegerTracer => {
   const options = {
     logger: {
       info: (msg: string) => {
-        console.log("Logger: INFO ", msg);
+        console.log("INFO ", msg);
       },
       error: (msg: string) => {
-        console.log("Logger: ERROR ", msg);
+        console.log("ERROR ", msg);
       },
     },
   };
@@ -25,3 +26,4 @@ const initTracer = (serviceName: string): JaegerTracer => {
 };
 
 export default initTracer;
+export * from "opentracing";

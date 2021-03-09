@@ -1,7 +1,7 @@
 {
   "name": "@web3api/logger",
   "description": "Web3API Core",
-  "version": "0.0.1-prealpha.4",
+  "version": "0.0.1-prealpha.6",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -32,6 +32,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@types/jaeger-client": "^3.15.4"
+    "@types/jaeger-client": "^3.15.4",
+    "opentracing": "^0.14.5"
   }
 }
