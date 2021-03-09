@@ -1,22 +1,55 @@
-# How To Run
+# Console Web3API
 
-## 1. Setup Test Env
+Calls log on logger plugin at uri `w3://w3/logger`. Default logger logs to console, but can be overridden with redirect to custom logger web3api implementation.
+
+### Log levels
+
+- DEBUG
+- INFO
+- WARN
+- ERROR
+
+## Example
+
+### Usage
+
+In schema:
+```graph
+#import { Query } into Console  from "w3://w3/logger"
+
+type Query {
+  customMethod(): Boolean!
+}
+```
+
+In code:
+
+```ts
+import { Console_Query } from "./w3";
+
+function customMethod(): bool {
+  Console_Query.info("some useful info about my API");
+
+  return true;
+}
+```
+### How To Run
+
+### 1. Setup Test Env
 
 ```
-npx w3 test-env up
+yarn run test:env:up
 ```
 
-## 3. Build & Deploy The Web3API
+### 2. Build & Deploy The Web3API
 
 ```
-npx w3 build \
---ipfs http://localhost:5001 \
---graph simplestorage,http://localhost:8020 \
---test-ens simplestorage.eth
+yarn run build
+yarn run deploy
 ```
 
-## 4. Test The Web3API Using A Query Recipe
+### 3. Test The Web3API Using A Query Recipe
 
 ```
-npx w3 query ./recipes/e2e.json --test-ens
+npx w3 query ./recipes/e2e.json
 ```

@@ -1,10 +1,26 @@
-### Sample Plugin
+# Logger Plugin
 
-This is a sample plugin with sample query/mutation.
-You can add new functionalities to it by following steps.
+Logger plugin calls javascript console.log with target log level and message.
 
-1. Add queries/mutations the `schema.graphql` file
-2. Add resolvers for that to the `resolvers.ts` file.
-   Use the Plugin class in the `index.ts` file to add helpers/methods to handle queries/mutations.
-3. Update the `manifest.ts` file.
-4. Run `yarn build`
+## Log levels
+
+- DEBUG
+- INFO
+- WARN
+- ERROR
+
+## Example
+
+```ts
+const response = await web3ApiClient.query<{ get: boolean }>({
+uri: new Uri("w3://w3/logger"),
+  query: `
+    query {
+      log(
+        level: ${LogLevel.INFO}
+        message: "Test message"
+      )
+    }
+  `
+})
+```
