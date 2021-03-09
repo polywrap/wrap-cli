@@ -1,6 +1,6 @@
 {
-  "name": "templates-plugin-typescript",
-  "description": "Web3API Plugin Typescript Template",
+  "name": "@web3api/logger",
+  "description": "Web3API Plugin for logging to console",
   "private": true,
   "version": "0.0.1-prealpha.5",
   "main": "build/index.js",
