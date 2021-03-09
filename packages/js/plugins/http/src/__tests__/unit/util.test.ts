@@ -1,4 +1,5 @@
 import { fromAxiosResponse, toAxiosRequestConfig } from "../../util";
+import { ResponseType } from "../../types";
 
 describe("converting axios response", () => {
 
@@ -46,7 +47,7 @@ describe("creating axios config", () => {
         { key: "Accept", value: "application-json" },
         { key: "X-Header", value: "test-value" },
       ],
-      responseType: "TEXT",
+      responseType: ResponseType.TEXT,
       body: "body-content",
     });
 
@@ -61,7 +62,7 @@ describe("creating axios config", () => {
   test("with url params", () => {
     const config = toAxiosRequestConfig({
       urlParams: [{ key: "tag", value: "data" }],
-      responseType: "BINARY",
+      responseType: ResponseType.BINARY,
       body: "body-content",
     });
 
