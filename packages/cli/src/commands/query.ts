@@ -89,7 +89,7 @@ export default {
         },
       },
       {
-        from: new Uri("w3://logger/logger"),
+        from: new Uri("w3://w3/logger"),
         to: {
           factory: () => new LoggerPlugin(),
           manifest: LoggerPlugin.manifest(),

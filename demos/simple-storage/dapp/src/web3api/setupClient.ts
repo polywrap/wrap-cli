@@ -2,6 +2,7 @@ import { Uri, UriRedirect, Web3ApiClient } from "@web3api/client-js";
 import { EnsPlugin } from "@web3api/ens-plugin-js";
 import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
 import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
+import { LoggerPlugin } from "@web3api/logger-plugin-js";
 
 export async function setupWeb3ApiClient(): Promise<Web3ApiClient> {
   const ethereum = (window as any).ethereum;
@@ -30,7 +31,14 @@ export async function setupWeb3ApiClient(): Promise<Web3ApiClient> {
         factory: () => new EnsPlugin({ }),
         manifest: EnsPlugin.manifest()
       }
-    }
+    },
+    {
+      from: new Uri("w3://w3/logger"),
+      to: {
+        factory: () => new LoggerPlugin(),
+        manifest: LoggerPlugin.manifest(),
+      },
+    },
   ];
 
   return new Web3ApiClient({ redirects });

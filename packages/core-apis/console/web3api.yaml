@@ -8,5 +8,5 @@ query:
     language: wasm/assemblyscript
     file: ./src/query/index.ts
 import_redirects:
-  - uri: w3://logger/logger
+  - uri: w3://w3/logger
     schema: ../../js/plugins/logger/schema.graphql
