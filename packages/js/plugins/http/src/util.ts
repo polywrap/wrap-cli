@@ -50,7 +50,8 @@ export function toAxiosRequestConfig(request: Request): AxiosRequestConfig {
   }, {});
 
   let config: AxiosRequestConfig = {
-    responseType: request.responseType == ResponseType.BINARY ? "arraybuffer" : "text",
+    responseType:
+      request.responseType == ResponseType.BINARY ? "arraybuffer" : "text",
   };
 
   if (urlParams) {

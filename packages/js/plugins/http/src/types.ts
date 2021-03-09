@@ -12,8 +12,8 @@ export class UrlParam {
 }
 
 export enum ResponseType {
-  TEXT, 
-  BINARY
+  TEXT,
+  BINARY,
 }
 
 export class Request {
