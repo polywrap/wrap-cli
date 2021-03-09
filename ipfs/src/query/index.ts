@@ -7,7 +7,6 @@ import {
   Input_addFile,
   AddResult
 } from "./w3";
-import {Buffer} from "buffer"
 
 export function catToString(input: Input_catToString): String {
   const url = input.ipfsUrl + "/api/v0/cat?arg=" + input.cid;
@@ -39,8 +38,10 @@ export function catFile(input: Input_catFile): ArrayBuffer {
       body: "",
     }
   });
-  const b = Buffer.from(catResponse.body, "base64")
-  return new Uint32Array(b, b.byteLength, b.byteLength / Uint32Array.BYTES_PER_ELEMENT);
+  if(catResponse == null) {
+    throw new Error("")
+  }
+  return String.UTF8.encode(catResponse.body);
 }
 
 export function tryResolveUri(input: Input_tryResolveUri): string {
