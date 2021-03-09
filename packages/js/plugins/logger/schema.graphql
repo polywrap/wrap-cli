@@ -1,10 +1,8 @@
 enum LogLevel {
-  ALL,
   DEBUG,
   INFO,
   WARN,
   ERROR,
-  FATAL
 }
 
 type Query {
