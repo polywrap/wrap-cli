@@ -80,11 +80,11 @@ export const runW3CLI = async (
       reject(error);
     });
 
-    child.stdout.on("data", (data: string) => {
+    child.stdout?.on("data", (data: string) => {
       stdout += data.toString();
     });
 
-    child.stderr.on("data", (data: string) => {
+    child.stderr?.on("data", (data: string) => {
       stderr += data.toString();
     });
 
