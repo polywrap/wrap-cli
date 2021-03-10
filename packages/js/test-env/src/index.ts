@@ -4,7 +4,7 @@ import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 import { EnsPlugin } from "@web3api/ens-plugin-js";
 
 import path from "path";
-import { spawn } from "child_process";
+import spawn from "spawn-command";
 import axios from "axios";
 
 interface TestEnvironment {
@@ -58,63 +58,46 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
   return { ipfs, ethereum, redirects, data };
 };
 
-export const run = (
-  command: string,
-  args: string[],
-  projectRoot: string
+export const runW3CLI = async (
+  args: string[]
 ): Promise<{
-  exitCode: number | null;
+  exitCode: number;
   stdout: string;
   stderr: string;
 }> => {
-  return new Promise((resolve, reject) => {
-    const child = spawn(command, args, { cwd: projectRoot });
+  const [exitCode, stdout, stderr] = await new Promise((resolve, reject) => {
+    // Make sure to set an absolute working directory
+    let cwd = process.cwd();
+    cwd = cwd[0] !== "/" ? path.resolve(__dirname, cwd) : cwd;
+
+    const command = `npx w3 ${args.join(" ")}`;
+    const child = spawn(command, { cwd });
 
     let stdout = "";
     let stderr = "";
 
-    if (child.stdout) {
-      child.stdout.setEncoding("utf8");
-      child.stdout.on("data", (data: string) => {
-        stdout += data;
-      });
-    }
+    child.on("error", (error: Error) => {
+      reject(error);
+    });
 
-    if (child.stderr) {
-      child.stderr.setEncoding("utf8");
-      child.stderr.on("data", (data: string) => {
-        stderr += data;
-      });
-    }
+    child.stdout?.on("data", (data: string) => {
+      stdout += data.toString();
+    });
 
-    child
-      .on("close", (exitCode: number | null) => {
-        resolve({
-          exitCode,
-          stderr,
-          stdout
-        });
-      })
-      .on("error", (err: Error) => {
-        reject(err);
-      });
+    child.stderr?.on("data", (data: string) => {
+      stderr += data.toString();
+    });
+
+    child.on("exit", (exitCode: number) => {
+      resolve([exitCode, stdout, stderr]);
+    });
   });
-};
 
-export const runW3CLI = async (
-  args: string[]
-): Promise<{
-  exitCode: number | null;
-  stdout: string;
-  stderr: string;
-}> => {
-  // Make sure to set an absolute working directory
-  let cwd = process.cwd();
-  cwd = cwd[0] !== "/" ? path.resolve(__dirname, cwd) : cwd;
-
-  const command = path.resolve(__dirname, "../../node_modules/.bin/w3");
-
-  return await run(command, args, cwd);
+  return {
+    exitCode,
+    stdout,
+    stderr,
+  };
 };
 
 export async function buildAndDeployApi(
@@ -161,20 +144,6 @@ export async function buildAndDeployApi(
     ensDomain: apiEns,
     ipfsCid: apiCid,
   };
-}
-
-export async function testEnvUp(): Promise<void> {
-  await runW3CLI([
-    "test-env",
-    "up"
-  ]);
-}
-
-export async function testEnvDown(): Promise<void> {
-  await runW3CLI([
-    "test-env",
-    "down"
-  ]);
 }
 
 const getRandomInt = (min: number, max: number) => {
