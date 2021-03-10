@@ -46,6 +46,14 @@ export function parseQuery(
         );
       }
 
+      let alias: string | undefined = undefined;
+      if (selection.alias) {
+        alias = selection.alias.value;
+        if (invokeOptions.find((io) => io.alias === alias)) {
+          throw Error(`Duplicate alias '${alias}' found.`);
+        }
+      }
+
       const method = selection.name.value;
 
       // Get all input arguments
@@ -79,9 +87,12 @@ export function parseQuery(
         method,
         input,
         resultFilter,
+        alias,
       });
     }
   }
+
+  checkDuplicateMethodInvocations(invokeOptions);
 
   return invokeOptions;
 }
@@ -161,4 +172,28 @@ function extractSelections(node: SelectionSetNode): Record<string, unknown> {
   }
 
   return result;
+}
+
+function checkDuplicateMethodInvocations(
+  invokeOptions: InvokeApiOptions[]
+): void {
+  const uniqueMethodInvocations: { method: string; alias?: string }[] = [];
+
+  for (const invokeOption of invokeOptions) {
+    if (
+      uniqueMethodInvocations.find(
+        (mi) =>
+          invokeOption.method === mi.method && invokeOption.alias === mi.alias
+      )
+    ) {
+      throw Error(
+        `Duplicate method '${invokeOption.method}' invocation found. Use different graphql aliases if this was intetional`
+      );
+    } else {
+      uniqueMethodInvocations.push({
+        method: invokeOption.method,
+        alias: invokeOption.alias,
+      });
+    }
+  }
 }
