@@ -251,7 +251,7 @@ describe("e2e tests for HttpPlugin", () => {
             post(
               url: "http://www.example.com/api"
               request: {
-                responseType: 1
+                responseType: BINARY
                 body: "{data: 'test-request'}"
               }
             )
@@ -293,7 +293,7 @@ describe("e2e tests for HttpPlugin", () => {
             post(
               url: "http://www.example.com/api"
               request: {
-                responseType: 0
+                responseType: TEXT
                 body: "{data: 'test-request'}"
                 urlParams: [{key: "query", value: "foo"}]
                 headers: [{key: "X-Request-Header", value: "req-foo"}]
