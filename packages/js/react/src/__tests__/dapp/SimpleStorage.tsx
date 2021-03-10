@@ -2,9 +2,6 @@ import { useWeb3ApiQuery, Web3ApiProvider } from "@web3api/react";
 import { Uri, UriRedirect } from "@web3api/client-js";
 import React from "react";
 
-// Needed for bundling the @web3api/client-js web worker
-process.env.WORKER_PREFIX = "workerize-loader!";
-
 const SimpleStorage = ({ uri }: { uri: Uri }) => {
   const { execute: deployContract, data: deployData } = useWeb3ApiQuery({
     uri,

@@ -8,9 +8,6 @@ import { EnsPlugin } from "@web3api/ens-plugin-js";
 import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
 import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 
-// Needed for bundling the @web3api/client-js web worker
-process.env.WORKER_PREFIX = "workerize-loader!";
-
 const SimpleStorageProvider = createWeb3ApiRoot("simpleStorage");
 // const OneInchProvider = createWeb3ApiRoot("ta");
 
