@@ -39,7 +39,7 @@ describe("e2e tests for HttpPlugin", () => {
             get(
               url: "http://www.example.com/api"
               request: {
-                responseType: 0
+                responseType: TEXT
               }
             )
           }
@@ -80,7 +80,7 @@ describe("e2e tests for HttpPlugin", () => {
             get(
               url: "http://www.example.com/api"
               request: {
-                responseType: 1
+                responseType: BINARY
               }
             )
           }
@@ -121,7 +121,7 @@ describe("e2e tests for HttpPlugin", () => {
             get(
               url: "http://www.example.com/api"
               request: {
-                responseType: 0
+                responseType: TEXT
                 urlParams: [{key: "query", value: "foo"}]
                 headers: [{key: "X-Request-Header", value: "req-foo"}]
               }
@@ -168,7 +168,7 @@ describe("e2e tests for HttpPlugin", () => {
             get(
               url: "http://www.example.com/api"
               request: {
-                responseType: 0
+                responseType: TEXT
               }
             )
           }
@@ -209,7 +209,7 @@ describe("e2e tests for HttpPlugin", () => {
             post(
               url: "http://www.example.com/api"
               request: {
-                responseType: 0
+                responseType: TEXT
                 body: "{data: 'test-request'}"
               }
             )
@@ -341,7 +341,7 @@ describe("e2e tests for HttpPlugin", () => {
             post(
               url: "http://www.example.com/api"
               request: {
-                responseType: 0
+                responseType: TEXT
               }
             )
           }
