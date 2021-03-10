@@ -124,11 +124,19 @@ describe("Web3ApiClient", () => {
 
     const get = await client.query<{
       getData: number;
+      secondGetData: number;
+      thirdGetData: number;
     }>({
       uri: ensUri,
       query: `
         query {
           getData(
+            address: "${address}"
+          )
+          secondGetData: getData(
+            address: "${address}"
+          )
+          thirdGetDate: getData(
             address: "${address}"
           )
         }
@@ -138,6 +146,8 @@ describe("Web3ApiClient", () => {
     expect(get.errors).toBeFalsy();
     expect(get.data).toBeTruthy();
     expect(get.data?.getData).toBe(55);
+    expect(get.data?.secondGetData).toBe(55);
+    expect(get.data?.thirdGetData).toBe(55);
   });
 
   it("object-types", async () => {

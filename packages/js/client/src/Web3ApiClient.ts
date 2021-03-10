@@ -63,6 +63,7 @@ export class Web3ApiClient implements Client {
       const parallelInvocations: Promise<{
         method: string;
         result: InvokeApiResult<unknown>;
+        alias: string | undefined;
       }>[] = [];
 
       for (const invocation of invokeOptions) {
@@ -72,6 +73,7 @@ export class Web3ApiClient implements Client {
             decode: true,
           }).then((result) => ({
             method: invocation.method,
+            alias: invocation.alias,
             result,
           }))
         );
@@ -81,31 +83,22 @@ export class Web3ApiClient implements Client {
       const invocations = await Promise.all(parallelInvocations);
 
       // Aggregate all invocation results
-      let methods: string[] = [];
+      const methods: string[] = [];
       const resultDatas: unknown[] = [];
       const errors: Error[] = [];
 
       for (const invocation of invocations) {
-        methods.push(invocation.method);
+        if (invocation.alias) {
+          methods.push(invocation.alias);
+        } else {
+          methods.push(invocation.method);
+        }
+
         resultDatas.push(invocation.result.data);
         if (invocation.result.error) {
           errors.push(invocation.result.error);
         }
       }
-
-      // Helper for appending "_#" to repeated names
-      const makeRepeatedUnique = (names: string[]): string[] => {
-        const counts: { [key: string]: number } = {};
-
-        return names.reduce((acc, name) => {
-          const count = (counts[name] = (counts[name] || 0) + 1);
-          const uniq = count > 1 ? `${name}_${count - 1}` : name;
-          acc.push(uniq);
-          return acc;
-        }, [] as string[]);
-      };
-
-      methods = makeRepeatedUnique(methods);
 
       // Build are data map, where each method maps to its data
       const data: Record<string, unknown> = {};
