@@ -39,6 +39,8 @@ export class HttpPlugin extends Plugin {
   }
 
   public async post(url: string, request: Request): Promise<Response> {
+    const axiosConfig = toAxiosRequestConfig(request)
+    
     let data: any;
     if(request.body?.formDataBody?.data) {
       const formData = new FormData()
@@ -46,6 +48,11 @@ export class HttpPlugin extends Plugin {
         formData.append(element.key, element.data);
       });
       data = formData;
+
+      axiosConfig.headers = {
+        ...axiosConfig.headers,
+        ...formData.getHeaders(),
+      }
     } else if(request.body?.rawBody) {
       data = request.body.rawBody;
     }
@@ -53,7 +60,7 @@ export class HttpPlugin extends Plugin {
     const response = await axios.post(
       url,
       data,
-      toAxiosRequestConfig(request)
+      axiosConfig
     );
     return fromAxiosResponse(response);
   }

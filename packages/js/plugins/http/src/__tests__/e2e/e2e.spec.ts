@@ -271,6 +271,54 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.post.headers.length).toEqual(2) // default reply headers
     });
 
+    test("succesfull request with multipart form data", async () => {
+      nock("http://www.example.com")
+        .defaultReplyHeaders(defaultReplyHeaders)
+        .post("/api", (body) => {
+          return true
+        })
+        .reply(200)
+
+
+      const web3ApiClient = new Web3ApiClient({
+        redirects: [
+          {
+            from: new Uri("w3://ens/http.web3api.eth"),
+            to: {
+              factory: () => new HttpPlugin(),
+              manifest: HttpPlugin.manifest(),
+            },
+          },
+        ]
+      })
+
+      const response = await web3ApiClient.query<{ post: Response }>({
+        uri: new Uri("w3://ens/http.web3api.eth"),
+        query: `
+          mutation {
+            post(
+              url: "http://www.example.com/api"
+              request: {
+                responseType: 1
+                body: {
+                  formDataBody: {
+                    data: [{key: "testfile.txt", data: "Lorem ipsum"}]
+                  }
+                }
+              }
+            )
+          }
+        `
+      })
+
+      expect(response.data).toBeDefined()
+      expect(response.errors).toBeUndefined()
+      expect(response.data?.post.status).toBe(200)
+      // expect(response.data?.get.statusText).toBe("OK")
+      // expect(response.data?.post.body).toBe(Buffer.from('{data: "test-response"}').toString('base64'))
+      expect(response.data?.post.headers.length).toEqual(2) // default reply headers
+    });
+
     test("succesfull request with query params and request headers", async () => {
       nock("http://www.example.com", { reqheaders: { 'X-Request-Header': "req-foo" } })
         .defaultReplyHeaders(defaultReplyHeaders)
