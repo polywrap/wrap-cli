@@ -1,5 +1,5 @@
 import { Web3ApiClient, Uri, UriRedirect } from "../";
-import { buildAndDeployApi, initTestEnvironment } from "../helpers";
+import { buildAndDeployApi, initTestEnvironment } from "@web3api/test-env-js";
 
 jest.setTimeout(50000);
 

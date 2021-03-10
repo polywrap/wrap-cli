@@ -5,10 +5,12 @@ import React from "react";
 import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import {
   UriRedirect,
-  Uri,
-  initTestEnvironment,
-  buildAndDeployApi,
+  Uri
 } from "@web3api/client-js";
+import {
+  initTestEnvironment,
+  buildAndDeployApi
+} from "@web3api/test-env-js";
 
 jest.setTimeout(30000);
 

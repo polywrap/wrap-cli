@@ -1,11 +1,11 @@
-import { Uri, UriRedirect } from "..";
+import { Uri, UriRedirect } from "@web3api/core-js";
+import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
+import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
+import { EnsPlugin } from "@web3api/ens-plugin-js";
 
 import path from "path";
 import spawn from "spawn-command";
 import axios from "axios";
-import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
-import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
-import { EnsPlugin } from "@web3api/ens-plugin-js";
 
 interface TestEnvironment {
   ipfs: string;

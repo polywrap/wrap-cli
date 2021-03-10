@@ -7,10 +7,12 @@ import {
 } from "@testing-library/react-hooks";
 import {
   Uri,
-  UriRedirect,
-  initTestEnvironment,
-  buildAndDeployApi,
+  UriRedirect
 } from "@web3api/client-js";
+import {
+  initTestEnvironment,
+  buildAndDeployApi
+} from "@web3api/test-env-js";
 
 jest.setTimeout(30000);
 
