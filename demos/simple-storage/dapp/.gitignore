@@ -23,4 +23,4 @@ yarn-debug.log*
 yarn-error.log*
 
 # Web3API Worker Thread
-./public/thread.js
+thread.js
