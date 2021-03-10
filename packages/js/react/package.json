@@ -1,8 +1,16 @@
 {
   "name": "@web3api/react",
+  "description": "Web3API React Integration",
   "version": "0.0.1-prealpha.5",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/web3-api/monorepo.git"
+  },
   "main": "build/index.js",
+  "files": [
+    "build"
+  ],
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color --ext 'src/**/*.{ts|tsx}'",
