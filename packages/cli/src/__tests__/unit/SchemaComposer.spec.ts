@@ -1,11 +1,11 @@
 import path from "path";
-import { loadManifest } from "../lib/helpers/manifest";
-import { SchemaComposer, Project } from "../lib";
-import { composedSchema } from "./project/sample";
+import { loadManifest } from "../../lib/helpers/manifest";
+import { SchemaComposer, Project } from "../../lib";
+import { composedSchema } from "../project/sample";
 
 describe("SchemaComposer validation", () => {
   let manifest;
-  const manifestPath = path.join(__dirname, "project", "web3api.yaml");
+  const manifestPath = path.join(__dirname, "../project", "web3api.yaml");
 
   beforeAll(async () => {
     manifest = await loadManifest(manifestPath);
@@ -13,10 +13,10 @@ describe("SchemaComposer validation", () => {
 
   it("Should load & compose schema properly", async () => {
     const project = new Project({
-      manifestPath
+      manifestPath,
     });
     const composer = new SchemaComposer({
-      project
+      project,
     });
     const schema = await composer.getComposedSchemas();
     expect(schema).toEqual(composedSchema);
