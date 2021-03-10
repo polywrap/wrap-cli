@@ -20,7 +20,21 @@ export class Request {
   headers?: Header[];
   urlParams?: UrlParam[];
   responseType: ResponseType;
-  body?: string;
+  body?: Body;
+}
+
+export class Body {
+  rawBody?: string;
+  formDataBody?: FormData;
+}
+
+export class FormData {
+  data: FormDataEntry[];
+}
+
+export class FormDataEntry {
+  key: string;
+  data: string;
 }
 
 export class Response {

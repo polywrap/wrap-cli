@@ -1,4 +1,5 @@
 import { fromAxiosResponse, toAxiosRequestConfig } from "../../util";
+import {ResponseType} from "../../types"
 
 describe("converting axios response", () => {
   test("response type: text", () => {
@@ -45,8 +46,8 @@ describe("creating axios config", () => {
         { key: "Accept", value: "application-json" },
         { key: "X-Header", value: "test-value" },
       ],
-      responseType: "TEXT",
-      body: "body-content",
+      responseType: ResponseType.TEXT,
+      body: {rawBody: "body-content"},
     });
 
     expect(config.headers).toStrictEqual({
@@ -60,8 +61,8 @@ describe("creating axios config", () => {
   test("with url params", () => {
     const config = toAxiosRequestConfig({
       urlParams: [{ key: "tag", value: "data" }],
-      responseType: "BINARY",
-      body: "body-content",
+      responseType: ResponseType.BINARY,
+      body: {rawBody: "body-content"},
     });
 
     expect(config.headers).toBeUndefined();

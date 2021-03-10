@@ -12,6 +12,8 @@ import {
   PluginManifest,
 } from "@web3api/core-js";
 
+const FormData = require('form-data')
+
 export class HttpPlugin extends Plugin {
   constructor() {
     super();
@@ -37,9 +39,20 @@ export class HttpPlugin extends Plugin {
   }
 
   public async post(url: string, request: Request): Promise<Response> {
+    let data: any;
+    if(request.body?.formDataBody?.data) {
+      const formData = new FormData()
+      request.body.formDataBody.data.forEach(element => {
+        formData.append(element.key, element.data);
+      });
+      data = formData;
+    } else if(request.body?.rawBody) {
+      data = request.body.rawBody;
+    }
+
     const response = await axios.post(
       url,
-      request.body,
+      data,
       toAxiosRequestConfig(request)
     );
     return fromAxiosResponse(response);

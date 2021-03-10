@@ -39,7 +39,7 @@ describe("e2e tests for HttpPlugin", () => {
             get(
               url: "http://www.example.com/api"
               request: {
-                responseType: TEXT
+                responseType: 0
               }
             )
           }
@@ -80,7 +80,7 @@ describe("e2e tests for HttpPlugin", () => {
             get(
               url: "http://www.example.com/api"
               request: {
-                responseType: BINARY
+                responseType: 1
               }
             )
           }
@@ -121,7 +121,7 @@ describe("e2e tests for HttpPlugin", () => {
             get(
               url: "http://www.example.com/api"
               request: {
-                responseType: TEXT
+                responseType: 0
                 urlParams: [{key: "query", value: "foo"}]
                 headers: [{key: "X-Request-Header", value: "req-foo"}]
               }
@@ -168,7 +168,7 @@ describe("e2e tests for HttpPlugin", () => {
             get(
               url: "http://www.example.com/api"
               request: {
-                responseType: TEXT
+                responseType: 0
               }
             )
           }
@@ -209,8 +209,10 @@ describe("e2e tests for HttpPlugin", () => {
             post(
               url: "http://www.example.com/api"
               request: {
-                responseType: TEXT
-                body: "{data: 'test-request'}"
+                responseType: 0
+                body: {
+                  rawBody: "{data: 'test-request'}"
+                }
               }
             )
           }
@@ -251,8 +253,10 @@ describe("e2e tests for HttpPlugin", () => {
             post(
               url: "http://www.example.com/api"
               request: {
-                responseType: BINARY
-                body: "{data: 'test-request'}"
+                responseType: 1
+                body: {
+                  rawBody: "{data: 'test-request'}"
+                }
               }
             )
           }
@@ -293,8 +297,10 @@ describe("e2e tests for HttpPlugin", () => {
             post(
               url: "http://www.example.com/api"
               request: {
-                responseType: TEXT
-                body: "{data: 'test-request'}"
+                responseType: 0
+                body: {
+                  rawBody: "{data: 'test-request'}"
+                }
                 urlParams: [{key: "query", value: "foo"}]
                 headers: [{key: "X-Request-Header", value: "req-foo"}]
               }
@@ -341,7 +347,7 @@ describe("e2e tests for HttpPlugin", () => {
             post(
               url: "http://www.example.com/api"
               request: {
-                responseType: TEXT
+                responseType: 0
               }
             )
           }

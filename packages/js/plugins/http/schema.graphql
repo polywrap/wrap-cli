@@ -19,7 +19,21 @@ type Request {
   headers: [Header!]
   urlParams: [UrlParam!]
   responseType: ResponseType!
-  body: String
+  body: Body
+}
+
+type Body {
+  rawBody: String
+  formDataBody: FormData
+}
+
+type FormData {
+  data: FormDataEntry[]
+}
+
+type FormDataEntry {
+  key: String
+  data: String
 }
 
 enum ResponseType {
