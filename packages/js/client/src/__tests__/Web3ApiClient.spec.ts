@@ -136,7 +136,7 @@ describe("Web3ApiClient", () => {
           secondGetData: getData(
             address: "${address}"
           )
-          thirdGetDate: getData(
+          thirdGetData: getData(
             address: "${address}"
           )
         }
