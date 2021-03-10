@@ -68,7 +68,7 @@ describe("parseQuery", () => {
   });
 
   it("works with multiple queries", () => {
-    const methods = `
+    const queryMethods = `
       someMethod(
         arg1: 4
         arg2: ["hey", "there", [5.5]]
@@ -97,12 +97,41 @@ describe("parseQuery", () => {
         }
       }
     `;
+    const mutationMethods = `
+      mutationSomeMethod: someMethod(
+        arg1: 4
+        arg2: ["hey", "there", [5.5]]
+        arg3: {
+          prop: "hey"
+          obj: {
+            prop: 5
+          }
+        }
+        var1: $varOne
+        var2: $varTwo
+      ) {
+        someResult {
+          prop1
+          prop2
+        }
+      }
+
+      mutationAnotherMethod: anotherMethod(
+        arg: "hey"
+        var: $varOne
+      ) {
+        resultOne
+        resultTwo {
+          prop
+        }
+      }
+    `;
     const doc = createQueryDocument(`
       mutation {
-        ${methods}
+        ${mutationMethods}
       }
       query {
-        ${methods}
+        ${queryMethods}
       }
     `);
 
@@ -133,6 +162,7 @@ describe("parseQuery", () => {
           prop2: true,
         },
       },
+      alias: "mutationSomeMethod",
     };
     const method2: InvokeApiOptions = {
       uri: dummy,
@@ -148,6 +178,7 @@ describe("parseQuery", () => {
           prop: true,
         },
       },
+      alias: "mutationAnotherMethod",
     };
 
     const expected: InvokeApiOptions[] = [
@@ -156,10 +187,12 @@ describe("parseQuery", () => {
       {
         ...method1,
         module: "query",
+        alias: undefined
       },
       {
         ...method2,
         module: "query",
+        alias: undefined
       },
     ];
 
@@ -279,6 +312,50 @@ describe("parseQuery", () => {
 
     expect(() => parseQuery(dummy, doc)).toThrowError(
       /Duplicate result selections found/
+    );
+  });
+
+  it("fails when duplicate aliases found", () => {
+    const doc = createQueryDocument(`
+      mutation {
+        alias: method(
+          arg: "hey"
+        ) {
+          result
+        }
+
+        alias: method2(
+          arg: "hey"
+        ) {
+          result
+        }
+      }
+    `);
+
+    expect(() => parseQuery(dummy, doc)).toThrowError(
+      /Duplicate alias 'alias' found./
+    );
+  });
+
+  it("fails when duplicate methods without alias found", () => {
+    const doc = createQueryDocument(`
+      mutation {
+        method(
+          arg: "hey"
+        ) {
+          result
+        }
+
+        method(
+          arg: "hey"
+        ) {
+          result
+        }
+      }
+    `);
+
+    expect(() => parseQuery(dummy, doc)).toThrowError(
+      /Duplicate method 'method' invocation found./
     );
   });
 });
