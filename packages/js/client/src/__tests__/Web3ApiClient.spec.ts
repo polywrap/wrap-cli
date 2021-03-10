@@ -1,5 +1,6 @@
 import { Web3ApiClient, Uri, UriRedirect } from "../";
 import { buildAndDeployApi, initTestEnvironment } from "@web3api/test-env-js";
+import { GetPathToTestApis } from "@web3api/test-cases";
 
 jest.setTimeout(50000);
 
@@ -17,7 +18,7 @@ describe("Web3ApiClient", () => {
 
   it("simple-storage", async () => {
     const api = await buildAndDeployApi(
-      `${__dirname}/apis/simple-storage`,
+      `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
       ensAddress
     );
@@ -88,7 +89,7 @@ describe("Web3ApiClient", () => {
 
   it("object-types", async () => {
     const api = await buildAndDeployApi(
-      `${__dirname}/apis/object-types`,
+      `${GetPathToTestApis()}/object-types`,
       ipfsProvider,
       ensAddress
     );
@@ -354,7 +355,7 @@ describe("Web3ApiClient", () => {
 
   it("bytes-type", async () => {
     const api = await buildAndDeployApi(
-      `${__dirname}/apis/bytes-type`,
+      `${GetPathToTestApis()}/bytes-type`,
       ipfsProvider,
       ensAddress
     );
@@ -389,7 +390,7 @@ describe("Web3ApiClient", () => {
 
   it("enum-types", async () => {
     const api = await buildAndDeployApi(
-      `${__dirname}/apis/enum-types`,
+      `${GetPathToTestApis()}/enum-types`,
       ipfsProvider,
       ensAddress
     );

@@ -3654,6 +3654,36 @@
     "@typescript-eslint/types" "4.11.1"
     eslint-visitor-keys "^2.0.0"
 
+"@web3api/core-js@0.0.1-prealpha.2":
+  version "0.0.1-prealpha.2"
+  resolved "https://registry.yarnpkg.com/@web3api/core-js/-/core-js-0.0.1-prealpha.2.tgz#6bbf494e19dd6ce2b61891919005fc77ff5b9b5d"
+  integrity sha512-voLQFyjVAMq3uuXvs10AtR13xtCFn+2AMdDE23F3zUpBOqeN+rKMVX7qQf5O9G1FXsueFmd8Fet5cK3A4oVJJQ==
+  dependencies:
+    "@web3api/manifest-schema" "0.0.1-prealpha.2"
+    graphql "15.3.0"
+    graphql-tag "2.10.4"
+    js-yaml "3.14.0"
+    jsonschema "1.4.0"
+    semver "7.3.4"
+
+"@web3api/ethereum-plugin-js@0.0.1-prealpha.2":
+  version "0.0.1-prealpha.2"
+  resolved "https://registry.yarnpkg.com/@web3api/ethereum-plugin-js/-/ethereum-plugin-js-0.0.1-prealpha.2.tgz#2b5b91af3669e0c3c5c09312240e1b0c26cacfd2"
+  integrity sha512-K+GM7gpehVVF7Ow9YUtiTDodmZH0YcYtnQLUZoJeLJaGGxiLWwYhlisRgGnH+s4y/wMZBUSe0YNa9InPZwrWLQ==
+  dependencies:
+    "@web3api/core-js" "0.0.1-prealpha.2"
+    ethers "5.0.7"
+
+"@web3api/manifest-schema@0.0.1-prealpha.2":
+  version "0.0.1-prealpha.2"
+  resolved "https://registry.yarnpkg.com/@web3api/manifest-schema/-/manifest-schema-0.0.1-prealpha.2.tgz#8ae1575bdf7752fa129288ee08f4531cb4184c16"
+  integrity sha512-1n6gVPImsYH0Ho4J1jCCFoVq9iD3QdNcta8VvixD0BSxPwVWsf8RnCISkG3rT6sj8iJ3oFiz78ReDsZCl7H2eA==
+
+"@web3api/wasm-as@0.0.1-prealpha.2":
+  version "0.0.1-prealpha.2"
+  resolved "https://registry.yarnpkg.com/@web3api/wasm-as/-/wasm-as-0.0.1-prealpha.2.tgz#2a7438206499c87947f5c7a31f92f6f84f1e8ed8"
+  integrity sha512-LuYBVzKVyAdr6giCILL/Hd4gyDS7sqGf+bqzu8T4AZhirJbCEk0sp1pRLmolMZ6/oRSBVnSyg9UsWljBUhm3yA==
+
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.8.5.tgz#51b1c5fe6576a34953bf4b253df9f0d490d9e359"
