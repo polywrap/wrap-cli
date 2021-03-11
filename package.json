@@ -15,7 +15,8 @@
     "nohoist": [
       "**/@testing-library/*",
       "**/@types/testing-library*",
-      "**/@types/react-lottie"
+      "**/@types/react-lottie",
+      "**/@web3api/ethereum-plugin-js"
     ]
   },
   "scripts": {
