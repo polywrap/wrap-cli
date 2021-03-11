@@ -1,32 +1,10 @@
 [
   {
-    "api": "ens/simplestorage.eth",
+    "api": "ens/ens.eth",
     "constants": "./constants.json"
   },
   {
     "query": "./get.graphql",
-    "variables": { "address": "$SimpleStorageAddr" }
-  },
-  {
-    "query": "./set.graphql",
-    "variables": {
-      "address": "$SimpleStorageAddr",
-      "value": 5
-    }
-  },
-  {
-    "query": "./get.graphql",
-    "variables": { "address": "$SimpleStorageAddr" }
-  },
-  {
-    "query": "./set.graphql",
-    "variables": {
-      "address": "$SimpleStorageAddr",
-      "value": 569
-    }
-  },
-  {
-    "query": "./get.graphql",
-    "variables": { "address": "$SimpleStorageAddr" }
+    "variables": { "address": "$ENSAddr", "name": "$ENSName" }
   }
 ]

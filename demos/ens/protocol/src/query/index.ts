@@ -1,16 +1,16 @@
 import { Ethereum_Query } from "./w3/imported";
-import { Input_getData, Input_getResolver } from "./w3";
+import {  Input_getResolver } from "./w3";
+import { hash } from "eth-ens-namehash"
 
-export function getData(input: Input_getData): u32 {
+export function getResolver(input: Input_getResolver): string {
+  const namehash = hash(input.name)
   const res = Ethereum_Query.callView({
     address: input.address,
-    method: "function get() view returns (uint256)",
-    args: [],
+    method: "function resolver(bytes32 node) external view returns (address)",
+    args: [
+      // namehash
+    ],
   });
 
-  return U32.parseInt(res);
-}
-
-export function getResolver(address: Input_getResolver): String {
-  return "hola";
+  return res;
 }

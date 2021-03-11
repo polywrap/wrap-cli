@@ -15,10 +15,7 @@ node ./deploy-contracts.js
 ## 3. Build & Deploy The Web3API
 
 ```
-npx w3 build \
---ipfs http://localhost:5001 \
---graph simplestorage,http://localhost:8020 \
---test-ens simplestorage.eth
+npx w3 build --ipfs http://localhost:5001 --graph ens,http://localhost:8020 --test-ens ens.eth
 ```
 
 ## 4. Test The Web3API Using A Query Recipe

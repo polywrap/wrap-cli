@@ -1,28 +1,11 @@
-const { EthereumPlugin } = require("@web3api/ethereum-plugin-js");
-const fs = require("fs");
-const YAML = require("js-yaml");
+const axios = require("axios")
 
 async function main() {
-  const contractAbi = require(`${__dirname}/src/contracts/SimpleStorage.json`);
+  const { data } = await axios.get("http://localhost:4040/deploy-ens");
 
-  const eth = new EthereumPlugin({
-    provider: "http://localhost:8545"
-  });
+  ensAddress = data.ensAddress;
 
-  const address = await eth.deployContract(
-    contractAbi.abi, `0x${contractAbi.bytecode.object}`
-  );
-
-  console.log(`✔️ SimpleStorage live at: ${address}`)
-
-  const constants = require(`${__dirname}/recipes/constants.json`);
-  constants.SimpleStorageAddr = address;
-  fs.writeFileSync(
-    `${__dirname}/recipes/constants.json`,
-    JSON.stringify(constants, null, 2)
-  );
-
-  console.log("✔️ Recipe Constants Updated");
+  console.log(data)
 }
 
 main()

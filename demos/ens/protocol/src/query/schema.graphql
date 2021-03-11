@@ -1,6 +1,5 @@
 #import { Query } into Ethereum from "w3://ens/ethereum.web3api.eth"
 
 type Query {
-  getData(address: String!): Int!
-  getResolver(address: String!): String!
+  getResolver(address: String!, name: String!): String!
 }

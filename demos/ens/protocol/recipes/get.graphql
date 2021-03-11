@@ -1,5 +1,6 @@
-query GetData($address: String!) {
-  getData(
-    address: $address
+query GetResolver($address: String!, $name: String!) {
+  getResolver(
+    address: $address,
+    name: $name
   )
 }
