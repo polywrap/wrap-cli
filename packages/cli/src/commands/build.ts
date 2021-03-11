@@ -196,15 +196,17 @@ export default {
 
           return data.success;
         }
+
+        if (uris.length) {
+          print.success("URI Viewers:");
+          print.table(uris);
+          return true;
+        } else {
+          return false;
+        }
       }
 
-      if (uris.length) {
-        print.success("URI Viewers:");
-        print.table(uris);
-        return true;
-      } else {
-        return false;
-      }
+      return true;
     };
 
     if (!watch) {

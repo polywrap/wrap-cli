@@ -17,4 +17,4 @@ RUN apk --no-cache --virtual build-dependencies add \
 
 EXPOSE ${DEV_SERVER_PORT}
 
-CMD [ "yarn", "start" ]
+ENTRYPOINT yarn start

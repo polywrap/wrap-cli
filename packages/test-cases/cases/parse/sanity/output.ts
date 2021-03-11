@@ -12,8 +12,8 @@ import {
   createImportedQueryDefinition,
   createEnumDefinition,
   createEnumPropertyDefinition,
-  createImportedEnumDefinition,
-} from "../../../typeInfo";
+  createImportedEnumDefinition
+} from "../../../../schema/parse/src/typeInfo";
 
 export const output: TypeInfo = {
   objectTypes: [

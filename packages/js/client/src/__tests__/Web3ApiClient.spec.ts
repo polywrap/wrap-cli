@@ -1,9 +1,14 @@
 import { Web3ApiClient, Uri, UriRedirect } from "../";
-import { buildAndDeployApi } from "./helpers";
+import {
+  buildAndDeployApi,
+  testEnvUp,
+  testEnvDown
+} from "./helpers";
 
 import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
 import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 import { EnsPlugin } from "@web3api/ens-plugin-js";
+import { GetPathToTestApis } from "@web3api/test-cases";
 import axios from "axios";
 import {
   createWeb3ApiClient,
@@ -19,12 +24,15 @@ describe("Web3ApiClient", () => {
   let redirects: UriRedirect[];
 
   beforeAll(async () => {
+    // Stand up the test env
+    await testEnvUp();
+
     // fetch providers from dev server
     const {
       data: { ipfs, ethereum },
     } = await axios.get("http://localhost:4040/providers");
 
-    if (!ipfs) {
+    if (!ipfs || ipfs.length === 0) {
       throw Error("Dev server must be running at port 4040");
     }
 
@@ -59,6 +67,11 @@ describe("Web3ApiClient", () => {
         },
       },
     ];
+  }, 50000);
+
+  afterAll(async () => {
+    // Teardown the test environment
+    await testEnvDown();
   });
 
   it.only("simple-storage", async () => {
@@ -78,7 +91,7 @@ describe("Web3ApiClient", () => {
     };
 
     const api = await buildAndDeployApi(
-      `${__dirname}/apis/simple-storage`,
+      `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
       ensAddress
     );
@@ -153,7 +166,7 @@ describe("Web3ApiClient", () => {
 
   it("object-types", async () => {
     const api = await buildAndDeployApi(
-      `${__dirname}/apis/object-types`,
+      `${GetPathToTestApis()}/object-types`,
       ipfsProvider,
       ensAddress
     );
@@ -418,7 +431,7 @@ describe("Web3ApiClient", () => {
 
   it("bytes-type", async () => {
     const api = await buildAndDeployApi(
-      `${__dirname}/apis/bytes-type`,
+      `${GetPathToTestApis()}/bytes-type`,
       ipfsProvider,
       ensAddress
     );
@@ -453,7 +466,7 @@ describe("Web3ApiClient", () => {
 
   it("enum-types", async () => {
     const api = await buildAndDeployApi(
-      `${__dirname}/apis/enum-types`,
+      `${GetPathToTestApis()}/enum-types`,
       ipfsProvider,
       ensAddress
     );
