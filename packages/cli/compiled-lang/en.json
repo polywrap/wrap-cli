@@ -1,0 +1,16 @@
+{
+  "typeToViewCommands": [
+    {
+      "type": 0,
+      "value": "Type "
+    },
+    {
+      "type": 1,
+      "value": "phrase"
+    },
+    {
+      "type": 0,
+      "value": " to view common commands"
+    }
+  ]
+}
