@@ -1,12 +1,6 @@
 import { useReducer, useMemo } from "react";
 
-export interface Web3ApiContextInterface {
-  data?: Record<string, unknown>;
-  loading: boolean;
-  errors?: Error[];
-}
-
-function update(payload: Partial<Web3ApiContextInterface>) {
+function update(payload: Partial<Web3ApiQueryContext>) {
   return <const>{
     type: "UPDATE",
     payload,
@@ -15,13 +9,7 @@ function update(payload: Partial<Web3ApiContextInterface>) {
 
 export type HandleAction = ReturnType<typeof update>;
 
-export const INITIAL_STATE = {
-  data: undefined,
-  loading: false,
-  errors: undefined,
-};
-
-const reducer = (state: Web3ApiContextInterface, action: HandleAction) => ({
+const reducer = (state: Web3ApiQueryContext, action: HandleAction) => ({
   ...state,
   ...action.payload,
 });

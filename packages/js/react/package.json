@@ -24,7 +24,8 @@
     "install:web3api": "npx web3api-worker-install ./"
   },
   "dependencies": {
-    "@web3api/client-js": "0.0.1-prealpha.5"
+    "@web3api/client-js": "0.0.1-prealpha.5",
+    "@web3api/core-js": "0.0.1-prealpha.5"
   },
   "devDependencies": {
     "@web3api/cli": "0.0.1-prealpha.5",

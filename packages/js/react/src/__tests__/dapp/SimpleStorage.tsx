@@ -3,7 +3,9 @@ import { Uri, UriRedirect } from "@web3api/client-js";
 import React from "react";
 
 const SimpleStorage = ({ uri }: { uri: Uri }) => {
-  const { execute: deployContract, data: deployData } = useWeb3ApiQuery({
+  const { execute: deployContract, data: deployData } = useWeb3ApiQuery<{
+    deployContract: string
+  }>({
     uri,
     query: `mutation { deployContract }`,
   });
@@ -12,10 +14,14 @@ const SimpleStorage = ({ uri }: { uri: Uri }) => {
     uri,
     query: `mutation {
       setData(
-        address: "${deployData?.deployContract}"
-        value: 5
+        address: $address
+        value: $value
       )
     }`,
+    variables: {
+      value: 5,
+      address: deployData?.deployContract
+    }
   });
 
   const { execute: getStorageData, data: currentStorage } = useWeb3ApiQuery({
