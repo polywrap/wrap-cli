@@ -1,0 +1,6 @@
+{
+  "typeToViewCommands": {
+    "defaultMessage": "Type {phrase} to view common commands",
+    "description": "type phrase to view commands"
+  }
+}

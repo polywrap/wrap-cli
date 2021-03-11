@@ -19,9 +19,12 @@
     "lint": "eslint --color --ext .ts src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
-    "test:watch": "jest --watch --passWithNoTests --verbose"
+    "test:watch": "jest --watch --passWithNoTests --verbose",
+    "intl-extract": "formatjs extract 'src/**/*.ts*' --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
+    "intl-compile": "formatjs compile lang/en.json --ast --out-file compiled-lang/en.json"
   },
   "dependencies": {
+    "@formatjs/intl": "^1.8.2",
     "@web3api/client-js": "0.0.1-prealpha.5",
     "@web3api/client-test-env": "0.0.1-prealpha.5",
     "@web3api/core-js": "0.0.1-prealpha.5",
@@ -38,6 +41,8 @@
     "fs-extra": "9.0.1",
     "gluegun": "4.6.1",
     "graphql-tag": "2.11.0",
+    "intl-messageformat-parser": "^6.4.2",
+    "intl-messageformat": "^9.5.2",
     "ipfs-http-client": "^48.1.3",
     "js-yaml": "3.14.0",
     "mustache": "4.0.1",
@@ -46,12 +51,14 @@
     "ws": "7.3.1"
   },
   "devDependencies": {
+    "@formatjs/cli": "^3.1.6",
+    "@formatjs/ts-transformer": "^3.2.0",
     "@types/jest": "26.0.8",
     "@types/node": "12.6.9",
     "jest": "26.2.2",
     "rimraf": "3.0.2",
     "ts-jest": "26.1.4",
-    "typescript": "3.9.6"
+    "typescript": "4.2.3"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {
