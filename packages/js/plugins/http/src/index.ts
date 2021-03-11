@@ -62,6 +62,9 @@ export class HttpPlugin extends Plugin {
       data,
       axiosConfig
     );
-    return fromAxiosResponse(response);
+
+    const prepResponse = fromAxiosResponse(response)
+    console.log(prepResponse);
+    return prepResponse;
   }
 }

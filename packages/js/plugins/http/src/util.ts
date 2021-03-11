@@ -28,6 +28,12 @@ export function fromAxiosResponse(
       body: Buffer.from(axiosResponse.data).toString("base64"),
     };
   } else {
+    if(typeof axiosResponse.data == "object") {
+      return {
+        ...response,
+        body: JSON.stringify(axiosResponse.data)
+      }
+    }
     return {
       ...response,
       body: axiosResponse.data,

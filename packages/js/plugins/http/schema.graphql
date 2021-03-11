@@ -19,16 +19,16 @@ type Request {
   headers: [Header!]
   urlParams: [UrlParam!]
   responseType: ResponseType!
-  body: Body
+  body: Body!
 }
 
 type Body {
   rawBody: String
-  formDataBody: FormData
+  formDataBody: FormData!
 }
 
 type FormData {
-  data: FormDataEntry[]
+  data: [FormDataEntry!]
 }
 
 type FormDataEntry {
