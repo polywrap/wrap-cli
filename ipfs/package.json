@@ -14,8 +14,11 @@
   "devDependencies": {
     "@web3api/cli": "0.0.1-prealpha.4",
     "@web3api/wasm-as": "0.0.1-prealpha.4",
+    "as-base64": "0.1.1",
     "ethers": "5.0.8",
     "js-yaml": "3.14.0",
-    "ipfs": "0.54.2"
+    "ipfs": "0.54.2",
+    "form-data": "4.0.0",
+    "assemblyscript-json": "1.0.0"
   }
 }

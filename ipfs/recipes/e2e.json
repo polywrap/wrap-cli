@@ -4,11 +4,15 @@
     "constants": "./constants.json"
   },
   {
+    "query": "./catFile.graphql",
+    "variables": { "cid": "$SampleCid", "ipfsUrl": "$IpfsUrl" }
+  },
+  {
     "query": "./catToString.graphql",
     "variables": { "cid": "$SampleCid", "ipfsUrl": "$IpfsUrl" }
   },
   {
-    "query": "./catFile.graphql",
-    "variables": { "cid": "$SampleCid", "ipfsUrl": "$IpfsUrl" }
+    "query": "./addFile.graphql",
+    "variables": { "data": "$Data", "fileName": "$Path", "ipfsUrl": "$IpfsUrl" }
   }
 ]

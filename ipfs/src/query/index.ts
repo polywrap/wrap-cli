@@ -1,22 +1,22 @@
-import { Http_Query, Http_ResponseType } from "./w3/imported";
+import { Http_Query, Http_ResponseType, Http_Body } from "./w3/imported";
 import { 
   Input_catToString,
   Input_catFile,
   Input_tryResolveUri,
-  Input_getFile,
-  Input_addFile,
-  AddResult
 } from "./w3";
+import {decode} from "as-base64"
+
+export const EmptyBody: Http_Body = {rawBody:"", formDataBody: {data: []}}
 
 export function catToString(input: Input_catToString): String {
-  const url = input.ipfsUrl + "/api/v0/cat?arg=" + input.cid;
+  const url = input.ipfsUrl + "/api/v0/cat";
   const catResponse = Http_Query.get({
     url: url,
     request: {
       headers: [],
       urlParams: [{key: "arg", value: input.cid}],
       responseType: Http_ResponseType.TEXT,
-      body: "",
+      body: EmptyBody,
     }
   });
 
@@ -28,30 +28,28 @@ export function catToString(input: Input_catToString): String {
 }
 
 export function catFile(input: Input_catFile): ArrayBuffer {
-  const url = input.ipfsUrl + "/api/v0/cat?arg=" + input.cid;
+  const url = input.ipfsUrl + "/api/v0/cat";
   const catResponse = Http_Query.get({
     url: url,
     request: {
       headers: [],
       urlParams: [{key: "arg", value: input.cid}],
       responseType: Http_ResponseType.BINARY,
-      body: "",
+      body: EmptyBody,
     }
   });
-  if(catResponse == null) {
-    throw new Error("")
+
+  if(catResponse == null || catResponse.status != 200) {
+    throw new Error(`Failed to cat file: ${catResponse.status} ${catResponse.statusText}`);
   }
-  return String.UTF8.encode(catResponse.body);
+
+  return decode(catResponse.body).buffer;
 }
 
 export function tryResolveUri(input: Input_tryResolveUri): string {
+  if(input.authority != "ipfs") {
+    return "";
+  }
+
   return "";
-}
-
-export function getFile(input: Input_getFile): ArrayBuffer {
-  return new ArrayBuffer(3);
-}
-
-export function addFile(input: Input_addFile): AddResult {
-  return {cid: "", path: ""};
 }

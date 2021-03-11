@@ -1,0 +1,7 @@
+mutation {
+    addFile(
+        ipfsUrl: $ipfsUrl
+        fileName: $fileName
+        data: $data
+    )
+}

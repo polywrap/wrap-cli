@@ -1,4 +1,6 @@
 {
   "SampleCid": "QmcUZ2oVczdFaRsY8Fcqi8f27GLF8fY6mVboGZGYS8JE72",
-  "IpfsUrl": "http://127.0.0.1:5001"
+  "IpfsUrl": "http://127.0.0.1:5001",
+  "Path": "test.txt",
+  "Data": "Lorem ipsum dolorem sum igitas teum muritas dove puritas."
 }
