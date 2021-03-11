@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@types/jaeger-client": "^3.15.4",
+    "jaeger-client": "^3.18.1",
     "opentracing": "^0.14.5"
   }
 }
