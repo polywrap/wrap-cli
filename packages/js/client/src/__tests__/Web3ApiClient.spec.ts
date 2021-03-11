@@ -1,13 +1,6 @@
 import { Web3ApiClient, Uri, UriRedirect } from "../";
-import {
-  buildAndDeployApi,
-  testEnvUp,
-  testEnvDown
-} from "./helpers";
+import { buildAndDeployApi, testEnvUp, testEnvDown } from "./helpers";
 
-import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
-import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
-import { EnsPlugin } from "@web3api/ens-plugin-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 import axios from "axios";
 import {
@@ -36,37 +29,12 @@ describe("Web3ApiClient", () => {
       throw Error("Dev server must be running at port 4040");
     }
 
-    ipfsProvider = ipfs;
     // re-deploy ENS
     const { data } = await axios.get("http://localhost:4040/deploy-ens");
 
+    ipfsProvider = ipfs;
     ensAddress = data.ensAddress;
     ethereumProvider = ethereum;
-    // Test env redirects for ethereum, ipfs, and ENS.
-    // Will be used to fetch APIs.
-    redirects = [
-      {
-        from: new Uri("w3://ens/ethereum.web3api.eth"),
-        to: {
-          factory: () => new EthereumPlugin({ provider: ethereum }),
-          manifest: EthereumPlugin.manifest(),
-        },
-      },
-      {
-        from: new Uri("w3://ens/ipfs.web3api.eth"),
-        to: {
-          factory: () => new IpfsPlugin({ provider: ipfs }),
-          manifest: IpfsPlugin.manifest(),
-        },
-      },
-      {
-        from: new Uri("w3://ens/ens.web3api.eth"),
-        to: {
-          factory: () => new EnsPlugin({ address: ensAddress }),
-          manifest: EnsPlugin.manifest(),
-        },
-      },
-    ];
   }, 50000);
 
   afterAll(async () => {
@@ -75,6 +43,7 @@ describe("Web3ApiClient", () => {
   });
 
   it.only("simple-storage", async () => {
+    //@TODO: Retrieve this from test-env
     const createClientParams: Web3ApiClientParams = {
       ethereum: {
         from: "w3://ens/ethereum.web3api.eth",
@@ -96,14 +65,10 @@ describe("Web3ApiClient", () => {
       ensAddress
     );
 
+    const client = await createWeb3ApiClient(createClientParams);
+
     const ensUri = new Uri(`ens/${api.ensDomain}`);
     const ipfsUri = new Uri(`ipfs/${api.ipfsCid}`);
-
-    const client = await createWeb3ApiClient(createClientParams, {
-      ipfsProvider,
-      ethereumProvider,
-      ensAddress,
-    });
 
     const deploy = await client.query<{
       deployContract: string;

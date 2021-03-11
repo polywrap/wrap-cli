@@ -1,8 +1,6 @@
 import { Web3ApiClient } from "./Web3ApiClient";
+
 import { UriRedirect, Uri } from "@web3api/core-js";
-import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
-import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
-import { EnsPlugin } from "@web3api/ens-plugin-js";
 
 export type ModuleConnector = Record<string, string>;
 export type Web3ApiClientParams = Record<string, ModuleConnector>;
@@ -14,10 +12,7 @@ export type RecordRedirect = {
   };
 };
 
-export const createWeb3ApiClient = async (
-  services: Web3ApiClientParams,
-  { ipfsProvider, ethereumProvider, ensAddress }: any
-) => {
+export const createWeb3ApiClient = async (services: Web3ApiClientParams) => {
   const plugins = Object.keys(services);
 
   const getPluginModule = async (plugin: string): Promise<UriRedirect> => {
@@ -25,13 +20,13 @@ export const createWeb3ApiClient = async (
     try {
       const Module = await import(`@web3api/${plugin}-plugin-js`);
       const pluginMethodName = Object.keys(Module)[0];
+      const CurrentPlugin = Module[pluginMethodName];
       const { from, ...moduleConnectors } = services[plugin];
-      const uri = new Uri(from);
       return {
-        from: uri,
+        from: new Uri(from),
         to: {
-          factory: () => new Module(moduleConnectors),
-          manifest: Module[pluginMethodName].manifest(),
+          factory: () => new CurrentPlugin(moduleConnectors),
+          manifest: CurrentPlugin.manifest(),
         },
       };
     } catch (e) {
@@ -45,40 +40,6 @@ export const createWeb3ApiClient = async (
   });
 
   const pluginsLoaded = await Promise.all(pluginPromises);
-
-  const mockRedirects = [
-    {
-      from: new Uri("w3://ens/ethereum.web3api.eth"),
-      to: {
-        factory: () => new EthereumPlugin({ provider: ethereumProvider }),
-        manifest: EthereumPlugin.manifest(),
-      },
-    },
-    {
-      from: new Uri("w3://ens/ipfs.web3api.eth"),
-      to: {
-        factory: () => new IpfsPlugin({ provider: ipfsProvider }),
-        manifest: IpfsPlugin.manifest(),
-      },
-    },
-    {
-      from: new Uri("w3://ens/ens.web3api.eth"),
-      to: {
-        factory: () => new EnsPlugin({ address: ensAddress }),
-        manifest: EnsPlugin.manifest(),
-      },
-    },
-  ];
-
-  console.log(
-    "///////////////////////////  PLUGINS LOADED  REDIRECTS  //////////////////////////////////////"
-  );
-  console.log(pluginsLoaded);
-
-  console.log(
-    "///////////////////////////  MOCK  REDIRECTS  //////////////////////////////////////"
-  );
-  console.log(mockRedirects);
 
   return new Web3ApiClient({ redirects: pluginsLoaded });
 };
