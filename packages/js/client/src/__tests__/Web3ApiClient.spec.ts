@@ -1,7 +1,8 @@
-import { Web3ApiClient, Uri, UriRedirect } from "../";
+import { Uri } from "../";
 import { buildAndDeployApi, testEnvUp, testEnvDown } from "./helpers";
 
 import { GetPathToTestApis } from "@web3api/test-cases";
+import { clientTestEnv } from "@web3api/client-test-env";
 import axios from "axios";
 import {
   createWeb3ApiClient,
@@ -12,9 +13,8 @@ jest.setTimeout(50000);
 
 describe("Web3ApiClient", () => {
   let ipfsProvider: string;
-  let ethereumProvider: string;
   let ensAddress: string;
-  let redirects: UriRedirect[];
+  let clientParams: Web3ApiClientParams;
 
   beforeAll(async () => {
     // Stand up the test env
@@ -22,7 +22,7 @@ describe("Web3ApiClient", () => {
 
     // fetch providers from dev server
     const {
-      data: { ipfs, ethereum },
+      data: { ipfs },
     } = await axios.get("http://localhost:4040/providers");
 
     if (!ipfs || ipfs.length === 0) {
@@ -34,7 +34,14 @@ describe("Web3ApiClient", () => {
 
     ipfsProvider = ipfs;
     ensAddress = data.ensAddress;
-    ethereumProvider = ethereum;
+
+    clientParams = {
+      ...clientTestEnv,
+      ens: {
+        from: "w3://ens/ens.web3api.eth",
+        address: data.ensAddress,
+      },
+    };
   }, 50000);
 
   afterAll(async () => {
@@ -42,30 +49,14 @@ describe("Web3ApiClient", () => {
     await testEnvDown();
   });
 
-  it.only("simple-storage", async () => {
-    //@TODO: Retrieve this from test-env
-    const createClientParams: Web3ApiClientParams = {
-      ethereum: {
-        from: "w3://ens/ethereum.web3api.eth",
-        provider: ethereumProvider,
-      },
-      ipfs: {
-        from: "w3://ens/ipfs.web3api.eth",
-        provider: ipfsProvider,
-      },
-      ens: {
-        from: "w3://ens/ens.web3api.eth",
-        address: ensAddress,
-      },
-    };
-
+  it("simple-storage", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
       ensAddress
     );
 
-    const client = await createWeb3ApiClient(createClientParams);
+    const client = await createWeb3ApiClient(clientParams);
 
     const ensUri = new Uri(`ens/${api.ensDomain}`);
     const ipfsUri = new Uri(`ipfs/${api.ipfsCid}`);
@@ -137,7 +128,7 @@ describe("Web3ApiClient", () => {
     );
     const ensUri = new Uri(`ens/${api.ensDomain}`);
 
-    const client = new Web3ApiClient({ redirects });
+    const client = await createWeb3ApiClient(clientParams);
 
     const method1a = await client.query<{
       method1: {
@@ -402,7 +393,7 @@ describe("Web3ApiClient", () => {
     );
     const ensUri = new Uri(`ens/${api.ensDomain}`);
 
-    const client = new Web3ApiClient({ redirects });
+    const client = await createWeb3ApiClient(clientParams);
 
     const response = await client.query<{
       bytesMethod: Buffer;
@@ -437,7 +428,7 @@ describe("Web3ApiClient", () => {
     );
     const ensUri = new Uri(`ens/${api.ensDomain}`);
 
-    const client = new Web3ApiClient({ redirects });
+    const client = await createWeb3ApiClient(clientParams);
 
     const method1a = await client.query<any>({
       uri: ensUri,

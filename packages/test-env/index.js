@@ -42,6 +42,17 @@ async function down(quiet = false) {
   )
 }
 
+const clientTestEnv = {
+  ethereum: {
+    from: "w3://ens/ethereum.web3api.eth",
+    provider: "http://localhost:8545",
+  },
+  ipfs: {
+    from: "w3://ens/ipfs.web3api.eth",
+    provider: "http://localhost:5001",
+  },
+};
+
 if (require.main === module) {
   up().catch(err => {
     console.log(err)
@@ -50,6 +61,7 @@ if (require.main === module) {
 } else {
   module.exports = {
     up,
-    down
+    down,
+    clientTestEnv
   }
 }

@@ -38,6 +38,7 @@
     "@types/js-yaml": "3.11.1",
     "@types/semver": "^7.3.4",
     "@web3api/cli": "0.0.1-prealpha.5",
+    "@web3api/client-test-env": "0.0.1-prealpha.5",
     "@web3api/test-cases": "0.0.1-prealpha.1",
     "axios": "0.19.2",
     "jest": "26.2.2",
