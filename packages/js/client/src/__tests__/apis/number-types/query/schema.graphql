@@ -1,6 +1,11 @@
 type Query {
-  integerMethod(
+  i32Method(
     first: Int!
     second: Int!
   ): Int!
+
+  u32Method(
+    first: UInt32!
+    second: UInt32!
+  ): UInt32!
 }
