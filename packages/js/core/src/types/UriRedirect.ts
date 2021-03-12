@@ -23,3 +23,23 @@ export interface UriRedirectDefinition {
   /** The destination URI, or plugin, that will now handle the invocation. */
   to: string | PluginPackage;
 }
+
+export function convertToUriRedirects(
+  redirectDefinitions: UriRedirectDefinition[]
+): UriRedirect[] {
+  const redirects: UriRedirect[] = [];
+  for (const definition of redirectDefinitions) {
+    const from = new Uri(definition.from);
+    const to =
+      typeof definition.to === "string"
+        ? new Uri(definition.to)
+        : definition.to;
+
+    redirects.push({
+      from: from,
+      to: to,
+    });
+  }
+
+  return redirects;
+}

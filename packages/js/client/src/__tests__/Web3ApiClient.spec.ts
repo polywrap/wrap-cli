@@ -1,13 +1,13 @@
-import { Web3ApiClient, Uri, UriRedirect } from "../";
+import { Web3ApiClient, Uri, UriRedirectDefinition } from "../";
 import {
   buildAndDeployApi,
   testEnvUp,
   testEnvDown
 } from "./helpers";
 
-import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
-import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
-import { EnsPlugin } from "@web3api/ens-plugin-js";
+import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
+import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
+import { ensPlugin } from "@web3api/ens-plugin-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 import axios from "axios";
 
@@ -16,7 +16,7 @@ jest.setTimeout(50000);
 describe("Web3ApiClient", () => {
   let ipfsProvider: string;
   let ensAddress: string;
-  let redirects: UriRedirect[];
+  let redirects: UriRedirectDefinition[];
 
   beforeAll(async () => {
     // Stand up the test env
@@ -42,25 +42,16 @@ describe("Web3ApiClient", () => {
     // Will be used to fetch APIs.
     redirects = [
       {
-        from: new Uri("w3://ens/ethereum.web3api.eth"),
-        to: {
-          factory: () => new EthereumPlugin({ provider: ethereum }),
-          manifest: EthereumPlugin.manifest(),
-        },
+        from: "w3://ens/ethereum.web3api.eth",
+        to: ethereumPlugin({ provider: ethereum }),
       },
       {
-        from: new Uri("w3://ens/ipfs.web3api.eth"),
-        to: {
-          factory: () => new IpfsPlugin({ provider: ipfs }),
-          manifest: IpfsPlugin.manifest(),
-        },
+        from: "w3://ens/ipfs.web3api.eth",
+        to: ipfsPlugin({ provider: ipfs }),
       },
       {
-        from: new Uri("w3://ens/ens.web3api.eth"),
-        to: {
-          factory: () => new EnsPlugin({ address: ensAddress }),
-          manifest: EnsPlugin.manifest(),
-        },
+        from: "w3://ens/ens.web3api.eth",
+        to: ensPlugin({ address: ensAddress }),
       },
     ];
   }, 50000);

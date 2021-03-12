@@ -17,6 +17,8 @@ import {
   InvokeApiOptions,
   InvokeApiResult,
   Manifest,
+  UriRedirectDefinition,
+  convertToUriRedirects,
 } from "@web3api/core-js";
 
 export interface ClientConfig {
@@ -29,16 +31,17 @@ export class Web3ApiClient implements Client {
   // and handle cases where the are multiple jumps. For exmaple, if
   // A => B => C, then the cache should have A => C, and B => C.
   private _apiCache: ApiCache = new Map<string, Api>();
+  private _config: ClientConfig;
 
-  constructor(
-    private _config: ClientConfig = {
-      redirects: [],
-    }
-  ) {
-    const { redirects } = this._config;
+  constructor(config: { redirects: UriRedirectDefinition[] }) {
+    const redirects = convertToUriRedirects(config.redirects);
+    this._config = {
+      ...config,
+      redirects,
+    };
 
     // Add all default redirects (IPFS, ETH, ENS)
-    redirects.push(...getDefaultRedirects());
+    this._config.redirects.push(...getDefaultRedirects());
   }
 
   public redirects(): readonly UriRedirect[] {
