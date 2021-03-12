@@ -8,4 +8,9 @@ type Query {
     first: UInt32!
     second: UInt32!
   ): UInt32!
+#
+#  f32Method(
+#    first: Float32!
+#    second: Float32!
+#  ): Float32!
 }

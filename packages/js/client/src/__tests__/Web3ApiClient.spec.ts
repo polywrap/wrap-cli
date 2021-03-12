@@ -563,6 +563,27 @@ describe("Web3ApiClient", () => {
     expect(integerOverflowResponse.errors).toBeTruthy();
     expect(integerOverflowResponse.errors?.[0].message).toMatch(/integer overflow/);
     expect(integerOverflowResponse.data?.u32Method).toBeUndefined();
+
+    // const floatOverflowResponse = await client.query<{
+    //   f32Method: number
+    // }>({
+    //   uri: ensUri,
+    //   query: `
+    //     query {
+    //       f32Method(
+    //         first: $firstFloat
+    //         second: $secondFloat
+    //       )
+    //     }
+    //   `,
+    //   variables: {
+    //     firstFloat: 3.402823448181152343750, // max f32 size = 3.40282344818115234375
+    //     secondFloat: 10.0
+    //   }
+    // });
+    // expect(floatOverflowResponse.errors).toBeTruthy();
+    // expect(floatOverflowResponse.errors?.[0].message).toMatch(/bad prefix/);
+    // expect(floatOverflowResponse.data?.f32Method).toBeUndefined();
   });
 
 });
