@@ -153,3 +153,4 @@ export const ensPlugin: PluginFactory<EnsConfig> = (opts: EnsConfig) => {
     manifest: manifest,
   };
 };
+export const plugin = ensPlugin;

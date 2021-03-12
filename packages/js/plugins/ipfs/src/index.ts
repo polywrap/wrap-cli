@@ -92,3 +92,4 @@ export const ipfsPlugin: PluginFactory<IpfsConfig> = (opts: IpfsConfig) => {
     manifest: manifest,
   };
 };
+export const plugin = ipfsPlugin;

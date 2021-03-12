@@ -156,3 +156,4 @@ export const ethereumPlugin: PluginFactory<EthereumConfig> = (
     manifest: manifest,
   };
 };
+export const plugin = ethereumPlugin;

@@ -54,3 +54,4 @@ export const graphNodePlugin: PluginFactory<GraphNodeConfig> = (
     manifest: manifest,
   };
 };
+export const plugin = graphNodePlugin;

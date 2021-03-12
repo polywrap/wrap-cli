@@ -53,3 +53,4 @@ export const httpPlugin: PluginFactory<Record<string, never>> = () => {
     manifest: manifest,
   };
 };
+export const plugin = httpPlugin;

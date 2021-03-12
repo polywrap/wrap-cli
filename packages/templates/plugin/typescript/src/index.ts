@@ -49,3 +49,4 @@ export const samplePlugin: PluginFactory<SamplePluginConfig> = (
     manifest: SamplePlugin.manifest(),
   };
 };
+export const plugin = samplePlugin;
