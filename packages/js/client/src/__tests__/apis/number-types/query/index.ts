@@ -1,7 +1,7 @@
 import {
   Input_i32Method,
   Input_u32Method,
-  Input_f32Method
+  // Input_f32Method
 } from "./w3";
 
 export function i32Method(input: Input_i32Method): i32 {
