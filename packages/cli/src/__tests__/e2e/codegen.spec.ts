@@ -1,6 +1,8 @@
 import path from "path";
 import { defaultGenerationFile, defaultManifest } from "../../commands/codegen";
-import { clearStyle, run } from "./utils";
+import { clearStyle } from "./utils";
+
+import { runCLI } from "@web3api/test-env-js";
 
 const HELP = `
 w3 codegen [<generation-file>] [options]
@@ -23,66 +25,50 @@ describe("e2e tests for codegen command", () => {
   const projectRoot = path.resolve(__dirname, "../project/");
 
   test("Should show help text", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["codegen", "--help"],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["codegen", "--help"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(0);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output)).toEqual(HELP);
   });
 
   test("Should throw error for invalid params - outputDir", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["codegen", "--output-dir"],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["codegen", "--output-dir"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(0);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--output-dir option missing <path> argument
 ${HELP}`);
   });
 
   test("Should throw error for invalid params - ens", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["codegen", "--ens"],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["codegen", "--ens"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(0);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--ens option missing <[address,]domain> argument
 ${HELP}`);
   });
 
   test("Should throw error for invalid generation file - wrong file", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["codegen", `web3api-invalid.gen.js`],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["codegen", `web3api-invalid.gen.js`],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(1);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output)).toContain(`- Generate types
 - Load web3api from web3api.yaml
 ✔ Load web3api from web3api.yaml
@@ -90,17 +76,13 @@ ${HELP}`);
   });
 
   test("Should throw error for invalid generation file - no run() method", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["codegen", `web3api-norun.gen.js`],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["codegen", `web3api-norun.gen.js`],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(1);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output)).toContain(`- Generate types
 - Load web3api from web3api.yaml
 ✔ Load web3api from web3api.yaml
@@ -108,20 +90,16 @@ ${HELP}`);
   });
 
   test("Should successfully generate types", async () => {
-    const errorHandler = jest.fn();
-
     const rimraf = require("rimraf");
     rimraf.sync(`${projectRoot}/types`);
 
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["codegen"],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["codegen"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(0);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`- Generate types
 - Load web3api from web3api.yaml
 ✔ Load web3api from web3api.yaml

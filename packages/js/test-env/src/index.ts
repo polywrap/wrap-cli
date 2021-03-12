@@ -58,20 +58,26 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
   return { ipfs, ethereum, redirects, data };
 };
 
-export const runW3CLI = async (
-  args: string[]
+export const runCLI = async (
+  options: {
+    args: string[],
+    cwd?: string,
+  },
+  cli: string = "npx w3"
 ): Promise<{
   exitCode: number;
   stdout: string;
   stderr: string;
 }> => {
   const [exitCode, stdout, stderr] = await new Promise((resolve, reject) => {
-    // Make sure to set an absolute working directory
-    let cwd = process.cwd();
-    cwd = cwd[0] !== "/" ? path.resolve(__dirname, cwd) : cwd;
+    if (!options.cwd) {
+      // Make sure to set an absolute working directory
+      const cwd = process.cwd();
+      options.cwd = cwd[0] !== "/" ? path.resolve(__dirname, cwd) : cwd;
+    }
 
-    const command = `npx w3 ${args.join(" ")}`;
-    const child = spawn(command, { cwd });
+    const command = `${cli} ${options.args.join(" ")}`;
+    const child = spawn(command, { cwd: options.cwd });
 
     let stdout = "";
     let stderr = "";
@@ -112,16 +118,18 @@ export async function buildAndDeployApi(
   const apiEns = `${generateName()}.eth`;
 
   // build & deploy the protocol
-  const { exitCode, stdout, stderr } = await runW3CLI([
-    "build",
-    `${apiAbsPath}/web3api.yaml`,
-    "--output-dir",
-    `${apiAbsPath}/build`,
-    "--ipfs",
-    ipfsProvider,
-    "--test-ens",
-    `${ensAddress},${apiEns}`,
-  ]);
+  const { exitCode, stdout, stderr } = await runCLI({
+    args: [
+      "build",
+      `${apiAbsPath}/web3api.yaml`,
+      "--output-dir",
+      `${apiAbsPath}/build`,
+      "--ipfs",
+      ipfsProvider,
+      "--test-ens",
+      `${ensAddress},${apiEns}`,
+    ]
+  });
 
   if (exitCode !== 0) {
     console.error(`w3 exited with code: ${exitCode}`);

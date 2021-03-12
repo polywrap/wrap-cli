@@ -1,4 +1,4 @@
-import { spawn } from "child_process";
+/*import { spawn } from "child_process";
 
 export const run = (
   command: string,
@@ -40,7 +40,7 @@ export const run = (
         reject(err);
       });
   });
-};
+};*/
 
 export const clearStyle = (styled: string) => {
   return styled.replace(
