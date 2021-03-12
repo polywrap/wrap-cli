@@ -11,6 +11,7 @@ import {
   initTestEnvironment,
   buildAndDeployApi
 } from "@web3api/test-env-js";
+import { GetPathToTestApis } from "@web3api/test-cases";
 
 jest.setTimeout(30000);
 
@@ -31,7 +32,7 @@ describe("Web3API React Integration", () => {
 
     redirects = testRedirects;
     api = await buildAndDeployApi(
-      `${__dirname}/simple-storage-api`,
+      `${GetPathToTestApis()}/simple-storage`,
       ipfs,
       data.ensAddress
     );

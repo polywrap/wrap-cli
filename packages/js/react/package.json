@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@web3api/cli": "0.0.1-prealpha.5",
+    "@web3api/test-cases": "0.0.1-prealpha.1",
     "@web3api/test-env-js": "0.0.1-prealpha.5",
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^5.1.0",

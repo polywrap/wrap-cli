@@ -19,6 +19,7 @@ import {
   initTestEnvironment,
   buildAndDeployApi
 } from "@web3api/test-env-js";
+import { GetPathToTestApis } from "@web3api/test-cases";
 
 jest.setTimeout(30000);
 
@@ -36,7 +37,7 @@ describe("useWeb3ApiQuery hook", () => {
     } = await initTestEnvironment();
 
     const { ensDomain } = await buildAndDeployApi(
-      `${__dirname}/simple-storage-api`,
+      `${GetPathToTestApis()}/simple-storage`,
       ipfs,
       data.ensAddress
     );
