@@ -4,7 +4,6 @@ import React from "react";
 type ClientContext = React.Context<Web3ApiClient>
 
 interface Web3ApiProviderState {
-  client?: Web3ApiClient;
   ClientContext: ClientContext;
 }
 
@@ -36,13 +35,16 @@ export function createWeb3ApiProvider(
   };
 
   return ({ redirects, children }) => {
-    // Initialize the provider's state
-    const state = PROVIDERS[name];
-    state.client = new Web3ApiClient({ redirects });
-    const ClientProvider = state.ClientContext.Provider;
+    // Only recreate the Web3ApiClient when the redirects change
+    const client = React.useMemo(
+      () => new Web3ApiClient({ redirects }),
+    [redirects]);
+
+    // Get the provider's context
+    const ClientProvider = PROVIDERS[name].ClientContext.Provider;
 
     return (
-      <ClientProvider value={state.client as Web3ApiClient}>
+      <ClientProvider value={client}>
         {children}
       </ClientProvider>
     );
