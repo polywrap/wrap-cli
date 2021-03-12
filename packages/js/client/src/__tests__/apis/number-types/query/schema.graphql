@@ -1,0 +1,6 @@
+type Query {
+  integerMethod(
+    first: Int!
+    second: Int!
+  ): Int!
+}

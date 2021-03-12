@@ -512,4 +512,62 @@ describe("Web3ApiClient", () => {
     });
   });
 
+  it("number-types", async () => {
+    const api = await buildAndDeployApi(
+      `${__dirname}/apis/number-types`,
+      ipfsProvider,
+      ensAddress
+    );
+
+    const ensUri = new Uri(`ens/${api.ensDomain}`);
+    const client = new Web3ApiClient({ redirects });
+
+    const integerAdditionResponse = await client.query<{
+      integerMethod: number
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          integerMethod(
+            first: $firstInt
+            second: $secondInt
+          )
+        }
+      `,
+      variables: {
+        firstInt: 21474836,
+        secondInt: 10
+      }
+    });
+    expect(integerAdditionResponse.errors).toBeFalsy();
+    expect(integerAdditionResponse.data).toBeTruthy();
+    expect(integerAdditionResponse.data).toMatchObject({
+      integerMethod: 21474846
+    });
+
+    // max i32 = 2147483648
+    for (let tooBigInt in [-2147483649, 2147483649]) {
+      const integerUnderflowResponse = await client.query<{
+        integerMethod: number
+      }>({
+        uri: ensUri,
+        query: `
+        query {
+          integerMethod(
+            first: $firstInt
+            second: $secondInt
+          )
+        }
+      `,
+        variables: {
+          firstInt: tooBigInt,
+          secondInt: 10
+        }
+      });
+      expect(integerUnderflowResponse.errors).toBeTruthy();
+      expect(integerUnderflowResponse.errors?.[0].message).toMatch(/integer overflow/);
+      expect(integerUnderflowResponse.data?.integerMethod).toBeUndefined();
+    }
+  });
+
 });
