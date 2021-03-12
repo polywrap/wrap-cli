@@ -3,6 +3,4 @@
 type Query {
   catToString(ipfsUrl: String!, cid: String!): String!
   catFile(ipfsUrl: String!, cid: String!): Bytes!
-
-  tryResolveUri(ipfsUrl: String!, authority: String!, path: String!): String
 }

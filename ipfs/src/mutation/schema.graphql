@@ -1,7 +1,7 @@
 #import { Mutation, ResponseType } into Http from "w3://ens/http.web3api.eth"
 
 type Mutation {
-  addFile(ipfsUrl: String!, fileName: String!, data: String!): AddResult!
+  addFile(ipfsUrl: String!, fileName: String!, data: Bytes!): AddResult!
 }
 
 type AddResult {

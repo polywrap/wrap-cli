@@ -12,15 +12,15 @@ export function addFile(input: Input_addFile): AddResult {
       responseType: Http_ResponseType.TEXT,
       body: {
         formDataBody: {
-          data: [{key: input.fileName, data: input.data}]
+          data: [{key: input.fileName, data: String.UTF8.decode(input.data)}]
         },
         rawBody: null
       },
     }
   })
 
-  if(addResponse == null) {
-    throw new Error("Error on add request");
+  if(addResponse == null || addResponse.status != 200) {
+    throw new Error(`Failed to add file: ${input.fileName}`);
   }
 
   const responseObj: JSON.Obj = <JSON.Obj>(JSON.parse(addResponse.body));

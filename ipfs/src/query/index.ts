@@ -1,8 +1,7 @@
 import { Http_Query, Http_ResponseType, Http_Body } from "./w3/imported";
 import { 
   Input_catToString,
-  Input_catFile,
-  Input_tryResolveUri,
+  Input_catFile
 } from "./w3";
 import {decode} from "as-base64"
 
@@ -21,7 +20,7 @@ export function catToString(input: Input_catToString): String {
   });
 
   if(catResponse == null || catResponse.status != 200) {
-    throw new Error(`Failed to cat file: ${catResponse.status} ${catResponse.statusText}`);
+    throw new Error(`Failed to cat file: ${catResponse?.status} ${catResponse?.statusText}`);
   }
 
   return catResponse.body;
@@ -40,16 +39,8 @@ export function catFile(input: Input_catFile): ArrayBuffer {
   });
 
   if(catResponse == null || catResponse.status != 200) {
-    throw new Error(`Failed to cat file: ${catResponse.status} ${catResponse.statusText}`);
+    throw new Error(`Failed to cat file: ${catResponse?.status} ${catResponse?.statusText}`);
   }
 
   return decode(catResponse.body).buffer;
-}
-
-export function tryResolveUri(input: Input_tryResolveUri): string {
-  if(input.authority != "ipfs") {
-    return "";
-  }
-
-  return "";
 }
