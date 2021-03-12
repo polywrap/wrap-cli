@@ -1,15 +1,10 @@
 import { Web3ApiClient, Uri, UriRedirectDefinition } from "../";
 import {
   buildAndDeployApi,
-  testEnvUp,
-  testEnvDown
-} from "./helpers";
-
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import { ensPlugin } from "@web3api/ens-plugin-js";
+  initTestEnvironment,
+  stopTestEnvironment
+} from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
-import axios from "axios";
 
 jest.setTimeout(50000);
 
@@ -19,46 +14,14 @@ describe("Web3ApiClient", () => {
   let redirects: UriRedirectDefinition[];
 
   beforeAll(async () => {
-    // Stand up the test env
-    await testEnvUp();
-
-    // fetch providers from dev server
-    const {
-      data: { ipfs, ethereum },
-    } = await axios.get("http://localhost:4040/providers");
-
-    if (!ipfs || ipfs.length === 0) {
-      throw Error("Dev server must be running at port 4040");
-    }
-
+    const { ipfs, data, redirects: testRedirects } = await initTestEnvironment();
     ipfsProvider = ipfs;
-
-    // re-deploy ENS
-    const { data } = await axios.get("http://localhost:4040/deploy-ens");
-
     ensAddress = data.ensAddress;
-
-    // Test env redirects for ethereum, ipfs, and ENS.
-    // Will be used to fetch APIs.
-    redirects = [
-      {
-        from: "w3://ens/ethereum.web3api.eth",
-        to: ethereumPlugin({ provider: ethereum }),
-      },
-      {
-        from: "w3://ens/ipfs.web3api.eth",
-        to: ipfsPlugin({ provider: ipfs }),
-      },
-      {
-        from: "w3://ens/ens.web3api.eth",
-        to: ensPlugin({ address: ensAddress }),
-      },
-    ];
-  }, 50000);
+    redirects = testRedirects;
+  });
 
   afterAll(async () => {
-    // Teardown the test environment
-    await testEnvDown();
+    await stopTestEnvironment();
   });
 
   it("simple-storage", async () => {
@@ -67,6 +30,7 @@ describe("Web3ApiClient", () => {
       ipfsProvider,
       ensAddress
     );
+
     const ensUri = new Uri(`ens/${api.ensDomain}`);
     const ipfsUri = new Uri(`ipfs/${api.ipfsCid}`);
 

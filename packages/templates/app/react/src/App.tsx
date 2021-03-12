@@ -7,9 +7,6 @@ import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 
-// Needed for bundling the @web3api/client-js web worker
-process.env.WORKER_PREFIX= 'workerize-loader!';
-
 function App() {
   const [contract, setContract] = React.useState<string | undefined>(undefined);
   const [client, setClient] = React.useState<Web3ApiClient | undefined>(undefined);
