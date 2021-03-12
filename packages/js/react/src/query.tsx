@@ -20,11 +20,17 @@ export interface UseWeb3ApiQueryProps extends QueryApiOptions {
   provider?: string;
 }
 
-export interface UseWeb3ApiQuery extends UseWeb3ApiQueryState {
+export interface UseWeb3ApiQuery<
+  TData extends Record<string, unknown> = Record<string, unknown>
+> extends UseWeb3ApiQueryState<TData> {
   execute: () => Promise<QueryApiResult>;
 }
 
-export const useWeb3ApiQuery = (props: UseWeb3ApiQueryProps): UseWeb3ApiQuery => {
+export function useWeb3ApiQuery<
+  TData extends Record<string, unknown> = Record<string, unknown>
+>(
+  props: UseWeb3ApiQueryProps
+): UseWeb3ApiQuery<TData> {
 
   if (!props.provider) {
     props.provider = PRIMARY_PROVIDER;
@@ -48,13 +54,13 @@ export const useWeb3ApiQuery = (props: UseWeb3ApiQueryProps): UseWeb3ApiQuery =>
   }
 
   // Initialize the UseWeb3ApiQueryState
-  const { state, dispatch } = createStateReducer<UseWeb3ApiQueryState>(
-    INITIAL_QUERY_STATE
+  const { state, dispatch } = createStateReducer<UseWeb3ApiQueryState<TData>>(
+    INITIAL_QUERY_STATE as UseWeb3ApiQueryState<TData>
   );
 
   const execute = async (variables?: Record<string, unknown>) => {
     dispatch({ loading: true });
-    const { data, errors } = await client.query({
+    const { data, errors } = await client.query<TData>({
       ...props,
       variables: {
         ...props.variables,
