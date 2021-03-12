@@ -1,6 +1,8 @@
 import path from "path";
 import { supportedLangs } from "../../commands/create";
-import { clearStyle, run } from "./utils";
+import { clearStyle } from "./utils";
+
+import { runCLI } from "@web3api/test-env-js";
 
 const HELP = `
 w3 create command <project-name> [options]
@@ -23,129 +25,97 @@ describe("e2e tests for create command", () => {
   const projectRoot = path.resolve(__dirname, "../project");
   
   test("Should show help text", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["create", "--help"],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["create", "--help"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(0);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output)).toEqual(HELP);
   });
 
   test("Should throw error for missing parameter - type", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["create"],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["create"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(0);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`Please provide a command
 ${HELP}`);
   });
 
   test("Should throw error for missing parameter - lang", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["create", "type"],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["create", "type"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(0);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`Please provide a language
 ${HELP}`);
   });
 
   test("Should throw error for missing parameter - name", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["create", "type", "lang"],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["create", "type", "lang"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(0);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`Please provide a project name
 ${HELP}`);
   });
 
   test("Should throw error for invalid parameter - type", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["create", "unknown", "app", "name"],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["create", "unknown", "app", "name"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(0);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`Unrecognized command "unknown"
 ${HELP}`);
   });
 
   test("Should throw error for invalid parameter - lang", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["create", "api", "unknown", "name"],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["create", "api", "unknown", "name"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(0);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`Unrecognized language "unknown"
 ${HELP}`);
   });
 
   test("Should throw error for invalid parameter - output-dir", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["create", "api", "assemblyscript", "name", "-o"],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["create", "api", "assemblyscript", "name", "-o"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(0);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--output-dir option missing <path> argument
 ${HELP}`);
   });
 
   test("Should successfully generate project", async () => {
-    const errorHandler = jest.fn();
-
     const rimraf = require("rimraf");
     rimraf.sync(`${projectRoot}/test`);
 
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["create", "api", "assemblyscript", "test", "-o", `${projectRoot}/test`],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output } = await runCLI({
+      args: ["create", "api", "assemblyscript", "test", "-o", `${projectRoot}/test`],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(0);
     expect(clearStyle(output)).toContain(
