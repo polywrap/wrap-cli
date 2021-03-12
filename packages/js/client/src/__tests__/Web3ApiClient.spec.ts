@@ -1,9 +1,14 @@
 import { Web3ApiClient, Uri, UriRedirect } from "../";
-import { buildAndDeployApi } from "./helpers";
+import {
+  buildAndDeployApi,
+  testEnvUp,
+  testEnvDown
+} from "./helpers";
 
 import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
 import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 import { EnsPlugin } from "@web3api/ens-plugin-js";
+import { GetPathToTestApis } from "@web3api/test-cases";
 import axios from "axios";
 
 jest.setTimeout(50000);
@@ -14,12 +19,15 @@ describe("Web3ApiClient", () => {
   let redirects: UriRedirect[];
 
   beforeAll(async () => {
+    // Stand up the test env
+    await testEnvUp();
+
     // fetch providers from dev server
     const {
       data: { ipfs, ethereum },
     } = await axios.get("http://localhost:4040/providers");
 
-    if (!ipfs) {
+    if (!ipfs || ipfs.length === 0) {
       throw Error("Dev server must be running at port 4040");
     }
 
@@ -55,11 +63,16 @@ describe("Web3ApiClient", () => {
         },
       },
     ];
+  }, 50000);
+
+  afterAll(async () => {
+    // Teardown the test environment
+    await testEnvDown();
   });
 
   it("simple-storage", async () => {
     const api = await buildAndDeployApi(
-      `${__dirname}/apis/simple-storage`,
+      `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
       ensAddress
     );
@@ -129,7 +142,7 @@ describe("Web3ApiClient", () => {
 
   it("object-types", async () => {
     const api = await buildAndDeployApi(
-      `${__dirname}/apis/object-types`,
+      `${GetPathToTestApis()}/object-types`,
       ipfsProvider,
       ensAddress
     );
@@ -395,7 +408,7 @@ describe("Web3ApiClient", () => {
 
   it("bytes-type", async () => {
     const api = await buildAndDeployApi(
-      `${__dirname}/apis/bytes-type`,
+      `${GetPathToTestApis()}/bytes-type`,
       ipfsProvider,
       ensAddress
     );
@@ -427,4 +440,89 @@ describe("Web3ApiClient", () => {
       bytesMethod: Buffer.from("Argument Value Sanity!").buffer
     });
   });
+
+  it("enum-types", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/enum-types`,
+      ipfsProvider,
+      ensAddress
+    );
+    const ensUri = new Uri(`ens/${api.ensDomain}`);
+
+    const client = new Web3ApiClient({ redirects });
+
+    const method1a = await client.query<any>({
+      uri: ensUri,
+      query: `
+        query {
+          method1(
+            en: 5
+          )
+        }
+      `,
+    });
+
+    expect(method1a.errors).toBeTruthy();
+    expect((method1a.errors as Error[])[0].message).toMatch(
+      /__w3_abort: Invalid value for enum 'Enum': 5/gm
+    );
+
+    const method1b = await client.query<any>({
+      uri: ensUri,
+      query: `
+        query {
+          method1(
+            en: 2
+            optEnum: 1
+          )
+        }
+      `,
+    });
+
+    expect(method1b.errors).toBeFalsy();
+    expect(method1b.data).toBeTruthy();
+    expect(method1b.data).toMatchObject({
+      method1: 2
+    });
+
+    const method1c = await client.query<any>({
+      uri: ensUri,
+      query: `
+        query {
+          method1(
+            en: 1
+            optEnum: INVALID
+          )
+        }
+      `,
+    });
+
+    expect(method1c.errors).toBeTruthy();
+    // @ts-ignore
+    expect(method1c.errors[0].message).toMatch(
+      /__w3_abort: Invalid key for enum 'Enum': INVALID/gm
+    );
+
+    const method2a = await client.query<any>({
+      uri: ensUri,
+      query: `
+        query {
+          method2(
+            enumArray: [OPTION1, 0, OPTION3]
+          )
+        }
+      `,
+    });
+
+    expect(method2a.errors).toBeFalsy();
+    expect(method2a.data).toBeTruthy();
+    expect(method2a.data).toMatchObject({
+      method2: [
+        0,
+        0,
+        2
+      ]
+    });
+  });
+
 });
