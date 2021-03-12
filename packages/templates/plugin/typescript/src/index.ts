@@ -1,7 +1,12 @@
 import { mutation, query } from "./resolvers";
 import { manifest } from "./manifest";
 
-import { Plugin, PluginManifest, PluginModules } from "@web3api/core-js";
+import {
+  Plugin,
+  PluginFactory,
+  PluginManifest,
+  PluginModules,
+} from "@web3api/core-js";
 
 export interface SamplePluginConfig {
   defaultValue: string;
@@ -35,3 +40,12 @@ export class SamplePlugin extends Plugin {
     return this._config.defaultValue;
   }
 }
+
+export const samplePlugin: PluginFactory<SamplePluginConfig> = (
+  opts: SamplePluginConfig
+) => {
+  return {
+    factory: () => new SamplePlugin(opts),
+    manifest: SamplePlugin.manifest(),
+  };
+};

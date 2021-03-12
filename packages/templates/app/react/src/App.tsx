@@ -3,9 +3,9 @@ import logo from './logo.svg';
 import './App.css';
 
 import { Uri, UriRedirect, Web3ApiClient } from "@web3api/client-js";
-import { EnsPlugin } from "@web3api/ens-plugin-js";
-import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
-import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
+import { ensPlugin } from "@web3api/ens-plugin-js";
+import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
+import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 
 // Needed for bundling the @web3api/client-js web worker
 process.env.WORKER_PREFIX= 'workerize-loader!';
@@ -22,25 +22,16 @@ function App() {
 
     const redirects: UriRedirect[] = [
       {
-        from: new Uri("w3://ens/ethereum.web3api.eth"),
-        to: {
-          factory: () => new EthereumPlugin({ provider: ethereum }),
-          manifest: EthereumPlugin.manifest()
-        }
+        from: "w3://ens/ethereum.web3api.eth",
+        to: ethereumPlugin({ provider: ethereum })
       },
       {
-        from: new Uri("w3://ens/ipfs.web3api.eth"),
-        to: {
-          factory: () => new IpfsPlugin({ provider: 'https://ipfs.io/api/v0/' }),
-          manifest: IpfsPlugin.manifest()
-        }
+        from: "w3://ens/ipfs.web3api.eth",
+        to: ipfsPlugin({ provider: "https://ipfs.io/api/v0/" }),
       },
       {
-        from: new Uri("w3://ens/ens.web3api.eth"),
-        to: {
-          factory: () => new EnsPlugin({ }),
-          manifest: EnsPlugin.manifest()
-        }
+        from: "w3://ens/ens.web3api.eth",
+        to: ensPlugin({}),
       }
     ];
     setClient(new Web3ApiClient({ redirects }));
