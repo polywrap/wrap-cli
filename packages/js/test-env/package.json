@@ -23,7 +23,8 @@
     "@web3api/ens-plugin-js": "0.0.1-prealpha.5",
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.5",
     "@web3api/ipfs-plugin-js": "0.0.1-prealpha.5",
-    "axios": "0.21.1"
+    "axios": "0.21.1",
+    "spawn-command": "0.0.2-1"
   },
   "devDependencies": {
     "rimraf": "3.0.2",

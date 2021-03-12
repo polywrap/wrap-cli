@@ -25,8 +25,8 @@
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint -- --fix",
     "lint:ci": "lerna run lint --parallel",
-    "test": "lerna run test --no-private",
-    "test:ci": "lerna run test:ci --no-private",
+    "test": "lerna run test --no-private --ignore @web3api/client-js && lerna run test --scope @web3api/client-js",
+    "test:ci": "lerna run test:ci --no-private --ignore @web3api/client-js && lerna run test:ci --scope @web3api/client-js",
     "version:apply": "npx lerna version $(cat VERSION) --exact --no-git-tag-version --yes",
     "postversion:apply": "git add . && git commit -m \"build(release): migrate to `cat ./VERSION`\"",
     "publish:npm": "lerna publish from-package --no-private --yes --registry https://registry.npmjs.org/ --no-verify-access"

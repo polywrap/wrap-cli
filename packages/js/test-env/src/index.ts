@@ -2,7 +2,6 @@ import { Uri, UriRedirect } from "@web3api/core-js";
 import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
 import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 import { EnsPlugin } from "@web3api/ens-plugin-js";
-
 import path from "path";
 import spawn from "spawn-command";
 import axios from "axios";
@@ -21,7 +20,9 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
   const { exitCode, stderr } = await runCLI({ args: ["test-env", "up"] });
 
   if (exitCode) {
-    throw Error(`initTestEnvironment failed to start test environment.\nExit Code: ${exitCode}\nStdErr: ${stderr}`);
+    throw Error(
+      `initTestEnvironment failed to start test environment.\nExit Code: ${exitCode}\nStdErr: ${stderr}`
+    );
   }
 
   // fetch providers from dev server
@@ -65,21 +66,25 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
   return { ipfs, ethereum, redirects, data };
 };
 
-export const stopTestEnvironment = async () => {
+export const stopTestEnvironment = async (): Promise<void> => {
   // Stop the test environment
   const { exitCode, stderr } = await runCLI({ args: ["test-env", "down"] });
 
   if (exitCode) {
-    throw Error(`stopTestEnvironment failed to stop test environment.\nExit Code: ${exitCode}\nStdErr: ${stderr}`);
+    throw Error(
+      `stopTestEnvironment failed to stop test environment.\nExit Code: ${exitCode}\nStdErr: ${stderr}`
+    );
   }
-}
+
+  return Promise.resolve();
+};
 
 export const runCLI = async (
   options: {
-    args: string[],
-    cwd?: string,
+    args: string[];
+    cwd?: string;
   },
-  cli: string = "npx w3"
+  cli = "npx w3"
 ): Promise<{
   exitCode: number;
   stdout: string;
@@ -144,7 +149,7 @@ export async function buildAndDeployApi(
       ipfsProvider,
       "--test-ens",
       `${ensAddress},${apiEns}`,
-    ]
+    ],
   });
 
   if (exitCode !== 0) {
