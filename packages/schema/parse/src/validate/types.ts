@@ -6,7 +6,7 @@ import {
 } from "../typeInfo";
 
 import { DocumentNode, StringValueNode, visit } from "graphql";
-import { getSchemaCycles } from "@namestys/graphql-schema-cycles";
+import { getSchemaCycles } from "graphql-schema-cycles";
 
 export function typeDefinitions(astNode: DocumentNode): void {
   const objectTypes: Record<string, boolean> = {};
