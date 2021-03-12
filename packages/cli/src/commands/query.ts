@@ -12,6 +12,8 @@ import { EnsPlugin } from "@web3api/ens-plugin-js";
 import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
 import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 import { HttpPlugin } from "@web3api/http-plugin-js"
+import { readFileSync } from "fs";
+import { resolve } from "path"
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const HELP = `
@@ -135,6 +137,11 @@ export default {
               if (typeof value === "string") {
                 if (value[0] === "$") {
                   output[key] = constants[value.replace("$", "")];
+                }
+                if (value.startsWith("file:")) {
+                  const path = value.replace("file:", "");
+                  const pathContent = readFileSync(resolve(path));
+                  output[key] = Uint8Array.from(pathContent);
                 }
               } else if (typeof value === "object") {
                 output[key] = resolveConstants(
