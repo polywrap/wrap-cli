@@ -43,17 +43,19 @@ export class HttpPlugin extends Plugin {
     
     let data: any;
     if(request.body?.formDataBody?.data) {
+      // body is defined as form data
       const formData = new FormData()
       request.body.formDataBody.data.forEach(element => {
         formData.append(element.key, element.data);
       });
       data = formData;
-
+      // set up appropriate headers for form data
       axiosConfig.headers = {
         ...axiosConfig.headers,
         ...formData.getHeaders(),
       }
     } else if(request.body?.rawBody) {
+      // body is defined as raw string
       data = request.body.rawBody;
     }
 
@@ -63,8 +65,6 @@ export class HttpPlugin extends Plugin {
       axiosConfig
     );
 
-    const prepResponse = fromAxiosResponse(response)
-    console.log(prepResponse);
-    return prepResponse;
+    return fromAxiosResponse(response);
   }
 }
