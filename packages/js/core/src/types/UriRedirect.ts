@@ -1,8 +1,5 @@
 import { PluginPackage, Uri } from ".";
 
-/**
- * Redirect from one URI, or a set of URIs, to a new URI or a plugin.
- */
 export interface UriRedirect {
   /** Redirect from this URI */
   from: Uri;
