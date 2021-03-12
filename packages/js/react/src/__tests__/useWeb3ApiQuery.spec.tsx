@@ -1,4 +1,9 @@
-import { useWeb3ApiQuery, Web3ApiProvider, QueryExecutionParams } from "..";
+import {
+  useWeb3ApiQuery,
+  Web3ApiProvider,
+  UseWeb3ApiQueryProps,
+  createWeb3ApiProvider
+} from "..";
 
 import {
   renderHook,
@@ -9,6 +14,7 @@ import {
   Uri,
   UriRedirect
 } from "@web3api/client-js";
+import { QueryApiOptions } from "@web3api/core-js";
 import {
   initTestEnvironment,
   buildAndDeployApi
@@ -46,10 +52,10 @@ describe("useWeb3ApiQuery hook", () => {
   });
 
   const assertMutationWorks = async (
-    query: QueryExecutionParams,
+    options: QueryApiOptions,
     expectedResult: number
   ) => {
-    const setDataStorageHook = () => useWeb3ApiQuery(query);
+    const setDataStorageHook = () => useWeb3ApiQuery(options);
 
     const {
       result: seStorageData,
@@ -67,7 +73,7 @@ describe("useWeb3ApiQuery hook", () => {
   };
 
   const queryStorageData = async (contract: string, uri: Uri) => {
-    const getStorageDataQuery = {
+    const getStorageDataQuery: UseWeb3ApiQueryProps = {
       uri,
       query: `query {
         getData(
@@ -92,7 +98,7 @@ describe("useWeb3ApiQuery hook", () => {
   };
 
   it("Deployment should work", async () => {
-    const deployQuery = {
+    const deployQuery: UseWeb3ApiQueryProps = {
       uri,
       query: `mutation { deployContract }`,
     };
@@ -126,7 +132,7 @@ describe("useWeb3ApiQuery hook", () => {
   });
 
   it("Should update storage data to five with hard coded value", async () => {
-    const setStorageDataQuery = {
+    const setStorageDataQuery: UseWeb3ApiQueryProps = {
       uri,
       query: `
         mutation {
@@ -142,7 +148,7 @@ describe("useWeb3ApiQuery hook", () => {
   });
 
   it("Should update storage data to five by setting value through  ", async () => {
-    const setStorageDataQuery = {
+    const setStorageDataQuery: UseWeb3ApiQueryProps = {
       uri,
       query: `
         mutation {
@@ -161,8 +167,8 @@ describe("useWeb3ApiQuery hook", () => {
   });
 
   it("Should throw error because there's no provider with expected key ", async () => {
-    const getStorageDataQuery = {
-      key: "Non existent Web3API Provider",
+    const getStorageDataQuery: UseWeb3ApiQueryProps = {
+      provider: "Non existent Web3API Provider",
       uri,
       query: `query {
         getData(
@@ -172,8 +178,31 @@ describe("useWeb3ApiQuery hook", () => {
     };
 
     const getDataStorageHook = () => useWeb3ApiQuery(getStorageDataQuery);
-    expect(getDataStorageHook).toThrowError(
-      /You are trying to use Web3ApiQuery hook with key: Non existent Web3API Provider and it doesn't exists/
+    const { result } = renderHook(getDataStorageHook);
+
+    expect(result.error?.message).toMatch(
+      /You are trying to use useWeb3ApiQuery with provider \"Non existent Web3API Provider\"/
+    );
+  });
+
+  it("Should throw error if provider is not within the DOM hierarchy", async () => {
+    createWeb3ApiProvider("other");
+
+    const getStorageDataQuery: UseWeb3ApiQueryProps = {
+      provider: "other",
+      uri,
+      query: `query {
+        getData(
+          address: "${contractAddress}"
+        )
+      }`,
+    };
+
+    const getDataStorageHook = () => useWeb3ApiQuery(getStorageDataQuery);
+    const { result } = renderHook(getDataStorageHook, WrapperProvider);
+
+    expect(result.error?.message).toMatch(
+      /The requested Web3APIProvider \"other\" was not found within the DOM hierarchy/
     );
   });
 });
