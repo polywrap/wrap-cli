@@ -5,6 +5,7 @@ type ClientContext = React.Context<Web3ApiClient>
 
 interface Web3ApiProviderState {
   ClientContext: ClientContext;
+  client?: Web3ApiClient;
 }
 
 interface Web3ApiProviderMap {
@@ -35,16 +36,29 @@ export function createWeb3ApiProvider(
   };
 
   return ({ redirects, children }) => {
-    // Only recreate the Web3ApiClient when the redirects change
-    const client = React.useMemo(
-      () => new Web3ApiClient({ redirects }),
-    [redirects]);
+    // If the client has already been set for this provider
+    if (PROVIDERS[name].client) {
+      throw Error( 
+        `Duplicate Web3ApiProvider detected. Please use "createWeb3ApiProvider("provider-name")".`
+      );
+    }
+
+    // Instantiate the client
+    PROVIDERS[name].client = new Web3ApiClient({ redirects });
+
+    // Unset the client in the global state when
+    // this provider is unmounted
+    React.useEffect(() => {
+      return function cleanup() {
+        PROVIDERS[name].client = undefined;
+      }
+    });
 
     // Get the provider's context
     const ClientProvider = PROVIDERS[name].ClientContext.Provider;
 
     return (
-      <ClientProvider value={client}>
+      <ClientProvider value={PROVIDERS[name].client as Web3ApiClient}>
         {children}
       </ClientProvider>
     );

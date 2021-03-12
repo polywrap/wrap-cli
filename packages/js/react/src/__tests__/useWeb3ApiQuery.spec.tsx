@@ -9,6 +9,7 @@ import {
   renderHook,
   act,
   RenderHookOptions,
+  cleanup
 } from "@testing-library/react-hooks";
 import {
   Uri,
@@ -28,7 +29,6 @@ describe("useWeb3ApiQuery hook", () => {
   let uri: Uri;
   let redirects: UriRedirect[];
   let WrapperProvider: RenderHookOptions<unknown>;
-  let contractAddress: string;
 
   beforeAll(async () => {
     const {
@@ -57,109 +57,75 @@ describe("useWeb3ApiQuery hook", () => {
     await stopTestEnvironment();
   });
 
-  const assertMutationWorks = async (
-    options: QueryApiOptions,
-    expectedResult: number
+  const sendQuery = async (
+    options: QueryApiOptions
   ) => {
-    const setDataStorageHook = () => useWeb3ApiQuery(options);
+    const hook = () => useWeb3ApiQuery(options);
 
-    const {
-      result: seStorageData,
-      waitForNextUpdate: waitForDataStorageUpdate,
-    } = renderHook(setDataStorageHook, WrapperProvider);
+    const { result: hookResult } = renderHook(hook, WrapperProvider);
 
-    act(() => {
-      seStorageData.current.execute();
+    await act(async () => {
+      await hookResult.current.execute();
     });
 
-    await waitForDataStorageUpdate();
+    const result = hookResult.current;
+    cleanup();
+    return result;
+  }
 
-    const newResult = await queryStorageData(contractAddress, uri);
-    expect(newResult).toBe(expectedResult);
-  };
-
-  const queryStorageData = async (contract: string, uri: Uri) => {
-    const getStorageDataQuery: UseWeb3ApiQueryProps = {
-      uri,
-      query: `query {
-        getData(
-          address: "${contract}"
-        )
-      }`,
-    };
-
-    const getDataStorageHook = () => useWeb3ApiQuery(getStorageDataQuery);
-
-    const {
-      result: storageData,
-      waitForNextUpdate: waitForDataStorage,
-    } = renderHook(getDataStorageHook, WrapperProvider);
-
-    act(() => {
-      storageData.current.execute();
-    });
-
-    await waitForDataStorage();
-    return storageData.current.data?.getData;
-  };
-
-  it("Deployment should work", async () => {
+  it("Should update storage data to five with hard coded value", async () => {
     const deployQuery: UseWeb3ApiQueryProps = {
       uri,
       query: `mutation { deployContract }`,
     };
 
-    const deployContractHook = () => useWeb3ApiQuery(deployQuery);
+    const { data } = await sendQuery(deployQuery);
 
-    const {
-      result: deployContractResult,
-      waitForNextUpdate: waitForContractDeployment,
-    } = renderHook(deployContractHook, WrapperProvider);
-
-    // assert initial state
-    expect(deployContractResult.current.data).toBe(undefined);
-    expect(deployContractResult.current.errors).toBe(undefined);
-    expect(deployContractResult.current.loading).toBe(false);
-
-    // deploy contract
-    act(() => {
-      deployContractResult.current.execute();
-    });
-
-    await waitForContractDeployment();
-    contractAddress = deployContractResult.current.data
-      ?.deployContract as string;
-    expect(deployContractResult.current.data?.deployContract).toMatch(/0x/);
-  });
-
-  it("Should retrieve initial storage data which is 0 ", async () => {
-    const data = await queryStorageData(contractAddress, uri);
-    expect(data).toBe(0);
-  });
-
-  it("Should update storage data to five with hard coded value", async () => {
     const setStorageDataQuery: UseWeb3ApiQueryProps = {
       uri,
       query: `
         mutation {
           setData(
-            address: "${contractAddress}"
+            address: "${data.deployContract}"
             value: 5
           )
         }
       `,
     };
 
-    await assertMutationWorks(setStorageDataQuery, 5);
+    const result = await sendQuery(setStorageDataQuery);
+    expect(result.errors).toBeFalsy();
+    expect(result.data?.setData).toMatch(/0x/);
+
+    const getStorageDataQuery: UseWeb3ApiQueryProps = {
+      uri,
+      query: `
+        query {
+          getData(
+            address: "${data.deployContract}"
+          )
+        }
+      `,
+    };
+
+    const { data: { getData } } = await sendQuery(getStorageDataQuery);
+    expect(getData).toBe(5);
   });
 
-  it("Should update storage data to five by setting value through  ", async () => {
+  it("Should update storage data to five by setting value through variables", async () => {
+    const deployQuery: UseWeb3ApiQueryProps = {
+      uri,
+      query: `mutation { deployContract }`,
+    };
+
+    const { data } = await sendQuery(deployQuery);
+
     const setStorageDataQuery: UseWeb3ApiQueryProps = {
       uri,
       query: `
         mutation {
           setData(
-            address: "${contractAddress}"
+            address: "${data.deployContract}"
             value: $value
           )
         }
@@ -169,7 +135,23 @@ describe("useWeb3ApiQuery hook", () => {
       },
     };
 
-    await assertMutationWorks(setStorageDataQuery, 5);
+    const result = await sendQuery(setStorageDataQuery);
+    expect(result.errors).toBeFalsy();
+    expect(result.data?.setData).toMatch(/0x/);
+
+    const getStorageDataQuery: UseWeb3ApiQueryProps = {
+      uri,
+      query: `
+        query {
+          getData(
+            address: "${data.deployContract}"
+          )
+        }
+      `,
+    };
+
+    const { data: { getData } } = await sendQuery(getStorageDataQuery);
+    expect(getData).toBe(5);
   });
 
   it("Should throw error because there's no provider with expected key ", async () => {
@@ -178,7 +160,7 @@ describe("useWeb3ApiQuery hook", () => {
       uri,
       query: `query {
         getData(
-          address: "${contractAddress}"
+          address: "foo"
         )
       }`,
     };
@@ -199,7 +181,7 @@ describe("useWeb3ApiQuery hook", () => {
       uri,
       query: `query {
         getData(
-          address: "${contractAddress}"
+          address: "foo"
         )
       }`,
     };
