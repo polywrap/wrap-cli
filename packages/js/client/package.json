@@ -19,11 +19,8 @@
     "build": "rimraf ./build && tsc --project tsconfig.build.json && npx webpack --config webpack.config.js",
     "lint": "eslint --color --ext .ts src/",
     "test": "TEST=true jest --passWithNoTests --runInBand --verbose",
-    "test:watch": "TEST=true jest --watch --passWithNoTests --verbose",
-    "test:ci": "TEST=true yarn test:env:up && yarn test",
-    "posttest:ci": "yarn test:env:down",
-    "test:env:up": "w3 test-env up",
-    "test:env:down": "w3 test-env down"
+    "test:ci": "TEST=true jest --passWithNoTests --runInBand --verbose",
+    "test:watch": "TEST=true jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
     "@msgpack/msgpack": "2.3.0",
@@ -41,10 +38,10 @@
     "@types/js-yaml": "3.11.1",
     "@types/semver": "^7.3.4",
     "@web3api/cli": "0.0.1-prealpha.5",
-    "axios": "0.19.2",
+    "@web3api/test-env-js": "0.0.1-prealpha.5",
+    "@web3api/test-cases": "0.0.1-prealpha.1",
     "jest": "26.2.2",
     "rimraf": "3.0.2",
-    "spawn-command": "0.0.2-1",
     "ts-jest": "26.1.4",
     "ts-loader": "8.0.17",
     "ts-node": "8.10.2",
