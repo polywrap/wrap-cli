@@ -17,6 +17,7 @@ import {
 import { QueryApiOptions } from "@web3api/core-js";
 import {
   initTestEnvironment,
+  stopTestEnvironment,
   buildAndDeployApi
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
@@ -50,6 +51,10 @@ describe("useWeb3ApiQuery hook", () => {
         redirects,
       },
     };
+  });
+
+  afterAll(async () => {
+    await stopTestEnvironment();
   });
 
   const assertMutationWorks = async (

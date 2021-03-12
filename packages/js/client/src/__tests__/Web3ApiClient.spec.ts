@@ -1,5 +1,9 @@
 import { Web3ApiClient, Uri, UriRedirect } from "../";
-import { buildAndDeployApi, initTestEnvironment } from "@web3api/test-env-js";
+import {
+  buildAndDeployApi,
+  initTestEnvironment,
+  stopTestEnvironment
+} from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
 jest.setTimeout(50000);
@@ -14,6 +18,10 @@ describe("Web3ApiClient", () => {
     ipfsProvider = ipfs;
     ensAddress = data.ensAddress;
     redirects = testRedirects;
+  });
+
+  afterAll(async () => {
+    await stopTestEnvironment();
   });
 
   it("simple-storage", async () => {

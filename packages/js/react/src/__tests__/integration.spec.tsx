@@ -9,6 +9,7 @@ import {
 } from "@web3api/client-js";
 import {
   initTestEnvironment,
+  stopTestEnvironment,
   buildAndDeployApi
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
@@ -37,6 +38,10 @@ describe("Web3API React Integration", () => {
       data.ensAddress
     );
     ensUri = new Uri(`ens/${api.ensDomain}`);
+  });
+
+  afterAll(async () => {
+    await stopTestEnvironment();
   });
 
   it("Deploys, read and write on Smart Contract ", async () => {

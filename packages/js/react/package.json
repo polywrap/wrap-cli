@@ -14,13 +14,10 @@
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color --ext 'src/**/*.{ts|tsx}'",
-    "test:ci": "TEST=true yarn test:env:up && yarn test",
+    "test:ci": "yarn test",
     "test": "TEST=true jest --passWithNoTests --runInBand --verbose --env=./src/__tests__/env/index.ts",
     "test:watch": "yarn test --watch",
     "pretest": "yarn install:web3api",
-    "posttest:ci": "yarn test:env:down",
-    "test:env:up": "w3 test-env up",
-    "test:env:down": "w3 test-env down",
     "install:web3api": "npx web3api-worker-install ./"
   },
   "dependencies": {

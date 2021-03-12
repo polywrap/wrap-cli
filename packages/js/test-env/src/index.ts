@@ -17,6 +17,13 @@ interface TestEnvironment {
 }
 
 export const initTestEnvironment = async (): Promise<TestEnvironment> => {
+  // Start the test environment
+  const { exitCode, stderr } = await runCLI({ args: ["test-env", "up"] });
+
+  if (exitCode) {
+    throw Error(`initTestEnvironment failed to start test environment.\nExit Code: ${exitCode}\nStdErr: ${stderr}`);
+  }
+
   // fetch providers from dev server
   const {
     data: { ipfs, ethereum },
@@ -57,6 +64,15 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
 
   return { ipfs, ethereum, redirects, data };
 };
+
+export const stopTestEnvironment = async () => {
+  // Stop the test environment
+  const { exitCode, stderr } = await runCLI({ args: ["test-env", "down"] });
+
+  if (exitCode) {
+    throw Error(`stopTestEnvironment failed to stop test environment.\nExit Code: ${exitCode}\nStdErr: ${stderr}`);
+  }
+}
 
 export const runCLI = async (
   options: {
