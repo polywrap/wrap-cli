@@ -8,6 +8,7 @@ import {
   Plugin,
   PluginManifest,
   PluginModules,
+  PluginFactory,
 } from "@web3api/core-js";
 import { ethers } from "ethers";
 import { Base58 } from "@ethersproject/basex";
@@ -145,3 +146,10 @@ export class EnsPlugin extends Plugin {
     }
   }
 }
+
+export const ensPlugin: PluginFactory<EnsConfig> = (opts: EnsConfig) => {
+  return {
+    factory: () => new EnsPlugin(opts),
+    manifest: manifest,
+  };
+};

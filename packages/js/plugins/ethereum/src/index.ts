@@ -7,6 +7,7 @@ import {
   Plugin,
   PluginManifest,
   PluginModules,
+  PluginFactory,
 } from "@web3api/core-js";
 import { Signer, ethers } from "ethers";
 import {
@@ -22,7 +23,7 @@ export type EthereumSigner = Signer | Address | AccountIndex;
 export type EthereumProvider = string | ExternalProvider;
 export type EthereumClient = JsonRpcProvider | Web3Provider;
 
-export interface EthereumConfig {
+export interface EthereumConfig extends Record<string, unknown> {
   provider: EthereumProvider;
   signer?: EthereumSigner;
 }
@@ -146,3 +147,12 @@ export class EthereumPlugin extends Plugin {
     return res.transactionHash;
   }
 }
+
+export const ethereumPlugin: PluginFactory<EthereumConfig> = (
+  opts: EthereumConfig
+) => {
+  return {
+    factory: () => new EthereumPlugin(opts),
+    manifest: manifest,
+  };
+};
