@@ -51,8 +51,6 @@ describe("js-sha3 algorithms returned values match the plugin's", () => {
       `,
     })
 
-    console.log(response.errors)
-
     expect(response.data).toBeDefined()
     expect(response.errors).toBeUndefined()
     expect(response.data?.sha3_512).toBe(expected)

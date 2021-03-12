@@ -1,0 +1,4 @@
+type Query {
+  hash(value: String!): String!
+  normalize(value: String!): String!
+}
