@@ -1,12 +1,180 @@
 {
-  "typeToViewCommands": [
+  "commands_build_address": [
+    {
+      "type": 0,
+      "value": "ENS Address"
+    }
+  ],
+  "commands_build_description": [
+    {
+      "type": 0,
+      "value": "Builds a Web3API and (optionally) uploads it to IPFS"
+    }
+  ],
+  "commands_build_ensRegistry": [
+    {
+      "type": 0,
+      "value": "ENS Registry"
+    }
+  ],
+  "commands_build_error_outputDirMissingPath": [
+    {
+      "type": 1,
+      "value": "optionName"
+    },
+    {
+      "type": 0,
+      "value": " option missing "
+    },
+    {
+      "type": 1,
+      "value": "argument"
+    },
+    {
+      "type": 0,
+      "value": " argument"
+    }
+  ],
+  "commands_build_error_resolution": [
+    {
+      "type": 0,
+      "value": "ENS Resolution Failed"
+    }
+  ],
+  "commands_build_error_testEnsAddressMissing": [
+    {
+      "type": 1,
+      "value": "optionName"
+    },
+    {
+      "type": 0,
+      "value": " option missing "
+    },
+    {
+      "type": 1,
+      "value": "argument"
+    },
+    {
+      "type": 0,
+      "value": " argument"
+    }
+  ],
+  "commands_build_error_testEnsNodeMissing": [
+    {
+      "type": 1,
+      "value": "optionName"
+    },
+    {
+      "type": 0,
+      "value": " option requires the "
+    },
+    {
+      "type": 1,
+      "value": "requiredOptionName"
+    },
+    {
+      "type": 0,
+      "value": " option"
+    }
+  ],
+  "commands_build_ethProvider": [
+    {
+      "type": 0,
+      "value": "Ethereum Provider"
+    }
+  ],
+  "commands_build_keypressListener_exit": [
+    {
+      "type": 0,
+      "value": "Exit: [CTRL + C], [ESC], or [Q]"
+    }
+  ],
+  "commands_build_keypressListener_watching": [
+    {
+      "type": 0,
+      "value": "Watching"
+    }
+  ],
+  "commands_build_options_e": [
+    {
+      "type": 0,
+      "value": "Publish the package to a test ENS domain locally (requires --ipfs)"
+    }
+  ],
+  "commands_build_options_e_address": [
+    {
+      "type": 0,
+      "value": "address"
+    }
+  ],
+  "commands_build_options_e_domain": [
+    {
+      "type": 0,
+      "value": "domain"
+    }
+  ],
+  "commands_build_options_h": [
+    {
+      "type": 0,
+      "value": "Show usage information"
+    }
+  ],
+  "commands_build_options_i": [
+    {
+      "type": 0,
+      "value": "Upload build results to an IPFS node (default: dev-server's node)"
+    }
+  ],
+  "commands_build_options_i_node": [
+    {
+      "type": 0,
+      "value": "node"
+    }
+  ],
+  "commands_build_options_o": [
+    {
+      "type": 0,
+      "value": "Output directory for build results (default: build/)"
+    }
+  ],
+  "commands_build_options_o_path": [
+    {
+      "type": 0,
+      "value": "path"
+    }
+  ],
+  "commands_build_options_options": [
+    {
+      "type": 0,
+      "value": "options"
+    }
+  ],
+  "commands_build_options_w": [
+    {
+      "type": 0,
+      "value": "Automatically rebuild when changes are made (default: false)"
+    }
+  ],
+  "commands_build_uriViewers": [
+    {
+      "type": 0,
+      "value": "URI Viewers"
+    }
+  ],
+  "commands_w3_error_notACommand": [
+    {
+      "type": 0,
+      "value": "is not a command"
+    }
+  ],
+  "commands_w3_helpPrompt": [
     {
       "type": 0,
       "value": "Type "
     },
     {
       "type": 1,
-      "value": "phrase"
+      "value": "command"
     },
     {
       "type": 0,

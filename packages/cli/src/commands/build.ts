@@ -9,26 +9,89 @@ import {
 } from "../lib";
 import { fixParameters } from "../lib/helpers/parameters";
 import { publishToIPFS } from "../lib/publishers/ipfs-publisher";
+import { getIntl } from "../lib/internationalization";
 
+import { defineMessages } from "@formatjs/intl";
 import chalk from "chalk";
 import axios from "axios";
 import readline from "readline";
 import { GluegunToolbox } from "gluegun";
 
-const HELP = `
-${chalk.bold("w3 build")} [options] ${chalk.bold("[<web3api-manifest>]")}
+const intl = getIntl();
 
-Options:
-  -h, --help                         Show usage information
-  -i, --ipfs [<node>]                Upload build results to an IPFS node (default: dev-server's node)
-  -o, --output-dir <path>            Output directory for build results (default: build/)
-  -e, --test-ens <[address,]domain>  Publish the package to a test ENS domain locally (requires --ipfs)
-  -w, --watch                        Automatically rebuild when changes are made (default: false)
+const helpMessages = defineMessages({
+  h: {
+    id: "commands_build_options_h",
+    defaultMessage: "Show usage information",
+    description: "",
+  },
+  i: {
+    id: "commands_build_options_i",
+    defaultMessage: "Upload build results to an IPFS node (default: dev-server's node)",
+    description: "",
+  },
+  o: {
+    id: "commands_build_options_o",
+    defaultMessage: "Output directory for build results (default: build/)",
+    description: "",
+  },
+  e: {
+    id: "commands_build_options_e",
+    defaultMessage: "Publish the package to a test ENS domain locally (requires --ipfs)",
+    description: "",
+  },
+  w: {
+    id: "commands_build_options_w",
+    defaultMessage: "Automatically rebuild when changes are made (default: false)",
+    description: "",
+  },
+  options: {
+    id: "commands_build_options_options",
+    defaultMessage: "options",
+  },
+  node: {
+    id: "commands_build_options_i_node",
+    defaultMessage: "node",
+    description: "IPFS node",
+  },
+  path: {
+    id: "commands_build_options_o_path",
+    defaultMessage: "path",
+    description: "file path for output",
+  },
+  address: {
+    id: "commands_build_options_e_address",
+    defaultMessage: "address",
+    description: "Ethereum address",
+  },
+  domain: {
+    id: "commands_build_options_e_domain",
+    defaultMessage: "domain",
+    description: "ENS domain (e.g. https://name.eth)",
+  },
+});
+const optionsString = intl.formatMessage(helpMessages.options);
+const nodeString = `[<${intl.formatMessage(helpMessages.node)}>]`;
+const outputDirString = `<${intl.formatMessage(helpMessages.path)}>`;
+const addressDomainString = `<[${intl.formatMessage(helpMessages.address)},]${intl.formatMessage(helpMessages.domain)}>`;
+const HELP = `
+${chalk.bold("w3 build")} [${optionsString}] ${chalk.bold("[<web3api-manifest>]")}
+
+${optionsString[0].toUpperCase() + optionsString.slice(1)}:
+  -h, --help                         ${intl.formatMessage(helpMessages.h)}
+  -i, --ipfs ${nodeString}                ${intl.formatMessage(helpMessages.i)}
+  -o, --output-dir ${outputDirString}            ${intl.formatMessage(helpMessages.o)}
+  -e, --test-ens ${addressDomainString}  ${intl.formatMessage(helpMessages.e)}
+  -w, --watch                        ${intl.formatMessage(helpMessages.w)}
 `;
 
 export default {
   alias: ["b"],
-  description: "Builds a Web3API and (optionally) uploads it to IPFS",
+  description: intl.formatMessage({
+    id: "commands_build_description",
+    defaultMessage: "Builds a Web3API and (optionally) uploads it to IPFS",
+    description: "description of command 'w3 build'",
+  }),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
 
@@ -68,19 +131,53 @@ export default {
     }
 
     if (outputDir === true) {
-      print.error("--output-dir option missing <path> argument");
+      const outputDirMissingPathMessage = intl.formatMessage(
+        {
+          id: "commands_build_error_outputDirMissingPath",
+          defaultMessage: "{optionName} option missing {argument} argument",
+          description: "",
+        },
+        {
+          optionName: "--output-dir",
+          argument: outputDirString,
+        }
+      );
+      print.error(outputDirMissingPathMessage);
       print.info(HELP);
       return;
     }
 
     if (testEns === true) {
-      print.error("--test-ens option missing <[address,]domain> argument");
+      const testEnsAddressMissingMessage = intl.formatMessage(
+        {
+          id: "commands_build_error_testEnsAddressMissing",
+          defaultMessage: "{optionName} option missing {argument} argument",
+          description: "",
+        },
+        {
+          optionName: "--test-ens",
+          argument: addressDomainString,
+        }
+      );
+      print.error(testEnsAddressMissingMessage);
       print.info(HELP);
       return;
     }
 
     if (testEns && !ipfs) {
-      print.error("--test-ens option requires the --ipfs [<node>] option");
+      const testEnsNodeMissingMessage = intl.formatMessage(
+        {
+          id: "commands_build_error_testEnsNodeMissing",
+          defaultMessage:
+            "{optionName} option requires the {requiredOptionName} option",
+          description: "",
+        },
+        {
+          optionName: "--test-ens",
+          requiredOptionName: `--ipfs ${nodeString}`,
+        }
+      );
+      print.error(testEnsNodeMissingMessage);
       print.info(HELP);
       return;
     }
@@ -170,7 +267,12 @@ export default {
 
         if (testEns) {
           if (!ensAddress) {
-            uris.push(["ENS Registry", `${ethProvider}/${ensAddress}`]);
+            const ensRegistryMessage = intl.formatMessage({
+              id: "commands_build_ensRegistry",
+              defaultMessage: "ENS Registry",
+              description: "",
+            });
+            uris.push([ensRegistryMessage, `${ethProvider}/${ensAddress}`]);
           }
 
           // ask the dev server to publish the CID to ENS
@@ -187,10 +289,27 @@ export default {
           if (data.success) {
             uris.push(["Web3API ENS", `${testEns} => ${cid}`]);
           } else {
+            const resolutionErrorMessages = defineMessages({
+              resolution: {
+                id: "commands_build_error_resolution",
+                defaultMessage: "ENS Resolution Failed",
+                description: "",
+              },
+              provider: {
+                id: "commands_build_ethProvider",
+                defaultMessage: "Ethereum Provider",
+                description: "",
+              },
+              address: {
+                id: "commands_build_address",
+                defaultMessage: "ENS Address",
+                description: "",
+              },
+            });
             print.error(
-              `ENS Resolution Failed { ${testEns} => ${cid} }\n` +
-                `Ethereum Provider: ${ethProvider}\n` +
-                `ENS Address: ${ensAddress}`
+              `${intl.formatMessage(resolutionErrorMessages.resolution)} { ${testEns} => ${cid} }\n` +
+                `${intl.formatMessage(resolutionErrorMessages.provider)}: ${ethProvider}\n` +
+                `${intl.formatMessage(resolutionErrorMessages.address)}: ${ensAddress}`
             );
           }
 
@@ -199,7 +318,12 @@ export default {
       }
 
       if (uris.length) {
-        print.success("URI Viewers:");
+        const uriViewers = intl.formatMessage({
+          id: "commands_build_uriViewers",
+          defaultMessage: "URI Viewers",
+          description: "",
+        });
+        print.success(`${uriViewers}:`);
         print.table(uris);
         return true;
       } else {
@@ -220,8 +344,20 @@ export default {
 
       const keyPressListener = () => {
         // Watch for escape key presses
-        print.info(`Watching: ${project.manifestDir}`);
-        print.info("Exit: [CTRL + C], [ESC], or [Q]");
+        const keypressListenerMessages = defineMessages({
+          watching: {
+            id: "commands_build_keypressListener_watching",
+            defaultMessage: "Watching",
+            description: "watching, monitoring key presses",
+          },
+          exit: {
+            id: "commands_build_keypressListener_exit",
+            defaultMessage: "Exit: [CTRL + C], [ESC], or [Q]",
+            description: "Stop watching, monitoring key presses",
+          },
+        });
+        print.info(`${intl.formatMessage(keypressListenerMessages.watching)}: ${project.manifestDir}`);
+        print.info(intl.formatMessage(keypressListenerMessages.exit));
         readline.emitKeypressEvents(process.stdin);
         process.stdin.on("keypress", async (str, key) => {
           if (

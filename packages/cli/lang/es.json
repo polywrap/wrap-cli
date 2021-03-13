@@ -1,3 +1,93 @@
 {
-  "typeToViewCommands": "Type {phrase} para mirar common commands"
+  "commands_build_address": {
+    "defaultMessage": "ENS Address",
+    "description": ""
+  },
+  "commands_build_description": {
+    "defaultMessage": "Builds a Web3API y (opcionalmente) uploads it to IPFS",
+    "description": "description of command 'w3 build'"
+  },
+  "commands_build_ensRegistry": {
+    "defaultMessage": "ENS Registry",
+    "description": ""
+  },
+  "commands_build_error_outputDirMissingPath": {
+    "defaultMessage": "{optionName} option missing {argument} argument",
+    "description": ""
+  },
+  "commands_build_error_resolution": {
+    "defaultMessage": "ENS Resolution Failed",
+    "description": ""
+  },
+  "commands_build_error_testEnsAddressMissing": {
+    "defaultMessage": "{optionName} option missing {argument} argument",
+    "description": ""
+  },
+  "commands_build_error_testEnsNodeMissing": {
+    "defaultMessage": "{optionName} option requires the {requiredOptionName} option",
+    "description": ""
+  },
+  "commands_build_ethProvider": {
+    "defaultMessage": "Ethereum Provider",
+    "description": ""
+  },
+  "commands_build_keypressListener_exit": {
+    "defaultMessage": "Exit: [CTRL + C], [ESC], or [Q]",
+    "description": "Stop watching, monitoring key presses"
+  },
+  "commands_build_keypressListener_watching": {
+    "defaultMessage": "Watching",
+    "description": "watching, monitoring key presses"
+  },
+  "commands_build_options_e": {
+    "defaultMessage": "Publish the package to a test ENS domain locally (requires --ipfs)",
+    "description": ""
+  },
+  "commands_build_options_e_address": {
+    "defaultMessage": "address",
+    "description": "Ethereum address"
+  },
+  "commands_build_options_e_domain": {
+    "defaultMessage": "domain",
+    "description": "ENS domain (e.g. https://name.eth)"
+  },
+  "commands_build_options_h": {
+    "defaultMessage": "Show usage information",
+    "description": ""
+  },
+  "commands_build_options_i": {
+    "defaultMessage": "Upload build results to an IPFS node (default: dev-server's node)",
+    "description": ""
+  },
+  "commands_build_options_i_node": {
+    "defaultMessage": "node",
+    "description": "IPFS node"
+  },
+  "commands_build_options_o": {
+    "defaultMessage": "Output directory for build results (default: build/)",
+    "description": ""
+  },
+  "commands_build_options_o_path": {
+    "defaultMessage": "path",
+    "description": "file path for output"
+  },
+  "commands_build_options_options": {
+    "defaultMessage": "options"
+  },
+  "commands_build_options_w": {
+    "defaultMessage": "Automatically rebuild when changes are made (default: false)",
+    "description": ""
+  },
+  "commands_build_uriViewers": {
+    "defaultMessage": "URI Viewers",
+    "description": ""
+  },
+  "commands_w3_error_notACommand": {
+    "defaultMessage": "is not a command",
+    "description": "[command] is not a valid command"
+  },
+  "commands_w3_helpPrompt": {
+    "defaultMessage": "Type {command} para mirar common commands",
+    "description": "resolves to 'Type w3 help to view common commands'"
+  }
 }
