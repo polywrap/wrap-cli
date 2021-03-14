@@ -206,11 +206,11 @@ export default {
       const outputDirMissingPathMessage = intl.formatMessage(
         {
           id: "commands_create_error_outputDirMissingPath",
-          defaultMessage: "{optionName} option missing {argument} argument",
+          defaultMessage: "{option} option missing {argument} argument",
           description: "",
         },
         {
-          optionName: "--output-dir",
+          option: "--output-dir",
           argument: `<${intl.formatMessage(helpMessages.path)}>`,
         }
       );

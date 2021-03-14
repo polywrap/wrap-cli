@@ -147,11 +147,11 @@ export default {
       const outputDirMissingPathMessage = intl.formatMessage(
         {
           id: "commands_build_error_outputDirMissingPath",
-          defaultMessage: "{optionName} option missing {argument} argument",
+          defaultMessage: "{option} option missing {argument} argument",
           description: "",
         },
         {
-          optionName: "--output-dir",
+          option: "--output-dir",
           argument: `<${intl.formatMessage(helpMessages.path)}>`,
         }
       );
@@ -164,11 +164,11 @@ export default {
       const ensAddressMissingMessage = intl.formatMessage(
         {
           id: "commands_build_error_testEnsAddressMissing",
-          defaultMessage: "{optionName} option missing {argument} argument",
+          defaultMessage: "{option} option missing {argument} argument",
           description: "",
         },
         {
-          optionName: "--ens",
+          option: "--ens",
           argument: `[<${intl.formatMessage(helpMessages.address)}>]`,
         }
       );

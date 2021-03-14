@@ -145,11 +145,11 @@ export default {
       const outputDirMissingPathMessage = intl.formatMessage(
         {
           id: "commands_build_error_outputDirMissingPath",
-          defaultMessage: "{optionName} option missing {argument} argument",
+          defaultMessage: "{option} option missing {argument} argument",
           description: "",
         },
         {
-          optionName: "--output-dir",
+          option: "--output-dir",
           argument: `<${pathStr}>`,
         }
       );
@@ -162,11 +162,11 @@ export default {
       const testEnsAddressMissingMessage = intl.formatMessage(
         {
           id: "commands_build_error_testEnsAddressMissing",
-          defaultMessage: "{optionName} option missing {argument} argument",
+          defaultMessage: "{option} option missing {argument} argument",
           description: "",
         },
         {
-          optionName: "--test-ens",
+          option: "--test-ens",
           argument: `<[${addrStr},]${domStr}>`,
         }
       );
@@ -179,13 +179,12 @@ export default {
       const testEnsNodeMissingMessage = intl.formatMessage(
         {
           id: "commands_build_error_testEnsNodeMissing",
-          defaultMessage:
-            "{optionName} option requires the {requiredOptionName} option",
+          defaultMessage: "{option} option requires the {required} option",
           description: "",
         },
         {
-          optionName: "--test-ens",
-          requiredOptionName: `--ipfs [<${nodeStr}>]`,
+          option: "--test-ens",
+          required: `--ipfs [<${nodeStr}>]`,
         }
       );
       print.error(testEnsNodeMissingMessage);
