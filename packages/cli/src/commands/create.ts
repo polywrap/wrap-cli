@@ -22,12 +22,12 @@ const helpMessages = defineMessages({
   command: {
     id: "commands_create_options_command",
     defaultMessage: "command",
-    description: "programming statement that tells the computer to do something",
+    description: "programming statement that direct computer",
   },
   commands: {
     id: "commands_create_options_commands",
     defaultMessage: "Commands",
-    description: "programming statements that tell the computer to do something",
+    description: "programming statements that direct computer",
   },
   projectName: {
     id: "commands_create_options_projectName",
@@ -69,7 +69,15 @@ const helpMessages = defineMessages({
     description: "file path for output",
   },
 });
-const pathString = `<${intl.formatMessage(helpMessages.path)}>`;
+const cmdStr = intl.formatMessage(helpMessages.command);
+const nameStr = intl.formatMessage(helpMessages.projectName);
+const optionsStr = intl.formatMessage(helpMessages.options);
+const langStr = intl.formatMessage(helpMessages.lang);
+const langsStr = intl.formatMessage(helpMessages.langs);
+const createProjStr = intl.formatMessage(helpMessages.createProject);
+const createAppStr = intl.formatMessage(helpMessages.createApp);
+const createPluginStr = intl.formatMessage(helpMessages.createPlugin);
+const pathStr = intl.formatMessage(helpMessages.path);
 
 const supportedLangs: { [key: string]: string[] } = {
   api: ["assemblyscript"],
@@ -78,19 +86,19 @@ const supportedLangs: { [key: string]: string[] } = {
 };
 
 const HELP = `
-${chalk.bold("w3 create")} ${intl.formatMessage(helpMessages.command)} <${intl.formatMessage(helpMessages.projectName)}> [${intl.formatMessage(helpMessages.options)}]
+${chalk.bold("w3 create")} ${cmdStr} <${nameStr}> [${optionsStr}]
 
 ${intl.formatMessage(helpMessages.commands)}:
-  ${chalk.bold("api")} <${intl.formatMessage(helpMessages.lang)}>     ${intl.formatMessage(helpMessages.createProject)}
-    ${intl.formatMessage(helpMessages.langs)}: ${supportedLangs.api.join(", ")}
-  ${chalk.bold("app")} <${intl.formatMessage(helpMessages.lang)}>     ${intl.formatMessage(helpMessages.createApp)}
-    ${intl.formatMessage(helpMessages.langs)}: ${supportedLangs.app.join(", ")}
-  ${chalk.bold("plugin")} <${intl.formatMessage(helpMessages.lang)}>  ${intl.formatMessage(helpMessages.createPlugin)}
-    ${intl.formatMessage(helpMessages.langs)}: ${supportedLangs.plugin.join(", ")}
+  ${chalk.bold("api")} <${langStr}>     ${createProjStr}
+    ${langsStr}: ${supportedLangs.api.join(", ")}
+  ${chalk.bold("app")} <${langStr}>     ${createAppStr}
+    ${langsStr}: ${supportedLangs.app.join(", ")}
+  ${chalk.bold("plugin")} <${langStr}>  ${createPluginStr}
+    ${langsStr}: ${supportedLangs.plugin.join(", ")}
 
 Options:
   -h, --help               ${intl.formatMessage(helpMessages.h)}
-  -o, --output-dir ${pathString}  ${intl.formatMessage(helpMessages.o)}
+  -o, --output-dir <${pathStr}>  ${intl.formatMessage(helpMessages.o)}
 `;
 
 export default {
@@ -176,7 +184,7 @@ export default {
       const unrecognizedCommand = intl.formatMessage({
         id: "commands_create_error_unrecognizedCommand",
         defaultMessage: "Unrecognized command",
-        description: "error message indicating user provided unrecognized command",
+        description: "error when user provided unrecognized command",
       });
       print.error(`${unrecognizedCommand} "${type}"`);
       print.info(HELP);
@@ -187,7 +195,7 @@ export default {
       const unrecognizedLanguage = intl.formatMessage({
         id: "commands_create_error_unrecognizedLanguage",
         defaultMessage: "Unrecognized language",
-        description: "error message indicating user provided unrecognized language",
+        description: "error when user provided unrecognized language",
       });
       print.error(`${unrecognizedLanguage} "${lang}"`);
       print.info(HELP);
@@ -203,7 +211,7 @@ export default {
         },
         {
           optionName: "--output-dir",
-          argument: pathString,
+          argument: `<${intl.formatMessage(helpMessages.path)}>`,
         }
       );
       print.error(outputDirMissingPathMessage);
@@ -267,7 +275,8 @@ export default {
         if (type === "api") {
           readyMessage = intl.formatMessage({
             id: "commands_create_readyProtocol",
-            defaultMessage: "You are ready to turn your protocol into a Web3API",
+            defaultMessage:
+              "You are ready to turn your protocol into a Web3API",
             description: "",
           });
         } else if (type === "app") {

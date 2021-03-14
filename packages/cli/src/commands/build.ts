@@ -27,7 +27,8 @@ const helpMessages = defineMessages({
   },
   i: {
     id: "commands_build_options_i",
-    defaultMessage: "Upload build results to an IPFS node (default: dev-server's node)",
+    defaultMessage:
+      "Upload build results to an IPFS node (default: dev-server's node)",
     description: "",
   },
   o: {
@@ -37,12 +38,14 @@ const helpMessages = defineMessages({
   },
   e: {
     id: "commands_build_options_e",
-    defaultMessage: "Publish the package to a test ENS domain locally (requires --ipfs)",
+    defaultMessage:
+      "Publish the package to a test ENS domain locally (requires --ipfs)",
     description: "",
   },
   w: {
     id: "commands_build_options_w",
-    defaultMessage: "Automatically rebuild when changes are made (default: false)",
+    defaultMessage:
+      "Automatically rebuild when changes are made (default: false)",
     description: "",
   },
   manifest: {
@@ -75,18 +78,21 @@ const helpMessages = defineMessages({
     description: "ENS domain (e.g. https://name.eth)",
   },
 });
-const optionsString = intl.formatMessage(helpMessages.options);
-const nodeString = `[<${intl.formatMessage(helpMessages.node)}>]`;
-const pathString = `<${intl.formatMessage(helpMessages.path)}>`;
-const addressDomainString = `<[${intl.formatMessage(helpMessages.address)},]${intl.formatMessage(helpMessages.domain)}>`;
-const HELP = `
-${chalk.bold("w3 build")} [${optionsString}] ${chalk.bold("[<web3api-" + intl.formatMessage(helpMessages.manifest) + ">]")}
+const optionsStr = intl.formatMessage(helpMessages.options);
+const manStr = intl.formatMessage(helpMessages.manifest);
+const nodeStr = intl.formatMessage(helpMessages.node);
+const pathStr = intl.formatMessage(helpMessages.path);
+const addrStr = intl.formatMessage(helpMessages.address);
+const domStr = intl.formatMessage(helpMessages.domain);
 
-${optionsString[0].toUpperCase() + optionsString.slice(1)}:
+const HELP = `
+${chalk.bold("w3 build")} [${optionsStr}] ${chalk.bold(`[<web3api-${manStr}>]`)}
+
+${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                         ${intl.formatMessage(helpMessages.h)}
-  -i, --ipfs ${nodeString}                ${intl.formatMessage(helpMessages.i)}
-  -o, --output-dir ${pathString}            ${intl.formatMessage(helpMessages.o)}
-  -e, --test-ens ${addressDomainString}  ${intl.formatMessage(helpMessages.e)}
+  -i, --ipfs [<${nodeStr}>]                ${intl.formatMessage(helpMessages.i)}
+  -o, --output-dir <${pathStr}>            ${intl.formatMessage(helpMessages.o)}
+  -e, --test-ens <[${addrStr},]${domStr}>  ${intl.formatMessage(helpMessages.e)}
   -w, --watch                        ${intl.formatMessage(helpMessages.w)}
 `;
 
@@ -144,7 +150,7 @@ export default {
         },
         {
           optionName: "--output-dir",
-          argument: pathString,
+          argument: `<${pathStr}>`,
         }
       );
       print.error(outputDirMissingPathMessage);
@@ -161,7 +167,7 @@ export default {
         },
         {
           optionName: "--test-ens",
-          argument: addressDomainString,
+          argument: `<[${addrStr},]${domStr}>`,
         }
       );
       print.error(testEnsAddressMissingMessage);
@@ -179,7 +185,7 @@ export default {
         },
         {
           optionName: "--test-ens",
-          requiredOptionName: `--ipfs ${nodeString}`,
+          requiredOptionName: `--ipfs [<${nodeStr}>]`,
         }
       );
       print.error(testEnsNodeMissingMessage);
@@ -294,27 +300,25 @@ export default {
           if (data.success) {
             uris.push(["Web3API ENS", `${testEns} => ${cid}`]);
           } else {
-            const resolutionErrorMessages = defineMessages({
-              resolution: {
-                id: "commands_build_error_resolution",
-                defaultMessage: "ENS Resolution Failed",
-                description: "",
-              },
-              provider: {
-                id: "commands_build_ethProvider",
-                defaultMessage: "Ethereum Provider",
-                description: "",
-              },
-              address: {
-                id: "commands_build_address",
-                defaultMessage: "ENS Address",
-                description: "",
-              },
+            const resolutionMessage = intl.formatMessage({
+              id: "commands_build_error_resolution",
+              defaultMessage: "ENS Resolution Failed",
+              description: "",
+            });
+            const providerMessage = intl.formatMessage({
+              id: "commands_build_ethProvider",
+              defaultMessage: "Ethereum Provider",
+              description: "",
+            });
+            const addressMessage = intl.formatMessage({
+              id: "commands_build_address",
+              defaultMessage: "ENS Address",
+              description: "",
             });
             print.error(
-              `${intl.formatMessage(resolutionErrorMessages.resolution)} { ${testEns} => ${cid} }\n` +
-                `${intl.formatMessage(resolutionErrorMessages.provider)}: ${ethProvider}\n` +
-                `${intl.formatMessage(resolutionErrorMessages.address)}: ${ensAddress}`
+              `${resolutionMessage} { ${testEns} => ${cid} }\n` +
+                `${providerMessage}: ${ethProvider}\n` +
+                `${addressMessage}: ${ensAddress}`
             );
           }
 
@@ -349,20 +353,18 @@ export default {
 
       const keyPressListener = () => {
         // Watch for escape key presses
-        const keypressListenerMessages = defineMessages({
-          watching: {
-            id: "commands_build_keypressListener_watching",
-            defaultMessage: "Watching",
-            description: "watching, monitoring key presses",
-          },
-          exit: {
-            id: "commands_build_keypressListener_exit",
-            defaultMessage: "Exit: [CTRL + C], [ESC], or [Q]",
-            description: "Stop watching, monitoring key presses",
-          },
+        const watchingMessage = intl.formatMessage({
+          id: "commands_build_keypressListener_watching",
+          defaultMessage: "Watching",
+          description: "watching, monitoring key presses",
         });
-        print.info(`${intl.formatMessage(keypressListenerMessages.watching)}: ${project.manifestDir}`);
-        print.info(intl.formatMessage(keypressListenerMessages.exit));
+        const exitMessage = intl.formatMessage({
+          id: "commands_build_keypressListener_exit",
+          defaultMessage: "Exit: [CTRL + C], [ESC], or [Q]",
+          description: "Stop watching, monitoring key presses",
+        });
+        print.info(`${watchingMessage}: ${project.manifestDir}`);
+        print.info(exitMessage);
         readline.emitKeypressEvents(process.stdin);
         process.stdin.on("keypress", async (str, key) => {
           if (

@@ -31,9 +31,10 @@ const helpMessages = defineMessages({
   },
 });
 const optionsString = intl.formatMessage(helpMessages.options);
+const scriptStr = intl.formatMessage(helpMessages.script);
 
 const HELP = `
-${chalk.bold("w3 query")} [${optionsString}] ${chalk.bold(`<${intl.formatMessage(helpMessages.script)}>`)}
+${chalk.bold("w3 query")} [${optionsString}] ${chalk.bold(`<${scriptStr}>`)}
 
 ${optionsString[0].toUpperCase() + optionsString.slice(1)}:
   -t, --test-ens  ${intl.formatMessage(helpMessages.t)}

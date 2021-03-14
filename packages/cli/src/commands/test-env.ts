@@ -1,9 +1,9 @@
 import { startupTestEnv, shutdownTestEnv } from "../lib/env/test";
 import { withSpinner } from "../lib/helpers/spinner";
+import { getIntl } from "../lib/internationalization";
 
 import { GluegunToolbox, print } from "gluegun";
 import chalk from "chalk";
-import { getIntl } from "../lib/internationalization";
 import { defineMessages } from "@formatjs/intl";
 
 const intl = getIntl();
@@ -12,7 +12,7 @@ const helpMessages = defineMessages({
   command: {
     id: "commands_testEnv_options_command",
     defaultMessage: "command",
-    description: "programming statement that tells the computer to do something",
+    description: "programming statement that directs computer",
   },
   start: {
     id: "commands_testEnv_options_start",

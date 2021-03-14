@@ -26,7 +26,8 @@ const helpMessages = defineMessages({
   },
   i: {
     id: "commands_codegen_options_i",
-    defaultMessage: "IPFS node to load external schemas (default: dev-server's node)",
+    defaultMessage:
+      "IPFS node to load external schemas (default: dev-server's node)",
     description: "",
   },
   o: {
@@ -36,7 +37,8 @@ const helpMessages = defineMessages({
   },
   e: {
     id: "commands_codegen_options_e",
-    defaultMessage: "ENS address to lookup external schemas (default: 0x0000...2e1e)",
+    defaultMessage:
+      "ENS address to lookup external schemas (default: 0x0000...2e1e)",
     description: "",
   },
   genFile: {
@@ -69,23 +71,33 @@ const helpMessages = defineMessages({
     description: "Ethereum address",
   },
 });
-const genFileOp = `[<${intl.formatMessage(helpMessages.genFile).toLowerCase().replace(' ', '-')}>]`;
-const optionsString = intl.formatMessage(helpMessages.options);
-const pathString = `<${intl.formatMessage(helpMessages.path)}>`;
-const addressString = `[<${intl.formatMessage(helpMessages.address)}>]`;
+const genFileOp = intl
+  .formatMessage(helpMessages.genFile)
+  .toLowerCase()
+  .replace(" ", "-");
+const optionsStr = intl.formatMessage(helpMessages.options);
+const nodeStr = intl.formatMessage(helpMessages.node);
+const pathStr = intl.formatMessage(helpMessages.path);
+const addrStr = intl.formatMessage(helpMessages.address);
+const hStr = intl.formatMessage(helpMessages.h);
+const mStr = intl.formatMessage(helpMessages.m);
+const iStr = intl.formatMessage(helpMessages.i);
+const oStr = intl.formatMessage(helpMessages.o);
+const eStr = intl.formatMessage(helpMessages.e);
+const defaultManifestStr = defaultManifest.join(" | ");
 
 const HELP = `
-${chalk.bold("w3 codegen")} ${chalk.bold(genFileOp)} [${optionsString}]
+${chalk.bold("w3 codegen")} ${chalk.bold(`[<${genFileOp}>]`)} [${optionsStr}]
 
 ${intl.formatMessage(helpMessages.genFile)}:
   ${intl.formatMessage(helpMessages.genFilePath)}: ${defaultGenerationFile})
 
-${optionsString[0].toUpperCase() + optionsString.slice(1)}:
-  -h, --help                              ${intl.formatMessage(helpMessages.h)}
-  -m, --manifest-path ${pathString}              ${intl.formatMessage(helpMessages.m)}: ${defaultManifest.join(" | ")})
-  -i, --ipfs [<${intl.formatMessage(helpMessages.node)}>]                     ${intl.formatMessage(helpMessages.i)}
-  -o, --output-dir ${pathString}                 ${intl.formatMessage(helpMessages.o)}
-  -e, --ens ${addressString}                   ${intl.formatMessage(helpMessages.e)}
+${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
+  -h, --help                              ${hStr}
+  -m, --manifest-path <${pathStr}>              ${mStr}: ${defaultManifestStr})
+  -i, --ipfs [<${nodeStr}>]                     ${iStr}
+  -o, --output-dir <${pathStr}>                 ${oStr}
+  -e, --ens [<${addrStr}>]                   ${eStr}
 `;
 
 export default {
@@ -140,7 +152,7 @@ export default {
         },
         {
           optionName: "--output-dir",
-          argument: pathString,
+          argument: `<${intl.formatMessage(helpMessages.path)}>`,
         }
       );
       print.error(outputDirMissingPathMessage);
@@ -157,7 +169,7 @@ export default {
         },
         {
           optionName: "--ens",
-          argument: addressString,
+          argument: `[<${intl.formatMessage(helpMessages.address)}>]`,
         }
       );
       print.error(ensAddressMissingMessage);
@@ -219,7 +231,7 @@ export default {
       const successMessage = intl.formatMessage({
         id: "commands_codegen_success",
         defaultMessage: "Types were generated successfully",
-        description: "successfully generated code for programming language types",
+        description: "successfully generated code for language types",
       });
       print.success(`🔥 ${successMessage} 🔥`);
       process.exitCode = 0;
