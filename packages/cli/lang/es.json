@@ -4,7 +4,7 @@
     "description": ""
   },
   "commands_build_description": {
-    "defaultMessage": "Builds a Web3API y (opcionalmente) uploads it to IPFS",
+    "defaultMessage": "Builds a Web3API and (optionally) uploads it to IPFS",
     "description": "description of command 'w3 build'"
   },
   "commands_build_ensRegistry": {
@@ -74,12 +74,250 @@
   "commands_build_options_options": {
     "defaultMessage": "options"
   },
+  "commands_build_options_t": {
+    "defaultMessage": "Use the development server's ENS instance",
+    "description": ""
+  },
   "commands_build_options_w": {
     "defaultMessage": "Automatically rebuild when changes are made (default: false)",
     "description": ""
   },
   "commands_build_uriViewers": {
     "defaultMessage": "URI Viewers",
+    "description": ""
+  },
+  "commands_codegen_description": {
+    "defaultMessage": "Auto-generate API Types",
+    "description": "description of command 'w3 codegen'"
+  },
+  "commands_codegen_options_e": {
+    "defaultMessage": "ENS address to lookup external schemas (default: 0x0000...2e1e)",
+    "description": ""
+  },
+  "commands_codegen_options_e_address": {
+    "defaultMessage": "address",
+    "description": "Ethereum address"
+  },
+  "commands_codegen_options_genFile": {
+    "defaultMessage": "Generation file",
+    "description": ""
+  },
+  "commands_codegen_options_genFilePath": {
+    "defaultMessage": "Path to the generation file (default",
+    "description": ""
+  },
+  "commands_codegen_options_h": {
+    "defaultMessage": "Show usage information",
+    "description": ""
+  },
+  "commands_codegen_options_i": {
+    "defaultMessage": "IPFS node to load external schemas (default: dev-server's node)",
+    "description": ""
+  },
+  "commands_codegen_options_i_node": {
+    "defaultMessage": "node",
+    "description": "IPFS node"
+  },
+  "commands_codegen_options_m": {
+    "defaultMessage": "Path to the Web3API manifest file (default",
+    "description": ""
+  },
+  "commands_codegen_options_manifest": {
+    "defaultMessage": "manifest",
+    "description": "web3api manifest file"
+  },
+  "commands_codegen_options_o": {
+    "defaultMessage": "Output directory for generated types (default: types/)",
+    "description": ""
+  },
+  "commands_codegen_options_o_path": {
+    "defaultMessage": "path",
+    "description": "file path for output"
+  },
+  "commands_codegen_options_options": {
+    "defaultMessage": "options"
+  },
+  "commands_codegen_success": {
+    "defaultMessage": "Types were generated successfully",
+    "description": "successfully generated code for language types"
+  },
+  "commands_create_description": {
+    "defaultMessage": "Create a new project with w3 CLI",
+    "description": "description of command 'w3 create'"
+  },
+  "commands_create_directoryExists": {
+    "defaultMessage": "Directory with name {dir} already exists",
+    "description": ""
+  },
+  "commands_create_error_commandFail": {
+    "defaultMessage": "Command failed: {error}",
+    "description": ""
+  },
+  "commands_create_error_noCommand": {
+    "defaultMessage": "Please provide a command",
+    "description": "error message indicating missing command"
+  },
+  "commands_create_error_noLang": {
+    "defaultMessage": "Please provide a language",
+    "description": "error message indicating missing language"
+  },
+  "commands_create_error_noName": {
+    "defaultMessage": "Please provide a project name",
+    "description": "error message indicating missing project name"
+  },
+  "commands_create_error_outputDirMissingPath": {
+    "defaultMessage": "{optionName} option missing {argument} argument",
+    "description": ""
+  },
+  "commands_create_error_unrecognizedCommand": {
+    "defaultMessage": "Unrecognized command",
+    "description": "error when user provided unrecognized command"
+  },
+  "commands_create_error_unrecognizedLanguage": {
+    "defaultMessage": "Unrecognized language",
+    "description": "error when user provided unrecognized language"
+  },
+  "commands_create_options_command": {
+    "defaultMessage": "command",
+    "description": "programming statement that direct computer"
+  },
+  "commands_create_options_commands": {
+    "defaultMessage": "Commands",
+    "description": "programming statements that direct computer"
+  },
+  "commands_create_options_createApp": {
+    "defaultMessage": "Create a Web3API application",
+    "description": "create a new software application"
+  },
+  "commands_create_options_createPlugin": {
+    "defaultMessage": "Create a Web3API plugin",
+    "description": "create a new software plugin"
+  },
+  "commands_create_options_createProject": {
+    "defaultMessage": "Create a Web3API project",
+    "description": "create a new software project"
+  },
+  "commands_create_options_h": {
+    "defaultMessage": "Show usage information",
+    "description": ""
+  },
+  "commands_create_options_lang": {
+    "defaultMessage": "lang",
+    "description": "short for 'language'"
+  },
+  "commands_create_options_langs": {
+    "defaultMessage": "langs",
+    "description": "short for 'languages'"
+  },
+  "commands_create_options_o": {
+    "defaultMessage": "Output directory for the new project",
+    "description": ""
+  },
+  "commands_create_options_o_path": {
+    "defaultMessage": "path",
+    "description": "file path for output"
+  },
+  "commands_create_options_options": {
+    "defaultMessage": "options"
+  },
+  "commands_create_options_projectName": {
+    "defaultMessage": "project-name",
+    "description": "name of new project user wants to create"
+  },
+  "commands_create_options_recipeScript": {
+    "defaultMessage": "recipe-script",
+    "description": "code script to use for query"
+  },
+  "commands_create_overwritePrompt": {
+    "defaultMessage": "Do you want to overwrite this directory?",
+    "description": ""
+  },
+  "commands_create_overwriting": {
+    "defaultMessage": "Overwriting {dir}...",
+    "description": ""
+  },
+  "commands_create_readyDapp": {
+    "defaultMessage": "You are ready to build a dApp using Web3API",
+    "description": ""
+  },
+  "commands_create_readyPlugin": {
+    "defaultMessage": "You are ready to build a plugin into a Web3API",
+    "description": ""
+  },
+  "commands_create_readyProtocol": {
+    "defaultMessage": "You are ready to turn your protocol into a Web3API",
+    "description": ""
+  },
+  "commands_create_settingUp": {
+    "defaultMessage": "Setting everything up...",
+    "description": ""
+  },
+  "commands_query_description": {
+    "defaultMessage": "Query Web3APIs using recipe scripts",
+    "description": "description of command 'w3 query'"
+  },
+  "commands_query_error_missingScript": {
+    "defaultMessage": "Required argument {script} is missing",
+    "description": ""
+  },
+  "commands_query_error_noApi": {
+    "defaultMessage": "API needs to be initialized",
+    "description": ""
+  },
+  "commands_query_error_readFail": {
+    "defaultMessage": "Failed to read query {query}",
+    "description": ""
+  },
+  "commands_testEnv_description": {
+    "defaultMessage": "Manage a test environment for Web3API",
+    "description": "description of command 'w3 test-env'"
+  },
+  "commands_testEnv_error_never": {
+    "defaultMessage": "This should never happen...",
+    "description": ""
+  },
+  "commands_testEnv_error_noCommand": {
+    "defaultMessage": "No command given",
+    "description": ""
+  },
+  "commands_testEnv_error_unrecognizedCommand": {
+    "defaultMessage": "Unrecognized command: {command}",
+    "description": ""
+  },
+  "commands_testEnv_options_command": {
+    "defaultMessage": "command",
+    "description": "programming statement that directs computer"
+  },
+  "commands_testEnv_options_start": {
+    "defaultMessage": "Startup the test env",
+    "description": "Start up the testing environment"
+  },
+  "commands_testEnv_options_stop": {
+    "defaultMessage": "Shutdown the test env",
+    "description": "Shut down the testing environment"
+  },
+  "commands_testEnv_shutdown_error": {
+    "defaultMessage": "Failed to shutdown test environment",
+    "description": ""
+  },
+  "commands_testEnv_shutdown_text": {
+    "defaultMessage": "Shutting down test environment...",
+    "description": ""
+  },
+  "commands_testEnv_shutdown_warning": {
+    "defaultMessage": "Warning shutting down test environment",
+    "description": ""
+  },
+  "commands_testEnv_startup_error": {
+    "defaultMessage": "Failed to start test environment",
+    "description": ""
+  },
+  "commands_testEnv_startup_text": {
+    "defaultMessage": "Starting test environment...",
+    "description": ""
+  },
+  "commands_testEnv_startup_warning": {
+    "defaultMessage": "Warning starting test environment",
     "description": ""
   },
   "commands_w3_error_notACommand": {

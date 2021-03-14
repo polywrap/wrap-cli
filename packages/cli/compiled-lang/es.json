@@ -8,7 +8,7 @@
   "commands_build_description": [
     {
       "type": 0,
-      "value": "Builds a Web3API y (opcionalmente) uploads it to IPFS"
+      "value": "Builds a Web3API and (optionally) uploads it to IPFS"
     }
   ],
   "commands_build_ensRegistry": [
@@ -149,6 +149,12 @@
       "value": "options"
     }
   ],
+  "commands_build_options_t": [
+    {
+      "type": 0,
+      "value": "Use the development server's ENS instance"
+    }
+  ],
   "commands_build_options_w": [
     {
       "type": 0,
@@ -159,6 +165,408 @@
     {
       "type": 0,
       "value": "URI Viewers"
+    }
+  ],
+  "commands_codegen_description": [
+    {
+      "type": 0,
+      "value": "Auto-generate API Types"
+    }
+  ],
+  "commands_codegen_options_e": [
+    {
+      "type": 0,
+      "value": "ENS address to lookup external schemas (default: 0x0000...2e1e)"
+    }
+  ],
+  "commands_codegen_options_e_address": [
+    {
+      "type": 0,
+      "value": "address"
+    }
+  ],
+  "commands_codegen_options_genFile": [
+    {
+      "type": 0,
+      "value": "Generation file"
+    }
+  ],
+  "commands_codegen_options_genFilePath": [
+    {
+      "type": 0,
+      "value": "Path to the generation file (default"
+    }
+  ],
+  "commands_codegen_options_h": [
+    {
+      "type": 0,
+      "value": "Show usage information"
+    }
+  ],
+  "commands_codegen_options_i": [
+    {
+      "type": 0,
+      "value": "IPFS node to load external schemas (default: dev-server's node)"
+    }
+  ],
+  "commands_codegen_options_i_node": [
+    {
+      "type": 0,
+      "value": "node"
+    }
+  ],
+  "commands_codegen_options_m": [
+    {
+      "type": 0,
+      "value": "Path to the Web3API manifest file (default"
+    }
+  ],
+  "commands_codegen_options_manifest": [
+    {
+      "type": 0,
+      "value": "manifest"
+    }
+  ],
+  "commands_codegen_options_o": [
+    {
+      "type": 0,
+      "value": "Output directory for generated types (default: types/)"
+    }
+  ],
+  "commands_codegen_options_o_path": [
+    {
+      "type": 0,
+      "value": "path"
+    }
+  ],
+  "commands_codegen_options_options": [
+    {
+      "type": 0,
+      "value": "options"
+    }
+  ],
+  "commands_codegen_success": [
+    {
+      "type": 0,
+      "value": "Types were generated successfully"
+    }
+  ],
+  "commands_create_description": [
+    {
+      "type": 0,
+      "value": "Create a new project with w3 CLI"
+    }
+  ],
+  "commands_create_directoryExists": [
+    {
+      "type": 0,
+      "value": "Directory with name "
+    },
+    {
+      "type": 1,
+      "value": "dir"
+    },
+    {
+      "type": 0,
+      "value": " already exists"
+    }
+  ],
+  "commands_create_error_commandFail": [
+    {
+      "type": 0,
+      "value": "Command failed: "
+    },
+    {
+      "type": 1,
+      "value": "error"
+    }
+  ],
+  "commands_create_error_noCommand": [
+    {
+      "type": 0,
+      "value": "Please provide a command"
+    }
+  ],
+  "commands_create_error_noLang": [
+    {
+      "type": 0,
+      "value": "Please provide a language"
+    }
+  ],
+  "commands_create_error_noName": [
+    {
+      "type": 0,
+      "value": "Please provide a project name"
+    }
+  ],
+  "commands_create_error_outputDirMissingPath": [
+    {
+      "type": 1,
+      "value": "optionName"
+    },
+    {
+      "type": 0,
+      "value": " option missing "
+    },
+    {
+      "type": 1,
+      "value": "argument"
+    },
+    {
+      "type": 0,
+      "value": " argument"
+    }
+  ],
+  "commands_create_error_unrecognizedCommand": [
+    {
+      "type": 0,
+      "value": "Unrecognized command"
+    }
+  ],
+  "commands_create_error_unrecognizedLanguage": [
+    {
+      "type": 0,
+      "value": "Unrecognized language"
+    }
+  ],
+  "commands_create_options_command": [
+    {
+      "type": 0,
+      "value": "command"
+    }
+  ],
+  "commands_create_options_commands": [
+    {
+      "type": 0,
+      "value": "Commands"
+    }
+  ],
+  "commands_create_options_createApp": [
+    {
+      "type": 0,
+      "value": "Create a Web3API application"
+    }
+  ],
+  "commands_create_options_createPlugin": [
+    {
+      "type": 0,
+      "value": "Create a Web3API plugin"
+    }
+  ],
+  "commands_create_options_createProject": [
+    {
+      "type": 0,
+      "value": "Create a Web3API project"
+    }
+  ],
+  "commands_create_options_h": [
+    {
+      "type": 0,
+      "value": "Show usage information"
+    }
+  ],
+  "commands_create_options_lang": [
+    {
+      "type": 0,
+      "value": "lang"
+    }
+  ],
+  "commands_create_options_langs": [
+    {
+      "type": 0,
+      "value": "langs"
+    }
+  ],
+  "commands_create_options_o": [
+    {
+      "type": 0,
+      "value": "Output directory for the new project"
+    }
+  ],
+  "commands_create_options_o_path": [
+    {
+      "type": 0,
+      "value": "path"
+    }
+  ],
+  "commands_create_options_options": [
+    {
+      "type": 0,
+      "value": "options"
+    }
+  ],
+  "commands_create_options_projectName": [
+    {
+      "type": 0,
+      "value": "project-name"
+    }
+  ],
+  "commands_create_options_recipeScript": [
+    {
+      "type": 0,
+      "value": "recipe-script"
+    }
+  ],
+  "commands_create_overwritePrompt": [
+    {
+      "type": 0,
+      "value": "Do you want to overwrite this directory?"
+    }
+  ],
+  "commands_create_overwriting": [
+    {
+      "type": 0,
+      "value": "Overwriting "
+    },
+    {
+      "type": 1,
+      "value": "dir"
+    },
+    {
+      "type": 0,
+      "value": "..."
+    }
+  ],
+  "commands_create_readyDapp": [
+    {
+      "type": 0,
+      "value": "You are ready to build a dApp using Web3API"
+    }
+  ],
+  "commands_create_readyPlugin": [
+    {
+      "type": 0,
+      "value": "You are ready to build a plugin into a Web3API"
+    }
+  ],
+  "commands_create_readyProtocol": [
+    {
+      "type": 0,
+      "value": "You are ready to turn your protocol into a Web3API"
+    }
+  ],
+  "commands_create_settingUp": [
+    {
+      "type": 0,
+      "value": "Setting everything up..."
+    }
+  ],
+  "commands_query_description": [
+    {
+      "type": 0,
+      "value": "Query Web3APIs using recipe scripts"
+    }
+  ],
+  "commands_query_error_missingScript": [
+    {
+      "type": 0,
+      "value": "Required argument "
+    },
+    {
+      "type": 1,
+      "value": "script"
+    },
+    {
+      "type": 0,
+      "value": " is missing"
+    }
+  ],
+  "commands_query_error_noApi": [
+    {
+      "type": 0,
+      "value": "API needs to be initialized"
+    }
+  ],
+  "commands_query_error_readFail": [
+    {
+      "type": 0,
+      "value": "Failed to read query "
+    },
+    {
+      "type": 1,
+      "value": "query"
+    }
+  ],
+  "commands_testEnv_description": [
+    {
+      "type": 0,
+      "value": "Manage a test environment for Web3API"
+    }
+  ],
+  "commands_testEnv_error_never": [
+    {
+      "type": 0,
+      "value": "This should never happen..."
+    }
+  ],
+  "commands_testEnv_error_noCommand": [
+    {
+      "type": 0,
+      "value": "No command given"
+    }
+  ],
+  "commands_testEnv_error_unrecognizedCommand": [
+    {
+      "type": 0,
+      "value": "Unrecognized command: "
+    },
+    {
+      "type": 1,
+      "value": "command"
+    }
+  ],
+  "commands_testEnv_options_command": [
+    {
+      "type": 0,
+      "value": "command"
+    }
+  ],
+  "commands_testEnv_options_start": [
+    {
+      "type": 0,
+      "value": "Startup the test env"
+    }
+  ],
+  "commands_testEnv_options_stop": [
+    {
+      "type": 0,
+      "value": "Shutdown the test env"
+    }
+  ],
+  "commands_testEnv_shutdown_error": [
+    {
+      "type": 0,
+      "value": "Failed to shutdown test environment"
+    }
+  ],
+  "commands_testEnv_shutdown_text": [
+    {
+      "type": 0,
+      "value": "Shutting down test environment..."
+    }
+  ],
+  "commands_testEnv_shutdown_warning": [
+    {
+      "type": 0,
+      "value": "Warning shutting down test environment"
+    }
+  ],
+  "commands_testEnv_startup_error": [
+    {
+      "type": 0,
+      "value": "Failed to start test environment"
+    }
+  ],
+  "commands_testEnv_startup_text": [
+    {
+      "type": 0,
+      "value": "Starting test environment..."
+    }
+  ],
+  "commands_testEnv_startup_warning": [
+    {
+      "type": 0,
+      "value": "Warning starting test environment"
     }
   ],
   "commands_w3_error_notACommand": [

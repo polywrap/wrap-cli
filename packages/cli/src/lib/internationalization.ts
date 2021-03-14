@@ -38,20 +38,3 @@ export function getIntl(locale = "en"): IntlShape<string> {
 //       return require("../../compiled-lang/en.json");
 //   }
 // }
-
-// used for importing uncompiled messages --> less performant
-// async function loadRawLocaleData(locale: string): Promise<Record<string, string>> {
-//   switch (locale) {
-//     case "es":
-//       // eslint-disable-next-line @typescript-eslint/no-require-imports
-//       return require("../../lang/es.json");
-//     default:
-//       const messages: Record<string, string> = {};
-//       // eslint-disable-next-line @typescript-eslint/no-require-imports
-//       const enImportMessages = await require("../../lang/en.json");
-//       Object.keys(enImportMessages).map((key: string) => {
-//         messages[key] = enImportMessages[key].defaultMessage;
-//       });
-//       return messages;
-//   }
-// }
