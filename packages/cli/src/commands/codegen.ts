@@ -8,8 +8,8 @@ import axios from "axios";
 import { GluegunToolbox } from "gluegun";
 import { defineMessages } from "@formatjs/intl";
 
-const defaultGenerationFile = "web3api.gen.js";
-const defaultManifest = ["web3api.yaml", "web3api.yml"];
+export const defaultGenerationFile = "web3api.gen.js";
+export const defaultManifest = ["web3api.yaml", "web3api.yml"];
 
 const intl = getIntl();
 

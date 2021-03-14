@@ -79,7 +79,7 @@ const createAppStr = intl.formatMessage(helpMessages.createApp);
 const createPluginStr = intl.formatMessage(helpMessages.createPlugin);
 const pathStr = intl.formatMessage(helpMessages.path);
 
-const supportedLangs: { [key: string]: string[] } = {
+export const supportedLangs: { [key: string]: string[] } = {
   api: ["assemblyscript"],
   app: ["react"],
   plugin: ["typescript"],
