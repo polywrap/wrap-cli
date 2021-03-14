@@ -12,7 +12,7 @@
     "description": ""
   },
   "commands_build_error_outputDirMissingPath": {
-    "defaultMessage": "{optionName} option missing {argument} argument",
+    "defaultMessage": "{option} option missing {argument} argument",
     "description": ""
   },
   "commands_build_error_resolution": {
@@ -20,11 +20,11 @@
     "description": ""
   },
   "commands_build_error_testEnsAddressMissing": {
-    "defaultMessage": "{optionName} option missing {argument} argument",
+    "defaultMessage": "{option} option missing {argument} argument",
     "description": ""
   },
   "commands_build_error_testEnsNodeMissing": {
-    "defaultMessage": "{optionName} option requires the {requiredOptionName} option",
+    "defaultMessage": "{option} option requires the {required} option",
     "description": ""
   },
   "commands_build_ethProvider": {
@@ -89,6 +89,10 @@
   "commands_codegen_description": {
     "defaultMessage": "Auto-generate API Types",
     "description": "description of command 'w3 codegen'"
+  },
+  "commands_codegen_error_domain": {
+    "defaultMessage": "domain",
+    "description": "ENS domain (e.g. https://name.eth)"
   },
   "commands_codegen_options_e": {
     "defaultMessage": "ENS address to lookup external schemas (default: 0x0000...2e1e)",
@@ -166,7 +170,7 @@
     "description": "error message indicating missing project name"
   },
   "commands_create_error_outputDirMissingPath": {
-    "defaultMessage": "{optionName} option missing {argument} argument",
+    "defaultMessage": "{option} option missing {argument} argument",
     "description": ""
   },
   "commands_create_error_unrecognizedCommand": {

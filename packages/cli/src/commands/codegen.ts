@@ -161,6 +161,11 @@ export default {
     }
 
     if (ens === true) {
+      const domStr = intl.formatMessage({
+        id: "commands_codegen_error_domain",
+        defaultMessage: "domain",
+        description: "ENS domain (e.g. https://name.eth)",
+      });
       const ensAddressMissingMessage = intl.formatMessage(
         {
           id: "commands_build_error_testEnsAddressMissing",
@@ -169,7 +174,7 @@ export default {
         },
         {
           option: "--ens",
-          argument: `[<${intl.formatMessage(helpMessages.address)}>]`,
+          argument: `<[${intl.formatMessage(helpMessages.address)},]${domStr}>`,
         }
       );
       print.error(ensAddressMissingMessage);

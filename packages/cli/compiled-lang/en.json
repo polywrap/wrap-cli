@@ -20,7 +20,7 @@
   "commands_build_error_outputDirMissingPath": [
     {
       "type": 1,
-      "value": "optionName"
+      "value": "option"
     },
     {
       "type": 0,
@@ -44,7 +44,7 @@
   "commands_build_error_testEnsAddressMissing": [
     {
       "type": 1,
-      "value": "optionName"
+      "value": "option"
     },
     {
       "type": 0,
@@ -62,7 +62,7 @@
   "commands_build_error_testEnsNodeMissing": [
     {
       "type": 1,
-      "value": "optionName"
+      "value": "option"
     },
     {
       "type": 0,
@@ -70,7 +70,7 @@
     },
     {
       "type": 1,
-      "value": "requiredOptionName"
+      "value": "required"
     },
     {
       "type": 0,
@@ -171,6 +171,12 @@
     {
       "type": 0,
       "value": "Auto-generate API Types"
+    }
+  ],
+  "commands_codegen_error_domain": [
+    {
+      "type": 0,
+      "value": "domain"
     }
   ],
   "commands_codegen_options_e": [
@@ -302,7 +308,7 @@
   "commands_create_error_outputDirMissingPath": [
     {
       "type": 1,
-      "value": "optionName"
+      "value": "option"
     },
     {
       "type": 0,

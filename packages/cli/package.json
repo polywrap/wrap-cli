@@ -20,7 +20,7 @@
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose",
-    "intl:extract": "formatjs extract 'src/**/*.ts*' --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
+    "intl:extract": "formatjs extract 'src/commands/*.ts*' --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
     "intl:compile:en": "formatjs compile lang/en.json --ast --out-file compiled-lang/en.json",
     "intl:compile:es": "formatjs compile lang/es.json --ast --out-file compiled-lang/es.json"
   },
