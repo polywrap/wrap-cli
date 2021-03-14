@@ -4,6 +4,7 @@ import {
   IntlShape,
   IntlCache,
 } from "@formatjs/intl";
+import osLocale from "os-locale";
 // import { MessageFormatElement } from "intl-messageformat-parser";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
@@ -13,8 +14,9 @@ const esMessages = require("../../compiled-lang/es.json");
 
 const cache: IntlCache = createIntlCache();
 
-export function getIntl(locale = "en"): IntlShape<string> {
-  const messages = locale == "es" ? esMessages : enMessages;
+export function getIntl(): IntlShape<string> {
+  const locale: string = osLocale.sync(); // can make async if top-level await is available
+  const messages = locale.substring(0, 2) == "es" ? esMessages : enMessages;
   return createIntl(
     {
       locale: locale,
