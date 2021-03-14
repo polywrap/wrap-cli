@@ -324,20 +324,22 @@ export default {
 
           return data.success;
         }
+
+        if (uris.length) {
+          const uriViewers = intl.formatMessage({
+            id: "commands_build_uriViewers",
+            defaultMessage: "URI Viewers",
+            description: "",
+          });
+          print.success(`${uriViewers}:`);
+          print.table(uris);
+          return true;
+        } else {
+          return false;
+        }
       }
 
-      if (uris.length) {
-        const uriViewers = intl.formatMessage({
-          id: "commands_build_uriViewers",
-          defaultMessage: "URI Viewers",
-          description: "",
-        });
-        print.success(`${uriViewers}:`);
-        print.table(uris);
-        return true;
-      } else {
-        return false;
-      }
+      return true;
     };
 
     if (!watch) {
