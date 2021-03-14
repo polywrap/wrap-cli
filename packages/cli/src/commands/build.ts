@@ -45,6 +45,11 @@ const helpMessages = defineMessages({
     defaultMessage: "Automatically rebuild when changes are made (default: false)",
     description: "",
   },
+  manifest: {
+    id: "commands_codegen_options_manifest",
+    defaultMessage: "manifest",
+    description: "web3api manifest file",
+  },
   options: {
     id: "commands_build_options_options",
     defaultMessage: "options",
@@ -72,15 +77,15 @@ const helpMessages = defineMessages({
 });
 const optionsString = intl.formatMessage(helpMessages.options);
 const nodeString = `[<${intl.formatMessage(helpMessages.node)}>]`;
-const outputDirString = `<${intl.formatMessage(helpMessages.path)}>`;
+const pathString = `<${intl.formatMessage(helpMessages.path)}>`;
 const addressDomainString = `<[${intl.formatMessage(helpMessages.address)},]${intl.formatMessage(helpMessages.domain)}>`;
 const HELP = `
-${chalk.bold("w3 build")} [${optionsString}] ${chalk.bold("[<web3api-manifest>]")}
+${chalk.bold("w3 build")} [${optionsString}] ${chalk.bold("[<web3api-" + intl.formatMessage(helpMessages.manifest) + ">]")}
 
 ${optionsString[0].toUpperCase() + optionsString.slice(1)}:
   -h, --help                         ${intl.formatMessage(helpMessages.h)}
   -i, --ipfs ${nodeString}                ${intl.formatMessage(helpMessages.i)}
-  -o, --output-dir ${outputDirString}            ${intl.formatMessage(helpMessages.o)}
+  -o, --output-dir ${pathString}            ${intl.formatMessage(helpMessages.o)}
   -e, --test-ens ${addressDomainString}  ${intl.formatMessage(helpMessages.e)}
   -w, --watch                        ${intl.formatMessage(helpMessages.w)}
 `;
@@ -139,7 +144,7 @@ export default {
         },
         {
           optionName: "--output-dir",
-          argument: outputDirString,
+          argument: pathString,
         }
       );
       print.error(outputDirMissingPathMessage);

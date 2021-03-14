@@ -1,7 +1,6 @@
 import { fixParameters } from "../lib/helpers/parameters";
+import { getIntl } from "../lib/internationalization";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import axios from "axios";
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
@@ -11,18 +10,42 @@ import { Uri, UriRedirect, Web3ApiClient } from "@web3api/client-js";
 import { EnsPlugin } from "@web3api/ens-plugin-js";
 import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
 import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
+import { defineMessages } from "@formatjs/intl";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const intl = getIntl();
+
+const helpMessages = defineMessages({
+  t: {
+    id: "commands_build_options_t",
+    defaultMessage: "Use the development server's ENS instance",
+    description: "",
+  },
+  options: {
+    id: "commands_build_options_options",
+    defaultMessage: "options",
+  },
+  script: {
+    id: "commands_create_options_recipeScript",
+    defaultMessage: "recipe-script",
+    description: "code script to use for query",
+  },
+});
+const optionsString = intl.formatMessage(helpMessages.options);
+
 const HELP = `
-${chalk.bold("w3 query")} [options] ${chalk.bold("<recipe-script>")}
+${chalk.bold("w3 query")} [${optionsString}] ${chalk.bold(`<${intl.formatMessage(helpMessages.script)}>`)}
 
-Options:
-  -t, --test-ens  Use the development server's ENS instance
+${optionsString[0].toUpperCase() + optionsString.slice(1)}:
+  -t, --test-ens  ${intl.formatMessage(helpMessages.t)}
 `;
 
 export default {
   alias: ["q"],
-  description: "Query Web3APIs using recipe scripts",
+  description: intl.formatMessage({
+    id: "commands_query_description",
+    defaultMessage: "Query Web3APIs using recipe scripts",
+    description: "description of command 'w3 query'",
+  }),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
     // eslint-disable-next-line prefer-const
@@ -51,7 +74,17 @@ export default {
     }
 
     if (!recipePath) {
-      print.error("Required argument <recipe-script> is missing");
+      const scriptMissingMessage = intl.formatMessage(
+        {
+          id: "commands_query_error_missingScript",
+          defaultMessage: "Required argument {script} is missing",
+          description: "",
+        },
+        {
+          script: `<${intl.formatMessage(helpMessages.script)}>`,
+        }
+      );
+      print.error(scriptMissingMessage);
       print.info(HELP);
       return;
     }
@@ -111,7 +144,17 @@ export default {
         const query = filesystem.read(path.join(dir, task.query));
 
         if (!query) {
-          throw Error(`Failed to read query ${query}`);
+          const readFailMessage = intl.formatMessage(
+            {
+              id: "commands_query_error_readFail",
+              defaultMessage: "Failed to read query {query}",
+              description: "",
+            },
+            {
+              query: query,
+            }
+          );
+          throw Error(readFailMessage);
         }
 
         let variables: Record<string, unknown> = {};
@@ -144,7 +187,12 @@ export default {
         }
 
         if (!uri) {
-          throw Error("API needs to be initialized");
+          const noApiMessage = intl.formatMessage({
+            id: "commands_query_error_noApi",
+            defaultMessage: "API needs to be initialized",
+            description: "",
+          });
+          throw Error(noApiMessage);
         }
 
         print.warning("-----------------------------------");

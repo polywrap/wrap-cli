@@ -1,8 +1,75 @@
 import { generateProject } from "../lib/generators/project-generator";
 import { fixParameters } from "../lib/helpers/parameters";
+import { getIntl } from "../lib/internationalization";
 
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
+import { defineMessages } from "@formatjs/intl";
+
+const intl = getIntl();
+
+const helpMessages = defineMessages({
+  h: {
+    id: "commands_create_options_h",
+    defaultMessage: "Show usage information",
+    description: "",
+  },
+  o: {
+    id: "commands_create_options_o",
+    defaultMessage: "Output directory for the new project",
+    description: "",
+  },
+  command: {
+    id: "commands_create_options_command",
+    defaultMessage: "command",
+    description: "programming statement that tells the computer to do something",
+  },
+  commands: {
+    id: "commands_create_options_commands",
+    defaultMessage: "Commands",
+    description: "programming statements that tell the computer to do something",
+  },
+  projectName: {
+    id: "commands_create_options_projectName",
+    defaultMessage: "project-name",
+    description: "name of new project user wants to create",
+  },
+  options: {
+    id: "commands_create_options_options",
+    defaultMessage: "options",
+  },
+  lang: {
+    id: "commands_create_options_lang",
+    defaultMessage: "lang",
+    description: "short for 'language'",
+  },
+  langs: {
+    id: "commands_create_options_langs",
+    defaultMessage: "langs",
+    description: "short for 'languages'",
+  },
+  createProject: {
+    id: "commands_create_options_createProject",
+    defaultMessage: "Create a Web3API project",
+    description: "create a new software project",
+  },
+  createApp: {
+    id: "commands_create_options_createApp",
+    defaultMessage: "Create a Web3API application",
+    description: "create a new software application",
+  },
+  createPlugin: {
+    id: "commands_create_options_createPlugin",
+    defaultMessage: "Create a Web3API plugin",
+    description: "create a new software plugin",
+  },
+  path: {
+    id: "commands_create_options_o_path",
+    defaultMessage: "path",
+    description: "file path for output",
+  },
+});
+const pathString = `<${intl.formatMessage(helpMessages.path)}>`;
 
 const supportedLangs: { [key: string]: string[] } = {
   api: ["assemblyscript"],
@@ -11,24 +78,28 @@ const supportedLangs: { [key: string]: string[] } = {
 };
 
 const HELP = `
-${chalk.bold("w3 create")} command <project-name> [options]
+${chalk.bold("w3 create")} ${intl.formatMessage(helpMessages.command)} <${intl.formatMessage(helpMessages.projectName)}> [${intl.formatMessage(helpMessages.options)}]
 
-Commands:
-  ${chalk.bold("api")} <lang>     Create a Web3API project
-    langs: ${supportedLangs.api.join(", ")}
-  ${chalk.bold("app")} <lang>     Create a Web3API application
-    langs: ${supportedLangs.app.join(", ")}
-  ${chalk.bold("plugin")} <lang>  Create a Web3API plugin
-    langs: ${supportedLangs.plugin.join(", ")}
+${intl.formatMessage(helpMessages.commands)}:
+  ${chalk.bold("api")} <${intl.formatMessage(helpMessages.lang)}>     ${intl.formatMessage(helpMessages.createProject)}
+    ${intl.formatMessage(helpMessages.langs)}: ${supportedLangs.api.join(", ")}
+  ${chalk.bold("app")} <${intl.formatMessage(helpMessages.lang)}>     ${intl.formatMessage(helpMessages.createApp)}
+    ${intl.formatMessage(helpMessages.langs)}: ${supportedLangs.app.join(", ")}
+  ${chalk.bold("plugin")} <${intl.formatMessage(helpMessages.lang)}>  ${intl.formatMessage(helpMessages.createPlugin)}
+    ${intl.formatMessage(helpMessages.langs)}: ${supportedLangs.plugin.join(", ")}
 
 Options:
-  -h, --help               Show usage information
-  -o, --output-dir <path>  Output directory for the new project
+  -h, --help               ${intl.formatMessage(helpMessages.h)}
+  -o, --output-dir ${pathString}  ${intl.formatMessage(helpMessages.o)}
 `;
 
 export default {
   alias: ["c"],
-  description: "Create a new project with w3 CLI",
+  description: intl.formatMessage({
+    id: "commands_create_description",
+    defaultMessage: "Create a new project with w3 CLI",
+    description: "description of command 'w3 create'",
+  }),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { parameters, print, prompt, filesystem } = toolbox;
 
@@ -66,37 +137,76 @@ export default {
     }
 
     if (!type) {
-      print.error("Please provide a command");
+      print.error(
+        intl.formatMessage({
+          id: "commands_create_error_noCommand",
+          defaultMessage: "Please provide a command",
+          description: "error message indicating missing command",
+        })
+      );
       print.info(HELP);
       return;
     }
 
     if (!lang) {
-      print.error("Please provide a language");
+      print.error(
+        intl.formatMessage({
+          id: "commands_create_error_noLang",
+          defaultMessage: "Please provide a language",
+          description: "error message indicating missing language",
+        })
+      );
       print.info(HELP);
       return;
     }
 
     if (!name) {
-      print.error("Please provide a project name");
+      print.error(
+        intl.formatMessage({
+          id: "commands_create_error_noName",
+          defaultMessage: "Please provide a project name",
+          description: "error message indicating missing project name",
+        })
+      );
       print.info(HELP);
       return;
     }
 
     if (!supportedLangs[type]) {
-      print.error(`Unrecognized command "${type}"`);
+      const unrecognizedCommand = intl.formatMessage({
+        id: "commands_create_error_unrecognizedCommand",
+        defaultMessage: "Unrecognized command",
+        description: "error message indicating user provided unrecognized command",
+      });
+      print.error(`${unrecognizedCommand} "${type}"`);
       print.info(HELP);
       return;
     }
 
     if (supportedLangs[type].indexOf(lang) === -1) {
-      print.error(`Unrecognized language "${lang}"`);
+      const unrecognizedLanguage = intl.formatMessage({
+        id: "commands_create_error_unrecognizedLanguage",
+        defaultMessage: "Unrecognized language",
+        description: "error message indicating user provided unrecognized language",
+      });
+      print.error(`${unrecognizedLanguage} "${lang}"`);
       print.info(HELP);
       return;
     }
 
     if (outputDir === true) {
-      print.error("--output-dir option missing <path> argument");
+      const outputDirMissingPathMessage = intl.formatMessage(
+        {
+          id: "commands_create_error_outputDirMissingPath",
+          defaultMessage: "{optionName} option missing {argument} argument",
+          description: "",
+        },
+        {
+          optionName: "--output-dir",
+          argument: pathString,
+        }
+      );
+      print.error(outputDirMissingPathMessage);
       print.info(HELP);
       return;
     }
@@ -106,14 +216,44 @@ export default {
     // check if project already exists
     if (!filesystem.exists(projectDir)) {
       print.newline();
-      print.info(`Setting everything up...`);
+      print.info(
+        intl.formatMessage({
+          id: "commands_create_settingUp",
+          defaultMessage: "Setting everything up...",
+          description: "",
+        })
+      );
     } else {
-      print.info(`Directory with name ${projectDir} already exists`);
+      const directoryExistsMessage = intl.formatMessage(
+        {
+          id: "commands_create_directoryExists",
+          defaultMessage: "Directory with name {dir} already exists",
+          description: "",
+        },
+        {
+          dir: projectDir,
+        }
+      );
+      print.info(directoryExistsMessage);
       const overwrite = await prompt.confirm(
-        "Do you want to overwrite this directory?"
+        intl.formatMessage({
+          id: "commands_create_overwritePrompt",
+          defaultMessage: "Do you want to overwrite this directory?",
+          description: "",
+        })
       );
       if (overwrite) {
-        print.info(`Overwriting ${projectDir}...`);
+        const overwritingMessage = intl.formatMessage(
+          {
+            id: "commands_create_overwriting",
+            defaultMessage: "Overwriting {dir}...",
+            description: "",
+          },
+          {
+            dir: projectDir,
+          }
+        );
+        print.info(overwritingMessage);
         filesystem.remove(projectDir);
       } else {
         process.exit(8);
@@ -123,19 +263,40 @@ export default {
     generateProject(type, lang, projectDir, filesystem)
       .then(() => {
         print.newline();
-
+        let readyMessage;
         if (type === "api") {
-          print.info(
-            `🔥 You are ready to turn your protocol into a Web3API 🔥`
-          );
+          readyMessage = intl.formatMessage({
+            id: "commands_create_readyProtocol",
+            defaultMessage: "You are ready to turn your protocol into a Web3API",
+            description: "",
+          });
         } else if (type === "app") {
-          print.info(`🔥 You are ready to build a dApp using Web3API 🔥`);
+          readyMessage = intl.formatMessage({
+            id: "commands_create_readyDapp",
+            defaultMessage: "You are ready to build a dApp using Web3API",
+            description: "",
+          });
         } else if (type === "plugin") {
-          print.info(`🔥 You are ready to build a plugin into a Web3API 🔥`);
+          readyMessage = intl.formatMessage({
+            id: "commands_create_readyPlugin",
+            defaultMessage: "You are ready to build a plugin into a Web3API",
+            description: "",
+          });
         }
+        print.info(`🔥 ${readyMessage} 🔥`);
       })
       .catch((err) => {
-        print.error(`Command failed: ${err.command}`);
+        const commandFailError = intl.formatMessage(
+          {
+            id: "commands_create_error_commandFail",
+            defaultMessage: "Command failed: {error}",
+            description: "",
+          },
+          {
+            error: err.command,
+          }
+        );
+        print.error(commandFailError);
       });
   },
 };
