@@ -49,7 +49,9 @@ export class Web3ApiClient implements Client {
   public async query<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>
-  >(options: QueryApiOptions<TVariables, string>): Promise<QueryApiResult<TData>> {
+  >(
+    options: QueryApiOptions<TVariables, string>
+  ): Promise<QueryApiResult<TData>> {
     try {
       const { uri, query, variables } = options;
 
@@ -135,10 +137,13 @@ export class Web3ApiClient implements Client {
     try {
       const uri = new Uri(options.uri);
       const api = await this.loadWeb3Api(uri);
-      return (await api.invoke({
-        ...options,
-        uri
-      }, this)) as TData;
+      return (await api.invoke(
+        {
+          ...options,
+          uri,
+        },
+        this
+      )) as TData;
     } catch (error) {
       return { error: error };
     }

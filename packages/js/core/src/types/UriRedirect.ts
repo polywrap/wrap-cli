@@ -10,9 +10,7 @@ export interface UriRedirect<TUri = string> {
   to: TUri | PluginPackage;
 }
 
-export function sanitizeUriRedirects(
-  input: UriRedirect[]
-): UriRedirect<Uri>[] {
+export function sanitizeUriRedirects(input: UriRedirect[]): UriRedirect<Uri>[] {
   const output: UriRedirect<Uri>[] = [];
   for (const definition of input) {
     const from = new Uri(definition.from);
@@ -21,7 +19,7 @@ export function sanitizeUriRedirects(
         ? new Uri(definition.to)
         : definition.to;
 
-        output.push({
+    output.push({
       from: from,
       to: to,
     });
