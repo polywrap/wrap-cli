@@ -326,6 +326,44 @@ describe("resolveUri", () => {
     expect(apiIdentity.error).toBeUndefined();
   });
 
+  it("works with query time redirects", async () => {
+    const uriToPlugin: UriRedirect[] = [
+      ...redirects,
+      {
+        from: new Uri("some/api"),
+        to: {
+          factory: () => ({} as Plugin),
+          manifest: {
+            schema: "",
+            implemented: [new Uri("w3/api-resolver")],
+            imported: [],
+          },
+        },
+      },
+    ];
+
+    const result = await resolveUri(
+      new Uri("some/api"),
+      client([
+        {
+          from: new Uri("some/api"),
+          to: new Uri("invalid/api")
+        }
+      ], apis),
+      createPluginApi,
+      createApi,
+      true,
+      uriToPlugin
+    );
+
+    const apiIdentity = await result.invoke(
+      {} as InvokeApiOptions,
+      {} as Client
+    );
+
+    expect(apiIdentity.error).toBeUndefined();
+  });
+
   it("throw when URI does not resolve to an API", async () => {
 
     const faultyIpfsApi: PluginModules = {

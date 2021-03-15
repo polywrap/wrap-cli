@@ -1,4 +1,4 @@
-import { Api, Client, Uri, PluginPackage } from "../types";
+import { Api, Client, Uri, PluginPackage, UriRedirect } from "../types";
 import { Manifest, deserializeManifest } from "../manifest";
 import * as ApiResolver from "../apis/api-resolver";
 import { getImplementations } from "./get-implementations";
@@ -8,7 +8,8 @@ export async function resolveUri(
   client: Client,
   createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
   createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api,
-  noValidate?: boolean
+  noValidate?: boolean,
+  queryRedirects?: UriRedirect[]
 ): Promise<Api> {
   let resolvedUri = uri;
 
@@ -37,7 +38,12 @@ export async function resolveUri(
     }
   };
 
-  const redirects = client.redirects();
+  let redirects = client.redirects();
+
+  if (queryRedirects) {
+    queryRedirects.push(...redirects);
+    redirects = queryRedirects;
+  }
 
   // Iterate through all redirects. If anything matches
   // apply the redirect. If the redirect `to` is a Plugin,
