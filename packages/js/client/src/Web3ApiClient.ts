@@ -53,7 +53,12 @@ export class Web3ApiClient implements Client {
     TVariables extends Record<string, unknown> = Record<string, unknown>
   >(options: QueryApiOptions<TVariables>): Promise<QueryApiResult<TData>> {
     try {
-      const { uri, query, variables } = options;
+      const { uri, query, variables, redirects } = options;
+
+      let queryRedirects: UriRedirect[] | undefined = undefined;
+      if (redirects) {
+        queryRedirects = convertToUriRedirects(redirects);
+      }
 
       // Convert the query string into a query document
       const queryDocument =
@@ -72,6 +77,7 @@ export class Web3ApiClient implements Client {
         parallelInvocations.push(
           this.invoke({
             ...invocation,
+            queryRedirects: queryRedirects,
             decode: true,
           }).then((result) => ({
             method: invocation.method,
@@ -135,14 +141,17 @@ export class Web3ApiClient implements Client {
   ): Promise<InvokeApiResult<TData>> {
     try {
       const { uri } = options;
-      const api = await this.loadWeb3Api(uri);
+      const api = await this.loadWeb3Api(uri, options.queryRedirects);
       return (await api.invoke(options, this)) as TData;
     } catch (error) {
       return { error: error };
     }
   }
 
-  public async loadWeb3Api(uri: Uri): Promise<Api> {
+  public async loadWeb3Api(
+    uri: Uri,
+    queryRedirects?: UriRedirect[]
+  ): Promise<Api> {
     let api = this._apiCache.get(uri.uri);
 
     if (!api) {
@@ -151,7 +160,9 @@ export class Web3ApiClient implements Client {
         this,
         (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
         (uri: Uri, manifest: Manifest, apiResolver: Uri) =>
-          new WasmWeb3Api(uri, manifest, apiResolver)
+          new WasmWeb3Api(uri, manifest, apiResolver),
+        undefined,
+        queryRedirects
       );
 
       if (!api) {

@@ -1,4 +1,5 @@
 import { Uri } from "./";
+import { UriRedirectDefinition } from "./UriRedirect";
 
 import { DocumentNode, parse } from "graphql";
 import gql from "graphql-tag";
@@ -36,6 +37,11 @@ export interface QueryApiOptions<
    * Variables referenced within the query string via GraphQL's '$variable' syntax.
    */
   variables?: TVariables;
+
+  /**
+   * Redirects valid only in this query call.
+   */
+  redirects?: UriRedirectDefinition[];
 }
 
 /**
