@@ -34,7 +34,8 @@ export const manifest: PluginManifest = {
   }
   
   type Body {
-    rawBody: String
+    stringBody: String
+    rawBody: Bytes
     formDataBody: FormData!
   }
   

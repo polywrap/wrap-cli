@@ -47,7 +47,7 @@ describe("creating axios config", () => {
         { key: "X-Header", value: "test-value" },
       ],
       responseType: ResponseType.TEXT,
-      body: {rawBody: "body-content"},
+      body: {stringBody: "body-content", formDataBody: {data: []}},
     });
 
     expect(config.headers).toStrictEqual({
@@ -62,7 +62,7 @@ describe("creating axios config", () => {
     const config = toAxiosRequestConfig({
       urlParams: [{ key: "tag", value: "data" }],
       responseType: ResponseType.BINARY,
-      body: {rawBody: "body-content"},
+      body: {stringBody: "body-content", formDataBody: {data: []}},
     });
 
     expect(config.headers).toBeUndefined();

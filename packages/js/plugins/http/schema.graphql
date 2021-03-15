@@ -28,7 +28,8 @@ enum ResponseType {
 }
 
 type Body {
-  rawBody: String
+  stringBody: String
+  rawBody: Bytes
   formDataBody: FormData!
 }
 

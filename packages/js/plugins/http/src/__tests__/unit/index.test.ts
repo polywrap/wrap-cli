@@ -114,7 +114,7 @@ describe("test http plugin", () => {
           { key: "X-Test-Header", value: "test-header-value" },
         ],
         urlParams: [{ key: "q", value: "test-param" }],
-        body: {rawBody: "{request: 1001}"},
+        body: {stringBody: "{request: 1001}", formDataBody: {data: []}},
         responseType: ResponseType.TEXT,
       });
 
@@ -152,7 +152,7 @@ describe("test http plugin", () => {
           { key: "X-Test-Header", value: "test-header-value" },
         ],
         urlParams: [{ key: "q", value: "test-param" }],
-        body: {rawBody: "{request: 1001}"},
+        body: {stringBody: "{request: 1001}", formDataBody: {data: []}},
         responseType: ResponseType.BINARY,
       });
 

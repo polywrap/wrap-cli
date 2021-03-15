@@ -211,7 +211,8 @@ describe("e2e tests for HttpPlugin", () => {
               request: {
                 responseType: 0
                 body: {
-                  rawBody: "{data: 'test-request'}"
+                  stringBody: "{data: 'test-request'}",
+                  formDataBody: {data: []}
                 }
               }
             )
@@ -255,7 +256,8 @@ describe("e2e tests for HttpPlugin", () => {
               request: {
                 responseType: 1
                 body: {
-                  rawBody: "{data: 'test-request'}"
+                  stringBody: "{data: 'test-request'}",
+                  formDataBody: {data: []}
                 }
               }
             )
@@ -347,7 +349,8 @@ describe("e2e tests for HttpPlugin", () => {
               request: {
                 responseType: 0
                 body: {
-                  rawBody: "{data: 'test-request'}"
+                  stringBody: "{data: 'test-request'}",
+                  formDataBody: {data: []}
                 }
                 urlParams: [{key: "query", value: "foo"}]
                 headers: [{key: "X-Request-Header", value: "req-foo"}]
