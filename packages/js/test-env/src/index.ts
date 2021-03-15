@@ -1,63 +1,130 @@
+import { Uri, UriRedirect } from "@web3api/core-js";
+import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
+import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
+import { EnsPlugin } from "@web3api/ens-plugin-js";
 import path from "path";
-import { spawn } from "child_process";
+import spawn from "spawn-command";
+import axios from "axios";
 
-export const run = (
-  command: string,
-  args: string[],
-  projectRoot: string
+interface TestEnvironment {
+  ipfs: string;
+  ethereum: string;
+  redirects: UriRedirect[];
+  data: {
+    ensAddress: string;
+  };
+}
+
+export const initTestEnvironment = async (): Promise<TestEnvironment> => {
+  // Start the test environment
+  const { exitCode, stderr } = await runCLI({ args: ["test-env", "up"] });
+
+  if (exitCode) {
+    throw Error(
+      `initTestEnvironment failed to start test environment.\nExit Code: ${exitCode}\nStdErr: ${stderr}`
+    );
+  }
+
+  // fetch providers from dev server
+  const {
+    data: { ipfs, ethereum },
+  } = await axios.get("http://localhost:4040/providers");
+
+  if (!ipfs) {
+    throw Error("Dev server must be running at port 4040");
+  }
+
+  // re-deploy ENS
+  const { data } = await axios.get("http://localhost:4040/deploy-ens");
+
+  // Test env redirects for ethereum, ipfs, and ENS.
+  // Will be used to fetch APIs.
+  const redirects = [
+    {
+      from: new Uri("w3://ens/ethereum.web3api.eth"),
+      to: {
+        factory: () => new EthereumPlugin({ provider: ethereum }),
+        manifest: EthereumPlugin.manifest(),
+      },
+    },
+    {
+      from: new Uri("w3://ens/ipfs.web3api.eth"),
+      to: {
+        factory: () => new IpfsPlugin({ provider: ipfs }),
+        manifest: IpfsPlugin.manifest(),
+      },
+    },
+    {
+      from: new Uri("w3://ens/ens.web3api.eth"),
+      to: {
+        factory: () => new EnsPlugin({ address: data.ensAddress }),
+        manifest: EnsPlugin.manifest(),
+      },
+    },
+  ];
+
+  return { ipfs, ethereum, redirects, data };
+};
+
+export const stopTestEnvironment = async (): Promise<void> => {
+  // Stop the test environment
+  const { exitCode, stderr } = await runCLI({ args: ["test-env", "down"] });
+
+  if (exitCode) {
+    throw Error(
+      `stopTestEnvironment failed to stop test environment.\nExit Code: ${exitCode}\nStdErr: ${stderr}`
+    );
+  }
+
+  return Promise.resolve();
+};
+
+export const runCLI = async (
+  options: {
+    args: string[];
+    cwd?: string;
+  },
+  cli = "npx w3"
 ): Promise<{
-  exitCode: number | null;
+  exitCode: number;
   stdout: string;
   stderr: string;
 }> => {
-  return new Promise((resolve, reject) => {
-    const child = spawn(command, args, { cwd: projectRoot });
+  const [exitCode, stdout, stderr] = await new Promise((resolve, reject) => {
+    if (!options.cwd) {
+      // Make sure to set an absolute working directory
+      const cwd = process.cwd();
+      options.cwd = cwd[0] !== "/" ? path.resolve(__dirname, cwd) : cwd;
+    }
+
+    const command = `${cli} ${options.args.join(" ")}`;
+    const child = spawn(command, { cwd: options.cwd });
 
     let stdout = "";
     let stderr = "";
 
-    if (child.stdout) {
-      child.stdout.setEncoding("utf8");
-      child.stdout.on("data", (data: string) => {
-        stdout += data;
-      });
-    }
+    child.on("error", (error: Error) => {
+      reject(error);
+    });
 
-    if (child.stderr) {
-      child.stderr.setEncoding("utf8");
-      child.stderr.on("data", (data: string) => {
-        stderr += data;
-      });
-    }
+    child.stdout?.on("data", (data: string) => {
+      stdout += data.toString();
+    });
 
-    child
-      .on("close", (exitCode: number | null) => {
-        resolve({
-          exitCode,
-          stderr,
-          stdout
-        });
-      })
-      .on("error", (err: Error) => {
-        reject(err);
-      });
+    child.stderr?.on("data", (data: string) => {
+      stderr += data.toString();
+    });
+
+    child.on("exit", (exitCode: number) => {
+      resolve([exitCode, stdout, stderr]);
+    });
   });
-};
 
-export const runW3CLI = async (
-  args: string[]
-): Promise<{
-  exitCode: number | null;
-  stdout: string;
-  stderr: string;
-}> => {
-  // Make sure to set an absolute working directory
-  let cwd = process.cwd();
-  cwd = cwd[0] !== "/" ? path.resolve(__dirname, cwd) : cwd;
-
-  const command = path.resolve(__dirname, "../../node_modules/.bin/w3");
-
-  return await run(command, args, cwd);
+  return {
+    exitCode,
+    stdout,
+    stderr,
+  };
 };
 
 export async function buildAndDeployApi(
@@ -72,16 +139,18 @@ export async function buildAndDeployApi(
   const apiEns = `${generateName()}.eth`;
 
   // build & deploy the protocol
-  const { exitCode, stdout, stderr } = await runW3CLI([
-    "build",
-    `${apiAbsPath}/web3api.yaml`,
-    "--output-dir",
-    `${apiAbsPath}/build`,
-    "--ipfs",
-    ipfsProvider,
-    "--test-ens",
-    `${ensAddress},${apiEns}`,
-  ]);
+  const { exitCode, stdout, stderr } = await runCLI({
+    args: [
+      "build",
+      `${apiAbsPath}/web3api.yaml`,
+      "--output-dir",
+      `${apiAbsPath}/build`,
+      "--ipfs",
+      ipfsProvider,
+      "--test-ens",
+      `${ensAddress},${apiEns}`,
+    ],
+  });
 
   if (exitCode !== 0) {
     console.error(`w3 exited with code: ${exitCode}`);
@@ -104,20 +173,6 @@ export async function buildAndDeployApi(
     ensDomain: apiEns,
     ipfsCid: apiCid,
   };
-}
-
-export async function testEnvUp(): Promise<void> {
-  await runW3CLI([
-    "test-env",
-    "up"
-  ]);
-}
-
-export async function testEnvDown(): Promise<void> {
-  await runW3CLI([
-    "test-env",
-    "down"
-  ]);
 }
 
 const getRandomInt = (min: number, max: number) => {

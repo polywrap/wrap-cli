@@ -76,6 +76,7 @@ export class WasmWeb3Api extends Api {
     // Spawn the worker thread
     let modulePath = "./thread.js";
 
+    // If we're in node.js
     if (typeof process === "object" && typeof window === "undefined") {
       modulePath = `${__dirname}/thread.js`;
 
