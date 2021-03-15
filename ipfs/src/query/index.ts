@@ -5,7 +5,7 @@ import {
 } from "./w3";
 import {decode} from "as-base64"
 
-export const EmptyBody: Http_Body = {rawBody:"", formDataBody: {data: []}}
+const EmptyBody: Http_Body = {rawBody:null, stringBody:null, formDataBody: {data: []}}
 
 export function catToString(input: Input_catToString): String {
   const url = input.ipfsUrl + "/api/v0/cat";

@@ -14,7 +14,8 @@ export function addFile(input: Input_addFile): AddResult {
         formDataBody: {
           data: [{key: input.fileName, data: String.UTF8.decode(input.data)}]
         },
-        rawBody: null
+        rawBody: null,
+        stringBody: null
       },
     }
   })
@@ -23,10 +24,10 @@ export function addFile(input: Input_addFile): AddResult {
     throw new Error(`Failed to add file: ${input.fileName}`);
   }
 
+  // parse result
+  let addResult: AddResult = {name: "", hash: "", size: ""}
   const responseObj: JSON.Obj = <JSON.Obj>(JSON.parse(addResponse.body));
   
-  let addResult: AddResult = {name: "", hash: "", size: ""}
-
   const nameOrNull: JSON.Str | null = responseObj.getString("Name");
   if(nameOrNull != null) {
     addResult.name = nameOrNull.valueOf();
@@ -41,7 +42,6 @@ export function addFile(input: Input_addFile): AddResult {
   if(sizeOrNull != null) {
     addResult.size = sizeOrNull.valueOf();
   }
-
 
   return addResult;
 }
