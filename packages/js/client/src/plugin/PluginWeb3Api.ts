@@ -10,12 +10,27 @@ import {
   Uri,
 } from "@web3api/core-js";
 import { decode } from "@msgpack/msgpack";
+import Web3APITracer from "@web3api/logger";
 
 export class PluginWeb3Api extends Api {
   private _instance: Plugin | undefined;
+  private _tracer: Web3APITracer;
 
-  constructor(private _uri: Uri, private _plugin: PluginPackage) {
+  constructor(
+    private _uri: Uri,
+    private _plugin: PluginPackage,
+    private _logEnabled: boolean = false
+  ) {
     super();
+
+    this._tracer = new Web3APITracer(this._logEnabled, "plugin-web3api");
+    this._tracer.startSpan("constructor");
+
+    this._tracer.setAttribute("uri", this._uri);
+    this._tracer.setAttribute("plugin", this._plugin);
+    this._tracer.addEvent("created");
+
+    this._tracer.endSpan();
   }
 
   public async invoke<TData = unknown>(
@@ -26,30 +41,42 @@ export class PluginWeb3Api extends Api {
     const modules = this.getInstance().getModules(client);
     const pluginModule = modules[module];
 
-    if (!pluginModule) {
-      throw new Error(`PluginWeb3Api: module "${module}" not found.`);
-    }
-
-    if (!pluginModule[method]) {
-      throw new Error(`PluginWeb3Api: method "${method}" not found.`);
-    }
+    this._tracer.startSpan("invoke");
+    this._tracer.setAttribute("options", options);
 
     let jsInput: Record<string, unknown>;
 
-    // If the input is a msgpack buffer, deserialize it
-    if (input instanceof ArrayBuffer) {
-      const result = decode(input);
-
-      if (typeof result !== "object") {
-        throw new Error(
-          `PluginWeb3Api: decoded MsgPack input did not result in an object.\nResult: ${result}`
-        );
+    try {
+      if (!pluginModule) {
+        throw new Error(`PluginWeb3Api: module "${module}" not found.`);
       }
 
-      jsInput = result as Record<string, unknown>;
-    } else {
-      jsInput = input;
+      if (!pluginModule[method]) {
+        throw new Error(`PluginWeb3Api: method "${method}" not found.`);
+      }
+
+      // If the input is a msgpack buffer, deserialize it
+      if (input instanceof ArrayBuffer) {
+        const result = decode(input);
+
+        if (typeof result !== "object") {
+          throw new Error(
+            `PluginWeb3Api: decoded MsgPack input did not result in an object.\nResult: ${result}`
+          );
+        }
+
+        jsInput = result as Record<string, unknown>;
+      } else {
+        jsInput = input;
+      }
+    } catch (error) {
+      this._tracer.recordException(error);
+      this._tracer.endSpan();
+
+      throw error;
     }
+
+    this._tracer.addEvent("decoded", jsInput);
 
     try {
       const result = (await executeMaybeAsyncFunction(
@@ -58,6 +85,8 @@ export class PluginWeb3Api extends Api {
         client
       )) as TData;
 
+      this._tracer.addEvent("result", result);
+
       if (result !== undefined) {
         let data = result as unknown;
 
@@ -65,13 +94,20 @@ export class PluginWeb3Api extends Api {
           data = filterResults(result, resultFilter);
         }
 
+        this._tracer.addEvent("filtered", data);
+        this._tracer.endSpan();
+
         return {
           data: data as TData,
         };
       } else {
+        this._tracer.endSpan();
+
         return {};
       }
     } catch (e) {
+      this._tracer.recordException(e);
+
       return {
         error: new Error(
           `PluginWeb3Api: invocation exception encountered.\n` +

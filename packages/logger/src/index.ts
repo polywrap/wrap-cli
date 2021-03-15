@@ -35,7 +35,7 @@ class Web3APITracer {
     }
   };
 
-  addEvent = (event: string, data?: Object) => {
+  addEvent = (event: string, data?: any) => {
     if (!this.logEnabled) return;
 
     const span = api.getSpan(api.context.active());
