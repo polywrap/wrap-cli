@@ -31,6 +31,7 @@
     "@web3api/schema-bind": "0.0.1-prealpha.4",
     "@web3api/schema-compose": "0.0.1-prealpha.4",
     "@web3api/schema-parse": "0.0.1-prealpha.4",
+    "@web3api/http-plugin-js": "0.0.1-prealpha.6",
     "assemblyscript": "0.17.14",
     "axios": "0.19.2",
     "chalk": "4.1.0",

@@ -11,9 +11,9 @@ import { Uri, UriRedirect, Web3ApiClient } from "@web3api/client-js";
 import { EnsPlugin } from "@web3api/ens-plugin-js";
 import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
 import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
-import { HttpPlugin } from "@web3api/http-plugin-js"
+import { HttpPlugin } from "@web3api/http-plugin-js";
 import { readFileSync } from "fs";
-import { resolve } from "path"
+import { resolve } from "path";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const HELP = `
@@ -95,8 +95,8 @@ export default {
         to: {
           factory: () => new HttpPlugin(),
           manifest: HttpPlugin.manifest(),
-        }
-      }
+        },
+      },
     ];
 
     const client = new Web3ApiClient({ redirects });

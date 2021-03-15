@@ -4996,6 +4996,11 @@ arrify@^2.0.0:
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-2.0.1.tgz#c9655e9331e0abcd588d2a7cad7e9956f66701fa"
   integrity sha512-3duEwti880xqi4eAMN8AyR4a0ByT90zoYdLlevfrvU43vb0YZwZVfxOgxWrLXXXpyugL0hNZc9G6BiB5B3nUug==
 
+as-base64@0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/as-base64/-/as-base64-0.1.1.tgz#64739407f838a9a848e102ac5cd5549c98bfd2f6"
+  integrity sha512-jsqYYwBsDH7YLUfrWAIYA001sgesO2yqKxzAvGIyVWTnw4oiE26Q20RHV8q0U268gkRKkGfJdoYmN+ivGK7yew==
+
 asap@^2.0.0, asap@~2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
@@ -5017,6 +5022,11 @@ asn1@~0.2.3:
   integrity sha512-jxwzQpLQjSmWXgwaCZE9Nz+glAG01yF1QnWgbhGwHI5A6FRIEY6IVqtHhIepHqI7/kyEyQEagBC5mBEFlIYvdg==
   dependencies:
     safer-buffer "~2.1.0"
+
+assemblyscript-json@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/assemblyscript-json/-/assemblyscript-json-1.0.0.tgz#2211f53987f377ef90dd5425b14e09bd1fdea74a"
+  integrity sha512-Cv96RESaVbCJn6jqVPXJlrClb3ZoLwcoSNFPDpHMXxi7NqLBeUGhV6zitSjLIgPHXVocIuYYH+SnykzEtErrBg==
 
 assemblyscript@0.17.14:
   version "0.17.14"
@@ -9961,6 +9971,15 @@ fork-ts-checker-webpack-plugin@3.1.1:
     semver "^5.6.0"
     tapable "^1.0.0"
     worker-rpc "^0.1.0"
+
+form-data@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/form-data/-/form-data-4.0.0.tgz#93919daeaf361ee529584b9b31664dc12c9fa452"
+  integrity sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==
+  dependencies:
+    asynckit "^0.4.0"
+    combined-stream "^1.0.8"
+    mime-types "^2.1.12"
 
 form-data@^2.4.0:
   version "2.5.1"
