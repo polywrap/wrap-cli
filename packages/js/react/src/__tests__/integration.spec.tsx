@@ -4,8 +4,7 @@ import { SimpleStorageContainer } from "./dapp/SimpleStorage";
 import React from "react";
 import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import {
-  UriRedirect,
-  Uri
+  UriRedirect
 } from "@web3api/client-js";
 import {
   initTestEnvironment,
@@ -18,7 +17,7 @@ jest.setTimeout(30000);
 
 describe("Web3API React Integration", () => {
   let redirects: UriRedirect[];
-  let ensUri: Uri;
+  let ensUri: string;
   let api: {
     ensDomain: string;
     ipfsCid: string;
@@ -37,7 +36,7 @@ describe("Web3API React Integration", () => {
       ipfs,
       data.ensAddress
     );
-    ensUri = new Uri(`ens/${api.ensDomain}`);
+    ensUri = `ens/${api.ensDomain}`;
   });
 
   afterAll(async () => {

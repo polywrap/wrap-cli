@@ -4,6 +4,7 @@ import { manifest } from "./manifest";
 import {
   Client,
   Plugin,
+  PluginFactory,
   PluginManifest,
   PluginModules,
 } from "@web3api/core-js";
@@ -79,3 +80,11 @@ export class IpfsPlugin extends Plugin {
     return this._ipfs.ls(cid);
   }
 }
+
+export const ipfsPlugin: PluginFactory<IpfsConfig> = (opts: IpfsConfig) => {
+  return {
+    factory: () => new IpfsPlugin(opts),
+    manifest: manifest,
+  };
+};
+export const plugin = ipfsPlugin;

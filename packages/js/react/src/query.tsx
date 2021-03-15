@@ -16,7 +16,9 @@ export const INITIAL_QUERY_STATE: UseWeb3ApiQueryState = {
   loading: false
 };
 
-export interface UseWeb3ApiQueryProps extends QueryApiOptions {
+export interface UseWeb3ApiQueryProps<
+  TVariables extends Record<string, unknown> = Record<string, unknown>
+> extends QueryApiOptions<TVariables, string> {
   provider?: string;
 }
 
