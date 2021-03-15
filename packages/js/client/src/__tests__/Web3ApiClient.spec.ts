@@ -522,7 +522,91 @@ describe("Web3ApiClient", () => {
     const ensUri = new Uri(`ens/${api.ensDomain}`);
     const client = new Web3ApiClient({ redirects });
 
-    const integerUnderflowResponse = await client.query<{
+    const i8Underflow = await client.query<{
+      i8Method: number
+    }>({
+      uri: ensUri,
+      query: `
+      query {
+        i8Method(
+          first: $firstInt
+          second: $secondInt
+        )
+      }
+    `,
+      variables: {
+        firstInt: -129, // min i8 = -128
+        secondInt: 10
+      }
+    });
+    expect(i8Underflow.errors).toBeTruthy();
+    expect(i8Underflow.errors?.[0].message).toMatch(/integer overflow/);
+    expect(i8Underflow.data?.i8Method).toBeUndefined();
+
+    const u8Overflow = await client.query<{
+      u8Method: number
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          u8Method(
+            first: $firstInt
+            second: $secondInt
+          )
+        }
+      `,
+      variables: {
+        firstInt: 256, // max u8 = 255
+        secondInt: 10
+      }
+    });
+    expect(u8Overflow.errors).toBeTruthy();
+    expect(u8Overflow.errors?.[0].message).toMatch(/integer overflow/);
+    expect(u8Overflow.data?.u8Method).toBeUndefined();
+
+    const i16Underflow = await client.query<{
+      i16Method: number
+    }>({
+      uri: ensUri,
+      query: `
+      query {
+        i16Method(
+          first: $firstInt
+          second: $secondInt
+        )
+      }
+    `,
+      variables: {
+        firstInt: -32769, // min i16 = -32768
+        secondInt: 10
+      }
+    });
+    expect(i16Underflow.errors).toBeTruthy();
+    expect(i16Underflow.errors?.[0].message).toMatch(/integer overflow/);
+    expect(i16Underflow.data?.i16Method).toBeUndefined();
+
+    const u16Overflow = await client.query<{
+      u16Method: number
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          u16Method(
+            first: $firstInt
+            second: $secondInt
+          )
+        }
+      `,
+      variables: {
+        firstInt: 65536, // max u16 = 65535
+        secondInt: 10
+      }
+    });
+    expect(u16Overflow.errors).toBeTruthy();
+    expect(u16Overflow.errors?.[0].message).toMatch(/integer overflow/);
+    expect(u16Overflow.data?.u16Method).toBeUndefined();
+
+    const i32Underflow = await client.query<{
       i32Method: number
     }>({
       uri: ensUri,
@@ -539,11 +623,11 @@ describe("Web3ApiClient", () => {
         secondInt: 10
       }
     });
-    expect(integerUnderflowResponse.errors).toBeTruthy();
-    expect(integerUnderflowResponse.errors?.[0].message).toMatch(/integer overflow/);
-    expect(integerUnderflowResponse.data?.i32Method).toBeUndefined();
+    expect(i32Underflow.errors).toBeTruthy();
+    expect(i32Underflow.errors?.[0].message).toMatch(/integer overflow/);
+    expect(i32Underflow.data?.i32Method).toBeUndefined();
 
-    const integerOverflowResponse = await client.query<{
+    const u32Overflow = await client.query<{
       u32Method: number
     }>({
       uri: ensUri,
@@ -560,9 +644,51 @@ describe("Web3ApiClient", () => {
         secondInt: 10
       }
     });
-    expect(integerOverflowResponse.errors).toBeTruthy();
-    expect(integerOverflowResponse.errors?.[0].message).toMatch(/integer overflow/);
-    expect(integerOverflowResponse.data?.u32Method).toBeUndefined();
+    expect(u32Overflow.errors).toBeTruthy();
+    expect(u32Overflow.errors?.[0].message).toMatch(/integer overflow/);
+    expect(u32Overflow.data?.u32Method).toBeUndefined();
+
+    const i64Underflow = await client.query<{
+      i64Method: number
+    }>({
+      uri: ensUri,
+      query: `
+      query {
+        i64Method(
+          first: $firstInt
+          second: $secondInt
+        )
+      }
+    `,
+      variables: {
+        firstInt: -9223372036854775809, // min i32 = -9223372036854775808
+        secondInt: 10
+      }
+    });
+    expect(i64Underflow.errors).toBeTruthy();
+    expect(i64Underflow.errors?.[0].message).toMatch(/bad prefix/);
+    expect(i64Underflow.data?.i64Method).toBeUndefined();
+
+    const u64Overflow = await client.query<{
+      u64Method: number
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          u64Method(
+            first: $firstInt
+            second: $secondInt
+          )
+        }
+      `,
+      variables: {
+        firstInt: 18446744073709551616, // max u64 = 18446744073709551615
+        secondInt: 10
+      }
+    });
+    expect(u64Overflow.errors).toBeTruthy();
+    expect(u64Overflow.errors?.[0].message).toMatch(/bad prefix/);
+    expect(u64Overflow.data?.u64Method).toBeUndefined();
 
     // const floatOverflowResponse = await client.query<{
     //   f32Method: number
