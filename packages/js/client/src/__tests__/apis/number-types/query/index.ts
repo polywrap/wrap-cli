@@ -7,7 +7,6 @@ import {
   Input_u32Method,
   Input_i64Method,
   Input_u64Method,
-  // Input_f32Method
 } from "./w3";
 
 export function i8Method(input: Input_i8Method): i8 {
@@ -58,8 +57,3 @@ export function u64Method(input: Input_u64Method): u64 {
   return firstInt + secondInt;
 }
 
-// export function f32Method(input: Input_f32Method): f32 {
-//   const firstFloat = input.first;
-//   const secondFloat = input.second;
-//   return firstFloat + secondFloat;
-// }

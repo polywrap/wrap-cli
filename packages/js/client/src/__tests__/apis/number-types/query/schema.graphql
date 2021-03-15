@@ -40,8 +40,4 @@ type Query {
     second: UInt64!
   ): UInt64!
 
-#  f32Method(
-#    first: Float32!
-#    second: Float32!
-#  ): Float32!
 }
