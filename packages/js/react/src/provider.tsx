@@ -1,4 +1,4 @@
-import { UriRedirectDefinition, Web3ApiClient } from "@web3api/client-js";
+import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
 import React from "react";
 
 type ClientContext = React.Context<Web3ApiClient>
@@ -15,7 +15,7 @@ interface Web3ApiProviderMap {
 export const PROVIDERS: Web3ApiProviderMap = {};
 
 interface Web3ApiProviderProps {
-  redirects: UriRedirectDefinition[];
+  redirects: UriRedirect<string>[];
   children: React.ReactNode;
 }
 

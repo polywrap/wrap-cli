@@ -1,4 +1,4 @@
-import { Web3ApiClient, Uri, UriRedirectDefinition } from "../";
+import { Web3ApiClient, UriRedirect } from "../";
 import {
   buildAndDeployApi,
   initTestEnvironment,
@@ -11,7 +11,7 @@ jest.setTimeout(50000);
 describe("Web3ApiClient", () => {
   let ipfsProvider: string;
   let ensAddress: string;
-  let redirects: UriRedirectDefinition[];
+  let redirects: UriRedirect[];
 
   beforeAll(async () => {
     const { ipfs, data, redirects: testRedirects } = await initTestEnvironment();
@@ -31,8 +31,8 @@ describe("Web3ApiClient", () => {
       ensAddress
     );
 
-    const ensUri = new Uri(`ens/${api.ensDomain}`);
-    const ipfsUri = new Uri(`ipfs/${api.ipfsCid}`);
+    const ensUri = `ens/${api.ensDomain}`;
+    const ipfsUri = `ipfs/${api.ipfsCid}`;
 
     const client = new Web3ApiClient({ redirects });
 
@@ -101,7 +101,7 @@ describe("Web3ApiClient", () => {
       ipfsProvider,
       ensAddress
     );
-    const ensUri = new Uri(`ens/${api.ensDomain}`);
+    const ensUri = `ens/${api.ensDomain}`;
 
     const client = new Web3ApiClient({ redirects });
 
@@ -367,7 +367,7 @@ describe("Web3ApiClient", () => {
       ipfsProvider,
       ensAddress
     );
-    const ensUri = new Uri(`ens/${api.ensDomain}`);
+    const ensUri = `ens/${api.ensDomain}`;
 
     const client = new Web3ApiClient({ redirects });
 
@@ -402,7 +402,7 @@ describe("Web3ApiClient", () => {
       ipfsProvider,
       ensAddress
     );
-    const ensUri = new Uri(`ens/${api.ensDomain}`);
+    const ensUri = `ens/${api.ensDomain}`;
 
     const client = new Web3ApiClient({ redirects });
 

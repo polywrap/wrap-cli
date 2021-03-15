@@ -7,7 +7,7 @@ import {
   Manifest,
   Uri,
   Web3ApiClient,
-  UriRedirectDefinition,
+  UriRedirect,
 } from "@web3api/client-js";
 import { composeSchema, ComposerOutput } from "@web3api/schema-compose";
 import { ensPlugin } from "@web3api/ens-plugin-js";
@@ -33,7 +33,7 @@ export class SchemaComposer {
 
   constructor(private _config: SchemaConfig) {
     const { ensAddress, ethProvider, ipfsProvider } = this._config;
-    const redirects: UriRedirectDefinition[] = [];
+    const redirects: UriRedirect[] = [];
 
     if (ensAddress) {
       redirects.push({

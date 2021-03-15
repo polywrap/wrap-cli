@@ -1,4 +1,4 @@
-import { UriRedirectDefinition } from "@web3api/core-js";
+import { UriRedirect } from "@web3api/core-js";
 import { plugin as ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { plugin as ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { plugin as ensPlugin } from "@web3api/ens-plugin-js";
@@ -9,7 +9,7 @@ import axios from "axios";
 interface TestEnvironment {
   ipfs: string;
   ethereum: string;
-  redirects: UriRedirectDefinition[];
+  redirects: UriRedirect[];
   data: {
     ensAddress: string;
   };
@@ -39,7 +39,7 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
 
   // Test env redirects for ethereum, ipfs, and ENS.
   // Will be used to fetch APIs.
-  const redirects: UriRedirectDefinition[] = [
+  const redirects: UriRedirect[] = [
     {
       from: "w3://ens/ethereum.web3api.eth",
       to: ethereumPlugin({ provider: ethereum }),
