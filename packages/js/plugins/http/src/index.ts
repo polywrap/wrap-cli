@@ -11,6 +11,7 @@ import {
   Plugin,
   PluginModules,
   PluginManifest,
+  PluginFactory,
 } from "@web3api/core-js";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
@@ -68,3 +69,11 @@ export class HttpPlugin extends Plugin {
     return fromAxiosResponse(response);
   }
 }
+
+export const httpPlugin: PluginFactory<Record<string, never>> = () => {
+  return {
+    factory: () => new HttpPlugin(),
+    manifest: manifest,
+  };
+};
+export const plugin = httpPlugin;

@@ -14,7 +14,7 @@ export const Query = {
     uri: Uri
   ): Promise<InvokeApiResult<MaybeUriOrManifest>> =>
     client.invoke<MaybeUriOrManifest>({
-      uri: api,
+      uri: api.uri,
       module: "query",
       method: `tryResolveUri`,
       input: {
@@ -28,7 +28,7 @@ export const Query = {
     path: string
   ): Promise<InvokeApiResult<ArrayBuffer>> =>
     client.invoke<ArrayBuffer>({
-      uri: api,
+      uri: api.uri,
       module: "query",
       method: "getFile",
       input: {

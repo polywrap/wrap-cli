@@ -7,10 +7,10 @@ import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 import gql from "graphql-tag";
 import path from "path";
-import { Uri, UriRedirect, Web3ApiClient } from "@web3api/client-js";
-import { EnsPlugin } from "@web3api/ens-plugin-js";
-import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
-import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
+import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
+import { ensPlugin } from "@web3api/ens-plugin-js";
+import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
+import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { HttpPlugin } from "@web3api/http-plugin-js";
 import { readFileSync } from "fs";
 import { resolve } from "path";
@@ -70,25 +70,16 @@ export default {
     // maybe have it exported from test-env.
     const redirects: UriRedirect[] = [
       {
-        from: new Uri("w3://ens/ethereum.web3api.eth"),
-        to: {
-          factory: () => new EthereumPlugin({ provider: ethereum }),
-          manifest: EthereumPlugin.manifest(),
-        },
+        from: "w3://ens/ethereum.web3api.eth",
+        to: ethereumPlugin({ provider: ethereum }),
       },
       {
-        from: new Uri("w3://ens/ipfs.web3api.eth"),
-        to: {
-          factory: () => new IpfsPlugin({ provider: ipfs }),
-          manifest: IpfsPlugin.manifest(),
-        },
+        from: "w3://ens/ipfs.web3api.eth",
+        to: ipfsPlugin({ provider: ipfs }),
       },
       {
-        from: new Uri("w3://ens/ens.web3api.eth"),
-        to: {
-          factory: () => new EnsPlugin({ address: ensAddress }),
-          manifest: EnsPlugin.manifest(),
-        },
+        from: "w3://ens/ens.web3api.eth",
+        to: ensPlugin({ address: ensAddress }),
       },
       {
         from: new Uri("w3://ens/http.web3api.eth"),
@@ -168,7 +159,7 @@ export default {
         print.warning("-----------------------------------");
 
         const { data, errors } = await client.query({
-          uri: new Uri(uri),
+          uri,
           query: gql(query),
           variables,
         });

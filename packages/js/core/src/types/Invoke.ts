@@ -3,9 +3,9 @@ import { Uri } from ".";
 export type InvokableModules = "query" | "mutation";
 
 /** Options required for an API invocation. */
-export interface InvokeApiOptions {
+export interface InvokeApiOptions<TUri = Uri> {
   /** The API's URI */
-  uri: Uri;
+  uri: TUri;
 
   /** Module to be called into. */
   module: InvokableModules;
@@ -54,6 +54,6 @@ export interface InvokeApiResult<TData = unknown> {
 
 export interface InvokeHandler {
   invoke<TData = unknown>(
-    options: InvokeApiOptions
+    options: InvokeApiOptions<string>
   ): Promise<InvokeApiResult<TData>>;
 }
