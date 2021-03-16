@@ -1,9 +1,11 @@
-import { ComposerOutput, ComposerOptions } from "../../";
+import { ComposerOutput, ComposerOptions } from "..";
 
 import path from "path";
 import { readdirSync, readFileSync, Dirent, existsSync } from "fs";
 
-const root = path.join(__dirname, "./");
+import {GetPathToComposeTestFiles} from "@web3api/test-cases"
+
+const root = GetPathToComposeTestFiles();
 
 export type TestCases = {
   name: string;

@@ -1,20 +1,104 @@
+import { Uri, UriRedirect } from "@web3api/core-js";
+import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
+import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
+import { EnsPlugin } from "@web3api/ens-plugin-js";
 import path from "path";
 import spawn from "spawn-command";
+import axios from "axios";
 
-export const runW3CLI = async (
-  args: string[]
+interface TestEnvironment {
+  ipfs: string;
+  ethereum: string;
+  redirects: UriRedirect[];
+  data: {
+    ensAddress: string;
+  };
+}
+
+export const initTestEnvironment = async (): Promise<TestEnvironment> => {
+  // Start the test environment
+  const { exitCode, stderr } = await runCLI({ args: ["test-env", "up"] });
+
+  if (exitCode) {
+    throw Error(
+      `initTestEnvironment failed to start test environment.\nExit Code: ${exitCode}\nStdErr: ${stderr}`
+    );
+  }
+
+  // fetch providers from dev server
+  const {
+    data: { ipfs, ethereum },
+  } = await axios.get("http://localhost:4040/providers");
+
+  if (!ipfs) {
+    throw Error("Dev server must be running at port 4040");
+  }
+
+  // re-deploy ENS
+  const { data } = await axios.get("http://localhost:4040/deploy-ens");
+
+  // Test env redirects for ethereum, ipfs, and ENS.
+  // Will be used to fetch APIs.
+  const redirects = [
+    {
+      from: new Uri("w3://ens/ethereum.web3api.eth"),
+      to: {
+        factory: () => new EthereumPlugin({ provider: ethereum }),
+        manifest: EthereumPlugin.manifest(),
+      },
+    },
+    {
+      from: new Uri("w3://ens/ipfs.web3api.eth"),
+      to: {
+        factory: () => new IpfsPlugin({ provider: ipfs }),
+        manifest: IpfsPlugin.manifest(),
+      },
+    },
+    {
+      from: new Uri("w3://ens/ens.web3api.eth"),
+      to: {
+        factory: () => new EnsPlugin({ address: data.ensAddress }),
+        manifest: EnsPlugin.manifest(),
+      },
+    },
+  ];
+
+  return { ipfs, ethereum, redirects, data };
+};
+
+export const stopTestEnvironment = async (): Promise<void> => {
+  // Stop the test environment
+  const { exitCode, stderr } = await runCLI({ args: ["test-env", "down"] });
+
+  if (exitCode) {
+    throw Error(
+      `stopTestEnvironment failed to stop test environment.\nExit Code: ${exitCode}\nStdErr: ${stderr}`
+    );
+  }
+
+  return Promise.resolve();
+};
+
+export const runCLI = async (
+  options: {
+    args: string[];
+    cwd?: string;
+  },
+  cli = "npx w3"
 ): Promise<{
   exitCode: number;
   stdout: string;
   stderr: string;
 }> => {
   const [exitCode, stdout, stderr] = await new Promise((resolve, reject) => {
-    // Make sure to set an absolute working directory
-    let cwd = process.cwd();
-    cwd = cwd[0] !== "/" ? path.resolve(__dirname, cwd) : cwd;
+    if (!options.cwd) {
+      // Make sure to set an absolute working directory
+      const cwd = process.cwd();
+      options.cwd = cwd[0] !== "/" ? path.resolve(__dirname, cwd) : cwd;
+    }
 
-    const command = `npx w3 ${args.join(" ")}`;
-    const child = spawn(command, { cwd });
+    const command = `${cli} ${options.args.join(" ")}`;
+    const child = spawn(command, { cwd: options.cwd });
 
     let stdout = "";
     let stderr = "";
@@ -23,11 +107,11 @@ export const runW3CLI = async (
       reject(error);
     });
 
-    child.stdout.on("data", (data: string) => {
+    child.stdout?.on("data", (data: string) => {
       stdout += data.toString();
     });
 
-    child.stderr.on("data", (data: string) => {
+    child.stderr?.on("data", (data: string) => {
       stderr += data.toString();
     });
 
@@ -55,16 +139,18 @@ export async function buildAndDeployApi(
   const apiEns = `${generateName()}.eth`;
 
   // build & deploy the protocol
-  const { exitCode, stdout, stderr } = await runW3CLI([
-    "build",
-    `${apiAbsPath}/web3api.yaml`,
-    "--output-dir",
-    `${apiAbsPath}/build`,
-    "--ipfs",
-    ipfsProvider,
-    "--test-ens",
-    `${ensAddress},${apiEns}`,
-  ]);
+  const { exitCode, stdout, stderr } = await runCLI({
+    args: [
+      "build",
+      `${apiAbsPath}/web3api.yaml`,
+      "--output-dir",
+      `${apiAbsPath}/build`,
+      "--ipfs",
+      ipfsProvider,
+      "--test-ens",
+      `${ensAddress},${apiEns}`,
+    ],
+  });
 
   if (exitCode !== 0) {
     console.error(`w3 exited with code: ${exitCode}`);

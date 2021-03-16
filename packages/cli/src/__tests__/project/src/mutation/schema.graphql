@@ -1,5 +1,19 @@
+#import { Mutation } into Ethereum from "w3://ens/ethereum.web3api.eth"
+
 type Mutation {
-  setData(address: String!, value: UInt32!): String!
+  setData(
+    options: SetDataOptions!
+  ): SetDataResult!
 
   deployContract: String!
+}
+
+type SetDataOptions {
+  address: String!
+  value: UInt32!
+}
+
+type SetDataResult {
+  txReceipt: String!
+  value: UInt32!
 }
