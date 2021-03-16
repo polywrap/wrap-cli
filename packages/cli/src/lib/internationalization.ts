@@ -11,10 +11,11 @@ import { MessageFormatElement } from "intl-messageformat-parser";
 const cache: IntlCache = createIntlCache();
 
 export function getIntl(locale: string = osLocale.sync()): IntlShape<string> {
-  const messages = getLocaleData(locale);
+  const lang = locale.substring(0, 2);
+  const messages = getLocaleData(lang);
   return createIntl(
     {
-      locale: locale,
+      locale: lang,
       defaultLocale: "en",
       messages: messages,
     },
@@ -22,8 +23,8 @@ export function getIntl(locale: string = osLocale.sync()): IntlShape<string> {
   );
 }
 
-function getLocaleData(locale: string): Record<string, MessageFormatElement[]> {
-  switch (locale.substring(0, 2)) {
+function getLocaleData(lang: string): Record<string, MessageFormatElement[]> {
+  switch (lang) {
     case "es":
       return JSON.parse(
         readFileSync(__dirname + "/../../compiled-lang/es.json", "utf-8")

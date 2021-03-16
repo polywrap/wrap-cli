@@ -1,3 +1,5 @@
+import { getIntl } from "../internationalization";
+
 import { execSync, spawn } from "child_process";
 import { GluegunFilesystem } from "gluegun";
 import dns from "dns";
@@ -121,8 +123,19 @@ export const generateProject = (
       args.push(root);
 
       if (!isOnline) {
-        console.log(chalk.yellow("You appear to be offline."));
-        console.log(chalk.yellow("Falling back to the local Yarn cache."));
+        const intl = getIntl();
+        const offlineMessage = intl.formatMessage({
+          id: "lib_generators_projectGenerator_offline",
+          defaultMessage: "You appear to be offline.",
+          description: "",
+        });
+        const fallbackMessage = intl.formatMessage({
+          id: "lib_generators_projectGenerator_fallback",
+          defaultMessage: "Falling back to the local Yarn cache.",
+          description: "",
+        });
+        console.log(chalk.yellow(offlineMessage));
+        console.log(chalk.yellow(fallbackMessage));
         console.log();
       }
     } else {

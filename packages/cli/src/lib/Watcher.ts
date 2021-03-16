@@ -1,3 +1,5 @@
+import { getIntl } from "./internationalization";
+
 import chokidar from "chokidar";
 
 export type WatchEventType =
@@ -38,9 +40,16 @@ export class Watcher {
 
   public start(directory: string, options: WatchOptions): void {
     if (this._session) {
-      throw Error(
-        `Watcher session is already in progress. Directory: ${this._session.directory}`
+      const alreadyWatching = getIntl().formatMessage(
+        {
+          id: "lib_compiler_noInvoke",
+          defaultMessage:
+            "Watcher session is already in progress. Directory: {dir}",
+          description: "",
+        },
+        { dir: `${this._session.directory}` }
       );
+      throw Error(alreadyWatching);
     }
 
     const watcher = chokidar.watch(directory, options);
