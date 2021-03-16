@@ -11,7 +11,7 @@ import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import { HttpPlugin } from "@web3api/http-plugin-js";
+import { httpPlugin } from "@web3api/http-plugin-js";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 
@@ -82,11 +82,8 @@ export default {
         to: ensPlugin({ address: ensAddress }),
       },
       {
-        from: new Uri("w3://ens/http.web3api.eth"),
-        to: {
-          factory: () => new HttpPlugin(),
-          manifest: HttpPlugin.manifest(),
-        },
+        from: "w3://ens/http.web3api.eth",
+        to: httpPlugin({}),
       },
     ];
 
