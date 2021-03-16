@@ -1,6 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/naming-convention,@typescript-eslint/no-var-requires,@typescript-eslint/no-require-imports
 import { getIntl } from "../internationalization";
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires,@typescript-eslint/naming-convention
 const IPFSClient = require("ipfs-http-client");
 const { globSource } = IPFSClient;
 
