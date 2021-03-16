@@ -5,13 +5,6 @@ import { UriRedirect, Uri } from "@web3api/core-js";
 export type ModuleConnector = Record<string, string>;
 export type Web3ApiClientParams = Record<string, ModuleConnector>;
 
-export type RecordRedirect = {
-  value: {
-    to: string;
-    from: string;
-  };
-};
-
 export const createWeb3ApiClient = async (services: Web3ApiClientParams) => {
   const plugins = Object.keys(services);
   try {
