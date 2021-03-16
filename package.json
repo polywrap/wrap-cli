@@ -22,7 +22,6 @@
     "reset": "yarn clean && yarn && yarn build",
     "clean": "rimraf ./**/node_modules ./**/build ./**/coverage",
     "build": "lerna run build --no-private --ignore @web3api/cli && lerna run build --scope @web3api/cli",
-    "build:client": "lerna run build --scope @web3api/client-js",
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint -- --fix",
     "lint:ci": "lerna run lint --parallel",
