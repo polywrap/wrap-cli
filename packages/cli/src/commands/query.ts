@@ -7,7 +7,7 @@ import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 import gql from "graphql-tag";
 import path from "path";
-import { Uri, UriRedirectDefinition, Web3ApiClient } from "@web3api/client-js";
+import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
@@ -65,7 +65,7 @@ export default {
 
     // TODO: move this into its own package, since it's being used everywhere?
     // maybe have it exported from test-env.
-    const redirects: UriRedirectDefinition[] = [
+    const redirects: UriRedirect[] = [
       {
         from: "w3://ens/ethereum.web3api.eth",
         to: ethereumPlugin({ provider: ethereum }),
@@ -144,7 +144,7 @@ export default {
         print.warning("-----------------------------------");
 
         const { data, errors } = await client.query({
-          uri: new Uri(uri),
+          uri,
           query: gql(query),
           variables,
         });

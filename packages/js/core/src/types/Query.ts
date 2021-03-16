@@ -22,10 +22,11 @@ export function createQueryDocument(query: string): QueryDocument {
 
 /** Options required for an API query. */
 export interface QueryApiOptions<
-  TVariables extends Record<string, unknown> = Record<string, unknown>
+  TVariables extends Record<string, unknown> = Record<string, unknown>,
+  TUri = Uri
 > {
   /** The API's URI */
-  uri: Uri;
+  uri: TUri;
 
   /**
    * The GraphQL query to parse and execute, leading to one or more
@@ -77,6 +78,6 @@ export interface QueryHandler {
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>
   >(
-    options: QueryApiOptions<TVariables>
+    options: QueryApiOptions<TVariables, string>
   ): Promise<QueryApiResult<TData>>;
 }

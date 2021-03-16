@@ -8,7 +8,7 @@ import {
 
 describe("getImplementations", () => {
   it("works in the typical case", () => {
-    const implementations: UriRedirect[] = [
+    const implementations: UriRedirect<Uri>[] = [
       {
         from: new Uri("authority/some-abstract-interface"),
         to: new Uri("one/1"),
@@ -37,7 +37,7 @@ describe("getImplementations", () => {
       },
     ];
 
-    const others: UriRedirect[] = [
+    const others: UriRedirect<Uri>[] = [
       {
         from: new Uri("some-other/other"),
         to: new Uri("other/other"),

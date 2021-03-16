@@ -1,4 +1,4 @@
-import { UriRedirectDefinition, Web3ApiClient } from "@web3api/client-js";
+import { Web3ApiClient, UriRedirect } from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
@@ -9,7 +9,7 @@ export async function setupWeb3ApiClient(): Promise<Web3ApiClient> {
     await ethereum.enable();
   }
 
-  const redirects: UriRedirectDefinition[] = [
+  const redirects: UriRedirect[] = [
     {
       from: "w3://ens/ethereum.web3api.eth",
       to: ethereumPlugin({ provider: ethereum }),

@@ -1,16 +1,16 @@
 import { Uri } from "../";
 import { PluginPackage } from "../types";
-import { convertToUriRedirects } from "../types/UriRedirect";
+import { sanitizeUriRedirects } from "../types/UriRedirect";
 
-describe("convertToUriRedirects", () => {
+describe("sanitizeUriRedirects", () => {
   it("Returns empty array if empty array passed", () => {
-    const redirects = convertToUriRedirects([]);
+    const redirects = sanitizeUriRedirects([]);
 
     expect(redirects).toEqual([]);
   });
 
   it("Returns uri redirects from uri redirect definitions", () => {
-    const redirects = convertToUriRedirects([
+    const redirects = sanitizeUriRedirects([
       {
         from: "w3://w3/api",
         to: "w3://w3/api"
