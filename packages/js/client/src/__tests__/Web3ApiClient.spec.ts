@@ -1,52 +1,29 @@
-import { Uri } from "../";
-import { buildAndDeployApi, testEnvUp, testEnvDown } from "./helpers";
-
-import { GetPathToTestApis } from "@web3api/test-cases";
-import { clientTestEnv } from "@web3api/client-test-env";
-import axios from "axios";
 import {
-  createWeb3ApiClient,
-  Web3ApiClientParams,
-} from "../createWeb3ApiClient";
+  createWeb3ApiClient
+} from "../";
+import {
+  buildAndDeployApi,
+  initTestEnvironment,
+  stopTestEnvironment
+} from "@web3api/test-env-js";
+import { GetPathToTestApis } from "@web3api/test-cases";
 
 jest.setTimeout(50000);
 
 describe("Web3ApiClient", () => {
   let ipfsProvider: string;
+  let ethProvider: string;
   let ensAddress: string;
-  let clientParams: Web3ApiClientParams;
 
   beforeAll(async () => {
-    // Stand up the test env
-    await testEnvUp();
-
-    // fetch providers from dev server
-    const {
-      data: { ipfs },
-    } = await axios.get("http://localhost:4040/providers");
-
-    if (!ipfs || ipfs.length === 0) {
-      throw Error("Dev server must be running at port 4040");
-    }
-
-    // re-deploy ENS
-    const { data } = await axios.get("http://localhost:4040/deploy-ens");
-
+    const { ipfs, ethereum, data } = await initTestEnvironment();
     ipfsProvider = ipfs;
+    ethProvider = ethereum;
     ensAddress = data.ensAddress;
-
-    clientParams = {
-      ...clientTestEnv,
-      ens: {
-        from: "w3://ens/ens.web3api.eth",
-        address: data.ensAddress,
-      },
-    };
-  }, 50000);
+  });
 
   afterAll(async () => {
-    // Teardown the test environment
-    await testEnvDown();
+    await stopTestEnvironment();
   });
 
   it("simple-storage", async () => {
@@ -56,10 +33,14 @@ describe("Web3ApiClient", () => {
       ensAddress
     );
 
-    const client = await createWeb3ApiClient(clientParams);
+    const client = await createWeb3ApiClient({
+      ethereum: ethProvider,
+      ipfs: ipfsProvider,
+      ens: ensAddress
+    });
 
-    const ensUri = new Uri(`ens/${api.ensDomain}`);
-    const ipfsUri = new Uri(`ipfs/${api.ipfsCid}`);
+    const ensUri = `ens/${api.ensDomain}`;
+    const ipfsUri = `ipfs/${api.ipfsCid}`;
 
     const deploy = await client.query<{
       deployContract: string;
@@ -126,7 +107,7 @@ describe("Web3ApiClient", () => {
       ipfsProvider,
       ensAddress
     );
-    const ensUri = new Uri(`ens/${api.ensDomain}`);
+    const ensUri = `ens/${api.ensDomain}`;
 
     const client = await createWeb3ApiClient(clientParams);
 
@@ -391,7 +372,7 @@ describe("Web3ApiClient", () => {
       ipfsProvider,
       ensAddress
     );
-    const ensUri = new Uri(`ens/${api.ensDomain}`);
+    const ensUri = `ens/${api.ensDomain}`;
 
     const client = await createWeb3ApiClient(clientParams);
 
@@ -426,7 +407,7 @@ describe("Web3ApiClient", () => {
       ipfsProvider,
       ensAddress
     );
-    const ensUri = new Uri(`ens/${api.ensDomain}`);
+    const ensUri = `ens/${api.ensDomain}`;
 
     const client = await createWeb3ApiClient(clientParams);
 

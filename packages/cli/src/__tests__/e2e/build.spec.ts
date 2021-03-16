@@ -1,5 +1,7 @@
 import path from "path";
-import { clearStyle, run } from "./utils";
+import { clearStyle } from "./utils";
+
+import { runCLI } from "@web3api/test-env-js";
 
 const HELP = `
 w3 build [options] [<web3api-manifest>]
@@ -17,83 +19,63 @@ describe("e2e tests for build command", () => {
   const projectRoot = path.resolve(__dirname, "../project/");
 
   test("Should show help text", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["build", "--help"],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["build", "--help"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(0);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output)).toEqual(HELP);
   });
 
   test("Should throw error for invalid params - outputDir", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["build", "--output-dir"],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["build", "--output-dir"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(0);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--output-dir option missing <path> argument
 ${HELP}`);
   });
 
   test("Should throw error for invalid params - testEns", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["build", "--test-ens"],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["build", "--test-ens"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(0);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--test-ens option missing <[address,]domain> argument
 ${HELP}`);
   });
 
   test("Should throw error for invalid params - ipfs", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["build", "--test-ens", "test.eth"],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["build", "--test-ens", "test.eth"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(0);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--test-ens option requires the --ipfs [<node>] option
 ${HELP}`);
   });
 
   test("Should throw error for invalid web3api - invalid route", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["build", "invalid-web3api-1.yaml"],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["build", "invalid-web3api-1.yaml"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(1);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output)).toContain(`- Compile Web3API
 - Load web3api from invalid-web3api-1.yaml
 ✔ Load web3api from invalid-web3api-1.yaml
@@ -102,34 +84,26 @@ ${HELP}`);
   });
 
   test("Should throw error for invalid web3api - invalid field", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["build", "invalid-web3api-2.yaml"],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["build", "invalid-web3api-2.yaml"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(1);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output)).toContain(`- Compile Web3API
 - Load web3api from invalid-web3api-2.yaml
 ✖ Failed to load web3api from invalid-web3api-2.yaml: Field wrong_mutation is not accepted in the schema. Please check the accepted fields here:`);
   });
 
   test("Successfully build the project", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["build"],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["build"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(0);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`- Compile Web3API
 - Load web3api from web3api.yaml
 ✔ Load web3api from web3api.yaml

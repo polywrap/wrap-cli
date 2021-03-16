@@ -1,7 +1,7 @@
 {
   "name": "@web3api/schema-bind",
   "description": "Web3API Schema Binding",
-  "version": "0.0.1-prealpha.5",
+  "version": "0.0.1-prealpha.6",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -20,13 +20,13 @@
     "copy:templates": "copyfiles -u 1 src/**/*.mustache build/"
   },
   "dependencies": {
-    "@web3api/schema-parse": "0.0.1-prealpha.5",
+    "@web3api/schema-parse": "0.0.1-prealpha.6",
     "mustache": "4.0.1"
   },
   "devDependencies": {
-    "@web3api/test-cases": "0.0.1-prealpha.1",
     "@types/jest": "26.0.8",
     "@types/mustache": "4.0.1",
+    "@web3api/test-cases": "0.0.1-prealpha.6",
     "copyfiles": "2.4.1",
     "jest": "26.2.2",
     "rimraf": "3.0.2",
