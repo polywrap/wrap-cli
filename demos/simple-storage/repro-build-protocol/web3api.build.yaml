@@ -1,9 +1,8 @@
 image: 
   name: build-env
-  dockerfile: ./myCustomDockerfile #Comment to use default image
+  dockerfile: ./docker
 env:
   sources:
     - ./src
     - ./package.json
   outputDir: ./build
-  script: ./script.sh

@@ -3,14 +3,15 @@
 
 import { Project } from "./Project";
 import { SchemaComposer } from "./SchemaComposer";
-import { step, withSpinner, outputManifest } from "./helpers";
+import { withSpinner, outputManifest } from "./helpers";
+import { copyDir } from "../lib/helpers/copy";
+import { BuildVars, parseManifest } from "./helpers/build-manifest";
+import { buildImage, copyFromImageToHost } from "./helpers/docker";
 
 import { bindSchema, writeDirectory } from "@web3api/schema-bind";
 import path from "path";
-import fs, { readFileSync } from "fs";
+import fs, { copyFileSync, statSync } from "fs";
 import * as gluegun from "gluegun";
-import { Ora } from "ora";
-import * as asc from "assemblyscript/cli/asc";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const fsExtra = require("fs-extra");
@@ -24,10 +25,10 @@ export interface CompilerConfig {
 export class Compiler {
   constructor(private _config: CompilerConfig) {}
 
-  public async compile(verbose?: boolean): Promise<boolean> {
+  public async compile(): Promise<boolean> {
     try {
       // Compile the API
-      await this._compileWeb3Api(verbose);
+      await this._compileWeb3Api();
 
       return true;
     } catch (e) {
@@ -36,10 +37,67 @@ export class Compiler {
     }
   }
 
-  private async _compileWeb3Api(verbose?: boolean) {
+  private _copySources({
+    sources,
+    dockerfilePath,
+    tempDirPath,
+  }: {
+    sources: string[];
+    dockerfilePath: string;
+    tempDirPath: string;
+  }) {
+    copyDir(dockerfilePath, path.join(tempDirPath));
+
+    sources.forEach((source) => {
+      const isDir = statSync(source).isDirectory();
+
+      if (isDir) {
+        copyDir(source, path.join(tempDirPath, path.basename(source)));
+      } else {
+        copyFileSync(source, path.join(tempDirPath, path.basename(source)));
+      }
+    });
+  }
+
+  private async _buildSourcesInDocker(
+    {
+      outputImageName,
+      paths: { tempDir, outputDir, dockerfile },
+      sources,
+      args,
+    }: BuildVars,
+    quiet = true
+  ) {
+    this._copySources({
+      dockerfilePath: dockerfile,
+      sources,
+      tempDirPath: tempDir,
+    });
+
+    await buildImage(
+      {
+        tempDir,
+        outputImageName,
+        args,
+      },
+      quiet
+    );
+
+    await copyFromImageToHost(
+      {
+        tempDir,
+        imageName: outputImageName,
+        sourceDir: outputDir, //build folder inside docker
+        destinationDir: path.join("..", "..", outputDir),
+      },
+      quiet
+    );
+  }
+
+  private async _compileWeb3Api() {
     const { outputDir, project, schemaComposer } = this._config;
 
-    const run = async (spinner?: Ora): Promise<void> => {
+    const run = async (): Promise<void> => {
       // Init & clean build directory
       this._cleanDir(this._config.outputDir);
 
@@ -54,7 +112,7 @@ export class Compiler {
         );
       }
 
-      const buildModule = async (moduleName: "mutation" | "query") => {
+      const generateModuleCode = async (moduleName: "mutation" | "query") => {
         const module = manifest[moduleName];
 
         if (!module) {
@@ -70,19 +128,16 @@ export class Compiler {
         // Generate code next to the module entry point file
         this._generateCode(module.module.file, composed[moduleName] as string);
 
-        await this._compileWasmModule(
-          module.module.file,
-          moduleName,
-          outputDir,
-          spinner,
-          verbose
-        );
         module.module.file = `./${moduleName}.wasm`;
         module.schema.file = "./schema.graphql";
       };
 
-      await buildModule("mutation");
-      await buildModule("query");
+      await generateModuleCode("mutation");
+      await generateModuleCode("query");
+
+      const buildVars = parseManifest();
+
+      await this._buildSourcesInDocker(buildVars, project.quiet);
 
       // Output the schema & manifest files
       fs.writeFileSync(
@@ -100,114 +155,9 @@ export class Compiler {
         "Compile Web3API",
         "Failed to compile Web3API",
         "Warnings while compiling Web3API",
-        async (spinner) => {
-          return run(spinner);
+        async () => {
+          return run();
         }
-      );
-    }
-  }
-
-  private async _compileWasmModule(
-    modulePath: string,
-    moduleName: string,
-    outputDir: string,
-    spinner?: Ora,
-    verbose?: boolean
-  ) {
-    const { project } = this._config;
-
-    if (!project.quiet && spinner) {
-      step(
-        spinner,
-        "Compiling WASM module:",
-        `${modulePath} => ${outputDir}/${moduleName}.wasm`
-      );
-    }
-
-    const moduleAbsolute = path.join(project.manifestDir, modulePath);
-    const baseDir = path.dirname(moduleAbsolute);
-    const libsDirs = [];
-
-    for (
-      let dir: string | undefined = path.resolve(baseDir);
-      // Terminate after the root dir or when we have found node_modules
-      dir !== undefined;
-      // Continue with the parent directory, terminate after the root dir
-      dir = path.dirname(dir) === dir ? undefined : path.dirname(dir)
-    ) {
-      if (fs.existsSync(path.join(dir, "node_modules"))) {
-        libsDirs.push(path.join(dir, "node_modules"));
-      }
-    }
-
-    if (libsDirs.length === 0) {
-      throw Error(
-        `could not locate \`node_modules\` in parent directories of web3api manifest`
-      );
-    }
-
-    const args = [
-      path.join(baseDir, "w3/entry.ts"),
-      "--path",
-      libsDirs.join(","),
-      "--outFile",
-      `${outputDir}/${moduleName}.wasm`,
-      "--use",
-      `abort=${path.relative(
-        process.cwd(),
-        path.join(baseDir, "w3/entry/w3Abort")
-      )}`,
-      "--optimize",
-      "--debug",
-      "--importMemory",
-      "--runtime",
-      "stub",
-    ];
-
-    // compile the module into the output directory
-    await asc.main(
-      args,
-      {
-        stdout: !verbose ? undefined : process.stdout,
-        stderr: process.stderr,
-      },
-      (e: Error | null) => {
-        if (e != null) {
-          throw e;
-        }
-        return 0;
-      }
-    );
-
-    const wasmSource = readFileSync(`${outputDir}/${moduleName}.wasm`);
-    const mod = await WebAssembly.compile(wasmSource);
-    const memory = new WebAssembly.Memory({ initial: 1 });
-    const instance = await WebAssembly.instantiate(mod, {
-      env: {
-        memory,
-      },
-      w3: {
-        __w3_subinvoke: () => {},
-        __w3_subinvoke_result_len: () => {},
-        __w3_subinvoke_result: () => {},
-        __w3_subinvoke_error_len: () => {},
-        __w3_subinvoke_error: () => {},
-        __w3_invoke_args: () => {},
-        __w3_invoke_result: () => {},
-        __w3_invoke_error: () => {},
-        __w3_abort: () => {},
-      },
-    });
-
-    if (!instance.exports._w3_init) {
-      throw Error(
-        "WASM module is missing the _w3_init export. This should never happen..."
-      );
-    }
-
-    if (!instance.exports._w3_invoke) {
-      throw Error(
-        "WASM module is missing the _w3_invoke export. This should never happen..."
       );
     }
   }

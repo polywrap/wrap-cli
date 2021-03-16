@@ -9,7 +9,7 @@
     "test:env:down": "w3 test-env down"
   },
   "devDependencies": {
-    "@web3api/cli": "0.0.1-prealpha.1",
+    "@web3api/cli": "0.0.1-prealpha.6",
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.1",
     "@web3api/wasm-as": "0.0.1-prealpha.1",
     "ethers": "5.0.8",

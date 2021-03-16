@@ -1,6 +1,6 @@
 {
   "name": "@web3api/cli",
-  "version": "0.0.1-prealpha.1",
+  "version": "0.0.1-prealpha.6",
   "license": "MIT",
   "bin": {
     "w3": "bin/w3"
@@ -40,15 +40,11 @@
   "devDependencies": {
     "@types/jest": "26.0.8",
     "@types/node": "12.6.9",
-<<<<<<< HEAD
-    "@types/rimraf": "2.0.2",
-    "typescript": "3.9.6",
-    "copyfiles": "^2.4.1"
-=======
+    "@types/rimraf": "^2.0.2",
+    "copyfiles": "^2.4.1",
     "jest": "26.2.2",
     "rimraf": "3.0.2",
     "ts-jest": "26.1.4",
     "typescript": "3.9.6"
->>>>>>> prealpha-dev
   }
 }

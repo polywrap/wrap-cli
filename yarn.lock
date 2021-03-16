@@ -3432,6 +3432,14 @@
     "@types/prop-types" "*"
     csstype "^3.0.2"
 
+"@types/rimraf@^2.0.2":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@types/rimraf/-/rimraf-2.0.4.tgz#403887b0b53c6100a6c35d2ab24f6ccc042fec46"
+  integrity sha512-8gBudvllD2A/c0CcEX/BivIDorHFt5UI5m46TsNj8DjWCCTTZT74kEe4g+QsY7P/B9WdO98d82zZgXO/RQzu2Q==
+  dependencies:
+    "@types/glob" "*"
+    "@types/node" "*"
+
 "@types/secp256k1@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@types/secp256k1/-/secp256k1-4.0.1.tgz#fb3aa61a1848ad97d7425ff9dcba784549fca5a4"
@@ -3608,6 +3616,36 @@
   dependencies:
     "@typescript-eslint/types" "4.11.1"
     eslint-visitor-keys "^2.0.0"
+
+"@web3api/core-js@0.0.1-prealpha.6":
+  version "0.0.1-prealpha.6"
+  resolved "https://registry.yarnpkg.com/@web3api/core-js/-/core-js-0.0.1-prealpha.6.tgz#e9b7825cf4806be2bc7badd875197e7721d29037"
+  integrity sha512-Qvj9mvaHOeVTdWTmSqic8/B/nFsdejmSAYFy2z6WmEdpbIcYhy8n46ur9FXcoT771DIsYOtW4LlKCteDWlyHVA==
+  dependencies:
+    "@web3api/manifest-schema" "0.0.1-prealpha.6"
+    graphql "15.3.0"
+    graphql-tag "2.10.4"
+    js-yaml "3.14.0"
+    jsonschema "1.4.0"
+    semver "7.3.4"
+
+"@web3api/ethereum-plugin-js@0.0.1-prealpha.6":
+  version "0.0.1-prealpha.6"
+  resolved "https://registry.yarnpkg.com/@web3api/ethereum-plugin-js/-/ethereum-plugin-js-0.0.1-prealpha.6.tgz#ab0a40ffdbd49a8f0af433be34e32012d330e3ad"
+  integrity sha512-+HgmthJu+r0dPjkcU5wXvrlt96N+GJzHgP2Iyi+BQjSOCf7RccTowKTNoxukpzxIGxCv1uDoVZ/lLXbooGjNIQ==
+  dependencies:
+    "@web3api/core-js" "0.0.1-prealpha.6"
+    ethers "5.0.7"
+
+"@web3api/manifest-schema@0.0.1-prealpha.6":
+  version "0.0.1-prealpha.6"
+  resolved "https://registry.yarnpkg.com/@web3api/manifest-schema/-/manifest-schema-0.0.1-prealpha.6.tgz#a13279b236092c7f78100169ea3994864a11c435"
+  integrity sha512-+8WrJ/K3yELcd7BTA9fwnoLox03HB+741DSqAuwijRcwoRhJmc8o0ln1/W9AwQa0iPtYsdiWedl4XHbtM07aJw==
+
+"@web3api/wasm-as@0.0.1-prealpha.6":
+  version "0.0.1-prealpha.6"
+  resolved "https://registry.yarnpkg.com/@web3api/wasm-as/-/wasm-as-0.0.1-prealpha.6.tgz#3ab9839409a58bcd6abe230d64b59796a72ab86b"
+  integrity sha512-i5tTnuXTlmAwHcLzBmjiy1yn7cEL6LhewNB3oDhkGvZBF6oC7V1TK+tSBpaRztSWykUh4xvZUrTrexppovZ8tw==
 
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
@@ -6569,7 +6607,7 @@ copy-descriptor@^0.1.0:
   resolved "https://registry.yarnpkg.com/copy-descriptor/-/copy-descriptor-0.1.1.tgz#676f6eb3c39997c2ee1ac3a924fd6124748f578d"
   integrity sha1-Z29us8OZl8LuGsOpJP1hJHSPV40=
 
-copyfiles@2.4.1:
+copyfiles@2.4.1, copyfiles@^2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/copyfiles/-/copyfiles-2.4.1.tgz#d2dcff60aaad1015f09d0b66e7f0f1c5cd3c5da5"
   integrity sha512-fereAvAvxDrQDOXybk3Qu3dPbOoKoysFMWtkY3mv5BsL8//OSZVL5DCLYqgRfY5cWirgRzlC+WSrxp6Bo3eNZg==
