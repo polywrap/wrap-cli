@@ -60,7 +60,11 @@ export class Web3ApiClient implements Client {
         typeof query === "string" ? createQueryDocument(query) : query;
 
       // Parse the query to understand what's being invoked
-      const queryInvocations = parseQuery(new Uri(uri), queryDocument, variables);
+      const queryInvocations = parseQuery(
+        new Uri(uri),
+        queryDocument,
+        variables
+      );
 
       // Execute all invocations in parallel
       const parallelInvocations: Promise<{
