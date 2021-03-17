@@ -1,5 +1,7 @@
 import path from "path";
-import { run, clearStyle } from "./utils";
+import { clearStyle } from "./utils";
+
+import { runCLI } from "@web3api/test-env-js";
 
 const HELP = `
   w3             🔥 Web3API CLI 🔥                                      
@@ -15,17 +17,13 @@ describe("e2e tests for no help", () => {
   const projectRoot = path.resolve(__dirname, "../project/");
   
   test("Should display the help content", async () => {
-    const errorHandler = jest.fn();
-
-    const { code, output } = await run(
-      "../../../bin/w3",
-      ["help"],
-      projectRoot,
-      errorHandler
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["help"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
 
     expect(code).toEqual(0);
-    expect(errorHandler).not.toBeCalled();
+    expect(error).toBe("");
     expect(clearStyle(output)).toContain(HELP);
   });
 });

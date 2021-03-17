@@ -17,10 +17,11 @@ import {
   InvokeApiOptions,
   InvokeApiResult,
   Manifest,
+  sanitizeUriRedirects,
 } from "@web3api/core-js";
 
-export interface ClientConfig {
-  redirects: UriRedirect[];
+export interface ClientConfig<TUri = string> {
+  redirects: UriRedirect<TUri>[];
 }
 
 export class Web3ApiClient implements Client {
@@ -29,26 +30,28 @@ export class Web3ApiClient implements Client {
   // and handle cases where the are multiple jumps. For exmaple, if
   // A => B => C, then the cache should have A => C, and B => C.
   private _apiCache: ApiCache = new Map<string, Api>();
+  private _config: ClientConfig<Uri>;
 
-  constructor(
-    private _config: ClientConfig = {
-      redirects: [],
-    }
-  ) {
-    const { redirects } = this._config;
+  constructor(config: ClientConfig) {
+    this._config = {
+      ...config,
+      redirects: sanitizeUriRedirects(config.redirects),
+    };
 
     // Add all default redirects (IPFS, ETH, ENS)
-    redirects.push(...getDefaultRedirects());
+    this._config.redirects.push(...getDefaultRedirects());
   }
 
-  public redirects(): readonly UriRedirect[] {
+  public redirects(): readonly UriRedirect<Uri>[] {
     return this._config.redirects;
   }
 
   public async query<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>
-  >(options: QueryApiOptions<TVariables>): Promise<QueryApiResult<TData>> {
+  >(
+    options: QueryApiOptions<TVariables, string>
+  ): Promise<QueryApiResult<TData>> {
     try {
       const { uri, query, variables } = options;
 
@@ -57,7 +60,7 @@ export class Web3ApiClient implements Client {
         typeof query === "string" ? createQueryDocument(query) : query;
 
       // Parse the query to understand what's being invoked
-      const queryInvocations = parseQuery(uri, queryDocument, variables);
+      const queryInvocations = parseQuery(new Uri(uri), queryDocument, variables);
 
       // Execute all invocations in parallel
       const parallelInvocations: Promise<{
@@ -69,6 +72,7 @@ export class Web3ApiClient implements Client {
         parallelInvocations.push(
           this.invoke({
             ...queryInvocations[invocationName],
+            uri: queryInvocations[invocationName].uri.uri,
             decode: true,
           }).then((result) => ({
             name: invocationName,
@@ -105,12 +109,18 @@ export class Web3ApiClient implements Client {
   }
 
   public async invoke<TData = unknown>(
-    options: InvokeApiOptions
+    options: InvokeApiOptions<string>
   ): Promise<InvokeApiResult<TData>> {
     try {
-      const { uri } = options;
+      const uri = new Uri(options.uri);
       const api = await this.loadWeb3Api(uri);
-      return (await api.invoke(options, this)) as TData;
+      return (await api.invoke(
+        {
+          ...options,
+          uri,
+        },
+        this
+      )) as TData;
     } catch (error) {
       return { error: error };
     }
