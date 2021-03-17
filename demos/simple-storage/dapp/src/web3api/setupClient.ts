@@ -16,7 +16,7 @@ export async function setupWeb3ApiClient(): Promise<Web3ApiClient> {
     },
     {
       from: "w3://ens/ipfs.web3api.eth",
-      to: ipfsPlugin({ provider: ethereum }),
+      to: ipfsPlugin({ provider: "https://ipfs.io" }),
     },
     {
       from: "w3://ens/ens.web3api.eth",
