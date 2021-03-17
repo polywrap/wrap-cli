@@ -1,10 +1,11 @@
 /// NOTE: This is an auto-generated file. See scripts/extractPluginConfigs.ts
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 /// Types generated from build/index.d.ts
 
 export interface EthereumConfig {
-    provider: EthereumProvider;
-    signer?: EthereumSigner;
+  provider: EthereumProvider;
+  signer?: EthereumSigner;
 }
 
 export type EthereumProvider = string | ExternalProvider;

@@ -1,34 +1,37 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable prefer-const */
+
 import { Web3ApiClient } from "./Web3ApiClient";
-import {
-  PluginConfigs,
-  modules,
-  uris
-} from "./pluginConfigs";
+import { PluginConfigs, modules, uris } from "./pluginConfigs";
+
 import { UriRedirect } from "@web3api/core-js";
 
 export { PluginConfigs };
 
-export async function createWeb3ApiClient(plugins: PluginConfigs): Promise<Web3ApiClient> {
-
+export async function createWeb3ApiClient(
+  plugins: PluginConfigs
+): Promise<Web3ApiClient> {
   const redirects: UriRedirect[] = [];
 
   for (const plugin of Object.keys(plugins)) {
-    let Module: any;
+    let pluginModule: any;
 
     if (!modules[plugin]) {
-      throw Error(`Requested plugin "${plugin}" is not a supported createWeb3ApiClient plugin.`);
-    }
-
-    try {
-      Module = await import(modules[plugin]);
-    } catch (err) {
       throw Error(
-        `Failed to import plugin module. Please install the package "${modules[plugin]}".\n` +
-        `Error: ${err.message}`
+        `Requested plugin "${plugin}" is not a supported createWeb3ApiClient plugin.`
       );
     }
 
-    const pluginFactory = Module["plugin"];
+    try {
+      pluginModule = await import(modules[plugin]);
+    } catch (err) {
+      throw Error(
+        `Failed to import plugin module. Please install the package "${modules[plugin]}".\n` +
+          `Error: ${err.message}`
+      );
+    }
+
+    const pluginFactory = pluginModule["plugin"];
 
     if (!pluginFactory) {
       throw Error(
@@ -47,8 +50,10 @@ export async function createWeb3ApiClient(plugins: PluginConfigs): Promise<Web3A
     );
 
     if (
-      !pluginPackage || typeof pluginPackage !== "object" ||
-      !pluginPackage.factory || !pluginPackage.manifest
+      !pluginPackage ||
+      typeof pluginPackage !== "object" ||
+      !pluginPackage.factory ||
+      !pluginPackage.manifest
     ) {
       throw Error(
         `Plugin package is malformed. Expected object with keys "factory" and "manifest". Got: ${pluginPackage}`
@@ -57,7 +62,7 @@ export async function createWeb3ApiClient(plugins: PluginConfigs): Promise<Web3A
 
     redirects.push({
       from: uris[plugin],
-      to: pluginPackage
+      to: pluginPackage,
     });
   }
 
