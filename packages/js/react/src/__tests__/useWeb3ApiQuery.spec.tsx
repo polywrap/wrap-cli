@@ -29,14 +29,14 @@ describe("useWeb3ApiQuery hook", () => {
   beforeAll(async () => {
     const {
       ipfs,
-      data,
+      ensAddress,
       redirects: testRedirects,
     } = await initTestEnvironment();
 
     const { ensDomain } = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
       ipfs,
-      data.ensAddress
+      ensAddress
     );
 
     uri = `ens/${ensDomain}`;

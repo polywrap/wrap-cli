@@ -1,4 +1,6 @@
-import { Web3ApiClient, UriRedirect } from "../";
+import {
+  createWeb3ApiClient
+} from "../";
 import {
   buildAndDeployApi,
   initTestEnvironment,
@@ -10,14 +12,14 @@ jest.setTimeout(50000);
 
 describe("Web3ApiClient", () => {
   let ipfsProvider: string;
+  let ethProvider: string;
   let ensAddress: string;
-  let redirects: UriRedirect[];
 
   beforeAll(async () => {
-    const { ipfs, data, redirects: testRedirects } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
     ipfsProvider = ipfs;
-    ensAddress = data.ensAddress;
-    redirects = testRedirects;
+    ethProvider = ethereum;
+    ensAddress = ens;
   });
 
   afterAll(async () => {
@@ -31,10 +33,14 @@ describe("Web3ApiClient", () => {
       ensAddress
     );
 
+    const client = await createWeb3ApiClient({
+      ethereum: { provider: ethProvider },
+      ipfs: { provider: ipfsProvider },
+      ens: { address: ensAddress }
+    });
+
     const ensUri = `ens/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
-
-    const client = new Web3ApiClient({ redirects });
 
     const deploy = await client.query<{
       deployContract: string;
@@ -103,15 +109,19 @@ describe("Web3ApiClient", () => {
     );
     const ensUri = `ens/${api.ensDomain}`;
 
-    const client = new Web3ApiClient({ redirects });
+    const client = await createWeb3ApiClient({
+      ethereum: { provider: ethProvider },
+      ipfs: { provider: ipfsProvider },
+      ens: { address: ensAddress }
+    });
 
     const method1a = await client.query<{
       method1: {
-        prop: string,
+        prop: string;
         nested: {
-          prop: string
-        }
-      }[]
+          prop: string;
+        };
+      }[];
     }>({
       uri: ensUri,
       query: `
@@ -135,25 +145,25 @@ describe("Web3ApiClient", () => {
         {
           prop: "arg1 prop",
           nested: {
-            prop: "arg1 nested prop"
-          }
+            prop: "arg1 nested prop",
+          },
         },
         {
           prop: "",
           nested: {
-            prop: ""
-          }
-        }
-      ]
+            prop: "",
+          },
+        },
+      ],
     });
 
     const method1b = await client.query<{
       method1: {
-        prop: string,
+        prop: string;
         nested: {
-          prop: string
-        }
-      }[]
+          prop: string;
+        };
+      }[];
     }>({
       uri: ensUri,
       query: `
@@ -183,25 +193,25 @@ describe("Web3ApiClient", () => {
         {
           prop: "arg1 prop",
           nested: {
-            prop: "arg1 nested prop"
-          }
+            prop: "arg1 nested prop",
+          },
         },
         {
           prop: "arg2 prop",
           nested: {
-            prop: "arg2 circular prop"
-          }
-        }
-      ]
+            prop: "arg2 circular prop",
+          },
+        },
+      ],
     });
 
     const method2a = await client.query<{
       method2: {
-        prop: string,
+        prop: string;
         nested: {
-          prop: string
-        }
-      } | null
+          prop: string;
+        };
+      } | null;
     }>({
       uri: ensUri,
       query: `
@@ -224,18 +234,18 @@ describe("Web3ApiClient", () => {
       method2: {
         prop: "arg prop",
         nested: {
-          prop: "arg nested prop"
-        }
-      }
+          prop: "arg nested prop",
+        },
+      },
     });
 
     const method2b = await client.query<{
       method2: {
-        prop: string,
+        prop: string;
         nested: {
-          prop: string
-        }
-      } | null
+          prop: string;
+        };
+      } | null;
     }>({
       uri: ensUri,
       query: `
@@ -255,17 +265,16 @@ describe("Web3ApiClient", () => {
     expect(method2b.errors).toBeFalsy();
     expect(method2b.data).toBeTruthy();
     expect(method2b.data).toMatchObject({
-      method2: null
+      method2: null,
     });
-
 
     const method3 = await client.query<{
       method3: ({
-        prop: string,
+        prop: string;
         nested: {
-          prop: string
-        }
-      } | null)[]
+          prop: string;
+        };
+      } | null)[];
     }>({
       uri: ensUri,
       query: `
@@ -290,19 +299,19 @@ describe("Web3ApiClient", () => {
         {
           prop: "arg prop",
           nested: {
-            prop: "arg nested prop"
-          }
-        }
-      ]
+            prop: "arg nested prop",
+          },
+        },
+      ],
     });
 
     const method4 = await client.query<{
       method4: ({
-        prop: string,
+        prop: string;
         nested: {
-          prop: string
-        }
-      } | null)[]
+          prop: string;
+        };
+      } | null)[];
     }>({
       uri: ensUri,
       query: `
@@ -331,11 +340,11 @@ describe("Web3ApiClient", () => {
 
     const method5 = await client.query<{
       method5: {
-        prop: string,
+        prop: string;
         nested: {
-          prop: string
-        }
-      }
+          prop: string;
+        };
+      };
     }>({
       uri: ensUri,
       query: `
@@ -353,11 +362,11 @@ describe("Web3ApiClient", () => {
     expect(method5.data).toBeTruthy();
     expect(method5.data).toMatchObject({
       method5: {
-        prop: '1234',
+        prop: "1234",
         nested: {
-          prop: 'nested prop'
-        }
-      }
+          prop: "nested prop",
+        },
+      },
     });
   });
 
@@ -369,10 +378,14 @@ describe("Web3ApiClient", () => {
     );
     const ensUri = `ens/${api.ensDomain}`;
 
-    const client = new Web3ApiClient({ redirects });
+    const client = await createWeb3ApiClient({
+      ethereum: { provider: ethProvider },
+      ipfs: { provider: ipfsProvider },
+      ens: { address: ensAddress }
+    });
 
     const response = await client.query<{
-      bytesMethod: Buffer
+      bytesMethod: Buffer;
     }>({
       uri: ensUri,
       query: `
@@ -385,14 +398,14 @@ describe("Web3ApiClient", () => {
         }
       `,
       variables: {
-        buffer: Buffer.from("Argument Value")
-      }
+        buffer: Buffer.from("Argument Value"),
+      },
     });
 
     expect(response.errors).toBeFalsy();
     expect(response.data).toBeTruthy();
     expect(response.data).toMatchObject({
-      bytesMethod: Buffer.from("Argument Value Sanity!").buffer
+      bytesMethod: Buffer.from("Argument Value Sanity!").buffer,
     });
   });
 
@@ -404,7 +417,11 @@ describe("Web3ApiClient", () => {
     );
     const ensUri = `ens/${api.ensDomain}`;
 
-    const client = new Web3ApiClient({ redirects });
+    const client = await createWeb3ApiClient({
+      ethereum: { provider: ethProvider },
+      ipfs: { provider: ipfsProvider },
+      ens: { address: ensAddress }
+    });
 
     const method1a = await client.query<any>({
       uri: ensUri,
@@ -437,7 +454,7 @@ describe("Web3ApiClient", () => {
     expect(method1b.errors).toBeFalsy();
     expect(method1b.data).toBeTruthy();
     expect(method1b.data).toMatchObject({
-      method1: 2
+      method1: 2,
     });
 
     const method1c = await client.query<any>({
@@ -472,12 +489,7 @@ describe("Web3ApiClient", () => {
     expect(method2a.errors).toBeFalsy();
     expect(method2a.data).toBeTruthy();
     expect(method2a.data).toMatchObject({
-      method2: [
-        0,
-        0,
-        2
-      ]
+      method2: [0, 0, 2],
     });
   });
-
 });
