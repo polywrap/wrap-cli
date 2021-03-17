@@ -13,9 +13,6 @@ export interface InvokeApiOptions {
   /** Method to be executed. */
   method: string;
 
-  /** Method alias in executed result */
-  alias?: string;
-
   /**
    * Input arguments for the method, structured as a map,
    * removing the chance of incorrectly ordering arguments.

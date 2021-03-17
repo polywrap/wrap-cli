@@ -1,4 +1,4 @@
-import { createQueryDocument, parseQuery, InvokeApiOptions, Uri } from "../";
+import { createQueryDocument, parseQuery, QueryApiInvocations, Uri } from "../";
 
 describe("parseQuery", () => {
   const dummy = new Uri("w3://dumb/dummy");
@@ -36,35 +36,37 @@ describe("parseQuery", () => {
       varTwo: 55,
     });
 
-    const expected: InvokeApiOptions = {
-      uri: dummy,
-      module: "mutation",
-      method: "someMethod",
-      input: {
-        arg1: "hey",
-        arg2: 4,
-        arg3: true,
-        arg4: null,
-        arg5: ["hey", "there", [5.5]],
-        arg6: {
-          prop: "hey",
-          obj: {
-            prop: 5,
-            var: "var 1"
+    const expected: QueryApiInvocations = {
+      someMethod: {
+        uri: dummy,
+        module: "mutation",
+        method: "someMethod",
+        input: {
+          arg1: "hey",
+          arg2: 4,
+          arg3: true,
+          arg4: null,
+          arg5: ["hey", "there", [5.5]],
+          arg6: {
+            prop: "hey",
+            obj: {
+              prop: 5,
+              var: "var 1"
+            },
+          },
+          var1: "var 1",
+          var2: 55,
+        },
+        resultFilter: {
+          someResult: {
+            prop1: true,
+            prop2: true,
           },
         },
-        var1: "var 1",
-        var2: 55,
-      },
-      resultFilter: {
-        someResult: {
-          prop1: true,
-          prop2: true,
-        },
-      },
+      }
     };
 
-    expect(result).toMatchObject([expected]);
+    expect(result).toMatchObject(expected);
   });
 
   it("works with multiple queries", () => {
@@ -140,61 +142,61 @@ describe("parseQuery", () => {
       varTwo: 55,
     });
 
-    const method1: InvokeApiOptions = {
-      uri: dummy,
-      module: "mutation",
-      method: "someMethod",
-      input: {
-        arg1: 4,
-        arg2: ["hey", "there", [5.5]],
-        arg3: {
-          prop: "hey",
-          obj: {
-            prop: 5,
+    const method1: QueryApiInvocations = {
+      someMethod: {
+        uri: dummy,
+        module: "query",
+        method: "someMethod",
+        input: {
+          arg1: 4,
+          arg2: ["hey", "there", [5.5]],
+          arg3: {
+            prop: "hey",
+            obj: {
+              prop: 5,
+            },
           },
+          var1: "var 1",
+          var2: 55,
         },
-        var1: "var 1",
-        var2: 55,
-      },
-      resultFilter: {
-        someResult: {
-          prop1: true,
-          prop2: true,
-        },
-      },
-      alias: "mutationSomeMethod",
+        resultFilter: {
+          someResult: {
+            prop1: true,
+            prop2: true,
+          },
+        }
+      }
     };
-    const method2: InvokeApiOptions = {
-      uri: dummy,
-      module: "mutation",
-      method: "anotherMethod",
-      input: {
-        arg: "hey",
-        var: "var 1",
-      },
-      resultFilter: {
-        resultOne: true,
-        resultTwo: {
-          prop: true,
+    const method2: QueryApiInvocations = {
+      anotherMethod: {
+        uri: dummy,
+        module: "query",
+        method: "anotherMethod",
+        input: {
+          arg: "hey",
+          var: "var 1",
         },
-      },
-      alias: "mutationAnotherMethod",
+        resultFilter: {
+          resultOne: true,
+          resultTwo: {
+            prop: true,
+          },
+        }
+      }
     };
 
-    const expected: InvokeApiOptions[] = [
-      method1,
-      method2,
-      {
-        ...method1,
-        module: "query",
-        alias: undefined
+    const expected: QueryApiInvocations = {
+      ...method1,
+      ...method2,
+      mutationSomeMethod: {
+        ...method1.someMethod,
+        module: "mutation"
       },
-      {
-        ...method2,
-        module: "query",
-        alias: undefined
+      mutationAnotherMethod: {
+        ...method2.anotherMethod,
+        module: "mutation"
       },
-    ];
+    };
 
     expect(result).toMatchObject(expected);
   });
@@ -333,7 +335,7 @@ describe("parseQuery", () => {
     `);
 
     expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Duplicate alias 'alias' found./
+      /Duplicate query name found "alias"/
     );
   });
 
@@ -355,7 +357,7 @@ describe("parseQuery", () => {
     `);
 
     expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Duplicate method 'method' invocation found./
+      /Duplicate query name found "method"/
     );
   });
 });

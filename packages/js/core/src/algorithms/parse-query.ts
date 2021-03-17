@@ -1,4 +1,4 @@
-import { InvokeApiOptions, QueryDocument, Uri } from "../types";
+import { QueryApiInvocations, QueryDocument, Uri } from "../types";
 
 import { SelectionSetNode, ValueNode } from "graphql";
 
@@ -6,12 +6,12 @@ export function parseQuery(
   uri: Uri,
   doc: QueryDocument,
   variables?: Record<string, unknown>
-): InvokeApiOptions[] {
+): QueryApiInvocations {
   if (doc.definitions.length === 0) {
     throw Error("Empty query document found.");
   }
 
-  const invokeOptions: InvokeApiOptions[] = [];
+  const queryInvocations: QueryApiInvocations = {};
 
   for (const def of doc.definitions) {
     if (def.kind !== "OperationDefinition") {
@@ -46,15 +46,14 @@ export function parseQuery(
         );
       }
 
-      let alias: string | undefined = undefined;
-      if (selection.alias) {
-        alias = selection.alias.value;
-        if (invokeOptions.find((io) => io.alias === alias)) {
-          throw Error(`Duplicate alias '${alias}' found.`);
-        }
-      }
-
       const method = selection.name.value;
+      const invocationName = selection.alias ? selection.alias.value : method;
+
+      if (queryInvocations[invocationName]) {
+        throw Error(
+          `Duplicate query name found "${invocationName}". Please use GraphQL aliases that each have unique names.`
+        );
+      }
 
       // Get all input arguments
       const selectionArgs = selection.arguments;
@@ -81,20 +80,17 @@ export function parseQuery(
         resultFilter = extractSelections(selectionResults);
       }
 
-      invokeOptions.push({
+      queryInvocations[invocationName] = {
         uri,
         module,
         method,
         input,
         resultFilter,
-        alias,
-      });
+      };
     }
   }
 
-  checkDuplicateMethodInvocations(invokeOptions);
-
-  return invokeOptions;
+  return queryInvocations;
 }
 
 function extractValue(
@@ -172,28 +168,4 @@ function extractSelections(node: SelectionSetNode): Record<string, unknown> {
   }
 
   return result;
-}
-
-function checkDuplicateMethodInvocations(
-  invokeOptions: InvokeApiOptions[]
-): void {
-  const uniqueMethodInvocations: { method: string; alias?: string }[] = [];
-
-  for (const invokeOption of invokeOptions) {
-    if (
-      uniqueMethodInvocations.find(
-        (mi) =>
-          invokeOption.method === mi.method && invokeOption.alias === mi.alias
-      )
-    ) {
-      throw Error(
-        `Duplicate method '${invokeOption.method}' invocation found. Use different graphql aliases if this was intetional`
-      );
-    } else {
-      uniqueMethodInvocations.push({
-        method: invokeOption.method,
-        alias: invokeOption.alias,
-      });
-    }
-  }
 }

@@ -1,4 +1,4 @@
-import { Uri } from "./";
+import { Uri, InvokeApiOptions } from "./";
 
 import { DocumentNode, parse } from "graphql";
 import gql from "graphql-tag";
@@ -63,6 +63,10 @@ export interface QueryApiResult<
 
   /** Errors encountered during the query. */
   errors?: Error[];
+}
+
+export interface QueryApiInvocations {
+  [methodOrAlias: string]: InvokeApiOptions;
 }
 
 /** A type that can parse & execute a given query */

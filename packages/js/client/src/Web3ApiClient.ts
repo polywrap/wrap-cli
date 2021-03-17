@@ -57,54 +57,38 @@ export class Web3ApiClient implements Client {
         typeof query === "string" ? createQueryDocument(query) : query;
 
       // Parse the query to understand what's being invoked
-      const invokeOptions = parseQuery(uri, queryDocument, variables);
+      const queryInvocations = parseQuery(uri, queryDocument, variables);
 
       // Execute all invocations in parallel
       const parallelInvocations: Promise<{
-        method: string;
+        name: string;
         result: InvokeApiResult<unknown>;
-        alias: string | undefined;
       }>[] = [];
 
-      for (const invocation of invokeOptions) {
+      for (const invocationName of Object.keys(queryInvocations)) {
         parallelInvocations.push(
           this.invoke({
-            ...invocation,
+            ...queryInvocations[invocationName],
             decode: true,
           }).then((result) => ({
-            method: invocation.method,
-            alias: invocation.alias,
+            name: invocationName,
             result,
           }))
         );
       }
 
       // Await the invocations
-      const invocations = await Promise.all(parallelInvocations);
+      const invocationResults = await Promise.all(parallelInvocations);
 
       // Aggregate all invocation results
-      const methods: string[] = [];
-      const resultDatas: unknown[] = [];
+      const data: Record<string, unknown> = {};
       const errors: Error[] = [];
 
-      for (const invocation of invocations) {
-        if (invocation.alias) {
-          methods.push(invocation.alias);
-        } else {
-          methods.push(invocation.method);
-        }
-
-        resultDatas.push(invocation.result.data);
+      for (const invocation of invocationResults) {
+        data[invocation.name] = invocation.result.data;
         if (invocation.result.error) {
           errors.push(invocation.result.error);
         }
-      }
-
-      // Build are data map, where each method maps to its data
-      const data: Record<string, unknown> = {};
-
-      for (let i = 0; i < methods.length; ++i) {
-        data[methods[i]] = resultDatas[i];
       }
 
       return {
