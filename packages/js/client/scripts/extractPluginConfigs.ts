@@ -48,7 +48,7 @@ const plugins: PluginConfigSource[] = [
     name: "Ens",
     module: "@web3api/ens-plugin-js",
     file: "build/index.d.ts",
-    uri: "w3://ens/ethereum.web3api.eth",
+    uri: "w3://ens/ens.web3api.eth",
     config: "EnsConfig",
     interfaces: ["EnsConfig"],
     types: ["Address"]
