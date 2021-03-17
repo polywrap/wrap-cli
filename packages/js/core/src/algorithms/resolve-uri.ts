@@ -9,7 +9,7 @@ export async function resolveUri(
   createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
   createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api,
   noValidate?: boolean,
-  queryRedirects?: UriRedirect[]
+  queryRedirects?: UriRedirect<Uri>[]
 ): Promise<Api> {
   let resolvedUri = uri;
 
@@ -38,8 +38,9 @@ export async function resolveUri(
     }
   };
 
-  let redirects = client.redirects();
+  let redirects = client.redirects() as UriRedirect<Uri>[];
 
+  // Resolve query time redirects first if they exist
   if (queryRedirects) {
     queryRedirects.push(...redirects);
     redirects = queryRedirects;

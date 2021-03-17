@@ -55,9 +55,9 @@ export class Web3ApiClient implements Client {
     try {
       const { uri, query, variables, redirects } = options;
 
-      let queryRedirects: UriRedirect[] | undefined = undefined;
+      let queryRedirects: UriRedirect<Uri>[] | undefined = undefined;
       if (redirects) {
-        queryRedirects = convertToUriRedirects(redirects);
+        queryRedirects = sanitizeUriRedirects(redirects);
       }
 
       // Convert the query string into a query document
@@ -157,9 +157,15 @@ export class Web3ApiClient implements Client {
 
   public async loadWeb3Api(
     uri: Uri,
-    queryRedirects?: UriRedirect[]
+    queryRedirects?: UriRedirect<Uri>[]
   ): Promise<Api> {
-    let api = this._apiCache.get(uri.uri);
+    let api: Api | undefined = undefined;
+    queryRedirects = [];
+
+    // avoid using cache if query redirects specified
+    if (queryRedirects && queryRedirects.length) {
+      api = this._apiCache.get(uri.uri);
+    }
 
     if (!api) {
       api = await resolveUri(
@@ -176,7 +182,9 @@ export class Web3ApiClient implements Client {
         throw Error(`Unable to resolve Web3API at uri: ${uri}`);
       }
 
-      this._apiCache.set(uri.uri, api);
+      if (!queryRedirects || !queryRedirects.length) {
+        this._apiCache.set(uri.uri, api);
+      }
     }
 
     return api;

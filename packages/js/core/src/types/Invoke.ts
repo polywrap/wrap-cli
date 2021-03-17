@@ -37,7 +37,7 @@ export interface InvokeApiOptions<TUri = Uri> {
   /**
    * Custom redirects passed in query and only valid during current invoke.
    */
-  queryRedirects?: UriRedirect[];
+  queryRedirects?: UriRedirect<Uri>[];
 }
 
 /**

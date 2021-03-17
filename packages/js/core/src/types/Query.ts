@@ -1,5 +1,4 @@
-import { Uri } from "./";
-import { UriRedirectDefinition } from "./UriRedirect";
+import { Uri, UriRedirect } from "./";
 
 import { DocumentNode, parse } from "graphql";
 import gql from "graphql-tag";
@@ -42,7 +41,7 @@ export interface QueryApiOptions<
   /**
    * Redirects valid only in this query call.
    */
-  redirects?: UriRedirectDefinition[];
+  redirects?: UriRedirect<string>[];
 }
 
 /**

@@ -6,7 +6,7 @@ import {
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
-jest.setTimeout(50000);
+jest.setTimeout(10000000);
 
 describe("Web3ApiClient", () => {
   let ipfsProvider: string;
@@ -22,6 +22,81 @@ describe("Web3ApiClient", () => {
 
   afterAll(async () => {
     await stopTestEnvironment();
+  });
+
+it("simple-storage with query time redirects", async () => {
+
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensAddress
+    );
+
+    const ensUri = `ens/${api.ensDomain}`;
+    const ipfsUri = `ipfs/${api.ipfsCid}`;
+
+    const client = new Web3ApiClient({ redirects: [] });
+
+    const deploy = await client.query<{
+      deployContract: string;
+    }>({
+      uri: ensUri,
+      query: `
+        mutation {
+          deployContract
+        }
+      `,
+      redirects: redirects
+    });
+
+    expect(deploy.errors).toBeFalsy();
+    expect(deploy.data).toBeTruthy();
+    expect(deploy.data?.deployContract.indexOf("0x")).toBeGreaterThan(-1);
+
+    if (!deploy.data) {
+      return;
+    }
+
+    const address = deploy.data.deployContract;
+    const set = await client.query<{
+      setData: string;
+    }>({
+      uri: ipfsUri,
+      query: `
+        mutation {
+          setData(
+            address: "${address}"
+            value: $value
+          )
+        }
+      `,
+      variables: {
+        value: 55,
+      },
+      redirects: redirects
+    });
+
+    expect(set.errors).toBeFalsy();
+    expect(set.data).toBeTruthy();
+    expect(set.data?.setData.indexOf("0x")).toBeGreaterThan(-1);
+
+    const get = await client.query<{
+      getData: number;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          getData(
+            address: "${address}"
+          )
+        }
+      `,
+      redirects: redirects
+    });
+
+    expect(get.errors).toBeFalsy();
+    expect(get.data).toBeTruthy();
+    expect(get.data?.getData).toBe(55);
   });
 
   it("simple-storage", async () => {
@@ -479,5 +554,4 @@ describe("Web3ApiClient", () => {
       ]
     });
   });
-
 });
