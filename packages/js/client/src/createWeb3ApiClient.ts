@@ -1,43 +1,65 @@
 import { Web3ApiClient } from "./Web3ApiClient";
+import {
+  PluginConfigs,
+  modules,
+  uris
+} from "./pluginConfigs";
+import { UriRedirect } from "@web3api/core-js";
 
-import { UriRedirect, Uri } from "@web3api/core-js";
+export { PluginConfigs };
 
-export type ModuleConnector = Record<string, string>;
-export type Web3ApiClientParams = Record<string, ModuleConnector>;
+export async function createWeb3ApiClient(plugins: PluginConfigs): Promise<Web3ApiClient> {
 
-export const createWeb3ApiClient = async (services: Web3ApiClientParams) => {
-  const plugins = Object.keys(services);
-  try {
-    const getPluginModule = async (plugin: string): Promise<UriRedirect> => {
-      const Module = await import(`@web3api/${plugin}-plugin-js`);
-      //@TODO: Make sure this is the correct way
-      const pluginMethodName = Object.keys(Module)[0];
-      const CurrentPlugin = Module[pluginMethodName];
-      const { from, ...pluginConfig } = services[plugin];
-      return {
-        from: new Uri(from),
-        to: {
-          factory: () => new CurrentPlugin(pluginConfig),
-          manifest: CurrentPlugin.manifest(),
-        },
-      };
-    };
+  const redirects: UriRedirect[] = [];
 
-    const pluginPromises = plugins.map(async (plugin: string) => {
-      const redirect = await getPluginModule(plugin);
-      return redirect;
-    });
+  for (const plugin of Object.keys(plugins)) {
+    let Module: any;
 
-    const pluginsLoaded = await Promise.all(pluginPromises);
+    if (!modules[plugin]) {
+      throw Error(`Requested plugin "${plugin}" is not a supported createWeb3ApiClient plugin.`);
+    }
 
-    return new Web3ApiClient({ redirects: pluginsLoaded });
-  } catch (e) {
-    if (e.code === "MODULE_NOT_FOUND") {
-      throw new Error(
-        `You must install ${e.moduleName} into your project in order to use it`
+    try {
+      Module = await import(modules[plugin]);
+    } catch (err) {
+      throw Error(
+        `Failed to import plugin module. Please install the package "${modules[plugin]}".\n` +
+        `Error: ${err.message}`
       );
     }
 
-    throw new Error(e.message);
+    const pluginFactory = Module["plugin"];
+
+    if (!pluginFactory) {
+      throw Error(
+        `Plugin module "${modules[plugin]}" is missing the "plugin: PluginFactory" export.`
+      );
+    }
+
+    if (typeof pluginFactory !== "function") {
+      throw Error(
+        `The "plugin: PluginFactory" export must be a function. Found in module "${modules[plugin]}".`
+      );
+    }
+
+    const pluginPackage = pluginFactory(
+      (plugins as Record<string, unknown>)[plugin]
+    );
+
+    if (
+      !pluginPackage || typeof pluginPackage !== "object" ||
+      !pluginPackage.factory || !pluginPackage.manifest
+    ) {
+      throw Error(
+        `Plugin package is malformed. Expected object with keys "factory" and "manifest". Got: ${pluginPackage}`
+      );
+    }
+
+    redirects.push({
+      from: uris[plugin],
+      to: pluginPackage
+    });
   }
-};
+
+  return new Web3ApiClient({ redirects });
+}

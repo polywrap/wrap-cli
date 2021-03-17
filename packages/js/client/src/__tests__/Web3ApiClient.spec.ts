@@ -16,10 +16,10 @@ describe("Web3ApiClient", () => {
   let ensAddress: string;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, data } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
-    ensAddress = data.ensAddress;
+    ensAddress = ens;
   });
 
   afterAll(async () => {
@@ -34,9 +34,9 @@ describe("Web3ApiClient", () => {
     );
 
     const client = await createWeb3ApiClient({
-      ethereum: ethProvider,
-      ipfs: ipfsProvider,
-      ens: ensAddress
+      ethereum: { provider: ethProvider },
+      ipfs: { provider: ipfsProvider },
+      ens: { address: ensAddress }
     });
 
     const ensUri = `ens/${api.ensDomain}`;
@@ -109,7 +109,11 @@ describe("Web3ApiClient", () => {
     );
     const ensUri = `ens/${api.ensDomain}`;
 
-    const client = await createWeb3ApiClient(clientParams);
+    const client = await createWeb3ApiClient({
+      ethereum: { provider: ethProvider },
+      ipfs: { provider: ipfsProvider },
+      ens: { address: ensAddress }
+    });
 
     const method1a = await client.query<{
       method1: {
@@ -374,7 +378,11 @@ describe("Web3ApiClient", () => {
     );
     const ensUri = `ens/${api.ensDomain}`;
 
-    const client = await createWeb3ApiClient(clientParams);
+    const client = await createWeb3ApiClient({
+      ethereum: { provider: ethProvider },
+      ipfs: { provider: ipfsProvider },
+      ens: { address: ensAddress }
+    });
 
     const response = await client.query<{
       bytesMethod: Buffer;
@@ -409,7 +417,11 @@ describe("Web3ApiClient", () => {
     );
     const ensUri = `ens/${api.ensDomain}`;
 
-    const client = await createWeb3ApiClient(clientParams);
+    const client = await createWeb3ApiClient({
+      ethereum: { provider: ethProvider },
+      ipfs: { provider: ipfsProvider },
+      ens: { address: ensAddress }
+    });
 
     const method1a = await client.query<any>({
       uri: ensUri,

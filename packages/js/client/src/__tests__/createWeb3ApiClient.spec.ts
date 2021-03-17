@@ -1,17 +1,13 @@
-import { createWeb3ApiClient } from "../createWeb3ApiClient";
-
-import { clientTestEnv } from "@web3api/client-test-env";
+import { createWeb3ApiClient, PluginConfigs } from "../createWeb3ApiClient";
 
 it("Should throw because the plugin requested it's not installed ", async () => {
   const clientParams = {
-    ...clientTestEnv,
     nonExistantPlugin: {
-      from: "none",
       provider: "none",
     },
-  };
+  } as PluginConfigs;
 
   await expect(createWeb3ApiClient(clientParams)).rejects.toThrow(
-    "You must install @web3api/nonExistantPlugin-plugin-js into your project in order to use it"
+    "Requested plugin \"nonExistantPlugin\" is not a supported createWeb3ApiClient plugin."
   );
 });
