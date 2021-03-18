@@ -3,6 +3,7 @@ type Query {
     address: String!
     method: String!
     args: [String!]!
+    network: String
   ): String!
 }
 

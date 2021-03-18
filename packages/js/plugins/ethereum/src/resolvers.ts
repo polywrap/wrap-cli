@@ -25,7 +25,13 @@ export const query = (ethereum: EthereumPlugin): PluginModule => ({
     address: string;
     method: string;
     args: string[];
+    network?: string;
   }) => {
-    return await ethereum.callView(input.address, input.method, input.args);
+    return await ethereum.callView(
+      input.address,
+      input.method,
+      input.args,
+      input.network
+    );
   },
 });

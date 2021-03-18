@@ -66,12 +66,21 @@ export class EnsPlugin extends Plugin {
     domain = domain.replace("w3://", "");
     domain = domain.replace("ens/", "");
 
+    // Check for non-default network
+    let network = "";
+    const re = /^(homestead|mainnet|ropsten|kovan|rinkeby|goerli)\//i;
+    if (re.exec(domain)) {
+      network = domain.substring(0, domain.indexOf("/"));
+      domain = domain.replace(network + "/", "");
+    }
+
     const domainNode = ethers.utils.namehash(domain);
 
     const callView = async (
       address: string,
       method: string,
-      args: string[]
+      args: string[],
+      network: string
     ): Promise<string> => {
       const { data, errors } = await client.query({
         uri: new Uri("ens/ethereum.web3api.eth"),
@@ -80,12 +89,14 @@ export class EnsPlugin extends Plugin {
             address: $address,
             method: $method,
             args: $args
+            network: $network
           )
         }`,
         variables: {
           address,
           method,
           args,
+          network,
         },
       });
 
@@ -109,22 +120,31 @@ export class EnsPlugin extends Plugin {
     };
 
     // Get the node's resolver address
-    const resolverAddress = await callView(ensAddress, ensAbi.resolver, [
-      domainNode,
-    ]);
+    const resolverAddress = await callView(
+      ensAddress,
+      ensAbi.resolver,
+      [domainNode],
+      network
+    );
 
     // Get the CID stored at this domain
     let hash;
     try {
-      hash = await callView(resolverAddress, resolverAbi.contenthash, [
-        domainNode,
-      ]);
+      hash = await callView(
+        resolverAddress,
+        resolverAbi.contenthash,
+        [domainNode],
+        network
+      );
     } catch (e) {
       try {
         // Fallback, contenthash doesn't exist, try content
-        hash = await callView(resolverAddress, resolverAbi.content, [
-          domainNode,
-        ]);
+        hash = await callView(
+          resolverAddress,
+          resolverAbi.content,
+          [domainNode],
+          network
+        );
       } catch (err) {
         // The resolver contract is unknown...
         throw Error(`Incompatible resolver ABI at address ${resolverAddress}`);

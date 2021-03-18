@@ -110,6 +110,20 @@ export class EthereumPlugin extends Plugin {
     return new ethers.Contract(address, abi, this.getSigner());
   }
 
+  public getProviderOnNetwork(network: string): ethers.providers.Provider {
+    const re = /^(homestead|mainnet|ropsten|kovan|rinkeby|goerli)$/i;
+    if (!re.exec(network)) {
+      throw new Error(
+        `Unrecognized network name ${network} does not match known networks: homestead, mainnet, ropsten, kovan, rinkeby, goerli`
+      );
+    }
+    if (typeof this._config.provider === "string") {
+      return new JsonRpcProvider(this._config.provider, network.toLowerCase());
+    } else {
+      return new Web3Provider(this._config.provider, network.toLowerCase());
+    }
+  }
+
   public async deployContract(
     abi: ethers.ContractInterface,
     bytecode: string,
@@ -125,9 +139,13 @@ export class EthereumPlugin extends Plugin {
   public async callView(
     address: Address,
     method: string,
-    args: string[]
+    args: string[],
+    network?: string
   ): Promise<string> {
-    const contract = this.getContract(address, [method]);
+    let contract = this.getContract(address, [method]);
+    if (network) {
+      contract = contract.connect(this.getProviderOnNetwork(network));
+    }
     const funcs = Object.keys(contract.interface.functions);
     const res = await contract[funcs[0]](...args);
     return res.toString();
