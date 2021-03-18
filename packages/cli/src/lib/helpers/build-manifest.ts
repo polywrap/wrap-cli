@@ -2,11 +2,11 @@ import { transformEnvToArgs } from "./docker";
 
 import path from "path";
 import YAML from "js-yaml";
-import { readFileSync } from "fs";
+import { existsSync, readdirSync, readFileSync } from "fs";
 
 export interface BuildManifest {
   image: {
-    dockerfile?: string;
+    dockerfile: string;
     name: string;
   };
   env: {
@@ -17,23 +17,15 @@ export interface BuildManifest {
 }
 
 export interface BuildVars {
-  paths: {
-    tempDir: string;
-    dockerfile: string;
-    outputDir: string;
-  };
+  tempDir: string;
+  dockerfile: string;
+  outputDir: string;
   args: string;
   outputImageName: string;
   ignorePaths: string[];
 }
 
-const BASE_DOCKERFILE_PATH = path.join(
-  __dirname,
-  "..",
-  "lib",
-  "env",
-  "build-env"
-);
+const BASE_DOCKERFILE_PATH = path.join(__dirname, "..", "env", "build-images");
 
 export type ModulesToBuild = "query" | "mutation" | "both";
 
@@ -46,19 +38,37 @@ export const parseManifest = (modulesToBuild: ModulesToBuild): BuildVars => {
 
   const tempDirPath = path.join(process.cwd(), ".w3", "temp");
   const buildArgsString = transformEnvToArgs(doc.env);
-  const { dockerfile: userDockerfile, name: imageName } = doc.image;
-  const dockerFilePath = userDockerfile || BASE_DOCKERFILE_PATH;
+  const { dockerfile, name: imageName } = doc.image;
+
+  const dockerFilePathExists = existsSync(dockerfile);
+
+  const dockerFilePath = dockerFilePathExists
+    ? dockerfile
+    : getDockerfilePathFromCatalog(dockerfile);
   const ignorePaths = doc.env.ignorePaths;
   const outputDir = doc.env.outputDir;
 
   return {
-    paths: {
-      tempDir: tempDirPath,
-      dockerfile: dockerFilePath,
-      outputDir,
-    },
+    tempDir: tempDirPath,
+    dockerfile: dockerFilePath,
+    outputDir,
     args: buildArgsString,
     outputImageName: imageName,
     ignorePaths,
   };
+};
+
+const getDockerfilePathFromCatalog = (name: string) => {
+  const imageFolders = readdirSync(BASE_DOCKERFILE_PATH);
+  const imageExists = existsSync(path.join(BASE_DOCKERFILE_PATH, name));
+
+  if (!imageExists) {
+    throw new Error(
+      `Image "${name}" does not exist. Please use on of the following: ${imageFolders.map(
+        (i) => `\n- ${i}`
+      )}`
+    );
+  }
+
+  return path.join(BASE_DOCKERFILE_PATH, name, "Dockerfile");
 };

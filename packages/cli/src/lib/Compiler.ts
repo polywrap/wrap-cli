@@ -76,7 +76,9 @@ export class Compiler {
   private async _buildSourcesInDocker(
     {
       outputImageName,
-      paths: { tempDir, outputDir, dockerfile },
+      tempDir,
+      outputDir,
+      dockerfile,
       ignorePaths,
       args,
     }: BuildVars,
