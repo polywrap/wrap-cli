@@ -75,7 +75,7 @@ function main(): void {
 
     for (const pluginInterface of plugin.interfaces || []) {
       const int = sourceFile.getInterfaceOrThrow(pluginInterface);
-      output += `\n\n${int.print()}`;
+      output += `\n\n${int.print().replace(/    /g, "  ")}`;
     }
 
     for (const pluginType of plugin.types || []) {
@@ -103,9 +103,9 @@ function main(): void {
   for (const plugin of plugins) {
     const pluginKey = plugin.name.toLowerCase();
     indexContent += `\nimport { ${plugin.config} } from "./${plugin.name}";`;
-    pluginConfigs += `\n    ${pluginKey}?: ${plugin.config};`;
-    pluginModules += `\n    ${pluginKey}: "${plugin.module}",`;
-    pluginUris += `\n    ${pluginKey}: "${plugin.uri}",`;
+    pluginConfigs += `\n  ${pluginKey}?: ${plugin.config};`;
+    pluginModules += `\n  ${pluginKey}: "${plugin.module}",`;
+    pluginUris += `\n  ${pluginKey}: "${plugin.uri}",`;
   }
 
   pluginConfigs += `\n}`;
