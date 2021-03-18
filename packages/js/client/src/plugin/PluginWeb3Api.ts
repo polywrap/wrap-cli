@@ -10,27 +10,21 @@ import {
   Uri,
 } from "@web3api/core-js";
 import { decode } from "@msgpack/msgpack";
-import Web3APITracer from "@web3api/logger";
+import Logger from "@web3api/logger";
 
 export class PluginWeb3Api extends Api {
   private _instance: Plugin | undefined;
-  private _tracer: Web3APITracer;
 
-  constructor(
-    private _uri: Uri,
-    private _plugin: PluginPackage,
-    private _logEnabled: boolean = false
-  ) {
+  constructor(private _uri: Uri, private _plugin: PluginPackage) {
     super();
 
-    this._tracer = new Web3APITracer(this._logEnabled, "plugin-web3api");
-    this._tracer.startSpan("constructor");
+    Logger.startSpan("PluginWeb3Api constructor");
 
-    this._tracer.setAttribute("uri", this._uri);
-    this._tracer.setAttribute("plugin", this._plugin);
-    this._tracer.addEvent("created");
+    Logger.setAttribute("uri", this._uri);
+    Logger.setAttribute("plugin", this._plugin);
+    Logger.addEvent("Created");
 
-    this._tracer.endSpan();
+    Logger.endSpan();
   }
 
   public async invoke<TData = unknown>(
@@ -41,8 +35,8 @@ export class PluginWeb3Api extends Api {
     const modules = this.getInstance().getModules(client);
     const pluginModule = modules[module];
 
-    this._tracer.startSpan("invoke");
-    this._tracer.setAttribute("options", options);
+    Logger.startSpan("invoke");
+    Logger.setAttribute("options", options);
 
     let jsInput: Record<string, unknown>;
 
@@ -70,13 +64,12 @@ export class PluginWeb3Api extends Api {
         jsInput = input;
       }
     } catch (error) {
-      this._tracer.recordException(error);
-      this._tracer.endSpan();
+      Logger.recordException(error);
 
       throw error;
     }
 
-    this._tracer.addEvent("decoded", jsInput);
+    Logger.addEvent("Decoded", jsInput);
 
     try {
       const result = (await executeMaybeAsyncFunction(
@@ -85,7 +78,7 @@ export class PluginWeb3Api extends Api {
         client
       )) as TData;
 
-      this._tracer.addEvent("result", result);
+      Logger.addEvent("Result", result);
 
       if (result !== undefined) {
         let data = result as unknown;
@@ -94,19 +87,19 @@ export class PluginWeb3Api extends Api {
           data = filterResults(result, resultFilter);
         }
 
-        this._tracer.addEvent("filtered", data);
-        this._tracer.endSpan();
+        Logger.addEvent("Filtered result", data);
+        Logger.endSpan();
 
         return {
           data: data as TData,
         };
       } else {
-        this._tracer.endSpan();
+        Logger.endSpan();
 
         return {};
       }
     } catch (e) {
-      this._tracer.recordException(e);
+      Logger.recordException(e);
 
       return {
         error: new Error(
