@@ -42,7 +42,6 @@ export async function resolveUri(
 
   // Resolve query time redirects first if they exist
   if (queryRedirects) {
-    queryRedirects.push(...redirects);
     redirects = queryRedirects;
   }
 

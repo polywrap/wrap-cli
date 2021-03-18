@@ -142,7 +142,7 @@ export class Web3ApiClient implements Client {
   ): Promise<InvokeApiResult<TData>> {
     try {
       const uri = new Uri(options.uri);
-      const api = await this.loadWeb3Api(uri);
+      const api = await this.loadWeb3Api(uri, options.queryRedirects);
       return (await api.invoke(
         {
           ...options,
@@ -160,8 +160,6 @@ export class Web3ApiClient implements Client {
     queryRedirects?: UriRedirect<Uri>[]
   ): Promise<Api> {
     let api: Api | undefined = undefined;
-    queryRedirects = [];
-
     // avoid using cache if query redirects specified
     if (queryRedirects && queryRedirects.length) {
       api = this._apiCache.get(uri.uri);
