@@ -4,13 +4,13 @@
 import { Project } from "./Project";
 import { SchemaComposer } from "./SchemaComposer";
 import { withSpinner, outputManifest } from "./helpers";
-import { copyDir } from "../lib/helpers/copy";
 import { BuildVars, parseManifest } from "./helpers/build-manifest";
 import { buildImage, copyFromImageToHost } from "./helpers/docker";
 
+import { readdirSync } from "fs";
 import { bindSchema, writeDirectory } from "@web3api/schema-bind";
 import path from "path";
-import fs, { copyFileSync, statSync } from "fs";
+import fs from "fs";
 import * as gluegun from "gluegun";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
@@ -38,24 +38,33 @@ export class Compiler {
   }
 
   private _copySources({
-    sources,
     dockerfilePath,
     tempDirPath,
+    ignorePaths,
   }: {
-    sources: string[];
+    ignorePaths: string[];
     dockerfilePath: string;
     tempDirPath: string;
   }) {
-    copyDir(dockerfilePath, path.join(tempDirPath));
+    fsExtra.removeSync(tempDirPath);
+    fsExtra.copySync(dockerfilePath, `${tempDirPath}/Dockerfile`);
 
-    sources.forEach((source) => {
-      const isDir = statSync(source).isDirectory();
+    const files = readdirSync(process.cwd(), { withFileTypes: true }).filter(
+      (file) => file.name !== ".w3"
+    );
+    const fullIgnorePaths = ignorePaths.map((ignorePath) =>
+      path.join(process.cwd(), ignorePath)
+    );
 
-      if (isDir) {
-        copyDir(source, path.join(tempDirPath, path.basename(source)));
-      } else {
-        copyFileSync(source, path.join(tempDirPath, path.basename(source)));
-      }
+    files.forEach((file) => {
+      fsExtra.copySync(
+        path.join(process.cwd(), file.name),
+        path.join(tempDirPath, file.name),
+        {
+          overwrite: false,
+          filter: (pathString: string) => !fullIgnorePaths.includes(pathString),
+        }
+      );
     });
   }
 
@@ -63,14 +72,14 @@ export class Compiler {
     {
       outputImageName,
       paths: { tempDir, outputDir, dockerfile },
-      sources,
+      ignorePaths,
       args,
     }: BuildVars,
     quiet = true
   ) {
     this._copySources({
       dockerfilePath: dockerfile,
-      sources,
+      ignorePaths,
       tempDirPath: tempDir,
     });
 
@@ -87,8 +96,8 @@ export class Compiler {
       {
         tempDir,
         imageName: outputImageName,
-        sourceDir: outputDir, //build folder inside docker
-        destinationDir: path.join("..", "..", outputDir),
+        source: outputDir, //build folder inside docker
+        destination: path.join("..", "..", outputDir),
       },
       quiet
     );
@@ -137,15 +146,15 @@ export class Compiler {
 
       const buildVars = parseManifest();
 
-      await this._buildSourcesInDocker(buildVars, project.quiet);
-
       // Output the schema & manifest files
-      fs.writeFileSync(
-        `${outputDir}/schema.graphql`,
-        composed.combined,
-        "utf-8"
-      );
-      await outputManifest(manifest, `${outputDir}/web3api.yaml`);
+      const schemaPath = `${outputDir}/schema.graphql`;
+      fs.writeFileSync(schemaPath, composed.combined, "utf-8");
+
+      const manifestPath = `${outputDir}/web3api.yaml`;
+      await outputManifest(manifest, manifestPath);
+
+      // Build sources
+      await this._buildSourcesInDocker(buildVars, project.quiet);
     };
 
     if (project.quiet) {

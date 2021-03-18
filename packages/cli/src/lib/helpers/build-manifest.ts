@@ -11,7 +11,7 @@ export interface BuildManifest {
   };
   env: {
     [key: string]: string | string[];
-    sources: string[];
+    ignorePaths: string[];
     outputDir: string;
   };
 }
@@ -24,7 +24,7 @@ export interface BuildVars {
   };
   args: string;
   outputImageName: string;
-  sources: string[];
+  ignorePaths: string[];
 }
 
 const BASE_DOCKERFILE_PATH = path.join(
@@ -44,7 +44,7 @@ export const parseManifest = (): BuildVars => {
   const buildArgsString = transformEnvToArgs(doc.env);
   const { dockerfile: userDockerfile, name: imageName } = doc.image;
   const dockerFilePath = userDockerfile || BASE_DOCKERFILE_PATH;
-  const sources = doc.env.sources;
+  const ignorePaths = doc.env.ignorePaths;
   const outputDir = doc.env.outputDir;
 
   return {
@@ -55,6 +55,6 @@ export const parseManifest = (): BuildVars => {
     },
     args: buildArgsString,
     outputImageName: imageName,
-    sources,
+    ignorePaths,
   };
 };

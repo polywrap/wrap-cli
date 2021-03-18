@@ -1,12 +1,10 @@
 import { runCommand } from "./command";
 
-import rimraf from "rimraf";
-
 interface CopyArgs {
   tempDir: string;
   imageName: string;
-  sourceDir: string;
-  destinationDir: string;
+  source: string;
+  destination: string;
 }
 
 interface BuildArgs {
@@ -34,7 +32,7 @@ export function transformEnvToArgs(
 }
 
 export async function copyFromImageToHost(
-  { tempDir, imageName, sourceDir, destinationDir }: CopyArgs,
+  { tempDir, imageName, source, destination }: CopyArgs,
   quiet = true
 ): Promise<void> {
   await runCommand(
@@ -42,16 +40,26 @@ export async function copyFromImageToHost(
     quiet
   );
   await runCommand(
-    `cd ${tempDir} && docker cp temp:/app/${sourceDir}/. ${destinationDir}`,
+    `cd ${tempDir} && docker cp temp:/app/${source}/. ${destination}`,
     quiet
   );
   await runCommand(`cd ${tempDir} && docker rm -f temp`, quiet);
+}
 
-  try {
-    rimraf.sync(tempDir);
-  } catch (e) {
-    console.log(e);
-  }
+export async function copyFromHostToImage(
+  { tempDir, imageName, source, destination }: CopyArgs,
+  quiet = true
+): Promise<void> {
+  await runCommand(
+    `cd ${tempDir} && docker create -ti --name temp ${imageName}`,
+    quiet
+  );
+  console.log(tempDir, " ", source, " ", ` temp:/app/${destination}`);
+  await runCommand(
+    `cd ${tempDir} && docker cp ${source} temp:/app/${destination}`,
+    quiet
+  );
+  await runCommand(`cd ${tempDir} && docker rm -f temp`, quiet);
 }
 
 export async function buildImage(
@@ -59,7 +67,7 @@ export async function buildImage(
   quiet = true
 ): Promise<void> {
   await runCommand(
-    `cd ${tempDir} && docker build --no-cache -t ${outputImageName} . ${args}`,
+    `cd ${tempDir} && docker build -t ${outputImageName} . ${args}`,
     quiet
   );
 }

@@ -1,8 +1,8 @@
 image: 
   name: build-env
-  dockerfile: ./docker
+  dockerfile: ./Dockerfile
 env:
-  sources:
-    - ./src
-    - ./package.json
+  ignorePaths:
+    - ./node_modules
+    - ./build
   outputDir: ./build
