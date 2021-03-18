@@ -23,7 +23,7 @@ export type EthereumSigner = Signer | Address | AccountIndex;
 export type EthereumProvider = string | ExternalProvider;
 export type EthereumClient = JsonRpcProvider | Web3Provider;
 
-export interface EthereumConfig extends Record<string, unknown> {
+export interface EthereumConfig {
   provider: EthereumProvider;
   signer?: EthereumSigner;
 }

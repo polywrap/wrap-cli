@@ -9,10 +9,8 @@ import axios from "axios";
 interface TestEnvironment {
   ipfs: string;
   ethereum: string;
+  ensAddress: string;
   redirects: UriRedirect[];
-  data: {
-    ensAddress: string;
-  };
 }
 
 export const initTestEnvironment = async (): Promise<TestEnvironment> => {
@@ -54,7 +52,7 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
     },
   ];
 
-  return { ipfs, ethereum, redirects, data };
+  return { ipfs, ethereum, ensAddress: data.ensAddress, redirects };
 };
 
 export const stopTestEnvironment = async (): Promise<void> => {
