@@ -6,7 +6,7 @@ import {
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
-jest.setTimeout(10000000);
+jest.setTimeout(50000);
 
 describe("Web3ApiClient", () => {
   let ipfsProvider: string;
@@ -52,8 +52,7 @@ it("simple-storage with query time redirects", async () => {
     expect(deploy.errors).toBeFalsy();
     expect(deploy.data).toBeTruthy();
     expect(deploy.data?.deployContract.indexOf("0x")).toBeGreaterThan(-1);
-  });
-    /*
+
     if (!deploy.data) {
       return;
     }
@@ -555,5 +554,4 @@ it("simple-storage with query time redirects", async () => {
       ]
     });
   });
-  */
 });
