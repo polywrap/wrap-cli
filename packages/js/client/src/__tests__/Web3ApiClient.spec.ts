@@ -510,7 +510,11 @@ describe("Web3ApiClient", () => {
       ensAddress
     );
     const ensUri = `ens/${api.ensDomain}`;
-    const client = new Web3ApiClient({ redirects });
+    const client = await createWeb3ApiClient({
+      ethereum: { provider: ethProvider },
+      ipfs: { provider: ipfsProvider },
+      ens: { address: ensAddress }
+    });
 
     const largeStr = new Array(10000).join("web3api ")
     const largeBytes = new Uint8Array(Buffer.from(largeStr));
