@@ -1,6 +1,6 @@
 {
-  "name": "@web3api/logger",
-  "description": "Web3API Core",
+  "name": "@web3api/tracing",
+  "description": "Web3API Core Tracing",
   "version": "0.0.1-prealpha.6",
   "license": "MIT",
   "repository": {

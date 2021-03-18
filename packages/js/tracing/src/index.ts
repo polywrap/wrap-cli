@@ -5,30 +5,32 @@ import {
 } from "@opentelemetry/tracing";
 import * as api from "@opentelemetry/api";
 
-class Logger {
-  public static logEnabled = false;
+export class Tracer {
+  public static traceEnabled = false;
 
   private static _tracer: api.Tracer;
   private static _provider: BasicTracerProvider | null = null;
 
-  static enableLogging(tracerName: string): void {
-    this.logEnabled = true;
+  static enableTracing(tracerName: string): void {
+    this.traceEnabled = true;
     this.initProvider();
 
     this._tracer = api.trace.getTracer(tracerName);
   }
 
-  static disableLogging(): void {
-    this.logEnabled = false;
+  static disableTracing(): void {
+    this.traceEnabled = false;
   }
 
   static startSpan(spanName: string): void {
-    if (!this.logEnabled) return;
+    if (!this.traceEnabled) return;
 
     this._tracer.startSpan(spanName);
   }
 
   static setAttribute(attrName: string, data: unknown): void {
+    if (!this.traceEnabled) return;
+
     const span = api.getSpan(api.context.active());
     if (span) {
       span.setAttribute(attrName, JSON.stringify(data));
@@ -36,7 +38,7 @@ class Logger {
   }
 
   static addEvent(event: string, data?: unknown): void {
-    if (!this.logEnabled) return;
+    if (!this.traceEnabled) return;
 
     const span = api.getSpan(api.context.active());
 
@@ -46,7 +48,7 @@ class Logger {
   }
 
   static recordException(error: api.Exception): void {
-    if (!this.logEnabled) return;
+    if (!this.traceEnabled) return;
 
     const span = api.getSpan(api.context.active());
 
@@ -61,7 +63,7 @@ class Logger {
   }
 
   static endSpan(): void {
-    if (!this.logEnabled) return;
+    if (!this.traceEnabled) return;
 
     const span = api.getSpan(api.context.active());
     if (span) span.end();
@@ -80,5 +82,3 @@ class Logger {
     this._provider.register();
   }
 }
-
-export default Logger;

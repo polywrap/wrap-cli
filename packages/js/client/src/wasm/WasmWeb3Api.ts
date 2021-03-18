@@ -22,7 +22,7 @@ import {
 } from "@web3api/core-js";
 import path from "path";
 import * as MsgPack from "@msgpack/msgpack";
-import Logger from "@web3api/logger";
+import { Tracer } from "@web3api/tracing";
 
 const Worker = require("web-worker");
 
@@ -48,14 +48,14 @@ export class WasmWeb3Api extends Api {
   ) {
     super();
 
-    Logger.startSpan("WasmWeb3Api constructor");
+    Tracer.startSpan("WasmWeb3Api constructor");
 
-    Logger.setAttribute("uri", _uri);
-    Logger.setAttribute("manifest", _manifest);
-    Logger.setAttribute("apiResolver", _apiResolver);
-    Logger.addEvent("Created");
+    Tracer.setAttribute("uri", _uri);
+    Tracer.setAttribute("manifest", _manifest);
+    Tracer.setAttribute("apiResolver", _apiResolver);
+    Tracer.addEvent("Created");
 
-    Logger.endSpan();
+    Tracer.endSpan();
   }
 
   public async invoke(
@@ -64,7 +64,7 @@ export class WasmWeb3Api extends Api {
   ): Promise<InvokeApiResult<unknown | ArrayBuffer>> {
     const { module, method, input, decode } = options;
 
-    Logger.startSpan("invoke");
+    Tracer.startSpan("invoke");
 
     // Fetch the WASM module
     const wasm = await this.getWasmModule(module, client);
@@ -78,7 +78,7 @@ export class WasmWeb3Api extends Api {
     threadsActive++;
     const threadId = threadAvailable++;
 
-    Logger.addEvent("Another thread available", threadId);
+    Tracer.addEvent("Another thread available", threadId);
 
     // Wrap the queue
     if (threadAvailable >= maxThreads) {
@@ -149,7 +149,7 @@ export class WasmWeb3Api extends Api {
             }
           }
 
-          Logger.addEvent("Transfer done", { data, status });
+          Tracer.addEvent("Transfer done", { data, status });
 
           Atomics.store(
             threadMutexes,
@@ -164,7 +164,7 @@ export class WasmWeb3Api extends Api {
           async (event: { data: HostAction }) => {
             const action = event.data;
 
-            Logger.addEvent("Worker message", action);
+            Tracer.addEvent("Worker message", action);
 
             switch (action.type) {
               case "Abort": {
@@ -250,8 +250,8 @@ export class WasmWeb3Api extends Api {
     worker.terminate();
     threadsActive--;
 
-    Logger.addEvent("Worker terminated", state);
-    Logger.endSpan();
+    Tracer.addEvent("Worker terminated", state);
+    Tracer.endSpan();
 
     if (!state) {
       throw Error("WasmWeb3Api: query state was never set.");
@@ -302,7 +302,7 @@ export class WasmWeb3Api extends Api {
       return this._schema;
     }
     try {
-      Logger.startSpan("getSchema");
+      Tracer.startSpan("getSchema");
 
       const module = this._manifest.query || this._manifest.mutation;
 
@@ -311,7 +311,7 @@ export class WasmWeb3Api extends Api {
         throw Error(`WasmWeb3Api: No module was found.`);
       }
 
-      Logger.setAttribute("module", module);
+      Tracer.setAttribute("module", module);
 
       const { data, error } = await ApiResolver.Query.getFile(
         client,
@@ -330,7 +330,7 @@ export class WasmWeb3Api extends Api {
         );
       }
 
-      Logger.addEvent("Query file", data);
+      Tracer.addEvent("Query file", data);
 
       const decoder = new TextDecoder();
       this._schema = decoder.decode(data);
@@ -341,12 +341,13 @@ export class WasmWeb3Api extends Api {
         );
       }
 
-      Logger.addEvent("Decoded schema", this._schema);
-      Logger.endSpan();
+      Tracer.addEvent("Decoded schema", this._schema);
+      Tracer.endSpan();
 
       return this._schema;
     } catch (error) {
-      Logger.recordException(error);
+      Tracer.recordException(error);
+
       throw error;
     }
   }
@@ -359,8 +360,7 @@ export class WasmWeb3Api extends Api {
       return this._wasm[module] as ArrayBuffer;
     }
 
-    try {
-      Logger.startSpan("getWasmModule");
+      Tracer.startSpan("getWasmModule");
 
       if (!moduleManifest) {
         throw Error(
@@ -384,13 +384,14 @@ export class WasmWeb3Api extends Api {
         );
       }
 
-      Logger.addEvent("Query file", data);
-      Logger.endSpan();
+      Tracer.addEvent("Query file", data);
+      Tracer.endSpan();
 
       this._wasm[module] = data;
       return data;
     } catch (error) {
-      Logger.recordException(error);
+      Tracer.recordException(error);
+
       throw error;
     }
   }

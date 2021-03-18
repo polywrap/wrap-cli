@@ -10,7 +10,7 @@ import {
   Uri,
 } from "@web3api/core-js";
 import { decode } from "@msgpack/msgpack";
-import Logger from "@web3api/logger";
+import { Tracer } from "@web3api/tracing";
 
 export class PluginWeb3Api extends Api {
   private _instance: Plugin | undefined;
@@ -18,13 +18,13 @@ export class PluginWeb3Api extends Api {
   constructor(private _uri: Uri, private _plugin: PluginPackage) {
     super();
 
-    Logger.startSpan("PluginWeb3Api constructor");
+    Tracer.startSpan("PluginWeb3Api constructor");
 
-    Logger.setAttribute("uri", this._uri);
-    Logger.setAttribute("plugin", this._plugin);
-    Logger.addEvent("Created");
+    Tracer.setAttribute("uri", this._uri);
+    Tracer.setAttribute("plugin", this._plugin);
+    Tracer.addEvent("Created");
 
-    Logger.endSpan();
+    Tracer.endSpan();
   }
 
   public async invoke<TData = unknown>(
@@ -35,8 +35,8 @@ export class PluginWeb3Api extends Api {
     const modules = this.getInstance().getModules(client);
     const pluginModule = modules[module];
 
-    Logger.startSpan("invoke");
-    Logger.setAttribute("options", options);
+    Tracer.startSpan("invoke");
+    Tracer.setAttribute("options", options);
 
     let jsInput: Record<string, unknown>;
 
@@ -64,12 +64,12 @@ export class PluginWeb3Api extends Api {
         jsInput = input;
       }
     } catch (error) {
-      Logger.recordException(error);
+      Tracer.recordException(error);
 
       throw error;
     }
 
-    Logger.addEvent("Decoded", jsInput);
+    Tracer.addEvent("Decoded", jsInput);
 
     try {
       const result = (await executeMaybeAsyncFunction(
@@ -78,7 +78,7 @@ export class PluginWeb3Api extends Api {
         client
       )) as TData;
 
-      Logger.addEvent("Result", result);
+      Tracer.addEvent("Result", result);
 
       if (result !== undefined) {
         let data = result as unknown;
@@ -87,19 +87,19 @@ export class PluginWeb3Api extends Api {
           data = filterResults(result, resultFilter);
         }
 
-        Logger.addEvent("Filtered result", data);
-        Logger.endSpan();
+        Tracer.addEvent("Filtered result", data);
+        Tracer.endSpan();
 
         return {
           data: data as TData,
         };
       } else {
-        Logger.endSpan();
+        Tracer.endSpan();
 
         return {};
       }
     } catch (e) {
-      Logger.recordException(e);
+      Tracer.recordException(e);
 
       return {
         error: new Error(
