@@ -90,7 +90,7 @@ function main(): void {
 
     outputFiles.push({
       fileName: `${plugin.name}.ts`,
-      content: output
+      content: output + "\n"
     });
   }
 
