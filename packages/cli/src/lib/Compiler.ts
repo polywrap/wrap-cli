@@ -104,7 +104,7 @@ export class Compiler {
         tempDir,
         imageName: outputImageName,
         source: outputDir, //build folder inside docker
-        destination: path.join("..", "..", outputDir),
+        destination: path.join(process.cwd(), outputDir),
       },
       quiet
     );
@@ -174,18 +174,20 @@ export class Compiler {
 
       const modulesToBuild = this._determineModulesToBuild(manifest);
 
-      if (modulesToBuild) {
-        const buildVars = parseManifest(modulesToBuild);
-        // Output the schema & manifest files
-        const schemaPath = `${outputDir}/schema.graphql`;
-        fs.writeFileSync(schemaPath, composed.combined, "utf-8");
-
-        const manifestPath = `${outputDir}/web3api.yaml`;
-        await outputManifest(manifest, manifestPath);
-
-        // Build sources
-        await this._buildSourcesInDocker(buildVars, project.quiet);
+      if (!modulesToBuild) {
+        return;
       }
+
+      const buildVars = parseManifest(modulesToBuild);
+      // Output the schema & manifest files
+      const schemaPath = `${outputDir}/schema.graphql`;
+      fs.writeFileSync(schemaPath, composed.combined, "utf-8");
+
+      const manifestPath = `${outputDir}/web3api.yaml`;
+      await outputManifest(manifest, manifestPath);
+
+      // Build sources
+      await this._buildSourcesInDocker(buildVars, project.quiet);
     };
 
     if (project.quiet) {

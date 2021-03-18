@@ -1,8 +1,7 @@
 image: 
   name: build-env
-  dockerfile: node:12.20.1-wasm:0.17.13
+  dockerfile: node:12.20.1-asc:0.17.13
 env:
   ignorePaths:
     - ./node_modules
-    - ./build
   outputDir: ./build

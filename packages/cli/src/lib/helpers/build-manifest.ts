@@ -35,10 +35,10 @@ export const parseManifest = (modulesToBuild: ModulesToBuild): BuildVars => {
   ) as BuildManifest;
 
   doc.env.modules_to_build = modulesToBuild;
-
-  const tempDirPath = path.join(process.cwd(), ".w3", "temp");
-  const buildArgsString = transformEnvToArgs(doc.env);
   const { dockerfile, name: imageName } = doc.image;
+
+  const tempDirPath = path.join(process.cwd(), ".w3", "build", imageName);
+  const buildArgsString = transformEnvToArgs(doc.env);
 
   const dockerFilePathExists = existsSync(dockerfile);
 

@@ -35,31 +35,31 @@ export async function copyFromImageToHost(
   { tempDir, imageName, source, destination }: CopyArgs,
   quiet = true
 ): Promise<void> {
-  await runCommand(
-    `cd ${tempDir} && docker create -ti --name temp ${imageName}`,
-    quiet
-  );
-  await runCommand(
-    `cd ${tempDir} && docker cp temp:/app/${source}/. ${destination}`,
-    quiet
-  );
-  await runCommand(`cd ${tempDir} && docker rm -f temp`, quiet);
-}
+  let copyError: Error | undefined;
 
-export async function copyFromHostToImage(
-  { tempDir, imageName, source, destination }: CopyArgs,
-  quiet = true
-): Promise<void> {
   await runCommand(
     `cd ${tempDir} && docker create -ti --name temp ${imageName}`,
     quiet
   );
-  console.log(tempDir, " ", source, " ", ` temp:/app/${destination}`);
-  await runCommand(
-    `cd ${tempDir} && docker cp ${source} temp:/app/${destination}`,
-    quiet
-  );
-  await runCommand(`cd ${tempDir} && docker rm -f temp`, quiet);
+
+  try {
+    await runCommand(
+      `cd ${tempDir} && docker cp temp:/app/${source}/. ${destination}`,
+      quiet
+    );
+  } catch (e) {
+    copyError = e;
+  }
+
+  try {
+    await runCommand(`cd ${tempDir} && docker rm -f temp`, quiet);
+  } catch (e) {
+    console.log(e);
+  }
+
+  if (copyError) {
+    throw copyError;
+  }
 }
 
 export async function buildImage(
