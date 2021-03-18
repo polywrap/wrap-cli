@@ -35,10 +35,14 @@ const BASE_DOCKERFILE_PATH = path.join(
   "build-env"
 );
 
-export const parseManifest = (): BuildVars => {
+export type ModulesToBuild = "query" | "mutation" | "both";
+
+export const parseManifest = (modulesToBuild: ModulesToBuild): BuildVars => {
   const doc = YAML.safeLoad(
     readFileSync("./web3api.build.yaml", "utf8")
   ) as BuildManifest;
+
+  doc.env.modules_to_build = modulesToBuild;
 
   const tempDirPath = path.join(process.cwd(), ".w3", "temp");
   const buildArgsString = transformEnvToArgs(doc.env);

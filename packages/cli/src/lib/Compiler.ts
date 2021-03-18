@@ -4,7 +4,11 @@
 import { Project } from "./Project";
 import { SchemaComposer } from "./SchemaComposer";
 import { withSpinner, outputManifest } from "./helpers";
-import { BuildVars, parseManifest } from "./helpers/build-manifest";
+import {
+  BuildVars,
+  ModulesToBuild,
+  parseManifest,
+} from "./helpers/build-manifest";
 import { buildImage, copyFromImageToHost } from "./helpers/docker";
 
 import { readdirSync } from "fs";
@@ -12,6 +16,7 @@ import { bindSchema, writeDirectory } from "@web3api/schema-bind";
 import path from "path";
 import fs from "fs";
 import * as gluegun from "gluegun";
+import { Manifest } from "@web3api/core-js";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const fsExtra = require("fs-extra");
@@ -103,6 +108,27 @@ export class Compiler {
     );
   }
 
+  private _determineModulesToBuild(
+    manifest: Manifest
+  ): ModulesToBuild | undefined {
+    const manifestMutation = manifest.mutation;
+    const manifestQuery = manifest.query;
+
+    if (manifestMutation && manifestQuery) {
+      return "both";
+    }
+
+    if (manifestMutation) {
+      return "mutation";
+    }
+
+    if (manifestQuery) {
+      return "query";
+    }
+
+    return undefined;
+  }
+
   private async _compileWeb3Api() {
     const { outputDir, project, schemaComposer } = this._config;
 
@@ -144,17 +170,20 @@ export class Compiler {
       await generateModuleCode("mutation");
       await generateModuleCode("query");
 
-      const buildVars = parseManifest();
+      const modulesToBuild = this._determineModulesToBuild(manifest);
 
-      // Output the schema & manifest files
-      const schemaPath = `${outputDir}/schema.graphql`;
-      fs.writeFileSync(schemaPath, composed.combined, "utf-8");
+      if (modulesToBuild) {
+        const buildVars = parseManifest(modulesToBuild);
+        // Output the schema & manifest files
+        const schemaPath = `${outputDir}/schema.graphql`;
+        fs.writeFileSync(schemaPath, composed.combined, "utf-8");
 
-      const manifestPath = `${outputDir}/web3api.yaml`;
-      await outputManifest(manifest, manifestPath);
+        const manifestPath = `${outputDir}/web3api.yaml`;
+        await outputManifest(manifest, manifestPath);
 
-      // Build sources
-      await this._buildSourcesInDocker(buildVars, project.quiet);
+        // Build sources
+        await this._buildSourcesInDocker(buildVars, project.quiet);
+      }
     };
 
     if (project.quiet) {
