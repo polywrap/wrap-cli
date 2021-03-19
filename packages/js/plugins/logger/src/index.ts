@@ -1,7 +1,6 @@
 import { query } from "./resolvers";
 import { manifest } from "./manifest";
 
-import colors from "colors";
 import {
   Plugin,
   PluginManifest,
@@ -15,9 +14,15 @@ export enum LogLevel {
   ERROR,
 }
 
+export type LogFunc = (level: LogLevel, message: string) => boolean;
+
 export class LoggerPlugin extends Plugin {
-  constructor() {
+
+  private _logFunc?: LogFunc;
+
+  constructor(logFunc?: LogFunc) {
     super();
+    this._logFunc = logFunc;
   }
 
   public static manifest(): PluginManifest {
@@ -30,16 +35,23 @@ export class LoggerPlugin extends Plugin {
     };
   }
 
-  public async log(level: LogLevel, message: string): Promise<boolean> {
+  public log(level: LogLevel, message: string): boolean {
+    if (this._logFunc) {
+      return this._logFunc(level, message);
+    }
+
     switch (level) {
       case LogLevel.DEBUG:
-        console.log(colors.blue(message));
+        console.debug(message);
         break;
       case LogLevel.WARN:
-        console.log(colors.yellow(message));
+        console.warn(message);
         break;
       case LogLevel.ERROR:
-        console.log(colors.red(message));
+        console.error(message);
+        break;
+      case LogLevel.INFO:
+        console.log(message);
         break;
       default:
         console.log(message);
