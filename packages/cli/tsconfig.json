@@ -4,6 +4,7 @@
     "outDir": "build",
     "lib": [
       "es2020",
+      "es2015",
       "es5",
       "dom",
       "ESNext.AsyncIterable"

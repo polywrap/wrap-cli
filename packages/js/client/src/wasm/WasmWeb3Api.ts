@@ -175,7 +175,7 @@ export class WasmWeb3Api extends Api {
                 const { data, error } = await client.invoke<
                   unknown | ArrayBuffer
                 >({
-                  uri: new Uri(action.uri),
+                  uri: action.uri,
                   module: action.module as InvokableModules,
                   method: action.method,
                   input: action.input,

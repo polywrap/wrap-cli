@@ -4,6 +4,7 @@ import { manifest } from "./manifest";
 import {
   Client,
   Plugin,
+  PluginFactory,
   PluginManifest,
   PluginModules,
 } from "@web3api/core-js";
@@ -37,7 +38,7 @@ export class IpfsPlugin extends Plugin {
   }
 
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
-  // https://github.com/Web3-API/prototype/issues/101
+  // https://github.com/web3-api/monorepo/issues/101
   public getModules(_client: Client): PluginModules {
     return {
       query: query(this),
@@ -79,3 +80,11 @@ export class IpfsPlugin extends Plugin {
     return this._ipfs.ls(cid);
   }
 }
+
+export const ipfsPlugin: PluginFactory<IpfsConfig> = (opts: IpfsConfig) => {
+  return {
+    factory: () => new IpfsPlugin(opts),
+    manifest: manifest,
+  };
+};
+export const plugin = ipfsPlugin;

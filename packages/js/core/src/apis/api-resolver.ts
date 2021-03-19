@@ -1,4 +1,4 @@
-// TODO: https://github.com/Web3-API/prototype/issues/101
+// TODO: https://github.com/web3-api/monorepo/issues/101
 import { Uri, Client, InvokeApiResult } from "../";
 
 interface MaybeUriOrManifest {
@@ -14,7 +14,7 @@ export const Query = {
     uri: Uri
   ): Promise<InvokeApiResult<MaybeUriOrManifest>> =>
     client.invoke<MaybeUriOrManifest>({
-      uri: api,
+      uri: api.uri,
       module: "query",
       method: `tryResolveUri`,
       input: {
@@ -28,7 +28,7 @@ export const Query = {
     path: string
   ): Promise<InvokeApiResult<ArrayBuffer>> =>
     client.invoke<ArrayBuffer>({
-      uri: api,
+      uri: api.uri,
       module: "query",
       method: "getFile",
       input: {

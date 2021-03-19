@@ -2,7 +2,7 @@ import { Uri, UriRedirect } from "../types";
 
 export function getImplementations(
   abstractApi: Uri,
-  redirects: readonly UriRedirect[]
+  redirects: readonly UriRedirect<Uri>[]
 ): Uri[] {
   const result: Uri[] = [];
 

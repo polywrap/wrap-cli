@@ -269,7 +269,7 @@ type Namespace_Imported_ObjectType @imported(
 enum Namespace_CustomEnum @imported(
   namespace: "Namespace",
   uri: "test.eth",
-  type: "CustomEnum"
+  nativeType: "CustomEnum"
 ) {
   STRING
   BYTES
@@ -278,7 +278,7 @@ enum Namespace_CustomEnum @imported(
 enum Namespace_Imported_Enum @imported(
   namespace: "Namespace",
   uri: "test.eth",
-  type: "Imported_Enum"
+  nativeType: "Imported_Enum"
 ) {
   STRING
   BYTES
