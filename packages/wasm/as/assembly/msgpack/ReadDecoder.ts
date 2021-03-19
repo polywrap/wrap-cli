@@ -120,7 +120,7 @@ export class ReadDecoder extends Read {
     if (isFixedInt(prefix)) {
       return u64(prefix);
     } else if (isNegativeFixedInt(prefix)) {
-      throw new Error("bad prefix");
+      throw new Error("unsigned integer cannot be negative: prefix = " + prefix.toString());
     }
 
     switch (prefix) {
@@ -133,7 +133,7 @@ export class ReadDecoder extends Read {
       case Format.UINT64:
         return this.view.getUint64();
       default:
-        throw new Error("bad prefix for unsigned int");
+        throw new Error("bad prefix for unsigned int: prefix = " + prefix.toString());
     }
   }
 
@@ -142,7 +142,7 @@ export class ReadDecoder extends Read {
     if (isFloat32(prefix)) {
       return <f32>this.view.getFloat32();
     }
-    throw new Error("bad prefix");
+    throw new Error("bad prefix for float32: " + prefix.toString());
   }
 
   readFloat64(): f64 {
@@ -150,7 +150,7 @@ export class ReadDecoder extends Read {
     if (isFloat64(prefix)) {
       return <f64>this.view.getFloat64();
     }
-    throw new Error("bad prefix");
+    throw new Error("bad prefix for float 64: " + prefix.toString());
   }
 
   readStringLength(): u32 {

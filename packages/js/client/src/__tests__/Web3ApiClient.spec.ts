@@ -559,9 +559,9 @@ describe("Web3ApiClient", () => {
     });
   });
 
-  it("number-types", async () => {
+  it("number-types under and overflows", async () => {
     const api = await buildAndDeployApi(
-      `${__dirname}/apis/number-types`,
+      `${GetPathToTestApis()}/number-types`,
       ipfsProvider,
       ensAddress
     );
@@ -590,7 +590,9 @@ describe("Web3ApiClient", () => {
       }
     });
     expect(i8Underflow.errors).toBeTruthy();
-    expect(i8Underflow.errors?.[0].message).toMatch(/integer overflow/);
+    expect(i8Underflow.errors?.[0].message).toMatch(
+      /integer overflow: value = -129; bits = 8/
+    );
     expect(i8Underflow.data?.i8Method).toBeUndefined();
 
     const u8Overflow = await client.query<{
@@ -611,7 +613,9 @@ describe("Web3ApiClient", () => {
       }
     });
     expect(u8Overflow.errors).toBeTruthy();
-    expect(u8Overflow.errors?.[0].message).toMatch(/integer overflow/);
+    expect(u8Overflow.errors?.[0].message).toMatch(
+      /unsigned integer overflow: value = 256; bits = 8/
+    );
     expect(u8Overflow.data?.u8Method).toBeUndefined();
 
     const i16Underflow = await client.query<{
@@ -632,7 +636,9 @@ describe("Web3ApiClient", () => {
       }
     });
     expect(i16Underflow.errors).toBeTruthy();
-    expect(i16Underflow.errors?.[0].message).toMatch(/integer overflow/);
+    expect(i16Underflow.errors?.[0].message).toMatch(
+      /integer overflow: value = -32769; bits = 16/
+    );
     expect(i16Underflow.data?.i16Method).toBeUndefined();
 
     const u16Overflow = await client.query<{
@@ -653,7 +659,9 @@ describe("Web3ApiClient", () => {
       }
     });
     expect(u16Overflow.errors).toBeTruthy();
-    expect(u16Overflow.errors?.[0].message).toMatch(/integer overflow/);
+    expect(u16Overflow.errors?.[0].message).toMatch(
+      /unsigned integer overflow: value = 65536; bits = 16/
+    );
     expect(u16Overflow.data?.u16Method).toBeUndefined();
 
     const i32Underflow = await client.query<{
@@ -674,7 +682,9 @@ describe("Web3ApiClient", () => {
       }
     });
     expect(i32Underflow.errors).toBeTruthy();
-    expect(i32Underflow.errors?.[0].message).toMatch(/integer overflow/);
+    expect(i32Underflow.errors?.[0].message).toMatch(
+      /integer overflow: value = -2147483649; bits = 32/
+    );
     expect(i32Underflow.data?.i32Method).toBeUndefined();
 
     const u32Overflow = await client.query<{
@@ -695,7 +705,9 @@ describe("Web3ApiClient", () => {
       }
     });
     expect(u32Overflow.errors).toBeTruthy();
-    expect(u32Overflow.errors?.[0].message).toMatch(/integer overflow/);
+    expect(u32Overflow.errors?.[0].message).toMatch(
+      /unsigned integer overflow: value = 4294967296; bits = 32/
+    );
     expect(u32Overflow.data?.u32Method).toBeUndefined();
 
     const i64Underflow = await client.query<{
@@ -716,7 +728,9 @@ describe("Web3ApiClient", () => {
       }
     });
     expect(i64Underflow.errors).toBeTruthy();
-    expect(i64Underflow.errors?.[0].message).toMatch(/bad prefix/);
+    expect(i64Underflow.errors?.[0].message).toMatch(
+      /bad prefix for int: /
+    );
     expect(i64Underflow.data?.i64Method).toBeUndefined();
 
     const u64Overflow = await client.query<{
@@ -737,7 +751,9 @@ describe("Web3ApiClient", () => {
       }
     });
     expect(u64Overflow.errors).toBeTruthy();
-    expect(u64Overflow.errors?.[0].message).toMatch(/bad prefix/);
+    expect(u64Overflow.errors?.[0].message).toMatch(
+      /bad prefix for unsigned int: /
+    );
     expect(u64Overflow.data?.u64Method).toBeUndefined();
   });
 });
