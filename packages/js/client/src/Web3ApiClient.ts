@@ -40,7 +40,7 @@ export class Web3ApiClient implements Client {
       };
     } else {
       this._config = {
-        redirects: []
+        redirects: [],
       };
     }
 

@@ -27,7 +27,7 @@ export function getDefaultRedirects(): UriRedirect<Uri>[] {
     },
     {
       from: new Uri("w3://w3/logger"),
-      to: loggerPlugin()
-    }
+      to: loggerPlugin(),
+    },
   ];
 }

@@ -1,11 +1,7 @@
 import { query } from "./resolvers";
 import { manifest } from "./manifest";
 
-import {
-  Plugin,
-  PluginManifest,
-  PluginModules
-} from "@web3api/core-js";
+import { Plugin, PluginManifest, PluginModules, PluginPackage } from "@web3api/core-js";
 
 export enum LogLevel {
   DEBUG,
@@ -17,7 +13,6 @@ export enum LogLevel {
 export type LogFunc = (level: LogLevel, message: string) => boolean;
 
 export class LoggerPlugin extends Plugin {
-
   private _logFunc?: LogFunc;
 
   constructor(logFunc?: LogFunc) {
@@ -61,7 +56,7 @@ export class LoggerPlugin extends Plugin {
   }
 }
 
-export const loggerPlugin = () => {
+export const loggerPlugin = (): PluginPackage => {
   return {
     factory: () => new LoggerPlugin(),
     manifest: manifest,

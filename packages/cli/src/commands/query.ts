@@ -77,7 +77,7 @@ export default {
       {
         from: "w3://ens/ens.web3api.eth",
         to: ensPlugin({ address: ensAddress }),
-      }
+      },
     ];
 
     const client = new Web3ApiClient({ redirects });
