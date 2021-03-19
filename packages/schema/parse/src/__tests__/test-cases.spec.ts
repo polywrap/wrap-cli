@@ -1,5 +1,5 @@
 import { parseSchema } from "../";
-import { fetchTestCases } from "./cases";
+import { fetchTestCases } from "./index";
 
 describe("Web3API Schema Parser Test Cases", () => {
   const cases = fetchTestCases();

@@ -3,11 +3,11 @@ import { query } from "./resolvers";
 import { manifest } from "./manifest";
 
 import {
-  Uri,
   Client,
   Plugin,
   PluginManifest,
   PluginModules,
+  PluginFactory,
 } from "@web3api/core-js";
 import { ethers } from "ethers";
 import { Base58 } from "@ethersproject/basex";
@@ -74,7 +74,7 @@ export class EnsPlugin extends Plugin {
       args: string[]
     ): Promise<string> => {
       const { data, errors } = await client.query({
-        uri: new Uri("ens/ethereum.web3api.eth"),
+        uri: "ens/ethereum.web3api.eth",
         query: `query {
           callView(
             address: $address,
@@ -145,3 +145,11 @@ export class EnsPlugin extends Plugin {
     }
   }
 }
+
+export const ensPlugin: PluginFactory<EnsConfig> = (opts: EnsConfig) => {
+  return {
+    factory: () => new EnsPlugin(opts),
+    manifest: manifest,
+  };
+};
+export const plugin = ensPlugin;
