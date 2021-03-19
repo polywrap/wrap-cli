@@ -120,7 +120,9 @@ export class ReadDecoder extends Read {
     if (isFixedInt(prefix)) {
       return u64(prefix);
     } else if (isNegativeFixedInt(prefix)) {
-      throw new Error("unsigned integer cannot be negative: prefix = " + prefix.toString());
+      throw new Error(
+        "unsigned integer cannot be negative: prefix = " + prefix.toString()
+      );
     }
 
     switch (prefix) {
@@ -133,7 +135,9 @@ export class ReadDecoder extends Read {
       case Format.UINT64:
         return this.view.getUint64();
       default:
-        throw new Error("bad prefix for unsigned int: prefix = " + prefix.toString());
+        throw new Error(
+          "bad prefix for unsigned int: prefix = " + prefix.toString()
+        );
     }
   }
 
