@@ -11,11 +11,7 @@ import {
   RenderHookOptions,
   cleanup
 } from "@testing-library/react-hooks";
-import {
-  Uri,
-  UriRedirect
-} from "@web3api/client-js";
-import { QueryApiOptions } from "@web3api/core-js";
+import { QueryApiOptions, UriRedirect } from "@web3api/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
@@ -26,24 +22,24 @@ import { GetPathToTestApis } from "@web3api/test-cases";
 jest.setTimeout(30000);
 
 describe("useWeb3ApiQuery hook", () => {
-  let uri: Uri;
-  let redirects: UriRedirect[];
+  let uri: string;
+  let redirects: UriRedirect<string>[];
   let WrapperProvider: RenderHookOptions<unknown>;
 
   beforeAll(async () => {
     const {
       ipfs,
-      data,
+      ensAddress,
       redirects: testRedirects,
     } = await initTestEnvironment();
 
     const { ensDomain } = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
       ipfs,
-      data.ensAddress
+      ensAddress
     );
 
-    uri = new Uri(`ens/${ensDomain}`);
+    uri = `ens/${ensDomain}`;
     redirects = testRedirects;
     WrapperProvider = {
       wrapper: Web3ApiProvider,

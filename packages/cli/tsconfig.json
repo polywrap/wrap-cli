@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "build",
     "lib": [
-      "es2020.Intl",
+      "es2020.intl",
+      "es2015",
       "es5",
       "dom",
       "ESNext.AsyncIterable"

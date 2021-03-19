@@ -1,7 +1,7 @@
-import { Uri, UriRedirect } from "@web3api/core-js";
-import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
-import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
-import { EnsPlugin } from "@web3api/ens-plugin-js";
+import { UriRedirect } from "@web3api/core-js";
+import { plugin as ethereumPlugin } from "@web3api/ethereum-plugin-js";
+import { plugin as ipfsPlugin } from "@web3api/ipfs-plugin-js";
+import { plugin as ensPlugin } from "@web3api/ens-plugin-js";
 import path from "path";
 import spawn from "spawn-command";
 import axios from "axios";
@@ -9,10 +9,8 @@ import axios from "axios";
 interface TestEnvironment {
   ipfs: string;
   ethereum: string;
+  ensAddress: string;
   redirects: UriRedirect[];
-  data: {
-    ensAddress: string;
-  };
 }
 
 export const initTestEnvironment = async (): Promise<TestEnvironment> => {
@@ -39,31 +37,22 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
 
   // Test env redirects for ethereum, ipfs, and ENS.
   // Will be used to fetch APIs.
-  const redirects = [
+  const redirects: UriRedirect[] = [
     {
-      from: new Uri("w3://ens/ethereum.web3api.eth"),
-      to: {
-        factory: () => new EthereumPlugin({ provider: ethereum }),
-        manifest: EthereumPlugin.manifest(),
-      },
+      from: "w3://ens/ethereum.web3api.eth",
+      to: ethereumPlugin({ provider: ethereum }),
     },
     {
-      from: new Uri("w3://ens/ipfs.web3api.eth"),
-      to: {
-        factory: () => new IpfsPlugin({ provider: ipfs }),
-        manifest: IpfsPlugin.manifest(),
-      },
+      from: "w3://ens/ipfs.web3api.eth",
+      to: ipfsPlugin({ provider: ipfs }),
     },
     {
-      from: new Uri("w3://ens/ens.web3api.eth"),
-      to: {
-        factory: () => new EnsPlugin({ address: data.ensAddress }),
-        manifest: EnsPlugin.manifest(),
-      },
+      from: "w3://ens/ens.web3api.eth",
+      to: ensPlugin({ address: data.ensAddress }),
     },
   ];
 
-  return { ipfs, ethereum, redirects, data };
+  return { ipfs, ethereum, ensAddress: data.ensAddress, redirects };
 };
 
 export const stopTestEnvironment = async (): Promise<void> => {

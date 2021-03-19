@@ -1,8 +1,8 @@
 import { useWeb3ApiQuery, Web3ApiProvider } from "@web3api/react";
-import { Uri, UriRedirect } from "@web3api/client-js";
+import { UriRedirect } from "@web3api/client-js";
 import React from "react";
 
-const SimpleStorage = ({ uri }: { uri: Uri }) => {
+const SimpleStorage = ({ uri }: { uri: string }) => {
   const { execute: deployContract, data: deployData } = useWeb3ApiQuery<{
     deployContract: string
   }>({
@@ -59,7 +59,7 @@ export const SimpleStorageContainer = ({
   ensUri,
 }: {
   redirects: UriRedirect[];
-  ensUri: Uri;
+  ensUri: string;
 }) => (
   <Web3ApiProvider redirects={redirects}>
     <SimpleStorage uri={ensUri} />

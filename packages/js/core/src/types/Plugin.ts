@@ -52,9 +52,9 @@ export abstract class Plugin {
   public abstract getModules(client: Client): PluginModules;
 }
 
-export type PluginFactory = () => Plugin;
-
-export interface PluginPackage {
-  factory: PluginFactory;
+export type PluginPackage = {
+  factory: () => Plugin;
   manifest: PluginManifest;
-}
+};
+
+export type PluginFactory<TOpts> = (opts: TOpts) => PluginPackage;
