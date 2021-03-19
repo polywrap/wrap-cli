@@ -2,7 +2,6 @@ import { Web3ApiClient, UriRedirect } from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import { loggerPlugin } from "@web3api/logger-plugin-js";
 
 export async function setupWeb3ApiClient(): Promise<Web3ApiClient> {
   const ethereum = (window as any).ethereum;
