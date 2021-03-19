@@ -1,0 +1,17 @@
+query Log($message: String!) {
+  error(
+    message: $message
+  )
+
+  info(
+    message: $message
+  )
+
+  debug(
+    message: $message
+  )
+
+  warn(
+    message: $message
+  )
+}

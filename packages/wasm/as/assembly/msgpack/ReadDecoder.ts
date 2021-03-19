@@ -476,6 +476,7 @@ export class ReadDecoder extends Read {
           this.view.discard(this.view.getUint16());
           break;
         case Format.STR32:
+<<<<<<< HEAD
           this.view.discard(this.view.getUint32());
           break;
         case Format.ARRAY16:
@@ -488,6 +489,26 @@ export class ReadDecoder extends Read {
           objectsToDiscard = 2 * <i32>this.view.getUint16();
           break;
         case Format.MAP32:
+=======
+          // TODO overflow, need to modify discard and underlying array buffer
+          // https://github.com/web3-api/monorepo/issues/70
+          this.view.discard(this.view.getUint32());
+          break;
+        case Format.ARRAY16:
+          //TODO OVERFLOW https://github.com/web3-api/monorepo/issues/70
+          objectsToDiscard = <i32>this.view.getUint16();
+          break;
+        case Format.ARRAY32:
+          //TODO OVERFLOW https://github.com/web3-api/monorepo/issues/70
+          objectsToDiscard = <i32>this.view.getUint32();
+          break;
+        case Format.MAP16:
+          //TODO OVERFLOW https://github.com/web3-api/monorepo/issues/70
+          objectsToDiscard = 2 * <i32>this.view.getUint16();
+          break;
+        case Format.MAP32:
+          //TODO OVERFLOW https://github.com/web3-api/monorepo/issues/70
+>>>>>>> prealpha-dev
           objectsToDiscard = 2 * <i32>this.view.getUint32();
           break;
         default:

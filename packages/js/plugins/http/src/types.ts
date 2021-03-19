@@ -1,5 +1,5 @@
 // TODO: Generate this from the schema.graphql file
-// https://github.com/Web3-API/prototype/issues/101
+// https://github.com/web3-api/monorepo/issues/101
 
 export class Header {
   key: string;

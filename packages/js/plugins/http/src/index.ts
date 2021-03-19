@@ -10,6 +10,7 @@ import {
   Plugin,
   PluginModules,
   PluginManifest,
+  PluginPackage,
 } from "@web3api/core-js";
 
 export class HttpPlugin extends Plugin {
@@ -45,3 +46,11 @@ export class HttpPlugin extends Plugin {
     return fromAxiosResponse(response);
   }
 }
+
+export const httpPlugin = (): PluginPackage => {
+  return {
+    factory: () => new HttpPlugin(),
+    manifest: manifest,
+  };
+};
+export const plugin = httpPlugin;

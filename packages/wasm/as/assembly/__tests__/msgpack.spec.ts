@@ -26,11 +26,18 @@ class Sanity {
   float32: f32;
   float64: f64;
   str: string = "";
+  largeStr: string = "";
   bytes: ArrayBuffer = new ArrayBuffer(1);
+  largeBytes: ArrayBuffer = new ArrayBuffer(1);
   array: Array<u8> = new Array<u8>();
+  largeStrArray: Array<string> = new Array<string>();
+  largeBytesArray: Array<ArrayBuffer> = new Array<ArrayBuffer>();
   map: Map<string, Array<i32>> = new Map<string, Array<i32>>();
 
   init(): void {
+    const largeString = new Array<string>(10000).join("web3api ");
+    const largeBytes = String.UTF8.encode(largeString);
+
     this.nil = null;
     this.int8 = -128;
     this.int16 = -32768;
@@ -47,11 +54,20 @@ class Sanity {
     this.float32 = 3.40282344818115234375;
     this.float64 = 3124124512.598273468017578125;
     this.str = "Hello, world!";
+    this.largeStr = new Array<string>(10).join("web3api ");
     this.bytes = new ArrayBuffer(12);
+    this.largeBytes = largeBytes;
     this.array = [10, 20, 30];
     this.map = new Map<string, Array<i32>>();
     this.map.set("foo", [1, -1, 42]);
     this.map.set("baz", [12412, -98987]);
+
+    this.largeStrArray = [];
+    this.largeBytesArray = [];
+    for (let i=0; i<100; i++) {
+      this.largeStrArray.push(largeString);
+      this.largeBytesArray.push(largeBytes);
+    }
   }
 
   toBuffer(): ArrayBuffer {
@@ -75,7 +91,7 @@ class Sanity {
 }
 
 function serializeSanity(writer: Write, type: Sanity): void {
-  writer.writeMapLength(19);
+  writer.writeMapLength(23);
   writer.writeString("nil");
   writer.writeNullableString(type.nil);
   writer.writeString("int8");
@@ -108,11 +124,23 @@ function serializeSanity(writer: Write, type: Sanity): void {
   writer.writeFloat64(type.float64);
   writer.writeString("str");
   writer.writeString(type.str);
+  writer.writeString("largeStr");
+  writer.writeString(type.largeStr);
   writer.writeString("bytes");
   writer.writeBytes(type.bytes);
+  writer.writeString("largeBytes");
+  writer.writeBytes(type.largeBytes);
   writer.writeString("array");
   writer.writeArray(type.array, (writer: Write, item: u8) => {
     writer.writeUInt8(item);
+  });
+  writer.writeString("largeStrArray");
+  writer.writeArray(type.largeStrArray, (writer: Write, item: string) => {
+    writer.writeString(item);
+  });
+  writer.writeString("largeBytesArray");
+  writer.writeArray(type.largeBytesArray, (writer: Write, item: ArrayBuffer) => {
+    writer.writeBytes(item);
   });
   writer.writeString("map");
   writer.writeMap(
@@ -167,12 +195,28 @@ function deserializeSanity(reader: Read, type: Sanity): void {
       type.float64 = reader.readFloat64();
     } else if (field == "str") {
       type.str = reader.readString();
+    } else if (field == "largeStr") {
+      type.largeStr = reader.readString();
     } else if (field == "bytes") {
       type.bytes = reader.readBytes();
+    } else if (field == "largeBytes") {
+      type.largeBytes = reader.readBytes();
     } else if (field == "array") {
       type.array = reader.readArray(
         (reader: Read): u8 => {
           return reader.readUInt8();
+        }
+      );
+    } else if (field == "largeStrArray") {
+      type.largeStrArray = reader.readArray(
+        (reader: Read): string => {
+          return reader.readString();
+        }
+      );
+    } else if (field == "largeBytesArray") {
+      type.largeBytesArray = reader.readArray(
+        (reader: Read): ArrayBuffer => {
+          return reader.readBytes();
         }
       );
     } else if (field == "map") {

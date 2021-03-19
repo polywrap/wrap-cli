@@ -58,7 +58,7 @@ type {{type}} @imported(
 enum {{type}} @imported(
   namespace: "{{namespace}}",
   uri: "{{uri}}",
-  type: "{{nativeType}}"
+  nativeType: "{{nativeType}}"
 ) {
   {{#constants}}
   {{.}}
