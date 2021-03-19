@@ -32,11 +32,17 @@ export class Web3ApiClient implements Client {
   private _apiCache: ApiCache = new Map<string, Api>();
   private _config: ClientConfig<Uri>;
 
-  constructor(config: ClientConfig) {
-    this._config = {
-      ...config,
-      redirects: sanitizeUriRedirects(config.redirects),
-    };
+  constructor(config?: ClientConfig) {
+    if (config) {
+      this._config = {
+        ...config,
+        redirects: sanitizeUriRedirects(config.redirects),
+      };
+    } else {
+      this._config = {
+        redirects: [],
+      };
+    }
 
     // Add all default redirects (IPFS, ETH, ENS)
     this._config.redirects.push(...getDefaultRedirects());

@@ -10,12 +10,12 @@ type Query implements ApiResolver_Query {
 
   getFile(
     path: String!
-  ): Bytes # TODO: https://github.com/Web3-API/prototype/issues/100
+  ): Bytes # TODO: https://github.com/web3-api/monorepo/issues/100
 }
 
 type Mutation {
   # TODO: Allow for custom type CID
-  # https://github.com/Web3-API/prototype/issues/103
+  # https://github.com/web3-api/monorepo/issues/103
   addFile(data: Bytes!): AddResult!
 }
 
