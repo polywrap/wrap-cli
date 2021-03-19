@@ -1,7 +1,12 @@
 import { query } from "./resolvers";
 import { manifest } from "./manifest";
 
-import { Plugin, PluginManifest, PluginModules, PluginPackage } from "@web3api/core-js";
+import {
+  Plugin,
+  PluginManifest,
+  PluginModules,
+  PluginPackage,
+} from "@web3api/core-js";
 
 export enum LogLevel {
   DEBUG,
