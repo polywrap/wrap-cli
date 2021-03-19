@@ -502,4 +502,60 @@ describe("Web3ApiClient", () => {
       method2: [0, 0, 2],
     });
   });
+
+  it("should work with large types", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/large-types`,
+      ipfsProvider,
+      ensAddress
+    );
+    const ensUri = `ens/${api.ensDomain}`;
+    const client = await createWeb3ApiClient({
+      ethereum: { provider: ethProvider },
+      ipfs: { provider: ipfsProvider },
+      ens: { address: ensAddress }
+    });
+
+    const largeStr = new Array(10000).join("web3api ")
+    const largeBytes = new Uint8Array(Buffer.from(largeStr));
+    const largeStrArray = [];
+    const largeBytesArray = [];
+
+    for (let i=0; i<100; i++) {
+      largeStrArray.push(largeStr);
+      largeBytesArray.push(largeBytes);
+    }
+
+    const largeTypesMethodCall = await client.query<any>({
+      uri: ensUri,
+      query: `
+        query {
+          method(
+            largeCollection: {
+              largeStr: $largeStr
+              largeBytes: $largeBytes
+              largeStrArray: $largeStrArray
+              largeBytesArray: $largeBytesArray
+            }
+          )
+        }
+      `,
+      variables: {
+        largeStr: largeStr,
+        largeBytes: largeBytes,
+        largeStrArray: largeStrArray,
+        largeBytesArray: largeBytesArray,
+      }
+    });
+
+    expect(largeTypesMethodCall.data).toBeTruthy();
+    expect(largeTypesMethodCall.data).toEqual({
+      method: {
+        largeStr: largeStr,
+        largeBytes: largeBytes,
+        largeStrArray: largeStrArray,
+        largeBytesArray: largeBytesArray
+      }
+    });
+  });
 });
