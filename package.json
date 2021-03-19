@@ -40,7 +40,6 @@
     "eslint-config-prettier": "7.1.0",
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-prettier": "3.3.0",
-    "eslint-plugin-formatjs": "^2.12.7",
     "prettier": "2.2.1"
   }
 }

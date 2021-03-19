@@ -7,6 +7,7 @@ import {
 import osLocale from "os-locale";
 import { readFileSync } from "fs";
 import { MessageFormatElement } from "intl-messageformat-parser";
+import * as fs from "fs";
 
 interface LocaleData {
   lang: string;
@@ -28,8 +29,11 @@ export function getIntl(locale: string = osLocale.sync()): IntlShape<string> {
 }
 
 function getLocaleData(locale: string): LocaleData {
+  const supportedLangs = fs
+    .readdirSync(`${__dirname}/../../compiled-lang/`)
+    .map((s) => s.substring(0, 2));
   const localeLang = locale.substring(0, 2);
-  const lang = ["en", "es"].includes(localeLang) ? localeLang : "en";
+  const lang = supportedLangs.includes(localeLang) ? localeLang : "en";
   const messages = JSON.parse(
     readFileSync(`${__dirname}/../../compiled-lang/${lang}.json`, "utf-8")
   );

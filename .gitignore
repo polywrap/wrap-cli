@@ -5,3 +5,4 @@ coverage
 .vscode
 *.log
 w3
+packages/cli/compiled-lang/*.json

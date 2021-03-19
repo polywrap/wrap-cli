@@ -15,8 +15,7 @@ module.exports = {
   plugins: [
     "eslint-plugin-import",
     "@typescript-eslint",
-    "prettier",
-    "formatjs"
+    "prettier"
   ],
   extends: [
     "eslint:recommended",
@@ -84,15 +83,7 @@ module.exports = {
         "groups": [["index", "sibling", "parent", "internal"], ["external", "builtin"], "object"],
         "newlines-between": "always"
       }
-    ],
-    "formatjs/enforce-default-message": ["error", "literal"],
-    "formatjs/enforce-placeholders": "error",
-    "formatjs/no-camel-case": "warn",
-    "formatjs/no-emoji": "warn",
-    "formatjs/no-multiple-whitespaces": "warn",
-    "formatjs/no-multiple-plurals": "warn",
-    "formatjs/no-offset": "warn",
-    "formatjs/enforce-id": ["off", { "idInterpolationPattern": "[sha512:contenthash:base64:6]" }]
+    ]
   },
   "overrides": [
     {
