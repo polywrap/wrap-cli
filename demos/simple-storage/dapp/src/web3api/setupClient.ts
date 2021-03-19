@@ -22,11 +22,7 @@ export async function setupWeb3ApiClient(): Promise<Web3ApiClient> {
     {
       from: "w3://ens/ens.web3api.eth",
       to: ensPlugin({}),
-    },
-    {
-      from: "w3://w3/logger",
-      to: loggerPlugin(),
-    },
+    }
   ];
 
   return new Web3ApiClient({ redirects });

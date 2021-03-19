@@ -2,6 +2,7 @@ import { Uri, UriRedirect } from "@web3api/core-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
+import { loggerPlugin } from "@web3api/logger-plugin-js";
 
 export function getDefaultRedirects(): UriRedirect<Uri>[] {
   // NOTE: These are high-level primitives for core plugins,
@@ -24,5 +25,9 @@ export function getDefaultRedirects(): UriRedirect<Uri>[] {
           "https://eth-mainnet.gateway.pokt.network/v1/5fc677007c6654002ed13350",
       }),
     },
+    {
+      from: new Uri("w3://w3/logger"),
+      to: loggerPlugin()
+    }
   ];
 }
