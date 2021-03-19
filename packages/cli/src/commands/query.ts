@@ -11,7 +11,6 @@ import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import { loggerPlugin } from "@web3api/logger-plugin-js";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const HELP = `
@@ -78,11 +77,7 @@ export default {
       {
         from: "w3://ens/ens.web3api.eth",
         to: ensPlugin({ address: ensAddress }),
-      },
-      {
-        from: "w3://w3/logger",
-        to: loggerPlugin(),
-      },
+      }
     ];
 
     const client = new Web3ApiClient({ redirects });
