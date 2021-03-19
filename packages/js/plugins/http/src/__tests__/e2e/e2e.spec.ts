@@ -1,6 +1,5 @@
 import { Web3ApiClient } from "@web3api/client-js"
-import { Uri } from "@web3api/core-js"
-import { HttpPlugin } from "../..";
+import { httpPlugin } from "../..";
 import { Response } from "../../types";
 import nock from "nock"
 
@@ -19,21 +18,17 @@ describe("e2e tests for HttpPlugin", () => {
         .get("/api")
         .reply(200, '{data: "test-response"}')
 
-
       const web3ApiClient = new Web3ApiClient({
         redirects: [
           {
-            from: new Uri("w3://ens/http.web3api.eth"),
-            to: {
-              factory: () => new HttpPlugin(),
-              manifest: HttpPlugin.manifest(),
-            },
+            from: "w3://ens/http.web3api.eth",
+            to: httpPlugin(),
           },
         ]
       })
 
       const response = await web3ApiClient.query<{ get: Response }>({
-        uri: new Uri("w3://ens/http.web3api.eth"),
+        uri: "w3://ens/http.web3api.eth",
         query: `
           query {
             get(
@@ -64,17 +59,14 @@ describe("e2e tests for HttpPlugin", () => {
       const web3ApiClient = new Web3ApiClient({
         redirects: [
           {
-            from: new Uri("w3://ens/http.web3api.eth"),
-            to: {
-              factory: () => new HttpPlugin(),
-              manifest: HttpPlugin.manifest(),
-            },
+            from: "w3://ens/http.web3api.eth",
+            to: httpPlugin(),
           },
         ]
       })
 
       const response = await web3ApiClient.query<{ get: Response }>({
-        uri: new Uri("w3://ens/http.web3api.eth"),
+        uri: "w3://ens/http.web3api.eth",
         query: `
           query {
             get(
@@ -105,17 +97,14 @@ describe("e2e tests for HttpPlugin", () => {
       const web3ApiClient = new Web3ApiClient({
         redirects: [
           {
-            from: new Uri("w3://ens/http.web3api.eth"),
-            to: {
-              factory: () => new HttpPlugin(),
-              manifest: HttpPlugin.manifest(),
-            },
+            from: "w3://ens/http.web3api.eth",
+            to: httpPlugin(),
           },
         ]
       })
 
       const response = await web3ApiClient.query<{ get: Response }>({
-        uri: new Uri("w3://ens/http.web3api.eth"),
+        uri: "w3://ens/http.web3api.eth",
         query: `
           query {
             get(
@@ -152,17 +141,14 @@ describe("e2e tests for HttpPlugin", () => {
       const web3ApiClient = new Web3ApiClient({
         redirects: [
           {
-            from: new Uri("w3://ens/http.web3api.eth"),
-            to: {
-              factory: () => new HttpPlugin(),
-              manifest: HttpPlugin.manifest(),
-            },
+            from: "w3://ens/http.web3api.eth",
+            to: httpPlugin(),
           },
         ]
       })
 
       const response = await web3ApiClient.query<{ get: Response }>({
-        uri: new Uri("w3://ens/http.web3api.eth"),
+        uri: "w3://ens/http.web3api.eth",
         query: `
           query {
             get(
@@ -193,17 +179,14 @@ describe("e2e tests for HttpPlugin", () => {
       const web3ApiClient = new Web3ApiClient({
         redirects: [
           {
-            from: new Uri("w3://ens/http.web3api.eth"),
-            to: {
-              factory: () => new HttpPlugin(),
-              manifest: HttpPlugin.manifest(),
-            },
+            from: "w3://ens/http.web3api.eth",
+            to: httpPlugin(),
           },
         ]
       })
 
       const response = await web3ApiClient.query<{ post: Response }>({
-        uri: new Uri("w3://ens/http.web3api.eth"),
+        uri: "w3://ens/http.web3api.eth",
         query: `
           mutation {
             post(
@@ -235,17 +218,14 @@ describe("e2e tests for HttpPlugin", () => {
       const web3ApiClient = new Web3ApiClient({
         redirects: [
           {
-            from: new Uri("w3://ens/http.web3api.eth"),
-            to: {
-              factory: () => new HttpPlugin(),
-              manifest: HttpPlugin.manifest(),
-            },
+            from: "w3://ens/http.web3api.eth",
+            to: httpPlugin(),
           },
         ]
       })
 
       const response = await web3ApiClient.query<{ post: Response }>({
-        uri: new Uri("w3://ens/http.web3api.eth"),
+        uri: "w3://ens/http.web3api.eth",
         query: `
           mutation {
             post(
@@ -277,17 +257,14 @@ describe("e2e tests for HttpPlugin", () => {
       const web3ApiClient = new Web3ApiClient({
         redirects: [
           {
-            from: new Uri("w3://ens/http.web3api.eth"),
-            to: {
-              factory: () => new HttpPlugin(),
-              manifest: HttpPlugin.manifest(),
-            },
+            from: "w3://ens/http.web3api.eth",
+            to: httpPlugin(),
           },
         ]
       })
 
       const response = await web3ApiClient.query<{ post: Response }>({
-        uri: new Uri("w3://ens/http.web3api.eth"),
+        uri: "w3://ens/http.web3api.eth",
         query: `
           mutation {
             post(
@@ -325,17 +302,14 @@ describe("e2e tests for HttpPlugin", () => {
       const web3ApiClient = new Web3ApiClient({
         redirects: [
           {
-            from: new Uri("w3://ens/http.web3api.eth"),
-            to: {
-              factory: () => new HttpPlugin(),
-              manifest: HttpPlugin.manifest(),
-            },
+            from: "w3://ens/http.web3api.eth",
+            to: httpPlugin(),
           },
         ]
       })
 
       const response = await web3ApiClient.query<{ get: Response }>({
-        uri: new Uri("w3://ens/http.web3api.eth"),
+        uri: "w3://ens/http.web3api.eth",
         query: `
           mutation {
             post(

@@ -7,6 +7,7 @@ import {
   Plugin,
   PluginManifest,
   PluginModules,
+  PluginFactory,
 } from "@web3api/core-js";
 import { Signer, ethers } from "ethers";
 import {
@@ -146,3 +147,13 @@ export class EthereumPlugin extends Plugin {
     return res.transactionHash;
   }
 }
+
+export const ethereumPlugin: PluginFactory<EthereumConfig> = (
+  opts: EthereumConfig
+) => {
+  return {
+    factory: () => new EthereumPlugin(opts),
+    manifest: manifest,
+  };
+};
+export const plugin = ethereumPlugin;

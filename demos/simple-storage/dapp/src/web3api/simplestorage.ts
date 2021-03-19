@@ -1,6 +1,6 @@
-import { Uri, Web3ApiClient } from "@web3api/client-js";
+import { Web3ApiClient } from "@web3api/client-js";
 
-export const uri = new Uri("ens/api.simplestorage.eth");
+export const uri = "ens/api.simplestorage.eth";
 
 export interface SetDataResult {
   txReceipt: string,

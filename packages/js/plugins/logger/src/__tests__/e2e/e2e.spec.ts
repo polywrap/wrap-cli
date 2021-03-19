@@ -1,6 +1,5 @@
 import { Web3ApiClient } from "@web3api/client-js"
-import { Uri } from "@web3api/core-js"
-import { LoggerPlugin, LogLevel } from "../..";
+import { loggerPlugin, LogLevel } from "../..";
 
 describe("log method", () => {
 
@@ -8,17 +7,14 @@ describe("log method", () => {
     const web3ApiClient = new Web3ApiClient({
       redirects: [
         {
-          from: new Uri("w3://w3/logger"),
-          to: {
-            factory: () => new LoggerPlugin(),
-            manifest: LoggerPlugin.manifest(),
-          },
-        },
+          from: "w3://w3/logger",
+          to: loggerPlugin(),
+        }
       ]
     })
 
     const response = await web3ApiClient.query<{ log: boolean }>({
-      uri: new Uri("w3://w3/logger"),
+      uri: "w3://w3/logger",
       query: `
         query {
           log(

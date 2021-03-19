@@ -2,14 +2,14 @@
   "name": "@web3api/demo-simple-storage-dapp",
   "description": "Web3API SimpleStorage dApp Demo",
   "private": true,
-  "version": "0.0.1-prealpha.4",
+  "version": "0.0.1-prealpha.6",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/web3-api/monorepo.git"
   },
   "dependencies": {
-    "@web3api/client-js": "0.0.1-prealpha.4",
+    "@web3api/client-js": "0.0.1-prealpha.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-lottie": "1.2.3",
@@ -19,8 +19,6 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "@types/node": "^12.0.0",
-    "@types/react": "^16.9.0",
-    "@types/react-dom": "^16.9.0",
     "@types/react-lottie": "1.2.5",
     "eslint": "^6.6.0",
     "typescript": "3.7.2"
@@ -34,6 +32,10 @@
     "prebuild": "yarn install:web3api",
     "prestart": "yarn install:web3api",
     "install:web3api": "npx web3api-worker-install ./public"
+  },
+  "resolutions": {
+    "@types/react": "^16.9.0",
+    "@types/react-dom": "^16.9.0"
   },
   "eslintConfig": {
     "root": true,

@@ -17,10 +17,11 @@ import {
   InvokeApiOptions,
   InvokeApiResult,
   Manifest,
+  sanitizeUriRedirects,
 } from "@web3api/core-js";
 
-export interface ClientConfig {
-  redirects: UriRedirect[];
+export interface ClientConfig<TUri = string> {
+  redirects: UriRedirect<TUri>[];
 }
 
 export class Web3ApiClient implements Client {
@@ -29,26 +30,28 @@ export class Web3ApiClient implements Client {
   // and handle cases where the are multiple jumps. For exmaple, if
   // A => B => C, then the cache should have A => C, and B => C.
   private _apiCache: ApiCache = new Map<string, Api>();
+  private _config: ClientConfig<Uri>;
 
-  constructor(
-    private _config: ClientConfig = {
-      redirects: [],
-    }
-  ) {
-    const { redirects } = this._config;
+  constructor(config: ClientConfig) {
+    this._config = {
+      ...config,
+      redirects: sanitizeUriRedirects(config.redirects),
+    };
 
     // Add all default redirects (IPFS, ETH, ENS)
-    redirects.push(...getDefaultRedirects());
+    this._config.redirects.push(...getDefaultRedirects());
   }
 
-  public redirects(): readonly UriRedirect[] {
+  public redirects(): readonly UriRedirect<Uri>[] {
     return this._config.redirects;
   }
 
   public async query<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>
-  >(options: QueryApiOptions<TVariables>): Promise<QueryApiResult<TData>> {
+  >(
+    options: QueryApiOptions<TVariables, string>
+  ): Promise<QueryApiResult<TData>> {
     try {
       const { uri, query, variables } = options;
 
@@ -57,61 +60,43 @@ export class Web3ApiClient implements Client {
         typeof query === "string" ? createQueryDocument(query) : query;
 
       // Parse the query to understand what's being invoked
-      const invokeOptions = parseQuery(uri, queryDocument, variables);
+      const queryInvocations = parseQuery(
+        new Uri(uri),
+        queryDocument,
+        variables
+      );
 
       // Execute all invocations in parallel
       const parallelInvocations: Promise<{
-        method: string;
+        name: string;
         result: InvokeApiResult<unknown>;
       }>[] = [];
 
-      for (const invocation of invokeOptions) {
+      for (const invocationName of Object.keys(queryInvocations)) {
         parallelInvocations.push(
           this.invoke({
-            ...invocation,
+            ...queryInvocations[invocationName],
+            uri: queryInvocations[invocationName].uri.uri,
             decode: true,
           }).then((result) => ({
-            method: invocation.method,
+            name: invocationName,
             result,
           }))
         );
       }
 
       // Await the invocations
-      const invocations = await Promise.all(parallelInvocations);
+      const invocationResults = await Promise.all(parallelInvocations);
 
       // Aggregate all invocation results
-      let methods: string[] = [];
-      const resultDatas: unknown[] = [];
+      const data: Record<string, unknown> = {};
       const errors: Error[] = [];
 
-      for (const invocation of invocations) {
-        methods.push(invocation.method);
-        resultDatas.push(invocation.result.data);
+      for (const invocation of invocationResults) {
+        data[invocation.name] = invocation.result.data;
         if (invocation.result.error) {
           errors.push(invocation.result.error);
         }
-      }
-
-      // Helper for appending "_#" to repeated names
-      const makeRepeatedUnique = (names: string[]): string[] => {
-        const counts: { [key: string]: number } = {};
-
-        return names.reduce((acc, name) => {
-          const count = (counts[name] = (counts[name] || 0) + 1);
-          const uniq = count > 1 ? `${name}_${count - 1}` : name;
-          acc.push(uniq);
-          return acc;
-        }, [] as string[]);
-      };
-
-      methods = makeRepeatedUnique(methods);
-
-      // Build are data map, where each method maps to its data
-      const data: Record<string, unknown> = {};
-
-      for (let i = 0; i < methods.length; ++i) {
-        data[methods[i]] = resultDatas[i];
       }
 
       return {
@@ -128,12 +113,18 @@ export class Web3ApiClient implements Client {
   }
 
   public async invoke<TData = unknown>(
-    options: InvokeApiOptions
+    options: InvokeApiOptions<string>
   ): Promise<InvokeApiResult<TData>> {
     try {
-      const { uri } = options;
+      const uri = new Uri(options.uri);
       const api = await this.loadWeb3Api(uri);
-      return (await api.invoke(options, this)) as TData;
+      return (await api.invoke(
+        {
+          ...options,
+          uri,
+        },
+        this
+      )) as TData;
     } catch (error) {
       return { error: error };
     }

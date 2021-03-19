@@ -1,7 +1,12 @@
 import { query } from "./resolvers";
 import { manifest } from "./manifest";
 
-import { Plugin, PluginManifest, PluginModules } from "@web3api/core-js";
+import {
+  Plugin,
+  PluginFactory,
+  PluginManifest,
+  PluginModules,
+} from "@web3api/core-js";
 import { execute, makePromise } from "apollo-link";
 import { createHttpLink } from "apollo-link-http";
 import fetch from "cross-fetch";
@@ -40,3 +45,13 @@ export class GraphNodePlugin extends Plugin {
     return JSON.stringify(result);
   }
 }
+
+export const graphNodePlugin: PluginFactory<GraphNodeConfig> = (
+  opts: GraphNodeConfig
+) => {
+  return {
+    factory: () => new GraphNodePlugin(opts),
+    manifest: manifest,
+  };
+};
+export const plugin = graphNodePlugin;

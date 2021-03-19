@@ -76,6 +76,7 @@ export class WasmWeb3Api extends Api {
     // Spawn the worker thread
     let modulePath = "./thread.js";
 
+    // If we're in node.js
     if (typeof process === "object" && typeof window === "undefined") {
       modulePath = `${__dirname}/thread.js`;
 
@@ -174,7 +175,7 @@ export class WasmWeb3Api extends Api {
                 const { data, error } = await client.invoke<
                   unknown | ArrayBuffer
                 >({
-                  uri: new Uri(action.uri),
+                  uri: action.uri,
                   module: action.module as InvokableModules,
                   method: action.method,
                   input: action.input,

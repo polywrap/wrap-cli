@@ -2,7 +2,11 @@ import { query } from "./resolvers";
 import { manifest } from "./manifest";
 
 import colors from "colors";
-import { Plugin, PluginManifest, PluginModules } from "@web3api/core-js";
+import {
+  Plugin,
+  PluginManifest,
+  PluginModules
+} from "@web3api/core-js";
 
 export enum LogLevel {
   DEBUG,
@@ -44,3 +48,11 @@ export class LoggerPlugin extends Plugin {
     return true;
   }
 }
+
+export const loggerPlugin = () => {
+  return {
+    factory: () => new LoggerPlugin(),
+    manifest: manifest,
+  };
+};
+export const plugin = loggerPlugin;
