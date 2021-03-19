@@ -1,4 +1,4 @@
-import { PluginManifest } from "@web3api/core-js";
+import { PluginManifest, Uri } from "@web3api/core-js";
 
 export const manifest: PluginManifest = {
   schema: `
@@ -18,6 +18,6 @@ export const manifest: PluginManifest = {
     ): Boolean!
   }
 `,
-  implemented: [],
+  implemented: [new Uri("w3/logger")],
   imported: [],
 };
