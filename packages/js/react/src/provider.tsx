@@ -15,7 +15,7 @@ interface Web3ApiProviderMap {
 export const PROVIDERS: Web3ApiProviderMap = {};
 
 interface Web3ApiProviderProps {
-  redirects: UriRedirect[];
+  redirects: UriRedirect<string>[];
   children: React.ReactNode;
 }
 
