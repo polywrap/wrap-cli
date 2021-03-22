@@ -11,17 +11,18 @@ module.exports = {
   projectName: 'monorepo',
   themeConfig: {
     navbar: {
-      title: 'Web3API Documentation',
+      title: 'Web3API Docs',
       logo: {
         alt: 'Web3API Icon',
         src: 'img/Web3API_Icon.svg',
+        href: 'https://web3api.dev',
       },
       items: [
         {
           href: 'https://github.com/web3-api/monorepo',
           className: 'header-github-link',
           'aria-label': 'GitHub repository',
-          position: 'right',
+          position: 'left',
         },
       ],
     },
@@ -63,5 +64,8 @@ module.exports = {
         },
       },
     ],
+  ],
+  plugins: [
+    require.resolve('docusaurus-lunr-search')
   ],
 };
