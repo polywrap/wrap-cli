@@ -14,5 +14,15 @@ module.exports = {
         'developers/developer-dump',
       ],
     },
+    {
+      type: 'category',
+      label: 'Resources',
+      items: [
+        'resources/guides-and-tutorials',
+        'resources/talks-and-videos',
+        'resources/developer-tooling',
+        'resources/the-web3api-technical-standard'
+      ]
+    },
   ],
 };
