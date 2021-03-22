@@ -4,7 +4,8 @@ const customFields = {
   githubUrl: `https://github.com/web3-api/monorepo`,
   discordUrl: `https://discord.gg/Z5m88a5qWu`,
   twitterUrl: 'https://twitter.com/Web3Api',
-  forumUrl: 'https://forum.web3api.dev'
+  forumUrl: 'https://forum.web3api.dev',
+  daoUrl: 'https://github.com/web3-api/dao',
 };
 
 module.exports = {
@@ -58,31 +59,15 @@ module.exports = {
               className: 'twitter-logo',
               'aria-label': 'twitter account',
             },
+            {
+              label: 'DAO',
+              href: customFields.daoUrl,
+              className: 'dao-logo',
+              'aria-label': 'dao repo'
+            },
           ],
         },
       ],
-    },
-    footer: {
-      style: 'dark',
-      links: [
-        {
-          title: 'Community',
-          items: [
-            {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
-            },
-            {
-              label: 'Twitter',
-              href: 'https://twitter.com/docusaurus',
-            },
-            {
-              label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
-            },
-          ],
-        },
-      ]
     },
   },
   presets: [
