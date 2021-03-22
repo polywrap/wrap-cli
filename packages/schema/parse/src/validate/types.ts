@@ -152,7 +152,29 @@ export function propertyTypes(astNode: DocumentNode): void {
 }
 
 export function infiniteRecursions(astNode: DocumentNode): void {
-  const { cycleStrings, foundCycle } = getSchemaCycles(astNode);
+  const operationTypes: string[] = [];
+  const operationTypeNames = ["Mutation", "Subscription", "Query"];
+
+  const hey = visit(astNode, {
+    enter: {
+      ObjectTypeDefinition: (node) => {
+        const isOperationType = operationTypeNames.some((name) =>
+          node.name.value.includes(name)
+        );
+        if (isOperationType) {
+          operationTypes.push(node.name.value);
+        }
+
+        return node;
+      },
+    },
+  });
+
+  console.log(hey);
+
+  const { cycleStrings, foundCycle } = getSchemaCycles(hey, {
+    ignoreTypeNames: operationTypes,
+  });
 
   if (foundCycle) {
     throw Error(

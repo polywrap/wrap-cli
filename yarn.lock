@@ -9600,10 +9600,10 @@ graphql-json-transform@^1.1.0-alpha.0:
   resolved "https://registry.yarnpkg.com/graphql-json-transform/-/graphql-json-transform-1.1.0-alpha.0.tgz#fb0c88d24840067e6c55ac64bbc8d4e5de245d2d"
   integrity sha512-I6lR/lYEezSz4iru0f7a/wR8Rzi3pCafk7S0bX2b/WQOtK0vKabxLShGBXIslsi0arMehIjvOPHJl7MpOUqj0w==
 
-graphql-schema-cycles@1.1.0-alpha.0:
-  version "1.1.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/graphql-schema-cycles/-/graphql-schema-cycles-1.1.0-alpha.0.tgz#b15033c7e39171ef4ba50ee5bef801da527ac110"
-  integrity sha512-7FXE3bvJvr0ll7ZvZwfQjEdR0mR62UPcvQF0mwXUJKTP0dYEFXidEAz8SfykYrlUZ0izTPJBU5mnEJIJRxTlow==
+graphql-schema-cycles@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/graphql-schema-cycles/-/graphql-schema-cycles-1.1.0.tgz#7f34d80306a728059633b68c9b8868feaaffa851"
+  integrity sha512-GoQKzfBk1SlsXjDQ9O19ueyJcnr6JkGnlw7DzLpf/m6YABZIYxVnSioSZ9ZCedHLcYq9FplE0cGXTUedOmlnEg==
   dependencies:
     graphql "15.5.0"
     graphql-json-transform "^1.1.0-alpha.0"

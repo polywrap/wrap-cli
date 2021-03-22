@@ -59,7 +59,7 @@ type CustomType {
 }
 
 type AnotherType {
-  prop: String
+  prop: String!
 }
 
 type UserObject {

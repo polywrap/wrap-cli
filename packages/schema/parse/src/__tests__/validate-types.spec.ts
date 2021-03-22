@@ -163,6 +163,30 @@ type D {
 }
 `
 
+const infiniteTypes4 = `
+type Mutation {
+  method1(
+    arg1: String!
+    arg2: String
+    arg3: Boolean
+  ): String!
+}
+
+type TestImport_Query @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Query"
+) {
+  importedMethod(
+    str: String!
+  ): String!
+
+  anotherMethod(
+    str: String!
+  ): String!
+}
+`
+
 describe("Web3API Schema Type Validation", () => {
   it("typeDefinitions", () => {
     const exec = (schema: string) => () => parseSchema(schema, {
@@ -240,5 +264,8 @@ describe("Web3API Schema Type Validation", () => {
     expect(exec(infiniteTypes3)).toThrow(
       /Graphql cycles are not supported. \nFound: \n- { D -\[prop\]-> B -\[prop\]-> C -\[prop\]-> A -\[root\]-> D }/gm
     )
+
+    //Should ignore Operation Types
+    expect(exec(infiniteTypes4)).not.toThrow()
   })
 });
