@@ -1,7 +1,13 @@
 {
-  "name": "docs",
-  "version": "0.0.0",
-  "private": true,
+  "name": "@web3api/docs",
+  "version": "0.0.1-prealpha.1",
+  "description": "Web3API Documentation",
+  "author": "Web3API",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/web3-api/monorepo.git"
+  },
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
@@ -32,5 +38,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -1,3 +1,8 @@
+---
+id: create-js-plugin
+title: Create a JavaScript Plugin
+---
+
 - JS Plugin
 - - Description: ...
 - - Steps:

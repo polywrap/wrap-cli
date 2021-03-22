@@ -10,7 +10,6 @@ module.exports = {
   organizationName: 'web3-api',
   projectName: 'monorepo',
   themeConfig: {
-    hideableSidebar: true,
     navbar: {
       title: 'Web3API Documentation',
       logo: {
@@ -60,7 +59,7 @@ module.exports = {
           routeBasePath: '/'
         },
         theme: {
-          customCss: require.resolve('./src/css/custom.css'),
+          customCss: require.resolve('./style.css'),
         },
       },
     ],

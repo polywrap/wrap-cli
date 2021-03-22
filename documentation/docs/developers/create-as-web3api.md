@@ -1,3 +1,8 @@
+---
+id: create-as-web3api
+title: Create an AssemblyScript Web3API
+---
+
 - WASM Package
 - - Description: ...
 - - Steps:

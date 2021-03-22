@@ -1,11 +1,9 @@
-# **[Web3API](https://web3api.dev/#/)** &middot; ![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg) ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
-
-<img src="https://github.com/Web3-API/branding/blob/master/logo/Web3API_On_Black_BG.jpg?raw=true)" alt="Web3API Logo" width="500"/>
-
-<br/>
-<br/>
-
-## **Welcome to the Web3API documentation**
+---
+id: welcome
+title: Welcome!
+description: TODOTODOTODO
+slug: /
+---
 
 **Web3API** is a developer toolchain that allows for data querying and manipulation of Web3 protocols using any programming language.
 <br/>
@@ -68,7 +66,7 @@ And that's it 🎉! You're ready to use the Web3API website demo.
 🏁 To begin, visit our Simple Storage dApp that's deployed on this website: [Web3API Demo](https://demo-simplestorage-web3api.on.fleek.co/). <br/>
 
 **Here's an overview of our demo:**<br/>
-<img src="./assets/demo_01.png" width="650">
+<img src="./assets/demo_01.png" width="650" />
 
 1. ENS Domain: `api.simplestorage.eth`
    - This is the ENS domain name that will be resolved to the underlying IPFS content identifier.

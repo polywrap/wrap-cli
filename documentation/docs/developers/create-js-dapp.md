@@ -1,3 +1,8 @@
+---
+id: create-js-dapp
+title: Create a JavaScript dApp
+---
+
 - dApp
 - - Description: ...
 - - Steps:
