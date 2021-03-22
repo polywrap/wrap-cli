@@ -19,11 +19,9 @@ export function serializeAnotherType(type: AnotherType): ArrayBuffer {
 }
 
 export function writeAnotherType(writer: Write, type: AnotherType): void {
-  writer.writeMapLength(2);
+  writer.writeMapLength(1);
   writer.writeString("prop");
   writer.writeNullableString(type.prop);
-  writer.writeString("circular");
-  Types.CustomType.write(writer, type.circular);
 }
 
 export function deserializeAnotherType(buffer: ArrayBuffer): AnotherType {
@@ -35,8 +33,6 @@ export function readAnotherType(reader: Read): AnotherType {
   var numFields = reader.readMapLength();
 
   var _prop: string | null = null;
-  var _circular: Types.CustomType | null = null;
-  var _circularSet: bool = false;
 
   while (numFields > 0) {
     numFields--;
@@ -45,19 +41,10 @@ export function readAnotherType(reader: Read): AnotherType {
     if (field == "prop") {
       _prop = reader.readNullableString();
     }
-    else if (field == "circular") {
-      const object = Types.CustomType.read(reader);
-      _circular = object;
-      _circularSet = true;
-    }
   }
 
-  if (!_circular || !_circularSet) {
-    throw new Error("Missing required property: 'circular: CustomType'");
-  }
 
   return {
-    prop: _prop,
-    circular: _circular
+    prop: _prop
   };
 }

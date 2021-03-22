@@ -118,7 +118,7 @@ type Bar {
 }
 `;
 
-const infiniteTypes1 = `
+const circularTypes1 = `
 type A {
   prop: B!
 }
@@ -128,7 +128,7 @@ type B {
 }
 `
 
-const infiniteTypes2 = `
+const circularTypes2 = `
 type A {
   prop: B!
 }
@@ -142,7 +142,7 @@ type C {
 }
 `
 
-const infiniteTypes3 = `
+const circularTypes3 = `
 type A {
   prop: B!
   root: D!
@@ -163,7 +163,7 @@ type D {
 }
 `
 
-const infiniteTypes4 = `
+const circularTypes4 = `
 type Mutation {
   method1(
     arg1: String!
@@ -184,6 +184,26 @@ type TestImport_Query @imported(
   anotherMethod(
     str: String!
   ): String!
+}
+`
+
+const circularTypes5 = `
+type TestImport_Object @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Object"
+) {
+  prop: String!
+  nested: TestImport_NestedObject!
+}
+
+type TestImport_NestedObject @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "NestedObject"
+) {
+  foo: [String!]!
+  circular: TestImport_Object!
 }
 `
 
@@ -248,24 +268,28 @@ describe("Web3API Schema Type Validation", () => {
     );
   })
 
-  it("Infinite recursions", () => {
+  it("Circular type definitions", () => {
     const exec = (schema: string) => () => parseSchema(schema, {
-      validators: [typeValidators.infiniteRecursions]
+      validators: [typeValidators.circularDefinitions]
     })
 
-    expect(exec(infiniteTypes1)).toThrow(
+    expect(exec(circularTypes1)).toThrow(
       /Graphql cycles are not supported. \nFound: \n- { B -\[prop\]-> A -\[prop\]-> B }/gm
     )
 
-    expect(exec(infiniteTypes2)).toThrow(
+    expect(exec(circularTypes2)).toThrow(
       /Graphql cycles are not supported. \nFound: \n- { C -\[prop\]-> A -\[prop\]-> B -\[prop\]-> C }/gm
     )
 
-    expect(exec(infiniteTypes3)).toThrow(
+    expect(exec(circularTypes3)).toThrow(
       /Graphql cycles are not supported. \nFound: \n- { D -\[prop\]-> B -\[prop\]-> C -\[prop\]-> A -\[root\]-> D }/gm
     )
 
     //Should ignore Operation Types
-    expect(exec(infiniteTypes4)).not.toThrow()
+    expect(exec(circularTypes4)).not.toThrow()
+
+    expect(exec(circularTypes5)).toThrow(
+      /Graphql cycles are not supported. \nFound: \n- { TestImport_NestedObject -\[circular\]-> TestImport_Object -\[nested\]-> TestImport_NestedObject }/gm
+    )
   })
 });

@@ -276,11 +276,6 @@ export const output: TypeInfo = {
             required: true,
           }),
         }),
-        createObjectPropertyDefinition({
-          name: "circular",
-          type: "TestImport_Object",
-          required: true,
-        })
       ],
     }
   ],

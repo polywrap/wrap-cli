@@ -151,11 +151,11 @@ export function propertyTypes(astNode: DocumentNode): void {
   }
 }
 
-export function infiniteRecursions(astNode: DocumentNode): void {
+export function circularDefinitions(astNode: DocumentNode): void {
   const operationTypes: string[] = [];
   const operationTypeNames = ["Mutation", "Subscription", "Query"];
 
-  const hey = visit(astNode, {
+  visit(astNode, {
     enter: {
       ObjectTypeDefinition: (node) => {
         const isOperationType = operationTypeNames.some((name) =>
@@ -164,15 +164,11 @@ export function infiniteRecursions(astNode: DocumentNode): void {
         if (isOperationType) {
           operationTypes.push(node.name.value);
         }
-
-        return node;
       },
     },
   });
 
-  console.log(hey);
-
-  const { cycleStrings, foundCycle } = getSchemaCycles(hey, {
+  const { cycleStrings, foundCycle } = getSchemaCycles(astNode, {
     ignoreTypeNames: operationTypes,
   });
 
