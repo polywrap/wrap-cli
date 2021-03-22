@@ -4,7 +4,7 @@ const customFields = {
   githubUrl: `https://github.com/web3-api/monorepo`,
   discordUrl: `https://discord.gg/Z5m88a5qWu`,
   twitterUrl: 'https://twitter.com/Web3Api',
-  forumUrl: 'https://forum.web3api.dev'
+  forumUrl: 'https://forum.web3api.dev',
 };
 
 module.exports = {
@@ -34,7 +34,7 @@ module.exports = {
               label: 'Forum',
               href: customFields.forumUrl,
               className: 'forum-logo',
-              'aria-label': 'Forum'
+              'aria-label': 'Forum',
             },
             {
               label: 'GitHub',
@@ -66,19 +66,19 @@ module.exports = {
           items: [
             {
               label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
+              href: 'https://discordapp.com/invite/Z5m88a5qWu',
             },
             {
               label: 'Twitter',
-              href: 'https://twitter.com/docusaurus',
+              href: 'https://twitter.com/web3api',
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
+              href: 'https://github.com/web3-api',
             },
           ],
         },
-      ]
+      ],
     },
   },
   presets: [
@@ -89,7 +89,7 @@ module.exports = {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl: 'https://github.com/web3-api/monorepo',
-          routeBasePath: '/'
+          routeBasePath: '/',
         },
         theme: {
           customCss: require.resolve('./style.css'),
@@ -97,7 +97,5 @@ module.exports = {
       },
     ],
   ],
-  plugins: [
-    require.resolve('docusaurus-lunr-search')
-  ],
+  plugins: [require.resolve('docusaurus-lunr-search')],
 };
