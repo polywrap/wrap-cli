@@ -1,112 +1,42 @@
 /* eslint-disable prefer-const */
 import { CodeGenerator, Project, SchemaComposer } from "../lib";
 import { fixParameters } from "../lib/helpers/parameters";
-import { getIntl } from "../lib/internationalization";
+import { intlMsg } from "../lib/internationalization/languageConfig";
 
 import chalk from "chalk";
 import axios from "axios";
 import { GluegunToolbox } from "gluegun";
-import { defineMessages } from "@formatjs/intl";
 
 export const defaultGenerationFile = "web3api.gen.js";
 export const defaultManifest = ["web3api.yaml", "web3api.yml"];
 
-const intl = getIntl();
-
-const helpMessages = defineMessages({
-  h: {
-    id: "commands_codegen_options_h",
-    defaultMessage: "Show usage information",
-    description: "",
-  },
-  m: {
-    id: "commands_codegen_options_m",
-    defaultMessage: "Path to the Web3API manifest file (default",
-    description: "",
-  },
-  i: {
-    id: "commands_codegen_options_i",
-    defaultMessage:
-      "IPFS node to load external schemas (default: dev-server's node)",
-    description: "",
-  },
-  o: {
-    id: "commands_codegen_options_o",
-    defaultMessage: "Output directory for generated types (default: types/)",
-    description: "",
-  },
-  e: {
-    id: "commands_codegen_options_e",
-    defaultMessage:
-      "ENS address to lookup external schemas (default: 0x0000...2e1e)",
-    description: "",
-  },
-  genFile: {
-    id: "commands_codegen_options_genFile",
-    defaultMessage: "Generation file",
-    description: "",
-  },
-  genFilePath: {
-    id: "commands_codegen_options_genFilePath",
-    defaultMessage: "Path to the generation file (default",
-    description: "",
-  },
-  options: {
-    id: "commands_codegen_options_options",
-    defaultMessage: "options",
-  },
-  node: {
-    id: "commands_codegen_options_i_node",
-    defaultMessage: "node",
-    description: "IPFS node",
-  },
-  path: {
-    id: "commands_codegen_options_o_path",
-    defaultMessage: "path",
-    description: "file path for output",
-  },
-  address: {
-    id: "commands_codegen_options_e_address",
-    defaultMessage: "address",
-    description: "Ethereum address",
-  },
-});
-const genFileOp = intl
-  .formatMessage(helpMessages.genFile)
+const genFileOp = intlMsg
+  .commands_codegen_options_genFile()
   .toLowerCase()
   .replace(" ", "-");
-const optionsStr = intl.formatMessage(helpMessages.options);
-const nodeStr = intl.formatMessage(helpMessages.node);
-const pathStr = intl.formatMessage(helpMessages.path);
-const addrStr = intl.formatMessage(helpMessages.address);
-const hStr = intl.formatMessage(helpMessages.h);
-const mStr = intl.formatMessage(helpMessages.m);
-const iStr = intl.formatMessage(helpMessages.i);
-const oStr = intl.formatMessage(helpMessages.o);
-const eStr = intl.formatMessage(helpMessages.e);
+const optionsStr = intlMsg.commands_codegen_options_options();
+const nodeStr = intlMsg.commands_codegen_options_i_node();
+const pathStr = intlMsg.commands_codegen_options_o_path();
+const addrStr = intlMsg.commands_codegen_options_e_address();
 const defaultManifestStr = defaultManifest.join(" | ");
 
 const HELP = `
 ${chalk.bold("w3 codegen")} ${chalk.bold(`[<${genFileOp}>]`)} [${optionsStr}]
 
-${intl.formatMessage(helpMessages.genFile)}:
-  ${intl.formatMessage(helpMessages.genFilePath)}: ${defaultGenerationFile})
+${intlMsg.commands_codegen_options_genFile()}:
+  ${intlMsg.commands_codegen_options_genFilePath()}: ${defaultGenerationFile})
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
-  -h, --help                              ${hStr}
-  -m, --manifest-path <${pathStr}>              ${mStr}: ${defaultManifestStr})
-  -i, --ipfs [<${nodeStr}>]                     ${iStr}
-  -o, --output-dir <${pathStr}>                 ${oStr}
-  -e, --ens [<${addrStr}>]                   ${eStr}
+  -h, --help                              ${intlMsg.commands_codegen_options_h()}
+  -m, --manifest-path <${pathStr}>              ${intlMsg.commands_codegen_options_m()}: ${defaultManifestStr})
+  -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
+  -o, --output-dir <${pathStr}>                 ${intlMsg.commands_codegen_options_o()}
+  -e, --ens [<${addrStr}>]                   ${intlMsg.commands_codegen_options_e()}
 `;
 
 export default {
   alias: ["g"],
-  description: intl.formatMessage({
-    id: "commands_codegen_description",
-    defaultMessage: "Auto-generate API Types",
-    description: "description of command 'w3 codegen'",
-  }),
+  description: intlMsg.commands_codegen_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
 
@@ -144,15 +74,10 @@ export default {
     }
 
     if (outputDir === true) {
-      const outputDirMissingPathMessage = intl.formatMessage(
-        {
-          id: "commands_build_error_outputDirMissingPath",
-          defaultMessage: "{option} option missing {argument} argument",
-          description: "",
-        },
+      const outputDirMissingPathMessage = intlMsg.commands_build_error_outputDirMissingPath(
         {
           option: "--output-dir",
-          argument: `<${intl.formatMessage(helpMessages.path)}>`,
+          argument: `<${pathStr}>`,
         }
       );
       print.error(outputDirMissingPathMessage);
@@ -161,20 +86,11 @@ export default {
     }
 
     if (ens === true) {
-      const domStr = intl.formatMessage({
-        id: "commands_codegen_error_domain",
-        defaultMessage: "domain",
-        description: "ENS domain (e.g. https://name.eth)",
-      });
-      const ensAddressMissingMessage = intl.formatMessage(
-        {
-          id: "commands_build_error_testEnsAddressMissing",
-          defaultMessage: "{option} option missing {argument} argument",
-          description: "",
-        },
+      const domStr = intlMsg.commands_codegen_error_domain();
+      const ensAddressMissingMessage = intlMsg.commands_build_error_testEnsAddressMissing(
         {
           option: "--ens",
-          argument: `<[${intl.formatMessage(helpMessages.address)},]${domStr}>`,
+          argument: `<[${addrStr},]${domStr}>`,
         }
       );
       print.error(ensAddressMissingMessage);
@@ -233,12 +149,7 @@ export default {
     });
 
     if (await codeGenerator.generate()) {
-      const successMessage = intl.formatMessage({
-        id: "commands_codegen_success",
-        defaultMessage: "Types were generated successfully",
-        description: "successfully generated code for language types",
-      });
-      print.success(`🔥 ${successMessage} 🔥`);
+      print.success(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
       process.exitCode = 0;
     } else {
       process.exitCode = 1;

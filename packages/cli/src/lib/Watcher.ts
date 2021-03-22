@@ -1,4 +1,4 @@
-import { getIntl } from "./internationalization";
+import { intlMsg } from "./internationalization/languageConfig";
 
 import chokidar from "chokidar";
 
@@ -40,15 +40,9 @@ export class Watcher {
 
   public start(directory: string, options: WatchOptions): void {
     if (this._session) {
-      const alreadyWatching = getIntl().formatMessage(
-        {
-          id: "lib_compiler_noInvoke",
-          defaultMessage:
-            "Watcher session is already in progress. Directory: {dir}",
-          description: "",
-        },
-        { dir: `${this._session.directory}` }
-      );
+      const alreadyWatching = intlMsg.lib_watcher_alreadyWatching({
+        dir: this._session.directory,
+      });
       throw Error(alreadyWatching);
     }
 

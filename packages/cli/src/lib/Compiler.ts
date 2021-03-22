@@ -4,7 +4,7 @@
 import { Project } from "./Project";
 import { SchemaComposer } from "./SchemaComposer";
 import { step, withSpinner, outputManifest } from "./helpers";
-import { getIntl } from "./internationalization";
+import { intlMsg } from "./internationalization/languageConfig";
 
 import { bindSchema, writeDirectory } from "@web3api/schema-bind";
 import path from "path";
@@ -12,7 +12,6 @@ import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import * as asc from "assemblyscript/cli/asc";
-import { defineMessages } from "@formatjs/intl";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const fsExtra = require("fs-extra");
@@ -55,11 +54,7 @@ export class Compiler {
       const composed = await schemaComposer.getComposedSchemas();
 
       if (!composed.combined) {
-        const failedSchemaMessage = getIntl().formatMessage({
-          id: "lib_compiler_failedSchemaReturn",
-          defaultMessage: "Schema composer failed to return a combined schema.",
-          description: "",
-        });
+        const failedSchemaMessage = intlMsg.lib_compiler_failedSchemaReturn();
         throw Error(`compileWeb3Api: ${failedSchemaMessage}`);
       }
 
@@ -71,14 +66,9 @@ export class Compiler {
         }
 
         if (!composed[moduleName]) {
-          const missingSchemaMessage = getIntl().formatMessage(
-            {
-              id: "lib_compiler_missingDefinition",
-              defaultMessage: "Missing schema definition for the module {name}",
-              description: "",
-            },
-            { name: `"${moduleName}"` }
-          );
+          const missingSchemaMessage = intlMsg.lib_compiler_missingDefinition({
+            name: `"${moduleName}"`,
+          });
           throw Error(missingSchemaMessage);
         }
 
@@ -111,28 +101,10 @@ export class Compiler {
     if (project.quiet) {
       return run();
     } else {
-      const intl = getIntl();
-      const messages = defineMessages({
-        text: {
-          id: "lib_compiler_compileText",
-          defaultMessage: "Compile Web3API",
-          description: "",
-        },
-        error: {
-          id: "lib_compiler_compileError",
-          defaultMessage: "Failed to compile Web3API",
-          description: "",
-        },
-        warning: {
-          id: "lib_compiler_compileWarning",
-          defaultMessage: "Warnings while compiling Web3API",
-          description: "",
-        },
-      });
       return await withSpinner(
-        intl.formatMessage(messages.text),
-        intl.formatMessage(messages.error),
-        intl.formatMessage(messages.warning),
+        intlMsg.lib_compiler_compileText(),
+        intlMsg.lib_compiler_compileError(),
+        intlMsg.lib_compiler_compileWarning(),
         async (spinner) => {
           return run(spinner);
         }
@@ -150,14 +122,9 @@ export class Compiler {
     const { project } = this._config;
 
     if (!project.quiet && spinner) {
-      const stepMessage = getIntl().formatMessage({
-        id: "lib_compiler_step",
-        defaultMessage: "Compiling WASM module",
-        description: "",
-      });
       step(
         spinner,
-        `${stepMessage}:`,
+        `${intlMsg.lib_compiler_step()}:`,
         `${modulePath} => ${outputDir}/${moduleName}.wasm`
       );
     }
@@ -179,15 +146,9 @@ export class Compiler {
     }
 
     if (libsDirs.length === 0) {
-      const noNodeModules = getIntl().formatMessage(
-        {
-          id: "lib_compiler_noNodeModules",
-          defaultMessage:
-            "could not locate {folder} in parent directories of web3api manifest",
-          description: "could not locate node_modules folder",
-        },
-        { folder: `\`node_modules\`` }
-      );
+      const noNodeModules = intlMsg.lib_compiler_noNodeModules({
+        folder: `\`node_modules\``,
+      });
       throw Error(noNodeModules);
     }
 
@@ -245,23 +206,11 @@ export class Compiler {
     });
 
     if (!instance.exports._w3_init) {
-      const noInitMessage = getIntl().formatMessage({
-        id: "lib_compiler_noInit",
-        defaultMessage:
-          "WASM module is missing the _w3_init export. This should never happen...",
-        description: "",
-      });
-      throw Error(noInitMessage);
+      throw Error(intlMsg.lib_compiler_noInit());
     }
 
     if (!instance.exports._w3_invoke) {
-      const noInvokeMessage = getIntl().formatMessage({
-        id: "lib_compiler_noInvoke",
-        defaultMessage:
-          "WASM module is missing the _w3_invoke export. This should never happen...",
-        description: "",
-      });
-      throw Error(noInvokeMessage);
+      throw Error(intlMsg.lib_compiler_noInvoke());
     }
   }
 

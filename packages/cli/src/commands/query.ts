@@ -1,5 +1,5 @@
 import { fixParameters } from "../lib/helpers/parameters";
-import { getIntl } from "../lib/internationalization";
+import { intlMsg } from "../lib/internationalization/languageConfig";
 
 import axios from "axios";
 import chalk from "chalk";
@@ -10,43 +10,20 @@ import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import { defineMessages } from "@formatjs/intl";
 
-const intl = getIntl();
-
-const helpMessages = defineMessages({
-  t: {
-    id: "commands_build_options_t",
-    defaultMessage: "Use the development server's ENS instance",
-    description: "",
-  },
-  options: {
-    id: "commands_build_options_options",
-    defaultMessage: "options",
-  },
-  script: {
-    id: "commands_create_options_recipeScript",
-    defaultMessage: "recipe-script",
-    description: "code script to use for query",
-  },
-});
-const optionsString = intl.formatMessage(helpMessages.options);
-const scriptStr = intl.formatMessage(helpMessages.script);
+const optionsString = intlMsg.commands_build_options_options();
+const scriptStr = intlMsg.commands_create_options_recipeScript();
 
 const HELP = `
 ${chalk.bold("w3 query")} [${optionsString}] ${chalk.bold(`<${scriptStr}>`)}
 
 ${optionsString[0].toUpperCase() + optionsString.slice(1)}:
-  -t, --test-ens  ${intl.formatMessage(helpMessages.t)}
+  -t, --test-ens  ${intlMsg.commands_build_options_t()}
 `;
 
 export default {
   alias: ["q"],
-  description: intl.formatMessage({
-    id: "commands_query_description",
-    defaultMessage: "Query Web3APIs using recipe scripts",
-    description: "description of command 'w3 query'",
-  }),
+  description: intlMsg.commands_query_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
     // eslint-disable-next-line prefer-const
@@ -75,16 +52,9 @@ export default {
     }
 
     if (!recipePath) {
-      const scriptMissingMessage = intl.formatMessage(
-        {
-          id: "commands_query_error_missingScript",
-          defaultMessage: "Required argument {script} is missing",
-          description: "",
-        },
-        {
-          script: `<${intl.formatMessage(helpMessages.script)}>`,
-        }
-      );
+      const scriptMissingMessage = intlMsg.commands_query_error_missingScript({
+        script: `<${scriptStr}>`,
+      });
       print.error(scriptMissingMessage);
       print.info(HELP);
       return;
@@ -136,16 +106,9 @@ export default {
         const query = filesystem.read(path.join(dir, task.query));
 
         if (!query) {
-          const readFailMessage = intl.formatMessage(
-            {
-              id: "commands_query_error_readFail",
-              defaultMessage: "Failed to read query {query}",
-              description: "",
-            },
-            {
-              query: query,
-            }
-          );
+          const readFailMessage = intlMsg.commands_query_error_readFail({
+            query: query ?? "undefined",
+          });
           throw Error(readFailMessage);
         }
 
@@ -179,12 +142,7 @@ export default {
         }
 
         if (!uri) {
-          const noApiMessage = intl.formatMessage({
-            id: "commands_query_error_noApi",
-            defaultMessage: "API needs to be initialized",
-            description: "",
-          });
-          throw Error(noApiMessage);
+          throw Error(intlMsg.commands_query_error_noApi());
         }
 
         print.warning("-----------------------------------");

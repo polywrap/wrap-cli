@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/naming-convention,@typescript-eslint/no-var-requires,@typescript-eslint/no-require-imports
-import { getIntl } from "../internationalization";
+import { intlMsg } from "../internationalization/languageConfig";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires,@typescript-eslint/naming-convention
 const IPFSClient = require("ipfs-http-client");
@@ -12,12 +11,7 @@ export async function publishToIPFS(
   try {
     new URL(ipfs);
   } catch (e) {
-    const intl = getIntl();
-    const urlMalformedMessage = intl.formatMessage({
-      id: "lib_publishers_ipfsPublisher_urlMalformed",
-      defaultMessage: "IPFS URL Malformed",
-      description: "IPFS URL has incorrect syntax",
-    });
+    const urlMalformedMessage = intlMsg.lib_publishers_ipfsPublisher_urlMalformed();
     throw Error(`${urlMalformedMessage}: ${ipfs}\n${e}`);
   }
 
