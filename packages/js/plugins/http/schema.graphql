@@ -18,14 +18,16 @@ type Response {
 type Request {
   headers: [Header!]
   urlParams: [UrlParam!]
-  responseType: ResponseType!
+  responseType: String! # "TEXT" || "BINARY"
   body: String
 }
 
-enum ResponseType {
-  TEXT
-  BINARY
-}
+# Enum types curently not supported 
+#
+# enum ResponseType {
+#   TEXT
+#   BINARY
+# }
 
 type Query {
   get(url: String!, request: Request): Response

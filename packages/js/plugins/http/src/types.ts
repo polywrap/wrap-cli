@@ -11,10 +11,7 @@ export class UrlParam {
   value: string;
 }
 
-export enum ResponseType {
-  TEXT,
-  BINARY,
-}
+export type ResponseType = "TEXT" | "BINARY";
 
 export class Request {
   headers?: Header[];

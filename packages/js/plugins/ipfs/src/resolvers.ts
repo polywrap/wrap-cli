@@ -53,7 +53,7 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
   },
   getFile: async (input: { path: string }) => {
     try {
-      return await ipfs.catToBuffer(input.path);
+      return await ipfs.cat(input.path);
     } catch (e) {
       return null;
     }

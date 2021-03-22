@@ -1,7 +1,6 @@
 import { HttpPlugin } from "../../index";
 
 import axios, { AxiosResponse, AxiosRequestConfig } from "axios";
-import { ResponseType } from "../../types";
 
 // mock axios
 jest.mock("axios");
@@ -36,7 +35,7 @@ describe("test http plugin", () => {
           { key: "X-Test-Header", value: "test-header-value" },
         ],
         urlParams: [{ key: "q", value: "test-param" }],
-        responseType: ResponseType.TEXT,
+        responseType: "TEXT",
       });
 
       expect(mockedAxios.get).lastCalledWith("/api/test", {
@@ -73,7 +72,7 @@ describe("test http plugin", () => {
           { key: "X-Test-Header", value: "test-header-value" },
         ],
         urlParams: [{ key: "q", value: "test-param" }],
-        responseType: ResponseType.BINARY,
+        responseType: "BINARY",
       });
 
       expect(mockedAxios.get).lastCalledWith("/api/test", {
@@ -115,7 +114,7 @@ describe("test http plugin", () => {
         ],
         urlParams: [{ key: "q", value: "test-param" }],
         body: "{request: 1001}",
-        responseType: ResponseType.TEXT,
+        responseType: "TEXT",
       });
 
       expect(mockedAxios.post).lastCalledWith("/api/test", "{request: 1001}", {
@@ -153,7 +152,7 @@ describe("test http plugin", () => {
         ],
         urlParams: [{ key: "q", value: "test-param" }],
         body: "{request: 1001}",
-        responseType: ResponseType.BINARY,
+        responseType: "BINARY",
       });
 
       expect(mockedAxios.post).lastCalledWith("/api/test", "{request: 1001}", {
