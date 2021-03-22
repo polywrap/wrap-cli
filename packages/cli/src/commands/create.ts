@@ -7,7 +7,7 @@ import { GluegunToolbox } from "gluegun";
 
 const cmdStr = intlMsg.commands_create_options_command();
 const nameStr = intlMsg.commands_create_options_projectName();
-const optionsStr = intlMsg.commands_create_options_options();
+const optionsStr = intlMsg.commands_options_options();
 const langStr = intlMsg.commands_create_options_lang();
 const langsStr = intlMsg.commands_create_options_langs();
 const createProjStr = intlMsg.commands_create_options_createProject();

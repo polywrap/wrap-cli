@@ -14,7 +14,7 @@ const genFileOp = intlMsg
   .commands_codegen_options_genFile()
   .toLowerCase()
   .replace(" ", "-");
-const optionsStr = intlMsg.commands_codegen_options_options();
+const optionsStr = intlMsg.commands_options_options();
 const nodeStr = intlMsg.commands_codegen_options_i_node();
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const addrStr = intlMsg.commands_codegen_options_e_address();

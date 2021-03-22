@@ -39,7 +39,7 @@ export interface IntlMsg {
     commands_build_options_manifest: () => string;
     commands_codegen_options_o: () => string;
     commands_codegen_options_o_path: () => string;
-    commands_codegen_options_options: () => string;
+    commands_options_options: () => string;
     commands_codegen_success: () => string;
     commands_create_description: () => string;
     commands_create_directoryExists: (options: commands_create_directoryExists_Options) => string;
@@ -60,7 +60,6 @@ export interface IntlMsg {
     commands_create_options_langs: () => string;
     commands_create_options_o: () => string;
     commands_create_options_o_path: () => string;
-    commands_create_options_options: () => string;
     commands_create_options_projectName: () => string;
     commands_create_options_recipeScript: () => string;
     commands_create_overwritePrompt: () => string;
@@ -155,7 +154,7 @@ export interface IntlStrings {
     commands_build_options_manifest: string;
     commands_codegen_options_o: string;
     commands_codegen_options_o_path: string;
-    commands_codegen_options_options: string;
+    commands_options_options: string;
     commands_codegen_success: string;
     commands_create_description: string;
     commands_create_directoryExists: string;
@@ -176,7 +175,6 @@ export interface IntlStrings {
     commands_create_options_langs: string;
     commands_create_options_o: string;
     commands_create_options_o_path: string;
-    commands_create_options_options: string;
     commands_create_options_projectName: string;
     commands_create_options_recipeScript: string;
     commands_create_overwritePrompt: string;
@@ -271,7 +269,7 @@ export const intlMsg: IntlMsg = {
     commands_build_options_manifest: (): string => intl.formatMessage({ id: "commands_build_options_manifest", defaultMessage: "manifest" }),
     commands_codegen_options_o: (): string => intl.formatMessage({ id: "commands_codegen_options_o", defaultMessage: "Output directory for generated types (default: types/)" }),
     commands_codegen_options_o_path: (): string => intl.formatMessage({ id: "commands_codegen_options_o_path", defaultMessage: "path" }),
-    commands_codegen_options_options: (): string => intl.formatMessage({ id: "commands_codegen_options_options", defaultMessage: "options" }),
+    commands_options_options: (): string => intl.formatMessage({ id: "commands_options_options", defaultMessage: "options" }),
     commands_codegen_success: (): string => intl.formatMessage({ id: "commands_codegen_success", defaultMessage: "Types were generated successfully" }),
     commands_create_description: (): string => intl.formatMessage({ id: "commands_create_description", defaultMessage: "Create a new project with w3 CLI" }),
     commands_create_directoryExists: (options: commands_create_directoryExists_Options): string => intl.formatMessage({ id: "commands_create_directoryExists", defaultMessage: "Directory with name {dir} already exists" }, options),
@@ -292,7 +290,6 @@ export const intlMsg: IntlMsg = {
     commands_create_options_langs: (): string => intl.formatMessage({ id: "commands_create_options_langs", defaultMessage: "langs" }),
     commands_create_options_o: (): string => intl.formatMessage({ id: "commands_create_options_o", defaultMessage: "Output directory for the new project" }),
     commands_create_options_o_path: (): string => intl.formatMessage({ id: "commands_create_options_o_path", defaultMessage: "path" }),
-    commands_create_options_options: (): string => intl.formatMessage({ id: "commands_create_options_options", defaultMessage: "options" }),
     commands_create_options_projectName: (): string => intl.formatMessage({ id: "commands_create_options_projectName", defaultMessage: "project-name" }),
     commands_create_options_recipeScript: (): string => intl.formatMessage({ id: "commands_create_options_recipeScript", defaultMessage: "recipe-script" }),
     commands_create_overwritePrompt: (): string => intl.formatMessage({ id: "commands_create_overwritePrompt", defaultMessage: "Do you want to overwrite this directory?" }),
