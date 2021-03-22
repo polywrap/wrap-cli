@@ -66,7 +66,12 @@ And that's it 🎉! You're ready to use the Web3API website demo.
 🏁 To begin, visit our Simple Storage dApp that's deployed on this website: [Web3API Demo](https://demo-simplestorage-web3api.on.fleek.co/). <br/>
 
 **Here's an overview of our demo:**<br/>
-<img src="../static/img/demo_01.png" width="650" />
+
+<img
+  src={require('./assets/demo_01.png').default}
+  alt="Demo Screenshot"
+  width="650"
+/>
 
 1. ENS Domain: `api.simplestorage.eth`
    - This is the ENS domain name that will be resolved to the underlying IPFS content identifier.
