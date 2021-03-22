@@ -16,6 +16,13 @@ module.exports = {
     },
     {
       type: 'category',
+      label: 'Demos',
+      items: [
+        'demos/simplestorage-eth',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Resources',
       items: [
         'resources/guides-and-tutorials',
