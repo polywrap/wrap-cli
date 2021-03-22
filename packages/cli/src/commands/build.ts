@@ -196,7 +196,10 @@ export default {
 
         if (testEns) {
           if (!ensAddress) {
-            uris.push([intlMsg.commands_build_ensRegistry(), `${ethProvider}/${ensAddress}`]);
+            uris.push([
+              intlMsg.commands_build_ensRegistry(),
+              `${ethProvider}/${ensAddress}`,
+            ]);
           }
 
           // ask the dev server to publish the CID to ENS
@@ -248,7 +251,11 @@ export default {
 
       const keyPressListener = () => {
         // Watch for escape key presses
-        print.info(`${intlMsg.commands_build_keypressListener_watching()}: ${project.manifestDir}`);
+        print.info(
+          `${intlMsg.commands_build_keypressListener_watching()}: ${
+            project.manifestDir
+          }`
+        );
         print.info(intlMsg.commands_build_keypressListener_exit());
         readline.emitKeypressEvents(process.stdin);
         process.stdin.on("keypress", async (str, key) => {
