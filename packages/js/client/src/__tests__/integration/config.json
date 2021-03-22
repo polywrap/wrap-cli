@@ -1,8 +1,0 @@
-{
-  "baseUrl": "http://localhost:5000",
-  "userAgent": "synpress",
-  "integrationFolder": "src/__tests__/integration",
-  "screenshotsFolder": "src/__tests__/integration/screenshots",
-  "videosFolder": "src/__tests__/integration/videos",
-  "chromeWebSecurity": true
-}

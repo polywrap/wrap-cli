@@ -25,7 +25,7 @@
     "test:env:up": "w3 test-env up",
     "test:env:down": "w3 test-env down",
     "pretest:integration": "cd ../../../demos/simple-storage/dapp && yarn build",
-    "test:integration": "start-server-and-test 'serve ../../../demos/simple-storage/dapp/build' http://localhost:5000 'synpress run --configFile ./src/__tests__/integration/config.json'",
+    "test:integration": "start-server-and-test 'serve ../../../demos/simple-storage/dapp/build' http://localhost:5000 'cypress run'",
     "start:demo": "serve ../../../demos/simple-storage/dapp/build"
   },
   "dependencies": {
@@ -40,13 +40,15 @@
     "web-worker": "1.0.0"
   },
   "devDependencies": {
-    "@synthetixio/synpress": "^0.7.2",
+    "@nodefactory/dappeteer": "2.0.0",
     "@types/jest": "26.0.8",
     "@types/js-yaml": "3.11.1",
     "@types/semver": "^7.3.4",
     "@web3api/cli": "0.0.1-prealpha.5",
     "axios": "0.19.2",
+    "cypress": "6.8.0",
     "jest": "26.2.2",
+    "puppeteer": "5.4.1",
     "rimraf": "3.0.2",
     "serve": "^11.3.2",
     "spawn-command": "0.0.2-1",
