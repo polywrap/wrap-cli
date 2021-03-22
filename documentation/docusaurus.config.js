@@ -23,9 +23,13 @@ module.exports = {
       logo: {
         alt: 'Web3API Icon',
         src: 'img/Web3API_Icon.svg',
-        href: 'https://web3api.dev',
+        href: '/',
       },
       items: [
+        {
+          label: 'Website',
+          href: 'https://web3api.dev'
+        },
         {
           label: 'Community',
           position: 'left',
