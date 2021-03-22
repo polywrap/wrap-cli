@@ -98,7 +98,7 @@ module.exports = {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl: 'https://github.com/web3-api/monorepo',
-          routeBasePath: '/'
+          routeBasePath: '/',
         },
         theme: {
           customCss: require.resolve('./style.css'),
@@ -106,7 +106,5 @@ module.exports = {
       },
     ],
   ],
-  plugins: [
-    require.resolve('docusaurus-lunr-search')
-  ],
+  plugins: [require.resolve('docusaurus-lunr-search')],
 };
