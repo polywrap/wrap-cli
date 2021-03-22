@@ -26,6 +26,12 @@
   color: #61dafb;
 }
 
+.nav {
+  display: flex;
+  justify-content: flex-end;
+  margin: 1rem 1rem 0 0;
+}
+
 .Code-Block {
   border-radius: 10px;
   background-color: #272727;
