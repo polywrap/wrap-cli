@@ -9,6 +9,8 @@ import React, { useRef, useCallback } from "react";
 import classnames from "classnames";
 import { useHistory } from "@docusaurus/router";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import styles from "./styles.css";
+
 const Search = props => {
   const initialized = useRef(false);
   const searchBarRef = useRef(null);

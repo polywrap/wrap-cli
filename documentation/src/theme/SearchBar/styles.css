@@ -23,18 +23,10 @@
 
 @media (max-width: 360px) {
   .search-bar {
-    width: 0 !important;
-    background: none !important;
-    padding: 0 !important;
-    transition: none !important;
+    width: 105px !important;
   }
 
   .search-bar-expanded {
     width: 9rem !important;
-  }
-
-  .search-icon {
-    display: inline;
-    vertical-align: sub;
   }
 }

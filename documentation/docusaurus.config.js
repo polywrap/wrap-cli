@@ -11,7 +11,7 @@ module.exports = {
   projectName: 'monorepo',
   themeConfig: {
     navbar: {
-      title: 'Web3API Docs',
+      title: 'Web3API',
       logo: {
         alt: 'Web3API Icon',
         src: 'img/Web3API_Icon.svg',
