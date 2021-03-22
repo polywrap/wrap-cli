@@ -10,6 +10,7 @@ module.exports = {
   organizationName: 'web3-api',
   projectName: 'monorepo',
   themeConfig: {
+    hideableSidebar: true,
     navbar: {
       title: 'Web3API Documentation',
       logo: {
@@ -18,14 +19,9 @@ module.exports = {
       },
       items: [
         {
-          to: 'docs/',
-          activeBasePath: 'docs',
-          label: 'Docs',
-          position: 'left',
-        },
-        {
           href: 'https://github.com/web3-api/monorepo',
-          label: 'Code',
+          className: 'header-github-link',
+          'aria-label': 'GitHub repository',
           position: 'right',
         },
       ],
@@ -33,15 +29,6 @@ module.exports = {
     footer: {
       style: 'dark',
       links: [
-        {
-          title: 'Docs',
-          items: [
-            {
-              label: 'Getting Started',
-              to: 'docs/',
-            },
-          ],
-        },
         {
           title: 'Community',
           items: [
@@ -52,15 +39,6 @@ module.exports = {
             {
               label: 'Twitter',
               href: 'https://twitter.com/docusaurus',
-            },
-          ],
-        },
-        {
-          title: 'More',
-          items: [
-            {
-              label: 'Blog',
-              to: 'blog',
             },
             {
               label: 'GitHub',
@@ -79,6 +57,7 @@ module.exports = {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl: 'https://github.com/web3-api/monorepo',
+          routeBasePath: '/'
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
