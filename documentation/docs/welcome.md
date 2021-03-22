@@ -1,7 +1,7 @@
 ---
 id: welcome
 title: Welcome!
-description: TODOTODOTODO
+description: The Universal Web3 Integration Standard
 slug: /
 ---
 
