@@ -31,7 +31,7 @@
   "commands_codegen_options_i": "IPFS node to load external schemas (default: dev-server's node)",
   "commands_codegen_options_i_node": "node",
   "commands_codegen_options_m": "Path to the Web3API manifest file (default",
-  "commands_codegen_options_manifest": "manifest",
+  "commands_build_options_manifest": "manifest",
   "commands_codegen_options_o": "Output directory for generated types (default: types/)",
   "commands_codegen_options_o_path": "path",
   "commands_codegen_options_options": "options",

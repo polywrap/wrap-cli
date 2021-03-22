@@ -36,7 +36,7 @@ export interface IntlMsg {
     commands_codegen_options_i: () => string;
     commands_codegen_options_i_node: () => string;
     commands_codegen_options_m: () => string;
-    commands_codegen_options_manifest: () => string;
+    commands_build_options_manifest: () => string;
     commands_codegen_options_o: () => string;
     commands_codegen_options_o_path: () => string;
     commands_codegen_options_options: () => string;
@@ -143,7 +143,7 @@ export interface IntlStrings {
     commands_codegen_options_i: string;
     commands_codegen_options_i_node: string;
     commands_codegen_options_m: string;
-    commands_codegen_options_manifest: string;
+    commands_build_options_manifest: string;
     commands_codegen_options_o: string;
     commands_codegen_options_o_path: string;
     commands_codegen_options_options: string;
@@ -250,7 +250,7 @@ export const intlMsg: IntlMsg = {
     commands_codegen_options_i: (): string => intl.formatMessage({ id: "commands_codegen_options_i", defaultMessage: "IPFS node to load external schemas (default: dev-server's node)" }),
     commands_codegen_options_i_node: (): string => intl.formatMessage({ id: "commands_codegen_options_i_node", defaultMessage: "node" }),
     commands_codegen_options_m: (): string => intl.formatMessage({ id: "commands_codegen_options_m", defaultMessage: "Path to the Web3API manifest file (default" }),
-    commands_codegen_options_manifest: (): string => intl.formatMessage({ id: "commands_codegen_options_manifest", defaultMessage: "manifest" }),
+    commands_build_options_manifest: (): string => intl.formatMessage({ id: "commands_build_options_manifest", defaultMessage: "manifest" }),
     commands_codegen_options_o: (): string => intl.formatMessage({ id: "commands_codegen_options_o", defaultMessage: "Output directory for generated types (default: types/)" }),
     commands_codegen_options_o_path: (): string => intl.formatMessage({ id: "commands_codegen_options_o_path", defaultMessage: "path" }),
     commands_codegen_options_options: (): string => intl.formatMessage({ id: "commands_codegen_options_options", defaultMessage: "options" }),
