@@ -29,14 +29,10 @@ export default async function (): Promise<void> {
     });
   });
 
-  const PUPPETEER_CONFIG: puppeteer.LaunchOptions = {
-    args: ["--disable-web-security"],
-  };
-
-  const browser = await launch(puppeteer, PUPPETEER_CONFIG);
+  const browser = await launch(puppeteer);
 
   try {
-    await setupMetamask(browser, {});
+    await setupMetamask(browser);
     global.browser = browser;
   } catch (error) {
     console.log(error);

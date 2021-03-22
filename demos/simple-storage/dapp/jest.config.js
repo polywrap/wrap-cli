@@ -10,10 +10,3 @@ module.exports = {
   testEnvironment: "./src/__tests__/environment.js",
   testMatch: ["**/?(*).spec.js"],
 };
-
-module.exports.PUPPETEER_CONFIG = {
-  product: "chrome",
-  args: ["--disable-web-security"],
-};
-
-module.exports.metamaskOptions = {};

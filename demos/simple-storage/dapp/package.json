@@ -40,7 +40,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "lint": "eslint --ext .tsx --ext .ts src/",
-    "test": "jest --config ./jest.config.js --isolatedModules=false",
+    "test": "jest",
     "eject": "react-scripts eject",
     "prebuild": "yarn install:web3api",
     "prestart": "yarn install:web3api",
