@@ -1,60 +1,21 @@
-import {
-  createIntl,
-  createIntlCache,
-  IntlShape,
-  IntlCache,
-} from "@formatjs/intl";
-import osLocale from "os-locale";
-import { readFileSync } from "fs";
-import * as fs from "fs";
+import fs from "fs";
 import { Project, VariableDeclarationKind, SyntaxKind } from "ts-morph";
 
-interface LocaleData {
-  lang: string;
-  messages: Record<string, string>;
-}
+const tsConfigPath = `${__dirname}/../../../tsconfig.json`;
+const defaultLanguagePath = `${__dirname}/../lang/en.json`;
+const targetFilePath = `${__dirname}/../src/lib/internationalization/languageConfig.ts`;
 
-const cache: IntlCache = createIntlCache();
+generateLanguageTypes(tsConfigPath, defaultLanguagePath, targetFilePath);
 
-export function getIntl(locale: string = osLocale.sync()): IntlShape<string> {
-  const localeData: LocaleData = getLocaleData(locale);
-  if (!fs.existsSync(`${__dirname}/lang.ts`)) {
-    generateIntlTypes("en");
-  }
-  return createIntl(
-    {
-      locale: localeData.lang,
-      defaultLocale: "en",
-      messages: localeData.messages,
-    },
-    cache
-  );
-}
-
-function getLocaleData(locale: string): LocaleData {
-  const supportedLangs = fs
-    .readdirSync(`${__dirname}/../../lang/`)
-    .map((s) => s.substring(0, 2));
-  const localeLang = locale.substring(0, 2);
-  const lang = supportedLangs.includes(localeLang) ? localeLang : "en";
-  const messages = JSON.parse(
-    readFileSync(`${__dirname}/../../lang/${lang}.json`, "utf-8")
-  );
-  return {
-    lang: lang,
-    messages: messages,
-  };
-}
-
-function generateIntlTypes(defaultLang: string) {
+function generateLanguageTypes(tsConfigPath: string, defaultLangPath: string, targetFilePath: string) {
   // create source file
   const project = new Project({
-    tsConfigFilePath: `${__dirname}/../../tsconfig.json`,
+    tsConfigFilePath: tsConfigPath,
   });
-  const sourceFile = project.createSourceFile(`${__dirname}/../../src/lib/lang.ts`, "", { overwrite: true });
+  const sourceFile = project.createSourceFile(targetFilePath, "", { overwrite: true });
   // add lint ignore for file
   sourceFile.addStatements("/* eslint-disable */");
-  // import getIntl
+  // import getIntl for formatjs
   const importFormatJsIntl = sourceFile.addImportDeclaration({
     moduleSpecifier: "./internationalization",
   });
@@ -69,8 +30,13 @@ function generateIntlTypes(defaultLang: string) {
     ],
   });
   sourceFile.addStatements("");
-  // declare IntlMsg object and interface
+  // declare IntlMsg interface
   const intlMsgInt = sourceFile.addInterface({ name: "IntlMsg" });
+  intlMsgInt.setIsExported(true);
+  // declare IntlStrings interface
+  const intlStringsInt = sourceFile.addInterface({ name: "IntlStrings" });
+  intlStringsInt.setIsExported(true);
+  // declare IntlMsg object
   const intlMsgVar = sourceFile.addVariableStatement({
     declarationKind: VariableDeclarationKind.Const,
     declarations: [
@@ -84,13 +50,15 @@ function generateIntlTypes(defaultLang: string) {
   const intlMsgObj = intlMsgVar
     .getDeclarations()[0]
     .getInitializerIfKindOrThrow(SyntaxKind.ObjectLiteralExpression);
-  // read english strings
+  // read default language strings
   const messages: Record<string, string> = JSON.parse(
-    readFileSync(`${__dirname}/../../lang/${defaultLang}.json`, "utf-8")
+    fs.readFileSync(defaultLangPath, "utf-8")
   );
-  // iterate and parse raw english strings
+  // iterate and parse default language strings
   for (const [id, text] of Object.entries(messages)) {
-    // read and parse interface fields
+    // add string to IntlStrings interface
+    intlStringsInt.addProperty({ name: id, type: "string" });
+    // read and parse interface fields for messages with arguments
     const args: string[] = [];
     for (let i = 0; i < text.length; i++) {
       let c = text.charAt(i);
@@ -104,19 +72,22 @@ function generateIntlTypes(defaultLang: string) {
         args.push(arg);
       }
     }
-    // declare interface if it contains fields; add to IntlMsg interface and obj
+    // declare an options interface if message contains fields
     if (args.length > 0) {
       const intName = id + "_Options";
       const messageInt = sourceFile.addInterface({ name: intName });
+      messageInt.setIsExported(true);
       for (const arg of args) {
-        messageInt.addProperty({ name: arg, type: "any" });
+        messageInt.addProperty({ name: arg, type: "string" });
       }
+      // add to IntlMsg interface and obj -> with options argument
       intlMsgInt.addProperty({ name: id, type: `(options: ${intName}) => string` });
       intlMsgObj.addPropertyAssignment({
         name: id,
         initializer: `(options: ${intName}): string => intl.formatMessage({ id: "${id}", defaultMessage: "${text}" }, options)`,
       });
     } else {
+      // add to IntlMsg interface and obj -> no options argument
       intlMsgInt.addProperty({ name: id, type: `() => string` });
       intlMsgObj.addPropertyAssignment({
         name: id,
