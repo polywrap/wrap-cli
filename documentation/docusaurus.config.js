@@ -5,6 +5,9 @@ const customFields = {
   discordUrl: `https://discord.gg/Z5m88a5qWu`,
   twitterUrl: 'https://twitter.com/Web3Api',
   forumUrl: 'https://forum.web3api.dev',
+  daoUrl: 'https://github.com/web3-api/dao',
+  blogUrl: 'https://web3api.substack.com/',
+  gitcoinUrl: 'https://gitcoin.co/grants/1252/web3api',
 };
 
 module.exports = {
@@ -23,30 +26,22 @@ module.exports = {
       logo: {
         alt: 'Web3API Icon',
         src: 'img/Web3API_Icon.svg',
-        href: 'https://web3api.dev',
+        href: '/',
       },
       items: [
         {
-          label: 'Community',
+          label: 'Website',
+          href: 'https://web3api.dev'
+        },
+        {
+          label: 'Social',
           position: 'left',
           items: [
             {
-              label: 'Forum',
-              href: customFields.forumUrl,
-              className: 'forum-logo',
-              'aria-label': 'Forum',
-            },
-            {
-              label: 'GitHub',
-              href: customFields.githubUrl,
-              className: 'github-logo',
-              'aria-label': 'GitHub repository',
-            },
-            {
-              label: 'Discord',
-              href: customFields.discordUrl,
-              className: 'discord-logo',
-              'aria-label': 'Discord server',
+              label: 'Blog',
+              href: customFields.blogUrl,
+              className: 'blog-logo',
+              'aria-label': 'Web3API Blog',
             },
             {
               label: 'Twitter',
@@ -54,27 +49,41 @@ module.exports = {
               className: 'twitter-logo',
               'aria-label': 'twitter account',
             },
+            {
+              label: 'Donate',
+              href: customFields.gitcoinUrl,
+              className: 'gitcoin-logo',
+              'aria-label': 'gitcoin grant',
+            },
           ],
         },
-      ],
-    },
-    footer: {
-      style: 'dark',
-      links: [
         {
-          title: 'Community',
+          label: 'Community',
+          position: 'left',
           items: [
             {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/Z5m88a5qWu',
+              label: 'Code',
+              href: customFields.githubUrl,
+              className: 'github-logo',
+              'aria-label': 'GitHub repository',
             },
             {
-              label: 'Twitter',
-              href: 'https://twitter.com/web3api',
+              label: 'Discuss',
+              href: customFields.forumUrl,
+              className: 'forum-logo',
+              'aria-label': 'Forum'
             },
             {
-              label: 'GitHub',
-              href: 'https://github.com/web3-api',
+              label: 'Chat',
+              href: customFields.discordUrl,
+              className: 'discord-logo',
+              'aria-label': 'Discord server',
+            },
+            {
+              label: 'Govern',
+              href: customFields.daoUrl,
+              className: 'dao-logo',
+              'aria-label': 'dao repo'
             },
           ],
         },
