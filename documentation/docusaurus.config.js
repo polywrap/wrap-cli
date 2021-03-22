@@ -6,6 +6,8 @@ const customFields = {
   twitterUrl: 'https://twitter.com/Web3Api',
   forumUrl: 'https://forum.web3api.dev',
   daoUrl: 'https://github.com/web3-api/dao',
+  blogUrl: 'https://web3api.substack.com/',
+  gitcoinUrl: 'https://gitcoin.co/grants/1252/web3api',
 };
 
 module.exports = {
@@ -32,26 +34,14 @@ module.exports = {
           href: 'https://web3api.dev'
         },
         {
-          label: 'Community',
+          label: 'Social',
           position: 'left',
           items: [
             {
-              label: 'Forum',
-              href: customFields.forumUrl,
-              className: 'forum-logo',
-              'aria-label': 'Forum'
-            },
-            {
-              label: 'GitHub',
-              href: customFields.githubUrl,
-              className: 'github-logo',
-              'aria-label': 'GitHub repository',
-            },
-            {
-              label: 'Discord',
-              href: customFields.discordUrl,
-              className: 'discord-logo',
-              'aria-label': 'Discord server',
+              label: 'Blog',
+              href: customFields.blogUrl,
+              className: 'blog-logo',
+              'aria-label': 'Web3API Blog',
             },
             {
               label: 'Twitter',
@@ -60,7 +50,37 @@ module.exports = {
               'aria-label': 'twitter account',
             },
             {
-              label: 'DAO',
+              label: 'Donate',
+              href: customFields.gitcoinUrl,
+              className: 'gitcoin-logo',
+              'aria-label': 'gitcoin grant',
+            },
+          ],
+        },
+        {
+          label: 'Community',
+          position: 'left',
+          items: [
+            {
+              label: 'Code',
+              href: customFields.githubUrl,
+              className: 'github-logo',
+              'aria-label': 'GitHub repository',
+            },
+            {
+              label: 'Discuss',
+              href: customFields.forumUrl,
+              className: 'forum-logo',
+              'aria-label': 'Forum'
+            },
+            {
+              label: 'Chat',
+              href: customFields.discordUrl,
+              className: 'discord-logo',
+              'aria-label': 'Discord server',
+            },
+            {
+              label: 'Govern',
               href: customFields.daoUrl,
               className: 'dao-logo',
               'aria-label': 'dao repo'
