@@ -68,7 +68,7 @@ describe("IDNA UTS #46", () => {
 
       expect(response.data).toBeDefined();
       expect(response.errors).toBeUndefined();
-      expect(response.data?.convert).toBe(expected);
+      expect(response.data?.convert).toEqual(expected);
     });
   });
 });

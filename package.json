@@ -16,7 +16,9 @@
       "**/@testing-library/*",
       "**/@types/testing-library*",
       "**/@types/react-lottie",
-      "**/@web3api/ethereum-plugin-js"
+      "**/@web3api/ethereum-plugin-js",
+      "**/@web3api/sha3",
+      "**/@web3api/uts46"
     ]
   },
   "scripts": {
