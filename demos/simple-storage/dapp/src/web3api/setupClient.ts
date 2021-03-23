@@ -5,7 +5,6 @@ import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
 
 export async function setupWeb3ApiClient(): Promise<Web3ApiClient> {
   const ethereum = (window as any).ethereum;
-  console.log(ethereum);
   if (ethereum && ethereum.enable) {
     await ethereum.enable();
   }
@@ -15,25 +14,24 @@ export async function setupWeb3ApiClient(): Promise<Web3ApiClient> {
       from: new Uri("w3://ens/ethereum.web3api.eth"),
       to: {
         factory: () => new EthereumPlugin({ provider: ethereum }),
-        manifest: EthereumPlugin.manifest(),
-      },
+        manifest: EthereumPlugin.manifest()
+      }
     },
     {
       from: new Uri("w3://ens/ipfs.web3api.eth"),
       to: {
-        factory: () => new IpfsPlugin({ provider: "https://ipfs.io" }),
-        manifest: IpfsPlugin.manifest(),
-      },
+        factory: () => new IpfsPlugin({ provider: 'https://ipfs.io' }),
+        manifest: IpfsPlugin.manifest()
+      }
     },
     {
       from: new Uri("w3://ens/ens.web3api.eth"),
       to: {
         factory: () => new EnsPlugin({}),
-        manifest: EnsPlugin.manifest(),
-      },
-    },
+        manifest: EnsPlugin.manifest()
+      }
+    }
   ];
 
-  console.log(redirects);
   return new Web3ApiClient({ redirects });
 }
