@@ -6,12 +6,9 @@ slug: /
 ---
 
 **Web3API** is a developer toolchain that makes it easy to interact with any blockchain (or P2P network) from any programming language!
-<br/>
 
-> _**⚠️ Heads up!** <br/> <br/>
+> _**⚠️ Heads up!** <br/>
 > Web3API is in pre-alpha, meaning our code and documentation are rapidly changing. Have questions or want to get involved? Join our [Discord](https://discord.com/invite/Z5m88a5qWu) or [open an issue](https://github.com/Web3-API/monorepo/issues) on our GitHub repo._
-
-<br/>
 
 ### **Getting started**
 

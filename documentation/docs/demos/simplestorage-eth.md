@@ -21,7 +21,7 @@ We believe in learning by doing so we've put together a simple tutorial that sho
 
 And that's it 🎉! You're ready to use the Web3API website demo.
 
-### **Website demo**<br/>
+### **Website demo**
 
 🏁 To begin, visit our Simple Storage dApp that's deployed on this website: [Web3API Demo](https://demo-simplestorage-web3api.on.fleek.co/). <br/>
 
