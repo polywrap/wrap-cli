@@ -35,9 +35,19 @@ function getLocaleData(locale: string): LocaleData {
     .map((s) => s.substring(0, 2));
   const localeLang = locale.substring(0, 2);
   const lang = supportedLangs.includes(localeLang) ? localeLang : "en";
-  const messages: IntlStrings = JSON.parse(
-    readFileSync(`${__dirname}/../../../lang/${lang}.json`, "utf-8")
-  );
+  let messages: IntlStrings;
+  try {
+    messages = JSON.parse(
+      readFileSync(`${__dirname}/../../../lang/${lang}.json`, "utf-8")
+    );
+  } catch (e) {
+    console.log(
+      `Language data for locale ${locale} is incomplete or malformed. Using default language instead.`
+    );
+    messages = JSON.parse(
+      readFileSync(`${__dirname}/../../../lang/en.json`, "utf-8")
+    );
+  }
   return {
     lang: lang,
     messages: messages,
