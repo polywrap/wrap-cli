@@ -16,6 +16,7 @@
     "react-scripts": "3.4.1"
   },
   "devDependencies": {
+    "@jest/types": "26.6.2",
     "@nodefactory/dappeteer": "2.0.0",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -27,24 +28,22 @@
     "@types/react-lottie": "1.2.5",
     "eslint": "^6.6.0",
     "jest": "26.2.2",
-    "ts-jest": "26.5.4",
     "jest-puppeteer": "4.4.0",
-    "typescript": "3.7.2",
-    "rimraf": "^3.0.2",
-    "mkdirp": "1.0.4",
-    "serve-handler": "6.1.3",
-    "@jest/types": "26.6.2",
-    "puppeteer": "5.4.1"
+    "serve": "^11.3.2",
+    "start-server-and-test": "^1.11.0",
+    "puppeteer": "5.4.1",
+    "ts-jest": "26.5.4",
+    "typescript": "3.7.2"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "lint": "eslint --ext .tsx --ext .ts src/",
-    "test": "jest",
     "eject": "react-scripts eject",
     "prebuild": "yarn install:web3api",
     "prestart": "yarn install:web3api",
-    "install:web3api": "npx web3api-worker-install ./public"
+    "install:web3api": "npx web3api-worker-install ./public",
+    "test:integration": "start-server-and-test 'serve ./build -l 3000' http://localhost:3000 'jest'"
   },
   "eslintConfig": {
     "root": true,
