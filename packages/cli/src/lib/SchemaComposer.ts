@@ -5,9 +5,9 @@ import { Project } from "./Project";
 
 import { Manifest, Uri, Web3ApiClient, UriRedirect } from "@web3api/client-js";
 import { composeSchema, ComposerOutput } from "@web3api/schema-compose";
-import { EnsPlugin } from "@web3api/ens-plugin-js";
-import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
-import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
+import { ensPlugin } from "@web3api/ens-plugin-js";
+import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
+import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import fs from "fs";
 import path from "path";
 import * as gluegun from "gluegun";
@@ -32,31 +32,22 @@ export class SchemaComposer {
 
     if (ensAddress) {
       redirects.push({
-        from: new Uri("w3://ens/ens.web3api.eth"),
-        to: {
-          factory: () => new EnsPlugin({ address: ensAddress }),
-          manifest: EnsPlugin.manifest(),
-        },
+        from: "w3://ens/ens.web3api.eth",
+        to: ensPlugin({ address: ensAddress }),
       });
     }
 
     if (ethProvider) {
       redirects.push({
-        from: new Uri("w3://ens/ethereum.web3api.eth"),
-        to: {
-          factory: () => new EthereumPlugin({ provider: ethProvider }),
-          manifest: EthereumPlugin.manifest(),
-        },
+        from: "w3://ens/ethereum.web3api.eth",
+        to: ethereumPlugin({ provider: ethProvider }),
       });
     }
 
     if (ipfsProvider) {
       redirects.push({
-        from: new Uri("w3://ens/ipfs.web3api.eth"),
-        to: {
-          factory: () => new IpfsPlugin({ provider: ipfsProvider }),
-          manifest: IpfsPlugin.manifest(),
-        },
+        from: "w3://ens/ipfs.web3api.eth",
+        to: ipfsPlugin({ provider: ipfsProvider }),
       });
     }
 

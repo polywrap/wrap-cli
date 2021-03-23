@@ -7,6 +7,7 @@ import {
   Plugin,
   PluginManifest,
   PluginModules,
+  PluginFactory,
 } from "@web3api/core-js";
 import { Signer, ethers } from "ethers";
 import {
@@ -45,7 +46,7 @@ export class EthereumPlugin extends Plugin {
   }
 
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
-  // https://github.com/Web3-API/prototype/issues/101
+  // https://github.com/web3-api/monorepo/issues/101
   public getModules(_client: Client): PluginModules {
     return {
       query: query(this),
@@ -164,3 +165,13 @@ export class EthereumPlugin extends Plugin {
     return res.transactionHash;
   }
 }
+
+export const ethereumPlugin: PluginFactory<EthereumConfig> = (
+  opts: EthereumConfig
+) => {
+  return {
+    factory: () => new EthereumPlugin(opts),
+    manifest: manifest,
+  };
+};
+export const plugin = ethereumPlugin;
