@@ -24,10 +24,9 @@
     "@types/react-lottie": "1.2.5",
     "eslint": "^6.6.0",
     "jest": "26.2.2",
-    "jest-puppeteer": "4.4.0",
     "serve": "^11.3.2",
     "start-server-and-test": "^1.11.0",
-    "puppeteer": "5.4.1",
+    "puppeteer": "8.0.0",
     "ts-jest": "26.5.4",
     "typescript": "3.7.2"
   },
