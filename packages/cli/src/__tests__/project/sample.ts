@@ -45,6 +45,7 @@ export const composedSchema = {
     "    address: String!\n" +
     "    method: String!\n" +
     "    args: [String!]!\n" +
+    "    network: String\n" +
     "  ): String!\n" +
     "}\n" +
     "\n" +
@@ -192,6 +193,7 @@ export const composedSchema = {
     "    address: String!\n" +
     "    method: String!\n" +
     "    args: [String!]!\n" +
+    "    network: String\n" +
     "  ): String!\n" +
     "}\n" +
     "\n" +

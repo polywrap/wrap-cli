@@ -139,6 +139,7 @@ type Ethereum_Query @imported(
     address: String!
     method: String!
     args: [String!]!
+    network: String
   ): String!
 }
 
