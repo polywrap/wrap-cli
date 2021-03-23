@@ -1,6 +1,6 @@
 {
-  "name": "@web3api/ensnamehash",
-  "description": "Web3API ENS Namehash Javascript Plugin",
+  "name": "@web3api/uts46",
+  "description": "Web3API IDNA-UTS #46 Javascript Plugin",
   "version": "0.0.1-prealpha.5",
   "license": "MIT",
   "repository": {
@@ -21,8 +21,7 @@
   },
   "dependencies": {
     "@web3api/core-js": "0.0.1-prealpha.5",
-    "@web3api/cli": "0.0.1-prealpha.7",
-    "eth-ens-namehash": "2.0.8"
+    "idna-uts46-hx": "3.4.0"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",

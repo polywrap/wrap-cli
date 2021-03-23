@@ -1,4 +1,5 @@
 #import { Query } into Ethereum from "w3://ens/ethereum.web3api.eth"
+#import { Query } into ENSNamehash from "w3://ens/namehash.web3api.eth"
 
 type Query {
   getResolver(address: String!, name: String!): String!
