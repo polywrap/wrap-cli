@@ -4,6 +4,7 @@ import { manifest } from "./manifest";
 import {
   Client,
   Plugin,
+  PluginFactory,
   PluginManifest,
   PluginModules,
 } from "@web3api/core-js";
@@ -37,7 +38,7 @@ export class IpfsPlugin extends Plugin {
   }
 
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
-  // https://github.com/Web3-API/prototype/issues/101
+  // https://github.com/web3-api/monorepo/issues/101
   public getModules(_client: Client): PluginModules {
     return {
       query: query(this),
@@ -59,18 +60,13 @@ export class IpfsPlugin extends Plugin {
     return await this._ipfs.add(data);
   }
 
-  public async cat(cid: string): Promise<Uint8Array> {
-    return await this.catToBuffer(cid);
+  public async cat(cid: string): Promise<Buffer> {
+    return await this._ipfs.cat(cid);
   }
 
   public async catToString(cid: string): Promise<string> {
-    const buffer = await this.catToBuffer(cid);
-    const decoder = new TextDecoder();
-    return decoder.decode(buffer);
-  }
-
-  public async catToBuffer(cid: string): Promise<Uint8Array> {
-    return this._ipfs.cat(cid);
+    const buffer = await this.cat(cid);
+    return buffer.toString("utf-8");
   }
 
   public ls(
@@ -84,3 +80,11 @@ export class IpfsPlugin extends Plugin {
     return this._ipfs.ls(cid);
   }
 }
+
+export const ipfsPlugin: PluginFactory<IpfsConfig> = (opts: IpfsConfig) => {
+  return {
+    factory: () => new IpfsPlugin(opts),
+    manifest: manifest,
+  };
+};
+export const plugin = ipfsPlugin;
