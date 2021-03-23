@@ -1,4 +1,4 @@
-import { fetchTestCases } from "./cases";
+import { fetchTestCases } from "./index";
 import { readDirectory } from "../utils/fs";
 import { bindSchema, OutputEntry, TargetLanguage } from "../";
 

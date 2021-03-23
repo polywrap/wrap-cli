@@ -92,7 +92,7 @@ function App() {
           <>
             Let's get started...<br/><br/>
             {emoji("🔌")} Set Metamask to Rinkeby<br/>
-            <button onClick={async () =>
+            <button id="deploy-contract" onClick={async () =>
               deployContract(
                 await getClient()
               ).then(address =>
@@ -103,7 +103,7 @@ function App() {
             }>
               {emoji("🚀")} Deploy SimpleStorage.sol
             </button>
-            <div id="deploy-contract" className="Code-Block">
+            <div className="Code-Block">
               {syntax.class(() => <>Web3Api</>)}.
               {syntax.prop(() => <>query</>)}
               {"({"}<br/>
