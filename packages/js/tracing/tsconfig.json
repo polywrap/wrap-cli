@@ -1,10 +1,10 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "../../../tsconfig",
   "compilerOptions": {
     "outDir": "build"
   },
   "include": [
-    "./src/**/*.ts"
+    "./src/*.ts"
   ],
   "exclude": []
 }

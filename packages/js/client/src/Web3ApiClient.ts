@@ -33,9 +33,9 @@ export class Web3ApiClient implements Client {
   private _apiCache: ApiCache = new Map<string, Api>();
   private _config: ClientConfig<Uri>;
 
-  constructor(config: ClientConfig, private _logEnabled: boolean = false) {
-    if (this._logEnabled) {
-      this.enableLogging();
+  constructor(config: ClientConfig, private _traceEnabled: boolean = false) {
+    if (this._traceEnabled) {
+      this.enableTracing();
     }
 
     Tracer.startSpan("constructor");
@@ -54,12 +54,12 @@ export class Web3ApiClient implements Client {
     Tracer.endSpan();
   }
 
-  public enableLogging(): void {
-    Tracer.enableLogging("web3api-client");
+  public enableTracing(): void {
+    Tracer.enableTracing("web3api-client");
   }
 
-  public disableLogging(): void {
-    Tracer.disableLogging();
+  public disableTracing(): void {
+    Tracer.disableTracing();
   }
 
   public redirects(): readonly UriRedirect<Uri>[] {
@@ -112,7 +112,7 @@ export class Web3ApiClient implements Client {
       // Await the invocations
       const invocationResults = await Promise.all(parallelInvocations);
 
-      Tracer.addEvent("Invocations finished", invocations);
+      Tracer.addEvent("Invocations finished", invocationResults);
 
       // Aggregate all invocation results
       const data: Record<string, unknown> = {};
@@ -125,29 +125,8 @@ export class Web3ApiClient implements Client {
         }
       }
 
-      // Helper for appending "_#" to repeated names
-      const makeRepeatedUnique = (names: string[]): string[] => {
-        const counts: { [key: string]: number } = {};
-
-        return names.reduce((acc, name) => {
-          const count = (counts[name] = (counts[name] || 0) + 1);
-          const uniq = count > 1 ? `${name}_${count - 1}` : name;
-          acc.push(uniq);
-          return acc;
-        }, [] as string[]);
-      };
-
-      methods = makeRepeatedUnique(methods);
-
-      // Build are data map, where each method maps to its data
-      const data: Record<string, unknown> = {};
-
-      for (let i = 0; i < methods.length; ++i) {
-        data[methods[i]] = resultDatas[i];
-      }
-
-      Tracer.setAttribute("methods", methods);
       Tracer.setAttribute("data", data);
+      Tracer.setAttribute("errors", errors);
 
       Tracer.endSpan();
 
@@ -164,7 +143,7 @@ export class Web3ApiClient implements Client {
         return { errors: [error] };
       }
     } finally {
-      this._tracer.endSpan();
+      Tracer.endSpan();
     }
   }
 
@@ -195,7 +174,7 @@ export class Web3ApiClient implements Client {
 
       return { error: error };
     } finally {
-      this._tracer.endSpan();
+      Tracer.endSpan();
     }
   }
 

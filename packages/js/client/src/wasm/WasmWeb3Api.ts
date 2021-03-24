@@ -360,7 +360,10 @@ export class WasmWeb3Api extends Api {
       return this._wasm[module] as ArrayBuffer;
     }
 
+    try {
       Tracer.startSpan("getWasmModule");
+
+      const moduleManifest = this._manifest[module];
 
       if (!moduleManifest) {
         throw Error(
@@ -393,6 +396,8 @@ export class WasmWeb3Api extends Api {
       Tracer.recordException(error);
 
       throw error;
+    } finally {
+      Tracer.endSpan();
     }
   }
 }
