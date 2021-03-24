@@ -36,19 +36,25 @@ export function createWeb3ApiProvider(
   };
 
   return ({ redirects, children }) => {
-    // If the client has already been set for this provider
-    if (PROVIDERS[name].client) {
-      throw Error( 
-        `Duplicate Web3ApiProvider detected. Please use "createWeb3ApiProvider("provider-name")".`
-      );
-    }
 
-    // Instantiate the client
-    PROVIDERS[name].client = new Web3ApiClient({ redirects });
+    const [clientCreated, setClientCreated] = React.useState(false);
 
-    // Unset the client in the global state when
-    // this provider is unmounted
     React.useEffect(() => {
+
+      // If the client has already been set for this provider
+      if (PROVIDERS[name].client) {
+        throw Error( 
+          `Duplicate Web3ApiProvider detected. Please use "createWeb3ApiProvider("provider-name")".`
+        );
+      }
+
+      // Instantiate the client
+      PROVIDERS[name].client = new Web3ApiClient({ redirects });
+
+      setClientCreated(true);
+
+      // Unset the client in the global state when
+      // this provider is unmounted
       return function cleanup() {
         PROVIDERS[name].client = undefined;
       }
@@ -57,11 +63,11 @@ export function createWeb3ApiProvider(
     // Get the provider's context
     const ClientProvider = PROVIDERS[name].ClientContext.Provider;
 
-    return (
+    return clientCreated ? (
       <ClientProvider value={PROVIDERS[name].client as Web3ApiClient}>
         {children}
       </ClientProvider>
-    );
+    ) : null;
   };
 }
 
