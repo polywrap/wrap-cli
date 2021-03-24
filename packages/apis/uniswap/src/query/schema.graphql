@@ -15,7 +15,8 @@ type Query {
 
   # Pair
   pairAddress(
-    pair: Pair!
+    token0: Token!
+    token1: Token!
   ): String!
 
   pairLiquidityToken(
@@ -99,15 +100,15 @@ type Query {
 
   # Fetch
   fetchTokenData(
-    chainId: ChainId,
+    chainId: ChainId!,
     address: String!
     symbol: String
     name: String
   ): Token!
 
   fetchPairData(
-    tokenA: Token!
-    tokenB: Token!
+    token0: Token!
+    token1: Token!
   ): Pair!
 
   # Constants
@@ -149,8 +150,8 @@ type TokenAmount {
 }
 
 type Pair {
-  token0: Token!
-  token1: Token!
+  tokenAmount0: TokenAmount!
+  tokenAmount1: TokenAmount!
 }
 
 type Route {
