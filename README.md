@@ -43,13 +43,5 @@ or, if client-test-env is already running in the background:
 To autofix lint errors:
 `yarn lint:fix`
 
-## Demos  
-
-Each demo below showcases different aspects of Web3API. Please see the demo's README for further details and instructions.  
-
-| Demo | Status |  
-|------|--------|  
-| [Simple Storage](./demos/simple-storage/README.md) | Running |  
-
 ## Contact  
 For all inquiries, please fill out our [contact form](https://airtable.com/shrzxezSAlpoUUZNV), or create an issue in this repository.  
