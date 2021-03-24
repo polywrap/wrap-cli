@@ -88,7 +88,7 @@ export class EnsPlugin extends Plugin {
           callView(
             address: $address,
             method: $method,
-            args: $args
+            args: $args,
             network: $network
           )
         }`,
