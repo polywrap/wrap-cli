@@ -1,3 +1,5 @@
+import { Tracer } from "@web3api/tracing";
+
 function memcpy(
   src: Uint8Array,
   srcOffset: number,
@@ -30,10 +32,18 @@ export function writeString(
   dst: ArrayBuffer,
   dstOffset: number
 ): Uint8Array {
+  Tracer.startSpan("utils: writeString");
+  Tracer.setAttribute("str", str);
+
   const encoder = new TextEncoder();
   const strBuffer = encoder.encode(str);
   const view = new Uint8Array(dst);
-  return memcpy(strBuffer, 0, view, dstOffset, strBuffer.byteLength);
+  const result = memcpy(strBuffer, 0, view, dstOffset, strBuffer.byteLength);
+
+  Tracer.addEvent("writeString finished", result);
+  Tracer.endSpan();
+
+  return result;
 }
 
 export function writeBytes(
@@ -41,9 +51,17 @@ export function writeBytes(
   dst: ArrayBuffer,
   dstOffset: number
 ): Uint8Array {
+  Tracer.startSpan("utils: writeBytes");
+  Tracer.setAttribute("bytes", bytes);
+
   const bytesView = new Uint8Array(bytes);
   const dstView = new Uint8Array(dst);
-  return memcpy(bytesView, 0, dstView, dstOffset, bytesView.byteLength);
+  const result = memcpy(bytesView, 0, dstView, dstOffset, bytesView.byteLength);
+
+  Tracer.addEvent("writeBytes finished", result);
+  Tracer.endSpan();
+
+  return result;
 }
 
 export function readBytes(
@@ -51,8 +69,16 @@ export function readBytes(
   offset: number,
   length: number
 ): ArrayBuffer {
+  Tracer.startSpan("utils: readBytes");
+  Tracer.setAttribute("from", from);
+  Tracer.setAttribute("offset", offset);
+
   const buffer = new ArrayBuffer(length);
   writeBytes(from.slice(offset, offset + length), buffer, 0);
+
+  Tracer.addEvent("readBytes finished", buffer);
+  Tracer.endSpan();
+
   return buffer;
 }
 
@@ -61,11 +87,30 @@ export function readString(
   offset: number,
   length: number
 ): string {
+  Tracer.startSpan("utils: readString");
+  Tracer.setAttribute("from", from);
+  Tracer.setAttribute("offset", offset);
+
   const buffer = readBytes(from, offset, length);
   const decoder = new TextDecoder();
-  return decoder.decode(buffer);
+  const result = decoder.decode(buffer);
+
+  Tracer.addEvent("readString finished", result);
+  Tracer.endSpan();
+
+  return result;
 }
 
 export async function sleep(ms: number): Promise<void> {
-  return new Promise((resolve: () => void) => setTimeout(() => resolve(), ms));
+  Tracer.startSpan("utils: sleep");
+  Tracer.setAttribute("period", ms);
+
+  return new Promise((resolve: () => void) =>
+    setTimeout(() => {
+      Tracer.addEvent("sleep finished");
+      Tracer.endSpan();
+
+      resolve();
+    }, ms)
+  );
 }

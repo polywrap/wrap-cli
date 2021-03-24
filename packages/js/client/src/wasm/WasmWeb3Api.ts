@@ -251,49 +251,55 @@ export class WasmWeb3Api extends Api {
     threadsActive--;
 
     Tracer.addEvent("Worker terminated", state);
-    Tracer.endSpan();
 
-    if (!state) {
-      throw Error("WasmWeb3Api: query state was never set.");
-    }
+    try {
+      if (!state) {
+        throw Error("WasmWeb3Api: query state was never set.");
+      }
 
-    switch (state) {
-      case "Abort": {
-        return {
-          error: new Error(
-            `WasmWeb3Api: Thread aborted execution.\nMessage: ${abortMessage}`
-          ),
-        };
-      }
-      case "LogQueryError": {
-        return {
-          error: new Error(
-            `WasmWeb3Api: invocation exception encourtered.\n` +
-              `uri: ${this._uri.uri}\nmodule: ${module}\n` +
-              `method: ${method}\n` +
-              `input: ${JSON.stringify(input, null, 2)}\n` +
-              `exception: ${queryError}`
-          ),
-        };
-      }
-      case "LogQueryResult": {
-        if (decode) {
-          try {
-            return { data: MsgPack.decode(queryResult as ArrayBuffer) };
-          } catch (err) {
-            throw Error(
-              `WasmWeb3Api: Failed to decode query result.\nResult: ${JSON.stringify(
-                queryResult
-              )}\nError: ${err}`
-            );
+      switch (state) {
+        case "Abort": {
+          return {
+            error: new Error(
+              `WasmWeb3Api: Thread aborted execution.\nMessage: ${abortMessage}`
+            ),
+          };
+        }
+        case "LogQueryError": {
+          return {
+            error: new Error(
+              `WasmWeb3Api: invocation exception encourtered.\n` +
+                `uri: ${this._uri.uri}\nmodule: ${module}\n` +
+                `method: ${method}\n` +
+                `input: ${JSON.stringify(input, null, 2)}\n` +
+                `exception: ${queryError}`
+            ),
+          };
+        }
+        case "LogQueryResult": {
+          if (decode) {
+            try {
+              return { data: MsgPack.decode(queryResult as ArrayBuffer) };
+            } catch (err) {
+              throw Error(
+                `WasmWeb3Api: Failed to decode query result.\nResult: ${JSON.stringify(
+                  queryResult
+                )}\nError: ${err}`
+              );
+            }
+          } else {
+            return { data: queryResult };
           }
-        } else {
-          return { data: queryResult };
+        }
+        default: {
+          throw Error(`WasmWeb3Api: Unknown state "${state}"`);
         }
       }
-      default: {
-        throw Error(`WasmWeb3Api: Unknown state "${state}"`);
-      }
+    } catch (error) {
+      Tracer.recordException(error);
+      throw error;
+    } finally {
+      Tracer.endSpan();
     }
   }
 
