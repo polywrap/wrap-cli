@@ -39,9 +39,14 @@ export interface QueryApiOptions<
   variables?: TVariables;
 
   /**
-   * Redirects valid only in this query call.
+   * Custom redirects valid only in this query call.
    */
   redirects?: UriRedirect<string>[];
+
+  /**
+   * Query id used to track query context data set internally.
+   */
+  id?: string;
 }
 
 /**

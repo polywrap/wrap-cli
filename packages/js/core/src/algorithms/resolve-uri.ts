@@ -1,4 +1,4 @@
-import { Api, Client, Uri, PluginPackage, UriRedirect } from "../types";
+import { Api, Client, Uri, PluginPackage } from "../types";
 import { Manifest, deserializeManifest } from "../manifest";
 import * as ApiResolver from "../apis/api-resolver";
 import { getImplementations } from "./get-implementations";
@@ -8,8 +8,8 @@ export async function resolveUri(
   client: Client,
   createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
   createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api,
-  noValidate?: boolean,
-  queryRedirects?: UriRedirect<Uri>[]
+  id: string,
+  noValidate?: boolean
 ): Promise<Api> {
   let resolvedUri = uri;
 
@@ -38,18 +38,12 @@ export async function resolveUri(
     }
   };
 
-  let redirects = client.redirects() as UriRedirect<Uri>[];
-
-  // Resolve query time redirects first if they exist
-  if (queryRedirects) {
-    queryRedirects.push(...redirects);
-    redirects = queryRedirects;
-  }
+  const invokeContext = client.getInvokeContext(id);
 
   // Iterate through all redirects. If anything matches
   // apply the redirect. If the redirect `to` is a Plugin,
   // return a PluginWeb3Api instance.
-  for (const redirect of redirects) {
+  for (const redirect of invokeContext.redirects) {
     const from = redirect.from;
 
     if (!from) {
@@ -78,7 +72,7 @@ export async function resolveUri(
   // The final URI has been resolved, let's now resolve the Web3API package
   const uriResolverImplementations = getImplementations(
     new Uri("w3/api-resolver"),
-    redirects
+    invokeContext.redirects
   );
 
   for (let i = 0; i < uriResolverImplementations.length; ++i) {

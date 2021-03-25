@@ -1,5 +1,9 @@
-import { Uri, UriRedirect, QueryHandler, InvokeHandler } from "./";
+import { UriRedirect, QueryHandler, InvokeHandler, Uri } from "./";
+
+export interface InvokeContext {
+  readonly redirects: UriRedirect<Uri>[];
+}
 
 export interface Client extends QueryHandler, InvokeHandler {
-  redirects: () => readonly UriRedirect<Uri>[];
+  getInvokeContext: (id: string) => InvokeContext;
 }
