@@ -25,11 +25,11 @@ type Query {
 
   pairReserve0(
     pair: Pair!
-  ): UInt256!
+  ): Uint256!
 
   pairReserve1(
     pair: Pair!
-  ): UInt256!
+  ): Uint256!
 
   pairOutputAmount(
     pair: Pair!
@@ -100,7 +100,7 @@ type Query {
 
   # Fetch
   fetchTokenData(
-    chainId: ChainId!,
+    chainId: ChainId!
     address: String!
     symbol: String
     name: String
