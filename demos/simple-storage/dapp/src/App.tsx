@@ -92,7 +92,7 @@ function App() {
           <>
             Let's get started...<br/><br/>
             {emoji("🔌")} Set Metamask to Rinkeby<br/>
-            <button onClick={async () =>
+            <button id="deploy-contract" onClick={async () =>
               deployContract(
                 await getClient()
               ).then(address =>
