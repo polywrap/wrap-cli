@@ -68,7 +68,7 @@ export class EnsPlugin extends Plugin {
 
     // Check for non-default network
     let network = "";
-    const re = /^(homestead|mainnet|ropsten|kovan|rinkeby|goerli)\//i;
+    const re = /^[A-Za-z0-9]+\//i;
     if (re.exec(domain)) {
       network = domain.substring(0, domain.indexOf("/"));
       domain = domain.replace(network + "/", "");

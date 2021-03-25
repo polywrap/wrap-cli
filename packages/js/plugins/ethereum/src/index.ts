@@ -112,16 +112,17 @@ export class EthereumPlugin extends Plugin {
   }
 
   public getProviderOnNetwork(network: string): ethers.providers.Provider {
-    const re = /^(homestead|mainnet|ropsten|kovan|rinkeby|goerli)$/i;
-    if (!re.exec(network)) {
-      throw new Error(
-        `Unrecognized network name ${network} does not match known networks: homestead, mainnet, ropsten, kovan, rinkeby, goerli`
+    const re = /^(homestead|mainnet|ropsten|kovan|rinkeby|goerli|testnet)$/i;
+    if (!re.exec(network) && isNaN(+network)) {
+      throw Error(
+        `Unrecognized network "${network}" is not an integer and does not match known networks: homestead, mainnet, ropsten, kovan, rinkeby, goerli, testnet`
       );
     }
+    const networkish = +network || network.toLowerCase();
     if (typeof this._config.provider === "string") {
-      return new JsonRpcProvider(this._config.provider, network.toLowerCase());
+      return new JsonRpcProvider(this._config.provider, networkish);
     } else {
-      return new Web3Provider(this._config.provider, network.toLowerCase());
+      return new Web3Provider(this._config.provider, networkish);
     }
   }
 
