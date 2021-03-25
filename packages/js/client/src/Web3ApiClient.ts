@@ -2,6 +2,7 @@ import { getDefaultRedirects } from "./default-redirects";
 import { PluginWeb3Api } from "./plugin/PluginWeb3Api";
 import { WasmWeb3Api } from "./wasm/WasmWeb3Api";
 
+import { v4 as uuid } from "uuid";
 import {
   Api,
   ApiCache,
@@ -75,7 +76,7 @@ export class Web3ApiClient implements Client {
     let queryId: string;
 
     if (!options.id) {
-      queryId = "string";
+      queryId = uuid();
     } else {
       queryId = options.id;
     }
@@ -165,7 +166,7 @@ export class Web3ApiClient implements Client {
   ): Promise<InvokeApiResult<TData>> {
     let invokeId: string;
     if (!options.id) {
-      invokeId = "string";
+      invokeId = uuid();
 
       let redirects: UriRedirect<Uri>[];
       if (options.redirects && options.redirects.length) {
