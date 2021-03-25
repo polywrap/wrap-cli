@@ -1,5 +1,7 @@
 import { PluginPackage, Uri } from ".";
 
+import { Tracer } from "@web3api/tracing";
+
 export interface UriRedirect<TUri = string> {
   /** Redirect from this URI */
   from: TUri;
@@ -11,6 +13,9 @@ export interface UriRedirect<TUri = string> {
 }
 
 export function sanitizeUriRedirects(input: UriRedirect[]): UriRedirect<Uri>[] {
+  Tracer.startSpan("core: sanitizeUriRedirects");
+  Tracer.setAttribute("input", input);
+
   const output: UriRedirect<Uri>[] = [];
   for (const definition of input) {
     const from = new Uri(definition.from);
@@ -24,6 +29,9 @@ export function sanitizeUriRedirects(input: UriRedirect[]): UriRedirect<Uri>[] {
       to: to,
     });
   }
+
+  Tracer.addEvent("sanitize Uri redirects finished", output);
+  Tracer.endSpan();
 
   return output;
 }

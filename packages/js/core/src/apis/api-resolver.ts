@@ -1,6 +1,8 @@
 // TODO: https://github.com/web3-api/monorepo/issues/101
 import { Uri, Client, InvokeApiResult } from "../";
 
+import { Tracer } from "@web3api/tracing";
+
 interface MaybeUriOrManifest {
   uri?: string;
   manifest?: string;
@@ -12,8 +14,10 @@ export const Query = {
     client: Client,
     api: Uri,
     uri: Uri
-  ): Promise<InvokeApiResult<MaybeUriOrManifest>> =>
-    client.invoke<MaybeUriOrManifest>({
+  ): Promise<InvokeApiResult<MaybeUriOrManifest>> => {
+    Tracer.addEvent("core: tryResolveUri", { api, uri });
+
+    return client.invoke<MaybeUriOrManifest>({
       uri: api.uri,
       module: "query",
       method: `tryResolveUri`,
@@ -21,18 +25,22 @@ export const Query = {
         authority: uri.authority,
         path: uri.path,
       },
-    }),
+    });
+  },
   getFile: (
     client: Client,
     api: Uri,
     path: string
-  ): Promise<InvokeApiResult<ArrayBuffer>> =>
-    client.invoke<ArrayBuffer>({
+  ): Promise<InvokeApiResult<ArrayBuffer>> => {
+    Tracer.addEvent("core: getFile", { api, path });
+
+    return client.invoke<ArrayBuffer>({
       uri: api.uri,
       module: "query",
       method: "getFile",
       input: {
         path,
       },
-    }),
+    });
+  },
 };
