@@ -94,35 +94,57 @@ export function pairLiquidityToken(input: Input_pairLiquidityToken): Token {
   });
 }
 
-// export function pairReserve0(input: Input_pairReserve0): u256 {
-//   const pair: Pair = input.pair;
-//   return "";
-// }
-//
-// export function pairReserve1(input: Input_pairReserve1): u256 {
-//   const pair: Pair = input.pair;
-//   return "";
-// }
-//
-// export function pairOutputAmount(input: Input_pairOutputAmount): TokenAmount {
-//   const pair: Pair = input.pair;
-//   const inputAmount: TokenAmount = input.inputAmount;
-//   return "";
-// }
-//
-// export function pairInputAmount(input: Input_pairInputAmount): TokenAmount {
-//   const pair: Pair = input.pair;
-//   const outputAmount: TokenAmount = input.outputAmount;
-//   return "";
-// }
-//
-// export function pairLiquidityValue(input: Input_pairLiquidityValue): TokenAmount {
-//   const pair: Pair = input.pair;
-//   const token: Token = input.token;
-//   const totalSupply: TokenAmount = input.totalSupply;
-//   const liquidity: TokenAmount = input.liquidity;
-//   return "";
-// }
+export function pairReserve0(input: Input_pairReserves): u256 {
+  const pair: Pair = input.pair;
+  return pair.token0.amount;
+}
+
+export function pairReserve1(input: Input_pairReserves): u256 {
+  const pair: Pair = input.pair;
+  return pair.token1.amount;
+}
+
+export function pairOutputAmount(input: Input_pairOutputAmount): TokenAmount {
+  const pair: Pair = input.pair;
+  const tradeTokenAmount: TokenAmount = input.inputAmount;
+  let inTokenAmount: TokenAmount;
+  let outTokenAmount: TokenAmount;
+  if (tokenEquals({ pair.token0.token, tradeTokenAmount.token })) {
+    inTokenAmount = pair.token0;
+    outTokenAmount = pair.token1;
+  }  else {
+    inTokenAmount = pair.token1;
+    outTokenAmount = pair.token0;
+  }
+  if (tradeTokenAmount.amount == 0) {
+    throw new RangeError("Insufficient input amount: Input amount must be greater than zero");
+  }
+  if (pair.token0.amount == 0 || pair.token1.amount == 0) {
+    throw new RangeError("Insufficient liquidity: Pair reserves must be greater than zero")
+  }
+
+  const amountInWithFee: u256 = tradeTokenAmount.amount * 997;
+  const numerator: u256 = amountInWithFee * outTokenAmount.amount;
+  const denominator: u256 = (inTokenAmount.amount * 1000) + amountInWithFee;
+  return {
+    token: outTokenAmount.token,
+    amount: numerator / denominator,
+  };
+}
+
+export function pairInputAmount(input: Input_pairInputAmount): TokenAmount {
+  const pair: Pair = input.pair;
+  const outputAmount: TokenAmount = input.outputAmount;
+  return "";
+}
+
+export function pairLiquidityValue(input: Input_pairLiquidityValue): TokenAmount {
+  const pair: Pair = input.pair;
+  const token: Token = input.token;
+  const totalSupply: TokenAmount = input.totalSupply;
+  const liquidity: TokenAmount = input.liquidity;
+  return "";
+}
 
 // Fetch functions /////////////////////////////////////////////////////////////
 
@@ -159,12 +181,13 @@ export function fetchPairData(input: Input_fetchPairData): Pair {
 
   // get amounts
   const address = pairAddress({ token0, token1 });
-  const amounts: string = Ethereum_Query.callView({
+  const res: string = Ethereum_Query.callView({
     address: address,
     method: "function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)",
     args: []
   });
-  const [amountA, amountB, _] = amounts.substring(1, amounts.length - 1).split(",");
+  // TODO: confirm that this is what res will look like
+  const [amountA, amountB, _] = res.substring(1, res.length - 1).split(",");
 
   // returned amounts are ordered by token sort order
   const token0SortsBefore: boolean = tokenSortsBefore({token0, token1});
