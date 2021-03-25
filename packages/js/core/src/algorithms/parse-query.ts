@@ -1,3 +1,5 @@
+import { Tracer } from "@web3api/tracing";
+
 import { QueryApiInvocations, QueryDocument, Uri } from "../types";
 
 import { SelectionSetNode, ValueNode } from "graphql";
@@ -7,96 +9,119 @@ export function parseQuery(
   doc: QueryDocument,
   variables?: Record<string, unknown>
 ): QueryApiInvocations {
-  if (doc.definitions.length === 0) {
-    throw Error("Empty query document found.");
-  }
+  Tracer.startSpan("core: parseQuery");
 
-  const queryInvocations: QueryApiInvocations = {};
+  Tracer.setAttribute("uri", uri);
+  Tracer.setAttribute("doc", doc);
+  Tracer.setAttribute("variables", variables);
 
-  for (const def of doc.definitions) {
-    if (def.kind !== "OperationDefinition") {
-      throw Error(
-        `Unrecognized root level definition type: ${def.kind}\n` +
-          "Please use a 'query' or 'mutation' operations."
-      );
+  try {
+    if (doc.definitions.length === 0) {
+      throw Error("Empty query document found.");
     }
 
-    // Get the module name (query or mutation)
-    const module = def.operation;
+    const queryInvocations: QueryApiInvocations = {};
 
-    if (module === "subscription") {
-      throw Error("Subscription queries are not yet supported.");
-    }
-
-    // Get the method name
-    const selectionSet = def.selectionSet;
-    const selections = selectionSet.selections;
-
-    if (selections.length === 0) {
-      throw Error(
-        "Empty selection set found. Please include the name of a method you'd like to query."
-      );
-    }
-
-    for (const selection of selections) {
-      if (selection.kind !== "Field") {
+    for (const def of doc.definitions) {
+      if (def.kind !== "OperationDefinition") {
         throw Error(
-          `Unsupported selection type found: ${selection.kind}\n` +
-            "Please query a method."
+          `Unrecognized root level definition type: ${def.kind}\n` +
+            "Please use a 'query' or 'mutation' operations."
         );
       }
 
-      const method = selection.name.value;
-      const invocationName = selection.alias ? selection.alias.value : method;
+      // Get the module name (query or mutation)
+      const module = def.operation;
 
-      if (queryInvocations[invocationName]) {
+      if (module === "subscription") {
+        throw Error("Subscription queries are not yet supported.");
+      }
+
+      // Get the method name
+      const selectionSet = def.selectionSet;
+      const selections = selectionSet.selections;
+
+      if (selections.length === 0) {
         throw Error(
-          `Duplicate query name found "${invocationName}". Please use GraphQL aliases that each have unique names.`
+          "Empty selection set found. Please include the name of a method you'd like to query."
         );
       }
 
-      // Get all input arguments
-      const selectionArgs = selection.arguments;
-      const input: Record<string, unknown> = {};
-
-      if (selectionArgs) {
-        for (const arg of selectionArgs) {
-          const name = arg.name.value;
-
-          if (input[name]) {
-            throw Error(`Duplicate input argument found: ${name}`);
-          }
-
-          const valueDef = arg.value;
-          input[name] = extractValue(valueDef, variables);
+      for (const selection of selections) {
+        if (selection.kind !== "Field") {
+          throw Error(
+            `Unsupported selection type found: ${selection.kind}\n` +
+              "Please query a method."
+          );
         }
+
+        const method = selection.name.value;
+        const invocationName = selection.alias ? selection.alias.value : method;
+
+        if (queryInvocations[invocationName]) {
+          throw Error(
+            `Duplicate query name found "${invocationName}". Please use GraphQL aliases that each have unique names.`
+          );
+        }
+
+        // Get all input arguments
+        const selectionArgs = selection.arguments;
+        const input: Record<string, unknown> = {};
+
+        if (selectionArgs) {
+          for (const arg of selectionArgs) {
+            const name = arg.name.value;
+
+            if (input[name]) {
+              throw Error(`Duplicate input argument found: ${name}`);
+            }
+
+            const valueDef = arg.value;
+            input[name] = extractValue(valueDef, variables);
+
+            Tracer.addEvent("extractValue done", input[name]);
+          }
+        }
+
+        // Get the results the query is asking for
+        const selectionResults = selection.selectionSet;
+        let resultFilter: Record<string, unknown> | undefined = undefined;
+
+        if (selectionResults) {
+          resultFilter = extractSelections(selectionResults);
+
+          Tracer.addEvent("extractSelection done", resultFilter);
+        }
+
+        queryInvocations[invocationName] = {
+          uri,
+          module,
+          method,
+          input,
+          resultFilter,
+        };
       }
-
-      // Get the results the query is asking for
-      const selectionResults = selection.selectionSet;
-      let resultFilter: Record<string, unknown> | undefined = undefined;
-
-      if (selectionResults) {
-        resultFilter = extractSelections(selectionResults);
-      }
-
-      queryInvocations[invocationName] = {
-        uri,
-        module,
-        method,
-        input,
-        resultFilter,
-      };
     }
-  }
 
-  return queryInvocations;
+    Tracer.addEvent("parse query finished", queryInvocations);
+    Tracer.endSpan();
+
+    return queryInvocations;
+  } catch (error) {
+    Tracer.recordException(error);
+
+    throw error;
+  } finally {
+    Tracer.endSpan();
+  }
 }
 
 function extractValue(
   node: ValueNode,
   variables?: Record<string, unknown>
 ): unknown {
+  Tracer.addEvent("core: extractValue", { node, variables });
+
   if (node.kind === "Variable") {
     // Get the argument's value from the variables object
     if (!variables) {
@@ -147,6 +172,8 @@ function extractValue(
 }
 
 function extractSelections(node: SelectionSetNode): Record<string, unknown> {
+  Tracer.addEvent("core: extractSelections", { node });
+
   const result: Record<string, unknown> = {};
 
   for (const selection of node.selections) {

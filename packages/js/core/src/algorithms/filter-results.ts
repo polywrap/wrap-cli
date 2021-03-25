@@ -1,18 +1,34 @@
+import { Tracer } from "@web3api/tracing";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export function filterResults(
   result: unknown,
   filter: Record<string, any>
 ): unknown {
+  Tracer.startSpan("core: filterResults");
+
+  Tracer.setAttribute("result", result);
+  Tracer.setAttribute("filter", filter);
+
   if (!result) {
+    Tracer.endSpan();
+
     return result;
   }
 
-  if (typeof result !== "object") {
-    throw Error(
-      `The result given is not an object. ` +
-        `Filters can only be given on results that are of 'object' type.\n` +
-        `Filter: ${JSON.stringify(filter, null, 2)}`
-    );
+  try {
+    if (typeof result !== "object") {
+      throw Error(
+        `The result given is not an object. ` +
+          `Filters can only be given on results that are of 'object' type.\n` +
+          `Filter: ${JSON.stringify(filter, null, 2)}`
+      );
+    }
+  } catch (error) {
+    Tracer.recordException(error);
+    Tracer.endSpan();
+
+    throw error;
   }
 
   const filtered: Record<string, any> = {};
@@ -29,6 +45,9 @@ export function filterResults(
       filtered[key] = undefined;
     }
   }
+
+  Tracer.addEvent("filtering finished", filtered);
+  Tracer.endSpan();
 
   return filtered;
 }
