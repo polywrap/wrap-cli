@@ -1,3 +1,10 @@
+# Web3API 0.0.1-prealpha.8
+## Bug Fixes
+* Fixed bug in `@web3api/react` package.
+
+## Misc
+* Removed documentation & demos from the monorepo.
+
 # Web3API 0.0.1-prealpha.7
 ## Features
 * Console Log Web3API
