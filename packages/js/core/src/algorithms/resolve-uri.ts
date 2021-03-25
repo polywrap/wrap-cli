@@ -1,9 +1,9 @@
-import { Tracer } from "@web3api/tracing";
-
 import { Api, Client, Uri, PluginPackage } from "../types";
 import { Manifest, deserializeManifest } from "../manifest";
 import * as ApiResolver from "../apis/api-resolver";
 import { getImplementations } from "./get-implementations";
+
+import { Tracer } from "@web3api/tracing";
 
 export async function resolveUri(
   uri: Uri,

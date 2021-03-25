@@ -1,8 +1,7 @@
-import { Tracer } from "@web3api/tracing";
-
 import { QueryApiInvocations, QueryDocument, Uri } from "../types";
 
 import { SelectionSetNode, ValueNode } from "graphql";
+import { Tracer } from "@web3api/tracing";
 
 export function parseQuery(
   uri: Uri,
