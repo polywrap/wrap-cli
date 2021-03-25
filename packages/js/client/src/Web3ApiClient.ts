@@ -32,11 +32,17 @@ export class Web3ApiClient implements Client {
   private _apiCache: ApiCache = new Map<string, Api>();
   private _config: ClientConfig<Uri>;
 
-  constructor(config: ClientConfig) {
-    this._config = {
-      ...config,
-      redirects: sanitizeUriRedirects(config.redirects),
-    };
+  constructor(config?: ClientConfig) {
+    if (config) {
+      this._config = {
+        ...config,
+        redirects: sanitizeUriRedirects(config.redirects),
+      };
+    } else {
+      this._config = {
+        redirects: [],
+      };
+    }
 
     // Add all default redirects (IPFS, ETH, ENS)
     this._config.redirects.push(...getDefaultRedirects());
@@ -65,63 +71,44 @@ export class Web3ApiClient implements Client {
         typeof query === "string" ? createQueryDocument(query) : query;
 
       // Parse the query to understand what's being invoked
-      const invokeOptions = parseQuery(new Uri(uri), queryDocument, variables);
+      const queryInvocations = parseQuery(
+        new Uri(uri),
+        queryDocument,
+        variables
+      );
 
       // Execute all invocations in parallel
       const parallelInvocations: Promise<{
-        method: string;
+        name: string;
         result: InvokeApiResult<unknown>;
       }>[] = [];
 
-      for (const invocation of invokeOptions) {
+      for (const invocationName of Object.keys(queryInvocations)) {
         parallelInvocations.push(
           this.invoke({
-            ...invocation,
-            queryRedirects: queryRedirects,
-            uri: invocation.uri.uri,
+            ...queryInvocations[invocationName],
+            uri: queryInvocations[invocationName].uri.uri,
             decode: true,
+            queryRedirects: queryRedirects,
           }).then((result) => ({
-            method: invocation.method,
+            name: invocationName,
             result,
           }))
         );
       }
 
       // Await the invocations
-      const invocations = await Promise.all(parallelInvocations);
+      const invocationResults = await Promise.all(parallelInvocations);
 
       // Aggregate all invocation results
-      let methods: string[] = [];
-      const resultDatas: unknown[] = [];
+      const data: Record<string, unknown> = {};
       const errors: Error[] = [];
 
-      for (const invocation of invocations) {
-        methods.push(invocation.method);
-        resultDatas.push(invocation.result.data);
+      for (const invocation of invocationResults) {
+        data[invocation.name] = invocation.result.data;
         if (invocation.result.error) {
           errors.push(invocation.result.error);
         }
-      }
-
-      // Helper for appending "_#" to repeated names
-      const makeRepeatedUnique = (names: string[]): string[] => {
-        const counts: { [key: string]: number } = {};
-
-        return names.reduce((acc, name) => {
-          const count = (counts[name] = (counts[name] || 0) + 1);
-          const uniq = count > 1 ? `${name}_${count - 1}` : name;
-          acc.push(uniq);
-          return acc;
-        }, [] as string[]);
-      };
-
-      methods = makeRepeatedUnique(methods);
-
-      // Build are data map, where each method maps to its data
-      const data: Record<string, unknown> = {};
-
-      for (let i = 0; i < methods.length; ++i) {
-        data[methods[i]] = resultDatas[i];
       }
 
       return {

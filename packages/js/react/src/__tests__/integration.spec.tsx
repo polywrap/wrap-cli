@@ -26,7 +26,7 @@ describe("Web3API React Integration", () => {
   beforeAll(async () => {
     const {
       ipfs,
-      data,
+      ensAddress,
       redirects: testRedirects,
     } = await initTestEnvironment();
 
@@ -34,7 +34,7 @@ describe("Web3API React Integration", () => {
     api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
       ipfs,
-      data.ensAddress
+      ensAddress
     );
     ensUri = `ens/${api.ensDomain}`;
   });

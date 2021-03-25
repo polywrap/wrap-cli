@@ -1,5 +1,5 @@
 import { PROVIDERS, PRIMARY_PROVIDER } from "./provider";
-import { createStateReducer } from "./state";
+import { useStateReducer } from "./state";
 
 import { QueryApiResult, QueryApiOptions } from "@web3api/core-js";
 import React from "react";
@@ -56,7 +56,7 @@ export function useWeb3ApiQuery<
   }
 
   // Initialize the UseWeb3ApiQueryState
-  const { state, dispatch } = createStateReducer<UseWeb3ApiQueryState<TData>>(
+  const { state, dispatch } = useStateReducer<UseWeb3ApiQueryState<TData>>(
     INITIAL_QUERY_STATE as UseWeb3ApiQueryState<TData>
   );
 

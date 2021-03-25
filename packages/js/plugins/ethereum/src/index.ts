@@ -23,7 +23,7 @@ export type EthereumSigner = Signer | Address | AccountIndex;
 export type EthereumProvider = string | ExternalProvider;
 export type EthereumClient = JsonRpcProvider | Web3Provider;
 
-export interface EthereumConfig extends Record<string, unknown> {
+export interface EthereumConfig {
   provider: EthereumProvider;
   signer?: EthereumSigner;
 }
@@ -46,7 +46,7 @@ export class EthereumPlugin extends Plugin {
   }
 
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
-  // https://github.com/Web3-API/prototype/issues/101
+  // https://github.com/web3-api/monorepo/issues/101
   public getModules(_client: Client): PluginModules {
     return {
       query: query(this),
