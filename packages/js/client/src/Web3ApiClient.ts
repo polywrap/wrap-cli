@@ -228,7 +228,6 @@ export class Web3ApiClient implements Client {
       this._invokeContextMap.set(subInvokeId, {
         redirects: redirects,
       });
-
       return {
         id: subInvokeId,
         shouldClearContext: true,
@@ -248,7 +247,6 @@ export class Web3ApiClient implements Client {
     this._invokeContextMap.set(invokeId, {
       redirects: invokeRedirects,
     });
-
     return {
       id: invokeId,
       shouldClearContext: true,
