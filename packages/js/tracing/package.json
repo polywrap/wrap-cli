@@ -34,8 +34,11 @@
   "dependencies": {
     "@opentelemetry/api": "^1.0.0-rc.0",
     "@opentelemetry/core": "^0.18.0",
+    "@opentelemetry/context-zone": "^0.18.0",
+    "@opentelemetry/exporter-collector": "^0.18.0",
     "@opentelemetry/exporter-jaeger": "^0.18.0",
     "@opentelemetry/node": "^0.18.0",
+    "@opentelemetry/propagator-b3": "^0.18.0",
     "@opentelemetry/tracing": "^0.18.0",
     "@opentelemetry/web": "^0.18.0"
   }

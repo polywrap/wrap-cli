@@ -3,13 +3,19 @@ import {
   ConsoleSpanExporter,
   SimpleSpanProcessor,
 } from "@opentelemetry/tracing";
+import { WebTracerProvider } from "@opentelemetry/web";
 import * as api from "@opentelemetry/api";
+import { ZoneContextManager } from "@opentelemetry/context-zone";
+import { B3Propagator } from "@opentelemetry/propagator-b3";
 
 export class Tracer {
   public static traceEnabled = false;
 
   private static _tracer: api.Tracer;
-  private static _provider: BasicTracerProvider | null = null;
+  private static _provider:
+    | WebTracerProvider
+    | BasicTracerProvider
+    | null = null;
 
   static enableTracing(tracerName: string): void {
     this.traceEnabled = true;
@@ -72,13 +78,20 @@ export class Tracer {
   static initProvider(): void {
     if (this._provider) return;
 
-    this._provider = new BasicTracerProvider();
+    if (typeof window === "undefined") {
+      this._provider = new BasicTracerProvider();
+    } else {
+      this._provider = new WebTracerProvider();
+    }
 
     // Configure span processor to send spans to the exporter
     this._provider.addSpanProcessor(
       new SimpleSpanProcessor(new ConsoleSpanExporter())
     );
 
-    this._provider.register();
+    this._provider.register({
+      contextManager: new ZoneContextManager(),
+      propagator: new B3Propagator(),
+    });
   }
 }
