@@ -60,7 +60,7 @@ export class Web3ApiClient implements Client {
   public getInvokeContext(id: string): InvokeContext {
     const context = this._invokeContextMap.get(id);
     if (!context) {
-      throw new Error(`No invoke context with found with id: ${id}`);
+      throw new Error(`No invoke context found with id: ${id}`);
     }
 
     return context;
@@ -194,7 +194,14 @@ export class Web3ApiClient implements Client {
           ...options,
           uri,
         },
-        this,
+        {
+          query: (options: QueryApiOptions<Record<string, unknown>, string>) =>
+            this.query({ ...options, id: invokeId }),
+          // @ts-ignore
+          invoke: (options: InvokeApiOptions<string>) =>
+            this.invoke<Record<string, unknown>>({ ...options, id: invokeId }),
+          getInvokeContext: () => this.getInvokeContext(invokeId),
+        },
         invokeId
       )) as TData;
     } catch (error) {

@@ -148,7 +148,7 @@ describe("resolveUri", () => {
     const query = ApiResolver.Query;
     const uri = new Uri("w3/some-uri");
 
-    expect(query.tryResolveUri(client(redirects, apis), api, uri)).toBeDefined();
+    expect(query.tryResolveUri(client(redirects, apis), api, uri, "id")).toBeDefined();
     expect(query.getFile(client(redirects, apis), file, path)).toBeDefined();
   });
 
@@ -158,12 +158,14 @@ describe("resolveUri", () => {
       client(redirects, apis),
       createPluginApi,
       createApi,
+      "id",
       true
     );
 
     const apiIdentity = await result.invoke(
       {} as InvokeApiOptions,
-      {} as Client
+      {} as Client,
+      "id",
     );
 
     expect(apiIdentity).toMatchObject({
@@ -181,12 +183,14 @@ describe("resolveUri", () => {
       client(redirects, apis),
       createPluginApi,
       createApi,
+      "id",
       true
     );
 
     const apiIdentity = await result.invoke(
       {} as InvokeApiOptions,
-      {} as Client
+      {} as Client,
+      "id"
     );
 
     expect(apiIdentity).toMatchObject({
@@ -204,12 +208,14 @@ describe("resolveUri", () => {
       client(redirects, apis),
       createPluginApi,
       createApi,
+      "id",
       true
     );
 
     const apiIdentity = await result.invoke(
       {} as InvokeApiOptions,
-      {} as Client
+      {} as Client,
+      "id"
     );
 
     expect(apiIdentity).toMatchObject({
@@ -228,12 +234,14 @@ describe("resolveUri", () => {
       client(redirects, apis),
       createPluginApi,
       createApi,
+      "id",
       true
     );
 
     const apiIdentity = await result.invoke(
       {} as InvokeApiOptions,
-      {} as Client
+      {} as Client,
+      "id"
     );
 
     expect(apiIdentity).toMatchObject({
@@ -265,6 +273,7 @@ describe("resolveUri", () => {
       client(circular, apis),
       createPluginApi,
       createApi,
+      "id",
       true
     ).catch((e) =>
       expect(e.message).toMatch(/Infinite loop while resolving URI/)
@@ -291,6 +300,7 @@ describe("resolveUri", () => {
       client(missingFromProperty, apis),
       createPluginApi,
       createApi,
+      "id",
       true
     ).catch((e) =>
       expect(e.message).toMatch("Redirect missing the from property.\nEncountered while resolving w3://some/api")
@@ -318,55 +328,18 @@ describe("resolveUri", () => {
       client(uriToPlugin, apis),
       createPluginApi,
       createApi,
+      "id",
       true
     );
 
     const apiIdentity = await result.invoke(
       {} as InvokeApiOptions,
-      {} as Client
+      {} as Client,
+      "id"
     );
 
     expect(apiIdentity.error).toBeUndefined();
   });
-
-  it("works with query time redirects", async () => {
-    const uriToPlugin: UriRedirect[] = [
-      ...redirects,
-      {
-        from: new Uri("some/api"),
-        to: {
-          factory: () => ({} as Plugin),
-          manifest: {
-            schema: "",
-            implemented: [new Uri("w3/api-resolver")],
-            imported: [],
-          },
-        },
-      },
-    ];
-
-    const result = await resolveUri(
-      new Uri("some/api"),
-      client([
-        {
-          from: new Uri("some/api"),
-          to: new Uri("invalid/api")
-        }
-      ], apis),
-      createPluginApi,
-      createApi,
-      true,
-      uriToPlugin
-    );
-
-    const apiIdentity = await result.invoke(
-      {} as InvokeApiOptions,
-      {} as Client
-    );
-
-    expect(apiIdentity.error).toBeUndefined();
-  });
-
   it("throw when URI does not resolve to an API", async () => {
 
     const faultyIpfsApi: PluginModules = {
@@ -394,6 +367,7 @@ describe("resolveUri", () => {
       }),
       createPluginApi,
       createApi,
+      "id",
       true
     ).catch((e) =>
       expect(e.message).toMatch(`No Web3API found at URI: ${uri.uri}`)

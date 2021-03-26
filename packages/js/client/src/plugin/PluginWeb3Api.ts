@@ -7,7 +7,6 @@ import {
   InvokeApiResult,
   Plugin,
   PluginPackage,
-  QueryApiOptions,
   Uri,
 } from "@web3api/core-js";
 import { decode } from "@msgpack/msgpack";
@@ -21,19 +20,10 @@ export class PluginWeb3Api extends Api {
 
   public async invoke<TData = unknown>(
     options: InvokeApiOptions,
-    client: Client,
-    id: string
+    client: Client
   ): Promise<InvokeApiResult<TData>> {
-    const wrappedClient = {
-      query: (options: QueryApiOptions<Record<string, unknown>, string>) =>
-        client.query({ ...options, id: id }),
-      invoke: (options: InvokeApiOptions<string>) =>
-        client.invoke<TData>({ ...options, id: id }),
-      getInvokeContext: (id: string) => client.getInvokeContext(id),
-    };
-
     const { module, method, input, resultFilter } = options;
-    const modules = this.getInstance().getModules(wrappedClient as Client);
+    const modules = this.getInstance().getModules(client);
     const pluginModule = modules[module];
 
     if (!pluginModule) {
@@ -65,7 +55,7 @@ export class PluginWeb3Api extends Api {
       const result = (await executeMaybeAsyncFunction(
         pluginModule[method],
         jsInput,
-        wrappedClient
+        client
       )) as TData;
 
       if (result !== undefined) {

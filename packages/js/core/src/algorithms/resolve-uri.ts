@@ -81,7 +81,8 @@ export async function resolveUri(
     const { data } = await ApiResolver.Query.tryResolveUri(
       client,
       uriResolver,
-      resolvedUri
+      resolvedUri,
+      id
     );
 
     // If nothing was returned, the URI is not supported
