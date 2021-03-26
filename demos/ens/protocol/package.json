@@ -10,9 +10,9 @@
     "test:env:down": "npx w3 test-env down"
   },
   "devDependencies": {
-    "@web3api/cli": "0.0.1-prealpha.5",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.5",
-    "@web3api/wasm-as": "0.0.1-prealpha.5",
+    "@web3api/cli": "0.0.1-prealpha.7",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.7",
+    "@web3api/wasm-as": "0.0.1-prealpha.7",
     "ethers": "5.0.8",
     "js-yaml": "3.14.0"
   },

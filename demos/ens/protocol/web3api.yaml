@@ -6,8 +6,16 @@ query:
   module:
     language: wasm/assemblyscript
     file: ./src/query/index.ts
+mutation:
+  schema:
+    file: ./src/mutation/schema.graphql
+  module:
+    language: wasm/assemblyscript
+    file: ./src/mutation/index.ts
 import_redirects:
   - uri: w3://ens/ethereum.web3api.eth
     schema: ./node_modules/@web3api/ethereum-plugin-js/schema.graphql
-  - uri: w3://ens/namehash.web3api.eth
-    schema: ../../../node_modules/@web3api/ensnamehash/schema.graphql
+  - uri: w3://ens/sha3.web3api.eth
+    schema: ../../../node_modules/@web3api/sha3-plugin-js/schema.graphql
+  - uri: w3://ens/uts46.web3api.eth
+    schema: ../../../node_modules/@web3api/uts46-plugin-js/schema.graphql

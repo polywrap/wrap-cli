@@ -3,11 +3,17 @@ import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { loggerPlugin } from "@web3api/logger-plugin-js";
+import { sha3Plugin } from "@web3api/sha3-plugin-js";
+import { uts46Plugin } from "@web3api/uts46-plugin-js";
 
 export function getDefaultRedirects(): UriRedirect<Uri>[] {
   // NOTE: These are high-level primitives for core plugins,
   //       over time, we will further de-abstract these core plugins
   return [
+    {
+      from: new Uri("w3://ens/uts46.web3api.eth"),
+      to: uts46Plugin(),
+    },
     // IPFS is required for downloading Web3API packages
     {
       from: new Uri("w3://ens/ipfs.web3api.eth"),
@@ -28,6 +34,10 @@ export function getDefaultRedirects(): UriRedirect<Uri>[] {
     {
       from: new Uri("w3://w3/logger"),
       to: loggerPlugin(),
+    },
+    {
+      from: new Uri("w3://ens/sha3.web3api.eth"),
+      to: sha3Plugin(),
     },
   ];
 }

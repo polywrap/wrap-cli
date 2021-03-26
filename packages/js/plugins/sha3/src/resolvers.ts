@@ -42,6 +42,10 @@ export const query = (): PluginModule => ({
     return keccak_256(input.message);
   },
   // eslint-disable-next-line @typescript-eslint/naming-convention
+  buffer_keccak_256: (input: { message: string }) => {
+    return keccak_256(new Buffer(input.message, "hex"));
+  },
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   keccak_224: (input: { message: string }) => {
     return keccak_224(input.message);
   },

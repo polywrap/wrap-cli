@@ -4,6 +4,16 @@
     "constants": "./constants.json"
   },
   {
+    "query": "./register.graphql",
+    "variables": {
+      "domain": "$ENSDomain",
+      "address": "$ENSAccount",
+      "registrar": "$Registrar",
+      "ensAddress": "$ENSAddr",
+      "resolverAddress": "$Resolver"
+    }
+  },
+  {
     "query": "./get.graphql",
     "variables": { "address": "$ENSAddr", "name": "$ENSName" }
   }

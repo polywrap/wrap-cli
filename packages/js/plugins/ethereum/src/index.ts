@@ -69,6 +69,11 @@ export class EthereumPlugin extends Plugin {
     if (signer !== undefined) {
       this.setSigner(signer);
     }
+
+    void this._client
+      .getSigner(0)
+      .getAddress()
+      .then((address) => console.log("SIGNER: " + address));
   }
 
   public setSigner(signer: EthereumSigner): void {
@@ -141,10 +146,15 @@ export class EthereumPlugin extends Plugin {
   ): Promise<string> {
     const contract = this.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
-    const tx = await contract[funcs[0]](...args);
-    const res = await tx.wait();
-    // TODO: improve this
-    return res.transactionHash;
+    try {
+      const tx = await contract[funcs[0]](...args);
+      const res = await tx.wait();
+      // TODO: improve this
+      return res.transactionHash;
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
   }
 }
 

@@ -1,0 +1,5 @@
+#import { Mutation } into Ethereum from "w3://ens/ethereum.web3api.eth"
+
+type Mutation {
+  register(domain: String!, address: String!, registrar: String!, ensAddress: String!, resolverAddress: String!): String!
+}

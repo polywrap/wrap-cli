@@ -1,7 +1,6 @@
-import { Uri } from "@web3api/core-js";
 import { Web3ApiClient } from "@web3api/client-js";
 import uts46 from "idna-uts46-hx";
-import { UTS46Plugin } from "..";
+import { uts46Plugin } from "..";
 
 const textToConvert = "xn-bb-eka.at";
 
@@ -12,11 +11,8 @@ describe("IDNA UTS #46", () => {
     client = new Web3ApiClient({
       redirects: [
         {
-          from: new Uri("w3://ens/uts46.web3api.eth"),
-          to: {
-            factory: () => new UTS46Plugin(),
-            manifest: UTS46Plugin.manifest(),
-          },
+          from: "w3://ens/uts46.web3api.eth",
+          to: uts46Plugin(),
         },
       ],
     });
@@ -26,7 +22,7 @@ describe("IDNA UTS #46", () => {
     it("ToAscii matches", async () => {
       const expected = uts46.toAscii(textToConvert);
       const response = await client.query<{ toAscii: string }>({
-        uri: new Uri("w3://ens/uts46.web3api.eth"),
+        uri: "w3://ens/uts46.web3api.eth",
         query: `
           query {
             toAscii(value: "${textToConvert}")
@@ -39,10 +35,21 @@ describe("IDNA UTS #46", () => {
       expect(response.data?.toAscii).toBe(expected);
     });
 
+    it("ToAscii with options matches", async () => {
+      const expected = uts46.toAscii(textToConvert, {
+        transitional: false,
+        useStd3ASCII: true,
+        verifyDnsLength: false,
+      });
+      const response = uts46.toAscii(textToConvert)
+
+      expect(response).toBe(expected);
+    });
+
     it("ToUnicode matches", async () => {
       const expected = uts46.toUnicode(textToConvert);
       const response = await client.query<{ toUnicode: string }>({
-        uri: new Uri("w3://ens/uts46.web3api.eth"),
+        uri: "w3://ens/uts46.web3api.eth",
         query: `
           query {
             toUnicode(value: "${textToConvert}")
@@ -58,7 +65,7 @@ describe("IDNA UTS #46", () => {
     it("Convert matches", async () => {
       const expected = uts46.convert(textToConvert);
       const response = await client.query<{ convert: string }>({
-        uri: new Uri("w3://ens/uts46.web3api.eth"),
+        uri: "w3://ens/uts46.web3api.eth",
         query: `
           query {
             convert(value: "${textToConvert}")

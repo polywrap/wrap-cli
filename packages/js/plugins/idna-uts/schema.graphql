@@ -1,4 +1,7 @@
-type Query {
-  hash(value: String!): String!
-  normalize(value: String!): String!
+#import { Query } into ApiResolver from "w3/api-resolver"
+
+type Query implements ApiResolver_Query {
+  toAscii(value: String!): String!
+  toUnicode(value: String!): String!
+  convert(value: String!): String!
 }

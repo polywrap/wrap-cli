@@ -1,4 +1,8 @@
 {
-  "ENSAddr": "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
-  "ENSName": "namesty.eth"
+  "ENSAddr": "0x4cFB3F70BF6a80397C2e634e5bDd85BC0bb189EE",
+  "ENSName": "alice.eth",
+  "ENSDomain": "ens.eth",
+  "ENSAccount": "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1",
+  "Registrar": "0xeea2Fc1D255Fd28aA15c6c2324Ad40B03267f9c5",
+  "Resolver": "0xc0b3B62DD0400E4baa721DdEc9B8A384147b23fF"
 }
