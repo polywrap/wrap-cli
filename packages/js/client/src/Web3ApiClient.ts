@@ -93,6 +93,12 @@ export class Web3ApiClient implements Client {
         queryRedirects = this._config.redirects;
       }
 
+      if (!options.id) {
+        this._invokeContextMap.set(queryId, {
+          redirects: queryRedirects,
+        });
+      }
+
       // Convert the query string into a query document
       const queryDocument =
         typeof query === "string" ? createQueryDocument(query) : query;
@@ -109,10 +115,6 @@ export class Web3ApiClient implements Client {
         name: string;
         result: InvokeApiResult<unknown>;
       }>[] = [];
-
-      this._invokeContextMap.set(queryId, {
-        redirects: queryRedirects,
-      });
 
       for (const invocationName of Object.keys(queryInvocations)) {
         parallelInvocations.push(
@@ -192,7 +194,8 @@ export class Web3ApiClient implements Client {
           ...options,
           uri,
         },
-        this
+        this,
+        invokeId
       )) as TData;
     } catch (error) {
       result = { error: error };

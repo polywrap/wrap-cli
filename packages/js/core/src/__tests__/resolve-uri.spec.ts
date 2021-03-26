@@ -20,7 +20,11 @@ describe("resolveUri", () => {
     redirects: UriRedirect<Uri>[],
     apis: Record<string, PluginModules>
   ): Client => ({
-    redirects: () => redirects,
+    getInvokeContext: () => {
+      return {
+        redirects: redirects,
+      }
+    },
     query: <
       TData extends Record<string, unknown> = Record<string, unknown>,
       TVariables extends Record<string, unknown> = Record<string, unknown>,

@@ -7,6 +7,9 @@ import {
   stopTestEnvironment
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
+import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
+import { ensPlugin } from "@web3api/ens-plugin-js";
+import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 
 jest.setTimeout(50000);
 
@@ -27,7 +30,6 @@ describe("Web3ApiClient", () => {
   });
 
 it("simple-storage with query time redirects", async () => {
-
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
@@ -37,7 +39,24 @@ it("simple-storage with query time redirects", async () => {
     const ensUri = `ens/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
 
-    const client = new Web3ApiClient({ redirects: [] });
+    const redirects = [
+      {
+        from: "w3://ens/ipfs.web3api.eth",
+        to: ipfsPlugin({ provider: ipfsProvider })
+      },
+      {
+        from: "w3//ens/ens.web3api.eth",
+        to: ensPlugin({ address: ensAddress }),
+      },
+      {
+        from: "w3://ens/ethereum.web3api.eth",
+        to: ethereumPlugin({
+           provider: ethProvider
+        })
+      }
+    ]
+
+    const client = await createWeb3ApiClient({});
 
     const deploy = await client.query<{
       deployContract: string;
