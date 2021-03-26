@@ -161,8 +161,7 @@ export class Web3ApiClient implements Client {
           ...options,
           uri,
         },
-        wrapClient(this, invokeId),
-        invokeId
+        wrapClient(this, invokeId)
       )) as TData;
     } catch (error) {
       result = { error: error };

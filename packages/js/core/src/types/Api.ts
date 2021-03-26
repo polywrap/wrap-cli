@@ -16,8 +16,7 @@ export abstract class Api {
    */
   public abstract invoke(
     options: InvokeApiOptions,
-    client: Client,
-    id: string
+    client: Client
   ): Promise<InvokeApiResult<unknown>>;
 
   /** Get the API's schema */
