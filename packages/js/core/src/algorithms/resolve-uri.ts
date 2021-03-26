@@ -1,4 +1,4 @@
-import { Api, Client, Uri, PluginPackage } from "../types";
+import { Api, Client, Uri, PluginPackage, wrapClient } from "../types";
 import { Manifest, deserializeManifest } from "../manifest";
 import * as ApiResolver from "../apis/api-resolver";
 import { getImplementations } from "./get-implementations";
@@ -79,10 +79,9 @@ export async function resolveUri(
     const uriResolver = uriResolverImplementations[i];
 
     const { data } = await ApiResolver.Query.tryResolveUri(
-      client,
+      wrapClient(client, id),
       uriResolver,
-      resolvedUri,
-      id
+      resolvedUri
     );
 
     // If nothing was returned, the URI is not supported

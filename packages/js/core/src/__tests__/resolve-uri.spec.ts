@@ -148,7 +148,7 @@ describe("resolveUri", () => {
     const query = ApiResolver.Query;
     const uri = new Uri("w3/some-uri");
 
-    expect(query.tryResolveUri(client(redirects, apis), api, uri, "id")).toBeDefined();
+    expect(query.tryResolveUri(client(redirects, apis), api, uri)).toBeDefined();
     expect(query.getFile(client(redirects, apis), file, path)).toBeDefined();
   });
 
