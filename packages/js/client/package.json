@@ -42,6 +42,7 @@
     "@types/semver": "^7.3.4",
     "@types/uuid": "^8.3.0",
     "@web3api/cli": "0.0.1-prealpha.8",
+    "@web3api/test-cases": "0.0.1-prealpha.8",
     "@web3api/test-env-js": "0.0.1-prealpha.8",
     "jest": "26.2.2",
     "rimraf": "3.0.2",
