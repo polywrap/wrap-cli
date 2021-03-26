@@ -164,8 +164,7 @@ describe("resolveUri", () => {
 
     const apiIdentity = await result.invoke(
       {} as InvokeApiOptions,
-      {} as Client,
-      "id",
+      {} as Client
     );
 
     expect(apiIdentity).toMatchObject({
@@ -189,8 +188,7 @@ describe("resolveUri", () => {
 
     const apiIdentity = await result.invoke(
       {} as InvokeApiOptions,
-      {} as Client,
-      "id"
+      {} as Client
     );
 
     expect(apiIdentity).toMatchObject({
@@ -215,7 +213,6 @@ describe("resolveUri", () => {
     const apiIdentity = await result.invoke(
       {} as InvokeApiOptions,
       {} as Client,
-      "id"
     );
 
     expect(apiIdentity).toMatchObject({
@@ -241,7 +238,6 @@ describe("resolveUri", () => {
     const apiIdentity = await result.invoke(
       {} as InvokeApiOptions,
       {} as Client,
-      "id"
     );
 
     expect(apiIdentity).toMatchObject({
@@ -335,7 +331,6 @@ describe("resolveUri", () => {
     const apiIdentity = await result.invoke(
       {} as InvokeApiOptions,
       {} as Client,
-      "id"
     );
 
     expect(apiIdentity.error).toBeUndefined();
