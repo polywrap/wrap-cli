@@ -20,6 +20,7 @@ import {
   Manifest,
   sanitizeUriRedirects,
   InvokeContext,
+  wrapClient,
 } from "@web3api/core-js";
 
 const DEFAULT_CONTEXT_ID = "default";
@@ -72,33 +73,14 @@ export class Web3ApiClient implements Client {
   >(
     options: QueryApiOptions<TVariables, string>
   ): Promise<QueryApiResult<TData>> {
+    const { uri, query, variables, redirects } = options;
     let result: QueryApiResult<TData>;
-    let queryId: string;
-
-    if (!options.id) {
-      queryId = uuid();
-    } else {
-      queryId = options.id;
-    }
+    const { id: queryId, shouldClearContext } = this.setInvokeContext(
+      options.id,
+      redirects ? sanitizeUriRedirects(redirects) : undefined
+    );
 
     try {
-      const { uri, query, variables, redirects } = options;
-
-      let queryRedirects: UriRedirect<Uri>[];
-      if (redirects) {
-        const queryTimeRedirects = sanitizeUriRedirects(redirects);
-        queryTimeRedirects.push(...this._config.redirects);
-        queryRedirects = queryTimeRedirects;
-      } else {
-        queryRedirects = this._config.redirects;
-      }
-
-      if (!options.id) {
-        this._invokeContextMap.set(queryId, {
-          redirects: queryRedirects,
-        });
-      }
-
       // Convert the query string into a query document
       const queryDocument =
         typeof query === "string" ? createQueryDocument(query) : query;
@@ -156,34 +138,19 @@ export class Web3ApiClient implements Client {
       }
     }
 
-    if (!options.id) {
-      this._invokeContextMap.delete(queryId);
+    if (shouldClearContext) {
+      this.clearInvokeContext(queryId);
     }
-
     return result;
   }
 
   public async invoke<TData = unknown>(
     options: InvokeApiOptions<string>
   ): Promise<InvokeApiResult<TData>> {
-    let invokeId: string;
-    if (!options.id) {
-      invokeId = uuid();
-
-      let redirects: UriRedirect<Uri>[];
-      if (options.redirects && options.redirects.length) {
-        options.redirects.push(...this._config.redirects);
-        redirects = options.redirects;
-      } else {
-        redirects = this._config.redirects;
-      }
-
-      this._invokeContextMap.set(invokeId, {
-        redirects: redirects,
-      });
-    } else {
-      invokeId = options.id;
-    }
+    const { id: invokeId, shouldClearContext } = this.setInvokeContext(
+      options.id,
+      options.redirects
+    );
 
     let result: InvokeApiResult<TData>;
     try {
@@ -194,24 +161,16 @@ export class Web3ApiClient implements Client {
           ...options,
           uri,
         },
-        {
-          query: (options: QueryApiOptions<Record<string, unknown>, string>) =>
-            this.query({ ...options, id: invokeId }),
-          // @ts-ignore
-          invoke: (options: InvokeApiOptions<string>) =>
-            this.invoke<Record<string, unknown>>({ ...options, id: invokeId }),
-          getInvokeContext: () => this.getInvokeContext(invokeId),
-        },
+        wrapClient(this, invokeId),
         invokeId
       )) as TData;
     } catch (error) {
       result = { error: error };
     }
 
-    if (!options.id) {
-      this._invokeContextMap.delete(invokeId);
+    if (shouldClearContext) {
+      this.clearInvokeContext(invokeId);
     }
-
     return result;
   }
 
@@ -241,5 +200,62 @@ export class Web3ApiClient implements Client {
     }
 
     return api;
+  }
+
+  /**
+   * Sets invoke context based on 3 cases:
+   *  1. id sent and no query time redirects sent -> use existing invoke context
+   *  2. id sent and query time redirects specified -> create new subinvoke context
+   *  3. id not sent -> create new parent invoke context
+   */
+  private setInvokeContext(
+    id?: string,
+    redirects?: UriRedirect<Uri>[]
+  ): {
+    id: string;
+    shouldClearContext: boolean;
+  } {
+    if (id && (!redirects || !redirects.length)) {
+      return {
+        id: id,
+        shouldClearContext: false,
+      };
+    } else if (id && redirects?.length) {
+      const subInvokeId = uuid();
+      const parentContext = this.getInvokeContext(id);
+      redirects.push(...parentContext.redirects);
+
+      this._invokeContextMap.set(subInvokeId, {
+        redirects: redirects,
+      });
+
+      return {
+        id: subInvokeId,
+        shouldClearContext: true,
+      };
+    }
+
+    const invokeId = uuid();
+
+    let invokeRedirects: UriRedirect<Uri>[];
+    if (redirects && redirects.length) {
+      redirects.push(...this._config.redirects);
+      invokeRedirects = redirects;
+    } else {
+      invokeRedirects = this._config.redirects;
+    }
+
+    this._invokeContextMap.set(invokeId, {
+      redirects: invokeRedirects,
+    });
+
+    return {
+      id: invokeId,
+      shouldClearContext: true,
+    };
+  }
+
+  private clearInvokeContext(id: string): void {
+    this._invokeContextMap.delete(id);
   }
 }
