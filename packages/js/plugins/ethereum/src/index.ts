@@ -107,8 +107,12 @@ export class EthereumPlugin extends Plugin {
     }
   }
 
-  public getContract(address: Address, abi: string[]): ethers.Contract {
-    return new ethers.Contract(address, abi, this.getSigner());
+  public getContract(address: Address, abi: string[], signer: boolean = true): ethers.Contract {
+    if (signer) {
+      return new ethers.Contract(address, abi, this.getSigner());
+    } else {
+      return new ethers.Contract(address, abi, this._client);
+    }
   }
 
   public getProviderOnNetwork(network: string): ethers.providers.Provider {
@@ -147,7 +151,7 @@ export class EthereumPlugin extends Plugin {
     args: string[],
     network?: string
   ): Promise<string> {
-    let contract = this.getContract(address, [method]);
+    let contract = this.getContract(address, [method], false);
     if (network) {
       contract = contract.connect(this.getProviderOnNetwork(network));
     }
