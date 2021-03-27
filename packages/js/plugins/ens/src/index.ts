@@ -50,7 +50,7 @@ export class EnsPlugin extends Plugin {
   }
 
   public async ensToCID(domain: string, client: Client): Promise<string> {
-    const ensAddress =
+    let ensAddress =
       this._config.address || "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
     const ensAbi = {
       resolver:
@@ -67,11 +67,18 @@ export class EnsPlugin extends Plugin {
     domain = domain.replace("ens/", "");
 
     // Check for non-default network
-    let network = "";
-    const re = /^[A-Za-z0-9]+\//i;
-    if (re.exec(domain)) {
+    let network = undefined;
+    const hasNetwork = /^[A-Za-z0-9]+\//i.exec(domain);
+    if (hasNetwork) {
       network = domain.substring(0, domain.indexOf("/"));
+      const knownNetworks = /^(homestead|mainnet|ropsten|kovan|rinkeby|goerli|testnet)$/i;
+      if (!knownNetworks.exec(network)) {
+        throw Error(
+          `Unrecognized network "${network}" does not match known networks: homestead, mainnet, ropsten, kovan, rinkeby, goerli, testnet`
+        );
+      }
       domain = domain.replace(network + "/", "");
+      ensAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
     }
 
     const domainNode = ethers.utils.namehash(domain);
@@ -80,7 +87,7 @@ export class EnsPlugin extends Plugin {
       address: string,
       method: string,
       args: string[],
-      network: string
+      network?: string
     ): Promise<string> => {
       const { data, errors } = await client.query({
         uri: "ens/ethereum.web3api.eth",
@@ -89,14 +96,13 @@ export class EnsPlugin extends Plugin {
             address: $address,
             method: $method,
             args: $args,
-            network: $network
+            network: ${network ?? "null"}
           )
         }`,
         variables: {
           address,
           method,
           args,
-          network,
         },
       });
 

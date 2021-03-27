@@ -119,10 +119,13 @@ export class EthereumPlugin extends Plugin {
       );
     }
     const networkish = +network || network.toLowerCase();
+    const networkObject = ethers.providers.getNetwork(networkish);
     if (typeof this._config.provider === "string") {
-      return new JsonRpcProvider(this._config.provider, networkish);
+      // TODO: get free api keys for provider or make it possible for users to provide api keys?
+      return ethers.getDefaultProvider(networkObject);
     } else {
-      return new Web3Provider(this._config.provider, networkish);
+      // TODO: this branch is untested
+      return new Web3Provider(this._config.provider, networkObject);
     }
   }
 

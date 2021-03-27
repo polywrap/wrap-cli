@@ -27,7 +27,7 @@ describe("e2e tests for query command", () => {
 ${HELP}`);
   });
 
-  test("Should successfully return response", async () => {
+  test("Should successfully return response (test env)", async () => {
     const { exitCode: testenvCode, stderr: testEnvUpErr } = await runCLI({
       args: ["test-env", "up"],
       cwd: projectRoot
@@ -99,4 +99,57 @@ mutation {
       cwd: projectRoot
     }, "../../../bin/w3");
   }, 240000);
+
+  test("Should successfully return response (live demo)", async () => {
+    const { exitCode: testenvCode, stderr: testEnvUpErr } = await runCLI({
+      args: ["test-env", "up"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
+    expect(testEnvUpErr).toBe("");
+    expect(testenvCode).toEqual(0);
+
+    const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
+      args: ["query", "./recipes/e2eDemo.json"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
+
+    expect(code).toEqual(0);
+    expect(queryErr).toBe("");
+
+    const constants = require(`${projectRoot}/recipes/constants.json`);
+    expect(clearStyle(output)).toContain(`-----------------------------------
+mutation {
+  setData(
+    options: {
+      address: $address
+      value: $value
+    }
+  ) {
+    value
+    txReceipt
+  }
+}
+
+{
+  "address": "${constants.SimpleStorageAddr}",
+  "value": 569
+}
+-----------------------------------
+-----------------------------------
+{
+  "setData": {
+    "txReceipt": "0x`);
+    expect(clearStyle(output)).toContain(`",
+    "value": 569
+  }
+}
+-----------------------------------
+`);
+
+    await runCLI({
+      args: ["test-env", "down"],
+      cwd: projectRoot
+    }, "../../../bin/w3");
+  }, 240000);
+
 });
