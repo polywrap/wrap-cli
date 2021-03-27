@@ -107,7 +107,11 @@ export class EthereumPlugin extends Plugin {
     }
   }
 
-  public getContract(address: Address, abi: string[], signer: boolean = true): ethers.Contract {
+  public getContract(
+    address: Address,
+    abi: string[],
+    signer = true
+  ): ethers.Contract {
     if (signer) {
       return new ethers.Contract(address, abi, this.getSigner());
     } else {
