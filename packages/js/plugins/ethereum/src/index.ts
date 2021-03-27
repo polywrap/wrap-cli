@@ -107,8 +107,12 @@ export class EthereumPlugin extends Plugin {
     }
   }
 
-  public getContract(address: Address, abi: string[]): ethers.Contract {
-    return new ethers.Contract(address, abi, this.getSigner());
+  public getContract(address: Address, abi: string[], signer: boolean = true): ethers.Contract {
+    if (signer) {
+      return new ethers.Contract(address, abi, this.getSigner());
+    } else {
+      return new ethers.Contract(address, abi, this._client);
+    }
   }
 
   public async deployContract(
@@ -128,7 +132,7 @@ export class EthereumPlugin extends Plugin {
     method: string,
     args: string[]
   ): Promise<string> {
-    const contract = this.getContract(address, [method]);
+    const contract = this.getContract(address, [method], false);
     const funcs = Object.keys(contract.interface.functions);
     const res = await contract[funcs[0]](...args);
     return res.toString();
