@@ -96,7 +96,7 @@ export async function resolveUri(
       const convertedUri = new Uri(newUri);
       trackUriRedirect(convertedUri.uri, uriResolver.uri);
       resolvedUri = convertedUri;
-      i = 0;
+      i = -1;
       continue;
     } else if (manifestStr) {
       // We've found our manifest at the current URI resolver
