@@ -25,3 +25,13 @@ export function normalize(name: string): string {
     value: name
   }) : name
 }
+
+export function sha3 (value: string): string {
+  return "0x" + SHA3_Query.keccak_256({ message: value })
+}
+
+export function getLabelFromDomain(value: string): string {
+  const splitName = value.split(".")
+  splitName.pop()
+  return splitName.join(".")
+}

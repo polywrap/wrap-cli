@@ -4,17 +4,57 @@
     "constants": "./constants.json"
   },
   {
-    "query": "./register.graphql",
+    "query": "./mutations/register.graphql",
     "variables": {
-      "domain": "$ENSDomain",
-      "address": "$ENSAccount",
-      "registrar": "$Registrar",
-      "ensAddress": "$ENSAddr",
+      "domain": "$Domain",
+      "registrarAddress": "$Registrar",
+      "registryAddress": "$Registry",
+      "resolverAddress": "$Resolver",
+      "owner": "$Signer"
+    }
+  },
+  {
+    "query": "./mutations/setAddress.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "address": "$Signer",
       "resolverAddress": "$Resolver"
     }
   },
   {
-    "query": "./get.graphql",
-    "variables": { "address": "$ENSAddr", "name": "$ENSName" }
+    "query": "./mutations/setContentHash.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "cid": "$CID",
+      "resolverAddress": "$Resolver"
+    }
+  },
+  {
+    "query": "./mutations/reverseRegister.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "reverseRegistryAddress": "$Reverse",
+      "owner": "$Signer"
+    }
+  },
+  {
+    "query": "./queries/getResolver.graphql",
+    "variables": { "registryAddress": "$Registry", "domain": "$Domain" }
+  },
+  {
+    "query": "./queries/getOwner.graphql",
+    "variables": { "registryAddress": "$Registry", "domain": "$Domain" }
+  },
+  {
+    "query": "./queries/getAddress.graphql",
+    "variables": { "resolverAddress": "$Resolver", "domain": "$Domain" }
+  },
+  {
+    "query": "./queries/getContentHash.graphql",
+    "variables": { "resolverAddress": "$Resolver", "domain": "$Domain" }
+  },
+  {
+    "query": "./queries/getNameFromAddress.graphql",
+    "variables": { "address": "$Signer", "registryAddress": "$Registry" }
   }
 ]

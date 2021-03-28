@@ -3,5 +3,14 @@
 #import { Query } into SHA3 from "w3://ens/sha3.web3api.eth"
 
 type Query {
-  getResolver(address: String!, name: String!): String!
+  getResolver(registryAddress: String!, domain: String!): String!
+  getOwner(domain: String!, registryAddress: String!): String!
+  getAddress(domain: String!, resolverAddress: String!): String!
+  getAddressFromDomain(domain: String!, registryAddress: String!): String!
+  getContentHash(domain: String!, resolverAddress: String!): String!
+  getContentHashFromDomain(domain: String!, registryAddress: String!): String!
+  getExpiryTimes(domain: String!, registrarAddress: String!): String!
+  getReverseResolver(address: String!, registryAddress: String!): String!
+  getNameFromReverseResolver(address: String!, resolverAddress: String!): String!
+  getNameFromAddress(address: String!, registryAddress: String!): String!
 }

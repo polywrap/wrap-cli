@@ -1,9 +1,0 @@
-mutation RegisterResolver($domain: String!, $address: String!, $registrar: String!, $ensAddress: String!, $resolverAddress: String!) {
-  register(
-    domain: $domain,
-    address: $address,
-    registrar: $registrar,
-    ensAddress: $ensAddress,
-    resolverAddress: $resolverAddress
-  )
-}

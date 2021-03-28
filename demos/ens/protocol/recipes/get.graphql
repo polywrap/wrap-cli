@@ -1,6 +1,0 @@
-query GetResolver($address: String!, $name: String!) {
-  getResolver(
-    address: $address,
-    name: $name
-  )
-}

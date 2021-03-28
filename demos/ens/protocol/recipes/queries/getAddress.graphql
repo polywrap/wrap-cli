@@ -1,0 +1,6 @@
+query getAddress($domain: String!, $resolverAddress: String!) {
+  getAddress(
+    domain: $domain,
+    resolverAddress: $resolverAddress
+  )
+}
