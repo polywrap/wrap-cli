@@ -1,0 +1,10 @@
+mutation setSubdomain(
+  $subdomain: String!, $owner: String!, $registryAddress: String!, $resolverAddress: String!
+) {
+  setSubdomain(
+    subdomain: $subdomain
+    owner: $owner
+    registryAddress: $registryAddress,
+    resolverAddress: $resolverAddress
+  )
+}

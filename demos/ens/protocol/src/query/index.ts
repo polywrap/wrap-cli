@@ -1,4 +1,4 @@
-import { getLabelFromDomain, namehash, sha3 } from "../utils";
+import { namehash, sha3 } from "../utils";
 import {
   Ethereum_Query,
   Input_getResolver,
@@ -90,7 +90,7 @@ export function getContentHashFromDomain(
 }
 
 export function getExpiryTimes(input: Input_getExpiryTimes): string {
-  const label = getLabelFromDomain(input.domain);
+  const label = input.domain.split(".")[0];
 
   const expiryTime = Ethereum_Query.callView({
     address: input.registrarAddress,

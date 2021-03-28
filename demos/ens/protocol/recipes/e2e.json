@@ -38,12 +38,41 @@
     }
   },
   {
-    "query": "./queries/getResolver.graphql",
-    "variables": { "registryAddress": "$Registry", "domain": "$Domain" }
+    "query": "./mutations/setSubdomain.graphql",
+    "variables": {
+      "subdomain": "$Subdomain",
+      "owner": "$Signer",
+      "registryAddress": "$Registry",
+      "resolverAddress": "$Resolver"
+    }
   },
   {
     "query": "./queries/getOwner.graphql",
     "variables": { "registryAddress": "$Registry", "domain": "$Domain" }
+  },
+  {
+    "query": "./mutations/setOwner.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "registryAddress": "$Registry",
+      "newOwner": "$AlternateOwner"
+    }
+  },
+  {
+    "query": "./queries/getOwner.graphql",
+    "variables": { "registryAddress": "$Registry", "domain": "$Domain" }
+  },
+  {
+    "query": "./queries/getOwner.graphql",
+    "variables": { "registryAddress": "$Registry", "domain": "$Subdomain" }
+  },
+  {
+    "query": "./queries/getResolver.graphql",
+    "variables": { "registryAddress": "$Registry", "domain": "$Domain" }
+  },
+  {
+    "query": "./queries/getResolver.graphql",
+    "variables": { "registryAddress": "$Registry", "domain": "$Subdomain" }
   },
   {
     "query": "./queries/getAddress.graphql",

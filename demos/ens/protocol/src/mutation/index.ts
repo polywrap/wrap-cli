@@ -1,5 +1,5 @@
 import { getResolver } from "../query";
-import { getLabelFromDomain, namehash, sha3 } from "../utils";
+import { namehash, sha3 } from "../utils";
 import {
   Ethereum_Mutation,
   Input_registerDomain,
@@ -9,7 +9,9 @@ import {
   Input_setContentHash,
   Input_setContentHashFromDomain,
   Input_setName,
+  Input_setOwner,
   Input_setResolver,
+  Input_setSubdomain,
 } from "./w3";
 
 export function setResolver(input: Input_setResolver): string {
@@ -23,7 +25,7 @@ export function setResolver(input: Input_setResolver): string {
 }
 
 export function registerDomain(input: Input_registerDomain): string {
-  const label = getLabelFromDomain(input.domain);
+  const label = input.domain.split(".")[0];
 
   Ethereum_Mutation.sendTransaction({
     address: input.registrarAddress,
@@ -38,6 +40,36 @@ export function registerDomain(input: Input_registerDomain): string {
   });
 
   return setResolverTx;
+}
+
+export function setOwner(input: Input_setOwner): string {
+  let tx = Ethereum_Mutation.sendTransaction({
+    address: input.registryAddress,
+    method: "function setOwner(bytes32 node, address owner) external",
+    args: [namehash(input.domain), input.newOwner],
+  });
+
+  return tx
+}
+
+export function setSubdomain(input: Input_setSubdomain): string {
+  const splitDomain = input.subdomain.split(".")
+  const subdomainLabel = splitDomain[0]
+  const domain = splitDomain.slice(1, splitDomain.length).join(".")
+  
+  Ethereum_Mutation.sendTransaction({
+    address: input.registryAddress,
+    method: "function setSubnodeOwner(bytes32 node, bytes32 label, address owner) external",
+    args: [namehash(domain), sha3(subdomainLabel), input.owner],
+  });
+
+  let tx = setResolver({
+    domain: input.subdomain,
+    registryAddress: input.registryAddress,
+    resolverAddress: input.resolverAddress
+  })
+
+  return tx
 }
 
 export function setName(input: Input_setName): string {
