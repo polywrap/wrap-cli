@@ -1,4 +1,4 @@
-import { intlMsg } from "../lib/internationalization/languageConfig";
+import { intlMsg } from "../lib/intl";
 
 import { GluegunToolbox } from "gluegun";
 

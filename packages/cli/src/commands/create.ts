@@ -1,6 +1,6 @@
 import { generateProject } from "../lib/generators/project-generator";
 import { fixParameters } from "../lib/helpers/parameters";
-import { intlMsg } from "../lib/internationalization/languageConfig";
+import { intlMsg } from "../lib/intl";
 
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";

@@ -1,6 +1,6 @@
 import { displayPath } from "./path";
 import { withSpinner } from "./spinner";
-import { intlMsg } from "../internationalization/languageConfig";
+import { intlMsg } from "../intl";
 
 import fs from "fs";
 import YAML from "js-yaml";

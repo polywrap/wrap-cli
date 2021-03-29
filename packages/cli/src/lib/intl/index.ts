@@ -1,4 +1,4 @@
-import { IntlStrings } from "./languageConfig";
+import { IntlStrings } from "./types";
 
 import {
   createIntl,
@@ -9,6 +9,8 @@ import {
 import osLocale from "os-locale";
 import { readFileSync } from "fs";
 import * as fs from "fs";
+
+export * from "./types";
 
 interface LocaleData {
   lang: string;

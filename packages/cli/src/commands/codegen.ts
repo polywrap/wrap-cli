@@ -1,7 +1,7 @@
 /* eslint-disable prefer-const */
 import { CodeGenerator, Project, SchemaComposer } from "../lib";
 import { fixParameters } from "../lib/helpers/parameters";
-import { intlMsg } from "../lib/internationalization/languageConfig";
+import { intlMsg } from "../lib/intl";
 
 import chalk from "chalk";
 import axios from "axios";

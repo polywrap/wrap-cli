@@ -4,7 +4,7 @@
 import { Project } from "./Project";
 import { SchemaComposer } from "./SchemaComposer";
 import { step, withSpinner, outputManifest } from "./helpers";
-import { intlMsg } from "./internationalization/languageConfig";
+import { intlMsg } from "./intl";
 
 import { bindSchema, writeDirectory } from "@web3api/schema-bind";
 import path from "path";

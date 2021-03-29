@@ -1,4 +1,4 @@
-import { intlMsg } from "./internationalization/languageConfig";
+import { intlMsg } from "./intl";
 
 import chokidar from "chokidar";
 

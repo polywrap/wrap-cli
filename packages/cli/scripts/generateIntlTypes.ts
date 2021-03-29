@@ -1,23 +1,30 @@
+import {
+  Project,
+  VariableDeclarationKind,
+  SyntaxKind,
+  IndentationText
+} from "ts-morph";
 import fs from "fs";
-import { Project, VariableDeclarationKind, SyntaxKind } from "ts-morph";
 
-const tsConfigPath = `${__dirname}/../../../tsconfig.json`;
+const tsConfigPath = `${__dirname}/../tsconfig.json`;
 const defaultLanguagePath = `${__dirname}/../lang/en.json`;
-const targetFilePath = `${__dirname}/../src/lib/internationalization/languageConfig.ts`;
+const targetFilePath = `${__dirname}/../src/lib/intl/types.ts`;
 
-generateLanguageTypes(tsConfigPath, defaultLanguagePath, targetFilePath);
-
-function generateLanguageTypes(tsConfigPath: string, defaultLangPath: string, targetFilePath: string) {
+function main(tsConfigPath: string, defaultLangPath: string, targetFilePath: string) {
   // create source file
   const project = new Project({
     tsConfigFilePath: tsConfigPath,
+    manipulationSettings: {
+      indentationText: IndentationText.TwoSpaces
+    }
   });
   const sourceFile = project.createSourceFile(targetFilePath, "", { overwrite: true });
   // add lint ignore for file
+  sourceFile.addStatements("/// NOTE: This is an auto-generated file. See scripts/generateIntlTypes.ts")
   sourceFile.addStatements("/* eslint-disable */");
   // import getIntl for formatjs
   const importFormatJsIntl = sourceFile.addImportDeclaration({
-    moduleSpecifier: "./internationalization",
+    moduleSpecifier: ".",
   });
   importFormatJsIntl.addNamedImport({ name: "getIntl" });
   sourceFile.addVariableStatement({
@@ -97,4 +104,12 @@ function generateLanguageTypes(tsConfigPath: string, defaultLangPath: string, ta
   }
   // save
   sourceFile.saveSync();
+}
+
+try {
+  main(tsConfigPath, defaultLanguagePath, targetFilePath);
+  process.exit(0);
+} catch (err) {
+  console.error(err);
+  process.exit(1);
 }

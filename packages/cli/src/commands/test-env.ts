@@ -1,6 +1,6 @@
 import { startupTestEnv, shutdownTestEnv } from "../lib/env/test";
 import { withSpinner } from "../lib/helpers/spinner";
-import { intlMsg } from "../lib/internationalization/languageConfig";
+import { intlMsg } from "../lib/intl";
 
 import { GluegunToolbox, print } from "gluegun";
 import chalk from "chalk";

@@ -1,5 +1,5 @@
 import { fixParameters } from "../lib/helpers/parameters";
-import { intlMsg } from "../lib/internationalization/languageConfig";
+import { intlMsg } from "../lib/intl";
 
 import axios from "axios";
 import chalk from "chalk";

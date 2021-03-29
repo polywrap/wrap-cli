@@ -1,4 +1,4 @@
-import { intlMsg } from "../internationalization/languageConfig";
+import { intlMsg } from "../intl";
 
 import { execSync, spawn } from "child_process";
 import { GluegunFilesystem } from "gluegun";

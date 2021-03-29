@@ -9,7 +9,7 @@ import {
 } from "../lib";
 import { fixParameters } from "../lib/helpers/parameters";
 import { publishToIPFS } from "../lib/publishers/ipfs-publisher";
-import { intlMsg } from "../lib/internationalization/languageConfig";
+import { intlMsg } from "../lib/intl";
 
 import chalk from "chalk";
 import axios from "axios";

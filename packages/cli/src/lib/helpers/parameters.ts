@@ -1,5 +1,5 @@
 // Workaround for https://github.com/infinitered/gluegun/pull/464.
-import { intlMsg } from "../internationalization/languageConfig";
+import { intlMsg } from "../intl";
 
 export const fixParameters = (
   parameters: { options: Record<string, unknown>; array?: string[] },
