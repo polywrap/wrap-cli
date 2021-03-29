@@ -1,7 +1,6 @@
 import { fixParameters } from "../lib/helpers/parameters";
+import { intlMsg } from "../lib/intl";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import axios from "axios";
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
@@ -12,17 +11,19 @@ import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const HELP = `
-${chalk.bold("w3 query")} [options] ${chalk.bold("<recipe-script>")}
+const optionsString = intlMsg.commands_build_options_options();
+const scriptStr = intlMsg.commands_create_options_recipeScript();
 
-Options:
-  -t, --test-ens  Use the development server's ENS instance
+const HELP = `
+${chalk.bold("w3 query")} [${optionsString}] ${chalk.bold(`<${scriptStr}>`)}
+
+${optionsString[0].toUpperCase() + optionsString.slice(1)}:
+  -t, --test-ens  ${intlMsg.commands_build_options_t()}
 `;
 
 export default {
   alias: ["q"],
-  description: "Query Web3APIs using recipe scripts",
+  description: intlMsg.commands_query_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
     // eslint-disable-next-line prefer-const
@@ -51,7 +52,10 @@ export default {
     }
 
     if (!recipePath) {
-      print.error("Required argument <recipe-script> is missing");
+      const scriptMissingMessage = intlMsg.commands_query_error_missingScript({
+        script: `<${scriptStr}>`,
+      });
+      print.error(scriptMissingMessage);
       print.info(HELP);
       return;
     }
@@ -112,7 +116,10 @@ export default {
         const query = filesystem.read(path.join(dir, task.query));
 
         if (!query) {
-          throw Error(`Failed to read query ${query}`);
+          const readFailMessage = intlMsg.commands_query_error_readFail({
+            query: query ?? "undefined",
+          });
+          throw Error(readFailMessage);
         }
 
         let variables: Record<string, unknown> = {};
@@ -147,7 +154,7 @@ export default {
         }
 
         if (!uri) {
-          throw Error("API needs to be initialized");
+          throw Error(intlMsg.commands_query_error_noApi());
         }
 
         print.warning("-----------------------------------");

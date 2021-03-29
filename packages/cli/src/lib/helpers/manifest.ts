@@ -1,5 +1,6 @@
 import { displayPath } from "./path";
 import { withSpinner } from "./spinner";
+import { intlMsg } from "../intl";
 
 import fs from "fs";
 import YAML from "js-yaml";
@@ -13,7 +14,10 @@ export async function loadManifest(
     const manifest = fs.readFileSync(manifestPath, "utf-8");
 
     if (!manifest) {
-      throw Error(`Unable to load manifest: ${manifestPath}`);
+      const noLoadMessage = intlMsg.lib_helpers_manifest_unableToLoad({
+        path: `${manifestPath}`,
+      });
+      throw Error(noLoadMessage);
     }
 
     try {
@@ -28,11 +32,10 @@ export async function loadManifest(
     return await run();
   } else {
     manifestPath = displayPath(manifestPath);
-
     return (await withSpinner(
-      `Load web3api from ${manifestPath}`,
-      `Failed to load web3api from ${manifestPath}`,
-      `Warnings loading web3api from ${manifestPath}`,
+      intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
+      intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
+      intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
       async (_spinner) => {
         return await run();
       }
@@ -49,7 +52,10 @@ export async function outputManifest(
     const str = YAML.safeDump(manifest);
 
     if (!str) {
-      throw Error(`Unable to dump manifest: ${manifest}`);
+      const noDumpMessage = intlMsg.lib_helpers_manifest_unableToDump({
+        manifest: `${manifest}`,
+      });
+      throw Error(noDumpMessage);
     }
 
     fs.writeFileSync(manifestPath, str, "utf-8");
@@ -59,11 +65,10 @@ export async function outputManifest(
     return run();
   } else {
     manifestPath = displayPath(manifestPath);
-
     return await withSpinner(
-      `Output web3api to ${manifestPath}`,
-      `Failed to output web3api to ${manifestPath}`,
-      `Warnings outputting web3api to ${manifestPath}`,
+      intlMsg.lib_helpers_manifest_outputText({ path: manifestPath }),
+      intlMsg.lib_helpers_manifest_outputError({ path: manifestPath }),
+      intlMsg.lib_helpers_manifest_outputWarning({ path: manifestPath }),
       (_spinner): Promise<unknown> => {
         return Promise.resolve(run());
       }

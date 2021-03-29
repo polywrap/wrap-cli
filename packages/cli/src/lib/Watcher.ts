@@ -1,3 +1,5 @@
+import { intlMsg } from "./intl";
+
 import chokidar from "chokidar";
 
 export type WatchEventType =
@@ -38,9 +40,10 @@ export class Watcher {
 
   public start(directory: string, options: WatchOptions): void {
     if (this._session) {
-      throw Error(
-        `Watcher session is already in progress. Directory: ${this._session.directory}`
-      );
+      const alreadyWatching = intlMsg.lib_watcher_alreadyWatching({
+        dir: this._session.directory,
+      });
+      throw Error(alreadyWatching);
     }
 
     const watcher = chokidar.watch(directory, options);
