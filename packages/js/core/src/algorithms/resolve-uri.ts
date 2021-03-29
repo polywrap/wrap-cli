@@ -107,5 +107,9 @@ export async function resolveUri(
   }
 
   // We've failed to resolve the URI
-  throw Error(`No Web3API found at URI: ${uri.uri}`);
+  throw Error(
+    `No Web3API found at URI: ${uri.uri}` +
+      `\nResolution Path: ${JSON.stringify(uriHistory, null, 2)}` +
+      `\nResolvers Used: ${uriResolverImplementations}`
+  );
 }

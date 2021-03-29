@@ -60,23 +60,33 @@ export default {
       return;
     }
 
-    const {
-      data: { ipfs, ethereum },
-    } = await axios.get("http://localhost:4040/providers");
-    const {
-      data: { ensAddress },
-    } = await axios.get("http://localhost:4040/ens");
+    let ipfsProvider = "";
+    let ethereumProvider = "";
+    let ensAddress = "";
+
+    try {
+      const {
+        data: { ipfs, ethereum },
+      } = await axios.get("http://localhost:4040/providers");
+      ipfsProvider = ipfs;
+      ethereumProvider = ethereum;
+      const { data } = await axios.get("http://localhost:4040/ens");
+      ensAddress = data.ensAddress;
+    } catch (e) {
+      print.error(`w3 test-env not found, please run "w3 test-env up"`);
+      return;
+    }
 
     // TODO: move this into its own package, since it's being used everywhere?
     // maybe have it exported from test-env.
     const redirects: UriRedirect[] = [
       {
         from: "w3://ens/ethereum.web3api.eth",
-        to: ethereumPlugin({ provider: ethereum }),
+        to: ethereumPlugin({ provider: ethereumProvider }),
       },
       {
         from: "w3://ens/ipfs.web3api.eth",
-        to: ipfsPlugin({ provider: ipfs }),
+        to: ipfsPlugin({ provider: ipfsProvider }),
       },
       {
         from: "w3://ens/ens.web3api.eth",
@@ -125,13 +135,15 @@ export default {
               if (typeof value === "string") {
                 if (value[0] === "$") {
                   output[key] = constants[value.replace("$", "")];
+                } else {
+                  output[key] = value;
                 }
               } else if (typeof value === "object") {
                 output[key] = resolveConstants(
                   value as Record<string, unknown>
                 );
               } else {
-                output[key] = vars[key];
+                output[key] = value;
               }
             });
 
