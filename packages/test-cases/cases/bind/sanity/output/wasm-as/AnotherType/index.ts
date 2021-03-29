@@ -13,6 +13,7 @@ import * as Types from "..";
 
 export class AnotherType {
   prop: string | null;
+  circular: Types.CustomType | null;
 
   static toBuffer(type: AnotherType): ArrayBuffer {
     return serializeAnotherType(type);

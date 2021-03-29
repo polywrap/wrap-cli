@@ -19,9 +19,15 @@ export function serializeAnotherType(type: AnotherType): ArrayBuffer {
 }
 
 export function writeAnotherType(writer: Write, type: AnotherType): void {
-  writer.writeMapLength(1);
+  writer.writeMapLength(2);
   writer.writeString("prop");
   writer.writeNullableString(type.prop);
+  writer.writeString("circular");
+  if (type.circular) {
+    Types.CustomType.write(writer, type.circular);
+  } else {
+    writer.writeNil();
+  }
 }
 
 export function deserializeAnotherType(buffer: ArrayBuffer): AnotherType {
@@ -33,6 +39,7 @@ export function readAnotherType(reader: Read): AnotherType {
   var numFields = reader.readMapLength();
 
   var _prop: string | null = null;
+  var _circular: Types.CustomType | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -41,10 +48,16 @@ export function readAnotherType(reader: Read): AnotherType {
     if (field == "prop") {
       _prop = reader.readNullableString();
     }
+    else if (field == "circular") {
+      if (!reader.isNextNil()) {
+        const object = Types.CustomType.read(reader);
+        _circular = object;
+      }
+    }
   }
 
-
   return {
-    prop: _prop
+    prop: _prop,
+    circular: _circular
   };
 }
