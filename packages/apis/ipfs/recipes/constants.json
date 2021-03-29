@@ -1,5 +1,6 @@
 {
   "SampleCid": "QmcUZ2oVczdFaRsY8Fcqi8f27GLF8fY6mVboGZGYS8JE72",
   "IpfsUrl": "http://127.0.0.1:5001",
-  "FileName": "test.txt"
+  "FileName": "test.txt",
+  "File": "file:./test.txt"
 }

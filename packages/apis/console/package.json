@@ -1,7 +1,6 @@
 {
-  "name": "@web3api/console",
+  "name": "@web3api/console-api",
   "description": "Web3API for logging",
-  "private": true,
   "version": "0.0.1-prealpha.8",
   "scripts": {
     "build": "w3 build",
@@ -13,7 +12,6 @@
   },
   "devDependencies": {
     "@web3api/cli": "0.0.1-prealpha.8",
-    "@web3api/wasm-as": "0.0.1-prealpha.8",
-    "js-yaml": "3.14.0"
+    "@web3api/wasm-as": "0.0.1-prealpha.8"
   }
 }

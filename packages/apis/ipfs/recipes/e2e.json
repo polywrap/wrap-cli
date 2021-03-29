@@ -13,6 +13,6 @@
   },
   {
     "query": "./addFile.graphql",
-    "variables": { "data": "file:recipes/test.txt", "fileName": "$FileName", "ipfsUrl": "$IpfsUrl" }
+    "variables": { "data": "$File", "fileName": "$FileName", "ipfsUrl": "$IpfsUrl" }
   }
 ]
