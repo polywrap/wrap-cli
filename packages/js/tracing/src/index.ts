@@ -5,8 +5,6 @@ import {
 } from "@opentelemetry/tracing";
 import { WebTracerProvider } from "@opentelemetry/web";
 import * as api from "@opentelemetry/api";
-import { ZoneContextManager } from "@opentelemetry/context-zone";
-import { B3Propagator } from "@opentelemetry/propagator-b3";
 
 export class Tracer {
   public static traceEnabled = false;
@@ -22,7 +20,7 @@ export class Tracer {
     this.traceEnabled = true;
     this.initProvider();
 
-    this._tracer = api.trace.getTracer(tracerName);
+    this._tracer = this._provider!.getTracer(tracerName);
   }
 
   static disableTracing(): void {
@@ -106,9 +104,6 @@ export class Tracer {
       new SimpleSpanProcessor(new ConsoleSpanExporter())
     );
 
-    this._provider.register({
-      contextManager: new ZoneContextManager(),
-      propagator: new B3Propagator(),
-    });
+    this._provider.register();
   }
 }
