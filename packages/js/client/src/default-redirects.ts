@@ -2,6 +2,7 @@ import { Uri, UriRedirect } from "@web3api/core-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
+import { httpPlugin } from "@web3api/http-plugin-js";
 import { loggerPlugin } from "@web3api/logger-plugin-js";
 
 export function getDefaultRedirects(): UriRedirect<Uri>[] {
@@ -24,6 +25,10 @@ export function getDefaultRedirects(): UriRedirect<Uri>[] {
         provider:
           "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
       }),
+    },
+    {
+      from: new Uri("w3://ens/http.web3api.eth"),
+      to: httpPlugin()
     },
     {
       from: new Uri("w3://w3/logger"),

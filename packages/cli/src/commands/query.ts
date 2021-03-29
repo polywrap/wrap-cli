@@ -11,7 +11,6 @@ import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import { httpPlugin } from "@web3api/http-plugin-js";
 import { readFileSync } from "fs";
 import { resolve, dirname } from "path";
 
@@ -90,11 +89,7 @@ export default {
       {
         from: "w3://ens/ens.web3api.eth",
         to: ensPlugin({ address: ensAddress }),
-      },
-      {
-        from: "w3://ens/http.web3api.eth",
-        to: httpPlugin(),
-      },
+      }
     ];
 
     const client = new Web3ApiClient({ redirects });
