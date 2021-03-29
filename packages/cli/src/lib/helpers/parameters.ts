@@ -1,4 +1,6 @@
 // Workaround for https://github.com/infinitered/gluegun/pull/464.
+import { intlMsg } from "../intl";
+
 export const fixParameters = (
   parameters: { options: Record<string, unknown>; array?: string[] },
   booleanOptions: Record<string, unknown>
@@ -15,9 +17,10 @@ export const fixParameters = (
     .join(", ");
 
   if (unexpectedStringOptions.length > 1) {
-    throw new Error(
-      `Unexpected value provided for one or more of ${optionNames}. See --help for more information.`
+    const unexpectedValueMessage = intlMsg.lib_helpers_parameters_unexpectedValue(
+      { options: `${optionNames}` }
     );
+    throw new Error(unexpectedValueMessage);
   } else if (unexpectedStringOptions.length == 1) {
     const params = parameters.array || [];
     params.unshift(unexpectedStringOptions[0].value);

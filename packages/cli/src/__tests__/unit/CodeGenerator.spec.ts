@@ -51,7 +51,7 @@ describe("CodeGenerator validation", () => {
 
   it("Should generate", async () => {
     if (fs.existsSync(outputDir)) {
-      fs.rmdirSync(outputDir, { recursive: true });
+      fs.rmSync(outputDir, { recursive: true });
     }
 
     const project = new Project({
@@ -177,6 +177,6 @@ type Ethereum_Mutation @imported(
     const { schema: schema3 } = require("../project/types/folder/schema2.ts");
     expect(schema3).toEqual(expectedSchema);
 
-    fs.rmdirSync(outputDir, { recursive: true });
+    fs.rmSync(outputDir, { recursive: true });
   });
 });
