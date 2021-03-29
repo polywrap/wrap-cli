@@ -25,7 +25,7 @@ function main(tsConfigPath: string, langPath: string, targetFilePath: string) {
   sourceFile.addStatements("/* eslint-disable */");
   // import getIntl for formatjs
   const importFormatJsIntl = sourceFile.addImportDeclaration({
-    moduleSpecifier: ".",
+    moduleSpecifier: "./utils",
   });
   importFormatJsIntl.addNamedImport({ name: "getIntl" });
   sourceFile.addVariableStatement({
