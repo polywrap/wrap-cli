@@ -14,8 +14,7 @@
     "declarationDir": "build/types"
   },
   "include": [
-    "./src/**/*.ts",
-    "./lang/*.ts"
+    "./src/**/*.ts"
   ],
   "exclude": []
 }
