@@ -1,4 +1,4 @@
-// TODO: https://github.com/Web3-API/prototype/issues/101
+// TODO: https://github.com/web3-api/monorepo/issues/101
 import { Uri, Client, InvokeApiResult } from "../";
 
 interface MaybeUriOrManifest {

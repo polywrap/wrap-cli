@@ -1,3 +1,6 @@
+// TODO: Generate this from the schema.graphql file
+// https://github.com/web3-api/monorepo/issues/101
+
 export class Header {
   key: string;
   value: string;
