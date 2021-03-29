@@ -15,4 +15,4 @@ mutation:
     file: ./src/mutation/index.ts
 import_redirects:
   - uri: w3://ens/http.web3api.eth
-    schema: ../packages/js/plugins/http/schema.graphql
+    schema: ../../js/plugins/http/schema.graphql

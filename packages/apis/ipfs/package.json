@@ -1,6 +1,6 @@
 {
   "name": "@web3api/ipfs",
-  "version": "0.0.1-prealpha.1",
+  "version": "0.0.1-prealpha.8",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -12,13 +12,10 @@
     "test:env:down": "w3 test-env down"
   },
   "devDependencies": {
-    "@web3api/cli": "0.0.1-prealpha.4",
-    "@web3api/wasm-as": "0.0.1-prealpha.4",
+    "@web3api/cli": "0.0.1-prealpha.8",
+    "@web3api/wasm-as": "0.0.1-prealpha.8",
     "as-base64": "0.1.1",
-    "ethers": "5.0.8",
-    "js-yaml": "3.14.0",
-    "ipfs": "0.54.2",
-    "form-data": "4.0.0",
-    "assemblyscript-json": "1.0.0"
+    "assemblyscript-json": "1.0.0",
+    "ipfs": "0.52.0"
   }
 }
