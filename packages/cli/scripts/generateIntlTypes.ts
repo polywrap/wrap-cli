@@ -5,12 +5,13 @@ import {
   IndentationText
 } from "ts-morph";
 import fs from "fs";
+import path from "path";
 
 const tsConfigPath = `${__dirname}/../tsconfig.json`;
 const defaultLanguagePath = `${__dirname}/../lang/en.json`;
 const targetFilePath = `${__dirname}/../src/lib/intl/types.ts`;
 
-function main(tsConfigPath: string, defaultLangPath: string, targetFilePath: string) {
+function main(tsConfigPath: string, langPath: string, targetFilePath: string) {
   // create source file
   const project = new Project({
     tsConfigFilePath: tsConfigPath,
@@ -59,7 +60,7 @@ function main(tsConfigPath: string, defaultLangPath: string, targetFilePath: str
     .getInitializerIfKindOrThrow(SyntaxKind.ObjectLiteralExpression);
   // read default language strings
   const messages: Record<string, string> = JSON.parse(
-    fs.readFileSync(defaultLangPath, "utf-8")
+    fs.readFileSync(langPath, "utf-8")
   );
   // iterate and parse default language strings
   for (const [id, text] of Object.entries(messages)) {
@@ -104,6 +105,42 @@ function main(tsConfigPath: string, defaultLangPath: string, targetFilePath: str
   }
   // save
   sourceFile.saveSync();
+
+  // validate other lang json files to make sure they include all required messages
+  const langFileName = path.basename(langPath);
+  const langDir = path.dirname(langPath);
+  const langs = fs.readdirSync(langDir).filter(
+    (lang) => lang !== langFileName
+  );
+
+  const langErrors: Record<string, string[]> = {};
+
+  for (const lang of langs) {
+    const langMessages: Record<string, string> = JSON.parse(
+      fs.readFileSync(path.join(langDir, lang), "utf-8")
+    );
+
+    const missingMessages: string[] = [];
+
+    for (const message of Object.keys(messages)) {
+      if (!langMessages[message]) {
+        missingMessages.push(message);
+      }
+    }
+
+    if (missingMessages.length > 0) {
+      langErrors[lang] = missingMessages;
+    }
+  }
+
+  if (Object.keys(langErrors).length > 0) {
+    throw Error(
+      `Found lang files missing required commands:\n` +
+      `${Object.keys(langErrors).map((lang) =>
+        `"${lang}": ${JSON.stringify(langErrors[lang], null, 2)}\n`
+      )}`
+    );
+  }
 }
 
 try {
