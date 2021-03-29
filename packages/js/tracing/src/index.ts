@@ -16,6 +16,7 @@ export class Tracer {
     | WebTracerProvider
     | BasicTracerProvider
     | null = null;
+  private static _spans: Array<api.Span> = [];
 
   static enableTracing(tracerName: string): void {
     this.traceEnabled = true;
@@ -28,16 +29,29 @@ export class Tracer {
     this.traceEnabled = false;
   }
 
+  static pushSpan(span: api.Span): void {
+    this._spans.push(span);
+  }
+
+  static currentSpan(): api.Span | undefined {
+    return this._spans.slice(-1)[0];
+  }
+
+  static popSpan(): void {
+    this._spans.pop();
+  }
+
   static startSpan(spanName: string): void {
     if (!this.traceEnabled) return;
 
-    this._tracer.startSpan(spanName);
+    const span = this._tracer.startSpan(spanName);
+    this.pushSpan(span);
   }
 
   static setAttribute(attrName: string, data: unknown): void {
     if (!this.traceEnabled) return;
 
-    const span = api.getSpan(api.context.active());
+    const span = this.currentSpan();
     if (span) {
       span.setAttribute(attrName, JSON.stringify(data));
     }
@@ -46,7 +60,7 @@ export class Tracer {
   static addEvent(event: string, data?: unknown): void {
     if (!this.traceEnabled) return;
 
-    const span = api.getSpan(api.context.active());
+    const span = this.currentSpan();
 
     if (span) {
       span.addEvent(event, { data: JSON.stringify(data) });
@@ -56,7 +70,7 @@ export class Tracer {
   static recordException(error: api.Exception): void {
     if (!this.traceEnabled) return;
 
-    const span = api.getSpan(api.context.active());
+    const span = this.currentSpan();
 
     if (span) {
       // recordException converts the error into a span event.
@@ -71,8 +85,11 @@ export class Tracer {
   static endSpan(): void {
     if (!this.traceEnabled) return;
 
-    const span = api.getSpan(api.context.active());
-    if (span) span.end();
+    const span = this.currentSpan();
+    if (span) {
+      span.end();
+      this.popSpan();
+    }
   }
 
   static initProvider(): void {

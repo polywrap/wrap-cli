@@ -66,7 +66,7 @@ export async function resolveUri(
         Uri.equals(testUri, from) ? redirect.to : testUri;
 
       const uriOrPlugin = tryRedirect(resolvedUri);
-      Tracer.addEvent("trid redirect", uriOrPlugin);
+      Tracer.addEvent("tried redirect", uriOrPlugin);
 
       if (Uri.isUri(uriOrPlugin)) {
         Tracer.addEvent("resolved as uri");
