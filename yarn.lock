@@ -9708,6 +9708,19 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.6.tgz#ff040b2b0853b23c3d31027523706f1885d76bee"
   integrity sha512-nTnJ528pbqxYanhpDYsi4Rd8MAeaBA67+RZ10CM1m3bTAVFEDcd5AuA4a6W5YkGZ1iNXHzZz8T6TBKLeBuNriQ==
 
+graphql-json-transform@^1.1.0-alpha.0:
+  version "1.1.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/graphql-json-transform/-/graphql-json-transform-1.1.0-alpha.0.tgz#fb0c88d24840067e6c55ac64bbc8d4e5de245d2d"
+  integrity sha512-I6lR/lYEezSz4iru0f7a/wR8Rzi3pCafk7S0bX2b/WQOtK0vKabxLShGBXIslsi0arMehIjvOPHJl7MpOUqj0w==
+
+graphql-schema-cycles@1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/graphql-schema-cycles/-/graphql-schema-cycles-1.1.2.tgz#925d65d774d296238620aaedc391f26a9e46eb33"
+  integrity sha512-0I1pOOZZ8MhcNvhvYVRBIGnco8Q4EWfRYJ8vBuGEajuEuSXhC340Tasx7so1jjSphk+48kaoXy2+LNaTnEaSjA==
+  dependencies:
+    graphql "15.5.0"
+    graphql-json-transform "^1.1.0-alpha.0"
+
 graphql-tag@2.10.4:
   version "2.10.4"
   resolved "https://registry.yarnpkg.com/graphql-tag/-/graphql-tag-2.10.4.tgz#2f301a98219be8b178a6453bb7e33b79b66d8f83"
@@ -9718,17 +9731,7 @@ graphql-tag@2.11.0:
   resolved "https://registry.yarnpkg.com/graphql-tag/-/graphql-tag-2.11.0.tgz#1deb53a01c46a7eb401d6cb59dec86fa1cccbffd"
   integrity sha512-VmsD5pJqWJnQZMUeRwrDhfgoyqcfwEkvtpANqcoUG8/tOLkwNgU9mzub/Mc78OJMhHjx7gfAMTxzdG43VGg3bA==
 
-graphql@15.3.0:
-  version "15.3.0"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.3.0.tgz#3ad2b0caab0d110e3be4a5a9b2aa281e362b5278"
-  integrity sha512-GTCJtzJmkFLWRfFJuoo9RWWa/FfamUHgiFosxi/X1Ani4AVWbeyBenZTNX6dM+7WSbbFfTo/25eh0LLkwHMw2w==
-
-graphql@15.4.0:
-  version "15.4.0"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.4.0.tgz#e459dea1150da5a106486ba7276518b5295a4347"
-  integrity sha512-EB3zgGchcabbsU9cFe1j+yxdzKQKAbGUWRb13DsrsMN1yyfmmIq+2+L5MqVWcDCE4V89R5AyUOi7sMOGxdsYtA==
-
-graphql@^15.4.0:
+graphql@15.5.0:
   version "15.5.0"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.5.0.tgz#39d19494dbe69d1ea719915b578bf920344a69d5"
   integrity sha512-OmaM7y0kaK31NKG31q4YbD2beNYa6jBBKtMFT6gLYJljHLJr42IqJ8KX08u3Li/0ifzTU5HjmoOOrwa5BRLeDA==
