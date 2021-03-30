@@ -43,7 +43,6 @@ export class Tracer {
   static startSpan(spanName: string): void {
     if (!this.traceEnabled) return;
 
-    const currentSpan = this.currentSpan();
     const span = this._tracer.startSpan(spanName, {});
     this.pushSpan(span);
   }
