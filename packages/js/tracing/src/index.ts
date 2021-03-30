@@ -2,6 +2,7 @@ import {
   BasicTracerProvider,
   ConsoleSpanExporter,
   SimpleSpanProcessor,
+  Tracer as otTracer,
 } from "@opentelemetry/tracing";
 import { ZipkinExporter } from "@opentelemetry/exporter-zipkin";
 import { WebTracerProvider } from "@opentelemetry/web";
@@ -10,7 +11,7 @@ import * as api from "@opentelemetry/api";
 export class Tracer {
   public static traceEnabled = false;
 
-  private static _tracer: api.Tracer;
+  private static _tracer: otTracer;
   private static _provider:
     | WebTracerProvider
     | BasicTracerProvider
@@ -43,7 +44,14 @@ export class Tracer {
   static startSpan(spanName: string): void {
     if (!this.traceEnabled) return;
 
-    const span = this._tracer.startSpan(spanName, {});
+    const currentSpan = this.currentSpan();
+    const span = this._tracer.startSpan(
+      spanName,
+      {},
+      currentSpan
+        ? api.setSpanContext(api.context.active(), currentSpan.context())
+        : undefined
+    );
     this.pushSpan(span);
   }
 
