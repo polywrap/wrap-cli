@@ -1,5 +1,5 @@
-description: Uniswap Web3API
-repository: https://github.com/web3-api/monorepo
+description: UniswapV2 Web3API
+repository: https://github.com/web3-api/monorepo/packages/apis/uniswapv2
 format: 0.0.1-prealpha.1
 mutation:
   schema:
