@@ -171,6 +171,7 @@ export function circularDefinitions(astNode: DocumentNode): void {
 
   const { cycleStrings, foundCycle } = getSchemaCycles(astNode, {
     ignoreTypeNames: operationTypes,
+    allowOnNullableFields: true,
   });
 
   if (foundCycle) {

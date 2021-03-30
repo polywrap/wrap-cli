@@ -207,6 +207,16 @@ type TestImport_NestedObject @imported(
 }
 `
 
+const circularTypes6 = `
+type A {
+  prop: B!
+}
+
+type B {
+  prop: A
+}
+`
+
 describe("Web3API Schema Type Validation", () => {
   it("typeDefinitions", () => {
     const exec = (schema: string) => () => parseSchema(schema, {
@@ -291,5 +301,8 @@ describe("Web3API Schema Type Validation", () => {
     expect(exec(circularTypes5)).toThrow(
       /Graphql cycles are not supported. \nFound: \n- { TestImport_NestedObject -\[circular\]-> TestImport_Object -\[nested\]-> TestImport_NestedObject }/gm
     )
+
+    //Should allow circular references on nullable fields
+    expect(exec(circularTypes6)).not.toThrow()
   })
 });
