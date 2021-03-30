@@ -22,7 +22,9 @@ export class Tracer {
     this.traceEnabled = true;
     this.initProvider();
 
-    this._tracer = this._provider!.getTracer(tracerName);
+    if (this._provider) {
+      this._tracer = this._provider.getTracer(tracerName);
+    }
   }
 
   static disableTracing(): void {

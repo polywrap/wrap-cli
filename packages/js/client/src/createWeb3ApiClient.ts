@@ -10,7 +10,7 @@ export { PluginConfigs };
 
 export async function createWeb3ApiClient(
   plugins: PluginConfigs,
-  traceEnabled: boolean = false
+  traceEnabled = false
 ): Promise<Web3ApiClient> {
   const redirects: UriRedirect[] = [];
 
