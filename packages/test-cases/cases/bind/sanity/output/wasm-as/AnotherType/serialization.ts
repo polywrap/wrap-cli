@@ -49,12 +49,14 @@ export function readAnotherType(reader: Read): AnotherType {
       _prop = reader.readNullableString();
     }
     else if (field == "circular") {
+      var object: Types.CustomType | null = null;
       if (!reader.isNextNil()) {
-        const object = Types.CustomType.read(reader);
-        _circular = object;
+        object = Types.CustomType.read(reader);
       }
+      _circular = object;
     }
   }
+
 
   return {
     prop: _prop,
