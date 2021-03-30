@@ -158,9 +158,9 @@ export function circularDefinitions(astNode: DocumentNode): void {
   visit(astNode, {
     enter: {
       ObjectTypeDefinition: (node) => {
-        const isOperationType = operationTypeNames.some((name) =>
-          node.name.value === name ||
-          node.name.value.endsWith(`_${name}`)
+        const isOperationType = operationTypeNames.some(
+          (name) =>
+            node.name.value === name || node.name.value.endsWith(`_${name}`)
         );
         if (isOperationType) {
           operationTypes.push(node.name.value);
