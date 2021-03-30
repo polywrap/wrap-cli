@@ -83,6 +83,11 @@ class Sanity {
     const decoder = new ReadDecoder(buffer);
     deserializeSanity(decoder, this);
   }
+
+  fromBufferWithOverflows(buffer: ArrayBuffer): void {
+    const decoder = new ReadDecoder(buffer);
+    deserializeWithOverflow(decoder, this);
+  }
 }
 
 function serializeSanity(writer: Write, type: Sanity): void {
@@ -233,6 +238,72 @@ function deserializeSanity(reader: Read, type: Sanity): void {
   }
 }
 
+function deserializeWithOverflow(reader: Read, type: Sanity): void {
+  let numFields = reader.readMapLength();
+
+  while (numFields > 0) {
+    numFields--;
+    const field = reader.readString();
+
+    if (field == "nil") {
+      type.nil = reader.readNullableString();
+    } else if (field == "int8") {
+      type.int8 = <i8>reader.readInt16();
+    } else if (field == "int16") {
+      type.int16 = <i16>reader.readInt8();
+    } else if (field == "int32") {
+      type.int32 = <i32>reader.readInt16();
+    } else if (field == "int64") {
+      type.int64 = <i64>reader.readInt8();
+    } else if (field == "uint8") {
+      type.uint8 = <u8>reader.readUInt64();
+    } else if (field == "uint16") {
+      type.uint16 = <u16>reader.readUInt8()
+    } else if (field == "uint32") {
+      type.uint32 = <u32>reader.readUInt16();
+    } else if (field == "uint64") {
+      type.uint64 = <u64>reader.readUInt8();
+    } else if (field == "boolean") {
+      type.boolean = reader.readBool();
+    } else if (field == "optUint32") {
+      type.optUint32 = reader.readNullableUInt32();
+    } else if (field == "optUint64") {
+      type.optUint64 = reader.readNullableUInt64();
+    } else if (field == "optBool") {
+      type.optBool = reader.readNullableBool();
+    } else if (field == "float32") {
+      type.float32 = <f32>reader.readFloat64();
+    } else if (field == "float64") {
+      type.float64 = <f64>reader.readFloat32();
+    } else if (field == "str") {
+      type.str = reader.readString();
+    } else if (field == "bytes") {
+      type.bytes = reader.readBytes();
+    } else if (field == "array") {
+      type.array = reader.readArray(
+        (reader: Read): u8 => {
+          return <u8>reader.readInt8();
+        }
+      );
+    } else if (field == "map") {
+      type.map = reader.readMap(
+        (reader: Read): string => {
+          return reader.readString();
+        },
+        (reader: Read): Array<i32> => {
+          return reader.readArray(
+            (reader: Read): i32 => {
+              return <i32>reader.readInt16();
+            }
+          );
+        }
+      );
+    } else {
+      throw new Error("Sanity.decode: Unknown field name '" + field + "'");
+    }
+  }
+}
+
 describe("MsgPack: Sanity", () => {
   it("Serializes & Deserializes", () => {
     const input = new Sanity();
@@ -241,4 +312,14 @@ describe("MsgPack: Sanity", () => {
     output.fromBuffer(input.toBuffer());
     expect(output).toStrictEqual(input);
   });
+
+  // THIS SHOULD FAIL; CAN'T ASSERT EXCEPTION IS THROWN
+  // it("Serializes & Deserializes with Overflow", () => {
+  //   const input = new Sanity();
+  //   input.init();
+  //   const output = new Sanity();
+  //   output.fromBufferWithOverflows(input.toBuffer());
+  //   expect(output).toStrictEqual(input);
+  // });
+
 });

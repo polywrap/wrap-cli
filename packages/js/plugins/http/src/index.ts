@@ -10,7 +10,7 @@ import {
   Plugin,
   PluginModules,
   PluginManifest,
-  PluginFactory,
+  PluginPackage,
 } from "@web3api/core-js";
 
 export class HttpPlugin extends Plugin {
@@ -47,7 +47,7 @@ export class HttpPlugin extends Plugin {
   }
 }
 
-export const httpPlugin: PluginFactory<Record<string, never>> = () => {
+export const httpPlugin = (): PluginPackage => {
   return {
     factory: () => new HttpPlugin(),
     manifest: manifest,

@@ -57,4 +57,4 @@ export type PluginPackage = {
   manifest: PluginManifest;
 };
 
-export type PluginFactory<Opts> = (opts: Opts) => PluginPackage;
+export type PluginFactory<TOpts> = (opts: TOpts) => PluginPackage;

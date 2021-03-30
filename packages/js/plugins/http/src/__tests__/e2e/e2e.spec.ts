@@ -1,5 +1,5 @@
 import { Web3ApiClient } from "@web3api/client-js"
-import { HttpPlugin } from "../..";
+import { httpPlugin } from "../..";
 import { Response } from "../../types";
 import nock from "nock"
 
@@ -18,15 +18,11 @@ describe("e2e tests for HttpPlugin", () => {
         .get("/api")
         .reply(200, '{data: "test-response"}')
 
-
       const web3ApiClient = new Web3ApiClient({
         redirects: [
           {
             from: "w3://ens/http.web3api.eth",
-            to: {
-              factory: () => new HttpPlugin(),
-              manifest: HttpPlugin.manifest(),
-            },
+            to: httpPlugin(),
           },
         ]
       })
@@ -64,10 +60,7 @@ describe("e2e tests for HttpPlugin", () => {
         redirects: [
           {
             from: "w3://ens/http.web3api.eth",
-            to: {
-              factory: () => new HttpPlugin(),
-              manifest: HttpPlugin.manifest(),
-            },
+            to: httpPlugin(),
           },
         ]
       })
@@ -105,10 +98,7 @@ describe("e2e tests for HttpPlugin", () => {
         redirects: [
           {
             from: "w3://ens/http.web3api.eth",
-            to: {
-              factory: () => new HttpPlugin(),
-              manifest: HttpPlugin.manifest(),
-            },
+            to: httpPlugin(),
           },
         ]
       })
@@ -152,10 +142,7 @@ describe("e2e tests for HttpPlugin", () => {
         redirects: [
           {
             from: "w3://ens/http.web3api.eth",
-            to: {
-              factory: () => new HttpPlugin(),
-              manifest: HttpPlugin.manifest(),
-            },
+            to: httpPlugin(),
           },
         ]
       })
@@ -193,10 +180,7 @@ describe("e2e tests for HttpPlugin", () => {
         redirects: [
           {
             from: "w3://ens/http.web3api.eth",
-            to: {
-              factory: () => new HttpPlugin(),
-              manifest: HttpPlugin.manifest(),
-            },
+            to: httpPlugin(),
           },
         ]
       })
@@ -235,10 +219,7 @@ describe("e2e tests for HttpPlugin", () => {
         redirects: [
           {
             from: "w3://ens/http.web3api.eth",
-            to: {
-              factory: () => new HttpPlugin(),
-              manifest: HttpPlugin.manifest(),
-            },
+            to: httpPlugin(),
           },
         ]
       })
@@ -277,10 +258,7 @@ describe("e2e tests for HttpPlugin", () => {
         redirects: [
           {
             from: "w3://ens/http.web3api.eth",
-            to: {
-              factory: () => new HttpPlugin(),
-              manifest: HttpPlugin.manifest(),
-            },
+            to: httpPlugin(),
           },
         ]
       })
@@ -325,10 +303,7 @@ describe("e2e tests for HttpPlugin", () => {
         redirects: [
           {
             from: "w3://ens/http.web3api.eth",
-            to: {
-              factory: () => new HttpPlugin(),
-              manifest: HttpPlugin.manifest(),
-            },
+            to: httpPlugin(),
           },
         ]
       })
