@@ -31,6 +31,12 @@ type Query {
     pair: Pair!
   ): Uint256!
 
+  quote(
+    amountA: Uint256!
+    reserveA: Uint256!
+    reserveB: Uint256!
+  ): Uint256!
+
   pairOutputAmount(
     pair: Pair!
     inputAmount: TokenAmount!
@@ -41,12 +47,20 @@ type Query {
     outputAmount: TokenAmount!
   ): TokenAmount!
 
+  pairLiquidityMinted(
+    pair: Pair!
+    totalSupply: TokenAmount!
+    tokenAmount0: TokenAmount!
+    tokenAmount1: TokenAmount!
+  ): TokenAmount
+
   pairLiquidityValue(
     pair: Pair!
-    token: Token!
     totalSupply: TokenAmount!
     liquidity: TokenAmount!
-  ): TokenAmount!
+    feeOn: boolean
+    kLast: Uint256
+  ): [TokenAmount!]!
 
   # Route
   routePath(
@@ -111,6 +125,14 @@ type Query {
     token1: Token!
   ): Pair!
 
+  fetchTotalSupply(
+    token: Token!
+  ): TokenAmount!
+
+  fetchKLast(
+    token: Token!
+  ): Uint256!
+
   # Constants
   factoryAddress: String!
   initCodeHash: String!
@@ -163,4 +185,8 @@ type Trade {
   route: Route!
   amount: TokenAmount!
   tradeType: TradeType!
+}
+
+type BestTradeOptions {
+  pairs: [Pair!]!
 }
