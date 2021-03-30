@@ -77,7 +77,6 @@ export async function resolveUri(
         }
       } else {
         Tracer.addEvent("resolved as plugin");
-        Tracer.endSpan();
 
         // We've found a plugin, return an instance of it
         return createPluginApi(resolvedUri, uriOrPlugin);

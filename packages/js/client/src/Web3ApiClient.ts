@@ -38,7 +38,7 @@ export class Web3ApiClient implements Client {
       this.enableTracing();
     }
 
-    Tracer.startSpan("constructor");
+    Tracer.startSpan("Web3ApiClient: constructor");
 
     if (config) {
       this._config = {
@@ -81,7 +81,7 @@ export class Web3ApiClient implements Client {
     try {
       const { uri, query, variables } = options;
 
-      Tracer.startSpan("query");
+      Tracer.startSpan("Web3ApiClient: query");
 
       Tracer.setAttribute("options", options);
 
@@ -134,8 +134,6 @@ export class Web3ApiClient implements Client {
       Tracer.setAttribute("data", data);
       Tracer.setAttribute("errors", errors);
 
-      Tracer.endSpan();
-
       return {
         data: data as TData,
         errors: errors.length === 0 ? undefined : errors,
@@ -159,14 +157,13 @@ export class Web3ApiClient implements Client {
     try {
       const uri = new Uri(options.uri);
 
-      Tracer.startSpan("invoke");
+      Tracer.startSpan("Web3ApiClient: invoke");
 
       Tracer.setAttribute("options", options);
 
       const api = await this.loadWeb3Api(uri);
 
       Tracer.addEvent("Load web3api", api);
-      Tracer.endSpan();
 
       return (await api.invoke(
         {
@@ -187,7 +184,7 @@ export class Web3ApiClient implements Client {
   public async loadWeb3Api(uri: Uri): Promise<Api> {
     let api = this._apiCache.get(uri.uri);
 
-    Tracer.startSpan("loadWeb3Api");
+    Tracer.startSpan("Web3ApiClient: loadWeb3Api");
 
     Tracer.setAttribute("uri", uri);
 

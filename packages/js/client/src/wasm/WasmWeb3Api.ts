@@ -48,7 +48,7 @@ export class WasmWeb3Api extends Api {
   ) {
     super();
 
-    Tracer.startSpan("WasmWeb3Api constructor");
+    Tracer.startSpan("WasmWeb3Api: constructor");
 
     Tracer.setAttribute("uri", _uri);
     Tracer.setAttribute("manifest", _manifest);
@@ -64,7 +64,8 @@ export class WasmWeb3Api extends Api {
   ): Promise<InvokeApiResult<unknown | ArrayBuffer>> {
     const { module, method, input, decode } = options;
 
-    Tracer.startSpan("invoke");
+    Tracer.startSpan("WasmWeb3Api: invoke");
+    Tracer.setAttribute("options", options);
 
     // Fetch the WASM module
     const wasm = await this.getWasmModule(module, client);
@@ -304,11 +305,12 @@ export class WasmWeb3Api extends Api {
   }
 
   public async getSchema(client: Client): Promise<string> {
-    if (this._schema) {
-      return this._schema;
-    }
     try {
-      Tracer.startSpan("getSchema");
+      Tracer.startSpan("WasmWeb3Api: getSchema");
+
+      if (this._schema) {
+        return this._schema;
+      }
 
       const module = this._manifest.query || this._manifest.mutation;
 
@@ -348,13 +350,14 @@ export class WasmWeb3Api extends Api {
       }
 
       Tracer.addEvent("Decoded schema", this._schema);
-      Tracer.endSpan();
 
       return this._schema;
     } catch (error) {
       Tracer.recordException(error);
 
       throw error;
+    } finally {
+      Tracer.endSpan();
     }
   }
 
@@ -362,12 +365,12 @@ export class WasmWeb3Api extends Api {
     module: InvokableModules,
     client: Client
   ): Promise<ArrayBuffer> {
-    if (this._wasm[module] !== undefined) {
-      return this._wasm[module] as ArrayBuffer;
-    }
-
     try {
-      Tracer.startSpan("getWasmModule");
+      Tracer.startSpan("WasmWeb3Api: getWasmModule");
+
+      if (this._wasm[module] !== undefined) {
+        return this._wasm[module] as ArrayBuffer;
+      }
 
       const moduleManifest = this._manifest[module];
 
@@ -394,7 +397,6 @@ export class WasmWeb3Api extends Api {
       }
 
       Tracer.addEvent("Query file", data);
-      Tracer.endSpan();
 
       this._wasm[module] = data;
       return data;

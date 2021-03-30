@@ -10,13 +10,11 @@ export function filterResults(
   Tracer.setAttribute("result", result);
   Tracer.setAttribute("filter", filter);
 
-  if (!result) {
-    Tracer.endSpan();
-
-    return result;
-  }
-
   try {
+    if (!result) {
+      return result;
+    }
+
     if (typeof result !== "object") {
       throw Error(
         `The result given is not an object. ` +
@@ -24,30 +22,30 @@ export function filterResults(
           `Filter: ${JSON.stringify(filter, null, 2)}`
       );
     }
+
+    const filtered: Record<string, any> = {};
+    const res: any = result;
+
+    for (const key of Object.keys(filter)) {
+      if (res[key]) {
+        if (typeof filter[key] === "boolean") {
+          filtered[key] = res[key];
+        } else {
+          filtered[key] = filterResults(res[key], filter[key]);
+        }
+      } else {
+        filtered[key] = undefined;
+      }
+    }
+
+    Tracer.addEvent("filtering finished", filtered);
+
+    return filtered;
   } catch (error) {
     Tracer.recordException(error);
-    Tracer.endSpan();
 
     throw error;
+  } finally {
+    Tracer.endSpan();
   }
-
-  const filtered: Record<string, any> = {};
-  const res: any = result;
-
-  for (const key of Object.keys(filter)) {
-    if (res[key]) {
-      if (typeof filter[key] === "boolean") {
-        filtered[key] = res[key];
-      } else {
-        filtered[key] = filterResults(res[key], filter[key]);
-      }
-    } else {
-      filtered[key] = undefined;
-    }
-  }
-
-  Tracer.addEvent("filtering finished", filtered);
-  Tracer.endSpan();
-
-  return filtered;
 }

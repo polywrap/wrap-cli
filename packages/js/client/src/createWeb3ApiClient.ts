@@ -9,7 +9,8 @@ import { UriRedirect } from "@web3api/core-js";
 export { PluginConfigs };
 
 export async function createWeb3ApiClient(
-  plugins: PluginConfigs
+  plugins: PluginConfigs,
+  traceEnabled: boolean = false
 ): Promise<Web3ApiClient> {
   const redirects: UriRedirect[] = [];
 
@@ -66,5 +67,5 @@ export async function createWeb3ApiClient(
     });
   }
 
-  return new Web3ApiClient({ redirects });
+  return new Web3ApiClient({ redirects }, traceEnabled);
 }

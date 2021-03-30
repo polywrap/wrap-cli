@@ -111,7 +111,6 @@ export class Uri {
       }
 
       Tracer.addEvent("parse uri finished", { processed, result });
-      Tracer.endSpan();
 
       return {
         uri: processed,
@@ -120,9 +119,10 @@ export class Uri {
       };
     } catch (error) {
       Tracer.recordException(error);
-      Tracer.endSpan();
 
       throw error;
+    } finally {
+      Tracer.endSpan();
     }
   }
 

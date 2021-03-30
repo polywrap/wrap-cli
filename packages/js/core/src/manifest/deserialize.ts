@@ -17,37 +17,36 @@ export function deserializeManifest(
   Tracer.setAttribute("manifest", manifest);
   Tracer.setAttribute("options", options);
 
-  const anyManifest = YAML.safeLoad(manifest) as AnyManifest | undefined;
-
   try {
+    const anyManifest = YAML.safeLoad(manifest) as AnyManifest | undefined;
+
     if (!anyManifest) {
       throw Error(`Unable to parse manifest: ${manifest}`);
     }
+
+    Tracer.addEvent("loaded manifest", anyManifest);
+
+    if (!options || !options.noValidate) {
+      validateManifest(anyManifest);
+      Tracer.addEvent("manifest validation done");
+    }
+
+    if (compare(anyManifest.format, latest) === -1) {
+      const result = migrateManifest(anyManifest, latest);
+
+      Tracer.addEvent("migrated manifest", result);
+
+      return result;
+    } else {
+      Tracer.addEvent("manifest is the latest one");
+
+      return anyManifest as Manifest;
+    }
   } catch (error) {
     Tracer.recordException(error);
-    Tracer.endSpan();
 
     throw error;
-  }
-
-  Tracer.addEvent("loaded manifest", anyManifest);
-
-  if (!options || !options.noValidate) {
-    validateManifest(anyManifest);
-    Tracer.addEvent("manifest validation done");
-  }
-
-  if (compare(anyManifest.format, latest) === -1) {
-    const result = migrateManifest(anyManifest, latest);
-
-    Tracer.addEvent("migrated manifest", result);
+  } finally {
     Tracer.endSpan();
-
-    return result;
-  } else {
-    Tracer.addEvent("manifest is the latest one");
-    Tracer.endSpan();
-
-    return anyManifest as Manifest;
   }
 }

@@ -3,6 +3,7 @@ import {
   ConsoleSpanExporter,
   SimpleSpanProcessor,
 } from "@opentelemetry/tracing";
+import { ZipkinExporter } from "@opentelemetry/exporter-zipkin";
 import { WebTracerProvider } from "@opentelemetry/web";
 import * as api from "@opentelemetry/api";
 
@@ -42,7 +43,8 @@ export class Tracer {
   static startSpan(spanName: string): void {
     if (!this.traceEnabled) return;
 
-    const span = this._tracer.startSpan(spanName);
+    const currentSpan = this.currentSpan();
+    const span = this._tracer.startSpan(spanName, {});
     this.pushSpan(span);
   }
 
@@ -102,6 +104,10 @@ export class Tracer {
     // Configure span processor to send spans to the exporter
     this._provider.addSpanProcessor(
       new SimpleSpanProcessor(new ConsoleSpanExporter())
+    );
+
+    this._provider.addSpanProcessor(
+      new SimpleSpanProcessor(new ZipkinExporter())
     );
 
     this._provider.register();

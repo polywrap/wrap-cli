@@ -103,7 +103,6 @@ export function parseQuery(
     }
 
     Tracer.addEvent("parse query finished", queryInvocations);
-    Tracer.endSpan();
 
     return queryInvocations;
   } catch (error) {

@@ -147,11 +147,11 @@ export function validateManifest(manifest: AnyManifest): void {
     }
 
     Tracer.addEvent("manifest is valid");
-    Tracer.endSpan();
   } catch (error) {
     Tracer.recordException(error);
-    Tracer.endSpan();
 
     throw error;
+  } finally {
+    Tracer.endSpan();
   }
 }

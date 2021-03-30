@@ -41,13 +41,13 @@ export const migrateManifest = (
     const result = migrator(manifest);
 
     Tracer.addEvent("migrate manifest finished", result);
-    Tracer.endSpan();
 
     return result;
   } catch (error) {
     Tracer.recordException(error);
-    Tracer.endSpan();
 
     throw error;
+  } finally {
+    Tracer.endSpan();
   }
 };

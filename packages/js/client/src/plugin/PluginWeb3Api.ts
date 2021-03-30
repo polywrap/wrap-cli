@@ -18,7 +18,7 @@ export class PluginWeb3Api extends Api {
   constructor(private _uri: Uri, private _plugin: PluginPackage) {
     super();
 
-    Tracer.startSpan("PluginWeb3Api constructor");
+    Tracer.startSpan("PluginWeb3Api: constructor");
 
     Tracer.setAttribute("uri", this._uri);
     Tracer.setAttribute("plugin", this._plugin);
@@ -35,7 +35,7 @@ export class PluginWeb3Api extends Api {
     const modules = this.getInstance().getModules(client);
     const pluginModule = modules[module];
 
-    Tracer.startSpan("invoke");
+    Tracer.startSpan("PluginWeb3Api: invoke");
     Tracer.setAttribute("options", options);
 
     let jsInput: Record<string, unknown>;
@@ -65,6 +65,7 @@ export class PluginWeb3Api extends Api {
       }
     } catch (error) {
       Tracer.recordException(error);
+      Tracer.endSpan();
 
       throw error;
     }
@@ -88,14 +89,11 @@ export class PluginWeb3Api extends Api {
         }
 
         Tracer.addEvent("Filtered result", data);
-        Tracer.endSpan();
 
         return {
           data: data as TData,
         };
       } else {
-        Tracer.endSpan();
-
         return {};
       }
     } catch (e) {
@@ -111,6 +109,8 @@ export class PluginWeb3Api extends Api {
             `exception: ${e.message}`
         ),
       };
+    } finally {
+      Tracer.endSpan();
     }
   }
 
