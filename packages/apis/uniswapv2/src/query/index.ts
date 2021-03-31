@@ -1,8 +1,7 @@
-import * as fetch from "./fetch";
-import * as token from "./token";
-import * as pair from "./pair";
+export * from "./fetch";
+export * from "./token";
+export * from "./pair";
 
-export {fetch, token, pair};
 
 // TODO: write bignumber class? Need u256 solution
 // TODO: review functions for potential overflow errors; write safemath utils for assemblyscript?

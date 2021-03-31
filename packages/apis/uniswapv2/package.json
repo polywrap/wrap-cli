@@ -8,6 +8,9 @@
     "test:env:up": "npx w3 test-env up",
     "test:env:down": "npx w3 test-env down"
   },
+  "workspaces": {
+    "nohoist": ["assemblyscript", "assemblyscript/**"]
+  },
   "devDependencies": {
     "@uniswap/v2-core": "1.0.1",
     "@uniswap/v2-periphery": "1.1.0-beta.0",
@@ -15,6 +18,7 @@
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.8",
     "@web3api/wasm-as": "0.0.1-prealpha.8",
     "ethers": "5.0.8",
-    "js-yaml": "3.14.0"
+    "js-yaml": "3.14.0",
+    "assemblyscript": "0.17.14"
   }
 }
