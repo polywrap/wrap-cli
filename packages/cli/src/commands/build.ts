@@ -1,28 +1,42 @@
 /* eslint-disable prefer-const */
-import { Compiler, Project, SchemaComposer } from "../lib";
+import {
+  Compiler,
+  Project,
+  SchemaComposer,
+  Watcher,
+  WatchEvent,
+  watchEventName,
+} from "../lib";
 import { fixParameters } from "../lib/helpers/parameters";
 import { publishToIPFS } from "../lib/publishers/ipfs-publisher";
+import { intlMsg } from "../lib/intl";
 
 import chalk from "chalk";
 import axios from "axios";
+import readline from "readline";
 import { GluegunToolbox } from "gluegun";
 
+const optionsStr = intlMsg.commands_build_options_options();
+const manStr = intlMsg.commands_build_options_manifest();
+const nodeStr = intlMsg.commands_build_options_i_node();
+const pathStr = intlMsg.commands_build_options_o_path();
+const addrStr = intlMsg.commands_build_options_e_address();
+const domStr = intlMsg.commands_build_options_e_domain();
+
 const HELP = `
-${chalk.bold("w3 build")} [options] ${chalk.bold("[<web3api-manifest>]")}
+${chalk.bold("w3 build")} [${optionsStr}] ${chalk.bold(`[<web3api-${manStr}>]`)}
 
-Options:
-  -h, --help                         Show usage information
-  -i, --ipfs [<node>]                Upload build results to an IPFS node (default: dev-server's node)
-  -o, --output-dir <path>            Output directory for build results (default: build/)
-  -e, --test-ens <[address,]domain>  Publish the package to a test ENS domain locally (requires --ipfs)
+${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
+  -h, --help                         ${intlMsg.commands_build_options_h()}
+  -i, --ipfs [<${nodeStr}>]                ${intlMsg.commands_build_options_i()}
+  -o, --output-dir <${pathStr}>            ${intlMsg.commands_build_options_o()}
+  -e, --test-ens <[${addrStr},]${domStr}>  ${intlMsg.commands_build_options_e()}
+  -w, --watch                        ${intlMsg.commands_build_options_w()}
 `;
-
-// TODO: add to the above options when implemented
-// -w, --watch                        Regenerate types when web3api files change (default: false)
 
 export default {
   alias: ["b"],
-  description: "Builds a Web3API and (optionally) uploads it to IPFS",
+  description: intlMsg.commands_build_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
 
@@ -62,19 +76,37 @@ export default {
     }
 
     if (outputDir === true) {
-      print.error("--output-dir option missing <path> argument");
+      const outputDirMissingPathMessage = intlMsg.commands_build_error_outputDirMissingPath(
+        {
+          option: "--output-dir",
+          argument: `<${pathStr}>`,
+        }
+      );
+      print.error(outputDirMissingPathMessage);
       print.info(HELP);
       return;
     }
 
     if (testEns === true) {
-      print.error("--test-ens option missing <[address,]domain> argument");
+      const testEnsAddressMissingMessage = intlMsg.commands_build_error_testEnsAddressMissing(
+        {
+          option: "--test-ens",
+          argument: `<[${addrStr},]${domStr}>`,
+        }
+      );
+      print.error(testEnsAddressMissingMessage);
       print.info(HELP);
       return;
     }
 
     if (testEns && !ipfs) {
-      print.error("--test-ens option requires the --ipfs [<node>] option");
+      const testEnsNodeMissingMessage = intlMsg.commands_build_error_testEnsNodeMissing(
+        {
+          option: "--test-ens",
+          required: `--ipfs [<${nodeStr}>]`,
+        }
+      );
+      print.error(testEnsNodeMissingMessage);
       print.info(HELP);
       return;
     }
@@ -145,56 +177,126 @@ export default {
       schemaComposer,
     });
 
-    let result = false;
+    const execute = async (): Promise<boolean> => {
+      compiler.clearCache();
+      const result = await compiler.compile();
 
-    /*if (watch) {
-      // TODO: https://github.com/Web3-API/prototype/issues/98
-      // compiler.watchAndCompile();
-    } else*/ {
-      result = await compiler.compile();
-      if (result === false) {
+      if (!result) {
+        return result;
+      }
+
+      const uris: string[][] = [];
+
+      // publish to IPFS
+      if (ipfs) {
+        const cid = await publishToIPFS(outputDir, ipfs);
+
+        print.success(`IPFS { ${cid} }`);
+        uris.push(["Web3API IPFS", `ipfs://${cid}`]);
+
+        if (testEns) {
+          if (!ensAddress) {
+            uris.push([
+              intlMsg.commands_build_ensRegistry(),
+              `${ethProvider}/${ensAddress}`,
+            ]);
+          }
+
+          // ask the dev server to publish the CID to ENS
+          const { data } = await axios.get(
+            "http://localhost:4040/register-ens",
+            {
+              params: {
+                domain: ensDomain,
+                cid,
+              },
+            }
+          );
+
+          if (data.success) {
+            uris.push(["Web3API ENS", `${testEns} => ${cid}`]);
+          } else {
+            print.error(
+              `${intlMsg.commands_build_error_resolution()} { ${testEns} => ${cid} }\n` +
+                `${intlMsg.commands_build_ethProvider()}: ${ethProvider}\n` +
+                `${intlMsg.commands_build_address()}: ${ensAddress}`
+            );
+          }
+
+          return data.success;
+        }
+
+        if (uris.length) {
+          print.success(`${intlMsg.commands_build_uriViewers()}:`);
+          print.table(uris);
+          return true;
+        } else {
+          return false;
+        }
+      }
+
+      return true;
+    };
+
+    if (!watch) {
+      const result = await execute();
+
+      if (!result) {
         process.exitCode = 1;
         return;
       }
-    }
+    } else {
+      // Execute
+      await execute();
 
-    const uris: string[][] = [];
-
-    // publish to IPFS
-    if (ipfs) {
-      const cid = await publishToIPFS(outputDir, ipfs);
-
-      print.success(`IPFS { ${cid} }`);
-      uris.push(["Web3API IPFS", `ipfs://${cid}`]);
-
-      if (testEns) {
-        if (!ensAddress) {
-          uris.push(["ENS Registry", `${ethProvider}/${ensAddress}`]);
-        }
-
-        // ask the dev server to publish the CID to ENS
-        const { data } = await axios.get("http://localhost:4040/register-ens", {
-          params: {
-            domain: ensDomain,
-            cid,
-          },
+      const keyPressListener = () => {
+        // Watch for escape key presses
+        print.info(
+          `${intlMsg.commands_build_keypressListener_watching()}: ${
+            project.manifestDir
+          }`
+        );
+        print.info(intlMsg.commands_build_keypressListener_exit());
+        readline.emitKeypressEvents(process.stdin);
+        process.stdin.on("keypress", async (str, key) => {
+          if (
+            key.name == "escape" ||
+            key.name == "q" ||
+            (key.name == "c" && key.ctrl)
+          ) {
+            await watcher.stop();
+            process.kill(process.pid, "SIGINT");
+          }
         });
 
-        if (data.success) {
-          uris.push(["Web3API ENS", `${testEns} => ${cid}`]);
-        } else {
-          print.error(
-            `ENS Resolution Failed { ${testEns} => ${cid} }\n` +
-              `Ethereum Provider: ${ethProvider}\n` +
-              `ENS Address: ${ensAddress}`
-          );
+        if (process.stdin.setRawMode) {
+          process.stdin.setRawMode(true);
         }
-      }
-    }
 
-    if (uris.length) {
-      print.success("URI Viewers:");
-      print.table(uris);
+        process.stdin.resume();
+      };
+
+      keyPressListener();
+
+      // Watch the directory
+      const watcher = new Watcher();
+
+      watcher.start(project.manifestDir, {
+        ignored: [outputDir + "/**", project.manifestDir + "/**/w3/**"],
+        ignoreInitial: true,
+        execute: async (events: WatchEvent[]) => {
+          // Log all of the events encountered
+          for (const event of events) {
+            print.info(`${watchEventName(event.type)}: ${event.path}`);
+          }
+
+          // Execute the build
+          await execute();
+
+          // Process key presses
+          keyPressListener();
+        },
+      });
     }
 
     process.exitCode = 0;

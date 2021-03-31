@@ -1,0 +1,141 @@
+### Web3API Header START ###
+scalar UInt
+scalar UInt8
+scalar UInt16
+scalar UInt32
+scalar UInt64
+scalar Int
+scalar Int8
+scalar Int16
+scalar Int32
+scalar Int64
+scalar Bytes
+
+directive @imported(
+  uri: String!
+  namespace: String!
+  nativeType: String!
+) on OBJECT | ENUM
+
+directive @imports(
+  types: [String!]!
+) on OBJECT
+
+### Web3API Header END ###
+
+enum CustomEnum {
+  STRING
+  BYTES
+}
+
+type Query {
+  method1(
+    str: String!
+    optStr: String
+    u: UInt!
+    optU: UInt
+    uArrayArray: [[UInt]]!
+  ): String!
+
+  method2(
+    arg: [String!]!
+  ): [Int64!]!
+}
+
+type Mutation @imports(
+  types: [
+    "Imported_NestedObjectType",
+    "Imported_ObjectType"
+  ]
+) {
+  method1(
+    str: String!
+    optStr: String
+    u: UInt!
+    optU: UInt
+    uArrayArray: [[UInt]]!
+  ): String!
+
+  method2(
+    arg: [String!]!
+  ): [Int64!]!
+
+  localObjects(
+    nestedLocalObject: NestedObjectType
+    localObjectArray: [NestedObjectType!]
+  ): NestedObjectType
+
+  importedObjects(
+    nestedLocalObject: Imported_NestedObjectType
+    localObjectArray: [Imported_NestedObjectType!]
+  ): Imported_NestedObjectType
+}
+
+type CustomType {
+  str: String!
+  optStr: String
+  u: UInt!
+  optU: UInt
+  u8: UInt8!
+  u16: UInt16!
+  u32: UInt32!
+  u64: UInt64!
+  i: Int!
+  i8: Int8!
+  i16: Int16!
+  i32: Int32!
+  i64: Int64!
+  bytes: Bytes!
+  uArray: [UInt!]!
+  uOptArray: [UInt!]
+  optUOptArray: [UInt]
+  optStrOptArray: [String]
+  uArrayArray: [[UInt!]!]!
+  uOptArrayOptArray: [[UInt64]]!
+  uArrayOptArrayArray: [[[UInt64!]!]]!
+  crazyArray: [[[[UInt64!]]!]]
+  object: ObjectType!
+  optObject: ObjectType
+  nestedObject: NestedObjectType!
+  optNestedObject: NestedObjectType
+  optNestedObjectArray: [NestedObjectType]!
+  importedNestedObject: Imported_NestedObjectType!
+  optImportedNestedObjectArray: [Imported_NestedObjectType]!
+  enum: CustomEnum!
+  optEnum: CustomEnum
+  importedEnum: Imported_Enum!
+  optImportedEnum: Imported_Enum
+}
+
+type NestedObjectType {
+  nestedObject: ObjectType!
+}
+
+type ObjectType {
+  prop: String!
+}
+
+type Imported_NestedObjectType @imported(
+  uri: "imported.eth",
+  namespace: "Imported",
+  nativeType: "NestedObjectType"
+) {
+  nestedObject: Imported_ObjectType!
+}
+
+type Imported_ObjectType @imported(
+  uri: "imported.eth",
+  namespace: "Imported",
+  nativeType: "ObjectType"
+) {
+  prop: String!
+}
+
+enum Imported_Enum @imported(
+  namespace: "Imported",
+  uri: "imported.eth",
+  nativeType: "ImportedEnum"
+) {
+  STRING
+  BYTES
+}

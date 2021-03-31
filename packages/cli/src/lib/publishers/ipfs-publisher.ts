@@ -1,4 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/naming-convention,@typescript-eslint/no-var-requires,@typescript-eslint/no-require-imports
+import { intlMsg } from "../intl";
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires,@typescript-eslint/naming-convention
 const IPFSClient = require("ipfs-http-client");
 const { globSource } = IPFSClient;
 
@@ -9,7 +11,8 @@ export async function publishToIPFS(
   try {
     new URL(ipfs);
   } catch (e) {
-    throw Error(`IPFS URL Malformed: ${ipfs}\n${e}`);
+    const urlMalformedMessage = intlMsg.lib_publishers_ipfsPublisher_urlMalformed();
+    throw Error(`${urlMalformedMessage}: ${ipfs}\n${e}`);
   }
 
   const client = new IPFSClient(ipfs);

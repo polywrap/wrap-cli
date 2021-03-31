@@ -68,7 +68,7 @@ type Namespace_Object {
 `;
 
 
-describe("Web3API Schema Directives Validation", () => { 
+describe("Web3API Schema Directives Validation", () => {
   it("supportedDirectives", () => {
     expect(() => parseSchema(supportedDirectivesSchema, {
       validators: [
@@ -125,7 +125,7 @@ describe("Web3API Schema Directives Validation", () => {
         directiveValidators.importedDirective
       ]
     })).toThrow(
-      /@imports directive should only be used on object type definitions, but it is being used in the following location: definitions -> 0 -> fields -> 0 -> directives -> 0/gm
+      /@imported directive should only be used on object or enum type definitions, but it is being used in the following location: definitions -> 0 -> fields -> 0 -> directives -> 0/gm
     );
   });
 });

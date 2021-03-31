@@ -3,7 +3,7 @@ import { IpfsPlugin } from "./";
 import { PluginModule } from "@web3api/core-js";
 
 // TODO: generate types from the schema
-// https://github.com/Web3-API/prototype/issues/101
+// https://github.com/web3-api/monorepo/issues/101
 export const mutation = (ipfs: IpfsPlugin): PluginModule => ({
   addFile: async (input: { data: Uint8Array }) => {
     const { path, cid } = await ipfs.add(input.data);
@@ -33,7 +33,7 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
         };
       } catch (e) {
         // TODO: logging
-        // https://github.com/Web3-API/prototype/issues/33
+        // https://github.com/web3-api/monorepo/issues/33
       }
 
       // Try fetching uri/web3api.yml
@@ -44,7 +44,7 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
         };
       } catch (e) {
         // TODO: logging
-        // https://github.com/Web3-API/prototype/issues/33
+        // https://github.com/web3-api/monorepo/issues/33
       }
     }
 
@@ -53,7 +53,7 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
   },
   getFile: async (input: { path: string }) => {
     try {
-      return await ipfs.catToBuffer(input.path);
+      return await ipfs.cat(input.path);
     } catch (e) {
       return null;
     }

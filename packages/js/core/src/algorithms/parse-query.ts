@@ -1,4 +1,4 @@
-import { InvokeApiOptions, QueryDocument, Uri } from "../types";
+import { QueryApiInvocations, QueryDocument, Uri } from "../types";
 
 import { SelectionSetNode, ValueNode } from "graphql";
 
@@ -6,12 +6,12 @@ export function parseQuery(
   uri: Uri,
   doc: QueryDocument,
   variables?: Record<string, unknown>
-): InvokeApiOptions[] {
+): QueryApiInvocations {
   if (doc.definitions.length === 0) {
     throw Error("Empty query document found.");
   }
 
-  const invokeOptions: InvokeApiOptions[] = [];
+  const queryInvocations: QueryApiInvocations = {};
 
   for (const def of doc.definitions) {
     if (def.kind !== "OperationDefinition") {
@@ -47,6 +47,13 @@ export function parseQuery(
       }
 
       const method = selection.name.value;
+      const invocationName = selection.alias ? selection.alias.value : method;
+
+      if (queryInvocations[invocationName]) {
+        throw Error(
+          `Duplicate query name found "${invocationName}". Please use GraphQL aliases that each have unique names.`
+        );
+      }
 
       // Get all input arguments
       const selectionArgs = selection.arguments;
@@ -73,17 +80,17 @@ export function parseQuery(
         resultFilter = extractSelections(selectionResults);
       }
 
-      invokeOptions.push({
+      queryInvocations[invocationName] = {
         uri,
         module,
         method,
         input,
         resultFilter,
-      });
+      };
     }
   }
 
-  return invokeOptions;
+  return queryInvocations;
 }
 
 function extractValue(

@@ -153,9 +153,12 @@ export function importedDirective(astNode: ASTNode): void {
       return;
     }
 
-    if (lastNodeVisited !== "ObjectTypeDefinition") {
+    if (
+      lastNodeVisited !== "ObjectTypeDefinition" &&
+      lastNodeVisited !== "EnumTypeDefinition"
+    ) {
       throw new Error(
-        `@imports directive should only be used on object type definitions, ` +
+        `@imported directive should only be used on object or enum type definitions, ` +
           `but it is being used in the following location: ${path.join(" -> ")}`
       );
     }

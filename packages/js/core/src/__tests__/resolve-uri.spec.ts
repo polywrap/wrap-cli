@@ -10,7 +10,6 @@ import {
   PluginPackage,
   QueryApiOptions,
   QueryApiResult,
-  SchemaDocument,
   Uri,
   UriRedirect,
   resolveUri,
@@ -18,14 +17,14 @@ import {
 
 describe("resolveUri", () => {
   const client = (
-    redirects: UriRedirect[],
+    redirects: UriRedirect<Uri>[],
     apis: Record<string, PluginModules>
   ): Client => ({
     redirects: () => redirects,
     query: <
       TData extends Record<string, unknown> = Record<string, unknown>,
-      TVariables extends Record<string, unknown> = Record<string, unknown>
-    >(_options: QueryApiOptions<TVariables>): Promise<QueryApiResult<TData>> => {
+      TVariables extends Record<string, unknown> = Record<string, unknown>,
+    >(_options: QueryApiOptions<TVariables, string>): Promise<QueryApiResult<TData>> => {
       return Promise.resolve({
         data: ({
           foo: "foo",
@@ -33,10 +32,10 @@ describe("resolveUri", () => {
       });
     },
     invoke: <TData = unknown>(
-      options: InvokeApiOptions
+      options: InvokeApiOptions<string>
     ): Promise<InvokeApiResult<TData>> => {
       return Promise.resolve({
-        data: apis[options.uri.uri]?.[options.module]?.[options.method](
+        data: apis[options.uri]?.[options.module]?.[options.method](
           options.input as Record<string, unknown>,
           {} as Client
         ) as TData,
@@ -110,7 +109,7 @@ describe("resolveUri", () => {
     },
   };
 
-  const redirects: UriRedirect[] = [
+  const redirects: UriRedirect<Uri>[] = [
     {
       from: new Uri("w3/api-resolver"),
       to: new Uri("ens/ens"),
@@ -243,7 +242,7 @@ describe("resolveUri", () => {
   });
 
   it("throws when circular redirect loops are found", async () => {
-    const circular: UriRedirect[] = [
+    const circular: UriRedirect<Uri>[] = [
       ...redirects,
       {
         from: new Uri("some/api"),
@@ -269,14 +268,14 @@ describe("resolveUri", () => {
   });
 
   it("throws when redirect missing the from property", async () => {
-    const missingFromProperty: UriRedirect[] = [
+    const missingFromProperty: UriRedirect<Uri>[] = [
       ...redirects,
       {
         from: new Uri("some/api"),
         to: new Uri("ens/api"),
       },
       {
-        from: null,
+        from: null as any,
         to: new Uri("another/api"),
       },
     ];
@@ -295,7 +294,7 @@ describe("resolveUri", () => {
   });
 
   it("works when a Web3API redirects to a Plugin", async () => {
-    const uriToPlugin: UriRedirect[] = [
+    const uriToPlugin: UriRedirect<Uri>[] = [
       ...redirects,
       {
         from: new Uri("some/api"),

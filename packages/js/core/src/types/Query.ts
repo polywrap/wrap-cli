@@ -1,4 +1,4 @@
-import { Uri } from "./";
+import { Uri, InvokeApiOptions } from "./";
 
 import { DocumentNode, parse } from "graphql";
 import gql from "graphql-tag";
@@ -21,10 +21,11 @@ export function createQueryDocument(query: string): QueryDocument {
 
 /** Options required for an API query. */
 export interface QueryApiOptions<
-  TVariables extends Record<string, unknown> = Record<string, unknown>
+  TVariables extends Record<string, unknown> = Record<string, unknown>,
+  TUri = Uri
 > {
   /** The API's URI */
-  uri: Uri;
+  uri: TUri;
 
   /**
    * The GraphQL query to parse and execute, leading to one or more
@@ -65,12 +66,16 @@ export interface QueryApiResult<
   errors?: Error[];
 }
 
+export interface QueryApiInvocations {
+  [methodOrAlias: string]: InvokeApiOptions;
+}
+
 /** A type that can parse & execute a given query */
 export interface QueryHandler {
   query<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>
   >(
-    options: QueryApiOptions<TVariables>
+    options: QueryApiOptions<TVariables, string>
   ): Promise<QueryApiResult<TData>>;
 }

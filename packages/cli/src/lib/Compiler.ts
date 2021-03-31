@@ -6,6 +6,7 @@ import { SchemaComposer } from "./SchemaComposer";
 import { withSpinner, outputManifest } from "./helpers";
 import { BuildVars, parseManifest } from "./helpers/build-manifest";
 import { buildImage, copyFromImageToHost } from "./helpers/docker";
+import { intlMsg } from "./intl";
 
 import { readdirSync, readFileSync } from "fs";
 import { bindSchema, writeDirectory } from "@web3api/schema-bind";
@@ -38,6 +39,11 @@ export class Compiler {
       gluegun.print.error(e);
       return false;
     }
+  }
+
+  public clearCache(): void {
+    this._config.project.clearCache();
+    this._config.schemaComposer.clearCache();
   }
 
   private _copySources({
@@ -165,14 +171,12 @@ export class Compiler {
       this._cleanDir(this._config.outputDir);
 
       const manifest = await project.getManifest();
-
       // Get the fully composed schema
       const composed = await schemaComposer.getComposedSchemas();
 
       if (!composed.combined) {
-        throw Error(
-          "compileWeb3Api: Schema composer failed to return a combined schema."
-        );
+        const failedSchemaMessage = intlMsg.lib_compiler_failedSchemaReturn();
+        throw Error(`compileWeb3Api: ${failedSchemaMessage}`);
       }
 
       const generateModuleCode = async (moduleName: ModuleName) => {
@@ -183,9 +187,10 @@ export class Compiler {
         }
 
         if (!composed[moduleName]) {
-          throw Error(
-            `Missing schema definition for the module "${moduleName}"`
-          );
+          const missingSchemaMessage = intlMsg.lib_compiler_missingDefinition({
+            name: `"${moduleName}"`,
+          });
+          throw Error(missingSchemaMessage);
         }
 
         // Generate code next to the module entry point file
@@ -226,11 +231,11 @@ export class Compiler {
       return run();
     } else {
       return await withSpinner(
-        "Compile Web3API",
-        "Failed to compile Web3API",
-        "Warnings while compiling Web3API",
-        async () => {
-          return run();
+        intlMsg.lib_compiler_compileText(),
+        intlMsg.lib_compiler_compileError(),
+        intlMsg.lib_compiler_compileWarning(),
+        async (spinner) => {
+          return run(spinner);
         }
       );
     }

@@ -33,31 +33,31 @@ export class ReadDecoder extends Read {
 
   readInt8(): i8 {
     const value = this.readInt64();
-    if (value <= i64(i8.MAX_VALUE) || value >= i64(i8.MIN_VALUE)) {
+    if (value <= i64(i8.MAX_VALUE) && value >= i64(i8.MIN_VALUE)) {
       return i8(value);
     }
     throw new Error(
-      "interger overflow: value = " + value.toString() + "; bits = 8"
+      "integer overflow: value = " + value.toString() + "; bits = 8"
     );
   }
 
   readInt16(): i16 {
     const value = this.readInt64();
-    if (value <= i64(i16.MAX_VALUE) || value >= i64(i16.MIN_VALUE)) {
+    if (value <= i64(i16.MAX_VALUE) && value >= i64(i16.MIN_VALUE)) {
       return i16(value);
     }
     throw new Error(
-      "interger overflow: value = " + value.toString() + "; bits = 16"
+      "integer overflow: value = " + value.toString() + "; bits = 16"
     );
   }
 
   readInt32(): i32 {
     const value = this.readInt64();
-    if (value <= i64(i32.MAX_VALUE) || value >= i64(i32.MIN_VALUE)) {
+    if (value <= i64(i32.MAX_VALUE) && value >= i64(i32.MIN_VALUE)) {
       return i32(value);
     }
     throw new Error(
-      "interger overflow: value = " + value.toString() + "; bits = 32"
+      "integer overflow: value = " + value.toString() + "; bits = 32"
     );
   }
 
@@ -80,37 +80,37 @@ export class ReadDecoder extends Read {
       case Format.INT64:
         return this.view.getInt64();
       default:
-        throw new Error("bad prefix for int");
+        throw new Error("bad prefix for int: " + prefix.toString());
     }
   }
 
   readUInt8(): u8 {
     const value = this.readUInt64();
-    if (value <= u64(u8.MAX_VALUE) || value >= u64(u8.MIN_VALUE)) {
+    if (value <= u64(u8.MAX_VALUE) && value >= u64(u8.MIN_VALUE)) {
       return u8(value);
     }
     throw new Error(
-      "unsigned interger overflow: value = " + value.toString() + "; bits = 8"
+      "unsigned integer overflow: value = " + value.toString() + "; bits = 8"
     );
   }
 
   readUInt16(): u16 {
     const value = this.readUInt64();
-    if (value <= u64(u16.MAX_VALUE) || value >= u64(u16.MIN_VALUE)) {
+    if (value <= u64(u16.MAX_VALUE) && value >= u64(u16.MIN_VALUE)) {
       return u16(value);
     }
     throw new Error(
-      "unsigned interger overflow: value = " + value.toString() + "; bits = 16"
+      "unsigned integer overflow: value = " + value.toString() + "; bits = 16"
     );
   }
 
   readUInt32(): u32 {
     const value = this.readUInt64();
-    if (value <= u64(u32.MAX_VALUE) || value >= u64(u32.MIN_VALUE)) {
+    if (value <= u64(u32.MAX_VALUE) && value >= u64(u32.MIN_VALUE)) {
       return u32(value);
     }
     throw new Error(
-      "unsigned interger overflow: value = " + value.toString() + "; bits = 32"
+      "unsigned integer overflow: value = " + value.toString() + "; bits = 32"
     );
   }
 
@@ -120,7 +120,9 @@ export class ReadDecoder extends Read {
     if (isFixedInt(prefix)) {
       return u64(prefix);
     } else if (isNegativeFixedInt(prefix)) {
-      throw new Error("bad prefix");
+      throw new Error(
+        "unsigned integer cannot be negative: prefix = " + prefix.toString()
+      );
     }
 
     switch (prefix) {
@@ -133,7 +135,9 @@ export class ReadDecoder extends Read {
       case Format.UINT64:
         return this.view.getUint64();
       default:
-        throw new Error("bad prefix for unsigned int");
+        throw new Error(
+          "bad prefix for unsigned int: prefix = " + prefix.toString()
+        );
     }
   }
 
@@ -142,7 +146,7 @@ export class ReadDecoder extends Read {
     if (isFloat32(prefix)) {
       return <f32>this.view.getFloat32();
     }
-    throw new Error("bad prefix");
+    throw new Error("bad prefix for float32: " + prefix.toString());
   }
 
   readFloat64(): f64 {
@@ -150,7 +154,7 @@ export class ReadDecoder extends Read {
     if (isFloat64(prefix)) {
       return <f64>this.view.getFloat64();
     }
-    throw new Error("bad prefix");
+    throw new Error("bad prefix for float 64: " + prefix.toString());
   }
 
   readStringLength(): u32 {
@@ -363,11 +367,22 @@ export class ReadDecoder extends Read {
   }
 
   isNextNil(): bool {
-    if (this.view.peekUint8() == Format.NIL) {
+    const format = this.view.peekUint8();
+    if (format == Format.NIL) {
       this.view.discard(1);
       return true;
     }
     return false;
+  }
+
+  isNextString(): bool {
+    const format = this.view.peekUint8();
+    return (
+      isFixedString(format) ||
+      format == Format.STR8 ||
+      format == Format.STR16 ||
+      format == Format.STR32
+    );
   }
 
   private skip(): void {
@@ -392,10 +407,8 @@ export class ReadDecoder extends Read {
       const strLength = leadByte & 0x1f;
       this.view.discard(strLength);
     } else if (isFixedArray(leadByte)) {
-      // TODO handle overflow https://github.com/Web3-API/prototype/issues/70
       objectsToDiscard = <i32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
     } else if (isFixedMap(leadByte)) {
-      // TODO handle overflow https://github.com/Web3-API/prototype/issues/70
       objectsToDiscard =
         2 * <i32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
     } else {
@@ -467,24 +480,18 @@ export class ReadDecoder extends Read {
           this.view.discard(this.view.getUint16());
           break;
         case Format.STR32:
-          // TODO overflow, need to modify discard and underlying array buffer
-          // https://github.com/Web3-API/prototype/issues/70
           this.view.discard(this.view.getUint32());
           break;
         case Format.ARRAY16:
-          //TODO OVERFLOW https://github.com/Web3-API/prototype/issues/70
           objectsToDiscard = <i32>this.view.getUint16();
           break;
         case Format.ARRAY32:
-          //TODO OVERFLOW https://github.com/Web3-API/prototype/issues/70
           objectsToDiscard = <i32>this.view.getUint32();
           break;
         case Format.MAP16:
-          //TODO OVERFLOW https://github.com/Web3-API/prototype/issues/70
           objectsToDiscard = 2 * <i32>this.view.getUint16();
           break;
         case Format.MAP32:
-          //TODO OVERFLOW https://github.com/Web3-API/prototype/issues/70
           objectsToDiscard = 2 * <i32>this.view.getUint32();
           break;
         default:
