@@ -4,14 +4,10 @@
 import { Project } from "./Project";
 import { SchemaComposer } from "./SchemaComposer";
 import { withSpinner, outputManifest } from "./helpers";
-import {
-  BuildVars,
-  ModulesToBuild,
-  parseManifest,
-} from "./helpers/build-manifest";
+import { BuildVars, parseManifest } from "./helpers/build-manifest";
 import { buildImage, copyFromImageToHost } from "./helpers/docker";
 
-import { readdirSync } from "fs";
+import { readdirSync, readFileSync } from "fs";
 import { bindSchema, writeDirectory } from "@web3api/schema-bind";
 import path from "path";
 import fs from "fs";
@@ -26,6 +22,8 @@ export interface CompilerConfig {
   project: Project;
   schemaComposer: SchemaComposer;
 }
+
+export type ModuleName = "mutation" | "query";
 
 export class Compiler {
   constructor(private _config: CompilerConfig) {}
@@ -52,7 +50,7 @@ export class Compiler {
     tempDirPath: string;
   }) {
     fsExtra.removeSync(tempDirPath);
-    fsExtra.copySync(dockerfilePath, `${tempDirPath}/Dockerfile`);
+    fsExtra.copySync(dockerfilePath, path.join(tempDirPath, "Dockerfile"));
 
     const files = readdirSync(process.cwd(), { withFileTypes: true }).filter(
       (file) => file.name !== ".w3"
@@ -71,6 +69,39 @@ export class Compiler {
         }
       );
     });
+  }
+
+  private async _validateExports(moduleName: ModuleName, outputDir: string) {
+    const wasmSource = readFileSync(path.join(outputDir, `${moduleName}.wasm`));
+    const mod = await WebAssembly.compile(wasmSource);
+    console.log("MODULE", mod);
+    const memory = new WebAssembly.Memory({ initial: 1 });
+    const instance = await WebAssembly.instantiate(mod, {
+      env: {
+        memory,
+      },
+      w3: {
+        __w3_subinvoke: () => {},
+        __w3_subinvoke_result_len: () => {},
+        __w3_subinvoke_result: () => {},
+        __w3_subinvoke_error_len: () => {},
+        __w3_subinvoke_error: () => {},
+        __w3_invoke_args: () => {},
+        __w3_invoke_result: () => {},
+        __w3_invoke_error: () => {},
+        __w3_abort: () => {},
+      },
+    });
+
+    if (!instance.exports._w3_init) {
+      throw Error(`_w3_init_ is not exported from built ${moduleName} module`);
+    }
+
+    if (!instance.exports._w3_invoke) {
+      throw Error(
+        `No _w3_invoke is not exported from built ${moduleName} module`
+      );
+    }
   }
 
   private async _buildSourcesInDocker(
@@ -110,25 +141,20 @@ export class Compiler {
     );
   }
 
-  private _determineModulesToBuild(
-    manifest: Manifest
-  ): ModulesToBuild | undefined {
+  private _determineModulesToBuild(manifest: Manifest): ModuleName[] {
     const manifestMutation = manifest.mutation;
     const manifestQuery = manifest.query;
-
-    if (manifestMutation && manifestQuery) {
-      return "both";
-    }
+    const modulesToBuild: ModuleName[] = [];
 
     if (manifestMutation) {
-      return "mutation";
+      modulesToBuild.push("mutation");
     }
 
     if (manifestQuery) {
-      return "query";
+      modulesToBuild.push("query");
     }
 
-    return undefined;
+    return modulesToBuild;
   }
 
   private async _compileWeb3Api() {
@@ -149,7 +175,7 @@ export class Compiler {
         );
       }
 
-      const generateModuleCode = async (moduleName: "mutation" | "query") => {
+      const generateModuleCode = async (moduleName: ModuleName) => {
         const module = manifest[moduleName];
 
         if (!module) {
@@ -169,14 +195,15 @@ export class Compiler {
         module.schema.file = "./schema.graphql";
       };
 
-      await generateModuleCode("mutation");
-      await generateModuleCode("query");
-
       const modulesToBuild = this._determineModulesToBuild(manifest);
 
-      if (!modulesToBuild) {
-        return;
+      if (modulesToBuild.length === 0) {
+        throw new Error("No modules to build declared");
       }
+
+      await Promise.all(
+        modulesToBuild.map((module) => generateModuleCode(module))
+      );
 
       const buildVars = parseManifest(modulesToBuild);
       // Output the schema & manifest files
@@ -188,6 +215,11 @@ export class Compiler {
 
       // Build sources
       await this._buildSourcesInDocker(buildVars, project.quiet);
+
+      // Validate exports
+      await Promise.all(
+        modulesToBuild.map((module) => this._validateExports(module, outputDir))
+      );
     };
 
     if (project.quiet) {

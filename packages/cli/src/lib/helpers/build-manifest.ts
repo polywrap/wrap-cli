@@ -1,4 +1,5 @@
 import { transformEnvToArgs } from "./docker";
+import { ModuleName } from "..";
 
 import path from "path";
 import YAML from "js-yaml";
@@ -29,12 +30,21 @@ const BASE_DOCKERFILE_PATH = path.join(__dirname, "..", "env", "build-images");
 
 export type ModulesToBuild = "query" | "mutation" | "both";
 
-export const parseManifest = (modulesToBuild: ModulesToBuild): BuildVars => {
+export const parseManifest = (modulesToBuild: ModuleName[]): BuildVars => {
   const doc = YAML.safeLoad(
     readFileSync("./web3api.build.yaml", "utf8")
   ) as BuildManifest;
 
-  doc.env.modules_to_build = modulesToBuild;
+  if (modulesToBuild.includes("query") && modulesToBuild.includes("mutation")) {
+    doc.env.modules_to_build = "both";
+  } else if (modulesToBuild.includes("query")) {
+    doc.env.modules_to_build = "query";
+  } else if (modulesToBuild.includes("mutation")) {
+    doc.env.modules_to_build = "mutation";
+  } else {
+    throw new Error("No modules to build declared");
+  }
+
   const { dockerfile, name: imageName } = doc.image;
 
   const tempDirPath = path.join(process.cwd(), ".w3", "build", imageName);
