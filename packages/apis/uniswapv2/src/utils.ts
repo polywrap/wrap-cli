@@ -13,16 +13,63 @@ export function compareAddresses(ref: string, other: string): u8 {
 
 export function resolveChainId(chainId: ChainId): u32 {
   switch (chainId) {
-    case 0: // mainnet
+    case ChainId.MAINNET:
       return 1;
-    case 1: // ropsten
+    case ChainId.ROPSTEN:
       return 3;
-    case 2: // rinkeby
+    case ChainId.RINKEBY:
       return 4;
-    case 3: // goerli
-      return 420;
-    case 4: // kovan
+    case ChainId.GOERLI:
+      return 5;
+    case ChainId.KOVAN:
       return 42;
+    default:
+      throw Error("Unknown chain ID. This should never happen.");
+  }
+}
+
+export function getWETH9(chainId: ChainId): Token {
+  switch (chainId) {
+    case ChainId.MAINNET:
+      return {
+        chainId: ChainId.MAINNET,
+        address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+        decimals: 18,
+        symbol: 'WETH9',
+        name: 'Wrapped Ether'
+      };
+    case ChainId.ROPSTEN:
+      return {
+        chainId: ChainId.ROPSTEN,
+        address: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
+        decimals: 18,
+        symbol: 'WETH9',
+        name: 'Wrapped Ether'
+      };
+    case ChainId.RINKEBY:
+      return {
+        chainId: ChainId.RINKEBY,
+        address: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
+        decimals: 18,
+        symbol: 'WETH9',
+        name: 'Wrapped Ether'
+      };
+    case ChainId.GOERLI:
+      return {
+        chainId: ChainId.GOERLI,
+        address: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
+        decimals: 18,
+        symbol: 'WETH9',
+        name: 'Wrapped Ether'
+      };
+    case ChainId.KOVAN:
+      return {
+        chainId: ChainId.KOVAN,
+        address: '0xd0A1E359811322d97991E03f863a0C30C2cF029C',
+        decimals: 18,
+        symbol: 'WETH9',
+        name: 'Wrapped Ether'
+      };
     default:
       throw Error("Unknown chain ID. This should never happen.");
   }

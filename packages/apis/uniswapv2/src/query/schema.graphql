@@ -31,12 +31,6 @@ type Query {
     pair: Pair!
   ): Uint256!
 
-  quote(
-    amountA: Uint256!
-    reserveA: Uint256!
-    reserveB: Uint256!
-  ): Uint256!
-
   pairOutputAmount(
     pair: Pair!
     inputAmount: TokenAmount!

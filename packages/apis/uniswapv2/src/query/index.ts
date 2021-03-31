@@ -4,7 +4,9 @@ import * as pair from "./pair";
 
 export {fetch, token, pair};
 
-// TODO: write safemath utils for assemblyscript? or bignumber class? Need u256 solution
+// TODO: write bignumber class? Need u256 solution
+// TODO: review functions for potential overflow errors; write safemath utils for assemblyscript?
+// TODO: make sure differing token decimals work out when testing
 
 // constants ///////////////////////////////////////////////////////////////////
 
