@@ -80,7 +80,6 @@ export class Compiler {
   private async _validateExports(moduleName: ModuleName, outputDir: string) {
     const wasmSource = readFileSync(path.join(outputDir, `${moduleName}.wasm`));
     const mod = await WebAssembly.compile(wasmSource);
-    console.log("MODULE", mod);
     const memory = new WebAssembly.Memory({ initial: 1 });
     const instance = await WebAssembly.instantiate(mod, {
       env: {
@@ -234,8 +233,8 @@ export class Compiler {
         intlMsg.lib_compiler_compileText(),
         intlMsg.lib_compiler_compileError(),
         intlMsg.lib_compiler_compileWarning(),
-        async (spinner) => {
-          return run(spinner);
+        async () => {
+          return run();
         }
       );
     }
