@@ -2,6 +2,7 @@ import { Ethereum_Query } from "./w3/imported";
 import { resolveChainId } from "../utils";
 import { mulDiv, sqrt } from "../mathUtils";
 import { fetchTokenData } from "./fetch";
+import { tokenEquals } from "./token";
 
 // TODO: this can be calculated off-chain with keccack256
 // returns address of pair liquidity token contract
@@ -28,26 +29,17 @@ export function pairLiquidityToken(input: Input_pairLiquidityToken): Token {
 }
 
 // returns the reserve of token0
+// TODO: pairReserve0 seems unnecessary. Remove?
 export function pairReserve0(input: Input_pairReserves): u256 {
   const pair: Pair = input.pair;
   return pair.token0.amount;
 }
 
 // returns the reserve of token1
+// TODO: pairReserve1 seems unnecessary. Remove?
 export function pairReserve1(input: Input_pairReserves): u256 {
   const pair: Pair = input.pair;
   return pair.token1.amount;
-}
-
-// given some amount of an asset and pair reserves, returns an equivalent amount of the other asset
-export function quote(amountA: u256, reserveA: u256, reserveB: u256): u256 {
-  if (amountA == 0) {
-    throw new RangeError("Insufficient input amount: Input amount must be greater than zero");
-  }
-  if (reserveA == 0 || reserveB == 0) {
-    throw new RangeError("Insufficient liquidity: Pair reserves must be greater than zero")
-  }
-  return amountA * reserveB / reserveA;
 }
 
 // Pricing function for exact input amounts. Returns maximum output amount, based on current reserves, if the trade were executed.
