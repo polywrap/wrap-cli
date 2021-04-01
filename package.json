@@ -10,6 +10,10 @@
   "workspaces": {
     "packages": [
       "./packages/**/*"
+    ],
+    "nohoist": [
+      "react-scripts",
+      "react-scripts/**"
     ]
   },
   "scripts": {
