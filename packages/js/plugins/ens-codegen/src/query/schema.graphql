@@ -1,3 +1,0 @@
-query {
-  callView(address: $address, method: $method, args: $args)
-}

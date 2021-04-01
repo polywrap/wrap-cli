@@ -1,25 +1,23 @@
 exports.run = (output, config) => {
   output.entries.push({
-    type: "File",
-    name: "./schema1.ts",
-    data: config.generate("./templates/schema.mustache", config.typeInfo),
-  });
-
-  output.entries.push({
     type: "Directory",
-    name: "./folder",
+    name: "./src",
     data: [
       {
         type: "File",
-        name: "./schema2.ts",
-        data: config.generate("./templates/schema.mustache", config.typeInfo),
+        name: "./index.ts",
+        data: "./templates/index.mustache",
+      },
+      {
+        type: "Template",
+        name: "./manifest.ts",
+        data: config.generate("./templates/manifest.mustache", config.typeInfo),
+      },
+      {
+        type: "Template",
+        name: "./resolvers.ts",
+        data: "./templates/resolvers.mustache",
       },
     ],
-  });
-
-  output.entries.push({
-    type: "Template",
-    name: "./schema3.ts",
-    data: "./templates/schema.mustache",
   });
 };

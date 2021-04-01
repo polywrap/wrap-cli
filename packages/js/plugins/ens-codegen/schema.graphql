@@ -6,7 +6,5 @@ type Query implements ApiResolver_Query {
     path: String!
   ): ApiResolver_MaybeUriOrManifest
 
-  getFile(
-    path: String!
-  ): Bytes # TODO: https://github.com/web3-api/monorepo/issues/100
+  getFile(path: String!): Bytes
 }
