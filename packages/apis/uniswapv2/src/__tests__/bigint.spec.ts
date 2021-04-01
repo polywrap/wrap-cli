@@ -169,18 +169,24 @@ describe("BigInt: Sanity", () => {
     const biA = BigInt.fromString(intA);
     expect(biA.divInt(intB).toString()).toStrictEqual("1748673246820348602804623476982897439256983468762846982060929060");
 
-    // modulus
+    // modulo small integer
     const intC = "1748673246820348602804623476982897439256983468762846982060929060934";
     const intD = 1000
     const biC = BigInt.fromString(intC);
     expect(biC.modInt(intD).toString()).toStrictEqual("934");
 
-    // division by big integer
-    const intE = "1748673246820348602804623476982897439256983468762846982060929060934";
-    const intF = "0000000000000000000000000001000000000000000000000000000000000000000"
-    const biE = BigInt.fromString(intE);
-    const biF = BigInt.fromString(intF);
-    expect(biE.div(biF).toString()).toStrictEqual("1748673246820348602804623476");
+    // // division by big integer
+    // const intE = "1748673246820348602804623476982897439256983468762846982060929060934";
+    // const intF = "0000000000000000000000000001000000000000000000000000000000000000000"
+    // const biE = BigInt.fromString(intE);
+    // const biF = BigInt.fromString(intF);
+    // expect(biE.div(biF).toString()).toStrictEqual("1748673246820348602804623476");
+    //
+    // const intG = "1748673246820348602804623476982897439256983468762846982060929060934";
+    // const intH = "6235862358623856826358623875623587"
+    // const biG = BigInt.fromString(intG);
+    // const biH = BigInt.fromString(intH);
+    // expect(biG.div(biH).toString()).toStrictEqual("280422040490042098934906652980388");
 
   });
 });

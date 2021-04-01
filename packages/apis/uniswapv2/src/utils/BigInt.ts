@@ -3,7 +3,8 @@
 export class BigInt {
   public readonly isNegative: boolean;
   private readonly d: i32[] = []; // digits stored from least to most significant
-  private readonly base: i32 = 1000 * 1000 * 1000; // 10^9
+  private readonly base: i32 = 1000 * 1000 * 1000; // 10^e
+  private readonly e: i32 = 9;
 
   constructor(bigNumber: string) {
     // TODO: check that input represents an integer. parseInt returns 0 on invalid input; no regex in AS; maybe use ascii?
@@ -12,13 +13,13 @@ export class BigInt {
       this.isNegative = true;
       bigNumber = bigNumber.substring(1);
     }
-    // parse string in 9-digit segments
-    for (let i = bigNumber.length; i > 0; i -= 9) {
+    // parse string in baseE-digit segments
+    for (let i = bigNumber.length; i > 0; i -= this.e) {
       let digitStr: string;
-      if (i < 9) {
+      if (i < this.e) {
         digitStr = bigNumber.substring(0, i);
       } else {
-        digitStr = bigNumber.substring(i - 9, i);
+        digitStr = bigNumber.substring(i - this.e, i);
       }
       this.d.push(I32.parseInt(digitStr));
     }
@@ -101,6 +102,9 @@ export class BigInt {
     for (let i = 0; i < this.d.length; i++) {
       let carry: i32 = 0;
       for (let j = 0; j < other.d.length || carry; j++) {
+        if (j >= other.d.length) {
+          res.push(0);
+        }
         const otherVal = j < other.d.length ? other.d[j] : 0;
         const cur: u64 = res[i + j] + <u64>this.d[i] * otherVal + carry;
         res[i + j] = <i32>(cur % this.base);
@@ -108,30 +112,6 @@ export class BigInt {
       }
     }
     return BigInt.fromDigits(res, this.isNegative != other.isNegative);
-  }
-
-  // O(N^2)
-  div(other: BigInt): BigInt {
-    if (other.d.length == 0 || (other.d.length == 1 && other.d[0] == 0))
-      throw new RangeError("Divide by zero");
-    let res = BigInt.fromDigits(this.d, this.isNegative != other.isNegative);
-    const n = other.d.length;
-    for (let i = 0; i < n - 1; i++) {
-      res = res.divInt(this.base);
-    }
-    return res.divInt(other.d[n - 1]);
-  }
-
-  mod(other: BigInt): u64 {
-    if (other.d.length == 0 || (other.d.length == 1 && other.d[0] == 0))
-      throw new RangeError("Divide by zero");
-    const n = other.d.length;
-    let carry: u64 = 0;
-    for (let i = 0; i < n - 1; i++) {
-      carry += this.modInt(this.base);
-    }
-    carry += this.modInt(other.d[n - 1]);
-    return carry;
   }
 
   // O(N)
@@ -205,7 +185,7 @@ export class BigInt {
     let res = this.isNegative ? "-" : "";
     res += this.d[this.d.length - 1].toString();
     for (let i = this.d.length - 2; i >= 0; i--) {
-      res += this.d[i].toString().padStart(9, "0");
+      res += this.d[i].toString().padStart(this.e, "0");
     }
     return res;
   }
