@@ -1,4 +1,4 @@
-# Web3API 0.0.1-prealpha.9
+# Web3API 0.0.1-prealpha.10
 ## Bug Fixes
 * `@web3api/ens-plugin-js`: Fix the schema.
 
