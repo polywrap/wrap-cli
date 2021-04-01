@@ -4,12 +4,12 @@ exports.run = (output, config) => {
     name: "./src",
     data: [
       {
-        type: "File",
+        type: "Template",
         name: "./index.ts",
         data: "./templates/index.mustache",
       },
       {
-        type: "Template",
+        type: "File",
         name: "./manifest.ts",
         data: config.generate("./templates/manifest.mustache", config.typeInfo),
       },
