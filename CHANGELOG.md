@@ -1,4 +1,8 @@
 # Web3API 0.0.1-prealpha.9
+## Bug Fixes
+* `@web3api/ens-plugin-js`: Fix the schema.
+
+# Web3API 0.0.1-prealpha.9
 ## Features
 * `@web3api/cli`: CLI Internalized Text Support
   * Currently English is implemented, and Spanish support is slated to be added next.
