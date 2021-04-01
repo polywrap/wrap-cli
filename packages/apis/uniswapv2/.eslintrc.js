@@ -3,7 +3,8 @@ module.exports = {
   "rules": {
     "import/no-extraneous-dependencies": "off",
     "@typescript-eslint/ban-ts-comment": "off",
-    "@typescript-eslint/naming-convention": ["error", 
+    "@typescript-eslint/no-inferrable-types": "off",
+    "@typescript-eslint/naming-convention": ["error",
     {selector: "default", format: ['camelCase']},
     {selector: ["classProperty", "objectLiteralProperty", "parameterProperty", "classMethod"], format: ['camelCase'], leadingUnderscore: "allow"},
     //variable must be in camel or upper case

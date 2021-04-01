@@ -1,6 +1,6 @@
 import { Ethereum_Query } from "./w3/imported";
-import { resolveChainId } from "../utils";
-import { mulDiv, sqrt } from "../mathUtils";
+import { resolveChainId } from "../utils/utils";
+import { mulDiv, sqrt } from "../utils/mathUtils";
 import { fetchTokenData } from "./fetch";
 import { tokenEquals } from "./token";
 
