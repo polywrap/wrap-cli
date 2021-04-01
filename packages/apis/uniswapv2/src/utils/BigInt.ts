@@ -110,31 +110,52 @@ export class BigInt {
     return BigInt.fromDigits(res, this.isNegative != other.isNegative);
   }
 
+  // O(N^2)
+  div(other: BigInt): BigInt {
+    if (other.d.length == 0 || (other.d.length == 1 && other.d[0] == 0))
+      throw new RangeError("Divide by zero");
+    let res = BigInt.fromDigits(this.d, this.isNegative != other.isNegative);
+    const n = other.d.length;
+    for (let i = 0; i < n - 1; i++) {
+      res = res.divInt(this.base);
+    }
+    return res.divInt(other.d[n - 1]);
+  }
+
+  mod(other: BigInt): u64 {
+    if (other.d.length == 0 || (other.d.length == 1 && other.d[0] == 0))
+      throw new RangeError("Divide by zero");
+    const n = other.d.length;
+    let carry: u64 = 0;
+    for (let i = 0; i < n - 1; i++) {
+      carry += this.modInt(this.base);
+    }
+    carry += this.modInt(other.d[n - 1]);
+    return carry;
+  }
+
   // O(N)
-  // only works if other < base
-  // TODO: division algorithm only works if other < base. Need robust algorithm!
   divInt(other: i32): BigInt {
     if (other == 0) throw new RangeError("Divide by zero");
     const res = BigInt.fromDigits(this.d, this.isNegative != other < 0);
-    let carry: i32 = 0;
+    let carry: u64 = 0;
     for (let i = res.d.length - 1; i >= 0; i--) {
-      const cur: u64 = res.d[i] + <u64>carry * res.base;
+      const cur: u64 = res.d[i] + carry * res.base;
       res.d[i] = <i32>(cur / other);
-      carry = <i32>(cur % other);
+      carry = cur % other;
     }
     return res.trimLeadingZeros();
   }
 
   // O(N)
-  // TODO: modulus algorithm only works if other < base. Need robust algorithm!
-  modInt(other: i32): i32 {
+  modInt(other: i32): u64 {
     if (other == 0) throw new RangeError("Divide by zero");
     const res = BigInt.fromDigits(this.d, this.isNegative != other < 0);
-    let carry: i32 = 0;
+    let carry: u64 = 0;
     for (let i = res.d.length - 1; i >= 0; i--) {
-      const cur: u64 = res.d[i] + <u64>carry * res.base;
+      const cur: u64 = res.d[i] + carry * res.base;
       res.d[i] = <i32>(cur / other);
-      carry = <i32>(cur % other);
+      carry = cur % other;
     }
     return carry;
   }
