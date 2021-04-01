@@ -1,6 +1,7 @@
-#import { Query } into ApiResolver from "w3/api-resolver"
+# TODO: should import and "implements" the api-resolver core-api schema
+# https://github.com/Web3-API/monorepo/issues/75
 
-type Query implements ApiResolver_Query {
+type Query {
   catFile(cid: String!): Bytes!
 
   tryResolveUri(
@@ -10,7 +11,7 @@ type Query implements ApiResolver_Query {
 
   getFile(
     path: String!
-  ): Bytes # TODO: https://github.com/web3-api/monorepo/issues/100
+  ): Bytes
 }
 
 type Mutation {
@@ -22,4 +23,11 @@ type Mutation {
 type AddResult {
   path: String!
   cid: String!
+}
+
+# TODO: should get replaced with an import
+# https://github.com/Web3-API/monorepo/issues/75
+type ApiResolver_MaybeUriOrManifest {
+  uri: String
+  manifest: String
 }

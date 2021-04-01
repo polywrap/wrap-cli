@@ -11,6 +11,7 @@ export const validators: SchemaValidator[] = [
   directiveValidators.importsDirective,
   typeValidators.typeDefinitions,
   typeValidators.propertyTypes,
+  typeValidators.circularDefinitions,
 ];
 
 export { directiveValidators, typeValidators };
