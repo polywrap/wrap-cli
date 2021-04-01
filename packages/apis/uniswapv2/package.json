@@ -5,6 +5,9 @@
   "version": "0.0.1-prealpha.8",
   "scripts": {
     "build": "npx w3 build",
+    "build:as": "asc ./src/utils/BigInt.ts -o ./build/utils/BigInt.wasm -d ./build/utils/BigInt.d.ts",
+    "test:as": "asp --verbose",
+    "test:ci": "asp --summary",
     "test:env:up": "npx w3 test-env up",
     "test:env:down": "npx w3 test-env down"
   },
@@ -19,6 +22,7 @@
     "@web3api/wasm-as": "0.0.1-prealpha.8",
     "ethers": "5.0.8",
     "js-yaml": "3.14.0",
-    "assemblyscript": "0.17.14"
+    "assemblyscript": "0.17.14",
+    "@as-pect/cli": "5.0.1"
   }
 }

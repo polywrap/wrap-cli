@@ -1,5 +1,5 @@
 import { Ethereum_Query } from "./w3/imported";
-import { resolveChainId } from "../utils";
+import { resolveChainId } from "../utils/utils";
 
 export function fetchTokenData(input: Input_fetchTokenData): Token {
   const address: string = input.address;

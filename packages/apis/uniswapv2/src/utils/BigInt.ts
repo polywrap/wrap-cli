@@ -1,6 +1,6 @@
 // based on https://cp-algorithms.com/algebra/big-integer.html
 
-class BigInt {
+export class BigInt {
   public readonly isNegative: boolean;
   private readonly d: i32[] = []; // digits stored from least to most significant
   private readonly base: i32 = 1000 * 1000 * 1000; // 10^9
@@ -14,7 +14,7 @@ class BigInt {
     }
     // parse string in 9-digit segments
     for (let i = bigNumber.length; i > 0; i -= 9) {
-      let digitStr;
+      let digitStr: string;
       if (i < 9) {
         digitStr = bigNumber.substring(0, i);
       } else {
@@ -30,12 +30,22 @@ class BigInt {
     return new BigInt(bigNumber);
   }
 
-  static fromDigits(bigNumber: i32[], isNegative = false): BigInt {
+  static fromDigits(bigNumber: i32[], isNegative: boolean = false): BigInt {
     const res = new BigInt(isNegative ? "-" : "");
     for (let i = 0; i < bigNumber.length; i++) {
       res.d.push(bigNumber[i]);
     }
     return res.trimLeadingZeros();
+  }
+
+  // O(N)
+  copy(): BigInt {
+    return BigInt.fromDigits(this.d, this.isNegative);
+  }
+
+  // O(N)
+  opposite(): BigInt {
+    return BigInt.fromDigits(this.d, !this.isNegative);
   }
 
   // O(N)
@@ -64,7 +74,7 @@ class BigInt {
   // O(N)
   sub(other: BigInt): BigInt {
     if (this.isNegative && other.isNegative) {
-      return this.add(other);
+      return other.opposite().sub(this.opposite());
     } else if (!this.isNegative && other.isNegative) {
       return this.add(other.opposite());
     } else if (this.isNegative && !other.isNegative) {
@@ -85,14 +95,14 @@ class BigInt {
   }
 
   // O(N^2) -- this is the "school book" algorithm, which mimics the way we learn to do multiplication by hand as children
-  // TODO: there are more efficient multiplication algorithms; this one is too slow!
+  // Although it is O(N^2), it is faster in practice than asymptotically better algorithms for multiplicands of <= 256 bits
   mul(other: BigInt): BigInt {
     const res: i32[] = new Array<i32>(this.d.length + other.d.length);
     for (let i = 0; i < this.d.length; i++) {
       let carry: i32 = 0;
       for (let j = 0; j < other.d.length || carry; j++) {
         const otherVal = j < other.d.length ? other.d[j] : 0;
-        const cur: i64 = res[i + j] + this.d[i] * otherVal + carry;
+        const cur: u64 = res[i + j] + <u64>this.d[i] * otherVal + carry;
         res[i + j] = <i32>(cur % this.base);
         carry = <i32>(cur / this.base);
       }
@@ -103,12 +113,12 @@ class BigInt {
   // O(N)
   // only works if other < base
   // TODO: division algorithm only works if other < base. Need robust algorithm!
-  divInt(other: i32) {
+  divInt(other: i32): BigInt {
     if (other == 0) throw new RangeError("Divide by zero");
     const res = BigInt.fromDigits(this.d, this.isNegative != other < 0);
     let carry: i32 = 0;
     for (let i = res.d.length - 1; i >= 0; i--) {
-      const cur: i64 = res.d[i] + carry * res.base;
+      const cur: u64 = res.d[i] + <u64>carry * res.base;
       res.d[i] = <i32>(cur / other);
       carry = <i32>(cur % other);
     }
@@ -117,29 +127,19 @@ class BigInt {
 
   // O(N)
   // TODO: modulus algorithm only works if other < base. Need robust algorithm!
-  modInt(other: i32) {
+  modInt(other: i32): i32 {
     if (other == 0) throw new RangeError("Divide by zero");
-    const res: BigInt = this.copy();
+    const res = BigInt.fromDigits(this.d, this.isNegative != other < 0);
     let carry: i32 = 0;
     for (let i = res.d.length - 1; i >= 0; i--) {
-      const cur: i64 = res.d[i] + carry * res.base;
+      const cur: u64 = res.d[i] + <u64>carry * res.base;
       res.d[i] = <i32>(cur / other);
       carry = <i32>(cur % other);
     }
     return carry;
   }
 
-  // O(N)
-  copy(): BigInt {
-    return BigInt.fromDigits(this.d);
-  }
-
-  // O(N)
-  opposite(): BigInt {
-    return BigInt.fromDigits(this.d, !this.isNegative);
-  }
-
-  equals(other: BigInt): boolean {
+  eq(other: BigInt): boolean {
     return this.compareTo(other) == 0;
   }
 
@@ -161,30 +161,25 @@ class BigInt {
 
   compareTo(other: BigInt): i8 {
     // opposite signs
-    if (this.isNegative && !other.isNegative) return 1;
-    if (!this.isNegative && other.isNegative) return -1;
+    if (this.isNegative && !other.isNegative) return -1;
+    if (!this.isNegative && other.isNegative) return 1;
     // different number of "digits"
-    if (this.d.length > other.d.length && !this.isNegative) return -1;
-    if (other.d.length > this.d.length && !this.isNegative) return 1;
-    if (this.d.length > other.d.length && this.isNegative) return 1;
-    if (other.d.length > this.d.length && this.isNegative) return -1;
-    // different number of digits in final "digit"
-    const thisLastLen = this.d[this.d.length - 1].toString().length;
-    const otherLastLen = other.d[other.d.length - 1].toString().length;
-    if (thisLastLen > otherLastLen && !this.isNegative) return -1;
-    if (otherLastLen > thisLastLen && !this.isNegative) return 1;
-    if (thisLastLen > otherLastLen && this.isNegative) return 1;
-    if (otherLastLen > thisLastLen && this.isNegative) return -1;
+    if (this.d.length != other.d.length) {
+      if (this.d.length > other.d.length && !this.isNegative) return 1;
+      else if (other.d.length > this.d.length && !this.isNegative) return -1;
+      else if (this.d.length > other.d.length && this.isNegative) return -1;
+      else return 1;
+    }
     // numbers are same length, so check each "digit"
     for (let i = this.d.length - 1; i >= 0; i--) {
-      if (this.d[i] < other.d[i]) return 1;
-      if (this.d[i] > other.d[i]) return -1;
+      if (this.d[i] < other.d[i]) return -1;
+      if (this.d[i] > other.d[i]) return 1;
     }
     return 0;
   }
 
   // O(N)
-  toString() {
+  toString(): string {
     if (this.d.length == 0) return "0";
     let res = this.isNegative ? "-" : "";
     res += this.d[this.d.length - 1].toString();
