@@ -3,6 +3,7 @@ import {
   Input_catFile
 } from "./w3";
 import {decode} from "as-base64"
+import { IpfsError } from "../error";
 
 const EmptyBody: Http_Body = {rawBody:null, stringBody:null, formDataBody: {data: []}}
 

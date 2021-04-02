@@ -89,7 +89,7 @@ export default {
       {
         from: "w3://ens/ens.web3api.eth",
         to: ensPlugin({ address: ensAddress }),
-      }
+      },
     ];
 
     const client = new Web3ApiClient({ redirects });
@@ -143,10 +143,14 @@ export default {
                         output[key] = readFileSync(path);
                       } else {
                         if (!recipePath) {
-                          throw Error("recipePath is null. This should never happen.");
+                          throw Error(
+                            "recipePath is null. This should never happen."
+                          );
                         }
 
-                        output[key] = readFileSync(resolve(dirname(recipePath), path));
+                        output[key] = readFileSync(
+                          resolve(dirname(recipePath), path)
+                        );
                       }
                       break;
                     default:
@@ -165,10 +169,14 @@ export default {
                     output[key] = readFileSync(path);
                   } else {
                     if (!recipePath) {
-                      throw Error("recipePath is null. This should never happen.");
+                      throw Error(
+                        "recipePath is null. This should never happen."
+                      );
                     }
 
-                    output[key] = readFileSync(resolve(dirname(recipePath), path));
+                    output[key] = readFileSync(
+                      resolve(dirname(recipePath), path)
+                    );
                   }
                 } else {
                   output[key] = str;

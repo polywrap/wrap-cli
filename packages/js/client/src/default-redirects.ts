@@ -28,7 +28,7 @@ export function getDefaultRedirects(): UriRedirect<Uri>[] {
     },
     {
       from: new Uri("w3://ens/http.web3api.eth"),
-      to: httpPlugin()
+      to: httpPlugin(),
     },
     {
       from: new Uri("w3://w3/logger"),

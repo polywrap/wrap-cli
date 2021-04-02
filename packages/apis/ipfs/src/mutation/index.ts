@@ -1,6 +1,7 @@
 import { Http_Mutation, Http_ResponseType } from "./w3/imported";
 import { Input_addFile, AddFileResult } from "./w3";
 import { JSON } from "assemblyscript-json";
+import { IpfsError } from "../error";
 
 export function addFile(input: Input_addFile): AddFileResult {
   const url = input.ipfsUrl + "/api/v0/add";

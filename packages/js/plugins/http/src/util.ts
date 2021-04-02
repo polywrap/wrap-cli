@@ -1,8 +1,7 @@
 import { Request, Response, ResponseType, Header } from "./types";
 
 import { AxiosResponse, AxiosRequestConfig } from "axios";
-
-import FormData from "form-data"
+import FormData from "form-data";
 
 /**
  * Convert AxiosResponse<string> to Response
@@ -50,7 +49,9 @@ export type AxiosData = string | ArrayBuffer | FormData | undefined;
  *
  * @param request
  */
-export function toAxiosRequest(request: Request): {config: AxiosRequestConfig, data: AxiosData} {
+export function toAxiosRequest(
+  request: Request
+): { config: AxiosRequestConfig; data: AxiosData } {
   const urlParams = request.urlParams?.reduce((params, p) => {
     return { ...params, [p.key]: p.value };
   }, {});
@@ -75,8 +76,10 @@ export function toAxiosRequest(request: Request): {config: AxiosRequestConfig, d
   let data: AxiosData;
 
   if (request.body) {
-    if (request.body.formDataBody && 
-      request.body.formDataBody.data.length > 0) {
+    if (
+      request.body.formDataBody &&
+      request.body.formDataBody.data.length > 0
+    ) {
       // body is defined as form data
       const fd = new FormData();
       request.body.formDataBody.data.forEach((element) => {
@@ -95,5 +98,5 @@ export function toAxiosRequest(request: Request): {config: AxiosRequestConfig, d
     }
   }
 
-  return {config, data};
+  return { config, data };
 }
