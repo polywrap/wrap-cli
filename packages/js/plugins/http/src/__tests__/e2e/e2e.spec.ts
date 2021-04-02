@@ -1,5 +1,4 @@
 import { Web3ApiClient } from "@web3api/client-js"
-import { httpPlugin } from "../..";
 import { Response } from "../../types";
 import nock from "nock"
 

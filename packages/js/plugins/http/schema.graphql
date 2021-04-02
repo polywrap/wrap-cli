@@ -19,7 +19,7 @@ type Request {
   headers: [Header!]
   urlParams: [UrlParam!]
   responseType: ResponseType!
-  body: Body!
+  body: Body
 }
 
 enum ResponseType {
@@ -30,7 +30,7 @@ enum ResponseType {
 type Body {
   stringBody: String
   rawBody: Bytes
-  formDataBody: FormData!
+  formDataBody: FormData
 }
 
 type FormData {

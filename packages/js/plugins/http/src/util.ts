@@ -2,6 +2,8 @@ import { Request, Response, ResponseType, Header } from "./types";
 
 import { AxiosResponse, AxiosRequestConfig } from "axios";
 
+import FormData from "form-data"
+
 /**
  * Convert AxiosResponse<string> to Response
  *
@@ -41,12 +43,14 @@ export function fromAxiosResponse(
   }
 }
 
+export type AxiosData = string | ArrayBuffer | FormData | undefined;
+
 /**
  * Creates AxiosRequestConfig from Request
  *
  * @param request
  */
-export function toAxiosRequestConfig(request: Request): AxiosRequestConfig {
+export function toAxiosRequest(request: Request): {config: AxiosRequestConfig, data: AxiosData} {
   const urlParams = request.urlParams?.reduce((params, p) => {
     return { ...params, [p.key]: p.value };
   }, {});
@@ -68,5 +72,28 @@ export function toAxiosRequestConfig(request: Request): AxiosRequestConfig {
     config = { ...config, headers: requestHeaders };
   }
 
-  return config;
+  let data: AxiosData;
+
+  if (request.body) {
+    if (request.body.formDataBody && 
+      request.body.formDataBody.data.length > 0) {
+      // body is defined as form data
+      const fd = new FormData();
+      request.body.formDataBody.data.forEach((element) => {
+        fd.append(element.key, element.data);
+      });
+      data = fd;
+      // set up appropriate headers for form data
+      config.headers = {
+        ...config.headers,
+        ...fd.getHeaders(),
+      };
+    } else if (request.body.stringBody) {
+      data = request.body.stringBody;
+    } else if (request.body.rawBody) {
+      data = request.body.rawBody;
+    }
+  }
+
+  return {config, data};
 }

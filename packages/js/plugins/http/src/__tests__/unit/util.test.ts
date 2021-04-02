@@ -1,4 +1,4 @@
-import { fromAxiosResponse, toAxiosRequestConfig } from "../../util";
+import { fromAxiosResponse, toAxiosRequest } from "../../util";
 import {ResponseType} from "../../types"
 
 describe("converting axios response", () => {
@@ -41,32 +41,98 @@ describe("converting axios response", () => {
 
 describe("creating axios config", () => {
   test("with headers", () => {
-    const config = toAxiosRequestConfig({
+    const axiosReq = toAxiosRequest({
       headers: [
         { key: "Accept", value: "application-json" },
         { key: "X-Header", value: "test-value" },
       ],
       responseType: ResponseType.TEXT,
-      body: {stringBody: "body-content", formDataBody: {data: []}},
     });
 
-    expect(config.headers).toStrictEqual({
+    expect(axiosReq.config.headers).toStrictEqual({
       ["Accept"]: "application-json",
       ["X-Header"]: "test-value",
     });
-    expect(config.params).toBeUndefined();
-    expect(config.responseType).toBe("text");
+    expect(axiosReq.config.params).toBeUndefined();
+    expect(axiosReq.config.responseType).toBe("text");
   });
 
   test("with url params", () => {
-    const config = toAxiosRequestConfig({
+    const config = toAxiosRequest({
       urlParams: [{ key: "tag", value: "data" }],
       responseType: ResponseType.BINARY,
-      body: {stringBody: "body-content", formDataBody: {data: []}},
     });
 
-    expect(config.headers).toBeUndefined();
-    expect(config.params).toStrictEqual({ ["tag"]: "data" });
-    expect(config.responseType).toBe("arraybuffer");
+    expect(config.config.headers).toBeUndefined();
+    expect(config.config.params).toStrictEqual({ ["tag"]: "data" });
+    expect(config.config.responseType).toBe("arraybuffer");
+  });
+
+  test("with body as form data", () => {
+    const axiosReq = toAxiosRequest({
+      headers: [
+        { key: "Accept", value: "application-json" },
+        { key: "X-Header", value: "test-value" },
+      ],
+      responseType: ResponseType.TEXT,
+      body: {
+        formDataBody: {
+          data: [
+            {
+              key: "prop", 
+              data: "test-data",
+            }]
+        }
+      },
+    });
+
+    expect(axiosReq.config.headers["Accept"])
+      .toStrictEqual("application-json");
+    expect(axiosReq.config.headers["X-Header"])
+      .toStrictEqual("test-value");      
+    expect(axiosReq.config.headers["content-type"].startsWith("multipart/form-data;"))
+      .toBeTruthy()
+    expect(axiosReq.config.params).toBeUndefined();
+    expect(axiosReq.config.responseType).toBe("text");
+    expect(axiosReq.data).toHaveProperty("_valueLength");
+    expect(axiosReq.data).toHaveProperty("_overheadLength");
+  });
+
+  test("with body as string", () => {
+    const axiosReq = toAxiosRequest({
+      headers: [
+        { key: "Accept", value: "application-json" },
+        { key: "X-Header", value: "test-value" },
+      ],
+      responseType: ResponseType.TEXT,
+      body: {stringBody: "test-string-body"}
+    });
+
+    expect(axiosReq.config.headers).toStrictEqual({
+      ["Accept"]: "application-json",
+      ["X-Header"]: "test-value",
+    });
+    expect(axiosReq.config.params).toBeUndefined();
+    expect(axiosReq.config.responseType).toBe("text");
+    expect(axiosReq.data).toBe("test-string-body");
+  });
+
+  test("with body as raw bytes", () => {
+    const axiosReq = toAxiosRequest({
+      headers: [
+        { key: "Accept", value: "application-json" },
+        { key: "X-Header", value: "test-value" },
+      ],
+      responseType: ResponseType.TEXT,
+      body: {rawBody: Uint8Array.from([21, 34, 45])}
+    });
+
+    expect(axiosReq.config.headers).toStrictEqual({
+      ["Accept"]: "application-json",
+      ["X-Header"]: "test-value",
+    });
+    expect(axiosReq.config.params).toBeUndefined();
+    expect(axiosReq.config.responseType).toBe("text");
+    expect(axiosReq.data).toStrictEqual(Uint8Array.from([21, 34, 45]));
   });
 });

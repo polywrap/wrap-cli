@@ -26,7 +26,7 @@ export class Request {
 export class Body {
   stringBody?: string;
   rawBody?: ArrayBuffer;
-  formDataBody: FormData;
+  formDataBody?: FormData;
 }
 
 export class FormData {
