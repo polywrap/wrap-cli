@@ -1,3 +1,7 @@
+import {
+  ChainId,
+  Token
+} from "../query/w3";
 
 // TODO: use this if localCompare doesn't exist in AssemblyScript (it's not in the docs)
 export function compareAddresses(ref: string, other: string): u8 {
@@ -11,20 +15,20 @@ export function compareAddresses(ref: string, other: string): u8 {
   return ref.length - other.length;
 }
 
-export function resolveChainId(chainId: ChainId): u32 {
+export function resolveChainId(chainId: ChainId): string {
   switch (chainId) {
     case ChainId.MAINNET:
-      return 1;
+      return "1";
     case ChainId.ROPSTEN:
-      return 3;
+      return "3";
     case ChainId.RINKEBY:
-      return 4;
+      return "4";
     case ChainId.GOERLI:
-      return 5;
+      return "5";
     case ChainId.KOVAN:
-      return 42;
+      return "42";
     default:
-      throw Error("Unknown chain ID. This should never happen.");
+      throw new Error("Unknown chain ID. This should never happen.");
   }
 }
 
@@ -71,6 +75,6 @@ export function getWETH9(chainId: ChainId): Token {
         name: 'Wrapped Ether'
       };
     default:
-      throw Error("Unknown chain ID. This should never happen.");
+      throw new Error("Unknown chain ID. This should never happen.");
   }
 }

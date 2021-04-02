@@ -1,3 +1,4 @@
+import { Input_tokenEquals, Input_tokenSortsBefore, Token } from "./w3";
 
 // Checks if the current instance is equal to another (has an identical chainId and address).
 export function tokenEquals(input: Input_tokenEquals): boolean {

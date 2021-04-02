@@ -1,5 +1,4 @@
 {
-  "factoryAddress": "",
-  "initCodeHash": "",
-  "minimumLiquidity": ""
+  "FACTORY_ADDRESS": "",
+  "MINIMUM_LIQUIDITY": ""
 }
