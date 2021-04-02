@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.11
+## Bug Fixes
+* `@web3api/cli`: Include the internationalization JSON files in the published package.
+
 # Web3API 0.0.1-prealpha.10
 ## Bug Fixes
 * `@web3api/ens-plugin-js`: Fix the schema.

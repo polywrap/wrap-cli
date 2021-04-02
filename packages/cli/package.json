@@ -9,7 +9,8 @@
   },
   "files": [
     "build",
-    "bin"
+    "bin",
+    "lang"
   ],
   "bin": {
     "w3": "bin/w3"
