@@ -21,7 +21,7 @@ export function addFile(input: Input_addFile): AddResult {
   })
 
   if(addResponse == null || addResponse.status != 200) {
-    throw new Error(`Failed to add file: ${input.fileName}`);
+    throw new IpfsError("addFile", addResponse.status, addResponse.statusText);
   }
 
   // parse result

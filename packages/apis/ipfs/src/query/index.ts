@@ -20,7 +20,7 @@ export function catToString(input: Input_catToString): String {
   });
 
   if(catResponse == null || catResponse.status != 200) {
-    throw new Error(`Failed to cat file: ${catResponse?.status} ${catResponse?.statusText}`);
+    throw new IpfsError("catFile", catResponse.status, catResponse.statusText);
   }
 
   return catResponse.body;
@@ -39,7 +39,7 @@ export function catFile(input: Input_catFile): ArrayBuffer {
   });
 
   if(catResponse == null || catResponse.status != 200) {
-    throw new Error(`Failed to cat file: ${catResponse?.status} ${catResponse?.statusText}`);
+    throw new IpfsError("catFile", catResponse.status, catResponse.statusText);
   }
 
   return decode(catResponse.body).buffer;
