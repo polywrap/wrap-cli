@@ -1,26 +1,43 @@
 import { Ethereum_Query } from "./w3/imported";
-import { resolveChainId } from "../utils/utils";
+import { tokenSortsBefore } from "./token";
+import {
+  ChainId,
+  Input_fetchKLast,
+  Input_fetchPairData,
+  Input_fetchTokenData,
+  Input_fetchTotalSupply,
+  Pair,
+  Token,
+  TokenAmount,
+} from "./w3";
+import { pairAddress } from "./pair";
 
 export function fetchTokenData(input: Input_fetchTokenData): Token {
   const address: string = input.address;
   const chainId: ChainId = input.chainId;
-  const symbol: string = input.symbol != null ? input.symbol : Ethereum_Query.callView({
-    address: address,
-    method: "function symbol() external pure returns (string memory)",
-    args: [],
-    network: resolveChainId(chainId)
-  });
-  const name: string = input.name != null ? input.name : Ethereum_Query.callView({
-    address: address,
-    method: "function name() external pure returns (string memory)",
-    args: [],
-    network: resolveChainId(chainId)
-  });
+  const symbol: string =
+    input.symbol != null
+      ? input.symbol!
+      : Ethereum_Query.callView({
+          address: address,
+          method: "function symbol() external pure returns (string memory)",
+          args: [],
+          // network: resolveChainId(chainId)
+        });
+  const name: string =
+    input.name != null
+      ? input.name!
+      : Ethereum_Query.callView({
+          address: address,
+          method: "function name() external pure returns (string memory)",
+          args: [],
+          // network: resolveChainId(chainId)
+        });
   const decimals: string = Ethereum_Query.callView({
     address: address,
     method: "function decimals() external pure returns (uint8)",
     args: [],
-    network: resolveChainId(chainId)
+    // network: resolveChainId(chainId)
   });
   return {
     chainId: chainId,
@@ -39,27 +56,33 @@ export function fetchPairData(input: Input_fetchPairData): Pair {
   const address = pairAddress({ token0, token1 });
   const res: string = Ethereum_Query.callView({
     address: address,
-    method: "function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)",
+    method:
+      "function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)",
     args: [],
-    network: resolveChainId(token0.chainId)
+    // network: resolveChainId(token0.chainId)
   });
   // TODO: confirm that this is what res will look like
-  const [amountA, amountB, _] = res.substring(1, res.length - 1).split(",");
+  const resArray: string[] = res.substring(1, res.length - 1).split(",");
+  const amountA = resArray[0];
+  const amountB = resArray[1];
 
   // returned amounts are ordered by token sort order
-  const token0SortsBefore: boolean = tokenSortsBefore({token0, token1});
+  const token0SortsBefore: boolean = tokenSortsBefore({
+    token: token0,
+    other: token1,
+  });
   const amount0 = token0SortsBefore ? amountA : amountB;
   const amount1 = token0SortsBefore ? amountB : amountA;
 
   return {
-    token0: {
+    tokenAmount0: {
       token: token0,
-      amount: U256.parseInt(amount0),
+      amount: amount0,
     },
-    token1: {
+    tokenAmount1: {
       token: token1,
-      amount: U256.parseInt(amount1),
-    }
+      amount: amount1,
+    },
   };
 }
 
@@ -70,23 +93,23 @@ export function fetchTotalSupply(input: Input_fetchTotalSupply): TokenAmount {
     address: token.address,
     method: "function totalSupply() external view returns (uint)",
     args: [],
-    network: resolveChainId(token.chainId)
+    // network: resolveChainId(token.chainId)
   });
   return {
     token: token,
-    amount: parseInt(res),
-  }
+    amount: res,
+  };
 }
 
 // input token must be a pair liquidity token
 // returns reserve0 * reserve1, as of immediately after the most recent liquidity event
-export function fetchKLast(input: Input_fetchKLast): u256 {
+export function fetchKLast(input: Input_fetchKLast): string {
   const token: Token = input.token;
   const res: string = Ethereum_Query.callView({
     address: token.address,
     method: "function kLast() external view returns (uint)",
     args: [],
-    network: resolveChainId(token.chainId)
+    // network: resolveChainId(token.chainId)
   });
-  return parseInt(res);
+  return res;
 }

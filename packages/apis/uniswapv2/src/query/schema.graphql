@@ -23,13 +23,9 @@ type Query {
     pair: Pair!
   ): Token!
 
-  pairReserve0(
+  pairReserves(
     pair: Pair!
-  ): Uint256!
-
-  pairReserve1(
-    pair: Pair!
-  ): Uint256!
+  ): [String!]! # [Uint256!]!
 
   pairOutputAmount(
     pair: Pair!
@@ -52,8 +48,8 @@ type Query {
     pair: Pair!
     totalSupply: TokenAmount!
     liquidity: TokenAmount!
-    feeOn: boolean
-    kLast: Uint256
+    feeOn: Boolean
+    kLast: String # Uint256
   ): [TokenAmount!]!
 
   # Route
@@ -70,41 +66,41 @@ type Query {
   ): TokenAmount!
 
   # Trade
-  tradeExecutionPrice(
-    trade: Trade!
-  ): TokenAmount!
-
-  tradeNextMidPrice(
-    trade: Trade!
-  ): TokenAmount!
-
-  tradeSlippage(
-    trade: Trade!
-  ): TokenAmount!
-
-  tradeMinimumAmountOut(
-    trade: Trade!
-    slippageTolerance: Float32!
-  ): TokenAmount!
-
-  tradeMinimumAmountIn(
-    trade: Trade!
-    slippageTolerance: Float32!
-  ): TokenAmount!
-
-  bestTradeExactIn(
-    pairs: [Pair!]!
-    amountIn: TokenAmount!
-    tokenOut: Token!
-    options: BestTradeOptions!
-  ): [Trade!]!
-
-  bestTradeExactOut(
-    pairs: [Pair!]!
-    tokenIn: Token!
-    amountOut: TokenAmount!
-    options: BestTradeOptions!
-  ): [Trade!]!
+#  tradeExecutionPrice(
+#    trade: Trade!
+#  ): TokenAmount!
+#
+#  tradeNextMidPrice(
+#    trade: Trade!
+#  ): TokenAmount!
+#
+#  tradeSlippage(
+#    trade: Trade!
+#  ): TokenAmount!
+#
+#  tradeMinimumAmountOut(
+#    trade: Trade!
+#    slippageTolerance: String! # Float32!
+#  ): TokenAmount!
+#
+#  tradeMinimumAmountIn(
+#    trade: Trade!
+#    slippageTolerance: String! # Float32!
+#  ): TokenAmount!
+#
+#  bestTradeExactIn(
+#    pairs: [Pair!]!
+#    amountIn: TokenAmount!
+#    tokenOut: Token!
+#    options: BestTradeOptions!
+#  ): [Trade!]!
+#
+#  bestTradeExactOut(
+#    pairs: [Pair!]!
+#    tokenIn: Token!
+#    amountOut: TokenAmount!
+#    options: BestTradeOptions!
+#  ): [Trade!]!
 
   # Fetch
   fetchTokenData(
@@ -125,7 +121,7 @@ type Query {
 
   fetchKLast(
     token: Token!
-  ): Uint256!
+  ): String! # Uint256!
 
   # Constants
   factoryAddress: String!
@@ -162,7 +158,7 @@ type Token {
 
 type TokenAmount {
   token: Token!
-  amount: UInt256!
+  amount: String! # UInt256!
 }
 
 type Pair {
