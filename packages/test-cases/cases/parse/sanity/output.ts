@@ -279,7 +279,7 @@ export const output: TypeInfo = {
         createObjectPropertyDefinition({
           name: "circular",
           type: "TestImport_Object",
-          required: true,
+          required: false,
         })
       ],
     }

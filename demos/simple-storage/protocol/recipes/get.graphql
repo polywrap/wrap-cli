@@ -1,5 +1,0 @@
-query {
-  getData(
-    address: $address
-  )
-}

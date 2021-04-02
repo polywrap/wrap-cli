@@ -6,6 +6,7 @@ import {
 } from "../typeInfo";
 
 import { DocumentNode, StringValueNode, visit } from "graphql";
+import { getSchemaCycles } from "graphql-schema-cycles";
 
 export function typeDefinitions(astNode: DocumentNode): void {
   const objectTypes: Record<string, boolean> = {};
@@ -147,5 +148,37 @@ export function propertyTypes(astNode: DocumentNode): void {
         `Unknown property type found: type ${field.object} { ${field.field}: ${field.type} }`
       );
     }
+  }
+}
+
+export function circularDefinitions(astNode: DocumentNode): void {
+  const operationTypes: string[] = [];
+  const operationTypeNames = ["Mutation", "Subscription", "Query"];
+
+  visit(astNode, {
+    enter: {
+      ObjectTypeDefinition: (node) => {
+        const isOperationType = operationTypeNames.some(
+          (name) =>
+            node.name.value === name || node.name.value.endsWith(`_${name}`)
+        );
+        if (isOperationType) {
+          operationTypes.push(node.name.value);
+        }
+      },
+    },
+  });
+
+  const { cycleStrings, foundCycle } = getSchemaCycles(astNode, {
+    ignoreTypeNames: operationTypes,
+    allowOnNullableFields: true,
+  });
+
+  if (foundCycle) {
+    throw Error(
+      `Graphql cycles are not supported. \nFound: ${cycleStrings.map(
+        (cycle) => `\n- ${cycle}`
+      )}`
+    );
   }
 }
