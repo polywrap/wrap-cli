@@ -1,8 +1,8 @@
 import { Http_Mutation, Http_ResponseType } from "./w3/imported";
-import { Input_addFile, AddResult } from "./w3";
+import { Input_addFile, AddFileResult } from "./w3";
 import { JSON } from "assemblyscript-json";
 
-export function addFile(input: Input_addFile): AddResult {
+export function addFile(input: Input_addFile): AddFileResult {
   const url = input.ipfsUrl + "/api/v0/add";
   const addResponse = Http_Mutation.post({
     url: url,
@@ -25,7 +25,7 @@ export function addFile(input: Input_addFile): AddResult {
   }
 
   // parse result
-  let addResult: AddResult = {name: "", hash: "", size: ""}
+  let addResult: AddFileResult = {name: "", hash: "", size: ""}
   const responseObj: JSON.Obj = <JSON.Obj>(JSON.parse(addResponse.body));
   
   const nameOrNull: JSON.Str | null = responseObj.getString("Name");

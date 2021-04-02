@@ -8,10 +8,6 @@
     "variables": { "cid": "$SampleCid", "ipfsUrl": "$IpfsUrl" }
   },
   {
-    "query": "./catToString.graphql",
-    "variables": { "cid": "$SampleCid", "ipfsUrl": "$IpfsUrl" }
-  },
-  {
     "query": "./addFile.graphql",
     "variables": { "data": "$File", "fileName": "$FileName", "ipfsUrl": "$IpfsUrl" }
   }

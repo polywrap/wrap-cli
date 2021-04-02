@@ -1,6 +1,0 @@
-query {
-  catToString(
-    ipfsUrl: $ipfsUrl
-    cid: $cid
-  )
-}
