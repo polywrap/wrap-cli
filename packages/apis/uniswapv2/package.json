@@ -11,21 +11,21 @@
     "test:env:up": "npx w3 test-env up",
     "test:env:down": "npx w3 test-env down"
   },
-  "workspaces": {
-    "nohoist": [
-      "assemblyscript",
-      "assemblyscript/**"
-    ]
-  },
   "devDependencies": {
     "@as-pect/cli": "5.0.1",
     "@uniswap/v2-core": "1.0.1",
     "@uniswap/v2-periphery": "1.1.0-beta.0",
-    "@web3api/cli": "0.0.1-prealpha.8",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.8",
-    "@web3api/wasm-as": "0.0.1-prealpha.8",
+    "@web3api/cli": "0.0.1-prealpha.11",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.11",
+    "@web3api/wasm-as": "0.0.1-prealpha.11",
+    "@web3api/client-js": "0.0.1-prealpha.11",
     "assemblyscript": "0.17.14",
     "ethers": "5.0.8",
-    "js-yaml": "3.14.0"
+    "js-yaml": "3.14.0",
+    "@types/jest": "26.0.8",
+    "typescript": "3.9.7",
+    "ts-jest": "26.1.4",
+    "jest": "26.2.2"
+
   }
 }

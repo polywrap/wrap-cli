@@ -1892,6 +1892,7 @@
     intl-messageformat-parser "6.4.2"
     tslib "^2.1.0"
 
+<<<<<<< HEAD
 "@formatjs/ts-transformer@3.2.0":
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/@formatjs/ts-transformer/-/ts-transformer-3.2.0.tgz#fdd3617347f023cbe3dad91713240d39bb139eca"
@@ -1901,6 +1902,8 @@
     tslib "^2.1.0"
     typescript "^4.0"
 
+=======
+>>>>>>> 4de18b8f... added testing packages and blank test files as placeholders for testing uniswap api
 "@hapi/address@2.x.x":
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/@hapi/address/-/address-2.1.4.tgz#5d67ed43f3fd41a69d4b9ff7b56e7c0d1d0a81e5"
@@ -3830,6 +3833,7 @@
     "@uniswap/lib" "1.1.1"
     "@uniswap/v2-core" "1.0.0"
 
+<<<<<<< HEAD
 "@web3api/cli@0.0.1-prealpha.8":
   version "0.0.1-prealpha.8"
   resolved "https://registry.yarnpkg.com/@web3api/cli/-/cli-0.0.1-prealpha.8.tgz#d0e396ebeb9a3c6aac832c0f45990f3223bea348"
@@ -3845,20 +3849,39 @@
     "@web3api/schema-compose" "0.0.1-prealpha.8"
     "@web3api/schema-parse" "0.0.1-prealpha.8"
 >>>>>>> 5f5c906c... refactored, added some Pair and fetch functions, added some util functions
+=======
+"@web3api/cli@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/cli/-/cli-0.0.1-prealpha.11.tgz#23e0376c82d0262abce16e76983c2b596491844d"
+  integrity sha512-VHuU7s6IGJPPLv1Bq7hxqIn5BA9A6cBdNMyFvdbKlv6DbQ4e7CjK4YnoQSZLFWWtqpR5PORIpvBxBZMpdDRh8w==
+  dependencies:
+    "@formatjs/intl" "1.8.2"
+    "@web3api/client-js" "0.0.1-prealpha.11"
+    "@web3api/client-test-env" "0.0.1-prealpha.11"
+    "@web3api/core-js" "0.0.1-prealpha.11"
+    "@web3api/ens-plugin-js" "0.0.1-prealpha.11"
+    "@web3api/ethereum-plugin-js" "0.0.1-prealpha.11"
+    "@web3api/ipfs-plugin-js" "0.0.1-prealpha.11"
+    "@web3api/schema-bind" "0.0.1-prealpha.11"
+    "@web3api/schema-compose" "0.0.1-prealpha.11"
+    "@web3api/schema-parse" "0.0.1-prealpha.11"
+>>>>>>> 4de18b8f... added testing packages and blank test files as placeholders for testing uniswap api
     assemblyscript "0.17.14"
     axios "0.19.2"
     chalk "4.1.0"
-    chokidar "^3.5.1"
+    chokidar "3.5.1"
     fs-extra "9.0.1"
     gluegun "4.6.1"
     graphql-tag "2.11.0"
-    ipfs-http-client "^48.1.3"
+    ipfs-http-client "48.1.3"
     js-yaml "3.14.0"
     mustache "4.0.1"
     ora "4.0.0"
+    os-locale "5.0.0"
     spawn-command "0.0.2-1"
     ws "7.3.1"
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 "@web3api/client-js@0.0.1-prealpha.7":
   version "0.0.1-prealpha.7"
@@ -3907,20 +3930,48 @@
   version "0.0.1-prealpha.8"
   resolved "https://registry.yarnpkg.com/@web3api/client-test-env/-/client-test-env-0.0.1-prealpha.8.tgz#880b2ca31fcc26dd5647c07bbdfeb59fab4720ed"
   integrity sha512-Lt734/UTPYM7qVHECpgbWeCU2TlBkbuHsAyI+mRB5cgxLH+LZg8uS5uSLxE7iGUpq3PCsrqC4lQ5oQRyCPrOjw==
-
-"@web3api/core-js@0.0.1-prealpha.8":
-  version "0.0.1-prealpha.8"
-  resolved "https://registry.yarnpkg.com/@web3api/core-js/-/core-js-0.0.1-prealpha.8.tgz#245ef5c4225318bbf116ea726b0c6a6b234c8570"
-  integrity sha512-en8yz6LOMpU8oLOfggnDzSKSDd1TvnIuk6KFqdV0ZUA5tFZ5fmEYaAs4e7dTeFwD6VuTQ15ifuiZc5LCrg2odg==
+=======
+"@web3api/client-js@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/client-js/-/client-js-0.0.1-prealpha.11.tgz#d21c647da24e2e2c09005fc56fb64905fa94d67c"
+  integrity sha512-yAA0ppcMUFBWb1i0dAGh1t4GQwkp6HdNSY7FLfqwbXNu9dZ3o+AwTWBJfCT15m978AMAgCdvta7Q0FTgks4FYg==
   dependencies:
+    "@msgpack/msgpack" "2.3.0"
+    "@web3api/core-js" "0.0.1-prealpha.11"
+    "@web3api/ens-plugin-js" "0.0.1-prealpha.11"
+    "@web3api/ethereum-plugin-js" "0.0.1-prealpha.11"
+    "@web3api/ipfs-plugin-js" "0.0.1-prealpha.11"
+    "@web3api/logger-plugin-js" "0.0.1-prealpha.11"
+    "@web3api/schema-parse" "0.0.1-prealpha.11"
+    graphql "15.5.0"
+    js-yaml "3.14.0"
+    web-worker "1.0.0"
+
+"@web3api/client-test-env@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/client-test-env/-/client-test-env-0.0.1-prealpha.11.tgz#9b4919188acbf9fb42c06cca218acf69fb071137"
+  integrity sha512-JVOvaPigIcl+5cw5/zwnOz+ZXQMYoRW1SP8hPGYmhW5Pt3Q6xj5BAxdLvuf+YVn4wF7693iCWyK2ZXzw/np7Ow==
+>>>>>>> 4de18b8f... added testing packages and blank test files as placeholders for testing uniswap api
+
+"@web3api/core-js@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/core-js/-/core-js-0.0.1-prealpha.11.tgz#0ebb9a65189bc0a321026cdc41642820eab1acf6"
+  integrity sha512-pQ880RjMfvDXmn2CLyNNxVRFjmqq87VuhXk5TuCqhhNgAii4ACf1ZuurIJsc/YsAWTHTC6irTL5R2VLQ64rvqg==
+  dependencies:
+<<<<<<< HEAD
     "@web3api/manifest-schema" "0.0.1-prealpha.8"
 >>>>>>> 5f5c906c... refactored, added some Pair and fetch functions, added some util functions
     graphql "15.3.0"
+=======
+    "@web3api/manifest-schema" "0.0.1-prealpha.11"
+    graphql "15.5.0"
+>>>>>>> 4de18b8f... added testing packages and blank test files as placeholders for testing uniswap api
     graphql-tag "2.10.4"
     js-yaml "3.14.0"
     jsonschema "1.4.0"
     semver "7.3.4"
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 "@web3api/ens-plugin-js@0.0.1-prealpha.7":
   version "0.0.1-prealpha.7"
@@ -3949,29 +4000,40 @@
   version "0.0.1-prealpha.8"
   resolved "https://registry.yarnpkg.com/@web3api/ens-plugin-js/-/ens-plugin-js-0.0.1-prealpha.8.tgz#da87dfee79bbfdbc1dbbd1d80874f76a1a0159a8"
   integrity sha512-13fGpsioG4XimThZV+A/wQhpfR/VY2ksKNzqWeMGchKOVwhlKqiOQ6aIxkGaPYEnslLAIIIya9dKFJY26O+AOw==
+=======
+"@web3api/ens-plugin-js@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/ens-plugin-js/-/ens-plugin-js-0.0.1-prealpha.11.tgz#a604bad302e0ba8c5062d1ef52e6c9ea4cdefe51"
+  integrity sha512-LZDTx2xfo5lRY0b68AeHv7Rga88D+DYHI/fbs9aZS+I1Y94gBAS9+ohoPfv2dwWLRrnPxFXiQ5FjRZ/ehM1OQw==
+>>>>>>> 4de18b8f... added testing packages and blank test files as placeholders for testing uniswap api
   dependencies:
-    "@web3api/core-js" "0.0.1-prealpha.8"
+    "@web3api/core-js" "0.0.1-prealpha.11"
     ethers "5.0.7"
 
-"@web3api/ethereum-plugin-js@0.0.1-prealpha.8":
-  version "0.0.1-prealpha.8"
-  resolved "https://registry.yarnpkg.com/@web3api/ethereum-plugin-js/-/ethereum-plugin-js-0.0.1-prealpha.8.tgz#79c5b058ce04756201d7f9c21e2e330307259594"
-  integrity sha512-FeznWQAlTKDXj63l1nUky1Fb1YM6APCeFb7RY9Lb29WqPCLKEsmO6ne3c0XJGm6dSbzGxVtJoCaajydRLJJIDQ==
+"@web3api/ethereum-plugin-js@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/ethereum-plugin-js/-/ethereum-plugin-js-0.0.1-prealpha.11.tgz#96f9a2e6e06e6b4fdeaf17bdf3796105d709a203"
+  integrity sha512-jemYM9Visbnn0Ojxs5WXgtECX5VzsfCyFpC4A/zeeWhGf2EGq3cFtmf7qGicpMcfpQXIJqEz2lNJSHwvIZ1LuQ==
   dependencies:
-    "@web3api/core-js" "0.0.1-prealpha.8"
+    "@web3api/core-js" "0.0.1-prealpha.11"
     ethers "5.0.7"
 
-"@web3api/ipfs-plugin-js@0.0.1-prealpha.8":
-  version "0.0.1-prealpha.8"
-  resolved "https://registry.yarnpkg.com/@web3api/ipfs-plugin-js/-/ipfs-plugin-js-0.0.1-prealpha.8.tgz#790b3345fe5f689db1a29ce79c42c1508c0375ff"
-  integrity sha512-sKEcrBbqQjjNha8dUUH6tsArkrideUeMH0sOfFCGzkxY1qPn7rk8srvmiuSNIb32E35hH2zBY4v3iXZ5G8QBdw==
+"@web3api/ipfs-plugin-js@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/ipfs-plugin-js/-/ipfs-plugin-js-0.0.1-prealpha.11.tgz#e0492e8f790c441604ffde3da76f9f35d2d10ac3"
+  integrity sha512-NHZG3uw88Q7bSgb0L82KfDD/lGMQzWW7o1ZWMddguujrrn/x9wKVJb56txTllypAQJ89xDl9afRqovEImUhnXA==
   dependencies:
+<<<<<<< HEAD
     "@web3api/core-js" "0.0.1-prealpha.8"
 >>>>>>> 5f5c906c... refactored, added some Pair and fetch functions, added some util functions
+=======
+    "@web3api/core-js" "0.0.1-prealpha.11"
+>>>>>>> 4de18b8f... added testing packages and blank test files as placeholders for testing uniswap api
     cids "^1.1.4"
     ipfs-http-client-lite "0.3.0"
     is-ipfs "1.0.3"
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 "@web3api/logger-plugin-js@0.0.1-prealpha.7":
   version "0.0.1-prealpha.7"
@@ -4018,43 +4080,57 @@
   version "0.0.1-prealpha.8"
   resolved "https://registry.yarnpkg.com/@web3api/logger-plugin-js/-/logger-plugin-js-0.0.1-prealpha.8.tgz#2b291f71cf205b3d6db74f904ef6d205c5b34db7"
   integrity sha512-BdJluzWw0URhXKh+k04hkM2XzU/ganDsppxu1yw9sv2MuhbARfu9HdovyHwlXglp/a7KOZmLI3fIEOayYAvKXw==
+=======
+"@web3api/logger-plugin-js@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/logger-plugin-js/-/logger-plugin-js-0.0.1-prealpha.11.tgz#97dabd8d48e8284b5b965bd52431ce195ba478e6"
+  integrity sha512-wQlJfM0ehM3nxMrXna6U7kR89r9STYz7Pbvr5Jvxv6OAxiBcL9Yg38ayRmhBq/kbPrd9GoUViDki6eL/heRl5w==
+>>>>>>> 4de18b8f... added testing packages and blank test files as placeholders for testing uniswap api
   dependencies:
-    "@web3api/core-js" "0.0.1-prealpha.8"
+    "@web3api/core-js" "0.0.1-prealpha.11"
 
-"@web3api/manifest-schema@0.0.1-prealpha.8":
-  version "0.0.1-prealpha.8"
-  resolved "https://registry.yarnpkg.com/@web3api/manifest-schema/-/manifest-schema-0.0.1-prealpha.8.tgz#52631b6ca9608a646919212ba7646129d276dc79"
-  integrity sha512-IgS8h3WEZCmKAJ5Lk2Tukfbs7aEMBv2Q8u4ibMyLT03zjMDmc8iRi48dmGyjUOYkJfXQ0hO38KHxbE2X4Wov5Q==
+"@web3api/manifest-schema@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/manifest-schema/-/manifest-schema-0.0.1-prealpha.11.tgz#d44c543de6a6793d225e511f187ca1c6dcd33e0d"
+  integrity sha512-jaYhIqx6hycctDNy0Bui7hkyNa7yCzd8ny5wzlmpUze/xv2HtEFDD4Sw2v+mEJFvc/TU4t10JBEl1DKx7rz8DA==
 
-"@web3api/schema-bind@0.0.1-prealpha.8":
-  version "0.0.1-prealpha.8"
-  resolved "https://registry.yarnpkg.com/@web3api/schema-bind/-/schema-bind-0.0.1-prealpha.8.tgz#e8a05cdf1fcdf410c0fc359f136be5964c4f4324"
-  integrity sha512-YvX5SeACR2stxOKjVcgOTaz6Ecsk541KaDNzMu1gVTsE/tKcNuzDIvBGalm0oRSq0nvQtapROCr4bY9SUHbVpw==
+"@web3api/schema-bind@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/schema-bind/-/schema-bind-0.0.1-prealpha.11.tgz#dc6da6d980378fb72934bf909f6a6273f613d0c3"
+  integrity sha512-BzPRR0Bo2svsJH/dFJ/YBGihOHg+5k3FfQjk5hdr9wGhJzUNY+9vVlE+fv9hGyqPQFmF+bzRexa8/HsiTaf72A==
   dependencies:
-    "@web3api/schema-parse" "0.0.1-prealpha.8"
+    "@web3api/schema-parse" "0.0.1-prealpha.11"
     mustache "4.0.1"
 
-"@web3api/schema-compose@0.0.1-prealpha.8":
-  version "0.0.1-prealpha.8"
-  resolved "https://registry.yarnpkg.com/@web3api/schema-compose/-/schema-compose-0.0.1-prealpha.8.tgz#1ebd80062c179915acca756884d5f02da1e1b79a"
-  integrity sha512-Nw7XEcrGdxZ56Af+5Y6YuZCufAgYEBAhQ/PE0NpDY3b8fk1qkStCwvw31iryMjjd8OEJFDgreE/EPnK3w57+IQ==
+"@web3api/schema-compose@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/schema-compose/-/schema-compose-0.0.1-prealpha.11.tgz#32fbc88c3ecd0e8a56bfe8851195dc3f16599f99"
+  integrity sha512-tPknjLaPeBFgOUX6DYr4VacYYwV3F4tMK/qZZhmuuHlrWH6aKMBCxeTmo3k8cJLPVC9lWn9kzFPzRGOziEDA4w==
   dependencies:
-    "@web3api/schema-parse" "0.0.1-prealpha.8"
-    graphql "15.4.0"
+    "@web3api/schema-parse" "0.0.1-prealpha.11"
+    graphql "15.5.0"
     mustache "4.0.1"
 
-"@web3api/schema-parse@0.0.1-prealpha.8":
-  version "0.0.1-prealpha.8"
-  resolved "https://registry.yarnpkg.com/@web3api/schema-parse/-/schema-parse-0.0.1-prealpha.8.tgz#6172ac52bab2ce44777ef5595fe6565461fb9ebf"
-  integrity sha512-wTJIF+C6BQgkjYXnXcya3DCysNlCM2CATGlyCSdKVheSwScQDrEfW9lwtZo7fkatxFarFZ67R6+2NvQk/5rg+g==
+"@web3api/schema-parse@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/schema-parse/-/schema-parse-0.0.1-prealpha.11.tgz#4a1359054541a7cebb7ff1bdcb415175c117825c"
+  integrity sha512-fOA+e+HUQFdb3d/roAIjDuTSKab1q4JrPShwtPr6uaH6y2AF7hfsCWuVu6zV8WD4ihnizrCo7N6AWm2T0Bjsww==
   dependencies:
-    graphql "15.4.0"
+    graphql "15.5.0"
+    graphql-schema-cycles "1.1.2"
 
+<<<<<<< HEAD
 "@web3api/wasm-as@0.0.1-prealpha.8":
   version "0.0.1-prealpha.8"
   resolved "https://registry.yarnpkg.com/@web3api/wasm-as/-/wasm-as-0.0.1-prealpha.8.tgz#cdde1ea5a033411889684991b445708ce22ba8b3"
   integrity sha512-Z9zjZVxx5ytTY8M2yz7vLbLYbW1lrOk/JI3/WG5A5+PGxmmht9cxWZPfC4dZbJH6Fj1KAXdJfdABEXlFBQNU8w==
 >>>>>>> 5f5c906c... refactored, added some Pair and fetch functions, added some util functions
+=======
+"@web3api/wasm-as@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/wasm-as/-/wasm-as-0.0.1-prealpha.11.tgz#761f032461b0893a58e14fed6d831521c825332f"
+  integrity sha512-B/UmUmutFetOPQQBa96O9eSPcGEt4PezhN6xFyBTmGKGpRUyQe+AGxcfT16CZ7HFk7B/0NmxLz/PeR3PBDYVEQ==
+>>>>>>> 4de18b8f... added testing packages and blank test files as placeholders for testing uniswap api
 
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
