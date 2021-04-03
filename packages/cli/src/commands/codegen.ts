@@ -1,5 +1,10 @@
 /* eslint-disable prefer-const */
-import { CodeGenerator, Project, SchemaComposer } from "../lib";
+import {
+  // CodeGenerator,
+  Compiler,
+  Project,
+  SchemaComposer,
+} from "../lib";
 import { fixParameters } from "../lib/helpers/parameters";
 import { intlMsg } from "../lib/intl";
 
@@ -128,7 +133,7 @@ export default {
         ? filesystem.resolve(defaultManifest[0])
         : filesystem.resolve(defaultManifest[1]));
     outputDir =
-      (outputDir && filesystem.resolve(outputDir)) || filesystem.path("types");
+      (outputDir && filesystem.resolve(outputDir)) || filesystem.path("build");
 
     const project = new Project({
       manifestPath,
@@ -141,14 +146,20 @@ export default {
       ensAddress,
     });
 
-    const codeGenerator = new CodeGenerator({
+    const compiler = new Compiler({
       project,
-      schemaComposer,
-      generationFile,
       outputDir,
+      schemaComposer,
     });
 
-    if (await codeGenerator.generate()) {
+    // const codeGenerator = new CodeGenerator({
+    //   project,
+    //   schemaComposer,
+    //   generationFile,
+    //   outputDir,
+    // });
+
+    if (await compiler.codegen(true)) {
       print.success(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
       process.exitCode = 0;
     } else {

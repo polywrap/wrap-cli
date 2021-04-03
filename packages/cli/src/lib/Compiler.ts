@@ -42,12 +42,46 @@ export class Compiler {
     }
   }
 
+  public async codegen(): Promise<boolean> {
+    try {
+      // Compile the schema
+      await this._compileSchema();
+
+      return true;
+    } catch (e) {
+      gluegun.print.error(e);
+      return false;
+    }
+  }
+
   public clearCache(): void {
     this._config.project.clearCache();
     this._config.schemaComposer.clearCache();
   }
 
   private async _compileWeb3Api(verbose?: boolean) {
+    const { project } = this._config;
+
+    const run = async (): Promise<void> => {
+      await this._compileSchema(verbose);
+      await this._compileWasmModules(verbose);
+    };
+
+    if (project.quiet) {
+      return run();
+    } else {
+      return await withSpinner(
+        intlMsg.lib_compiler_compileText(),
+        intlMsg.lib_compiler_compileError(),
+        intlMsg.lib_compiler_compileWarning(),
+        async () => {
+          return run();
+        }
+      );
+    }
+  }
+
+  private async _compileSchema(verbose?: boolean) {
     const { outputDir, project, schemaComposer } = this._config;
 
     const run = async (spinner?: Ora): Promise<void> => {
@@ -63,7 +97,7 @@ export class Compiler {
         throw Error(`compileWeb3Api: ${failedSchemaMessage}`);
       }
 
-      const buildModules = async () => {
+      const buildSchemas = async () => {
         const buildQuery = !!manifest.query;
         const buildMutation = !!manifest.mutation;
 
@@ -124,6 +158,42 @@ export class Compiler {
               }
             : undefined
         );
+      };
+
+      await buildSchemas();
+
+      // Output the schema & manifest files
+      fs.writeFileSync(
+        `${outputDir}/schema.graphql`,
+        composed.combined.schema,
+        "utf-8"
+      );
+      await outputManifest(manifest, `${outputDir}/web3api.yaml`);
+    };
+
+    if (project.quiet) {
+      return run();
+    } else {
+      return await withSpinner(
+        intlMsg.lib_compiler_compileText(),
+        intlMsg.lib_compiler_compileError(),
+        intlMsg.lib_compiler_compileWarning(),
+        async (spinner) => {
+          return run(spinner);
+        }
+      );
+    }
+  }
+
+  private async _compileWasmModules(verbose?: boolean) {
+    const { outputDir, project } = this._config;
+
+    const run = async (spinner?: Ora): Promise<void> => {
+      const manifest = await project.getManifest();
+
+      const buildModules = async () => {
+        const buildQuery = !!manifest.query;
+        const buildMutation = !!manifest.mutation;
 
         if (buildQuery) {
           const queryManifest = manifest as Required<typeof manifest>;
@@ -153,23 +223,15 @@ export class Compiler {
       };
 
       await buildModules();
-
-      // Output the schema & manifest files
-      fs.writeFileSync(
-        `${outputDir}/schema.graphql`,
-        composed.combined.schema,
-        "utf-8"
-      );
-      await outputManifest(manifest, `${outputDir}/web3api.yaml`);
     };
 
     if (project.quiet) {
       return run();
     } else {
       return await withSpinner(
-        intlMsg.lib_compiler_compileText(),
-        intlMsg.lib_compiler_compileError(),
-        intlMsg.lib_compiler_compileWarning(),
+        intlMsg.lib_compiler_compileWasmModulesText(),
+        intlMsg.lib_compiler_compileWasmModulesError(),
+        intlMsg.lib_compiler_compileWasmModulesWarning(),
         async (spinner) => {
           return run(spinner);
         }

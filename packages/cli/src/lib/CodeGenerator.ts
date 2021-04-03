@@ -86,9 +86,9 @@ export class CodeGenerator {
       await run();
     } else {
       await withSpinner(
-        intlMsg.lib_codeGenerator_genCodeText(),
-        intlMsg.lib_codeGenerator_genCodeError(),
-        intlMsg.lib_codeGenerator_genCodeWarning(),
+        intlMsg.lib_compiler_buildSchemaText(),
+        intlMsg.lib_compiler_buildSchemaError(),
+        intlMsg.lib_compiler_buildSchemaWarning(),
         async (spinner) => {
           return run(spinner);
         }
