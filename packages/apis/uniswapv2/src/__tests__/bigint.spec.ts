@@ -1,12 +1,12 @@
 import { BigInt } from "../utils/BigInt";
+import { method } from "../../../../test-cases/cases/apis/large-types/query";
 
 describe("BigInt: Sanity", () => {
 
   it("Construct big numbers", () => {
-
     // constructor with small integer
     const smallStr = "100";
-    const bigIntSmallStrCon = new BigInt(smallStr);
+    const bigIntSmallStrCon = BigInt.fromString(smallStr);
     expect(bigIntSmallStrCon.toString()).toStrictEqual(smallStr);
     // using fromString static method
     const bigIntSmallStrFrom = BigInt.fromString(smallStr);
@@ -14,18 +14,18 @@ describe("BigInt: Sanity", () => {
 
     // construct with big integer
     const bigStr = "10000000000000000000000000000000000000000000000000000000000000000000";
-    const bigIntBigStr = new BigInt(bigStr);
+    const bigIntBigStr = BigInt.fromString(bigStr);
     expect(bigIntBigStr.toString()).toStrictEqual(bigStr);
     expect(bigIntBigStr.isNegative).toStrictEqual(false);
 
     // construct with negative big integer
     const bigStrNeg = "-10000000000000000000000000000000000000000000000000000000000000000000";
-    const bigIntBigStrNeg = new BigInt(bigStrNeg);
+    const bigIntBigStrNeg = BigInt.fromString(bigStrNeg);
     expect(bigIntBigStrNeg.toString()).toStrictEqual(bigStrNeg);
     expect(bigIntBigStrNeg.isNegative).toStrictEqual(true);
 
     // construct with big integer from digits
-    const bigDig = [1000, 1000, 1000];
+    const bigDig: u32[] = [1000, 1000, 1000];
     const bigIntBigDig = BigInt.fromDigits(bigDig);
     expect(bigIntBigDig.toString()).toStrictEqual("1000000001000000001000");
     expect(bigIntBigDig.isNegative).toStrictEqual(false);
@@ -38,7 +38,6 @@ describe("BigInt: Sanity", () => {
 
 
   it("Comparison", () => {
-
     // equals
     const intA = "100000000000000000000000000000000000000000000000000";
     const intB = "100000000000000000000000000000000000000000000000000";
@@ -71,7 +70,6 @@ describe("BigInt: Sanity", () => {
 
 
   it("Addition", () => {
-
     // small integer addition
     const intA = "100";
     const intB = "50";
