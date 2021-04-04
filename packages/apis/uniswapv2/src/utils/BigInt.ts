@@ -2,6 +2,7 @@
 
 export class BigInt {
   public static ZERO: BigInt = BigInt.fromDigits([0]);
+  public static ONE: BigInt = BigInt.fromDigits([1]);
 
   public readonly isNegative: boolean;
   private readonly _d: i32[] = []; // digits stored from least to most significant
@@ -120,11 +121,22 @@ export class BigInt {
     return BigInt.fromDigits(res, this.isNegative != other.isNegative);
   }
 
-  // TEMPORARY
+  // using binary search -> ~O(logN*N^2);
+  // idea pulled from https://github.com/achyutb6/big-integer-arithmetic/blob/master/src/aab180004/Num.java
   @operator("/")
   div(other: BigInt): BigInt {
-    const denominator: i32 = I32.parseInt(other.toString());
-    return this.divInt(denominator);
+    if (other.eq(BigInt.ZERO)) throw new RangeError("Divide by zero");
+    let lo: BigInt = BigInt.ZERO;
+    let hi: BigInt = this.copy();
+
+    while (lo.lte(hi)) {
+      const mid: BigInt = hi.sub(lo).divInt(2).add(lo);
+      const cmp: i8 = this.compareTo(other.mul(mid));
+      if (cmp < 0) hi = mid.sub(BigInt.ONE);
+      else if (cmp > 0) lo = mid.add(BigInt.ONE);
+      else return mid;
+    }
+    return lo.sub(BigInt.ONE);
   }
 
   // O(N)
@@ -153,10 +165,27 @@ export class BigInt {
     return carry;
   }
 
-  // Babylonian method (used in Uniswap contracts)
+  sqrt(): BigInt {
+    const one = BigInt.ONE;
+    const three = BigInt.fromDigits([3]);
+    let z: BigInt = BigInt.ZERO;
+    if (this.gt(three)) {
+      z = this;
+      let x: BigInt = this.divInt(2).add(one);
+      while (x.lt(z)) {
+        z = x;
+        x = this.div(x).add(x).divInt(2);
+      }
+    } else if (!this.eq(BigInt.ZERO)) {
+      z = one;
+    }
+    return z;
+  }
+
+  // Babylonian method (as used in Uniswap contracts)
   // eslint-disable-next-line @typescript-eslint/member-ordering
   static sqrt(y: BigInt): BigInt {
-    const one = BigInt.fromDigits([1]);
+    const one = BigInt.ONE;
     const three = BigInt.fromDigits([3]);
     let z: BigInt = BigInt.ZERO;
     if (y.gt(three)) {
@@ -164,7 +193,7 @@ export class BigInt {
       let x: BigInt = y.divInt(2).add(one);
       while (x.lt(z)) {
         z = x;
-        x = y.divInt(I32.parseInt(x.toString())).add(x).divInt(2);
+        x = y.div(x).add(x).divInt(2);
       }
     } else if (!y.eq(BigInt.ZERO)) {
       z = one;

@@ -4,6 +4,7 @@ module.exports = {
     "import/no-extraneous-dependencies": "off",
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-inferrable-types": "off",
+    "@typescript-eslint/member-ordering": "off",
     "@typescript-eslint/naming-convention": ["error",
     {selector: "default", format: ['camelCase']},
     {selector: ["objectLiteralProperty", "parameterProperty", "classMethod"], format: ['camelCase'], leadingUnderscore: "allow"},
