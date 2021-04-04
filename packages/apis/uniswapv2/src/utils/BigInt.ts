@@ -5,11 +5,11 @@ export class BigInt {
   public static ONE: BigInt = BigInt.fromDigits([1]);
 
   public readonly isNegative: boolean;
-  private readonly _d: i32[] = []; // digits stored from least to most significant
-  private readonly _base: i32 = 1000 * 1000 * 1000; // 10^e
+  private readonly _d: u32[] = []; // digits stored from least to most significant
   private readonly _e: i32 = 9;
+  private readonly _base: u32 = 10 ** <u32>this._e;
 
-  constructor(bigNumber: string) {
+  private constructor(bigNumber: string) {
     // TODO: check that input represents an integer. parseInt returns 0 on invalid input; no regex in AS; maybe use ascii?
     // check sign
     if (bigNumber.length >= 1 && bigNumber.charAt(0) == "-") {
@@ -24,20 +24,36 @@ export class BigInt {
       } else {
         digitStr = bigNumber.substring(i - this._e, i);
       }
-      this._d.push(I32.parseInt(digitStr));
+      this._d.push(U32.parseInt(digitStr));
     }
     // remove any leading zeros
     this.trimLeadingZeros();
   }
 
   static fromString(bigNumber: string): BigInt {
+    // prevent negative empty array
+    if (bigNumber.length == 1 && bigNumber.charAt(0) == "-") {
+      bigNumber = "0";
+    }
+    // prevent negative zero
+    if (bigNumber == "-0") {
+      bigNumber = "0";
+    }
     return new BigInt(bigNumber);
   }
 
-  static fromDigits(bigNumber: i32[], isNegative: boolean = false): BigInt {
+  static fromDigits(digits: u32[], isNegative: boolean = false): BigInt {
+    // prevent negative empty array
+    if (digits.length == 0) {
+      return new BigInt("0");
+    }
+    // prevent negative zero
+    if (digits.length == 1 && digits[0] == 0) {
+      return new BigInt("0");
+    }
     const res = new BigInt(isNegative ? "-" : "");
-    for (let i = 0; i < bigNumber.length; i++) {
-      res._d.push(bigNumber[i]);
+    for (let i = 0; i < digits.length; i++) {
+      res._d.push(digits[i]);
     }
     return res.trimLeadingZeros();
   }
@@ -91,10 +107,12 @@ export class BigInt {
     const res: BigInt = this.copy();
     let carry: bool = 0;
     for (let i = 0; i < other._d.length || carry; i++) {
-      res._d[i] -= carry + (i < other._d.length ? other._d[i] : 0);
-      carry = res._d[i] < 0 ? 1 : 0;
+      const val: i64 = <i64>res._d[i] - carry - (i < other._d.length ? <i64>other._d[i] : 0);
+      carry = val < 0 ? 1 : 0;
       if (carry) {
-        res._d[i] += res._base;
+        res._d[i] = <u32>(val + res._base);
+      } else {
+        res._d[i] = <u32>val;
       }
     }
     return res.trimLeadingZeros();
@@ -105,30 +123,38 @@ export class BigInt {
   // Although it is O(N^2), it is faster in practice than asymptotically better algorithms for multiplicands of <= 256 bits
   @operator("*")
   mul(other: BigInt): BigInt {
-    const res: i32[] = new Array<i32>(this._d.length + other._d.length);
+    const res: u32[] = new Array<u32>(this._d.length + other._d.length);
     for (let i = 0; i < this._d.length; i++) {
-      let carry: i32 = 0;
+      let carry: u32 = 0;
       for (let j = 0; j < other._d.length || carry; j++) {
         if (j >= other._d.length) {
           res.push(0);
         }
         const otherVal = j < other._d.length ? other._d[j] : 0;
         const cur: u64 = res[i + j] + <u64>this._d[i] * otherVal + carry;
-        res[i + j] = <i32>(cur % this._base);
-        carry = <i32>(cur / this._base);
+        res[i + j] = <u32>(cur % this._base);
+        carry = <u32>(cur / this._base);
       }
     }
     return BigInt.fromDigits(res, this.isNegative != other.isNegative);
   }
 
-  // using binary search -> ~O(logN*N^2);
+  // using binary search -> ~O(logZ*N^2) where Z is the magnitude of the numerator
   // idea pulled from https://github.com/achyutb6/big-integer-arithmetic/blob/master/src/aab180004/Num.java
   @operator("/")
   div(other: BigInt): BigInt {
     if (other.eq(BigInt.ZERO)) throw new RangeError("Divide by zero");
+    if (other.gt(this)) return BigInt.ZERO;
+    if (other._d.length == 1) return this.divInt(other._d[0]);
+
     let lo: BigInt = BigInt.ZERO;
     let hi: BigInt = this.copy();
-
+    // improve bounds to improve performance
+    lo = lo.trimLeadingZeros();
+    for (let i = other._d.length; i > 1; i--) {
+      hi._d.pop();
+    }
+    // search
     while (lo.lte(hi)) {
       const mid: BigInt = hi.sub(lo).divInt(2).add(lo);
       const cmp: i8 = this.compareTo(other.mul(mid));
@@ -146,7 +172,7 @@ export class BigInt {
     let carry: u64 = 0;
     for (let i = res._d.length - 1; i >= 0; i--) {
       const cur: u64 = res._d[i] + carry * res._base;
-      res._d[i] = <i32>(cur / other);
+      res._d[i] = <u32>(cur / other);
       carry = cur % other;
     }
     return res.trimLeadingZeros();
@@ -159,7 +185,7 @@ export class BigInt {
     let carry: u64 = 0;
     for (let i = res._d.length - 1; i >= 0; i--) {
       const cur: u64 = res._d[i] + carry * res._base;
-      res._d[i] = <i32>(cur / other);
+      res._d[i] = <u32>(cur / other);
       carry = cur % other;
     }
     return carry;
