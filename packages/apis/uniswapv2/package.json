@@ -11,6 +11,12 @@
     "test:env:up": "npx w3 test-env up",
     "test:env:down": "npx w3 test-env down"
   },
+  "workspaces": {
+    "nohoist": [
+      "assemblyscript",
+      "assemblyscript/**"
+    ]
+  },
   "devDependencies": {
     "@as-pect/cli": "5.0.1",
     "@uniswap/v2-core": "1.0.1",

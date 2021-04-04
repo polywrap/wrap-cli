@@ -99,6 +99,14 @@ describe("BigInt: Sanity", () => {
     const biG = BigInt.fromString(intG);
     const biH = BigInt.fromString(intH);
     expect(biG.add(biH).toString()).toStrictEqual("-1000000000000000000000000000000000000000000000000000000000000000000");
+
+    // addition with large, keyboard-mashed random numbers
+    const intY = "840839472643347286973460987678476578370923859325252";
+    const intZ = "98409867296349527348967348435235";
+    const biY = BigInt.fromString(intY);
+    const biZ = BigInt.fromString(intZ);
+    expect(biY.add(biZ).toString()).toStrictEqual("840839472643347287071870854974826105719891207760487");
+
   });
 
 
@@ -135,6 +143,14 @@ describe("BigInt: Sanity", () => {
     const biI = BigInt.fromString(intI);
     const biJ = BigInt.fromString(intJ);
     expect(biI.sub(biJ).toString()).toStrictEqual("1000000000000000010000000000000000000000000000000000000000000000000");
+
+    // subtraction with large, keyboard-mashed random numbers
+    const intY = "840839472643347286973460987678476578370923859325252";
+    const intZ = "98409867296349527348967348435235";
+    const biY = BigInt.fromString(intY);
+    const biZ = BigInt.fromString(intZ);
+    expect(biY.sub(biZ).toString()).toStrictEqual("840839472643347286875051120382127051021956510890017");
+
   });
 
 
@@ -159,6 +175,13 @@ describe("BigInt: Sanity", () => {
     const biG = BigInt.fromString(intG);
     const biH = BigInt.fromString(intH);
     expect(biG.mul(biH).toString()).toStrictEqual("-78947029734601043986098348634860927985723987523875683269589000000000000000000000000000000000000000000000000000000000000000000");
+
+    // multiplication with large, keyboard-mashed random numbers
+    const intY = "840839472643347286973460987678476578370923859325252";
+    const intZ = "98409867296349527348967348435235";
+    const biY = BigInt.fromString(intY);
+    const biZ = BigInt.fromString(intZ);
+    expect(biY.mul(biZ).toString()).toStrictEqual("82746900920364325240080057746476164545617939441639416531994182441731305785122054220");
   });
 
 
@@ -175,18 +198,41 @@ describe("BigInt: Sanity", () => {
     const biC = BigInt.fromString(intC);
     expect(biC.modInt(intD).toString()).toStrictEqual("934");
 
-    // // division by big integer
-    // const intE = "1748673246820348602804623476982897439256983468762846982060929060934";
-    // const intF = "0000000000000000000000000001000000000000000000000000000000000000000"
-    // const biE = BigInt.fromString(intE);
-    // const biF = BigInt.fromString(intF);
-    // expect(biE.div(biF).toString()).toStrictEqual("1748673246820348602804623476");
-    //
-    // const intG = "1748673246820348602804623476982897439256983468762846982060929060934";
-    // const intH = "6235862358623856826358623875623587"
-    // const biG = BigInt.fromString(intG);
-    // const biH = BigInt.fromString(intH);
-    // expect(biG.div(biH).toString()).toStrictEqual("280422040490042098934906652980388");
+    // division by big integer
+    const intE = "1748673246820348602804623476982897439256983468762846982060929060934";
+    const intF = "0000000000000000000000000001000000000000000000000000000000000000000"
+    const biE = BigInt.fromString(intE);
+    const biF = BigInt.fromString(intF);
+    expect(biE.div(biF).toString()).toStrictEqual("1748673246820348602804623476");
 
+    // division with large, keyboard-mashed random numbers
+    const intG = "1748673246820348602804623476982897439256983468762846982060929060934";
+    const intH = "6235862358623856826358623875623587"
+    const biG = BigInt.fromString(intG);
+    const biH = BigInt.fromString(intH);
+    expect(biG.div(biH).toString()).toStrictEqual("280422040490042098934906652980388");
+
+    const intY = "840839472643347286973460987678476578370923859325252";
+    const intZ = "98409867296349527348967348435235";
+    const biY = BigInt.fromString(intY);
+    const biZ = BigInt.fromString(intZ);
+    expect(biY.div(biZ).toString()).toStrictEqual("8544259795730238462");
   });
+
+
+  it("Sqrt", () => {
+    // Square root with large, keyboard-mashed random numbers
+    const biA = BigInt.fromString("3057858124145219824908823108730476996787211345099474372535994731984517835859426295382779155662045288853072702726904352842299084952356");
+    expect(biA.sqrt().toString()).toStrictEqual("1748673246820348602804623476982897439256983468762846982060929060934");
+
+    const biB = BigInt.fromString("38885979355701890764931367009156654082153602597277005998068110746569");
+    expect(biB.sqrt().toString()).toStrictEqual("6235862358623856826358623875623587");
+
+    const biC = BigInt.fromString("707011018755142370596690561440450269690829465205449797047996582731278317572133241312051335080724863504");
+    expect(biC.sqrt().toString()).toStrictEqual("840839472643347286973460987678476578370923859325252");
+
+    const biD = BigInt.fromString("9684501981285124231672521053664615343720375041608711602989505225");
+    expect(biD.sqrt().toString()).toStrictEqual("98409867296349527348967348435235");
+  });
+
 });

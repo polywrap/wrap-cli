@@ -129,7 +129,7 @@ export function pairLiquidityMinted(input: Input_pairLiquidityMinted): TokenAmou
   const supply = BigInt.fromString(totalSupply.amount);
   if (supply.eq(BigInt.ZERO)) {
     const minLiq = BigInt.fromDigits([MINIMUM_LIQUIDITY]);
-    liquidity = BigInt.sqrt(amount0.mul(amount1)).sub(minLiq);
+    liquidity = amount0.mul(amount1).sqrt().sub(minLiq);
   } else {
     const pairAmt0 = BigInt.fromString(pairTokens[0].amount);
     const pairAmt1 = BigInt.fromString(pairTokens[1].amount);
@@ -142,8 +142,8 @@ export function pairLiquidityMinted(input: Input_pairLiquidityMinted): TokenAmou
   }
   return {
     token: totalSupply.token,
-    amount: liquidity.toString()
-  }
+    amount: liquidity.toString(),
+  };
 }
 
 /*
@@ -165,13 +165,13 @@ export function pairLiquidityValue(input: Input_pairLiquidityValue): TokenAmount
   const liqAmt = BigInt.fromString(liquidity.amount);
   let totalSupplyAmount = BigInt.fromString(totalSupply.amount);
   if (feeOn && kLast.gt(BigInt.ZERO)) {
-    const rootK = BigInt.sqrt(amount0.mul(amount1));
-    const rootKLast = BigInt.sqrt(kLast);
+    const rootK = amount0.mul(amount1).sqrt();
+    const rootKLast = kLast.sqrt();
     if (rootK.gt(rootKLast)) {
       const numerator1 = totalSupplyAmount;
       const numerator2 = rootK.sub(rootKLast);
       const denominator = rootK.mul(BigInt.fromString("5")).add(rootKLast);
-      const feeLiquidity = numerator1.mul(numerator2).div(denominator); // mulDiv
+      const feeLiquidity = numerator1.mul(numerator2).div(denominator);
       totalSupplyAmount = totalSupplyAmount.add(feeLiquidity);
     }
   }
