@@ -101,13 +101,18 @@ export class BigInt {
       return this.add(other.opposite());
     } else if (this.isNegative && !other.isNegative) {
       return this.add(other.opposite());
-    } else if (this.lt(other)) {
+    }
+    const cmp: i8 = this.compareTo(other);
+    if (cmp < 0) {
       return other.sub(this).opposite();
+    } else if (cmp == 0) {
+      return BigInt.ZERO;
     }
     const res: BigInt = this.copy();
     let carry: bool = 0;
     for (let i = 0; i < other._d.length || carry; i++) {
-      const val: i64 = <i64>res._d[i] - carry - (i < other._d.length ? <i64>other._d[i] : 0);
+      const subVal: i64 = <i64>(i < other._d.length ? other._d[i] : 0);
+      const val: i64 = <i64>res._d[i] - carry - subVal;
       carry = val < 0 ? 1 : 0;
       if (carry) {
         res._d[i] = <u32>(val + res._base);
@@ -150,7 +155,6 @@ export class BigInt {
     let lo: BigInt = BigInt.ZERO;
     let hi: BigInt = this.copy();
     // improve bounds to improve performance
-    lo = lo.trimLeadingZeros();
     for (let i = other._d.length; i > 1; i--) {
       hi._d.pop();
     }
