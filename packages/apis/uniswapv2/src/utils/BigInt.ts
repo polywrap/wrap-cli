@@ -241,7 +241,7 @@ export class BigInt {
 
   pow(exponent: u64): BigInt {
     let res: BigInt = this.copy();
-    for (let i = 1; i < exponent; i++) {
+    for (let i: u64 = 1; i < exponent; i++) {
       res = res.mul(res);
     }
     return res;
