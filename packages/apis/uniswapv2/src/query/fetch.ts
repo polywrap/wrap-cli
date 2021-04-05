@@ -105,11 +105,10 @@ export function fetchTotalSupply(input: Input_fetchTotalSupply): TokenAmount {
 // returns reserve0 * reserve1, as of immediately after the most recent liquidity event
 export function fetchKLast(input: Input_fetchKLast): string {
   const token: Token = input.token;
-  const res: string = Ethereum_Query.callView({
+  return Ethereum_Query.callView({
     address: token.address,
     method: "function kLast() external view returns (uint)",
     args: [],
     // network: resolveChainId(token.chainId)
   });
-  return res;
 }
