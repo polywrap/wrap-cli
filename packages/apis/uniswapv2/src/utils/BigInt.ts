@@ -58,6 +58,10 @@ export class BigInt {
     return res.trimLeadingZeros();
   }
 
+  static fromInt(value: i64): BigInt {
+    return BigInt.fromString(value.toString());
+  }
+
   // O(N)
   copy(): BigInt {
     return BigInt.fromDigits(this._d, this.isNegative);
@@ -92,6 +96,10 @@ export class BigInt {
     return res;
   }
 
+  static add(left: BigInt, right: BigInt): BigInt {
+    return left.add(right);
+  }
+
   // O(N)
   @operator("-")
   sub(other: BigInt): BigInt {
@@ -123,6 +131,10 @@ export class BigInt {
     return res.trimLeadingZeros();
   }
 
+  static sub(left: BigInt, right: BigInt): BigInt {
+    return left.sub(right);
+  }
+
   // TODO: add mulInt function for performance optimization
   // O(N^2) -- this is the "school book" algorithm, which mimics the way we learn to do multiplication by hand as children
   // Although it is O(N^2), it is faster in practice than asymptotically better algorithms for multiplicands of <= 256 bits
@@ -144,6 +156,10 @@ export class BigInt {
     return BigInt.fromDigits(res, this.isNegative != other.isNegative);
   }
 
+  static mul(left: BigInt, right: BigInt): BigInt {
+    return left.mul(right);
+  }
+
   // using binary search -> ~O(logZ*N^2) where Z is the magnitude of the numerator
   // idea pulled from https://github.com/achyutb6/big-integer-arithmetic/blob/master/src/aab180004/Num.java
   @operator("/")
@@ -154,6 +170,7 @@ export class BigInt {
 
     let lo: BigInt = BigInt.ZERO;
     let hi: BigInt = this.copy();
+    // TODO: can I improve lower bounds? for BigInt division?
     // improve bounds to improve performance
     for (let i = other._d.length; i > 1; i--) {
       hi._d.pop();
@@ -167,6 +184,10 @@ export class BigInt {
       else return mid;
     }
     return lo.sub(BigInt.ONE);
+  }
+
+  static div(left: BigInt, right: BigInt): BigInt {
+    return left.div(right);
   }
 
   // O(N)
@@ -195,6 +216,8 @@ export class BigInt {
     return carry;
   }
 
+  // Babylonian method (as used in Uniswap contracts)
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   sqrt(): BigInt {
     const one = BigInt.ONE;
     const three = BigInt.fromDigits([3]);
@@ -212,23 +235,20 @@ export class BigInt {
     return z;
   }
 
-  // Babylonian method (as used in Uniswap contracts)
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   static sqrt(y: BigInt): BigInt {
-    const one = BigInt.ONE;
-    const three = BigInt.fromDigits([3]);
-    let z: BigInt = BigInt.ZERO;
-    if (y.gt(three)) {
-      z = y;
-      let x: BigInt = y.divInt(2).add(one);
-      while (x.lt(z)) {
-        z = x;
-        x = y.div(x).add(x).divInt(2);
-      }
-    } else if (!y.eq(BigInt.ZERO)) {
-      z = one;
+    return y.sqrt();
+  }
+
+  pow(exponent: u64): BigInt {
+    let res: BigInt = this.copy();
+    for (let i = 1; i < exponent; i++) {
+      res = res.mul(res);
     }
-    return z;
+    return res;
+  }
+
+  static pow(base: BigInt, exponent: u64): BigInt {
+    return base.pow(exponent);
   }
 
   @operator("==")
@@ -236,9 +256,17 @@ export class BigInt {
     return this.compareTo(other) == 0;
   }
 
+  static eq(left: BigInt, right: BigInt): boolean {
+    return left.eq(right);
+  }
+
   @operator("!=")
   ne(other: BigInt): boolean {
     return !this.eq(other);
+  }
+
+  static ne(left: BigInt, right: BigInt): boolean {
+    return left.ne(right);
   }
 
   @operator("<")
@@ -246,9 +274,17 @@ export class BigInt {
     return this.compareTo(other) < 0;
   }
 
+  static lt(left: BigInt, right: BigInt): boolean {
+    return left.lt(right);
+  }
+
   @operator("<=")
   lte(other: BigInt): boolean {
     return this.compareTo(other) <= 0;
+  }
+
+  static lte(left: BigInt, right: BigInt): boolean {
+    return left.lte(right);
   }
 
   @operator(">")
@@ -256,9 +292,17 @@ export class BigInt {
     return this.compareTo(other) > 0;
   }
 
+  static gt(left: BigInt, right: BigInt): boolean {
+    return left.gt(right);
+  }
+
   @operator(">=")
   gte(other: BigInt): boolean {
     return this.compareTo(other) >= 0;
+  }
+
+  static gte(left: BigInt, right: BigInt): boolean {
+    return left.gte(right);
   }
 
   compareTo(other: BigInt): i8 {

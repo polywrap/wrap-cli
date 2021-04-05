@@ -137,17 +137,6 @@ enum ChainId {
   KOVAN
 }
 
-enum TradeType {
-  EXACT_INPUT
-  EXACT_OUTPUT
-}
-
-enum Rounding {
-  ROUND_DOWN
-  ROUND_HALF_UP
-  ROUND_UP
-}
-
 type Token {
   chainId: ChainId!
   address: String!
@@ -175,6 +164,17 @@ type Trade {
   route: Route!
   amount: TokenAmount!
   tradeType: TradeType!
+}
+
+enum TradeType {
+  EXACT_INPUT
+  EXACT_OUTPUT
+}
+
+enum Rounding {
+  ROUND_DOWN
+  ROUND_HALF_UP
+  ROUND_UP
 }
 
 type BestTradeOptions {
