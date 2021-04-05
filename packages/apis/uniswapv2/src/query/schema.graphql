@@ -66,41 +66,41 @@ type Query {
   ): TokenAmount!
 
   # Trade
-#  tradeExecutionPrice(
-#    trade: Trade!
-#  ): TokenAmount!
-#
-#  tradeNextMidPrice(
-#    trade: Trade!
-#  ): TokenAmount!
-#
-#  tradeSlippage(
-#    trade: Trade!
-#  ): TokenAmount!
-#
-#  tradeMinimumAmountOut(
-#    trade: Trade!
-#    slippageTolerance: String! # Float32!
-#  ): TokenAmount!
-#
-#  tradeMinimumAmountIn(
-#    trade: Trade!
-#    slippageTolerance: String! # Float32!
-#  ): TokenAmount!
-#
-#  bestTradeExactIn(
-#    pairs: [Pair!]!
-#    amountIn: TokenAmount!
-#    tokenOut: Token!
-#    options: BestTradeOptions!
-#  ): [Trade!]!
-#
-#  bestTradeExactOut(
-#    pairs: [Pair!]!
-#    tokenIn: Token!
-#    amountOut: TokenAmount!
-#    options: BestTradeOptions!
-#  ): [Trade!]!
+  tradeExecutionPrice(
+    trade: Trade!
+  ): TokenAmount!
+
+  tradeNextMidPrice(
+    trade: Trade!
+  ): TokenAmount!
+
+  tradeSlippage(
+    trade: Trade!
+  ): TokenAmount!
+
+  tradeMinimumAmountOut(
+    trade: Trade!
+    slippageTolerance: String! # Float32!
+  ): TokenAmount!
+
+  tradeMinimumAmountIn(
+    trade: Trade!
+    slippageTolerance: String! # Float32!
+  ): TokenAmount!
+
+  bestTradeExactIn(
+    pairs: [Pair!]!
+    amountIn: TokenAmount!
+    tokenOut: Token!
+    options: BestTradeOptions!
+  ): [Trade!]!
+
+  bestTradeExactOut(
+    pairs: [Pair!]!
+    tokenIn: Token!
+    amountOut: TokenAmount!
+    options: BestTradeOptions!
+  ): [Trade!]!
 
   # Fetch
   fetchTokenData(
