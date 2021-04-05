@@ -203,12 +203,19 @@ describe("BigInt: Sanity", () => {
     const biF = BigInt.fromString(intF);
     expect(biE.div(biF).toString()).toStrictEqual("1748673246820348602804623476");
 
-    // division with large, keyboard-mashed random numbers
-    const intG = "1748673246820348602804623476982897439256983468762846982060929060934";
-    const intH = "6235862358623856826358623875623587"
+    // division by larger number
+    const intG = "6235862358623856826358623875623587"
+    const intH = "1748673246820348602804623476982897439256983468762846982060929060934";
     const biG = BigInt.fromString(intG);
     const biH = BigInt.fromString(intH);
-    expect(biG.div(biH).toString()).toStrictEqual("280422040490042098934906652980388");
+    expect(biG.div(biH).toString()).toStrictEqual("0");
+
+    // division with large, keyboard-mashed random numbers
+    const intW = "1748673246820348602804623476982897439256983468762846982060929060934";
+    const intX = "6235862358623856826358623875623587"
+    const biW = BigInt.fromString(intW);
+    const biX = BigInt.fromString(intX);
+    expect(biW.div(biX).toString()).toStrictEqual("280422040490042098934906652980388");
 
     const intY = "840839472643347286973460987678476578370923859325252";
     const intZ = "98409867296349527348967348435235";
