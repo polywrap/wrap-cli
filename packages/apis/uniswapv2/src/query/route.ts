@@ -1,6 +1,8 @@
 import { tokenEquals } from "./token";
 import { BigInt } from "../utils/BigInt";
 import { Input_routeMidPrice, Input_routeOutput, Input_routePath, Pair, Route, Token, TokenAmount } from "./w3";
+import Price from "../utils/Price";
+import { pairReserves } from "./pair";
 
 // returns the full path from input token to output token.
 export function routePath(input: Input_routePath): Token[] {
@@ -11,8 +13,8 @@ export function routePath(input: Input_routePath): Token[] {
     const currentIn = path[i];
     const token0 = pairs[i].tokenAmount0.token;
     const token1 = pairs[i].tokenAmount1.token;
-    const isToken0In = tokenEquals({token: currentIn, other: token0});
-    const isToken1In = tokenEquals({token: currentIn, other: token1});
+    const isToken0In = tokenEquals({ token: currentIn, other: token0 });
+    const isToken1In = tokenEquals({ token: currentIn, other: token1 });
     if (!isToken0In && isToken1In) {
       throw new Error("Invalid or unordered route: Route must contain ordered pairs such that adjacent pairs contain one token in common.");
     }
@@ -29,69 +31,26 @@ export function routeOutput(input: Input_routeOutput): Token {
 }
 
 // Returns the current mid price along the route.
-// TODO: this function is not yet implemented
 export function routeMidPrice(input: Input_routeMidPrice): TokenAmount {
   const route: Route = input.route;
-
+  const path = routePath({ route: input.route });
+  const prices: Price[] = [];
+  for (let i = 0; i < route.pairs.length; i++) {
+    const pair = route.pairs[i];
+    const reserves: TokenAmount[] = pairReserves({ pair: pair });
+    const reserve0: TokenAmount = reserves[0];
+    const reserve1: TokenAmount = reserves[1];
+    const amount0 = BigInt.fromString(reserve0.amount);
+    const amount1 = BigInt.fromString(reserve1.amount);
+    prices.push(
+      tokenEquals({ token: path[i], other: pair.tokenAmount0.token })
+        ? new Price(reserve0.token, reserve1.token, amount0, amount1)
+        : new Price(reserve1.token, reserve0.token, amount1, amount0)
+    );
+  }
+  const finalPrice = prices.slice(1).reduce((k, v) => k.mul(v), prices[0]);
   return {
-    amount: "0",
-    token: route.input
-  }
-}
-
-// public get midPrice(): Price {
-//   const prices: Price[] = []
-//   for (const [i, pair] of this.pairs.entries()) {
-//     prices.push(
-//       this.path[i].equals(pair.token0)
-//         ? new Price(pair.reserve0.currency, pair.reserve1.currency, pair.reserve0.raw, pair.reserve1.raw)
-//         : new Price(pair.reserve1.currency, pair.reserve0.currency, pair.reserve1.raw, pair.reserve0.raw)
-//     )
-//   }
-//   return prices.slice(1).reduce((accumulator, currentValue) => accumulator.multiply(currentValue), prices[0])
-// }
-
-
-// class Price {
-//
-//   baseToken: Token;
-//   quoteToken: Token;
-//   scalar: number;
-//   raw: number;
-//   adjusted: number;
-//
-//   constructor(base: Token, quote: Token) {
-//     this.baseToken = base;
-//     this.quoteToken = quote;
-//   }
-//
-//   invert(): Price {
-//
-//   }
-//
-//   multiply(other: Price): Price {
-//
-//   }
-//
-//   quote(tokenAmont: TokenAmount): TokenAmount {
-//
-//   }
-//
-//
-// }
-
-
-
-// given some amount of an asset and pair reserves, returns an equivalent amount of the other asset
-function quote(amountA: string, reserveA: string, reserveB: string): string {
-  const amtA = BigInt.fromString(amountA);
-  const resA = BigInt.fromString(reserveA);
-  const resB = BigInt.fromString(reserveB);
-  if (amtA.eq(BigInt.ZERO)) {
-    throw new RangeError("Insufficient input amount: Input amount must be greater than zero");
-  }
-  if (resA.eq(BigInt.ZERO) || resB.eq(BigInt.ZERO)) {
-    throw new RangeError("Insufficient liquidity: Pair reserves must be greater than zero");
-  }
-  return amtA.mul(resB).div(resA).toString();
+    token: finalPrice.quoteToken,
+    amount: finalPrice.quotient().toString(),
+  };
 }

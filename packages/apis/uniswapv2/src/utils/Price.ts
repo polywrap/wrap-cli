@@ -11,7 +11,12 @@ export default class Price extends Fraction {
   public readonly scalar: Fraction; // used to adjust the raw fraction w/r/t the decimals of the {base,quote}Token
 
   // denominator and numerator _must_ be raw, i.e. in the native representation
-  public constructor(baseToken: Token, quoteToken: Token, denominator: BigInt, numerator: BigInt) {
+  public constructor(
+    baseToken: Token,
+    quoteToken: Token,
+    denominator: BigInt,
+    numerator: BigInt
+  ) {
     super(numerator, denominator);
 
     this.baseToken = baseToken;
@@ -31,18 +36,30 @@ export default class Price extends Fraction {
   }
 
   public invert(): Price {
-    return new Price(this.quoteToken, this.baseToken, this.numerator, this.denominator);
+    return new Price(
+      this.quoteToken,
+      this.baseToken,
+      this.numerator,
+      this.denominator
+    );
   }
 
   public mul(other: Price): Price {
-    if (!tokenEquals({token: this.quoteToken, other: other.baseToken}))
-      throw new Error("Price multiply error: quoteToken of 'left' must be the same as baseToken of 'right'");
+    if (!tokenEquals({ token: this.quoteToken, other: other.baseToken }))
+      throw new Error(
+        "Price multiply error: quoteToken of 'left' must be the same as baseToken of 'right'"
+      );
     const fraction = super.mul(other);
-    return new Price(this.baseToken, other.quoteToken, fraction.denominator, fraction.numerator);
+    return new Price(
+      this.baseToken,
+      other.quoteToken,
+      fraction.denominator,
+      fraction.numerator
+    );
   }
 
   public quote(tokenAmount: TokenAmount): TokenAmount {
-    if (!tokenEquals({token: tokenAmount.token, other: this.baseToken})) {
+    if (!tokenEquals({ token: tokenAmount.token, other: this.baseToken })) {
       throw new Error("Token of tokenAmount must be the same as baseToken");
     }
     const biAmount = BigInt.fromString(tokenAmount.amount);

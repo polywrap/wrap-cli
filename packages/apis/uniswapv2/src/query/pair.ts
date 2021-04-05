@@ -35,15 +35,15 @@ export function pairLiquidityToken(input: Input_pairLiquidityToken): Token {
     chainId: token0.chainId,
     address: pairAddress({token0, token1}),
     symbol: null,
-    name: null
+    name: null,
   });
 }
 
 // returns the reserve of token0
-// TODO: pairReserve0 seems unnecessary. Remove?
-export function pairReserves(input: Input_pairReserves): string[] {
+// TODO: pairReserves seems unnecessary. It's basically a class getter method. Remove?
+export function pairReserves(input: Input_pairReserves): TokenAmount[] {
   const pair: Pair = input.pair;
-  return [pair.tokenAmount0.amount, pair.tokenAmount1.amount];
+  return [pair.tokenAmount0, pair.tokenAmount1];
 }
 
 // Pricing function for exact input amounts. Returns maximum output amount, based on current reserves, if the trade were executed.

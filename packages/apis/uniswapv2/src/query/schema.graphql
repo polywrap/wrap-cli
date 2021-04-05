@@ -25,7 +25,7 @@ type Query {
 
   pairReserves(
     pair: Pair!
-  ): [String!]! # [Uint256!]!
+  ): [TokenAmount!]! # [Uint256!]!
 
   pairOutputAmount(
     pair: Pair!
