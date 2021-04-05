@@ -32,11 +32,24 @@ export function routeOutput(input: Input_routeOutput): Token {
 // TODO: this function is not yet implemented
 export function routeMidPrice(input: Input_routeMidPrice): TokenAmount {
   const route: Route = input.route;
+
   return {
     amount: "0",
     token: route.input
   }
 }
+
+// public get midPrice(): Price {
+//   const prices: Price[] = []
+//   for (const [i, pair] of this.pairs.entries()) {
+//     prices.push(
+//       this.path[i].equals(pair.token0)
+//         ? new Price(pair.reserve0.currency, pair.reserve1.currency, pair.reserve0.raw, pair.reserve1.raw)
+//         : new Price(pair.reserve1.currency, pair.reserve0.currency, pair.reserve1.raw, pair.reserve0.raw)
+//     )
+//   }
+//   return prices.slice(1).reduce((accumulator, currentValue) => accumulator.multiply(currentValue), prices[0])
+// }
 
 
 // class Price {
