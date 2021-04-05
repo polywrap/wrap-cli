@@ -88,6 +88,7 @@ export default class Fraction {
     );
   }
 
+  // TODO: implement Fraction toSignificant and toFixed functions
   // public toSignificant(
   //   significantDigits: number,
   //   format: object = { groupSeparator: '' },
