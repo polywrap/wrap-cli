@@ -1,3 +1,36 @@
+# Web3API 0.0.1-prealpha.11
+## Bug Fixes
+* `@web3api/cli`: Include the internationalization JSON files in the published package.
+
+# Web3API 0.0.1-prealpha.10
+## Bug Fixes
+* `@web3api/ens-plugin-js`: Fix the schema.
+
+# Web3API 0.0.1-prealpha.9
+## Features
+* `@web3api/cli`: CLI Internalized Text Support
+  * Currently English is implemented, and Spanish support is slated to be added next.
+* `@web3api/schema-parse`: GraphQL Infinite Cycle Detection
+  * Bad object relationships within the Web3API's GraphQL schema are now automatically detected, ensuring developers never create objects that can never be instantiated properly.
+* `@web3api/templates`: Auto-Generate Smart Contract ABI & Bytecode Assemblyscript Module
+  * This auto-generated module is being used within the `deployContract` mutation.
+
+## Bug Fixes
+* `@web3api/core-js`: The `resolve-uri` core algorithm had an "off by one" iteration bug, where it never retried the first `api-resolver` in the implementations array.
+* `@web3api/ethereum-plugin-js`: When using a provider that lacks signing capabilities (ex: Infura RPC endpoint), the `getContract` function was trying to get a signer when one did not exist.
+* `@web3api/ipfs-plugin-js`: Fixed this plugin's schema, as it was using unsupported syntax.
+
+## Misc
+* Upgrade node version to v14.16.0.
+* Upgrade TypeScript version to v4.0.7.
+
+# Web3API 0.0.1-prealpha.8
+## Bug Fixes
+* Fixed bug in `@web3api/react` package.
+
+## Misc
+* Removed documentation & demos from the monorepo.
+
 # Web3API 0.0.1-prealpha.7
 ## Features
 * Console Log Web3API
