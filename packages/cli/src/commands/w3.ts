@@ -1,3 +1,5 @@
+import { intlMsg } from "../lib/intl";
+
 import { GluegunToolbox } from "gluegun";
 
 export default {
@@ -6,10 +8,13 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { print, parameters } = toolbox;
     if (parameters.first !== undefined) {
-      print.error(`w3 ${parameters.first} is not a command`);
+      const errorMessage = intlMsg.commands_w3_error_notACommand();
+      print.error(`w3 ${parameters.first} ${errorMessage}`);
     } else {
       print.success(
-        `Type ${print.colors.blue("w3 help")} to view common commands`
+        intlMsg.commands_w3_helpPrompt({
+          command: `${print.colors.blue("w3 help")}`,
+        })
       );
     }
   },

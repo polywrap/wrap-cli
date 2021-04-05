@@ -63,7 +63,7 @@ enum CustomEnum {
 
 type AnotherType {
   prop: String
-  circular: CustomType!
+  circular: CustomType
 }
 
 type Query @imports(
