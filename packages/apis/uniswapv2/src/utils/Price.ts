@@ -53,6 +53,7 @@ export default class Price extends Fraction {
     };
   }
 
+  // TODO: implement Price toSignificant and toFixed functions
   // public toSignificant(significantDigits: number = 6, format?: object, rounding?: Rounding): string {
   //   return this.adjusted.toSignificant(significantDigits, format, rounding);
   // }
