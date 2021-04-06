@@ -1,0 +1,41 @@
+Single App.tsx
+App() {
+  <HelloWorldWeb3ApiClient />
+  <HelloWorldWeb3ApiReact />
+}
+
+HelloWorldWeb3ApiClient:
+<input message>
+<button onClick={await client.query(...)}>
+
+HelloWorldWeb3ApiReact:
+// TODO: link to docs
+const { execute } = useWeb3ApiQuery(...)
+
+// TODO: link to provider docs
+<Web3ApiProvider>
+<input message>
+<button onClick={await execute()}>
+</Web3ApiProvider>
+
+getWeb3ApiRedirects.ts
+
+const redirects: UriRedirect[] = [];
+
+/*
+  // Here's how you use Metamask
+  if (window.ethereum) {
+    ...
+    redirects.push({
+      from: "w3://ens/ethereum.web3api.eth",,
+      to: ethereumPlugin({ provider: window.ethereum })
+    })
+  }
+*/
+
+return redirects;
+
+TODO:
+- Web3API Lottie
+- Link to documentation
+- Output the hello world Output
