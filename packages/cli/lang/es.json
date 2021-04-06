@@ -49,10 +49,10 @@
   "commands_create_options_commands": "Comandos",
   "commands_create_options_createApp": "Crear una aplicación Web3API",
   "commands_create_options_createPlugin": "Crear un Web3API plugin",
-  "commands_create_options_createProject": "Create a Web3API project",
+  "commands_create_options_createProject": "Crear un proyecto Web3API",
   "commands_create_options_h": "Mostrar información de uso",
-  "commands_create_options_lang": "lang",
-  "commands_create_options_langs": "langs",
+  "commands_create_options_lang": "idioma",
+  "commands_create_options_langs": "idiomas",
   "commands_create_options_o": "Directorio de salida (output) para el nuevo proyecto",
   "commands_create_options_o_path": "ruta",
   "commands_create_options_projectName": "nombre-del-proyecto",
@@ -112,6 +112,3 @@
   "lib_publishers_ipfsPublisher_urlMalformed": "URL de IPFS con formato incorrecto",
   "lib_watcher_alreadyWatching": "La sesión de observación ya está en progreso. Directorio: {dir}"
 }
-
-TODO mejorar las tíldes
-TODO El API vs La API
