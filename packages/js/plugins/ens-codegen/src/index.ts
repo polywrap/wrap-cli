@@ -155,4 +155,3 @@ export const ensPlugin: PluginFactory<EnsConfig> = (opts: EnsConfig) => {
   };
 };
 export const plugin = ensPlugin;
-

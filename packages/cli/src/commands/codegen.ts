@@ -1,5 +1,6 @@
 /* eslint-disable prefer-const */
 import {
+  CodeGenerator,
   // CodeGenerator,
   Compiler,
   Project,
@@ -124,16 +125,13 @@ export default {
     }
 
     // Resolve generation file & output directories
-    generationFile =
-      (generationFile && filesystem.resolve(generationFile)) ||
-      filesystem.resolve(defaultGenerationFile);
+    generationFile = generationFile && filesystem.resolve(generationFile);
     manifestPath =
       (manifestPath && filesystem.resolve(manifestPath)) ||
       ((await filesystem.existsAsync(defaultManifest[0]))
         ? filesystem.resolve(defaultManifest[0])
         : filesystem.resolve(defaultManifest[1]));
-    outputDir =
-      (outputDir && filesystem.resolve(outputDir)) || filesystem.path("build");
+    outputDir = outputDir && filesystem.resolve(outputDir);
 
     const project = new Project({
       manifestPath,
@@ -146,20 +144,28 @@ export default {
       ensAddress,
     });
 
-    const compiler = new Compiler({
-      project,
-      outputDir,
-      schemaComposer,
-    });
+    let result = false;
 
-    // const codeGenerator = new CodeGenerator({
-    //   project,
-    //   schemaComposer,
-    //   generationFile,
-    //   outputDir,
-    // });
+    if (generationFile) {
+      const codeGenerator = new CodeGenerator({
+        project,
+        schemaComposer,
+        generationFile,
+        outputDir: outputDir || filesystem.path("types"),
+      });
 
-    if (await compiler.codegen(true)) {
+      result = await codeGenerator.generate();
+    } else {
+      const compiler = new Compiler({
+        project,
+        outputDir: outputDir || filesystem.path("build"),
+        schemaComposer,
+      });
+
+      result = await compiler.codegen();
+    }
+
+    if (result) {
       print.success(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
       process.exitCode = 0;
     } else {

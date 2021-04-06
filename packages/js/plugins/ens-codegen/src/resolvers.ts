@@ -33,4 +33,3 @@ export const query = (ens: EnsPlugin, client: Client): PluginModule => ({
     return null;
   },
 });
-

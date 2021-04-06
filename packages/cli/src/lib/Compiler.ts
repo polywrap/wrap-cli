@@ -63,7 +63,7 @@ export class Compiler {
     const { project } = this._config;
 
     const run = async (): Promise<void> => {
-      await this._compileSchema(verbose);
+      await this._compileSchema();
       await this._compileWasmModules(verbose);
     };
 
@@ -81,10 +81,10 @@ export class Compiler {
     }
   }
 
-  private async _compileSchema(verbose?: boolean) {
+  private async _compileSchema() {
     const { outputDir, project, schemaComposer } = this._config;
 
-    const run = async (spinner?: Ora): Promise<void> => {
+    const run = async (): Promise<void> => {
       // Init & clean build directory
       this._cleanDir(this._config.outputDir);
 
@@ -175,11 +175,11 @@ export class Compiler {
       return run();
     } else {
       return await withSpinner(
-        intlMsg.lib_compiler_compileText(),
-        intlMsg.lib_compiler_compileError(),
-        intlMsg.lib_compiler_compileWarning(),
-        async (spinner) => {
-          return run(spinner);
+        intlMsg.lib_compiler_buildSchemaText(),
+        intlMsg.lib_compiler_buildSchemaError(),
+        intlMsg.lib_compiler_buildSchemaWarning(),
+        async () => {
+          return run();
         }
       );
     }

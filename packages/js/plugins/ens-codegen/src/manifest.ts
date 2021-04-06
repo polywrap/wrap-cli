@@ -25,4 +25,3 @@ type ApiResolver_MaybeUriOrManifest {
   implemented: [new Uri("w3/api-resolver")],
   imported: [new Uri("ens/ethereum.web3api.eth")],
 };
-
