@@ -1,0 +1,10 @@
+query {
+  catFile(
+    ipfsUrl: $ipfsUrl
+    cid: $cid
+    catFileOptions: {
+      offset: 5
+      length: 10
+    }
+  )
+}
