@@ -1,8 +1,17 @@
 import { tokenEquals } from "./token";
-import { BigInt } from "../utils/BigInt";
-import { Input_routeMidPrice, Input_routeOutput, Input_routePath, Pair, Route, Token, TokenAmount } from "./w3";
+import {
+  Input_routeMidPrice,
+  Input_routeOutput,
+  Input_routePath,
+  Pair,
+  Route,
+  Token,
+  TokenAmount,
+} from "./w3";
 import Price from "../utils/Price";
 import { pairReserves } from "./pair";
+
+import { BigInt } from "as-bigint";
 
 // returns the full path from input token to output token.
 export function routePath(input: Input_routePath): Token[] {
@@ -16,7 +25,9 @@ export function routePath(input: Input_routePath): Token[] {
     const isToken0In = tokenEquals({ token: currentIn, other: token0 });
     const isToken1In = tokenEquals({ token: currentIn, other: token1 });
     if (!isToken0In && isToken1In) {
-      throw new Error("Invalid or unordered route: Route must contain ordered pairs such that adjacent pairs contain one token in common.");
+      throw new Error(
+        "Invalid or unordered route: Route must contain ordered pairs such that adjacent pairs contain one token in common."
+      );
     }
     const currentOut = isToken0In ? token1 : token0;
     path.push(currentOut);

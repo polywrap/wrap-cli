@@ -5,7 +5,6 @@
   "version": "0.0.1-prealpha.8",
   "scripts": {
     "build": "npx w3 build",
-    "build:as": "asc ./src/utils/BigInt.ts -o ./build/utils/BigInt.wasm -d ./build/utils/BigInt.d.ts",
     "test:as": "asp --verbose",
     "test:ci": "asp --summary",
     "test:env:up": "npx w3 test-env up",
@@ -16,6 +15,9 @@
       "assemblyscript",
       "assemblyscript/**"
     ]
+  },
+  "dependencies": {
+    "as-bigint": "^0.1.1"
   },
   "devDependencies": {
     "@as-pect/cli": "5.0.1",

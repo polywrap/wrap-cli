@@ -1,6 +1,6 @@
 // translated to AS from https://github.com/Uniswap/uniswap-sdk-core/blob/main/src/entities/fractions/fraction.ts
 
-import { BigInt } from "./BigInt";
+import { BigInt } from "as-bigint";
 
 export default class Fraction {
   public readonly numerator: BigInt;

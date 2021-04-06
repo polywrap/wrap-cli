@@ -2,8 +2,9 @@
 
 import { Token, TokenAmount } from "../query/w3";
 import Fraction from "./Fraction";
-import { BigInt } from "./BigInt";
 import { tokenEquals } from "../query";
+
+import { BigInt } from "as-bigint";
 
 export default class Price extends Fraction {
   public readonly baseToken: Token; // input i.e. denominator
