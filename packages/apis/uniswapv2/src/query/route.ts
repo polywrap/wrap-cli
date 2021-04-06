@@ -44,7 +44,16 @@ export function routeOutput(input: Input_routeOutput): Token {
 // Returns the current mid price along the route.
 export function routeMidPrice(input: Input_routeMidPrice): TokenAmount {
   const route: Route = input.route;
-  const path = routePath({ route: input.route });
+  const finalPrice = midPrice(route);
+  return {
+    token: finalPrice.quoteToken,
+    amount: finalPrice.adjusted().quotient().toString(), // TODO: should this be adjusted or raw price? also needs formatting
+  };
+}
+
+// helper function for use in routeMidPrice and trade query functions
+export function midPrice(route: Route): Price {
+  const path = routePath({ route: route });
   const prices: Price[] = [];
   for (let i = 0; i < route.pairs.length; i++) {
     const pair = route.pairs[i];
@@ -59,9 +68,5 @@ export function routeMidPrice(input: Input_routeMidPrice): TokenAmount {
         : new Price(reserve1.token, reserve0.token, amount1, amount0)
     );
   }
-  const finalPrice = prices.slice(1).reduce((k, v) => k.mul(v), prices[0]);
-  return {
-    token: finalPrice.quoteToken,
-    amount: finalPrice.quotient().toString(),
-  };
+  return prices.slice(1).reduce((k, v) => k.mul(v), prices[0]);
 }

@@ -11,15 +11,27 @@ export default class Fraction {
     this.denominator = denominator;
   }
 
+  public static fromString(decimalNumber: string): Fraction {
+    const index = decimalNumber.indexOf(".");
+    if (index == -1) {
+      return new Fraction(BigInt.fromString(decimalNumber));
+    }
+    const numerator = BigInt.fromString(
+      decimalNumber.substring(0, index) + decimalNumber.substring(index + 1)
+    );
+    const e: i32 = decimalNumber.length - index + 1;
+    let denomStr = "1";
+    for (let i = 0; i < e; i++) {
+      denomStr += "0";
+    }
+    const denominator = BigInt.fromString(denomStr);
+    return new Fraction(numerator, denominator);
+  }
+
   // performs floor division
   public quotient(): BigInt {
     return BigInt.div(this.numerator, this.denominator);
   }
-
-  // remainder after floor division
-  // public get remainder(): Fraction {
-  //   return new Fraction(JSBI.remainder(this.numerator, this.denominator), this.denominator)
-  // }
 
   public invert(): Fraction {
     return new Fraction(this.denominator, this.numerator);

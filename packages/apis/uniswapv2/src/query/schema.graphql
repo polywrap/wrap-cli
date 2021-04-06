@@ -32,7 +32,17 @@ type Query {
     inputAmount: TokenAmount!
   ): TokenAmount!
 
+  pairOutputNextPair(
+    pair: Pair!
+    inputAmount: TokenAmount!
+  ): TokenAmount!
+
   pairInputAmount(
+    pair: Pair!
+    outputAmount: TokenAmount!
+  ): TokenAmount!
+
+  pairInputNextPair(
     pair: Pair!
     outputAmount: TokenAmount!
   ): TokenAmount!
@@ -83,7 +93,7 @@ type Query {
     slippageTolerance: String! # Float32!
   ): TokenAmount!
 
-  tradeMinimumAmountIn(
+  tradeMaximumAmountIn(
     trade: Trade!
     slippageTolerance: String! # Float32!
   ): TokenAmount!
@@ -92,14 +102,14 @@ type Query {
     pairs: [Pair!]!
     amountIn: TokenAmount!
     tokenOut: Token!
-    options: BestTradeOptions!
+    options: BestTradeOptions
   ): [Trade!]!
 
   bestTradeExactOut(
     pairs: [Pair!]!
     tokenIn: Token!
     amountOut: TokenAmount!
-    options: BestTradeOptions!
+    options: BestTradeOptions
   ): [Trade!]!
 
   # Fetch
@@ -126,7 +136,7 @@ type Query {
   # Constants
   factoryAddress: String!
   initCodeHash: String!
-  minimumLiquidity: UInt
+  minimumLiquidity: UInt32!
 }
 
 enum ChainId {
@@ -178,5 +188,6 @@ enum Rounding {
 }
 
 type BestTradeOptions {
-  pairs: [Pair!]!
+  maxNumResults: UInt32
+  maxHops: UInt32
 }

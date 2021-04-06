@@ -1,7 +1,7 @@
 import { Ethereum_Query } from "./w3/imported";
 import { fetchTokenData } from "./fetch";
 import { tokenEquals, tokenSortsBefore } from "./token";
-import { FACTORY_ADDRESS, MINIMUM_LIQUIDITY } from "./index";
+import { factoryAddress, minimumLiquidity } from "./index";
 import {
   Input_pairAddress,
   Input_pairInputAmount,
@@ -23,7 +23,7 @@ export function pairAddress(input: Input_pairAddress): string {
   const token0: string = input.token0.address;
   const token1: string = input.token1.address;
   return Ethereum_Query.callView({
-    address: FACTORY_ADDRESS,
+    address: factoryAddress(),
     method:
       "function getPair(address tokenA, address tokenB) external view returns (address pair)",
     args: [token0, token1],
@@ -51,6 +51,7 @@ export function pairReserves(input: Input_pairReserves): TokenAmount[] {
   return [pair.tokenAmount0, pair.tokenAmount1];
 }
 
+// TODO: reduce duplicate code by writing helper functions for pairOutputAmount, pairOutputNextPair, and their Input complements
 // Pricing function for exact input amounts. Returns maximum output amount, based on current reserves, if the trade were executed.
 export function pairOutputAmount(input: Input_pairOutputAmount): TokenAmount {
   const pair: Pair = input.pair;
@@ -93,6 +94,56 @@ export function pairOutputAmount(input: Input_pairOutputAmount): TokenAmount {
   return {
     token: outTokenAmount.token,
     amount: numerator.div(denominator).toString(),
+  };
+}
+
+export function pairOutputNextPair(input: Input_pairOutputNextPair): Pair {
+  const pair: Pair = input.pair;
+  const tradeTokenAmount: TokenAmount = input.inputAmount;
+  const tradeAmount = BigInt.fromString(tradeTokenAmount.amount);
+  if (tradeAmount.eq(BigInt.ZERO)) {
+    throw new RangeError(
+      "Insufficient input amount: Input amount must be greater than zero"
+    );
+  }
+  if (
+    BigInt.fromString(pair.tokenAmount0.amount).eq(BigInt.ZERO) ||
+    BigInt.fromString(pair.tokenAmount1.amount).eq(BigInt.ZERO)
+  ) {
+    throw new RangeError(
+      "Insufficient liquidity: Pair reserves must be greater than zero"
+    );
+  }
+  let inTokenAmount: TokenAmount;
+  let outTokenAmount: TokenAmount;
+  if (
+    tokenEquals({
+      token: pair.tokenAmount0.token,
+      other: tradeTokenAmount.token,
+    })
+  ) {
+    inTokenAmount = pair.tokenAmount0;
+    outTokenAmount = pair.tokenAmount1;
+  } else {
+    inTokenAmount = pair.tokenAmount1;
+    outTokenAmount = pair.tokenAmount0;
+  }
+  const biInTokenAmt: BigInt = BigInt.fromString(inTokenAmount.amount);
+  const biOutTokenAmt: BigInt = BigInt.fromString(outTokenAmount.amount);
+  const amountInWithFee: BigInt = tradeAmount.mul(BigInt.fromString("997"));
+  const numerator: BigInt = amountInWithFee.mul(biOutTokenAmt);
+  const denominator: BigInt = biInTokenAmt
+    .mul(BigInt.fromString("1000"))
+    .add(amountInWithFee);
+  return {
+    tokenAmount0: {
+      token: inTokenAmount.token,
+      amount: biInTokenAmt.add(tradeAmount).toString(),
+    },
+    tokenAmount1: {
+      token: outTokenAmount.token,
+      amount: biOutTokenAmt.sub(numerator.div(denominator)).toString(),
+    },
   };
 }
 
@@ -143,6 +194,57 @@ export function pairInputAmount(input: Input_pairInputAmount): TokenAmount {
   };
 }
 
+export function pairInputNextPair(input: Input_pairInputNextPair): Pair {
+  const pair: Pair = input.pair;
+  const tradeTokenAmount: TokenAmount = input.outputAmount;
+  const tradeAmount = BigInt.fromString(tradeTokenAmount.amount);
+  if (tradeAmount.eq(BigInt.ZERO)) {
+    throw new RangeError(
+      "Insufficient output amount: Output amount must be greater than zero"
+    );
+  }
+  if (
+    BigInt.fromString(pair.tokenAmount0.amount) == BigInt.ZERO ||
+    BigInt.fromString(pair.tokenAmount1.amount) == BigInt.ZERO
+  ) {
+    throw new RangeError(
+      "Insufficient liquidity: Pair reserves must be greater than zero"
+    );
+  }
+  let inTokenAmount: TokenAmount;
+  let outTokenAmount: TokenAmount;
+  if (
+    tokenEquals({
+      token: pair.tokenAmount0.token,
+      other: tradeTokenAmount.token,
+    })
+  ) {
+    outTokenAmount = pair.tokenAmount0;
+    inTokenAmount = pair.tokenAmount1;
+  } else {
+    outTokenAmount = pair.tokenAmount1;
+    inTokenAmount = pair.tokenAmount0;
+  }
+  const biInTokenAmt = BigInt.fromString(inTokenAmount.amount);
+  const biOutTokenAmt = BigInt.fromString(outTokenAmount.amount)
+  const numerator: BigInt = biInTokenAmt.mul(tradeAmount).mul(BigInt.fromString("1000"));
+  const denominator: BigInt = biOutTokenAmt.sub(tradeAmount).mul(BigInt.fromString("997"));
+  const resAmount: BigInt = numerator
+    .div(denominator)
+    .add(BigInt.fromString("1"));
+
+  return {
+    tokenAmount0: {
+      token: inTokenAmount.token,
+      amount: biInTokenAmt.add(resAmount).toString(),
+    },
+    tokenAmount1: {
+      token: outTokenAmount.token,
+      amount: biOutTokenAmt.sub(tradeAmount).toString(),
+    },
+  };
+}
+
 /*
 Calculates the exact amount of liquidity tokens minted from a given amount of token0 and token1.
   totalSupply is total supply of pair liquidity token.
@@ -175,7 +277,7 @@ export function pairLiquidityMinted(
   let amount1 = BigInt.fromString(tokenAmounts[1].amount);
   const supply = BigInt.fromString(totalSupply.amount);
   if (supply.eq(BigInt.ZERO)) {
-    const minLiq = BigInt.fromDigits([MINIMUM_LIQUIDITY]);
+    const minLiq = BigInt.fromDigits([minimumLiquidity()]);
     liquidity = amount0.mul(amount1).sqrt().sub(minLiq);
   } else {
     const pairAmt0 = BigInt.fromString(pairTokens[0].amount);

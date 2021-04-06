@@ -28,11 +28,11 @@ export default class Price extends Fraction {
     );
   }
 
-  public get raw(): Fraction {
+  public raw(): Fraction {
     return new Fraction(this.numerator, this.denominator);
   }
 
-  public get adjusted(): Fraction {
+  public adjusted(): Fraction {
     return super.mul(this.scalar);
   }
 
