@@ -8,7 +8,7 @@
   "commands_build_error_testEnsNodeMissing": "La opción {option} requires the {required} option",
   "commands_build_ethProvider": "Proveedor de Ethereum",
   "commands_build_keypressListener_exit": "Salir: [CTRL + C], [ESC], or [Q]",
-  TODO "commands_build_keypressListener_watching": "Watching",
+  "commands_build_keypressListener_watching": "Observando cambios",
   "commands_build_options_e": "Publica el paquete localmente a un dominio de ENS de prueba  (requiere --ipfs)",
   "commands_build_options_e_address": "dirección",
   "commands_build_options_e_domain": "dominio",
