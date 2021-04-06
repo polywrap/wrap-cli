@@ -1,11 +1,5 @@
 /* eslint-disable prefer-const */
-import {
-  CodeGenerator,
-  // CodeGenerator,
-  Compiler,
-  Project,
-  SchemaComposer,
-} from "../lib";
+import { CodeGenerator, Compiler, Project, SchemaComposer } from "../lib";
 import { fixParameters } from "../lib/helpers/parameters";
 import { intlMsg } from "../lib/intl";
 
