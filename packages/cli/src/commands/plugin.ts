@@ -1,8 +1,8 @@
-import { GluegunToolbox, print } from "gluegun";
-import chalk from "chalk";
-
 import { fixParameters } from "../lib/helpers";
 import { intlMsg } from "../lib/intl";
+
+import { GluegunToolbox, print } from "gluegun";
+import chalk from "chalk";
 
 export const supportedLangs: { [key: string]: string[] } = {
   build: ["typescript"],
@@ -35,7 +35,7 @@ Options:
 export default {
   alias: ["p"],
   description: intlMsg.commands_plugin_description(),
-  run: async (toolbox: GluegunToolbox): Promise<unknown> => {
+  run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { parameters } = toolbox;
 
     // Options
@@ -67,6 +67,56 @@ export default {
     }
 
     if (help) {
+      print.info(HELP);
+      return;
+    }
+
+    if (!type) {
+      print.error(intlMsg.commands_plugin_error_noCommand());
+      print.info(HELP);
+      return;
+    }
+
+    if (!lang) {
+      print.error(intlMsg.commands_plugin_error_noLang());
+      print.info(HELP);
+      return;
+    }
+
+    if (!supportedLangs[type]) {
+      const unrecognizedCommand = intlMsg.commands_plugin_error_unrecognizedCommand();
+      print.error(`${unrecognizedCommand} "${type}"`);
+      print.info(HELP);
+      return;
+    }
+
+    if (supportedLangs[type].indexOf(lang) === -1) {
+      const unrecognizedLanguage = intlMsg.commands_plugin_error_unrecognizedLanguage();
+      print.error(`${unrecognizedLanguage} "${lang}"`);
+      print.info(HELP);
+      return;
+    }
+
+    if (outputSchema === true) {
+      const outputSchemaMissingPathMessage = intlMsg.commands_plugin_error_outputDirMissingPath(
+        {
+          option: "--output-schema",
+          argument: `<${pathStr}>`,
+        }
+      );
+      print.error(outputSchemaMissingPathMessage);
+      print.info(HELP);
+      return;
+    }
+
+    if (outputTypes === true) {
+      const outputTypesMissingPathMessage = intlMsg.commands_plugin_error_outputDirMissingPath(
+        {
+          option: "--output-types",
+          argument: `<${pathStr}>`,
+        }
+      );
+      print.error(outputTypesMissingPathMessage);
       print.info(HELP);
       return;
     }
