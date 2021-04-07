@@ -31,7 +31,9 @@ async function main() {
   if (output.contracts) {
     console.log("✔️ Compiled SimpleStorage.sol");
   } else {
-    throw Error(`Error: Failed to compile SimpleStorage.sol.\n${output}`);
+    throw Error(
+      `Error: Failed to compile SimpleStorage.sol.\n${JSON.stringify(output, null, 2)}`
+    );
   }
 
   // Fetch the compiled contract's abi & bytecode
