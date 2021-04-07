@@ -1,88 +1,81 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState, FC } from "react";
+import "./App.css";
+import { useWeb3ApiQuery } from "@web3api/react";
+import Lottie from "react-lottie";
+import Web3ApiAnimation from "./lottie/Web3API_Icon_Cycle.json";
 
-import { Uri, UriRedirect, Web3ApiClient } from "@web3api/client-js";
-import { ensPlugin } from "@web3api/ens-plugin-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
+const App: FC = () => {
+  const [message, setMessage] = useState("");
 
-function App() {
-  const [contract, setContract] = React.useState<string | undefined>(undefined);
-  const [client, setClient] = React.useState<Web3ApiClient | undefined>(undefined);
-
-  async function setupClient() {
-    const ethereum = (window as any).ethereum;
-    if (ethereum && ethereum.enable) {
-      await ethereum.enable();
-    }
-
-    const redirects: UriRedirect[] = [
-      {
-        from: "w3://ens/ethereum.web3api.eth",
-        to: ethereumPlugin({ provider: ethereum })
-      },
-      {
-        from: "w3://ens/ipfs.web3api.eth",
-        to: ipfsPlugin({ provider: "https://ipfs.io/api/v0/" }),
-      },
-      {
-        from: "w3://ens/ens.web3api.eth",
-        to: ensPlugin({}),
+  useEffect(() => {
+    (async () => {
+      const ethereum = (window as any).ethereum;
+      if (ethereum && ethereum.enable) {
+        await ethereum.enable();
       }
-    ];
-    setClient(new Web3ApiClient({ redirects }));
-  }
+    })();
+  }, []);
 
-  const deployContract = async () => {
-    if (!client) {
-      await setupClient();
+  const logoLottieOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: Web3ApiAnimation,
+  };
 
-      if (!client) {
-        return;
-      }
-    }
+  const { execute: logMessage } = useWeb3ApiQuery({
+    provider: "helloWorld",
+    uri: "ens/helloworld.eth",
+    query: `query { 
+        logMessage(
+            message: ${message} 
+        )
+     }`,
+  });
 
-    console.log("querying")
+  // data: deployData,
+  // loading: loadingDeploy,
+  // errors: deployContractErrors,
+  const logMsgHandler = async (): Promise<any> => {
+    const result = await logMessage();
+    console.log(result);
+  };
 
-    const { data, errors } = await client.query({
-      uri: new Uri("ens/api.simplestorage.eth"),
-      query: `mutation { deployContract }`
-    });
-
-    console.log(data)
-    console.log(errors)
-
-    if (errors) {
-      console.error(errors);
-    }
-
-    if (data) {
-      setContract(
-        data.deployContract as string
-      );
-    }
-  }
+  const onChangeHandler = (event: any): void => {
+    setMessage(event?.target.value);
+  };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Web3API: SimpleStorage Demo
-        </p>
-        {!contract ?
-          (<button onClick={deployContract}>
-            Deploy Contract
-          </button>) :
-          <p>SimpleStorage Contract: {contract}</p>
-        }
-        <button>
-          Set Storage
+    <>
+      <div className="main">
+        <Lottie
+          options={logoLottieOptions}
+          isClickToPauseDisabled={true}
+          height={"300px"}
+          width={"300px"}
+        />
+        <text className="main__heading">Hello world from Web3API!</text>
+        <text className="main__text">
+          Try out our Hello World demo by connecting your MetaMask, type
+          anything into the input below, click the submit and check out your
+          developer console logs.
+        </text>
+        <input
+          className="main__input"
+          onChange={(event) => onChangeHandler(event)}
+        />
+        <button className="main__btn" onClick={logMsgHandler}>
+          Submit
         </button>
-      </header>
-    </div>
+        <a
+          className="main__link"
+          href="https://documentation-master.on.fleek.co/"
+        >
+          Want to build your own Web3API? Visit our documentation{" "}
+          <span style={{ color: "blue" }}>here</span>.
+        </a>
+      </div>
+    </>
   );
-}
+};
 
 export default App;

@@ -3558,6 +3558,13 @@
   dependencies:
     "@types/react" "^16"
 
+"@types/react-lottie@^1.2.5":
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/@types/react-lottie/-/react-lottie-1.2.5.tgz#659322961de534227ba354109342cad967d98841"
+  integrity sha512-g5c7r0VN8g0hLsFEtR71ZFDWDp6niY4D/7llcAcLjV3LpaoyANmaQ9jispskWpkAUP+NYQcFllMtoGIWUM6VRw==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-test-renderer@>=16.9.0":
   version "17.0.1"
   resolved "https://registry.yarnpkg.com/@types/react-test-renderer/-/react-test-renderer-17.0.1.tgz#3120f7d1c157fba9df0118dae20cb0297ee0e06b"
@@ -3790,6 +3797,88 @@
   dependencies:
     "@typescript-eslint/types" "4.11.1"
     eslint-visitor-keys "^2.0.0"
+
+"@web3api/client-js@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/client-js/-/client-js-0.0.1-prealpha.11.tgz#d21c647da24e2e2c09005fc56fb64905fa94d67c"
+  integrity sha512-yAA0ppcMUFBWb1i0dAGh1t4GQwkp6HdNSY7FLfqwbXNu9dZ3o+AwTWBJfCT15m978AMAgCdvta7Q0FTgks4FYg==
+  dependencies:
+    "@msgpack/msgpack" "2.3.0"
+    "@web3api/core-js" "0.0.1-prealpha.11"
+    "@web3api/ens-plugin-js" "0.0.1-prealpha.11"
+    "@web3api/ethereum-plugin-js" "0.0.1-prealpha.11"
+    "@web3api/ipfs-plugin-js" "0.0.1-prealpha.11"
+    "@web3api/logger-plugin-js" "0.0.1-prealpha.11"
+    "@web3api/schema-parse" "0.0.1-prealpha.11"
+    graphql "15.5.0"
+    js-yaml "3.14.0"
+    web-worker "1.0.0"
+
+"@web3api/core-js@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/core-js/-/core-js-0.0.1-prealpha.11.tgz#0ebb9a65189bc0a321026cdc41642820eab1acf6"
+  integrity sha512-pQ880RjMfvDXmn2CLyNNxVRFjmqq87VuhXk5TuCqhhNgAii4ACf1ZuurIJsc/YsAWTHTC6irTL5R2VLQ64rvqg==
+  dependencies:
+    "@web3api/manifest-schema" "0.0.1-prealpha.11"
+    graphql "15.5.0"
+    graphql-tag "2.10.4"
+    js-yaml "3.14.0"
+    jsonschema "1.4.0"
+    semver "7.3.4"
+
+"@web3api/ens-plugin-js@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/ens-plugin-js/-/ens-plugin-js-0.0.1-prealpha.11.tgz#a604bad302e0ba8c5062d1ef52e6c9ea4cdefe51"
+  integrity sha512-LZDTx2xfo5lRY0b68AeHv7Rga88D+DYHI/fbs9aZS+I1Y94gBAS9+ohoPfv2dwWLRrnPxFXiQ5FjRZ/ehM1OQw==
+  dependencies:
+    "@web3api/core-js" "0.0.1-prealpha.11"
+    ethers "5.0.7"
+
+"@web3api/ethereum-plugin-js@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/ethereum-plugin-js/-/ethereum-plugin-js-0.0.1-prealpha.11.tgz#96f9a2e6e06e6b4fdeaf17bdf3796105d709a203"
+  integrity sha512-jemYM9Visbnn0Ojxs5WXgtECX5VzsfCyFpC4A/zeeWhGf2EGq3cFtmf7qGicpMcfpQXIJqEz2lNJSHwvIZ1LuQ==
+  dependencies:
+    "@web3api/core-js" "0.0.1-prealpha.11"
+    ethers "5.0.7"
+
+"@web3api/ipfs-plugin-js@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/ipfs-plugin-js/-/ipfs-plugin-js-0.0.1-prealpha.11.tgz#e0492e8f790c441604ffde3da76f9f35d2d10ac3"
+  integrity sha512-NHZG3uw88Q7bSgb0L82KfDD/lGMQzWW7o1ZWMddguujrrn/x9wKVJb56txTllypAQJ89xDl9afRqovEImUhnXA==
+  dependencies:
+    "@web3api/core-js" "0.0.1-prealpha.11"
+    cids "^1.1.4"
+    ipfs-http-client-lite "0.3.0"
+    is-ipfs "1.0.3"
+
+"@web3api/logger-plugin-js@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/logger-plugin-js/-/logger-plugin-js-0.0.1-prealpha.11.tgz#97dabd8d48e8284b5b965bd52431ce195ba478e6"
+  integrity sha512-wQlJfM0ehM3nxMrXna6U7kR89r9STYz7Pbvr5Jvxv6OAxiBcL9Yg38ayRmhBq/kbPrd9GoUViDki6eL/heRl5w==
+  dependencies:
+    "@web3api/core-js" "0.0.1-prealpha.11"
+
+"@web3api/manifest-schema@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/manifest-schema/-/manifest-schema-0.0.1-prealpha.11.tgz#d44c543de6a6793d225e511f187ca1c6dcd33e0d"
+  integrity sha512-jaYhIqx6hycctDNy0Bui7hkyNa7yCzd8ny5wzlmpUze/xv2HtEFDD4Sw2v+mEJFvc/TU4t10JBEl1DKx7rz8DA==
+
+"@web3api/react@^0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/react/-/react-0.0.1-prealpha.11.tgz#5b39e9f1121383e5c3307a9200bc6eac31d67d4e"
+  integrity sha512-4QfqEbMl+r/E0yv5uMfXl88uXUQihCNYjuZJG8xIMs+ch9WPN1V8L6kZ9rolJUwxjGXro2xKb7fc8LXjXNZGng==
+  dependencies:
+    "@web3api/client-js" "0.0.1-prealpha.11"
+    "@web3api/core-js" "0.0.1-prealpha.11"
+
+"@web3api/schema-parse@0.0.1-prealpha.11":
+  version "0.0.1-prealpha.11"
+  resolved "https://registry.yarnpkg.com/@web3api/schema-parse/-/schema-parse-0.0.1-prealpha.11.tgz#4a1359054541a7cebb7ff1bdcb415175c117825c"
+  integrity sha512-fOA+e+HUQFdb3d/roAIjDuTSKab1q4JrPShwtPr6uaH6y2AF7hfsCWuVu6zV8WD4ihnizrCo7N6AWm2T0Bjsww==
+  dependencies:
+    graphql "15.5.0"
+    graphql-schema-cycles "1.1.2"
 
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
@@ -12841,6 +12930,11 @@ loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.4.0:
   dependencies:
     js-tokens "^3.0.0 || ^4.0.0"
 
+lottie-web@^5.1.3:
+  version "5.7.8"
+  resolved "https://registry.yarnpkg.com/lottie-web/-/lottie-web-5.7.8.tgz#c7a2e42983bcb42093590a03ccdde8741d3f960e"
+  integrity sha512-VxKCZk33GwZac6mVHvT3grUFR/zrMsW85M7vxQPrgpJOP2IhcnjMbuD0h7muBkXgw84K9KmGulmcyzvhpzSMAg==
+
 loud-rejection@^1.0.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/loud-rejection/-/loud-rejection-1.6.0.tgz#5b46f80147edee578870f086d04821cf998e551f"
@@ -16047,6 +16141,14 @@ react-is@^17.0.1:
   version "17.0.2"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
+
+react-lottie@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/react-lottie/-/react-lottie-1.2.3.tgz#8544b96939e088658072eea5e12d912cdaa3acc1"
+  integrity sha512-qLCERxUr8M+4mm1LU0Ruxw5Y5Fn/OmYkGfnA+JDM/dZb3oKwVAJCjwnjkj9TMHtzR2U6sMEUD3ZZ1RaHagM7kA==
+  dependencies:
+    babel-runtime "^6.26.0"
+    lottie-web "^5.1.3"
 
 react-scripts@3.4.1:
   version "3.4.1"

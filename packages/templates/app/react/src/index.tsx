@@ -1,17 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import Test from "./Test";
-import * as serviceWorker from "./serviceWorker";
+import App from "./App";
+import { createWeb3ApiProvider } from "@web3api/react";
+import { redirects } from "./redirects";
+
+const HelloWorldProvider = createWeb3ApiProvider("helloWorld");
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Test />
-  </React.StrictMode>,
+  <HelloWorldProvider redirects={redirects}>
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  </HelloWorldProvider>,
   document.getElementById("root")
 );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
