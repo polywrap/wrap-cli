@@ -54,7 +54,7 @@ export default class Fraction {
   public sub(other: Fraction): Fraction {
     if (BigInt.eq(this.denominator, other.denominator)) {
       const numeratorSub: BigInt = BigInt.sub(this.numerator, other.numerator);
-      return new Fraction(numeratorSub, this.denominator)
+      return new Fraction(numeratorSub, this.denominator);
     }
     return new Fraction(
       BigInt.sub(

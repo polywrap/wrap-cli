@@ -17,7 +17,7 @@
     ]
   },
   "dependencies": {
-    "as-bigint": "^0.1.1"
+    "as-bigint": "^0.1.2"
   },
   "devDependencies": {
     "@as-pect/cli": "5.0.1",
