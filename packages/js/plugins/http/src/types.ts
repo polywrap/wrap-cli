@@ -42,5 +42,5 @@ export class Response {
   status: number;
   statusText: string;
   headers: Header[];
-  body: string;
+  body?: string;
 }

@@ -6,8 +6,7 @@ type Query {
 
 type CatFileOptions {
   headers: [Http_Header!]
-  qs: [Http_UrlParam!]
+  queryString: [Http_UrlParam!]
   offset: Int64
   length: Int64
-  responseType: Http_ResponseType
 }

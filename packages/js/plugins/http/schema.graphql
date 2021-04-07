@@ -12,7 +12,7 @@ type Response {
   status: UInt64!
   statusText: String!
   headers: [Header!]
-  body: String!
+  body: String
 }
 
 type Request {
@@ -43,9 +43,9 @@ type FormDataEntry {
 }
 
 type Query {
-  get(url: String!, request: Request!): Response
+  get(url: String!, request: Request): Response
 }
 
 type Mutation {
-  post(url: String!, request: Request!): Response
+  post(url: String!, request: Request): Response
 }

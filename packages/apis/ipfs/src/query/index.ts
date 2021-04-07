@@ -9,38 +9,27 @@ export function catFile(input: Input_catFile): ArrayBuffer {
   const url = input.ipfsUrl + "/api/v0/cat";
   let headers: Http_Header[];
   let urlParams: Http_UrlParam[];
-  let responseType: Http_ResponseType;
 
   urlParams = [{key: "arg", value: input.cid}];
-  responseType = Http_ResponseType.TEXT;
   
   if(input.catFileOptions) {
     let cfo = input.catFileOptions as CatFileOptions;
-    
     if(cfo.headers) {
       headers = cfo.headers as Http_Header[];
     }
-    
-    if(cfo.qs) {
-      urlParams = urlParams.concat(cfo.qs as Http_UrlParam[]);
+    if(cfo.queryString) {
+      urlParams = urlParams.concat(cfo.queryString as Http_UrlParam[]);
     }
-    
     if(cfo.length) {
       urlParams = urlParams.concat(
         [{key: "length", value: cfo.length.value.toString()} as Http_UrlParam]
       );
     }
-    
     if(cfo.offset) {
       urlParams = urlParams.concat( 
         [{key: "offset", value: cfo.offset.value.toString()} as Http_UrlParam]
       )
     }
-
-    if(cfo.responseType) {
-      responseType = cfo.responseType.value;
-    }
- 
   }
   
   const catResponse = Http_Query.get({
@@ -48,7 +37,10 @@ export function catFile(input: Input_catFile): ArrayBuffer {
     request: {
       headers,
       urlParams,
-      responseType,
+      // TODO - Add response type as parameter to CatFileOptions
+      // so response can be returned as string or binary data
+      // depends on https://github.com/Web3-API/monorepo/issues/246
+      responseType: Http_ResponseType.BINARY,
       body: null
     }
   });
@@ -57,5 +49,5 @@ export function catFile(input: Input_catFile): ArrayBuffer {
     throw new IpfsError("catFile", catResponse.status, catResponse.statusText);
   }
 
-  return decode(catResponse.body).buffer;
+  return decode(catResponse.body as string).buffer;
 }
