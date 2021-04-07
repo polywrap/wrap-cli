@@ -5,10 +5,12 @@ import { factoryAddress, minimumLiquidity } from "./index";
 import {
   Input_pairAddress,
   Input_pairInputAmount,
+  Input_pairInputNextPair,
   Input_pairLiquidityMinted,
   Input_pairLiquidityToken,
   Input_pairLiquidityValue,
   Input_pairOutputAmount,
+  Input_pairOutputNextPair,
   Input_pairReserves,
   Pair,
   Token,
@@ -225,9 +227,13 @@ export function pairInputNextPair(input: Input_pairInputNextPair): Pair {
     inTokenAmount = pair.tokenAmount0;
   }
   const biInTokenAmt = BigInt.fromString(inTokenAmount.amount);
-  const biOutTokenAmt = BigInt.fromString(outTokenAmount.amount)
-  const numerator: BigInt = biInTokenAmt.mul(tradeAmount).mul(BigInt.fromString("1000"));
-  const denominator: BigInt = biOutTokenAmt.sub(tradeAmount).mul(BigInt.fromString("997"));
+  const biOutTokenAmt = BigInt.fromString(outTokenAmount.amount);
+  const numerator: BigInt = biInTokenAmt
+    .mul(tradeAmount)
+    .mul(BigInt.fromString("1000"));
+  const denominator: BigInt = biOutTokenAmt
+    .sub(tradeAmount)
+    .mul(BigInt.fromString("997"));
   const resAmount: BigInt = numerator
     .div(denominator)
     .add(BigInt.fromString("1"));

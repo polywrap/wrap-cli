@@ -51,20 +51,20 @@ export class PriorityQueue<Key> {
     return this.compareTo(this.pq[i].value, this.pq[j].value) < 0;
   }
 
-  private exch(i: i32, j: i32) {
+  private exch(i: i32, j: i32): void {
     const t: Nullable<Key> = this.pq[i];
     this.pq[i] = this.pq[j];
     this.pq[j] = t;
   }
 
-  private swim(k: i32) {
+  private swim(k: i32): void {
     while (k > 1 && this.less(k / 2, k)) {
       this.exch(k / 2, k);
       k = k / 2;
     }
   }
 
-  private sink(k: i32) {
+  private sink(k: i32): void {
     while (2 * k <= this.n) {
       let j: i32 = 2 * k;
       if (j < this.n && this.less(j, j + 1)) j++;
