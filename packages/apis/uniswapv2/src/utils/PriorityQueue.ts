@@ -1,5 +1,3 @@
-import { Nullable } from "@web3api/wasm-as";
-
 /*
   Heap priority queue that sorts by max priority, determined by priority function comapareTo.
   compareTo is a sorting function that takes two values and returns:
@@ -10,20 +8,20 @@ import { Nullable } from "@web3api/wasm-as";
   It is assumed that any mutations of Key don't change sort order.
 */
 export class PriorityQueue<Key> {
-  private readonly pq: Nullable<Key>[];
+  private readonly pq: (Key | null)[];
   private n: i32 = 0;
   private readonly compareTo: (left: Key, right: Key) => i32;
 
-  constructor(comparator: (left: Key, right: Key) => i32, capacity: i32 = 8) {
-    this.pq = new Array<Nullable<Key>>(capacity + 1);
-    this.pq[0] = Nullable.fromNull();
+  constructor(comparator: (left: Key, right: Key) => i32, capacity: i32 = 0) {
+    this.pq = new Array<Key | null>(capacity + 1);
+    this.pq[0] = null; // 0 index must be null for heap tree math
     this.compareTo = comparator;
   }
 
   public toArray(): Key[] {
     return this.pq
-      .filter((v: Nullable<Key>) => !v.isNull)
-      .map((v: Nullable<Key>) => v.value);
+      .filter((v: Key | null) => v != null)
+      .map<Key>((v: Key | null) => v!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
   }
 
   public isEmpty(): boolean {
@@ -35,24 +33,26 @@ export class PriorityQueue<Key> {
   }
 
   public insert(v: Key): void {
-    this.pq[++this.n] = Nullable.fromValue(v);
-    this.swim(this.n);
+    this.pq.push(v);
+    this.swim(++this.n);
   }
 
-  public delMax(): Key {
-    const max: Key = this.pq[1].value;
+  public delMax(): Key | null {
+    if (this.n < 1) return null;
+    const max: Key | null = this.pq[1];
     this.exch(1, this.n--);
-    this.pq[this.n + 1] = Nullable.fromNull();
+    this.pq.pop();
     this.sink(1);
     return max;
   }
 
   private less(i: i32, j: i32): boolean {
-    return this.compareTo(this.pq[i].value, this.pq[j].value) < 0;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.compareTo(this.pq[i]!, this.pq[j]!) < 0;
   }
 
   private exch(i: i32, j: i32): void {
-    const t: Nullable<Key> = this.pq[i];
+    const t: Key | null = this.pq[i];
     this.pq[i] = this.pq[j];
     this.pq[j] = t;
   }

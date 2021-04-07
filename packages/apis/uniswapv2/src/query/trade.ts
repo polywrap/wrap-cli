@@ -1,5 +1,4 @@
 import {
-  BestTradeOptions,
   Pair,
   Token,
   TokenAmount,
@@ -13,37 +12,17 @@ import {
   Input_bestTradeExactIn,
   Input_bestTradeExactOut,
 } from "./w3";
-import { midPrice, routeMidPrice, routeOutput, routePath } from "./route";
+import { midPrice, routeMidPrice } from "./route";
 import Price from "../utils/Price";
-import {
-  pairInputAmount,
-  pairInputNextPair,
-  pairOutputAmount,
-  pairOutputNextPair,
-} from "./pair";
+import { pairInputAmount, pairOutputAmount } from "./pair";
 import Fraction from "../utils/Fraction";
 import { tokenAmountEquals, tokenEquals } from "./token";
 import { PriorityQueue } from "../utils/PriorityQueue";
+import { TradeOptions } from "../utils/TradeOptions";
+import { ProcessedTrade } from "../utils/ProcesssedTrade";
+import { TradeData } from "../utils/TradeData";
 
 import { BigInt } from "as-bigint";
-
-interface TradeData {
-  trade: Trade;
-  processedTrade: ProcessedTrade;
-}
-
-interface ProcessedTrade {
-  nextPairs: Pair[];
-  amounts: TokenAmount[];
-  inputAmount: TokenAmount;
-  outputAmount: TokenAmount;
-  tradeType: TradeType;
-}
-
-interface TradeOptions {
-  maxNumResults: u32;
-  maxHops: u32;
-}
 
 // TODO: handle unwrapped Ether
 // The average price that the trade would execute at.
@@ -51,7 +30,7 @@ export function tradeExecutionPrice(
   input: Input_tradeExecutionPrice
 ): TokenAmount {
   const trade: Trade = input.trade;
-  const processedTrade: ProcessedTrade = processTrade(trade);
+  const processedTrade: ProcessedTrade = new ProcessedTrade(trade);
   const executionPrice = new Price(
     processedTrade.inputAmount.token,
     processedTrade.outputAmount.token,
@@ -67,7 +46,7 @@ export function tradeExecutionPrice(
 // What the new mid price would be if the trade were to execute.
 export function tradeNextMidPrice(input: Input_tradeNextMidPrice): TokenAmount {
   const trade: Trade = input.trade;
-  const processedTrade: ProcessedTrade = processTrade(trade);
+  const processedTrade: ProcessedTrade = new ProcessedTrade(trade);
   const nextPairs: Pair[] = processedTrade.nextPairs;
   return routeMidPrice({
     route: { pairs: nextPairs, input: trade.route.input },
@@ -79,7 +58,7 @@ export function tradeNextMidPrice(input: Input_tradeNextMidPrice): TokenAmount {
 // result is a percent like 100.0%, not a decimal like 1.00, but there is no decimal point in the string
 export function tradeSlippage(input: Input_tradeSlippage): TokenAmount {
   const trade: Trade = input.trade;
-  const processedTrade: ProcessedTrade = processTrade(trade);
+  const processedTrade: ProcessedTrade = new ProcessedTrade(trade);
   const price: Price = midPrice(trade.route);
   // compute price impact
   const inputFraction: Fraction = new Fraction(
@@ -109,9 +88,9 @@ export function tradeMinimumAmountOut(
     throw new RangeError("slippage tolerance cannot be less than zero");
   }
   if (trade.tradeType == TradeType.EXACT_OUTPUT) {
-    return processTrade(trade).outputAmount;
+    return new ProcessedTrade(trade).outputAmount;
   } else {
-    const processedTrade = processTrade(trade);
+    const processedTrade = new ProcessedTrade(trade);
     const biOutAmt = BigInt.fromString(processedTrade.outputAmount.amount);
     const slippageAdjustedAmountOut = new Fraction(BigInt.ONE)
       .add(slippageTolerance)
@@ -135,9 +114,9 @@ export function tradeMaximumAmountIn(
     throw new RangeError("slippage tolerance cannot be less than zero");
   }
   if (trade.tradeType == TradeType.EXACT_INPUT) {
-    return processTrade(trade).inputAmount;
+    return new ProcessedTrade(trade).inputAmount;
   } else {
-    const processedTrade = processTrade(trade);
+    const processedTrade = new ProcessedTrade(trade);
     const biInputAmt = BigInt.fromString(processedTrade.inputAmount.amount);
     const slippageAdjustedAmountIn = new Fraction(BigInt.ONE)
       .add(slippageTolerance)
@@ -158,7 +137,7 @@ export function bestTradeExactIn(input: Input_bestTradeExactIn): Trade[] {
   const pairs: Pair[] = input.pairs;
   const amountIn: TokenAmount = input.amountIn;
   const tokenOut: Token = input.tokenOut;
-  const options: TradeOptions = processTradeOptions(input.options);
+  const options: TradeOptions = new TradeOptions(input.options);
   if (pairs.length == 0) {
     throw new Error("Pairs array is empty");
   }
@@ -173,7 +152,7 @@ export function bestTradeExactOut(input: Input_bestTradeExactOut): Trade[] {
   const pairs: Pair[] = input.pairs;
   const tokenIn: Token = input.tokenIn;
   const amountOut: TokenAmount = input.amountOut;
-  const options: TradeOptions = processTradeOptions(input.options);
+  const options: TradeOptions = new TradeOptions(input.options);
   if (pairs.length == 0) {
     throw new Error("Pairs array is empty");
   }
@@ -184,119 +163,6 @@ export function bestTradeExactOut(input: Input_bestTradeExactOut): Trade[] {
   return bestTrades.toArray().map<Trade>((v: TradeData) => v.trade);
 }
 
-// helper function for use in tradeExecutinPrice, tradeMidPrice, and tradeSlippage functions
-function processTrade(trade: Trade): ProcessedTrade {
-  const path: Token[] = routePath({ route: trade.route });
-  const amounts: TokenAmount[] = new Array(path.length);
-  const nextPairs: Pair[] = new Array(trade.route.pairs.length);
-  if (trade.tradeType == TradeType.EXACT_INPUT) {
-    if (trade.amount.token != trade.route.input) {
-      throw new Error(
-        "Trade input token must be the same as trade route input token"
-      );
-    }
-    amounts[0] = trade.amount;
-    for (let i = 0; i < path.length - 1; i++) {
-      const pair = trade.route.pairs[i];
-      const outputAmount: TokenAmount = pairOutputAmount({
-        pair: pair,
-        inputAmount: amounts[i],
-      });
-      const nextPair: Pair = pairOutputNextPair({
-        pair: pair,
-        inputAmount: amounts[i],
-      });
-      amounts[i + 1] = outputAmount;
-      nextPairs[i] = nextPair;
-    }
-  } else {
-    const routeOut: Token = routeOutput({ route: trade.route });
-    if (trade.amount.token != routeOut) {
-      throw new Error(
-        "Trade input token must be the same as trade route input token"
-      );
-    }
-    amounts[amounts.length - 1] = trade.amount;
-    for (let i = path.length - 1; i > 0; i--) {
-      const pair = trade.route.pairs[i - 1];
-      const inputAmount: TokenAmount = pairInputAmount({
-        pair: pair,
-        outputAmount: amounts[i],
-      });
-      const nextPair: Pair = pairInputNextPair({
-        pair: pair,
-        outputAmount: amounts[i],
-      });
-      amounts[i - 1] = inputAmount;
-      nextPairs[i - 1] = nextPair;
-    }
-  }
-  const inputAmount: TokenAmount =
-    trade.tradeType == TradeType.EXACT_INPUT ? trade.amount : amounts[0];
-  const outputAmount: TokenAmount =
-    trade.tradeType == TradeType.EXACT_OUTPUT
-      ? trade.amount
-      : amounts[amounts.length - 1];
-  return {
-    nextPairs: nextPairs,
-    amounts: amounts,
-    inputAmount: inputAmount,
-    outputAmount: outputAmount,
-    tradeType: trade.tradeType,
-  };
-}
-
-function processTradeOptions(options: BestTradeOptions | null): TradeOptions {
-  if (options == null) {
-    return {
-      maxNumResults: 3,
-      maxHops: 3,
-    };
-  } else {
-    const res = options.maxNumResults.isNull ? 3 : options.maxNumResults.value;
-    const hops = options.maxHops.isNull ? 3 : options.maxHops.value;
-    return {
-      maxNumResults: res,
-      maxHops: hops,
-    };
-  }
-}
-
-// trades with higher output and lower input have highest priority
-function tradeComparator(a: TradeData, b: TradeData): i32 {
-  const aInput = a.processedTrade.inputAmount;
-  const bInput = b.processedTrade.inputAmount;
-  if (tokenEquals({ token: aInput.token, other: bInput.token })) {
-    throw new Error("To be compared, trades must the same input token");
-  }
-  const aOutput = a.processedTrade.outputAmount;
-  const bOutput = b.processedTrade.outputAmount;
-  if (tokenEquals({ token: aOutput.token, other: bOutput.token })) {
-    throw new Error("To be compared, trades must the same output token");
-  }
-  const aOutputBI = BigInt.fromString(aOutput.amount);
-  const bOutputBI = BigInt.fromString(bOutput.amount);
-  const outCmp = aOutputBI.compareTo(bOutputBI);
-  if (outCmp == 0) {
-    const aInputBI = BigInt.fromString(aInput.amount);
-    const bInputBI = BigInt.fromString(bInput.amount);
-    const inCmp = aInputBI.compareTo(bInputBI);
-    if (inCmp == 0) {
-      return 0;
-    } else if (inCmp < 0) {
-      return 1;
-    } else {
-      return -1;
-    }
-  } else {
-    if (outCmp > 0) {
-      return 1;
-    } else {
-      return -1;
-    }
-  }
-}
-
 function _bestTradeExactIn(
   pairs: Pair[],
   amountIn: TokenAmount,
@@ -305,7 +171,7 @@ function _bestTradeExactIn(
   currentPairs: Pair[] = [],
   originalAmountIn: TokenAmount = amountIn,
   bestTrades: PriorityQueue<TradeData> = new PriorityQueue<TradeData>(
-    tradeComparator
+    TradeData.compare
   )
 ): PriorityQueue<TradeData> {
   const sameTokenAmount = tokenAmountEquals({
@@ -346,24 +212,19 @@ function _bestTradeExactIn(
         amount: originalAmountIn,
         tradeType: TradeType.EXACT_INPUT,
       };
-      bestTrades.insert({
-        trade: newTrade,
-        processedTrade: processTrade(newTrade),
-      });
+      bestTrades.insert(new TradeData(newTrade, new ProcessedTrade(newTrade)));
     } else if (options.maxHops > 1 && pairs.length > 1) {
       const amountOut: TokenAmount = pairOutputAmount({
         pair: pair,
         inputAmount: amountIn,
       });
       const otherPairs = pairs.slice(0, i).concat(pairs.slice(i + 1));
+      options.maxHops--;
       _bestTradeExactIn(
         otherPairs,
         amountOut,
         tokenOut,
-        {
-          maxNumResults: options.maxNumResults,
-          maxHops: options.maxHops - 1,
-        },
+        options,
         currentPairs.concat([pair]),
         originalAmountIn,
         bestTrades
@@ -381,7 +242,7 @@ function _bestTradeExactOut(
   currentPairs: Pair[] = [],
   originalAmountOut: TokenAmount = amountOut,
   bestTrades: PriorityQueue<TradeData> = new PriorityQueue<TradeData>(
-    tradeComparator
+    TradeData.compare
   )
 ): PriorityQueue<TradeData> {
   const sameTokenAmount = tokenAmountEquals({
@@ -422,24 +283,19 @@ function _bestTradeExactOut(
         amount: originalAmountOut,
         tradeType: TradeType.EXACT_OUTPUT,
       };
-      bestTrades.insert({
-        trade: newTrade,
-        processedTrade: processTrade(newTrade),
-      });
+      bestTrades.insert(new TradeData(newTrade, new ProcessedTrade(newTrade)));
     } else if (options.maxHops > 1 && pairs.length > 1) {
       const amountIn: TokenAmount = pairInputAmount({
         pair: pair,
         outputAmount: amountOut,
       });
       const otherPairs = pairs.slice(0, i).concat(pairs.slice(i + 1));
+      options.maxHops--;
       _bestTradeExactOut(
         otherPairs,
         tokenIn,
         amountIn,
-        {
-          maxNumResults: options.maxNumResults,
-          maxHops: options.maxHops - 1,
-        },
+        options,
         [pair].concat(currentPairs),
         originalAmountOut,
         bestTrades

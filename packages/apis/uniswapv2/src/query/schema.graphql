@@ -40,7 +40,7 @@ type Query {
   pairOutputNextPair(
     pair: Pair!
     inputAmount: TokenAmount!
-  ): TokenAmount!
+  ): Pair!
 
   pairInputAmount(
     pair: Pair!
@@ -50,7 +50,7 @@ type Query {
   pairInputNextPair(
     pair: Pair!
     outputAmount: TokenAmount!
-  ): TokenAmount!
+  ): Pair!
 
   pairLiquidityMinted(
     pair: Pair!
