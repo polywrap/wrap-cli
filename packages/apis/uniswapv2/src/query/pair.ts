@@ -44,8 +44,7 @@ export function pairLiquidityToken(input: Input_pairLiquidityToken): Token {
   });
 }
 
-// returns the reserve of token0
-// TODO: pairReserves seems unnecessary. It's basically a class getter method. Remove?
+// returns the reserves for [token0, token1]
 export function pairReserves(input: Input_pairReserves): TokenAmount[] {
   const pair: Pair = input.pair;
   return [pair.tokenAmount0, pair.tokenAmount1];

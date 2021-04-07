@@ -4,26 +4,8 @@ import Price from "../utils/Price";
 import { pairInputAmount, pairInputNextPair, pairOutputAmount, pairOutputNextPair } from "./pair";
 import { BigInt } from "as-bigint";
 import Fraction from "../utils/Fraction";
-import { tokenEquals } from "./token";
+import { tokenAmountEquals, tokenEquals } from "./token";
 import { PriorityQueue } from "../utils/PriorityQueue";
-
-/*
-type Route {
-  pairs: [Pair!]!
-  input: Token!
-}
-
-type Trade {
-  route: Route!
-  amount: TokenAmount!
-  tradeType: TradeType!
-}
-
-enum TradeType {
-  EXACT_INPUT
-  EXACT_OUTPUT
-}
-*/
 
 interface TradeData {
   trade: Trade;
@@ -128,11 +110,6 @@ export function tradeMaximumAmountIn(input: Input_tradeMaximumAmountIn): TokenAm
   }
 }
 
-// type BestTradeOptions {
-//   maxNumResults: UInt32
-//   maxHops: UInt32
-// }
-
 /* Given a list of pairs, a fixed amount in, and token amount out, this method
  returns the best maxNumResults trades that swap an input token amount to an
  output token, making at most maxHops hops. The returned trades are sorted by
@@ -158,72 +135,25 @@ export function bestTradeExactIn(input: Input_bestTradeExactIn): Trade[] {
   return bestTrades.toArray().map<Trade>((v: TradeData) => v.trade);
 }
 
-function _bestTradeExactIn(pairs: Pair[],
-                           amountIn: TokenAmount,
-                           tokenOut: Token,
-                           options: BestTradeOptions,
-                           currentPairs: Pair[] = [],
-                           originalAmountIn: TokenAmount = amountIn,
-                           bestTrades: PriorityQueue<TradeData> = new PriorityQueue<TradeData>(_tradeComparator)): PriorityQueue<TradeData> {
-  if (originalAmountIn != amountIn && currentPairs.length == 0) {
-    throw new Error("Recursion error: invariants are false");
-  }
-  for (let i = 0; i < pairs.length; i++) {
-    const pair = pairs[i];
-
-    const isToken0 = tokenEquals({ token: amountIn.token, other: pair.tokenAmount0.token });
-    const isToken1 = tokenEquals({ token: amountIn.token, other: pair.tokenAmount1.token });
-    if (!isToken0 && !isToken1) continue;
-
-    const biTokenAmt0 = BigInt.fromString(pair.tokenAmount0.amount);
-    const biTokenAmt1 = BigInt.fromString(pair.tokenAmount1.amount);
-    if (biTokenAmt0.eq(BigInt.ZERO) || biTokenAmt1.eq(BigInt.ZERO)) continue;
-    const biAmtIn = BigInt.fromString(amountIn.amount);
-    if (biAmtIn.eq(BigInt.ZERO)) continue;
-
-    const amountOut: TokenAmount = pairOutputAmount({ pair: pair, inputAmount: amountIn });
-    if (tokenEquals({ token: amountOut.token, other: tokenOut })) {
-      const newTrade: Trade = {
-        route: {
-          pairs: currentPairs.concat([pair]),
-          input: originalAmountIn.token,
-        },
-        amount: originalAmountIn,
-        tradeType: TradeType.EXACT_INPUT,
-      };
-      bestTrades.insert({
-        trade: newTrade,
-        processedTrade: processTrade(newTrade),
-      });
-    } else if (options.maxHops > 1 && pairs.length > 1) {
-      const otherPairs = pairs.slice(0, i).concat(pairs.slice(i + 1));
-      _bestTradeExactIn(
-        otherPairs,
-        amountOut,
-        tokenOut,
-        {
-          maxNumResults: options.maxNumResults,
-          maxHops: options.maxHops - 1,
-        },
-        currentPairs.concat([pair]),
-        originalAmountIn,
-        bestTrades
-      );
-    }
-  }
-  return bestTrades;
-}
-
 export function bestTradeExactOut(input: Input_bestTradeExactOut): Trade[] {
   const pairs: Pair[] = input.pairs;
   const tokenIn: Token = input.tokenIn;
   const amountOut: TokenAmount = input.amountOut;
-  const options: BestTradeOptions = input.options != null
+  const options: BestTradeOptions =
+    input.options != null
       ? input.options! // eslint-disable-line @typescript-eslint/no-non-null-assertion
       : {
         maxNumResults: 3,
         maxHops: 3,
       };
+  if (pairs.length == 0) {
+    throw new Error("Pairs array is empty");
+  }
+  if (options.maxHops == 0) {
+    throw new Error("maxHops must be greater than zero");
+  }
+  const bestTrades = _bestTradeExactOut(pairs, tokenIn, amountOut, options);
+  return bestTrades.toArray().map<Trade>((v: TradeData) => v.trade);
 }
 
 // helper function for use in tradeExecutinPrice, tradeMidPrice, and tradeSlippage functions
@@ -269,7 +199,7 @@ function processTrade(trade: Trade): ProcessedTrade {
 }
 
 // trades with higher output and lower input have highest priority
-function _tradeComparator(a: TradeData, b: TradeData): i32 {
+function tradeComparator(a: TradeData, b: TradeData): i32 {
   const aInput = a.processedTrade.inputAmount;
   const bInput = b.processedTrade.inputAmount;
   if (tokenEquals({ token: aInput.token, other: bInput.token })) {
@@ -301,4 +231,120 @@ function _tradeComparator(a: TradeData, b: TradeData): i32 {
       return -1;
     }
   }
+}
+
+function _bestTradeExactIn(pairs: Pair[],
+                           amountIn: TokenAmount,
+                           tokenOut: Token,
+                           options: BestTradeOptions,
+                           currentPairs: Pair[] = [],
+                           originalAmountIn: TokenAmount = amountIn,
+                           bestTrades: PriorityQueue<TradeData> = new PriorityQueue<TradeData>(tradeComparator)): PriorityQueue<TradeData> {
+  const sameTokenAmount = tokenAmountEquals({ tokenAmount0: originalAmountIn, tokenAmount1: amountIn });
+  if (!sameTokenAmount && currentPairs.length == 0) {
+    throw new Error("Recursion error: invariants are false");
+  }
+  for (let i = 0; i < pairs.length; i++) {
+    const pair = pairs[i];
+
+    const isToken0 = tokenEquals({ token: amountIn.token, other: pair.tokenAmount0.token });
+    const isToken1 = tokenEquals({ token: amountIn.token, other: pair.tokenAmount1.token });
+    if (!isToken0 && !isToken1) continue;
+
+    const biTokenAmt0 = BigInt.fromString(pair.tokenAmount0.amount);
+    const biTokenAmt1 = BigInt.fromString(pair.tokenAmount1.amount);
+    if (biTokenAmt0.eq(BigInt.ZERO) || biTokenAmt1.eq(BigInt.ZERO)) continue;
+    const biAmtIn = BigInt.fromString(amountIn.amount);
+    if (biAmtIn.eq(BigInt.ZERO)) continue;
+
+    const amountOutToken = isToken0 ? pair.tokenAmount1 : pair.tokenAmount0;
+    if (tokenEquals({ token: amountOutToken, other: tokenOut })) {
+      const newTrade: Trade = {
+        route: {
+          pairs: currentPairs.concat([pair]),
+          input: originalAmountIn.token,
+        },
+        amount: originalAmountIn,
+        tradeType: TradeType.EXACT_INPUT,
+      };
+      bestTrades.insert({
+        trade: newTrade,
+        processedTrade: processTrade(newTrade),
+      });
+    } else if (options.maxHops > 1 && pairs.length > 1) {
+      const amountOut: TokenAmount = pairOutputAmount({ pair: pair, inputAmount: amountIn });
+      const otherPairs = pairs.slice(0, i).concat(pairs.slice(i + 1));
+      _bestTradeExactIn(
+        otherPairs,
+        amountOut,
+        tokenOut,
+        {
+          maxNumResults: options.maxNumResults,
+          maxHops: options.maxHops - 1,
+        },
+        currentPairs.concat([pair]),
+        originalAmountIn,
+        bestTrades
+      );
+    }
+  }
+  return bestTrades;
+}
+
+function _bestTradeExactOut(pairs: Pair[],
+                           tokenIn: Token,
+                           amountOut: TokenAmount,
+                           options: BestTradeOptions,
+                           currentPairs: Pair[] = [],
+                           originalAmountOut: TokenAmount = amountOut,
+                           bestTrades: PriorityQueue<TradeData> = new PriorityQueue<TradeData>(tradeComparator)): PriorityQueue<TradeData> {
+  const sameTokenAmount = tokenAmountEquals({ tokenAmount0: originalAmountOut, tokenAmount1: amountOut });
+  if (!sameTokenAmount && currentPairs.length == 0) {
+    throw new Error("Recursion error: invariants are false");
+  }
+  for (let i = 0; i < pairs.length; i++) {
+    const pair = pairs[i];
+
+    const isToken0 = tokenEquals({ token: amountOut.token, other: pair.tokenAmount0.token });
+    const isToken1 = tokenEquals({ token: amountOut.token, other: pair.tokenAmount1.token });
+    if (!isToken0 && !isToken1) continue;
+
+    const biTokenAmt0 = BigInt.fromString(pair.tokenAmount0.amount);
+    const biTokenAmt1 = BigInt.fromString(pair.tokenAmount1.amount);
+    if (biTokenAmt0.eq(BigInt.ZERO) || biTokenAmt1.eq(BigInt.ZERO)) continue;
+    const biAmtOut = BigInt.fromString(amountOut.amount);
+    if (biAmtOut.eq(BigInt.ZERO)) continue;
+
+    const amountInToken = isToken0 ? pair.tokenAmount1 : pair.tokenAmount0;
+    if (tokenEquals({ token: amountInToken, other: tokenIn })) {
+      const newTrade: Trade = {
+        route: {
+          pairs: [pair].concat(currentPairs),
+          input: originalAmountOut.token,
+        },
+        amount: originalAmountOut,
+        tradeType: TradeType.EXACT_OUTPUT,
+      };
+      bestTrades.insert({
+        trade: newTrade,
+        processedTrade: processTrade(newTrade),
+      });
+    } else if (options.maxHops > 1 && pairs.length > 1) {
+      const amountIn: TokenAmount = pairInputAmount({ pair: pair, outputAmount: amountOut });
+      const otherPairs = pairs.slice(0, i).concat(pairs.slice(i + 1));
+      _bestTradeExactOut(
+        otherPairs,
+        tokenIn,
+        amountIn,
+        {
+          maxNumResults: options.maxNumResults,
+          maxHops: options.maxHops - 1,
+        },
+        [pair].concat(currentPairs),
+        originalAmountOut,
+        bestTrades
+      );
+    }
+  }
+  return bestTrades;
 }

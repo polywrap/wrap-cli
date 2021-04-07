@@ -8,6 +8,11 @@ type Query {
     other: Token!
   ): Boolean!
 
+  tokenAmountEquals(
+    tokenAmount0: TokenAmount!
+    tokenAmount1: TokenAmount!
+  ): Boolean!
+
   tokenSortsBefore(
     token: Token!
     other: Token!
