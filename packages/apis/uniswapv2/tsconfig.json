@@ -2,5 +2,6 @@
   "extends": "assemblyscript/std/assembly.json",
   "include": [
     "./src/**/*.ts"
-  ]
+  ],
+  "exclude": ["./src/__tests__/**/*.ts"]
 }

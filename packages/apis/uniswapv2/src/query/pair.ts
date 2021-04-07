@@ -57,14 +57,14 @@ export function pairReserves(input: Input_pairReserves): TokenAmount[] {
 export function pairOutputAmount(input: Input_pairOutputAmount): TokenAmount {
   const pair: Pair = input.pair;
   const tradeTokenAmount: TokenAmount = input.inputAmount;
-  return ProcessedPair.pairOutputFromExactInput(pair, tradeTokenAmount).amount;
+  return ProcessedPair.pairOutputForExactInput(pair, tradeTokenAmount).amount;
 }
 
 // Pricing function for exact input amounts. Returns next pair state, based on current reserves, if the trade were executed.
 export function pairOutputNextPair(input: Input_pairOutputNextPair): Pair {
   const pair: Pair = input.pair;
   const tradeTokenAmount: TokenAmount = input.inputAmount;
-  return ProcessedPair.pairOutputFromExactInput(pair, tradeTokenAmount).nextPair;
+  return ProcessedPair.pairOutputForExactInput(pair, tradeTokenAmount).nextPair;
 }
 
 // Pricing function for exact output amounts. Returns minimum input amount, based on current reserves, if the trade were executed.

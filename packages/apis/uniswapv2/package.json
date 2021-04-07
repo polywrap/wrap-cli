@@ -5,8 +5,8 @@
   "version": "0.0.1-prealpha.8",
   "scripts": {
     "build": "npx w3 build",
-    "test:as": "asp --verbose",
-    "test:ci": "asp --summary",
+    "test": "TEST=true jest --passWithNoTests --runInBand --verbose",
+    "test:ci": "TEST=true jest --passWithNoTests --runInBand --verbose",
     "test:env:up": "npx w3 test-env up",
     "test:env:down": "npx w3 test-env down"
   },
@@ -20,7 +20,6 @@
     "as-bigint": "^0.1.2"
   },
   "devDependencies": {
-    "@as-pect/cli": "5.0.1",
     "@uniswap/v2-core": "1.0.1",
     "@uniswap/v2-periphery": "1.1.0-beta.0",
     "@web3api/cli": "0.0.1-prealpha.11",

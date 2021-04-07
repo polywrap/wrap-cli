@@ -148,6 +148,9 @@ export function bestTradeExactIn(input: Input_bestTradeExactIn): Trade[] {
   return bestTrades.toArray().map<Trade>((v: TradeData) => v.trade);
 }
 
+/* Similar to the above method, but targets a fixed output token amount. The
+ returned trades are sorted by input amount, in increasing order, and all share
+ the given output amount. */
 export function bestTradeExactOut(input: Input_bestTradeExactOut): Trade[] {
   const pairs: Pair[] = input.pairs;
   const tokenIn: Token = input.tokenIn;

@@ -12,7 +12,7 @@ export class ProcessedPair {
     this.nextPair = nextPair;
   }
 
-  static pairOutputFromExactInput(
+  static pairOutputForExactInput(
     pair: Pair,
     tradeTokenAmount: TokenAmount
   ): ProcessedPair {

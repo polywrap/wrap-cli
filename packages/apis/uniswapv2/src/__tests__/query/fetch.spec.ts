@@ -1,110 +1,77 @@
-// import { createWeb3ApiClient } from "../";
-// import {
-//   buildAndDeployApi,
-//   initTestEnvironment,
-//   stopTestEnvironment
-// } from "@web3api/test-env-js";
-// import { GetPathToTestApis } from "@web3api/test-cases";
-//
-// jest.setTimeout(50000);
-//
-// describe("Web3ApiClient", () => {
-//   let ipfsProvider: string;
-//   let ethProvider: string;
-//   let ensAddress: string;
-//
-//   beforeAll(async () => {
-//     const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
-//     ipfsProvider = ipfs;
-//     ethProvider = ethereum;
-//     ensAddress = ens;
-//   });
-//
-//   afterAll(async () => {
-//     await stopTestEnvironment();
-//   });
-//
-//   it("simple-storage", async () => {
-//     const api = await buildAndDeployApi(
-//       `${GetPathToTestApis()}/simple-storage`,
-//       ipfsProvider,
-//       ensAddress
-//     );
-//
-//     const client = await createWeb3ApiClient({
-//       ethereum: { provider: ethProvider },
-//       ipfs: { provider: ipfsProvider },
-//       ens: { address: ensAddress }
-//     });
-//
-//     const ensUri = `ens/${api.ensDomain}`;
-//     const ipfsUri = `ipfs/${api.ipfsCid}`;
-//
-//     const deploy = await client.query<{
-//       deployContract: string;
-//     }>({
-//       uri: ensUri,
-//       query: `
-//         mutation {
-//           deployContract
-//         }
-//       `,
-//     });
-//
-//     expect(deploy.errors).toBeFalsy();
-//     expect(deploy.data).toBeTruthy();
-//     expect(deploy.data?.deployContract.indexOf("0x")).toBeGreaterThan(-1);
-//
-//     if (!deploy.data) {
-//       return;
-//     }
-//
-//     const address = deploy.data.deployContract;
-//     const set = await client.query<{
-//       setData: string;
-//     }>({
-//       uri: ipfsUri,
-//       query: `
-//         mutation {
-//           setData(
-//             address: "${address}"
-//             value: $value
-//           )
-//         }
-//       `,
-//       variables: {
-//         value: 55,
-//       },
-//     });
-//
-//     expect(set.errors).toBeFalsy();
-//     expect(set.data).toBeTruthy();
-//     expect(set.data?.setData.indexOf("0x")).toBeGreaterThan(-1);
-//
-//     const get = await client.query<{
-//       getData: number;
-//       secondGetData: number;
-//       thirdGetData: number;
-//     }>({
-//       uri: ensUri,
-//       query: `
-//         query {
-//           getData(
-//             address: "${address}"
-//           )
-//           secondGetData: getData(
-//             address: "${address}"
-//           )
-//           thirdGetData: getData(
-//             address: "${address}"
-//           )
-//         }
-//       `,
-//     });
-//
-//     expect(get.errors).toBeFalsy();
-//     expect(get.data).toBeTruthy();
-//     expect(get.data?.getData).toBe(55);
-//     expect(get.data?.secondGetData).toBe(55);
-//     expect(get.data?.thirdGetData).toBe(55);
-//   });
+import { buildAndDeployApi, initTestEnvironment, stopTestEnvironment } from "@web3api/test-env-js";
+import { createWeb3ApiClient, Web3ApiClient } from "@web3api/client-js";
+import { Token } from "../../query/w3";
+
+jest.setTimeout(50000);
+
+describe("Fetch", () => {
+  let client: Web3ApiClient;
+  let ensUri: string;
+  let ipfsUri: string;
+  let tokens: Token[] = [];
+
+  // set up test environment and client; build and deploy api
+  beforeAll(async () => {
+    const { ipfs: ipfsProvider, ethereum: ethProvider, ensAddress } = await initTestEnvironment();
+
+    client = await createWeb3ApiClient({
+      ethereum: { provider: ethProvider },
+      ipfs: { provider: ipfsProvider },
+      ens: { address: ensAddress }
+    });
+
+    const api = await buildAndDeployApi(
+      __dirname + "/../../../../uniswapv2",
+      ipfsProvider,
+      ensAddress
+    );
+
+    ensUri = `ens/${api.ensDomain}`;
+    ipfsUri = `ipfs/${api.ipfsCid}`;
+  });
+
+  // set up test case data
+  beforeAll(async () => {
+    // Testnet token list
+    // https://tokenlists.org/token-list?url=testnet.tokenlist.eth
+    await fetch("https://wispy-bird-88a7.uniswap.workers.dev/?url=http://testnet.tokenlist.eth.link")
+      .then(response => response.json() as Record<string, any>)
+      .then(json => json.tokens as Record<string, any>[])
+      .then(list => list.forEach(token => tokens.push({
+          chainId: token.chainId,
+          address: token.address,
+          decimals: null,
+          symbol: null,
+          name: null,
+        })));
+  });
+
+  afterAll(async () => {
+    await stopTestEnvironment();
+  });
+
+  it("Fetch token data", async () => {
+
+    const tokenData = await client.query<{
+      fetchTokenData: Token;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          fetchTokenData(
+            chainId: $chainId
+            address: $address
+          )
+        }
+      `,
+      variables: {
+        chainId: tokens[10].chainId,
+        address: tokens[10].address,
+      },
+    });
+
+    expect(tokenData.errors).toBeFalsy();
+    expect(tokenData.data).toBeTruthy();
+    console.log(tokenData.data);
+  });
+});
