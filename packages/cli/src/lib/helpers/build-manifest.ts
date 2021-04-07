@@ -13,14 +13,14 @@ export interface BuildManifest {
   env: {
     [key: string]: string | string[];
     ignorePaths: string[];
-    outputDir: string;
+    buildDir: string;
   };
 }
 
 export interface BuildVars {
   tempDir: string;
   dockerfile: string;
-  outputDir: string;
+  buildDir: string;
   args: string;
   outputImageName: string;
   ignorePaths: string[];
@@ -30,7 +30,10 @@ const BASE_DOCKERFILE_PATH = path.join(__dirname, "..", "env", "build-images");
 
 export type ModulesToBuild = "query" | "mutation" | "both";
 
-export const parseManifest = (modulesToBuild: ModuleName[]): BuildVars => {
+export const parseManifest = (
+  modulesToBuild: ModuleName[],
+  schemaAndManifestDir: string
+): BuildVars => {
   const doc = YAML.safeLoad(
     readFileSync("./web3api.build.yaml", "utf8")
   ) as BuildManifest;
@@ -45,6 +48,8 @@ export const parseManifest = (modulesToBuild: ModuleName[]): BuildVars => {
     throw new Error("No modules to build declared");
   }
 
+  doc.env.schemaManifestDir = schemaAndManifestDir;
+
   const { dockerfile, name: imageName } = doc.image;
 
   const tempDirPath = path.join(process.cwd(), ".w3", "build", imageName);
@@ -56,12 +61,16 @@ export const parseManifest = (modulesToBuild: ModuleName[]): BuildVars => {
     ? dockerfile
     : getDockerfilePathFromCatalog(dockerfile);
   const ignorePaths = doc.env.ignorePaths;
-  const outputDir = doc.env.outputDir;
+  const buildDir = doc.env.buildDir;
+
+  if (!buildDir) {
+    throw new Error("No build directory specified");
+  }
 
   return {
     tempDir: tempDirPath,
     dockerfile: dockerFilePath,
-    outputDir,
+    buildDir,
     args: buildArgsString,
     outputImageName: imageName,
     ignorePaths,

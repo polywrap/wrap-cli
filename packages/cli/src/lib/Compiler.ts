@@ -77,8 +77,8 @@ export class Compiler {
     });
   }
 
-  private async _validateExports(moduleName: ModuleName, outputDir: string) {
-    const wasmSource = readFileSync(path.join(outputDir, `${moduleName}.wasm`));
+  private async _validateExports(moduleName: ModuleName, buildDir: string) {
+    const wasmSource = readFileSync(path.join(buildDir, `${moduleName}.wasm`));
     const mod = await WebAssembly.compile(wasmSource);
     const memory = new WebAssembly.Memory({ initial: 1 });
     const instance = await WebAssembly.instantiate(mod, {
@@ -113,11 +113,12 @@ export class Compiler {
     {
       outputImageName,
       tempDir,
-      outputDir,
+      buildDir,
       dockerfile,
       ignorePaths,
       args,
     }: BuildVars,
+    outputDir: string,
     quiet = true
   ) {
     this._copySources({
@@ -139,8 +140,8 @@ export class Compiler {
       {
         tempDir,
         imageName: outputImageName,
-        source: outputDir, //build folder inside docker
-        destination: path.join(process.cwd(), outputDir),
+        source: buildDir,
+        destination: outputDir,
       },
       quiet
     );
@@ -205,20 +206,30 @@ export class Compiler {
         throw new Error("No modules to build declared");
       }
 
+      // Output the schema & manifest files
+      // TODO: where should these files be outputted to?
+      const schemaAndManifestDir = "./w3";
+
+      if (!fs.existsSync(schemaAndManifestDir)) {
+        fs.mkdirSync(schemaAndManifestDir);
+      }
+
+      const schemaPath = path.join(schemaAndManifestDir, "schema.graphql");
+      fs.writeFileSync(schemaPath, composed.combined, "utf-8");
+
+      const manifestPath = path.join(schemaAndManifestDir, "web3api.yaml");
+      await outputManifest(manifest, manifestPath);
+
+      // Parse build manifest
+
+      const buildVars = parseManifest(modulesToBuild, schemaAndManifestDir);
+
       await Promise.all(
         modulesToBuild.map((module) => generateModuleCode(module))
       );
 
-      const buildVars = parseManifest(modulesToBuild);
-      // Output the schema & manifest files
-      const schemaPath = `${outputDir}/schema.graphql`;
-      fs.writeFileSync(schemaPath, composed.combined, "utf-8");
-
-      const manifestPath = `${outputDir}/web3api.yaml`;
-      await outputManifest(manifest, manifestPath);
-
       // Build sources
-      await this._buildSourcesInDocker(buildVars, project.quiet);
+      await this._buildSourcesInDocker(buildVars, outputDir, project.quiet);
 
       // Validate exports
       await Promise.all(

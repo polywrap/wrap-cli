@@ -19,7 +19,7 @@ export function transformEnvToArgs(
   return Object.entries(env)
     .map(([key, value]) => {
       if (typeof value === "string") {
-        return `--build-arg ${key}=${value}`;
+        return `--build-arg ${key}="${value}"`;
       } else if (Array.isArray(value)) {
         return `--build-arg ${key}="${value.join(" ")}"`;
       } else {

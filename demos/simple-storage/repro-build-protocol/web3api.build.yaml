@@ -4,4 +4,4 @@ image:
 env:
   ignorePaths:
     - ./node_modules
-  outputDir: ./build
+  buildDir: ./dist
