@@ -2,7 +2,7 @@
   "name": "templates-plugin-typescript",
   "description": "Web3API Plugin Typescript Template",
   "private": true,
-  "version": "0.0.1-prealpha.10",
+  "version": "0.0.1-prealpha.12",
   "main": "build/index.js",
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.json",
@@ -12,7 +12,7 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@web3api/core-js": "0.0.1-prealpha.10"
+    "@web3api/core-js": "0.0.1-prealpha.12"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
