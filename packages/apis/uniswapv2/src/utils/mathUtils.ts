@@ -19,7 +19,7 @@ export function sqrt(y: u64): u64 {
 // https://medium.com/coinmonks/math-in-solidity-part-3-percents-and-proportions-4db014e080b1
 // slightly differs from uniswap implementation -> https://github.com/Uniswap/uniswap-lib/blob/master/contracts/libraries/FullMath.sol
 function fullMul(x: u64, y: u64): u64[] {
-  // TODO: the casts to u32 are intended to wrap around; solidity wraps around on overflow rather than throws
+  // the casts to u32 are intended to wrap around; solidity wraps around on overflow rather than throws
   const xl: u64 = <u32>x;
   const xh: u64 = x >> 128;
   const yl: u64 = <u32>y;
