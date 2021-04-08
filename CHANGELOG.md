@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.13
+## Features
+* Improved template projects that are used with the `w3 create ...` CLI command.
+
 # Web3API 0.0.1-prealpha.12
 ## Bug Fixes
 * Added schemas to plugin manifest modules, removing the need for `import_redirects`.
