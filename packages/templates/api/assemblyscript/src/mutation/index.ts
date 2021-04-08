@@ -1,5 +1,7 @@
-import { Ethereum_Mutation } from "./w3/imported";
-import { Input_setData } from "./w3";
+import {
+  Ethereum_Mutation,
+  Input_setData
+} from "./w3";
 import { abi, bytecode } from "../contracts/SimpleStorage";
 
 export function setData(input: Input_setData): string {
