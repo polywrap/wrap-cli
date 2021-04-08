@@ -1,0 +1,42 @@
+{
+  "name": "uniswapV2-api-assemblyscript",
+  "description": "UniswapV2 Web3API",
+  "private": true,
+  "version": "0.0.1-prealpha.8",
+  "scripts": {
+    "build": "npx w3 build",
+    "test": "TEST=true jest --passWithNoTests --runInBand --verbose",
+    "test:ci": "TEST=true jest --passWithNoTests --runInBand --verbose",
+    "test:env:up": "npx w3 test-env up",
+    "test:env:down": "npx w3 test-env down"
+  },
+  "workspaces": {
+    "nohoist": [
+      "assemblyscript",
+      "assemblyscript/**"
+    ]
+  },
+  "dependencies": {
+    "as-bigint": "^0.1.2"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@types/jest": "26.0.8",
+    "@types/node": "12.6.9",
+    "@uniswap/v2-core": "1.0.1",
+    "@uniswap/v2-periphery": "1.1.0-beta.0",
+    "@web3api/cli": "0.0.1-prealpha.12",
+    "@web3api/client-js": "0.0.1-prealpha.12",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.12",
+    "@web3api/test-env-js": "0.0.1-prealpha.12",
+    "@web3api/wasm-as": "0.0.1-prealpha.12",
+    "assemblyscript": "0.17.14",
+    "hardhat": "^2.1.2",
+    "jest": "26.6.3",
+    "js-yaml": "3.14.0",
+    "rimraf": "3.0.2",
+    "ts-jest": "26.5.4",
+    "typescript": "4.0.7",
+    "ts-node": "8.10.2"
+  }
+}

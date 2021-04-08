@@ -1,3 +1,9 @@
+# Web3API 0.0.1-prealpha.12
+## Bug Fixes
+* Added schemas to plugin manifest modules, removing the need for `import_redirects`.
+* Fixed the IpfsPlugin's `addFile` method.
+* Improved the api/assemblyscript template project.
+
 # Web3API 0.0.1-prealpha.11
 ## Bug Fixes
 * `@web3api/cli`: Include the internationalization JSON files in the published package.

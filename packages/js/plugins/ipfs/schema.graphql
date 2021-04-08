@@ -17,12 +17,7 @@ type Query {
 type Mutation {
   # TODO: Allow for custom type CID
   # https://github.com/web3-api/monorepo/issues/103
-  addFile(data: Bytes!): AddResult!
-}
-
-type AddResult {
-  path: String!
-  cid: String!
+  addFile(data: Bytes!): String!
 }
 
 # TODO: should get replaced with an import

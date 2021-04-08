@@ -1,0 +1,198 @@
+#import { Query } into Ethereum from "w3://ens/ethereum.web3api.eth"
+
+type Query {
+
+  # Token
+  tokenEquals(
+    token: Token!
+    other: Token!
+  ): Boolean!
+
+  tokenAmountEquals(
+    tokenAmount0: TokenAmount!
+    tokenAmount1: TokenAmount!
+  ): Boolean!
+
+  tokenSortsBefore(
+    token: Token!
+    other: Token!
+  ): Boolean!
+
+  # Pair
+  pairAddress(
+    token0: Token!
+    token1: Token!
+  ): String!
+
+  pairLiquidityToken(
+    pair: Pair!
+  ): Token!
+
+  pairReserves(
+    pair: Pair!
+  ): [TokenAmount!]! # [Uint256!]!
+
+  pairOutputAmount(
+    pair: Pair!
+    inputAmount: TokenAmount!
+  ): TokenAmount!
+
+  pairOutputNextPair(
+    pair: Pair!
+    inputAmount: TokenAmount!
+  ): Pair!
+
+  pairInputAmount(
+    pair: Pair!
+    outputAmount: TokenAmount!
+  ): TokenAmount!
+
+  pairInputNextPair(
+    pair: Pair!
+    outputAmount: TokenAmount!
+  ): Pair!
+
+  pairLiquidityMinted(
+    pair: Pair!
+    totalSupply: TokenAmount!
+    tokenAmount0: TokenAmount!
+    tokenAmount1: TokenAmount!
+  ): TokenAmount
+
+  pairLiquidityValue(
+    pair: Pair!
+    totalSupply: TokenAmount!
+    liquidity: TokenAmount!
+    feeOn: Boolean
+    kLast: String # Uint256
+  ): [TokenAmount!]!
+
+  # Route
+  routePath(
+    route: Route!
+  ): [Token!]!
+
+  routeOutput(
+    route: Route!
+  ): Token!
+
+  routeMidPrice(
+    route: Route!
+  ): TokenAmount!
+
+  # Trade
+  tradeExecutionPrice(
+    trade: Trade!
+  ): TokenAmount!
+
+  tradeNextMidPrice(
+    trade: Trade!
+  ): TokenAmount!
+
+  tradeSlippage(
+    trade: Trade!
+  ): TokenAmount!
+
+  tradeMinimumAmountOut(
+    trade: Trade!
+    slippageTolerance: String! # Float32!
+  ): TokenAmount!
+
+  tradeMaximumAmountIn(
+    trade: Trade!
+    slippageTolerance: String! # Float32!
+  ): TokenAmount!
+
+  bestTradeExactIn(
+    pairs: [Pair!]!
+    amountIn: TokenAmount!
+    tokenOut: Token!
+    options: BestTradeOptions
+  ): [Trade!]!
+
+  bestTradeExactOut(
+    pairs: [Pair!]!
+    tokenIn: Token!
+    amountOut: TokenAmount!
+    options: BestTradeOptions
+  ): [Trade!]!
+
+  # Fetch
+  fetchTokenData(
+    chainId: ChainId!
+    address: String!
+    symbol: String
+    name: String
+  ): Token!
+
+  fetchPairData(
+    token0: Token!
+    token1: Token!
+  ): Pair!
+
+  fetchTotalSupply(
+    token: Token!
+  ): TokenAmount!
+
+  fetchKLast(
+    token: Token!
+  ): String! # Uint256!
+
+  # Constants
+  factoryAddress: String!
+  initCodeHash: String!
+  minimumLiquidity: UInt32!
+}
+
+enum ChainId {
+  MAINNET
+  ROPSTEN
+  RINKEBY
+  GOERLI
+  KOVAN
+}
+
+type Token {
+  chainId: ChainId!
+  address: String!
+  decimals: UInt8!
+  symbol: String
+  name: String
+}
+
+type TokenAmount {
+  token: Token!
+  amount: String! # UInt256!
+}
+
+type Pair {
+  tokenAmount0: TokenAmount!
+  tokenAmount1: TokenAmount!
+}
+
+type Route {
+  pairs: [Pair!]!
+  input: Token!
+}
+
+type Trade {
+  route: Route!
+  amount: TokenAmount!
+  tradeType: TradeType!
+}
+
+enum TradeType {
+  EXACT_INPUT
+  EXACT_OUTPUT
+}
+
+enum Rounding {
+  ROUND_DOWN
+  ROUND_HALF_UP
+  ROUND_UP
+}
+
+type BestTradeOptions {
+  maxNumResults: UInt32
+  maxHops: UInt32
+}
