@@ -1,14 +1,23 @@
+/* eslint-disable prefer-const */
+import { GluegunToolbox, print } from "gluegun";
+import axios from "axios";
+import chalk from "chalk";
+
+import { CodeGenerator, Compiler, Project, SchemaComposer } from "../lib";
 import { fixParameters } from "../lib/helpers";
 import { intlMsg } from "../lib/intl";
 
-import { GluegunToolbox, print } from "gluegun";
-import chalk from "chalk";
-
+export const defaultGenerationFile = "web3api.gen.js";
 export const supportedLangs: { [key: string]: string[] } = {
   build: ["typescript"],
   codegen: ["typescript"],
 };
+export const defaultManifest = ["web3api.yaml", "web3api.yml"];
 
+const genFileOp = intlMsg
+  .commands_plugin_options_genFile()
+  .toLowerCase()
+  .replace(" ", "-");
 const cmdStr = intlMsg.commands_plugin_options_command();
 const optionsStr = intlMsg.commands_options_options();
 const langsStr = intlMsg.commands_plugin_options_langs();
@@ -16,9 +25,14 @@ const langStr = intlMsg.commands_plugin_options_lang();
 const buildStr = intlMsg.commands_plugin_options_build();
 const codegenStr = intlMsg.commands_plugin_options_codegen();
 const pathStr = intlMsg.commands_plugin_options_path();
+const defaultManifestStr = defaultManifest.join(" | ");
+const nodeStr = intlMsg.commands_plugin_options_i_node();
+const addrStr = intlMsg.commands_plugin_options_e_address();
 
 const HELP = `
-${chalk.bold("w3 plugin")} ${cmdStr} [${optionsStr}]
+${chalk.bold("w3 plugin")} ${cmdStr} ${chalk.bold(
+  `[<${genFileOp}>]`
+)} [${optionsStr}]
 
 Commands:
   ${chalk.bold("build")} <${langStr}>     ${buildStr}
@@ -26,31 +40,48 @@ Commands:
   ${chalk.bold("codegen")} <${langStr}>   ${codegenStr}
     ${langsStr}: ${supportedLangs.codegen.join(", ")}
 
+${intlMsg.commands_plugin_options_genFile()}:
+  ${intlMsg.commands_plugin_options_genFilePath()}: ${defaultGenerationFile})
+
 Options:
   -h, --help                        ${intlMsg.commands_plugin_options_h()}
+  -m, --manifest-path <${pathStr}>  ${intlMsg.commands_plugin_options_m()}: ${defaultManifestStr})
   -s, --output-schema <${pathStr}>  ${intlMsg.commands_plugins_options_schema()}
   -t, --output-types <${pathStr}>   ${intlMsg.commands_plugins_options_types()}
+  -i, --ipfs [<${nodeStr}>]         ${intlMsg.commands_plugin_options_i()}
+  -e, --ens [<${addrStr}>]          ${intlMsg.commands_plugin_options_e()}
 `;
 
 export default {
   alias: ["p"],
   description: intlMsg.commands_plugin_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { parameters } = toolbox;
+    const { filesystem, parameters } = toolbox;
 
     // Options
-    let { help, outputSchema, outputTypes } = parameters.options;
-    const { h, s, t } = parameters.options;
+    let {
+      help,
+      manifestPath,
+      outputSchema,
+      outputTypes,
+      ipfs,
+      ens,
+    } = parameters.options;
+    const { h, m, s, t, i, e } = parameters.options;
 
     help = help || h;
+    manifestPath = manifestPath || m;
     outputSchema = outputSchema || s;
     outputTypes = outputTypes || t;
+    ipfs = ipfs || i;
+    ens = ens || e;
 
-    let type = "";
-    let lang = "";
+    let type = "",
+      lang = "",
+      generationFile = "";
     try {
       const params = parameters;
-      [type, lang] = fixParameters(
+      [type, lang, generationFile] = fixParameters(
         {
           options: params.options,
           array: params.array,
@@ -119,6 +150,86 @@ export default {
       print.error(outputTypesMissingPathMessage);
       print.info(HELP);
       return;
+    }
+
+    if (ens === true) {
+      const domStr = intlMsg.commands_plugin_error_domain();
+      const ensAddressMissingMessage = intlMsg.commands_build_error_testEnsAddressMissing(
+        {
+          option: "--ens",
+          argument: `<[${addrStr},]${domStr}>`,
+        }
+      );
+      print.error(ensAddressMissingMessage);
+      print.info(HELP);
+      return;
+    }
+
+    let ipfsProvider: string | undefined;
+    let ethProvider: string | undefined;
+    let ensAddress: string | undefined = ens;
+
+    if (typeof ipfs === "string") {
+      // Custom IPFS provider
+      ipfsProvider = ipfs;
+    } else if (ipfs) {
+      // Dev-server IPFS provider
+      try {
+        const {
+          data: { ipfs, ethereum },
+        } = await axios.get("http://localhost:4040/providers");
+        ipfsProvider = ipfs;
+        ethProvider = ethereum;
+      } catch (e) {
+        // Dev server not found
+      }
+    }
+
+    manifestPath =
+      (manifestPath && filesystem.resolve(manifestPath)) ||
+      ((await filesystem.existsAsync(defaultManifest[0]))
+        ? filesystem.resolve(defaultManifest[0])
+        : filesystem.resolve(defaultManifest[1]));
+    outputSchema = outputSchema && filesystem.resolve(outputSchema);
+    outputTypes = outputTypes && filesystem.resolve(outputTypes);
+
+    const project = new Project({
+      manifestPath,
+    });
+
+    const schemaComposer = new SchemaComposer({
+      project,
+      ipfsProvider,
+      ethProvider,
+      ensAddress,
+    });
+
+    if (type == "codegen") {
+    }
+    let result = false;
+    if (generationFile) {
+      const codeGenerator = new CodeGenerator({
+        project,
+        schemaComposer,
+        generationFile,
+        outputDir: outputTypes || filesystem.path("types"),
+      });
+
+      result = await codeGenerator.generate();
+    } else {
+      const compiler = new Compiler({
+        project,
+        outputDir: outputSchema || filesystem.path("build"),
+        schemaComposer,
+      });
+
+      result = await compiler.codegen();
+    }
+
+    if (result) {
+      process.exitCode = 0;
+    } else {
+      process.exitCode = 1;
     }
   },
 };
