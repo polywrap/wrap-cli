@@ -21,7 +21,7 @@ import {
 } from "@web3api/core-js";
 
 export interface ClientConfig<TUri = string> {
-  redirects: UriRedirect<TUri>[];
+  redirects?: UriRedirect<TUri>[];
 }
 
 export class Web3ApiClient implements Client {
@@ -36,7 +36,7 @@ export class Web3ApiClient implements Client {
     if (config) {
       this._config = {
         ...config,
-        redirects: sanitizeUriRedirects(config.redirects),
+        redirects: config.redirects ? sanitizeUriRedirects(config.redirects) : [],
       };
     } else {
       this._config = {
@@ -44,12 +44,16 @@ export class Web3ApiClient implements Client {
       };
     }
 
+    if (!this._config.redirects) {
+      this._config.redirects = [];
+    }
+
     // Add all default redirects (IPFS, ETH, ENS)
     this._config.redirects.push(...getDefaultRedirects());
   }
 
   public redirects(): readonly UriRedirect<Uri>[] {
-    return this._config.redirects;
+    return this._config.redirects || [];
   }
 
   public async query<

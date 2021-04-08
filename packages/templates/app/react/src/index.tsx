@@ -1,17 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import App from "./App";
-import { createWeb3ApiProvider } from "@web3api/react";
-import { redirects } from "./redirects";
-
-const HelloWorldProvider = createWeb3ApiProvider("helloWorld");
+import { App } from "./App";
 
 ReactDOM.render(
-  <HelloWorldProvider redirects={redirects}>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  </HelloWorldProvider>,
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
   document.getElementById("root")
 );
