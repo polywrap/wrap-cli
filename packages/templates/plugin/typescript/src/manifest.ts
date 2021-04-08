@@ -5,11 +5,11 @@ export const manifest: PluginManifest = {
   // https://github.com/web3-api/monorepo/issues/101
   schema: `
 type Query {
-  sampleQuery(query: String!): String!
+  sampleQuery(data: String!): String!
 }
 
 type Mutation {
-  sampleMutation(data: Bytes!): SampleResult!
+  sampleMutation(data: Bytes!): Boolean!
 }`,
   implemented: [],
   imported: [],
