@@ -2,7 +2,7 @@
   "name": "templates-app-react",
   "description": "Web3API dApp React Template",
   "private": true,
-  "version": "0.0.1-prealpha.11",
+  "version": "0.0.1-prealpha.12",
   "workspaces": {
     "nohoist": [
       "react-scripts",
