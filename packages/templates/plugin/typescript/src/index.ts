@@ -33,7 +33,7 @@ export class SamplePlugin extends Plugin {
   }
 
   public sampleMutation(data: Uint8Array): boolean {
-    return data.length > 0
+    return data.length > 0;
   }
 }
 
