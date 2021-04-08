@@ -27,7 +27,7 @@ const App: FC = () => {
     uri: "ens/helloworld.eth",
     query: `query { 
         logMessage(
-            message: ${message} 
+            message: "${message}"
         )
      }`,
   });
