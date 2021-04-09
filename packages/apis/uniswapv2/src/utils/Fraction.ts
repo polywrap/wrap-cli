@@ -19,7 +19,7 @@ export default class Fraction {
     const numerator = BigInt.fromString(
       decimalNumber.substring(0, index) + decimalNumber.substring(index + 1)
     );
-    const e: i32 = decimalNumber.length - index + 1;
+    const e: i32 = decimalNumber.length - index - 1;
     let denomStr = "1";
     for (let i = 0; i < e; i++) {
       denomStr += "0";
