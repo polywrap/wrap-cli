@@ -2,9 +2,17 @@
 import { query, mutation } from "./resolvers";
 import { manifest } from "./manifest";
 import {
+  Connection as ConnectionOverride
+} from "./types";
+import {
   Address,
+  AccountIndex,
+  EthereumSigner,
+  EthereumProvider,
   Connection,
-  ConnectionConfig
+  Connections,
+  ConnectionConfig,
+  ConnectionConfigs
 } from "./Connection";
 
 import {
@@ -16,15 +24,43 @@ import {
 } from "@web3api/core-js";
 import { ethers } from "ethers";
 
-export interface EthereumConfig extends ConnectionConfig { }
+// Export all types that are nested inside of EthereumConfig.
+// This is required for the extractPluginConfigs.ts script.
+export {
+  Address,
+  AccountIndex,
+  EthereumSigner,
+  EthereumProvider,
+  ConnectionConfig,
+  ConnectionConfigs
+};
+
+export type EthereumConfig = ConnectionConfigs & {
+  defaultNetwork?: string;
+};
 
 export class EthereumPlugin extends Plugin {
 
-  private _connection: Connection;
+  private _connections: Connections;
+  private _defaultNetwork: string;
 
   constructor(config: EthereumConfig) {
     super();
-    this._connection = new Connection(config)
+    this._connections = Connection.fromConfigs(config);
+
+    // Assign the default network (mainnet if not provided)
+    if (config.defaultNetwork) {
+      this._defaultNetwork = config.defaultNetwork;
+    } else {
+      this._defaultNetwork = "mainnet";
+    }
+
+    // Create a connection for the default network if none exists
+    if (!this._connections[this._defaultNetwork]) {
+      this._connections[this._defaultNetwork] = Connection.fromNetwork(
+        this._defaultNetwork
+      );
+    }
   }
 
   public static manifest(): PluginManifest {
@@ -44,9 +80,9 @@ export class EthereumPlugin extends Plugin {
     abi: ethers.ContractInterface,
     bytecode: string,
     args: string[],
-    connectionOverride?: Connection
+    connectionOverride?: ConnectionOverride
   ): Promise<Address> {
-    let connection = connectionOverride || this._connection;
+    const connection = await this.getConnection(connectionOverride);
     const signer = connection.getSigner();
     const factory = new ethers.ContractFactory(abi, bytecode, signer);
     const contract = await factory.deploy(...args);
@@ -58,10 +94,10 @@ export class EthereumPlugin extends Plugin {
     address: Address,
     method: string,
     args: string[],
-    connectionOverride?: Connection
+    connectionOverride?: ConnectionOverride
   ): Promise<string> {
-    let connection = connectionOverride || this._connection;
-    let contract = connection.getContract(address, [method], false);
+    const connection = await this.getConnection(connectionOverride);
+    const contract = connection.getContract(address, [method], false);
     const funcs = Object.keys(contract.interface.functions);
     const res = await contract[funcs[0]](...args);
     return res.toString();
@@ -71,15 +107,57 @@ export class EthereumPlugin extends Plugin {
     address: Address,
     method: string,
     args: string[],
-    connectionOverride?: Connection
+    connectionOverride?: ConnectionOverride
   ): Promise<string> {
-    let connection = connectionOverride || this._connection;
+    const connection = await this.getConnection(connectionOverride);
     const contract = connection.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
     const tx = await contract[funcs[0]](...args);
     const res = await tx.wait();
     // TODO: improve this
     return res.transactionHash;
+  }
+
+  public async getConnection(connectionOverride?: ConnectionOverride): Promise<Connection> {
+    if (!connectionOverride) {
+      return this._connections[this._defaultNetwork];
+    }
+
+    const { network, node } = connectionOverride;
+    let connection: Connection;
+
+    // If a custom network is provided, either get an already
+    // established connection, or a create a new one
+    if (network) {
+      const networkish = network.chainId || network.name || 0;
+      connection = Connection.fromNetwork(networkish);
+    } else {
+      connection = this._connections[this._defaultNetwork];
+    }
+
+    // If a custom node endpoint is provided, create a combined
+    // connection with the node's endpoint and a connection's signer
+    // (if one exists for the network)
+    if (node) {
+      const nodeConnection = Connection.fromNode(node);
+      const nodeNetwork = await nodeConnection.getProvider().getNetwork();
+
+      const establishedConnection =
+        this._connections[nodeNetwork.chainId.toString()] ||
+        this._connections[nodeNetwork.name];
+
+      if (establishedConnection) {
+        try {
+          nodeConnection.setSigner(
+            establishedConnection.getSigner()
+          );
+        } catch (e) { }
+      }
+
+      connection = nodeConnection;
+    }
+
+    return connection;
   }
 }
 

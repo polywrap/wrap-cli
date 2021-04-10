@@ -62,6 +62,8 @@ export class EnsPlugin extends Plugin {
       content: "function content(bytes32 nodehash) view returns (bytes32)",
     };
 
+    // TODO: default to mainnet
+    // TODO: support chainId + network names
     // Remove the ENS URI scheme & authority
     domain = domain.replace("w3://", "");
     domain = domain.replace("ens/", "");
@@ -71,12 +73,6 @@ export class EnsPlugin extends Plugin {
     const hasNetwork = /^[A-Za-z0-9]+\//i.exec(domain);
     if (hasNetwork) {
       network = domain.substring(0, domain.indexOf("/"));
-      const knownNetworks = /^(homestead|mainnet|ropsten|kovan|rinkeby|goerli|testnet)$/i;
-      if (!knownNetworks.exec(network)) {
-        throw Error(
-          `Unrecognized network "${network}" does not match known networks: homestead, mainnet, ropsten, kovan, rinkeby, goerli, testnet`
-        );
-      }
       domain = domain.replace(network + "/", "");
       ensAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
     }

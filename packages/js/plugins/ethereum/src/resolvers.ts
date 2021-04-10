@@ -1,6 +1,5 @@
 import { EthereumPlugin } from ".";
-import { Connection as SchemaConnection } from "./types";
-import { Connection } from "./Connection";
+import { Connection as ConnectionOverride } from "./types";
 
 import { PluginModule } from "@web3api/core-js";
 
@@ -9,15 +8,13 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
     address: string;
     method: string;
     args?: string[];
-    connection?: SchemaConnection;
+    connection?: ConnectionOverride;
   }) => {
     return await ethereum.sendTransaction(
       input.address,
       input.method,
       input.args || [],
       input.connection
-        ? Connection.fromSchemaConnection(input.connection)
-        : undefined
     );
   },
 
@@ -25,15 +22,13 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
     abi: string;
     bytecode: string;
     args?: string[];
-    connection?: SchemaConnection;
+    connection?: ConnectionOverride;
   }) => {
     return await ethereum.deployContract(
       input.abi,
       input.bytecode,
       input.args || [],
       input.connection
-        ? Connection.fromSchemaConnection(input.connection)
-        : undefined
     );
   },
 });
@@ -43,15 +38,13 @@ export const query = (ethereum: EthereumPlugin): PluginModule => ({
     address: string;
     method: string;
     args?: string[];
-    connection?: SchemaConnection;
+    connection?: ConnectionOverride;
   }) => {
     return await ethereum.callView(
       input.address,
       input.method,
       input.args || [],
       input.connection
-        ? Connection.fromSchemaConnection(input.connection)
-        : undefined
     );
   },
 });

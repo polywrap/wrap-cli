@@ -21,6 +21,14 @@ export interface ConnectionConfig {
   signer?: EthereumSigner;
 }
 
+export interface ConnectionConfigs {
+  [network: string]: ConnectionConfig;
+}
+
+export interface Connections {
+  [network: string]: Connection;
+}
+
 export class Connection {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -34,30 +42,28 @@ export class Connection {
     this.setProvider(provider, signer !== undefined ? signer : 0);
   }
 
-  static fromSchemaConnection(config: SchemaConnection): Connection {
-    if (config.network) {
-      if (!config.network.chainId && !config.network.name) {
-        throw Error(
-          `fromSchemaConnection: Network config must have chainId or name defined`
-        );
-      }
+  static fromConfigs(configs: ConnectionConfigs): Connections {
+    const connections: Connections = { };
 
-      const networkish: Networkish = config.network.chainId || config.network.name || 0;
-
-      return new Connection({
-        provider: ethers.providers.getDefaultProvider(
-          ethers.providers.getNetwork(networkish)
-        ) as JsonRpcProvider
-      });
-    } else if (config.node) {
-      return new Connection({
-        provider: config.node
-      })
-    } else {
-      throw Error(
-        `fromSchemaConnection: Connection config must have network or node defined`
-      )
+    for (const network of Object.keys(configs)) {
+      connections[network] = new Connection(configs[network]);
     }
+
+    return connections;
+  }
+
+  static fromNetwork(networkish: Networkish) {
+    return new Connection({
+      provider: ethers.providers.getDefaultProvider(
+        ethers.providers.getNetwork(networkish)
+      ) as JsonRpcProvider
+    });
+  }
+
+  static fromNode(node: string) {
+    return new Connection({
+      provider: node
+    });
   }
 
   public setProvider(
@@ -81,6 +87,10 @@ export class Connection {
     if (signer !== undefined) {
       this.setSigner(signer);
     }
+  }
+
+  public getProvider(): EthereumClient {
+    return this._client;
   }
 
   public setSigner(signer: EthereumSigner): void {

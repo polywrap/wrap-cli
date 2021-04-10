@@ -31,8 +31,8 @@ const plugins: PluginConfigSource[] = [
     file: "build/index.d.ts",
     uri: "w3://ens/ethereum.web3api.eth",
     config: "EthereumConfig",
-    interfaces: ["EthereumConfig"],
-    types: ["EthereumProvider", "EthereumSigner", "AccountIndex", "Address"],
+    interfaces: ["ConnectionConfig", "ConnectionConfigs"],
+    types: ["EthereumConfig", "EthereumProvider", "EthereumSigner", "AccountIndex", "Address"],
     externals: [
       {
         type: "Signer",
@@ -40,6 +40,10 @@ const plugins: PluginConfigSource[] = [
       },
       {
         type: "ExternalProvider",
+        module: "@ethersproject/providers"
+      },
+      {
+        type: "JsonRpcProvider",
         module: "@ethersproject/providers"
       }
     ]
