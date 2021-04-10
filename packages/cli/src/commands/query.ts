@@ -82,7 +82,11 @@ export default {
     const redirects: UriRedirect[] = [
       {
         from: "w3://ens/ethereum.web3api.eth",
-        to: ethereumPlugin({ provider: ethereumProvider }),
+        to: ethereumPlugin({
+          testnet: {
+            provider: ethereumProvider
+          }
+        }),
       },
       {
         from: "w3://ens/ipfs.web3api.eth",
@@ -90,7 +94,11 @@ export default {
       },
       {
         from: "w3://ens/ens.web3api.eth",
-        to: ensPlugin({ address: ensAddress }),
+        to: ensPlugin({
+          addresses: {
+            testnet: ensAddress
+          }
+        }),
       },
     ];
 
