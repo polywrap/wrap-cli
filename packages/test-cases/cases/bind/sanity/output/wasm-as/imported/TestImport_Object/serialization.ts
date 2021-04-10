@@ -24,7 +24,7 @@ export function writeTestImport_Object(writer: Write, type: TestImport_Object): 
   Types.TestImport_AnotherObject.write(writer, type.object);
   writer.writeString("optObject");
   if (type.optObject) {
-    Types.TestImport_AnotherObject.write(writer, type.optObject);
+    Types.TestImport_AnotherObject.write(writer, type.optObject as Types.TestImport_AnotherObject);
   } else {
     writer.writeNil();
   }
@@ -35,7 +35,7 @@ export function writeTestImport_Object(writer: Write, type: TestImport_Object): 
   writer.writeString("optObjectArray");
   writer.writeNullableArray(type.optObjectArray, (writer: Write, item: Types.TestImport_AnotherObject | null): void => {
     if (item) {
-      Types.TestImport_AnotherObject.write(writer, item);
+      Types.TestImport_AnotherObject.write(writer, item as Types.TestImport_AnotherObject);
     } else {
       writer.writeNil();
     }

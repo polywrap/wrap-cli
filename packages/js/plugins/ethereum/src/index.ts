@@ -1,9 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { query, mutation } from "./resolvers";
 import { manifest } from "./manifest";
-import {
-  Connection as ConnectionOverride
-} from "./types";
+import { Connection as ConnectionOverride } from "./types";
 import {
   Address,
   AccountIndex,
@@ -12,7 +10,7 @@ import {
   Connection,
   Connections,
   ConnectionConfig,
-  ConnectionConfigs
+  ConnectionConfigs,
 } from "./Connection";
 
 import {
@@ -32,7 +30,7 @@ export {
   EthereumSigner,
   EthereumProvider,
   ConnectionConfig,
-  ConnectionConfigs
+  ConnectionConfigs,
 };
 
 export type EthereumConfig = ConnectionConfigs & {
@@ -40,7 +38,6 @@ export type EthereumConfig = ConnectionConfigs & {
 };
 
 export class EthereumPlugin extends Plugin {
-
   private _connections: Connections;
   private _defaultNetwork: string;
 
@@ -118,7 +115,9 @@ export class EthereumPlugin extends Plugin {
     return res.transactionHash;
   }
 
-  public async getConnection(connectionOverride?: ConnectionOverride): Promise<Connection> {
+  public async getConnection(
+    connectionOverride?: ConnectionOverride
+  ): Promise<Connection> {
     if (!connectionOverride) {
       return this._connections[this._defaultNetwork];
     }
@@ -129,12 +128,16 @@ export class EthereumPlugin extends Plugin {
     // If a custom network is provided, either get an already
     // established connection, or a create a new one
     if (networkNameOrChainId) {
-      const chainId = Number.parseInt(networkNameOrChainId);
-
-      if (chainId !== NaN) {
-        connection = Connection.fromNetwork(chainId);
+      if (this._connections[networkNameOrChainId]) {
+        connection = this._connections[networkNameOrChainId];
       } else {
-        connection = Connection.fromNetwork(networkNameOrChainId);
+        const chainId = Number.parseInt(networkNameOrChainId);
+
+        if (!isNaN(chainId)) {
+          connection = Connection.fromNetwork(chainId);
+        } else {
+          connection = Connection.fromNetwork(networkNameOrChainId);
+        }
       }
     } else {
       connection = this._connections[this._defaultNetwork];
@@ -153,10 +156,10 @@ export class EthereumPlugin extends Plugin {
 
       if (establishedConnection) {
         try {
-          nodeConnection.setSigner(
-            establishedConnection.getSigner()
-          );
-        } catch (e) { }
+          nodeConnection.setSigner(establishedConnection.getSigner());
+        } catch (e) {
+          // It's okay if there isn't a signer available.
+        }
       }
 
       connection = nodeConnection;

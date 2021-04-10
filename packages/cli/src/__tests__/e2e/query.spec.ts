@@ -53,8 +53,8 @@ ${HELP}`);
       cwd: projectRoot
     }, "../../../bin/w3");
 
-    expect(buildCode).toEqual(0);
     expect(buildErr).toBe("");
+    expect(buildCode).toEqual(0);
 
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
       args: ["query", "./recipes/e2e.json", "--test-ens"],
@@ -72,6 +72,9 @@ mutation {
       address: $address
       value: $value
     }
+    connection: {
+      networkNameOrChainId: $network
+    }
   ) {
     value
     txReceipt
@@ -80,7 +83,8 @@ mutation {
 
 {
   "address": "${constants.SimpleStorageAddr}",
-  "value": 569
+  "value": 569,
+  "network": "testnet"
 }
 -----------------------------------
 -----------------------------------

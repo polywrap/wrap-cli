@@ -84,8 +84,8 @@ export default {
         from: "w3://ens/ethereum.web3api.eth",
         to: ethereumPlugin({
           testnet: {
-            provider: ethereumProvider
-          }
+            provider: ethereumProvider,
+          },
         }),
       },
       {
@@ -96,8 +96,8 @@ export default {
         from: "w3://ens/ens.web3api.eth",
         to: ensPlugin({
           addresses: {
-            testnet: ensAddress
-          }
+            testnet: ensAddress,
+          },
         }),
       },
     ];

@@ -20,12 +20,12 @@ export interface Addresses {
 }
 
 export interface EnsConfig {
-  addresses?: Addresses
+  addresses?: Addresses;
 }
 
 export class EnsPlugin extends Plugin {
-
-  public static defaultEnsAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
+  public static defaultEnsAddress =
+    "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
 
   constructor(private _config: EnsConfig) {
     super();
@@ -53,7 +53,7 @@ export class EnsPlugin extends Plugin {
   }
 
   public setAddresses(addresses: Addresses): void {
-    this._config.addresses = { };
+    this._config.addresses = {};
 
     for (const network of Object.keys(addresses)) {
       this._config.addresses[network] = getAddress(addresses[network]);
@@ -118,9 +118,11 @@ export class EnsPlugin extends Plugin {
           address,
           method,
           args,
-          connection: networkNameOrChainId ? {
-            networkNameOrChainId
-          } : undefined
+          connection: networkNameOrChainId
+            ? {
+                networkNameOrChainId,
+              }
+            : undefined,
         },
       });
 

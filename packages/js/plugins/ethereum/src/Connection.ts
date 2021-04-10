@@ -4,7 +4,7 @@ import {
   JsonRpcProvider,
   WebSocketProvider,
   Web3Provider,
-  Networkish
+  Networkish,
 } from "@ethersproject/providers";
 import { getAddress } from "@ethersproject/address";
 
@@ -28,7 +28,6 @@ export interface Connections {
 }
 
 export class Connection {
-
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore: initialized within setProvider
   private _client: EthereumClient;
@@ -41,7 +40,7 @@ export class Connection {
   }
 
   static fromConfigs(configs: ConnectionConfigs): Connections {
-    const connections: Connections = { };
+    const connections: Connections = {};
 
     for (const network of Object.keys(configs)) {
       connections[network] = new Connection(configs[network]);
@@ -50,17 +49,17 @@ export class Connection {
     return connections;
   }
 
-  static fromNetwork(networkish: Networkish) {
+  static fromNetwork(networkish: Networkish): Connection {
     return new Connection({
       provider: ethers.providers.getDefaultProvider(
         ethers.providers.getNetwork(networkish)
-      ) as JsonRpcProvider
+      ) as JsonRpcProvider,
     });
   }
 
-  static fromNode(node: string) {
+  static fromNode(node: string): Connection {
     return new Connection({
-      provider: node
+      provider: node,
     });
   }
 
@@ -71,14 +70,14 @@ export class Connection {
     this._config.provider = provider;
 
     if (typeof provider === "string") {
-      this._client = ethers.providers.getDefaultProvider(
-        provider
-      ) as JsonRpcProvider | WebSocketProvider;
+      this._client = ethers.providers.getDefaultProvider(provider) as
+        | JsonRpcProvider
+        | WebSocketProvider;
     } else {
       if ((provider as JsonRpcProvider).anyNetwork !== undefined) {
         this._client = provider as JsonRpcProvider;
       } else {
-        this._client = new Web3Provider(provider as ExternalProvider)
+        this._client = new Web3Provider(provider as ExternalProvider);
       }
     }
 
@@ -112,11 +111,19 @@ export class Connection {
   public getSigner(): ethers.Signer {
     const { signer } = this._config;
 
-    if (this._config.signer === undefined) {
+    if (signer === undefined) {
       throw Error("Signer is undefined, this should never happen.");
     }
 
     if (typeof signer === "string" || typeof signer === "number") {
+      if (!this._client.getSigner) {
+        throw Error(
+          "Connection.getSigner: Ethereum provider does not have a signer, " +
+            "probably because it's an external RPC connection.\n" +
+            `Network: ${JSON.stringify(this._client._network, null, 2)}`
+        );
+      }
+
       return this._client.getSigner(signer);
     } else if (Signer.isSigner(signer)) {
       return signer;

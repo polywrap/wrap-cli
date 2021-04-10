@@ -5,7 +5,7 @@
 /// build/index.d.ts, build/Connection.d.ts
 
 export type EthereumConfig = ConnectionConfigs & {
-    defaultNetwork?: string;
+  defaultNetwork?: string;
 };
 
 export interface ConnectionConfig {

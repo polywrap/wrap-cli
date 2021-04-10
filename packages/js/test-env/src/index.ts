@@ -42,8 +42,8 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
       from: "w3://ens/ethereum.web3api.eth",
       to: ethereumPlugin({
         testnet: {
-          provider: ethereum as string
-        }
+          provider: ethereum as string,
+        },
       }),
     },
     {
@@ -54,8 +54,8 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
       from: "w3://ens/ens.web3api.eth",
       to: ensPlugin({
         addresses: {
-          testnet: data.ensAddress as string
-        }
+          testnet: data.ensAddress as string,
+        },
       }),
     },
   ];

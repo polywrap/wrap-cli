@@ -12,7 +12,9 @@ async function main() {
   });
 
   const address = await eth.deployContract(
-    contractAbi.abi, `0x${contractAbi.bytecode.object}`
+    contractAbi.abi, `0x${contractAbi.bytecode.object}`, [], {
+      networkNameOrChainId: "testnet"
+    }
   );
 
   console.log(`✔️ SimpleStorage live at: ${address}`)
