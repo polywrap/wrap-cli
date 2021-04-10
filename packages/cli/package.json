@@ -1,7 +1,7 @@
 {
   "name": "@web3api/cli",
   "description": "Web3API CLI",
-  "version": "0.0.1-prealpha.8",
+  "version": "0.0.1-prealpha.13",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -9,7 +9,8 @@
   },
   "files": [
     "build",
-    "bin"
+    "bin",
+    "lang"
   ],
   "bin": {
     "w3": "bin/w3"
@@ -23,16 +24,16 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@web3api/client-js": "0.0.1-prealpha.8",
-    "@web3api/client-test-env": "0.0.1-prealpha.8",
-    "@web3api/core-js": "0.0.1-prealpha.8",
-    "@web3api/ens-plugin-js": "0.0.1-prealpha.8",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.8",
-    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.8",
-    "@web3api/schema-bind": "0.0.1-prealpha.8",
-    "@web3api/schema-compose": "0.0.1-prealpha.8",
-    "@web3api/schema-parse": "0.0.1-prealpha.8",
     "@formatjs/intl": "1.8.2",
+    "@web3api/client-js": "0.0.1-prealpha.13",
+    "@web3api/client-test-env": "0.0.1-prealpha.13",
+    "@web3api/core-js": "0.0.1-prealpha.13",
+    "@web3api/ens-plugin-js": "0.0.1-prealpha.13",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.13",
+    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.13",
+    "@web3api/schema-bind": "0.0.1-prealpha.13",
+    "@web3api/schema-compose": "0.0.1-prealpha.13",
+    "@web3api/schema-parse": "0.0.1-prealpha.13",
     "assemblyscript": "0.17.14",
     "axios": "0.19.2",
     "chalk": "4.1.0",
@@ -51,14 +52,14 @@
   "devDependencies": {
     "@types/jest": "26.0.8",
     "@types/node": "12.6.9",
-    "@web3api/test-env-js": "0.0.1-prealpha.8",
+    "@web3api/test-env-js": "0.0.1-prealpha.13",
+    "eslint-plugin-formatjs": "2.12.7",
     "jest": "26.6.3",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",
-    "typescript": "4.0.7",
-    "ts-node": "8.10.2",
     "ts-morph": "10.0.1",
-    "eslint-plugin-formatjs": "2.12.7"
+    "ts-node": "8.10.2",
+    "typescript": "4.0.7"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {

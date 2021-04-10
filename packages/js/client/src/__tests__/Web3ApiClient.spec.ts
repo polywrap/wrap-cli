@@ -315,39 +315,6 @@ describe("Web3ApiClient", () => {
       ],
     });
 
-    const method4 = await client.query<{
-      method4: ({
-        prop: string;
-        nested: {
-          prop: string;
-        };
-      } | null)[];
-    }>({
-      uri: ensUri,
-      query: `
-        query {
-          method4(
-            arg: {
-              prop: {
-                root: {
-                  prop: {
-
-                  }
-                }
-              }
-            }
-          )
-        }
-      `,
-    });
-
-    expect(method4.errors).toBeTruthy();
-    if (method4.errors) {
-      expect(method4.errors[0].message).toMatch(
-        /__w3_abort: Missing required property: 'root: InfiniteRoot'/gm
-      );
-    }
-
     const method5 = await client.query<{
       method5: {
         prop: string;
