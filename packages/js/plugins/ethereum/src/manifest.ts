@@ -29,14 +29,9 @@ type Mutation {
   ): String!
 }
 
-type Network {
-  name: String
-  chainId: UInt32
-}
-
 type Connection {
   node: String
-  network: Network
+  networkNameOrChainId: String
 }`,
   implemented: [],
   imported: [],

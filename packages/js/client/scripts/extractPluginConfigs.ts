@@ -54,7 +54,7 @@ const plugins: PluginConfigSource[] = [
     file: "build/index.d.ts",
     uri: "w3://ens/ens.web3api.eth",
     config: "EnsConfig",
-    interfaces: ["EnsConfig"],
+    interfaces: ["EnsConfig", "Addresses"],
     types: ["Address"]
   }
 ];

@@ -1,5 +1,3 @@
-import { Connection as SchemaConnection } from "./types";
-
 import { Signer, ethers } from "ethers";
 import {
   ExternalProvider,

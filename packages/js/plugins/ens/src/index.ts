@@ -15,17 +15,24 @@ import { getAddress } from "@ethersproject/address";
 
 export type Address = string;
 
+export interface Addresses {
+  [network: string]: Address;
+}
+
 export interface EnsConfig {
-  address?: Address;
+  addresses?: Addresses
 }
 
 export class EnsPlugin extends Plugin {
+
+  public static defaultEnsAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
+
   constructor(private _config: EnsConfig) {
     super();
 
     // Sanitize address
-    if (this._config.address) {
-      this.setAddress(this._config.address);
+    if (this._config.addresses) {
+      this.setAddresses(this._config.addresses);
     }
   }
 
@@ -45,13 +52,15 @@ export class EnsPlugin extends Plugin {
     };
   }
 
-  public setAddress(address: Address): void {
-    this._config.address = getAddress(address);
+  public setAddresses(addresses: Addresses): void {
+    this._config.addresses = { };
+
+    for (const network of Object.keys(addresses)) {
+      this._config.addresses[network] = getAddress(addresses[network]);
+    }
   }
 
   public async ensToCID(domain: string, client: Client): Promise<string> {
-    let ensAddress =
-      this._config.address || "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
     const ensAbi = {
       resolver:
         "function resolver(bytes32 node) external view returns (address)",
@@ -62,19 +71,29 @@ export class EnsPlugin extends Plugin {
       content: "function content(bytes32 nodehash) view returns (bytes32)",
     };
 
-    // TODO: default to mainnet
-    // TODO: support chainId + network names
+    let ensAddress = EnsPlugin.defaultEnsAddress;
+
     // Remove the ENS URI scheme & authority
     domain = domain.replace("w3://", "");
     domain = domain.replace("ens/", "");
 
     // Check for non-default network
-    let network = undefined;
+    let network = "mainnet";
     const hasNetwork = /^[A-Za-z0-9]+\//i.exec(domain);
     if (hasNetwork) {
       network = domain.substring(0, domain.indexOf("/"));
+
+      // Remove the network from the domain URI's path
       domain = domain.replace(network + "/", "");
-      ensAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
+
+      // Lowercase only
+      network = network.toLowerCase();
+
+      // Check if we have a custom address configured
+      // for this network
+      if (this._config.addresses && this._config.addresses[network]) {
+        ensAddress = this._config.addresses[network];
+      }
     }
 
     const domainNode = ethers.utils.namehash(domain);
@@ -83,7 +102,7 @@ export class EnsPlugin extends Plugin {
       address: string,
       method: string,
       args: string[],
-      network?: string
+      networkNameOrChainId?: string
     ): Promise<string> => {
       const { data, errors } = await client.query({
         uri: "ens/ethereum.web3api.eth",
@@ -92,13 +111,16 @@ export class EnsPlugin extends Plugin {
             address: $address,
             method: $method,
             args: $args,
-            network: ${network ?? "null"}
+            connection: $connection
           )
         }`,
         variables: {
           address,
           method,
           args,
+          connection: networkNameOrChainId ? {
+            networkNameOrChainId
+          } : undefined
         },
       });
 
@@ -163,7 +185,7 @@ export class EnsPlugin extends Plugin {
     ) {
       return Base58.encode(ethers.utils.hexDataSlice(hash, 4));
     } else {
-      throw Error(`Unkown CID format, CID hash: ${hash}`);
+      throw Error(`Unknown CID format, CID hash: ${hash}`);
     }
   }
 }

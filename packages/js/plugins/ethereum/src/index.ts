@@ -123,14 +123,19 @@ export class EthereumPlugin extends Plugin {
       return this._connections[this._defaultNetwork];
     }
 
-    const { network, node } = connectionOverride;
+    const { networkNameOrChainId, node } = connectionOverride;
     let connection: Connection;
 
     // If a custom network is provided, either get an already
     // established connection, or a create a new one
-    if (network) {
-      const networkish = network.chainId || network.name || 0;
-      connection = Connection.fromNetwork(networkish);
+    if (networkNameOrChainId) {
+      const chainId = Number.parseInt(networkNameOrChainId);
+
+      if (chainId !== NaN) {
+        connection = Connection.fromNetwork(chainId);
+      } else {
+        connection = Connection.fromNetwork(networkNameOrChainId);
+      }
     } else {
       connection = this._connections[this._defaultNetwork];
     }
