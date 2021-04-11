@@ -16,12 +16,23 @@ import {
   Web3Provider,
 } from "@ethersproject/providers";
 import { getAddress } from "@ethersproject/address";
+import { defaultAbiCoder } from "ethers/lib/utils";
+
+type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
 
 export type Address = string;
 export type AccountIndex = number;
 export type EthereumSigner = Signer | Address | AccountIndex;
 export type EthereumProvider = string | ExternalProvider;
 export type EthereumClient = JsonRpcProvider | Web3Provider;
+
+export type SerializableTxReceipt = Overwrite<
+  ethers.providers.TransactionReceipt,
+  {
+    gasUsed: string;
+    cumulativeGasUsed: string;
+  }
+>;
 
 export interface EthereumConfig {
   provider: EthereumProvider;
@@ -136,23 +147,70 @@ export class EthereumPlugin extends Plugin {
     method: string,
     args: string[]
   ): Promise<string> {
+    console.log(await this.getSigner().getAddress());
     const contract = this.getContract(address, [method], false);
     const funcs = Object.keys(contract.interface.functions);
     const res = await contract[funcs[0]](...args);
     return res.toString();
   }
 
-  public async sendTransaction(
+  public async callContractMethod(
+    address: Address,
+    method: string,
+    args: string[]
+  ): Promise<ethers.providers.TransactionReceipt> {
+    const contract = this.getContract(address, [method]);
+    const funcs = Object.keys(contract.interface.functions);
+    const tx = await contract[funcs[0]](...args);
+    const res: ethers.providers.TransactionReceipt = await tx.wait();
+
+    return res;
+  }
+
+  public async estimateContractCallGas(
     address: Address,
     method: string,
     args: string[]
   ): Promise<string> {
     const contract = this.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
-    const tx = await contract[funcs[0]](...args);
-    const res = await tx.wait();
-    // TODO: improve this
-    return res.transactionHash;
+    const gas = await contract.estimateGas[funcs[0]](...args);
+
+    return gas.toString();
+  }
+
+  public async sendTransaction(
+    tx: ethers.providers.TransactionRequest
+  ): Promise<ethers.providers.TransactionReceipt> {
+    const signer = this.getSigner();
+
+    const res = await signer.sendTransaction(tx);
+    return await res.wait();
+  }
+
+  public async sendRPC(method: string, params: string[]): Promise<unknown> {
+    const provider = this.getSigner().provider;
+
+    if (
+      provider instanceof JsonRpcProvider ||
+      provider instanceof Web3Provider
+    ) {
+      const response = await provider.send(method, params);
+      return response;
+    } else {
+      throw new Error("Provider is not compatible with method");
+    }
+  }
+
+  public async signMessage(message: string): Promise<string> {
+    const messageHash = ethers.utils.id(message);
+    const messageHashBytes = ethers.utils.arrayify(messageHash);
+
+    return await this.getSigner().signMessage(messageHashBytes);
+  }
+
+  public encodeParams(types: string[], values: string[]): string {
+    return defaultAbiCoder.encode(types, values);
   }
 }
 

@@ -1,20 +1,81 @@
+type Log {
+  blockNumber: Int!
+  blockHash: string!
+  transactionIndex: Int!
+  removed: Boolean!
+  address: String!
+  data: String!
+  topics: [String!]!
+  transactionHash: String!
+  logIndex: Int!
+}
+
+type TxReceipt {
+  to: String!
+  from: String!
+  contractAddress: String!
+  transactionIndex: Int!
+  root: String
+  gasUsed: String!
+  logsBloom: String!
+  blockHash: String!
+  transactionHash: String!
+  logs: [Log!]!,
+  blockNumber: Int!
+  confirmations: Int!
+  cumulativeGasUsed: String!
+  byzantium: Boolean!
+  status: Int!
+}
+
+type TxRequest {
+  to: String;
+  from: String;
+  nonce: String;
+  gasLimit: String;
+  gasPrice: String;
+  data: String;
+  value: String;
+  chainId: Int;
+}
+
 type Query {
   callView(
     address: String!
     method: String!
     args: [String!]!
   ): String!
+
+  signMessage(
+    message: String!
+  ): String!
+
+  encodeParams(
+    types: [String!]!
+    values: [String!]!
+  ): String!
+
+  getSignerAddress: String!
 }
 
 type Mutation {
-  sendTransaction(
+  callContractMethod(
     address: String!
     method: String!
     args: [String!]!
-  ): String!
+  ): TxReceipt!
 
   deployContract(
     abi: String!
     bytecode: String!
   ): String!
+
+  sendTransaction(
+    tx: TxRequest!
+  ): TxReceipt!
+
+  sendRPC(
+    method: String!
+    params: [String!]!
+  ): String
 }
