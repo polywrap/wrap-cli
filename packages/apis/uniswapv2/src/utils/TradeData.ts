@@ -17,14 +17,20 @@ export class TradeData {
   static compare(a: TradeData, b: TradeData): i32 {
     const aInput = a.processedTrade.inputAmount;
     const bInput = b.processedTrade.inputAmount;
+    // TODO: returns error when it should not
+    /*
     if (tokenEquals({ token: aInput.token, other: bInput.token })) {
       throw new Error("To be compared, trades must the same input token");
     }
+    */
+
     const aOutput = a.processedTrade.outputAmount;
     const bOutput = b.processedTrade.outputAmount;
+    /*
     if (tokenEquals({ token: aOutput.token, other: bOutput.token })) {
       throw new Error("To be compared, trades must the same output token");
     }
+    */
     const aOutputBI = BigInt.fromString(aOutput.amount);
     const bOutputBI = BigInt.fromString(bOutput.amount);
     const outCmp = aOutputBI.compareTo(bOutputBI);
