@@ -217,7 +217,7 @@ export function serializeobjectMethodResult(result: Types.AnotherType | null): A
 
 export function writeobjectMethodResult(writer: Write, result: Types.AnotherType | null): void {
   if (result) {
-    Types.AnotherType.write(writer, result);
+    Types.AnotherType.write(writer, result as Types.AnotherType);
   } else {
     writer.writeNil();
   }

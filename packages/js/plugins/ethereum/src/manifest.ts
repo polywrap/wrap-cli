@@ -8,7 +8,8 @@ type Query {
   callView(
     address: String!
     method: String!
-    args: [String!]!
+    args: [String!]
+    connection: Connection
   ): String!
 }
 
@@ -16,13 +17,21 @@ type Mutation {
   sendTransaction(
     address: String!
     method: String!
-    args: [String!]!
+    args: [String!]
+    connection: Connection
   ): String!
 
   deployContract(
     abi: String!
     bytecode: String!
+    args: [String!]
+    connection: Connection
   ): String!
+}
+
+type Connection {
+  node: String
+  networkNameOrChainId: String
 }`,
   implemented: [],
   imported: [],

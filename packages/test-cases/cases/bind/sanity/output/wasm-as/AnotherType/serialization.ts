@@ -24,7 +24,7 @@ export function writeAnotherType(writer: Write, type: AnotherType): void {
   writer.writeNullableString(type.prop);
   writer.writeString("circular");
   if (type.circular) {
-    Types.CustomType.write(writer, type.circular);
+    Types.CustomType.write(writer, type.circular as Types.CustomType);
   } else {
     writer.writeNil();
   }

@@ -1,14 +1,23 @@
 /// NOTE: This is an auto-generated file. See scripts/extractPluginConfigs.ts
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-/// Types generated from build/index.d.ts
+/// Types generated from @web3api/ethereum-plugin-js build files:
+/// build/index.d.ts, build/Connection.d.ts
 
-export interface EthereumConfig {
+export type EthereumConfig = ConnectionConfigs & {
+  defaultNetwork?: string;
+};
+
+export interface ConnectionConfig {
   provider: EthereumProvider;
   signer?: EthereumSigner;
 }
 
-export type EthereumProvider = string | ExternalProvider;
+export interface ConnectionConfigs {
+  [network: string]: ConnectionConfig;
+}
+
+export type EthereumProvider = string | ExternalProvider | JsonRpcProvider;
 
 export type EthereumSigner = Signer | Address | AccountIndex;
 
@@ -21,3 +30,6 @@ export type Signer = any;
 
 // import { ExternalProvider } from "@ethersproject/providers"
 export type ExternalProvider = any;
+
+// import { JsonRpcProvider } from "@ethersproject/providers"
+export type JsonRpcProvider = any;
