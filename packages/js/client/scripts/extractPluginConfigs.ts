@@ -102,7 +102,7 @@ function main(): void {
 
       for (const pluginType of file.types || []) {
         const typ = sourceFile.getTypeAliasOrThrow(pluginType);
-        output += `\n\n${typ.print().replace("declare ", "")}`;
+        output += `\n\n${typ.print().replace("declare ", "").replace(/    /g, "  ")}`;
       }
     }
 

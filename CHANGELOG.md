@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.15
+## Bugs
+* Fix `extractPluginConfigs.ts` output.
+
 # Web3API 0.0.1-prealpha.14
 ## Features
 * Network Specific ENS Lookup
