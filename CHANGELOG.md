@@ -1,3 +1,10 @@
+# Web3API 0.0.1-prealpha.14
+## Features
+* Network Specific ENS Lookup
+  * `@web3api/ethereum-plugin-js`: The EthereumPlugin can now be constructed with multiple network connections (mainnet, rinkeby, testnet, etc).
+    * All Query & Mutation methods now accept an optional `connection` property which can be used to configure a specific network to be used for the action.
+  * `@web3api/ens-plugin-js`: The EnsPlugin can now handle URIs that address specific networks. For example: `w3://ens/testnet/myweb3api.eth`. It will request the `testnet` connection to be used when querying the Ethereum Web3API.
+
 # Web3API 0.0.1-prealpha.13
 ## Features
 * Improved template projects that are used with the `w3 create ...` CLI command.
