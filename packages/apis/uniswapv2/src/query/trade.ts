@@ -370,6 +370,7 @@ function _bestTradeExactOut(
   return bestTrades;
 }
 
+// TODO: export in schema and implement percent difference like uniswap sdk
 export function computePriceImpact(trade: Trade): BigInt {
   const midPrice = routeMidPrice({
     route: trade.route,
