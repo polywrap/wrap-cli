@@ -206,7 +206,11 @@ export function bestTradeExactIn(input: Input_bestTradeExactIn): Trade[] {
     throw new Error("maxHops must be greater than zero");
   }
   const bestTrades = _bestTradeExactIn(pairs, amountIn, tokenOut, options);
-  return bestTrades.toArray();
+  if (options.maxNumResults) {
+    return bestTrades.toArray().slice(0, options.maxNumResults);
+  } else {
+    return bestTrades.toArray();
+  }
 }
 
 /* Similar to the above method, but targets a fixed output token amount. The
@@ -224,7 +228,12 @@ export function bestTradeExactOut(input: Input_bestTradeExactOut): Trade[] {
     throw new Error("maxHops must be greater than zero");
   }
   const bestTrades = _bestTradeExactOut(pairs, tokenIn, amountOut, options);
-  return bestTrades.toArray();
+
+  if (options.maxNumResults) {
+    return bestTrades.toArray().slice(0, options.maxNumResults);
+  } else {
+    return bestTrades.toArray();
+  }
 }
 
 function _bestTradeExactIn(
@@ -294,6 +303,7 @@ function _bestTradeExactIn(
       );
     }
   }
+
   return bestTrades;
 }
 
@@ -331,6 +341,7 @@ function _bestTradeExactOut(
     if (biTokenAmt0.eq(BigInt.ZERO) || biTokenAmt1.eq(BigInt.ZERO)) continue;
     const biAmtOut = BigInt.fromString(amountOut.amount);
     if (biAmtOut.eq(BigInt.ZERO)) continue;
+    // if (biTokenAmt0.gte(biTokenAmt1)) continue;
 
     const amountInToken = isToken0
       ? pair.tokenAmount1.token
