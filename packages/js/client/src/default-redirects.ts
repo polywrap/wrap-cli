@@ -17,7 +17,7 @@ export function getDefaultRedirects(): UriRedirect<Uri>[] {
     // IPFS is required for downloading Web3API packages
     {
       from: new Uri("w3://ens/ipfs.web3api.eth"),
-      to: ipfsPlugin({ provider: "https://ipfs.infura.io " }),
+      to: ipfsPlugin({ provider: "https://ipfs.io" }),
     },
     // ENS is required for resolving domain to IPFS hashes
     {
@@ -27,8 +27,10 @@ export function getDefaultRedirects(): UriRedirect<Uri>[] {
     {
       from: new Uri("w3://ens/ethereum.web3api.eth"),
       to: ethereumPlugin({
-        provider:
-          "https://eth-mainnet.gateway.pokt.network/v1/5fc677007c6654002ed13350",
+        mainnet: {
+          provider:
+            "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+        },
       }),
     },
     {

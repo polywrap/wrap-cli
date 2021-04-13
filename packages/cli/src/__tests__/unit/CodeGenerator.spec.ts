@@ -51,7 +51,7 @@ describe("CodeGenerator validation", () => {
 
   it("Should generate", async () => {
     if (fs.existsSync(outputDir)) {
-      fs.rmdirSync(outputDir, { recursive: true });
+      fs.rmSync(outputDir, { recursive: true });
     }
 
     const project = new Project({
@@ -98,24 +98,30 @@ directive @imports(
 
 type Query @imports(
   types: [
-    "Ethereum_Query"
+    "Ethereum_Query",
+    "Ethereum_Connection"
   ]
 ) {
   getData(
     address: String!
+    connection: Ethereum_Connection
   ): UInt32!
 }
 
 type Mutation @imports(
   types: [
-    "Ethereum_Mutation"
+    "Ethereum_Mutation",
+    "Ethereum_Connection"
   ]
 ) {
   setData(
     options: SetDataOptions!
+    connection: Ethereum_Connection
   ): SetDataResult!
 
-  deployContract: String!
+  deployContract(
+    connection: Ethereum_Connection
+  ): String!
 }
 
 type SetDataOptions {
@@ -138,7 +144,8 @@ type Ethereum_Query @imported(
   callView(
     address: String!
     method: String!
-    args: [String!]!
+    args: [String!]
+    connection: Ethereum_Connection
   ): String!
 }
 
@@ -150,18 +157,30 @@ type Ethereum_Mutation @imported(
   sendTransaction(
     address: String!
     method: String!
-    args: [String!]!
+    args: [String!]
+    connection: Ethereum_Connection
   ): String!
 
   deployContract(
     abi: String!
     bytecode: String!
+    args: [String!]
+    connection: Ethereum_Connection
   ): String!
 }
 
 ### Imported Queries END ###
 
 ### Imported Objects START ###
+
+type Ethereum_Connection @imported(
+  uri: "w3://ens/ethereum.web3api.eth",
+  namespace: "Ethereum",
+  nativeType: "Connection"
+) {
+  node: String
+  networkNameOrChainId: String
+}
 
 ### Imported Objects END ###
 
@@ -176,6 +195,6 @@ type Ethereum_Mutation @imported(
     const { schema: schema3 } = require("../project/types/folder/schema2.ts");
     expect(schema3).toEqual(expectedSchema);
 
-    fs.rmdirSync(outputDir, { recursive: true });
+    fs.rmSync(outputDir, { recursive: true });
   });
 });

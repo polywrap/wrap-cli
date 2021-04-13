@@ -40,15 +40,23 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
   const redirects: UriRedirect[] = [
     {
       from: "w3://ens/ethereum.web3api.eth",
-      to: ethereumPlugin({ provider: ethereum }),
+      to: ethereumPlugin({
+        testnet: {
+          provider: ethereum as string,
+        },
+      }),
     },
     {
       from: "w3://ens/ipfs.web3api.eth",
-      to: ipfsPlugin({ provider: ipfs }),
+      to: ipfsPlugin({ provider: ipfs as string }),
     },
     {
       from: "w3://ens/ens.web3api.eth",
-      to: ensPlugin({ address: data.ensAddress }),
+      to: ensPlugin({
+        addresses: {
+          testnet: data.ensAddress as string,
+        },
+      }),
     },
   ];
 
