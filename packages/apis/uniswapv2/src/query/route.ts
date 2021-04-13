@@ -1,8 +1,8 @@
 import { tokenEquals } from "./token";
 import {
   Input_routeMidPrice,
-  Input_routeOutput,
   Input_routePath,
+  Input_createRoute,
   Pair,
   Route,
   Token,
@@ -13,10 +13,31 @@ import { pairReserves } from "./pair";
 
 import { BigInt } from "as-bigint";
 
+export function createRoute(input: Input_createRoute): Route {
+  const path = routePath({
+    pairs: input.pairs,
+    input: input.input,
+  });
+
+  let output: Token;
+  if (input.output != null) {
+    output = input.output as Token;
+  } else {
+    output = path[path.length - 1];
+  }
+
+  return {
+    path: path,
+    pairs: input.pairs,
+    input: input.input,
+    output: output,
+  };
+}
+
 // returns the full path from input token to output token.
 export function routePath(input: Input_routePath): Token[] {
-  const pairs: Pair[] = input.route.pairs;
-  const inToken: Token = input.route.input;
+  const pairs: Pair[] = input.pairs;
+  const inToken: Token = input.input;
   const path: Token[] = [inToken];
   for (let i = 0; i < pairs.length; i++) {
     const currentIn = path[i];
@@ -35,12 +56,6 @@ export function routePath(input: Input_routePath): Token[] {
   return path;
 }
 
-// Returns the output token.
-export function routeOutput(input: Input_routeOutput): Token {
-  const path = routePath({ route: input.route });
-  return path[path.length - 1];
-}
-
 // Returns the current mid price along the route.
 export function routeMidPrice(input: Input_routeMidPrice): TokenAmount {
   const route: Route = input.route;
@@ -53,7 +68,7 @@ export function routeMidPrice(input: Input_routeMidPrice): TokenAmount {
 
 // helper function for use in routeMidPrice and trade query functions
 export function midPrice(route: Route): Price {
-  const path = routePath({ route: route });
+  const path = route.path;
   const prices: Price[] = [];
   for (let i = 0; i < route.pairs.length; i++) {
     const pair = route.pairs[i];

@@ -1,22 +1,19 @@
 import { Trade } from "../query/w3";
 import { tokenEquals } from "../query";
-import { ProcessedTrade } from "./ProcesssedTrade";
 
 import { BigInt } from "as-bigint";
 
 export class TradeData {
   trade: Trade;
-  processedTrade: ProcessedTrade;
 
-  constructor(trade: Trade, processedTrade: ProcessedTrade) {
+  constructor(trade: Trade) {
     this.trade = trade;
-    this.processedTrade = processedTrade;
   }
 
   // trades with higher output and lower input have highest priority
   static compare(a: TradeData, b: TradeData): i32 {
-    const aInput = a.processedTrade.inputAmount;
-    const bInput = b.processedTrade.inputAmount;
+    const aInput = a.trade.inputAmount;
+    const bInput = b.trade.inputAmount;
     // TODO: returns error when it should not
     /*
     if (tokenEquals({ token: aInput.token, other: bInput.token })) {
@@ -24,8 +21,8 @@ export class TradeData {
     }
     */
 
-    const aOutput = a.processedTrade.outputAmount;
-    const bOutput = b.processedTrade.outputAmount;
+    const aOutput = a.trade.outputAmount;
+    const bOutput = b.trade.outputAmount;
     /*
     if (tokenEquals({ token: aOutput.token, other: bOutput.token })) {
       throw new Error("To be compared, trades must the same output token");

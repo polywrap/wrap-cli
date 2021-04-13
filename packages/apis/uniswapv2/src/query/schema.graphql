@@ -68,19 +68,28 @@ type Query {
   ): [TokenAmount!]!
 
   # Route
-  routePath(
-    route: Route!
-  ): [Token!]!
+  createRoute(
+    pairs: [Pair!]!
+    input: Token!
+    output: Token
+  ): Route!
 
-  routeOutput(
-    route: Route!
-  ): Token!
+  routePath(
+    pairs: [Pair!]!
+    input: Token!
+  ): [Token!]!
 
   routeMidPrice(
     route: Route!
   ): TokenAmount!
 
   # Trade
+  createTrade(
+    route: Route!
+    amount: TokenAmount!
+    tradeType: TradeType!
+  ): Trade!
+
   tradeExecutionPrice(
     trade: Trade!
   ): TokenAmount!
@@ -171,13 +180,16 @@ type Pair {
 }
 
 type Route {
+  path: [Token!]!
   pairs: [Pair!]!
   input: Token!
+  output: Token!
 }
 
 type Trade {
   route: Route!
-  amount: TokenAmount!
+  inputAmount: TokenAmount!
+  outputAmount: TokenAmount!
   tradeType: TradeType!
 }
 

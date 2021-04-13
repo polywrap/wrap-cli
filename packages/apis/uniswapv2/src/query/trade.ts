@@ -11,18 +11,82 @@ import {
   Input_tradeMaximumAmountIn,
   Input_bestTradeExactIn,
   Input_bestTradeExactOut,
+  Input_createTrade,
 } from "./w3";
-import { midPrice, routeMidPrice } from "./route";
+import { createRoute, midPrice, routeMidPrice } from "./route";
 import Price from "../utils/Price";
-import { pairInputAmount, pairOutputAmount } from "./pair";
+import {
+  pairInputAmount,
+  pairInputNextPair,
+  pairOutputAmount,
+  pairOutputNextPair,
+} from "./pair";
 import Fraction from "../utils/Fraction";
 import { tokenAmountEquals, tokenEquals } from "./token";
 import { PriorityQueue } from "../utils/PriorityQueue";
 import { TradeOptions } from "../utils/TradeOptions";
-import { ProcessedTrade } from "../utils/ProcesssedTrade";
 import { TradeData } from "../utils/TradeData";
 
 import { BigInt } from "as-bigint";
+
+export function createTrade(input: Input_createTrade): Trade {
+  const amounts: TokenAmount[] = new Array(input.route.path.length);
+  const nextPairs: Pair[] = new Array(input.route.pairs.length);
+  if (input.tradeType == TradeType.EXACT_INPUT) {
+    if (input.amount.token != input.route.input) {
+      throw new Error(
+        "Trade input token must be the same as trade route input token"
+      );
+    }
+    amounts[0] = input.amount;
+    for (let i = 0; i < input.route.path.length - 1; i++) {
+      const pair = input.route.pairs[i];
+      const outputAmount: TokenAmount = pairOutputAmount({
+        pair: pair,
+        inputAmount: amounts[i],
+      });
+      const nextPair: Pair = pairOutputNextPair({
+        pair: pair,
+        inputAmount: amounts[i],
+      });
+      amounts[i + 1] = outputAmount;
+      nextPairs[i] = nextPair;
+    }
+  } else {
+    if (input.amount.token != input.route.output) {
+      throw new Error(
+        "Trade input token must be the same as trade route input token"
+      );
+    }
+    amounts[amounts.length - 1] = input.amount;
+    for (let i = input.route.path.length - 1; i > 0; i--) {
+      const pair = input.route.pairs[i - 1];
+      const inputAmount: TokenAmount = pairInputAmount({
+        pair: pair,
+        outputAmount: amounts[i],
+      });
+      const nextPair: Pair = pairInputNextPair({
+        pair: pair,
+        outputAmount: amounts[i],
+      });
+      amounts[i - 1] = inputAmount;
+      nextPairs[i - 1] = nextPair;
+    }
+  }
+  const inputAmount: TokenAmount =
+    input.tradeType == TradeType.EXACT_INPUT ? input.amount : amounts[0];
+  const outputAmount: TokenAmount =
+    input.tradeType == TradeType.EXACT_OUTPUT
+      ? input.amount
+      : amounts[amounts.length - 1];
+
+  return {
+    inputAmount: inputAmount,
+    outputAmount: outputAmount,
+    route: input.route,
+    tradeType: input.tradeType,
+  };
+}
 
 // TODO: handle unwrapped Ether
 // The average price that the trade would execute at.
@@ -30,12 +94,11 @@ export function tradeExecutionPrice(
   input: Input_tradeExecutionPrice
 ): TokenAmount {
   const trade: Trade = input.trade;
-  const processedTrade: ProcessedTrade = new ProcessedTrade(trade);
   const executionPrice = new Price(
-    processedTrade.inputAmount.token,
-    processedTrade.outputAmount.token,
-    BigInt.fromString(processedTrade.inputAmount.amount),
-    BigInt.fromString(processedTrade.outputAmount.amount)
+    trade.inputAmount.token,
+    trade.outputAmount.token,
+    BigInt.fromString(trade.inputAmount.amount),
+    BigInt.fromString(trade.outputAmount.amount)
   );
   return {
     token: executionPrice.quoteToken,
@@ -46,10 +109,8 @@ export function tradeExecutionPrice(
 // What the new mid price would be if the trade were to execute.
 export function tradeNextMidPrice(input: Input_tradeNextMidPrice): TokenAmount {
   const trade: Trade = input.trade;
-  const processedTrade: ProcessedTrade = new ProcessedTrade(trade);
-  const nextPairs: Pair[] = processedTrade.nextPairs;
   return routeMidPrice({
-    route: { pairs: nextPairs, input: trade.route.input },
+    route: trade.route,
   });
 }
 
@@ -58,19 +119,18 @@ export function tradeNextMidPrice(input: Input_tradeNextMidPrice): TokenAmount {
 // result is a percent like 100.0%, not a decimal like 1.00, but there is no decimal point in the string
 export function tradeSlippage(input: Input_tradeSlippage): TokenAmount {
   const trade: Trade = input.trade;
-  const processedTrade: ProcessedTrade = new ProcessedTrade(trade);
   const price: Price = midPrice(trade.route);
   // compute price impact
   const inputFraction: Fraction = new Fraction(
-    BigInt.fromString(processedTrade.inputAmount.amount)
+    BigInt.fromString(trade.inputAmount.amount)
   );
   const outputFraction: Fraction = new Fraction(
-    BigInt.fromString(processedTrade.outputAmount.amount)
+    BigInt.fromString(trade.outputAmount.amount)
   );
   const exactQuote: Fraction = price.raw().mul(inputFraction);
   const slippage = exactQuote.sub(outputFraction).div(exactQuote);
   return {
-    token: processedTrade.outputAmount.token,
+    token: trade.outputAmount.token,
     amount: slippage
       .mul(new Fraction(BigInt.fromString("100")))
       .quotient()
@@ -88,17 +148,16 @@ export function tradeMinimumAmountOut(
     throw new RangeError("slippage tolerance cannot be less than zero");
   }
   if (trade.tradeType == TradeType.EXACT_OUTPUT) {
-    return new ProcessedTrade(trade).outputAmount;
+    return trade.outputAmount;
   } else {
-    const processedTrade = new ProcessedTrade(trade);
-    const biOutAmt = BigInt.fromString(processedTrade.outputAmount.amount);
+    const biOutAmt = BigInt.fromString(trade.outputAmount.amount);
     const slippageAdjustedAmountOut = new Fraction(BigInt.ONE)
       .add(slippageTolerance)
       .invert()
       .mul(new Fraction(biOutAmt))
       .quotient();
     return {
-      token: processedTrade.outputAmount.token,
+      token: trade.outputAmount.token,
       amount: slippageAdjustedAmountOut.toString(),
     };
   }
@@ -114,16 +173,15 @@ export function tradeMaximumAmountIn(
     throw new RangeError("slippage tolerance cannot be less than zero");
   }
   if (trade.tradeType == TradeType.EXACT_INPUT) {
-    return new ProcessedTrade(trade).inputAmount;
+    return trade.inputAmount;
   } else {
-    const processedTrade = new ProcessedTrade(trade);
-    const biInputAmt = BigInt.fromString(processedTrade.inputAmount.amount);
+    const biInputAmt = BigInt.fromString(trade.inputAmount.amount);
     const slippageAdjustedAmountIn = new Fraction(BigInt.ONE)
       .add(slippageTolerance)
       .mul(new Fraction(biInputAmt))
       .quotient();
     return {
-      token: processedTrade.inputAmount.token,
+      token: trade.inputAmount.token,
       amount: slippageAdjustedAmountIn.toString(),
     };
   }
@@ -207,15 +265,15 @@ function _bestTradeExactIn(
       ? pair.tokenAmount1.token
       : pair.tokenAmount0.token;
     if (tokenEquals({ token: amountOutToken, other: tokenOut })) {
-      const newTrade: Trade = {
-        route: {
+      const newTrade = createTrade({
+        route: createRoute({
           pairs: currentPairs.concat([pair]),
           input: originalAmountIn.token,
-        },
+        }),
         amount: originalAmountIn,
         tradeType: TradeType.EXACT_INPUT,
-      };
-      bestTrades.insert(new TradeData(newTrade, new ProcessedTrade(newTrade)));
+      });
+      bestTrades.insert(new TradeData(newTrade));
     } else if (options.maxHops > 1 && pairs.length > 1) {
       const amountOut: TokenAmount = pairOutputAmount({
         pair: pair,
@@ -278,15 +336,15 @@ function _bestTradeExactOut(
       ? pair.tokenAmount1.token
       : pair.tokenAmount0.token;
     if (tokenEquals({ token: amountInToken, other: tokenIn })) {
-      const newTrade: Trade = {
-        route: {
+      const newTrade: Trade = createTrade({
+        route: createRoute({
           pairs: [pair].concat(currentPairs),
           input: originalAmountOut.token,
-        },
+        }),
         amount: originalAmountOut,
         tradeType: TradeType.EXACT_OUTPUT,
-      };
-      bestTrades.insert(new TradeData(newTrade, new ProcessedTrade(newTrade)));
+      });
+      bestTrades.insert(new TradeData(newTrade));
     } else if (options.maxHops > 1 && pairs.length > 1) {
       const amountIn: TokenAmount = pairInputAmount({
         pair: pair,
