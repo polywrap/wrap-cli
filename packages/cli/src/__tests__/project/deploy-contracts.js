@@ -6,9 +6,11 @@ async function main() {
   const contractAbi = require(`${__dirname}/src/contracts/SimpleStorage.json`);
 
   const eth = new EthereumPlugin({
-    testnet: {
-      provider: "http://localhost:8545"
-    }
+    networks: {
+      testnet: {
+        provider: "http://localhost:8545"
+      },
+    },
   });
 
   const address = await eth.deployContract(

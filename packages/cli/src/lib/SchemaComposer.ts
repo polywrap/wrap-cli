@@ -45,8 +45,10 @@ export class SchemaComposer {
       redirects.push({
         from: "w3://ens/ethereum.web3api.eth",
         to: ethereumPlugin({
-          testnet: {
-            provider: ethProvider,
+          networks: {
+            testnet: {
+              provider: ethProvider,
+            },
           },
         }),
       });
