@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.16
+## Bugs
+* `@web3api/test-env`: Expose the IPFS node's swarm port (4001).
+
 # Web3API 0.0.1-prealpha.15
 ## Bugs
 * Fix `extractPluginConfigs.ts` output.
