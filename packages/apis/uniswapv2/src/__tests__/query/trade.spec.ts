@@ -1,7 +1,7 @@
 import { Nullable } from "@web3api/wasm-as";
-import { routePath, tokenEquals } from "../../query";
-import { bestTradeExactIn, bestTradeExactOut, tradeMaximumAmountIn, tradeMinimumAmountOut } from "../../query/trade"
-import { ChainId, Pair, Token, Trade, TradeType } from "../../query/w3";
+import { createRoute } from "../../query";
+import { bestTradeExactIn, bestTradeExactOut, createTrade, tradeMaximumAmountIn, tradeMinimumAmountOut } from "../../query/trade"
+import { ChainId, Pair, Token, TradeType } from "../../query/w3";
 
 const token0: Token = {
   chainId: ChainId.MAINNET,
@@ -94,28 +94,28 @@ const empty_pair_0_1: Pair = {
   }
 }
 
-const exactIn: Trade = {
-  route: {
+const exactIn = createTrade({
+  route: createRoute({
     pairs: [pair_0_1, pair_1_2],
     input: token0
-  },
+  }),
   amount: {
     token: token0,
     amount: "100"
   },
   tradeType: TradeType.EXACT_INPUT
-}
-const exactOut: Trade = {
-  route: {
+})
+const exactOut = createTrade({
+  route: createRoute({
     pairs: [pair_0_1, pair_1_2],
     input: token0
-  },
+  }),
   amount: {
     token: token2,
     amount: "100"
   },
   tradeType: TradeType.EXACT_OUTPUT
-}
+})
 
 describe("Trade", () => {
 
@@ -164,23 +164,16 @@ describe("Trade", () => {
         options: null,
       });
 
-      const route0 = routePath({
-        route: result[0].route
-      });
-      const route1 = routePath({
-        route: result[1].route
-      });
-
       expect(result.length).toStrictEqual(2);
       expect(result[0].route.pairs.length).toStrictEqual(1)
-      expect(route0).toStrictEqual([token0, token2]);
-      expect(result[0].amount).toStrictEqual({
+      expect(result[0].route.path).toStrictEqual([token0, token2]);
+      expect(result[0].inputAmount).toStrictEqual({
         token: token0,
         amount: "100"
       })
       expect(result[1].route.pairs.length).toStrictEqual(2);
-      expect(route1).toStrictEqual([token0, token1, token2]);
-      expect(result[1].amount).toStrictEqual({
+      expect(result[1].route.path).toStrictEqual([token0, token1, token2]);
+      expect(result[1].inputAmount).toStrictEqual({
         token: token0,
         amount: "100"
       })
@@ -215,7 +208,7 @@ describe("Trade", () => {
 
       expect(result.length).toStrictEqual(1);
       expect(result[0].route.pairs.length).toStrictEqual(1);
-      expect(routePath({ route: result[0].route })).toStrictEqual([token0, token2]);
+      expect(result[0].route.path).toStrictEqual([token0, token2]);
     });
 
     test("insufficient input for one pair", () => {
@@ -234,7 +227,7 @@ describe("Trade", () => {
 
       expect(result.length).toStrictEqual(1);
       expect(result[0].route.pairs.length).toStrictEqual(1);
-      expect(routePath({ route: result[0].route })).toStrictEqual([token0, token2]);
+      expect(result[0].route.path).toStrictEqual([token0, token2]);
       // TODO Missing output amount
       /*
       expect(result[0].amount).toStrictEqual({
@@ -324,24 +317,17 @@ describe("Trade", () => {
         options: null,
       });
 
-      const route0 = routePath({
-        route: result[0].route
-      });
-      const route1 = routePath({
-        route: result[1].route
-      });
-
       expect(result.length).toStrictEqual(2);
       expect(result[0].route.pairs.length).toStrictEqual(1)
-      expect(route0).toStrictEqual([token0, token2]);
-      expect(result[0].amount).toStrictEqual({
+      expect(result[0].route.path).toStrictEqual([token0, token2]);
+      expect(result[0].inputAmount).toStrictEqual({
         token: token0,
         amount: "100"
       })
       // TODO: output amount
       expect(result[1].route.pairs.length).toStrictEqual(2);
-      expect(route1).toStrictEqual([token0, token1, token2]);
-      expect(result[1].amount).toStrictEqual({
+      expect(result[1].route.path).toStrictEqual([token0, token1, token2]);
+      expect(result[1].inputAmount).toStrictEqual({
         token: token0,
         amount: "100"
       })
@@ -377,7 +363,7 @@ describe("Trade", () => {
 
       expect(result.length).toStrictEqual(1);
       expect(result[0].route.pairs.length).toStrictEqual(1);
-      expect(routePath({ route: result[0].route })).toStrictEqual([token0, token2]);
+      expect(result[0].route.path).toStrictEqual([token0, token2]);
     });
 
     test("insufficient liquidity", () => {
