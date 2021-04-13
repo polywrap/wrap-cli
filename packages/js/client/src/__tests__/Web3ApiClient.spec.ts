@@ -29,9 +29,11 @@ describe("Web3ApiClient", () => {
   const getClient = async () => {
     return createWeb3ApiClient({
       ethereum: {
-        testnet: {
-          provider: ethProvider
-        }
+        networks: {
+          testnet: {
+            provider: ethProvider
+          },
+        },
       },
       ipfs: { provider: ipfsProvider },
       ens: {

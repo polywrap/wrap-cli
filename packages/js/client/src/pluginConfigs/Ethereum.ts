@@ -4,9 +4,10 @@
 /// Types generated from @web3api/ethereum-plugin-js build files:
 /// build/index.d.ts, build/Connection.d.ts
 
-export type EthereumConfig = ConnectionConfigs & {
+export interface EthereumConfig {
+  networks: ConnectionConfigs;
   defaultNetwork?: string;
-};
+}
 
 export interface ConnectionConfig {
   provider: EthereumProvider;

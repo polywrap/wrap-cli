@@ -21,9 +21,11 @@ export function getDefaultRedirects(): UriRedirect<Uri>[] {
     {
       from: new Uri("w3://ens/ethereum.web3api.eth"),
       to: ethereumPlugin({
-        mainnet: {
-          provider:
-            "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+        networks: {
+          mainnet: {
+            provider:
+              "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+          },
         },
       }),
     },
