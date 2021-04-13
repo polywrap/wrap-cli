@@ -341,12 +341,19 @@ function _bestTradeExactOut(
     if (biTokenAmt0.eq(BigInt.ZERO) || biTokenAmt1.eq(BigInt.ZERO)) continue;
     const biAmtOut = BigInt.fromString(amountOut.amount);
     if (biAmtOut.eq(BigInt.ZERO)) continue;
-    // if (biTokenAmt0.gte(biTokenAmt1)) continue;
 
+    if (isToken0) {
+      if (biTokenAmt0.lt(biAmtOut)) {
+        continue;
+      }
+    } else {
+      if (biTokenAmt1.lt(biAmtOut)) {
+        continue;
+      }
+    }
     const amountInToken = isToken0
       ? pair.tokenAmount1.token
       : pair.tokenAmount0.token;
-
     if (tokenEquals({ token: amountInToken, other: tokenIn })) {
       const newTrade: Trade = createTrade({
         route: createRoute({

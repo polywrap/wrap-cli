@@ -5,8 +5,9 @@
   "version": "0.0.1-prealpha.8",
   "scripts": {
     "build": "npx w3 build",
-    "test": "asp --verbose",
-    "test:ci": "TEST=true jest --passWithNoTests --runInBand --verbose",
+    "test:unit": "asp --verbose",
+    "test": "yarn run test:unit",
+    "test:ci": "TEST=TRUE yarn run test:unit",
     "test:env:up": "npx w3 test-env up",
     "test:env:down": "npx w3 test-env down"
   },
