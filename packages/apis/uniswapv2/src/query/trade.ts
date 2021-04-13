@@ -272,6 +272,7 @@ function _bestTradeExactIn(
         route: createRoute({
           pairs: currentPairs.concat([pair]),
           input: originalAmountIn.token,
+          output: tokenOut,
         }),
         amount: originalAmountIn,
         tradeType: TradeType.EXACT_INPUT,
@@ -341,8 +342,8 @@ function _bestTradeExactOut(
       const newTrade: Trade = createTrade({
         route: createRoute({
           pairs: [pair].concat(currentPairs),
-          input: originalAmountOut.token,
-          output: tokenIn,
+          output: originalAmountOut.token,
+          input: tokenIn,
         }),
         amount: originalAmountOut,
         tradeType: TradeType.EXACT_OUTPUT,
@@ -369,17 +370,33 @@ function _bestTradeExactOut(
   return bestTrades;
 }
 
-export function tradeComparator(a: Trade, b: Trade): i32 {
+export function computePriceImpact(trade: Trade): BigInt {
+  const midPrice = routeMidPrice({
+    route: trade.route,
+  });
+  const midPriceBI = BigInt.fromString(midPrice.amount);
+  const inputAmountBI = BigInt.fromString(trade.inputAmount.amount);
+  const outputAmountBI = BigInt.fromString(trade.outputAmount.amount);
+
+  const exactQuote = midPriceBI.mul(inputAmountBI);
+  return exactQuote.sub(outputAmountBI).div(exactQuote);
+}
+
+export function tradeComparator(b: Trade, a: Trade): i32 {
   const ioCmp = inputOutputComparator(a, b);
-  if (ioCmp !== 0) {
+  if (ioCmp != 0) {
     return ioCmp;
   }
 
-  // TODO: price impact comaprison
+  const aPriceImpact = computePriceImpact(a);
+  const bPriceImpact = computePriceImpact(b);
+  if (aPriceImpact.lt(bPriceImpact)) {
+    return -1;
+  } else if (aPriceImpact.gt(bPriceImpact)) {
+    return 1;
+  }
 
-  // TODO: route path comparison
-
-  return 1;
+  return a.route.path.length - b.route.path.length;
 }
 
 export function inputOutputComparator(a: Trade, b: Trade): i32 {

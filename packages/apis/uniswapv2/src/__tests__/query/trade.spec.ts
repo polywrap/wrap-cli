@@ -228,14 +228,12 @@ describe("Trade", () => {
       expect(result.length).toStrictEqual(1);
       expect(result[0].route.pairs.length).toStrictEqual(1);
       expect(result[0].route.path).toStrictEqual([token0, token2]);
-      // TODO Missing output amount
-      /*
-      expect(result[0].amount).toStrictEqual({
+      expect(result[0].outputAmount).toStrictEqual({
         token: token2,
         amount: "1"
       })
-      */
     });
+
 
     test("respects n", () => {
       const result =  bestTradeExactIn({
@@ -322,16 +320,22 @@ describe("Trade", () => {
       expect(result[0].route.path).toStrictEqual([token0, token2]);
       expect(result[0].inputAmount).toStrictEqual({
         token: token0,
+        amount: "101"
+      })
+      expect(result[0].outputAmount).toStrictEqual({
+        token: token2,
         amount: "100"
       })
-      // TODO: output amount
       expect(result[1].route.pairs.length).toStrictEqual(2);
       expect(result[1].route.path).toStrictEqual([token0, token1, token2]);
       expect(result[1].inputAmount).toStrictEqual({
         token: token0,
+        amount: "156"
+      })
+      expect(result[0].outputAmount).toStrictEqual({
+        token: token2,
         amount: "100"
       })
-      // TODO: output amount
     });
 
     test("doesn't throw for zero liquidity pairs", () => {
