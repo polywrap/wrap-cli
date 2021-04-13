@@ -6,11 +6,12 @@ import axios from "axios"
 import { ethers } from "ethers";
 
 const { hash: namehash } = require("eth-ens-namehash")
+jest.setTimeout(60000)
 
 describe("Ethereum Plugin", () => {
   let client: Web3ApiClient;
   let ensAddress: string;
-  // let resolverAddress: string;
+  let resolverAddress: string;
   let registrarAddress: string;
   // let reverseAddress: string;
   const signer = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1"
@@ -30,29 +31,13 @@ describe("Ethereum Plugin", () => {
     const { data } = await axios.get("http://localhost:4040/deploy-ens");
 
     ensAddress = data.ensAddress
-    // resolverAddress = data.resolverAddress
+    resolverAddress = data.resolverAddress
     registrarAddress = data.registrarAddress
     // reverseAddress = data.reverseAddress
   });
 
   describe("Query", () => {
     it("CallView", async () => {
-      const node = namehash("whatever.eth")
-      const response = await client.query<{ callView: string }>({
-        uri: "w3://ens/ethereum.web3api.eth",
-        query: `
-          query {
-            callView(address: "${ensAddress}", method: "function resolver(bytes32 node) external view returns (address)", args: ["${node}"])
-          }
-        `,
-      });
-  
-      expect(response.data?.callView).toBeDefined()
-      expect(response.data?.callView).toBe("0x0000000000000000000000000000000000000000")
-      expect(response.errors).toBeUndefined()
-    });
-
-    it("Estimate Tx Gas", async () => {
       const node = namehash("whatever.eth")
       const response = await client.query<{ callView: string }>({
         uri: "w3://ens/ethereum.web3api.eth",
@@ -124,6 +109,221 @@ describe("Ethereum Plugin", () => {
       expect(response.data?.getSignerAddress).toBeDefined()
       expect(response.data?.getSignerAddress.startsWith("0x")).toBe(true)
     })
+
+    it("Get Signer Balance", async () => {
+      const response = await client.query<{ getSignerBalance: string }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          query {
+            getSignerBalance
+          }
+        `,
+      });
+  
+      expect(response.errors).toBeUndefined()
+      expect(response.data?.getSignerBalance).toBeDefined()
+    })
+
+    it("Get Signer Transaction Count", async () => {
+      const response = await client.query<{ getSignerTransactionCount: string }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          query {
+            getSignerTransactionCount
+          }
+        `,
+      });
+  
+      expect(response.errors).toBeUndefined()
+      expect(response.data?.getSignerTransactionCount).toBeDefined()
+      expect(Number(response.data?.getSignerTransactionCount)).toBeTruthy()
+    })
+
+    it("Get Gas Price", async () => {
+      const response = await client.query<{ getGasPrice: string }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          query {
+            getGasPrice
+          }
+        `,
+      });
+  
+      expect(response.errors).toBeUndefined()
+      expect(response.data?.getGasPrice).toBeDefined()
+      expect(Number(response.data?.getGasPrice)).toBeTruthy()
+    })
+
+    it("Estimate TX Gas", async () => {
+      const label = "0x" + keccak256("testwhatever5")
+      const types = ["bytes32", "address"]
+      const values = [label, signer]
+      const data = defaultAbiCoder.encode(types, values)
+
+      const response = await client.query<{ estimateTxGas: string }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          query {
+            estimateTxGas(to: "${registrarAddress}", data: "${data}")
+          }
+        `,
+      });
+  
+      expect(response.data?.estimateTxGas).toBeDefined()
+      expect(response.errors).toBeUndefined()
+      expect(Number(response.data?.estimateTxGas)).toBeTruthy()
+    })
+
+    it("To WEI", async () => {
+      const response = await client.query<{ toWei: string }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          query {
+            toWei(amount: "20")
+          }
+        `,
+      });
+  
+      expect(response.errors).toBeUndefined()
+      expect(response.data?.toWei).toBeDefined()
+      expect(Number(response.data?.toWei)).toEqual(20000000000000000000)
+    })
+
+    it("From WEI", async () => {
+      const response = await client.query<{ fromWei: string }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          query {
+            fromWei(amount: "20000000000000000000")
+          }
+        `,
+      });
+  
+      expect(response.errors).toBeUndefined()
+      expect(response.data?.fromWei).toBeDefined()
+      expect(Number(response.data?.fromWei)).toEqual(20)
+    })
+
+    it("Check address", async () => {
+      const response = await client.query<{ checkAddress: string }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          query {
+            checkAddress(address: "${signer}")
+          }
+        `,
+      });
+  
+      expect(response.errors).toBeUndefined()
+      expect(response.data?.checkAddress).toBeDefined()
+      expect(response.data?.checkAddress).toEqual(true)
+    })
+    
+
+    it("Wait for event (NameTransfer)", async () => {
+      const event = "event Transfer(bytes32 indexed node, address owner)"
+      const label = "0x" + keccak256("testwhatever10")
+      const domain = "testwhatever10.eth"
+      const newOwner = "0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0"
+
+      const listenerPromise = client.query<{ waitForEvent: any }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          query {
+            waitForEvent(address: "${ensAddress}", event: "${event}", args: ["${namehash(domain)}"], timeout: 20000)
+          }
+        `,
+      }).then(({ data }) => {
+        expect(typeof data?.waitForEvent.data === "string").toBe(true)
+        expect(typeof data?.waitForEvent.address === "string").toBe(true)
+        expect(data?.waitForEvent.log).toBeDefined()
+        expect(typeof data?.waitForEvent.log.transactionHash === "string").toBe(true)
+      });
+
+      
+      await client.query<{ callContractMethod: ethers.providers.TransactionReceipt }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          mutation {
+            callContractMethod(address: "${registrarAddress}", method: "function register(bytes32 label, address owner)", args: ["${label}", "${signer}"])
+          }
+        `,
+      });
+
+      await client.query<{ callContractMethod: ethers.providers.TransactionReceipt }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          mutation {
+            callContractMethod(address: "${ensAddress}", method: "function setOwner(bytes32 node, address owner) external", args: ["${namehash(domain)}", "${newOwner}"])
+          }
+        `
+      });
+
+      await listenerPromise
+
+    })
+
+    it("Wait for event (NewResolver)", async () => {
+      const event = "event NewResolver(bytes32 indexed node, address resolver)"
+      const label = "0x" + keccak256("testwhatever12")
+      const domain = "testwhatever12.eth"
+
+      const listenerPromise = client.query<{ waitForEvent: any }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          query {
+            waitForEvent(address: "${ensAddress}", event: "${event}", args: [], timeout: 20000)
+          }
+        `,
+      }).then(({ data }) => {
+        expect(typeof data?.waitForEvent.data === "string").toBe(true)
+        expect(typeof data?.waitForEvent.address === "string").toBe(true)
+        expect(data?.waitForEvent.log).toBeDefined()
+        expect(typeof data?.waitForEvent.log.transactionHash === "string").toBe(true)
+
+        return
+      });
+      
+      await client.query<{ callContractMethod: ethers.providers.TransactionReceipt }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          mutation {
+            callContractMethod(address: "${registrarAddress}", method: "function register(bytes32 label, address owner)", args: ["${label}", "${signer}"])
+          }
+        `,
+      });
+
+      await client.query<{ callContractMethod: ethers.providers.TransactionReceipt }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          mutation {
+            callContractMethod(address: "${ensAddress}", method: "function setResolver(bytes32 node, address owner)", args: ["${namehash(domain)}", "${resolverAddress}"])
+          }
+        `
+      });
+
+      await listenerPromise
+
+    })
+
+    it("Estimate TX gas", async () => {
+      const label = "0x" + keccak256("testwhatever23")
+      const types = ["bytes32", "address"]
+      const values = [label, signer]
+
+      const data = defaultAbiCoder.encode(types, values)
+      const response = await client.query<{ estimateTxGas: ethers.providers.TransactionReceipt }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          query {
+            estimateTxGas(to: "${registrarAddress}", data: "${data}")
+          }
+        `,
+      });
+  
+      expect(response.data?.estimateTxGas).toBeDefined()
+      expect(response.errors).toBeUndefined()
+    })
   })
 
   describe("Mutation", () => {
@@ -162,7 +362,7 @@ describe("Ethereum Plugin", () => {
     })
   
     it("SendRPC", async () => {
-      const response = await client.query<{ sendRPC?: string }>({
+      await client.query<{ sendRPC?: string }>({
         uri: "w3://ens/ethereum.web3api.eth",
         query: `
           mutation {
@@ -170,8 +370,6 @@ describe("Ethereum Plugin", () => {
           }
         `,
       });
-  
-      console.log(response.data?.sendRPC)
     })
   })
 });

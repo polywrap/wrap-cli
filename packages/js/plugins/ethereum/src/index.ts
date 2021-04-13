@@ -15,6 +15,7 @@ import {
   JsonRpcProvider,
   Web3Provider,
 } from "@ethersproject/providers";
+import { Log } from "@ethersproject/abstract-provider";
 import { getAddress } from "@ethersproject/address";
 import { defaultAbiCoder } from "ethers/lib/utils";
 
@@ -211,6 +212,72 @@ export class EthereumPlugin extends Plugin {
 
   public encodeParams(types: string[], values: string[]): string {
     return defaultAbiCoder.encode(types, values);
+  }
+
+  public checkAddress(address: string): boolean {
+    try {
+      // If the address is all upper-case, convert to lower case
+      if (address.indexOf("0X") > -1) {
+        address = address.toLowerCase();
+      }
+
+      const result = ethers.utils.getAddress(address);
+      if (!result) {
+        throw new Error("Invalid address");
+      }
+
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  public fromWei(amount: string): string {
+    const etherAmount = ethers.utils.formatEther(amount.toString());
+    return etherAmount.toString();
+  }
+
+  public toWei(amount: string): string {
+    const weiAmount = ethers.utils.parseEther(amount.toString());
+    return weiAmount.toString();
+  }
+
+  public async waitForEvent(
+    address: string,
+    event: string,
+    args: string[],
+    timeout = 60000
+  ): Promise<{
+    data: string;
+    address: string;
+    log: Log;
+  }> {
+    const contract = this.getContract(address, [event]);
+    const events = Object.keys(contract.interface.events);
+    const filter = contract.filters[events.slice(-1)[0]](...args);
+
+    return Promise.race([
+      new Promise((resolve) => {
+        contract.once(filter, (data: string, address: string, log: Log) => {
+          resolve({
+            data,
+            address,
+            log,
+          });
+        });
+      }),
+      new Promise((_, reject) => {
+        setTimeout(function () {
+          reject(
+            `Waiting for event "${event}" on contract "${address}" timed out`
+          );
+        }, timeout);
+      }),
+    ]) as Promise<{
+      data: string;
+      address: string;
+      log: Log;
+    }>;
   }
 }
 

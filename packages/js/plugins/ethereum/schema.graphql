@@ -56,6 +56,35 @@ type Query {
   ): String!
 
   getSignerAddress: String!
+
+  getSignerBalance(blockTag: Int): String!
+
+  getSignerTransactionCount(blockTag: Int): String!
+
+  getGasPrice: String!
+
+  estimateContractCallGas(
+    address: String!
+    method: String!
+    args: [String!]!
+  ): String!
+
+  checkAddress (address: String!): String!
+
+  toWei (amount: String!): String!
+
+  fromWei (amount: String!): String!
+
+  estimateTxGas(
+    tx: TxRequest!
+  ): String!
+
+  waitForEvent (
+    address: String!
+    event: String!
+    args: [String]!
+    timeout: Int
+  ): String!
 }
 
 type Mutation {

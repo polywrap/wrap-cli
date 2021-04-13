@@ -70,6 +70,32 @@ export const query = (ethereum: EthereumPlugin): PluginModule => ({
     return (await ethereum.getSigner().estimateGas(input.tx)).toString();
   },
 
+  checkAddress: async (input: { address: string }) => {
+    return await ethereum.checkAddress(input.address);
+  },
+
+  toWei: async (input: { amount: string }) => {
+    return await ethereum.toWei(input.amount);
+  },
+
+  fromWei: async (input: { amount: string }) => {
+    return await ethereum.fromWei(input.amount);
+  },
+
+  waitForEvent: async (input: {
+    address: string;
+    event: string;
+    args: string[];
+    timeout: number;
+  }) => {
+    return await ethereum.waitForEvent(
+      input.address,
+      input.event,
+      input.args,
+      input.timeout
+    );
+  },
+
   estimateContractCallGas: async (input: {
     address: string;
     method: string;
