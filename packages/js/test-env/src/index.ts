@@ -41,8 +41,10 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
     {
       from: "w3://ens/ethereum.web3api.eth",
       to: ethereumPlugin({
-        testnet: {
-          provider: ethereum as string,
+        networks: {
+          testnet: {
+            provider: ethereum as string,
+          },
         },
       }),
     },

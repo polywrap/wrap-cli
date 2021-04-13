@@ -83,12 +83,14 @@ export default {
       {
         from: "w3://ens/ethereum.web3api.eth",
         to: ethereumPlugin({
-          testnet: {
-            provider: ethereumProvider,
-          },
-          mainnet: {
-            provider:
-              "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+          networks: {
+            testnet: {
+              provider: ethereumProvider,
+            },
+            mainnet: {
+              provider:
+                "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+            },
           },
         }),
       },
