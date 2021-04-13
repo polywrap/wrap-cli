@@ -25,7 +25,6 @@ import Fraction from "../utils/Fraction";
 import { tokenAmountEquals, tokenEquals } from "./token";
 import { PriorityQueue } from "../utils/PriorityQueue";
 import { TradeOptions } from "../utils/TradeOptions";
-import { TradeData } from "../utils/TradeData";
 
 import { BigInt } from "as-bigint";
 
@@ -33,11 +32,14 @@ export function createTrade(input: Input_createTrade): Trade {
   const amounts: TokenAmount[] = new Array(input.route.path.length);
   const nextPairs: Pair[] = new Array(input.route.pairs.length);
   if (input.tradeType == TradeType.EXACT_INPUT) {
+    /*
     if (input.amount.token != input.route.input) {
       throw new Error(
         "Trade input token must be the same as trade route input token"
       );
     }
+    */
+
     amounts[0] = input.amount;
     for (let i = 0; i < input.route.path.length - 1; i++) {
       const pair = input.route.pairs[i];
@@ -53,11 +55,14 @@ export function createTrade(input: Input_createTrade): Trade {
       nextPairs[i] = nextPair;
     }
   } else {
+    /*
     if (input.amount.token != input.route.output) {
       throw new Error(
         "Trade input token must be the same as trade route input token"
       );
     }
+    */
+
     amounts[amounts.length - 1] = input.amount;
     for (let i = input.route.path.length - 1; i > 0; i--) {
       const pair = input.route.pairs[i - 1];
@@ -203,7 +208,7 @@ export function bestTradeExactIn(input: Input_bestTradeExactIn): Trade[] {
     throw new Error("maxHops must be greater than zero");
   }
   const bestTrades = _bestTradeExactIn(pairs, amountIn, tokenOut, options);
-  return bestTrades.toArray().map<Trade>((v: TradeData) => v.trade);
+  return bestTrades.toArray();
 }
 
 /* Similar to the above method, but targets a fixed output token amount. The
@@ -221,7 +226,7 @@ export function bestTradeExactOut(input: Input_bestTradeExactOut): Trade[] {
     throw new Error("maxHops must be greater than zero");
   }
   const bestTrades = _bestTradeExactOut(pairs, tokenIn, amountOut, options);
-  return bestTrades.toArray().map<Trade>((v: TradeData) => v.trade);
+  return bestTrades.toArray();
 }
 
 function _bestTradeExactIn(
@@ -231,10 +236,8 @@ function _bestTradeExactIn(
   options: TradeOptions,
   currentPairs: Pair[] = [],
   originalAmountIn: TokenAmount = amountIn,
-  bestTrades: PriorityQueue<TradeData> = new PriorityQueue<TradeData>(
-    TradeData.compare
-  )
-): PriorityQueue<TradeData> {
+  bestTrades: PriorityQueue<Trade> = new PriorityQueue<Trade>(tradeComparator)
+): PriorityQueue<Trade> {
   const sameTokenAmount = tokenAmountEquals({
     tokenAmount0: originalAmountIn,
     tokenAmount1: amountIn,
@@ -273,7 +276,7 @@ function _bestTradeExactIn(
         amount: originalAmountIn,
         tradeType: TradeType.EXACT_INPUT,
       });
-      bestTrades.insert(new TradeData(newTrade));
+      bestTrades.insert(newTrade);
     } else if (options.maxHops > 1 && pairs.length > 1) {
       const amountOut: TokenAmount = pairOutputAmount({
         pair: pair,
@@ -302,10 +305,8 @@ function _bestTradeExactOut(
   options: TradeOptions,
   currentPairs: Pair[] = [],
   originalAmountOut: TokenAmount = amountOut,
-  bestTrades: PriorityQueue<TradeData> = new PriorityQueue<TradeData>(
-    TradeData.compare
-  )
-): PriorityQueue<TradeData> {
+  bestTrades: PriorityQueue<Trade> = new PriorityQueue<Trade>(tradeComparator)
+): PriorityQueue<Trade> {
   const sameTokenAmount = tokenAmountEquals({
     tokenAmount0: originalAmountOut,
     tokenAmount1: amountOut,
@@ -335,16 +336,18 @@ function _bestTradeExactOut(
     const amountInToken = isToken0
       ? pair.tokenAmount1.token
       : pair.tokenAmount0.token;
+
     if (tokenEquals({ token: amountInToken, other: tokenIn })) {
       const newTrade: Trade = createTrade({
         route: createRoute({
           pairs: [pair].concat(currentPairs),
           input: originalAmountOut.token,
+          output: tokenIn,
         }),
         amount: originalAmountOut,
         tradeType: TradeType.EXACT_OUTPUT,
       });
-      bestTrades.insert(new TradeData(newTrade));
+      bestTrades.insert(newTrade);
     } else if (options.maxHops > 1 && pairs.length > 1) {
       const amountIn: TokenAmount = pairInputAmount({
         pair: pair,
@@ -364,4 +367,54 @@ function _bestTradeExactOut(
     }
   }
   return bestTrades;
+}
+
+export function tradeComparator(a: Trade, b: Trade): i32 {
+  const ioCmp = inputOutputComparator(a, b);
+  if (ioCmp !== 0) {
+    return ioCmp;
+  }
+
+  // TODO: price impact comaprison
+
+  // TODO: route path comparison
+
+  return 1;
+}
+
+export function inputOutputComparator(a: Trade, b: Trade): i32 {
+  const aInput = a.inputAmount;
+  const bInput = b.inputAmount;
+  if (!tokenEquals({ token: aInput.token, other: bInput.token })) {
+    throw new Error("To be compared, trades must the same input token");
+  }
+
+  const aOutput = a.outputAmount;
+  const bOutput = b.outputAmount;
+  if (!tokenEquals({ token: aOutput.token, other: bOutput.token })) {
+    throw new Error("To be compared, trades must the same output token");
+  }
+
+  const aOutputBI = BigInt.fromString(aOutput.amount);
+  const bOutputBI = BigInt.fromString(bOutput.amount);
+  const aInputBI = BigInt.fromString(aInput.amount);
+  const bInputBI = BigInt.fromString(bInput.amount);
+
+  if (aOutputBI.eq(bOutputBI)) {
+    if (aInputBI.eq(bInputBI)) {
+      return 0;
+    }
+
+    if (aInputBI.lt(bInputBI)) {
+      return -1;
+    } else {
+      return 1;
+    }
+  } else {
+    if (aOutputBI.lt(bOutputBI)) {
+      return 1;
+    } else {
+      return -1;
+    }
+  }
 }
