@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.17
+## Bugs
+* `@web3api/ethereum-plugin-js`: Network configurations must be nested within a property in order to allow for the `defaultNetwork` property to be set w/o causing a typing error (for not being of the `ConnectionConfig` type).
+
 # Web3API 0.0.1-prealpha.16
 ## Bugs
 * `@web3api/test-env`: Expose the IPFS node's swarm port (4001).
