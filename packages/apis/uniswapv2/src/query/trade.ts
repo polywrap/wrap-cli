@@ -53,13 +53,11 @@ export function createTrade(input: Input_createTrade): Trade {
       nextPairs[i] = nextPair;
     }
   } else {
-    /*
     if (input.amount.token != input.route.output) {
       throw new Error(
         "Trade input token must be the same as trade route input token"
       );
     }
-    */
 
     amounts[amounts.length - 1] = input.amount;
     for (let i = input.route.path.length - 1; i > 0; i--) {
