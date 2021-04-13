@@ -1,6 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { query, mutation } from "./resolvers";
 import { manifest } from "./manifest";
+import {
+  serializableTxReceipt,
+  SerializableTxReceipt,
+  SerializableTxRequest,
+} from "./serialize";
 
 import {
   Client,
@@ -19,21 +24,11 @@ import { Log } from "@ethersproject/abstract-provider";
 import { getAddress } from "@ethersproject/address";
 import { defaultAbiCoder } from "ethers/lib/utils";
 
-type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
-
 export type Address = string;
 export type AccountIndex = number;
 export type EthereumSigner = Signer | Address | AccountIndex;
 export type EthereumProvider = string | ExternalProvider;
 export type EthereumClient = JsonRpcProvider | Web3Provider;
-
-export type SerializableTxReceipt = Overwrite<
-  ethers.providers.TransactionReceipt,
-  {
-    gasUsed: string;
-    cumulativeGasUsed: string;
-  }
->;
 
 export interface EthereumConfig {
   provider: EthereumProvider;
@@ -159,11 +154,11 @@ export class EthereumPlugin extends Plugin {
     address: Address,
     method: string,
     args: string[]
-  ): Promise<ethers.providers.TransactionReceipt> {
+  ): Promise<SerializableTxReceipt> {
     const contract = this.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
     const tx = await contract[funcs[0]](...args);
-    const res: ethers.providers.TransactionReceipt = await tx.wait();
+    const res: SerializableTxReceipt = await tx.wait();
 
     return res;
   }
@@ -181,12 +176,14 @@ export class EthereumPlugin extends Plugin {
   }
 
   public async sendTransaction(
-    tx: ethers.providers.TransactionRequest
-  ): Promise<ethers.providers.TransactionReceipt> {
+    tx: SerializableTxRequest
+  ): Promise<SerializableTxReceipt> {
     const signer = this.getSigner();
 
     const res = await signer.sendTransaction(tx);
-    return await res.wait();
+    const receipt = await res.wait();
+
+    return serializableTxReceipt(receipt);
   }
 
   public async sendRPC(method: string, params: string[]): Promise<unknown> {

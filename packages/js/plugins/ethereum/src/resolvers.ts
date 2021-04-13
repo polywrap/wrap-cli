@@ -1,7 +1,7 @@
 import { EthereumPlugin } from ".";
+import { SerializableTxRequest } from "./serialize";
 
 import { PluginModule } from "@web3api/core-js";
-import { ethers } from "ethers";
 
 export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
   callContractMethod: async (input: {
@@ -16,9 +16,7 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
     );
   },
 
-  sendTransaction: async (input: {
-    tx: ethers.providers.TransactionRequest;
-  }) => {
+  sendTransaction: async (input: { tx: SerializableTxRequest }) => {
     return await ethereum.sendTransaction(input.tx);
   },
 
@@ -66,7 +64,7 @@ export const query = (ethereum: EthereumPlugin): PluginModule => ({
     return (await ethereum.getSigner().getGasPrice()).toString();
   },
 
-  estimateTxGas: async (input: { tx: ethers.providers.TransactionRequest }) => {
+  estimateTxGas: async (input: { tx: SerializableTxRequest }) => {
     return (await ethereum.getSigner().estimateGas(input.tx)).toString();
   },
 
