@@ -6,30 +6,38 @@ import { ChainId, Pair, Token, TradeType } from "../../query/w3";
 const token0: Token = {
   chainId: ChainId.MAINNET,
   address: "0x0000000000000000000000000000000000000001",
-  decimals: 18,
-  symbol: "t0",
-  name: null,
+  currency: {
+    decimals: 18,
+    symbol: "t0",
+    name: null,
+  }
 }
 const token1: Token = {
   chainId: ChainId.MAINNET,
   address: "0x0000000000000000000000000000000000000002",
-  decimals: 18,
-  symbol: "t1",
-  name: null,
+  currency: {
+    decimals: 18,
+    symbol: "t1",
+    name: null,
+  }
 }
 const token2: Token = {
   chainId: ChainId.MAINNET,
   address: "0x0000000000000000000000000000000000000003",
-  decimals: 18,
-  symbol: "t2",
-  name: null,
+  currency: {
+    decimals: 18,
+    symbol: "t2",
+    name: null,
+  }
 }
 const token3: Token = {
   chainId: ChainId.MAINNET,
   address: "0x0000000000000000000000000000000000000004",
-  decimals: 18,
-  symbol: "t3",
-  name: null,
+  currency: {
+    decimals: 18,
+    symbol: "t3",
+    name: null,
+  }
 }
 
 const pair_0_1: Pair = {
@@ -97,7 +105,8 @@ const empty_pair_0_1: Pair = {
 const exactIn = createTrade({
   route: createRoute({
     pairs: [pair_0_1, pair_1_2],
-    input: token0
+    input: token0,
+    output: null,
   }),
   amount: {
     token: token0,
@@ -108,7 +117,8 @@ const exactIn = createTrade({
 const exactOut = createTrade({
   route: createRoute({
     pairs: [pair_0_1, pair_1_2],
-    input: token0
+    input: token0,
+    output: null,
   }),
   amount: {
     token: token2,
