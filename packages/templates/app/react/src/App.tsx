@@ -22,6 +22,11 @@ export const App: React.FC = () => {
           isClickToPauseDisabled={true}
           height={"300px"}
           width={"300px"}
+          style={{
+            width: "50%",
+            height: "auto",
+            maxWidth: "300px"
+          }}
         />
         <HelloWorld />
       </Web3ApiProvider>

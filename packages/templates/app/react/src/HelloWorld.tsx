@@ -27,9 +27,9 @@ export const HelloWorld: React.FC = () => {
 
   return (
     <>
-      <div className="main__heading">"Hello World" from Web3API!</div>
+      <div className="main__heading">"Hello World"<br/>from Web3API!</div>
       <div className="main__text">
-        Try out the "Hello World" Web3API by:<br/>
+        Test the "Hello World" Web3API by:<br/>
           1. type into the input below<br/>
           2. click the submit button<br/>
           3. view the output in <a
@@ -58,6 +58,7 @@ export const HelloWorld: React.FC = () => {
           Checkout Our Documentation
         </a>
       </div>
+      <div style={{ width: "100%", height: "100px" }}/>
       <div className="footer__container">
         <a
           className="footer__link"
@@ -71,14 +72,14 @@ export const HelloWorld: React.FC = () => {
           href="https://app.ens.domains/name/helloworld.web3api.eth"
           target="_blank"
         >
-          ENS Domain (mainnet)
+          ENS Domain
         </a>
         <a
           className="footer__link"
           href="https://bafybeig7r7vm6vg7fkv4u57p6pj3t3a7li56zeiiu6nn7sx5lrlacy7lpi.ipfs.dweb.link/"
           target="_blank"
         >
-          IPFS Payload
+          IPFS Package
         </a>
       </div>
     </>
