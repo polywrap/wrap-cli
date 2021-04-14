@@ -18,14 +18,22 @@ const isIPFS = require("is-ipfs");
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
 
 interface IpfsClient {
-  add(data: Uint8Array, options?: unknown): Promise<{
-    name: string;
-    hash: CID;
-  }[]>;
+  add(
+    data: Uint8Array,
+    options?: unknown
+  ): Promise<
+    {
+      name: string;
+      hash: CID;
+    }[]
+  >;
 
   cat(cid: string, options?: unknown): Promise<Buffer>;
 
-  resolve(cid: string, options?: unknown): Promise<{
+  resolve(
+    cid: string,
+    options?: unknown
+  ): Promise<{
     path: string;
   }>;
 }
@@ -106,7 +114,7 @@ export class IpfsPlugin extends Plugin {
         const { path } = await ipfs.resolve(cid, options);
         return {
           cid: path,
-          provider
+          provider,
         };
       },
       options
@@ -135,10 +143,7 @@ export class IpfsPlugin extends Plugin {
 
         while (!complete) {
           const controller = new AbortController();
-          const timer = setTimeout(
-            () => controller.abort(),
-            timeout
-          );
+          const timer = setTimeout(() => controller.abort(), timeout);
 
           try {
             result = await exec(ipfs, provider, { signal: controller.signal });
@@ -148,7 +153,11 @@ export class IpfsPlugin extends Plugin {
 
           clearTimeout(timer);
 
-          if (controller.signal.aborted && this._config.fallbackProviders && !providerOverride) {
+          if (
+            controller.signal.aborted &&
+            this._config.fallbackProviders &&
+            !providerOverride
+          ) {
             // Retry with a new provider
             fallbackIdx += 1;
 
@@ -166,7 +175,12 @@ export class IpfsPlugin extends Plugin {
         if (!result) {
           throw Error(
             `${operation}: Timeout has been exceeded, and all providers have been exhausted.\nTimeout: ${timeout}\nProviders: ${
-              providerOverride ? [providerOverride] : [this._config.provider, ...(this._config.fallbackProviders || [])]
+              providerOverride
+                ? [providerOverride]
+                : [
+                    this._config.provider,
+                    ...(this._config.fallbackProviders || []),
+                  ]
             }`
           );
         }

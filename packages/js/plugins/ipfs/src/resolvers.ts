@@ -13,15 +13,12 @@ export const mutation = (ipfs: IpfsPlugin): PluginModule => ({
 });
 
 export const query = (ipfs: IpfsPlugin): PluginModule => ({
-  catFile: async (input: {
-    cid: string,
-    options?: Options
-  }) => {
+  catFile: async (input: { cid: string; options?: Options }) => {
     return await ipfs.cat(input.cid, input.options);
   },
   resolve: async (input: {
-    cid: string,
-    options?: Options
+    cid: string;
+    options?: Options;
   }): Promise<ResolveResult> => {
     return await ipfs.resolve(input.cid, input.options);
   },
@@ -35,11 +32,9 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
       // Try fetching uri/web3api.yaml
       try {
         return {
-          manifest: await ipfs.catToString(
-            `${input.path}/web3api.yaml`, {
-              timeout: 5000
-            }
-          ),
+          manifest: await ipfs.catToString(`${input.path}/web3api.yaml`, {
+            timeout: 5000,
+          }),
           uri: null,
         };
       } catch (e) {
@@ -50,11 +45,9 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
       // Try fetching uri/web3api.yml
       try {
         return {
-          manifest: await ipfs.catToString(
-            `${input.path}/web3api.yml`, {
-              timeout: 5000
-            }
-          ),
+          manifest: await ipfs.catToString(`${input.path}/web3api.yml`, {
+            timeout: 5000,
+          }),
           uri: null,
         };
       } catch (e) {
@@ -69,11 +62,11 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
   getFile: async (input: { path: string }) => {
     try {
       const { cid, provider } = await ipfs.resolve(input.path, {
-        timeout: 5000
+        timeout: 5000,
       });
 
       return await ipfs.cat(cid, {
-        provider: provider
+        provider: provider,
       });
     } catch (e) {
       return null;
