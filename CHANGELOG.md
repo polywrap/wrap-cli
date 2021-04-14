@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.19
+## Features
+* `@web3api/ipfs-plugin-js`: Added options for request timeouts, provider overrides, and fallback providers. Additionally a new method has been added, `resolve`, which allows the caller to try and resolve a given IFPS CID to ensure the document exists.
+
 # Web3API 0.0.1-prealpha.18
 ## Features
 * Updated the `app/react` template project to use the latest "Hello World" Web3API published at `ens/helloworld.web3api.eth`.
