@@ -1,0 +1,9 @@
+mutation setSubdomainOwner(
+  $subdomain: String!, $owner: String!, $registryAddress: String!
+) {
+  setSubdomainOwner(
+    subdomain: $subdomain
+    owner: $owner
+    registryAddress: $registryAddress
+  )
+}

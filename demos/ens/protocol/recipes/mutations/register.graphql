@@ -1,9 +1,8 @@
-mutation RegisterDomain($domain: String!, $registrarAddress: String!, $registryAddress: String!, $resolverAddress: String!, $owner: String!) {
+mutation RegisterDomain($domain: String!, $registrarAddress: String!, $registryAddress: String!, $owner: String!) {
   registerDomain(
     domain: $domain,
     registrarAddress: $registrarAddress,
     registryAddress: $registryAddress,
-    resolverAddress: $resolverAddress,
     owner: $owner
   )
 }

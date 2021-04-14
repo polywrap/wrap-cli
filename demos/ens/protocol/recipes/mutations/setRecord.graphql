@@ -1,0 +1,5 @@
+mutation setRecord(
+  $domain: String!, $owner: String!, $resolverAddress: String!, $ttl: String!, $registryAddress: String!
+) {
+  setRecord(domain: $domain, owner: $owner, resolverAddress: $resolverAddress, ttl: $ttl, registryAddress: $registryAddress)
+}

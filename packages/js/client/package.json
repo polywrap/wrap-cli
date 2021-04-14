@@ -31,6 +31,8 @@
     "@web3api/ipfs-plugin-js": "0.0.1-prealpha.15",
     "@web3api/logger-plugin-js": "0.0.1-prealpha.15",
     "@web3api/schema-parse": "0.0.1-prealpha.15",
+    "@web3api/sha3-plugin-js": "0.0.1-prealpha.15",
+    "@web3api/uts46-plugin-js": "0.0.1-prealpha.15",
     "graphql": "15.5.0",
     "js-yaml": "3.14.0",
     "web-worker": "1.0.0"

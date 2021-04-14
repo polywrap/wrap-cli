@@ -1,7 +1,14 @@
 [
   {
-    "api": "ens/ens.eth",
+    "api": "ens/testnet/ens.eth",
     "constants": "./constants.json"
+  },
+  {
+    "query": "./mutations/deployFIFSRegistrar.graphql",
+    "variables": {
+      "registryAddress": "$Registry",
+      "tld": "$Tld"
+    }
   },
   {
     "query": "./mutations/register.graphql",
@@ -9,8 +16,27 @@
       "domain": "$Domain",
       "registrarAddress": "$Registrar",
       "registryAddress": "$Registry",
-      "resolverAddress": "$Resolver",
       "owner": "$Signer"
+    }
+  },
+  {
+    "query": "./mutations/setResolver.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "resolverAddress": "$Resolver",
+      "registryAddress": "$Registry",
+      "owner": "$Signer"
+    }
+  },
+  {
+    "query": "./mutations/setSubdomainRecord.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "label": "$Label",
+      "owner": "$Signer",
+      "resolverAddress": "$Resolver",
+      "ttl": "$Ttl",
+      "registryAddress": "$Registry"
     }
   },
   {
@@ -38,12 +64,20 @@
     }
   },
   {
-    "query": "./mutations/setSubdomain.graphql",
+    "query": "./mutations/setSubdomainOwner.graphql",
     "variables": {
       "subdomain": "$Subdomain",
       "owner": "$Signer",
+      "registryAddress": "$Registry"
+    }
+  },
+  {
+    "query": "./mutations/setResolver.graphql",
+    "variables": {
+      "domain": "$Subdomain",
+      "resolverAddress": "$Resolver",
       "registryAddress": "$Registry",
-      "resolverAddress": "$Resolver"
+      "owner": "$Signer"
     }
   },
   {

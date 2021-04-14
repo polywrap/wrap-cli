@@ -1,0 +1,3 @@
+mutation setResolver($domain: String!, $resolverAddress: String!, $registryAddress: String!) {
+  setResolver(domain: $domain, resolverAddress: $resolverAddress, registryAddress: $registryAddress)
+}

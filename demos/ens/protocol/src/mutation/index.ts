@@ -1,5 +1,6 @@
 import { getResolver } from "../query";
 import { namehash, sha3 } from "../utils";
+import { abi, bytecode} from "../contracts/FIFSRegistrar"
 import {
   Ethereum_Mutation,
   Input_registerDomain,
@@ -11,7 +12,10 @@ import {
   Input_setName,
   Input_setOwner,
   Input_setResolver,
-  Input_setSubdomain,
+  Input_setSubdomainOwner,
+  Input_setSubdomainRecord,
+  Input_setRecord,
+  Input_deployFIFSRegistrar
 } from "./w3";
 
 export function setResolver(input: Input_setResolver): string {
@@ -19,6 +23,10 @@ export function setResolver(input: Input_setResolver): string {
     address: input.registryAddress,
     method: "function setResolver(bytes32 node, address owner)",
     args: [namehash(input.domain), input.resolverAddress],
+    connection: {
+      networkNameOrChainId: "testnet",
+      node: null
+    }
   });
 
   return setResolverTx;
@@ -27,19 +35,17 @@ export function setResolver(input: Input_setResolver): string {
 export function registerDomain(input: Input_registerDomain): string {
   const label = input.domain.split(".")[0];
 
-  Ethereum_Mutation.sendTransaction({
+  const tx = Ethereum_Mutation.sendTransaction({
     address: input.registrarAddress,
     method: "function register(bytes32 label, address owner)",
     args: [sha3(label), input.owner],
+    connection: {
+      networkNameOrChainId: "testnet",
+      node: null
+    }
   });
 
-  const setResolverTx = setResolver({
-    domain: input.domain,
-    registryAddress: input.registryAddress,
-    resolverAddress: input.resolverAddress,
-  });
-
-  return setResolverTx;
+  return tx;
 }
 
 export function setOwner(input: Input_setOwner): string {
@@ -47,27 +53,58 @@ export function setOwner(input: Input_setOwner): string {
     address: input.registryAddress,
     method: "function setOwner(bytes32 node, address owner) external",
     args: [namehash(input.domain), input.newOwner],
+    connection: {
+      networkNameOrChainId: "testnet",
+      node: null
+    }
   });
 
   return tx
 }
 
-export function setSubdomain(input: Input_setSubdomain): string {
+export function setSubdomainOwner(input: Input_setSubdomainOwner): string {
   const splitDomain = input.subdomain.split(".")
   const subdomainLabel = splitDomain[0]
   const domain = splitDomain.slice(1, splitDomain.length).join(".")
   
-  Ethereum_Mutation.sendTransaction({
+  let tx = Ethereum_Mutation.sendTransaction({
     address: input.registryAddress,
     method: "function setSubnodeOwner(bytes32 node, bytes32 label, address owner) external",
     args: [namehash(domain), sha3(subdomainLabel), input.owner],
+    connection: {
+      networkNameOrChainId: "testnet",
+      node: null
+    }
   });
 
-  let tx = setResolver({
-    domain: input.subdomain,
-    registryAddress: input.registryAddress,
-    resolverAddress: input.resolverAddress
-  })
+  return tx
+}
+
+export function setSubdomainRecord(input: Input_setSubdomainRecord): string {
+  const tx = Ethereum_Mutation.sendTransaction({
+    address: input.registryAddress,
+    method: "function setSubnodeRecord(bytes32 node, bytes32 label, address owner, address resolver, uint64 ttl)",
+    args: [namehash(input.domain), sha3(input.label), input.owner, input.resolverAddress, input.ttl],
+    connection: {
+      networkNameOrChainId: "testnet",
+      node: null
+    }
+  });
+
+  return tx
+}
+
+//TODO: Where could this be used on mainnet?
+export function setRecord(input: Input_setRecord): string {
+  const tx = Ethereum_Mutation.sendTransaction({
+    address: input.registryAddress,
+    method: "function setRecord(bytes32 node, address owner, address resolver, uint64 ttl)",
+    args: [namehash(input.domain), input.owner, input.resolverAddress, input.ttl],
+    connection: {
+      networkNameOrChainId: "testnet",
+      node: null
+    }
+  });
 
   return tx
 }
@@ -77,6 +114,10 @@ export function setName(input: Input_setName): string {
     address: input.reverseRegistryAddress,
     method: "function setName(string name)",
     args: [input.domain],
+    connection: {
+      networkNameOrChainId: "testnet",
+      node: null
+    }
   });
 
   return setNameTx;
@@ -89,6 +130,10 @@ export function reverseRegisterDomain(
     address: input.reverseRegistryAddress,
     method: "function claim(address owner)",
     args: [input.owner],
+    connection: {
+      networkNameOrChainId: "testnet",
+      node: null
+    }
   });
 
   const setNameTx = setName({
@@ -104,6 +149,10 @@ export function setAddress(input: Input_setAddress): string {
     address: input.resolverAddress,
     method: "function setAddr(bytes32 node, address addr)",
     args: [namehash(input.domain), input.address],
+    connection: {
+      networkNameOrChainId: "testnet",
+      node: null
+    }
   });
 
   return setAddrTx;
@@ -114,6 +163,10 @@ export function setContentHash(input: Input_setContentHash): string {
     address: input.resolverAddress,
     method: "function setContenthash(bytes32 node, bytes hash)",
     args: [namehash(input.domain), input.cid],
+    connection: {
+      networkNameOrChainId: "testnet",
+      node: null
+    }
   });
 
   return setContentHash;
@@ -129,6 +182,10 @@ export function setAddressFromDomain(input: Input_setAddressFromDomain): string 
     address: resolverAddress,
     method: "function setAddr(bytes32 node, address addr)",
     args: [namehash(input.domain), input.address],
+    connection: {
+      networkNameOrChainId: "testnet",
+      node: null
+    }
   });
 
   return setAddrTx;
@@ -144,7 +201,25 @@ export function setContentHashFromDomain(input: Input_setContentHashFromDomain):
     address: resolverAddress,
     method: "function setContenthash(bytes32 node, bytes hash)",
     args: [namehash(input.domain), input.cid],
+    connection: {
+      networkNameOrChainId: "testnet",
+      node: null
+    }
   });
 
   return setContentHash;
+}
+
+export function deployFIFSRegistrar(input: Input_deployFIFSRegistrar): string {
+  const address = Ethereum_Mutation.deployContract({
+    abi,
+    bytecode,
+    args: [input.registryAddress, namehash(input.tld)],
+    connection: {
+      networkNameOrChainId: "testnet",
+      node: null
+    },
+  })
+
+  return address
 }
