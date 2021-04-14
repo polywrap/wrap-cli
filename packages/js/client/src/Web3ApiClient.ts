@@ -47,6 +47,10 @@ export class Web3ApiClient implements Client {
           ? sanitizeUriRedirects(config.redirects)
           : [],
       };
+    } else {
+      this._config = {
+        redirects: [],
+      };
     }
 
     if (!this._config.redirects) {
