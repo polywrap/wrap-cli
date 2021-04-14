@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.18
+## Features
+* Updated the `app/react` template project to use the latest "Hello World" Web3API published at `ens/helloworld.web3api.eth`.
+
 # Web3API 0.0.1-prealpha.17
 ## Bugs
 * `@web3api/ethereum-plugin-js`: Network configurations must be nested within a property in order to allow for the `defaultNetwork` property to be set w/o causing a typing error (for not being of the `ConnectionConfig` type).
