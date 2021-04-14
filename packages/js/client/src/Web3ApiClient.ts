@@ -47,10 +47,6 @@ export class Web3ApiClient implements Client {
           ? sanitizeUriRedirects(config.redirects)
           : [],
       };
-    } else {
-      this._config = {
-        redirects: [],
-      };
     }
 
     if (!this._config.redirects) {
@@ -184,7 +180,7 @@ export class Web3ApiClient implements Client {
     invokeContextId = DEFAULT_CONTEXT_ID
   ): Promise<Api> {
     let api: Api | undefined = undefined;
-    // avoid using cache if query redirects specified
+    // TODO: validate cache when query time redirects used
     api = this._apiCache.get(uri.uri);
 
     if (!api) {

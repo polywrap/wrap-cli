@@ -54,7 +54,7 @@ describe("Web3ApiClient", () => {
       ensAddress
     );
 
-    const ensUri = `ens/${api.ensDomain}`;
+    const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
 
     const redirects = [
@@ -73,6 +73,7 @@ describe("Web3ApiClient", () => {
       {
         from: "w3://ens/ethereum.web3api.eth",
         to: ethereumPlugin({
+          defaultNetwork: "testnet",
           networks: {
             testnet: {
               provider: ethProvider
@@ -90,7 +91,11 @@ describe("Web3ApiClient", () => {
       uri: ensUri,
       query: `
         mutation {
-          deployContract
+          deployContract(
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
         }
       `,
       redirects: redirects
@@ -114,6 +119,9 @@ describe("Web3ApiClient", () => {
           setData(
             address: "${address}"
             value: $value
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
           )
         }
       `,
@@ -135,6 +143,9 @@ describe("Web3ApiClient", () => {
         query {
           getData(
             address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
           )
         }
       `,
