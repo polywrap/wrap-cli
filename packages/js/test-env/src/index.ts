@@ -52,9 +52,7 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
       from: "w3://ens/ipfs.web3api.eth",
       to: ipfsPlugin({
         provider: ipfs as string,
-        fallbackProviders: [
-          "https://ipfs.io"
-        ]
+        fallbackProviders: ["https://ipfs.io"],
       }),
     },
     {
