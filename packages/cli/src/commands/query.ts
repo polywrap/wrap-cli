@@ -96,10 +96,7 @@ export default {
       },
       {
         from: "w3://ens/ipfs.web3api.eth",
-        to: ipfsPlugin({
-          provider: ipfsProvider,
-          fallbackProviders: ["https://ipfs.io"],
-        }),
+        to: ipfsPlugin({ provider: ipfsProvider }),
       },
       {
         from: "w3://ens/ens.web3api.eth",
