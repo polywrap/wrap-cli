@@ -1,4 +1,5 @@
 import { IpfsPlugin } from "./";
+import { ResolveResult, Options } from "./types";
 
 import { PluginModule } from "@web3api/core-js";
 
@@ -12,8 +13,17 @@ export const mutation = (ipfs: IpfsPlugin): PluginModule => ({
 });
 
 export const query = (ipfs: IpfsPlugin): PluginModule => ({
-  catFile: async (input: { cid: string }) => {
-    return await ipfs.cat(input.cid);
+  catFile: async (input: {
+    cid: string,
+    options?: Options
+  }) => {
+    return await ipfs.cat(input.cid, input.options);
+  },
+  resolve: async (input: {
+    cid: string,
+    options?: Options
+  }): Promise<ResolveResult> => {
+    return await ipfs.resolve(input.cid, input.options);
   },
   // w3/api-resolver
   tryResolveUri: async (input: { authority: string; path: string }) => {
@@ -25,7 +35,11 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
       // Try fetching uri/web3api.yaml
       try {
         return {
-          manifest: await ipfs.catToString(`${input.path}/web3api.yaml`),
+          manifest: await ipfs.catToString(
+            `${input.path}/web3api.yaml`, {
+              timeout: 5000
+            }
+          ),
           uri: null,
         };
       } catch (e) {
@@ -36,7 +50,11 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
       // Try fetching uri/web3api.yml
       try {
         return {
-          manifest: await ipfs.catToString(`${input.path}/web3api.yml`),
+          manifest: await ipfs.catToString(
+            `${input.path}/web3api.yml`, {
+              timeout: 5000
+            }
+          ),
           uri: null,
         };
       } catch (e) {
@@ -50,7 +68,13 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
   },
   getFile: async (input: { path: string }) => {
     try {
-      return await ipfs.cat(input.path);
+      const { cid, provider } = await ipfs.resolve(input.path, {
+        timeout: 5000
+      });
+
+      return await ipfs.cat(cid, {
+        provider: provider
+      });
     } catch (e) {
       return null;
     }

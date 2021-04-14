@@ -57,7 +57,12 @@ export class SchemaComposer {
     if (ipfsProvider) {
       redirects.push({
         from: "w3://ens/ipfs.web3api.eth",
-        to: ipfsPlugin({ provider: ipfsProvider }),
+        to: ipfsPlugin({
+          provider: ipfsProvider,
+          fallbackProviders: [
+            "https://ipfs.io"
+          ]
+        }),
       });
     }
 
