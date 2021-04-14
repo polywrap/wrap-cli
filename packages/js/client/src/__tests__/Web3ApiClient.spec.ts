@@ -64,12 +64,20 @@ describe("Web3ApiClient", () => {
       },
       {
         from: "w3//ens/ens.web3api.eth",
-        to: ensPlugin({ address: ensAddress }),
+        to: ensPlugin({
+          addresses: {
+            testnet: ensAddress
+          }
+        }),
       },
       {
         from: "w3://ens/ethereum.web3api.eth",
         to: ethereumPlugin({
-           provider: ethProvider
+          networks: {
+            testnet: {
+              provider: ethProvider
+            }
+          }
         })
       }
     ]
