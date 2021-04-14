@@ -30,18 +30,17 @@
 }
 
 .main__link {
-  text-decoration: none;
   font-size: 22px;
   font-weight: 600;
   margin-top: 2rem;
-  color: white;
+  color: #60c093;
 }
 
 .main__input {
   font: inherit;
-  color: white;
+  color: #60c093;
   width: 40rem;
-  border: 1px solid white;
+  border: 3px solid #529dad;
   height: 1.1876em;
   margin: 2.5rem 0;
   display: block;
@@ -75,4 +74,21 @@
   color: #ffffff;
   border: solid 1px #529dad;
   background-color: #60c093;
+}
+
+.footer__container {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 2.5rem;
+  text-align: center;
+}
+
+.footer__link {
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-right: 20px;
+  color: white;
 }
