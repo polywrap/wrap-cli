@@ -54,10 +54,18 @@ export class IpfsPlugin extends Plugin {
   public async add(
     data: Uint8Array
   ): Promise<{
-    path: string;
-    cid: CID;
+    name: string;
+    hash: CID;
   }> {
-    return await this._ipfs.add(data);
+    const result = await this._ipfs.add(data);
+
+    if (result.length === 0) {
+      throw Error(
+        `IpfsPlugin:add failed to add contents. Result of length 0 returned.`
+      );
+    }
+
+    return result[0];
   }
 
   public async cat(cid: string): Promise<Buffer> {

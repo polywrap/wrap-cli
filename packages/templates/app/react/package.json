@@ -2,24 +2,33 @@
   "name": "templates-app-react",
   "description": "Web3API dApp React Template",
   "private": true,
-  "version": "0.0.1-prealpha.8",
+  "version": "0.0.1-prealpha.16",
+  "workspaces": {
+    "nohoist": [
+      "react-scripts",
+      "react-scripts/**"
+    ]
+  },
   "dependencies": {
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
-    "@web3api/client-js": "0.0.1-prealpha.8",
+    "@types/react-lottie": "^1.2.5",
+    "@web3api/client-js": "0.0.1-prealpha.16",
+    "@web3api/react": "0.0.1-prealpha.16",
     "http-proxy": "1.18.1",
     "http-proxy-middleware": "1.0.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-lottie": "^1.2.3",
     "react-scripts": "3.4.1",
     "stream-array": "1.1.2",
-    "typescript": "~3.7.2"
+    "typescript": "4.0.7"
   },
   "devDependencies": {
-    "eslint": "^6.6.0"
+    "eslint": "6.8.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -33,7 +42,9 @@
   },
   "eslintConfig": {
     "root": true,
-    "extends": "react-app"
+    "extends": [
+      "react-app"
+    ]
   },
   "browserslist": {
     "production": [

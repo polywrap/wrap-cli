@@ -26,7 +26,7 @@ import {
 const DEFAULT_CONTEXT_ID = "default";
 
 export interface ClientConfig<TUri = string> {
-  redirects: UriRedirect<TUri>[];
+  redirects?: UriRedirect<TUri>[];
 }
 
 export class Web3ApiClient implements Client {
@@ -43,12 +43,18 @@ export class Web3ApiClient implements Client {
     if (config) {
       this._config = {
         ...config,
-        redirects: sanitizeUriRedirects(config.redirects),
+        redirects: config.redirects
+          ? sanitizeUriRedirects(config.redirects)
+          : [],
       };
     } else {
       this._config = {
         redirects: [],
       };
+    }
+
+    if (!this._config.redirects) {
+      this._config.redirects = [];
     }
 
     // Add all default redirects (IPFS, ETH, ENS)
@@ -237,10 +243,10 @@ export class Web3ApiClient implements Client {
 
     let invokeRedirects: UriRedirect<Uri>[];
     if (redirects && redirects.length) {
-      redirects.push(...this._config.redirects);
+      redirects.push(...(this._config.redirects as UriRedirect<Uri>[]));
       invokeRedirects = redirects;
     } else {
-      invokeRedirects = this._config.redirects;
+      invokeRedirects = this._config.redirects as UriRedirect<Uri>[];
     }
 
     this._invokeContextMap.set(invokeId, {

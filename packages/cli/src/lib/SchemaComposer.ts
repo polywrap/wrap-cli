@@ -33,14 +33,24 @@ export class SchemaComposer {
     if (ensAddress) {
       redirects.push({
         from: "w3://ens/ens.web3api.eth",
-        to: ensPlugin({ address: ensAddress }),
+        to: ensPlugin({
+          addresses: {
+            testnet: ensAddress,
+          },
+        }),
       });
     }
 
     if (ethProvider) {
       redirects.push({
         from: "w3://ens/ethereum.web3api.eth",
-        to: ethereumPlugin({ provider: ethProvider }),
+        to: ethereumPlugin({
+          networks: {
+            testnet: {
+              provider: ethProvider,
+            },
+          },
+        }),
       });
     }
 

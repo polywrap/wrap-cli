@@ -25,7 +25,7 @@ export interface UseWeb3ApiQueryProps<
 export interface UseWeb3ApiQuery<
   TData extends Record<string, unknown> = Record<string, unknown>
 > extends UseWeb3ApiQueryState<TData> {
-  execute: () => Promise<QueryApiResult>;
+  execute: () => Promise<QueryApiResult<TData>>;
 }
 
 export function useWeb3ApiQuery<

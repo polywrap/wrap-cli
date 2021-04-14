@@ -6,11 +6,8 @@ import { PluginModule } from "@web3api/core-js";
 // https://github.com/web3-api/monorepo/issues/101
 export const mutation = (ipfs: IpfsPlugin): PluginModule => ({
   addFile: async (input: { data: Uint8Array }) => {
-    const { path, cid } = await ipfs.add(input.data);
-    return {
-      path,
-      cid,
-    };
+    const { hash } = await ipfs.add(input.data);
+    return hash;
   },
 });
 
