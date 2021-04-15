@@ -14,4 +14,5 @@ type Mutation {
   setAddressFromDomain(domain: String!, address: String!, registryAddress: String!): String!
   setContentHashFromDomain(domain: String!, cid: String!, registryAddress: String!): String!
   deployFIFSRegistrar(registryAddress: String!, tld: String!): String!
+  registerSubnodeRecordWithFIFSRegistrar(label: String!, owner: String!, resolverAddress: String!, ttl: String!, fifsRegistrarAddress: String!): String!
 }

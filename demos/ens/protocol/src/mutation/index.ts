@@ -1,5 +1,5 @@
 import { getResolver } from "../query";
-import { namehash, sha3 } from "../utils";
+import { namehash, keccak256 } from "../utils";
 import { abi, bytecode} from "../contracts/FIFSRegistrar"
 import {
   Ethereum_Mutation,
@@ -15,7 +15,8 @@ import {
   Input_setSubdomainOwner,
   Input_setSubdomainRecord,
   Input_setRecord,
-  Input_deployFIFSRegistrar
+  Input_deployFIFSRegistrar,
+  Input_registerSubnodeRecordWithFIFSRegistrar
 } from "./w3";
 
 export function setResolver(input: Input_setResolver): string {
@@ -38,7 +39,7 @@ export function registerDomain(input: Input_registerDomain): string {
   const tx = Ethereum_Mutation.sendTransaction({
     address: input.registrarAddress,
     method: "function register(bytes32 label, address owner)",
-    args: [sha3(label), input.owner],
+    args: [keccak256(label), input.owner],
     connection: {
       networkNameOrChainId: "testnet",
       node: null
@@ -70,7 +71,7 @@ export function setSubdomainOwner(input: Input_setSubdomainOwner): string {
   let tx = Ethereum_Mutation.sendTransaction({
     address: input.registryAddress,
     method: "function setSubnodeOwner(bytes32 node, bytes32 label, address owner) external",
-    args: [namehash(domain), sha3(subdomainLabel), input.owner],
+    args: [namehash(domain), keccak256(subdomainLabel), input.owner],
     connection: {
       networkNameOrChainId: "testnet",
       node: null
@@ -84,7 +85,7 @@ export function setSubdomainRecord(input: Input_setSubdomainRecord): string {
   const tx = Ethereum_Mutation.sendTransaction({
     address: input.registryAddress,
     method: "function setSubnodeRecord(bytes32 node, bytes32 label, address owner, address resolver, uint64 ttl)",
-    args: [namehash(input.domain), sha3(input.label), input.owner, input.resolverAddress, input.ttl],
+    args: [namehash(input.domain), keccak256(input.label), input.owner, input.resolverAddress, input.ttl],
     connection: {
       networkNameOrChainId: "testnet",
       node: null
@@ -222,4 +223,20 @@ export function deployFIFSRegistrar(input: Input_deployFIFSRegistrar): string {
   })
 
   return address
+}
+
+//TODO: needs testing here with a recipe. Was tested in the Web3Hub
+
+export function registerSubnodeRecordWithFIFSRegistrar(input: Input_registerSubnodeRecordWithFIFSRegistrar): string {
+  const txHash = Ethereum_Mutation.sendTransaction({
+    address: input.fifsRegistrarAddress,
+    method: "function register(bytes32 label, address owner, address resolver, uint64 ttl) external",
+    args: [keccak256(input.label), input.owner, input.resolverAddress, input.ttl],
+    connection: {
+      networkNameOrChainId: "testnet",
+      node: null
+    }
+  });
+
+  return txHash
 }

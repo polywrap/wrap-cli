@@ -26,6 +26,6 @@ export function normalize(name: string): string {
   }) : name
 }
 
-export function sha3 (value: string): string {
+export function keccak256 (value: string): string {
   return "0x" + SHA3_Query.keccak_256({ message: value })
 }

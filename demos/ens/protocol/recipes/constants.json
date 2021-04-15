@@ -9,7 +9,7 @@
   "Domain2": "record.eth",
   "Subdomain": "test.web3api.eth",
   "Label": "label",
-  "Tld": "eth",
+  "Tld": "test.web3api.eth",
   "Ttl": "0",
   "AlternateOwner": "0xf9F77f613Ee7D374C954fADA27618E21eA31FB76"
 }

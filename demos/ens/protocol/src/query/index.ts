@@ -1,4 +1,4 @@
-import { namehash, sha3 } from "../utils";
+import { namehash, keccak256 } from "../utils";
 import {
   Ethereum_Query,
   Input_getResolver,
@@ -120,7 +120,7 @@ export function getExpiryTimes(input: Input_getExpiryTimes): string {
     address: input.registrarAddress,
     method:
       "function expiryTimes(bytes32 label) external view returns (uint256)",
-    args: [sha3(label)],
+    args: [keccak256(label)],
     connection: {
       networkNameOrChainId: "testnet",
       node: null
