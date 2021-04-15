@@ -2,41 +2,48 @@
   "name": "uniswapV2-api-assemblyscript",
   "description": "UniswapV2 Web3API",
   "private": true,
-  "version": "0.0.1-prealpha.8",
+  "version": "0.0.1",
   "scripts": {
     "build": "npx w3 build",
-    "test": "TEST=true jest --passWithNoTests --runInBand --verbose",
-    "test:ci": "TEST=true jest --passWithNoTests --runInBand --verbose",
-    "test:env:up": "npx w3 test-env up",
-    "test:env:down": "npx w3 test-env down"
+    "test": "TS_NODE_PROJECT='./tsconfig.json' hardhat test",
+    "test:ci": "TS_NODE_PROJECT='./tsconfig.json' hardhat test"
   },
   "workspaces": {
     "nohoist": [
       "assemblyscript",
-      "assemblyscript/**"
+      "assemblyscript/**",
+      "mocha",
+      "mocha/**",
+      "@types/mocha",
+      "@types/mocha/**"
     ]
   },
   "dependencies": {
-    "as-bigint": "^0.1.2"
+    "as-bigint": "^0.1.3"
   },
   "devDependencies": {
+    "@uniswap/sdk": "^3.0.3",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
-    "@types/jest": "26.0.8",
+    "@types/chai": "^4.2.16",
+    "@types/mocha": "^8.2.2",
     "@types/node": "12.6.9",
+    "@types/node-fetch": "^2.5.10",
     "@uniswap/v2-core": "1.0.1",
     "@uniswap/v2-periphery": "1.1.0-beta.0",
-    "@web3api/cli": "0.0.1-prealpha.12",
-    "@web3api/client-js": "0.0.1-prealpha.12",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.12",
-    "@web3api/test-env-js": "0.0.1-prealpha.12",
-    "@web3api/wasm-as": "0.0.1-prealpha.12",
+    "@web3api/cli": "0.0.1-prealpha.20",
+    "@web3api/client-js": "0.0.1-prealpha.20",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.20",
+    "@web3api/test-env-js": "0.0.1-prealpha.20",
+    "@web3api/wasm-as": "0.0.1-prealpha.20",
     "assemblyscript": "0.17.14",
+    "chai": "4.3.4",
+    "ethers": "5.0.7",
     "hardhat": "^2.1.2",
-    "jest": "26.6.3",
     "js-yaml": "3.14.0",
+    "mocha": "^8.3.2",
+    "node-fetch": "2.6.1",
     "rimraf": "3.0.2",
-    "ts-jest": "26.5.4",
-    "typescript": "4.0.7",
-    "ts-node": "8.10.2"
+    "ts-node": "8.10.2",
+    "typescript": "4.0.7"
   }
 }

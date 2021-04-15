@@ -1,7 +1,21 @@
 {
-  "extends": "assemblyscript/std/assembly.json",
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "lib": [
+      "es2020",
+      "es2015",
+      "es5",
+      "dom"
+    ],
+    "outDir": "build",
+    "types": ["mocha"],
+  },
   "include": [
-    "./src/**/*.ts"
+    "./src/__tests__/**/*.ts"
   ],
-  "exclude": ["./src/__tests__/**/*.ts"]
+  "exclude": [
+    "./src/query/**/*.ts",
+    "./src/mutation/**/*.ts",
+    "./src/utils/**/*.ts"
+  ]
 }

@@ -63,7 +63,7 @@ export function midPrice(route: Route): Price {
     const amount0 = BigInt.fromString(reserve0.amount);
     const amount1 = BigInt.fromString(reserve1.amount);
     prices.push(
-      tokenEquals({ token: path[i], other: pair.tokenAmount0.token })
+      tokenEquals({ token: path[i], other: reserve0.token })
         ? new Price(reserve0.token, reserve1.token, amount0, amount1)
         : new Price(reserve1.token, reserve0.token, amount1, amount0)
     );

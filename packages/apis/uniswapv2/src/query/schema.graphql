@@ -32,6 +32,14 @@ type Query {
     pair: Pair!
   ): [TokenAmount!]! # [Uint256!]!
 
+  pairToken0Price(
+    pair: Pair!
+  ): TokenAmount!
+
+  pairToken1Price(
+    pair: Pair!
+  ): TokenAmount!
+
   pairOutputAmount(
     pair: Pair!
     inputAmount: TokenAmount!

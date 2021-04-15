@@ -1,0 +1,14 @@
+{
+  "extends": "assemblyscript/std/assembly.json",
+  "compilerOptions": {
+    "outDir": "build"
+  },
+  "include": [
+    "./src/query/**/*.ts",
+    "./src/mutation/**/*.ts",
+    "./src/utils/**/*.ts"
+  ],
+  "exclude": [
+    "./src/__tests__/**/*.ts"
+  ]
+}
