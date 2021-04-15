@@ -17,6 +17,16 @@ enum Rounding {
   ROUND_UP
 }
 
+type TradeOptions {
+  allowedSlippage: String!
+  recipient: String!
+  unixTimestamp: UInt64!
+  ttl: UInt32
+  deadline: UInt32
+  feeOnTransfer: Boolean
+}
+
+
 type Token {
   chainId: ChainId!
   address: String!

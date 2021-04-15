@@ -44,8 +44,9 @@ export function swapCallParameters(
   const path = input.trade.route.path.map<string>((token) => token.address);
   const deadline = !input.tradeOptions.ttl.isNull
     ? "0x" +
-      ((Math.floor((Date.now() / 1000) as f64) +
-        input.tradeOptions.ttl.value) as u64).toString(16)
+      (
+        input.tradeOptions.unixTimestamp + input.tradeOptions.ttl.value
+      ).toString(16)
     : "0x" + (input.tradeOptions.deadline.value as u32).toString(16);
   const useFeeOnTransfer = input.tradeOptions.feeOnTransfer;
 

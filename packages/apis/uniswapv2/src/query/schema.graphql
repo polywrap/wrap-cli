@@ -1,18 +1,11 @@
 #import { Query } into Ethereum from "w3://ens/ethereum.web3api.eth"
-#import { ChainId, TradeType, Rounding, Currency, Token, TokenAmount, Pair, Route, Trade } from "../common/schema.graphql"
+#import { ChainId, TradeType, Rounding, Currency, Token, TokenAmount, TradeOptions, Pair, Route, Trade } from "../common/schema.graphql"
 
 type BestTradeOptions {
   maxNumResults: UInt32
   maxHops: UInt32
 }
 
-type TradeOptions {
-  allowedSlippage: String!
-  recipient: String!
-  ttl: UInt32
-  deadline: UInt32
-  feeOnTransfer: Boolean
-}
 
 type SwapParameters {
   methodName: String!
