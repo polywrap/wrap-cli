@@ -22,7 +22,12 @@ describe("Ethereum Plugin", () => {
         {
           from: "w3://ens/ethereum.web3api.eth",
           to: ethereumPlugin({
-            provider: "http://localhost:8545",
+            networks: {
+              testnet: {
+                provider: "http://localhost:8545"
+              }
+            },
+            defaultNetwork: "testnet"
           }),
         },
       ],

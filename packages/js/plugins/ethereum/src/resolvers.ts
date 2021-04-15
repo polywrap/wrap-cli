@@ -19,8 +19,11 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
     );
   },
 
-  sendTransaction: async (input: { tx: SerializableTxRequest }) => {
-    return await ethereum.sendTransaction(input.tx);
+  sendTransaction: async (input: {
+    tx: SerializableTxRequest;
+    connection?: ConnectionOverride;
+  }) => {
+    return await ethereum.sendTransaction(input.tx, input.connection);
   },
   deployContract: async (input: {
     abi: string;
@@ -36,8 +39,12 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
     );
   },
 
-  sendRPC: async (input: { method: string; params: string[] }) => {
-    return await ethereum.sendRPC(input.method, input.params);
+  sendRPC: async (input: {
+    method: string;
+    params: string[];
+    connection?: ConnectionOverride;
+  }) => {
+    return await ethereum.sendRPC(input.method, input.params, input.connection);
   },
 });
 
@@ -56,34 +63,51 @@ export const query = (ethereum: EthereumPlugin): PluginModule => ({
     );
   },
 
-  signMessage: async (input: { message: string }) => {
-    return await ethereum.signMessage(input.message);
+  signMessage: async (input: {
+    message: string;
+    connection?: ConnectionOverride;
+  }) => {
+    return await ethereum.signMessage(input.message, input.connection);
   },
 
   encodeParams: (input: { types: string[]; values: string[] }) => {
     return ethereum.encodeParams(input.types, input.values);
   },
 
-  getSignerAddress: async () => {
-    return await ethereum.getSigner().getAddress();
+  getSignerAddress: async (input: { connection?: ConnectionOverride }) => {
+    const connection = await ethereum.getConnection(input.connection);
+    return await connection.getSigner().getAddress();
   },
 
-  getSignerBalance: async (input: { blockTag?: number }) => {
-    return (await ethereum.getSigner().getBalance(input.blockTag)).toString();
+  getSignerBalance: async (input: {
+    blockTag?: number;
+    connection?: ConnectionOverride;
+  }) => {
+    const connection = await ethereum.getConnection(input.connection);
+    return (await connection.getSigner().getBalance(input.blockTag)).toString();
   },
 
-  getSignerTransactionCount: async (input: { blockTag?: number }) => {
+  getSignerTransactionCount: async (input: {
+    blockTag?: number;
+    connection?: ConnectionOverride;
+  }) => {
+    const connection = await ethereum.getConnection(input.connection);
     return (
-      await ethereum.getSigner().getTransactionCount(input.blockTag)
+      await connection.getSigner().getTransactionCount(input.blockTag)
     ).toString();
   },
 
-  getGasPrice: async () => {
-    return (await ethereum.getSigner().getGasPrice()).toString();
+  getGasPrice: async (input: { connection?: ConnectionOverride }) => {
+    const connection = await ethereum.getConnection(input.connection);
+    return (await connection.getSigner().getGasPrice()).toString();
   },
 
-  estimateTxGas: async (input: { tx: SerializableTxRequest }) => {
-    return (await ethereum.getSigner().estimateGas(input.tx)).toString();
+  estimateTxGas: async (input: {
+    tx: SerializableTxRequest;
+    connection?: ConnectionOverride;
+  }) => {
+    const connection = await ethereum.getConnection(input.connection);
+    return (await connection.getSigner().estimateGas(input.tx)).toString();
   },
 
   checkAddress: async (input: { address: string }) => {
@@ -103,12 +127,14 @@ export const query = (ethereum: EthereumPlugin): PluginModule => ({
     event: string;
     args: string[];
     timeout: number;
+    connection?: ConnectionOverride;
   }) => {
     return await ethereum.waitForEvent(
       input.address,
       input.event,
       input.args,
-      input.timeout
+      input.timeout,
+      input.connection
     );
   },
 
@@ -116,11 +142,13 @@ export const query = (ethereum: EthereumPlugin): PluginModule => ({
     address: string;
     method: string;
     args: string[];
+    connection?: ConnectionOverride;
   }) => {
     return await ethereum.estimateContractCallGas(
       input.address,
       input.method,
-      input.args
+      input.args,
+      input.connection
     );
   },
 });

@@ -49,6 +49,7 @@ type Query {
 
   signMessage(
     message: String!
+    connection: Connection
   ): String!
 
   encodeParams(
@@ -56,18 +57,25 @@ type Query {
     values: [String!]!
   ): String!
 
-  getSignerAddress: String!
+  getSignerAddress(connection: Connection): String!
 
-  getSignerBalance(blockTag: Int): String!
+  getSignerBalance(
+    blockTag: Int
+    connection: Connection
+  ): String!
 
-  getSignerTransactionCount(blockTag: Int): String!
+  getSignerTransactionCount(
+    blockTag: Int
+    connection: Connection
+  ): String!
 
-  getGasPrice: String!
+  getGasPrice(connection: Connection): String!
 
   estimateContractCallGas(
     address: String!
     method: String!
     args: [String!]!
+    connection: Connection
   ): String!
 
   checkAddress (address: String!): String!
@@ -78,6 +86,7 @@ type Query {
 
   estimateTxGas(
     tx: TxRequest!
+    connection: Connection
   ): String!
 
   waitForEvent (
@@ -85,6 +94,7 @@ type Query {
     event: String!
     args: [String]!
     timeout: Int
+    connection: Connection
   ): String!
 }
 
@@ -105,11 +115,13 @@ type Mutation {
 
   sendTransaction(
     tx: TxRequest!
+    connection: Connection
   ): TxReceipt!
 
   sendRPC(
     method: String!
     params: [String!]!
+    connection: Connection
   ): String
 }
 

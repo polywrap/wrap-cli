@@ -25,14 +25,9 @@ import {
   PluginModules,
   PluginFactory,
 } from "@web3api/core-js";
-import { Signer, ethers } from "ethers";
-import {
-  ExternalProvider,
-  JsonRpcProvider,
-  Web3Provider,
-} from "@ethersproject/providers";
+import { ethers } from "ethers";
+import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import { Log } from "@ethersproject/abstract-provider";
-import { getAddress } from "@ethersproject/address";
 import { defaultAbiCoder } from "ethers/lib/utils";
 
 // Export all types that are nested inside of EthereumConfig.
@@ -185,9 +180,11 @@ export class EthereumPlugin extends Plugin {
   public async estimateContractCallGas(
     address: Address,
     method: string,
-    args: string[]
+    args: string[],
+    connectionOverride?: ConnectionOverride
   ): Promise<string> {
-    const contract = this.getContract(address, [method]);
+    const connection = await this.getConnection(connectionOverride);
+    const contract = connection.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
     const gas = await contract.estimateGas[funcs[0]](...args);
 
@@ -195,9 +192,11 @@ export class EthereumPlugin extends Plugin {
   }
 
   public async sendTransaction(
-    tx: SerializableTxRequest
+    tx: SerializableTxRequest,
+    connectionOverride?: ConnectionOverride
   ): Promise<SerializableTxReceipt> {
-    const signer = this.getSigner();
+    const connection = await this.getConnection(connectionOverride);
+    const signer = connection.getSigner();
 
     const res = await signer.sendTransaction(tx);
     const receipt = await res.wait();
@@ -205,8 +204,13 @@ export class EthereumPlugin extends Plugin {
     return serializableTxReceipt(receipt);
   }
 
-  public async sendRPC(method: string, params: string[]): Promise<unknown> {
-    const provider = this.getSigner().provider;
+  public async sendRPC(
+    method: string,
+    params: string[],
+    connectionOverride?: ConnectionOverride
+  ): Promise<unknown> {
+    const connection = await this.getConnection(connectionOverride);
+    const provider = connection.getSigner().provider;
 
     if (
       provider instanceof JsonRpcProvider ||
@@ -219,11 +223,15 @@ export class EthereumPlugin extends Plugin {
     }
   }
 
-  public async signMessage(message: string): Promise<string> {
+  public async signMessage(
+    message: string,
+    connectionOverride?: ConnectionOverride
+  ): Promise<string> {
+    const connection = await this.getConnection(connectionOverride);
     const messageHash = ethers.utils.id(message);
     const messageHashBytes = ethers.utils.arrayify(messageHash);
 
-    return await this.getSigner().signMessage(messageHashBytes);
+    return await connection.getSigner().signMessage(messageHashBytes);
   }
 
   public encodeParams(types: string[], values: string[]): string {
@@ -262,13 +270,15 @@ export class EthereumPlugin extends Plugin {
     address: string,
     event: string,
     args: string[],
-    timeout = 60000
+    timeout = 60000,
+    connectionOverride?: ConnectionOverride
   ): Promise<{
     data: string;
     address: string;
     log: Log;
   }> {
-    const contract = this.getContract(address, [event]);
+    const connection = await this.getConnection(connectionOverride);
+    const contract = connection.getContract(address, [event]);
     const events = Object.keys(contract.interface.events);
     const filter = contract.filters[events.slice(-1)[0]](...args);
 
