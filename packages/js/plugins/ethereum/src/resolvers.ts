@@ -1,5 +1,6 @@
 import { EthereumPlugin } from ".";
 import { SerializableTxRequest } from "./serialize";
+import { Connection as ConnectionOverride } from "./types";
 
 import { PluginModule } from "@web3api/core-js";
 
@@ -7,21 +8,32 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
   callContractMethod: async (input: {
     address: string;
     method: string;
-    args: string[];
+    args?: string[];
+    connection?: ConnectionOverride;
   }) => {
     return await ethereum.callContractMethod(
       input.address,
       input.method,
-      input.args
+      input.args || [],
+      input.connection
     );
   },
 
   sendTransaction: async (input: { tx: SerializableTxRequest }) => {
     return await ethereum.sendTransaction(input.tx);
   },
-
-  deployContract: async (input: { abi: string; bytecode: string }) => {
-    return await ethereum.deployContract(input.abi, input.bytecode);
+  deployContract: async (input: {
+    abi: string;
+    bytecode: string;
+    args?: string[];
+    connection?: ConnectionOverride;
+  }) => {
+    return await ethereum.deployContract(
+      input.abi,
+      input.bytecode,
+      input.args || [],
+      input.connection
+    );
   },
 
   sendRPC: async (input: { method: string; params: string[] }) => {
@@ -33,9 +45,15 @@ export const query = (ethereum: EthereumPlugin): PluginModule => ({
   callView: async (input: {
     address: string;
     method: string;
-    args: string[];
+    args?: string[];
+    connection?: ConnectionOverride;
   }) => {
-    return await ethereum.callView(input.address, input.method, input.args);
+    return await ethereum.callView(
+      input.address,
+      input.method,
+      input.args || [],
+      input.connection
+    );
   },
 
   signMessage: async (input: { message: string }) => {

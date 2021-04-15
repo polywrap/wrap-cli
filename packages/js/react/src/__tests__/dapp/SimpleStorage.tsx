@@ -7,7 +7,13 @@ const SimpleStorage = ({ uri }: { uri: string }) => {
     deployContract: string
   }>({
     uri,
-    query: `mutation { deployContract }`,
+    query: `mutation {
+      deployContract(
+        connection: {
+          networkNameOrChainId: "testnet"
+        }
+      )
+    }`,
   });
 
   const { execute: setData } = useWeb3ApiQuery({
@@ -16,6 +22,9 @@ const SimpleStorage = ({ uri }: { uri: string }) => {
       setData(
         address: $address
         value: $value
+        connection: {
+          networkNameOrChainId: "testnet"
+        }
       )
     }`,
     variables: {
@@ -29,6 +38,9 @@ const SimpleStorage = ({ uri }: { uri: string }) => {
     query: `query {
       getData(
         address: "${deployData?.deployContract}"
+        connection: {
+          networkNameOrChainId: "testnet"
+        }
       )
     }`,
   });

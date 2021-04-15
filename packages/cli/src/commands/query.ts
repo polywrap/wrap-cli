@@ -82,15 +82,32 @@ export default {
     const redirects: UriRedirect[] = [
       {
         from: "w3://ens/ethereum.web3api.eth",
-        to: ethereumPlugin({ provider: ethereumProvider }),
+        to: ethereumPlugin({
+          networks: {
+            testnet: {
+              provider: ethereumProvider,
+            },
+            mainnet: {
+              provider:
+                "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+            },
+          },
+        }),
       },
       {
         from: "w3://ens/ipfs.web3api.eth",
-        to: ipfsPlugin({ provider: ipfsProvider }),
+        to: ipfsPlugin({
+          provider: ipfsProvider,
+          fallbackProviders: ["https://ipfs.io"],
+        }),
       },
       {
         from: "w3://ens/ens.web3api.eth",
-        to: ensPlugin({ address: ensAddress }),
+        to: ensPlugin({
+          addresses: {
+            testnet: ensAddress,
+          },
+        }),
       },
     ];
 

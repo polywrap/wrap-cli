@@ -1,6 +1,17 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { query, mutation } from "./resolvers";
 import { manifest } from "./manifest";
+import { Connection as ConnectionOverride } from "./types";
+import {
+  Address,
+  AccountIndex,
+  EthereumSigner,
+  EthereumProvider,
+  Connection,
+  Connections,
+  ConnectionConfig,
+  ConnectionConfigs,
+} from "./Connection";
 import {
   serializableTxReceipt,
   SerializableTxReceipt,
@@ -24,28 +35,43 @@ import { Log } from "@ethersproject/abstract-provider";
 import { getAddress } from "@ethersproject/address";
 import { defaultAbiCoder } from "ethers/lib/utils";
 
-export type Address = string;
-export type AccountIndex = number;
-export type EthereumSigner = Signer | Address | AccountIndex;
-export type EthereumProvider = string | ExternalProvider;
-export type EthereumClient = JsonRpcProvider | Web3Provider;
+// Export all types that are nested inside of EthereumConfig.
+// This is required for the extractPluginConfigs.ts script.
+export {
+  Address,
+  AccountIndex,
+  EthereumSigner,
+  EthereumProvider,
+  ConnectionConfig,
+  ConnectionConfigs,
+};
 
 export interface EthereumConfig {
-  provider: EthereumProvider;
-  signer?: EthereumSigner;
+  networks: ConnectionConfigs;
+  defaultNetwork?: string;
 }
 
 export class EthereumPlugin extends Plugin {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore: initialized within setProvider
-  private _client: EthereumClient;
+  private _connections: Connections;
+  private _defaultNetwork: string;
 
-  constructor(private _config: EthereumConfig) {
+  constructor(config: EthereumConfig) {
     super();
-    const { provider, signer } = _config;
+    this._connections = Connection.fromConfigs(config.networks);
 
-    // Sanitize Provider & Signer
-    this.setProvider(provider, signer !== undefined ? signer : 0);
+    // Assign the default network (mainnet if not provided)
+    if (config.defaultNetwork) {
+      this._defaultNetwork = config.defaultNetwork;
+    } else {
+      this._defaultNetwork = "mainnet";
+    }
+
+    // Create a connection for the default network if none exists
+    if (!this._connections[this._defaultNetwork]) {
+      this._connections[this._defaultNetwork] = Connection.fromNetwork(
+        this._defaultNetwork
+      );
+    }
   }
 
   public static manifest(): PluginManifest {
@@ -61,77 +87,14 @@ export class EthereumPlugin extends Plugin {
     };
   }
 
-  public setProvider(
-    provider: EthereumProvider,
-    signer?: EthereumSigner
-  ): void {
-    this._config.provider = provider;
-
-    if (typeof provider === "string") {
-      this._client = new JsonRpcProvider(provider);
-    } else {
-      this._client = new Web3Provider(provider);
-    }
-
-    if (signer !== undefined) {
-      this.setSigner(signer);
-    }
-  }
-
-  public setSigner(signer: EthereumSigner): void {
-    if (typeof signer === "string") {
-      this._config.signer = getAddress(signer);
-    } else if (Signer.isSigner(signer)) {
-      this._config.signer = signer;
-
-      if (signer.provider !== this._config.provider) {
-        throw Error(
-          `Signer's connected provider does not match the config's ` +
-            `provider. Please call "setProvider(...)" before calling ` +
-            `"setSigner(...)" if a different provider is desired.`
-        );
-      }
-    } else {
-      this._config.signer = signer;
-    }
-  }
-
-  public getSigner(): ethers.Signer {
-    const { signer } = this._config;
-
-    if (this._config.signer === undefined) {
-      throw Error("Signer is undefined, this should never happen.");
-    }
-
-    if (typeof signer === "string" || typeof signer === "number") {
-      return this._client.getSigner(signer);
-    } else if (Signer.isSigner(signer)) {
-      return signer;
-    } else {
-      throw Error(
-        `Signer is an unrecognized type, this should never happen. \n${signer}`
-      );
-    }
-  }
-
-  public getContract(
-    address: Address,
-    abi: string[],
-    signer = true
-  ): ethers.Contract {
-    if (signer) {
-      return new ethers.Contract(address, abi, this.getSigner());
-    } else {
-      return new ethers.Contract(address, abi, this._client);
-    }
-  }
-
   public async deployContract(
     abi: ethers.ContractInterface,
     bytecode: string,
-    ...args: unknown[]
+    args: string[],
+    connectionOverride?: ConnectionOverride
   ): Promise<Address> {
-    const signer = this.getSigner();
+    const connection = await this.getConnection(connectionOverride);
+    const signer = connection.getSigner();
     const factory = new ethers.ContractFactory(abi, bytecode, signer);
     const contract = await factory.deploy(...args);
     await contract.deployTransaction.wait();
@@ -141,10 +104,11 @@ export class EthereumPlugin extends Plugin {
   public async callView(
     address: Address,
     method: string,
-    args: string[]
+    args: string[],
+    connectionOverride?: ConnectionOverride
   ): Promise<string> {
-    console.log(await this.getSigner().getAddress());
-    const contract = this.getContract(address, [method], false);
+    const connection = await this.getConnection(connectionOverride);
+    const contract = connection.getContract(address, [method], false);
     const funcs = Object.keys(contract.interface.functions);
     const res = await contract[funcs[0]](...args);
     return res.toString();
@@ -153,14 +117,69 @@ export class EthereumPlugin extends Plugin {
   public async callContractMethod(
     address: Address,
     method: string,
-    args: string[]
+    args: string[],
+    connectionOverride?: ConnectionOverride
   ): Promise<SerializableTxReceipt> {
-    const contract = this.getContract(address, [method]);
+    const connection = await this.getConnection(connectionOverride);
+    const contract = connection.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
     const tx = await contract[funcs[0]](...args);
     const res: SerializableTxReceipt = await tx.wait();
 
     return res;
+  }
+
+  public async getConnection(
+    connectionOverride?: ConnectionOverride
+  ): Promise<Connection> {
+    if (!connectionOverride) {
+      return this._connections[this._defaultNetwork];
+    }
+
+    const { networkNameOrChainId, node } = connectionOverride;
+    let connection: Connection;
+
+    // If a custom network is provided, either get an already
+    // established connection, or a create a new one
+    if (networkNameOrChainId) {
+      if (this._connections[networkNameOrChainId]) {
+        connection = this._connections[networkNameOrChainId];
+      } else {
+        const chainId = Number.parseInt(networkNameOrChainId);
+
+        if (!isNaN(chainId)) {
+          connection = Connection.fromNetwork(chainId);
+        } else {
+          connection = Connection.fromNetwork(networkNameOrChainId);
+        }
+      }
+    } else {
+      connection = this._connections[this._defaultNetwork];
+    }
+
+    // If a custom node endpoint is provided, create a combined
+    // connection with the node's endpoint and a connection's signer
+    // (if one exists for the network)
+    if (node) {
+      const nodeConnection = Connection.fromNode(node);
+      const nodeNetwork = await nodeConnection.getProvider().getNetwork();
+
+      const establishedConnection =
+        this._connections[nodeNetwork.chainId.toString()] ||
+        this._connections[nodeNetwork.name];
+
+      if (establishedConnection) {
+        try {
+          nodeConnection.setSigner(establishedConnection.getSigner());
+        } catch (e) {
+          // It's okay if there isn't a signer available.
+        }
+      }
+
+      connection = nodeConnection;
+    }
+
+    return connection;
   }
 
   public async estimateContractCallGas(

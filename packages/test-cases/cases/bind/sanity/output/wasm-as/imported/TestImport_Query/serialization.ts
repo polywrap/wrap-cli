@@ -55,7 +55,7 @@ export function writeimportedMethodArgs(
   Types.TestImport_Object.write(writer, input.object);
   writer.writeString("optObject");
   if (input.optObject) {
-    Types.TestImport_Object.write(writer, input.optObject);
+    Types.TestImport_Object.write(writer, input.optObject as Types.TestImport_Object);
   } else {
     writer.writeNil();
   }
@@ -66,7 +66,7 @@ export function writeimportedMethodArgs(
   writer.writeString("optObjectArray");
   writer.writeNullableArray(input.optObjectArray, (writer: Write, item: Types.TestImport_Object | null): void => {
     if (item) {
-      Types.TestImport_Object.write(writer, item);
+      Types.TestImport_Object.write(writer, item as Types.TestImport_Object);
     } else {
       writer.writeNil();
     }

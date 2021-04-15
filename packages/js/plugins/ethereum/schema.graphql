@@ -43,7 +43,8 @@ type Query {
   callView(
     address: String!
     method: String!
-    args: [String!]!
+    args: [String!]
+    connection: Connection
   ): String!
 
   signMessage(
@@ -91,12 +92,15 @@ type Mutation {
   callContractMethod(
     address: String!
     method: String!
-    args: [String!]!
+    args: [String!]
+    connection: Connection
   ): TxReceipt!
 
   deployContract(
     abi: String!
     bytecode: String!
+    args: [String!]
+    connection: Connection
   ): String!
 
   sendTransaction(
@@ -107,4 +111,9 @@ type Mutation {
     method: String!
     params: [String!]!
   ): String
+}
+
+type Connection {
+  node: String
+  networkNameOrChainId: String
 }
