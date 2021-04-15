@@ -2,7 +2,6 @@ import { Nullable } from "@web3api/wasm-as";
 
 import { createRoute, createTrade, swapCallParameters, toHex } from "../../query";
 import { ChainId, Pair, Token, TradeType, } from "../../query/w3";
-import { writecallViewArgs } from "../../query/w3/imported/Ethereum_Query/serialization";
 import { ETHER } from "../../utils/Currency";
 import { getWETH9 } from "../../utils/utils";
 
