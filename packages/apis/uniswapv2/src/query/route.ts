@@ -10,6 +10,9 @@ import {
 } from "./w3";
 import Price from "../utils/Price";
 import { pairReserves } from "./pair";
+import { ChainId } from "../mutation/w3";
+import { getWETH9 } from "../utils/utils";
+import { ETHER } from "../utils/Currency";
 
 import { BigInt } from "as-bigint";
 
@@ -37,8 +40,15 @@ export function createRoute(input: Input_createRoute): Route {
 // returns the full path from input token to output token.
 export function routePath(input: Input_routePath): Token[] {
   const pairs: Pair[] = input.pairs;
+  if (!(pairs.length > 0)) {
+    throw new Error("Route has to define at least on pair");
+  }
   const inToken: Token = input.input;
-  const path: Token[] = [inToken];
+  const chainId: ChainId = pairs[0].tokenAmount0.token.chainId;
+
+  const weth = getWETH9(chainId);
+
+  const path: Token[] = input.input.currency == ETHER ? [weth] : [inToken];
   for (let i = 0; i < pairs.length; i++) {
     const currentIn = path[i];
     const token0 = pairs[i].tokenAmount0.token;
