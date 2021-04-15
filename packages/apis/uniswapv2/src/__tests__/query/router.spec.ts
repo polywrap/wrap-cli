@@ -82,6 +82,7 @@ describe("swapCallParameters", () => {
         tradeOptions: {
           ttl: Nullable.fromValue<u32>(50),
           recipient: "0x0000000000000000000000000000000000000004",
+          unixTimestamp: Date.now() / 1000,
           allowedSlippage: "0.01",
           deadline: Nullable.fromNull<u32>(),
           feeOnTransfer: Nullable.fromNull<boolean>()
@@ -126,6 +127,7 @@ describe("swapCallParameters", () => {
         tradeOptions: {
           ttl: Nullable.fromNull<u32>(),
           recipient: "0x0000000000000000000000000000000000000004",
+          unixTimestamp: Date.now() / 1000,
           allowedSlippage: "0.01",
           deadline: Nullable.fromValue<u32>(50),
           feeOnTransfer: Nullable.fromNull<boolean>()
@@ -163,6 +165,7 @@ describe("swapCallParameters", () => {
         tradeOptions: {
           ttl: Nullable.fromValue<u32>(50),
           recipient: "0x0000000000000000000000000000000000000004",
+          unixTimestamp: Date.now() / 1000,
           allowedSlippage: "0.01",
           deadline: Nullable.fromNull<u32>(),
           feeOnTransfer: Nullable.fromNull<boolean>()
@@ -199,6 +202,7 @@ describe("swapCallParameters", () => {
         tradeOptions: {
           ttl: Nullable.fromValue<u32>(50),
           recipient: "0x0000000000000000000000000000000000000004",
+          unixTimestamp: Date.now() / 1000,
           allowedSlippage: "0.01",
           deadline: Nullable.fromNull<u32>(),
           feeOnTransfer: Nullable.fromNull<boolean>()
@@ -241,6 +245,7 @@ describe("swapCallParameters", () => {
         tradeOptions: {
           ttl: Nullable.fromValue<u32>(50),
           recipient: "0x0000000000000000000000000000000000000004",
+          unixTimestamp: Date.now() / 1000,
           allowedSlippage: "0.01",
           deadline: Nullable.fromNull<u32>(),
           feeOnTransfer: Nullable.fromNull<boolean>()
@@ -284,6 +289,7 @@ describe("swapCallParameters", () => {
         tradeOptions: {
           ttl: Nullable.fromValue<u32>(50),
           recipient: "0x0000000000000000000000000000000000000004",
+          unixTimestamp: Date.now() / 1000,
           allowedSlippage: "0.01",
           deadline: Nullable.fromNull<u32>(),
           feeOnTransfer: Nullable.fromNull<boolean>()
@@ -320,6 +326,7 @@ describe("swapCallParameters", () => {
         tradeOptions: {
           ttl: Nullable.fromValue<u32>(50),
           recipient: "0x0000000000000000000000000000000000000004",
+          unixTimestamp: Date.now() / 1000,
           allowedSlippage: "0.01",
           deadline: Nullable.fromNull<u32>(),
           feeOnTransfer: Nullable.fromNull<boolean>()
@@ -367,6 +374,7 @@ describe("swapCallParameters", () => {
           tradeOptions: {
             ttl: Nullable.fromValue<u32>(50),
             recipient: "0x0000000000000000000000000000000000000004",
+            unixTimestamp: Date.now() / 1000,
             allowedSlippage: "0.01",
             deadline: Nullable.fromNull<u32>(),
             feeOnTransfer: Nullable.fromValue<boolean>(true)
@@ -407,6 +415,7 @@ describe("swapCallParameters", () => {
           tradeOptions: {
             ttl: Nullable.fromValue<u32>(50),
             recipient: "0x0000000000000000000000000000000000000004",
+            unixTimestamp: Date.now() / 1000,
             allowedSlippage: "0.01",
             deadline: Nullable.fromNull<u32>(),
             feeOnTransfer: Nullable.fromValue<boolean>(true)
@@ -443,6 +452,7 @@ describe("swapCallParameters", () => {
           tradeOptions: {
             ttl: Nullable.fromValue<u32>(50),
             recipient: "0x0000000000000000000000000000000000000004",
+            unixTimestamp: Date.now() / 1000,
             allowedSlippage: "0.01",
             deadline: Nullable.fromNull<u32>(),
             feeOnTransfer: Nullable.fromValue<boolean>(true)
@@ -459,6 +469,104 @@ describe("swapCallParameters", () => {
         expect(result.value).toStrictEqual("0x0");
         const deadlineDifference = (Date.now() / 1000) as number - parseInt(result.args[result.args.length - 1]) as number;
         expect(deadlineDifference < 5).toBe(true);
+      });
+    });
+
+    describe("exact out", () => {
+      test("ether to token1", () => {
+        expect(() => {
+          const exactOut = createTrade({
+            route: createRoute({
+              pairs: [pair_weth_0, pair_0_1],
+              input: {
+                currency: ETHER,
+                address: "",
+                chainId: ChainId.MAINNET
+              },
+              output: token1,
+            }),
+            amount: {
+              token: token1,
+              amount: "100"
+            },
+            tradeType: TradeType.EXACT_OUTPUT
+          });
+          swapCallParameters({
+            trade: exactOut,
+            tradeOptions: {
+              ttl: Nullable.fromValue<u32>(50),
+              recipient: "0x0000000000000000000000000000000000000004",
+              unixTimestamp: Date.now() / 1000,
+              allowedSlippage: "0.01",
+              deadline: Nullable.fromNull<u32>(),
+              feeOnTransfer: Nullable.fromValue<boolean>(true)
+            }
+          });
+        });
+      });
+
+      test("token1 to ether", () => {
+        expect(() => {
+          const exactOut = createTrade({
+            route: createRoute({
+              pairs: [pair_0_1, pair_weth_0],
+              input: token1,
+              output: {
+                currency: ETHER,
+                address: "",
+                chainId: ChainId.MAINNET
+              },
+            }),
+            amount: {
+              token: {
+                currency: ETHER,
+                address: "",
+                chainId: ChainId.MAINNET
+              },
+              amount: "100"
+            },
+            tradeType: TradeType.EXACT_OUTPUT
+          });
+          swapCallParameters({
+            trade: exactOut,
+            tradeOptions: {
+              ttl: Nullable.fromValue<u32>(50),
+              recipient: "0x0000000000000000000000000000000000000004",
+              unixTimestamp: Date.now() / 1000,
+              allowedSlippage: "0.01",
+              deadline: Nullable.fromNull<u32>(),
+              feeOnTransfer: Nullable.fromValue<boolean>(true)
+            }
+          });
+        }).toThrow();
+      });
+
+      test("token0 to token1", () => {
+        expect(() => {
+          const exactOut = createTrade({
+            route: createRoute({
+              pairs: [pair_0_1],
+              input: token0,
+              output: token1
+            }),
+            amount: {
+              token: token1,
+              amount: "100"
+            },
+            tradeType: TradeType.EXACT_OUTPUT
+          });
+          swapCallParameters({
+            trade: exactOut,
+            tradeOptions: {
+              ttl: Nullable.fromValue<u32>(50),
+              recipient: "0x0000000000000000000000000000000000000004",
+              unixTimestamp: Date.now() / 1000,
+              allowedSlippage: "0.01",
+              deadline: Nullable.fromNull<u32>(),
+              feeOnTransfer: Nullable.fromValue<boolean>(true)
+            }
+          });
+        });
       });
     });
   });
