@@ -25,6 +25,7 @@ import Fraction from "../utils/Fraction";
 import { tokenAmountEquals, tokenEquals } from "./token";
 import { PriorityQueue } from "../utils/PriorityQueue";
 import { TradeOptions } from "../utils/TradeOptions";
+import { ETHER } from "../utils/Currency";
 
 import { BigInt } from "as-bigint";
 
@@ -80,6 +81,13 @@ export function createTrade(input: Input_createTrade): Trade {
     input.tradeType == TradeType.EXACT_OUTPUT
       ? input.amount
       : amounts[amounts.length - 1];
+
+  if (input.route.input.currency === ETHER) {
+    inputAmount.token.currency = ETHER;
+  }
+  if (input.route.output.currency === ETHER) {
+    outputAmount.token.currency = ETHER;
+  }
 
   return {
     inputAmount: inputAmount,
