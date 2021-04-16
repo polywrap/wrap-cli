@@ -1,10 +1,9 @@
 #import { Mutation } into Ethereum from "w3://ens/ethereum.web3api.eth"
+#import { ChainId, Currency, Route, Trade, TradeOptions } from "../common/schema.graphql"
 
 type Mutation {
-  setData(
-    address: String!
-    value: UInt32!
+  exec(
+    trade: Trade!
+    tradeOptions: TradeOptions!
   ): String!
-
-  deployContract: String!
 }
