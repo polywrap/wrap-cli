@@ -67,7 +67,7 @@ const visitorEnter = (
     const method = createMethodDefinition({
       type: importDef.nativeType,
       name: node.name.value,
-      return: returnType
+      return: returnType,
     });
     importDef.methods.push(method);
     state.currentMethod = method;

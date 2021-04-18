@@ -34,7 +34,7 @@ import {
   visitImportedEnumDefinition,
   GenericDefinition,
   isKind,
-  header
+  header,
 } from "@web3api/schema-parse";
 
 export async function resolveImportsAndParseSchemas(
@@ -98,9 +98,7 @@ export async function resolveImportsAndParseSchemas(
   newSchema = addQueryImportsDirective(newSchema, externalImports, mutation);
 
   // Parse the newly formed schema, and combine it with the subTypeInfo
-  return parseSchema(
-    header + newSchema + renderSchema(subTypeInfo, false)
-  );
+  return parseSchema(header + newSchema + renderSchema(subTypeInfo, false));
 }
 
 interface Namespaced {

@@ -12,6 +12,7 @@ import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import * as asc from "assemblyscript/cli/asc";
+import { SchemaInfo } from "@web3api/schema-compose";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const fsExtra = require("fs-extra");
@@ -76,21 +77,40 @@ export class Compiler {
           throw Error(missingSchemaMessage);
         }
 
-        const directory = this._getGenerationDirectory(
-          module.module.file
-        );
+        const directory = this._getGenerationDirectory(module.module.file);
 
         if (generationDirectories.indexOf(directory) !== -1) {
           throw Error(
             `compileWeb3Api: Duplicate code generation folder found for module ${moduleName}.` +
-            `Please ensure each module file is located in a unique directory.`
+              `Please ensure each module file is located in a unique directory.`
           );
         }
 
         generationDirectories.push(directory);
 
         // Generate code next to the module entry point file
-        this._generateCode(directory, composed[moduleName] as string);
+        if (!composed[moduleName]) {
+          throw Error(
+            `Compiler: Missing schema for the module "${moduleName}"`
+          );
+        }
+
+        switch (moduleName) {
+          case "mutation":
+            this._generateCode(
+              directory,
+              (composed.mutation as SchemaInfo).schema
+            );
+            break;
+          case "query":
+            this._generateCode(
+              directory,
+              (composed.query as SchemaInfo).schema
+            );
+            break;
+          default:
+            throw Error(`Compiler: Unsupported module type "${moduleName}"`);
+        }
 
         await this._compileWasmModule(
           module.module.file,
@@ -109,7 +129,7 @@ export class Compiler {
       // Output the schema & manifest files
       fs.writeFileSync(
         `${outputDir}/schema.graphql`,
-        composed.combined,
+        composed.combined.schema,
         "utf-8"
       );
       await outputManifest(manifest, `${outputDir}/web3api.yaml`);
@@ -241,7 +261,6 @@ export class Compiler {
   }
 
   private _generateCode(directory: string, schema: string): string[] {
-
     // Clean the code generation
     this._cleanDir(directory);
 

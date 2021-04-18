@@ -24,7 +24,7 @@ import {
   visit,
   DirectiveNode,
   ArgumentNode,
-  ValueNode
+  ValueNode,
 } from "graphql";
 
 const visitorEnter = (
@@ -90,7 +90,7 @@ const visitorEnter = (
 
     const query = createQueryDefinition({
       type: nodeName,
-      imports
+      imports,
     });
     queryTypes.push(query);
     state.currentQuery = query;
@@ -110,7 +110,7 @@ const visitorEnter = (
     const method = createMethodDefinition({
       type: query.type,
       name: node.name.value,
-      return: returnType
+      return: returnType,
     });
     query.methods.push(method);
     state.currentMethod = method;

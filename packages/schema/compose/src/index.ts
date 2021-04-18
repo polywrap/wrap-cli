@@ -2,10 +2,7 @@ import { SchemaFile, SchemaResolvers } from "./types";
 import { resolveImportsAndParseSchemas } from "./resolve";
 import { renderSchema } from "./render";
 
-import {
-  TypeInfo,
-  combineTypeInfo,
-} from "@web3api/schema-parse";
+import { TypeInfo, combineTypeInfo } from "@web3api/schema-parse";
 
 export interface ComposerOptions {
   schemas: {
@@ -59,36 +56,33 @@ export async function composeSchema(
   if (results.query) {
     result.query = {
       schema: renderSchema(results.query, true),
-      typeInfo: results.query
+      typeInfo: results.query,
     };
   }
 
   if (results.mutation) {
     result.mutation = {
       schema: renderSchema(results.mutation, true),
-      typeInfo: results.mutation
+      typeInfo: results.mutation,
     };
   }
 
   if (results.query && results.mutation) {
-    const typeInfo = combineTypeInfo([
-      results.query,
-      results.mutation,
-    ]);
+    const typeInfo = combineTypeInfo([results.query, results.mutation]);
 
     result.combined = {
       schema: renderSchema(typeInfo, true),
-      typeInfo
+      typeInfo,
     };
   } else if (results.query) {
     result.combined = {
       schema: renderSchema(results.query, true),
-      typeInfo: results.query
+      typeInfo: results.query,
     };
   } else if (results.mutation) {
     result.combined = {
       schema: renderSchema(results.mutation, true),
-      typeInfo: results.mutation
+      typeInfo: results.mutation,
     };
   }
 

@@ -13,6 +13,10 @@ describe("SchemaComposer validation", () => {
       project,
     });
     const schema = await composer.getComposedSchemas();
-    expect(schema).toEqual(composedSchema);
+    expect({
+      query: schema.query?.schema,
+      mutation: schema.mutation?.schema,
+      combined: schema.combined?.schema,
+    }).toEqual(composedSchema);
   });
 });

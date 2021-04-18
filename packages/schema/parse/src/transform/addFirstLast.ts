@@ -27,7 +27,7 @@ export const addFirstLast: TypeInfoTransforms = {
     QueryDefinition: (def: QueryDefinition) => ({
       ...def,
       methods: setFirstLast(def.methods),
-      imports: setFirstLast(def.imports)
+      imports: setFirstLast(def.imports),
     }),
     ImportedQueryDefinition: (def: ImportedQueryDefinition) => ({
       ...def,

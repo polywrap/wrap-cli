@@ -6,13 +6,13 @@ import {
   TypeInfo,
   addFirstLast,
   toGraphQLType,
-  performTransforms
+  performTransforms,
 } from "@web3api/schema-parse";
 
 // Remove mustache's built-in HTML escaping
 Mustache.escape = (value) => value;
 
-export function renderSchema(typeInfo: TypeInfo, header: boolean) {
+export function renderSchema(typeInfo: TypeInfo, header: boolean): string {
   // Prepare the TypeInfo for the renderer
   typeInfo = performTransforms(typeInfo, addFirstLast);
   typeInfo = performTransforms(typeInfo, toGraphQLType);

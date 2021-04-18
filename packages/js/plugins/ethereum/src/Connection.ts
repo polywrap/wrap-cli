@@ -50,9 +50,9 @@ export class Connection {
 
   static fromNetwork(networkish: Networkish): Connection {
     return new Connection({
-      provider: ethers.providers.getDefaultProvider(
+      provider: (ethers.providers.getDefaultProvider(
         ethers.providers.getNetwork(networkish)
-      ) as unknown as JsonRpcProvider,
+      ) as unknown) as JsonRpcProvider,
     });
   }
 
@@ -69,9 +69,9 @@ export class Connection {
     this._config.provider = provider;
 
     if (typeof provider === "string") {
-      this._client = ethers.providers.getDefaultProvider(
+      this._client = (ethers.providers.getDefaultProvider(
         provider
-      ) as unknown as JsonRpcProvider;
+      ) as unknown) as JsonRpcProvider;
     } else {
       if ((provider as JsonRpcProvider).anyNetwork !== undefined) {
         this._client = provider as JsonRpcProvider;
