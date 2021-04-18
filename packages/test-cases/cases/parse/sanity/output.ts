@@ -212,7 +212,12 @@ export const output: TypeInfo = {
           ...createMethodDefinition({
             type: "query",
             name: "queryMethod",
-            return: createScalarPropertyDefinition({ name: "queryMethod", type: "Int", required: true }),
+            return: createArrayPropertyDefinition({
+              name: "queryMethod",
+              type: "[Int]",
+              required: true,
+              item: createScalarDefinition({ name: "queryMethod", type: "Int", required: false }),
+            })
           }),
           arguments: [createScalarPropertyDefinition({ name: "arg", type: "String", required: true })],
         },
@@ -337,10 +342,15 @@ export const output: TypeInfo = {
           ...createMethodDefinition({
             type: "query",
             name: "anotherMethod",
-            return: createScalarPropertyDefinition({
+            return: createArrayPropertyDefinition({
               name: "anotherMethod",
-              type: "Int64",
-              required: true
+              type: "[Int64]",
+              required: true,
+              item: createScalarDefinition({
+                name: "anotherMethod",
+                type: "Int64",
+                required: false
+              }),
             }),
           }),
           arguments: [

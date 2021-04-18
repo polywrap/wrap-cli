@@ -15,10 +15,15 @@ export interface ComposerOptions {
   resolvers: SchemaResolvers;
 }
 
+export interface SchemaInfo {
+  schema: string;
+  typeInfo: TypeInfo;
+}
+
 export interface ComposerOutput {
-  query?: string;
-  mutation?: string;
-  combined?: string;
+  query?: SchemaInfo;
+  mutation?: SchemaInfo;
+  combined?: SchemaInfo;
 }
 
 export async function composeSchema(
@@ -52,11 +57,17 @@ export async function composeSchema(
   const result: ComposerOutput = {};
 
   if (results.query) {
-    result.query = renderSchema(results.query, true);
+    result.query = {
+      schema: renderSchema(results.query, true),
+      typeInfo: results.query
+    };
   }
 
   if (results.mutation) {
-    result.mutation = renderSchema(results.mutation, true);
+    result.mutation = {
+      schema: renderSchema(results.mutation, true),
+      typeInfo: results.mutation
+    };
   }
 
   if (results.query && results.mutation) {
@@ -65,11 +76,20 @@ export async function composeSchema(
       results.mutation,
     ]);
 
-    result.combined = renderSchema(typeInfo, true);
+    result.combined = {
+      schema: renderSchema(typeInfo, true),
+      typeInfo
+    };
   } else if (results.query) {
-    result.combined = renderSchema(results.query, true);
+    result.combined = {
+      schema: renderSchema(results.query, true),
+      typeInfo: results.query
+    };
   } else if (results.mutation) {
-    result.combined = renderSchema(results.mutation, true);
+    result.combined = {
+      schema: renderSchema(results.mutation, true),
+      typeInfo: results.mutation
+    };
   }
 
   return result;
