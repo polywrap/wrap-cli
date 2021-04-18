@@ -203,15 +203,29 @@ export const output: TypeInfo = {
   ],
   queryTypes: [
     {
-      ...createQueryDefinition({ type: "Query" }),
+      ...createQueryDefinition({
+        type: "Query",
+        imports: [{ type: "TestImport_Query" }]
+      }),
       methods: [
         {
-          ...createMethodDefinition({ type: "query", name: "queryMethod" }),
+          ...createMethodDefinition({
+            type: "query",
+            name: "queryMethod",
+            return: createScalarPropertyDefinition({ name: "queryMethod", type: "Int", required: true }),
+          }),
           arguments: [createScalarPropertyDefinition({ name: "arg", type: "String", required: true })],
-          return: createScalarPropertyDefinition({ name: "queryMethod", type: "Int", required: true }),
         },
         {
-          ...createMethodDefinition({ type: "query", name: "userObjectMethod" }),
+          ...createMethodDefinition({
+            type: "query",
+            name: "userObjectMethod",
+            return: createObjectPropertyDefinition({
+              name: "userObjectMethod",
+              type: "UserObject",
+              required: true
+            }),
+          }),
           arguments: [
             createObjectPropertyDefinition({ name: "userObject", type: "UserObject" }),
             createArrayPropertyDefinition({ name: "arrayObject", type: "[UserObject]", required: true, item: createObjectDefinition({
@@ -220,14 +234,17 @@ export const output: TypeInfo = {
               required: true
             })}),
           ],
-          return: createObjectPropertyDefinition({
-            name: "userObjectMethod",
-            type: "UserObject",
-            required: true
-          }),
         },
         {
-          ...createMethodDefinition({ type: "query", name: "enumMethod" }),
+          ...createMethodDefinition({
+            type: "query",
+            name: "enumMethod",
+            return: createEnumPropertyDefinition({
+              name: "enumMethod",
+              type: "CustomEnum",
+              required: true
+            }),
+          }),
           arguments: [
             createEnumPropertyDefinition({ name: "enum", type: "CustomEnum" }),
             createArrayPropertyDefinition({ name: "arrayEnum", type: "[CustomEnum]", required: true, item: createEnumDefinition({
@@ -236,11 +253,6 @@ export const output: TypeInfo = {
               required: true
             })}),
           ],
-          return: createEnumPropertyDefinition({
-            name: "enumMethod",
-            type: "CustomEnum",
-            required: true
-          }),
         },
       ],
     },
@@ -294,7 +306,15 @@ export const output: TypeInfo = {
       }),
       methods: [
         {
-          ...createMethodDefinition({ type: "query", name: "importedMethod" }),
+          ...createMethodDefinition({
+            type: "query",
+            name: "importedMethod",
+            return: createScalarPropertyDefinition({
+              name: "importedMethod",
+              type: "String",
+              required: true
+            }),
+          }),
           arguments: [
             createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
             createScalarPropertyDefinition({ name: "optStr", type: "String", required: false }),
@@ -312,14 +332,17 @@ export const output: TypeInfo = {
               })
             }),
           ],
-          return: createScalarPropertyDefinition({
-            name: "importedMethod",
-            type: "String",
-            required: true
-          }),
         },
         {
-          ...createMethodDefinition({ type: "query", name: "anotherMethod" }),
+          ...createMethodDefinition({
+            type: "query",
+            name: "anotherMethod",
+            return: createScalarPropertyDefinition({
+              name: "anotherMethod",
+              type: "Int64",
+              required: true
+            }),
+          }),
           arguments: [
             createArrayPropertyDefinition({
               name: "arg",
@@ -328,14 +351,26 @@ export const output: TypeInfo = {
               item: createScalarDefinition({ name: "arg", type: "String", required: true })
             }),
           ],
-          return: createScalarPropertyDefinition({
-            name: "anotherMethod",
-            type: "Int64",
-            required: true
-          }),
         },
         {
-          ...createMethodDefinition({ type: "query", name: "importedObjectMethod" }),
+          ...createMethodDefinition({
+            type: "query",
+            name: "importedObjectMethod",
+            return: {
+              ...createObjectPropertyDefinition({
+                name: "importedObjectMethod",
+                type: "TestImport_Object",
+                required: true
+              }),
+              object: {
+                ...createObjectDefinition({
+                  name: "importedObjectMethod",
+                  type: "TestImport_Object",
+                  required: true
+                }),
+              }
+            },
+          }),
           arguments: [
             {
               ...createObjectPropertyDefinition({
@@ -352,23 +387,17 @@ export const output: TypeInfo = {
               }
             }
           ],
-          return: {
-            ...createObjectPropertyDefinition({
-              name: "importedObjectMethod",
-              type: "TestImport_Object",
-              required: true
-            }),
-            object: {
-              ...createObjectDefinition({
-                name: "importedObjectMethod",
-                type: "TestImport_Object",
-                required: true
-              }),
-            }
-          }
         },
         {
-          ...createMethodDefinition({ type: "query", name: "importedEnumMethod" }),
+          ...createMethodDefinition({
+            type: "query",
+            name: "importedEnumMethod",
+            return: createEnumPropertyDefinition({
+              name: "importedEnumMethod",
+              type: "TestImport_Enum",
+              required: true
+            }),
+          }),
           arguments: [
             {
               ...createEnumPropertyDefinition({
@@ -384,14 +413,7 @@ export const output: TypeInfo = {
                 required: false
               }),
             }
-          ],
-          return: {
-            ...createEnumPropertyDefinition({
-              name: "importedEnumMethod",
-              type: "TestImport_Enum",
-              required: true
-            }),
-          }
+          ]
         },
       ],
     },
@@ -404,13 +426,16 @@ export const output: TypeInfo = {
       }),
       methods: [
         {
-          ...createMethodDefinition({ type: "mutation", name: "importedMethod" }),
-          arguments: [createScalarPropertyDefinition({ name: "str", type: "String", required: true })],
-          return: createScalarPropertyDefinition({
+          ...createMethodDefinition({
+            type: "mutation",
             name: "importedMethod",
-            type: "String",
-            required: true
+            return: createScalarPropertyDefinition({
+              name: "importedMethod",
+              type: "String",
+              required: true
+            }),
           }),
+          arguments: [createScalarPropertyDefinition({ name: "str", type: "String", required: true })],
         },
       ],
     },

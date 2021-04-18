@@ -2,7 +2,6 @@ import { Signer, ethers } from "ethers";
 import {
   ExternalProvider,
   JsonRpcProvider,
-  WebSocketProvider,
   Web3Provider,
   Networkish,
 } from "@ethersproject/providers";
@@ -53,7 +52,7 @@ export class Connection {
     return new Connection({
       provider: ethers.providers.getDefaultProvider(
         ethers.providers.getNetwork(networkish)
-      ) as JsonRpcProvider,
+      ) as unknown as JsonRpcProvider,
     });
   }
 
@@ -70,9 +69,9 @@ export class Connection {
     this._config.provider = provider;
 
     if (typeof provider === "string") {
-      this._client = ethers.providers.getDefaultProvider(provider) as
-        | JsonRpcProvider
-        | WebSocketProvider;
+      this._client = ethers.providers.getDefaultProvider(
+        provider
+      ) as unknown as JsonRpcProvider;
     } else {
       if ((provider as JsonRpcProvider).anyNetwork !== undefined) {
         this._client = provider as JsonRpcProvider;

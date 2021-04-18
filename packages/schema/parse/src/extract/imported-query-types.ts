@@ -3,6 +3,7 @@ import {
   ImportedQueryDefinition,
   createImportedQueryDefinition,
   createMethodDefinition,
+  createPropertyDefinition,
 } from "../typeInfo";
 import {
   extractInputValueDefinition,
@@ -58,12 +59,19 @@ const visitorEnter = (
       );
     }
 
+    const returnType = createPropertyDefinition({
+      type: "N/A",
+      name: node.name.value,
+    });
+
     const method = createMethodDefinition({
       type: importDef.nativeType,
       name: node.name.value,
+      return: returnType
     });
     importDef.methods.push(method);
     state.currentMethod = method;
+    state.currentReturn = returnType;
   },
   InputValueDefinition: (node: InputValueDefinitionNode) => {
     extractInputValueDefinition(node, state);

@@ -10,7 +10,8 @@ import {
   SYNTAX_REFERENCE,
 } from "./types";
 import { parseExternalImports, parseLocalImports } from "./parse";
-import { template as headerTemplate } from "./templates/header.mustache";
+import { renderSchema } from "./render";
+import { addHeader } from "./templates/header.mustache";
 
 import {
   TypeInfo,
@@ -33,25 +34,15 @@ import {
   visitImportedEnumDefinition,
   GenericDefinition,
   isKind,
+  header
 } from "@web3api/schema-parse";
-import Mustache from "mustache";
 
-// Remove mustache's built-in HTML escaping
-Mustache.escape = (value) => value;
-
-export function addHeader(schema: string): string {
-  return Mustache.render(headerTemplate, { schema });
-}
-
-export async function resolveImports(
+export async function resolveImportsAndParseSchemas(
   schema: string,
   schemaPath: string,
   mutation: boolean,
   resolvers: SchemaResolvers
-): Promise<{
-  schema: string;
-  typeInfo: TypeInfo;
-}> {
+): Promise<TypeInfo> {
   const importKeywordCapture = /^[#]*["{3}]*import[ \n\t]/gm;
   const externalImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*into[ \n\t]*(\w+?)[ \n\t]*from[ \n\t]*[\"'`]([a-zA-Z0-9_~.:\/]+?)[\"'`]/g;
   const localImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*from[ \n\t]*[\"'`]([a-zA-Z0-9_~\-:.\/]+?)[\"'`]/g;
@@ -106,10 +97,10 @@ export async function resolveImports(
   // Add the @imports directive
   newSchema = addQueryImportsDirective(newSchema, externalImports, mutation);
 
-  return {
-    schema: newSchema,
-    typeInfo: subTypeInfo,
-  };
+  // Parse the newly formed schema, and combine it with the subTypeInfo
+  return parseSchema(
+    header + newSchema + renderSchema(subTypeInfo, false)
+  );
 }
 
 interface Namespaced {

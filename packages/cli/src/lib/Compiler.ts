@@ -58,6 +58,10 @@ export class Compiler {
         throw Error(`compileWeb3Api: ${failedSchemaMessage}`);
       }
 
+      // Track all code generation folders used. If there are duplicates,
+      // inform the user to ensure overwriting will never occur.
+      const generationDirectories: string[] = [];
+
       const buildModule = async (moduleName: "mutation" | "query") => {
         const module = manifest[moduleName];
 
@@ -72,8 +76,21 @@ export class Compiler {
           throw Error(missingSchemaMessage);
         }
 
+        const directory = this._getGenerationDirectory(
+          module.module.file
+        );
+
+        if (generationDirectories.indexOf(directory) !== -1) {
+          throw Error(
+            `compileWeb3Api: Duplicate code generation folder found for module ${moduleName}.` +
+            `Please ensure each module file is located in a unique directory.`
+          );
+        }
+
+        generationDirectories.push(directory);
+
         // Generate code next to the module entry point file
-        this._generateCode(module.module.file, composed[moduleName] as string);
+        this._generateCode(directory, composed[moduleName] as string);
 
         await this._compileWasmModule(
           module.module.file,
@@ -214,13 +231,16 @@ export class Compiler {
     }
   }
 
-  private _generateCode(entryPoint: string, schema: string): string[] {
+  private _getGenerationDirectory(entryPoint: string): string {
     const { project } = this._config;
 
     const absolute = path.isAbsolute(entryPoint)
       ? entryPoint
       : this._appendPath(project.manifestPath, entryPoint);
-    const directory = `${path.dirname(absolute)}/w3`;
+    return `${path.dirname(absolute)}/w3`;
+  }
+
+  private _generateCode(directory: string, schema: string): string[] {
 
     // Clean the code generation
     this._cleanDir(directory);
