@@ -6,7 +6,7 @@ import { transformTypeInfo, TypeInfo } from "@web3api/schema-parse";
 
 export * from "./utils";
 
-export type TargetLanguage = "wasm-as";
+export type TargetLanguage = "wasm-as" | "plugin-ts";
 
 export type OutputEntry = FileEntry | DirectoryEntry | TemplateEntry;
 

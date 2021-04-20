@@ -3,7 +3,11 @@ import { Project } from "./Project";
 import { step, withSpinner } from "./helpers";
 import { intlMsg } from "./intl";
 
-import { OutputDirectory, writeDirectory } from "@web3api/schema-bind";
+import {
+  OutputDirectory,
+  writeDirectory,
+  bindSchema,
+} from "@web3api/schema-bind";
 import path from "path";
 import fs, { readFileSync, writeFileSync } from "fs";
 import * as gluegun from "gluegun";
@@ -90,11 +94,7 @@ export class CodeGenerator {
             this._generateTemplate(templatePath, typeInfo, spinner)
         );
       } else {
-        const content = this._generateTemplate(
-          "../../../schema/bind/src/bindings/ts/templates/schema.mustache",
-          typeInfo,
-          spinner
-        );
+        const content = bindSchema("plugin-ts", this._schema || "");
         writeFileSync(this._config.outputTypes!, content);
       }
     };
