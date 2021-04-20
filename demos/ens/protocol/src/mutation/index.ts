@@ -16,7 +16,7 @@ import {
   Input_setSubdomainRecord,
   Input_setRecord,
   Input_deployFIFSRegistrar,
-  Input_registerSubnodeRecordWithFIFSRegistrar
+  Input_registerSubnodeOwnerWithFIFSRegistrar
 } from "./w3";
 
 export function setResolver(input: Input_setResolver): string {
@@ -227,11 +227,11 @@ export function deployFIFSRegistrar(input: Input_deployFIFSRegistrar): string {
 
 //TODO: needs testing here with a recipe. Was tested in the Web3Hub
 
-export function registerSubnodeRecordWithFIFSRegistrar(input: Input_registerSubnodeRecordWithFIFSRegistrar): string {
+export function registerSubnodeOwnerWithFIFSRegistrar(input: Input_registerSubnodeOwnerWithFIFSRegistrar): string {
   const txHash = Ethereum_Mutation.sendTransaction({
     address: input.fifsRegistrarAddress,
-    method: "function register(bytes32 label, address owner, address resolver, uint64 ttl) external",
-    args: [keccak256(input.label), input.owner, input.resolverAddress, input.ttl],
+    method: "function register(bytes32 label, address owner) external",
+    args: [keccak256(input.label), input.owner],
     connection: {
       networkNameOrChainId: "testnet",
       node: null
