@@ -3849,6 +3849,23 @@
     "@typescript-eslint/types" "4.11.1"
     eslint-visitor-keys "^2.0.0"
 
+"@web3api/core-js@0.0.1-prealpha.8":
+  version "0.0.1-prealpha.8"
+  resolved "https://registry.yarnpkg.com/@web3api/core-js/-/core-js-0.0.1-prealpha.8.tgz#245ef5c4225318bbf116ea726b0c6a6b234c8570"
+  integrity sha512-en8yz6LOMpU8oLOfggnDzSKSDd1TvnIuk6KFqdV0ZUA5tFZ5fmEYaAs4e7dTeFwD6VuTQ15ifuiZc5LCrg2odg==
+  dependencies:
+    "@web3api/manifest-schema" "0.0.1-prealpha.8"
+    graphql "15.3.0"
+    graphql-tag "2.10.4"
+    js-yaml "3.14.0"
+    jsonschema "1.4.0"
+    semver "7.3.4"
+
+"@web3api/manifest-schema@0.0.1-prealpha.8":
+  version "0.0.1-prealpha.8"
+  resolved "https://registry.yarnpkg.com/@web3api/manifest-schema/-/manifest-schema-0.0.1-prealpha.8.tgz#52631b6ca9608a646919212ba7646129d276dc79"
+  integrity sha512-IgS8h3WEZCmKAJ5Lk2Tukfbs7aEMBv2Q8u4ibMyLT03zjMDmc8iRi48dmGyjUOYkJfXQ0hO38KHxbE2X4Wov5Q==
+
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.8.5.tgz#51b1c5fe6576a34953bf4b253df9f0d490d9e359"
@@ -9813,6 +9830,11 @@ graphql-tag@2.11.0:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/graphql-tag/-/graphql-tag-2.11.0.tgz#1deb53a01c46a7eb401d6cb59dec86fa1cccbffd"
   integrity sha512-VmsD5pJqWJnQZMUeRwrDhfgoyqcfwEkvtpANqcoUG8/tOLkwNgU9mzub/Mc78OJMhHjx7gfAMTxzdG43VGg3bA==
+
+graphql@15.3.0:
+  version "15.3.0"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.3.0.tgz#3ad2b0caab0d110e3be4a5a9b2aa281e362b5278"
+  integrity sha512-GTCJtzJmkFLWRfFJuoo9RWWa/FfamUHgiFosxi/X1Ani4AVWbeyBenZTNX6dM+7WSbbFfTo/25eh0LLkwHMw2w==
 
 graphql@15.5.0:
   version "15.5.0"
