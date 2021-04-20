@@ -4,6 +4,7 @@ import {
   supportedModules,
 } from "../lib/env/test";
 import { withSpinner } from "../lib/helpers/spinner";
+import { intlMsg } from "../lib/intl";
 
 import { filesystem, GluegunToolbox, print } from "gluegun";
 import chalk from "chalk";
@@ -25,8 +26,8 @@ Supported modules: ${supportedModules}
 
 export default {
   alias: ["t"],
-  description: "Manage a test environment for Web3API",
-  run: async (toolbox: GluegunToolbox): Promise<void> => {
+  description: intlMsg.commands_testEnv_description(),
+  run: async (toolbox: GluegunToolbox): Promise<unknown> => {
     const { parameters } = toolbox;
     const command = parameters.first;
     const modules = parameters.array?.slice(1) || new Array<string>();
@@ -36,13 +37,18 @@ export default {
     ci = ci || c;
 
     if (!command) {
-      print.error("No command given");
+      print.error(intlMsg.commands_testEnv_error_noCommand());
       print.info(HELP);
       return;
     }
 
     if (command !== "up" && command !== "down") {
-      print.error(`Unrecognized command: ${command}`);
+      const unrecognizedCommandMessage = intlMsg.commands_testEnv_error_unrecognizedCommand(
+        {
+          command: command,
+        }
+      );
+      print.error(unrecognizedCommandMessage);
       print.info(HELP);
       return;
     }
@@ -55,24 +61,24 @@ export default {
 
     if (command === "up") {
       return await withSpinner(
-        "Starting test environment...",
-        "Failed to start test environment",
-        "Warning starting test environment",
+        intlMsg.commands_testEnv_startup_text(),
+        intlMsg.commands_testEnv_startup_error(),
+        intlMsg.commands_testEnv_startup_warning(),
         async (_spinner) => {
           return startupTestEnv(true, configFilePath, ci, modules);
         }
       );
     } else if (command === "down") {
       return await withSpinner(
-        "Shutting down test environment...",
-        "Failed to shutdown test environment",
-        "Warning shutting down test environment",
+        intlMsg.commands_testEnv_shutdown_text(),
+        intlMsg.commands_testEnv_shutdown_error(),
+        intlMsg.commands_testEnv_shutdown_warning(),
         async (_spinner) => {
           return await shutdownTestEnv(true, configFilePath, ci, modules);
         }
       );
     } else {
-      throw Error("This should never happen...");
+      throw Error(intlMsg.commands_testEnv_error_never());
     }
   },
 };

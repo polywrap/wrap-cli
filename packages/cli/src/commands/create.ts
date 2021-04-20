@@ -1,31 +1,45 @@
 import { generateProject } from "../lib/generators/project-generator";
 import { fixParameters } from "../lib/helpers/parameters";
+import { intlMsg } from "../lib/intl";
 
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 
-const supportedLangs: { [key: string]: string[] } = {
+const cmdStr = intlMsg.commands_create_options_command();
+const nameStr = intlMsg.commands_create_options_projectName();
+const optionsStr = intlMsg.commands_options_options();
+const langStr = intlMsg.commands_create_options_lang();
+const langsStr = intlMsg.commands_create_options_langs();
+const createProjStr = intlMsg.commands_create_options_createProject();
+const createAppStr = intlMsg.commands_create_options_createApp();
+const createPluginStr = intlMsg.commands_create_options_createPlugin();
+const pathStr = intlMsg.commands_create_options_o_path();
+
+export const supportedLangs: { [key: string]: string[] } = {
   api: ["assemblyscript"],
   app: ["react"],
+  plugin: ["typescript"],
 };
 
 const HELP = `
-${chalk.bold("w3 create")} command <project-name> [options]
+${chalk.bold("w3 create")} ${cmdStr} <${nameStr}> [${optionsStr}]
 
-Commands:
-  ${chalk.bold("api")} <lang>  Create a Web3API project
-    langs: ${supportedLangs.api.join(", ")}
-  ${chalk.bold("app")} <lang>            Create a Web3API application
-    langs: ${supportedLangs.app.join(", ")}
+${intlMsg.commands_create_options_commands()}:
+  ${chalk.bold("api")} <${langStr}>     ${createProjStr}
+    ${langsStr}: ${supportedLangs.api.join(", ")}
+  ${chalk.bold("app")} <${langStr}>     ${createAppStr}
+    ${langsStr}: ${supportedLangs.app.join(", ")}
+  ${chalk.bold("plugin")} <${langStr}>  ${createPluginStr}
+    ${langsStr}: ${supportedLangs.plugin.join(", ")}
 
 Options:
-  -h, --help               Show usage information
-  -o, --output-dir <path>  Output directory for the new project
+  -h, --help               ${intlMsg.commands_create_options_h()}
+  -o, --output-dir <${pathStr}>  ${intlMsg.commands_create_options_o()}
 `;
 
 export default {
   alias: ["c"],
-  description: "Create a new project with w3 CLI",
+  description: intlMsg.commands_create_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { parameters, print, prompt, filesystem } = toolbox;
 
@@ -63,37 +77,45 @@ export default {
     }
 
     if (!type) {
-      print.error("Please provide a command");
+      print.error(intlMsg.commands_create_error_noCommand());
       print.info(HELP);
       return;
     }
 
     if (!lang) {
-      print.error("Please provide a language");
+      print.error(intlMsg.commands_create_error_noLang());
       print.info(HELP);
       return;
     }
 
     if (!name) {
-      print.error("Please provide a project name");
+      print.error(intlMsg.commands_create_error_noName());
       print.info(HELP);
       return;
     }
 
     if (!supportedLangs[type]) {
-      print.error(`Unrecognized command "${type}"`);
+      const unrecognizedCommand = intlMsg.commands_create_error_unrecognizedCommand();
+      print.error(`${unrecognizedCommand} "${type}"`);
       print.info(HELP);
       return;
     }
 
     if (supportedLangs[type].indexOf(lang) === -1) {
-      print.error(`Unrecognized language "${lang}"`);
+      const unrecognizedLanguage = intlMsg.commands_create_error_unrecognizedLanguage();
+      print.error(`${unrecognizedLanguage} "${lang}"`);
       print.info(HELP);
       return;
     }
 
     if (outputDir === true) {
-      print.error("--output-dir option missing <path> argument");
+      const outputDirMissingPathMessage = intlMsg.commands_create_error_outputDirMissingPath(
+        {
+          option: "--output-dir",
+          argument: `<${pathStr}>`,
+        }
+      );
+      print.error(outputDirMissingPathMessage);
       print.info(HELP);
       return;
     }
@@ -103,14 +125,20 @@ export default {
     // check if project already exists
     if (!filesystem.exists(projectDir)) {
       print.newline();
-      print.info(`Setting everything up...`);
+      print.info(intlMsg.commands_create_settingUp());
     } else {
-      print.info(`Directory with name ${projectDir} already exists`);
+      const directoryExistsMessage = intlMsg.commands_create_directoryExists({
+        dir: projectDir,
+      });
+      print.info(directoryExistsMessage);
       const overwrite = await prompt.confirm(
-        "Do you want to overwrite this directory?"
+        intlMsg.commands_create_overwritePrompt()
       );
       if (overwrite) {
-        print.info(`Overwriting ${projectDir}...`);
+        const overwritingMessage = intlMsg.commands_create_overwriting({
+          dir: projectDir,
+        });
+        print.info(overwritingMessage);
         filesystem.remove(projectDir);
       } else {
         process.exit(8);
@@ -120,17 +148,21 @@ export default {
     generateProject(type, lang, projectDir, filesystem)
       .then(() => {
         print.newline();
-
+        let readyMessage;
         if (type === "api") {
-          print.info(
-            `🔥 You are ready to turn your protocol into a Web3API 🔥`
-          );
+          readyMessage = intlMsg.commands_create_readyProtocol();
         } else if (type === "app") {
-          print.info(`🔥 You are ready to build a dApp using Web3API 🔥`);
+          readyMessage = intlMsg.commands_create_readyDapp();
+        } else if (type === "plugin") {
+          readyMessage = intlMsg.commands_create_readyPlugin();
         }
+        print.info(`🔥 ${readyMessage} 🔥`);
       })
       .catch((err) => {
-        print.error(`Command failed: ${err.command}`);
+        const commandFailError = intlMsg.commands_create_error_commandFail({
+          error: err.command,
+        });
+        print.error(commandFailError);
       });
   },
 };

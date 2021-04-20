@@ -10,12 +10,18 @@ export const query = (ens: EnsPlugin, client: Client): PluginModule => ({
     }
 
     try {
+      const cid = await ens.ensToCID(input.path, client);
+
+      if (!cid) {
+        return null;
+      }
+
       return {
-        uri: `ipfs/${await ens.ensToCID(input.path, client)}`,
+        uri: `ipfs/${cid}`,
         manifest: null,
       };
     } catch (e) {
-      // TODO: logging https://github.com/Web3-API/prototype/issues/33
+      // TODO: logging https://github.com/web3-api/monorepo/issues/33
     }
 
     // Nothing found

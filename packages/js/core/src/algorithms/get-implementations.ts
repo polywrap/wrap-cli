@@ -2,9 +2,16 @@ import { Uri, UriRedirect } from "../types";
 
 export function getImplementations(
   abstractApi: Uri,
-  redirects: readonly UriRedirect[]
+  redirects: readonly UriRedirect<Uri>[]
 ): Uri[] {
   const result: Uri[] = [];
+
+  const addUniqueResult = (uri: Uri) => {
+    // If the URI hasn't been added already
+    if (result.findIndex((i) => Uri.equals(i, uri)) === -1) {
+      result.push(uri);
+    }
+  };
 
   for (const redirect of redirects) {
     // Plugin implemented check
@@ -14,13 +21,13 @@ export function getImplementations(
         implemented.findIndex((uri) => Uri.equals(uri, abstractApi)) > -1;
 
       if (implementedApi) {
-        result.push(redirect.from);
+        addUniqueResult(redirect.from);
       }
     }
     // Explicit check
     else if (Uri.isUri(redirect.from)) {
       if (Uri.equals(redirect.from, abstractApi)) {
-        result.push(redirect.to);
+        addUniqueResult(redirect.to);
       }
     }
   }

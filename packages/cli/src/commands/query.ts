@@ -1,28 +1,29 @@
 import { fixParameters } from "../lib/helpers/parameters";
+import { intlMsg } from "../lib/intl";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import axios from "axios";
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 import gql from "graphql-tag";
 import path from "path";
-import { Uri, UriRedirect, Web3ApiClient } from "@web3api/client-js";
-import { EnsPlugin } from "@web3api/ens-plugin-js";
-import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
-import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
+import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
+import { ensPlugin } from "@web3api/ens-plugin-js";
+import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
+import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const optionsString = intlMsg.commands_build_options_options();
+const scriptStr = intlMsg.commands_create_options_recipeScript();
+
 const HELP = `
-${chalk.bold("w3 query")} [options] ${chalk.bold("<recipe-script>")}
+${chalk.bold("w3 query")} [${optionsString}] ${chalk.bold(`<${scriptStr}>`)}
 
-Options:
-  -p, --port  Development server's port
+${optionsString[0].toUpperCase() + optionsString.slice(1)}:
+  -t, --test-ens  ${intlMsg.commands_build_options_t()}
 `;
 
 export default {
-  alias: ["t"],
-  description: "Query Web3APIs using simple JSON recipe files",
+  alias: ["q"],
+  description: intlMsg.commands_query_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
     // eslint-disable-next-line prefer-const
@@ -51,41 +52,62 @@ export default {
     }
 
     if (!recipePath) {
-      print.error("Required argument <recipe-script> is missing");
+      const scriptMissingMessage = intlMsg.commands_query_error_missingScript({
+        script: `<${scriptStr}>`,
+      });
+      print.error(scriptMissingMessage);
       print.info(HELP);
       return;
     }
 
-    const {
-      data: { ipfs, ethereum },
-    } = await axios.get(`http://localhost:${port}/providers`);
-    const {
-      data: { ensAddress },
-    } = await axios.get(`http://localhost:${port}/ens`);
+    let ipfsProvider = "";
+    let ethereumProvider = "";
+    let ensAddress = "";
+
+    try {
+      const {
+        data: { ipfs, ethereum },
+      } = await axios.get("http://localhost:4040/providers");
+      ipfsProvider = ipfs;
+      ethereumProvider = ethereum;
+      const { data } = await axios.get("http://localhost:4040/ens");
+      ensAddress = data.ensAddress;
+    } catch (e) {
+      print.error(`w3 test-env not found, please run "w3 test-env up"`);
+      return;
+    }
 
     // TODO: move this into its own package, since it's being used everywhere?
     // maybe have it exported from test-env.
     const redirects: UriRedirect[] = [
       {
-        from: new Uri("w3://ens/ethereum.web3api.eth"),
-        to: {
-          factory: () => new EthereumPlugin({ provider: ethereum }),
-          manifest: EthereumPlugin.manifest(),
-        },
+        from: "w3://ens/ethereum.web3api.eth",
+        to: ethereumPlugin({
+          networks: {
+            testnet: {
+              provider: ethereumProvider,
+            },
+            mainnet: {
+              provider:
+                "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+            },
+          },
+        }),
       },
       {
-        from: new Uri("w3://ens/ipfs.web3api.eth"),
-        to: {
-          factory: () => new IpfsPlugin({ provider: ipfs }),
-          manifest: IpfsPlugin.manifest(),
-        },
+        from: "w3://ens/ipfs.web3api.eth",
+        to: ipfsPlugin({
+          provider: ipfsProvider,
+          fallbackProviders: ["https://ipfs.io"],
+        }),
       },
       {
-        from: new Uri("w3://ens/ens.web3api.eth"),
-        to: {
-          factory: () => new EnsPlugin({ address: ensAddress }),
-          manifest: EnsPlugin.manifest(),
-        },
+        from: "w3://ens/ens.web3api.eth",
+        to: ensPlugin({
+          addresses: {
+            testnet: ensAddress,
+          },
+        }),
       },
     ];
 
@@ -111,25 +133,45 @@ export default {
         const query = filesystem.read(path.join(dir, task.query));
 
         if (!query) {
-          throw Error(`Failed to read query ${query}`);
+          const readFailMessage = intlMsg.commands_query_error_readFail({
+            query: query ?? "undefined",
+          });
+          throw Error(readFailMessage);
         }
 
-        let variables: Record<string, string> = {};
+        let variables: Record<string, unknown> = {};
 
         if (task.variables) {
-          variables = { ...task.variables };
+          const resolveConstants = (
+            vars: Record<string, unknown>
+          ): Record<string, unknown> => {
+            const output: Record<string, unknown> = {};
 
-          Object.keys(variables).forEach((key: string) => {
-            if (typeof variables[key] === "string") {
-              if (variables[key][0] === "$") {
-                variables[key] = constants[variables[key].replace("$", "")];
+            Object.keys(vars).forEach((key: string) => {
+              const value = vars[key];
+              if (typeof value === "string") {
+                if (value[0] === "$") {
+                  output[key] = constants[value.replace("$", "")];
+                } else {
+                  output[key] = value;
+                }
+              } else if (typeof value === "object") {
+                output[key] = resolveConstants(
+                  value as Record<string, unknown>
+                );
+              } else {
+                output[key] = value;
               }
-            }
-          });
+            });
+
+            return output;
+          };
+
+          variables = resolveConstants(task.variables);
         }
 
         if (!uri) {
-          throw Error("API needs to be initialized");
+          throw Error(intlMsg.commands_query_error_noApi());
         }
 
         print.warning("-----------------------------------");
@@ -138,7 +180,7 @@ export default {
         print.warning("-----------------------------------");
 
         const { data, errors } = await client.query({
-          uri: new Uri(uri),
+          uri,
           query: gql(query),
           variables,
         });

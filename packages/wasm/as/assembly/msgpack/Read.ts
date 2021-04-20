@@ -42,4 +42,7 @@ export abstract class Read {
     key_fn: (reader: Read) => K,
     value_fn: (reader: Read) => V
   ): Map<K, V> | null;
+
+  abstract isNextNil(): bool;
+  abstract isNextString(): bool;
 }

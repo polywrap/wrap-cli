@@ -1,8 +1,13 @@
 {
   "name": "@web3api/schema-parse",
-  "version": "0.0.1-prealpha.1",
+  "description": "Web3API Schema Parsing",
+  "version": "0.0.1-prealpha.20",
   "license": "MIT",
-  "main": "build",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/web3-api/monorepo.git"
+  },
+  "main": "build/index.js",
   "files": [
     "build"
   ],
@@ -14,15 +19,21 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "graphql": "15.4.0"
+    "graphql": "15.5.0",
+    "graphql-schema-cycles": "1.1.2"
   },
   "devDependencies": {
     "@types/deep-equal": "1.0.1",
     "@types/jest": "26.0.8",
-    "jest": "26.2.2",
+    "@web3api/test-cases": "0.0.1-prealpha.20",
+    "jest": "26.6.3",
     "rimraf": "3.0.2",
-    "ts-jest": "26.1.4",
+    "ts-jest": "26.5.4",
     "ts-node": "8.10.2",
-    "typescript": "3.9.7"
+    "typescript": "4.0.7"
+  },
+  "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
+  "publishConfig": {
+    "access": "public"
   }
 }

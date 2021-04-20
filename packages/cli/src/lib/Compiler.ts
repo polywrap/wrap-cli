@@ -1,90 +1,62 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Web3ApiManifest } from "./Web3ApiManifest";
-import { displayPath } from "./helpers/path";
-import { step, withSpinner } from "./helpers/spinner";
+import { Project } from "./Project";
+import { SchemaComposer } from "./SchemaComposer";
+import { step, withSpinner, outputManifest } from "./helpers";
+import { intlMsg } from "./intl";
 
-import fs, { readFileSync } from "fs";
-import path from "path";
-import * as asc from "assemblyscript/cli/asc";
-import { Manifest, Uri, Web3ApiClient, UriRedirect } from "@web3api/client-js";
 import { bindSchema, writeDirectory } from "@web3api/schema-bind";
-import { composeSchema, ComposerOutput } from "@web3api/schema-compose";
-import { EnsPlugin } from "@web3api/ens-plugin-js";
-import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
-import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
+import path from "path";
+import fs, { readFileSync } from "fs";
+import * as gluegun from "gluegun";
+import { Ora } from "ora";
+import * as asc from "assemblyscript/cli/asc";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const fsExtra = require("fs-extra");
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-const toolbox = require("gluegun/toolbox");
 
 export interface CompilerConfig {
-  manifestPath: string;
   outputDir: string;
-  ensAddress?: string;
-  ethProvider?: string;
-  ipfsProvider?: string;
+  project: Project;
+  schemaComposer: SchemaComposer;
 }
 
 export class Compiler {
-  private _manifestDir: string;
+  constructor(private _config: CompilerConfig) {}
 
-  constructor(private _config: CompilerConfig) {
-    this._manifestDir = path.dirname(_config.manifestPath);
-  }
-
-  public async compile(quiet?: boolean, verbose?: boolean): Promise<boolean> {
+  public async compile(verbose?: boolean): Promise<boolean> {
     try {
-      // Load the manifest
-      const manifest = await this._loadManifest();
-
       // Compile the API
-      await this._compileWeb3API(manifest, quiet, verbose);
+      await this._compileWeb3Api(verbose);
 
       return true;
     } catch (e) {
-      toolbox.print.error(e);
+      gluegun.print.error(e);
       return false;
     }
   }
 
-  private async _loadManifest(quiet = false): Promise<Manifest> {
-    const run = () => {
-      return Web3ApiManifest.load(this._config.manifestPath);
-    };
-
-    if (quiet) {
-      return run();
-    } else {
-      const manifestPath = displayPath(this._config.manifestPath);
-
-      return await withSpinner(
-        `Load web3api from ${manifestPath}`,
-        `Failed to load web3api from ${manifestPath}`,
-        `Warnings loading web3api from ${manifestPath}`,
-        async (_spinner) => {
-          return run();
-        }
-      );
-    }
+  public clearCache(): void {
+    this._config.project.clearCache();
+    this._config.schemaComposer.clearCache();
   }
 
-  private async _compileWeb3API(
-    manifest: Manifest,
-    quiet?: boolean,
-    verbose?: boolean
-  ) {
-    const run = async (spinner?: any) => {
-      const { outputDir } = this._config;
+  private async _compileWeb3Api(verbose?: boolean) {
+    const { outputDir, project, schemaComposer } = this._config;
 
+    const run = async (spinner?: Ora): Promise<void> => {
       // Init & clean build directory
       this._cleanDir(this._config.outputDir);
 
-      // Load & compose the schemas
-      const composed = await this._composeSchemas(manifest);
+      const manifest = await project.getManifest();
+      // Get the fully composed schema
+      const composed = await schemaComposer.getComposedSchemas();
+
+      if (!composed.combined) {
+        const failedSchemaMessage = intlMsg.lib_compiler_failedSchemaReturn();
+        throw Error(`compileWeb3Api: ${failedSchemaMessage}`);
+      }
 
       const buildModule = async (moduleName: "mutation" | "query") => {
         const module = manifest[moduleName];
@@ -94,9 +66,10 @@ export class Compiler {
         }
 
         if (!composed[moduleName]) {
-          throw Error(
-            `Missing schema definition for the module "${moduleName}"`
-          );
+          const missingSchemaMessage = intlMsg.lib_compiler_missingDefinition({
+            name: `"${moduleName}"`,
+          });
+          throw Error(missingSchemaMessage);
         }
 
         // Generate code next to the module entry point file
@@ -107,7 +80,6 @@ export class Compiler {
           moduleName,
           outputDir,
           spinner,
-          quiet,
           verbose
         );
         module.module.file = `./${moduleName}.wasm`;
@@ -123,16 +95,16 @@ export class Compiler {
         composed.combined,
         "utf-8"
       );
-      Web3ApiManifest.dump(manifest, `${outputDir}/web3api.yaml`);
+      await outputManifest(manifest, `${outputDir}/web3api.yaml`);
     };
 
-    if (quiet) {
+    if (project.quiet) {
       return run();
     } else {
       return await withSpinner(
-        "Compile Web3API",
-        "Failed to compile Web3API",
-        "Warnings while compiling Web3API",
+        intlMsg.lib_compiler_compileText(),
+        intlMsg.lib_compiler_compileError(),
+        intlMsg.lib_compiler_compileWarning(),
         async (spinner) => {
           return run(spinner);
         }
@@ -144,19 +116,20 @@ export class Compiler {
     modulePath: string,
     moduleName: string,
     outputDir: string,
-    spinner?: any,
-    quiet?: boolean,
+    spinner?: Ora,
     verbose?: boolean
   ) {
-    if (!quiet) {
+    const { project } = this._config;
+
+    if (!project.quiet && spinner) {
       step(
         spinner,
-        "Compiling WASM module:",
+        `${intlMsg.lib_compiler_step()}:`,
         `${modulePath} => ${outputDir}/${moduleName}.wasm`
       );
     }
 
-    const moduleAbsolute = path.join(this._manifestDir, modulePath);
+    const moduleAbsolute = path.join(project.manifestDir, modulePath);
     const baseDir = path.dirname(moduleAbsolute);
     const libsDirs = [];
 
@@ -173,9 +146,10 @@ export class Compiler {
     }
 
     if (libsDirs.length === 0) {
-      throw Error(
-        `could not locate \`node_modules\` in parent directories of web3api manifest`
-      );
+      const noNodeModules = intlMsg.lib_compiler_noNodeModules({
+        folder: `\`node_modules\``,
+      });
+      throw Error(noNodeModules);
     }
 
     const args = [
@@ -184,11 +158,16 @@ export class Compiler {
       libsDirs.join(","),
       "--outFile",
       `${outputDir}/${moduleName}.wasm`,
+      "--use",
+      `abort=${path.relative(
+        process.cwd(),
+        path.join(baseDir, "w3/entry/w3Abort")
+      )}`,
       "--optimize",
       "--debug",
       "--importMemory",
       "--runtime",
-      "none",
+      "stub",
     ];
 
     // compile the module into the output directory
@@ -212,9 +191,6 @@ export class Compiler {
     const instance = await WebAssembly.instantiate(mod, {
       env: {
         memory,
-        abort: (msg: string, file: string, line: number, column: number) => {
-          console.error(`Abort: ${msg}\n${file}\n[${line},${column}]`);
-        },
       },
       w3: {
         __w3_subinvoke: () => {},
@@ -225,137 +201,35 @@ export class Compiler {
         __w3_invoke_args: () => {},
         __w3_invoke_result: () => {},
         __w3_invoke_error: () => {},
+        __w3_abort: () => {},
       },
     });
 
     if (!instance.exports._w3_init) {
-      throw Error(
-        "WASM module is missing the _w3_init export. This should never happen..."
-      );
+      throw Error(intlMsg.lib_compiler_noInit());
     }
 
     if (!instance.exports._w3_invoke) {
-      throw Error(
-        "WASM module is missing the _w3_invoke export. This should never happen..."
-      );
+      throw Error(intlMsg.lib_compiler_noInvoke());
     }
   }
 
   private _generateCode(entryPoint: string, schema: string): string[] {
+    const { project } = this._config;
+
     const absolute = path.isAbsolute(entryPoint)
       ? entryPoint
-      : this._appendPath(this._config.manifestPath, entryPoint);
+      : this._appendPath(project.manifestPath, entryPoint);
     const directory = `${path.dirname(absolute)}/w3`;
+
+    // Clean the code generation
     this._cleanDir(directory);
+
+    // Generate the bindings
     const output = bindSchema("wasm-as", schema);
+
+    // Output the bindings
     return writeDirectory(directory, output);
-  }
-
-  private async _composeSchemas(manifest: Manifest): Promise<ComposerOutput> {
-    const querySchemaPath = manifest.query?.schema.file;
-    const mutationSchemaPath = manifest.mutation?.schema.file;
-
-    return composeSchema({
-      schemas: {
-        query: querySchemaPath
-          ? {
-              schema: this._fetchLocalSchema(querySchemaPath),
-              absolutePath: querySchemaPath,
-            }
-          : undefined,
-        mutation: mutationSchemaPath
-          ? {
-              schema: this._fetchLocalSchema(mutationSchemaPath),
-              absolutePath: mutationSchemaPath,
-            }
-          : undefined,
-      },
-      resolvers: {
-        external: (uri: string) => this._fetchExternalSchema(uri, manifest),
-        local: (path: string) => Promise.resolve(this._fetchLocalSchema(path)),
-      },
-    });
-  }
-
-  private async _fetchExternalSchema(
-    uri: string,
-    manifest: Manifest
-  ): Promise<string> {
-    // Check to see if we have any import redirects that match
-    if (manifest.import_redirects) {
-      for (const redirect of manifest.import_redirects) {
-        const redirectUri = new Uri(redirect.uri);
-        const uriParsed = new Uri(uri);
-
-        if (Uri.equals(redirectUri, uriParsed)) {
-          return this._fetchLocalSchema(redirect.schema);
-        }
-      }
-    }
-
-    const { ensAddress, ethProvider, ipfsProvider } = this._config;
-
-    // If custom providers are supplied, try fetching the URI
-    // with them added to the client first
-    if (ensAddress || ethProvider || ipfsProvider) {
-      const redirects: UriRedirect[] = [];
-
-      if (ensAddress) {
-        redirects.push({
-          from: new Uri("w3://ens/ens.web3api.eth"),
-          to: {
-            factory: () => new EnsPlugin({ address: ensAddress }),
-            manifest: EnsPlugin.manifest(),
-          },
-        });
-      }
-
-      if (ethProvider) {
-        redirects.push({
-          from: new Uri("w3://ens/ethereum.web3api.eth"),
-          to: {
-            factory: () => new EthereumPlugin({ provider: ethProvider }),
-            manifest: EthereumPlugin.manifest(),
-          },
-        });
-      }
-
-      if (ipfsProvider) {
-        redirects.push({
-          from: new Uri("w3://ens/ipfs.web3api.eth"),
-          to: {
-            factory: () => new IpfsPlugin({ provider: ipfsProvider }),
-            manifest: IpfsPlugin.manifest(),
-          },
-        });
-      }
-
-      try {
-        const client = new Web3ApiClient({ redirects });
-        const api = await client.loadWeb3Api(new Uri(uri));
-        const schema = await api.getSchema(client);
-
-        if (schema) {
-          return schema;
-        }
-      } catch (e) {
-        // Do nothing, try using the default client below
-      }
-    }
-
-    // Try fetching the schema with a vanilla Web3API client
-    const client = new Web3ApiClient();
-    const api = await client.loadWeb3Api(new Uri(uri));
-    return await api.getSchema(client);
-  }
-
-  private _fetchLocalSchema(schemaPath: string) {
-    return fs.readFileSync(
-      path.isAbsolute(schemaPath)
-        ? schemaPath
-        : this._appendPath(this._config.manifestPath, schemaPath),
-      "utf-8"
-    );
   }
 
   private _appendPath(root: string, subPath: string) {

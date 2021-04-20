@@ -3,11 +3,13 @@ import { extractors, SchemaExtractor } from "./extract";
 import { TypeInfoTransforms, performTransforms } from "./transform";
 import { finalizePropertyDef } from "./transform/finalizePropertyDef";
 import { validators, SchemaValidator } from "./validate";
+import { Blackboard } from "./extract/Blackboard";
 
 import { parse } from "graphql";
 
 export * from "./typeInfo";
 export * from "./transform";
+export * from "./header";
 
 interface ParserOptions {
   extractors?: SchemaExtractor[];
@@ -40,12 +42,15 @@ export function parseSchema(
     }
   }
 
+  // Create a blackboard for shared metadata
+  const blackboard = new Blackboard(astNode);
+
   // Extract & Build TypeInfo
   let info = createTypeInfo();
   const extracts = options.extractors || extractors;
 
   for (const extract of extracts) {
-    extract(astNode, info);
+    extract(astNode, info, blackboard);
   }
 
   // Finalize & Transform TypeInfo

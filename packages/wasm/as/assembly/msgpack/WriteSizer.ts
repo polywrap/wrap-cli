@@ -108,7 +108,7 @@ export class WriteSizer extends Write {
       return;
     }
     this.writeBytesLength(value.byteLength);
-    this.length += value.byteLength + 1;
+    this.length += value.byteLength;
   }
 
   writeArrayLength(length: u32): void {
@@ -121,7 +121,7 @@ export class WriteSizer extends Write {
     }
   }
 
-  writeArray<T>(a: Array<T>, fn: (sizer: WriteSizer, item: T) => void): void {
+  writeArray<T>(a: Array<T>, fn: (sizer: Write, item: T) => void): void {
     this.writeArrayLength(a.length);
     for (let i: i32 = 0; i < a.length; i++) {
       fn(this, a[i]);
@@ -140,8 +140,8 @@ export class WriteSizer extends Write {
 
   writeMap<K, V>(
     m: Map<K, V>,
-    key_fn: (sizer: WriteSizer, key: K) => void,
-    value_fn: (sizer: WriteSizer, value: V) => void
+    key_fn: (sizer: Write, key: K) => void,
+    value_fn: (sizer: Write, value: V) => void
   ): void {
     this.writeMapLength(m.size);
     const keys = m.keys();
@@ -272,7 +272,7 @@ export class WriteSizer extends Write {
 
   writeNullableArray<T>(
     a: Array<T> | null,
-    fn: (sizer: Sizer, item: T) => void
+    fn: (sizer: Write, item: T) => void
   ): void {
     if (a === null) {
       this.writeNil();
@@ -283,8 +283,8 @@ export class WriteSizer extends Write {
 
   writeNullableMap<K, V>(
     m: Map<K, V> | null,
-    key_fn: (sizer: WriteSizer, key: K) => void,
-    value_fn: (sizer: WriteSizer, value: V) => void
+    key_fn: (sizer: Write, key: K) => void,
+    value_fn: (sizer: Write, value: V) => void
   ): void {
     if (m === null) {
       this.writeNil();

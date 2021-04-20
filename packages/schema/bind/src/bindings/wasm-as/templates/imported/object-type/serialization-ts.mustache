@@ -7,6 +7,7 @@ import {
   Nullable
 } from "@web3api/wasm-as";
 import { {{type}} } from "./";
+import * as Types from "../..";
 
 export function serialize{{type}}(type: {{type}}): ArrayBuffer {
   const sizer = new WriteSizer();
@@ -17,7 +18,7 @@ export function serialize{{type}}(type: {{type}}): ArrayBuffer {
   return buffer;
 }
 
-function write{{type}}(writer: Write, type: {{type}}) {
+export function write{{type}}(writer: Write, type: {{type}}): void {
   writer.writeMapLength({{properties.length}});
   {{#properties}}
   writer.writeString("{{name}}");
@@ -29,12 +30,53 @@ function write{{type}}(writer: Write, type: {{type}}) {
     {{> serialize_array}}
   });
   {{/array}}
+  {{#object}}
+  {{#required}}
+  Types.{{type}}.write(writer, type.{{name}});
+  {{/required}}
+  {{^required}}
+  if (type.{{name}}) {
+    Types.{{type}}.write(writer, type.{{name}} as Types.{{type}});
+  } else {
+    writer.writeNil();
+  }
+  {{/required}}
+  {{/object}}
+  {{#enum}}
+  {{#required}}
+  writer.writeInt32(type.{{name}});
+  {{/required}}
+  {{^required}}
+  writer.writeNullableInt32(type.{{name}});
+  {{/required}}
+  {{/enum}}
   {{/properties}}
 }
 
-export function deserialize{{type}}(buffer: ArrayBuffer, type: {{type}}) {
+export function deserialize{{type}}(buffer: ArrayBuffer): {{type}} {
   const reader = new ReadDecoder(buffer);
+  return read{{type}}(reader);
+}
+
+export function read{{type}}(reader: Read): {{type}} {
   var numFields = reader.readMapLength();
+
+  {{#properties}}
+  {{^object}}
+  var _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+  {{/object}}
+  {{#object}}
+  {{#required}}
+  var _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} | null = null;
+  {{/required}}
+  {{^required}}
+  var _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+  {{/required}}
+  {{/object}}
+  {{#required}}
+  var _{{name}}Set: bool = false;
+  {{/required}}
+  {{/properties}}
 
   while (numFields > 0) {
     numFields--;
@@ -43,14 +85,44 @@ export function deserialize{{type}}(buffer: ArrayBuffer, type: {{type}}) {
     {{#properties}}
     {{^first}}else {{/first}}if (field == "{{name}}") {
       {{#scalar}}
-      type.{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
+      _{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
       {{/scalar}}
       {{#array}}
-      type.{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}} => {
+      _{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}} => {
         {{> deserialize_array}}
       });
       {{/array}}
+      {{#enum}}
+      {{> deserialize_enum}}
+      _{{name}} = value;
+      {{/enum}}
+      {{#object}}
+      {{> deserialize_object }}
+      _{{name}} = object;
+      {{/object}}
+      {{#required}}
+      _{{name}}Set = true;
+      {{/required}}
     }
     {{/properties}}
   }
+
+  {{#properties}}
+  {{#required}}
+  {{^object}}
+  if (!_{{name}}Set) {
+  {{/object}}
+  {{#object}}
+  if (!_{{name}} || !_{{name}}Set) {
+  {{/object}}
+    throw new Error("Missing required property: '{{name}}: {{type}}'");
+  }
+  {{/required}}
+  {{/properties}}
+
+  return {
+    {{#properties}}
+    {{name}}: _{{name}}{{^last}},{{/last}}
+    {{/properties}}
+  };
 }

@@ -1,5 +1,12 @@
 {
   "npmClient": "yarn",
   "useWorkspaces": true,
-  "version": "0.0.0"
+  "version": "independent",
+  "command": {
+    "publish": {
+      "ignore": [
+        "templates-*"
+      ]
+    }
+  }
 }

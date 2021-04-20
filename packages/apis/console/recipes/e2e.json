@@ -1,0 +1,10 @@
+[
+  {
+    "api": "ens/console.eth",
+    "constants": "./constants.json"
+  },
+  {
+    "query": "./log.graphql",
+    "variables": { "message": "$message" }
+  }
+]
