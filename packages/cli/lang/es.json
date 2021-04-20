@@ -75,8 +75,6 @@
   "commands_plugin_options_command": "command",
   "commands_plugin_options_e": "ENS address to lookup external schemas (default: 0x0000...2e1e)",
   "commands_plugin_options_e_address": "address",
-  "commands_plugin_options_genFile": "Generation file",
-  "commands_plugin_options_genFilePath": "Path to the generation file (default",
   "commands_plugin_options_h": "Show usage information",
   "commands_plugin_options_i": "IPFS node to load external schemas (default: dev-server's node)",
   "commands_plugin_options_i_node": "node",

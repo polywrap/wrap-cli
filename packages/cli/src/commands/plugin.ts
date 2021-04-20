@@ -7,17 +7,12 @@ import { CodeGenerator, Compiler, Project, SchemaComposer } from "../lib";
 import { fixParameters } from "../lib/helpers";
 import { intlMsg } from "../lib/intl";
 
-export const defaultGenerationFile = "web3api.gen.js";
 export const supportedLangs: { [key: string]: string[] } = {
   build: ["typescript"],
   codegen: ["typescript"],
 };
 export const defaultManifest = ["web3api.yaml", "web3api.yml"];
 
-const genFileOp = intlMsg
-  .commands_plugin_options_genFile()
-  .toLowerCase()
-  .replace(" ", "-");
 const cmdStr = intlMsg.commands_plugin_options_command();
 const optionsStr = intlMsg.commands_options_options();
 const langsStr = intlMsg.commands_plugin_options_langs();
@@ -30,18 +25,13 @@ const nodeStr = intlMsg.commands_plugin_options_i_node();
 const addrStr = intlMsg.commands_plugin_options_e_address();
 
 const HELP = `
-${chalk.bold("w3 plugin")} ${cmdStr} ${chalk.bold(
-  `[<${genFileOp}>]`
-)} [${optionsStr}]
+${chalk.bold("w3 plugin")} ${cmdStr} [${optionsStr}]
 
 Commands:
   ${chalk.bold("build")} <${langStr}>     ${buildStr}
     ${langsStr}: ${supportedLangs.build.join(", ")}
   ${chalk.bold("codegen")} <${langStr}>   ${codegenStr}
     ${langsStr}: ${supportedLangs.codegen.join(", ")}
-
-${intlMsg.commands_plugin_options_genFile()}:
-  ${intlMsg.commands_plugin_options_genFilePath()}: ${defaultGenerationFile})
 
 Options:
   -h, --help                        ${intlMsg.commands_plugin_options_h()}
@@ -77,11 +67,10 @@ export default {
     ens = ens || e;
 
     let type = "",
-      lang = "",
-      generationFile = "";
+      lang = "";
     try {
       const params = parameters;
-      [type, lang, generationFile] = fixParameters(
+      [type, lang] = fixParameters(
         {
           options: params.options,
           array: params.array,
@@ -204,19 +193,17 @@ export default {
       ensAddress,
     });
 
-    if (type == "codegen") {
-    }
     let result = false;
-    if (generationFile) {
-      const codeGenerator = new CodeGenerator({
-        project,
-        schemaComposer,
-        generationFile,
-        outputDir: outputTypes || filesystem.path("types"),
-      });
 
-      result = await codeGenerator.generate();
-    } else {
+    const codeGenerator = new CodeGenerator({
+      project,
+      schemaComposer,
+      outputTypes: outputTypes || filesystem.resolve("./src/types.ts"),
+    });
+
+    result = await codeGenerator.generate();
+
+    if (type == "build") {
       const compiler = new Compiler({
         project,
         outputDir: outputSchema || filesystem.path("build"),
