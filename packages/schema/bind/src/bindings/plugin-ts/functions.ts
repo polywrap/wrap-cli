@@ -1,3 +1,4 @@
+import { isBaseType } from "./types";
 import { MustacheFunction } from "../functions";
 
 export const toTypescript: MustacheFunction = () => {
@@ -18,38 +19,22 @@ export const toTypescript: MustacheFunction = () => {
 
     switch (type) {
       case "Int":
-        type = "i32";
-        break;
       case "Int8":
-        type = "i8";
-        break;
       case "Int16":
-        type = "i16";
-        break;
       case "Int32":
-        type = "i32";
-        break;
       case "Int64":
-        type = "i64";
-        break;
       case "UInt":
       case "UInt32":
-        type = "u32";
-        break;
       case "UInt8":
-        type = "u8";
-        break;
       case "UInt16":
-        type = "u16";
-        break;
       case "UInt64":
-        type = "u64";
+        type = "number";
         break;
       case "String":
         type = "string";
         break;
       case "Boolean":
-        type = "bool";
+        type = "boolean";
         break;
       case "Bytes":
         type = "ArrayBuffer";
@@ -67,7 +52,6 @@ export const toTypescript: MustacheFunction = () => {
   };
 };
 
-// TODO: reference wasm-as/functions
 const toTypescriptArray = (type: string, nullable: boolean): string => {
   const result = type.match(/(\[)([[\]A-Za-z1-9_.!]+)(\])/);
 
@@ -75,6 +59,26 @@ const toTypescriptArray = (type: string, nullable: boolean): string => {
     throw Error(`Invalid Array: ${type}`);
   }
 
-  const wasmType = toWasm()(result[2], (str) => str);
-  return applyNullable("Array<" + wasmType + ">", nullable, false);
+  const tsType = toTypescript()(result[2], (str) => str);
+  return applyNullable("Array<" + tsType + ">", nullable, false);
+};
+
+const applyNullable = (
+  type: string,
+  nullable: boolean,
+  isEnum: boolean
+): string => {
+  if (nullable) {
+    if (
+      type.indexOf("Array") === 0 ||
+      type.indexOf("string") === 0 ||
+      (!isEnum && !isBaseType(type))
+    ) {
+      return `${type} | null`;
+    } else {
+      return `Nullable<${type}>`;
+    }
+  } else {
+    return type;
+  }
 };
