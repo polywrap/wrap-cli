@@ -1,11 +1,11 @@
 /* eslint-disable prefer-const */
-import { GluegunToolbox, print } from "gluegun";
-import axios from "axios";
-import chalk from "chalk";
-
 import { CodeGenerator, Compiler, Project, SchemaComposer } from "../lib";
 import { fixParameters } from "../lib/helpers";
 import { intlMsg } from "../lib/intl";
+
+import { GluegunToolbox, print } from "gluegun";
+import axios from "axios";
+import chalk from "chalk";
 
 export const supportedLangs: { [key: string]: string[] } = {
   build: ["typescript"],
