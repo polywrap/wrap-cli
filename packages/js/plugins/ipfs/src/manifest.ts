@@ -8,7 +8,15 @@ export const manifest: PluginManifest = {
 # https://github.com/Web3-API/monorepo/issues/75
 
 type Query {
-  catFile(cid: String!): Bytes!
+  catFile(
+    cid: String!
+    options: Options
+  ): Bytes!
+
+  resolve(
+    cid: String!
+    options: Options
+  ): ResolveResult
 
   tryResolveUri(
     authority: String!
@@ -24,6 +32,20 @@ type Mutation {
   # TODO: Allow for custom type CID
   # https://github.com/web3-api/monorepo/issues/103
   addFile(data: Bytes!): String!
+}
+
+type ResolveResult {
+  cid: String!
+  provider: String!
+}
+
+type Options {
+  # Timeout (in ms) for the operation.
+  # Fallback providers are used if timeout is reached.
+  timeout: UInt64
+
+  # The IPFS provider to be used
+  provider: String
 }
 
 # TODO: should get replaced with an import
