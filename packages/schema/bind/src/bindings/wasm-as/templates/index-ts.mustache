@@ -19,18 +19,18 @@ export {
 {{/queryTypes}}
 
 {{#objectTypes}}
-export * from "./{{type}}";
+export { {{type}} } from "./{{type}}";
 {{/objectTypes}}
 {{#enumTypes}}
-export * from "./{{type}}";
+export { {{type}} } from "./{{type}}";
 {{/enumTypes}}
 
 {{#importedQueryTypes}}
-export * from "./imported/{{type}}";
+export { {{type}} } from "./imported/{{type}}";
 {{/importedQueryTypes}}
 {{#importedObjectTypes}}
-export * from "./imported/{{type}}";
+export { {{type}} } from "./imported/{{type}}";
 {{/importedObjectTypes}}
 {{#importedEnumTypes}}
-export * from "./imported/{{type}}";
+export { {{type}} } from "./imported/{{type}}";
 {{/importedEnumTypes}}
