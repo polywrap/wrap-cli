@@ -23,8 +23,8 @@ export default class Price extends Fraction {
     this.baseToken = baseToken;
     this.quoteToken = quoteToken;
     this.scalar = new Fraction(
-      BigInt.pow(BigInt.fromInt(10), baseToken.decimals),
-      BigInt.pow(BigInt.fromInt(10), quoteToken.decimals)
+      BigInt.pow(BigInt.fromUInt16(10), baseToken.decimals),
+      BigInt.pow(BigInt.fromUInt16(10), quoteToken.decimals)
     );
   }
 

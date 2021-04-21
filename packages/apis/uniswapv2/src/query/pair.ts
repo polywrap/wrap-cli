@@ -119,7 +119,7 @@ export function pairLiquidityMinted(
   let amount1 = BigInt.fromString(tokenAmounts[1].amount);
   const supply = BigInt.fromString(totalSupply.amount);
   if (supply.eq(BigInt.ZERO)) {
-    const minLiq = BigInt.fromDigits([minimumLiquidity()]);
+    const minLiq = BigInt.fromUInt32(minimumLiquidity());
     liquidity = amount0.mul(amount1).sqrt().sub(minLiq);
   } else {
     const pairAmt0 = BigInt.fromString(pairTokens[0].amount);

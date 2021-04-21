@@ -17,6 +17,7 @@ describe('computePairAddress', () => {
 
   before(async () => {
     const { ipfs, ensAddress, redirects } = await initTestEnvironment();
+    // fetch providers from dev server
     client = new Web3ApiClient({ redirects });
     // deploy api
     const apiPath: string = path.resolve(__dirname + '/../../../');

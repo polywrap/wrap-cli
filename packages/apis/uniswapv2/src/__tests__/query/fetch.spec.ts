@@ -8,12 +8,11 @@ import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { loggerPlugin } from "@web3api/logger-plugin-js";
-import { ExternalProvider } from "@web3api/client-js/build/pluginConfigs/Ethereum";
 import { Pair, TokenAmount } from "./types";
 const path = require('path');
 
 describe("Fetch", () => {
-  const ethProvider = hre.ethers.provider as ExternalProvider
+  const ethProvider = hre.ethers.provider
   const ipfsProvider = "https://ipfs.io";
   const ensAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
   // https://tokenlists.org/token-list?url=https://gateway.ipfs.io/ipns/tokens.uniswap.org
@@ -29,8 +28,14 @@ describe("Fetch", () => {
     const redirects: UriRedirect[] = [
       {
         from: "w3://ens/ethereum.web3api.eth",
-        // @ts-ignore
-        to: ethereumPlugin({ provider: ethProvider }),
+        to: ethereumPlugin({
+          networks: {
+            mainnet: {
+              provider: ethProvider
+            },
+          },
+          defaultNetwork: "mainnet"
+        }),
       },
       {
         from: "w3://ens/ipfs.web3api.eth",
@@ -38,7 +43,7 @@ describe("Fetch", () => {
       },
       {
         from: "w3://ens/ens.web3api.eth",
-        to: ensPlugin({}),
+        to: ensPlugin({address: ensAddress}),
       },
       {
         from: "w3://w3/logger",
