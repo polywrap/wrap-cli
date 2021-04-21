@@ -4,7 +4,6 @@ import { step, withSpinner } from "./helpers";
 import { intlMsg } from "./intl";
 
 import { OutputDirectory, writeDirectory } from "@web3api/schema-bind";
-import { parseSchema } from "@web3api/schema-parse";
 import path from "path";
 import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
@@ -46,8 +45,15 @@ export class CodeGenerator {
 
       // Get the fully composed schema
       const composed = await schemaComposer.getComposedSchemas();
-      const typeInfo = parseSchema(composed.combined || "");
-      this._schema = composed.combined;
+
+      if (!composed.combined) {
+        throw Error(
+          `CodeGenerator: The schema does not exist, please define one.`
+        );
+      }
+
+      const typeInfo = composed.combined.typeInfo;
+      this._schema = composed.combined.schema;
 
       // Check the generation file if it has the proper run() method
       // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
