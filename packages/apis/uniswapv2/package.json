@@ -5,8 +5,9 @@
   "version": "0.0.1-prealpha.8",
   "scripts": {
     "build": "npx w3 build",
-    "test": "TEST=true jest --passWithNoTests --runInBand --verbose",
-    "test:ci": "TEST=true jest --passWithNoTests --runInBand --verbose",
+    "test:unit": "asp --verbose",
+    "test": "yarn run test:unit",
+    "test:ci": "TEST=TRUE yarn run test:unit",
     "test:env:up": "npx w3 test-env up",
     "test:env:down": "npx w3 test-env down"
   },
@@ -20,6 +21,7 @@
     "as-bigint": "^0.1.2"
   },
   "devDependencies": {
+    "@as-pect/cli": "^6.0.0",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@types/jest": "26.0.8",
     "@types/node": "12.6.9",
@@ -36,7 +38,7 @@
     "js-yaml": "3.14.0",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",
-    "typescript": "4.0.7",
-    "ts-node": "8.10.2"
+    "ts-node": "8.10.2",
+    "typescript": "4.0.7"
   }
 }
