@@ -1,3 +1,9 @@
+{{#__commonImport}}
+import { {{type}} } from "../../common";
+
+export { {{type}} };
+{{/__commonImport}}
+{{^__commonImport}}
 import {
   w3_subinvoke,
   Nullable
@@ -33,3 +39,4 @@ export class {{type}} {
   {{/last}}
   {{/methods}}
 }
+{{/__commonImport}}

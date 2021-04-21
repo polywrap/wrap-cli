@@ -6,7 +6,12 @@ import { SchemaComposer } from "./SchemaComposer";
 import { step, withSpinner, outputManifest } from "./helpers";
 import { intlMsg } from "./intl";
 
-import { bindSchema, writeDirectory } from "@web3api/schema-bind";
+import { TypeInfo } from "@web3api/schema-parse";
+import {
+  bindSchema,
+  writeDirectory,
+  BindModuleOptions,
+} from "@web3api/schema-bind";
 import path from "path";
 import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
@@ -58,72 +63,96 @@ export class Compiler {
         throw Error(`compileWeb3Api: ${failedSchemaMessage}`);
       }
 
-      // Track all code generation folders used. If there are duplicates,
-      // inform the user to ensure overwriting will never occur.
-      const generationDirectories: string[] = [];
+      const buildModules = async () => {
+        const buildQuery = !!manifest.query;
+        const buildMutation = !!manifest.mutation;
 
-      const buildModule = async (moduleName: "mutation" | "query") => {
-        const module = manifest[moduleName];
-
-        if (!module) {
-          return;
-        }
-
-        if (!composed[moduleName]) {
+        const throwMissingSchema = (moduleName: string) => {
           const missingSchemaMessage = intlMsg.lib_compiler_missingDefinition({
             name: `"${moduleName}"`,
           });
           throw Error(missingSchemaMessage);
+        };
+
+        if (buildQuery && !composed.query) {
+          throwMissingSchema("query");
         }
 
-        const directory = this._getGenerationDirectory(module.module.file);
+        if (buildMutation && !composed.mutation) {
+          throwMissingSchema("mutation");
+        }
 
-        if (generationDirectories.indexOf(directory) !== -1) {
+        const queryDirectory = manifest.query
+          ? this._getGenerationDirectory(manifest.query.module.file)
+          : undefined;
+        const mutationDirectory = manifest.mutation
+          ? this._getGenerationDirectory(manifest.mutation.module.file)
+          : undefined;
+
+        if (
+          queryDirectory &&
+          mutationDirectory &&
+          queryDirectory === mutationDirectory
+        ) {
           throw Error(
-            `compileWeb3Api: Duplicate code generation folder found for module ${moduleName}.` +
+            `compileWeb3Api: Duplicate code generation folder found "${queryDirectory}".` +
               `Please ensure each module file is located in a unique directory.`
           );
         }
 
-        generationDirectories.push(directory);
+        if (buildQuery && !composed.query?.schema) {
+          throw Error(`compileWeb3Api: Missing schema for the module "query"`);
+        }
 
-        // Generate code next to the module entry point file
-        if (!composed[moduleName]) {
+        if (buildMutation && !composed.mutation?.schema) {
           throw Error(
-            `compileWeb3Api: Missing SchemaInfo for the module "${moduleName}"`
+            `compileWeb3Api: Missing schema for the module "mutation"`
           );
         }
 
-        if (!composed[moduleName]?.schema) {
-          throw Error(
-            `compileWeb3Api: Missing schema for the module "${moduleName}"`
-          );
-        }
-
-        switch (moduleName) {
-          case "mutation":
-            this._generateCode(directory, composed.mutation?.schema as string);
-            break;
-          case "query":
-            this._generateCode(directory, composed.query?.schema as string);
-            break;
-          default:
-            throw Error(`Compiler: Unsupported module type "${moduleName}"`);
-        }
-
-        await this._compileWasmModule(
-          module.module.file,
-          moduleName,
-          outputDir,
-          spinner,
-          verbose
+        this._generateCode(
+          buildQuery
+            ? {
+                typeInfo: composed.query?.typeInfo as TypeInfo,
+                outputDirAbs: queryDirectory as string,
+              }
+            : undefined,
+          buildMutation
+            ? {
+                typeInfo: composed.mutation?.typeInfo as TypeInfo,
+                outputDirAbs: mutationDirectory as string,
+              }
+            : undefined
         );
-        module.module.file = `./${moduleName}.wasm`;
-        module.schema.file = "./schema.graphql";
+
+        if (buildQuery) {
+          const queryManifest = manifest as Required<typeof manifest>;
+          await this._compileWasmModule(
+            queryManifest.query.module.file,
+            "query",
+            outputDir,
+            spinner,
+            verbose
+          );
+          queryManifest.query.module.file = `./query.wasm`;
+          queryManifest.query.schema.file = "./schema.graphql";
+        }
+
+        if (buildMutation) {
+          const mutationManifest = manifest as Required<typeof manifest>;
+          await this._compileWasmModule(
+            mutationManifest.mutation.module.file,
+            "mutation",
+            outputDir,
+            spinner,
+            verbose
+          );
+          mutationManifest.mutation.module.file = `./mutation.wasm`;
+          mutationManifest.mutation.schema.file = "./schema.graphql";
+        }
       };
 
-      await buildModule("mutation");
-      await buildModule("query");
+      await buildModules();
 
       // Output the schema & manifest files
       fs.writeFileSync(
@@ -259,15 +288,40 @@ export class Compiler {
     return `${path.dirname(absolute)}/w3`;
   }
 
-  private _generateCode(directory: string, schema: string): string[] {
+  private _generateCode(
+    query?: BindModuleOptions,
+    mutation?: BindModuleOptions
+  ): string[] {
     // Clean the code generation
-    this._cleanDir(directory);
+    if (query) {
+      this._cleanDir(query.outputDirAbs);
+    }
+
+    if (mutation) {
+      this._cleanDir(mutation.outputDirAbs);
+    }
 
     // Generate the bindings
-    const output = bindSchema("wasm-as", schema);
+    const output = bindSchema({
+      language: "wasm-as",
+      query,
+      mutation,
+    });
 
     // Output the bindings
-    return writeDirectory(directory, output);
+    const filesWritten: string[] = [];
+
+    if (query && output.query) {
+      filesWritten.push(...writeDirectory(query.outputDirAbs, output.query));
+    }
+
+    if (mutation && output.mutation) {
+      filesWritten.push(
+        ...writeDirectory(mutation.outputDirAbs, output.mutation)
+      );
+    }
+
+    return filesWritten;
   }
 
   private _appendPath(root: string, subPath: string) {
