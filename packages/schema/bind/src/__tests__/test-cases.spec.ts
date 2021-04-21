@@ -15,7 +15,11 @@ describe("Web3API Binding Test Suite", () => {
           const expectedOutput = readDirectory(directory);
           const output = bindSchema(name as TargetLanguage, test.inputSchema);
 
-          const alphabetical = (a, b) => {
+          interface Named {
+            name: string;
+          }
+
+          const alphabetical = (a: Named, b: Named) => {
             if (a.name < b.name) {
               return -1;
             }

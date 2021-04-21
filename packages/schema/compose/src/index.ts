@@ -4,17 +4,11 @@ import { renderSchema } from "./render";
 
 import { TypeInfo, combineTypeInfo } from "@web3api/schema-parse";
 
-export interface ComposerOptions {
-  schemas: {
-    query?: SchemaFile;
-    mutation?: SchemaFile;
-  };
-  resolvers: SchemaResolvers;
-}
+export * from "./types";
 
 export interface SchemaInfo {
-  schema: string;
-  typeInfo: TypeInfo;
+  schema?: string;
+  typeInfo?: TypeInfo;
 }
 
 export interface ComposerOutput {
@@ -23,18 +17,33 @@ export interface ComposerOutput {
   combined?: SchemaInfo;
 }
 
+export enum ComposerFilter {
+  Schema = 1 << 0,
+  TypeInfo = 1 << 1,
+  All = Schema | TypeInfo,
+}
+
+export interface ComposerOptions {
+  schemas: {
+    query?: SchemaFile;
+    mutation?: SchemaFile;
+  };
+  resolvers: SchemaResolvers;
+  output: ComposerFilter;
+}
+
 export async function composeSchema(
   options: ComposerOptions
 ): Promise<ComposerOutput> {
   const { schemas, resolvers } = options;
   const { query, mutation } = schemas;
-  const results: {
+  const typeInfos: {
     query?: TypeInfo;
     mutation?: TypeInfo;
   } = {};
 
   if (query && query.schema) {
-    results.query = await resolveImportsAndParseSchemas(
+    typeInfos.query = await resolveImportsAndParseSchemas(
       query.schema,
       query.absolutePath,
       false,
@@ -43,7 +52,7 @@ export async function composeSchema(
   }
 
   if (mutation && mutation.schema) {
-    results.mutation = await resolveImportsAndParseSchemas(
+    typeInfos.mutation = await resolveImportsAndParseSchemas(
       mutation.schema,
       mutation.absolutePath,
       true,
@@ -51,40 +60,34 @@ export async function composeSchema(
     );
   }
 
-  const result: ComposerOutput = {};
+  const output: ComposerOutput = {};
+  const includeSchema = options.output & ComposerFilter.Schema;
+  const includeTypeInfo = options.output & ComposerFilter.TypeInfo;
+  const createSchemaInfo = (typeInfo: TypeInfo): SchemaInfo => ({
+    schema: includeSchema ? renderSchema(typeInfo, true) : undefined,
+    typeInfo: includeTypeInfo ? typeInfo : undefined,
+  });
 
-  if (results.query) {
-    result.query = {
-      schema: renderSchema(results.query, true),
-      typeInfo: results.query,
-    };
+  if (typeInfos.query) {
+    output.query = createSchemaInfo(typeInfos.query);
   }
 
-  if (results.mutation) {
-    result.mutation = {
-      schema: renderSchema(results.mutation, true),
-      typeInfo: results.mutation,
-    };
+  if (typeInfos.mutation) {
+    output.mutation = createSchemaInfo(typeInfos.mutation);
   }
 
-  if (results.query && results.mutation) {
-    const typeInfo = combineTypeInfo([results.query, results.mutation]);
+  if (typeInfos.query && typeInfos.mutation) {
+    const combinedTypeInfo = combineTypeInfo([
+      typeInfos.query,
+      typeInfos.mutation,
+    ]);
 
-    result.combined = {
-      schema: renderSchema(typeInfo, true),
-      typeInfo,
-    };
-  } else if (results.query) {
-    result.combined = {
-      schema: renderSchema(results.query, true),
-      typeInfo: results.query,
-    };
-  } else if (results.mutation) {
-    result.combined = {
-      schema: renderSchema(results.mutation, true),
-      typeInfo: results.mutation,
-    };
+    output.combined = createSchemaInfo(combinedTypeInfo);
+  } else if (typeInfos.query) {
+    output.combined = output.query;
+  } else if (typeInfos.mutation) {
+    output.combined = output.mutation;
   }
 
-  return result;
+  return output;
 }

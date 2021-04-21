@@ -12,7 +12,6 @@ import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import * as asc from "assemblyscript/cli/asc";
-import { SchemaInfo } from "@web3api/schema-compose";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const fsExtra = require("fs-extra");
@@ -91,22 +90,22 @@ export class Compiler {
         // Generate code next to the module entry point file
         if (!composed[moduleName]) {
           throw Error(
-            `Compiler: Missing schema for the module "${moduleName}"`
+            `compileWeb3Api: Missing SchemaInfo for the module "${moduleName}"`
+          );
+        }
+
+        if (!composed[moduleName]?.schema) {
+          throw Error(
+            `compileWeb3Api: Missing schema for the module "${moduleName}"`
           );
         }
 
         switch (moduleName) {
           case "mutation":
-            this._generateCode(
-              directory,
-              (composed.mutation as SchemaInfo).schema
-            );
+            this._generateCode(directory, composed.mutation?.schema as string);
             break;
           case "query":
-            this._generateCode(
-              directory,
-              (composed.query as SchemaInfo).schema
-            );
+            this._generateCode(directory, composed.query?.schema as string);
             break;
           default:
             throw Error(`Compiler: Unsupported module type "${moduleName}"`);

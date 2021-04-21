@@ -1,4 +1,4 @@
-import { ComposerOutput, ComposerOptions } from "..";
+import { ComposerOutput, ComposerOptions, ComposerFilter } from "..";
 
 import path from "path";
 import { readdirSync, readFileSync, Dirent, existsSync } from "fs";
@@ -121,6 +121,7 @@ export function fetchTestCases(): TestCases {
           external: resolveExternal,
           local: resolveLocal,
         },
+        output: ComposerFilter.All
       },
       output: {
         query: querySchema && queryTypeInfo ? {
