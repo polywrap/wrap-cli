@@ -1,4 +1,4 @@
-import { buildAndDeployApi,  } from "@web3api/test-env-js";
+import { buildAndDeployApi, initTestEnvironment } from "@web3api/test-env-js";
 import { Web3ApiClient, UriRedirect } from "@web3api/client-js";
 import { Token } from "../../query/w3";
 import * as hre from "hardhat";
@@ -9,11 +9,14 @@ import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { loggerPlugin } from "@web3api/logger-plugin-js";
 import { Pair, TokenAmount } from "./types";
+import { ExternalProvider } from "@web3api/client-js/build/pluginConfigs/Ethereum";
 const path = require('path');
+
+// TODO: do fetches for a specific block number and compare to actual result for that block number
 
 describe("Fetch", () => {
   const ethProvider = hre.ethers.provider
-  const ipfsProvider = "https://ipfs.io";
+  // const ipfsProvider = "https://ipfs.io";
   const ensAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
   // https://tokenlists.org/token-list?url=https://gateway.ipfs.io/ipns/tokens.uniswap.org
   const defaultUniswapTokenList = "https://gateway.ipfs.io/ipns/tokens.uniswap.org";
@@ -24,18 +27,12 @@ describe("Fetch", () => {
   let tokens: Token[] = [];
 
   before(async () => {
+    const { ipfs: ipfsProvider } = await initTestEnvironment();
     // get client
     const redirects: UriRedirect[] = [
       {
         from: "w3://ens/ethereum.web3api.eth",
-        to: ethereumPlugin({
-          networks: {
-            mainnet: {
-              provider: ethProvider
-            },
-          },
-          defaultNetwork: "mainnet"
-        }),
+        to: ethereumPlugin({ provider: ethProvider as ExternalProvider }),
       },
       {
         from: "w3://ens/ipfs.web3api.eth",

@@ -59,6 +59,20 @@ export function pairReserves(input: Input_pairReserves): TokenAmount[] {
   return [pair.tokenAmount1, pair.tokenAmount0];
 }
 
+// Returns the current mid price of the pair in terms of token0, i.e. the ratio of reserve1 to reserve0
+export function pairToken0Price(input: Input_pairToken0Price): TokenAmount {
+  const pair = input.pair;
+  const price = new Price(pair.tokenAmount0.token, pair.tokenAmount1.token, BigInt.fromString(pair.tokenAmount0.amount), BigInt.fromString(pair.tokenAmount1.amount));
+  return { token: pair.tokenAmount1.token, amount: price.adjusted().quotient().toString() };
+}
+
+// Returns the current mid price of the pair in terms of token1, i.e. the ratio of reserve0 to reserve1
+export function pairToken1Price(input: Input_pairToken1Price): TokenAmount {
+  const pair = input.pair;
+  const price = new Price(pair.tokenAmount1.token, pair.tokenAmount0.token, BigInt.fromString(pair.tokenAmount1.amount), BigInt.fromString(pair.tokenAmount0.amount));
+  return { token: pair.tokenAmount0.token, amount: price.adjusted().quotient().toString() };
+}
+
 // Pricing function for exact input amounts. Returns maximum output amount, based on current reserves, if the trade were executed.
 export function pairOutputAmount(input: Input_pairOutputAmount): TokenAmount {
   const pair: Pair = input.pair;
@@ -179,18 +193,4 @@ export function pairLiquidityValue(
     { token: pair.tokenAmount0.token, amount: token0Value.toString() },
     { token: pair.tokenAmount1.token, amount: token1Value.toString() },
   ];
-}
-
-// Returns the current mid price of the pair in terms of token0, i.e. the ratio of reserve1 to reserve0
-export function pairToken0Price(input: Input_pairToken0Price): TokenAmount {
-  const pair = input.pair;
-  const price = new Price(pair.tokenAmount0.token, pair.tokenAmount1.token, BigInt.fromString(pair.tokenAmount0.amount), BigInt.fromString(pair.tokenAmount1.amount));
-  return { token: pair.tokenAmount1.token, amount: price.adjusted().quotient().toString() };
-}
-
-// Returns the current mid price of the pair in terms of token1, i.e. the ratio of reserve0 to reserve1
-export function pairToken1Price(input: Input_pairToken1Price): TokenAmount {
-  const pair = input.pair;
-  const price = new Price(pair.tokenAmount1.token, pair.tokenAmount0.token, BigInt.fromString(pair.tokenAmount1.amount), BigInt.fromString(pair.tokenAmount0.amount));
-  return { token: pair.tokenAmount0.token, amount: price.adjusted().quotient().toString() };
 }

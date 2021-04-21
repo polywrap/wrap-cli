@@ -45,7 +45,7 @@ export function routePath(input: Input_routePath): Token[] {
     const token1 = pairs[i].tokenAmount1.token;
     const isToken0In = tokenEquals({ token: currentIn, other: token0 });
     const isToken1In = tokenEquals({ token: currentIn, other: token1 });
-    if (!isToken0In && isToken1In) {
+    if (!isToken0In && !isToken1In) {
       throw new Error(
         "Invalid or unordered route: Route must contain ordered pairs such that adjacent pairs contain one token in common."
       );

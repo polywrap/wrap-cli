@@ -5,17 +5,17 @@
   "version": "0.0.1",
   "scripts": {
     "build": "npx w3 build",
-    "test": " TS_NODE_PROJECT='./tsconfig.json' hardhat test",
-    "test:ci": "TS_NODE_PROJECT='./tsconfig.json' hardhat test"
+    "test:e2e": " TS_NODE_PROJECT='./tsconfig.json' hardhat test",
+    "test:unit": "asp --verbose",
+    "test": "yarn run test:unit",
+    "test:ci": "TEST=TRUE yarn run test:unit",
+    "test:env:up": "npx w3 test-env up",
+    "test:env:down": "npx w3 test-env down"
   },
   "workspaces": {
     "nohoist": [
       "assemblyscript",
-      "assemblyscript/**",
-      "mocha",
-      "mocha/**",
-      "@types/mocha",
-      "@types/mocha/**"
+      "assemblyscript/**"
     ]
   },
   "dependencies": {
@@ -23,9 +23,6 @@
   },
   "devDependencies": {
     "@uniswap/sdk": "^3.0.3",
-    "@nomiclabs/hardhat-ethers": "^2.0.2",
-    "@types/chai": "^4.2.16",
-    "@types/mocha": "^8.2.2",
     "@types/node": "12.6.9",
     "@types/node-fetch": "^2.5.10",
     "@uniswap/v2-core": "1.0.1",
@@ -36,14 +33,11 @@
     "@web3api/test-env-js": "0.0.1-prealpha.20",
     "@web3api/wasm-as": "0.0.1-prealpha.20",
     "assemblyscript": "0.17.14",
-    "chai": "4.3.4",
-    "ethers": "5.0.7",
-    "hardhat": "^2.1.2",
     "js-yaml": "3.14.0",
-    "mocha": "^8.3.2",
     "node-fetch": "2.6.1",
     "rimraf": "3.0.2",
     "ts-node": "8.10.2",
-    "typescript": "4.0.7"
+    "@as-pect/cli": "^6.0.0",
+    "ethers": "^5.1.3"
   }
 }
