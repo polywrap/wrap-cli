@@ -1,6 +1,9 @@
-query getAddress($domain: String!, $resolverAddress: String!) {
+query {
   getAddress(
-    domain: $domain,
+    domain: $domain
     resolverAddress: $resolverAddress
+    connection: {
+      networkNameOrChainId: $network
+    }
   )
 }

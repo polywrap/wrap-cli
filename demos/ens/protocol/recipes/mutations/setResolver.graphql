@@ -1,3 +1,10 @@
-mutation setResolver($domain: String!, $resolverAddress: String!, $registryAddress: String!) {
-  setResolver(domain: $domain, resolverAddress: $resolverAddress, registryAddress: $registryAddress)
+mutation {
+  setResolver(
+    domain: $domain
+    resolverAddress: $resolverAddress
+    registryAddress: $registryAddress
+    connection: {
+      networkNameOrChainId: $network
+    }
+  )
 }

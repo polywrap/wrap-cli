@@ -1,6 +1,9 @@
-query getContentHash($domain: String!, $resolverAddress: String!) {
+query {
   getContentHash(
-    domain: $domain,
+    domain: $domain
     resolverAddress: $resolverAddress
+    connection: {
+      networkNameOrChainId: $network
+    }
   )
 }

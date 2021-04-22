@@ -1,8 +1,11 @@
-mutation RegisterDomain($domain: String!, $registrarAddress: String!, $registryAddress: String!, $owner: String!) {
+mutation {
   registerDomain(
-    domain: $domain,
-    registrarAddress: $registrarAddress,
-    registryAddress: $registryAddress,
+    domain: $domain
+    registrarAddress: $registrarAddress
+    registryAddress: $registryAddress
     owner: $owner
+    connection: {
+      networkNameOrChainId: $network
+    }
   )
 }

@@ -1,5 +1,13 @@
-mutation setSubdomainRecord(
-  $domain: String!, $label: String!, $owner: String!, $resolverAddress: String!, $ttl: String!, $registryAddress: String!
-) {
-  setSubdomainRecord(domain: $domain, label: $label, owner: $owner, resolverAddress: $resolverAddress, ttl: $ttl, registryAddress: $registryAddress)
+mutation {
+  setSubdomainRecord(
+    domain: $domain
+    label: $label
+    owner: $owner
+    resolverAddress: $resolverAddress
+    ttl: $ttl
+    registryAddress: $registryAddress
+    connection: {
+      networkNameOrChainId: $network
+    }
+  )
 }

@@ -1,7 +1,10 @@
-mutation setAddress($domain: String!, $address: String!, $resolverAddress: String!) {
+mutation {
   setAddress(
-    domain: $domain,
-    address: $address,
+    domain: $domain
+    address: $address
     resolverAddress: $resolverAddress
+    connection: {
+      networkNameOrChainId: $network
+    }
   )
 }

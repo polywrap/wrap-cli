@@ -24,10 +24,7 @@ export function setResolver(input: Input_setResolver): string {
     address: input.registryAddress,
     method: "function setResolver(bytes32 node, address owner)",
     args: [namehash(input.domain), input.resolverAddress],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return setResolverTx;
@@ -40,10 +37,7 @@ export function registerDomain(input: Input_registerDomain): string {
     address: input.registrarAddress,
     method: "function register(bytes32 label, address owner)",
     args: [keccak256(label), input.owner],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return tx;
@@ -54,10 +48,7 @@ export function setOwner(input: Input_setOwner): string {
     address: input.registryAddress,
     method: "function setOwner(bytes32 node, address owner) external",
     args: [namehash(input.domain), input.newOwner],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return tx
@@ -72,10 +63,7 @@ export function setSubdomainOwner(input: Input_setSubdomainOwner): string {
     address: input.registryAddress,
     method: "function setSubnodeOwner(bytes32 node, bytes32 label, address owner) external",
     args: [namehash(domain), keccak256(subdomainLabel), input.owner],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return tx
@@ -86,10 +74,7 @@ export function setSubdomainRecord(input: Input_setSubdomainRecord): string {
     address: input.registryAddress,
     method: "function setSubnodeRecord(bytes32 node, bytes32 label, address owner, address resolver, uint64 ttl)",
     args: [namehash(input.domain), keccak256(input.label), input.owner, input.resolverAddress, input.ttl],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return tx
@@ -101,10 +86,7 @@ export function setRecord(input: Input_setRecord): string {
     address: input.registryAddress,
     method: "function setRecord(bytes32 node, address owner, address resolver, uint64 ttl)",
     args: [namehash(input.domain), input.owner, input.resolverAddress, input.ttl],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return tx
@@ -115,10 +97,7 @@ export function setName(input: Input_setName): string {
     address: input.reverseRegistryAddress,
     method: "function setName(string name)",
     args: [input.domain],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return setNameTx;
@@ -131,10 +110,7 @@ export function reverseRegisterDomain(
     address: input.reverseRegistryAddress,
     method: "function claim(address owner)",
     args: [input.owner],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   const setNameTx = setName({
@@ -150,10 +126,7 @@ export function setAddress(input: Input_setAddress): string {
     address: input.resolverAddress,
     method: "function setAddr(bytes32 node, address addr)",
     args: [namehash(input.domain), input.address],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return setAddrTx;
@@ -164,10 +137,7 @@ export function setContentHash(input: Input_setContentHash): string {
     address: input.resolverAddress,
     method: "function setContenthash(bytes32 node, bytes hash)",
     args: [namehash(input.domain), input.cid],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return setContentHash;
@@ -183,10 +153,7 @@ export function setAddressFromDomain(input: Input_setAddressFromDomain): string 
     address: resolverAddress,
     method: "function setAddr(bytes32 node, address addr)",
     args: [namehash(input.domain), input.address],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return setAddrTx;
@@ -202,10 +169,7 @@ export function setContentHashFromDomain(input: Input_setContentHashFromDomain):
     address: resolverAddress,
     method: "function setContenthash(bytes32 node, bytes hash)",
     args: [namehash(input.domain), input.cid],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return setContentHash;
@@ -216,13 +180,10 @@ export function deployFIFSRegistrar(input: Input_deployFIFSRegistrar): string {
     abi,
     bytecode,
     args: [input.registryAddress, namehash(input.tld)],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    },
-  })
+    connection: input.connection
+  });
 
-  return address
+  return address;
 }
 
 //TODO: needs testing here with a recipe. Was tested in the Web3Hub
@@ -232,11 +193,8 @@ export function registerSubnodeOwnerWithFIFSRegistrar(input: Input_registerSubno
     address: input.fifsRegistrarAddress,
     method: "function register(bytes32 label, address owner) external",
     args: [keccak256(input.label), input.owner],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
-  return txHash
+  return txHash;
 }

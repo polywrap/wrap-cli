@@ -1,7 +1,10 @@
-mutation reverseRegisterDomain($domain: String! $reverseRegistryAddress: String!, $owner: String!) {
+mutation {
   reverseRegisterDomain(
-    domain: $domain,
-    reverseRegistryAddress: $reverseRegistryAddress,
+    domain: $domain
+    reverseRegistryAddress: $reverseRegistryAddress
     owner: $owner
+    connection: {
+      networkNameOrChainId: $network
+    }
   )
 }

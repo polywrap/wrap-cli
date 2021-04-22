@@ -1,6 +1,9 @@
-query getExpiryTimes($domain: String!, $registrarAddress: String!) {
+query {
   getExpiryTimes(
-    domain: $domain,
+    domain: $domain
     registrarAddress: $registrarAddress
+    connection: {
+      networkNameOrChainId: $network
+    }
   )
 }

@@ -1,11 +1,10 @@
-mutation setOwner(
-  $domain: String!
-  $newOwner: String!
-  $registryAddress: String!
-) {
+mutation {
   setOwner(
     domain: $domain
     newOwner: $newOwner
     registryAddress: $registryAddress
+    connection: {
+      networkNameOrChainId: $network
+    }
   )
 }

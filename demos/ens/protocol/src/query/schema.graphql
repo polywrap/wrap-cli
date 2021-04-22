@@ -1,16 +1,65 @@
-#import { Query } into Ethereum from "w3://ens/ethereum.web3api.eth"
+#import { Query, Connection } into Ethereum from "w3://ens/ethereum.web3api.eth"
 #import { Query } into UTS46 from "w3://ens/uts46.web3api.eth"
 #import { Query } into SHA3 from "w3://ens/sha3.web3api.eth"
 
 type Query {
-  getResolver(registryAddress: String!, domain: String!): String!
-  getOwner(domain: String!, registryAddress: String!): String!
-  getAddress(domain: String!, resolverAddress: String!): String!
-  getAddressFromDomain(domain: String!, registryAddress: String!): String!
-  getContentHash(domain: String!, resolverAddress: String!): String!
-  getContentHashFromDomain(domain: String!, registryAddress: String!): String!
-  getExpiryTimes(domain: String!, registrarAddress: String!): String!
-  getReverseResolver(address: String!, registryAddress: String!): String!
-  getNameFromReverseResolver(address: String!, resolverAddress: String!): String!
-  getNameFromAddress(address: String!, registryAddress: String!): String!
+  getResolver(
+    registryAddress: String!
+    domain: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  getOwner(
+    domain: String!
+    registryAddress: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  getAddress(
+    domain: String!
+    resolverAddress: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  getAddressFromDomain(
+    domain: String!
+    registryAddress: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  getContentHash(
+    domain: String!
+    resolverAddress: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  getContentHashFromDomain(
+    domain: String!
+    registryAddress: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  getExpiryTimes(
+    domain: String!
+    registrarAddress: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  getReverseResolver(
+    address: String!
+    registryAddress: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  getNameFromReverseResolver(
+    address: String!
+    resolverAddress: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  getNameFromAddress(
+    address: String!
+    registryAddress: String!
+    connection: Ethereum_Connection
+  ): String!
 }

@@ -20,10 +20,7 @@ export function getResolver(input: Input_getResolver): string {
     address: input.registryAddress,
     method: "function resolver(bytes32 node) external view returns (address)",
     args: [domain],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return resolverAddress;
@@ -34,10 +31,7 @@ export function getOwner(input: Input_getOwner): string {
     address: input.registryAddress,
     method: "function owner(bytes32 node) external view returns (address)",
     args: [namehash(input.domain)],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return owner;
@@ -48,10 +42,7 @@ export function getAddress(input: Input_getAddress): string {
     address: input.resolverAddress,
     method: "function addr(bytes32 node) external view returns (address)",
     args: [namehash(input.domain)],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return address;
@@ -62,10 +53,7 @@ export function getContentHash(input: Input_getContentHash): string {
     address: input.resolverAddress,
     method: "function contenthash(bytes32 node) external view returns (bytes)",
     args: [namehash(input.domain)],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return hash;
@@ -83,10 +71,7 @@ export function getAddressFromDomain(
     address: resolverAddress,
     method: "function addr(bytes32 node) external view returns (address)",
     args: [namehash(input.domain)],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return address;
@@ -104,10 +89,7 @@ export function getContentHashFromDomain(
     address: resolverAddress,
     method: "function contenthash(bytes32 node) external view returns (bytes)",
     args: [namehash(input.domain)],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return hash;
@@ -121,10 +103,7 @@ export function getExpiryTimes(input: Input_getExpiryTimes): string {
     method:
       "function expiryTimes(bytes32 label) external view returns (uint256)",
     args: [keccak256(label)],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return expiryTime;
@@ -137,10 +116,7 @@ export function getReverseResolver(input: Input_getReverseResolver): string {
     address: input.registryAddress,
     method: "function resolver(bytes32 node) external view returns (address)",
     args: [address],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return resolverAddress;
@@ -158,10 +134,7 @@ export function getNameFromAddress(input: Input_getNameFromAddress): string {
     address: resolverAddress,
     method: "function name(bytes32 node) external view returns (string)",
     args: [address],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return name;
@@ -176,10 +149,7 @@ export function getNameFromReverseResolver(
     address: input.resolverAddress,
     method: "function name(bytes32 node) external view returns (string)",
     args: [address],
-    connection: {
-      networkNameOrChainId: "testnet",
-      node: null
-    }
+    connection: input.connection
   });
 
   return name;

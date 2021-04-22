@@ -1,6 +1,9 @@
-query getOwner($domain: String!, $registryAddress: String!) {
+query {
   getOwner(
-    domain: $domain,
+    domain: $domain
     registryAddress: $registryAddress
+    connection: {
+      networkNameOrChainId: $network
+    }
   )
 }

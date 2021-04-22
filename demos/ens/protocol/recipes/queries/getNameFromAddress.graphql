@@ -1,6 +1,9 @@
-query getNameFromAddress($address: String!, $registryAddress: String!) {
+query {
   getNameFromAddress(
-    address: $address,
+    address: $address
     registryAddress: $registryAddress
+    connection: {
+      networkNameOrChainId: $network
+    }
   )
 }

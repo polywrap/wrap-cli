@@ -7,7 +7,8 @@
     "query": "./mutations/deployFIFSRegistrar.graphql",
     "variables": {
       "registryAddress": "$Registry",
-      "tld": "$Tld"
+      "tld": "$Tld",
+      "network": "testnet"
     }
   },
   {
@@ -16,7 +17,8 @@
       "domain": "$Domain",
       "registrarAddress": "$Registrar",
       "registryAddress": "$Registry",
-      "owner": "$Signer"
+      "owner": "$Signer",
+      "network": "testnet"
     }
   },
   {
@@ -25,7 +27,8 @@
       "domain": "$Domain",
       "resolverAddress": "$Resolver",
       "registryAddress": "$Registry",
-      "owner": "$Signer"
+      "owner": "$Signer",
+      "network": "testnet"
     }
   },
   {
@@ -36,7 +39,8 @@
       "owner": "$Signer",
       "resolverAddress": "$Resolver",
       "ttl": "$Ttl",
-      "registryAddress": "$Registry"
+      "registryAddress": "$Registry",
+      "network": "testnet"
     }
   },
   {
@@ -44,7 +48,8 @@
     "variables": {
       "domain": "$Domain",
       "address": "$Signer",
-      "resolverAddress": "$Resolver"
+      "resolverAddress": "$Resolver",
+      "network": "testnet"
     }
   },
   {
@@ -52,7 +57,8 @@
     "variables": {
       "domain": "$Domain",
       "cid": "$CID",
-      "resolverAddress": "$Resolver"
+      "resolverAddress": "$Resolver",
+      "network": "testnet"
     }
   },
   {
@@ -60,7 +66,8 @@
     "variables": {
       "domain": "$Domain",
       "reverseRegistryAddress": "$Reverse",
-      "owner": "$Signer"
+      "owner": "$Signer",
+      "network": "testnet"
     }
   },
   {
@@ -68,7 +75,8 @@
     "variables": {
       "subdomain": "$Subdomain",
       "owner": "$Signer",
-      "registryAddress": "$Registry"
+      "registryAddress": "$Registry",
+      "network": "testnet"
     }
   },
   {
@@ -77,47 +85,81 @@
       "domain": "$Subdomain",
       "resolverAddress": "$Resolver",
       "registryAddress": "$Registry",
-      "owner": "$Signer"
+      "owner": "$Signer",
+      "network": "testnet"
     }
   },
   {
     "query": "./queries/getOwner.graphql",
-    "variables": { "registryAddress": "$Registry", "domain": "$Domain" }
+    "variables": {
+      "registryAddress": "$Registry",
+      "domain": "$Domain",
+      "network": "testnet"
+    }
   },
   {
     "query": "./mutations/setOwner.graphql",
     "variables": {
       "domain": "$Domain",
       "registryAddress": "$Registry",
-      "newOwner": "$AlternateOwner"
+      "newOwner": "$AlternateOwner",
+      "network": "testnet"
     }
   },
   {
     "query": "./queries/getOwner.graphql",
-    "variables": { "registryAddress": "$Registry", "domain": "$Domain" }
+    "variables": {
+      "registryAddress": "$Registry",
+      "domain": "$Domain",
+      "network": "testnet"
+    }
   },
   {
     "query": "./queries/getOwner.graphql",
-    "variables": { "registryAddress": "$Registry", "domain": "$Subdomain" }
+    "variables": {
+      "registryAddress": "$Registry",
+      "domain": "$Subdomain",
+      "network": "testnet"
+    }
   },
   {
     "query": "./queries/getResolver.graphql",
-    "variables": { "registryAddress": "$Registry", "domain": "$Domain" }
+    "variables": {
+      "registryAddress": "$Registry",
+      "domain": "$Domain",
+      "network": "testnet"
+    }
   },
   {
     "query": "./queries/getResolver.graphql",
-    "variables": { "registryAddress": "$Registry", "domain": "$Subdomain" }
+    "variables": {
+      "registryAddress": "$Registry",
+      "domain": "$Subdomain",
+      "network": "testnet"
+    }
   },
   {
     "query": "./queries/getAddress.graphql",
-    "variables": { "resolverAddress": "$Resolver", "domain": "$Domain" }
+    "variables": {
+      "resolverAddress": "$Resolver",
+      "domain": "$Domain",
+      "network": "testnet"
+    }
   },
   {
     "query": "./queries/getContentHash.graphql",
-    "variables": { "resolverAddress": "$Resolver", "domain": "$Domain" }
+    "variables": {
+      "resolverAddress": "$Resolver",
+      "domain": "$Domain",
+      "network": "testnet"
+    }
   },
   {
     "query": "./queries/getNameFromAddress.graphql",
-    "variables": { "address": "$Signer", "registryAddress": "$Registry" }
+    "variables": {
+      "address": "$Signer",
+      "registryAddress": "$Registry",
+      "network": "testnet"
+    }
   }
 ]

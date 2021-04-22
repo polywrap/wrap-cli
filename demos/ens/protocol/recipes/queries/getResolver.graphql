@@ -1,6 +1,9 @@
-query getResolver($registryAddress: String!, $domain: String!) {
+query {
   getResolver(
-    domain: $domain,
+    domain: $domain
     registryAddress: $registryAddress
+    connection: {
+      networkNameOrChainId: $network
+    }
   )
 }

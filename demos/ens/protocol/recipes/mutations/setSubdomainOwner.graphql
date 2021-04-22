@@ -1,9 +1,10 @@
-mutation setSubdomainOwner(
-  $subdomain: String!, $owner: String!, $registryAddress: String!
-) {
+mutation {
   setSubdomainOwner(
     subdomain: $subdomain
     owner: $owner
     registryAddress: $registryAddress
+    connection: {
+      networkNameOrChainId: $network
+    }
   )
 }
