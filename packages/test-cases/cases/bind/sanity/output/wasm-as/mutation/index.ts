@@ -8,11 +8,11 @@ export {
   Input_objectMethod
 };
 
-export * from "./AnotherType";
-export * from "./CustomType";
-export * from "./CustomEnum";
+export { AnotherType } from "./AnotherType";
+export { CustomType } from "./CustomType";
+export { CustomEnum } from "./CustomEnum";
 
-export * from "./imported/TestImport_Query";
-export * from "./imported/TestImport_Object";
-export * from "./imported/TestImport_AnotherObject";
-export * from "./imported/TestImport_Enum";
+export { TestImport_Query } from "./imported/TestImport_Query";
+export { TestImport_Object } from "./imported/TestImport_Object";
+export { TestImport_AnotherObject } from "./imported/TestImport_AnotherObject";
+export { TestImport_Enum } from "./imported/TestImport_Enum";
