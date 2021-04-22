@@ -22,7 +22,12 @@ export {
 export { {{type}} } from "./{{type}}";
 {{/objectTypes}}
 {{#enumTypes}}
-export { {{type}} } from "./{{type}}";
+export {
+  {{type}},
+  get{{type}}Key,
+  get{{type}}Value,
+  sanitize{{type}}Value
+} from "./{{type}}";
 {{/enumTypes}}
 
 {{#importedQueryTypes}}
@@ -32,5 +37,10 @@ export { {{type}} } from "./imported/{{type}}";
 export { {{type}} } from "./imported/{{type}}";
 {{/importedObjectTypes}}
 {{#importedEnumTypes}}
-export { {{type}} } from "./imported/{{type}}";
+export {
+  {{type}},
+  get{{type}}Key,
+  get{{type}}Value,
+  sanitize{{type}}Value
+} from "./imported/{{type}}";
 {{/importedEnumTypes}}
