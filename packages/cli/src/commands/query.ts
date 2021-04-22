@@ -13,12 +13,14 @@ import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 
 const optionsString = intlMsg.commands_build_options_options();
 const scriptStr = intlMsg.commands_create_options_recipeScript();
+const pathStr = intlMsg.commands_query_options_r_path();
 
 const HELP = `
 ${chalk.bold("w3 query")} [${optionsString}] ${chalk.bold(`<${scriptStr}>`)}
 
 ${optionsString[0].toUpperCase() + optionsString.slice(1)}:
   -t, --test-ens  ${intlMsg.commands_build_options_t()}
+  -r, --redirects <${pathStr}> ${intlMsg.commands_query_options_r()}
 `;
 
 export default {
@@ -27,9 +29,10 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
     // eslint-disable-next-line prefer-const
-    let { t, testEns } = parameters.options;
+    let { t, testEns, r, redirects } = parameters.options;
 
     testEns = testEns || t;
+    redirects = redirects || r;
 
     let recipePath;
     try {
@@ -60,6 +63,18 @@ export default {
       return;
     }
 
+    if (redirects === true) {
+      const redirectsPathMissingPathMessage = intlMsg.commands_query_error_redirectsPathMissingPath(
+        {
+          option: "--redirects",
+          argument: `<${pathStr}>`,
+        }
+      );
+      print.error(redirectsPathMissingPathMessage);
+      print.info(HELP);
+      return;
+    }
+
     let ipfsProvider = "";
     let ethereumProvider = "";
     let ensAddress = "";
@@ -79,7 +94,7 @@ export default {
 
     // TODO: move this into its own package, since it's being used everywhere?
     // maybe have it exported from test-env.
-    const redirects: UriRedirect[] = [
+    const testEnvRedirects: UriRedirect[] = [
       {
         from: "w3://ens/ethereum.web3api.eth",
         to: ethereumPlugin({
@@ -111,7 +126,69 @@ export default {
       },
     ];
 
-    const client = new Web3ApiClient({ redirects });
+    const customRedirects: UriRedirect[] = [];
+
+    if (redirects) {
+      const redirectsModule = await import(filesystem.resolve(redirects));
+
+      if (!redirectsModule || !redirectsModule.redirects) {
+        const redirectsModuleMissingExportMessage = intlMsg.commands_query_error_redirectsModuleMissingExport(
+          { module: redirects }
+        );
+        print.error(redirectsModuleMissingExportMessage);
+      }
+
+      const importedRedirects = redirectsModule.redirects;
+
+      // Ensure the redirects exported by the module is an array
+      if (
+        typeof importedRedirects !== "object" ||
+        importedRedirects.length === undefined ||
+        typeof importedRedirects.length !== "number"
+      ) {
+        print.error(intlMsg.commands_query_error_redirectsExportNotArray());
+        return;
+      }
+
+      // Ensure each redirect in the array is valid
+      for (let i = 0; i < importedRedirects.length; ++i) {
+        const redirect = importedRedirects[i];
+
+        if (typeof redirect !== "object" || !redirect.from || !redirect.to) {
+          print.error(intlMsg.commands_query_error_redirectsItemNotValid(
+            { index: i.toString() }
+          ));
+          return;
+        } else if (typeof redirect.from !== "string") {
+          print.error(intlMsg.commands_query_error_redirectsItemFromNotString(
+            { index: i.toString() }
+          ));
+          return;
+        } else if (typeof redirect.to !== "string" && typeof redirect.to !== "object") {
+          print.error(intlMsg.commands_query_error_redirectsItemToNotStringOrObject(
+            { index: i.toString() }
+          ));
+          return;
+        } else if (typeof redirect.to === "object" && (
+          typeof redirect.to.factory !== "function" ||
+          typeof redirect.to.manifest !== "object"
+        )) {
+          print.error(intlMsg.commands_query_error_redirectsItemToNotValidPlugin(
+            { index: i.toString() }
+          ));
+          return;
+        }
+      }
+
+      customRedirects.push(...redirectsModule.redirects);
+    }
+
+    const client = new Web3ApiClient({
+      redirects: [
+        ...customRedirects,
+        ...testEnvRedirects
+      ]
+    });
 
     const recipe = JSON.parse(filesystem.read(recipePath) as string);
     const dir = path.dirname(recipePath);
