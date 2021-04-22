@@ -107,9 +107,9 @@ ${HELP}`);
     expect(clearStyle(output)).toEqual(`- Compile Web3API
 - Load web3api from web3api.yaml
 ✔ Load web3api from web3api.yaml
-  Compiling WASM module: ./src/mutation/index.ts => ${projectRoot}/build/mutation.wasm
-- Compile Web3API
   Compiling WASM module: ./src/query/index.ts => ${projectRoot}/build/query.wasm
+- Compile Web3API
+  Compiling WASM module: ./src/mutation/index.ts => ${projectRoot}/build/mutation.wasm
 - Compile Web3API
 - Output web3api to build/web3api.yaml
 ✔ Output web3api to build/web3api.yaml
