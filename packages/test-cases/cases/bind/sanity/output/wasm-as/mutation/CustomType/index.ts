@@ -1,3 +1,1 @@
-import { CustomType } from "../common";
-
-export { CustomType };
+export { CustomType } from "../common";

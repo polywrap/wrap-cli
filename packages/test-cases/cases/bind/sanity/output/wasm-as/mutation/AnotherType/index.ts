@@ -1,3 +1,1 @@
-import { AnotherType } from "../common";
-
-export { AnotherType };
+export { AnotherType } from "../common";

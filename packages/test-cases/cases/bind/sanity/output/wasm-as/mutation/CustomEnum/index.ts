@@ -1,3 +1,6 @@
-import { CustomEnum } from "../common";
-
-export { CustomEnum };
+export {
+  CustomEnum,
+  getCustomEnumKey,
+  getCustomEnumValue,
+  sanitizeCustomEnumValue
+} from "../common";

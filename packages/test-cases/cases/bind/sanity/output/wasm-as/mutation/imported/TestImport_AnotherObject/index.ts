@@ -1,3 +1,1 @@
-import { TestImport_AnotherObject } from "../../common";
-
-export { TestImport_AnotherObject };
+export { TestImport_AnotherObject } from "../../common";

@@ -1,7 +1,10 @@
 {{#__commonImport}}
-import { {{type}} } from "../../common";
-
-export { {{type}} };
+export {
+  {{type}},
+  get{{type}}Key,
+  get{{type}}Value,
+  sanitize{{type}}Value
+} from "../../common";
 {{/__commonImport}}
 {{^__commonImport}}
 export enum {{type}} {
