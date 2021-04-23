@@ -10,7 +10,7 @@
     "deploy": "yarn deploy:contract && yarn deploy:web3api",
     "deploy:web3api": "npx w3 build --ipfs http://localhost:5001 --test-ens ens.eth",
     "deploy:contract": "node ./deploy-contracts.js",
-    "test": "npx w3 query ./recipes/e2e.json --redirects ./redirects.ts"
+    "test": "npx w3 query ./recipes/e2e.json --redirects ./redirects.js"
   },
   "devDependencies": {
     "@web3api/cli": "0.0.1-prealpha.21",
