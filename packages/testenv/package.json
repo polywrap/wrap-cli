@@ -3,8 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "ts-node index.ts"
+    "build": "rimraf ./build && tsc --project tsconfig.build.json"
   },
+  "main": "build/index.js",
+  "files": [
+    "build"
+  ],
+  "typings": "build/types",
   "dependencies": {
     "dotenv": "8.2.0",
     "rimraf": "^3.0.2",

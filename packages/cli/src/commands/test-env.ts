@@ -1,7 +1,7 @@
-import { startupTestEnv, shutdownTestEnv } from "../lib/env/test";
 import { withSpinner } from "../lib/helpers/spinner";
 import { intlMsg } from "../lib/intl";
 
+import { executeCommand } from "@web3api/testenv";
 import { GluegunToolbox, print } from "gluegun";
 import chalk from "chalk";
 
@@ -19,6 +19,9 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<unknown> => {
     const { parameters } = toolbox;
     const command = parameters.first;
+    const { modules } = parameters.options;
+
+    const modulesToUse: string[] | undefined = modules && modules.split(",");
 
     if (!command) {
       print.error(intlMsg.commands_testEnv_error_noCommand());
@@ -37,13 +40,15 @@ export default {
       return;
     }
 
+    console.log(modulesToUse, command);
+
     if (command === "up") {
       return await withSpinner(
         intlMsg.commands_testEnv_startup_text(),
         intlMsg.commands_testEnv_startup_error(),
         intlMsg.commands_testEnv_startup_warning(),
         async (_spinner) => {
-          await startupTestEnv(true);
+          await executeCommand("up", modulesToUse);
         }
       );
     } else if (command === "down") {
@@ -52,7 +57,7 @@ export default {
         intlMsg.commands_testEnv_shutdown_error(),
         intlMsg.commands_testEnv_shutdown_warning(),
         async (_spinner) => {
-          await shutdownTestEnv(true);
+          await executeCommand("down");
         }
       );
     } else {

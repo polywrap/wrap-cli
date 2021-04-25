@@ -15,7 +15,7 @@ interface Manifest {
   };
 }
 
-const BASE_COMPOSE_DIR_PATH = path.join(__dirname, ".w3", "testenv");
+const BASE_COMPOSE_DIR_PATH = path.join(__dirname, "..", ".w3", "testenv");
 const BASE_COMPOSE_FILE_PATH = path.join(
   BASE_COMPOSE_DIR_PATH,
   "docker-compose.yml"
@@ -27,14 +27,18 @@ export const parseManifest = (
   return YAML.safeLoad(fs.readFileSync(manifestPath, "utf-8")) as Manifest;
 };
 
-export const extractDockerComposePaths = (): string[] => {
+export const extractDockerComposePaths = (
+  modulesToExtract?: string[]
+): string[] => {
   const manifest = parseManifest();
-  const modules =
-    Object.values(manifest.modules).map((module) => module.module) || [];
+  const modules = manifest.modules || {};
+  const filteredModules = modulesToExtract? Object.keys(modules).filter(key => modulesToExtract.includes(key)): Object.keys(modules)
+  const modulesExtracted = filteredModules.map((moduleName) => modules[moduleName].module)
 
-  return modules.map((module) => {
+  return modulesExtracted.map((module) => {
     return path.join(
       __dirname,
+      "..",
       "..",
       "..",
       "node_modules",
@@ -60,15 +64,16 @@ export const generateBaseDockerCompose = (): void => {
   fs.writeFileSync(BASE_COMPOSE_FILE_PATH, fileContent);
 };
 
-export const executeCommand = (command: string): void => {
+export const executeCommand = (
+  command: string,
+  modulesToUse?: string[]
+): void => {
   generateBaseDockerCompose();
 
-  const paths = extractDockerComposePaths();
+  const paths = extractDockerComposePaths(modulesToUse);
   const baseCommand = `docker-compose -f ${BASE_COMPOSE_FILE_PATH} ${paths
     .map((path) => ` -f ${path}`)
     .join("")}`;
 
   execSync(`${baseCommand} ${command}`, { stdio: "inherit" });
 };
-
-executeCommand("up");
