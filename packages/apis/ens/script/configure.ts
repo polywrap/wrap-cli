@@ -11,7 +11,6 @@ dotenv.config();
 async function main() {
   const uri = "ipfs/QmdAsjKDB8rJEdYc8nqCCXVMcCweDArau2oZ9qaF33KJZr";
   const ensAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
-  // const resolverAddress = "0xf6305c19e814d2a75429Fd637d01F7ee0E77d615";
   const network = "rinkeby";
   const domain = "open.web3api.eth";
   const privKey = process.env.ETH_PRIV_KEY as string;

@@ -8,7 +8,7 @@ export function namehash (inputName: string): string {
   const name: string = normalize(inputName)
 
   if (name) {
-    const labels: string[] = name.split('.')
+    const labels: string[] = name.split('.');
 
     for(let i = labels.length - 1; i >= 0; i--) {
       const labelSha = SHA3_Query.buffer_keccak_256({
