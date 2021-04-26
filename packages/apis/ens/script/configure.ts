@@ -8,17 +8,12 @@ import axios from "axios";
 import dotenv from "dotenv";
 dotenv.config();
 
-// TODO:
-// - deploy web3api to testnet at testnet/ens.eth
-// - create Web3ApiClient pointed to rinkeby w/ signer($ETH_PRIV_KEY)
-// - send queries
-
 async function main() {
-  const uri = "ipfs/QmfPBVeJkVL78yecnTXx4tKd6kyFcGkAXSNtznKacHWvbG";
+  const uri = "ipfs/QmdAsjKDB8rJEdYc8nqCCXVMcCweDArau2oZ9qaF33KJZr";
   const ensAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
   // const resolverAddress = "0xf6305c19e814d2a75429Fd637d01F7ee0E77d615";
   const network = "rinkeby";
-  const domain = "open.someopendomain.eth";
+  const domain = "open.web3api.eth";
   const privKey = process.env.ETH_PRIV_KEY as string;
 
   if (!privKey) {
@@ -123,15 +118,3 @@ main()
   .finally(() =>
     process.exit(0)
   );
-
-/*
-//PSEUDO-CODE Recipe to deploy and configure public subdomain
-x const ensAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
-x const publicResolverAddress = "0x..."
-x const label = "mysubdomain"
-const owner = "0x..."
-x const domain = "public.domain.eth"
-
-x const fifsRegistrarAddress = await deployFIFSRegistrar(ensAddress, domain)
-x await setSubdomainOwner(domain, fifsRegistrarAddress, ensAddress)
-*/
