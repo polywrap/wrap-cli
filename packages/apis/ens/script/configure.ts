@@ -36,14 +36,6 @@ async function main() {
   const client = new Web3ApiClient({
     redirects: [
       {
-        from: "w3://ens/uts46.web3api.eth",
-        to: uts46Plugin(),
-      },
-      {
-        from: "w3://ens/sha3.web3api.eth",
-        to: sha3Plugin(),
-      },
-      {
         from: "w3://ens/ipfs.web3api.eth",
         to: ipfsPlugin({
           provider: "http://localhost:5001",
