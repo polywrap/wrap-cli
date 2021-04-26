@@ -66,11 +66,11 @@ export default {
     ipfs = ipfs || i;
     ens = ens || e;
 
-    let type = "",
+    let command = "",
       lang = "";
     try {
       const params = parameters;
-      [type, lang] = fixParameters(
+      [command, lang] = fixParameters(
         {
           options: params.options,
           array: params.array,
@@ -91,7 +91,7 @@ export default {
       return;
     }
 
-    if (!type) {
+    if (!command) {
       print.error(intlMsg.commands_plugin_error_noCommand());
       print.info(HELP);
       return;
@@ -103,14 +103,14 @@ export default {
       return;
     }
 
-    if (!supportedLangs[type]) {
+    if (!supportedLangs[command]) {
       const unrecognizedCommand = intlMsg.commands_plugin_error_unrecognizedCommand();
-      print.error(`${unrecognizedCommand} "${type}"`);
+      print.error(`${unrecognizedCommand} "${command}"`);
       print.info(HELP);
       return;
     }
 
-    if (supportedLangs[type].indexOf(lang) === -1) {
+    if (supportedLangs[command].indexOf(lang) === -1) {
       const unrecognizedLanguage = intlMsg.commands_plugin_error_unrecognizedLanguage();
       print.error(`${unrecognizedLanguage} "${lang}"`);
       print.info(HELP);
@@ -203,7 +203,7 @@ export default {
 
     result = await codeGenerator.generate();
 
-    if (type == "build") {
+    if (command == "build") {
       const compiler = new Compiler({
         project,
         outputDir: outputSchema || filesystem.path("build"),

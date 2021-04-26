@@ -95,7 +95,7 @@ export class CodeGenerator {
         );
       } else {
         const content = bindSchema("plugin-ts", this._schema || "");
-        writeFileSync(this._config.outputTypes!, content);
+        writeFileSync(this._config.outputTypes!, content.entries[0].data);
       }
     };
 
