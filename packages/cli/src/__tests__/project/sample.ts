@@ -26,11 +26,13 @@ export const composedSchema = {
     "\n" +
     "type Query @imports(\n" +
     "  types: [\n" +
-    '    "Ethereum_Query"\n' +
+    '    "Ethereum_Query",\n' +
+    '    "Ethereum_Connection"\n' +
     "  ]\n" +
     ") {\n" +
     "  getData(\n" +
     "    address: String!\n" +
+    "    connection: Ethereum_Connection\n" +
     "  ): UInt32!\n" +
     "}\n" +
     "\n" +
@@ -44,13 +46,23 @@ export const composedSchema = {
     "  callView(\n" +
     "    address: String!\n" +
     "    method: String!\n" +
-    "    args: [String!]!\n" +
+    "    args: [String!]\n" +
+    "    connection: Ethereum_Connection\n" +
     "  ): String!\n" +
     "}\n" +
     "\n" +
     "### Imported Queries END ###\n" +
     "\n" +
     "### Imported Objects START ###\n" +
+    "\n" +
+    "type Ethereum_Connection @imported(\n" +
+    "  uri: \"w3://ens/ethereum.web3api.eth\",\n" +
+    "  namespace: \"Ethereum\",\n" +
+    "  nativeType: \"Connection\"\n" +
+    ") {\n" +
+    "  node: String\n" +
+    "  networkNameOrChainId: String\n" +
+    "}\n" +
     "\n" +
     "### Imported Objects END ###\n",
   mutation:
@@ -80,14 +92,18 @@ export const composedSchema = {
     "\n" +
     "type Mutation @imports(\n" +
     "  types: [\n" +
-    '    "Ethereum_Mutation"\n' +
+    '    "Ethereum_Mutation",\n' +
+    '    "Ethereum_Connection"\n' +
     "  ]\n" +
     ") {\n" +
     "  setData(\n" +
     "    options: SetDataOptions!\n" +
+    "    connection: Ethereum_Connection\n" +
     "  ): SetDataResult!\n" +
     "\n" +
-    "  deployContract: String!\n" +
+    "  deployContract(\n" +
+    "    connection: Ethereum_Connection\n" +
+    "  ): String!\n" +
     "}\n" +
     "\n" +
     "type SetDataOptions {\n" +
@@ -110,18 +126,30 @@ export const composedSchema = {
     "  sendTransaction(\n" +
     "    address: String!\n" +
     "    method: String!\n" +
-    "    args: [String!]!\n" +
+    "    args: [String!]\n" +
+    "    connection: Ethereum_Connection\n" +
     "  ): String!\n" +
     "\n" +
     "  deployContract(\n" +
     "    abi: String!\n" +
     "    bytecode: String!\n" +
+    "    args: [String!]\n" +
+    "    connection: Ethereum_Connection\n" +
     "  ): String!\n" +
     "}\n" +
     "\n" +
     "### Imported Queries END ###\n" +
     "\n" +
     "### Imported Objects START ###\n" +
+    "\n" +
+    "type Ethereum_Connection @imported(\n" +
+    "  uri: \"w3://ens/ethereum.web3api.eth\",\n" +
+    "  namespace: \"Ethereum\",\n" +
+    "  nativeType: \"Connection\"\n" +
+    ") {\n" +
+    "  node: String\n" +
+    "  networkNameOrChainId: String\n" +
+    "}\n" +
     "\n" +
     "### Imported Objects END ###\n",
   combined:
@@ -151,24 +179,30 @@ export const composedSchema = {
     "\n" +
     "type Query @imports(\n" +
     "  types: [\n" +
-    '    "Ethereum_Query"\n' +
+    '    "Ethereum_Query",\n' +
+    '    "Ethereum_Connection"\n' +
     "  ]\n" +
     ") {\n" +
     "  getData(\n" +
     "    address: String!\n" +
+    "    connection: Ethereum_Connection\n" +
     "  ): UInt32!\n" +
     "}\n" +
     "\n" +
     "type Mutation @imports(\n" +
     "  types: [\n" +
-    '    "Ethereum_Mutation"\n' +
+    '    "Ethereum_Mutation",\n' +
+    '    "Ethereum_Connection"\n' +
     "  ]\n" +
     ") {\n" +
     "  setData(\n" +
     "    options: SetDataOptions!\n" +
+    "    connection: Ethereum_Connection\n" +
     "  ): SetDataResult!\n" +
     "\n" +
-    "  deployContract: String!\n" +
+    "  deployContract(\n" +
+    "    connection: Ethereum_Connection\n" +
+    "  ): String!\n" +
     "}\n" +
     "\n" +
     "type SetDataOptions {\n" +
@@ -191,7 +225,8 @@ export const composedSchema = {
     "  callView(\n" +
     "    address: String!\n" +
     "    method: String!\n" +
-    "    args: [String!]!\n" +
+    "    args: [String!]\n" +
+    "    connection: Ethereum_Connection\n" +
     "  ): String!\n" +
     "}\n" +
     "\n" +
@@ -203,18 +238,30 @@ export const composedSchema = {
     "  sendTransaction(\n" +
     "    address: String!\n" +
     "    method: String!\n" +
-    "    args: [String!]!\n" +
+    "    args: [String!]\n" +
+    "    connection: Ethereum_Connection\n" +
     "  ): String!\n" +
     "\n" +
     "  deployContract(\n" +
     "    abi: String!\n" +
     "    bytecode: String!\n" +
+    "    args: [String!]\n" +
+    "    connection: Ethereum_Connection\n" +
     "  ): String!\n" +
     "}\n" +
     "\n" +
     "### Imported Queries END ###\n" +
     "\n" +
     "### Imported Objects START ###\n" +
+    "\n" +
+    "type Ethereum_Connection @imported(\n" +
+    "  uri: \"w3://ens/ethereum.web3api.eth\",\n" +
+    "  namespace: \"Ethereum\",\n" +
+    "  nativeType: \"Connection\"\n" +
+    ") {\n" +
+    "  node: String\n" +
+    "  networkNameOrChainId: String\n" +
+    "}\n" +
     "\n" +
     "### Imported Objects END ###\n",
 };

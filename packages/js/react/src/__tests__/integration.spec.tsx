@@ -36,7 +36,7 @@ describe("Web3API React Integration", () => {
       ipfs,
       ensAddress
     );
-    ensUri = `ens/${api.ensDomain}`;
+    ensUri = `ens/testnet/${api.ensDomain}`;
   });
 
   afterAll(async () => {
@@ -62,6 +62,7 @@ describe("Web3API React Integration", () => {
   });
 
   it("Should throw error because two providers with same key has been rendered ", () => {
+    // @ts-ignore
     const CustomWeb3ApiProvider = createWeb3ApiProvider("test");
     expect(() => createWeb3ApiProvider("test")).toThrowError(
       /A Web3Api provider already exists with the name \"test\"/

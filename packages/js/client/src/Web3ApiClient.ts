@@ -22,7 +22,7 @@ import {
 import { Tracer } from "@web3api/tracing";
 
 export interface ClientConfig<TUri = string> {
-  redirects: UriRedirect<TUri>[];
+  redirects?: UriRedirect<TUri>[];
 }
 
 export class Web3ApiClient implements Client {
@@ -43,12 +43,18 @@ export class Web3ApiClient implements Client {
     if (config) {
       this._config = {
         ...config,
-        redirects: sanitizeUriRedirects(config.redirects),
+        redirects: config.redirects
+          ? sanitizeUriRedirects(config.redirects)
+          : [],
       };
     } else {
       this._config = {
         redirects: [],
       };
+    }
+
+    if (!this._config.redirects) {
+      this._config.redirects = [];
     }
 
     // Add all default redirects (IPFS, ETH, ENS)
@@ -69,7 +75,7 @@ export class Web3ApiClient implements Client {
   }
 
   public redirects(): readonly UriRedirect<Uri>[] {
-    return this._config.redirects;
+    return this._config.redirects || [];
   }
 
   public async query<
