@@ -44,7 +44,7 @@ export function registerDomain(input: Input_registerDomain): string {
 }
 
 export function setOwner(input: Input_setOwner): string {
-  let tx = Ethereum_Mutation.sendTransaction({
+  const tx = Ethereum_Mutation.sendTransaction({
     address: input.registryAddress,
     method: "function setOwner(bytes32 node, address owner) external",
     args: [namehash(input.domain), input.newOwner],
@@ -58,8 +58,8 @@ export function setSubdomainOwner(input: Input_setSubdomainOwner): string {
   const splitDomain = input.subdomain.split(".")
   const subdomainLabel = splitDomain[0]
   const domain = splitDomain.slice(1, splitDomain.length).join(".")
-  
-  let tx = Ethereum_Mutation.sendTransaction({
+
+  const tx = Ethereum_Mutation.sendTransaction({
     address: input.registryAddress,
     method: "function setSubnodeOwner(bytes32 node, bytes32 label, address owner) external",
     args: [namehash(domain), keccak256(subdomainLabel), input.owner],

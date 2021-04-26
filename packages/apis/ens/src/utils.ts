@@ -2,23 +2,42 @@ import { SHA3_Query } from "./mutation/w3/imported/SHA3_Query";
 import { UTS46_Query } from "./mutation/w3/imported/UTS46_Query";
 
 export function namehash (inputName: string): string {
-  let node = ''
-  for (let i: number = 0; i < 32; i++) {
-    node += '00'
-  }
+  let node = new Uint8Array(32);
+  node.fill(0);
 
   const name: string = normalize(inputName)
 
   if (name) {
-    let labels: string[] = name.split('.')
+    const labels: string[] = name.split('.')
 
     for(let i = labels.length - 1; i >= 0; i--) {
-      let labelSha = SHA3_Query.keccak_256({ message: labels[i] })
-      node = SHA3_Query.buffer_keccak_256({ message: (node + labelSha) })
+      const labelSha = SHA3_Query.buffer_keccak_256({
+        message: String.UTF8.encode(labels[i])
+      });
+      const combined = new Uint8Array(node.byteLength + labelSha.byteLength);
+      combined.set(node);
+      combined.set(Uint8Array.wrap(labelSha), node.byteLength);
+      node = Uint8Array.wrap(
+        SHA3_Query.buffer_keccak_256({
+          message: combined.buffer
+        })
+      );
     }
   }
 
-  return '0x' + node
+  let result = '0x';
+
+  for (let i = 0; i < node.byteLength; ++i) {
+    let hexStr = node[i].toString(16);
+
+    if (hexStr.length === 1) {
+      hexStr = "0" + hexStr;
+    }
+
+    result += hexStr;
+  }
+
+  return result;
 }
 
 export function normalize(name: string): string {

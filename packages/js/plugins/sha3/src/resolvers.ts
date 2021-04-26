@@ -36,7 +36,18 @@ export const query = (): PluginModule => ({
     return keccak_256(input.message);
   },
   buffer_keccak_256: (input: { message: ArrayBuffer }) => {
-    return keccak_256(input.message);
+    const result = keccak_256(input.message);
+    const hexValues = result.match(/[\da-f]{2}/gi);
+
+    if (!hexValues) {
+      return new Uint8Array(0);
+    }
+
+    return new Uint8Array(
+      hexValues.map(function (h) {
+        return parseInt(h, 16)
+      })
+    );
   },
   keccak_224: (input: { message: string }) => {
     return keccak_224(input.message);

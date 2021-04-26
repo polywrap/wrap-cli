@@ -15,7 +15,7 @@ type Query {
   keccak_256(message: String!): String!
   keccak_224(message: String!): String!
 
-  buffer_keccak_256(message: Bytes!): String!
+  buffer_keccak_256(message: Bytes!): Bytes!
 
   shake_128(message: String!, outputBits: Int!): String!
   shake_256(message: String!, outputBits: Int!): String!

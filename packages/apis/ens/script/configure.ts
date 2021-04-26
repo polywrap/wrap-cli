@@ -2,8 +2,6 @@ import { Web3ApiClient } from "@web3api/client-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ethereumPlugin, EthereumProvider } from "@web3api/ethereum-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
-import { uts46Plugin } from "@web3api/uts46-plugin-js";
-import { sha3Plugin } from "@web3api/sha3-plugin-js";
 
 import { ethers, Wallet } from "ethers";
 import axios from "axios";
@@ -16,7 +14,7 @@ dotenv.config();
 // - send queries
 
 async function main() {
-  const uri = "ipfs/QmZKcHjxXHrWapE9MXDseVUEJqhFtrP6QGX1TUfcoQJfAx";
+  const uri = "ipfs/QmfPBVeJkVL78yecnTXx4tKd6kyFcGkAXSNtznKacHWvbG";
   const ensAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
   // const resolverAddress = "0xf6305c19e814d2a75429Fd637d01F7ee0E77d615";
   const network = "rinkeby";
@@ -31,7 +29,7 @@ async function main() {
   const { data } = await axios.get("http://localhost:4040/ens");
   const testnetEnsAddress = data.ensAddress as string;
 
-  console.log(testnetEnsAddress)
+  const rinkebyProvider = ethers.getDefaultProvider("rinkeby");
 
   const client = new Web3ApiClient({
     redirects: [
@@ -55,8 +53,8 @@ async function main() {
         to: ethereumPlugin({
           networks: {
             rinkeby: {
-              provider: ethers.getDefaultProvider("rinkeby") as EthereumProvider,
-              signer: new Wallet(privKey)
+              provider: rinkebyProvider as EthereumProvider,
+              signer: new Wallet(privKey, rinkebyProvider)
             },
             testnet: {
               provider: "http://localhost:8545"
@@ -94,24 +92,24 @@ async function main() {
 
   // Set the subdomain's owner to the FIFSRegistrar
   const setOwner = await client.query<{
-    setSubdomainOwner: string
+    setOwner: string
   }>({
     uri,
     query: `mutation {
-      setSubdomainOwner(
-        subdomain: "${domain}"
-        owner: "${fifsAddress}"
+      setOwner(
+        domain: "${domain}"
+        newOwner: "${fifsAddress}"
         registryAddress: "${ensAddress}"
         connection: {
           networkNameOrChainId: "${network}"
         }
       )
     }`
-  })
+  });
 
   if (!setOwner.errors) {
     console.log("Set Owner Succeeded!")
-    console.log(setOwner.data?.setSubdomainOwner);
+    console.log(setOwner.data?.setOwner);
   } else {
     throw Error(`Failed to Set Owner: ${setOwner.errors}`);
   }
