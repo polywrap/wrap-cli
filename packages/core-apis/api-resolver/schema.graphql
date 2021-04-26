@@ -6,7 +6,7 @@ type Query {
 
   getFile(
     path: String!
-  ): Bytes # TODO: https://github.com/web3-api/monorepo/issues/100
+  ): Bytes
 }
 
 type MaybeUriOrManifest {

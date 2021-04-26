@@ -72,7 +72,7 @@ type Query @imports(
 ) {
   queryMethod(
     arg: String!
-  ): Int!
+  ): [Int]!
 
   userObjectMethod(
     userObject: UserObject
@@ -100,7 +100,7 @@ type TestImport_Query @imported(
 
   anotherMethod(
     arg: [String!]!
-  ): Int64!
+  ): [Int64]!
 
   importedObjectMethod(
     importedObject: TestImport_Object!

@@ -2,7 +2,7 @@
   "name": "ens-web3api",
   "description": "ENS Web3API",
   "private": true,
-  "version": "0.0.1-prealpha.15",
+  "version": "0.0.1-prealpha.21",
   "scripts": {
     "build": "npx w3 build",
     "test:env:up": "npx w3 test-env up",

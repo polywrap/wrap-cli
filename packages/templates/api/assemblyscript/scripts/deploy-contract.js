@@ -15,9 +15,11 @@ async function main() {
 
   // Deploy the contract to testnet
   const eth = new EthereumPlugin({
-    testnet: {
-      provider: "http://localhost:8545"
-    }
+    networks: {
+      testnet: {
+        provider: "http://localhost:8545"
+      },
+    },
   });
 
   const address = await eth.deployContract(

@@ -1,13 +1,3 @@
-import {
-  Input_queryMethod,
-  Input_objectMethod
-} from "./Query";
-
-export {
-  Input_queryMethod,
-  Input_objectMethod
-};
-
 export * from "./CustomType";
 export * from "./AnotherType";
 export * from "./CustomEnum";
