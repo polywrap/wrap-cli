@@ -3,16 +3,20 @@ import { Project } from "./Project";
 import { step, withSpinner } from "./helpers";
 import { intlMsg } from "./intl";
 
+import { TypeInfo } from "@web3api/schema-parse";
 import {
   OutputDirectory,
   writeDirectory,
   bindSchema,
 } from "@web3api/schema-bind";
 import path from "path";
-import fs, { readFileSync, writeFileSync } from "fs";
+import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import Mustache from "mustache";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+const fsExtra = require("fs-extra");
 
 export interface CodeGeneratorConfig {
   outputDir?: string;
@@ -64,11 +68,11 @@ export class CodeGenerator {
       const typeInfo = composed.combined.typeInfo;
       this._schema = composed.combined.schema;
 
-      const output: OutputDirectory = {
-        entries: [],
-      };
-
       if (this._config.generationFile) {
+        const output: OutputDirectory = {
+          entries: [],
+        };
+
         // Check the generation file if it has the proper run() method
         // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
         const generator = await require(this._config.generationFile);
@@ -94,11 +98,36 @@ export class CodeGenerator {
             this._generateTemplate(templatePath, typeInfo, spinner)
         );
       } else {
-        const content = bindSchema("plugin-ts", this._schema || "");
-        writeFileSync(
-          this._config.outputTypes || "src/types.ts",
-          content.entries[0].data
-        );
+        const manifest = await project.getManifest();
+
+        const queryDirectory = manifest.query
+          ? this._getGenerationDirectory(manifest.query.module.file)
+          : undefined;
+        const mutationDirectory = manifest.mutation
+          ? this._getGenerationDirectory(manifest.mutation.module.file)
+          : undefined;
+
+        this._cleanDir(queryDirectory as string);
+        this._cleanDir(mutationDirectory as string);
+
+        const content = bindSchema({
+          query: {
+            typeInfo: composed.query?.typeInfo as TypeInfo,
+            outputDirAbs: queryDirectory as string,
+          },
+          mutation: {
+            typeInfo: composed.mutation?.typeInfo as TypeInfo,
+            outputDirAbs: mutationDirectory as string,
+          },
+          language: "plugin-ts",
+        });
+
+        if (content.query) {
+          writeDirectory(queryDirectory as string, content.query);
+        }
+        if (content.mutation) {
+          writeDirectory(mutationDirectory as string, content.mutation);
+        }
       }
     };
 
@@ -152,5 +181,26 @@ ${content}
 `;
 
     return content;
+  }
+
+  private _getGenerationDirectory(entryPoint: string): string {
+    const { project } = this._config;
+
+    const absolute = path.isAbsolute(entryPoint)
+      ? entryPoint
+      : this._appendPath(project.manifestPath, entryPoint);
+    return `${path.dirname(absolute)}/w3`;
+  }
+
+  private _appendPath(root: string, subPath: string) {
+    return path.join(path.dirname(root), subPath);
+  }
+
+  private _cleanDir(dir: string) {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir);
+    }
+
+    fsExtra.emptyDirSync(dir);
   }
 }
