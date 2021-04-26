@@ -35,7 +35,7 @@ export function generateBinding(
     entries: [
       {
         type: "File",
-        name: "./types.ts",
+        name: "types.ts",
         data: Mustache.render(
           template.toString(),
           schema ? { ...typeInfo, schema } : typeInfo
