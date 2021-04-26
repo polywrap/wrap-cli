@@ -88,14 +88,17 @@ export class CodeGenerator {
         });
 
         writeDirectory(
-          this._config.outputDir!,
+          this._config.outputDir || "build",
           output,
           (templatePath: string) =>
             this._generateTemplate(templatePath, typeInfo, spinner)
         );
       } else {
         const content = bindSchema("plugin-ts", this._schema || "");
-        writeFileSync(this._config.outputTypes!, content.entries[0].data);
+        writeFileSync(
+          this._config.outputTypes || "src/types.ts",
+          content.entries[0].data
+        );
       }
     };
 
