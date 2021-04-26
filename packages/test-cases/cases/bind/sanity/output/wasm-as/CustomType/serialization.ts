@@ -104,7 +104,7 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   Types.AnotherType.write(writer, type.object);
   writer.writeString("optObject");
   if (type.optObject) {
-    Types.AnotherType.write(writer, type.optObject);
+    Types.AnotherType.write(writer, type.optObject as Types.AnotherType);
   } else {
     writer.writeNil();
   }
@@ -115,7 +115,7 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.writeString("optObjectArray");
   writer.writeNullableArray(type.optObjectArray, (writer: Write, item: Types.AnotherType | null): void => {
     if (item) {
-      Types.AnotherType.write(writer, item);
+      Types.AnotherType.write(writer, item as Types.AnotherType);
     } else {
       writer.writeNil();
     }

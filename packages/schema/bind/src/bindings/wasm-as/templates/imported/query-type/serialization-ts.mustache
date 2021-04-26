@@ -53,7 +53,7 @@ export function write{{name}}Args(
   {{/required}}
   {{^required}}
   if (input.{{name}}) {
-    Types.{{type}}.write(writer, input.{{name}});
+    Types.{{type}}.write(writer, input.{{name}} as Types.{{type}});
   } else {
     writer.writeNil();
   }

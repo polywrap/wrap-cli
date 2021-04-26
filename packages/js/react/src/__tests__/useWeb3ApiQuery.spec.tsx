@@ -1,9 +1,11 @@
 import {
   useWeb3ApiQuery,
   Web3ApiProvider,
-  UseWeb3ApiQueryProps,
   createWeb3ApiProvider
 } from "..";
+import {
+  UseWeb3ApiQueryProps
+} from "../query"
 
 import {
   renderHook,
@@ -11,7 +13,7 @@ import {
   RenderHookOptions,
   cleanup
 } from "@testing-library/react-hooks";
-import { QueryApiOptions, UriRedirect } from "@web3api/core-js";
+import { UriRedirect } from "@web3api/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
@@ -39,7 +41,7 @@ describe("useWeb3ApiQuery hook", () => {
       ensAddress
     );
 
-    uri = `ens/${ensDomain}`;
+    uri = `ens/testnet/${ensDomain}`;
     redirects = testRedirects;
     WrapperProvider = {
       wrapper: Web3ApiProvider,
@@ -53,10 +55,10 @@ describe("useWeb3ApiQuery hook", () => {
     await stopTestEnvironment();
   });
 
-  const sendQuery = async (
-    options: QueryApiOptions
-  ) => {
-    const hook = () => useWeb3ApiQuery(options);
+  async function sendQuery<TData extends Record<string, unknown>>(
+    options: UseWeb3ApiQueryProps
+  ) {
+    const hook = () => useWeb3ApiQuery<TData>(options);
 
     const { result: hookResult } = renderHook(hook, WrapperProvider);
 
@@ -72,18 +74,29 @@ describe("useWeb3ApiQuery hook", () => {
   it("Should update storage data to five with hard coded value", async () => {
     const deployQuery: UseWeb3ApiQueryProps = {
       uri,
-      query: `mutation { deployContract }`,
+      query: `mutation {
+        deployContract (
+          connection: {
+            networkNameOrChainId: "testnet"
+          }
+        )
+      }`,
     };
 
-    const { data } = await sendQuery(deployQuery);
+    const { data } = await sendQuery<{
+      deployContract: string
+    }>(deployQuery);
 
     const setStorageDataQuery: UseWeb3ApiQueryProps = {
       uri,
       query: `
         mutation {
           setData(
-            address: "${data.deployContract}"
+            address: "${data?.deployContract}"
             value: 5
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
           )
         }
       `,
@@ -98,31 +111,47 @@ describe("useWeb3ApiQuery hook", () => {
       query: `
         query {
           getData(
-            address: "${data.deployContract}"
+            address: "${data?.deployContract}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
           )
         }
       `,
     };
 
-    const { data: { getData } } = await sendQuery(getStorageDataQuery);
-    expect(getData).toBe(5);
+    const { data: getDataData } = await sendQuery<{
+      getData: number
+    }>(getStorageDataQuery);
+    expect(getDataData?.getData).toBe(5);
   });
 
   it("Should update storage data to five by setting value through variables", async () => {
     const deployQuery: UseWeb3ApiQueryProps = {
       uri,
-      query: `mutation { deployContract }`,
+      query: `mutation {
+        deployContract(
+          connection: {
+            networkNameOrChainId: "testnet"
+          }
+        )
+      }`,
     };
 
-    const { data } = await sendQuery(deployQuery);
+    const { data } = await sendQuery<{
+      deployContract: string
+    }>(deployQuery);
 
     const setStorageDataQuery: UseWeb3ApiQueryProps = {
       uri,
       query: `
         mutation {
           setData(
-            address: "${data.deployContract}"
+            address: "${data?.deployContract}"
             value: $value
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
           )
         }
       `,
@@ -140,14 +169,17 @@ describe("useWeb3ApiQuery hook", () => {
       query: `
         query {
           getData(
-            address: "${data.deployContract}"
+            address: "${data?.deployContract}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
           )
         }
       `,
     };
 
-    const { data: { getData } } = await sendQuery(getStorageDataQuery);
-    expect(getData).toBe(5);
+    const { data: getDataData } = await sendQuery(getStorageDataQuery);
+    expect(getDataData?.getData).toBe(5);
   });
 
   it("Should throw error because there's no provider with expected key ", async () => {

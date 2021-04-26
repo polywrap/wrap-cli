@@ -33,21 +33,34 @@ export class SchemaComposer {
     if (ensAddress) {
       redirects.push({
         from: "w3://ens/ens.web3api.eth",
-        to: ensPlugin({ address: ensAddress }),
+        to: ensPlugin({
+          addresses: {
+            testnet: ensAddress,
+          },
+        }),
       });
     }
 
     if (ethProvider) {
       redirects.push({
         from: "w3://ens/ethereum.web3api.eth",
-        to: ethereumPlugin({ provider: ethProvider }),
+        to: ethereumPlugin({
+          networks: {
+            testnet: {
+              provider: ethProvider,
+            },
+          },
+        }),
       });
     }
 
     if (ipfsProvider) {
       redirects.push({
         from: "w3://ens/ipfs.web3api.eth",
-        to: ipfsPlugin({ provider: ipfsProvider }),
+        to: ipfsPlugin({
+          provider: ipfsProvider,
+          fallbackProviders: ["https://ipfs.io"],
+        }),
       });
     }
 
