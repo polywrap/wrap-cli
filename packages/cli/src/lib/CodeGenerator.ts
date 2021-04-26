@@ -10,13 +10,10 @@ import {
   bindSchema,
 } from "@web3api/schema-bind";
 import path from "path";
-import fs, { readFileSync } from "fs";
+import fs, { readFileSync, writeFileSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import Mustache from "mustache";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-const fsExtra = require("fs-extra");
 
 export interface CodeGeneratorConfig {
   outputDir?: string;
@@ -98,36 +95,19 @@ export class CodeGenerator {
             this._generateTemplate(templatePath, typeInfo, spinner)
         );
       } else {
-        const manifest = await project.getManifest();
-
-        const queryDirectory = manifest.query
-          ? this._getGenerationDirectory(manifest.query.module.file)
-          : undefined;
-        const mutationDirectory = manifest.mutation
-          ? this._getGenerationDirectory(manifest.mutation.module.file)
-          : undefined;
-
-        this._cleanDir(queryDirectory as string);
-        this._cleanDir(mutationDirectory as string);
-
         const content = bindSchema({
           query: {
-            typeInfo: composed.query?.typeInfo as TypeInfo,
-            outputDirAbs: queryDirectory as string,
-          },
-          mutation: {
-            typeInfo: composed.mutation?.typeInfo as TypeInfo,
-            outputDirAbs: mutationDirectory as string,
+            typeInfo: composed.combined?.typeInfo as TypeInfo,
+            schema: composed.combined?.schema,
+            outputDirAbs: "",
           },
           language: "plugin-ts",
         });
 
-        if (content.query) {
-          writeDirectory(queryDirectory as string, content.query);
-        }
-        if (content.mutation) {
-          writeDirectory(mutationDirectory as string, content.mutation);
-        }
+        writeFileSync(
+          this._config.outputTypes as string,
+          content.query?.entries[0].data
+        );
       }
     };
 
@@ -181,26 +161,5 @@ ${content}
 `;
 
     return content;
-  }
-
-  private _getGenerationDirectory(entryPoint: string): string {
-    const { project } = this._config;
-
-    const absolute = path.isAbsolute(entryPoint)
-      ? entryPoint
-      : this._appendPath(project.manifestPath, entryPoint);
-    return `${path.dirname(absolute)}/w3`;
-  }
-
-  private _appendPath(root: string, subPath: string) {
-    return path.join(path.dirname(root), subPath);
-  }
-
-  private _cleanDir(dir: string) {
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
-    }
-
-    fsExtra.emptyDirSync(dir);
   }
 }

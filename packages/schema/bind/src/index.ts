@@ -39,6 +39,7 @@ export interface BindOutput {
 
 export interface BindModuleOptions {
   typeInfo: TypeInfo;
+  schema?: string;
   outputDirAbs: string;
 }
 
@@ -79,9 +80,11 @@ export function bindSchema(options: BindOptions): BindOutput {
   }
 
   return {
-    query: query ? generateBinding(language, query.typeInfo) : undefined,
+    query: query
+      ? generateBinding(language, query.typeInfo, query.schema)
+      : undefined,
     mutation: mutation
-      ? generateBinding(language, mutation.typeInfo)
+      ? generateBinding(language, mutation.typeInfo, mutation.schema)
       : undefined,
   };
 }

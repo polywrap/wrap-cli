@@ -8,6 +8,7 @@ export interface QueryModule extends PluginModule {
 
 export interface Input_getData {
   address: string;
+  connection?: Types.Ethereum_Connection | null;
 }
 export interface MutationModule extends PluginModule {
   setData: (
@@ -20,8 +21,10 @@ export interface MutationModule extends PluginModule {
 
 export interface Input_setData {
   options: Types.SetDataOptions;
+  connection?: Types.Ethereum_Connection | null;
 }
 export interface Input_deployContract {
+  connection?: Types.Ethereum_Connection | null;
 }
 
 export const schema = `### Web3API Header START ###
@@ -50,24 +53,30 @@ directive @imports(
 
 type Query @imports(
   types: [
-    "Ethereum_Query"
+    "Ethereum_Query",
+    "Ethereum_Connection"
   ]
 ) {
   getData(
     address: String!
+    connection: Ethereum_Connection
   ): UInt32!
 }
 
 type Mutation @imports(
   types: [
-    "Ethereum_Mutation"
+    "Ethereum_Mutation",
+    "Ethereum_Connection"
   ]
 ) {
   setData(
     options: SetDataOptions!
+    connection: Ethereum_Connection
   ): SetDataResult!
 
-  deployContract: String!
+  deployContract(
+    connection: Ethereum_Connection
+  ): String!
 }
 
 type SetDataOptions {
@@ -90,7 +99,8 @@ type Ethereum_Query @imported(
   callView(
     address: String!
     method: String!
-    args: [String!]!
+    args: [String!]
+    connection: Ethereum_Connection
   ): String!
 }
 
@@ -102,18 +112,30 @@ type Ethereum_Mutation @imported(
   sendTransaction(
     address: String!
     method: String!
-    args: [String!]!
+    args: [String!]
+    connection: Ethereum_Connection
   ): String!
 
   deployContract(
     abi: String!
     bytecode: String!
+    args: [String!]
+    connection: Ethereum_Connection
   ): String!
 }
 
 ### Imported Queries END ###
 
 ### Imported Objects START ###
+
+type Ethereum_Connection @imported(
+  uri: "w3://ens/ethereum.web3api.eth",
+  namespace: "Ethereum",
+  nativeType: "Connection"
+) {
+  node: String
+  networkNameOrChainId: String
+}
 
 ### Imported Objects END ###
 `;
