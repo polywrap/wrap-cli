@@ -11,6 +11,7 @@ import {
   TokenAmount,
 } from "./w3";
 import { pairAddress } from "./pair";
+import { resolveChainId } from "../utils/utils";
 
 export function fetchTokenData(input: Input_fetchTokenData): Token {
   const address: string = input.address;
@@ -22,7 +23,10 @@ export function fetchTokenData(input: Input_fetchTokenData): Token {
           address: address,
           method: "function symbol() external pure returns (string memory)",
           args: [],
-          // network: resolveChainId(chainId)
+          connection: {
+            node: null,
+            networkNameOrChainId: resolveChainId(chainId),
+          },
         });
   const name: string =
     input.name != null
@@ -31,13 +35,19 @@ export function fetchTokenData(input: Input_fetchTokenData): Token {
           address: address,
           method: "function name() external pure returns (string memory)",
           args: [],
-          // network: resolveChainId(chainId)
+          connection: {
+            node: null,
+            networkNameOrChainId: resolveChainId(chainId),
+          },
         });
   const decimals: string = Ethereum_Query.callView({
     address: address,
     method: "function decimals() external pure returns (uint8)",
     args: [],
-    // network: resolveChainId(chainId)
+    connection: {
+      node: null,
+      networkNameOrChainId: resolveChainId(chainId),
+    },
   });
   return {
     chainId: chainId,
@@ -59,7 +69,10 @@ export function fetchPairData(input: Input_fetchPairData): Pair {
     method:
       "function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)",
     args: [],
-    // network: resolveChainId(token0.chainId)
+    connection: {
+      node: null,
+      networkNameOrChainId: resolveChainId(token0.chainId),
+    },
   });
   // TODO: confirm that this is what res will look like
   const resArray: string[] = res.substring(1, res.length - 1).split(",");
@@ -93,7 +106,10 @@ export function fetchTotalSupply(input: Input_fetchTotalSupply): TokenAmount {
     address: token.address,
     method: "function totalSupply() external view returns (uint)",
     args: [],
-    // network: resolveChainId(token.chainId)
+    connection: {
+      node: null,
+      networkNameOrChainId: resolveChainId(token.chainId),
+    },
   });
   return {
     token: token,
@@ -109,6 +125,9 @@ export function fetchKLast(input: Input_fetchKLast): string {
     address: token.address,
     method: "function kLast() external view returns (uint)",
     args: [],
-    // network: resolveChainId(token.chainId)
+    connection: {
+      node: null,
+      networkNameOrChainId: resolveChainId(token.chainId),
+    },
   });
 }

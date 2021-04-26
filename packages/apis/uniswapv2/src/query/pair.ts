@@ -23,6 +23,7 @@ import { BigInt } from "as-bigint";
 import { ProcessedPair } from "../utils/ProcessedPair";
 import Price from "../utils/Price";
 
+
 // TODO: this can be calculated off-chain with keccack256
 // returns address of pair liquidity token contract
 export function pairAddress(input: Input_pairAddress): string {

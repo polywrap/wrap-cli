@@ -1,46 +1,64 @@
-import { buildAndDeployApi, initTestEnvironment } from "@web3api/test-env-js";
-import { Web3ApiClient, UriRedirect } from "@web3api/client-js";
-import { Token } from "../../query/w3";
-import * as hre from "hardhat";
-import { expect } from "chai";
+import { buildAndDeployApi, initTestEnvironment, stopTestEnvironment } from "@web3api/test-env-js";
+import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
 import fetch, { Response } from "node-fetch";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { loggerPlugin } from "@web3api/logger-plugin-js";
-import { Pair, TokenAmount } from "./types";
-import { ExternalProvider } from "@web3api/client-js/build/pluginConfigs/Ethereum";
-const path = require('path');
+import { ChainId, Pair, Token, TokenAmount } from "./types";
+import path from "path";
+import * as fs from "fs";
+
+jest.setTimeout(600000);
+
+// -l 8000000 --deterministic --hostname=0.0.0.0 --chainId 0 --fork https://mainnet.infura.io/v3/d119148113c047ca90f0311ed729c466@12292343
 
 // TODO: do fetches for a specific block number and compare to actual result for that block number
-
 describe("Fetch", () => {
-  const ethProvider = hre.ethers.provider
-  // const ipfsProvider = "https://ipfs.io";
-  const ensAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
+  const infuraProjectId = fs.readFileSync(__dirname + "/../../../infuraProjectId.txt", 'utf-8');
+  const alchemyApiKey = fs.readFileSync(__dirname + "/../../../alchemyApiKey.txt", 'utf-8');
+  const infuraProvider = `https://ropsten.infura.io/v3/${infuraProjectId}`;
+  const alchemyProvider = `https://eth-rinkeby.alchemyapi.io/v2/${alchemyApiKey}`;
+
   // https://tokenlists.org/token-list?url=https://gateway.ipfs.io/ipns/tokens.uniswap.org
-  const defaultUniswapTokenList = "https://gateway.ipfs.io/ipns/tokens.uniswap.org";
+  // const defaultUniswapTokenList = "https://gateway.ipfs.io/ipns/tokens.uniswap.org";
+  // https://tokenlists.org/token-list?url=testnet.tokenlist.eth
+  const tokenListUrl = "https://wispy-bird-88a7.uniswap.workers.dev/?url=http://testnet.tokenlist.eth.link"
 
   let client: Web3ApiClient;
   let ensUri: string;
   let ipfsUri: string;
   let tokens: Token[] = [];
 
-  before(async () => {
-    const { ipfs: ipfsProvider } = await initTestEnvironment();
+  beforeAll(async () => {
+    const { ethereum: testEnvEtherem, ensAddress, ipfs } = await initTestEnvironment();
     // get client
     const redirects: UriRedirect[] = [
       {
-        from: "w3://ens/ethereum.web3api.eth",
-        to: ethereumPlugin({ provider: ethProvider as ExternalProvider }),
+        from: "ens/ethereum.web3api.eth",
+        to: ethereumPlugin({
+          networks: {
+            testnet: {
+              provider: testEnvEtherem
+            },
+            ropsten: {
+              provider: infuraProvider
+            },
+            rinkeby: {
+              provider: alchemyProvider
+            }
+          },
+          defaultNetwork: "testnet"
+        })
       },
       {
         from: "w3://ens/ipfs.web3api.eth",
-        to: ipfsPlugin({ provider: ipfsProvider }),
+        to: ipfsPlugin({ provider: ipfs }),
       },
       {
         from: "w3://ens/ens.web3api.eth",
-        to: ensPlugin({address: ensAddress}),
+        // @ts-ignore
+        to: ensPlugin({ address: ensAddress }),
       },
       {
         from: "w3://w3/logger",
@@ -50,25 +68,32 @@ describe("Fetch", () => {
     client = new Web3ApiClient({ redirects });
 
     // deploy api
-    const apiPath: string = path.resolve(__dirname + '/../../../');
-    const api = await buildAndDeployApi(apiPath, ipfsProvider, ensAddress);
+    const apiPath: string = path.resolve(__dirname + "/../../../");
+    const api = await buildAndDeployApi(apiPath, ipfs, ensAddress);
     ensUri = `ens/${api.ensDomain}`;
     ipfsUri = `ipfs/${api.ipfsCid}`;
     console.log(ipfsUri);
   });
 
+  afterAll(async () => {
+    await stopTestEnvironment();
+  });
+
   // set up test case data
-  before(async () => {
-    await fetch(defaultUniswapTokenList)
-      .then((response: Response) => response.json() as Record<string, any>)
-      .then((json: Record<string, any>) => json.tokens as Record<string, any>[])
-      .then((list: Record<string, any>[]) => list.forEach(token => tokens.push({
-          chainId: token.chainId,
+  beforeAll(async () => {
+    await fetch(tokenListUrl)
+      .then((response: Response) => response.text())
+      .then((text: string) => {
+        const tokensObj = JSON.parse(text) as Record<string, any>;
+        let list: Record<string, any>[] = tokensObj.tokens;
+        list.forEach(token => tokens.push({
+          chainId: ChainId.ROPSTEN,
           address: token.address,
-          decimals: null,
-          symbol: null,
-          name: null,
-        })))
+          decimals: token.decimals,
+          symbol: token.symbol,
+          name: token.name,
+        }));
+      })
       .catch(e => console.log(e));
   });
 
@@ -90,8 +115,8 @@ describe("Fetch", () => {
         address: tokens[0].address,
       },
     });
-    expect(tokenData.errors).to.be.false;
-    expect(tokenData.data).to.be.true;
+    expect(tokenData.errors).toBeFalsy();
+    expect(tokenData.data).toBeTruthy();
     console.log(tokenData.data);
   });
 
@@ -113,8 +138,8 @@ describe("Fetch", () => {
         token1: tokens[1]
       },
     });
-    expect(pairData.errors).to.be.false;
-    expect(pairData.data).to.be.true;
+    expect(pairData.errors).toBeFalsy();
+    expect(pairData.data).toBeTruthy();
     console.log(pairData.data);
   });
 
@@ -122,7 +147,7 @@ describe("Fetch", () => {
     const totalSupply = await client.query<{
       fetchTotalSupply: TokenAmount;
     }>({
-      uri: ensUri,
+      uri: ipfsUri,
       query: `
         query {
           fetchTotalSupply(
@@ -134,8 +159,8 @@ describe("Fetch", () => {
         token: tokens[0],
       },
     });
-    expect(totalSupply.errors).to.be.false;
-    expect(totalSupply.data).to.be.true;
+    expect(totalSupply.errors).toBeFalsy();
+    expect(totalSupply.data).toBeTruthy();
     console.log(totalSupply.data);
   });
 
@@ -155,8 +180,8 @@ describe("Fetch", () => {
         token: tokens[0],
       },
     });
-    expect(kLast.errors).to.be.false;
-    expect(kLast.data).to.be.true;
+    expect(kLast.errors).toBeFalsy();
+    expect(kLast.data).toBeTruthy();
     console.log(kLast.data);
   });
 
