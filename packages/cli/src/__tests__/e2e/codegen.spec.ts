@@ -16,7 +16,7 @@ Options:
     " | "
   )})
   -i, --ipfs [<node>]                     IPFS node to load external schemas (default: dev-server's node)
-  -o, --output-dir <path>                 Output directory for generated types (default: types/)
+  -o, --output-dir <path>                 Output directory for generated types (default: ['build/', 'types/'])
   -e, --ens [<address>]                   ENS address to lookup external schemas (default: 0x0000...2e1e)
 
 `;
@@ -25,10 +25,13 @@ describe("e2e tests for codegen command", () => {
   const projectRoot = path.resolve(__dirname, "../project/");
 
   test("Should show help text", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["codegen", "--help"],
-      cwd: projectRoot
-    }, "../../../bin/w3");
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+      {
+        args: ["codegen", "--help"],
+        cwd: projectRoot,
+      },
+      "../../../bin/w3"
+    );
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -36,10 +39,13 @@ describe("e2e tests for codegen command", () => {
   });
 
   test("Should throw error for invalid params - outputDir", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["codegen", "--output-dir"],
-      cwd: projectRoot
-    }, "../../../bin/w3");
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+      {
+        args: ["codegen", "--output-dir"],
+        cwd: projectRoot,
+      },
+      "../../../bin/w3"
+    );
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -49,10 +55,13 @@ ${HELP}`);
   });
 
   test("Should throw error for invalid params - ens", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["codegen", "--ens"],
-      cwd: projectRoot
-    }, "../../../bin/w3");
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+      {
+        args: ["codegen", "--ens"],
+        cwd: projectRoot,
+      },
+      "../../../bin/w3"
+    );
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -62,10 +71,13 @@ ${HELP}`);
   });
 
   test("Should throw error for invalid generation file - wrong file", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["codegen", `web3api-invalid.gen.js`],
-      cwd: projectRoot
-    }, "../../../bin/w3");
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+      {
+        args: ["codegen", `web3api-invalid.gen.js`],
+        cwd: projectRoot,
+      },
+      "../../../bin/w3"
+    );
 
     expect(code).toEqual(1);
     expect(error).toBe("");
@@ -76,10 +88,13 @@ ${HELP}`);
   });
 
   test("Should throw error for invalid generation file - no run() method", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["codegen", `web3api-norun.gen.js`],
-      cwd: projectRoot
-    }, "../../../bin/w3");
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+      {
+        args: ["codegen", `web3api-norun.gen.js`],
+        cwd: projectRoot,
+      },
+      "../../../bin/w3"
+    );
 
     expect(code).toEqual(1);
     expect(error).toBe("");
@@ -93,24 +108,23 @@ ${HELP}`);
     const rimraf = require("rimraf");
     rimraf.sync(`${projectRoot}/types`);
 
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["codegen"],
-      cwd: projectRoot
-    }, "../../../bin/w3");
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+      {
+        args: ["codegen"],
+        cwd: projectRoot,
+      },
+      "../../../bin/w3"
+    );
 
     expect(code).toEqual(0);
     expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`- Generate types
+    expect(clearStyle(output)).toEqual(`- Build schema
 - Load web3api from web3api.yaml
 ✔ Load web3api from web3api.yaml
-  Generating types from ./templates/schema.mustache
-- Generate types
-  Generating types from ./templates/schema.mustache
-- Generate types
-  Generating types from ./templates/schema.mustache
-- Generate types
-✔ Generate types
-🔥 Types were generated successfully 🔥
+- Output web3api to build/web3api.yaml
+✔ Output web3api to build/web3api.yaml
+✔ Build schema
+🔥 Schema was built successfully 🔥
 `);
 
     rimraf.sync(`${projectRoot}/types`);
