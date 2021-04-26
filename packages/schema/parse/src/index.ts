@@ -1,6 +1,6 @@
 import { TypeInfo, createTypeInfo } from "./typeInfo";
 import { extractors, SchemaExtractor } from "./extract";
-import { TypeInfoTransforms, performTransforms } from "./transform";
+import { TypeInfoTransforms, transformTypeInfo } from "./transform";
 import { finalizePropertyDef } from "./transform/finalizePropertyDef";
 import { validators, SchemaValidator } from "./validate";
 import { Blackboard } from "./extract/Blackboard";
@@ -54,11 +54,11 @@ export function parseSchema(
   }
 
   // Finalize & Transform TypeInfo
-  info = performTransforms(info, finalizePropertyDef);
+  info = transformTypeInfo(info, finalizePropertyDef);
 
   if (options && options.transforms) {
     for (const transform of options.transforms) {
-      info = performTransforms(info, transform);
+      info = transformTypeInfo(info, transform);
     }
   }
 

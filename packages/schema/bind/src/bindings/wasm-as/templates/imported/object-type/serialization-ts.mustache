@@ -1,3 +1,4 @@
+{{^__commonImport}}
 import {
   Read,
   ReadDecoder,
@@ -36,7 +37,7 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   {{/required}}
   {{^required}}
   if (type.{{name}}) {
-    Types.{{type}}.write(writer, type.{{name}});
+    Types.{{type}}.write(writer, type.{{name}} as Types.{{type}});
   } else {
     writer.writeNil();
   }
@@ -126,3 +127,4 @@ export function read{{type}}(reader: Read): {{type}} {
     {{/properties}}
   };
 }
+{{/__commonImport}}
