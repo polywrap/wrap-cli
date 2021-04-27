@@ -168,7 +168,6 @@ export class Compiler {
         composed.combined.schema,
         "utf-8"
       );
-      await outputManifest(manifest, `${outputDir}/web3api.yaml`);
     };
 
     if (project.quiet) {
@@ -223,6 +222,7 @@ export class Compiler {
       };
 
       await buildModules();
+      await outputManifest(manifest, `${outputDir}/web3api.yaml`);
     };
 
     if (project.quiet) {
