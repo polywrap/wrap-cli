@@ -79,7 +79,7 @@ export function pairToken0Price(input: Input_pairToken0Price): TokenAmount {
   );
   return {
     token: pair.tokenAmount1.token,
-    amount: price.adjusted().quotient().toString(),
+    amount: price.toFixed(18),
   };
 }
 
@@ -94,7 +94,7 @@ export function pairToken1Price(input: Input_pairToken1Price): TokenAmount {
   );
   return {
     token: pair.tokenAmount0.token,
-    amount: price.adjusted().quotient().toString(),
+    amount: price.toFixed(18),
   };
 }
 

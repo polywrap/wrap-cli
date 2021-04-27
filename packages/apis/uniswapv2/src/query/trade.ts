@@ -103,7 +103,7 @@ export function tradeExecutionPrice(
   );
   return {
     token: executionPrice.quoteToken,
-    amount: executionPrice.adjusted().quotient().toString(), // TODO: should this be adjusted or raw price? also needs formatting
+    amount: executionPrice.toFixed(18),
   };
 }
 
@@ -115,9 +115,8 @@ export function tradeNextMidPrice(input: Input_tradeNextMidPrice): TokenAmount {
   });
 }
 
-// TODO: needs formatted output
 // The slippage incurred by the trade. (strictly > 0.30%)
-// result is a percent like 100.0%, not a decimal like 1.00, but there is no decimal point in the string
+// result is a percent like 100.0%
 export function tradeSlippage(input: Input_tradeSlippage): TokenAmount {
   const trade: Trade = input.trade;
   const price: Price = midPrice(trade.route);
@@ -132,10 +131,7 @@ export function tradeSlippage(input: Input_tradeSlippage): TokenAmount {
   const slippage = exactQuote.sub(outputFraction).div(exactQuote);
   return {
     token: trade.outputAmount.token,
-    amount: slippage
-      .mul(new Fraction(BigInt.fromString("100")))
-      .quotient()
-      .toString(),
+    amount: slippage.mul(new Fraction(BigInt.fromString("100"))).toFixed(18),
   };
 }
 
@@ -384,17 +380,10 @@ function _bestTradeExactOut(
   return bestTrades;
 }
 
-// TODO: export in schema and implement percent difference like uniswap sdk
+// TODO: fix after implementing BigFloat comparison methods
 export function computePriceImpact(trade: Trade): BigInt {
-  const midPrice = routeMidPrice({
-    route: trade.route,
-  });
-  const midPriceBI = BigInt.fromString(midPrice.amount);
-  const inputAmountBI = BigInt.fromString(trade.inputAmount.amount);
-  const outputAmountBI = BigInt.fromString(trade.outputAmount.amount);
-
-  const exactQuote = midPriceBI.mul(inputAmountBI);
-  return exactQuote.sub(outputAmountBI).div(exactQuote);
+  const slippage: string = tradeSlippage({ trade }).amount;
+  return BigInt.fromString(slippage.substring(0, slippage.indexOf(".")));
 }
 
 export function tradeComparator(b: Trade, a: Trade): i32 {

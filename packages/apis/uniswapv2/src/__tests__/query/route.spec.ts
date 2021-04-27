@@ -42,7 +42,7 @@ describe('Route', () => {
     });
     const midPrice: TokenAmount = routeMidPrice({ route });
     expect(midPrice.token).toStrictEqual(weth);
-    expect(midPrice.amount).toStrictEqual("1");
+    expect(midPrice.amount).toStrictEqual("1.142857142857142857");
   });
 
   it('returns route midPrice:1', () => {

@@ -62,7 +62,7 @@ export function routeMidPrice(input: Input_routeMidPrice): TokenAmount {
   const finalPrice = midPrice(route);
   return {
     token: finalPrice.quoteToken,
-    amount: finalPrice.adjusted().quotient().toString(), // TODO: should this be adjusted or raw price? also needs formatting
+    amount: finalPrice.toFixed(18),
   };
 }
 

@@ -1,7 +1,7 @@
-import { Ethereum_Query } from "./w3/imported";
 import { tokenSortsBefore } from "./token";
 import {
   ChainId,
+  Ethereum_Query,
   Input_fetchKLast,
   Input_fetchPairData,
   Input_fetchTokenData,
