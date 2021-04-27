@@ -1,9 +1,9 @@
 export enum ChainId {
-  MAINNET,
-  ROPSTEN,
-  RINKEBY,
-  GOERLI,
-  KOVAN
+  MAINNET="MAINNET",
+  ROPSTEN="ROPSTEN",
+  RINKEBY="RINKEBY",
+  GOERLI="GOERLI",
+  KOVAN="KOVAN"
 }
 
 export interface Token {

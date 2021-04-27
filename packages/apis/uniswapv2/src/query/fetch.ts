@@ -74,8 +74,7 @@ export function fetchPairData(input: Input_fetchPairData): Pair {
       networkNameOrChainId: resolveChainId(token0.chainId),
     },
   });
-  // TODO: confirm that this is what res will look like
-  const resArray: string[] = res.substring(1, res.length - 1).split(",");
+  const resArray: string[] = res.split(",");
   const amountA = resArray[0];
   const amountB = resArray[1];
 

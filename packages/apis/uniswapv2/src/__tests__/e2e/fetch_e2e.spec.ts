@@ -6,7 +6,6 @@ import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ChainId, Pair, Token, TokenAmount } from "./types";
 import path from "path";
-import * as fs from "fs";
 
 jest.setTimeout(60000);
 
@@ -14,21 +13,12 @@ jest.setTimeout(60000);
 // image: 'trufflesuite/ganache-cli'
 // ports:
 //   - '8546:8545'
-// command: -l 8000000 --deterministic --hostname=0.0.0.0 --chainId 0 --fork https://mainnet.infura.io/v3/d119148113c047ca90f0311ed729c466@12292343
+// command: -l 8000000 --deterministic --hostname=0.0.0.0 --chainId 1 --fork https://mainnet.infura.io/v3/d119148113c047ca90f0311ed729c466
 
-// -l 8000000 --deterministic --hostname=0.0.0.0 --chainId 0 --fork https://mainnet.infura.io/v3/d119148113c047ca90f0311ed729c466@12292343
-
-// TODO: do fetches for a specific block number and compare to actual result for that block number
 describe("Fetch", () => {
-  // const infuraProjectId = fs.readFileSync(__dirname + "/../../../infuraProjectId.txt", 'utf-8');
-  const alchemyApiKey = fs.readFileSync(__dirname + "/../../../alchemyApiKey.txt", 'utf-8');
-  // const infuraProvider = `https://ropsten.infura.io/v3/${infuraProjectId}`;
-  const alchemyProvider = `https://eth-rinkeby.alchemyapi.io/v2/${alchemyApiKey}`;
 
   // https://tokenlists.org/token-list?url=https://gateway.ipfs.io/ipns/tokens.uniswap.org
   const defaultUniswapTokenList = "https://gateway.ipfs.io/ipns/tokens.uniswap.org";
-  // https://tokenlists.org/token-list?url=testnet.tokenlist.eth
-  // const tokenListUrl = "https://wispy-bird-88a7.uniswap.workers.dev/?url=http://testnet.tokenlist.eth.link"
 
   let client: Web3ApiClient;
   let ensUri: string;
@@ -45,9 +35,6 @@ describe("Fetch", () => {
           networks: {
             testnet: {
               provider: testEnvEtherem
-            },
-            rinkeby: {
-              provider: alchemyProvider
             },
             mainnet: {
               provider: "http://localhost:8546"
@@ -97,7 +84,7 @@ describe("Fetch", () => {
       .catch(e => console.log(e));
   });
 
-  it.only("Fetches token data", async () => {
+  it("Fetches token data", async () => {
     const tokenData = await client.query<{
       fetchTokenData: Token;
     }>({
@@ -115,9 +102,9 @@ describe("Fetch", () => {
         address: tokens[0].address,
       },
     });
+
     expect(tokenData.errors).toBeFalsy();
     expect(tokenData.data).toBeTruthy();
-    console.log(tokenData.data);
   });
 
   it("Fetches pair data", async () => {
@@ -134,13 +121,12 @@ describe("Fetch", () => {
         }
       `,
       variables: {
-        token0: tokens[0],
-        token1: tokens[1]
+        token0: tokens[9],
+        token1: tokens[31]
       },
     });
     expect(pairData.errors).toBeFalsy();
     expect(pairData.data).toBeTruthy();
-    console.log(pairData.data);
   });
 
   it("Fetches total supply", async () => {
@@ -161,10 +147,35 @@ describe("Fetch", () => {
     });
     expect(totalSupply.errors).toBeFalsy();
     expect(totalSupply.data).toBeTruthy();
-    console.log(totalSupply.data);
   });
 
   it("Fetches kLast", async () => {
+    const pairAddress = await client.query<{
+      pairAddress: string;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          pairAddress(
+            token0: $token0
+            token1: $token1
+          )
+        }
+      `,
+      variables: {
+        token0: tokens[9],
+        token1: tokens[31]
+      },
+    });
+
+    const pairToken = {
+      chainId: ChainId.MAINNET,
+      address: pairAddress.data?.pairAddress ?? "",
+      decimals: 18,
+      symbol: null,
+      name: null,
+    };
+
     const kLast = await client.query<{
       fetchKLast: string;
     }>({
@@ -177,12 +188,11 @@ describe("Fetch", () => {
         }
       `,
       variables: {
-        token: tokens[0],
+        token: pairToken,
       },
     });
     expect(kLast.errors).toBeFalsy();
     expect(kLast.data).toBeTruthy();
-    console.log(kLast.data);
   });
 
 });
