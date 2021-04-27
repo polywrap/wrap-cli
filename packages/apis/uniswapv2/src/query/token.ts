@@ -6,8 +6,6 @@ import {
   TokenAmount,
 } from "./w3";
 
-import { BigInt } from "as-bigint";
-
 // Checks if the current instance is equal to another (has an identical chainId and address).
 export function tokenEquals(input: Input_tokenEquals): boolean {
   const token: Token = input.token;
@@ -22,7 +20,7 @@ export function tokenAmountEquals(input: Input_tokenAmountEquals): boolean {
   const amt1: TokenAmount = input.tokenAmount1;
   return (
     tokenEquals({ token: amt0.token, other: amt1.token }) &&
-    BigInt.fromString(amt0.amount).eq(BigInt.fromString(amt1.amount))
+    amt0.amount == amt1.amount
   );
 }
 

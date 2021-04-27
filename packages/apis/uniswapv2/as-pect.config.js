@@ -24,7 +24,7 @@ module.exports = {
   /**
    * A set of regexp that will disclude source files from testing.
    */
-  disclude: [/node_modules/],
+  disclude: [/node_modules|e2e/],
   /**
    * Add your required AssemblyScript imports here.
    */

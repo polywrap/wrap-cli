@@ -1,7 +1,12 @@
 {
   "extends": "assemblyscript/std/assembly.json",
+  "compilerOptions": {
+    "outDir": "build"
+  },
   "include": [
-    "./src/**/*.ts"
+    "./src/**/*.ts",
   ],
-  "exclude": ["./src/__tests__/**/*.ts"]
+  "exclude": [
+    "./src/__tests__/e2e/**/*.ts"
+  ]
 }
