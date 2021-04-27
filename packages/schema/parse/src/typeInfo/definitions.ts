@@ -218,13 +218,13 @@ export function createObjectPropertyDefinition(args: {
 export interface MethodDefinition extends GenericDefinition {
   type: OperationType;
   arguments: PropertyDefinition[];
-  return: PropertyDefinition | null;
+  return: PropertyDefinition;
 }
 export function createMethodDefinition(args: {
   type: string;
   name: string;
   arguments?: PropertyDefinition[];
-  return?: PropertyDefinition;
+  return: PropertyDefinition;
 }): MethodDefinition {
   const lowercase = args.type.toLowerCase();
   if (!isOperationType(lowercase)) {
@@ -237,7 +237,7 @@ export function createMethodDefinition(args: {
     type: lowercase,
     required: true,
     arguments: args.arguments ? args.arguments : [],
-    return: args.return ? args.return : null,
+    return: args.return,
     kind: DefinitionKind.Method,
   };
 }
@@ -245,9 +245,11 @@ export function createMethodDefinition(args: {
 export interface QueryDefinition extends GenericDefinition {
   type: QueryType;
   methods: MethodDefinition[];
+  imports: { type: string }[];
 }
 export function createQueryDefinition(args: {
   type: string;
+  imports?: { type: string }[];
   required?: boolean;
 }): QueryDefinition {
   if (!isQueryType(args.type)) {
@@ -260,6 +262,7 @@ export function createQueryDefinition(args: {
     ...createGenericDefinition(args),
     type: args.type,
     methods: [],
+    imports: args.imports ? args.imports : [],
     kind: DefinitionKind.Query,
   };
 }
