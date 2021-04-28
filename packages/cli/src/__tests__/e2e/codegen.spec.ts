@@ -121,8 +121,6 @@ ${HELP}`);
     expect(clearStyle(output)).toEqual(`- Build schema
 - Load web3api from web3api.yaml
 ✔ Load web3api from web3api.yaml
-- Output web3api to build/web3api.yaml
-✔ Output web3api to build/web3api.yaml
 ✔ Build schema
 🔥 Schema was built successfully 🔥
 `);

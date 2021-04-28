@@ -176,8 +176,6 @@ ${HELP}`);
 ✔ Load web3api from web3api.yaml
 ✔ Generate types
 - Build schema
-- Output web3api to build/web3api.yaml
-✔ Output web3api to build/web3api.yaml
 ✔ Build schema
 `);
 

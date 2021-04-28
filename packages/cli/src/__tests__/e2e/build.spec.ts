@@ -132,14 +132,14 @@ ${HELP}`);
 - Build schema
 - Load web3api from web3api.yaml
 ✔ Load web3api from web3api.yaml
-- Output web3api to build/web3api.yaml
-✔ Output web3api to build/web3api.yaml
 ✔ Build schema
 - Compile Wasm modules
   Compiling WASM module: ./src/query/index.ts => ${projectRoot}/build/query.wasm
 - Compile Wasm modules
   Compiling WASM module: ./src/mutation/index.ts => ${projectRoot}/build/mutation.wasm
 - Compile Wasm modules
+- Output web3api to build/web3api.yaml
+✔ Output web3api to build/web3api.yaml
 ✔ Compile Wasm modules
 ✔ Compile Web3API
 `);
