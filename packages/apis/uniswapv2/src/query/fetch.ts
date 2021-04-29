@@ -52,9 +52,11 @@ export function fetchTokenData(input: Input_fetchTokenData): Token {
   return {
     chainId: chainId,
     address: address,
-    decimals: U8.parseInt(decimals),
-    symbol: symbol,
-    name: name,
+    currency: {
+      decimals: U8.parseInt(decimals),
+      symbol: symbol,
+      name: name,
+    },
   };
 }
 

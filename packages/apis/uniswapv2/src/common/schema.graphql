@@ -1,0 +1,64 @@
+enum ChainId {
+  MAINNET
+  ROPSTEN
+  RINKEBY
+  GOERLI
+  KOVAN
+}
+
+enum TradeType {
+  EXACT_INPUT
+  EXACT_OUTPUT
+}
+
+enum Rounding {
+  ROUND_DOWN
+  ROUND_HALF_UP
+  ROUND_UP
+}
+
+type TradeOptions {
+  allowedSlippage: String!
+  recipient: String!
+  unixTimestamp: UInt64!
+  ttl: UInt32
+  deadline: UInt32
+  feeOnTransfer: Boolean
+}
+
+
+type Token {
+  chainId: ChainId!
+  address: String!
+  currency: Currency!
+}
+
+type Currency {
+  decimals: UInt8!
+  symbol: String
+  name: String
+}
+
+type TokenAmount {
+  token: Token!
+  amount: String! # UInt256!
+}
+
+type Pair {
+  tokenAmount0: TokenAmount!
+  tokenAmount1: TokenAmount!
+}
+
+type Route {
+  path: [Token!]!
+  pairs: [Pair!]!
+  input: Token!
+  output: Token!
+}
+
+type Trade {
+  route: Route!
+  inputAmount: TokenAmount!
+  outputAmount: TokenAmount!
+  tradeType: TradeType!
+}
