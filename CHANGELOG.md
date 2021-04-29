@@ -1,3 +1,10 @@
+# Web3API 0.0.1-prealpha.21
+## Feature
+* Sharing code & types between `query` and `mutation` modules is now possible.
+
+## Bugs
+* Common types found in both `query` and `mutation` schemas are properly consolidated. If types have the same name, but a different structure, and error is thrown.
+
 # Web3API 0.0.1-prealpha.20
 ## Bugs
 * Fix the `w3 create app react ...` template project's styling to be responsive.
