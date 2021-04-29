@@ -1,8 +1,7 @@
 import { ChainId, Pair, Token, TokenAmount } from "../../query/w3";
 import {
-  pairInputAmount, pairInputNextPair,
   pairLiquidityMinted,
-  pairLiquidityValue, pairOutputAmount, pairOutputNextPair,
+  pairLiquidityValue,
   pairReserves,
   pairToken0Price,
   pairToken1Price,
@@ -14,30 +13,38 @@ import { BigFloat } from "as-bigfloat";
 const token0: Token = {
   chainId: ChainId.MAINNET,
   address: "0x0000000000000000000000000000000000000001",
-  decimals: 18,
-  symbol: "t0",
-  name: null,
+  currency: {
+    decimals: 18,
+    symbol: "t0",
+    name: null,
+  }
 }
 const token1: Token = {
   chainId: ChainId.MAINNET,
   address: "0x0000000000000000000000000000000000000002",
-  decimals: 18,
-  symbol: "t1",
-  name: null,
+  currency: {
+    decimals: 18,
+    symbol: "t1",
+    name: null,
+  }
 }
 const token2: Token = {
   chainId: ChainId.MAINNET,
   address: "0x0000000000000000000000000000000000000003",
-  decimals: 18,
-  symbol: "t2",
-  name: null,
+  currency: {
+    decimals: 18,
+    symbol: "t2",
+    name: null,
+  }
 }
 const token3: Token = {
   chainId: ChainId.MAINNET,
   address: "0x0000000000000000000000000000000000000004",
-  decimals: 18,
-  symbol: "t3",
-  name: null,
+  currency: {
+    decimals: 18,
+    symbol: "t3",
+    name: null,
+  }
 }
 
 const pair_0_1: Pair = {
@@ -154,7 +161,19 @@ describe('Pair miscellaneous', () => {
 
   test("pairLiquidityMinted 0 reserves", () => {
     const pair: Pair = { tokenAmount0: { token: token0, amount: "0" }, tokenAmount1: { token: token1, amount: "0" } };
-    const totalSupply: TokenAmount = { token: { chainId: ChainId.MAINNET, address: "", decimals: 18, name: "", symbol: "" }, amount: "0" };
+    const totalSupply: TokenAmount = {
+      token:
+        {
+          chainId: ChainId.MAINNET,
+          address: "",
+          currency: {
+            decimals: 18,
+            name: "",
+            symbol: "",
+          },
+        },
+      amount: "0"
+    };
     const tokenAmount0: TokenAmount = { token: token0, amount: "1001" };
     const tokenAmount1: TokenAmount = { token: token1, amount: "1001" };
 
@@ -164,7 +183,17 @@ describe('Pair miscellaneous', () => {
 
   test("pairLiquidityMinted !0 reserves", () => {
     const pair: Pair = { tokenAmount0: { token: token0, amount: "10000" }, tokenAmount1: { token: token1, amount: "10000" } };
-    const totalSupply: TokenAmount = { token: { chainId: ChainId.MAINNET, address: "", decimals: 18, name: "", symbol: "" }, amount: "10000" };
+    const totalSupply: TokenAmount = {
+      token: {
+        chainId: ChainId.MAINNET,
+        address: "",
+        currency: {
+          decimals: 18,
+          name: "",
+          symbol: "",
+        },
+      },
+      amount: "10000" };
     const tokenAmount0: TokenAmount = { token: token0, amount: "2000" };
     const tokenAmount1: TokenAmount = { token: token1, amount: "2000" };
 
@@ -175,9 +204,38 @@ describe('Pair miscellaneous', () => {
 
   it('getLiquidityValue:!feeOn', () => {
     const pair: Pair = { tokenAmount0: { token: token0, amount: "1000" }, tokenAmount1: { token: token1, amount: "1000" } };
-    const totalSupply: TokenAmount = { token: { chainId: ChainId.MAINNET, address: "", decimals: 18, name: "", symbol: "" }, amount: "1000" };
-    const liquidity1000: TokenAmount = { token: { chainId: ChainId.MAINNET, address: "", decimals: 18, name: "", symbol: "" }, amount: "1000" };
-    const liquidity500: TokenAmount = { token: { chainId: ChainId.MAINNET, address: "", decimals: 18, name: "", symbol: "" }, amount: "500" };
+    const totalSupply: TokenAmount = {
+      token: {
+        chainId: ChainId.MAINNET,
+        address: "",
+        currency: {
+          decimals: 18,
+          name: "",
+          symbol: "",
+        },
+      },  amount: "1000" };
+    const liquidity1000: TokenAmount = {
+      token: {
+        chainId: ChainId.MAINNET,
+        address: "",
+        currency: {
+          decimals: 18,
+          name: "",
+          symbol: "",
+        },
+      },
+      amount: "1000" };
+    const liquidity500: TokenAmount = {
+      token: {
+        chainId: ChainId.MAINNET,
+        address: "",
+        currency: {
+          decimals: 18,
+          name: "",
+          symbol: "",
+        },
+      },
+      amount: "500" };
 
     const liquidityValueA = pairLiquidityValue({ pair: pair, totalSupply: totalSupply, liquidity: liquidity1000, feeOn: Nullable.fromNull<boolean>(), kLast: null });
     expect(liquidityValueA[0].token).toStrictEqual(token0);
@@ -191,8 +249,28 @@ describe('Pair miscellaneous', () => {
 
   it('getLiquidityValue:feeOn', () => {
     const pair: Pair = { tokenAmount0: { token: token0, amount: "1000" }, tokenAmount1: { token: token1, amount: "1000" } };
-    const totalSupply: TokenAmount = { token: { chainId: ChainId.MAINNET, address: "", decimals: 18, name: "", symbol: "" }, amount: "500" };
-    const liquidity: TokenAmount = { token: { chainId: ChainId.MAINNET, address: "", decimals: 18, name: "", symbol: "" }, amount: "500" };
+    const totalSupply: TokenAmount = {
+      token: {
+        chainId: ChainId.MAINNET,
+        address: "",
+        currency: {
+          decimals: 18,
+          name: "",
+          symbol: "",
+        },
+      },
+      amount: "500" };
+    const liquidity: TokenAmount = {
+      token: {
+        chainId: ChainId.MAINNET,
+        address: "",
+        currency: {
+          decimals: 18,
+          name: "",
+          symbol: "",
+        },
+      },
+      amount: "500" };
     const kLast: string = "250000";
 
     const liquidityValue = pairLiquidityValue({ pair: pair, totalSupply: totalSupply, liquidity: liquidity, feeOn: Nullable.fromValue(true), kLast: kLast });

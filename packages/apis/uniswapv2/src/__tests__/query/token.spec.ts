@@ -139,9 +139,11 @@ describe('tokenAmountEquals', () => {
         token: {
           chainId: ChainId.MAINNET,
           address: ADDRESS_ONE,
-          decimals: 18,
-          name: null,
-          symbol: null
+          currency: {
+            decimals: 18,
+            name: null,
+            symbol: null
+          }
         },
         amount: "1000"
       },
@@ -149,9 +151,11 @@ describe('tokenAmountEquals', () => {
         token: {
           chainId: ChainId.MAINNET,
           address: ADDRESS_ONE,
-          decimals: 18,
-          name: null,
-          symbol: null
+          currency: {
+            decimals: 18,
+            name: null,
+            symbol: null
+          }
         },
         amount: "1000"
       },
@@ -166,9 +170,11 @@ describe('tokenAmountEquals', () => {
         token: {
           chainId: ChainId.MAINNET,
           address: ADDRESS_ONE,
-          decimals: 18,
-          name: null,
-          symbol: null
+          currency: {
+            decimals: 18,
+            name: null,
+            symbol: null
+          }
         },
         amount: "1001"
       },
@@ -176,9 +182,11 @@ describe('tokenAmountEquals', () => {
         token: {
           chainId: ChainId.MAINNET,
           address: ADDRESS_ONE,
-          decimals: 18,
-          name: null,
-          symbol: null
+          currency: {
+            decimals: 18,
+            name: null,
+            symbol: null
+          }
         },
         amount: "1000"
       },
@@ -193,9 +201,11 @@ describe('tokenAmountEquals', () => {
         token: {
           chainId: ChainId.MAINNET,
           address: ADDRESS_ONE,
-          decimals: 18,
-          name: null,
-          symbol: null
+          currency: {
+            decimals: 18,
+            name: null,
+            symbol: null
+          }
         },
         amount: "1000"
       },
@@ -203,9 +213,11 @@ describe('tokenAmountEquals', () => {
         token: {
           chainId: ChainId.MAINNET,
           address: ADDRESS_TWO,
-          decimals: 18,
-          name: null,
-          symbol: null
+          currency: {
+            decimals: 18,
+            name: null,
+            symbol: null
+          }
         },
         amount: "1000"
       },
@@ -223,16 +235,20 @@ describe('tokenSortsBefore', () => {
       token: {
         chainId: ChainId.MAINNET,
         address: ADDRESS_ONE,
-        decimals: 18,
-        name: null,
-        symbol: null
+        currency: {
+          decimals: 18,
+          name: null,
+          symbol: null
+        }
       },
       other: {
         chainId: ChainId.MAINNET,
         address: ADDRESS_TWO,
-        decimals: 18,
-        name: null,
-        symbol: null
+        currency: {
+          decimals: 18,
+          name: null,
+          symbol: null
+        }
       }
     });
 
@@ -244,16 +260,20 @@ describe('tokenSortsBefore', () => {
       token: {
         chainId: ChainId.MAINNET,
         address: ADDRESS_TWO,
-        decimals: 18,
-        name: null,
-        symbol: null
+        currency: {
+          decimals: 18,
+          name: null,
+          symbol: null
+        }
       },
       other: {
         chainId: ChainId.MAINNET,
         address: ADDRESS_ONE,
-        decimals: 18,
-        name: null,
-        symbol: null
+        currency: {
+          decimals: 18,
+          name: null,
+          symbol: null
+        }
       }
     });
 
@@ -265,16 +285,20 @@ describe('tokenSortsBefore', () => {
       token: {
         chainId: ChainId.MAINNET,
         address: ADDRESS_ONE,
-        decimals: 18,
-        name: null,
-        symbol: null
+        currency: {
+          decimals: 18,
+          name: null,
+          symbol: null
+        }
       },
       other: {
         chainId: ChainId.MAINNET,
         address: ADDRESS_ONE,
-        decimals: 18,
-        name: null,
-        symbol: null
+        currency: {
+          decimals: 18,
+          name: null,
+          symbol: null
+        }
       }
     });
 

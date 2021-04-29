@@ -2,9 +2,31 @@ import { ChainId, Pair, Route, Token, TokenAmount } from "../../query/w3";
 import { createRoute, routeMidPrice } from "../../query";
 import { BigFloat } from "as-bigfloat";
 
-const token0: Token = { chainId: ChainId.MAINNET, address: '0x0000000000000000000000000000000000000001', decimals: 18, symbol: 't0', name: null };
-const token1: Token = { chainId: ChainId.MAINNET, address: '0x0000000000000000000000000000000000000002', decimals: 18, symbol: 't1', name: null };
-const weth:Token = { chainId: ChainId.MAINNET, address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", decimals: 18, symbol: "WETH9", name: "Wrapped Ether" };
+const token0: Token = {
+  chainId: ChainId.MAINNET,
+  address: '0x0000000000000000000000000000000000000001',
+  currency: {
+    decimals: 18,
+    symbol: "t0",
+    name: null,
+  } };
+const token1: Token = {
+  chainId: ChainId.MAINNET,
+  address: '0x0000000000000000000000000000000000000002',
+  currency: {
+    decimals: 18,
+    symbol: "t1",
+    name: null,
+  } };
+const weth:Token = {
+  chainId: ChainId.MAINNET,
+  address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  currency: {
+    decimals: 18,
+    symbol: "WETH9",
+    name: "Wrapped Ether"
+  }
+};
 const pair_0_1: Pair = { tokenAmount0: {token: token0, amount: '100'}, tokenAmount1: { token: token1, amount: '200' } };
 const pair_0_weth: Pair = { tokenAmount0: {token: token0, amount: '100'}, tokenAmount1: { token: weth, amount: '100' } };
 const pair_1_weth: Pair = { tokenAmount0: {token: token1, amount: '175'}, tokenAmount1: { token: weth, amount: '100' } };
