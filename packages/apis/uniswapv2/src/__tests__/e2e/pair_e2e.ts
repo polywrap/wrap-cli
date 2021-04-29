@@ -4,6 +4,88 @@ import * as path from "path";
 import { expect } from "chai";
 import * as uni from "@uniswap/sdk";
 import { ChainId, Token, TokenAmount } from "./types";
+import { pairInputAmount, pairInputNextPair } from "../../query";
+import { Pair } from "../../query/w3";
+
+// TODO: translate this to typescript
+// test("pairOutputAmount", () => {
+//   for (let i = 0; i < pairs.length; i++) {
+//     const pair = pairs[i];
+//     const output: TokenAmount = pairOutputAmount({
+//       pair: pair,
+//       inputAmount: {
+//         token: pair.tokenAmount0.token,
+//         amount: "100"
+//       }
+//     });
+//     expect(output.token).toStrictEqual(pair.tokenAmount1.token);
+//     const expectedAmount = "TODO"
+//     expect(output.amount).toStrictEqual(expectedAmount.toString());
+//   }
+// });
+//
+// test("pairOutputNextPair", () => {
+//   for (let i = 0; i < pairs.length; i++) {
+//     const pair = pairs[i];
+//     const nextPair: Pair = pairOutputNextPair({
+//       pair: pair,
+//       inputAmount: {
+//         token: pair.tokenAmount0.token,
+//         amount: "100"
+//       }
+//     });
+//     const expectedPair: Pair = {
+//       tokenAmount0: {
+//         amount: "TODO",
+//         token: pair.tokenAmount0.token
+//       },
+//       tokenAmount1: {
+//         amount: "TODO",
+//         token: pair.tokenAmount1.token
+//       }
+//     }
+//     expect(nextPair).toStrictEqual(expectedPair);
+//   }
+// });
+// test("pairInputAmount", () => {
+//   for (let i = 0; i < pairs.length; i++) {
+//     const pair = pairs[i];
+//     const input: TokenAmount = pairInputAmount({
+//       pair: pair,
+//       outputAmount: {
+//         token: pair.tokenAmount0.token,
+//         amount: "100"
+//       }
+//     });
+//     expect(input.token).toStrictEqual(pair.tokenAmount1.token);
+//     const expectedAmount = "TODO"
+//     expect(input.amount).toStrictEqual(expectedAmount.toString());
+//   }
+// });
+//
+// test("pairInputNextPair", () => {
+//   for (let i = 0; i < pairs.length; i++) {
+//     const pair = pairs[i];
+//     const nextPair: Pair = pairInputNextPair({
+//       pair: pair,
+//       outputAmount: {
+//         token: pair.tokenAmount0.token,
+//         amount: "100"
+//       }
+//     });
+//     const expectedPair: Pair = {
+//       tokenAmount0: {
+//         amount: "TODO",
+//         token: pair.tokenAmount0.token
+//       },
+//       tokenAmount1: {
+//         amount: "TODO",
+//         token: pair.tokenAmount1.token
+//       }
+//     }
+//     expect(nextPair).toStrictEqual(expectedPair);
+//   }
+// });
 
 describe('computePairAddress', () => {
   let client: Web3ApiClient;

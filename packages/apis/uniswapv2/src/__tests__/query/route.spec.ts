@@ -1,5 +1,6 @@
 import { ChainId, Pair, Route, Token, TokenAmount } from "../../query/w3";
 import { createRoute, routeMidPrice } from "../../query";
+import { BigFloat } from "as-bigfloat";
 
 const token0: Token = { chainId: ChainId.MAINNET, address: '0x0000000000000000000000000000000000000001', decimals: 18, symbol: 't0', name: null };
 const token1: Token = { chainId: ChainId.MAINNET, address: '0x0000000000000000000000000000000000000002', decimals: 18, symbol: 't1', name: null };
@@ -53,7 +54,8 @@ describe('Route', () => {
     });
     const midPrice: TokenAmount = routeMidPrice({ route });
     expect(midPrice.token).toStrictEqual(token0);
-    expect(midPrice.amount).toStrictEqual("0.875");
+    const amount: string = BigFloat.fromString(midPrice.amount).toString();
+    expect(amount).toStrictEqual("0.875");
   });
 
   it('returns route midPrice:2', () => {
@@ -64,7 +66,8 @@ describe('Route', () => {
     });
     const midPrice: TokenAmount = routeMidPrice({ route });
     expect(midPrice.token).toStrictEqual(token1);
-    expect(midPrice.amount).toStrictEqual("1.75");
+    const amount: string = BigFloat.fromString(midPrice.amount).toString();
+    expect(amount).toStrictEqual("1.75");
   });
 
 });

@@ -103,30 +103,31 @@ export default class Fraction {
     );
   }
 
-  // TODO: implement Fraction toSignificant and toFixed functions
   public toSignificant(
     significantDigits: i32,
-    rounding: Rounding = Rounding.ROUND_HALF_UP // eslint-disable-line
+    rounding: Rounding = Rounding.ROUND_HALF_UP
   ): string {
     if (significantDigits < 0) {
       throw new Error(
         significantDigits.toString() + " is not a positive integer."
       );
     }
-    return BigFloat.fromFraction(this.numerator, this.denominator).toString(
-      significantDigits
-    );
+    return BigFloat.fromFraction(
+      this.numerator,
+      this.denominator
+    ).toSignificant(significantDigits, rounding);
   }
 
   public toFixed(
     decimalPlaces: i32,
-    rounding: Rounding = Rounding.ROUND_HALF_UP // eslint-disable-line
+    rounding: Rounding = Rounding.ROUND_HALF_UP
   ): string {
     if (decimalPlaces < 0) {
       throw new Error(decimalPlaces.toString() + " is negative.");
     }
-    return BigFloat.fromFraction(this.numerator, this.denominator).toString(
-      decimalPlaces
+    return BigFloat.fromFraction(this.numerator, this.denominator).toFixed(
+      decimalPlaces,
+      rounding
     );
   }
 }

@@ -59,7 +59,6 @@ describe("Fetch", () => {
     const api = await buildAndDeployApi(apiPath, ipfs, ensAddress);
     ensUri = `ens/testnet/${api.ensDomain}`;
     ipfsUri = `ipfs/${api.ipfsCid}`;
-    console.log(ipfsUri);
   });
 
   afterAll(async () => {

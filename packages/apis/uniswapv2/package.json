@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "as-bigint": "^0.2.4",
-    "as-bigfloat": "^0.0.1"
+    "as-bigfloat": "^0.0.4"
   },
   "devDependencies": {
     "@uniswap/sdk": "^3.0.3",

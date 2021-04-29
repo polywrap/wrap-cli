@@ -9,6 +9,7 @@ import {
   tokenSortsBefore
 } from "../../query";
 import { Nullable } from "@web3api/wasm-as";
+import { BigFloat } from "as-bigfloat";
 
 const token0: Token = {
   chainId: ChainId.MAINNET,
@@ -130,8 +131,9 @@ describe('Pair core', () => {
       const pair: Pair = pairs[i];
       const price: TokenAmount = pairToken0Price({ pair });
       expect(price.token).toStrictEqual(pair.tokenAmount1.token);
-      const expectedPrice: f32 = F32.parseFloat(pair.tokenAmount1.amount) / F32.parseFloat(pair.tokenAmount0.amount);
-      expect(price.amount).toStrictEqual(expectedPrice.toString());
+      const expectedPrice: f64 = F64.parseFloat(pair.tokenAmount1.amount) / F64.parseFloat(pair.tokenAmount0.amount);
+      const amount: string = BigFloat.fromString(price.amount).toString();
+      expect(amount.substr(0, 17)).toStrictEqual(expectedPrice.toString().substr(0, 17));
     }
   });
 
@@ -140,88 +142,9 @@ describe('Pair core', () => {
       const pair = pairs[i];
       const price: TokenAmount = pairToken1Price({ pair });
       expect(price.token).toStrictEqual(pair.tokenAmount0.token);
-      const expectedPrice: f32 = F32.parseFloat(pair.tokenAmount0.amount) / F32.parseFloat(pair.tokenAmount1.amount);
-      expect(price.amount).toStrictEqual(expectedPrice.toString());
-    }
-  });
-
-  test("pairOutputAmount", () => {
-    for (let i = 0; i < pairs.length; i++) {
-      const pair = pairs[i];
-      const output: TokenAmount = pairOutputAmount({
-        pair: pair,
-        inputAmount: {
-          token: pair.tokenAmount0.token,
-          amount: "100"
-        }
-      });
-      expect(output.token).toStrictEqual(pair.tokenAmount1.token);
-      const expectedAmount = "TODO"
-      expect(output.amount).toStrictEqual(expectedAmount.toString());
-    }
-  });
-
-  test("pairOutputNextPair", () => {
-    for (let i = 0; i < pairs.length; i++) {
-      const pair = pairs[i];
-      const nextPair: Pair = pairOutputNextPair({
-        pair: pair,
-        inputAmount: {
-          token: pair.tokenAmount0.token,
-          amount: "100"
-        }
-      });
-      const expectedPair: Pair = {
-        tokenAmount0: {
-          amount: "TODO",
-          token: pair.tokenAmount0.token
-        },
-        tokenAmount1: {
-          amount: "TODO",
-          token: pair.tokenAmount1.token
-        }
-      }
-      expect(nextPair).toStrictEqual(expectedPair);
-    }
-  });
-
-  test("pairInputAmount", () => {
-    for (let i = 0; i < pairs.length; i++) {
-      const pair = pairs[i];
-      const input: TokenAmount = pairInputAmount({
-        pair: pair,
-        outputAmount: {
-          token: pair.tokenAmount0.token,
-          amount: "100"
-        }
-      });
-      expect(input.token).toStrictEqual(pair.tokenAmount1.token);
-      const expectedAmount = "TODO"
-      expect(input.amount).toStrictEqual(expectedAmount.toString());
-    }
-  });
-
-  test("pairInputNextPair", () => {
-    for (let i = 0; i < pairs.length; i++) {
-      const pair = pairs[i];
-      const nextPair: Pair = pairInputNextPair({
-        pair: pair,
-        outputAmount: {
-          token: pair.tokenAmount0.token,
-          amount: "100"
-        }
-      });
-      const expectedPair: Pair = {
-        tokenAmount0: {
-          amount: "TODO",
-          token: pair.tokenAmount0.token
-        },
-        tokenAmount1: {
-          amount: "TODO",
-          token: pair.tokenAmount1.token
-        }
-      }
-      expect(nextPair).toStrictEqual(expectedPair);
+      const expectedPrice: f64 = F64.parseFloat(pair.tokenAmount0.amount) / F64.parseFloat(pair.tokenAmount1.amount);
+      const amount: string = BigFloat.fromString(price.amount).toString();
+      expect(amount.substr(0, 17)).toStrictEqual(expectedPrice.toString().substr(0, 17));
     }
   });
 

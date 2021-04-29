@@ -27,6 +27,7 @@ import { PriorityQueue } from "../utils/PriorityQueue";
 import { TradeOptions } from "../utils/TradeOptions";
 
 import { BigInt } from "as-bigint";
+import { BigFloat } from "as-bigfloat";
 
 export function createTrade(input: Input_createTrade): Trade {
   const amounts: TokenAmount[] = new Array(input.route.path.length);
@@ -380,10 +381,9 @@ function _bestTradeExactOut(
   return bestTrades;
 }
 
-// TODO: fix after implementing BigFloat comparison methods
-export function computePriceImpact(trade: Trade): BigInt {
+function computePriceImpact(trade: Trade): BigFloat {
   const slippage: string = tradeSlippage({ trade }).amount;
-  return BigInt.fromString(slippage.substring(0, slippage.indexOf(".")));
+  return BigFloat.fromString(slippage);
 }
 
 export function tradeComparator(b: Trade, a: Trade): i32 {
