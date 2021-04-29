@@ -19,6 +19,7 @@ const isPromise = <T extends unknown>(
 
 export class Tracer {
   public static traceEnabled = false;
+  public static logLevel: LogLevel;
 
   private static _tracer: otTracer;
   private static _provider:
@@ -36,8 +37,19 @@ export class Tracer {
     }
   }
 
+  static setLogLevel(newLogLevel: LogLevel): void {
+    this.logLevel = newLogLevel;
+
+    if (newLogLevel == "off") this.traceEnabled = false;
+    else this.traceEnabled = true;
+  }
+
+  static enableTracing(): void {
+    this.setLogLevel("debug");
+  }
+
   static disableTracing(): void {
-    this.traceEnabled = false;
+    this.setLogLevel("off");
   }
 
   static startSpan(spanName: string): void {
@@ -74,7 +86,7 @@ export class Tracer {
   }
 
   static addEvent(event: string, data?: unknown): void {
-    if (!this.traceEnabled) return;
+    if (!this.traceEnabled || this.logLevel == "error") return;
 
     const span = this._currentSpan();
 
@@ -84,7 +96,7 @@ export class Tracer {
   }
 
   static recordException(error: api.Exception): void {
-    if (!this.traceEnabled) return;
+    if (!this.traceEnabled || this.logLevel == "info") return;
 
     const span = this._currentSpan();
 
