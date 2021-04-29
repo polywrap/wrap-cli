@@ -24,7 +24,7 @@ export default {
     const level = parameters.first;
 
     if (!level) {
-      print.error(intlMsg.commands_testEnv_error_noCommand());
+      print.error(intlMsg.commands_trace_error_noLevel());
       print.info(HELP);
       return;
     }
@@ -41,5 +41,6 @@ export default {
     }
 
     Tracer.setLogLevel(level as LogLevel);
+    print.success(intlMsg.commands_trace_logLevelSetText({ level }));
   },
 };

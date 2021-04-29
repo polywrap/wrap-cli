@@ -6,6 +6,7 @@ import { runCLI } from "@web3api/test-env-js";
 const HELP = `
   w3             🔥 Web3API CLI 🔥                                      
   help (h)       -                                                    
+  trace (l)      Turn on/off logging                                  
   test-env (t)   Manage a test environment for Web3API                
   query (q)      Query Web3APIs using recipe scripts                  
   create (c)     Create a new project with w3 CLI                     
