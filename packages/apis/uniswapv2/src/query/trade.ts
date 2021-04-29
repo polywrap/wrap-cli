@@ -25,6 +25,7 @@ import Fraction from "../utils/Fraction";
 import { tokenAmountEquals, tokenEquals } from "./token";
 import { PriorityQueue } from "../utils/PriorityQueue";
 import { TradeOptions } from "../utils/TradeOptions";
+import { ETHER } from "../utils/Currency";
 
 import { BigInt } from "as-bigint";
 
@@ -32,7 +33,7 @@ export function createTrade(input: Input_createTrade): Trade {
   const amounts: TokenAmount[] = new Array(input.route.path.length);
   const nextPairs: Pair[] = new Array(input.route.pairs.length);
   if (input.tradeType == TradeType.EXACT_INPUT) {
-    if (input.amount.token != input.route.input) {
+    if (input.amount.token.currency != input.route.input.currency) {
       throw new Error(
         "Trade input token must be the same as trade route input token"
       );
@@ -53,7 +54,7 @@ export function createTrade(input: Input_createTrade): Trade {
       nextPairs[i] = nextPair;
     }
   } else {
-    if (input.amount.token != input.route.output) {
+    if (input.amount.token.currency != input.route.output.currency) {
       throw new Error(
         "Trade input token must be the same as trade route input token"
       );
@@ -80,6 +81,13 @@ export function createTrade(input: Input_createTrade): Trade {
     input.tradeType == TradeType.EXACT_OUTPUT
       ? input.amount
       : amounts[amounts.length - 1];
+
+  if (input.route.input.currency === ETHER) {
+    inputAmount.token.currency = ETHER;
+  }
+  if (input.route.output.currency === ETHER) {
+    outputAmount.token.currency = ETHER;
+  }
 
   return {
     inputAmount: inputAmount,
