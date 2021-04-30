@@ -9,6 +9,10 @@ export enum ChainId {
 export interface Token {
   chainId: ChainId;
   address: string;
+  currency: Currency;
+}
+
+export interface Currency {
   decimals: number;
   symbol: string | null
   name: string | null
@@ -25,13 +29,16 @@ export interface Pair {
 }
 
 export interface Route {
+  path: Token[];
   pairs: Pair[];
   input: Token;
+  output: Token;
 }
 
 export interface Trade {
   route: Route;
-  amount: TokenAmount;
+  inputAmount: TokenAmount;
+  outputAmount: TokenAmount;
   tradeType: TradeType;
 }
 
@@ -49,4 +56,13 @@ export enum Rounding {
 export interface BestTradeOptions {
   maxNumResults: number;
   maxHops: number;
+}
+
+export interface TradeOptions {
+  allowedSlippage: string;
+  recipient: string;
+  unixTimestamp: number;
+  ttl: number;
+  deadline: number;
+  feeOnTransfer: boolean;
 }

@@ -16,6 +16,11 @@ type SwapParameters {
 type Query {
 
   # Token
+  currencyEquals(
+    currency: Currency!
+    other: Currency!
+  ): Boolean!
+
   tokenEquals(
     token: Token!
     other: Token!

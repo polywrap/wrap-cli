@@ -1,11 +1,8 @@
 import { buildAndDeployApi, initTestEnvironment, stopTestEnvironment } from "@web3api/test-env-js";
 import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
-import fetch, { Response } from "node-fetch";
-import { ensPlugin } from "@web3api/ens-plugin-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ChainId, Pair, Token, TokenAmount } from "./types";
 import path from "path";
+import { defaultUniswapTokenList, getRedirects, getTokenList } from "../testUtils";
 
 jest.setTimeout(60000);
 
@@ -17,70 +14,26 @@ jest.setTimeout(60000);
 
 describe("Fetch", () => {
 
-  // https://tokenlists.org/token-list?url=https://gateway.ipfs.io/ipns/tokens.uniswap.org
-  const defaultUniswapTokenList = "https://gateway.ipfs.io/ipns/tokens.uniswap.org";
-
   let client: Web3ApiClient;
   let ensUri: string;
-  let ipfsUri: string;
   let tokens: Token[] = [];
 
   beforeAll(async () => {
     const { ethereum: testEnvEtherem, ensAddress, ipfs } = await initTestEnvironment();
     // get client
-    const redirects: UriRedirect[] = [
-      {
-        from: "ens/ethereum.web3api.eth",
-        to: ethereumPlugin({
-          networks: {
-            testnet: {
-              provider: testEnvEtherem
-            },
-            mainnet: {
-              provider: "http://localhost:8546"
-            }
-          },
-          defaultNetwork: "testnet"
-        })
-      },
-      {
-        from: "w3://ens/ipfs.web3api.eth",
-        to: ipfsPlugin({ provider: ipfs }),
-      },
-      {
-        from: "w3://ens/ens.web3api.eth",
-        to: ensPlugin({ addresses: { testnet: ensAddress } }),
-      },
-    ];
+    const redirects: UriRedirect[] = getRedirects(testEnvEtherem, ipfs, ensAddress);
     client = new Web3ApiClient({ redirects });
-
     // deploy api
     const apiPath: string = path.resolve(__dirname + "/../../../");
     const api = await buildAndDeployApi(apiPath, ipfs, ensAddress);
     ensUri = `ens/testnet/${api.ensDomain}`;
-    ipfsUri = `ipfs/${api.ipfsCid}`;
+    // ipfsUri = `ipfs/${api.ipfsCid}`;
+    // set up test case data
+    tokens = await getTokenList(defaultUniswapTokenList);
   });
 
   afterAll(async () => {
     await stopTestEnvironment();
-  });
-
-  // set up test case data
-  beforeAll(async () => {
-    await fetch(defaultUniswapTokenList)
-      .then((response: Response) => response.text())
-      .then((text: string) => {
-        const tokensObj = JSON.parse(text) as Record<string, any>;
-        let list: Record<string, any>[] = tokensObj.tokens;
-        list.forEach(token => tokens.push({
-          chainId: ChainId.MAINNET,
-          address: token.address,
-          decimals: token.decimals,
-          symbol: token.symbol,
-          name: token.name,
-        }));
-      })
-      .catch(e => console.log(e));
   });
 
   it("Fetches token data", async () => {
@@ -167,12 +120,14 @@ describe("Fetch", () => {
       },
     });
 
-    const pairToken = {
+    const pairToken: Token = {
       chainId: ChainId.MAINNET,
       address: pairAddress.data?.pairAddress ?? "",
-      decimals: 18,
-      symbol: null,
-      name: null,
+      currency: {
+        decimals: 18,
+        symbol: null,
+        name: null,
+      },
     };
 
     const kLast = await client.query<{

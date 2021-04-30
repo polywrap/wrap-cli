@@ -60,6 +60,7 @@ export function fetchTokenData(input: Input_fetchTokenData): Token {
   };
 }
 
+// returns pair data in token-sorted order
 export function fetchPairData(input: Input_fetchPairData): Pair {
   const token0: Token = input.token0;
   const token1: Token = input.token1;
@@ -85,19 +86,30 @@ export function fetchPairData(input: Input_fetchPairData): Pair {
     token: token0,
     other: token1,
   });
-  const amount0 = token0SortsBefore ? amountA : amountB;
-  const amount1 = token0SortsBefore ? amountB : amountA;
 
-  return {
-    tokenAmount0: {
-      token: token0,
-      amount: amount0,
-    },
-    tokenAmount1: {
-      token: token1,
-      amount: amount1,
-    },
-  };
+  if (token0SortsBefore) {
+    return {
+      tokenAmount0: {
+        token: token0,
+        amount: amountA,
+      },
+      tokenAmount1: {
+        token: token1,
+        amount: amountB,
+      },
+    };
+  } else {
+    return {
+      tokenAmount0: {
+        token: token1,
+        amount: amountA,
+      },
+      tokenAmount1: {
+        token: token0,
+        amount: amountB,
+      },
+    };
+  }
 }
 
 // returns total supply of ERC20-compliant token

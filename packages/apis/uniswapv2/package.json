@@ -23,6 +23,7 @@
     "as-bigfloat": "^0.0.4"
   },
   "devDependencies": {
+    "axios": "0.21.1",
     "@uniswap/sdk": "^3.0.3",
     "@types/node": "12.6.9",
     "@types/node-fetch": "^2.5.10",
