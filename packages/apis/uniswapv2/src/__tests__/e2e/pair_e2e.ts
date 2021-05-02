@@ -2,7 +2,7 @@ import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
 import { buildAndDeployApi, initTestEnvironment, stopTestEnvironment } from "@web3api/test-env-js";
 import * as path from "path";
 import { Pair, Token, TokenAmount } from "./types";
-import { defaultUniswapTokenList, getPairData, getRedirects, getTokenList } from "../testUtils";
+import { defaultUniswapTokenList, getPairData, getRedirects, getTokenList, getUniPairs } from "../testUtils";
 import * as uni from "@uniswap/sdk";
 
 jest.setTimeout(60000);
@@ -12,7 +12,7 @@ describe('Pair', () => {
   let client: Web3ApiClient;
   let ensUri: string;
   let pairs: Pair[] = [];
-  let uniPairs: uni.Pair[] = [];
+  let uniPairs: uni.Pair[];
 
   beforeAll(async () => {
     const { ethereum: testEnvEtherem, ensAddress, ipfs } = await initTestEnvironment();
@@ -45,31 +45,7 @@ describe('Pair', () => {
     [aave_dai, usdc_dai, aave_usdc, comp_weth, uni_link, uni_wbtc, wbtc_weth].forEach(pair => pairs.push(pair!));
 
     // create uniswap sdk pairs to compare results
-    uniPairs = pairs.map(pair => {
-      return new uni.Pair(
-        new uni.TokenAmount(
-          new uni.Token(
-            1,
-            pair.tokenAmount0.token.address,
-            pair.tokenAmount0.token.currency.decimals,
-            pair.tokenAmount0.token.currency.symbol || "",
-            pair.tokenAmount0.token.currency.name || ""
-          ),
-          pair.tokenAmount0.amount
-        ),
-        new uni.TokenAmount(
-          new uni.Token(
-            1,
-            pair.tokenAmount1.token.address,
-            pair.tokenAmount1.token.currency.decimals,
-            pair.tokenAmount1.token.currency.symbol || "",
-            pair.tokenAmount1.token.currency.name || ""
-          ),
-          pair.tokenAmount1.amount
-        ),
-      );
-    })
-
+    uniPairs = getUniPairs(pairs, 1);
   });
 
   afterAll(async () => {

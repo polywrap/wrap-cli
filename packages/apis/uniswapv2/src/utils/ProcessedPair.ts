@@ -1,7 +1,6 @@
-import { Pair, TokenAmount } from "../query/w3";
-import { currencyEquals, tokenEquals } from "../query";
-import { ETHER } from "./Currency";
-import { getWETH9 } from "./utils";
+import { Pair, Token, TokenAmount } from "../query/w3";
+import { tokenEquals } from "../query";
+import { wrapIfEther } from "./utils";
 
 import { BigInt } from "as-bigint";
 
@@ -32,30 +31,22 @@ export class ProcessedPair {
         "Insufficient liquidity: Pair reserves must be greater than zero"
       );
     }
-    // check if need to wrap ether
-    if (
-      currencyEquals({
-        currency: tradeTokenAmount.token.currency,
-        other: ETHER,
-      })
-    ) {
-      tradeTokenAmount.token = getWETH9(tradeTokenAmount.token.chainId);
-    }
     // make sure input and output tokens are correctly assigned
     let inTokenAmount: TokenAmount;
     let outTokenAmount: TokenAmount;
+    const wrappedTradeToken: Token = wrapIfEther(tradeTokenAmount.token);
     if (
       tokenEquals({
-        token: pair.tokenAmount0.token,
-        other: tradeTokenAmount.token,
+        token: wrapIfEther(pair.tokenAmount0.token),
+        other: wrappedTradeToken,
       })
     ) {
       inTokenAmount = pair.tokenAmount0;
       outTokenAmount = pair.tokenAmount1;
     } else if (
       tokenEquals({
-        token: pair.tokenAmount1.token,
-        other: tradeTokenAmount.token,
+        token: wrapIfEther(pair.tokenAmount1.token),
+        other: wrappedTradeToken,
       })
     ) {
       inTokenAmount = pair.tokenAmount1;
@@ -117,30 +108,22 @@ export class ProcessedPair {
         "Insufficient liquidity: Pair reserves must be greater than zero"
       );
     }
-    // check if need to wrap ether
-    if (
-      currencyEquals({
-        currency: tradeTokenAmount.token.currency,
-        other: ETHER,
-      })
-    ) {
-      tradeTokenAmount.token = getWETH9(tradeTokenAmount.token.chainId);
-    }
     // make sure input and output tokens are correctly assigned
     let inTokenAmount: TokenAmount;
     let outTokenAmount: TokenAmount;
+    const wrappedTradeToken: Token = wrapIfEther(tradeTokenAmount.token);
     if (
       tokenEquals({
-        token: pair.tokenAmount0.token,
-        other: tradeTokenAmount.token,
+        token: wrapIfEther(pair.tokenAmount0.token),
+        other: wrappedTradeToken,
       })
     ) {
       outTokenAmount = pair.tokenAmount0;
       inTokenAmount = pair.tokenAmount1;
     } else if (
       tokenEquals({
-        token: pair.tokenAmount1.token,
-        other: tradeTokenAmount.token,
+        token: wrapIfEther(pair.tokenAmount1.token),
+        other: wrappedTradeToken,
       })
     ) {
       outTokenAmount = pair.tokenAmount1;

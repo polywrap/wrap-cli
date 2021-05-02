@@ -1,4 +1,3 @@
-import { Ethereum_Query } from "./w3/imported";
 import { fetchTokenData } from "./fetch";
 import { tokenSortsBefore } from "./token";
 import { factoryAddress, minimumLiquidity } from "./index";
@@ -17,6 +16,7 @@ import {
   Pair,
   Token,
   TokenAmount,
+  Ethereum_Query,
 } from "./w3";
 import { ProcessedPair } from "../utils/ProcessedPair";
 import Price from "../utils/Price";

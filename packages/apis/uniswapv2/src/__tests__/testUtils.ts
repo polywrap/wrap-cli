@@ -7,6 +7,7 @@ import { ensPlugin } from "@web3api/ens-plugin-js";
 import axios from "axios";
 import path from "path";
 import { buildAndDeployApi } from "@web3api/test-env-js";
+import * as uni from "@uniswap/sdk";
 
 // https://tokenlists.org/token-list?url=https://gateway.ipfs.io/ipns/tokens.uniswap.org
 export const defaultUniswapTokenList = "https://gateway.ipfs.io/ipns/tokens.uniswap.org";
@@ -99,4 +100,31 @@ export async function getPairData(token0: Token, token1: Token, client: Web3ApiC
     },
   });
   return pairData.data?.fetchPairData;
+}
+
+export function getUniPairs(pairs: Pair[], chainId: number): uni.Pair[] {
+  return pairs.map(pair => {
+    return new uni.Pair(
+      new uni.TokenAmount(
+        new uni.Token(
+          chainId,
+          pair.tokenAmount0.token.address,
+          pair.tokenAmount0.token.currency.decimals,
+          pair.tokenAmount0.token.currency.symbol || "",
+          pair.tokenAmount0.token.currency.name || ""
+        ),
+        pair.tokenAmount0.amount
+      ),
+      new uni.TokenAmount(
+        new uni.Token(
+          chainId,
+          pair.tokenAmount1.token.address,
+          pair.tokenAmount1.token.currency.decimals,
+          pair.tokenAmount1.token.currency.symbol || "",
+          pair.tokenAmount1.token.currency.name || ""
+        ),
+        pair.tokenAmount1.amount
+      ),
+    );
+  })
 }

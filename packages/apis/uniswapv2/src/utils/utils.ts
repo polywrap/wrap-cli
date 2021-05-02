@@ -1,4 +1,5 @@
 import { ChainId, Token } from "../query/w3";
+import { ETHER } from "./Currency";
 
 export function compareAddresses(ref: string, other: string): i32 {
   const n: i32 = ref.length < other.length ? ref.length : other.length;
@@ -81,4 +82,12 @@ export function getWETH9(chainId: ChainId): Token {
     default:
       throw new Error("Unknown chain ID. This should never happen.");
   }
+}
+
+// check if need to wrap ether
+export function wrapIfEther(token: Token): Token {
+  if (token.currency == ETHER && token.address == "") {
+    return getWETH9(token.chainId);
+  }
+  return token;
 }

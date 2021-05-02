@@ -11,7 +11,7 @@ import {
   TokenAmount,
 } from "./w3";
 import { pairAddress } from "./pair";
-import { resolveChainId } from "../utils/utils";
+import { resolveChainId, wrapIfEther } from "../utils/utils";
 
 export function fetchTokenData(input: Input_fetchTokenData): Token {
   const address: string = input.address;
@@ -62,9 +62,11 @@ export function fetchTokenData(input: Input_fetchTokenData): Token {
 
 // returns pair data in token-sorted order
 export function fetchPairData(input: Input_fetchPairData): Pair {
-  const token0: Token = input.token0;
-  const token1: Token = input.token1;
-
+  let token0: Token = input.token0;
+  let token1: Token = input.token1;
+  // wrap if ether
+  token0 = wrapIfEther(token0);
+  token1 = wrapIfEther(token1);
   // get amounts
   const address = pairAddress({ token0, token1 });
   const res: string = Ethereum_Query.callView({
