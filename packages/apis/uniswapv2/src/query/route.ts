@@ -1,4 +1,4 @@
-import { tokenEquals } from "./token";
+import { currencyEquals, tokenEquals } from "./token";
 import {
   Input_routeMidPrice,
   Input_routePath,
@@ -7,10 +7,10 @@ import {
   Route,
   Token,
   TokenAmount,
+  ChainId,
 } from "./w3";
 import Price from "../utils/Price";
 import { pairReserves } from "./pair";
-import { ChainId } from "../mutation/w3";
 import { getWETH9 } from "../utils/utils";
 import { ETHER } from "../utils/Currency";
 
@@ -48,7 +48,12 @@ export function routePath(input: Input_routePath): Token[] {
 
   const weth = getWETH9(chainId);
 
-  const path: Token[] = input.input.currency == ETHER ? [weth] : [inToken];
+  const path: Token[] = currencyEquals({
+    currency: input.input.currency,
+    other: ETHER,
+  })
+    ? [weth]
+    : [inToken];
   for (let i = 0; i < pairs.length; i++) {
     const currentIn = path[i];
     const token0 = pairs[i].tokenAmount0.token;

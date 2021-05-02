@@ -18,14 +18,14 @@ export class ProcessedPair {
     tradeTokenAmount: TokenAmount
   ): ProcessedPair {
     const tradeAmount = BigInt.fromString(tradeTokenAmount.amount);
-    if (tradeAmount.eq(BigInt.ZERO)) {
+    if (tradeAmount.isZero()) {
       throw new RangeError(
         "Insufficient input amount: Input amount must be greater than zero"
       );
     }
     if (
-      BigInt.fromString(pair.tokenAmount0.amount).eq(BigInt.ZERO) ||
-      BigInt.fromString(pair.tokenAmount1.amount).eq(BigInt.ZERO)
+      BigInt.fromString(pair.tokenAmount0.amount).isZero() ||
+      BigInt.fromString(pair.tokenAmount1.amount).isZero()
     ) {
       throw new RangeError(
         "Insufficient liquidity: Pair reserves must be greater than zero"
@@ -95,14 +95,14 @@ export class ProcessedPair {
     tradeTokenAmount: TokenAmount
   ): ProcessedPair {
     const tradeAmount = BigInt.fromString(tradeTokenAmount.amount);
-    if (tradeAmount.eq(BigInt.ZERO)) {
+    if (tradeAmount.isZero()) {
       throw new RangeError(
         "Insufficient output amount: Output amount must be greater than zero"
       );
     }
     if (
-      BigInt.fromString(pair.tokenAmount0.amount) == BigInt.ZERO ||
-      BigInt.fromString(pair.tokenAmount1.amount) == BigInt.ZERO
+      BigInt.fromString(pair.tokenAmount0.amount).isZero() ||
+      BigInt.fromString(pair.tokenAmount1.amount).isZero()
     ) {
       throw new RangeError(
         "Insufficient liquidity: Pair reserves must be greater than zero"

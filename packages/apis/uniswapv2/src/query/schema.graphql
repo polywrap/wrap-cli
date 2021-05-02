@@ -6,7 +6,6 @@ type BestTradeOptions {
   maxHops: UInt32
 }
 
-
 type SwapParameters {
   methodName: String!
   args: [String!]!

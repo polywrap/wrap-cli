@@ -22,7 +22,7 @@ import {
   pairOutputNextPair,
 } from "./pair";
 import Fraction from "../utils/Fraction";
-import { tokenAmountEquals, tokenEquals } from "./token";
+import { currencyEquals, tokenAmountEquals, tokenEquals } from "./token";
 import { PriorityQueue } from "../utils/PriorityQueue";
 import { TradeOptions } from "../utils/TradeOptions";
 import { ETHER } from "../utils/Currency";
@@ -32,9 +32,14 @@ import { BigFloat } from "as-bigfloat";
 
 export function createTrade(input: Input_createTrade): Trade {
   const amounts: TokenAmount[] = new Array(input.route.path.length);
-  const nextPairs: Pair[] = new Array(input.route.pairs.length);
+  const nextPairs: Pair[] = new Array(input.route.pairs.length); // TODO this array is created and updated, but never read from. Do we need it?
   if (input.tradeType == TradeType.EXACT_INPUT) {
-    if (input.amount.token.currency != input.route.input.currency) {
+    if (
+      !currencyEquals({
+        currency: input.amount.token.currency,
+        other: input.route.input.currency,
+      })
+    ) {
       throw new Error(
         "Trade input token must be the same as trade route input token"
       );
@@ -57,7 +62,7 @@ export function createTrade(input: Input_createTrade): Trade {
   } else {
     if (input.amount.token.currency != input.route.output.currency) {
       throw new Error(
-        "Trade input token must be the same as trade route input token"
+        "Trade output token must be the same as trade route output token"
       );
     }
 
@@ -83,10 +88,10 @@ export function createTrade(input: Input_createTrade): Trade {
       ? input.amount
       : amounts[amounts.length - 1];
 
-  if (input.route.input.currency === ETHER) {
+  if (currencyEquals({ currency: input.route.input.currency, other: ETHER })) {
     inputAmount.token.currency = ETHER;
   }
-  if (input.route.output.currency === ETHER) {
+  if (currencyEquals({ currency: input.route.output.currency, other: ETHER })) {
     outputAmount.token.currency = ETHER;
   }
 
@@ -269,9 +274,9 @@ function _bestTradeExactIn(
 
     const biTokenAmt0 = BigInt.fromString(pair.tokenAmount0.amount);
     const biTokenAmt1 = BigInt.fromString(pair.tokenAmount1.amount);
-    if (biTokenAmt0.eq(BigInt.ZERO) || biTokenAmt1.eq(BigInt.ZERO)) continue;
+    if (biTokenAmt0.isZero() || biTokenAmt1.isZero()) continue;
     const biAmtIn = BigInt.fromString(amountIn.amount);
-    if (biAmtIn.eq(BigInt.ZERO)) continue;
+    if (biAmtIn.isZero()) continue;
 
     const amountOutToken = isToken0
       ? pair.tokenAmount1.token
