@@ -4,6 +4,7 @@ import { createRoute, createTrade, swapCallParameters, toHex } from "../../query
 import { ChainId, Pair, Token, TradeType, } from "../../query/w3";
 import { ETHER } from "../../utils/Currency";
 import { getWETH9 } from "../../utils/utils";
+import { BigInt } from "as-bigint";
 
 const token0: Token = {
   chainId: ChainId.MAINNET,
@@ -47,7 +48,7 @@ const pair_weth_0: Pair = {
 
 describe("toHex", () => {
   test("returns valid hex string from number", () => {
-    const result = toHex(999);
+    const result = toHex(BigInt.fromUInt32(999));
 
     expect(result).toStrictEqual("0x3e7");
   });

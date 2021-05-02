@@ -98,7 +98,6 @@ export function createTrade(input: Input_createTrade): Trade {
   };
 }
 
-// TODO: handle unwrapped Ether
 // The average price that the trade would execute at.
 export function tradeExecutionPrice(
   input: Input_tradeExecutionPrice

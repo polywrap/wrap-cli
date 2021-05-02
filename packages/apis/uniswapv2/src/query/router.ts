@@ -2,10 +2,11 @@ import { ETHER } from "../utils/Currency";
 import { tradeMaximumAmountIn, tradeMinimumAmountOut } from "./trade";
 import { Input_swapCallParameters, SwapParameters, TradeType } from "./w3";
 
+import { BigInt } from "as-bigint";
+
 const ZERO_HEX = "0x0";
 
-export function toHex<T extends number>(currencyAmount: T): string {
-  // TODO: BigInt.toString(radix)
+export function toHex(currencyAmount: BigInt): string {
   return "0x" + currencyAmount.toString(16);
 }
 
@@ -25,20 +26,20 @@ export function swapCallParameters(
 
   const to = input.tradeOptions.recipient;
   const amountIn = toHex(
-    parseInt(
+    BigInt.fromString(
       tradeMaximumAmountIn({
         trade: input.trade,
         slippageTolerance: input.tradeOptions.allowedSlippage,
       }).amount
-    ) as u64
+    )
   );
   const amountOut = toHex(
-    parseInt(
+    BigInt.fromString(
       tradeMinimumAmountOut({
         trade: input.trade,
         slippageTolerance: input.tradeOptions.allowedSlippage,
       }).amount
-    ) as u64
+    )
   );
 
   const path = input.trade.route.path.map<string>((token) => token.address);
