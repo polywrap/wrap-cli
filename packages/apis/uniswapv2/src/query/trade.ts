@@ -26,9 +26,11 @@ import { currencyEquals, tokenAmountEquals, tokenEquals } from "./token";
 import { PriorityQueue } from "../utils/PriorityQueue";
 import { TradeOptions } from "../utils/TradeOptions";
 import { ETHER } from "../utils/Currency";
+import { wrapIfEther } from "../utils/utils";
 
 import { BigInt } from "as-bigint";
 import { BigFloat } from "as-bigfloat";
+import { Nullable } from "@web3api/wasm-as";
 
 export function createTrade(input: Input_createTrade): Trade {
   const amounts: TokenAmount[] = new Array(input.route.path.length);
@@ -204,7 +206,7 @@ export function tradeMaximumAmountIn(
 export function bestTradeExactIn(input: Input_bestTradeExactIn): Trade[] {
   const pairs: Pair[] = input.pairs;
   const amountIn: TokenAmount = input.amountIn;
-  const tokenOut: Token = input.tokenOut;
+  let tokenOut: Token = input.tokenOut;
   const options: TradeOptions = new TradeOptions(input.options);
   if (pairs.length == 0) {
     throw new Error("Pairs array is empty");
@@ -212,6 +214,8 @@ export function bestTradeExactIn(input: Input_bestTradeExactIn): Trade[] {
   if (options.maxHops == 0) {
     throw new Error("maxHops must be greater than zero");
   }
+  amountIn.token = wrapIfEther(amountIn.token);
+  tokenOut = wrapIfEther(tokenOut);
   const bestTrades = _bestTradeExactIn(pairs, amountIn, tokenOut, options);
   if (options.maxNumResults) {
     return bestTrades.toArray().slice(0, options.maxNumResults);
@@ -225,7 +229,7 @@ export function bestTradeExactIn(input: Input_bestTradeExactIn): Trade[] {
  the given output amount. */
 export function bestTradeExactOut(input: Input_bestTradeExactOut): Trade[] {
   const pairs: Pair[] = input.pairs;
-  const tokenIn: Token = input.tokenIn;
+  let tokenIn: Token = input.tokenIn;
   const amountOut: TokenAmount = input.amountOut;
   const options: TradeOptions = new TradeOptions(input.options);
   if (pairs.length == 0) {
@@ -234,6 +238,8 @@ export function bestTradeExactOut(input: Input_bestTradeExactOut): Trade[] {
   if (options.maxHops == 0) {
     throw new Error("maxHops must be greater than zero");
   }
+  tokenIn = wrapIfEther(tokenIn);
+  amountOut.token = wrapIfEther(amountOut.token);
   const bestTrades = _bestTradeExactOut(pairs, tokenIn, amountOut, options);
 
   if (options.maxNumResults) {
@@ -298,12 +304,14 @@ function _bestTradeExactIn(
         inputAmount: amountIn,
       });
       const otherPairs = pairs.slice(0, i).concat(pairs.slice(i + 1));
-      options.maxHops--;
       _bestTradeExactIn(
         otherPairs,
         amountOut,
         tokenOut,
-        options,
+        new TradeOptions({
+          maxNumResults: Nullable.fromValue(options.maxNumResults),
+          maxHops: Nullable.fromValue(options.maxHops - 1),
+        }),
         currentPairs.concat([pair]),
         originalAmountIn,
         bestTrades
@@ -378,12 +386,14 @@ function _bestTradeExactOut(
         outputAmount: amountOut,
       });
       const otherPairs = pairs.slice(0, i).concat(pairs.slice(i + 1));
-      options.maxHops--;
       _bestTradeExactOut(
         otherPairs,
         tokenIn,
         amountIn,
-        options,
+        new TradeOptions({
+          maxNumResults: Nullable.fromValue(options.maxNumResults),
+          maxHops: Nullable.fromValue(options.maxHops - 1),
+        }),
         [pair].concat(currentPairs),
         originalAmountOut,
         bestTrades
