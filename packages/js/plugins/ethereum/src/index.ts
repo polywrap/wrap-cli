@@ -122,10 +122,8 @@ export class EthereumPlugin extends Plugin {
     };
 
     const tx = await signer.sendTransaction(txRequest);
-    const res = await tx.wait();
-
     // TODO: improve this
-    return res.transactionHash;
+    return tx.hash;
   }
 
   public async getConnection(
