@@ -20,7 +20,7 @@ import {
   PluginModules,
   PluginFactory,
 } from "@web3api/core-js";
-import { ethers } from "ethers";
+import { ethers, providers } from "ethers";
 
 // Export all types that are nested inside of EthereumConfig.
 // This is required for the extractPluginConfigs.ts script.
@@ -105,13 +105,25 @@ export class EthereumPlugin extends Plugin {
     address: Address,
     method: string,
     args: string[],
+    value = "0",
+    gasLimit?: string,
     connectionOverride?: ConnectionOverride
   ): Promise<string> {
     const connection = await this.getConnection(connectionOverride);
     const contract = connection.getContract(address, [method]);
-    const funcs = Object.keys(contract.interface.functions);
-    const tx = await contract[funcs[0]](...args);
+    const signer = connection.getSigner();
+
+    const data = contract.interface.encodeFunctionData(method, args);
+    const txRequest: providers.TransactionRequest = {
+      to: contract.address,
+      data: data,
+      value: value,
+      gasLimit: gasLimit,
+    };
+
+    const tx = await signer.sendTransaction(txRequest);
     const res = await tx.wait();
+
     // TODO: improve this
     return res.transactionHash;
   }
