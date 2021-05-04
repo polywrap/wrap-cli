@@ -4,6 +4,7 @@
   "private": true,
   "version": "0.0.1",
   "scripts": {
+    "deploy": "w3 build --ipfs http://127.0.0.1:5001 --test-end uniswap.v2.eth",
     "build": "npx w3 build",
     "test:e2e": "jest --passWithNoTests --runInBand --verbose",
     "test:unit": "asp --verbose",
