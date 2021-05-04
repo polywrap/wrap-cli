@@ -15,12 +15,7 @@ import {
 } from "./w3";
 import { createRoute, midPrice, routeMidPrice } from "./route";
 import Price from "../utils/Price";
-import {
-  pairInputAmount,
-  pairInputNextPair,
-  pairOutputAmount,
-  pairOutputNextPair,
-} from "./pair";
+import { pairInputAmount, pairOutputAmount } from "./pair";
 import Fraction from "../utils/Fraction";
 import { currencyEquals, tokenAmountEquals, tokenEquals } from "./token";
 import { PriorityQueue } from "../utils/PriorityQueue";
@@ -34,7 +29,6 @@ import { Nullable } from "@web3api/wasm-as";
 
 export function createTrade(input: Input_createTrade): Trade {
   const amounts: TokenAmount[] = new Array(input.route.path.length);
-  const nextPairs: Pair[] = new Array(input.route.pairs.length); // TODO this array is created and updated, but never read from. Do we need it?
   if (input.tradeType == TradeType.EXACT_INPUT) {
     if (
       !currencyEquals({
@@ -50,16 +44,10 @@ export function createTrade(input: Input_createTrade): Trade {
     amounts[0] = input.amount;
     for (let i = 0; i < input.route.path.length - 1; i++) {
       const pair = input.route.pairs[i];
-      const outputAmount: TokenAmount = pairOutputAmount({
+      amounts[i + 1] = pairOutputAmount({
         pair: pair,
         inputAmount: amounts[i],
       });
-      const nextPair: Pair = pairOutputNextPair({
-        pair: pair,
-        inputAmount: amounts[i],
-      });
-      amounts[i + 1] = outputAmount;
-      nextPairs[i] = nextPair;
     }
   } else {
     if (input.amount.token.currency != input.route.output.currency) {
@@ -71,16 +59,10 @@ export function createTrade(input: Input_createTrade): Trade {
     amounts[amounts.length - 1] = input.amount;
     for (let i = input.route.path.length - 1; i > 0; i--) {
       const pair = input.route.pairs[i - 1];
-      const inputAmount: TokenAmount = pairInputAmount({
+      amounts[i - 1] = pairInputAmount({
         pair: pair,
         outputAmount: amounts[i],
       });
-      const nextPair: Pair = pairInputNextPair({
-        pair: pair,
-        outputAmount: amounts[i],
-      });
-      amounts[i - 1] = inputAmount;
-      nextPairs[i - 1] = nextPair;
     }
   }
   const inputAmount: TokenAmount =
