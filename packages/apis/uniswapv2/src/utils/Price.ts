@@ -1,6 +1,6 @@
 // translated to AS from https://github.com/Uniswap/uniswap-sdk-core/blob/main/src/entities/fractions/fraction.ts
 
-import { Token, TokenAmount } from "../query/w3";
+import { Rounding, Token, TokenAmount } from "../query/w3";
 import Fraction from "./Fraction";
 import { tokenEquals } from "../query";
 
@@ -23,8 +23,8 @@ export default class Price extends Fraction {
     this.baseToken = baseToken;
     this.quoteToken = quoteToken;
     this.scalar = new Fraction(
-      BigInt.pow(BigInt.fromInt(10), baseToken.currency.decimals),
-      BigInt.pow(BigInt.fromInt(10), quoteToken.currency.decimals)
+      BigInt.pow(BigInt.fromUInt16(10), baseToken.currency.decimals),
+      BigInt.pow(BigInt.fromUInt16(10), quoteToken.currency.decimals)
     );
   }
 
@@ -71,12 +71,17 @@ export default class Price extends Fraction {
     };
   }
 
-  // TODO: implement Price toSignificant and toFixed functions
-  // public toSignificant(significantDigits: number = 6, format?: object, rounding?: Rounding): string {
-  //   return this.adjusted.toSignificant(significantDigits, format, rounding);
-  // }
-  //
-  // public toFixed(decimalPlaces: number = 4, format?: object, rounding?: Rounding): string {
-  //   return this.adjusted.toFixed(decimalPlaces, format, rounding);
-  // }
+  public toSignificant(
+    significantDigits: i32 = 6,
+    rounding: Rounding = Rounding.ROUND_HALF_UP
+  ): string {
+    return this.adjusted().toSignificant(significantDigits, rounding);
+  }
+
+  public toFixed(
+    decimalPlaces: i32 = 4,
+    rounding: Rounding = Rounding.ROUND_HALF_UP
+  ): string {
+    return this.adjusted().toFixed(decimalPlaces, rounding);
+  }
 }

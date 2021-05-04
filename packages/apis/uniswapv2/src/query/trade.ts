@@ -15,25 +15,27 @@ import {
 } from "./w3";
 import { createRoute, midPrice, routeMidPrice } from "./route";
 import Price from "../utils/Price";
-import {
-  pairInputAmount,
-  pairInputNextPair,
-  pairOutputAmount,
-  pairOutputNextPair,
-} from "./pair";
+import { pairInputAmount, pairOutputAmount } from "./pair";
 import Fraction from "../utils/Fraction";
-import { tokenAmountEquals, tokenEquals } from "./token";
+import { currencyEquals, tokenAmountEquals, tokenEquals } from "./token";
 import { PriorityQueue } from "../utils/PriorityQueue";
 import { TradeOptions } from "../utils/TradeOptions";
 import { ETHER } from "../utils/Currency";
+import { wrapIfEther } from "../utils/utils";
 
 import { BigInt } from "as-bigint";
+import { BigFloat } from "as-bigfloat";
+import { Nullable } from "@web3api/wasm-as";
 
 export function createTrade(input: Input_createTrade): Trade {
   const amounts: TokenAmount[] = new Array(input.route.path.length);
-  const nextPairs: Pair[] = new Array(input.route.pairs.length);
   if (input.tradeType == TradeType.EXACT_INPUT) {
-    if (input.amount.token.currency != input.route.input.currency) {
+    if (
+      !currencyEquals({
+        currency: input.amount.token.currency,
+        other: input.route.input.currency,
+      })
+    ) {
       throw new Error(
         "Trade input token must be the same as trade route input token"
       );
@@ -42,37 +44,25 @@ export function createTrade(input: Input_createTrade): Trade {
     amounts[0] = input.amount;
     for (let i = 0; i < input.route.path.length - 1; i++) {
       const pair = input.route.pairs[i];
-      const outputAmount: TokenAmount = pairOutputAmount({
+      amounts[i + 1] = pairOutputAmount({
         pair: pair,
         inputAmount: amounts[i],
       });
-      const nextPair: Pair = pairOutputNextPair({
-        pair: pair,
-        inputAmount: amounts[i],
-      });
-      amounts[i + 1] = outputAmount;
-      nextPairs[i] = nextPair;
     }
   } else {
     if (input.amount.token.currency != input.route.output.currency) {
       throw new Error(
-        "Trade input token must be the same as trade route input token"
+        "Trade output token must be the same as trade route output token"
       );
     }
 
     amounts[amounts.length - 1] = input.amount;
     for (let i = input.route.path.length - 1; i > 0; i--) {
       const pair = input.route.pairs[i - 1];
-      const inputAmount: TokenAmount = pairInputAmount({
+      amounts[i - 1] = pairInputAmount({
         pair: pair,
         outputAmount: amounts[i],
       });
-      const nextPair: Pair = pairInputNextPair({
-        pair: pair,
-        outputAmount: amounts[i],
-      });
-      amounts[i - 1] = inputAmount;
-      nextPairs[i - 1] = nextPair;
     }
   }
   const inputAmount: TokenAmount =
@@ -82,10 +72,10 @@ export function createTrade(input: Input_createTrade): Trade {
       ? input.amount
       : amounts[amounts.length - 1];
 
-  if (input.route.input.currency === ETHER) {
+  if (currencyEquals({ currency: input.route.input.currency, other: ETHER })) {
     inputAmount.token.currency = ETHER;
   }
-  if (input.route.output.currency === ETHER) {
+  if (currencyEquals({ currency: input.route.output.currency, other: ETHER })) {
     outputAmount.token.currency = ETHER;
   }
 
@@ -97,7 +87,6 @@ export function createTrade(input: Input_createTrade): Trade {
   };
 }
 
-// TODO: handle unwrapped Ether
 // The average price that the trade would execute at.
 export function tradeExecutionPrice(
   input: Input_tradeExecutionPrice
@@ -111,7 +100,7 @@ export function tradeExecutionPrice(
   );
   return {
     token: executionPrice.quoteToken,
-    amount: executionPrice.adjusted().quotient().toString(), // TODO: should this be adjusted or raw price? also needs formatting
+    amount: executionPrice.toFixed(18),
   };
 }
 
@@ -123,9 +112,8 @@ export function tradeNextMidPrice(input: Input_tradeNextMidPrice): TokenAmount {
   });
 }
 
-// TODO: needs formatted output
 // The slippage incurred by the trade. (strictly > 0.30%)
-// result is a percent like 100.0%, not a decimal like 1.00, but there is no decimal point in the string
+// result is a percent like 100.0%
 export function tradeSlippage(input: Input_tradeSlippage): TokenAmount {
   const trade: Trade = input.trade;
   const price: Price = midPrice(trade.route);
@@ -140,10 +128,7 @@ export function tradeSlippage(input: Input_tradeSlippage): TokenAmount {
   const slippage = exactQuote.sub(outputFraction).div(exactQuote);
   return {
     token: trade.outputAmount.token,
-    amount: slippage
-      .mul(new Fraction(BigInt.fromString("100")))
-      .quotient()
-      .toString(),
+    amount: slippage.mul(new Fraction(BigInt.fromString("100"))).toFixed(18),
   };
 }
 
@@ -203,7 +188,7 @@ export function tradeMaximumAmountIn(
 export function bestTradeExactIn(input: Input_bestTradeExactIn): Trade[] {
   const pairs: Pair[] = input.pairs;
   const amountIn: TokenAmount = input.amountIn;
-  const tokenOut: Token = input.tokenOut;
+  let tokenOut: Token = input.tokenOut;
   const options: TradeOptions = new TradeOptions(input.options);
   if (pairs.length == 0) {
     throw new Error("Pairs array is empty");
@@ -211,6 +196,8 @@ export function bestTradeExactIn(input: Input_bestTradeExactIn): Trade[] {
   if (options.maxHops == 0) {
     throw new Error("maxHops must be greater than zero");
   }
+  amountIn.token = wrapIfEther(amountIn.token);
+  tokenOut = wrapIfEther(tokenOut);
   const bestTrades = _bestTradeExactIn(pairs, amountIn, tokenOut, options);
   if (options.maxNumResults) {
     return bestTrades.toArray().slice(0, options.maxNumResults);
@@ -224,7 +211,7 @@ export function bestTradeExactIn(input: Input_bestTradeExactIn): Trade[] {
  the given output amount. */
 export function bestTradeExactOut(input: Input_bestTradeExactOut): Trade[] {
   const pairs: Pair[] = input.pairs;
-  const tokenIn: Token = input.tokenIn;
+  let tokenIn: Token = input.tokenIn;
   const amountOut: TokenAmount = input.amountOut;
   const options: TradeOptions = new TradeOptions(input.options);
   if (pairs.length == 0) {
@@ -233,6 +220,8 @@ export function bestTradeExactOut(input: Input_bestTradeExactOut): Trade[] {
   if (options.maxHops == 0) {
     throw new Error("maxHops must be greater than zero");
   }
+  tokenIn = wrapIfEther(tokenIn);
+  amountOut.token = wrapIfEther(amountOut.token);
   const bestTrades = _bestTradeExactOut(pairs, tokenIn, amountOut, options);
 
   if (options.maxNumResults) {
@@ -273,9 +262,9 @@ function _bestTradeExactIn(
 
     const biTokenAmt0 = BigInt.fromString(pair.tokenAmount0.amount);
     const biTokenAmt1 = BigInt.fromString(pair.tokenAmount1.amount);
-    if (biTokenAmt0.eq(BigInt.ZERO) || biTokenAmt1.eq(BigInt.ZERO)) continue;
+    if (biTokenAmt0.isZero() || biTokenAmt1.isZero()) continue;
     const biAmtIn = BigInt.fromString(amountIn.amount);
-    if (biAmtIn.eq(BigInt.ZERO)) continue;
+    if (biAmtIn.isZero()) continue;
 
     const amountOutToken = isToken0
       ? pair.tokenAmount1.token
@@ -297,12 +286,14 @@ function _bestTradeExactIn(
         inputAmount: amountIn,
       });
       const otherPairs = pairs.slice(0, i).concat(pairs.slice(i + 1));
-      options.maxHops--;
       _bestTradeExactIn(
         otherPairs,
         amountOut,
         tokenOut,
-        options,
+        new TradeOptions({
+          maxNumResults: Nullable.fromValue(options.maxNumResults),
+          maxHops: Nullable.fromValue(options.maxHops - 1),
+        }),
         currentPairs.concat([pair]),
         originalAmountIn,
         bestTrades
@@ -377,12 +368,14 @@ function _bestTradeExactOut(
         outputAmount: amountOut,
       });
       const otherPairs = pairs.slice(0, i).concat(pairs.slice(i + 1));
-      options.maxHops--;
       _bestTradeExactOut(
         otherPairs,
         tokenIn,
         amountIn,
-        options,
+        new TradeOptions({
+          maxNumResults: Nullable.fromValue(options.maxNumResults),
+          maxHops: Nullable.fromValue(options.maxHops - 1),
+        }),
         [pair].concat(currentPairs),
         originalAmountOut,
         bestTrades
@@ -392,17 +385,9 @@ function _bestTradeExactOut(
   return bestTrades;
 }
 
-// TODO: export in schema and implement percent difference like uniswap sdk
-export function computePriceImpact(trade: Trade): BigInt {
-  const midPrice = routeMidPrice({
-    route: trade.route,
-  });
-  const midPriceBI = BigInt.fromString(midPrice.amount);
-  const inputAmountBI = BigInt.fromString(trade.inputAmount.amount);
-  const outputAmountBI = BigInt.fromString(trade.outputAmount.amount);
-
-  const exactQuote = midPriceBI.mul(inputAmountBI);
-  return exactQuote.sub(outputAmountBI).div(exactQuote);
+function computePriceImpact(trade: Trade): BigFloat {
+  const slippage: string = tradeSlippage({ trade }).amount;
+  return BigFloat.fromString(slippage);
 }
 
 export function tradeComparator(b: Trade, a: Trade): i32 {

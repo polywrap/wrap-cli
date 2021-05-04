@@ -1,6 +1,9 @@
 // translated to AS from https://github.com/Uniswap/uniswap-sdk-core/blob/main/src/entities/fractions/fraction.ts
 
+import { Rounding } from "../query/w3";
+
 import { BigInt } from "as-bigint";
+import { BigFloat } from "as-bigfloat";
 
 export default class Fraction {
   public readonly numerator: BigInt;
@@ -100,32 +103,31 @@ export default class Fraction {
     );
   }
 
-  // TODO: implement Fraction toSignificant and toFixed functions
-  // public toSignificant(
-  //   significantDigits: number,
-  //   format: object = { groupSeparator: '' },
-  //   rounding: Rounding = Rounding.ROUND_HALF_UP
-  // ): string {
-  //   invariant(Number.isInteger(significantDigits), `${significantDigits} is not an integer.`)
-  //   invariant(significantDigits > 0, `${significantDigits} is not positive.`)
-  //
-  //   Decimal.set({ precision: significantDigits + 1, rounding: toSignificantRounding[rounding] })
-  //   const quotient = new Decimal(this.numerator.toString())
-  //     .div(this.denominator.toString())
-  //     .toSignificantDigits(significantDigits)
-  //   return quotient.toFormat(quotient.decimalPlaces(), format)
-  // }
-  //
-  // public toFixed(
-  //   decimalPlaces: number,
-  //   format: object = { groupSeparator: '' },
-  //   rounding: Rounding = Rounding.ROUND_HALF_UP
-  // ): string {
-  //   invariant(Number.isInteger(decimalPlaces), `${decimalPlaces} is not an integer.`)
-  //   invariant(decimalPlaces >= 0, `${decimalPlaces} is negative.`)
-  //
-  //   Big.DP = decimalPlaces
-  //   Big.RM = toFixedRounding[rounding]
-  //   return new Big(this.numerator.toString()).div(this.denominator.toString()).toFormat(decimalPlaces, format)
-  // }
+  public toSignificant(
+    significantDigits: i32,
+    rounding: Rounding = Rounding.ROUND_HALF_UP
+  ): string {
+    if (significantDigits < 0) {
+      throw new Error(
+        significantDigits.toString() + " is not a positive integer."
+      );
+    }
+    return BigFloat.fromFraction(
+      this.numerator,
+      this.denominator
+    ).toSignificant(significantDigits, rounding);
+  }
+
+  public toFixed(
+    decimalPlaces: i32,
+    rounding: Rounding = Rounding.ROUND_HALF_UP
+  ): string {
+    if (decimalPlaces < 0) {
+      throw new Error(decimalPlaces.toString() + " is negative.");
+    }
+    return BigFloat.fromFraction(this.numerator, this.denominator).toFixed(
+      decimalPlaces,
+      rounding
+    );
+  }
 }

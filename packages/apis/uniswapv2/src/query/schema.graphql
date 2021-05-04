@@ -6,7 +6,6 @@ type BestTradeOptions {
   maxHops: UInt32
 }
 
-
 type SwapParameters {
   methodName: String!
   args: [String!]!
@@ -16,6 +15,11 @@ type SwapParameters {
 type Query {
 
   # Token
+  currencyEquals(
+    currency: Currency!
+    other: Currency!
+  ): Boolean!
+
   tokenEquals(
     token: Token!
     other: Token!
@@ -44,6 +48,14 @@ type Query {
   pairReserves(
     pair: Pair!
   ): [TokenAmount!]! # [Uint256!]!
+
+  pairToken0Price(
+    pair: Pair!
+  ): TokenAmount!
+
+  pairToken1Price(
+    pair: Pair!
+  ): TokenAmount!
 
   pairOutputAmount(
     pair: Pair!

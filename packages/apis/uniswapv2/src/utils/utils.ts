@@ -1,11 +1,12 @@
 import { ChainId, Token } from "../query/w3";
+import { ETHER } from "./Currency";
+import { currencyEquals } from "../query";
 
-// TODO: use this if localCompare doesn't exist in AssemblyScript (it's not in the docs)
-export function compareAddresses(ref: string, other: string): u8 {
-  const n: u8 = Math.min(ref.length, other.length);
+export function compareAddresses(ref: string, other: string): i32 {
+  const n: i32 = ref.length < other.length ? ref.length : other.length;
   for (let i = 0; i < n; i++) {
     if (ref.charAt(i) < other.charAt(i)) return -1;
-    else if (ref.charAt(i) > other.charAt(i)) return 1;
+    if (ref.charAt(i) > other.charAt(i)) return 1;
   }
   return ref.length - other.length;
 }
@@ -82,4 +83,15 @@ export function getWETH9(chainId: ChainId): Token {
     default:
       throw new Error("Unknown chain ID. This should never happen.");
   }
+}
+
+// check if need to wrap ether
+export function wrapIfEther(token: Token): Token {
+  if (
+    currencyEquals({ currency: token.currency, other: ETHER }) &&
+    token.address == ""
+  ) {
+    return getWETH9(token.chainId);
+  }
+  return token;
 }

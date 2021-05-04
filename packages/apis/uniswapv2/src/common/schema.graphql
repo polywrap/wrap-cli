@@ -26,7 +26,6 @@ type TradeOptions {
   feeOnTransfer: Boolean
 }
 
-
 type Token {
   chainId: ChainId!
   address: String!

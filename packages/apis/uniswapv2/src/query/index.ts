@@ -5,8 +5,6 @@ export * from "./route";
 export * from "./trade";
 export * from "./router";
 
-// TODO: make sure differing token decimals work out when testing
-
 // constants ///////////////////////////////////////////////////////////////////
 
 export const factoryAddress: () => string = () =>

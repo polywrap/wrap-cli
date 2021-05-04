@@ -1,4 +1,6 @@
 import {
+  Currency,
+  Input_currencyEquals,
   Input_tokenAmountEquals,
   Input_tokenEquals,
   Input_tokenSortsBefore,
@@ -6,13 +8,22 @@ import {
   TokenAmount,
 } from "./w3";
 
-import { BigInt } from "as-bigint";
+// Checks if the current instance is equal to another (has an identical chainId and address).
+export function currencyEquals(input: Input_currencyEquals): boolean {
+  const currency: Currency = input.currency;
+  const other: Currency = input.other;
+  return (
+    currency.name == other.name &&
+    currency.symbol == other.symbol &&
+    currency.decimals == other.decimals
+  );
+}
 
 // Checks if the current instance is equal to another (has an identical chainId and address).
 export function tokenEquals(input: Input_tokenEquals): boolean {
   const token: Token = input.token;
   const other: Token = input.other;
-  return token.chainId === other.chainId && token.address === other.address;
+  return token.chainId == other.chainId && token.address == other.address;
 }
 
 // compares two TokenAmount types for equality, returning true if they have the
@@ -22,7 +33,7 @@ export function tokenAmountEquals(input: Input_tokenAmountEquals): boolean {
   const amt1: TokenAmount = input.tokenAmount1;
   return (
     tokenEquals({ token: amt0.token, other: amt1.token }) &&
-    BigInt.fromString(amt0.amount).eq(BigInt.fromString(amt1.amount))
+    amt0.amount == amt1.amount
   );
 }
 
@@ -30,5 +41,7 @@ export function tokenAmountEquals(input: Input_tokenAmountEquals): boolean {
 export function tokenSortsBefore(input: Input_tokenSortsBefore): boolean {
   const token: Token = input.token;
   const other: Token = input.other;
-  return token.address.localeCompare(other.address) < 0;
+  const tokenAddress: string = token.address.toLowerCase();
+  const otherAddress: string = other.address.toLowerCase();
+  return tokenAddress.localeCompare(otherAddress) < 0;
 }
