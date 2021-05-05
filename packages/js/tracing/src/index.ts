@@ -6,6 +6,8 @@ import {
 import { ZipkinExporter } from "@opentelemetry/exporter-zipkin";
 import { WebTracerProvider } from "@opentelemetry/web";
 import * as api from "@opentelemetry/api";
+import { execSync, spawn } from "child_process";
+import path from "path";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const inspect = require("util-inspect");

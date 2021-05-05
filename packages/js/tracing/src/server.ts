@@ -1,21 +1,20 @@
 import express from "express";
+import { Tracer } from "./index";
 
 const app = express();
 const PORT = 4040;
 
 app.use(express.json());
 
-let level = "debug";
-
 app.get("/level", (req: express.Request, res: express.Response) => {
-  res.send(level);
+  res.send(Tracer.logLevel);
 });
 
 app.post("/level", (req: express.Request, res: express.Response) => {
-  level = req.body.level;
-  res.send(level);
+  Tracer.setLogLevel(req.body.level);
+  res.send(Tracer.logLevel);
 });
 
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`Logging server listening on port ${PORT}`);
 });
