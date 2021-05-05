@@ -10,6 +10,7 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
     args?: string[];
     value?: string;
     gasLimit: string;
+    gasPrice: string;
     connection?: ConnectionOverride;
   }) => {
     return await ethereum.sendTransaction(
@@ -18,6 +19,7 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
       input.args || [],
       input.value,
       input.gasLimit,
+      input.gasPrice,
       input.connection
     );
   },
