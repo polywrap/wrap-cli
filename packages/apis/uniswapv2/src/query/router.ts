@@ -20,7 +20,7 @@ export function swapCallParameters(
     throw new Error("Ether can't be trade input and output");
   }
 
-  if (!input.tradeOptions.ttl && !input.tradeOptions.deadline) {
+  if (input.tradeOptions.ttl.isNull && input.tradeOptions.deadline.isNull) {
     throw new Error("Either ttl or deadline have to be defined for trade");
   }
 
@@ -76,7 +76,7 @@ export function swapCallParameters(
           ? "swapExactTokensForTokensSupportingFeeOnTransferTokens"
           : "swapExactTokensForTokens";
         // (uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
-        args = [amountIn, amountOut, path.toString(), to, deadline];
+        args = [amountIn, amountOut, "[" + path.toString(), to, deadline];
         value = ZERO_HEX;
       }
       break;
