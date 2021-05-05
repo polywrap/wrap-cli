@@ -20,7 +20,7 @@ import {
   PluginModules,
   PluginFactory,
 } from "@web3api/core-js";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber, ethers, providers } from "ethers";
 
 // Export all types that are nested inside of EthereumConfig.
 // This is required for the extractPluginConfigs.ts script.
@@ -125,14 +125,13 @@ export class EthereumPlugin extends Plugin {
     const signer = connection.getSigner();
 
     const txData = contract.interface.encodeFunctionData(funcs[0], parsedArgs);
-    const txRequest = {
+    const txRequest: providers.TransactionRequest = {
       to: contract.address,
       data: txData,
       gasLimit: BigNumber.from(gasLimit),
-      gasPrice: BigNumber.from(20),
+      gasPrice: gasPrice ? BigNumber.from(gasPrice) : undefined,
       value: value,
     };
-    console.log(txRequest);
 
     const tx = await signer.sendTransaction(txRequest);
     return tx.hash;
