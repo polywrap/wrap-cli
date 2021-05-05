@@ -13,10 +13,11 @@
   ],
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
-    "lint": "eslint --color --ext .ts src/",
+    "lint": "eslint --color --ext .ts **/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
-    "test:watch": "jest --watch --passWithNoTests --verbose"
+    "test:watch": "jest --watch --passWithNoTests --verbose",
+    "server": "ts-node server/src/server.ts",
   },
   "dependencies": {
     "@opentelemetry/api": "^1.0.0-rc.0",
@@ -32,6 +33,7 @@
     "util-inspect": "0.1.8"
   },
   "devDependencies": {
+    "@types/express": "^4.17.8",
     "@types/jest": "26.0.8",
     "@types/uuid": "3.4.3",
     "jest": "26.2.2",
@@ -39,6 +41,7 @@
     "rimraf": "3.0.2",
     "ts-jest": "26.1.4",
     "ts-node": "8.10.2",
+    "ts-node-dev": "^1.0.0-pre.61",
     "typescript": "3.9.7"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
