@@ -79,20 +79,11 @@ export default {
     }
 
     if (command == "up") {
-      try {
-        await Tracer.startLoggingServer();
-      } catch (err) {
-        const commandFailError = intlMsg.commands_trace_error_commandFail({
-          error: err.command,
-        });
-        print.error(commandFailError);
-
-        process.exitCode = 1;
-        return;
-      }
+      await Tracer.startLoggingServer();
     }
 
     Tracer.setLogLevel(level as LogLevel);
     print.success(intlMsg.commands_trace_logLevelSetText({ level }));
+    process.exit(0);
   },
 };
