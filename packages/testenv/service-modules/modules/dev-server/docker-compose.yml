@@ -1,7 +1,7 @@
 version: '3'
 services:
   dev-server:
-    image: 'devserver:latest'
+    build: ./
     ports:
       - '${DEV_SERVER_PORT}:${DEV_SERVER_PORT}'
     links:

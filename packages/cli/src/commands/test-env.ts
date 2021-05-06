@@ -1,7 +1,8 @@
+import { getAggregatedManifest } from "./../../../testenv/src/index";
 import { withSpinner } from "../lib/helpers/spinner";
 import { intlMsg } from "../lib/intl";
 
-import { executeCommand } from "@web3api/testenv";
+import { testenv, getEnvVariables } from "@web3api/testenv";
 import { GluegunToolbox, print } from "gluegun";
 import chalk from "chalk";
 
@@ -11,12 +12,13 @@ ${chalk.bold("w3 test-env")} ${intlMsg.commands_testEnv_options_command()}
 Commands:
   ${chalk.bold("up")}    ${intlMsg.commands_testEnv_options_start()}
   ${chalk.bold("down")}  ${intlMsg.commands_testEnv_options_stop()}
+  ${chalk.bold("env-vars")}  ${intlMsg.commands_testEnv_options_env_vars()}
 `;
 
 export default {
   alias: ["t"],
   description: intlMsg.commands_testEnv_description(),
-  run: async (toolbox: GluegunToolbox): Promise<unknown> => {
+  run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { parameters } = toolbox;
     const command = parameters.first;
     const { modules } = parameters.options;
@@ -29,7 +31,12 @@ export default {
       return;
     }
 
-    if (command !== "up" && command !== "down") {
+    if (
+      command !== "up" &&
+      command !== "down" &&
+      command !== "env-vars" &&
+      command !== "manifest"
+    ) {
       const unrecognizedCommandMessage = intlMsg.commands_testEnv_error_unrecognizedCommand(
         {
           command: command,
@@ -40,24 +47,45 @@ export default {
       return;
     }
 
-    console.log(modulesToUse, command);
-
     if (command === "up") {
-      return await withSpinner(
+      await withSpinner(
         intlMsg.commands_testEnv_startup_text(),
         intlMsg.commands_testEnv_startup_error(),
         intlMsg.commands_testEnv_startup_warning(),
         async (_spinner) => {
-          await executeCommand("up", modulesToUse);
+          await testenv(true, { modules: modulesToUse });
         }
       );
     } else if (command === "down") {
-      return await withSpinner(
+      await withSpinner(
         intlMsg.commands_testEnv_shutdown_text(),
         intlMsg.commands_testEnv_shutdown_error(),
         intlMsg.commands_testEnv_shutdown_warning(),
         async (_spinner) => {
-          await executeCommand("down");
+          await testenv(false, { modules: modulesToUse });
+        }
+      );
+    } else if (command === "env-vars") {
+      let envVars = "";
+
+      await withSpinner(
+        intlMsg.commands_testEnv_envVars_text(),
+        intlMsg.commands_testEnv_envVars_error(),
+        intlMsg.commands_testEnv_envVars_warning(),
+        async (_spinner) => {
+          const vars = await getEnvVariables({ modules: modulesToUse });
+          envVars = `${vars.map((variable) => `\n- ${variable}`).join("")}`;
+        }
+      );
+
+      print.info(envVars);
+    } else if (command === "manifest") {
+      await withSpinner(
+        intlMsg.commands_testEnv_manifest_text(),
+        intlMsg.commands_testEnv_manifest_error(),
+        intlMsg.commands_testEnv_manifest_warning(),
+        async (_spinner) => {
+          await getAggregatedManifest({ modules: modulesToUse });
         }
       );
     } else {

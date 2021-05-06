@@ -9,9 +9,9 @@
   },
   "workspaces": {
     "packages": [
-      "./packages/**/*"
-    ],
-    "nohoist": ["./packages/testenv", "./packages/testenv/**/*", "./packages/testenv/**", "./packages/testenv/*", "@web3api/ipfs-service"]
+      "./packages/**/*",
+      "./demos/**/*"
+    ]
   },
   "scripts": {
     "reset": "yarn clean && yarn && yarn build",

@@ -14,9 +14,7 @@
     "dotenv": "8.2.0",
     "rimraf": "^3.0.2",
     "ts-node": "9.1.1",
-    "js-yaml": "3.14.0",
-    "@web3api/ipfs-service": "0.0.1",
-    "@web3api/devserver": "0.0.1"
+    "js-yaml": "3.14.0"
   },
   "devDependencies": {
     "@types/node": "12.12.2",
