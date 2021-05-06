@@ -1,6 +1,7 @@
 import { ETHER } from "../utils/Currency";
 import { tradeMaximumAmountIn, tradeMinimumAmountOut } from "./trade";
 import { Input_swapCallParameters, SwapParameters, TradeType } from "./w3";
+import { currencyEquals } from "./token";
 
 import { BigInt } from "as-bigint";
 
@@ -13,8 +14,14 @@ export function toHex(currencyAmount: BigInt): string {
 export function swapCallParameters(
   input: Input_swapCallParameters
 ): SwapParameters {
-  const etherIn = input.trade.inputAmount.token.currency === ETHER;
-  const etherOut = input.trade.outputAmount.token.currency === ETHER;
+  const etherIn = currencyEquals({
+    currency: input.trade.inputAmount.token.currency,
+    other: ETHER,
+  });
+  const etherOut = currencyEquals({
+    currency: input.trade.outputAmount.token.currency,
+    other: ETHER,
+  });
 
   if (etherIn && etherOut) {
     throw new Error("Ether can't be trade input and output");
