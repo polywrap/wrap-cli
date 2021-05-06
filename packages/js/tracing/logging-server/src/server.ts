@@ -1,5 +1,5 @@
 import express from "express";
-import { Tracer } from "@web3api/tracing";
+import { Tracer } from "../../src/index";
 
 const app = express();
 const PORT = 4040;

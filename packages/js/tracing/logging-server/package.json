@@ -1,6 +1,6 @@
 {
   "name": "@web3api/logging-server",
-  "description": "Web3API Core Logging server",
+  "description": "Web3API Core Tracing Logging Server",
   "version": "0.0.1-prealpha.21",
   "license": "MIT",
   "repository": {
@@ -12,14 +12,13 @@
     "build"
   ],
   "scripts": {
-    "build": "rimraf ./build && tsc --project tsconfig.build.json",
+    "build": "rimraf ./build && tsc --project tsconfig.json",
     "lint": "eslint --color --ext .ts src/",
     "server": "node build/server.js"
   },
   "devDependencies": {
     "@types/express": "^4.17.8",
     "@types/node": "^14.6.2",
-    "@web3api/tracing": "0.0.1-prealpha.21",
     "json-schema-to-typescript": "10.1.3",
     "rimraf": "3.0.2",
     "ts-node": "8.10.2",
