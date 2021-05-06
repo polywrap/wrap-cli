@@ -31,6 +31,7 @@
     "@web3api/ens-plugin-js": "0.0.1-prealpha.21",
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.21",
     "@web3api/ipfs-plugin-js": "0.0.1-prealpha.21",
+    "@web3api/logging-server": "0.0.1-prealpha.21",
     "@web3api/schema-bind": "0.0.1-prealpha.21",
     "@web3api/schema-compose": "0.0.1-prealpha.21",
     "@web3api/schema-parse": "0.0.1-prealpha.21",

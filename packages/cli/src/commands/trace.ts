@@ -3,7 +3,7 @@ import { intlMsg } from "../lib/intl";
 
 import { GluegunToolbox, print } from "gluegun";
 import chalk from "chalk";
-import { Tracer, LogLevel } from "@web3api/tracing";
+import { startLoggingServer, stopLoggingServer } from "../lib/logging";
 
 const commands = ["up", "down"];
 const logLevels = ["debug", "info", "error", "off"];
@@ -27,6 +27,7 @@ export default {
   description: intlMsg.commands_trace_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { parameters } = toolbox;
+    // eslint-disable-next-line prefer-const
     let { l, level, h, help } = parameters.options;
 
     level = level || l;
@@ -46,6 +47,7 @@ export default {
         }
       );
     } catch (e) {
+      command = null;
       print.error(e.message);
       process.exitCode = 1;
       return;
@@ -79,10 +81,12 @@ export default {
     }
 
     if (command == "up") {
-      await Tracer.startLoggingServer();
+      await startLoggingServer(false);
+    } else if (command == "down") {
+      await stopLoggingServer(false);
     }
 
-    Tracer.setLogLevel(level as LogLevel);
+    // Tracer.setLogLevel(level as LogLevel);
     print.success(intlMsg.commands_trace_logLevelSetText({ level }));
     process.exit(0);
   },
