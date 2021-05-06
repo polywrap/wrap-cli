@@ -4,11 +4,11 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 COPY ./.env ./
-COPY ./logging-server .
+COPY . .
 
 RUN yarn \
   && yarn build
 
-EXPOSE ${DEV_SERVER_PORT}
+EXPOSE ${LOGGING_SERVER_PORT}
 
 ENTRYPOINT yarn server

@@ -1,8 +1,10 @@
 import express from "express";
-import { Tracer } from "../../src/index";
+import { Tracer } from "@web3api/tracing";
+
+require("dotenv").config({ path: "./.env" });
 
 const app = express();
-const PORT = 4040;
+const PORT = process.env.LOGGING_SERVER_PORT;
 
 app.use(express.json());
 
