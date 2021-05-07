@@ -33,9 +33,7 @@ export function writeString(
   const encoder = new TextEncoder();
   const strBuffer = encoder.encode(str);
   const view = new Uint8Array(dst);
-  const result = memcpy(strBuffer, 0, view, dstOffset, strBuffer.byteLength);
-
-  return result;
+  return memcpy(strBuffer, 0, view, dstOffset, strBuffer.byteLength);
 }
 
 export function writeBytes(
@@ -45,9 +43,7 @@ export function writeBytes(
 ): Uint8Array {
   const bytesView = new Uint8Array(bytes);
   const dstView = new Uint8Array(dst);
-  const result = memcpy(bytesView, 0, dstView, dstOffset, bytesView.byteLength);
-
-  return result;
+  return memcpy(bytesView, 0, dstView, dstOffset, bytesView.byteLength);
 }
 
 export function readBytes(
@@ -57,7 +53,6 @@ export function readBytes(
 ): ArrayBuffer {
   const buffer = new ArrayBuffer(length);
   writeBytes(from.slice(offset, offset + length), buffer, 0);
-
   return buffer;
 }
 
@@ -68,9 +63,7 @@ export function readString(
 ): string {
   const buffer = readBytes(from, offset, length);
   const decoder = new TextDecoder();
-  const result = decoder.decode(buffer);
-
-  return result;
+  return decoder.decode(buffer);
 }
 
 export async function sleep(ms: number): Promise<void> {
