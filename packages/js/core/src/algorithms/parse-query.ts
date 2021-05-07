@@ -3,18 +3,12 @@ import { QueryApiInvocations, QueryDocument, Uri } from "../types";
 import { SelectionSetNode, ValueNode } from "graphql";
 import { Tracer } from "@web3api/tracing";
 
-export function parseQuery(
-  uri: Uri,
-  doc: QueryDocument,
-  variables?: Record<string, unknown>
-): QueryApiInvocations {
-  Tracer.startSpan("core: parseQuery");
-
-  Tracer.setAttribute("uri", uri);
-  Tracer.setAttribute("doc", doc);
-  Tracer.setAttribute("variables", variables);
-
-  try {
+export const parseQuery = Tracer.traceFunc(
+  "core: parseQuery", (
+    uri: Uri,
+    doc: QueryDocument,
+    variables?: Record<string, unknown>
+  ): QueryApiInvocations => {
     if (doc.definitions.length === 0) {
       throw Error("Empty query document found.");
     }
@@ -75,10 +69,7 @@ export function parseQuery(
               throw Error(`Duplicate input argument found: ${name}`);
             }
 
-            const valueDef = arg.value;
-            input[name] = extractValue(valueDef, variables);
-
-            Tracer.addEvent("extractValue done", input[name]);
+            input[name] = extractValue(arg.value, variables);
           }
         }
 
@@ -88,8 +79,6 @@ export function parseQuery(
 
         if (selectionResults) {
           resultFilter = extractSelections(selectionResults);
-
-          Tracer.addEvent("extractSelection done", resultFilter);
         }
 
         queryInvocations[invocationName] = {
@@ -102,95 +91,91 @@ export function parseQuery(
       }
     }
 
-    Tracer.addEvent("parse query finished", queryInvocations);
-
     return queryInvocations;
-  } catch (error) {
-    Tracer.recordException(error);
-
-    throw error;
-  } finally {
-    Tracer.endSpan();
   }
-}
+);
 
-function extractValue(
-  node: ValueNode,
-  variables?: Record<string, unknown>
-): unknown {
-  Tracer.addEvent("core: extractValue", { node, variables });
+const extractValue = Tracer.traceFunc(
+  "core: extractValue", (
+    node: ValueNode,
+    variables?: Record<string, unknown>
+  ): unknown => {
 
-  if (node.kind === "Variable") {
-    // Get the argument's value from the variables object
-    if (!variables) {
-      throw Error(
-        `Variables were not specified, tried to resolve variable from query. Name: ${node.name.value}\n`
-      );
+    if (node.kind === "Variable") {
+      // Get the argument's value from the variables object
+      if (!variables) {
+        throw Error(
+          `Variables were not specified, tried to resolve variable from query. Name: ${node.name.value}\n`
+        );
+      }
+
+      if (!variables[node.name.value]) {
+        throw Error(`Missing variable: ${node.name.value}`);
+      }
+
+      return variables[node.name.value];
+    } else if (
+      node.kind === "StringValue" ||
+      node.kind === "EnumValue" ||
+      node.kind === "BooleanValue"
+    ) {
+      return node.value;
+    } else if (node.kind === "IntValue") {
+      return Number.parseInt(node.value);
+    } else if (node.kind === "FloatValue") {
+      return Number.parseFloat(node.value);
+    } else if (node.kind === "NullValue") {
+      return null;
+    } else if (node.kind === "ListValue") {
+      const length = node.values.length;
+      const list = [];
+
+      for (let i = 0; i < length; ++i) {
+        list.push(extractValue(node.values[i], variables));
+      }
+
+      return list;
+    } else if (node.kind === "ObjectValue") {
+      const length = node.fields.length;
+      const object: Record<string, unknown> = {};
+
+      for (let i = 0; i < length; ++i) {
+        const field = node.fields[i];
+        object[field.name.value] = extractValue(field.value, variables);
+      }
+
+      return object;
+    } else {
+      throw Error(`Unsupported value node: ${node}`);
     }
+  }
+);
 
-    if (!variables[node.name.value]) {
-      throw Error(`Missing variable: ${node.name.value}`);
-    }
+export const extractSelections = Tracer.traceFunc(
+  "core: extractSelections", (
+    node: SelectionSetNode
+  ): Record<string, unknown> => {
 
-    return variables[node.name.value];
-  } else if (
-    node.kind === "StringValue" ||
-    node.kind === "EnumValue" ||
-    node.kind === "BooleanValue"
-  ) {
-    return node.value;
-  } else if (node.kind === "IntValue") {
-    return Number.parseInt(node.value);
-  } else if (node.kind === "FloatValue") {
-    return Number.parseFloat(node.value);
-  } else if (node.kind === "NullValue") {
-    return null;
-  } else if (node.kind === "ListValue") {
-    const length = node.values.length;
-    const result = [];
-
-    for (let i = 0; i < length; ++i) {
-      result.push(extractValue(node.values[i], variables));
-    }
-
-    return result;
-  } else if (node.kind === "ObjectValue") {
-    const length = node.fields.length;
     const result: Record<string, unknown> = {};
 
-    for (let i = 0; i < length; ++i) {
-      const field = node.fields[i];
-      result[field.name.value] = extractValue(field.value, variables);
+    for (const selection of node.selections) {
+      if (selection.kind !== "Field") {
+        throw Error(`Unsupported result selection type found: ${selection.kind}`);
+      }
+
+      const name = selection.name.value;
+
+      if (result[name]) {
+        throw Error(`Duplicate result selections found: ${name}`);
+      }
+
+      if (selection.selectionSet) {
+        result[name] = extractSelections(selection.selectionSet);
+      } else {
+        result[name] = true;
+      }
     }
 
     return result;
-  } else {
-    throw Error(`Unsupported value node: ${node}`);
   }
-}
-
-function extractSelections(node: SelectionSetNode): Record<string, unknown> {
-  Tracer.addEvent("core: extractSelections", { node });
-
-  const result: Record<string, unknown> = {};
-
-  for (const selection of node.selections) {
-    if (selection.kind !== "Field") {
-      throw Error(`Unsupported result selection type found: ${selection.kind}`);
-    }
-
-    const name = selection.name.value;
-
-    if (result[name]) {
-      throw Error(`Duplicate result selections found: ${name}`);
-    }
-
-    if (selection.selectionSet) {
-      result[name] = extractSelections(selection.selectionSet);
-    } else {
-      result[name] = true;
-    }
-  }
-
-  return result;
-}
+);

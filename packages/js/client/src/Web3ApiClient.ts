@@ -23,6 +23,7 @@ import { Tracer } from "@web3api/tracing";
 
 export interface ClientConfig<TUri = string> {
   redirects?: UriRedirect<TUri>[];
+  tracingEnabled?: boolean;
 }
 
 export class Web3ApiClient implements Client {
@@ -31,47 +32,54 @@ export class Web3ApiClient implements Client {
   // and handle cases where the are multiple jumps. For exmaple, if
   // A => B => C, then the cache should have A => C, and B => C.
   private _apiCache: ApiCache = new Map<string, Api>();
-  private _config: ClientConfig<Uri>;
+  private _config: ClientConfig<Uri> = { };
 
-  constructor(config?: ClientConfig, private _traceEnabled: boolean = false) {
-    if (this._traceEnabled) {
-      this.enableTracing();
+  constructor(config?: ClientConfig) {
+    try {
+      if (!config) {
+        this._config = {
+          redirects: [],
+          tracingEnabled: false
+        };
+      }
+
+      this.tracingEnabled(!!config?.tracingEnabled);
+
+      Tracer.startSpan("Web3ApiClient: constructor");
+
+      if (config) {
+        this._config = {
+          ...config,
+          redirects: config.redirects
+            ? sanitizeUriRedirects(config.redirects)
+            : [],
+        };
+      }
+
+      if (!this._config.redirects) {
+        this._config.redirects = [];
+      }
+
+      // Add all default redirects (IPFS, ETH, ENS)
+      this._config.redirects.push(...getDefaultRedirects());
+
+      Tracer.setAttribute("config", this._config);
+    } catch (error) {
+      Tracer.recordException(error);
+      throw error;
+    } finally {
+      Tracer.endSpan();
     }
+  }
 
-    Tracer.startSpan("Web3ApiClient: constructor");
-
-    if (config) {
-      this._config = {
-        ...config,
-        redirects: config.redirects
-          ? sanitizeUriRedirects(config.redirects)
-          : [],
-      };
+  public tracingEnabled(enable: boolean): void {
+    if (enable) {
+      Tracer.enableTracing("Web3ApiClient");
     } else {
-      this._config = {
-        redirects: [],
-      };
+      Tracer.disableTracing();
     }
 
-    if (!this._config.redirects) {
-      this._config.redirects = [];
-    }
-
-    // Add all default redirects (IPFS, ETH, ENS)
-    this._config.redirects.push(...getDefaultRedirects());
-
-    Tracer.setAttribute("config", this._config);
-    Tracer.addEvent("Created");
-
-    Tracer.endSpan();
-  }
-
-  public enableTracing(): void {
-    Tracer.enableTracing("web3api-client");
-  }
-
-  public disableTracing(): void {
-    Tracer.disableTracing();
+    this._config.tracingEnabled = enable;
   }
 
   public redirects(): readonly UriRedirect<Uri>[] {
@@ -84,136 +92,130 @@ export class Web3ApiClient implements Client {
   >(
     options: QueryApiOptions<TVariables, string>
   ): Promise<QueryApiResult<TData>> {
-    try {
-      const { uri, query, variables } = options;
 
-      Tracer.startSpan("Web3ApiClient: query");
+    const run = Tracer.traceFunc(
+      "Web3ApiClient: query", async (
+        options: QueryApiOptions<TVariables, string>
+      ): Promise<QueryApiResult<TData>> => {
 
-      Tracer.setAttribute("options", options);
+        const { uri, query, variables } = options;
 
-      // Convert the query string into a query document
-      const queryDocument =
-        typeof query === "string" ? createQueryDocument(query) : query;
+        // Convert the query string into a query document
+        const queryDocument =
+          typeof query === "string" ? createQueryDocument(query) : query;
 
-      // Parse the query to understand what's being invoked
-      const queryInvocations = parseQuery(
-        new Uri(uri),
-        queryDocument,
-        variables
-      );
-
-      // Execute all invocations in parallel
-      const parallelInvocations: Promise<{
-        name: string;
-        result: InvokeApiResult<unknown>;
-      }>[] = [];
-
-      for (const invocationName of Object.keys(queryInvocations)) {
-        parallelInvocations.push(
-          this.invoke({
-            ...queryInvocations[invocationName],
-            uri: queryInvocations[invocationName].uri.uri,
-            decode: true,
-          }).then((result) => ({
-            name: invocationName,
-            result,
-          }))
+        // Parse the query to understand what's being invoked
+        const queryInvocations = parseQuery(
+          new Uri(uri),
+          queryDocument,
+          variables
         );
-      }
 
-      // Await the invocations
-      const invocationResults = await Promise.all(parallelInvocations);
+        // Execute all invocations in parallel
+        const parallelInvocations: Promise<{
+          name: string;
+          result: InvokeApiResult<unknown>;
+        }>[] = [];
 
-      Tracer.addEvent("Invocations finished", invocationResults);
-
-      // Aggregate all invocation results
-      const data: Record<string, unknown> = {};
-      const errors: Error[] = [];
-
-      for (const invocation of invocationResults) {
-        data[invocation.name] = invocation.result.data;
-        if (invocation.result.error) {
-          errors.push(invocation.result.error);
+        for (const invocationName of Object.keys(queryInvocations)) {
+          parallelInvocations.push(
+            this.invoke({
+              ...queryInvocations[invocationName],
+              uri: queryInvocations[invocationName].uri.uri,
+              decode: true,
+            }).then((result) => ({
+              name: invocationName,
+              result,
+            }))
+          );
         }
+
+        // Await the invocations
+        const invocationResults = await Promise.all(parallelInvocations);
+
+        Tracer.addEvent("invocationResults", invocationResults);
+
+        // Aggregate all invocation results
+        const data: Record<string, unknown> = {};
+        const errors: Error[] = [];
+
+        for (const invocation of invocationResults) {
+          data[invocation.name] = invocation.result.data;
+          if (invocation.result.error) {
+            errors.push(invocation.result.error);
+          }
+        }
+
+        return {
+          data: data as TData,
+          errors: errors.length === 0 ? undefined : errors,
+        };
       }
+    );
 
-      Tracer.setAttribute("data", data);
-      Tracer.setAttribute("errors", errors);
-
-      return {
-        data: data as TData,
-        errors: errors.length === 0 ? undefined : errors,
-      };
-    } catch (error) {
-      Tracer.recordException(error);
-
-      if (error.length) {
-        return { errors: error };
-      } else {
-        return { errors: [error] };
-      }
-    } finally {
-      Tracer.endSpan();
-    }
+    return await run(options)
+      .catch((error) => {
+        if (error.length) {
+          return { errors: error };
+        } else {
+          return { errors: [error] };
+        }
+      });
   }
 
   public async invoke<TData = unknown>(
     options: InvokeApiOptions<string>
   ): Promise<InvokeApiResult<TData>> {
-    try {
-      const uri = new Uri(options.uri);
 
-      Tracer.startSpan("Web3ApiClient: invoke");
+    const run = Tracer.traceFunc(
+      "Web3ApiClient: invoke", async (
+        options: InvokeApiOptions<string>
+      ): Promise<InvokeApiResult<TData>> => {
 
-      Tracer.setAttribute("options", options);
+        const uri = new Uri(options.uri);
+        const api = await this.loadWeb3Api(uri);
 
-      const api = await this.loadWeb3Api(uri);
-
-      Tracer.addEvent("Load web3api", api);
-
-      return (await api.invoke(
-        {
+        const result = await api.invoke({
           ...options,
           uri,
-        },
-        this
-      )) as TData;
-    } catch (error) {
-      Tracer.recordException(error);
+        }, this) as TData;
 
-      return { error: error };
-    } finally {
-      Tracer.endSpan();
-    }
+        return result;
+      }
+    );
+
+    return run(options);
   }
 
   public async loadWeb3Api(uri: Uri): Promise<Api> {
-    let api = this._apiCache.get(uri.uri);
 
-    Tracer.startSpan("Web3ApiClient: loadWeb3Api");
+    const run = Tracer.traceFunc(
+      "Web3ApiClient: loadWeb3Api", async (
+        uri: Uri
+      ): Promise<Api> => {
 
-    Tracer.setAttribute("uri", uri);
+        let api = this._apiCache.get(uri.uri);
 
-    if (!api) {
-      api = await resolveUri(
-        uri,
-        this,
-        (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
-        (uri: Uri, manifest: Manifest, apiResolver: Uri) =>
-          new WasmWeb3Api(uri, manifest, apiResolver)
-      );
+        if (!api) {
+          api = await resolveUri(
+            uri,
+            this,
+            (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
+            (uri: Uri, manifest: Manifest, apiResolver: Uri) =>
+              new WasmWeb3Api(uri, manifest, apiResolver)
+          );
 
-      Tracer.addEvent("Resolve uri", api);
+          if (!api) {
+            throw Error(`Unable to resolve Web3API at uri: ${uri}`);
+          }
 
-      if (!api) {
-        throw Error(`Unable to resolve Web3API at uri: ${uri}`);
+          this._apiCache.set(uri.uri, api);
+        }
+
+        return api;
       }
+    );
 
-      this._apiCache.set(uri.uri, api);
-    }
-
-    Tracer.endSpan();
-
-    return api;
+    return run(uri);
   }
 }

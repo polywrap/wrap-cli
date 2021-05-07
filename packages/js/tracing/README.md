@@ -2,20 +2,26 @@
 
 #### Steps to use tracing
 
-- Run the zipkin client using docker
+1. Run the zipkin client using docker
 
-  ```
-  docker run -d -p 9411:9411 openzipkin/zipkin
-  ```
+    ```
+    docker run -d -p 9411:9411 openzipkin/zipkin
+    ```
 
-- Enable tracing when creating the `Web3ApiClient`
-  The second parameter of the `Web3ApiClient`'s constructor is `_traceEnabled`.
+2. Enable tracing when creating the `Web3ApiClient`
 
-  ```
-  new Web3ApiClient({ ... }, true)
-  ```
+    ```typescript
+    const client = new Web3ApiClient({
+      ...,
+      tracingEnabled: true
+    })
+    ```
 
-  Or you can turn on tracing while running the `Web3ApiClient` by calling the `enableTracing` method of `Web3ApiClient`. (There's also the `disableTracing` method to disable tracing at any moment)
+    Or you can turn on tracing while running the `Web3ApiClient` by calling the `tracingEnabled` method of `Web3ApiClient`.
 
-- Once you run the dapp and started producing logs, go to zipkin client which is running on `https://localhost:9411`.
-  There you can just click `RUN QUERY` button without any filters to show all the logs.
+    ```typescript
+    // Turn tracing off
+    client.tracingEnabled(false);
+    ```
+
+3. Once you run the dapp and started producing logs, go to zipkin client which is running on `https://localhost:9411`. There you can click `RUN QUERY` button without any filters to show all the logs.

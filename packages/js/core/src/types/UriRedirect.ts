@@ -30,8 +30,7 @@ export function sanitizeUriRedirects(input: UriRedirect[]): UriRedirect<Uri>[] {
     });
   }
 
-  Tracer.addEvent("sanitize Uri redirects finished", output);
+  Tracer.setAttribute("output", output);
   Tracer.endSpan();
-
   return output;
 }

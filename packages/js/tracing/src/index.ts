@@ -7,6 +7,7 @@ import {
 import { ZipkinExporter } from "@opentelemetry/exporter-zipkin";
 import { WebTracerProvider } from "@opentelemetry/web";
 import * as api from "@opentelemetry/api";
+import { v4 as uuid } from "uuid";
 
 export class Tracer {
   public static traceEnabled = false;
@@ -20,10 +21,12 @@ export class Tracer {
 
   static enableTracing(tracerName: string): void {
     this.traceEnabled = true;
-    this.initProvider();
+    this._initProvider();
 
     if (this._provider) {
-      this._tracer = this._provider.getTracer(tracerName);
+      this._tracer = this._provider.getTracer(
+        `${tracerName} ${uuid().substr(0, 8)}`
+      );
     }
   }
 
@@ -31,22 +34,10 @@ export class Tracer {
     this.traceEnabled = false;
   }
 
-  static pushSpan(span: api.Span): void {
-    this._spans.push(span);
-  }
-
-  static currentSpan(): api.Span | undefined {
-    return this._spans.slice(-1)[0];
-  }
-
-  static popSpan(): void {
-    this._spans.pop();
-  }
-
   static startSpan(spanName: string): void {
     if (!this.traceEnabled) return;
 
-    const currentSpan = this.currentSpan();
+    const currentSpan = this._currentSpan();
     const span = this._tracer.startSpan(
       spanName,
       {},
@@ -54,13 +45,23 @@ export class Tracer {
         ? api.setSpanContext(api.context.active(), currentSpan.context())
         : undefined
     );
-    this.pushSpan(span);
+    this._pushSpan(span);
+  }
+
+  static endSpan(): void {
+    if (!this.traceEnabled) return;
+
+    const span = this._currentSpan();
+    if (span) {
+      span.end();
+      this._popSpan();
+    }
   }
 
   static setAttribute(attrName: string, data: unknown): void {
     if (!this.traceEnabled) return;
 
-    const span = this.currentSpan();
+    const span = this._currentSpan();
     if (span) {
       span.setAttribute(attrName, JSON.stringify(data));
     }
@@ -69,7 +70,7 @@ export class Tracer {
   static addEvent(event: string, data?: unknown): void {
     if (!this.traceEnabled) return;
 
-    const span = this.currentSpan();
+    const span = this._currentSpan();
 
     if (span) {
       span.addEvent(event, { data: JSON.stringify(data) });
@@ -79,7 +80,7 @@ export class Tracer {
   static recordException(error: api.Exception): void {
     if (!this.traceEnabled) return;
 
-    const span = this.currentSpan();
+    const span = this._currentSpan();
 
     if (span) {
       // recordException converts the error into a span event.
@@ -91,17 +92,31 @@ export class Tracer {
     }
   }
 
-  static endSpan(): void {
-    if (!this.traceEnabled) return;
-
-    const span = this.currentSpan();
-    if (span) {
-      span.end();
-      this.popSpan();
+  static traceFunc<TArgs extends Array<any>, TReturn>(
+    span: string,
+    func: (...args: TArgs) => TReturn
+  ) {
+    return (...args: TArgs): TReturn => {
+      try {
+        this.startSpan(span);
+        this.setAttribute("input", { ...args })
+  
+        const result = func(...args)
+  
+        this.setAttribute("output", result);
+        return result;
+      } catch (error) {
+        this.recordException(error);
+        throw error;
+      } finally {
+        this.endSpan();
+      }
     }
   }
 
-  static initProvider(): void {
+  // TODO: configure output types (console, file, server, etc)
+
+  static _initProvider(): void {
     if (this._provider) return;
 
     if (typeof window === "undefined") {
@@ -120,5 +135,17 @@ export class Tracer {
     );
 
     this._provider.register();
+  }
+
+  static _pushSpan(span: api.Span): void {
+    this._spans.push(span);
+  }
+
+  static _currentSpan(): api.Span | undefined {
+    return this._spans.slice(-1)[0];
+  }
+
+  static _popSpan(): void {
+    this._spans.pop();
   }
 }
