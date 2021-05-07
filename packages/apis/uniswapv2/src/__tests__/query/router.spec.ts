@@ -5,7 +5,6 @@ import { ChainId, Pair, Token, TradeType, } from "../../query/w3";
 import { ETHER } from "../../utils/Currency";
 import { getWETH9 } from "../../utils/utils";
 import { BigInt } from "as-bigint";
-import { JSON } from "assemblyscript-json";
 
 const token0: Token = {
   chainId: ChainId.MAINNET,
@@ -93,7 +92,7 @@ describe("swapCallParameters", () => {
       expect(result.methodName).toStrictEqual("swapExactETHForTokens");
       expect(result.args.slice(0, -1)).toStrictEqual([
         "0x51",
-        JSON.from([getWETH9(ChainId.MAINNET).address, token0.address, token1.address]).toString(),
+        '["' + [getWETH9(ChainId.MAINNET).address, token0.address, token1.address].join('","') + '"]',
         "0x0000000000000000000000000000000000000004"
       ]);
       expect(result.value).toStrictEqual("0x64");
@@ -137,7 +136,7 @@ describe("swapCallParameters", () => {
       expect(result.methodName).toStrictEqual("swapExactETHForTokens");
       expect(result.args).toStrictEqual([
         "0x51",
-        JSON.from([getWETH9(ChainId.MAINNET).address, token0.address, token1.address]).toString(),
+        '["' + ([getWETH9(ChainId.MAINNET).address, token0.address, token1.address]).join('","') + '"]',
         "0x0000000000000000000000000000000000000004",
         "0x32"
       ]);
@@ -176,7 +175,7 @@ describe("swapCallParameters", () => {
       expect(result.args.slice(0, -1)).toStrictEqual([
         "0x64",
         "0x51",
-        JSON.from([token1.address, token0.address, getWETH9(ChainId.MAINNET).address]).toString(),
+        '["' + [token1.address, token0.address, getWETH9(ChainId.MAINNET).address].join('","') + '"]',
         "0x0000000000000000000000000000000000000004"
       ]);
       expect(result.value).toStrictEqual("0x0");
@@ -213,7 +212,7 @@ describe("swapCallParameters", () => {
       expect(result.args.slice(0, -1)).toStrictEqual([
         "0x64",
         "0x59",
-        JSON.from([token0.address, token1.address]).toString(),
+        '["' + [token0.address, token1.address].join('","') + '"]',
         "0x0000000000000000000000000000000000000004"
       ]);
       expect(result.value).toStrictEqual("0x0");
@@ -255,7 +254,7 @@ describe("swapCallParameters", () => {
       expect(result.methodName).toStrictEqual("swapETHForExactTokens");
       expect(result.args.slice(0, -1)).toStrictEqual([
         "0x64",
-        JSON.from([getWETH9(ChainId.MAINNET).address, token0.address, token1.address]).toString(),
+        '["' + [getWETH9(ChainId.MAINNET).address, token0.address, token1.address].join('","') + '"]',
         "0x0000000000000000000000000000000000000004"
       ]);
       expect(result.value).toStrictEqual("0x80");
@@ -300,7 +299,7 @@ describe("swapCallParameters", () => {
       expect(result.args.slice(0, -1)).toStrictEqual([
         "0x64",
         "0x80",
-        JSON.from([token1.address, token0.address, getWETH9(ChainId.MAINNET).address]).toString(),
+        '["' + [token1.address, token0.address, getWETH9(ChainId.MAINNET).address].join('","') + '"]',
         "0x0000000000000000000000000000000000000004"
       ]);
       expect(result.value).toStrictEqual("0x0");
@@ -337,7 +336,7 @@ describe("swapCallParameters", () => {
       expect(result.args.slice(0, -1)).toStrictEqual([
         "0x64",
         "0x71",
-        JSON.from([token0.address, token1.address]).toString(),
+        '["' + [token0.address, token1.address].join('","') + '"]',
         "0x0000000000000000000000000000000000000004"
       ]);
       expect(result.value).toStrictEqual("0x0");
@@ -384,7 +383,7 @@ describe("swapCallParameters", () => {
         expect(result.methodName).toStrictEqual("swapExactETHForTokensSupportingFeeOnTransferTokens");
         expect(result.args.slice(0, -1)).toStrictEqual([
           "0x51",
-          JSON.from([getWETH9(ChainId.MAINNET).address, token0.address, token1.address]).toString(),
+          '["' + [getWETH9(ChainId.MAINNET).address, token0.address, token1.address].join('","') + '"]',
           "0x0000000000000000000000000000000000000004"
         ]);
         expect(result.value).toStrictEqual("0x64");
@@ -425,7 +424,7 @@ describe("swapCallParameters", () => {
         expect(result.args.slice(0, -1)).toStrictEqual([
           "0x64",
           "0x51",
-          JSON.from([token1.address, token0.address, getWETH9(ChainId.MAINNET).address]).toString(),
+          '["' + [token1.address, token0.address, getWETH9(ChainId.MAINNET).address].join('","') + '"]',
           "0x0000000000000000000000000000000000000004"
         ]);
         expect(result.value).toStrictEqual("0x0");
@@ -462,7 +461,7 @@ describe("swapCallParameters", () => {
         expect(result.args.slice(0, -1)).toStrictEqual([
           "0x64",
           "0x59",
-          JSON.from([token0.address, token1.address]).toString(),
+          '["' + [token0.address, token1.address].join('","') + '"]',
           "0x0000000000000000000000000000000000000004"
         ]);
         expect(result.value).toStrictEqual("0x0");

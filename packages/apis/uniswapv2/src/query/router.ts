@@ -53,7 +53,7 @@ export function swapCallParameters(
   const pathArray = input.trade.route.path.map<string>(
     (token) => token.address
   );
-  const path = JSON.from<string[]>(pathArray).toString();
+  const path = '["' + pathArray.join('","') + '"]';
   const deadline = !input.tradeOptions.ttl.isNull
     ? "0x" +
       (
