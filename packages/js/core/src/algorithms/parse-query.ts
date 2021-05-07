@@ -4,7 +4,8 @@ import { SelectionSetNode, ValueNode } from "graphql";
 import { Tracer } from "@web3api/tracing";
 
 export const parseQuery = Tracer.traceFunc(
-  "core: parseQuery", (
+  "core: parseQuery",
+  (
     uri: Uri,
     doc: QueryDocument,
     variables?: Record<string, unknown>
@@ -96,11 +97,8 @@ export const parseQuery = Tracer.traceFunc(
 );
 
 const extractValue = Tracer.traceFunc(
-  "core: extractValue", (
-    node: ValueNode,
-    variables?: Record<string, unknown>
-  ): unknown => {
-
+  "core: extractValue",
+  (node: ValueNode, variables?: Record<string, unknown>): unknown => {
     if (node.kind === "Variable") {
       // Get the argument's value from the variables object
       if (!variables) {
@@ -152,15 +150,15 @@ const extractValue = Tracer.traceFunc(
 );
 
 export const extractSelections = Tracer.traceFunc(
-  "core: extractSelections", (
-    node: SelectionSetNode
-  ): Record<string, unknown> => {
-
+  "core: extractSelections",
+  (node: SelectionSetNode): Record<string, unknown> => {
     const result: Record<string, unknown> = {};
 
     for (const selection of node.selections) {
       if (selection.kind !== "Field") {
-        throw Error(`Unsupported result selection type found: ${selection.kind}`);
+        throw Error(
+          `Unsupported result selection type found: ${selection.kind}`
+        );
       }
 
       const name = selection.name.value;

@@ -10,7 +10,8 @@ import { Tracer } from "@web3api/tracing";
 export { PluginConfigs };
 
 export const createWeb3ApiClient = Tracer.traceFunc(
-  "createWeb3ApiClient", async (
+  "createWeb3ApiClient",
+  async (
     plugins: PluginConfigs,
     tracingEnabled = false
   ): Promise<Web3ApiClient> => {

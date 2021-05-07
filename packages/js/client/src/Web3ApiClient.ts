@@ -32,14 +32,14 @@ export class Web3ApiClient implements Client {
   // and handle cases where the are multiple jumps. For exmaple, if
   // A => B => C, then the cache should have A => C, and B => C.
   private _apiCache: ApiCache = new Map<string, Api>();
-  private _config: ClientConfig<Uri> = { };
+  private _config: ClientConfig<Uri> = {};
 
   constructor(config?: ClientConfig) {
     try {
       if (!config) {
         this._config = {
           redirects: [],
-          tracingEnabled: false
+          tracingEnabled: false,
         };
       }
 
@@ -92,12 +92,11 @@ export class Web3ApiClient implements Client {
   >(
     options: QueryApiOptions<TVariables, string>
   ): Promise<QueryApiResult<TData>> {
-
     const run = Tracer.traceFunc(
-      "Web3ApiClient: query", async (
+      "Web3ApiClient: query",
+      async (
         options: QueryApiOptions<TVariables, string>
       ): Promise<QueryApiResult<TData>> => {
-
         const { uri, query, variables } = options;
 
         // Convert the query string into a query document
@@ -153,32 +152,33 @@ export class Web3ApiClient implements Client {
       }
     );
 
-    return await run(options)
-      .catch((error) => {
-        if (error.length) {
-          return { errors: error };
-        } else {
-          return { errors: [error] };
-        }
-      });
+    return await run(options).catch((error) => {
+      if (error.length) {
+        return { errors: error };
+      } else {
+        return { errors: [error] };
+      }
+    });
   }
 
   public async invoke<TData = unknown>(
     options: InvokeApiOptions<string>
   ): Promise<InvokeApiResult<TData>> {
-
     const run = Tracer.traceFunc(
-      "Web3ApiClient: invoke", async (
+      "Web3ApiClient: invoke",
+      async (
         options: InvokeApiOptions<string>
       ): Promise<InvokeApiResult<TData>> => {
-
         const uri = new Uri(options.uri);
         const api = await this.loadWeb3Api(uri);
 
-        const result = await api.invoke({
-          ...options,
-          uri,
-        }, this) as TData;
+        const result = (await api.invoke(
+          {
+            ...options,
+            uri,
+          },
+          this
+        )) as TData;
 
         return result;
       }
@@ -188,12 +188,9 @@ export class Web3ApiClient implements Client {
   }
 
   public async loadWeb3Api(uri: Uri): Promise<Api> {
-
     const run = Tracer.traceFunc(
-      "Web3ApiClient: loadWeb3Api", async (
-        uri: Uri
-      ): Promise<Api> => {
-
+      "Web3ApiClient: loadWeb3Api",
+      async (uri: Uri): Promise<Api> => {
         let api = this._apiCache.get(uri.uri);
 
         if (!api) {

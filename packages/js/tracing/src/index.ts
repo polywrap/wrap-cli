@@ -92,17 +92,17 @@ export class Tracer {
     }
   }
 
-  static traceFunc<TArgs extends Array<any>, TReturn>(
+  static traceFunc<TArgs extends Array<unknown>, TReturn>(
     span: string,
     func: (...args: TArgs) => TReturn
   ) {
     return (...args: TArgs): TReturn => {
       try {
         this.startSpan(span);
-        this.setAttribute("input", { ...args })
-  
-        const result = func(...args)
-  
+        this.setAttribute("input", { ...args });
+
+        const result = func(...args);
+
         this.setAttribute("output", result);
         return result;
       } catch (error) {
@@ -111,7 +111,7 @@ export class Tracer {
       } finally {
         this.endSpan();
       }
-    }
+    };
   }
 
   // TODO: configure output types (console, file, server, etc)
