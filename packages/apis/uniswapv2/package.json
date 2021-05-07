@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "as-bigfloat": "^0.0.4",
-    "as-bigint": "^0.2.4",
+    "as-bigint": "^0.2.4"
   },
   "devDependencies": {
     "@as-pect/cli": "^6.0.0",
