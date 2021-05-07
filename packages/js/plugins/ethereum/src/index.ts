@@ -105,7 +105,7 @@ export class EthereumPlugin extends Plugin {
     address: Address,
     method: string,
     args: string[],
-    value = "0",
+    value?: string,
     gasLimit?: string,
     gasPrice?: string,
     connectionOverride?: ConnectionOverride
@@ -114,9 +114,9 @@ export class EthereumPlugin extends Plugin {
     const contract = connection.getContract(address, [method]);
     const parsedArgs: (string | string[])[] = [];
     for (const arg of args) {
-      if (arg.startsWith("[")) {
-        parsedArgs.push(arg.replace("[", "").split(","));
-      } else {
+      try {
+        parsedArgs.push(JSON.parse(arg));
+      } catch {
         parsedArgs.push(arg);
       }
     }
