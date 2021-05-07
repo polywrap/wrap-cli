@@ -4,6 +4,7 @@ import { Input_swapCallParameters, SwapParameters, TradeType } from "./w3";
 import { currencyEquals } from "./token";
 
 import { BigInt } from "as-bigint";
+import { JSON } from "assemblyscript-json";
 
 const ZERO_HEX = "0x0";
 
@@ -49,7 +50,10 @@ export function swapCallParameters(
     )
   );
 
-  const path = input.trade.route.path.map<string>((token) => token.address);
+  const pathArray = input.trade.route.path.map<string>(
+    (token) => token.address
+  );
+  const path = JSON.from<string[]>(pathArray).toString();
   const deadline = !input.tradeOptions.ttl.isNull
     ? "0x" +
       (
@@ -69,21 +73,21 @@ export function swapCallParameters(
           ? "swapExactETHForTokensSupportingFeeOnTransferTokens"
           : "swapExactETHForTokens";
         // (uint amountOutMin, address[] calldata path, address to, uint deadline)
-        args = [amountOut, path.toString(), to, deadline];
+        args = [amountOut, path, to, deadline];
         value = amountIn;
       } else if (etherOut) {
         methodName = !useFeeOnTransfer.isNull
           ? "swapExactTokensForETHSupportingFeeOnTransferTokens"
           : "swapExactTokensForETH";
         // (uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
-        args = [amountIn, amountOut, path.toString(), to, deadline];
+        args = [amountIn, amountOut, path, to, deadline];
         value = ZERO_HEX;
       } else {
         methodName = !useFeeOnTransfer.isNull
           ? "swapExactTokensForTokensSupportingFeeOnTransferTokens"
           : "swapExactTokensForTokens";
         // (uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
-        args = [amountIn, amountOut, "[" + path.toString(), to, deadline];
+        args = [amountIn, amountOut, path, to, deadline];
         value = ZERO_HEX;
       }
       break;
@@ -95,17 +99,17 @@ export function swapCallParameters(
       if (etherIn) {
         methodName = "swapETHForExactTokens";
         // (uint amountOut, address[] calldata path, address to, uint deadline)
-        args = [amountOut, path.toString(), to, deadline];
+        args = [amountOut, path, to, deadline];
         value = amountIn;
       } else if (etherOut) {
         methodName = "swapTokensForExactETH";
         // (uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
-        args = [amountOut, amountIn, path.toString(), to, deadline];
+        args = [amountOut, amountIn, path, to, deadline];
         value = ZERO_HEX;
       } else {
         methodName = "swapTokensForExactTokens";
         // (uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
-        args = [amountOut, amountIn, path.toString(), to, deadline];
+        args = [amountOut, amountIn, path, to, deadline];
         value = ZERO_HEX;
       }
       break;
