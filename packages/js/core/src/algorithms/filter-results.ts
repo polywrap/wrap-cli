@@ -1,16 +1,12 @@
 import { Tracer } from "@web3api/tracing";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export function filterResults(
-  result: unknown,
-  filter: Record<string, any>
-): unknown {
-  Tracer.startSpan("core: filterResults");
+export const filterResults = Tracer.traceFunc(
+  "core: filterResults", (
+    result: unknown,
+    filter: Record<string, any>
+  ): unknown => {
 
-  Tracer.setAttribute("result", result);
-  Tracer.setAttribute("filter", filter);
-
-  try {
     if (!result) {
       return result;
     }
@@ -38,14 +34,6 @@ export function filterResults(
       }
     }
 
-    Tracer.addEvent("filtering finished", filtered);
-
     return filtered;
-  } catch (error) {
-    Tracer.recordException(error);
-
-    throw error;
-  } finally {
-    Tracer.endSpan();
   }
-}
+);

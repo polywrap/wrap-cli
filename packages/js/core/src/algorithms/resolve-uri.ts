@@ -5,23 +5,19 @@ import { getImplementations } from "./get-implementations";
 
 import { Tracer } from "@web3api/tracing";
 
-export async function resolveUri(
-  uri: Uri,
-  client: Client,
-  createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
-  createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api,
-  noValidate?: boolean
-): Promise<Api> {
-  Tracer.startSpan("core: resolveUri");
+export const resolveUri = Tracer.traceFunc(
+  "core: resolveUri", async (
+    uri: Uri,
+    client: Client,
+    createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
+    createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api,
+    noValidate?: boolean
+  ): Promise<Api> => {
 
-  Tracer.setAttribute("uri", uri);
-  Tracer.setAttribute("client", client);
-  Tracer.setAttribute("noValidate", noValidate);
-
-  try {
     let resolvedUri = uri;
+
     // Keep track of past URIs to avoid infinite loops
-    const uriHistory: { uri: string; source: string }[] = [
+    let uriHistory: { uri: string; source: string }[] = [
       {
         uri: resolvedUri.uri,
         source: "ROOT",
@@ -29,8 +25,6 @@ export async function resolveUri(
     ];
 
     const trackUriRedirect = (uri: string, source: string) => {
-      Tracer.addEvent("trackUriRedirect", { uri, source });
-
       const dupIdx = uriHistory.findIndex((item) => item.uri === uri);
       uriHistory.push({
         uri,
@@ -47,12 +41,22 @@ export async function resolveUri(
       }
     };
 
+    const resetUriHistory = () => {
+      uriHistory = [
+        {
+          uri: resolvedUri.uri,
+          source: "ROOT"
+        }
+      ];
+    }
+
     const redirects = client.redirects();
 
     // Iterate through all redirects. If anything matches
-    // apply the redirect. If the redirect `to` is a Plugin,
-    // return a PluginWeb3Api instance.
-    for (const redirect of redirects) {
+    // apply the redirect, and restart the process over again.
+    // If the redirect `to` is a Plugin, return a PluginWeb3Api instance.
+    for (let i = 0; i < redirects.length; ++i) {
+      const redirect = redirects[i];
       const from = redirect.from;
 
       if (!from) {
@@ -66,20 +70,27 @@ export async function resolveUri(
         Uri.equals(testUri, from) ? redirect.to : testUri;
 
       const uriOrPlugin = tryRedirect(resolvedUri);
-      Tracer.addEvent("tried redirect", uriOrPlugin);
 
+      // If we've redirected to another URI
       if (Uri.isUri(uriOrPlugin)) {
-        Tracer.addEvent("resolved as uri");
-
         if (uriOrPlugin.uri !== resolvedUri.uri) {
-          trackUriRedirect(uriOrPlugin.uri, redirect.from.toString());
+          trackUriRedirect(uriOrPlugin.uri, redirect.from.uri);
+
+          Tracer.addEvent("client-redirect", {
+            from: redirect.from.uri,
+            to: redirect.to
+          });
+
+          // Restart the iteration over again
+          i = -1;
           resolvedUri = uriOrPlugin;
         }
       } else {
-        Tracer.addEvent("resolved as plugin");
-
         // We've found a plugin, return an instance of it
-        return createPluginApi(resolvedUri, uriOrPlugin);
+        return Tracer.traceFunc(
+          "resolveUri: createPluginApi",
+          (uri: Uri, plugin: PluginPackage) => createPluginApi(uri, plugin)
+        )(resolvedUri, uriOrPlugin);
       }
     }
 
@@ -89,6 +100,12 @@ export async function resolveUri(
       redirects
     );
 
+    // Clear the history of URI redirects, so we can now
+    // track api-resolver driven redirects
+    resetUriHistory();
+
+    // Iterate through all api-resolver implementations,
+    // iteratively resolving the URI until we reach the Web3API manifest
     for (let i = 0; i < uriResolverImplementations.length; ++i) {
       const uriResolver = uriResolverImplementations[i];
 
@@ -100,6 +117,7 @@ export async function resolveUri(
 
       // If nothing was returned, the URI is not supported
       if (!data || (!data.uri && !data.manifest)) {
+        Tracer.addEvent("continue", uriResolver.uri);
         continue;
       }
 
@@ -110,14 +128,26 @@ export async function resolveUri(
         // Use the new URI, and reset our index
         const convertedUri = new Uri(newUri);
         trackUriRedirect(convertedUri.uri, uriResolver.uri);
-        resolvedUri = convertedUri;
+
+        Tracer.addEvent("api-resolver-redirect", {
+          from: resolvedUri.uri,
+          to: convertedUri.uri
+        });
+
+        // Restart the iteration over again
         i = -1;
+        resolvedUri = convertedUri;
         continue;
       } else if (manifestStr) {
         // We've found our manifest at the current URI resolver
         // meaning the URI resolver can also be used as an API resolver
         const manifest = deserializeManifest(manifestStr, { noValidate });
-        return createApi(resolvedUri, manifest, uriResolver);
+
+        return Tracer.traceFunc(
+          "resolveUri: createApi",
+          (uri: Uri, manifest: Manifest, apiResolver: Uri) =>
+            createApi(uri, manifest, apiResolver)
+        )(resolvedUri, manifest, uriResolver);
       }
     }
 
@@ -127,11 +157,5 @@ export async function resolveUri(
         `\nResolution Path: ${JSON.stringify(uriHistory, null, 2)}` +
         `\nResolvers Used: ${uriResolverImplementations}`
     );
-  } catch (error) {
-    Tracer.recordException(error);
-
-    throw error;
-  } finally {
-    Tracer.endSpan();
   }
-}
+);
