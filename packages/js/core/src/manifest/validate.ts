@@ -26,9 +26,6 @@ Validator.prototype.customFormats.file = (file: unknown) => {
 };
 
 function validateFile(path: unknown): boolean {
-  Tracer.startSpan("core: validateFile");
-  Tracer.setAttribute("path", path);
-
   if (typeof path !== "string") {
     return false;
   }
@@ -41,9 +38,6 @@ function validateFile(path: unknown): boolean {
     result = validPathMatch[0].length === path.length;
   }
 
-  Tracer.addEvent("validate file finished", result);
-  Tracer.endSpan();
-
   return result;
 }
 
@@ -52,26 +46,17 @@ Validator.prototype.customFormats.manifestFormat = (format: unknown) => {
 };
 
 function validateFormat(format: unknown): boolean {
-  Tracer.startSpan("core: validateFormat");
-  Tracer.setAttribute("format", format);
-
   if (typeof format !== "string") {
     return false;
   }
 
-  const result = manifestSchemas[format as ManifestFormats] !== undefined;
-
-  Tracer.addEvent("validate format finished", result);
-  Tracer.endSpan();
-
-  return result;
+  return manifestSchemas[format as ManifestFormats] !== undefined;
 }
 
-export function validateManifest(manifest: AnyManifest): void {
-  Tracer.startSpan("core: validateManifest");
-  Tracer.setAttribute("manifest", manifest);
-
-  try {
+export const validateManifest = Tracer.traceFunc(
+  "core: validateManifest", (
+    manifest: AnyManifest
+  ): void => {
     const schema = manifestSchemas[manifest.format as ManifestFormats];
 
     if (!schema) {
@@ -80,20 +65,17 @@ export function validateManifest(manifest: AnyManifest): void {
 
     const { errors } = validator.validate(manifest, schema);
 
-    /*
-   We should handle five cases or errors:
-   1- When a non-accepted field is added to the manifest
-   2- When the type of the field is unknown
-   3- When a required field is not sent
-   4- When version string is not correct
-   5- When file string is not an existing file
-  */
+    /**
+      We should handle five cases or errors:
+      1- When a non-accepted field is added to the manifest
+      2- When the type of the field is unknown
+      3- When a required field is not sent
+      4- When version string is not correct
+      5- When file string is not an existing file
+    */
     if (errors.length > 0) {
       const { path, message, name, argument, instance } = errors[0];
       const pathMapping = path.join(" -> ");
-
-      Tracer.addEvent("manifest is invalid", { errors });
-      Tracer.endSpan();
 
       switch (name) {
         case ValidationError.REQUIRED: {
@@ -145,13 +127,5 @@ export function validateManifest(manifest: AnyManifest): void {
           );
       }
     }
-
-    Tracer.addEvent("manifest is valid");
-  } catch (error) {
-    Tracer.recordException(error);
-
-    throw error;
-  } finally {
-    Tracer.endSpan();
   }
-}
+);

@@ -16,15 +16,11 @@ export const migrators: Migrator = {
   // "0.0.1-prealpha.1": migrate_0_0_1_prealpha_1_TO_0_0_1_prealpha_2
 };
 
-export const migrateManifest = (
-  manifest: AnyManifest,
-  to: ManifestFormats
-): Manifest => {
-  Tracer.startSpan("core: migrateManifest");
-  Tracer.setAttribute("maniefst", manifest);
-  Tracer.setAttribute("to", to);
-
-  try {
+export const migrateManifest = Tracer.traceFunc(
+  "core: migrateManifest", (
+    manifest: AnyManifest,
+    to: ManifestFormats
+  ): Manifest => {
     const from = manifest.format as ManifestFormats;
 
     if (!(from in ManifestFormats)) {
@@ -38,16 +34,6 @@ export const migrateManifest = (
       );
     }
 
-    const result = migrator(manifest);
-
-    Tracer.addEvent("migrate manifest finished", result);
-
-    return result;
-  } catch (error) {
-    Tracer.recordException(error);
-
-    throw error;
-  } finally {
-    Tracer.endSpan();
+    return migrator(manifest);
   }
-};
+);

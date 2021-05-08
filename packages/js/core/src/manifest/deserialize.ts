@@ -9,44 +9,25 @@ export interface DeserializeOptions {
   noValidate?: boolean;
 }
 
-export function deserializeManifest(
-  manifest: string,
-  options?: DeserializeOptions
-): Manifest {
-  Tracer.startSpan("core: deserializeManifest");
-  Tracer.setAttribute("manifest", manifest);
-  Tracer.setAttribute("options", options);
-
-  try {
+export const deserializeManifest = Tracer.traceFunc(
+  "core: deserializeManifest",(
+    manifest: string,
+    options?: DeserializeOptions
+  ): Manifest => {
     const anyManifest = YAML.safeLoad(manifest) as AnyManifest | undefined;
 
     if (!anyManifest) {
       throw Error(`Unable to parse manifest: ${manifest}`);
     }
 
-    Tracer.addEvent("loaded manifest", anyManifest);
-
     if (!options || !options.noValidate) {
       validateManifest(anyManifest);
-      Tracer.addEvent("manifest validation done");
     }
 
     if (compare(anyManifest.format, latest) === -1) {
-      const result = migrateManifest(anyManifest, latest);
-
-      Tracer.addEvent("migrated manifest", result);
-
-      return result;
+      return migrateManifest(anyManifest, latest);
     } else {
-      Tracer.addEvent("manifest is the latest one");
-
       return anyManifest as Manifest;
     }
-  } catch (error) {
-    Tracer.recordException(error);
-
-    throw error;
-  } finally {
-    Tracer.endSpan();
   }
-}
+);
