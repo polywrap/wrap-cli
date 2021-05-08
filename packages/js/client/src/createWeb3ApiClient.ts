@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prefer-const */
 
-import { Web3ApiClient } from "./Web3ApiClient";
+import { Web3ApiClient, ClientConfig } from "./Web3ApiClient";
 import { PluginConfigs, modules, uris } from "./pluginConfigs";
 
 import { UriRedirect } from "@web3api/core-js";
@@ -13,7 +13,7 @@ export const createWeb3ApiClient = Tracer.traceFunc(
   "createWeb3ApiClient",
   async (
     plugins: PluginConfigs,
-    tracingEnabled = false
+    config?: ClientConfig
   ): Promise<Web3ApiClient> => {
     const redirects: UriRedirect[] = [];
 
@@ -70,6 +70,16 @@ export const createWeb3ApiClient = Tracer.traceFunc(
       });
     }
 
-    return new Web3ApiClient({ redirects, tracingEnabled });
+    if (config) {
+      return new Web3ApiClient({
+        ...config,
+        redirects: [
+          ...redirects,
+          ...(config.redirects ? config.redirects : []),
+        ],
+      });
+    } else {
+      return new Web3ApiClient({ redirects });
+    }
   }
 );
