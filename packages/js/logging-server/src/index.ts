@@ -1,23 +1,42 @@
-import express from "express";
-import { Tracer } from "@web3api/tracing";
-import dotenv from "dotenv";
+import { exec } from "child_process";
+import { ExecException } from "node:child_process";
 
-dotenv.config({ path: "./.env" });
+export const runCommand = async (
+  command: string,
+  quiet: boolean
+): Promise<void> => {
+  if (!quiet) {
+    console.log(`> ${command}`);
+  }
 
-const app = express();
-const PORT = process.env.LOGGING_SERVER_PORT;
+  return new Promise((resolve, reject) => {
+    const callback = (
+      err: ExecException | null,
+      stdout: string,
+      stderr: string
+    ) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        if (!quiet) {
+          // the *entire* stdout and stderr (buffered)
+          console.log(`stdout: ${stdout}`);
+          console.log(`stderr: ${stderr}`);
+        }
 
-app.use(express.json());
+        resolve();
+      }
+    };
 
-app.get("/level", (req: express.Request, res: express.Response) => {
-  res.send(Tracer.logLevel);
-});
+    exec(command, { cwd: __dirname }, callback);
+  });
+};
 
-app.post("/level", (req: express.Request, res: express.Response) => {
-  Tracer.setLogLevel(req.body.level);
-  res.send(Tracer.logLevel);
-});
+export const up = async (quiet = false): Promise<void> => {
+  await runCommand("docker-compose up -d", quiet);
+};
 
-app.listen(PORT, () => {
-  console.log(`Logging server listening on port ${PORT}`);
-});
+export const down = async (quiet = false): Promise<void> => {
+  await runCommand("docker-compose down", quiet);
+};

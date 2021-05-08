@@ -74,7 +74,7 @@ export class Web3ApiClient implements Client {
 
   public tracingEnabled(enable: boolean): void {
     if (enable) {
-      Tracer.enableTracing("Web3ApiClient");
+      Tracer.setTracing("Web3ApiClient");
     } else {
       Tracer.disableTracing();
     }

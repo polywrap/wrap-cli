@@ -7,6 +7,8 @@ import { ZipkinExporter } from "@opentelemetry/exporter-zipkin";
 import { WebTracerProvider } from "@opentelemetry/web";
 import * as api from "@opentelemetry/api";
 
+export type LogLevel = "debug" | "info" | "error" | "off";
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const inspect = require("util-inspect");
 
@@ -28,7 +30,7 @@ export class Tracer {
     | null = null;
   private static _spans: Array<api.Span> = [];
 
-  static enableTracing(tracerName: string): void {
+  static setTracing(tracerName: string): void {
     this.traceEnabled = true;
     this._initProvider();
 

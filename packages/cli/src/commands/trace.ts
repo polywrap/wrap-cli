@@ -1,9 +1,9 @@
 import { fixParameters } from "../lib/helpers/parameters";
 import { intlMsg } from "../lib/intl";
+import { startLoggingServer, stopLoggingServer } from "../lib/logging";
 
 import { GluegunToolbox, print } from "gluegun";
 import chalk from "chalk";
-import { startLoggingServer, stopLoggingServer } from "../lib/logging";
 
 const commands = ["up", "down"];
 const logLevels = ["debug", "info", "error", "off"];

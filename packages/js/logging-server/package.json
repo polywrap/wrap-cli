@@ -14,7 +14,7 @@
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.json",
     "lint": "eslint --color --ext .ts src/",
-    "server": "node build/index.js"
+    "server": "node build/server.js"
   },
   "devDependencies": {
     "@types/express": "^4.17.8",
