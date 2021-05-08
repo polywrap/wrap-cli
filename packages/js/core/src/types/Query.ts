@@ -1,5 +1,6 @@
 import { Uri, InvokeApiOptions } from "./";
 
+import { Tracer } from "@web3api/tracing";
 import { DocumentNode, parse } from "graphql";
 import gql from "graphql-tag";
 
@@ -7,17 +8,23 @@ import gql from "graphql-tag";
 export type SchemaDocument = DocumentNode;
 
 /** Create a GraphQL SchemaDocument by parsing a string */
-export function createSchemaDocument(schema: string): SchemaDocument {
-  return parse(schema);
-}
+export const createSchemaDocument = Tracer.traceFunc(
+  "core: createSchemaDocument",
+  (schema: string): SchemaDocument => {
+    return parse(schema);
+  }
+);
 
 /** GraphQL QueryDocument */
 export type QueryDocument = DocumentNode;
 
 /** Create a GraphQL QueryDocument by parsing a string */
-export function createQueryDocument(query: string): QueryDocument {
-  return gql(query);
-}
+export const createQueryDocument = Tracer.traceFunc(
+  "core: createQueryDocument",
+  (query: string): QueryDocument => {
+    return gql(query);
+  }
+);
 
 /** Options required for an API query. */
 export interface QueryApiOptions<
