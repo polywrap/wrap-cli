@@ -49,12 +49,11 @@ export class WasmWeb3Api extends Api {
     super();
 
     Tracer.startSpan("WasmWeb3Api: constructor");
-
-    Tracer.setAttribute("uri", _uri);
-    Tracer.setAttribute("manifest", _manifest);
-    Tracer.setAttribute("apiResolver", _apiResolver);
-    Tracer.addEvent("Created");
-
+    Tracer.setAttribute("input", {
+      uri: this._uri,
+      manifest: this._manifest,
+      apiResolver: this._apiResolver
+    });
     Tracer.endSpan();
   }
 
@@ -62,350 +61,363 @@ export class WasmWeb3Api extends Api {
     options: InvokeApiOptions,
     client: Client
   ): Promise<InvokeApiResult<unknown | ArrayBuffer>> {
-    const { module, method, input, decode } = options;
 
-    Tracer.startSpan("WasmWeb3Api: invoke");
-    Tracer.setAttribute("options", options);
+    const run = Tracer.traceFunc(
+      "WasmWeb3Api: invoke",
+      async (
+        options: InvokeApiOptions,
+        client: Client
+      ): Promise<InvokeApiResult<unknown | ArrayBuffer>> => {
 
-    // Fetch the WASM module
-    const wasm = await this.getWasmModule(module, client);
+        const { module, method, input, decode } = options;
 
-    // TODO: come up with a better future-proof solution
-    while (threadsActive >= maxThreads) {
-      // Wait for another thread to become available
-      await sleep(500);
-    }
+        // Fetch the WASM module
+        const wasm = await this.getWasmModule(module, client);
 
-    threadsActive++;
-    const threadId = threadAvailable++;
+        // TODO: come up with a better future-proof solution
+        while (threadsActive >= maxThreads) {
+          // Wait for another thread to become available
+          await sleep(500);
+        }
 
-    Tracer.addEvent("Another thread available", threadId);
+        threadsActive++;
+        const threadId = threadAvailable++;
 
-    // Wrap the queue
-    if (threadAvailable >= maxThreads) {
-      threadAvailable = 0;
-    }
+        Tracer.addEvent("threadId", threadId);
 
-    Atomics.store(threadMutexes, threadId, 0);
+        // Wrap the queue
+        if (threadAvailable >= maxThreads) {
+          threadAvailable = 0;
+        }
 
-    // Spawn the worker thread
-    let modulePath = "./thread.js";
+        Atomics.store(threadMutexes, threadId, 0);
 
-    // If we're in node.js
-    if (typeof process === "object" && typeof window === "undefined") {
-      modulePath = `${__dirname}/thread.js`;
+        // Spawn the worker thread
+        let modulePath = "./thread.js";
 
-      if (process.env.TEST) {
-        modulePath = `${__dirname}/thread-loader.js`;
-      }
-    }
+        // If we're in node.js
+        if (typeof process === "object" && typeof window === "undefined") {
+          modulePath = `${__dirname}/thread.js`;
 
-    const worker = new Worker(modulePath);
-
-    // Our transfer buffer, used to send data to the thread atomically.
-    // The first byte in the transfer array specifies how many bytes are in the array (max 255).
-    const transferBuffer = new SharedArrayBuffer(
-      maxTransferBytes * Uint8Array.BYTES_PER_ELEMENT
-    );
-    const transfer = new Uint8Array(transferBuffer, 0, maxTransferBytes);
-
-    let state: "Abort" | "LogQueryError" | "LogQueryResult" | undefined;
-    let abortMessage: string | undefined;
-    let queryResult: ArrayBuffer | undefined;
-    let queryError: string | undefined;
-
-    const awaitCompletion = new Promise(
-      (resolve: (value?: unknown) => void) => {
-        let transferPending = false;
-        const transferData = async (data: ArrayBuffer, status: number) => {
-          let progress = 0;
-          const totalBytes = data.byteLength;
-          const dataView = new Uint8Array(data);
-
-          while (progress < totalBytes) {
-            // Reset the transfer buffer
-            transfer.fill(0);
-
-            // Calculate how many bytes we can send
-            const bytesLeft = totalBytes - progress;
-            const bytesToSend = Math.min(bytesLeft, maxTransferBytes - 1);
-
-            // Set the first byte to the number of bytes we're sending
-            transfer.set([bytesToSend]);
-
-            // Copy our data in
-            transfer.set(dataView.slice(progress, progress + bytesToSend), 1);
-
-            transferPending = true;
-            progress += bytesToSend;
-
-            // Notify the thread that we've sent data, giving it a specific
-            // status code
-            Atomics.store(threadMutexes, threadId, status);
-            Atomics.notify(threadMutexes, threadId, Infinity);
-
-            // Wait until the transferPending flag has been reset
-            while (transferPending) {
-              await sleep(100);
-            }
+          if (process.env.TEST) {
+            modulePath = `${__dirname}/thread-loader.js`;
           }
+        }
 
-          Tracer.addEvent("Transfer done", { data, status });
+        const worker = new Worker(modulePath);
 
-          Atomics.store(
-            threadMutexes,
-            threadId,
-            ThreadWakeStatus.SUBINVOKE_DONE
-          );
-          Atomics.notify(threadMutexes, threadId, Infinity);
-        };
+        // Our transfer buffer, used to send data to the thread atomically.
+        // The first byte in the transfer array specifies how many bytes are in the array (max 255).
+        const transferBuffer = new SharedArrayBuffer(
+          maxTransferBytes * Uint8Array.BYTES_PER_ELEMENT
+        );
+        const transfer = new Uint8Array(transferBuffer, 0, maxTransferBytes);
 
-        worker.addEventListener(
-          "message",
-          async (event: { data: HostAction }) => {
-            const action = event.data;
+        let state: "Abort" | "LogQueryError" | "LogQueryResult" | undefined;
+        let abortMessage: string | undefined;
+        let queryResult: ArrayBuffer | undefined;
+        let queryError: string | undefined;
 
-            Tracer.addEvent("Worker message", action);
+        const awaitCompletion = new Promise(
+          (resolve: (value?: unknown) => void) => {
+            let transferPending = false;
+            const transferData = async (data: ArrayBuffer, status: number) => {
 
-            switch (action.type) {
-              case "Abort": {
-                abortMessage = action.message;
-                state = action.type;
-                resolve();
-                break;
-              }
-              case "LogQueryError": {
-                queryError = action.error;
-                state = action.type;
-                resolve();
-                break;
-              }
-              case "LogQueryResult": {
-                queryResult = action.result;
-                state = action.type;
-                resolve();
-                break;
-              }
-              // TODO: replace with proper logging
-              case "LogInfo": {
-                break;
-              }
-              case "SubInvoke": {
-                const { data, error } = await client.invoke<
-                  unknown | ArrayBuffer
-                >({
-                  uri: action.uri,
-                  module: action.module as InvokableModules,
-                  method: action.method,
-                  input: action.input,
-                });
+              Tracer.startSpan("WasmWeb3Api: invoke: transferData");
+              Tracer.setAttribute("input", { data, status });
 
-                if (!error) {
-                  let msgpack: ArrayBuffer;
-                  if (data instanceof ArrayBuffer) {
-                    msgpack = data;
-                  } else {
-                    msgpack = MsgPack.encode(data);
-                  }
+              let progress = 0;
+              const totalBytes = data.byteLength;
+              const dataView = new Uint8Array(data);
 
-                  // transfer the result
-                  await transferData(
-                    msgpack,
-                    ThreadWakeStatus.SUBINVOKE_RESULT
-                  );
-                } else {
-                  const encoder = new TextEncoder();
-                  const bytes = encoder.encode(
-                    `${error.name}: ${error.message}`
-                  );
+              while (progress < totalBytes) {
+                // Reset the transfer buffer
+                transfer.fill(0);
 
-                  // transfer the error
-                  await transferData(bytes, ThreadWakeStatus.SUBINVOKE_ERROR);
+                // Calculate how many bytes we can send
+                const bytesLeft = totalBytes - progress;
+                const bytesToSend = Math.min(bytesLeft, maxTransferBytes - 1);
+
+                // Set the first byte to the number of bytes we're sending
+                transfer.set([bytesToSend]);
+
+                // Copy our data in
+                transfer.set(dataView.slice(progress, progress + bytesToSend), 1);
+
+                transferPending = true;
+                progress += bytesToSend;
+
+                // Notify the thread that we've sent data, giving it a specific
+                // status code
+                Atomics.store(threadMutexes, threadId, status);
+                Atomics.notify(threadMutexes, threadId, Infinity);
+
+                // Wait until the transferPending flag has been reset
+                while (transferPending) {
+                  await sleep(100);
                 }
+              }
 
-                break;
+              Atomics.store(
+                threadMutexes,
+                threadId,
+                ThreadWakeStatus.SUBINVOKE_DONE
+              );
+              Atomics.notify(threadMutexes, threadId, Infinity);
+
+              Tracer.endSpan();
+            };
+
+            worker.addEventListener(
+              "message",
+              async (event: { data: HostAction }) => {
+                const action = event.data;
+
+                Tracer.addEvent("worker-message", action);
+
+                switch (action.type) {
+                  case "Abort": {
+                    abortMessage = action.message;
+                    state = action.type;
+                    resolve();
+                    break;
+                  }
+                  case "LogQueryError": {
+                    queryError = action.error;
+                    state = action.type;
+                    resolve();
+                    break;
+                  }
+                  case "LogQueryResult": {
+                    queryResult = action.result;
+                    state = action.type;
+                    resolve();
+                    break;
+                  }
+                  // TODO: replace with proper logging
+                  case "LogInfo": {
+                    break;
+                  }
+                  case "SubInvoke": {
+                    const { data, error } = await client.invoke<
+                      unknown | ArrayBuffer
+                    >({
+                      uri: action.uri,
+                      module: action.module as InvokableModules,
+                      method: action.method,
+                      input: action.input,
+                    });
+
+                    if (!error) {
+                      let msgpack: ArrayBuffer;
+                      if (data instanceof ArrayBuffer) {
+                        msgpack = data;
+                      } else {
+                        msgpack = MsgPack.encode(data);
+                      }
+
+                      // transfer the result
+                      await transferData(
+                        msgpack,
+                        ThreadWakeStatus.SUBINVOKE_RESULT
+                      );
+                    } else {
+                      const encoder = new TextEncoder();
+                      const bytes = encoder.encode(
+                        `${error.name}: ${error.message}`
+                      );
+
+                      // transfer the error
+                      await transferData(bytes, ThreadWakeStatus.SUBINVOKE_ERROR);
+                    }
+
+                    break;
+                  }
+                  case "TransferComplete": {
+                    transferPending = false;
+                    break;
+                  }
+                }
               }
-              case "TransferComplete": {
-                transferPending = false;
-                break;
-              }
-            }
+            );
           }
         );
+
+        Tracer.addEvent("worker-started", {
+          method,
+          input,
+          threadId
+        });
+
+        // Start the thread
+        worker.postMessage({
+          wasm,
+          method,
+          input,
+          threadMutexesBuffer,
+          threadId,
+          transferBuffer,
+        });
+
+        await awaitCompletion;
+
+        Atomics.store(threadMutexes, threadId, 0);
+        worker.terminate();
+        threadsActive--;
+
+        Tracer.addEvent("worker-terminated", state);
+
+        if (!state) {
+          throw Error("WasmWeb3Api: query state was never set.");
+        }
+
+        switch (state) {
+          case "Abort": {
+            return {
+              error: new Error(
+                `WasmWeb3Api: Thread aborted execution.\nMessage: ${abortMessage}`
+              ),
+            };
+          }
+          case "LogQueryError": {
+            return {
+              error: new Error(
+                `WasmWeb3Api: invocation exception encourtered.\n` +
+                  `uri: ${this._uri.uri}\nmodule: ${module}\n` +
+                  `method: ${method}\n` +
+                  `input: ${JSON.stringify(input, null, 2)}\n` +
+                  `exception: ${queryError}`
+              ),
+            };
+          }
+          case "LogQueryResult": {
+            if (decode) {
+              try {
+                return { data: MsgPack.decode(queryResult as ArrayBuffer) };
+              } catch (err) {
+                throw Error(
+                  `WasmWeb3Api: Failed to decode query result.\nResult: ${JSON.stringify(
+                    queryResult
+                  )}\nError: ${err}`
+                );
+              }
+            } else {
+              return { data: queryResult };
+            }
+          }
+          default: {
+            throw Error(`WasmWeb3Api: Unknown state "${state}"`);
+          }
+        }
       }
     );
 
-    // Start the thread
-    worker.postMessage({
-      wasm,
-      method,
-      input,
-      threadMutexesBuffer,
-      threadId,
-      transferBuffer,
-    });
-
-    await awaitCompletion;
-
-    Atomics.store(threadMutexes, threadId, 0);
-    worker.terminate();
-    threadsActive--;
-
-    Tracer.addEvent("Worker terminated", state);
-
-    try {
-      if (!state) {
-        throw Error("WasmWeb3Api: query state was never set.");
-      }
-
-      switch (state) {
-        case "Abort": {
-          return {
-            error: new Error(
-              `WasmWeb3Api: Thread aborted execution.\nMessage: ${abortMessage}`
-            ),
-          };
-        }
-        case "LogQueryError": {
-          return {
-            error: new Error(
-              `WasmWeb3Api: invocation exception encourtered.\n` +
-                `uri: ${this._uri.uri}\nmodule: ${module}\n` +
-                `method: ${method}\n` +
-                `input: ${JSON.stringify(input, null, 2)}\n` +
-                `exception: ${queryError}`
-            ),
-          };
-        }
-        case "LogQueryResult": {
-          if (decode) {
-            try {
-              return { data: MsgPack.decode(queryResult as ArrayBuffer) };
-            } catch (err) {
-              throw Error(
-                `WasmWeb3Api: Failed to decode query result.\nResult: ${JSON.stringify(
-                  queryResult
-                )}\nError: ${err}`
-              );
-            }
-          } else {
-            return { data: queryResult };
-          }
-        }
-        default: {
-          throw Error(`WasmWeb3Api: Unknown state "${state}"`);
-        }
-      }
-    } catch (error) {
-      Tracer.recordException(error);
-      throw error;
-    } finally {
-      Tracer.endSpan();
-    }
+    return run(options, client)
+      .catch((error) => {
+        return {
+          error
+        };
+      });
   }
 
   public async getSchema(client: Client): Promise<string> {
-    try {
-      Tracer.startSpan("WasmWeb3Api: getSchema");
 
-      if (this._schema) {
+    const run = Tracer.traceFunc(
+      "WasmWeb3Api: getSchema",
+      async (client: Client): Promise<string> => {
+
+        if (this._schema) {
+          return this._schema;
+        }
+
+        // Either the query or mutation module will work,
+        // as they share the same schema file
+        const module = this._manifest.query || this._manifest.mutation;
+
+        if (!module) {
+          // TODO: this won't work for abstract APIs
+          throw Error(`WasmWeb3Api: No module was found.`);
+        }
+
+        const { data, error } = await ApiResolver.Query.getFile(
+          client,
+          this._apiResolver,
+          path.join(this._uri.path, module.schema.file)
+        );
+
+        if (error) {
+          throw error;
+        }
+
+        // If nothing is returned, the schema was not found
+        if (!data) {
+          throw Error(
+            `WasmWeb3Api: Schema was not found.\nURI: ${this._uri}\nSubpath: ${module.schema.file}`
+          );
+        }
+
+        const decoder = new TextDecoder();
+        this._schema = decoder.decode(data);
+
+        if (!this._schema) {
+          throw Error(
+            `WasmWeb3Api: Decoding the schema's bytes array failed.\nBytes: ${data}`
+          );
+        }
+
         return this._schema;
       }
+    );
 
-      const module = this._manifest.query || this._manifest.mutation;
-
-      if (!module) {
-        // TODO: this won't work for abstract APIs
-        throw Error(`WasmWeb3Api: No module was found.`);
-      }
-
-      Tracer.setAttribute("module", module);
-
-      const { data, error } = await ApiResolver.Query.getFile(
-        client,
-        this._apiResolver,
-        path.join(this._uri.path, module.schema.file)
-      );
-
-      if (error) {
-        throw error;
-      }
-
-      // If nothing is returned, the schema was not found
-      if (!data) {
-        throw Error(
-          `WasmWeb3Api: Schema was not found.\nURI: ${this._uri}\nSubpath: ${module.schema.file}`
-        );
-      }
-
-      Tracer.addEvent("Query file", data);
-
-      const decoder = new TextDecoder();
-      this._schema = decoder.decode(data);
-
-      if (!this._schema) {
-        throw Error(
-          `WasmWeb3Api: Decoding the schema's bytes array failed.\nBytes: ${data}`
-        );
-      }
-
-      Tracer.addEvent("Decoded schema", this._schema);
-
-      return this._schema;
-    } catch (error) {
-      Tracer.recordException(error);
-
-      throw error;
-    } finally {
-      Tracer.endSpan();
-    }
+    return run(client);
   }
 
   private async getWasmModule(
     module: InvokableModules,
     client: Client
   ): Promise<ArrayBuffer> {
-    try {
-      Tracer.startSpan("WasmWeb3Api: getWasmModule");
 
-      if (this._wasm[module] !== undefined) {
-        return this._wasm[module] as ArrayBuffer;
-      }
+    const run = Tracer.traceFunc(
+      "WasmWeb3Api: getWasmModule",
+      async (
+        module: InvokableModules,
+        client: Client
+      ): Promise<ArrayBuffer> => {
 
-      const moduleManifest = this._manifest[module];
+        if (this._wasm[module] !== undefined) {
+          return this._wasm[module] as ArrayBuffer;
+        }
 
-      if (!moduleManifest) {
-        throw Error(
-          `Package manifest does not contain a definition for module "${module}"`
+        const moduleManifest = this._manifest[module];
+
+        if (!moduleManifest) {
+          throw Error(
+            `Package manifest does not contain a definition for module "${module}"`
+          );
+        }
+
+        const { data, error } = await ApiResolver.Query.getFile(
+          client,
+          this._apiResolver,
+          path.join(this._uri.path, moduleManifest.module.file)
         );
+
+        if (error) {
+          throw error;
+        }
+
+        // If nothing is returned, the module was not found
+        if (!data) {
+          throw Error(
+            `Module was not found.\nURI: ${this._uri}\nSubpath: ${moduleManifest.module.file}`
+          );
+        }
+
+        this._wasm[module] = data;
+        return data;
       }
+    );
 
-      const { data, error } = await ApiResolver.Query.getFile(
-        client,
-        this._apiResolver,
-        path.join(this._uri.path, moduleManifest.module.file)
-      );
-      if (error) {
-        throw error;
-      }
-
-      // If nothing is returned, the module was not found
-      if (!data) {
-        throw Error(
-          `Module was not found.\nURI: ${this._uri}\nSubpath: ${moduleManifest.module.file}`
-        );
-      }
-
-      Tracer.addEvent("Query file", data);
-
-      this._wasm[module] = data;
-      return data;
-    } catch (error) {
-      Tracer.recordException(error);
-
-      throw error;
-    } finally {
-      Tracer.endSpan();
-    }
+    return run(module, client);
   }
 }
