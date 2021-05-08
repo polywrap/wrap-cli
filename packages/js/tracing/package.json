@@ -29,7 +29,7 @@
     "@opentelemetry/propagator-b3": "^0.18.0",
     "@opentelemetry/tracing": "^0.18.0",
     "@opentelemetry/web": "^0.18.0",
-    "uuid": "8.3.2"
+    "util-inspect": "0.1.8"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",

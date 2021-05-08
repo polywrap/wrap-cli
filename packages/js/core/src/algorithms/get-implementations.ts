@@ -3,10 +3,8 @@ import { Uri, UriRedirect } from "../types";
 import { Tracer } from "@web3api/tracing";
 
 export const getImplementations = Tracer.traceFunc(
-  "core: getImplementations", (
-    abstractApi: Uri,
-    redirects: readonly UriRedirect<Uri>[]
-  ): Uri[] => {
+  "core: getImplementations",
+  (abstractApi: Uri, redirects: readonly UriRedirect<Uri>[]): Uri[] => {
     const result: Uri[] = [];
 
     const addUniqueResult = (uri: Uri) => {

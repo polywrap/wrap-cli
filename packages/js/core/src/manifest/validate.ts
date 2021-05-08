@@ -54,9 +54,8 @@ function validateFormat(format: unknown): boolean {
 }
 
 export const validateManifest = Tracer.traceFunc(
-  "core: validateManifest", (
-    manifest: AnyManifest
-  ): void => {
+  "core: validateManifest",
+  (manifest: AnyManifest): void => {
     const schema = manifestSchemas[manifest.format as ManifestFormats];
 
     if (!schema) {

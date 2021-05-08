@@ -9,9 +9,8 @@ export type SchemaDocument = DocumentNode;
 
 /** Create a GraphQL SchemaDocument by parsing a string */
 export const createSchemaDocument = Tracer.traceFunc(
-  "core: createSchemaDocument", (
-    schema: string
-  ): SchemaDocument => {
+  "core: createSchemaDocument",
+  (schema: string): SchemaDocument => {
     return parse(schema);
   }
 );
@@ -21,9 +20,8 @@ export type QueryDocument = DocumentNode;
 
 /** Create a GraphQL QueryDocument by parsing a string */
 export const createQueryDocument = Tracer.traceFunc(
-  "core: createQueryDocument", (
-    query: string
-  ): QueryDocument => {
+  "core: createQueryDocument",
+  (query: string): QueryDocument => {
     return gql(query);
   }
 );

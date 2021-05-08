@@ -2,11 +2,8 @@ import { Tracer } from "@web3api/tracing";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const filterResults = Tracer.traceFunc(
-  "core: filterResults", (
-    result: unknown,
-    filter: Record<string, any>
-  ): unknown => {
-
+  "core: filterResults",
+  (result: unknown, filter: Record<string, any>): unknown => {
     if (!result) {
       return result;
     }

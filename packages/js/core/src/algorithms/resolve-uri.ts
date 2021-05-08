@@ -6,14 +6,14 @@ import { getImplementations } from "./get-implementations";
 import { Tracer } from "@web3api/tracing";
 
 export const resolveUri = Tracer.traceFunc(
-  "core: resolveUri", async (
+  "core: resolveUri",
+  async (
     uri: Uri,
     client: Client,
     createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
     createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api,
     noValidate?: boolean
   ): Promise<Api> => {
-
     let resolvedUri = uri;
 
     // Keep track of past URIs to avoid infinite loops
@@ -45,10 +45,10 @@ export const resolveUri = Tracer.traceFunc(
       uriHistory = [
         {
           uri: resolvedUri.uri,
-          source: "ROOT"
-        }
+          source: "ROOT",
+        },
       ];
-    }
+    };
 
     const redirects = client.redirects();
 
@@ -78,7 +78,7 @@ export const resolveUri = Tracer.traceFunc(
 
           Tracer.addEvent("client-redirect", {
             from: redirect.from.uri,
-            to: redirect.to
+            to: redirect.to,
           });
 
           // Restart the iteration over again
@@ -131,7 +131,7 @@ export const resolveUri = Tracer.traceFunc(
 
         Tracer.addEvent("api-resolver-redirect", {
           from: resolvedUri.uri,
-          to: convertedUri.uri
+          to: convertedUri.uri,
         });
 
         // Restart the iteration over again

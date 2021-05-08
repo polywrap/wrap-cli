@@ -26,7 +26,7 @@ export const Query = {
           path: uri.path,
         },
       });
-    },
+    }
   ),
   getFile: Tracer.traceFunc(
     "core: api-resolver: getFile",
@@ -43,6 +43,6 @@ export const Query = {
           path,
         },
       });
-    },
-  )
+    }
+  ),
 };

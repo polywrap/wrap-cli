@@ -17,10 +17,8 @@ export const migrators: Migrator = {
 };
 
 export const migrateManifest = Tracer.traceFunc(
-  "core: migrateManifest", (
-    manifest: AnyManifest,
-    to: ManifestFormats
-  ): Manifest => {
+  "core: migrateManifest",
+  (manifest: AnyManifest, to: ManifestFormats): Manifest => {
     const from = manifest.format as ManifestFormats;
 
     if (!(from in ManifestFormats)) {

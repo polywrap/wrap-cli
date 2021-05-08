@@ -1,13 +1,21 @@
 import {
   BasicTracerProvider,
-  ConsoleSpanExporter,
   SimpleSpanProcessor,
   Tracer as otTracer,
 } from "@opentelemetry/tracing";
 import { ZipkinExporter } from "@opentelemetry/exporter-zipkin";
 import { WebTracerProvider } from "@opentelemetry/web";
 import * as api from "@opentelemetry/api";
-import { v4 as uuid } from "uuid";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+const inspect = require("util-inspect");
+
+type MaybeAsync<T> = Promise<T> | T;
+
+const isPromise = <T extends unknown>(
+  test?: MaybeAsync<T>
+): test is Promise<T> =>
+  !!test && typeof (test as Promise<T>).then === "function";
 
 export class Tracer {
   public static traceEnabled = false;
@@ -24,9 +32,7 @@ export class Tracer {
     this._initProvider();
 
     if (this._provider) {
-      this._tracer = this._provider.getTracer(
-        `${tracerName} ${uuid().substr(0, 8)}`
-      );
+      this._tracer = this._provider.getTracer(tracerName);
     }
   }
 
@@ -63,7 +69,7 @@ export class Tracer {
 
     const span = this._currentSpan();
     if (span) {
-      span.setAttribute(attrName, JSON.stringify(data));
+      span.setAttribute(attrName, JSON.stringify(inspect(data)));
     }
   }
 
@@ -73,7 +79,7 @@ export class Tracer {
     const span = this._currentSpan();
 
     if (span) {
-      span.addEvent(event, { data: JSON.stringify(data) });
+      span.addEvent(event, { data: JSON.stringify(inspect(data)) });
     }
   }
 
@@ -103,18 +109,24 @@ export class Tracer {
 
         const result = func(...args);
 
-        this.setAttribute("output", result);
-        return result;
+        if (isPromise(result)) {
+          return (result.then((result) => {
+            this.setAttribute("output", result);
+            this.endSpan();
+            return result;
+          }) as unknown) as TReturn;
+        } else {
+          this.setAttribute("output", result);
+          this.endSpan();
+          return result;
+        }
       } catch (error) {
         this.recordException(error);
-        throw error;
-      } finally {
         this.endSpan();
+        throw error;
       }
     };
   }
-
-  // TODO: configure output types (console, file, server, etc)
 
   static _initProvider(): void {
     if (this._provider) return;
@@ -126,10 +138,6 @@ export class Tracer {
     }
 
     // Configure span processor to send spans to the exporter
-    this._provider.addSpanProcessor(
-      new SimpleSpanProcessor(new ConsoleSpanExporter())
-    );
-
     this._provider.addSpanProcessor(
       new SimpleSpanProcessor(new ZipkinExporter())
     );

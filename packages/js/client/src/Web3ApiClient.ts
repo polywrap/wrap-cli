@@ -60,7 +60,7 @@ export class Web3ApiClient implements Client {
         this._config.redirects = [];
       }
 
-      // Add all default redirects (IPFS, ETH, ENS)
+      // Add all default redirects
       this._config.redirects.push(...getDefaultRedirects());
 
       Tracer.setAttribute("config", this._config);

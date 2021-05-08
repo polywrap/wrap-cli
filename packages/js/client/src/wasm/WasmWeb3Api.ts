@@ -52,7 +52,7 @@ export class WasmWeb3Api extends Api {
     Tracer.setAttribute("input", {
       uri: this._uri,
       manifest: this._manifest,
-      apiResolver: this._apiResolver
+      apiResolver: this._apiResolver,
     });
     Tracer.endSpan();
   }
@@ -61,14 +61,12 @@ export class WasmWeb3Api extends Api {
     options: InvokeApiOptions,
     client: Client
   ): Promise<InvokeApiResult<unknown | ArrayBuffer>> {
-
     const run = Tracer.traceFunc(
       "WasmWeb3Api: invoke",
       async (
         options: InvokeApiOptions,
         client: Client
       ): Promise<InvokeApiResult<unknown | ArrayBuffer>> => {
-
         const { module, method, input, decode } = options;
 
         // Fetch the WASM module
@@ -122,7 +120,6 @@ export class WasmWeb3Api extends Api {
           (resolve: (value?: unknown) => void) => {
             let transferPending = false;
             const transferData = async (data: ArrayBuffer, status: number) => {
-
               Tracer.startSpan("WasmWeb3Api: invoke: transferData");
               Tracer.setAttribute("input", { data, status });
 
@@ -142,7 +139,10 @@ export class WasmWeb3Api extends Api {
                 transfer.set([bytesToSend]);
 
                 // Copy our data in
-                transfer.set(dataView.slice(progress, progress + bytesToSend), 1);
+                transfer.set(
+                  dataView.slice(progress, progress + bytesToSend),
+                  1
+                );
 
                 transferPending = true;
                 progress += bytesToSend;
@@ -228,7 +228,10 @@ export class WasmWeb3Api extends Api {
                       );
 
                       // transfer the error
-                      await transferData(bytes, ThreadWakeStatus.SUBINVOKE_ERROR);
+                      await transferData(
+                        bytes,
+                        ThreadWakeStatus.SUBINVOKE_ERROR
+                      );
                     }
 
                     break;
@@ -246,7 +249,7 @@ export class WasmWeb3Api extends Api {
         Tracer.addEvent("worker-started", {
           method,
           input,
-          threadId
+          threadId,
         });
 
         // Start the thread
@@ -312,20 +315,17 @@ export class WasmWeb3Api extends Api {
       }
     );
 
-    return run(options, client)
-      .catch((error) => {
-        return {
-          error
-        };
-      });
+    return run(options, client).catch((error) => {
+      return {
+        error,
+      };
+    });
   }
 
   public async getSchema(client: Client): Promise<string> {
-
     const run = Tracer.traceFunc(
       "WasmWeb3Api: getSchema",
       async (client: Client): Promise<string> => {
-
         if (this._schema) {
           return this._schema;
         }
@@ -376,14 +376,12 @@ export class WasmWeb3Api extends Api {
     module: InvokableModules,
     client: Client
   ): Promise<ArrayBuffer> {
-
     const run = Tracer.traceFunc(
       "WasmWeb3Api: getWasmModule",
       async (
         module: InvokableModules,
         client: Client
       ): Promise<ArrayBuffer> => {
-
         if (this._wasm[module] !== undefined) {
           return this._wasm[module] as ArrayBuffer;
         }

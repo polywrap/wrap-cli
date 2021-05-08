@@ -10,10 +10,8 @@ export interface DeserializeOptions {
 }
 
 export const deserializeManifest = Tracer.traceFunc(
-  "core: deserializeManifest",(
-    manifest: string,
-    options?: DeserializeOptions
-  ): Manifest => {
+  "core: deserializeManifest",
+  (manifest: string, options?: DeserializeOptions): Manifest => {
     const anyManifest = YAML.safeLoad(manifest) as AnyManifest | undefined;
 
     if (!anyManifest) {
