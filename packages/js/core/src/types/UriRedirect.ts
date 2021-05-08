@@ -12,25 +12,24 @@ export interface UriRedirect<TUri = string> {
   to: TUri | PluginPackage;
 }
 
-export function sanitizeUriRedirects(input: UriRedirect[]): UriRedirect<Uri>[] {
-  Tracer.startSpan("core: sanitizeUriRedirects");
-  Tracer.setAttribute("input", input);
+export const sanitizeUriRedirects = Tracer.traceFunc(
+  "core: sanitizeUriRedirects", (
+    input: UriRedirect[]
+  ): UriRedirect<Uri>[] => {
+    const output: UriRedirect<Uri>[] = [];
+    for (const definition of input) {
+      const from = new Uri(definition.from);
+      const to =
+        typeof definition.to === "string"
+          ? new Uri(definition.to)
+          : definition.to;
 
-  const output: UriRedirect<Uri>[] = [];
-  for (const definition of input) {
-    const from = new Uri(definition.from);
-    const to =
-      typeof definition.to === "string"
-        ? new Uri(definition.to)
-        : definition.to;
+      output.push({
+        from: from,
+        to: to,
+      });
+    }
 
-    output.push({
-      from: from,
-      to: to,
-    });
+    return output;
   }
-
-  Tracer.setAttribute("output", output);
-  Tracer.endSpan();
-  return output;
-}
+);

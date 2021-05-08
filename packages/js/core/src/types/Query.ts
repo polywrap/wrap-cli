@@ -8,29 +8,25 @@ import gql from "graphql-tag";
 export type SchemaDocument = DocumentNode;
 
 /** Create a GraphQL SchemaDocument by parsing a string */
-export function createSchemaDocument(schema: string): SchemaDocument {
-  Tracer.startSpan("core: createSchemaDocument");
-  Tracer.setAttribute("schema", schema);
-
-  const document = parse(schema);
-
-  Tracer.endSpan();
-  return document;
-}
+export const createSchemaDocument = Tracer.traceFunc(
+  "core: createSchemaDocument", (
+    schema: string
+  ): SchemaDocument => {
+    return parse(schema);
+  }
+);
 
 /** GraphQL QueryDocument */
 export type QueryDocument = DocumentNode;
 
 /** Create a GraphQL QueryDocument by parsing a string */
-export function createQueryDocument(query: string): QueryDocument {
-  Tracer.startSpan("core: createQueryDocument");
-  Tracer.setAttribute("query", query);
-
-  const document = gql(query);
-
-  Tracer.endSpan();
-  return document;
-}
+export const createQueryDocument = Tracer.traceFunc(
+  "core: createQueryDocument", (
+    query: string
+  ): QueryDocument => {
+    return gql(query);
+  }
+);
 
 /** Options required for an API query. */
 export interface QueryApiOptions<
