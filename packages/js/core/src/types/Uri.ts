@@ -62,8 +62,6 @@ export class Uri {
   }
 
   public static parseUri(uri: string): UriConfig {
-    Tracer.startSpan("core: Uri.parseUri");
-    Tracer.setAttribute("uri", uri);
 
     const run = Tracer.traceFunc(
       "Uri: parseUri", (
