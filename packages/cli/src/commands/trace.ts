@@ -1,6 +1,10 @@
 import { fixParameters } from "../lib/helpers/parameters";
 import { intlMsg } from "../lib/intl";
-import { startLoggingServer, stopLoggingServer } from "../lib/logging";
+import {
+  startLoggingServer,
+  stopLoggingServer,
+  setLogLevel,
+} from "../lib/logging";
 
 import { GluegunToolbox, print } from "gluegun";
 import chalk from "chalk";
@@ -86,7 +90,7 @@ export default {
       await stopLoggingServer(false);
     }
 
-    // Tracer.setLogLevel(level as LogLevel);
+    setLogLevel(level);
     print.success(intlMsg.commands_trace_logLevelSetText({ level }));
     process.exit(0);
   },
