@@ -3,12 +3,17 @@ import YAML from "js-yaml";
 import fs from "fs";
 import path from "path";
 import { exec as nodeExec } from "child_process";
-import { BASE_PACKAGE_JSON } from "./utils";
+import rimraf from "rimraf";
 
-const rimraf = require("rimraf");
+export const BASE_PACKAGE_JSON = {
+  name: "@web3api/w3-testenv",
+  version: "1.0.0",
+  private: true,
+  dependencies: {},
+};
 
 interface Manifest {
-  [key: string]: any;
+  dockerCompose: Record<string, any>;
   modules?: {
     [key: string]: {
       module: string;
@@ -35,20 +40,32 @@ const BASE_COMPOSE_FILE_PATH = path.join(
   "docker-compose.yml"
 );
 
-const exec = (command: string) => {
-  return new Promise<string>((res, rej) => {
-    nodeExec(command, (err, stdout) => {
-      if (err) {
-        rej(err);
-      }
+const exec = (command: string, watch = false) => {
+  return new Promise<string>((res) => {
+    const process = nodeExec(command);
 
-      res(stdout);
+    process.stdout?.on("data", (data) => {
+      if (watch) {
+        console.log(data.toString());
+      }
+    });
+
+    process.stderr?.on("data", (data) => {
+      if (watch) {
+        console.log(data.toString());
+      }
+    });
+
+    process.on("exit", () => {
+      res("");
     });
   });
 };
 
-export const validateNoBuildArg = (manifest: Manifest) => {
-  const services: { build?: any }[] = Object.values(manifest.services);
+export const validateNoBuildArg = (manifest: Manifest): void => {
+  const services: { build?: any }[] = Object.values(
+    manifest.dockerCompose.services
+  );
 
   if (!services.length) {
     return;
@@ -63,7 +80,9 @@ export const validateNoBuildArg = (manifest: Manifest) => {
   });
 };
 
-export const parseManifest = <T extends object>(manifestPath: string): T => {
+export const parseManifest = <T extends Record<string, any>>(
+  manifestPath: string
+): T => {
   return YAML.safeLoad(fs.readFileSync(manifestPath, "utf-8")) as T;
 };
 
@@ -72,41 +91,45 @@ const correctBuildImageOptionPaths = (
 ): DockerCompose => {
   const dockerComposeFile = parseManifest<DockerCompose>(dockerComposePath);
 
-  // const correctedServiceEntries = Object.entries(
-  //   dockerComposeFile.services || {}
-  // ).map(([serviceName, value]) => {
-  //   if (!value.build) {
-  //     return [serviceName, value];
-  //   }
+  const correctedServiceEntries = Object.entries(
+    dockerComposeFile.services || {}
+  ).map(([serviceName, value]) => {
+    if (!value.build) {
+      return [serviceName, value];
+    }
 
-  //   if (typeof value.build === "string") {
-  //     return [
-  //       serviceName,
-  //       {
-  //         ...value,
-  //         build: path.relative(process.cwd(), path.join(
-  //           path.join(dockerComposePath, ".."),
-  //           value.build
-  //         )),
-  //       },
-  //     ];
-  //   } else {
-  //     return [
-  //       serviceName,
-  //       {
-  //         ...value,
-  //         build: {
-  //           ...value.build,
-  //           context: path.relative(process.cwd(), path.join(dockerComposePath, ".."))
-  //         },
-  //       },
-  //     ];
-  //   }
-  // });
+    if (typeof value.build === "string") {
+      return [
+        serviceName,
+        {
+          ...value,
+          build: path.join(
+            process.cwd(),
+            path.join(path.join(dockerComposePath, ".."), value.build)
+          ),
+        },
+      ];
+    } else {
+      return [
+        serviceName,
+        {
+          ...value,
+          build: {
+            ...value.build,
+            context: path.join(
+              process.cwd(),
+              path.join(dockerComposePath, "..")
+            ),
+          },
+        },
+      ];
+    }
+  });
 
-  return dockerComposeFile;
-
-  // return { ...dockerComposeFile, services: Object.fromEntries(correctedServiceEntries) }
+  return {
+    ...dockerComposeFile,
+    services: Object.fromEntries(correctedServiceEntries),
+  };
 };
 
 const installModules = async (
@@ -188,19 +211,16 @@ export const extractDockerComposeFiles = async (
 
 export const generateBaseDockerCompose = (): string => {
   const manifest = parseManifest<Manifest>("./web3api.env.yaml");
-
-  if (manifest.modules) {
-    delete manifest.modules;
-  }
-
-  const fileContent = YAML.dump(manifest);
+  const fileContent = YAML.dump(manifest.dockerCompose);
 
   fs.writeFileSync(BASE_COMPOSE_FILE_PATH, fileContent);
 
   return BASE_COMPOSE_FILE_PATH;
 };
 
-export const generateDockerManifests = async (modulesToUse?: string[]) => {
+export const generateDockerManifests = async (
+  modulesToUse?: string[]
+): Promise<{ modulePaths: string[]; basePath: string }> => {
   const paths = await extractDockerComposeFiles(modulesToUse);
   const basePath = generateBaseDockerCompose();
 
@@ -221,43 +241,56 @@ interface Options {
   watch?: boolean;
 }
 
-export const testenv = async (up: boolean, options: Options) => {
+interface TestEnvOptions extends Options {
+  detached?: boolean;
+}
+
+export const up = async (options: TestEnvOptions): Promise<void> => {
   const { modulePaths: paths } = await generateDockerManifests(options.modules);
   const baseCommand = await generateBaseComposedCommand(paths);
+
   await exec(
-    `${baseCommand} ${up ? "up" : "down"} ${options.watch ? "-D" : ""} ${up ? "--build" : ""}`
+    `${baseCommand} up ${options.detached ? "-d" : ""} --build`,
+    options.watch
   );
 };
 
-export const getAggregatedManifest = async (options: Options) => {
+export const down = async (options: TestEnvOptions): Promise<void> => {
+  const { modulePaths: paths } = await generateDockerManifests();
+  const baseCommand = await generateBaseComposedCommand(paths);
+
+  await exec(`${baseCommand} down`, options.watch);
+};
+
+export const getAggregatedManifest = async (
+  options: Options
+): Promise<string> => {
   const { modulePaths: paths } = await generateDockerManifests(options.modules);
   const baseCommand = await generateBaseComposedCommand(paths);
-  await exec(
-    `${baseCommand} config`
-  );
-}
+  return await exec(`${baseCommand} config`, options.watch);
+};
 
-export const getEnvVariables = async (options: Options) => {
+export const getEnvVariables = async (options: Options): Promise<string[]> => {
   //Matches ${...} syntax
   const envVarRegex = /\${([^}]+)}/gm;
   const dockerComposePaths = await extractDockerComposeFiles(options.modules);
 
   const vars = dockerComposePaths.reduce((acc, current) => {
     const rawManifest = fs.readFileSync(current, "utf-8");
-    const matches = rawManifest.match(envVarRegex) || []
+    const matches = rawManifest.match(envVarRegex) || [];
 
     return [
       ...acc,
-      ...matches.map(match => {
-        if(match.startsWith("$")) {
-          if(match.startsWith("${")) {
-            return match.slice(2, match.length - 1)
+      ...matches.map((match) => {
+        if (match.startsWith("$")) {
+          if (match.startsWith("${")) {
+            return match.slice(2, match.length - 1);
           }
 
-          return match.slice(1)
+          return match.slice(1);
         }
 
-        return match
+        return match;
       }),
     ];
   }, [] as string[]);
