@@ -9,6 +9,6 @@ COPY . .
 RUN yarn \
   && yarn build
 
-EXPOSE ${LOGGING_SERVER_PORT}
+EXPOSE ${TRACE_SERVER_PORT}
 
 ENTRYPOINT yarn server
