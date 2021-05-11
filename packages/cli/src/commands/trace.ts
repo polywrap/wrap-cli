@@ -15,7 +15,7 @@ const logLevels = ["debug", "info", "error", "off"];
 const HELP = `
 ${chalk.bold(
   "w3 trace"
-)} [${intlMsg.commands_trace_command()}] ${intlMsg.commands_trace_options()}
+)} [${intlMsg.commands_trace_command()}] [${intlMsg.commands_trace_options()}]
 
 Commands:
   ${chalk.bold("up")}       ${intlMsg.commands_trace_command_up()}
@@ -90,7 +90,7 @@ export default {
       await stopLoggingServer(false);
     }
 
-    setLogLevel(level);
+    await setLogLevel(level);
     print.success(intlMsg.commands_trace_logLevelSetText({ level }));
     process.exit(0);
   },

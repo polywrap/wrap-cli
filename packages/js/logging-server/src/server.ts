@@ -13,8 +13,8 @@ app.get("/level", (req: express.Request, res: express.Response) => {
   res.send(Tracer.logLevel);
 });
 
-app.post("/level", (req: express.Request, res: express.Response) => {
-  Tracer.setLogLevel(req.body.level);
+app.post("/level", async (req: express.Request, res: express.Response) => {
+  await Tracer.setLogLevel(req.body.level);
   res.send(Tracer.logLevel);
 });
 

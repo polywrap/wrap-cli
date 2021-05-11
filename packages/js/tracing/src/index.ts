@@ -6,6 +6,7 @@ import {
 import { ZipkinExporter } from "@opentelemetry/exporter-zipkin";
 import { WebTracerProvider } from "@opentelemetry/web";
 import * as api from "@opentelemetry/api";
+import axios from "axios";
 
 export type LogLevel = "debug" | "info" | "error" | "off";
 
@@ -39,18 +40,51 @@ export class Tracer {
     }
   }
 
-  static setLogLevel(newLogLevel: LogLevel): void {
-    this.logLevel = newLogLevel;
-
+  static setLogLevel(newLogLevel: LogLevel): Promise<boolean> {
     if (newLogLevel == "off") this.traceEnabled = false;
     else this.traceEnabled = true;
+
+    return new Promise<boolean>((resolve, reject) => {
+      if (!process.env.TRACE_SERVER) {
+        this.logLevel = newLogLevel;
+        resolve(true);
+      }
+
+      const port = process.env.TRACE_SERVER_PORT || 4040;
+      axios
+        .post(`http://localhost:${port}/level`, {
+          level: newLogLevel,
+        })
+        .then(() => {
+          resolve(true);
+        })
+        .catch((err) => reject(err));
+    });
+  }
+
+  static getLogLevel(): Promise<LogLevel> {
+    return new Promise<LogLevel>((resolve, reject) => {
+      if (!process.env.TRACE_SERVER) {
+        resolve(this.logLevel);
+      }
+
+      const port = process.env.TRACE_SERVER_PORT || 4040;
+      axios
+        .get(`http://localhost:${port}/level`)
+        .then((response) => {
+          resolve(response.data);
+        })
+        .catch((err) => reject(err));
+    });
   }
 
   static enableTracing(): void {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.setLogLevel("debug");
   }
 
   static disableTracing(): void {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.setLogLevel("off");
   }
 
@@ -88,28 +122,40 @@ export class Tracer {
   }
 
   static addEvent(event: string, data?: unknown): void {
-    if (!this.traceEnabled || this.logLevel == "error") return;
+    if (!this.traceEnabled) return;
 
-    const span = this._currentSpan();
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    this.getLogLevel().then((level) => {
+      if (level == "error") {
+        return;
+      }
 
-    if (span) {
-      span.addEvent(event, { data: JSON.stringify(inspect(data)) });
-    }
+      const span = this._currentSpan();
+
+      if (span) {
+        span.addEvent(event, { data: JSON.stringify(inspect(data)) });
+      }
+    });
   }
 
   static recordException(error: api.Exception): void {
-    if (!this.traceEnabled || this.logLevel == "info") return;
+    if (!this.traceEnabled) return;
 
-    const span = this._currentSpan();
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    this.getLogLevel().then((level) => {
+      if (level == "info") return;
 
-    if (span) {
-      // recordException converts the error into a span event.
-      span.recordException(error);
+      const span = this._currentSpan();
 
-      // If the exception means the operation results in an
-      // error state, you can also use it to update the span status.
-      span.setStatus({ code: api.SpanStatusCode.ERROR });
-    }
+      if (span) {
+        // recordException converts the error into a span event.
+        span.recordException(error);
+
+        // If the exception means the operation results in an
+        // error state, you can also use it to update the span status.
+        span.setStatus({ code: api.SpanStatusCode.ERROR });
+      }
+    });
   }
 
   static traceFunc<TArgs extends Array<unknown>, TReturn>(
