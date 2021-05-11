@@ -4,4 +4,4 @@ services:
   logging-server:
     build: ./
     ports:
-      - "${LOGGING_SERVER_PORT}:${LOGGING_SERVER_PORT}"
+      - "${TRACE_SERVER_PORT}:${TRACE_SERVER_PORT}"

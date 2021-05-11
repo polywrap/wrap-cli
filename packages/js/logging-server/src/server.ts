@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: "./.env" });
 
 const app = express();
-const PORT = process.env.LOGGING_SERVER_PORT;
+const PORT = process.env.TRACE_SERVER_PORT;
 
 app.use(express.json());
 

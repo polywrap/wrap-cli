@@ -20,19 +20,9 @@ Options:
 describe("e2e tests for trace command", () => {
   const projectRoot = path.resolve(__dirname, "../project/");
 
-  test("Should throw error for no level given", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["trace"],
-        cwd: projectRoot,
-      },
-      "../../../bin/w3"
-    );
-
-    expect(code).toEqual(0);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`No level given
-${HELP}`);
+  beforeAll(() => {
+    process.env.TRACE_SERVER_PORT = "4040";
+    process.env.TRACE_SERVER = "true";
   });
 
   test("Should throw error for unrecognized command", async () => {
@@ -65,6 +55,22 @@ ${HELP}`);
 ${HELP}`);
   });
 
+  test("Should successfully start the logging-server", async () => {
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+      {
+        args: ["trace", "up"],
+        cwd: projectRoot,
+      },
+      "../../../bin/w3"
+    );
+
+    expect(code).toEqual(0);
+    expect(error).toBe("");
+    expect(clearStyle(output)).toEqual(`Log level was set to debug
+`);
+    expect(await Tracer.getLogLevel()).toEqual("debug");
+  });
+
   test("Should successfully set log level", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
@@ -78,6 +84,6 @@ ${HELP}`);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`Log level was set to debug
 `);
-    expect(Tracer.logLevel).toEqual("debug");
+    expect(await Tracer.getLogLevel()).toEqual("debug");
   });
 });
