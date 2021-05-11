@@ -34,9 +34,15 @@ export const runCommand = async (
 };
 
 export const up = async (quiet = false): Promise<void> => {
+  const traceGuiPort = process.env.TRACE_GUI_PORT || 9411;
   await runCommand("docker-compose up -d", quiet);
+  await runCommand(
+    `docker run -d --name openzipkin -p ${traceGuiPort}:${traceGuiPort} openzipkin/zipkin`,
+    quiet
+  );
 };
 
 export const down = async (quiet = false): Promise<void> => {
   await runCommand("docker-compose down", quiet);
+  await runCommand(`docker rm -f openzipkin`, quiet);
 };
