@@ -26,7 +26,7 @@ export interface BuildVars {
   ignorePaths: string[];
 }
 
-const BASE_DOCKERFILE_PATH = path.join(__dirname, "..", "images");
+const BASE_DOCKERFILE_PATH = path.join(__dirname, "..", "build-images");
 
 export type ModulesToBuild = InvokableModules | "all";
 
