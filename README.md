@@ -18,6 +18,8 @@ See the specification for [more information](https://github.com/Web3-API/specifi
 Developer documentation coming soon!
 
 ## Contributing  
+Before contributing please read the [dev guidelines](DEV_GUIDELINES.md).
+
 ### Prerequisites  
 - `nvm`  
 - `yarn`  
