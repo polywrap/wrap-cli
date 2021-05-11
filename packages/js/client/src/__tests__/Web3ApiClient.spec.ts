@@ -26,6 +26,24 @@ describe("Web3ApiClient", () => {
     await stopTestEnvironment();
   });
 
+  const getClient = async () => {
+    return createWeb3ApiClient({
+      ethereum: {
+        networks: {
+          testnet: {
+            provider: ethProvider
+          },
+        },
+      },
+      ipfs: { provider: ipfsProvider },
+      ens: {
+        addresses: {
+          testnet: ensAddress
+        }
+      }
+    })
+  }
+
   it("simple-storage", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
@@ -33,13 +51,9 @@ describe("Web3ApiClient", () => {
       ensAddress
     );
 
-    const client = await createWeb3ApiClient({
-      ethereum: { provider: ethProvider },
-      ipfs: { provider: ipfsProvider },
-      ens: { address: ensAddress }
-    });
+    const client = await getClient();
 
-    const ensUri = `ens/${api.ensDomain}`;
+    const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
 
     const deploy = await client.query<{
@@ -48,7 +62,11 @@ describe("Web3ApiClient", () => {
       uri: ensUri,
       query: `
         mutation {
-          deployContract
+          deployContract(
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
         }
       `,
     });
@@ -71,6 +89,9 @@ describe("Web3ApiClient", () => {
           setData(
             address: "${address}"
             value: $value
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
           )
         }
       `,
@@ -93,12 +114,21 @@ describe("Web3ApiClient", () => {
         query {
           getData(
             address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
           )
           secondGetData: getData(
             address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
           )
           thirdGetData: getData(
             address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
           )
         }
       `,
@@ -117,13 +147,9 @@ describe("Web3ApiClient", () => {
       ipfsProvider,
       ensAddress
     );
-    const ensUri = `ens/${api.ensDomain}`;
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
-    const client = await createWeb3ApiClient({
-      ethereum: { provider: ethProvider },
-      ipfs: { provider: ipfsProvider },
-      ens: { address: ensAddress }
-    });
+    const client = await getClient();
 
     const method1a = await client.query<{
       method1: {
@@ -315,39 +341,6 @@ describe("Web3ApiClient", () => {
       ],
     });
 
-    const method4 = await client.query<{
-      method4: ({
-        prop: string;
-        nested: {
-          prop: string;
-        };
-      } | null)[];
-    }>({
-      uri: ensUri,
-      query: `
-        query {
-          method4(
-            arg: {
-              prop: {
-                root: {
-                  prop: {
-
-                  }
-                }
-              }
-            }
-          )
-        }
-      `,
-    });
-
-    expect(method4.errors).toBeTruthy();
-    if (method4.errors) {
-      expect(method4.errors[0].message).toMatch(
-        /__w3_abort: Missing required property: 'root: InfiniteRoot'/gm
-      );
-    }
-
     const method5 = await client.query<{
       method5: {
         prop: string;
@@ -386,13 +379,9 @@ describe("Web3ApiClient", () => {
       ipfsProvider,
       ensAddress
     );
-    const ensUri = `ens/${api.ensDomain}`;
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
-    const client = await createWeb3ApiClient({
-      ethereum: { provider: ethProvider },
-      ipfs: { provider: ipfsProvider },
-      ens: { address: ensAddress }
-    });
+    const client = await getClient();
 
     const response = await client.query<{
       bytesMethod: Buffer;
@@ -425,13 +414,9 @@ describe("Web3ApiClient", () => {
       ipfsProvider,
       ensAddress
     );
-    const ensUri = `ens/${api.ensDomain}`;
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
-    const client = await createWeb3ApiClient({
-      ethereum: { provider: ethProvider },
-      ipfs: { provider: ipfsProvider },
-      ens: { address: ensAddress }
-    });
+    const client = await getClient();
 
     const method1a = await client.query<any>({
       uri: ensUri,
@@ -509,12 +494,8 @@ describe("Web3ApiClient", () => {
       ipfsProvider,
       ensAddress
     );
-    const ensUri = `ens/${api.ensDomain}`;
-    const client = await createWeb3ApiClient({
-      ethereum: { provider: ethProvider },
-      ipfs: { provider: ipfsProvider },
-      ens: { address: ensAddress }
-    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+    const client = await getClient();
 
     const largeStr = new Array(10000).join("web3api ")
     const largeBytes = new Uint8Array(Buffer.from(largeStr));
@@ -565,12 +546,8 @@ describe("Web3ApiClient", () => {
       ipfsProvider,
       ensAddress
     );
-    const ensUri = `ens/${api.ensDomain}`;
-    const client = await createWeb3ApiClient({
-      ethereum: { provider: ethProvider },
-      ipfs: { provider: ipfsProvider },
-      ens: { address: ensAddress }
-    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+    const client = await getClient();
 
     const i8Underflow = await client.query<{
       i8Method: number

@@ -4,13 +4,18 @@
 import { Project } from "./Project";
 
 import { Manifest, Uri, Web3ApiClient, UriRedirect } from "@web3api/client-js";
-import { composeSchema, ComposerOutput } from "@web3api/schema-compose";
+import {
+  composeSchema,
+  ComposerOutput,
+  ComposerFilter,
+} from "@web3api/schema-compose";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import fs from "fs";
 import path from "path";
 import * as gluegun from "gluegun";
+import { SchemaFile } from "@web3api/schema-compose";
 
 export interface SchemaConfig {
   project: Project;
@@ -33,28 +38,43 @@ export class SchemaComposer {
     if (ensAddress) {
       redirects.push({
         from: "w3://ens/ens.web3api.eth",
-        to: ensPlugin({ address: ensAddress }),
+        to: ensPlugin({
+          addresses: {
+            testnet: ensAddress,
+          },
+        }),
       });
     }
 
     if (ethProvider) {
       redirects.push({
         from: "w3://ens/ethereum.web3api.eth",
-        to: ethereumPlugin({ provider: ethProvider }),
+        to: ethereumPlugin({
+          networks: {
+            testnet: {
+              provider: ethProvider,
+            },
+          },
+        }),
       });
     }
 
     if (ipfsProvider) {
       redirects.push({
         from: "w3://ens/ipfs.web3api.eth",
-        to: ipfsPlugin({ provider: ipfsProvider }),
+        to: ipfsPlugin({
+          provider: ipfsProvider,
+          fallbackProviders: ["https://ipfs.io"],
+        }),
       });
     }
 
     this._client = new Web3ApiClient({ redirects });
   }
 
-  public async getComposedSchemas(): Promise<ComposerOutput> {
+  public async getComposedSchemas(
+    output: ComposerFilter = ComposerFilter.All
+  ): Promise<ComposerOutput> {
     if (this._composerOutput) {
       return Promise.resolve(this._composerOutput);
     }
@@ -64,26 +84,24 @@ export class SchemaComposer {
     const manifest = await project.getManifest();
     const querySchemaPath = manifest.query?.schema.file;
     const mutationSchemaPath = manifest.mutation?.schema.file;
+    const getSchema = (schemaPath?: string): SchemaFile | undefined =>
+      schemaPath
+        ? {
+            schema: this._fetchLocalSchema(schemaPath),
+            absolutePath: schemaPath,
+          }
+        : undefined;
 
     this._composerOutput = await composeSchema({
       schemas: {
-        query: querySchemaPath
-          ? {
-              schema: this._fetchLocalSchema(querySchemaPath),
-              absolutePath: querySchemaPath,
-            }
-          : undefined,
-        mutation: mutationSchemaPath
-          ? {
-              schema: this._fetchLocalSchema(mutationSchemaPath),
-              absolutePath: mutationSchemaPath,
-            }
-          : undefined,
+        query: getSchema(querySchemaPath),
+        mutation: getSchema(mutationSchemaPath),
       },
       resolvers: {
         external: (uri: string) => this._fetchExternalSchema(uri, manifest),
         local: (path: string) => Promise.resolve(this._fetchLocalSchema(path)),
       },
+      output,
     });
 
     return this._composerOutput;

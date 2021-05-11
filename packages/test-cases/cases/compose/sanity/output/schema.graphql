@@ -46,29 +46,6 @@ type Query @imports(
   ): [Int64!]!
 }
 
-type CustomQueryType {
-  str: String!
-  optStr: String
-  u: UInt!
-  optU: UInt
-  u8: UInt8!
-  u64: UInt64!
-  i: Int!
-  i8: Int8!
-  i64: Int64!
-  bytes: Bytes!
-  uArray: [UInt!]!
-  uOptArray: [UInt!]
-  optStrOptArray: [String]
-  crazyArray: [[[[UInt64!]]!]]
-  commonType: CommonType!
-  customType: Namespace_CustomType!
-}
-
-type AnotherQueryType {
-  prop: String
-}
-
 type Mutation @imports(
   types: [
     "Namespace_Query",
@@ -95,6 +72,43 @@ type Mutation @imports(
   ): [Int64!]!
 }
 
+type CustomQueryType {
+  str: String!
+  optStr: String
+  u: UInt!
+  optU: UInt
+  u8: UInt8!
+  u64: UInt64!
+  i: Int!
+  i8: Int8!
+  i64: Int64!
+  bytes: Bytes!
+  uArray: [UInt!]!
+  uOptArray: [UInt!]
+  optStrOptArray: [String]
+  crazyArray: [[[[UInt64!]]!]]
+  commonType: CommonType!
+  customType: Namespace_CustomType!
+}
+
+type AnotherQueryType {
+  prop: String
+}
+
+type CommonType {
+  prop: UInt8!
+  nestedObject: NestedType!
+  objectArray: [[ArrayObject]]!
+}
+
+type NestedType {
+  prop: String!
+}
+
+type ArrayObject {
+  prop: String!
+}
+
 type CustomMutationType {
   str: String!
   optStr: String
@@ -116,20 +130,6 @@ type CustomMutationType {
 
 type AnotherMutationType {
   prop: String
-}
-
-type CommonType {
-  prop: UInt8!
-  nestedObject: NestedType!
-  objectArray: [[ArrayObject]]!
-}
-
-type NestedType {
-  prop: String!
-}
-
-type ArrayObject {
-  prop: String!
 }
 
 ### Imported Queries START ###

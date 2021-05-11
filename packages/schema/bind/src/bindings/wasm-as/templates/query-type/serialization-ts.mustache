@@ -120,7 +120,7 @@ export function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}
   {{/required}}
   {{^required}}
   if (result) {
-    Types.{{type}}.write(writer, result);
+    Types.{{type}}.write(writer, result as Types.{{type}});
   } else {
     writer.writeNil();
   }

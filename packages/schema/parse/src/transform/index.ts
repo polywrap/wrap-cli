@@ -50,7 +50,7 @@ export interface TypeInfoTransformer {
   ) => ImportedObjectDefinition;
 }
 
-export function performTransforms(
+export function transformTypeInfo(
   typeInfo: TypeInfo,
   transforms: TypeInfoTransforms
 ): TypeInfo {

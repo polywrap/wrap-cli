@@ -1,6 +1,6 @@
 import { transformEnvToArgs } from "./docker";
-import { ModuleName } from "..";
 
+import { InvokableModules } from "@web3api/core-js";
 import path from "path";
 import YAML from "js-yaml";
 import { existsSync, readdirSync, readFileSync } from "fs";
@@ -28,10 +28,10 @@ export interface BuildVars {
 
 const BASE_DOCKERFILE_PATH = path.join(__dirname, "..", "env", "build-images");
 
-export type ModulesToBuild = "query" | "mutation" | "both";
+export type ModulesToBuild = InvokableModules | "all";
 
 export const parseManifest = (
-  modulesToBuild: ModuleName[],
+  modulesToBuild: InvokableModules[],
   schemaAndManifestDir: string
 ): BuildVars => {
   const doc = YAML.safeLoad(
@@ -39,7 +39,7 @@ export const parseManifest = (
   ) as BuildManifest;
 
   if (modulesToBuild.includes("query") && modulesToBuild.includes("mutation")) {
-    doc.env.modules_to_build = "both";
+    doc.env.modules_to_build = "all";
   } else if (modulesToBuild.includes("query")) {
     doc.env.modules_to_build = "query";
   } else if (modulesToBuild.includes("mutation")) {

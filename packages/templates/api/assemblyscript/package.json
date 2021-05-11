@@ -2,18 +2,24 @@
   "name": "templates-api-assemblyscript",
   "description": "Web3API Assemblyscript Template",
   "private": true,
-  "version": "0.0.1-prealpha.8",
+  "version": "0.0.1-prealpha.21",
   "scripts": {
-    "build": "npx w3 build",
-    "contracts:deploy": "node ./deploy-contracts.js",
-    "test:env:up": "npx w3 test-env up && yarn contracts:deploy",
-    "test:env:down": "npx w3 test-env down"
+    "build": "yarn build:contract && yarn build:web3api",
+    "build:web3api": "npx w3 build",
+    "build:contract": "node ./scripts/build-contract.js",
+    "test:env:up": "npx w3 test-env up",
+    "test:env:down": "npx w3 test-env down",
+    "deploy": "yarn deploy:contract && yarn deploy:web3api",
+    "deploy:web3api": "npx w3 build --ipfs http://localhost:5001 --test-ens simplestorage.eth",
+    "deploy:contract": "node ./scripts/deploy-contract.js",
+    "test": "npx w3 query ./recipes/e2e.json"
   },
   "devDependencies": {
-    "@web3api/cli": "0.0.1-prealpha.8",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.8",
-    "@web3api/wasm-as": "0.0.1-prealpha.8",
+    "@web3api/cli": "0.0.1-prealpha.21",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.21",
+    "@web3api/wasm-as": "0.0.1-prealpha.21",
     "ethers": "5.0.8",
-    "js-yaml": "3.14.0"
+    "js-yaml": "3.14.0",
+    "solc": "0.8.3"
   }
 }

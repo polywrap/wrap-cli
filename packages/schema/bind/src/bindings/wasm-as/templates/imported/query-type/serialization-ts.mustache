@@ -1,3 +1,4 @@
+{{^__commonImport}}
 {{#methods.length}}
 import {
   Nullable,
@@ -53,7 +54,7 @@ export function write{{name}}Args(
   {{/required}}
   {{^required}}
   if (input.{{name}}) {
-    Types.{{type}}.write(writer, input.{{name}});
+    Types.{{type}}.write(writer, input.{{name}} as Types.{{type}});
   } else {
     writer.writeNil();
   }
@@ -88,3 +89,4 @@ export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#return}}{{#to
 {{/last}}
 {{/methods}}
 {{/methods.length}}
+{{/__commonImport}}

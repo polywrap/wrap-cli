@@ -1,8 +1,14 @@
 import { header } from "@web3api/schema-parse";
+import Mustache from "mustache";
 
-const template = `${header}
+// Remove mustache's built-in HTML escaping
+Mustache.escape = (value) => value;
+
+export const template = `${header}
 
 {{schema}}
 `;
 
-export { template };
+export function addHeader(schema: string): string {
+  return Mustache.render(template, { schema });
+}

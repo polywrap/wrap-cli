@@ -25,7 +25,7 @@ ONBUILD RUN asc ./src/query/w3/entry.ts --path ./node_modules --outFile ${build_
 FROM base as mutation
 ONBUILD RUN asc ./src/mutation/w3/entry.ts --path ./node_modules --outFile ${build_dir}/mutation.wasm --use abort=src/mutation/w3/entry/w3Abort --optimize --debug --importMemory --runtime stub
 
-FROM base as both
+FROM base as all
 RUN echo ${build_dir}
 ONBUILD RUN asc ./src/query/w3/entry.ts --path ./node_modules --outFile ${build_dir}/query.wasm --use abort=src/query/w3/entry/w3Abort --optimize --debug --importMemory --runtime stub
 ONBUILD RUN asc ./src/mutation/w3/entry.ts --path ./node_modules --outFile ${build_dir}/mutation.wasm --use abort=src/mutation/w3/entry/w3Abort --optimize --debug --importMemory --runtime stub

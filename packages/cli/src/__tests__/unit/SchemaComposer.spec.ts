@@ -1,15 +1,11 @@
 import path from "path";
-import { loadManifest } from "../../lib/helpers/manifest";
 import { SchemaComposer, Project } from "../../lib";
 import { composedSchema } from "../project/sample";
 
-describe("SchemaComposer validation", () => {
-  let manifest;
-  const manifestPath = path.join(__dirname, "../project", "web3api.yaml");
+import { ComposerFilter } from "@web3api/schema-compose";
 
-  beforeAll(async () => {
-    manifest = await loadManifest(manifestPath);
-  });
+describe("SchemaComposer validation", () => {
+  const manifestPath = path.join(__dirname, "../project", "web3api.yaml");
 
   it("Should load & compose schema properly", async () => {
     const project = new Project({
@@ -18,7 +14,11 @@ describe("SchemaComposer validation", () => {
     const composer = new SchemaComposer({
       project,
     });
-    const schema = await composer.getComposedSchemas();
-    expect(schema).toEqual(composedSchema);
+    const schema = await composer.getComposedSchemas(ComposerFilter.Schema);
+    expect({
+      query: schema.query?.schema,
+      mutation: schema.mutation?.schema,
+      combined: schema.combined?.schema,
+    }).toEqual(composedSchema);
   });
 });
