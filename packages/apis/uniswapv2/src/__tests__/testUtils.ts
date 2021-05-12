@@ -1,6 +1,5 @@
 import { ChainId, Pair, Token } from "./e2e/types";
 import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
-import fetch, { Response } from "node-fetch";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
@@ -8,9 +7,7 @@ import axios from "axios";
 import path from "path";
 import { buildAndDeployApi } from "@web3api/test-env-js";
 import * as uni from "@uniswap/sdk";
-
-// https://tokenlists.org/token-list?url=https://gateway.ipfs.io/ipns/tokens.uniswap.org
-export const defaultUniswapTokenList = "https://gateway.ipfs.io/ipns/tokens.uniswap.org";
+import tokenList from "./e2e/testData/tokenList.json";
 
 interface TestEnvironment {
   ipfs: string;
@@ -42,7 +39,7 @@ export function getRedirects(ethereum: string, ipfs: string, ensAddress: string)
           testnet: {
             provider: ethereum
           },
-          mainnet: {
+          "MAINNET": {
             provider: "http://localhost:8546"
           },
         },
@@ -60,24 +57,22 @@ export function getRedirects(ethereum: string, ipfs: string, ensAddress: string)
   ];
 }
 
-export async function getTokenList(tokenListUrl: string): Promise<Token[]> {
+export async function getTokenList(): Promise<Token[]> {
   let tokens: Token[] = [];
-  await fetch(tokenListUrl)
-    .then((response: Response) => response.text())
-    .then((text: string) => {
-      const tokensObj = JSON.parse(text) as Record<string, any>;
-      let list: Record<string, any>[] = tokensObj.tokens;
-      list.forEach(token => tokens.push({
-        chainId: ChainId.MAINNET,
-        address: token.address,
-        currency: {
-          decimals: token.decimals,
-          symbol: token.symbol,
-          name: token.name,
-        },
-      }));
-    })
-    .catch(e => console.log(e));
+  tokenList.forEach((token: {
+    address: string;
+    decimals: number;
+    symbol: string;
+    name: string;
+  }) => tokens.push({
+    chainId: ChainId.MAINNET,
+    address: token.address,
+    currency: {
+      decimals: token.decimals,
+      symbol: token.symbol,
+      name: token.name,
+    },
+  }));
   return tokens;
 }
 
