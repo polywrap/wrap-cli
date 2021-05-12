@@ -55,10 +55,6 @@ describe("Exec", () => {
       uri: ensUri,
       query: `
         query {
-          pairAddress (
-            token0: $token0
-            token1: $token1
-          )
           fetchPairData(
             token0: $token0
             token1: $token1
@@ -76,10 +72,6 @@ describe("Exec", () => {
       uri: ensUri,
       query: `
         query {
-          pairAddress (
-            token0: $token0
-            token1: $token1
-          )
           fetchPairData(
             token0: $token0
             token1: $token1
@@ -97,10 +89,6 @@ describe("Exec", () => {
       uri: ensUri,
       query: `
         query {
-          pairAddress (
-            token0: $token0
-            token1: $token1
-          )
           fetchPairData(
             token0: $token0
             token1: $token1
