@@ -31,6 +31,8 @@ describe("Swap", () => {
     const apiPath: string = path.resolve(__dirname + "../../../../");
     const api = await buildAndDeployApi(apiPath, ipfs, ensAddress);
     ensUri = `ens/testnet/${api.ensDomain}`;
+    ethersProvider = ethers.providers.getDefaultProvider("http://localhost:8546") as providers.JsonRpcProvider;
+    recipient = await ethersProvider.getSigner().getAddress();
 
     // set up test case data -> pairs
     tokens = await getTokenList();
@@ -74,9 +76,6 @@ describe("Swap", () => {
       name: "Ether",
       symbol: "ETH",
     };
-
-    ethersProvider = ethers.providers.getDefaultProvider("http://localhost:8546") as providers.JsonRpcProvider;
-    recipient = await ethersProvider.getSigner().getAddress();
   });
 
   afterAll(async () => {
@@ -317,7 +316,7 @@ describe("Swap", () => {
         token0: dai,
         token1: link,
         amount: "100",
-        tradeType: 0,
+        tradeType: "EXACT_INPUT",
         tradeOptions: {
           allowedSlippage: "0.1",
           recipient: recipient,
@@ -327,6 +326,10 @@ describe("Swap", () => {
       },
     });
 
+
+    expect(daiLinkSwap.errors).toBeFalsy();
+    const daiLinkSwapTx = await ethersProvider.getTransaction(daiLinkSwap.data!.swap);
+    await daiLinkSwapTx.wait();
     const swapExactInDaiBalance = await daiContract.balanceOf(recipient);
     expect(swapExactInDaiBalance.sub(daiBalance)).toEqual(BigNumber.from("100"));
 
@@ -348,7 +351,7 @@ describe("Swap", () => {
         token0: link,
         token1: dai,
         amount: "100",
-        tradeType: 1,
+        tradeType: "EXACT_OUTPUT",
         tradeOptions: {
           allowedSlippage: "0.1",
           recipient: recipient,
@@ -358,6 +361,9 @@ describe("Swap", () => {
       },
     });
 
+    expect(linkDaiSwap.errors).toBeFalsy();
+    const linkDaiSwapTx = await ethersProvider.getTransaction(daiLinkSwap.data!.swap);
+    await linkDaiSwapTx.wait();
     const swapExactOutDaiBalance = await daiContract.balanceOf(recipient);
     expect(swapExactOutDaiBalance.sub(swapExactInDaiBalance)).toEqual(BigNumber.from("100"));
   });
