@@ -128,9 +128,9 @@ export class EthereumPlugin extends Plugin {
     const txRequest: providers.TransactionRequest = {
       to: contract.address,
       data: txData,
-      gasLimit: BigNumber.from(gasLimit),
+      gasLimit: gasLimit ? BigNumber.from(gasLimit) : undefined,
       gasPrice: gasPrice ? BigNumber.from(gasPrice) : undefined,
-      value: value,
+      value: value ? BigNumber.from(value) : undefined,
     };
 
     const tx = await signer.sendTransaction(txRequest);
