@@ -47,7 +47,7 @@ type Query {
 
   pairReserves(
     pair: Pair!
-  ): [TokenAmount!]! # [Uint256!]!
+  ): [TokenAmount!]!
 
   pairToken0Price(
     pair: Pair!
@@ -106,7 +106,7 @@ type Query {
 
   routeMidPrice(
     route: Route!
-  ): TokenAmount!
+  ): String!
 
   # Router
   swapCallParameters(
@@ -123,15 +123,15 @@ type Query {
 
   tradeExecutionPrice(
     trade: Trade!
-  ): TokenAmount!
+  ): String!
 
   tradeNextMidPrice(
     trade: Trade!
-  ): TokenAmount!
+  ): String!
 
   tradeSlippage(
     trade: Trade!
-  ): TokenAmount!
+  ): String!
 
   tradeMinimumAmountOut(
     trade: Trade!

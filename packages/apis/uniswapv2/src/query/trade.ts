@@ -88,9 +88,7 @@ export function createTrade(input: Input_createTrade): Trade {
 }
 
 // The average price that the trade would execute at.
-export function tradeExecutionPrice(
-  input: Input_tradeExecutionPrice
-): TokenAmount {
+export function tradeExecutionPrice(input: Input_tradeExecutionPrice): string {
   const trade: Trade = input.trade;
   const executionPrice = new Price(
     trade.inputAmount.token,
@@ -98,14 +96,11 @@ export function tradeExecutionPrice(
     BigInt.fromString(trade.inputAmount.amount),
     BigInt.fromString(trade.outputAmount.amount)
   );
-  return {
-    token: executionPrice.quoteToken,
-    amount: executionPrice.toFixed(18),
-  };
+  return executionPrice.toFixed(18);
 }
 
 // What the new mid price would be if the trade were to execute.
-export function tradeNextMidPrice(input: Input_tradeNextMidPrice): TokenAmount {
+export function tradeNextMidPrice(input: Input_tradeNextMidPrice): string {
   const trade: Trade = input.trade;
   return routeMidPrice({
     route: trade.route,
@@ -114,7 +109,7 @@ export function tradeNextMidPrice(input: Input_tradeNextMidPrice): TokenAmount {
 
 // The slippage incurred by the trade. (strictly > 0.30%)
 // result is a percent like 100.0%
-export function tradeSlippage(input: Input_tradeSlippage): TokenAmount {
+export function tradeSlippage(input: Input_tradeSlippage): string {
   const trade: Trade = input.trade;
   const price: Price = midPrice(trade.route);
   // compute price impact
@@ -126,10 +121,7 @@ export function tradeSlippage(input: Input_tradeSlippage): TokenAmount {
   );
   const exactQuote: Fraction = price.raw().mul(inputFraction);
   const slippage = exactQuote.sub(outputFraction).div(exactQuote);
-  return {
-    token: trade.outputAmount.token,
-    amount: slippage.mul(new Fraction(BigInt.fromString("100"))).toFixed(18),
-  };
+  return slippage.mul(new Fraction(BigInt.fromString("100"))).toFixed(18);
 }
 
 export function tradeMinimumAmountOut(
@@ -386,7 +378,7 @@ function _bestTradeExactOut(
 }
 
 function computePriceImpact(trade: Trade): BigFloat {
-  const slippage: string = tradeSlippage({ trade }).amount;
+  const slippage: string = tradeSlippage({ trade });
   return BigFloat.fromString(slippage);
 }
 

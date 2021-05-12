@@ -72,13 +72,10 @@ export function routePath(input: Input_routePath): Token[] {
 }
 
 // Returns the current mid price along the route.
-export function routeMidPrice(input: Input_routeMidPrice): TokenAmount {
+export function routeMidPrice(input: Input_routeMidPrice): string {
   const route: Route = input.route;
   const finalPrice = midPrice(route);
-  return {
-    token: finalPrice.quoteToken,
-    amount: finalPrice.toFixed(18),
-  };
+  return finalPrice.toFixed(18);
 }
 
 // helper function for use in routeMidPrice and trade query functions

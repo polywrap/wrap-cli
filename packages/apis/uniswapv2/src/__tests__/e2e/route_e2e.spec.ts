@@ -170,7 +170,7 @@ describe('Route', () => {
       const expectedRoute = new uni.Route(uniPairs, uniInputToken, uniOutputToken);
       // actual midPrice
       const actualMidPrice = await client.query<{
-        routeMidPrice: TokenAmount;
+        routeMidPrice: string;
       }>({
         uri: ensUri,
         query: `
@@ -184,12 +184,8 @@ describe('Route', () => {
           route: actualRoute?.data?.createRoute,
         }
       });
-      // make sure price quote token is correct
-      const actualPriceTokenAddress: string = actualMidPrice.data?.routeMidPrice?.token.address ?? "";
-      const expectedPriceTokenAddress: string = (expectedRoute.midPrice.quoteCurrency as uni.Token).address;
-      expect(actualPriceTokenAddress).toStrictEqual(expectedPriceTokenAddress);
       // make sure price is correct
-      const actualRouteMidPrice: string = actualMidPrice.data?.routeMidPrice?.amount!
+      const actualRouteMidPrice: string = actualMidPrice.data?.routeMidPrice!
       const expectedRouteMidPrice: string = expectedRoute.midPrice.toFixed(18);
       expect(actualRouteMidPrice).toStrictEqual(expectedRouteMidPrice);
     }
