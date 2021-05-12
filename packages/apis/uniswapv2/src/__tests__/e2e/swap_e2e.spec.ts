@@ -5,10 +5,11 @@ import path from "path";
 import { getRedirects, getTokenList } from "../testUtils";
 import { Contract, ethers, providers } from "ethers";
 import erc20ABI from "./testData/erc20ABI.json";
+import { BigNumber } from "@ethersproject/bignumber";
 
 jest.setTimeout(90000);
 
-describe("Exec", () => {
+describe("Swap", () => {
 
   let client: Web3ApiClient;
   let recipient: string;
@@ -16,6 +17,9 @@ describe("Exec", () => {
   let tokens: Token[];
   let ethersProvider: providers.JsonRpcProvider;
   let ethCurrency: Currency;
+  let dai: Token;
+  let eth: Token;
+  let link: Token;
 
   beforeAll(async () => {
     const { ethereum: testEnvEtherem, ensAddress, ipfs } = await initTestEnvironment();
@@ -30,6 +34,41 @@ describe("Exec", () => {
 
     // set up test case data -> pairs
     tokens = await getTokenList();
+    dai = tokens.filter(token => token.currency.symbol === "DAI")[0];
+    const approveHash = await client.query<{approve: string}>({
+      uri: ensUri,
+      query: `
+        mutation {
+          approve(
+            token: $token
+          )
+        }
+      `,
+      variables: {
+        token: dai,
+      },
+    });
+    const daiApproveTx = await ethersProvider.getTransaction(approveHash.data!.approve);
+    await daiApproveTx.wait();
+
+    link = tokens.filter(token => token.currency.symbol === "LINK")[0];
+    const linkApprove = await client.query<{approve: string}>({
+      uri: ensUri,
+      query: `
+        mutation {
+          approve(
+            token: $token
+          )
+        }
+      `,
+      variables: {
+        token: link,
+      },
+    });
+    const linkApproveTx = await ethersProvider.getTransaction(linkApprove.data!.approve);
+    await linkApproveTx.wait();
+
+    eth = tokens.filter(token => token.currency.symbol === "WETH")[0];
     ethCurrency = {
       decimals: 18,
       name: "Ether",
@@ -44,11 +83,7 @@ describe("Exec", () => {
     await stopTestEnvironment();
   });
 
-  it("Should successfully trade ether -> dai -> link -> ether", async () => {
-    const dai: Token = tokens.filter(token => token.currency.symbol === "DAI")[0];
-    const eth: Token = tokens.filter(token => token.currency.symbol === "WETH")[0];
-    const link: Token = tokens.filter(token => token.currency.symbol === "LINK")[0];
-
+  it("Should successfully exec ether -> dai -> link -> ether trades", async () => {
     const etherDaiData = await client.query<{
       fetchPairData: Pair;
     }>({
@@ -100,7 +135,11 @@ describe("Exec", () => {
         token1: eth,
       },
     });
+    JSON.stringify(etherDaiData)
+    JSON.stringify(daiLinkData);
+    JSON.stringify(linkEtherData);
 
+    // EXEC: ETH -> dai
     const etherDaiTradeResult = await client.query<{bestTradeExactOut: Trade[]}>({
       uri: ensUri,
       query: `
@@ -109,7 +148,6 @@ describe("Exec", () => {
             pairs: $pairs
             amountOut: $amountOut
             tokenIn: $tokenIn
-            tradeOptions: null
           )
         }
       `,
@@ -127,7 +165,6 @@ describe("Exec", () => {
     etherDaiTrade.route.pairs[0].tokenAmount1.token.currency = ethCurrency;
     etherDaiTrade.route.input.currency = ethCurrency;
     etherDaiTrade.inputAmount.token.currency = ethCurrency;
-
     const etherDaiTxHash = await client.query<{ exec: string}>({
       uri: ensUri,
       query: `
@@ -154,8 +191,10 @@ describe("Exec", () => {
     await etherDaiTx.wait();
 
     const daiContract = new Contract(dai.address, erc20ABI, ethersProvider);
-    expect((await daiContract.balanceOf(recipient)).gte("1000")).toBeTruthy();
+    const daiBalance = await daiContract.balanceOf(recipient);
+    expect(daiBalance.gte("1000")).toBeTruthy();
 
+    // EXEC dai -> link
     const daiLinkTradeData = await client.query<{bestTradeExactIn: Trade[]}>({
       uri: ensUri,
       query: `
@@ -164,7 +203,6 @@ describe("Exec", () => {
             pairs: $pairs
             amountIn: $amountIn
             tokenOut: $tokenOut
-            tradeOptions: null
           )
         }
       `,
@@ -178,23 +216,6 @@ describe("Exec", () => {
       },
     });
     const daiLinkTrade = daiLinkTradeData.data!.bestTradeExactIn[0];
-
-    const approveHash = await client.query<{approve: string}>({
-      uri: ensUri,
-      query: `
-        mutation {
-          approve(
-            trade: $trade
-          )
-        }
-      `,
-      variables: {
-        trade: daiLinkTrade,
-      },
-    });
-    const daiApproveTx = await ethersProvider.getTransaction(approveHash.data!.approve);
-    await daiApproveTx.wait();
-
     const daiLinkTxHash = await client.query<{ exec: string}>({
       uri: ensUri,
       query: `
@@ -222,11 +243,10 @@ describe("Exec", () => {
     expect(daiLinkTxHash.errors).toBeFalsy();
     const daiLinkTx = await ethersProvider.getTransaction(daiLinkTxHash.data!.exec);
     await daiLinkTx.wait();
-
     expect((await daiContract.balanceOf(recipient)).toString()).toBe("0");
     expect(linkBalance.gt("0")).toBeTruthy();
 
-
+    // EXEC link -> eth exec
     const linkEthTradeResult = await client.query<{bestTradeExactIn: Trade[]}>({
       uri: ensUri,
       query: `
@@ -235,7 +255,6 @@ describe("Exec", () => {
             pairs: $pairs
             amountIn: $amountIn
             tokenOut: $tokenOut
-            tradeOptions: null
           )
         }
       `,
@@ -248,27 +267,11 @@ describe("Exec", () => {
         tokenOut: eth,
       },
     });
-
     const linkEthTrade = linkEthTradeResult.data!.bestTradeExactIn[0];
     linkEthTrade.route.path[1].currency = ethCurrency;
     linkEthTrade.route.pairs[0].tokenAmount1.token.currency = ethCurrency;
     linkEthTrade.route.output.currency = ethCurrency;
     linkEthTrade.outputAmount.token.currency = ethCurrency;
-    const linkApprove = await client.query<{approve: string}>({
-      uri: ensUri,
-      query: `
-        mutation {
-          approve(
-            trade: $trade
-          )
-        }
-      `,
-      variables: {
-        trade: linkEthTrade,
-      },
-    });
-    const linkApproveTx = await ethersProvider.getTransaction(linkApprove.data!.approve);
-    await linkApproveTx.wait();
     const linkEthTxHash = await client.query<{ exec: string}>({
       uri: ensUri,
       query: `
@@ -295,5 +298,67 @@ describe("Exec", () => {
     await linkEthTx.wait();
 
     expect((await linkContract.balanceOf(recipient)).lt(linkBalance)).toBeTruthy();
+
+    // SWAP dai -> link
+    const daiLinkSwap = await client.query<{ swap: string}>({
+      uri: ensUri,
+      query: `
+        mutation {
+          swap (
+            tokenIn: $token0
+            tokenOut: $token1
+            amount: $amount
+            tradeType: $tradeType
+            tradeOptions: $tradeOptions
+          )
+        }
+      `,
+      variables: {
+        token0: dai,
+        token1: link,
+        amount: "100",
+        tradeType: 0,
+        tradeOptions: {
+          allowedSlippage: "0.1",
+          recipient: recipient,
+          unixTimestamp: parseInt((new Date().getTime() / 1000).toFixed(0)),
+          ttl: 1800
+        }
+      },
+    });
+
+    const swapExactInDaiBalance = await daiContract.balanceOf(recipient);
+    expect(swapExactInDaiBalance.sub(daiBalance)).toEqual(BigNumber.from("100"));
+
+    // SWAP link -> dai
+    const linkDaiSwap = await client.query<{ swap: string}>({
+      uri: ensUri,
+      query: `
+        mutation {
+          swap (
+            tokenIn: $token0
+            tokenOut: $token1
+            amount: $amount
+            tradeType: $tradeType
+            tradeOptions: $tradeOptions
+          )
+        }
+      `,
+      variables: {
+        token0: link,
+        token1: dai,
+        amount: "100",
+        tradeType: 1,
+        tradeOptions: {
+          allowedSlippage: "0.1",
+          recipient: recipient,
+          unixTimestamp: parseInt((new Date().getTime() / 1000).toFixed(0)),
+          ttl: 1800
+        }
+      },
+    });
+
+    const swapExactOutDaiBalance = await daiContract.balanceOf(recipient);
+    expect(swapExactOutDaiBalance.sub(swapExactInDaiBalance)).toEqual(BigNumber.from("100"));
   });
 });

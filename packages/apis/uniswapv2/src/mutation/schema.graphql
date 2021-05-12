@@ -2,12 +2,20 @@
 #import { ChainId, Currency, Route, Trade, Pair, TradeOptions } from "../common/schema.graphql"
 
 type Mutation {
+  swap (
+    tokenIn: Token!
+    tokenOut: Token!
+    amount: String!
+    tradeType: TradeType!
+    tradeOptions: TradeOptions!
+  ): String!
+
   exec(
     trade: Trade!
     tradeOptions: TradeOptions!
   ): String!
 
   approve(
-    trade: Trade!
+    token: Token!
   ): String!
 }

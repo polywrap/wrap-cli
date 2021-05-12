@@ -1,7 +1,21 @@
 import { Ethereum_Mutation } from "./w3/imported";
-import { getChainIdKey, Input_exec, Input_approve } from "./w3";
-import { swapCallParameters, toHex } from "../query";
+import {
+  getChainIdKey,
+  Input_exec,
+  Input_approve,
+  Input_swap,
+  Trade,
+  TradeType,
+} from "./w3";
+import {
+  bestTradeExactIn,
+  bestTradeExactOut,
+  fetchPairData,
+  swapCallParameters,
+  toHex,
+} from "../query";
 import { UNISWAP_ROUTER_CONTRACT } from "../utils/constants";
+import { getSwapMethodAbi } from "./abi";
 
 import { BigInt } from "as-bigint";
 
@@ -16,7 +30,7 @@ export function exec(input: Input_exec): string {
   });
 
   const txHash = Ethereum_Mutation.sendTransaction({
-    method: getMethodAbi(swapParameters.methodName),
+    method: getSwapMethodAbi(swapParameters.methodName),
     args: swapParameters.args,
     value: swapParameters.value,
     address: UNISWAP_ROUTER_CONTRACT,
@@ -32,46 +46,53 @@ export function exec(input: Input_exec): string {
   return txHash;
 }
 
+export function swap(input: Input_swap): string {
+  let trade: Trade;
+  const pair = fetchPairData({
+    token0: input.tokenIn,
+    token1: input.tokenOut,
+  });
+
+  if (input.tradeType == TradeType.EXACT_INPUT) {
+    trade = bestTradeExactIn({
+      pairs: [pair],
+      amountIn: {
+        token: input.tokenIn,
+        amount: input.amount,
+      },
+      tokenOut: input.tokenOut,
+      options: null,
+    })[0];
+  } else {
+    trade = bestTradeExactOut({
+      pairs: [pair],
+      amountOut: {
+        token: input.tokenOut,
+        amount: input.amount,
+      },
+      tokenIn: input.tokenIn,
+      options: null,
+    })[0];
+  }
+
+  return exec({
+    trade: trade,
+    tradeOptions: input.tradeOptions,
+  });
+}
+
 export function approve(input: Input_approve): string {
   return Ethereum_Mutation.sendTransaction({
     method:
       "function approve(address spender, uint value) external returns (bool)",
     args: [UNISWAP_ROUTER_CONTRACT, toHex(BigInt.fromString(MAX_UINT_256))],
     value: null,
-    address: input.trade.inputAmount.token.address,
+    address: input.token.address,
     connection: {
       node: null,
-      networkNameOrChainId: getChainIdKey(
-        input.trade.inputAmount.token.chainId
-      ),
+      networkNameOrChainId: getChainIdKey(input.token.chainId),
     },
     gasPrice: null,
     gasLimit: null,
   });
-}
-
-function getMethodAbi(methodName: string): string {
-  if (methodName == "swapExactTokensForTokens")
-    return `function swapExactTokensForTokens(uint amountIn,uint amountOutMin,address[] calldata path,address to,uint deadline) external returns (uint[] memory amounts)`;
-  else if (methodName == "swapTokensForExactTokens")
-    return `function swapTokensForExactTokens(uint amountOut,uint amountInMax,address[] calldata path,address to,uint deadline) external returns (uint[] memory amounts)`;
-  else if (methodName == "swapExactETHForTokens")
-    return `function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable returns (uint[] memory amounts)`;
-  else if (methodName == "swapTokensForExactETH")
-    return `function swapTokensForExactETH(uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts)`;
-  else if (methodName == "swapExactTokensForETH")
-    return `function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts)`;
-  else if (methodName == "swapETHForExactTokens")
-    return `function swapETHForExactTokens(uint amountOut, address[] calldata path, address to, uint deadline) external payable returns (uint[] memory amounts)`;
-  else if (
-    methodName == "swapExactTokensForTokensSupportingFeeOnTransferTokens"
-  )
-    return `function swapExactTokensForTokensSupportingFeeOnTransferTokens(uint amountIn,uint amountOutMin,address[] calldata path,address to,uint deadline) external`;
-  else if (methodName == "swapExactETHForTokensSupportingFeeOnTransferTokens")
-    return `function swapExactETHForTokensSupportingFeeOnTransferTokens(uint amountOutMin,address[] calldata path,address to,uint deadline) external payable`;
-  else if (methodName == "swapExactTokensForETHSupportingFeeOnTransferTokens")
-    return `function swapExactTokensForETHSupportingFeeOnTransferTokens(uint amountIn,uint amountOutMin,address[] calldata path,address to,uint deadline) external`;
-  else {
-    throw new Error("Invalid method name " + methodName);
-  }
 }
