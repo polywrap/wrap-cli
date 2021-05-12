@@ -262,7 +262,6 @@ describe("Exec", () => {
     });
 
     const linkEthTrade = linkEthTradeResult.data!.bestTradeExactIn[0];
-    console.log(JSON.stringify(linkEthTrade, null ,2));
     linkEthTrade.route.path[1].currency = ethCurrency;
     linkEthTrade.route.pairs[0].tokenAmount1.token.currency = ethCurrency;
     linkEthTrade.route.output.currency = ethCurrency;
