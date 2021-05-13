@@ -1,6 +1,6 @@
 {
-  "name": "@web3api/core-js",
-  "description": "Web3API Javascript Core",
+  "name": "@web3api/tracing-js",
+  "description": "Web3API Core Tracing",
   "version": "0.0.1-prealpha.21",
   "license": "MIT",
   "repository": {
@@ -12,30 +12,34 @@
     "build"
   ],
   "scripts": {
-    "build": "rimraf ./build && yarn build:manifest && tsc --project tsconfig.build.json",
-    "build:manifest": "node ./scripts/generateManifest.js",
+    "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color --ext .ts src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@web3api/manifest-schema": "0.0.1-prealpha.21",
-    "@web3api/tracing-js": "0.0.1-prealpha.21",
-    "graphql": "15.5.0",
-    "graphql-tag": "2.10.4",
-    "js-yaml": "3.14.0",
-    "jsonschema": "1.4.0",
-    "semver": "7.3.4"
+    "@opentelemetry/api": "^1.0.0-rc.0",
+    "@opentelemetry/core": "^0.18.0",
+    "@opentelemetry/context-zone": "^0.18.0",
+    "@opentelemetry/exporter-collector": "^0.18.0",
+    "@opentelemetry/exporter-jaeger": "^0.18.0",
+    "@opentelemetry/exporter-zipkin": "^0.18.0",
+    "@opentelemetry/node": "^0.18.0",
+    "@opentelemetry/propagator-b3": "^0.18.0",
+    "@opentelemetry/tracing": "^0.18.0",
+    "@opentelemetry/web": "^0.18.0",
+    "util-inspect": "0.1.8"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
-    "jest": "26.6.3",
+    "@types/uuid": "3.4.3",
+    "jest": "26.2.2",
     "json-schema-to-typescript": "10.1.3",
     "rimraf": "3.0.2",
-    "ts-jest": "26.5.4",
+    "ts-jest": "26.1.4",
     "ts-node": "8.10.2",
-    "typescript": "4.0.7"
+    "typescript": "3.9.7"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {
