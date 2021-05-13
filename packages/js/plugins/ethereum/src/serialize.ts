@@ -10,6 +10,16 @@ export type SerializableTxReceipt = Overwrite<
   }
 >;
 
+export type SerializableTxResponse = Overwrite<
+  ethers.providers.TransactionResponse,
+  {
+    nonce: string;
+    gasLimit: string;
+    gasPrice: string;
+    data: string;
+  }
+>;
+
 export type SerializableTxRequest = Overwrite<
   ethers.providers.TransactionRequest,
   {
@@ -26,6 +36,16 @@ export const serializableTxReceipt = (
   ...receipt,
   gasUsed: receipt.gasUsed.toString(),
   cumulativeGasUsed: receipt.gasUsed.toString(),
+});
+
+export const serializableTxResponse = (
+  response: ethers.providers.TransactionResponse
+): SerializableTxResponse => ({
+  ...response,
+  nonce: response.nonce.toString(),
+  gasLimit: response.nonce.toString(),
+  gasPrice: response.nonce.toString(),
+  data: response.nonce.toString(),
 });
 
 export const serializableTxRequest = (

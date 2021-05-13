@@ -12,11 +12,7 @@ import {
   ConnectionConfig,
   ConnectionConfigs,
 } from "./Connection";
-import {
-  serializableTxReceipt,
-  SerializableTxReceipt,
-  SerializableTxRequest,
-} from "./serialize";
+import { SerializableTxRequest } from "./serialize";
 
 import {
   Client,
@@ -45,6 +41,10 @@ export interface EthereumConfig {
   networks: ConnectionConfigs;
   defaultNetwork?: string;
 }
+
+export type SendOptions = Partial<{
+  wait: boolean;
+}>;
 
 export class EthereumPlugin extends Plugin {
   private _connections: Connections;
@@ -92,6 +92,7 @@ export class EthereumPlugin extends Plugin {
     const signer = connection.getSigner();
     const factory = new ethers.ContractFactory(abi, bytecode, signer);
     const contract = await factory.deploy(...args);
+
     await contract.deployTransaction.wait();
     return contract.address;
   }
@@ -114,14 +115,31 @@ export class EthereumPlugin extends Plugin {
     method: string,
     args: string[],
     connectionOverride?: ConnectionOverride
-  ): Promise<SerializableTxReceipt> {
+  ): Promise<ethers.providers.TransactionResponse> {
     const connection = await this.getConnection(connectionOverride);
     const contract = connection.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
-    const tx = await contract[funcs[0]](...args);
-    const res: SerializableTxReceipt = await tx.wait();
+    const res: ethers.providers.TransactionResponse = await contract[funcs[0]](
+      ...args
+    );
 
     return res;
+  }
+
+  public async callContractMethodAndWait(
+    address: Address,
+    method: string,
+    args: string[],
+    connectionOverride?: ConnectionOverride
+  ): Promise<ethers.providers.TransactionReceipt> {
+    const response = await this.callContractMethod(
+      address,
+      method,
+      args,
+      connectionOverride
+    );
+
+    return response.wait();
   }
 
   public async getConnection(
@@ -194,14 +212,31 @@ export class EthereumPlugin extends Plugin {
   public async sendTransaction(
     tx: SerializableTxRequest,
     connectionOverride?: ConnectionOverride
-  ): Promise<SerializableTxReceipt> {
+  ): Promise<ethers.providers.TransactionResponse> {
     const connection = await this.getConnection(connectionOverride);
     const signer = connection.getSigner();
 
-    const res = await signer.sendTransaction(tx);
-    const receipt = await res.wait();
+    return await signer.sendTransaction(tx);
+  }
 
-    return serializableTxReceipt(receipt);
+  public async awaitTransaction(
+    txHash: string,
+    confirmations: number,
+    timeout: number,
+    connectionOverride?: ConnectionOverride
+  ): Promise<ethers.providers.TransactionReceipt> {
+    const connection = await this.getConnection(connectionOverride);
+    const provider = connection.getProvider();
+
+    return await provider.waitForTransaction(txHash, confirmations, timeout);
+  }
+
+  public async sendTransactionAndWait(
+    tx: SerializableTxRequest,
+    connectionOverride?: ConnectionOverride
+  ): Promise<ethers.providers.TransactionReceipt> {
+    const res = await this.sendTransaction(tx, connectionOverride);
+    return await res.wait();
   }
 
   public async sendRPC(

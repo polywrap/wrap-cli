@@ -1,5 +1,9 @@
 import { EthereumPlugin } from ".";
-import { SerializableTxRequest } from "./serialize";
+import {
+  serializableTxReceipt,
+  SerializableTxRequest,
+  serializableTxResponse,
+} from "./serialize";
 import { Connection as ConnectionOverride } from "./types";
 
 import { PluginModule } from "@web3api/core-js";
@@ -11,20 +15,51 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
     args?: string[];
     connection?: ConnectionOverride;
   }) => {
-    return await ethereum.callContractMethod(
+    const response = await ethereum.callContractMethod(
       input.address,
       input.method,
       input.args || [],
       input.connection
     );
+
+    return serializableTxResponse(response);
+  },
+
+  callContractMethodAndWait: async (input: {
+    address: string;
+    method: string;
+    args?: string[];
+    connection?: ConnectionOverride;
+  }) => {
+    const response = await ethereum.callContractMethodAndWait(
+      input.address,
+      input.method,
+      input.args || [],
+      input.connection
+    );
+
+    return serializableTxReceipt(response);
   },
 
   sendTransaction: async (input: {
     tx: SerializableTxRequest;
     connection?: ConnectionOverride;
   }) => {
-    return await ethereum.sendTransaction(input.tx, input.connection);
+    const res = await ethereum.sendTransaction(input.tx, input.connection);
+    return serializableTxResponse(res);
   },
+
+  sendTransactionAndWait: async (input: {
+    tx: SerializableTxRequest;
+    connection?: ConnectionOverride;
+  }) => {
+    const res = await ethereum.sendTransactionAndWait(
+      input.tx,
+      input.connection
+    );
+    return serializableTxReceipt(res);
+  },
+
   deployContract: async (input: {
     abi: string;
     bytecode: string;
@@ -136,6 +171,22 @@ export const query = (ethereum: EthereumPlugin): PluginModule => ({
       input.timeout,
       input.connection
     );
+  },
+
+  awaitTransaction: async (input: {
+    txHash: string;
+    confirmations: number;
+    timeout: number;
+    connectionOverride?: ConnectionOverride;
+  }) => {
+    const result = await ethereum.awaitTransaction(
+      input.txHash,
+      input.confirmations,
+      input.timeout,
+      input.connectionOverride
+    );
+
+    return serializableTxReceipt(result);
   },
 
   estimateContractCallGas: async (input: {

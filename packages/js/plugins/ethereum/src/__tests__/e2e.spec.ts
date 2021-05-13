@@ -329,6 +329,39 @@ describe("Ethereum Plugin", () => {
       expect(response.data?.estimateTxGas).toBeDefined()
       expect(response.errors).toBeUndefined()
     })
+
+    it("AwaitTransaction", async () => {
+      const label = "0x" + keccak256("testwhatever")
+      const types = ["bytes32", "address"]
+      const values = [label, signer]
+
+      const data = defaultAbiCoder.encode(types, values)
+      const response = await client.query<{ sendTransaction: ethers.providers.TransactionResponse }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          mutation {
+            sendTransaction(to: "${registrarAddress}", data: "${data}")
+          }
+        `,
+      });
+  
+      const txHash = response.data?.sendTransaction.hash as string
+
+      const awaitResponse = await client.query<{ awaitTransaction: ethers.providers.TransactionReceipt }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          query {
+            awaitTransaction(txHash: "${txHash}", confirmations: 1, timeout: 60000)
+          }
+        `,
+      });
+
+      console.log(awaitResponse.data?.awaitTransaction)
+
+      expect(awaitResponse.data?.awaitTransaction).toBeDefined()
+      expect(awaitResponse.errors).toBeUndefined()
+      expect(awaitResponse.data?.awaitTransaction.transactionHash).toBeDefined()
+    })
   })
 
   describe("Mutation", () => {
@@ -347,13 +380,28 @@ describe("Ethereum Plugin", () => {
       expect(response.errors).toBeUndefined()
     })
 
+    it("CallContractMethodAndWait", async () => {
+      const label = "0x" + keccak256("testwhatever")
+      const response = await client.query<{ callContractMethodAndWait: ethers.providers.TransactionReceipt }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          mutation {
+            callContractMethodAndWait(address: "${registrarAddress}", method: "function register(bytes32 label, address owner)", args: ["${label}", "${signer}"])
+          }
+        `,
+      });
+  
+      expect(response.data?.callContractMethodAndWait).toBeDefined()
+      expect(response.errors).toBeUndefined()
+    })
+
     it("SendTransaction", async () => {
       const label = "0x" + keccak256("testwhatever")
       const types = ["bytes32", "address"]
       const values = [label, signer]
 
       const data = defaultAbiCoder.encode(types, values)
-      const response = await client.query<{ sendTransaction: ethers.providers.TransactionReceipt }>({
+      const response = await client.query<{ sendTransaction: ethers.providers.TransactionResponse }>({
         uri: "w3://ens/ethereum.web3api.eth",
         query: `
           mutation {
@@ -364,6 +412,27 @@ describe("Ethereum Plugin", () => {
   
       expect(response.data?.sendTransaction).toBeDefined()
       expect(response.errors).toBeUndefined()
+      expect(response.data?.sendTransaction.hash).toBeDefined()
+    })
+
+    it("SendTransactionAndWait", async () => {
+      const label = "0x" + keccak256("testwhatever")
+      const types = ["bytes32", "address"]
+      const values = [label, signer]
+
+      const data = defaultAbiCoder.encode(types, values)
+      const response = await client.query<{ sendTransactionAndWait: ethers.providers.TransactionReceipt }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          mutation {
+            sendTransactionAndWait(to: "${registrarAddress}", data: "${data}")
+          }
+        `,
+      });
+  
+      expect(response.data?.sendTransactionAndWait).toBeDefined()
+      expect(response.errors).toBeUndefined()
+      expect(response.data?.sendTransactionAndWait.transactionHash).toBeDefined()
     })
   
     it("SendRPC", async () => {
