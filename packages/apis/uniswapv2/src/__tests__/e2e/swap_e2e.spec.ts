@@ -5,7 +5,6 @@ import path from "path";
 import { getRedirects, getTokenList } from "../testUtils";
 import { Contract, ethers, providers } from "ethers";
 import erc20ABI from "./testData/erc20ABI.json";
-import { BigNumber } from "@ethersproject/bignumber";
 
 jest.setTimeout(90000);
 
@@ -154,7 +153,7 @@ describe("Swap", () => {
         pairs: [etherDaiData.data!.fetchPairData],
         amountOut: {
           token: dai,
-          amount: "100000"
+          amount: "100000000"
         },
         tokenIn: eth,
       },
@@ -191,7 +190,7 @@ describe("Swap", () => {
 
     const daiContract = new Contract(dai.address, erc20ABI, ethersProvider);
     const daiBalance = await daiContract.balanceOf(recipient);
-    expect(daiBalance.gte("1000")).toBeTruthy();
+    expect(daiBalance.gte("100000000")).toBeTruthy();
 
     // EXEC dai -> link
     const daiLinkTradeData = await client.query<{bestTradeExactIn: Trade[]}>({
@@ -242,7 +241,7 @@ describe("Swap", () => {
     expect(daiLinkTxHash.errors).toBeFalsy();
     const daiLinkTx = await ethersProvider.getTransaction(daiLinkTxHash.data!.exec);
     await daiLinkTx.wait();
-    expect((await daiContract.balanceOf(recipient)).toString()).toBe("0");
+    expect((await daiContract.balanceOf(recipient)).toString()).toBe("99900000");
     expect(linkBalance.gt("0")).toBeTruthy();
 
     // EXEC link -> eth exec
@@ -330,8 +329,7 @@ describe("Swap", () => {
     expect(daiLinkSwap.errors).toBeFalsy();
     const daiLinkSwapTx = await ethersProvider.getTransaction(daiLinkSwap.data!.swap);
     await daiLinkSwapTx.wait();
-    const swapExactInDaiBalance = await daiContract.balanceOf(recipient);
-    expect(swapExactInDaiBalance.sub(daiBalance)).toEqual(BigNumber.from("100"));
+    expect((await daiContract.balanceOf(recipient)).toString()).toBe("99899900");
 
     // SWAP link -> dai
     const linkDaiSwap = await client.query<{ swap: string}>({
@@ -364,7 +362,6 @@ describe("Swap", () => {
     expect(linkDaiSwap.errors).toBeFalsy();
     const linkDaiSwapTx = await ethersProvider.getTransaction(daiLinkSwap.data!.swap);
     await linkDaiSwapTx.wait();
-    const swapExactOutDaiBalance = await daiContract.balanceOf(recipient);
-    expect(swapExactOutDaiBalance.sub(swapExactInDaiBalance)).toEqual(BigNumber.from("100"));
+    expect((await daiContract.balanceOf(recipient)).toString()).toEqual("99900000");
   });
 });
