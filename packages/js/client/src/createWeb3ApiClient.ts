@@ -5,7 +5,7 @@ import { Web3ApiClient, ClientConfig } from "./Web3ApiClient";
 import { PluginConfigs, modules, uris } from "./pluginConfigs";
 
 import { UriRedirect } from "@web3api/core-js";
-import { Tracer } from "@web3api/tracing";
+import { Tracer } from "@web3api/tracing-js";
 
 export { PluginConfigs };
 

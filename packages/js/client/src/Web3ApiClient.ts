@@ -19,7 +19,7 @@ import {
   Manifest,
   sanitizeUriRedirects,
 } from "@web3api/core-js";
-import { Tracer } from "@web3api/tracing";
+import { Tracer } from "@web3api/tracing-js";
 
 export interface ClientConfig<TUri = string> {
   redirects?: UriRedirect<TUri>[];

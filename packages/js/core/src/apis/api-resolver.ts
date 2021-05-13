@@ -1,7 +1,7 @@
 // TODO: https://github.com/web3-api/monorepo/issues/101
 import { Uri, Client, InvokeApiResult } from "../";
 
-import { Tracer } from "@web3api/tracing";
+import { Tracer } from "@web3api/tracing-js";
 
 interface MaybeUriOrManifest {
   uri?: string;

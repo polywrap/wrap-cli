@@ -22,7 +22,7 @@ import {
 } from "@web3api/core-js";
 import path from "path";
 import * as MsgPack from "@msgpack/msgpack";
-import { Tracer } from "@web3api/tracing";
+import { Tracer } from "@web3api/tracing-js";
 
 const Worker = require("web-worker");
 

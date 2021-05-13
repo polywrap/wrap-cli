@@ -1,4 +1,4 @@
-import { Tracer } from "@web3api/tracing";
+import { Tracer } from "@web3api/tracing-js";
 
 /** URI configuration */
 export interface UriConfig {

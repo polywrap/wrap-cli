@@ -1,6 +1,6 @@
 import { AnyManifest, Manifest, ManifestFormats } from "./formats";
 
-import { Tracer } from "@web3api/tracing";
+import { Tracer } from "@web3api/tracing-js";
 
 // TODO: uncomment when new version is created
 /*import {
