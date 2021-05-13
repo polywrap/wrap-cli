@@ -1,3 +1,12 @@
+# Web3API 0.0.1-prealpha.22
+## Feature
+* `@web3api/tracing-js`: The `tracing-js` package uses the [OpenTelemetry Standard](https://opentelemetry.io/) for logging trace events. This enables things like:
+  * Benchmark Timings
+  * Input Argument + Output Result Logging
+  * In-Depth Exception Tracing
+* `@web3api/core-js`: All functions are now traceable.
+* `@web3api/client-js`: All functions are now traceable.
+
 # Web3API 0.0.1-prealpha.21
 ## Feature
 * Sharing code & types between `query` and `mutation` modules is now possible.
