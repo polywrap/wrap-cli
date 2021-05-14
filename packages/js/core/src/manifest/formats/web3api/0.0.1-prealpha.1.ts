@@ -6,8 +6,8 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface Manifest {
-  format: string;
+export interface Web3ApiManifest {
+  format: "0.0.1-prealpha.1";
   description?: string;
   repository?: string;
   mutation?: {

@@ -9,7 +9,7 @@
   "properties": {
     "format": {
       "type": "string",
-      "format": "buildManifestFormat"
+      "const": "0.0.1-prealpha.2"
     },
     "docker": {
       "type": "object",

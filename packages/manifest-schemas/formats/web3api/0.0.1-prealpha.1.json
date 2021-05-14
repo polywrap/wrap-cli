@@ -8,7 +8,7 @@
   "properties": {
     "format": {
       "type": "string",
-      "format": "packageManifestFormat"
+      "const": "0.0.1-prealpha.1"
     },
     "description": {
       "type": "string"
