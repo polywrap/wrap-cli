@@ -2,22 +2,25 @@ ARG modules_to_build
 
 FROM node:12.20.1-alpine3.10 as base
 
-ARG schemaManifestDir
-ENV schema_manifest_dir=${schemaManifestDir}
-
 ARG buildDir
 ENV build_dir=${buildDir}
 
-ONBUILD RUN apk --no-cache --virtual build-dependencies add \
+RUN apk --no-cache --virtual build-dependencies add \
     bash \
     git \
     openssh \
     make \
     g++
-ONBUILD COPY . /app
-ONBUILD COPY ${schema_manifest_dir}/. /app/${build_dir}
-ONBUILD WORKDIR /app
-ONBUILD RUN npm i && npm i -g assemblyscript@0.17.13
+
+WORKDIR /app
+
+# Install deps in its own step, making rebuilds faster
+# when just the Web3API schema & implementation files change
+COPY package.json ./
+RUN npm i && npm i -g assemblyscript@0.17.13
+
+# Copy the rest of the Web3API source files
+COPY . ./
 
 FROM base as query
 ONBUILD RUN asc ./src/query/w3/entry.ts --path ./node_modules --outFile ${build_dir}/query.wasm --use abort=src/query/w3/entry/w3Abort --optimize --debug --importMemory --runtime stub

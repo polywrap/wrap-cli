@@ -1,0 +1,36 @@
+{
+  "id": "Web3ApiBuildManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "docker"
+  ],
+  "properties": {
+    "format": {
+      "type": "string",
+      "format": "buildManifestFormat"
+    },
+    "docker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "imageOrDockerfile"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "format": "dockerImageName"
+        },
+        "imageOrDockerfile": {
+          "type": "string",
+          "format": "imageOrDockerfile"
+        }
+      }
+    },
+    "env": {
+      "type": "object"
+    }
+  }
+}

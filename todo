@@ -1,0 +1,76 @@
+# Default Setup
+- remove the "language" manifest key, use "build: ./web3api.build.yaml" or "build: wasm/assemblyscript"
+- build manifest proper
+- - update the existing manifest code to use "RootManifest"
+- - Add "BuildManifest" to the core
+- - validate web3api.build.yaml manifest
+- - env.json gets added to env property in the json schema
+- dockerfile default env variables values
+- default build manifest for wasm/assemblyscript
+- - define custom manifest to be used
+- Use query.module.file in the docker file
+- whitelist instead of a blacklist (better for security)
+- mustache template?
+- - use this for includes
+- - use this building query and/or mutation
+- should we treat the build images like we do the services
+  for the test-env? making them seperate npm packages?
+- - (yes, but do after mege, use test-env)
+- Remove ONBUILD in the "leaf" image
+
+# Misc Cleanup
+- intl strings
+- 1 run cli command (function)
+- e2e tests
+- update template projects
+- better output text
+- - --verbose (docker logs)
+- validate ENV variables are being detected and required as needed (how to differentiate between optional and required?)
+- - docker should do this, make sure. Mayybe there's another command we can run before to verify all env vars exist?
+- - docker validate? docker-compose config
+
+- TODO
+  include:
+    - src/**/*
+    - package.json
+    - yarn.lock
+
+{{#include}}
+ONBUILD COPY {{.}} ./
+{{/include}}
+
+- TODO
+outputDir: ./output
+remove "buildDir"
+
+option 1
+
+format: 0.0.1-prealpha.2
+description: SimpleStorage Web3API Example
+repository: https://github.com/web3-api/demos
+build:
+  language: wasm/assemblyscript
+  manifest: ./web3api.build.yaml
+mutation:
+  schema: ./src/mutation/schema.graphql
+  module: ./src/mutation/index.ts
+query:
+  schema: ./src/query/schema.graphql
+  module: ./src/query/index.ts
+
+option 2
+
+format: 0.0.1-prealpha.2
+description: SimpleStorage Web3API Example
+repository: https://github.com/web3-api/demos
+build:
+  manifest: ./web3api.build.yaml
+  codegen: wasm/assemblyscript
+  modules:
+    mutation:
+      schema: ./src/mutation/schema.graphql
+      module: ./src/mutation/index.ts
+    query:
+      schema: ./src/query/schema.graphql
+      module: ./src/query/index.ts
+

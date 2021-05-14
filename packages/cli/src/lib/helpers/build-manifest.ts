@@ -26,13 +26,12 @@ export interface BuildVars {
   ignorePaths: string[];
 }
 
-const BASE_DOCKERFILE_PATH = path.join(__dirname, "..", "build-images");
+const BASE_DOCKERFILE_PATH = path.join(__dirname, "..", "build-env/images/");
 
 export type ModulesToBuild = InvokableModules | "all";
 
 export const parseManifest = (
-  modulesToBuild: InvokableModules[],
-  schemaAndManifestDir: string
+  modulesToBuild: InvokableModules[]
 ): BuildVars => {
   const doc = YAML.safeLoad(
     readFileSync("./web3api.build.yaml", "utf8")
@@ -47,8 +46,6 @@ export const parseManifest = (
   } else {
     throw new Error("No modules to build declared");
   }
-
-  doc.env.schemaManifestDir = schemaAndManifestDir;
 
   const { dockerfile, name: imageName } = doc.image;
 

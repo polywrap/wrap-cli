@@ -143,7 +143,7 @@ export class Compiler {
         }
 
         // Parse and build manifest, and format the BuildVars
-        const buildVars = parseManifest(modulesToBuild, outputDir);
+        const buildVars = parseManifest(modulesToBuild);
 
         // Build the sources
         await this._buildSourcesInDocker(buildVars, outputDir, project.quiet);
