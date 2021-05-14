@@ -29,6 +29,8 @@
 - - docker should do this, make sure. Mayybe there's another command we can run before to verify all env vars exist?
 - - docker validate? docker-compose config
 
+- remove asc version from build-env image
+
 - TODO
   include:
     - src/**/*
