@@ -121,7 +121,7 @@ export function tradeSlippage(input: Input_tradeSlippage): string {
   );
   const exactQuote: Fraction = price.raw().mul(inputFraction);
   const slippage = exactQuote.sub(outputFraction).div(exactQuote);
-  return slippage.mul(new Fraction(BigInt.fromString("100"))).toFixed(18);
+  return slippage.toFixed(18);
 }
 
 export function tradeMinimumAmountOut(
