@@ -6,7 +6,7 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface Web3ApiBuildManifest {
+export interface BuildManifest {
   format: "0.0.1-prealpha.2";
   docker: {
     name: string;

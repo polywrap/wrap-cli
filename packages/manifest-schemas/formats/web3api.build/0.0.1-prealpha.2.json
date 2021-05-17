@@ -1,5 +1,5 @@
 {
-  "id": "Web3ApiBuildManifest",
+  "id": "BuildManifest",
   "type": "object",
   "additionalProperties": false,
   "required": [
