@@ -180,7 +180,7 @@ export function tradeMaximumAmountIn(
 export function bestTradeExactIn(input: Input_bestTradeExactIn): Trade[] {
   const pairs: Pair[] = input.pairs;
   const amountIn: TokenAmount = input.amountIn;
-  let tokenOut: Token = input.tokenOut;
+  const tokenOut: Token = input.tokenOut;
   const options: TradeOptions = new TradeOptions(input.options);
   if (pairs.length == 0) {
     throw new Error("Pairs array is empty");
@@ -188,8 +188,6 @@ export function bestTradeExactIn(input: Input_bestTradeExactIn): Trade[] {
   if (options.maxHops == 0) {
     throw new Error("maxHops must be greater than zero");
   }
-  amountIn.token = wrapIfEther(amountIn.token);
-  tokenOut = wrapIfEther(tokenOut);
   const bestTrades = _bestTradeExactIn(pairs, amountIn, tokenOut, options);
   if (options.maxNumResults) {
     return bestTrades.toArray().slice(0, options.maxNumResults);
@@ -203,7 +201,7 @@ export function bestTradeExactIn(input: Input_bestTradeExactIn): Trade[] {
  the given output amount. */
 export function bestTradeExactOut(input: Input_bestTradeExactOut): Trade[] {
   const pairs: Pair[] = input.pairs;
-  let tokenIn: Token = input.tokenIn;
+  const tokenIn: Token = input.tokenIn;
   const amountOut: TokenAmount = input.amountOut;
   const options: TradeOptions = new TradeOptions(input.options);
   if (pairs.length == 0) {
@@ -212,8 +210,6 @@ export function bestTradeExactOut(input: Input_bestTradeExactOut): Trade[] {
   if (options.maxHops == 0) {
     throw new Error("maxHops must be greater than zero");
   }
-  tokenIn = wrapIfEther(tokenIn);
-  amountOut.token = wrapIfEther(amountOut.token);
   const bestTrades = _bestTradeExactOut(pairs, tokenIn, amountOut, options);
 
   if (options.maxNumResults) {
@@ -226,7 +222,7 @@ export function bestTradeExactOut(input: Input_bestTradeExactOut): Trade[] {
 function _bestTradeExactIn(
   pairs: Pair[],
   amountIn: TokenAmount,
-  tokenOut: Token,
+  currencyOut: Token,
   options: TradeOptions,
   currentPairs: Pair[] = [],
   originalAmountIn: TokenAmount = amountIn,
@@ -239,6 +235,8 @@ function _bestTradeExactIn(
   if (!sameTokenAmount && currentPairs.length == 0) {
     throw new Error("Recursion error: invariants are false");
   }
+  amountIn.token = wrapIfEther(amountIn.token);
+  const tokenOut: Token = wrapIfEther(currencyOut);
   for (let i = 0; i < pairs.length; i++) {
     const pair = pairs[i];
 
@@ -266,7 +264,7 @@ function _bestTradeExactIn(
         route: createRoute({
           pairs: currentPairs.concat([pair]),
           input: originalAmountIn.token,
-          output: tokenOut,
+          output: currencyOut,
         }),
         amount: originalAmountIn,
         tradeType: TradeType.EXACT_INPUT,
@@ -281,7 +279,7 @@ function _bestTradeExactIn(
       _bestTradeExactIn(
         otherPairs,
         amountOut,
-        tokenOut,
+        currencyOut,
         new TradeOptions({
           maxNumResults: Nullable.fromValue(options.maxNumResults),
           maxHops: Nullable.fromValue(options.maxHops - 1),
@@ -298,7 +296,7 @@ function _bestTradeExactIn(
 
 function _bestTradeExactOut(
   pairs: Pair[],
-  tokenIn: Token,
+  currencyIn: Token,
   amountOut: TokenAmount,
   options: TradeOptions,
   currentPairs: Pair[] = [],
@@ -312,6 +310,8 @@ function _bestTradeExactOut(
   if (!sameTokenAmount && currentPairs.length == 0) {
     throw new Error("Recursion error: invariants are false");
   }
+  const tokenIn: Token = wrapIfEther(currencyIn);
+  amountOut.token = wrapIfEther(amountOut.token);
   for (let i = 0; i < pairs.length; i++) {
     const pair = pairs[i];
 
@@ -348,7 +348,7 @@ function _bestTradeExactOut(
         route: createRoute({
           pairs: [pair].concat(currentPairs),
           output: originalAmountOut.token,
-          input: tokenIn,
+          input: currencyIn,
         }),
         amount: originalAmountOut,
         tradeType: TradeType.EXACT_OUTPUT,
@@ -362,7 +362,7 @@ function _bestTradeExactOut(
       const otherPairs = pairs.slice(0, i).concat(pairs.slice(i + 1));
       _bestTradeExactOut(
         otherPairs,
-        tokenIn,
+        currencyIn,
         amountIn,
         new TradeOptions({
           maxNumResults: Nullable.fromValue(options.maxNumResults),
