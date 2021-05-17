@@ -28,13 +28,6 @@ export const migrateBuildManifest = Tracer.traceFunc(
       throw new Error(`Unrecognized BuildManifestFormat "${manifest.format}"`);
     }
 
-    const migrator = migrators[from];
-    if (!migrator) {
-      throw new Error(
-        `Migrator from BuildManifestFormat "${from}" to "${to}" is not available`
-      );
-    }
-
-    return migrator(manifest);
+    throw new Error(`This should never happen, BuildManifest migrators is empty. from: ${from}, to: ${to}`);
   }
 );

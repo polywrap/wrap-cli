@@ -36,6 +36,7 @@ export const migrate{{#latest}}{{type}}{{/latest}} = Tracer.traceFunc(
       throw new Error(`Unrecognized {{#latest}}{{type}}{{/latest}}Format "${manifest.format}"`);
     }
 
+{{#prevFormats.length}}
     const migrator = migrators[from];
     if (!migrator) {
       throw new Error(
@@ -44,5 +45,9 @@ export const migrate{{#latest}}{{type}}{{/latest}} = Tracer.traceFunc(
     }
 
     return migrator(manifest);
+{{/prevFormats.length}}
+{{^prevFormats.length}}
+    throw new Error(`This should never happen, {{#latest}}{{type}}{{/latest}} migrators is empty. from: ${from}, to: ${to}`);
+{{/prevFormats.length}}
   }
 );
