@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "build": "rimraf ./build && yarn build:manifest && tsc --project tsconfig.build.json",
-    "build:manifest": "node ./scripts/generateManifestTypes.js",
+    "build:manifest": "node ./scripts/manifest/generateFormatTypes.js",
     "lint": "eslint --color --ext .ts src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
@@ -32,6 +32,7 @@
     "@types/jest": "26.0.8",
     "jest": "26.6.3",
     "json-schema-to-typescript": "10.1.3",
+    "mustache": "4.0.1",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",
     "ts-node": "8.10.2",

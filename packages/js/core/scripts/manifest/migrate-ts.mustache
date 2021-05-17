@@ -1,0 +1,48 @@
+import {
+  Any{{#latest}}{{type}}{{/latest}},
+  {{#latest}}{{type}}{{/latest}},
+  {{#latest}}{{type}}{{/latest}}Formats,
+  latest{{#latest}}{{type}}{{/latest}}Format
+} from ".";
+
+{{#prevFormats}}
+import {
+  migrate as migrate_{{tsVersion}}_to_{{#latest}}{{tsVersion}}{{/latest}}
+} from "./migrators/{{version}}_to_{{#latest}}{{version}}{{/latest}}";
+{{/prevFormats}}
+
+import { Tracer } from "@web3api/tracing";
+
+type Migrator = {
+  [key in {{#latest}}{{type}}{{/latest}}Formats]?: (m: Any{{#latest}}{{type}}{{/latest}}) => {{#latest}}{{type}}{{/latest}};
+};
+
+export const migrators: Migrator = {
+{{#prevFormats}}
+  "{{version}}": migrate_{{tsVersion}}_to_{{#latest}}{{tsVersion}}{{/latest}}
+{{/prevFormats}}
+};
+
+export const migrate{{#latest}}{{type}}{{/latest}} = Tracer.traceFunc(
+  "core: migrate{{#latest}}{{type}}{{/latest}}",
+  (manifest: Any{{#latest}}{{type}}{{/latest}}, to: {{#latest}}{{type}}{{/latest}}Formats): {{#latest}}{{type}}{{/latest}} => {
+    const from = manifest.format as {{#latest}}{{type}}{{/latest}}Formats;
+
+    if (from === latest{{#latest}}{{type}}{{/latest}}Format) {
+      return manifest as {{#latest}}{{type}}{{/latest}};
+    }
+
+    if (!(from in {{#latest}}{{type}}{{/latest}}Formats)) {
+      throw new Error(`Unrecognized {{#latest}}{{type}}{{/latest}}Format "${manifest.format}"`);
+    }
+
+    const migrator = migrators[from];
+    if (!migrator) {
+      throw new Error(
+        `Migrator from {{#latest}}{{type}}{{/latest}}Format "${from}" to "${to}" is not available`
+      );
+    }
+
+    return migrator(manifest);
+  }
+);

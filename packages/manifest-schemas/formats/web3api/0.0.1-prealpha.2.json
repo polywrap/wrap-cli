@@ -3,62 +3,67 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "format"
+    "format",
+    "modules",
+    "language"
   ],
   "properties": {
     "format": {
       "type": "string",
       "const": "0.0.1-prealpha.2"
     },
-    "description": {
-      "type": "string"
-    },
     "repository": {
       "type": "string"
-    },
-    "language": {
-      "type": "string",
-      "format": "wasmLanguage"
     },
     "build": {
       "type": "string",
       "format": "file"
     },
-    "mutation": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "schema": {
-          "type": "string",
-          "format": "file"
-        },
-        "module": {
-          "type": "string",
-          "format": "file"
-        }
-      },
-      "required": [
-        "schema",
-        "module"
-      ]
+    "language": {
+      "type": "string",
+      "format": "wasmLanguage"
     },
-    "query": {
+    "modules": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "schema": {
-          "type": "string",
-          "format": "file"
+        "mutation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schema": {
+              "type": "string",
+              "format": "file"
+            },
+            "module": {
+              "type": "string",
+              "format": "file"
+            }
+          },
+          "required": [
+            "schema",
+            "module"
+          ]
         },
-        "module": {
-          "type": "string",
-          "format": "file"
+        "query": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schema": {
+              "type": "string",
+              "format": "file"
+            },
+            "module": {
+              "type": "string",
+              "format": "file"
+            }
+          },
+          "required": [
+            "schema",
+            "module"
+          ]
         }
-      },
-      "required": [
-        "schema",
-        "module"
-      ]
+      }
     },
     "import_redirects": {
       "type": "array",
