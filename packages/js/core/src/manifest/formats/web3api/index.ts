@@ -32,3 +32,7 @@ export type Web3ApiManifest = Web3ApiManifest0_0_1_prealpha_2;
 export const latestWeb3ApiManifestFormat = Web3ApiManifestFormats["0.0.1-prealpha.2"]
 
 export { migrateWeb3ApiManifest } from "./migrate";
+
+export { deserializeWeb3ApiManifest } from "./deserialize";
+
+export { validateWeb3ApiManifest } from "./validate";

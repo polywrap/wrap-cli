@@ -26,3 +26,7 @@ export type BuildManifest = BuildManifest0_0_1_prealpha_2;
 export const latestBuildManifestFormat = BuildManifestFormats["0.0.1-prealpha.2"]
 
 export { migrateBuildManifest } from "./migrate";
+
+export { deserializeBuildManifest } from "./deserialize";
+
+export { validateBuildManifest } from "./validate";

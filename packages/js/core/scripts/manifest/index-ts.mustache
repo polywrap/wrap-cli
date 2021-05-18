@@ -34,3 +34,7 @@ export type {{#latest}}{{type}}{{/latest}} = {{#latest}}{{type}}{{tsVersion}}{{/
 export const latest{{#latest}}{{type}}{{/latest}}Format = {{#latest}}{{type}}{{/latest}}Formats["{{#latest}}{{version}}{{/latest}}"]
 
 export { migrate{{#latest}}{{type}}{{/latest}} } from "./migrate";
+
+export { deserialize{{#latest}}{{type}}{{/latest}} } from "./deserialize";
+
+export { validate{{#latest}}{{type}}{{/latest}} } from "./validate";

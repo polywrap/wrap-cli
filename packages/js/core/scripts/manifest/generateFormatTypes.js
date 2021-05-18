@@ -60,57 +60,57 @@ async function generateFormatTypes() {
       }
     }
 
-    const versionToTs = (version) => version.replace(/\./g, "_").replace(/\-/g, "_");
+    const renderTemplate = (name, context) => {
+      const tsTemplate = fs.readFileSync(
+        __dirname + `/${name}-ts.mustache`, { encoding: "utf-8" }
+      );
+
+      // Render the template
+      const tsSrc = Mustache.render(tsTemplate, context);
+
+      // Emit the source
+      const tsOutputPath = path.join(__dirname, `/../../src/manifest/formats/${formatTypeName}/${name}.ts`);
+      fs.mkdirSync(path.dirname(tsOutputPath), { recursive: true });
+      fs.writeFileSync(tsOutputPath, tsSrc);
+    }
+
     const lastItem = (arr) => arr[arr.length - 1];
+    const versionToTs = (version) =>
+      version.replace(/\./g, "_").replace(/\-/g, "_");
 
     // Generate an index.ts file that exports root types that aggregate all versions
-    const indexTsTemplate = fs.readFileSync(
-      __dirname + "/index-ts.mustache", { encoding: "utf-8" }
-    );
-
-    // Prepare the template's context
-    const indexTsContext = { };
-    indexTsContext.formats = formatModules.map((module) => {
+    const indexContext = { };
+    indexContext.formats = formatModules.map((module) => {
       return {
         type: module.interface,
         version: module.version,
         tsVersion: versionToTs(module.version)
       }
     });
-    indexTsContext.latest = lastItem(indexTsContext.formats);
+    indexContext.latest = lastItem(indexContext.formats);
 
-    // Render the template
-    const indexTsSrc = Mustache.render(indexTsTemplate, indexTsContext);
-
-    // Emit the source
-    const indexTsOutputPath = path.join(__dirname, `/../../src/manifest/formats/${formatTypeName}/index.ts`);
-    fs.mkdirSync(path.dirname(indexTsOutputPath), { recursive: true });
-    fs.writeFileSync(indexTsOutputPath, indexTsSrc);
+    renderTemplate("index", indexContext);
 
     // Generate a migrate.ts file that exports a migration function from all version to the latest version
-    const migrateTsTemplate = fs.readFileSync(
-      __dirname + "/migrate-ts.mustache", { encoding: "utf-8" }
-    );
-
-    // Prepare the template's context
-    const migrateTsContext = { };
-    migrateTsContext.prevFormats = formatModules.map((module) => {
+    const migrateContext = { };
+    migrateContext.prevFormats = formatModules.map((module) => {
       return {
         type: module.interface,
         version: module.version,
         tsVersion: versionToTs(module.version)
       }
     });
-    migrateTsContext.latest = lastItem(migrateTsContext.prevFormats);
-    migrateTsContext.prevFormats.pop();
+    migrateContext.latest = lastItem(migrateContext.prevFormats);
+    migrateContext.prevFormats.pop();
 
-    // Render the template
-    const migrateTsSrc = Mustache.render(migrateTsTemplate, migrateTsContext);
+    renderTemplate("migrate", migrateContext);
 
-    // Emit the source
-    const migrateTsOutputPath = path.join(__dirname, `/../../src/manifest/formats/${formatTypeName}/migrate.ts`);
-    fs.mkdirSync(path.dirname(migrateTsOutputPath), { recursive: true });
-    fs.writeFileSync(migrateTsOutputPath, migrateTsSrc);
+    // Generate a deserialize.ts file that exports a deserialization function for the latest format version
+    const deserializeContext = {
+      type: migrateContext.latest.type
+    };
+
+    renderTemplate("deserialize", deserializeContext);
   }
 
   return Promise.resolve();
