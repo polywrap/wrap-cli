@@ -4,7 +4,6 @@ import { Input_swapCallParameters, SwapParameters, TradeType } from "./w3";
 import { currencyEquals } from "./token";
 
 import { BigInt } from "as-bigint";
-import { JSON } from "assemblyscript-json";
 
 const ZERO_HEX = "0x0";
 
@@ -113,6 +112,11 @@ export function swapCallParameters(
         value = ZERO_HEX;
       }
       break;
+    default:
+      methodName = "";
+      // (uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
+      args = [];
+      value = ZERO_HEX;
   }
 
   return {

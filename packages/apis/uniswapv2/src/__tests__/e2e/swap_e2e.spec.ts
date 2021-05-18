@@ -133,9 +133,6 @@ describe("Swap", () => {
         token1: eth,
       },
     });
-    JSON.stringify(etherDaiData)
-    JSON.stringify(daiLinkData);
-    JSON.stringify(linkEtherData);
 
     // EXEC: ETH -> dai
     const etherDaiTradeResult = await client.query<{bestTradeExactOut: Trade[]}>({

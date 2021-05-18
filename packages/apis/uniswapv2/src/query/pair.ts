@@ -17,10 +17,10 @@ import {
   Token,
   TokenAmount,
   Ethereum_Query,
+  getChainIdKey,
 } from "./w3";
 import { ProcessedPair } from "../utils/ProcessedPair";
 import Price from "../utils/Price";
-import { resolveChainId } from "../utils/utils";
 
 import { BigInt } from "as-bigint";
 
@@ -36,7 +36,7 @@ export function pairAddress(input: Input_pairAddress): string {
     args: [token0, token1],
     connection: {
       node: null,
-      networkNameOrChainId: resolveChainId(input.token0.chainId),
+      networkNameOrChainId: getChainIdKey(input.token0.chainId),
     },
   });
 }

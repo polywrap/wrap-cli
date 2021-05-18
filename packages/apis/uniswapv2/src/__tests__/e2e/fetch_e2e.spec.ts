@@ -2,7 +2,7 @@ import { buildAndDeployApi, initTestEnvironment, stopTestEnvironment } from "@we
 import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
 import { ChainId, Pair, Token, TokenAmount } from "./types";
 import path from "path";
-import { defaultUniswapTokenList, getRedirects, getTokenList } from "../testUtils";
+import { getRedirects, getTokenList } from "../testUtils";
 import * as uni from "@uniswap/sdk";
 import * as ethers from "ethers";
 
@@ -28,7 +28,7 @@ describe("Fetch", () => {
     ensUri = `ens/testnet/${api.ensDomain}`;
     // ipfsUri = `ipfs/${api.ipfsCid}`;
     // set up test case data -> tokens
-    tokens = await getTokenList(defaultUniswapTokenList);
+    tokens = await getTokenList();
     uniTokens = tokens.map(token => {
       return new uni.Token(
         uni.ChainId.MAINNET,
