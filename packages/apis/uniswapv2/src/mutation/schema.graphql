@@ -1,9 +1,21 @@
 #import { Mutation } into Ethereum from "w3://ens/ethereum.web3api.eth"
-#import { ChainId, Currency, Route, Trade, TradeOptions } from "../common/schema.graphql"
+#import { ChainId, Currency, Route, Trade, Pair, TradeOptions } from "../common/schema.graphql"
 
 type Mutation {
+  swap (
+    tokenIn: Token!
+    tokenOut: Token!
+    amount: String!
+    tradeType: TradeType!
+    tradeOptions: TradeOptions!
+  ): String!
+
   exec(
     trade: Trade!
     tradeOptions: TradeOptions!
+  ): String!
+
+  approve(
+    token: Token!
   ): String!
 }

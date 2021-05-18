@@ -127,6 +127,9 @@ export const composedSchema = {
     "    address: String!\n" +
     "    method: String!\n" +
     "    args: [String!]\n" +
+    "    value: String\n" +
+    "    gasLimit: String\n" +
+    "    gasPrice: String\n" +
     "    connection: Ethereum_Connection\n" +
     "  ): String!\n" +
     "\n" +
@@ -239,6 +242,9 @@ export const composedSchema = {
     "    address: String!\n" +
     "    method: String!\n" +
     "    args: [String!]\n" +
+    "    value: String\n" +
+    "    gasLimit: String\n" +
+    "    gasPrice: String\n" +
     "    connection: Ethereum_Connection\n" +
     "  ): String!\n" +
     "\n" +
