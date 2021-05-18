@@ -1,4 +1,4 @@
-import { ChainId, Pair, Route, Token, TokenAmount } from "../../query/w3";
+import { ChainId, Pair, Route, Token } from "../../query/w3";
 import { createRoute, routeMidPrice } from "../../query";
 import { BigFloat } from "as-bigfloat";
 
@@ -63,9 +63,8 @@ describe('Route', () => {
       input: weth,
       output: weth,
     });
-    const midPrice: TokenAmount = routeMidPrice({ route });
-    expect(midPrice.token).toStrictEqual(weth);
-    expect(midPrice.amount).toStrictEqual("1.142857142857142857");
+    const midPrice: string = routeMidPrice({ route });
+    expect(midPrice).toStrictEqual("1.142857142857142857");
   });
 
   it('returns route midPrice:1', () => {
@@ -74,9 +73,8 @@ describe('Route', () => {
       input: weth,
       output: token0,
     });
-    const midPrice: TokenAmount = routeMidPrice({ route });
-    expect(midPrice.token).toStrictEqual(token0);
-    const amount: string = BigFloat.fromString(midPrice.amount).toString();
+    const midPrice: string = routeMidPrice({ route });
+    const amount: string = BigFloat.fromString(midPrice).toString();
     expect(amount).toStrictEqual("0.875");
   });
 
@@ -86,9 +84,8 @@ describe('Route', () => {
       input: token0,
       output: token1,
     });
-    const midPrice: TokenAmount = routeMidPrice({ route });
-    expect(midPrice.token).toStrictEqual(token1);
-    const amount: string = BigFloat.fromString(midPrice.amount).toString();
+    const midPrice: string = routeMidPrice({ route });
+    const amount: string = BigFloat.fromString(midPrice).toString();
     expect(amount).toStrictEqual("1.75");
   });
 
