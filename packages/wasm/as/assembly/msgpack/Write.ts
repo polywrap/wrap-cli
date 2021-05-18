@@ -1,4 +1,5 @@
 import { Nullable } from "./Nullable";
+import { BigInt } from "../BigInt";
 
 export abstract class Write {
   abstract writeNil(): void;
@@ -17,6 +18,7 @@ export abstract class Write {
   abstract writeString(value: string): void;
   abstract writeBytesLength(length: u32): void;
   abstract writeBytes(value: ArrayBuffer): void;
+  abstract writeBigInt(value: BigInt): void;
   abstract writeArrayLength(length: u32): void;
   abstract writeArray<T>(
     a: Array<T>,
@@ -42,6 +44,7 @@ export abstract class Write {
   abstract writeNullableFloat64(value: Nullable<f64>): void;
   abstract writeNullableString(value: string | null): void;
   abstract writeNullableBytes(value: ArrayBuffer | null): void;
+  abstract writeNullableBigInt(value: BigInt | null): void;
   abstract writeNullableArray<T>(
     a: Array<T> | null,
     fn: (writer: Write, item: T) => void
