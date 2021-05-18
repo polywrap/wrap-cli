@@ -21,7 +21,7 @@ import { currencyEquals, tokenAmountEquals, tokenEquals } from "./token";
 import { PriorityQueue } from "../utils/PriorityQueue";
 import { TradeOptions } from "../utils/TradeOptions";
 import { ETHER } from "../utils/Currency";
-import { wrapIfEther } from "../utils/utils";
+import { copyTokenAmount, wrapIfEther } from "../utils/utils";
 
 import { BigInt } from "as-bigint";
 import { BigFloat } from "as-bigfloat";
@@ -188,6 +188,7 @@ export function bestTradeExactIn(input: Input_bestTradeExactIn): Trade[] {
   if (options.maxHops == 0) {
     throw new Error("maxHops must be greater than zero");
   }
+
   const bestTrades = _bestTradeExactIn(pairs, amountIn, tokenOut, options);
   if (options.maxNumResults) {
     return bestTrades.toArray().slice(0, options.maxNumResults);
@@ -210,8 +211,8 @@ export function bestTradeExactOut(input: Input_bestTradeExactOut): Trade[] {
   if (options.maxHops == 0) {
     throw new Error("maxHops must be greater than zero");
   }
-  const bestTrades = _bestTradeExactOut(pairs, tokenIn, amountOut, options);
 
+  const bestTrades = _bestTradeExactOut(pairs, tokenIn, amountOut, options);
   if (options.maxNumResults) {
     return bestTrades.toArray().slice(0, options.maxNumResults);
   } else {
@@ -225,7 +226,7 @@ function _bestTradeExactIn(
   currencyOut: Token,
   options: TradeOptions,
   currentPairs: Pair[] = [],
-  originalAmountIn: TokenAmount = amountIn,
+  originalAmountIn: TokenAmount = copyTokenAmount(amountIn),
   bestTrades: PriorityQueue<Trade> = new PriorityQueue<Trade>(tradeComparator)
 ): PriorityQueue<Trade> {
   const sameTokenAmount = tokenAmountEquals({
@@ -300,7 +301,7 @@ function _bestTradeExactOut(
   amountOut: TokenAmount,
   options: TradeOptions,
   currentPairs: Pair[] = [],
-  originalAmountOut: TokenAmount = amountOut,
+  originalAmountOut: TokenAmount = copyTokenAmount(amountOut),
   bestTrades: PriorityQueue<Trade> = new PriorityQueue<Trade>(tradeComparator)
 ): PriorityQueue<Trade> {
   const sameTokenAmount = tokenAmountEquals({

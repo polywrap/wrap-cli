@@ -1,4 +1,4 @@
-import { currencyEquals, tokenEquals } from "./token";
+import { tokenEquals } from "./token";
 import {
   Input_routeMidPrice,
   Input_routePath,
@@ -7,12 +7,10 @@ import {
   Route,
   Token,
   TokenAmount,
-  ChainId,
 } from "./w3";
 import Price from "../utils/Price";
 import { pairReserves } from "./pair";
-import { getWETH9 } from "../utils/utils";
-import { ETHER } from "../utils/Currency";
+import { wrapIfEther } from "../utils/utils";
 
 import { BigInt } from "as-bigint";
 
@@ -44,16 +42,8 @@ export function routePath(input: Input_routePath): Token[] {
     throw new Error("Route has to define at least on pair");
   }
   const inToken: Token = input.input;
-  const chainId: ChainId = pairs[0].tokenAmount0.token.chainId;
 
-  const weth = getWETH9(chainId);
-
-  const path: Token[] = currencyEquals({
-    currency: input.input.currency,
-    other: ETHER,
-  })
-    ? [weth]
-    : [inToken];
+  const path: Token[] = [wrapIfEther(inToken)];
   for (let i = 0; i < pairs.length; i++) {
     const currentIn = path[i];
     const token0 = pairs[i].tokenAmount0.token;

@@ -1,4 +1,4 @@
-import { ChainId, Token } from "../query/w3";
+import { ChainId, Token, TokenAmount } from "../query/w3";
 import { ETHER } from "./Currency";
 import { currencyEquals } from "../query";
 
@@ -94,4 +94,23 @@ export function wrapIfEther(token: Token): Token {
     return getWETH9(token.chainId);
   }
   return token;
+}
+
+export function copyToken(token: Token): Token {
+  return {
+    chainId: token.chainId,
+    address: token.address,
+    currency: {
+      name: token.currency.name,
+      symbol: token.currency.symbol,
+      decimals: token.currency.decimals,
+    },
+  };
+}
+
+export function copyTokenAmount(tokenAmount: TokenAmount): TokenAmount {
+  return {
+    token: copyToken(tokenAmount.token),
+    amount: tokenAmount.amount,
+  };
 }
