@@ -5,7 +5,7 @@ import { Pair, Token, TokenAmount } from "./types";
 import { getPairData, getRedirects, getTokenList, getUniPairs } from "../testUtils";
 import * as uni from "@uniswap/sdk";
 
-jest.setTimeout(60000);
+jest.setTimeout(90000);
 
 describe('Pair', () => {
 

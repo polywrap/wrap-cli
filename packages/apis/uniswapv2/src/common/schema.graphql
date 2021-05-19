@@ -40,7 +40,7 @@ type Currency {
 
 type TokenAmount {
   token: Token!
-  amount: String! # UInt256!
+  amount: BigInt!
 }
 
 type Pair {

@@ -1,4 +1,5 @@
 #import { Query } into Ethereum from "w3://ens/ethereum.web3api.eth"
+#import { Query } into SHA3 from "w3://ens/sha3.web3api.eth"
 #import { ChainId, TradeType, Rounding, Currency, Token, TokenAmount, TradeOptions, Pair, Route, Trade } from "../common/schema.graphql"
 
 type BestTradeOptions {
@@ -51,11 +52,11 @@ type Query {
 
   pairToken0Price(
     pair: Pair!
-  ): TokenAmount!
+  ): String!
 
   pairToken1Price(
     pair: Pair!
-  ): TokenAmount!
+  ): String!
 
   pairOutputAmount(
     pair: Pair!
@@ -89,7 +90,7 @@ type Query {
     totalSupply: TokenAmount!
     liquidity: TokenAmount!
     feeOn: Boolean
-    kLast: String # Uint256
+    kLast: BigInt
   ): [TokenAmount!]!
 
   # Route
@@ -176,7 +177,7 @@ type Query {
 
   fetchKLast(
     token: Token!
-  ): String! # Uint256!
+  ): BigInt!
 
   # Constants
   factoryAddress: String!

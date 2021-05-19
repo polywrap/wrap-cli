@@ -9,6 +9,8 @@ import {
 } from "../../query";
 import { ChainId, Pair, Token, TradeType } from "../../query/w3";
 
+import { BigInt } from "as-bigint";
+
 const token0: Token = {
   chainId: ChainId.MAINNET,
   address: "0x0000000000000000000000000000000000000001",
@@ -56,62 +58,62 @@ const token3: Token = {
 
 const pair_0_1: Pair = {
   tokenAmount0: {
-    amount: "1000",
+    amount: BigInt.fromString("1000"),
     token: token0
   },
   tokenAmount1: {
-    amount: "1000",
+    amount: BigInt.fromString("1000"),
     token: token1
   }
 }
 const pair_0_2: Pair = {
   tokenAmount0: {
-    amount: "1000",
+    amount: BigInt.fromString("1000"),
     token: token0
   },
   tokenAmount1: {
-    amount: "1100",
+    amount: BigInt.fromString("1100"),
     token: token2
   }
 }
 const pair_0_3: Pair = {
   tokenAmount0: {
-    amount: "1000",
+    amount: BigInt.fromString("1000"),
     token: token0
   },
   tokenAmount1: {
-    amount: "900",
+    amount: BigInt.fromString("900"),
     token: token3
   }
 }
 const pair_1_2: Pair = {
   tokenAmount0: {
-    amount: "1200",
+    amount: BigInt.fromString("1200"),
     token: token1
   },
   tokenAmount1: {
-    amount: "1000",
+    amount: BigInt.fromString("1000"),
     token: token2
   }
 }
 const pair_1_3: Pair = {
   tokenAmount0: {
-    amount: "1200",
+    amount: BigInt.fromString("1200"),
     token: token1
   },
   tokenAmount1: {
-    amount: "1300",
+    amount: BigInt.fromString("1300"),
     token: token3
   }
 }
 
 const empty_pair_0_1: Pair = {
   tokenAmount0: {
-    amount: "0",
+    amount: BigInt.ZERO,
     token: token0
   },
   tokenAmount1: {
-    amount: "0",
+    amount: BigInt.ZERO,
     token: token1
   }
 }
@@ -135,7 +137,7 @@ const exactIn = createTrade({
   }),
   amount: {
     token: token0,
-    amount: "100"
+    amount: BigInt.fromString("100")
   },
   tradeType: TradeType.EXACT_INPUT
 })
@@ -147,7 +149,7 @@ const exactOut = createTrade({
   }),
   amount: {
     token: token2,
-    amount: "100"
+    amount: BigInt.fromString("100")
   },
   tradeType: TradeType.EXACT_OUTPUT
 })
@@ -161,7 +163,7 @@ describe("Trade", () => {
           pairs: [],
           amountIn: {
             token: token0,
-            amount: "100"
+            amount: BigInt.fromString("100")
           },
           tokenOut: token2,
           options: null,
@@ -175,7 +177,7 @@ describe("Trade", () => {
           pairs: [pair_0_2],
           amountIn: {
             token: token0,
-            amount: "100"
+            amount: BigInt.fromString("100")
           },
           tokenOut: token2,
           options: {
@@ -193,7 +195,7 @@ describe("Trade", () => {
         ],
         amountIn: {
           token: token0,
-          amount: "100"
+          amount: BigInt.fromString("100")
         },
         tokenOut: token2,
         options: null,
@@ -204,13 +206,13 @@ describe("Trade", () => {
       expect(result[0].route.path).toStrictEqual([token0, token2]);
       expect(result[0].inputAmount).toStrictEqual({
         token: token0,
-        amount: "100"
+        amount: BigInt.fromString("100")
       })
       expect(result[1].route.pairs.length).toStrictEqual(2);
       expect(result[1].route.path).toStrictEqual([token0, token1, token2]);
       expect(result[1].inputAmount).toStrictEqual({
         token: token0,
-        amount: "100"
+        amount: BigInt.fromString("100")
       })
     });
 
@@ -219,7 +221,7 @@ describe("Trade", () => {
         pairs: [empty_pair_0_1],
         amountIn: {
           token: token0,
-          amount: "100"
+          amount: BigInt.fromString("100")
         },
         tokenOut: token1,
         options: null
@@ -232,7 +234,7 @@ describe("Trade", () => {
         pairs: [pair_0_1, pair_0_2, pair_1_2],
         amountIn: {
           token: token0,
-          amount: "10"
+          amount: BigInt.fromString("10")
         },
         tokenOut: token2,
         options: {
@@ -251,7 +253,7 @@ describe("Trade", () => {
         pairs: [pair_0_1, pair_0_2, pair_1_2],
         amountIn: {
           token: token0,
-          amount: "1"
+          amount: BigInt.fromString("1")
         },
         tokenOut: token2,
         options: {
@@ -265,7 +267,7 @@ describe("Trade", () => {
       expect(result[0].route.path).toStrictEqual([token0, token2]);
       expect(result[0].outputAmount).toStrictEqual({
         token: token2,
-        amount: "1"
+        amount: BigInt.fromString("1")
       })
     });
 
@@ -275,7 +277,7 @@ describe("Trade", () => {
         pairs: [pair_0_1, pair_0_2, pair_1_2],
         amountIn: {
           token: token0,
-          amount: "10"
+          amount: BigInt.fromString("10")
         },
         tokenOut: token2,
         options: {
@@ -293,7 +295,7 @@ describe("Trade", () => {
         pairs: [pair_0_1, pair_0_3, pair_1_3],
         amountIn: {
           token: token0,
-          amount: "10"
+          amount: BigInt.fromString("10")
         },
         tokenOut: token2,
         options: null
@@ -382,7 +384,7 @@ describe("Trade", () => {
           pairs: [],
           amountOut: {
             token: token2,
-            amount: "100"
+            amount: BigInt.fromString("100")
           },
           tokenIn: token0,
           options: null,
@@ -396,7 +398,7 @@ describe("Trade", () => {
           pairs: [pair_0_2],
           amountOut: {
             token: token2,
-            amount: "100"
+            amount: BigInt.fromString("100")
           },
           tokenIn: token0,
           options: {
@@ -414,7 +416,7 @@ describe("Trade", () => {
         ],
         amountOut: {
           token: token2,
-          amount: "100"
+          amount: BigInt.fromString("100")
         },
         tokenIn: token0,
         options: null,
@@ -425,21 +427,21 @@ describe("Trade", () => {
       expect(result[0].route.path).toStrictEqual([token0, token2]);
       expect(result[0].inputAmount).toStrictEqual({
         token: token0,
-        amount: "101"
+        amount: BigInt.fromString("101")
       })
       expect(result[0].outputAmount).toStrictEqual({
         token: token2,
-        amount: "100"
+        amount: BigInt.fromString("100")
       })
       expect(result[1].route.pairs.length).toStrictEqual(2);
       expect(result[1].route.path).toStrictEqual([token0, token1, token2]);
       expect(result[1].inputAmount).toStrictEqual({
         token: token0,
-        amount: "156"
+        amount: BigInt.fromString("156")
       })
       expect(result[0].outputAmount).toStrictEqual({
         token: token2,
-        amount: "100"
+        amount: BigInt.fromString("100")
       })
     });
 
@@ -448,7 +450,7 @@ describe("Trade", () => {
         pairs: [empty_pair_0_1],
         amountOut: {
           token: token1,
-          amount: "100"
+          amount: BigInt.fromString("100")
         },
         tokenIn: token1,
         options: null
@@ -461,7 +463,7 @@ describe("Trade", () => {
         pairs: [pair_0_1, pair_0_2, pair_1_2],
         amountOut: {
           token: token2,
-          amount: "10"
+          amount: BigInt.fromString("10")
         },
         tokenIn: token0,
         options: {
@@ -480,7 +482,7 @@ describe("Trade", () => {
         pairs: [pair_0_1, pair_0_2, pair_1_2],
         amountOut: {
           token: token2,
-          amount: "1200"
+          amount: BigInt.fromString("1200")
         },
         tokenIn: token0,
         options: null
@@ -494,7 +496,7 @@ describe("Trade", () => {
         pairs: [pair_0_1, pair_0_2, pair_1_2],
         amountOut: {
           token: token2,
-          amount: "1050"
+          amount: BigInt.fromString("1050")
         },
         tokenIn: token0,
         options: null
@@ -508,7 +510,7 @@ describe("Trade", () => {
         pairs: [pair_0_1, pair_0_2, pair_1_2],
         amountOut: {
           token: token2,
-          amount: "10"
+          amount: BigInt.fromString("10")
         },
         tokenIn: token0,
         options: {
@@ -526,7 +528,7 @@ describe("Trade", () => {
         pairs: [pair_0_1, pair_0_3, pair_1_3],
         amountOut: {
           token: token2,
-          amount: "10"
+          amount: BigInt.fromString("10")
         },
         tokenIn: token0,
         options: null
@@ -555,7 +557,7 @@ describe("Trade", () => {
           slippageTolerance: "2"
         })).toStrictEqual({
           token: token2,
-          amount: "23"
+          amount: BigInt.fromString("23")
         })
 
         expect(tradeMinimumAmountOut({
@@ -563,7 +565,7 @@ describe("Trade", () => {
           slippageTolerance: "0.05"
         })).toStrictEqual({
           token: token2,
-          amount: "65"
+          amount: BigInt.fromString("65")
         })
 
         expect(tradeMinimumAmountOut({
@@ -571,7 +573,7 @@ describe("Trade", () => {
           slippageTolerance: "0"
         })).toStrictEqual({
           token: token2,
-          amount: "69"
+          amount: BigInt.fromString("69")
         })
       })
     });
@@ -591,7 +593,7 @@ describe("Trade", () => {
           slippageTolerance: "2"
         })).toStrictEqual({
           token: token2,
-          amount: "100"
+          amount: BigInt.fromString("100")
         })
 
         expect(tradeMinimumAmountOut({
@@ -599,7 +601,7 @@ describe("Trade", () => {
           slippageTolerance: "0.05"
         })).toStrictEqual({
           token: token2,
-          amount: "100"
+          amount: BigInt.fromString("100")
         })
 
         expect(tradeMinimumAmountOut({
@@ -607,7 +609,7 @@ describe("Trade", () => {
           slippageTolerance: "0"
         })).toStrictEqual({
           token: token2,
-          amount: "100"
+          amount: BigInt.fromString("100")
         })
       })
     });
@@ -630,7 +632,7 @@ describe("Trade", () => {
           slippageTolerance: "2"
         })).toStrictEqual({
           token: token0,
-          amount: "100"
+          amount: BigInt.fromString("100")
         })
 
         expect(tradeMaximumAmountIn({
@@ -638,7 +640,7 @@ describe("Trade", () => {
           slippageTolerance: "0.05"
         })).toStrictEqual({
           token: token0,
-          amount: "100"
+          amount: BigInt.fromString("100")
         })
 
         expect(tradeMaximumAmountIn({
@@ -646,7 +648,7 @@ describe("Trade", () => {
           slippageTolerance: "0"
         })).toStrictEqual({
           token: token0,
-          amount: "100"
+          amount: BigInt.fromString("100")
         })
       })
     });
@@ -666,7 +668,7 @@ describe("Trade", () => {
           slippageTolerance: "2"
         })).toStrictEqual({
           token: token0,
-          amount: "468"
+          amount: BigInt.fromString("468")
         })
 
         expect(tradeMaximumAmountIn({
@@ -674,7 +676,7 @@ describe("Trade", () => {
           slippageTolerance: "0.05"
         })).toStrictEqual({
           token: token0,
-          amount: "163"
+          amount: BigInt.fromString("163")
         })
 
         expect(tradeMaximumAmountIn({
@@ -682,7 +684,7 @@ describe("Trade", () => {
           slippageTolerance: "0"
         })).toStrictEqual({
           token: token0,
-          amount: "156"
+          amount: BigInt.fromString("156")
         })
       })
     });

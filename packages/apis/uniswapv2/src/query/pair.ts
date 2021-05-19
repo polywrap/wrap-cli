@@ -2,6 +2,8 @@ import { fetchTokenData } from "./fetch";
 import { tokenSortsBefore } from "./token";
 import { factoryAddress, minimumLiquidity } from "./index";
 import {
+  Ethereum_Query,
+  getChainIdKey,
   Input_pairAddress,
   Input_pairInputAmount,
   Input_pairInputNextPair,
@@ -16,15 +18,12 @@ import {
   Pair,
   Token,
   TokenAmount,
-  Ethereum_Query,
-  getChainIdKey,
 } from "./w3";
 import { ProcessedPair } from "../utils/ProcessedPair";
 import Price from "../utils/Price";
 
 import { BigInt } from "as-bigint";
 
-// TODO: this can be calculated off-chain with keccack256
 // returns address of pair liquidity token contract
 export function pairAddress(input: Input_pairAddress): string {
   const token0: string = input.token0.address;
@@ -40,6 +39,28 @@ export function pairAddress(input: Input_pairAddress): string {
     },
   });
 }
+
+// keccak256( 0xff ++ address ++ salt ++ keccak256(init_code))[12:]
+// export function pairAddress(input: Input_pairAddress): string {
+//   let tokenA: string;
+//   let tokenB: string;
+//   if (tokenSortsBefore({ token: input.token0, other: input.token1 })) {
+//     tokenA = input.token0.address;
+//     tokenB = input.token1.address;
+//   } else {
+//     tokenA = input.token1.address;
+//     tokenB = input.token0.address;
+//   }
+//   const salt: string = SHA3_Query.keccak_256({
+//     message: tokenA.substring(2) + tokenB.substring(2),
+//   });
+//   return getChecksumAddress(
+//     SHA3_Query.keccak_256({
+//       message:
+//         "ff" + getChecksumAddress(factoryAddress()).substring(2) + salt + initCodeHash().substring(2),
+//     }).substring(26)
+//   );
+// }
 
 // returns pair liquidity token
 export function pairLiquidityToken(input: Input_pairLiquidityToken): Token {
@@ -69,33 +90,27 @@ export function pairReserves(input: Input_pairReserves): TokenAmount[] {
 }
 
 // Returns the current mid price of the pair in terms of token0, i.e. the ratio of reserve1 to reserve0
-export function pairToken0Price(input: Input_pairToken0Price): TokenAmount {
+export function pairToken0Price(input: Input_pairToken0Price): string {
   const pair = input.pair;
   const price = new Price(
     pair.tokenAmount0.token,
     pair.tokenAmount1.token,
-    BigInt.fromString(pair.tokenAmount0.amount),
-    BigInt.fromString(pair.tokenAmount1.amount)
+    pair.tokenAmount0.amount,
+    pair.tokenAmount1.amount
   );
-  return {
-    token: pair.tokenAmount1.token,
-    amount: price.toFixed(18),
-  };
+  return price.toFixed(18);
 }
 
 // Returns the current mid price of the pair in terms of token1, i.e. the ratio of reserve0 to reserve1
-export function pairToken1Price(input: Input_pairToken1Price): TokenAmount {
+export function pairToken1Price(input: Input_pairToken1Price): string {
   const pair = input.pair;
   const price = new Price(
     pair.tokenAmount1.token,
     pair.tokenAmount0.token,
-    BigInt.fromString(pair.tokenAmount1.amount),
-    BigInt.fromString(pair.tokenAmount0.amount)
+    pair.tokenAmount1.amount,
+    pair.tokenAmount0.amount
   );
-  return {
-    token: pair.tokenAmount0.token,
-    amount: price.toFixed(18),
-  };
+  return price.toFixed(18);
 }
 
 // Pricing function for exact input amounts. Returns maximum output amount, based on current reserves, if the trade were executed.
@@ -154,15 +169,15 @@ export function pairLiquidityMinted(
     : [tokenAmount1, tokenAmount0];
   // calculate liquidity to mint
   let liquidity: BigInt;
-  let amount0 = BigInt.fromString(tokenAmounts[0].amount);
-  let amount1 = BigInt.fromString(tokenAmounts[1].amount);
-  const supply = BigInt.fromString(totalSupply.amount);
+  let amount0 = tokenAmounts[0].amount;
+  let amount1 = tokenAmounts[1].amount;
+  const supply = totalSupply.amount;
   if (supply.eq(BigInt.ZERO)) {
     const minLiq = BigInt.fromUInt32(minimumLiquidity());
     liquidity = amount0.mul(amount1).sqrt().sub(minLiq);
   } else {
-    const pairAmt0 = BigInt.fromString(pairTokens[0].amount);
-    const pairAmt1 = BigInt.fromString(pairTokens[1].amount);
+    const pairAmt0 = pairTokens[0].amount;
+    const pairAmt1 = pairTokens[1].amount;
     amount0 = amount0.mul(supply).div(pairAmt0);
     amount1 = amount1.mul(supply).div(pairAmt1);
     liquidity = amount0.lt(amount1) ? amount0 : amount1;
@@ -174,7 +189,7 @@ export function pairLiquidityMinted(
   }
   return {
     token: totalSupply.token,
-    amount: liquidity.toString(),
+    amount: liquidity,
   };
 }
 
@@ -192,21 +207,18 @@ export function pairLiquidityValue(
   const totalSupply: TokenAmount = input.totalSupply;
   const liquidity: TokenAmount = input.liquidity;
   const feeOn: bool = !input.feeOn.isNull && input.feeOn.value;
-  const kLast: BigInt = BigInt.fromString(
-    input.kLast != null ? input.kLast! : "0"
-  );
-
-  const amount0 = BigInt.fromString(pair.tokenAmount0.amount);
-  const amount1 = BigInt.fromString(pair.tokenAmount1.amount);
-  const liqAmt = BigInt.fromString(liquidity.amount);
-  let totalSupplyAmount = BigInt.fromString(totalSupply.amount);
+  const kLast: BigInt = input.kLast === null ? BigInt.ZERO : input.kLast!;
+  const amount0 = pair.tokenAmount0.amount;
+  const amount1 = pair.tokenAmount1.amount;
+  const liqAmt = liquidity.amount;
+  let totalSupplyAmount = totalSupply.amount;
   if (feeOn && kLast.gt(BigInt.ZERO)) {
     const rootK = amount0.mul(amount1).sqrt();
     const rootKLast = kLast.sqrt();
     if (rootK.gt(rootKLast)) {
       const numerator1 = totalSupplyAmount;
       const numerator2 = rootK.sub(rootKLast);
-      const denominator = rootK.mul(BigInt.fromString("5")).add(rootKLast);
+      const denominator = rootK.mul(BigInt.fromUInt16(5)).add(rootKLast);
       const feeLiquidity = numerator1.mul(numerator2).div(denominator);
       totalSupplyAmount = totalSupplyAmount.add(feeLiquidity);
     }
@@ -215,7 +227,7 @@ export function pairLiquidityValue(
   const token1Value = amount1.mul(liqAmt).div(totalSupplyAmount);
 
   return [
-    { token: pair.tokenAmount0.token, amount: token0Value.toString() },
-    { token: pair.tokenAmount1.token, amount: token1Value.toString() },
+    { token: pair.tokenAmount0.token, amount: token0Value },
+    { token: pair.tokenAmount1.token, amount: token1Value },
   ];
 }

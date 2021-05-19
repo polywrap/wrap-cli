@@ -1,4 +1,4 @@
-import { ChainId, Token, TokenAmount } from "../query/w3";
+import { ChainId, SHA3_Query, Token, TokenAmount } from "../query/w3";
 import { ETHER } from "./Currency";
 import { currencyEquals } from "../query";
 
@@ -115,3 +115,46 @@ export function copyTokenAmount(tokenAmount: TokenAmount): TokenAmount {
     amount: tokenAmount.amount,
   };
 }
+
+// https://eips.ethereum.org/EIPS/eip-1014
+// https://github.com/ethers-io/ethers.js/blob/master/packages/address/src.ts/index.ts#L143
+// https://github.com/ethers-io/ethers.js/blob/master/packages/bytes/src.ts/index.ts
+// https://github.com/Uniswap/uniswap-v2-core/blob/master/contracts/UniswapV2Factory.sol#L32
+// https://uniswap.org/docs/v2/javascript-SDK/getting-pair-addresses/
+
+// export function getChecksumAddress(address: string): string {
+//   if (address.startsWith("0x")) {
+//     address.substring(2);
+//   }
+//   address = address.toLowerCase();
+//   const chars: string[] = address.split("");
+//
+//   const expanded: Uint8Array = new Uint8Array(40);
+//   for (let i = 0; i < 40; i++) {
+//     expanded[i] = chars[i].charCodeAt(0);
+//   }
+//
+//   const hashed: string = SHA3_Query.keccak_256({ message: expanded.join("") });
+//   const hashedArr: Uint8Array = arrayify(hashed);
+//   for (let i = 0; i < 40; i += 2) {
+//     if (hashedArr[i >> 1] >> 4 >= 8) {
+//       chars[i] = chars[i].toUpperCase();
+//     }
+//     if ((hashedArr[i >> 1] & 0x0f) >= 8) {
+//       chars[i + 1] = chars[i + 1].toUpperCase();
+//     }
+//   }
+//
+//   return "0x" + chars.join("");
+// }
+//
+// function arrayify(value: string): Uint8Array {
+//   const hex = value.substring(2);
+//   const result: Uint8Array = new Uint8Array(value.length / 2);
+//   let j: u32 = 0;
+//   for (let i = 0; i < hex.length; i += 2) {
+//     result[j] = U8.parseInt(hex.substring(i, i + 2), 16);
+//     j++;
+//   }
+//   return result;
+// }

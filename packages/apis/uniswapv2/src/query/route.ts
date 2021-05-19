@@ -12,8 +12,6 @@ import Price from "../utils/Price";
 import { pairReserves } from "./pair";
 import { wrapIfEther } from "../utils/utils";
 
-import { BigInt } from "as-bigint";
-
 export function createRoute(input: Input_createRoute): Route {
   const path = routePath({
     pairs: input.pairs,
@@ -77,12 +75,20 @@ export function midPrice(route: Route): Price {
     const reserves: TokenAmount[] = pairReserves({ pair: pair });
     const reserve0: TokenAmount = reserves[0];
     const reserve1: TokenAmount = reserves[1];
-    const amount0 = BigInt.fromString(reserve0.amount);
-    const amount1 = BigInt.fromString(reserve1.amount);
     prices.push(
       tokenEquals({ token: path[i], other: reserve0.token })
-        ? new Price(reserve0.token, reserve1.token, amount0, amount1)
-        : new Price(reserve1.token, reserve0.token, amount1, amount0)
+        ? new Price(
+            reserve0.token,
+            reserve1.token,
+            reserve0.amount,
+            reserve1.amount
+          )
+        : new Price(
+            reserve1.token,
+            reserve0.token,
+            reserve1.amount,
+            reserve0.amount
+          )
     );
   }
   return prices.slice(1).reduce((k, v) => k.mul(v), prices[0]);

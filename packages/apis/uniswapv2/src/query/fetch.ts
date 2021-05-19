@@ -14,6 +14,8 @@ import {
 import { pairAddress } from "./pair";
 import { wrapIfEther } from "../utils/utils";
 
+import { BigInt } from "as-bigint";
+
 export function fetchTokenData(input: Input_fetchTokenData): Token {
   const address: string = input.address;
   const chainId: ChainId = input.chainId;
@@ -94,22 +96,22 @@ export function fetchPairData(input: Input_fetchPairData): Pair {
     return {
       tokenAmount0: {
         token: token0,
-        amount: amountA,
+        amount: BigInt.fromString(amountA),
       },
       tokenAmount1: {
         token: token1,
-        amount: amountB,
+        amount: BigInt.fromString(amountB),
       },
     };
   } else {
     return {
       tokenAmount0: {
         token: token1,
-        amount: amountA,
+        amount: BigInt.fromString(amountA),
       },
       tokenAmount1: {
         token: token0,
-        amount: amountB,
+        amount: BigInt.fromString(amountB),
       },
     };
   }
@@ -129,15 +131,15 @@ export function fetchTotalSupply(input: Input_fetchTotalSupply): TokenAmount {
   });
   return {
     token: token,
-    amount: res,
+    amount: BigInt.fromString(res),
   };
 }
 
 // input token must be a pair liquidity token
 // returns reserve0 * reserve1, as of immediately after the most recent liquidity event
-export function fetchKLast(input: Input_fetchKLast): string {
+export function fetchKLast(input: Input_fetchKLast): BigInt {
   const token: Token = input.token;
-  return Ethereum_Query.callView({
+  const result: string = Ethereum_Query.callView({
     address: token.address,
     method: "function kLast() external view returns (uint)",
     args: [],
@@ -146,4 +148,5 @@ export function fetchKLast(input: Input_fetchKLast): string {
       networkNameOrChainId: getChainIdKey(token.chainId),
     },
   });
+  return BigInt.fromString(result);
 }

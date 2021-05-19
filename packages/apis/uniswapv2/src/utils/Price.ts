@@ -63,11 +63,11 @@ export default class Price extends Fraction {
     if (!tokenEquals({ token: tokenAmount.token, other: this.baseToken })) {
       throw new Error("Token of tokenAmount must be the same as baseToken");
     }
-    const biAmount = BigInt.fromString(tokenAmount.amount);
+    const biAmount = tokenAmount.amount;
     const res = super.mul(new Fraction(biAmount)).quotient();
     return {
       token: this.quoteToken,
-      amount: res.toString(),
+      amount: res,
     };
   }
 

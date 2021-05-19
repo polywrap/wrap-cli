@@ -1,6 +1,7 @@
 import { ChainId, Pair, Route, Token } from "../../query/w3";
 import { createRoute, routeMidPrice } from "../../query";
 import { BigFloat } from "as-bigfloat";
+import { BigInt } from "as-bigint";
 
 const token0: Token = {
   chainId: ChainId.MAINNET,
@@ -27,9 +28,9 @@ const weth:Token = {
     name: "Wrapped Ether"
   }
 };
-const pair_0_1: Pair = { tokenAmount0: {token: token0, amount: '100'}, tokenAmount1: { token: token1, amount: '200' } };
-const pair_0_weth: Pair = { tokenAmount0: {token: token0, amount: '100'}, tokenAmount1: { token: weth, amount: '100' } };
-const pair_1_weth: Pair = { tokenAmount0: {token: token1, amount: '175'}, tokenAmount1: { token: weth, amount: '100' } };
+const pair_0_1: Pair = { tokenAmount0: {token: token0, amount: BigInt.fromString("100")}, tokenAmount1: { token: token1, amount: BigInt.fromString("200") } };
+const pair_0_weth: Pair = { tokenAmount0: {token: token0, amount: BigInt.fromString("100")}, tokenAmount1: { token: weth, amount: BigInt.fromString("100") } };
+const pair_1_weth: Pair = { tokenAmount0: {token: token1, amount: BigInt.fromString("175")}, tokenAmount1: { token: weth, amount: BigInt.fromString("100") } };
 
 describe('Route', () => {
 

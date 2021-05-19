@@ -33,20 +33,16 @@ export function swapCallParameters(
 
   const to = input.tradeOptions.recipient;
   const amountIn = toHex(
-    BigInt.fromString(
-      tradeMaximumAmountIn({
-        trade: input.trade,
-        slippageTolerance: input.tradeOptions.allowedSlippage,
-      }).amount
-    )
+    tradeMaximumAmountIn({
+      trade: input.trade,
+      slippageTolerance: input.tradeOptions.allowedSlippage,
+    }).amount
   );
   const amountOut = toHex(
-    BigInt.fromString(
-      tradeMinimumAmountOut({
-        trade: input.trade,
-        slippageTolerance: input.tradeOptions.allowedSlippage,
-      }).amount
-    )
+    tradeMinimumAmountOut({
+      trade: input.trade,
+      slippageTolerance: input.tradeOptions.allowedSlippage,
+    }).amount
   );
 
   const pathArray = input.trade.route.path.map<string>(
