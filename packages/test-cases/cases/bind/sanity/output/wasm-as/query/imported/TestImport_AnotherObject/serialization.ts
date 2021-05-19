@@ -4,7 +4,8 @@ import {
   Write,
   WriteSizer,
   WriteEncoder,
-  Nullable
+  Nullable,
+  BigInt
 } from "@web3api/wasm-as";
 import { TestImport_AnotherObject } from "./";
 import * as Types from "../..";

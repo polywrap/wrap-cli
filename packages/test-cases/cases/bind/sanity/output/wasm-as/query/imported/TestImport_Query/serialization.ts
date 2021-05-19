@@ -3,7 +3,8 @@ import {
   Write,
   WriteSizer,
   WriteEncoder,
-  ReadDecoder
+  ReadDecoder,
+  BigInt
 } from "@web3api/wasm-as";
 import * as Types from "../..";
 

@@ -84,6 +84,7 @@ scalar Int16
 scalar Int32
 scalar Int64
 scalar Bytes
+scalar BigInt
 
 directive @imported(
   uri: String!
