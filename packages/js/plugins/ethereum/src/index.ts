@@ -20,7 +20,7 @@ import {
   PluginModules,
   PluginFactory,
 } from "@web3api/core-js";
-import { ethers } from "ethers";
+import { BigNumber, ethers, providers } from "ethers";
 
 // Export all types that are nested inside of EthereumConfig.
 // This is required for the extractPluginConfigs.ts script.
@@ -105,15 +105,36 @@ export class EthereumPlugin extends Plugin {
     address: Address,
     method: string,
     args: string[],
+    value?: string,
+    gasLimit?: string,
+    gasPrice?: string,
     connectionOverride?: ConnectionOverride
   ): Promise<string> {
     const connection = await this.getConnection(connectionOverride);
     const contract = connection.getContract(address, [method]);
+    const parsedArgs: (string | string[])[] = [];
+    for (const arg of args) {
+      try {
+        parsedArgs.push(JSON.parse(arg));
+      } catch {
+        parsedArgs.push(arg);
+      }
+    }
+
     const funcs = Object.keys(contract.interface.functions);
-    const tx = await contract[funcs[0]](...args);
-    const res = await tx.wait();
-    // TODO: improve this
-    return res.transactionHash;
+    const signer = connection.getSigner();
+
+    const txData = contract.interface.encodeFunctionData(funcs[0], parsedArgs);
+    const txRequest: providers.TransactionRequest = {
+      to: contract.address,
+      data: txData,
+      gasLimit: gasLimit ? BigNumber.from(gasLimit) : undefined,
+      gasPrice: gasPrice ? BigNumber.from(gasPrice) : undefined,
+      value: value ? BigNumber.from(value) : undefined,
+    };
+
+    const tx = await signer.sendTransaction(txRequest);
+    return tx.hash;
   }
 
   public async getConnection(

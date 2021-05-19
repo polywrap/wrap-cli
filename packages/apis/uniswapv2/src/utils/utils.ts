@@ -11,6 +11,7 @@ export function compareAddresses(ref: string, other: string): i32 {
   return ref.length - other.length;
 }
 
+// TODO: Waiting to delete this in case we are eventually able to make calls by chain id.
 export function resolveChainId(chainId: ChainId): string {
   switch (chainId) {
     case ChainId.MAINNET:

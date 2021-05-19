@@ -2,7 +2,7 @@ import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
 import { buildAndDeployApi, initTestEnvironment, stopTestEnvironment } from "@web3api/test-env-js";
 import * as path from "path";
 import { ChainId, Pair, Route, Token, TokenAmount, Trade, TradeType } from "./types";
-import { defaultUniswapTokenList, getPairData, getRedirects, getTokenList, getUniPairs } from "../testUtils";
+import { getPairData, getRedirects, getTokenList, getUniPairs } from "../testUtils";
 import * as uni from "@uniswap/sdk";
 
 jest.setTimeout(60000);
@@ -26,7 +26,7 @@ describe('trade e2e', () => {
     const api = await buildAndDeployApi(apiPath, ipfs, ensAddress);
     ensUri = `ens/testnet/${api.ensDomain}`;
     // pick some test case tokens
-    const allTokens: Token[] = await getTokenList(defaultUniswapTokenList);
+    const allTokens: Token[] = await getTokenList();
     const aave: Token = allTokens.filter(token => token.currency.symbol === "AAVE")[0];
     const dai: Token = allTokens.filter(token => token.currency.symbol === "DAI")[0];
     const usdc: Token = allTokens.filter(token => token.currency.symbol === "USDC")[0];

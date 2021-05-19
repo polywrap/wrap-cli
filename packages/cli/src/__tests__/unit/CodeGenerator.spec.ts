@@ -158,6 +158,9 @@ type Ethereum_Mutation @imported(
     address: String!
     method: String!
     args: [String!]
+    value: String
+    gasLimit: String
+    gasPrice: String
     connection: Ethereum_Connection
   ): String!
 

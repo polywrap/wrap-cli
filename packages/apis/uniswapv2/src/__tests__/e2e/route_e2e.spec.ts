@@ -2,10 +2,10 @@ import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
 import { buildAndDeployApi, initTestEnvironment, stopTestEnvironment } from "@web3api/test-env-js";
 import * as path from "path";
 import { Pair, Route, Token } from "./types";
-import { defaultUniswapTokenList, getPairData, getRedirects, getTokenList, getUniPairs } from "../testUtils";
+import { getPairData, getRedirects, getTokenList, getUniPairs } from "../testUtils";
 import * as uni from "@uniswap/sdk";
 
-jest.setTimeout(60000);
+jest.setTimeout(90000);
 
 describe('Route', () => {
 
@@ -26,7 +26,7 @@ describe('Route', () => {
     const api = await buildAndDeployApi(apiPath, ipfs, ensAddress);
     ensUri = `ens/testnet/${api.ensDomain}`;
     // pick some test case tokens
-    const tokens: Token[] = await getTokenList(defaultUniswapTokenList);
+    const tokens: Token[] = await getTokenList();
     const aave: Token = tokens.filter(token => token.currency.symbol === "AAVE")[0];
     const dai: Token = tokens.filter(token => token.currency.symbol === "DAI")[0];
     const usdc: Token = tokens.filter(token => token.currency.symbol === "USDC")[0];

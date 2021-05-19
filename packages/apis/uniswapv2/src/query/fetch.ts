@@ -2,6 +2,7 @@ import { tokenSortsBefore } from "./token";
 import {
   ChainId,
   Ethereum_Query,
+  getChainIdKey,
   Input_fetchKLast,
   Input_fetchPairData,
   Input_fetchTokenData,
@@ -11,7 +12,7 @@ import {
   TokenAmount,
 } from "./w3";
 import { pairAddress } from "./pair";
-import { resolveChainId, wrapIfEther } from "../utils/utils";
+import { wrapIfEther } from "../utils/utils";
 
 export function fetchTokenData(input: Input_fetchTokenData): Token {
   const address: string = input.address;
@@ -25,7 +26,7 @@ export function fetchTokenData(input: Input_fetchTokenData): Token {
           args: [],
           connection: {
             node: null,
-            networkNameOrChainId: resolveChainId(chainId),
+            networkNameOrChainId: getChainIdKey(chainId),
           },
         });
   const name: string =
@@ -37,7 +38,7 @@ export function fetchTokenData(input: Input_fetchTokenData): Token {
           args: [],
           connection: {
             node: null,
-            networkNameOrChainId: resolveChainId(chainId),
+            networkNameOrChainId: getChainIdKey(chainId),
           },
         });
   const decimals: string = Ethereum_Query.callView({
@@ -46,7 +47,7 @@ export function fetchTokenData(input: Input_fetchTokenData): Token {
     args: [],
     connection: {
       node: null,
-      networkNameOrChainId: resolveChainId(chainId),
+      networkNameOrChainId: getChainIdKey(chainId),
     },
   });
   return {
@@ -76,7 +77,7 @@ export function fetchPairData(input: Input_fetchPairData): Pair {
     args: [],
     connection: {
       node: null,
-      networkNameOrChainId: resolveChainId(token0.chainId),
+      networkNameOrChainId: getChainIdKey(token0.chainId),
     },
   });
   const resArray: string[] = res.split(",");
@@ -123,7 +124,7 @@ export function fetchTotalSupply(input: Input_fetchTotalSupply): TokenAmount {
     args: [],
     connection: {
       node: null,
-      networkNameOrChainId: resolveChainId(token.chainId),
+      networkNameOrChainId: getChainIdKey(token.chainId),
     },
   });
   return {
@@ -142,7 +143,7 @@ export function fetchKLast(input: Input_fetchKLast): string {
     args: [],
     connection: {
       node: null,
-      networkNameOrChainId: resolveChainId(token.chainId),
+      networkNameOrChainId: getChainIdKey(token.chainId),
     },
   });
 }
