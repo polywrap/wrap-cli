@@ -1,0 +1,7 @@
+mutation setContentHash($domain: String!, $cid: String!, $resolverAddress: String!) {
+  setContentHash(
+    domain: $domain,
+    cid: $cid,
+    resolverAddress: $resolverAddress
+  )
+}
