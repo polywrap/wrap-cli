@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@as-pect/cli": "5.0.1",
+    "as-bigint": "0.2.4",
     "assemblyscript": "0.17.14"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",

@@ -4,7 +4,8 @@ import {
   Write,
   WriteSizer,
   WriteEncoder,
-  Nullable
+  Nullable,
+  BigInt
 } from "@web3api/wasm-as";
 import { CustomType } from "./";
 import * as Types from "..";
@@ -19,7 +20,7 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
 }
 
 export function writeCustomType(writer: Write, type: CustomType): void {
-  writer.writeMapLength(33);
+  writer.writeMapLength(35);
   writer.writeString("str");
   writer.writeString(type.str);
   writer.writeString("optStr");
@@ -46,6 +47,10 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.writeInt32(type.i32);
   writer.writeString("i64");
   writer.writeInt64(type.i64);
+  writer.writeString("bigint");
+  writer.writeBigInt(type.bigint);
+  writer.writeString("optBigint");
+  writer.writeNullableBigInt(type.optBigint);
   writer.writeString("bytes");
   writer.writeBytes(type.bytes);
   writer.writeString("optBytes");
@@ -166,6 +171,9 @@ export function readCustomType(reader: Read): CustomType {
   var _i32Set: bool = false;
   var _i64: i64 = 0;
   var _i64Set: bool = false;
+  var _bigint: BigInt = BigInt.fromUInt16(0);
+  var _bigintSet: bool = false;
+  var _optBigint: BigInt | null = null;
   var _bytes: ArrayBuffer = new ArrayBuffer(0);
   var _bytesSet: bool = false;
   var _optBytes: ArrayBuffer | null = null;
@@ -250,6 +258,13 @@ export function readCustomType(reader: Read): CustomType {
     else if (field == "i64") {
       _i64 = reader.readInt64();
       _i64Set = true;
+    }
+    else if (field == "bigint") {
+      _bigint = reader.readBigInt();
+      _bigintSet = true;
+    }
+    else if (field == "optBigint") {
+      _optBigint = reader.readNullableBigInt();
     }
     else if (field == "bytes") {
       _bytes = reader.readBytes();
@@ -448,6 +463,9 @@ export function readCustomType(reader: Read): CustomType {
   if (!_i64Set) {
     throw new Error("Missing required property: 'i64: Int64'");
   }
+  if (!_bigintSet) {
+    throw new Error("Missing required property: 'bigint: BigInt'");
+  }
   if (!_bytesSet) {
     throw new Error("Missing required property: 'bytes: Bytes'");
   }
@@ -493,6 +511,8 @@ export function readCustomType(reader: Read): CustomType {
     i16: _i16,
     i32: _i32,
     i64: _i64,
+    bigint: _bigint,
+    optBigint: _optBigint,
     bytes: _bytes,
     optBytes: _optBytes,
     boolean: _boolean,
