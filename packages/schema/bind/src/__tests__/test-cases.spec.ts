@@ -64,6 +64,9 @@ describe("Web3API Binding Test Suite", () => {
           output.mutation.entries = sort(output.mutation.entries);
         }
 
+        console.log('TEST1', JSON.stringify(output));
+        console.log('TEST2', JSON.stringify(expectedOutput));
+
         expect(output).toMatchObject(expectedOutput);
       }
     });

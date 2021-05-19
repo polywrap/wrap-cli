@@ -36,7 +36,9 @@ export function fetchTestCases(): TestCases {
     file: string
   ): string | undefined => {
     if (fs.existsSync(file)) {
-      return fs.readFileSync(file, { encoding: "utf-8" });
+      return fs.readFileSync(file, { encoding: "utf-8" })
+        .replace(/\r\n/g, '\n')
+        .replace(/\r/g, '\n');
     } else {
       return undefined;
     }

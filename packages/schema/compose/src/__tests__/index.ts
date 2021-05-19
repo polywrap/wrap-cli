@@ -45,7 +45,9 @@ export function fetchTestCases(): TestCases {
       const filePath = getFilePath(subpath, absolute);
 
       if (existsSync(filePath)) {
-        return readFileSync(filePath, { encoding: "utf-8" });
+        return readFileSync(filePath, { encoding: "utf-8" })
+          .replace(/\r\n/g, '\n')
+          .replace(/\r/g, '\n');
       } else {
         return undefined;
       }
