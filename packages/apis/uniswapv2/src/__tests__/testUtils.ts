@@ -39,7 +39,7 @@ export function getRedirects(ethereum: string, ipfs: string, ensAddress: string)
           testnet: {
             provider: ethereum
           },
-          "MAINNET": {
+          MAINNET: {
             provider: "http://localhost:8546"
           },
         },

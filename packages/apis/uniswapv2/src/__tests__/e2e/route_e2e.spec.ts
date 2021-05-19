@@ -1,11 +1,11 @@
 import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
 import { buildAndDeployApi, initTestEnvironment, stopTestEnvironment } from "@web3api/test-env-js";
 import * as path from "path";
-import { Pair, Route, Token, TokenAmount } from "./types";
-import { defaultUniswapTokenList, getPairData, getRedirects, getTokenList, getUniPairs } from "../testUtils";
+import { Pair, Route, Token } from "./types";
+import { getPairData, getRedirects, getTokenList, getUniPairs } from "../testUtils";
 import * as uni from "@uniswap/sdk";
 
-jest.setTimeout(60000);
+jest.setTimeout(90000);
 
 describe('Route', () => {
 
@@ -26,7 +26,7 @@ describe('Route', () => {
     const api = await buildAndDeployApi(apiPath, ipfs, ensAddress);
     ensUri = `ens/testnet/${api.ensDomain}`;
     // pick some test case tokens
-    const tokens: Token[] = await getTokenList(defaultUniswapTokenList);
+    const tokens: Token[] = await getTokenList();
     const aave: Token = tokens.filter(token => token.currency.symbol === "AAVE")[0];
     const dai: Token = tokens.filter(token => token.currency.symbol === "DAI")[0];
     const usdc: Token = tokens.filter(token => token.currency.symbol === "USDC")[0];
@@ -170,7 +170,7 @@ describe('Route', () => {
       const expectedRoute = new uni.Route(uniPairs, uniInputToken, uniOutputToken);
       // actual midPrice
       const actualMidPrice = await client.query<{
-        routeMidPrice: TokenAmount;
+        routeMidPrice: string;
       }>({
         uri: ensUri,
         query: `
@@ -184,12 +184,8 @@ describe('Route', () => {
           route: actualRoute?.data?.createRoute,
         }
       });
-      // make sure price quote token is correct
-      const actualPriceTokenAddress: string = actualMidPrice.data?.routeMidPrice?.token.address ?? "";
-      const expectedPriceTokenAddress: string = (expectedRoute.midPrice.quoteCurrency as uni.Token).address;
-      expect(actualPriceTokenAddress).toStrictEqual(expectedPriceTokenAddress);
       // make sure price is correct
-      const actualRouteMidPrice: string = actualMidPrice.data?.routeMidPrice?.amount!
+      const actualRouteMidPrice: string = actualMidPrice.data?.routeMidPrice!
       const expectedRouteMidPrice: string = expectedRoute.midPrice.toFixed(18);
       expect(actualRouteMidPrice).toStrictEqual(expectedRouteMidPrice);
     }

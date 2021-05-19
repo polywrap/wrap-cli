@@ -18,6 +18,9 @@ type Mutation {
     address: String!
     method: String!
     args: [String!]
+    value: String
+    gasLimit: String
+    gasPrice: String
     connection: Connection
   ): String!
 

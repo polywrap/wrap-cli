@@ -1,6 +1,12 @@
 import { Nullable } from "@web3api/wasm-as";
 import { createRoute } from "../../query";
-import { bestTradeExactIn, bestTradeExactOut, createTrade, tradeMaximumAmountIn, tradeMinimumAmountOut } from "../../query/trade"
+import {
+  bestTradeExactIn,
+  bestTradeExactOut,
+  createTrade,
+  tradeMaximumAmountIn,
+  tradeMinimumAmountOut
+} from "../../query";
 import { ChainId, Pair, Token, TradeType } from "../../query/w3";
 
 const token0: Token = {
@@ -39,6 +45,14 @@ const token3: Token = {
     name: null,
   }
 }
+
+// const tokenEth: Token = {
+//   chainId: ChainId.MAINNET,
+//   address: "",
+//   currency: ETHER
+// }
+//
+// const tokenWeth: Token = getWETH9(ChainId.MAINNET);
 
 const pair_0_1: Pair = {
   tokenAmount0: {
@@ -101,6 +115,17 @@ const empty_pair_0_1: Pair = {
     token: token1
   }
 }
+
+// const pair_weth_1: Pair = {
+//   tokenAmount0: {
+//     amount: "1000",
+//     token: tokenWeth
+//   },
+//   tokenAmount1: {
+//     amount: "1000",
+//     token: token1
+//   }
+// }
 
 const exactIn = createTrade({
   route: createRoute({
@@ -277,7 +302,77 @@ describe("Trade", () => {
       expect(result.length).toStrictEqual(0);
     });
 
-    // TODO: WETH implementation and tests
+    // TODO: WETH bestTrade as-pect unit tests are not compiling correctly (e.g. the expected token is changing values without being modified and more)
+    // test("exactIn accepts Eth input", () => {
+    //   const result =  bestTradeExactIn({
+    //     pairs: [pair_weth_1, pair_0_1, pair_0_3, pair_1_3],
+    //     amountIn: {
+    //       token: tokenEth,
+    //       amount: "10"
+    //     },
+    //     tokenOut: token1,
+    //     options: null
+    //   });
+    //   expect(result.length).toStrictEqual(1);
+    //   expect(result[0].route.pairs.length).toStrictEqual(1);
+    //   expect(result[0].route.path).toStrictEqual([tokenWeth, token1]);
+    //   expect(result[0].inputAmount).toStrictEqual({
+    //     token: tokenEth,
+    //     amount: "10"
+    //   });
+    // });
+    //
+    // test("exactIn accepts Eth output", () => {
+    //   const result =  bestTradeExactIn({
+    //     pairs: [pair_weth_1, pair_0_1, pair_0_3, pair_1_3],
+    //     amountIn: {
+    //       token: token1,
+    //       amount: "10"
+    //     },
+    //     tokenOut: tokenEth,
+    //     options: null
+    //   });
+    //   expect(result.length).toStrictEqual(1);
+    //   expect(result[0].route.pairs.length).toStrictEqual(1);
+    //   expect(result[0].route.path).toStrictEqual([token1, tokenWeth]);
+    //   expect(result[0].outputAmount.token).toStrictEqual(tokenEth);
+    // });
+    //
+    // test("exactOut accepts Eth input", () => {
+    //   const result =  bestTradeExactOut({
+    //     pairs: [pair_weth_1, pair_0_1, pair_0_3, pair_1_3],
+    //     amountOut: {
+    //       token: token1,
+    //       amount: "10"
+    //     },
+    //     tokenIn: tokenEth,
+    //     options: null
+    //   });
+    //   expect(result.length).toStrictEqual(1);
+    //   expect(result[0].route.pairs.length).toStrictEqual(1);
+    //   expect(result[0].route.path).toStrictEqual([tokenWeth, token1]);
+    //   expect(result[0].inputAmount.token).toStrictEqual(tokenEth);
+    // });
+    //
+    // test("exactOut accepts Eth output", () => {
+    //   const result =  bestTradeExactOut({
+    //     pairs: [pair_weth_1, pair_0_1, pair_0_3, pair_1_3],
+    //     amountOut: {
+    //       token: tokenEth,
+    //       amount: "10"
+    //     },
+    //     tokenIn: token1,
+    //     options: null
+    //   });
+    //   expect(result.length).toStrictEqual(1);
+    //   expect(result[0].route.pairs.length).toStrictEqual(1);
+    //   expect(result[0].route.path).toStrictEqual([token1, tokenWeth]);
+    //   expect(result[0].outputAmount).toStrictEqual({
+    //     token: tokenEth,
+    //     amount: "10"
+    //   });
+    // });
+
   });
 
   describe("bestTradeExactOut", () => {
