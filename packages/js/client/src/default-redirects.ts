@@ -33,7 +33,7 @@ export const getDefaultRedirects = Tracer.traceFunc(
               provider:
                 "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
             },
-          }
+          },
         }),
       },
       {
