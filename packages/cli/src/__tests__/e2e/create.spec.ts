@@ -123,5 +123,5 @@ ${HELP}`);
     );
 
     rimraf.sync(`${projectRoot}/test`);
-  }, 10000);
+  }, 60000);
 });
