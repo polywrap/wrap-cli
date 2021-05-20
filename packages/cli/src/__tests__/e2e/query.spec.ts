@@ -1,5 +1,5 @@
 import path from "path";
-import { clearStyle } from "./utils";
+import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
 
@@ -18,7 +18,7 @@ describe("e2e tests for query command", () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["query"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
 
     expect(exitCode).toEqual(0);
     expect(stderr).toBe("");
@@ -31,7 +31,7 @@ ${HELP}`);
     const { exitCode: testenvCode, stderr: testEnvUpErr } = await runCLI({
       args: ["test-env", "up"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
     expect(testEnvUpErr).toBe("");
     expect(testenvCode).toEqual(0);
 
@@ -51,7 +51,7 @@ ${HELP}`);
         "simplestorage.eth",
       ],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
 
     expect(buildErr).toBe("");
     expect(buildCode).toEqual(0);
@@ -59,7 +59,7 @@ ${HELP}`);
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
       args: ["query", "./recipes/e2e.json", "--test-ens"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
 
     expect(code).toEqual(0);
     expect(queryErr).toBe("");
@@ -101,6 +101,6 @@ mutation {
     await runCLI({
       args: ["test-env", "down"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
   }, 240000);
 });
