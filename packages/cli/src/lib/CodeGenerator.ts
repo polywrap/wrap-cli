@@ -20,7 +20,7 @@ export interface CodeGeneratorConfig {
 export class CodeGenerator {
   private _schema: string | undefined = "";
 
-  constructor(private _config: CodeGeneratorConfig) {}
+  constructor(private _config: CodeGeneratorConfig) { }
 
   public async generate(): Promise<boolean> {
     try {

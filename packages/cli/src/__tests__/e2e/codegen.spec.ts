@@ -67,12 +67,11 @@ ${HELP}`);
       cwd: projectRoot
     }, w3Cli);
 
+    const genFile = path.normalize(`${projectRoot}/web3api-invalid.gen.js`);
+
     expect(code).toEqual(1);
     expect(error).toBe("");
-    expect(clearStyle(output)).toContain(`- Generate types
-- Load web3api from web3api.yaml
-✔ Load web3api from web3api.yaml
-✖ Failed to generate types: Cannot find module '${projectRoot}/web3api-invalid.gen.js'`);
+    expect(clearStyle(output)).toContain(`Failed to generate types: Cannot find module '${genFile}'`);
   });
 
   test("Should throw error for invalid generation file - no run() method", async () => {
@@ -83,10 +82,7 @@ ${HELP}`);
 
     expect(code).toEqual(1);
     expect(error).toBe("");
-    expect(clearStyle(output)).toContain(`- Generate types
-- Load web3api from web3api.yaml
-✔ Load web3api from web3api.yaml
-✖ Failed to generate types: The generation file provided doesn't have the 'run' method.`);
+    expect(clearStyle(output)).toContain(`Failed to generate types: The generation file provided doesn't have the 'run' method.`);
   });
 
   test("Should successfully generate types", async () => {
@@ -100,18 +96,7 @@ ${HELP}`);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`- Generate types
-- Load web3api from web3api.yaml
-✔ Load web3api from web3api.yaml
-  Generating types from ./templates/schema.mustache
-- Generate types
-  Generating types from ./templates/schema.mustache
-- Generate types
-  Generating types from ./templates/schema.mustache
-- Generate types
-✔ Generate types
-🔥 Types were generated successfully 🔥
-`);
+    expect(clearStyle(output)).toContain(`🔥 Types were generated successfully 🔥`);
 
     rimraf.sync(`${projectRoot}/types`);
   });
