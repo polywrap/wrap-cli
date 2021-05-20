@@ -1,4 +1,5 @@
 import { OutputDirectory, OutputEntry } from "../";
+import { alphabeticalNamedSort } from "./sort";
 
 import path from "path";
 import {
@@ -9,7 +10,6 @@ import {
   mkdirSync,
   existsSync,
 } from "fs";
-import { alphabeticalNamedSort } from "./sort";
 
 // TODO: make this all async, making it run faster
 export function readDirectory(dir: string): OutputDirectory {
@@ -18,8 +18,8 @@ export function readDirectory(dir: string): OutputDirectory {
 
     if (dirent.isDirectory()) {
       const entries: OutputEntry[] = readdirSync(direntPath, {
-          withFileTypes: true,
-        })
+        withFileTypes: true,
+      })
         .sort(alphabeticalNamedSort)
         .map((dirent) => importDirectoryEntry(direntPath, dirent));
 
@@ -38,8 +38,8 @@ export function readDirectory(dir: string): OutputDirectory {
   };
 
   const entries: OutputEntry[] = readdirSync(dir, {
-      withFileTypes: true,
-    })
+    withFileTypes: true,
+  })
     .sort(alphabeticalNamedSort)
     .map((dirent) => importDirectoryEntry(dir, dirent));
 
