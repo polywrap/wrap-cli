@@ -191,7 +191,7 @@ export class Compiler {
       step(
         spinner,
         `${intlMsg.lib_compiler_step()}:`,
-        `${modulePath} => ${outputDir}/${moduleName}.wasm`
+        `${modulePath} => ` + path.normalize(`${outputDir}/${moduleName}.wasm`)
       );
     }
 
@@ -228,7 +228,7 @@ export class Compiler {
       `abort=${path.relative(
         process.cwd(),
         path.join(baseDir, "w3/entry/w3Abort")
-      )}`,
+      ).replace(/\\/g, "/")}`,
       "--optimize",
       "--debug",
       "--importMemory",

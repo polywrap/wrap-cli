@@ -1,6 +1,6 @@
 import path from "path";
 import { defaultGenerationFile, defaultManifest } from "../../commands/codegen";
-import { clearStyle } from "./utils";
+import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
 
@@ -28,7 +28,7 @@ describe("e2e tests for codegen command", () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", "--help"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -39,7 +39,7 @@ describe("e2e tests for codegen command", () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", "--output-dir"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -52,7 +52,7 @@ ${HELP}`);
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", "--ens"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -65,7 +65,7 @@ ${HELP}`);
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", `web3api-invalid.gen.js`],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
 
     expect(code).toEqual(1);
     expect(error).toBe("");
@@ -79,7 +79,7 @@ ${HELP}`);
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", `web3api-norun.gen.js`],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
 
     expect(code).toEqual(1);
     expect(error).toBe("");
@@ -96,7 +96,7 @@ ${HELP}`);
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
