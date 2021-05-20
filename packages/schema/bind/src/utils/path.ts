@@ -12,7 +12,6 @@ export function getRelativePath(from: string, to: string): string {
   return normalizeWithLinuxPathSep(Path.relative(from, to));
 }
 
-export function normalizeWithLinuxPathSep(path: string) {
-  return Path.normalize(path)
-    .replace(/\\/g, '/');
+export function normalizeWithLinuxPathSep(path: string): string {
+  return Path.normalize(path).replace(/\\/g, "/");
 }

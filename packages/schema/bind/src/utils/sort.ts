@@ -10,4 +10,4 @@ export function alphabeticalNamedSort(a: Named, b: Named): number {
     return 1;
   }
   return 0;
-};
+}
