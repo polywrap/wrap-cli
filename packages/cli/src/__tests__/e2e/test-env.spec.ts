@@ -47,9 +47,7 @@ ${HELP}`);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`- Starting test environment...
-✔ Starting test environment...
-`);
+    expect(clearStyle(output)).toContain(`- Starting test environment...`);
 
     await runCLI({
       args: ["test-env", "down"],
@@ -65,8 +63,6 @@ ${HELP}`);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`- Shutting down test environment...
-✔ Shutting down test environment...
-`);
+    expect(clearStyle(output)).toContain(`- Shutting down test environment...`);
   }, 20000);
 });
