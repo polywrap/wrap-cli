@@ -13,7 +13,33 @@ enum ValidationError {
   INPUT = "format",
 }
 
+const manifestSchemas: { [key in ManifestFormats]: Schema | undefined } = {
+  "0.0.1-prealpha.1": schema_0_0_1_prealpha_1,
+  // TODO: Uncomment when a new version exists
+  // "0.0.1-prealpha.2": schema_0_0_1_prealpha_2
+};
+
 const validator = new Validator();
+
+Validator.prototype.customFormats.file = (file: unknown) => {
+  return validateFile(file);
+};
+
+function validateFile(path: unknown): boolean {
+  if (typeof path !== "string") {
+    return false;
+  }
+
+  // eslint-disable-next-line no-useless-escape
+  const validPathMatch = path.match(/^((\.\/|..\/)[^\/ ]*)+\/?$/gm);
+
+  let result = false;
+  if (validPathMatch && validPathMatch[0]) {
+    result = validPathMatch[0].length === path.length;
+  }
+
+  return result;
+}
 
 Validator.prototype.customFormats.manifestFormat = (format: unknown) => {
   return validateFormat(format);
