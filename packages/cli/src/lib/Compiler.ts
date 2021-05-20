@@ -12,6 +12,7 @@ import {
   writeDirectory,
   BindModuleOptions,
 } from "@web3api/schema-bind";
+import { writeFileSync } from "@web3api/os-js";
 import path from "path";
 import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
@@ -155,9 +156,9 @@ export class Compiler {
       await buildModules();
 
       // Output the schema & manifest files
-      fs.writeFileSync(
+      writeFileSync(
         `${outputDir}/schema.graphql`,
-        composed.combined.schema,
+        composed.combined.schema as string,
         "utf-8"
       );
       await outputManifest(manifest, `${outputDir}/web3api.yaml`);

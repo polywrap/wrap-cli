@@ -1,12 +1,12 @@
 import { OutputDirectory, OutputEntry } from "../";
 import { alphabeticalNamedSort } from "./sort";
 
+import { writeFileSync } from "@web3api/os-js";
 import path from "path";
 import {
   readdirSync,
   readFileSync,
   Dirent,
-  writeFileSync,
   mkdirSync,
   existsSync,
 } from "fs";
