@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import rimraf from "rimraf";
 import { SchemaComposer, Project, CodeGenerator } from "../../lib";
 
 describe("CodeGenerator validation", () => {
@@ -51,7 +52,7 @@ describe("CodeGenerator validation", () => {
 
   it("Should generate", async () => {
     if (fs.existsSync(outputDir)) {
-      fs.rmSync(outputDir, { recursive: true });
+      rimraf.sync(outputDir);
     }
 
     const project = new Project({
@@ -195,6 +196,6 @@ type Ethereum_Connection @imported(
     const { schema: schema3 } = require("../project/types/folder/schema2.ts");
     expect(schema3).toEqual(expectedSchema);
 
-    fs.rmSync(outputDir, { recursive: true });
+    rimraf.sync(outputDir);
   });
 });

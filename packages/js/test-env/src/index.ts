@@ -3,7 +3,7 @@ import { plugin as ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { plugin as ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { plugin as ensPlugin } from "@web3api/ens-plugin-js";
 import path from "path";
-import spawn from "spawn-command";
+import spawn from "cross-spawn";
 import axios from "axios";
 
 interface TestEnvironment {

@@ -22,7 +22,12 @@ describe("e2e tests for build command", () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["build", "--help"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, __dirname + "\\..\\..\\..\\bin\\w3");
+
+    console.log("HERERE")
+    console.log(code)
+    console.error(error)
+    console.log(output)
 
     expect(code).toEqual(0);
     expect(error).toBe("");
