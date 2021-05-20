@@ -15,6 +15,8 @@ Options:
 
 `;
 
+const cliCmd = `node ${__dirname}/../../../bin/w3`;
+
 describe("e2e tests for build command", () => {
   const projectRoot = path.resolve(__dirname, "../project/");
 
@@ -22,12 +24,7 @@ describe("e2e tests for build command", () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["build", "--help"],
       cwd: projectRoot
-    }, __dirname + "\\..\\..\\..\\bin\\w3");
-
-    console.log("HERERE")
-    console.log(code)
-    console.error(error)
-    console.log(output)
+    }, cliCmd);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -38,7 +35,7 @@ describe("e2e tests for build command", () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["build", "--output-dir"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, cliCmd);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -51,7 +48,7 @@ ${HELP}`);
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["build", "--test-ens"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, cliCmd);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -64,7 +61,7 @@ ${HELP}`);
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["build", "--test-ens", "test.eth"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, cliCmd);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -77,7 +74,7 @@ ${HELP}`);
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["build", "invalid-web3api-1.yaml"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, cliCmd);
 
     expect(code).toEqual(1);
     expect(error).toBe("");
@@ -92,7 +89,7 @@ ${HELP}`);
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["build", "invalid-web3api-2.yaml"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, cliCmd);
 
     expect(code).toEqual(1);
     expect(error).toBe("");
@@ -105,7 +102,7 @@ ${HELP}`);
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["build"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, cliCmd);
 
     expect(code).toEqual(0);
     expect(error).toBe("");

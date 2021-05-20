@@ -40,7 +40,6 @@
     "axios": "0.19.2",
     "chalk": "4.1.0",
     "chokidar": "3.5.1",
-    "cross-spawn": "7.0.3",
     "fs-extra": "9.0.1",
     "gluegun": "4.6.1",
     "graphql-tag": "2.11.0",

@@ -9,6 +9,7 @@
       "ESNext.AsyncIterable"
     ],
     "outDir": "build",
+    "declarationDir": "build/types",
     "esModuleInterop": true,
     "resolveJsonModule": true,
   },

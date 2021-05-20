@@ -1,6 +1,6 @@
 import { intlMsg } from "../intl";
 
-import spawn from "cross-spawn";
+import { execSync, spawn } from "child_process";
 import { GluegunFilesystem } from "gluegun";
 import dns from "dns";
 import url from "url";
@@ -9,7 +9,7 @@ import path from "path";
 
 export function shouldUseYarn(): boolean {
   try {
-    spawn.sync("yarnpkg --version", { stdio: "ignore" });
+    execSync("yarnpkg --version", { stdio: "ignore" });
     return true;
   } catch (e) {
     return false;
@@ -22,7 +22,7 @@ function getProxy() {
   } else {
     try {
       // Trying to read https-proxy from .npmrc
-      const httpsProxy = spawn.sync("npm config get https-proxy")
+      const httpsProxy = execSync("npm config get https-proxy")
         .toString()
         .trim();
       return httpsProxy !== "null" ? httpsProxy : undefined;
