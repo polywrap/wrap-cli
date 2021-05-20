@@ -1,0 +1,14 @@
+description: ENS
+format: 0.0.1-prealpha.1
+query:
+  schema:
+    file: ./src/query/schema.graphql
+  module:
+    language: wasm/assemblyscript
+    file: ./src/query/index.ts
+mutation:
+  schema:
+    file: ./src/mutation/schema.graphql
+  module:
+    language: wasm/assemblyscript
+    file: ./src/mutation/index.ts

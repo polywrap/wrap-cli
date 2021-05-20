@@ -1,6 +1,4 @@
-#import { Query } into ApiResolver from "w3/api-resolver"
-
-type Query implements ApiResolver_Query {
+type Query {
   sha3_512(message: String!): String!
   sha3_384(message: String!): String!
   sha3_256(message: String!): String!
@@ -11,8 +9,8 @@ type Query implements ApiResolver_Query {
   keccak_256(message: String!): String!
   keccak_224(message: String!): String!
 
-  buffer_keccak_256(message: String!): String!
-  
+  buffer_keccak_256(message: Bytes!): Bytes!
+
   shake_128(message: String!, outputBits: Int!): String!
   shake_256(message: String!, outputBits: Int!): String!
 }

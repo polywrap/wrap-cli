@@ -1,4 +1,4 @@
-import { manifest } from "./../../ethereum/src/manifest";
+import { manifest } from "./manifest";
 import { query } from "./resolvers";
 
 import {

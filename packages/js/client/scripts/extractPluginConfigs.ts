@@ -37,7 +37,7 @@ const plugins: PluginConfigSource[] = [
     files: [
       {
         name: "build/index.d.ts",
-        types: ["EthereumConfig"],
+        interfaces: ["EthereumConfig"],
       },
       {
         name: "build/Connection.d.ts",

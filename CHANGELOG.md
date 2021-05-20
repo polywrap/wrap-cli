@@ -1,3 +1,26 @@
+# Web3API 0.0.1-prealpha.21
+## Feature
+* Sharing code & types between `query` and `mutation` modules is now possible.
+
+## Bugs
+* Common types found in both `query` and `mutation` schemas are properly consolidated. If types have the same name, but a different structure, and error is thrown.
+
+# Web3API 0.0.1-prealpha.20
+## Bugs
+* Fix the `w3 create app react ...` template project's styling to be responsive.
+
+# Web3API 0.0.1-prealpha.19
+## Features
+* `@web3api/ipfs-plugin-js`: Added options for request timeouts, provider overrides, and fallback providers. Additionally a new method has been added, `resolve`, which allows the caller to try and resolve a given IFPS CID to ensure the document exists.
+
+# Web3API 0.0.1-prealpha.18
+## Features
+* Updated the `app/react` template project to use the latest "Hello World" Web3API published at `ens/helloworld.web3api.eth`.
+
+# Web3API 0.0.1-prealpha.17
+## Bugs
+* `@web3api/ethereum-plugin-js`: Network configurations must be nested within a property in order to allow for the `defaultNetwork` property to be set w/o causing a typing error (for not being of the `ConnectionConfig` type).
+
 # Web3API 0.0.1-prealpha.16
 ## Bugs
 * `@web3api/test-env`: Expose the IPFS node's swarm port (4001).

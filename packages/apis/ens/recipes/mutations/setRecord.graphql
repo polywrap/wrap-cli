@@ -1,0 +1,12 @@
+mutation {
+  setRecord(
+    domain: $domain
+    owner: $owner
+    resolverAddress: $resolverAddress
+    ttl: $ttl
+    registryAddress: $registryAddress
+    connection: {
+      networkNameOrChainId: $network
+    }
+  )
+}

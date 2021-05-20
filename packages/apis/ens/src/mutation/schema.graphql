@@ -1,0 +1,107 @@
+#import { Mutation, Connection } into Ethereum from "w3://ens/ethereum.web3api.eth"
+#import { Query } into UTS46 from "w3://ens/uts46.web3api.eth"
+#import { Query } into SHA3 from "w3://ens/sha3.web3api.eth"
+
+type Mutation {
+  setResolver(
+    domain: String!
+    resolverAddress: String!
+    registryAddress: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  registerDomain(
+    domain: String!
+    registrarAddress: String!
+    registryAddress: String!
+    owner: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  reverseRegisterDomain(
+    domain: String!
+    reverseRegistryAddress: String!
+    owner: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  setName(
+    domain: String!
+    reverseRegistryAddress: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  setAddress(
+    domain: String!
+    address: String!
+    resolverAddress: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  setOwner(
+    domain: String!
+    newOwner: String!
+    registryAddress: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  setSubdomainOwner(
+    subdomain: String!
+    owner: String!
+    registryAddress: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  setRecord(
+    domain: String!
+    owner: String!
+    resolverAddress: String!
+    ttl: String!
+    registryAddress: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  setSubdomainRecord(
+    domain: String!
+    label: String!
+    owner: String!
+    resolverAddress: String!
+    ttl: String!
+    registryAddress: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  setContentHash(
+    domain: String!
+    cid: String!
+    resolverAddress: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  setAddressFromDomain(
+    domain: String!
+    address: String!
+    registryAddress: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  setContentHashFromDomain(
+    domain: String!
+    cid: String!
+    registryAddress: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  deployFIFSRegistrar(
+    registryAddress: String!
+    tld: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  registerSubnodeOwnerWithFIFSRegistrar(
+    label: String!
+    owner: String!
+    fifsRegistrarAddress: String!
+    connection: Ethereum_Connection
+  ): String!
+}

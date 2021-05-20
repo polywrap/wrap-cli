@@ -1,7 +1,0 @@
-mutation setAddress($domain: String!, $address: String!, $resolverAddress: String!) {
-  setAddress(
-    domain: $domain,
-    address: $address,
-    resolverAddress: $resolverAddress
-  )
-}

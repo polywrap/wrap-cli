@@ -1,7 +1,0 @@
-#import { Query } into ApiResolver from "w3/api-resolver"
-
-type Query implements ApiResolver_Query {
-  toAscii(value: String!): String!
-  toUnicode(value: String!): String!
-  convert(value: String!): String!
-}

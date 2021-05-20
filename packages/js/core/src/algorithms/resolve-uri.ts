@@ -110,6 +110,9 @@ export async function resolveUri(
   throw Error(
     `No Web3API found at URI: ${uri.uri}` +
       `\nResolution Path: ${JSON.stringify(uriHistory, null, 2)}` +
-      `\nResolvers Used: ${uriResolverImplementations}`
+      `\nResolvers Used: ${uriResolverImplementations}` +
+      `\nPlugins Found: ${redirects.filter((redirect) => 
+        typeof redirect.to !== "string"
+      ).map((redirect) => redirect.from.uri)}`
   );
 }

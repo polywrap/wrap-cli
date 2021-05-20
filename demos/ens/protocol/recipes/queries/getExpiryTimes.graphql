@@ -1,6 +1,0 @@
-query getExpiryTimes($domain: String!, $registrarAddress: String!) {
-  getExpiryTimes(
-    domain: $domain,
-    registrarAddress: $registrarAddress
-  )
-}

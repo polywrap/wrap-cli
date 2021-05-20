@@ -33,9 +33,10 @@ export {
   ConnectionConfigs,
 };
 
-export type EthereumConfig = ConnectionConfigs & {
+export interface EthereumConfig {
+  networks: ConnectionConfigs;
   defaultNetwork?: string;
-};
+}
 
 export class EthereumPlugin extends Plugin {
   private _connections: Connections;
@@ -43,7 +44,7 @@ export class EthereumPlugin extends Plugin {
 
   constructor(config: EthereumConfig) {
     super();
-    this._connections = Connection.fromConfigs(config);
+    this._connections = Connection.fromConfigs(config.networks);
 
     // Assign the default network (mainnet if not provided)
     if (config.defaultNetwork) {

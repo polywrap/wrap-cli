@@ -1,3 +1,0 @@
-mutation deployFIFSRegistrar($registryAddress: String!, $tld: String!) {
-  deployFIFSRegistrar(registryAddress: $registryAddress, tld: $tld)
-}

@@ -1,0 +1,15 @@
+{
+  "Registry": "0xdEe5E09e2851BF2f0847c9deb48FFC952Fef9012",
+  "Registrar": "0x55cB51dbEC6E7460935Dbeb65D85De4fa9b1f6b3",
+  "Resolver": "0x642072d6Aec4AEF4498E96184073625ed87Ddf1B",
+  "Reverse": "0x0dF7777969315968f0c74103a5e7B50ECcE51569",
+  "Signer": "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1",
+  "CID": "0x64EC88CA00B268E5BA1A35678A1B5316D212F4F366B2477232534A8AECA37F3C",
+  "Domain": "web3api.eth",
+  "Domain2": "record.eth",
+  "Subdomain": "test.web3api.eth",
+  "Label": "label",
+  "Tld": "test.web3api.eth",
+  "Ttl": "0",
+  "AlternateOwner": "0xf9F77f613Ee7D374C954fADA27618E21eA31FB76"
+}

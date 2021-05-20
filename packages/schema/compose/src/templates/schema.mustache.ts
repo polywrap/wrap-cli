@@ -1,5 +1,26 @@
-const template = `{{schema}}
+const template = `
 {{#typeInfo}}
+{{#queryTypes}}
+type {{type}} {{#imports.length}}@imports(
+  types: [
+    {{#imports}}
+    "{{type}}"{{^last}},{{/last}}
+    {{/imports}}
+  ]
+) {{/imports.length}}{
+  {{#methods}}
+  {{name}}{{#arguments.length}}(
+    {{#arguments}}
+    {{name}}: {{toGraphQLType}}
+    {{/arguments}}
+  ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}
+  {{^last}}
+
+  {{/last}}
+  {{/methods}}
+}
+
+{{/queryTypes}}
 {{#objectTypes}}
 type {{type}} {
   {{#properties}}

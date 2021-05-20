@@ -1,0 +1,9 @@
+query {
+  getExpiryTimes(
+    domain: $domain
+    registrarAddress: $registrarAddress
+    connection: {
+      networkNameOrChainId: $network
+    }
+  )
+}

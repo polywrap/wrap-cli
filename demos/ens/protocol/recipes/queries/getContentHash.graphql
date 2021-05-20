@@ -1,6 +1,0 @@
-query getContentHash($domain: String!, $resolverAddress: String!) {
-  getContentHash(
-    domain: $domain,
-    resolverAddress: $resolverAddress
-  )
-}

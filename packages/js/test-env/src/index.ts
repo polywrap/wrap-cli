@@ -41,14 +41,19 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
     {
       from: "w3://ens/ethereum.web3api.eth",
       to: ethereumPlugin({
-        testnet: {
-          provider: ethereum as string,
+        networks: {
+          testnet: {
+            provider: ethereum as string,
+          },
         },
       }),
     },
     {
       from: "w3://ens/ipfs.web3api.eth",
-      to: ipfsPlugin({ provider: ipfs as string }),
+      to: ipfsPlugin({
+        provider: ipfs as string,
+        fallbackProviders: ["https://ipfs.io"],
+      }),
     },
     {
       from: "w3://ens/ens.web3api.eth",
