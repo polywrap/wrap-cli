@@ -1,6 +1,6 @@
 import { intlMsg } from "../intl";
 
-import { execSync, spawn } from "child_process";
+import spawn from "cross-spawn";
 import { GluegunFilesystem } from "gluegun";
 import dns from "dns";
 import url from "url";
@@ -9,7 +9,7 @@ import path from "path";
 
 export function shouldUseYarn(): boolean {
   try {
-    execSync("yarnpkg --version", { stdio: "ignore" });
+    spawn.sync("yarnpkg --version", { stdio: "ignore" });
     return true;
   } catch (e) {
     return false;
@@ -22,7 +22,7 @@ function getProxy() {
   } else {
     try {
       // Trying to read https-proxy from .npmrc
-      const httpsProxy = execSync("npm config get https-proxy")
+      const httpsProxy = spawn.sync("npm config get https-proxy")
         .toString()
         .trim();
       return httpsProxy !== "null" ? httpsProxy : undefined;
@@ -62,7 +62,7 @@ const executeCommand = (
 ): Promise<boolean | { command: string }> => {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, { stdio: "inherit", cwd: root });
-    child.on("close", (code) => {
+    child.on("close", (code: number) => {
       if (code !== 0) {
         // Return the failed command
         reject({
