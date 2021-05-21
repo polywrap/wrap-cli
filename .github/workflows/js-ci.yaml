@@ -90,7 +90,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Read .nvmrc
-        run: for /F "tokens=*" %n IN ('type .nvmrc') DO @(%n\echo '::set-output name=NVMRC::%n')
+        run: iex "echo ::set-output name=NVMRC::$(type .nvmrc)"
         id: nvm
 
       - name: Setup Node.js
