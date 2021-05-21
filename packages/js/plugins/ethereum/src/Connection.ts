@@ -4,7 +4,7 @@ import {
   JsonRpcProvider,
   Web3Provider,
   Networkish,
-  getNetwork
+  getNetwork,
 } from "@ethersproject/providers";
 import { getAddress } from "@ethersproject/address";
 
@@ -43,7 +43,6 @@ export class Connection {
     const connections: Connections = {};
 
     for (const network of Object.keys(configs)) {
-
       // Create the connection
       const connection = new Connection(configs[network]);
 
