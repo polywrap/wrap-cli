@@ -7,8 +7,12 @@ export function writeFileSync(
   options?: fs.WriteFileOptions
 ): void {
   if (typeof data === "string") {
-    data = data.replace(/\r\n|\r|\n/g, os.EOL);
+    data = normalizeLineEndings(data);
   }
 
   fs.writeFileSync(path, data, options);
+}
+
+export function normalizeLineEndings(data: string, eol: string = os.EOL): string {
+  return data.replace(/\r\n|\r|\n/g, eol);
 }

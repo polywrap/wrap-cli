@@ -2,6 +2,7 @@ import path from "path";
 import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
+import { normalizeLineEndings } from "@web3api/os-js";
 
 const HELP = `
 w3 query [options] <recipe-script>
@@ -65,7 +66,7 @@ ${HELP}`);
     expect(queryErr).toBe("");
 
     const constants = require(`${projectRoot}/recipes/constants.json`);
-    expect(clearStyle(output)).toContain(`-----------------------------------
+    expect(clearStyle(normalizeLineEndings(output, "\n"))).toContain(`-----------------------------------
 mutation {
   setData(
     options: {
