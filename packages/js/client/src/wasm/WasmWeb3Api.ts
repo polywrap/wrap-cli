@@ -400,9 +400,7 @@ export class WasmWeb3Api extends Api {
         );
 
         if (error) {
-          throw Error(
-            `ApiResolver.Query.getFile Failed: ${error}`
-          );
+          throw Error(`ApiResolver.Query.getFile Failed: ${error}`);
         }
 
         // If nothing is returned, the module was not found

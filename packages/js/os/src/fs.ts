@@ -13,6 +13,9 @@ export function writeFileSync(
   fs.writeFileSync(path, data, options);
 }
 
-export function normalizeLineEndings(data: string, eol: string = os.EOL): string {
+export function normalizeLineEndings(
+  data: string,
+  eol: string = os.EOL
+): string {
   return data.replace(/\r\n|\r|\n/g, eol);
 }
