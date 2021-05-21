@@ -53,7 +53,7 @@ ${HELP}`);
       args: ["test-env", "down"],
       cwd: projectRoot
     }, w3Cli);
-  }, 30000);
+  }, 60000);
 
   test("Should successfully shut down test environment", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
