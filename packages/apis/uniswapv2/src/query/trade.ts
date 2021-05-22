@@ -23,7 +23,7 @@ import { TradeOptions } from "../utils/TradeOptions";
 import { ETHER } from "../utils/Currency";
 import { copyTokenAmount, wrapIfEther } from "../utils/utils";
 
-import { BigInt } from "as-bigint";
+import { BigInt } from "@web3api/wasm-as";
 import { BigFloat } from "as-bigfloat";
 import { Nullable } from "@web3api/wasm-as";
 

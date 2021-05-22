@@ -1,4 +1,4 @@
-import { Ethereum_Mutation } from "./w3/imported";
+import { Ethereum_Mutation } from "./w3";
 import {
   getChainIdKey,
   Input_exec,
@@ -17,7 +17,7 @@ import {
 import { UNISWAP_ROUTER_CONTRACT } from "../utils/constants";
 import { getSwapMethodAbi } from "./abi";
 
-import { BigInt } from "as-bigint";
+import { BigInt } from "@web3api/wasm-as";
 
 const GAS_LIMIT = "200000";
 const MAX_UINT_256 =

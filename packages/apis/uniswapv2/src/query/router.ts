@@ -3,7 +3,7 @@ import { tradeMaximumAmountIn, tradeMinimumAmountOut } from "./trade";
 import { Input_swapCallParameters, SwapParameters, TradeType } from "./w3";
 import { currencyEquals } from "./token";
 
-import { BigInt } from "as-bigint";
+import { BigInt } from "@web3api/wasm-as";
 
 const ZERO_HEX = "0x0";
 

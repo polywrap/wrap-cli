@@ -1,4 +1,4 @@
-import { ChainId, SHA3_Query, Token, TokenAmount } from "../query/w3";
+import { ChainId, Token, TokenAmount } from "../query/w3";
 import { ETHER } from "./Currency";
 import { currencyEquals } from "../query";
 

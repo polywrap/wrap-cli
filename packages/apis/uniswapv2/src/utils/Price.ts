@@ -4,7 +4,7 @@ import { Rounding, Token, TokenAmount } from "../query/w3";
 import Fraction from "./Fraction";
 import { tokenEquals } from "../query";
 
-import { BigInt } from "as-bigint";
+import { BigInt } from "@web3api/wasm-as";
 
 export default class Price extends Fraction {
   public readonly baseToken: Token; // input i.e. denominator

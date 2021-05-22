@@ -22,7 +22,7 @@ import {
 import { ProcessedPair } from "../utils/ProcessedPair";
 import Price from "../utils/Price";
 
-import { BigInt } from "as-bigint";
+import { BigInt } from "@web3api/wasm-as";
 
 // returns address of pair liquidity token contract
 export function pairAddress(input: Input_pairAddress): string {
