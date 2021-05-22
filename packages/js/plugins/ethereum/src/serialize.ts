@@ -59,10 +59,3 @@ export const serializableTxRequest = (
     request.gasPrice !== undefined ? request.gasPrice.toString() : undefined,
   value: request.value !== undefined ? request.value.toString() : undefined,
 });
-
-export type SerializableTxOverrides = {
-  nonce?: string;
-  gasLimit?: string;
-  gasPrice?: string;
-  value?: string;
-};

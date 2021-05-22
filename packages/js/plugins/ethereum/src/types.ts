@@ -4,3 +4,10 @@ export interface Connection {
   node?: string;
   networkNameOrChainId?: string;
 }
+
+export interface TxOverrides {
+  nonce?: string;
+  gasLimit?: string;
+  gasPrice?: string;
+  value?: string;
+}

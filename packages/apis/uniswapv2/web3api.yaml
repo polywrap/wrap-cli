@@ -13,3 +13,6 @@ query:
   module:
     language: wasm/assemblyscript
     file: ./src/query/index.ts
+import_redirects:
+  - uri: w3://ens/ethereum.web3api.eth
+    schema: ../../js/plugins/ethereum/schema.graphql

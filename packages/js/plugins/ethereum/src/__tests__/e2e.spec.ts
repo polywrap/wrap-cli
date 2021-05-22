@@ -289,11 +289,30 @@ describe("Ethereum Plugin", () => {
         return
       });
       
+      // await client.query<{ callContractMethod: ethers.providers.TransactionReceipt }>({
+      //   uri: "w3://ens/ethereum.web3api.eth",
+      //   query: `
+      //     mutation {
+      //       callContractMethod(address: "${registrarAddress}", method: "function register(bytes32 label, address owner)", args: ["${label}", "${signer}"])
+      //     }
+      //   `,
+      // });
+
       await client.query<{ callContractMethod: ethers.providers.TransactionReceipt }>({
         uri: "w3://ens/ethereum.web3api.eth",
         query: `
           mutation {
-            callContractMethod(address: "${registrarAddress}", method: "function register(bytes32 label, address owner)", args: ["${label}", "${signer}"])
+            callContractMethod(
+              address: "${registrarAddress}", 
+              method: "function register(bytes32 label, address owner)", 
+              args: ["${label}", "${signer}"]
+              txOverrides: {
+                value: null,
+                nonce: null,
+                gasPrice: null,
+                gasLimit: 200000
+              }
+            )
           }
         `,
       });
