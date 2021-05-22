@@ -12,6 +12,7 @@ import {
   ConnectionConfig,
   ConnectionConfigs,
 } from "./Connection";
+import { SerializableTxRequest } from "./serialize";
 
 import {
   Client,
@@ -20,7 +21,10 @@ import {
   PluginModules,
   PluginFactory,
 } from "@web3api/core-js";
-import { BigNumber, ethers, providers } from "ethers";
+import { ethers } from "ethers";
+import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
+import { Log } from "@ethersproject/abstract-provider";
+import { defaultAbiCoder } from "ethers/lib/utils";
 
 // Export all types that are nested inside of EthereumConfig.
 // This is required for the extractPluginConfigs.ts script.
@@ -37,6 +41,10 @@ export interface EthereumConfig {
   networks: ConnectionConfigs;
   defaultNetwork?: string;
 }
+
+export type SendOptions = Partial<{
+  wait: boolean;
+}>;
 
 export class EthereumPlugin extends Plugin {
   private _connections: Connections;
@@ -84,6 +92,7 @@ export class EthereumPlugin extends Plugin {
     const signer = connection.getSigner();
     const factory = new ethers.ContractFactory(abi, bytecode, signer);
     const contract = await factory.deploy(...args);
+
     await contract.deployTransaction.wait();
     return contract.address;
   }
@@ -101,7 +110,7 @@ export class EthereumPlugin extends Plugin {
     return res.toString();
   }
 
-  public async sendTransaction(
+  public async callContractMethod(
     address: Address,
     method: string,
     args: string[],
@@ -109,7 +118,7 @@ export class EthereumPlugin extends Plugin {
     gasLimit?: string,
     gasPrice?: string,
     connectionOverride?: ConnectionOverride
-  ): Promise<string> {
+  ): Promise<ethers.providers.TransactionResponse> {
     const connection = await this.getConnection(connectionOverride);
     const contract = connection.getContract(address, [method]);
     const parsedArgs: (string | string[])[] = [];
@@ -122,19 +131,27 @@ export class EthereumPlugin extends Plugin {
     }
 
     const funcs = Object.keys(contract.interface.functions);
-    const signer = connection.getSigner();
+    const res: ethers.providers.TransactionResponse = await contract[funcs[0]](
+      ...args
+    );
 
-    const txData = contract.interface.encodeFunctionData(funcs[0], parsedArgs);
-    const txRequest: providers.TransactionRequest = {
-      to: contract.address,
-      data: txData,
-      gasLimit: gasLimit ? BigNumber.from(gasLimit) : undefined,
-      gasPrice: gasPrice ? BigNumber.from(gasPrice) : undefined,
-      value: value ? BigNumber.from(value) : undefined,
-    };
+    return res;
+  }
 
-    const tx = await signer.sendTransaction(txRequest);
-    return tx.hash;
+  public async callContractMethodAndWait(
+    address: Address,
+    method: string,
+    args: string[],
+    connectionOverride?: ConnectionOverride
+  ): Promise<ethers.providers.TransactionReceipt> {
+    const response = await this.callContractMethod(
+      address,
+      method,
+      args,
+      connectionOverride
+    );
+
+    return response.wait();
   }
 
   public async getConnection(
@@ -188,6 +205,152 @@ export class EthereumPlugin extends Plugin {
     }
 
     return connection;
+  }
+
+  public async estimateContractCallGas(
+    address: Address,
+    method: string,
+    args: string[],
+    connectionOverride?: ConnectionOverride
+  ): Promise<string> {
+    const connection = await this.getConnection(connectionOverride);
+    const contract = connection.getContract(address, [method]);
+    const funcs = Object.keys(contract.interface.functions);
+    const gas = await contract.estimateGas[funcs[0]](...args);
+
+    return gas.toString();
+  }
+
+  public async sendTransaction(
+    tx: SerializableTxRequest,
+    connectionOverride?: ConnectionOverride
+  ): Promise<ethers.providers.TransactionResponse> {
+    const connection = await this.getConnection(connectionOverride);
+    const signer = connection.getSigner();
+
+    return await signer.sendTransaction(tx);
+  }
+
+  public async awaitTransaction(
+    txHash: string,
+    confirmations: number,
+    timeout: number,
+    connectionOverride?: ConnectionOverride
+  ): Promise<ethers.providers.TransactionReceipt> {
+    const connection = await this.getConnection(connectionOverride);
+    const provider = connection.getProvider();
+
+    return await provider.waitForTransaction(txHash, confirmations, timeout);
+  }
+
+  public async sendTransactionAndWait(
+    tx: SerializableTxRequest,
+    connectionOverride?: ConnectionOverride
+  ): Promise<ethers.providers.TransactionReceipt> {
+    const res = await this.sendTransaction(tx, connectionOverride);
+    return await res.wait();
+  }
+
+  public async sendRPC(
+    method: string,
+    params: string[],
+    connectionOverride?: ConnectionOverride
+  ): Promise<unknown> {
+    const connection = await this.getConnection(connectionOverride);
+    const provider = connection.getSigner().provider;
+
+    if (
+      provider instanceof JsonRpcProvider ||
+      provider instanceof Web3Provider
+    ) {
+      const response = await provider.send(method, params);
+      return response;
+    } else {
+      throw new Error("Provider is not compatible with method");
+    }
+  }
+
+  public async signMessage(
+    message: string,
+    connectionOverride?: ConnectionOverride
+  ): Promise<string> {
+    const connection = await this.getConnection(connectionOverride);
+    const messageHash = ethers.utils.id(message);
+    const messageHashBytes = ethers.utils.arrayify(messageHash);
+
+    return await connection.getSigner().signMessage(messageHashBytes);
+  }
+
+  public encodeParams(types: string[], values: string[]): string {
+    return defaultAbiCoder.encode(types, values);
+  }
+
+  public checkAddress(address: string): boolean {
+    try {
+      // If the address is all upper-case, convert to lower case
+      if (address.indexOf("0X") > -1) {
+        address = address.toLowerCase();
+      }
+
+      const result = ethers.utils.getAddress(address);
+      if (!result) {
+        throw new Error("Invalid address");
+      }
+
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  public fromWei(amount: string): string {
+    const etherAmount = ethers.utils.formatEther(amount.toString());
+    return etherAmount.toString();
+  }
+
+  public toWei(amount: string): string {
+    const weiAmount = ethers.utils.parseEther(amount.toString());
+    return weiAmount.toString();
+  }
+
+  public async waitForEvent(
+    address: string,
+    event: string,
+    args: string[],
+    timeout = 60000,
+    connectionOverride?: ConnectionOverride
+  ): Promise<{
+    data: string;
+    address: string;
+    log: Log;
+  }> {
+    const connection = await this.getConnection(connectionOverride);
+    const contract = connection.getContract(address, [event]);
+    const events = Object.keys(contract.interface.events);
+    const filter = contract.filters[events.slice(-1)[0]](...args);
+
+    return Promise.race([
+      new Promise((resolve) => {
+        contract.once(filter, (data: string, address: string, log: Log) => {
+          resolve({
+            data,
+            address,
+            log,
+          });
+        });
+      }),
+      new Promise((_, reject) => {
+        setTimeout(function () {
+          reject(
+            `Waiting for event "${event}" on contract "${address}" timed out`
+          );
+        }, timeout);
+      }),
+    ]) as Promise<{
+      data: string;
+      address: string;
+      log: Log;
+    }>;
   }
 }
 

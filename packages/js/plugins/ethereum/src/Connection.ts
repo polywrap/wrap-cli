@@ -71,7 +71,7 @@ export class Connection {
     if (typeof provider === "string") {
       this._client = (ethers.providers.getDefaultProvider(
         provider
-      ) as unknown) as JsonRpcProvider;
+      ) as unknown) as JsonRpcProvider | WebSocketProvider;
     } else {
       if ((provider as JsonRpcProvider).anyNetwork !== undefined) {
         this._client = provider as JsonRpcProvider;
