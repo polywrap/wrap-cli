@@ -114,9 +114,6 @@ export class EthereumPlugin extends Plugin {
     address: Address,
     method: string,
     args: string[],
-    value?: string,
-    gasLimit?: string,
-    gasPrice?: string,
     connectionOverride?: ConnectionOverride
   ): Promise<ethers.providers.TransactionResponse> {
     const connection = await this.getConnection(connectionOverride);

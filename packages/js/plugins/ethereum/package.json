@@ -34,7 +34,7 @@
     "typescript": "4.0.7",
     "ganache-core": "2.13.2",
     "eth-ens-namehash": "2.0.8",
-    "js-sha3": "0.8.0"
+    "@web3api/client-js": "0.0.1-prealpha.22"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {

@@ -1,6 +1,6 @@
 type Log {
   blockNumber: Int!
-  blockHash: string!
+  blockHash: String!
   transactionIndex: Int!
   removed: Boolean!
   address: String!
@@ -39,14 +39,14 @@ type TxResponse {
 }
 
 type TxRequest {
-  to: String;
-  from: String;
-  nonce: String;
-  gasLimit: String;
-  gasPrice: String;
-  data: String;
-  value: String;
-  chainId: Int;
+  to: String
+  from: String
+  nonce: String
+  gasLimit: String
+  gasPrice: String
+  data: String
+  value: String
+  chainId: Int
 }
 
 type Query {
@@ -120,9 +120,6 @@ type Mutation {
     address: String!
     method: String!
     args: [String!]
-    value: String
-    gasLimit: String
-    gasPrice: String
     connection: Connection
   ): TxResponse!
 

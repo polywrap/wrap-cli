@@ -4,6 +4,7 @@ import {
   JsonRpcProvider,
   Web3Provider,
   Networkish,
+  WebSocketProvider,
 } from "@ethersproject/providers";
 import { getAddress } from "@ethersproject/address";
 
