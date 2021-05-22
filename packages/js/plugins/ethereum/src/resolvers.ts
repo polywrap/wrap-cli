@@ -1,5 +1,6 @@
 import { EthereumPlugin } from ".";
 import {
+  SerializableTxOverrides,
   serializableTxReceipt,
   SerializableTxRequest,
   serializableTxResponse,
@@ -14,12 +15,14 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
     method: string;
     args?: string[];
     connection?: ConnectionOverride;
+    txOverrides?: SerializableTxOverrides;
   }) => {
     const response = await ethereum.callContractMethod(
       input.address,
       input.method,
       input.args || [],
-      input.connection
+      input.connection,
+      input.txOverrides
     );
 
     return serializableTxResponse(response);
@@ -30,12 +33,14 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
     method: string;
     args?: string[];
     connection?: ConnectionOverride;
+    txOverrides?: SerializableTxOverrides;
   }) => {
     const response = await ethereum.callContractMethodAndWait(
       input.address,
       input.method,
       input.args || [],
-      input.connection
+      input.connection,
+      input.txOverrides
     );
 
     return serializableTxReceipt(response);
