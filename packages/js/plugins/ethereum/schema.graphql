@@ -49,6 +49,13 @@ type TxRequest {
   chainId: Int
 }
 
+type TxOverrides {
+  nonce: String
+  gasLimit: String
+  gasPrice: String
+  value: String
+}
+
 type Query {
   callView(
     address: String!
@@ -121,6 +128,7 @@ type Mutation {
     method: String!
     args: [String!]
     connection: Connection
+    txOverrides: TxOverrides
   ): TxResponse!
 
   callContractMethodAndWait(
@@ -128,6 +136,7 @@ type Mutation {
     method: String!
     args: [String!]
     connection: Connection
+    txOverrides: TxOverrides
   ): TxReceipt!
 
   deployContract(

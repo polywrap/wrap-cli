@@ -12,7 +12,7 @@ import {
   ConnectionConfig,
   ConnectionConfigs,
 } from "./Connection";
-import { SerializableTxRequest } from "./serialize";
+import { SerializableTxOverrides, SerializableTxRequest } from "./serialize";
 
 import {
   Client,
@@ -114,22 +114,20 @@ export class EthereumPlugin extends Plugin {
     address: Address,
     method: string,
     args: string[],
-    connectionOverride?: ConnectionOverride
+    connectionOverride?: ConnectionOverride,
+    txOverrides?: SerializableTxOverrides
   ): Promise<ethers.providers.TransactionResponse> {
     const connection = await this.getConnection(connectionOverride);
     const contract = connection.getContract(address, [method]);
-    const parsedArgs: (string | string[])[] = [];
-    for (const arg of args) {
-      try {
-        parsedArgs.push(JSON.parse(arg));
-      } catch {
-        parsedArgs.push(arg);
-      }
-    }
-
     const funcs = Object.keys(contract.interface.functions);
     const res: ethers.providers.TransactionResponse = await contract[funcs[0]](
-      ...args
+      ...args,
+      {
+        gasPrice: txOverrides?.gasPrice,
+        gasLimit: txOverrides?.gasLimit,
+        value: txOverrides?.value,
+        none: txOverrides?.nonce,
+      }
     );
 
     return res;
@@ -139,13 +137,15 @@ export class EthereumPlugin extends Plugin {
     address: Address,
     method: string,
     args: string[],
-    connectionOverride?: ConnectionOverride
+    connectionOverride?: ConnectionOverride,
+    txOverrides?: SerializableTxOverrides
   ): Promise<ethers.providers.TransactionReceipt> {
     const response = await this.callContractMethod(
       address,
       method,
       args,
-      connectionOverride
+      connectionOverride,
+      txOverrides
     );
 
     return response.wait();
