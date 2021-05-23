@@ -1,11 +1,10 @@
 import { EthereumPlugin } from ".";
 import {
-  SerializableTxOverrides,
   serializableTxReceipt,
   SerializableTxRequest,
   serializableTxResponse,
 } from "./serialize";
-import { Connection as ConnectionOverride } from "./types";
+import { Connection as ConnectionOverride, TxOverrides } from "./types";
 
 import { PluginModule } from "@web3api/core-js";
 
@@ -15,7 +14,7 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
     method: string;
     args?: string[];
     connection?: ConnectionOverride;
-    txOverrides?: SerializableTxOverrides;
+    txOverrides?: TxOverrides;
   }) => {
     const response = await ethereum.callContractMethod(
       input.address,
@@ -33,7 +32,7 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
     method: string;
     args?: string[];
     connection?: ConnectionOverride;
-    txOverrides?: SerializableTxOverrides;
+    txOverrides?: TxOverrides;
   }) => {
     const response = await ethereum.callContractMethodAndWait(
       input.address,
