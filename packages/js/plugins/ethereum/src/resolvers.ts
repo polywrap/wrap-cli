@@ -216,12 +216,14 @@ export const query = (ethereum: EthereumPlugin): PluginModule => ({
     method: string;
     args: string[];
     connection?: ConnectionOverride;
+    txOverrides?: TxOverrides;
   }) => {
     return await ethereum.estimateContractCallGas(
       input.address,
       input.method,
       input.args,
-      input.connection
+      input.connection,
+      input.txOverrides
     );
   },
 });

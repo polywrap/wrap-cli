@@ -93,6 +93,7 @@ type Query {
     method: String!
     args: [String!]!
     connection: Connection
+    txOverrides: TxOverrides
   ): String!
 
   checkAddress (address: String!): String!

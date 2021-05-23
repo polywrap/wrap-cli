@@ -231,12 +231,18 @@ export class EthereumPlugin extends Plugin {
     address: Address,
     method: string,
     args: string[],
-    connectionOverride?: ConnectionOverride
+    connectionOverride?: ConnectionOverride,
+    txOverrides?: TxOverrides
   ): Promise<string> {
     const connection = await this.getConnection(connectionOverride);
     const contract = connection.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
-    const gas = await contract.estimateGas[funcs[0]](...args);
+    const gas = await contract.estimateGas[funcs[0]](...args, {
+      gasPrice: txOverrides?.gasPrice,
+      gasLimit: txOverrides?.gasLimit,
+      value: txOverrides?.value,
+      none: txOverrides?.nonce,
+    });
 
     return gas.toString();
   }
