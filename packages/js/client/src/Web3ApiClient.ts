@@ -16,10 +16,10 @@ import {
   resolveUri,
   InvokeApiOptions,
   InvokeApiResult,
-  Manifest,
+  Web3ApiManifest,
   sanitizeUriRedirects,
 } from "@web3api/core-js";
-import { Tracer } from "@web3api/tracing";
+import { Tracer } from "@web3api/tracing-js";
 
 export interface ClientConfig<TUri = string> {
   redirects?: UriRedirect<TUri>[];
@@ -198,7 +198,7 @@ export class Web3ApiClient implements Client {
             uri,
             this,
             (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
-            (uri: Uri, manifest: Manifest, apiResolver: Uri) =>
+            (uri: Uri, manifest: Web3ApiManifest, apiResolver: Uri) =>
               new WasmWeb3Api(uri, manifest, apiResolver)
           );
 

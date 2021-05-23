@@ -3,7 +3,7 @@ import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { loggerPlugin } from "@web3api/logger-plugin-js";
-import { Tracer } from "@web3api/tracing";
+import { Tracer } from "@web3api/tracing-js";
 
 export const getDefaultRedirects = Tracer.traceFunc(
   "client-js: getDefaultRedirects",

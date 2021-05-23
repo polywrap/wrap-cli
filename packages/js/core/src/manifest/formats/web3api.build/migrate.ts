@@ -13,7 +13,7 @@ import {
 } from ".";
 
 
-import { Tracer } from "@web3api/tracing";
+import { Tracer } from "@web3api/tracing-js";
 
 type Migrator = {
   [key in BuildManifestFormats]?: (m: AnyBuildManifest) => BuildManifest;

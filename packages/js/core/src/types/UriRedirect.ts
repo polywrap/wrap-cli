@@ -1,6 +1,6 @@
 import { PluginPackage, Uri } from ".";
 
-import { Tracer } from "@web3api/tracing";
+import { Tracer } from "@web3api/tracing-js";
 
 export interface UriRedirect<TUri = string> {
   /** Redirect from this URI */

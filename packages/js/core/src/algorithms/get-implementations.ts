@@ -1,6 +1,6 @@
 import { Uri, UriRedirect } from "../types";
 
-import { Tracer } from "@web3api/tracing";
+import { Tracer } from "@web3api/tracing-js";
 
 export const getImplementations = Tracer.traceFunc(
   "core: getImplementations",

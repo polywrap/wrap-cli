@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@web3api/manifest-schemas": "0.0.1-prealpha.21",
-    "@web3api/tracing": "0.0.1-prealpha.21",
+    "@web3api/tracing-js": "0.0.1-prealpha.21",
     "graphql": "15.5.0",
     "graphql-tag": "2.10.4",
     "js-yaml": "3.14.0",

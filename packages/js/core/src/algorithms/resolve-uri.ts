@@ -1,9 +1,9 @@
 import { Api, Client, Uri, PluginPackage } from "../types";
-import { Manifest, deserializeManifest } from "../manifest";
+import { Web3ApiManifest, deserializeWeb3ApiManifest } from "../manifest";
 import * as ApiResolver from "../apis/api-resolver";
 import { getImplementations } from "./get-implementations";
 
-import { Tracer } from "@web3api/tracing";
+import { Tracer } from "@web3api/tracing-js";
 
 export const resolveUri = Tracer.traceFunc(
   "core: resolveUri",
@@ -11,7 +11,7 @@ export const resolveUri = Tracer.traceFunc(
     uri: Uri,
     client: Client,
     createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
-    createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api,
+    createApi: (uri: Uri, manifest: Web3ApiManifest, apiResolver: Uri) => Api,
     noValidate?: boolean
   ): Promise<Api> => {
     let resolvedUri = uri;
@@ -141,11 +141,11 @@ export const resolveUri = Tracer.traceFunc(
       } else if (manifestStr) {
         // We've found our manifest at the current URI resolver
         // meaning the URI resolver can also be used as an API resolver
-        const manifest = deserializeManifest(manifestStr, { noValidate });
+        const manifest = deserializeWeb3ApiManifest(manifestStr, { noValidate });
 
         return Tracer.traceFunc(
           "resolveUri: createApi",
-          (uri: Uri, manifest: Manifest, apiResolver: Uri) =>
+          (uri: Uri, manifest: Web3ApiManifest, apiResolver: Uri) =>
             createApi(uri, manifest, apiResolver)
         )(resolvedUri, manifest, uriResolver);
       }

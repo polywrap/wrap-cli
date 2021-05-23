@@ -22,10 +22,11 @@ async function generateFormatTypes() {
     const formatModules = [];
 
     // Get all JSON schemas for this format type (v1, v2, etc)
-    const formatSchemas = fs.readdirSync(formatTypeDir);
+    const formatSchemaFiles = fs.readdirSync(formatTypeDir);
+    const formatSchemas = [];
 
-    for (let k = 0; k < formatSchemas.length; ++k) {
-      const formatSchemaName = formatSchemas[k];
+    for (let k = 0; k < formatSchemaFiles.length; ++k) {
+      const formatSchemaName = formatSchemaFiles[k];
       const formatVersion = formatSchemaName.replace(".json", "");
       const formatSchemaPath = path.join(formatTypeDir, formatSchemaName);
 
@@ -34,6 +35,8 @@ async function generateFormatTypes() {
         const formatSchema = JSON.parse(
           fs.readFileSync(formatSchemaPath, { encoding: "utf-8" })
         );
+
+        formatSchemas.push(formatSchema);
 
         // Convert it to a TypeScript interface
         const tsFile = await SchemaToTypescript.compile(
@@ -111,6 +114,46 @@ async function generateFormatTypes() {
     };
 
     renderTemplate("deserialize", deserializeContext);
+
+    // Generate a validate.ts file that validates the manifest against the JSON schema
+    const validateContext = { };
+    validateContext.formats = formatModules.map((module) => {
+      return {
+        type: module.interface,
+        version: module.version,
+        tsVersion: versionToTs(module.version),
+        dir: formatTypeName
+      };
+    });
+    validateContext.latest = lastItem(validateContext.formats);
+
+    // Extract all validators
+    validateContext.validators = [];
+
+    for (let k = 0; k < formatSchemas.length; ++k) {
+      const formatSchema = formatSchemas[k];
+
+      const getValidator = (obj) => {
+        if (typeof obj !== "object") {
+          return;
+        }
+
+        if (obj.format && typeof obj.format === "string") {
+          if (validateContext.validators.indexOf(obj.format) === -1) {
+            validateContext.validators.push(obj.format);
+          }
+        }
+
+        const keys = Object.keys(obj);
+        for (let j = 0; j < keys.length; ++j) {
+          getValidator(obj[keys[j]]);
+        }
+      }
+
+      getValidator(formatSchema);
+    }
+
+    renderTemplate("validate", validateContext);
   }
 
   return Promise.resolve();
