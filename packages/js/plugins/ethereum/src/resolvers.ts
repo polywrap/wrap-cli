@@ -45,6 +45,24 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
     return serializableTxReceipt(response);
   },
 
+  callContractMethodStatic: async (input: {
+    address: string;
+    method: string;
+    args?: string[];
+    connection?: ConnectionOverride;
+    txOverrides?: TxOverrides;
+  }) => {
+    const exception = await ethereum.callContractMethodStatic(
+      input.address,
+      input.method,
+      input.args || [],
+      input.connection,
+      input.txOverrides
+    );
+
+    return exception;
+  },
+
   sendTransaction: async (input: {
     tx: SerializableTxRequest;
     connection?: ConnectionOverride;

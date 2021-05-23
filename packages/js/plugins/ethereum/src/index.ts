@@ -151,6 +151,29 @@ export class EthereumPlugin extends Plugin {
     return response.wait();
   }
 
+  public async callContractMethodStatic(
+    address: Address,
+    method: string,
+    args: string[],
+    connectionOverride?: ConnectionOverride,
+    txOverrides?: TxOverrides
+  ): Promise<string> {
+    const connection = await this.getConnection(connectionOverride);
+    const contract = connection.getContract(address, [method]);
+    const funcs = Object.keys(contract.interface.functions);
+    try {
+      await contract.callStatic[funcs[0]](...args, {
+        gasPrice: txOverrides?.gasPrice,
+        gasLimit: txOverrides?.gasLimit,
+        value: txOverrides?.value,
+        none: txOverrides?.nonce,
+      });
+    } catch (e) {
+      return e.reason;
+    }
+    return "";
+  }
+
   public async getConnection(
     connectionOverride?: ConnectionOverride
   ): Promise<Connection> {
