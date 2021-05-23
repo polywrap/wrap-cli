@@ -22,7 +22,7 @@ import {
 import { UNISWAP_ROUTER_CONTRACT } from "../utils/constants";
 import { getSwapMethodAbi } from "./abi";
 
-import { BigInt } from "@web3api/wasm-as";
+import { BigInt, Nullable } from "@web3api/wasm-as";
 
 const MAX_UINT_256 =
   "115792089237316195423570985008687907853269984665640564039457584007913129639935";
@@ -43,7 +43,7 @@ export function execCall(input: Input_execCall): Ethereum_TxReceipt {
   const chainId: ChainId = input.chainId;
   const gasEstimate: string = estimateGas({
     parameters: swapParameters,
-    chainId: chainId,
+    chainId: Nullable.fromValue(chainId),
   });
   // gasLimit is based on uniswap interface calculateGasMargin(value) method
   const gasLimit: string = BigInt.fromString(gasEstimate)

@@ -106,7 +106,7 @@ type Query {
 
   estimateGas(
     parameters: SwapParameters!
-    chainId: ChainId!
+    chainId: ChainId
   ): String!
 
   # Trade

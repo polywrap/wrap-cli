@@ -13,7 +13,7 @@ import { currencyEquals } from "./token";
 import { UNISWAP_ROUTER_CONTRACT } from "../utils/constants";
 import { getSwapMethodAbi } from "../mutation/abi";
 
-import { BigInt } from "@web3api/wasm-as";
+import { BigInt, Nullable } from "@web3api/wasm-as";
 
 const ZERO_HEX = "0x0";
 
@@ -134,14 +134,16 @@ export function swapCallParameters(
 
 export function estimateGas(input: Input_estimateGas): string {
   const swapParameters: SwapParameters = input.parameters;
-  const chainId: ChainId = input.chainId;
+  const chainId: Nullable<ChainId> = input.chainId;
   return Ethereum_Query.estimateContractCallGas({
     address: UNISWAP_ROUTER_CONTRACT,
     method: getSwapMethodAbi(swapParameters.methodName),
     args: swapParameters.args,
-    connection: {
-      node: null,
-      networkNameOrChainId: getChainIdKey(chainId),
-    },
+    connection: chainId.isNull
+      ? {
+          node: null,
+          networkNameOrChainId: getChainIdKey(chainId.value),
+        }
+      : null,
   });
 }
