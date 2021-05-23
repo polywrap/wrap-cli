@@ -1,17 +1,6 @@
 #import { Query } into Ethereum from "w3://ens/ethereum.web3api.eth"
 #import { Query } into SHA3 from "w3://ens/sha3.web3api.eth"
-#import { ChainId, TradeType, Rounding, Currency, Token, TokenAmount, TradeOptions, Pair, Route, Trade } from "../common/schema.graphql"
-
-type BestTradeOptions {
-  maxNumResults: UInt32
-  maxHops: UInt32
-}
-
-type SwapParameters {
-  methodName: String!
-  args: [String!]!
-  value: String!
-}
+#import { ChainId, TradeType, Rounding, Currency, Token, TokenAmount, TradeOptions, Pair, Route, Trade, BestTradeOptions, SwapParameters } from "../common/schema.graphql"
 
 type Query {
 

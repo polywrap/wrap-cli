@@ -1,5 +1,5 @@
 #import { Mutation, TxReceipt } into Ethereum from "w3://ens/ethereum.web3api.eth"
-#import { ChainId, Currency, Route, Trade, Pair, TradeOptions } from "../common/schema.graphql"
+#import { ChainId, Currency, Route, Trade, Pair, TradeOptions, SwapParameters } from "../common/schema.graphql"
 
 type Mutation {
   swap (
@@ -13,6 +13,11 @@ type Mutation {
   exec(
     trade: Trade!
     tradeOptions: TradeOptions!
+  ): Ethereum_TxReceipt!
+
+  execCall(
+    parameters: SwapParameters!
+    chainId: ChainId!
   ): Ethereum_TxReceipt!
 
   approve(

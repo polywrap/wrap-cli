@@ -1,4 +1,9 @@
-import { Ethereum_Mutation, Ethereum_TxReceipt } from "./w3";
+import {
+  ChainId,
+  Ethereum_Mutation,
+  Ethereum_TxReceipt,
+  Input_execCall,
+} from "./w3";
 import {
   getChainIdKey,
   Input_exec,
@@ -6,6 +11,7 @@ import {
   Input_swap,
   Trade,
   TradeType,
+  SwapParameters,
 } from "./w3";
 import {
   bestTradeExactIn,
@@ -28,15 +34,22 @@ export function exec(input: Input_exec): Ethereum_TxReceipt {
     trade: input.trade,
     tradeOptions: input.tradeOptions,
   });
+  return execCall({
+    parameters: swapParameters,
+    chainId: input.trade.inputAmount.token.chainId,
+  });
+}
+
+export function execCall(input: Input_execCall): Ethereum_TxReceipt {
+  const swapParameters: SwapParameters = input.parameters;
+  const chainId: ChainId = input.chainId;
   const gasEstimate: string = Ethereum_Query.estimateContractCallGas({
     address: UNISWAP_ROUTER_CONTRACT,
     method: getSwapMethodAbi(swapParameters.methodName),
     args: swapParameters.args,
     connection: {
       node: null,
-      networkNameOrChainId: getChainIdKey(
-        input.trade.inputAmount.token.chainId
-      ),
+      networkNameOrChainId: getChainIdKey(chainId),
     },
   });
   // gasLimit is based on uniswap interface calculateGasMargin(value) method
@@ -52,9 +65,7 @@ export function exec(input: Input_exec): Ethereum_TxReceipt {
       args: swapParameters.args,
       connection: {
         node: null,
-        networkNameOrChainId: getChainIdKey(
-          input.trade.inputAmount.token.chainId
-        ),
+        networkNameOrChainId: getChainIdKey(chainId),
       },
       txOverrides: {
         value: swapParameters.value,

@@ -61,3 +61,14 @@ type Trade {
   outputAmount: TokenAmount!
   tradeType: TradeType!
 }
+
+type BestTradeOptions {
+  maxNumResults: UInt32
+  maxHops: UInt32
+}
+
+type SwapParameters {
+  methodName: String!
+  args: [String!]!
+  value: String!
+}
