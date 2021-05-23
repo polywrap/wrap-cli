@@ -4355,6 +4355,11 @@ arrify@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-2.0.1.tgz#c9655e9331e0abcd588d2a7cad7e9956f66701fa"
 
+as-bigint@0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/as-bigint/-/as-bigint-0.2.4.tgz#dce1335765e592fcb3e7923a70643ff42e7b1663"
+  integrity sha512-7RSlYlk5EY+p2YUuzDQN1nyeku4Q+W1fFm2QeHNlj5kFhfBVVaecOsWxRRcL9L3NUdTUbyj4IuOOWZMeC9LXgg==
+
 asap@^2.0.0, asap@~2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"

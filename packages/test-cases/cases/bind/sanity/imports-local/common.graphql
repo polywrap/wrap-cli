@@ -12,6 +12,8 @@ type CustomType {
   i16: Int16!
   i32: Int32!
   i64: Int64!
+  bigint: BigInt!
+  optBigint: BigInt
   bytes: Bytes!
   optBytes: Bytes
   boolean: Boolean!
