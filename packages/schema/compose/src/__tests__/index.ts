@@ -5,6 +5,7 @@ import { readdirSync, readFileSync, Dirent, existsSync } from "fs";
 
 import { TypeInfo } from "@web3api/schema-parse";
 import { GetPathToComposeTestFiles } from "@web3api/test-cases"
+import { normalizeLineEndings } from "@web3api/os-js";
 
 const root = GetPathToComposeTestFiles();
 
@@ -45,7 +46,10 @@ export function fetchTestCases(): TestCases {
       const filePath = getFilePath(subpath, absolute);
 
       if (existsSync(filePath)) {
-        return readFileSync(filePath, { encoding: "utf-8" });
+        return normalizeLineEndings(
+          readFileSync(filePath, { encoding: "utf-8" }),
+          "\n"
+        );
       } else {
         return undefined;
       }

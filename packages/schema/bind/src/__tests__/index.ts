@@ -4,7 +4,8 @@ import fs from "fs";
 import path from "path";
 import { TypeInfo } from "@web3api/schema-parse";
 import { composeSchema, ComposerFilter } from "@web3api/schema-compose";
-import { GetPathToBindTestFiles } from "@web3api/test-cases"
+import { GetPathToBindTestFiles } from "@web3api/test-cases";
+import { normalizeLineEndings } from "@web3api/os-js";
 
 const root = GetPathToBindTestFiles();
 
@@ -36,7 +37,10 @@ export function fetchTestCases(): TestCases {
     file: string
   ): string | undefined => {
     if (fs.existsSync(file)) {
-      return fs.readFileSync(file, { encoding: "utf-8" });
+      return normalizeLineEndings(
+        fs.readFileSync(file, { encoding: "utf-8" }),
+        "\n"
+      );
     } else {
       return undefined;
     }

@@ -16,12 +16,12 @@
     "web3api-worker-install": "bin/web3api-worker-install"
   },
   "scripts": {
-    "build": "rimraf ./build && tsc --project tsconfig.build.json && npx webpack --config webpack.config.js",
+    "build": "rimraf ./build && tsc --project tsconfig.build.json && npx webpack-cli --config webpack.config.js",
     "prebuild": "ts-node ./scripts/extractPluginConfigs.ts",
     "lint": "eslint --color --ext .ts src/",
-    "test": "TEST=true jest --passWithNoTests --runInBand --verbose",
-    "test:ci": "TEST=true jest --passWithNoTests --runInBand --verbose",
-    "test:watch": "TEST=true jest --watch --passWithNoTests --verbose"
+    "test": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose",
+    "test:ci": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose",
+    "test:watch": "cross-env TEST=true jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
     "@msgpack/msgpack": "2.3.0",
@@ -43,6 +43,8 @@
     "@web3api/cli": "0.0.1-prealpha.22",
     "@web3api/test-cases": "0.0.1-prealpha.22",
     "@web3api/test-env-js": "0.0.1-prealpha.22",
+    "@web3api/os-js": "0.0.1-prealpha.22",
+    "cross-env": "7.0.3",
     "jest": "26.6.3",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",

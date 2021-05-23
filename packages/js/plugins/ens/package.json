@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@web3api/core-js": "0.0.1-prealpha.22",
+    "@ethersproject/address": "5.0.7",
     "ethers": "5.0.7"
   },
   "devDependencies": {

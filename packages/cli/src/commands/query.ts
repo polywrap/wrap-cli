@@ -195,13 +195,11 @@ export default {
           for (const error of errors) {
             print.error("-----------------------------------");
             print.fancy(error.message);
+            print.fancy(error.stack || "");
             print.error("-----------------------------------");
           }
         }
       }
     }
-
-    // Setup Web3API
-    // Iterate through recipe and execute it
   },
 };
