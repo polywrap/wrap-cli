@@ -126,6 +126,14 @@ type Query {
     timeout: Int
     connection: Connection
   ): String!
+  
+  callContractMethodStatic(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Connection
+    txOverrides: TxOverrides
+  ): String!
 }
 
 type Mutation {
