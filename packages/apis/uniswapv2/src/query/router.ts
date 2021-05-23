@@ -137,14 +137,6 @@ export function swapCallParameters(
 export function estimateGas(input: Input_estimateGas): string {
   const swapParameters: SwapParameters = input.parameters;
   const chainId: Nullable<ChainId> = input.chainId;
-  const txOverrides: TxOverrides =
-    input.txOverrides == null
-      ? { gasLimit: null, gasPrice: null }
-      : input.txOverrides!;
-  const gasLimit: string | null =
-    txOverrides.gasLimit === null ? null : txOverrides.gasLimit!.toString();
-  const gasPrice: string | null =
-    txOverrides.gasPrice === null ? null : txOverrides.gasPrice!.toString();
   return Ethereum_Query.estimateContractCallGas({
     address: UNISWAP_ROUTER_CONTRACT,
     method: getSwapMethodAbi(swapParameters.methodName),
@@ -157,8 +149,8 @@ export function estimateGas(input: Input_estimateGas): string {
       : null,
     txOverrides: {
       value: swapParameters.value,
-      gasPrice: gasPrice,
-      gasLimit: gasLimit,
+      gasPrice: null,
+      gasLimit: null,
       nonce: null,
     },
   });
