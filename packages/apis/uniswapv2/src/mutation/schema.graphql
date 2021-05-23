@@ -25,6 +25,7 @@ type Mutation {
 
   approve(
     token: Token!
+    amount: BigInt
     txOverrides: TxOverrides
   ): Ethereum_TxReceipt!
 }

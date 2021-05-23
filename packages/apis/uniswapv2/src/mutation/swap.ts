@@ -108,6 +108,8 @@ export function swap(input: Input_swap): Ethereum_TxReceipt {
 }
 
 export function approve(input: Input_approve): Ethereum_TxReceipt {
+  const amount: BigInt =
+    input.amount === null ? BigInt.fromString(MAX_UINT_256) : input.amount!;
   const txOverrides: TxOverrides =
     input.txOverrides == null
       ? { gasLimit: null, gasPrice: null }
@@ -121,7 +123,7 @@ export function approve(input: Input_approve): Ethereum_TxReceipt {
       address: input.token.address,
       method:
         "function approve(address spender, uint value) external returns (bool)",
-      args: [UNISWAP_ROUTER_CONTRACT, toHex(BigInt.fromString(MAX_UINT_256))],
+      args: [UNISWAP_ROUTER_CONTRACT, toHex(amount)],
       connection: {
         node: null,
         networkNameOrChainId: getChainIdKey(input.token.chainId),
