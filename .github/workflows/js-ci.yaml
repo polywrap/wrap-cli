@@ -3,8 +3,8 @@ name: JS-CI
 on: [push, pull_request]
 
 jobs:
-  CI-Linux:
-    name: JS-CI
+  JS-CI-Linux:
+    name: JS-CI-Linux
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -47,8 +47,8 @@ jobs:
 # containers, which is what we run within our toolchain for test-envs and build-envs.
 # In order to enable this, we can move to Circle CI, which supports Docker Enterprise.
 
-#  CI-Mac:
-#    name: JS-CI
+#  JS-CI-Mac:
+#    name: JS-CI-Mac
 #    runs-on: macos-latest
 #    timeout-minutes: 20
 #    steps:
@@ -86,8 +86,8 @@ jobs:
 #      - name: Test
 #        run: yarn test:ci
 
-#  CI-Windows:
-#    name: JS-CI
+#  JS-CI-Windows:
+#    name: JS-CI-Windows
 #    runs-on: windows-latest
 #    timeout-minutes: 20
 #    steps:
@@ -95,7 +95,7 @@ jobs:
 #        uses: actions/checkout@v2
 #
 #      - name: Read .nvmrc
-#        run: ::set-output name=NVMRC::type .nvmrc
+#        run: iex "echo '::set-output name=NVMRC::$(type .nvmrc)'"
 #        id: nvm
 #
 #      - name: Setup Node.js

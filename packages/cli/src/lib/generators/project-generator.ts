@@ -64,7 +64,7 @@ const executeCommand = (
     const child = spawn(command, args, {
       stdio: "inherit",
       cwd: root,
-      shell: process.platform == "win32"
+      shell: process.platform == "win32",
     });
     child.on("close", (code: number) => {
       if (code !== 0) {

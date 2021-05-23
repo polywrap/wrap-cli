@@ -225,10 +225,9 @@ export class Compiler {
       "--outFile",
       `${outputDir}/${moduleName}.wasm`,
       "--use",
-      `abort=${path.relative(
-        process.cwd(),
-        path.join(baseDir, "w3/entry/w3Abort")
-      ).replace(/\\/g, "/")}`,
+      `abort=${path
+        .relative(process.cwd(), path.join(baseDir, "w3/entry/w3Abort"))
+        .replace(/\\/g, "/")}`,
       "--optimize",
       "--debug",
       "--importMemory",
