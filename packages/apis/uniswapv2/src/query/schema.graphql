@@ -109,6 +109,11 @@ type Query {
     chainId: ChainId
   ): String!
 
+  execCallStatic(
+    parameters: SwapParameters!
+    chainId: ChainId!
+  ): String!
+
   # Trade
   createTrade(
     route: Route!
