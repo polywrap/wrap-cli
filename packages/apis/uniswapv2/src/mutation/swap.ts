@@ -2,7 +2,6 @@ import {
   ChainId,
   Ethereum_Mutation,
   Ethereum_TxReceipt,
-  Input_estimateGas,
   Input_execCall,
   getChainIdKey,
   Input_exec,
@@ -15,13 +14,13 @@ import {
 import {
   bestTradeExactIn,
   bestTradeExactOut,
+  estimateGas,
   fetchPairData,
   swapCallParameters,
   toHex,
 } from "../query";
 import { UNISWAP_ROUTER_CONTRACT } from "../utils/constants";
 import { getSwapMethodAbi } from "./abi";
-import { Ethereum_Query } from "../query/w3";
 
 import { BigInt } from "@web3api/wasm-as";
 
@@ -127,18 +126,4 @@ export function approve(input: Input_approve): Ethereum_TxReceipt {
     }
   );
   return txReceipt;
-}
-
-export function estimateGas(input: Input_estimateGas): string {
-  const swapParameters: SwapParameters = input.parameters;
-  const chainId: ChainId = input.chainId;
-  return Ethereum_Query.estimateContractCallGas({
-    address: UNISWAP_ROUTER_CONTRACT,
-    method: getSwapMethodAbi(swapParameters.methodName),
-    args: swapParameters.args,
-    connection: {
-      node: null,
-      networkNameOrChainId: getChainIdKey(chainId),
-    },
-  });
 }

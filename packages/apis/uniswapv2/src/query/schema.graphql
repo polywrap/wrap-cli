@@ -104,6 +104,11 @@ type Query {
     tradeOptions: TradeOptions!
   ): SwapParameters!
 
+  estimateGas(
+    parameters: SwapParameters!
+    chainId: ChainId!
+  ): String!
+
   # Trade
   createTrade(
     route: Route!

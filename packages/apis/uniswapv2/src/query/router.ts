@@ -1,7 +1,17 @@
 import { ETHER } from "../utils/Currency";
 import { tradeMaximumAmountIn, tradeMinimumAmountOut } from "./trade";
-import { Input_swapCallParameters, SwapParameters, TradeType } from "./w3";
+import {
+  ChainId,
+  Ethereum_Query,
+  getChainIdKey,
+  Input_estimateGas,
+  Input_swapCallParameters,
+  SwapParameters,
+  TradeType,
+} from "./w3";
 import { currencyEquals } from "./token";
+import { UNISWAP_ROUTER_CONTRACT } from "../utils/constants";
+import { getSwapMethodAbi } from "../mutation/abi";
 
 import { BigInt } from "@web3api/wasm-as";
 
@@ -120,4 +130,18 @@ export function swapCallParameters(
     value: value,
     args: args,
   };
+}
+
+export function estimateGas(input: Input_estimateGas): string {
+  const swapParameters: SwapParameters = input.parameters;
+  const chainId: ChainId = input.chainId;
+  return Ethereum_Query.estimateContractCallGas({
+    address: UNISWAP_ROUTER_CONTRACT,
+    method: getSwapMethodAbi(swapParameters.methodName),
+    args: swapParameters.args,
+    connection: {
+      node: null,
+      networkNameOrChainId: getChainIdKey(chainId),
+    },
+  });
 }

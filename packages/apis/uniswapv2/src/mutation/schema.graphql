@@ -23,9 +23,4 @@ type Mutation {
   approve(
     token: Token!
   ): Ethereum_TxReceipt!
-
-  estimateGas(
-    parameters: SwapParameters!
-    chainId: ChainId!
-  ): String!
 }
