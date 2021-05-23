@@ -164,22 +164,10 @@ export function execCallStatic(input: Input_execCallStatic): string {
     input.txOverrides == null
       ? { gasLimit: null, gasPrice: null }
       : input.txOverrides!;
-  // gasLimit is based on uniswap interface calculateGasMargin(value) method
-  let gasLimit: string;
-  if (txOverrides.gasLimit !== null) {
-    gasLimit = txOverrides.gasLimit!.toString();
-  } else {
-    const gasEstimate: string = estimateGas({
-      parameters: swapParameters,
-      chainId: Nullable.fromValue(chainId),
-    });
-    gasLimit = BigInt.fromString(gasEstimate)
-      .mulInt(11000)
-      .divInt(10000)
-      .toString();
-  }
   const gasPrice: string | null =
     txOverrides.gasPrice === null ? null : txOverrides.gasPrice!.toString();
+  const gasLimit: string | null =
+    txOverrides.gasLimit === null ? null : txOverrides.gasLimit!.toString();
 
   return Ethereum_Query.callContractMethodStatic({
     address: UNISWAP_ROUTER_CONTRACT,

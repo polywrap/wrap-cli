@@ -15,7 +15,6 @@ import {
 import {
   bestTradeExactIn,
   bestTradeExactOut,
-  estimateGas,
   fetchPairData,
   swapCallParameters,
   toHex,
@@ -23,7 +22,7 @@ import {
 import { UNISWAP_ROUTER_CONTRACT } from "../utils/constants";
 import { getSwapMethodAbi } from "./abi";
 
-import { BigInt, Nullable } from "@web3api/wasm-as";
+import { BigInt } from "@web3api/wasm-as";
 
 const MAX_UINT_256 =
   "115792089237316195423570985008687907853269984665640564039457584007913129639935";
@@ -47,22 +46,10 @@ export function execCall(input: Input_execCall): Ethereum_TxReceipt {
     input.txOverrides == null
       ? { gasLimit: null, gasPrice: null }
       : input.txOverrides!;
-  // gasLimit is based on uniswap interface calculateGasMargin(value) method
-  let gasLimit: string;
-  if (txOverrides.gasLimit !== null) {
-    gasLimit = txOverrides.gasLimit!.toString();
-  } else {
-    const gasEstimate: string = estimateGas({
-      parameters: swapParameters,
-      chainId: Nullable.fromValue(chainId),
-    });
-    gasLimit = BigInt.fromString(gasEstimate)
-      .mulInt(11000)
-      .divInt(10000)
-      .toString();
-  }
   const gasPrice: string | null =
     txOverrides.gasPrice === null ? null : txOverrides.gasPrice!.toString();
+  const gasLimit: string | null =
+    txOverrides.gasLimit === null ? null : txOverrides.gasLimit!.toString();
 
   const txReceipt: Ethereum_TxReceipt = Ethereum_Mutation.callContractMethodAndWait(
     {
