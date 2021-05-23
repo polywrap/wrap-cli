@@ -1,6 +1,7 @@
-import { ChainId, Token, TokenAmount } from "../query/w3";
+import { ChainId, Ethereum_Log, Ethereum_TxReceipt, Token, TokenAmount } from "../query/w3";
 import { ETHER } from "./Currency";
 import { currencyEquals } from "../query";
+import { Log, TxReceipt } from "../mutation/w3";
 
 export function compareAddresses(ref: string, other: string): i32 {
   const n: i32 = ref.length < other.length ? ref.length : other.length;
@@ -113,6 +114,40 @@ export function copyTokenAmount(tokenAmount: TokenAmount): TokenAmount {
   return {
     token: copyToken(tokenAmount.token),
     amount: tokenAmount.amount,
+  };
+}
+
+export function serializeTxLog(log: Ethereum_Log): Log {
+  return {
+    blockNumber: log.blockNumber,
+    blockHash: log.blockHash,
+    transactionIndex: log.transactionIndex,
+    removed: log.removed,
+    address: log.address,
+    data: log.data,
+    topics: log.topics,
+    transactionHash: log.transactionHash,
+    logIndex: log.logIndex,
+  };
+}
+
+export function serializeTxReceipt(txReceipt: Ethereum_TxReceipt): TxReceipt {
+  return {
+    to: txReceipt.to,
+    from: txReceipt.from,
+    contractAddress: txReceipt.contractAddress,
+    transactionIndex: txReceipt.transactionIndex,
+    root: txReceipt.root,
+    gasUsed: txReceipt.gasUsed,
+    logsBloom: txReceipt.logsBloom,
+    blockHash: txReceipt.blockHash,
+    transactionHash: txReceipt.transactionHash,
+    logs: txReceipt.logs.map<Log>((ethLog) => serializeTxLog(ethLog)),
+    blockNumber: txReceipt.blockNumber,
+    confirmations: txReceipt.confirmations,
+    cumulativeGasUsed: txReceipt.cumulativeGasUsed,
+    byzantium: txReceipt.byzantium,
+    status: txReceipt.status,
   };
 }
 

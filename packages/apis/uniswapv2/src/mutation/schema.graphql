@@ -8,14 +8,44 @@ type Mutation {
     amount: BigInt!
     tradeType: TradeType!
     tradeOptions: TradeOptions!
-  ): String!
+  ): TxReceipt!
 
   exec(
     trade: Trade!
     tradeOptions: TradeOptions!
-  ): String!
+  ): TxReceipt!
 
   approve(
     token: Token!
-  ): String!
+  ): TxReceipt!
+}
+
+type Log {
+  blockNumber: Int!
+  blockHash: String!
+  transactionIndex: Int!
+  removed: Boolean!
+  address: String!
+  data: String!
+  topics: [String!]!
+  transactionHash: String!
+  logIndex: Int!
+}
+
+type TxReceipt {
+  to: String!
+  from: String!
+  contractAddress: String!
+  transactionIndex: Int!
+  root: String
+  gasUsed: String!
+  logsBloom: String!
+  blockHash: String!
+  transactionHash: String!
+  logs: [Log!]!,
+  blockNumber: Int!
+  confirmations: Int!
+  cumulativeGasUsed: String!
+  byzantium: Boolean!
+  status: Int!
 }
