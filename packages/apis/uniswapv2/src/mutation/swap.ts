@@ -1,4 +1,4 @@
-import { Ethereum_Mutation, Ethereum_TxReceipt, TxReceipt } from "./w3";
+import { Ethereum_Mutation, Ethereum_TxReceipt } from "./w3";
 import {
   getChainIdKey,
   Input_exec,
@@ -17,14 +17,13 @@ import {
 import { UNISWAP_ROUTER_CONTRACT } from "../utils/constants";
 import { getSwapMethodAbi } from "./abi";
 import { Ethereum_Query } from "../query/w3";
-import { serializeTxReceipt } from "../utils/utils";
 
 import { BigInt } from "@web3api/wasm-as";
 
 const MAX_UINT_256 =
   "115792089237316195423570985008687907853269984665640564039457584007913129639935";
 
-export function exec(input: Input_exec): TxReceipt {
+export function exec(input: Input_exec): Ethereum_TxReceipt {
   const swapParameters = swapCallParameters({
     trade: input.trade,
     tradeOptions: input.tradeOptions,
@@ -65,10 +64,10 @@ export function exec(input: Input_exec): TxReceipt {
       },
     }
   );
-  return serializeTxReceipt(txReceipt);
+  return txReceipt;
 }
 
-export function swap(input: Input_swap): TxReceipt {
+export function swap(input: Input_swap): Ethereum_TxReceipt {
   let trade: Trade;
   const pair = fetchPairData({
     token0: input.tokenIn,
@@ -103,7 +102,7 @@ export function swap(input: Input_swap): TxReceipt {
   });
 }
 
-export function approve(input: Input_approve): TxReceipt {
+export function approve(input: Input_approve): Ethereum_TxReceipt {
   const txReceipt: Ethereum_TxReceipt = Ethereum_Mutation.callContractMethodAndWait(
     {
       address: input.token.address,
@@ -122,5 +121,5 @@ export function approve(input: Input_approve): TxReceipt {
       },
     }
   );
-  return serializeTxReceipt(txReceipt);
+  return txReceipt;
 }
