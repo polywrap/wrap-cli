@@ -10,6 +10,7 @@ import {
   Trade,
   TradeType,
   SwapParameters,
+  TxOverrides,
 } from "./w3";
 import {
   bestTradeExactIn,
@@ -35,21 +36,33 @@ export function exec(input: Input_exec): Ethereum_TxReceipt {
   return execCall({
     parameters: swapParameters,
     chainId: input.trade.inputAmount.token.chainId,
+    txOverrides: input.txOverrides,
   });
 }
 
 export function execCall(input: Input_execCall): Ethereum_TxReceipt {
   const swapParameters: SwapParameters = input.parameters;
   const chainId: ChainId = input.chainId;
-  const gasEstimate: string = estimateGas({
-    parameters: swapParameters,
-    chainId: Nullable.fromValue(chainId),
-  });
+  const txOverrides: TxOverrides =
+    input.txOverrides == null
+      ? { gasLimit: null, gasPrice: null }
+      : input.txOverrides!;
   // gasLimit is based on uniswap interface calculateGasMargin(value) method
-  const gasLimit: string = BigInt.fromString(gasEstimate)
-    .mulInt(11000)
-    .divInt(10000)
-    .toString();
+  let gasLimit: string;
+  if (txOverrides.gasLimit !== null) {
+    gasLimit = txOverrides.gasLimit!.toString();
+  } else {
+    const gasEstimate: string = estimateGas({
+      parameters: swapParameters,
+      chainId: Nullable.fromValue(chainId),
+    });
+    gasLimit = BigInt.fromString(gasEstimate)
+      .mulInt(11000)
+      .divInt(10000)
+      .toString();
+  }
+  const gasPrice: string | null =
+    txOverrides.gasPrice === null ? null : txOverrides.gasPrice!.toString();
 
   const txReceipt: Ethereum_TxReceipt = Ethereum_Mutation.callContractMethodAndWait(
     {
@@ -62,7 +75,7 @@ export function execCall(input: Input_execCall): Ethereum_TxReceipt {
       },
       txOverrides: {
         value: swapParameters.value,
-        gasPrice: null,
+        gasPrice: gasPrice,
         gasLimit: gasLimit,
         nonce: null,
       },
@@ -103,10 +116,19 @@ export function swap(input: Input_swap): Ethereum_TxReceipt {
   return exec({
     trade: trade,
     tradeOptions: input.tradeOptions,
+    txOverrides: input.txOverrides,
   });
 }
 
 export function approve(input: Input_approve): Ethereum_TxReceipt {
+  const txOverrides: TxOverrides =
+    input.txOverrides == null
+      ? { gasLimit: null, gasPrice: null }
+      : input.txOverrides!;
+  const gasPrice: string | null =
+    txOverrides.gasPrice === null ? null : txOverrides.gasPrice!.toString();
+  const gasLimit: string | null =
+    txOverrides.gasLimit === null ? null : txOverrides.gasLimit!.toString();
   const txReceipt: Ethereum_TxReceipt = Ethereum_Mutation.callContractMethodAndWait(
     {
       address: input.token.address,
@@ -119,8 +141,8 @@ export function approve(input: Input_approve): Ethereum_TxReceipt {
       },
       txOverrides: {
         value: null,
-        gasPrice: null,
-        gasLimit: null,
+        gasPrice: gasPrice,
+        gasLimit: gasLimit,
         nonce: null,
       },
     }

@@ -9,6 +9,7 @@ import {
   Input_execCallStatic,
   SwapParameters,
   TradeType,
+  TxOverrides
 } from "./w3";
 import { currencyEquals } from "./token";
 import { UNISWAP_ROUTER_CONTRACT } from "../utils/constants";
@@ -149,18 +150,30 @@ export function estimateGas(input: Input_estimateGas): string {
   });
 }
 
+// returns empty string if call would be successful, otherwise returns solidity contract error
 export function execCallStatic(input: Input_execCallStatic): string {
   const swapParameters: SwapParameters = input.parameters;
   const chainId: ChainId = input.chainId;
-  const gasEstimate: string = estimateGas({
-    parameters: swapParameters,
-    chainId: Nullable.fromValue(chainId),
-  });
+  const txOverrides: TxOverrides =
+    input.txOverrides == null
+      ? { gasLimit: null, gasPrice: null }
+      : input.txOverrides!;
   // gasLimit is based on uniswap interface calculateGasMargin(value) method
-  const gasLimit: string = BigInt.fromString(gasEstimate)
-    .mulInt(11000)
-    .divInt(10000)
-    .toString();
+  let gasLimit: string;
+  if (txOverrides.gasLimit !== null) {
+    gasLimit = txOverrides.gasLimit!.toString();
+  } else {
+    const gasEstimate: string = estimateGas({
+      parameters: swapParameters,
+      chainId: Nullable.fromValue(chainId),
+    });
+    gasLimit = BigInt.fromString(gasEstimate)
+      .mulInt(11000)
+      .divInt(10000)
+      .toString();
+  }
+  const gasPrice: string | null =
+    txOverrides.gasPrice === null ? null : txOverrides.gasPrice!.toString();
 
   return Ethereum_Query.callContractMethodStatic({
     address: UNISWAP_ROUTER_CONTRACT,
@@ -172,7 +185,7 @@ export function execCallStatic(input: Input_execCallStatic): string {
     },
     txOverrides: {
       value: swapParameters.value,
-      gasPrice: null,
+      gasPrice: gasPrice,
       gasLimit: gasLimit,
       nonce: null,
     },

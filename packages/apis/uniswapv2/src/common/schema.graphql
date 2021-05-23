@@ -72,3 +72,8 @@ type SwapParameters {
   args: [String!]!
   value: String!
 }
+
+type TxOverrides {
+  gasPrice: BigInt
+  gasLimit: BigInt
+}
