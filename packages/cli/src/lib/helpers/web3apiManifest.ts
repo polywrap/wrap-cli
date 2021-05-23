@@ -4,13 +4,13 @@ import { intlMsg } from "../intl";
 
 import fs from "fs";
 import YAML from "js-yaml";
-import { Manifest, deserializeManifest } from "@web3api/core-js";
+import { Web3ApiManifest, deserializeWeb3ApiManifest } from "@web3api/core-js";
 
-export async function loadManifest(
+export async function loadWeb3ApiManifest(
   manifestPath: string,
   quiet = false
-): Promise<Manifest> {
-  const run = (): Promise<Manifest> => {
+): Promise<Web3ApiManifest> {
+  const run = (): Promise<Web3ApiManifest> => {
     const manifest = fs.readFileSync(manifestPath, "utf-8");
 
     if (!manifest) {
@@ -21,7 +21,7 @@ export async function loadManifest(
     }
 
     try {
-      const result = deserializeManifest(manifest);
+      const result = deserializeWeb3ApiManifest(manifest);
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);
@@ -39,12 +39,12 @@ export async function loadManifest(
       async (_spinner) => {
         return await run();
       }
-    )) as Manifest;
+    )) as Web3ApiManifest;
   }
 }
 
-export async function outputManifest(
-  manifest: Manifest,
+export async function outputWeb3ApiManifest(
+  manifest: Web3ApiManifest,
   manifestPath: string,
   quiet = false
 ): Promise<unknown> {

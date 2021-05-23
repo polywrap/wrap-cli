@@ -1,6 +1,6 @@
-import { loadManifest } from "./helpers";
+import { loadWeb3ApiManifest } from "./helpers";
 
-import { Manifest } from "@web3api/core-js";
+import { Web3ApiManifest } from "@web3api/core-js";
 import path from "path";
 
 export interface ProjectConfig {
@@ -9,7 +9,7 @@ export interface ProjectConfig {
 }
 
 export class Project {
-  private _manifest: Manifest | undefined;
+  private _manifest: Web3ApiManifest | undefined;
 
   constructor(private _config: ProjectConfig) {}
 
@@ -25,9 +25,9 @@ export class Project {
     return !!this._config.quiet;
   }
 
-  public async getManifest(): Promise<Manifest> {
+  public async getManifest(): Promise<Web3ApiManifest> {
     if (!this._manifest) {
-      this._manifest = await loadManifest(this.manifestPath, this.quiet);
+      this._manifest = await loadWeb3ApiManifest(this.manifestPath, this.quiet);
     }
 
     return Promise.resolve(this._manifest);

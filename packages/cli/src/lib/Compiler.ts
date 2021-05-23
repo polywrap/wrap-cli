@@ -5,12 +5,12 @@ import { Project } from "./Project";
 import { SchemaComposer } from "./SchemaComposer";
 import { BuildVars, parseManifest } from "./helpers/build-manifest";
 import { buildImage, copyFromImageToHost } from "./helpers/docker";
-import { withSpinner, outputManifest } from "./helpers";
+import { withSpinner, outputWeb3ApiManifest } from "./helpers";
 import { intlMsg } from "./intl";
 
 import {
   InvokableModules,
-  Manifest
+  Web3ApiManifest
 } from "@web3api/core-js";
 import {
   bindSchema,
@@ -87,11 +87,11 @@ export class Compiler {
           throwMissingSchema("mutation");
         }
 
-        const queryDirectory = manifest.query
-          ? this._getGenerationDirectory(manifest.query.module.file)
+        const queryDirectory = manifest.modules.query
+          ? this._getGenerationDirectory(manifest.modules.query.module)
           : undefined;
-        const mutationDirectory = manifest.mutation
-          ? this._getGenerationDirectory(manifest.mutation.module.file)
+        const mutationDirectory = manifest.modules.mutation
+          ? this._getGenerationDirectory(manifest.modules.mutation.module)
           : undefined;
 
         if (
@@ -132,14 +132,18 @@ export class Compiler {
 
         if (buildQuery) {
           const queryManifest = manifest as Required<typeof manifest>;
-          queryManifest.query.module.file = `./query.wasm`;
-          queryManifest.query.schema.file = "./schema.graphql";
+          queryManifest.modules.query = {
+            module: "./query.wasm",
+            schema: "./schema.graphql"
+          };
         }
 
         if (buildMutation) {
           const mutationManifest = manifest as Required<typeof manifest>;
-          mutationManifest.mutation.module.file = `./mutation.wasm`;
-          mutationManifest.mutation.schema.file = "./schema.graphql";
+          mutationManifest.modules.mutation = {
+            module: "./mutation.wasm",
+            schema: "./schema.graphql"
+          };
         }
 
         // Parse and build manifest, and format the BuildVars
@@ -168,7 +172,7 @@ export class Compiler {
         composed.combined.schema,
         "utf-8"
       );
-      await outputManifest(manifest, `${outputDir}/web3api.yaml`);
+      await outputWeb3ApiManifest(manifest, `${outputDir}/web3api.yaml`);
 
       // Generate the schema bindings and output the built WASM modules
       await generateAndBuildModules(modulesToBuild);
@@ -336,9 +340,9 @@ export class Compiler {
     }
   }
 
-  private _determineModulesToBuild(manifest: Manifest): InvokableModules[] {
-    const manifestMutation = manifest.mutation;
-    const manifestQuery = manifest.query;
+  private _determineModulesToBuild(manifest: Web3ApiManifest): InvokableModules[] {
+    const manifestMutation = manifest.modules.mutation;
+    const manifestQuery = manifest.modules.query;
     const modulesToBuild: InvokableModules[] = [];
 
     if (manifestMutation) {

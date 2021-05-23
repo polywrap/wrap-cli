@@ -3,7 +3,7 @@
 
 import { Project } from "./Project";
 
-import { Manifest, Uri, Web3ApiClient, UriRedirect } from "@web3api/client-js";
+import { Web3ApiManifest, Uri, Web3ApiClient, UriRedirect } from "@web3api/client-js";
 import {
   composeSchema,
   ComposerOutput,
@@ -82,8 +82,8 @@ export class SchemaComposer {
     const { project } = this._config;
 
     const manifest = await project.getManifest();
-    const querySchemaPath = manifest.query?.schema.file;
-    const mutationSchemaPath = manifest.mutation?.schema.file;
+    const querySchemaPath = manifest.modules.query?.schema;
+    const mutationSchemaPath = manifest.modules.mutation?.schema;
     const getSchema = (schemaPath?: string): SchemaFile | undefined =>
       schemaPath
         ? {
@@ -113,7 +113,7 @@ export class SchemaComposer {
 
   private async _fetchExternalSchema(
     uri: string,
-    manifest: Manifest
+    manifest: Web3ApiManifest
   ): Promise<string> {
     // Check to see if we have any import redirects that match
     if (manifest.import_redirects) {
