@@ -9,7 +9,7 @@ import {
   Input_execCallStatic,
   SwapParameters,
   TradeType,
-  TxOverrides
+  TxOverrides,
 } from "./w3";
 import { currencyEquals } from "./token";
 import { UNISWAP_ROUTER_CONTRACT } from "../utils/constants";
@@ -137,6 +137,14 @@ export function swapCallParameters(
 export function estimateGas(input: Input_estimateGas): string {
   const swapParameters: SwapParameters = input.parameters;
   const chainId: Nullable<ChainId> = input.chainId;
+  const txOverrides: TxOverrides =
+    input.txOverrides == null
+      ? { gasLimit: null, gasPrice: null }
+      : input.txOverrides!;
+  const gasLimit: string | null =
+    txOverrides.gasLimit === null ? null : txOverrides.gasLimit!.toString();
+  const gasPrice: string | null =
+    txOverrides.gasPrice === null ? null : txOverrides.gasPrice!.toString();
   return Ethereum_Query.estimateContractCallGas({
     address: UNISWAP_ROUTER_CONTRACT,
     method: getSwapMethodAbi(swapParameters.methodName),
@@ -147,6 +155,12 @@ export function estimateGas(input: Input_estimateGas): string {
           networkNameOrChainId: getChainIdKey(chainId.value),
         }
       : null,
+    txOverrides: {
+      value: swapParameters.value,
+      gasPrice: gasPrice,
+      gasLimit: gasLimit,
+      nonce: null,
+    },
   });
 }
 

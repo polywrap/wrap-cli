@@ -107,6 +107,7 @@ type Query {
   estimateGas(
     parameters: SwapParameters!
     chainId: ChainId
+    txOverrides: TxOverrides
   ): String!
 
   execCallStatic(
