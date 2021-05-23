@@ -35,7 +35,7 @@ export const serializableTxReceipt = (
 ): SerializableTxReceipt => ({
   ...receipt,
   gasUsed: receipt.gasUsed.toString(),
-  cumulativeGasUsed: receipt.gasUsed.toString(),
+  cumulativeGasUsed: receipt.cumulativeGasUsed.toString(),
 });
 
 export const serializableTxResponse = (
@@ -43,9 +43,9 @@ export const serializableTxResponse = (
 ): SerializableTxResponse => ({
   ...response,
   nonce: response.nonce.toString(),
-  gasLimit: response.nonce.toString(),
-  gasPrice: response.nonce.toString(),
-  data: response.nonce.toString(),
+  gasLimit: response.gasLimit.toString(),
+  gasPrice: response.gasPrice.toString(),
+  data: response.data.toString(),
 });
 
 export const serializableTxRequest = (
