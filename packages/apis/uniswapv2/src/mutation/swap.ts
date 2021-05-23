@@ -2,9 +2,8 @@ import {
   ChainId,
   Ethereum_Mutation,
   Ethereum_TxReceipt,
+  Input_estimateGas,
   Input_execCall,
-} from "./w3";
-import {
   getChainIdKey,
   Input_exec,
   Input_approve,
@@ -43,14 +42,9 @@ export function exec(input: Input_exec): Ethereum_TxReceipt {
 export function execCall(input: Input_execCall): Ethereum_TxReceipt {
   const swapParameters: SwapParameters = input.parameters;
   const chainId: ChainId = input.chainId;
-  const gasEstimate: string = Ethereum_Query.estimateContractCallGas({
-    address: UNISWAP_ROUTER_CONTRACT,
-    method: getSwapMethodAbi(swapParameters.methodName),
-    args: swapParameters.args,
-    connection: {
-      node: null,
-      networkNameOrChainId: getChainIdKey(chainId),
-    },
+  const gasEstimate: string = estimateGas({
+    parameters: swapParameters,
+    chainId: chainId,
   });
   // gasLimit is based on uniswap interface calculateGasMargin(value) method
   const gasLimit: string = BigInt.fromString(gasEstimate)
@@ -133,4 +127,18 @@ export function approve(input: Input_approve): Ethereum_TxReceipt {
     }
   );
   return txReceipt;
+}
+
+export function estimateGas(input: Input_estimateGas): string {
+  const swapParameters: SwapParameters = input.parameters;
+  const chainId: ChainId = input.chainId;
+  return Ethereum_Query.estimateContractCallGas({
+    address: UNISWAP_ROUTER_CONTRACT,
+    method: getSwapMethodAbi(swapParameters.methodName),
+    args: swapParameters.args,
+    connection: {
+      node: null,
+      networkNameOrChainId: getChainIdKey(chainId),
+    },
+  });
 }
