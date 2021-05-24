@@ -1,9 +1,7 @@
 import { fetchTokenData } from "./fetch";
 import { tokenSortsBefore } from "./token";
-import { factoryAddress, minimumLiquidity } from "./index";
+import { factoryAddress, initCodeHash, minimumLiquidity } from "./index";
 import {
-  Ethereum_Query,
-  getChainIdKey,
   Input_pairAddress,
   Input_pairInputAmount,
   Input_pairInputNextPair,
@@ -16,51 +14,43 @@ import {
   Input_pairToken0Price,
   Input_pairToken1Price,
   Pair,
+  SHA3_Query,
   Token,
   TokenAmount,
 } from "./w3";
 import { ProcessedPair } from "../utils/ProcessedPair";
 import Price from "../utils/Price";
+import { concat, getChecksumAddress } from "../utils/utils";
 
 import { BigInt } from "@web3api/wasm-as";
 
 // returns address of pair liquidity token contract
+// see https://uniswap.org/docs/v2/javascript-SDK/getting-pair-addresses/
+// and https://eips.ethereum.org/EIPS/eip-1014
 export function pairAddress(input: Input_pairAddress): string {
-  const token0: string = input.token0.address;
-  const token1: string = input.token1.address;
-  return Ethereum_Query.callView({
-    address: factoryAddress(),
-    method:
-      "function getPair(address tokenA, address tokenB) external view returns (address pair)",
-    args: [token0, token1],
-    connection: {
-      node: null,
-      networkNameOrChainId: getChainIdKey(input.token0.chainId),
-    },
+  let tokenA: string;
+  let tokenB: string;
+  if (tokenSortsBefore({ token: input.token0, other: input.token1 })) {
+    tokenA = input.token0.address;
+    tokenB = input.token1.address;
+  } else {
+    tokenA = input.token1.address;
+    tokenB = input.token0.address;
+  }
+  const salt: string = SHA3_Query.buffer_keccak_256({
+    message: tokenA.substring(2) + tokenB.substring(2),
   });
+  const concatenatedItems: Uint8Array = concat([
+    "0xff",
+    getChecksumAddress(factoryAddress()),
+    salt,
+    initCodeHash(),
+  ]);
+  const concatenationHash: string = SHA3_Query.uint8array_keccak_256({
+    message: concatenatedItems.toString(),
+  });
+  return getChecksumAddress(concatenationHash.substring(24));
 }
-
-// keccak256( 0xff ++ address ++ salt ++ keccak256(init_code))[12:]
-// export function pairAddress(input: Input_pairAddress): string {
-//   let tokenA: string;
-//   let tokenB: string;
-//   if (tokenSortsBefore({ token: input.token0, other: input.token1 })) {
-//     tokenA = input.token0.address;
-//     tokenB = input.token1.address;
-//   } else {
-//     tokenA = input.token1.address;
-//     tokenB = input.token0.address;
-//   }
-//   const salt: string = SHA3_Query.keccak_256({
-//     message: tokenA.substring(2) + tokenB.substring(2),
-//   });
-//   return getChecksumAddress(
-//     SHA3_Query.keccak_256({
-//       message:
-//         "ff" + getChecksumAddress(factoryAddress()).substring(2) + salt + initCodeHash().substring(2),
-//     }).substring(26)
-//   );
-// }
 
 // returns pair liquidity token
 export function pairLiquidityToken(input: Input_pairLiquidityToken): Token {

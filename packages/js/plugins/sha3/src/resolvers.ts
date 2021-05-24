@@ -46,6 +46,18 @@ export const query = (): PluginModule => ({
     return keccak_256(new Buffer(input.message, "hex"));
   },
   // eslint-disable-next-line @typescript-eslint/naming-convention
+  uint8array_keccak_256: (input: { message: string }) => {
+    let message = input.message;
+    if (!message.startsWith("[")) {
+      message = "[" + message + "]";
+    }
+    try {
+      return keccak_256(JSON.parse(message) as Uint8Array);
+    } catch (e) {
+      throw Error('Input must have format of either "[0, 1, 2]" or "0, 1, 2"');
+    }
+  },
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   keccak_224: (input: { message: string }) => {
     return keccak_224(input.message);
   },

@@ -12,6 +12,7 @@ type Query implements ApiResolver_Query {
   keccak_224(message: String!): String!
 
   buffer_keccak_256(message: String!): String!
+  uint8array_keccak_256(message: String!): String!
   
   shake_128(message: String!, outputBits: Int!): String!
   shake_256(message: String!, outputBits: Int!): String!
