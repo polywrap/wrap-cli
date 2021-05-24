@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { query, mutation } from "./resolvers";
 import { manifest } from "./manifest";
-import { Connection as ConnectionOverride, TxOverrides } from "./types";
+import { Connection as ConnectionOverride, TxOverrides, TxRequest } from "./types";
 import {
   Address,
   AccountIndex,
@@ -12,7 +12,6 @@ import {
   ConnectionConfig,
   ConnectionConfigs,
 } from "./Connection";
-import { SerializableTxRequest } from "./serialize";
 
 import {
   Client,
@@ -249,7 +248,7 @@ export class EthereumPlugin extends Plugin {
   }
 
   public async sendTransaction(
-    tx: SerializableTxRequest,
+    tx: TxRequest,
     connectionOverride?: ConnectionOverride
   ): Promise<ethers.providers.TransactionResponse> {
     const connection = await this.getConnection(connectionOverride);
@@ -271,7 +270,7 @@ export class EthereumPlugin extends Plugin {
   }
 
   public async sendTransactionAndWait(
-    tx: SerializableTxRequest,
+    tx: TxRequest,
     connectionOverride?: ConnectionOverride
   ): Promise<ethers.providers.TransactionReceipt> {
     const res = await this.sendTransaction(tx, connectionOverride);

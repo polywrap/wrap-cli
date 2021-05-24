@@ -1,10 +1,13 @@
 import { EthereumPlugin } from ".";
 import {
-  serializableTxReceipt,
-  SerializableTxRequest,
-  serializableTxResponse,
-} from "./serialize";
-import { Connection as ConnectionOverride, TxOverrides } from "./types";
+  mapTxReceipt,
+  mapTxResponse,
+} from "./mapping";
+import {
+  Connection as ConnectionOverride,
+  TxOverrides,
+  TxRequest
+} from "./types";
 
 import { PluginModule } from "@web3api/core-js";
 
@@ -24,7 +27,7 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
       input.txOverrides
     );
 
-    return serializableTxResponse(response);
+    return mapTxResponse(response);
   },
 
   callContractMethodAndWait: async (input: {
@@ -42,7 +45,7 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
       input.txOverrides
     );
 
-    return serializableTxReceipt(response);
+    return mapTxReceipt(response);
   },
 
   callContractMethodStatic: async (input: {
@@ -64,22 +67,22 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
   },
 
   sendTransaction: async (input: {
-    tx: SerializableTxRequest;
+    tx: TxRequest;
     connection?: ConnectionOverride;
   }) => {
     const res = await ethereum.sendTransaction(input.tx, input.connection);
-    return serializableTxResponse(res);
+    return mapTxResponse(res);
   },
 
   sendTransactionAndWait: async (input: {
-    tx: SerializableTxRequest;
+    tx: TxRequest;
     connection?: ConnectionOverride;
   }) => {
     const res = await ethereum.sendTransactionAndWait(
       input.tx,
       input.connection
     );
-    return serializableTxReceipt(res);
+    return mapTxReceipt(res);
   },
 
   deployContract: async (input: {
@@ -160,7 +163,7 @@ export const query = (ethereum: EthereumPlugin): PluginModule => ({
   },
 
   estimateTxGas: async (input: {
-    tx: SerializableTxRequest;
+    tx: TxRequest;
     connection?: ConnectionOverride;
   }) => {
     const connection = await ethereum.getConnection(input.connection);
@@ -208,7 +211,7 @@ export const query = (ethereum: EthereumPlugin): PluginModule => ({
       input.connectionOverride
     );
 
-    return serializableTxReceipt(result);
+    return mapTxReceipt(result);
   },
 
   estimateContractCallGas: async (input: {

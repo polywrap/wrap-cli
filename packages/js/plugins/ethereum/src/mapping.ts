@@ -1,46 +1,21 @@
 import { ethers } from "ethers";
+import {
+  TxReceipt,
+  TxResponse,
+  TxRequest
+} from "./types";
 
-type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
-
-export type SerializableTxReceipt = Overwrite<
-  ethers.providers.TransactionReceipt,
-  {
-    gasUsed: string;
-    cumulativeGasUsed: string;
-  }
->;
-
-export type SerializableTxResponse = Overwrite<
-  ethers.providers.TransactionResponse,
-  {
-    nonce: string;
-    gasLimit: string;
-    gasPrice: string;
-    data: string;
-  }
->;
-
-export type SerializableTxRequest = Overwrite<
-  ethers.providers.TransactionRequest,
-  {
-    nonce?: string;
-    gasLimit?: string;
-    gasPrice?: string;
-    value?: string;
-  }
->;
-
-export const serializableTxReceipt = (
+export const mapTxReceipt = (
   receipt: ethers.providers.TransactionReceipt
-): SerializableTxReceipt => ({
+): TxReceipt => ({
   ...receipt,
   gasUsed: receipt.gasUsed.toString(),
   cumulativeGasUsed: receipt.cumulativeGasUsed.toString(),
 });
 
-export const serializableTxResponse = (
+export const mapTxResponse = (
   response: ethers.providers.TransactionResponse
-): SerializableTxResponse => ({
+): TxResponse => ({
   ...response,
   nonce: response.nonce.toString(),
   gasLimit: response.gasLimit.toString(),
@@ -48,9 +23,9 @@ export const serializableTxResponse = (
   data: response.data.toString(),
 });
 
-export const serializableTxRequest = (
+export const mapTxRequest = (
   request: ethers.providers.TransactionRequest
-): SerializableTxRequest => ({
+): TxRequest => ({
   ...request,
   nonce: request.nonce !== undefined ? request.nonce.toString() : undefined,
   gasLimit:
