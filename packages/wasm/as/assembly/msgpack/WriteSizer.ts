@@ -1,5 +1,6 @@
 import { Write } from "./Write";
 import { Nullable } from "./Nullable";
+import { BigInt } from "../BigInt";
 
 export class WriteSizer extends Write {
   length: i32;
@@ -109,6 +110,11 @@ export class WriteSizer extends Write {
     }
     this.writeBytesLength(value.byteLength);
     this.length += value.byteLength;
+  }
+
+  writeBigInt(value: BigInt): void {
+    const str = value.toString();
+    this.writeString(str);
   }
 
   writeArrayLength(length: u32): void {
@@ -268,6 +274,15 @@ export class WriteSizer extends Write {
     }
 
     this.writeBytes(value);
+  }
+
+  writeNullableBigInt(value: BigInt | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeBigInt(value);
   }
 
   writeNullableArray<T>(

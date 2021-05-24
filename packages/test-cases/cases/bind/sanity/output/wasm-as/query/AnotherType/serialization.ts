@@ -4,7 +4,8 @@ import {
   Write,
   WriteSizer,
   WriteEncoder,
-  Nullable
+  Nullable,
+  BigInt
 } from "@web3api/wasm-as";
 import { AnotherType } from "./";
 import * as Types from "..";

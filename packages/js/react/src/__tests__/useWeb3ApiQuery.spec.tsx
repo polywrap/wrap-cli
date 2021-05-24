@@ -21,7 +21,7 @@ import {
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
-jest.setTimeout(30000);
+jest.setTimeout(60000);
 
 describe("useWeb3ApiQuery hook", () => {
   let uri: string;
@@ -197,7 +197,7 @@ describe("useWeb3ApiQuery hook", () => {
     const { result } = renderHook(getDataStorageHook);
 
     expect(result.error?.message).toMatch(
-      /You are trying to use useWeb3ApiQuery with provider \"Non existent Web3API Provider\"/
+      /You are trying to use useWeb3ApiClient with provider \"Non existent Web3API Provider\"/
     );
   });
 

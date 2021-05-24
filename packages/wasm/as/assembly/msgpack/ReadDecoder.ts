@@ -12,6 +12,7 @@ import {
 import { Nullable } from "./Nullable";
 import { Read } from "./Read";
 import { E_INVALIDLENGTH } from "./utils";
+import { BigInt } from "../BigInt";
 
 export class ReadDecoder extends Read {
   private view: DataView;
@@ -208,6 +209,11 @@ export class ReadDecoder extends Read {
     return arrBytes;
   }
 
+  readBigInt(): BigInt {
+    const str = this.readString();
+    return BigInt.fromString(str);
+  }
+
   readArrayLength(): u32 {
     const leadByte = this.view.getUint8();
     if (isFixedArray(leadByte)) {
@@ -347,6 +353,13 @@ export class ReadDecoder extends Read {
       return null;
     }
     return this.readBytes();
+  }
+
+  readNullableBigInt(): BigInt | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readBigInt();
   }
 
   readNullableArray<T>(fn: (decoder: Read) => T): Array<T> | null {

@@ -20,7 +20,6 @@ import {
   ApiResolver,
   InvokableModules,
 } from "@web3api/core-js";
-import path from "path";
 import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -95,10 +94,10 @@ export class WasmWeb3Api extends Api {
 
         // If we're in node.js
         if (typeof process === "object" && typeof window === "undefined") {
-          modulePath = `${__dirname}/thread.js`;
+          modulePath = `file://${__dirname}/thread.js`;
 
           if (process.env.TEST) {
-            modulePath = `${__dirname}/thread-loader.js`;
+            modulePath = `file://${__dirname}/thread-loader.js`;
           }
         }
 
@@ -342,7 +341,7 @@ export class WasmWeb3Api extends Api {
         const { data, error } = await ApiResolver.Query.getFile(
           client,
           this._apiResolver,
-          path.join(this._uri.path, module.schema.file)
+          this.combinePaths(this._uri.path, module.schema.file)
         );
 
         if (error) {
@@ -397,11 +396,11 @@ export class WasmWeb3Api extends Api {
         const { data, error } = await ApiResolver.Query.getFile(
           client,
           this._apiResolver,
-          path.join(this._uri.path, moduleManifest.module.file)
+          this.combinePaths(this._uri.path, moduleManifest.module.file)
         );
 
         if (error) {
-          throw error;
+          throw Error(`ApiResolver.Query.getFile Failed: ${error}`);
         }
 
         // If nothing is returned, the module was not found
@@ -417,5 +416,23 @@ export class WasmWeb3Api extends Api {
     );
 
     return run(module, client);
+  }
+
+  private combinePaths(a: string, b: string) {
+    // Normalize all path seperators
+    a = a.replace(/\\/g, "/");
+    b = b.replace(/\\/g, "/");
+
+    // Append a seperator if one doesn't exist
+    if (a[a.length - 1] !== "/") {
+      a += "/";
+    }
+
+    // Remove any leading seperators from
+    while (b[0] === "/" || b[0] === ".") {
+      b = b.substr(1);
+    }
+
+    return a + b;
   }
 }

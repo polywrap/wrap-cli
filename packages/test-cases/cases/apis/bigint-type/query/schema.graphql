@@ -1,0 +1,12 @@
+type Query {
+  method(
+    arg1: BigInt!
+    arg2: BigInt
+    obj: BigIntInput!
+  ): BigInt!
+}
+
+type BigIntInput {
+  prop1: BigInt!
+  prop2: BigInt
+}

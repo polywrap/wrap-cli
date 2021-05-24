@@ -373,6 +373,70 @@ describe("Web3ApiClient", () => {
     });
   });
 
+  it("bigint-type", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/bigint-type`,
+      ipfsProvider,
+      ensAddress
+    );
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const client = await getClient();
+
+    {
+      const response = await client.query<{
+        method: string
+      }>({
+        uri: ensUri,
+        query: `query {
+          method(
+            arg1: "123456789123456789"
+            obj: {
+              prop1: "987654321987654321"
+            }
+          )
+        }`
+      });
+
+      const result = BigInt("123456789123456789") * BigInt("987654321987654321");
+
+      expect(response.errors).toBeFalsy();
+      expect(response.data).toBeTruthy();
+      expect(response.data).toMatchObject({
+        method: result.toString()
+      });
+    }
+
+    {
+      const response = await client.query<{
+        method: string
+      }>({
+        uri: ensUri,
+        query: `query {
+          method(
+            arg1: "123456789123456789"
+            arg2: "123456789123456789123456789123456789"
+            obj: {
+              prop1: "987654321987654321"
+              prop2: "987654321987654321987654321987654321"
+            }
+          )
+        }`
+      });
+
+      const result = BigInt("123456789123456789")
+        * BigInt("123456789123456789123456789123456789")
+        * BigInt("987654321987654321")
+        * BigInt("987654321987654321987654321987654321");
+
+      expect(response.errors).toBeFalsy();
+      expect(response.data).toBeTruthy();
+      expect(response.data).toMatchObject({
+        method: result.toString()
+      });
+    }
+  });
+
   it("bytes-type", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/bytes-type`,
