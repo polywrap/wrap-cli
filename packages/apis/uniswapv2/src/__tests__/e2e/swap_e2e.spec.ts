@@ -5,6 +5,7 @@ import path from "path";
 import { getRedirects, getTokenList } from "../testUtils";
 import { Contract, ethers, providers } from "ethers";
 import erc20ABI from "./testData/erc20ABI.json";
+import { SwapParameters } from "../../query/w3";
 
 jest.setTimeout(120000);
 
@@ -367,5 +368,368 @@ describe("Swap", () => {
     const linkDaiSwapTx = await ethersProvider.getTransaction(linkDaiSwapHash);
     await linkDaiSwapTx.wait();
     expect((await daiContract.balanceOf(recipient)).toString()).toEqual("99900000");
+  });
+
+  it("Should successfully estimate swap call gas (ether-dai swap)", async () => {
+    const etherDaiData = await client.query<{
+      fetchPairData: Pair;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          fetchPairData(
+            token0: $token0
+            token1: $token1
+          )
+        }
+      `,
+      variables: {
+        token0: eth,
+        token1: dai,
+      },
+    });
+
+    const etherDaiTradeResult = await client.query<{bestTradeExactOut: Trade[]}>({
+      uri: ensUri,
+      query: `
+        query {
+          bestTradeExactOut (
+            pairs: $pairs
+            amountOut: $amountOut
+            tokenIn: $tokenIn
+          )
+        }
+      `,
+      variables: {
+        pairs: [etherDaiData.data!.fetchPairData],
+        amountOut: {
+          token: dai,
+          amount: "100000000"
+        },
+        tokenIn: eth,
+      },
+    });
+    const etherDaiTrade = etherDaiTradeResult.data!.bestTradeExactOut[0];
+    const etherDaiSwapParametersQuery = await client.query<{ swapParameters: SwapParameters}>({
+      uri: ensUri,
+      query: `
+        query {
+          swapCallParameters(
+            trade: $trade
+            tradeOptions: $tradeOptions
+          )
+        }
+      `,
+      variables: {
+        trade: etherDaiTrade,
+        tradeOptions: {
+          allowedSlippage: "0.1",
+          recipient: recipient,
+          unixTimestamp: parseInt((new Date().getTime() / 1000).toFixed(0)),
+          ttl: 1800
+        }
+      },
+    });
+
+    expect(etherDaiSwapParametersQuery.errors).toBeFalsy;
+    expect(etherDaiSwapParametersQuery.data?.swapParameters).toBeTruthy();
+    const etherDaiSwapParameters: SwapParameters = etherDaiSwapParametersQuery.data?.swapParameters!;
+
+    const etherDaiGasEstimateQuery = await client.query<{ estimateGas: string}>({
+      uri: ensUri,
+      query: `
+        query {
+          estimateGas(
+            parameters: $parameters
+            chainId: $chainId
+          )
+        }
+      `,
+      variables: {
+        parameters: etherDaiSwapParameters,
+        chainId: etherDaiTrade.inputAmount.token.chainId
+      },
+    });
+    const etherDaiGasEstimate: string = etherDaiGasEstimateQuery.data?.estimateGas ?? "";
+
+    const etherDaiSwapExecQuery = await client.query<{ exec: TxReceipt}>({
+      uri: ensUri,
+      query: `
+        mutation {
+          exec(
+            trade: $trade
+            tradeOptions: $tradeOptions
+          )
+        }
+      `,
+      variables: {
+        trade: etherDaiTrade,
+        tradeOptions: {
+          allowedSlippage: "0.1",
+          recipient: recipient,
+          unixTimestamp: parseInt((new Date().getTime() / 1000).toFixed(0)),
+          ttl: 1800
+        }
+      },
+    });
+    const etherDaiSwapActualGas = etherDaiSwapExecQuery.data?.exec.gasUsed ?? "-1";
+
+    expect(etherDaiGasEstimate).toStrictEqual(etherDaiSwapActualGas);
+  });
+
+  it("Should successfully estimate swap call gas (dai-link swap)", async () => {
+    const daiLinkData = await client.query<{
+      fetchPairData: Pair;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          fetchPairData(
+            token0: $token0
+            token1: $token1
+          )
+        }
+      `,
+      variables: {
+        token0: dai,
+        token1: link,
+      },
+    });
+
+    const daiLinkTradeData = await client.query<{bestTradeExactIn: Trade[]}>({
+      uri: ensUri,
+      query: `
+        query {
+          bestTradeExactIn (
+            pairs: $pairs
+            amountIn: $amountIn
+            tokenOut: $tokenOut
+          )
+        }
+      `,
+      variables: {
+        pairs: [daiLinkData.data!.fetchPairData],
+        amountIn: {
+          token: dai,
+          amount: "100000"
+        },
+        tokenOut: link,
+      },
+    });
+    const daiLinkTrade = daiLinkTradeData.data!.bestTradeExactIn[0];
+
+    const daiLinkSwapParametersQuery = await client.query<{ swapParameters: SwapParameters}>({
+      uri: ensUri,
+      query: `
+        query {
+          swapCallParameters(
+            trade: $trade
+            tradeOptions: $tradeOptions
+          )
+        }
+      `,
+      variables: {
+        trade: daiLinkTrade,
+        tradeOptions: {
+          allowedSlippage: "0.1",
+          recipient: recipient,
+          unixTimestamp: parseInt((new Date().getTime() / 1000).toFixed(0)),
+          ttl: 1800
+        }
+      },
+    });
+
+    expect(daiLinkSwapParametersQuery.errors).toBeFalsy;
+    expect(daiLinkSwapParametersQuery.data?.swapParameters).toBeTruthy();
+    const daiLinkSwapParameters: SwapParameters = daiLinkSwapParametersQuery.data?.swapParameters!;
+
+    const daiLinkGasEstimateQuery = await client.query<{ estimateGas: string}>({
+      uri: ensUri,
+      query: `
+        query {
+          estimateGas(
+            parameters: $parameters
+            chainId: $chainId
+          )
+        }
+      `,
+      variables: {
+        parameters: daiLinkSwapParameters,
+        chainId: daiLinkTrade.inputAmount.token.chainId
+      },
+    });
+    const daiLinkGasEstimate: string = daiLinkGasEstimateQuery.data?.estimateGas ?? "";
+
+    const daiLinkSwapExecQuery = await client.query<{ exec: TxReceipt}>({
+      uri: ensUri,
+      query: `
+        mutation {
+          exec(
+            trade: $trade
+            tradeOptions: $tradeOptions
+          )
+        }
+      `,
+      variables: {
+        trade: daiLinkTrade,
+        tradeOptions: {
+          allowedSlippage: "0.1",
+          recipient: recipient,
+          unixTimestamp: parseInt((new Date().getTime() / 1000).toFixed(0)),
+          ttl: 1800
+        }
+      },
+    });
+    const daiLinkSwapActualGas = daiLinkSwapExecQuery.data?.exec.gasUsed ?? "-1";
+
+    expect(daiLinkGasEstimate).toStrictEqual(daiLinkSwapActualGas);
+  });
+
+  it("Should call a swap statically (i.e. does not actually execute but \"pretends\" to execute) and return revert reason", async () => {
+    const daiLinkData = await client.query<{
+      fetchPairData: Pair;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          fetchPairData(
+            token0: $token0
+            token1: $token1
+          )
+        }
+      `,
+      variables: {
+        token0: dai,
+        token1: link,
+      },
+    });
+
+    const daiLinkTradeData = await client.query<{bestTradeExactIn: Trade[]}>({
+      uri: ensUri,
+      query: `
+        query {
+          bestTradeExactIn (
+            pairs: $pairs
+            amountIn: $amountIn
+            tokenOut: $tokenOut
+          )
+        }
+      `,
+      variables: {
+        pairs: [daiLinkData.data!.fetchPairData],
+        amountIn: {
+          token: dai,
+          amount: "100000"
+        },
+        tokenOut: link,
+      },
+    });
+    const daiLinkTrade = daiLinkTradeData.data!.bestTradeExactIn[0];
+
+    const daiLinkSwapParametersQuery = await client.query<{ swapParameters: SwapParameters}>({
+      uri: ensUri,
+      query: `
+        query {
+          swapCallParameters(
+            trade: $trade
+            tradeOptions: $tradeOptions
+          )
+        }
+      `,
+      variables: {
+        trade: daiLinkTrade,
+        tradeOptions: {
+          allowedSlippage: "0.1",
+          recipient: recipient,
+          unixTimestamp: parseInt((new Date().getTime() / 1000).toFixed(0)),
+          ttl: 1800
+        }
+      },
+    });
+
+    expect(daiLinkSwapParametersQuery.errors).toBeFalsy;
+    expect(daiLinkSwapParametersQuery.data?.swapParameters).toBeTruthy();
+    const daiLinkSwapParameters: SwapParameters = daiLinkSwapParametersQuery.data?.swapParameters!;
+
+    const daiLinkSwapStatic = await client.query<{ execCallStatic: string}>({
+      uri: ensUri,
+      query: `
+        query {
+          execCallStatic(
+            parameters: $parameters
+            chainId: $chainId
+            txOverrides: $txOverrides
+          )
+        }
+      `,
+      variables: {
+        parameters: daiLinkSwapParameters,
+        chainId: daiLinkTrade.inputAmount.token.chainId,
+        txOverrides: { gasPrice: 1, gasLimit: 1}
+      },
+    });
+    const exceptionReason: string | undefined = daiLinkSwapStatic.data?.execCallStatic;
+    expect(exceptionReason).not.toBeUndefined();
+    expect(exceptionReason).toStrictEqual("processing response error");
+
+    const daiLinkSwapReal = await client.query<{ execCall: TxReceipt}>({
+      uri: ensUri,
+      query: `
+        mutation {
+          execCall(
+            parameters: $parameters
+            chainId: $chainId
+          )
+        }
+      `,
+      variables: {
+        parameters: daiLinkSwapParameters,
+        chainId: daiLinkTrade.inputAmount.token.chainId,
+        txOverrides: { gasPrice: 1, gasLimit: 1}
+      },
+    });
+    const daiLinkSwapReceipt: TxReceipt | undefined = daiLinkSwapReal.data?.execCall;
+    expect(daiLinkSwapReceipt).not.toBeUndefined();
+    expect(daiLinkSwapReceipt?.status).toBeFalsy();
+
+    const daiLinkSwapStaticNoError = await client.query<{ execCallStatic: string}>({
+      uri: ensUri,
+      query: `
+        query {
+          execCallStatic(
+            parameters: $parameters
+            chainId: $chainId
+            txOverrides: $txOverrides
+          )
+        }
+      `,
+      variables: {
+        parameters: daiLinkSwapParameters,
+        chainId: daiLinkTrade.inputAmount.token.chainId
+      },
+    });
+    const hasException: string | undefined = daiLinkSwapStaticNoError.data?.execCallStatic;
+    expect(hasException).not.toBeUndefined();
+    expect(hasException).toStrictEqual("");
+
+    const daiLinkSwapRealSuccess = await client.query<{ execCall: TxReceipt}>({
+      uri: ensUri,
+      query: `
+        mutation {
+          execCall(
+            parameters: $parameters
+            chainId: $chainId
+          )
+        }
+      `,
+      variables: {
+        parameters: daiLinkSwapParameters,
+        chainId: daiLinkTrade.inputAmount.token.chainId,
+        txOverrides: { gasPrice: 1, gasLimit: 1}
+      },
+    });
+    const daiLinkSwapSuccessReceipt: TxReceipt | undefined = daiLinkSwapRealSuccess.data?.execCall;
+    expect(daiLinkSwapSuccessReceipt).not.toBeUndefined();
+    expect(daiLinkSwapSuccessReceipt?.status).toBeTruthy();
   });
 });
