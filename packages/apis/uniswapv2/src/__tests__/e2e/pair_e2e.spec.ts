@@ -5,7 +5,7 @@ import { Pair, Token, TokenAmount } from "./types";
 import { getPairData, getRedirects, getTokenList, getUniPairs } from "../testUtils";
 import * as uni from "@uniswap/sdk";
 
-jest.setTimeout(90000);
+jest.setTimeout(150000);
 
 describe('Pair', () => {
 
@@ -56,7 +56,7 @@ describe('Pair', () => {
     await stopTestEnvironment();
   })
 
-  it("pairAddress", async () => {
+  it("off-chain pairAddress", async () => {
     for (let i = 0; i < pairs.length; i++) {
       const pair = pairs[i];
       const actualOutput = await client.query<{
@@ -79,6 +79,7 @@ describe('Pair', () => {
       if (actualOutput.errors) {
         actualOutput.errors.forEach(e => console.log(e.message));
       }
+
       const expectedOutput: string = uni.Pair.getAddress(uniPairs[i].token0, uniPairs[i].token1);
       expect(actualOutput.data?.pairAddress).toStrictEqual(expectedOutput);
     }

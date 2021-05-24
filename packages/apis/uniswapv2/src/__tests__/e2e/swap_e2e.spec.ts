@@ -6,8 +6,6 @@ import { getRedirects, getTokenList } from "../testUtils";
 import { Contract, ethers, providers } from "ethers";
 import erc20ABI from "./testData/erc20ABI.json";
 import { SwapParameters } from "../../query/w3";
-import { UNISWAP_ROUTER_CONTRACT } from "../../utils/constants";
-import { getSwapMethodAbi } from "../../mutation/abi";
 
 jest.setTimeout(120000);
 
