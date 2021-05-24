@@ -94,6 +94,11 @@ export async function getPairData(token0: Token, token1: Token, client: Web3ApiC
       token1: token1
     },
   });
+
+  if (pairData.errors) {
+    throw pairData.errors;
+  }
+
   return pairData.data?.fetchPairData;
 }
 
@@ -121,5 +126,5 @@ export function getUniPairs(pairs: Pair[], chainId: number): uni.Pair[] {
         pair.tokenAmount1.amount
       ),
     );
-  })
+  });
 }

@@ -42,7 +42,11 @@ describe('Pair', () => {
     const uni_link: Pair | undefined = await getPairData(uniswap, link, client, ensUri);
     const uni_wbtc: Pair | undefined = await getPairData(uniswap, wbtc, client, ensUri);
     const wbtc_weth: Pair | undefined = await getPairData(wbtc, weth, client, ensUri);
-    [aave_dai, usdc_dai, aave_usdc, comp_weth, uni_link, uni_wbtc, wbtc_weth].forEach(pair => pairs.push(pair!));
+    [aave_dai, usdc_dai, aave_usdc, comp_weth, uni_link, uni_wbtc, wbtc_weth].forEach(pair => {
+      if (pair) {
+        pairs.push(pair)
+      }
+    });
 
     // create uniswap sdk pairs to compare results
     uniPairs = getUniPairs(pairs, 1);
@@ -52,7 +56,7 @@ describe('Pair', () => {
     await stopTestEnvironment();
   })
 
-  it.only("pairAddress", async () => {
+  it("pairAddress", async () => {
     for (let i = 0; i < pairs.length; i++) {
       const pair = pairs[i];
       const actualOutput = await client.query<{

@@ -187,15 +187,16 @@ export class EthereumPlugin extends Plugin {
     // If a custom network is provided, either get an already
     // established connection, or a create a new one
     if (networkNameOrChainId) {
-      if (this._connections[networkNameOrChainId]) {
-        connection = this._connections[networkNameOrChainId];
+      const networkStr = networkNameOrChainId.toLowerCase();
+      if (this._connections[networkStr]) {
+        connection = this._connections[networkStr];
       } else {
-        const chainId = Number.parseInt(networkNameOrChainId);
+        const chainId = Number.parseInt(networkStr);
 
         if (!isNaN(chainId)) {
           connection = Connection.fromNetwork(chainId);
         } else {
-          connection = Connection.fromNetwork(networkNameOrChainId);
+          connection = Connection.fromNetwork(networkStr);
         }
       }
     } else {

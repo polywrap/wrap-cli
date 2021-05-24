@@ -53,7 +53,12 @@ describe('trade e2e', () => {
     const uni_link: Pair | undefined = await getPairData(uniswap, link, client, ensUri);
     const uni_wbtc: Pair | undefined = await getPairData(uniswap, wbtc, client, ensUri);
     const wbtc_weth: Pair | undefined = await getPairData(wbtc, weth, client, ensUri);
-    [aave_dai, usdc_dai, link_usdc, uni_link, uni_wbtc, wbtc_weth, comp_weth].forEach(pair => pairs.push(pair!));
+    [aave_dai, usdc_dai, link_usdc, uni_link, uni_wbtc, wbtc_weth, comp_weth].forEach(pair => {
+      if (pair) {
+        pairs.push(pair)
+      }
+    });
+
     uniPairs = getUniPairs(pairs, 1);
   });
 
