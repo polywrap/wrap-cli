@@ -66,3 +66,38 @@ export interface TradeOptions {
   deadline: number;
   feeOnTransfer: boolean;
 }
+
+export interface Log {
+  blockNumber: number
+  blockHash: string
+  transactionIndex: number
+  removed: boolean
+  address: string
+  data: string
+  topics: string[]
+  transactionHash: string
+  logIndex: number
+}
+
+export interface TxReceipt {
+  to: string
+  from: string
+  contractAddress: string
+  transactionIndex: number
+  root: string
+  gasUsed: string
+  logsBloom: string
+  blockHash: string
+  transactionHash: string
+  logs: Log[]
+  blockNumber: number
+  confirmations: number
+  cumulativeGasUsed: string
+  byzantium: boolean
+  status: number
+}
+
+export interface TxOverrides {
+  gasPrice: string | null
+  gasLimit: string | null
+}

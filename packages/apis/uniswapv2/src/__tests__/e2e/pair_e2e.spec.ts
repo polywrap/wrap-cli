@@ -52,6 +52,34 @@ describe('Pair', () => {
     await stopTestEnvironment();
   })
 
+  it.only("pairAddress", async () => {
+    for (let i = 0; i < pairs.length; i++) {
+      const pair = pairs[i];
+      const actualOutput = await client.query<{
+        pairAddress: string;
+      }>({
+        uri: ensUri,
+        query: `
+        query {
+          pairAddress(
+            token0: $token0
+            token1: $token1
+          )
+        }
+      `,
+        variables: {
+          token0: pair.tokenAmount0.token,
+          token1: pair.tokenAmount1.token
+        },
+      });
+      if (actualOutput.errors) {
+        actualOutput.errors.forEach(e => console.log(e.message));
+      }
+      const expectedOutput: string = uni.Pair.getAddress(uniPairs[i].token0, uniPairs[i].token1);
+      expect(actualOutput.data?.pairAddress).toStrictEqual(expectedOutput);
+    }
+  });
+
   it("pairOutputAmount", async () => {
     for (let i = 0; i < pairs.length; i++) {
       const pair = pairs[i];
