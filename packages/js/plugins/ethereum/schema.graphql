@@ -11,18 +11,18 @@ type Log {
 }
 
 type TxReceipt {
-  to: String!
+  to: String
   from: String!
-  contractAddress: String!
+  contractAddress: String
   transactionIndex: Int!
   root: String
   gasUsed: String!
-  logsBloom: String!
-  blockHash: String!
+#  logsBloom: String!
+#  blockHash: String!
   transactionHash: String!
-  logs: [Log!]!,
-  blockNumber: Int!
-  confirmations: Int!
+#  logs: [Log!]!
+#  blockNumber: Int!
+#  confirmations: Int!
   cumulativeGasUsed: String!
   byzantium: Boolean!
   status: Int!
@@ -36,6 +36,10 @@ type TxResponse {
   confirmations: Int!
   from: String!
   raw: String
+  nonce: String!
+  gasLimit: String!
+  gasPrice: String!
+  data: String!
 }
 
 type TxRequest {

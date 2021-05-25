@@ -118,6 +118,7 @@ export function approve(input: Input_approve): Ethereum_TxReceipt {
     txOverrides.gasPrice === null ? null : txOverrides.gasPrice!.toString();
   const gasLimit: string | null =
     txOverrides.gasLimit === null ? null : txOverrides.gasLimit!.toString();
+
   const txReceipt: Ethereum_TxReceipt = Ethereum_Mutation.callContractMethodAndWait(
     {
       address: input.token.address,

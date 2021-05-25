@@ -1,7 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { query, mutation } from "./resolvers";
 import { manifest } from "./manifest";
-import { Connection as ConnectionOverride, TxOverrides, TxRequest } from "./types";
+import {
+  Connection as ConnectionOverride,
+  TxOverrides,
+  TxRequest,
+} from "./types";
 import {
   Address,
   AccountIndex,

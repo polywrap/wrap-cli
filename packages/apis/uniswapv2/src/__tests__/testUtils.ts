@@ -53,7 +53,7 @@ export function getRedirects(ethereum: string, ipfs: string, ensAddress: string)
     {
       from: "w3://ens/ens.web3api.eth",
         to: ensPlugin({ addresses: { testnet: ensAddress } }),
-    },
+    }
   ];
 }
 

@@ -26,7 +26,7 @@ type TxReceipt {
   logsBloom: String!
   blockHash: String!
   transactionHash: String!
-  logs: [Log!]!,
+  logs: [Log!]!
   blockNumber: Int!
   confirmations: Int!
   cumulativeGasUsed: String!
@@ -127,7 +127,7 @@ type Query {
     timeout: Int
     connection: Connection
   ): String!
-  
+
   callContractMethodStatic(
     address: String!
     method: String!

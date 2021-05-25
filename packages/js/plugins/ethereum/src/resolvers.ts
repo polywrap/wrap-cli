@@ -1,12 +1,9 @@
 import { EthereumPlugin } from ".";
-import {
-  mapTxReceipt,
-  mapTxResponse,
-} from "./mapping";
+import { mapTxReceipt, mapTxResponse } from "./mapping";
 import {
   Connection as ConnectionOverride,
   TxOverrides,
-  TxRequest
+  TxRequest,
 } from "./types";
 
 import { PluginModule } from "@web3api/core-js";

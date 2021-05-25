@@ -1,5 +1,6 @@
 #import { Mutation, TxReceipt } into Ethereum from "w3://ens/ethereum.web3api.eth"
 #import { ChainId, Currency, Route, Trade, Pair, TradeOptions, SwapParameters, TxOverrides } from "../common/schema.graphql"
+#import { Query, LogLevel } into Logger from "w3://w3/logger"
 
 type Mutation {
   swap (

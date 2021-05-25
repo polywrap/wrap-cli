@@ -5,7 +5,7 @@ import { ChainId, Pair, Route, Token, TokenAmount, Trade, TradeType } from "./ty
 import { getPairData, getRedirects, getTokenList, getUniPairs } from "../testUtils";
 import * as uni from "@uniswap/sdk";
 
-jest.setTimeout(90000);
+jest.setTimeout(120000);
 
 describe('trade e2e', () => {
 

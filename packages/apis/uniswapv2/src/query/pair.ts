@@ -20,7 +20,7 @@ import {
 } from "./w3";
 import { ProcessedPair } from "../utils/ProcessedPair";
 import Price from "../utils/Price";
-import { concat, getChecksumAddress } from "../utils/utils";
+import { concat, getChecksumAddress } from "../utils/addressUtils";
 
 import { BigInt } from "@web3api/wasm-as";
 

@@ -25,7 +25,7 @@ describe("Swap", () => {
     const { ethereum: testEnvEtherem, ensAddress, ipfs } = await initTestEnvironment();
     // get client
     const redirects: UriRedirect[] = getRedirects(testEnvEtherem, ipfs, ensAddress);
-    client = new Web3ApiClient({ redirects: redirects });
+    client = new Web3ApiClient({ redirects: redirects, tracingEnabled: true });
 
     // deploy api
     const apiPath: string = path.resolve(__dirname + "../../../../");
@@ -50,9 +50,14 @@ describe("Swap", () => {
         token: dai,
       },
     });
+    if (daiTxReceipt.errors) {
+      daiTxReceipt.errors.forEach(console.log)
+    }
     const daiApprove: string = daiTxReceipt.data?.approve.transactionHash ?? "";
     const daiApproveTx = await ethersProvider.getTransaction(daiApprove);
     await daiApproveTx.wait();
+
+    console.log("dai approved: " + daiApprove)
 
     link = tokens.filter(token => token.currency.symbol === "LINK")[0];
     const linkTxReceipt = await client.query<{approve: TxReceipt}>({
@@ -84,7 +89,7 @@ describe("Swap", () => {
     await stopTestEnvironment();
   });
 
-  it("Should successfully exec ether -> dai -> link -> ether trades", async () => {
+  it.only("Should successfully exec ether -> dai -> link -> ether trades", async () => {
     const etherDaiData = await client.query<{
       fetchPairData: Pair;
     }>({

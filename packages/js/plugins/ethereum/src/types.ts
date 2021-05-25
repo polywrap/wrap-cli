@@ -18,31 +18,35 @@ export interface Log {
 }
 
 export interface TxReceipt {
-  to: string;
+  to?: string;
   from: string;
-  contractAddress: string;
+  contractAddress?: string;
   transactionIndex: number;
   root?: string;
   gasUsed: string;
-  logsBloom: string;
-  blockHash: string;
+  // logsBloom: string;
+  // blockHash: string;
   transactionHash: string;
-  logs: Log[];
-  blockNumber: number;
-  confirmations: number;
+  // logs: Log[];
+  // blockNumber: number;
+  // confirmations: number;
   cumulativeGasUsed: string;
   byzantium: boolean;
   status: number;
 }
 
 export interface TxResponse {
-  hash: string
-  blockNumber?: number
-  blockHash?: string
-  timestamp?: number
-  confirmations: number
-  from: string
-  raw?: string
+  hash: string;
+  blockNumber?: number;
+  blockHash?: string;
+  timestamp?: number;
+  confirmations: number;
+  from: string;
+  raw?: string;
+  nonce: string;
+  gasLimit: string;
+  gasPrice: string;
+  data: string;
 }
 
 export interface TxRequest {
@@ -57,8 +61,8 @@ export interface TxRequest {
 }
 
 export interface TxOverrides {
-  nonce?: string
-  gasLimit?: string
-  gasPrice?: string
-  value?: string
+  nonce?: string;
+  gasLimit?: string;
+  gasPrice?: string;
+  value?: string;
 }
