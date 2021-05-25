@@ -22,7 +22,7 @@ export function dockerImageName(name: unknown): boolean {
   return true;
 }
 
-export function imageOrDockerfile(value: unknown): boolean {
+export function dockerfileName(value: unknown): boolean {
   if (typeof value !== "string") {
     return false;
   }

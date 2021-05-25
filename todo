@@ -1,5 +1,5 @@
 # Default Setup
-- remove the "language" manifest key, use "build: ./web3api.build.yaml" or "build: wasm/assemblyscript"
+x remove the "language" manifest key, use "build: ./web3api.build.yaml" or "build: wasm/assemblyscript"
 - build manifest proper
 - - update the existing manifest code to use "RootManifest"
 - - Add "BuildManifest" to the core

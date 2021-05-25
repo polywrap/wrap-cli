@@ -81,7 +81,7 @@ export class SchemaComposer {
 
     const { project } = this._config;
 
-    const manifest = await project.getManifest();
+    const manifest = await project.getWeb3ApiManifest();
     const querySchemaPath = manifest.modules.query?.schema;
     const mutationSchemaPath = manifest.modules.mutation?.schema;
     const getSchema = (schemaPath?: string): SchemaFile | undefined =>
@@ -140,12 +140,8 @@ export class SchemaComposer {
     return fs.readFileSync(
       path.isAbsolute(schemaPath)
         ? schemaPath
-        : this._appendPath(this._config.project.manifestPath, schemaPath),
+        : path.join(this._config.project.web3apiManifestDir, schemaPath),
       "utf-8"
     );
-  }
-
-  private _appendPath(root: string, subPath: string) {
-    return path.join(path.dirname(root), subPath);
   }
 }

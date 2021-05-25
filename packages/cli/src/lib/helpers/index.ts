@@ -1,4 +1,5 @@
 export * from "./path";
-export * from "./web3apiManifest";
+export * from "./manifest";
 export * from "./parameters";
 export * from "./spinner";
+export * from "./docker";

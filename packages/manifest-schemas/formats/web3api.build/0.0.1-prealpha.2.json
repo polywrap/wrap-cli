@@ -3,8 +3,7 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "format",
-    "docker"
+    "format"
   ],
   "properties": {
     "format": {
@@ -14,18 +13,17 @@
     "docker": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "name",
-        "imageOrDockerfile"
-      ],
       "properties": {
         "name": {
           "type": "string",
           "format": "dockerImageName"
         },
-        "imageOrDockerfile": {
+        "dockerfile": {
           "type": "string",
-          "format": "imageOrDockerfile"
+          "format": "dockerfileName"
+        },
+        "nameDigest": {
+          "type": "string"
         }
       }
     },

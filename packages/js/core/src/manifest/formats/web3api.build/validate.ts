@@ -20,7 +20,7 @@ const schemas: BuildManifestSchemas = {
 const validator = new Validator();
 
 Validator.prototype.customFormats.dockerImageName = Validators.dockerImageName;
-Validator.prototype.customFormats.imageOrDockerfile = Validators.imageOrDockerfile;
+Validator.prototype.customFormats.dockerfileName = Validators.dockerfileName;
 
 export const validateBuildManifest = Tracer.traceFunc(
   "core: validateBuildManifest",

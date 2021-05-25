@@ -8,9 +8,10 @@
 
 export interface BuildManifest {
   format: "0.0.1-prealpha.2";
-  docker: {
-    name: string;
-    imageOrDockerfile: string;
+  docker?: {
+    name?: string;
+    dockerfile?: string;
+    nameDigest?: string;
   };
   env?: {
     [k: string]: unknown;
