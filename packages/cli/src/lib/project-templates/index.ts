@@ -61,8 +61,12 @@ const executeCommand = (
   root: string
 ): Promise<boolean | { command: string }> => {
   return new Promise((resolve, reject) => {
-    const child = spawn(command, args, { stdio: "inherit", cwd: root });
-    child.on("close", (code) => {
+    const child = spawn(command, args, {
+      stdio: "inherit",
+      cwd: root,
+      shell: process.platform == "win32",
+    });
+    child.on("close", (code: number) => {
       if (code !== 0) {
         // Return the failed command
         reject({

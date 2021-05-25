@@ -22,11 +22,12 @@ import {
   BindModuleOptions,
 } from "@web3api/schema-bind";
 import { TypeInfo } from "@web3api/schema-parse";
-
-import path from "path";
-import fs, { readFileSync } from "fs";
-import * as gluegun from "gluegun";
 import { ComposerOutput } from "@web3api/schema-compose";
+import { writeFileSync } from "@web3api/os-js";
+
+import fs from "fs";
+import path from "path";
+import * as gluegun from "gluegun";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const fsExtra = require("fs-extra");
@@ -191,7 +192,7 @@ export class Compiler {
     }
 
     // Build the sources
-    await this._buildSourcesInDocker(buildManifest, outputDir, project.quiet);
+    await this._buildSourcesInDocker(buildManifest, project.quiet);
 
     // Validate the WASM exports
     await Promise.all(
@@ -201,7 +202,7 @@ export class Compiler {
     );
 
     // Output the schema & manifest files
-    fs.writeFileSync(
+    writeFileSync(
       `${outputDir}/schema.graphql`,
       composerOutput.combined.schema,
       "utf-8"
@@ -282,7 +283,7 @@ export class Compiler {
   }
 
   private async _validateExports(moduleName: InvokableModules, buildDir: string) {
-    const wasmSource = readFileSync(path.join(buildDir, `${moduleName}.wasm`));
+    const wasmSource = fs.readFileSync(path.join(buildDir, `${moduleName}.wasm`));
     const mod = await WebAssembly.compile(wasmSource);
     const memory = new WebAssembly.Memory({ initial: 1 });
     const instance = await WebAssembly.instantiate(mod, {

@@ -1,7 +1,7 @@
 {
   "name": "@web3api/tracing-js",
   "description": "Web3API Core Tracing",
-  "version": "0.0.1-prealpha.21",
+  "version": "0.0.1-prealpha.23",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -20,8 +20,8 @@
   },
   "dependencies": {
     "@opentelemetry/api": "^1.0.0-rc.0",
-    "@opentelemetry/core": "^0.18.0",
     "@opentelemetry/context-zone": "^0.18.0",
+    "@opentelemetry/core": "^0.18.0",
     "@opentelemetry/exporter-collector": "^0.18.0",
     "@opentelemetry/exporter-jaeger": "^0.18.0",
     "@opentelemetry/exporter-zipkin": "^0.18.0",

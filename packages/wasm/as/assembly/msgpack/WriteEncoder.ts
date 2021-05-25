@@ -2,6 +2,7 @@ import { DataView } from "./DataView";
 import { Format } from "./Format";
 import { Nullable } from "./Nullable";
 import { Write } from "./Write";
+import { BigInt } from "../BigInt";
 
 export class WriteEncoder extends Write {
   private view: DataView;
@@ -132,6 +133,11 @@ export class WriteEncoder extends Write {
     }
     this.writeBytesLength(value.byteLength);
     this.view.setBytes(value);
+  }
+
+  writeBigInt(value: BigInt): void {
+    const str = value.toString();
+    this.writeString(str);
   }
 
   writeArrayLength(length: u32): void {
@@ -295,6 +301,15 @@ export class WriteEncoder extends Write {
     }
 
     this.writeBytes(value);
+  }
+
+  writeNullableBigInt(value: BigInt | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeBigInt(value);
   }
 
   writeNullableArray<T>(

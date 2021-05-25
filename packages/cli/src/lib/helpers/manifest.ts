@@ -8,6 +8,7 @@ import {
   deserializeWeb3ApiManifest,
   deserializeBuildManifest
 } from "@web3api/core-js";
+import { writeFileSync } from "@web3api/os-js";
 import YAML from "js-yaml";
 import fs from "fs";
 
@@ -127,7 +128,7 @@ export async function outputManifest(
       throw Error(noDumpMessage);
     }
 
-    fs.writeFileSync(manifestPath, str, "utf-8");
+    writeFileSync(manifestPath, str, "utf-8");
   };
 
   if (quiet) {

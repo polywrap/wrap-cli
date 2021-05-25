@@ -1,5 +1,6 @@
 import { fetchTestCases } from "./index";
 import { readDirectory } from "../utils/fs";
+import { alphabeticalNamedSort } from "../utils/sort";
 import { bindSchema, OutputEntry, TargetLanguage } from "../";
 
 describe("Web3API Binding Test Suite", () => {
@@ -34,26 +35,12 @@ describe("Web3API Binding Test Suite", () => {
           mutation: testCase.input.mutation
         });
 
-        interface Named {
-          name: string;
-        }
-
-        const alphabetical = (a: Named, b: Named) => {
-          if (a.name < b.name) {
-            return -1;
-          }
-          if (a.name > b.name) {
-            return 1;
-          }
-          return 0;
-        };
-
         const sort = (array: OutputEntry[]): OutputEntry[] => {
           array.forEach((entry) => {
             if (typeof entry.data !== "string") entry.data = sort(entry.data);
           });
 
-          return array.sort(alphabetical);
+          return array.sort(alphabeticalNamedSort);
         };
 
         if (output.query) {
