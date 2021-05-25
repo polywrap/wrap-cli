@@ -1,0 +1,28 @@
+{
+  "id": "BuildManifest_WasmAsExt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "env"
+  ],
+  "properties": {
+    "args": {
+      "type": "object",
+      "required": [
+        "node_version",
+        "include"
+      ],
+      "properties": {
+        "node_version": {
+          "type": "string"
+        },
+        "include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

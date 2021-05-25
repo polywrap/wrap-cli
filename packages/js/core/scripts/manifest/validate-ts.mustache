@@ -9,7 +9,12 @@ import schema_{{tsVersion}} from "@web3api/manifest-schemas/formats/{{dir}}/{{ve
 {{/formats}}
 import { Tracer } from "@web3api/tracing-js"
 
-import { Validator, Schema, ValidationError } from "jsonschema";
+import {
+  Schema,
+  Validator,
+  ValidationError,
+  ValidatorResult
+} from "jsonschema";
 
 type {{#latest}}{{type}}{{/latest}}Schemas = {
   [key in {{#latest}}{{type}}{{/latest}}Formats]: Schema | undefined
@@ -29,20 +34,29 @@ Validator.prototype.customFormats.{{.}} = Validators.{{.}};
 
 export const validate{{#latest}}{{type}}{{/latest}} = Tracer.traceFunc(
   "core: validate{{#latest}}{{type}}{{/latest}}",
-  (manifest: Any{{#latest}}{{type}}{{/latest}}): void => {
+  (
+    manifest: Any{{#latest}}{{type}}{{/latest}},
+    extSchema: Schema | undefined = undefined
+  ): void => {
     const schema = schemas[manifest.format as {{#latest}}{{type}}{{/latest}}Formats];
 
     if (!schema) {
       throw Error(`Unrecognized {{#latest}}{{type}}{{/latest}} schema format "${manifest.format}"`);
     }
 
-    const result = validator.validate(manifest, schema);
+    const throwIfErrors = (result: ValidatorResult) => {
+      if (result.errors.length) {
+        throw [
+          new Error(`Validation errors encountered while sanitizing {{#latest}}{{type}}{{/latest}} format ${manifest.format}`),
+          ...result.errors.map((error: ValidationError) => new Error(error.toString()))
+        ];
+      }
+    };
 
-    if (result.errors.length) {
-      throw [
-        new Error(`Validation errors encountered while sanitizing {{#latest}}{{type}}{{/latest}} format ${manifest.format}`),
-        ...result.errors.map((error: ValidationError) => new Error(error.toString()))
-      ];
+    throwIfErrors(validator.validate(manifest, schema));
+
+    if (extSchema) {
+      throwIfErrors(validator.validate(manifest, extSchema));
     }
   }
 );

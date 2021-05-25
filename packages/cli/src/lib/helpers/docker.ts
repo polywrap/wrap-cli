@@ -1,19 +1,18 @@
 import { runCommand } from "./command";
-
+/*
 interface CopyArgs {
-  tempDir: string;
   imageName: string;
   source: string;
   destination: string;
 }
 
 interface BuildArgs {
-  tempDir: string;
   outputImageName: string;
   args: string;
 }
+*/
 
-export function transformEnvToArgs(
+export function transformBuildArgs(
   env: Record<string, string | string[]>
 ): string {
   return Object.entries(env)
@@ -44,7 +43,7 @@ export async function copyFromImageToHost(
 
   try {
     await runCommand(
-      `cd ${tempDir} && docker cp temp:/app/${source}/. ${destination}`,
+      `cd ${tempDir} && docker cp temp:/project/${source}/. ${destination}`,
       quiet
     );
   } catch (e) {

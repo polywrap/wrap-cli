@@ -9,7 +9,9 @@ import {
   deserializeBuildManifest
 } from "@web3api/core-js";
 import { writeFileSync } from "@web3api/os-js";
+import { Schema as JsonSchema } from "jsonschema";
 import YAML from "js-yaml";
+import path from "path";
 import fs from "fs";
 
 export async function loadWeb3ApiManifest(
@@ -63,8 +65,20 @@ export async function loadBuildManifest(
       throw Error(noLoadMessage);
     }
 
+    // Load the custom json-schema extension if it exists
+    const envSchemaPath = path.dirname(manifestPath) + "/web3api.build.ext.json";
+    let extSchema: JsonSchema | undefined = undefined;
+
+    if (fs.existsSync(envSchemaPath)) {
+      extSchema = JSON.parse(
+        fs.readFileSync(envSchemaPath, "utf-8")
+      ) as JsonSchema;
+    }
+
     try {
-      const result = deserializeBuildManifest(manifest);
+      const result = deserializeBuildManifest(manifest, {
+        extSchema: extSchema
+      });
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);

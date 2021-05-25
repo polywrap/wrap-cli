@@ -161,7 +161,7 @@ export default {
     }
 
     const project = new Project({
-      manifestPath,
+      web3apiManifestPath: manifestPath,
     });
 
     const schemaComposer = new SchemaComposer({
@@ -253,7 +253,7 @@ export default {
         // Watch for escape key presses
         print.info(
           `${intlMsg.commands_build_keypressListener_watching()}: ${
-            project.manifestDir
+            project.web3apiManifestDir
           }`
         );
         print.info(intlMsg.commands_build_keypressListener_exit());
@@ -281,8 +281,8 @@ export default {
       // Watch the directory
       const watcher = new Watcher();
 
-      watcher.start(project.manifestDir, {
-        ignored: [outputDir + "/**", project.manifestDir + "/**/w3/**"],
+      watcher.start(project.web3apiManifestDir, {
+        ignored: [outputDir + "/**", project.web3apiManifestDir + "/**/w3/**"],
         ignoreInitial: true,
         execute: async (events: WatchEvent[]) => {
           // Log all of the events encountered

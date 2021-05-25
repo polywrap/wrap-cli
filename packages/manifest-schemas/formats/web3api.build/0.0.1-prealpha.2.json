@@ -27,7 +27,7 @@
         }
       }
     },
-    "env": {
+    "args": {
       "type": "object"
     }
   }

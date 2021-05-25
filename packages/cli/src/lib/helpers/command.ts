@@ -2,7 +2,8 @@ import { exec, ExecException } from "child_process";
 
 export async function runCommand(
   command: string,
-  quiet = false
+  quiet = false,
+  env = undefined
 ): Promise<void> {
   if (!quiet) {
     console.log(`> ${command}`);
@@ -28,6 +29,6 @@ export async function runCommand(
       }
     };
 
-    exec(command, { cwd: __dirname }, callback);
+    exec(command, { cwd: __dirname, env }, callback);
   });
 }

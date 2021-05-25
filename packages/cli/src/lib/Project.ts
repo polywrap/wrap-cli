@@ -6,7 +6,7 @@ import fs from "fs";
 
 export interface ProjectConfig {
   web3apiManifestPath: string;
-  buildManifestPath: string;
+  buildManifestPath?: string;
   quiet?: boolean;
 }
 
@@ -42,7 +42,7 @@ export class Project {
     // Use a default build manifest for the provided language
     else {
       const language = web3apiManifest.language;
-      const path = `${__dirname}/build-env/${language}/web3api.build.yaml`;
+      const path = `${__dirname}/build-images/${language}/web3api.build.yaml`;
 
       if (!fs.existsSync(path)) {
         throw Error(`Unrecognized build language ${language}. No manifest found at ${path}.`);
@@ -72,9 +72,37 @@ export class Project {
         await this.getBuildManifestPath(),
         this.quiet
       );
+
+      // Add default env variables
+      const web3apiManifest = await this.getWeb3ApiManifest();
+      const defaultEnv = {
+        web3api_mutation_dir: web3apiManifest.modules.mutation
+          ? path.dirname(web3apiManifest.modules.mutation.module)
+          : undefined,
+        web3api_query_dir: web3apiManifest.modules.query
+        ? path.dirname(web3apiManifest.modules.query.module)
+        : undefined,
+        web3api_manifests: await this.getManifestPaths()
+      };
+
+      if (!this._buildManifest.env) {
+        this._buildManifest.env = defaultEnv;
+      } else {
+        this._buildManifest.env = {
+          ...this._buildManifest.env,
+          ...defaultEnv
+        };
+      }
     }
 
     return Promise.resolve(this._buildManifest);
+  }
+
+  public async getManifestPaths(): Promise<string[]> {
+    return [
+      this.web3apiManifestPath,
+      await this.getBuildManifestPath()
+    ];
   }
 
   public clearCache(): void {

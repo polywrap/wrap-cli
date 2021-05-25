@@ -32,19 +32,6 @@ import * as gluegun from "gluegun";
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const fsExtra = require("fs-extra");
 
-// TODO:
-// x get manifest
-// x get build manifest key (if option wasn't provided)
-// x x if neither are there, load the default one based on the language (wasm/assemblyscript -> wasm-as)
-// x loadBuildManifest(buildManifestPath, envSchema, this.quiet)
-// - - add env schema to json schema
-// - - validate env schema w/ json schema
-
-// TODO:
-// - getBuildEnv(web3apiManifest, buildManifest)
-// - - add all buildManifest.env props
-// - - add all defaults (web3api_mutation_dir, web3api_query_dir, web3api_manifests)
-
 export interface CompilerConfig {
   outputDir: string;
   project: Project;

@@ -29,7 +29,7 @@ export const deserializeBuildManifest = Tracer.traceFunc(
     }
 
     if (!options || !options.noValidate) {
-      validateBuildManifest(anyBuildManifest);
+      validateBuildManifest(anyBuildManifest, options?.extSchema);
     }
 
     const versionCompare = compare(

@@ -29,7 +29,7 @@ export const deserializeWeb3ApiManifest = Tracer.traceFunc(
     }
 
     if (!options || !options.noValidate) {
-      validateWeb3ApiManifest(anyWeb3ApiManifest);
+      validateWeb3ApiManifest(anyWeb3ApiManifest, options?.extSchema);
     }
 
     const versionCompare = compare(
