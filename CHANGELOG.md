@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.24
+## Bugs
+* `@web3api/wasm-as`: Moved `as-bigint` from `devDependencies` to `dependencies`. Fixes [issue #347](https://github.com/Web3-API/monorepo/issues/347)
+
 # Web3API 0.0.1-prealpha.23
 ## Feature
 * `@web3api/os-js`: This package contains OS agnostic code for doing things like writing files w/ consistent line endings.
