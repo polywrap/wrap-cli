@@ -2,7 +2,7 @@ import { EthereumPlugin } from ".";
 import { mapTxReceipt, mapTxResponse, mapLog } from "./mapping";
 import {
   Connection as ConnectionOverride,
-  Log,
+  EventNotification,
   TxOverrides,
   TxReceipt,
   TxRequest,
@@ -197,7 +197,7 @@ export const query = (ethereum: EthereumPlugin): PluginModule => ({
     args: string[];
     timeout: number;
     connection?: ConnectionOverride;
-  }): Promise<{ data: string; address: string; log: Log }> => {
+  }): Promise<EventNotification> => {
     const { data, address, log } = await ethereum.waitForEvent(
       input.address,
       input.event,

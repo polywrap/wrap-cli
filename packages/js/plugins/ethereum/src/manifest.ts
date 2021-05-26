@@ -19,18 +19,9 @@ type Log {
 type TxReceipt {
   to: String
   from: String!
-  contractAddress: String
-  transactionIndex: Int!
-  root: String
-  gasUsed: String!
-  logsBloom: String!
-  blockHash: String!
   transactionHash: String!
-  logs: [Log!]!
-  blockNumber: Int!
-  confirmations: Int!
+  blockNumber: String!
   cumulativeGasUsed: String!
-  byzantium: Boolean!
   status: Int!
 }
 
@@ -64,6 +55,12 @@ type TxOverrides {
   gasLimit: String
   gasPrice: String
   value: String
+}
+
+type EventNotification {
+  data: String!
+  address: String!
+  log: Log!
 }
 
 type Query {
@@ -130,7 +127,7 @@ type Query {
     args: [String]!
     timeout: Int
     connection: Connection
-  ): String!
+  ): EventNotification!
 
   callContractMethodStatic(
     address: String!
