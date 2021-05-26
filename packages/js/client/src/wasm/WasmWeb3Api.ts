@@ -285,7 +285,7 @@ export class WasmWeb3Api extends Api {
           case "LogQueryError": {
             return {
               error: new Error(
-                `WasmWeb3Api: invocation exception encourtered.\n` +
+                `WasmWeb3Api: invocation exception encountered.\n` +
                   `uri: ${this._uri.uri}\nmodule: ${module}\n` +
                   `method: ${method}\n` +
                   `input: ${JSON.stringify(input, null, 2)}\n` +

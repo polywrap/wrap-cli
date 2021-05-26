@@ -17,9 +17,9 @@ type Log {
 }
 
 type TxReceipt {
-  to: String!
+  to: String
   from: String!
-  contractAddress: String!
+  contractAddress: String
   transactionIndex: Int!
   root: String
   gasUsed: String!
@@ -42,6 +42,10 @@ type TxResponse {
   confirmations: Int!
   from: String!
   raw: String
+  nonce: String!
+  gasLimit: String!
+  gasPrice: String!
+  data: String!
 }
 
 type TxRequest {

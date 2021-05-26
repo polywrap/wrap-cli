@@ -1,18 +1,18 @@
-import { TxReceipt, TxResponse, TxRequest } from "./types";
+import { TxReceipt, TxResponse, TxRequest, Log } from "./types";
 
 import { ethers } from "ethers";
 
-// const mapLog = (log: ethers.providers.Log): Log => ({
-//   blockNumber: log.blockNumber,
-//   blockHash: log.blockHash,
-//   transactionIndex: log.transactionIndex,
-//   removed: log.removed,
-//   address: log.address,
-//   data: log.data,
-//   topics: log.topics,
-//   transactionHash: log.transactionHash,
-//   logIndex: log.logIndex,
-// });
+export const mapLog = (log: ethers.providers.Log): Log => ({
+  blockNumber: log.blockNumber,
+  blockHash: log.blockHash,
+  transactionIndex: log.transactionIndex,
+  removed: log.removed,
+  address: log.address,
+  data: log.data,
+  topics: log.topics,
+  transactionHash: log.transactionHash,
+  logIndex: log.logIndex,
+});
 
 export const mapTxReceipt = (
   receipt: ethers.providers.TransactionReceipt
@@ -23,12 +23,12 @@ export const mapTxReceipt = (
   transactionIndex: receipt.transactionIndex,
   root: receipt.root,
   gasUsed: receipt.gasUsed.toString(),
-  // logsBloom: receipt.logsBloom,
-  // blockHash: receipt.blockHash,
+  logsBloom: receipt.logsBloom,
+  blockHash: receipt.blockHash,
   transactionHash: receipt.transactionHash,
-  // logs: receipt.logs.map(mapLog),
-  // blockNumber: receipt.blockNumber,
-  // confirmations: receipt.confirmations,
+  logs: receipt.logs.map(mapLog),
+  blockNumber: receipt.blockNumber,
+  confirmations: receipt.confirmations,
   cumulativeGasUsed: receipt.cumulativeGasUsed.toString(),
   byzantium: receipt.byzantium,
   status: receipt.status ?? 0,

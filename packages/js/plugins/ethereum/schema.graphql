@@ -17,12 +17,12 @@ type TxReceipt {
   transactionIndex: Int!
   root: String
   gasUsed: String!
-#  logsBloom: String!
-#  blockHash: String!
+  logsBloom: String!
+  blockHash: String!
   transactionHash: String!
-#  logs: [Log!]!
-#  blockNumber: Int!
-#  confirmations: Int!
+  logs: [Log!]!
+  blockNumber: Int!
+  confirmations: Int!
   cumulativeGasUsed: String!
   byzantium: Boolean!
   status: Int!

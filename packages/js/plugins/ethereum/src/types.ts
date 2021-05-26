@@ -24,12 +24,12 @@ export interface TxReceipt {
   transactionIndex: number;
   root?: string;
   gasUsed: string;
-  // logsBloom: string;
-  // blockHash: string;
+  logsBloom: string;
+  blockHash: string;
   transactionHash: string;
-  // logs: Log[];
-  // blockNumber: number;
-  // confirmations: number;
+  logs: Log[];
+  blockNumber: number;
+  confirmations: number;
   cumulativeGasUsed: string;
   byzantium: boolean;
   status: number;
