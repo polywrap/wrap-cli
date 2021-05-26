@@ -32,7 +32,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install dependencies
-        run: yarn install --nonInteractive --frozen-lockfile
+        run: yarn install --nonInteractive --frozen-lockfile --prefer-offline
 
       - name: Lint
         run: yarn run lint:ci
