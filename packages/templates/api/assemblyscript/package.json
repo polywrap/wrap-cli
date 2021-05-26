@@ -18,7 +18,6 @@
     "@web3api/cli": "0.0.1-prealpha.23",
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.23",
     "@web3api/wasm-as": "0.0.1-prealpha.23",
-    "as-bigint": "^0.2.4",
     "ethers": "5.0.8",
     "js-yaml": "3.14.0",
     "solc": "0.8.3"
