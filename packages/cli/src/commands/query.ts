@@ -132,7 +132,7 @@ export default {
                 // Resolve Constants
                 if (str[0] === "$") {
                   str = constants[value.replace("$", "")];
-                } 
+                }
                 // Execute transform functions
                 if (str[0] === "#") {
                   const valueParts = str.replace("#", "").split(":", 2);
