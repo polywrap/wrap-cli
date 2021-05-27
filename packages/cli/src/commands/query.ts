@@ -132,51 +132,30 @@ export default {
                 // Resolve Constants
                 if (str[0] === "$") {
                   str = constants[value.replace("$", "")];
-                } else if (value[0] === "#") {
-                  const valueParts = value.split(":", 1);
+                } 
+                // Execute transform functions
+                if (str[0] === "#") {
+                  const valueParts = str.replace("#", "").split(":", 2);
                   const transformFunction = valueParts[0];
-                  const path = valueParts[1];
+                  const arg = valueParts[1];
                   switch (transformFunction) {
                     case "loadFile":
                       // If the path isn't absolute, use the recipe folder as the root dir
-                      if (isAbsolute(path)) {
-                        output[key] = readFileSync(path);
+                      if (isAbsolute(arg)) {
+                        output[key] = readFileSync(arg);
                       } else {
                         if (!recipePath) {
                           throw Error(
                             "recipePath is null. This should never happen."
                           );
                         }
-
                         output[key] = readFileSync(
-                          resolve(dirname(recipePath), path)
+                          resolve(dirname(recipePath), arg)
                         );
                       }
                       break;
                     default:
                       throw new Error("Unsuported transform function");
-                  }
-                } else {
-                  output[key] = str;
-                }
-
-                // Resolve Files
-                if (str.startsWith("file:")) {
-                  const path = str.replace("file:", "");
-
-                  // If the path isn't absolute, use the recipe folder as the root dir
-                  if (isAbsolute(path)) {
-                    output[key] = readFileSync(path);
-                  } else {
-                    if (!recipePath) {
-                      throw Error(
-                        "recipePath is null. This should never happen."
-                      );
-                    }
-
-                    output[key] = readFileSync(
-                      resolve(dirname(recipePath), path)
-                    );
                   }
                 } else {
                   output[key] = str;
@@ -192,7 +171,6 @@ export default {
 
             return output;
           };
-
           variables = resolveConstants(task.variables);
         }
 
