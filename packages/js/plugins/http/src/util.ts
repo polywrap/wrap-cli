@@ -81,21 +81,31 @@ export function toAxiosRequest(
       request.body.formDataBody.data.length > 0
     ) {
       // body is defined as form data
-      const fd = new FormData();   
+      const fd = new FormData();
       request.body.formDataBody.data.forEach((formDataEntry) => {
-        let options: FormData.AppendOptions = {}
-        if(formDataEntry.opts) {
-          if(formDataEntry.opts.contentType && formDataEntry.opts.contentType != "") {
-            options.contentType = formDataEntry.opts.contentType
-          };
-          if(formDataEntry.opts.fileName && formDataEntry.opts.fileName != "") {
-            options.filename = formDataEntry.opts.fileName
-          };
-          if(formDataEntry.opts.filePath && formDataEntry.opts.filePath != "") {
-            options.filepath = formDataEntry.opts.filePath
-          };
+        const options: FormData.AppendOptions = {};
+        if (formDataEntry.opts) {
+          if (
+            formDataEntry.opts.contentType &&
+            formDataEntry.opts.contentType != ""
+          ) {
+            options.contentType = formDataEntry.opts.contentType;
+          }
+          if (
+            formDataEntry.opts.fileName &&
+            formDataEntry.opts.fileName != ""
+          ) {
+            options.filename = formDataEntry.opts.fileName;
+          }
+          if (
+            formDataEntry.opts.filePath &&
+            formDataEntry.opts.filePath != ""
+          ) {
+            options.filepath = formDataEntry.opts.filePath;
+          }
         }
-        const elementData = formDataEntry.data == null ? Buffer.alloc(0) : formDataEntry.data;
+        const elementData =
+          formDataEntry.data == null ? Buffer.alloc(0) : formDataEntry.data;
         fd.append(formDataEntry.key, elementData, options);
       });
       data = fd;
