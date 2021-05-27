@@ -74,6 +74,14 @@ type Query {
     connection: Connection
   ): String!
 
+  callContractMethodStatic(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Connection
+    txOverrides: TxOverrides
+  ): String!
+
   signMessage(
     message: String!
     connection: Connection
@@ -98,6 +106,11 @@ type Query {
 
   getGasPrice(connection: Connection): String!
 
+  estimateTxGas(
+    tx: TxRequest!
+    connection: Connection
+  ): String!
+
   estimateContractCallGas(
     address: String!
     method: String!
@@ -111,11 +124,6 @@ type Query {
   toWei (amount: String!): String!
 
   fromWei (amount: String!): String!
-
-  estimateTxGas(
-    tx: TxRequest!
-    connection: Connection
-  ): String!
 
   awaitTransaction(
     txHash: String!
@@ -131,14 +139,6 @@ type Query {
     timeout: Int
     connection: Connection
   ): EventNotification!
-
-  callContractMethodStatic(
-    address: String!
-    method: String!
-    args: [String!]
-    connection: Connection
-    txOverrides: TxOverrides
-  ): String!
 }
 
 type Mutation {

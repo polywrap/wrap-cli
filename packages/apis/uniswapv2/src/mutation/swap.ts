@@ -11,6 +11,7 @@ import {
   TradeType,
   SwapParameters,
   TxOverrides,
+  Pair,
 } from "./w3";
 import {
   bestTradeExactIn,
@@ -28,7 +29,7 @@ const MAX_UINT_256 =
   "115792089237316195423570985008687907853269984665640564039457584007913129639935";
 
 export function exec(input: Input_exec): Ethereum_TxReceipt {
-  const swapParameters = swapCallParameters({
+  const swapParameters: SwapParameters = swapCallParameters({
     trade: input.trade,
     tradeOptions: input.tradeOptions,
   });
@@ -73,7 +74,7 @@ export function execCall(input: Input_execCall): Ethereum_TxReceipt {
 
 export function swap(input: Input_swap): Ethereum_TxReceipt {
   let trade: Trade;
-  const pair = fetchPairData({
+  const pair: Pair = fetchPairData({
     token0: input.tokenIn,
     token1: input.tokenOut,
   });

@@ -16,6 +16,7 @@ import {
   ConnectionConfig,
   ConnectionConfigs,
 } from "./Connection";
+import { parseArgs } from "./mapping";
 
 import {
   Client,
@@ -94,7 +95,7 @@ export class EthereumPlugin extends Plugin {
     const connection = await this.getConnection(connectionOverride);
     const signer = connection.getSigner();
     const factory = new ethers.ContractFactory(abi, bytecode, signer);
-    const contract = await factory.deploy(...args);
+    const contract = await factory.deploy(...parseArgs(args));
 
     await contract.deployTransaction.wait();
     return contract.address;
@@ -109,7 +110,7 @@ export class EthereumPlugin extends Plugin {
     const connection = await this.getConnection(connectionOverride);
     const contract = connection.getContract(address, [method], false);
     const funcs = Object.keys(contract.interface.functions);
-    const res = await contract[funcs[0]](...args);
+    const res = await contract[funcs[0]](...parseArgs(args));
     return res.toString();
   }
 
@@ -123,13 +124,19 @@ export class EthereumPlugin extends Plugin {
     const connection = await this.getConnection(connectionOverride);
     const contract = connection.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
+
+    const gasPrice: string | undefined = txOverrides?.gasPrice;
+    const gasLimit: string | undefined = txOverrides?.gasLimit;
+    const value: string | undefined = txOverrides?.value;
+    const nonce: string | undefined = txOverrides?.nonce;
+
     const res: ethers.providers.TransactionResponse = await contract[funcs[0]](
-      ...args,
+      ...parseArgs(args),
       {
-        gasPrice: txOverrides?.gasPrice,
-        gasLimit: txOverrides?.gasLimit,
-        value: txOverrides?.value,
-        none: txOverrides?.nonce,
+        gasPrice: gasPrice ? ethers.BigNumber.from(gasPrice) : undefined,
+        gasLimit: gasLimit ? ethers.BigNumber.from(gasLimit) : undefined,
+        value: value ? ethers.BigNumber.from(value) : undefined,
+        nonce: nonce ? ethers.BigNumber.from(nonce) : undefined,
       }
     );
 
@@ -164,15 +171,21 @@ export class EthereumPlugin extends Plugin {
     const connection = await this.getConnection(connectionOverride);
     const contract = connection.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
+
+    const gasPrice: string | undefined = txOverrides?.gasPrice;
+    const gasLimit: string | undefined = txOverrides?.gasLimit;
+    const value: string | undefined = txOverrides?.value;
+    const nonce: string | undefined = txOverrides?.nonce;
+
     try {
-      await contract.callStatic[funcs[0]](...args, {
-        gasPrice: txOverrides?.gasPrice,
-        gasLimit: txOverrides?.gasLimit,
-        value: txOverrides?.value,
-        none: txOverrides?.nonce,
+      await contract.callStatic[funcs[0]](...parseArgs(args), {
+        gasPrice: gasPrice ? ethers.BigNumber.from(gasPrice) : undefined,
+        gasLimit: gasLimit ? ethers.BigNumber.from(gasLimit) : undefined,
+        value: value ? ethers.BigNumber.from(value) : undefined,
+        nonce: nonce ? ethers.BigNumber.from(nonce) : undefined,
       });
     } catch (e) {
-      return e.reason;
+      return e.code;
     }
     return "";
   }
@@ -241,11 +254,17 @@ export class EthereumPlugin extends Plugin {
     const connection = await this.getConnection(connectionOverride);
     const contract = connection.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
-    const gas = await contract.estimateGas[funcs[0]](...args, {
-      gasPrice: txOverrides?.gasPrice,
-      gasLimit: txOverrides?.gasLimit,
-      value: txOverrides?.value,
-      none: txOverrides?.nonce,
+
+    const gasPrice: string | undefined = txOverrides?.gasPrice;
+    const gasLimit: string | undefined = txOverrides?.gasLimit;
+    const value: string | undefined = txOverrides?.value;
+    const nonce: string | undefined = txOverrides?.nonce;
+
+    const gas = await contract.estimateGas[funcs[0]](...parseArgs(args), {
+      gasPrice: gasPrice ? ethers.BigNumber.from(gasPrice) : undefined,
+      gasLimit: gasLimit ? ethers.BigNumber.from(gasLimit) : undefined,
+      value: value ? ethers.BigNumber.from(value) : undefined,
+      nonce: nonce ? ethers.BigNumber.from(nonce) : undefined,
     });
 
     return gas.toString();
@@ -357,7 +376,7 @@ export class EthereumPlugin extends Plugin {
     const connection = await this.getConnection(connectionOverride);
     const contract = connection.getContract(address, [event]);
     const events = Object.keys(contract.interface.events);
-    const filter = contract.filters[events.slice(-1)[0]](...args);
+    const filter = contract.filters[events.slice(-1)[0]](...parseArgs(args));
 
     return Promise.race([
       new Promise((resolve) => {

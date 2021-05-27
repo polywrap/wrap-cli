@@ -23,7 +23,7 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
     const response: ethers.providers.TransactionResponse = await ethereum.callContractMethod(
       input.address,
       input.method,
-      input.args || [],
+      input.args ?? [],
       input.connection,
       input.txOverrides
     );
@@ -41,28 +41,12 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
     const response: ethers.providers.TransactionReceipt = await ethereum.callContractMethodAndWait(
       input.address,
       input.method,
-      input.args || [],
+      input.args ?? [],
       input.connection,
       input.txOverrides
     );
 
     return mapTxReceipt(response);
-  },
-
-  callContractMethodStatic: async (input: {
-    address: string;
-    method: string;
-    args?: string[];
-    connection?: ConnectionOverride;
-    txOverrides?: TxOverrides;
-  }): Promise<string> => {
-    return await ethereum.callContractMethodStatic(
-      input.address,
-      input.method,
-      input.args || [],
-      input.connection,
-      input.txOverrides
-    );
   },
 
   sendTransaction: async (input: {
@@ -96,7 +80,7 @@ export const mutation = (ethereum: EthereumPlugin): PluginModule => ({
     return await ethereum.deployContract(
       input.abi,
       input.bytecode,
-      input.args || [],
+      input.args ?? [],
       input.connection
     );
   },
@@ -120,8 +104,24 @@ export const query = (ethereum: EthereumPlugin): PluginModule => ({
     return await ethereum.callView(
       input.address,
       input.method,
-      input.args || [],
+      input.args ?? [],
       input.connection
+    );
+  },
+
+  callContractMethodStatic: async (input: {
+    address: string;
+    method: string;
+    args?: string[];
+    connection?: ConnectionOverride;
+    txOverrides?: TxOverrides;
+  }): Promise<string> => {
+    return await ethereum.callContractMethodStatic(
+      input.address,
+      input.method,
+      input.args ?? [],
+      input.connection,
+      input.txOverrides
     );
   },
 
@@ -179,6 +179,22 @@ export const query = (ethereum: EthereumPlugin): PluginModule => ({
     return (await connection.getSigner().estimateGas(input.tx)).toString();
   },
 
+  estimateContractCallGas: async (input: {
+    address: string;
+    method: string;
+    args: string[];
+    connection?: ConnectionOverride;
+    txOverrides?: TxOverrides;
+  }): Promise<string> => {
+    return await ethereum.estimateContractCallGas(
+      input.address,
+      input.method,
+      input.args,
+      input.connection,
+      input.txOverrides
+    );
+  },
+
   checkAddress: async (input: { address: string }): Promise<boolean> => {
     return await ethereum.checkAddress(input.address);
   },
@@ -226,21 +242,5 @@ export const query = (ethereum: EthereumPlugin): PluginModule => ({
     );
 
     return mapTxReceipt(result);
-  },
-
-  estimateContractCallGas: async (input: {
-    address: string;
-    method: string;
-    args: string[];
-    connection?: ConnectionOverride;
-    txOverrides?: TxOverrides;
-  }): Promise<string> => {
-    return await ethereum.estimateContractCallGas(
-      input.address,
-      input.method,
-      input.args,
-      input.connection,
-      input.txOverrides
-    );
   },
 });
