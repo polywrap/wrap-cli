@@ -1,0 +1,63 @@
+mutation {
+    addFolder(
+        ipfsUrl: $ipfsUrl
+        directoryEntry: {
+            directories: [
+                {
+                    name: $dirA
+                    directories: []
+                    files: [
+                        {
+                            name: $filA0
+                            data: $dataA0
+                        },
+                        {
+                            name: $filA1
+                            data: $dataA1
+                        }
+                    ]
+                },
+                {
+                    name: $dirB
+                    directories: [
+                        {
+                            name: $dirBA
+                            directories: []
+                            files: [
+                                {
+                                    name: $filBA0
+                                    data: $dataBA0
+                                },
+                                {
+                                    name: $filBA1
+                                    data: $dataBA1
+                                }
+                            ]
+                        },
+                        {
+                            name: $dirBB
+                            directories: []
+                            files: [
+                                {
+                                    name: $filBB0
+                                    data: $dataBB0
+                                }
+                            ]
+                        }
+                    ]
+                    files: []
+                }
+            ]
+            files: [
+                {
+                    name: $fil0
+                    data: $data0
+                },
+                {
+                    name: $fil1
+                    data: $data1
+                }
+            ]
+        }
+    )
+}

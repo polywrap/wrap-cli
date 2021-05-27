@@ -4,6 +4,9 @@ mutation {
         fileEntry: {
             name: $name
             data: $data
+            options: {
+                wrapWithDirectory: true
+            }
         }
     )
 }

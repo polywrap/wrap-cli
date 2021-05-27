@@ -13,6 +13,49 @@
   },
   {
     "query": "./addFile.graphql",
-    "variables": { "data": "$File", "fileName": "$FileName", "ipfsUrl": "$IpfsUrl" }
+    "variables": { "data": "$File", "name": "$FileName", "ipfsUrl": "$IpfsUrl" }
+  },
+  {
+    "query": "./addFileWithOptions.graphql",
+    "variables": { "data": "$File", "name": "$FileName", "ipfsUrl": "$IpfsUrl" }
+  },
+  {
+    "query": "./addFolderWithOptions.graphql",
+    "variables": { 
+      "fil0": "$Fil_0",
+      "data0": "$Data_0",
+      "fil1": "$Fil_1", 
+      "data1": "$Data_1", 
+      "ipfsUrl": "$IpfsUrl", 
+      "dirA":"$Dir_A",
+      "filA0":"$Fil_A_0",
+      "dataA0":"$Data_A_0",
+      "filA1":"$Fil_A_1",
+      "dataA1":"$Data_A_1"
+    }
+  },
+  {
+    "query": "./addFolder.graphql",
+    "variables": { 
+      "fil0": "$Fil_0",
+      "data0": "$Data_0",
+      "fil1": "$Fil_1", 
+      "data1": "$Data_1", 
+      "ipfsUrl": "$IpfsUrl", 
+      "dirA":"$Dir_A",
+      "filA0":"$Fil_A_0",
+      "dataA0":"$Data_A_0",
+      "filA1":"$Fil_A_1",
+      "dataA1":"$Data_A_1",
+      "dirB":"$Dir_B",
+      "dirBA":"$Dir_B_A",
+      "filBA0":"$Fil_B_A_0",
+      "dataBA0":"$Data_B_A_0",
+      "filBA1":"$Fil_B_A_1",
+      "dataBA1":"$Data_B_A_1",
+      "dirBB":"$Dir_B_B",
+      "filBB0":"$Fil_B_B_0",
+      "dataBB0":"$Data_B_B_0"
+    }
   }
 ]

@@ -1,10 +1,11 @@
 #import { Mutation, ResponseType } into Http from "w3://ens/http.web3api.eth"
 
 type Mutation {
-  addFile(ipfsUrl: String!, fileName: String!, data: Bytes!): AddFileResult!
+  addFile(ipfsUrl: String!, fileEntry: FileEntry!, options: AddFileOptions): AddResult!
+  addFolder(ipfsUrl: String!, directoryEntry: DirectoryBlob!, options: AddFileOptions): [AddResult!]!
 }
 
-type AddFileResult {
+type AddResult {
   name: String!
   hash: String!
   size: String!
@@ -13,4 +14,21 @@ type AddFileResult {
 type AddFileOptions {
   wrapWithDirectory: Boolean
   pin: Boolean
+  onlyHash: Boolean
+}
+
+type DirectoryEntry {
+  name: String!
+  directories: [DirectoryEntry!]!
+  files: [FileEntry!]!
+}
+
+type FileEntry {
+  name: String!
+  data: Bytes!
+}
+
+type DirectoryBlob {
+  directories: [DirectoryEntry!]!
+  files: [FileEntry!]!
 }

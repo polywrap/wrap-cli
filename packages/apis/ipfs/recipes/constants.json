@@ -1,6 +1,26 @@
 {
   "SampleCid": "QmcUZ2oVczdFaRsY8Fcqi8f27GLF8fY6mVboGZGYS8JE72",
   "IpfsUrl": "http://127.0.0.1:5001",
+  
   "FileName": "test.txt",
-  "File": "#loadFile:./test.txt"
+  "File": "#loadFile:./test.txt",
+
+  "Fil_0": "file_0.txt",
+  "Data_0": "#loadFile:./dirTest/file_0.txt",
+  "Fil_1": "file_1.txt",
+  "Data_1": "#loadFile:./dirTest/file_1.txt",
+  "Dir_A": "directory_A",
+  "Fil_A_0": "file_A_0.txt",
+  "Data_A_0": "#loadFile:./dirTest/directory_A/file_A_0.txt",
+  "Fil_A_1": "file_A_1.txt",
+  "Data_A_1": "#loadFile:./dirTest/directory_A/file_A_1.txt",
+  "Dir_B": "directory_B",
+  "Dir_B_A": "directory_B_A",
+  "Fil_B_A_0": "file_B_A_0",
+  "Data_B_A_0": "#loadFile:./dirTest/directory_B/directory_B_A/file_B_A_0.txt",
+  "Fil_B_A_1": "file_B_A_1",
+  "Data_B_A_1": "#loadFile:./dirTest/directory_B/directory_B_A/file_B_A_1.txt",
+  "Dir_B_B": "directory_B_B",
+  "Fil_B_B_0": "file_B_B_0",
+  "Data_B_B_0": "#loadFile:./dirTest/directory_B/directory_B_B/file_B_B_0.txt"
 }
