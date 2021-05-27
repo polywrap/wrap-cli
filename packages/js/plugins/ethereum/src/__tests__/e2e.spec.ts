@@ -423,7 +423,7 @@ describe("Ethereum Plugin", () => {
         `,
       });
 
-      expect(response.data?.callContractMethodStatic).toEqual("processing response error")
+      expect(response.data?.callContractMethodStatic).toBeTruthy()
       expect(response.errors).toBeUndefined()
     })
   })

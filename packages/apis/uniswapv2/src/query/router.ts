@@ -76,30 +76,33 @@ export function swapCallParameters(
   switch (input.trade.tradeType) {
     case TradeType.EXACT_INPUT:
       if (etherIn) {
-        methodName = !useFeeOnTransfer.isNull
-          ? "swapExactETHForTokensSupportingFeeOnTransferTokens"
-          : "swapExactETHForTokens";
+        methodName =
+          !useFeeOnTransfer.isNull && useFeeOnTransfer.value
+            ? "swapExactETHForTokensSupportingFeeOnTransferTokens"
+            : "swapExactETHForTokens";
         // (uint amountOutMin, address[] calldata path, address to, uint deadline)
         args = [amountOut, path, to, deadline];
         value = amountIn;
       } else if (etherOut) {
-        methodName = !useFeeOnTransfer.isNull
-          ? "swapExactTokensForETHSupportingFeeOnTransferTokens"
-          : "swapExactTokensForETH";
+        methodName =
+          !useFeeOnTransfer.isNull && useFeeOnTransfer.value
+            ? "swapExactTokensForETHSupportingFeeOnTransferTokens"
+            : "swapExactTokensForETH";
         // (uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
         args = [amountIn, amountOut, path, to, deadline];
         value = ZERO_HEX;
       } else {
-        methodName = !useFeeOnTransfer.isNull
-          ? "swapExactTokensForTokensSupportingFeeOnTransferTokens"
-          : "swapExactTokensForTokens";
+        methodName =
+          !useFeeOnTransfer.isNull && useFeeOnTransfer.value
+            ? "swapExactTokensForTokensSupportingFeeOnTransferTokens"
+            : "swapExactTokensForTokens";
         // (uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
         args = [amountIn, amountOut, path, to, deadline];
         value = ZERO_HEX;
       }
       break;
     case TradeType.EXACT_OUTPUT:
-      if (!useFeeOnTransfer.isNull) {
+      if (!useFeeOnTransfer.isNull && useFeeOnTransfer.value) {
         throw new Error("Cannot use fee on transfer with exact out trade");
       }
 
@@ -121,16 +124,13 @@ export function swapCallParameters(
       }
       break;
     default:
-      methodName = "";
-      // (uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
-      args = [];
-      value = ZERO_HEX;
+      throw new Error("method name not found");
   }
 
   return {
     methodName: methodName,
-    value: value,
     args: args,
+    value: value,
   };
 }
 
@@ -151,7 +151,6 @@ export function estimateGas(input: Input_estimateGas): string {
       value: swapParameters.value,
       gasPrice: null,
       gasLimit: null,
-      nonce: null,
     },
   });
 }
@@ -181,7 +180,6 @@ export function execCallStatic(input: Input_execCallStatic): string {
       value: swapParameters.value,
       gasPrice: gasPrice,
       gasLimit: gasLimit,
-      nonce: null,
     },
   });
 }

@@ -64,3 +64,9 @@ export const mapTxRequest = (
   value: request.value !== undefined ? request.value.toString() : undefined,
   chainId: request.chainId,
 });
+
+export const parseArgs = (args: string[]): (string | string[])[] => {
+  return args.map((arg: string) =>
+    arg.startsWith("[") && arg.endsWith("]") ? JSON.parse(arg) : arg
+  );
+};

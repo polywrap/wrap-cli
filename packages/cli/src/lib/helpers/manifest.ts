@@ -4,6 +4,7 @@ import { intlMsg } from "../intl";
 
 import fs from "fs";
 import YAML from "js-yaml";
+import { writeFileSync } from "@web3api/os-js";
 import { Manifest, deserializeManifest } from "@web3api/core-js";
 
 export async function loadManifest(
@@ -58,7 +59,7 @@ export async function outputManifest(
       throw Error(noDumpMessage);
     }
 
-    fs.writeFileSync(manifestPath, str, "utf-8");
+    writeFileSync(manifestPath, str, "utf-8");
   };
 
   if (quiet) {

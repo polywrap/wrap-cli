@@ -13,7 +13,7 @@ import {
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
-jest.setTimeout(30000);
+jest.setTimeout(60000);
 
 describe("Web3API React Integration", () => {
   let redirects: UriRedirect[];
@@ -59,11 +59,15 @@ describe("Web3API React Integration", () => {
     fireEvent.click(screen.getByText("Set the storage to 5!"));
     await waitFor(() => screen.getByText("5"));
     expect(screen.getByText("5")).toBeTruthy();
+
+    // check for provider redirects
+    expect(screen.getByText("Provider Redirects are correct")).toBeTruthy();
   });
 
   it("Should throw error because two providers with same key has been rendered ", () => {
     // @ts-ignore
     const CustomWeb3ApiProvider = createWeb3ApiProvider("test");
+
     expect(() => createWeb3ApiProvider("test")).toThrowError(
       /A Web3Api provider already exists with the name \"test\"/
     );

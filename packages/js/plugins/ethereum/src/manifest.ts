@@ -60,7 +60,6 @@ type TxRequest {
 }
 
 type TxOverrides {
-  nonce: String
   gasLimit: String
   gasPrice: String
   value: String
@@ -107,7 +106,7 @@ type Query {
   estimateContractCallGas(
     address: String!
     method: String!
-    args: [String!]!
+    args: [String!]
     connection: Connection
     txOverrides: TxOverrides
   ): String!

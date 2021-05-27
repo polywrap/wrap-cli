@@ -14,7 +14,7 @@
   },
   "scripts": {
     "reset": "yarn clean && yarn && yarn build",
-    "clean": "rimraf ./**/node_modules ./**/build ./**/coverage",
+    "clean": "npx rimraf ./**/node_modules ./**/build ./**/coverage",
     "build": "lerna run build --no-private --ignore @web3api/cli* --ignore @web3api/react && lerna run build --scope @web3api/client-js --scope @web3api/react && lerna run build --scope @web3api/cli",
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint -- --fix",

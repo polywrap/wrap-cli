@@ -1,7 +1,7 @@
 import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
 import { buildAndDeployApi, initTestEnvironment, stopTestEnvironment } from "@web3api/test-env-js";
 import * as path from "path";
-import { ChainId, Pair, Route, Token, TokenAmount, Trade, TradeType } from "./types";
+import { ChainId, Pair, Route, Token, TokenAmount, Trade } from "./types";
 import { getPairData, getRedirects, getTokenList, getUniPairs } from "../testUtils";
 import * as uni from "@uniswap/sdk";
 
@@ -107,7 +107,7 @@ describe('trade e2e', () => {
       variables: {
         route: route.data?.createRoute,
         inAmount: amountIn,
-        tradeType: TradeType.EXACT_INPUT,
+        tradeType: "EXACT_INPUT",
       }
     });
     // expected trade

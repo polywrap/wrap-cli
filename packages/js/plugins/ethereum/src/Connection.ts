@@ -5,7 +5,7 @@ import {
   Web3Provider,
   Networkish,
   WebSocketProvider,
-  getNetwork
+  getNetwork,
 } from "@ethersproject/providers";
 import { getAddress } from "@ethersproject/address";
 

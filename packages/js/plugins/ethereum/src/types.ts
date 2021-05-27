@@ -61,7 +61,6 @@ export interface TxRequest {
 }
 
 export interface TxOverrides {
-  nonce?: string;
   gasLimit?: string;
   gasPrice?: string;
   value?: string;
