@@ -538,6 +538,7 @@ export class ReadDecoder extends Read {
     return objectsToDiscard;
   }
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   private getErrorMessage(leadByte: u8): string {
     if (isNegativeFixedInt(leadByte)) {
       return "Found 'NegativeFixedInt'.";
