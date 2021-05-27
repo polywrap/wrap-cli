@@ -40,13 +40,11 @@ export class HttpPlugin extends Plugin {
 
   public async post(url: string, request: Request): Promise<Response> {
     const axiosRequest = toAxiosRequest(request);
-
     const response = await axios.post(
       url,
       axiosRequest.data,
       axiosRequest.config
     );
-
     return fromAxiosResponse(response);
   }
 }

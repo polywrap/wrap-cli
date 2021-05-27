@@ -70,10 +70,7 @@ describe("creating axios config", () => {
 
   test("with body as form data", () => {
     const axiosReq = toAxiosRequest({
-      headers: [
-        { key: "Accept", value: "application-json" },
-        { key: "X-Header", value: "test-value" },
-      ],
+      headers: [],
       responseType: ResponseType.TEXT,
       body: {
         formDataBody: {
@@ -81,15 +78,15 @@ describe("creating axios config", () => {
             {
               key: "prop", 
               data: "test-data",
+              opts: {
+                contentType: "application/octet-stream",
+                fileName: "directory_A%2Ffile_A_0.txt",
+              }
             }]
         }
       },
     });
-
-    expect(axiosReq.config.headers["Accept"])
-      .toStrictEqual("application-json");
-    expect(axiosReq.config.headers["X-Header"])
-      .toStrictEqual("test-value");      
+    console.log(axiosReq)
     expect(axiosReq.config.headers["content-type"].startsWith("multipart/form-data;"))
       .toBeTruthy()
     expect(axiosReq.config.params).toBeUndefined();

@@ -38,8 +38,15 @@ type FormData {
 }
 
 type FormDataEntry {
-  key: String
+  key: String!
   data: String
+  opts: FormDataOptions
+}
+
+type FormDataOptions {
+  contentType: String
+  fileName: String
+  filePath: String
 }
 
 type Query {

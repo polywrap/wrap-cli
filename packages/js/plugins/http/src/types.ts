@@ -36,6 +36,13 @@ export class FormData {
 export class FormDataEntry {
   key: string;
   data: string;
+  opts?: FormDataOptions;
+}
+
+export class FormDataOptions {
+  contentType?: string;
+  fileName?: string;
+  filePath?: string;
 }
 
 export class Response {
