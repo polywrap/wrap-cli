@@ -11,7 +11,6 @@ import {
 } from "./Format";
 import { Nullable } from "./Nullable";
 import { Read } from "./Read";
-import { E_INVALIDLENGTH } from "./utils";
 import { BigInt } from "../BigInt";
 
 export class ReadDecoder extends Read {
@@ -29,7 +28,10 @@ export class ReadDecoder extends Read {
     } else if (value == Format.FALSE) {
       return false;
     }
-    throw new Error("bad value for bool");
+
+    throw new TypeError(
+      "Property must be of type 'bool'. " + this.getErrorMessage(value)
+    );
   }
 
   readInt8(): i8 {
@@ -37,7 +39,7 @@ export class ReadDecoder extends Read {
     if (value <= i64(i8.MAX_VALUE) && value >= i64(i8.MIN_VALUE)) {
       return i8(value);
     }
-    throw new Error(
+    throw new RangeError(
       "integer overflow: value = " + value.toString() + "; bits = 8"
     );
   }
@@ -47,7 +49,7 @@ export class ReadDecoder extends Read {
     if (value <= i64(i16.MAX_VALUE) && value >= i64(i16.MIN_VALUE)) {
       return i16(value);
     }
-    throw new Error(
+    throw new RangeError(
       "integer overflow: value = " + value.toString() + "; bits = 16"
     );
   }
@@ -57,7 +59,7 @@ export class ReadDecoder extends Read {
     if (value <= i64(i32.MAX_VALUE) && value >= i64(i32.MIN_VALUE)) {
       return i32(value);
     }
-    throw new Error(
+    throw new RangeError(
       "integer overflow: value = " + value.toString() + "; bits = 32"
     );
   }
@@ -81,7 +83,9 @@ export class ReadDecoder extends Read {
       case Format.INT64:
         return this.view.getInt64();
       default:
-        throw new Error("bad prefix for int: " + prefix.toString());
+        throw new TypeError(
+          "Property must be of type 'int'. " + this.getErrorMessage(prefix)
+        );
     }
   }
 
@@ -90,7 +94,7 @@ export class ReadDecoder extends Read {
     if (value <= u64(u8.MAX_VALUE) && value >= u64(u8.MIN_VALUE)) {
       return u8(value);
     }
-    throw new Error(
+    throw new RangeError(
       "unsigned integer overflow: value = " + value.toString() + "; bits = 8"
     );
   }
@@ -100,7 +104,7 @@ export class ReadDecoder extends Read {
     if (value <= u64(u16.MAX_VALUE) && value >= u64(u16.MIN_VALUE)) {
       return u16(value);
     }
-    throw new Error(
+    throw new RangeError(
       "unsigned integer overflow: value = " + value.toString() + "; bits = 16"
     );
   }
@@ -110,7 +114,7 @@ export class ReadDecoder extends Read {
     if (value <= u64(u32.MAX_VALUE) && value >= u64(u32.MIN_VALUE)) {
       return u32(value);
     }
-    throw new Error(
+    throw new RangeError(
       "unsigned integer overflow: value = " + value.toString() + "; bits = 32"
     );
   }
@@ -121,7 +125,7 @@ export class ReadDecoder extends Read {
     if (isFixedInt(prefix)) {
       return u64(prefix);
     } else if (isNegativeFixedInt(prefix)) {
-      throw new Error(
+      throw new RangeError(
         "unsigned integer cannot be negative: prefix = " + prefix.toString()
       );
     }
@@ -136,8 +140,8 @@ export class ReadDecoder extends Read {
       case Format.UINT64:
         return this.view.getUint64();
       default:
-        throw new Error(
-          "bad prefix for unsigned int: prefix = " + prefix.toString()
+        throw new TypeError(
+          "Property must be of type 'uint'. " + this.getErrorMessage(prefix)
         );
     }
   }
@@ -147,7 +151,10 @@ export class ReadDecoder extends Read {
     if (isFloat32(prefix)) {
       return <f32>this.view.getFloat32();
     }
-    throw new Error("bad prefix for float32: " + prefix.toString());
+
+    throw new TypeError(
+      "Property must be of type 'float32'. " + this.getErrorMessage(prefix)
+    );
   }
 
   readFloat64(): f64 {
@@ -155,7 +162,10 @@ export class ReadDecoder extends Read {
     if (isFloat64(prefix)) {
       return <f64>this.view.getFloat64();
     }
-    throw new Error("bad prefix for float 64: " + prefix.toString());
+
+    throw new TypeError(
+      "Property must be of type 'float64'. " + this.getErrorMessage(prefix)
+    );
   }
 
   readStringLength(): u32 {
@@ -175,7 +185,9 @@ export class ReadDecoder extends Read {
         return this.view.getUint32();
     }
 
-    throw new RangeError(E_INVALIDLENGTH + leadByte.toString());
+    throw new TypeError(
+      "Property must be of type 'string'. " + this.getErrorMessage(leadByte)
+    );
   }
 
   readString(): string {
@@ -200,7 +212,10 @@ export class ReadDecoder extends Read {
       case Format.BIN32:
         return this.view.getUint32();
     }
-    throw new RangeError(E_INVALIDLENGTH);
+
+    throw new TypeError(
+      "Property must be of type 'bytes'. " + this.getErrorMessage(leadByte)
+    );
   }
 
   readBytes(): ArrayBuffer {
@@ -225,7 +240,10 @@ export class ReadDecoder extends Read {
     } else if (leadByte == Format.NIL) {
       return 0;
     }
-    throw new RangeError(E_INVALIDLENGTH + leadByte.toString());
+
+    throw new TypeError(
+      "Property must be of type 'array'. " + this.getErrorMessage(leadByte)
+    );
   }
 
   readArray<T>(fn: (reader: Read) => T): Array<T> {
@@ -247,7 +265,10 @@ export class ReadDecoder extends Read {
     } else if (leadByte == Format.MAP32) {
       return this.view.getUint32();
     }
-    throw new RangeError(E_INVALIDLENGTH);
+
+    throw new TypeError(
+      "Property must be of type 'map'. " + this.getErrorMessage(leadByte)
+    );
   }
 
   readMap<K, V>(
@@ -515,5 +536,77 @@ export class ReadDecoder extends Read {
     }
 
     return objectsToDiscard;
+  }
+
+  private getErrorMessage(leadByte: u8): string {
+    if (isNegativeFixedInt(leadByte)) {
+      return "Found 'NegativeFixedInt'.";
+    } else if (isFixedInt(leadByte)) {
+      return "Found 'FixedInt'.";
+    } else if (isFixedString(leadByte)) {
+      return "Found 'FixedString'.";
+    } else if (isFixedArray(leadByte)) {
+      return "Found 'FixedArray'.";
+    } else if (isFixedMap(leadByte)) {
+      return "Found 'FixedMap'.";
+    } else {
+      switch (leadByte) {
+        case Format.NIL:
+          return "Found 'nil'.";
+        case Format.TRUE:
+        case Format.FALSE:
+          return "Found 'bool'.";
+        case Format.BIN8:
+          return "Found 'BIN8'.";
+        case Format.BIN16:
+          return "Found 'BIN16'.";
+        case Format.BIN32:
+          return "Found 'BIN32'.";
+        case Format.FLOAT32:
+          return "Found 'float32'.";
+        case Format.FLOAT64:
+          return "Found 'float64'.";
+        case Format.UINT8:
+          return "Found 'uint8'.";
+        case Format.UINT16:
+          return "Found 'uint16'.";
+        case Format.UINT32:
+          return "Found 'uint32'.";
+        case Format.UINT64:
+          return "Found 'uint64'.";
+        case Format.INT8:
+          return "Found 'int8'.";
+        case Format.INT16:
+          return "Found 'int16'.";
+        case Format.INT32:
+          return "Found 'int32'.";
+        case Format.INT64:
+          return "Found 'int64'.";
+        case Format.FIXEXT1:
+          return "Found 'FIXEXT1'.";
+        case Format.FIXEXT2:
+          return "Found 'FIXEXT2'.";
+        case Format.FIXEXT4:
+          return "Found 'FIXEXT4'.";
+        case Format.FIXEXT8:
+          return "Found 'FIXEXT8'.";
+        case Format.FIXEXT16:
+          return "Found 'FIXEXT16'.";
+        case Format.STR8:
+        case Format.STR16:
+        case Format.STR32:
+          return "Found 'string'.";
+        case Format.ARRAY16:
+        case Format.ARRAY32:
+          return "Found 'array'.";
+        case Format.MAP16:
+        case Format.MAP32:
+          return "Found 'map'.";
+        default:
+          throw new TypeError(
+            "invalid prefix, bad encoding for val: " + leadByte.toString()
+          );
+      }
+    }
   }
 }
