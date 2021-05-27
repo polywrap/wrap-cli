@@ -510,7 +510,7 @@ describe("Swap", () => {
           value: swapParameters.value,
         });
       } catch (e) {
-        ethersException = e.code;
+        ethersException = e.reason;
       }
 
       expect(exception).toStrictEqual(ethersException);

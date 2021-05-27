@@ -181,7 +181,7 @@ export class EthereumPlugin extends Plugin {
         value: value ? ethers.BigNumber.from(value) : undefined,
       });
     } catch (e) {
-      return e.code;
+      return e.reason;
     }
     return "";
   }
