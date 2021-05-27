@@ -1,4 +1,5 @@
 import { Nullable } from "./Nullable";
+import { Context } from "./Context";
 import { BigInt } from "../BigInt";
 
 export abstract class Read {
@@ -48,4 +49,6 @@ export abstract class Read {
 
   abstract isNextNil(): bool;
   abstract isNextString(): bool;
+
+  abstract context(): Context;
 }

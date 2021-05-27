@@ -16,10 +16,12 @@ import { BigInt } from "../BigInt";
 
 export class ReadDecoder extends Read {
   private view: DataView;
+  public context: Context;
 
-  constructor(ua: ArrayBuffer) {
+  constructor(ua: ArrayBuffer, context: Context) {
     super();
-    this.view = new DataView(ua, 0, ua.byteLength);
+    this.context = context;
+    this.view = new DataView(ua, 0, ua.byteLength, context);
   }
 
   readBool(): bool {
@@ -29,7 +31,7 @@ export class ReadDecoder extends Read {
     } else if (value == Format.FALSE) {
       return false;
     }
-    throw new Error("bad value for bool");
+    throw new Error(this.context.toString() + "bad value for bool");
   }
 
   readInt8(): i8 {
@@ -159,6 +161,9 @@ export class ReadDecoder extends Read {
   }
 
   readStringLength(): u32 {
+    if (this.isNextNil()) {
+      return 0;
+    }
     const leadByte = this.view.getUint8();
     if (isFixedString(leadByte)) {
       return leadByte & 0x1f;
@@ -173,9 +178,11 @@ export class ReadDecoder extends Read {
         return <u32>this.view.getUint16();
       case Format.STR32:
         return this.view.getUint32();
+      case Format.NIL:
+        return 0;
     }
 
-    throw new RangeError(E_INVALIDLENGTH + leadByte.toString());
+    throw new RangeError("readStringLength: " + E_INVALIDLENGTH + leadByte.toString());
   }
 
   readString(): string {
@@ -199,6 +206,8 @@ export class ReadDecoder extends Read {
         return <u32>this.view.getUint16();
       case Format.BIN32:
         return this.view.getUint32();
+      case Format.NIL:
+        return 0;
     }
     throw new RangeError(E_INVALIDLENGTH);
   }
@@ -215,17 +224,22 @@ export class ReadDecoder extends Read {
   }
 
   readArrayLength(): u32 {
+    if (this.isNextNil()) {
+      return 0;
+    }
     const leadByte = this.view.getUint8();
     if (isFixedArray(leadByte)) {
       return <u32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
-    } else if (leadByte == Format.ARRAY16) {
-      return <u32>this.view.getUint16();
-    } else if (leadByte == Format.ARRAY32) {
-      return this.view.getUint32();
-    } else if (leadByte == Format.NIL) {
-      return 0;
     }
-    throw new RangeError(E_INVALIDLENGTH + leadByte.toString());
+    switch (leadByte) {
+      case Format.ARRAY16:
+        return <u32>this.view.getUint16();
+      case Format.ARRAY32:
+        return this.view.getUint32();
+      case Format.NIL:
+        return 0;
+    }
+    throw new RangeError("readArrayLength: " + E_INVALIDLENGTH + leadByte.toString());
   }
 
   readArray<T>(fn: (reader: Read) => T): Array<T> {
@@ -239,15 +253,22 @@ export class ReadDecoder extends Read {
   }
 
   readMapLength(): u32 {
+    if (this.isNextNil()) {
+      return 0;
+    }
     const leadByte = this.view.getUint8();
     if (isFixedMap(leadByte)) {
       return <u32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
-    } else if (leadByte == Format.MAP16) {
-      return <u32>this.view.getUint16();
-    } else if (leadByte == Format.MAP32) {
-      return this.view.getUint32();
     }
-    throw new RangeError(E_INVALIDLENGTH);
+    switch (leadByte) {
+      case Format.MAP16:
+        return <u32>this.view.getUint16();
+      case Format.MAP32:
+        return this.view.getUint32();
+      case Format.NIL:
+        return 0;
+    }
+    throw new RangeError("readMapLength: " + E_INVALIDLENGTH + leadByte.toString());
   }
 
   readMap<K, V>(

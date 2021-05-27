@@ -9,7 +9,7 @@ import {
   PluginPackage,
   Uri,
 } from "@web3api/core-js";
-import { decode } from "@msgpack/msgpack";
+import { decode, encode } from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
 
 export class PluginWeb3Api extends Api {
@@ -78,6 +78,24 @@ export class PluginWeb3Api extends Api {
 
           if (result !== undefined) {
             let data = result as unknown;
+
+            if (process.env.TEST_PLUGIN) {
+              // try to encode the returned result,
+              // ensuring it's msgpack compliant
+              try {
+                encode(data);
+              } catch (e) {
+                throw Error(
+                  `TEST_PLUGIN msgpack encode failure.` +
+                  `uri: ${this._uri.uri}\nmodule: ${module}\n` +
+                  `method: ${method}\n` +
+                  `input: ${JSON.stringify(jsInput, null, 2)}\n` +
+                  `result: ${JSON.stringify(data, null, 2)}\n` +
+                  `exception: ${e}`
+                );
+              }
+              
+            }
 
             if (resultFilter) {
               data = filterResults(result, resultFilter);

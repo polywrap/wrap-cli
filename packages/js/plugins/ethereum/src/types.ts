@@ -20,18 +20,18 @@ export interface Log {
 export interface TxReceipt {
   to?: string;
   from: string;
-  // contractAddress?: string;
-  // transactionIndex: number;
-  // root?: string;
-  // gasUsed: string;
-  // logsBloom: string;
-  // blockHash: string;
+  contractAddress?: string;
+  transactionIndex: number;
+  root?: string;
+  gasUsed: string;
+  logsBloom: string;
+  blockHash: string;
   transactionHash: string;
-  // logs: Log[];
+  logs: Log[];
   blockNumber: string;
-  // confirmations: number;
+  confirmations: number;
   cumulativeGasUsed: string;
-  // byzantium: boolean;
+  byzantium: boolean;
   status: number;
 }
 

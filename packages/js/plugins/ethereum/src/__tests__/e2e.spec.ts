@@ -1,5 +1,9 @@
 import { defaultAbiCoder } from 'ethers/lib/utils';
 import { Web3ApiClient } from "@web3api/client-js";
+import {
+  initTestEnvironment,
+  stopTestEnvironment
+} from "@web3api/test-env-js";
 import { keccak256 } from "js-sha3";
 import { ethereumPlugin } from "..";
 import axios from "axios"
@@ -17,6 +21,8 @@ describe("Ethereum Plugin", () => {
   const signer = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1"
 
   beforeAll(async () => {
+    const { ethereum } = await initTestEnvironment();
+
     client = new Web3ApiClient({
       redirects: [
         {
@@ -24,7 +30,7 @@ describe("Ethereum Plugin", () => {
           to: ethereumPlugin({
             networks: {
               testnet: {
-                provider: "http://localhost:8545"
+                provider: ethereum
               }
             },
             defaultNetwork: "testnet"
@@ -38,7 +44,10 @@ describe("Ethereum Plugin", () => {
     ensAddress = data.ensAddress
     resolverAddress = data.resolverAddress
     registrarAddress = data.registrarAddress
-    // reverseAddress = data.reverseAddress
+  });
+
+  afterAll(async () => {
+    await stopTestEnvironment();
   });
 
   describe("Query", () => {

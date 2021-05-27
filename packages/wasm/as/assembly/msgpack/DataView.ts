@@ -26,7 +26,12 @@ export class DataView {
 
   getBytes(length: i32): ArrayBuffer {
     if (this.byteOffset + length > this.byteLength)
-      throw new RangeError(E_INDEXOUTOFRANGE);
+      throw new RangeError(
+        "getBytes: " + E_INDEXOUTOFRANGE +
+        " [length: " + length.toString() +
+        " byteOffset: " + this.byteOffset.toString() +
+        " byteLength: " + this.byteLength.toString() + "]"
+      );
     const result = this.buffer.slice(this.byteOffset, this.byteOffset + length);
     this.byteOffset += length;
     return result;
