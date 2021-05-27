@@ -2,7 +2,7 @@
   "name": "templates-app-react",
   "description": "Web3API dApp React Template",
   "private": true,
-  "version": "0.0.1-prealpha.23",
+  "version": "0.0.1-prealpha.24",
   "workspaces": {
     "nohoist": [
       "react-scripts",
@@ -16,8 +16,8 @@
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "@types/react-lottie": "^1.2.5",
-    "@web3api/client-js": "0.0.1-prealpha.23",
-    "@web3api/react": "0.0.1-prealpha.23",
+    "@web3api/client-js": "0.0.1-prealpha.24",
+    "@web3api/react": "0.0.1-prealpha.24",
     "http-proxy": "1.18.1",
     "http-proxy-middleware": "1.0.6",
     "react": "^16.13.1",

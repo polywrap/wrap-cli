@@ -1,7 +1,7 @@
 {
   "name": "@web3api/ethereum-plugin-js",
   "description": "Web3API Ethereum Javascript Plugin",
-  "version": "0.0.1-prealpha.23",
+  "version": "0.0.1-prealpha.24",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
   "dependencies": {
     "@ethersproject/address": "5.0.7",
     "@ethersproject/providers": "5.0.7",
-    "@web3api/core-js": "0.0.1-prealpha.23",
+    "@web3api/core-js": "0.0.1-prealpha.24",
     "ethers": "5.0.7"
   },
   "devDependencies": {
