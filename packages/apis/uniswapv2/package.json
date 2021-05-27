@@ -6,7 +6,7 @@
   "scripts": {
     "deploy": "w3 build --ipfs http://127.0.0.1:5001 --test-ens uniswap.v2.eth",
     "build": "npx w3 build",
-    "test:e2e": "jest --passWithNoTests --runInBand --verbose src/__tests__/e2e/router_e2e.spec.ts",
+    "test:e2e": "jest --passWithNoTests --runInBand --verbose",
     "test:unit": "asp --verbose",
     "test": "yarn test:unit && yarn test:e2e",
     "test:ci": "TEST=TRUE yarn run test:unit",

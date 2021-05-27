@@ -182,14 +182,14 @@ export const query = (ethereum: EthereumPlugin): PluginModule => ({
   estimateContractCallGas: async (input: {
     address: string;
     method: string;
-    args: string[];
+    args?: string[];
     connection?: ConnectionOverride;
     txOverrides?: TxOverrides;
   }): Promise<string> => {
     return await ethereum.estimateContractCallGas(
       input.address,
       input.method,
-      input.args,
+      input.args ?? [],
       input.connection,
       input.txOverrides
     );

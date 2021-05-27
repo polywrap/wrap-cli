@@ -97,7 +97,7 @@ type Query {
   estimateContractCallGas(
     address: String!
     method: String!
-    args: [String!]!
+    args: [String!]
     connection: Connection
     txOverrides: TxOverrides
   ): String!
