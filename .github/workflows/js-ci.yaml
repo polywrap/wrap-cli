@@ -3,8 +3,8 @@ name: JS-CI
 on: [push, pull_request]
 
 jobs:
-  CI:
-    name: JS-CI
+  JS-CI-Linux:
+    name: JS-CI-Linux
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -41,3 +41,86 @@ jobs:
 
       - name: Test
         run: yarn test:ci
+
+# NOTE: Mac & Windows CI is not currently possible, since GitHub Actions does not
+# use "Docker Enterprise". Docker Enterprise is required when running linux based
+# containers, which is what we run within our toolchain for test-envs and build-envs.
+# In order to enable this, we can move to Circle CI, which supports Docker Enterprise.
+
+#  JS-CI-Mac:
+#    name: JS-CI-Mac
+#    runs-on: macos-latest
+#    timeout-minutes: 20
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v2
+#
+#      - name: Read .nvmrc
+#        run: echo ::set-output name=NVMRC::$(cat .nvmrc)
+#        id: nvm
+#
+#      - name: Setup Node.js
+#        uses: actions/setup-node@master
+#        with:
+#          node-version: '${{ steps.nvm.outputs.NVMRC }}'
+#
+#      - name: Check for cached node_modules
+#        uses: actions/cache@v2
+#        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+#        with:
+#          path: |
+#            node_modules
+#            */*/node_modules
+#          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+#
+#      - name: Install dependencies
+#        if: steps.cache-deps.outputs.cache-hit != 'true'
+#        run: yarn install --nonInteractive --frozen-lockfile
+#
+#      - name: Lint
+#        run: yarn run lint:ci
+#
+#      - name: Build
+#        run: yarn build
+#
+#      - name: Test
+#        run: yarn test:ci
+
+#  JS-CI-Windows:
+#    name: JS-CI-Windows
+#    runs-on: windows-latest
+#    timeout-minutes: 20
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v2
+#
+#      - name: Read .nvmrc
+#        run: iex "echo '::set-output name=NVMRC::$(type .nvmrc)'"
+#        id: nvm
+#
+#      - name: Setup Node.js
+#        uses: actions/setup-node@master
+#        with:
+#          node-version: '${{ steps.nvm.outputs.NVMRC }}'
+#
+#      - name: Check for cached node_modules
+#        uses: actions/cache@v2
+#        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+#        with:
+#          path: |
+#            node_modules
+#            */*/node_modules
+#          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+#
+#      - name: Install dependencies
+#        if: steps.cache-deps.outputs.cache-hit != 'true'
+#        run: yarn install --nonInteractive --frozen-lockfile
+#
+#      - name: Lint
+#        run: yarn run lint:ci
+#
+#      - name: Build
+#        run: yarn build
+#
+#      - name: Test
+#        run: yarn test:ci

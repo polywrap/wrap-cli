@@ -1,3 +1,4 @@
+const os = require("@web3api/os-js");
 const SchemaToTypescript = require("json-schema-to-typescript");
 const fs = require("fs");
 const path = require("path");
@@ -23,7 +24,7 @@ const generateManifest = async () => {
       const file = await SchemaToTypescript.compile(format, "Web3API")
 
       const manifestPath = path.join(__dirname, `/../src/manifest/formats/${version}.ts`);
-      fs.writeFileSync(
+      os.writeFileSync(
         manifestPath,
         `/* eslint-disable @typescript-eslint/naming-convention */\n${file}`,
         { }

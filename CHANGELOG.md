@@ -1,3 +1,10 @@
+# Web3API 0.0.1-prealpha.23
+## Feature
+* `@web3api/os-js`: This package contains OS agnostic code for doing things like writing files w/ consistent line endings.
+* Windows Support: The toolchain now builds and runs properly on the Windows operating system.
+* `BigInt` Schema Type: The `BigInt` type is now available for use as a base type for Web3API GraphQL schemas.
+* `@web3api/react`: The `useWeb3ApiClient` hook was added, allowing users to easily get a reference to the Web3ApiClient used by the Web3ApiProvider.
+
 # Web3API 0.0.1-prealpha.22
 ## Feature
 * `@web3api/tracing-js`: The `tracing-js` package uses the [OpenTelemetry Standard](https://opentelemetry.io/) for logging trace events. This enables things like:

@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
-    "lint": "eslint --color --ext 'src/**/*.{ts|tsx}'",
+    "lint": "eslint --color --ext \"src/**/*.{ts|tsx}\"",
     "test:ci": "yarn test",
     "test": "jest --passWithNoTests --runInBand --verbose --env=./src/__tests__/env/index.ts",
     "test:watch": "yarn test --watch",

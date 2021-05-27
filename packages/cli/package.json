@@ -25,12 +25,14 @@
   },
   "dependencies": {
     "@formatjs/intl": "1.8.2",
+    "@types/node": "12.7.11",
     "@web3api/client-js": "0.0.1-prealpha.22",
     "@web3api/client-test-env": "0.0.1-prealpha.22",
     "@web3api/core-js": "0.0.1-prealpha.22",
     "@web3api/ens-plugin-js": "0.0.1-prealpha.22",
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.22",
     "@web3api/ipfs-plugin-js": "0.0.1-prealpha.22",
+    "@web3api/os-js": "0.0.1-prealpha.22",
     "@web3api/schema-bind": "0.0.1-prealpha.22",
     "@web3api/schema-compose": "0.0.1-prealpha.22",
     "@web3api/schema-parse": "0.0.1-prealpha.22",
@@ -46,7 +48,6 @@
     "mustache": "4.0.1",
     "ora": "4.0.0",
     "os-locale": "5.0.0",
-    "spawn-command": "0.0.2-1",
     "ws": "7.3.1"
   },
   "devDependencies": {
