@@ -23,6 +23,11 @@
   resolved "https://registry.yarnpkg.com/@as-pect/assembly/-/assembly-5.0.1.tgz#052bb0082db81ec11c4756312ab182ec6eda3025"
   integrity sha512-8tkBALZa8jjUmBoz67gRyl8X501IWzkyRl7rxIcJq6HycudlmL8zfxtZL4x70gtvK4nDcb885FmrnnknH5L+hQ==
 
+"@as-pect/assembly@^6.1.0":
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/@as-pect/assembly/-/assembly-6.1.0.tgz#17a9a872a8cc3a003e449d2bc29566b7d4d1bc82"
+  integrity sha512-N8bxUjIOfT6rK1HEA6tpe8Mb9pR2lG4QzgkD8PwS9gzsnE9XoQyGN8MDI5VH9tmgQZlmNUZRXkbn7JnExWSzqQ==
+
 "@as-pect/cli@5.0.1":
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/@as-pect/cli/-/cli-5.0.1.tgz#2f66026aac759c837048dfd43cdf94c332a64aef"
@@ -36,6 +41,19 @@
     "@as-pect/csv-reporter" "^5.0.1"
     "@as-pect/json-reporter" "^5.0.1"
 
+"@as-pect/cli@^6.0.0":
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/@as-pect/cli/-/cli-6.1.1.tgz#35c57b3afde3e961d6891f0b9bb223206243c148"
+  integrity sha512-DXn+0Iktrfu11h4Z8sVuagEmCrO2uMhC0ovND3L2G+mF0ruC/Nh2tKzFBzkMqPai5HB6GfLQ0leKY9KwDn9pSA==
+  dependencies:
+    "@as-pect/assembly" "^6.1.0"
+    "@as-pect/core" "^6.1.1"
+    chalk "^4.1.0"
+    glob "^7.1.6"
+  optionalDependencies:
+    "@as-pect/csv-reporter" "^6.1.1"
+    "@as-pect/json-reporter" "^6.1.1"
+
 "@as-pect/core@^5.0.1":
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/@as-pect/core/-/core-5.0.1.tgz#eab6d5a578c963d163ec43626e926d96a8ec294e"
@@ -46,12 +64,29 @@
     chalk "^4.1.0"
     long "^4.0.0"
 
+"@as-pect/core@^6.1.1":
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/@as-pect/core/-/core-6.1.1.tgz#4b52b78df8084829d5f6ef08291b5855beec4fb2"
+  integrity sha512-hjP2JLIK87sS3zz6RaIeFG12lq6itA/RgYTMoG2KqhoVWiE+WOm6vXy9LUJRoeDUiS8pq+MHpr4ERUkNFxMNqg==
+  dependencies:
+    "@as-pect/assembly" "^6.1.0"
+    "@as-pect/snapshots" "^6.1.0"
+    chalk "^4.1.0"
+    long "^4.0.0"
+
 "@as-pect/csv-reporter@^5.0.1":
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/@as-pect/csv-reporter/-/csv-reporter-5.0.1.tgz#9eb2b3fbdd659306762cfdfbd0177127dd5d835f"
   integrity sha512-XbzbVqXrB7Wds5yYgWiqFe9fNnYMZJQRdZafd7iETlkHhhfZgtYvLbYsdJfMeLMZSdhKInA91y+GkDi0fHEmDQ==
   dependencies:
     "@as-pect/core" "^5.0.1"
+
+"@as-pect/csv-reporter@^6.1.1":
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/@as-pect/csv-reporter/-/csv-reporter-6.1.1.tgz#d90be23be425d915dc3ee3cb7d466d1c5e8d13f1"
+  integrity sha512-pVfUbSw6BJ98P9OL8hynE7rtcBKtBvLKd3o8h8244S005babw2ZsD+84TrQVC58NWY7FLC/9faXtEJLn0bDClg==
+  dependencies:
+    "@as-pect/core" "^6.1.1"
 
 "@as-pect/json-reporter@^5.0.1":
   version "5.0.1"
@@ -60,10 +95,25 @@
   dependencies:
     "@as-pect/core" "^5.0.1"
 
+"@as-pect/json-reporter@^6.1.1":
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/@as-pect/json-reporter/-/json-reporter-6.1.1.tgz#63dcf4eb8cedea4ce0e0d2be3296fbbe1667bfa2"
+  integrity sha512-9eTQPA8uu7dliMKli076x5Jq+azVu6ymVq+J+ZPdfnan3djNDJ4uPUdmIFVBFoYOjg03eLwwPkjYKGbQGotk/g==
+  dependencies:
+    "@as-pect/core" "^6.1.1"
+
 "@as-pect/snapshots@^5.0.1":
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/@as-pect/snapshots/-/snapshots-5.0.1.tgz#7945db8ce5a771699658febe0cf20454afda6c35"
   integrity sha512-+fQbJ2FfYcILPphKILFQmxf9Fbck4TmmQTLEJS0MbIv3tt2LeyTk5n8y/+JMAQ3pTb029EJjjAX8g1b83cCVig==
+  dependencies:
+    diff "^5.0.0"
+    nearley "^2.20.1"
+
+"@as-pect/snapshots@^6.1.0":
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/@as-pect/snapshots/-/snapshots-6.1.0.tgz#bd5f7ba4ff0ae3df4ff5991de9410f0302875a28"
+  integrity sha512-8N5T5lDHl11SrwX3O0C+wayYmfzdVbPEt7vdLyig3FT4/suBLP6jBf3FGbYMhNwxio1iNraSrY/PsfGJc3M8pQ==
   dependencies:
     diff "^5.0.0"
     nearley "^2.20.1"

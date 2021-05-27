@@ -46,10 +46,8 @@ function converDirectoryEntryToFormData(dirs: DirectoryEntry[], path: string): A
         for (let j = 0; j < dir.files.length; j++) {
             formData.push(convertFileEntryToFormData(dir.files[j], newPath))
         }
-        for (let k = 0; k < dir.directories.length; k++) {
-            const rest = converDirectoryEntryToFormData(dir.directories[k].directories, newPath);
-            formData = formData.concat(rest);
-        }
+        const rest = converDirectoryEntryToFormData(dir.directories, newPath);
+        formData = formData.concat(rest);
     }
     return formData;
 }
