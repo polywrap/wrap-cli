@@ -541,15 +541,15 @@ export class ReadDecoder extends Read {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   private getErrorMessage(leadByte: u8): string {
     if (isNegativeFixedInt(leadByte)) {
-      return "Found 'NegativeFixedInt'.";
+      return "Found 'int'.";
     } else if (isFixedInt(leadByte)) {
-      return "Found 'FixedInt'.";
+      return "Found 'int'.";
     } else if (isFixedString(leadByte)) {
-      return "Found 'FixedString'.";
+      return "Found 'string'.";
     } else if (isFixedArray(leadByte)) {
-      return "Found 'FixedArray'.";
+      return "Found 'array'.";
     } else if (isFixedMap(leadByte)) {
-      return "Found 'FixedMap'.";
+      return "Found 'map'.";
     } else {
       switch (leadByte) {
         case Format.NIL:
