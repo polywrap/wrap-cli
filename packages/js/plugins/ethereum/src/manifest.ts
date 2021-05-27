@@ -51,7 +51,6 @@ type TxRequest {
 }
 
 type TxOverrides {
-  nonce: String
   gasLimit: String
   gasPrice: String
   value: String

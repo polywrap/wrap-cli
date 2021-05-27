@@ -128,7 +128,6 @@ export class EthereumPlugin extends Plugin {
     const gasPrice: string | undefined = txOverrides?.gasPrice;
     const gasLimit: string | undefined = txOverrides?.gasLimit;
     const value: string | undefined = txOverrides?.value;
-    const nonce: string | undefined = txOverrides?.nonce;
 
     const res: ethers.providers.TransactionResponse = await contract[funcs[0]](
       ...parseArgs(args),
@@ -136,7 +135,6 @@ export class EthereumPlugin extends Plugin {
         gasPrice: gasPrice ? ethers.BigNumber.from(gasPrice) : undefined,
         gasLimit: gasLimit ? ethers.BigNumber.from(gasLimit) : undefined,
         value: value ? ethers.BigNumber.from(value) : undefined,
-        nonce: nonce ? ethers.BigNumber.from(nonce) : undefined,
       }
     );
 
@@ -175,14 +173,12 @@ export class EthereumPlugin extends Plugin {
     const gasPrice: string | undefined = txOverrides?.gasPrice;
     const gasLimit: string | undefined = txOverrides?.gasLimit;
     const value: string | undefined = txOverrides?.value;
-    const nonce: string | undefined = txOverrides?.nonce;
 
     try {
       await contract.callStatic[funcs[0]](...parseArgs(args), {
         gasPrice: gasPrice ? ethers.BigNumber.from(gasPrice) : undefined,
         gasLimit: gasLimit ? ethers.BigNumber.from(gasLimit) : undefined,
         value: value ? ethers.BigNumber.from(value) : undefined,
-        nonce: nonce ? ethers.BigNumber.from(nonce) : undefined,
       });
     } catch (e) {
       return e.code;
@@ -258,13 +254,11 @@ export class EthereumPlugin extends Plugin {
     const gasPrice: string | undefined = txOverrides?.gasPrice;
     const gasLimit: string | undefined = txOverrides?.gasLimit;
     const value: string | undefined = txOverrides?.value;
-    const nonce: string | undefined = txOverrides?.nonce;
 
     const gas = await contract.estimateGas[funcs[0]](...parseArgs(args), {
       gasPrice: gasPrice ? ethers.BigNumber.from(gasPrice) : undefined,
       gasLimit: gasLimit ? ethers.BigNumber.from(gasLimit) : undefined,
       value: value ? ethers.BigNumber.from(value) : undefined,
-      nonce: nonce ? ethers.BigNumber.from(nonce) : undefined,
     });
 
     return gas.toString();

@@ -426,27 +426,30 @@ describe("Swap", () => {
     // get expected gas estimate
     const uniswapRouterAddress = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
     const abi = [getSwapMethodAbi(swapParameters.methodName)];
-    const contract = new ethers.Contract(uniswapRouterAddress, abi, ethersProvider.getSigner(recipient));
-    const expectedGasEstimate = await contract.estimateGas[swapParameters.methodName](...parsedArgs, {
-      value: swapParameters.value,
+    const contract = new ethers.Contract(uniswapRouterAddress, abi, ethersProvider.getSigner());
+    const funcs = Object.keys(contract.interface.functions);
+    const expectedGasEstimate = await contract.estimateGas[funcs[0]](...parsedArgs, {
+      value: ethers.BigNumber.from(swapParameters.value),
     });
 
     expect(actualGasEstimate).toStrictEqual(expectedGasEstimate.toString());
   });
 
   it("Should call a swap statically (i.e. does not actually execute but \"pretends\" to execute) and return revert reason", async () => {
-    const dai: Token = tokens.filter(token => token.currency.symbol === "DAI")[0];
-    const aave: Token = tokens.filter(token => token.currency.symbol === "AAVE")[0];
-    const tokenAmount: TokenAmount = {
-      token: aave,
-      amount: "1000000000000000000"
-    };
-    const bestTradeInArray: Trade[] = await getBestTradeExactIn(pairs, tokenAmount, dai, null, client, ensUri);
-    const bestTrade: Trade = bestTradeInArray[0];
+    const uniToken: Token = tokens.filter(token => token.currency.symbol === "UNI")[0];
+    for (const tokenIn of [ethToken, uniToken]) {
+      const tokenOut: Token = tokens.filter(token => token.currency.symbol === "WBTC")[0];
+      const tokenAmount: TokenAmount = {
+        token: tokenIn,
+        amount: "1000000000000000000"
+      };
 
-    const swapParametersQuery = await client.query<{ swapCallParameters: SwapParameters }>({
-      uri: ensUri,
-      query: `
+      const bestTradeInArray: Trade[] = await getBestTradeExactIn(pairs, tokenAmount, tokenOut, null, client, ensUri);
+      const bestTrade: Trade = bestTradeInArray[0];
+
+      const swapParametersQuery = await client.query<{ swapCallParameters: SwapParameters }>({
+        uri: ensUri,
+        query: `
         query {
           swapCallParameters(
             trade: $trade
@@ -454,25 +457,25 @@ describe("Swap", () => {
           )
         }
       `,
-      variables: {
-        trade: bestTrade,
-        tradeOptions: {
-          allowedSlippage: "0.1",
-          recipient: recipient,
-          unixTimestamp: parseInt((new Date().getTime() / 1000).toFixed(0)),
-          ttl: 1800
-        }
-      },
-    });
-    if (swapParametersQuery.errors) {
-      console.log("swap parameter errors")
-      swapParametersQuery.errors.forEach(console.log)
-    }
-    const swapParameters: SwapParameters = swapParametersQuery.data?.swapCallParameters!;
+        variables: {
+          trade: bestTrade,
+          tradeOptions: {
+            allowedSlippage: "0.1",
+            recipient: recipient,
+            unixTimestamp: parseInt((new Date().getTime() / 1000).toFixed(0)),
+            ttl: 1800
+          }
+        },
+      });
+      if (swapParametersQuery.errors) {
+        console.log("swap parameter errors")
+        swapParametersQuery.errors.forEach(console.log)
+      }
+      const swapParameters: SwapParameters = swapParametersQuery.data?.swapCallParameters!;
 
-    const swapStatic = await client.query<{ execCallStatic: string }>({
-      uri: ensUri,
-      query: `
+      const swapStatic = await client.query<{ execCallStatic: string }>({
+        uri: ensUri,
+        query: `
         query {
           execCallStatic(
             parameters: $parameters
@@ -480,37 +483,37 @@ describe("Swap", () => {
           )
         }
     `,
-      variables: {
-        parameters: swapParameters,
-        chainId: aave.chainId,
-      },
-    });
-    if (swapStatic.errors) {
-      console.log("callStatic errors");
-      swapStatic.errors.forEach(console.log)
-    }
-    const exception: string | undefined = swapStatic.data?.execCallStatic;
-    expect(exception).not.toBeUndefined();
-
-    // parse swap parameters args
-    const parsedArgs: (string | string[])[] = swapParameters.args.map((arg: string) =>
-      arg.startsWith("[") && arg.endsWith("]") ? JSON.parse(arg) : arg
-    );
-
-    // get expected gas estimate
-    const uniswapRouterAddress = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
-    const abi = [getSwapMethodAbi(swapParameters.methodName)];
-    const contract = new ethers.Contract(uniswapRouterAddress, abi, ethersProvider.getSigner(recipient));
-    let ethersException = "";
-    try {
-      await contract.callStatic[swapParameters.methodName](...parsedArgs, {
-        value: swapParameters.value,
+        variables: {
+          parameters: swapParameters,
+          chainId: tokenIn.chainId,
+        },
       });
-    } catch(e) {
-      ethersException = e.code;
+      if (swapStatic.errors) {
+        console.log("callStatic errors");
+        swapStatic.errors.forEach(console.log)
+      }
+      const exception: string | undefined = swapStatic.data?.execCallStatic;
+      expect(exception).not.toStrictEqual(undefined);
+
+      // parse swap parameters args
+      const parsedArgs: (string | string[])[] = swapParameters.args.map((arg: string) =>
+        arg.startsWith("[") && arg.endsWith("]") ? JSON.parse(arg) : arg
+      );
+
+      // get expected exception or lack thereof
+      const uniswapRouterAddress = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
+      const abi = [getSwapMethodAbi(swapParameters.methodName)];
+      const contract = new ethers.Contract(uniswapRouterAddress, abi, ethersProvider.getSigner(recipient));
+      let ethersException = "";
+      try {
+        await contract.callStatic[swapParameters.methodName](...parsedArgs, {
+          value: swapParameters.value,
+        });
+      } catch (e) {
+        ethersException = e.code;
+      }
+
+      expect(exception).toStrictEqual(ethersException);
     }
-
-    expect(exception).toStrictEqual(ethersException);
-
   });
 });

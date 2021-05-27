@@ -65,7 +65,6 @@ export function execCall(input: Input_execCall): Ethereum_TxReceipt {
         value: swapParameters.value,
         gasPrice: gasPrice,
         gasLimit: gasLimit,
-        nonce: null,
       },
     }
   );
@@ -134,7 +133,6 @@ export function approve(input: Input_approve): Ethereum_TxReceipt {
         value: null,
         gasPrice: gasPrice,
         gasLimit: gasLimit,
-        nonce: null,
       },
     }
   );

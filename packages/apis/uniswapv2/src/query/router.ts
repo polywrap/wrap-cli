@@ -151,7 +151,6 @@ export function estimateGas(input: Input_estimateGas): string {
       value: swapParameters.value,
       gasPrice: null,
       gasLimit: null,
-      nonce: null,
     },
   });
 }
@@ -181,7 +180,6 @@ export function execCallStatic(input: Input_execCallStatic): string {
       value: swapParameters.value,
       gasPrice: gasPrice,
       gasLimit: gasLimit,
-      nonce: null,
     },
   });
 }

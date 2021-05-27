@@ -86,7 +86,7 @@ describe("Swap", () => {
     await stopTestEnvironment();
   });
 
-  it.only("Should successfully exec ether -> dai -> link -> ether trades", async () => {
+  it("Should successfully exec ether -> dai -> link -> ether trades", async () => {
     const etherDaiData = await client.query<{
       fetchPairData: Pair;
     }>({
