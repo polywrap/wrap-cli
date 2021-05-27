@@ -1,0 +1,29 @@
+{
+  "name": "@web3api/os-js",
+  "description": "Web3API Javascript OS Utilities",
+  "version": "0.0.1-prealpha.23",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/web3-api/monorepo.git"
+  },
+  "main": "build/index.js",
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "build": "rimraf ./build && tsc --project tsconfig.build.json",
+    "lint": "eslint --color --ext .ts src/"
+  },
+  "dependencies": {
+    "@types/node": "12.7.11"
+  },
+  "devDependencies": {
+    "rimraf": "3.0.2",
+    "typescript": "4.0.7"
+  },
+  "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
+  "publishConfig": {
+    "access": "public"
+  }
+}

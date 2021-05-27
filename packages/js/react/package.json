@@ -1,7 +1,7 @@
 {
   "name": "@web3api/react",
   "description": "Web3API React Integration",
-  "version": "0.0.1-prealpha.22",
+  "version": "0.0.1-prealpha.23",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
-    "lint": "eslint --color --ext 'src/**/*.{ts|tsx}'",
+    "lint": "eslint --color --ext \"src/**/*.{ts|tsx}\"",
     "test:ci": "yarn test",
     "test": "jest --passWithNoTests --runInBand --verbose --env=./src/__tests__/env/index.ts",
     "test:watch": "yarn test --watch",
@@ -21,16 +21,16 @@
     "install:web3api": "npx web3api-worker-install ./"
   },
   "dependencies": {
-    "@web3api/client-js": "0.0.1-prealpha.22",
-    "@web3api/core-js": "0.0.1-prealpha.22"
+    "@web3api/client-js": "0.0.1-prealpha.23",
+    "@web3api/core-js": "0.0.1-prealpha.23"
   },
   "devDependencies": {
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^5.1.0",
     "@types/jest": "26.0.8",
-    "@web3api/cli": "0.0.1-prealpha.22",
-    "@web3api/test-cases": "0.0.1-prealpha.22",
-    "@web3api/test-env-js": "0.0.1-prealpha.22",
+    "@web3api/cli": "0.0.1-prealpha.23",
+    "@web3api/test-cases": "0.0.1-prealpha.23",
+    "@web3api/test-env-js": "0.0.1-prealpha.23",
     "jest": "26.6.3",
     "jest-environment-jsdom": "^26.0.1",
     "rimraf": "3.0.2",
