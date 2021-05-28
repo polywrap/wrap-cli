@@ -5799,6 +5799,11 @@ binaryen@98.0.0-nightly.20201109:
   resolved "https://registry.yarnpkg.com/binaryen/-/binaryen-98.0.0-nightly.20201109.tgz#512bf6ca15c67bf7402144734a4836e63993aa05"
   integrity sha512-iRarAqdH5lMWlMBzrDuJgLYJR2g4QXk93iYE2zpr6gEZkb/jCgDpPUXdhuN11Ge1zZ/6By4DwA1mmifcx7FWaw==
 
+binaryen@^101.0.0:
+  version "101.0.0"
+  resolved "https://registry.yarnpkg.com/binaryen/-/binaryen-101.0.0.tgz#42a9e4cc7a22e2c1d75a31d28005a9b518b2c555"
+  integrity sha512-FRmVxvrR8jtcf0qcukNAPZDM3dZ2sc9GmA/hKxBI7k3fFzREKh1cAs+ruQi+ITTKz7u/AuFMuVnbJwTh0ef/HQ==
+
 bindings@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.5.0.tgz#10353c9e945334bc0511a6d90b38fbc7c9c504df"
