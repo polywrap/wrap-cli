@@ -11,7 +11,7 @@ export class Context {
   private first: Node<string> | null = null;
   private n: i32 = 0;
 
-  constructor(description: string = "") {
+  constructor(description: string = "context description not set") {
     this.description = description;
   }
 
@@ -54,7 +54,7 @@ export class Context {
     result += "Context: " + this.description;
     if (this.isEmpty()) {
       result += "\n".padEnd(1 + size * tabs++, " ");
-      result += "Context stack is empty or context was not set";
+      result += "context stack is empty";
       return result;
     }
     let current: Node<string> | null = this.first;

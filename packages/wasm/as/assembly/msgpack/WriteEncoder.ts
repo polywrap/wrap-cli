@@ -9,7 +9,7 @@ export class WriteEncoder extends Write {
   public readonly context: Context;
   private view: DataView;
 
-  constructor(ua: ArrayBuffer, context: Context) {
+  constructor(ua: ArrayBuffer, context: Context = new Context()) {
     super();
     this.context = context;
     this.view = new DataView(ua, 0, ua.byteLength, context);
