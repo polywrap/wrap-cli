@@ -1,12 +1,6 @@
 // Context is stores MsgPack serialization context in a stack, and prints it in a clear format
 
 export class Context {
-  // array (stack)
-  // push(string)
-  // pop()
-  // toString(): string
-  //   "${stack[0]}:"
-  //   "  ${stack[1]:"
   private description: string;
   private first: Node<string> | null = null;
   private n: i32 = 0;

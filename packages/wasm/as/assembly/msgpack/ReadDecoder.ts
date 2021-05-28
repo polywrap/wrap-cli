@@ -32,7 +32,7 @@ export class ReadDecoder extends Read {
     } else if (value == Format.FALSE) {
       return false;
     }
-    throw new Error(this.context.printWithContext("bad value for bool"));
+    throw new Error(this.context.printWithContext("bad prefix value for bool: " + value.toString()));
   }
 
   readInt8(): i8 {
@@ -213,7 +213,7 @@ export class ReadDecoder extends Read {
 
     throw new RangeError(
       this.context.printWithContext(
-        "readStringLength: " + E_INVALIDLENGTH + leadByte.toString()
+        "readStringLength: " + E_INVALIDLENGTH + " " + leadByte.toString()
       )
     );
   }
@@ -274,7 +274,7 @@ export class ReadDecoder extends Read {
     }
     throw new RangeError(
       this.context.printWithContext(
-        "readArrayLength: " + E_INVALIDLENGTH + leadByte.toString()
+        "readArrayLength: " + E_INVALIDLENGTH + " " + leadByte.toString()
       )
     );
   }
@@ -307,7 +307,7 @@ export class ReadDecoder extends Read {
     }
     throw new RangeError(
       this.context.printWithContext(
-        "readMapLength: " + E_INVALIDLENGTH + leadByte.toString()
+        "readMapLength: " + E_INVALIDLENGTH + " " + leadByte.toString()
       )
     );
   }
@@ -572,7 +572,7 @@ export class ReadDecoder extends Read {
         default:
           throw new TypeError(
             this.context.printWithContext(
-              "invalid prefix, bad encoding for val: " + leadByte.toString()
+              "invalid prefix; cannot get size due to bad encoding for value: " + leadByte.toString()
             )
           );
       }
