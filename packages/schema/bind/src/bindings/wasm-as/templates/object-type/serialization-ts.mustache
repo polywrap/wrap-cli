@@ -12,10 +12,11 @@ import { {{type}} } from "./";
 import * as Types from "..";
 
 export function serialize{{type}}(type: {{type}}): ArrayBuffer {
+  const context: MsgPackContext = new MsgPackContext("Serializing {{type}}");
   const sizer = new WriteSizer();
   write{{type}}(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
-  const encoder = new WriteEncoder(buffer);
+  const encoder = new WriteEncoder(buffer, context);
   write{{type}}(encoder, type);
   return buffer;
 }
@@ -23,6 +24,7 @@ export function serialize{{type}}(type: {{type}}): ArrayBuffer {
 export function write{{type}}(writer: Write, type: {{type}}): void {
   writer.writeMapLength({{properties.length}});
   {{#properties}}
+  writer.context.push(field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}");
   writer.writeString("{{name}}");
   {{#scalar}}
   writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{name}});
@@ -52,11 +54,12 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   writer.writeNullableInt32(type.{{name}});
   {{/required}}
   {{/enum}}
+  writer.context.pop();
   {{/properties}}
 }
 
 export function deserialize{{type}}(buffer: ArrayBuffer): {{type}} {
-  const context = new MsgPackContext("object-type: {{type}}");
+  const context: MsgPackContext = new MsgPackContext("Deserializing {{type}}");
   const reader = new ReadDecoder(buffer, context);
   return read{{type}}(reader);
 }
@@ -84,7 +87,7 @@ export function read{{type}}(reader: Read): {{type}} {
   while (numFields > 0) {
     numFields--;
     const field = reader.readString();
-    reader.context.push("property: " + field);
+    reader.context.push(field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}");
 
     {{#properties}}
     {{^first}}else {{/first}}if (field == "{{name}}") {

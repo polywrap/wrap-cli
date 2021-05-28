@@ -13,12 +13,14 @@ import { Nullable } from "./Nullable";
 import { Read } from "./Read";
 import { E_INVALIDLENGTH } from "./utils";
 import { BigInt } from "../BigInt";
+import { MsgPackContext } from "./MsgPackContext";
 
+// TODO: add Context to error messages
 export class ReadDecoder extends Read {
+  public readonly context: MsgPackContext;
   private view: DataView;
-  public context: Context;
 
-  constructor(ua: ArrayBuffer, context: Context) {
+  constructor(ua: ArrayBuffer, context: MsgPackContext = new MsgPackContext()) {
     super();
     this.context = context;
     this.view = new DataView(ua, 0, ua.byteLength, context);
@@ -31,7 +33,7 @@ export class ReadDecoder extends Read {
     } else if (value == Format.FALSE) {
       return false;
     }
-    throw new Error(this.context.toString() + "bad value for bool");
+    throw new Error("bad value for bool");
   }
 
   readInt8(): i8 {

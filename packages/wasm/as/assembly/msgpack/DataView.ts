@@ -1,16 +1,20 @@
 import { E_INDEXOUTOFRANGE, E_INVALIDLENGTH, BLOCK_MAXSIZE } from "./utils";
+import { MsgPackContext } from "./MsgPackContext";
 
+// TODO: add Context to error messages
 export class DataView {
   @unsafe
   readonly dataStart: u32;
   readonly buffer: ArrayBuffer;
   readonly byteLength: i32;
   private byteOffset: i32;
+  private context: MsgPackContext;
 
   constructor(
     buffer: ArrayBuffer,
     byte_offset: i32 = 0,
-    byte_length: i32 = buffer.byteLength
+    byte_length: i32 = buffer.byteLength,
+    context: MsgPackContext = new MsgPackContext()
   ) {
     if (
       i32(<u32>byte_length > <u32>BLOCK_MAXSIZE) |
@@ -22,6 +26,7 @@ export class DataView {
     this.dataStart = dataStart;
     this.byteLength = byte_length;
     this.byteOffset = byte_offset;
+    this.context = context;
   }
 
   getBytes(length: i32): ArrayBuffer {
