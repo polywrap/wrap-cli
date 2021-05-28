@@ -3,13 +3,16 @@ import { Format } from "./Format";
 import { Nullable } from "./Nullable";
 import { Write } from "./Write";
 import { BigInt } from "../BigInt";
+import { Context } from "./Context";
 
 export class WriteEncoder extends Write {
+  public readonly context: Context;
   private view: DataView;
 
-  constructor(ua: ArrayBuffer) {
+  constructor(ua: ArrayBuffer, context: Context) {
     super();
-    this.view = new DataView(ua, 0, ua.byteLength);
+    this.context = context;
+    this.view = new DataView(ua, 0, ua.byteLength, context);
   }
 
   writeNil(): void {

@@ -1,5 +1,4 @@
 import { Nullable } from "./Nullable";
-import { MsgPackContext } from "./MsgPackContext";
 import { BigInt } from "../BigInt";
 
 export abstract class Read {

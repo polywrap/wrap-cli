@@ -13,14 +13,13 @@ import { Nullable } from "./Nullable";
 import { Read } from "./Read";
 import { E_INVALIDLENGTH } from "./utils";
 import { BigInt } from "../BigInt";
-import { MsgPackContext } from "./MsgPackContext";
+import { Context } from "./Context";
 
-// TODO: add Context to error messages
 export class ReadDecoder extends Read {
-  public readonly context: MsgPackContext;
+  public readonly context: Context;
   private view: DataView;
 
-  constructor(ua: ArrayBuffer, context: MsgPackContext = new MsgPackContext()) {
+  constructor(ua: ArrayBuffer, context: Context = new Context()) {
     super();
     this.context = context;
     this.view = new DataView(ua, 0, ua.byteLength, context);
@@ -33,7 +32,7 @@ export class ReadDecoder extends Read {
     } else if (value == Format.FALSE) {
       return false;
     }
-    throw new Error("bad value for bool");
+    throw new Error(this.context.printWithContext("bad value for bool"));
   }
 
   readInt8(): i8 {
@@ -42,7 +41,9 @@ export class ReadDecoder extends Read {
       return i8(value);
     }
     throw new Error(
-      "integer overflow: value = " + value.toString() + "; bits = 8"
+      this.context.printWithContext(
+        "integer overflow: value = " + value.toString() + "; bits = 8"
+      )
     );
   }
 
@@ -52,7 +53,9 @@ export class ReadDecoder extends Read {
       return i16(value);
     }
     throw new Error(
-      "integer overflow: value = " + value.toString() + "; bits = 16"
+      this.context.printWithContext(
+        "integer overflow: value = " + value.toString() + "; bits = 16"
+      )
     );
   }
 
@@ -62,7 +65,9 @@ export class ReadDecoder extends Read {
       return i32(value);
     }
     throw new Error(
-      "integer overflow: value = " + value.toString() + "; bits = 32"
+      this.context.printWithContext(
+        "integer overflow: value = " + value.toString() + "; bits = 32"
+      )
     );
   }
 
@@ -85,7 +90,11 @@ export class ReadDecoder extends Read {
       case Format.INT64:
         return this.view.getInt64();
       default:
-        throw new Error("bad prefix for int: " + prefix.toString());
+        throw new Error(
+          this.context.printWithContext(
+            "bad prefix for int: " + prefix.toString()
+          )
+        );
     }
   }
 
@@ -95,7 +104,9 @@ export class ReadDecoder extends Read {
       return u8(value);
     }
     throw new Error(
-      "unsigned integer overflow: value = " + value.toString() + "; bits = 8"
+      this.context.printWithContext(
+        "unsigned integer overflow: value = " + value.toString() + "; bits = 8"
+      )
     );
   }
 
@@ -105,7 +116,9 @@ export class ReadDecoder extends Read {
       return u16(value);
     }
     throw new Error(
-      "unsigned integer overflow: value = " + value.toString() + "; bits = 16"
+      this.context.printWithContext(
+        "unsigned integer overflow: value = " + value.toString() + "; bits = 16"
+      )
     );
   }
 
@@ -115,7 +128,9 @@ export class ReadDecoder extends Read {
       return u32(value);
     }
     throw new Error(
-      "unsigned integer overflow: value = " + value.toString() + "; bits = 32"
+      this.context.printWithContext(
+        "unsigned integer overflow: value = " + value.toString() + "; bits = 32"
+      )
     );
   }
 
@@ -126,7 +141,9 @@ export class ReadDecoder extends Read {
       return u64(prefix);
     } else if (isNegativeFixedInt(prefix)) {
       throw new Error(
-        "unsigned integer cannot be negative: prefix = " + prefix.toString()
+        this.context.printWithContext(
+          "unsigned integer cannot be negative: prefix = " + prefix.toString()
+        )
       );
     }
 
@@ -141,7 +158,9 @@ export class ReadDecoder extends Read {
         return this.view.getUint64();
       default:
         throw new Error(
-          "bad prefix for unsigned int: prefix = " + prefix.toString()
+          this.context.printWithContext(
+            "bad prefix for unsigned int: prefix = " + prefix.toString()
+          )
         );
     }
   }
@@ -151,7 +170,11 @@ export class ReadDecoder extends Read {
     if (isFloat32(prefix)) {
       return <f32>this.view.getFloat32();
     }
-    throw new Error("bad prefix for float32: " + prefix.toString());
+    throw new Error(
+      this.context.printWithContext(
+        "bad prefix for float32: " + prefix.toString()
+      )
+    );
   }
 
   readFloat64(): f64 {
@@ -159,7 +182,11 @@ export class ReadDecoder extends Read {
     if (isFloat64(prefix)) {
       return <f64>this.view.getFloat64();
     }
-    throw new Error("bad prefix for float 64: " + prefix.toString());
+    throw new Error(
+      this.context.printWithContext(
+        "bad prefix for float 64: " + prefix.toString()
+      )
+    );
   }
 
   readStringLength(): u32 {
@@ -184,7 +211,11 @@ export class ReadDecoder extends Read {
         return 0;
     }
 
-    throw new RangeError("readStringLength: " + E_INVALIDLENGTH + leadByte.toString());
+    throw new RangeError(
+      this.context.printWithContext(
+        "readStringLength: " + E_INVALIDLENGTH + leadByte.toString()
+      )
+    );
   }
 
   readString(): string {
@@ -211,7 +242,7 @@ export class ReadDecoder extends Read {
       case Format.NIL:
         return 0;
     }
-    throw new RangeError(E_INVALIDLENGTH);
+    throw new RangeError(this.context.printWithContext(E_INVALIDLENGTH));
   }
 
   readBytes(): ArrayBuffer {
@@ -241,7 +272,11 @@ export class ReadDecoder extends Read {
       case Format.NIL:
         return 0;
     }
-    throw new RangeError("readArrayLength: " + E_INVALIDLENGTH + leadByte.toString());
+    throw new RangeError(
+      this.context.printWithContext(
+        "readArrayLength: " + E_INVALIDLENGTH + leadByte.toString()
+      )
+    );
   }
 
   readArray<T>(fn: (reader: Read) => T): Array<T> {
@@ -270,7 +305,11 @@ export class ReadDecoder extends Read {
       case Format.NIL:
         return 0;
     }
-    throw new RangeError("readMapLength: " + E_INVALIDLENGTH + leadByte.toString());
+    throw new RangeError(
+      this.context.printWithContext(
+        "readMapLength: " + E_INVALIDLENGTH + leadByte.toString()
+      )
+    );
   }
 
   readMap<K, V>(
@@ -532,7 +571,9 @@ export class ReadDecoder extends Read {
           break;
         default:
           throw new TypeError(
-            "invalid prefix, bad encoding for val: " + leadByte.toString()
+            this.context.printWithContext(
+              "invalid prefix, bad encoding for val: " + leadByte.toString()
+            )
           );
       }
     }

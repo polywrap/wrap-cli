@@ -1,20 +1,19 @@
 import { E_INDEXOUTOFRANGE, E_INVALIDLENGTH, BLOCK_MAXSIZE } from "./utils";
-import { MsgPackContext } from "./MsgPackContext";
+import { Context } from "./Context";
 
-// TODO: add Context to error messages
 export class DataView {
   @unsafe
   readonly dataStart: u32;
   readonly buffer: ArrayBuffer;
   readonly byteLength: i32;
   private byteOffset: i32;
-  private context: MsgPackContext;
+  private context: Context;
 
   constructor(
     buffer: ArrayBuffer,
     byte_offset: i32 = 0,
     byte_length: i32 = buffer.byteLength,
-    context: MsgPackContext = new MsgPackContext()
+    context: Context = new Context()
   ) {
     if (
       i32(<u32>byte_length > <u32>BLOCK_MAXSIZE) |
@@ -32,10 +31,12 @@ export class DataView {
   getBytes(length: i32): ArrayBuffer {
     if (this.byteOffset + length > this.byteLength)
       throw new RangeError(
-        "getBytes: " + E_INDEXOUTOFRANGE +
-        " [length: " + length.toString() +
-        " byteOffset: " + this.byteOffset.toString() +
-        " byteLength: " + this.byteLength.toString() + "]"
+        this.context.printWithContext(
+          "getBytes: " + E_INDEXOUTOFRANGE +
+          " [length: " + length.toString() +
+          " byteOffset: " + this.byteOffset.toString() +
+          " byteLength: " + this.byteLength.toString() + "]"
+        )
       );
     const result = this.buffer.slice(this.byteOffset, this.byteOffset + length);
     this.byteOffset += length;

@@ -1,6 +1,6 @@
 // Context is stores MsgPack serialization context in a stack, and prints it in a clear format
 
-export class MsgPackContext {
+export class Context {
   // array (stack)
   // push(string)
   // pop()
@@ -42,16 +42,24 @@ export class MsgPackContext {
   }
 
   public toString(): string {
-    let result = "Context: " + this.description;
-    let tabs = 1;
+    return this.printWithTabs();
+  }
+
+  public printWithContext(message: string): string {
+    return message + "\n" + this.printWithTabs(1);
+  }
+
+  private printWithTabs(tabs: i32 = 0, size: i32 = 2): string {
+    let result = "".padStart(size * tabs++, " ");
+    result += "Context: " + this.description;
     if (this.isEmpty()) {
-      result += "\n".padEnd(14 + 2 * tabs, " ");
+      result += "\n".padEnd(1 + size * tabs++, " ");
       result += "Context stack is empty or context was not set";
       return result;
     }
     let current: Node<string> | null = this.first;
     while (current !== null) {
-      result += "\n".padEnd(14 + 2 * tabs++, " ");
+      result += "\n".padEnd(1 + size * tabs++, " ");
       result += "at " + current.item + ": " + current.type;
       current = current.next;
     }

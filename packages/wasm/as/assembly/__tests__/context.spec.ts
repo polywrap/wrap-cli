@@ -1,10 +1,10 @@
-import { MsgPackContext } from "../msgpack/MsgPackContext";
+import { Context } from "../msgpack/Context";
 
 
 describe("Context class", () => {
 
   it("pushes and pops values", () => {
-    const context: MsgPackContext = new MsgPackContext();
+    const context: Context = new Context();
     expect(context.length).toStrictEqual(0);
     expect(context.isEmpty()).toStrictEqual(true);
     context.push("property", "string");
@@ -20,11 +20,19 @@ describe("Context class", () => {
   });
 
   it("prints in desired format", () => {
-    const context: MsgPackContext = new MsgPackContext("Deserializing MyObject");
+    const context: Context = new Context("Deserializing MyObject");
     context.push("propertyOne", "string");
-    expect(context.toString()).toStrictEqual(
-      `Context: Deserializing MyObject
-               at propertyOne: string`
+    expect("\n" + context.toString()).toStrictEqual(
+      `
+Context: Deserializing MyObject
+  at propertyOne: string`
+    )
+
+    expect(context.printWithContext("\nInvalid length")).toStrictEqual(
+      `
+Invalid length
+  Context: Deserializing MyObject
+    at propertyOne: string`
     )
 
   });

@@ -12,7 +12,7 @@ import { {{type}} } from "./";
 import * as Types from "..";
 
 export function serialize{{type}}(type: {{type}}): ArrayBuffer {
-  const context: MsgPackContext = new MsgPackContext("Serializing {{type}}");
+  const context: Context = new Context("Serializing {{type}}");
   const sizer = new WriteSizer();
   write{{type}}(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
@@ -59,7 +59,7 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
 }
 
 export function deserialize{{type}}(buffer: ArrayBuffer): {{type}} {
-  const context: MsgPackContext = new MsgPackContext("Deserializing {{type}}");
+  const context: Context = new Context("Deserializing {{type}}");
   const reader = new ReadDecoder(buffer, context);
   return read{{type}}(reader);
 }
