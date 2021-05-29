@@ -1,9 +1,8 @@
 {
   "id": "BuildManifest_WasmAsExt",
   "type": "object",
-  "additionalProperties": false,
   "required": [
-    "env"
+    "args"
   ],
   "properties": {
     "args": {

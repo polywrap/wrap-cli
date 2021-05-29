@@ -75,7 +75,7 @@ export class Project {
 
       // Add default env variables
       const web3apiManifest = await this.getWeb3ApiManifest();
-      const defaultEnv = {
+      const defaultArgs = {
         web3api_mutation_dir: web3apiManifest.modules.mutation
           ? path.dirname(web3apiManifest.modules.mutation.module)
           : undefined,
@@ -85,12 +85,12 @@ export class Project {
         web3api_manifests: await this.getManifestPaths()
       };
 
-      if (!this._buildManifest.env) {
-        this._buildManifest.env = defaultEnv;
+      if (!this._buildManifest.args) {
+        this._buildManifest.args = defaultArgs;
       } else {
-        this._buildManifest.env = {
-          ...this._buildManifest.env,
-          ...defaultEnv
+        this._buildManifest.args = {
+          ...this._buildManifest.args,
+          ...defaultArgs
         };
       }
     }

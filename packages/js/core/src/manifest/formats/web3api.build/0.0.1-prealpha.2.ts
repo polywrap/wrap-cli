@@ -13,7 +13,7 @@ export interface BuildManifest {
     dockerfile?: string;
     nameDigest?: string;
   };
-  env?: {
+  args?: {
     [k: string]: unknown;
   };
 }

@@ -1,72 +1,69 @@
 import { runCommand } from "./command";
-/*
-interface CopyArgs {
-  imageName: string;
-  source: string;
-  destination: string;
+
+export async function copyArtifactsFromBuildImage(
+  outputDir: string,
+  imageName: string,
+  quiet = true
+): Promise<void> {
+  await runCommand(
+    `docker create -ti --name root-${imageName} ${imageName}`,
+    quiet
+  );
+
+  await runCommand(
+    `docker cp root-${imageName}:/project/build ${outputDir}`,
+    quiet
+  );
+
+  await runCommand(`docker rm -f root-${imageName}`, quiet);
 }
 
-interface BuildArgs {
-  outputImageName: string;
-  args: string;
-}
-*/
+export async function createBuildImage(
+  rootDir: string,
+  imageName: string,
+  dockerfile: string,
+  args?: Record<string, unknown>,
+  quiet: boolean = true
+): Promise<void> {
+  const dockerArgs = args ? formatBuildArgs(args) : "";
 
-export function transformBuildArgs(
-  env: Record<string, string | string[]>
+  await runCommand(
+    `docker build -f ${dockerfile} -t ${imageName} ${rootDir} ${dockerArgs}`,
+    quiet
+  );
+}
+
+function formatBuildArgs(
+  args: Record<string, unknown>,
+  prefix: string = ""
 ): string {
-  return Object.entries(env)
+  return Object.entries(args)
+    .filter(([, value]) => value !== undefined)
     .map(([key, value]) => {
-      if (typeof value === "string") {
-        return `--build-arg ${key}="${value}"`;
-      } else if (Array.isArray(value)) {
-        return `--build-arg ${key}="${value.join(" ")}"`;
+      const type = typeof value;
+      let buildArg = `--build-arg ${prefix}${key}=`;
+
+      if (Array.isArray(value)) {
+        // TODO: support arrays of non-base types, like objects
+        buildArg += `"${value.join(",")}"`;
+      } else if (type === "string") {
+        buildArg += `"${value}"`;
+      } else if (type === "boolean") {
+        buildArg += `${value ? "true" : "false"}`;
+      } else if (type === "number") {
+        buildArg += `${(value as number).toString()}`;
+      } else if (type === "object") {
+        return formatBuildArgs(
+          value as Record<string, unknown>,
+          prefix ? `${prefix}_${key}_` : `${key}_`
+        );
       } else {
-        throw new Error(
-          "Unsupported env variable type. Supported types: string, string[]"
+        throw Error(
+          `Unsupported BuildManifest.env variable "${key}". Type: ${type}, Value: ${value}`
         );
       }
+
+      return buildArg;
     })
     .join(" ");
-}
-
-export async function copyFromImageToHost(
-  { tempDir, imageName, source, destination }: CopyArgs,
-  quiet = true
-): Promise<void> {
-  let copyError: Error | undefined;
-
-  await runCommand(
-    `cd ${tempDir} && docker create -ti --name temp ${imageName}`,
-    quiet
-  );
-
-  try {
-    await runCommand(
-      `cd ${tempDir} && docker cp temp:/project/${source}/. ${destination}`,
-      quiet
-    );
-  } catch (e) {
-    copyError = e;
-  }
-
-  try {
-    await runCommand(`cd ${tempDir} && docker rm -f temp`, quiet);
-  } catch (e) {
-    console.log(e);
-  }
-
-  if (copyError) {
-    throw copyError;
-  }
-}
-
-export async function buildImage(
-  { tempDir, outputImageName, args }: BuildArgs,
-  quiet = true
-): Promise<void> {
-  await runCommand(
-    `cd ${tempDir} && docker build -t ${outputImageName} . ${args}`,
-    quiet
-  );
 }

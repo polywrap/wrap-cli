@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "@formatjs/intl": "1.8.2",
-    "@types/node": "12.7.11",
     "@web3api/client-js": "0.0.1-prealpha.23",
     "@web3api/client-test-env": "0.0.1-prealpha.23",
     "@web3api/core-js": "0.0.1-prealpha.23",
@@ -54,7 +53,7 @@
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
-    "@types/node": "12.6.9",
+    "@types/node": "12.7.11",
     "@web3api/test-env-js": "0.0.1-prealpha.23",
     "copyfiles": "^2.4.1",
     "eslint-plugin-formatjs": "2.12.7",

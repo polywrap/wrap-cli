@@ -6,8 +6,8 @@ import { SchemaComposer } from "./SchemaComposer";
 import {
   withSpinner,
   outputManifest,
-  buildImage,
-  copyFromImageToHost
+  createBuildImage,
+  //copyArtifactsFromBuildImage
 } from "./helpers";
 import { intlMsg } from "./intl";
 
@@ -110,7 +110,7 @@ export class Compiler {
     composerOutput: ComposerOutput,
     modulesToBuild: InvokableModules[]
   ) {
-    const { outputDir, project } = this._config;
+    const { outputDir } = this._config;
     const buildQuery = modulesToBuild.indexOf("query") > -1;
     const buildMutation = modulesToBuild.indexOf("mutation") > -1;
 
@@ -179,14 +179,14 @@ export class Compiler {
     }
 
     // Build the sources
-    await this._buildSourcesInDocker(buildManifest, project.quiet);
+    await this._buildSourcesInDocker();
 
     // Validate the WASM exports
-    await Promise.all(
+    /*await Promise.all(
       modulesToBuild.map(
         (module) => this._validateExports(module, outputDir)
       )
-    );
+    );*/
 
     // Output the schema & manifest files
     writeFileSync(
@@ -243,33 +243,31 @@ export class Compiler {
     return filesWritten;
   }
 
-  private async _buildSourcesInDocker(
-    buildManifest: BuildManifest,
-    quiet = true
-  ) {
-    const { outputDir } = this._config;
+  private async _buildSourcesInDocker() {
+    const { project } = this._config;
+    const buildManifestDir = await project.getBuildManifestDir();
+    const buildManifest = await project.getBuildManifest();
+    const imageName = buildManifest?.docker?.name || "web3api-build";
+    const dockerfile = buildManifest?.docker?.dockerfile
+      ? `${buildManifestDir}/${buildManifest?.docker?.dockerfile}`
+      : `${buildManifestDir}/Dockerfile`;
 
-    await buildImage(
-      {
-        tempDir,
-        outputImageName,
-        args,
-      },
-      quiet
+    await createBuildImage(
+      project.web3apiManifestDir,
+      imageName,
+      dockerfile,
+      buildManifest.args,
+      project.quiet
     );
 
-    await copyFromImageToHost(
-      {
-        tempDir,
-        imageName: outputImageName,
-        source: buildDir,
-        destination: outputDir,
-      },
-      quiet
-    );
+    /*await copyArtifactsFromBuildImage(
+      outputDir,
+      imageName,
+      project.quiet
+    );*/
   }
 
-  private async _validateExports(moduleName: InvokableModules, buildDir: string) {
+  /*private async _validateExports(moduleName: InvokableModules, buildDir: string) {
     const wasmSource = fs.readFileSync(path.join(buildDir, `${moduleName}.wasm`));
     const mod = await WebAssembly.compile(wasmSource);
     const memory = new WebAssembly.Memory({ initial: 1 });
@@ -299,7 +297,7 @@ export class Compiler {
         `No _w3_invoke is not exported from built ${moduleName} module`
       );
     }
-  }
+  }*/
 
   private _determineModulesToBuild(manifest: Web3ApiManifest): InvokableModules[] {
     const manifestMutation = manifest.modules.mutation;

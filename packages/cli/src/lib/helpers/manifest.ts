@@ -73,6 +73,9 @@ export async function loadBuildManifest(
       extSchema = JSON.parse(
         fs.readFileSync(envSchemaPath, "utf-8")
       ) as JsonSchema;
+
+      // The extension schema must support additional properties
+      extSchema.additionalProperties = true;
     }
 
     try {
