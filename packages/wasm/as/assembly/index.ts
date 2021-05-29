@@ -5,6 +5,7 @@ export {
   WriteEncoder,
   WriteSizer,
   Nullable,
+  Context,
 } from "./msgpack";
 
 export { BigInt } from "./BigInt";

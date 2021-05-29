@@ -17,9 +17,9 @@ export class Context {
     return this.n;
   }
 
-  public push(item: string, type: string = ""): void {
+  public push(item: string, type: string = "", info: string = ""): void {
     const oldfirst: Node<string> | null = this.first;
-    this.first = new Node<string>(item, type, oldfirst);
+    this.first = new Node<string>(item, type, info, oldfirst);
     this.n++;
   }
 
@@ -30,9 +30,11 @@ export class Context {
       );
     }
     const item: string = this.first!.item;
+    const type: string = this.first!.type;
+    const info: string = this.first!.info;
     this.first = this.first!.next;
     this.n--;
-    return item;
+    return item + ": " + type + (info == "" ? "" : " >> " + info);
   }
 
   public toString(): string {
@@ -54,7 +56,8 @@ export class Context {
     let current: Node<string> | null = this.first;
     while (current !== null) {
       result += "\n".padEnd(1 + size * tabs++, " ");
-      result += "at " + current.item + ": " + current.type;
+      const info: string = current.info == "" ? "" : " >> " + current.info;
+      result += "at " + current.item + ": " + current.type + info;
       current = current.next;
     }
     return result;
@@ -64,11 +67,13 @@ export class Context {
 class Node<T> {
   item: T;
   type: string;
+  info: string;
   next: Node<T> | null;
 
-  constructor(item: T, type: string, next: Node<T> | null) {
+  constructor(item: T, type: string, info: string, next: Node<T> | null) {
     this.item = item;
     this.type = type;
+    this.info = info;
     this.next = next;
   }
 }

@@ -6,13 +6,17 @@ import { BigInt } from "../BigInt";
 import { Context } from "./Context";
 
 export class WriteEncoder extends Write {
-  public readonly context: Context;
+  private readonly _context: Context;
   private view: DataView;
 
   constructor(ua: ArrayBuffer, context: Context = new Context()) {
     super();
-    this.context = context;
+    this._context = context;
     this.view = new DataView(ua, 0, ua.byteLength, context);
+  }
+
+  context(): Context {
+    return this._context;
   }
 
   writeNil(): void {

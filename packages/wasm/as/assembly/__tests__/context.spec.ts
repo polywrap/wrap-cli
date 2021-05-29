@@ -1,4 +1,4 @@
-import { Context } from "../msgpack/Context";
+import { Context } from "../msgpack";
 
 
 describe("Context class", () => {
@@ -21,18 +21,29 @@ describe("Context class", () => {
 
   it("prints in desired format", () => {
     const context: Context = new Context("Deserializing MyObject");
-    context.push("propertyOne", "string");
+    context.push("propertyOne", "unknown", "searching for property type");
+
     expect("\n" + context.toString()).toStrictEqual(
       `
 Context: Deserializing MyObject
-  at propertyOne: string`
+  at propertyOne: unknown >> searching for property type`
     )
 
     expect(context.printWithContext("\nInvalid length")).toStrictEqual(
       `
 Invalid length
   Context: Deserializing MyObject
-    at propertyOne: string`
+    at propertyOne: unknown >> searching for property type`
+    )
+
+    context.push("propertyOne", "i32", "type found, reading property");
+
+    expect(context.printWithContext("\nInvalid length")).toStrictEqual(
+      `
+Invalid length
+  Context: Deserializing MyObject
+    at propertyOne: i32 >> type found, reading property
+      at propertyOne: unknown >> searching for property type`
     )
 
   });
