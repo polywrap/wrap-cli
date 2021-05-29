@@ -52,8 +52,8 @@ export function readTestImport_AnotherObject(reader: Read): TestImport_AnotherOb
       _prop = reader.readString();
       _propSet = true;
       reader.context().pop();
+      reader.context().pop();
     }
-    reader.context().pop();
   }
 
   if (!_propSet) {

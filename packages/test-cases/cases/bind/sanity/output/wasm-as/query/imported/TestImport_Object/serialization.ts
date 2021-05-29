@@ -107,6 +107,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
       _object = object;
       _objectSet = true;
       reader.context().pop();
+      reader.context().pop();
     }
     else if (field == "optObject") {
       reader.context().push(field, "Types.TestImport_AnotherObject | null", "type found, reading property");
@@ -116,6 +117,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
       }
       _optObject = object;
       reader.context().pop();
+      reader.context().pop();
     }
     else if (field == "objectArray") {
       reader.context().push(field, "Array<Types.TestImport_AnotherObject>", "type found, reading property");
@@ -124,6 +126,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
         return object;
       });
       _objectArraySet = true;
+      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "optObjectArray") {
@@ -135,6 +138,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
         }
         return object;
       });
+      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "en") {
@@ -148,6 +152,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
       }
       _en = value;
       _enSet = true;
+      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "optEnum") {
@@ -169,6 +174,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
       }
       _optEnum = value;
       reader.context().pop();
+      reader.context().pop();
     }
     else if (field == "enumArray") {
       reader.context().push(field, "Array<Types.TestImport_Enum>", "type found, reading property");
@@ -183,6 +189,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
         return value;
       });
       _enumArraySet = true;
+      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "optEnumArray") {
@@ -206,8 +213,8 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
         return value;
       });
       reader.context().pop();
+      reader.context().pop();
     }
-    reader.context().pop();
   }
 
   if (!_object || !_objectSet) {

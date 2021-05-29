@@ -5,7 +5,8 @@ import {
   WriteEncoder,
   Write,
   Nullable,
-  BigInt, Context
+  BigInt,
+  Context
 } from "@web3api/wasm-as";
 import * as Types from "..";
 
@@ -43,10 +44,12 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
       _str = reader.readString();
       _strSet = true;
       reader.context().pop();
+      reader.context().pop();
     }
     else if (field == "optStr") {
       reader.context().push(field, "string | null", "type found, reading property");
       _optStr = reader.readNullableString();
+      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "en") {
@@ -60,6 +63,7 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
       }
       _en = value;
       _enSet = true;
+      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "optEnum") {
@@ -81,6 +85,7 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
       }
       _optEnum = value;
       reader.context().pop();
+      reader.context().pop();
     }
     else if (field == "enumArray") {
       reader.context().push(field, "Array<Types.CustomEnum>", "type found, reading property");
@@ -95,6 +100,7 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
         return value;
       });
       _enumArraySet = true;
+      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "optEnumArray") {
@@ -117,7 +123,8 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
         }
         return value;
       });
-      reader.context().pop()
+      reader.context().pop();
+      reader.context().pop();
     }
   }
 
@@ -188,6 +195,7 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
       _object = object;
       _objectSet = true;
       reader.context().pop();
+      reader.context().pop();
     }
     else if (field == "optObject") {
       reader.context().push(field, "Types.AnotherType | null", "type found, reading property");
@@ -197,6 +205,7 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
       }
       _optObject = object;
       reader.context().pop();
+      reader.context().pop();
     }
     else if (field == "objectArray") {
       reader.context().push(field, "Array<Types.AnotherType>", "type found, reading property");
@@ -205,6 +214,7 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
         return object;
       });
       _objectArraySet = true;
+      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "optObjectArray") {
@@ -217,8 +227,8 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
         return object;
       });
       reader.context().pop();
+      reader.context().pop();
     }
-    reader.context().pop();
   }
 
   if (!_object || !_objectSet) {

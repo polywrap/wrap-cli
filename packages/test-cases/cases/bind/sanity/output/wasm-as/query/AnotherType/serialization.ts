@@ -59,6 +59,7 @@ export function readAnotherType(reader: Read): AnotherType {
       reader.context().push(field, "string | null", "type found, reading property");
       _prop = reader.readNullableString();
       reader.context().pop();
+      reader.context().pop();
     }
     else if (field == "circular") {
       reader.context().push(field, "Types.CustomType | null", "type found, reading property");
@@ -68,8 +69,8 @@ export function readAnotherType(reader: Read): AnotherType {
       }
       _circular = object;
       reader.context().pop();
+      reader.context().pop();
     }
-    reader.context().pop();
   }
 
 
