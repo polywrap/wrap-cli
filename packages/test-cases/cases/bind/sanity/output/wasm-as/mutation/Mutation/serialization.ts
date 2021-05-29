@@ -43,6 +43,8 @@ export function deserializemutationMethodArgs(argsBuf: ArrayBuffer): Input_mutat
       reader.context().push(field, "string", "type found, reading property");
       _str = reader.readString();
       _strSet = true;
+      reader.context().pop();
+      reader.context().pop();
     }
     else if (field == "optStr") {
       reader.context().push(field, "string | null", "type found, reading property");

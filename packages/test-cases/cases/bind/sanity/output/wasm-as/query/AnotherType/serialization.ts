@@ -24,11 +24,11 @@ export function serializeAnotherType(type: AnotherType): ArrayBuffer {
 
 export function writeAnotherType(writer: Write, type: AnotherType): void {
   writer.writeMapLength(2);
-  writer.context().push("prop", "string", "writing property");
+  writer.context().push("prop", "string | null", "writing property");
   writer.writeString("prop");
   writer.writeNullableString(type.prop);
   writer.context().pop();
-  writer.context().push("circular", "Types.CustomType | nul", "writing property");
+  writer.context().push("circular", "Types.CustomType | null", "writing property");
   writer.writeString("circular");
   if (type.circular) {
     Types.CustomType.write(writer, type.circular as Types.CustomType);

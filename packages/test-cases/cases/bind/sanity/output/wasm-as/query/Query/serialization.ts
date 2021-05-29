@@ -21,7 +21,7 @@ export class Input_queryMethod {
 
 export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMethod {
   const context: Context =  new Context("Deserializing query-type: queryMethod");
-  const reader = new ReadDecoder(argsBuf);
+  const reader = new ReadDecoder(argsBuf, context);
   var numFields = reader.readMapLength();
 
   var _str: string = "";

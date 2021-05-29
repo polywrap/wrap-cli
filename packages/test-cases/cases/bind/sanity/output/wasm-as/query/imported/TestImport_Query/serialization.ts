@@ -49,7 +49,7 @@ export function writeimportedMethodArgs(
   writer.writeString("optStr");
   writer.writeNullableString(input.optStr);
   writer.context().pop();
-  writer.context().push("u32", "u32", "writing property");
+  writer.context().push("u", "u32", "writing property");
   writer.writeString("u");
   writer.writeUInt32(input.u);
   writer.context().pop();
@@ -124,9 +124,10 @@ export function deserializeimportedMethodResult(buffer: ArrayBuffer): Types.Test
   if (!reader.isNextNil()) {
     object = Types.TestImport_Object.read(reader);
   }
+  const res: Types.TestImport_Object | null =  object;
   reader.context().pop();
 
-  return object;
+  return res;
 }
 
 export class Input_anotherMethod {
@@ -161,7 +162,7 @@ export function deserializeanotherMethodResult(buffer: ArrayBuffer): i64 {
   const context: Context =  new Context("Deserializing imported query-type: anotherMethod");
   const reader = new ReadDecoder(buffer, context);
 
-  reader.context().push("signMessage", "string", "reading function output");
+  reader.context().push("anotherMethod", "i64", "reading function output");
   const res: i64 = reader.readInt64();
   reader.context().pop();
 

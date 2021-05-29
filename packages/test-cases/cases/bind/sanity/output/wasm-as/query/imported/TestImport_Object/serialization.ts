@@ -12,7 +12,7 @@ import { TestImport_Object } from "./";
 import * as Types from "../..";
 
 export function serializeTestImport_Object(type: TestImport_Object): ArrayBuffer {
-  const sizerContext: Context = new Context("Serializing (sizing)  imported object-type: TestIimport_Object");
+  const sizerContext: Context = new Context("Serializing (sizing)  imported object-type: TestImport_Object");
   const sizer = new WriteSizer(sizerContext);
   writeTestImport_Object(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
@@ -28,7 +28,7 @@ export function writeTestImport_Object(writer: Write, type: TestImport_Object): 
   writer.writeString("object");
   Types.TestImport_AnotherObject.write(writer, type.object);
   writer.context().pop();
-  writer.context().push("optOjbect", "TestImport_AnotherObject | null", "writing property");
+  writer.context().push("optObject", "Types.TestImport_AnotherObject | null", "writing property");
   writer.writeString("optObject");
   if (type.optObject) {
     Types.TestImport_AnotherObject.write(writer, type.optObject as Types.TestImport_AnotherObject);

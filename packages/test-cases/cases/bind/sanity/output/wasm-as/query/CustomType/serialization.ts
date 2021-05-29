@@ -80,7 +80,7 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.writeString("bigint");
   writer.writeBigInt(type.bigint);
   writer.context().pop();
-  writer.context().push("optBigInt", "BigInt | null", "writing property");
+  writer.context().push("optBigint", "BigInt | null", "writing property");
   writer.writeString("optBigint");
   writer.writeNullableBigInt(type.optBigint);
   writer.context().pop();
@@ -106,7 +106,7 @@ export function writeCustomType(writer: Write, type: CustomType): void {
     writer.writeUInt32(item);
   });
   writer.context().pop();
-  writer.context().push("uOptArray", "Array<Nullable<u32>>", "writing property");
+  writer.context().push("uOptArray", "Array<u32> | null", "writing property");
   writer.writeString("uOptArray");
   writer.writeNullableArray(type.uOptArray, (writer: Write, item: u32): void => {
     writer.writeUInt32(item);
@@ -118,7 +118,7 @@ export function writeCustomType(writer: Write, type: CustomType): void {
     writer.writeNullableUInt32(item);
   });
   writer.context().pop();
-  writer.context().push("otpStrOptArray", "Array<string | null> | null", "writing property");
+  writer.context().push("optStrOptArray", "Array<string | null> | null", "writing property");
   writer.writeString("optStrOptArray");
   writer.writeNullableArray(type.optStrOptArray, (writer: Write, item: string | null): void => {
     writer.writeNullableString(item);
@@ -198,7 +198,7 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.writeString("optEnum");
   writer.writeNullableInt32(type.optEnum);
   writer.context().pop();
-  writer.context().push("enumArray", "Array<Typs.CustomEnum>", "writing property");
+  writer.context().push("enumArray", "Array<Types.CustomEnum>", "writing property");
   writer.writeString("enumArray");
   writer.writeArray(type.enumArray, (writer: Write, item: Types.CustomEnum): void => {
     writer.writeInt32(item);
@@ -549,7 +549,7 @@ export function readCustomType(reader: Read): CustomType {
       reader.context().pop();
     }
     else if (field == "optEnum") {
-      reader.context().push(field, "Nullable<Types.CustomEnum>>", "type found, reading property");
+      reader.context().push(field, "Nullable<Types.CustomEnum>", "type found, reading property");
       let value: Nullable<Types.CustomEnum>;
       if (!reader.isNextNil()) {
         if (reader.isNextString()) {
@@ -570,7 +570,7 @@ export function readCustomType(reader: Read): CustomType {
       reader.context().pop();
     }
     else if (field == "enumArray") {
-      reader.context().push(field, "Array<Types.CustomEnum>>", "type found, reading property");
+      reader.context().push(field, "Array<Types.CustomEnum>", "type found, reading property");
       _enumArray = reader.readArray((reader: Read): Types.CustomEnum => {
         let value: Types.CustomEnum;
         if (reader.isNextString()) {

@@ -12,7 +12,7 @@ import { TestImport_AnotherObject } from "./";
 import * as Types from "../..";
 
 export function serializeTestImport_AnotherObject(type: TestImport_AnotherObject): ArrayBuffer {
-  const sizerContext: Context = new Context("Serializing (sizing)  imported object-type: AnotherObject");
+  const sizerContext: Context = new Context("Serializing (sizing)  imported object-type: TestImport_AnotherObject");
   const sizer = new WriteSizer(sizerContext);
   writeTestImport_AnotherObject(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
