@@ -74,7 +74,7 @@ export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#return}}{{#to
   const reader = new ReadDecoder(buffer, context);
 
   {{#return}}
-  reader.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "reading property");
+  reader.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "reading function output");
   {{#scalar}}
   const res: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
   {{/scalar}}
