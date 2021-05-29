@@ -5,6 +5,7 @@ export class Context {
   private first: Node<string> | null = null;
   private n: i32 = 0;
 
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   constructor(description: string = "context description not set") {
     this.description = description;
   }
@@ -17,6 +18,7 @@ export class Context {
     return this.n;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   public push(item: string, type: string = "", info: string = ""): void {
     const oldfirst: Node<string> | null = this.first;
     this.first = new Node<string>(item, type, info, oldfirst);

@@ -67,7 +67,8 @@ export class WriteSizer extends Write {
       this.length += 2;
     } else if (value < 1 << 16) {
       this.length += 3;
-    } else if (value < 1 << 32) { // TODO: This looks like an error because I think the 1 defaults to an i32, implying 1 << 32 == 1 << 0
+    } else if (value < 1 << 32) {
+      // TODO: This looks like an error because I think the 1 defaults to an i32, implying 1 << 32 == 1 << 0
       this.length += 5;
     } else {
       this.length += 9;
