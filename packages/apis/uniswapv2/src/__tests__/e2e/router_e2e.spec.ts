@@ -16,7 +16,7 @@ import { getSwapMethodAbi } from "../../mutation/abi";
 
 jest.setTimeout(120000);
 
-describe("Swap", () => {
+describe("Router", () => {
 
   let client: Web3ApiClient;
   let recipient: string;
