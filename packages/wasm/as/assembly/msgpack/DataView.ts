@@ -32,10 +32,15 @@ export class DataView {
     if (this.byteOffset + length > this.byteLength)
       throw new RangeError(
         this.context.printWithContext(
-          "getBytes: " + E_INDEXOUTOFRANGE +
-          " [length: " + length.toString() +
-          " byteOffset: " + this.byteOffset.toString() +
-          " byteLength: " + this.byteLength.toString() + "]"
+          "getBytes: " +
+            E_INDEXOUTOFRANGE +
+            " [length: " +
+            length.toString() +
+            " byteOffset: " +
+            this.byteOffset.toString() +
+            " byteLength: " +
+            this.byteLength.toString() +
+            "]"
         )
       );
     const result = this.buffer.slice(this.byteOffset, this.byteOffset + length);
