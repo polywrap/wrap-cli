@@ -1,4 +1,5 @@
 import { E_INDEXOUTOFRANGE, E_INVALIDLENGTH, BLOCK_MAXSIZE } from "./utils";
+import { Context } from "./Context";
 
 export class DataView {
   @unsafe
@@ -6,11 +7,13 @@ export class DataView {
   readonly buffer: ArrayBuffer;
   readonly byteLength: i32;
   private byteOffset: i32;
+  private context: Context;
 
   constructor(
     buffer: ArrayBuffer,
     byte_offset: i32 = 0,
-    byte_length: i32 = buffer.byteLength
+    byte_length: i32 = buffer.byteLength,
+    context: Context = new Context()
   ) {
     if (
       i32(<u32>byte_length > <u32>BLOCK_MAXSIZE) |
@@ -22,11 +25,19 @@ export class DataView {
     this.dataStart = dataStart;
     this.byteLength = byte_length;
     this.byteOffset = byte_offset;
+    this.context = context;
   }
 
   getBytes(length: i32): ArrayBuffer {
     if (this.byteOffset + length > this.byteLength)
-      throw new RangeError(E_INDEXOUTOFRANGE);
+      throw new RangeError(
+        this.context.printWithContext(
+          "getBytes: " + E_INDEXOUTOFRANGE +
+          " [length: " + length.toString() +
+          " byteOffset: " + this.byteOffset.toString() +
+          " byteLength: " + this.byteLength.toString() + "]"
+        )
+      );
     const result = this.buffer.slice(this.byteOffset, this.byteOffset + length);
     this.byteOffset += length;
     return result;

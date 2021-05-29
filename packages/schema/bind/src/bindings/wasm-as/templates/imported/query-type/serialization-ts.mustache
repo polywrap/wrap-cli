@@ -6,7 +6,8 @@ import {
   WriteSizer,
   WriteEncoder,
   ReadDecoder,
-  BigInt
+  BigInt,
+  Context
 } from "@web3api/wasm-as";
 import * as Types from "../..";
 
@@ -18,10 +19,12 @@ export class Input_{{name}} {
 }
 
 export function serialize{{name}}Args(input: Input_{{name}}): ArrayBuffer {
-  const sizer = new WriteSizer();
+  const sizerContext: Context = new Context("Serializing (sizing) imported query-type: {{name}}");
+  const sizer = new WriteSizer(sizerContext);
   write{{name}}Args(sizer, input);
   const buffer = new ArrayBuffer(sizer.length);
-  const encoder = new WriteEncoder(buffer);
+  const encoderContext: Context = new Context("Serializing (encoding) imported query-type: {{name}}");
+  const encoder = new WriteEncoder(buffer, encoderContext);
   write{{name}}Args(encoder, input);
   return buffer;
 }
@@ -32,6 +35,7 @@ export function write{{name}}Args(
 ): void {
   writer.writeMapLength({{arguments.length}});
   {{#arguments}}
+  writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
   writer.writeString("{{name}}");
   {{#scalar}}
   writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{name}});
@@ -61,29 +65,36 @@ export function write{{name}}Args(
   }
   {{/required}}
   {{/object}}
+  writer.context().pop();
   {{/arguments}}
 }
 
 export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
-  const reader = new ReadDecoder(buffer);
+  const context: Context =  new Context("Deserializing imported query-type: {{name}}");
+  const reader = new ReadDecoder(buffer, context);
+
   {{#return}}
+  reader.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "reading function output");
   {{#scalar}}
-  return reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
+  const res: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
   {{/scalar}}
   {{#array}}
-  return reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}} => {
+  const res: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}} => {
     {{> deserialize_array}}
   });
   {{/array}}
   {{#enum}}
   {{> deserialize_enum}}
-  return value;
+  const res: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} =  value;
   {{/enum}}
   {{#object}}
   {{> deserialize_object}}
-  return object;
+  const res: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} =  object;
   {{/object}}
   {{/return}}
+  reader.context().pop();
+
+  return res;
 }
 {{^last}}
 

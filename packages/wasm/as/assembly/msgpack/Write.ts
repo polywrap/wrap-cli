@@ -1,5 +1,6 @@
 import { Nullable } from "./Nullable";
 import { BigInt } from "../BigInt";
+import { Context } from "./Context";
 
 export abstract class Write {
   abstract writeNil(): void;
@@ -54,4 +55,6 @@ export abstract class Write {
     key_fn: (writer: Write, key: K) => void,
     value_fn: (writer: Write, value: V) => void
   ): void;
+
+  abstract context(): Context;
 }
