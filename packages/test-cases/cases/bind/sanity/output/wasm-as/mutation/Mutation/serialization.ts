@@ -129,13 +129,13 @@ export function deserializemutationMethodArgs(argsBuf: ArrayBuffer): Input_mutat
   }
 
   if (!_strSet) {
-    throw new Error("Missing required argument: 'str: String'");
+    throw new Error(reader.context().printWithContext("Missing required argument: 'str: String'"));
   }
   if (!_enSet) {
-    throw new Error("Missing required argument: 'en: CustomEnum'");
+    throw new Error(reader.context().printWithContext("Missing required argument: 'en: CustomEnum'"));
   }
   if (!_enumArraySet) {
-    throw new Error("Missing required argument: 'enumArray: [CustomEnum]'");
+    throw new Error(reader.context().printWithContext("Missing required argument: 'enumArray: [CustomEnum]'"));
   }
 
   return {
@@ -232,10 +232,10 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
   }
 
   if (!_object || !_objectSet) {
-    throw new Error("Missing required argument: 'object: AnotherType'");
+    throw new Error(reader.context().printWithContext("Missing required argument: 'object: AnotherType'"));
   }
   if (!_objectArraySet) {
-    throw new Error("Missing required argument: 'objectArray: [AnotherType]'");
+    throw new Error(reader.context().printWithContext("Missing required argument: 'objectArray: [AnotherType]'"));
   }
 
   return {

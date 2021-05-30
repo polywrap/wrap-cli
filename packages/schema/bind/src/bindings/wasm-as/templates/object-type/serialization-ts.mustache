@@ -127,7 +127,7 @@ export function read{{type}}(reader: Read): {{type}} {
   {{#object}}
   if (!_{{name}} || !_{{name}}Set) {
   {{/object}}
-    throw new Error("Missing required property: '{{name}}: {{type}}'");
+    throw new Error(reader.context().printWithContext("Missing required property: '{{name}}: {{type}}'"));
   }
   {{/required}}
   {{/properties}}

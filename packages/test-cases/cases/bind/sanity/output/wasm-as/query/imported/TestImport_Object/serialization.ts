@@ -218,16 +218,16 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
   }
 
   if (!_object || !_objectSet) {
-    throw new Error("Missing required property: 'object: TestImport_AnotherObject'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'object: TestImport_AnotherObject'"));
   }
   if (!_objectArraySet) {
-    throw new Error("Missing required property: 'objectArray: [TestImport_AnotherObject]'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'objectArray: [TestImport_AnotherObject]'"));
   }
   if (!_enSet) {
-    throw new Error("Missing required property: 'en: TestImport_Enum'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'en: TestImport_Enum'"));
   }
   if (!_enumArraySet) {
-    throw new Error("Missing required property: 'enumArray: [TestImport_Enum]'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'enumArray: [TestImport_Enum]'"));
   }
 
   return {

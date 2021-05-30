@@ -611,70 +611,70 @@ export function readCustomType(reader: Read): CustomType {
   }
 
   if (!_strSet) {
-    throw new Error("Missing required property: 'str: String'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'str: String'"));
   }
   if (!_uSet) {
-    throw new Error("Missing required property: 'u: UInt'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'u: UInt'"));
   }
   if (!_u8Set) {
-    throw new Error("Missing required property: 'u8: UInt8'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'u8: UInt8'"));
   }
   if (!_u16Set) {
-    throw new Error("Missing required property: 'u16: UInt16'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'u16: UInt16'"));
   }
   if (!_u32Set) {
-    throw new Error("Missing required property: 'u32: UInt32'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'u32: UInt32'"));
   }
   if (!_u64Set) {
-    throw new Error("Missing required property: 'u64: UInt64'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'u64: UInt64'"));
   }
   if (!_iSet) {
-    throw new Error("Missing required property: 'i: Int'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'i: Int'"));
   }
   if (!_i8Set) {
-    throw new Error("Missing required property: 'i8: Int8'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'i8: Int8'"));
   }
   if (!_i16Set) {
-    throw new Error("Missing required property: 'i16: Int16'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'i16: Int16'"));
   }
   if (!_i32Set) {
-    throw new Error("Missing required property: 'i32: Int32'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'i32: Int32'"));
   }
   if (!_i64Set) {
-    throw new Error("Missing required property: 'i64: Int64'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'i64: Int64'"));
   }
   if (!_bigintSet) {
-    throw new Error("Missing required property: 'bigint: BigInt'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'bigint: BigInt'"));
   }
   if (!_bytesSet) {
-    throw new Error("Missing required property: 'bytes: Bytes'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'bytes: Bytes'"));
   }
   if (!_booleanSet) {
-    throw new Error("Missing required property: 'boolean: Boolean'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'boolean: Boolean'"));
   }
   if (!_uArraySet) {
-    throw new Error("Missing required property: 'uArray: [UInt]'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'uArray: [UInt]'"));
   }
   if (!_uArrayArraySet) {
-    throw new Error("Missing required property: 'uArrayArray: [[UInt]]'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'uArrayArray: [[UInt]]'"));
   }
   if (!_uOptArrayOptArraySet) {
-    throw new Error("Missing required property: 'uOptArrayOptArray: [[UInt64]]'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'uOptArrayOptArray: [[UInt64]]'"));
   }
   if (!_uArrayOptArrayArraySet) {
-    throw new Error("Missing required property: 'uArrayOptArrayArray: [[[UInt64]]]'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'uArrayOptArrayArray: [[[UInt64]]]'"));
   }
   if (!_object || !_objectSet) {
-    throw new Error("Missing required property: 'object: AnotherType'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'object: AnotherType'"));
   }
   if (!_objectArraySet) {
-    throw new Error("Missing required property: 'objectArray: [AnotherType]'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'objectArray: [AnotherType]'"));
   }
   if (!_enSet) {
-    throw new Error("Missing required property: 'en: CustomEnum'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'en: CustomEnum'"));
   }
   if (!_enumArraySet) {
-    throw new Error("Missing required property: 'enumArray: [CustomEnum]'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'enumArray: [CustomEnum]'"));
   }
 
   return {

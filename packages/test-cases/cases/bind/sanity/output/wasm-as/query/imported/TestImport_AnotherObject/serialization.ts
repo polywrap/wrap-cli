@@ -57,7 +57,7 @@ export function readTestImport_AnotherObject(reader: Read): TestImport_AnotherOb
   }
 
   if (!_propSet) {
-    throw new Error("Missing required property: 'prop: String'");
+    throw new Error(reader.context().printWithContext("Missing required property: 'prop: String'"));
   }
 
   return {
