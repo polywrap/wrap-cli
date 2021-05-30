@@ -289,12 +289,10 @@ export function readCustomType(reader: Read): CustomType {
       _str = reader.readString();
       _strSet = true;
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "optStr") {
       reader.context().push(field, "string | null", "type found, reading property");
       _optStr = reader.readNullableString();
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "u") {
@@ -302,12 +300,10 @@ export function readCustomType(reader: Read): CustomType {
       _u = reader.readUInt32();
       _uSet = true;
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "optU") {
       reader.context().push(field, "Nullable<u32>", "type found, reading property");
       _optU = reader.readNullableUInt32();
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "u8") {
@@ -315,13 +311,11 @@ export function readCustomType(reader: Read): CustomType {
       _u8 = reader.readUInt8();
       _u8Set = true;
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "u16") {
       reader.context().push(field, "u16", "type found, reading property");
       _u16 = reader.readUInt16();
       _u16Set = true;
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "u32") {
@@ -329,13 +323,11 @@ export function readCustomType(reader: Read): CustomType {
       _u32 = reader.readUInt32();
       _u32Set = true;
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "u64") {
       reader.context().push(field, "u64", "type found, reading property");
       _u64 = reader.readUInt64();
       _u64Set = true;
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "i") {
@@ -343,13 +335,11 @@ export function readCustomType(reader: Read): CustomType {
       _i = reader.readInt32();
       _iSet = true;
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "i8") {
       reader.context().push(field, "i8", "type found, reading property");
       _i8 = reader.readInt8();
       _i8Set = true;
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "i16") {
@@ -357,13 +347,11 @@ export function readCustomType(reader: Read): CustomType {
       _i16 = reader.readInt16();
       _i16Set = true;
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "i32") {
       reader.context().push(field, "i32", "type found, reading property");
       _i32 = reader.readInt32();
       _i32Set = true;
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "i64") {
@@ -371,19 +359,16 @@ export function readCustomType(reader: Read): CustomType {
       _i64 = reader.readInt64();
       _i64Set = true;
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "bigint") {
       reader.context().push(field, "BigInt", "type found, reading property");
       _bigint = reader.readBigInt();
       _bigintSet = true;
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "optBigint") {
       reader.context().push(field, "BigInt | null", "type found, reading property");
       _optBigint = reader.readNullableBigInt();
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "bytes") {
@@ -391,12 +376,10 @@ export function readCustomType(reader: Read): CustomType {
       _bytes = reader.readBytes();
       _bytesSet = true;
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "optBytes") {
       reader.context().push(field, "ArrayBuffer | null", "type found, reading property");
       _optBytes = reader.readNullableBytes();
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "boolean") {
@@ -404,12 +387,10 @@ export function readCustomType(reader: Read): CustomType {
       _boolean = reader.readBool();
       _booleanSet = true;
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "optBoolean") {
       reader.context().push(field, "Nullable<bool>", "type found, reading property");
       _optBoolean = reader.readNullableBool();
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "uArray") {
@@ -419,14 +400,12 @@ export function readCustomType(reader: Read): CustomType {
       });
       _uArraySet = true;
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "uOptArray") {
       reader.context().push(field, "Array<u32> | null", "type found, reading property");
       _uOptArray = reader.readNullableArray((reader: Read): u32 => {
         return reader.readUInt32();
       });
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "optUOptArray") {
@@ -435,14 +414,12 @@ export function readCustomType(reader: Read): CustomType {
         return reader.readNullableUInt32();
       });
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "optStrOptArray") {
       reader.context().push(field, "Array<string | null> | null", "type found, reading property");
       _optStrOptArray = reader.readNullableArray((reader: Read): string | null => {
         return reader.readNullableString();
       });
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "uArrayArray") {
@@ -454,7 +431,6 @@ export function readCustomType(reader: Read): CustomType {
       });
       _uArrayArraySet = true;
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "uOptArrayOptArray") {
       reader.context().push(field, "Array<Array<Nullable<u64>> | null>", "type found, reading property");
@@ -464,7 +440,6 @@ export function readCustomType(reader: Read): CustomType {
         });
       });
       _uOptArrayOptArraySet = true;
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "uArrayOptArrayArray") {
@@ -477,7 +452,6 @@ export function readCustomType(reader: Read): CustomType {
         });
       });
       _uArrayOptArrayArraySet = true;
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "crazyArray") {
@@ -492,14 +466,12 @@ export function readCustomType(reader: Read): CustomType {
         });
       });
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "object") {
       reader.context().push(field, "Types.AnotherType", "type found, reading property");
       const object = Types.AnotherType.read(reader);
       _object = object;
       _objectSet = true;
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "optObject") {
@@ -510,7 +482,6 @@ export function readCustomType(reader: Read): CustomType {
       }
       _optObject = object;
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "objectArray") {
       reader.context().push(field, "Array<Types.AnotherType>", "type found, reading property");
@@ -519,7 +490,6 @@ export function readCustomType(reader: Read): CustomType {
         return object;
       });
       _objectArraySet = true;
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "optObjectArray") {
@@ -531,7 +501,6 @@ export function readCustomType(reader: Read): CustomType {
         }
         return object;
       });
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "en") {
@@ -545,7 +514,6 @@ export function readCustomType(reader: Read): CustomType {
       }
       _en = value;
       _enSet = true;
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "optEnum") {
@@ -567,7 +535,6 @@ export function readCustomType(reader: Read): CustomType {
       }
       _optEnum = value;
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "enumArray") {
       reader.context().push(field, "Array<Types.CustomEnum>", "type found, reading property");
@@ -582,7 +549,6 @@ export function readCustomType(reader: Read): CustomType {
         return value;
       });
       _enumArraySet = true;
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "optEnumArray") {
@@ -606,8 +572,8 @@ export function readCustomType(reader: Read): CustomType {
         return value;
       });
       reader.context().pop();
-      reader.context().pop();
     }
+    reader.context().pop();
   }
 
   if (!_strSet) {

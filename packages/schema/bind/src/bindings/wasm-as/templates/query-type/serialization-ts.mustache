@@ -68,9 +68,9 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
       _{{name}}Set = true;
       {{/required}}
       reader.context().pop();
-      reader.context().pop();
     }
     {{/arguments}}
+    reader.context().pop();
   }
 
   {{#arguments}}

@@ -114,9 +114,9 @@ export function read{{type}}(reader: Read): {{type}} {
       _{{name}}Set = true;
       {{/required}}
       reader.context().pop();
-      reader.context().pop();
     }
     {{/properties}}
+    reader.context().pop();
   }
 
   {{#properties}}
