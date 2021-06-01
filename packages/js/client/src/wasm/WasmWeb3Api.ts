@@ -24,15 +24,6 @@ import path from "path";
 import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
 
-const Worker = require("web-worker");
-
-let threadsActive = 0;
-let threadAvailable = 0;
-const threadMutexesBuffer = new SharedArrayBuffer(
-  maxThreads * Int32Array.BYTES_PER_ELEMENT
-);
-const threadMutexes = new Int32Array(threadMutexesBuffer, 0, maxThreads);
-
 export class WasmWeb3Api extends Api {
   private _schema?: string;
 
@@ -72,44 +63,77 @@ export class WasmWeb3Api extends Api {
         // Fetch the WASM module
         const wasm = await this.getWasmModule(module, client);
 
-        // TODO: come up with a better future-proof solution
-        while (threadsActive >= maxThreads) {
-          // Wait for another thread to become available
-          await sleep(500);
+        /// TAKEN FROM THREAD.TS
+
+        if (options.input instanceof ArrayBuffer) {
+          // No need to serialize
+          state.args = options.input;
+        } else {
+          // We must serialize the input object into msgpack
+          state.args = encode(options.input);
         }
-
-        threadsActive++;
-        const threadId = threadAvailable++;
-
-        Tracer.addEvent("threadId", threadId);
-
-        // Wrap the queue
-        if (threadAvailable >= maxThreads) {
-          threadAvailable = 0;
-        }
-
-        Atomics.store(threadMutexes, threadId, 0);
-
-        // Spawn the worker thread
-        let modulePath = "./thread.js";
-
-        // If we're in node.js
-        if (typeof process === "object" && typeof window === "undefined") {
-          modulePath = `${__dirname}/thread.js`;
-
-          if (process.env.TEST) {
-            modulePath = `${__dirname}/thread-loader.js`;
+    
+        const module = new WebAssembly.Module(data.wasm);
+        const memory = new WebAssembly.Memory({ initial: 1 });
+        const source = new WebAssembly.Instance(module, imports(memory));
+    
+        const exports = source.exports as W3Exports;
+    
+        const hasExport = (
+          name: string,
+          exports: Record<string, unknown>
+        ): boolean => {
+          if (!exports[name]) {
+            abort(`A required export was not found: ${name}`);
+            return false;
           }
+    
+          return true;
+        };
+    
+        // Make sure _w3_init exists
+        if (!hasExport("_w3_init", exports)) {
+          return;
+        }
+    
+        // Initialize the Web3Api module
+        exports._w3_init();
+    
+        // Make sure _w3_invoke exists
+        if (!hasExport("_w3_invoke", exports)) {
+          return;
+        }
+    
+        const result = exports._w3_invoke(
+          state.method.length,
+          state.args.byteLength
+        );
+    
+        if (result) {
+          if (!state.invoke.result) {
+            abort(`Invoke result is missing.`);
+            return;
+          }
+    
+          // __w3_invoke_result has already been called
+          dispatchAction({
+            type: "LogQueryResult",
+            result: state.invoke.result,
+          });
+        } else {
+          if (!state.invoke.error) {
+            abort(`Invoke error is missing.`);
+            return;
+          }
+    
+          // __w3_invoke_error has already been called
+          dispatchAction({
+            type: "LogQueryError",
+            error: state.invoke.error,
+          });
         }
 
-        const worker = new Worker(modulePath);
-
-        // Our transfer buffer, used to send data to the thread atomically.
-        // The first byte in the transfer array specifies how many bytes are in the array (max 255).
-        const transferBuffer = new SharedArrayBuffer(
-          maxTransferBytes * Uint8Array.BYTES_PER_ELEMENT
-        );
-        const transfer = new Uint8Array(transferBuffer, 0, maxTransferBytes);
+        /// TAKEN FROM THREAD.TS
 
         let state: "Abort" | "LogQueryError" | "LogQueryResult" | undefined;
         let abortMessage: string | undefined;
