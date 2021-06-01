@@ -223,40 +223,7 @@ export class WasmWeb3Api extends Api {
                     break;
                   }
                   case "SubInvoke": {
-                    const { data, error } = await client.invoke<
-                      unknown | ArrayBuffer
-                    >({
-                      uri: action.uri,
-                      module: action.module as InvokableModules,
-                      method: action.method,
-                      input: action.input,
-                    });
-
-                    if (!error) {
-                      let msgpack: ArrayBuffer;
-                      if (data instanceof ArrayBuffer) {
-                        msgpack = data;
-                      } else {
-                        msgpack = MsgPack.encode(data);
-                      }
-
-                      // transfer the result
-                      await transferData(
-                        msgpack,
-                        ThreadWakeStatus.SUBINVOKE_RESULT
-                      );
-                    } else {
-                      const encoder = new TextEncoder();
-                      const bytes = encoder.encode(
-                        `${error.name}: ${error.message}`
-                      );
-
-                      // transfer the error
-                      await transferData(
-                        bytes,
-                        ThreadWakeStatus.SUBINVOKE_ERROR
-                      );
-                    }
+                    
 
                     break;
                   }

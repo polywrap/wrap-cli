@@ -9,8 +9,6 @@ import {
   writeString
 } from "./utils";
 
-import * as Asyncify from "https://unpkg.com/asyncify-wasm?module";
-
 export const imports = (memory: WebAssembly.Memory): W3Imports => ({
   w3: {
     __w3_subinvoke: (
@@ -23,99 +21,44 @@ export const imports = (memory: WebAssembly.Memory): W3Imports => ({
       inputPtr: u32,
       inputLen: u32
     ): boolean => {
-      if (
-        state.threadId === undefined ||
-        state.threadMutexes === undefined ||
-        state.transfer === undefined
-      ) {
-        abort(
-          `__w3_subinvoke: thread uninitialized.\nthreadId: ${state.threadId}\nthreadMutexes: ${state.threadMutexes}`
-        );
-        return false;
-      }
-
-      // Reset our state
-      state.subinvoke.result = undefined;
-      state.subinvoke.error = undefined;
 
       const uri = readString(memory.buffer, uriPtr, uriLen);
       const module = readString(memory.buffer, modulePtr, moduleLen);
       const method = readString(memory.buffer, methodPtr, methodLen);
       const input = readBytes(memory.buffer, inputPtr, inputLen);
 
-      // Reset our thread's status
-      Atomics.store(state.threadMutexes, state.threadId, 0);
+      // TODO: hasExport(asyncify_start_unwind)
+      // TODO: asyncify_start_unwind
 
-      dispatchAction({
-        type: "SubInvoke",
-        uri,
-        module,
-        method,
-        input,
+      const { data, error } = await client.invoke<
+        unknown | ArrayBuffer
+      >({
+        uri: uri,
+        module: module as InvokableModules,
+        method: method,
+        input: input,
       });
 
-      // Pause the thread
-      Atomics.wait(state.threadMutexes, state.threadId, 0);
-
-      // Get the code & reset to 0
-      const status: ThreadWakeStatus = Atomics.exchange(
-        state.threadMutexes,
-        state.threadId,
-        0
-      );
-
-      if (
-        status === ThreadWakeStatus.SUBINVOKE_ERROR ||
-        status === ThreadWakeStatus.SUBINVOKE_RESULT
-      ) {
-        let transferStatus: ThreadWakeStatus = status;
-        let numBytes = Atomics.load(state.transfer, 0);
-        let data = new Uint8Array(numBytes);
-        let progress = 0;
-
-        while (true) {
-          const newLength = progress + numBytes;
-
-          if (data.byteLength < newLength) {
-            data = new Uint8Array(data, 0, newLength);
-          }
-
-          for (let i = 1; i <= numBytes; ++i) {
-            data[progress + (i - 1)] = Atomics.load(state.transfer, i);
-          }
-
-          progress += numBytes;
-          dispatchAction({ type: "TransferComplete" });
-
-          // If the main thread hasn't said we're done yet, wait
-          // for another chunk of data
-          if (transferStatus !== ThreadWakeStatus.SUBINVOKE_DONE) {
-            Atomics.wait(state.threadMutexes, state.threadId, 0);
-            transferStatus = Atomics.exchange(
-              state.threadMutexes,
-              state.threadId,
-              0
-            );
-            numBytes = Atomics.load(state.transfer, 0);
-          } else {
-            break;
-          }
+      if (!error) {
+        let msgpack: ArrayBuffer;
+        if (data instanceof ArrayBuffer) {
+          msgpack = data;
+        } else {
+          msgpack = MsgPack.encode(data);
         }
 
-        // Transfer is complete, copy result to desired location
-        if (status === ThreadWakeStatus.SUBINVOKE_ERROR) {
-          const decoder = new TextDecoder();
-          state.subinvoke.error = decoder.decode(data);
-          return false;
-        } else if (status === ThreadWakeStatus.SUBINVOKE_RESULT) {
-          state.subinvoke.result = data.buffer;
-          return true;
-        }
+        // TODO: handle the result (msgpack), probably store in state
       } else {
-        abort(`__w3_subinvoke: Unknown wake status ${status}`);
-        return false;
+        const encoder = new TextEncoder();
+        const bytes = encoder.encode(
+          `${error.name}: ${error.message}`
+        );
+
+        // TODO: handle the error (bytes), probably store in state
       }
-      return false;
+
+      // TODO: hasExport(asyncify_start_rewind)
+      // TODO: asyncify_start_rewind()
     },
     // Give WASM the size of the result
     __w3_subinvoke_result_len: (): u32 => {
