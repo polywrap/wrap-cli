@@ -9,6 +9,7 @@ import {
   writeString
 } from "./utils";
 
+// TODO: probably needs to take the WasmWeb3Api class's state as an argument here
 export const imports = (memory: WebAssembly.Memory): W3Imports => ({
   w3: {
     __w3_subinvoke: (
@@ -30,7 +31,11 @@ export const imports = (memory: WebAssembly.Memory): W3Imports => ({
       // TODO: hasExport(asyncify_start_unwind)
       // TODO: asyncify_start_unwind
 
-      const { data, error } = await client.invoke<
+      // "i think this is right"
+      // TODO: cannot await, because imports cannot be async.
+      //       instead, use a promise chain, and access a resolve/reject function from the WasmWeb3Api class's state.
+
+      const { data, error } = client.invoke<
         unknown | ArrayBuffer
       >({
         uri: uri,
