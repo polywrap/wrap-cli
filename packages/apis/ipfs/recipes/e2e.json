@@ -20,7 +20,7 @@
     "variables": { "data": "$File", "name": "$FileName", "ipfsUrl": "$IpfsUrl" }
   },
   {
-    "query": "./addFolderWithOptions.graphql",
+    "query": "./addFolder.graphql",
     "variables": { 
       "fil0": "$Fil_0",
       "data0": "$Data_0",
@@ -35,7 +35,7 @@
     }
   },
   {
-    "query": "./addFolder.graphql",
+    "query": "./addFolderWithOptions.graphql",
     "variables": { 
       "fil0": "$Fil_0",
       "data0": "$Data_0",

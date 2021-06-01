@@ -16,36 +16,6 @@ mutation {
                             data: $dataA1
                         }
                     ]
-                },
-                {
-                    name: $dirB
-                    directories: [
-                        {
-                            name: $dirBA
-                            directories: []
-                            files: [
-                                {
-                                    name: $filBA0
-                                    data: $dataBA0
-                                },
-                                {
-                                    name: $filBA1
-                                    data: $dataBA1
-                                }
-                            ]
-                        },
-                        {
-                            name: $dirBB
-                            directories: []
-                            files: [
-                                {
-                                    name: $filBB0
-                                    data: $dataBB0
-                                }
-                            ]
-                        }
-                    ]
-                    files: []
                 }
             ]
             files: [
