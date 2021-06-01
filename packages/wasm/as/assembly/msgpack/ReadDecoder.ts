@@ -291,6 +291,7 @@ export class ReadDecoder extends Read {
     const size = this.readArrayLength();
     const a = new Array<T>();
     for (let i: u32 = 0; i < size; i++) {
+      // TODO: context
       const item = fn(this);
       a.push(item);
     }
