@@ -10,7 +10,7 @@ import {
   getTokenList,
   getUniPairs
 } from "../testUtils";
-import { ethers, providers } from "ethers";
+import { ethers } from "ethers";
 import * as uni from "@uniswap/sdk";
 import { getSwapMethodAbi } from "../../mutation/abi";
 
@@ -21,7 +21,7 @@ describe("Router", () => {
   let client: Web3ApiClient;
   let recipient: string;
   let ensUri: string;
-  let ethersProvider: providers.JsonRpcProvider;
+  let ethersProvider: ethers.providers.JsonRpcProvider;
   let tokens: Token[] = [];
   let pairs: Pair[] = [];
   let uniPairs: uni.Pair[];
@@ -37,7 +37,7 @@ describe("Router", () => {
     const apiPath: string = path.resolve(__dirname + "../../../../");
     const api = await buildAndDeployApi(apiPath, ipfs, ensAddress);
     ensUri = `ens/testnet/${api.ensDomain}`;
-    ethersProvider = ethers.providers.getDefaultProvider("http://localhost:8546") as providers.JsonRpcProvider;
+    ethersProvider = new ethers.providers.JsonRpcProvider("http://localhost:8546");
     recipient = await ethersProvider.getSigner().getAddress();
 
     // set up test case data -> pairs
@@ -97,7 +97,7 @@ describe("Router", () => {
         txReceipt.errors.forEach(console.log)
       }
       const approvedHash: string = txReceipt.data?.approve.transactionHash ?? "";
-      const status: number = txReceipt.data?.approve.status ?? 0;
+      const status: number = txReceipt.data?.approve.status ?? 1;
       if (!approvedHash || !status) {
         throw new Error("Failed to approve token: " + token.currency.symbol);
       }
@@ -360,7 +360,7 @@ describe("Router", () => {
     }
   });
 
-  it("Should successfully estimate swap call gas", async () => {
+  it.only("Should successfully estimate swap call gas", async () => {
     const token0 = ethToken;
     const token1 = tokens.filter(token => token.currency.symbol === "WBTC")[0];
     const tokenAmount: TokenAmount = {

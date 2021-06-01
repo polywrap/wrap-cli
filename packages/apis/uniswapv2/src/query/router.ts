@@ -142,11 +142,11 @@ export function estimateGas(input: Input_estimateGas): string {
     method: getSwapMethodAbi(swapParameters.methodName),
     args: swapParameters.args,
     connection: chainId.isNull
-      ? {
+      ? null
+      : {
           node: null,
           networkNameOrChainId: getChainIdKey(chainId.value),
-        }
-      : null,
+        },
     txOverrides: {
       value: swapParameters.value,
       gasPrice: null,
@@ -160,7 +160,7 @@ export function execCallStatic(input: Input_execCallStatic): string {
   const swapParameters: SwapParameters = input.parameters;
   const chainId: ChainId = input.chainId;
   const txOverrides: TxOverrides =
-    input.txOverrides == null
+    input.txOverrides === null
       ? { gasLimit: null, gasPrice: null }
       : input.txOverrides!;
   const gasPrice: string | null =

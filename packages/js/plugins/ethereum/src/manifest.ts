@@ -17,21 +17,8 @@ type Log {
 }
 
 type TxReceipt {
-  to: String
-  from: String!
-  contractAddress: String
-  transactionIndex: Int!
-  root: String
-  gasUsed: String!
-  logsBloom: String!
-  blockHash: String!
   transactionHash: String!
-  logs: [Log!]!
-  blockNumber: String!
-  confirmations: Int!
   cumulativeGasUsed: String!
-  byzantium: Boolean!
-  status: Int!
 }
 
 type TxResponse {

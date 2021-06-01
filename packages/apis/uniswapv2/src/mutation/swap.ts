@@ -44,7 +44,7 @@ export function execCall(input: Input_execCall): Ethereum_TxReceipt {
   const swapParameters: SwapParameters = input.parameters;
   const chainId: ChainId = input.chainId;
   const txOverrides: TxOverrides =
-    input.txOverrides == null
+    input.txOverrides === null
       ? { gasLimit: null, gasPrice: null }
       : input.txOverrides!;
   const gasPrice: string | null =
@@ -111,7 +111,7 @@ export function approve(input: Input_approve): Ethereum_TxReceipt {
   const amount: BigInt =
     input.amount === null ? BigInt.fromString(MAX_UINT_256) : input.amount!;
   const txOverrides: TxOverrides =
-    input.txOverrides == null
+    input.txOverrides === null
       ? { gasLimit: null, gasPrice: null }
       : input.txOverrides!;
   const gasPrice: string | null =
