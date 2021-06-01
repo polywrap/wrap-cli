@@ -31,11 +31,10 @@ export const imports = (memory: WebAssembly.Memory): W3Imports => ({
       // TODO: hasExport(asyncify_start_unwind)
       // TODO: asyncify_start_unwind
 
-      // "i think this is right"
       // TODO: cannot await, because imports cannot be async.
-      //       instead, use a promise chain, and access a resolve/reject function from the WasmWeb3Api class's state.
+      //       instead, use the "called twice" pattern that's described in the "sleep" example
 
-      const { data, error } = client.invoke<
+      const { data, error } = await client.invoke<
         unknown | ArrayBuffer
       >({
         uri: uri,
