@@ -13,6 +13,8 @@ import {
 } from "./types";
 import { readBytes, readString, writeBytes, writeString } from "./utils";
 
+import * as Asyncify from "https://unpkg.com/asyncify-wasm?module";
+
 import { encode } from "@msgpack/msgpack";
 
 interface State {

@@ -17,7 +17,7 @@ import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import * as asc from "assemblyscript/cli/asc";
-import binaryen from "binaryen";
+import { execSync } from "child_process";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const fsExtra = require("fs-extra");
@@ -251,25 +251,17 @@ export class Compiler {
       }
     );
 
-    const wasmSource = readFileSync(`${outputDir}/${moduleName}.wasm`);
+    execSync(
+      `npx wasm-opt --asyncify ${outputDir}/${moduleName}.wasm -o ${outputDir}/${moduleName}-parsed.wasm`,
+      { cwd: `${__dirname}/../../` }
+    );
 
-    const ir = binaryen.parseText(wasmSource.toString());
-    binaryen.setOptimizeLevel(1);
-    ir.runPasses(["asyncify"]);
-
-    const binary = ir.emitBinary();
-    const mod = new WebAssembly.Module(binary);
-
+    const wasmSource = readFileSync(`${outputDir}/${moduleName}-parsed.wasm`);
+    const mod = await WebAssembly.compile(wasmSource);
     const memory = new WebAssembly.Memory({ initial: 1 });
     const instance = await WebAssembly.instantiate(mod, {
       env: {
         memory,
-        before: () => {
-          console.log("before!");
-          setTimeout(function () {
-            console.log("(an event that happens during the sleep)");
-          }, 1000);
-        },
         sleep: (ms: number) => {
           if (!sleeping) {
             // We are called in order to start a sleep/unwind.
@@ -279,25 +271,22 @@ export class Compiler {
             view[DATA_ADDR >> 2] = DATA_ADDR + 8;
             // The end of the stack will not be reached here anyhow.
             view[(DATA_ADDR + 4) >> 2] = 1024;
-            wasmExports.asyncify_start_unwind(DATA_ADDR);
+            (wasmExports.asyncify_start_unwind as Function)(DATA_ADDR);
             sleeping = true;
             // Resume after the proper delay.
             setTimeout(function () {
               console.log("timeout ended, starting to rewind the stack");
-              wasmExports.asyncify_start_rewind(DATA_ADDR);
+              (wasmExports.asyncify_start_rewind as Function)(DATA_ADDR);
               // The code is now ready to rewind; to start the process, enter the
               // first function that should be on the call stack.
-              wasmExports.main();
+              (wasmExports.main as Function)();
             }, ms);
           } else {
             // We are called as part of a resume/rewind. Stop sleeping.
             console.log("...resume");
-            wasmExports.asyncify_stop_rewind();
+            (wasmExports.asyncify_stop_rewind as Function)();
             sleeping = false;
           }
-        },
-        after: () => {
-          console.log("after!");
         },
       },
       w3: {
@@ -314,7 +303,9 @@ export class Compiler {
     });
 
     const wasmExports = instance.exports;
-    const view = new Int32Array(wasmExports.memory.buffer);
+    const view = new Int32Array(
+      (wasmExports.memory as WebAssembly.Memory).buffer
+    );
 
     // Global state for running the program.
     const DATA_ADDR = 16; // Where the unwind/rewind data structure will live.
