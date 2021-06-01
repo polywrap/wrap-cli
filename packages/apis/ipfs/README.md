@@ -1,22 +1,6 @@
 # IPFS Web3API package
 
-## Functions
-
-### Query
-
-`catFile(ipfsUrl: String!, cid: String!): Bytes!`
-
-Returns byte content of file, defined by provided _cid_.
-
-`catToString(ipfsUrl: String!, cid: String!): String!`
-
-Returns string content of file, defined by provided _cid_.
-
-### Mutation
-
-`addFile(ipfsUrl: String!, fileName: String!, data: Bytes!): AddResult!`
-
-Saves file to ipfs, returns _name_, _hash_ and _size_ as `AddResult`.
+Inspect schema files to see what functionalities are available - `/query/schema.graphql` and `/mutation/schema.graphql`.
 
 ## How To Run
 

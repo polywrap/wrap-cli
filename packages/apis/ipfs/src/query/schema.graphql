@@ -1,6 +1,7 @@
 #import { Query, ResponseType } into Http from "w3://ens/http.web3api.eth"
 
 type Query {
+  # Returns byte content of file, defined by provided cid
   catFile(ipfsUrl: String!, cid: String!, catFileOptions: CatFileOptions): Bytes!
 }
 
