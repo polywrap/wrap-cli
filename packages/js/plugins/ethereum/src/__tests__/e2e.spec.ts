@@ -372,7 +372,7 @@ describe("Ethereum Plugin", () => {
       const response = await client.query<{ callContractMethodStatic: string }>({
         uri: "w3://ens/ethereum.web3api.eth",
         query: `
-          mutation {
+          query {
             callContractMethodStatic(
               address: "${registrarAddress}", 
               method: "function register(bytes32 label, address owner)", 
@@ -397,7 +397,7 @@ describe("Ethereum Plugin", () => {
       const response = await client.query<{ callContractMethodStatic: string }>({
         uri: "w3://ens/ethereum.web3api.eth",
         query: `
-          mutation {
+          query {
             callContractMethodStatic(
               address: "${registrarAddress}", 
               method: "function register(bytes32 label, address owner)", 
