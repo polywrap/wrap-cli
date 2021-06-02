@@ -372,14 +372,13 @@ describe("Ethereum Plugin", () => {
       const response = await client.query<{ callContractMethodStatic: string }>({
         uri: "w3://ens/ethereum.web3api.eth",
         query: `
-          mutation {
+          query {
             callContractMethodStatic(
               address: "${registrarAddress}", 
               method: "function register(bytes32 label, address owner)", 
               args: ["${label}", "${signer}"],               
               txOverrides: {
                 value: null,
-                nonce: null,
                 gasPrice: 50,
                 gasLimit: 200000
               }
@@ -387,6 +386,9 @@ describe("Ethereum Plugin", () => {
           }
         `,
       });
+      if (response.errors) {
+        response.errors.forEach(console.log);
+      }
 
       expect(response.data?.callContractMethodStatic).toEqual("")
       expect(response.errors).toBeUndefined()
@@ -397,14 +399,13 @@ describe("Ethereum Plugin", () => {
       const response = await client.query<{ callContractMethodStatic: string }>({
         uri: "w3://ens/ethereum.web3api.eth",
         query: `
-          mutation {
+          query {
             callContractMethodStatic(
               address: "${registrarAddress}", 
               method: "function register(bytes32 label, address owner)", 
               args: ["${label}", "${signer}"],               
               txOverrides: {
                 value: null,
-                nonce: null,
                 gasPrice: 50,
                 gasLimit: 1
               }
