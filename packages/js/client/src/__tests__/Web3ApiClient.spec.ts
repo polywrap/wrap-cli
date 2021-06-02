@@ -770,7 +770,7 @@ describe("Web3ApiClient", () => {
     });
     expect(i64Underflow.errors).toBeTruthy();
     expect(i64Underflow.errors?.[0].message).toMatch(
-      /bad prefix for int: /
+      /Property must be of type 'int'. Found 'float64'./
     );
     expect(i64Underflow.data?.i64Method).toBeUndefined();
 
@@ -793,8 +793,110 @@ describe("Web3ApiClient", () => {
     });
     expect(u64Overflow.errors).toBeTruthy();
     expect(u64Overflow.errors?.[0].message).toMatch(
-      /bad prefix for unsigned int: /
+      /Property must be of type 'uint'. Found 'float64'/
     );
     expect(u64Overflow.data?.u64Method).toBeUndefined();
+  });
+
+  it("invalid type errors", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/invalid-types`,
+      ipfsProvider,
+      ensAddress
+    );
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+    const client = await getClient();
+
+    const invalidBoolIntSent = await client.query({
+      uri: ensUri,
+      query: `
+      query {
+        boolMethod(
+          arg: $integer
+        )
+      }
+    `,
+      variables: {
+        integer: 10
+      }
+    });
+    expect(invalidBoolIntSent.errors).toBeTruthy();
+    expect(invalidBoolIntSent.errors?.[0].message).toMatch(
+      /Property must be of type 'bool'. Found 'int'./
+    );
+
+    const invalidIntBoolSent = await client.query({
+      uri: ensUri,
+      query: `
+      query {
+        intMethod(
+          arg: $bool
+        )
+      }
+    `,
+      variables: {
+        bool: true
+      }
+    });
+    expect(invalidIntBoolSent.errors).toBeTruthy();
+    expect(invalidIntBoolSent.errors?.[0].message).toMatch(
+      /Property must be of type 'int'. Found 'bool'./
+    );
+
+    const invalidUIntArraySent = await client.query({
+      uri: ensUri,
+      query: `
+      query {
+        uIntMethod(
+          arg: $array
+        )
+      }
+    `,
+      variables: {
+        array: [10]
+      }
+    });
+    expect(invalidUIntArraySent.errors).toBeTruthy();
+    expect(invalidUIntArraySent.errors?.[0].message).toMatch(
+      /Property must be of type 'uint'. Found 'array'./
+    );
+
+    const invalidBytesFloatSent = await client.query({
+      uri: ensUri,
+      query: `
+      query {
+        bytesMethod(
+          arg: $float
+        )
+      }
+    `,
+      variables: {
+        float: 10.15
+      }
+    });
+    expect(invalidBytesFloatSent.errors).toBeTruthy();
+    expect(invalidBytesFloatSent.errors?.[0].message).toMatch(
+      /Property must be of type 'bytes'. Found 'float64'./
+    );
+
+    const invalidArrayMapSent = await client.query({
+      uri: ensUri,
+      query: `
+      query {
+        arrayMethod(
+          arg: $object
+        )
+      }
+    `,
+      variables: {
+        object: {
+          prop: "prop"
+        }
+      }
+    });
+    expect(invalidArrayMapSent.errors).toBeTruthy();
+    expect(invalidArrayMapSent.errors?.[0].message).toMatch(
+      /Property must be of type 'array'. Found 'map'./
+    );
   });
 });
