@@ -17,21 +17,8 @@ type Log {
 }
 
 type TxReceipt {
-  to: String!
-  from: String!
-  contractAddress: String!
-  transactionIndex: Int!
-  root: String
-  gasUsed: String!
-  logsBloom: String!
-  blockHash: String!
   transactionHash: String!
-  logs: [Log!]!,
-  blockNumber: Int!
-  confirmations: Int!
   cumulativeGasUsed: String!
-  byzantium: Boolean!
-  status: Int!
 }
 
 type TxResponse {
@@ -42,6 +29,10 @@ type TxResponse {
   confirmations: Int!
   from: String!
   raw: String
+  nonce: String!
+  gasLimit: String!
+  gasPrice: String!
+  data: String!
 }
 
 type TxRequest {
@@ -56,10 +47,15 @@ type TxRequest {
 }
 
 type TxOverrides {
-  nonce: String
   gasLimit: String
   gasPrice: String
   value: String
+}
+
+type EventNotification {
+  data: String!
+  address: String!
+  log: Log!
 }
 
 type Query {
@@ -97,7 +93,7 @@ type Query {
   estimateContractCallGas(
     address: String!
     method: String!
-    args: [String!]!
+    args: [String!]
     connection: Connection
     txOverrides: TxOverrides
   ): String!
@@ -126,7 +122,7 @@ type Query {
     args: [String]!
     timeout: Int
     connection: Connection
-  ): String!
+  ): EventNotification!
 
   callContractMethodStatic(
     address: String!

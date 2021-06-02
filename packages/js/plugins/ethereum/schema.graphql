@@ -11,22 +11,27 @@ type Log {
 }
 
 type TxReceipt {
-  to: String!
-  from: String!
-  contractAddress: String!
-  transactionIndex: Int!
-  root: String
-  gasUsed: String!
-  logsBloom: String!
-  blockHash: String!
   transactionHash: String!
-  logs: [Log!]!,
-  blockNumber: Int!
-  confirmations: Int!
   cumulativeGasUsed: String!
-  byzantium: Boolean!
-  status: Int!
 }
+
+#type TxReceipt {
+#  to: String
+#  from: String!
+#  contractAddress: String
+#  transactionIndex: Int!
+#  root: String
+#  gasUsed: String!
+#  logsBloom: String!
+#  blockHash: String!
+#  transactionHash: String!
+#  logs: [Log!]!
+#  blockNumber: String!
+#  confirmations: Int!
+#  cumulativeGasUsed: String!
+#  byzantium: Boolean!
+#  status: Int!
+#}
 
 type TxResponse {
   hash: String!
@@ -36,6 +41,10 @@ type TxResponse {
   confirmations: Int!
   from: String!
   raw: String
+  nonce: String!
+  gasLimit: String!
+  gasPrice: String!
+  data: String!
 }
 
 type TxRequest {
@@ -50,10 +59,15 @@ type TxRequest {
 }
 
 type TxOverrides {
-  nonce: String
   gasLimit: String
   gasPrice: String
   value: String
+}
+
+type EventNotification {
+  data: String!
+  address: String!
+  log: Log!
 }
 
 type Query {
@@ -62,6 +76,14 @@ type Query {
     method: String!
     args: [String!]
     connection: Connection
+  ): String!
+
+  callContractMethodStatic(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Connection
+    txOverrides: TxOverrides
   ): String!
 
   signMessage(
@@ -88,10 +110,15 @@ type Query {
 
   getGasPrice(connection: Connection): String!
 
+  estimateTxGas(
+    tx: TxRequest!
+    connection: Connection
+  ): String!
+
   estimateContractCallGas(
     address: String!
     method: String!
-    args: [String!]!
+    args: [String!]
     connection: Connection
     txOverrides: TxOverrides
   ): String!
@@ -101,11 +128,6 @@ type Query {
   toWei (amount: String!): String!
 
   fromWei (amount: String!): String!
-
-  estimateTxGas(
-    tx: TxRequest!
-    connection: Connection
-  ): String!
 
   awaitTransaction(
     txHash: String!
@@ -120,15 +142,7 @@ type Query {
     args: [String]!
     timeout: Int
     connection: Connection
-  ): String!
-
-  callContractMethodStatic(
-    address: String!
-    method: String!
-    args: [String!]
-    connection: Connection
-    txOverrides: TxOverrides
-  ): String!
+  ): EventNotification!
 }
 
 type Mutation {
