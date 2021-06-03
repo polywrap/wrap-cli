@@ -22,7 +22,7 @@ export class Context {
     this.nodes.push({
       item,
       type,
-      info
+      info,
     });
   }
 
@@ -33,7 +33,9 @@ export class Context {
       );
     }
     const node = this.nodes.pop();
-    return node.item + ": " + node.type + (node.info == "" ? "" : " >> " + node.info);
+    return (
+      node.item + ": " + node.type + (node.info == "" ? "" : " >> " + node.info)
+    );
   }
 
   public toString(): string {

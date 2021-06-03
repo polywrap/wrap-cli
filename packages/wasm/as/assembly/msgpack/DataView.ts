@@ -1,8 +1,4 @@
-import {
-  E_INVALIDLENGTH,
-  BLOCK_MAXSIZE,
-  throwIndexOutOfRange
-} from "./utils";
+import { E_INVALIDLENGTH, BLOCK_MAXSIZE, throwIndexOutOfRange } from "./utils";
 import { Context } from "./Context";
 
 export class DataView {
@@ -25,17 +21,18 @@ export class DataView {
     ) {
       throw new RangeError(
         context.printWithContext(
-          "DataView.constructor" + ": " +
-          E_INVALIDLENGTH +
-          "[byte_length: " +
-          byte_length.toString() +
-          " BLOCK_MAXSIZE: " +
-          BLOCK_MAXSIZE.toString() +
-          " byte_offset: " +
-          byte_offset.toString() +
-          "buffer.byteLength: " +
-          buffer.byteLength.toString() +
-          "]"
+          "DataView.constructor" +
+            ": " +
+            E_INVALIDLENGTH +
+            "[byte_length: " +
+            byte_length.toString() +
+            " BLOCK_MAXSIZE: " +
+            BLOCK_MAXSIZE.toString() +
+            " byte_offset: " +
+            byte_offset.toString() +
+            "buffer.byteLength: " +
+            buffer.byteLength.toString() +
+            "]"
         )
       );
     }

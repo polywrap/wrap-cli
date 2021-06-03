@@ -13,20 +13,21 @@ export function throwIndexOutOfRange(
   context: Context,
   method: string,
   length: u32,
-  byteOffset: u32,
-  byteLength: u32
+  byte_offset: u32,
+  byte_length: u32
 ): void {
   throw new RangeError(
     context.printWithContext(
-      method + ": " +
-      E_INDEXOUTOFRANGE +
-      "[length: " +
-      length.toString() +
-      " byteOffset: " +
-      byteOffset.toString() +
-      " byteLength: " +
-      byteLength.toString() +
-      "]"
+      method +
+        ": " +
+        E_INDEXOUTOFRANGE +
+        "[length: " +
+        length.toString() +
+        " byteOffset: " +
+        byte_offset.toString() +
+        " byteLength: " +
+        byte_length.toString() +
+        "]"
     )
   );
 }
