@@ -67,6 +67,7 @@ export class Compiler {
       const buildModules = async () => {
         const buildQuery = !!manifest.query;
         const buildMutation = !!manifest.mutation;
+        const buildWasmModules = !manifest.interface;
 
         const throwMissingSchema = (moduleName: string) => {
           const missingSchemaMessage = intlMsg.lib_compiler_missingDefinition({
@@ -82,25 +83,7 @@ export class Compiler {
         if (buildMutation && !composed.mutation) {
           throwMissingSchema("mutation");
         }
-
-        const queryDirectory = manifest.query
-          ? this._getGenerationDirectory(manifest.query.module.file)
-          : undefined;
-        const mutationDirectory = manifest.mutation
-          ? this._getGenerationDirectory(manifest.mutation.module.file)
-          : undefined;
-
-        if (
-          queryDirectory &&
-          mutationDirectory &&
-          queryDirectory === mutationDirectory
-        ) {
-          throw Error(
-            `compileWeb3Api: Duplicate code generation folder found "${queryDirectory}".` +
-              `Please ensure each module file is located in a unique directory.`
-          );
-        }
-
+        
         if (buildQuery && !composed.query?.schema) {
           throw Error(`compileWeb3Api: Missing schema for the module "query"`);
         }
@@ -111,44 +94,81 @@ export class Compiler {
           );
         }
 
-        this._generateCode(
-          buildQuery
-            ? {
-                typeInfo: composed.query?.typeInfo as TypeInfo,
-                outputDirAbs: queryDirectory as string,
-              }
-            : undefined,
-          buildMutation
-            ? {
-                typeInfo: composed.mutation?.typeInfo as TypeInfo,
-                outputDirAbs: mutationDirectory as string,
-              }
-            : undefined
-        );
+        if(buildWasmModules) {
+               
+          if (manifest.query && !manifest.query.module) {
+            throw Error(`compileWeb3Api: Missing module definition for the module "query"`);
+          }
+
+          if (manifest.mutation && !manifest.mutation.module) {
+            throw Error(`compileWeb3Api: Missing module definition for the module "mutation"`);
+          }
+          
+          const queryDirectory = manifest.query
+            ? this._getGenerationDirectory(manifest.query.module!.file)
+            : undefined;
+          const mutationDirectory = manifest.mutation
+            ? this._getGenerationDirectory(manifest.mutation.module!.file)
+            : undefined;
+
+          if (
+            queryDirectory &&
+            mutationDirectory &&
+            queryDirectory === mutationDirectory
+          ) {
+            throw Error(
+              `compileWeb3Api: Duplicate code generation folder found "${queryDirectory}".` +
+                `Please ensure each module file is located in a unique directory.`
+            );
+          }
+
+          this._generateCode(
+            buildQuery
+              ? {
+                  typeInfo: composed.query?.typeInfo as TypeInfo,
+                  outputDirAbs: queryDirectory as string,
+                }
+              : undefined,
+            buildMutation
+              ? {
+                  typeInfo: composed.mutation?.typeInfo as TypeInfo,
+                  outputDirAbs: mutationDirectory as string,
+                }
+              : undefined
+          );
+        }
 
         if (buildQuery) {
           const queryManifest = manifest as Required<typeof manifest>;
-          await this._compileWasmModule(
-            queryManifest.query.module.file,
-            "query",
-            outputDir,
-            spinner,
-            verbose
-          );
-          queryManifest.query.module.file = `./query.wasm`;
+
+          if(buildWasmModules) {
+            await this._compileWasmModule(
+              queryManifest.query.module!.file,
+              "query",
+              outputDir,
+              spinner,
+              verbose
+            );
+            queryManifest.query.module!.file = `./query.wasm`;
+          }
+         
           queryManifest.query.schema.file = "./schema.graphql";
         }
 
         if (buildMutation) {
           const mutationManifest = manifest as Required<typeof manifest>;
-          await this._compileWasmModule(
-            mutationManifest.mutation.module.file,
-            "mutation",
-            outputDir,
-            spinner,
-            verbose
-          );
-          mutationManifest.mutation.module.file = `./mutation.wasm`;
+
+          if(buildWasmModules) {
+            await this._compileWasmModule(
+              mutationManifest.mutation.module!.file,
+              "mutation",
+              outputDir,
+              spinner,
+              verbose
+            );
+            mutationManifest.mutation.module!.file = `./mutation.wasm`;
+          }
+      
           mutationManifest.mutation.schema.file = "./schema.graphql";
         }
       };

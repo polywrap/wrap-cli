@@ -1,0 +1,13 @@
+#import { Mutation, Connection } into Ethereum from "w3://ens/ethereum.web3api.eth"
+
+type Mutation {
+  setData(
+    address: String!
+    value: UInt32!
+    connection: Ethereum_Connection
+  ): String!
+
+  deployContract(
+    connection: Ethereum_Connection
+  ): String!
+}

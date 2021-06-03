@@ -1,7 +1,7 @@
-description: Web3API Resolver Standard
+description: Web3API Resolver Interface
 format: 0.0.1-prealpha.1
 repository: https://github.com/web3-api/monorepo
-abstract: true
+interface: true
 query:
   schema:
     file: ./query.graphql
