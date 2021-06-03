@@ -16,8 +16,7 @@ const createPluginStr = intlMsg.commands_create_options_createPlugin();
 const pathStr = intlMsg.commands_create_options_o_path();
 
 export const supportedLangs: { [key: string]: string[] } = {
-  interface: ["assemblyscript"],
-  api: ["assemblyscript"],
+  api: ["assemblyscript", "interface"],
   app: ["react"],
   plugin: ["typescript"],
 };
