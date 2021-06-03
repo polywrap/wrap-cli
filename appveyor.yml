@@ -3,12 +3,11 @@ image: Visual Studio 2019
 
 install:
   - docker version
-  - docker-compose version
 
 build: off
 
 test_script:
-  - ps: "& 'C:/Program Files/Docker/Docker/DockerCli.exe' -SwitchDaemon -SwitchLinuxEngine"
+  # - ps: "& 'C:/Program Files/Docker/Docker/DockerCli.exe' -SwitchDaemon -SwitchLinuxEngine"
   - choco install nodejs-lts --version=14.16.0
   - npm i -g yarn
   - yarn install --nonInteractive --frozen-lockfile
