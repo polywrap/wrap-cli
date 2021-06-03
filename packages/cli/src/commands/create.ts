@@ -149,7 +149,7 @@ export default {
       .then(() => {
         print.newline();
         let readyMessage;
-        if (type === "api" || type === "interface") {
+        if (type === "api") {
           readyMessage = intlMsg.commands_create_readyProtocol();
         } else if (type === "app") {
           readyMessage = intlMsg.commands_create_readyDapp();
