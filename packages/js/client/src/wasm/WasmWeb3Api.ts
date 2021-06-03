@@ -90,7 +90,7 @@ export class WasmWeb3Api extends Api {
         Atomics.store(threadMutexes, threadId, 0);
 
         // Spawn the worker thread
-        let modulePath = "./thread.js";
+        let modulePath = process.env.WEB3API_THREAD_PATH || "./thread.js";
 
         // If we're in node.js
         if (typeof process === "object" && typeof window === "undefined") {
