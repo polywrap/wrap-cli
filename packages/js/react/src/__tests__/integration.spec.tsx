@@ -13,7 +13,7 @@ import {
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
-jest.setTimeout(60000);
+jest.setTimeout(120000);
 
 describe("Web3API React Integration", () => {
   let redirects: UriRedirect[];

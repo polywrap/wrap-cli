@@ -16,7 +16,7 @@ import {
 } from "@web3api/test-env-js";
 import { UseWeb3ApiClientProps } from '../client';
 
-jest.setTimeout(60000);
+jest.setTimeout(120000);
 
 describe("useWeb3ApiClient hook", () => {
   let redirects: UriRedirect<string>[];

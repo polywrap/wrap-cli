@@ -21,7 +21,7 @@ import {
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
-jest.setTimeout(60000);
+jest.setTimeout(120000);
 
 describe("useWeb3ApiQuery hook", () => {
   let uri: string;
