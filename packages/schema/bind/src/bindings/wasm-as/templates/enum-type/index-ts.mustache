@@ -1,3 +1,12 @@
+{{#__commonImport}}
+export {
+  {{type}},
+  get{{type}}Key,
+  get{{type}}Value,
+  sanitize{{type}}Value
+} from "../common";
+{{/__commonImport}}
+{{^__commonImport}}
 export enum {{type}} {
   {{#constants}}
   {{.}},
@@ -33,3 +42,4 @@ export function get{{type}}Key(value: {{type}}): string {
       throw new Error("Invalid value for enum '{{type}}': " + value.toString());
   }
 }
+{{/__commonImport}}

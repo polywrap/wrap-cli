@@ -2,6 +2,8 @@ import fs from "fs";
 import path from "path";
 import { SchemaComposer, Project, CodeGenerator } from "../../lib";
 
+const rimraf = require("rimraf");
+
 describe("CodeGenerator validation", () => {
   const manifestPath = path.join(__dirname, "../project", "web3api.yaml");
   const generationFile = path.join(__dirname, "../project", "web3api.gen.js");
@@ -51,7 +53,7 @@ describe("CodeGenerator validation", () => {
 
   it("Should generate", async () => {
     if (fs.existsSync(outputDir)) {
-      fs.rmSync(outputDir, { recursive: true });
+      rimraf.sync(outputDir);
     }
 
     const project = new Project({
@@ -84,6 +86,7 @@ scalar Int16
 scalar Int32
 scalar Int64
 scalar Bytes
+scalar BigInt
 
 directive @imported(
   uri: String!
@@ -195,6 +198,6 @@ type Ethereum_Connection @imported(
     const { schema: schema3 } = require("../project/types/folder/schema2.ts");
     expect(schema3).toEqual(expectedSchema);
 
-    fs.rmSync(outputDir, { recursive: true });
+    rimraf.sync(outputDir);
   });
 });

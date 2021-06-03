@@ -1,20 +1,48 @@
 import { composeSchema } from "../";
 import { fetchTestCases } from "./index";
 
+function removeFunctionProps(obj: unknown) {
+  if (typeof obj !== "object") {
+    return;
+  }
+
+  for (var i in obj) {
+    if (!obj.hasOwnProperty(i)) continue;
+
+    const typeOf = typeof (obj as any)[i];
+
+    if (typeOf === "object") {
+      removeFunctionProps((obj as any)[i]);
+    } else if (typeOf == "function") {
+      delete (obj as any)[i];
+    }
+  }
+
+  return obj;
+}
+
 describe("Web3API Schema Composer Test Cases", () => {
-  const cases = fetchTestCases();
+  let cases = fetchTestCases();
 
   for (const test of cases) {
     it(`Case: ${test.name}`, async () => {
-      const result = await composeSchema(test.input);
-      if (test.output.query) {
-        expect(result.query).toEqual(test.output.query);
+      const testCase = await test.promise;
+
+      if (!testCase) {
+        return;
       }
-      if (test.output.mutation) {
-        expect(result.mutation).toEqual(test.output.mutation);
+
+      const result = await composeSchema(testCase.input);
+      removeFunctionProps(result);
+
+      if (testCase.output.query) {
+        expect(result.query).toMatchObject(testCase.output.query);
       }
-      if (test.output.combined) {
-        expect(result.combined).toEqual(test.output.combined);
+      if (testCase.output.mutation) {
+        expect(result.mutation).toEqual(testCase.output.mutation);
+      }
+      if (testCase.output.combined) {
+        expect(result.combined).toEqual(testCase.output.combined);
       }
     });
   }

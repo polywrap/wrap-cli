@@ -1,4 +1,6 @@
 import { Nullable } from "./Nullable";
+import { BigInt } from "../BigInt";
+import { Context } from "./Context";
 
 export abstract class Read {
   abstract readBool(): bool;
@@ -16,6 +18,7 @@ export abstract class Read {
   abstract readString(): string;
   abstract readBytesLength(): u32;
   abstract readBytes(): ArrayBuffer;
+  abstract readBigInt(): BigInt;
   abstract readArrayLength(): u32;
   abstract readArray<T>(fn: (reader: Read) => T): Array<T>;
   abstract readMapLength(): u32;
@@ -37,6 +40,7 @@ export abstract class Read {
   abstract readNullableFloat64(): Nullable<f64>;
   abstract readNullableString(): string | null;
   abstract readNullableBytes(): ArrayBuffer | null;
+  abstract readNullableBigInt(): BigInt | null;
   abstract readNullableArray<T>(fn: (decoder: Read) => T): Array<T> | null;
   abstract readNullableMap<K, V>(
     key_fn: (reader: Read) => K,
@@ -45,4 +49,6 @@ export abstract class Read {
 
   abstract isNextNil(): bool;
   abstract isNextString(): bool;
+
+  abstract context(): Context;
 }

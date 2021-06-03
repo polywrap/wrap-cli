@@ -10,6 +10,7 @@ scalar Int16
 scalar Int32
 scalar Int64
 scalar Bytes
+scalar BigInt
 
 directive @imported(
   uri: String!
@@ -32,6 +33,32 @@ type Query @imports(
     "Namespace_Imported_ObjectType",
     "Namespace_CustomEnum",
     "Namespace_Imported_Enum"
+  ]
+) {
+  method1(
+    str: String!
+    optStr: String
+    u: UInt!
+    uArrayArray: [[UInt]]!
+  ): String!
+
+  method2(
+    arg: [String!]!
+  ): [Int64!]!
+}
+
+type Mutation @imports(
+  types: [
+    "Namespace_Query",
+    "Namespace_Mutation",
+    "Namespace_NestedObjectType",
+    "Namespace_ObjectType",
+    "Namespace_Imported_NestedObjectType",
+    "Namespace_Imported_ObjectType",
+    "Namespace_CustomType",
+    "Namespace_CustomEnum",
+    "Namespace_Imported_Enum",
+    "JustMutation_Mutation"
   ]
 ) {
   method1(
@@ -69,30 +96,18 @@ type AnotherQueryType {
   prop: String
 }
 
-type Mutation @imports(
-  types: [
-    "Namespace_Query",
-    "Namespace_Mutation",
-    "Namespace_NestedObjectType",
-    "Namespace_ObjectType",
-    "Namespace_Imported_NestedObjectType",
-    "Namespace_Imported_ObjectType",
-    "Namespace_CustomType",
-    "Namespace_CustomEnum",
-    "Namespace_Imported_Enum",
-    "JustMutation_Mutation"
-  ]
-) {
-  method1(
-    str: String!
-    optStr: String
-    u: UInt!
-    uArrayArray: [[UInt]]!
-  ): String!
+type CommonType {
+  prop: UInt8!
+  nestedObject: NestedType!
+  objectArray: [[ArrayObject]]!
+}
 
-  method2(
-    arg: [String!]!
-  ): [Int64!]!
+type NestedType {
+  prop: String!
+}
+
+type ArrayObject {
+  prop: String!
 }
 
 type CustomMutationType {
@@ -116,20 +131,6 @@ type CustomMutationType {
 
 type AnotherMutationType {
   prop: String
-}
-
-type CommonType {
-  prop: UInt8!
-  nestedObject: NestedType!
-  objectArray: [[ArrayObject]]!
-}
-
-type NestedType {
-  prop: String!
-}
-
-type ArrayObject {
-  prop: String!
 }
 
 ### Imported Queries START ###

@@ -12,6 +12,7 @@ export const composedSchema = {
     "scalar Int32\n" +
     "scalar Int64\n" +
     "scalar Bytes\n" +
+    "scalar BigInt\n" +
     "\n" +
     "directive @imported(\n" +
     "  uri: String!\n" +
@@ -78,6 +79,7 @@ export const composedSchema = {
     "scalar Int32\n" +
     "scalar Int64\n" +
     "scalar Bytes\n" +
+    "scalar BigInt\n" +
     "\n" +
     "directive @imported(\n" +
     "  uri: String!\n" +
@@ -165,6 +167,7 @@ export const composedSchema = {
     "scalar Int32\n" +
     "scalar Int64\n" +
     "scalar Bytes\n" +
+    "scalar BigInt\n" +
     "\n" +
     "directive @imported(\n" +
     "  uri: String!\n" +

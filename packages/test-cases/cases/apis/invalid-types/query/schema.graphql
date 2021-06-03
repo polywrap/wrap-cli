@@ -1,0 +1,21 @@
+type Query {
+  boolMethod(
+    arg: Boolean!
+  ): Boolean!
+
+  intMethod(
+    arg: Int64!
+  ): Int64!
+
+  uIntMethod(
+    arg: UInt64!
+  ): UInt64!
+
+  bytesMethod(
+    arg: Bytes!
+  ): Bytes!
+
+  arrayMethod(
+    arg: [String!]!
+  ): [String!]
+}
