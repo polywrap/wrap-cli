@@ -2,33 +2,6 @@ import { ChainId, Token, TokenAmount } from "../query/w3";
 import { ETHER } from "./Currency";
 import { currencyEquals } from "../query";
 
-export function compareAddresses(ref: string, other: string): i32 {
-  const n: i32 = ref.length < other.length ? ref.length : other.length;
-  for (let i = 0; i < n; i++) {
-    if (ref.charAt(i) < other.charAt(i)) return -1;
-    if (ref.charAt(i) > other.charAt(i)) return 1;
-  }
-  return ref.length - other.length;
-}
-
-// TODO: Waiting to delete this in case we are eventually able to make calls by chain id.
-export function resolveChainId(chainId: ChainId): string {
-  switch (chainId) {
-    case ChainId.MAINNET:
-      return "1";
-    case ChainId.ROPSTEN:
-      return "3";
-    case ChainId.RINKEBY:
-      return "4";
-    case ChainId.GOERLI:
-      return "5";
-    case ChainId.KOVAN:
-      return "42";
-    default:
-      throw new Error("Unknown chain ID. This should never happen.");
-  }
-}
-
 export function getWETH9(chainId: ChainId): Token {
   switch (chainId) {
     case ChainId.MAINNET:

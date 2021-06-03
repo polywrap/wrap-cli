@@ -1,7 +1,7 @@
 {
   "name": "@web3api/ethereum-plugin-js",
   "description": "Web3API Ethereum Javascript Plugin",
-  "version": "0.0.1-prealpha.23",
+  "version": "0.0.1-prealpha.24",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -15,23 +15,26 @@
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color --ext .ts src/",
-    "test": "jest --passWithNoTests --runInBand --verbose",
-    "test:ci": "jest --passWithNoTests --runInBand --verbose",
-    "test:watch": "jest --watch --passWithNoTests --verbose"
+    "test": "TEST_PLUGIN=true jest --passWithNoTests --runInBand --verbose --detectOpenHandles",
+    "test:ci": "TEST_PLUGIN=true jest --passWithNoTests --runInBand --verbos --detectOpenHandlese",
+    "test:watch": "TEST_PLUGIN=true jest --watch --passWithNoTests --verbose --detectOpenHandles"
   },
   "dependencies": {
     "@ethersproject/address": "5.0.7",
     "@ethersproject/providers": "5.0.7",
-    "@web3api/core-js": "0.0.1-prealpha.23",
+    "@web3api/core-js": "0.0.1-prealpha.24",
     "ethers": "5.0.7"
   },
   "devDependencies": {
+    "@web3api/client-js": "0.0.1-prealpha.24",
     "@types/jest": "26.0.8",
     "jest": "26.6.3",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",
     "ts-node": "8.10.2",
-    "typescript": "4.0.7"
+    "typescript": "4.0.7",
+    "ganache-core": "2.13.2",
+    "eth-ens-namehash": "2.0.8"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {

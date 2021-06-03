@@ -9,6 +9,7 @@ import {
 } from "../../query";
 import { Nullable } from "@web3api/wasm-as";
 import { BigFloat } from "as-bigfloat";
+import { BigInt } from "as-bigint";
 
 const token0: Token = {
   chainId: ChainId.MAINNET,
@@ -49,63 +50,52 @@ const token3: Token = {
 
 const pair_0_1: Pair = {
   tokenAmount0: {
-    amount: "1000",
+    amount: BigInt.fromString("1000"),
     token: token0
   },
   tokenAmount1: {
-    amount: "1000",
+    amount: BigInt.fromString("1000"),
     token: token1
   }
 }
 const pair_0_2: Pair = {
   tokenAmount0: {
-    amount: "1000",
+    amount: BigInt.fromString("1000"),
     token: token0
   },
   tokenAmount1: {
-    amount: "1100",
+    amount: BigInt.fromString("1100"),
     token: token2
   }
 }
 const pair_0_3: Pair = {
   tokenAmount0: {
-    amount: "1000",
+    amount: BigInt.fromString("1000"),
     token: token0
   },
   tokenAmount1: {
-    amount: "900",
+    amount: BigInt.fromString("900"),
     token: token3
   }
 }
 const pair_1_2: Pair = {
   tokenAmount0: {
-    amount: "1200",
+    amount: BigInt.fromString("1200"),
     token: token1
   },
   tokenAmount1: {
-    amount: "1000",
+    amount: BigInt.fromString("1000"),
     token: token2
   }
 }
 const pair_1_3: Pair = {
   tokenAmount0: {
-    amount: "1200",
+    amount: BigInt.fromString("1200"),
     token: token1
   },
   tokenAmount1: {
-    amount: "1300",
+    amount: BigInt.fromString("1300"),
     token: token3
-  }
-}
-
-const empty_pair_0_1: Pair = {
-  tokenAmount0: {
-    amount: "0",
-    token: token0
-  },
-  tokenAmount1: {
-    amount: "0",
-    token: token1
   }
 }
 
@@ -136,22 +126,18 @@ describe('Pair core', () => {
   test("pairToken0Price",() => {
     for (let i = 0; i < pairs.length; i++) {
       const pair: Pair = pairs[i];
-      const price: TokenAmount = pairToken0Price({ pair });
-      expect(price.token).toStrictEqual(pair.tokenAmount1.token);
-      const expectedPrice: f64 = F64.parseFloat(pair.tokenAmount1.amount) / F64.parseFloat(pair.tokenAmount0.amount);
-      const amount: string = BigFloat.fromString(price.amount).toString();
-      expect(amount.substr(0, 17)).toStrictEqual(expectedPrice.toString().substr(0, 17));
+      const price: string = pairToken0Price({ pair });
+      const expectedPrice: BigFloat = BigFloat.fromFraction(pair.tokenAmount1.amount, pair.tokenAmount0.amount);
+      expect(BigFloat.fromString(price).toString()).toStrictEqual(expectedPrice.toString());
     }
   });
 
   test("pairToken1Price", () => {
     for (let i = 0; i < pairs.length; i++) {
       const pair = pairs[i];
-      const price: TokenAmount = pairToken1Price({ pair });
-      expect(price.token).toStrictEqual(pair.tokenAmount0.token);
-      const expectedPrice: f64 = F64.parseFloat(pair.tokenAmount0.amount) / F64.parseFloat(pair.tokenAmount1.amount);
-      const amount: string = BigFloat.fromString(price.amount).toString();
-      expect(amount.substr(0, 17)).toStrictEqual(expectedPrice.toString().substr(0, 17));
+      const price: string = pairToken1Price({ pair });
+      const expectedPrice: BigFloat = BigFloat.fromFraction(pair.tokenAmount0.amount, pair.tokenAmount1.amount);
+      expect(price).toStrictEqual(expectedPrice.toFixed(18));
     }
   });
 
@@ -160,7 +146,7 @@ describe('Pair core', () => {
 describe('Pair miscellaneous', () => {
 
   test("pairLiquidityMinted 0 reserves", () => {
-    const pair: Pair = { tokenAmount0: { token: token0, amount: "0" }, tokenAmount1: { token: token1, amount: "0" } };
+    const pair: Pair = { tokenAmount0: { token: token0, amount: BigInt.ZERO }, tokenAmount1: { token: token1, amount: BigInt.ZERO } };
     const totalSupply: TokenAmount = {
       token:
         {
@@ -172,17 +158,17 @@ describe('Pair miscellaneous', () => {
             symbol: "",
           },
         },
-      amount: "0"
+      amount: BigInt.ZERO
     };
-    const tokenAmount0: TokenAmount = { token: token0, amount: "1001" };
-    const tokenAmount1: TokenAmount = { token: token1, amount: "1001" };
+    const tokenAmount0: TokenAmount = { token: token0, amount: BigInt.fromString("1001") };
+    const tokenAmount1: TokenAmount = { token: token1, amount: BigInt.fromString("1001") };
 
     const minted: TokenAmount = pairLiquidityMinted({ pair, totalSupply, tokenAmount0, tokenAmount1 });
-    expect(minted.amount).toStrictEqual('1');
+    expect(minted.amount.toString()).toStrictEqual('1');
   });
 
   test("pairLiquidityMinted !0 reserves", () => {
-    const pair: Pair = { tokenAmount0: { token: token0, amount: "10000" }, tokenAmount1: { token: token1, amount: "10000" } };
+    const pair: Pair = { tokenAmount0: { token: token0, amount: BigInt.fromString("10000") }, tokenAmount1: { token: token1, amount: BigInt.fromString("10000") } };
     const totalSupply: TokenAmount = {
       token: {
         chainId: ChainId.MAINNET,
@@ -193,17 +179,17 @@ describe('Pair miscellaneous', () => {
           symbol: "",
         },
       },
-      amount: "10000" };
-    const tokenAmount0: TokenAmount = { token: token0, amount: "2000" };
-    const tokenAmount1: TokenAmount = { token: token1, amount: "2000" };
+      amount: BigInt.fromString("10000") };
+    const tokenAmount0: TokenAmount = { token: token0, amount: BigInt.fromString("2000") };
+    const tokenAmount1: TokenAmount = { token: token1, amount: BigInt.fromString("2000") };
 
     const minted: TokenAmount = pairLiquidityMinted({ pair, totalSupply, tokenAmount0, tokenAmount1 });
-    expect(minted.amount).toStrictEqual('2000');
+    expect(minted.amount.toString()).toStrictEqual('2000');
 
   });
 
   it('getLiquidityValue:!feeOn', () => {
-    const pair: Pair = { tokenAmount0: { token: token0, amount: "1000" }, tokenAmount1: { token: token1, amount: "1000" } };
+    const pair: Pair = { tokenAmount0: { token: token0, amount: BigInt.fromString("1000") }, tokenAmount1: { token: token1, amount: BigInt.fromString("1000") } };
     const totalSupply: TokenAmount = {
       token: {
         chainId: ChainId.MAINNET,
@@ -213,7 +199,7 @@ describe('Pair miscellaneous', () => {
           name: "",
           symbol: "",
         },
-      },  amount: "1000" };
+      },  amount: BigInt.fromString("1000") };
     const liquidity1000: TokenAmount = {
       token: {
         chainId: ChainId.MAINNET,
@@ -224,7 +210,7 @@ describe('Pair miscellaneous', () => {
           symbol: "",
         },
       },
-      amount: "1000" };
+      amount: BigInt.fromString("1000") };
     const liquidity500: TokenAmount = {
       token: {
         chainId: ChainId.MAINNET,
@@ -235,20 +221,20 @@ describe('Pair miscellaneous', () => {
           symbol: "",
         },
       },
-      amount: "500" };
+      amount: BigInt.fromString("500") };
 
     const liquidityValueA = pairLiquidityValue({ pair: pair, totalSupply: totalSupply, liquidity: liquidity1000, feeOn: Nullable.fromNull<boolean>(), kLast: null });
     expect(liquidityValueA[0].token).toStrictEqual(token0);
     expect(liquidityValueA[1].token).toStrictEqual(token1);
-    expect(liquidityValueA[0].amount).toStrictEqual("1000");
-    expect(liquidityValueA[1].amount).toStrictEqual("1000");
+    expect(liquidityValueA[0].amount.toString()).toStrictEqual("1000");
+    expect(liquidityValueA[1].amount.toString()).toStrictEqual("1000");
     const liquidityValueB = pairLiquidityValue({ pair: pair, totalSupply: totalSupply, liquidity: liquidity500, feeOn: Nullable.fromValue(false), kLast: null });
     expect(liquidityValueB[0].token).toStrictEqual(token0);
-    expect(liquidityValueB[0].amount).toStrictEqual("500");
+    expect(liquidityValueB[0].amount.toString()).toStrictEqual("500");
   })
 
   it('getLiquidityValue:feeOn', () => {
-    const pair: Pair = { tokenAmount0: { token: token0, amount: "1000" }, tokenAmount1: { token: token1, amount: "1000" } };
+    const pair: Pair = { tokenAmount0: { token: token0, amount: BigInt.fromString("1000") }, tokenAmount1: { token: token1, amount: BigInt.fromString("1000") } };
     const totalSupply: TokenAmount = {
       token: {
         chainId: ChainId.MAINNET,
@@ -259,7 +245,7 @@ describe('Pair miscellaneous', () => {
           symbol: "",
         },
       },
-      amount: "500" };
+      amount: BigInt.fromString("500") };
     const liquidity: TokenAmount = {
       token: {
         chainId: ChainId.MAINNET,
@@ -270,12 +256,12 @@ describe('Pair miscellaneous', () => {
           symbol: "",
         },
       },
-      amount: "500" };
-    const kLast: string = "250000";
+      amount: BigInt.fromString("500") };
+    const kLast: BigInt = BigInt.fromString("250000");
 
     const liquidityValue = pairLiquidityValue({ pair: pair, totalSupply: totalSupply, liquidity: liquidity, feeOn: Nullable.fromValue(true), kLast: kLast });
     expect(liquidityValue[0].token).toStrictEqual(token0);
-    expect(liquidityValue[0].amount).toStrictEqual("917"); // ceiling(1000 - (500 * (1 / 6)))
+    expect(liquidityValue[0].amount.toString()).toStrictEqual("917"); // ceiling(1000 - (500 * (1 / 6)))
   })
 
 });

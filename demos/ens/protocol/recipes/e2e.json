@@ -1,0 +1,123 @@
+[
+  {
+    "api": "ens/testnet/ens.eth",
+    "constants": "./constants.json"
+  },
+  {
+    "query": "./mutations/deployFIFSRegistrar.graphql",
+    "variables": {
+      "registryAddress": "$Registry",
+      "tld": "$Tld"
+    }
+  },
+  {
+    "query": "./mutations/register.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "registrarAddress": "$Registrar",
+      "registryAddress": "$Registry",
+      "owner": "$Signer"
+    }
+  },
+  {
+    "query": "./mutations/setResolver.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "resolverAddress": "$Resolver",
+      "registryAddress": "$Registry",
+      "owner": "$Signer"
+    }
+  },
+  {
+    "query": "./mutations/setSubdomainRecord.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "label": "$Label",
+      "owner": "$Signer",
+      "resolverAddress": "$Resolver",
+      "ttl": "$Ttl",
+      "registryAddress": "$Registry"
+    }
+  },
+  {
+    "query": "./mutations/setAddress.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "address": "$Signer",
+      "resolverAddress": "$Resolver"
+    }
+  },
+  {
+    "query": "./mutations/setContentHash.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "cid": "$CID",
+      "resolverAddress": "$Resolver"
+    }
+  },
+  {
+    "query": "./mutations/reverseRegister.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "reverseRegistryAddress": "$Reverse",
+      "owner": "$Signer"
+    }
+  },
+  {
+    "query": "./mutations/setSubdomainOwner.graphql",
+    "variables": {
+      "subdomain": "$Subdomain",
+      "owner": "$Signer",
+      "registryAddress": "$Registry"
+    }
+  },
+  {
+    "query": "./mutations/setResolver.graphql",
+    "variables": {
+      "domain": "$Subdomain",
+      "resolverAddress": "$Resolver",
+      "registryAddress": "$Registry",
+      "owner": "$Signer"
+    }
+  },
+  {
+    "query": "./queries/getOwner.graphql",
+    "variables": { "registryAddress": "$Registry", "domain": "$Domain" }
+  },
+  {
+    "query": "./mutations/setOwner.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "registryAddress": "$Registry",
+      "newOwner": "$AlternateOwner"
+    }
+  },
+  {
+    "query": "./queries/getOwner.graphql",
+    "variables": { "registryAddress": "$Registry", "domain": "$Domain" }
+  },
+  {
+    "query": "./queries/getOwner.graphql",
+    "variables": { "registryAddress": "$Registry", "domain": "$Subdomain" }
+  },
+  {
+    "query": "./queries/getResolver.graphql",
+    "variables": { "registryAddress": "$Registry", "domain": "$Domain" }
+  },
+  {
+    "query": "./queries/getResolver.graphql",
+    "variables": { "registryAddress": "$Registry", "domain": "$Subdomain" }
+  },
+  {
+    "query": "./queries/getAddress.graphql",
+    "variables": { "resolverAddress": "$Resolver", "domain": "$Domain" }
+  },
+  {
+    "query": "./queries/getContentHash.graphql",
+    "variables": { "resolverAddress": "$Resolver", "domain": "$Domain" }
+  },
+  {
+    "query": "./queries/getNameFromAddress.graphql",
+    "variables": { "address": "$Signer", "registryAddress": "$Registry" }
+  }
+]

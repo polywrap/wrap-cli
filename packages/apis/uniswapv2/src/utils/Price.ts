@@ -4,7 +4,7 @@ import { Rounding, Token, TokenAmount } from "../query/w3";
 import Fraction from "./Fraction";
 import { tokenEquals } from "../query";
 
-import { BigInt } from "as-bigint";
+import { BigInt } from "@web3api/wasm-as";
 
 export default class Price extends Fraction {
   public readonly baseToken: Token; // input i.e. denominator
@@ -63,11 +63,11 @@ export default class Price extends Fraction {
     if (!tokenEquals({ token: tokenAmount.token, other: this.baseToken })) {
       throw new Error("Token of tokenAmount must be the same as baseToken");
     }
-    const biAmount = BigInt.fromString(tokenAmount.amount);
+    const biAmount = tokenAmount.amount;
     const res = super.mul(new Fraction(biAmount)).quotient();
     return {
       token: this.quoteToken,
-      amount: res.toString(),
+      amount: res,
     };
   }
 

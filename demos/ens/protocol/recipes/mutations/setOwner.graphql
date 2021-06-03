@@ -1,0 +1,11 @@
+mutation setOwner(
+  $domain: String!
+  $newOwner: String!
+  $registryAddress: String!
+) {
+  setOwner(
+    domain: $domain
+    newOwner: $newOwner
+    registryAddress: $registryAddress
+  )
+}

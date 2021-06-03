@@ -2,7 +2,7 @@ import { Pair, Token, TokenAmount } from "../query/w3";
 import { tokenEquals } from "../query";
 import { wrapIfEther } from "./utils";
 
-import { BigInt } from "as-bigint";
+import { BigInt } from "@web3api/wasm-as";
 
 export class ProcessedPair {
   amount: TokenAmount;
@@ -17,15 +17,15 @@ export class ProcessedPair {
     pair: Pair,
     tradeTokenAmount: TokenAmount
   ): ProcessedPair {
-    const tradeAmount = BigInt.fromString(tradeTokenAmount.amount);
+    const tradeAmount = tradeTokenAmount.amount;
     if (tradeAmount.isZero()) {
       throw new RangeError(
         "Insufficient input amount: Input amount must be greater than zero"
       );
     }
     if (
-      BigInt.fromString(pair.tokenAmount0.amount).isZero() ||
-      BigInt.fromString(pair.tokenAmount1.amount).isZero()
+      pair.tokenAmount0.amount.isZero() ||
+      pair.tokenAmount1.amount.isZero()
     ) {
       throw new RangeError(
         "Insufficient liquidity: Pair reserves must be greater than zero"
@@ -55,8 +55,8 @@ export class ProcessedPair {
       throw new Error("Input token must be a member of the pair");
     }
     // calculate
-    const biInTokenAmt: BigInt = BigInt.fromString(inTokenAmount.amount);
-    const biOutTokenAmt: BigInt = BigInt.fromString(outTokenAmount.amount);
+    const biInTokenAmt: BigInt = inTokenAmount.amount;
+    const biOutTokenAmt: BigInt = outTokenAmount.amount;
     const amountInWithFee: BigInt = tradeAmount.mul(BigInt.fromUInt16(997));
     const numerator: BigInt = amountInWithFee.mul(biOutTokenAmt);
     const denominator: BigInt = biInTokenAmt
@@ -66,15 +66,15 @@ export class ProcessedPair {
     // instantiate results
     const resultAmount: TokenAmount = {
       token: outTokenAmount.token,
-      amount: output.toString(),
+      amount: output,
     };
     const resultInputTokenAmount: TokenAmount = {
       token: inTokenAmount.token,
-      amount: biInTokenAmt.add(tradeAmount).toString(),
+      amount: biInTokenAmt.add(tradeAmount),
     };
     const resultOutputTokenAmount: TokenAmount = {
       token: outTokenAmount.token,
-      amount: biOutTokenAmt.sub(output).toString(),
+      amount: biOutTokenAmt.sub(output),
     };
     // return results
     if (pair.tokenAmount0.token.address == inTokenAmount.token.address) {
@@ -94,15 +94,15 @@ export class ProcessedPair {
     pair: Pair,
     tradeTokenAmount: TokenAmount
   ): ProcessedPair {
-    const tradeAmount = BigInt.fromString(tradeTokenAmount.amount);
+    const tradeAmount = tradeTokenAmount.amount;
     if (tradeAmount.isZero()) {
       throw new RangeError(
         "Insufficient output amount: Output amount must be greater than zero"
       );
     }
     if (
-      BigInt.fromString(pair.tokenAmount0.amount).isZero() ||
-      BigInt.fromString(pair.tokenAmount1.amount).isZero()
+      pair.tokenAmount0.amount.isZero() ||
+      pair.tokenAmount1.amount.isZero()
     ) {
       throw new RangeError(
         "Insufficient liquidity: Pair reserves must be greater than zero"
@@ -132,8 +132,8 @@ export class ProcessedPair {
       throw new Error("Output token must be a member of the pair");
     }
     // calculate
-    const biInTokenAmt = BigInt.fromString(inTokenAmount.amount);
-    const biOutTokenAmt = BigInt.fromString(outTokenAmount.amount);
+    const biInTokenAmt = inTokenAmount.amount;
+    const biOutTokenAmt = outTokenAmount.amount;
     const numerator: BigInt = biInTokenAmt
       .mul(tradeAmount)
       .mul(BigInt.fromUInt16(1000));
@@ -144,15 +144,15 @@ export class ProcessedPair {
     // instantiate results
     const resultAmount: TokenAmount = {
       token: inTokenAmount.token,
-      amount: input.toString(),
+      amount: input,
     };
     const resultInputTokenAmount: TokenAmount = {
       token: inTokenAmount.token,
-      amount: biInTokenAmt.add(input).toString(),
+      amount: biInTokenAmt.add(input),
     };
     const resultOutputTokenAmount: TokenAmount = {
       token: outTokenAmount.token,
-      amount: biOutTokenAmt.sub(tradeAmount).toString(),
+      amount: biOutTokenAmt.sub(tradeAmount),
     };
     // return results
     if (pair.tokenAmount0.token.address == inTokenAmount.token.address) {

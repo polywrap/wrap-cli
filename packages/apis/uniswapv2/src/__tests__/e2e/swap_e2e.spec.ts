@@ -1,12 +1,12 @@
 import { buildAndDeployApi, initTestEnvironment, stopTestEnvironment } from "@web3api/test-env-js";
 import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
-import { Currency, Pair, Token, Trade } from "./types";
+import { Currency, Pair, Token, Trade, TxResponse } from "./types";
 import path from "path";
 import { getRedirects, getTokenList } from "../testUtils";
 import { Contract, ethers, providers } from "ethers";
 import erc20ABI from "./testData/erc20ABI.json";
 
-jest.setTimeout(90000);
+jest.setTimeout(120000);
 
 describe("Swap", () => {
 
@@ -24,7 +24,7 @@ describe("Swap", () => {
     const { ethereum: testEnvEtherem, ensAddress, ipfs } = await initTestEnvironment();
     // get client
     const redirects: UriRedirect[] = getRedirects(testEnvEtherem, ipfs, ensAddress);
-    client = new Web3ApiClient({ redirects: redirects });
+    client = new Web3ApiClient({ redirects: redirects, tracingEnabled: true });
 
     // deploy api
     const apiPath: string = path.resolve(__dirname + "../../../../");
@@ -36,7 +36,7 @@ describe("Swap", () => {
     // set up test case data -> pairs
     tokens = await getTokenList();
     dai = tokens.filter(token => token.currency.symbol === "DAI")[0];
-    const approveHash = await client.query<{approve: string}>({
+    const daiTxResponse = await client.query<{approve: TxResponse}>({
       uri: ensUri,
       query: `
         mutation {
@@ -49,11 +49,15 @@ describe("Swap", () => {
         token: dai,
       },
     });
-    const daiApproveTx = await ethersProvider.getTransaction(approveHash.data!.approve);
+    if (daiTxResponse.errors) {
+      daiTxResponse.errors.forEach(console.log)
+    }
+    const daiApprove: string = daiTxResponse.data?.approve?.hash ?? "";
+    const daiApproveTx = await ethersProvider.getTransaction(daiApprove);
     await daiApproveTx.wait();
 
     link = tokens.filter(token => token.currency.symbol === "LINK")[0];
-    const linkApprove = await client.query<{approve: string}>({
+    const linkTxResponse = await client.query<{approve: TxResponse}>({
       uri: ensUri,
       query: `
         mutation {
@@ -66,7 +70,8 @@ describe("Swap", () => {
         token: link,
       },
     });
-    const linkApproveTx = await ethersProvider.getTransaction(linkApprove.data!.approve);
+    const linkApprove: string = linkTxResponse.data?.approve.hash ?? "";
+    const linkApproveTx = await ethersProvider.getTransaction(linkApprove);
     await linkApproveTx.wait();
 
     eth = tokens.filter(token => token.currency.symbol === "WETH")[0];
@@ -160,7 +165,7 @@ describe("Swap", () => {
     etherDaiTrade.route.pairs[0].tokenAmount1.token.currency = ethCurrency;
     etherDaiTrade.route.input.currency = ethCurrency;
     etherDaiTrade.inputAmount.token.currency = ethCurrency;
-    const etherDaiTxHash = await client.query<{ exec: string}>({
+    const etherDaiTxResponse = await client.query<{ exec: TxResponse}>({
       uri: ensUri,
       query: `
         mutation {
@@ -181,8 +186,13 @@ describe("Swap", () => {
       },
     });
 
-    expect(etherDaiTxHash.errors).toBeFalsy
-    const etherDaiTx = await ethersProvider.getTransaction(etherDaiTxHash.data!.exec);
+    if (etherDaiTxResponse.errors) {
+      etherDaiTxResponse.errors.forEach(console.log)
+    }
+
+    expect(etherDaiTxResponse.errors).toBeFalsy
+    const etherDaiTxHash: string = etherDaiTxResponse.data?.exec.hash ?? "";
+    const etherDaiTx = await ethersProvider.getTransaction(etherDaiTxHash);
     await etherDaiTx.wait();
 
     const daiContract = new Contract(dai.address, erc20ABI, ethersProvider);
@@ -211,7 +221,7 @@ describe("Swap", () => {
       },
     });
     const daiLinkTrade = daiLinkTradeData.data!.bestTradeExactIn[0];
-    const daiLinkTxHash = await client.query<{ exec: string}>({
+    const daiLinkTxResponse = await client.query<{ exec: TxResponse}>({
       uri: ensUri,
       query: `
         mutation {
@@ -235,8 +245,9 @@ describe("Swap", () => {
     const linkContract = new Contract(link.address, erc20ABI, ethersProvider);
     const linkBalance = await linkContract.balanceOf(recipient);
 
-    expect(daiLinkTxHash.errors).toBeFalsy();
-    const daiLinkTx = await ethersProvider.getTransaction(daiLinkTxHash.data!.exec);
+    expect(daiLinkTxResponse.errors).toBeFalsy();
+    const daiLinkTxHash: string = daiLinkTxResponse.data?.exec.hash ?? "";
+    const daiLinkTx = await ethersProvider.getTransaction(daiLinkTxHash);
     await daiLinkTx.wait();
     expect((await daiContract.balanceOf(recipient)).toString()).toBe("99900000");
     expect(linkBalance.gt("0")).toBeTruthy();
@@ -267,7 +278,7 @@ describe("Swap", () => {
     linkEthTrade.route.pairs[0].tokenAmount1.token.currency = ethCurrency;
     linkEthTrade.route.output.currency = ethCurrency;
     linkEthTrade.outputAmount.token.currency = ethCurrency;
-    const linkEthTxHash = await client.query<{ exec: string}>({
+    const linkEthTxResponse = await client.query<{ exec: TxResponse}>({
       uri: ensUri,
       query: `
         mutation {
@@ -288,14 +299,15 @@ describe("Swap", () => {
       },
     });
 
-    expect(linkEthTxHash.errors).toBeFalsy();
-    const linkEthTx = await ethersProvider.getTransaction(linkEthTxHash.data!.exec);
+    expect(linkEthTxResponse.errors).toBeFalsy();
+    const linkEthTxHash: string = linkEthTxResponse.data?.exec.hash ?? "";
+    const linkEthTx = await ethersProvider.getTransaction(linkEthTxHash);
     await linkEthTx.wait();
 
     expect((await linkContract.balanceOf(recipient)).lt(linkBalance)).toBeTruthy();
 
     // SWAP dai -> link
-    const daiLinkSwap = await client.query<{ swap: string}>({
+    const daiLinkSwap = await client.query<{ swap: TxResponse}>({
       uri: ensUri,
       query: `
         mutation {
@@ -324,12 +336,13 @@ describe("Swap", () => {
 
 
     expect(daiLinkSwap.errors).toBeFalsy();
-    const daiLinkSwapTx = await ethersProvider.getTransaction(daiLinkSwap.data!.swap);
+    const daiLinkSwapHash: string = daiLinkSwap.data?.swap.hash ?? "";
+    const daiLinkSwapTx = await ethersProvider.getTransaction(daiLinkSwapHash);
     await daiLinkSwapTx.wait();
     expect((await daiContract.balanceOf(recipient)).toString()).toBe("99899900");
 
     // SWAP link -> dai
-    const linkDaiSwap = await client.query<{ swap: string}>({
+    const linkDaiSwap = await client.query<{ swap: TxResponse}>({
       uri: ensUri,
       query: `
         mutation {
@@ -357,7 +370,8 @@ describe("Swap", () => {
     });
 
     expect(linkDaiSwap.errors).toBeFalsy();
-    const linkDaiSwapTx = await ethersProvider.getTransaction(daiLinkSwap.data!.swap);
+    const linkDaiSwapHash: string = linkDaiSwap.data?.swap.hash ?? "";
+    const linkDaiSwapTx = await ethersProvider.getTransaction(linkDaiSwapHash);
     await linkDaiSwapTx.wait();
     expect((await daiContract.balanceOf(recipient)).toString()).toEqual("99900000");
   });

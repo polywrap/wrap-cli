@@ -13,3 +13,6 @@ query:
   module:
     language: wasm/assemblyscript
     file: ./src/query/index.ts
+import_redirects:
+  - uri: w3://ens/sha3.web3api.eth
+    schema: ../../../node_modules/@web3api/sha3-plugin-js/schema.graphql

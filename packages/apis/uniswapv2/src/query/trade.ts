@@ -23,7 +23,7 @@ import { TradeOptions } from "../utils/TradeOptions";
 import { ETHER } from "../utils/Currency";
 import { copyTokenAmount, wrapIfEther } from "../utils/utils";
 
-import { BigInt } from "as-bigint";
+import { BigInt } from "@web3api/wasm-as";
 import { BigFloat } from "as-bigfloat";
 import { Nullable } from "@web3api/wasm-as";
 
@@ -93,8 +93,8 @@ export function tradeExecutionPrice(input: Input_tradeExecutionPrice): string {
   const executionPrice = new Price(
     trade.inputAmount.token,
     trade.outputAmount.token,
-    BigInt.fromString(trade.inputAmount.amount),
-    BigInt.fromString(trade.outputAmount.amount)
+    trade.inputAmount.amount,
+    trade.outputAmount.amount
   );
   return executionPrice.toFixed(18);
 }
@@ -113,12 +113,8 @@ export function tradeSlippage(input: Input_tradeSlippage): string {
   const trade: Trade = input.trade;
   const price: Price = midPrice(trade.route);
   // compute price impact
-  const inputFraction: Fraction = new Fraction(
-    BigInt.fromString(trade.inputAmount.amount)
-  );
-  const outputFraction: Fraction = new Fraction(
-    BigInt.fromString(trade.outputAmount.amount)
-  );
+  const inputFraction: Fraction = new Fraction(trade.inputAmount.amount);
+  const outputFraction: Fraction = new Fraction(trade.outputAmount.amount);
   const exactQuote: Fraction = price.raw().mul(inputFraction);
   const slippage = exactQuote.sub(outputFraction).div(exactQuote);
   return slippage.toFixed(18);
@@ -136,7 +132,7 @@ export function tradeMinimumAmountOut(
   if (trade.tradeType == TradeType.EXACT_OUTPUT) {
     return trade.outputAmount;
   } else {
-    const biOutAmt = BigInt.fromString(trade.outputAmount.amount);
+    const biOutAmt = trade.outputAmount.amount;
     const slippageAdjustedAmountOut = new Fraction(BigInt.ONE)
       .add(slippageTolerance)
       .invert()
@@ -144,7 +140,7 @@ export function tradeMinimumAmountOut(
       .quotient();
     return {
       token: trade.outputAmount.token,
-      amount: slippageAdjustedAmountOut.toString(),
+      amount: slippageAdjustedAmountOut,
     };
   }
 }
@@ -161,14 +157,14 @@ export function tradeMaximumAmountIn(
   if (trade.tradeType == TradeType.EXACT_INPUT) {
     return trade.inputAmount;
   } else {
-    const biInputAmt = BigInt.fromString(trade.inputAmount.amount);
+    const biInputAmt = trade.inputAmount.amount;
     const slippageAdjustedAmountIn = new Fraction(BigInt.ONE)
       .add(slippageTolerance)
       .mul(new Fraction(biInputAmt))
       .quotient();
     return {
       token: trade.inputAmount.token,
-      amount: slippageAdjustedAmountIn.toString(),
+      amount: slippageAdjustedAmountIn,
     };
   }
 }
@@ -251,10 +247,10 @@ function _bestTradeExactIn(
     });
     if (!isToken0 && !isToken1) continue;
 
-    const biTokenAmt0 = BigInt.fromString(pair.tokenAmount0.amount);
-    const biTokenAmt1 = BigInt.fromString(pair.tokenAmount1.amount);
+    const biTokenAmt0 = pair.tokenAmount0.amount;
+    const biTokenAmt1 = pair.tokenAmount1.amount;
     if (biTokenAmt0.isZero() || biTokenAmt1.isZero()) continue;
-    const biAmtIn = BigInt.fromString(amountIn.amount);
+    const biAmtIn = amountIn.amount;
     if (biAmtIn.isZero()) continue;
 
     const amountOutToken = isToken0
@@ -326,10 +322,10 @@ function _bestTradeExactOut(
     });
     if (!isToken0 && !isToken1) continue;
 
-    const biTokenAmt0 = BigInt.fromString(pair.tokenAmount0.amount);
-    const biTokenAmt1 = BigInt.fromString(pair.tokenAmount1.amount);
+    const biTokenAmt0 = pair.tokenAmount0.amount;
+    const biTokenAmt1 = pair.tokenAmount1.amount;
     if (biTokenAmt0.eq(BigInt.ZERO) || biTokenAmt1.eq(BigInt.ZERO)) continue;
-    const biAmtOut = BigInt.fromString(amountOut.amount);
+    const biAmtOut = amountOut.amount;
     if (biAmtOut.eq(BigInt.ZERO)) continue;
 
     if (isToken0) {
@@ -413,10 +409,10 @@ export function inputOutputComparator(a: Trade, b: Trade): i32 {
     throw new Error("To be compared, trades must the same output token");
   }
 
-  const aOutputBI = BigInt.fromString(aOutput.amount);
-  const bOutputBI = BigInt.fromString(bOutput.amount);
-  const aInputBI = BigInt.fromString(aInput.amount);
-  const bInputBI = BigInt.fromString(bInput.amount);
+  const aOutputBI = aOutput.amount;
+  const bOutputBI = bOutput.amount;
+  const aInputBI = aInput.amount;
+  const bInputBI = bInput.amount;
 
   if (aOutputBI.eq(bOutputBI)) {
     if (aInputBI.eq(bInputBI)) {

@@ -1,0 +1,6 @@
+query getOwner($domain: String!, $registryAddress: String!) {
+  getOwner(
+    domain: $domain,
+    registryAddress: $registryAddress
+  )
+}

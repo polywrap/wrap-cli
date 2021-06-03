@@ -40,7 +40,7 @@ type Currency {
 
 type TokenAmount {
   token: Token!
-  amount: String! # UInt256!
+  amount: BigInt!
 }
 
 type Pair {
@@ -60,4 +60,20 @@ type Trade {
   inputAmount: TokenAmount!
   outputAmount: TokenAmount!
   tradeType: TradeType!
+}
+
+type BestTradeOptions {
+  maxNumResults: UInt32
+  maxHops: UInt32
+}
+
+type SwapParameters {
+  methodName: String!
+  args: [String!]!
+  value: String!
+}
+
+type TxOverrides {
+  gasPrice: BigInt
+  gasLimit: BigInt
 }

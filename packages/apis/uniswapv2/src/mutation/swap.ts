@@ -1,11 +1,17 @@
-import { Ethereum_Mutation } from "./w3/imported";
 import {
+  ChainId,
+  Ethereum_Mutation,
+  Input_execCall,
   getChainIdKey,
   Input_exec,
   Input_approve,
   Input_swap,
   Trade,
   TradeType,
+  SwapParameters,
+  TxOverrides,
+  Pair,
+  Ethereum_TxResponse,
 } from "./w3";
 import {
   bestTradeExactIn,
@@ -17,38 +23,55 @@ import {
 import { UNISWAP_ROUTER_CONTRACT } from "../utils/constants";
 import { getSwapMethodAbi } from "./abi";
 
-import { BigInt } from "as-bigint";
+import { BigInt } from "@web3api/wasm-as";
 
-const GAS_LIMIT = "200000";
 const MAX_UINT_256 =
   "115792089237316195423570985008687907853269984665640564039457584007913129639935";
 
-export function exec(input: Input_exec): string {
-  const swapParameters = swapCallParameters({
+export function exec(input: Input_exec): Ethereum_TxResponse {
+  const swapParameters: SwapParameters = swapCallParameters({
     trade: input.trade,
     tradeOptions: input.tradeOptions,
   });
-
-  const txHash = Ethereum_Mutation.sendTransaction({
-    method: getSwapMethodAbi(swapParameters.methodName),
-    args: swapParameters.args,
-    value: swapParameters.value,
-    address: UNISWAP_ROUTER_CONTRACT,
-    connection: {
-      node: null,
-      networkNameOrChainId: getChainIdKey(
-        input.trade.inputAmount.token.chainId
-      ),
-    },
-    gasPrice: null,
-    gasLimit: GAS_LIMIT,
+  return execCall({
+    parameters: swapParameters,
+    chainId: input.trade.inputAmount.token.chainId,
+    txOverrides: input.txOverrides,
   });
-  return txHash;
 }
 
-export function swap(input: Input_swap): string {
+export function execCall(input: Input_execCall): Ethereum_TxResponse {
+  const swapParameters: SwapParameters = input.parameters;
+  const chainId: ChainId = input.chainId;
+  const txOverrides: TxOverrides =
+    input.txOverrides === null
+      ? { gasLimit: null, gasPrice: null }
+      : input.txOverrides!;
+  const gasPrice: string | null =
+    txOverrides.gasPrice === null ? null : txOverrides.gasPrice!.toString();
+  const gasLimit: string | null =
+    txOverrides.gasLimit === null ? null : txOverrides.gasLimit!.toString();
+
+  const txResponse: Ethereum_TxResponse = Ethereum_Mutation.callContractMethod({
+    address: UNISWAP_ROUTER_CONTRACT,
+    method: getSwapMethodAbi(swapParameters.methodName),
+    args: swapParameters.args,
+    connection: {
+      node: null,
+      networkNameOrChainId: getChainIdKey(chainId),
+    },
+    txOverrides: {
+      value: swapParameters.value,
+      gasPrice: gasPrice,
+      gasLimit: gasLimit,
+    },
+  });
+  return txResponse;
+}
+
+export function swap(input: Input_swap): Ethereum_TxResponse {
   let trade: Trade;
-  const pair = fetchPairData({
+  const pair: Pair = fetchPairData({
     token0: input.tokenIn,
     token1: input.tokenOut,
   });
@@ -78,21 +101,36 @@ export function swap(input: Input_swap): string {
   return exec({
     trade: trade,
     tradeOptions: input.tradeOptions,
+    txOverrides: input.txOverrides,
   });
 }
 
-export function approve(input: Input_approve): string {
-  return Ethereum_Mutation.sendTransaction({
+export function approve(input: Input_approve): Ethereum_TxResponse {
+  const amount: BigInt =
+    input.amount === null ? BigInt.fromString(MAX_UINT_256) : input.amount!;
+  const txOverrides: TxOverrides =
+    input.txOverrides === null
+      ? { gasLimit: null, gasPrice: null }
+      : input.txOverrides!;
+  const gasPrice: string | null =
+    txOverrides.gasPrice === null ? null : txOverrides.gasPrice!.toString();
+  const gasLimit: string | null =
+    txOverrides.gasLimit === null ? null : txOverrides.gasLimit!.toString();
+
+  const txResponse: Ethereum_TxResponse = Ethereum_Mutation.callContractMethod({
+    address: input.token.address,
     method:
       "function approve(address spender, uint value) external returns (bool)",
-    args: [UNISWAP_ROUTER_CONTRACT, toHex(BigInt.fromString(MAX_UINT_256))],
-    value: null,
-    address: input.token.address,
+    args: [UNISWAP_ROUTER_CONTRACT, toHex(amount)],
     connection: {
       node: null,
       networkNameOrChainId: getChainIdKey(input.token.chainId),
     },
-    gasPrice: null,
-    gasLimit: null,
+    txOverrides: {
+      value: null,
+      gasPrice: gasPrice,
+      gasLimit: gasLimit,
+    },
   });
+  return txResponse;
 }

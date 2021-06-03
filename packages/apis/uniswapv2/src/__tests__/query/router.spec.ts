@@ -27,21 +27,21 @@ const token1: Token = {
 
 const pair_0_1: Pair = {
   tokenAmount0: {
-    amount: "1000",
+    amount: BigInt.fromString("1000"),
     token: token0
   },
   tokenAmount1: {
-    amount: "1000",
+    amount: BigInt.fromString("1000"),
     token: token1
   }
 }
 const pair_weth_0: Pair = {
   tokenAmount0: {
-    amount: "1000",
+    amount: BigInt.fromString("1000"),
     token: getWETH9(ChainId.MAINNET)
   },
   tokenAmount1: {
-    amount: "1000",
+    amount: BigInt.fromString("1000"),
     token: token0,
   }
 }
@@ -73,7 +73,7 @@ describe("swapCallParameters", () => {
             address: "",
             chainId: ChainId.MAINNET,
           },
-          amount: "100"
+          amount: BigInt.fromString("100")
         },
         tradeType: TradeType.EXACT_INPUT
       })
@@ -117,7 +117,7 @@ describe("swapCallParameters", () => {
             address: "",
             chainId: ChainId.MAINNET,
           },
-          amount: "100"
+          amount: BigInt.fromString("100")
         },
         tradeType: TradeType.EXACT_INPUT
       })
@@ -155,7 +155,7 @@ describe("swapCallParameters", () => {
         }),
         amount: {
           token: token1,
-          amount: "100"
+          amount: BigInt.fromString("100")
         },
         tradeType: TradeType.EXACT_INPUT
       });
@@ -192,7 +192,7 @@ describe("swapCallParameters", () => {
         }),
         amount: {
           token: token0,
-          amount: "100"
+          amount: BigInt.fromString("100")
         },
         tradeType: TradeType.EXACT_INPUT
       });
@@ -235,7 +235,7 @@ describe("swapCallParameters", () => {
         }),
         amount: {
           token: token1,
-          amount: "100"
+          amount: BigInt.fromString("100")
         },
         tradeType: TradeType.EXACT_OUTPUT
       })
@@ -279,7 +279,7 @@ describe("swapCallParameters", () => {
             address: "",
             chainId: ChainId.MAINNET
           },
-          amount: "100"
+          amount: BigInt.fromString("100")
         },
         tradeType: TradeType.EXACT_OUTPUT
       });
@@ -316,7 +316,7 @@ describe("swapCallParameters", () => {
         }),
         amount: {
           token: token1,
-          amount: "100"
+          amount: BigInt.fromString("100")
         },
         tradeType: TradeType.EXACT_OUTPUT
       });
@@ -364,7 +364,7 @@ describe("swapCallParameters", () => {
               address: "",
               chainId: ChainId.MAINNET,
             },
-            amount: "100"
+            amount: BigInt.fromString("100")
           },
           tradeType: TradeType.EXACT_INPUT
         })
@@ -404,7 +404,7 @@ describe("swapCallParameters", () => {
           }),
           amount: {
             token: token1,
-            amount: "100"
+            amount: BigInt.fromString("100")
           },
           tradeType: TradeType.EXACT_INPUT
         });
@@ -441,7 +441,7 @@ describe("swapCallParameters", () => {
           }),
           amount: {
             token: token0,
-            amount: "100"
+            amount: BigInt.fromString("100")
           },
           tradeType: TradeType.EXACT_INPUT
         });
@@ -485,7 +485,7 @@ describe("swapCallParameters", () => {
             }),
             amount: {
               token: token1,
-              amount: "100"
+              amount: BigInt.fromString("100")
             },
             tradeType: TradeType.EXACT_OUTPUT
           });
@@ -521,7 +521,7 @@ describe("swapCallParameters", () => {
                 address: "",
                 chainId: ChainId.MAINNET
               },
-              amount: "100"
+              amount: BigInt.fromString("100")
             },
             tradeType: TradeType.EXACT_OUTPUT
           });
@@ -549,7 +549,7 @@ describe("swapCallParameters", () => {
             }),
             amount: {
               token: token1,
-              amount: "100"
+              amount: BigInt.fromString("100")
             },
             tradeType: TradeType.EXACT_OUTPUT
           });

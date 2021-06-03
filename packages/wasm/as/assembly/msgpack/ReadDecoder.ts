@@ -13,13 +13,20 @@ import { Nullable } from "./Nullable";
 import { Read } from "./Read";
 import { E_INVALIDLENGTH } from "./utils";
 import { BigInt } from "../BigInt";
+import { Context } from "./Context";
 
 export class ReadDecoder extends Read {
+  private readonly _context: Context;
   private view: DataView;
 
-  constructor(ua: ArrayBuffer) {
+  constructor(ua: ArrayBuffer, context: Context = new Context()) {
     super();
-    this.view = new DataView(ua, 0, ua.byteLength);
+    this._context = context;
+    this.view = new DataView(ua, 0, ua.byteLength, context);
+  }
+
+  context(): Context {
+    return this._context;
   }
 
   readBool(): bool {
@@ -29,7 +36,11 @@ export class ReadDecoder extends Read {
     } else if (value == Format.FALSE) {
       return false;
     }
-    throw new Error("bad value for bool");
+    throw new Error(
+      this._context.printWithContext(
+        "bad prefix value for bool: " + value.toString()
+      )
+    );
   }
 
   readInt8(): i8 {
@@ -38,7 +49,9 @@ export class ReadDecoder extends Read {
       return i8(value);
     }
     throw new Error(
-      "integer overflow: value = " + value.toString() + "; bits = 8"
+      this._context.printWithContext(
+        "integer overflow: value = " + value.toString() + "; bits = 8"
+      )
     );
   }
 
@@ -48,7 +61,9 @@ export class ReadDecoder extends Read {
       return i16(value);
     }
     throw new Error(
-      "integer overflow: value = " + value.toString() + "; bits = 16"
+      this._context.printWithContext(
+        "integer overflow: value = " + value.toString() + "; bits = 16"
+      )
     );
   }
 
@@ -58,7 +73,9 @@ export class ReadDecoder extends Read {
       return i32(value);
     }
     throw new Error(
-      "integer overflow: value = " + value.toString() + "; bits = 32"
+      this._context.printWithContext(
+        "integer overflow: value = " + value.toString() + "; bits = 32"
+      )
     );
   }
 
@@ -81,7 +98,11 @@ export class ReadDecoder extends Read {
       case Format.INT64:
         return this.view.getInt64();
       default:
-        throw new Error("bad prefix for int: " + prefix.toString());
+        throw new Error(
+          this._context.printWithContext(
+            "bad prefix for int: " + prefix.toString()
+          )
+        );
     }
   }
 
@@ -91,7 +112,9 @@ export class ReadDecoder extends Read {
       return u8(value);
     }
     throw new Error(
-      "unsigned integer overflow: value = " + value.toString() + "; bits = 8"
+      this._context.printWithContext(
+        "unsigned integer overflow: value = " + value.toString() + "; bits = 8"
+      )
     );
   }
 
@@ -101,7 +124,9 @@ export class ReadDecoder extends Read {
       return u16(value);
     }
     throw new Error(
-      "unsigned integer overflow: value = " + value.toString() + "; bits = 16"
+      this._context.printWithContext(
+        "unsigned integer overflow: value = " + value.toString() + "; bits = 16"
+      )
     );
   }
 
@@ -111,7 +136,9 @@ export class ReadDecoder extends Read {
       return u32(value);
     }
     throw new Error(
-      "unsigned integer overflow: value = " + value.toString() + "; bits = 32"
+      this._context.printWithContext(
+        "unsigned integer overflow: value = " + value.toString() + "; bits = 32"
+      )
     );
   }
 
@@ -122,7 +149,9 @@ export class ReadDecoder extends Read {
       return u64(prefix);
     } else if (isNegativeFixedInt(prefix)) {
       throw new Error(
-        "unsigned integer cannot be negative: prefix = " + prefix.toString()
+        this._context.printWithContext(
+          "unsigned integer cannot be negative: prefix = " + prefix.toString()
+        )
       );
     }
 
@@ -137,7 +166,9 @@ export class ReadDecoder extends Read {
         return this.view.getUint64();
       default:
         throw new Error(
-          "bad prefix for unsigned int: prefix = " + prefix.toString()
+          this._context.printWithContext(
+            "bad prefix for unsigned int: prefix = " + prefix.toString()
+          )
         );
     }
   }
@@ -147,7 +178,11 @@ export class ReadDecoder extends Read {
     if (isFloat32(prefix)) {
       return <f32>this.view.getFloat32();
     }
-    throw new Error("bad prefix for float32: " + prefix.toString());
+    throw new Error(
+      this._context.printWithContext(
+        "bad prefix for float32: " + prefix.toString()
+      )
+    );
   }
 
   readFloat64(): f64 {
@@ -155,10 +190,17 @@ export class ReadDecoder extends Read {
     if (isFloat64(prefix)) {
       return <f64>this.view.getFloat64();
     }
-    throw new Error("bad prefix for float 64: " + prefix.toString());
+    throw new Error(
+      this._context.printWithContext(
+        "bad prefix for float 64: " + prefix.toString()
+      )
+    );
   }
 
   readStringLength(): u32 {
+    if (this.isNextNil()) {
+      return 0;
+    }
     const leadByte = this.view.getUint8();
     if (isFixedString(leadByte)) {
       return leadByte & 0x1f;
@@ -173,9 +215,15 @@ export class ReadDecoder extends Read {
         return <u32>this.view.getUint16();
       case Format.STR32:
         return this.view.getUint32();
+      case Format.NIL:
+        return 0;
     }
 
-    throw new RangeError(E_INVALIDLENGTH + leadByte.toString());
+    throw new RangeError(
+      this._context.printWithContext(
+        "readStringLength: " + E_INVALIDLENGTH + " " + leadByte.toString()
+      )
+    );
   }
 
   readString(): string {
@@ -199,8 +247,10 @@ export class ReadDecoder extends Read {
         return <u32>this.view.getUint16();
       case Format.BIN32:
         return this.view.getUint32();
+      case Format.NIL:
+        return 0;
     }
-    throw new RangeError(E_INVALIDLENGTH);
+    throw new RangeError(this._context.printWithContext(E_INVALIDLENGTH));
   }
 
   readBytes(): ArrayBuffer {
@@ -215,17 +265,26 @@ export class ReadDecoder extends Read {
   }
 
   readArrayLength(): u32 {
+    if (this.isNextNil()) {
+      return 0;
+    }
     const leadByte = this.view.getUint8();
     if (isFixedArray(leadByte)) {
       return <u32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
-    } else if (leadByte == Format.ARRAY16) {
-      return <u32>this.view.getUint16();
-    } else if (leadByte == Format.ARRAY32) {
-      return this.view.getUint32();
-    } else if (leadByte == Format.NIL) {
-      return 0;
     }
-    throw new RangeError(E_INVALIDLENGTH + leadByte.toString());
+    switch (leadByte) {
+      case Format.ARRAY16:
+        return <u32>this.view.getUint16();
+      case Format.ARRAY32:
+        return this.view.getUint32();
+      case Format.NIL:
+        return 0;
+    }
+    throw new RangeError(
+      this._context.printWithContext(
+        "readArrayLength: " + E_INVALIDLENGTH + " " + leadByte.toString()
+      )
+    );
   }
 
   readArray<T>(fn: (reader: Read) => T): Array<T> {
@@ -239,15 +298,26 @@ export class ReadDecoder extends Read {
   }
 
   readMapLength(): u32 {
+    if (this.isNextNil()) {
+      return 0;
+    }
     const leadByte = this.view.getUint8();
     if (isFixedMap(leadByte)) {
       return <u32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
-    } else if (leadByte == Format.MAP16) {
-      return <u32>this.view.getUint16();
-    } else if (leadByte == Format.MAP32) {
-      return this.view.getUint32();
     }
-    throw new RangeError(E_INVALIDLENGTH);
+    switch (leadByte) {
+      case Format.MAP16:
+        return <u32>this.view.getUint16();
+      case Format.MAP32:
+        return this.view.getUint32();
+      case Format.NIL:
+        return 0;
+    }
+    throw new RangeError(
+      this._context.printWithContext(
+        "readMapLength: " + E_INVALIDLENGTH + " " + leadByte.toString()
+      )
+    );
   }
 
   readMap<K, V>(
@@ -509,7 +579,10 @@ export class ReadDecoder extends Read {
           break;
         default:
           throw new TypeError(
-            "invalid prefix, bad encoding for val: " + leadByte.toString()
+            this._context.printWithContext(
+              "invalid prefix; cannot get size due to bad encoding for value: " +
+                leadByte.toString()
+            )
           );
       }
     }

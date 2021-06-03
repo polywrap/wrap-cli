@@ -1,9 +1,21 @@
 import { ETHER } from "../utils/Currency";
 import { tradeMaximumAmountIn, tradeMinimumAmountOut } from "./trade";
-import { Input_swapCallParameters, SwapParameters, TradeType } from "./w3";
+import {
+  ChainId,
+  Ethereum_Query,
+  getChainIdKey,
+  Input_estimateGas,
+  Input_swapCallParameters,
+  Input_execCallStatic,
+  SwapParameters,
+  TradeType,
+  TxOverrides,
+} from "./w3";
 import { currencyEquals } from "./token";
+import { UNISWAP_ROUTER_CONTRACT } from "../utils/constants";
+import { getSwapMethodAbi } from "../mutation/abi";
 
-import { BigInt } from "as-bigint";
+import { BigInt, Nullable } from "@web3api/wasm-as";
 
 const ZERO_HEX = "0x0";
 
@@ -33,20 +45,16 @@ export function swapCallParameters(
 
   const to = input.tradeOptions.recipient;
   const amountIn = toHex(
-    BigInt.fromString(
-      tradeMaximumAmountIn({
-        trade: input.trade,
-        slippageTolerance: input.tradeOptions.allowedSlippage,
-      }).amount
-    )
+    tradeMaximumAmountIn({
+      trade: input.trade,
+      slippageTolerance: input.tradeOptions.allowedSlippage,
+    }).amount
   );
   const amountOut = toHex(
-    BigInt.fromString(
-      tradeMinimumAmountOut({
-        trade: input.trade,
-        slippageTolerance: input.tradeOptions.allowedSlippage,
-      }).amount
-    )
+    tradeMinimumAmountOut({
+      trade: input.trade,
+      slippageTolerance: input.tradeOptions.allowedSlippage,
+    }).amount
   );
 
   const pathArray = input.trade.route.path.map<string>(
@@ -68,30 +76,33 @@ export function swapCallParameters(
   switch (input.trade.tradeType) {
     case TradeType.EXACT_INPUT:
       if (etherIn) {
-        methodName = !useFeeOnTransfer.isNull
-          ? "swapExactETHForTokensSupportingFeeOnTransferTokens"
-          : "swapExactETHForTokens";
+        methodName =
+          !useFeeOnTransfer.isNull && useFeeOnTransfer.value
+            ? "swapExactETHForTokensSupportingFeeOnTransferTokens"
+            : "swapExactETHForTokens";
         // (uint amountOutMin, address[] calldata path, address to, uint deadline)
         args = [amountOut, path, to, deadline];
         value = amountIn;
       } else if (etherOut) {
-        methodName = !useFeeOnTransfer.isNull
-          ? "swapExactTokensForETHSupportingFeeOnTransferTokens"
-          : "swapExactTokensForETH";
+        methodName =
+          !useFeeOnTransfer.isNull && useFeeOnTransfer.value
+            ? "swapExactTokensForETHSupportingFeeOnTransferTokens"
+            : "swapExactTokensForETH";
         // (uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
         args = [amountIn, amountOut, path, to, deadline];
         value = ZERO_HEX;
       } else {
-        methodName = !useFeeOnTransfer.isNull
-          ? "swapExactTokensForTokensSupportingFeeOnTransferTokens"
-          : "swapExactTokensForTokens";
+        methodName =
+          !useFeeOnTransfer.isNull && useFeeOnTransfer.value
+            ? "swapExactTokensForTokensSupportingFeeOnTransferTokens"
+            : "swapExactTokensForTokens";
         // (uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
         args = [amountIn, amountOut, path, to, deadline];
         value = ZERO_HEX;
       }
       break;
     case TradeType.EXACT_OUTPUT:
-      if (!useFeeOnTransfer.isNull) {
+      if (!useFeeOnTransfer.isNull && useFeeOnTransfer.value) {
         throw new Error("Cannot use fee on transfer with exact out trade");
       }
 
@@ -113,15 +124,62 @@ export function swapCallParameters(
       }
       break;
     default:
-      methodName = "";
-      // (uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
-      args = [];
-      value = ZERO_HEX;
+      throw new Error("method name not found");
   }
 
   return {
     methodName: methodName,
-    value: value,
     args: args,
+    value: value,
   };
+}
+
+export function estimateGas(input: Input_estimateGas): string {
+  const swapParameters: SwapParameters = input.parameters;
+  const chainId: Nullable<ChainId> = input.chainId;
+  return Ethereum_Query.estimateContractCallGas({
+    address: UNISWAP_ROUTER_CONTRACT,
+    method: getSwapMethodAbi(swapParameters.methodName),
+    args: swapParameters.args,
+    connection: chainId.isNull
+      ? null
+      : {
+          node: null,
+          networkNameOrChainId: getChainIdKey(chainId.value),
+        },
+    txOverrides: {
+      value: swapParameters.value,
+      gasPrice: null,
+      gasLimit: null,
+    },
+  });
+}
+
+// returns empty string if call would be successful, otherwise returns solidity contract error
+export function execCallStatic(input: Input_execCallStatic): string {
+  const swapParameters: SwapParameters = input.parameters;
+  const chainId: ChainId = input.chainId;
+  const txOverrides: TxOverrides =
+    input.txOverrides === null
+      ? { gasLimit: null, gasPrice: null }
+      : input.txOverrides!;
+  const gasPrice: string | null =
+    txOverrides.gasPrice === null ? null : txOverrides.gasPrice!.toString();
+  const gasLimit: string | null =
+    txOverrides.gasLimit === null ? null : txOverrides.gasLimit!.toString();
+
+  return Ethereum_Query.callContractMethodStatic({
+    address: UNISWAP_ROUTER_CONTRACT,
+    method: getSwapMethodAbi(swapParameters.methodName),
+    args: swapParameters.args,
+    connection: {
+      node: null,
+      networkNameOrChainId: getChainIdKey(chainId),
+    },
+    txOverrides: {
+      value: swapParameters.value,
+      gasPrice: gasPrice,
+      gasLimit: gasLimit,
+    },
+  });
 }

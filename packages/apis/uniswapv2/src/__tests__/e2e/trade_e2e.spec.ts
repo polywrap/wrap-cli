@@ -1,11 +1,11 @@
 import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
 import { buildAndDeployApi, initTestEnvironment, stopTestEnvironment } from "@web3api/test-env-js";
 import * as path from "path";
-import { ChainId, Pair, Route, Token, TokenAmount, Trade, TradeType } from "./types";
+import { ChainId, Pair, Route, Token, TokenAmount, Trade } from "./types";
 import { getPairData, getRedirects, getTokenList, getUniPairs } from "../testUtils";
 import * as uni from "@uniswap/sdk";
 
-jest.setTimeout(60000);
+jest.setTimeout(120000);
 
 describe('trade e2e', () => {
 
@@ -53,7 +53,12 @@ describe('trade e2e', () => {
     const uni_link: Pair | undefined = await getPairData(uniswap, link, client, ensUri);
     const uni_wbtc: Pair | undefined = await getPairData(uniswap, wbtc, client, ensUri);
     const wbtc_weth: Pair | undefined = await getPairData(wbtc, weth, client, ensUri);
-    [aave_dai, usdc_dai, link_usdc, uni_link, uni_wbtc, wbtc_weth, comp_weth].forEach(pair => pairs.push(pair!));
+    [aave_dai, usdc_dai, link_usdc, uni_link, uni_wbtc, wbtc_weth, comp_weth].forEach(pair => {
+      if (pair) {
+        pairs.push(pair)
+      }
+    });
+
     uniPairs = getUniPairs(pairs, 1);
   });
 
@@ -102,7 +107,7 @@ describe('trade e2e', () => {
       variables: {
         route: route.data?.createRoute,
         inAmount: amountIn,
-        tradeType: TradeType.EXACT_INPUT,
+        tradeType: "EXACT_INPUT",
       }
     });
     // expected trade

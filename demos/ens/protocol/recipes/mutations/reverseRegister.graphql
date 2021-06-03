@@ -1,0 +1,7 @@
+mutation reverseRegisterDomain($domain: String! $reverseRegistryAddress: String!, $owner: String!) {
+  reverseRegisterDomain(
+    domain: $domain,
+    reverseRegistryAddress: $reverseRegistryAddress,
+    owner: $owner
+  )
+}

@@ -1,4 +1,4 @@
-import { ChainId, Pair, Token } from "./e2e/types";
+import { BestTradeOptions, ChainId, Pair, Token, TokenAmount, Trade } from "./e2e/types";
 import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
@@ -53,7 +53,7 @@ export function getRedirects(ethereum: string, ipfs: string, ensAddress: string)
     {
       from: "w3://ens/ens.web3api.eth",
         to: ensPlugin({ addresses: { testnet: ensAddress } }),
-    },
+    }
   ];
 }
 
@@ -94,6 +94,11 @@ export async function getPairData(token0: Token, token1: Token, client: Web3ApiC
       token1: token1
     },
   });
+
+  if (pairData.errors) {
+    throw pairData.errors;
+  }
+
   return pairData.data?.fetchPairData;
 }
 
@@ -121,5 +126,71 @@ export function getUniPairs(pairs: Pair[], chainId: number): uni.Pair[] {
         pair.tokenAmount1.amount
       ),
     );
+  });
+}
+
+export async function getBestTradeExactIn(
+  allowedPairs: Pair[],
+  currencyAmountIn: TokenAmount,
+  currencyOut: Token,
+  bestTradeOptions: BestTradeOptions | null,
+  client: Web3ApiClient,
+  ensUri: string
+): Promise<Trade[]> {
+  const query = await client.query<{
+    bestTradeExactIn: Trade[]
+  }>({
+    uri: ensUri,
+    query: `query {
+        bestTradeExactIn(
+          pairs: $pairs
+          amountIn: $amountIn
+          tokenOut: $tokenOut
+          options: ${bestTradeOptions ?? "null"}
+         )
+       }`,
+    variables: {
+      pairs: allowedPairs,
+      amountIn: currencyAmountIn,
+      tokenOut: currencyOut,
+    }
   })
+  const result: Trade[] | undefined = query.data?.bestTradeExactIn
+  if (query.errors) {
+    query.errors.forEach(console.log)
+  }
+  return result!
+}
+
+export async function getBestTradeExactOut(
+  allowedPairs: Pair[],
+  currencyIn: Token,
+  currencyAmountOut: TokenAmount,
+  bestTradeOptions: BestTradeOptions | null,
+  client: Web3ApiClient,
+  ensUri: string
+): Promise<Trade[]> {
+  const query = await client.query<{
+    bestTradeExactOut: Trade[]
+  }>({
+    uri: ensUri,
+    query: `query {
+        bestTradeExactOut(
+          pairs: $pairs
+          tokenIn: $tokenIn
+          amountOut: $amountOut
+          options: ${bestTradeOptions ?? "null"}
+         )
+       }`,
+    variables: {
+      pairs: allowedPairs,
+      tokenIn: currencyIn,
+      amountOut: currencyAmountOut,
+    }
+  })
+  const result: Trade[] | undefined = query.data?.bestTradeExactOut
+  if (query.errors) {
+    query.errors.forEach(console.log)
+  }
+  return result!
 }

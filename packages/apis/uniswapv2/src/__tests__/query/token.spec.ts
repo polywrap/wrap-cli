@@ -1,6 +1,8 @@
 import { tokenAmountEquals, tokenEquals, tokenSortsBefore } from "../../query";
 import { ChainId } from "../../query/w3";
 
+import { BigInt } from "as-bigint";
+
 const ADDRESS_ONE = '0x0000000000000000000000000000000000000001'
 const ADDRESS_TWO = '0x0000000000000000000000000000000000000002'
 
@@ -145,7 +147,7 @@ describe('tokenAmountEquals', () => {
             symbol: null
           }
         },
-        amount: "1000"
+        amount: BigInt.fromString("1000")
       },
       tokenAmount1: {
         token: {
@@ -157,7 +159,7 @@ describe('tokenAmountEquals', () => {
             symbol: null
           }
         },
-        amount: "1000"
+        amount: BigInt.fromString("1000")
       },
     });
 
@@ -176,7 +178,7 @@ describe('tokenAmountEquals', () => {
             symbol: null
           }
         },
-        amount: "1001"
+        amount: BigInt.fromString("1001")
       },
       tokenAmount1: {
         token: {
@@ -188,7 +190,7 @@ describe('tokenAmountEquals', () => {
             symbol: null
           }
         },
-        amount: "1000"
+        amount: BigInt.fromString("1000")
       },
     });
 
@@ -207,7 +209,7 @@ describe('tokenAmountEquals', () => {
             symbol: null
           }
         },
-        amount: "1000"
+        amount: BigInt.fromString("1000")
       },
       tokenAmount1: {
         token: {
@@ -219,7 +221,7 @@ describe('tokenAmountEquals', () => {
             symbol: null
           }
         },
-        amount: "1000"
+        amount: BigInt.fromString("1000")
       },
     });
 
