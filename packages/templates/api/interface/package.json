@@ -1,6 +1,6 @@
 {
-  "name": "resolver-interface",
-  "description": "Web3API Resolver Interface",
+  "name": "templates-api-interface",
+  "description": "Web3API Interface Example",
   "private": true,
   "version": "0.0.1-prealpha.24",
   "scripts": {
