@@ -294,9 +294,10 @@ export class ReadDecoder extends Read {
     const size = this.readArrayLength();
     const a = new Array<T>();
     for (let i: u32 = 0; i < size; i++) {
-      // TODO: context
+      this._context.push("array[" + i.toString() + "]");
       const item = fn(this);
       a.push(item);
+      this._context.pop();
     }
     return a;
   }
@@ -331,9 +332,11 @@ export class ReadDecoder extends Read {
     const size = this.readMapLength();
     const m = new Map<K, V>();
     for (let i: u32 = 0; i < size; i++) {
+      this._context.push("map[" + i.toString() + "]");
       const key = key_fn(this);
       const value = value_fn(this);
       m.set(key, value);
+      this._context.pop();
     }
     return m;
   }

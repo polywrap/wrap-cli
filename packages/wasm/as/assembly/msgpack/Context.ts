@@ -1,5 +1,5 @@
-// Context is stores MsgPack serialization context in a stack, and prints it in a clear format
-
+// Context stores debug information in a stack,
+// and prints it in a clear format
 export class Context {
   private description: string;
   private nodes: Array<Node> = [];

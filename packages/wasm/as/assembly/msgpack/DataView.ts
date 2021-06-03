@@ -1,5 +1,4 @@
 import {
-  E_INDEXOUTOFRANGE,
   E_INVALIDLENGTH,
   BLOCK_MAXSIZE,
   throwIndexOutOfRange
