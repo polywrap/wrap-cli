@@ -31,10 +31,10 @@ export class Context {
         "Null pointer exception: tried to pop an item from an empty Context stack"
       );
     }
-    const item: string = this.first!.item;
-    const type: string = this.first!.type;
-    const info: string = this.first!.info;
-    this.first = this.first!.next;
+    const item: string = this.first!.item; // eslint disable-line @typescript-eslint/no-non-null-assertion
+    const type: string = this.first!.type; // eslint disable-line @typescript-eslint/no-non-null-assertion
+    const info: string = this.first!.info; // eslint disable-line @typescript-eslint/no-non-null-assertion
+    this.first = this.first!.next; // eslint disable-line @typescript-eslint/no-non-null-assertion
     this.n--;
     return item + ": " + type + (info == "" ? "" : " >> " + info);
   }

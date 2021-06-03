@@ -3730,6 +3730,18 @@
     "@uniswap/lib" "1.1.1"
     "@uniswap/v2-core" "1.0.0"
 
+"@web3api/sha3-plugin-js@file:./packages/js/plugins/sha3":
+  version "0.0.1-prealpha.24"
+  dependencies:
+    "@web3api/core-js" "0.0.1-prealpha.24"
+    js-sha3 "0.8.0"
+
+"@web3api/uts46-plugin-js@file:./packages/js/plugins/idna-uts":
+  version "0.0.1-prealpha.24"
+  dependencies:
+    "@web3api/core-js" "0.0.1-prealpha.24"
+    idna-uts46-hx "3.4.0"
+
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.8.5.tgz#51b1c5fe6576a34953bf4b253df9f0d490d9e359"

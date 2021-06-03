@@ -278,8 +278,12 @@ export class WasmWeb3Api extends Api {
             return {
               error: new Error(
                 `WasmWeb3Api: Thread aborted execution.\nURI: ${this._uri.uri}\n` +
-                `Module: ${module}\nMethod: ${method}\n` +
-                `Input: ${JSON.stringify(input, null, 2)}\nMessage: ${abortMessage}\n`
+                  `Module: ${module}\nMethod: ${method}\n` +
+                  `Input: ${JSON.stringify(
+                    input,
+                    null,
+                    2
+                  )}\nMessage: ${abortMessage}\n`
               ),
             };
           }

@@ -87,14 +87,13 @@ export class PluginWeb3Api extends Api {
               } catch (e) {
                 throw Error(
                   `TEST_PLUGIN msgpack encode failure.` +
-                  `uri: ${this._uri.uri}\nmodule: ${module}\n` +
-                  `method: ${method}\n` +
-                  `input: ${JSON.stringify(jsInput, null, 2)}\n` +
-                  `result: ${JSON.stringify(data, null, 2)}\n` +
-                  `exception: ${e}`
+                    `uri: ${this._uri.uri}\nmodule: ${module}\n` +
+                    `method: ${method}\n` +
+                    `input: ${JSON.stringify(jsInput, null, 2)}\n` +
+                    `result: ${JSON.stringify(data, null, 2)}\n` +
+                    `exception: ${e}`
                 );
               }
-              
             }
 
             if (resultFilter) {
