@@ -1,6 +1,6 @@
 {
   "name": "@web3api/dev-server",
-  "version": "0.0.1-prealpha.24",
+  "version": "0.0.1-prealpha.25",
   "private": true,
   "main": "build/index.js",
   "scripts": {

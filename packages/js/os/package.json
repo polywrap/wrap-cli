@@ -1,7 +1,7 @@
 {
   "name": "@web3api/os-js",
   "description": "Web3API Javascript OS Utilities",
-  "version": "0.0.1-prealpha.24",
+  "version": "0.0.1-prealpha.25",
   "license": "MIT",
   "repository": {
     "type": "git",

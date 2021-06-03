@@ -2,7 +2,7 @@
   "name": "@web3api/console",
   "description": "Web3API for logging",
   "private": true,
-  "version": "0.0.1-prealpha.24",
+  "version": "0.0.1-prealpha.25",
   "scripts": {
     "build": "w3 build",
     "deploy": "w3 build --ipfs http://127.0.0.1:5001 --test-ens console.eth",
@@ -12,8 +12,8 @@
     "test:env:down": "w3 test-env down"
   },
   "devDependencies": {
-    "@web3api/cli": "0.0.1-prealpha.24",
-    "@web3api/wasm-as": "0.0.1-prealpha.24",
+    "@web3api/cli": "0.0.1-prealpha.25",
+    "@web3api/wasm-as": "0.0.1-prealpha.25",
     "js-yaml": "3.14.0"
   }
 }
