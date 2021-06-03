@@ -5,7 +5,8 @@ import {
   WriteEncoder,
   Write,
   Nullable,
-  BigInt
+  BigInt,
+  Context
 } from "@web3api/wasm-as";
 import * as Types from "..";
 {{#methods}}
@@ -17,8 +18,9 @@ export class Input_{{name}} {
 }
 
 export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
+  const context: Context =  new Context("Deserializing query-type: {{name}}");
   {{#arguments.length}}
-  const reader = new ReadDecoder(argsBuf);
+  const reader = new ReadDecoder(argsBuf, context);
   var numFields = reader.readMapLength();
 
   {{#arguments}}
@@ -42,8 +44,10 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
     numFields--;
     const field = reader.readString();
 
+    reader.context().push(field, "unknown", "searching for property type");
     {{#arguments}}
     {{^first}}else {{/first}}if (field == "{{name}}") {
+      reader.context().push(field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property");
       {{#scalar}}
       _{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
       {{/scalar}}
@@ -63,8 +67,10 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
       {{#required}}
       _{{name}}Set = true;
       {{/required}}
+      reader.context().pop();
     }
     {{/arguments}}
+    reader.context().pop();
   }
 
   {{#arguments}}
@@ -75,7 +81,7 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
   {{#object}}
   if (!_{{name}} || !_{{name}}Set) {
   {{/object}}
-    throw new Error("Missing required argument: '{{name}}: {{type}}'");
+    throw new Error(reader.context().printWithContext("Missing required argument: '{{name}}: {{type}}'"));
   }
   {{/required}}
   {{/arguments}}
@@ -89,16 +95,19 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
 }
 
 export function serialize{{name}}Result(result: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}): ArrayBuffer {
-  const sizer = new WriteSizer();
+  const sizerContext: Context = new Context("Serializing (sizing) query-type: {{name}}");
+  const sizer = new WriteSizer(sizerContext);
   write{{name}}Result(sizer, result);
   const buffer = new ArrayBuffer(sizer.length);
-  const encoder = new WriteEncoder(buffer);
+  const encoderContext: Context = new Context("Serializing (encoding) query-type: {{name}}");
+  const encoder = new WriteEncoder(buffer, encoderContext);
   write{{name}}Result(encoder, result);
   return buffer;
 }
 
 export function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}): void {
   {{#return}}
+  writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
   {{#scalar}}
   writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(result);
   {{/scalar}}
@@ -127,6 +136,7 @@ export function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}
   }
   {{/required}}
   {{/object}}
+  writer.context().pop();
   {{/return}}
 }
 {{/methods}}
