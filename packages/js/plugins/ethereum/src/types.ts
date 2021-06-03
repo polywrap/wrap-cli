@@ -42,16 +42,16 @@ export interface TxReceipt {
 
 export interface TxResponse {
   hash: string;
-  blockNumber?: number;
-  blockHash?: string;
-  timestamp?: number;
-  confirmations: number;
-  from: string;
-  raw?: string;
-  nonce: string;
-  gasLimit: string;
-  gasPrice: string;
-  data: string;
+  // blockNumber?: number;
+  // blockHash?: string;
+  // timestamp?: number;
+  // confirmations: number;
+  // from: string;
+  // raw?: string;
+  // nonce: string;
+  // gasLimit: string;
+  // gasPrice: string;
+  // data: string;
 }
 
 export interface TxRequest {

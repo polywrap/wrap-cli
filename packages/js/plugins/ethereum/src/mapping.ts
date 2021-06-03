@@ -45,17 +45,23 @@ export const mapTxResponse = (
   response: ethers.providers.TransactionResponse
 ): TxResponse => ({
   hash: response.hash,
-  blockNumber: response.blockNumber,
-  blockHash: response.blockHash,
-  timestamp: response.timestamp,
-  confirmations: response.confirmations,
-  from: response.from,
-  raw: response.raw,
-  nonce: response.nonce.toString(),
-  gasLimit: response.gasLimit.toString(),
-  gasPrice: response.gasPrice.toString(),
-  data: response.data.toString(),
 });
+
+// export const mapTxResponse = (
+//   response: ethers.providers.TransactionResponse
+// ): TxResponse => ({
+//   hash: response.hash,
+//   blockNumber: response.blockNumber,
+//   blockHash: response.blockHash,
+//   timestamp: response.timestamp,
+//   confirmations: response.confirmations,
+//   from: response.from,
+//   raw: response.raw,
+//   nonce: response.nonce.toString(),
+//   gasLimit: response.gasLimit.toString(),
+//   gasPrice: response.gasPrice.toString(),
+//   data: response.data.toString(),
+// });
 
 export const mapTxRequest = (
   request: ethers.providers.TransactionRequest

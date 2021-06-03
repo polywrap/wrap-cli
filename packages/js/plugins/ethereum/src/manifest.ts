@@ -23,16 +23,6 @@ type TxReceipt {
 
 type TxResponse {
   hash: String!
-  blockNumber: Int
-  blockHash: String
-  timestamp: Int
-  confirmations: Int!
-  from: String!
-  raw: String
-  nonce: String!
-  gasLimit: String!
-  gasPrice: String!
-  data: String!
 }
 
 type TxRequest {

@@ -1,6 +1,16 @@
 import { buildAndDeployApi, initTestEnvironment, stopTestEnvironment } from "@web3api/test-env-js";
 import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
-import { ChainId, Pair, Token, TokenAmount, Trade, TradeOptions, SwapParameters, TradeType, TxReceipt } from "./types";
+import {
+  ChainId,
+  Pair,
+  Token,
+  TokenAmount,
+  Trade,
+  TradeOptions,
+  SwapParameters,
+  TradeType,
+  TxResponse
+} from "./types";
 import path from "path";
 import {
   getBestTradeExactIn,
@@ -79,7 +89,7 @@ describe("Router", () => {
 
     // approve token transfers
     for (let token of tokens) {
-      const txReceipt = await client.query<{approve: TxReceipt}>({
+      const txResponse = await client.query<{approve: TxResponse}>({
         uri: ensUri,
         query: `
         mutation {
@@ -92,13 +102,12 @@ describe("Router", () => {
           token: token,
         },
       });
-      if (txReceipt.errors) {
+      if (txResponse.errors) {
         console.log("approval error(s) for " + token.currency.symbol)
-        txReceipt.errors.forEach(console.log)
+        txResponse.errors.forEach(console.log)
       }
-      const approvedHash: string = txReceipt.data?.approve.transactionHash ?? "";
-      const status: number = txReceipt.data?.approve.status ?? 1;
-      if (!approvedHash || !status) {
+      const approvedHash: string = txResponse.data?.approve.hash ?? "";
+      if (!approvedHash) {
         throw new Error("Failed to approve token: " + token.currency.symbol);
       }
     }
@@ -360,7 +369,7 @@ describe("Router", () => {
     }
   });
 
-  it.only("Should successfully estimate swap call gas", async () => {
+  it("Should successfully estimate swap call gas", async () => {
     const token0 = ethToken;
     const token1 = tokens.filter(token => token.currency.symbol === "WBTC")[0];
     const tokenAmount: TokenAmount = {

@@ -1,7 +1,6 @@
 import {
   ChainId,
   Ethereum_Mutation,
-  Ethereum_TxReceipt,
   Input_execCall,
   getChainIdKey,
   Input_exec,
@@ -12,6 +11,7 @@ import {
   SwapParameters,
   TxOverrides,
   Pair,
+  Ethereum_TxResponse,
 } from "./w3";
 import {
   bestTradeExactIn,
@@ -28,7 +28,7 @@ import { BigInt } from "@web3api/wasm-as";
 const MAX_UINT_256 =
   "115792089237316195423570985008687907853269984665640564039457584007913129639935";
 
-export function exec(input: Input_exec): Ethereum_TxReceipt {
+export function exec(input: Input_exec): Ethereum_TxResponse {
   const swapParameters: SwapParameters = swapCallParameters({
     trade: input.trade,
     tradeOptions: input.tradeOptions,
@@ -40,7 +40,7 @@ export function exec(input: Input_exec): Ethereum_TxReceipt {
   });
 }
 
-export function execCall(input: Input_execCall): Ethereum_TxReceipt {
+export function execCall(input: Input_execCall): Ethereum_TxResponse {
   const swapParameters: SwapParameters = input.parameters;
   const chainId: ChainId = input.chainId;
   const txOverrides: TxOverrides =
@@ -52,26 +52,24 @@ export function execCall(input: Input_execCall): Ethereum_TxReceipt {
   const gasLimit: string | null =
     txOverrides.gasLimit === null ? null : txOverrides.gasLimit!.toString();
 
-  const txReceipt: Ethereum_TxReceipt = Ethereum_Mutation.callContractMethodAndWait(
-    {
-      address: UNISWAP_ROUTER_CONTRACT,
-      method: getSwapMethodAbi(swapParameters.methodName),
-      args: swapParameters.args,
-      connection: {
-        node: null,
-        networkNameOrChainId: getChainIdKey(chainId),
-      },
-      txOverrides: {
-        value: swapParameters.value,
-        gasPrice: gasPrice,
-        gasLimit: gasLimit,
-      },
-    }
-  );
-  return txReceipt;
+  const txResponse: Ethereum_TxResponse = Ethereum_Mutation.callContractMethod({
+    address: UNISWAP_ROUTER_CONTRACT,
+    method: getSwapMethodAbi(swapParameters.methodName),
+    args: swapParameters.args,
+    connection: {
+      node: null,
+      networkNameOrChainId: getChainIdKey(chainId),
+    },
+    txOverrides: {
+      value: swapParameters.value,
+      gasPrice: gasPrice,
+      gasLimit: gasLimit,
+    },
+  });
+  return txResponse;
 }
 
-export function swap(input: Input_swap): Ethereum_TxReceipt {
+export function swap(input: Input_swap): Ethereum_TxResponse {
   let trade: Trade;
   const pair: Pair = fetchPairData({
     token0: input.tokenIn,
@@ -107,7 +105,7 @@ export function swap(input: Input_swap): Ethereum_TxReceipt {
   });
 }
 
-export function approve(input: Input_approve): Ethereum_TxReceipt {
+export function approve(input: Input_approve): Ethereum_TxResponse {
   const amount: BigInt =
     input.amount === null ? BigInt.fromString(MAX_UINT_256) : input.amount!;
   const txOverrides: TxOverrides =
@@ -119,22 +117,20 @@ export function approve(input: Input_approve): Ethereum_TxReceipt {
   const gasLimit: string | null =
     txOverrides.gasLimit === null ? null : txOverrides.gasLimit!.toString();
 
-  const txReceipt: Ethereum_TxReceipt = Ethereum_Mutation.callContractMethodAndWait(
-    {
-      address: input.token.address,
-      method:
-        "function approve(address spender, uint value) external returns (bool)",
-      args: [UNISWAP_ROUTER_CONTRACT, toHex(amount)],
-      connection: {
-        node: null,
-        networkNameOrChainId: getChainIdKey(input.token.chainId),
-      },
-      txOverrides: {
-        value: null,
-        gasPrice: gasPrice,
-        gasLimit: gasLimit,
-      },
-    }
-  );
-  return txReceipt;
+  const txResponse: Ethereum_TxResponse = Ethereum_Mutation.callContractMethod({
+    address: input.token.address,
+    method:
+      "function approve(address spender, uint value) external returns (bool)",
+    args: [UNISWAP_ROUTER_CONTRACT, toHex(amount)],
+    connection: {
+      node: null,
+      networkNameOrChainId: getChainIdKey(input.token.chainId),
+    },
+    txOverrides: {
+      value: null,
+      gasPrice: gasPrice,
+      gasLimit: gasLimit,
+    },
+  });
+  return txResponse;
 }
