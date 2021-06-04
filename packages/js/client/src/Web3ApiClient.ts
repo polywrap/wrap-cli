@@ -18,6 +18,7 @@ import {
   InvokeApiResult,
   Manifest,
   sanitizeUriRedirects,
+  getImplementations
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -210,6 +211,17 @@ export class Web3ApiClient implements Client {
         }
 
         return api;
+      }
+    );
+
+    return run(uri);
+  }
+
+  public getImplementations(uri: Uri): Uri[] {
+    const run = Tracer.traceFunc(
+      "Web3ApiClient: getImplementations",
+      (uri: Uri): Uri[] => {
+        return getImplementations(uri, this.redirects());
       }
     );
 
