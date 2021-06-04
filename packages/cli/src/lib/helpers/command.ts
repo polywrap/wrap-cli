@@ -2,7 +2,7 @@ import { exec, ExecException } from "child_process";
 
 export async function runCommand(
   command: string,
-  quiet = false,
+  quiet = true,
   env = undefined
 ): Promise<{ stdout: string, stderr: string }> {
   if (!quiet) {
@@ -17,13 +17,14 @@ export async function runCommand(
         stderr: string
       ) => {
         if (err) {
-          console.error(err);
+          console.error(stdout);
+          console.error(stderr);
           reject(err);
         } else {
           if (!quiet) {
             // the *entire* stdout and stderr (buffered)
-            console.log(`stdout: ${stdout}`);
-            console.log(`stderr: ${stderr}`);
+            console.log(stdout);
+            console.error(stderr);
           }
 
           resolve({ stdout, stderr });

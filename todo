@@ -25,10 +25,10 @@ x output build image ID
 # Misc Cleanup
 x intl strings
 x update template projects
-- docker command failure cli output (asc compiler errors)
-- better output text
-- - --verbose (docker logs)
-- 1 run cli command (function)
+x docker command failure cli output (asc compiler errors)
+x better output text
+x x --verbose (docker logs)
+x 1 run cli command (function)
 - e2e tests
 
 # test

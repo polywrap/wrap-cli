@@ -32,6 +32,7 @@ ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -o, --output-dir <${pathStr}>            ${intlMsg.commands_build_options_o()}
   -e, --test-ens <[${addrStr},]${domStr}>  ${intlMsg.commands_build_options_e()}
   -w, --watch                        ${intlMsg.commands_build_options_w()}
+  -v, --verbose                      ${intlMsg.commands_build_options_v()}
 `;
 
 export default {
@@ -40,14 +41,15 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
 
-    const { h, i, o, w, e } = parameters.options;
-    let { help, ipfs, outputDir, watch, testEns } = parameters.options;
+    const { h, i, o, w, e, v } = parameters.options;
+    let { help, ipfs, outputDir, watch, testEns, verbose } = parameters.options;
 
     help = help || h;
     ipfs = ipfs || i;
     outputDir = outputDir || o;
     watch = watch || w;
     testEns = testEns || e;
+    verbose = verbose || v;
 
     let manifestPath;
     try {
@@ -62,6 +64,8 @@ export default {
           help,
           w,
           watch,
+          v,
+          verbose,
         }
       );
     } catch (e) {
@@ -162,6 +166,7 @@ export default {
 
     const project = new Project({
       web3apiManifestPath: manifestPath,
+      quiet: verbose ? false : true
     });
 
     const schemaComposer = new SchemaComposer({
