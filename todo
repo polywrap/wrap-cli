@@ -14,6 +14,9 @@ x mustache template? yes.
 x x use this for includes
 x x use this building query and/or mutation
 x Remove ONBUILD in the "leaf" image
+- validate exports
+
+# Future
 - should we treat the build images like we do the services
   for the test-env? making them seperate npm packages?
 - - (yes, but do after mege, use test-env)
@@ -52,3 +55,5 @@ remove "buildDir"
 - Project w/ dockerfile
 - Project w/ web3api.yaml in sub directory
 - Project w/ missing config variable
+- validation: invalid exports (empty wasm module)
+- 

@@ -183,12 +183,11 @@ export class Compiler {
     await this._buildSourcesInDocker();
 
     // Validate the WASM exports
-    // TODO
-    /*await Promise.all(
+    await Promise.all(
       modulesToBuild.map(
         (module) => this._validateExports(module, outputDir)
       )
-    );*/
+    );
 
     // Output the schema & manifest files
     writeFileSync(
@@ -287,7 +286,7 @@ export class Compiler {
     );
   }
 
-  /*private async _validateExports(moduleName: InvokableModules, buildDir: string) {
+  private async _validateExports(moduleName: InvokableModules, buildDir: string) {
     const wasmSource = fs.readFileSync(path.join(buildDir, `${moduleName}.wasm`));
     const mod = await WebAssembly.compile(wasmSource);
     const memory = new WebAssembly.Memory({ initial: 1 });
@@ -317,7 +316,7 @@ export class Compiler {
         `No _w3_invoke is not exported from built ${moduleName} module`
       );
     }
-  }*/
+  }
 
   private _determineModulesToBuild(manifest: Web3ApiManifest): InvokableModules[] {
     const manifestMutation = manifest.modules.mutation;
