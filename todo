@@ -19,6 +19,7 @@ x Remove ONBUILD in the "leaf" image
 - - (yes, but do after mege, use test-env)
 
 # Misc Cleanup
+- docker command failure cli output (asc compiler errors)
 - intl strings
 - 1 run cli command (function)
 - e2e tests

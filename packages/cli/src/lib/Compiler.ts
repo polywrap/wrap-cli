@@ -7,7 +7,8 @@ import {
   withSpinner,
   outputManifest,
   generateDockerfile,
-  createBuildImage
+  createBuildImage,
+  copyArtifactsFromBuildImage
 } from "./helpers";
 import { intlMsg } from "./intl";
 
@@ -245,7 +246,7 @@ export class Compiler {
   }
 
   private async _buildSourcesInDocker() {
-    const { project } = this._config;
+    const { project, outputDir } = this._config;
     const buildManifestDir = await project.getBuildManifestDir();
     const buildManifest = await project.getBuildManifest();
     const imageName = buildManifest?.docker?.name || "web3api-build";
@@ -278,11 +279,12 @@ export class Compiler {
       project.quiet
     );
 
-    /*await copyArtifactsFromBuildImage(
+    await copyArtifactsFromBuildImage(
       outputDir,
+      await project.getWeb3ApiArtifacts(),
       imageName,
       project.quiet
-    );*/
+    );
   }
 
   /*private async _validateExports(moduleName: InvokableModules, buildDir: string) {

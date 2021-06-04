@@ -8,18 +8,25 @@ import fs from "fs";
 
 export async function copyArtifactsFromBuildImage(
   outputDir: string,
+  buildArtifacts: string[],
   imageName: string,
   quiet = true
 ): Promise<void> {
+  // Make sure the interactive terminal name is available
+  await runCommand(`docker rm -f root-${imageName}`, quiet)
+    .catch((e) => {});
+
   await runCommand(
     `docker create -ti --name root-${imageName} ${imageName}`,
     quiet
   );
 
-  await runCommand(
-    `docker cp root-${imageName}:/project/build ${outputDir}`,
-    quiet
-  );
+  for (const buildArtifact of buildArtifacts) {
+    await runCommand(
+      `docker cp root-${imageName}:/project/build/${buildArtifact} ${outputDir}`,
+      quiet
+    );
+  }
 
   await runCommand(`docker rm -f root-${imageName}`, quiet);
 }

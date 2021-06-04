@@ -77,6 +77,20 @@ export class Project {
     return web3apiModules;
   }
 
+  public async getWeb3ApiArtifacts(): Promise<string[]> {
+    const web3apiManifest = await this.getWeb3ApiManifest();
+    let web3apiArtifacts = [];
+
+    if (web3apiManifest.modules.mutation) {
+      web3apiArtifacts.push("mutation.wasm");
+    }
+    if (web3apiManifest.modules.query) {
+      web3apiArtifacts.push("query.wasm");
+    }
+
+    return web3apiArtifacts;
+  }
+
   /// Web3API Build Manifest (web3api.build.yaml)
 
   public async getBuildManifestPath(): Promise<string> {
