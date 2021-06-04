@@ -183,7 +183,13 @@ export class Compiler {
     }
 
     // Build the sources
-    await this._buildSourcesInDocker();
+    const dockerImageId = await this._buildSourcesInDocker();
+    const outputBuildManifest: BuildManifest = {
+      format: "0.0.1-prealpha.2",
+      docker: {
+        buildImageId: dockerImageId
+      }
+    };
 
     // Validate the WASM exports
     await Promise.all(
@@ -197,7 +203,7 @@ export class Compiler {
       "utf-8"
     );
     await outputManifest(web3apiManifest, `${outputDir}/web3api.yaml`);
-    await outputManifest(buildManifest, `${outputDir}/web3api.build.yaml`);
+    await outputManifest(outputBuildManifest, `${outputDir}/web3api.build.yaml`);
   }
 
   private _getGenerationDirectory(entryPoint: string): string {
@@ -245,7 +251,7 @@ export class Compiler {
     return filesWritten;
   }
 
-  private async _buildSourcesInDocker() {
+  private async _buildSourcesInDocker(): Promise<string> {
     const { project, outputDir } = this._config;
     const buildManifestDir = await project.getBuildManifestDir();
     const buildManifest = await project.getBuildManifest();
@@ -269,7 +275,7 @@ export class Compiler {
       dockerfile = generateDockerfile(dockerfile, buildManifest.config || {});
     }
 
-    await createBuildImage(
+    const dockerImageId = await createBuildImage(
       project.getWeb3ApiManifestDir(),
       imageName,
       dockerfile,
@@ -282,6 +288,8 @@ export class Compiler {
       imageName,
       project.quiet
     );
+
+    return dockerImageId;
   }
 
   private async _validateExports(

@@ -34,6 +34,18 @@ export function dockerfileName(value: unknown): boolean {
   return true;
 }
 
+export function dockerImageId(value: unknown): boolean {
+  if (typeof value !== "string") {
+    return false;
+  }
+
+  if (value.indexOf("sha256:") === -1) { 
+    return false;
+  }
+
+  return true;
+}
+
 export function wasmLanguage(language: unknown): boolean {
   if (typeof language !== "string") {
     return false;

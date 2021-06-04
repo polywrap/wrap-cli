@@ -11,7 +11,7 @@ export interface BuildManifest {
   docker?: {
     name?: string;
     dockerfile?: string;
-    nameDigest?: string;
+    buildImageId?: string;
   };
   config?: {
     [k: string]: unknown;

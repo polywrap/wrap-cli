@@ -15,6 +15,7 @@ x x use this for includes
 x x use this building query and/or mutation
 x Remove ONBUILD in the "leaf" image
 x validate exports
+x output build image ID
 
 # Future
 - should we treat the build images like we do the services
@@ -23,7 +24,7 @@ x validate exports
 
 # Misc Cleanup
 x intl strings
-- update template projects
+x update template projects
 - docker command failure cli output (asc compiler errors)
 - better output text
 - - --verbose (docker logs)
@@ -40,3 +41,4 @@ x intl strings
 - validate ENV variables are being detected and required as needed (how to differentiate between optional and required?)
 - - docker should do this, make sure. Mayybe there's another command we can run before to verify all env vars exist?
 - - docker validate? docker-compose config
+- missing assemblyscript dependency

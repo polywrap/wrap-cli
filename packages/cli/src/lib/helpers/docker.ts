@@ -4,6 +4,7 @@ import { writeFileSync } from "@web3api/os-js";
 import Mustache from "mustache";
 import path from "path";
 import fs from "fs";
+import { intlMsg } from "../intl";
 
 export async function copyArtifactsFromBuildImage(
   outputDir: string,
@@ -35,11 +36,26 @@ export async function createBuildImage(
   imageName: string,
   dockerfile: string,
   quiet = true
-): Promise<void> {
+): Promise<string> {
+  // Build the docker image
   await runCommand(
     `docker build -f ${dockerfile} -t ${imageName} ${rootDir}`,
     quiet
   );
+
+  // Get the docker image ID
+  const { stdout } = await runCommand(
+    `docker image inspect ${imageName} -f "{{.ID}}"`,
+    quiet
+  );
+
+  if (stdout.indexOf("sha256:") === -1) {
+    throw Error(
+      intlMsg.lib_docker_invalidImageId({ imageId: stdout })
+    );
+  }
+
+  return stdout;
 }
 
 export function generateDockerfile(

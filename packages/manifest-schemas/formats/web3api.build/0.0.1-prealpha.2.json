@@ -22,8 +22,9 @@
           "type": "string",
           "format": "dockerfileName"
         },
-        "nameDigest": {
-          "type": "string"
+        "buildImageId": {
+          "type": "string",
+          "format": "dockerImageId"
         }
       }
     },

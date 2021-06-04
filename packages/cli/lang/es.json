@@ -117,5 +117,6 @@
   "lib_helpers_parameters_unexpectedValue": "Unexpected value provided for one or more of {options}. See --help for more information.",
   "lib_publishers_ipfsPublisher_urlMalformed": "IPFS URL Malformed",
   "lib_project_invalid_build_language": "Unrecognized build language {language}. No default manifest found at {defaultPath}",
-  "lib_watcher_alreadyWatching": "Watcher session is already in progress. Directory: {dir}"
+  "lib_watcher_alreadyWatching": "Watcher session is already in progress. Directory: {dir}",
+  "lib_docker_invalidImageId": "Invalid docker image ID returned: {imageId}"
 }

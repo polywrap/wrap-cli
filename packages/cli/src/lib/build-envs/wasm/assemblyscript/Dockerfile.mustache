@@ -24,12 +24,12 @@ COPY {{.}} .
 COPY {{.}} {{.}}
 {{/include}}
 
-{{#web3api_module_dirs}}
-# Build the module at {{.}}
-RUN ./node_modules/.bin/asc {{.}}/w3/entry.ts \
+{{#web3api_modules}}
+# Build the module at {{dir}}
+RUN ./node_modules/.bin/asc {{dir}}/w3/entry.ts \
     --path ./node_modules \
-    --outFile ./build/query.wasm \
-    --use abort=src/query/w3/entry/w3Abort \
+    --outFile ./build/{{name}}.wasm \
+    --use abort={{dir}}/w3/entry/w3Abort \
     --optimize --debug --importMemory \
     --runtime stub
-{{/web3api_module_dirs}}
+{{/web3api_modules}}

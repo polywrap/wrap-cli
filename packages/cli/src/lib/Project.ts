@@ -65,17 +65,27 @@ export class Project {
     return Promise.resolve(this._web3apiManifest);
   }
 
-  public async getWeb3ApiModuleDirs(): Promise<string[]> {
+  public async getWeb3ApiModules(): Promise<{
+    dir: string,
+    name: string,
+  }[]> {
     const web3apiManifest = await this.getWeb3ApiManifest();
-    const web3apiModules = [];
+    const web3apiModules: {
+      dir: string,
+      name: string,
+    }[] = [];
 
     if (web3apiManifest.modules.mutation) {
-      web3apiModules.push(
-        path.dirname(web3apiManifest.modules.mutation.module)
-      );
+      web3apiModules.push({
+        dir: path.dirname(web3apiManifest.modules.mutation.module).replace("./", ""),
+        name: "mutation"
+      });
     }
     if (web3apiManifest.modules.query) {
-      web3apiModules.push(path.dirname(web3apiManifest.modules.query.module));
+      web3apiModules.push({
+        dir: path.dirname(web3apiManifest.modules.query.module).replace("./", ""),
+        name: "query"
+      });
     }
 
     return web3apiModules;
@@ -138,7 +148,7 @@ export class Project {
 
       // Add default env variables
       const defaultConfig = {
-        web3api_module_dirs: await this.getWeb3ApiModuleDirs(),
+        web3api_modules: await this.getWeb3ApiModules(),
         web3api_manifests: await this.getManifestPaths(),
       };
 

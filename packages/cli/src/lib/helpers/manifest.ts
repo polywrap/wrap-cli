@@ -112,9 +112,13 @@ export async function outputManifest(
   const run = () => {
     const removeUndefinedProps = (
       obj: unknown
-    ): Record<string, unknown> | undefined => {
+    ): Record<string, unknown> | Array<unknown> | undefined => {
       if (!obj || typeof obj !== "object") {
         return undefined;
+      }
+
+      if (Array.isArray(obj)) {
+        return obj;
       }
 
       const input = obj as Record<string, unknown>;
