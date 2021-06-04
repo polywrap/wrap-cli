@@ -83,7 +83,7 @@ export class Compiler {
         if (buildMutation && !composed.mutation) {
           throwMissingSchema("mutation");
         }
-        
+
         if (buildQuery && !composed.query?.schema) {
           throw Error(`compileWeb3Api: Missing schema for the module "query"`);
         }
@@ -94,16 +94,19 @@ export class Compiler {
           );
         }
 
-        if(buildWasmModules) {
-               
+        if (buildWasmModules) {
           if (manifest.query && !manifest.query.module) {
-            throw Error(`compileWeb3Api: Missing module definition for the module "query"`);
+            throw Error(
+              `compileWeb3Api: Missing module definition for the module "query"`
+            );
           }
 
           if (manifest.mutation && !manifest.mutation.module) {
-            throw Error(`compileWeb3Api: Missing module definition for the module "mutation"`);
+            throw Error(
+              `compileWeb3Api: Missing module definition for the module "mutation"`
+            );
           }
-          
+
           const queryDirectory = manifest.query
             ? this._getGenerationDirectory(manifest.query.module!.file)
             : undefined;
@@ -141,7 +144,7 @@ export class Compiler {
         if (buildQuery) {
           const queryManifest = manifest as Required<typeof manifest>;
 
-          if(buildWasmModules) {
+          if (buildWasmModules) {
             await this._compileWasmModule(
               queryManifest.query.module!.file,
               "query",
@@ -151,14 +154,14 @@ export class Compiler {
             );
             queryManifest.query.module!.file = `./query.wasm`;
           }
-         
+
           queryManifest.query.schema.file = "./schema.graphql";
         }
 
         if (buildMutation) {
           const mutationManifest = manifest as Required<typeof manifest>;
 
-          if(buildWasmModules) {
+          if (buildWasmModules) {
             await this._compileWasmModule(
               mutationManifest.mutation.module!.file,
               "mutation",
@@ -168,7 +171,7 @@ export class Compiler {
             );
             mutationManifest.mutation.module!.file = `./mutation.wasm`;
           }
-      
+
           mutationManifest.mutation.schema.file = "./schema.graphql";
         }
       };
