@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { SchemaComposer, Project, CodeGenerator } from "../../lib";
 
-const rimraf = require("rimraf");
+import rimraf from "rimraf";
 
 describe("CodeGenerator validation", () => {
   const manifestPath = path.join(__dirname, "../project", "web3api.yaml");

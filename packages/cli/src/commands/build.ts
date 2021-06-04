@@ -178,7 +178,7 @@ export default {
     });
 
     const execute = async (): Promise<boolean> => {
-      compiler.clearCache();
+      compiler.reset();
       const result = await compiler.compile();
 
       if (!result) {
@@ -253,7 +253,7 @@ export default {
         // Watch for escape key presses
         print.info(
           `${intlMsg.commands_build_keypressListener_watching()}: ${
-            project.web3apiManifestDir
+            project.getWeb3ApiManifestDir()
           }`
         );
         print.info(intlMsg.commands_build_keypressListener_exit());
@@ -281,8 +281,8 @@ export default {
       // Watch the directory
       const watcher = new Watcher();
 
-      watcher.start(project.web3apiManifestDir, {
-        ignored: [outputDir + "/**", project.web3apiManifestDir + "/**/w3/**"],
+      watcher.start(project.getWeb3ApiManifestDir(), {
+        ignored: [outputDir + "/**", project.getWeb3ApiManifestDir() + "/**/w3/**"],
         ignoreInitial: true,
         execute: async (events: WatchEvent[]) => {
           // Log all of the events encountered

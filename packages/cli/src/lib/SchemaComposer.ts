@@ -107,7 +107,7 @@ export class SchemaComposer {
     return this._composerOutput;
   }
 
-  public clearCache(): void {
+  public reset(): void {
     this._composerOutput = undefined;
   }
 
@@ -140,7 +140,7 @@ export class SchemaComposer {
     return fs.readFileSync(
       path.isAbsolute(schemaPath)
         ? schemaPath
-        : path.join(this._config.project.web3apiManifestDir, schemaPath),
+        : path.join(this._config.project.getWeb3ApiManifestDir(), schemaPath),
       "utf-8"
     );
   }

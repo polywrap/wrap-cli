@@ -2,10 +2,10 @@
   "id": "BuildManifest_WasmAsExt",
   "type": "object",
   "required": [
-    "args"
+    "config"
   ],
   "properties": {
-    "args": {
+    "config": {
       "type": "object",
       "required": [
         "node_version",

@@ -12,8 +12,9 @@
     "test:env:down": "w3 test-env down"
   },
   "devDependencies": {
-    "@web3api/cli": "0.0.1-prealpha.23",
-    "@web3api/wasm-as": "0.0.1-prealpha.23",
+    "@web3api/cli": "0.0.1-prealpha.24",
+    "@web3api/wasm-as": "0.0.1-prealpha.24",
+    "assemblyscript": "0.19.1",
     "js-yaml": "3.14.0"
   }
 }

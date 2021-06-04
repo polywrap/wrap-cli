@@ -1,5 +1,11 @@
 import { runCommand } from "./command";
 
+import { writeFileSync } from "@web3api/os-js";
+
+import Mustache from "mustache";
+import path from "path";
+import fs from "fs";
+
 export async function copyArtifactsFromBuildImage(
   outputDir: string,
   imageName: string,
@@ -22,48 +28,22 @@ export async function createBuildImage(
   rootDir: string,
   imageName: string,
   dockerfile: string,
-  args?: Record<string, unknown>,
   quiet: boolean = true
 ): Promise<void> {
-  const dockerArgs = args ? formatBuildArgs(args) : "";
-
   await runCommand(
-    `docker build -f ${dockerfile} -t ${imageName} ${rootDir} ${dockerArgs}`,
+    `docker build -f ${dockerfile} -t ${imageName} ${rootDir}`,
     quiet
   );
 }
 
-function formatBuildArgs(
-  args: Record<string, unknown>,
-  prefix: string = ""
+export function generateDockerfile(
+  templatePath: string,
+  config: Record<string, unknown>
 ): string {
-  return Object.entries(args)
-    .filter(([, value]) => value !== undefined)
-    .map(([key, value]) => {
-      const type = typeof value;
-      let buildArg = `--build-arg ${prefix}${key}=`;
-
-      if (Array.isArray(value)) {
-        // TODO: support arrays of non-base types, like objects
-        buildArg += `"${value.join(",")}"`;
-      } else if (type === "string") {
-        buildArg += `"${value}"`;
-      } else if (type === "boolean") {
-        buildArg += `${value ? "true" : "false"}`;
-      } else if (type === "number") {
-        buildArg += `${(value as number).toString()}`;
-      } else if (type === "object") {
-        return formatBuildArgs(
-          value as Record<string, unknown>,
-          prefix ? `${prefix}_${key}_` : `${key}_`
-        );
-      } else {
-        throw Error(
-          `Unsupported BuildManifest.env variable "${key}". Type: ${type}, Value: ${value}`
-        );
-      }
-
-      return buildArg;
-    })
-    .join(" ");
+  const outputDir = path.dirname(templatePath);
+  const outputFilePath = path.join(outputDir, "Dockerfile");
+  const template = fs.readFileSync(templatePath, "utf-8");
+  const dockerfile = Mustache.render(template, config);
+  writeFileSync(outputFilePath, dockerfile, "utf-8");
+  return outputFilePath;
 }

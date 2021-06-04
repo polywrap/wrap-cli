@@ -6,8 +6,8 @@ import { SchemaComposer } from "./SchemaComposer";
 import {
   withSpinner,
   outputManifest,
-  createBuildImage,
-  //copyArtifactsFromBuildImage
+  generateDockerfile,
+  createBuildImage
 } from "./helpers";
 import { intlMsg } from "./intl";
 
@@ -53,9 +53,9 @@ export class Compiler {
     }
   }
 
-  public clearCache(): void {
-    this._config.project.clearCache();
-    this._config.schemaComposer.clearCache();
+  public reset(): void {
+    this._config.project.reset();
+    this._config.schemaComposer.reset();
   }
 
   private async _compileWeb3Api() {
@@ -182,6 +182,7 @@ export class Compiler {
     await this._buildSourcesInDocker();
 
     // Validate the WASM exports
+    // TODO
     /*await Promise.all(
       modulesToBuild.map(
         (module) => this._validateExports(module, outputDir)
@@ -203,7 +204,7 @@ export class Compiler {
 
     const absolute = path.isAbsolute(entryPoint)
       ? entryPoint
-      : path.join(project.web3apiManifestDir, entryPoint);
+      : path.join(project.getWeb3ApiManifestDir(), entryPoint);
     return `${path.dirname(absolute)}/w3`;
   }
 
@@ -248,15 +249,32 @@ export class Compiler {
     const buildManifestDir = await project.getBuildManifestDir();
     const buildManifest = await project.getBuildManifest();
     const imageName = buildManifest?.docker?.name || "web3api-build";
-    const dockerfile = buildManifest?.docker?.dockerfile
-      ? `${buildManifestDir}/${buildManifest?.docker?.dockerfile}`
-      : `${buildManifestDir}/Dockerfile`;
+    let dockerfile = buildManifest?.docker?.dockerfile
+      ? path.join(buildManifestDir, buildManifest?.docker?.dockerfile)
+      : path.join(buildManifestDir, "Dockerfile");
+
+    // If the dockerfile path isn't provided, generate it
+    if (!buildManifest?.docker?.dockerfile) {
+      // Make sure the default template is in the cached .w3/build/env folder
+      await project.cacheDefaultBuildManifestFiles();
+      dockerfile = generateDockerfile(
+        project.getCachePath("build/env/Dockerfile.mustache"),
+        buildManifest.config || { }
+      );
+    }
+
+    // If the dockerfile path contains ".mustache", generate
+    if (dockerfile.indexOf(".mustache") > -1) {
+      dockerfile = generateDockerfile(
+        dockerfile,
+        buildManifest.config || { }
+      );
+    }
 
     await createBuildImage(
-      project.web3apiManifestDir,
+      project.getWeb3ApiManifestDir(),
       imageName,
       dockerfile,
-      buildManifest.args,
       project.quiet
     );
 

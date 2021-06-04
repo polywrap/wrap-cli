@@ -3,6 +3,8 @@ import { loadWeb3ApiManifest, loadBuildManifest } from "./helpers";
 import { Web3ApiManifest, BuildManifest } from "@web3api/core-js";
 import path from "path";
 import fs from "fs";
+import rimraf from "rimraf";
+import copyfiles from "copyfiles";
 
 export interface ProjectConfig {
   web3apiManifestPath: string;
@@ -13,20 +15,69 @@ export interface ProjectConfig {
 export class Project {
   private _web3apiManifest: Web3ApiManifest | undefined;
   private _buildManifest: BuildManifest | undefined;
+  private _defaultBuildManifestCached: boolean = false;
 
   constructor(private _config: ProjectConfig) {}
-
-  get web3apiManifestPath(): string {
-    return this._config.web3apiManifestPath;
-  }
-
-  get web3apiManifestDir(): string {
-    return path.dirname(this.web3apiManifestPath);
-  }
 
   get quiet(): boolean {
     return !!this._config.quiet;
   }
+
+  public reset(): void {
+    this._web3apiManifest = undefined;
+    this._buildManifest = undefined;
+    this._defaultBuildManifestCached = false;
+  }
+
+  public async getManifestPaths(absolute: boolean = false): Promise<string[]> {
+    const web3apiManifestPath = this.getWeb3ApiManifestPath();
+    const root = path.dirname(web3apiManifestPath);
+
+    return [
+      absolute
+        ? web3apiManifestPath
+        : path.relative(root, web3apiManifestPath),
+      absolute
+        ? await this.getBuildManifestPath()
+        : path.relative(root, await this.getBuildManifestPath())
+    ];
+  }
+
+  /// Web3API Manifest (web3api.yaml)
+
+  public getWeb3ApiManifestPath(): string {
+    return this._config.web3apiManifestPath;
+  }
+
+  public getWeb3ApiManifestDir(): string {
+    return path.dirname(this.getWeb3ApiManifestPath());
+  }
+
+  public async getWeb3ApiManifest(): Promise<Web3ApiManifest> {
+    if (!this._web3apiManifest) {
+      this._web3apiManifest = await loadWeb3ApiManifest(
+        this.getWeb3ApiManifestPath(), this.quiet
+      );
+    }
+
+    return Promise.resolve(this._web3apiManifest);
+  }
+
+  public async getWeb3ApiModuleDirs(): Promise<string[]> {
+    const web3apiManifest = await this.getWeb3ApiManifest();
+    let web3apiModules = [];
+
+    if (web3apiManifest.modules.mutation) {
+      web3apiModules.push(path.dirname(web3apiManifest.modules.mutation.module));
+    }
+    if (web3apiManifest.modules.query) {
+      web3apiModules.push(path.dirname(web3apiManifest.modules.query.module));
+    }
+
+    return web3apiModules;
+  }
+
+  /// Web3API Build Manifest (web3api.build.yaml)
 
   public async getBuildManifestPath(): Promise<string> {
     const web3apiManifest = await this.getWeb3ApiManifest();
@@ -37,33 +88,27 @@ export class Project {
     }
     // If the web3api.yaml manifest specifies a custom build manifest
     else if (web3apiManifest.build) {
-      return `${this.web3apiManifestDir}/${web3apiManifest.build}`;
+      this._config.buildManifestPath = path.join(
+        this.getWeb3ApiManifestDir(),
+        web3apiManifest.build
+      );
+      return this._config.buildManifestPath;
     }
     // Use a default build manifest for the provided language
     else {
-      const language = web3apiManifest.language;
-      const path = `${__dirname}/build-images/${language}/web3api.build.yaml`;
+      await this.cacheDefaultBuildManifestFiles();
 
-      if (!fs.existsSync(path)) {
-        throw Error(`Unrecognized build language ${language}. No manifest found at ${path}.`);
-      }
-
-      return path;
+      // Return the cached manifest
+      this._config.buildManifestPath = path.join(
+        this.getCachePath("build/env"),
+        "web3api.build.yaml"
+      );
+      return this._config.buildManifestPath;
     }
   }
 
   public async getBuildManifestDir(): Promise<string> {
     return path.dirname(await this.getBuildManifestPath());
-  }
-
-  public async getWeb3ApiManifest(): Promise<Web3ApiManifest> {
-    if (!this._web3apiManifest) {
-      this._web3apiManifest = await loadWeb3ApiManifest(
-        this.web3apiManifestPath, this.quiet
-      );
-    }
-
-    return Promise.resolve(this._web3apiManifest);
   }
 
   public async getBuildManifest(): Promise<BuildManifest> {
@@ -74,39 +119,83 @@ export class Project {
       );
 
       // Add default env variables
-      const web3apiManifest = await this.getWeb3ApiManifest();
-      const defaultArgs = {
-        web3api_mutation_dir: web3apiManifest.modules.mutation
-          ? path.dirname(web3apiManifest.modules.mutation.module)
-          : undefined,
-        web3api_query_dir: web3apiManifest.modules.query
-        ? path.dirname(web3apiManifest.modules.query.module)
-        : undefined,
+      const defaultConfig = {
+        web3api_module_dirs: await this.getWeb3ApiModuleDirs(),
         web3api_manifests: await this.getManifestPaths()
       };
 
-      if (!this._buildManifest.args) {
-        this._buildManifest.args = defaultArgs;
+      if (!this._buildManifest.config) {
+        this._buildManifest.config = defaultConfig;
       } else {
-        this._buildManifest.args = {
-          ...this._buildManifest.args,
-          ...defaultArgs
+        this._buildManifest.config = {
+          ...this._buildManifest.config,
+          ...defaultConfig
         };
       }
     }
 
-    return Promise.resolve(this._buildManifest);
+    return this._buildManifest;
   }
 
-  public async getManifestPaths(): Promise<string[]> {
-    return [
-      this.web3apiManifestPath,
-      await this.getBuildManifestPath()
-    ];
+  public async cacheDefaultBuildManifestFiles(): Promise<void> {
+    if (this._defaultBuildManifestCached) {
+      return;
+    }
+
+    const language = (await this.getWeb3ApiManifest()).language;
+
+    const defaultPath = `${__dirname}/build-envs/${language}/web3api.build.yaml`;
+
+    if (!fs.existsSync(defaultPath)) {
+      throw Error(`Unrecognized build language ${language}. No default manifest found at ${defaultPath}`);
+    }
+
+    // Update the cache
+    this.removeCacheDir("build/env");
+    await this.copyFilesIntoCache("build/env/", `${__dirname}/build-envs/${language}/*`);
+    this._defaultBuildManifestCached = true;
   }
 
-  public clearCache(): void {
-    this._web3apiManifest = undefined;
-    this._buildManifest = undefined;
+  /// Cache (.w3 folder)
+
+  public getCacheDir(): string {
+    return path.join(this.getWeb3ApiManifestDir(), ".w3");
+  }
+
+  public readCacheFile(file: string): string | undefined {
+    const filePath = path.join(this.getCacheDir(), file);
+
+    if (!fs.existsSync(filePath)) {
+      return undefined;
+    }
+
+    return fs.readFileSync(filePath, "utf-8");
+  }
+
+  public removeCacheDir(subfolder: string): void {
+    const folderPath = path.join(this.getCacheDir(), subfolder);
+    rimraf.sync(folderPath);
+  }
+
+  public getCachePath(subpath: string): string {
+    return path.join(this.getCacheDir(), subpath);
+  }
+
+  public async copyFilesIntoCache(destSubfolder: string, sourceFolder: string): Promise<void> {
+    const dest = this.getCachePath(destSubfolder);
+
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(dest, { recursive: true });
+    }
+
+    await new Promise((resolve, reject) => {
+      copyfiles([sourceFolder, dest], { up: true }, (error) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve()
+        }
+      })
+    });
   }
 }
