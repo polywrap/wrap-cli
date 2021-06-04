@@ -22,7 +22,7 @@ x validate exports
 - - (yes, but do after mege, use test-env)
 
 # Misc Cleanup
-- intl strings
+x intl strings
 - update template projects
 - docker command failure cli output (asc compiler errors)
 - better output text

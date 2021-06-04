@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { loadWeb3ApiManifest, loadBuildManifest } from "./helpers";
+import { intlMsg } from "./intl";
 
 import { Web3ApiManifest, BuildManifest } from "@web3api/core-js";
 import path from "path";
@@ -165,7 +166,7 @@ export class Project {
 
     if (!fs.existsSync(defaultPath)) {
       throw Error(
-        `Unrecognized build language ${language}. No default manifest found at ${defaultPath}`
+        intlMsg.lib_project_invalid_build_language({ language, defaultPath })
       );
     }
 

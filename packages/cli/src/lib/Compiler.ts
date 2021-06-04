@@ -72,15 +72,13 @@ export class Compiler {
       const composerOutput = await schemaComposer.getComposedSchemas();
 
       if (!composerOutput.combined) {
-        throw Error(
-          `compileWeb3Api: ${intlMsg.lib_compiler_failedSchemaReturn()}`
-        );
+        throw Error(intlMsg.lib_compiler_failedSchemaReturn());
       }
 
       const modulesToBuild = this._determineModulesToBuild(web3apiManifest);
 
       if (modulesToBuild.length === 0) {
-        throw new Error("No modules to build declared");
+        throw new Error(intlMsg.lib_compiler_noModulesToBuild());
       }
 
       // Generate the schema bindings and output the built WASM modules
@@ -147,8 +145,7 @@ export class Compiler {
       queryDirectory === mutationDirectory
     ) {
       throw Error(
-        `compileWeb3Api: Duplicate code generation folder found "${queryDirectory}".` +
-          `Please ensure each module file is located in a unique directory.`
+        intlMsg.lib_compiler_dup_code_folder({ directory: queryDirectory })
       );
     }
 
@@ -314,12 +311,12 @@ export class Compiler {
     });
 
     if (!instance.exports._w3_init) {
-      throw Error(`_w3_init_ is not exported from built ${moduleName} module`);
+      throw Error(intlMsg.lib_compiler_missing_export__w3_init({ moduleName }));
     }
 
     if (!instance.exports._w3_invoke) {
       throw Error(
-        `No _w3_invoke is not exported from built ${moduleName} module`
+        intlMsg.lib_compiler_missing_export__w3_invoke({ moduleName })
       );
     }
   }
