@@ -1,21 +1,17 @@
-import {
-  AnyBuildManifest,
-  BuildManifestFormats
-} from ".";
+import { AnyBuildManifest, BuildManifestFormats } from ".";
 import * as Validators from "../../validators";
 
 import schema_0_0_1_prealpha_2 from "@web3api/manifest-schemas/formats/web3api.build/0.0.1-prealpha.2.json";
-import { Tracer } from "@web3api/tracing-js"
-
+import { Tracer } from "@web3api/tracing-js";
 import {
   Schema,
   Validator,
   ValidationError,
-  ValidatorResult
+  ValidatorResult,
 } from "jsonschema";
 
 type BuildManifestSchemas = {
-  [key in BuildManifestFormats]: Schema | undefined
+  [key in BuildManifestFormats]: Schema | undefined;
 };
 
 const schemas: BuildManifestSchemas = {
@@ -36,14 +32,20 @@ export const validateBuildManifest = Tracer.traceFunc(
     const schema = schemas[manifest.format as BuildManifestFormats];
 
     if (!schema) {
-      throw Error(`Unrecognized BuildManifest schema format "${manifest.format}"`);
+      throw Error(
+        `Unrecognized BuildManifest schema format "${manifest.format}"`
+      );
     }
 
     const throwIfErrors = (result: ValidatorResult) => {
       if (result.errors.length) {
         throw [
-          new Error(`Validation errors encountered while sanitizing BuildManifest format ${manifest.format}`),
-          ...result.errors.map((error: ValidationError) => new Error(error.toString()))
+          new Error(
+            `Validation errors encountered while sanitizing BuildManifest format ${manifest.format}`
+          ),
+          ...result.errors.map(
+            (error: ValidationError) => new Error(error.toString())
+          ),
         ];
       }
     };

@@ -141,7 +141,9 @@ export const resolveUri = Tracer.traceFunc(
       } else if (manifestStr) {
         // We've found our manifest at the current URI resolver
         // meaning the URI resolver can also be used as an API resolver
-        const manifest = deserializeWeb3ApiManifest(manifestStr, { noValidate });
+        const manifest = deserializeWeb3ApiManifest(manifestStr, {
+          noValidate,
+        });
 
         return Tracer.traceFunc(
           "resolveUri: createApi",

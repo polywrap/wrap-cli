@@ -11,7 +11,7 @@ import {
   AnyWeb3ApiManifest,
   migrateWeb3ApiManifest,
   validateWeb3ApiManifest,
-  latestWeb3ApiManifestFormat
+  latestWeb3ApiManifestFormat,
 } from ".";
 import { DeserializeManifestOptions } from "../../";
 
@@ -22,7 +22,9 @@ import { Tracer } from "@web3api/tracing-js";
 export const deserializeWeb3ApiManifest = Tracer.traceFunc(
   "core: deserializeWeb3ApiManifest",
   (manifest: string, options?: DeserializeManifestOptions): Web3ApiManifest => {
-    const anyWeb3ApiManifest = YAML.safeLoad(manifest) as AnyWeb3ApiManifest | undefined;
+    const anyWeb3ApiManifest = YAML.safeLoad(manifest) as
+      | AnyWeb3ApiManifest
+      | undefined;
 
     if (!anyWeb3ApiManifest) {
       throw Error(`Unable to parse Web3ApiManifest: ${manifest}`);
@@ -39,10 +41,15 @@ export const deserializeWeb3ApiManifest = Tracer.traceFunc(
 
     if (versionCompare === -1) {
       // Upgrade
-      return migrateWeb3ApiManifest(anyWeb3ApiManifest, latestWeb3ApiManifestFormat);
+      return migrateWeb3ApiManifest(
+        anyWeb3ApiManifest,
+        latestWeb3ApiManifestFormat
+      );
     } else if (versionCompare === 1) {
       // Downgrade
-      throw Error(`Cannot downgrade Web3API version ${anyWeb3ApiManifest.format}, please upgrade your Web3ApiClient package.`);
+      throw Error(
+        `Cannot downgrade Web3API version ${anyWeb3ApiManifest.format}, please upgrade your Web3ApiClient package.`
+      );
     } else {
       // Latest
       return anyWeb3ApiManifest as Web3ApiManifest;

@@ -8,14 +8,14 @@ import {
   outputManifest,
   generateDockerfile,
   createBuildImage,
-  copyArtifactsFromBuildImage
+  copyArtifactsFromBuildImage,
 } from "./helpers";
 import { intlMsg } from "./intl";
 
 import {
   InvokableModules,
   Web3ApiManifest,
-  BuildManifest
+  BuildManifest,
 } from "@web3api/core-js";
 import {
   bindSchema,
@@ -25,7 +25,6 @@ import {
 import { TypeInfo } from "@web3api/schema-parse";
 import { ComposerOutput } from "@web3api/schema-compose";
 import { writeFileSync } from "@web3api/os-js";
-
 import fs from "fs";
 import path from "path";
 import * as gluegun from "gluegun";
@@ -73,7 +72,9 @@ export class Compiler {
       const composerOutput = await schemaComposer.getComposedSchemas();
 
       if (!composerOutput.combined) {
-        throw Error(`compileWeb3Api: ${intlMsg.lib_compiler_failedSchemaReturn()}`);
+        throw Error(
+          `compileWeb3Api: ${intlMsg.lib_compiler_failedSchemaReturn()}`
+        );
       }
 
       const modulesToBuild = this._determineModulesToBuild(web3apiManifest);
@@ -126,7 +127,10 @@ export class Compiler {
       throwMissingSchema("query");
     }
 
-    if (buildMutation && (!composerOutput.mutation || !composerOutput.mutation.schema)) {
+    if (
+      buildMutation &&
+      (!composerOutput.mutation || !composerOutput.mutation.schema)
+    ) {
       throwMissingSchema("mutation");
     }
 
@@ -167,15 +171,17 @@ export class Compiler {
       const queryManifest = web3apiManifest as Required<typeof web3apiManifest>;
       queryManifest.modules.query = {
         module: "./query.wasm",
-        schema: "./schema.graphql"
+        schema: "./schema.graphql",
       };
     }
 
     if (buildMutation) {
-      const mutationManifest = web3apiManifest as Required<typeof web3apiManifest>;
+      const mutationManifest = web3apiManifest as Required<
+        typeof web3apiManifest
+      >;
       mutationManifest.modules.mutation = {
         module: "./mutation.wasm",
-        schema: "./schema.graphql"
+        schema: "./schema.graphql",
       };
     }
 
@@ -184,9 +190,7 @@ export class Compiler {
 
     // Validate the WASM exports
     await Promise.all(
-      modulesToBuild.map(
-        (module) => this._validateExports(module, outputDir)
-      )
+      modulesToBuild.map((module) => this._validateExports(module, outputDir))
     );
 
     // Output the schema & manifest files
@@ -259,16 +263,13 @@ export class Compiler {
       await project.cacheDefaultBuildManifestFiles();
       dockerfile = generateDockerfile(
         project.getCachePath("build/env/Dockerfile.mustache"),
-        buildManifest.config || { }
+        buildManifest.config || {}
       );
     }
 
     // If the dockerfile path contains ".mustache", generate
     if (dockerfile.indexOf(".mustache") > -1) {
-      dockerfile = generateDockerfile(
-        dockerfile,
-        buildManifest.config || { }
-      );
+      dockerfile = generateDockerfile(dockerfile, buildManifest.config || {});
     }
 
     await createBuildImage(
@@ -286,8 +287,13 @@ export class Compiler {
     );
   }
 
-  private async _validateExports(moduleName: InvokableModules, buildDir: string) {
-    const wasmSource = fs.readFileSync(path.join(buildDir, `${moduleName}.wasm`));
+  private async _validateExports(
+    moduleName: InvokableModules,
+    buildDir: string
+  ) {
+    const wasmSource = fs.readFileSync(
+      path.join(buildDir, `${moduleName}.wasm`)
+    );
     const mod = await WebAssembly.compile(wasmSource);
     const memory = new WebAssembly.Memory({ initial: 1 });
     const instance = await WebAssembly.instantiate(mod, {
@@ -318,7 +324,9 @@ export class Compiler {
     }
   }
 
-  private _determineModulesToBuild(manifest: Web3ApiManifest): InvokableModules[] {
+  private _determineModulesToBuild(
+    manifest: Web3ApiManifest
+  ): InvokableModules[] {
     const manifestMutation = manifest.modules.mutation;
     const manifestQuery = manifest.modules.query;
     const modulesToBuild: InvokableModules[] = [];

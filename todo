@@ -14,7 +14,7 @@ x mustache template? yes.
 x x use this for includes
 x x use this building query and/or mutation
 x Remove ONBUILD in the "leaf" image
-- validate exports
+x validate exports
 
 # Future
 - should we treat the build images like we do the services
@@ -22,32 +22,13 @@ x Remove ONBUILD in the "leaf" image
 - - (yes, but do after mege, use test-env)
 
 # Misc Cleanup
-- docker command failure cli output (asc compiler errors)
 - intl strings
-- 1 run cli command (function)
-- e2e tests
 - update template projects
+- docker command failure cli output (asc compiler errors)
 - better output text
 - - --verbose (docker logs)
-- validate ENV variables are being detected and required as needed (how to differentiate between optional and required?)
-- - docker should do this, make sure. Mayybe there's another command we can run before to verify all env vars exist?
-- - docker validate? docker-compose config
-
-x remove asc version from build-env image
-
-x TODO
-  include:
-    - src/**/*
-    - package.json
-    - yarn.lock
-
-{{#include}}
-ONBUILD COPY {{.}} ./
-{{/include}}
-
-- TODO
-outputDir: ./output
-remove "buildDir"
+- 1 run cli command (function)
+- e2e tests
 
 # test
 - Project w/o web3api.build.yaml
@@ -56,4 +37,6 @@ remove "buildDir"
 - Project w/ web3api.yaml in sub directory
 - Project w/ missing config variable
 - validation: invalid exports (empty wasm module)
-- 
+- validate ENV variables are being detected and required as needed (how to differentiate between optional and required?)
+- - docker should do this, make sure. Mayybe there's another command we can run before to verify all env vars exist?
+- - docker validate? docker-compose config

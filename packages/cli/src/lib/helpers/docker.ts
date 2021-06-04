@@ -1,7 +1,6 @@
 import { runCommand } from "./command";
 
 import { writeFileSync } from "@web3api/os-js";
-
 import Mustache from "mustache";
 import path from "path";
 import fs from "fs";
@@ -13,8 +12,8 @@ export async function copyArtifactsFromBuildImage(
   quiet = true
 ): Promise<void> {
   // Make sure the interactive terminal name is available
-  await runCommand(`docker rm -f root-${imageName}`, quiet)
-    .catch((e) => {});
+  /* eslint-disable @typescript-eslint/no-empty-function */
+  await runCommand(`docker rm -f root-${imageName}`, quiet).catch(() => {});
 
   await runCommand(
     `docker create -ti --name root-${imageName} ${imageName}`,
@@ -35,7 +34,7 @@ export async function createBuildImage(
   rootDir: string,
   imageName: string,
   dockerfile: string,
-  quiet: boolean = true
+  quiet = true
 ): Promise<void> {
   await runCommand(
     `docker build -f ${dockerfile} -t ${imageName} ${rootDir}`,

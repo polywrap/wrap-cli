@@ -61,7 +61,7 @@ export async function composeSchema(
   }
 
   const output: ComposerOutput = {
-    combined: {}
+    combined: {},
   };
   const includeSchema = options.output & ComposerFilter.Schema;
   const includeTypeInfo = options.output & ComposerFilter.TypeInfo;

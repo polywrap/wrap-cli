@@ -6,7 +6,7 @@ import {
   BuildManifest,
   Web3ApiManifest,
   deserializeWeb3ApiManifest,
-  deserializeBuildManifest
+  deserializeBuildManifest,
 } from "@web3api/core-js";
 import { writeFileSync } from "@web3api/os-js";
 import { Schema as JsonSchema } from "jsonschema";
@@ -66,7 +66,8 @@ export async function loadBuildManifest(
     }
 
     // Load the custom json-schema extension if it exists
-    const envSchemaPath = path.dirname(manifestPath) + "/web3api.build.ext.json";
+    const envSchemaPath =
+      path.dirname(manifestPath) + "/web3api.build.ext.json";
     let extSchema: JsonSchema | undefined = undefined;
 
     if (fs.existsSync(envSchemaPath)) {
@@ -80,7 +81,7 @@ export async function loadBuildManifest(
 
     try {
       const result = deserializeBuildManifest(manifest, {
-        extSchema: extSchema
+        extSchema: extSchema,
       });
       return Promise.resolve(result);
     } catch (e) {
@@ -109,14 +110,15 @@ export async function outputManifest(
   quiet = false
 ): Promise<unknown> {
   const run = () => {
-
-    const removeUndefinedProps = (obj: unknown): Record<string, unknown> | undefined => {
+    const removeUndefinedProps = (
+      obj: unknown
+    ): Record<string, unknown> | undefined => {
       if (!obj || typeof obj !== "object") {
         return undefined;
       }
 
       const input = obj as Record<string, unknown>;
-      let newObj: Record<string, unknown> = {};
+      const newObj: Record<string, unknown> = {};
 
       Object.keys(input).forEach((key) => {
         if (input[key]) {

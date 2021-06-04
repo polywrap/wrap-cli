@@ -3,7 +3,12 @@
 
 import { Project } from "./Project";
 
-import { Web3ApiManifest, Uri, Web3ApiClient, UriRedirect } from "@web3api/client-js";
+import {
+  Web3ApiManifest,
+  Uri,
+  Web3ApiClient,
+  UriRedirect,
+} from "@web3api/client-js";
 import {
   composeSchema,
   ComposerOutput,

@@ -11,7 +11,7 @@ import {
   AnyBuildManifest,
   migrateBuildManifest,
   validateBuildManifest,
-  latestBuildManifestFormat
+  latestBuildManifestFormat,
 } from ".";
 import { DeserializeManifestOptions } from "../../";
 
@@ -22,7 +22,9 @@ import { Tracer } from "@web3api/tracing-js";
 export const deserializeBuildManifest = Tracer.traceFunc(
   "core: deserializeBuildManifest",
   (manifest: string, options?: DeserializeManifestOptions): BuildManifest => {
-    const anyBuildManifest = YAML.safeLoad(manifest) as AnyBuildManifest | undefined;
+    const anyBuildManifest = YAML.safeLoad(manifest) as
+      | AnyBuildManifest
+      | undefined;
 
     if (!anyBuildManifest) {
       throw Error(`Unable to parse BuildManifest: ${manifest}`);
@@ -42,7 +44,9 @@ export const deserializeBuildManifest = Tracer.traceFunc(
       return migrateBuildManifest(anyBuildManifest, latestBuildManifestFormat);
     } else if (versionCompare === 1) {
       // Downgrade
-      throw Error(`Cannot downgrade Web3API version ${anyBuildManifest.format}, please upgrade your Web3ApiClient package.`);
+      throw Error(
+        `Cannot downgrade Web3API version ${anyBuildManifest.format}, please upgrade your Web3ApiClient package.`
+      );
     } else {
       // Latest
       return anyBuildManifest as BuildManifest;

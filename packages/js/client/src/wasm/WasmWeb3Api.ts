@@ -331,7 +331,8 @@ export class WasmWeb3Api extends Api {
 
         // Either the query or mutation module will work,
         // as they share the same schema file
-        const module = this._manifest.modules.mutation || this._manifest.modules.query;
+        const module =
+          this._manifest.modules.mutation || this._manifest.modules.query;
 
         if (!module) {
           // TODO: this won't work for abstract APIs

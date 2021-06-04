@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import { loadWeb3ApiManifest, loadBuildManifest } from "./helpers";
 
 import { Web3ApiManifest, BuildManifest } from "@web3api/core-js";
@@ -15,7 +17,7 @@ export interface ProjectConfig {
 export class Project {
   private _web3apiManifest: Web3ApiManifest | undefined;
   private _buildManifest: BuildManifest | undefined;
-  private _defaultBuildManifestCached: boolean = false;
+  private _defaultBuildManifestCached = false;
 
   constructor(private _config: ProjectConfig) {}
 
@@ -29,17 +31,15 @@ export class Project {
     this._defaultBuildManifestCached = false;
   }
 
-  public async getManifestPaths(absolute: boolean = false): Promise<string[]> {
+  public async getManifestPaths(absolute = false): Promise<string[]> {
     const web3apiManifestPath = this.getWeb3ApiManifestPath();
     const root = path.dirname(web3apiManifestPath);
 
     return [
-      absolute
-        ? web3apiManifestPath
-        : path.relative(root, web3apiManifestPath),
+      absolute ? web3apiManifestPath : path.relative(root, web3apiManifestPath),
       absolute
         ? await this.getBuildManifestPath()
-        : path.relative(root, await this.getBuildManifestPath())
+        : path.relative(root, await this.getBuildManifestPath()),
     ];
   }
 
@@ -56,7 +56,8 @@ export class Project {
   public async getWeb3ApiManifest(): Promise<Web3ApiManifest> {
     if (!this._web3apiManifest) {
       this._web3apiManifest = await loadWeb3ApiManifest(
-        this.getWeb3ApiManifestPath(), this.quiet
+        this.getWeb3ApiManifestPath(),
+        this.quiet
       );
     }
 
@@ -65,10 +66,12 @@ export class Project {
 
   public async getWeb3ApiModuleDirs(): Promise<string[]> {
     const web3apiManifest = await this.getWeb3ApiManifest();
-    let web3apiModules = [];
+    const web3apiModules = [];
 
     if (web3apiManifest.modules.mutation) {
-      web3apiModules.push(path.dirname(web3apiManifest.modules.mutation.module));
+      web3apiModules.push(
+        path.dirname(web3apiManifest.modules.mutation.module)
+      );
     }
     if (web3apiManifest.modules.query) {
       web3apiModules.push(path.dirname(web3apiManifest.modules.query.module));
@@ -79,7 +82,7 @@ export class Project {
 
   public async getWeb3ApiArtifacts(): Promise<string[]> {
     const web3apiManifest = await this.getWeb3ApiManifest();
-    let web3apiArtifacts = [];
+    const web3apiArtifacts = [];
 
     if (web3apiManifest.modules.mutation) {
       web3apiArtifacts.push("mutation.wasm");
@@ -135,7 +138,7 @@ export class Project {
       // Add default env variables
       const defaultConfig = {
         web3api_module_dirs: await this.getWeb3ApiModuleDirs(),
-        web3api_manifests: await this.getManifestPaths()
+        web3api_manifests: await this.getManifestPaths(),
       };
 
       if (!this._buildManifest.config) {
@@ -143,7 +146,7 @@ export class Project {
       } else {
         this._buildManifest.config = {
           ...this._buildManifest.config,
-          ...defaultConfig
+          ...defaultConfig,
         };
       }
     }
@@ -161,12 +164,17 @@ export class Project {
     const defaultPath = `${__dirname}/build-envs/${language}/web3api.build.yaml`;
 
     if (!fs.existsSync(defaultPath)) {
-      throw Error(`Unrecognized build language ${language}. No default manifest found at ${defaultPath}`);
+      throw Error(
+        `Unrecognized build language ${language}. No default manifest found at ${defaultPath}`
+      );
     }
 
     // Update the cache
     this.removeCacheDir("build/env");
-    await this.copyFilesIntoCache("build/env/", `${__dirname}/build-envs/${language}/*`);
+    await this.copyFilesIntoCache(
+      "build/env/",
+      `${__dirname}/build-envs/${language}/*`
+    );
     this._defaultBuildManifestCached = true;
   }
 
@@ -195,7 +203,10 @@ export class Project {
     return path.join(this.getCacheDir(), subpath);
   }
 
-  public async copyFilesIntoCache(destSubfolder: string, sourceFolder: string): Promise<void> {
+  public async copyFilesIntoCache(
+    destSubfolder: string,
+    sourceFolder: string
+  ): Promise<void> {
     const dest = this.getCachePath(destSubfolder);
 
     if (!fs.existsSync(dest)) {
@@ -207,9 +218,9 @@ export class Project {
         if (error) {
           reject(error);
         } else {
-          resolve()
+          resolve();
         }
-      })
+      });
     });
   }
 }

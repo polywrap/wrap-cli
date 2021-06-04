@@ -9,9 +9,8 @@ import {
   AnyBuildManifest,
   BuildManifest,
   BuildManifestFormats,
-  latestBuildManifestFormat
+  latestBuildManifestFormat,
 } from ".";
-
 
 import { Tracer } from "@web3api/tracing-js";
 
@@ -19,8 +18,7 @@ type Migrator = {
   [key in BuildManifestFormats]?: (m: AnyBuildManifest) => BuildManifest;
 };
 
-export const migrators: Migrator = {
-};
+export const migrators: Migrator = {};
 
 export const migrateBuildManifest = Tracer.traceFunc(
   "core: migrateBuildManifest",
@@ -35,6 +33,8 @@ export const migrateBuildManifest = Tracer.traceFunc(
       throw new Error(`Unrecognized BuildManifestFormat "${manifest.format}"`);
     }
 
-    throw new Error(`This should never happen, BuildManifest migrators is empty. from: ${from}, to: ${to}`);
+    throw new Error(
+      `This should never happen, BuildManifest migrators is empty. from: ${from}, to: ${to}`
+    );
   }
 );

@@ -252,9 +252,7 @@ export default {
       const keyPressListener = () => {
         // Watch for escape key presses
         print.info(
-          `${intlMsg.commands_build_keypressListener_watching()}: ${
-            project.getWeb3ApiManifestDir()
-          }`
+          `${intlMsg.commands_build_keypressListener_watching()}: ${project.getWeb3ApiManifestDir()}`
         );
         print.info(intlMsg.commands_build_keypressListener_exit());
         readline.emitKeypressEvents(process.stdin);
@@ -282,7 +280,10 @@ export default {
       const watcher = new Watcher();
 
       watcher.start(project.getWeb3ApiManifestDir(), {
-        ignored: [outputDir + "/**", project.getWeb3ApiManifestDir() + "/**/w3/**"],
+        ignored: [
+          outputDir + "/**",
+          project.getWeb3ApiManifestDir() + "/**/w3/**",
+        ],
         ignoreInitial: true,
         execute: async (events: WatchEvent[]) => {
           // Log all of the events encountered
