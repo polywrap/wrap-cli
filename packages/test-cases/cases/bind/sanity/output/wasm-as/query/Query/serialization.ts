@@ -44,12 +44,10 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
       _str = reader.readString();
       _strSet = true;
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "optStr") {
       reader.context().push(field, "string | null", "type found, reading property");
       _optStr = reader.readNullableString();
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "en") {
@@ -63,7 +61,6 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
       }
       _en = value;
       _enSet = true;
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "optEnum") {
@@ -85,7 +82,6 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
       }
       _optEnum = value;
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "enumArray") {
       reader.context().push(field, "Array<Types.CustomEnum>", "type found, reading property");
@@ -100,7 +96,6 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
         return value;
       });
       _enumArraySet = true;
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "optEnumArray") {
@@ -124,18 +119,18 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
         return value;
       });
       reader.context().pop();
-      reader.context().pop();
     }
+    reader.context().pop();
   }
 
   if (!_strSet) {
-    throw new Error("Missing required argument: 'str: String'");
+    throw new Error(reader.context().printWithContext("Missing required argument: 'str: String'"));
   }
   if (!_enSet) {
-    throw new Error("Missing required argument: 'en: CustomEnum'");
+    throw new Error(reader.context().printWithContext("Missing required argument: 'en: CustomEnum'"));
   }
   if (!_enumArraySet) {
-    throw new Error("Missing required argument: 'enumArray: [CustomEnum]'");
+    throw new Error(reader.context().printWithContext("Missing required argument: 'enumArray: [CustomEnum]'"));
   }
 
   return {
@@ -195,7 +190,6 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
       _object = object;
       _objectSet = true;
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "optObject") {
       reader.context().push(field, "Types.AnotherType | null", "type found, reading property");
@@ -205,7 +199,6 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
       }
       _optObject = object;
       reader.context().pop();
-      reader.context().pop();
     }
     else if (field == "objectArray") {
       reader.context().push(field, "Array<Types.AnotherType>", "type found, reading property");
@@ -214,7 +207,6 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
         return object;
       });
       _objectArraySet = true;
-      reader.context().pop();
       reader.context().pop();
     }
     else if (field == "optObjectArray") {
@@ -227,15 +219,15 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
         return object;
       });
       reader.context().pop();
-      reader.context().pop();
     }
+    reader.context().pop();
   }
 
   if (!_object || !_objectSet) {
-    throw new Error("Missing required argument: 'object: AnotherType'");
+    throw new Error(reader.context().printWithContext("Missing required argument: 'object: AnotherType'"));
   }
   if (!_objectArraySet) {
-    throw new Error("Missing required argument: 'objectArray: [AnotherType]'");
+    throw new Error(reader.context().printWithContext("Missing required argument: 'objectArray: [AnotherType]'"));
   }
 
   return {

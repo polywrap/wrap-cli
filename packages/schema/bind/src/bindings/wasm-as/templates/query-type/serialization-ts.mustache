@@ -68,9 +68,9 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
       _{{name}}Set = true;
       {{/required}}
       reader.context().pop();
-      reader.context().pop();
     }
     {{/arguments}}
+    reader.context().pop();
   }
 
   {{#arguments}}
@@ -81,7 +81,7 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
   {{#object}}
   if (!_{{name}} || !_{{name}}Set) {
   {{/object}}
-    throw new Error("Missing required argument: '{{name}}: {{type}}'");
+    throw new Error(reader.context().printWithContext("Missing required argument: '{{name}}: {{type}}'"));
   }
   {{/required}}
   {{/arguments}}

@@ -27,9 +27,11 @@ export class WriteSizer extends Write {
   writeInt8(value: i8): void {
     this.writeInt64(<i64>value);
   }
+
   writeInt16(value: i16): void {
     this.writeInt64(<i64>value);
   }
+
   writeInt32(value: i32): void {
     this.writeInt64(<i64>value);
   }

@@ -1,3 +1,8 @@
+# Web3API 0.0.1-prealpha.25
+## Feature
+* `@web3api/client-js`: Added the `WEB3API_THREAD_PATH` env variable, allowing integrators to customize where the `thread.js` worker thread module is imported from.
+* `@web3api/wasm-as`: Improved error logging w/ better error messages and a "context stack" showing exactly what properties of the MsgPack blob the serialization / deserialization is failing at.
+
 # Web3API 0.0.1-prealpha.24
 ## Bugs
 * `@web3api/wasm-as`: Moved `as-bigint` from `devDependencies` to `dependencies`. Fixes [issue #347](https://github.com/Web3-API/monorepo/issues/347)

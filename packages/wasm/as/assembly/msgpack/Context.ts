@@ -1,9 +1,8 @@
-// Context is stores MsgPack serialization context in a stack, and prints it in a clear format
-
+// Context stores debug information in a stack,
+// and prints it in a clear format
 export class Context {
   private description: string;
-  private first: Node<string> | null = null;
-  private n: i32 = 0;
+  private nodes: Array<Node> = [];
 
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   constructor(description: string = "context description not set") {
@@ -11,18 +10,20 @@ export class Context {
   }
 
   public isEmpty(): boolean {
-    return this.first === null;
+    return this.nodes.length === 0;
   }
 
   get length(): i32 {
-    return this.n;
+    return this.nodes.length;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   public push(item: string, type: string = "", info: string = ""): void {
-    const oldfirst: Node<string> | null = this.first;
-    this.first = new Node<string>(item, type, info, oldfirst);
-    this.n++;
+    this.nodes.push({
+      item,
+      type,
+      info,
+    });
   }
 
   public pop(): string {
@@ -31,12 +32,10 @@ export class Context {
         "Null pointer exception: tried to pop an item from an empty Context stack"
       );
     }
-    const item: string = this.first!.item; // eslint disable-line @typescript-eslint/no-non-null-assertion
-    const type: string = this.first!.type; // eslint disable-line @typescript-eslint/no-non-null-assertion
-    const info: string = this.first!.info; // eslint disable-line @typescript-eslint/no-non-null-assertion
-    this.first = this.first!.next; // eslint disable-line @typescript-eslint/no-non-null-assertion
-    this.n--;
-    return item + ": " + type + (info == "" ? "" : " >> " + info);
+    const node = this.nodes.pop();
+    return (
+      node.item + ": " + node.type + (node.info == "" ? "" : " >> " + node.info)
+    );
   }
 
   public toString(): string {
@@ -50,32 +49,27 @@ export class Context {
   private printWithTabs(tabs: i32 = 0, size: i32 = 2): string {
     let result = "".padStart(size * tabs++, " ");
     result += "Context: " + this.description;
+
     if (this.isEmpty()) {
       result += "\n".padEnd(1 + size * tabs++, " ");
       result += "context stack is empty";
       return result;
     }
-    let current: Node<string> | null = this.first;
-    while (current !== null) {
+
+    for (let i = this.nodes.length - 1; i >= 0; --i) {
+      const node = this.nodes[i];
+      const info: string = node.info == "" ? "" : " >> " + node.info;
+
       result += "\n".padEnd(1 + size * tabs++, " ");
-      const info: string = current.info == "" ? "" : " >> " + current.info;
-      result += "at " + current.item + ": " + current.type + info;
-      current = current.next;
+      result += "at " + node.item + ": " + node.type + info;
     }
+
     return result;
   }
 }
 
-class Node<T> {
-  item: T;
+class Node {
+  item: string;
   type: string;
   info: string;
-  next: Node<T> | null;
-
-  constructor(item: T, type: string, info: string, next: Node<T> | null) {
-    this.item = item;
-    this.type = type;
-    this.info = info;
-    this.next = next;
-  }
 }
