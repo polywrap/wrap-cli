@@ -47,9 +47,7 @@ export class CodeGenerator {
       const composed = await schemaComposer.getComposedSchemas();
 
       if (!composed.combined) {
-        throw Error(
-          `CodeGenerator: The schema does not exist, please define one.`
-        );
+        throw Error(`CodeGenerator: ${intlMsg.lib_codeGenerator_noSchema()}`);
       }
 
       const typeInfo = composed.combined.typeInfo;

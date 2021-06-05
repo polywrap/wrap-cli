@@ -96,18 +96,25 @@ export class Compiler {
           queryDirectory === mutationDirectory
         ) {
           throw Error(
-            `compileWeb3Api: Duplicate code generation folder found "${queryDirectory}".` +
-              `Please ensure each module file is located in a unique directory.`
+            `compileWeb3Api: ${intlMsg.lib_compiler_duplicateFolder({
+              directory: queryDirectory,
+            })}`
           );
         }
 
         if (buildQuery && !composed.query?.schema) {
-          throw Error(`compileWeb3Api: Missing schema for the module "query"`);
+          throw Error(
+            `compileWeb3Api: ${intlMsg.lib_compiler_noSchema({
+              module: "query",
+            })}`
+          );
         }
 
         if (buildMutation && !composed.mutation?.schema) {
           throw Error(
-            `compileWeb3Api: Missing schema for the module "mutation"`
+            `compileWeb3Api: ${intlMsg.lib_compiler_noSchema({
+              module: "mutation",
+            })}`
           );
         }
 
