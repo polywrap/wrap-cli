@@ -32,8 +32,6 @@
     "@web3api/logger-plugin-js": "0.0.1-prealpha.24",
     "@web3api/schema-parse": "0.0.1-prealpha.24",
     "@web3api/tracing-js": "0.0.1-prealpha.24",
-    "@web3api/sha3-plugin-js": "file:./../plugins/sha3",
-    "@web3api/uts46-plugin-js": "file:./../plugins/idna-uts",
     "graphql": "15.5.0",
     "js-yaml": "3.14.0",
     "web-worker": "1.0.0"
