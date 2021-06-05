@@ -12,7 +12,7 @@ export interface UseWeb3ApiQueryState<
 export const INITIAL_QUERY_STATE: UseWeb3ApiQueryState = {
   data: undefined,
   errors: undefined,
-  loading: false
+  loading: false,
 };
 
 export interface UseWeb3ApiQueryProps<
@@ -24,15 +24,14 @@ export interface UseWeb3ApiQueryProps<
 export interface UseWeb3ApiQuery<
   TData extends Record<string, unknown> = Record<string, unknown>
 > extends UseWeb3ApiQueryState<TData> {
-  execute: () => Promise<QueryApiResult<TData>>;
+  execute: (
+    variables?: Record<string, unknown>
+  ) => Promise<QueryApiResult<TData>>;
 }
 
 export function useWeb3ApiQuery<
   TData extends Record<string, unknown> = Record<string, unknown>
->(
-  props: UseWeb3ApiQueryProps
-): UseWeb3ApiQuery<TData> {
-
+>(props: UseWeb3ApiQueryProps): UseWeb3ApiQuery<TData> {
   const client = useWeb3ApiClient({ provider: props.provider });
 
   // Initialize the UseWeb3ApiQueryState
@@ -46,8 +45,8 @@ export function useWeb3ApiQuery<
       ...props,
       variables: {
         ...props.variables,
-        ...variables
-      }
+        ...variables,
+      },
     });
     dispatch({ data, errors, loading: false });
     return { data, errors };
@@ -57,4 +56,4 @@ export function useWeb3ApiQuery<
     ...state,
     execute,
   };
-};
+}
