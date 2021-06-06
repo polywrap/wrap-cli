@@ -8,7 +8,7 @@ import {
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
-jest.setTimeout(120000);
+jest.setTimeout(200000);
 
 describe("Web3ApiClient", () => {
   let ipfsProvider: string;
