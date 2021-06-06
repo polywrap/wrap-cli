@@ -13,7 +13,7 @@ import {
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
-jest.setTimeout(120000);
+jest.setTimeout(60000);
 
 describe("Web3API React Integration", () => {
   let redirects: UriRedirect[];
@@ -47,17 +47,17 @@ describe("Web3API React Integration", () => {
     render(<SimpleStorageContainer redirects={redirects} ensUri={ensUri} />);
 
     fireEvent.click(screen.getByText("Deploy"));
-    await waitFor(() => screen.getByText(/0x/));
+    await waitFor(() => screen.getByText(/0x/), { timeout: 15000 });
     expect(screen.getByText(/0x/)).toBeTruthy();
 
     // check storage is 0
     fireEvent.click(screen.getByText("Check storage"));
-    await waitFor(() => screen.getByText("0"));
+    await waitFor(() => screen.getByText("0"), { timeout: 15000 });
     expect(screen.getByText("0")).toBeTruthy();
 
     // update storage to five and check it
     fireEvent.click(screen.getByText("Set the storage to 5!"));
-    await waitFor(() => screen.getByText("5"));
+    await waitFor(() => screen.getByText("5"), { timeout: 15000 });
     expect(screen.getByText("5")).toBeTruthy();
 
     // check for provider redirects
