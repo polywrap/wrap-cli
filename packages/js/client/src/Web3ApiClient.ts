@@ -7,6 +7,7 @@ import {
   ApiCache,
   Client,
   createQueryDocument,
+  GetManifestOptions,
   parseQuery,
   PluginPackage,
   QueryApiOptions,
@@ -18,6 +19,7 @@ import {
   InvokeApiResult,
   Manifest,
   sanitizeUriRedirects,
+  PluginManifest,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -214,5 +216,18 @@ export class Web3ApiClient implements Client {
     );
 
     return run(uri);
+  }
+
+  public async getManifest(
+    options: GetManifestOptions
+  ): Promise<Manifest | PluginManifest> {
+    let uri: Uri;
+    if (typeof options.uri === "string") {
+      uri = new Uri(options.uri);
+    } else {
+      uri = options.uri;
+    }
+    const api = await this.loadWeb3Api(uri);
+    return await api.getManifest(options, this);
   }
 }

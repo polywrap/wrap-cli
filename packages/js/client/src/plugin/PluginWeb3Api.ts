@@ -3,9 +3,11 @@ import {
   Client,
   executeMaybeAsyncFunction,
   filterResults,
+  GetManifestOptions,
   InvokeApiOptions,
   InvokeApiResult,
   Plugin,
+  PluginManifest,
   PluginPackage,
   Uri,
 } from "@web3api/core-js";
@@ -113,6 +115,13 @@ export class PluginWeb3Api extends Api {
 
   public async getSchema(_client: Client): Promise<string> {
     return Promise.resolve(this._plugin.manifest.schema);
+  }
+
+  public async getManifest(
+    options: GetManifestOptions, // eslint-disable-line @typescript-eslint/no-unused-vars
+    client: Client // eslint-disable-line @typescript-eslint/no-unused-vars
+  ): Promise<PluginManifest> {
+    return { ...this._plugin.manifest };
   }
 
   private getInstance(): Plugin {

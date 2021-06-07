@@ -1,4 +1,5 @@
-import { Client, InvokeApiOptions, InvokeApiResult } from ".";
+import { Client, InvokeApiOptions, InvokeApiResult, PluginManifest } from ".";
+import { GetManifestOptions, Manifest } from "../manifest";
 
 /**
  * The API definition, which can be used to spawn
@@ -21,6 +22,18 @@ export abstract class Api {
 
   /** Get the API's schema */
   public abstract async getSchema(client: Client): Promise<string>;
+
+  /**
+   * Get the API's manifest
+   *
+   * @param options Options for manifest retrieval
+   * @param client The client instance requesting this invocation.
+   * This client will be used for any sub-queries that occur.
+   */
+  public abstract async getManifest(
+    options: GetManifestOptions,
+    client: Client
+  ): Promise<Manifest | PluginManifest>;
 }
 
 /** Cache of API definitions, mapping the API's URI to its definition */

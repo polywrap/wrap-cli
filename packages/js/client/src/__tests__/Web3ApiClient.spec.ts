@@ -1,5 +1,5 @@
 import {
-  createWeb3ApiClient
+  createWeb3ApiClient, Uri
 } from "../";
 import {
   buildAndDeployApi,
@@ -7,6 +7,8 @@ import {
   stopTestEnvironment
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
+import { Manifest, PluginManifest, deserializeManifest } from "@web3api/core-js";
+import { readFileSync } from "fs";
 
 jest.setTimeout(50000);
 
@@ -898,5 +900,58 @@ describe("Web3ApiClient", () => {
     expect(invalidArrayMapSent.errors?.[0].message).toMatch(
       /Property must be of type 'array'. Found 'map'./
     );
+  });
+
+  it("getManifest -- simple-storage web3api", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensAddress
+    );
+    const client = await getClient();
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const manifest: Manifest | PluginManifest = await client.getManifest({
+      uri: ensUri,
+      manifest: 'web3api.yaml'
+    })
+
+    const actualManifestStr: string = readFileSync(`${GetPathToTestApis()}/simple-storage/build/web3api.yaml`, 'utf8');
+    const actualManifest: Manifest = deserializeManifest(actualManifestStr);
+
+    expect(manifest).toBeTruthy();
+    expect(manifest).toStrictEqual(actualManifest);
+  });
+
+  it("getManifest -- Logger plugin", async () => {
+    const client = await getClient();
+
+    const manifest: Manifest | PluginManifest = await client.getManifest({
+      uri: "w3://w3/logger"
+    })
+
+    expect(manifest).toBeTruthy();
+    expect(manifest).toStrictEqual({
+      schema: `
+# TODO: should import and "implements" the logger core-api schema
+# https://github.com/Web3-API/monorepo/issues/75
+
+enum LogLevel {
+  DEBUG,
+  INFO,
+  WARN,
+  ERROR,
+}
+
+type Query {
+  log(
+    level: LogLevel!
+    message: String!
+  ): Boolean!
+}
+`,
+      implemented: [new Uri("w3/logger")],
+      imported: [],
+    });
   });
 });

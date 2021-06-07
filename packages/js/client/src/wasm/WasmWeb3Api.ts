@@ -19,6 +19,8 @@ import {
   Client,
   ApiResolver,
   InvokableModules,
+  deserializeManifest,
+  GetManifestOptions,
 } from "@web3api/core-js";
 import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
@@ -338,37 +340,32 @@ export class WasmWeb3Api extends Api {
           throw Error(`WasmWeb3Api: No module was found.`);
         }
 
-        const { data, error } = await ApiResolver.Query.getFile(
+        this._schema = (await this.getFile(
+          module.schema.file,
           client,
-          this._apiResolver,
-          this.combinePaths(this._uri.path, module.schema.file)
-        );
-
-        if (error) {
-          throw error;
-        }
-
-        // If nothing is returned, the schema was not found
-        if (!data) {
-          throw Error(
-            `WasmWeb3Api: Schema was not found.\nURI: ${this._uri}\nSubpath: ${module.schema.file}`
-          );
-        }
-
-        const decoder = new TextDecoder();
-        this._schema = decoder.decode(data);
-
-        if (!this._schema) {
-          throw Error(
-            `WasmWeb3Api: Decoding the schema's bytes array failed.\nBytes: ${data}`
-          );
-        }
+          "utf8"
+        )) as string;
 
         return this._schema;
       }
     );
 
     return run(client);
+  }
+
+  public async getManifest(
+    options: GetManifestOptions,
+    client: Client
+  ): Promise<Manifest> {
+    if (!options?.manifest) {
+      return this._manifest;
+    }
+    const manifest = (await this.getFile(
+      options.manifest,
+      client,
+      "utf8"
+    )) as string;
+    return deserializeManifest(manifest);
   }
 
   private async getWasmModule(
@@ -393,22 +390,10 @@ export class WasmWeb3Api extends Api {
           );
         }
 
-        const { data, error } = await ApiResolver.Query.getFile(
-          client,
-          this._apiResolver,
-          this.combinePaths(this._uri.path, moduleManifest.module.file)
-        );
-
-        if (error) {
-          throw Error(`ApiResolver.Query.getFile Failed: ${error}`);
-        }
-
-        // If nothing is returned, the module was not found
-        if (!data) {
-          throw Error(
-            `Module was not found.\nURI: ${this._uri}\nSubpath: ${moduleManifest.module.file}`
-          );
-        }
+        const data = (await this.getFile(
+          moduleManifest.module.file,
+          client
+        )) as ArrayBuffer;
 
         this._wasm[module] = data;
         return data;
@@ -416,6 +401,42 @@ export class WasmWeb3Api extends Api {
     );
 
     return run(module, client);
+  }
+
+  private async getFile(
+    filepath: string,
+    client: Client,
+    encoding?: string
+  ): Promise<ArrayBuffer | string> {
+    const { data, error } = await ApiResolver.Query.getFile(
+      client,
+      this._apiResolver,
+      this.combinePaths(this._uri.path, filepath)
+    );
+
+    if (error) {
+      throw error;
+    }
+
+    // If nothing is returned, the file was not found
+    if (!data) {
+      throw Error(
+        `WasmWeb3Api: File was not found.\nURI: ${this._uri}\nSubpath: ${filepath}`
+      );
+    }
+
+    if (encoding) {
+      const decoder = new TextDecoder(encoding);
+      const text = decoder.decode(data);
+
+      if (!text) {
+        throw Error(
+          `WasmWeb3Api: Decoding the file's bytes array failed.\nBytes: ${data}`
+        );
+      }
+      return text;
+    }
+    return data;
   }
 
   private combinePaths(a: string, b: string) {
