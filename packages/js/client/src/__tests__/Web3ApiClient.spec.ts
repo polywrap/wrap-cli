@@ -902,13 +902,14 @@ describe("Web3ApiClient", () => {
     );
   });
 
-  /*it("get implementations", async () => {
-    const interface1Uri = "ens/some-interface1.eth";
-    const interface2Uri = "ens/some-interface2.eth";
+  it("get implementations", async () => {
+    console.log('saddssds');
+    const interface1Uri = "w3://ens/some-interface1.eth";
+    const interface2Uri = "w3://ens/some-interface2.eth";
 
-    const implementation1Uri = "ens/some-implementation.eth";
-    const implementation2Uri = "ens/some-implementation2.eth";
-    const implementation3Uri = "ens/some-implementation3.eth";
+    const implementation1Uri = "w3://ens/some-implementation.eth";
+    const implementation2Uri = "w3://ens/some-implementation2.eth";
+    const implementation3Uri = "w3://ens/some-implementation3.eth";
 
     const client = await getClient({
       redirects: [
@@ -950,5 +951,5 @@ describe("Web3ApiClient", () => {
     expect(implementations2.length).toBe(2);
     expect(implementations2).toContain(implementation3Uri);
     expect(implementations2).toContain(interface2Uri);
-  });*/
+  });
 });

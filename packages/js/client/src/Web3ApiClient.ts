@@ -22,8 +22,14 @@ import {
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
+export interface UriInterfaceImplementations<TUri = string> {
+  interface: TUri;
+  implementations: TUri[];
+}
+
 export interface ClientConfig<TUri = string> {
   redirects?: UriRedirect<TUri>[];
+  implementations?: UriInterfaceImplementations<TUri>[];
   tracingEnabled?: boolean;
 }
 
