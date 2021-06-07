@@ -217,11 +217,12 @@ export class Web3ApiClient implements Client {
     return run(uri);
   }
 
-  public getImplementations(uri: Uri): Uri[] {
+  public getImplementations(uri: string): string[] {
     const run = Tracer.traceFunc(
       "Web3ApiClient: getImplementations",
-      (uri: Uri): Uri[] => {
-        return getImplementations(uri, this.redirects());
+      (uri: string): string[] => {
+        return getImplementations(new Uri(uri), this.redirects())
+          .map(x => x.toString());
       }
     );
 
