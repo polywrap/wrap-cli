@@ -8,7 +8,7 @@ async function main() {
   const eth = new EthereumPlugin({
     networks: {
       testnet: {
-        provider: "http://localhost:8545"
+        provider: "http://localhost:8546"
       },
     },
   });
