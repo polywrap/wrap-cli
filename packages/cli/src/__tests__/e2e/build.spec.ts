@@ -94,7 +94,7 @@ ${HELP}`);
   });
 
   test("Successfully build the project", async () => {
-    const { exitCode: code, stdout: output } = await runCLI({
+    const { exitCode: code, stdout: output, stderr } = await runCLI({
       args: ["build", "-v"],
       cwd: projectRoot
     }, w3Cli);
@@ -102,8 +102,9 @@ ${HELP}`);
     const manifestPath = path.normalize("build/web3api.yaml");
     const sanitizedOutput = clearStyle(output);
 
-    expect(code).toEqual(0);
     expect(sanitizedOutput).toContain("Artifacts written to ./build from the image `build-env`");
+    expect(stderr).toBe("");
+    expect(code).toEqual(0);
     expect(sanitizedOutput).toContain("Manifest written to ./build/web3api.yaml");
     expect(sanitizedOutput).toContain(manifestPath);
   });
