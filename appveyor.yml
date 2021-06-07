@@ -1,16 +1,22 @@
 version: 1.0.{build}
 image: Visual Studio 2019
 
-install:
-  - docker version
-  - docker-compose version
+cache:
+  - "..\\.yarn-cache"
 
-build: off
+install:
+  - ps: "Install-Product node (Get-Content ./.nvmrc) x64"
+  # - choco install nodejs-lts --version=14.16.0
+  - npm i -g yarn
+  - node --version
+  - yarn --version
+
+build_script:
+  - yarn install --nonInteractive --frozen-lockfile --preferred-cache-folder ..\\.yarn-cache
+  - yarn build
 
 test_script:
+  - docker version
+  - docker-compose version
   - ps: "& 'C:/Program Files/Docker/Docker/DockerCli.exe' -SwitchDaemon -SwitchLinuxEngine"
-  - choco install nodejs-lts --version=14.16.0
-  - npm i -g yarn
-  - yarn install --nonInteractive --frozen-lockfile
-  - yarn build
   - yarn test:ci
