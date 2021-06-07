@@ -12,6 +12,7 @@ cache:
 install:
   - ps: "choco install nodejs-lts --version=$($(Get-Content .nvmrc).replace('v',''))"
   - npm i -g yarn
+  - yarn config set cache-folder ..\\.yarn-cache
   - node --version
   - yarn --version
 
