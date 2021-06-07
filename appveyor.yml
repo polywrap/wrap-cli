@@ -16,6 +16,5 @@ build_script:
 
 test_script:
   - docker version
-  - docker-compose version
   - ps: "& 'C:/Program Files/Docker/Docker/DockerCli.exe' -SwitchDaemon -SwitchLinuxEngine"
   - yarn test:ci
