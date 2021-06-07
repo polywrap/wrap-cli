@@ -17,7 +17,7 @@ install:
   - yarn --version
 
 build_script:
-  - yarn install --nonInteractive --frozen-lockfile --preferred-cache-folder ..\\.yarn-cache
+  - yarn install --nonInteractive --frozen-lockfile
   - yarn build
 
 test_script:
