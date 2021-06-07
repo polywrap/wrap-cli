@@ -1,8 +1,13 @@
 version: 1.0.{build}
 image: Visual Studio 2019
 
+matrix:
+  fast_finish: true  
+
 cache:
-  - "..\\.yarn-cache"
+  - C:\ProgramData\chocolatey\bin -> .nvmrc
+  - C:\ProgramData\chocolatey\lib -> .nvmrc
+  - ..\\.yarn-cache -> yarn.lock
 
 install:
   - ps: "choco install nodejs-lts --version=$($(Get-Content .nvmrc).replace('v',''))"
@@ -16,5 +21,6 @@ build_script:
 
 test_script:
   - docker version
+  - docker-compose version
   - ps: "& 'C:/Program Files/Docker/Docker/DockerCli.exe' -SwitchDaemon -SwitchLinuxEngine"
   - yarn test:ci
