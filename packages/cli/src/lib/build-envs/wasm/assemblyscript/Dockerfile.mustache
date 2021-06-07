@@ -23,6 +23,9 @@ COPY {{.}} .
 {{#include}}
 COPY {{.}} {{.}}
 {{/include}}
+{{#web3api_modules}}
+COPY {{dir}} {{dir}}
+{{/web3api_modules}}
 
 {{#web3api_modules}}
 # Build the module at {{dir}}

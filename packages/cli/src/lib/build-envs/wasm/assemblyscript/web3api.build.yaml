@@ -5,5 +5,4 @@ docker:
 config:
   node_version: "14.16.0"
   include:
-    - ./src
     - ./package.json

@@ -16,16 +16,48 @@ export async function copyArtifactsFromBuildImage(
 ): Promise<void> {
   const run = async (): Promise<void> => {
     // Make sure the interactive terminal name is available
-    const { stdout } = await runCommand("docker container ls", quiet);
+    const { stdout: containerLsOutput } = await runCommand(
+      "docker container ls -a",
+      quiet
+    );
 
-    if (stdout.indexOf(`root-${imageName}`) > -1) {
+    if (containerLsOutput.indexOf(`root-${imageName}`) > -1) {
       await runCommand(`docker rm -f root-${imageName}`, quiet);
     }
 
+    // Create a new interactive terminal
     await runCommand(
       `docker create -ti --name root-${imageName} ${imageName}`,
       quiet
     );
+
+    // Make sure the "project" directory exists
+    const { stdout: projectLsOutput } = await runCommand(
+      `docker run --rm ${imageName} /bin/bash -c "ls /project"`,
+      quiet
+    ).catch(() => ({ stdout: "" }));
+
+    if (projectLsOutput.length <= 1) {
+      throw Error(
+        intlMsg.lib_helpers_docker_projectFolderMissing({ image: imageName })
+      );
+    }
+
+    const { stdout: buildLsOutput } = await runCommand(
+      `docker run --rm ${imageName} /bin/bash -c "ls /project/build"`,
+      quiet
+    ).catch(() => ({ stdout: "" }));
+
+    for (const buildArtifact of buildArtifacts) {
+      if (buildLsOutput.indexOf(buildArtifact) === -1) {
+        throw Error(
+          intlMsg.lib_helpers_docker_projectBuildFolderMissing({
+            image: imageName,
+            artifact: buildArtifact,
+          })
+        );
+      }
+    }
 
     for (const buildArtifact of buildArtifacts) {
       await runCommand(
