@@ -12,12 +12,11 @@ cache:
 install:
   - ps: "choco install nodejs-lts --version=$($(Get-Content .nvmrc).replace('v',''))"
   - npm i -g yarn
-  - yarn config set cache-folder ..\\.yarn-cache
   - node --version
   - yarn --version
 
 build_script:
-  - yarn install --nonInteractive --frozen-lockfile
+  - yarn install --nonInteractive --frozen-lockfile --cache-folder ..\\.yarn-cache
   - yarn build
 
 test_script:
