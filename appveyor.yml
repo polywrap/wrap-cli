@@ -5,8 +5,7 @@ cache:
   - "..\\.yarn-cache"
 
 install:
-  - ps: "Install-Product node (Get-Content ./.nvmrc) x64"
-  # - choco install nodejs-lts --version=14.16.0
+  - ps: choco install nodejs-lts --version=$(Get-Content .nvmrc).replace( 'v', '' )
   - npm i -g yarn
   - node --version
   - yarn --version
