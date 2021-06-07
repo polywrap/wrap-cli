@@ -1,10 +1,12 @@
+import { displayPath } from "./path";
 import { runCommand } from "./command";
+import { withSpinner } from "./spinner";
+import { intlMsg } from "../intl";
 
 import { writeFileSync } from "@web3api/os-js";
 import Mustache from "mustache";
 import path from "path";
 import fs from "fs";
-import { intlMsg } from "../intl";
 
 export async function copyArtifactsFromBuildImage(
   outputDir: string,
@@ -12,23 +14,45 @@ export async function copyArtifactsFromBuildImage(
   imageName: string,
   quiet = true
 ): Promise<void> {
-  // Make sure the interactive terminal name is available
-  /* eslint-disable @typescript-eslint/no-empty-function */
-  await runCommand(`docker rm -f root-${imageName}`, quiet).catch(() => {});
+  const run = async (): Promise<void> => {
+    // Make sure the interactive terminal name is available
+    const { stdout } = await runCommand("docker container ls", quiet);
 
-  await runCommand(
-    `docker create -ti --name root-${imageName} ${imageName}`,
-    quiet
-  );
+    if (stdout.indexOf(`root-${imageName}`) > -1) {
+      await runCommand(`docker rm -f root-${imageName}`, quiet);
+    }
 
-  for (const buildArtifact of buildArtifacts) {
     await runCommand(
-      `docker cp root-${imageName}:/project/build/${buildArtifact} ${outputDir}`,
+      `docker create -ti --name root-${imageName} ${imageName}`,
       quiet
     );
-  }
 
-  await runCommand(`docker rm -f root-${imageName}`, quiet);
+    for (const buildArtifact of buildArtifacts) {
+      await runCommand(
+        `docker cp root-${imageName}:/project/build/${buildArtifact} ${outputDir}`,
+        quiet
+      );
+    }
+
+    await runCommand(`docker rm -f root-${imageName}`, quiet);
+  };
+
+  if (quiet) {
+    return await run();
+  } else {
+    const args = {
+      path: displayPath(outputDir),
+      image: imageName,
+    };
+    return (await withSpinner(
+      intlMsg.lib_helpers_docker_copyText(args),
+      intlMsg.lib_helpers_docker_copyError(args),
+      intlMsg.lib_helpers_docker_copyWarning(args),
+      async (_spinner) => {
+        return await run();
+      }
+    )) as void;
+  }
 }
 
 export async function createBuildImage(
@@ -37,25 +61,43 @@ export async function createBuildImage(
   dockerfile: string,
   quiet = true
 ): Promise<string> {
-  // Build the docker image
-  await runCommand(
-    `docker build -f ${dockerfile} -t ${imageName} ${rootDir}`,
-    quiet
-  );
-
-  // Get the docker image ID
-  const { stdout } = await runCommand(
-    `docker image inspect ${imageName} -f "{{.ID}}"`,
-    quiet
-  );
-
-  if (stdout.indexOf("sha256:") === -1) {
-    throw Error(
-      intlMsg.lib_docker_invalidImageId({ imageId: stdout })
+  const run = async (): Promise<string> => {
+    // Build the docker image
+    await runCommand(
+      `docker build -f ${dockerfile} -t ${imageName} ${rootDir}`,
+      quiet
     );
-  }
 
-  return stdout;
+    // Get the docker image ID
+    const { stdout } = await runCommand(
+      `docker image inspect ${imageName} -f "{{.ID}}"`,
+      quiet
+    );
+
+    if (stdout.indexOf("sha256:") === -1) {
+      throw Error(intlMsg.lib_docker_invalidImageId({ imageId: stdout }));
+    }
+
+    return stdout;
+  };
+
+  if (quiet) {
+    return await run();
+  } else {
+    const args = {
+      image: imageName,
+      dockerfile: displayPath(dockerfile),
+      context: displayPath(rootDir),
+    };
+    return (await withSpinner(
+      intlMsg.lib_helpers_docker_buildText(args),
+      intlMsg.lib_helpers_docker_buildError(args),
+      intlMsg.lib_helpers_docker_buildWarning(args),
+      async (_spinner) => {
+        return await run();
+      }
+    )) as string;
+  }
 }
 
 export function generateDockerfile(

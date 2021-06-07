@@ -66,7 +66,6 @@ export class Compiler {
       this._cleanDir(this._config.outputDir);
 
       const web3apiManifest = await project.getWeb3ApiManifest();
-      const buildManifest = await project.getBuildManifest();
 
       // Get the fully composed schema
       const composerOutput = await schemaComposer.getComposedSchemas();
@@ -84,7 +83,6 @@ export class Compiler {
       // Generate the schema bindings and output the built WASM modules
       await this._generateAndBuildModules(
         web3apiManifest,
-        buildManifest,
         composerOutput,
         modulesToBuild
       );
@@ -106,11 +104,10 @@ export class Compiler {
 
   private async _generateAndBuildModules(
     web3apiManifest: Web3ApiManifest,
-    buildManifest: BuildManifest,
     composerOutput: ComposerOutput,
     modulesToBuild: InvokableModules[]
   ) {
-    const { outputDir } = this._config;
+    const { outputDir, project } = this._config;
     const buildQuery = modulesToBuild.indexOf("query") > -1;
     const buildMutation = modulesToBuild.indexOf("mutation") > -1;
 
@@ -164,32 +161,8 @@ export class Compiler {
         : undefined
     );
 
-    if (buildQuery) {
-      const queryManifest = web3apiManifest as Required<typeof web3apiManifest>;
-      queryManifest.modules.query = {
-        module: "./query.wasm",
-        schema: "./schema.graphql",
-      };
-    }
-
-    if (buildMutation) {
-      const mutationManifest = web3apiManifest as Required<
-        typeof web3apiManifest
-      >;
-      mutationManifest.modules.mutation = {
-        module: "./mutation.wasm",
-        schema: "./schema.graphql",
-      };
-    }
-
     // Build the sources
     const dockerImageId = await this._buildSourcesInDocker();
-    const outputBuildManifest: BuildManifest = {
-      format: "0.0.1-prealpha.2",
-      docker: {
-        buildImageId: dockerImageId
-      }
-    };
 
     // Validate the WASM exports
     await Promise.all(
@@ -202,8 +175,49 @@ export class Compiler {
       composerOutput.combined.schema,
       "utf-8"
     );
-    await outputManifest(web3apiManifest, `${outputDir}/web3api.yaml`);
-    await outputManifest(outputBuildManifest, `${outputDir}/web3api.build.yaml`);
+
+    const outputWeb3ApiManifest = Object.assign({}, web3apiManifest);
+
+    if (buildQuery) {
+      const queryManifest = outputWeb3ApiManifest as Required<
+        typeof outputWeb3ApiManifest
+      >;
+      queryManifest.modules.query = {
+        module: "./query.wasm",
+        schema: "./schema.graphql",
+      };
+    }
+
+    if (buildMutation) {
+      const mutationManifest = outputWeb3ApiManifest as Required<
+        typeof outputWeb3ApiManifest
+      >;
+      mutationManifest.modules.mutation = {
+        module: "./mutation.wasm",
+        schema: "./schema.graphql",
+      };
+    }
+
+    outputWeb3ApiManifest.build = "./web3api.build.yaml";
+
+    await outputManifest(
+      outputWeb3ApiManifest,
+      `${outputDir}/web3api.yaml`,
+      project.quiet
+    );
+
+    const outputBuildManifest: BuildManifest = {
+      format: "0.0.1-prealpha.2",
+      docker: {
+        buildImageId: dockerImageId,
+      },
+    };
+
+    await outputManifest(
+      outputBuildManifest,
+      `${outputDir}/web3api.build.yaml`,
+      project.quiet
+    );
   }
 
   private _getGenerationDirectory(entryPoint: string): string {

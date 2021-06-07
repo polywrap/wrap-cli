@@ -11,7 +11,7 @@ describe("CodeGenerator validation", () => {
 
   it("Should fail with invalid manifest path", async () => {
     const project = new Project({
-      manifestPath: "invalidManifest",
+      web3apiManifestPath: "invalidManifest",
       quiet: true,
     });
     const schemaComposer = new SchemaComposer({
@@ -30,7 +30,7 @@ describe("CodeGenerator validation", () => {
 
   it("Should fail with invalid generation file", async () => {
     const project = new Project({
-      manifestPath,
+      web3apiManifestPath: manifestPath,
       quiet: true,
     });
     const schemaComposer = new SchemaComposer({
@@ -57,7 +57,7 @@ describe("CodeGenerator validation", () => {
     }
 
     const project = new Project({
-      manifestPath,
+      web3apiManifestPath: manifestPath,
       quiet: true,
     });
     const schemaComposer = new SchemaComposer({

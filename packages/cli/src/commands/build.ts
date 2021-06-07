@@ -166,7 +166,7 @@ export default {
 
     const project = new Project({
       web3apiManifestPath: manifestPath,
-      quiet: verbose ? false : true
+      quiet: verbose ? false : true,
     });
 
     const schemaComposer = new SchemaComposer({

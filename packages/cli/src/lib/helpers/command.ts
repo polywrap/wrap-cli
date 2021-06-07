@@ -4,34 +4,32 @@ export async function runCommand(
   command: string,
   quiet = true,
   env = undefined
-): Promise<{ stdout: string, stderr: string }> {
+): Promise<{ stdout: string; stderr: string }> {
   if (!quiet) {
     console.log(`> ${command}`);
   }
 
-  return new Promise<{ stdout: string, stderr: string }>(
-    (resolve, reject) => {
-      const callback = (
-        err: ExecException | null,
-        stdout: string,
-        stderr: string
-      ) => {
-        if (err) {
-          console.error(stdout);
+  return new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
+    const callback = (
+      err: ExecException | null,
+      stdout: string,
+      stderr: string
+    ) => {
+      if (err) {
+        console.error(stdout);
+        console.error(stderr);
+        reject(err);
+      } else {
+        if (!quiet) {
+          // the *entire* stdout and stderr (buffered)
+          console.log(stdout);
           console.error(stderr);
-          reject(err);
-        } else {
-          if (!quiet) {
-            // the *entire* stdout and stderr (buffered)
-            console.log(stdout);
-            console.error(stderr);
-          }
-
-          resolve({ stdout, stderr });
         }
-      };
 
-      exec(command, { cwd: __dirname, env }, callback);
-    }
-  );
+        resolve({ stdout, stderr });
+      }
+    };
+
+    exec(command, { cwd: __dirname, env }, callback);
+  });
 }

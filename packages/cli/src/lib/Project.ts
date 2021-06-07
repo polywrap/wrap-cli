@@ -65,26 +65,32 @@ export class Project {
     return Promise.resolve(this._web3apiManifest);
   }
 
-  public async getWeb3ApiModules(): Promise<{
-    dir: string,
-    name: string,
-  }[]> {
+  public async getWeb3ApiModules(): Promise<
+    {
+      dir: string;
+      name: string;
+    }[]
+  > {
     const web3apiManifest = await this.getWeb3ApiManifest();
     const web3apiModules: {
-      dir: string,
-      name: string,
+      dir: string;
+      name: string;
     }[] = [];
 
     if (web3apiManifest.modules.mutation) {
       web3apiModules.push({
-        dir: path.dirname(web3apiManifest.modules.mutation.module).replace("./", ""),
-        name: "mutation"
+        dir: path
+          .dirname(web3apiManifest.modules.mutation.module)
+          .replace("./", ""),
+        name: "mutation",
       });
     }
     if (web3apiManifest.modules.query) {
       web3apiModules.push({
-        dir: path.dirname(web3apiManifest.modules.query.module).replace("./", ""),
-        name: "query"
+        dir: path
+          .dirname(web3apiManifest.modules.query.module)
+          .replace("./", ""),
+        name: "query",
       });
     }
 
@@ -143,6 +149,7 @@ export class Project {
     if (!this._buildManifest) {
       this._buildManifest = await loadBuildManifest(
         await this.getBuildManifestPath(),
+        this,
         this.quiet
       );
 

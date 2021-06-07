@@ -1,5 +1,6 @@
 import { displayPath } from "./path";
 import { withSpinner } from "./spinner";
+import { Project } from "../Project";
 import { intlMsg } from "../intl";
 
 import {
@@ -53,6 +54,7 @@ export async function loadWeb3ApiManifest(
 
 export async function loadBuildManifest(
   manifestPath: string,
+  project: Project,
   quiet = false
 ): Promise<BuildManifest> {
   const run = (): Promise<BuildManifest> => {
@@ -66,13 +68,21 @@ export async function loadBuildManifest(
     }
 
     // Load the custom json-schema extension if it exists
-    const envSchemaPath =
-      path.dirname(manifestPath) + "/web3api.build.ext.json";
+    let configSchemaPath = path.join(
+      path.dirname(manifestPath),
+      "/web3api.build.ext.json"
+    );
     let extSchema: JsonSchema | undefined = undefined;
 
-    if (fs.existsSync(envSchemaPath)) {
+    if (!fs.existsSync(configSchemaPath)) {
+      configSchemaPath = project.getCachePath(
+        "build/env/web3api.build.ext.json"
+      );
+    }
+
+    if (fs.existsSync(configSchemaPath)) {
       extSchema = JSON.parse(
-        fs.readFileSync(envSchemaPath, "utf-8")
+        fs.readFileSync(configSchemaPath, "utf-8")
       ) as JsonSchema;
 
       // The extension schema must support additional properties

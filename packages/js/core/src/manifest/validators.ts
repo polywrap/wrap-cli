@@ -39,7 +39,7 @@ export function dockerImageId(value: unknown): boolean {
     return false;
   }
 
-  if (value.indexOf("sha256:") === -1) { 
+  if (value.indexOf("sha256:") === -1) {
     return false;
   }
 

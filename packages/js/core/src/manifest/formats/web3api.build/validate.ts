@@ -48,10 +48,10 @@ export const validateBuildManifest = Tracer.traceFunc(
 
     const throwIfErrors = (result: ValidatorResult) => {
       if (result.errors.length) {
-        throw [
-          new Error(`Validation errors encountered while sanitizing BuildManifest format ${manifest.format}`),
-          ...result.errors.map((error: ValidationError) => new Error(error.toString()))
-        ];
+        throw new Error([
+          `Validation errors encountered while sanitizing BuildManifest format ${manifest.format}`,
+          ...result.errors.map((error: ValidationError) => error.toString())
+        ].join("\n"));
       }
     };
 
