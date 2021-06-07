@@ -1,4 +1,4 @@
-import { generateProject } from "../lib/generators/project-generator";
+import { generateProjectTemplate } from "../lib/project-templates";
 import { fixParameters } from "../lib/helpers/parameters";
 import { intlMsg } from "../lib/intl";
 
@@ -145,7 +145,7 @@ export default {
       }
     }
 
-    generateProject(type, lang, projectDir, filesystem)
+    generateProjectTemplate(type, lang, projectDir, filesystem)
       .then(() => {
         print.newline();
         let readyMessage;

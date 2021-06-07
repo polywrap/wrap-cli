@@ -1,7 +1,8 @@
 import {
   Read,
   Write,
-  Nullable
+  Nullable,
+  BigInt
 } from "@web3api/wasm-as";
 import {
   serializeCustomType,
@@ -25,6 +26,8 @@ export class CustomType {
   i16: i16;
   i32: i32;
   i64: i64;
+  bigint: BigInt;
+  optBigint: BigInt | null;
   bytes: ArrayBuffer;
   optBytes: ArrayBuffer | null;
   boolean: bool;

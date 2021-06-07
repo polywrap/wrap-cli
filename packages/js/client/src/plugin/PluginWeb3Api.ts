@@ -10,7 +10,7 @@ import {
   Uri,
 } from "@web3api/core-js";
 import { decode } from "@msgpack/msgpack";
-import { Tracer } from "@web3api/tracing";
+import { Tracer } from "@web3api/tracing-js";
 
 export class PluginWeb3Api extends Api {
   private _instance: Plugin | undefined;

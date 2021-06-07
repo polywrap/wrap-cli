@@ -14,15 +14,14 @@ import {
   InvokeApiOptions,
   InvokeApiResult,
   Api,
-  Manifest,
+  Web3ApiManifest,
   Uri,
   Client,
   ApiResolver,
   InvokableModules,
 } from "@web3api/core-js";
-import path from "path";
 import * as MsgPack from "@msgpack/msgpack";
-import { Tracer } from "@web3api/tracing";
+import { Tracer } from "@web3api/tracing-js";
 
 const Worker = require("web-worker");
 
@@ -43,7 +42,7 @@ export class WasmWeb3Api extends Api {
 
   constructor(
     private _uri: Uri,
-    private _manifest: Manifest,
+    private _manifest: Web3ApiManifest,
     private _apiResolver: Uri
   ) {
     super();
@@ -91,14 +90,14 @@ export class WasmWeb3Api extends Api {
         Atomics.store(threadMutexes, threadId, 0);
 
         // Spawn the worker thread
-        let modulePath = "./thread.js";
+        let modulePath = process.env.WEB3API_THREAD_PATH || "./thread.js";
 
         // If we're in node.js
         if (typeof process === "object" && typeof window === "undefined") {
-          modulePath = `${__dirname}/thread.js`;
+          modulePath = `file://${__dirname}/thread.js`;
 
           if (process.env.TEST) {
-            modulePath = `${__dirname}/thread-loader.js`;
+            modulePath = `file://${__dirname}/thread-loader.js`;
           }
         }
 
@@ -332,7 +331,8 @@ export class WasmWeb3Api extends Api {
 
         // Either the query or mutation module will work,
         // as they share the same schema file
-        const module = this._manifest.query || this._manifest.mutation;
+        const module =
+          this._manifest.modules.mutation || this._manifest.modules.query;
 
         if (!module) {
           // TODO: this won't work for abstract APIs
@@ -342,7 +342,7 @@ export class WasmWeb3Api extends Api {
         const { data, error } = await ApiResolver.Query.getFile(
           client,
           this._apiResolver,
-          path.join(this._uri.path, module.schema.file)
+          this.combinePaths(this._uri.path, module.schema)
         );
 
         if (error) {
@@ -352,7 +352,7 @@ export class WasmWeb3Api extends Api {
         // If nothing is returned, the schema was not found
         if (!data) {
           throw Error(
-            `WasmWeb3Api: Schema was not found.\nURI: ${this._uri}\nSubpath: ${module.schema.file}`
+            `WasmWeb3Api: Schema was not found.\nURI: ${this._uri}\nSubpath: ${module.schema}`
           );
         }
 
@@ -386,7 +386,7 @@ export class WasmWeb3Api extends Api {
           return this._wasm[module] as ArrayBuffer;
         }
 
-        const moduleManifest = this._manifest[module];
+        const moduleManifest = this._manifest.modules[module];
 
         if (!moduleManifest) {
           throw Error(
@@ -397,17 +397,17 @@ export class WasmWeb3Api extends Api {
         const { data, error } = await ApiResolver.Query.getFile(
           client,
           this._apiResolver,
-          path.join(this._uri.path, moduleManifest.module.file)
+          this.combinePaths(this._uri.path, moduleManifest.module)
         );
 
         if (error) {
-          throw error;
+          throw Error(`ApiResolver.Query.getFile Failed: ${error}`);
         }
 
         // If nothing is returned, the module was not found
         if (!data) {
           throw Error(
-            `Module was not found.\nURI: ${this._uri}\nSubpath: ${moduleManifest.module.file}`
+            `Module was not found.\nURI: ${this._uri}\nSubpath: ${moduleManifest.module}`
           );
         }
 
@@ -417,5 +417,23 @@ export class WasmWeb3Api extends Api {
     );
 
     return run(module, client);
+  }
+
+  private combinePaths(a: string, b: string) {
+    // Normalize all path seperators
+    a = a.replace(/\\/g, "/");
+    b = b.replace(/\\/g, "/");
+
+    // Append a seperator if one doesn't exist
+    if (a[a.length - 1] !== "/") {
+      a += "/";
+    }
+
+    // Remove any leading seperators from
+    while (b[0] === "/" || b[0] === ".") {
+      b = b.substr(1);
+    }
+
+    return a + b;
   }
 }

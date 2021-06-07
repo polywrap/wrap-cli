@@ -1,14 +1,9 @@
 import { OutputDirectory, OutputEntry } from "../";
+import { alphabeticalNamedSort } from "./sort";
 
+import { writeFileSync } from "@web3api/os-js";
 import path from "path";
-import {
-  readdirSync,
-  readFileSync,
-  Dirent,
-  writeFileSync,
-  mkdirSync,
-  existsSync,
-} from "fs";
+import { readdirSync, readFileSync, Dirent, mkdirSync, existsSync } from "fs";
 
 // TODO: make this all async, making it run faster
 export function readDirectory(dir: string): OutputDirectory {
@@ -18,7 +13,9 @@ export function readDirectory(dir: string): OutputDirectory {
     if (dirent.isDirectory()) {
       const entries: OutputEntry[] = readdirSync(direntPath, {
         withFileTypes: true,
-      }).map((dirent) => importDirectoryEntry(direntPath, dirent));
+      })
+        .sort(alphabeticalNamedSort)
+        .map((dirent) => importDirectoryEntry(direntPath, dirent));
 
       return {
         type: "Directory",
@@ -36,7 +33,9 @@ export function readDirectory(dir: string): OutputDirectory {
 
   const entries: OutputEntry[] = readdirSync(dir, {
     withFileTypes: true,
-  }).map((dirent) => importDirectoryEntry(dir, dirent));
+  })
+    .sort(alphabeticalNamedSort)
+    .map((dirent) => importDirectoryEntry(dir, dirent));
 
   return { entries };
 }

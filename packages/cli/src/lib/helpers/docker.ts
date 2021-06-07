@@ -1,73 +1,145 @@
+import { displayPath } from "./path";
 import { runCommand } from "./command";
+import { withSpinner } from "./spinner";
+import { intlMsg } from "../intl";
 
-interface CopyArgs {
-  tempDir: string;
-  imageName: string;
-  source: string;
-  destination: string;
-}
+import { writeFileSync } from "@web3api/os-js";
+import Mustache from "mustache";
+import path from "path";
+import fs from "fs";
 
-interface BuildArgs {
-  tempDir: string;
-  outputImageName: string;
-  args: string;
-}
-
-export function transformEnvToArgs(
-  env: Record<string, string | string[]>
-): string {
-  return Object.entries(env)
-    .map(([key, value]) => {
-      if (typeof value === "string") {
-        return `--build-arg ${key}="${value}"`;
-      } else if (Array.isArray(value)) {
-        return `--build-arg ${key}="${value.join(" ")}"`;
-      } else {
-        throw new Error(
-          "Unsupported env variable type. Supported types: string, string[]"
-        );
-      }
-    })
-    .join(" ");
-}
-
-export async function copyFromImageToHost(
-  { tempDir, imageName, source, destination }: CopyArgs,
+export async function copyArtifactsFromBuildImage(
+  outputDir: string,
+  buildArtifacts: string[],
+  imageName: string,
   quiet = true
 ): Promise<void> {
-  let copyError: Error | undefined;
-
-  await runCommand(
-    `cd ${tempDir} && docker create -ti --name temp ${imageName}`,
-    quiet
-  );
-
-  try {
-    await runCommand(
-      `cd ${tempDir} && docker cp temp:/app/${source}/. ${destination}`,
+  const run = async (): Promise<void> => {
+    // Make sure the interactive terminal name is available
+    const { stdout: containerLsOutput } = await runCommand(
+      "docker container ls -a",
       quiet
     );
-  } catch (e) {
-    copyError = e;
-  }
 
-  try {
-    await runCommand(`cd ${tempDir} && docker rm -f temp`, quiet);
-  } catch (e) {
-    console.log(e);
-  }
+    if (containerLsOutput.indexOf(`root-${imageName}`) > -1) {
+      await runCommand(`docker rm -f root-${imageName}`, quiet);
+    }
 
-  if (copyError) {
-    throw copyError;
+    // Create a new interactive terminal
+    await runCommand(
+      `docker create -ti --name root-${imageName} ${imageName}`,
+      quiet
+    );
+
+    // Make sure the "project" directory exists
+    const { stdout: projectLsOutput } = await runCommand(
+      `docker run --rm ${imageName} /bin/bash -c "ls /project"`,
+      quiet
+    ).catch(() => ({ stdout: "" }));
+
+    if (projectLsOutput.length <= 1) {
+      throw Error(
+        intlMsg.lib_helpers_docker_projectFolderMissing({ image: imageName })
+      );
+    }
+
+    const { stdout: buildLsOutput } = await runCommand(
+      `docker run --rm ${imageName} /bin/bash -c "ls /project/build"`,
+      quiet
+    ).catch(() => ({ stdout: "" }));
+
+    for (const buildArtifact of buildArtifacts) {
+      if (buildLsOutput.indexOf(buildArtifact) === -1) {
+        throw Error(
+          intlMsg.lib_helpers_docker_projectBuildFolderMissing({
+            image: imageName,
+            artifact: buildArtifact,
+          })
+        );
+      }
+    }
+
+    for (const buildArtifact of buildArtifacts) {
+      await runCommand(
+        `docker cp root-${imageName}:/project/build/${buildArtifact} ${outputDir}`,
+        quiet
+      );
+    }
+
+    await runCommand(`docker rm -f root-${imageName}`, quiet);
+  };
+
+  if (quiet) {
+    return await run();
+  } else {
+    const args = {
+      path: displayPath(outputDir),
+      image: imageName,
+    };
+    return (await withSpinner(
+      intlMsg.lib_helpers_docker_copyText(args),
+      intlMsg.lib_helpers_docker_copyError(args),
+      intlMsg.lib_helpers_docker_copyWarning(args),
+      async (_spinner) => {
+        return await run();
+      }
+    )) as void;
   }
 }
 
-export async function buildImage(
-  { tempDir, outputImageName, args }: BuildArgs,
+export async function createBuildImage(
+  rootDir: string,
+  imageName: string,
+  dockerfile: string,
   quiet = true
-): Promise<void> {
-  await runCommand(
-    `cd ${tempDir} && docker build -t ${outputImageName} . ${args}`,
-    quiet
-  );
+): Promise<string> {
+  const run = async (): Promise<string> => {
+    // Build the docker image
+    await runCommand(
+      `docker build -f ${dockerfile} -t ${imageName} ${rootDir}`,
+      quiet
+    );
+
+    // Get the docker image ID
+    const { stdout } = await runCommand(
+      `docker image inspect ${imageName} -f "{{.ID}}"`,
+      quiet
+    );
+
+    if (stdout.indexOf("sha256:") === -1) {
+      throw Error(intlMsg.lib_docker_invalidImageId({ imageId: stdout }));
+    }
+
+    return stdout;
+  };
+
+  if (quiet) {
+    return await run();
+  } else {
+    const args = {
+      image: imageName,
+      dockerfile: displayPath(dockerfile),
+      context: displayPath(rootDir),
+    };
+    return (await withSpinner(
+      intlMsg.lib_helpers_docker_buildText(args),
+      intlMsg.lib_helpers_docker_buildError(args),
+      intlMsg.lib_helpers_docker_buildWarning(args),
+      async (_spinner) => {
+        return await run();
+      }
+    )) as string;
+  }
+}
+
+export function generateDockerfile(
+  templatePath: string,
+  config: Record<string, unknown>
+): string {
+  const outputDir = path.dirname(templatePath);
+  const outputFilePath = path.join(outputDir, "Dockerfile");
+  const template = fs.readFileSync(templatePath, "utf-8");
+  const dockerfile = Mustache.render(template, config);
+  writeFileSync(outputFilePath, dockerfile, "utf-8");
+  return outputFilePath;
 }

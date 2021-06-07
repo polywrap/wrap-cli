@@ -1,3 +1,28 @@
+# Web3API 0.0.1-prealpha.25
+## Feature
+* `@web3api/client-js`: Added the `WEB3API_THREAD_PATH` env variable, allowing integrators to customize where the `thread.js` worker thread module is imported from.
+* `@web3api/wasm-as`: Improved error logging w/ better error messages and a "context stack" showing exactly what properties of the MsgPack blob the serialization / deserialization is failing at.
+
+# Web3API 0.0.1-prealpha.24
+## Bugs
+* `@web3api/wasm-as`: Moved `as-bigint` from `devDependencies` to `dependencies`. Fixes [issue #347](https://github.com/Web3-API/monorepo/issues/347)
+
+# Web3API 0.0.1-prealpha.23
+## Feature
+* `@web3api/os-js`: This package contains OS agnostic code for doing things like writing files w/ consistent line endings.
+* Windows Support: The toolchain now builds and runs properly on the Windows operating system.
+* `BigInt` Schema Type: The `BigInt` type is now available for use as a base type for Web3API GraphQL schemas.
+* `@web3api/react`: The `useWeb3ApiClient` hook was added, allowing users to easily get a reference to the Web3ApiClient used by the Web3ApiProvider.
+
+# Web3API 0.0.1-prealpha.22
+## Feature
+* `@web3api/tracing-js`: The `tracing-js` package uses the [OpenTelemetry Standard](https://opentelemetry.io/) for logging trace events. This enables things like:
+  * Benchmark Timings
+  * Input Argument + Output Result Logging
+  * In-Depth Exception Tracing
+* `@web3api/core-js`: All functions are now traceable.
+* `@web3api/client-js`: All functions are now traceable.
+
 # Web3API 0.0.1-prealpha.21
 ## Feature
 * Sharing code & types between `query` and `mutation` modules is now possible.

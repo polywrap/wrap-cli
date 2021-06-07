@@ -2,32 +2,34 @@ import { exec, ExecException } from "child_process";
 
 export async function runCommand(
   command: string,
-  quiet = false
-): Promise<void> {
+  quiet = true,
+  env = undefined
+): Promise<{ stdout: string; stderr: string }> {
   if (!quiet) {
     console.log(`> ${command}`);
   }
 
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
     const callback = (
       err: ExecException | null,
       stdout: string,
       stderr: string
     ) => {
       if (err) {
-        console.error(err);
+        console.error(stdout);
+        console.error(stderr);
         reject(err);
       } else {
         if (!quiet) {
           // the *entire* stdout and stderr (buffered)
-          console.log(`stdout: ${stdout}`);
-          console.log(`stderr: ${stderr}`);
+          console.log(stdout);
+          console.error(stderr);
         }
 
-        resolve();
+        resolve({ stdout, stderr });
       }
     };
 
-    exec(command, { cwd: __dirname }, callback);
+    exec(command, { cwd: __dirname, env }, callback);
   });
 }

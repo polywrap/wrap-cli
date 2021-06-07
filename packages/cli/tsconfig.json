@@ -1,17 +1,17 @@
 {
   "extends": "../../tsconfig",
   "compilerOptions": {
-    "outDir": "build",
     "lib": [
-      "es2020.intl",
+      "es2020",
       "es2015",
       "es5",
       "dom",
       "ESNext.AsyncIterable"
     ],
+    "outDir": "build",
+    "declarationDir": "build/types",
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "declarationDir": "build/types"
   },
   "include": [
     "./src/**/*.ts"
