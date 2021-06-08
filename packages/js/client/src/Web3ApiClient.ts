@@ -20,7 +20,7 @@ import {
   Manifest,
   sanitizeUriRedirects,
   sanitizeUriInterfaceImplementations,
-  getImplementations
+  getImplementations,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -59,7 +59,7 @@ export class Web3ApiClient implements Client {
             : [],
           implementations: config.implementations
             ? sanitizeUriInterfaceImplementations(config.implementations)
-            : []
+            : [],
         };
       }
 
@@ -163,7 +163,7 @@ export class Web3ApiClient implements Client {
       }
     );
 
-    return await run(options).catch((error: any) => {
+    return await run(options).catch((error) => {
       if (error.length) {
         return { errors: error };
       } else {
@@ -231,8 +231,11 @@ export class Web3ApiClient implements Client {
     const run = Tracer.traceFunc(
       "Web3ApiClient: getImplementations",
       (uri: string): string[] => {
-        return getImplementations(new Uri(uri), this.redirects(), this.implementations())
-          .map(x => x.uri);
+        return getImplementations(
+          new Uri(uri),
+          this.redirects(),
+          this.implementations()
+        ).map((x) => x.uri);
       }
     );
 

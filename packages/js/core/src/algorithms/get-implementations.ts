@@ -21,7 +21,7 @@ export const getImplementations = Tracer.traceFunc(
 
     const addAllImplementationsFromPluginRedirects = (
       redirects: readonly UriRedirect<Uri>[],
-      abstractApi: Uri
+      apiInterfaceUri: Uri
     ) => {
       for (const redirect of redirects) {
         // Plugin implemented check
@@ -40,7 +40,7 @@ export const getImplementations = Tracer.traceFunc(
 
     const addAllImplementationsFromImplementationsArray = (
       implementationsArray: readonly UriInterfaceImplementations<Uri>[],
-      abstractApi: Uri
+      apiInterfaceUri: Uri
     ) => {
       for (const interfaceImplementations of implementationsArray) {
         const fullyResolvedUri = applyRedirects(
