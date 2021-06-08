@@ -4,4 +4,4 @@ repository: https://github.com/web3-api/monorepo
 interface: true
 query:
   schema:
-    file: ./query.graphql
+    file: ./src/query.graphql
