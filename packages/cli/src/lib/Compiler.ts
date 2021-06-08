@@ -3,21 +3,31 @@
 
 import { Project } from "./Project";
 import { SchemaComposer } from "./SchemaComposer";
-import { step, withSpinner, outputManifest } from "./helpers";
+import {
+  withSpinner,
+  outputManifest,
+  generateDockerfile,
+  createBuildImage,
+  copyArtifactsFromBuildImage,
+} from "./helpers";
 import { intlMsg } from "./intl";
 
-import { TypeInfo } from "@web3api/schema-parse";
+import {
+  InvokableModules,
+  Web3ApiManifest,
+  BuildManifest,
+} from "@web3api/core-js";
 import {
   bindSchema,
   writeDirectory,
   BindModuleOptions,
 } from "@web3api/schema-bind";
+import { TypeInfo } from "@web3api/schema-parse";
+import { ComposerOutput } from "@web3api/schema-compose";
 import { writeFileSync } from "@web3api/os-js";
+import fs from "fs";
 import path from "path";
-import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
-import { Ora } from "ora";
-import * as asc from "assemblyscript/cli/asc";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const fsExtra = require("fs-extra");
@@ -31,10 +41,10 @@ export interface CompilerConfig {
 export class Compiler {
   constructor(private _config: CompilerConfig) {}
 
-  public async compile(verbose?: boolean): Promise<boolean> {
+  public async compile(): Promise<boolean> {
     try {
       // Compile the API
-      await this._compileWeb3Api(verbose);
+      await this._compileWeb3Api();
 
       return true;
     } catch (e) {
@@ -43,132 +53,39 @@ export class Compiler {
     }
   }
 
-  public clearCache(): void {
-    this._config.project.clearCache();
-    this._config.schemaComposer.clearCache();
+  public reset(): void {
+    this._config.project.reset();
+    this._config.schemaComposer.reset();
   }
 
-  private async _compileWeb3Api(verbose?: boolean) {
-    const { outputDir, project, schemaComposer } = this._config;
+  private async _compileWeb3Api() {
+    const { project, schemaComposer } = this._config;
 
-    const run = async (spinner?: Ora): Promise<void> => {
+    const run = async (): Promise<void> => {
       // Init & clean build directory
       this._cleanDir(this._config.outputDir);
 
-      const manifest = await project.getManifest();
-      // Get the fully composed schema
-      const composed = await schemaComposer.getComposedSchemas();
+      const web3apiManifest = await project.getWeb3ApiManifest();
 
-      if (!composed.combined) {
-        const failedSchemaMessage = intlMsg.lib_compiler_failedSchemaReturn();
-        throw Error(`compileWeb3Api: ${failedSchemaMessage}`);
+      // Get the fully composed schema
+      const composerOutput = await schemaComposer.getComposedSchemas();
+
+      if (!composerOutput.combined) {
+        throw Error(intlMsg.lib_compiler_failedSchemaReturn());
       }
 
-      const buildModules = async () => {
-        const buildQuery = !!manifest.query;
-        const buildMutation = !!manifest.mutation;
+      const modulesToBuild = this._determineModulesToBuild(web3apiManifest);
 
-        const throwMissingSchema = (moduleName: string) => {
-          const missingSchemaMessage = intlMsg.lib_compiler_missingDefinition({
-            name: `"${moduleName}"`,
-          });
-          throw Error(missingSchemaMessage);
-        };
+      if (modulesToBuild.length === 0) {
+        throw new Error(intlMsg.lib_compiler_noModulesToBuild());
+      }
 
-        if (buildQuery && !composed.query) {
-          throwMissingSchema("query");
-        }
-
-        if (buildMutation && !composed.mutation) {
-          throwMissingSchema("mutation");
-        }
-
-        const queryDirectory = manifest.query
-          ? this._getGenerationDirectory(manifest.query.module.file)
-          : undefined;
-        const mutationDirectory = manifest.mutation
-          ? this._getGenerationDirectory(manifest.mutation.module.file)
-          : undefined;
-
-        if (
-          queryDirectory &&
-          mutationDirectory &&
-          queryDirectory === mutationDirectory
-        ) {
-          throw Error(
-            `compileWeb3Api: ${intlMsg.lib_compiler_duplicateFolder({
-              directory: queryDirectory,
-            })}`
-          );
-        }
-
-        if (buildQuery && !composed.query?.schema) {
-          throw Error(
-            `compileWeb3Api: ${intlMsg.lib_compiler_noSchema({
-              module: "query",
-            })}`
-          );
-        }
-
-        if (buildMutation && !composed.mutation?.schema) {
-          throw Error(
-            `compileWeb3Api: ${intlMsg.lib_compiler_noSchema({
-              module: "mutation",
-            })}`
-          );
-        }
-
-        this._generateCode(
-          buildQuery
-            ? {
-                typeInfo: composed.query?.typeInfo as TypeInfo,
-                outputDirAbs: queryDirectory as string,
-              }
-            : undefined,
-          buildMutation
-            ? {
-                typeInfo: composed.mutation?.typeInfo as TypeInfo,
-                outputDirAbs: mutationDirectory as string,
-              }
-            : undefined
-        );
-
-        if (buildQuery) {
-          const queryManifest = manifest as Required<typeof manifest>;
-          await this._compileWasmModule(
-            queryManifest.query.module.file,
-            "query",
-            outputDir,
-            spinner,
-            verbose
-          );
-          queryManifest.query.module.file = `./query.wasm`;
-          queryManifest.query.schema.file = "./schema.graphql";
-        }
-
-        if (buildMutation) {
-          const mutationManifest = manifest as Required<typeof manifest>;
-          await this._compileWasmModule(
-            mutationManifest.mutation.module.file,
-            "mutation",
-            outputDir,
-            spinner,
-            verbose
-          );
-          mutationManifest.mutation.module.file = `./mutation.wasm`;
-          mutationManifest.mutation.schema.file = "./schema.graphql";
-        }
-      };
-
-      await buildModules();
-
-      // Output the schema & manifest files
-      writeFileSync(
-        `${outputDir}/schema.graphql`,
-        composed.combined.schema as string,
-        "utf-8"
+      // Generate the schema bindings and output the built WASM modules
+      await this._generateAndBuildModules(
+        web3apiManifest,
+        composerOutput,
+        modulesToBuild
       );
-      await outputManifest(manifest, `${outputDir}/web3api.yaml`);
     };
 
     if (project.quiet) {
@@ -178,112 +95,129 @@ export class Compiler {
         intlMsg.lib_compiler_compileText(),
         intlMsg.lib_compiler_compileError(),
         intlMsg.lib_compiler_compileWarning(),
-        async (spinner) => {
-          return run(spinner);
+        async () => {
+          return run();
         }
       );
     }
   }
 
-  private async _compileWasmModule(
-    modulePath: string,
-    moduleName: string,
-    outputDir: string,
-    spinner?: Ora,
-    verbose?: boolean
+  private async _generateAndBuildModules(
+    web3apiManifest: Web3ApiManifest,
+    composerOutput: ComposerOutput,
+    modulesToBuild: InvokableModules[]
   ) {
-    const { project } = this._config;
+    const { outputDir, project } = this._config;
+    const buildQuery = modulesToBuild.indexOf("query") > -1;
+    const buildMutation = modulesToBuild.indexOf("mutation") > -1;
 
-    if (!project.quiet && spinner) {
-      step(
-        spinner,
-        `${intlMsg.lib_compiler_step()}:`,
-        `${modulePath} => ` + path.normalize(`${outputDir}/${moduleName}.wasm`)
+    const throwMissingSchema = (moduleName: string) => {
+      const missingSchemaMessage = intlMsg.lib_compiler_missingDefinition({
+        name: `"${moduleName}"`,
+      });
+      throw Error(missingSchemaMessage);
+    };
+
+    if (buildQuery && (!composerOutput.query || !composerOutput.query.schema)) {
+      throwMissingSchema("query");
+    }
+
+    if (
+      buildMutation &&
+      (!composerOutput.mutation || !composerOutput.mutation.schema)
+    ) {
+      throwMissingSchema("mutation");
+    }
+
+    const queryDirectory = web3apiManifest.modules.query
+      ? this._getGenerationDirectory(web3apiManifest.modules.query.module)
+      : undefined;
+    const mutationDirectory = web3apiManifest.modules.mutation
+      ? this._getGenerationDirectory(web3apiManifest.modules.mutation.module)
+      : undefined;
+
+    if (
+      queryDirectory &&
+      mutationDirectory &&
+      queryDirectory === mutationDirectory
+    ) {
+      throw Error(
+        intlMsg.lib_compiler_dup_code_folder({ directory: queryDirectory })
       );
     }
 
-    const moduleAbsolute = path.join(project.manifestDir, modulePath);
-    const baseDir = path.dirname(moduleAbsolute);
-    const libsDirs = [];
-
-    for (
-      let dir: string | undefined = path.resolve(baseDir);
-      // Terminate after the root dir or when we have found node_modules
-      dir !== undefined;
-      // Continue with the parent directory, terminate after the root dir
-      dir = path.dirname(dir) === dir ? undefined : path.dirname(dir)
-    ) {
-      if (fs.existsSync(path.join(dir, "node_modules"))) {
-        libsDirs.push(path.join(dir, "node_modules"));
-      }
-    }
-
-    if (libsDirs.length === 0) {
-      const noNodeModules = intlMsg.lib_compiler_noNodeModules({
-        folder: `\`node_modules\``,
-      });
-      throw Error(noNodeModules);
-    }
-
-    const args = [
-      path.join(baseDir, "w3/entry.ts"),
-      "--path",
-      libsDirs.join(","),
-      "--outFile",
-      `${outputDir}/${moduleName}.wasm`,
-      "--use",
-      `abort=${path
-        .relative(process.cwd(), path.join(baseDir, "w3/entry/w3Abort"))
-        .replace(/\\/g, "/")}`,
-      "--optimize",
-      "--debug",
-      "--importMemory",
-      "--runtime",
-      "stub",
-    ];
-
-    // compile the module into the output directory
-    await asc.main(
-      args,
-      {
-        stdout: !verbose ? undefined : process.stdout,
-        stderr: process.stderr,
-      },
-      (e: Error | null) => {
-        if (e != null) {
-          throw e;
-        }
-        return 0;
-      }
+    this._generateCode(
+      buildQuery
+        ? {
+            typeInfo: composerOutput.query?.typeInfo as TypeInfo,
+            outputDirAbs: queryDirectory as string,
+          }
+        : undefined,
+      buildMutation
+        ? {
+            typeInfo: composerOutput.mutation?.typeInfo as TypeInfo,
+            outputDirAbs: mutationDirectory as string,
+          }
+        : undefined
     );
 
-    const wasmSource = readFileSync(`${outputDir}/${moduleName}.wasm`);
-    const mod = await WebAssembly.compile(wasmSource);
-    const memory = new WebAssembly.Memory({ initial: 1 });
-    const instance = await WebAssembly.instantiate(mod, {
-      env: {
-        memory,
-      },
-      w3: {
-        __w3_subinvoke: () => {},
-        __w3_subinvoke_result_len: () => {},
-        __w3_subinvoke_result: () => {},
-        __w3_subinvoke_error_len: () => {},
-        __w3_subinvoke_error: () => {},
-        __w3_invoke_args: () => {},
-        __w3_invoke_result: () => {},
-        __w3_invoke_error: () => {},
-        __w3_abort: () => {},
-      },
-    });
+    // Build the sources
+    const dockerImageId = await this._buildSourcesInDocker();
 
-    if (!instance.exports._w3_init) {
-      throw Error(intlMsg.lib_compiler_noInit());
+    // Validate the WASM exports
+    await Promise.all(
+      modulesToBuild.map((module) => this._validateExports(module, outputDir))
+    );
+
+    // Output the schema & manifest files
+    writeFileSync(
+      `${outputDir}/schema.graphql`,
+      composerOutput.combined.schema,
+      "utf-8"
+    );
+
+    const outputWeb3ApiManifest = Object.assign({}, web3apiManifest);
+
+    if (buildQuery) {
+      const queryManifest = outputWeb3ApiManifest as Required<
+        typeof outputWeb3ApiManifest
+      >;
+      queryManifest.modules.query = {
+        module: "./query.wasm",
+        schema: "./schema.graphql",
+      };
     }
 
-    if (!instance.exports._w3_invoke) {
-      throw Error(intlMsg.lib_compiler_noInvoke());
+    if (buildMutation) {
+      const mutationManifest = outputWeb3ApiManifest as Required<
+        typeof outputWeb3ApiManifest
+      >;
+      mutationManifest.modules.mutation = {
+        module: "./mutation.wasm",
+        schema: "./schema.graphql",
+      };
     }
+
+    outputWeb3ApiManifest.build = "./web3api.build.yaml";
+
+    await outputManifest(
+      outputWeb3ApiManifest,
+      `${outputDir}/web3api.yaml`,
+      project.quiet
+    );
+
+    const outputBuildManifest: BuildManifest = {
+      format: "0.0.1-prealpha.2",
+      docker: {
+        buildImageId: dockerImageId,
+      },
+    };
+
+    await outputManifest(
+      outputBuildManifest,
+      `${outputDir}/web3api.build.yaml`,
+      project.quiet
+    );
   }
 
   private _getGenerationDirectory(entryPoint: string): string {
@@ -291,7 +225,7 @@ export class Compiler {
 
     const absolute = path.isAbsolute(entryPoint)
       ? entryPoint
-      : this._appendPath(project.manifestPath, entryPoint);
+      : path.join(project.getWeb3ApiManifestDir(), entryPoint);
     return `${path.dirname(absolute)}/w3`;
   }
 
@@ -331,8 +265,100 @@ export class Compiler {
     return filesWritten;
   }
 
-  private _appendPath(root: string, subPath: string) {
-    return path.join(path.dirname(root), subPath);
+  private async _buildSourcesInDocker(): Promise<string> {
+    const { project, outputDir } = this._config;
+    const buildManifestDir = await project.getBuildManifestDir();
+    const buildManifest = await project.getBuildManifest();
+    const imageName = buildManifest?.docker?.name || "web3api-build";
+    let dockerfile = buildManifest?.docker?.dockerfile
+      ? path.join(buildManifestDir, buildManifest?.docker?.dockerfile)
+      : path.join(buildManifestDir, "Dockerfile");
+
+    // If the dockerfile path isn't provided, generate it
+    if (!buildManifest?.docker?.dockerfile) {
+      // Make sure the default template is in the cached .w3/build/env folder
+      await project.cacheDefaultBuildManifestFiles();
+      dockerfile = generateDockerfile(
+        project.getCachePath("build/env/Dockerfile.mustache"),
+        buildManifest.config || {}
+      );
+    }
+
+    // If the dockerfile path contains ".mustache", generate
+    if (dockerfile.indexOf(".mustache") > -1) {
+      dockerfile = generateDockerfile(dockerfile, buildManifest.config || {});
+    }
+
+    const dockerImageId = await createBuildImage(
+      project.getWeb3ApiManifestDir(),
+      imageName,
+      dockerfile,
+      project.quiet
+    );
+
+    await copyArtifactsFromBuildImage(
+      outputDir,
+      await project.getWeb3ApiArtifacts(),
+      imageName,
+      project.quiet
+    );
+
+    return dockerImageId;
+  }
+
+  private async _validateExports(
+    moduleName: InvokableModules,
+    buildDir: string
+  ) {
+    const wasmSource = fs.readFileSync(
+      path.join(buildDir, `${moduleName}.wasm`)
+    );
+    const mod = await WebAssembly.compile(wasmSource);
+    const memory = new WebAssembly.Memory({ initial: 1 });
+    const instance = await WebAssembly.instantiate(mod, {
+      env: {
+        memory,
+      },
+      w3: {
+        __w3_subinvoke: () => {},
+        __w3_subinvoke_result_len: () => {},
+        __w3_subinvoke_result: () => {},
+        __w3_subinvoke_error_len: () => {},
+        __w3_subinvoke_error: () => {},
+        __w3_invoke_args: () => {},
+        __w3_invoke_result: () => {},
+        __w3_invoke_error: () => {},
+        __w3_abort: () => {},
+      },
+    });
+
+    if (!instance.exports._w3_init) {
+      throw Error(intlMsg.lib_compiler_missing_export__w3_init({ moduleName }));
+    }
+
+    if (!instance.exports._w3_invoke) {
+      throw Error(
+        intlMsg.lib_compiler_missing_export__w3_invoke({ moduleName })
+      );
+    }
+  }
+
+  private _determineModulesToBuild(
+    manifest: Web3ApiManifest
+  ): InvokableModules[] {
+    const manifestMutation = manifest.modules.mutation;
+    const manifestQuery = manifest.modules.query;
+    const modulesToBuild: InvokableModules[] = [];
+
+    if (manifestMutation) {
+      modulesToBuild.push("mutation");
+    }
+
+    if (manifestQuery) {
+      modulesToBuild.push("query");
+    }
+
+    return modulesToBuild;
   }
 
   private _cleanDir(dir: string) {

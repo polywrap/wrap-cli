@@ -73,7 +73,7 @@ export default {
       const { data } = await axios.get("http://localhost:4040/ens");
       ensAddress = data.ensAddress;
     } catch (e) {
-      print.error(intlMsg.commands_query_error_noTestEnv());
+      print.error(intlMsg.commands_query_error_noTestEnvFound());
       return;
     }
 
