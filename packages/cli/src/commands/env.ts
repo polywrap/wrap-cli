@@ -1,10 +1,29 @@
-import { getAggregatedManifest, up, down } from "../lib/helpers/env";
 import { withSpinner } from "../lib/helpers/spinner";
 import { intlMsg } from "../lib/intl";
-import { getEnvVariables } from "../lib/helpers/env";
+import {
+  BASE_PACKAGE_JSON,
+  exec,
+  generateBaseComposedCommand,
+  generateBaseDockerCompose,
+  getDockerComposePaths,
+  installModules,
+  Manifest,
+  parseManifest,
+} from "../lib/env";
+import { getEnvVariables } from "../lib/env/envVars";
 
+import fs from "fs";
+import path from "path";
+import rimraf from "rimraf";
 import { GluegunToolbox, print } from "gluegun";
 import chalk from "chalk";
+
+const TESTENV_DIR_PATH = path.join(".w3", "testenv");
+const MODULES_DIR_PATH = path.join(TESTENV_DIR_PATH, "node_modules");
+const BASE_COMPOSE_FILE_PATH = path.join(
+  TESTENV_DIR_PATH,
+  "docker-compose.yml"
+);
 
 const HELP = `
 ${chalk.bold("w3 env")} ${intlMsg.commands_env_options_command()}
@@ -21,9 +40,10 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { parameters } = toolbox;
     const command = parameters.first;
-    const { modules, watch, detached } = parameters.options;
+    const { modules: modulesOption, watch, detached } = parameters.options;
 
-    const modulesToUse: string[] | undefined = modules && modules.split(",");
+    const modulesToUse: string[] | undefined =
+      modulesOption && modulesOption.split(",");
 
     if (!command) {
       print.error(intlMsg.commands_env_error_noCommand());
@@ -47,33 +67,38 @@ export default {
       return;
     }
 
+    const manifest = parseManifest<Manifest>("./web3api.env.yaml");
+    const modules = manifest.modules || {};
+
+    if (fs.existsSync(TESTENV_DIR_PATH)) {
+      rimraf.sync(TESTENV_DIR_PATH);
+    }
+
+    fs.mkdirSync(TESTENV_DIR_PATH, { recursive: true });
+
+    await installModules(
+      BASE_PACKAGE_JSON,
+      TESTENV_DIR_PATH,
+      Object.values(modules)
+    );
+
+    generateBaseDockerCompose(manifest, BASE_COMPOSE_FILE_PATH);
+
+    const modulesPaths = getDockerComposePaths(
+      MODULES_DIR_PATH,
+      modules,
+      modulesToUse
+    );
+
+    const baseCommand = generateBaseComposedCommand(
+      BASE_COMPOSE_FILE_PATH,
+      modulesPaths
+    );
+
     if (command === "up") {
-      await up({
-        modules: modulesToUse,
-        watch,
-        detached: detached || true,
-      });
-      // await withSpinner(
-      //   intlMsg.commands_env_startup_text(),
-      //   intlMsg.commands_env_startup_error(),
-      //   intlMsg.commands_env_startup_warning(),
-      //   async (_spinner) => {
-
-      //   }
-      // );
+      await exec(`${baseCommand} up ${detached ? "-d" : ""} --build`, watch);
     } else if (command === "down") {
-      await down({
-        modules: modulesToUse,
-        watch,
-      });
-      // await withSpinner(
-      //   intlMsg.commands_env_shutdown_text(),
-      //   intlMsg.commands_env_shutdown_error(),
-      //   intlMsg.commands_env_shutdown_warning(),
-      //   async (_spinner) => {
-
-      //   }
-      // );
+      await exec(`${baseCommand} down`, watch);
     } else if (command === "vars") {
       let vars = "";
 
@@ -82,7 +107,7 @@ export default {
         intlMsg.commands_env_vars_error(),
         intlMsg.commands_env_vars_warning(),
         async (_spinner) => {
-          const envVariables = await getEnvVariables({ modules: modulesToUse });
+          const envVariables = await getEnvVariables(modulesPaths);
           vars = `${envVariables
             .map((variable) => `\n- ${variable}`)
             .join("")}`;
@@ -92,16 +117,7 @@ export default {
       print.info(vars);
     } else if (command === "manifest") {
       let manifest = "";
-      manifest = await getAggregatedManifest({ modules: modulesToUse });
-      await withSpinner(
-        intlMsg.commands_env_manifest_text(),
-        intlMsg.commands_env_manifest_error(),
-        intlMsg.commands_env_manifest_warning(),
-        async (_spinner) => {
-          manifest = await getAggregatedManifest({ modules: modulesToUse });
-        }
-      );
-
+      manifest = await exec(`${baseCommand} config`, watch);
       print.info(manifest);
     } else {
       throw Error(intlMsg.commands_env_error_never());
