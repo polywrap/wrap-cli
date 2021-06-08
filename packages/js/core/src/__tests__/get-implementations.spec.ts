@@ -53,7 +53,7 @@ describe("getImplementations", () => {
         to: {
           factory: () => ({} as Plugin),
           manifest: {
-            schema: {} as SchemaDocument,
+            schema: "",
             implemented: [],
             imported: [],
           },
@@ -108,7 +108,7 @@ describe("getImplementations", () => {
         to: {
           factory: () => ({} as Plugin),
           manifest: {
-            schema: {} as SchemaDocument,
+            schema: '',
             implemented: [new Uri("authority/some-abstract-interface")],
             imported: [new Uri("something/else-2")],
           },
@@ -156,16 +156,23 @@ describe("getImplementations", () => {
       );
 
     expect(getImplementationsResult1).toBeTruthy();
-    expect(getImplementationsResult1.length).toBe(1);
-    expect(getImplementationsResult1).toContain(implementation3Uri);
+    expect(getImplementationsResult1).toEqual([
+      new Uri(implementation1Uri),
+      new Uri(implementation2Uri),
+      new Uri(implementation3Uri)
+    ]);
 
     expect(getImplementationsResult2).toBeTruthy();
-    expect(getImplementationsResult2.length).toBe(1);
-    expect(getImplementationsResult2).toContain(implementation3Uri);
+    expect(getImplementationsResult2).toEqual([
+      new Uri(implementation1Uri),
+      new Uri(implementation2Uri),
+      new Uri(implementation3Uri)
+    ]);
 
     expect(getImplementationsResult3).toBeTruthy();
-    expect(getImplementationsResult3.length).toBe(2);
-    expect(getImplementationsResult3).toContain(implementation3Uri);
-    expect(getImplementationsResult3).toContain(implementation4Uri);
+    expect(getImplementationsResult3).toEqual([
+      new Uri(implementation3Uri),
+      new Uri(implementation4Uri)
+    ]);
   });
 });

@@ -933,7 +933,7 @@ describe("Web3ApiClient", () => {
           to: {
             factory: () => ({} as Plugin),
             manifest: {
-              schema: {} as SchemaDocument,
+              schema: "",
               implemented: [],
               imported: [],
             }
@@ -966,18 +966,26 @@ describe("Web3ApiClient", () => {
     
     const implementations1 = client.getImplementations(interface1Uri);
     const implementations2 = client.getImplementations(interface2Uri);
+    const implementations3 = client.getImplementations(interface3Uri);
 
     expect(implementations1).toBeTruthy();
-    expect(implementations1.length).toBe(1);
-    expect(implementations1).toContain(implementation3Uri);
+    expect(implementations1).toEqual([
+      implementation1Uri,
+      implementation2Uri,
+      implementation3Uri
+    ]);
 
     expect(implementations2).toBeTruthy();
-    expect(implementations2.length).toBe(1);
-    expect(implementations2).toContain(implementation3Uri);
+    expect(implementations2).toEqual([
+      implementation1Uri,
+      implementation2Uri,
+      implementation3Uri
+    ]);
 
-    expect(implementations2).toBeTruthy();
-    expect(implementations2.length).toBe(2);
-    expect(implementations2).toContain(implementation3Uri);
-    expect(implementations2).toContain(implementation4Uri);
+    expect(implementations3).toBeTruthy();
+    expect(implementations3).toEqual([
+      implementation3Uri,
+      implementation4Uri
+    ]);
   });
 });
