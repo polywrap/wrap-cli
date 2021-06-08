@@ -1,7 +1,6 @@
 import {
   ClientConfig,
   createWeb3ApiClient,
-  SchemaDocument,
   Plugin
 } from "../";
 import {

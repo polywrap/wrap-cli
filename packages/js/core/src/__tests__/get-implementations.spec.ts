@@ -2,7 +2,6 @@ import {
   getImplementations,
   Uri,
   UriRedirect,
-  SchemaDocument,
   Plugin,
 } from "../";
 import { UriInterfaceImplementations } from "../types";
@@ -15,7 +14,7 @@ describe("getImplementations", () => {
         to: {
           factory: () => ({} as Plugin),
           manifest: {
-            schema: {} as SchemaDocument,
+            schema: "",
             implemented: [new Uri("authority/some-abstract-interface")],
             imported: [],
           },
@@ -26,7 +25,7 @@ describe("getImplementations", () => {
         to: {
           factory: () => ({} as Plugin),
           manifest: {
-            schema: {} as SchemaDocument,
+            schema: "",
             implemented: [new Uri("authority/some-abstract-interface")],
             imported: [new Uri("something/else-2")],
           },
