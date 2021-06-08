@@ -12,6 +12,11 @@ export interface UriRedirect<TUri = string> {
   to: TUri | PluginPackage;
 }
 
+export interface UriInterfaceImplementations<TUri = string> {
+  interface: TUri;
+  implementations: TUri[];
+}
+
 export const sanitizeUriRedirects = Tracer.traceFunc(
   "core: sanitizeUriRedirects",
   (input: UriRedirect[]): UriRedirect<Uri>[] => {
@@ -26,6 +31,30 @@ export const sanitizeUriRedirects = Tracer.traceFunc(
       output.push({
         from: from,
         to: to,
+      });
+    }
+
+    return output;
+  }
+);
+
+export const sanitizeUriInterfaceImplementations = Tracer.traceFunc(
+  "core: sanitizeUriInterfaceImplementations",
+  (input: UriInterfaceImplementations[]): UriInterfaceImplementations<Uri>[] => {
+    const output: UriInterfaceImplementations<Uri>[] = [];
+    for (const definition of input) {
+      const interfaceUri = new Uri(definition.interface);
+
+      const implementations = definition.implementations
+        .map(x => 
+            typeof x === "string"
+              ? new Uri(x)
+              : x
+          );
+
+      output.push({
+        interface: interfaceUri,
+        implementations: implementations,
       });
     }
 
