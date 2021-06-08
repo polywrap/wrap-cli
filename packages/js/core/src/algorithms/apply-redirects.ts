@@ -58,4 +58,3 @@ export const applyRedirects = Tracer.traceFunc(
     return finalUri;
   }
 );
-      

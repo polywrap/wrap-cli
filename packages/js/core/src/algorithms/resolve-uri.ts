@@ -69,11 +69,7 @@ const resolveUriWithApiResolvers = async (
       }
     };
 
-    // Iterate through all api-resolver implementations,
-    // iteratively resolving the URI until we reach the Web3API manifest
-    for (let i = 0; i < apiResolverImplementationUris.length; ++i) {
-      const uriResolver = new Uri(apiResolverImplementationUris[i]);
-
+    const tryResolveUriWithApiResolver = async (uri: Uri, uriResolver: Uri): Promise<ApiResolver.MaybeUriOrManifest | undefined> => {
       const { data } = await ApiResolver.Query.tryResolveUri(
         client,
         uriResolver,
@@ -83,15 +79,26 @@ const resolveUriWithApiResolvers = async (
       // If nothing was returned, the URI is not supported
       if (!data || (!data.uri && !data.manifest)) {
         Tracer.addEvent("continue", uriResolver.uri);
+        return undefined;
+      }
+
+      return data;
+    };
+
+    // Iterate through all api-resolver implementations,
+    // iteratively resolving the URI until we reach the Web3API manifest
+    for (let i = 0; i < apiResolverImplementationUris.length; ++i) {
+      const uriResolver = new Uri(apiResolverImplementationUris[i]);
+
+      const result = await tryResolveUriWithApiResolver(resolvedUri, uriResolver);
+
+      if(!result) {
         continue;
       }
 
-      const newUri = data.uri;
-      const manifestStr = data.manifest;
-
-      if (newUri) {
+      if (result.uri) {
         // Use the new URI, and reset our index
-        const convertedUri = new Uri(newUri);
+        const convertedUri = new Uri(result.uri);
         trackUriRedirect(convertedUri.uri, uriResolver.uri);
 
         Tracer.addEvent("api-resolver-redirect", {
@@ -103,10 +110,10 @@ const resolveUriWithApiResolvers = async (
         i = -1;
         resolvedUri = convertedUri;
         continue;
-      } else if (manifestStr) {
+      } else if (result.manifest) {
         // We've found our manifest at the current URI resolver
         // meaning the URI resolver can also be used as an API resolver
-        const manifest = deserializeManifest(manifestStr, { noValidate });
+        const manifest = deserializeManifest(result.manifest, { noValidate });
 
         return Tracer.traceFunc(
           "resolveUri: createApi",
