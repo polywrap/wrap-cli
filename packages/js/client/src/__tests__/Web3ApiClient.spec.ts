@@ -1,6 +1,8 @@
 import {
   ClientConfig,
-  createWeb3ApiClient
+  createWeb3ApiClient,
+  SchemaDocument,
+  Plugin
 } from "../";
 import {
   buildAndDeployApi,
@@ -8,7 +10,6 @@ import {
   stopTestEnvironment
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 
 jest.setTimeout(50000);
 
@@ -906,6 +907,7 @@ describe("Web3ApiClient", () => {
 
     const interface1Uri = "w3://ens/some-interface1.eth";
     const interface2Uri = "w3://ens/some-interface2.eth";
+    const interface3Uri = "w3://ens/some-interface3.eth";
 
     const implementation1Uri = "w3://ens/some-implementation.eth";
     const implementation2Uri = "w3://ens/some-implementation2.eth";
@@ -914,6 +916,10 @@ describe("Web3ApiClient", () => {
 
     const client = await getClient({
       redirects: [
+        {
+          from: interface1Uri,
+          to: interface2Uri
+        },
         {
           from: implementation1Uri,
           to: implementation2Uri
@@ -924,14 +930,14 @@ describe("Web3ApiClient", () => {
         },
         {
           from: implementation4Uri,
-          to: ethereumPlugin({
-            networks: {
-              mainnet: {
-                provider: "ethereum"
-              }
-            },
-            defaultNetwork: "mainnet"
-          })
+          to: {
+            factory: () => ({} as Plugin),
+            manifest: {
+              schema: {} as SchemaDocument,
+              implemented: [],
+              imported: [],
+            }
+          }
         }
       ],
       implementations: [
@@ -945,6 +951,12 @@ describe("Web3ApiClient", () => {
         {
           interface: interface2Uri,
           implementations: [
+            implementation3Uri
+          ]
+        },
+        {
+          interface: interface3Uri,
+          implementations: [
             implementation3Uri,
             implementation4Uri
           ]
@@ -956,9 +968,12 @@ describe("Web3ApiClient", () => {
     const implementations2 = client.getImplementations(interface2Uri);
 
     expect(implementations1).toBeTruthy();
-    expect(implementations1.length).toBe(2);
-    expect(implementations1).toContain(implementation1Uri);
-    expect(implementations1).toContain(implementation2Uri);
+    expect(implementations1.length).toBe(1);
+    expect(implementations1).toContain(implementation3Uri);
+
+    expect(implementations2).toBeTruthy();
+    expect(implementations2.length).toBe(1);
+    expect(implementations2).toContain(implementation3Uri);
 
     expect(implementations2).toBeTruthy();
     expect(implementations2.length).toBe(2);

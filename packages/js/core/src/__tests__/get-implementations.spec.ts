@@ -76,4 +76,96 @@ describe("getImplementations", () => {
 
     expect(result).toMatchObject(values);
   });
+
+  it("works with complex redirects", () => {
+    const interface1Uri = "w3://ens/some-interface1.eth";
+    const interface2Uri = "w3://ens/some-interface2.eth";
+    const interface3Uri = "w3://ens/some-interface3.eth";
+
+    const implementation1Uri = "w3://ens/some-implementation.eth";
+    const implementation2Uri = "w3://ens/some-implementation2.eth";
+    const implementation3Uri = "w3://ens/some-implementation3.eth";
+    const implementation4Uri = "w3://ens/some-implementation4.eth";
+
+    const redirects: UriRedirect<Uri>[] = [
+      {
+        from: new Uri(interface1Uri),
+        to: new Uri(interface2Uri)
+      },
+      {
+        from: new Uri(implementation1Uri),
+        to: new Uri(implementation2Uri)
+      },
+      {
+        from: new Uri(implementation2Uri),
+        to: new Uri(implementation3Uri)
+      }
+    ];
+
+    const pluginImplementations: UriRedirect<Uri>[] = [
+      {
+        from: new Uri(implementation4Uri),
+        to: {
+          factory: () => ({} as Plugin),
+          manifest: {
+            schema: {} as SchemaDocument,
+            implemented: [new Uri("authority/some-abstract-interface")],
+            imported: [new Uri("something/else-2")],
+          },
+        }
+      }
+    ];
+
+    const implementations: UriInterfaceImplementations<Uri>[] = [
+      {
+        interface: new Uri(interface1Uri),
+        implementations: [
+          new Uri(implementation1Uri),
+          new Uri(implementation2Uri)
+        ]
+      },
+      {
+        interface: new Uri(interface2Uri),
+        implementations: [
+          new Uri(implementation3Uri)
+        ]
+      },
+      {
+        interface: new Uri(interface3Uri),
+        implementations: [
+          new Uri(implementation3Uri),
+          new Uri(implementation4Uri)
+        ]
+      }
+    ];
+
+    const getImplementationsResult1 = getImplementations(
+        new Uri(interface1Uri), 
+        [...pluginImplementations, ...redirects],
+        implementations
+      );
+    const getImplementationsResult2 = getImplementations(
+        new Uri(interface2Uri), 
+        [...pluginImplementations, ...redirects],
+        implementations
+      );
+    const getImplementationsResult3 = getImplementations(
+        new Uri(interface3Uri), 
+        [...pluginImplementations, ...redirects],
+        implementations
+      );
+
+    expect(getImplementationsResult1).toBeTruthy();
+    expect(getImplementationsResult1.length).toBe(1);
+    expect(getImplementationsResult1).toContain(implementation3Uri);
+
+    expect(getImplementationsResult2).toBeTruthy();
+    expect(getImplementationsResult2.length).toBe(1);
+    expect(getImplementationsResult2).toContain(implementation3Uri);
+
+    expect(getImplementationsResult3).toBeTruthy();
+    expect(getImplementationsResult3.length).toBe(2);
+    expect(getImplementationsResult3).toContain(implementation3Uri);
+    expect(getImplementationsResult3).toContain(implementation4Uri);
+  });
 });
