@@ -3,7 +3,12 @@
 
 import { Project } from "./Project";
 
-import { Manifest, Uri, Web3ApiClient, UriRedirect } from "@web3api/client-js";
+import {
+  Web3ApiManifest,
+  Uri,
+  Web3ApiClient,
+  UriRedirect,
+} from "@web3api/client-js";
 import {
   composeSchema,
   ComposerOutput,
@@ -81,9 +86,9 @@ export class SchemaComposer {
 
     const { project } = this._config;
 
-    const manifest = await project.getManifest();
-    const querySchemaPath = manifest.query?.schema.file;
-    const mutationSchemaPath = manifest.mutation?.schema.file;
+    const manifest = await project.getWeb3ApiManifest();
+    const querySchemaPath = manifest.modules.query?.schema;
+    const mutationSchemaPath = manifest.modules.mutation?.schema;
     const getSchema = (schemaPath?: string): SchemaFile | undefined =>
       schemaPath
         ? {
@@ -107,13 +112,13 @@ export class SchemaComposer {
     return this._composerOutput;
   }
 
-  public clearCache(): void {
+  public reset(): void {
     this._composerOutput = undefined;
   }
 
   private async _fetchExternalSchema(
     uri: string,
-    manifest: Manifest
+    manifest: Web3ApiManifest
   ): Promise<string> {
     // Check to see if we have any import redirects that match
     if (manifest.import_redirects) {
@@ -140,12 +145,8 @@ export class SchemaComposer {
     return fs.readFileSync(
       path.isAbsolute(schemaPath)
         ? schemaPath
-        : this._appendPath(this._config.project.manifestPath, schemaPath),
+        : path.join(this._config.project.getWeb3ApiManifestDir(), schemaPath),
       "utf-8"
     );
-  }
-
-  private _appendPath(root: string, subPath: string) {
-    return path.join(path.dirname(root), subPath);
   }
 }
