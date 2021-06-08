@@ -5,6 +5,7 @@ import { applyRedirects } from "./apply-redirects";
 import { findPluginPackage } from "./find-plugin-package";
 
 import { Tracer } from "@web3api/tracing-js";
+import { getImplementations } from "./get-implementations";
 
 export const resolveUri = Tracer.traceFunc(
   "core: resolveUri",
@@ -29,7 +30,7 @@ export const resolveUri = Tracer.traceFunc(
     }
 
     // The final URI has been resolved, let's now resolve the Web3API package
-    const uriResolverImplementations = client.getImplementations("w3/api-resolver");
+    const uriResolverImplementations = getImplementations(new Uri("w3/api-resolver"), redirects, client.implementations());
 
     return await resolveUriWithApiResolvers(finalRedirectedUri, uriResolverImplementations, client, createApi, noValidate);
   }
@@ -37,7 +38,7 @@ export const resolveUri = Tracer.traceFunc(
 
 const resolveUriWithApiResolvers = async (
     uri: Uri, 
-    apiResolverImplementationUris: string[],  
+    apiResolverImplementationUris: Uri[],  
     client: Client, 
     createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api,
     noValidate?: boolean
@@ -88,7 +89,7 @@ const resolveUriWithApiResolvers = async (
     // Iterate through all api-resolver implementations,
     // iteratively resolving the URI until we reach the Web3API manifest
     for (let i = 0; i < apiResolverImplementationUris.length; ++i) {
-      const uriResolver = new Uri(apiResolverImplementationUris[i]);
+      const uriResolver = apiResolverImplementationUris[i];
 
       const result = await tryResolveUriWithApiResolver(resolvedUri, uriResolver);
 

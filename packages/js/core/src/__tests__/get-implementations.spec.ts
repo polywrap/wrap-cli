@@ -5,14 +5,11 @@ import {
   SchemaDocument,
   Plugin,
 } from "../";
+import { UriInterfaceImplementations } from "../types";
 
 describe("getImplementations", () => {
   it("works in the typical case", () => {
-    const implementations: UriRedirect<Uri>[] = [
-      {
-        from: new Uri("authority/some-abstract-interface"),
-        to: new Uri("one/1"),
-      },
+    const pluginImplementations: UriRedirect<Uri>[] = [
       {
         from: new Uri("authority/some-abstract-interface"),
         to: {
@@ -37,7 +34,16 @@ describe("getImplementations", () => {
       },
     ];
 
-    const others: UriRedirect<Uri>[] = [
+    const implementations: UriInterfaceImplementations<Uri>[] = [
+      {
+        interface: new Uri("authority/some-abstract-interface"),
+        implementations: [
+          new Uri("one/1")
+        ],
+      }
+    ];
+
+    const otherRedirects: UriRedirect<Uri>[] = [
       {
         from: new Uri("some-other/other"),
         to: new Uri("other/other"),
@@ -57,12 +63,17 @@ describe("getImplementations", () => {
 
     const result = getImplementations(
       new Uri("authority/some-abstract-interface"),
-      [...implementations, ...others]
+      [...pluginImplementations, ...otherRedirects],
+      implementations
     );
 
-    const values = implementations.map((item) =>
+    const values = pluginImplementations.map((item) =>
       Uri.isUri(item.to) ? item.to : item.from
+    ).concat(
+      implementations.map(x => x.implementations)
+        .reduce((s,x) =>s.concat(x), [])
     );
+
     expect(result).toMatchObject(values);
   });
 });

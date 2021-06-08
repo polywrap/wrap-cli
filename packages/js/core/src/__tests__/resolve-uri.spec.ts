@@ -14,13 +14,16 @@ import {
   UriRedirect,
   resolveUri,
 } from "../";
+import { UriInterfaceImplementations } from "../types";
 
 describe("resolveUri", () => {
   const client = (
     redirects: UriRedirect<Uri>[],
-    apis: Record<string, PluginModules>
+    implementations: UriInterfaceImplementations<Uri>[],
+    apis: Record<string, PluginModules>,
   ): Client => ({
     redirects: () => redirects,
+    implementations: () => implementations,
     query: <
       TData extends Record<string, unknown> = Record<string, unknown>,
       TVariables extends Record<string, unknown> = Record<string, unknown>,
@@ -111,14 +114,6 @@ describe("resolveUri", () => {
 
   const redirects: UriRedirect<Uri>[] = [
     {
-      from: new Uri("w3/api-resolver"),
-      to: new Uri("ens/ens"),
-    },
-    {
-      from: new Uri("w3/api-resolver"),
-      to: new Uri("ens/ipfs"),
-    },
-    {
       from: new Uri("ens/my-plugin"),
       to: {
         factory: () => ({} as Plugin),
@@ -128,6 +123,16 @@ describe("resolveUri", () => {
           imported: [],
         },
       },
+    },
+  ]
+  
+  const implementations: UriInterfaceImplementations<Uri>[] = [
+    {
+      interface: new Uri("w3/api-resolver"),
+      implementations: [
+        new Uri("ens/ens"),
+        new Uri("ens/ipfs")
+      ]
     },
   ];
 
@@ -144,14 +149,14 @@ describe("resolveUri", () => {
     const query = ApiResolver.Query;
     const uri = new Uri("w3/some-uri");
 
-    expect(query.tryResolveUri(client(redirects, apis), api, uri)).toBeDefined();
-    expect(query.getFile(client(redirects, apis), file, path)).toBeDefined();
+    expect(query.tryResolveUri(client(redirects, implementations, apis), api, uri)).toBeDefined();
+    expect(query.getFile(client(redirects, implementations, apis), file, path)).toBeDefined();
   });
 
   it("works in the typical case", async () => {
     const result = await resolveUri(
       new Uri("ens/test.eth"),
-      client(redirects, apis),
+      client(redirects, implementations, apis),
       createPluginApi,
       createApi,
       true
@@ -174,7 +179,7 @@ describe("resolveUri", () => {
   it("uses a plugin that implements api-resolver", async () => {
     const result = await resolveUri(
       new Uri("my/something-different"),
-      client(redirects, apis),
+      client(redirects, implementations, apis),
       createPluginApi,
       createApi,
       true
@@ -197,7 +202,7 @@ describe("resolveUri", () => {
   it("works when direct query a Web3API that implements the api-resolver", async () => {
     const result = await resolveUri(
       new Uri("ens/ens"),
-      client(redirects, apis),
+      client(redirects, implementations, apis),
       createPluginApi,
       createApi,
       true
@@ -221,7 +226,7 @@ describe("resolveUri", () => {
   it("works when direct query a plugin Web3API that implements the api-resolver", async () => {
     const result = await resolveUri(
       new Uri("my/something-different"),
-      client(redirects, apis),
+      client(redirects, implementations, apis),
       createPluginApi,
       createApi,
       true
@@ -258,7 +263,7 @@ describe("resolveUri", () => {
 
     return resolveUri(
       new Uri("some/api"),
-      client(circular, apis),
+      client(circular, implementations, apis),
       createPluginApi,
       createApi,
       true
@@ -284,7 +289,7 @@ describe("resolveUri", () => {
 
     return resolveUri(
       new Uri("some/api"),
-      client(missingFromProperty, apis),
+      client(missingFromProperty, implementations, apis),
       createPluginApi,
       createApi,
       true
@@ -311,7 +316,7 @@ describe("resolveUri", () => {
 
     const result = await resolveUri(
       new Uri("some/api"),
-      client(uriToPlugin, apis),
+      client(uriToPlugin, implementations, apis),
       createPluginApi,
       createApi,
       true
@@ -346,7 +351,7 @@ describe("resolveUri", () => {
 
     await resolveUri(
       uri,
-      client(redirects, {
+      client(redirects, implementations, {
         ...apis,
         "w3://ens/ipfs": faultyIpfsApi
       }),
