@@ -1,4 +1,4 @@
-import { useWeb3ApiQuery, Web3ApiProvider } from "@web3api/react";
+import { useWeb3ApiQuery, Web3ApiProvider, useWeb3ApiClient, createWeb3ApiProvider } from "@web3api/react";
 import { UriRedirect } from "@web3api/client-js";
 import React from "react";
 
@@ -45,6 +45,9 @@ const SimpleStorage = ({ uri }: { uri: string }) => {
     }`,
   });
 
+  const client1 = useWeb3ApiClient();
+  const client2 = useWeb3ApiClient({ provider: "custom" });
+
   const updateStorageData = async () => {
     await setData();
     await getStorageData();
@@ -60,11 +63,20 @@ const SimpleStorage = ({ uri }: { uri: string }) => {
           <button onClick={updateStorageData}>Set the storage to 5!</button>
           <button onClick={getStorageData}>Check storage</button>
           <div>{currentStorage?.getData} </div>
+          <div>
+            {
+              client1.redirects().length > client2.redirects().length 
+                ? 'Provider Redirects are correct' 
+                : 'Provider Redirects are not correct'
+            }
+          </div>
         </>
       )}
     </>
   );
 };
+
+const CustomProvider = createWeb3ApiProvider("custom");
 
 export const SimpleStorageContainer = ({
   redirects,
@@ -73,7 +85,9 @@ export const SimpleStorageContainer = ({
   redirects: UriRedirect[];
   ensUri: string;
 }) => (
-  <Web3ApiProvider redirects={redirects}>
-    <SimpleStorage uri={ensUri} />
-  </Web3ApiProvider>
+  <CustomProvider>
+    <Web3ApiProvider redirects={redirects}>
+      <SimpleStorage uri={ensUri} />
+    </Web3ApiProvider>
+  </CustomProvider>
 );

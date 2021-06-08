@@ -2,9 +2,9 @@ import { Signer, ethers } from "ethers";
 import {
   ExternalProvider,
   JsonRpcProvider,
-  WebSocketProvider,
   Web3Provider,
   Networkish,
+  getNetwork,
 } from "@ethersproject/providers";
 import { getAddress } from "@ethersproject/address";
 
@@ -43,7 +43,18 @@ export class Connection {
     const connections: Connections = {};
 
     for (const network of Object.keys(configs)) {
-      connections[network] = new Connection(configs[network]);
+      // Create the connection
+      const connection = new Connection(configs[network]);
+
+      connections[network] = connection;
+
+      // Handle the case where `network` is a number
+      const networkNumber = Number.parseInt(network);
+
+      if (networkNumber) {
+        const namedNetwork = getNetwork(networkNumber);
+        connections[namedNetwork.name] = connection;
+      }
     }
 
     return connections;
@@ -72,7 +83,7 @@ export class Connection {
     if (typeof provider === "string") {
       this._client = (ethers.providers.getDefaultProvider(
         provider
-      ) as unknown) as JsonRpcProvider | WebSocketProvider;
+      ) as unknown) as JsonRpcProvider;
     } else {
       if ((provider as JsonRpcProvider).anyNetwork !== undefined) {
         this._client = provider as JsonRpcProvider;
