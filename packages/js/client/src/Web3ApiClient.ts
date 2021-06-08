@@ -163,7 +163,7 @@ export class Web3ApiClient implements Client {
       }
     );
 
-    return await run(options).catch((error) => {
+    return await run(options).catch((error: any) => {
       if (error.length) {
         return { errors: error };
       } else {
