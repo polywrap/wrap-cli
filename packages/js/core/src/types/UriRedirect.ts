@@ -40,17 +40,16 @@ export const sanitizeUriRedirects = Tracer.traceFunc(
 
 export const sanitizeUriInterfaceImplementations = Tracer.traceFunc(
   "core: sanitizeUriInterfaceImplementations",
-  (input: UriInterfaceImplementations[]): UriInterfaceImplementations<Uri>[] => {
+  (
+    input: UriInterfaceImplementations[]
+  ): UriInterfaceImplementations<Uri>[] => {
     const output: UriInterfaceImplementations<Uri>[] = [];
     for (const definition of input) {
       const interfaceUri = new Uri(definition.interface);
 
-      const implementations = definition.implementations
-        .map(x => 
-            typeof x === "string"
-              ? new Uri(x)
-              : x
-          );
+      const implementations = definition.implementations.map((x) =>
+        typeof x === "string" ? new Uri(x) : x
+      );
 
       output.push({
         interface: interfaceUri,
