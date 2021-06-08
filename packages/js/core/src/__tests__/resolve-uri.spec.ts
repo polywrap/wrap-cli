@@ -4,7 +4,7 @@ import {
   Client,
   InvokeApiOptions,
   InvokeApiResult,
-  Manifest,
+  Web3ApiManifest,
   Plugin,
   PluginModules,
   PluginPackage,
@@ -55,7 +55,7 @@ describe("resolveUri", () => {
     };
   };
 
-  const createApi = (uri: Uri, manifest: Manifest, apiResolver: Uri): Api => {
+  const createApi = (uri: Uri, manifest: Web3ApiManifest, apiResolver: Uri): Api => {
     return {
       invoke: () =>
         Promise.resolve({
@@ -89,7 +89,7 @@ describe("resolveUri", () => {
       ) => {
         return {
           manifest:
-            input.authority === "ipfs" ? "format: 0.0.1-prealpha.1\ndog: cat" : undefined,
+            input.authority === "ipfs" ? "format: 0.0.1-prealpha.2\ndog: cat" : undefined,
         };
       },
     },
@@ -103,7 +103,7 @@ describe("resolveUri", () => {
       ) => {
         return {
           manifest:
-            input.authority === "my" ? "format: 0.0.1-prealpha.1" : undefined,
+            input.authority === "my" ? "format: 0.0.1-prealpha.2" : undefined,
         };
       },
     },
@@ -165,7 +165,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
       manifest: {
-        format: "0.0.1-prealpha.1"
+        format: "0.0.1-prealpha.2"
       },
       apiResolver: new Uri("ens/ipfs"),
     });
@@ -188,7 +188,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("my/something-different"),
       manifest: {
-        format: "0.0.1-prealpha.1"
+        format: "0.0.1-prealpha.2"
       },
       apiResolver: new Uri("ens/my-plugin"),
     });
@@ -211,7 +211,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
       manifest: {
-        format: "0.0.1-prealpha.1",
+        format: "0.0.1-prealpha.2",
         dog: "cat"
       },
       apiResolver: new Uri("ens/ipfs"),
@@ -235,7 +235,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("my/something-different"),
       manifest: {
-        format: "0.0.1-prealpha.1"
+        format: "0.0.1-prealpha.2"
       },
       apiResolver: new Uri("ens/my-plugin"),
     });
