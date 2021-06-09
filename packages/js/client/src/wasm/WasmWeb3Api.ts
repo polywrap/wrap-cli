@@ -19,6 +19,11 @@ import {
   Client,
   ApiResolver,
   InvokableModules,
+  GetManifestOptions,
+  deserializeWeb3ApiManifest,
+  deserializeBuildManifest,
+  Manifest,
+  ManifestFile,
 } from "@web3api/core-js";
 import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
@@ -340,7 +345,7 @@ export class WasmWeb3Api extends Api {
         }
 
         this._schema = (await this.getFile(
-          module.schema.file,
+          module.schema,
           client,
           "utf8"
         )) as string;
@@ -352,19 +357,24 @@ export class WasmWeb3Api extends Api {
     return run(client);
   }
 
-  public async getManifest(
-    options: GetManifestOptions,
+  public async getManifest<T extends ManifestFile>(
+    options: GetManifestOptions<T>,
     client: Client
-  ): Promise<Manifest> {
+  ): Promise<Manifest<T>> {
     if (!options?.manifest) {
-      return this._manifest;
+      return this._manifest as Manifest<T>;
     }
     const manifest = (await this.getFile(
       options.manifest,
       client,
       "utf8"
     )) as string;
-    return deserializeManifest(manifest);
+    switch (options.manifest) {
+      case "web3api.build.yaml":
+        return deserializeBuildManifest(manifest) as Manifest<T>;
+      default:
+        return deserializeWeb3ApiManifest(manifest) as Manifest<T>;
+    }
   }
 
   private async getWasmModule(
@@ -390,7 +400,7 @@ export class WasmWeb3Api extends Api {
         }
 
         const data = (await this.getFile(
-          moduleManifest.module.file,
+          moduleManifest.module,
           client
         )) as ArrayBuffer;
 

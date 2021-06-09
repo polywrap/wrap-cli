@@ -1,5 +1,5 @@
 import {
-  createWeb3ApiClient, Uri
+  createWeb3ApiClient
 } from "../";
 import {
   buildAndDeployApi,
@@ -7,7 +7,7 @@ import {
   stopTestEnvironment
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
-import { Manifest, PluginManifest, deserializeManifest } from "@web3api/core-js";
+import { Uri, PluginManifest, Web3ApiManifest, deserializeWeb3ApiManifest } from "@web3api/core-js";
 import { readFileSync } from "fs";
 
 jest.setTimeout(200000);
@@ -911,26 +911,29 @@ describe("Web3ApiClient", () => {
     const client = await getClient();
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
-    const manifest: Manifest | PluginManifest = await client.getManifest({
+    const actualManifestStr: string = readFileSync(`${GetPathToTestApis()}/simple-storage/build/web3api.yaml`, 'utf8');
+    const actualManifest: Web3ApiManifest = deserializeWeb3ApiManifest(actualManifestStr);
+
+    const manifest: Web3ApiManifest = await client.getManifest({
       uri: ensUri,
       manifest: 'web3api.yaml'
     })
-
-    const actualManifestStr: string = readFileSync(`${GetPathToTestApis()}/simple-storage/build/web3api.yaml`, 'utf8');
-    const actualManifest: Manifest = deserializeManifest(actualManifestStr);
-
-    expect(manifest).toBeTruthy();
     expect(manifest).toStrictEqual(actualManifest);
+
+    const defaultManifest: Web3ApiManifest = (await client.getManifest({
+      uri: ensUri,
+    })) as Web3ApiManifest;
+    expect(defaultManifest).toStrictEqual(actualManifest);
   });
 
   it("getManifest -- Logger plugin", async () => {
     const client = await getClient();
 
-    const manifest: Manifest | PluginManifest = await client.getManifest({
-      uri: "w3://w3/logger"
-    })
+    const manifest: PluginManifest = await client.getManifest({
+      uri: "w3://w3/logger",
+      manifest: "manifest.ts"
+    });
 
-    expect(manifest).toBeTruthy();
     expect(manifest).toStrictEqual({
       schema: `
 # TODO: should import and "implements" the logger core-api schema
@@ -953,5 +956,10 @@ type Query {
       implemented: [new Uri("w3/logger")],
       imported: [],
     });
+
+    const defaultManifest: PluginManifest = (await client.getManifest({
+      uri: "w3://w3/logger",
+    })) as PluginManifest;
+    expect(defaultManifest).toStrictEqual(manifest);
   });
 });
