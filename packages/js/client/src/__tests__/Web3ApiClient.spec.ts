@@ -10,7 +10,7 @@ import { GetPathToTestApis } from "@web3api/test-cases";
 import { Manifest, PluginManifest, deserializeManifest } from "@web3api/core-js";
 import { readFileSync } from "fs";
 
-jest.setTimeout(50000);
+jest.setTimeout(200000);
 
 describe("Web3ApiClient", () => {
   let ipfsProvider: string;

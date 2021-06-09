@@ -1,6 +1,6 @@
 {
-  "name": "@web3api/manifest-schema",
-  "description": "Web3API Manifest Schema",
+  "name": "@web3api/manifest-schemas",
+  "description": "Web3API Manifest Schemas",
   "version": "0.0.1-prealpha.25",
   "license": "MIT",
   "repository": {
