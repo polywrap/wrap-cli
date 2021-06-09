@@ -241,16 +241,15 @@ export class Web3ApiClient implements Client {
     const run = Tracer.traceFunc(
       "Web3ApiClient: getImplementations",
       (uri: string): string[] => {
-        const interfaceImplementations = this.interfaces()
-          .find((x) => Uri.equals(x.interface, new Uri(uri)));
+        const interfaceImplementations = this.interfaces().find((x) =>
+          Uri.equals(x.interface, new Uri(uri))
+        );
 
-        if(!interfaceImplementations) {
+        if (!interfaceImplementations) {
           throw Error(`Interface: ${uri} has no implementations registered`);
         }
 
-        return interfaceImplementations
-          .implementations
-          .map(x => x.uri);
+        return interfaceImplementations.implementations.map((x) => x.uri);
       }
     );
 
