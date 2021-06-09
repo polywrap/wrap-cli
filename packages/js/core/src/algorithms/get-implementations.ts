@@ -1,4 +1,4 @@
-import { Uri, UriRedirect, InterfaceImplementations } from "../types";
+import { Uri, UriRedirect, InterfaceImplementations, PluginRegistration } from "../types";
 import { applyRedirects } from "./apply-redirects";
 
 import { Tracer } from "@web3api/tracing-js";
@@ -8,6 +8,7 @@ export const getImplementations = Tracer.traceFunc(
   (
     apiInterfaceUri: Uri,
     redirects: readonly UriRedirect<Uri>[],
+    plugins: readonly PluginRegistration<Uri>[],
     interfaceImplementationsList: readonly InterfaceImplementations<Uri>[]
   ): Uri[] => {
     const result: Uri[] = [];
@@ -20,20 +21,15 @@ export const getImplementations = Tracer.traceFunc(
     };
 
     const addAllImplementationsFromPluginRedirects = (
-      redirects: readonly UriRedirect<Uri>[],
       apiInterfaceUri: Uri
     ) => {
-      for (const redirect of redirects) {
-        // Plugin implemented check
-        if (!Uri.isUri(redirect.to)) {
-          const { implemented } = redirect.to.manifest;
-          const implementedApi =
-            implemented.findIndex((uri) => Uri.equals(uri, apiInterfaceUri)) >
-            -1;
+      for (const pluginRegistration of plugins) {
+        const { implemented } = pluginRegistration.plugin.manifest;
+        const implementedApi =
+          implemented.findIndex((uri) => Uri.equals(uri, apiInterfaceUri)) > -1;
 
-          if (implementedApi) {
-            addUniqueResult(redirect.from);
-          }
+        if (implementedApi) {
+          addUniqueResult(pluginRegistration.uri);
         }
       }
     };
@@ -62,7 +58,6 @@ export const getImplementations = Tracer.traceFunc(
     );
 
     addAllImplementationsFromPluginRedirects(
-      redirects,
       finalRedirectedApiInterface
     );
     addAllImplementationsFromImplementationsArray(

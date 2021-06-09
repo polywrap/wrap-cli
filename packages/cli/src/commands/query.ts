@@ -6,7 +6,7 @@ import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 import gql from "graphql-tag";
 import path from "path";
-import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
+import { PluginRegistration, Web3ApiClient } from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
@@ -79,10 +79,10 @@ export default {
 
     // TODO: move this into its own package, since it's being used everywhere?
     // maybe have it exported from test-env.
-    const redirects: UriRedirect[] = [
+    const plugins: PluginRegistration[] = [
       {
-        from: "w3://ens/ethereum.web3api.eth",
-        to: ethereumPlugin({
+        uri: "w3://ens/ethereum.web3api.eth",
+        plugin: ethereumPlugin({
           networks: {
             testnet: {
               provider: ethereumProvider,
@@ -95,15 +95,15 @@ export default {
         }),
       },
       {
-        from: "w3://ens/ipfs.web3api.eth",
-        to: ipfsPlugin({
+        uri: "w3://ens/ipfs.web3api.eth",
+        plugin: ipfsPlugin({
           provider: ipfsProvider,
           fallbackProviders: ["https://ipfs.io"],
         }),
       },
       {
-        from: "w3://ens/ens.web3api.eth",
-        to: ensPlugin({
+        uri: "w3://ens/ens.web3api.eth",
+        plugin: ensPlugin({
           addresses: {
             testnet: ensAddress,
           },
@@ -111,7 +111,7 @@ export default {
       },
     ];
 
-    const client = new Web3ApiClient({ redirects });
+    const client = new Web3ApiClient({ plugins });
 
     const recipe = JSON.parse(filesystem.read(recipePath) as string);
     const dir = path.dirname(recipePath);

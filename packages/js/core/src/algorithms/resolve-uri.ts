@@ -20,7 +20,7 @@ export const resolveUri = Tracer.traceFunc(
 
     const finalRedirectedUri = applyRedirects(uri, redirects);
 
-    const plugin = findPluginPackage(finalRedirectedUri, redirects);
+    const plugin = findPluginPackage(finalRedirectedUri, client.plugins());
 
     if (plugin) {
       return Tracer.traceFunc(
@@ -33,6 +33,7 @@ export const resolveUri = Tracer.traceFunc(
     const uriResolverImplementations = getImplementations(
       new Uri("w3/api-resolver"),
       redirects,
+      client.plugins(),
       client.interfaces()
     );
 

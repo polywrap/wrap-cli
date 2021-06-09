@@ -4,7 +4,7 @@
 import { Web3ApiClient, ClientConfig } from "./Web3ApiClient";
 import { PluginConfigs, modules, uris } from "./pluginConfigs";
 
-import { UriRedirect } from "@web3api/core-js";
+import { PluginRegistration } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
 export { PluginConfigs };
@@ -12,12 +12,12 @@ export { PluginConfigs };
 export const createWeb3ApiClient = Tracer.traceFunc(
   "createWeb3ApiClient",
   async (
-    plugins: PluginConfigs,
+    pluginConfigs: PluginConfigs,
     config?: ClientConfig
   ): Promise<Web3ApiClient> => {
-    const redirects: UriRedirect[] = [];
+    const plugins: PluginRegistration[] = [];
 
-    for (const plugin of Object.keys(plugins)) {
+    for (const plugin of Object.keys(pluginConfigs)) {
       let pluginModule: any;
 
       if (!modules[plugin]) {
@@ -50,7 +50,7 @@ export const createWeb3ApiClient = Tracer.traceFunc(
       }
 
       const pluginPackage = pluginFactory(
-        (plugins as Record<string, unknown>)[plugin]
+        (pluginConfigs as Record<string, unknown>)[plugin]
       );
 
       if (
@@ -64,22 +64,22 @@ export const createWeb3ApiClient = Tracer.traceFunc(
         );
       }
 
-      redirects.push({
-        from: uris[plugin],
-        to: pluginPackage,
+      plugins.push({
+        uri: uris[plugin],
+        plugin: pluginPackage,
       });
     }
 
     if (config) {
       return new Web3ApiClient({
         ...config,
-        redirects: [
-          ...redirects,
-          ...(config.redirects ? config.redirects : []),
+        plugins: [
+          ...plugins,
+          ...(config.plugins ? config.plugins : []),
         ],
       });
     } else {
-      return new Web3ApiClient({ redirects });
+      return new Web3ApiClient({ plugins });
     }
   }
 );

@@ -1,4 +1,4 @@
-import { Uri, PluginPackage, UriRedirect } from "../types";
+import { Uri, PluginPackage, PluginRegistration } from "../types";
 
 import { Tracer } from "@web3api/tracing-js";
 
@@ -6,12 +6,12 @@ export const findPluginPackage = Tracer.traceFunc(
   "core: findPluginPackage",
   (
     uri: Uri,
-    redirects: readonly UriRedirect<Uri>[]
+    plugins: readonly PluginRegistration<Uri>[]
   ): PluginPackage | undefined => {
-    const pluginRedirect = redirects.find(
-      (redirect) => Uri.equals(redirect.from, uri) && !Uri.isUri(redirect.to)
+    const pluginRedirect = plugins.find(
+      (x) => Uri.equals(x.uri, uri)
     );
 
-    return pluginRedirect?.to as PluginPackage | undefined;
+    return pluginRedirect?.plugin as PluginPackage | undefined;
   }
 );

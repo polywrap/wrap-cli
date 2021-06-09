@@ -1,4 +1,4 @@
-import { getDefaultRedirects } from "./default-redirects";
+import { getDefaultPlugins } from "./get-default-plugins";
 import { PluginWeb3Api } from "./plugin/PluginWeb3Api";
 import { WasmWeb3Api } from "./wasm/WasmWeb3Api";
 
@@ -39,24 +39,21 @@ export class Web3ApiClient implements Client {
   // and handle cases where the are multiple jumps. For exmaple, if
   // A => B => C, then the cache should have A => C, and B => C.
   private _apiCache: ApiCache = new Map<string, Api>();
-  private _config: ClientConfig<Uri> = {};
+  private _config: Required<ClientConfig<Uri>> = {
+    redirects: [],
+    plugins: [],
+    interfaces: [],
+    tracingEnabled: false,
+  };
 
   constructor(config?: ClientConfig) {
     try {
-      if (!config) {
-        this._config = {
-          redirects: [],
-          tracingEnabled: false,
-        };
-      }
-
       this.tracingEnabled(!!config?.tracingEnabled);
 
       Tracer.startSpan("Web3ApiClient: constructor");
 
       if (config) {
         this._config = {
-          ...config,
           redirects: config.redirects
             ? sanitizeUriRedirects(config.redirects)
             : [],
@@ -66,15 +63,14 @@ export class Web3ApiClient implements Client {
           interfaces: config.interfaces
             ? sanitizeInterfaceImplementations(config.interfaces)
             : [],
+          tracingEnabled: !!config.tracingEnabled
         };
       }
 
-      if (!this._config.redirects) {
-        this._config.redirects = [];
-      }
+      // Add all default plugins
+      this._config.plugins.push(...getDefaultPlugins());
 
-      // Add all default redirects
-      this._config.redirects.push(...getDefaultRedirects());
+      this.requirePluginsToUseNonInterfaceUris();
 
       Tracer.setAttribute("config", this._config);
     } catch (error) {
@@ -82,6 +78,17 @@ export class Web3ApiClient implements Client {
       throw error;
     } finally {
       Tracer.endSpan();
+    }
+  }
+
+  private requirePluginsToUseNonInterfaceUris(): void {
+    const pluginUris = this.plugins().map(x => x.uri.uri);
+    const interfaceUris = this.interfaces().map(x => x.interface.uri);
+
+    const pluginsWithInterfaceUris = pluginUris.filter(plugin => interfaceUris.includes(plugin));
+
+    if(pluginsWithInterfaceUris.length) {
+      throw Error(`Plugins can't use interfaces for their URI. Invalid plugins: ${pluginsWithInterfaceUris}`);
     }
   }
 
@@ -263,6 +270,7 @@ export class Web3ApiClient implements Client {
         return getImplementations(
           new Uri(uri),
           this.redirects(),
+          this.plugins(),
           this.interfaces()
         ).map((x) => x.uri);
       }

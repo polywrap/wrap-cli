@@ -4,19 +4,17 @@ import { SimpleStorageContainer } from "./dapp/SimpleStorage";
 import React from "react";
 import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import {
-  UriRedirect
-} from "@web3api/client-js";
-import {
   initTestEnvironment,
   stopTestEnvironment,
   buildAndDeployApi
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
+import { PluginRegistration } from "@web3api/core-js";
 
 jest.setTimeout(60000);
 
 describe("Web3API React Integration", () => {
-  let redirects: UriRedirect[];
+  let plugins: PluginRegistration[];
   let ensUri: string;
   let api: {
     ensDomain: string;
@@ -27,10 +25,11 @@ describe("Web3API React Integration", () => {
     const {
       ipfs,
       ensAddress,
-      redirects: testRedirects,
+      plugins: defaultPlugins,
     } = await initTestEnvironment();
 
-    redirects = testRedirects;
+    plugins = defaultPlugins;
+
     api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
       ipfs,
@@ -44,7 +43,7 @@ describe("Web3API React Integration", () => {
   });
 
   it("Deploys, read and write on Smart Contract ", async () => {
-    render(<SimpleStorageContainer redirects={redirects} ensUri={ensUri} />);
+    render(<SimpleStorageContainer plugins={plugins} ensUri={ensUri} />);
 
     fireEvent.click(screen.getByText("Deploy"));
     await waitFor(() => screen.getByText(/0x/));
@@ -61,7 +60,7 @@ describe("Web3API React Integration", () => {
     expect(screen.getByText("5")).toBeTruthy();
 
     // check for provider redirects
-    expect(screen.getByText("Provider Redirects are correct")).toBeTruthy();
+    expect(screen.getByText("Provider plugin counts are correct")).toBeTruthy();
   });
 
   it("Should throw error because two providers with same key has been rendered ", () => {

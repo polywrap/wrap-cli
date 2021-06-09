@@ -1,27 +1,27 @@
-import { Uri, UriRedirect } from "@web3api/core-js";
+import { PluginRegistration, Uri } from "@web3api/core-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { loggerPlugin } from "@web3api/logger-plugin-js";
 import { Tracer } from "@web3api/tracing-js";
 
-export const getDefaultRedirects = Tracer.traceFunc(
-  "client-js: getDefaultRedirects",
-  (): UriRedirect<Uri>[] => {
+export const getDefaultPlugins = Tracer.traceFunc(
+  "client-js: getDefaultPlugins",
+  (): PluginRegistration<Uri>[] => {
     return [
       // IPFS is required for downloading Web3API packages
       {
-        from: new Uri("w3://ens/ipfs.web3api.eth"),
-        to: ipfsPlugin({ provider: "https://ipfs.io" }),
+        uri: new Uri("w3://ens/ipfs.web3api.eth"),
+        plugin: ipfsPlugin({ provider: "https://ipfs.io" }),
       },
       // ENS is required for resolving domain to IPFS hashes
       {
-        from: new Uri("w3://ens/ens.web3api.eth"),
-        to: ensPlugin({}),
+        uri: new Uri("w3://ens/ens.web3api.eth"),
+        plugin: ensPlugin({}),
       },
       {
-        from: new Uri("w3://ens/ethereum.web3api.eth"),
-        to: ethereumPlugin({
+        uri: new Uri("w3://ens/ethereum.web3api.eth"),
+        plugin: ethereumPlugin({
           networks: {
             mainnet: {
               provider:
@@ -31,8 +31,8 @@ export const getDefaultRedirects = Tracer.traceFunc(
         }),
       },
       {
-        from: new Uri("w3://w3/logger"),
-        to: loggerPlugin(),
+        uri: new Uri("w3://w3/logger"),
+        plugin: loggerPlugin(),
       },
     ];
   }
