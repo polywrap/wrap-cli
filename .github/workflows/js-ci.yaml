@@ -6,10 +6,27 @@ jobs:
   JS-CI-Linux:
     name: JS-CI-Linux
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Download demos for integration test
+        run: >
+          git clone https://github.com/Web3-API/demos.git &&
+          mkdir packages/demos &&
+          cp -r demos/sample-plugin packages/demos &&
+          cp -r demos/simple-storage/web3api-completed packages/demos &&
+          cd packages/demos/sample-plugin &&
+          yarn upgrade --latest --scope @web3api &&
+          cd ../web3api-completed &&
+          yarn upgrade --latest --scope @web3api &&
+          cd ../../.. &&
+          rm -r packages/demos/sample-plugin/node_modules &&
+          rm -r packages/demos/sample-plugin/yarn.lock &&
+          rm -r packages/demos/web3api-completed/node_modules &&
+          rm -r packages/demos/web3api-completed/yarn.lock &&
+          rm -r demos
 
       - name: Read .nvmrc
         run: echo ::set-output name=NVMRC::$(cat .nvmrc)
@@ -42,6 +59,12 @@ jobs:
 
       - name: Test
         run: yarn test:ci
+
+      - name: Integration Test - Sample Plugin Demo
+        run: cd packages/demos/sample-plugin && yarn test:ci
+
+      - name: Integration Test - Simple Storage Web3API Demo
+        run: cd packages/demos/web3api-completed && yarn test:env:up && yarn test && yarn test:env:down
 
 # NOTE: Mac & Windows CI is not currently possible, since GitHub Actions does not
 # use "Docker Enterprise". Docker Enterprise is required when running linux based
