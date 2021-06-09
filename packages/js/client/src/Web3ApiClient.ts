@@ -14,19 +14,22 @@ import {
   Uri,
   UriRedirect,
   UriInterfaceImplementations,
+  PluginRegistration,
   resolveUri,
   InvokeApiOptions,
   InvokeApiResult,
   Manifest,
   sanitizeUriRedirects,
   sanitizeUriInterfaceImplementations,
-  getImplementations,
+  sanitizePluginRegistrations,
+  getAllImplementations,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
 export interface ClientConfig<TUri = string> {
   redirects?: UriRedirect<TUri>[];
-  implementations?: UriInterfaceImplementations<TUri>[];
+  plugins?: PluginRegistration<TUri>[];
+  interfaces?: UriInterfaceImplementations<TUri>[];
   tracingEnabled?: boolean;
 }
 
@@ -56,6 +59,9 @@ export class Web3ApiClient implements Client {
           ...config,
           redirects: config.redirects
             ? sanitizeUriRedirects(config.redirects)
+            : [],
+          plugins: config.plugins
+            ? sanitizePluginRegistrations(config.plugins)
             : [],
           implementations: config.implementations
             ? sanitizeUriInterfaceImplementations(config.implementations)
@@ -93,8 +99,12 @@ export class Web3ApiClient implements Client {
     return this._config.redirects || [];
   }
 
-  public implementations(): readonly UriInterfaceImplementations<Uri>[] {
-    return this._config.implementations || [];
+  public plugins(): readonly PluginRegistration<Uri>[] {
+    return this._config.plugins || [];
+  }
+
+  public interfaces(): readonly UriInterfaceImplementations<Uri>[] {
+    return this._config.interfaces || [];
   }
 
   public async query<
@@ -231,10 +241,25 @@ export class Web3ApiClient implements Client {
     const run = Tracer.traceFunc(
       "Web3ApiClient: getImplementations",
       (uri: string): string[] => {
-        return getImplementations(
+        return getAllImplementations(
           new Uri(uri),
           this.redirects(),
-          this.implementations()
+          this.interfaces()
+        ).map((x) => x.uri);
+      }
+    );
+
+    return run(uri);
+  }
+
+  public getAllImplementations(uri: string): string[] {
+    const run = Tracer.traceFunc(
+      "Web3ApiClient: getImplementations",
+      (uri: string): string[] => {
+        return getAllImplementations(
+          new Uri(uri),
+          this.redirects(),
+          this.interfaces()
         ).map((x) => x.uri);
       }
     );
