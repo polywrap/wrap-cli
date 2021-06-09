@@ -1,4 +1,4 @@
-import { Uri, UriRedirect, UriInterfaceImplementations } from "../types";
+import { Uri, UriRedirect, InterfaceImplementations } from "../types";
 import { applyRedirects } from "./apply-redirects";
 
 import { Tracer } from "@web3api/tracing-js";
@@ -8,7 +8,7 @@ export const getImplementations = Tracer.traceFunc(
   (
     apiInterfaceUri: Uri,
     redirects: readonly UriRedirect<Uri>[],
-    interfaceImplementationsList: readonly UriInterfaceImplementations<Uri>[]
+    interfaceImplementationsList: readonly InterfaceImplementations<Uri>[]
   ): Uri[] => {
     const result: Uri[] = [];
 
@@ -39,7 +39,7 @@ export const getImplementations = Tracer.traceFunc(
     };
 
     const addAllImplementationsFromImplementationsArray = (
-      implementationsArray: readonly UriInterfaceImplementations<Uri>[],
+      implementationsArray: readonly InterfaceImplementations<Uri>[],
       apiInterfaceUri: Uri
     ) => {
       for (const interfaceImplementations of implementationsArray) {

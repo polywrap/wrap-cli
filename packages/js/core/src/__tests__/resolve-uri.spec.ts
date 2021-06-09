@@ -14,12 +14,12 @@ import {
   UriRedirect,
   resolveUri,
 } from "../";
-import { UriInterfaceImplementations } from "../types";
+import { InterfaceImplementations } from "../types";
 
 describe("resolveUri", () => {
   const client = (
     redirects: UriRedirect<Uri>[],
-    implementations: UriInterfaceImplementations<Uri>[],
+    implementations: InterfaceImplementations<Uri>[],
     apis: Record<string, PluginModules>,
   ): Client => ({
     redirects: () => redirects,
@@ -126,7 +126,7 @@ describe("resolveUri", () => {
     },
   ]
   
-  const implementations: UriInterfaceImplementations<Uri>[] = [
+  const implementations: InterfaceImplementations<Uri>[] = [
     {
       interface: new Uri("w3/api-resolver"),
       implementations: [

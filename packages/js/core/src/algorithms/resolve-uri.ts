@@ -33,7 +33,7 @@ export const resolveUri = Tracer.traceFunc(
     const uriResolverImplementations = getImplementations(
       new Uri("w3/api-resolver"),
       redirects,
-      client.implementations()
+      client.interfaces()
     );
 
     return await resolveUriWithApiResolvers(

@@ -13,23 +13,23 @@ import {
   QueryApiResult,
   Uri,
   UriRedirect,
-  UriInterfaceImplementations,
+  InterfaceImplementations,
   PluginRegistration,
   resolveUri,
   InvokeApiOptions,
   InvokeApiResult,
   Manifest,
   sanitizeUriRedirects,
-  sanitizeUriInterfaceImplementations,
+  sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
-  getAllImplementations,
+  getImplementations,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
 export interface ClientConfig<TUri = string> {
   redirects?: UriRedirect<TUri>[];
   plugins?: PluginRegistration<TUri>[];
-  interfaces?: UriInterfaceImplementations<TUri>[];
+  interfaces?: InterfaceImplementations<TUri>[];
   tracingEnabled?: boolean;
 }
 
@@ -63,8 +63,8 @@ export class Web3ApiClient implements Client {
           plugins: config.plugins
             ? sanitizePluginRegistrations(config.plugins)
             : [],
-          implementations: config.implementations
-            ? sanitizeUriInterfaceImplementations(config.implementations)
+          interfaces: config.interfaces
+            ? sanitizeInterfaceImplementations(config.interfaces)
             : [],
         };
       }
@@ -103,7 +103,7 @@ export class Web3ApiClient implements Client {
     return this._config.plugins || [];
   }
 
-  public interfaces(): readonly UriInterfaceImplementations<Uri>[] {
+  public interfaces(): readonly InterfaceImplementations<Uri>[] {
     return this._config.interfaces || [];
   }
 
@@ -241,11 +241,16 @@ export class Web3ApiClient implements Client {
     const run = Tracer.traceFunc(
       "Web3ApiClient: getImplementations",
       (uri: string): string[] => {
-        return getAllImplementations(
-          new Uri(uri),
-          this.redirects(),
-          this.interfaces()
-        ).map((x) => x.uri);
+        const interfaceImplementations = this.interfaces()
+          .find((x) => Uri.equals(x.interface, new Uri(uri)));
+
+        if(!interfaceImplementations) {
+          throw Error(`Interface: ${uri} has no implementations registered`);
+        }
+
+        return interfaceImplementations
+          .implementations
+          .map(x => x.uri);
       }
     );
 
@@ -256,7 +261,7 @@ export class Web3ApiClient implements Client {
     const run = Tracer.traceFunc(
       "Web3ApiClient: getImplementations",
       (uri: string): string[] => {
-        return getAllImplementations(
+        return getImplementations(
           new Uri(uri),
           this.redirects(),
           this.interfaces()

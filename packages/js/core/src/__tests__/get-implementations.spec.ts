@@ -4,7 +4,7 @@ import {
   UriRedirect,
   Plugin,
 } from "../";
-import { UriInterfaceImplementations } from "../types";
+import { InterfaceImplementations } from "../types";
 
 describe("getImplementations", () => {
   it("works in the typical case", () => {
@@ -33,7 +33,7 @@ describe("getImplementations", () => {
       },
     ];
 
-    const implementations: UriInterfaceImplementations<Uri>[] = [
+    const implementations: InterfaceImplementations<Uri>[] = [
       {
         interface: new Uri("authority/some-abstract-interface"),
         implementations: [
@@ -115,7 +115,7 @@ describe("getImplementations", () => {
       }
     ];
 
-    const implementations: UriInterfaceImplementations<Uri>[] = [
+    const implementations: InterfaceImplementations<Uri>[] = [
       {
         interface: new Uri(interface1Uri),
         implementations: [

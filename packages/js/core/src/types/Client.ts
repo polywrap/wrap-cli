@@ -1,12 +1,12 @@
 import {
   Uri,
   UriRedirect,
-  UriInterfaceImplementations,
+  InterfaceImplementations,
   QueryHandler,
   InvokeHandler,
 } from "./";
 
 export interface Client extends QueryHandler, InvokeHandler {
   redirects: () => readonly UriRedirect<Uri>[];
-  implementations: () => readonly UriInterfaceImplementations<Uri>[];
+  interfaces: () => readonly InterfaceImplementations<Uri>[];
 }
