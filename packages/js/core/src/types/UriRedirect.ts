@@ -32,6 +32,3 @@ export const sanitizeUriRedirects = Tracer.traceFunc(
     return output;
   }
 );
-
-    input: UriInterfaceImplementations[]
-  ): UriInterfaceImplementations<Uri>[] => {
