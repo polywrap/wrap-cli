@@ -1,6 +1,7 @@
 import {
   ClientConfig,
-  createWeb3ApiClient
+  createWeb3ApiClient,
+  Plugin
 } from "../";
 import {
   buildAndDeployApi,
@@ -8,7 +9,6 @@ import {
   stopTestEnvironment
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 
 jest.setTimeout(50000);
 
@@ -903,53 +903,88 @@ describe("Web3ApiClient", () => {
   });
 
   it("get implementations", async () => {
-    console.log('saddssds');
+
     const interface1Uri = "w3://ens/some-interface1.eth";
     const interface2Uri = "w3://ens/some-interface2.eth";
+    const interface3Uri = "w3://ens/some-interface3.eth";
 
     const implementation1Uri = "w3://ens/some-implementation.eth";
     const implementation2Uri = "w3://ens/some-implementation2.eth";
     const implementation3Uri = "w3://ens/some-implementation3.eth";
+    const implementation4Uri = "w3://ens/some-implementation4.eth";
 
     const client = await getClient({
       redirects: [
         {
           from: interface1Uri,
-          to: implementation1Uri
+          to: interface2Uri
         },
         {
-          from: interface1Uri,
+          from: implementation1Uri,
           to: implementation2Uri
         },
         {
-          from: interface2Uri,
+          from: implementation2Uri,
           to: implementation3Uri
         },
         {
-          from: interface2Uri,
-          to: ethereumPlugin({
-            networks: {
-              mainnet: {
-                provider: "ethereum"
-              }
-            },
-            defaultNetwork: "mainnet"
-          })
+          from: implementation4Uri,
+          to: {
+            factory: () => ({} as Plugin),
+            manifest: {
+              schema: "",
+              implemented: [],
+              imported: [],
+            }
+          }
+        }
+      ],
+      implementations: [
+        {
+          interface: interface1Uri,
+          implementations: [
+            implementation1Uri,
+            implementation2Uri
+          ]
+        },
+        {
+          interface: interface2Uri,
+          implementations: [
+            implementation3Uri
+          ]
+        },
+        {
+          interface: interface3Uri,
+          implementations: [
+            implementation3Uri,
+            implementation4Uri
+          ]
         }
       ]
     });
-
+    
     const implementations1 = client.getImplementations(interface1Uri);
     const implementations2 = client.getImplementations(interface2Uri);
+    const implementations3 = client.getImplementations(interface3Uri);
 
     expect(implementations1).toBeTruthy();
-    expect(implementations1.length).toBe(2);
-    expect(implementations1).toContain(implementation1Uri);
-    expect(implementations1).toContain(implementation2Uri);
+    expect(implementations1).toEqual([
+      implementation1Uri,
+      implementation2Uri,
+      implementation3Uri
+    ]);
 
     expect(implementations2).toBeTruthy();
-    expect(implementations2.length).toBe(2);
-    expect(implementations2).toContain(implementation3Uri);
-    expect(implementations2).toContain(interface2Uri);
+    expect(implementations2).toEqual([
+      implementation1Uri,
+      implementation2Uri,
+      implementation3Uri
+    ]);
+
+    expect(implementations3).toBeTruthy();
+    expect(implementations3).toEqual([
+      implementation3Uri,
+      implementation4Uri
+    ]);
   });
 });

@@ -6,3 +6,4 @@ export * from "./Query";
 export * from "./Invoke";
 export * from "./Uri";
 export * from "./UriRedirect";
+export * from "./UriInterfaceImplementations";
