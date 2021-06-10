@@ -5,12 +5,11 @@
  * and run node ./scripts/manifest/generateFormatTypes.js to regenerate this file.
  */
 import {
-  AnyWeb3ApiManifest,
-  Web3ApiManifestFormats
+  AnyEnvManifest,
+  EnvManifestFormats
 } from ".";
-import * as Validators from "../../validators";
-import schema_0_0_1_prealpha_1 from "@web3api/manifest-schemas/formats/web3api/0.0.1-prealpha.1.json";
-import schema_0_0_1_prealpha_2 from "@web3api/manifest-schemas/formats/web3api/0.0.1-prealpha.2.json";
+
+import schema_0_0_1_prealpha_2 from "@web3api/manifest-schemas/formats/web3api.env/0.0.1-prealpha.2.json";
 import { Tracer } from "@web3api/tracing-js"
 
 import {
@@ -20,36 +19,33 @@ import {
   ValidatorResult
 } from "jsonschema";
 
-type Web3ApiManifestSchemas = {
-  [key in Web3ApiManifestFormats]: Schema | undefined
+type EnvManifestSchemas = {
+  [key in EnvManifestFormats]: Schema | undefined
 };
 
-const schemas: Web3ApiManifestSchemas = {
-  "0.0.1-prealpha.1": schema_0_0_1_prealpha_1,
+const schemas: EnvManifestSchemas = {
   "0.0.1-prealpha.2": schema_0_0_1_prealpha_2,
 };
 
 const validator = new Validator();
 
-Validator.prototype.customFormats.file = Validators.file;
-Validator.prototype.customFormats.wasmLanguage = Validators.wasmLanguage;
 
-export const validateWeb3ApiManifest = Tracer.traceFunc(
-  "core: validateWeb3ApiManifest",
+export const validateEnvManifest = Tracer.traceFunc(
+  "core: validateEnvManifest",
   (
-    manifest: AnyWeb3ApiManifest,
+    manifest: AnyEnvManifest,
     extSchema: Schema | undefined = undefined
   ): void => {
-    const schema = schemas[manifest.format as Web3ApiManifestFormats];
+    const schema = schemas[manifest.format as EnvManifestFormats];
 
     if (!schema) {
-      throw Error(`Unrecognized Web3ApiManifest schema format "${manifest.format}"`);
+      throw Error(`Unrecognized EnvManifest schema format "${manifest.format}"`);
     }
 
     const throwIfErrors = (result: ValidatorResult) => {
       if (result.errors.length) {
         throw new Error([
-          `Validation errors encountered while sanitizing Web3ApiManifest format ${manifest.format}`,
+          `Validation errors encountered while sanitizing EnvManifest format ${manifest.format}`,
           ...result.errors.map((error: ValidationError) => error.toString())
         ].join("\n"));
       }

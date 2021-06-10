@@ -114,6 +114,68 @@ export async function loadBuildManifest(
   }
 }
 
+export async function loadEnvManifest(
+  manifestPath: string,
+  project: Project,
+  quiet = false
+): Promise<BuildManifest> {
+  const run = (): Promise<BuildManifest> => {
+    const manifest = fs.readFileSync(manifestPath, "utf-8");
+
+    if (!manifest) {
+      const noLoadMessage = intlMsg.lib_helpers_manifest_unableToLoad({
+        path: `${manifestPath}`,
+      });
+      throw Error(noLoadMessage);
+    }
+
+    // Load the custom json-schema extension if it exists
+    let configSchemaPath = path.join(
+      path.dirname(manifestPath),
+      "/web3api.build.ext.json"
+    );
+    let extSchema: JsonSchema | undefined = undefined;
+
+    if (!fs.existsSync(configSchemaPath)) {
+      configSchemaPath = project.getCachePath(
+        "build/env/web3api.build.ext.json"
+      );
+    }
+
+    if (fs.existsSync(configSchemaPath)) {
+      extSchema = JSON.parse(
+        fs.readFileSync(configSchemaPath, "utf-8")
+      ) as JsonSchema;
+
+      // The extension schema must support additional properties
+      extSchema.additionalProperties = true;
+    }
+
+    try {
+      const result = deserializeBuildManifest(manifest, {
+        extSchema: extSchema,
+      });
+      return Promise.resolve(result);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  };
+
+  if (quiet) {
+    return await run();
+  } else {
+    manifestPath = displayPath(manifestPath);
+    return (await withSpinner(
+      intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
+      intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
+      intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
+      async (_spinner) => {
+        return await run();
+      }
+    )) as BuildManifest;
+  }
+}
+
 export async function outputManifest(
   manifest: Web3ApiManifest | BuildManifest,
   manifestPath: string,
