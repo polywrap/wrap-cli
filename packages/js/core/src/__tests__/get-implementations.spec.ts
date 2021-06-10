@@ -89,24 +89,55 @@ describe("getImplementations", () => {
         implementations
       );
 
-    expect(getImplementationsResult1).toBeTruthy();
     expect(getImplementationsResult1).toEqual([
       new Uri(implementation1Uri),
       new Uri(implementation2Uri),
       new Uri(implementation3Uri)
     ]);
 
-    expect(getImplementationsResult2).toBeTruthy();
     expect(getImplementationsResult2).toEqual([
       new Uri(implementation1Uri),
       new Uri(implementation2Uri),
       new Uri(implementation3Uri)
     ]);
 
-    expect(getImplementationsResult3).toBeTruthy();
     expect(getImplementationsResult3).toEqual([
       new Uri(implementation3Uri),
       new Uri(implementation4Uri)
+    ]);
+  });
+
+  it("interface implementations are not redirected", () => {
+    const interface1Uri = "w3://ens/some-interface1.eth";
+
+    const implementation1Uri = "w3://ens/some-implementation.eth";
+    const implementation2Uri = "w3://ens/some-implementation2.eth";
+
+    const redirects: UriRedirect<Uri>[] = [
+      {
+        from: new Uri(implementation1Uri),
+        to: new Uri(implementation2Uri)
+      }
+    ];
+
+    const implementations: InterfaceImplementations<Uri>[] = [
+      {
+        interface: new Uri(interface1Uri),
+        implementations: [
+          new Uri(implementation1Uri)
+        ]
+      }
+    ];
+
+    const getImplementationsResult = getImplementations(
+        new Uri(interface1Uri), 
+        redirects,
+        [],
+        implementations
+      );
+  
+    expect(getImplementationsResult).toEqual([
+      new Uri(implementation1Uri)
     ]);
   });
 });
