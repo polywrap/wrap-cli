@@ -26,7 +26,7 @@ export const applyRedirects = Tracer.traceFunc(
       }
 
       if (redirectFromToMap[redirect.from.uri]) {
-          continue;
+        continue;
       }
 
       redirectFromToMap[redirect.from.uri] = redirect.to;

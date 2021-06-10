@@ -1,7 +1,3 @@
-import {
-  QueryHandler,
-  InvokeHandler,
-} from "./";
+import { QueryHandler, InvokeHandler } from "./";
 
-export interface Client extends QueryHandler, InvokeHandler {
-}
+export interface Client extends QueryHandler, InvokeHandler {}

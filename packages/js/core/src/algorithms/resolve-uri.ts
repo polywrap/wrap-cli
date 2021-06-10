@@ -1,4 +1,12 @@
-import { Api, Client, Uri, PluginPackage, InterfaceImplementations, PluginRegistration, UriRedirect } from "../types";
+import {
+  Api,
+  Client,
+  Uri,
+  PluginPackage,
+  InterfaceImplementations,
+  PluginRegistration,
+  UriRedirect,
+} from "../types";
 import { Manifest, deserializeManifest } from "../manifest";
 import * as ApiResolver from "../apis/api-resolver";
 import { applyRedirects } from "./apply-redirects";
@@ -19,7 +27,6 @@ export const resolveUri = Tracer.traceFunc(
     createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api,
     noValidate?: boolean
   ): Promise<Api> => {
-
     const finalRedirectedUri = applyRedirects(uri, redirects);
 
     const plugin = findPluginPackage(finalRedirectedUri, plugins);
