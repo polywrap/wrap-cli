@@ -1,7 +1,8 @@
 import {
   ClientConfig,
   createWeb3ApiClient,
-  Plugin
+  Plugin,
+  Uri
 } from "../";
 import {
   buildAndDeployApi,
@@ -46,6 +47,272 @@ describe("Web3ApiClient", () => {
       }
     }, config);
   }
+
+  it("redirect registration", () => {
+    const implementation1Uri = "w3://ens/some-implementation1.eth";
+    const implementation2Uri = "w3://ens/some-implementation2.eth";
+    
+    const client = new Web3ApiClient({
+        redirects: [
+          {
+            from: implementation1Uri,
+            to: implementation2Uri
+          }
+        ]
+      });
+
+    const redirects = client.redirects();
+
+    expect(redirects).toEqual([
+      {
+        from: new Uri(implementation1Uri),
+        to: new Uri(implementation2Uri),
+      }
+    ]);
+  });
+
+  it("plugin registration - with default plugins", () => {
+    const implementationUri = "w3://ens/some-implementation.eth";
+    const defaultPlugins = [
+      "w3://ens/ipfs.web3api.eth", 
+      "w3://ens/ens.web3api.eth", 
+      "w3://ens/ethereum.web3api.eth", 
+      "w3://w3/logger"
+    ];
+
+    const client = new Web3ApiClient({
+        plugins: [
+          {
+            uri: implementationUri,
+            plugin: {
+              factory: () => ({} as Plugin),
+              manifest: {
+                schema: "",
+                implemented: [],
+                imported: [],
+              }
+            }
+          }
+        ]
+      });
+
+    const pluginUris = client.plugins().map(x => x.uri.uri);
+
+    expect(pluginUris).toEqual([implementationUri].concat(defaultPlugins));
+  });
+
+  it("interface registration", () => {
+    const interfaceUri = "w3://ens/some-interface1.eth";
+    const implementation1Uri = "w3://ens/some-implementation1.eth";
+    const implementation2Uri = "w3://ens/some-implementation2.eth";
+    
+    const client = new Web3ApiClient({
+        interfaces: [
+          {
+            interface: interfaceUri,
+            implementations: [
+              implementation1Uri,
+              implementation2Uri
+            ]
+          }
+        ]
+      });
+
+    const interfaces = client.interfaces();
+
+    expect(interfaces).toEqual([
+        {
+          interface: new Uri(interfaceUri),
+          implementations: [
+            new Uri(implementation1Uri),
+            new Uri(implementation2Uri)
+          ]
+        }
+      ]);
+
+    const implementations = client.getImplementations(interfaceUri);
+
+    expect(implementations).toEqual([
+        implementation1Uri,
+        implementation2Uri
+      ]);
+  });
+
+  it("get all implementations of interface", async () => {
+
+    const interface1Uri = "w3://ens/some-interface1.eth";
+    const interface2Uri = "w3://ens/some-interface2.eth";
+    const interface3Uri = "w3://ens/some-interface3.eth";
+
+    const implementation1Uri = "w3://ens/some-implementation.eth";
+    const implementation2Uri = "w3://ens/some-implementation2.eth";
+    const implementation3Uri = "w3://ens/some-implementation3.eth";
+    const implementation4Uri = "w3://ens/some-implementation4.eth";
+
+    const client = await getClient({
+      redirects: [
+        {
+          from: interface1Uri,
+          to: interface2Uri
+        },
+        {
+          from: implementation1Uri,
+          to: implementation2Uri
+        },
+        {
+          from: implementation2Uri,
+          to: implementation3Uri
+        }
+      ],
+      plugins: [
+        {
+          uri: implementation4Uri,
+          plugin: {
+            factory: () => ({} as Plugin),
+            manifest: {
+              schema: "",
+              implemented: [],
+              imported: [],
+            }
+          }
+        }
+      ],
+      interfaces: [
+        {
+          interface: interface1Uri,
+          implementations: [
+            implementation1Uri,
+            implementation2Uri
+          ]
+        },
+        {
+          interface: interface2Uri,
+          implementations: [
+            implementation3Uri
+          ]
+        },
+        {
+          interface: interface3Uri,
+          implementations: [
+            implementation3Uri,
+            implementation4Uri
+          ]
+        }
+      ]
+    });
+    
+    const implementations1 = client.getAllImplementations(interface1Uri);
+    const implementations2 = client.getAllImplementations(interface2Uri);
+    const implementations3 = client.getAllImplementations(interface3Uri);
+
+    expect(implementations1).toEqual([
+        implementation1Uri,
+        implementation2Uri,
+        implementation3Uri
+      ]);
+
+    expect(implementations2).toEqual([
+        implementation1Uri,
+        implementation2Uri,
+        implementation3Uri
+      ]);
+
+    expect(implementations3).toEqual([
+        implementation3Uri,
+        implementation4Uri
+      ]);
+  });
+
+  it("plugins should not get registered with an interface uri (without default plugins)", () => {
+    const interface1Uri = "w3://ens/some-interface1.eth";
+    const interface2Uri = "w3://ens/some-interface2.eth";
+    const interface3Uri = "w3://ens/some-interface3.eth";
+
+    const implementationUri = "w3://ens/some-implementation.eth";
+    
+    expect(() => {
+      new Web3ApiClient({
+        plugins: [
+          {
+            uri: interface1Uri,
+            plugin: {
+              factory: () => ({} as Plugin),
+              manifest: {
+                schema: "",
+                implemented: [],
+                imported: [],
+              }
+            }
+          },
+          {
+            uri: interface2Uri,
+            plugin: {
+              factory: () => ({} as Plugin),
+              manifest: {
+                schema: "",
+                implemented: [],
+                imported: [],
+              }
+            }
+          }
+        ],
+        interfaces: [
+          {
+            interface: interface1Uri,
+            implementations: [
+              implementationUri
+            ]
+          },
+          {
+            interface: interface2Uri,
+            implementations: [
+              implementationUri
+            ]
+          },
+          {
+            interface: interface3Uri,
+            implementations: [
+              implementationUri
+            ]
+          }
+        ]
+      });
+    }).toThrow(`Plugins can't use interfaces for their URI. Invalid plugins: ${[interface1Uri, interface2Uri]}`);
+  });
+
+  it("plugins should not get registered with an interface uri (with default plugins)", async () => {
+    const interfaceUri = "w3://ens/some-interface.eth";
+
+    const implementationUri = "w3://ens/some-implementation.eth";
+    
+    await expect(async () => {
+      await getClient({
+        plugins: [
+          {
+            uri: interfaceUri,
+            plugin: {
+              factory: () => ({} as Plugin),
+              manifest: {
+                schema: "",
+                implemented: [],
+                imported: [],
+              }
+            }
+          }
+        ],
+        interfaces: [
+          {
+            interface: interfaceUri,
+            implementations: [
+              implementationUri
+            ]
+          }
+        ]
+      });
+    })
+    .rejects
+    .toThrow(`Plugins can't use interfaces for their URI. Invalid plugins: ${[interfaceUri]}`);
+  });
 
   it("simple-storage", async () => {
     const api = await buildAndDeployApi(
@@ -901,181 +1168,5 @@ describe("Web3ApiClient", () => {
     expect(invalidArrayMapSent.errors?.[0].message).toMatch(
       /Property must be of type 'array'. Found 'map'./
     );
-  });
-
-  it("get implementations", async () => {
-
-    const interface1Uri = "w3://ens/some-interface1.eth";
-    const interface2Uri = "w3://ens/some-interface2.eth";
-    const interface3Uri = "w3://ens/some-interface3.eth";
-
-    const implementation1Uri = "w3://ens/some-implementation.eth";
-    const implementation2Uri = "w3://ens/some-implementation2.eth";
-    const implementation3Uri = "w3://ens/some-implementation3.eth";
-    const implementation4Uri = "w3://ens/some-implementation4.eth";
-
-    const client = await getClient({
-      redirects: [
-        {
-          from: interface1Uri,
-          to: interface2Uri
-        },
-        {
-          from: implementation1Uri,
-          to: implementation2Uri
-        },
-        {
-          from: implementation2Uri,
-          to: implementation3Uri
-        }
-      ],
-      plugins: [
-        {
-          uri: implementation4Uri,
-          plugin: {
-            factory: () => ({} as Plugin),
-            manifest: {
-              schema: "",
-              implemented: [],
-              imported: [],
-            }
-          }
-        }
-      ],
-      interfaces: [
-        {
-          interface: interface1Uri,
-          implementations: [
-            implementation1Uri,
-            implementation2Uri
-          ]
-        },
-        {
-          interface: interface2Uri,
-          implementations: [
-            implementation3Uri
-          ]
-        },
-        {
-          interface: interface3Uri,
-          implementations: [
-            implementation3Uri,
-            implementation4Uri
-          ]
-        }
-      ]
-    });
-    
-    const implementations1 = client.getAllImplementations(interface1Uri);
-    const implementations2 = client.getAllImplementations(interface2Uri);
-    const implementations3 = client.getAllImplementations(interface3Uri);
-
-    expect(implementations1).toEqual([
-      implementation1Uri,
-      implementation2Uri,
-      implementation3Uri
-    ]);
-
-    expect(implementations2).toEqual([
-      implementation1Uri,
-      implementation2Uri,
-      implementation3Uri
-    ]);
-
-    expect(implementations3).toEqual([
-      implementation3Uri,
-      implementation4Uri
-    ]);
-  });
-
-  it("plugins should not get registered with an interface uri (without default plugins)", () => {
-    const interface1Uri = "w3://ens/some-interface1.eth";
-    const interface2Uri = "w3://ens/some-interface2.eth";
-    const interface3Uri = "w3://ens/some-interface3.eth";
-
-    const implementationUri = "w3://ens/some-implementation.eth";
-    
-    expect(() => {
-      new Web3ApiClient({
-        plugins: [
-          {
-            uri: interface1Uri,
-            plugin: {
-              factory: () => ({} as Plugin),
-              manifest: {
-                schema: "",
-                implemented: [],
-                imported: [],
-              }
-            }
-          },
-          {
-            uri: interface2Uri,
-            plugin: {
-              factory: () => ({} as Plugin),
-              manifest: {
-                schema: "",
-                implemented: [],
-                imported: [],
-              }
-            }
-          }
-        ],
-        interfaces: [
-          {
-            interface: interface1Uri,
-            implementations: [
-              implementationUri
-            ]
-          },
-          {
-            interface: interface2Uri,
-            implementations: [
-              implementationUri
-            ]
-          },
-          {
-            interface: interface3Uri,
-            implementations: [
-              implementationUri
-            ]
-          }
-        ]
-      });
-    }).toThrow(`Plugins can't use interfaces for their URI. Invalid plugins: ${[interface1Uri, interface2Uri]}`);
-  });
-
-  it("plugins should not get registered with an interface uri (with default plugins)", async () => {
-    const interfaceUri = "w3://ens/some-interface.eth";
-
-    const implementationUri = "w3://ens/some-implementation.eth";
-    
-    await expect(async () => {
-      await getClient({
-        plugins: [
-          {
-            uri: interfaceUri,
-            plugin: {
-              factory: () => ({} as Plugin),
-              manifest: {
-                schema: "",
-                implemented: [],
-                imported: [],
-              }
-            }
-          }
-        ],
-        interfaces: [
-          {
-            interface: interfaceUri,
-            implementations: [
-              implementationUri
-            ]
-          }
-        ]
-      });
-    })
-    .rejects
-    .toThrow(`Plugins can't use interfaces for their URI. Invalid plugins: ${[interfaceUri]}`);
   });
 });
