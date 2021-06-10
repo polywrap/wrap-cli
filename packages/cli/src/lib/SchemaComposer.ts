@@ -3,7 +3,12 @@
 
 import { Project } from "./Project";
 
-import { Manifest, Uri, Web3ApiClient, PluginRegistration } from "@web3api/client-js";
+import {
+  Manifest,
+  Uri,
+  Web3ApiClient,
+  PluginRegistration,
+} from "@web3api/client-js";
 import {
   composeSchema,
   ComposerOutput,

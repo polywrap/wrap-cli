@@ -63,7 +63,7 @@ export class Web3ApiClient implements Client {
           interfaces: config.interfaces
             ? sanitizeInterfaceImplementations(config.interfaces)
             : [],
-          tracingEnabled: !!config.tracingEnabled
+          tracingEnabled: !!config.tracingEnabled,
         };
       }
 
@@ -78,17 +78,6 @@ export class Web3ApiClient implements Client {
       throw error;
     } finally {
       Tracer.endSpan();
-    }
-  }
-
-  private requirePluginsToUseNonInterfaceUris(): void {
-    const pluginUris = this.plugins().map(x => x.uri.uri);
-    const interfaceUris = this.interfaces().map(x => x.interface.uri);
-
-    const pluginsWithInterfaceUris = pluginUris.filter(plugin => interfaceUris.includes(plugin));
-
-    if(pluginsWithInterfaceUris.length) {
-      throw Error(`Plugins can't use interfaces for their URI. Invalid plugins: ${pluginsWithInterfaceUris}`);
     }
   }
 
@@ -277,5 +266,20 @@ export class Web3ApiClient implements Client {
     );
 
     return run(uri);
+  }
+
+  private requirePluginsToUseNonInterfaceUris(): void {
+    const pluginUris = this.plugins().map((x) => x.uri.uri);
+    const interfaceUris = this.interfaces().map((x) => x.interface.uri);
+
+    const pluginsWithInterfaceUris = pluginUris.filter((plugin) =>
+      interfaceUris.includes(plugin)
+    );
+
+    if (pluginsWithInterfaceUris.length) {
+      throw Error(
+        `Plugins can't use interfaces for their URI. Invalid plugins: ${pluginsWithInterfaceUris}`
+      );
+    }
   }
 }

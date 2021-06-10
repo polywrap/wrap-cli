@@ -73,10 +73,7 @@ export const createWeb3ApiClient = Tracer.traceFunc(
     if (config) {
       return new Web3ApiClient({
         ...config,
-        plugins: [
-          ...plugins,
-          ...(config.plugins ? config.plugins : []),
-        ],
+        plugins: [...plugins, ...(config.plugins ? config.plugins : [])],
       });
     } else {
       return new Web3ApiClient({ plugins });

@@ -8,9 +8,7 @@ export const findPluginPackage = Tracer.traceFunc(
     uri: Uri,
     plugins: readonly PluginRegistration<Uri>[]
   ): PluginPackage | undefined => {
-    const pluginRedirect = plugins.find(
-      (x) => Uri.equals(x.uri, uri)
-    );
+    const pluginRedirect = plugins.find((x) => Uri.equals(x.uri, uri));
 
     return pluginRedirect?.plugin as PluginPackage | undefined;
   }
