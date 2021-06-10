@@ -18,14 +18,8 @@ import { InterfaceImplementations, PluginRegistration } from "../types";
 
 describe("resolveUri", () => {
   const client = (
-    redirects: UriRedirect<Uri>[],
-    plugins: PluginRegistration<Uri>[],
-    interfaceImplementationsList: InterfaceImplementations<Uri>[],
     apis: Record<string, PluginModules>,
   ): Client => ({
-    redirects: () => redirects,
-    plugins: () => plugins,
-    interfaces: () => interfaceImplementationsList,
     query: <
       TData extends Record<string, unknown> = Record<string, unknown>,
       TVariables extends Record<string, unknown> = Record<string, unknown>,
@@ -151,14 +145,17 @@ describe("resolveUri", () => {
     const query = ApiResolver.Query;
     const uri = new Uri("w3/some-uri");
 
-    expect(query.tryResolveUri(client([], plugins, interfaces, apis), api, uri)).toBeDefined();
-    expect(query.getFile(client([], plugins, interfaces, apis), file, path)).toBeDefined();
+    expect(query.tryResolveUri(client(apis), api, uri)).toBeDefined();
+    expect(query.getFile(client(apis), file, path)).toBeDefined();
   });
 
   it("works in the typical case", async () => {
     const result = await resolveUri(
       new Uri("ens/test.eth"),
-      client([], plugins, interfaces, apis),
+      client(apis),
+      [], 
+      plugins, 
+      interfaces,
       createPluginApi,
       createApi,
       true
@@ -181,7 +178,10 @@ describe("resolveUri", () => {
   it("uses a plugin that implements api-resolver", async () => {
     const result = await resolveUri(
       new Uri("my/something-different"),
-      client([], plugins, interfaces, apis),
+      client(apis),
+      [], 
+      plugins, 
+      interfaces,
       createPluginApi,
       createApi,
       true
@@ -204,7 +204,10 @@ describe("resolveUri", () => {
   it("works when direct query a Web3API that implements the api-resolver", async () => {
     const result = await resolveUri(
       new Uri("ens/ens"),
-      client([], plugins, interfaces, apis),
+      client(apis),
+      [], 
+      plugins, 
+      interfaces, 
       createPluginApi,
       createApi,
       true
@@ -228,7 +231,10 @@ describe("resolveUri", () => {
   it("works when direct query a plugin Web3API that implements the api-resolver", async () => {
     const result = await resolveUri(
       new Uri("my/something-different"),
-      client([], plugins, interfaces, apis),
+      client(apis),
+      [], 
+      plugins, 
+      interfaces,
       createPluginApi,
       createApi,
       true
@@ -264,7 +270,10 @@ describe("resolveUri", () => {
 
     return resolveUri(
       new Uri("some/api"),
-      client(circular, plugins, interfaces, apis),
+      client(apis),
+      circular, 
+      plugins, 
+      interfaces,
       createPluginApi,
       createApi,
       true
@@ -289,7 +298,10 @@ describe("resolveUri", () => {
 
     return resolveUri(
       new Uri("some/api"),
-      client(missingFromProperty, plugins, interfaces, apis),
+      client(apis),
+      missingFromProperty, 
+      plugins, 
+      interfaces,
       createPluginApi,
       createApi,
       true
@@ -316,7 +328,10 @@ describe("resolveUri", () => {
 
     const result = await resolveUri(
       new Uri("some/api"),
-      client([], pluginRegistrations, interfaces, apis),
+      client(apis),
+      [], 
+      pluginRegistrations, 
+      interfaces, 
       createPluginApi,
       createApi,
       true
@@ -351,10 +366,13 @@ describe("resolveUri", () => {
 
     await resolveUri(
       uri,
-      client([], plugins, interfaces, {
+      client({
         ...apis,
         "w3://ens/ipfs": faultyIpfsApi
       }),
+      [], 
+      plugins, 
+      interfaces,
       createPluginApi,
       createApi,
       true

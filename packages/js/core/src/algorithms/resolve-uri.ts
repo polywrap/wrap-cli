@@ -13,8 +13,8 @@ export const resolveUri = Tracer.traceFunc(
     uri: Uri,
     client: Client,
     redirects: readonly UriRedirect<Uri>[],
-    plugins: PluginRegistration<Uri>[],
-    interfaces: InterfaceImplementations<Uri>[],
+    plugins: readonly PluginRegistration<Uri>[],
+    interfaces: readonly InterfaceImplementations<Uri>[],
     createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
     createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api,
     noValidate?: boolean

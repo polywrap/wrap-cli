@@ -19,13 +19,17 @@ export const applyRedirects = Tracer.traceFunc(
     };
 
     for (const redirect of redirects) {
-      if (Uri.isUri(redirect.to)) {
-        if (redirectFromToMap[redirect.from.uri]) {
-            continue;
-        }
-
-        redirectFromToMap[redirect.from.uri] = redirect.to;
+      if (!redirect.from) {
+        throwError(
+          `Redirect missing the from property.\nEncountered while resolving ${uri.uri}`
+        );
       }
+
+      if (redirectFromToMap[redirect.from.uri]) {
+          continue;
+      }
+
+      redirectFromToMap[redirect.from.uri] = redirect.to;
     }
 
     let finalUri = uri;
