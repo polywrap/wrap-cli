@@ -9,6 +9,7 @@ import {
   stopTestEnvironment
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
+import { Web3ApiClient } from "../Web3ApiClient";
 
 jest.setTimeout(50000);
 
@@ -985,5 +986,96 @@ describe("Web3ApiClient", () => {
       implementation3Uri,
       implementation4Uri
     ]);
+  });
+
+  it("plugins should not get registered with an interface uri (without default plugins)", () => {
+    const interface1Uri = "w3://ens/some-interface1.eth";
+    const interface2Uri = "w3://ens/some-interface2.eth";
+    const interface3Uri = "w3://ens/some-interface3.eth";
+
+    const implementationUri = "w3://ens/some-implementation.eth";
+    
+    expect(() => {
+      new Web3ApiClient({
+        plugins: [
+          {
+            uri: interface1Uri,
+            plugin: {
+              factory: () => ({} as Plugin),
+              manifest: {
+                schema: "",
+                implemented: [],
+                imported: [],
+              }
+            }
+          },
+          {
+            uri: interface2Uri,
+            plugin: {
+              factory: () => ({} as Plugin),
+              manifest: {
+                schema: "",
+                implemented: [],
+                imported: [],
+              }
+            }
+          }
+        ],
+        interfaces: [
+          {
+            interface: interface1Uri,
+            implementations: [
+              implementationUri
+            ]
+          },
+          {
+            interface: interface2Uri,
+            implementations: [
+              implementationUri
+            ]
+          },
+          {
+            interface: interface3Uri,
+            implementations: [
+              implementationUri
+            ]
+          }
+        ]
+      });
+    }).toThrow(`Plugins can't use interfaces for their URI. Invalid plugins: ${[interface1Uri, interface2Uri]}`);
+  });
+
+  it("plugins should not get registered with an interface uri (with default plugins)", async () => {
+    const interfaceUri = "w3://ens/some-interface.eth";
+
+    const implementationUri = "w3://ens/some-implementation.eth";
+    
+    await expect(async () => {
+      await getClient({
+        plugins: [
+          {
+            uri: interfaceUri,
+            plugin: {
+              factory: () => ({} as Plugin),
+              manifest: {
+                schema: "",
+                implemented: [],
+                imported: [],
+              }
+            }
+          }
+        ],
+        interfaces: [
+          {
+            interface: interfaceUri,
+            implementations: [
+              implementationUri
+            ]
+          }
+        ]
+      });
+    })
+    .rejects
+    .toThrow(`Plugins can't use interfaces for their URI. Invalid plugins: ${[interfaceUri]}`);
   });
 });
