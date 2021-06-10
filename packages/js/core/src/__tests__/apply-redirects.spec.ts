@@ -16,7 +16,7 @@ describe("applyRedirects", () => {
         }
     ]);
     
-    expect(Uri.equals(redirectedUri, new Uri(uri1))).toBeTrue();
+    expect(Uri.equals(redirectedUri, new Uri(uri2))).toBeTrue();
   });
 
   it("works with the redirect stack overrides", () => {
@@ -35,6 +35,6 @@ describe("applyRedirects", () => {
         }
     ]);
     
-    expect(Uri.equals(redirectedUri, new Uri(uri1))).toBeTrue();
+    expect(Uri.equals(redirectedUri, new Uri(uri2))).toBeTrue();
   });
 });
