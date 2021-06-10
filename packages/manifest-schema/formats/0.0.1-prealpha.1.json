@@ -16,6 +16,9 @@
     "repository": {
       "type": "string"
     },
+    "interface": {
+      "type": "boolean"
+    },
     "mutation": {
       "type": "object",
       "additionalProperties": false,
@@ -52,8 +55,7 @@
         }
       },
       "required": [
-        "schema",
-        "module"
+        "schema"
       ]
     },
     "query": {
@@ -92,8 +94,7 @@
         }
       },
       "required": [
-        "schema",
-        "module"
+        "schema"
       ]
     },
     "import_redirects": {
