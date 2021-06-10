@@ -13,16 +13,20 @@ import {
   QueryApiResult,
   Uri,
   UriRedirect,
+  UriInterfaceImplementations,
   resolveUri,
   InvokeApiOptions,
   InvokeApiResult,
   Manifest,
   sanitizeUriRedirects,
+  sanitizeUriInterfaceImplementations,
+  getImplementations,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
 export interface ClientConfig<TUri = string> {
   redirects?: UriRedirect<TUri>[];
+  implementations?: UriInterfaceImplementations<TUri>[];
   tracingEnabled?: boolean;
 }
 
@@ -52,6 +56,9 @@ export class Web3ApiClient implements Client {
           ...config,
           redirects: config.redirects
             ? sanitizeUriRedirects(config.redirects)
+            : [],
+          implementations: config.implementations
+            ? sanitizeUriInterfaceImplementations(config.implementations)
             : [],
         };
       }
@@ -84,6 +91,10 @@ export class Web3ApiClient implements Client {
 
   public redirects(): readonly UriRedirect<Uri>[] {
     return this._config.redirects || [];
+  }
+
+  public implementations(): readonly UriInterfaceImplementations<Uri>[] {
+    return this._config.implementations || [];
   }
 
   public async query<
@@ -210,6 +221,21 @@ export class Web3ApiClient implements Client {
         }
 
         return api;
+      }
+    );
+
+    return run(uri);
+  }
+
+  public getImplementations(uri: string): string[] {
+    const run = Tracer.traceFunc(
+      "Web3ApiClient: getImplementations",
+      (uri: string): string[] => {
+        return getImplementations(
+          new Uri(uri),
+          this.redirects(),
+          this.implementations()
+        ).map((x) => x.uri);
       }
     );
 

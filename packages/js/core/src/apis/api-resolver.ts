@@ -3,7 +3,7 @@ import { Uri, Client, InvokeApiResult } from "../";
 
 import { Tracer } from "@web3api/tracing-js";
 
-interface MaybeUriOrManifest {
+export interface MaybeUriOrManifest {
   uri?: string;
   manifest?: string;
 }

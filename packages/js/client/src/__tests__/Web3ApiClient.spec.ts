@@ -1,5 +1,7 @@
 import {
-  createWeb3ApiClient
+  ClientConfig,
+  createWeb3ApiClient,
+  Plugin
 } from "../";
 import {
   buildAndDeployApi,
@@ -26,7 +28,7 @@ describe("Web3ApiClient", () => {
     await stopTestEnvironment();
   });
 
-  const getClient = async () => {
+  const getClient = async (config?: ClientConfig) => {
     return createWeb3ApiClient({
       ethereum: {
         networks: {
@@ -41,7 +43,7 @@ describe("Web3ApiClient", () => {
           testnet: ensAddress
         }
       }
-    })
+    }, config);
   }
 
   it("simple-storage", async () => {
@@ -898,5 +900,91 @@ describe("Web3ApiClient", () => {
     expect(invalidArrayMapSent.errors?.[0].message).toMatch(
       /Property must be of type 'array'. Found 'map'./
     );
+  });
+
+  it("get implementations", async () => {
+
+    const interface1Uri = "w3://ens/some-interface1.eth";
+    const interface2Uri = "w3://ens/some-interface2.eth";
+    const interface3Uri = "w3://ens/some-interface3.eth";
+
+    const implementation1Uri = "w3://ens/some-implementation.eth";
+    const implementation2Uri = "w3://ens/some-implementation2.eth";
+    const implementation3Uri = "w3://ens/some-implementation3.eth";
+    const implementation4Uri = "w3://ens/some-implementation4.eth";
+
+    const client = await getClient({
+      redirects: [
+        {
+          from: interface1Uri,
+          to: interface2Uri
+        },
+        {
+          from: implementation1Uri,
+          to: implementation2Uri
+        },
+        {
+          from: implementation2Uri,
+          to: implementation3Uri
+        },
+        {
+          from: implementation4Uri,
+          to: {
+            factory: () => ({} as Plugin),
+            manifest: {
+              schema: "",
+              implemented: [],
+              imported: [],
+            }
+          }
+        }
+      ],
+      implementations: [
+        {
+          interface: interface1Uri,
+          implementations: [
+            implementation1Uri,
+            implementation2Uri
+          ]
+        },
+        {
+          interface: interface2Uri,
+          implementations: [
+            implementation3Uri
+          ]
+        },
+        {
+          interface: interface3Uri,
+          implementations: [
+            implementation3Uri,
+            implementation4Uri
+          ]
+        }
+      ]
+    });
+    
+    const implementations1 = client.getImplementations(interface1Uri);
+    const implementations2 = client.getImplementations(interface2Uri);
+    const implementations3 = client.getImplementations(interface3Uri);
+
+    expect(implementations1).toBeTruthy();
+    expect(implementations1).toEqual([
+      implementation1Uri,
+      implementation2Uri,
+      implementation3Uri
+    ]);
+
+    expect(implementations2).toBeTruthy();
+    expect(implementations2).toEqual([
+      implementation1Uri,
+      implementation2Uri,
+      implementation3Uri
+    ]);
+
+    expect(implementations3).toBeTruthy();
+    expect(implementations3).toEqual([
+      implementation3Uri,
+      implementation4Uri
+    ]);
   });
 });
