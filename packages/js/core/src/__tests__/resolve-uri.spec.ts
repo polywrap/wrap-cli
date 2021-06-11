@@ -14,6 +14,7 @@ import {
   UriRedirect,
   resolveUri,
 } from "../";
+import { coreInterfaceUris } from "../interfaces";
 import { InterfaceImplementations, PluginRegistration } from "../types";
 
 describe("resolveUri", () => {
@@ -115,7 +116,7 @@ describe("resolveUri", () => {
         factory: () => ({} as Plugin),
         manifest: {
           schema: "",
-          implemented: [new Uri("w3/api-resolver")],
+          implemented: [coreInterfaceUris.apiResolver],
           imported: [],
         },
       },
@@ -124,10 +125,11 @@ describe("resolveUri", () => {
   
   const interfaces: InterfaceImplementations<Uri>[] = [
     {
-      interface: new Uri("w3/api-resolver"),
+      interface: coreInterfaceUris.apiResolver,
       implementations: [
         new Uri("ens/ens"),
-        new Uri("ens/ipfs")
+        new Uri("ens/ipfs"),
+        new Uri("ens/my-plugin")
       ]
     },
   ];
@@ -319,7 +321,7 @@ describe("resolveUri", () => {
           factory: () => ({} as Plugin),
           manifest: {
             schema: "",
-            implemented: [new Uri("w3/api-resolver")],
+            implemented: [coreInterfaceUris.apiResolver],
             imported: [],
           },
         },

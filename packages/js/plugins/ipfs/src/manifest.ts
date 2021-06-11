@@ -1,4 +1,4 @@
-import { PluginManifest, Uri } from "@web3api/core-js";
+import { PluginManifest, coreInterfaceUris } from "@web3api/core-js";
 
 export const manifest: PluginManifest = {
   // TODO: use the schema.graphql
@@ -54,6 +54,6 @@ type ApiResolver_MaybeUriOrManifest {
   uri: String
   manifest: String
 }`,
-  implemented: [new Uri("w3/api-resolver")],
+  implemented: [coreInterfaceUris.apiResolver],
   imported: [],
 };

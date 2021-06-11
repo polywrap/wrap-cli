@@ -11,6 +11,7 @@ import {
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 import { Web3ApiClient } from "../Web3ApiClient";
+import { getDefaultClientConfig } from "../get-default-client-config";
 
 jest.setTimeout(50000);
 
@@ -120,6 +121,9 @@ describe("Web3ApiClient", () => {
 
     const interfaces = client.interfaces();
 
+
+    const defaultClientConfig = getDefaultClientConfig();
+
     expect(interfaces).toEqual([
         {
           interface: new Uri(interfaceUri),
@@ -128,7 +132,7 @@ describe("Web3ApiClient", () => {
             new Uri(implementation2Uri)
           ]
         }
-      ]);
+      ].concat(defaultClientConfig.interfaces ?? []));
 
     const implementations = client.getImplementations(interfaceUri);
 
