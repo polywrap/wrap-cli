@@ -12,6 +12,11 @@ import {
 import { GetPathToTestApis } from "@web3api/test-cases";
 import { Web3ApiClient } from "../Web3ApiClient";
 import { getDefaultClientConfig } from "../get-default-client-config";
+import { ensPlugin } from "@web3api/ens-plugin-js";
+import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
+import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
+import { loggerPlugin } from "@web3api/logger-plugin-js";
+import { coreInterfaceUris } from '@web3api/core-js';
 
 jest.setTimeout(50000);
 
@@ -48,6 +53,50 @@ describe("Web3ApiClient", () => {
       }
     }, config);
   }
+  
+  it("default client config", () => {
+    const client = new Web3ApiClient();
+
+    expect(client.redirects()).toEqual([]);
+    expect(client.plugins()).toEqual([
+      {
+        uri: new Uri("w3://ens/ipfs.web3api.eth"),
+        plugin: ipfsPlugin({ provider: "https://ipfs.io" }),
+      },
+      {
+        uri: new Uri("w3://ens/ens.web3api.eth"),
+        plugin: ensPlugin({}),
+      },
+      {
+        plugin: ethereumPlugin({
+          networks: {
+            mainnet: {
+              provider:
+                "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+            },
+          },
+        }),
+      },
+      {
+        uri: new Uri("w3://ens/js-logger.web3api.eth"),
+        plugin: loggerPlugin(),
+      },
+    ]);
+    expect(client.interfaces()).toEqual([
+      {
+        interface: coreInterfaceUris.apiResolver,
+        implementations: [
+          new Uri("w3://ens/ipfs.web3api.eth"), 
+          new Uri("w3://ens/ens.web3api.eth")
+        ]
+      },
+      {
+        interface: coreInterfaceUris.logger,
+        implementations: [
+          new Uri("w3://ens/js-logger.web3api.eth")
+        ]
+      }]);
+  });
 
   it("redirect registration", () => {
     const implementation1Uri = "w3://ens/some-implementation1.eth";
