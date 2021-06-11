@@ -12,10 +12,6 @@ import {
 import { GetPathToTestApis } from "@web3api/test-cases";
 import { Web3ApiClient } from "../Web3ApiClient";
 import { getDefaultClientConfig } from "../get-default-client-config";
-import { ensPlugin } from "@web3api/ens-plugin-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import { loggerPlugin } from "@web3api/logger-plugin-js";
 import { coreInterfaceUris } from '@web3api/core-js';
 
 jest.setTimeout(50000);
@@ -57,32 +53,18 @@ describe("Web3ApiClient", () => {
   it("default client config", () => {
     const client = new Web3ApiClient();
 
-    expect(client.redirects()).toEqual([]);
-    expect(client.plugins()).toEqual([
-      {
-        uri: new Uri("w3://ens/ipfs.web3api.eth"),
-        plugin: ipfsPlugin({ provider: "https://ipfs.io" }),
-      },
-      {
-        uri: new Uri("w3://ens/ens.web3api.eth"),
-        plugin: ensPlugin({}),
-      },
-      {
-        plugin: ethereumPlugin({
-          networks: {
-            mainnet: {
-              provider:
-                "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
-            },
-          },
-        }),
-      },
-      {
-        uri: new Uri("w3://ens/js-logger.web3api.eth"),
-        plugin: loggerPlugin(),
-      },
-    ]);
-    expect(client.interfaces()).toEqual([
+    expect(client.redirects()).toStrictEqual([]);
+    expect(
+        client.plugins().map(x => x.uri)
+      ).toStrictEqual([ 
+        new Uri("w3://ens/ipfs.web3api.eth"), 
+        new Uri("w3://ens/ens.web3api.eth"), 
+        new Uri("w3://ens/ethereum.web3api.eth"), 
+        new Uri("w3://ens/js-logger.web3api.eth")
+      ]);
+    expect(
+        client.interfaces()
+      ).toStrictEqual([
       {
         interface: coreInterfaceUris.apiResolver,
         implementations: [
@@ -1254,39 +1236,45 @@ describe("Web3ApiClient", () => {
   });
 
   it("getImplementations - pass string or Uri", async () => {
+    const oldInterfaceUri = "ens/old.eth";
+    const newInterfaceUri = "ens/new.eth";
+
+    const implementation1Uri = "w3://ens/some-implementation1.eth";
+    const implementation2Uri = "w3://ens/some-implementation2.eth";
+
     const client = new Web3ApiClient({
       redirects: [
         {
-          from: "old",
-          to: "new"
+          from: oldInterfaceUri,
+          to: newInterfaceUri
         }
       ],
       interfaces: [
         {
-          interface: "old",
+          interface: oldInterfaceUri,
           implementations: [
-            "ens/1",
+            implementation1Uri,
           ]
         },
         {
-          interface: "new",
+          interface: newInterfaceUri,
           implementations: [
-            "ens/2",
+            implementation2Uri,
           ]
         }
       ]
     });
     
-    let result = client.getImplementations("old");
-    expect(result).toEqual(["ens/1"]);
+    let result = client.getImplementations(oldInterfaceUri);
+    expect(result).toEqual([implementation1Uri]);
     
-    result = client.getImplementations("old", { applyRedirects: true });
-    expect(result).toEqual(["ens/1", "ens/2"]);
+    result = client.getImplementations(oldInterfaceUri, { applyRedirects: true });
+    expect(result).toEqual([implementation1Uri, implementation2Uri]);
 
-    let result2 = client.getImplementations(new Uri("old"));
-    expect(result2).toEqual([new Uri("ens/1")]);
+    let result2 = client.getImplementations(new Uri(oldInterfaceUri));
+    expect(result2).toEqual([new Uri(implementation1Uri)]);
     
-    result2 = client.getImplementations(new Uri("old"), { applyRedirects: true });
-    expect(result2).toEqual([new Uri("ens/1"), new Uri("ens/2")]);
+    result2 = client.getImplementations(new Uri(oldInterfaceUri), { applyRedirects: true });
+    expect(result2).toEqual([new Uri(implementation1Uri), new Uri(implementation2Uri)]);
   });
 });
