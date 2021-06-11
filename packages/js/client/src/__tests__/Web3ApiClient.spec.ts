@@ -1203,4 +1203,41 @@ describe("Web3ApiClient", () => {
     expect(schemaWhenString).toEqual(schemaStr);
     expect(schemaWhenUri).toEqual(schemaStr);
   });
+
+  it("getImplementations - pass string or Uri", async () => {
+    const client = new Web3ApiClient({
+      redirects: [
+        {
+          from: "old",
+          to: "new"
+        }
+      ],
+      interfaces: [
+        {
+          interface: "old",
+          implementations: [
+            "ens/1",
+          ]
+        },
+        {
+          interface: "new",
+          implementations: [
+            "ens/2",
+          ]
+        }
+      ]
+    });
+    
+    let result = client.getImplementations("old");
+    expect(result).toEqual(["ens/1"]);
+    
+    result = client.getImplementations("old", { applyRedirects: true });
+    expect(result).toEqual(["ens/1", "ens/2"]);
+
+    let result2 = client.getImplementations(new Uri("old"));
+    expect(result2).toEqual([new Uri("ens/1")]);
+    
+    result2 = client.getImplementations(new Uri("old"), { applyRedirects: true });
+    expect(result2).toEqual([new Uri("ens/1"), new Uri("ens/2")]);
+  });
 });

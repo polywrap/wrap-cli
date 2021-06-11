@@ -149,7 +149,7 @@ export class Web3ApiClient implements Client {
           parallelInvocations.push(
             this.invoke({
               ...queryInvocations[invocationName],
-              uri: queryInvocations[invocationName].uri.uri,
+              uri: queryInvocations[invocationName].uri,
               decode: true,
             }).then((result) => ({
               name: invocationName,
@@ -192,20 +192,33 @@ export class Web3ApiClient implements Client {
 
   public async invoke<TData = unknown>(
     options: InvokeApiOptions<string>
+  ): Promise<InvokeApiResult<TData>>
+  public async invoke<TData = unknown>(
+    options: InvokeApiOptions<Uri>
+  ): Promise<InvokeApiResult<TData>>
+  public async invoke<TData = unknown>(
+    options: InvokeApiOptions<string | Uri>
   ): Promise<InvokeApiResult<TData>> {
+    let typedOptions: InvokeApiOptions<Uri>;
+    
+    if(typeof options.uri === "string") {
+      typedOptions = {
+        ...options,
+        uri: new Uri(options.uri)
+      };
+    } else {
+      typedOptions = options as InvokeApiOptions<Uri>;
+    }
+
     const run = Tracer.traceFunc(
       "Web3ApiClient: invoke",
       async (
-        options: InvokeApiOptions<string>
+        options: InvokeApiOptions<Uri>
       ): Promise<InvokeApiResult<TData>> => {
-        const uri = new Uri(options.uri);
-        const api = await this.loadWeb3Api(uri);
+        const api = await this.loadWeb3Api(options.uri);
 
         const result = (await api.invoke(
-          {
-            ...options,
-            uri,
-          },
+          options,
           this
         )) as TData;
 
@@ -213,7 +226,7 @@ export class Web3ApiClient implements Client {
       }
     );
 
-    return run(options);
+    return run(typedOptions);
   }
 
   public async loadWeb3Api(uri: string): Promise<Api>;
