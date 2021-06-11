@@ -14,6 +14,7 @@ import { findPluginPackage } from "./find-plugin-package";
 import { getImplementations } from "./get-implementations";
 
 import { Tracer } from "@web3api/tracing-js";
+import { coreInterfaceUris } from "../interfaces";
 
 export const resolveUri = Tracer.traceFunc(
   "core: resolveUri",
@@ -40,7 +41,7 @@ export const resolveUri = Tracer.traceFunc(
 
     // The final URI has been resolved, let's now resolve the Web3API package
     const uriResolverImplementations = getImplementations(
-      new Uri("w3/api-resolver"),
+      coreInterfaceUris.apiResolver,
       redirects,
       plugins,
       interfaces

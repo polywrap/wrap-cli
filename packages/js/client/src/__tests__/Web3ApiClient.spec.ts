@@ -77,7 +77,7 @@ describe("Web3ApiClient", () => {
       "w3://ens/ipfs.web3api.eth", 
       "w3://ens/ens.web3api.eth", 
       "w3://ens/ethereum.web3api.eth", 
-      "w3://w3/logger"
+      "w3://ens/js-logger.web3api.eth"
     ];
 
     const client = new Web3ApiClient({
