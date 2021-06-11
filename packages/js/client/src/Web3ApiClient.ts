@@ -252,8 +252,12 @@ export class Web3ApiClient implements Client {
     return run(typedUri);
   }
 
-  public getImplementations(uri: string): string[];
-  public getImplementations(uri: Uri): Uri[];
+  public getImplementations(
+    uri: string,
+    filters?: { applyRedirects: boolean }): string[];
+  public getImplementations(
+    uri: Uri,
+    filters?: { applyRedirects: boolean }): Uri[];
   public getImplementations(
     uri: string | Uri,
     filters: { applyRedirects: boolean } = { applyRedirects: false }

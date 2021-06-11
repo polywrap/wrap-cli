@@ -201,9 +201,9 @@ describe("Web3ApiClient", () => {
       ]
     });
     
-    const implementations1 = client.getAllImplementations(interface1Uri);
-    const implementations2 = client.getAllImplementations(interface2Uri);
-    const implementations3 = client.getAllImplementations(interface3Uri);
+    const implementations1 = client.getImplementations(interface1Uri, { applyRedirects: true });
+    const implementations2 = client.getImplementations(interface2Uri, { applyRedirects: true });
+    const implementations3 = client.getImplementations(interface3Uri, { applyRedirects: true });
 
     expect(implementations1).toEqual([
         implementation1Uri,
