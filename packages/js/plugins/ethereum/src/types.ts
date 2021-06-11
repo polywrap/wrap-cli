@@ -18,27 +18,22 @@ export interface Log {
 }
 
 export interface TxReceipt {
+  to?: string;
+  from: string;
+  contractAddress?: string;
+  transactionIndex: number;
+  root?: string;
+  gasUsed: string;
+  logsBloom: string;
+  blockHash: string;
   transactionHash: string;
+  logs: Log[];
+  blockNumber: string;
+  confirmations: number;
   cumulativeGasUsed: string;
+  byzantium: boolean;
+  status: number;
 }
-
-// export interface TxReceipt {
-//   to?: string;
-//   from: string;
-//   contractAddress?: string;
-//   transactionIndex: number;
-//   root?: string;
-//   gasUsed: string;
-//   logsBloom: string;
-//   blockHash: string;
-//   transactionHash: string;
-//   logs: Log[];
-//   blockNumber: string;
-//   confirmations: number;
-//   cumulativeGasUsed: string;
-//   byzantium: boolean;
-//   status: number;
-// }
 
 export interface TxResponse {
   hash: string;

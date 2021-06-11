@@ -1,44 +1,39 @@
 type Log {
-  blockNumber: Int!
+  blockNumber: UInt32!
   blockHash: String!
-  transactionIndex: Int!
+  transactionIndex: UInt32!
   removed: Boolean!
   address: String!
   data: String!
   topics: [String!]!
   transactionHash: String!
-  logIndex: Int!
+  logIndex: UInt32!
 }
 
 type TxReceipt {
+  to: String
+  from: String!
+  contractAddress: String
+  transactionIndex: UInt32!
+  root: String
+  gasUsed: String!
+  logsBloom: String!
+  blockHash: String!
   transactionHash: String!
+  logs: [Log!]!
+  blockNumber: String!
+  confirmations: UInt32!
   cumulativeGasUsed: String!
+  byzantium: Boolean!
+  status: UInt32!
 }
-
-#type TxReceipt {
-#  to: String
-#  from: String!
-#  contractAddress: String
-#  transactionIndex: Int!
-#  root: String
-#  gasUsed: String!
-#  logsBloom: String!
-#  blockHash: String!
-#  transactionHash: String!
-#  logs: [Log!]!
-#  blockNumber: String!
-#  confirmations: Int!
-#  cumulativeGasUsed: String!
-#  byzantium: Boolean!
-#  status: Int!
-#}
 
 type TxResponse {
   hash: String!
-  blockNumber: Int
+  blockNumber: UInt32
   blockHash: String
-  timestamp: Int
-  confirmations: Int!
+  timestamp: UInt32
+  confirmations: UInt32!
   from: String!
   raw: String
   nonce: String!
@@ -55,7 +50,7 @@ type TxRequest {
   gasPrice: String
   data: String
   value: String
-  chainId: Int
+  chainId: UInt32
 }
 
 type TxOverrides {
@@ -99,12 +94,12 @@ type Query {
   getSignerAddress(connection: Connection): String!
 
   getSignerBalance(
-    blockTag: Int
+    blockTag: UInt32
     connection: Connection
   ): String!
 
   getSignerTransactionCount(
-    blockTag: Int
+    blockTag: UInt32
     connection: Connection
   ): String!
 
@@ -131,8 +126,8 @@ type Query {
 
   awaitTransaction(
     txHash: String!
-    confirmations: Int!
-    timeout: Int!
+    confirmations: UInt32!
+    timeout: UInt32!
     connectionOverride: Connection
   ): TxReceipt!
 
@@ -140,7 +135,7 @@ type Query {
     address: String!
     event: String!
     args: [String]!
-    timeout: Int
+    timeout: UInt32
     connection: Connection
   ): EventNotification!
 }
