@@ -1,10 +1,9 @@
 import {
   getImplementations,
   Uri,
-  UriRedirect,
-  Plugin,
+  UriRedirect
 } from "../";
-import { InterfaceImplementations, PluginRegistration } from "../types";
+import { InterfaceImplementations } from "../types";
 
 describe("getImplementations", () => {
 
@@ -16,7 +15,6 @@ describe("getImplementations", () => {
     const implementation1Uri = "w3://ens/some-implementation.eth";
     const implementation2Uri = "w3://ens/some-implementation2.eth";
     const implementation3Uri = "w3://ens/some-implementation3.eth";
-    const implementation4Uri = "w3://ens/some-implementation4.eth";
 
     const redirects: UriRedirect<Uri>[] = [
       {
@@ -30,20 +28,6 @@ describe("getImplementations", () => {
       {
         from: new Uri(implementation2Uri),
         to: new Uri(implementation3Uri)
-      }
-    ];
-
-    const plugins: PluginRegistration<Uri>[] = [
-      {
-        uri: new Uri(implementation4Uri),
-        plugin: {
-          factory: () => ({} as Plugin),
-          manifest: {
-            schema: '',
-            implemented: [new Uri("authority/some-abstract-interface")],
-            imported: [new Uri("something/else-2")],
-          },
-        }
       }
     ];
 
@@ -64,8 +48,7 @@ describe("getImplementations", () => {
       {
         interface: new Uri(interface3Uri),
         implementations: [
-          new Uri(implementation3Uri),
-          new Uri(implementation4Uri)
+          new Uri(implementation3Uri)
         ]
       }
     ];
@@ -73,19 +56,16 @@ describe("getImplementations", () => {
     const getImplementationsResult1 = getImplementations(
         new Uri(interface1Uri), 
         redirects,
-        plugins,
         interfaces
       );
     const getImplementationsResult2 = getImplementations(
         new Uri(interface2Uri), 
         redirects,
-        plugins,
         interfaces
       );
     const getImplementationsResult3 = getImplementations(
         new Uri(interface3Uri), 
         redirects,
-        plugins,
         interfaces
       );
 
@@ -102,8 +82,7 @@ describe("getImplementations", () => {
     ]);
 
     expect(getImplementationsResult3).toEqual([
-      new Uri(implementation3Uri),
-      new Uri(implementation4Uri)
+      new Uri(implementation3Uri)
     ]);
   });
 
@@ -132,53 +111,11 @@ describe("getImplementations", () => {
     const getImplementationsResult = getImplementations(
         new Uri(interface1Uri), 
         redirects,
-        [],
         interfaces
       );
   
     expect(getImplementationsResult).toEqual([
       new Uri(implementation1Uri)
-    ]);
-  });
-
-  it("do not return plugins that are not explicitly registered", () => {
-    const interfaceUri = "w3://ens/some-interface.eth";
-
-    const implementation1Uri = "w3://ens/some-implementation1.eth";
-    const implementation2Uri = "w3://ens/some-implementation2.eth";
-
-    const plugins: PluginRegistration<Uri>[] = [
-      {
-        uri: new Uri(implementation1Uri),
-        plugin: {
-          factory: () => ({} as Plugin),
-          manifest: {
-            schema: '',
-            implemented: [new Uri(interfaceUri)],
-            imported: [],
-          }
-        }
-      }
-    ];
-
-    const interfaces: InterfaceImplementations<Uri>[] = [
-      {
-        interface: new Uri(interfaceUri),
-        implementations: [
-          new Uri(implementation2Uri)
-        ]
-      }
-    ];
-
-    const getImplementationsResult = getImplementations(
-        new Uri(interfaceUri),
-        [], 
-        plugins,
-        interfaces
-      );
-  
-    expect(getImplementationsResult).toEqual([
-      new Uri(implementation2Uri)
     ]);
   });
 });

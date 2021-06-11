@@ -321,13 +321,11 @@ export class Web3ApiClient implements Client {
           ? getImplementations(
               uri,
               this.redirects(),
-              this.plugins(),
               this.interfaces()
             ).map((x) => x.uri)
           : getImplementations(
               uri,
               this.redirects(),
-              this.plugins(),
               this.interfaces()
             );
       }

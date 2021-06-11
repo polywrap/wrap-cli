@@ -1,8 +1,7 @@
 import {
   Uri,
   UriRedirect,
-  InterfaceImplementations,
-  PluginRegistration,
+  InterfaceImplementations
 } from "../types";
 import { applyRedirects } from "./apply-redirects";
 
@@ -13,7 +12,6 @@ export const getImplementations = Tracer.traceFunc(
   (
     apiInterfaceUri: Uri,
     redirects: readonly UriRedirect<Uri>[],
-    plugins: readonly PluginRegistration<Uri>[],
     interfaceImplementationsList: readonly InterfaceImplementations<Uri>[]
   ): Uri[] => {
     const result: Uri[] = [];
