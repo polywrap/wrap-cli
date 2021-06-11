@@ -37,4 +37,17 @@ describe("applyRedirects", () => {
     
     expect(Uri.equals(redirectedUri, new Uri(uri2))).toBeTruthy();
   });
+
+  it("can not redirect to self", () => {
+    const uri = "w3://ens/some-uri.eth";
+
+    expect(() => {
+      applyRedirects(new Uri(uri), [
+        {
+            from: new Uri(uri),
+            to: new Uri(uri)
+        }
+      ]);
+    }).toThrow(/Infinite loop while resolving URI/);
+  });
 });
