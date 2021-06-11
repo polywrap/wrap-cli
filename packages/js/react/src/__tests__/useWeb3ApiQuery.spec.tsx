@@ -6,13 +6,8 @@ import {
 import {
   UseWeb3ApiQueryProps
 } from "../query"
+import { createRedirects } from "./redirects";
 
-import {
-  renderHook,
-  act,
-  RenderHookOptions,
-  cleanup
-} from "@testing-library/react-hooks";
 import { UriRedirect } from "@web3api/core-js";
 import {
   initTestEnvironment,
@@ -21,7 +16,14 @@ import {
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
-jest.setTimeout(30000);
+import {
+  renderHook,
+  act,
+  RenderHookOptions,
+  cleanup
+} from "@testing-library/react-hooks";
+
+jest.setTimeout(60000);
 
 describe("useWeb3ApiQuery hook", () => {
   let uri: string;
@@ -31,8 +33,8 @@ describe("useWeb3ApiQuery hook", () => {
   beforeAll(async () => {
     const {
       ipfs,
-      ensAddress,
-      redirects: testRedirects,
+      ethereum,
+      ensAddress
     } = await initTestEnvironment();
 
     const { ensDomain } = await buildAndDeployApi(
@@ -42,7 +44,7 @@ describe("useWeb3ApiQuery hook", () => {
     );
 
     uri = `ens/testnet/${ensDomain}`;
-    redirects = testRedirects;
+    redirects = createRedirects(ensAddress, ethereum, ipfs);
     WrapperProvider = {
       wrapper: Web3ApiProvider,
       initialProps: {
@@ -197,7 +199,7 @@ describe("useWeb3ApiQuery hook", () => {
     const { result } = renderHook(getDataStorageHook);
 
     expect(result.error?.message).toMatch(
-      /You are trying to use useWeb3ApiQuery with provider \"Non existent Web3API Provider\"/
+      /You are trying to use useWeb3ApiClient with provider \"Non existent Web3API Provider\"/
     );
   });
 

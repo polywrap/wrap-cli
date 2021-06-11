@@ -1,9 +1,12 @@
-import { defaultAbiCoder } from 'ethers/lib/utils';
-import { Web3ApiClient } from "@web3api/client-js";
-import { keccak256 } from "js-sha3";
 import { ethereumPlugin } from "..";
-import axios from "axios"
+
+import { Web3ApiClient } from "@web3api/client-js";
+import { initTestEnvironment } from "@web3api/test-env-js";
+
 import { ethers } from "ethers";
+import { defaultAbiCoder } from 'ethers/lib/utils';
+import { keccak256 } from "js-sha3";
+import axios from "axios"
 
 const { hash: namehash } = require("eth-ens-namehash")
 jest.setTimeout(60000)
@@ -17,6 +20,8 @@ describe("Ethereum Plugin", () => {
   const signer = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1"
 
   beforeAll(async () => {
+    const { ethereum } = await initTestEnvironment();
+
     client = new Web3ApiClient({
       redirects: [
         {
@@ -24,7 +29,7 @@ describe("Ethereum Plugin", () => {
           to: ethereumPlugin({
             networks: {
               testnet: {
-                provider: "http://localhost:8545"
+                provider: ethereum
               }
             },
             defaultNetwork: "testnet"

@@ -1,5 +1,5 @@
 import path from "path";
-import { clearStyle } from "./utils";
+import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
 
@@ -10,7 +10,7 @@ describe("e2e tests for no command", () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["unknown"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -21,7 +21,7 @@ describe("e2e tests for no command", () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: [],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
