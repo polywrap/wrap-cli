@@ -1,10 +1,11 @@
+import { ClientConfig } from ".";
+
 import { Uri, coreInterfaceUris } from "@web3api/core-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { loggerPlugin } from "@web3api/logger-plugin-js";
 import { Tracer } from "@web3api/tracing-js";
-import { ClientConfig } from ".";
 
 export const getDefaultClientConfig = Tracer.traceFunc(
   "client-js: getDefaultClientConfig",
@@ -42,17 +43,15 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         {
           interface: coreInterfaceUris.apiResolver,
           implementations: [
-            new Uri("w3://ens/ipfs.web3api.eth"), 
-            new Uri("w3://ens/ens.web3api.eth")
-          ]
+            new Uri("w3://ens/ipfs.web3api.eth"),
+            new Uri("w3://ens/ens.web3api.eth"),
+          ],
         },
         {
           interface: coreInterfaceUris.logger,
-          implementations: [
-            new Uri("w3://ens/js-logger.web3api.eth")
-          ]
-        }
-      ]
+          implementations: [new Uri("w3://ens/js-logger.web3api.eth")],
+        },
+      ],
     };
   }
 );

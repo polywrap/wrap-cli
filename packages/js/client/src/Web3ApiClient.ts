@@ -70,15 +70,15 @@ export class Web3ApiClient implements Client {
       // Add the default config
       const defaultClientConfig = getDefaultClientConfig();
 
-      if(defaultClientConfig.redirects) {
-        this._config.redirects.push(...defaultClientConfig.redirects)
+      if (defaultClientConfig.redirects) {
+        this._config.redirects.push(...defaultClientConfig.redirects);
       }
 
-      if(defaultClientConfig.plugins) {
+      if (defaultClientConfig.plugins) {
         this._config.plugins.push(...defaultClientConfig.plugins);
       }
 
-      if(defaultClientConfig.interfaces) {
+      if (defaultClientConfig.interfaces) {
         this._config.interfaces.push(...defaultClientConfig.interfaces);
       }
 
@@ -120,13 +120,11 @@ export class Web3ApiClient implements Client {
     TVariables extends Record<string, unknown> = Record<string, unknown>
   >(
     options: QueryApiOptions<TVariables, string>
-  ): Promise<QueryApiResult<TData>> 
+  ): Promise<QueryApiResult<TData>>;
   public async query<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>
-  >(
-    options: QueryApiOptions<TVariables, Uri>
-  ): Promise<QueryApiResult<TData>> 
+  >(options: QueryApiOptions<TVariables, Uri>): Promise<QueryApiResult<TData>>;
   public async query<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>
@@ -134,11 +132,11 @@ export class Web3ApiClient implements Client {
     options: QueryApiOptions<TVariables, string | Uri>
   ): Promise<QueryApiResult<TData>> {
     let typedOptions: QueryApiOptions<TVariables, Uri>;
-    
-    if(typeof options.uri === "string") {
+
+    if (typeof options.uri === "string") {
       typedOptions = {
         ...options,
-        uri: new Uri(options.uri)
+        uri: new Uri(options.uri),
       };
     } else {
       typedOptions = options as QueryApiOptions<TVariables, Uri>;
@@ -156,11 +154,7 @@ export class Web3ApiClient implements Client {
           typeof query === "string" ? createQueryDocument(query) : query;
 
         // Parse the query to understand what's being invoked
-        const queryInvocations = parseQuery(
-          uri,
-          queryDocument,
-          variables
-        );
+        const queryInvocations = parseQuery(uri, queryDocument, variables);
 
         // Execute all invocations in parallel
         const parallelInvocations: Promise<{
@@ -215,19 +209,19 @@ export class Web3ApiClient implements Client {
 
   public async invoke<TData = unknown>(
     options: InvokeApiOptions<string>
-  ): Promise<InvokeApiResult<TData>>
+  ): Promise<InvokeApiResult<TData>>;
   public async invoke<TData = unknown>(
     options: InvokeApiOptions<Uri>
-  ): Promise<InvokeApiResult<TData>>
+  ): Promise<InvokeApiResult<TData>>;
   public async invoke<TData = unknown>(
     options: InvokeApiOptions<string | Uri>
   ): Promise<InvokeApiResult<TData>> {
     let typedOptions: InvokeApiOptions<Uri>;
-    
-    if(typeof options.uri === "string") {
+
+    if (typeof options.uri === "string") {
       typedOptions = {
         ...options,
-        uri: new Uri(options.uri)
+        uri: new Uri(options.uri),
       };
     } else {
       typedOptions = options as InvokeApiOptions<Uri>;
@@ -240,10 +234,7 @@ export class Web3ApiClient implements Client {
       ): Promise<InvokeApiResult<TData>> => {
         const api = await this.loadWeb3Api(options.uri);
 
-        const result = (await api.invoke(
-          options,
-          this
-        )) as TData;
+        const result = (await api.invoke(options, this)) as TData;
 
         return result;
       }
@@ -290,10 +281,12 @@ export class Web3ApiClient implements Client {
 
   public getImplementations(
     uri: string,
-    filters?: { applyRedirects: boolean }): string[];
+    filters?: { applyRedirects: boolean }
+  ): string[];
   public getImplementations(
     uri: Uri,
-    filters?: { applyRedirects: boolean }): Uri[];
+    filters?: { applyRedirects: boolean }
+  ): Uri[];
   public getImplementations(
     uri: string | Uri,
     filters: { applyRedirects: boolean } = { applyRedirects: false }

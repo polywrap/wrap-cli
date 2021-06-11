@@ -12,9 +12,9 @@ import * as ApiResolver from "../apis/api-resolver";
 import { applyRedirects } from "./apply-redirects";
 import { findPluginPackage } from "./find-plugin-package";
 import { getImplementations } from "./get-implementations";
+import { coreInterfaceUris } from "../interfaces";
 
 import { Tracer } from "@web3api/tracing-js";
-import { coreInterfaceUris } from "../interfaces";
 
 export const resolveUri = Tracer.traceFunc(
   "core: resolveUri",
