@@ -10,11 +10,12 @@ export interface Manifest {
   format: string;
   description?: string;
   repository?: string;
+  interface?: boolean;
   mutation?: {
     schema: {
       file: string;
     };
-    module: {
+    module?: {
       language: string;
       file: string;
     };
@@ -23,7 +24,7 @@ export interface Manifest {
     schema: {
       file: string;
     };
-    module: {
+    module?: {
       language: string;
       file: string;
     };

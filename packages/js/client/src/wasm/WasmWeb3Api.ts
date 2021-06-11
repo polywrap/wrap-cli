@@ -393,6 +393,12 @@ export class WasmWeb3Api extends Api {
           );
         }
 
+        if (!moduleManifest.module) {
+          throw Error(
+            `Package manifest module ${module} does not contain a definition for module"`
+          );
+        }
+
         const { data, error } = await ApiResolver.Query.getFile(
           client,
           this._apiResolver,
