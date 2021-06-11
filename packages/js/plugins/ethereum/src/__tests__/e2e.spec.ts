@@ -8,7 +8,8 @@ import { defaultAbiCoder } from 'ethers/lib/utils';
 import { keccak256 } from "js-sha3";
 import axios from "axios"
 
-const { hash: namehash } = require("eth-ens-namehash")
+const { hash: namehash } = require("eth-ens-namehash");
+
 jest.setTimeout(60000)
 
 describe("Ethereum Plugin", () => {
