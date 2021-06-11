@@ -409,7 +409,7 @@ describe("Web3ApiClient", () => {
     expect(set.data).toBeTruthy();
     expect(set.data?.setData.indexOf("0x")).toBeGreaterThan(-1);
 
-    const get = await client.query<{
+    const getWithStringType = await client.query<{
       getData: number;
       secondGetData: number;
       thirdGetData: number;
@@ -439,11 +439,47 @@ describe("Web3ApiClient", () => {
       `,
     });
 
-    expect(get.errors).toBeFalsy();
-    expect(get.data).toBeTruthy();
-    expect(get.data?.getData).toBe(55);
-    expect(get.data?.secondGetData).toBe(55);
-    expect(get.data?.thirdGetData).toBe(55);
+    expect(getWithStringType.errors).toBeFalsy();
+    expect(getWithStringType.data).toBeTruthy();
+    expect(getWithStringType.data?.getData).toBe(55);
+    expect(getWithStringType.data?.secondGetData).toBe(55);
+    expect(getWithStringType.data?.thirdGetData).toBe(55);
+
+    const getWithUriType = await client.query<{
+      getData: number;
+      secondGetData: number;
+      thirdGetData: number;
+    }>({
+      uri: new Uri(ensUri),
+      query: `
+        query {
+          getData(
+            address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+          secondGetData: getData(
+            address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+          thirdGetData: getData(
+            address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(getWithUriType.errors).toBeFalsy();
+    expect(getWithUriType.data).toBeTruthy();
+    expect(getWithUriType.data?.getData).toBe(55);
+    expect(getWithUriType.data?.secondGetData).toBe(55);
+    expect(getWithUriType.data?.thirdGetData).toBe(55);
   });
 
   it("object-types", async () => {

@@ -120,11 +120,34 @@ export class Web3ApiClient implements Client {
     TVariables extends Record<string, unknown> = Record<string, unknown>
   >(
     options: QueryApiOptions<TVariables, string>
+  ): Promise<QueryApiResult<TData>> 
+  public async query<
+    TData extends Record<string, unknown> = Record<string, unknown>,
+    TVariables extends Record<string, unknown> = Record<string, unknown>
+  >(
+    options: QueryApiOptions<TVariables, Uri>
+  ): Promise<QueryApiResult<TData>> 
+  public async query<
+    TData extends Record<string, unknown> = Record<string, unknown>,
+    TVariables extends Record<string, unknown> = Record<string, unknown>
+  >(
+    options: QueryApiOptions<TVariables, string | Uri>
   ): Promise<QueryApiResult<TData>> {
+    let typedOptions: QueryApiOptions<TVariables, Uri>;
+    
+    if(typeof options.uri === "string") {
+      typedOptions = {
+        ...options,
+        uri: new Uri(options.uri)
+      };
+    } else {
+      typedOptions = options as QueryApiOptions<TVariables, Uri>;
+    }
+
     const run = Tracer.traceFunc(
       "Web3ApiClient: query",
       async (
-        options: QueryApiOptions<TVariables, string>
+        options: QueryApiOptions<TVariables, Uri>
       ): Promise<QueryApiResult<TData>> => {
         const { uri, query, variables } = options;
 
@@ -134,7 +157,7 @@ export class Web3ApiClient implements Client {
 
         // Parse the query to understand what's being invoked
         const queryInvocations = parseQuery(
-          new Uri(uri),
+          uri,
           queryDocument,
           variables
         );
@@ -181,7 +204,7 @@ export class Web3ApiClient implements Client {
       }
     );
 
-    return await run(options).catch((error) => {
+    return await run(typedOptions).catch((error) => {
       if (error.length) {
         return { errors: error };
       } else {
