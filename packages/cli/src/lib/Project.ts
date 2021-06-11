@@ -236,7 +236,7 @@ export class Project {
         if (error) {
           reject(error);
         } else {
-          resolve();
+          resolve(undefined);
         }
       });
     });

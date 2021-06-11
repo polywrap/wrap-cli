@@ -20,6 +20,9 @@
           "name": {
             "type": "string"
           },
+          "dockerComposePath": {
+            "type":"string"
+          },
           "module": {
             "type": "string"
           },

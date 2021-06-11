@@ -10,6 +10,7 @@ export interface Web3ApiManifest {
   format: "0.0.1-prealpha.2";
   repository?: string;
   build?: string;
+  env?: string;
   language: string;
   modules: {
     mutation?: {

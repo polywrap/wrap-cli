@@ -11,6 +11,7 @@ export interface EnvManifest {
   dockerCompose?: unknown;
   modules?: {
     name: string;
+    dockerComposePath?: string;
     module: string;
     version: string;
   }[];

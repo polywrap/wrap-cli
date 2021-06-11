@@ -8,6 +8,8 @@ import {
   Web3ApiManifest,
   deserializeWeb3ApiManifest,
   deserializeBuildManifest,
+  deserializeEnvManifest,
+  EnvManifest,
 } from "@web3api/core-js";
 import { writeFileSync } from "@web3api/os-js";
 import { Schema as JsonSchema } from "jsonschema";
@@ -116,10 +118,9 @@ export async function loadBuildManifest(
 
 export async function loadEnvManifest(
   manifestPath: string,
-  project: Project,
   quiet = false
-): Promise<BuildManifest> {
-  const run = (): Promise<BuildManifest> => {
+): Promise<EnvManifest> {
+  const run = (): Promise<EnvManifest> => {
     const manifest = fs.readFileSync(manifestPath, "utf-8");
 
     if (!manifest) {
@@ -129,32 +130,8 @@ export async function loadEnvManifest(
       throw Error(noLoadMessage);
     }
 
-    // Load the custom json-schema extension if it exists
-    let configSchemaPath = path.join(
-      path.dirname(manifestPath),
-      "/web3api.build.ext.json"
-    );
-    let extSchema: JsonSchema | undefined = undefined;
-
-    if (!fs.existsSync(configSchemaPath)) {
-      configSchemaPath = project.getCachePath(
-        "build/env/web3api.build.ext.json"
-      );
-    }
-
-    if (fs.existsSync(configSchemaPath)) {
-      extSchema = JSON.parse(
-        fs.readFileSync(configSchemaPath, "utf-8")
-      ) as JsonSchema;
-
-      // The extension schema must support additional properties
-      extSchema.additionalProperties = true;
-    }
-
     try {
-      const result = deserializeBuildManifest(manifest, {
-        extSchema: extSchema,
-      });
+      const result = deserializeEnvManifest(manifest);
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);
@@ -172,7 +149,7 @@ export async function loadEnvManifest(
       async (_spinner) => {
         return await run();
       }
-    )) as BuildManifest;
+    )) as EnvManifest;
   }
 }
 

@@ -1,33 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// import { withSpinner } from "../lib/helpers/spinner";
 import { intlMsg } from "../lib/intl";
-// import {
-//   BASE_PACKAGE_JSON,
-//   exec,
-//   generateBaseComposedCommand,
-//   generateBaseDockerCompose,
-//   getDockerComposePaths,
-//   installModules,
-//   Manifest,
-//   parseManifest,
-// } from "../lib/env";
-// import { getEnvVariables } from "../lib/env/envVars";
-import { fixParameters } from "../lib/helpers";
-
-// import fs from "fs";
-// import path from "path";
-// import rimraf from "rimraf";
-import { Project } from "../lib";
+import { fixParameters, withSpinner } from "../lib/helpers";
+import { EnvProject } from "../lib/EnvProject";
+import { runCommand } from "../lib/helpers/command";
 
 import { GluegunToolbox } from "gluegun";
 import chalk from "chalk";
-
-// const TESTENV_DIR_PATH = path.join(".w3", "testenv");
-// const MODULES_DIR_PATH = path.join(TESTENV_DIR_PATH, "node_modules");
-// const BASE_COMPOSE_FILE_PATH = path.join(
-//   TESTENV_DIR_PATH,
-//   "docker-compose.yml"
-// );
+import fs from "fs";
 
 const optionsStr = intlMsg.commands_env_options_options();
 const manStr = intlMsg.commands_env_options_manifest();
@@ -116,67 +94,67 @@ export default {
       return;
     }
 
-    const project = new Project({
+    const project = new EnvProject({
       web3apiManifestPath: manifestPath,
       quiet: verbose ? false : true,
+      modulesToUse: modules,
     });
 
-    console.log(project);
+    await project.installModules();
+    await project.generateBaseDockerCompose();
 
-    // const manifest = parseManifest<Manifest>("./web3api.env.yaml");
-    // const modules = manifest.modules || {};
+    const baseCommand = await project.generateBaseComposedCommand();
 
-    // if (fs.existsSync(TESTENV_DIR_PATH)) {
-    //   rimraf.sync(TESTENV_DIR_PATH);
-    // }
+    if (command === "up") {
+      await runCommand(
+        `${baseCommand} up ${detached ? "-d" : ""} --build`,
+        verbose
+      );
+    } else if (command === "down") {
+      await runCommand(`${baseCommand} down`, verbose);
+    } else if (command === "vars") {
+      let vars = "";
 
-    // fs.mkdirSync(TESTENV_DIR_PATH, { recursive: true });
+      await withSpinner(
+        intlMsg.commands_env_vars_text(),
+        intlMsg.commands_env_vars_error(),
+        intlMsg.commands_env_vars_warning(),
+        async (_spinner) => {
+          const envVarRegex = /\${([^}]+)}/gm;
+          const composePaths = await project.getDockerComposePaths();
 
-    // await installModules(
-    //   BASE_PACKAGE_JSON,
-    //   TESTENV_DIR_PATH,
-    //   Object.values(modules)
-    // );
+          const envVars = composePaths.reduce((acc, current) => {
+            const rawManifest = fs.readFileSync(current, "utf-8");
+            const matches = rawManifest.match(envVarRegex) || [];
 
-    // generateBaseDockerCompose(manifest, BASE_COMPOSE_FILE_PATH);
+            return [
+              ...acc,
+              ...matches.map((match) => {
+                if (match.startsWith("$")) {
+                  if (match.startsWith("${")) {
+                    return match.slice(2, match.length - 1);
+                  }
 
-    // const modulesPaths = getDockerComposePaths(
-    //   MODULES_DIR_PATH,
-    //   modules,
-    //   modulesToUse
-    // );
+                  return match.slice(1);
+                }
 
-    // const baseCommand = generateBaseComposedCommand(
-    //   BASE_COMPOSE_FILE_PATH,
-    //   modulesPaths
-    // );
+                return match;
+              }),
+            ];
+          }, [] as string[]);
 
-    // if (command === "up") {
-    //   await exec(`${baseCommand} up ${detached ? "-d" : ""} --build`, watch);
-    // } else if (command === "down") {
-    //   await exec(`${baseCommand} down`, watch);
-    // } else if (command === "vars") {
-    //   let vars = "";
+          const variables = Array.from(new Set(envVars));
 
-    //   await withSpinner(
-    //     intlMsg.commands_env_vars_text(),
-    //     intlMsg.commands_env_vars_error(),
-    //     intlMsg.commands_env_vars_warning(),
-    //     async (_spinner) => {
-    //       const envVariables = await getEnvVariables(modulesPaths);
-    //       vars = `${envVariables
-    //         .map((variable) => `\n- ${variable}`)
-    //         .join("")}`;
-    //     }
-    //   );
+          vars = `${variables.map((variable) => `\n- ${variable}`).join("")}`;
+        }
+      );
 
-    //   print.info(vars);
-    // } else if (command === "manifest") {
-    //   let manifest = "";
-    //   manifest = await exec(`${baseCommand} config`, watch);
-    //   print.info(manifest);
-    // } else {
-    //   throw Error(intlMsg.commands_env_error_never());
-    // }
+      print.info(vars);
+    } else if (command === "manifest") {
+      const { stdout } = await runCommand(`${baseCommand} config`, verbose);
+      print.info(stdout);
+    } else {
+      throw Error(intlMsg.commands_env_error_never());
+    }
   },
 };
