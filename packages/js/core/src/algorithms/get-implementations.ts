@@ -25,18 +25,6 @@ export const getImplementations = Tracer.traceFunc(
       }
     };
 
-    const addAllImplementationsFromPluginRedirects = (apiInterfaceUri: Uri) => {
-      for (const pluginRegistration of plugins) {
-        const { implemented } = pluginRegistration.plugin.manifest;
-        const implementedApi =
-          implemented.findIndex((uri) => Uri.equals(uri, apiInterfaceUri)) > -1;
-
-        if (implementedApi) {
-          addUniqueResult(pluginRegistration.uri);
-        }
-      }
-    };
-
     const addAllImplementationsFromImplementationsArray = (
       implementationsArray: readonly InterfaceImplementations<Uri>[],
       apiInterfaceUri: Uri
@@ -60,7 +48,6 @@ export const getImplementations = Tracer.traceFunc(
       redirects
     );
 
-    addAllImplementationsFromPluginRedirects(finalRedirectedApiInterface);
     addAllImplementationsFromImplementationsArray(
       interfaceImplementationsList,
       finalRedirectedApiInterface

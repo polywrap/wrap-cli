@@ -47,7 +47,7 @@ describe("getImplementations", () => {
       }
     ];
 
-    const implementations: InterfaceImplementations<Uri>[] = [
+    const interfaces: InterfaceImplementations<Uri>[] = [
       {
         interface: new Uri(interface1Uri),
         implementations: [
@@ -74,19 +74,19 @@ describe("getImplementations", () => {
         new Uri(interface1Uri), 
         redirects,
         plugins,
-        implementations
+        interfaces
       );
     const getImplementationsResult2 = getImplementations(
         new Uri(interface2Uri), 
         redirects,
         plugins,
-        implementations
+        interfaces
       );
     const getImplementationsResult3 = getImplementations(
         new Uri(interface3Uri), 
         redirects,
         plugins,
-        implementations
+        interfaces
       );
 
     expect(getImplementationsResult1).toEqual([
@@ -120,7 +120,7 @@ describe("getImplementations", () => {
       }
     ];
 
-    const implementations: InterfaceImplementations<Uri>[] = [
+    const interfaces: InterfaceImplementations<Uri>[] = [
       {
         interface: new Uri(interface1Uri),
         implementations: [
@@ -133,11 +133,52 @@ describe("getImplementations", () => {
         new Uri(interface1Uri), 
         redirects,
         [],
-        implementations
+        interfaces
       );
   
     expect(getImplementationsResult).toEqual([
       new Uri(implementation1Uri)
+    ]);
+  });
+
+  it("do not return plugins that are not explicitly registered", () => {
+    const interfaceUri = "w3://ens/some-interface.eth";
+
+    const implementation1Uri = "w3://ens/some-implementation1.eth";
+    const implementation2Uri = "w3://ens/some-implementation2.eth";
+
+    const plugins: PluginRegistration<Uri>[] = [
+      {
+        uri: new Uri(implementation1Uri),
+        plugin: {
+          factory: () => ({} as Plugin),
+          manifest: {
+            schema: '',
+            implemented: [new Uri(interfaceUri)],
+            imported: [],
+          }
+        }
+      }
+    ];
+
+    const interfaces: InterfaceImplementations<Uri>[] = [
+      {
+        interface: new Uri(interfaceUri),
+        implementations: [
+          new Uri(implementation2Uri)
+        ]
+      }
+    ];
+
+    const getImplementationsResult = getImplementations(
+        new Uri(interfaceUri),
+        [], 
+        plugins,
+        interfaces
+      );
+  
+    expect(getImplementationsResult).toEqual([
+      new Uri(implementation2Uri)
     ]);
   });
 });
