@@ -23,7 +23,7 @@ Options:
 describe("e2e tests for env command", () => {
   const projectRoot = path.resolve(__dirname, "../project/");
 
-  test("Should throw error for no command given", async () => {
+  test.skip("Should throw error for no command given", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
         args: ["env"],
@@ -38,7 +38,7 @@ describe("e2e tests for env command", () => {
 ${HELP}`);
   });
 
-  test("Should show help text", async () => {
+  test.skip("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
         args: ["env", "help"],
@@ -52,22 +52,42 @@ ${HELP}`);
     expect(clearStyle(output)).toEqual(HELP);
   });
 
-  test.only("Successfully builds project w/ web3api.build.yaml but no dockerfile", async () => {
-    const { stdout: output } = await runCLI(
+  test("Successfully extracts composed docker manifest's environment variable list", async () => {
+    const { exitCode: code, stdout: output } = await runCLI(
       {
-        args: ["env", "config", "web3api.env.yaml", "-v"],
+        args: ["env", "vars", "web3api.docker.yaml"],
         cwd: projectRoot,
       },
       w3Cli
     );
 
-    // const manifestPath = path.normalize("build/web3api.env.yaml");
-    console.log(output);
-    // const sanitizedOutput = clearStyle(output);
+    console.log(output)
+
+    const sanitizedOutput = clearStyle(output);
+
+    expect(code).toEqual(0);
+    expect(sanitizedOutput).toContain("IPFS_PORT");
+    expect(sanitizedOutput).toContain("DEV_SERVER_PORT");
+    expect(sanitizedOutput).toContain("ETHEREUM_PORT");
+  });
+
+  test.only("Successfully validates and displays composed docker manifest", async () => {
+    const { exitCode: code, stdout: output } = await runCLI(
+      {
+        args: ["env", "config", "web3api.docker.yaml", "-v"],
+        cwd: projectRoot,
+      },
+      w3Cli
+    );
+
+    console.log(output)
+
+    const sanitizedOutput = clearStyle(output);
 
     // expect(code).toEqual(0);
-    // expect(sanitizedOutput).toContain("Artifacts written to ./build from the image `build-env`");
-    // expect(sanitizedOutput).toContain("Manifest written to ./build/web3api.env.yaml");
-    // expect(sanitizedOutput).toContain(manifestPath);
+    // expect(sanitizedOutput).toContain("IPFS_PORT");
+    // expect(sanitizedOutput).toContain("DEV_SERVER_PORT");
+    // expect(sanitizedOutput).toContain("ETHEREUM_PORT");
   });
+  
 });

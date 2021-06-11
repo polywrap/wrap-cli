@@ -1,8 +1,4 @@
-import {
-  loadWeb3ApiManifest,
-  loadEnvManifest,
-  correctBuildContextPathsFromCompose,
-} from "./helpers";
+import { loadWeb3ApiManifest, loadEnvManifest } from "./helpers";
 import { runCommand } from "./helpers/command";
 
 import { Web3ApiManifest, EnvManifest } from "@web3api/core-js";
@@ -88,16 +84,16 @@ export class EnvProject {
     if (this._config.envManifestPath) {
       return this._config.envManifestPath;
     }
+
     // If the web3api.yaml manifest specifies a custom env manifest
     else if (web3apiManifest.env) {
       this._config.envManifestPath = path.join(
         this.getWeb3ApiManifestDir(),
         web3apiManifest.env
       );
+
       return this._config.envManifestPath;
-    }
-    // Use a default env manifest for the provided language
-    else {
+    } else {
       await this.cacheDefaultEnvManifestFiles();
 
       // Return the cached manifest
@@ -107,6 +103,7 @@ export class EnvProject {
       );
       return this._config.envManifestPath;
     }
+    // Use a default env manifest for the provided language
   }
 
   public async getEnvManifestDir(): Promise<string> {
@@ -132,6 +129,7 @@ export class EnvProject {
     // Update the cache
     this.removeCacheDir("env");
     await this.copyFilesIntoCache("env/", `${__dirname}/env/default/*`);
+
     this._defaultEnvManifestCached = true;
   }
 
@@ -188,7 +186,7 @@ export class EnvProject {
       return [];
     }
 
-    if (!this._config.modulesToUse.length) {
+    if (!this._config.modulesToUse || !this._config.modulesToUse.length) {
       return manifest.modules;
     }
 
@@ -202,7 +200,10 @@ export class EnvProject {
 
     const modules = await this.getFilteredModules();
 
-    if (!modules) {
+    console.log("MODS: ", modules);
+    console.log(this._modulesInstalled);
+
+    if (!modules || !modules.length) {
       return;
     }
 
@@ -215,40 +216,11 @@ export class EnvProject {
     };
 
     fs.writeFileSync(
-      path.join(this.getCachePath("package.json")),
+      path.join(this.getCachePath("env"), "package.json"),
       JSON.stringify(packageJSON)
     );
 
-    await runCommand(`cd ${this.getCacheDir()} && npm i`);
-
-    const nodeModulesPath = this.getCachePath("node_modules");
-
-    modules.forEach((m) => {
-      const defaultPath = "./docker-compose.yml";
-
-      const moduleDir = path.join(
-        process.cwd(),
-        nodeModulesPath,
-        m.module,
-        m.dockerComposePath || defaultPath
-      );
-
-      //Adjust module's docker-compose's build option if it exists
-
-      if (!fs.existsSync(moduleDir)) {
-        throw new Error(
-          `Couldn't find docker-compose.yml file for module "${m.module}" at path '${moduleDir}'`
-        );
-      }
-
-      const composeFileWithCorrectPaths = correctBuildContextPathsFromCompose(
-        moduleDir
-      );
-
-      //Ovewrite old docker-compose with corrected version
-      const newComposeFile = YAML.dump(composeFileWithCorrectPaths);
-      fs.writeFileSync(moduleDir, newComposeFile);
-    });
+    await runCommand(`cd ${this.getCachePath("env")} && npm i`);
 
     this._modulesInstalled = true;
   }
@@ -257,7 +229,10 @@ export class EnvProject {
     const manifest = await this.getEnvManifest();
     const fileContent = YAML.dump(manifest.dockerCompose);
 
-    fs.writeFileSync(this.getCachePath("docker-compose.yml"), fileContent);
+    fs.writeFileSync(
+      path.join(this.getCachePath("env"), "docker-compose.yml"),
+      fileContent
+    );
   }
 
   public async getDockerComposePaths(): Promise<string[]> {
@@ -273,7 +248,8 @@ export class EnvProject {
       const dockerComposePath = module.dockerComposePath || defaultPath;
 
       return path.join(
-        this.getCachePath("node_modules"),
+        this.getCachePath("env"),
+        "node_modules",
         module.module,
         dockerComposePath
       );
@@ -281,10 +257,21 @@ export class EnvProject {
   }
 
   public async generateBaseComposedCommand(): Promise<string> {
-    const baseComposePath = this.getCachePath("docker-compose.yml");
+    const baseComposePath = path.join(
+      this.getCachePath("env"),
+      "docker-compose.yml"
+    );
+    const manifest = await this.getEnvManifest();
+    const env = manifest.env || {};
     const modulePaths = await this.getDockerComposePaths();
+    const envKeys = Object.keys(env);
 
-    return `docker-compose -f ${baseComposePath} ${modulePaths
+    return `${envKeys
+      .map(
+        (key, i) =>
+          `export ${key}=${env[key]} ${i < envKeys.length ? "&& " : ""}`
+      )
+      .join("")} docker-compose -f ${baseComposePath} ${modulePaths
       .map((path) => ` -f ${path}`)
       .join("")}`;
   }

@@ -103,6 +103,8 @@ export default {
     await project.installModules();
     await project.generateBaseDockerCompose();
 
+    console.log("HERE");
+
     const baseCommand = await project.generateBaseComposedCommand();
 
     if (command === "up") {
@@ -150,8 +152,15 @@ export default {
       );
 
       print.info(vars);
-    } else if (command === "manifest") {
-      const { stdout } = await runCommand(`${baseCommand} config`, verbose);
+    } else if (command === "config") {
+      console.log("RAN");
+
+      const { stdout, stderr } = await runCommand(
+        `${baseCommand} config`,
+        !verbose
+      );
+
+      console.log(stdout, stderr);
       print.info(stdout);
     } else {
       throw Error(intlMsg.commands_env_error_never());

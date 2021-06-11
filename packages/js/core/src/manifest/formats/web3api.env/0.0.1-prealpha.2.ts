@@ -9,6 +9,13 @@
 export interface EnvManifest {
   format: "0.0.1-prealpha.2";
   dockerCompose?: unknown;
+  env?: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^.*$".
+     */
+    [k: string]: string | number;
+  };
   modules?: {
     name: string;
     dockerComposePath?: string;
