@@ -4,6 +4,60 @@ export const manifest: PluginManifest = {
   // TODO: use the schema.graphql
   // https://github.com/web3-api/monorepo/issues/101
   schema: `
+type Log {
+  blockNumber: Int!
+  blockHash: String!
+  transactionIndex: Int!
+  removed: Boolean!
+  address: String!
+  data: String!
+  topics: [String!]!
+  transactionHash: String!
+  logIndex: Int!
+}
+
+type TxReceipt {
+  transactionHash: String!
+  cumulativeGasUsed: String!
+}
+
+type TxResponse {
+  hash: String!
+  blockNumber: Int
+  blockHash: String
+  timestamp: Int
+  confirmations: Int!
+  from: String!
+  raw: String
+  nonce: String!
+  gasLimit: String!
+  gasPrice: String!
+  data: String!
+}
+
+type TxRequest {
+  to: String
+  from: String
+  nonce: String
+  gasLimit: String
+  gasPrice: String
+  data: String
+  value: String
+  chainId: Int
+}
+
+type TxOverrides {
+  gasLimit: String
+  gasPrice: String
+  value: String
+}
+
+type EventNotification {
+  data: String!
+  address: String!
+  log: Log!
+}
+
 type Query {
   callView(
     address: String!
@@ -11,15 +65,90 @@ type Query {
     args: [String!]
     connection: Connection
   ): String!
-}
 
-type Mutation {
-  sendTransaction(
+  signMessage(
+    message: String!
+    connection: Connection
+  ): String!
+
+  encodeParams(
+    types: [String!]!
+    values: [String!]!
+  ): String!
+
+  getSignerAddress(connection: Connection): String!
+
+  getSignerBalance(
+    blockTag: Int
+    connection: Connection
+  ): String!
+
+  getSignerTransactionCount(
+    blockTag: Int
+    connection: Connection
+  ): String!
+
+  getGasPrice(connection: Connection): String!
+
+  estimateContractCallGas(
     address: String!
     method: String!
     args: [String!]
     connection: Connection
+    txOverrides: TxOverrides
   ): String!
+
+  checkAddress (address: String!): String!
+
+  toWei (amount: String!): String!
+
+  fromWei (amount: String!): String!
+
+  estimateTxGas(
+    tx: TxRequest!
+    connection: Connection
+  ): String!
+
+  awaitTransaction(
+    txHash: String!
+    confirmations: Int!
+    timeout: Int!
+    connectionOverride: Connection
+  ): TxReceipt!
+
+  waitForEvent (
+    address: String!
+    event: String!
+    args: [String]!
+    timeout: Int
+    connection: Connection
+  ): EventNotification!
+
+  callContractMethodStatic(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Connection
+    txOverrides: TxOverrides
+  ): String!
+}
+
+type Mutation {
+  callContractMethod(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Connection
+    txOverrides: TxOverrides
+  ): TxResponse!
+
+  callContractMethodAndWait(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Connection
+    txOverrides: TxOverrides
+  ): TxReceipt!
 
   deployContract(
     abi: String!
@@ -27,6 +156,22 @@ type Mutation {
     args: [String!]
     connection: Connection
   ): String!
+
+  sendTransaction(
+    tx: TxRequest!
+    connection: Connection
+  ): TxResponse!
+
+  sendTransactionAndWait(
+    tx: TxRequest!
+    connection: Connection
+  ): TxReceipt!
+
+  sendRPC(
+    method: String!
+    params: [String!]!
+    connection: Connection
+  ): String
 }
 
 type Connection {

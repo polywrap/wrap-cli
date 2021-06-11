@@ -1,7 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { query, mutation } from "./resolvers";
 import { manifest } from "./manifest";
-import { Connection as ConnectionOverride } from "./types";
+import {
+  Connection as ConnectionOverride,
+  TxOverrides,
+  TxRequest,
+} from "./types";
 import {
   Address,
   AccountIndex,
@@ -12,7 +16,7 @@ import {
   ConnectionConfig,
   ConnectionConfigs,
 } from "./Connection";
-import { SerializableTxRequest } from "./serialize";
+import { parseArgs } from "./mapping";
 
 import {
   Client,
@@ -91,7 +95,7 @@ export class EthereumPlugin extends Plugin {
     const connection = await this.getConnection(connectionOverride);
     const signer = connection.getSigner();
     const factory = new ethers.ContractFactory(abi, bytecode, signer);
-    const contract = await factory.deploy(...args);
+    const contract = await factory.deploy(...parseArgs(args));
 
     await contract.deployTransaction.wait();
     return contract.address;
@@ -106,7 +110,7 @@ export class EthereumPlugin extends Plugin {
     const connection = await this.getConnection(connectionOverride);
     const contract = connection.getContract(address, [method], false);
     const funcs = Object.keys(contract.interface.functions);
-    const res = await contract[funcs[0]](...args);
+    const res = await contract[funcs[0]](...parseArgs(args));
     return res.toString();
   }
 
@@ -114,13 +118,24 @@ export class EthereumPlugin extends Plugin {
     address: Address,
     method: string,
     args: string[],
-    connectionOverride?: ConnectionOverride
+    connectionOverride?: ConnectionOverride,
+    txOverrides?: TxOverrides
   ): Promise<ethers.providers.TransactionResponse> {
     const connection = await this.getConnection(connectionOverride);
     const contract = connection.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
+
+    const gasPrice: string | undefined = txOverrides?.gasPrice;
+    const gasLimit: string | undefined = txOverrides?.gasLimit;
+    const value: string | undefined = txOverrides?.value;
+
     const res: ethers.providers.TransactionResponse = await contract[funcs[0]](
-      ...args
+      ...parseArgs(args),
+      {
+        gasPrice: gasPrice ? ethers.BigNumber.from(gasPrice) : undefined,
+        gasLimit: gasLimit ? ethers.BigNumber.from(gasLimit) : undefined,
+        value: value ? ethers.BigNumber.from(value) : undefined,
+      }
     );
 
     return res;
@@ -130,16 +145,45 @@ export class EthereumPlugin extends Plugin {
     address: Address,
     method: string,
     args: string[],
-    connectionOverride?: ConnectionOverride
+    connectionOverride?: ConnectionOverride,
+    txOverrides?: TxOverrides
   ): Promise<ethers.providers.TransactionReceipt> {
     const response = await this.callContractMethod(
       address,
       method,
       args,
-      connectionOverride
+      connectionOverride,
+      txOverrides
     );
 
     return response.wait();
+  }
+
+  public async callContractMethodStatic(
+    address: Address,
+    method: string,
+    args: string[],
+    connectionOverride?: ConnectionOverride,
+    txOverrides?: TxOverrides
+  ): Promise<string> {
+    const connection = await this.getConnection(connectionOverride);
+    const contract = connection.getContract(address, [method]);
+    const funcs = Object.keys(contract.interface.functions);
+
+    const gasPrice: string | undefined = txOverrides?.gasPrice;
+    const gasLimit: string | undefined = txOverrides?.gasLimit;
+    const value: string | undefined = txOverrides?.value;
+
+    try {
+      await contract.callStatic[funcs[0]](...parseArgs(args), {
+        gasPrice: gasPrice ? ethers.BigNumber.from(gasPrice) : undefined,
+        gasLimit: gasLimit ? ethers.BigNumber.from(gasLimit) : undefined,
+        value: value ? ethers.BigNumber.from(value) : undefined,
+      });
+    } catch (e) {
+      return e.reason;
+    }
+    return "";
   }
 
   public async getConnection(
@@ -155,15 +199,16 @@ export class EthereumPlugin extends Plugin {
     // If a custom network is provided, either get an already
     // established connection, or a create a new one
     if (networkNameOrChainId) {
-      if (this._connections[networkNameOrChainId]) {
-        connection = this._connections[networkNameOrChainId];
+      const networkStr = networkNameOrChainId.toLowerCase();
+      if (this._connections[networkStr]) {
+        connection = this._connections[networkStr];
       } else {
-        const chainId = Number.parseInt(networkNameOrChainId);
+        const chainId = Number.parseInt(networkStr);
 
         if (!isNaN(chainId)) {
           connection = Connection.fromNetwork(chainId);
         } else {
-          connection = Connection.fromNetwork(networkNameOrChainId);
+          connection = Connection.fromNetwork(networkStr);
         }
       }
     } else {
@@ -199,18 +244,28 @@ export class EthereumPlugin extends Plugin {
     address: Address,
     method: string,
     args: string[],
-    connectionOverride?: ConnectionOverride
+    connectionOverride?: ConnectionOverride,
+    txOverrides?: TxOverrides
   ): Promise<string> {
     const connection = await this.getConnection(connectionOverride);
     const contract = connection.getContract(address, [method]);
     const funcs = Object.keys(contract.interface.functions);
-    const gas = await contract.estimateGas[funcs[0]](...args);
+
+    const gasPrice: string | undefined = txOverrides?.gasPrice;
+    const gasLimit: string | undefined = txOverrides?.gasLimit;
+    const value: string | undefined = txOverrides?.value;
+
+    const gas = await contract.estimateGas[funcs[0]](...parseArgs(args), {
+      gasPrice: gasPrice ? ethers.BigNumber.from(gasPrice) : undefined,
+      gasLimit: gasLimit ? ethers.BigNumber.from(gasLimit) : undefined,
+      value: value ? ethers.BigNumber.from(value) : undefined,
+    });
 
     return gas.toString();
   }
 
   public async sendTransaction(
-    tx: SerializableTxRequest,
+    tx: TxRequest,
     connectionOverride?: ConnectionOverride
   ): Promise<ethers.providers.TransactionResponse> {
     const connection = await this.getConnection(connectionOverride);
@@ -232,7 +287,7 @@ export class EthereumPlugin extends Plugin {
   }
 
   public async sendTransactionAndWait(
-    tx: SerializableTxRequest,
+    tx: TxRequest,
     connectionOverride?: ConnectionOverride
   ): Promise<ethers.providers.TransactionReceipt> {
     const res = await this.sendTransaction(tx, connectionOverride);
@@ -315,7 +370,7 @@ export class EthereumPlugin extends Plugin {
     const connection = await this.getConnection(connectionOverride);
     const contract = connection.getContract(address, [event]);
     const events = Object.keys(contract.interface.events);
-    const filter = contract.filters[events.slice(-1)[0]](...args);
+    const filter = contract.filters[events.slice(-1)[0]](...parseArgs(args));
 
     return Promise.race([
       new Promise((resolve) => {

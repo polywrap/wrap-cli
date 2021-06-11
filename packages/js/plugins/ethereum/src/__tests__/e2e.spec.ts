@@ -1,9 +1,12 @@
-import { defaultAbiCoder } from 'ethers/lib/utils';
-import { Web3ApiClient } from "@web3api/client-js";
-import { keccak256 } from "js-sha3";
 import { ethereumPlugin } from "..";
-import axios from "axios"
+
+import { Web3ApiClient } from "@web3api/client-js";
+import { initTestEnvironment } from "@web3api/test-env-js";
+
 import { ethers } from "ethers";
+import { defaultAbiCoder } from 'ethers/lib/utils';
+import { keccak256 } from "js-sha3";
+import axios from "axios"
 
 const { hash: namehash } = require("eth-ens-namehash")
 jest.setTimeout(60000)
@@ -17,6 +20,8 @@ describe("Ethereum Plugin", () => {
   const signer = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1"
 
   beforeAll(async () => {
+    const { ethereum } = await initTestEnvironment();
+
     client = new Web3ApiClient({
       redirects: [
         {
@@ -24,7 +29,7 @@ describe("Ethereum Plugin", () => {
           to: ethereumPlugin({
             networks: {
               testnet: {
-                provider: "http://localhost:8545"
+                provider: ethereum
               }
             },
             defaultNetwork: "testnet"
@@ -38,7 +43,6 @@ describe("Ethereum Plugin", () => {
     ensAddress = data.ensAddress
     resolverAddress = data.resolverAddress
     registrarAddress = data.registrarAddress
-    // reverseAddress = data.reverseAddress
   });
 
   describe("Query", () => {
@@ -288,15 +292,20 @@ describe("Ethereum Plugin", () => {
 
         return
       });
-      
+
       await client.query<{ callContractMethod: ethers.providers.TransactionReceipt }>({
         uri: "w3://ens/ethereum.web3api.eth",
         query: `
           mutation {
-            callContractMethod(address: "${registrarAddress}", method: "function register(bytes32 label, address owner)", args: ["${label}", "${signer}"])
+            callContractMethod(
+              address: "${registrarAddress}", 
+              method: "function register(bytes32 label, address owner)", 
+              args: ["${label}", "${signer}"]
+            )
           }
         `,
       });
+
 
       await client.query<{ callContractMethod: ethers.providers.TransactionReceipt }>({
         uri: "w3://ens/ethereum.web3api.eth",
@@ -362,6 +371,56 @@ describe("Ethereum Plugin", () => {
       expect(awaitResponse.errors).toBeUndefined()
       expect(awaitResponse.data?.awaitTransaction.transactionHash).toBeDefined()
     })
+
+    it("CallContractMethodStatic (no error)", async () => {
+      const label = "0x" + keccak256("testwhatever")
+      const response = await client.query<{ callContractMethodStatic: string }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          query {
+            callContractMethodStatic(
+              address: "${registrarAddress}", 
+              method: "function register(bytes32 label, address owner)", 
+              args: ["${label}", "${signer}"],               
+              txOverrides: {
+                value: null,
+                nonce: null,
+                gasPrice: 50,
+                gasLimit: 200000
+              }
+            )
+          }
+        `,
+      });
+
+      expect(response.data?.callContractMethodStatic).toEqual("")
+      expect(response.errors).toBeUndefined()
+    })
+
+    it("CallContractMethodStatic (expecting error)", async () => {
+      const label = "0x" + keccak256("testwhatever")
+      const response = await client.query<{ callContractMethodStatic: string }>({
+        uri: "w3://ens/ethereum.web3api.eth",
+        query: `
+          query {
+            callContractMethodStatic(
+              address: "${registrarAddress}", 
+              method: "function register(bytes32 label, address owner)", 
+              args: ["${label}", "${signer}"],               
+              txOverrides: {
+                value: null,
+                nonce: null,
+                gasPrice: 50,
+                gasLimit: 1
+              }
+            )
+          }
+        `,
+      });
+
+      expect(response.data?.callContractMethodStatic).toBeTruthy()
+      expect(response.errors).toBeUndefined()
+    })
   })
 
   describe("Mutation", () => {
@@ -371,7 +430,17 @@ describe("Ethereum Plugin", () => {
         uri: "w3://ens/ethereum.web3api.eth",
         query: `
           mutation {
-            callContractMethod(address: "${registrarAddress}", method: "function register(bytes32 label, address owner)", args: ["${label}", "${signer}"])
+            callContractMethod(
+              address: "${registrarAddress}", 
+              method: "function register(bytes32 label, address owner)", 
+              args: ["${label}", "${signer}"],               
+              txOverrides: {
+                value: null,
+                nonce: null,
+                gasPrice: 50,
+                gasLimit: 200000
+              }
+            )
           }
         `,
       });
@@ -386,7 +455,17 @@ describe("Ethereum Plugin", () => {
         uri: "w3://ens/ethereum.web3api.eth",
         query: `
           mutation {
-            callContractMethodAndWait(address: "${registrarAddress}", method: "function register(bytes32 label, address owner)", args: ["${label}", "${signer}"])
+            callContractMethodAndWait(
+              address: "${registrarAddress}", 
+              method: "function register(bytes32 label, address owner)", 
+              args: ["${label}", "${signer}"],
+              txOverrides: {
+                value: null,
+                nonce: null,
+                gasPrice: 50,
+                gasLimit: 200000
+              }
+            )
           }
         `,
       });

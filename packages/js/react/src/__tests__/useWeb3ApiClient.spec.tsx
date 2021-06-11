@@ -1,20 +1,22 @@
+import { UseWeb3ApiClientProps } from '../client';
 import {
   Web3ApiProvider,
   createWeb3ApiProvider,
   useWeb3ApiClient
 } from "..";
+import { createRedirects } from "./redirects";
+
+import { UriRedirect } from "@web3api/core-js";
+import {
+  initTestEnvironment,
+  stopTestEnvironment
+} from "@web3api/test-env-js";
 
 import {
   renderHook,
   RenderHookOptions,
   cleanup
 } from "@testing-library/react-hooks";
-import { UriRedirect } from "@web3api/core-js";
-import {
-  initTestEnvironment,
-  stopTestEnvironment
-} from "@web3api/test-env-js";
-import { UseWeb3ApiClientProps } from '../client';
 
 jest.setTimeout(60000);
 
@@ -24,8 +26,12 @@ describe("useWeb3ApiClient hook", () => {
 
   beforeAll(async () => {
     const {
-      redirects: testRedirects,
+      ethereum,
+      ipfs,
+      ensAddress
     } = await initTestEnvironment();
+
+    redirects = createRedirects(ensAddress, ethereum, ipfs);
 
     redirects = testRedirects;
     WrapperProvider = {
