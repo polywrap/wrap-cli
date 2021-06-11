@@ -1169,4 +1169,34 @@ describe("Web3ApiClient", () => {
       /Property must be of type 'array'. Found 'map'./
     );
   });
+
+  it("loadWeb3Api - pass string or Uri", async () => {
+    const implementationUri = "w3://ens/some-implementation.eth";
+    const schemaStr = "test-schema";
+    
+    const client = new Web3ApiClient({
+        plugins: [
+          {
+            uri: implementationUri,
+            plugin: {
+              factory: () => ({} as Plugin),
+              manifest: {
+                schema: schemaStr,
+                implemented: [],
+                imported: [],
+              }
+            }
+          }
+        ]
+      });
+      
+    const apiWhenString = await client.loadWeb3Api(implementationUri);
+    const apiWhenUri = await client.loadWeb3Api(new Uri(implementationUri));
+
+    const schemaWhenString = await apiWhenString.getSchema(client);
+    const schemaWhenUri = await apiWhenUri.getSchema(client);
+
+    expect(schemaWhenString).toEqual(schemaStr);
+    expect(schemaWhenUri).toEqual(schemaStr);
+  });
 });
