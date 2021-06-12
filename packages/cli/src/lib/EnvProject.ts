@@ -34,7 +34,21 @@ export class EnvProject {
   private _defaultEnvManifestCached = false;
   private _modulesInstalled = false;
 
-  constructor(private _config: ProjectConfig) {}
+  private constructor(private _config: ProjectConfig) {}
+
+  static getInstance = async (_config: ProjectConfig): Promise<EnvProject> => {
+    const instance = new EnvProject(_config);
+
+    const manifest = await instance.getEnvManifest();
+
+    if (!manifest.modules && !manifest.dockerCompose) {
+      throw new Error(
+        `At least one is required in env manifest: "dockerCompose", "modules"`
+      );
+    }
+
+    return instance;
+  };
 
   get quiet(): boolean {
     return !!this._config.quiet;
@@ -273,7 +287,9 @@ export class EnvProject {
   }
 
   public async getCorrectedDockerComposePaths(): Promise<string[]> {
-    if (!this._modulesInstalled) {
+    const manifest = await this.getEnvManifest();
+
+    if (manifest.modules && !this._modulesInstalled) {
       throw new Error("Env modules have not been installed");
     }
 

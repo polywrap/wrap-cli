@@ -78,11 +78,29 @@ export default {
       return;
     }
 
-    const project = new EnvProject({
+    const project = await EnvProject.getInstance({
       web3apiManifestPath: manifestPath,
       quiet: !verbose,
       modulesToUse: modules,
     });
+
+    const manifest = await project.getEnvManifest();
+
+    if (manifest.modules && modules) {
+      const manifestModuleNames = manifest.modules.map((module) => module.name);
+      const unrecognizedModules: string[] = [];
+      modules.forEach((module: string) => {
+        if (!manifestModuleNames.includes(module)) {
+          unrecognizedModules.push(module);
+        }
+      });
+
+      if (unrecognizedModules.length) {
+        throw new Error(
+          `Unrecognized modules: ${unrecognizedModules.join(", ")}`
+        );
+      }
+    }
 
     await project.installModules();
     await project.generateBaseDockerCompose();
