@@ -72,6 +72,12 @@ type AnotherMutationType {
   prop: String
 }
 
+type ImplObject implements Interface_Object {
+  str: String!
+  uint8: UInt8!
+  anotherProp: String
+}
+
 type CommonType {
   prop: UInt8!
   nestedObject: NestedType!
@@ -218,6 +224,15 @@ type Namespace_CustomType @imported(
   optEnum: Namespace_CustomEnum
   importedEnum: Namespace_Imported_Enum!
   optImportedEnum: Namespace_Imported_Enum
+}
+
+type Interface_Object @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "Object"
+) {
+  str: String!
+  uint8: UInt8!
 }
 
 enum Namespace_CustomEnum @imported(

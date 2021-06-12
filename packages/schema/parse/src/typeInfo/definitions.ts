@@ -42,6 +42,7 @@ export function createGenericDefinition(args: {
 
 export interface ObjectDefinition extends GenericDefinition {
   properties: PropertyDefinition[];
+  interfaces: ObjectDefinition[];
 }
 export function createObjectDefinition(args: {
   type: string;
@@ -246,6 +247,7 @@ export interface QueryDefinition extends GenericDefinition {
   type: QueryType;
   methods: MethodDefinition[];
   imports: { type: string }[];
+  interfaces: ImportedQueryDefinition[];
 }
 export function createQueryDefinition(args: {
   type: string;

@@ -1,8 +1,9 @@
 #import { Query, Mutation, CustomType } into Namespace from "test.eth"
 #import { Mutation } into JustMutation from "just.mutation.eth"
+#import { Object, Mutation } into Interface from "interface.eth"
 #import { CommonType } from "../imports-local/common.graphql"
 
-type Mutation {
+type Mutation implements Interface_Mutation {
   method1(
     str: String!
     optStr: String
@@ -36,4 +37,8 @@ type CustomMutationType {
 
 type AnotherMutationType {
   prop: String
+}
+
+type ImplObject implements Interface_Object {
+  anotherProp: String
 }
