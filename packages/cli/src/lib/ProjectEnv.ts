@@ -28,7 +28,7 @@ const BASE_PACKAGE_JSON = {
 
 type Module = Exclude<EnvManifest["modules"], undefined>[number];
 
-export class EnvProject {
+export class ProjectEnv {
   private _web3apiManifest: Web3ApiManifest | undefined;
   private _envManifest: EnvManifest | undefined;
   private _defaultEnvManifestCached = false;
@@ -36,8 +36,8 @@ export class EnvProject {
 
   private constructor(private _config: ProjectConfig) {}
 
-  static getInstance = async (_config: ProjectConfig): Promise<EnvProject> => {
-    const instance = new EnvProject(_config);
+  static getInstance = async (_config: ProjectConfig): Promise<ProjectEnv> => {
+    const instance = new ProjectEnv(_config);
 
     const manifest = await instance.getEnvManifest();
 

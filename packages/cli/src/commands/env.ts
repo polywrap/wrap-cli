@@ -1,6 +1,6 @@
 import { intlMsg } from "../lib/intl";
 import { withSpinner } from "../lib/helpers";
-import { EnvProject } from "../lib/EnvProject";
+import { ProjectEnv } from "../lib/ProjectEnv";
 import { runCommand } from "../lib/helpers/command";
 
 import { GluegunToolbox } from "gluegun";
@@ -78,7 +78,7 @@ export default {
       return;
     }
 
-    const project = await EnvProject.getInstance({
+    const project = await ProjectEnv.getInstance({
       web3apiManifestPath: manifestPath,
       quiet: !verbose,
       modulesToUse: modules,
