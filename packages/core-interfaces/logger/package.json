@@ -1,6 +1,6 @@
 {
-  "name": "templates-api-interface",
-  "description": "Web3API Interface Example",
+  "name": "logger-interface",
+  "description": "Web3API Logger Interface",
   "private": true,
   "version": "0.0.1-prealpha.25",
   "scripts": {

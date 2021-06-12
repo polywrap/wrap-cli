@@ -349,6 +349,88 @@ describe("Web3ApiClient", () => {
     .toThrow(`Plugins can't use interfaces for their URI. Invalid plugins: ${[interfaceUri]}`);
   });
 
+  it("get implementations - do not return plugins that are not explicitly registered", () => {
+    const interfaceUri = "w3://ens/some-interface.eth";
+
+    const implementation1Uri = "w3://ens/some-implementation1.eth";
+    const implementation2Uri = "w3://ens/some-implementation2.eth";
+
+    const client = new Web3ApiClient({
+      plugins: [
+        {
+          uri: implementation1Uri,
+          plugin: {
+            factory: () => ({} as Plugin),
+            manifest: {
+              schema: '',
+              implemented: [new Uri(interfaceUri)],
+              imported: [],
+            }
+          }
+        }
+      ],
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [
+            implementation2Uri
+          ]
+        }
+      ]
+    });
+
+    const getImplementationsResult = client.getImplementations(
+        new Uri(interfaceUri),
+        { applyRedirects: true }
+      );
+  
+    expect(getImplementationsResult).toEqual([
+      new Uri(implementation2Uri)
+    ]);
+  });
+
+  it("get implementations - return implementations for plugins which don't have interface stated in manifest", () => {
+    const interfaceUri = "w3://ens/some-interface.eth";
+
+    const implementation1Uri = "w3://ens/some-implementation1.eth";
+    const implementation2Uri = "w3://ens/some-implementation2.eth";
+
+    const client = new Web3ApiClient({
+      plugins: [
+        {
+          uri: implementation1Uri,
+          plugin: {
+            factory: () => ({} as Plugin),
+            manifest: {
+              schema: '',
+              implemented: [],
+              imported: [],
+            }
+          }
+        }
+      ], 
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [
+            implementation1Uri,
+            implementation2Uri
+          ]
+        }
+      ]
+    });
+
+    const getImplementationsResult = client.getImplementations(
+      new Uri(interfaceUri),
+      { applyRedirects: true }
+    );
+
+    expect(getImplementationsResult).toEqual([
+      new Uri(implementation1Uri),
+      new Uri(implementation2Uri)
+    ]);
+  });
+
   it("simple-storage", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
