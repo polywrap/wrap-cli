@@ -3,7 +3,7 @@ import { EnsPlugin } from "./";
 import { Client, PluginModule } from "@web3api/core-js";
 
 export const query = (ens: EnsPlugin, client: Client): PluginModule => ({
-  // w3/api-resolver
+  //apiResolver
   tryResolveUri: async (input: { authority: string; path: string }) => {
     if (input.authority !== "ens") {
       return null;

@@ -14,16 +14,13 @@ import {
   UriRedirect,
   resolveUri,
 } from "../";
-import { UriInterfaceImplementations } from "../types";
+import { coreInterfaceUris } from "../interfaces";
+import { InterfaceImplementations, PluginRegistration } from "../types";
 
 describe("resolveUri", () => {
   const client = (
-    redirects: UriRedirect<Uri>[],
-    implementations: UriInterfaceImplementations<Uri>[],
     apis: Record<string, PluginModules>,
   ): Client => ({
-    redirects: () => redirects,
-    implementations: () => implementations,
     query: <
       TData extends Record<string, unknown> = Record<string, unknown>,
       TVariables extends Record<string, unknown> = Record<string, unknown>,
@@ -112,26 +109,27 @@ describe("resolveUri", () => {
     },
   };
 
-  const redirects: UriRedirect<Uri>[] = [
+  const plugins: PluginRegistration<Uri>[] = [
     {
-      from: new Uri("ens/my-plugin"),
-      to: {
+      uri: new Uri("ens/my-plugin"),
+      plugin: {
         factory: () => ({} as Plugin),
         manifest: {
           schema: "",
-          implemented: [new Uri("w3/api-resolver")],
+          implemented: [coreInterfaceUris.apiResolver],
           imported: [],
         },
       },
     },
   ]
   
-  const implementations: UriInterfaceImplementations<Uri>[] = [
+  const interfaces: InterfaceImplementations<Uri>[] = [
     {
-      interface: new Uri("w3/api-resolver"),
+      interface: coreInterfaceUris.apiResolver,
       implementations: [
         new Uri("ens/ens"),
-        new Uri("ens/ipfs")
+        new Uri("ens/ipfs"),
+        new Uri("ens/my-plugin")
       ]
     },
   ];
@@ -149,14 +147,17 @@ describe("resolveUri", () => {
     const query = ApiResolver.Query;
     const uri = new Uri("w3/some-uri");
 
-    expect(query.tryResolveUri(client(redirects, implementations, apis), api, uri)).toBeDefined();
-    expect(query.getFile(client(redirects, implementations, apis), file, path)).toBeDefined();
+    expect(query.tryResolveUri(client(apis), api, uri)).toBeDefined();
+    expect(query.getFile(client(apis), file, path)).toBeDefined();
   });
 
   it("works in the typical case", async () => {
     const result = await resolveUri(
       new Uri("ens/test.eth"),
-      client(redirects, implementations, apis),
+      client(apis),
+      [], 
+      plugins, 
+      interfaces,
       createPluginApi,
       createApi,
       true
@@ -179,7 +180,10 @@ describe("resolveUri", () => {
   it("uses a plugin that implements api-resolver", async () => {
     const result = await resolveUri(
       new Uri("my/something-different"),
-      client(redirects, implementations, apis),
+      client(apis),
+      [], 
+      plugins, 
+      interfaces,
       createPluginApi,
       createApi,
       true
@@ -202,7 +206,10 @@ describe("resolveUri", () => {
   it("works when direct query a Web3API that implements the api-resolver", async () => {
     const result = await resolveUri(
       new Uri("ens/ens"),
-      client(redirects, implementations, apis),
+      client(apis),
+      [], 
+      plugins, 
+      interfaces, 
       createPluginApi,
       createApi,
       true
@@ -226,7 +233,10 @@ describe("resolveUri", () => {
   it("works when direct query a plugin Web3API that implements the api-resolver", async () => {
     const result = await resolveUri(
       new Uri("my/something-different"),
-      client(redirects, implementations, apis),
+      client(apis),
+      [], 
+      plugins, 
+      interfaces,
       createPluginApi,
       createApi,
       true
@@ -248,7 +258,6 @@ describe("resolveUri", () => {
 
   it("throws when circular redirect loops are found", async () => {
     const circular: UriRedirect<Uri>[] = [
-      ...redirects,
       {
         from: new Uri("some/api"),
         to: new Uri("ens/api"),
@@ -263,7 +272,10 @@ describe("resolveUri", () => {
 
     return resolveUri(
       new Uri("some/api"),
-      client(circular, implementations, apis),
+      client(apis),
+      circular, 
+      plugins, 
+      interfaces,
       createPluginApi,
       createApi,
       true
@@ -274,7 +286,6 @@ describe("resolveUri", () => {
 
   it("throws when redirect missing the from property", async () => {
     const missingFromProperty: UriRedirect<Uri>[] = [
-      ...redirects,
       {
         from: new Uri("some/api"),
         to: new Uri("ens/api"),
@@ -289,7 +300,10 @@ describe("resolveUri", () => {
 
     return resolveUri(
       new Uri("some/api"),
-      client(missingFromProperty, implementations, apis),
+      client(apis),
+      missingFromProperty, 
+      plugins, 
+      interfaces,
       createPluginApi,
       createApi,
       true
@@ -298,16 +312,16 @@ describe("resolveUri", () => {
     );
   });
 
-  it("works when a Web3API redirects to a Plugin", async () => {
-    const uriToPlugin: UriRedirect<Uri>[] = [
-      ...redirects,
+  it("works when a Web3API registers a Plugin", async () => {
+    const pluginRegistrations: PluginRegistration<Uri>[] = [
+      ...plugins,
       {
-        from: new Uri("some/api"),
-        to: {
+        uri: new Uri("some/api"),
+        plugin: {
           factory: () => ({} as Plugin),
           manifest: {
             schema: "",
-            implemented: [new Uri("w3/api-resolver")],
+            implemented: [coreInterfaceUris.apiResolver],
             imported: [],
           },
         },
@@ -316,7 +330,10 @@ describe("resolveUri", () => {
 
     const result = await resolveUri(
       new Uri("some/api"),
-      client(uriToPlugin, implementations, apis),
+      client(apis),
+      [], 
+      pluginRegistrations, 
+      interfaces, 
       createPluginApi,
       createApi,
       true
@@ -351,10 +368,13 @@ describe("resolveUri", () => {
 
     await resolveUri(
       uri,
-      client(redirects, implementations, {
+      client({
         ...apis,
         "w3://ens/ipfs": faultyIpfsApi
       }),
+      [], 
+      plugins, 
+      interfaces,
       createPluginApi,
       createApi,
       true

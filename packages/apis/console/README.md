@@ -1,6 +1,6 @@
 # Console Web3API
 
-Calls log on logger plugin at uri `w3://w3/logger`. Default logger logs to console, but can be overridden with redirect to custom logger web3api implementation.
+Calls log on logger plugin at uri `w3://ens/js-logger.web3api.eth`. Default logger logs to console, but can be overridden with redirect to custom logger web3api implementation.
 
 ### Log levels
 

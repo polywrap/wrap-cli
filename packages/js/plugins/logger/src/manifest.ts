@@ -21,6 +21,6 @@ type Query {
   ): Boolean!
 }
 `,
-  implemented: [new Uri("w3/logger")],
+  implemented: [new Uri("w3://ens/logger.core.web3api.eth")],
   imported: [],
 };

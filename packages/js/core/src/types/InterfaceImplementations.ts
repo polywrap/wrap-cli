@@ -2,17 +2,17 @@ import { Uri } from ".";
 
 import { Tracer } from "@web3api/tracing-js";
 
-export interface UriInterfaceImplementations<TUri = string> {
+export interface InterfaceImplementations<TUri = string> {
   interface: TUri;
   implementations: TUri[];
 }
 
-export const sanitizeUriInterfaceImplementations = Tracer.traceFunc(
-  "core: sanitizeUriInterfaceImplementations",
+export const sanitizeInterfaceImplementations = Tracer.traceFunc(
+  "core: sanitizeInterfaceImplementations",
   (
-    input: UriInterfaceImplementations<string>[]
-  ): UriInterfaceImplementations<Uri>[] => {
-    const output: UriInterfaceImplementations<Uri>[] = [];
+    input: InterfaceImplementations<string>[]
+  ): InterfaceImplementations<Uri>[] => {
+    const output: InterfaceImplementations<Uri>[] = [];
     for (const definition of input) {
       const interfaceUri = new Uri(definition.interface);
 

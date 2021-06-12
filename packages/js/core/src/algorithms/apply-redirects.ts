@@ -18,17 +18,6 @@ export const applyRedirects = Tracer.traceFunc(
       );
     };
 
-    const checkForDuplicateRedirects = (
-      redirectFrom: Uri,
-      redirectFromToMap: Record<string, Uri>
-    ) => {
-      if (redirectFromToMap[redirectFrom.uri]) {
-        throwError(
-          `Cannot redirect from the same URI more than once, URI: "${uri}".`
-        );
-      }
-    };
-
     for (const redirect of redirects) {
       if (!redirect.from) {
         throwError(
@@ -36,11 +25,11 @@ export const applyRedirects = Tracer.traceFunc(
         );
       }
 
-      if (Uri.isUri(redirect.to)) {
-        checkForDuplicateRedirects(redirect.from, redirectFromToMap);
-
-        redirectFromToMap[redirect.from.uri] = redirect.to;
+      if (redirectFromToMap[redirect.from.uri]) {
+        continue;
       }
+
+      redirectFromToMap[redirect.from.uri] = redirect.to;
     }
 
     let finalUri = uri;

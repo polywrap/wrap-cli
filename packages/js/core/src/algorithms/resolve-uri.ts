@@ -1,9 +1,18 @@
-import { Api, Client, Uri, PluginPackage } from "../types";
+import {
+  Api,
+  Client,
+  Uri,
+  PluginPackage,
+  InterfaceImplementations,
+  PluginRegistration,
+  UriRedirect,
+} from "../types";
 import { Manifest, deserializeManifest } from "../manifest";
 import * as ApiResolver from "../apis/api-resolver";
 import { applyRedirects } from "./apply-redirects";
 import { findPluginPackage } from "./find-plugin-package";
 import { getImplementations } from "./get-implementations";
+import { coreInterfaceUris } from "../interfaces";
 
 import { Tracer } from "@web3api/tracing-js";
 
@@ -12,15 +21,16 @@ export const resolveUri = Tracer.traceFunc(
   async (
     uri: Uri,
     client: Client,
+    redirects: readonly UriRedirect<Uri>[],
+    plugins: readonly PluginRegistration<Uri>[],
+    interfaces: readonly InterfaceImplementations<Uri>[],
     createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
     createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api,
     noValidate?: boolean
   ): Promise<Api> => {
-    const redirects = client.redirects();
-
     const finalRedirectedUri = applyRedirects(uri, redirects);
 
-    const plugin = findPluginPackage(finalRedirectedUri, redirects);
+    const plugin = findPluginPackage(finalRedirectedUri, plugins);
 
     if (plugin) {
       return Tracer.traceFunc(
@@ -31,9 +41,10 @@ export const resolveUri = Tracer.traceFunc(
 
     // The final URI has been resolved, let's now resolve the Web3API package
     const uriResolverImplementations = getImplementations(
-      new Uri("w3/api-resolver"),
+      coreInterfaceUris.apiResolver,
       redirects,
-      client.implementations()
+      plugins,
+      interfaces
     );
 
     return await resolveUriWithApiResolvers(

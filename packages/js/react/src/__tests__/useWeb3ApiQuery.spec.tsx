@@ -13,7 +13,7 @@ import {
   RenderHookOptions,
   cleanup
 } from "@testing-library/react-hooks";
-import { UriRedirect } from "@web3api/core-js";
+import { PluginRegistration } from "@web3api/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
@@ -25,14 +25,14 @@ jest.setTimeout(60000);
 
 describe("useWeb3ApiQuery hook", () => {
   let uri: string;
-  let redirects: UriRedirect<string>[];
+  let plugins: PluginRegistration<string>[];
   let WrapperProvider: RenderHookOptions<unknown>;
 
   beforeAll(async () => {
     const {
       ipfs,
       ensAddress,
-      redirects: testRedirects,
+      plugins: testPlugins,
     } = await initTestEnvironment();
 
     const { ensDomain } = await buildAndDeployApi(
@@ -42,11 +42,11 @@ describe("useWeb3ApiQuery hook", () => {
     );
 
     uri = `ens/testnet/${ensDomain}`;
-    redirects = testRedirects;
+    plugins = testPlugins;
     WrapperProvider = {
       wrapper: Web3ApiProvider,
       initialProps: {
-        redirects,
+        plugins,
       },
     };
   });

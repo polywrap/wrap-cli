@@ -1,15 +1,10 @@
-import { PluginPackage, Uri } from ".";
+import { Uri } from ".";
 
 import { Tracer } from "@web3api/tracing-js";
 
 export interface UriRedirect<TUri = string> {
-  /** Redirect from this URI */
   from: TUri;
-
-  /** The destination URI, or plugin, that will now handle the invocation. */
-  // TODO: currently UriRedirects are used for: plugins, implementations, and redirects. This is either elegant, or confusing...
-  //       Should look at what it looks like to seperate these.
-  to: TUri | PluginPackage;
+  to: TUri;
 }
 
 export const sanitizeUriRedirects = Tracer.traceFunc(

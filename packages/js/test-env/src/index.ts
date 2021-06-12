@@ -1,4 +1,4 @@
-import { UriRedirect } from "@web3api/core-js";
+import { PluginRegistration } from "@web3api/core-js";
 import { plugin as ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { plugin as ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { plugin as ensPlugin } from "@web3api/ens-plugin-js";
@@ -10,7 +10,7 @@ interface TestEnvironment {
   ipfs: string;
   ethereum: string;
   ensAddress: string;
-  redirects: UriRedirect[];
+  plugins: PluginRegistration[];
 }
 
 export const initTestEnvironment = async (): Promise<TestEnvironment> => {
@@ -35,12 +35,13 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
   // re-deploy ENS
   const { data } = await axios.get("http://localhost:4040/deploy-ens");
 
-  // Test env redirects for ethereum, ipfs, and ENS.
-  // Will be used to fetch APIs.
-  const redirects: UriRedirect[] = [
+  //Test env plugins for ethereum, ipfs, and ENS.
+  // Will be used to fetch APIs.:
+
+  const plugins: PluginRegistration[] = [
     {
-      from: "w3://ens/ethereum.web3api.eth",
-      to: ethereumPlugin({
+      uri: "w3://ens/ethereum.web3api.eth",
+      plugin: ethereumPlugin({
         networks: {
           testnet: {
             provider: ethereum as string,
@@ -49,15 +50,15 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
       }),
     },
     {
-      from: "w3://ens/ipfs.web3api.eth",
-      to: ipfsPlugin({
+      uri: "w3://ens/ipfs.web3api.eth",
+      plugin: ipfsPlugin({
         provider: ipfs as string,
         fallbackProviders: ["https://ipfs.io"],
       }),
     },
     {
-      from: "w3://ens/ens.web3api.eth",
-      to: ensPlugin({
+      uri: "w3://ens/ens.web3api.eth",
+      plugin: ensPlugin({
         addresses: {
           testnet: data.ensAddress as string,
         },
@@ -65,7 +66,7 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
     },
   ];
 
-  return { ipfs, ethereum, ensAddress: data.ensAddress, redirects };
+  return { ipfs, ethereum, ensAddress: data.ensAddress, plugins };
 };
 
 export const stopTestEnvironment = async (): Promise<void> => {
