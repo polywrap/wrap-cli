@@ -14,7 +14,7 @@ export const getImplementations = Tracer.traceFunc(
     apiInterfaceUri: Uri,
     redirects: readonly UriRedirect<Uri>[],
     plugins: readonly PluginRegistration<Uri>[],
-    interfaceImplementationsList: readonly InterfaceImplementations<Uri>[]
+    interfaces: readonly InterfaceImplementations<Uri>[]
   ): Uri[] => {
     const result: Uri[] = [];
 
@@ -62,7 +62,7 @@ export const getImplementations = Tracer.traceFunc(
 
     addAllImplementationsFromPluginRedirects(finalRedirectedApiInterface);
     addAllImplementationsFromImplementationsArray(
-      interfaceImplementationsList,
+      interfaces,
       finalRedirectedApiInterface
     );
 
