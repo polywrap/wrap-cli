@@ -7,6 +7,7 @@ import { writeFileSync } from "@web3api/os-js";
 import Mustache from "mustache";
 import path from "path";
 import fs from "fs";
+import YAML from "js-yaml";
 
 export async function copyArtifactsFromBuildImage(
   outputDir: string,
@@ -142,4 +143,58 @@ export function generateDockerfile(
   const dockerfile = Mustache.render(template, config);
   writeFileSync(outputFilePath, dockerfile, "utf-8");
   return outputFilePath;
+}
+
+interface DockerCompose {
+  services: {
+    [key: string]: {
+      build?:
+        | string
+        | {
+            context: string;
+          };
+    };
+  };
+}
+
+export function correctBuildContextPathsFromCompose(
+  dockerComposePath: string
+): DockerCompose {
+  const dockerComposeFile = YAML.safeLoad(
+    fs.readFileSync(dockerComposePath, "utf-8")
+  ) as DockerCompose;
+
+  const correctedServiceEntries = Object.entries(
+    dockerComposeFile.services || {}
+  ).map(([serviceName, value]) => {
+    if (!value.build) {
+      return [serviceName, value];
+    }
+
+    if (typeof value.build === "string") {
+      return [
+        serviceName,
+        {
+          ...value,
+          build: path.join(path.join(dockerComposePath, ".."), value.build),
+        },
+      ];
+    } else {
+      return [
+        serviceName,
+        {
+          ...value,
+          build: {
+            ...value.build,
+            context: path.join(dockerComposePath, ".."),
+          },
+        },
+      ];
+    }
+  });
+
+  return {
+    ...dockerComposeFile,
+    services: Object.fromEntries(correctedServiceEntries),
+  };
 }

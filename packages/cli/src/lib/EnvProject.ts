@@ -1,4 +1,8 @@
-import { loadWeb3ApiManifest, loadEnvManifest } from "./helpers";
+import {
+  loadWeb3ApiManifest,
+  loadEnvManifest,
+  correctBuildContextPathsFromCompose,
+} from "./helpers";
 import { runCommand } from "./helpers/command";
 
 import { Web3ApiManifest, EnvManifest } from "@web3api/core-js";
@@ -198,10 +202,11 @@ export class EnvProject {
   public async installModules(): Promise<void> {
     //Compose package.json under .w3 folder and install deps
 
-    const modules = await this.getFilteredModules();
+    if (!fs.existsSync(this.getCachePath("env"))) {
+      fs.mkdirSync(this.getCachePath("env"), { recursive: true });
+    }
 
-    console.log("MODS: ", modules);
-    console.log(this._modulesInstalled);
+    const modules = await this.getFilteredModules();
 
     if (!modules || !modules.length) {
       return;
@@ -222,6 +227,38 @@ export class EnvProject {
 
     await runCommand(`cd ${this.getCachePath("env")} && npm i`);
 
+    modules.forEach((m) => {
+      const defaultPath = "./docker-compose.yml";
+
+      const moduleDir = path.join(
+        this.getCachePath("env"),
+        "node_modules",
+        m.module,
+        m.dockerComposePath || defaultPath
+      );
+
+      //Adjust module's docker-compose's build option if it exists
+
+      if (!fs.existsSync(moduleDir)) {
+        throw new Error(
+          `Couldn't find docker-compose.yml file for module "${m.module}" at path '${moduleDir}'`
+        );
+      }
+
+      const composeFileWithCorrectPaths = correctBuildContextPathsFromCompose(
+        moduleDir
+      );
+
+      //Write new docker-compose manifests with corrected build path and 'web3api' prefix
+      const newComposeFile = YAML.dump(composeFileWithCorrectPaths);
+      const correctedFilePath = path.join(
+        moduleDir,
+        "..",
+        "docker-compose.web3api.yml"
+      );
+      fs.writeFileSync(correctedFilePath, newComposeFile);
+    });
+
     this._modulesInstalled = true;
   }
 
@@ -235,17 +272,19 @@ export class EnvProject {
     );
   }
 
-  public async getDockerComposePaths(): Promise<string[]> {
+  public async getCorrectedDockerComposePaths(): Promise<string[]> {
     if (!this._modulesInstalled) {
       throw new Error("Env modules have not been installed");
     }
 
     const modules = await this.getFilteredModules();
 
-    const defaultPath = "./docker-compose.yml";
+    const defaultPath = "./docker-compose.web3api.yml";
 
     return modules.map((module) => {
-      const dockerComposePath = module.dockerComposePath || defaultPath;
+      const dockerComposePath = module.dockerComposePath
+        ? path.join(module.dockerComposePath, "..", defaultPath)
+        : defaultPath;
 
       return path.join(
         this.getCachePath("env"),
@@ -263,7 +302,7 @@ export class EnvProject {
     );
     const manifest = await this.getEnvManifest();
     const env = manifest.env || {};
-    const modulePaths = await this.getDockerComposePaths();
+    const modulePaths = await this.getCorrectedDockerComposePaths();
     const envKeys = Object.keys(env);
 
     return `${envKeys

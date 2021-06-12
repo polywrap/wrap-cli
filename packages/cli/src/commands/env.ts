@@ -1,5 +1,5 @@
 import { intlMsg } from "../lib/intl";
-import { fixParameters, withSpinner } from "../lib/helpers";
+import { withSpinner } from "../lib/helpers";
 import { EnvProject } from "../lib/EnvProject";
 import { runCommand } from "../lib/helpers/command";
 
@@ -9,7 +9,7 @@ import fs from "fs";
 
 const optionsStr = intlMsg.commands_env_options_options();
 const manStr = intlMsg.commands_env_options_manifest();
-const nodeStr = intlMsg.commands_env_options_i_node();
+const moduleNameStr = intlMsg.commands_env_moduleName();
 
 const cmdStr = intlMsg.commands_create_options_command();
 const upStr = intlMsg.commands_env_command_up();
@@ -31,8 +31,7 @@ ${intlMsg.commands_create_options_commands()}:
   ${chalk.bold("vars")}  ${varsStr}
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
-  -d, --detached                     ${intlMsg.commands_env_options_d()}
-  -m, --modules [<${nodeStr}>]       ${intlMsg.commands_env_options_m()}
+  -m, --modules [<${moduleNameStr}>]       ${intlMsg.commands_env_options_m()}
   -v, --verbose                      ${intlMsg.commands_env_options_v()}
 `;
 
@@ -41,32 +40,17 @@ export default {
   description: intlMsg.commands_env_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { parameters, print, filesystem } = toolbox;
-    const { d, m, v } = parameters.options;
-    let { detached, modules, verbose } = parameters.options;
+    const command = parameters.first;
+    const { m, v } = parameters.options;
+    let { modules, verbose } = parameters.options;
+    let manifestPath = parameters.second;
 
-    detached = detached || d;
     modules = modules || m;
-    verbose = verbose || v;
+    verbose = !!(verbose || v);
 
-    // const modulesToUse: string[] | undefined = [];
-    const params = toolbox.parameters;
-    const fixedParameters = fixParameters(
-      {
-        options: params.options,
-        array: params.array,
-      },
-      {
-        d,
-        detached,
-        m,
-        modules,
-        v,
-        verbose,
-      }
-    );
-
-    const command = fixedParameters[0];
-    let manifestPath = fixedParameters[1];
+    if (modules) {
+      modules = modules.split(",").map((m: string) => m.trim());
+    }
 
     if (command === "help") {
       print.info(HELP);
@@ -96,24 +80,19 @@ export default {
 
     const project = new EnvProject({
       web3apiManifestPath: manifestPath,
-      quiet: verbose ? false : true,
+      quiet: !verbose,
       modulesToUse: modules,
     });
 
     await project.installModules();
     await project.generateBaseDockerCompose();
 
-    console.log("HERE");
-
     const baseCommand = await project.generateBaseComposedCommand();
 
     if (command === "up") {
-      await runCommand(
-        `${baseCommand} up ${detached ? "-d" : ""} --build`,
-        verbose
-      );
+      await runCommand(`${baseCommand} up -d --build`, !verbose);
     } else if (command === "down") {
-      await runCommand(`${baseCommand} down`, verbose);
+      await runCommand(`${baseCommand} down`, !verbose);
     } else if (command === "vars") {
       let vars = "";
 
@@ -123,7 +102,7 @@ export default {
         intlMsg.commands_env_vars_warning(),
         async (_spinner) => {
           const envVarRegex = /\${([^}]+)}/gm;
-          const composePaths = await project.getDockerComposePaths();
+          const composePaths = await project.getCorrectedDockerComposePaths();
 
           const envVars = composePaths.reduce((acc, current) => {
             const rawManifest = fs.readFileSync(current, "utf-8");
@@ -153,14 +132,8 @@ export default {
 
       print.info(vars);
     } else if (command === "config") {
-      console.log("RAN");
+      const { stdout } = await runCommand(`${baseCommand} config`, !verbose);
 
-      const { stdout, stderr } = await runCommand(
-        `${baseCommand} config`,
-        !verbose
-      );
-
-      console.log(stdout, stderr);
       print.info(stdout);
     } else {
       throw Error(intlMsg.commands_env_error_never());

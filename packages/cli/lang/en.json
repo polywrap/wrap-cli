@@ -29,6 +29,7 @@
   "commands_env_options_m": "Use only specified modules",
   "commands_env_options_v": "Verbose output (default: false)",
   "commands_env_options_d": "Run in detached mode",
+  "commands_env_moduleName": "module-name",
   
   "commands_env_command_up": "Start Web3API environment",
   "commands_env_command_down": "Stop Web3API environment",
