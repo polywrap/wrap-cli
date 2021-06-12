@@ -19,7 +19,6 @@
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.25",
     "@web3api/wasm-as": "0.0.1-prealpha.25",
     "ethers": "5.0.8",
-    "js-yaml": "3.14.0",
     "solc": "0.8.3"
   }
 }
