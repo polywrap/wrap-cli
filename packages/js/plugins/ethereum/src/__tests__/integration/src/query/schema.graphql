@@ -28,21 +28,21 @@ type Query {
   getSignerBalance(
     blockTag: BigInt
     connection: Ethereum_Connection
-  ): String!
+  ): BigInt!
 
   getSignerTransactionCount(
     blockTag: BigInt
     connection: Ethereum_Connection
-  ): String!
+  ): BigInt!
 
   getGasPrice(
     connection: Ethereum_Connection
-  ): String!
+  ): BigInt!
 
   estimateTransactionGas(
     tx: Ethereum_TxRequest!
     connection: Ethereum_Connection
-  ): String!
+  ): BigInt!
 
   estimateContractCallGas(
     address: String!
@@ -50,19 +50,19 @@ type Query {
     args: [String!]
     connection: Ethereum_Connection
     txOverrides: Ethereum_TxOverrides
-  ): String!
+  ): BigInt!
 
   checkAddress(
     address: String!
   ): Boolean!
 
   toWei(
-    amount: BigInt!
+    eth: String!
   ): BigInt!
 
-  fromWei(
-    amount: BigInt!
-  ): BigInt!
+  toEth(
+    wei: BigInt!
+  ): String!
 
   awaitTransaction(
     txHash: String!

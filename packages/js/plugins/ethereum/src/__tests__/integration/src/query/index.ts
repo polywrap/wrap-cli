@@ -14,7 +14,7 @@ import {
   Input_estimateContractCallGas,
   Input_checkAddress,
   Input_toWei,
-  Input_fromWei,
+  Input_toEth,
   Input_awaitTransaction,
   Input_waitForEvent
 } from "./w3";
@@ -62,7 +62,7 @@ export function getSignerAddress(
 
 export function getSignerBalance(
   input: Input_getSignerBalance
-): string {
+): BigInt {
   return Ethereum_Query.getSignerBalance({
     blockTag: input.blockTag,
     connection: input.connection
@@ -71,7 +71,7 @@ export function getSignerBalance(
 
 export function getSignerTransactionCount(
   input: Input_getSignerTransactionCount
-): string {
+): BigInt {
   return Ethereum_Query.getSignerTransactionCount({
     blockTag: input.blockTag,
     connection: input.connection
@@ -80,7 +80,7 @@ export function getSignerTransactionCount(
 
 export function getGasPrice(
   input: Input_getGasPrice
-): string {
+): BigInt {
   return Ethereum_Query.getGasPrice({
     connection: input.connection
   });
@@ -88,7 +88,7 @@ export function getGasPrice(
 
 export function estimateTransactionGas(
   input: Input_estimateTransactionGas
-): string {
+): BigInt {
   return Ethereum_Query.estimateTransactionGas({
     tx: input.tx,
     connection: input.connection
@@ -97,7 +97,7 @@ export function estimateTransactionGas(
 
 export function estimateContractCallGas(
   input: Input_estimateContractCallGas
-): string {
+): BigInt {
   return Ethereum_Query.estimateContractCallGas({
     address: input.address,
     method: input.method,
@@ -119,15 +119,15 @@ export function toWei(
   input: Input_toWei
 ): BigInt {
   return Ethereum_Query.toWei({
-    amount: input.amount
+    eth: input.eth
   });
 }
 
-export function fromWei(
-  input: Input_fromWei
-): BigInt {
-  return Ethereum_Query.fromWei({
-    amount: input.amount
+export function toEth(
+  input: Input_toEth
+): String {
+  return Ethereum_Query.toEth({
+    wei: input.wei
   });
 }
 

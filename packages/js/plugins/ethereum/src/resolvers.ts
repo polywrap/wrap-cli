@@ -148,10 +148,10 @@ export const query = (plugin: Plugin): Schema.Query => ({
     );
   },
 
-  fromWei: async (
-    input: Schema.Input_fromWei
+  toEth: async (
+    input: Schema.Input_toEth
   ): Promise<string> => {
-    return plugin.fromWei(
+    return plugin.toEth(
       input
     );
   },

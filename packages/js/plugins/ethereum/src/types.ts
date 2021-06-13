@@ -156,11 +156,11 @@ export interface Input_checkAddress extends Record<string, unknown> {
 }
 
 export interface Input_toWei extends Record<string, unknown> {
-  amount: BigInt
+  eth: string
 }
 
-export interface Input_fromWei extends Record<string, unknown> {
-  amount: BigInt
+export interface Input_toEth extends Record<string, unknown> {
+  wei: BigInt
 }
 
 export interface Input_awaitTransaction extends Record<string, unknown> {
@@ -202,27 +202,27 @@ export interface Query extends PluginModule {
   getSignerBalance(
     input: Input_getSignerBalance,
     client: Client
-  ): Promise<string>;
+  ): Promise<BigInt>;
 
   getSignerTransactionCount(
     input: Input_getSignerTransactionCount,
     client: Client
-  ): Promise<string>;
+  ): Promise<BigInt>;
 
   getGasPrice(
     input: Input_getGasPrice,
     client: Client
-  ): Promise<string>;
+  ): Promise<BigInt>;
 
   estimateTransactionGas(
     input: Input_estimateTransactionGas,
     client: Client
-  ): Promise<string>;
+  ): Promise<BigInt>;
 
   estimateContractCallGas(
     input: Input_estimateContractCallGas,
     client: Client
-  ): Promise<string>;
+  ): Promise<BigInt>;
 
   checkAddress(
     input: Input_checkAddress,
@@ -234,10 +234,10 @@ export interface Query extends PluginModule {
     client: Client
   ): Promise<BigInt>;
 
-  fromWei(
-    input: Input_fromWei,
+  toEth(
+    input: Input_toEth,
     client: Client
-  ): Promise<BigInt>;
+  ): Promise<String>;
 
   awaitTransaction(
     input: Input_awaitTransaction,

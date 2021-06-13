@@ -142,21 +142,21 @@ type Query {
   getSignerBalance(
     blockTag: BigInt
     connection: Connection
-  ): String!
+  ): BigInt!
 
   getSignerTransactionCount(
     blockTag: BigInt
     connection: Connection
-  ): String!
+  ): BigInt!
 
   getGasPrice(
     connection: Connection
-  ): String!
+  ): BigInt!
 
   estimateTransactionGas(
     tx: TxRequest!
     connection: Connection
-  ): String!
+  ): BigInt!
 
   estimateContractCallGas(
     address: String!
@@ -164,19 +164,19 @@ type Query {
     args: [String!]
     connection: Connection
     txOverrides: TxOverrides
-  ): String!
+  ): BigInt!
 
   checkAddress(
     address: String!
   ): Boolean!
 
   toWei(
-    amount: BigInt!
+    eth: String!
   ): BigInt!
 
-  fromWei(
-    amount: BigInt!
-  ): BigInt!
+  toEth(
+    wei: BigInt!
+  ): String!
 
   awaitTransaction(
     txHash: String!

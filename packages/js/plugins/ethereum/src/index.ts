@@ -104,7 +104,11 @@ export class EthereumPlugin extends Plugin {
     const connection = await this.getConnection(input.connection);
     const signer = connection.getSigner();
     const res = await signer.sendTransaction(input.tx);
-    return Mapping.toTxResponse(res);
+    const result = Mapping.toTxResponse(res);
+    console.log("HERERERE", result.data);
+    console.log(typeof result.data)
+    console.log(typeof res.data);
+    return result;
   }
 
   public async sendTransactionAndWait(
@@ -309,14 +313,14 @@ export class EthereumPlugin extends Plugin {
   public toWei(
     input: Schema.Input_toWei
   ): string {
-    const weiAmount = ethers.utils.parseEther(input.amount);
+    const weiAmount = ethers.utils.parseEther(input.eth);
     return weiAmount.toString();
   }
 
-  public fromWei(
-    input: Schema.Input_fromWei
+  public toEth(
+    input: Schema.Input_toEth
   ): string {
-    const etherAmount = ethers.utils.formatEther(input.amount);
+    const etherAmount = ethers.utils.formatEther(input.wei);
     return etherAmount.toString();
   }
 
