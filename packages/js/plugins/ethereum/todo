@@ -1,0 +1,9 @@
+[x] GraphQL Schema Types
+[x] Typescript Types
+[x] Mapping
+[x] GraphQL Schema Methods
+[x] Implementation
+[x] Raw vs ABI function naming convention
+[x] Add any methods?
+[ ] Exhaustive tests in JS (including msgpack deserialization test)
+[ ] Exhaustive test in WASM (necessary?)

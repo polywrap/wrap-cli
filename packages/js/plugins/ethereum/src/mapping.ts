@@ -1,9 +1,107 @@
-import { TxReceipt, TxResponse, TxRequest, Log } from "./types";
+import {
+  Access,
+  TxReceipt,
+  TxResponse,
+  TxRequest,
+  Log
+} from "./types";
 
 import { ethers } from "ethers";
 
-export const mapLog = (log: ethers.providers.Log): Log => ({
-  blockNumber: log.blockNumber,
+export const toTxReceipt = (
+  receipt: ethers.providers.TransactionReceipt
+): TxReceipt => ({
+  to: receipt.to,
+  from: receipt.from,
+  contractAddress: receipt.contractAddress,
+  transactionIndex: receipt.transactionIndex,
+  root: receipt.root,
+  gasUsed: receipt.gasUsed.toString(),
+  logsBloom: receipt.logsBloom,
+  transactionHash: receipt.transactionHash,
+  logs: receipt.logs.map(toLog),
+  blockNumber: receipt.blockNumber.toString(),
+  blockHash: receipt.blockHash,
+  confirmations: receipt.confirmations,
+  cumulativeGasUsed: receipt.cumulativeGasUsed.toString(),
+  byzantium: receipt.byzantium,
+  status: receipt.status,
+});
+
+export const fromTxReceipt = (
+  receipt: TxReceipt
+): ethers.providers.TransactionReceipt => ({
+  to: receipt.to,
+  from: receipt.from,
+  contractAddress: receipt.contractAddress,
+  transactionIndex: receipt.transactionIndex,
+  root: receipt.root,
+  gasUsed: ethers.BigNumber.from(receipt.gasUsed),
+  logsBloom: receipt.logsBloom,
+  transactionHash: receipt.transactionHash,
+  logs: receipt.logs.map(fromLog),
+  blockNumber: Number(receipt.blockNumber),
+  blockHash: receipt.blockHash,
+  confirmations: receipt.confirmations,
+  cumulativeGasUsed: ethers.BigNumber.from(receipt.cumulativeGasUsed),
+  byzantium: receipt.byzantium,
+  status: receipt.status,
+})
+
+export const toTxResponse = (
+  response: ethers.providers.TransactionResponse
+): TxResponse => ({
+  hash: response.hash,
+  to: response.to,
+  from: response.from,
+  nonce: response.nonce,
+  gasLimit: response.gasLimit.toString(),
+  gasPrice: response.gasPrice.toString(),
+  data: response.data,
+  value: response.value.toString(),
+  chainId: response.chainId,
+  blockNumber: response.blockNumber?.toString(),
+  blockHash: response.blockHash,
+  timestamp: response.timestamp,
+  confirmations: response.confirmations,
+  raw: response.raw,
+  r: response.r,
+  s: response.s,
+  v: response.v,
+  type: response.type || undefined,
+  accessList: response.accessList?.map(toAccess)
+});
+
+export const toTxRequest = (
+  request: ethers.providers.TransactionRequest
+): TxRequest => ({
+  to: request.to,
+  from: request.from,
+  nonce: request.nonce ? Number(request.nonce.toString()) : undefined,
+  gasLimit: request.gasLimit?.toString(),
+  gasPrice: request.gasPrice?.toString(),
+  data: request.data?.toString(),
+  value: request.value?.toString(),
+  chainId: request.chainId,
+  type: request.type
+});
+
+export const fromTxRequest = (
+  request: TxRequest
+): ethers.providers.TransactionRequest => ({
+  to: request.to,
+  from: request.from,
+  nonce: request.nonce,
+  gasLimit: request.gasLimit,
+  gasPrice: request.gasPrice,
+  data: request.data,
+  value: request.value,
+  chainId: request.chainId,
+  type: request.type
+})
+
+export const toLog = (log: ethers.providers.Log): Log => ({
+  blockNumber: log.blockNumber.toString(),
   blockHash: log.blockHash,
   transactionIndex: log.transactionIndex,
   removed: log.removed,
@@ -14,59 +112,24 @@ export const mapLog = (log: ethers.providers.Log): Log => ({
   logIndex: log.logIndex,
 });
 
-export const mapTxReceipt = (
-  receipt: ethers.providers.TransactionReceipt
-): TxReceipt => ({
-  to: receipt.to,
-  from: receipt.from,
-  contractAddress: receipt.contractAddress,
-  transactionIndex: receipt.transactionIndex,
-  root: receipt.root,
-  gasUsed: receipt.gasUsed.toString(),
-  logsBloom: receipt.logsBloom,
-  blockHash: receipt.blockHash,
-  transactionHash: receipt.transactionHash,
-  logs: receipt.logs.map(mapLog),
-  blockNumber: receipt.blockNumber.toString(),
-  confirmations: receipt.confirmations,
-  cumulativeGasUsed: receipt.cumulativeGasUsed.toString(),
-  byzantium: receipt.byzantium,
-  status: receipt.status ?? 0,
+export const fromLog = (log: Log): ethers.providers.Log => ({
+  blockNumber: Number(log.blockNumber),
+  blockHash: log.blockHash,
+  transactionIndex: log.transactionIndex,
+  removed: log.removed,
+  address: log.address,
+  data: log.data,
+  topics: log.topics,
+  transactionHash: log.transactionHash,
+  logIndex: log.logIndex,
 });
 
-export const mapTxResponse = (
-  response: ethers.providers.TransactionResponse
-): TxResponse => ({
-  hash: response.hash,
-  blockNumber: response.blockNumber,
-  blockHash: response.blockHash,
-  timestamp: response.timestamp,
-  confirmations: response.confirmations,
-  from: response.from,
-  raw: response.raw,
-  nonce: response.nonce.toString(),
-  gasLimit: response.gasLimit.toString(),
-  gasPrice: response.gasPrice.toString(),
-  data: response.data.toString(),
+export const toAccess = (access: { address: string, storageKeys: string[] }): Access => ({
+  address: access.address,
+  storageKeys: access.storageKeys
 });
 
-export const mapTxRequest = (
-  request: ethers.providers.TransactionRequest
-): TxRequest => ({
-  to: request.to,
-  from: request.from,
-  nonce: request.nonce !== undefined ? request.nonce.toString() : undefined,
-  gasLimit:
-    request.gasLimit !== undefined ? request.gasLimit.toString() : undefined,
-  gasPrice:
-    request.gasPrice !== undefined ? request.gasPrice.toString() : undefined,
-  data: request.data !== undefined ? request.data.toString() : undefined,
-  value: request.value !== undefined ? request.value.toString() : undefined,
-  chainId: request.chainId,
+export const fromAccess = (access: Access): { address: string, storageKeys: string[] } => ({
+  address: access.address,
+  storageKeys: access.storageKeys
 });
-
-export const parseArgs = (args: string[]): (string | string[])[] => {
-  return args.map((arg: string) =>
-    arg.startsWith("[") && arg.endsWith("]") ? JSON.parse(arg) : arg
-  );
-};
