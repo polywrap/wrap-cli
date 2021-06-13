@@ -1,0 +1,81 @@
+#import { Query, Connection, EventNotification, StaticTxResult, TxOverrides, TxRequest, TxReceipt } into Ethereum from "w3://ens/ethereum.web3api.eth"
+
+type Query {
+  callContractView(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Ethereum_Connection
+  ): String!
+
+  callContractStatic(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Ethereum_Connection
+    txOverrides: Ethereum_TxOverrides
+  ): Ethereum_StaticTxResult!
+
+  encodeParams(
+    types: [String!]!
+    values: [String!]!
+  ): String!
+
+  getSignerAddress(
+    connection: Ethereum_Connection
+  ): String!
+
+  getSignerBalance(
+    blockTag: BigInt
+    connection: Ethereum_Connection
+  ): String!
+
+  getSignerTransactionCount(
+    blockTag: BigInt
+    connection: Ethereum_Connection
+  ): String!
+
+  getGasPrice(
+    connection: Ethereum_Connection
+  ): String!
+
+  estimateTransactionGas(
+    tx: Ethereum_TxRequest!
+    connection: Ethereum_Connection
+  ): String!
+
+  estimateContractCallGas(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Ethereum_Connection
+    txOverrides: Ethereum_TxOverrides
+  ): String!
+
+  checkAddress(
+    address: String!
+  ): Boolean!
+
+  toWei(
+    amount: BigInt!
+  ): BigInt!
+
+  fromWei(
+    amount: BigInt!
+  ): BigInt!
+
+  awaitTransaction(
+    txHash: String!
+    confirmations: UInt32!
+    timeout: UInt32!
+    connection: Ethereum_Connection
+  ): Ethereum_TxReceipt!
+
+  waitForEvent(
+    address: String!
+    event: String!
+    args: [String!]
+    timeout: UInt32
+    connection: Ethereum_Connection
+  ): Ethereum_EventNotification!
+}

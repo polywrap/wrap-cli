@@ -67,22 +67,22 @@ export function deserialize{{type}}(buffer: ArrayBuffer): {{type}} {
 }
 
 export function read{{type}}(reader: Read): {{type}} {
-  var numFields = reader.readMapLength();
+  let numFields = reader.readMapLength();
 
   {{#properties}}
   {{^object}}
-  var _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+  let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
   {{/object}}
   {{#object}}
   {{#required}}
-  var _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} | null = null;
+  let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} | null = null;
   {{/required}}
   {{^required}}
-  var _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+  let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
   {{/required}}
   {{/object}}
   {{#required}}
-  var _{{name}}Set: bool = false;
+  let _{{name}}Set: bool = false;
   {{/required}}
   {{/properties}}
 

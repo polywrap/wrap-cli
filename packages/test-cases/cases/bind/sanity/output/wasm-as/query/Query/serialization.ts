@@ -22,17 +22,17 @@ export class Input_queryMethod {
 export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMethod {
   const context: Context =  new Context("Deserializing query-type: queryMethod");
   const reader = new ReadDecoder(argsBuf, context);
-  var numFields = reader.readMapLength();
+  let numFields = reader.readMapLength();
 
-  var _str: string = "";
-  var _strSet: bool = false;
-  var _optStr: string | null = null;
-  var _en: Types.CustomEnum = 0;
-  var _enSet: bool = false;
-  var _optEnum: Nullable<Types.CustomEnum> = new Nullable<Types.CustomEnum>();
-  var _enumArray: Array<Types.CustomEnum> = [];
-  var _enumArraySet: bool = false;
-  var _optEnumArray: Array<Nullable<Types.CustomEnum>> | null = null;
+  let _str: string = "";
+  let _strSet: bool = false;
+  let _optStr: string | null = null;
+  let _en: Types.CustomEnum = 0;
+  let _enSet: bool = false;
+  let _optEnum: Nullable<Types.CustomEnum> = new Nullable<Types.CustomEnum>();
+  let _enumArray: Array<Types.CustomEnum> = [];
+  let _enumArraySet: bool = false;
+  let _optEnumArray: Array<Nullable<Types.CustomEnum>> | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -170,14 +170,13 @@ export class Input_objectMethod {
 export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectMethod {
   const context: Context =  new Context("Deserializing query-type: objectMethod");
   const reader = new ReadDecoder(argsBuf, context);
-  var numFields = reader.readMapLength();
+  let numFields = reader.readMapLength();
 
-  var _object: Types.AnotherType | null = null;
-  var _objectSet: bool = false;
-  var _optObject: Types.AnotherType | null = null;
-  var _objectArray: Array<Types.AnotherType> = [];
-  var _objectArraySet: bool = false;
-  var _optObjectArray: Array<Types.AnotherType | null> | null = null;
+  let _object: Types.AnotherType | null = null;
+  let _optObject: Types.AnotherType | null = null;
+  let _objectArray: Array<Types.AnotherType> = [];
+  let _objectArraySet: bool = false;
+  let _optObjectArray: Array<Types.AnotherType | null> | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -193,7 +192,7 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
     }
     else if (field == "optObject") {
       reader.context().push(field, "Types.AnotherType | null", "type found, reading property");
-      var object: Types.AnotherType | null = null;
+      let object: Types.AnotherType | null = null;
       if (!reader.isNextNil()) {
         object = Types.AnotherType.read(reader);
       }
@@ -212,7 +211,7 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
     else if (field == "optObjectArray") {
       reader.context().push(field, "Array<Types.AnotherType | null> | null", "type found, reading property");
       _optObjectArray = reader.readNullableArray((reader: Read): Types.AnotherType | null => {
-        var object: Types.AnotherType | null = null;
+        let object: Types.AnotherType | null = null;
         if (!reader.isNextNil()) {
           object = Types.AnotherType.read(reader);
         }
