@@ -10,7 +10,6 @@ import {
 } from "@web3api/test-env-js";
 
 import { ethers } from "ethers";
-import { defaultAbiCoder } from 'ethers/lib/utils';
 import { keccak256 } from "js-sha3";
 import axios from "axios"
 
@@ -310,7 +309,7 @@ describe("Ethereum Plugin", () => {
       expect(response.data?.toEth).toEqual("20.0")
     });
 
-    it.only("awaitTransaction", async () => {
+    it("awaitTransaction", async () => {
       const data = simpleBytecode;
 
       const response = await client.query<{ sendTransaction: Schema.TxResponse }>({
@@ -342,8 +341,6 @@ describe("Ethereum Plugin", () => {
           }
         `,
       });
-
-      console.log(awaitResponse.data?.awaitTransaction)
 
       expect(awaitResponse.data?.awaitTransaction).toBeDefined()
       expect(awaitResponse.errors).toBeUndefined()
@@ -475,16 +472,16 @@ describe("Ethereum Plugin", () => {
               txOverrides: {
                 value: null,
                 nonce: null,
-                gasPrice: 50,
-                gasLimit: 200000
+                gasPrice: "50",
+                gasLimit: "200000"
               }
             )
           }
         `,
       });
 
-      expect(response.data?.callContractMethod).toBeDefined()
       expect(response.errors).toBeUndefined()
+      expect(response.data?.callContractMethod).toBeDefined()
     });
 
     it("callContractMethodAndWait", async () => {
@@ -500,55 +497,45 @@ describe("Ethereum Plugin", () => {
               txOverrides: {
                 value: null,
                 nonce: null,
-                gasPrice: 50,
-                gasLimit: 200000
+                gasPrice: "50",
+                gasLimit: "200000"
               }
             )
           }
         `,
       });
-  
-      expect(response.data?.callContractMethodAndWait).toBeDefined()
+
       expect(response.errors).toBeUndefined()
+      expect(response.data?.callContractMethodAndWait).toBeDefined()
     });
 
     it("sendTransaction", async () => {
-      const label = "0x" + keccak256("testwhatever")
-      const types = ["bytes32", "address"]
-      const values = [label, signer]
-      const data = defaultAbiCoder.encode(types, values)
-
       const response = await client.query<{ sendTransaction: Schema.TxResponse }>({
         uri,
         query: `
           mutation {
-            sendTransaction(to: "${registrarAddress}", data: "${data}")
+            sendTransaction(tx: { data: "${simpleBytecode}" })
           }
         `,
       });
 
-      expect(response.data?.sendTransaction).toBeDefined()
       expect(response.errors).toBeUndefined()
+      expect(response.data?.sendTransaction).toBeDefined()
       expect(response.data?.sendTransaction.hash).toBeDefined()
     });
 
     it("sendTransactionAndWait", async () => {
-      const label = "0x" + keccak256("testwhatever")
-      const types = ["bytes32", "address"]
-      const values = [label, signer]
-
-      const data = defaultAbiCoder.encode(types, values)
       const response = await client.query<{ sendTransactionAndWait: Schema.TxReceipt }>({
         uri,
         query: `
           mutation {
-            sendTransactionAndWait(to: "${registrarAddress}", data: "${data}")
+            sendTransactionAndWait(tx: { data: "${simpleBytecode}" })
           }
         `,
       });
 
-      expect(response.data?.sendTransactionAndWait).toBeDefined()
       expect(response.errors).toBeUndefined()
+      expect(response.data?.sendTransactionAndWait).toBeDefined()
       expect(response.data?.sendTransactionAndWait.transactionHash).toBeDefined()
     });
 
@@ -567,8 +554,8 @@ describe("Ethereum Plugin", () => {
         }
       });
 
-      expect(response.data?.deployContract).toBeDefined();
       expect(response.errors).toBeUndefined();
+      expect(response.data?.deployContract).toBeDefined();
       expect(response.data?.deployContract).toContain("0x");
     });
 
@@ -591,12 +578,14 @@ describe("Ethereum Plugin", () => {
         uri,
         query: `
           mutation {
-            sendRPC(method: "eve_mine", params: [])
+            sendRPC(method: "eth_blockNumber", params: [])
           }
         `,
       });
 
-      expect(res).toBe("here");
+      expect(res.errors).toBeUndefined();
+      expect(res.data).toBeDefined();
+      expect(res.data?.sendRPC).toBeTruthy();
     });
   });
 });

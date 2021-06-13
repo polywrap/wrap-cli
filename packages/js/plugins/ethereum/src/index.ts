@@ -22,7 +22,6 @@ import {
   PluginFactory,
 } from "@web3api/core-js";
 import { ethers } from "ethers";
-import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import { defaultAbiCoder } from "ethers/lib/utils";
 
 // Export all types that are nested inside of EthereumConfig.
@@ -104,11 +103,7 @@ export class EthereumPlugin extends Plugin {
     const connection = await this.getConnection(input.connection);
     const signer = connection.getSigner();
     const res = await signer.sendTransaction(input.tx);
-    const result = Mapping.toTxResponse(res);
-    console.log("HERERERE", result.data);
-    console.log(typeof result.data)
-    console.log(typeof res.data);
-    return result;
+    return Mapping.toTxResponse(res);
   }
 
   public async sendTransactionAndWait(
@@ -150,19 +145,11 @@ export class EthereumPlugin extends Plugin {
     input: Schema.Input_sendRPC
   ): Promise<string> {
     const connection = await this.getConnection(input.connection);
-    const provider = connection.getSigner().provider;
-
-    if (
-      provider instanceof JsonRpcProvider ||
-      provider instanceof Web3Provider
-    ) {
-      const response = await provider.send(
-        input.method, input.params
-      );
-      return response.toString();
-    } else {
-      throw new Error("Provider is not compatible with method");
-    }
+    const provider = connection.getProvider();
+    const response = await provider.send(
+      input.method, input.params
+    );
+    return response.toString();
   }
 
   /// Query

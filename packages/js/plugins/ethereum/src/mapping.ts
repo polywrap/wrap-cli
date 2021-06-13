@@ -104,7 +104,7 @@ export const toLog = (log: ethers.providers.Log): Log => ({
   blockNumber: log.blockNumber.toString(),
   blockHash: log.blockHash,
   transactionIndex: log.transactionIndex,
-  removed: log.removed,
+  removed: !!log.removed,
   address: log.address,
   data: log.data,
   topics: log.topics,
