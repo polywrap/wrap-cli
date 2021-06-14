@@ -9,7 +9,7 @@ import {
   TradeOptions,
   SwapParameters,
   TradeType,
-  TxResponse
+  TxResponse, StaticTxResult
 } from "./types";
 import path from "path";
 import {
@@ -482,7 +482,7 @@ describe("Router", () => {
       }
       const swapParameters: SwapParameters = swapParametersQuery.data?.swapCallParameters!;
 
-      const swapStatic = await client.query<{ execCallStatic: string }>({
+      const swapStatic = await client.query<{ execCallStatic: StaticTxResult }>({
         uri: ensUri,
         query: `
         query {
@@ -501,8 +501,8 @@ describe("Router", () => {
         console.log("callStatic errors");
         swapStatic.errors.forEach(console.log)
       }
-      const exception: string | undefined = swapStatic.data?.execCallStatic;
-      expect(exception).not.toStrictEqual(undefined);
+      const exception: StaticTxResult | undefined = swapStatic.data?.execCallStatic;
+      expect(exception?.error).toStrictEqual(true)
 
       // parse swap parameters args
       const parsedArgs: (string | string[])[] = swapParameters.args.map((arg: string) =>
@@ -522,7 +522,7 @@ describe("Router", () => {
         ethersException = e.reason;
       }
 
-      expect(exception).toStrictEqual(ethersException);
+      expect(exception?.result).toStrictEqual(ethersException);
     }
   });
 });

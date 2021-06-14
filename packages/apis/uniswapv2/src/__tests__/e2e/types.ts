@@ -74,7 +74,7 @@ export interface TradeOptions {
 }
 
 export interface Log {
-  blockNumber: number;
+  blockNumber: string;
   blockHash: string;
   transactionIndex: number;
   removed: boolean;
@@ -86,46 +86,53 @@ export interface Log {
 }
 
 export interface TxReceipt {
-  // to?: string;
-  // from: string;
-  // contractAddress?: string;
-  // transactionIndex: number;
-  // root?: string;
-  // gasUsed: string;
-  // logsBloom: string;
-  // blockHash: string;
+  to: string;
+  from: string;
+  contractAddress: string;
+  transactionIndex: number;
+  root?: string;
+  gasUsed: string;
+  logsBloom: string;
   transactionHash: string;
-  // logs: Log[];
-  // blockNumber: string;
-  // // confirmations: number;
+  logs: Log[];
+  blockNumber: string;
+  blockHash: string;
+  confirmations: number;
   cumulativeGasUsed: string;
-  // // byzantium: boolean;
-  // status: number;
+  byzantium: boolean;
+  status?: number;
 }
 
 export interface TxResponse {
   hash: string;
-  // blockNumber?: number;
-  // blockHash?: string;
-  // timestamp?: number;
-  // confirmations: number;
-  // from: string;
-  // raw?: string;
-  // nonce: string;
-  // gasLimit: string;
-  // gasPrice: string;
-  // data: string;
+  to?: string;
+  from: string;
+  nonce: number;
+  gasLimit: string;
+  gasPrice: string;
+  data: string;
+  value: string;
+  chainId: number;
+  blockNumber?: string;
+  blockHash?: string;
+  timestamp?: number;
+  confirmations: number;
+  raw?: string;
+  r?: string;
+  s?: string;
+  v?: number;
+  type?: number;
+  accessList?: Access[];
 }
 
-export interface TxRequest {
-  to?: string;
-  from?: string;
-  nonce?: string;
-  gasLimit?: string;
-  gasPrice?: string;
-  data?: string;
-  value?: string;
-  chainId?: number;
+export interface Access {
+  address: string;
+  storageKeys: string[];
+}
+
+export interface StaticTxResult {
+  result: string;
+  error: boolean;
 }
 
 export interface TxOverrides {

@@ -10,6 +10,7 @@ import {
   SwapParameters,
   TradeType,
   TxOverrides,
+  Ethereum_StaticTxResult,
 } from "./w3";
 import { currencyEquals } from "./token";
 import { UNISWAP_ROUTER_CONTRACT } from "../utils/constants";
@@ -134,7 +135,7 @@ export function swapCallParameters(
   };
 }
 
-export function estimateGas(input: Input_estimateGas): string {
+export function estimateGas(input: Input_estimateGas): BigInt {
   const swapParameters: SwapParameters = input.parameters;
   const chainId: Nullable<ChainId> = input.chainId;
   return Ethereum_Query.estimateContractCallGas({
@@ -148,27 +149,24 @@ export function estimateGas(input: Input_estimateGas): string {
           networkNameOrChainId: getChainIdKey(chainId.value),
         },
     txOverrides: {
-      value: swapParameters.value,
+      value: BigInt.fromString(swapParameters.value.substring(2), 16),
       gasPrice: null,
       gasLimit: null,
     },
   });
 }
 
-// returns empty string if call would be successful, otherwise returns solidity contract error
-export function execCallStatic(input: Input_execCallStatic): string {
+export function execCallStatic(
+  input: Input_execCallStatic
+): Ethereum_StaticTxResult {
   const swapParameters: SwapParameters = input.parameters;
   const chainId: ChainId = input.chainId;
   const txOverrides: TxOverrides =
     input.txOverrides === null
       ? { gasLimit: null, gasPrice: null }
       : input.txOverrides!;
-  const gasPrice: string | null =
-    txOverrides.gasPrice === null ? null : txOverrides.gasPrice!.toString();
-  const gasLimit: string | null =
-    txOverrides.gasLimit === null ? null : txOverrides.gasLimit!.toString();
 
-  return Ethereum_Query.callContractMethodStatic({
+  return Ethereum_Query.callContractStatic({
     address: UNISWAP_ROUTER_CONTRACT,
     method: getSwapMethodAbi(swapParameters.methodName),
     args: swapParameters.args,
@@ -177,9 +175,9 @@ export function execCallStatic(input: Input_execCallStatic): string {
       networkNameOrChainId: getChainIdKey(chainId),
     },
     txOverrides: {
-      value: swapParameters.value,
-      gasPrice: gasPrice,
-      gasLimit: gasLimit,
+      value: BigInt.fromString(swapParameters.value.substring(2), 16),
+      gasPrice: txOverrides.gasPrice,
+      gasLimit: txOverrides.gasLimit,
     },
   });
 }

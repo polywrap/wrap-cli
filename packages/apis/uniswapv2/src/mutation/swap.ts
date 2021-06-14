@@ -47,10 +47,6 @@ export function execCall(input: Input_execCall): Ethereum_TxResponse {
     input.txOverrides === null
       ? { gasLimit: null, gasPrice: null }
       : input.txOverrides!;
-  const gasPrice: string | null =
-    txOverrides.gasPrice === null ? null : txOverrides.gasPrice!.toString();
-  const gasLimit: string | null =
-    txOverrides.gasLimit === null ? null : txOverrides.gasLimit!.toString();
 
   const txResponse: Ethereum_TxResponse = Ethereum_Mutation.callContractMethod({
     address: UNISWAP_ROUTER_CONTRACT,
@@ -61,9 +57,9 @@ export function execCall(input: Input_execCall): Ethereum_TxResponse {
       networkNameOrChainId: getChainIdKey(chainId),
     },
     txOverrides: {
-      value: swapParameters.value,
-      gasPrice: gasPrice,
-      gasLimit: gasLimit,
+      value: BigInt.fromString(swapParameters.value.substring(2), 16),
+      gasPrice: txOverrides.gasPrice,
+      gasLimit: txOverrides.gasLimit,
     },
   });
   return txResponse;
@@ -112,10 +108,6 @@ export function approve(input: Input_approve): Ethereum_TxResponse {
     input.txOverrides === null
       ? { gasLimit: null, gasPrice: null }
       : input.txOverrides!;
-  const gasPrice: string | null =
-    txOverrides.gasPrice === null ? null : txOverrides.gasPrice!.toString();
-  const gasLimit: string | null =
-    txOverrides.gasLimit === null ? null : txOverrides.gasLimit!.toString();
 
   const txResponse: Ethereum_TxResponse = Ethereum_Mutation.callContractMethod({
     address: input.token.address,
@@ -128,8 +120,8 @@ export function approve(input: Input_approve): Ethereum_TxResponse {
     },
     txOverrides: {
       value: null,
-      gasPrice: gasPrice,
-      gasLimit: gasLimit,
+      gasPrice: txOverrides.gasPrice,
+      gasLimit: txOverrides.gasLimit,
     },
   });
   return txResponse;

@@ -22,7 +22,7 @@ export function fetchTokenData(input: Input_fetchTokenData): Token {
   const symbol: string =
     input.symbol != null
       ? input.symbol!
-      : Ethereum_Query.callView({
+      : Ethereum_Query.callContractView({
           address: address,
           method: "function symbol() external pure returns (string memory)",
           args: [],
@@ -34,7 +34,7 @@ export function fetchTokenData(input: Input_fetchTokenData): Token {
   const name: string =
     input.name != null
       ? input.name!
-      : Ethereum_Query.callView({
+      : Ethereum_Query.callContractView({
           address: address,
           method: "function name() external pure returns (string memory)",
           args: [],
@@ -43,7 +43,7 @@ export function fetchTokenData(input: Input_fetchTokenData): Token {
             networkNameOrChainId: getChainIdKey(chainId),
           },
         });
-  const decimals: string = Ethereum_Query.callView({
+  const decimals: string = Ethereum_Query.callContractView({
     address: address,
     method: "function decimals() external pure returns (uint8)",
     args: [],
@@ -72,7 +72,7 @@ export function fetchPairData(input: Input_fetchPairData): Pair {
   token1 = wrapIfEther(token1);
   // get amounts
   const address = pairAddress({ token0, token1 });
-  const res: string = Ethereum_Query.callView({
+  const res: string = Ethereum_Query.callContractView({
     address: address,
     method:
       "function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)",
@@ -120,7 +120,7 @@ export function fetchPairData(input: Input_fetchPairData): Pair {
 // returns total supply of ERC20-compliant token
 export function fetchTotalSupply(input: Input_fetchTotalSupply): TokenAmount {
   const token: Token = input.token;
-  const res: string = Ethereum_Query.callView({
+  const res: string = Ethereum_Query.callContractView({
     address: token.address,
     method: "function totalSupply() external view returns (uint)",
     args: [],
@@ -139,7 +139,7 @@ export function fetchTotalSupply(input: Input_fetchTotalSupply): TokenAmount {
 // returns reserve0 * reserve1, as of immediately after the most recent liquidity event
 export function fetchKLast(input: Input_fetchKLast): BigInt {
   const token: Token = input.token;
-  const result: string = Ethereum_Query.callView({
+  const result: string = Ethereum_Query.callContractView({
     address: token.address,
     method: "function kLast() external view returns (uint)",
     args: [],
