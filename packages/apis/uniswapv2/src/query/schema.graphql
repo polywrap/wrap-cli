@@ -108,7 +108,7 @@ type Query {
   estimateGas(
     parameters: SwapParameters!
     chainId: ChainId
-  ): String!
+  ): BigInt!
 
   execCallStatic(
     parameters: SwapParameters!
