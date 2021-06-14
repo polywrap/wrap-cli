@@ -16,7 +16,7 @@ import axios from "axios"
 
 const { hash: namehash } = require("eth-ens-namehash");
 
-jest.setTimeout(60000)
+jest.setTimeout(120000)
 
 describe("Ethereum Plugin", () => {
   let client: Web3ApiClient;
