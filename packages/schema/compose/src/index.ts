@@ -14,7 +14,7 @@ export interface SchemaInfo {
 export interface ComposerOutput {
   query?: SchemaInfo;
   mutation?: SchemaInfo;
-  combined?: SchemaInfo;
+  combined: SchemaInfo;
 }
 
 export enum ComposerFilter {
@@ -60,7 +60,9 @@ export async function composeSchema(
     );
   }
 
-  const output: ComposerOutput = {};
+  const output: ComposerOutput = {
+    combined: {},
+  };
   const includeSchema = options.output & ComposerFilter.Schema;
   const includeTypeInfo = options.output & ComposerFilter.TypeInfo;
   const createSchemaInfo = (typeInfo: TypeInfo): SchemaInfo => ({
@@ -83,9 +85,9 @@ export async function composeSchema(
     ]);
 
     output.combined = createSchemaInfo(combinedTypeInfo);
-  } else if (typeInfos.query) {
+  } else if (typeInfos.query && output.query) {
     output.combined = output.query;
-  } else if (typeInfos.mutation) {
+  } else if (typeInfos.mutation && output.mutation) {
     output.combined = output.mutation;
   }
 

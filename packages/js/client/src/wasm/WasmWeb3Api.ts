@@ -14,7 +14,7 @@ import {
   InvokeApiOptions,
   InvokeApiResult,
   Api,
-  Manifest,
+  Web3ApiManifest,
   Uri,
   Client,
   ApiResolver,
@@ -42,7 +42,7 @@ export class WasmWeb3Api extends Api {
 
   constructor(
     private _uri: Uri,
-    private _manifest: Manifest,
+    private _manifest: Web3ApiManifest,
     private _apiResolver: Uri
   ) {
     super();
@@ -333,7 +333,8 @@ export class WasmWeb3Api extends Api {
 
         // Either the query or mutation module will work,
         // as they share the same schema file
-        const module = this._manifest.query || this._manifest.mutation;
+        const module =
+          this._manifest.modules.mutation || this._manifest.modules.query;
 
         if (!module) {
           // TODO: this won't work for abstract APIs
@@ -343,7 +344,7 @@ export class WasmWeb3Api extends Api {
         const { data, error } = await ApiResolver.Query.getFile(
           client,
           this._apiResolver,
-          this.combinePaths(this._uri.path, module.schema.file)
+          this.combinePaths(this._uri.path, module.schema)
         );
 
         if (error) {
@@ -353,7 +354,7 @@ export class WasmWeb3Api extends Api {
         // If nothing is returned, the schema was not found
         if (!data) {
           throw Error(
-            `WasmWeb3Api: Schema was not found.\nURI: ${this._uri}\nSubpath: ${module.schema.file}`
+            `WasmWeb3Api: Schema was not found.\nURI: ${this._uri}\nSubpath: ${module.schema}`
           );
         }
 
@@ -387,7 +388,7 @@ export class WasmWeb3Api extends Api {
           return this._wasm[module] as ArrayBuffer;
         }
 
-        const moduleManifest = this._manifest[module];
+        const moduleManifest = this._manifest.modules[module];
 
         if (!moduleManifest) {
           throw Error(
@@ -398,7 +399,7 @@ export class WasmWeb3Api extends Api {
         const { data, error } = await ApiResolver.Query.getFile(
           client,
           this._apiResolver,
-          this.combinePaths(this._uri.path, moduleManifest.module.file)
+          this.combinePaths(this._uri.path, moduleManifest.module)
         );
 
         if (error) {
@@ -408,7 +409,7 @@ export class WasmWeb3Api extends Api {
         // If nothing is returned, the module was not found
         if (!data) {
           throw Error(
-            `Module was not found.\nURI: ${this._uri}\nSubpath: ${moduleManifest.module.file}`
+            `Module was not found.\nURI: ${this._uri}\nSubpath: ${moduleManifest.module}`
           );
         }
 

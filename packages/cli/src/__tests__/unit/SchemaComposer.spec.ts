@@ -9,7 +9,7 @@ describe("SchemaComposer validation", () => {
 
   it("Should load & compose schema properly", async () => {
     const project = new Project({
-      manifestPath,
+      web3apiManifestPath: manifestPath,
     });
     const composer = new SchemaComposer({
       project,

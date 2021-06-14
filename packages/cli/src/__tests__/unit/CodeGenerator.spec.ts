@@ -3,7 +3,7 @@ import path from "path";
 import { SchemaComposer, Project, CodeGenerator } from "../../lib";
 import { composedSchema } from "../project/sample";
 
-const rimraf = require("rimraf");
+import rimraf from "rimraf";
 
 describe("CodeGenerator validation", () => {
   const manifestPath = path.join(__dirname, "../project", "web3api.yaml");
@@ -12,7 +12,7 @@ describe("CodeGenerator validation", () => {
 
   it("Should fail with invalid manifest path", async () => {
     const project = new Project({
-      manifestPath: "invalidManifest",
+      web3apiManifestPath: "invalidManifest",
       quiet: true,
     });
     const schemaComposer = new SchemaComposer({
@@ -31,7 +31,7 @@ describe("CodeGenerator validation", () => {
 
   it("Should fail with invalid generation file", async () => {
     const project = new Project({
-      manifestPath,
+      web3apiManifestPath: manifestPath,
       quiet: true,
     });
     const schemaComposer = new SchemaComposer({
@@ -58,7 +58,7 @@ describe("CodeGenerator validation", () => {
     }
 
     const project = new Project({
-      manifestPath,
+      web3apiManifestPath: manifestPath,
       quiet: true,
     });
     const schemaComposer = new SchemaComposer({
