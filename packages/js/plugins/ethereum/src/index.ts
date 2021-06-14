@@ -40,10 +40,6 @@ export interface EthereumConfig {
   defaultNetwork?: string;
 }
 
-export type SendOptions = Partial<{
-  wait: boolean;
-}>;
-
 export class EthereumPlugin extends Plugin {
   private _connections: Connections;
   private _defaultNetwork: string;
