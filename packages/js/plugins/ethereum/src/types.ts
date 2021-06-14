@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
 // https://github.com/web3-api/monorepo/issues/101
 import { PluginModule, Client } from "@web3api/core-js";
@@ -12,7 +14,7 @@ export interface TxReceipt {
   from: string;
   contractAddress: string;
   transactionIndex: UInt32;
-  root?: string
+  root?: string;
   gasUsed: BigInt;
   logsBloom: string;
   transactionHash: string;
@@ -22,7 +24,7 @@ export interface TxReceipt {
   confirmations: UInt32;
   cumulativeGasUsed: BigInt;
   byzantium: boolean;
-  status?: UInt32
+  status?: UInt32;
 }
 
 export interface TxResponse {
@@ -101,81 +103,82 @@ export interface Connection {
 /// Queries
 
 export interface Input_callContractView extends Record<string, unknown> {
-  address: string,
-  method: string,
-  args?: string[],
-  connection?: Connection
+  address: string;
+  method: string;
+  args?: string[];
+  connection?: Connection;
 }
 
 export interface Input_callContractStatic extends Record<string, unknown> {
-  address: string,
-  method: string,
-  args?: string[],
-  connection?: Connection,
-  txOverrides?: TxOverrides
+  address: string;
+  method: string;
+  args?: string[];
+  connection?: Connection;
+  txOverrides?: TxOverrides;
 }
 
 export interface Input_encodeParams extends Record<string, unknown> {
-  types: string[],
-  values: string[]
+  types: string[];
+  values: string[];
 }
 
 export interface Input_getSignerAddress extends Record<string, unknown> {
-  connection?: Connection
+  connection?: Connection;
 }
 
 export interface Input_getSignerBalance extends Record<string, unknown> {
-  blockTag?: BigInt,
-  connection?: Connection
+  blockTag?: BigInt;
+  connection?: Connection;
 }
 
-export interface Input_getSignerTransactionCount extends Record<string, unknown> {
-  blockTag?: BigInt,
-  connection?: Connection
+export interface Input_getSignerTransactionCount
+  extends Record<string, unknown> {
+  blockTag?: BigInt;
+  connection?: Connection;
 }
 
 export interface Input_getGasPrice extends Record<string, unknown> {
-  connection?: Connection
+  connection?: Connection;
 }
 
 export interface Input_estimateTransactionGas extends Record<string, unknown> {
-  tx: TxRequest,
-  connection?: Connection
+  tx: TxRequest;
+  connection?: Connection;
 }
 
 export interface Input_estimateContractCallGas extends Record<string, unknown> {
-  address: string,
-  method: string,
-  args?: string[],
-  connection?: Connection,
-  txOverrides?: TxOverrides
+  address: string;
+  method: string;
+  args?: string[];
+  connection?: Connection;
+  txOverrides?: TxOverrides;
 }
 
 export interface Input_checkAddress extends Record<string, unknown> {
-  address: string
+  address: string;
 }
 
 export interface Input_toWei extends Record<string, unknown> {
-  eth: string
+  eth: string;
 }
 
 export interface Input_toEth extends Record<string, unknown> {
-  wei: BigInt
+  wei: BigInt;
 }
 
 export interface Input_awaitTransaction extends Record<string, unknown> {
-  txHash: string,
-  confirmations: UInt32,
-  timeout: UInt32,
-  connection?: Connection
+  txHash: string;
+  confirmations: UInt32;
+  timeout: UInt32;
+  connection?: Connection;
 }
 
 export interface Input_waitForEvent extends Record<string, unknown> {
-  address: string,
-  event: string,
-  args?: string[],
-  timeout?: UInt32,
-  connection?: Connection,
+  address: string;
+  event: string;
+  args?: string[];
+  timeout?: UInt32;
+  connection?: Connection;
 }
 
 export interface Query extends PluginModule {
@@ -189,10 +192,7 @@ export interface Query extends PluginModule {
     client: Client
   ): Promise<StaticTxResult>;
 
-  encodeParams(
-    input: Input_encodeParams,
-    client: Client
-  ): Promise<string>;
+  encodeParams(input: Input_encodeParams, client: Client): Promise<string>;
 
   getSignerAddress(
     input: Input_getSignerAddress,
@@ -209,10 +209,7 @@ export interface Query extends PluginModule {
     client: Client
   ): Promise<BigInt>;
 
-  getGasPrice(
-    input: Input_getGasPrice,
-    client: Client
-  ): Promise<BigInt>;
+  getGasPrice(input: Input_getGasPrice, client: Client): Promise<BigInt>;
 
   estimateTransactionGas(
     input: Input_estimateTransactionGas,
@@ -224,20 +221,11 @@ export interface Query extends PluginModule {
     client: Client
   ): Promise<BigInt>;
 
-  checkAddress(
-    input: Input_checkAddress,
-    client: Client
-  ): Promise<boolean>;
+  checkAddress(input: Input_checkAddress, client: Client): Promise<boolean>;
 
-  toWei(
-    input: Input_toWei,
-    client: Client
-  ): Promise<BigInt>;
+  toWei(input: Input_toWei, client: Client): Promise<BigInt>;
 
-  toEth(
-    input: Input_toEth,
-    client: Client
-  ): Promise<String>;
+  toEth(input: Input_toEth, client: Client): Promise<string>;
 
   awaitTransaction(
     input: Input_awaitTransaction,
@@ -251,47 +239,48 @@ export interface Query extends PluginModule {
 }
 
 export interface Input_callContractMethod extends Record<string, unknown> {
-  address: string,
-  method: string,
-  args?: string[],
-  connection?: Connection,
-  txOverrides?: TxOverrides
+  address: string;
+  method: string;
+  args?: string[];
+  connection?: Connection;
+  txOverrides?: TxOverrides;
 }
 
-export interface Input_callContractMethodAndWait extends Record<string, unknown> {
-  address: string,
-  method: string,
-  args?: string[],
-  connection?: Connection,
-  txOverrides?: TxOverrides
+export interface Input_callContractMethodAndWait
+  extends Record<string, unknown> {
+  address: string;
+  method: string;
+  args?: string[];
+  connection?: Connection;
+  txOverrides?: TxOverrides;
 }
 
 export interface Input_sendTransaction extends Record<string, unknown> {
-  tx: TxRequest,
-  connection?: Connection
+  tx: TxRequest;
+  connection?: Connection;
 }
 
 export interface Input_sendTransactionAndWait extends Record<string, unknown> {
-  tx: TxRequest,
-  connection?: Connection
+  tx: TxRequest;
+  connection?: Connection;
 }
 
 export interface Input_deployContract extends Record<string, unknown> {
-  abi: string,
-  bytecode: string,
-  args?: string[],
-  connection?: Connection
+  abi: string;
+  bytecode: string;
+  args?: string[];
+  connection?: Connection;
 }
 
 export interface Input_signMessage extends Record<string, unknown> {
-  message: string,
-  connection?: Connection
+  message: string;
+  connection?: Connection;
 }
 
 export interface Input_sendRPC extends Record<string, unknown> {
-  method: string,
-  params: string[],
-  connection?: Connection
+  method: string;
+  params: string[];
+  connection?: Connection;
 }
 
 export interface Mutation extends PluginModule {
@@ -315,18 +304,9 @@ export interface Mutation extends PluginModule {
     client: Client
   ): Promise<TxReceipt>;
 
-  deployContract(
-    input: Input_deployContract,
-    client: Client
-  ): Promise<string>;
+  deployContract(input: Input_deployContract, client: Client): Promise<string>;
 
-  signMessage(
-    input: Input_signMessage,
-    client: Client
-  ): Promise<string>;
+  signMessage(input: Input_signMessage, client: Client): Promise<string>;
 
-  sendRPC(
-    input: Input_sendRPC,
-    client: Client
-  ): Promise<string>;
+  sendRPC(input: Input_sendRPC, client: Client): Promise<string>;
 }

@@ -122,33 +122,27 @@ export class EthereumPlugin extends Plugin {
     const connection = await this.getConnection(input.connection);
     const signer = connection.getSigner();
     const factory = new ethers.ContractFactory(
-      input.abi, input.bytecode, signer
+      input.abi,
+      input.bytecode,
+      signer
     );
-    const contract = await factory.deploy(
-      ...this.parseArgs(input.args)
-    );
+    const contract = await factory.deploy(...this.parseArgs(input.args));
 
     await contract.deployTransaction.wait();
     return contract.address;
   }
 
-  public async signMessage(
-    input: Schema.Input_signMessage
-  ): Promise<string> {
+  public async signMessage(input: Schema.Input_signMessage): Promise<string> {
     const connection = await this.getConnection(input.connection);
     const messageHash = ethers.utils.id(input.message);
     const messageHashBytes = ethers.utils.arrayify(messageHash);
     return await connection.getSigner().signMessage(messageHashBytes);
   }
 
-  public async sendRPC(
-    input: Schema.Input_sendRPC
-  ): Promise<string> {
+  public async sendRPC(input: Schema.Input_sendRPC): Promise<string> {
     const connection = await this.getConnection(input.connection);
     const provider = connection.getProvider();
-    const response = await provider.send(
-      input.method, input.params
-    );
+    const response = await provider.send(input.method, input.params);
     return response.toString();
   }
 
@@ -159,12 +153,12 @@ export class EthereumPlugin extends Plugin {
   ): Promise<string> {
     const connection = await this.getConnection(input.connection);
     const contract = connection.getContract(
-      input.address, [input.method], false
+      input.address,
+      [input.method],
+      false
     );
     const funcs = Object.keys(contract.interface.functions);
-    const res = await contract[funcs[0]](
-      ...this.parseArgs(input.args)
-    );
+    const res = await contract[funcs[0]](...this.parseArgs(input.args));
     return res.toString();
   }
 
@@ -172,38 +166,36 @@ export class EthereumPlugin extends Plugin {
     input: Schema.Input_callContractStatic
   ): Promise<Schema.StaticTxResult> {
     const connection = await this.getConnection(input.connection);
-    const contract = connection.getContract(
-      input.address, [input.method]
-    );
+    const contract = connection.getContract(input.address, [input.method]);
     const funcs = Object.keys(contract.interface.functions);
 
     try {
       const res = await contract.callStatic[funcs[0]](
-        ...this.parseArgs(input.args
-      ), {
-        gasPrice: input.gasPrice ? ethers.BigNumber.from(input.gasPrice) : undefined,
-        gasLimit: input.gasLimit ? ethers.BigNumber.from(input.gasLimit) : undefined,
-        value: input.value ? ethers.BigNumber.from(input.value) : undefined,
-      });
+        ...this.parseArgs(input.args),
+        {
+          gasPrice: input.gasPrice
+            ? ethers.BigNumber.from(input.gasPrice)
+            : undefined,
+          gasLimit: input.gasLimit
+            ? ethers.BigNumber.from(input.gasLimit)
+            : undefined,
+          value: input.value ? ethers.BigNumber.from(input.value) : undefined,
+        }
+      );
       return {
         result: res.toString(),
-        error: false
+        error: false,
       };
     } catch (e) {
       return {
         result: e.reason,
-        error: true
+        error: true,
       };
     }
   }
 
-  public encodeParams(
-    input: Schema.Input_encodeParams
-  ): string {
-    return defaultAbiCoder.encode(
-      input.types,
-      input.values
-    );
+  public encodeParams(input: Schema.Input_encodeParams): string {
+    return defaultAbiCoder.encode(input.types, input.values);
   }
 
   public async getSignerAddress(
@@ -217,9 +209,7 @@ export class EthereumPlugin extends Plugin {
     input: Schema.Input_getSignerBalance
   ): Promise<string> {
     const connection = await this.getConnection(input.connection);
-    return (
-      await connection.getSigner().getBalance(input.blockTag)
-    ).toString();
+    return (await connection.getSigner().getBalance(input.blockTag)).toString();
   }
 
   public async getSignerTransactionCount(
@@ -231,13 +221,9 @@ export class EthereumPlugin extends Plugin {
     ).toString();
   }
 
-  public async getGasPrice(
-    input: Schema.Input_getGasPrice
-  ): Promise<string> {
+  public async getGasPrice(input: Schema.Input_getGasPrice): Promise<string> {
     const connection = await this.getConnection(input.connection);
-    return (
-      await connection.getSigner().getGasPrice()
-    ).toString();
+    return (await connection.getSigner().getGasPrice()).toString();
   }
 
   public async estimateTransactionGas(
@@ -245,9 +231,7 @@ export class EthereumPlugin extends Plugin {
   ): Promise<string> {
     const connection = await this.getConnection(input.connection);
     return (
-      await connection.getSigner().estimateGas(
-        Mapping.fromTxRequest(input.tx)
-      )
+      await connection.getSigner().estimateGas(Mapping.fromTxRequest(input.tx))
     ).toString();
   }
 
@@ -255,9 +239,7 @@ export class EthereumPlugin extends Plugin {
     input: Schema.Input_estimateContractCallGas
   ): Promise<string> {
     const connection = await this.getConnection(input.connection);
-    const contract = connection.getContract(
-      input.address, [input.method]
-    );
+    const contract = connection.getContract(input.address, [input.method]);
     const funcs = Object.keys(contract.interface.functions);
 
     const gasPrice: string | undefined = input.txOverrides?.gasPrice;
@@ -265,19 +247,18 @@ export class EthereumPlugin extends Plugin {
     const value: string | undefined = input.txOverrides?.value;
 
     const gas = await contract.estimateGas[funcs[0]](
-      ...this.parseArgs(input.args
-    ), {
-      gasPrice: gasPrice ? ethers.BigNumber.from(gasPrice) : undefined,
-      gasLimit: gasLimit ? ethers.BigNumber.from(gasLimit) : undefined,
-      value: value ? ethers.BigNumber.from(value) : undefined,
-    });
+      ...this.parseArgs(input.args),
+      {
+        gasPrice: gasPrice ? ethers.BigNumber.from(gasPrice) : undefined,
+        gasLimit: gasLimit ? ethers.BigNumber.from(gasLimit) : undefined,
+        value: value ? ethers.BigNumber.from(value) : undefined,
+      }
+    );
 
     return gas.toString();
   }
 
-  public checkAddress(
-    input: Schema.Input_checkAddress
-  ): boolean {
+  public checkAddress(input: Schema.Input_checkAddress): boolean {
     let address = input.address;
 
     try {
@@ -297,16 +278,12 @@ export class EthereumPlugin extends Plugin {
     }
   }
 
-  public toWei(
-    input: Schema.Input_toWei
-  ): string {
+  public toWei(input: Schema.Input_toWei): string {
     const weiAmount = ethers.utils.parseEther(input.eth);
     return weiAmount.toString();
   }
 
-  public toEth(
-    input: Schema.Input_toEth
-  ): string {
+  public toEth(input: Schema.Input_toEth): string {
     const etherAmount = ethers.utils.formatEther(input.wei);
     return etherAmount.toString();
   }
@@ -315,27 +292,22 @@ export class EthereumPlugin extends Plugin {
     input: Schema.Input_waitForEvent
   ): Promise<Schema.EventNotification> {
     const connection = await this.getConnection(input.connection);
-    const contract = connection.getContract(
-      input.address, [input.event]
-    );
+    const contract = connection.getContract(input.address, [input.event]);
     const events = Object.keys(contract.interface.events);
-    const filter = contract.filters[events[0]](
-      ...this.parseArgs(input.args)
-    );
+    const filter = contract.filters[events[0]](...this.parseArgs(input.args));
 
     return Promise.race([
       new Promise<Schema.EventNotification>((resolve) => {
-        contract.once(filter, (
-          data: string,
-          address: string,
-          log: ethers.providers.Log
-        ) => {
-          resolve({
-            data,
-            address,
-            log: Mapping.toLog(log),
-          } as Schema.EventNotification);
-        });
+        contract.once(
+          filter,
+          (data: string, address: string, log: ethers.providers.Log) => {
+            resolve({
+              data,
+              address,
+              log: Mapping.toLog(log),
+            } as Schema.EventNotification);
+          }
+        );
       }),
       new Promise<Schema.EventNotification>((_, reject) => {
         setTimeout(function () {
@@ -354,7 +326,9 @@ export class EthereumPlugin extends Plugin {
     const provider = connection.getProvider();
 
     const res = await provider.waitForTransaction(
-      input.txHash, input.confirmations, input.timeout
+      input.txHash,
+      input.confirmations,
+      input.timeout
     );
 
     return Mapping.toTxReceipt(res);
@@ -430,23 +404,18 @@ export class EthereumPlugin extends Plugin {
     input: Schema.Input_callContractMethod
   ): Promise<ethers.providers.TransactionResponse> {
     const connection = await this.getConnection(input.connection);
-    const contract = connection.getContract(
-      input.address, [input.method]
-    );
+    const contract = connection.getContract(input.address, [input.method]);
     const funcs = Object.keys(contract.interface.functions);
 
     const gasPrice: string | undefined = input.txOverrides?.gasPrice;
     const gasLimit: string | undefined = input.txOverrides?.gasLimit;
     const value: string | undefined = input.txOverrides?.value;
 
-    return await contract[funcs[0]](
-      ...this.parseArgs(input.args),
-      {
-        gasPrice: gasPrice ? ethers.BigNumber.from(gasPrice) : undefined,
-        gasLimit: gasLimit ? ethers.BigNumber.from(gasLimit) : undefined,
-        value: value ? ethers.BigNumber.from(value) : undefined,
-      }
-    );
+    return await contract[funcs[0]](...this.parseArgs(input.args), {
+      gasPrice: gasPrice ? ethers.BigNumber.from(gasPrice) : undefined,
+      gasLimit: gasLimit ? ethers.BigNumber.from(gasLimit) : undefined,
+      value: value ? ethers.BigNumber.from(value) : undefined,
+    });
   }
 }
 

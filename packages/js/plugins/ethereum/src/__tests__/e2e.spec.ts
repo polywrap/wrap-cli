@@ -2,6 +2,7 @@ import { ethereumPlugin } from "..";
 import * as Schema from "../types";
 
 import { Web3ApiClient } from "@web3api/client-js";
+import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import {
   initTestEnvironment,
@@ -54,6 +55,14 @@ describe("Ethereum Plugin", () => {
             provider: ipfs,
             fallbackProviders: ["https://ipfs.io"]
           })
+        },
+        {
+          from: "w3://ens/ens.web3api.eth",
+          to: ensPlugin({
+            addresses: {
+              testnet: ensAddress
+            }
+          })
         }
       ],
     });
@@ -64,7 +73,7 @@ describe("Ethereum Plugin", () => {
       ensAddress
     );
 
-    uri = `ipfs/${api.ipfsCid}`;
+    uri = `ens/testnet/${api.ensDomain}`;
   });
 
   afterAll(async () => {

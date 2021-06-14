@@ -1,10 +1,4 @@
-import {
-  Access,
-  TxReceipt,
-  TxResponse,
-  TxRequest,
-  Log
-} from "./types";
+import { Access, TxReceipt, TxResponse, TxRequest, Log } from "./types";
 
 import { ethers } from "ethers";
 
@@ -46,7 +40,7 @@ export const fromTxReceipt = (
   cumulativeGasUsed: ethers.BigNumber.from(receipt.cumulativeGasUsed),
   byzantium: receipt.byzantium,
   status: receipt.status,
-})
+});
 
 export const toTxResponse = (
   response: ethers.providers.TransactionResponse
@@ -69,7 +63,7 @@ export const toTxResponse = (
   s: response.s,
   v: response.v,
   type: response.type || undefined,
-  accessList: response.accessList?.map(toAccess)
+  accessList: response.accessList?.map(toAccess),
 });
 
 export const toTxRequest = (
@@ -83,7 +77,7 @@ export const toTxRequest = (
   data: request.data?.toString(),
   value: request.value?.toString(),
   chainId: request.chainId,
-  type: request.type
+  type: request.type,
 });
 
 export const fromTxRequest = (
@@ -97,8 +91,8 @@ export const fromTxRequest = (
   data: request.data,
   value: request.value,
   chainId: request.chainId,
-  type: request.type
-})
+  type: request.type,
+});
 
 export const toLog = (log: ethers.providers.Log): Log => ({
   blockNumber: log.blockNumber.toString(),
@@ -124,12 +118,17 @@ export const fromLog = (log: Log): ethers.providers.Log => ({
   logIndex: log.logIndex,
 });
 
-export const toAccess = (access: { address: string, storageKeys: string[] }): Access => ({
+export const toAccess = (access: {
+  address: string;
+  storageKeys: string[];
+}): Access => ({
   address: access.address,
-  storageKeys: access.storageKeys
+  storageKeys: access.storageKeys,
 });
 
-export const fromAccess = (access: Access): { address: string, storageKeys: string[] } => ({
+export const fromAccess = (
+  access: Access
+): { address: string; storageKeys: string[] } => ({
   address: access.address,
-  storageKeys: access.storageKeys
+  storageKeys: access.storageKeys,
 });

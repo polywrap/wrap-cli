@@ -173,6 +173,7 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
   let numFields = reader.readMapLength();
 
   let _object: Types.AnotherType | null = null;
+  let _objectSet: bool = false;
   let _optObject: Types.AnotherType | null = null;
   let _objectArray: Array<Types.AnotherType> = [];
   let _objectArraySet: bool = false;

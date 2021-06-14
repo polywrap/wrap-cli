@@ -33,7 +33,6 @@ describe("useWeb3ApiClient hook", () => {
 
     redirects = createRedirects(ensAddress, ethereum, ipfs);
 
-    redirects = testRedirects;
     WrapperProvider = {
       wrapper: Web3ApiProvider,
       initialProps: {

@@ -212,7 +212,9 @@ export class WasmWeb3Api extends Api {
                       if (data instanceof ArrayBuffer) {
                         msgpack = data;
                       } else {
-                        msgpack = MsgPack.encode(data, { ignoreUndefined: true });
+                        msgpack = MsgPack.encode(data, {
+                          ignoreUndefined: true,
+                        });
                       }
 
                       // transfer the result
