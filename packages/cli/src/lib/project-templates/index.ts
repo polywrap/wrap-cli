@@ -7,7 +7,7 @@ import url from "url";
 import chalk from "chalk";
 import path from "path";
 
-export function shouldUseYarn(): boolean {
+function shouldUseYarn(): boolean {
   try {
     execSync("yarnpkg --version", { stdio: "ignore" });
     return true;
@@ -80,7 +80,7 @@ const executeCommand = (
   });
 };
 
-export const generateProject = (
+export const generateProjectTemplate = (
   type: string,
   lang: string,
   projectName: string,

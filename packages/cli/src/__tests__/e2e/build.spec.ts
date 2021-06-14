@@ -12,6 +12,7 @@ Options:
   -o, --output-dir <path>            Output directory for build results (default: build/)
   -e, --test-ens <[address,]domain>  Publish the package to a test ENS domain locally (requires --ipfs)
   -w, --watch                        Automatically rebuild when changes are made (default: false)
+  -v, --verbose                      Verbose output (default: false)
 
 `;
 
@@ -78,7 +79,7 @@ ${HELP}`);
 
     expect(code).toEqual(1);
     expect(error).toBe("");
-    expect(clearStyle(output)).toContain(`Failed to compile Web3API: ENOENT: no such file or directory, open '${schemaPath}'`);
+    expect(clearStyle(output)).toContain(`ENOENT: no such file or directory, open '${schemaPath}'`);
   });
 
   test("Should throw error for invalid web3api - invalid field", async () => {
@@ -89,24 +90,64 @@ ${HELP}`);
 
     expect(code).toEqual(1);
     expect(error).toBe("");
-    expect(clearStyle(output)).toContain(`Failed to load web3api from invalid-web3api-2.yaml: Field wrong_mutation is not accepted in the schema. Please check the accepted fields here:`);
+    expect(clearStyle(output)).toContain(`instance is not allowed to have the additional property \"wrong_mutation\"`);
   });
 
   test("Successfully build the project", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["build"],
+    const { exitCode: code, stdout: output } = await runCLI({
+      args: ["build", "-v"],
       cwd: projectRoot
     }, w3Cli);
 
-    const queryPath = path.normalize(`${projectRoot}/build/query.wasm`);
-    const mutationPath = path.normalize(`${projectRoot}/build/mutation.wasm`);
     const manifestPath = path.normalize("build/web3api.yaml");
     const sanitizedOutput = clearStyle(output);
 
     expect(code).toEqual(0);
-    expect(error).toBe("");
-    expect(sanitizedOutput).toContain(`Compiling WASM module: ./src/query/index.ts => ${queryPath}`);
-    expect(sanitizedOutput).toContain(`Compiling WASM module: ./src/mutation/index.ts => ${mutationPath}`);
+    expect(sanitizedOutput).toContain("Artifacts written to ./build from the image `build-env`");
+    expect(sanitizedOutput).toContain("Manifest written to ./build/web3api.yaml");
     expect(sanitizedOutput).toContain(manifestPath);
+  });
+
+  test("Successfully builds project w/ web3api.build.yaml but no dockerfile", async () => {
+    const { exitCode: code, stdout: output } = await runCLI({
+      args: ["build", "web3api.no-docker.yaml", "-v"],
+      cwd: projectRoot
+    }, w3Cli);
+
+    const manifestPath = path.normalize("build/web3api.yaml");
+    const sanitizedOutput = clearStyle(output);
+
+    expect(code).toEqual(0);
+    expect(sanitizedOutput).toContain("Artifacts written to ./build from the image `build-env`");
+    expect(sanitizedOutput).toContain("Manifest written to ./build/web3api.yaml");
+    expect(sanitizedOutput).toContain(manifestPath);
+  });
+
+  test("Successfully builds project w/ dockerfile", async () => {
+    const { exitCode: code, stdout: output } = await runCLI({
+      args: ["build", "web3api.docker.yaml", "-v"],
+      cwd: projectRoot
+    }, w3Cli);
+
+    const manifestPath = path.normalize("build/web3api.yaml");
+    const sanitizedOutput = clearStyle(output);
+
+    expect(code).toEqual(0);
+    expect(sanitizedOutput).toContain("Artifacts written to ./build from the image `build-env`");
+    expect(sanitizedOutput).toContain("Manifest written to ./build/web3api.yaml");
+    expect(sanitizedOutput).toContain(manifestPath);
+  });
+
+  test("Errors when dockerfile config property is missing", async () => {
+    const { exitCode: code, stdout: output } = await runCLI({
+      args: ["build", "web3api.wrong-config.yaml", "-v"],
+      cwd: projectRoot
+    }, w3Cli);
+
+    const sanitizedOutput = clearStyle(output);
+
+    expect(code).toEqual(1);
+    expect(sanitizedOutput).toContain("Validation errors encountered while sanitizing BuildManifest");
+    expect(sanitizedOutput).toContain("instance.config requires property \"include\"");
   });
 });

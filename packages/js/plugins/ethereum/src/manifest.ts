@@ -4,42 +4,104 @@ export const manifest: PluginManifest = {
   // TODO: use the schema.graphql
   // https://github.com/web3-api/monorepo/issues/101
   schema: `
-type Log {
-  blockNumber: Int!
-  blockHash: String!
-  transactionIndex: Int!
-  removed: Boolean!
-  address: String!
-  data: String!
-  topics: [String!]!
-  transactionHash: String!
-  logIndex: Int!
-}
+### Web3API Header START ###
+scalar UInt
+scalar UInt8
+scalar UInt16
+scalar UInt32
+scalar UInt64
+scalar Int
+scalar Int8
+scalar Int16
+scalar Int32
+scalar Int64
+scalar Bytes
+scalar BigInt
+
+directive @imported(
+  uri: String!
+  namespace: String!
+  nativeType: String!
+) on OBJECT | ENUM
+
+directive @imports(
+  types: [String!]!
+) on OBJECT
+### Web3API Header END ###
 
 type TxReceipt {
+  to: String!
+  from: String!
+  contractAddress: String!
+  transactionIndex: UInt32!
+  root: String
+  gasUsed: BigInt!
+  logsBloom: String!
   transactionHash: String!
-  cumulativeGasUsed: String!
+  logs: [Log!]!
+  blockNumber: BigInt!
+  blockHash: String!
+  confirmations: UInt32!
+  cumulativeGasUsed: BigInt!
+  byzantium: Boolean!
+  status: UInt32
 }
 
 type TxResponse {
   hash: String!
+  to: String
+  from: String!
+  nonce: UInt32!
+  gasLimit: BigInt!
+  gasPrice: BigInt!
+  data: String!
+  value: BigInt!
+  chainId: UInt32!
+  blockNumber: BigInt
+  blockHash: String
+  timestamp: UInt32
+  confirmations: UInt32!
+  raw: String
+  r: String
+  s: String
+  v: UInt32
+  type: UInt32
+  accessList: [Access!]
 }
 
 type TxRequest {
   to: String
   from: String
-  nonce: String
-  gasLimit: String
-  gasPrice: String
+  nonce: UInt32
+  gasLimit: BigInt
+  gasPrice: BigInt
   data: String
-  value: String
-  chainId: Int
+  value: BigInt
+  chainId: UInt32
+  type: UInt32
 }
 
 type TxOverrides {
-  gasLimit: String
-  gasPrice: String
-  value: String
+  gasLimit: BigInt
+  gasPrice: BigInt
+  value: BigInt
+}
+
+type StaticTxResult {
+  result: String!
+  error: Boolean!
+}
+
+type Log {
+  blockNumber: BigInt!
+  blockHash: String!
+  transactionIndex: UInt32!
+  removed: Boolean!
+  address: String!
+  data: String!
+  topics: [String!]!
+  transactionHash: String!
+  logIndex: UInt32!
 }
 
 type EventNotification {
@@ -48,37 +110,59 @@ type EventNotification {
   log: Log!
 }
 
+type Access {
+  address: String!
+  storageKeys: [String!]!
+}
+
+type Connection {
+  node: String
+  networkNameOrChainId: String
+}
+
 type Query {
-  callView(
+  callContractView(
     address: String!
     method: String!
     args: [String!]
     connection: Connection
   ): String!
 
-  signMessage(
-    message: String!
+  callContractStatic(
+    address: String!
+    method: String!
+    args: [String!]
     connection: Connection
-  ): String!
+    txOverrides: TxOverrides
+  ): StaticTxResult!
 
   encodeParams(
     types: [String!]!
     values: [String!]!
   ): String!
 
-  getSignerAddress(connection: Connection): String!
+  getSignerAddress(
+    connection: Connection
+  ): String!
 
   getSignerBalance(
-    blockTag: Int
+    blockTag: BigInt
     connection: Connection
-  ): String!
+  ): BigInt!
 
   getSignerTransactionCount(
-    blockTag: Int
+    blockTag: BigInt
     connection: Connection
-  ): String!
+  ): BigInt!
 
-  getGasPrice(connection: Connection): String!
+  getGasPrice(
+    connection: Connection
+  ): BigInt!
+
+  estimateTransactionGas(
+    tx: TxRequest!
+    connection: Connection
+  ): BigInt!
 
   estimateContractCallGas(
     address: String!
@@ -86,41 +170,34 @@ type Query {
     args: [String!]
     connection: Connection
     txOverrides: TxOverrides
-  ): String!
+  ): BigInt!
 
-  checkAddress (address: String!): String!
+  checkAddress(
+    address: String!
+  ): Boolean!
 
-  toWei (amount: String!): String!
+  toWei(
+    eth: String!
+  ): BigInt!
 
-  fromWei (amount: String!): String!
-
-  estimateTxGas(
-    tx: TxRequest!
-    connection: Connection
+  toEth(
+    wei: BigInt!
   ): String!
 
   awaitTransaction(
     txHash: String!
-    confirmations: Int!
-    timeout: Int!
-    connectionOverride: Connection
+    confirmations: UInt32!
+    timeout: UInt32!
+    connection: Connection
   ): TxReceipt!
 
-  waitForEvent (
+  waitForEvent(
     address: String!
     event: String!
-    args: [String]!
-    timeout: Int
+    args: [String!]
+    timeout: UInt32
     connection: Connection
   ): EventNotification!
-
-  callContractMethodStatic(
-    address: String!
-    method: String!
-    args: [String!]
-    connection: Connection
-    txOverrides: TxOverrides
-  ): String!
 }
 
 type Mutation {
@@ -140,13 +217,6 @@ type Mutation {
     txOverrides: TxOverrides
   ): TxReceipt!
 
-  deployContract(
-    abi: String!
-    bytecode: String!
-    args: [String!]
-    connection: Connection
-  ): String!
-
   sendTransaction(
     tx: TxRequest!
     connection: Connection
@@ -157,16 +227,23 @@ type Mutation {
     connection: Connection
   ): TxReceipt!
 
+  deployContract(
+    abi: String!
+    bytecode: String!
+    args: [String!]
+    connection: Connection
+  ): String!
+
+  signMessage(
+    message: String!
+    connection: Connection
+  ): String!
+
   sendRPC(
     method: String!
     params: [String!]!
     connection: Connection
   ): String
-}
-
-type Connection {
-  node: String
-  networkNameOrChainId: String
 }`,
   implemented: [],
   imported: [],

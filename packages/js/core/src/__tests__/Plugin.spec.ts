@@ -3,12 +3,11 @@ import {
   Plugin,
   PluginModules,
   PluginManifest,
-  Uri,
-  createSchemaDocument,
+  Uri
 } from "..";
 
 const testPluginManifest: PluginManifest = {
-  schema: createSchemaDocument(`
+  schema: `
     type Query {
       testQuery: Number!
     }
@@ -16,7 +15,7 @@ const testPluginManifest: PluginManifest = {
     type Mutation {
       testMutation: Boolean!
     }
-  `),
+  `,
   imported: [new Uri("host/path")],
   implemented: [new Uri("host2/path2")],
 };
@@ -46,6 +45,6 @@ describe("Plugin", () => {
 
     expect(testPluginManifest.implemented.length).toBe(1);
     expect(modules.mutation).toBeTruthy();
-    expect(modules.mutation.testMutation).toBeTruthy();
+    expect(modules.mutation?.testMutation).toBeTruthy();
   });
 });
