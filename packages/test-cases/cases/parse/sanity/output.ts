@@ -207,7 +207,31 @@ export const output: TypeInfo = {
     {
       ...createQueryDefinition({
         type: "Query",
-        imports: [{ type: "TestImport_Query" }]
+        imports: [{ type: "TestImport_Query" }, { type: "Interface_Query" }],
+        interfaces: [
+          {
+            ...createImportedQueryDefinition({
+              uri: "interface.uri.eth",
+              namespace: "Interface",
+              type: "Interface_Query",
+              nativeType: "Query"
+            }),
+            methods: [
+              {
+                ...createMethodDefinition({
+                  type: "query",
+                  name: "abstractMethod",
+                  return: createScalarPropertyDefinition({
+                    name: "abstractMethod",
+                    type: "String",
+                    required: true
+                  }),
+                }),
+                arguments: [createScalarPropertyDefinition({ name: "arg", type: "UInt8", required: true })],
+              },
+            ],
+          },
+        ]
       }),
       methods: [
         {
@@ -448,6 +472,28 @@ export const output: TypeInfo = {
             }),
           }),
           arguments: [createScalarPropertyDefinition({ name: "str", type: "String", required: true })],
+        },
+      ],
+    },
+    {
+      ...createImportedQueryDefinition({
+        uri: "interface.uri.eth",
+        namespace: "Interface",
+        type: "Interface_Query",
+        nativeType: "Query"
+      }),
+      methods: [
+        {
+          ...createMethodDefinition({
+            type: "query",
+            name: "abstractMethod",
+            return: createScalarPropertyDefinition({
+              name: "abstractMethod",
+              type: "String",
+              required: true
+            }),
+          }),
+          arguments: [createScalarPropertyDefinition({ name: "arg", type: "UInt8", required: true })],
         },
       ],
     },

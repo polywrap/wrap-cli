@@ -70,8 +70,8 @@ type UserObject {
   fieldB: Int!
 }
 
-type Query @imports(
-  types: [ "TestImport_Query" ]
+type Query implements Interface_Query @imports(
+  types: [ "TestImport_Query", "Interface_Query" ]
 ) {
   queryMethod(
     arg: String!
@@ -150,4 +150,14 @@ enum TestImport_Enum @imported(
 ) {
   TEXT
   BYTES
+}
+
+type Interface_Query @imported(
+  uri: "interface.uri.eth",
+  namespace: "Interface",
+  nativeType: "Query"
+) {
+  abstractMethod(
+    arg: UInt8!
+  ): String!
 }

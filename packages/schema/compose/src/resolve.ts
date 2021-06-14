@@ -283,19 +283,26 @@ function addQueryImportsDirective(
 
   // Append the @imports(...) directive to the query type
   const typeCapture = mutation
-    ? /type[ \n\t]*Mutation[ \n\t]*{/g
+    ? /type[ \n\t]*Mutation[ \n\t]*[^{]*[ \n\t]*{/g
     : /type[ \n\t]*Query[ \n\t]*{/g;
+
+  const implementsCapture = mutation
+    ? /type[ \n\t]*Mutation[ \n\t]*([^{]*)[ \n\t]*{/g
+    : /type[ \n\t]*Query[ \n\t]*([^{]*)[ \n\t]*{/g;
+
+  const implementsStr = implementsCapture.exec(schema)![1];
 
   const importedTypes = `${externalImports
     .map((type) => `\"${type}\"`)
     .join(",\n    ")}`;
-  const replacementQueryStr = `type ${mutation ? "Mutation" : "Query"} @imports(
+
+  const replacementQueryStr = `type ${mutation ? "Mutation" : "Query"} ${implementsStr} @imports(
   types: [
     ${importedTypes}
   ]
 ) {`;
 
-  return schema.replace(typeCapture, replacementQueryStr);
+  return schema.replace(typeCapture, replacementQueryStr, );
 }
 
 async function resolveExternalImports(

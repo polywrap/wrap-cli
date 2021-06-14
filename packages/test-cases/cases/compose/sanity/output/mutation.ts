@@ -30,6 +30,38 @@ export const typeInfo: TypeInfo = {
         { type: "Namespace_CustomEnum" },
         { type: "Namespace_Imported_Enum" },
         { type: "JustMutation_Mutation" },
+        { type: "Interface_Object" },
+        { type: "Interface_Mutation" },
+      ],
+      interfaces: [
+        {
+          ...createImportedQueryDefinition({
+            uri: "interface.eth",
+            namespace: "Interface",
+            nativeType: "Mutation",
+            type: "Interface_Mutation"
+          }),
+          methods: [
+            {
+              ...createMethodDefinition({
+                type: "mutation",
+                name: "abstractMethod",
+                return: createScalarPropertyDefinition({
+                  name: "abstractMethod",
+                  type: "String",
+                  required: true
+                })
+              }),
+              arguments: [
+                createScalarPropertyDefinition({
+                  name: "arg",
+                  required: true,
+                  type: "UInt8"
+                }),
+              ]
+            },
+          ]
+        }
       ],
       methods: [
         {
@@ -481,6 +513,34 @@ export const typeInfo: TypeInfo = {
         },
       ]
     },
+    {
+      ...createImportedQueryDefinition({
+        uri: "interface.eth",
+        namespace: "Interface",
+        nativeType: "Mutation",
+        type: "Interface_Mutation"
+      }),
+      methods: [
+        {
+          ...createMethodDefinition({
+            type: "mutation",
+            name: "abstractMethod",
+            return: createScalarPropertyDefinition({
+              name: "abstractMethod",
+              type: "String",
+              required: true
+            })
+          }),
+          arguments: [
+            createScalarPropertyDefinition({
+              name: "arg",
+              required: true,
+              type: "UInt8"
+            }),
+          ]
+        },
+      ]
+    },
   ],
   importedObjectTypes: [
     {
@@ -689,6 +749,18 @@ export const typeInfo: TypeInfo = {
           type: "Namespace_Imported_Enum",
           required: false
         }),
+      ]
+    },
+    {
+      ...createImportedObjectDefinition({
+        uri: "interface.eth",
+        namespace: "Interface",
+        nativeType: "Object",
+        type: "Interface_Object"
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
       ]
     },
   ],

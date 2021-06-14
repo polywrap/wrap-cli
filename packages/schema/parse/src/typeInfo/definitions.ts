@@ -48,11 +48,13 @@ export function createObjectDefinition(args: {
   type: string;
   name?: string | null;
   required?: boolean;
-  properties?: PropertyDefinition[];
+  properties?: PropertyDefinition[],
+  interfaces?: ObjectDefinition[]
 }): ObjectDefinition {
   return {
     ...createGenericDefinition(args),
     properties: args.properties ? args.properties : [],
+    interfaces: args.interfaces ? args.interfaces : [],
     kind: DefinitionKind.Object,
   };
 }
@@ -247,11 +249,12 @@ export interface QueryDefinition extends GenericDefinition {
   type: QueryType;
   methods: MethodDefinition[];
   imports: { type: string }[];
-  interfaces: ImportedQueryDefinition[];
+  interfaces: Partial<ImportedQueryDefinition>[];
 }
 export function createQueryDefinition(args: {
   type: string;
   imports?: { type: string }[];
+  interfaces?: Partial<ImportedQueryDefinition>[];
   required?: boolean;
 }): QueryDefinition {
   if (!isQueryType(args.type)) {
@@ -265,6 +268,7 @@ export function createQueryDefinition(args: {
     type: args.type,
     methods: [],
     imports: args.imports ? args.imports : [],
+    interfaces: args.interfaces ? args.interfaces : [],
     kind: DefinitionKind.Query,
   };
 }

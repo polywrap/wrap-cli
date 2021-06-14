@@ -1,13 +1,13 @@
 const template = `
 {{#typeInfo}}
 {{#queryTypes}}
-type {{type}} {{#imports.length}}@imports(
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}},{{/last}}{{/interfaces}}{{/interfaces.length}}{{#imports.length}} @imports(
   types: [
     {{#imports}}
     "{{type}}"{{^last}},{{/last}}
     {{/imports}}
   ]
-) {{/imports.length}}{
+){{/imports.length}} {
   {{#methods}}
   {{name}}{{#arguments.length}}(
     {{#arguments}}

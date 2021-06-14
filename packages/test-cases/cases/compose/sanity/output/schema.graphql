@@ -47,7 +47,7 @@ type Query @imports(
   ): [Int64!]!
 }
 
-type Mutation @imports(
+type Mutation implements Interface_Mutation @imports(
   types: [
     "Namespace_Query",
     "Namespace_Mutation",
@@ -58,7 +58,9 @@ type Mutation @imports(
     "Namespace_CustomType",
     "Namespace_CustomEnum",
     "Namespace_Imported_Enum",
-    "JustMutation_Mutation"
+    "JustMutation_Mutation",
+    "Interface_Object",
+    "Interface_Mutation"
   ]
 ) {
   method1(
@@ -191,6 +193,16 @@ type JustMutation_Mutation @imported(
   ): [Int64!]!
 }
 
+type Interface_Mutation @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "Mutation"
+) {
+  abstractMethod(
+    arg: UInt8!
+  ): String!
+}
+
 ### Imported Queries END ###
 
 ### Imported Objects START ###
@@ -265,6 +277,15 @@ type Namespace_Imported_ObjectType @imported(
   nativeType: "Imported_ObjectType"
 ) {
   prop: String!
+}
+
+type Interface_Object @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "Object"
+) {
+  str: String!
+  uint8: UInt8!
 }
 
 enum Namespace_CustomEnum @imported(
