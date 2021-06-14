@@ -1,5 +1,3 @@
-use wasm_bindgen::prelude::*;
-
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
 #[cfg(feature = "wee_alloc")]
@@ -7,6 +5,7 @@ use wasm_bindgen::prelude::*;
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 /// Subinvoke API
+#[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 extern "C" {
     fn __w3_subinvoke(
@@ -22,6 +21,7 @@ extern "C" {
 }
 
 /// Subinvoke Result
+#[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 extern "C" {
     fn __w3_subinvoke_result_len() -> u32;
@@ -29,6 +29,7 @@ extern "C" {
 }
 
 /// Subinvoke Error
+#[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 extern "C" {
     fn __w3_subinvoke_error_len() -> u32;
@@ -36,6 +37,7 @@ extern "C" {
 }
 
 /// Subinvoke API Helper
+#[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 pub fn w3_subinvoke(
     _uri: String,
