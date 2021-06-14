@@ -22,7 +22,7 @@ fn print_in_desired_format() {
     let mut context = Context::new();
     context.description = "Deserializing MyObject".to_string();
     context.push("propertyOne", "unknown", "searching for property type");
-    
+
     assert_eq!(context.to_string(), "  Context: Deserializing MyObject\n   at propertyOne : unknown >> searching for property type".to_string());
 
     assert_eq!(context.print_with_context("Invalid length"), "Invalid length \n  Context: Deserializing MyObject\n at propertyOne : unknown >> searching for property type");
