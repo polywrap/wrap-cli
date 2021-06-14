@@ -3,8 +3,8 @@ import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { loggerPlugin } from "@web3api/logger-plugin-js";
-import { sha3Plugin } from "@web3api/sha3-plugin-js";
-import { uts46Plugin } from "@web3api/uts46-plugin-js";
+import { sha3Plugin } from "@web3api/sha3-plugin-js"; // eslint-disable-line
+import { uts46Plugin } from "@web3api/uts46-plugin-js"; // eslint-disable-line
 import { Tracer } from "@web3api/tracing-js";
 
 export const getDefaultRedirects = Tracer.traceFunc(

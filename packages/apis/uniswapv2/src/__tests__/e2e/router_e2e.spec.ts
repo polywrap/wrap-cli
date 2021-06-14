@@ -450,7 +450,7 @@ describe("Router", () => {
       const tokenOut: Token = tokens.filter(token => token.currency.symbol === "WBTC")[0];
       const tokenAmount: TokenAmount = {
         token: tokenIn,
-        amount: "1000000000000000000"
+        amount: "10000000000000000000000000000000000000000000000"
       };
 
       const bestTradeInArray: Trade[] = await getBestTradeExactIn(pairs, tokenAmount, tokenOut, null, client, ensUri);

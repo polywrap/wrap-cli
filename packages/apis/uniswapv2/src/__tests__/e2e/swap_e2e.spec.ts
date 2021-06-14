@@ -268,7 +268,7 @@ describe("Swap", () => {
         pairs: [linkEtherData.data!.fetchPairData],
         amountIn: {
           token: link,
-          amount: "100"
+          amount: "200"
         },
         tokenOut: eth,
       },
