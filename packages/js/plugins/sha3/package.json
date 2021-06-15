@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/web3-api/monorepo.git"
   },
-  "main": "build/sha3/src/index.js",
+  "main": "build/index.js",
   "files": [
     "build",
     "schema.graphql"
