@@ -210,26 +210,7 @@ export const output: TypeInfo = {
         imports: [{ type: "TestImport_Query" }, { type: "Interface_Query" }],
         interfaces: [
           {
-            ...createImportedQueryDefinition({
-              uri: "interface.uri.eth",
-              namespace: "Interface",
-              type: "Interface_Query",
-              nativeType: "Query"
-            }),
-            methods: [
-              {
-                ...createMethodDefinition({
-                  type: "query",
-                  name: "abstractMethod",
-                  return: createScalarPropertyDefinition({
-                    name: "abstractMethod",
-                    type: "String",
-                    required: true
-                  }),
-                }),
-                arguments: [createScalarPropertyDefinition({ name: "arg", type: "UInt8", required: true })],
-              },
-            ],
+            type: "Interface_Query",
           },
         ]
       }),
@@ -283,6 +264,24 @@ export const output: TypeInfo = {
               name: "arrayEnum",
               required: true
             })}),
+          ],
+        },
+        {
+          ...createMethodDefinition({
+            type: "query",
+            name: "abstractMethod",
+            return: createScalarPropertyDefinition({
+              name: "abstractMethod",
+              type: "String",
+              required: true
+            }),
+          }),
+          arguments: [
+            createScalarPropertyDefinition({
+              name: "arg",
+              type: "UInt8",
+              required: true
+            }),
           ],
         },
       ],

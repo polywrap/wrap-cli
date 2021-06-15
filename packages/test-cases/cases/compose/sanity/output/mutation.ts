@@ -110,6 +110,24 @@ export const typeInfo: TypeInfo = {
         {
           ...createMethodDefinition({
             type: "mutation",
+            name: "abstractMethod",
+            return: createScalarPropertyDefinition({
+              name: "abstractMethod",
+              type: "String",
+              required: true
+            })
+          }),
+          arguments: [
+            createScalarPropertyDefinition({
+              name: "arg",
+              required: true,
+              type: "UInt8"
+            })
+          ]
+        },
+        {
+          ...createMethodDefinition({
+            type: "mutation",
             name: "method2",
             return: createArrayPropertyDefinition({
               name: "method2",

@@ -44,7 +44,7 @@ export async function resolveImportsAndParseSchemas(
   resolvers: SchemaResolvers
 ): Promise<TypeInfo> {
   const importKeywordCapture = /^[#]*["{3}]*import[ \n\t]/gm;
-  const externalImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*into[ \n\t]*(\w+?)[ \n\t]*from[ \n\t]*[\"'`]([a-zA-Z0-9_~.:\/]+?)[\"'`]/g;
+  const externalImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*into[ \n\t]*(\w+?)[ \n\t]*from[ \n\t]*[\"'`]([\-a-zA-Z0-9_~.:\/]+?)[\"'`]/g;
   const localImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*from[ \n\t]*[\"'`]([a-zA-Z0-9_~\-:.\/]+?)[\"'`]/g;
 
   const keywords = [...schema.matchAll(importKeywordCapture)];

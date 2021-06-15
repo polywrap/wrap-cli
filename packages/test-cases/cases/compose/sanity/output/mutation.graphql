@@ -49,6 +49,10 @@ type Mutation implements Interface_Mutation @imports(
   method2(
     arg: [String!]!
   ): [Int64!]!
+
+  abstractMethod(
+    arg: UInt8!
+  ): String!
 }
 
 type CustomMutationType {
