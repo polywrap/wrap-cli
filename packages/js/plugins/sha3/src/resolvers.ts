@@ -37,11 +37,13 @@ export const query = (): PluginModule => ({
   },
   hex_keccak_256: (input: { message: string }) => {
     // remove the leading 0x
-    const hexString = input.message.replace(/^0x/, '');
+    const hexString = input.message.replace(/^0x/, "");
 
     // ensure even number of characters
     if (hexString.length % 2 != 0) {
-      throw Error(`expecting an even number of characters in the hexString: ${hexString.length}`);
+      throw Error(
+        `expecting an even number of characters in the hexString: ${hexString.length}`
+      );
     }
 
     // check for some non-hex characters
@@ -59,7 +61,7 @@ export const query = (): PluginModule => ({
 
     // convert the octets to integers
     const integers = pairs.map((p) => {
-        return parseInt(p, 16);
+      return parseInt(p, 16);
     });
 
     return keccak_256(new Uint8Array(integers));
