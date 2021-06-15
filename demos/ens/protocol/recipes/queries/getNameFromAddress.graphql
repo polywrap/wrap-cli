@@ -1,6 +1,0 @@
-query getNameFromAddress($address: String!, $registryAddress: String!) {
-  getNameFromAddress(
-    address: $address,
-    registryAddress: $registryAddress
-  )
-}

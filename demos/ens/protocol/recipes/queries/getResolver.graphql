@@ -1,6 +1,0 @@
-query getResolver($registryAddress: String!, $domain: String!) {
-  getResolver(
-    domain: $domain,
-    registryAddress: $registryAddress
-  )
-}
