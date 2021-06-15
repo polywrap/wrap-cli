@@ -6,7 +6,6 @@
   "main": "build/index.js",
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.json",
-    "lint": "eslint --color --ext .ts src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose"
@@ -17,7 +16,6 @@
   "devDependencies": {
     "@types/jest": "26.0.8",
     "@web3api/client-js": "0.0.1-prealpha.25",
-    "eslint": "7.16.0",
     "jest": "26.6.3",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",
