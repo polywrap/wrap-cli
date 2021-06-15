@@ -1,6 +1,6 @@
 {
-  "name": "uniswapV2-api-assemblyscript",
-  "description": "UniswapV2 Web3API",
+  "name": "@web3api/uniswapV2-api",
+  "description": "Uniswap V2 Web3API",
   "private": true,
   "version": "0.0.1",
   "scripts": {
@@ -9,25 +9,17 @@
     "test:e2e": "jest --passWithNoTests --runInBand --verbose",
     "test:unit": "asp --verbose",
     "test": "yarn test:unit && yarn test:e2e",
-    "test:ci": "yarn run test:unit",
-    "test:env:up": "npx w3 test-env up",
-    "test:env:down": "npx w3 test-env down"
-  },
-  "workspaces": {
-    "nohoist": [
-      "assemblyscript",
-      "assemblyscript/**"
-    ]
+    "test:ci": "yarn test:unit && yarn test:e2e"
   },
   "dependencies": {
-    "as-bigfloat": "^0.0.4"
+    "as-bigfloat": "0.0.4"
   },
   "devDependencies": {
-    "@as-pect/cli": "^6.0.0",
+    "@as-pect/cli": "6.0.0",
     "@types/jest": "26.0.8",
     "@types/node": "12.6.9",
-    "@types/node-fetch": "^2.5.10",
-    "@uniswap/sdk": "^3.0.3",
+    "@types/node-fetch": "2.5.10",
+    "@uniswap/sdk": "3.0.3",
     "@uniswap/v2-core": "1.0.1",
     "@uniswap/v2-periphery": "1.1.0-beta.0",
     "@web3api/cli": "0.0.1-prealpha.25",
@@ -35,9 +27,9 @@
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.25",
     "@web3api/test-env-js": "0.0.1-prealpha.25",
     "@web3api/wasm-as": "0.0.1-prealpha.25",
-    "assemblyscript": "0.17.14",
+    "assemblyscript": "0.19.1",
     "axios": "0.21.1",
-    "ethers": "^5.1.3",
+    "ethers": "5.1.3",
     "jest": "26.6.3",
     "js-yaml": "3.14.0",
     "node-fetch": "2.6.1",
