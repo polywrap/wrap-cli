@@ -19,6 +19,7 @@ export const addFirstLast: TypeInfoTransforms = {
     ObjectDefinition: (def: ObjectDefinition) => ({
       ...def,
       properties: setFirstLast(def.properties),
+      interfaces: setFirstLast(def.interfaces)
     }),
     MethodDefinition: (def: MethodDefinition) => ({
       ...def,
@@ -28,6 +29,7 @@ export const addFirstLast: TypeInfoTransforms = {
       ...def,
       methods: setFirstLast(def.methods),
       imports: setFirstLast(def.imports),
+      interfaces: setFirstLast(def.interfaces),
     }),
     ImportedQueryDefinition: (def: ImportedQueryDefinition) => ({
       ...def,

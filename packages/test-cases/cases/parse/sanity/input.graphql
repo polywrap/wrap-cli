@@ -70,16 +70,8 @@ type UserObject {
   fieldB: Int!
 }
 
-type Implementation_Object implements Interface_Object {
-  str: String!
-  uint8: UInt8!
-}
-
-type Interface_Object @imported(
-  uri: "interface.eth",
-  namespace: "Interface",
-  nativeType: "Object"
-) {
+type ImplementationObject implements Interface_Object {
+  anotherProp: String
   str: String!
   uint8: UInt8!
 }
@@ -100,6 +92,10 @@ type Query implements Interface_Query @imports(
     enum: CustomEnum,
     arrayEnum: [CustomEnum!]!
   ): CustomEnum!
+
+  abstractMethod(
+    arg: UInt8!
+  ): String!
 }
 
 type TestImport_Query @imported(
@@ -174,4 +170,13 @@ type Interface_Query @imported(
   abstractMethod(
     arg: UInt8!
   ): String!
+}
+
+type Interface_Object @imported(
+  uri: "interface.uri.eth",
+  namespace: "Interface",
+  nativeType: "Object"
+) {
+  str: String!
+  uint8: UInt8!
 }

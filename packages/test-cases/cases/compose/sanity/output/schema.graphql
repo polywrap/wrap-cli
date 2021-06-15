@@ -73,6 +73,10 @@ type Mutation implements Interface_Mutation @imports(
   method2(
     arg: [String!]!
   ): [Int64!]!
+
+  abstractMethod(
+    arg: UInt8!
+  ): String!
 }
 
 type CustomQueryType {
@@ -133,6 +137,12 @@ type CustomMutationType {
 
 type AnotherMutationType {
   prop: String
+}
+
+type ImplementationObject implements Interface_Object {
+  anotherProp: String
+  str: String!
+  uint8: UInt8!
 }
 
 ### Imported Queries START ###

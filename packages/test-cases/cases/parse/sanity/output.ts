@@ -187,6 +187,19 @@ export const output: TypeInfo = {
         createScalarPropertyDefinition({ name: "fieldB", type: "Int", required: true }),
       ],
     },
+    {
+      ...createObjectDefinition({
+        type: "ImplementationObject",
+        interfaces: [
+          { type: "Interface_Object" }
+        ]
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "anotherProp", type: "String", required: false }),
+        createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true })
+      ],
+    },
   ],
   enumTypes: [
     createEnumDefinition({
@@ -324,7 +337,27 @@ export const output: TypeInfo = {
           required: false,
         })
       ],
-    }
+    },
+    {
+      ...createImportedObjectDefinition({
+        uri: "interface.uri.eth",
+        namespace: "Interface",
+        type: "Interface_Object",
+        nativeType: "Object"
+      }),
+      properties: [
+        createScalarPropertyDefinition({
+          name: "str",
+          type: "String",
+          required: true
+        }),
+        createScalarPropertyDefinition({
+          name: "uint8",
+          type: "UInt8",
+          required: true,
+        })
+      ],
+    },
   ],
   importedQueryTypes: [
     {

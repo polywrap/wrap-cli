@@ -73,7 +73,7 @@ export function importsDirective(astNode: DocumentNode): void {
       return;
     }
 
-    if (lastNodeVisited !== "ObjectTypeDefinition" && lastNodeVisited !== "NamedType") {
+    if (lastNodeVisited !== "ObjectTypeDefinition") {
       throw new Error(
         `@imports directive should only be used on QUERY or MUTATION type definitions, ` +
           `but it is being used in the following location: ${path.join(" -> ")}` + 

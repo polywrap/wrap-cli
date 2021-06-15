@@ -38,3 +38,7 @@ type CustomMutationType {
 type AnotherMutationType {
   prop: String
 }
+
+type ImplementationObject implements Interface_Object {
+  anotherProp: String
+}

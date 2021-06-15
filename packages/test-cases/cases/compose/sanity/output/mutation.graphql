@@ -78,6 +78,12 @@ type AnotherMutationType {
   prop: String
 }
 
+type ImplementationObject implements Interface_Object {
+  anotherProp: String
+  str: String!
+  uint8: UInt8!
+}
+
 type CommonType {
   prop: UInt8!
   nestedObject: NestedType!

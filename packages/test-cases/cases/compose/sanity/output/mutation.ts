@@ -34,34 +34,7 @@ export const typeInfo: TypeInfo = {
         { type: "Interface_Mutation" },
       ],
       interfaces: [
-        {
-          ...createImportedQueryDefinition({
-            uri: "interface.eth",
-            namespace: "Interface",
-            nativeType: "Mutation",
-            type: "Interface_Mutation"
-          }),
-          methods: [
-            {
-              ...createMethodDefinition({
-                type: "mutation",
-                name: "abstractMethod",
-                return: createScalarPropertyDefinition({
-                  name: "abstractMethod",
-                  type: "String",
-                  required: true
-                })
-              }),
-              arguments: [
-                createScalarPropertyDefinition({
-                  name: "arg",
-                  required: true,
-                  type: "UInt8"
-                }),
-              ]
-            },
-          ]
-        }
+        { type: "Interface_Mutation" }
       ],
       methods: [
         {
@@ -110,24 +83,6 @@ export const typeInfo: TypeInfo = {
         {
           ...createMethodDefinition({
             type: "mutation",
-            name: "abstractMethod",
-            return: createScalarPropertyDefinition({
-              name: "abstractMethod",
-              type: "String",
-              required: true
-            })
-          }),
-          arguments: [
-            createScalarPropertyDefinition({
-              name: "arg",
-              required: true,
-              type: "UInt8"
-            })
-          ]
-        },
-        {
-          ...createMethodDefinition({
-            type: "mutation",
             name: "method2",
             return: createArrayPropertyDefinition({
               name: "method2",
@@ -152,7 +107,25 @@ export const typeInfo: TypeInfo = {
               })
             })
           ]
-        }
+        },
+        {
+          ...createMethodDefinition({
+            type: "mutation",
+            name: "abstractMethod",
+            return: createScalarPropertyDefinition({
+              name: "abstractMethod",
+              type: "String",
+              required: true
+            })
+          }),
+          arguments: [
+            createScalarPropertyDefinition({
+              name: "arg",
+              required: true,
+              type: "UInt8"
+            })
+          ]
+        },
       ]
     }
   ],
@@ -224,6 +197,19 @@ export const typeInfo: TypeInfo = {
     {
       ...createObjectDefinition({ type: "AnotherMutationType" }),
       properties: [createScalarPropertyDefinition({ name: "prop", type: "String" })],
+    },
+    {
+      ...createObjectDefinition({
+        type: "ImplementationObject",
+        interfaces: [
+          { type: "Interface_Object" }
+        ]
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "anotherProp", type: "String", required: false }),
+        createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
+      ]
     },
     {
       ...createObjectDefinition({ type: "CommonType" }),

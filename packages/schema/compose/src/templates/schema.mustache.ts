@@ -22,7 +22,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}},
 
 {{/queryTypes}}
 {{#objectTypes}}
-type {{type}} {
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}},{{/last}}{{/interfaces}}{{/interfaces.length}} {
   {{#properties}}
   {{name}}: {{toGraphQLType}}
   {{/properties}}

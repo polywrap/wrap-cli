@@ -169,22 +169,16 @@ export function circularDefinitions(astNode: DocumentNode): void {
     },
   });
 
-  try {
+  const { cycleStrings, foundCycle } = getSchemaCycles(astNode, {
+    ignoreTypeNames: operationTypes,
+    allowOnNullableFields: true,
+  });
 
-    const { cycleStrings, foundCycle } = getSchemaCycles(astNode, {
-      ignoreTypeNames: operationTypes,
-      allowOnNullableFields: true,
-    });
-  
-    if (foundCycle) {
-      throw Error(
-        `Graphql cycles are not supported. \nFound: ${cycleStrings.map(
-          (cycle) => `\n- ${cycle}`
-        )}`
-      );
-    }
-  }
-  catch(ex) {
-    console.log(ex);
+  if (foundCycle) {
+    throw Error(
+      `Graphql cycles are not supported. \nFound: ${cycleStrings.map(
+        (cycle) => `\n- ${cycle}`
+      )}`
+    );
   }
 }

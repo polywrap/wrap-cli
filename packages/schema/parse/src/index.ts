@@ -56,18 +56,6 @@ export function parseSchema(
   // Finalize & Transform TypeInfo
   info = transformTypeInfo(info, finalizePropertyDef);
 
-  for(const queryType of info.queryTypes) {
-    queryType.interfaces = queryType.interfaces.map(interfaceDefinition => {
-      const importedQueryDefinition = info.importedQueryTypes.find(x => x.type === interfaceDefinition.type);
-
-      if(!importedQueryDefinition) {
-        throw '';
-      }
-
-      return importedQueryDefinition;
-    });
-  }
-
   if (options && options.transforms) {
     for (const transform of options.transforms) {
       info = transformTypeInfo(info, transform);

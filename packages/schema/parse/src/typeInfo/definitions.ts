@@ -42,14 +42,14 @@ export function createGenericDefinition(args: {
 
 export interface ObjectDefinition extends GenericDefinition {
   properties: PropertyDefinition[];
-  interfaces: ObjectDefinition[];
+  interfaces: { type: string }[];
 }
 export function createObjectDefinition(args: {
   type: string;
   name?: string | null;
   required?: boolean;
   properties?: PropertyDefinition[],
-  interfaces?: ObjectDefinition[]
+  interfaces?: { type: string }[]
 }): ObjectDefinition {
   return {
     ...createGenericDefinition(args),
