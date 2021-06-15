@@ -26,7 +26,7 @@ import { Tracer } from "@web3api/tracing-js";
 const Worker = require("web-worker");
 
 let threadsActive = 0;
-let threadAvailable = 0;
+const threadIds: number[] = new Array(maxThreads).map((_value, index) => index);
 const threadMutexesBuffer = new SharedArrayBuffer(
   maxThreads * Int32Array.BYTES_PER_ELEMENT
 );
@@ -72,20 +72,15 @@ export class WasmWeb3Api extends Api {
         const wasm = await this.getWasmModule(module, client);
 
         // TODO: come up with a better future-proof solution
-        while (threadsActive >= maxThreads) {
+        while (threadsActive >= maxThreads || threadIds.length === 0) {
           // Wait for another thread to become available
           await sleep(500);
         }
 
         threadsActive++;
-        const threadId = threadAvailable++;
+        const threadId = threadIds.pop() as number;
 
         Tracer.addEvent("threadId", threadId);
-
-        // Wrap the queue
-        if (threadAvailable >= maxThreads) {
-          threadAvailable = 0;
-        }
 
         Atomics.store(threadMutexes, threadId, 0);
 
@@ -268,6 +263,7 @@ export class WasmWeb3Api extends Api {
         Atomics.store(threadMutexes, threadId, 0);
         worker.terminate();
         threadsActive--;
+        threadIds.push(threadId);
 
         Tracer.addEvent("worker-terminated", state);
 
@@ -322,7 +318,7 @@ export class WasmWeb3Api extends Api {
       }
     );
 
-    return run(options, client).catch((error) => {
+    return run(options, client).catch((error: Error) => {
       return {
         error,
       };
