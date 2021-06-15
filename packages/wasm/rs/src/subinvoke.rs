@@ -1,9 +1,9 @@
 use wasm_bindgen::prelude::*;
 
-/// Subinvoke API
 #[wasm_bindgen(module = "w3")]
 extern "C" {
-    fn __w3_subinvoke(
+    /// Subinvoke API
+    pub fn __w3_subinvoke(
         uri_ptr: u32,
         uri_len: u32,
         module_ptr: u32,
@@ -13,20 +13,14 @@ extern "C" {
         input_ptr: u32,
         input_len: u32,
     ) -> bool;
-}
 
-/// Subinvoke Result
-#[wasm_bindgen(module = "w3")]
-extern "C" {
-    fn __w3_subinvoke_result_len() -> u32;
-    fn __w3_subinvoke_result(ptr: u32);
-}
+    /// Subinvoke Result
+    pub fn __w3_subinvoke_result_len() -> u32;
+    pub fn __w3_subinvoke_result(ptr: u32);
 
-/// Subinvoke Error
-#[wasm_bindgen(module = "w3")]
-extern "C" {
-    fn __w3_subinvoke_error_len() -> u32;
-    fn __w3_subinvoke_error(ptr: u32);
+    /// Subinvoke Error
+    pub fn __w3_subinvoke_error_len() -> u32;
+    pub fn __w3_subinvoke_error(ptr: u32);
 }
 
 /// Subinvoke API Helper
@@ -48,10 +42,7 @@ pub fn w3_subinvoke(
     let method_buf_u32 = method_buf
         .iter()
         .fold(0, |result, &bit| (result << 1) ^ bit) as u32;
-    let input_u32 = input
-        .as_slice()
-        .iter()
-        .fold(0, |result, &bit| (result << 1) ^ bit) as u32;
+    let input_u32 = input.iter().fold(0, |result, &bit| (result << 1) ^ bit) as u32;
 
     let success = unsafe {
         __w3_subinvoke(
@@ -69,7 +60,6 @@ pub fn w3_subinvoke(
         let error_len = unsafe { __w3_subinvoke_error_len() };
         let message_buf: Vec<u8> = Vec::with_capacity(error_len as usize);
         let message_buf_u32 = message_buf
-            .as_slice()
             .iter()
             .fold(0, |result, &bit| (result << 1) ^ bit) as u32;
         unsafe { __w3_subinvoke_error(message_buf_u32) };
@@ -79,7 +69,6 @@ pub fn w3_subinvoke(
     let result_len = unsafe { __w3_subinvoke_result_len() };
     let result_buf: Vec<u8> = Vec::with_capacity(result_len as usize);
     let result_buf_u32 = result_buf
-        .as_slice()
         .iter()
         .fold(0, |result, &bit| (result << 1) ^ bit) as u32;
     unsafe { __w3_subinvoke_result(result_buf_u32) };
