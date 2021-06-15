@@ -26,7 +26,7 @@ import { Tracer } from "@web3api/tracing-js";
 const Worker = require("web-worker");
 
 let threadsActive = 0;
-let threadAvailable = 0;
+const threadIds: number[] = Array.from({ length: maxThreads }, (_, i) => i);
 const threadMutexesBuffer = new SharedArrayBuffer(
   maxThreads * Int32Array.BYTES_PER_ELEMENT
 );
@@ -72,20 +72,15 @@ export class WasmWeb3Api extends Api {
         const wasm = await this.getWasmModule(module, client);
 
         // TODO: come up with a better future-proof solution
-        while (threadsActive >= maxThreads) {
+        while (threadsActive >= maxThreads || threadIds.length === 0) {
           // Wait for another thread to become available
           await sleep(500);
         }
 
         threadsActive++;
-        const threadId = threadAvailable++;
+        const threadId = threadIds.pop() as number;
 
         Tracer.addEvent("threadId", threadId);
-
-        // Wrap the queue
-        if (threadAvailable >= maxThreads) {
-          threadAvailable = 0;
-        }
 
         Atomics.store(threadMutexes, threadId, 0);
 
@@ -268,6 +263,7 @@ export class WasmWeb3Api extends Api {
         Atomics.store(threadMutexes, threadId, 0);
         worker.terminate();
         threadsActive--;
+        threadIds.push(threadId);
 
         Tracer.addEvent("worker-terminated", state);
 
@@ -279,14 +275,20 @@ export class WasmWeb3Api extends Api {
           case "Abort": {
             return {
               error: new Error(
-                `WasmWeb3Api: Thread aborted execution.\nMessage: ${abortMessage}`
+                `WasmWeb3Api: Thread aborted execution.\nURI: ${this._uri.uri}\n` +
+                  `Module: ${module}\nMethod: ${method}\n` +
+                  `Input: ${JSON.stringify(
+                    input,
+                    null,
+                    2
+                  )}\nMessage: ${abortMessage}\n`
               ),
             };
           }
           case "LogQueryError": {
             return {
               error: new Error(
-                `WasmWeb3Api: invocation exception encourtered.\n` +
+                `WasmWeb3Api: invocation exception encountered.\n` +
                   `uri: ${this._uri.uri}\nmodule: ${module}\n` +
                   `method: ${method}\n` +
                   `input: ${JSON.stringify(input, null, 2)}\n` +
@@ -316,7 +318,7 @@ export class WasmWeb3Api extends Api {
       }
     );
 
-    return run(options, client).catch((error) => {
+    return run(options, client).catch((error: Error) => {
       return {
         error,
       };
