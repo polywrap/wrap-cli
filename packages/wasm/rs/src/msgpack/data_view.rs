@@ -153,7 +153,7 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("get_u32", 4) {
             return Err(Error::from(error));
         }
-        let p = (self.data_start + self.byte_offset as u32) as u32;
+        let p = self.data_start + self.byte_offset as u32;
         let result = self.load_from_memory(p);
         self.byte_offset += 4;
         Ok(result.swap_bytes())
