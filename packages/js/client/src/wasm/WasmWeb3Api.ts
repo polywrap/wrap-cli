@@ -26,7 +26,7 @@ import { Tracer } from "@web3api/tracing-js";
 const Worker = require("web-worker");
 
 let threadsActive = 0;
-const threadIds: number[] = new Array(maxThreads).map((_value, index) => index);
+const threadIds: number[] = Array.from({length: maxThreads}, (_, i) => i)
 const threadMutexesBuffer = new SharedArrayBuffer(
   maxThreads * Int32Array.BYTES_PER_ELEMENT
 );
