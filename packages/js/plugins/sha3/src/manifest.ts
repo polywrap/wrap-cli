@@ -15,8 +15,8 @@ export const manifest: PluginManifest = {
   keccak_256(message: String!): String!
   keccak_224(message: String!): String!
 
-  buffer_keccak_256(message: String!): String!
-  uint8array_keccak_256(message: String!): String!
+  hex_keccak_256(message: String!): String!
+  buffer_keccak_256(message: Bytes!): String!
 
   shake_128(message: String!, outputBits: Int!): String!
   shake_256(message: String!, outputBits: Int!): String!

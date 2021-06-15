@@ -13,8 +13,8 @@ export function getChecksumAddress(address: string): string {
     expanded[i] = chars[i].charCodeAt(0);
   }
 
-  const hashed: string = SHA3_Query.uint8array_keccak_256({
-    message: expanded.toString(),
+  const hashed: string = SHA3_Query.buffer_keccak_256({
+    message: expanded.buffer,
   });
   const hashedArr: Uint8Array = arrayify(hashed);
 

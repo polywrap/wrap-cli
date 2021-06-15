@@ -37,7 +37,7 @@ export function pairAddress(input: Input_pairAddress): string {
     tokenA = input.token1.address;
     tokenB = input.token0.address;
   }
-  const salt: string = SHA3_Query.buffer_keccak_256({
+  const salt: string = SHA3_Query.hex_keccak_256({
     message: tokenA.substring(2) + tokenB.substring(2),
   });
   const concatenatedItems: Uint8Array = concat([
@@ -46,8 +46,8 @@ export function pairAddress(input: Input_pairAddress): string {
     salt,
     initCodeHash(),
   ]);
-  const concatenationHash: string = SHA3_Query.uint8array_keccak_256({
-    message: concatenatedItems.toString(),
+  const concatenationHash: string = SHA3_Query.buffer_keccak_256({
+    message: concatenatedItems.buffer,
   });
   return getChecksumAddress(concatenationHash.substring(24));
 }
