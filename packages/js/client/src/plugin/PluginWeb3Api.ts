@@ -9,7 +9,7 @@ import {
   PluginPackage,
   Uri,
 } from "@web3api/core-js";
-import { decode, encode } from "@msgpack/msgpack";
+import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
 
 export class PluginWeb3Api extends Api {
@@ -52,7 +52,7 @@ export class PluginWeb3Api extends Api {
 
         // If the input is a msgpack buffer, deserialize it
         if (input instanceof ArrayBuffer) {
-          const result = decode(input);
+          const result = MsgPack.decode(input);
 
           Tracer.addEvent("msgpack-decoded", result);
 
@@ -83,7 +83,7 @@ export class PluginWeb3Api extends Api {
               // try to encode the returned result,
               // ensuring it's msgpack compliant
               try {
-                encode(data);
+                MsgPack.encode(data);
               } catch (e) {
                 throw Error(
                   `TEST_PLUGIN msgpack encode failure.` +
