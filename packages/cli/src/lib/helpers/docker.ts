@@ -96,8 +96,10 @@ export async function createBuildImage(
   const run = async (): Promise<string> => {
     // Build the docker image
     await runCommand(
-      `DOCKER_BUILDKIT=1 docker build -f ${dockerfile} -t ${imageName} ${rootDir}`,
-      quiet
+      `docker build -f ${dockerfile} -t ${imageName} ${rootDir}`,
+      quiet, {
+        "DOCKER_BUILDKIT": 1
+      }
     );
 
     // Get the docker image ID
