@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "@formatjs/intl": "1.8.2",
-    "@types/node": "12.7.11",
     "@web3api/client-js": "0.0.1-prealpha.25",
     "@web3api/client-test-env": "0.0.1-prealpha.25",
     "@web3api/core-js": "0.0.1-prealpha.25",
@@ -37,7 +36,7 @@
     "@web3api/schema-bind": "0.0.1-prealpha.25",
     "@web3api/schema-compose": "0.0.1-prealpha.25",
     "@web3api/schema-parse": "0.0.1-prealpha.25",
-    "assemblyscript": "0.17.14",
+    "assemblyscript": "0.19.1",
     "axios": "0.19.2",
     "chalk": "4.1.0",
     "chokidar": "3.5.1",
