@@ -7,6 +7,7 @@ import {
   extractFieldDefinition,
   extractListType,
   extractNamedType,
+  isEnviromentType,
   State,
 } from "./object-types-utils";
 import { Blackboard } from "./Blackboard";
@@ -34,12 +35,7 @@ const visitorEnter = (
     }
 
     // Skip env types
-    if (
-      node.name.value === "QueryClientEnv" ||
-      node.name.value === "QueryEnv" ||
-      node.name.value === "MutationEnv" ||
-      node.name.value === "MutationClientEnv"
-    ) {
+    if (isEnviromentType(node.name.value)) {
       return;
     }
 

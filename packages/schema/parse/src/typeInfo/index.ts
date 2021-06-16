@@ -13,6 +13,13 @@ export * from "./scalar";
 export * from "./operation";
 export * from "./query";
 
+export enum EnvironmentType {
+  QueryClientEnvType = "QueryClientEnv",
+  QueryEnvType = "QueryEnv",
+  MutationClientEnvType = "MutationClientEnv",
+  MutationEnvType = "MutationEnv",
+}
+
 export interface Environment {
   mutation: {
     sanitized?: ObjectDefinition;

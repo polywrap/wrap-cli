@@ -1,8 +1,14 @@
-import { TypeInfo, createObjectDefinition, Environment } from "../typeInfo";
+import {
+  TypeInfo,
+  createObjectDefinition,
+  Environment,
+  EnvironmentType,
+} from "../typeInfo";
 import {
   extractFieldDefinition,
   extractListType,
   extractNamedType,
+  isEnviromentType,
   State,
 } from "./object-types-utils";
 import { Blackboard } from "./Blackboard";
@@ -23,26 +29,19 @@ const visitorEnter = (
   blackboard: Blackboard
 ) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
-    if (
-      node.name.value === "QueryClientEnv" ||
-      node.name.value === "QueryEnv" ||
-      node.name.value === "MutationEnv" ||
-      node.name.value === "MutationClientEnv"
-    ) {
+    if (isEnviromentType(node.name.value)) {
       const type = createObjectDefinition({ type: node.name.value });
 
-      if (node.name.value.startsWith("Query")) {
-        if (node.name.value.includes("Client")) {
-          environment.query.client = type;
-        } else {
-          environment.query.sanitized = type;
-        }
+      if (node.name.value.includes(EnvironmentType.QueryClientEnvType)) {
+        environment.query.client = type;
+      } else if (node.name.value.includes(EnvironmentType.QueryEnvType)) {
+        environment.query.sanitized = type;
+      } else if (
+        node.name.value.includes(EnvironmentType.MutationClientEnvType)
+      ) {
+        environment.mutation.client = type;
       } else {
-        if (node.name.value.includes("Client")) {
-          environment.mutation.client = type;
-        } else {
-          environment.mutation.sanitized = type;
-        }
+        environment.mutation.sanitized = type;
       }
 
       state.currentType = type;

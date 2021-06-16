@@ -81,6 +81,10 @@ describe("Web3API Schema TypeInfo Transformations", () => {
       transforms: [addFirstLast],
     });
     const expected: TypeInfo = {
+      environment: {
+        query: {},
+        mutation: {},
+      },
       enumTypes: [],
       importedEnumTypes: [],
       objectTypes: [
@@ -338,6 +342,10 @@ describe("Web3API Schema TypeInfo Transformations", () => {
       ],
     });
     const expected: TypeInfo = {
+      environment: {
+        query: {},
+        mutation: {},
+      },
       enumTypes: [],
       importedEnumTypes: [],
       objectTypes: [
