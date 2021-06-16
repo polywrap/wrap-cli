@@ -9,4 +9,5 @@ edition = "2018"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+num-bigint = "0.4.0"
 web3api-wasm-rs = { version = "0.1.0", path = "../../../../../../wasm/rs"}
