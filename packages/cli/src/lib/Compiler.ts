@@ -16,6 +16,7 @@ import {
   InvokableModules,
   Web3ApiManifest,
   BuildManifest,
+  validateModuleExports,
 } from "@web3api/core-js";
 import {
   bindSchema,
@@ -313,32 +314,11 @@ export class Compiler {
     const wasmSource = fs.readFileSync(
       path.join(buildDir, `${moduleName}.wasm`)
     );
-    const mod = await WebAssembly.compile(wasmSource);
-    const memory = new WebAssembly.Memory({ initial: 1 });
-    const instance = await WebAssembly.instantiate(mod, {
-      env: {
-        memory,
-      },
-      w3: {
-        __w3_subinvoke: () => {},
-        __w3_subinvoke_result_len: () => {},
-        __w3_subinvoke_result: () => {},
-        __w3_subinvoke_error_len: () => {},
-        __w3_subinvoke_error: () => {},
-        __w3_invoke_args: () => {},
-        __w3_invoke_result: () => {},
-        __w3_invoke_error: () => {},
-        __w3_abort: () => {},
-      },
-    });
+    const missingExport = await validateModuleExports(wasmSource);
 
-    if (!instance.exports._w3_init) {
-      throw Error(intlMsg.lib_compiler_missing_export__w3_init({ moduleName }));
-    }
-
-    if (!instance.exports._w3_invoke) {
+    if (missingExport) {
       throw Error(
-        intlMsg.lib_compiler_missing_export__w3_invoke({ moduleName })
+        intlMsg.lib_compiler_missing_export({ missingExport, moduleName })
       );
     }
   }

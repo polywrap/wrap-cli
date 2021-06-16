@@ -19,6 +19,7 @@ import {
   Client,
   ApiResolver,
   InvokableModules,
+  validateModuleExports,
 } from "@web3api/core-js";
 import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
@@ -412,6 +413,13 @@ export class WasmWeb3Api extends Api {
         if (!data) {
           throw Error(
             `Module was not found.\nURI: ${this._uri}\nSubpath: ${moduleManifest.module}`
+          );
+        }
+
+        const missingExport = await validateModuleExports(data);
+        if (missingExport) {
+          throw Error(
+            `WASM module is missing the ${missingExport} export. This should never happen...`
           );
         }
 
