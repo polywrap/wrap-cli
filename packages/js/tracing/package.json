@@ -19,16 +19,16 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@opentelemetry/api": "^1.0.0-rc.0",
-    "@opentelemetry/context-zone": "^0.18.0",
-    "@opentelemetry/core": "^0.18.0",
-    "@opentelemetry/exporter-collector": "^0.18.0",
-    "@opentelemetry/exporter-jaeger": "^0.18.0",
-    "@opentelemetry/exporter-zipkin": "^0.18.0",
-    "@opentelemetry/node": "^0.18.0",
-    "@opentelemetry/propagator-b3": "^0.18.0",
-    "@opentelemetry/tracing": "^0.18.0",
-    "@opentelemetry/web": "^0.18.0",
+    "@opentelemetry/api": "0.20.0",
+    "@opentelemetry/context-zone": "0.20.0",
+    "@opentelemetry/core": "0.20.0",
+    "@opentelemetry/exporter-collector": "0.20.0",
+    "@opentelemetry/exporter-jaeger": "0.20.0",
+    "@opentelemetry/exporter-zipkin": "0.20.0",
+    "@opentelemetry/node": "0.20.0",
+    "@opentelemetry/propagator-b3": "0.20.0",
+    "@opentelemetry/tracing": "0.20.0",
+    "@opentelemetry/web": "0.20.0",
     "util-inspect": "0.1.8"
   },
   "devDependencies": {

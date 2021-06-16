@@ -13,6 +13,10 @@
     "up": "docker-compose up",
     "down": "docker-compose down"
   },
+  "dependencies": {
+    "axios": "0.21.1",
+    "dotenv": "10.0.0"
+  },
   "publishConfig": {
     "access": "public"
   },

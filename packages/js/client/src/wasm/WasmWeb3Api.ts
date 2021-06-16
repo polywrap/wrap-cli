@@ -14,7 +14,7 @@ import {
   InvokeApiOptions,
   InvokeApiResult,
   Api,
-  Manifest,
+  Web3ApiManifest,
   Uri,
   Client,
   ApiResolver,
@@ -26,7 +26,7 @@ import { Tracer } from "@web3api/tracing-js";
 const Worker = require("web-worker");
 
 let threadsActive = 0;
-let threadAvailable = 0;
+const threadIds: number[] = Array.from({ length: maxThreads }, (_, i) => i);
 const threadMutexesBuffer = new SharedArrayBuffer(
   maxThreads * Int32Array.BYTES_PER_ELEMENT
 );
@@ -42,7 +42,7 @@ export class WasmWeb3Api extends Api {
 
   constructor(
     private _uri: Uri,
-    private _manifest: Manifest,
+    private _manifest: Web3ApiManifest,
     private _apiResolver: Uri
   ) {
     super();
@@ -72,20 +72,15 @@ export class WasmWeb3Api extends Api {
         const wasm = await this.getWasmModule(module, client);
 
         // TODO: come up with a better future-proof solution
-        while (threadsActive >= maxThreads) {
+        while (threadsActive >= maxThreads || threadIds.length === 0) {
           // Wait for another thread to become available
           await sleep(500);
         }
 
         threadsActive++;
-        const threadId = threadAvailable++;
+        const threadId = threadIds.pop() as number;
 
         Tracer.addEvent("threadId", threadId);
-
-        // Wrap the queue
-        if (threadAvailable >= maxThreads) {
-          threadAvailable = 0;
-        }
 
         Atomics.store(threadMutexes, threadId, 0);
 
@@ -212,7 +207,9 @@ export class WasmWeb3Api extends Api {
                       if (data instanceof ArrayBuffer) {
                         msgpack = data;
                       } else {
-                        msgpack = MsgPack.encode(data);
+                        msgpack = MsgPack.encode(data, {
+                          ignoreUndefined: true,
+                        });
                       }
 
                       // transfer the result
@@ -266,6 +263,7 @@ export class WasmWeb3Api extends Api {
         Atomics.store(threadMutexes, threadId, 0);
         worker.terminate();
         threadsActive--;
+        threadIds.push(threadId);
 
         Tracer.addEvent("worker-terminated", state);
 
@@ -277,14 +275,20 @@ export class WasmWeb3Api extends Api {
           case "Abort": {
             return {
               error: new Error(
-                `WasmWeb3Api: Thread aborted execution.\nMessage: ${abortMessage}`
+                `WasmWeb3Api: Thread aborted execution.\nURI: ${this._uri.uri}\n` +
+                  `Module: ${module}\nMethod: ${method}\n` +
+                  `Input: ${JSON.stringify(
+                    input,
+                    null,
+                    2
+                  )}\nMessage: ${abortMessage}\n`
               ),
             };
           }
           case "LogQueryError": {
             return {
               error: new Error(
-                `WasmWeb3Api: invocation exception encourtered.\n` +
+                `WasmWeb3Api: invocation exception encountered.\n` +
                   `uri: ${this._uri.uri}\nmodule: ${module}\n` +
                   `method: ${method}\n` +
                   `input: ${JSON.stringify(input, null, 2)}\n` +
@@ -314,7 +318,7 @@ export class WasmWeb3Api extends Api {
       }
     );
 
-    return run(options, client).catch((error) => {
+    return run(options, client).catch((error: Error) => {
       return {
         error,
       };
@@ -331,7 +335,8 @@ export class WasmWeb3Api extends Api {
 
         // Either the query or mutation module will work,
         // as they share the same schema file
-        const module = this._manifest.query || this._manifest.mutation;
+        const module =
+          this._manifest.modules.mutation || this._manifest.modules.query;
 
         if (!module) {
           // TODO: this won't work for abstract APIs
@@ -341,7 +346,7 @@ export class WasmWeb3Api extends Api {
         const { data, error } = await ApiResolver.Query.getFile(
           client,
           this._apiResolver,
-          this.combinePaths(this._uri.path, module.schema.file)
+          this.combinePaths(this._uri.path, module.schema)
         );
 
         if (error) {
@@ -351,7 +356,7 @@ export class WasmWeb3Api extends Api {
         // If nothing is returned, the schema was not found
         if (!data) {
           throw Error(
-            `WasmWeb3Api: Schema was not found.\nURI: ${this._uri}\nSubpath: ${module.schema.file}`
+            `WasmWeb3Api: Schema was not found.\nURI: ${this._uri}\nSubpath: ${module.schema}`
           );
         }
 
@@ -385,7 +390,7 @@ export class WasmWeb3Api extends Api {
           return this._wasm[module] as ArrayBuffer;
         }
 
-        const moduleManifest = this._manifest[module];
+        const moduleManifest = this._manifest.modules[module];
 
         if (!moduleManifest) {
           throw Error(
@@ -396,7 +401,7 @@ export class WasmWeb3Api extends Api {
         const { data, error } = await ApiResolver.Query.getFile(
           client,
           this._apiResolver,
-          this.combinePaths(this._uri.path, moduleManifest.module.file)
+          this.combinePaths(this._uri.path, moduleManifest.module)
         );
 
         if (error) {
@@ -406,7 +411,7 @@ export class WasmWeb3Api extends Api {
         // If nothing is returned, the module was not found
         if (!data) {
           throw Error(
-            `Module was not found.\nURI: ${this._uri}\nSubpath: ${moduleManifest.module.file}`
+            `Module was not found.\nURI: ${this._uri}\nSubpath: ${moduleManifest.module}`
           );
         }
 
