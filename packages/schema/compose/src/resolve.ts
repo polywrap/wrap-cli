@@ -76,7 +76,7 @@ export async function resolveImportsAndParseSchemas(
     importedEnumTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
-    enviroment: {
+    environment: {
       mutation: {},
       query: {},
     },

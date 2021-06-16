@@ -31,7 +31,7 @@ export interface TypeInfo {
   importedObjectTypes: ImportedObjectDefinition[];
   importedQueryTypes: ImportedQueryDefinition[];
   importedEnumTypes: ImportedEnumDefinition[];
-  enviroment: Environment;
+  environment: Environment;
 }
 
 export function createTypeInfo(): TypeInfo {
@@ -42,7 +42,7 @@ export function createTypeInfo(): TypeInfo {
     importedObjectTypes: [],
     importedQueryTypes: [],
     importedEnumTypes: [],
-    enviroment: {
+    environment: {
       mutation: {},
       query: {},
     },
@@ -59,7 +59,7 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
     importedObjectTypes: [],
     importedQueryTypes: [],
     importedEnumTypes: [],
-    enviroment: {
+    environment: {
       mutation: {},
       query: {},
     },

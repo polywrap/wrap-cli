@@ -99,30 +99,30 @@ export function transformTypeInfo(
     );
   }
 
-  if (result.enviroment.query.client) {
-    result.enviroment.query.client = visitObjectDefinition(
-      result.enviroment.query.client,
+  if (result.environment.query.client) {
+    result.environment.query.client = visitObjectDefinition(
+      result.environment.query.client,
       transforms
     );
   }
 
-  if (result.enviroment.query.sanitized) {
-    result.enviroment.query.sanitized = visitObjectDefinition(
-      result.enviroment.query.sanitized,
+  if (result.environment.query.sanitized) {
+    result.environment.query.sanitized = visitObjectDefinition(
+      result.environment.query.sanitized,
       transforms
     );
   }
 
-  if (result.enviroment.mutation.client) {
-    result.enviroment.mutation.client = visitObjectDefinition(
-      result.enviroment.mutation.client,
+  if (result.environment.mutation.client) {
+    result.environment.mutation.client = visitObjectDefinition(
+      result.environment.mutation.client,
       transforms
     );
   }
 
-  if (result.enviroment.mutation.sanitized) {
-    result.enviroment.mutation.sanitized = visitObjectDefinition(
-      result.enviroment.mutation.sanitized,
+  if (result.environment.mutation.sanitized) {
+    result.environment.mutation.sanitized = visitObjectDefinition(
+      result.environment.mutation.sanitized,
       transforms
     );
   }

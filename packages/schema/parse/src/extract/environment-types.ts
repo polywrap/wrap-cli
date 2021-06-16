@@ -18,7 +18,7 @@ import {
 } from "graphql";
 
 const visitorEnter = (
-  enviroment: Environment,
+  environment: Environment,
   state: State,
   blackboard: Blackboard
 ) => ({
@@ -33,15 +33,15 @@ const visitorEnter = (
 
       if (node.name.value.startsWith("Query")) {
         if (node.name.value.includes("Client")) {
-          enviroment.query.client = type;
+          environment.query.client = type;
         } else {
-          enviroment.query.sanitized = type;
+          environment.query.sanitized = type;
         }
       } else {
         if (node.name.value.includes("Client")) {
-          enviroment.mutation.client = type;
+          environment.mutation.client = type;
         } else {
-          enviroment.mutation.sanitized = type;
+          environment.mutation.sanitized = type;
         }
       }
 
@@ -74,7 +74,7 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export function extractEnviromentTypes(
+export function extractenvironmentTypes(
   astNode: DocumentNode,
   typeInfo: TypeInfo,
   blackboard: Blackboard
@@ -82,7 +82,7 @@ export function extractEnviromentTypes(
   const state: State = {};
 
   visit(astNode, {
-    enter: visitorEnter(typeInfo.enviroment, state, blackboard),
+    enter: visitorEnter(typeInfo.environment, state, blackboard),
     leave: visitorLeave(state),
   });
 }

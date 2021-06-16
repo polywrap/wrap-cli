@@ -16,7 +16,7 @@ import {
 } from "../../../../schema/parse/src/typeInfo";
 
 export const output: TypeInfo = {
-  enviroment: {
+  environment: {
     mutation: {
       sanitized: {
         ...createObjectDefinition({ type: "MutationEnv" }),
