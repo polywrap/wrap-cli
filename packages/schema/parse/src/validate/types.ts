@@ -80,6 +80,16 @@ export function propertyTypes(astNode: DocumentNode): void {
   visit(astNode, {
     enter: {
       ObjectTypeDefinition: (node) => {
+        // Skip env types
+        if (
+          node.name.value === "QueryClientEnv" ||
+          node.name.value === "QueryEnv" ||
+          node.name.value === "MutationEnv" ||
+          node.name.value === "MutationClientEnv"
+        ) {
+          return;
+        }
+
         currentObject = node.name.value;
         objectTypes[node.name.value] = true;
       },

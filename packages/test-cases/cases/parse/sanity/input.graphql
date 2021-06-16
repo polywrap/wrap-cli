@@ -70,6 +70,22 @@ type UserObject {
   fieldB: Int!
 }
 
+type QueryEnv {
+  prop: String!
+}
+
+type QueryClientEnv {
+  prop: String!
+}
+
+type MutationEnv {
+  prop: Int!
+}
+
+type MutationClientEnv {
+  prop: String!
+}
+
 type Query @imports(
   types: [ "TestImport_Query" ]
 ) {

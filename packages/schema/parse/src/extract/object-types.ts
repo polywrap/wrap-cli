@@ -33,6 +33,16 @@ const visitorEnter = (
       return;
     }
 
+    // Skip env types
+    if (
+      node.name.value === "QueryClientEnv" ||
+      node.name.value === "QueryEnv" ||
+      node.name.value === "MutationEnv" ||
+      node.name.value === "MutationClientEnv"
+    ) {
+      return;
+    }
+
     // Skip imported types
     if (
       node.directives &&

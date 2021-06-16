@@ -76,6 +76,10 @@ export async function resolveImportsAndParseSchemas(
     importedEnumTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
+    enviroment: {
+      mutation: {},
+      query: {},
+    },
   };
 
   const externalImports = await resolveExternalImports(
