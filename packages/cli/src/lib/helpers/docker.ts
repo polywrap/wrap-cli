@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import { displayPath } from "./path";
 import { runCommand } from "./command";
 import { withSpinner } from "./spinner";
@@ -97,8 +99,9 @@ export async function createBuildImage(
     // Build the docker image
     await runCommand(
       `docker build -f ${dockerfile} -t ${imageName} ${rootDir}`,
-      quiet, {
-        "DOCKER_BUILDKIT": 1
+      quiet,
+      {
+        DOCKER_BUILDKIT: "1",
       }
     );
 
