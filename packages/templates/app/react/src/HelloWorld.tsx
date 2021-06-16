@@ -16,6 +16,7 @@ export const HelloWorld: React.FC = () => {
   };
 
   const { execute } = useWeb3ApiQuery(query);
+  console.log('EXECUTE', execute);
 
   const notify = () => toast("Take a look at your console!");
 

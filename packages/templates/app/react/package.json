@@ -10,28 +10,36 @@
     ]
   },
   "dependencies": {
+    "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "@types/enzyme": "^3.10.8",
+    "@types/enzyme-adapter-react-16": "^1.0.6",
+    "@types/jest": "^26.0.23",
     "@types/node": "12.7.11",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "@types/react-lottie": "^1.2.5",
     "@web3api/client-js": "0.0.1-prealpha.25",
     "@web3api/react": "0.0.1-prealpha.25",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.6",
     "http-proxy": "1.18.1",
     "http-proxy-middleware": "1.0.6",
+    "jest": "^27.0.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-lottie": "^1.2.3",
     "react-scripts": "3.4.1",
     "react-toastify": "^7.0.4",
     "stream-array": "1.1.2",
+    "ts-jest": "^27.0.3",
     "typescript": "4.0.7"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test App.test.spec.tsx",
     "eject": "react-scripts eject",
     "prebuild": "yarn install:web3api",
     "prestart": "yarn install:web3api",
@@ -48,5 +56,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "devDependencies": {}
 }
