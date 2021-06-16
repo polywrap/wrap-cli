@@ -6,6 +6,7 @@ import { extractImportedObjectTypes } from "./imported-object-types";
 import { extractImportedQueryTypes } from "./imported-query-types";
 import { extractImportedEnumTypes } from "./imported-enum-types";
 import { Blackboard } from "./Blackboard";
+import { extractEnviromentTypes } from "./enviroment-types";
 
 import { DocumentNode } from "graphql";
 
@@ -22,4 +23,5 @@ export const extractors: SchemaExtractor[] = [
   extractImportedObjectTypes,
   extractQueryTypes,
   extractImportedQueryTypes,
+  extractEnviromentTypes,
 ];

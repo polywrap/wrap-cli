@@ -13,6 +13,17 @@ export * from "./scalar";
 export * from "./operation";
 export * from "./query";
 
+export interface Environment {
+  mutation: {
+    sanitized?: ObjectDefinition;
+    client?: ObjectDefinition;
+  };
+  query: {
+    sanitized?: ObjectDefinition;
+    client?: ObjectDefinition;
+  };
+}
+
 export interface TypeInfo {
   objectTypes: ObjectDefinition[];
   queryTypes: QueryDefinition[];
@@ -20,16 +31,7 @@ export interface TypeInfo {
   importedObjectTypes: ImportedObjectDefinition[];
   importedQueryTypes: ImportedQueryDefinition[];
   importedEnumTypes: ImportedEnumDefinition[];
-  enviroment: {
-    mutation: {
-      sanitized?: ObjectDefinition;
-      client?: ObjectDefinition;
-    };
-    query: {
-      sanitized?: ObjectDefinition;
-      client?: ObjectDefinition;
-    };
-  };
+  enviroment: Environment;
 }
 
 export function createTypeInfo(): TypeInfo {

@@ -99,6 +99,34 @@ export function transformTypeInfo(
     );
   }
 
+  if (result.enviroment.query.client) {
+    result.enviroment.query.client = visitObjectDefinition(
+      result.enviroment.query.client,
+      transforms
+    );
+  }
+
+  if (result.enviroment.query.sanitized) {
+    result.enviroment.query.sanitized = visitObjectDefinition(
+      result.enviroment.query.sanitized,
+      transforms
+    );
+  }
+
+  if (result.enviroment.mutation.client) {
+    result.enviroment.mutation.client = visitObjectDefinition(
+      result.enviroment.mutation.client,
+      transforms
+    );
+  }
+
+  if (result.enviroment.mutation.sanitized) {
+    result.enviroment.mutation.sanitized = visitObjectDefinition(
+      result.enviroment.mutation.sanitized,
+      transforms
+    );
+  }
+
   if (transforms.leave && transforms.leave.TypeInfo) {
     result = transforms.leave.TypeInfo(result);
   }

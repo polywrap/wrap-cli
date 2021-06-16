@@ -16,6 +16,36 @@ import {
 } from "../../../../schema/parse/src/typeInfo";
 
 export const output: TypeInfo = {
+  enviroment: {
+    mutation: {
+      sanitized: {
+        ...createObjectDefinition({ type: "MutationEnv" }),
+        properties: [
+          createScalarPropertyDefinition({ name: "prop", type: "Int", required: true })
+        ]
+      },
+      client: {
+        ...createObjectDefinition({ type: "MutationClientEnv" }),
+        properties: [
+          createScalarPropertyDefinition({ name: "prop", type: "String", required: false })
+        ]
+      }
+    },
+    query: {
+      sanitized: {
+        ...createObjectDefinition({ type: "QueryEnv" }),
+        properties: [
+          createScalarPropertyDefinition({ name: "prop", type: "String", required: true })
+        ]
+      },
+      client: {
+        ...createObjectDefinition({ type: "QueryClientEnv" }),
+        properties: [
+          createScalarPropertyDefinition({ name: "prop", type: "String", required: true })
+        ]
+      }
+    },
+  },
   objectTypes: [
     {
       ...createObjectDefinition({ type: "CustomType" }),

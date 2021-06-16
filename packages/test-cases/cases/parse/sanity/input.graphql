@@ -83,7 +83,7 @@ type MutationEnv {
 }
 
 type MutationClientEnv {
-  prop: String!
+  prop: String
 }
 
 type Query @imports(
