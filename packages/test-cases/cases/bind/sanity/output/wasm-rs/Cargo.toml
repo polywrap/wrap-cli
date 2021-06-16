@@ -1,0 +1,12 @@
+[package]
+name = "web3api-test-cases"
+version = "0.1.0"
+description = "Reusable Web3API Test Cases"
+authors = ["Kobby Pentangeli <kobbypentangeli@gmail.com>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+web3api-wasm-rs = { version = "0.1.0", path = "../../../../../../wasm/rs"}
