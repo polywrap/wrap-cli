@@ -1,7 +1,7 @@
 const template = `
 {{#typeInfo}}
 {{#queryTypes}}
-type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}},{{/last}}{{/interfaces}}{{/interfaces.length}}{{#imports.length}} @imports(
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}}{{#imports.length}} @imports(
   types: [
     {{#imports}}
     "{{type}}"{{^last}},{{/last}}
@@ -22,7 +22,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}},
 
 {{/queryTypes}}
 {{#objectTypes}}
-type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}},{{/last}}{{/interfaces}}{{/interfaces.length}} {
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}} {
   {{#properties}}
   {{name}}: {{toGraphQLType}}
   {{/properties}}

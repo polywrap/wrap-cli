@@ -191,13 +191,15 @@ export const output: TypeInfo = {
       ...createObjectDefinition({
         type: "ImplementationObject",
         interfaces: [
-          { type: "Interface_Object" }
+          { type: "Interface_Object" },
+          { type: "Interface_Object2" }
         ]
       }),
       properties: [
         createScalarPropertyDefinition({ name: "anotherProp", type: "String", required: false }),
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
-        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true })
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
+        createScalarPropertyDefinition({ name: "str2", type: "String", required: true }),
       ],
     },
   ],
@@ -355,6 +357,21 @@ export const output: TypeInfo = {
           name: "uint8",
           type: "UInt8",
           required: true,
+        })
+      ],
+    },
+    {
+      ...createImportedObjectDefinition({
+        uri: "interface.uri.eth",
+        namespace: "Interface",
+        type: "Interface_Object2",
+        nativeType: "Object2"
+      }),
+      properties: [
+        createScalarPropertyDefinition({
+          name: "str2",
+          type: "String",
+          required: true
         })
       ],
     },

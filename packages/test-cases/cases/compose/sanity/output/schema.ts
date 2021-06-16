@@ -28,6 +28,11 @@ export const typeInfo: TypeInfo = {
         { type: "Namespace_Imported_ObjectType" },
         { type: "Namespace_CustomEnum" },
         { type: "Namespace_Imported_Enum" },
+        { type: "Interface_Query" },
+        { type: "Interface_Object" },
+      ],
+      interfaces: [
+        { type: "Interface_Query" }
       ],
       methods: [
         {
@@ -100,6 +105,24 @@ export const typeInfo: TypeInfo = {
               })
             })
           ]
+        },
+        {
+          ...createMethodDefinition({
+            type: "query",
+            name: "abstractQueryMethod",
+            return: createObjectPropertyDefinition({
+              name: "abstractQueryMethod",
+              type: "Interface_Object",
+              required: true
+            })
+          }),
+          arguments: [
+            createScalarPropertyDefinition({
+              name: "arg",
+              required: true,
+              type: "UInt8"
+            })
+          ]
         }
       ]
     },
@@ -117,6 +140,7 @@ export const typeInfo: TypeInfo = {
         { type: "Namespace_Imported_Enum" },
         { type: "JustMutation_Mutation" },
         { type: "Interface_Object" },
+        { type: "Interface_Object2" },
         { type: "Interface_Mutation" },
       ],
       methods: [
@@ -194,9 +218,9 @@ export const typeInfo: TypeInfo = {
         {
           ...createMethodDefinition({
             type: "mutation",
-            name: "abstractMethod",
+            name: "abstractMutationMethod",
             return: createScalarPropertyDefinition({
-              name: "abstractMethod",
+              name: "abstractMutationMethod",
               type: "String",
               required: true
             })
@@ -394,13 +418,15 @@ export const typeInfo: TypeInfo = {
       ...createObjectDefinition({
         type: "ImplementationObject",
         interfaces: [
-          { type: "Interface_Object" }
+          { type: "Interface_Object" },
+          { type: "Interface_Object2" }
         ]
       }),
       properties: [
         createScalarPropertyDefinition({ name: "anotherProp", type: "String", required: false }),
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
         createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
+        createScalarPropertyDefinition({ name: "str2", type: "String", required: true }),
       ]
     }
   ],
@@ -489,6 +515,34 @@ export const typeInfo: TypeInfo = {
             })
           ]
         }
+      ]
+    },
+    {
+      ...createImportedQueryDefinition({
+        uri: "interface.eth",
+        namespace: "Interface",
+        nativeType: "Query",
+        type: "Interface_Query"
+      }),
+      methods: [
+        {
+          ...createMethodDefinition({
+            type: "query",
+            name: "abstractQueryMethod",
+            return: createObjectPropertyDefinition({
+              name: "abstractQueryMethod",
+              type: "Interface_Object",
+              required: true
+            })
+          }),
+          arguments: [
+            createScalarPropertyDefinition({
+              name: "arg",
+              required: true,
+              type: "UInt8"
+            }),
+          ]
+        },
       ]
     },
     {
@@ -682,9 +736,9 @@ export const typeInfo: TypeInfo = {
         {
           ...createMethodDefinition({
             type: "mutation",
-            name: "abstractMethod",
+            name: "abstractMutationMethod",
             return: createScalarPropertyDefinition({
-              name: "abstractMethod",
+              name: "abstractMutationMethod",
               type: "String",
               required: true
             })
@@ -919,6 +973,17 @@ export const typeInfo: TypeInfo = {
       properties: [
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
         createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
+      ]
+    },
+    {
+      ...createImportedObjectDefinition({
+        uri: "interface.eth",
+        namespace: "Interface",
+        nativeType: "Object2",
+        type: "Interface_Object2"
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "str2", type: "String", required: true }),
       ]
     },
   ],

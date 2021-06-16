@@ -366,7 +366,7 @@ function resolveInterfaces(
   const allInterfaces = getAllUniqueInterfaces();
   const interfacesWithBodies: { name: string, body: string }[] = [];
 
-  const typeCapture = /type[ \n\t]*([a-zA-Z0-9_]+)[a-zA-Z0-9_,.:@"!\(\)\[\] \n\t]+{([a-zA-Z0-9_,.:@"!\(\)\[\] \n\t]*)}/g;
+  const typeCapture = /type[ \n\t]*([a-zA-Z0-9_]+)[a-zA-Z0-9_,.:@"&!\(\)\[\] \n\t]+{([a-zA-Z0-9_,.:@"&!\(\)\[\] \n\t]*)}/g;
   const typeMatches = [...schema.matchAll(typeCapture)];
 
   for(const interfaceName of allInterfaces) {
@@ -388,7 +388,7 @@ function resolveInterfaces(
 
   for(const implementationWithInterfaces of implementationsWithInterfaces) {
 
-    const implementationTypeCapture = new RegExp(`(type[ \\n\\t]*${implementationWithInterfaces.typeName}[a-zA-Z0-9_,.:@"!\\(\\)\\[\\] \\n\\t]*{)([a-zA-Z0-9_,.:@"!\\(\\)\\[\\] \\n\\t]*)}`);
+    const implementationTypeCapture = new RegExp(`(type[ \\n\\t]*${implementationWithInterfaces.typeName}[a-zA-Z0-9_,.:@"&!\\(\\)\\[\\] \\n\\t]*{)([a-zA-Z0-9_,.:@"&!\\(\\)\\[\\] \\n\\t]*)}`);
 
     var bodiesOfInterfaces = implementationWithInterfaces.interfaces
       .map(interfaceName => {

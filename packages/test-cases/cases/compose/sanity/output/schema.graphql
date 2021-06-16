@@ -23,7 +23,7 @@ directive @imports(
 ) on OBJECT
 ### Web3API Header END ###
 
-type Query @imports(
+type Query implements Interface_Query @imports(
   types: [
     "Namespace_Query",
     "Namespace_CustomType",
@@ -32,7 +32,9 @@ type Query @imports(
     "Namespace_Imported_NestedObjectType",
     "Namespace_Imported_ObjectType",
     "Namespace_CustomEnum",
-    "Namespace_Imported_Enum"
+    "Namespace_Imported_Enum",
+    "Interface_Query",
+    "Interface_Object"
   ]
 ) {
   method1(
@@ -45,6 +47,10 @@ type Query @imports(
   method2(
     arg: [String!]!
   ): [Int64!]!
+
+  abstractQueryMethod(
+    arg: UInt8!
+  ): Interface_Object!
 }
 
 type Mutation implements Interface_Mutation @imports(
@@ -60,6 +66,7 @@ type Mutation implements Interface_Mutation @imports(
     "Namespace_Imported_Enum",
     "JustMutation_Mutation",
     "Interface_Object",
+    "Interface_Object2",
     "Interface_Mutation"
   ]
 ) {
@@ -74,7 +81,7 @@ type Mutation implements Interface_Mutation @imports(
     arg: [String!]!
   ): [Int64!]!
 
-  abstractMethod(
+  abstractMutationMethod(
     arg: UInt8!
   ): String!
 }
@@ -139,10 +146,11 @@ type AnotherMutationType {
   prop: String
 }
 
-type ImplementationObject implements Interface_Object {
+type ImplementationObject implements Interface_Object & Interface_Object2 {
   anotherProp: String
   str: String!
   uint8: UInt8!
+  str2: String!
 }
 
 ### Imported Queries START ###
@@ -163,6 +171,16 @@ type Namespace_Query @imported(
   method2(
     arg: [String!]!
   ): [Int64!]!
+}
+
+type Interface_Query @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "Query"
+) {
+  abstractQueryMethod(
+    arg: UInt8!
+  ): Interface_Object!
 }
 
 type Namespace_Mutation @imported(
@@ -208,7 +226,7 @@ type Interface_Mutation @imported(
   namespace: "Interface",
   nativeType: "Mutation"
 ) {
-  abstractMethod(
+  abstractMutationMethod(
     arg: UInt8!
   ): String!
 }
@@ -296,6 +314,14 @@ type Interface_Object @imported(
 ) {
   str: String!
   uint8: UInt8!
+}
+
+type Interface_Object2 @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "Object2"
+) {
+  str2: String!
 }
 
 enum Namespace_CustomEnum @imported(

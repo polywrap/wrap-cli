@@ -23,7 +23,7 @@ directive @imports(
 ) on OBJECT
 ### Web3API Header END ###
 
-type Query @imports(
+type Query implements Interface_Query @imports(
   types: [
     "Namespace_Query",
     "Namespace_CustomType",
@@ -32,7 +32,9 @@ type Query @imports(
     "Namespace_Imported_NestedObjectType",
     "Namespace_Imported_ObjectType",
     "Namespace_CustomEnum",
-    "Namespace_Imported_Enum"
+    "Namespace_Imported_Enum",
+    "Interface_Query",
+    "Interface_Object"
   ]
 ) {
   method1(
@@ -45,6 +47,10 @@ type Query @imports(
   method2(
     arg: [String!]!
   ): [Int64!]!
+
+  abstractQueryMethod(
+    arg: UInt8!
+  ): Interface_Object!
 }
 
 type CustomQueryType {
@@ -102,6 +108,16 @@ type Namespace_Query @imported(
   method2(
     arg: [String!]!
   ): [Int64!]!
+}
+
+type Interface_Query @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "Query"
+) {
+  abstractQueryMethod(
+    arg: UInt8!
+  ): Interface_Object!
 }
 
 ### Imported Queries END ###
@@ -178,6 +194,15 @@ type Namespace_Imported_ObjectType @imported(
   nativeType: "Imported_ObjectType"
 ) {
   prop: String!
+}
+
+type Interface_Object @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "Object"
+) {
+  str: String!
+  uint8: UInt8!
 }
 
 enum Namespace_CustomEnum @imported(

@@ -36,6 +36,7 @@ type Mutation implements Interface_Mutation @imports(
     "Namespace_Imported_Enum",
     "JustMutation_Mutation",
     "Interface_Object",
+    "Interface_Object2",
     "Interface_Mutation"
   ]
 ) {
@@ -50,7 +51,7 @@ type Mutation implements Interface_Mutation @imports(
     arg: [String!]!
   ): [Int64!]!
 
-  abstractMethod(
+  abstractMutationMethod(
     arg: UInt8!
   ): String!
 }
@@ -78,10 +79,11 @@ type AnotherMutationType {
   prop: String
 }
 
-type ImplementationObject implements Interface_Object {
+type ImplementationObject implements Interface_Object & Interface_Object2 {
   anotherProp: String
   str: String!
   uint8: UInt8!
+  str2: String!
 }
 
 type CommonType {
@@ -161,7 +163,7 @@ type Interface_Mutation @imported(
   namespace: "Interface",
   nativeType: "Mutation"
 ) {
-  abstractMethod(
+  abstractMutationMethod(
     arg: UInt8!
   ): String!
 }
@@ -249,6 +251,14 @@ type Interface_Object @imported(
 ) {
   str: String!
   uint8: UInt8!
+}
+
+type Interface_Object2 @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "Object2"
+) {
+  str2: String!
 }
 
 enum Namespace_CustomEnum @imported(

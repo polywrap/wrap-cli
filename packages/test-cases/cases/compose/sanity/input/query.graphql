@@ -1,7 +1,8 @@
 #import { Query, CustomType } into Namespace from "test.eth"
+#import { Query } into Interface from "interface.eth"
 #import { CommonType } from "../imports-local/common.graphql"
 
-type Query {
+type Query implements Interface_Query {
   method1(
     str: String!
     optStr: String

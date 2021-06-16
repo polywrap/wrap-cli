@@ -25,12 +25,22 @@ directive @imports(
 ### Web3API Header END ###
 
 type Mutation {
-  abstractMethod(
+  abstractMutationMethod(
     arg: UInt8!
   ): String!
+}
+
+type Query {
+  abstractQueryMethod(
+    arg: UInt8!
+  ): Object!
 }
 
 type Object {
   str: String!
   uint8: UInt8!
+}
+
+type Object2 {
+  str2: String!
 }
