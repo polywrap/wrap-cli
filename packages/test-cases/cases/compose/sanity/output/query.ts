@@ -136,10 +136,12 @@ export const typeInfo: TypeInfo = {
         { type: "Namespace_CustomEnum" },
         { type: "Namespace_Imported_Enum" },
         { type: "Interface_Query" },
+        { type: "Interface_InterfaceObject2" },
         { type: "Interface_Object" },
+        { type: "Interface_NestedInterfaceObject" },
       ],
       interfaces: [
-        { type: "Interface_Query" }
+        { type: "Interface_Query" },
       ],
       methods: [
         {
@@ -219,7 +221,7 @@ export const typeInfo: TypeInfo = {
             name: "abstractQueryMethod",
             return: createObjectPropertyDefinition({
               name: "abstractQueryMethod",
-              type: "Interface_Object",
+              type: "Interface_InterfaceObject2",
               required: true
             })
           }),
@@ -448,14 +450,39 @@ export const typeInfo: TypeInfo = {
       ...createImportedObjectDefinition({
         uri: "interface.eth",
         namespace: "Interface",
+        nativeType: "InterfaceObject2",
+        type: "Interface_InterfaceObject2"
+      }),
+      interfaces: [
+        { type: "Interface_NestedInterfaceObject" }
+      ],
+      properties: [
+        createScalarPropertyDefinition({ name: "str2", type: "String", required: true }),
+        createObjectPropertyDefinition({ name: "object", type: "Interface_Object", required: false }),
+      ]
+    },
+    {
+      ...createImportedObjectDefinition({
+        uri: "interface.eth",
+        namespace: "Interface",
         nativeType: "Object",
         type: "Interface_Object"
       }),
       properties: [
-        createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
         createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
       ]
-    }
+    },
+    {
+      ...createImportedObjectDefinition({
+        uri: "interface.eth",
+        namespace: "Interface",
+        nativeType: "NestedInterfaceObject",
+        type: "Interface_NestedInterfaceObject"
+      }),
+      properties: [
+        createObjectPropertyDefinition({ name: "object", type: "Interface_Object", required: false }),
+      ]
+    },
   ],
   importedQueryTypes: [
     {
@@ -558,7 +585,7 @@ export const typeInfo: TypeInfo = {
             name: "abstractQueryMethod",
             return: createObjectPropertyDefinition({
               name: "abstractQueryMethod",
-              type: "Interface_Object",
+              type: "Interface_InterfaceObject2",
               required: true
             })
           }),

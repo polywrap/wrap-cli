@@ -35,8 +35,10 @@ type Mutation implements Interface_Mutation @imports(
     "Namespace_CustomEnum",
     "Namespace_Imported_Enum",
     "JustMutation_Mutation",
+    "Interface_InterfaceObject1",
+    "Interface_InterfaceObject2",
     "Interface_Object",
-    "Interface_Object2",
+    "Interface_NestedInterfaceObject",
     "Interface_Mutation"
   ]
 ) {
@@ -79,11 +81,12 @@ type AnotherMutationType {
   prop: String
 }
 
-type ImplementationObject implements Interface_Object & Interface_Object2 {
+type ImplementationObject implements Interface_InterfaceObject1 & Interface_InterfaceObject2 {
   anotherProp: String
   str: String!
   uint8: UInt8!
   str2: String!
+  object: Interface_Object
 }
 
 type CommonType {
@@ -244,21 +247,38 @@ type Namespace_CustomType @imported(
   optImportedEnum: Namespace_Imported_Enum
 }
 
-type Interface_Object @imported(
+type Interface_InterfaceObject1 @imported(
   uri: "interface.eth",
   namespace: "Interface",
-  nativeType: "Object"
+  nativeType: "InterfaceObject1"
 ) {
   str: String!
   uint8: UInt8!
 }
 
-type Interface_Object2 @imported(
+type Interface_InterfaceObject2 implements Interface_NestedInterfaceObject @imported(
   uri: "interface.eth",
   namespace: "Interface",
-  nativeType: "Object2"
+  nativeType: "InterfaceObject2"
 ) {
   str2: String!
+  object: Interface_Object
+}
+
+type Interface_Object @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "Object"
+) {
+  uint8: UInt8!
+}
+
+type Interface_NestedInterfaceObject @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "NestedInterfaceObject"
+) {
+  object: Interface_Object
 }
 
 enum Namespace_CustomEnum @imported(

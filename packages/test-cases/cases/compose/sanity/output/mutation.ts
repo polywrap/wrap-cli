@@ -30,8 +30,9 @@ export const typeInfo: TypeInfo = {
         { type: "Namespace_CustomEnum" },
         { type: "Namespace_Imported_Enum" },
         { type: "JustMutation_Mutation" },
+        { type: "Interface_InterfaceObject1" },
+        { type: "Interface_InterfaceObject2" },
         { type: "Interface_Object" },
-        { type: "Interface_Object2" },
         { type: "Interface_Mutation" },
       ],
       interfaces: [
@@ -203,8 +204,8 @@ export const typeInfo: TypeInfo = {
       ...createObjectDefinition({
         type: "ImplementationObject",
         interfaces: [
-          { type: "Interface_Object" },
-          { type: "Interface_Object2" }
+          { type: "Interface_InterfaceObject1" },
+          { type: "Interface_InterfaceObject2" }
         ]
       }),
       properties: [
@@ -212,6 +213,7 @@ export const typeInfo: TypeInfo = {
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
         createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
         createScalarPropertyDefinition({ name: "str2", type: "String", required: true }),
+        createObjectPropertyDefinition({ name: "object", type: "Interface_Object", required: false }),
       ]
     },
     {
@@ -762,8 +764,8 @@ export const typeInfo: TypeInfo = {
       ...createImportedObjectDefinition({
         uri: "interface.eth",
         namespace: "Interface",
-        nativeType: "Object",
-        type: "Interface_Object"
+        nativeType: "InterfaceObject1",
+        type: "Interface_InterfaceObject1"
       }),
       properties: [
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
@@ -774,11 +776,37 @@ export const typeInfo: TypeInfo = {
       ...createImportedObjectDefinition({
         uri: "interface.eth",
         namespace: "Interface",
-        nativeType: "Object2",
-        type: "Interface_Object2"
+        nativeType: "InterfaceObject2",
+        type: "Interface_InterfaceObject2"
       }),
+      interfaces: [
+        { type: "Interface_NestedInterfaceObject" }
+      ],
       properties: [
         createScalarPropertyDefinition({ name: "str2", type: "String", required: true }),
+        createObjectPropertyDefinition({ name: "object", type: "Interface_Object", required: false }),
+      ]
+    },
+    {
+      ...createImportedObjectDefinition({
+        uri: "interface.eth",
+        namespace: "Interface",
+        nativeType: "Object",
+        type: "Interface_Object"
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
+      ]
+    },
+    {
+      ...createImportedObjectDefinition({
+        uri: "interface.eth",
+        namespace: "Interface",
+        nativeType: "NestedInterfaceObject",
+        type: "Interface_NestedInterfaceObject"
+      }),
+      properties: [
+        createObjectPropertyDefinition({ name: "object", type: "Interface_Object", required: false }),
       ]
     },
   ],

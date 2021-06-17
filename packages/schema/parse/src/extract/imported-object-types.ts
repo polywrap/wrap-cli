@@ -39,6 +39,7 @@ const visitorEnter = (
       uri: imported.uri,
       namespace: imported.namespace,
       nativeType: imported.nativeType,
+      interfaces: node.interfaces?.map(x => ({ type: x.name.value }))
     });
     importedObjectTypes.push(importedType);
     state.currentType = importedType;
