@@ -100,9 +100,11 @@ export async function createBuildImage(
     await runCommand(
       `docker build -f ${dockerfile} -t ${imageName} ${rootDir}`,
       quiet,
-      isWin() ? undefined : {
-        DOCKER_BUILDKIT: "true",
-      },
+      isWin()
+        ? undefined
+        : {
+            DOCKER_BUILDKIT: "true",
+          }
     );
 
     // Get the docker image ID
