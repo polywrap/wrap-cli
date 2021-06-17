@@ -10,6 +10,12 @@ export interface W3Exports {
   // Needed to comply with WebAssembly's typings
   [key: string]: unknown;
 
+  asyncify_start_unwind: (dataAddr: number) => void;
+  asyncify_start_rewind: (dataAddr: number) => void;
+  asyncify_stop_rewind: () => void;
+
+  main: () => void;
+
   _w3_init: () => void;
   _w3_invoke: (nameLen: u32, argsLen: u32) => boolean;
 }
@@ -48,6 +54,8 @@ export interface W3Imports {
 
   env: {
     memory: WebAssembly.Memory;
+    sleep: () => void;
+    wakeUp: () => void;
   };
 }
 

@@ -260,7 +260,7 @@ export class WasmWeb3Api extends Api {
 
         await awaitCompletion;
 
-        Atomics.store(threadMutexes, threadId, 0);
+        // Atomics.store(threadMutexes, threadId, 0);
         worker.terminate();
         threadsActive--;
         threadIds.push(threadId);
