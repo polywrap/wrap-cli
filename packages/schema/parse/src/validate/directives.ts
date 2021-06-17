@@ -34,12 +34,10 @@ export function supportedDirectives(astNode: DocumentNode): void {
 }
 
 export function importsDirective(astNode: DocumentNode): void {
-  let lastNodeVisited = "";
-  // let lastNode: ASTNode | undefined;
+  let isInsideObjectTypeDefinition = false;
 
   const ObjectTypeDefinition = (node: ObjectTypeDefinitionNode) => {
-    // lastNode = node;
-    lastNodeVisited = node.kind;
+    isInsideObjectTypeDefinition = true;
     const badUsageLocations: string[] = [];
 
     const importsAllowedObjectTypes = ["Query", "Mutation"];
@@ -75,11 +73,10 @@ export function importsDirective(astNode: DocumentNode): void {
       return;
     }
 
-    if (lastNodeVisited !== "ObjectTypeDefinition" && lastNodeVisited !== "NamedType") {
+    if (!isInsideObjectTypeDefinition) {
       throw new Error(
         `@imports directive should only be used on QUERY or MUTATION type definitions, ` +
-          `but it is being used in the following location: ${path.join(" -> ")}` + 
-          `LNV: ${lastNodeVisited}`
+          `but it is being used in the following location: ${path.join(" -> ")}`
       );
     }
 
@@ -134,20 +131,15 @@ export function importsDirective(astNode: DocumentNode): void {
         ObjectTypeDefinition(node as ObjectTypeDefinitionNode);
       } else if (node.kind === "Directive") {
         Directive(node as DirectiveNode, key, parent, path);
-      } else if(node.kind.includes("Interface")) {
-        console.log('sds');
-      }
-
-      if (node.kind !== "Name") {
-        lastNodeVisited = node.kind;
-        // lastNode = node;
+      } else if(node.kind !== "NamedType" && node.kind !== "Name") {
+        isInsideObjectTypeDefinition = false;
       }
     },
   });
 }
 
 export function importedDirective(astNode: ASTNode): void {
-  let lastNodeVisited = "";
+  let isInsideObjectOrEnumTypeDefinition = false;
 
   const Directive = (
     node: DirectiveNode,
@@ -159,11 +151,7 @@ export function importedDirective(astNode: ASTNode): void {
       return;
     }
 
-    if (
-      lastNodeVisited !== "ObjectTypeDefinition" &&
-      lastNodeVisited !== "EnumTypeDefinition" &&
-      lastNodeVisited !== "NamedType"
-    ) {
+    if (!isInsideObjectOrEnumTypeDefinition) {
       throw new Error(
         `@imported directive should only be used on object or enum type definitions, ` +
           `but it is being used in the following location: ${path.join(" -> ")}`
@@ -215,9 +203,11 @@ export function importedDirective(astNode: ASTNode): void {
       if (node.kind === "Directive") {
         Directive(node as DirectiveNode, key, parent, path);
       }
-
-      if (node.kind !== "Name") {
-        lastNodeVisited = node.kind;
+      else if(node.kind === "ObjectTypeDefinition" || node.kind === "EnumTypeDefinition") {
+        isInsideObjectOrEnumTypeDefinition = true;
+      }
+      else if(node.kind !== "NamedType" && node.kind !== "Name") {
+        isInsideObjectOrEnumTypeDefinition = false;
       }
     },
   });
