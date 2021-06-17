@@ -11,11 +11,12 @@ pub struct WriteSizer {
 
 impl WriteSizer {
     #[allow(dead_code)]
-    pub fn new() -> Self {
-        Self {
-            length: 0,
-            context: Context::new(),
-        }
+    pub fn new(context: Context) -> Self {
+        Self { length: 0, context }
+    }
+
+    pub fn get_length(&self) -> i32 {
+        self.length
     }
 }
 

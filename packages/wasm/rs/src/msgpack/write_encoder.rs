@@ -13,10 +13,10 @@ pub struct WriteEncoder {
 }
 
 impl WriteEncoder {
-    pub fn new(ua: &[u8]) -> Self {
+    pub fn new(ua: &[u8], context: Context) -> Self {
         Self {
-            context: Context::new(),
-            view: DataView::new(ua).unwrap(),
+            context: context.clone(),
+            view: DataView::new(ua, context).unwrap(),
         }
     }
 }

@@ -15,10 +15,9 @@ pub struct DataView {
 }
 
 impl DataView {
-    pub fn new(buf: &[u8]) -> Result<Self> {
+    pub fn new(buf: &[u8], context: Context) -> Result<Self> {
         let byte_offset = 0;
         let byte_length = buf.len() as i32;
-        let context = Context::new();
 
         if byte_length > BLOCK_MAX_SIZE as i32 || byte_offset + byte_length > buf.len() as i32 {
             let msg = format!("DataView::new(): {} [byte_length: {} BLOCK_MAX_SIZE: {} byte_offset: {} buffer.byte_length: {} ]",

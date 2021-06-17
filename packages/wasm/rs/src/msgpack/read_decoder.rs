@@ -16,10 +16,10 @@ pub struct ReadDecoder {
 
 impl ReadDecoder {
     #[allow(dead_code)]
-    pub fn new(buf: &[u8]) -> Self {
+    pub fn new(buf: &[u8], context: Context) -> Self {
         Self {
-            context: Context::new(),
-            view: DataView::new(buf).unwrap(),
+            context: context.clone(),
+            view: DataView::new(buf, context).unwrap(),
         }
     }
 
