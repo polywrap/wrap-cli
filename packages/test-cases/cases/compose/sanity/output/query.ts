@@ -11,7 +11,8 @@ import {
   createEnumPropertyDefinition,
   createImportedQueryDefinition,
   createImportedObjectDefinition,
-  createImportedEnumDefinition
+  createImportedEnumDefinition,
+  createInterfaceImplementedDefinition
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
@@ -141,7 +142,7 @@ export const typeInfo: TypeInfo = {
         { type: "Interface_NestedInterfaceObject" },
       ],
       interfaces: [
-        { type: "Interface_Query" },
+        createInterfaceImplementedDefinition({ type: "Interface_Query" }),
       ],
       methods: [
         {
@@ -454,7 +455,7 @@ export const typeInfo: TypeInfo = {
         type: "Interface_InterfaceObject2"
       }),
       interfaces: [
-        { type: "Interface_NestedInterfaceObject" }
+        createInterfaceImplementedDefinition({ type: "Interface_NestedInterfaceObject" })
       ],
       properties: [
         createScalarPropertyDefinition({ name: "str2", type: "String", required: true }),

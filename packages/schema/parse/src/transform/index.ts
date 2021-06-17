@@ -16,6 +16,7 @@ import {
   isKind,
   EnumDefinition,
   ImportedEnumDefinition,
+  InterfaceImplementedDefinition,
 } from "../typeInfo";
 
 export * from "./finalizePropertyDef";
@@ -48,6 +49,7 @@ export interface TypeInfoTransformer {
   ImportedObjectDefinition?: (
     def: ImportedObjectDefinition
   ) => ImportedObjectDefinition;
+  InterfaceImplementedDefinition?: (def: InterfaceImplementedDefinition) => InterfaceImplementedDefinition;
 }
 
 export function transformTypeInfo(
@@ -119,6 +121,23 @@ export function visitObjectDefinition(
       transforms
     );
   }
+
+  for (let i = 0; i < result.interfaces.length; ++i) {
+    result.interfaces[i] = visitInterfaceImplementedDefinition(
+      result.interfaces[i],
+      transforms
+    );
+  }
+
+  return transformType(result, transforms.leave);
+}
+
+export function visitInterfaceImplementedDefinition(
+  def: InterfaceImplementedDefinition,
+  transforms: TypeInfoTransforms
+): InterfaceImplementedDefinition {
+  let result = Object.assign({}, def);
+  result = transformType(result, transforms.enter);
 
   return transformType(result, transforms.leave);
 }
@@ -281,6 +300,7 @@ export function transformType<TDefinition extends GenericDefinition>(
     ImportedEnumDefinition,
     ImportedQueryDefinition,
     ImportedObjectDefinition,
+    InterfaceImplementedDefinition,
   } = transform;
 
   if (GenericDefinition && isKind(result, DefinitionKind.Generic)) {
@@ -321,6 +341,9 @@ export function transformType<TDefinition extends GenericDefinition>(
     isKind(result, DefinitionKind.ImportedObject)
   ) {
     result = Object.assign(result, ImportedObjectDefinition(result as any));
+  }
+  if (InterfaceImplementedDefinition && isKind(result, DefinitionKind.InterfaceImplemented)) {
+    result = Object.assign(result, InterfaceImplementedDefinition(result as any));
   }
 
   return result;

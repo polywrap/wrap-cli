@@ -2,6 +2,7 @@ import {
   TypeInfo,
   ObjectDefinition,
   createObjectDefinition,
+  createInterfaceImplementedDefinition,
 } from "../typeInfo";
 import {
   extractFieldDefinition,
@@ -46,7 +47,7 @@ const visitorEnter = (
     // Create a new TypeDefinition
     const type = createObjectDefinition({ 
       type: node.name.value,
-      interfaces: node.interfaces?.map(x => ({ type: x.name.value }))
+      interfaces: node.interfaces?.map(x => createInterfaceImplementedDefinition({ type: x.name.value }))
      });
     objectTypes.push(type);
     state.currentType = type;

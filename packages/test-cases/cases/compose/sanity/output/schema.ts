@@ -11,7 +11,8 @@ import {
   createEnumPropertyDefinition,
   createImportedQueryDefinition,
   createImportedObjectDefinition,
-  createImportedEnumDefinition
+  createImportedEnumDefinition,
+  createInterfaceImplementedDefinition
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
@@ -34,7 +35,7 @@ export const typeInfo: TypeInfo = {
         { type: "Interface_NestedInterfaceObject" },
       ],
       interfaces: [
-        { type: "Interface_Query" }
+        createInterfaceImplementedDefinition({ type: "Interface_Query" })
       ],
       methods: [
         {
@@ -144,8 +145,8 @@ export const typeInfo: TypeInfo = {
         { type: "Interface_InterfaceObject1" },
         { type: "Interface_InterfaceObject2" },
         { type: "Interface_Object" },
-        { type: "Interface_Mutation" },
         { type: "Interface_NestedInterfaceObject" },
+        { type: "Interface_Mutation" },
       ],
       methods: [
         {
@@ -239,7 +240,7 @@ export const typeInfo: TypeInfo = {
         },
       ],
       interfaces: [
-        { type: "Interface_Mutation" }
+        createInterfaceImplementedDefinition({ type: "Interface_Mutation" })
       ]
     }
   ],
@@ -422,8 +423,8 @@ export const typeInfo: TypeInfo = {
       ...createObjectDefinition({
         type: "ImplementationObject",
         interfaces: [
-          { type: "Interface_InterfaceObject1" },
-          { type: "Interface_InterfaceObject2" }
+          createInterfaceImplementedDefinition({ type: "Interface_InterfaceObject1" }),
+          createInterfaceImplementedDefinition({ type: "Interface_InterfaceObject2" })
         ]
       }),
       properties: [
@@ -976,7 +977,7 @@ export const typeInfo: TypeInfo = {
         type: "Interface_InterfaceObject2"
       }),
       interfaces: [
-        { type: "Interface_NestedInterfaceObject" }
+        createInterfaceImplementedDefinition({ type: "Interface_NestedInterfaceObject" })
       ],
       properties: [
         createScalarPropertyDefinition({ name: "str2", type: "String", required: true }),
@@ -998,23 +999,23 @@ export const typeInfo: TypeInfo = {
       ...createImportedObjectDefinition({
         uri: "interface.eth",
         namespace: "Interface",
-        nativeType: "InterfaceObject1",
-        type: "Interface_InterfaceObject1"
+        nativeType: "NestedInterfaceObject",
+        type: "Interface_NestedInterfaceObject"
       }),
       properties: [
-        createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
-        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
+        createObjectPropertyDefinition({ name: "object", type: "Interface_Object", required: false }),
       ]
     },
     {
       ...createImportedObjectDefinition({
         uri: "interface.eth",
         namespace: "Interface",
-        nativeType: "NestedInterfaceObject",
-        type: "Interface_NestedInterfaceObject"
+        nativeType: "InterfaceObject1",
+        type: "Interface_InterfaceObject1"
       }),
       properties: [
-        createObjectPropertyDefinition({ name: "object", type: "Interface_Object", required: false }),
+        createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
       ]
     },
   ],

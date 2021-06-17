@@ -334,7 +334,7 @@ type Interface_NestedInterfaceObject @imported(
   namespace: "Interface",
   nativeType: "NestedInterfaceObject"
 ) {
-  object: Object
+  object: Interface_Object
 }
 
 type Interface_InterfaceObject1 @imported(

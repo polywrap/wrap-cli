@@ -35,8 +35,10 @@ export function supportedDirectives(astNode: DocumentNode): void {
 
 export function importsDirective(astNode: DocumentNode): void {
   let lastNodeVisited = "";
+  // let lastNode: ASTNode | undefined;
 
   const ObjectTypeDefinition = (node: ObjectTypeDefinitionNode) => {
+    // lastNode = node;
     lastNodeVisited = node.kind;
     const badUsageLocations: string[] = [];
 
@@ -73,7 +75,7 @@ export function importsDirective(astNode: DocumentNode): void {
       return;
     }
 
-    if (lastNodeVisited !== "ObjectTypeDefinition") {
+    if (lastNodeVisited !== "ObjectTypeDefinition" && lastNodeVisited !== "NamedType") {
       throw new Error(
         `@imports directive should only be used on QUERY or MUTATION type definitions, ` +
           `but it is being used in the following location: ${path.join(" -> ")}` + 
@@ -132,10 +134,13 @@ export function importsDirective(astNode: DocumentNode): void {
         ObjectTypeDefinition(node as ObjectTypeDefinitionNode);
       } else if (node.kind === "Directive") {
         Directive(node as DirectiveNode, key, parent, path);
+      } else if(node.kind.includes("Interface")) {
+        console.log('sds');
       }
 
       if (node.kind !== "Name") {
         lastNodeVisited = node.kind;
+        // lastNode = node;
       }
     },
   });
@@ -156,7 +161,8 @@ export function importedDirective(astNode: ASTNode): void {
 
     if (
       lastNodeVisited !== "ObjectTypeDefinition" &&
-      lastNodeVisited !== "EnumTypeDefinition"
+      lastNodeVisited !== "EnumTypeDefinition" &&
+      lastNodeVisited !== "NamedType"
     ) {
       throw new Error(
         `@imported directive should only be used on object or enum type definitions, ` +

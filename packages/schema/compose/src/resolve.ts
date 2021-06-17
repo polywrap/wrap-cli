@@ -35,6 +35,7 @@ import {
   GenericDefinition,
   isKind,
   header,
+  InterfaceImplementedDefinition,
 } from "@web3api/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -150,18 +151,18 @@ const extractObjectImportDependencies = (
   uri: string
 ): TypeInfoTransforms => {
   const findImport = (
-    def: GenericDefinition,
+    type: string,
     namespaceType: string,
     rootTypes: EnumOrObject[],
     importedTypes: ImportedEnumOrObject[],
     kind: DefinitionKind
   ): ImportedEnumOrObject & Namespaced => {
     // Find this type's ObjectDefinition in the root type info
-    let idx = rootTypes.findIndex((obj) => obj.type === def.type);
+    let idx = rootTypes.findIndex((obj) => obj.type === type);
     let obj = undefined;
 
     if (idx === -1) {
-      idx = importedTypes.findIndex((obj) => obj.type === def.type);
+      idx = importedTypes.findIndex((obj) => obj.type === type);
     } else {
       obj = rootTypes[idx];
     }
@@ -169,7 +170,7 @@ const extractObjectImportDependencies = (
     if (idx === -1) {
       throw Error(
         `extractObjectImportDependencies: Cannot find the dependent type within the root type info.\n` +
-          `Type: ${def.type}\nTypeInfo: ${JSON.stringify(
+          `Type: ${type}\nTypeInfo: ${JSON.stringify(
             rootTypeInfo
           )}\n${namespace}\n${JSON.stringify(Object.keys(importsFound))}`
       );
@@ -187,7 +188,7 @@ const extractObjectImportDependencies = (
       kind,
       uri,
       namespace,
-      nativeType: def.type,
+      nativeType: type,
     };
   };
 
@@ -198,37 +199,96 @@ const extractObjectImportDependencies = (
           return def;
         }
 
-        const namespaceType = appendNamespace(namespace, def.type);
+        const processType = (type: string): string => {
+          const namespaceType = appendNamespace(namespace, type);
 
-        if (!importsFound[namespaceType]) {
-          // Find the import
-          const importFound = findImport(
-            def,
-            namespaceType,
-            rootTypeInfo.objectTypes,
-            rootTypeInfo.importedObjectTypes,
-            DefinitionKind.ImportedObject
-          ) as ImportedObjectDefinition;
-
-          // Keep track of it
-          importsFound[importFound.type] = importFound;
-
-          // Traverse this newly added object
-          visitObjectDefinition(importFound, {
-            ...extractObjectImportDependencies(
-              importsFound,
-              rootTypeInfo,
-              namespace,
-              uri
-            ),
-            leave: {
-              PropertyDefinition: (def: PropertyDefinition) => {
-                populatePropertyType(def);
-                return def;
+          if (!importsFound[namespaceType]) {
+            // Find the import
+            const importFound = findImport(
+              type,
+              namespaceType,
+              rootTypeInfo.objectTypes,
+              rootTypeInfo.importedObjectTypes,
+              DefinitionKind.ImportedObject
+            ) as ImportedObjectDefinition;
+  
+            // Keep track of it
+            importsFound[importFound.type] = importFound;
+  
+            // Traverse this newly added object
+            visitObjectDefinition(importFound, {
+              ...extractObjectImportDependencies(
+                importsFound,
+                rootTypeInfo,
+                namespace,
+                uri
+              ),
+              leave: {
+                PropertyDefinition: (def: PropertyDefinition) => {
+                  populatePropertyType(def);
+                  return def;
+                },
               },
-            },
-          });
+            });
+  
+            // importFound.interfaces = importFound.interfaces.map(x => ({
+            //   type: processType(x.type)
+            // }));
+          }
+
+          return namespaceType;
+        };
+
+        processType(def.type);
+
+        return def;
+      },
+      InterfaceImplementedDefinition: (def: InterfaceImplementedDefinition & Namespaced) => {
+        if (def.__namespaced) {
+          return def;
         }
+
+        const processType = (type: string): string => {
+          const namespaceType = appendNamespace(namespace, type);
+
+          if (!importsFound[namespaceType]) {
+            // Find the import
+            const importFound = findImport(
+              type,
+              namespaceType,
+              rootTypeInfo.objectTypes,
+              rootTypeInfo.importedObjectTypes,
+              DefinitionKind.ImportedObject
+            ) as ImportedObjectDefinition;
+  
+            // Keep track of it
+            importsFound[importFound.type] = importFound;
+  
+            // Traverse this newly added object
+            visitObjectDefinition(importFound, {
+              ...extractObjectImportDependencies(
+                importsFound,
+                rootTypeInfo,
+                namespace,
+                uri
+              ),
+              leave: {
+                PropertyDefinition: (def: PropertyDefinition) => {
+                  populatePropertyType(def);
+                  return def;
+                },
+              },
+            });
+  
+            // importFound.interfaces = importFound.interfaces.map(x => crea({
+            //   type: processType(x.type)
+            // }));
+          }
+
+          return namespaceType;
+        };
+
+        processType(def.type);
 
         return def;
       },
@@ -241,7 +301,7 @@ const extractObjectImportDependencies = (
         if (!importsFound[namespaceType]) {
           // Find the import
           const importFound = findImport(
-            def,
+            def.type,
             namespaceType,
             rootTypeInfo.enumTypes,
             rootTypeInfo.importedEnumTypes,
@@ -261,6 +321,17 @@ const extractObjectImportDependencies = (
 const namespaceTypes = (namespace: string): TypeInfoTransforms => ({
   enter: {
     ObjectDefinition: (def: ObjectDefinition & Namespaced) => {
+      if (def.__namespaced) {
+        return def;
+      }
+
+      return {
+        ...def,
+        type: appendNamespace(namespace, def.type),
+        __namespaced: true,
+      };
+    },
+    InterfaceImplementedDefinition: (def: InterfaceImplementedDefinition & Namespaced) => {
       if (def.__namespaced) {
         return def;
       }
@@ -511,6 +582,14 @@ async function resolveExternalImports(
         nativeType: type.type,
       };
 
+      const baseImportedType = typesToImport[namespacedType];
+
+      if('interfaces' in baseImportedType) {
+        // baseImportedType.interfaces = baseImportedType.interfaces.map(x => ({
+        //   type: appendNamespace(namespace, x.type)
+        // }));
+      }
+      
       // Extract all object dependencies
       visitorFunc(
         type,

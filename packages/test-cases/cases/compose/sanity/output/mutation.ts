@@ -11,7 +11,8 @@ import {
   createEnumPropertyDefinition,
   createImportedQueryDefinition,
   createImportedObjectDefinition,
-  createImportedEnumDefinition
+  createImportedEnumDefinition,
+  createInterfaceImplementedDefinition
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
@@ -33,10 +34,11 @@ export const typeInfo: TypeInfo = {
         { type: "Interface_InterfaceObject1" },
         { type: "Interface_InterfaceObject2" },
         { type: "Interface_Object" },
+        { type: "Interface_NestedInterfaceObject" },
         { type: "Interface_Mutation" },
       ],
       interfaces: [
-        { type: "Interface_Mutation" }
+        createInterfaceImplementedDefinition({type: "Interface_Mutation"})
       ],
       methods: [
         {
@@ -204,8 +206,8 @@ export const typeInfo: TypeInfo = {
       ...createObjectDefinition({
         type: "ImplementationObject",
         interfaces: [
-          { type: "Interface_InterfaceObject1" },
-          { type: "Interface_InterfaceObject2" }
+          createInterfaceImplementedDefinition({ type: "Interface_InterfaceObject1" }),
+          createInterfaceImplementedDefinition({ type: "Interface_InterfaceObject2" })
         ]
       }),
       properties: [
@@ -780,7 +782,7 @@ export const typeInfo: TypeInfo = {
         type: "Interface_InterfaceObject2"
       }),
       interfaces: [
-        { type: "Interface_NestedInterfaceObject" }
+        createInterfaceImplementedDefinition({ type: "Interface_NestedInterfaceObject" })
       ],
       properties: [
         createScalarPropertyDefinition({ name: "str2", type: "String", required: true }),

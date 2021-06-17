@@ -4,6 +4,7 @@ import {
   createQueryDefinition,
   createMethodDefinition,
   createPropertyDefinition,
+  createInterfaceImplementedDefinition,
 } from "../typeInfo";
 import {
   extractInputValueDefinition,
@@ -44,7 +45,7 @@ const visitorEnter = (
     const query = createQueryDefinition({
       type: nodeName,
       imports,
-      interfaces: node.interfaces?.map(x => ({ type: x.name.value }))
+      interfaces: node.interfaces?.map(x => createInterfaceImplementedDefinition({ type: x.name.value }))
     });
     queryTypes.push(query);
     state.currentQuery = query;
