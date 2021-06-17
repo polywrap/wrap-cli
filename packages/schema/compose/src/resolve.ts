@@ -116,11 +116,7 @@ export async function resolveImportsAndParseSchemas(
   newSchema = resolveInterfaces(newSchema, implementationsWithInterfaces);
 
   // Parse the newly formed schema
-  try {
-    return parseSchema(newSchema);
-  } catch (ex) {
-    throw "";
-  }
+  return parseSchema(newSchema);
 }
 
 interface Namespaced {
