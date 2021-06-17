@@ -3,6 +3,7 @@ import { defaultGenerationFile, defaultManifest } from "../../commands/codegen";
 import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
+import rimraf from "rimraf";
 
 const HELP = `
 w3 codegen [<generation-file>] [options]
@@ -86,7 +87,6 @@ ${HELP}`);
   });
 
   test("Should successfully generate types", async () => {
-    const rimraf = require("rimraf");
     rimraf.sync(`${projectRoot}/types`);
 
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({

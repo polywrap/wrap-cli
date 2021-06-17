@@ -21,22 +21,22 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
   const context: Context =  new Context("Deserializing query-type: {{name}}");
   {{#arguments.length}}
   const reader = new ReadDecoder(argsBuf, context);
-  var numFields = reader.readMapLength();
+  let numFields = reader.readMapLength();
 
   {{#arguments}}
   {{^object}}
-  var _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+  let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
   {{/object}}
   {{#object}}
   {{#required}}
-  var _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} | null = null;
+  let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} | null = null;
   {{/required}}
   {{^required}}
-  var _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+  let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
   {{/required}}
   {{/object}}
   {{#required}}
-  var _{{name}}Set: bool = false;
+  let _{{name}}Set: bool = false;
   {{/required}}
   {{/arguments}}
 

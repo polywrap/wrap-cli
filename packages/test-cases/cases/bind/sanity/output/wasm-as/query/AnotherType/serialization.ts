@@ -45,10 +45,10 @@ export function deserializeAnotherType(buffer: ArrayBuffer): AnotherType {
 }
 
 export function readAnotherType(reader: Read): AnotherType {
-  var numFields = reader.readMapLength();
+  let numFields = reader.readMapLength();
 
-  var _prop: string | null = null;
-  var _circular: Types.CustomType | null = null;
+  let _prop: string | null = null;
+  let _circular: Types.CustomType | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -62,7 +62,7 @@ export function readAnotherType(reader: Read): AnotherType {
     }
     else if (field == "circular") {
       reader.context().push(field, "Types.CustomType | null", "type found, reading property");
-      var object: Types.CustomType | null = null;
+      let object: Types.CustomType | null = null;
       if (!reader.isNextNil()) {
         object = Types.CustomType.read(reader);
       }

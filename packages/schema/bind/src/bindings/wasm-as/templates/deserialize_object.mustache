@@ -2,7 +2,7 @@
 const object = Types.{{type}}.read(reader);
 {{/required}}
 {{^required}}
-var object: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = null;
+let object: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = null;
 if (!reader.isNextNil()) {
   object = Types.{{type}}.read(reader);
 }

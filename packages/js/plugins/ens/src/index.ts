@@ -98,16 +98,18 @@ export class EnsPlugin extends Plugin {
 
     const domainNode = ethers.utils.namehash(domain);
 
-    const callView = async (
+    const callContractView = async (
       address: string,
       method: string,
       args: string[],
       networkNameOrChainId?: string
     ): Promise<string> => {
-      const { data, errors } = await client.query({
+      const { data, errors } = await client.query<{
+        callContractView: string;
+      }>({
         uri: "ens/ethereum.web3api.eth",
         query: `query {
-          callView(
+          callContractView(
             address: $address,
             method: $method,
             args: $args,
@@ -130,23 +132,23 @@ export class EnsPlugin extends Plugin {
         throw errors;
       }
 
-      if (data && data.callView) {
-        if (typeof data.callView !== "string") {
+      if (data && data.callContractView) {
+        if (typeof data.callContractView !== "string") {
           throw Error(
-            `Malformed data returned from Ethereum.callView: ${data.callView}`
+            `Malformed data returned from Ethereum.callContractView: ${data.callContractView}`
           );
         }
 
-        return data.callView;
+        return data.callContractView;
       }
 
       throw Error(
-        `Ethereum.callView returned nothing.\nData: ${data}\nErrors: ${errors}`
+        `Ethereum.callContractView returned nothing.\nData: ${data}\nErrors: ${errors}`
       );
     };
 
     // Get the node's resolver address
-    const resolverAddress = await callView(
+    const resolverAddress = await callContractView(
       ensAddress,
       ensAbi.resolver,
       [domainNode],
@@ -156,7 +158,7 @@ export class EnsPlugin extends Plugin {
     // Get the CID stored at this domain
     let hash;
     try {
-      hash = await callView(
+      hash = await callContractView(
         resolverAddress,
         resolverAbi.contenthash,
         [domainNode],
@@ -165,7 +167,7 @@ export class EnsPlugin extends Plugin {
     } catch (e) {
       try {
         // Fallback, contenthash doesn't exist, try content
-        hash = await callView(
+        hash = await callContractView(
           resolverAddress,
           resolverAbi.content,
           [domainNode],
