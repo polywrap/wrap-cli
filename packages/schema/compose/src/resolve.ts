@@ -199,47 +199,39 @@ const extractObjectImportDependencies = (
           return def;
         }
 
-        const processType = (type: string): string => {
-          const namespaceType = appendNamespace(namespace, type);
+        const type = def.type;
 
-          if (!importsFound[namespaceType]) {
-            // Find the import
-            const importFound = findImport(
-              type,
-              namespaceType,
-              rootTypeInfo.objectTypes,
-              rootTypeInfo.importedObjectTypes,
-              DefinitionKind.ImportedObject
-            ) as ImportedObjectDefinition;
-  
-            // Keep track of it
-            importsFound[importFound.type] = importFound;
-  
-            // Traverse this newly added object
-            visitObjectDefinition(importFound, {
-              ...extractObjectImportDependencies(
-                importsFound,
-                rootTypeInfo,
-                namespace,
-                uri
-              ),
-              leave: {
-                PropertyDefinition: (def: PropertyDefinition) => {
-                  populatePropertyType(def);
-                  return def;
-                },
+        const namespaceType = appendNamespace(namespace, type);
+
+        if (!importsFound[namespaceType]) {
+          // Find the import
+          const importFound = findImport(
+            type,
+            namespaceType,
+            rootTypeInfo.objectTypes,
+            rootTypeInfo.importedObjectTypes,
+            DefinitionKind.ImportedObject
+          ) as ImportedObjectDefinition;
+
+          // Keep track of it
+          importsFound[importFound.type] = importFound;
+
+          // Traverse this newly added object
+          visitObjectDefinition(importFound, {
+            ...extractObjectImportDependencies(
+              importsFound,
+              rootTypeInfo,
+              namespace,
+              uri
+            ),
+            leave: {
+              PropertyDefinition: (def: PropertyDefinition) => {
+                populatePropertyType(def);
+                return def;
               },
-            });
-  
-            // importFound.interfaces = importFound.interfaces.map(x => ({
-            //   type: processType(x.type)
-            // }));
-          }
-
-          return namespaceType;
-        };
-
-        processType(def.type);
+            },
+          });
+        }
 
         return def;
       },
@@ -248,47 +240,39 @@ const extractObjectImportDependencies = (
           return def;
         }
 
-        const processType = (type: string): string => {
-          const namespaceType = appendNamespace(namespace, type);
+        const type = def.type;
+       
+        const namespaceType = appendNamespace(namespace, type);
 
-          if (!importsFound[namespaceType]) {
-            // Find the import
-            const importFound = findImport(
-              type,
-              namespaceType,
-              rootTypeInfo.objectTypes,
-              rootTypeInfo.importedObjectTypes,
-              DefinitionKind.ImportedObject
-            ) as ImportedObjectDefinition;
-  
-            // Keep track of it
-            importsFound[importFound.type] = importFound;
-  
-            // Traverse this newly added object
-            visitObjectDefinition(importFound, {
-              ...extractObjectImportDependencies(
-                importsFound,
-                rootTypeInfo,
-                namespace,
-                uri
-              ),
-              leave: {
-                PropertyDefinition: (def: PropertyDefinition) => {
-                  populatePropertyType(def);
-                  return def;
-                },
+        if (!importsFound[namespaceType]) {
+          // Find the import
+          const importFound = findImport(
+            type,
+            namespaceType,
+            rootTypeInfo.objectTypes,
+            rootTypeInfo.importedObjectTypes,
+            DefinitionKind.ImportedObject
+          ) as ImportedObjectDefinition;
+
+          // Keep track of it
+          importsFound[importFound.type] = importFound;
+
+          // Traverse this newly added object
+          visitObjectDefinition(importFound, {
+            ...extractObjectImportDependencies(
+              importsFound,
+              rootTypeInfo,
+              namespace,
+              uri
+            ),
+            leave: {
+              PropertyDefinition: (def: PropertyDefinition) => {
+                populatePropertyType(def);
+                return def;
               },
-            });
-  
-            // importFound.interfaces = importFound.interfaces.map(x => crea({
-            //   type: processType(x.type)
-            // }));
-          }
-
-          return namespaceType;
-        };
-
-        processType(def.type);
+            },
+          });
+        }
 
         return def;
       },
@@ -582,14 +566,6 @@ async function resolveExternalImports(
         nativeType: type.type,
       };
 
-      const baseImportedType = typesToImport[namespacedType];
-
-      if('interfaces' in baseImportedType) {
-        // baseImportedType.interfaces = baseImportedType.interfaces.map(x => ({
-        //   type: appendNamespace(namespace, x.type)
-        // }));
-      }
-      
       // Extract all object dependencies
       visitorFunc(
         type,
