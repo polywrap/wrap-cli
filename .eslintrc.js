@@ -85,18 +85,86 @@ module.exports = {
       }
     ]
   },
-  "overrides": [
+  overrides: [
     {
-      "files": ["**/__tests__/**/*.ts", "*.spec.ts"],
-      "rules": {
+      files: ["**/__tests__/**/*.ts", "*.spec.ts"],
+      rules: {
         "import/no-extraneous-dependencies": "off"
       }
     },
     {
-      "files": ["*.d.ts"],
-      "rules": {
+      files: ["*.d.ts"],
+      rules: {
         "@typescript-eslint/triple-slash-reference": "off"
       }
-    }
+    },
+    {
+      files: ["*.graphql"],
+      parser: "@graphql-eslint/eslint-plugin",
+      plugins: ["@graphql-eslint"],
+      parserOptions: {
+        schema: ["./src/**/*.graphql"],
+        operations: ["./src/**/*.graphql"],
+      },
+      rules: {
+        "prettier/prettier": [2, {parser: "graphql"}],
+        "@graphql-eslint/avoid-typename-prefix": ["warn"],
+        "@graphql-eslint/no-unused-fields": ["warn"],
+        "@graphql-eslint/no-deprecated": ["warn"],
+        "@graphql-eslint/no-hashtag-description": ["error"],
+        "@graphql-eslint/require-deprecation-reason": ["error"],
+        "@graphql-eslint/no-case-insensitive-enum-values-duplicates": ["error"],
+        "@graphql-eslint/description-style": ["error", {"style":"inline"}],
+        "@graphql-eslint/avoid-duplicate-fields": ["error"],
+        "@graphql-eslint/naming-convention": ["error",
+          {
+            "FieldDefinition":"camelCase",
+            "InputObjectTypeDefinition":"PascalCase",
+            "EnumValueDefinition":"camelCase",
+            "InputValueDefinition":"camelCase",
+            "ObjectTypeDefinition":"PascalCase",
+            "InterfaceTypeDefinition":"PascalCase",
+            "EnumTypeDefinition":"PascalCase",
+            "UnionTypeDefinition":"PascalCase",
+            "ScalarTypeDefinition":"PascalCase",
+            "OperationDefinition":"PascalCase",
+            "FragmentDefinition":"PascalCase",
+            "QueryDefinition":"PascalCase",
+            "leadingUnderscore":"forbid",
+            "trailingUnderscore":"forbid"
+          }],
+        "@graphql-eslint/known-argument-names": ["error"],
+        "@graphql-eslint/known-directives": ["warn"],
+        "@graphql-eslint/known-type-names": ["error"],
+        "@graphql-eslint/known-fragment-names": ["warn"],
+        "@graphql-eslint/no-fragment-cycles": ["warn"],
+        "@graphql-eslint/no-undefined-variables": ["warn"],
+        "@graphql-eslint/no-unused-fragments": ["warn"],
+        "@graphql-eslint/no-unused-variables": ["warn"],
+        "@graphql-eslint/overlapping-fields-can-be-merged": ["warn"],
+        "@graphql-eslint/possible-fragment-spread": ["warn"],
+        "@graphql-eslint/possible-type-extension": ["error"],
+        "@graphql-eslint/provided-required-arguments": ["warn"],
+        "@graphql-eslint/scalar-leafs": ["warn"],
+        "@graphql-eslint/one-field-subscriptions": ["warn"],
+        "@graphql-eslint/unique-argument-names": ["error"],
+        "@graphql-eslint/unique-directive-names": ["warn"],
+        "@graphql-eslint/unique-directive-names-per-location": ["error"],
+        "@graphql-eslint/unique-enum-value-names": ["error"],
+        "@graphql-eslint/unique-field-definition-names": ["error"],
+        "@graphql-eslint/unique-input-field-names": ["error"],
+        "@graphql-eslint/unique-type-names": ["error"],
+        "@graphql-eslint/unique-variable-names": ["error"],
+        "@graphql-eslint/value-literals-of-correct-type": ["warn"],
+        "@graphql-eslint/variables-are-input-types": ["warn"],
+        "@graphql-eslint/variables-in-allowed-position": ["warn"]
+      },
+    },
+    {
+      files: ['*.js/*.graphql'],
+      rules: {
+        'prettier/prettier': 0
+      }
+    },
   ]
 };
