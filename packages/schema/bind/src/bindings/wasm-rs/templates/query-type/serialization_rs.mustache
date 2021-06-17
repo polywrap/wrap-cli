@@ -1,0 +1,10 @@
+use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
+
+{{#methods}}
+#[derive(Debug)]
+pub struct Input_{{name}} {
+    {{#arguments}}
+    {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
+    {{/arguments}}
+}
+{{/methods}}
