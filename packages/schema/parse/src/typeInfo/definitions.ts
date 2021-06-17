@@ -15,7 +15,7 @@ export enum DefinitionKind {
   ImportedQuery = 1 << 8,
   ImportedEnum = 1 << 9,
   ImportedObject = (1 << 10) | DefinitionKind.Object,
-  InterfaceImplemented = 1 << 11
+  InterfaceImplemented = 1 << 11,
 }
 
 export function isKind(type: GenericDefinition, kind: DefinitionKind): boolean {
@@ -49,8 +49,8 @@ export function createObjectDefinition(args: {
   type: string;
   name?: string | null;
   required?: boolean;
-  properties?: PropertyDefinition[],
-  interfaces?: InterfaceImplementedDefinition[]
+  properties?: PropertyDefinition[];
+  interfaces?: InterfaceImplementedDefinition[];
 }): ObjectDefinition {
   return {
     ...createGenericDefinition(args),

@@ -41,11 +41,13 @@ const visitorEnter = (
     }
 
     const imports = parseImportsDirective(nodeName, node);
-    
+
     const query = createQueryDefinition({
       type: nodeName,
       imports,
-      interfaces: node.interfaces?.map(x => createInterfaceImplementedDefinition({ type: x.name.value }))
+      interfaces: node.interfaces?.map((x) =>
+        createInterfaceImplementedDefinition({ type: x.name.value })
+      ),
     });
     queryTypes.push(query);
     state.currentQuery = query;
@@ -85,11 +87,14 @@ const visitorEnter = (
   },
 });
 
-const parseImportsDirective = (nodeName: string, node: ObjectTypeDefinitionNode): { type: string }[] => {
+const parseImportsDirective = (
+  nodeName: string,
+  node: ObjectTypeDefinitionNode
+): { type: string }[] => {
   // Look for the imports directive, and gather imported types
   const imports: { type: string }[] = [];
 
-  if(!node.directives) {
+  if (!node.directives) {
     return imports;
   }
 

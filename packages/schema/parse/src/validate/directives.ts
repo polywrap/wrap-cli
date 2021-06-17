@@ -131,7 +131,7 @@ export function importsDirective(astNode: DocumentNode): void {
         ObjectTypeDefinition(node as ObjectTypeDefinitionNode);
       } else if (node.kind === "Directive") {
         Directive(node as DirectiveNode, key, parent, path);
-      } else if(node.kind !== "NamedType" && node.kind !== "Name") {
+      } else if (node.kind !== "NamedType" && node.kind !== "Name") {
         isInsideObjectTypeDefinition = false;
       }
     },
@@ -202,11 +202,12 @@ export function importedDirective(astNode: ASTNode): void {
     ) => {
       if (node.kind === "Directive") {
         Directive(node as DirectiveNode, key, parent, path);
-      }
-      else if(node.kind === "ObjectTypeDefinition" || node.kind === "EnumTypeDefinition") {
+      } else if (
+        node.kind === "ObjectTypeDefinition" ||
+        node.kind === "EnumTypeDefinition"
+      ) {
         isInsideObjectOrEnumTypeDefinition = true;
-      }
-      else if(node.kind !== "NamedType" && node.kind !== "Name") {
+      } else if (node.kind !== "NamedType" && node.kind !== "Name") {
         isInsideObjectOrEnumTypeDefinition = false;
       }
     },

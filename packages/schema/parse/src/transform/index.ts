@@ -49,7 +49,9 @@ export interface TypeInfoTransformer {
   ImportedObjectDefinition?: (
     def: ImportedObjectDefinition
   ) => ImportedObjectDefinition;
-  InterfaceImplementedDefinition?: (def: InterfaceImplementedDefinition) => InterfaceImplementedDefinition;
+  InterfaceImplementedDefinition?: (
+    def: InterfaceImplementedDefinition
+  ) => InterfaceImplementedDefinition;
 }
 
 export function transformTypeInfo(
@@ -342,8 +344,14 @@ export function transformType<TDefinition extends GenericDefinition>(
   ) {
     result = Object.assign(result, ImportedObjectDefinition(result as any));
   }
-  if (InterfaceImplementedDefinition && isKind(result, DefinitionKind.InterfaceImplemented)) {
-    result = Object.assign(result, InterfaceImplementedDefinition(result as any));
+  if (
+    InterfaceImplementedDefinition &&
+    isKind(result, DefinitionKind.InterfaceImplemented)
+  ) {
+    result = Object.assign(
+      result,
+      InterfaceImplementedDefinition(result as any)
+    );
   }
 
   return result;

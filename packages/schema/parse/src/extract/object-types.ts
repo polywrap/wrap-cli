@@ -45,10 +45,12 @@ const visitorEnter = (
     }
 
     // Create a new TypeDefinition
-    const type = createObjectDefinition({ 
+    const type = createObjectDefinition({
       type: node.name.value,
-      interfaces: node.interfaces?.map(x => createInterfaceImplementedDefinition({ type: x.name.value }))
-     });
+      interfaces: node.interfaces?.map((x) =>
+        createInterfaceImplementedDefinition({ type: x.name.value })
+      ),
+    });
     objectTypes.push(type);
     state.currentType = type;
   },
