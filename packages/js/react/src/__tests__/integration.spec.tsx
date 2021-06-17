@@ -15,7 +15,7 @@ import { GetPathToTestApis } from "@web3api/test-cases";
 import React from "react";
 import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 
-jest.setTimeout(60000);
+jest.setTimeout(360000);
 
 describe("Web3API React Integration", () => {
   let redirects: UriRedirect[];
