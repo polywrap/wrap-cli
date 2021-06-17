@@ -34,6 +34,8 @@ type Query implements Interface_Query @imports(
     "Namespace_CustomEnum",
     "Namespace_Imported_Enum",
     "Interface_Query",
+    "Interface_QueryInterfaceArgument",
+    "Interface_NestedQueryInterfaceArgument",
     "Interface_InterfaceObject2",
     "Interface_Object",
     "Interface_NestedInterfaceObject"
@@ -51,7 +53,7 @@ type Query implements Interface_Query @imports(
   ): [Int64!]!
 
   abstractQueryMethod(
-    arg: UInt8!
+    arg: Interface_QueryInterfaceArgument!
   ): Interface_InterfaceObject2!
 }
 
@@ -184,7 +186,7 @@ type Interface_Query @imported(
   nativeType: "Query"
 ) {
   abstractQueryMethod(
-    arg: UInt8!
+    arg: Interface_QueryInterfaceArgument!
   ): Interface_InterfaceObject2!
 }
 
@@ -310,6 +312,23 @@ type Namespace_Imported_ObjectType @imported(
   nativeType: "Imported_ObjectType"
 ) {
   prop: String!
+}
+
+type Interface_QueryInterfaceArgument implements Interface_NestedQueryInterfaceArgument @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "QueryInterfaceArgument"
+) {
+  str: String!
+  uint8: UInt8!
+}
+
+type Interface_NestedQueryInterfaceArgument @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "NestedQueryInterfaceArgument"
+) {
+  uint8: UInt8!
 }
 
 type Interface_InterfaceObject2 implements Interface_NestedInterfaceObject @imported(

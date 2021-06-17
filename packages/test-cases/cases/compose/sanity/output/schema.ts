@@ -30,6 +30,8 @@ export const typeInfo: TypeInfo = {
         { type: "Namespace_CustomEnum" },
         { type: "Namespace_Imported_Enum" },
         { type: "Interface_Query" },
+        { type: "Interface_QueryInterfaceArgument" },
+        { type: "Interface_NestedQueryInterfaceArgument" },
         { type: "Interface_InterfaceObject2" },
         { type: "Interface_Object" },
         { type: "Interface_NestedInterfaceObject" },
@@ -120,10 +122,10 @@ export const typeInfo: TypeInfo = {
             })
           }),
           arguments: [
-            createScalarPropertyDefinition({
+            createObjectPropertyDefinition({
               name: "arg",
               required: true,
-              type: "UInt8"
+              type: "Interface_QueryInterfaceArgument"
             })
           ]
         }
@@ -542,10 +544,10 @@ export const typeInfo: TypeInfo = {
             })
           }),
           arguments: [
-            createScalarPropertyDefinition({
+            createObjectPropertyDefinition({
               name: "arg",
               required: true,
-              type: "UInt8"
+              type: "Interface_QueryInterfaceArgument"
             }),
           ]
         },
@@ -968,6 +970,32 @@ export const typeInfo: TypeInfo = {
         type: "Namespace_Imported_ObjectType"
       }),
       properties: [createScalarPropertyDefinition({ name: "prop", type: "String", required: true })],
+    },
+    {
+      ...createImportedObjectDefinition({
+        uri: "interface.eth",
+        namespace: "Interface",
+        nativeType: "QueryInterfaceArgument",
+        type: "Interface_QueryInterfaceArgument"
+      }),
+      interfaces: [
+        createInterfaceImplementedDefinition({ type: "Interface_NestedQueryInterfaceArgument" })
+      ],
+      properties: [
+        createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
+      ]
+    },
+    {
+      ...createImportedObjectDefinition({
+        uri: "interface.eth",
+        namespace: "Interface",
+        nativeType: "NestedQueryInterfaceArgument",
+        type: "Interface_NestedQueryInterfaceArgument"
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
+      ]
     },
     {
       ...createImportedObjectDefinition({

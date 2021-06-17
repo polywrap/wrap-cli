@@ -32,8 +32,17 @@ type Mutation {
 
 type Query {
   abstractQueryMethod(
-    arg: UInt8!
+    arg: QueryInterfaceArgument!
   ): InterfaceObject2!
+}
+
+type QueryInterfaceArgument implements NestedQueryInterfaceArgument {
+  str: String!
+  uint8: UInt8!
+}
+
+type NestedQueryInterfaceArgument {
+  uint8: UInt8!
 }
 
 type InterfaceObject1 {
