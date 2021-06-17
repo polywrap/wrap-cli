@@ -70,7 +70,6 @@ describe("Web3ApiClient", () => {
         }
       `,
     });
-
     expect(deploy.errors).toBeFalsy();
     expect(deploy.data).toBeTruthy();
     expect(deploy.data?.deployContract.indexOf("0x")).toBeGreaterThan(-1);

@@ -198,11 +198,11 @@ export class Compiler {
       };
     }
 
-    outputWeb3ApiManifest.build = "./web3api.build.yaml";
+    outputWeb3ApiManifest.build = "./web3api.build.json";
 
     await outputManifest(
       outputWeb3ApiManifest,
-      `${outputDir}/web3api.yaml`,
+      `${outputDir}/web3api.json`,
       project.quiet
     );
 
@@ -215,7 +215,7 @@ export class Compiler {
 
     await outputManifest(
       outputBuildManifest,
-      `${outputDir}/web3api.build.yaml`,
+      `${outputDir}/web3api.build.json`,
       project.quiet
     );
   }

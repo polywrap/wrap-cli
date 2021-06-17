@@ -21,9 +21,18 @@ import { Tracer } from "@web3api/tracing-js";
 export const deserialize{{type}} = Tracer.traceFunc(
   "core: deserialize{{type}}",
   (manifest: string, options?: DeserializeManifestOptions): {{type}} => {
-    const any{{type}} = YAML.safeLoad(manifest) as
+    let any{{type}}: Any{{type}} | undefined;
+    if (options?.json) {
+      try {
+        any{{type}} = JSON.parse(manifest) as Any{{type}};
+      } catch (e) {
+        any{{type}} = undefined;
+      }
+    } else {
+      any{{type}} = YAML.safeLoad(manifest) as
       | Any{{type}}
       | undefined;
+    }
 
     if (!any{{type}}) {
       throw Error(`Unable to parse {{type}}: ${manifest}`);

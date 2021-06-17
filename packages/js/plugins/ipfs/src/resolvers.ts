@@ -29,6 +29,19 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
     }
 
     if (IpfsPlugin.isCID(input.path)) {
+      // Try fetching uri/web3api.json
+      try {
+        return {
+          manifest: await ipfs.catToString(`${input.path}/web3api.json`, {
+            timeout: 5000,
+          }),
+          uri: null,
+        };
+      } catch (e) {
+        // TODO: logging
+        // https://github.com/web3-api/monorepo/issues/33
+      }
+
       // Try fetching uri/web3api.yaml
       try {
         return {

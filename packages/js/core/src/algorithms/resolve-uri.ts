@@ -143,6 +143,7 @@ export const resolveUri = Tracer.traceFunc(
         // meaning the URI resolver can also be used as an API resolver
         const manifest = deserializeWeb3ApiManifest(manifestStr, {
           noValidate,
+          json: manifestStr.startsWith("{"),
         });
 
         return Tracer.traceFunc(
