@@ -47,6 +47,7 @@ type Mutation implements Interface_Mutation @imports(
     optStr: String
     u: UInt!
     uArrayArray: [[UInt]]!
+    implObject: LocalImplementationObject!
   ): String!
 
   method2(
@@ -87,6 +88,15 @@ type ImplementationObject implements Interface_InterfaceObject1 & Interface_Inte
   uint8: UInt8!
   str2: String!
   object: Interface_Object
+}
+
+type LocalImplementationObject implements LocalInterfaceObject {
+  uint8: UInt8!
+  str: String!
+}
+
+type LocalInterfaceObject {
+  str: String!
 }
 
 type CommonType {

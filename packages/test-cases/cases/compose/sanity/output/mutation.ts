@@ -81,7 +81,12 @@ export const typeInfo: TypeInfo = {
                   type: "UInt"
                 })
               })
-            })
+            }),
+            createObjectPropertyDefinition({
+              name: "implObject",
+              required: true,
+              type: "LocalImplementationObject"
+            }),
           ]
         },
         {
@@ -216,6 +221,26 @@ export const typeInfo: TypeInfo = {
         createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
         createScalarPropertyDefinition({ name: "str2", type: "String", required: true }),
         createObjectPropertyDefinition({ name: "object", type: "Interface_Object", required: false }),
+      ]
+    },
+    {
+      ...createObjectDefinition({
+        type: "LocalImplementationObject",
+        interfaces: [
+          createInterfaceImplementedDefinition({ type: "LocalInterfaceObject" }),
+        ]
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
+        createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
+      ]
+    },
+    {
+      ...createObjectDefinition({
+        type: "LocalInterfaceObject",
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
       ]
     },
     {

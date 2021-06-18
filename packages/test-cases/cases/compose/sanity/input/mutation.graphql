@@ -9,6 +9,7 @@ type Mutation implements Interface_Mutation {
     optStr: String
     u: UInt!
     uArrayArray: [[UInt]]!
+    implObject: LocalImplementationObject!
   ): String!
 
   method2(
@@ -41,4 +42,12 @@ type AnotherMutationType {
 
 type ImplementationObject implements Interface_InterfaceObject1 & Interface_InterfaceObject2 {
   anotherProp: String
+}
+
+type LocalImplementationObject implements LocalInterfaceObject {
+  uint8: UInt8!
+}
+
+type LocalInterfaceObject {
+  str: String!
 }
