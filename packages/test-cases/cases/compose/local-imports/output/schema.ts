@@ -13,6 +13,10 @@ import {
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
+  environment: {
+    query: {},
+    mutation: {},
+  },
   importedObjectTypes: [],
   importedEnumTypes: [],
   importedQueryTypes: [],
