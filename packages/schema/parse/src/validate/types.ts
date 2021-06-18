@@ -107,6 +107,13 @@ export function propertyTypes(astNode: DocumentNode): void {
         }
       },
       FieldDefinition: (node) => {
+        if (
+          node.name.value === "sanitizeMutationEnv" ||
+          node.name.value === "sanitizeQueryEnv"
+        ) {
+          return;
+        }
+
         currentField = node.name.value;
       },
       NamedType: (node) => {

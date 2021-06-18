@@ -235,11 +235,32 @@ export const output: TypeInfo = {
   ],
   queryTypes: [
     {
+      ...createQueryDefinition({ type: "Mutation" }),
+      methods: [
+        {
+          ...createMethodDefinition({
+            type: "mutation",
+            name: "sanitizeMutationEnv",
+            return: createObjectPropertyDefinition({ name: "sanitizeMutationEnv", type: "MutationEnv", required: true }),
+            arguments: [createObjectPropertyDefinition({ name: "env", type: "MutationClientEnv", required: true })],
+          })
+        },
+      ],
+    },
+    {
       ...createQueryDefinition({
         type: "Query",
         imports: [{ type: "TestImport_Query" }]
       }),
       methods: [
+        {
+          ...createMethodDefinition({
+            type: "query",
+            name: "sanitizeQueryEnv",
+            return: createObjectPropertyDefinition({ name: "sanitizeQueryEnv", type: "QueryEnv", required: true }),
+            arguments: [createObjectPropertyDefinition({ name: "env", type: "QueryClientEnv", required: true })],
+          })
+        },
         {
           ...createMethodDefinition({
             type: "query",

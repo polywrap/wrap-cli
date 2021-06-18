@@ -4,6 +4,7 @@ import { TypeInfoTransforms, transformTypeInfo } from "./transform";
 import { finalizePropertyDef } from "./transform/finalizePropertyDef";
 import { validators, SchemaValidator } from "./validate";
 import { Blackboard } from "./extract/Blackboard";
+import { validateEnvironment } from "./validate/environment";
 
 import { parse } from "graphql";
 
@@ -61,6 +62,8 @@ export function parseSchema(
       info = transformTypeInfo(info, transform);
     }
   }
+
+  validateEnvironment(info);
 
   return info;
 }

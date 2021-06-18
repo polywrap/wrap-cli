@@ -86,9 +86,15 @@ type MutationClientEnv {
   prop: String
 }
 
+type Mutation {
+  sanitizeMutationEnv(env: MutationClientEnv!): MutationEnv!
+}
+
 type Query @imports(
   types: [ "TestImport_Query" ]
 ) {
+  sanitizeQueryEnv(env: QueryClientEnv!): QueryEnv!
+
   queryMethod(
     arg: String!
   ): [Int]!
