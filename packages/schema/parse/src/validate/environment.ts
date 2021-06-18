@@ -13,7 +13,7 @@ export function validateEnvironment(info: TypeInfo): void {
 export function validateQueryEnvironment(info: TypeInfo): void {
   if (!info.environment.query.sanitized) {
     throw new Error(
-      `Client enviroment type '${EnvironmentType.MutationClientEnvType}' should have matching sanitized enviroment type '${EnvironmentType.QueryEnvType}'`
+      `Client environment type '${EnvironmentType.QueryClientEnvType}' should have matching sanitized environment type '${EnvironmentType.QueryEnvType}'`
     );
   }
 
@@ -60,7 +60,7 @@ export function validateQueryEnvironment(info: TypeInfo): void {
 export function validateMutationEnvironment(info: TypeInfo): void {
   if (!info.environment.mutation.sanitized) {
     throw new Error(
-      `Client enviroment type '${EnvironmentType.MutationClientEnvType}' should have matching sanitized enviroment type '${EnvironmentType.MutationEnvType}'`
+      `Client environment type '${EnvironmentType.MutationClientEnvType}' should have matching sanitized environment type '${EnvironmentType.MutationEnvType}'`
     );
   }
 
@@ -99,7 +99,7 @@ export function validateMutationEnvironment(info: TypeInfo): void {
     sanitizeEnvMethod.return.required === false
   ) {
     throw new Error(
-      `'sanitizeMutationEnv' mutation method should return type '${EnvironmentType.MutationEnvType}'`
+      `'sanitizeMutationEnv' mutation method should have required return type '${EnvironmentType.MutationEnvType}'`
     );
   }
 }
