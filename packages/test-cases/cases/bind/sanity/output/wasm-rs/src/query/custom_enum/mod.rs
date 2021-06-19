@@ -1,14 +1,14 @@
-use std::io::{Error, ErrorKind, Result};
+use std::io::Result;
 
 pub enum CustomEnum {
     STRING,
     BYTES,
-    _MAX_,
+    _MAX_(i32),
 }
 
 impl CustomEnum {
-    pub fn sanitize_custom_enum_value(value: Self) -> Result<()> {
-        let valid = value == Self::STRING || value == Self::BYTES || value == Self::_MAX_;
+    pub fn sanitize_custom_enum_value(&mut self, value: i32) -> Result<()> {
+        let valid = value >= 0 && value < CustomEnum::_MAX_(i32);
         if !valid {
             let custom_error =
                 format!("Invalid value for enum 'CustomEnum': {}", value.to_string());
@@ -17,7 +17,7 @@ impl CustomEnum {
         Ok(())
     }
 
-    pub fn get_custom_enum_value(key: &str) -> Result<Self> {
+    pub fn get_custom_enum_value(&self, key: &str) -> Result<Self> {
         if key == "STRING" {
             return Ok(Self::STRING);
         }

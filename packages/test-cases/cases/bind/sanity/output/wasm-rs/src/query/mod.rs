@@ -6,3 +6,4 @@ mod query;
 
 pub use another_type::AnotherType;
 pub use custom_enum::CustomEnum;
+pub use custom_type::CustomType;

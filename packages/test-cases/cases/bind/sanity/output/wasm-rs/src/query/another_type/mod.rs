@@ -1,12 +1,20 @@
+use super::CustomType;
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use num_bigint::BigInt;
 
-pub struct AnotherType<T> {
+pub struct AnotherType {
     prop: Option<String>,
-    circular: Option<T>,
+    circular: Option<CustomType>,
 }
 
-impl AnotherType<T> {
+impl AnotherType {
+    pub fn new() -> Self {
+        Self {
+            prop: None,
+            circular: None,
+        }
+    }
+
     pub fn serialize_another_type(&mut self) -> Vec<u8> {
         let mut sizer_context = Context::new();
         sizer_context.description = "Serializing (sizing) object-type: AnotherType".to_string();
@@ -24,17 +32,16 @@ impl AnotherType<T> {
         writer.write_map_length(2);
         writer
             .context()
-            .push("prop", "string || None", "writing property");
+            .push("prop", "Option<String>", "writing property");
         writer.write_string("prop".to_string());
         writer.write_nullable_string(self.prop.clone());
         writer.context().pop();
         writer
             .context()
-            .push("circular", "Some(CustomType) || None", "writing property");
+            .push("circular", "Option<CustomType>", "writing property");
         writer.write_string("circular".to_string());
         if self.circular.is_some() {
-            //FIXME
-            //Types.CustomType.write(writer, type.circular as Types.CustomType);
+            // TODO: Types.CustomType.write(writer, type.circular as Types.CustomType);
         } else {
             writer.write_nil();
         }
@@ -62,7 +69,7 @@ impl AnotherType<T> {
             if field == "prop".to_string() {
                 reader.context().push(
                     field.as_str(),
-                    "Some(String) || None",
+                    "Option<String>",
                     "type found, reading property",
                 );
                 prop = reader.read_nullable_string();
@@ -70,12 +77,11 @@ impl AnotherType<T> {
             } else if field == "circular" {
                 reader.context().push(
                     field.as_str(),
-                    "Some(T) || None",
+                    "Option<String>",
                     "type found, reading property",
                 );
                 if !reader.is_next_nil() {
-                    //FIXME
-                    //circular = Types.CustomType.read(reader);
+                    // TODO: circular = Types.CustomType.read(reader);
                 }
                 reader.context().pop();
             }
