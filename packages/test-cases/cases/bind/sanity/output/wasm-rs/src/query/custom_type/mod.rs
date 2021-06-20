@@ -844,18 +844,19 @@ impl CustomType {
     }
 
     pub fn to_buffer(&mut self) -> Vec<u8> {
-        todo!()
+        self.serialize_custom_type()
     }
 
-    pub fn from_buffer(&mut self) -> Self {
-        todo!()
+    pub fn from_buffer(&mut self, buffer: Vec<u8>) -> Self {
+        self.deserialize_custom_type(buffer)
     }
 
     pub fn write<W: Write>(&mut self, writer: W) {
-        todo!()
+        self.write_custom_type(writer);
     }
 
     pub fn read<R: Read>(&mut self, reader: R) -> Self {
-        todo!()
+        self.read_custom_type(reader)
+            .expect("Failed to read CustomType")
     }
 }

@@ -1,4 +1,5 @@
 mod another_type;
+mod common;
 mod custom_enum;
 mod custom_type;
 mod entry;

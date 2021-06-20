@@ -41,7 +41,7 @@ impl AnotherType {
             .push("circular", "Option<CustomType>", "writing property");
         writer.write_string("circular".to_string());
         if self.circular.is_some() {
-            // TODO: Types.CustomType.write(writer, type.circular as Types.CustomType);
+            self.circular.unwrap().write(writer.clone());
         } else {
             writer.write_nil();
         }
@@ -57,8 +57,8 @@ impl AnotherType {
 
     pub fn read_another_type<R: Read>(&mut self, mut reader: R) -> Self {
         let mut num_of_fields = reader.read_map_length().unwrap_or_default();
-        let mut prop = None;
-        let mut circular = None;
+        let mut prop: Option<String> = None;
+        let mut circular: Option<CustomType> = None;
 
         while num_of_fields > 0 {
             num_of_fields -= 1;
@@ -77,12 +77,14 @@ impl AnotherType {
             } else if field == "circular" {
                 reader.context().push(
                     field.as_str(),
-                    "Option<String>",
+                    "Option<CustomType>",
                     "type found, reading property",
                 );
+                let mut object: Option<CustomType> = None;
                 if !reader.is_next_nil() {
-                    // TODO: circular = Types.CustomType.read(reader);
+                    object = Some(self.circular.unwrap().read(reader.clone()));
                 }
+                circular = object;
                 reader.context().pop();
             }
             reader.context().pop();
