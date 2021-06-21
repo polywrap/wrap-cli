@@ -1,5 +1,6 @@
 import {
   loadContract,
+  loadLocalContract,
   deploy
 } from "./utils";
 
@@ -10,6 +11,7 @@ const ensJSON = loadContract("ens", "ENSRegistry");
 const fifsRegistrarJSON = loadContract("ens", "FIFSRegistrar");
 const reverseRegistrarJSON = loadContract("ens", "ReverseRegistrar");
 const publicResolverJSON = loadContract("resolver", "PublicResolver");
+const polywrapRegistryJSON = loadLocalContract("PolywrapRegistry");
 
 const tld = "eth";
 
@@ -29,11 +31,15 @@ export async function deployENS(web3, accounts) {
   const reverse = await deploy(web3, accounts[0], reverseRegistrarJSON, ens._address, resolver._address);
   await setupReverseRegistrar(ens, resolver, reverse, accounts);
 
+  // PolywrapRegistry
+  const polywrapRegistry = await deploy(web3, accounts[0], polywrapRegistryJSON, ens._address);
+
   return {
     ensAddress: ens._address,
     resolverAddress: resolver._address,
     registrarAddress: registrar._address,
-    reverseAddress: reverse._address
+    reverseAddress: reverse._address,
+    polywrapRegistryAddress: polywrapRegistry._address,
   }
 }
 

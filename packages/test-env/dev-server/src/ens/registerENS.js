@@ -1,4 +1,4 @@
-import { loadContract } from "./utils"
+import { loadContract, loadLocalContract } from "./utils"
 import contentHash from 'content-hash'
 
 const utils = require("web3-utils")
@@ -7,6 +7,7 @@ const namehash = require("eth-ens-namehash");
 const ensJSON = loadContract("ens", "ENSRegistry");
 const fifsRegistrarJSON = loadContract("ens", "FIFSRegistrar");
 const publicResolverJSON = loadContract("resolver", "PublicResolver");
+const polywrapRegistryJSON = loadLocalContract("PolywrapRegistry");
 
 export async function registerENS({
   web3,
@@ -14,12 +15,15 @@ export async function registerENS({
   addresses: {
     ensAddress,
     registrarAddress,
-    resolverAddress
+    resolverAddress,
+    polywrapRegistryAddress
   },
   domain,
+  major,
+  minor,
+  patch,
   cid
 }) {
-
   const ens = new web3.eth.Contract(
     ensJSON.abi, ensAddress
   );
@@ -32,6 +36,10 @@ export async function registerENS({
     publicResolverJSON.abi, resolverAddress
   );
 
+  const polywrapRegistry = new web3.eth.Contract(
+    polywrapRegistryJSON.abi, polywrapRegistryAddress
+  );
+
   await registrar.methods.
     register(utils.sha3(domain.replace('.eth', '')), accounts[0])
     .send({ from: accounts[0] });
@@ -41,6 +49,16 @@ export async function registerENS({
     .send({ from: accounts[0] });
 
   await resolver.methods
-    .setContenthash(namehash.hash(domain), `0x${contentHash.fromIpfs(cid)}`)
+    .setText(namehash.hash(domain), 'polywrap-controller', accounts[0])
+    .send({ gas: 5000000, from: accounts[0] });
+
+  await polywrapRegistry.methods
+    .registerAPI(namehash.hash(domain))
+    .send({ gas: 5000000, from: accounts[0] });
+
+  console.log(`0x${contentHash.fromIpfs(cid)}`);
+
+  await polywrapRegistry.methods
+    .publishNewVersion(utils.keccak256(namehash.hash(domain)), major, minor, patch, `${cid}`)
     .send({ gas: 5000000, from: accounts[0] });
 }

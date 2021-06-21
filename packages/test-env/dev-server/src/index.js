@@ -69,10 +69,14 @@ router.get('/register-ens', async (req, res) => {
     accounts,
     addresses,
     domain: req.query.domain,
+    major: req.query.major,
+    minor: req.query.minor,
+    patch: req.query.patch,
     cid: req.query.cid
   });
 
   res.send({
+    message: `Published ${req.query.cid} at ${req.query.domain}/${req.query.major}.${req.query.minor}.${req.query.patch}`,
     success: true
   });
 })

@@ -6,6 +6,10 @@ export function loadContract(modName, contractName) {
   return require(`@ensdomains/${modName}/build/contracts/${contractName}`)
 }
 
+export function loadLocalContract(contractName) {
+  return require(`${__dirname}/contracts/${contractName}`)
+}
+
 export function deploy(web3, account, contractJSON, ...args) {
   const contract = new web3.eth.Contract(contractJSON.abi)
   return contract
