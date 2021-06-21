@@ -1,5 +1,8 @@
-use std::io::Result;
+// FIXME:
 
+use std::io::{Error, ErrorKind, Result};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum CustomEnum {
     STRING,
     BYTES,
@@ -12,7 +15,7 @@ impl CustomEnum {
         if !valid {
             let custom_error =
                 format!("Invalid value for enum 'CustomEnum': {}", value.to_string());
-            return Err(custom_error.into());
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         Ok(())
     }
@@ -25,17 +28,18 @@ impl CustomEnum {
             return Ok(Self::BYTES);
         }
         let custom_error = format!("Invalid key for enum 'CustomEnum': {}", key);
-        Err(custom_error.into())
+        return Err(Error::new(ErrorKind::Other, custom_error));
     }
 
-    pub fn get_custom_enum_key(value: Self) -> String {
-        if let Ok(_) = sanitize_custom_enum_value(value) {
+    pub fn get_custom_enum_key(&mut self, value: Self) -> String {
+        if let Ok(_) = self.sanitize_custom_enum_value(value) {
             return match value {
                 Self::STRING => "STRING".to_string(),
                 Self::BYTES => "BYTES".to_string(),
-                _ => {}
+                _ => {
+                    format!("Invalid value for enum 'CustomEnum': {}", value.into())
+                }
             };
         }
-        format!("Invalid value for enum 'CustomEnum': {}", value.into())
     }
 }

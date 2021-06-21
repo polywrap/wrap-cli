@@ -2,6 +2,7 @@ use super::CustomType;
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use num_bigint::BigInt;
 
+#[derive(Debug)]
 pub struct AnotherType {
     prop: Option<String>,
     circular: Option<CustomType>,
@@ -48,10 +49,10 @@ impl AnotherType {
         writer.context().pop();
     }
 
-    pub fn deserialize_another_type(&mut self, buffer: Vec<u8>) -> Self {
+    pub fn deserialize_another_type(&mut self, buffer: &[u8]) -> Self {
         let mut context = Context::new();
         context.description = "Deserializing object-type AnotherType".to_string();
-        let reader = ReadDecoder::new(buffer.as_slice(), context);
+        let reader = ReadDecoder::new(buffer, context);
         self.read_another_type(reader)
     }
 
@@ -62,31 +63,39 @@ impl AnotherType {
 
         while num_of_fields > 0 {
             num_of_fields -= 1;
-            let field = reader.read_string().unwrap_or_default();
+            let field = reader.read_string().unwrap_or_default().as_str();
+
+            match field {
+                "prop" => {
+                    reader
+                        .context()
+                        .push(field, "Option<String>", "type found, reading property");
+                    prop = reader.read_nullable_string();
+                    reader.context().pop();
+                }
+                "circular" => {
+                    reader.context().push(
+                        field,
+                        "Option<CustomType>",
+                        "type found, reading property",
+                    );
+                    let mut object: Option<CustomType> = None;
+                    if !reader.is_next_nil() {
+                        object = Some(self.circular.unwrap().read(reader.clone()));
+                    }
+                    circular = object;
+                    reader.context().pop();
+                }
+                _ => {
+                    reader
+                        .context()
+                        .push(field, "unknown", "searching for property type");
+                    reader.context().pop();
+                }
+            }
             reader
                 .context()
                 .push(field.as_str(), "unknown", "searching for property type");
-            if field == "prop".to_string() {
-                reader.context().push(
-                    field.as_str(),
-                    "Option<String>",
-                    "type found, reading property",
-                );
-                prop = reader.read_nullable_string();
-                reader.context().pop();
-            } else if field == "circular" {
-                reader.context().push(
-                    field.as_str(),
-                    "Option<CustomType>",
-                    "type found, reading property",
-                );
-                let mut object: Option<CustomType> = None;
-                if !reader.is_next_nil() {
-                    object = Some(self.circular.unwrap().read(reader.clone()));
-                }
-                circular = object;
-                reader.context().pop();
-            }
             reader.context().pop();
         }
         Self { prop, circular }
@@ -97,7 +106,7 @@ impl AnotherType {
     }
 
     pub fn from_buffer(&mut self, buffer: &[u8]) -> Self {
-        self.deserialize_another_type(buffer.to_vec())
+        self.deserialize_another_type(buffer)
     }
 
     pub fn write<W: Write>(&mut self, writer: W) {

@@ -2,9 +2,9 @@ use super::AnotherType;
 use super::CustomEnum;
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use num_bigint::BigInt;
-use std::io::Result;
+use std::io::{Error, ErrorKind, Result};
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CustomType {
     string: String,
     opt_string: Option<String>,
@@ -667,6 +667,7 @@ impl CustomType {
                     reader
                         .context()
                         .push(field, "unknown", "searching for property type");
+                    reader.context().pop();
                 }
             }
         }
@@ -675,133 +676,133 @@ impl CustomType {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'string: String'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !u_set {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'u: uint'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !uint8_set {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'uint8: u8'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !uint16_set {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'uint16: u16'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !uint32_set {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'uint32: u32'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !uint64_set {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'uint64: u64'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !i_set {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'i: int'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !int8_set {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'int8: i8'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !int16_set {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'int16: i16'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !int32_set {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'int32: i32'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !int64_set {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'int64: i64'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !bigint_set {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'bigint: BigInt'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !bytes_set {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'bytes: Vec<u8>'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !boolean_set {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'boolean: bool'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !u_array_set {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'u_array: Vec<u32>'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !u_array_array_set {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'u_array_array: Vec<Vec<u32>>'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !u_opt_array_opt_array_set {
             let custom_error = reader.context().print_with_context(
                 "Missing required property: 'u_opt_array_opt_array: Vec<Option<Vec<u64>>>'",
             );
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !u_array_opt_array_array_set {
             let custom_error = reader.context().print_with_context(
                 "Missing required property: 'u_array_opt_array_array_set: Vec<Option<Vec<Vec<u64>>>>'",
             );
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !object_set {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'object: AnotherType'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !object_array_set {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'object_array: Vec<AnotherType>'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !en_set {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'en: CustomEnum'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
         if !en_array_set {
             let custom_error = reader
                 .context()
                 .print_with_context("Missing required property: 'en_array: Vec<CustomEnum>'");
-            Err(custom_error.into())
+            return Err(Error::new(ErrorKind::Other, custom_error));
         }
 
         Ok(Self {
