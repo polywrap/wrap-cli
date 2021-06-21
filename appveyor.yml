@@ -16,7 +16,6 @@ install:
   - yarn --version
   - docker version
   - docker-compose version
-  - ps: $env:DOCKER_BUILDKIT = 1
 
 build_script:
   - yarn install --nonInteractive --frozen-lockfile --cache-folder ..\\.yarn-cache
