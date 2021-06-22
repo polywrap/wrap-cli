@@ -16,9 +16,11 @@
     "reset": "yarn clean && yarn && yarn build",
     "clean": "npx rimraf ./**/node_modules ./**/build ./**/coverage",
     "build": "lerna run build --no-private --ignore @web3api/cli* --ignore @web3api/react && lerna run build --scope @web3api/client-js --scope @web3api/react && lerna run build --scope @web3api/cli",
-    "lint": "lerna run lint",
-    "lint:fix": "lerna run lint -- --fix",
-    "lint:ci": "lerna run lint",
+    "lint": "lerna run lint && yarn lint:gql && yarn lint:json",
+    "lint:fix": "lerna run lint -- --fix && yarn lint:gql --fix",
+    "lint:ci": "lerna run lint && yarn lint:gql && yarn lint:json",
+    "lint:gql": "eslint -c ./.eslintrc.graphql.js --no-eslintrc --color --ext .graphql packages/",
+    "lint:json": "eslint -c ./.eslintrc.json.js --no-eslintrc --color --ext .json packages/",
     "test": "lerna run test --no-private --ignore @web3api/client-js && lerna run test --scope @web3api/client-js",
     "test:ci": "lerna run test:ci --no-private --ignore @web3api/client-js && lerna run test:ci --scope @web3api/client-js",
     "version:apply": "npx lerna version $(cat VERSION) --exact --no-git-tag-version --yes",
@@ -33,9 +35,10 @@
     "eslint": "7.16.0",
     "eslint-config-prettier": "7.1.0",
     "eslint-plugin-import": "2.22.1",
-    "eslint-plugin-prettier": "3.3.0",
+    "eslint-plugin-prettier": "3.4.0",
     "prettier": "2.2.1",
     "graphql": "15.5.0",
-    "@graphql-eslint/eslint-plugin": "1.0.1"
+    "@graphql-eslint/eslint-plugin": "1.0.1",
+    "eslint-plugin-json": "3.0.0"
   }
 }
