@@ -16,7 +16,7 @@ module.exports = {
   rules: {
     "prettier/prettier": ["error", {parser: "graphql"}],
     "@graphql-eslint/avoid-typename-prefix": ["warn"],
-    "@graphql-eslint/no-hashtag-description": ["warn"],
+    "@graphql-eslint/no-hashtag-description": ["off"],
     "@graphql-eslint/require-deprecation-reason": ["error"],
     "@graphql-eslint/no-case-insensitive-enum-values-duplicates": ["error"],
     "@graphql-eslint/description-style": ["warn", {"style":"inline"}],
