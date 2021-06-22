@@ -5,7 +5,10 @@ export {
   WriteEncoder,
   WriteSizer,
   Nullable,
+  Context,
 } from "./msgpack";
+
+export { BigInt } from "./BigInt";
 
 export * from "./abort";
 export * from "./invoke";

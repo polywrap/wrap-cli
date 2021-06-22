@@ -84,6 +84,11 @@ class Sanity {
     deserializeSanity(decoder, this);
   }
 
+  fromBufferInvalidTypes(buffer: ArrayBuffer): void {
+    const decoder = new ReadDecoder(buffer);
+    deserializeWithInvalidTypes(decoder, this);
+  }
+
   fromBufferWithOverflows(buffer: ArrayBuffer): void {
     const decoder = new ReadDecoder(buffer);
     deserializeWithOverflow(decoder, this);
@@ -304,6 +309,91 @@ function deserializeWithOverflow(reader: Read, type: Sanity): void {
   }
 }
 
+function deserializeWithInvalidTypes(reader: Read, type: Sanity): void {
+  let numFields = reader.readMapLength();
+
+  while (numFields > 0) {
+    numFields--;
+    const field = reader.readString();
+
+    if (field == "nil") {
+      type.nil = reader.readNullableString();
+    } else if (field == "int8") {
+      type.str = reader.readString();
+    } else if (field == "int8") {
+      type.int8 = reader.readInt8();
+    } else if (field == "int16") {
+      type.int16 = reader.readInt16();
+    } else if (field == "int32") {
+      type.int32 = reader.readInt32();
+    }
+    else if (field == "int64") {
+      type.int64 = reader.readInt64();
+    } else if (field == "uint8") {
+      type.uint8 = reader.readUInt8();
+    } else if (field == "uint16") {
+      type.uint16 = reader.readUInt16();
+    } else if (field == "uint32") {
+      type.uint32 = reader.readUInt32();
+    } else if (field == "uint64") {
+      type.uint64 = reader.readUInt64();
+    } else if (field == "boolean") {
+      type.boolean = reader.readBool();
+    } else if (field == "optUint32") {
+      type.optUint32 = reader.readNullableUInt32();
+    } else if (field == "optUint64") {
+      type.optUint64 = reader.readNullableUInt64();
+    } else if (field == "optBool") {
+      type.optBool = reader.readNullableBool();
+    } else if (field == "float32") {
+      type.float32 = reader.readFloat32();
+    } else if (field == "float64") {
+      type.float64 = reader.readFloat64();
+    } else if (field == "str") {
+      type.str = reader.readString();
+    } else if (field == "largeStr") {
+      type.largeStr = reader.readString();
+    } else if (field == "bytes") {
+      type.bytes = reader.readBytes();
+    } else if (field == "largeBytes") {
+      type.largeBytes = reader.readBytes();
+    } else if (field == "array") {
+      type.array = reader.readArray(
+        (reader: Read): u8 => {
+          return reader.readUInt8();
+        }
+      );
+    } else if (field == "largeStrArray") {
+      type.largeStrArray = reader.readArray(
+        (reader: Read): string => {
+          return reader.readString();
+        }
+      );
+    } else if (field == "largeBytesArray") {
+      type.largeBytesArray = reader.readArray(
+        (reader: Read): ArrayBuffer => {
+          return reader.readBytes();
+        }
+      );
+    } else if (field == "map") {
+      type.map = reader.readMap(
+        (reader: Read): string => {
+          return reader.readString();
+        },
+        (reader: Read): Array<i32> => {
+          return reader.readArray(
+            (reader: Read): i32 => {
+              return reader.readInt32();
+            }
+          );
+        }
+      );
+    } else {
+      throw new Error("Sanity.decode: Unknown field name '" + field + "'");
+    }
+  }
+}
+
 describe("MsgPack: Sanity", () => {
   it("Serializes & Deserializes", () => {
     const input = new Sanity();
@@ -313,13 +403,24 @@ describe("MsgPack: Sanity", () => {
     expect(output).toStrictEqual(input);
   });
 
-  // THIS SHOULD FAIL; CAN'T ASSERT EXCEPTION IS THROWN
-  // it("Serializes & Deserializes with Overflow", () => {
-  //   const input = new Sanity();
-  //   input.init();
-  //   const output = new Sanity();
-  //   output.fromBufferWithOverflows(input.toBuffer());
-  //   expect(output).toStrictEqual(input);
-  // });
+  it("Serializes & Deserializes with Overflow", () => {
+    expect(() => {
+      const input = new Sanity();
+      input.init();
+      const output = new Sanity();
+      output.fromBufferWithOverflows(input.toBuffer());
+    }).toThrow();
+  });
 
+});
+
+describe("MsgPack: Sanity", () => {
+  it("Throws error if invalid type found", () => {
+    expect(() => {
+      const input = new Sanity();
+      input.init();
+      const output = new Sanity();
+      output.fromBufferInvalidTypes(input.toBuffer());
+    }).toThrow();
+  });
 });

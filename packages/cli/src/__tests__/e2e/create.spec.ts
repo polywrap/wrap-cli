@@ -1,8 +1,9 @@
 import path from "path";
 import { supportedLangs } from "../../commands/create";
-import { clearStyle } from "./utils";
+import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
+import rimraf from "rimraf";
 
 const HELP = `
 w3 create command <project-name> [options]
@@ -28,7 +29,7 @@ describe("e2e tests for create command", () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "--help"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -39,7 +40,7 @@ describe("e2e tests for create command", () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -51,7 +52,7 @@ ${HELP}`);
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "type"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -63,7 +64,7 @@ ${HELP}`);
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "type", "lang"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -75,7 +76,7 @@ ${HELP}`);
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "unknown", "app", "name"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -87,7 +88,7 @@ ${HELP}`);
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "api", "unknown", "name"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -99,7 +100,7 @@ ${HELP}`);
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "api", "assemblyscript", "name", "-o"],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -109,13 +110,12 @@ ${HELP}`);
   });
 
   test("Should successfully generate project", async () => {
-    const rimraf = require("rimraf");
     rimraf.sync(`${projectRoot}/test`);
 
     const { exitCode: code, stdout: output } = await runCLI({
       args: ["create", "api", "assemblyscript", "test", "-o", `${projectRoot}/test`],
       cwd: projectRoot
-    }, "../../../bin/w3");
+    }, w3Cli);
 
     expect(code).toEqual(0);
     expect(clearStyle(output)).toContain(
@@ -123,5 +123,5 @@ ${HELP}`);
     );
 
     rimraf.sync(`${projectRoot}/test`);
-  }, 10000);
+  }, 60000);
 });

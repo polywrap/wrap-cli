@@ -2,7 +2,7 @@ import { Ethereum_Mutation } from "./w3/imported";
 import { Input_setData, Input_deployContract, SetDataResult } from "./w3";
 
 export function setData(input: Input_setData): SetDataResult {
-  const hash = Ethereum_Mutation.sendTransaction({
+  const receipt = Ethereum_Mutation.callContractMethodAndWait({
     address: input.options.address,
     method: "function set(uint256 value)",
     args: [input.options.value.toString()],
@@ -10,7 +10,7 @@ export function setData(input: Input_setData): SetDataResult {
   });
 
   return {
-    txReceipt: hash,
+    txReceipt: receipt.transactionHash,
     value: input.options.value
   };
 }

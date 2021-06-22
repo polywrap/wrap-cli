@@ -1,0 +1,6 @@
+[
+  {
+    "api": "ens/TBD.eth",
+    "constants": "./constants.json"
+  }
+]

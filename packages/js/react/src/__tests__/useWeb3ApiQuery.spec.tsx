@@ -6,13 +6,8 @@ import {
 import {
   UseWeb3ApiQueryProps
 } from "../query"
+import { createRedirects } from "./redirects";
 
-import {
-  renderHook,
-  act,
-  RenderHookOptions,
-  cleanup
-} from "@testing-library/react-hooks";
 import { UriRedirect } from "@web3api/core-js";
 import {
   initTestEnvironment,
@@ -21,7 +16,14 @@ import {
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
-jest.setTimeout(30000);
+import {
+  renderHook,
+  act,
+  RenderHookOptions,
+  cleanup
+} from "@testing-library/react-hooks";
+
+jest.setTimeout(360000);
 
 describe("useWeb3ApiQuery hook", () => {
   let uri: string;
@@ -31,8 +33,8 @@ describe("useWeb3ApiQuery hook", () => {
   beforeAll(async () => {
     const {
       ipfs,
-      ensAddress,
-      redirects: testRedirects,
+      ethereum,
+      ensAddress
     } = await initTestEnvironment();
 
     const { ensDomain } = await buildAndDeployApi(
@@ -42,7 +44,7 @@ describe("useWeb3ApiQuery hook", () => {
     );
 
     uri = `ens/testnet/${ensDomain}`;
-    redirects = testRedirects;
+    redirects = createRedirects(ensAddress, ethereum, ipfs);
     WrapperProvider = {
       wrapper: Web3ApiProvider,
       initialProps: {
@@ -64,6 +66,22 @@ describe("useWeb3ApiQuery hook", () => {
 
     await act(async () => {
       await hookResult.current.execute();
+    });
+
+    const result = hookResult.current;
+    cleanup();
+    return result;
+  }
+
+  async function sendQueryWithExecVariables<TData extends Record<string, unknown>>(
+    options: UseWeb3ApiQueryProps
+  ) {
+    const hook = () => useWeb3ApiQuery<TData>({ uri: options.uri, query: options.query, provider: options.provider});
+
+    const { result: hookResult } = renderHook(hook, WrapperProvider);
+
+    await act(async () => {
+      await hookResult.current.execute(options.variables);
     });
 
     const result = hookResult.current;
@@ -197,7 +215,7 @@ describe("useWeb3ApiQuery hook", () => {
     const { result } = renderHook(getDataStorageHook);
 
     expect(result.error?.message).toMatch(
-      /You are trying to use useWeb3ApiQuery with provider \"Non existent Web3API Provider\"/
+      /You are trying to use useWeb3ApiClient with provider \"Non existent Web3API Provider\"/
     );
   });
 
@@ -220,5 +238,61 @@ describe("useWeb3ApiQuery hook", () => {
     expect(result.error?.message).toMatch(
       /The requested Web3APIProvider \"other\" was not found within the DOM hierarchy/
     );
+  });
+
+  it("Should update storage data to three by setting value through variables passed to exec", async () => {
+    const deployQuery: UseWeb3ApiQueryProps = {
+      uri,
+      query: `mutation {
+        deployContract(
+          connection: {
+            networkNameOrChainId: "testnet"
+          }
+        )
+      }`,
+    };
+
+    const { data } = await sendQueryWithExecVariables<{
+      deployContract: string
+    }>(deployQuery);
+
+    const setStorageDataQuery: UseWeb3ApiQueryProps = {
+      uri,
+      query: `
+        mutation {
+          setData(
+            address: "${data?.deployContract}"
+            value: $value
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+      variables: {
+        value: 3,
+      },
+    };
+
+    const result = await sendQueryWithExecVariables(setStorageDataQuery);
+    expect(result.errors).toBeFalsy();
+    expect(result.data?.setData).toMatch(/0x/);
+
+    const getStorageDataQuery: UseWeb3ApiQueryProps = {
+      uri,
+      query: `
+        query {
+          getData(
+            address: "${data?.deployContract}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+    };
+
+    const { data: getDataData } = await sendQueryWithExecVariables(getStorageDataQuery);
+    expect(getDataData?.getData).toBe(3);
   });
 });
