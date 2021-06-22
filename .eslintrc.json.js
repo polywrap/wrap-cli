@@ -8,7 +8,7 @@ module.exports = {
   parserOptions: {
     "ecmaVersion": 2019
   },
-  ignorePatterns: ["**/w3/**/*.*", "**/__tests__/**/*.*"],
+  ignorePatterns: ["**/w3/**/*.*", "**/__tests__/**/*.*", "**/node_modules/**/*.*"],
   extends: [
     "plugin:json/recommended"
   ],
