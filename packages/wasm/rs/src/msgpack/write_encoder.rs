@@ -3,10 +3,11 @@ use super::data_view::DataView;
 use super::format::Format;
 use super::write::{Result, Write};
 use num_bigint::BigInt;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::hash::Hash;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct WriteEncoder {
     context: Context,
     view: DataView,
@@ -177,10 +178,10 @@ impl Write for WriteEncoder {
         }
     }
 
-    fn write_array<T>(&mut self, a: Vec<T>, arr_fn: fn(&T)) {
+    fn write_array<T>(&mut self, a: &[T], arr_fn: fn(&T)) {
         self.write_array_length(a.len() as u32);
         for item in a {
-            arr_fn(&item);
+            arr_fn(item);
         }
     }
 
@@ -336,7 +337,7 @@ impl Write for WriteEncoder {
         Ok(())
     }
 
-    fn write_nullable_array<T>(&mut self, a: Option<Vec<T>>, arr_fn: fn(&T)) -> Result {
+    fn write_nullable_array<T>(&mut self, a: Option<&[T]>, arr_fn: fn(&T)) -> Result {
         if a.is_none() {
             self.write_nil();
             return Ok(());

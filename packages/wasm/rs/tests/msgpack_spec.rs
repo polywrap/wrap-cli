@@ -1,7 +1,7 @@
 mod test {
     use std::collections::HashMap;
     use std::io::{Error, ErrorKind, Result};
-    use web3api_wasm_rs::{Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
+    use web3api_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
     #[derive(Debug, Clone)]
     pub struct Sanity {
@@ -78,26 +78,30 @@ mod test {
         }
 
         fn to_buffer(&mut self) -> Vec<u8> {
-            let sizer = WriteSizer::new();
+            let context = Context::new();
+            let sizer = WriteSizer::new(context.clone());
             self.serialize_sanity(sizer.clone());
             let buffer: Vec<u8> = Vec::with_capacity(sizer.length as usize);
-            let encoder = WriteEncoder::new(buffer.as_slice());
+            let encoder = WriteEncoder::new(buffer.as_slice(), context);
             self.serialize_sanity(encoder);
             buffer.to_vec()
         }
 
         fn from_buffer(&mut self, buffer: &[u8]) {
-            let decoder = ReadDecoder::new(buffer);
+            let context = Context::new();
+            let decoder = ReadDecoder::new(buffer, context);
             let _ = self.deserialize_sanity(decoder);
         }
 
         fn from_buffer_with_invalid_types(&mut self, buffer: &[u8]) {
-            let decoder = ReadDecoder::new(buffer);
+            let context = Context::new();
+            let decoder = ReadDecoder::new(buffer, context);
             let _ = self.deserialize_with_invalid_types(decoder);
         }
 
         fn from_buffer_with_overflows(&mut self, buffer: &[u8]) {
-            let decoder = ReadDecoder::new(buffer);
+            let context = Context::new();
+            let decoder = ReadDecoder::new(buffer, context);
             let _ = self.deserialize_with_overflow(decoder);
         }
 
@@ -141,7 +145,6 @@ mod test {
             let _ = writer.write_bytes(self.bytes.as_slice());
             writer.write_string("large_bytes".to_string());
             let _ = writer.write_bytes(self.large_bytes.as_slice());
-
             /* writer.write_string("array".to_string()); */
             /* writer.write_array() */
             /* writer.write_string("large_string_array") */

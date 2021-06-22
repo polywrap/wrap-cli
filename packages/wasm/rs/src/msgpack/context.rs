@@ -1,10 +1,10 @@
 //! Context stores debug information in a stack, and
 //! prints it in a clear format
 
+use serde::{Deserialize, Serialize};
 use std::io::{Error, ErrorKind, Result};
-use std::str::FromStr;
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct Context {
     pub description: String,
     nodes: Vec<Node>,
@@ -13,7 +13,7 @@ pub struct Context {
 impl Context {
     pub fn new() -> Self {
         Self {
-            description: String::from_str("context description not set").unwrap(),
+            description: "context description not set".to_string(),
             nodes: vec![],
         }
     }
@@ -38,8 +38,8 @@ impl Context {
     pub fn pop(&mut self) -> Result<String> {
         if self.is_empty() {
             return Err(Error::new(
-                ErrorKind::Other,
-                "Null pointer exception: tried to pop an item from an empty Context stack",
+                ErrorKind::NotFound,
+                "Error: tried to pop an item from an empty Context stack",
             ));
         }
         let node = self.nodes.pop().unwrap_or_default();
@@ -88,7 +88,7 @@ impl Context {
 }
 
 #[allow(dead_code)]
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct Node {
     node_item: String,
     node_type: String,
