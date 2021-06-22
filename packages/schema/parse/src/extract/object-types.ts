@@ -13,13 +13,11 @@ import {
 import { Blackboard } from "./Blackboard";
 
 import {
-  DocumentNode,
   ObjectTypeDefinitionNode,
   NonNullTypeNode,
   NamedTypeNode,
   ListTypeNode,
   FieldDefinitionNode,
-  visit,
   DirectiveNode,
 } from "graphql";
 
@@ -80,15 +78,14 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export function extractObjectTypes(
-  astNode: DocumentNode,
+export const getObjectTypesVisitor = (
   typeInfo: TypeInfo,
   blackboard: Blackboard
-): void {
+) => {
   const state: State = {};
-
-  visit(astNode, {
+  
+  return {
     enter: visitorEnter(typeInfo.objectTypes, state, blackboard),
-    leave: visitorLeave(state),
-  });
-}
+    leave: visitorLeave(state)
+  };
+};

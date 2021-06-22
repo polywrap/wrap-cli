@@ -15,14 +15,12 @@ import {
 import { Blackboard } from "./Blackboard";
 
 import {
-  DocumentNode,
   ObjectTypeDefinitionNode,
   NonNullTypeNode,
   NamedTypeNode,
   ListTypeNode,
   FieldDefinitionNode,
   InputValueDefinitionNode,
-  visit,
   DirectiveNode,
   ArgumentNode,
   ValueNode,
@@ -161,15 +159,14 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export function extractQueryTypes(
-  astNode: DocumentNode,
+export const getQueryTypesVisitor = (
   typeInfo: TypeInfo,
   blackboard: Blackboard
-): void {
+) => {
   const state: State = {};
-
-  visit(astNode, {
+  
+  return {
     enter: visitorEnter(typeInfo.queryTypes, state, blackboard),
-    leave: visitorLeave(state),
-  });
-}
+    leave: visitorLeave(state)
+  };
+};

@@ -5,7 +5,7 @@ import { finalizePropertyDef } from "./transform/finalizePropertyDef";
 import { validators, SchemaValidator } from "./validate";
 import { Blackboard } from "./extract/Blackboard";
 
-import { parse } from "graphql";
+import { ASTNode, DocumentNode, parse, visit } from "graphql";
 
 export * from "./typeInfo";
 export * from "./transform";
@@ -47,11 +47,9 @@ export function parseSchema(
 
   // Extract & Build TypeInfo
   let info = createTypeInfo();
-  const extracts = options.extractors || extractors;
 
-  for (const extract of extracts) {
-    extract(astNode, info, blackboard);
-  }
+  const extracts = options.extractors || extractors;
+  extract(astNode, info, blackboard, extracts);
 
   // Finalize & Transform TypeInfo
   info = transformTypeInfo(info, finalizePropertyDef);
@@ -64,3 +62,85 @@ export function parseSchema(
 
   return info;
 }
+
+const extract = (
+  astNode: DocumentNode,
+  typeInfo: TypeInfo,
+  blackboard: Blackboard,
+  extractors: SchemaExtractor[],
+) => {
+  const buildVisitorMaps = () => {
+    const enterVisitorMap: Record<string, any> = {};
+    const leaveVisitorMap: Record<string, any> = {};
+  
+    for(const visitor of aggregatedVisitors) {
+      if(visitor.enter) {
+        for(const type of Object.keys(visitor.enter)) {
+          if(!enterVisitorMap[type]) {
+            enterVisitorMap[type] = [];
+          } 
+  
+          enterVisitorMap[type].push(visitor.enter[type]);
+        }
+      }
+  
+      if(visitor.leave) {
+        for(const type of Object.keys(visitor.leave)) {
+          if(!leaveVisitorMap[type]) {
+            leaveVisitorMap[type] = [];
+          } 
+  
+          leaveVisitorMap[type].push(visitor.leave[type]);
+        }
+      }
+    }
+
+    return {
+      enterVisitorMap,
+      leaveVisitorMap
+    };
+  };
+
+  const buildVisitors = () => {
+    const enterVisitor: Record<string, (node: ASTNode) => void> = {};
+    const leaveVisitor: Record<string, (node: ASTNode) => void> = {};
+  
+    for(const key of Object.keys(enterVisitorMap)) {
+      enterVisitor[key] = (node) => {
+        for(const visitorType of enterVisitorMap[key]) {
+          visitorType(node);
+        }
+      };
+    }
+  
+    for(const key of Object.keys(leaveVisitorMap)) {
+      leaveVisitor[key] = (node) => {
+        for(const visitorType of leaveVisitorMap[key]) {
+          visitorType(node);
+        }
+      };
+    }
+
+    return {
+      enterVisitor,
+      leaveVisitor
+    };
+  };
+  
+  var aggregatedVisitors = extractors.map(getVisitor => getVisitor(typeInfo, blackboard));
+
+  const {
+    enterVisitorMap,
+    leaveVisitorMap
+  } = buildVisitorMaps();
+ 
+  const { 
+    enterVisitor, 
+    leaveVisitor 
+  } = buildVisitors();
+
+  visit(astNode, {
+    enter: enterVisitor,
+    leave: leaveVisitor
+  });
+};
