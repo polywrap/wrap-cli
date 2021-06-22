@@ -54,14 +54,7 @@ export function extractNamedType(
     state.nonNullType = false;
   } else if (method) {
     // Return value
-    if (!method.return) {
-      method.return = createPropertyDefinition({
-        type: "N/A",
-        name: method.name,
-      });
-
-      state.currentReturn = method.return;
-    } else if (!state.currentReturn) {
+    if (!state.currentReturn) {
       state.currentReturn = method.return;
     }
 

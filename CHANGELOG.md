@@ -1,3 +1,90 @@
+# Web3API 0.0.1-prealpha.26
+## Feature
+* `@web3api/uniswapV2-api`: Completed the Uniswap V2 Web3API implementation.
+* `@web3api/ethereum-plugin-js`: Upgraded the Ethereum plugin, added lots of new functionality.
+* `@web3api/cli`: Implemented a "reproducible build pipeline", where Web3APIs are now built in an isolated docker container. These builds can be fully configurable by developers. This also paves the way for implementing Web3APIs in any Wasm compatible language. Rust support on the way!
+* `@web3api/react`: Added the ability to set query `variables` within the `execute` function returned by the `useWeb3ApiQuery` hook.
+* `@web3api/sha3-plugin-js`: A SHA3 plugin has been implemented, and added to the client as a "default plugin".
+* `@web3api/uts46-plugin-js`: A UTS46 plugin has been implemented, and added to the client as a "default plugin".
+* CI: Windows CI has been implemented using appveyor.
+
+## Bugs
+* `@web3api/client-js`: Fixed threading issue causing the "unknown wake status" error.
+* Fixed Windows specific errors.
+
+# Web3API 0.0.1-prealpha.25
+## Feature
+* `@web3api/client-js`: Added the `WEB3API_THREAD_PATH` env variable, allowing integrators to customize where the `thread.js` worker thread module is imported from.
+* `@web3api/wasm-as`: Improved error logging w/ better error messages and a "context stack" showing exactly what properties of the MsgPack blob the serialization / deserialization is failing at.
+
+# Web3API 0.0.1-prealpha.24
+## Bugs
+* `@web3api/wasm-as`: Moved `as-bigint` from `devDependencies` to `dependencies`. Fixes [issue #347](https://github.com/Web3-API/monorepo/issues/347)
+
+# Web3API 0.0.1-prealpha.23
+## Feature
+* `@web3api/os-js`: This package contains OS agnostic code for doing things like writing files w/ consistent line endings.
+* Windows Support: The toolchain now builds and runs properly on the Windows operating system.
+* `BigInt` Schema Type: The `BigInt` type is now available for use as a base type for Web3API GraphQL schemas.
+* `@web3api/react`: The `useWeb3ApiClient` hook was added, allowing users to easily get a reference to the Web3ApiClient used by the Web3ApiProvider.
+
+# Web3API 0.0.1-prealpha.22
+## Feature
+* `@web3api/tracing-js`: The `tracing-js` package uses the [OpenTelemetry Standard](https://opentelemetry.io/) for logging trace events. This enables things like:
+  * Benchmark Timings
+  * Input Argument + Output Result Logging
+  * In-Depth Exception Tracing
+* `@web3api/core-js`: All functions are now traceable.
+* `@web3api/client-js`: All functions are now traceable.
+
+# Web3API 0.0.1-prealpha.21
+## Feature
+* Sharing code & types between `query` and `mutation` modules is now possible.
+
+## Bugs
+* Common types found in both `query` and `mutation` schemas are properly consolidated. If types have the same name, but a different structure, and error is thrown.
+
+# Web3API 0.0.1-prealpha.20
+## Bugs
+* Fix the `w3 create app react ...` template project's styling to be responsive.
+
+# Web3API 0.0.1-prealpha.19
+## Features
+* `@web3api/ipfs-plugin-js`: Added options for request timeouts, provider overrides, and fallback providers. Additionally a new method has been added, `resolve`, which allows the caller to try and resolve a given IFPS CID to ensure the document exists.
+
+# Web3API 0.0.1-prealpha.18
+## Features
+* Updated the `app/react` template project to use the latest "Hello World" Web3API published at `ens/helloworld.web3api.eth`.
+
+# Web3API 0.0.1-prealpha.17
+## Bugs
+* `@web3api/ethereum-plugin-js`: Network configurations must be nested within a property in order to allow for the `defaultNetwork` property to be set w/o causing a typing error (for not being of the `ConnectionConfig` type).
+
+# Web3API 0.0.1-prealpha.16
+## Bugs
+* `@web3api/test-env`: Expose the IPFS node's swarm port (4001).
+
+# Web3API 0.0.1-prealpha.15
+## Bugs
+* Fix `extractPluginConfigs.ts` output.
+
+# Web3API 0.0.1-prealpha.14
+## Features
+* Network Specific ENS Lookup
+  * `@web3api/ethereum-plugin-js`: The EthereumPlugin can now be constructed with multiple network connections (mainnet, rinkeby, testnet, etc).
+    * All Query & Mutation methods now accept an optional `connection` property which can be used to configure a specific network to be used for the action.
+  * `@web3api/ens-plugin-js`: The EnsPlugin can now handle URIs that address specific networks. For example: `w3://ens/testnet/myweb3api.eth`. It will request the `testnet` connection to be used when querying the Ethereum Web3API.
+
+# Web3API 0.0.1-prealpha.13
+## Features
+* Improved template projects that are used with the `w3 create ...` CLI command.
+
+# Web3API 0.0.1-prealpha.12
+## Bug Fixes
+* Added schemas to plugin manifest modules, removing the need for `import_redirects`.
+* Fixed the IpfsPlugin's `addFile` method.
+* Improved the api/assemblyscript template project.
+
 # Web3API 0.0.1-prealpha.11
 ## Bug Fixes
 * `@web3api/cli`: Include the internationalization JSON files in the published package.

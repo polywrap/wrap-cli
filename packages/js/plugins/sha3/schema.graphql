@@ -4,17 +4,14 @@ type Query {
   sha3_256(message: String!): String!
   sha3_224(message: String!): String!
 
-  keccak512(message: String!): String!
-  keccak384(message: String!): String!
-  keccak256(message: String!): String!
-  keccak224(message: String!): String!
-  
-  shake128(message: String!, outputBits: Integer!): String!
-  shake256(message: String!, outputBits: Integer!): String!
+  keccak_512(message: String!): String!
+  keccak_384(message: String!): String!
+  keccak_256(message: String!): String!
+  keccak_224(message: String!): String!
 
-  cshake128(message: String!, outputBits: Integer!, functionName: String!, customization: String!): String!
-  cshake256(message: String!, outputBits: Integer!, functionName: String!, customization: String!): String!
-  
-  kmac128(key: String! message: String!, outputBits: Integer!, customization: String!): String!
-  kmac256(key: String! message: String!, outputBits: Integer!, customization: String!): String!
+  hex_keccak_256(message: String!): String!
+  buffer_keccak_256(message: Bytes!): String!
+
+  shake_128(message: String!, outputBits: Int!): String!
+  shake_256(message: String!, outputBits: Int!): String!
 }

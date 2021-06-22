@@ -15,12 +15,21 @@ async function main() {
 
   // Deploy the contract to testnet
   const eth = new EthereumPlugin({
-    provider: "http://localhost:8545"
+    networks: {
+      testnet: {
+        provider: "http://localhost:8545"
+      },
+    },
   });
 
-  const address = await eth.deployContract(
-    contractAbi.abi, contractAbi.bytecode
-  );
+  const address = await eth.deployContract({
+    abi: contractAbi.abi,
+    bytecode: contractAbi.bytecode,
+    args: [],
+    connection: {
+      networkNameOrChainId: "testnet"
+    }
+  });
 
   console.log(`✔️ SimpleStorage live at: ${address}`)
 

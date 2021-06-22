@@ -1,11 +1,19 @@
 import { Write } from "./Write";
 import { Nullable } from "./Nullable";
+import { BigInt } from "../BigInt";
+import { Context } from "./Context";
 
 export class WriteSizer extends Write {
   length: i32;
+  private readonly _context: Context;
 
-  constructor() {
+  constructor(context: Context = new Context()) {
     super();
+    this._context = context;
+  }
+
+  context(): Context {
+    return this._context;
   }
 
   writeNil(): void {
@@ -19,9 +27,11 @@ export class WriteSizer extends Write {
   writeInt8(value: i8): void {
     this.writeInt64(<i64>value);
   }
+
   writeInt16(value: i16): void {
     this.writeInt64(<i64>value);
   }
+
   writeInt32(value: i32): void {
     this.writeInt64(<i64>value);
   }
@@ -59,7 +69,7 @@ export class WriteSizer extends Write {
       this.length += 2;
     } else if (value < 1 << 16) {
       this.length += 3;
-    } else if (value < 1 << 32) {
+    } else if (value < (<u64>1) << 32) {
       this.length += 5;
     } else {
       this.length += 9;
@@ -111,6 +121,11 @@ export class WriteSizer extends Write {
     this.length += value.byteLength;
   }
 
+  writeBigInt(value: BigInt): void {
+    const str = value.toString();
+    this.writeString(str);
+  }
+
   writeArrayLength(length: u32): void {
     if (length < 16) {
       this.length++;
@@ -121,7 +136,7 @@ export class WriteSizer extends Write {
     }
   }
 
-  writeArray<T>(a: Array<T>, fn: (sizer: WriteSizer, item: T) => void): void {
+  writeArray<T>(a: Array<T>, fn: (sizer: Write, item: T) => void): void {
     this.writeArrayLength(a.length);
     for (let i: i32 = 0; i < a.length; i++) {
       fn(this, a[i]);
@@ -140,8 +155,8 @@ export class WriteSizer extends Write {
 
   writeMap<K, V>(
     m: Map<K, V>,
-    key_fn: (sizer: WriteSizer, key: K) => void,
-    value_fn: (sizer: WriteSizer, value: V) => void
+    key_fn: (sizer: Write, key: K) => void,
+    value_fn: (sizer: Write, value: V) => void
   ): void {
     this.writeMapLength(m.size);
     const keys = m.keys();
@@ -270,6 +285,15 @@ export class WriteSizer extends Write {
     this.writeBytes(value);
   }
 
+  writeNullableBigInt(value: BigInt | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeBigInt(value);
+  }
+
   writeNullableArray<T>(
     a: Array<T> | null,
     fn: (sizer: Write, item: T) => void
@@ -283,8 +307,8 @@ export class WriteSizer extends Write {
 
   writeNullableMap<K, V>(
     m: Map<K, V> | null,
-    key_fn: (sizer: WriteSizer, key: K) => void,
-    value_fn: (sizer: WriteSizer, value: V) => void
+    key_fn: (sizer: Write, key: K) => void,
+    value_fn: (sizer: Write, value: V) => void
   ): void {
     if (m === null) {
       this.writeNil();

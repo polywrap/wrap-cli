@@ -15,17 +15,24 @@ import { getAddress } from "@ethersproject/address";
 
 export type Address = string;
 
+export interface Addresses {
+  [network: string]: Address;
+}
+
 export interface EnsConfig {
-  address?: Address;
+  addresses?: Addresses;
 }
 
 export class EnsPlugin extends Plugin {
+  public static defaultEnsAddress =
+    "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
+
   constructor(private _config: EnsConfig) {
     super();
 
     // Sanitize address
-    if (this._config.address) {
-      this.setAddress(this._config.address);
+    if (this._config.addresses) {
+      this.setAddresses(this._config.addresses);
     }
   }
 
@@ -45,13 +52,15 @@ export class EnsPlugin extends Plugin {
     };
   }
 
-  public setAddress(address: Address): void {
-    this._config.address = getAddress(address);
+  public setAddresses(addresses: Addresses): void {
+    this._config.addresses = {};
+
+    for (const network of Object.keys(addresses)) {
+      this._config.addresses[network] = getAddress(addresses[network]);
+    }
   }
 
   public async ensToCID(domain: string, client: Client): Promise<string> {
-    const ensAddress =
-      this._config.address || "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
     const ensAbi = {
       resolver:
         "function resolver(bytes32 node) external view returns (address)",
@@ -62,30 +71,60 @@ export class EnsPlugin extends Plugin {
       content: "function content(bytes32 nodehash) view returns (bytes32)",
     };
 
+    let ensAddress = EnsPlugin.defaultEnsAddress;
+
     // Remove the ENS URI scheme & authority
     domain = domain.replace("w3://", "");
     domain = domain.replace("ens/", "");
 
+    // Check for non-default network
+    let network = "mainnet";
+    const hasNetwork = /^[A-Za-z0-9]+\//i.exec(domain);
+    if (hasNetwork) {
+      network = domain.substring(0, domain.indexOf("/"));
+
+      // Remove the network from the domain URI's path
+      domain = domain.replace(network + "/", "");
+
+      // Lowercase only
+      network = network.toLowerCase();
+
+      // Check if we have a custom address configured
+      // for this network
+      if (this._config.addresses && this._config.addresses[network]) {
+        ensAddress = this._config.addresses[network];
+      }
+    }
+
     const domainNode = ethers.utils.namehash(domain);
 
-    const callView = async (
+    const callContractView = async (
       address: string,
       method: string,
-      args: string[]
+      args: string[],
+      networkNameOrChainId?: string
     ): Promise<string> => {
-      const { data, errors } = await client.query({
+      const { data, errors } = await client.query<{
+        callContractView: string;
+      }>({
         uri: "ens/ethereum.web3api.eth",
         query: `query {
-          callView(
+          callContractView(
             address: $address,
             method: $method,
-            args: $args
+            args: $args,
+            connection: $connection
           )
         }`,
         variables: {
           address,
           method,
           args,
+          connection: networkNameOrChainId
+            ? {
+                networkNameOrChainId,
+              }
+            : undefined,
         },
       });
 
@@ -93,38 +132,47 @@ export class EnsPlugin extends Plugin {
         throw errors;
       }
 
-      if (data && data.callView) {
-        if (typeof data.callView !== "string") {
+      if (data && data.callContractView) {
+        if (typeof data.callContractView !== "string") {
           throw Error(
-            `Malformed data returned from Ethereum.callView: ${data.callView}`
+            `Malformed data returned from Ethereum.callContractView: ${data.callContractView}`
           );
         }
 
-        return data.callView;
+        return data.callContractView;
       }
 
       throw Error(
-        `Ethereum.callView returned nothing.\nData: ${data}\nErrors: ${errors}`
+        `Ethereum.callContractView returned nothing.\nData: ${data}\nErrors: ${errors}`
       );
     };
 
     // Get the node's resolver address
-    const resolverAddress = await callView(ensAddress, ensAbi.resolver, [
-      domainNode,
-    ]);
+    const resolverAddress = await callContractView(
+      ensAddress,
+      ensAbi.resolver,
+      [domainNode],
+      network
+    );
 
     // Get the CID stored at this domain
     let hash;
     try {
-      hash = await callView(resolverAddress, resolverAbi.contenthash, [
-        domainNode,
-      ]);
+      hash = await callContractView(
+        resolverAddress,
+        resolverAbi.contenthash,
+        [domainNode],
+        network
+      );
     } catch (e) {
       try {
         // Fallback, contenthash doesn't exist, try content
-        hash = await callView(resolverAddress, resolverAbi.content, [
-          domainNode,
-        ]);
+        hash = await callContractView(
+          resolverAddress,
+          resolverAbi.content,
+          [domainNode],
+          network
+        );
       } catch (err) {
         // The resolver contract is unknown...
         throw Error(`Incompatible resolver ABI at address ${resolverAddress}`);
@@ -141,7 +189,7 @@ export class EnsPlugin extends Plugin {
     ) {
       return Base58.encode(ethers.utils.hexDataSlice(hash, 4));
     } else {
-      throw Error(`Unkown CID format, CID hash: ${hash}`);
+      throw Error(`Unknown CID format, CID hash: ${hash}`);
     }
   }
 }

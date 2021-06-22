@@ -3,22 +3,31 @@ import { readDirectory } from "../../utils/fs";
 import * as Functions from "./functions";
 
 import {
-  parseSchema,
+  transformTypeInfo,
   extendType,
   addFirstLast,
   toPrefixedGraphQLType,
+  TypeInfo,
 } from "@web3api/schema-parse";
 import path from "path";
 import Mustache from "mustache";
 
-export function generateBinding(schema: string): OutputDirectory {
+export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
   const entries: OutputEntry[] = [];
-  const typeInfo = parseSchema(schema, {
-    transforms: [extendType(Functions), addFirstLast, toPrefixedGraphQLType],
-  });
 
-  const absolutePath = path.join(__dirname, "./templates");
-  const directory = readDirectory(absolutePath);
+  // Transform the TypeInfo to our liking
+  const transforms = [
+    extendType(Functions),
+    addFirstLast,
+    toPrefixedGraphQLType,
+  ];
+
+  for (const transform of transforms) {
+    typeInfo = transformTypeInfo(typeInfo, transform);
+  }
+
+  const templatesDir = path.join(__dirname, "./templates");
+  const directory = readDirectory(templatesDir);
   const subTemplates = loadSubTemplates(directory.entries);
 
   // Generate object type folders
@@ -132,11 +141,16 @@ function generateFiles(
 
         // file templates don't contain '_'
         if (name.indexOf("_") === -1) {
-          output.push({
-            type: "File",
-            name: name.replace("-", "."),
-            data: Mustache.render(dirent.data, config, subTemplates),
-          });
+          const data = Mustache.render(dirent.data, config, subTemplates);
+
+          // If the file isn't empty, add it to the output
+          if (data) {
+            output.push({
+              type: "File",
+              name: name.replace("-", "."),
+              data,
+            });
+          }
         }
       } else if (dirent.type === "Directory" && subDirectories) {
         const subOutput: OutputEntry[] = [];

@@ -1,15 +1,17 @@
 import { Project as TsProject } from "ts-morph";
-import fs from "fs";
+import { writeFileSync } from "@web3api/os-js";
 import path from "path";
 
 interface PluginConfigSource {
   name: string;
   module: string;
-  file: string;
   uri: string;
   config: string;
-  interfaces?: string[];
-  types?: string[];
+  files: {
+    name: string;
+    interfaces?: string[];
+    types?: string[];
+  }[];
   externals?: {
     type: string;
     module: string;
@@ -20,19 +22,29 @@ const plugins: PluginConfigSource[] = [
   {
     name: "Ipfs",
     module: "@web3api/ipfs-plugin-js",
-    file: "build/index.d.ts",
     uri: "w3://ens/ipfs.web3api.eth",
     config: "IpfsConfig",
-    interfaces: ["IpfsConfig"]
+    files: [{
+      name: "build/index.d.ts",
+      interfaces: ["IpfsConfig"]
+    }]
   },
   {
     name: "Ethereum",
     module: "@web3api/ethereum-plugin-js",
-    file: "build/index.d.ts",
     uri: "w3://ens/ethereum.web3api.eth",
     config: "EthereumConfig",
-    interfaces: ["EthereumConfig"],
-    types: ["EthereumProvider", "EthereumSigner", "AccountIndex", "Address"],
+    files: [
+      {
+        name: "build/index.d.ts",
+        interfaces: ["EthereumConfig"],
+      },
+      {
+        name: "build/Connection.d.ts",
+        interfaces: ["ConnectionConfig", "ConnectionConfigs"],
+        types: ["EthereumProvider", "EthereumSigner", "AccountIndex", "Address"],
+      },
+    ],
     externals: [
       {
         type: "Signer",
@@ -41,17 +53,23 @@ const plugins: PluginConfigSource[] = [
       {
         type: "ExternalProvider",
         module: "@ethersproject/providers"
+      },
+      {
+        type: "JsonRpcProvider",
+        module: "@ethersproject/providers"
       }
     ]
   },
   {
     name: "Ens",
     module: "@web3api/ens-plugin-js",
-    file: "build/index.d.ts",
     uri: "w3://ens/ens.web3api.eth",
     config: "EnsConfig",
-    interfaces: ["EnsConfig"],
-    types: ["Address"]
+    files: [{
+      name: "build/index.d.ts",
+      interfaces: ["EnsConfig", "Addresses"],
+      types: ["Address"]
+    }]
   }
 ];
 
@@ -67,20 +85,25 @@ function main(): void {
   for (const plugin of plugins) {
     let output = header;
 
-    output += `\n\n/// Types generated from ${plugin.file}`
+    output += `\n\n/// Types generated from ${plugin.module} build files:\n/// ${
+      plugin.files.map(({ name }) => name).join(', ')
+    }`
 
     const project = new TsProject();
-    const filePath = require.resolve(path.join(plugin.module, plugin.file));
-    const sourceFile = project.addSourceFileAtPath(filePath);
 
-    for (const pluginInterface of plugin.interfaces || []) {
-      const int = sourceFile.getInterfaceOrThrow(pluginInterface);
-      output += `\n\n${int.print().replace(/    /g, "  ")}`;
-    }
+    for (const file of plugin.files) {
+      const filePath = require.resolve(path.join(plugin.module, file.name));
+      const sourceFile = project.addSourceFileAtPath(filePath);
 
-    for (const pluginType of plugin.types || []) {
-      const typ = sourceFile.getTypeAliasOrThrow(pluginType);
-      output += `\n\n${typ.print().replace("declare ", "")}`;
+      for (const pluginInterface of file.interfaces || []) {
+        const int = sourceFile.getInterfaceOrThrow(pluginInterface);
+        output += `\n\n${int.print().replace(/    /g, "  ")}`;
+      }
+
+      for (const pluginType of file.types || []) {
+        const typ = sourceFile.getTypeAliasOrThrow(pluginType);
+        output += `\n\n${typ.print().replace("declare ", "").replace(/    /g, "  ")}`;
+      }
     }
 
     for (const pluginExternal of plugin.externals || []) {
@@ -120,7 +143,7 @@ function main(): void {
   });
 
   for (const outputFile of outputFiles) {
-    fs.writeFileSync(
+    writeFileSync(
       __dirname + "/../src/pluginConfigs/" + outputFile.fileName,
       outputFile.content
     );

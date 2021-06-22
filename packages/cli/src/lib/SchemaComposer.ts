@@ -3,14 +3,24 @@
 
 import { Project } from "./Project";
 
-import { Manifest, Uri, Web3ApiClient, UriRedirect } from "@web3api/client-js";
-import { composeSchema, ComposerOutput } from "@web3api/schema-compose";
+import {
+  Web3ApiManifest,
+  Uri,
+  Web3ApiClient,
+  UriRedirect,
+} from "@web3api/client-js";
+import {
+  composeSchema,
+  ComposerOutput,
+  ComposerFilter,
+} from "@web3api/schema-compose";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import fs from "fs";
 import path from "path";
 import * as gluegun from "gluegun";
+import { SchemaFile } from "@web3api/schema-compose";
 
 export interface SchemaConfig {
   project: Project;
@@ -33,69 +43,82 @@ export class SchemaComposer {
     if (ensAddress) {
       redirects.push({
         from: "w3://ens/ens.web3api.eth",
-        to: ensPlugin({ address: ensAddress }),
+        to: ensPlugin({
+          addresses: {
+            testnet: ensAddress,
+          },
+        }),
       });
     }
 
     if (ethProvider) {
       redirects.push({
         from: "w3://ens/ethereum.web3api.eth",
-        to: ethereumPlugin({ provider: ethProvider }),
+        to: ethereumPlugin({
+          networks: {
+            testnet: {
+              provider: ethProvider,
+            },
+          },
+        }),
       });
     }
 
     if (ipfsProvider) {
       redirects.push({
         from: "w3://ens/ipfs.web3api.eth",
-        to: ipfsPlugin({ provider: ipfsProvider }),
+        to: ipfsPlugin({
+          provider: ipfsProvider,
+          fallbackProviders: ["https://ipfs.io"],
+        }),
       });
     }
 
     this._client = new Web3ApiClient({ redirects });
   }
 
-  public async getComposedSchemas(): Promise<ComposerOutput> {
+  public async getComposedSchemas(
+    output: ComposerFilter = ComposerFilter.All
+  ): Promise<ComposerOutput> {
     if (this._composerOutput) {
       return Promise.resolve(this._composerOutput);
     }
 
     const { project } = this._config;
 
-    const manifest = await project.getManifest();
-    const querySchemaPath = manifest.query?.schema.file;
-    const mutationSchemaPath = manifest.mutation?.schema.file;
+    const manifest = await project.getWeb3ApiManifest();
+    const querySchemaPath = manifest.modules.query?.schema;
+    const mutationSchemaPath = manifest.modules.mutation?.schema;
+    const getSchema = (schemaPath?: string): SchemaFile | undefined =>
+      schemaPath
+        ? {
+            schema: this._fetchLocalSchema(schemaPath),
+            absolutePath: schemaPath,
+          }
+        : undefined;
 
     this._composerOutput = await composeSchema({
       schemas: {
-        query: querySchemaPath
-          ? {
-              schema: this._fetchLocalSchema(querySchemaPath),
-              absolutePath: querySchemaPath,
-            }
-          : undefined,
-        mutation: mutationSchemaPath
-          ? {
-              schema: this._fetchLocalSchema(mutationSchemaPath),
-              absolutePath: mutationSchemaPath,
-            }
-          : undefined,
+        query: getSchema(querySchemaPath),
+        mutation: getSchema(mutationSchemaPath),
       },
       resolvers: {
         external: (uri: string) => this._fetchExternalSchema(uri, manifest),
         local: (path: string) => Promise.resolve(this._fetchLocalSchema(path)),
       },
+      output,
     });
 
     return this._composerOutput;
   }
 
-  public clearCache(): void {
+  public reset(): void {
     this._composerOutput = undefined;
   }
 
   private async _fetchExternalSchema(
     uri: string,
-    manifest: Manifest
+    manifest: Web3ApiManifest
   ): Promise<string> {
     // Check to see if we have any import redirects that match
     if (manifest.import_redirects) {
@@ -122,12 +145,8 @@ export class SchemaComposer {
     return fs.readFileSync(
       path.isAbsolute(schemaPath)
         ? schemaPath
-        : this._appendPath(this._config.project.manifestPath, schemaPath),
+        : path.join(this._config.project.getWeb3ApiManifestDir(), schemaPath),
       "utf-8"
     );
-  }
-
-  private _appendPath(root: string, subPath: string) {
-    return path.join(path.dirname(root), subPath);
   }
 }

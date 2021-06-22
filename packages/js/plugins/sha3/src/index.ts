@@ -1,7 +1,12 @@
-import { manifest } from "./../../ethereum/src/manifest";
+import { manifest } from "./manifest";
 import { query } from "./resolvers";
 
-import { Plugin, PluginManifest, PluginModules } from "@web3api/core-js";
+import {
+  Plugin,
+  PluginManifest,
+  PluginModules,
+  PluginPackage,
+} from "@web3api/core-js";
 
 export class SHA3Plugin extends Plugin {
   public static manifest(): PluginManifest {
@@ -14,3 +19,11 @@ export class SHA3Plugin extends Plugin {
     };
   }
 }
+
+export const sha3Plugin = (): PluginPackage => {
+  return {
+    factory: () => new SHA3Plugin(),
+    manifest: manifest,
+  };
+};
+export const plugin = sha3Plugin;

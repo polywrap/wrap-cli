@@ -131,7 +131,7 @@ export default {
       (outputDir && filesystem.resolve(outputDir)) || filesystem.path("types");
 
     const project = new Project({
-      manifestPath,
+      web3apiManifestPath: manifestPath,
     });
 
     const schemaComposer = new SchemaComposer({

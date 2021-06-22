@@ -8,7 +8,7 @@ import {
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
-jest.setTimeout(50000);
+jest.setTimeout(200000);
 
 describe("Web3ApiClient", () => {
   let ipfsProvider: string;
@@ -26,6 +26,24 @@ describe("Web3ApiClient", () => {
     await stopTestEnvironment();
   });
 
+  const getClient = async () => {
+    return createWeb3ApiClient({
+      ethereum: {
+        networks: {
+          testnet: {
+            provider: ethProvider
+          },
+        },
+      },
+      ipfs: { provider: ipfsProvider },
+      ens: {
+        addresses: {
+          testnet: ensAddress
+        }
+      }
+    })
+  }
+
   it("simple-storage", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
@@ -33,13 +51,9 @@ describe("Web3ApiClient", () => {
       ensAddress
     );
 
-    const client = await createWeb3ApiClient({
-      ethereum: { provider: ethProvider },
-      ipfs: { provider: ipfsProvider },
-      ens: { address: ensAddress }
-    });
+    const client = await getClient();
 
-    const ensUri = `ens/${api.ensDomain}`;
+    const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
 
     const deploy = await client.query<{
@@ -48,7 +62,11 @@ describe("Web3ApiClient", () => {
       uri: ensUri,
       query: `
         mutation {
-          deployContract
+          deployContract(
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
         }
       `,
     });
@@ -71,6 +89,9 @@ describe("Web3ApiClient", () => {
           setData(
             address: "${address}"
             value: $value
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
           )
         }
       `,
@@ -93,12 +114,21 @@ describe("Web3ApiClient", () => {
         query {
           getData(
             address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
           )
           secondGetData: getData(
             address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
           )
           thirdGetData: getData(
             address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
           )
         }
       `,
@@ -117,13 +147,9 @@ describe("Web3ApiClient", () => {
       ipfsProvider,
       ensAddress
     );
-    const ensUri = `ens/${api.ensDomain}`;
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
-    const client = await createWeb3ApiClient({
-      ethereum: { provider: ethProvider },
-      ipfs: { provider: ipfsProvider },
-      ens: { address: ensAddress }
-    });
+    const client = await getClient();
 
     const method1a = await client.query<{
       method1: {
@@ -347,19 +373,79 @@ describe("Web3ApiClient", () => {
     });
   });
 
+  it("bigint-type", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/bigint-type`,
+      ipfsProvider,
+      ensAddress
+    );
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const client = await getClient();
+
+    {
+      const response = await client.query<{
+        method: string
+      }>({
+        uri: ensUri,
+        query: `query {
+          method(
+            arg1: "123456789123456789"
+            obj: {
+              prop1: "987654321987654321"
+            }
+          )
+        }`
+      });
+
+      const result = BigInt("123456789123456789") * BigInt("987654321987654321");
+
+      expect(response.errors).toBeFalsy();
+      expect(response.data).toBeTruthy();
+      expect(response.data).toMatchObject({
+        method: result.toString()
+      });
+    }
+
+    {
+      const response = await client.query<{
+        method: string
+      }>({
+        uri: ensUri,
+        query: `query {
+          method(
+            arg1: "123456789123456789"
+            arg2: "123456789123456789123456789123456789"
+            obj: {
+              prop1: "987654321987654321"
+              prop2: "987654321987654321987654321987654321"
+            }
+          )
+        }`
+      });
+
+      const result = BigInt("123456789123456789")
+        * BigInt("123456789123456789123456789123456789")
+        * BigInt("987654321987654321")
+        * BigInt("987654321987654321987654321987654321");
+
+      expect(response.errors).toBeFalsy();
+      expect(response.data).toBeTruthy();
+      expect(response.data).toMatchObject({
+        method: result.toString()
+      });
+    }
+  });
+
   it("bytes-type", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/bytes-type`,
       ipfsProvider,
       ensAddress
     );
-    const ensUri = `ens/${api.ensDomain}`;
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
-    const client = await createWeb3ApiClient({
-      ethereum: { provider: ethProvider },
-      ipfs: { provider: ipfsProvider },
-      ens: { address: ensAddress }
-    });
+    const client = await getClient();
 
     const response = await client.query<{
       bytesMethod: Buffer;
@@ -392,13 +478,9 @@ describe("Web3ApiClient", () => {
       ipfsProvider,
       ensAddress
     );
-    const ensUri = `ens/${api.ensDomain}`;
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
-    const client = await createWeb3ApiClient({
-      ethereum: { provider: ethProvider },
-      ipfs: { provider: ipfsProvider },
-      ens: { address: ensAddress }
-    });
+    const client = await getClient();
 
     const method1a = await client.query<any>({
       uri: ensUri,
@@ -476,12 +558,8 @@ describe("Web3ApiClient", () => {
       ipfsProvider,
       ensAddress
     );
-    const ensUri = `ens/${api.ensDomain}`;
-    const client = await createWeb3ApiClient({
-      ethereum: { provider: ethProvider },
-      ipfs: { provider: ipfsProvider },
-      ens: { address: ensAddress }
-    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+    const client = await getClient();
 
     const largeStr = new Array(10000).join("web3api ")
     const largeBytes = new Uint8Array(Buffer.from(largeStr));
@@ -532,12 +610,8 @@ describe("Web3ApiClient", () => {
       ipfsProvider,
       ensAddress
     );
-    const ensUri = `ens/${api.ensDomain}`;
-    const client = await createWeb3ApiClient({
-      ethereum: { provider: ethProvider },
-      ipfs: { provider: ipfsProvider },
-      ens: { address: ensAddress }
-    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+    const client = await getClient();
 
     const i8Underflow = await client.query<{
       i8Method: number
@@ -696,7 +770,7 @@ describe("Web3ApiClient", () => {
     });
     expect(i64Underflow.errors).toBeTruthy();
     expect(i64Underflow.errors?.[0].message).toMatch(
-      /bad prefix for int: /
+      /Property must be of type 'int'. Found 'float64'./
     );
     expect(i64Underflow.data?.i64Method).toBeUndefined();
 
@@ -719,8 +793,110 @@ describe("Web3ApiClient", () => {
     });
     expect(u64Overflow.errors).toBeTruthy();
     expect(u64Overflow.errors?.[0].message).toMatch(
-      /bad prefix for unsigned int: /
+      /Property must be of type 'uint'. Found 'float64'/
     );
     expect(u64Overflow.data?.u64Method).toBeUndefined();
+  });
+
+  it("invalid type errors", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/invalid-types`,
+      ipfsProvider,
+      ensAddress
+    );
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+    const client = await getClient();
+
+    const invalidBoolIntSent = await client.query({
+      uri: ensUri,
+      query: `
+      query {
+        boolMethod(
+          arg: $integer
+        )
+      }
+    `,
+      variables: {
+        integer: 10
+      }
+    });
+    expect(invalidBoolIntSent.errors).toBeTruthy();
+    expect(invalidBoolIntSent.errors?.[0].message).toMatch(
+      /Property must be of type 'bool'. Found 'int'./
+    );
+
+    const invalidIntBoolSent = await client.query({
+      uri: ensUri,
+      query: `
+      query {
+        intMethod(
+          arg: $bool
+        )
+      }
+    `,
+      variables: {
+        bool: true
+      }
+    });
+    expect(invalidIntBoolSent.errors).toBeTruthy();
+    expect(invalidIntBoolSent.errors?.[0].message).toMatch(
+      /Property must be of type 'int'. Found 'bool'./
+    );
+
+    const invalidUIntArraySent = await client.query({
+      uri: ensUri,
+      query: `
+      query {
+        uIntMethod(
+          arg: $array
+        )
+      }
+    `,
+      variables: {
+        array: [10]
+      }
+    });
+    expect(invalidUIntArraySent.errors).toBeTruthy();
+    expect(invalidUIntArraySent.errors?.[0].message).toMatch(
+      /Property must be of type 'uint'. Found 'array'./
+    );
+
+    const invalidBytesFloatSent = await client.query({
+      uri: ensUri,
+      query: `
+      query {
+        bytesMethod(
+          arg: $float
+        )
+      }
+    `,
+      variables: {
+        float: 10.15
+      }
+    });
+    expect(invalidBytesFloatSent.errors).toBeTruthy();
+    expect(invalidBytesFloatSent.errors?.[0].message).toMatch(
+      /Property must be of type 'bytes'. Found 'float64'./
+    );
+
+    const invalidArrayMapSent = await client.query({
+      uri: ensUri,
+      query: `
+      query {
+        arrayMethod(
+          arg: $object
+        )
+      }
+    `,
+      variables: {
+        object: {
+          prop: "prop"
+        }
+      }
+    });
+    expect(invalidArrayMapSent.errors).toBeTruthy();
+    expect(invalidArrayMapSent.errors?.[0].message).toMatch(
+      /Property must be of type 'array'. Found 'map'./
+    );
   });
 });

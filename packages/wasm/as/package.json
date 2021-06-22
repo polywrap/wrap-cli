@@ -1,7 +1,7 @@
 {
   "name": "@web3api/wasm-as",
   "description": "Web3API Assemblyscript Runtime",
-  "version": "0.0.1-prealpha.10",
+  "version": "0.0.1-prealpha.26",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -19,6 +19,9 @@
     "lint": "eslint --color --ext .ts assembly/",
     "test": "asp --verbose",
     "test:ci": "asp --summary"
+  },
+  "dependencies": {
+    "as-bigint": "0.2.4"
   },
   "devDependencies": {
     "@as-pect/cli": "5.0.1",

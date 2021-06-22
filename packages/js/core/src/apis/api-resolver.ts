@@ -1,6 +1,8 @@
 // TODO: https://github.com/web3-api/monorepo/issues/101
 import { Uri, Client, InvokeApiResult } from "../";
 
+import { Tracer } from "@web3api/tracing-js";
+
 interface MaybeUriOrManifest {
   uri?: string;
   manifest?: string;
@@ -8,31 +10,39 @@ interface MaybeUriOrManifest {
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const Query = {
-  tryResolveUri: (
-    client: Client,
-    api: Uri,
-    uri: Uri
-  ): Promise<InvokeApiResult<MaybeUriOrManifest>> =>
-    client.invoke<MaybeUriOrManifest>({
-      uri: api.uri,
-      module: "query",
-      method: `tryResolveUri`,
-      input: {
-        authority: uri.authority,
-        path: uri.path,
-      },
-    }),
-  getFile: (
-    client: Client,
-    api: Uri,
-    path: string
-  ): Promise<InvokeApiResult<ArrayBuffer>> =>
-    client.invoke<ArrayBuffer>({
-      uri: api.uri,
-      module: "query",
-      method: "getFile",
-      input: {
-        path,
-      },
-    }),
+  tryResolveUri: Tracer.traceFunc(
+    "core: api-resolver: tryResolveUri",
+    async (
+      client: Client,
+      api: Uri,
+      uri: Uri
+    ): Promise<InvokeApiResult<MaybeUriOrManifest>> => {
+      return client.invoke<MaybeUriOrManifest>({
+        uri: api.uri,
+        module: "query",
+        method: `tryResolveUri`,
+        input: {
+          authority: uri.authority,
+          path: uri.path,
+        },
+      });
+    }
+  ),
+  getFile: Tracer.traceFunc(
+    "core: api-resolver: getFile",
+    async (
+      client: Client,
+      api: Uri,
+      path: string
+    ): Promise<InvokeApiResult<ArrayBuffer>> => {
+      return client.invoke<ArrayBuffer>({
+        uri: api.uri,
+        module: "query",
+        method: "getFile",
+        input: {
+          path,
+        },
+      });
+    }
+  ),
 };
