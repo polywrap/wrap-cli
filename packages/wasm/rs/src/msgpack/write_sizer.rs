@@ -318,7 +318,7 @@ impl Write for WriteSizer {
         Ok(())
     }
 
-    fn context(&self) -> &Context {
-        &self.context
+    fn context(&mut self) -> &mut Context {
+        &mut self.context
     }
 }

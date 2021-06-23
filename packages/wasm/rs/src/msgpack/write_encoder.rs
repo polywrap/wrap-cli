@@ -360,7 +360,7 @@ impl Write for WriteEncoder {
         Ok(())
     }
 
-    fn context(&self) -> &Context {
-        &self.context
+    fn context(&mut self) -> &mut Context {
+        &mut self.context
     }
 }

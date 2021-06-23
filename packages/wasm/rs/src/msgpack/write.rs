@@ -5,7 +5,7 @@ use std::hash::Hash;
 
 pub type Result = std::result::Result<(), failure::Error>;
 
-pub trait Write {
+pub trait Write: Clone + Sized {
     fn write_nil(&mut self);
     fn write_bool(&mut self, value: bool);
     fn write_i8(&mut self, value: i8);
@@ -48,5 +48,5 @@ pub trait Write {
         key_fn: fn(&K),
         val_fn: fn(&V),
     ) -> Result;
-    fn context(&self) -> &Context;
+    fn context(&mut self) -> &mut Context;
 }

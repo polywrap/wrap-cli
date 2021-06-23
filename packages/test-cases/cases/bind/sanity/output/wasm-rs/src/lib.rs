@@ -3,3 +3,6 @@ pub use web3api_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, Write
 
 mod mutation;
 mod query;
+
+pub use query::{AnotherType, CustomEnum, CustomType};
+pub use query::{TestImportAnotherObject, TestImportEnum, TestImportObject, TestImportQuery};

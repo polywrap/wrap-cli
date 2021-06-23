@@ -1,17 +1,19 @@
-// FIXME:
+use serde::{Deserialize, Serialize};
+use std::convert::TryFrom;
+use std::io::{Error, ErrorKind};
 
-use std::io::{Error, ErrorKind, Result};
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[repr(i32)]
 pub enum TestImportEnum {
     STRING,
     BYTES,
-    _MAX_(i32),
+    _MAX_,
 }
 
 impl TestImportEnum {
-    pub fn sanitize_test_import_enum_value(&mut self, value: i32) -> Result<()> {
-        let valid = value >= 0 && value < TestImportEnum::_MAX_(i32);
+    pub fn sanitize_test_import_enum_value(value: i32) -> Result<(), Error> {
+        let max_as_i32 = Self::_MAX_ as i32;
+        let valid = value >= 0 && value < max_as_i32;
         if !valid {
             let custom_error = format!(
                 "Invalid value for enum 'TestImportEnum': {}",
@@ -22,7 +24,7 @@ impl TestImportEnum {
         Ok(())
     }
 
-    pub fn get_test_import_enum_value(&self, key: &str) -> Result<Self> {
+    pub fn get_test_import_enum_value(key: &str) -> Result<Self, Error> {
         if key == "STRING" {
             return Ok(Self::STRING);
         }
@@ -33,15 +35,33 @@ impl TestImportEnum {
         return Err(Error::new(ErrorKind::Other, custom_error));
     }
 
-    pub fn get_test_import_enum_key(&mut self, value: Self) -> String {
-        if let Ok(_) = self.sanitize_test_import_enum_value(value) {
+    pub fn get_test_import_enum_key(value: Self) -> String {
+        if let Ok(_) = Self::sanitize_test_import_enum_value(value.clone() as i32) {
             return match value {
                 Self::STRING => "STRING".to_string(),
                 Self::BYTES => "BYTES".to_string(),
                 _ => {
-                    format!("Invalid value for enum 'TestImportEnum': {}", value.into())
+                    format!(
+                        "Invalid value for enum 'TestImportEnum': {}",
+                        (value as i32).to_string()
+                    )
                 }
             };
+        } else {
+            format!("")
+        }
+    }
+}
+
+impl TryFrom<i32> for TestImportEnum {
+    type Error = &'static str;
+
+    fn try_from(v: i32) -> Result<Self, Self::Error> {
+        match v {
+            x if x == Self::STRING as i32 => Ok(Self::STRING),
+            x if x == Self::BYTES as i32 => Ok(Self::BYTES),
+            x if x == Self::_MAX_ as i32 => Ok(Self::_MAX_),
+            _ => Err("Error converting TestImportEnum to i32"),
         }
     }
 }

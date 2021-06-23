@@ -1,16 +1,13 @@
-use super::{TestImportEnum, TestImportObject};
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
-use num_bigint::BigInt;
+use serde::{Deserialize, Serialize};
 use std::io::{Error, ErrorKind, Result};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct TestImportAnotherObject {
     prop: String,
 }
 
 impl TestImportAnotherObject {
-    pub const URI: String = "testimport.uri.eth".to_string();
-
     pub fn new() -> Self {
         Self {
             prop: String::new(),
@@ -22,7 +19,7 @@ impl TestImportAnotherObject {
         sizer_context.description =
             "Serializing (sizing) imported object-type: TestImportAnotherObject".to_string();
         let sizer = WriteSizer::new(sizer_context);
-        self.write_test_import_another_object(sizer);
+        self.write_test_import_another_object(sizer.clone());
 
         let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
         let mut encoder_context = Context::new();
@@ -38,7 +35,7 @@ impl TestImportAnotherObject {
         writer.context().push("prop", "string", "writing property");
         writer.write_string("prop".to_string());
         writer.write_string(self.prop.to_owned());
-        writer.context().pop();
+        let _ = writer.context().pop();
     }
 
     pub fn deserialize_test_import_another_object(&mut self, buffer: &[u8]) -> Self {
@@ -58,22 +55,22 @@ impl TestImportAnotherObject {
 
         while num_of_fields > 0 {
             num_of_fields -= 1;
-            let field = reader.read_string().unwrap_or_default().as_str();
+            let field = reader.read_string().unwrap_or_default();
 
-            match field {
+            match field.as_str() {
                 "prop" => {
                     reader
                         .context()
-                        .push(field, "String", "type found, reading property");
+                        .push(&field, "String", "type found, reading property");
                     prop = reader.read_string().unwrap_or_default();
                     prop_set = true;
-                    reader.context().pop();
+                    let _ = reader.context().pop();
                 }
                 _ => {
                     reader
                         .context()
-                        .push(field, "unknown", "searching for property type");
-                    reader.context().pop();
+                        .push(&field, "unknown", "searching for property type");
+                    let _ = reader.context().pop();
                 }
             }
         }

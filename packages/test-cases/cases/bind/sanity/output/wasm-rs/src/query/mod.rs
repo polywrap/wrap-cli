@@ -8,3 +8,5 @@ mod queries;
 pub use another_type::AnotherType;
 pub use custom_enum::CustomEnum;
 pub use custom_type::CustomType;
+
+pub use imported::{TestImportAnotherObject, TestImportEnum, TestImportObject, TestImportQuery};

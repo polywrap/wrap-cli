@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::hash::Hash;
 use std::io::Result;
 
-pub trait Read {
+pub trait Read: Clone + Sized {
     fn read_bool(&mut self) -> Result<bool>;
     fn read_i8(&mut self) -> Result<i8>;
     fn read_i16(&mut self) -> Result<i16>;
@@ -47,5 +47,5 @@ pub trait Read {
     ) -> Option<HashMap<K, V>>;
     fn is_next_nil(&mut self) -> bool;
     fn is_next_string(&mut self) -> bool;
-    fn context(&self) -> &Context;
+    fn context(&mut self) -> &mut Context;
 }

@@ -702,7 +702,7 @@ impl Read for ReadDecoder {
             || format == Format::STR32;
     }
 
-    fn context(&self) -> &Context {
-        &self.context
+    fn context(&mut self) -> &mut Context {
+        &mut self.context
     }
 }

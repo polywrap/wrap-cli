@@ -1,9 +1,10 @@
 use super::{AnotherType, CustomEnum};
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
-use num_bigint::BigInt;
+use serde::{Deserialize, Serialize};
+use std::convert::TryInto;
 use std::io::{Error, ErrorKind, Result};
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InputQueryMethod {
     string: String,
     opt_string: Option<String>,
@@ -18,7 +19,7 @@ impl InputQueryMethod {
         Self {
             string: "".to_string(),
             opt_string: None,
-            en: CustomEnum::_MAX_(0),
+            en: CustomEnum::_MAX_,
             opt_enum: None,
             enum_array: vec![],
             opt_enum_array: None,
@@ -34,7 +35,7 @@ impl InputQueryMethod {
         let mut string = "".to_string();
         let mut string_set = false;
         let mut opt_string: Option<String> = None;
-        let mut en = CustomEnum::_MAX_(0);
+        let mut en = CustomEnum::_MAX_;
         let mut en_set = false;
         let mut opt_enum: Option<CustomEnum> = None;
         let mut enum_array: Vec<CustomEnum> = vec![];
@@ -43,96 +44,88 @@ impl InputQueryMethod {
 
         while num_of_fields > 0 {
             num_of_fields -= 1;
-            let field = reader.read_string().unwrap_or_default().as_str();
-            reader
-                .context()
-                .push(field, "unknown", "searching for property type");
+            let field = reader.read_string().unwrap_or_default();
 
-            match field {
+            match field.as_str() {
                 "string" => {
                     reader
                         .context()
-                        .push(field, "string", "type found, reading property");
+                        .push(&field, "string", "type found, reading property");
                     string = reader.read_string().unwrap_or_default();
                     string_set = true;
-                    reader.context().pop();
+                    let _ = reader.context().pop();
                 }
                 "opt_string" => {
                     reader
                         .context()
-                        .push(field, "Option<String>", "type found, reading property");
+                        .push(&field, "Option<String>", "type found, reading property");
                     opt_string = reader.read_nullable_string();
-                    reader.context().pop();
+                    let _ = reader.context().pop();
                 }
                 "en" => {
                     reader
                         .context()
-                        .push(field, "CustomEnum", "type found, reading property");
-                    let mut value = CustomEnum::_MAX_(0);
+                        .push(&field, "CustomEnum", "type found, reading property");
+                    let mut value = CustomEnum::_MAX_ as i32;
                     if reader.is_next_string() {
-                        value = self
-                            .en
-                            .get_custom_enum_value(
-                                reader.read_string().unwrap_or_default().as_str(),
-                            )
-                            .unwrap();
+                        value = CustomEnum::get_custom_enum_value(
+                            reader.read_string().unwrap_or_default().as_str(),
+                        )
+                        .unwrap() as i32;
                     } else {
-                        let val = reader.read_i32().unwrap_or_default();
-                        let _ = value
-                            .unwrap_or(CustomEnum::_MAX_(0))
-                            .sanitize_custom_enum_value(val);
+                        value = reader.read_i32().unwrap_or_default();
+                        let _ = CustomEnum::sanitize_custom_enum_value(value.try_into().unwrap());
                     }
-                    en = value;
+                    en = value.try_into().unwrap();
                     en_set = true;
-                    reader.context().pop();
+                    let _ = reader.context().pop();
                 }
                 "opt_enum" => {
                     reader.context().push(
-                        field,
+                        &field,
                         "Option<CustomEnum>",
                         "type found, reading property",
                     );
-                    let mut value: Option<CustomEnum> = None;
+                    let mut value = Some(CustomEnum::_MAX_ as i32);
                     if !reader.is_next_nil() {
                         if reader.is_next_string() {
                             value = Some(
-                                self.en
-                                    .get_custom_enum_value(
-                                        reader.read_string().unwrap_or_default().as_str(),
-                                    )
-                                    .unwrap(),
+                                CustomEnum::get_custom_enum_value(
+                                    reader.read_string().unwrap_or_default().as_str(),
+                                )
+                                .unwrap() as i32,
                             );
                         } else {
-                            let val = reader.read_i32().unwrap_or_default();
-                            let _ = value
-                                .unwrap_or(CustomEnum::_MAX_(0))
-                                .sanitize_custom_enum_value(val);
+                            value = Some(reader.read_i32().unwrap_or_default());
+                            let _ = CustomEnum::sanitize_custom_enum_value(value.unwrap_or_default());
                         }
+                    } else {
+                        value = None;
                     }
-                    opt_enum = value;
-                    reader.context().pop();
+                    opt_enum = Some(value.unwrap().try_into().unwrap());
+                    let _ = reader.context().pop();
                 }
                 "enum_array" => {
                     reader
                         .context()
-                        .push(field, "Vec<CustomEnum>", "type found, reading property");
+                        .push(&field, "Vec<CustomEnum>", "type found, reading property");
                     // TODO: enum_array = reader.read_array();
                     enum_array_set = true;
-                    reader.context().pop();
+                    let _ = reader.context().pop();
                 }
                 "opt_enum_array" => {
                     reader.context().push(
-                        field,
+                        &field,
                         "Option<Vec<CustomEnum>>",
                         "type found, reading property",
                     );
                     // TODO: opt_enum_array = reader.read_nullable_array();
-                    reader.context().pop();
+                    let _ = reader.context().pop();
                 }
                 _ => {
                     reader
                         .context()
-                        .push(field, "unknown", "searching for property type");
+                        .push(&field, "unknown", "searching for property type");
                 }
             }
         }
@@ -184,18 +177,18 @@ impl InputQueryMethod {
             .context()
             .push("query_method", "i32", "writing property");
         writer.write_i32(result);
-        writer.context().pop();
+        let _ = writer.context().pop();
     }
 
     pub fn query_method_wrapped(&mut self, args_buf: &[u8]) -> Vec<u8> {
         let query_method = self.deserialize_query_method_args(args_buf).unwrap();
-        let args = bincode::<InputObjectMethod>::serialize(&query_method).unwrap_or_default();
+        let args = bincode::serialize(&query_method).unwrap_or_default();
         let result = args.iter().fold(0, |result, &bit| (result << 1) ^ bit) as i32;
         self.serialize_query_method_result(result)
     }
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InputObjectMethod {
     object: AnotherType,
     opt_object: Option<AnotherType>,
@@ -212,10 +205,10 @@ impl InputObjectMethod {
             opt_object_array: None,
         }
     }
-    pub fn deserialize_object_method_args(&mut self, args_buf: Vec<u8>) -> Result<Self> {
+    pub fn deserialize_object_method_args(&mut self, args_buf: &[u8]) -> Result<Self> {
         let mut context = Context::new();
         context.description = "Deserializing query-type: object_method".to_string();
-        let mut reader = ReadDecoder::new(args_buf.as_slice(), context);
+        let mut reader = ReadDecoder::new(args_buf, context);
         let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
         let mut object = AnotherType::new();
@@ -227,50 +220,50 @@ impl InputObjectMethod {
 
         while num_of_fields > 0 {
             num_of_fields -= 1;
-            let field = reader.read_string().unwrap_or_default().as_str();
+            let field = reader.read_string().unwrap_or_default();
 
-            match field {
+            match field.as_str() {
                 "object" => {
                     reader
                         .context()
-                        .push(field, "AnotherType", "type found, reading property");
+                        .push(&field, "AnotherType", "type found, reading property");
                     object = self.object.read(reader.clone());
                     object_set = true;
-                    reader.context().pop();
+                    let _ = reader.context().pop();
                 }
                 "opt_object" => {
                     reader.context().push(
-                        field,
+                        &field,
                         "Option<AnotherType>",
                         "type found, reading property",
                     );
                     if !reader.is_next_nil() {
                         opt_object = Some(self.object.read(reader.clone()));
                     }
-                    reader.context().pop();
+                    let _ = reader.context().pop();
                 }
                 "object_array" => {
                     reader
                         .context()
-                        .push(field, "Vec<AnotherType", "type found, reading property");
+                        .push(&field, "Vec<AnotherType", "type found, reading property");
                     // TODO: object_array = reader.read_array();
                     object_array_set = true;
-                    reader.context().pop();
+                    let _ = reader.context().pop();
                 }
                 "opt_object_array" => {
                     reader.context().push(
-                        field,
+                        &field,
                         "Option<Vec<AnotherType>>",
                         "type found, reading property",
                     );
                     // TODO: opt_object_array = reader.read_nullable_array();
-                    reader.context().pop();
+                    let _ = reader.context().pop();
                 }
                 _ => {
                     reader
                         .context()
-                        .push(field, "unknown", "searching for property type");
-                    reader.context().pop();
+                        .push(&field, "unknown", "searching for property type");
+                    let _ = reader.context().pop();
                 }
             }
         }
@@ -301,19 +294,19 @@ impl InputObjectMethod {
         let mut sizer_context = Context::new();
         sizer_context.description = "Serializing (sizing) query-type: object_method".to_string();
         let sizer = WriteSizer::new(sizer_context);
-        self.write_object_method_result(&sizer, &result);
-        let mut buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+        self.write_object_method_result(sizer.clone(), &result);
+        let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
         let mut encoder_context = Context::new();
         encoder_context.description =
             "Serializing (encoding) query-type: object_method".to_string();
         let encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-        self.write_object_method_result(&encoder, &result);
+        self.write_object_method_result(encoder, &result);
         buffer
     }
 
     pub fn write_object_method_result<W: Write>(
         &mut self,
-        mut writer: &W,
+        mut writer: W,
         result: &Option<AnotherType>,
     ) {
         writer
@@ -324,13 +317,11 @@ impl InputObjectMethod {
         } else {
             writer.write_nil();
         }
-        writer.context().pop();
+        let _ = writer.context().pop();
     }
 
     pub fn object_method_wrapped(&mut self, args_buf: &[u8]) -> Vec<u8> {
-        let result = self
-            .deserialize_object_method_args(args_buf.to_vec())
-            .unwrap();
+        let result = self.deserialize_object_method_args(args_buf).unwrap();
 
         self.serialize_object_method_result(result.opt_object)
     }

@@ -1,3 +1,5 @@
+// FIXME: cannot call #[wasm_bindgen] imports on non-wasm targets
+
 use web3api_wasm_rs::invoke;
 
 fn method_name(input: &[u8]) -> Vec<u8> {
