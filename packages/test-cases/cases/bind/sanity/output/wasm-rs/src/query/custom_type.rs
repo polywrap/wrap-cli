@@ -274,8 +274,7 @@ impl CustomType {
         let mut context = Context::new();
         context.description = "Deserializing object-type: CustomType".to_string();
         let reader = ReadDecoder::new(buffer, context);
-        Self::read_custom_type(reader)
-            .expect("Failed to deserialize CustomType")
+        Self::read_custom_type(reader).expect("Failed to deserialize CustomType")
     }
 
     pub fn read_custom_type<R: Read>(mut reader: R) -> Result<Self> {
@@ -470,9 +469,11 @@ impl CustomType {
                     let _ = reader.context().pop();
                 }
                 "opt_bytes" => {
-                    reader
-                        .context()
-                        .push(&field, "Option<Vec<u8>>", "type found, reading property");
+                    reader.context().push(
+                        &field,
+                        "Option<Vec<u8>>",
+                        "type found, reading property",
+                    );
                     opt_bytes = reader.read_nullable_bytes();
                     let _ = reader.context().pop();
                 }
@@ -636,7 +637,8 @@ impl CustomType {
                             );
                         } else {
                             value = Some(reader.read_i32().unwrap_or_default());
-                            let _ = CustomEnum::sanitize_custom_enum_value(value.unwrap_or_default());
+                            let _ =
+                                CustomEnum::sanitize_custom_enum_value(value.unwrap_or_default());
                         }
                     } else {
                         value = None;
@@ -645,9 +647,11 @@ impl CustomType {
                     let _ = reader.context().pop();
                 }
                 "en_array" => {
-                    reader
-                        .context()
-                        .push(&field, "Vec<CustomEnum>", "type found, reading property");
+                    reader.context().push(
+                        &field,
+                        "Vec<CustomEnum>",
+                        "type found, reading property",
+                    );
                     // TODO: en_array = reader.read_array();
                     en_array_set = true;
                     let _ = reader.context().pop();
@@ -665,7 +669,7 @@ impl CustomType {
                     reader
                         .context()
                         .push(&field, "unknown", "searching for property type");
-                        let _ = reader.context().pop();
+                    let _ = reader.context().pop();
                 }
             }
         }
@@ -855,7 +859,6 @@ impl CustomType {
     }
 
     pub fn read<R: Read>(reader: R) -> Self {
-        Self::read_custom_type(reader)
-            .expect("Failed to read CustomType")
+        Self::read_custom_type(reader).expect("Failed to read CustomType")
     }
 }

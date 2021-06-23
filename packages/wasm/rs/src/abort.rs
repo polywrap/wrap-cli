@@ -15,6 +15,7 @@ extern "C" {
 
 /// Helper for aborting
 #[allow(unused_unsafe)]
+#[wasm_bindgen]
 pub fn w3_abort(msg: &str, file: &str, line: u32, column: u32) {
     let msg_buf = msg.as_bytes();
     let file_buf = file.as_bytes();

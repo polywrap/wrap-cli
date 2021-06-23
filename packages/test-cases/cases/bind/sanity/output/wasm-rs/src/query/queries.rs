@@ -97,7 +97,8 @@ impl InputQueryMethod {
                             );
                         } else {
                             value = Some(reader.read_i32().unwrap_or_default());
-                            let _ = CustomEnum::sanitize_custom_enum_value(value.unwrap_or_default());
+                            let _ =
+                                CustomEnum::sanitize_custom_enum_value(value.unwrap_or_default());
                         }
                     } else {
                         value = None;
@@ -106,9 +107,11 @@ impl InputQueryMethod {
                     let _ = reader.context().pop();
                 }
                 "enum_array" => {
-                    reader
-                        .context()
-                        .push(&field, "Vec<CustomEnum>", "type found, reading property");
+                    reader.context().push(
+                        &field,
+                        "Vec<CustomEnum>",
+                        "type found, reading property",
+                    );
                     // TODO: enum_array = reader.read_array();
                     enum_array_set = true;
                     let _ = reader.context().pop();
@@ -236,9 +239,11 @@ impl InputObjectMethod {
                     let _ = reader.context().pop();
                 }
                 "object_array" => {
-                    reader
-                        .context()
-                        .push(&field, "Vec<AnotherType", "type found, reading property");
+                    reader.context().push(
+                        &field,
+                        "Vec<AnotherType",
+                        "type found, reading property",
+                    );
                     // TODO: object_array = reader.read_array();
                     object_array_set = true;
                     let _ = reader.context().pop();
@@ -297,10 +302,7 @@ impl InputObjectMethod {
         buffer
     }
 
-    pub fn write_object_method_result<W: Write>(
-        mut writer: W,
-        result: &Option<AnotherType>,
-    ) {
+    pub fn write_object_method_result<W: Write>(mut writer: W, result: &Option<AnotherType>) {
         writer
             .context()
             .push("object_method", "Option<AnotherType", "writing property");

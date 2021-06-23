@@ -2,8 +2,6 @@ use super::{TestImportEnum, TestImportObject};
 use crate::{subinvoke, Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use serde::{Deserialize, Serialize};
 
-
-
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TestImportQuery;
 

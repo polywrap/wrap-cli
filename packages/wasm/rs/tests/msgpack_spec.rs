@@ -87,22 +87,22 @@ mod test {
             buffer.to_vec()
         }
 
-        fn from_buffer(&mut self, buffer: &[u8]) {
+        fn from_buffer(&mut self, buffer: &[u8]) -> Result<()> {
             let context = Context::new();
             let decoder = ReadDecoder::new(buffer, context);
-            let _ = self.deserialize_sanity(decoder);
+            self.deserialize_sanity(decoder)
         }
 
-        fn from_buffer_with_invalid_types(&mut self, buffer: &[u8]) {
+        fn from_buffer_with_invalid_types(&mut self, buffer: &[u8]) -> Result<()> {
             let context = Context::new();
             let decoder = ReadDecoder::new(buffer, context);
-            let _ = self.deserialize_with_invalid_types(decoder);
+            self.deserialize_with_invalid_types(decoder)
         }
 
-        fn from_buffer_with_overflows(&mut self, buffer: &[u8]) {
+        fn from_buffer_with_overflows(&mut self, buffer: &[u8]) -> Result<()> {
             let context = Context::new();
             let decoder = ReadDecoder::new(buffer, context);
-            let _ = self.deserialize_with_overflow(decoder);
+            self.deserialize_with_overflow(decoder)
         }
 
         fn serialize_sanity<W: Write>(&self, mut writer: W) {
@@ -366,7 +366,7 @@ mod test {
     fn serialize_and_deserialize() {
         let mut input = Sanity::new();
         let mut output = Sanity::new();
-        output.from_buffer(input.to_buffer().as_slice());
+        let _ = output.from_buffer(input.to_buffer().as_slice());
         assert_eq!(output, input);
     }
 
@@ -374,19 +374,17 @@ mod test {
     fn serialize_and_deserialize_with_overflow() {
         let mut input = Sanity::new();
         let mut output = Sanity::new();
-        panic!(
-            "{:?}",
-            output.from_buffer_with_overflows(input.to_buffer().as_slice())
-        );
+        assert!(output
+            .from_buffer_with_overflows(input.to_buffer().as_slice())
+            .is_ok());
     }
 
     #[test]
     fn throw_error_if_invalid_type_found() {
         let mut input = Sanity::new();
         let mut output = Sanity::new();
-        panic!(
-            "{:?}",
-            output.from_buffer_with_invalid_types(input.to_buffer().as_slice())
-        );
+        assert!(output
+            .from_buffer_with_invalid_types(input.to_buffer().as_slice())
+            .is_ok());
     }
 }

@@ -28,6 +28,7 @@ pub fn w3_add_invoke(method: &str, func: InvokeFunction) {
 
 /// Helper for handling _w3_invoke
 #[allow(unused_unsafe)]
+#[wasm_bindgen]
 pub fn w3_invoke(method_size: u32, args_size: u32) -> bool {
     let method_buf: Vec<u8> = Vec::with_capacity(method_size as usize);
     let args_buf: Vec<u8> = Vec::with_capacity(args_size as usize);

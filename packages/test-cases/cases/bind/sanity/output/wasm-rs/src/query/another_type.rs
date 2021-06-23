@@ -15,8 +15,8 @@ impl AnotherType {
             circular: Box::new(None),
         }
     }
- 
-    pub fn serialize_another_type(mut object: Self) -> Vec<u8> {
+
+    pub fn serialize_another_type(object: Self) -> Vec<u8> {
         let mut sizer_context = Context::new();
         sizer_context.description = "Serializing (sizing) object-type: AnotherType".to_string();
         let sizer = WriteSizer::new(sizer_context);
@@ -29,7 +29,7 @@ impl AnotherType {
         buffer
     }
 
-    pub fn write_another_type<W: Write>(mut object: Self, mut writer: W) {
+    pub fn write_another_type<W: Write>(object: Self, mut writer: W) {
         writer.write_map_length(2);
         writer
             .context()
@@ -104,7 +104,7 @@ impl AnotherType {
         }
     }
 
-    pub fn to_buffer(mut object: Self) -> Vec<u8> {
+    pub fn to_buffer(object: Self) -> Vec<u8> {
         Self::serialize_another_type(object)
     }
 
