@@ -47,112 +47,112 @@ pub struct CustomType {
 }
 
 impl CustomType {
-    pub fn serialize_custom_type(&mut self) -> Vec<u8> {
+    pub fn serialize_custom_type(object: Self) -> Vec<u8> {
         let mut sizer_context = Context::new();
         sizer_context.description = "Serializing (sizing) object-type: CustomType".to_string();
         let sizer = WriteSizer::new(sizer_context);
-        self.write_custom_type(sizer.clone());
+        Self::write_custom_type(object.clone(), sizer.clone());
         let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
         let mut encoder_context = Context::new();
         encoder_context.description = "Serializing (encoding) object-type: CustomType".to_string();
         let encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-        self.write_custom_type(encoder);
+        Self::write_custom_type(object, encoder);
         buffer
     }
 
-    pub fn write_custom_type<W: Write>(&mut self, mut writer: W) {
+    pub fn write_custom_type<W: Write>(object: Self, mut writer: W) {
         writer.write_map_length(35);
         writer
             .context()
             .push("string", "string", "writing property");
         writer.write_string("string".to_string());
-        writer.write_string(self.string.to_owned());
+        writer.write_string(object.string.to_owned());
         let _ = writer.context().pop();
         writer
             .context()
             .push("opt_string", "Option<String>", "writing property");
         writer.write_string("opt_string".to_string());
-        let _ = writer.write_nullable_string(self.opt_string.to_owned());
+        let _ = writer.write_nullable_string(object.opt_string.to_owned());
         let _ = writer.context().pop();
         writer.context().push("u", "u32", "writing property");
         writer.write_string("u".to_string());
-        writer.write_u32(self.u);
+        writer.write_u32(object.u);
         let _ = writer.context().pop();
         writer
             .context()
             .push("opt_u", "Option<u32>", "writing property");
         writer.write_string("opt_u".to_string());
-        let _ = writer.write_nullable_u32(self.opt_u);
+        let _ = writer.write_nullable_u32(object.opt_u);
         let _ = writer.context().pop();
         writer.context().push("u8", "u8", "writing property");
         writer.write_string("u8".to_string());
-        writer.write_u8(self.uint8);
+        writer.write_u8(object.uint8);
         let _ = writer.context().pop();
         writer.context().push("u16", "u16", "writing property");
         writer.write_string("u16".to_string());
-        writer.write_u16(self.uint16);
+        writer.write_u16(object.uint16);
         let _ = writer.context().pop();
         writer.context().push("u32", "u32", "writing property");
         writer.write_string("u32".to_string());
-        writer.write_u32(self.uint32);
+        writer.write_u32(object.uint32);
         let _ = writer.context().pop();
         writer.context().push("u64", "u64", "writing property");
         writer.write_string("u64".to_string());
-        writer.write_u64(self.uint64);
+        writer.write_u64(object.uint64);
         let _ = writer.context().pop();
         writer.context().push("i", "i32", "writing property");
         writer.write_string("i".to_string());
-        writer.write_i32(self.i);
+        writer.write_i32(object.i);
         let _ = writer.context().pop();
         writer.context().push("i8", "i8", "writing property");
         writer.write_string("i8".to_string());
-        writer.write_i8(self.int8);
+        writer.write_i8(object.int8);
         let _ = writer.context().pop();
         writer.context().push("i16", "i16", "writing property");
         writer.write_string("i16".to_string());
-        writer.write_i16(self.int16);
+        writer.write_i16(object.int16);
         let _ = writer.context().pop();
         writer.context().push("i32", "i32", "writing property");
         writer.write_string("i32".to_string());
-        writer.write_i32(self.int32);
+        writer.write_i32(object.int32);
         let _ = writer.context().pop();
         writer.context().push("i64", "i64", "writing property");
         writer.write_string("i64".to_string());
-        writer.write_i64(self.int64);
+        writer.write_i64(object.int64);
         let _ = writer.context().pop();
         writer
             .context()
             .push("bigint", "BigInt", "writing property");
         writer.write_string("bigint".to_string());
-        writer.write_bigint(self.bigint.to_owned());
+        writer.write_bigint(object.bigint.to_owned());
         let _ = writer.context().pop();
         writer
             .context()
             .push("opt_bigint", "Option<BigInt>", "writing property");
         writer.write_string("opt_bigint".to_string());
-        let _ = writer.write_nullable_bigint(self.opt_bigint.to_owned());
+        let _ = writer.write_nullable_bigint(object.opt_bigint.to_owned());
         let _ = writer.context().pop();
         writer
             .context()
             .push("bytes", "Vec<u8>", "writing property");
         writer.write_string("bytes".to_string());
-        let _ = writer.write_bytes(self.bytes.as_slice());
+        let _ = writer.write_bytes(object.bytes.as_slice());
         let _ = writer.context().pop();
         writer
             .context()
             .push("opt_bytes", "Option<Vec<u8>>", "writing property");
         writer.write_string("opt_bytes".to_string());
-        let _ = writer.write_nullable_bytes(self.opt_bytes.to_owned());
+        let _ = writer.write_nullable_bytes(object.opt_bytes.to_owned());
         let _ = writer.context().pop();
         writer.context().push("boolean", "bool", "writing property");
         writer.write_string("boolean".to_string());
-        writer.write_bool(self.boolean);
+        writer.write_bool(object.boolean);
         let _ = writer.context().pop();
         writer
             .context()
             .push("opt_boolean", "Option<bool>", "writing property");
         writer.write_string("opt_boolean".to_string());
-        let _ = writer.write_nullable_bool(self.opt_boolean);
+        let _ = writer.write_nullable_bool(object.opt_boolean);
         let _ = writer.context().pop();
         writer
             .context()
@@ -216,14 +216,14 @@ impl CustomType {
             .context()
             .push("object", "AnotherType", "writing property");
         writer.write_string("object".to_string());
-        self.object.write(writer.to_owned());
+        AnotherType::write(object.object.clone(), writer.to_owned());
         let _ = writer.context().pop();
         writer
             .context()
             .push("opt_object", "Option<AnotherType>", "writing property");
         writer.write_string("opt_object".to_string());
-        if self.opt_object.is_some() {
-            self.opt_object.clone().unwrap().write(writer.to_owned());
+        if object.opt_object.is_some() {
+            AnotherType::write(object.opt_object.clone().unwrap(), writer.to_owned());
         } else {
             writer.write_nil();
         }
@@ -246,13 +246,13 @@ impl CustomType {
             .context()
             .push("en", "CustomEnum", "writing property");
         writer.write_string("en".to_string());
-        writer.write_i32(self.en.clone() as i32);
+        writer.write_i32(object.en.clone() as i32);
         let _ = writer.context().pop();
         writer
             .context()
             .push("opt_en", "Option<CustomEnum>", "writing property");
         writer.write_string("opt_en".to_string());
-        let _ = writer.write_nullable_i32(Some(self.opt_en.clone().unwrap() as i32));
+        let _ = writer.write_nullable_i32(Some(object.opt_en.clone().unwrap() as i32));
         let _ = writer.context().pop();
         writer
             .context()
@@ -270,15 +270,15 @@ impl CustomType {
         let _ = writer.context().pop();
     }
 
-    pub fn deserialize_custom_type(&mut self, buffer: &[u8]) -> Self {
+    pub fn deserialize_custom_type(buffer: &[u8]) -> Self {
         let mut context = Context::new();
         context.description = "Deserializing object-type: CustomType".to_string();
         let reader = ReadDecoder::new(buffer, context);
-        self.read_custom_type(reader)
+        Self::read_custom_type(reader)
             .expect("Failed to deserialize CustomType")
     }
 
-    pub fn read_custom_type<R: Read>(&mut self, mut reader: R) -> Result<Self> {
+    pub fn read_custom_type<R: Read>(mut reader: R) -> Result<Self> {
         let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
         let mut string = "".to_string();
@@ -567,7 +567,7 @@ impl CustomType {
                     reader
                         .context()
                         .push(&field, "AnotherType", "type found, reading property");
-                    object = self.object.read(reader.clone());
+                    object = AnotherType::read(reader.clone());
                     object_set = true;
                     let _ = reader.context().pop();
                 }
@@ -578,7 +578,7 @@ impl CustomType {
                         "type found, reading property",
                     );
                     if !reader.is_next_nil() {
-                        opt_object = Some(self.object.read(reader.clone()));
+                        opt_object = Some(AnotherType::read(reader.clone()));
                     }
                     let _ = reader.context().pop();
                 }
@@ -842,20 +842,20 @@ impl CustomType {
         })
     }
 
-    pub fn to_buffer(&mut self) -> Vec<u8> {
-        self.serialize_custom_type()
+    pub fn to_buffer(object: Self) -> Vec<u8> {
+        Self::serialize_custom_type(object)
     }
 
-    pub fn from_buffer(&mut self, buffer: &[u8]) -> Self {
-        self.deserialize_custom_type(buffer)
+    pub fn from_buffer(buffer: &[u8]) -> Self {
+        Self::deserialize_custom_type(buffer)
     }
 
-    pub fn write<W: Write>(&mut self, writer: W) {
-        self.write_custom_type(writer);
+    pub fn write<W: Write>(object: Self, writer: W) {
+        Self::write_custom_type(object, writer);
     }
 
-    pub fn read<R: Read>(&mut self, reader: R) -> Self {
-        self.read_custom_type(reader)
+    pub fn read<R: Read>(reader: R) -> Self {
+        Self::read_custom_type(reader)
             .expect("Failed to read CustomType")
     }
 }

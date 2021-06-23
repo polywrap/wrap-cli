@@ -26,7 +26,7 @@ impl InputQueryMethod {
         }
     }
 
-    pub fn deserialize_query_method_args(&mut self, args_buf: &[u8]) -> Result<Self> {
+    pub fn deserialize_query_method_args(args_buf: &[u8]) -> Result<Self> {
         let mut context = Context::new();
         context.description = "Deserializing query-type: query_method".to_string();
         let mut reader = ReadDecoder::new(args_buf, context);
@@ -159,32 +159,25 @@ impl InputQueryMethod {
         })
     }
 
-    pub fn serialize_query_method_result(&mut self, result: i32) -> Vec<u8> {
+    pub fn serialize_query_method_result(result: i32) -> Vec<u8> {
         let mut sizer_context = Context::new();
         sizer_context.description = "Serializing (sizing) query-type: query_method".to_string();
         let sizer = WriteSizer::new(sizer_context);
-        self.write_query_method_result(sizer.clone(), result);
+        Self::write_query_method_result(sizer.clone(), result);
         let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
         let mut encoder_context = Context::new();
         encoder_context.description = "Serializing (encoding) query-type: query_method".to_string();
         let encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-        self.write_query_method_result(encoder, result);
+        Self::write_query_method_result(encoder, result);
         buffer
     }
 
-    pub fn write_query_method_result<W: Write>(&mut self, mut writer: W, result: i32) {
+    pub fn write_query_method_result<W: Write>(mut writer: W, result: i32) {
         writer
             .context()
             .push("query_method", "i32", "writing property");
         writer.write_i32(result);
         let _ = writer.context().pop();
-    }
-
-    pub fn query_method_wrapped(&mut self, args_buf: &[u8]) -> Vec<u8> {
-        let query_method = self.deserialize_query_method_args(args_buf).unwrap();
-        let args = bincode::serialize(&query_method).unwrap_or_default();
-        let result = args.iter().fold(0, |result, &bit| (result << 1) ^ bit) as i32;
-        self.serialize_query_method_result(result)
     }
 }
 
@@ -205,7 +198,7 @@ impl InputObjectMethod {
             opt_object_array: None,
         }
     }
-    pub fn deserialize_object_method_args(&mut self, args_buf: &[u8]) -> Result<Self> {
+    pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<Self> {
         let mut context = Context::new();
         context.description = "Deserializing query-type: object_method".to_string();
         let mut reader = ReadDecoder::new(args_buf, context);
@@ -227,7 +220,7 @@ impl InputObjectMethod {
                     reader
                         .context()
                         .push(&field, "AnotherType", "type found, reading property");
-                    object = self.object.read(reader.clone());
+                    object = AnotherType::read(reader.clone());
                     object_set = true;
                     let _ = reader.context().pop();
                 }
@@ -238,7 +231,7 @@ impl InputObjectMethod {
                         "type found, reading property",
                     );
                     if !reader.is_next_nil() {
-                        opt_object = Some(self.object.read(reader.clone()));
+                        opt_object = Some(AnotherType::read(reader.clone()));
                     }
                     let _ = reader.context().pop();
                 }
@@ -290,22 +283,21 @@ impl InputObjectMethod {
         })
     }
 
-    pub fn serialize_object_method_result(&mut self, result: Option<AnotherType>) -> Vec<u8> {
+    pub fn serialize_object_method_result(result: Option<AnotherType>) -> Vec<u8> {
         let mut sizer_context = Context::new();
         sizer_context.description = "Serializing (sizing) query-type: object_method".to_string();
         let sizer = WriteSizer::new(sizer_context);
-        self.write_object_method_result(sizer.clone(), &result);
+        Self::write_object_method_result(sizer.clone(), &result);
         let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
         let mut encoder_context = Context::new();
         encoder_context.description =
             "Serializing (encoding) query-type: object_method".to_string();
         let encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-        self.write_object_method_result(encoder, &result);
+        Self::write_object_method_result(encoder, &result);
         buffer
     }
 
     pub fn write_object_method_result<W: Write>(
-        &mut self,
         mut writer: W,
         result: &Option<AnotherType>,
     ) {
@@ -313,16 +305,22 @@ impl InputObjectMethod {
             .context()
             .push("object_method", "Option<AnotherType", "writing property");
         if result.is_some() {
-            self.object.write(writer.clone());
+            AnotherType::write(result.clone().unwrap(), writer.clone());
         } else {
             writer.write_nil();
         }
         let _ = writer.context().pop();
     }
+}
 
-    pub fn object_method_wrapped(&mut self, args_buf: &[u8]) -> Vec<u8> {
-        let result = self.deserialize_object_method_args(args_buf).unwrap();
+pub fn query_method_wrapped(args_buf: &[u8]) -> Vec<u8> {
+    let query_method = InputQueryMethod::deserialize_query_method_args(args_buf).unwrap();
+    let args = bincode::serialize(&query_method).unwrap_or_default();
+    let result = args.iter().fold(0, |result, &bit| (result << 1) ^ bit) as i32;
+    InputQueryMethod::serialize_query_method_result(result)
+}
 
-        self.serialize_object_method_result(result.opt_object)
-    }
+pub fn object_method_wrapped(args_buf: &[u8]) -> Vec<u8> {
+    let object_method = InputObjectMethod::deserialize_object_method_args(args_buf).unwrap();
+    InputObjectMethod::serialize_object_method_result(object_method.opt_object)
 }

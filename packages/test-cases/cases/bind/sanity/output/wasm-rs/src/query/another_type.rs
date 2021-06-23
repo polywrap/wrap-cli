@@ -16,47 +16,47 @@ impl AnotherType {
         }
     }
  
-    pub fn serialize_another_type(&mut self) -> Vec<u8> {
+    pub fn serialize_another_type(mut object: Self) -> Vec<u8> {
         let mut sizer_context = Context::new();
         sizer_context.description = "Serializing (sizing) object-type: AnotherType".to_string();
         let sizer = WriteSizer::new(sizer_context);
-        self.write_another_type(sizer.clone());
+        Self::write_another_type(object.clone(), sizer.clone());
         let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
         let mut encoder_context = Context::new();
         encoder_context.description = "Serializing (encoding) object-type: AnotherType".to_string();
         let encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-        self.write_another_type(encoder);
+        Self::write_another_type(object, encoder);
         buffer
     }
 
-    pub fn write_another_type<W: Write>(&mut self, mut writer: W) {
+    pub fn write_another_type<W: Write>(mut object: Self, mut writer: W) {
         writer.write_map_length(2);
         writer
             .context()
             .push("prop", "Option<String>", "writing property");
         writer.write_string("prop".to_string());
-        let _ = writer.write_nullable_string(self.prop.clone());
+        let _ = writer.write_nullable_string(object.prop.clone());
         let _ = writer.context().pop();
         writer
             .context()
             .push("circular", "Option<CustomType>", "writing property");
         writer.write_string("circular".to_string());
-        if self.circular.is_some() {
-            self.circular.clone().unwrap().write(writer.clone());
+        if object.circular.is_some() {
+            Self::write(object, writer.clone());
         } else {
             writer.write_nil();
         }
         let _ = writer.context().pop();
     }
 
-    pub fn deserialize_another_type(&mut self, buffer: &[u8]) -> Self {
+    pub fn deserialize_another_type(buffer: &[u8]) -> Self {
         let mut context = Context::new();
         context.description = "Deserializing object-type AnotherType".to_string();
         let reader = ReadDecoder::new(buffer, context);
-        self.read_another_type(reader)
+        Self::read_another_type(reader)
     }
 
-    pub fn read_another_type<R: Read>(&mut self, mut reader: R) -> Self {
+    pub fn read_another_type<R: Read>(mut reader: R) -> Self {
         let mut num_of_fields = reader.read_map_length().unwrap_or_default();
         let mut prop: Option<String> = None;
         let mut circular: Option<CustomType> = None;
@@ -81,7 +81,7 @@ impl AnotherType {
                     );
                     let mut object: Option<CustomType> = None;
                     if !reader.is_next_nil() {
-                        object = Some(self.circular.clone().unwrap().read(reader.clone()));
+                        object = Some(CustomType::read(reader.clone()));
                     }
                     circular = object;
                     let _ = reader.context().pop();
@@ -104,19 +104,19 @@ impl AnotherType {
         }
     }
 
-    pub fn to_buffer(&mut self) -> Vec<u8> {
-        self.serialize_another_type()
+    pub fn to_buffer(mut object: Self) -> Vec<u8> {
+        Self::serialize_another_type(object)
     }
 
-    pub fn from_buffer(&mut self, buffer: &[u8]) -> Self {
-        self.deserialize_another_type(buffer)
+    pub fn from_buffer(buffer: &[u8]) -> Self {
+        Self::deserialize_another_type(buffer)
     }
 
-    pub fn write<W: Write>(&mut self, writer: W) {
-        self.write_another_type(writer);
+    pub fn write<W: Write>(object: Self, writer: W) {
+        Self::write_another_type(object, writer);
     }
 
-    pub fn read<R: Read>(&mut self, reader: R) -> Self {
-        self.read_another_type(reader)
+    pub fn read<R: Read>(reader: R) -> Self {
+        Self::read_another_type(reader)
     }
 }
