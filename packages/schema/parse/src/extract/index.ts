@@ -6,12 +6,12 @@ import { getImportedObjectTypesVisitor } from "./imported-object-types";
 import { getImportedQueryTypesVisitor } from "./imported-query-types";
 import { getImportedEnumTypesVisitor } from "./imported-enum-types";
 import { Blackboard } from "./Blackboard";
-import { EnterLeaveASTVisitor } from "../EnterLeaveASTVisitor";
+import { ASTVisitor } from "graphql";
 
 export type SchemaExtractor = (
   typeInfo: TypeInfo,
   blackboard: Blackboard
-) => EnterLeaveASTVisitor;
+) => ASTVisitor;
 
 export const extractors: SchemaExtractor[] = [
   getEnumTypesVisitor,

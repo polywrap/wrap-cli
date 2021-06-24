@@ -24,8 +24,8 @@ import {
   DirectiveNode,
   ArgumentNode,
   ValueNode,
+  ASTVisitor,
 } from "graphql";
-import { EnterLeaveASTVisitor } from "../EnterLeaveASTVisitor";
 
 const visitorEnter = (
   queryTypes: QueryDefinition[],
@@ -163,7 +163,7 @@ const visitorLeave = (state: State) => ({
 export const getQueryTypesVisitor = (
   typeInfo: TypeInfo,
   blackboard: Blackboard
-): EnterLeaveASTVisitor => {
+): ASTVisitor => {
   const state: State = {};
   
   return {

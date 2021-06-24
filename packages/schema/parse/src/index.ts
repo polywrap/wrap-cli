@@ -4,9 +4,8 @@ import { TypeInfoTransforms, transformTypeInfo } from "./transform";
 import { finalizePropertyDef } from "./transform/finalizePropertyDef";
 import { validators, SchemaValidator } from "./validate";
 import { Blackboard } from "./extract/Blackboard";
-import { aggregateVisitors } from "./aggregateVisitors";
 
-import { DocumentNode, parse, visit } from "graphql";
+import { DocumentNode, parse, visit, visitInParallel } from "graphql";
 
 export * from "./typeInfo";
 export * from "./transform";
@@ -64,7 +63,7 @@ const validate = (
     .filter(x => x);
 
 
-  visit(astNode, aggregateVisitors(allVisitors));
+  visit(astNode, visitInParallel(allVisitors));
 
   for(const displayValidationMessagesIfExist of allDisplayValidationMessages) {
     displayValidationMessagesIfExist!(astNode);
@@ -79,5 +78,5 @@ const extract = (
 ) => {
   const allVisitors = extractors.map(getVisitor => getVisitor(typeInfo, blackboard));
 
-  visit(astNode, aggregateVisitors(allVisitors));
+  visit(astNode, visitInParallel(allVisitors));
 };

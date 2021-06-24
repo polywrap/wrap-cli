@@ -19,8 +19,8 @@ import {
   NamedTypeNode,
   ListTypeNode,
   FieldDefinitionNode,
+  ASTVisitor,
 } from "graphql";
-import { EnterLeaveASTVisitor } from "../EnterLeaveASTVisitor";
 
 const visitorEnter = (
   importedObjectTypes: ImportedObjectDefinition[],
@@ -75,7 +75,7 @@ const visitorLeave = (state: State) => ({
 export const getImportedObjectTypesVisitor = (
   typeInfo: TypeInfo,
   blackboard: Blackboard
-): EnterLeaveASTVisitor => {
+): ASTVisitor => {
   const state: State = {};
   
   return {
