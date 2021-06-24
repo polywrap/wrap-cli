@@ -178,10 +178,10 @@ impl Write for WriteEncoder {
         }
     }
 
-    fn write_array<T>(&mut self, a: &[T], arr_fn: fn(&T)) {
+    fn write_array<T>(&mut self, a: &[T], arr_fn: fn(&mut Self, item: &T)) {
         self.write_array_length(a.len() as u32);
-        for item in a {
-            arr_fn(item);
+        for i in 0..a.len() {
+            arr_fn(self, &a[i]);
         }
     }
 
@@ -200,13 +200,19 @@ impl Write for WriteEncoder {
         }
     }
 
-    fn write_map<K: Eq + Hash, V>(&mut self, map: HashMap<K, V>, key_fn: fn(&K), val_fn: fn(&V)) {
+    fn write_map<K: Eq + Hash, V>(
+        &mut self,
+        map: HashMap<K, V>,
+        key_fn: fn(&mut Self, key: &K),
+        val_fn: fn(&mut Self, value: &V),
+    ) {
         self.write_map_length(map.len() as u32);
-        let keys = map.keys().into_iter();
-        for key in keys {
+        let keys: Vec<_> = map.keys().into_iter().collect();
+        for i in 0..keys.len() {
+            let key = keys[i];
             let value = map.get(&key).unwrap();
-            key_fn(key);
-            val_fn(value);
+            key_fn(self, key);
+            val_fn(self, value);
         }
     }
 
@@ -337,7 +343,11 @@ impl Write for WriteEncoder {
         Ok(())
     }
 
-    fn write_nullable_array<T>(&mut self, a: Option<&[T]>, arr_fn: fn(&T)) -> Result {
+    fn write_nullable_array<T>(
+        &mut self,
+        a: Option<&[T]>,
+        arr_fn: fn(&mut Self, item: &T),
+    ) -> Result {
         if a.is_none() {
             self.write_nil();
             return Ok(());
@@ -349,8 +359,8 @@ impl Write for WriteEncoder {
     fn write_nullable_map<K: Eq + Hash, V>(
         &mut self,
         map: Option<HashMap<K, V>>,
-        key_fn: fn(&K),
-        val_fn: fn(&V),
+        key_fn: fn(&mut Self, key: &K),
+        val_fn: fn(&mut Self, value: &V),
     ) -> Result {
         if map.is_none() {
             self.write_nil();

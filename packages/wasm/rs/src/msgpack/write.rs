@@ -24,9 +24,14 @@ pub trait Write: Clone + Sized {
     fn write_bytes(&mut self, buf: &[u8]) -> Result;
     fn write_bigint(&mut self, value: BigInt);
     fn write_array_length(&mut self, length: u32);
-    fn write_array<T>(&mut self, a: &[T], arr_fn: fn(&T));
+    fn write_array<T>(&mut self, a: &[T], arr_fn: fn(&mut Self, item: &T));
     fn write_map_length(&mut self, length: u32);
-    fn write_map<K: Eq + Hash, V>(&mut self, map: HashMap<K, V>, key_fn: fn(&K), val_fn: fn(&V));
+    fn write_map<K: Eq + Hash, V>(
+        &mut self,
+        map: HashMap<K, V>,
+        key_fn: fn(&mut Self, key: &K),
+        val_fn: fn(&mut Self, value: &V),
+    );
     fn write_nullable_bool(&mut self, value: Option<bool>) -> Result;
     fn write_nullable_i8(&mut self, value: Option<i8>) -> Result;
     fn write_nullable_i16(&mut self, value: Option<i16>) -> Result;
@@ -41,12 +46,16 @@ pub trait Write: Clone + Sized {
     fn write_nullable_string(&mut self, value: Option<String>) -> Result;
     fn write_nullable_bytes(&mut self, buf: Option<Vec<u8>>) -> Result;
     fn write_nullable_bigint(&mut self, value: Option<BigInt>) -> Result;
-    fn write_nullable_array<T>(&mut self, a: Option<&[T]>, arr_fn: fn(&T)) -> Result;
+    fn write_nullable_array<T>(
+        &mut self,
+        a: Option<&[T]>,
+        arr_fn: fn(&mut Self, item: &T),
+    ) -> Result;
     fn write_nullable_map<K: Eq + Hash, V>(
         &mut self,
         map: Option<HashMap<K, V>>,
-        key_fn: fn(&K),
-        val_fn: fn(&V),
+        key_fn: fn(&mut Self, key: &K),
+        val_fn: fn(&mut Self, value: &V),
     ) -> Result;
     fn context(&mut self) -> &mut Context;
 }
