@@ -1,11 +1,10 @@
 import { createWeb3ApiProvider } from "..";
 import { SimpleStorageContainer } from "./dapp/SimpleStorage";
+import { createRedirects } from "./redirects";
 
-import React from "react";
-import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import {
   UriRedirect
-} from "@web3api/client-js";
+} from "@web3api/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
@@ -13,7 +12,10 @@ import {
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
-jest.setTimeout(60000);
+import React from "react";
+import { render, fireEvent, screen, waitFor } from "@testing-library/react";
+
+jest.setTimeout(360000);
 
 describe("Web3API React Integration", () => {
   let redirects: UriRedirect[];
@@ -26,11 +28,12 @@ describe("Web3API React Integration", () => {
   beforeAll(async () => {
     const {
       ipfs,
+      ethereum,
       ensAddress,
-      redirects: testRedirects,
     } = await initTestEnvironment();
 
-    redirects = testRedirects;
+    redirects = createRedirects(ensAddress, ethereum, ipfs);
+
     api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
       ipfs,

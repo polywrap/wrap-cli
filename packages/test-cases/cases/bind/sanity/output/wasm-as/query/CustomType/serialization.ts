@@ -219,65 +219,65 @@ export function deserializeCustomType(buffer: ArrayBuffer): CustomType {
 }
 
 export function readCustomType(reader: Read): CustomType {
-  var numFields = reader.readMapLength();
+  let numFields = reader.readMapLength();
 
-  var _str: string = "";
-  var _strSet: bool = false;
-  var _optStr: string | null = null;
-  var _u: u32 = 0;
-  var _uSet: bool = false;
-  var _optU: Nullable<u32> = new Nullable<u32>();
-  var _u8: u8 = 0;
-  var _u8Set: bool = false;
-  var _u16: u16 = 0;
-  var _u16Set: bool = false;
-  var _u32: u32 = 0;
-  var _u32Set: bool = false;
-  var _u64: u64 = 0;
-  var _u64Set: bool = false;
-  var _i: i32 = 0;
-  var _iSet: bool = false;
-  var _i8: i8 = 0;
-  var _i8Set: bool = false;
-  var _i16: i16 = 0;
-  var _i16Set: bool = false;
-  var _i32: i32 = 0;
-  var _i32Set: bool = false;
-  var _i64: i64 = 0;
-  var _i64Set: bool = false;
-  var _bigint: BigInt = BigInt.fromUInt16(0);
-  var _bigintSet: bool = false;
-  var _optBigint: BigInt | null = null;
-  var _bytes: ArrayBuffer = new ArrayBuffer(0);
-  var _bytesSet: bool = false;
-  var _optBytes: ArrayBuffer | null = null;
-  var _boolean: bool = false;
-  var _booleanSet: bool = false;
-  var _optBoolean: Nullable<bool> = new Nullable<bool>();
-  var _uArray: Array<u32> = [];
-  var _uArraySet: bool = false;
-  var _uOptArray: Array<u32> | null = null;
-  var _optUOptArray: Array<Nullable<u32>> | null = null;
-  var _optStrOptArray: Array<string | null> | null = null;
-  var _uArrayArray: Array<Array<u32>> = [];
-  var _uArrayArraySet: bool = false;
-  var _uOptArrayOptArray: Array<Array<Nullable<u64>> | null> = [];
-  var _uOptArrayOptArraySet: bool = false;
-  var _uArrayOptArrayArray: Array<Array<Array<u64>> | null> = [];
-  var _uArrayOptArrayArraySet: bool = false;
-  var _crazyArray: Array<Array<Array<Array<u64> | null>> | null> | null = null;
-  var _object: Types.AnotherType | null = null;
-  var _objectSet: bool = false;
-  var _optObject: Types.AnotherType | null = null;
-  var _objectArray: Array<Types.AnotherType> = [];
-  var _objectArraySet: bool = false;
-  var _optObjectArray: Array<Types.AnotherType | null> | null = null;
-  var _en: Types.CustomEnum = 0;
-  var _enSet: bool = false;
-  var _optEnum: Nullable<Types.CustomEnum> = new Nullable<Types.CustomEnum>();
-  var _enumArray: Array<Types.CustomEnum> = [];
-  var _enumArraySet: bool = false;
-  var _optEnumArray: Array<Nullable<Types.CustomEnum>> | null = null;
+  let _str: string = "";
+  let _strSet: bool = false;
+  let _optStr: string | null = null;
+  let _u: u32 = 0;
+  let _uSet: bool = false;
+  let _optU: Nullable<u32> = new Nullable<u32>();
+  let _u8: u8 = 0;
+  let _u8Set: bool = false;
+  let _u16: u16 = 0;
+  let _u16Set: bool = false;
+  let _u32: u32 = 0;
+  let _u32Set: bool = false;
+  let _u64: u64 = 0;
+  let _u64Set: bool = false;
+  let _i: i32 = 0;
+  let _iSet: bool = false;
+  let _i8: i8 = 0;
+  let _i8Set: bool = false;
+  let _i16: i16 = 0;
+  let _i16Set: bool = false;
+  let _i32: i32 = 0;
+  let _i32Set: bool = false;
+  let _i64: i64 = 0;
+  let _i64Set: bool = false;
+  let _bigint: BigInt = BigInt.fromUInt16(0);
+  let _bigintSet: bool = false;
+  let _optBigint: BigInt | null = null;
+  let _bytes: ArrayBuffer = new ArrayBuffer(0);
+  let _bytesSet: bool = false;
+  let _optBytes: ArrayBuffer | null = null;
+  let _boolean: bool = false;
+  let _booleanSet: bool = false;
+  let _optBoolean: Nullable<bool> = new Nullable<bool>();
+  let _uArray: Array<u32> = [];
+  let _uArraySet: bool = false;
+  let _uOptArray: Array<u32> | null = null;
+  let _optUOptArray: Array<Nullable<u32>> | null = null;
+  let _optStrOptArray: Array<string | null> | null = null;
+  let _uArrayArray: Array<Array<u32>> = [];
+  let _uArrayArraySet: bool = false;
+  let _uOptArrayOptArray: Array<Array<Nullable<u64>> | null> = [];
+  let _uOptArrayOptArraySet: bool = false;
+  let _uArrayOptArrayArray: Array<Array<Array<u64>> | null> = [];
+  let _uArrayOptArrayArraySet: bool = false;
+  let _crazyArray: Array<Array<Array<Array<u64> | null>> | null> | null = null;
+  let _object: Types.AnotherType | null = null;
+  let _objectSet: bool = false;
+  let _optObject: Types.AnotherType | null = null;
+  let _objectArray: Array<Types.AnotherType> = [];
+  let _objectArraySet: bool = false;
+  let _optObjectArray: Array<Types.AnotherType | null> | null = null;
+  let _en: Types.CustomEnum = 0;
+  let _enSet: bool = false;
+  let _optEnum: Nullable<Types.CustomEnum> = new Nullable<Types.CustomEnum>();
+  let _enumArray: Array<Types.CustomEnum> = [];
+  let _enumArraySet: bool = false;
+  let _optEnumArray: Array<Nullable<Types.CustomEnum>> | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -476,7 +476,7 @@ export function readCustomType(reader: Read): CustomType {
     }
     else if (field == "optObject") {
       reader.context().push(field, "Types.AnotherType | null", "type found, reading property");
-      var object: Types.AnotherType | null = null;
+      let object: Types.AnotherType | null = null;
       if (!reader.isNextNil()) {
         object = Types.AnotherType.read(reader);
       }
@@ -495,7 +495,7 @@ export function readCustomType(reader: Read): CustomType {
     else if (field == "optObjectArray") {
       reader.context().push(field, "Array<Types.AnotherType | null> | null", "type found, reading property");
       _optObjectArray = reader.readNullableArray((reader: Read): Types.AnotherType | null => {
-        var object: Types.AnotherType | null = null;
+        let object: Types.AnotherType | null = null;
         if (!reader.isNextNil()) {
           object = Types.AnotherType.read(reader);
         }

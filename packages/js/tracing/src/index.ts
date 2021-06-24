@@ -32,7 +32,7 @@ export class Tracer {
     this._initProvider();
 
     if (this._provider) {
-      this._tracer = this._provider.getTracer(tracerName);
+      this._tracer = this._provider.getTracer(tracerName) as otTracer;
     }
   }
 
@@ -48,7 +48,10 @@ export class Tracer {
       spanName,
       {},
       currentSpan
-        ? api.setSpanContext(api.context.active(), currentSpan.context())
+        ? api.trace.setSpanContext(
+            api.context.active(),
+            currentSpan.spanContext()
+          )
         : undefined
     );
     this._pushSpan(span);

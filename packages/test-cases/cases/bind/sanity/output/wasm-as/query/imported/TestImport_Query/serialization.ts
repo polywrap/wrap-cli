@@ -120,7 +120,7 @@ export function deserializeimportedMethodResult(buffer: ArrayBuffer): Types.Test
   const reader = new ReadDecoder(buffer, context);
 
   reader.context().push("importedMethod", "Types.TestImport_Object | null", "reading function output");
-  var object: Types.TestImport_Object | null = null;
+  let object: Types.TestImport_Object | null = null;
   if (!reader.isNextNil()) {
     object = Types.TestImport_Object.read(reader);
   }

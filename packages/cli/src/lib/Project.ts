@@ -4,6 +4,7 @@ import { loadWeb3ApiManifest, loadBuildManifest } from "./helpers";
 import { intlMsg } from "./intl";
 
 import { Web3ApiManifest, BuildManifest } from "@web3api/core-js";
+import { normalizePath } from "@web3api/os-js";
 import path from "path";
 import fs from "fs";
 import rimraf from "rimraf";
@@ -155,8 +156,19 @@ export class Project {
 
       // Add default env variables
       const defaultConfig = {
-        web3api_modules: await this.getWeb3ApiModules(),
-        web3api_manifests: await this.getManifestPaths(),
+        web3api_modules: (await this.getWeb3ApiModules()).map(
+          (module: { dir: string; name: string }) => {
+            return {
+              name: module.name,
+              dir: normalizePath(module.dir),
+            };
+          }
+        ),
+        web3api_manifests: (await this.getManifestPaths()).map(
+          (path: string) => {
+            return normalizePath(path);
+          }
+        ),
       };
 
       if (!this._buildManifest.config) {
