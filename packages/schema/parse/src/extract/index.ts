@@ -9,12 +9,12 @@ import { Blackboard } from "./Blackboard";
 
 import { ASTVisitor } from "graphql";
 
-export type SchemaExtractor = (
+export type SchemaExtractorBuilder = (
   typeInfo: TypeInfo,
   blackboard: Blackboard
 ) => ASTVisitor;
 
-export const extractors: SchemaExtractor[] = [
+export const extractors: SchemaExtractorBuilder[] = [
   getEnumTypesVisitor,
   getImportedEnumTypesVisitor,
   getObjectTypesVisitor,

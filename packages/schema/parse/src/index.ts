@@ -1,5 +1,5 @@
 import { TypeInfo, createTypeInfo } from "./typeInfo";
-import { extractors, SchemaExtractor } from "./extract";
+import { extractors, SchemaExtractorBuilder } from "./extract";
 import { TypeInfoTransforms, transformTypeInfo } from "./transform";
 import { finalizePropertyDef } from "./transform/finalizePropertyDef";
 import { SchemaValidatorBuilder, validators } from "./validate";
@@ -12,7 +12,7 @@ export * from "./transform";
 export * from "./header";
 
 interface ParserOptions {
-  extractors?: SchemaExtractor[];
+  extractors?: SchemaExtractorBuilder[];
   transforms?: TypeInfoTransforms[];
   validators?: SchemaValidatorBuilder[];
   noValidate?: boolean;
@@ -74,7 +74,7 @@ const extract = (
   astNode: DocumentNode,
   typeInfo: TypeInfo,
   blackboard: Blackboard,
-  extractors: SchemaExtractor[]
+  extractors: SchemaExtractorBuilder[]
 ) => {
   const allVisitors = extractors.map((getVisitor) =>
     getVisitor(typeInfo, blackboard)
