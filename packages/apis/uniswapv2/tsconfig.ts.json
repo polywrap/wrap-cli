@@ -7,7 +7,7 @@
       "es5",
       "dom"
     ],
-    "outDir": "build",
+    "outDir": "build"
   },
   "include": [
     "./src/__tests__/e2e/**/*.ts"
