@@ -1,12 +1,9 @@
 import { ImportedDefinition } from "../typeInfo";
+import { SchemaValidator } from "./SchemaValidator";
 
-import {
-  DirectiveNode,
-  ASTNode,
-  ObjectTypeDefinitionNode,
-} from "graphql";
+import { DirectiveNode, ASTNode, ObjectTypeDefinitionNode } from "graphql";
 
-export const getSupportedDirectivesValidator = () => {
+export const getSupportedDirectivesValidator = (): SchemaValidator => {
   const supportedDirectives = ["imported", "imports"];
   const unsupportedUsages: string[] = [];
 
@@ -19,8 +16,8 @@ export const getSupportedDirectivesValidator = () => {
           if (!supportedDirectives.includes(name)) {
             unsupportedUsages.push(name);
           }
-        }
-      }
+        },
+      },
     },
     displayValidationMessagesIfExist: () => {
       if (unsupportedUsages.length) {
@@ -30,11 +27,11 @@ export const getSupportedDirectivesValidator = () => {
           )}`
         );
       }
-    }
+    },
   };
 };
 
-export const getImportsDirectiveValidator = () => {
+export const getImportsDirectiveValidator = (): SchemaValidator => {
   let isInsideObjectTypeDefinition = false;
 
   const ObjectTypeDefinition = (node: ObjectTypeDefinitionNode) => {
@@ -137,11 +134,11 @@ export const getImportsDirectiveValidator = () => {
           isInsideObjectTypeDefinition = false;
         }
       },
-    }
+    },
   };
-}
+};
 
-export const getImportedDirectiveValidator = () => {
+export const getImportedDirectiveValidator = (): SchemaValidator => {
   let isInsideObjectOrEnumTypeDefinition = false;
 
   const Directive = (
@@ -214,7 +211,7 @@ export const getImportedDirectiveValidator = () => {
         } else if (node.kind !== "NamedType" && node.kind !== "Name") {
           isInsideObjectOrEnumTypeDefinition = false;
         }
-      }
-    }
+      },
+    },
   };
-}
+};

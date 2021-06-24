@@ -4,11 +4,25 @@ import {
   isQueryType,
   queryTypeNames,
 } from "../typeInfo";
+import { SchemaValidator } from "./SchemaValidator";
 
-import { DirectiveNode, DocumentNode, EnumTypeDefinitionNode, FieldDefinitionNode, InputObjectTypeDefinitionNode, InputValueDefinitionNode, InterfaceTypeDefinitionNode, NamedTypeNode, ObjectTypeDefinitionNode, ScalarTypeDefinitionNode, StringValueNode, UnionTypeDefinitionNode } from "graphql";
+import {
+  DirectiveNode,
+  DocumentNode,
+  EnumTypeDefinitionNode,
+  FieldDefinitionNode,
+  InputObjectTypeDefinitionNode,
+  InputValueDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  NamedTypeNode,
+  ObjectTypeDefinitionNode,
+  ScalarTypeDefinitionNode,
+  StringValueNode,
+  UnionTypeDefinitionNode,
+} from "graphql";
 import { getSchemaCycles } from "graphql-schema-cycles";
 
-export const getTypeDefinitionsValidator = () => {
+export const getTypeDefinitionsValidator = (): SchemaValidator => {
   const objectTypes: Record<string, boolean> = {};
 
   return {
@@ -37,14 +51,14 @@ export const getTypeDefinitionsValidator = () => {
               "Subscriptions are not yet supported. Please use Query or Mutation."
             );
           }
-  
+
           // No duplicates
           if (objectTypes[node.name.value]) {
             throw Error(
               `Duplicate object type definition found: ${node.name.value}`
             );
           }
-  
+
           objectTypes[node.name.value] = true;
         },
         // No New Scalars
@@ -62,12 +76,12 @@ export const getTypeDefinitionsValidator = () => {
               `Found: union ${node.name.value}`
           );
         },
-      }
-    }
+      },
+    },
   };
-}
+};
 
-export const getPropertyTypesValidator = () => {
+export const getPropertyTypesValidator = (): SchemaValidator => {
   let currentObject: string | undefined;
   let currentImportType: string | undefined;
   let currentField: string | undefined;
@@ -116,7 +130,9 @@ export const getPropertyTypesValidator = () => {
           }
         },
         InputValueDefinition: (node: InputValueDefinitionNode) => {
-          const typeName = currentImportType ? currentImportType : currentObject;
+          const typeName = currentImportType
+            ? currentImportType
+            : currentObject;
           if (typeName && !isQueryType(typeName)) {
             // Arguments not supported on non-query types
             throw Error(
@@ -138,7 +154,7 @@ export const getPropertyTypesValidator = () => {
         },
       },
     },
-    displayValidationMessagesIfExist: (documentNode: DocumentNode) => {
+    displayValidationMessagesIfExist: () => {
       // Ensure all property types are either a
       // supported scalar, enum or an object type definition
       for (const field of fieldTypes) {
@@ -152,11 +168,11 @@ export const getPropertyTypesValidator = () => {
           );
         }
       }
-    }
+    },
   };
-}
+};
 
-export function getCircularDefinitionsValidator() {
+export function getCircularDefinitionsValidator(): SchemaValidator {
   const operationTypes: string[] = [];
   const operationTypeNames = ["Mutation", "Subscription", "Query"];
 
@@ -172,7 +188,7 @@ export function getCircularDefinitionsValidator() {
             operationTypes.push(node.name.value);
           }
         },
-      }
+      },
     },
     displayValidationMessagesIfExist: (documentNode: DocumentNode) => {
       const { cycleStrings, foundCycle } = getSchemaCycles(documentNode, {
@@ -187,6 +203,6 @@ export function getCircularDefinitionsValidator() {
           )}`
         );
       }
-    }
+    },
   };
 }

@@ -165,9 +165,9 @@ export const getQueryTypesVisitor = (
   blackboard: Blackboard
 ): ASTVisitor => {
   const state: State = {};
-  
+
   return {
     enter: visitorEnter(typeInfo.queryTypes, state, blackboard),
-    leave: visitorLeave(state)
+    leave: visitorLeave(state),
   };
 };

@@ -36,5 +36,5 @@ const visitorEnter = (importedEnumTypes: ImportedEnumDefinition[]) => ({
 export const getImportedEnumTypesVisitor = (
   typeInfo: TypeInfo
 ): ASTVisitor => ({
-  enter: visitorEnter(typeInfo.importedEnumTypes)
+  enter: visitorEnter(typeInfo.importedEnumTypes),
 });

@@ -111,9 +111,9 @@ export const getImportedQueryTypesVisitor = (
   blackboard: Blackboard
 ): ASTVisitor => {
   const state: State = {};
-  
+
   return {
     enter: visitorEnter(typeInfo.importedQueryTypes, state, blackboard),
-    leave: visitorLeave(state)
+    leave: visitorLeave(state),
   };
 };

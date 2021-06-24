@@ -2,7 +2,8 @@ import { TypeInfo, createTypeInfo } from "./typeInfo";
 import { extractors, SchemaExtractor } from "./extract";
 import { TypeInfoTransforms, transformTypeInfo } from "./transform";
 import { finalizePropertyDef } from "./transform/finalizePropertyDef";
-import { validators, SchemaValidator } from "./validate";
+import { validators } from "./validate";
+import { SchemaValidator } from "./SchemaValidator";
 import { Blackboard } from "./extract/Blackboard";
 
 import { DocumentNode, parse, visit, visitInParallel } from "graphql";
@@ -51,22 +52,24 @@ export function parseSchema(
   return info;
 }
 
-const validate = (
-  astNode: DocumentNode,
-  validators: SchemaValidator[],
-) => {
-  
-  const allValidators = validators.map(getValidator => getValidator());
-  const allVisitors = allValidators.map(x => x.visitor);
-  const allDisplayValidationMessages = allValidators
-    .map(x => x.displayValidationMessagesIfExist)
-    .filter(x => x);
-
+const validate = (astNode: DocumentNode, validators: SchemaValidator[]) => {
+  const allValidators = validators.map((getValidator) => getValidator());
+  const allVisitors = allValidators.map((x) => x.visitor);
+  const allDisplayValidationMessages: Array<
+    (documentNode: DocumentNode) => void
+  > = allValidators
+    .filter((x) => !!x.displayValidationMessagesIfExist)
+    .map(
+      (x) =>
+        x.displayValidationMessagesIfExist as (
+          documentNode: DocumentNode
+        ) => void
+    );
 
   visit(astNode, visitInParallel(allVisitors));
 
-  for(const displayValidationMessagesIfExist of allDisplayValidationMessages) {
-    displayValidationMessagesIfExist!(astNode);
+  for (const displayValidationMessagesIfExist of allDisplayValidationMessages) {
+    displayValidationMessagesIfExist(astNode);
   }
 };
 
@@ -74,9 +77,11 @@ const extract = (
   astNode: DocumentNode,
   typeInfo: TypeInfo,
   blackboard: Blackboard,
-  extractors: SchemaExtractor[],
+  extractors: SchemaExtractor[]
 ) => {
-  const allVisitors = extractors.map(getVisitor => getVisitor(typeInfo, blackboard));
+  const allVisitors = extractors.map((getVisitor) =>
+    getVisitor(typeInfo, blackboard)
+  );
 
   visit(astNode, visitInParallel(allVisitors));
 };

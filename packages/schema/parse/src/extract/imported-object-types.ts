@@ -77,9 +77,9 @@ export const getImportedObjectTypesVisitor = (
   blackboard: Blackboard
 ): ASTVisitor => {
   const state: State = {};
-  
+
   return {
     enter: visitorEnter(typeInfo.importedObjectTypes, state, blackboard),
-    leave: visitorLeave(state)
+    leave: visitorLeave(state),
   };
 };

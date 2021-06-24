@@ -6,6 +6,7 @@ import { getImportedObjectTypesVisitor } from "./imported-object-types";
 import { getImportedQueryTypesVisitor } from "./imported-query-types";
 import { getImportedEnumTypesVisitor } from "./imported-enum-types";
 import { Blackboard } from "./Blackboard";
+
 import { ASTVisitor } from "graphql";
 
 export type SchemaExtractor = (
