@@ -26,17 +26,20 @@ export interface GenericDefinition {
   type: string;
   name: string | null;
   required: boolean | null;
+  comment?: string;
   kind: DefinitionKind;
 }
 export function createGenericDefinition(args: {
   type: string;
   name?: string | null;
   required?: boolean;
+  comment?: string;
 }): GenericDefinition {
   return {
     type: args.type,
     name: args.name ? args.name : null,
     required: args.required ? args.required : null,
+    comment: args.comment,
     kind: DefinitionKind.Generic,
   };
 }
@@ -51,6 +54,7 @@ export function createObjectDefinition(args: {
   required?: boolean;
   properties?: PropertyDefinition[];
   interfaces?: InterfaceImplementedDefinition[];
+  comment?: string;
 }): ObjectDefinition {
   return {
     ...createGenericDefinition(args),
@@ -74,6 +78,7 @@ export function createAnyDefinition(args: {
   scalar?: ScalarDefinition;
   object?: ObjectDefinition;
   enum?: EnumDefinition;
+  comment?: string;
 }): AnyDefinition {
   return {
     ...createGenericDefinition(args),
@@ -113,6 +118,7 @@ export function createEnumDefinition(args: {
   name?: string | null;
   required?: boolean;
   constants?: string[];
+  comment?: string;
 }): EnumDefinition {
   return {
     ...createGenericDefinition(args),
@@ -165,6 +171,7 @@ export function createPropertyDefinition(args: {
   scalar?: ScalarDefinition;
   object?: ObjectDefinition;
   enum?: EnumDefinition;
+  comment?: string;
 }): PropertyDefinition {
   return {
     ...createAnyDefinition(args),
@@ -193,10 +200,14 @@ export function createArrayPropertyDefinition(args: {
   name?: string | null;
   required?: boolean;
   item?: GenericDefinition;
+  comment?: string;
 }): PropertyDefinition {
   return createPropertyDefinition({
     ...args,
-    array: createArrayDefinition(args),
+    array: {
+      ...createArrayDefinition(args),
+      comment: undefined
+    },
   });
 }
 
@@ -204,10 +215,14 @@ export function createScalarPropertyDefinition(args: {
   type: string;
   name?: string | null;
   required?: boolean;
+  comment?: string;
 }): PropertyDefinition {
   return createPropertyDefinition({
     ...args,
-    scalar: createScalarDefinition(args),
+    scalar: {
+      ...createScalarDefinition(args),
+      comment: undefined
+    },
   });
 }
 
@@ -219,7 +234,10 @@ export function createEnumPropertyDefinition(args: {
 }): PropertyDefinition {
   return createPropertyDefinition({
     ...args,
-    enum: createEnumDefinition(args),
+    enum: {
+      ...createEnumDefinition(args),
+      comment: undefined
+    },
   });
 }
 
@@ -228,10 +246,14 @@ export function createObjectPropertyDefinition(args: {
   name?: string | null;
   required?: boolean;
   properties?: PropertyDefinition[];
+  comment?: string;
 }): PropertyDefinition {
   return createPropertyDefinition({
     ...args,
-    object: createObjectDefinition(args),
+    object: {
+      ...createObjectDefinition(args),
+      comment: undefined
+    },
   });
 }
 
@@ -245,6 +267,7 @@ export function createMethodDefinition(args: {
   name: string;
   arguments?: PropertyDefinition[];
   return: PropertyDefinition;
+  comment?: string;
 }): MethodDefinition {
   const lowercase = args.type.toLowerCase();
   if (!isOperationType(lowercase)) {
@@ -273,6 +296,7 @@ export function createQueryDefinition(args: {
   imports?: { type: string }[];
   interfaces?: InterfaceImplementedDefinition[];
   required?: boolean;
+  comment?: string;
 }): QueryDefinition {
   if (!isQueryType(args.type)) {
     throw Error(
@@ -307,6 +331,7 @@ export function createImportedEnumDefinition(args: {
   uri: string;
   namespace: string;
   nativeType: string;
+  comment?: string;
 }): ImportedEnumDefinition {
   return {
     ...createEnumDefinition(args),
@@ -329,6 +354,7 @@ export function createImportedQueryDefinition(args: {
   namespace: string;
   nativeType: string;
   interfaces?: InterfaceImplementedDefinition[];
+  comment?: string;
 }): ImportedQueryDefinition {
   if (!isQueryType(args.nativeType)) {
     throw Error(
@@ -357,6 +383,7 @@ export function createImportedObjectDefinition(args: {
   namespace: string;
   nativeType: string;
   interfaces?: InterfaceImplementedDefinition[];
+  comment?: string;
 }): ImportedObjectDefinition {
   return {
     ...createObjectDefinition(args),

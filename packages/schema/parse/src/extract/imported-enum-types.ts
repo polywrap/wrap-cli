@@ -28,6 +28,7 @@ const visitorEnter = (importedEnumTypes: ImportedEnumDefinition[]) => ({
       uri: imported.uri,
       namespace: imported.namespace,
       nativeType: imported.nativeType,
+      comment: node.description?.value
     });
     importedEnumTypes.push(enumType);
   },
