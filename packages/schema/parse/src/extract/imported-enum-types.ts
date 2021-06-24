@@ -6,6 +6,7 @@ import {
 import { extractImportedDefinition } from "./imported-types-utils";
 
 import { EnumTypeDefinitionNode } from "graphql";
+import { EnterLeaveASTVisitor } from "../EnterLeaveASTVisitor";
 
 const visitorEnter = (importedEnumTypes: ImportedEnumDefinition[]) => ({
   EnumTypeDefinition: (node: EnumTypeDefinitionNode) => {
@@ -35,6 +36,6 @@ const visitorEnter = (importedEnumTypes: ImportedEnumDefinition[]) => ({
 
 export const getImportedEnumTypesVisitor = (
   typeInfo: TypeInfo
-) => ({
+): EnterLeaveASTVisitor => ({
   enter: visitorEnter(typeInfo.importedEnumTypes)
 });

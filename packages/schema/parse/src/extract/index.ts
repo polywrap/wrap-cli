@@ -6,15 +6,12 @@ import { getImportedObjectTypesVisitor } from "./imported-object-types";
 import { getImportedQueryTypesVisitor } from "./imported-query-types";
 import { getImportedEnumTypesVisitor } from "./imported-enum-types";
 import { Blackboard } from "./Blackboard";
-import { ASTNode } from "graphql";
+import { EnterLeaveASTVisitor } from "../EnterLeaveASTVisitor";
 
 export type SchemaExtractor = (
   typeInfo: TypeInfo,
   blackboard: Blackboard
-) => {
-  enter?: Record<string, (node: ASTNode) => void>;
-  leave?: Record<string, (node: ASTNode) => void>;
-};
+) => EnterLeaveASTVisitor;
 
 export const extractors: SchemaExtractor[] = [
   getEnumTypesVisitor,

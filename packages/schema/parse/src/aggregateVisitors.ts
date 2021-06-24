@@ -1,18 +1,12 @@
 import { ASTNode, Visitor, ASTKindToNode } from "graphql";
+import { VisitFn } from "graphql/language/visitor";
+import { EnterLeaveASTVisitor } from "./EnterLeaveASTVisitor";
 
-type CatchAllVisitorFunction = (
-  node: ASTNode,
-  key: string | number | undefined,
-  parent: ASTNode | undefined,
-  path: ReadonlyArray<string | number>
-) => void;
+type CatchAllVisitorFunction = VisitFn<ASTKindToNode[keyof ASTKindToNode]>;
 
 type VisitorFunction = (node: ASTNode) => void;
 
-const buildVisitorMapsAndFuncs = (visitors: {
-  enter?: Record<string, VisitorFunction> | CatchAllVisitorFunction,
-  leave?: Record<string, VisitorFunction> | CatchAllVisitorFunction
-}[]) => {
+const buildVisitorMapsAndFuncs = (visitors: EnterLeaveASTVisitor[]) => {
   const enterVisitorMap: Record<string, VisitorFunction[]> = {};
   const leaveVisitorMap: Record<string, VisitorFunction[]> = {};
   const enterFuncs: Array<CatchAllVisitorFunction> = [];
@@ -23,12 +17,14 @@ const buildVisitorMapsAndFuncs = (visitors: {
       if(typeof visitor.enter === "function") {
         enterFuncs.push(visitor.enter);
       } else {
-        for(const nodeKind of Object.keys(visitor.enter)) {
+        for(const key of Object.keys(visitor.enter)) {
+          const nodeKind = key as keyof ASTKindToNode;
+        
           if(!enterVisitorMap[nodeKind]) {
             enterVisitorMap[nodeKind] = [];
           } 
   
-          enterVisitorMap[nodeKind].push(visitor.enter[nodeKind]);
+          enterVisitorMap[nodeKind].push(visitor.enter[nodeKind] as VisitorFunction);
         }
       }
     }
@@ -37,12 +33,14 @@ const buildVisitorMapsAndFuncs = (visitors: {
       if(typeof visitor.leave === "function") {
         leaveFuncs.push(visitor.leave);
       } else {
-        for(const nodeKind of Object.keys(visitor.leave)) {
+        for(const key of Object.keys(visitor.leave)) {
+          const nodeKind = key as keyof ASTKindToNode;
+
           if(!leaveVisitorMap[nodeKind]) {
             leaveVisitorMap[nodeKind] = [];
           } 
   
-          leaveVisitorMap[nodeKind].push(visitor.leave[nodeKind]);
+          leaveVisitorMap[nodeKind].push(visitor.leave[nodeKind] as VisitorFunction);
         }
       }
     }
@@ -86,10 +84,11 @@ const buildVisitors = (
       node: ASTNode,
       key: string | number | undefined,
       parent: ASTNode | undefined,
-      path: ReadonlyArray<string | number>
+      path: ReadonlyArray<string | number>,
+      ancestors: ReadonlyArray<ASTNode| ReadonlyArray<ASTNode>>
     ) => {
       for(const enterFunc of enterFuncs) {
-        enterFunc(node, key, parent, path);
+        enterFunc(node, key, parent, path, ancestors);
       }
 
       const enterVisitor = enterVisitors[node.kind];
@@ -102,10 +101,11 @@ const buildVisitors = (
       node: ASTNode,
       key: string | number | undefined,
       parent: ASTNode | undefined,
-      path: ReadonlyArray<string | number>
+      path: ReadonlyArray<string | number>,
+      ancestors: ReadonlyArray<ASTNode| ReadonlyArray<ASTNode>>
     ) => {
       for(const leaveFunc of leaveFuncs) {
-        leaveFunc(node, key, parent, path);
+        leaveFunc(node, key, parent, path, ancestors);
       }
 
       const leaveVisitor = leaveVisitors[node.kind];
@@ -117,10 +117,7 @@ const buildVisitors = (
   };
 };
 
-export const aggregateVisitors = (visitors: {
-  enter?: Record<string, VisitorFunction> | CatchAllVisitorFunction,
-  leave?: Record<string, VisitorFunction> | CatchAllVisitorFunction
-}[]): Visitor<ASTKindToNode> => {
+export const aggregateVisitors = (visitors: EnterLeaveASTVisitor[]): Visitor<ASTKindToNode> => {
 
   const {
     enterVisitorMap,

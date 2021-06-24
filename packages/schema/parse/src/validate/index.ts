@@ -1,12 +1,10 @@
 import { DocumentNode } from "graphql";
+import { EnterLeaveASTVisitor } from "../EnterLeaveASTVisitor";
 import * as directiveValidators from "./directives";
 import * as typeValidators from "./types";
 
 export type SchemaValidator = () => {
-  visitor: {
-    enter?: Record<string, any>,
-    leave?: Record<string, any>
-  },
+  visitor: EnterLeaveASTVisitor,
   displayValidationMessagesIfExist?: (documentNode: DocumentNode) => void
 };
 

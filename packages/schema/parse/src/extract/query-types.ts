@@ -25,6 +25,7 @@ import {
   ArgumentNode,
   ValueNode,
 } from "graphql";
+import { EnterLeaveASTVisitor } from "../EnterLeaveASTVisitor";
 
 const visitorEnter = (
   queryTypes: QueryDefinition[],
@@ -162,7 +163,7 @@ const visitorLeave = (state: State) => ({
 export const getQueryTypesVisitor = (
   typeInfo: TypeInfo,
   blackboard: Blackboard
-) => {
+): EnterLeaveASTVisitor => {
   const state: State = {};
   
   return {

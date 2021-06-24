@@ -12,7 +12,8 @@ import {
   createImportedQueryDefinition,
   createEnumDefinition,
   createEnumPropertyDefinition,
-  createImportedEnumDefinition
+  createImportedEnumDefinition,
+  createInterfaceImplementedDefinition
 } from "../../../../schema/parse/src/typeInfo";
 
 export const output: TypeInfo = {
@@ -191,8 +192,8 @@ export const output: TypeInfo = {
       ...createObjectDefinition({
         type: "ImplementationObject",
         interfaces: [
-          { type: "Interface_Object" },
-          { type: "Interface_Object2" }
+          createInterfaceImplementedDefinition({ type: "Interface_Object" }),
+          createInterfaceImplementedDefinition({ type: "Interface_Object2" })
         ]
       }),
       properties: [
@@ -224,9 +225,7 @@ export const output: TypeInfo = {
         type: "Query",
         imports: [{ type: "TestImport_Query" }, { type: "Interface_Query" }],
         interfaces: [
-          {
-            type: "Interface_Query",
-          },
+          createInterfaceImplementedDefinition({ type: "Interface_Query" }),
         ]
       }),
       methods: [
