@@ -2,8 +2,7 @@ import { TypeInfo, createTypeInfo } from "./typeInfo";
 import { extractors, SchemaExtractor } from "./extract";
 import { TypeInfoTransforms, transformTypeInfo } from "./transform";
 import { finalizePropertyDef } from "./transform/finalizePropertyDef";
-import { validators } from "./validate";
-import { SchemaValidator } from "./SchemaValidator";
+import { SchemaValidatorBuilder, validators } from "./validate";
 import { Blackboard } from "./extract/Blackboard";
 
 import { DocumentNode, parse, visit, visitInParallel } from "graphql";
@@ -15,7 +14,7 @@ export * from "./header";
 interface ParserOptions {
   extractors?: SchemaExtractor[];
   transforms?: TypeInfoTransforms[];
-  validators?: SchemaValidator[];
+  validators?: SchemaValidatorBuilder[];
   noValidate?: boolean;
 }
 
@@ -52,7 +51,7 @@ export function parseSchema(
   return info;
 }
 
-const validate = (astNode: DocumentNode, validators: SchemaValidator[]) => {
+const validate = (astNode: DocumentNode, validators: SchemaValidatorBuilder[]) => {
   const allValidators = validators.map((getValidator) => getValidator());
   const allVisitors = allValidators.map((x) => x.visitor);
   const allDisplayValidationMessages: Array<
