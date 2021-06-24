@@ -1,17 +1,22 @@
+import { DocumentNode } from "graphql";
 import * as directiveValidators from "./directives";
 import * as typeValidators from "./types";
 
-import { DocumentNode } from "graphql";
-
-export type SchemaValidator = (astNode: DocumentNode) => void;
+export type SchemaValidator = () => {
+  visitor: {
+    enter?: Record<string, any>,
+    leave?: Record<string, any>
+  },
+  displayValidationMessagesIfExist?: (documentNode: DocumentNode) => void
+};
 
 export const validators: SchemaValidator[] = [
-  directiveValidators.supportedDirectives,
-  directiveValidators.importedDirective,
-  directiveValidators.importsDirective,
-  typeValidators.typeDefinitions,
-  typeValidators.propertyTypes,
-  typeValidators.circularDefinitions,
+  directiveValidators.getSupportedDirectivesValidator,
+  directiveValidators.getImportedDirectiveValidator,
+  directiveValidators.getImportsDirectiveValidator,
+  typeValidators.getTypeDefinitionsValidator,
+  typeValidators.getPropertyTypesValidator,
+  typeValidators.getCircularDefinitionsValidator,
 ];
 
 export { directiveValidators, typeValidators };

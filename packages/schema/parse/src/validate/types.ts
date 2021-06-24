@@ -5,67 +5,69 @@ import {
   queryTypeNames,
 } from "../typeInfo";
 
-import { DocumentNode, StringValueNode, visit } from "graphql";
+import { DirectiveNode, DocumentNode, EnumTypeDefinitionNode, FieldDefinitionNode, InputObjectTypeDefinitionNode, InputValueDefinitionNode, InterfaceTypeDefinitionNode, NamedTypeNode, ObjectTypeDefinitionNode, ScalarTypeDefinitionNode, StringValueNode, UnionTypeDefinitionNode } from "graphql";
 import { getSchemaCycles } from "graphql-schema-cycles";
 
-export function typeDefinitions(astNode: DocumentNode): void {
+export const getTypeDefinitionsValidator = () => {
   const objectTypes: Record<string, boolean> = {};
 
-  visit(astNode, {
-    enter: {
-      // No Interfaces
-      InterfaceTypeDefinition: (node) => {
-        throw Error(
-          "Interface type definitions are not supported.\n" +
-            `Found: interface ${node.name.value} { ... }\n` +
-            `Please Use: type ${node.name.value} { ... }`
-        );
-      },
-      // No Inputs
-      InputObjectTypeDefinition: (node) => {
-        throw Error(
-          "Input type definitions are not supported.\n" +
-            `Found: input ${node.name.value} { ... }\n` +
-            `Please Use: type ${node.name.value} { ... }`
-        );
-      },
-      ObjectTypeDefinition: (node) => {
-        // No Subscriptions
-        if (node.name.value === "Subscription") {
+  return {
+    visitor: {
+      enter: {
+        // No Interfaces
+        InterfaceTypeDefinition: (node: InterfaceTypeDefinitionNode) => {
           throw Error(
-            "Subscriptions are not yet supported. Please use Query or Mutation."
+            "Interface type definitions are not supported.\n" +
+              `Found: interface ${node.name.value} { ... }\n` +
+              `Please Use: type ${node.name.value} { ... }`
           );
-        }
-
-        // No duplicates
-        if (objectTypes[node.name.value]) {
+        },
+        // No Inputs
+        InputObjectTypeDefinition: (node: InputObjectTypeDefinitionNode) => {
           throw Error(
-            `Duplicate object type definition found: ${node.name.value}`
+            "Input type definitions are not supported.\n" +
+              `Found: input ${node.name.value} { ... }\n` +
+              `Please Use: type ${node.name.value} { ... }`
           );
-        }
-
-        objectTypes[node.name.value] = true;
-      },
-      // No New Scalars
-      ScalarTypeDefinition: (node) => {
-        if (!isScalarType(node.name.value)) {
+        },
+        ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
+          // No Subscriptions
+          if (node.name.value === "Subscription") {
+            throw Error(
+              "Subscriptions are not yet supported. Please use Query or Mutation."
+            );
+          }
+  
+          // No duplicates
+          if (objectTypes[node.name.value]) {
+            throw Error(
+              `Duplicate object type definition found: ${node.name.value}`
+            );
+          }
+  
+          objectTypes[node.name.value] = true;
+        },
+        // No New Scalars
+        ScalarTypeDefinition: (node: ScalarTypeDefinitionNode) => {
+          if (!isScalarType(node.name.value)) {
+            throw Error(
+              `Custom scalar types are not supported. Supported scalars: ${scalarTypeNames}`
+            );
+          }
+        },
+        // No Unions
+        UnionTypeDefinition: (node: UnionTypeDefinitionNode) => {
           throw Error(
-            `Custom scalar types are not supported. Supported scalars: ${scalarTypeNames}`
+            "Union type definitions are not supported.\n" +
+              `Found: union ${node.name.value}`
           );
-        }
-      },
-      // No Unions
-      UnionTypeDefinition: (node) => {
-        throw Error(
-          "Union type definitions are not supported.\n" +
-            `Found: union ${node.name.value}`
-        );
-      },
-    },
-  });
+        },
+      }
+    }
+  };
 }
 
-export function propertyTypes(astNode: DocumentNode): void {
+export const getPropertyTypesValidator = () => {
   let currentObject: string | undefined;
   let currentImportType: string | undefined;
   let currentField: string | undefined;
@@ -77,108 +79,114 @@ export function propertyTypes(astNode: DocumentNode): void {
     type: string;
   }[] = [];
 
-  visit(astNode, {
-    enter: {
-      ObjectTypeDefinition: (node) => {
-        currentObject = node.name.value;
-        objectTypes[node.name.value] = true;
-      },
-      EnumTypeDefinition: (node) => {
-        enumTypes[node.name.value] = true;
-      },
-      Directive: (node) => {
-        if (node.name.value === "imported") {
-          // save the imported native type name
-          if (node.arguments) {
-            const nativeType = node.arguments.find(
-              (arg) => arg.name.value === "nativeType"
-            );
+  return {
+    visitor: {
+      enter: {
+        ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
+          currentObject = node.name.value;
+          objectTypes[node.name.value] = true;
+        },
+        EnumTypeDefinition: (node: EnumTypeDefinitionNode) => {
+          enumTypes[node.name.value] = true;
+        },
+        Directive: (node: DirectiveNode) => {
+          if (node.name.value === "imported") {
+            // save the imported native type name
+            if (node.arguments) {
+              const nativeType = node.arguments.find(
+                (arg) => arg.name.value === "nativeType"
+              );
 
-            if (nativeType) {
-              currentImportType = (nativeType.value as StringValueNode).value;
+              if (nativeType) {
+                currentImportType = (nativeType.value as StringValueNode).value;
+              }
             }
           }
-        }
+        },
+        FieldDefinition: (node: FieldDefinitionNode) => {
+          currentField = node.name.value;
+        },
+        NamedType: (node: NamedTypeNode) => {
+          if (currentObject && currentField) {
+            fieldTypes.push({
+              object: currentObject,
+              field: currentField,
+              type: node.name.value,
+            });
+          }
+        },
+        InputValueDefinition: (node: InputValueDefinitionNode) => {
+          const typeName = currentImportType ? currentImportType : currentObject;
+          if (typeName && !isQueryType(typeName)) {
+            // Arguments not supported on non-query types
+            throw Error(
+              `Methods can only be defined on query types (${queryTypeNames.join(
+                ", "
+              )}).\n` +
+                `Found: type ${typeName} { ${currentField}(${node.name.value}) }`
+            );
+          }
+        },
       },
-      FieldDefinition: (node) => {
-        currentField = node.name.value;
+      leave: {
+        ObjectTypeDefinition: () => {
+          currentObject = undefined;
+          currentImportType = undefined;
+        },
+        FieldDefinition: () => {
+          currentField = undefined;
+        },
       },
-      NamedType: (node) => {
-        if (currentObject && currentField) {
-          fieldTypes.push({
-            object: currentObject,
-            field: currentField,
-            type: node.name.value,
-          });
-        }
-      },
-      InputValueDefinition: (node) => {
-        const typeName = currentImportType ? currentImportType : currentObject;
-        if (typeName && !isQueryType(typeName)) {
-          // Arguments not supported on non-query types
+    },
+    displayValidationMessagesIfExist: (documentNode: DocumentNode) => {
+      // Ensure all property types are either a
+      // supported scalar, enum or an object type definition
+      for (const field of fieldTypes) {
+        if (
+          !isScalarType(field.type) &&
+          !objectTypes[field.type] &&
+          !enumTypes[field.type]
+        ) {
           throw Error(
-            `Methods can only be defined on query types (${queryTypeNames.join(
-              ", "
-            )}).\n` +
-              `Found: type ${typeName} { ${currentField}(${node.name.value}) }`
+            `Unknown property type found: type ${field.object} { ${field.field}: ${field.type} }`
           );
         }
-      },
-    },
-    leave: {
-      ObjectTypeDefinition: () => {
-        currentObject = undefined;
-        currentImportType = undefined;
-      },
-      FieldDefinition: () => {
-        currentField = undefined;
-      },
-    },
-  });
-
-  // Ensure all property types are either a
-  // supported scalar, enum or an object type definition
-  for (const field of fieldTypes) {
-    if (
-      !isScalarType(field.type) &&
-      !objectTypes[field.type] &&
-      !enumTypes[field.type]
-    ) {
-      throw Error(
-        `Unknown property type found: type ${field.object} { ${field.field}: ${field.type} }`
-      );
+      }
     }
-  }
+  };
 }
 
-export function circularDefinitions(astNode: DocumentNode): void {
+export function getCircularDefinitionsValidator() {
   const operationTypes: string[] = [];
   const operationTypeNames = ["Mutation", "Subscription", "Query"];
 
-  visit(astNode, {
-    enter: {
-      ObjectTypeDefinition: (node) => {
-        const isOperationType = operationTypeNames.some(
-          (name) =>
-            node.name.value === name || node.name.value.endsWith(`_${name}`)
-        );
-        if (isOperationType) {
-          operationTypes.push(node.name.value);
-        }
-      },
+  return {
+    visitor: {
+      enter: {
+        ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
+          const isOperationType = operationTypeNames.some(
+            (name) =>
+              node.name.value === name || node.name.value.endsWith(`_${name}`)
+          );
+          if (isOperationType) {
+            operationTypes.push(node.name.value);
+          }
+        },
+      }
     },
-  });
+    displayValidationMessagesIfExist: (documentNode: DocumentNode) => {
+      const { cycleStrings, foundCycle } = getSchemaCycles(documentNode, {
+        ignoreTypeNames: operationTypes,
+        allowOnNullableFields: true,
+      });
 
-  const { cycleStrings, foundCycle } = getSchemaCycles(astNode, {
-    ignoreTypeNames: operationTypes,
-    allowOnNullableFields: true,
-  });
-
-  if (foundCycle) {
-    throw Error(
-      `Graphql cycles are not supported. \nFound: ${cycleStrings.map(
-        (cycle) => `\n- ${cycle}`
-      )}`
-    );
-  }
+      if (foundCycle) {
+        throw Error(
+          `Graphql cycles are not supported. \nFound: ${cycleStrings.map(
+            (cycle) => `\n- ${cycle}`
+          )}`
+        );
+      }
+    }
+  };
 }

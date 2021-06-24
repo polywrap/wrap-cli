@@ -4,8 +4,9 @@ import { TypeInfoTransforms, transformTypeInfo } from "./transform";
 import { finalizePropertyDef } from "./transform/finalizePropertyDef";
 import { validators, SchemaValidator } from "./validate";
 import { Blackboard } from "./extract/Blackboard";
+import { aggregateVisitors } from "./aggregateVisitors";
 
-import { ASTNode, DocumentNode, parse, visit } from "graphql";
+import { DocumentNode, parse, visit } from "graphql";
 
 export * from "./typeInfo";
 export * from "./transform";
@@ -27,19 +28,7 @@ export function parseSchema(
   // Validate GraphQL Schema
   if (!options.noValidate) {
     const validates = options.validators || validators;
-    const errors: Error[] = [];
-
-    for (const validate of validates) {
-      try {
-        validate(astNode);
-      } catch (e) {
-        errors.push(e);
-      }
-    }
-
-    if (errors.length) {
-      throw errors;
-    }
+    validate(astNode, validates);
   }
 
   // Create a blackboard for shared metadata
@@ -63,84 +52,32 @@ export function parseSchema(
   return info;
 }
 
+const validate = (
+  astNode: DocumentNode,
+  validators: SchemaValidator[],
+) => {
+  
+  const allValidators = validators.map(getValidator => getValidator());
+  const allVisitors = allValidators.map(x => x.visitor);
+  const allDisplayValidationMessages = allValidators
+    .map(x => x.displayValidationMessagesIfExist)
+    .filter(x => x);
+
+
+  visit(astNode, aggregateVisitors(allVisitors));
+
+  for(const displayValidationMessagesIfExist of allDisplayValidationMessages) {
+    displayValidationMessagesIfExist!(astNode);
+  }
+};
+
 const extract = (
   astNode: DocumentNode,
   typeInfo: TypeInfo,
   blackboard: Blackboard,
   extractors: SchemaExtractor[],
 ) => {
-  const buildVisitorMaps = () => {
-    const enterVisitorMap: Record<string, any> = {};
-    const leaveVisitorMap: Record<string, any> = {};
-  
-    for(const visitor of aggregatedVisitors) {
-      if(visitor.enter) {
-        for(const type of Object.keys(visitor.enter)) {
-          if(!enterVisitorMap[type]) {
-            enterVisitorMap[type] = [];
-          } 
-  
-          enterVisitorMap[type].push(visitor.enter[type]);
-        }
-      }
-  
-      if(visitor.leave) {
-        for(const type of Object.keys(visitor.leave)) {
-          if(!leaveVisitorMap[type]) {
-            leaveVisitorMap[type] = [];
-          } 
-  
-          leaveVisitorMap[type].push(visitor.leave[type]);
-        }
-      }
-    }
+  const allVisitors = extractors.map(getVisitor => getVisitor(typeInfo, blackboard));
 
-    return {
-      enterVisitorMap,
-      leaveVisitorMap
-    };
-  };
-
-  const buildVisitors = () => {
-    const enterVisitor: Record<string, (node: ASTNode) => void> = {};
-    const leaveVisitor: Record<string, (node: ASTNode) => void> = {};
-  
-    for(const key of Object.keys(enterVisitorMap)) {
-      enterVisitor[key] = (node) => {
-        for(const visitorType of enterVisitorMap[key]) {
-          visitorType(node);
-        }
-      };
-    }
-  
-    for(const key of Object.keys(leaveVisitorMap)) {
-      leaveVisitor[key] = (node) => {
-        for(const visitorType of leaveVisitorMap[key]) {
-          visitorType(node);
-        }
-      };
-    }
-
-    return {
-      enterVisitor,
-      leaveVisitor
-    };
-  };
-  
-  var aggregatedVisitors = extractors.map(getVisitor => getVisitor(typeInfo, blackboard));
-
-  const {
-    enterVisitorMap,
-    leaveVisitorMap
-  } = buildVisitorMaps();
- 
-  const { 
-    enterVisitor, 
-    leaveVisitor 
-  } = buildVisitors();
-
-  visit(astNode, {
-    enter: enterVisitor,
-    leave: leaveVisitor
-  });
+  visit(astNode, aggregateVisitors(allVisitors));
 };
