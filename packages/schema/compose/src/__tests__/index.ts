@@ -139,7 +139,7 @@ export function fetchTestCases(): TestCases {
         combined: schemaSchema && schemaTypeInfo ? {
           schema: schemaSchema,
           typeInfo: schemaTypeInfo
-        } : undefined
+        } : {}
       },
     };
   };
