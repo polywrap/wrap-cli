@@ -4,69 +4,36 @@
 #import { Query, LogLevel } into Logger from "w3://w3/logger"
 
 type Query {
-
   # Token
-  currencyEquals(
-    currency: Currency!
-    other: Currency!
-  ): Boolean!
+  currencyEquals(currency: Currency!, other: Currency!): Boolean!
 
-  tokenEquals(
-    token: Token!
-    other: Token!
-  ): Boolean!
+  tokenEquals(token: Token!, other: Token!): Boolean!
 
   tokenAmountEquals(
     tokenAmount0: TokenAmount!
     tokenAmount1: TokenAmount!
   ): Boolean!
 
-  tokenSortsBefore(
-    token: Token!
-    other: Token!
-  ): Boolean!
+  tokenSortsBefore(token: Token!, other: Token!): Boolean!
 
   # Pair
-  pairAddress(
-    token0: Token!
-    token1: Token!
-  ): String!
+  pairAddress(token0: Token!, token1: Token!): String!
 
-  pairLiquidityToken(
-    pair: Pair!
-  ): Token!
+  pairLiquidityToken(pair: Pair!): Token!
 
-  pairReserves(
-    pair: Pair!
-  ): [TokenAmount!]!
+  pairReserves(pair: Pair!): [TokenAmount!]!
 
-  pairToken0Price(
-    pair: Pair!
-  ): String!
+  pairToken0Price(pair: Pair!): String!
 
-  pairToken1Price(
-    pair: Pair!
-  ): String!
+  pairToken1Price(pair: Pair!): String!
 
-  pairOutputAmount(
-    pair: Pair!
-    inputAmount: TokenAmount!
-  ): TokenAmount!
+  pairOutputAmount(pair: Pair!, inputAmount: TokenAmount!): TokenAmount!
 
-  pairOutputNextPair(
-    pair: Pair!
-    inputAmount: TokenAmount!
-  ): Pair!
+  pairOutputNextPair(pair: Pair!, inputAmount: TokenAmount!): Pair!
 
-  pairInputAmount(
-    pair: Pair!
-    outputAmount: TokenAmount!
-  ): TokenAmount!
+  pairInputAmount(pair: Pair!, outputAmount: TokenAmount!): TokenAmount!
 
-  pairInputNextPair(
-    pair: Pair!
-    outputAmount: TokenAmount!
-  ): Pair!
+  pairInputNextPair(pair: Pair!, outputAmount: TokenAmount!): Pair!
 
   pairLiquidityMinted(
     pair: Pair!
@@ -84,31 +51,19 @@ type Query {
   ): [TokenAmount!]!
 
   # Route
-  createRoute(
-    pairs: [Pair!]!
-    input: Token!
-    output: Token
-  ): Route!
+  createRoute(pairs: [Pair!]!, input: Token!, output: Token): Route!
 
-  routePath(
-    pairs: [Pair!]!
-    input: Token!
-  ): [Token!]!
+  routePath(pairs: [Pair!]!, input: Token!): [Token!]!
 
-  routeMidPrice(
-    route: Route!
-  ): String!
+  routeMidPrice(route: Route!): String!
 
   # Router
   swapCallParameters(
-    trade: Trade!,
+    trade: Trade!
     tradeOptions: TradeOptions!
   ): SwapParameters!
 
-  estimateGas(
-    parameters: SwapParameters!
-    chainId: ChainId
-  ): BigInt!
+  estimateGas(parameters: SwapParameters!, chainId: ChainId): BigInt!
 
   execCallStatic(
     parameters: SwapParameters!
@@ -123,17 +78,11 @@ type Query {
     tradeType: TradeType!
   ): Trade!
 
-  tradeExecutionPrice(
-    trade: Trade!
-  ): String!
+  tradeExecutionPrice(trade: Trade!): String!
 
-  tradeNextMidPrice(
-    trade: Trade!
-  ): String!
+  tradeNextMidPrice(trade: Trade!): String!
 
-  tradeSlippage(
-    trade: Trade!
-  ): String!
+  tradeSlippage(trade: Trade!): String!
 
   tradeMinimumAmountOut(
     trade: Trade!
@@ -167,18 +116,11 @@ type Query {
     name: String
   ): Token!
 
-  fetchPairData(
-    token0: Token!
-    token1: Token!
-  ): Pair!
+  fetchPairData(token0: Token!, token1: Token!): Pair!
 
-  fetchTotalSupply(
-    token: Token!
-  ): TokenAmount!
+  fetchTotalSupply(token: Token!): TokenAmount!
 
-  fetchKLast(
-    token: Token!
-  ): BigInt!
+  fetchKLast(token: Token!): BigInt!
 
   # Constants
   factoryAddress: String!

@@ -4,7 +4,7 @@ module.exports = {
     es6: true,
     node: true,
   },
-  ignorePatterns: ["**/w3/**/*.*", "**/__tests__/**/*.*", "**/node_modules/**/*.*"],
+  ignorePatterns: ["**/node_modules/**/*.*", "**/w3/**/*.*", "**/__tests__/**/*.*", "**/test-cases/**/*.*"],
   parser: "@graphql-eslint/eslint-plugin",
   plugins: [
     "prettier",

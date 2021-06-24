@@ -22,7 +22,7 @@ type Request {
   body: String
 }
 
-# Enum types curently not supported 
+# Enum types curently not supported
 #
 # enum ResponseType {
 #   TEXT

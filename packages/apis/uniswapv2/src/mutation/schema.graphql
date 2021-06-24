@@ -2,7 +2,7 @@
 #import { ChainId, Currency, Route, Trade, Pair, TradeOptions, SwapParameters, TxOverrides } from "../common/schema.graphql"
 
 type Mutation {
-  swap (
+  swap(
     tokenIn: Token!
     tokenOut: Token!
     amount: BigInt!

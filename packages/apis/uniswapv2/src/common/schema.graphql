@@ -59,7 +59,7 @@ type Trade {
   route: Route!
   inputAmount: TokenAmount!
   outputAmount: TokenAmount!
-  tradeType: TradeType!
+  tradeType: TradeType! #eslint-disable-line @graphql-eslint/avoid-typename-prefix
 }
 
 type BestTradeOptions {

@@ -18,9 +18,7 @@ directive @imported(
   nativeType: String!
 ) on OBJECT | ENUM
 
-directive @imports(
-  types: [String!]!
-) on OBJECT
+directive @imports(types: [String!]!) on OBJECT
 ### Web3API Header END ###
 
 type TxReceipt {
@@ -95,7 +93,7 @@ type Log {
   data: String!
   topics: [String!]!
   transactionHash: String!
-  logIndex: UInt32!
+  logIndex: UInt32! #eslint-disable-line @graphql-eslint/avoid-typename-prefix
 }
 
 type EventNotification {
@@ -130,33 +128,17 @@ type Query {
     txOverrides: TxOverrides
   ): StaticTxResult!
 
-  encodeParams(
-    types: [String!]!
-    values: [String!]!
-  ): String!
+  encodeParams(types: [String!]!, values: [String!]!): String!
 
-  getSignerAddress(
-    connection: Connection
-  ): String!
+  getSignerAddress(connection: Connection): String!
 
-  getSignerBalance(
-    blockTag: BigInt
-    connection: Connection
-  ): BigInt!
+  getSignerBalance(blockTag: BigInt, connection: Connection): BigInt!
 
-  getSignerTransactionCount(
-    blockTag: BigInt
-    connection: Connection
-  ): BigInt!
+  getSignerTransactionCount(blockTag: BigInt, connection: Connection): BigInt!
 
-  getGasPrice(
-    connection: Connection
-  ): BigInt!
+  getGasPrice(connection: Connection): BigInt!
 
-  estimateTransactionGas(
-    tx: TxRequest!
-    connection: Connection
-  ): BigInt!
+  estimateTransactionGas(tx: TxRequest!, connection: Connection): BigInt!
 
   estimateContractCallGas(
     address: String!
@@ -166,17 +148,11 @@ type Query {
     txOverrides: TxOverrides
   ): BigInt!
 
-  checkAddress(
-    address: String!
-  ): Boolean!
+  checkAddress(address: String!): Boolean!
 
-  toWei(
-    eth: String!
-  ): BigInt!
+  toWei(eth: String!): BigInt!
 
-  toEth(
-    wei: BigInt!
-  ): String!
+  toEth(wei: BigInt!): String!
 
   awaitTransaction(
     txHash: String!
@@ -211,15 +187,9 @@ type Mutation {
     txOverrides: TxOverrides
   ): TxReceipt!
 
-  sendTransaction(
-    tx: TxRequest!
-    connection: Connection
-  ): TxResponse!
+  sendTransaction(tx: TxRequest!, connection: Connection): TxResponse!
 
-  sendTransactionAndWait(
-    tx: TxRequest!
-    connection: Connection
-  ): TxReceipt!
+  sendTransactionAndWait(tx: TxRequest!, connection: Connection): TxReceipt!
 
   deployContract(
     abi: String!
@@ -228,14 +198,7 @@ type Mutation {
     connection: Connection
   ): String!
 
-  signMessage(
-    message: String!
-    connection: Connection
-  ): String!
+  signMessage(message: String!, connection: Connection): String!
 
-  sendRPC(
-    method: String!
-    params: [String!]!
-    connection: Connection
-  ): String
+  sendRPC(method: String!, params: [String!]!, connection: Connection): String
 }

@@ -2,24 +2,16 @@
 # https://github.com/Web3-API/monorepo/issues/75
 
 type Query {
-  catFile(
-    cid: String!
-    options: Options
-  ): Bytes!
+  catFile(cid: String!, options: Options): Bytes!
 
-  resolve(
-    cid: String!
-    options: Options
-  ): ResolveResult
+  resolve(cid: String!, options: Options): ResolveResult
 
   tryResolveUri(
     authority: String!
     path: String!
   ): ApiResolver_MaybeUriOrManifest
 
-  getFile(
-    path: String!
-  ): Bytes
+  getFile(path: String!): Bytes
 }
 
 type Mutation {
