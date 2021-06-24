@@ -51,24 +51,22 @@ export function parseSchema(
   return info;
 }
 
-const validate = (astNode: DocumentNode, validators: SchemaValidatorBuilder[]) => {
+const validate = (
+  astNode: DocumentNode,
+  validators: SchemaValidatorBuilder[]
+) => {
   const allValidators = validators.map((getValidator) => getValidator());
   const allVisitors = allValidators.map((x) => x.visitor);
-  const allDisplayValidationMessages: Array<
-    (documentNode: DocumentNode) => void
-  > = allValidators
-    .filter((x) => !!x.displayValidationMessagesIfExist)
-    .map(
-      (x) =>
-        x.displayValidationMessagesIfExist as (
-          documentNode: DocumentNode
-        ) => void
-    );
+  const allDisplayValidationMessages = allValidators.map(
+    (x) => x.displayValidationMessagesIfExist
+  );
 
   visit(astNode, visitInParallel(allVisitors));
 
   for (const displayValidationMessagesIfExist of allDisplayValidationMessages) {
-    displayValidationMessagesIfExist(astNode);
+    if (displayValidationMessagesIfExist) {
+      displayValidationMessagesIfExist(astNode);
+    }
   }
 };
 
