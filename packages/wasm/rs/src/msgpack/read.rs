@@ -22,9 +22,13 @@ pub trait Read: Clone + Sized {
     fn read_bytes(&mut self) -> Result<Vec<u8>>;
     fn read_bigint(&mut self) -> Result<BigInt>;
     fn read_array_length(&mut self) -> Result<u32>;
-    fn read_array<T>(&mut self, reader: fn() -> T) -> Result<Vec<T>>;
+    fn read_array<T>(&mut self, reader: fn(&mut Self) -> T) -> Result<Vec<T>>;
     fn read_map_length(&mut self) -> Result<u32>;
-    fn read_map<K: Eq + Hash, V>(&mut self, key_fn: fn() -> K, val_fn: fn() -> V) -> HashMap<K, V>;
+    fn read_map<K: Eq + Hash, V>(
+        &mut self,
+        key_fn: fn(&mut Self) -> K,
+        val_fn: fn(&mut Self) -> V,
+    ) -> HashMap<K, V>;
     fn read_nullable_bool(&mut self) -> Option<bool>;
     fn read_nullable_i8(&mut self) -> Option<i8>;
     fn read_nullable_i16(&mut self) -> Option<i16>;
@@ -39,11 +43,11 @@ pub trait Read: Clone + Sized {
     fn read_nullable_string(&mut self) -> Option<String>;
     fn read_nullable_bytes(&mut self) -> Option<Vec<u8>>;
     fn read_nullable_bigint(&mut self) -> Option<BigInt>;
-    fn read_nullable_array<T>(&mut self, reader: fn() -> T) -> Option<Vec<T>>;
+    fn read_nullable_array<T>(&mut self, reader: fn(&mut Self) -> T) -> Option<Vec<T>>;
     fn read_nullable_map<K: Eq + Hash, V>(
         &mut self,
-        key_fn: fn() -> K,
-        val_fn: fn() -> V,
+        key_fn: fn(&mut Self) -> K,
+        val_fn: fn(&mut Self) -> V,
     ) -> Option<HashMap<K, V>>;
     fn is_next_nil(&mut self) -> bool;
     fn is_next_string(&mut self) -> bool;

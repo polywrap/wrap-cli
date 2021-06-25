@@ -526,12 +526,12 @@ impl Read for ReadDecoder {
         ))
     }
 
-    fn read_array<T>(&mut self, reader: fn() -> T) -> Result<Vec<T>> {
+    fn read_array<T>(&mut self, reader: fn(&mut Self) -> T) -> Result<Vec<T>> {
         let size = self.read_array_length().unwrap_or_default();
         let mut array: Vec<T> = vec![];
         for i in 0..size {
             self.context.push("array[", i.to_string().as_str(), "]");
-            let item = reader();
+            let item = reader(self);
             array.push(item);
             let _ = self.context.pop();
         }
@@ -556,13 +556,17 @@ impl Read for ReadDecoder {
         ))
     }
 
-    fn read_map<K: Eq + Hash, V>(&mut self, key_fn: fn() -> K, val_fn: fn() -> V) -> HashMap<K, V> {
+    fn read_map<K: Eq + Hash, V>(
+        &mut self,
+        key_fn: fn(&mut Self) -> K,
+        val_fn: fn(&mut Self) -> V,
+    ) -> HashMap<K, V> {
         let size = self.read_map_length().unwrap_or_default();
         let mut map: HashMap<K, V> = HashMap::new();
         for i in 0..size {
             self.context.push("map[", i.to_string().as_str(), "]");
-            let key = key_fn();
-            let value = val_fn();
+            let key = key_fn(self);
+            let value = val_fn(self);
             map.insert(key, value);
             let _ = self.context.pop();
         }
@@ -667,7 +671,7 @@ impl Read for ReadDecoder {
         Some(self.read_bigint().unwrap_or_default())
     }
 
-    fn read_nullable_array<T>(&mut self, reader: fn() -> T) -> Option<Vec<T>> {
+    fn read_nullable_array<T>(&mut self, reader: fn(&mut Self) -> T) -> Option<Vec<T>> {
         if self.is_next_nil() {
             return None;
         }
@@ -676,8 +680,8 @@ impl Read for ReadDecoder {
 
     fn read_nullable_map<K: Eq + Hash, V>(
         &mut self,
-        key_fn: fn() -> K,
-        val_fn: fn() -> V,
+        key_fn: fn(&mut Self) -> K,
+        val_fn: fn(&mut Self) -> V,
     ) -> Option<HashMap<K, V>> {
         if self.is_next_nil() {
             return None;
