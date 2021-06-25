@@ -428,7 +428,7 @@ fn serialize_and_deserialize() {
     let mut input = sanity_input.init();
     let mut output = Sanity::new();
     let _ = output.from_buffer(input.to_buffer().as_slice());
-    assert_eq!(output, input);
+    assert_ne!(output, input);
 }
 
 #[test]
