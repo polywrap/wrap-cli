@@ -2,3 +2,5 @@
 pub mod context_spec;
 #[cfg(test)]
 pub mod msgpack_spec;
+#[cfg(test)]
+pub mod invoke_spec;
