@@ -23,6 +23,9 @@ directive @imports(
 ) on OBJECT
 ### Web3API Header END ###
 
+"""
+Query comment
+"""
 type Query implements Interface_Query @imports(
   types: [
     "Namespace_Query",
@@ -41,13 +44,22 @@ type Query implements Interface_Query @imports(
     "Interface_NestedInterfaceObject"
   ]
 ) {
+"""
+method1 comment
+"""
   method1(
     str: String!
     optStr: String
     u: UInt!
+"""
+uArrayArray comment
+"""
     uArrayArray: [[UInt]]!
   ): String!
 
+"""
+method2 comment
+"""
   method2(
     arg: [String!]!
   ): [Int64!]!
@@ -57,6 +69,9 @@ type Query implements Interface_Query @imports(
   ): Interface_InterfaceObject2!
 }
 
+"""
+Mutation comment
+"""
 type Mutation implements Interface_Mutation @imports(
   types: [
     "Namespace_Query",
@@ -76,11 +91,26 @@ type Mutation implements Interface_Mutation @imports(
     "Interface_Mutation"
   ]
 ) {
+"""
+method1 comment
+"""
   method1(
+"""
+str comment
+"""
     str: String!
+"""
+optStr comment
+"""
     optStr: String
     u: UInt!
+"""
+uArrayArray comment
+"""
     uArrayArray: [[UInt]]!
+"""
+implObject comment
+"""
     implObject: LocalImplementationObject!
   ): String!
 
@@ -93,6 +123,9 @@ type Mutation implements Interface_Mutation @imports(
   ): String!
 }
 
+"""
+CustomQueryType comment
+"""
 type CustomQueryType {
   str: String!
   optStr: String
@@ -109,6 +142,9 @@ type CustomQueryType {
   optStrOptArray: [String]
   crazyArray: [[[[UInt64!]]!]]
   commonType: CommonType!
+"""
+customType comment
+"""
   customType: Namespace_CustomType!
 }
 
@@ -130,8 +166,17 @@ type ArrayObject {
   prop: String!
 }
 
+"""
+CustomMutationType comment
+"""
 type CustomMutationType {
+"""
+str comment
+"""
   str: String!
+"""
+optStr comment
+"""
   optStr: String
   u: UInt!
   optU: UInt
@@ -144,8 +189,14 @@ type CustomMutationType {
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optStrOptArray: [String]
+"""
+crazyArray comment
+"""
   crazyArray: [[[[UInt64!]]!]]
   commonType: CommonType!
+"""
+customType comment
+"""
   customType: Namespace_CustomType!
 }
 
@@ -153,7 +204,13 @@ type AnotherMutationType {
   prop: String
 }
 
+"""
+ImplementationObject comment
+"""
 type ImplementationObject implements Interface_InterfaceObject1 & Interface_InterfaceObject2 {
+"""
+anotherProp comment
+"""
   anotherProp: String
   str: String!
   uint8: UInt8!

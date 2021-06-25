@@ -23,6 +23,9 @@ directive @imports(
 ) on OBJECT
 ### Web3API Header END ###
 
+"""
+Mutation comment
+"""
 type Mutation implements Interface_Mutation @imports(
   types: [
     "Namespace_Query",
@@ -42,11 +45,26 @@ type Mutation implements Interface_Mutation @imports(
     "Interface_Mutation"
   ]
 ) {
+"""
+method1 comment
+"""
   method1(
+"""
+str comment
+"""
     str: String!
+"""
+optStr comment
+"""
     optStr: String
     u: UInt!
+"""
+uArrayArray comment
+"""
     uArrayArray: [[UInt]]!
+"""
+implObject comment
+"""
     implObject: LocalImplementationObject!
   ): String!
 
@@ -59,8 +77,17 @@ type Mutation implements Interface_Mutation @imports(
   ): String!
 }
 
+"""
+CustomMutationType comment
+"""
 type CustomMutationType {
+"""
+str comment
+"""
   str: String!
+"""
+optStr comment
+"""
   optStr: String
   u: UInt!
   optU: UInt
@@ -73,8 +100,14 @@ type CustomMutationType {
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optStrOptArray: [String]
+"""
+crazyArray comment
+"""
   crazyArray: [[[[UInt64!]]!]]
   commonType: CommonType!
+"""
+customType comment
+"""
   customType: Namespace_CustomType!
 }
 
@@ -82,7 +115,13 @@ type AnotherMutationType {
   prop: String
 }
 
+"""
+ImplementationObject comment
+"""
 type ImplementationObject implements Interface_InterfaceObject1 & Interface_InterfaceObject2 {
+"""
+anotherProp comment
+"""
   anotherProp: String
   str: String!
   uint8: UInt8!

@@ -19,7 +19,7 @@ export const typeInfo: TypeInfo = {
   enumTypes: [],
   queryTypes: [
     {
-      ...createQueryDefinition({ type: "Mutation" }),
+      ...createQueryDefinition({ type: "Mutation", comment: "Mutation comment" }),
       imports: [
         { type: "Namespace_Query" },
         { type: "Namespace_Mutation" },
@@ -49,18 +49,21 @@ export const typeInfo: TypeInfo = {
               name: "method1",
               type: "String",
               required: true
-            })
+            }),
+            comment: "method1 comment"
           }),
           arguments: [
             createScalarPropertyDefinition({
               name: "str",
               required: true,
-              type: "String"
+              type: "String",
+              comment: "str comment"
             }),
             createScalarPropertyDefinition({
               name: "optStr",
               required: false,
-              type: "String"
+              type: "String",
+              comment: "optStr comment"
             }),
             createScalarPropertyDefinition({
               name: "u",
@@ -80,12 +83,14 @@ export const typeInfo: TypeInfo = {
                   required: false,
                   type: "UInt"
                 })
-              })
+              }),
+              comment: "uArrayArray comment"
             }),
             createObjectPropertyDefinition({
               name: "implObject",
               required: true,
-              type: "LocalImplementationObject"
+              type: "LocalImplementationObject",
+              comment: "implObject comment"
             }),
           ]
         },
@@ -140,10 +145,10 @@ export const typeInfo: TypeInfo = {
   ],
   objectTypes: [
     {
-      ...createObjectDefinition({ type: "CustomMutationType" }),
+      ...createObjectDefinition({ type: "CustomMutationType", comment: "CustomMutationType comment" }),
       properties: [
-        createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
-        createScalarPropertyDefinition({ name: "optStr", type: "String", required: false }),
+        createScalarPropertyDefinition({ name: "str", type: "String", required: true, comment: "str comment" }),
+        createScalarPropertyDefinition({ name: "optStr", type: "String", required: false, comment: "optStr comment" }),
         createScalarPropertyDefinition({ name: "u", type: "UInt", required: true }),
         createScalarPropertyDefinition({ name: "optU", type: "UInt", required: false }),
         createScalarPropertyDefinition({ name: "u8", type: "UInt8", required: true }),
@@ -174,6 +179,7 @@ export const typeInfo: TypeInfo = {
           name: "crazyArray",
           type: "[[[[UInt64]]]]",
           required: false,
+          comment: "crazyArray comment",
           item: createArrayDefinition({
             name: "crazyArray",
             type: "[[[UInt64]]]",
@@ -200,6 +206,7 @@ export const typeInfo: TypeInfo = {
           name: "customType",
           type: "Namespace_CustomType",
           required: true,
+          comment: "customType comment"
         })
       ],
     },
@@ -213,10 +220,11 @@ export const typeInfo: TypeInfo = {
         interfaces: [
           createInterfaceImplementedDefinition({ type: "Interface_InterfaceObject1" }),
           createInterfaceImplementedDefinition({ type: "Interface_InterfaceObject2" })
-        ]
+        ],
+        comment: "ImplementationObject comment"
       }),
       properties: [
-        createScalarPropertyDefinition({ name: "anotherProp", type: "String", required: false }),
+        createScalarPropertyDefinition({ name: "anotherProp", type: "String", required: false, comment: "anotherProp comment" }),
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
         createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
         createScalarPropertyDefinition({ name: "str2", type: "String", required: true }),

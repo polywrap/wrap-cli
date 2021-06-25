@@ -18,7 +18,7 @@ import {
 export const typeInfo: TypeInfo = {
   objectTypes: [
     {
-      ...createObjectDefinition({ type: "CustomQueryType" }),
+      ...createObjectDefinition({ type: "CustomQueryType", comment: "CustomQueryType comment" }),
       properties: [
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
         createScalarPropertyDefinition({ name: "optStr", type: "String", required: false }),
@@ -78,6 +78,7 @@ export const typeInfo: TypeInfo = {
           name: "customType",
           type: "Namespace_CustomType",
           required: true,
+          comment: "customType comment"
         })
       ],
     },
@@ -126,7 +127,7 @@ export const typeInfo: TypeInfo = {
   ],
   queryTypes: [
     {
-      ...createQueryDefinition({ type: "Query" }),
+      ...createQueryDefinition({ type: "Query", comment: "Query comment" }),
       imports: [
         { type: "Namespace_Query" },
         { type: "Namespace_CustomType" },
@@ -155,7 +156,8 @@ export const typeInfo: TypeInfo = {
               name: "method1",
               type: "String",
               required: true
-            })
+            }),
+            comment: "method1 comment"
           }),
           arguments: [
             createScalarPropertyDefinition({
@@ -177,6 +179,7 @@ export const typeInfo: TypeInfo = {
               name: "uArrayArray",
               required: true,
               type: "[[UInt]]",
+              comment: "uArrayArray comment",
               item: createArrayDefinition({
                 name: "uArrayArray",
                 required: false,
@@ -194,6 +197,7 @@ export const typeInfo: TypeInfo = {
           ...createMethodDefinition({
             type: "query",
             name: "method2",
+            comment: "method2 comment",
             return: createArrayPropertyDefinition({
               name: "method2",
               type: "[Int64]",
