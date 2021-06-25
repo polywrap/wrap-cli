@@ -637,7 +637,7 @@ export function resolveEnviromentTypes(
   typeInfo.objectTypes.push(specificEnvType);
 }
 
-function checkDuplicateEnvProperties(
+export function checkDuplicateEnvProperties(
   envType: ObjectDefinition,
   genericEnvProperties: AnyDefinition[]
 ): void {
@@ -648,7 +648,7 @@ function checkDuplicateEnvProperties(
       )
     ) {
       throw new Error(
-        `Type '${envType.type}' contains duplicate property ${specificProperty.name} of type 'Env'`
+        `Type '${envType.type}' contains duplicate property '${specificProperty.name}' of type 'Env'`
       );
     }
   }
