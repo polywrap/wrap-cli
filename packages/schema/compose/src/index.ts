@@ -1,8 +1,15 @@
 import { SchemaFile, SchemaResolvers } from "./types";
-import { resolveImportsAndParseSchemas } from "./resolve";
+import {
+  resolveEnviromentTypes,
+  resolveImportsAndParseSchemas,
+} from "./resolve";
 import { renderSchema } from "./render";
 
-import { TypeInfo, combineTypeInfo } from "@web3api/schema-parse";
+import {
+  TypeInfo,
+  combineTypeInfo,
+  EnvironmentType,
+} from "@web3api/schema-parse";
 
 export * from "./types";
 
@@ -49,6 +56,11 @@ export async function composeSchema(
       false,
       resolvers
     );
+    resolveEnviromentTypes(
+      typeInfos.query,
+      EnvironmentType.QueryEnvType,
+      typeInfos.query.environment.query.sanitized
+    );
   }
 
   if (mutation && mutation.schema) {
@@ -57,6 +69,11 @@ export async function composeSchema(
       mutation.absolutePath,
       true,
       resolvers
+    );
+    resolveEnviromentTypes(
+      typeInfos.mutation,
+      EnvironmentType.MutationEnvType,
+      typeInfos.mutation.environment.mutation.sanitized
     );
   }
 

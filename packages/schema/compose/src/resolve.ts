@@ -35,6 +35,7 @@ import {
   GenericDefinition,
   isKind,
   header,
+  AnyDefinition,
 } from "@web3api/schema-parse";
 
 export async function resolveImportsAndParseSchemas(
@@ -605,6 +606,50 @@ async function resolveLocalImports(
           typeInfo.enumTypes.push(typesToImport[importType] as EnumDefinition);
         }
       }
+    }
+  }
+}
+
+export function resolveEnviromentTypes(
+  typeInfo: TypeInfo,
+  envTypeName: "QueryEnv" | "MutationEnv",
+  specificEnvType?: ObjectDefinition
+): void {
+  const genericEnvType = typeInfo.objectTypes.find(
+    (type) => type.type === "Env"
+  );
+  if (!genericEnvType) {
+    return;
+  }
+
+  typeInfo.objectTypes = typeInfo.objectTypes.filter((type) => {
+    return type.type !== genericEnvType.type;
+  });
+
+  if (!specificEnvType) {
+    genericEnvType.type = envTypeName;
+    return;
+  }
+
+  checkDuplicateEnvProperties(specificEnvType, genericEnvType.properties);
+
+  specificEnvType.properties.push(...genericEnvType.properties);
+  typeInfo.objectTypes.push(specificEnvType);
+}
+
+function checkDuplicateEnvProperties(
+  envType: ObjectDefinition,
+  genericEnvProperties: AnyDefinition[]
+): void {
+  for (const specificProperty of envType.properties) {
+    if (
+      genericEnvProperties.find(
+        (genericProperty) => genericProperty.name === specificProperty.name
+      )
+    ) {
+      throw new Error(
+        `Type '${envType.type}' contains duplicate property ${specificProperty.name} of type 'Env'`
+      );
     }
   }
 }
