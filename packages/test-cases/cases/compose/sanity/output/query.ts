@@ -16,7 +16,15 @@ import {
 
 export const typeInfo: TypeInfo = {
   environment: {
-    query: {},
+    query: {
+      sanitized: {
+        ...createObjectDefinition({ type: "QueryEnv" }),
+        properties: [
+          createScalarPropertyDefinition({ name: "bar", type: "Bytes", required: false }),
+          createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
+        ],
+      }
+    },
     mutation: {},
   },
   objectTypes: [
@@ -124,6 +132,13 @@ export const typeInfo: TypeInfo = {
       }),
       properties: [
         createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
+      ],
+    },
+    {
+      ...createObjectDefinition({ type: "QueryEnv" }),
+      properties: [
+        createScalarPropertyDefinition({ name: "bar", type: "Bytes", required: false }),
+        createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
       ],
     }
   ],

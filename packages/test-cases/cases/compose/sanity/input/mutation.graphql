@@ -1,6 +1,7 @@
 #import { Query, Mutation, CustomType } into Namespace from "test.eth"
 #import { Mutation } into JustMutation from "just.mutation.eth"
 #import { CommonType } from "../imports-local/common.graphql"
+#import { Env } from "../imports-local/common.graphql"
 
 type Mutation {
   method1(
@@ -13,6 +14,10 @@ type Mutation {
   method2(
     arg: [String!]!
   ): [Int64!]!
+}
+
+type MutationEnv {
+  bar: Int
 }
 
 type CustomMutationType {

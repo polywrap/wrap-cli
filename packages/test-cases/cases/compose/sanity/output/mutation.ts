@@ -11,13 +11,30 @@ import {
   createEnumPropertyDefinition,
   createImportedQueryDefinition,
   createImportedObjectDefinition,
-  createImportedEnumDefinition
+  createImportedEnumDefinition,
+  AnyDefinition
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
   environment: {
     query: {},
-    mutation: {},
+    mutation: {
+      sanitized: {
+        ...createObjectDefinition({ type: "MutationEnv" }),
+        properties: [
+          {
+            ...createScalarPropertyDefinition({ name: "bar", type: "Int", required: false }),
+            first: true,
+            last: null
+          } as AnyDefinition,
+          {
+            ...createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
+            first: null,
+            last: true,
+          } as AnyDefinition
+        ],
+      }
+    },
   },
   enumTypes: [],
   queryTypes: [
@@ -216,6 +233,13 @@ export const typeInfo: TypeInfo = {
       properties: [
         createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
       ],
+    },
+    {
+      ...createObjectDefinition({ type: "MutationEnv" }),
+      properties: [
+        { ...createScalarPropertyDefinition({ name: "bar", type: "Int", required: false }) },
+        createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
+      ]
     }
   ],
   importedQueryTypes: [

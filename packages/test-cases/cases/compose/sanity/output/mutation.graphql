@@ -86,6 +86,11 @@ type ArrayObject {
   prop: String!
 }
 
+type MutationEnv {
+  bar: Int
+  foo: String!
+}
+
 ### Imported Queries START ###
 
 type Namespace_Query @imported(

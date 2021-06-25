@@ -1,5 +1,6 @@
 #import { Query, CustomType } into Namespace from "test.eth"
 #import { CommonType } from "../imports-local/common.graphql"
+#import { Env } from "../imports-local/common.graphql"
 
 type Query {
   method1(
@@ -35,4 +36,8 @@ type CustomQueryType {
 
 type AnotherQueryType {
   prop: String
+}
+
+type QueryEnv {
+  bar: Bytes
 }

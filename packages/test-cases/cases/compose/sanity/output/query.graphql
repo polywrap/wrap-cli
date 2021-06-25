@@ -84,6 +84,11 @@ type ArrayObject {
   prop: String!
 }
 
+type QueryEnv {
+  bar: Bytes
+  foo: String!
+}
+
 ### Imported Queries START ###
 
 type Namespace_Query @imported(

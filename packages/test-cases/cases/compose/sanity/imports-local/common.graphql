@@ -11,3 +11,7 @@ type NestedType {
 type ArrayObject {
   prop: String!
 }
+
+type Env {
+  foo: String!
+}

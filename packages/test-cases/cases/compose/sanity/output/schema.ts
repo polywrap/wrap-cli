@@ -304,6 +304,13 @@ export const typeInfo: TypeInfo = {
       ],
     },
     {
+      ...createObjectDefinition({ type: "QueryEnv" }),
+      properties: [
+        createScalarPropertyDefinition({ name: "bar", type: "Bytes", required: false }),
+        createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
+      ],
+    },
+    {
       ...createObjectDefinition({ type: "CustomMutationType" }),
       properties: [
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
@@ -371,6 +378,13 @@ export const typeInfo: TypeInfo = {
       ...createObjectDefinition({ type: "AnotherMutationType" }),
       properties: [createScalarPropertyDefinition({ name: "prop", type: "String" })],
     },
+    {
+      ...createObjectDefinition({ type: "MutationEnv" }),
+      properties: [
+        { ...createScalarPropertyDefinition({ name: "bar", type: "Int", required: false }) },
+        createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
+      ]
+    }
   ],
   importedQueryTypes: [
     {
