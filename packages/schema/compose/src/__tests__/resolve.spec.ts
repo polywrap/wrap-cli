@@ -2,7 +2,7 @@ import { createObjectDefinition, createPropertyDefinition } from "@web3api/schem
 import { checkDuplicateEnvProperties } from "../resolve";
 
 describe("Check duplicate environment properties", () => {
-  it("should throws error if duplicate property found", () => {
+  it("should throw error if duplicate property found", () => {
     try {
       checkDuplicateEnvProperties(
         createObjectDefinition({
