@@ -1,6 +1,6 @@
+use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind, Result};
-use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
 #[derive(Debug, Clone)]
 pub struct Sanity {

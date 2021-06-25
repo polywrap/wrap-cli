@@ -1,10 +1,10 @@
-pub mod format;
 pub mod context;
-pub mod read;
-pub mod write;
-pub mod utils;
 pub mod data_view;
+pub mod format;
+pub mod read;
 pub mod read_decoder;
+pub mod utils;
+pub mod write;
 pub mod write_encoder;
 pub mod write_sizer;
 

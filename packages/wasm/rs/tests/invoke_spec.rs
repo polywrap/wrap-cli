@@ -1,7 +1,7 @@
 // FIXME: cannot call #[wasm_bindgen] imports on non-wasm targets
+use polywrap_wasm_rs::invoke;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen_test::wasm_bindgen_test;
-use polywrap_wasm_rs::invoke;
 
 #[wasm_bindgen]
 pub fn method_name(input: &[u8]) -> Vec<u8> {
