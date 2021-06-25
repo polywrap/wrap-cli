@@ -72,7 +72,7 @@ InterfaceObject1 comment
 type InterfaceObject1 {
   str: String!
 """
-uint8 comment
+InterfaceObject1_uint8 comment
 """
   uint8: UInt8!
 }

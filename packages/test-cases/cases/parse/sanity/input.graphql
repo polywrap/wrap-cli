@@ -30,7 +30,8 @@ enum CustomEnum {
 }
 
 """
-CustomType comment
+CustomType multi-line comment
+line 2
 """
 type CustomType {
 """

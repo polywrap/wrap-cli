@@ -19,7 +19,7 @@ import {
 export const output: TypeInfo = {
   objectTypes: [
     {
-      ...createObjectDefinition({ type: "CustomType", comment: "CustomType comment" }),
+      ...createObjectDefinition({ type: "CustomType", comment: "CustomType multi-line comment\nline 2" }),
       properties: [
         createScalarPropertyDefinition({ name: "str", type: "String", required: true, comment: "str comment" }),
         createScalarPropertyDefinition({ name: "optStr", type: "String", required: false, comment: "optStr comment" }),

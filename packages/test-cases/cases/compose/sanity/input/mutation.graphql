@@ -36,7 +36,8 @@ implObject comment
 }
 
 """
-CustomMutationType comment
+CustomMutationType multi-line comment
+line 2
 """
 type CustomMutationType {
 """

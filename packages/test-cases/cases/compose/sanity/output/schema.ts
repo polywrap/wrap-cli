@@ -373,7 +373,7 @@ export const typeInfo: TypeInfo = {
       ],
     },
     {
-      ...createObjectDefinition({ type: "CustomMutationType", comment: "CustomMutationType comment" }),
+      ...createObjectDefinition({ type: "CustomMutationType", comment: "CustomMutationType multi-line comment\nline 2" }),
       properties: [
         createScalarPropertyDefinition({ name: "str", type: "String", required: true, comment: "str comment" }),
         createScalarPropertyDefinition({ name: "optStr", type: "String", required: false, comment: "optStr comment" }),
@@ -454,7 +454,7 @@ export const typeInfo: TypeInfo = {
       properties: [
         createScalarPropertyDefinition({ name: "anotherProp", type: "String", required: false, comment: "anotherProp comment" }),
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
-        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true, comment: "uint8 comment" }),
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true, comment: "InterfaceObject1_uint8 comment" }),
         createScalarPropertyDefinition({ name: "str2", type: "String", required: true }),
         createObjectPropertyDefinition({ name: "object", type: "Interface_Object", required: false }),
       ]
@@ -1102,7 +1102,7 @@ export const typeInfo: TypeInfo = {
       }),
       properties: [
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
-        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true, comment: "uint8 comment"}),
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true, comment: "InterfaceObject1_uint8 comment"}),
       ]
     },
   ],

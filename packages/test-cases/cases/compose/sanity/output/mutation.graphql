@@ -78,7 +78,8 @@ implObject comment
 }
 
 """
-CustomMutationType comment
+CustomMutationType multi-line comment
+line 2
 """
 type CustomMutationType {
 """
@@ -125,7 +126,7 @@ anotherProp comment
   anotherProp: String
   str: String!
 """
-uint8 comment
+InterfaceObject1_uint8 comment
 """
   uint8: UInt8!
   str2: String!
@@ -345,7 +346,7 @@ type Interface_InterfaceObject1 @imported(
 ) {
   str: String!
 """
-uint8 comment
+InterfaceObject1_uint8 comment
 """
   uint8: UInt8!
 }
