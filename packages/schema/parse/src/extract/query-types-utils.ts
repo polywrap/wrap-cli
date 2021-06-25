@@ -131,7 +131,7 @@ export function extractInputValueDefinition(
   const argument = createPropertyDefinition({
     type: "N/A",
     name: node.name.value,
-    comment: node.description?.value
+    comment: node.description?.value,
   });
   method.arguments.push(argument);
   state.currentArgument = argument;

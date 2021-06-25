@@ -45,7 +45,7 @@ const visitorEnter = (
       interfaces: node.interfaces?.map((x) =>
         createInterfaceImplementedDefinition({ type: x.name.value })
       ),
-      comment: node.description?.value
+      comment: node.description?.value,
     });
     importedQueryTypes.push(importedType);
     state.currentImport = importedType;
@@ -72,7 +72,7 @@ const visitorEnter = (
       type: importDef.nativeType,
       name: node.name.value,
       return: returnType,
-      comment: node.description?.value
+      comment: node.description?.value,
     });
     importDef.methods.push(method);
     state.currentMethod = method;

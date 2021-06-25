@@ -206,7 +206,7 @@ export function createArrayPropertyDefinition(args: {
     ...args,
     array: {
       ...createArrayDefinition(args),
-      comment: undefined
+      comment: undefined,
     },
   });
 }
@@ -221,7 +221,7 @@ export function createScalarPropertyDefinition(args: {
     ...args,
     scalar: {
       ...createScalarDefinition(args),
-      comment: undefined
+      comment: undefined,
     },
   });
 }
@@ -237,7 +237,7 @@ export function createEnumPropertyDefinition(args: {
     ...args,
     enum: {
       ...createEnumDefinition(args),
-      comment: undefined
+      comment: undefined,
     },
   });
 }
@@ -253,7 +253,7 @@ export function createObjectPropertyDefinition(args: {
     ...args,
     object: {
       ...createObjectDefinition(args),
-      comment: undefined
+      comment: undefined,
     },
   });
 }
