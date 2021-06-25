@@ -231,6 +231,7 @@ export function createEnumPropertyDefinition(args: {
   name?: string | null;
   required?: boolean;
   constants?: string[];
+  comment?: string;
 }): PropertyDefinition {
   return createPropertyDefinition({
     ...args,

@@ -118,6 +118,7 @@ export const typeInfo: TypeInfo = {
           ...createMethodDefinition({
             type: "query",
             name: "abstractQueryMethod",
+            comment: "abstractQueryMethod comment",
             return: createObjectPropertyDefinition({
               name: "abstractQueryMethod",
               type: "Interface_InterfaceObject2",
@@ -128,7 +129,8 @@ export const typeInfo: TypeInfo = {
             createObjectPropertyDefinition({
               name: "arg",
               required: true,
-              type: "Interface_QueryInterfaceArgument"
+              type: "Interface_QueryInterfaceArgument",
+              comment: "arg comment"
             })
           ]
         }
@@ -330,7 +332,7 @@ export const typeInfo: TypeInfo = {
       properties: [createScalarPropertyDefinition({ name: "prop", type: "String" })],
     },
     {
-      ...createObjectDefinition({ type: "CommonType" }),
+      ...createObjectDefinition({ type: "CommonType", comment: "CommonType comment" }),
       properties: [
         createScalarPropertyDefinition({ name: "prop", type: "UInt8", required: true }),
         createObjectPropertyDefinition({ name: "nestedObject", type: "NestedType", required: true }),
@@ -338,6 +340,7 @@ export const typeInfo: TypeInfo = {
           name: "objectArray",
           type: "[[ArrayObject]]",
           required: true,
+          comment: "objectArray comment",
           item: createArrayDefinition({
             name: "objectArray",
             type: "[ArrayObject]",
@@ -353,7 +356,8 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createObjectDefinition({
-        type: "NestedType"
+        type: "NestedType",
+        comment: "NestedType comment"
       }),
       properties: [
         createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
@@ -361,7 +365,8 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createObjectDefinition({
-        type: "ArrayObject"
+        type: "ArrayObject",
+        comment: "ArrayObject comment"
       }),
       properties: [
         createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
@@ -449,7 +454,7 @@ export const typeInfo: TypeInfo = {
       properties: [
         createScalarPropertyDefinition({ name: "anotherProp", type: "String", required: false, comment: "anotherProp comment" }),
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
-        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true, comment: "uint8 comment" }),
         createScalarPropertyDefinition({ name: "str2", type: "String", required: true }),
         createObjectPropertyDefinition({ name: "object", type: "Interface_Object", required: false }),
       ]
@@ -481,7 +486,8 @@ export const typeInfo: TypeInfo = {
         uri: "test.eth",
         namespace: "Namespace",
         nativeType: "Query",
-        type: "Namespace_Query"
+        type: "Namespace_Query",
+        comment: "Query comment"
       }),
       methods: [
         {
@@ -536,6 +542,7 @@ export const typeInfo: TypeInfo = {
           ...createMethodDefinition({
             type: "query",
             name: "method2",
+            comment: "method2 comment",
             return: createArrayPropertyDefinition({
               name: "method2",
               type: "[Int64]",
@@ -552,6 +559,7 @@ export const typeInfo: TypeInfo = {
               name: "arg",
               required: true,
               type: "[String]",
+              comment: "arg comment",
               item: createScalarDefinition({
                 name: "arg",
                 required: true,
@@ -567,13 +575,15 @@ export const typeInfo: TypeInfo = {
         uri: "interface.eth",
         namespace: "Interface",
         nativeType: "Query",
-        type: "Interface_Query"
+        type: "Interface_Query",
+        comment: "Query comment"
       }),
       methods: [
         {
           ...createMethodDefinition({
             type: "query",
             name: "abstractQueryMethod",
+            comment: "abstractQueryMethod comment",
             return: createObjectPropertyDefinition({
               name: "abstractQueryMethod",
               type: "Interface_InterfaceObject2",
@@ -584,7 +594,8 @@ export const typeInfo: TypeInfo = {
             createObjectPropertyDefinition({
               name: "arg",
               required: true,
-              type: "Interface_QueryInterfaceArgument"
+              type: "Interface_QueryInterfaceArgument",
+              comment: "arg comment"
             }),
           ]
         },
@@ -595,7 +606,8 @@ export const typeInfo: TypeInfo = {
         uri: "test.eth",
         namespace: "Namespace",
         nativeType: "Mutation",
-        type: "Namespace_Mutation"
+        type: "Namespace_Mutation",
+        comment: "Mutation comment"
       }),
       methods: [
         {
@@ -775,7 +787,8 @@ export const typeInfo: TypeInfo = {
         uri: "interface.eth",
         namespace: "Interface",
         nativeType: "Mutation",
-        type: "Interface_Mutation"
+        type: "Interface_Mutation",
+        comment: "Mutation comment"
       }),
       methods: [
         {
@@ -805,7 +818,8 @@ export const typeInfo: TypeInfo = {
         uri: "test.eth",
         namespace: "Namespace",
         nativeType: "CustomType",
-        type: "Namespace_CustomType"
+        type: "Namespace_CustomType",
+        comment: "CustomType comment"
       }),
       properties: [
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
@@ -968,7 +982,8 @@ export const typeInfo: TypeInfo = {
         createEnumPropertyDefinition({
           name: "optImportedEnum",
           type: "Namespace_Imported_Enum",
-          required: false
+          required: false,
+          comment: "optImportedEnum comment"
         }),
       ]
     },
@@ -995,7 +1010,8 @@ export const typeInfo: TypeInfo = {
         uri: "test.eth",
         namespace: "Namespace",
         nativeType: "Imported_NestedObjectType",
-        type: "Namespace_Imported_NestedObjectType"
+        type: "Namespace_Imported_NestedObjectType",
+        comment: "Imported_NestedObjectType comment"
       }),
       properties: [createObjectPropertyDefinition({ name: "nestedObject", type: "Namespace_Imported_ObjectType", required: true })],
     },
@@ -1013,14 +1029,15 @@ export const typeInfo: TypeInfo = {
         uri: "interface.eth",
         namespace: "Interface",
         nativeType: "QueryInterfaceArgument",
-        type: "Interface_QueryInterfaceArgument"
+        type: "Interface_QueryInterfaceArgument",
+        comment: "QueryInterfaceArgument comment"
       }),
       interfaces: [
         createInterfaceImplementedDefinition({ type: "Interface_NestedQueryInterfaceArgument" })
       ],
       properties: [
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
-        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true , comment: "uint8 comment"}),
       ]
     },
     {
@@ -1028,7 +1045,8 @@ export const typeInfo: TypeInfo = {
         uri: "interface.eth",
         namespace: "Interface",
         nativeType: "NestedQueryInterfaceArgument",
-        type: "Interface_NestedQueryInterfaceArgument"
+        type: "Interface_NestedQueryInterfaceArgument",
+        comment: "NestedQueryInterfaceArgument comment"
       }),
       properties: [
         createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
@@ -1039,7 +1057,8 @@ export const typeInfo: TypeInfo = {
         uri: "interface.eth",
         namespace: "Interface",
         nativeType: "InterfaceObject2",
-        type: "Interface_InterfaceObject2"
+        type: "Interface_InterfaceObject2",
+        comment: "InterfaceObject2 comment"
       }),
       interfaces: [
         createInterfaceImplementedDefinition({ type: "Interface_NestedInterfaceObject" })
@@ -1054,7 +1073,8 @@ export const typeInfo: TypeInfo = {
         uri: "interface.eth",
         namespace: "Interface",
         nativeType: "Object",
-        type: "Interface_Object"
+        type: "Interface_Object",
+        comment: "Object comment"
       }),
       properties: [
         createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
@@ -1065,10 +1085,11 @@ export const typeInfo: TypeInfo = {
         uri: "interface.eth",
         namespace: "Interface",
         nativeType: "NestedInterfaceObject",
-        type: "Interface_NestedInterfaceObject"
+        type: "Interface_NestedInterfaceObject",
+        comment: "NestedInterfaceObject comment"
       }),
       properties: [
-        createObjectPropertyDefinition({ name: "object", type: "Interface_Object", required: false }),
+        createObjectPropertyDefinition({ name: "object", type: "Interface_Object", required: false, comment: "object comment" }),
       ]
     },
     {
@@ -1076,11 +1097,12 @@ export const typeInfo: TypeInfo = {
         uri: "interface.eth",
         namespace: "Interface",
         nativeType: "InterfaceObject1",
-        type: "Interface_InterfaceObject1"
+        type: "Interface_InterfaceObject1",
+        comment: "InterfaceObject1 comment"
       }),
       properties: [
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
-        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true, comment: "uint8 comment"}),
       ]
     },
   ],
@@ -1106,7 +1128,8 @@ export const typeInfo: TypeInfo = {
         constants: [
           "STRING",
           "BYTES"
-        ]
+        ],
+        comment: "Imported_Enum comment"
       })
     }
   ],

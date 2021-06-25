@@ -24,41 +24,80 @@ directive @imports(
 
 ### Web3API Header END ###
 
+"""
+Mutation comment
+"""
 type Mutation {
   abstractMutationMethod(
     arg: UInt8!
   ): String!
 }
 
+"""
+Query comment
+"""
 type Query {
+"""
+abstractQueryMethod comment
+"""
   abstractQueryMethod(
+"""
+arg comment
+"""
     arg: QueryInterfaceArgument!
   ): InterfaceObject2!
 }
 
+"""
+QueryInterfaceArgument comment
+"""
 type QueryInterfaceArgument implements NestedQueryInterfaceArgument {
   str: String!
+"""
+uint8 comment
+"""
   uint8: UInt8!
 }
 
+"""
+NestedQueryInterfaceArgument comment
+"""
 type NestedQueryInterfaceArgument {
   uint8: UInt8!
 }
 
+"""
+InterfaceObject1 comment
+"""
 type InterfaceObject1 {
   str: String!
+"""
+uint8 comment
+"""
   uint8: UInt8!
 }
 
+"""
+InterfaceObject2 comment
+"""
 type InterfaceObject2 implements NestedInterfaceObject {
   str2: String!
   object: Object
 }
 
+"""
+NestedInterfaceObject comment
+"""
 type NestedInterfaceObject {
+"""
+object comment
+"""
   object: Object
 }
 
+"""
+Object comment
+"""
 type Object {
   uint8: UInt8!
 }
