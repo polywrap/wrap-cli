@@ -1,7 +1,7 @@
-mod test_import_another_object;
-mod test_import_enum;
-mod test_import_object;
-mod test_import_query;
+pub mod test_import_another_object;
+pub mod test_import_enum;
+pub mod test_import_object;
+pub mod test_import_query;
 
 pub use test_import_another_object::TestImportAnotherObject;
 pub use test_import_enum::TestImportEnum;
