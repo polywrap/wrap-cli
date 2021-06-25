@@ -33,7 +33,7 @@
     unused_qualifications,
     unused_results
 )]
-*/
+
 
 pub mod abort;
 pub mod invoke;
@@ -44,6 +44,4 @@ pub use msgpack::{
     context::Context, read::Read, read_decoder::ReadDecoder, write::Write,
     write_encoder::WriteEncoder, write_sizer::WriteSizer,
 };
-
-/// New result wrapper for better error handling
-pub type Result = std::result::Result<(), failure::Error>;
+*/

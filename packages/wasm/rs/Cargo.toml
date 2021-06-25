@@ -1,8 +1,9 @@
 [package]
-name = "web3api-wasm-rs"
+name = "polywrap-wasm-rs"
 version = "0.1.0"
-description = "Web3API Rust-WASM Runtime"
+description = "Polywrap Rust-WASM Runtime"
 authors = ["Kobby Pentangeli <kobbypentangeli@gmail.com>"]
+repository = "https://github.com/polywrap/monorepo"
 license = "MIT"
 edition = "2018"
 
@@ -10,8 +11,6 @@ edition = "2018"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-#bincode = "1.3.3"
-failure = "0.1.8"
 num = "0.4.0"
 num-bigint = "0.4.0"
 serde = { version = "1.0.126", features = ["derive"] }
