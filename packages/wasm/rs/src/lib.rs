@@ -44,3 +44,5 @@ pub mod msgpack;
  //   context::Context, read::Read, read_decoder::ReadDecoder, write::Write,
  //   write_encoder::WriteEncoder, write_sizer::WriteSizer,
 //};
+
+pub use msgpack::context::Context;
