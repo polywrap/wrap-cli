@@ -622,14 +622,14 @@ export function resolveEnviromentTypes(
     return;
   }
 
-  typeInfo.objectTypes = typeInfo.objectTypes.filter((type) => {
-    return type.type !== genericEnvType.type;
-  });
-
   if (!specificEnvType) {
     genericEnvType.type = envTypeName;
     return;
   }
+
+  typeInfo.objectTypes = typeInfo.objectTypes.filter((type) => {
+    return type.type !== genericEnvType.type;
+  });
 
   checkDuplicateEnvProperties(specificEnvType, genericEnvType.properties);
 
