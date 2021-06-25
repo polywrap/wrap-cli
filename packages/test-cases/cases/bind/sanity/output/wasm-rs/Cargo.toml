@@ -1,8 +1,10 @@
 [package]
-name = "web3api-test-cases"
+name = "polywrap-rust-test-cases"
 version = "0.1.0"
-description = "Reusable Web3API Test Cases"
+description = "Reusable Polywrap Test Cases"
 authors = ["Kobby Pentangeli <kobbypentangeli@gmail.com>"]
+repository = "https://github.com/polywrap/monorepo"
+license = "MIT"
 edition = "2018"
 
 [lib]
@@ -10,9 +12,8 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 bincode = "1.3.3"
-#num-bigint = "0.4.0"
 num-bigint = { version = "0.4.0", features = ["serde"] }
 num-traits = "0.2.14"
 serde = { version = "1.0.126", features = ["derive"] }
 wasm-bindgen = "0.2.63"
-web3api-wasm-rs = { version = "0.1.0", path = "../../../../../../wasm/rs"}
+polywrap-wasm-rs = { version = "0.1.0", path = "../../../../../../wasm/rs"}
