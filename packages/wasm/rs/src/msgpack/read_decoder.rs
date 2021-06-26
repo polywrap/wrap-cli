@@ -526,7 +526,7 @@ impl Read for ReadDecoder {
         ))
     }
 
-    fn read_array<T>(&mut self, reader: fn(&mut Self) -> T) -> Result<Vec<T>> {
+    fn read_array<T>(&mut self, mut reader: impl FnMut(&mut Self) -> T) -> Result<Vec<T>> {
         let size = self.read_array_length().unwrap_or_default();
         let mut array: Vec<T> = vec![];
         for i in 0..size {
@@ -558,8 +558,8 @@ impl Read for ReadDecoder {
 
     fn read_map<K: Eq + Hash, V>(
         &mut self,
-        key_fn: fn(&mut Self) -> K,
-        val_fn: fn(&mut Self) -> V,
+        mut key_fn: impl FnMut(&mut Self) -> K,
+        mut val_fn: impl FnMut(&mut Self) -> V,
     ) -> HashMap<K, V> {
         let size = self.read_map_length().unwrap_or_default();
         let mut map: HashMap<K, V> = HashMap::new();
@@ -671,7 +671,7 @@ impl Read for ReadDecoder {
         Some(self.read_bigint().unwrap_or_default())
     }
 
-    fn read_nullable_array<T>(&mut self, reader: fn(&mut Self) -> T) -> Option<Vec<T>> {
+    fn read_nullable_array<T>(&mut self, reader: impl FnMut(&mut Self) -> T) -> Option<Vec<T>> {
         if self.is_next_nil() {
             return None;
         }
@@ -680,8 +680,8 @@ impl Read for ReadDecoder {
 
     fn read_nullable_map<K: Eq + Hash, V>(
         &mut self,
-        key_fn: fn(&mut Self) -> K,
-        val_fn: fn(&mut Self) -> V,
+        key_fn: impl FnMut(&mut Self) -> K,
+        val_fn: impl FnMut(&mut Self) -> V,
     ) -> Option<HashMap<K, V>> {
         if self.is_next_nil() {
             return None;
