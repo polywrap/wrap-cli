@@ -58,8 +58,8 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_u8(&mut self, value: u8) {
-        self.write_u64(value as u64);
+    fn write_u8(&mut self, value: &u8) {
+        self.write_u64(*value as u64);
     }
 
     fn write_u16(&mut self, value: u16) {
@@ -104,7 +104,7 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_string(&mut self, value: String) {
+    fn write_string(&mut self, value: &String) {
         self.write_string_length(value.len() as u32);
         self.length += value.len() as i32;
     }
@@ -119,19 +119,18 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_bytes(&mut self, value: &[u8]) -> Result<()> {
+    fn write_bytes(&mut self, value: &Vec<u8>) {
         if value.len() == 0 {
             self.length += 1;
-            return Ok(());
+        } else {
+            self.write_bytes_length(value.len() as u32);
+            self.length += value.len() as i32;
         }
-        self.write_bytes_length(value.len() as u32);
-        self.length += value.len() as i32;
-        Ok(())
     }
 
     fn write_bigint(&mut self, value: BigInt) {
         let val_str = value.to_string();
-        self.write_string(val_str);
+        self.write_string(&val_str);
     }
 
     fn write_array_length(&mut self, length: u32) {
@@ -144,7 +143,7 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_array<T>(&mut self, a: &[T], arr_fn: fn(&mut Self, item: &T)) {
+    fn write_array<T>(&mut self, a: &[T], mut arr_fn: impl FnMut(&mut Self, &T)) {
         self.write_array_length(a.len() as u32);
         for i in 0..a.len() {
             arr_fn(self, &a[i]);
@@ -164,8 +163,8 @@ impl Write for WriteSizer {
     fn write_map<K: Eq + Hash, V>(
         &mut self,
         map: HashMap<K, V>,
-        key_fn: fn(&mut Self, key: &K),
-        val_fn: fn(&mut Self, value: &V),
+        mut key_fn: impl FnMut(&mut Self, &K),
+        mut val_fn: impl FnMut(&mut Self, &V),
     ) {
         self.write_map_length(map.len() as u32);
         let keys: Vec<_> = map.keys().into_iter().collect();
@@ -227,7 +226,7 @@ impl Write for WriteSizer {
             self.write_nil();
             return Ok(());
         }
-        self.write_u8(value.unwrap_or_default());
+        self.write_u8(&value.unwrap_or_default());
         Ok(())
     }
 
@@ -281,7 +280,7 @@ impl Write for WriteSizer {
             self.write_nil();
             return Ok(());
         }
-        self.write_string(value.unwrap_or_default());
+        self.write_string(&value.unwrap_or_default());
         Ok(())
     }
 
@@ -306,7 +305,7 @@ impl Write for WriteSizer {
     fn write_nullable_array<T>(
         &mut self,
         a: Option<&[T]>,
-        arr_fn: fn(&mut Self, item: &T),
+        arr_fn: impl FnMut(&mut Self, &T),
     ) -> Result<()> {
         if a.is_none() {
             self.write_nil();
@@ -319,8 +318,8 @@ impl Write for WriteSizer {
     fn write_nullable_map<K: Eq + Hash, V>(
         &mut self,
         map: Option<HashMap<K, V>>,
-        key_fn: fn(&mut Self, key: &K),
-        val_fn: fn(&mut Self, value: &V),
+        key_fn: impl FnMut(&mut Self, &K),
+        val_fn: impl FnMut(&mut Self, &V),
     ) -> Result<()> {
         if map.is_none() {
             self.write_nil();
