@@ -17,3 +17,4 @@ num-traits = "0.2.14"
 serde = { version = "1.0.126", features = ["derive"] }
 wasm-bindgen = "0.2.63"
 polywrap-wasm-rs = { version = "0.1.0", path = "../../../../../wasm/rs"}
+polywrap-rust-test-cases = { version = "0.1.0", path = "../../../../../test-cases/cases/bind/sanity/output/wasm-rs" }
