@@ -5,6 +5,7 @@ use crate::{abort, invoke};
 use wasm_bindgen::prelude::*;
 
 pub use mutations::{mutation_method_wrapped, object_method_wrapped};
+pub use mutations::{InputMutationMethod, InputObjectMethod};
 
 #[wasm_bindgen]
 pub fn _w3_init() {
