@@ -38,7 +38,7 @@ impl TestImportObject {
         writer
             .context()
             .push("object", "TestImportAnotherObject", "writing property");
-        writer.write_string("object".to_string());
+        writer.write_string(&"object".to_string());
         self.object.clone().write(writer.to_owned());
         let _ = writer.context().pop();
         writer.context().push(
@@ -46,7 +46,7 @@ impl TestImportObject {
             "Option<TestImportAnotherObject>",
             "writing property",
         );
-        writer.write_string("opt_object".to_string());
+        writer.write_string(&"opt_object".to_string());
         if self.opt_object.is_some() {
             self.opt_object.clone().unwrap().write(writer.to_owned());
         } else {
@@ -58,7 +58,7 @@ impl TestImportObject {
             "Vec<TestImportAnotherObject>",
             "writing property",
         );
-        writer.write_string("object_array".to_string());
+        writer.write_string(&"object_array".to_string());
         // TODO: writer.write_array();
         let _ = writer.context().pop();
         writer.context().push(
@@ -66,25 +66,25 @@ impl TestImportObject {
             "Option<Vec<TestImportAnotherObject>>",
             "writing property",
         );
-        writer.write_string("opt_object_array".to_string());
+        writer.write_string(&"opt_object_array".to_string());
         // TODO: writer.write_nullable_array();
         let _ = writer.context().pop();
         writer
             .context()
             .push("en", "TestImportEnum", "writing property");
-        writer.write_string("en".to_string());
+        writer.write_string(&"en".to_string());
         writer.write_i32(self.en.clone() as i32);
         let _ = writer.context().pop();
         writer
             .context()
             .push("opt_enum", "Option<TestImportEnum>", "writing property");
-        writer.write_string("opt_enum".to_string());
+        writer.write_string(&"opt_enum".to_string());
         let _ = writer.write_nullable_i32(Some(self.opt_enum.clone().unwrap() as i32));
         let _ = writer.context().pop();
         writer
             .context()
             .push("enum_array", "Vec<TestImportEnum>>", "writing property");
-        writer.write_string("enum_array".to_string());
+        writer.write_string(&"enum_array".to_string());
         // TODO: writer.write_array();
         let _ = writer.context().pop();
         writer.context().push(
@@ -92,7 +92,7 @@ impl TestImportObject {
             "Option<Vec<TestImportEnum>>>",
             "writing property",
         );
-        writer.write_string("opt_enum_array".to_string());
+        writer.write_string(&"opt_enum_array".to_string());
         // TODO: writer.write_nullable_array();
         let _ = writer.context().pop();
     }

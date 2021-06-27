@@ -34,13 +34,13 @@ impl AnotherType {
         writer
             .context()
             .push("prop", "Option<String>", "writing property");
-        writer.write_string("prop".to_string());
+        writer.write_string(&"prop".to_string());
         let _ = writer.write_nullable_string(object.prop.clone());
         let _ = writer.context().pop();
         writer
             .context()
             .push("circular", "Option<CustomType>", "writing property");
-        writer.write_string("circular".to_string());
+        writer.write_string(&"circular".to_string());
         if object.circular.is_some() {
             Self::write(object, writer.clone());
         } else {

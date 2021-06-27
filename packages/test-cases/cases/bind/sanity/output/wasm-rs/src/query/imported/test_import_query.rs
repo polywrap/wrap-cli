@@ -56,43 +56,43 @@ impl InputImportedMethod {
         writer
             .context()
             .push("string", "String", "writing property");
-        writer.write_string("string".to_string());
-        writer.write_string(self.string.to_owned());
+        writer.write_string(&"string".to_string());
+        writer.write_string(&self.string);
         let _ = writer.context().pop();
         writer
             .context()
             .push("opt_string", "Option<String>", "writing property");
-        writer.write_string("opt_string".to_string());
+        writer.write_string(&"opt_string".to_string());
         let _ = writer.write_nullable_string(self.opt_string.to_owned());
         let _ = writer.context().pop();
         writer.context().push("u", "u32", "writing property");
-        writer.write_string("u".to_string());
+        writer.write_string(&"u".to_string());
         writer.write_u32(self.u);
         let _ = writer.context().pop();
         writer
             .context()
             .push("opt_u", "Option<u32>", "writing property");
-        writer.write_string("opt_u".to_string());
+        writer.write_string(&"opt_u".to_string());
         let _ = writer.write_nullable_u32(self.opt_u);
         let _ = writer.context().pop();
 
         writer
             .context()
             .push("u_array_array", "Vec<Vec<u32>>", "writing property");
-        writer.write_string("u_array_array".to_string());
+        writer.write_string(&"u_array_array".to_string());
         // TODO: writer.write_array();
         let _ = writer.context().pop();
 
         writer
             .context()
             .push("object", "TestImportObject", "writing property");
-        writer.write_string("object".to_string());
+        writer.write_string(&"object".to_string());
         self.object.write(writer.to_owned());
         let _ = writer.context().pop();
         writer
             .context()
             .push("opt_object", "Option<TestImportObject>", "writing property");
-        writer.write_string("opt_object".to_string());
+        writer.write_string(&"opt_object".to_string());
         if self.opt_object.is_some() {
             self.opt_object.clone().unwrap().write(writer.to_owned());
         } else {
@@ -102,7 +102,7 @@ impl InputImportedMethod {
         writer
             .context()
             .push("object_array", "Vec<TestImportObject>", "writing property");
-        writer.write_string("object_array".to_string());
+        writer.write_string(&"object_array".to_string());
         // TODO: writer.write_array();
         let _ = writer.context().pop();
         writer.context().push(
@@ -110,25 +110,25 @@ impl InputImportedMethod {
             "Option<Vec<TestImportObject>>",
             "writing property",
         );
-        writer.write_string("opt_object_array".to_string());
+        writer.write_string(&"opt_object_array".to_string());
         // TODO: writer.write_nullable_array();
         let _ = writer.context().pop();
         writer
             .context()
             .push("en", "TestImportEnum", "writing property");
-        writer.write_string("en".to_string());
+        writer.write_string(&"en".to_string());
         writer.write_i32(self.en.clone() as i32);
         let _ = writer.context().pop();
         writer
             .context()
             .push("opt_enum", "Option<TestImportEnum>", "writing property");
-        writer.write_string("opt_enum".to_string());
+        writer.write_string(&"opt_enum".to_string());
         let _ = writer.write_nullable_i32(Some(self.opt_enum.clone().unwrap() as i32));
         let _ = writer.context().pop();
         writer
             .context()
             .push("enum_array", "Vec<TestImportEnum>>", "writing property");
-        writer.write_string("enum_array".to_string());
+        writer.write_string(&"enum_array".to_string());
         // TODO: writer.write_array();
         let _ = writer.context().pop();
         writer.context().push(
@@ -136,7 +136,7 @@ impl InputImportedMethod {
             "Option<Vec<CustomEnum>>>",
             "writing property",
         );
-        writer.write_string("opt_enum_array".to_string());
+        writer.write_string(&"opt_enum_array".to_string());
         // TODO: writer.write_nullable_array();
         let _ = writer.context().pop();
     }
@@ -200,7 +200,7 @@ impl InputAnotherMethod {
         writer
             .context()
             .push("arg", "Vec<String>", "writing property");
-        writer.write_string("arg".to_string());
+        writer.write_string(&"arg".to_string());
         // TODO: writer.write_array();
         let _ = writer.context().pop();
     }

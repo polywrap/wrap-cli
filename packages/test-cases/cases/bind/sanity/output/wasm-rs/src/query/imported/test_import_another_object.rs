@@ -33,8 +33,8 @@ impl TestImportAnotherObject {
     pub fn write_test_import_another_object<W: Write>(&mut self, mut writer: W) {
         writer.write_map_length(1);
         writer.context().push("prop", "string", "writing property");
-        writer.write_string("prop".to_string());
-        writer.write_string(self.prop.to_owned());
+        writer.write_string(&"prop".to_string());
+        writer.write_string(&self.prop.to_owned());
         let _ = writer.context().pop();
     }
 

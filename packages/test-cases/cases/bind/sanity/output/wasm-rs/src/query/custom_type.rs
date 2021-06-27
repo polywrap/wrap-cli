@@ -65,105 +65,105 @@ impl CustomType {
         writer
             .context()
             .push("string", "string", "writing property");
-        writer.write_string("string".to_string());
-        writer.write_string(object.string.to_owned());
+        writer.write_string(&"string".to_string());
+        writer.write_string(&object.string.to_owned());
         let _ = writer.context().pop();
         writer
             .context()
             .push("opt_string", "Option<String>", "writing property");
-        writer.write_string("opt_string".to_string());
+        writer.write_string(&"opt_string".to_string());
         let _ = writer.write_nullable_string(object.opt_string.to_owned());
         let _ = writer.context().pop();
         writer.context().push("u", "u32", "writing property");
-        writer.write_string("u".to_string());
+        writer.write_string(&"u".to_string());
         writer.write_u32(object.u);
         let _ = writer.context().pop();
         writer
             .context()
             .push("opt_u", "Option<u32>", "writing property");
-        writer.write_string("opt_u".to_string());
+        writer.write_string(&"opt_u".to_string());
         let _ = writer.write_nullable_u32(object.opt_u);
         let _ = writer.context().pop();
         writer.context().push("u8", "u8", "writing property");
-        writer.write_string("u8".to_string());
-        writer.write_u8(object.uint8);
+        writer.write_string(&"u8".to_string());
+        writer.write_u8(&object.uint8);
         let _ = writer.context().pop();
         writer.context().push("u16", "u16", "writing property");
-        writer.write_string("u16".to_string());
+        writer.write_string(&"u16".to_string());
         writer.write_u16(object.uint16);
         let _ = writer.context().pop();
         writer.context().push("u32", "u32", "writing property");
-        writer.write_string("u32".to_string());
+        writer.write_string(&"u32".to_string());
         writer.write_u32(object.uint32);
         let _ = writer.context().pop();
         writer.context().push("u64", "u64", "writing property");
-        writer.write_string("u64".to_string());
+        writer.write_string(&"u64".to_string());
         writer.write_u64(object.uint64);
         let _ = writer.context().pop();
         writer.context().push("i", "i32", "writing property");
-        writer.write_string("i".to_string());
+        writer.write_string(&"i".to_string());
         writer.write_i32(object.i);
         let _ = writer.context().pop();
         writer.context().push("i8", "i8", "writing property");
-        writer.write_string("i8".to_string());
+        writer.write_string(&"i8".to_string());
         writer.write_i8(object.int8);
         let _ = writer.context().pop();
         writer.context().push("i16", "i16", "writing property");
-        writer.write_string("i16".to_string());
+        writer.write_string(&"i16".to_string());
         writer.write_i16(object.int16);
         let _ = writer.context().pop();
         writer.context().push("i32", "i32", "writing property");
-        writer.write_string("i32".to_string());
+        writer.write_string(&"i32".to_string());
         writer.write_i32(object.int32);
         let _ = writer.context().pop();
         writer.context().push("i64", "i64", "writing property");
-        writer.write_string("i64".to_string());
+        writer.write_string(&"i64".to_string());
         writer.write_i64(object.int64);
         let _ = writer.context().pop();
         writer
             .context()
             .push("bigint", "BigInt", "writing property");
-        writer.write_string("bigint".to_string());
+        writer.write_string(&"bigint".to_string());
         writer.write_bigint(object.bigint.to_owned());
         let _ = writer.context().pop();
         writer
             .context()
             .push("opt_bigint", "Option<BigInt>", "writing property");
-        writer.write_string("opt_bigint".to_string());
+        writer.write_string(&"opt_bigint".to_string());
         let _ = writer.write_nullable_bigint(object.opt_bigint.to_owned());
         let _ = writer.context().pop();
         writer
             .context()
             .push("bytes", "Vec<u8>", "writing property");
-        writer.write_string("bytes".to_string());
-        let _ = writer.write_bytes(object.bytes.as_slice());
+        writer.write_string(&"bytes".to_string());
+        let _ = writer.write_bytes(&object.bytes.clone());
         let _ = writer.context().pop();
         writer
             .context()
             .push("opt_bytes", "Option<Vec<u8>>", "writing property");
-        writer.write_string("opt_bytes".to_string());
+        writer.write_string(&"opt_bytes".to_string());
         let _ = writer.write_nullable_bytes(object.opt_bytes.to_owned());
         let _ = writer.context().pop();
         writer.context().push("boolean", "bool", "writing property");
-        writer.write_string("boolean".to_string());
+        writer.write_string(&"boolean".to_string());
         writer.write_bool(object.boolean);
         let _ = writer.context().pop();
         writer
             .context()
             .push("opt_boolean", "Option<bool>", "writing property");
-        writer.write_string("opt_boolean".to_string());
+        writer.write_string(&"opt_boolean".to_string());
         let _ = writer.write_nullable_bool(object.opt_boolean);
         let _ = writer.context().pop();
         writer
             .context()
             .push("u_array", "Vec<u32>", "writing property");
-        writer.write_string("u_array".to_string());
+        writer.write_string(&"u_array".to_string());
         // TODO: writer.write_array();
         let _ = writer.context().pop();
         writer
             .context()
             .push("u_opt_array", "Vec<Option<u32>>", "writing property");
-        writer.write_string("u_opt_array".to_string());
+        writer.write_string(&"u_opt_array".to_string());
         // TODO: writer.write_nullable_array();
         let _ = writer.context().pop();
         writer.context().push(
@@ -171,7 +171,7 @@ impl CustomType {
             "Option<Vec<Option<u32>>>",
             "writing property",
         );
-        writer.write_string("opt_u_opt_array".to_string());
+        writer.write_string(&"opt_u_opt_array".to_string());
         // TODO: writer.write_nullable_array();
         let _ = writer.context().pop();
         writer.context().push(
@@ -179,13 +179,13 @@ impl CustomType {
             "Option<Option<Vec<String>>>",
             "writing property",
         );
-        writer.write_string("opt_string_opt_array".to_string());
+        writer.write_string(&"opt_string_opt_array".to_string());
         // TODO: writer.write_nullable_array();
         let _ = writer.context().pop();
         writer
             .context()
             .push("u_array_array", "Vec<Vec<u32>>", "writing property");
-        writer.write_string("u_array_array".to_string());
+        writer.write_string(&"u_array_array".to_string());
         // TODO: writer.write_array();
         let _ = writer.context().pop();
         writer.context().push(
@@ -193,7 +193,7 @@ impl CustomType {
             "Vec<Option<Vec<u64>>>",
             "writing property",
         );
-        writer.write_string("u_opt_array_opt_array".to_string());
+        writer.write_string(&"u_opt_array_opt_array".to_string());
         // TODO: writer.write_array();
         let _ = writer.context().pop();
         writer.context().push(
@@ -201,7 +201,7 @@ impl CustomType {
             "Vec<Option<Vec<Vec<u64>>>>",
             "writing property",
         );
-        writer.write_string("u_array_opt_array_array".to_string());
+        writer.write_string(&"u_array_opt_array_array".to_string());
         // TODO: writer.write_array();
         let _ = writer.context().pop();
         writer.context().push(
@@ -209,19 +209,19 @@ impl CustomType {
             "Option<Vec<Option<Vec<Option<Vec<u64>>>>>>",
             "writing property",
         );
-        writer.write_string("crazy_array".to_string());
+        writer.write_string(&"crazy_array".to_string());
         // TODO: writer.write_nullable_array();
         let _ = writer.context().pop();
         writer
             .context()
             .push("object", "AnotherType", "writing property");
-        writer.write_string("object".to_string());
+        writer.write_string(&"object".to_string());
         AnotherType::write(object.object.clone(), writer.to_owned());
         let _ = writer.context().pop();
         writer
             .context()
             .push("opt_object", "Option<AnotherType>", "writing property");
-        writer.write_string("opt_object".to_string());
+        writer.write_string(&"opt_object".to_string());
         if object.opt_object.is_some() {
             AnotherType::write(object.opt_object.clone().unwrap(), writer.to_owned());
         } else {
@@ -231,7 +231,7 @@ impl CustomType {
         writer
             .context()
             .push("object_array", "Vec<AnotherType>", "writing property");
-        writer.write_string("object_array".to_string());
+        writer.write_string(&"object_array".to_string());
         // TODO: writer.write_array();
         let _ = writer.context().pop();
         writer.context().push(
@@ -239,25 +239,25 @@ impl CustomType {
             "Option<Vec<AnotherType>>",
             "writing property",
         );
-        writer.write_string("opt_object_array".to_string());
+        writer.write_string(&"opt_object_array".to_string());
         // TODO: writer.write_nullable_array();
         let _ = writer.context().pop();
         writer
             .context()
             .push("en", "CustomEnum", "writing property");
-        writer.write_string("en".to_string());
+        writer.write_string(&"en".to_string());
         writer.write_i32(object.en.clone() as i32);
         let _ = writer.context().pop();
         writer
             .context()
             .push("opt_en", "Option<CustomEnum>", "writing property");
-        writer.write_string("opt_en".to_string());
+        writer.write_string(&"opt_en".to_string());
         let _ = writer.write_nullable_i32(Some(object.opt_en.clone().unwrap() as i32));
         let _ = writer.context().pop();
         writer
             .context()
             .push("en_array", "Vec<CustomEnum>>", "writing property");
-        writer.write_string("en_array".to_string());
+        writer.write_string(&"en_array".to_string());
         // TODO: writer.write_array();
         let _ = writer.context().pop();
         writer.context().push(
@@ -265,7 +265,7 @@ impl CustomType {
             "Option<Vec<CustomEnum>>>",
             "writing property",
         );
-        writer.write_string("opt_en_array".to_string());
+        writer.write_string(&"opt_en_array".to_string());
         // TODO: writer.write_nullable_array();
         let _ = writer.context().pop();
     }
