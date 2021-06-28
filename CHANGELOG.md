@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.28
+## Bugs
+* Fixed API template project
+
 # Web3API 0.0.1-prealpha.27
 ## Bugs
 * Fixed API template project
