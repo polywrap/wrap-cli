@@ -1,3 +1,11 @@
+# Web3API 0.0.1-prealpha.28
+## Bugs
+* Fixed API template project
+
+# Web3API 0.0.1-prealpha.27
+## Bugs
+* Fixed API template project
+
 # Web3API 0.0.1-prealpha.26
 ## Feature
 * `@web3api/uniswapV2-api`: Completed the Uniswap V2 Web3API implementation.
