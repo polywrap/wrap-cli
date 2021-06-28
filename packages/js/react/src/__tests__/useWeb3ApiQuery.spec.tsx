@@ -23,7 +23,7 @@ import {
   cleanup
 } from "@testing-library/react-hooks";
 
-jest.setTimeout(60000);
+jest.setTimeout(360000);
 
 describe("useWeb3ApiQuery hook", () => {
   let uri: string;

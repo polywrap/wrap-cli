@@ -99,7 +99,7 @@ ${HELP}`);
       cwd: projectRoot
     }, w3Cli);
 
-    const manifestPath = path.normalize("build/web3api.json");
+    const manifestPath = "build/web3api.json";
     const sanitizedOutput = clearStyle(output);
 
     expect(code).toEqual(0);
@@ -114,7 +114,7 @@ ${HELP}`);
       cwd: projectRoot
     }, w3Cli);
 
-    const manifestPath = path.normalize("build/web3api.json");
+    const manifestPath = "build/web3api.json";
     const sanitizedOutput = clearStyle(output);
 
     expect(code).toEqual(0);
@@ -129,7 +129,7 @@ ${HELP}`);
       cwd: projectRoot
     }, w3Cli);
 
-    const manifestPath = path.normalize("build/web3api.json");
+    const manifestPath = "build/web3api.json";
     const sanitizedOutput = clearStyle(output);
 
     expect(code).toEqual(0);

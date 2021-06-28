@@ -9,7 +9,7 @@ import {
   deserializeWeb3ApiManifest,
   deserializeBuildManifest,
 } from "@web3api/core-js";
-import { writeFileSync } from "@web3api/os-js";
+import { writeFileSync, normalizePath } from "@web3api/os-js";
 import { Schema as JsonSchema } from "jsonschema";
 import path from "path";
 import fs from "fs";
@@ -168,9 +168,15 @@ export async function outputManifest(
   } else {
     manifestPath = displayPath(manifestPath);
     return await withSpinner(
-      intlMsg.lib_helpers_manifest_outputText({ path: manifestPath }),
-      intlMsg.lib_helpers_manifest_outputError({ path: manifestPath }),
-      intlMsg.lib_helpers_manifest_outputWarning({ path: manifestPath }),
+      intlMsg.lib_helpers_manifest_outputText({
+        path: normalizePath(manifestPath),
+      }),
+      intlMsg.lib_helpers_manifest_outputError({
+        path: normalizePath(manifestPath),
+      }),
+      intlMsg.lib_helpers_manifest_outputWarning({
+        path: normalizePath(manifestPath),
+      }),
       (_spinner): Promise<unknown> => {
         return Promise.resolve(run());
       }
