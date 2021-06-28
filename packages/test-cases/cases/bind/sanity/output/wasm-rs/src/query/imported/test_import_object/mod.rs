@@ -21,7 +21,7 @@ pub struct TestImportObject {
 }
 
 impl TestImportObject {
-    pub const URI: String = String::from("testimport.uri.eth");
+    pub const URI: &'static str = "testimport.uri.eth";
 
     pub fn to_buffer(object: Self) -> Vec<u8> {
         serialize_test_import_object(object)

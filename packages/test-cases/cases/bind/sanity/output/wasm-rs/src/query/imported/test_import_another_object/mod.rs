@@ -13,7 +13,7 @@ pub struct TestImportAnotherObject {
 }
 
 impl TestImportAnotherObject {
-    pub const URI: String = String::from("testimport.uri.eth");
+    pub const URI: &'static str = "testimport.uri.eth";
 
     pub fn new() -> Self {
         Self {
@@ -21,7 +21,7 @@ impl TestImportAnotherObject {
         }
     }
 
-    pub fn to_buffer(mut object: Self) -> Vec<u8> {
+    pub fn to_buffer(object: Self) -> Vec<u8> {
         serialize_test_import_another_object(object)
     }
 
@@ -29,7 +29,7 @@ impl TestImportAnotherObject {
         deserialize_test_import_another_object(buffer)
     }
 
-    pub fn write<W: Write>(mut object: Self, writer: W) {
+    pub fn write<W: Write>(object: Self, writer: W) {
         write_test_import_another_object(object, writer);
     }
 
