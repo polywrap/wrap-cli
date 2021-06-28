@@ -2,9 +2,9 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-import { HostAction, maxThreads, maxTransferBytes } from "./types";
-import { sleep } from "./utils";
+import { HostAction, u32, W3Exports } from "./types";
 import { WasmPromise } from "./thread";
+import { readBytes, readString, writeBytes, writeString } from "./utils";
 
 import {
   InvokeApiOptions,
@@ -19,14 +19,157 @@ import {
 import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
 
-const Worker = require("web-worker");
+interface State {
+  invoke: {
+    result?: ArrayBuffer;
+    error?: string;
+  };
+  subinvoke: {
+    result?: ArrayBuffer;
+    error?: string;
+  };
+}
 
-let threadsActive = 0;
-const threadIds: number[] = Array.from({ length: maxThreads }, (_, i) => i);
-const threadMutexesBuffer = new SharedArrayBuffer(
-  maxThreads * Int32Array.BYTES_PER_ELEMENT
-);
-const threadMutexes = new Int32Array(threadMutexesBuffer, 0, maxThreads);
+const createImports = (importArgs: {
+  DATA_ADDR: number;
+  view: Int32Array;
+  exports: W3Exports;
+  memory: WebAssembly.Memory;
+  args: ArrayBuffer;
+}) => {
+  const { DATA_ADDR, view, exports, memory, args } = importArgs;
+  const state: State = {
+    invoke: {},
+    subinvoke: {},
+  };
+  let sleeping = false;
+
+  return {
+    w3: {
+      __w3_subinvoke: (
+        uriPtr: u32,
+        uriLen: u32,
+        modulePtr: u32,
+        moduleLen: u32,
+        methodPtr: u32,
+        methodLen: u32,
+        inputPtr: u32,
+        inputLen: u32
+      ): boolean => {
+        const uri = readString(memory.buffer, uriPtr, uriLen);
+        const module = readString(memory.buffer, modulePtr, moduleLen);
+        const method = readString(memory.buffer, methodPtr, methodLen);
+        const input = readBytes(memory.buffer, inputPtr, inputLen);
+
+        const result = exports._w3_invoke(method.length, args.byteLength);
+
+        const { data, error } = invokeResult;
+
+        const transferStatus: ThreadWakeStatus = error
+          ? ThreadWakeStatus.SUBINVOKE_ERROR
+          : ThreadWakeStatus.SUBINVOKE_RESULT;
+
+        // Transfer is complete, copy result to desired location
+        if (transferStatus === ThreadWakeStatus.SUBINVOKE_ERROR) {
+          const decoder = new TextDecoder();
+          state.subinvoke.error = decoder.decode(data);
+          return false;
+        } else if (transferStatus === ThreadWakeStatus.SUBINVOKE_RESULT) {
+          state.subinvoke.result = data;
+          return true;
+        }
+
+        return false;
+      },
+      // Give WASM the size of the result
+      __w3_subinvoke_result_len: (): u32 => {
+        if (!state.subinvoke.result) {
+          abort("__w3_subinvoke_result_len: subinvoke.result is not set");
+          return 0;
+        }
+        return state.subinvoke.result.byteLength;
+      },
+      // Copy the subinvoke result into WASM
+      __w3_subinvoke_result: (ptr: u32): void => {
+        if (!state.subinvoke.result) {
+          abort("__w3_subinvoke_result: subinvoke.result is not set");
+          return;
+        }
+        writeBytes(state.subinvoke.result, memory.buffer, ptr);
+      },
+      // Give WASM the size of the error
+      __w3_subinvoke_error_len: (): u32 => {
+        if (!state.subinvoke.error) {
+          abort("__w3_subinvoke_error_len: subinvoke.error is not set");
+          return 0;
+        }
+        return state.subinvoke.error.length;
+      },
+      // Copy the subinvoke error into WASM
+      __w3_subinvoke_error: (ptr: u32): void => {
+        if (!state.subinvoke.error) {
+          abort("__w3_subinvoke_error: subinvoke.error is not set");
+          return;
+        }
+        writeString(state.subinvoke.error, memory.buffer, ptr);
+      },
+      // Copy the invocation's method & args into WASM
+      __w3_invoke_args: (methodPtr: u32, argsPtr: u32): void => {
+        if (!state.method) {
+          abort("__w3_invoke_args: method is not set");
+          return;
+        }
+        if (!state.args) {
+          abort("__w3_invoke_args: args is not set");
+          return;
+        }
+        writeString(state.method, memory.buffer, methodPtr);
+        writeBytes(state.args, memory.buffer, argsPtr);
+      },
+      // Store the invocation's result
+      __w3_invoke_result: (ptr: u32, len: u32): void => {
+        state.invoke.result = readBytes(memory.buffer, ptr, len);
+      },
+      // Store the invocation's error
+      __w3_invoke_error: (ptr: u32, len: u32): void => {
+        state.invoke.error = readString(memory.buffer, ptr, len);
+      },
+      __w3_abort: (
+        msgPtr: u32,
+        msgLen: u32,
+        filePtr: u32,
+        fileLen: u32,
+        line: u32,
+        column: u32
+      ): void => {
+        const msg = readString(memory.buffer, msgPtr, msgLen);
+        const file = readString(memory.buffer, filePtr, fileLen);
+        abort(
+          `__w3_abort: ${msg}\nFile: ${file}\nLocation: [${line},${column}]`
+        );
+      },
+      __w3_wake_up: () => {
+        exports.asyncify_start_rewind(DATA_ADDR);
+        exports.main();
+      },
+      __w3_sleep: () => {
+        if (!sleeping) {
+          view[DATA_ADDR >> 2] = DATA_ADDR + 8;
+          view[(DATA_ADDR + 4) >> 2] = 1024;
+
+          exports.asyncify_start_unwind(DATA_ADDR);
+          sleeping = true;
+        } else {
+          exports.asyncify_stop_rewind();
+          sleeping = false;
+        }
+      },
+      env: {
+        memory,
+      },
+    },
+  };
+};
 
 export class WasmWeb3Api extends Api {
   private _schema?: string;
@@ -62,64 +205,59 @@ export class WasmWeb3Api extends Api {
         options: InvokeApiOptions,
         client: Client
       ): Promise<InvokeApiResult<unknown | ArrayBuffer>> => {
-        const { module, method, input, decode } = options;
+        const { module: invokableModule, method, input, decode } = options;
 
         // Fetch the WASM module
-        const wasm = await this.getWasmModule(module, client);
-
-        // TODO: come up with a better future-proof solution
-        while (threadsActive >= maxThreads || threadIds.length === 0) {
-          // Wait for another thread to become available
-          await sleep(500);
-        }
-
-        threadsActive++;
-        const threadId = threadIds.pop() as number;
-
-        Tracer.addEvent("threadId", threadId);
-
-        Atomics.store(threadMutexes, threadId, 0);
-
-        // Spawn the worker thread
-        let modulePath = process.env.WEB3API_THREAD_PATH || "./thread.js";
-
-        // If we're in node.js
-        if (typeof process === "object" && typeof window === "undefined") {
-          modulePath = `file://${__dirname}/thread.js`;
-
-          if (process.env.TEST) {
-            modulePath = `file://${__dirname}/thread-loader.js`;
-          }
-        }
-
-        const worker = new Worker(modulePath);
-
-        // Our transfer buffer, used to send data to the thread atomically.
-        // The first byte in the transfer array specifies how many bytes are in the array (max 255).
-        const transferBuffer = new SharedArrayBuffer(
-          maxTransferBytes * Uint8Array.BYTES_PER_ELEMENT
-        );
+        const wasm = await this.getWasmModule(invokableModule, client);
 
         let state: "Abort" | "LogQueryError" | "LogQueryResult" | undefined;
         let abortMessage: string | undefined;
         let queryResult: ArrayBuffer | undefined;
         let queryError: string | undefined;
 
-        Tracer.addEvent("worker-started", {
-          method,
-          input,
-          threadId,
+        const args =
+          input instanceof ArrayBuffer
+            ? input
+            : MsgPack.encode(input, { ignoreUndefined: true });
+        const module = new WebAssembly.Module(wasm);
+        const memory = new WebAssembly.Memory({ initial: 1 });
+
+        const importArgs = {
+          DATA_ADDR: 16,
+          view: new Int32Array(memory.buffer),
+          exports: {} as W3Exports,
+          args,
+          subinvokeOptions: {
+            aInternal: undefined,
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            aListener: function () {},
+            set a(val: InvokeApiOptions | undefined) {
+              this.aInternal = val;
+              this.aListener(val);
+            },
+            get a(): InvokeApiOptions | undefined {
+              return this.aInternal;
+            },
+            registerListener: function (
+              listener: (val: InvokeApiOptions | undefined) => void
+            ) {
+              this.aListener = listener;
+            },
+          },
+        };
+
+        importArgs.subinvokeOptions.registerListener(function (
+          opts: InvokeApiOptions | undefined
+        ) {
+          if (opts) {
+            
+          } else {
+          }
         });
 
-        // Start the thread
-        worker.postMessage({
-          wasm,
-          method,
-          input,
-          threadMutexesBuffer,
-          threadId,
-          transferBuffer,
-        });
+        const source = new WebAssembly.Instance(module);
+
+        importArgs.exports = source.exports as W3Exports;
 
         // await awaitCompletion;
 
@@ -164,13 +302,6 @@ export class WasmWeb3Api extends Api {
             }
           );
         });
-
-        // Atomics.store(threadMutexes, threadId, 0);
-        worker.terminate();
-        threadsActive--;
-        threadIds.push(threadId);
-
-        Tracer.addEvent("worker-terminated", state);
 
         if (!state) {
           throw Error("WasmWeb3Api: query state was never set.");
