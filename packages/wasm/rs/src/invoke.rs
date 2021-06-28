@@ -40,9 +40,9 @@ pub fn w3_invoke(method_size: u32, args_size: u32) -> bool {
 
     let method = std::str::from_utf8(method_buf.as_slice()).unwrap();
     let invoke_func = invokes();
-    let query = invoke_func.get(method);
-    if query.is_some() {
-        let func = query.unwrap();
+    let maybe_func = invoke_func.get(method);
+    if maybe_func.is_some() {
+        let func = maybe_func.unwrap();
         let result = func(args_buf.as_slice());
         let result_u32 = result.iter().fold(0, |res, &bit| (res << 1) ^ bit) as u32;
 

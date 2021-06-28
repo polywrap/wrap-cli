@@ -285,7 +285,7 @@ impl DataView {
     }
 
     pub fn to_string() -> String {
-        format!("[object DataView")
+        format!("[object DataView]")
     }
 
     fn load_from_memory<T: FromPrimitive + Copy>(&mut self, mut p: T) -> T {
