@@ -1,15 +1,7 @@
 use super::context::Context;
 use std::io::{Error, ErrorKind};
 
-#[derive(Clone, Copy, Debug, Default)]
-pub struct Block {
-    /// Memory manager info
-    mm_info: u32,
-}
-
-pub const BLOCK_OVERHEAD: usize = 100; // FIXME: offsetof<BLOCK>();
-
-pub const BLOCK_MAX_SIZE: usize = (1 << 30) - BLOCK_OVERHEAD;
+pub const BLOCK_MAX_SIZE: usize = 1 << 30;
 pub const E_INDEX_OUT_OF_RANGE: &str = "Index out of range";
 pub const E_INVALID_LENGTH: &str = "Invalid length";
 
