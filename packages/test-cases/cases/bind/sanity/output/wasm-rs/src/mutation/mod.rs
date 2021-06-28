@@ -1,24 +1,25 @@
-mod mutations;
+pub mod another_type;
+pub mod common;
+pub mod custom_enum;
+pub mod custom_type;
+pub mod entry;
+pub mod imported;
+pub mod mutation;
 
-use crate::{abort, invoke};
+pub use crate::query::common::*;
 
-use wasm_bindgen::prelude::*;
+pub use another_type::AnotherType;
+pub use custom_enum::{
+    get_custom_enum_key, get_custom_enum_value, sanitize_custom_enum_value, CustomEnum,
+};
+pub use custom_type::CustomType;
+pub use mutation::serialization::{InputMutationMethod, InputObjectMethod};
+pub use mutation::wrapped::{mutation_method_wrapped, object_method_wrapped};
 
-pub use mutations::{mutation_method_wrapped, object_method_wrapped};
-pub use mutations::{InputMutationMethod, InputObjectMethod};
-
-#[wasm_bindgen]
-pub fn _w3_init() {
-    invoke::w3_add_invoke("mutation_method", mutation_method_wrapped);
-    invoke::w3_add_invoke("object_method", object_method_wrapped);
-}
-
-#[wasm_bindgen]
-pub fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
-    invoke::w3_invoke(method_size, args_size)
-}
-
-#[wasm_bindgen]
-pub fn w3_abort(msg: &str, file: &str, line: u32, column: u32) {
-    abort::w3_abort(msg, file, line, column);
-}
+pub use imported::test_import_another_object::TestImportAnotherObject;
+pub use imported::test_import_enum::{
+    get_test_import_enum_key, get_test_import_enum_value, sanitize_test_import_enum_value,
+    TestImportEnum,
+};
+pub use imported::test_import_object::TestImportObject;
+pub use imported::test_import_query::TestImportQuery;
