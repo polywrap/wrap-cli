@@ -20,8 +20,8 @@ pub fn w3_abort(msg: &str, file: &str, line: u32, column: u32) {
     let msg_buf = msg.as_bytes();
     let file_buf = file.as_bytes();
 
-    let msg_buf_u32 = msg_buf.iter().fold(0, |res, &bit| (res << 1) ^ bit) as u32;
-    let file_buf_u32 = file_buf.iter().fold(0, |res, &bit| (res << 1) ^ bit) as u32;
+    let msg_buf_u32 = msg_buf.as_ptr() as u32;
+    let file_buf_u32 = file_buf.as_ptr() as u32;
 
     unsafe {
         __w3_abort(

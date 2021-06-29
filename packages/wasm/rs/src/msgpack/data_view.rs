@@ -26,7 +26,7 @@ impl DataView {
             let ctx = context.print_with_context(&msg);
             return Err(Error::new(ErrorKind::Interrupted, ctx));
         }
-        let data_start = buf.iter().fold(0, |result, &bit| (result << 1) ^ bit) as u32;
+        let data_start = buf.as_ptr() as u32;
         Ok(Self {
             data_start,
             buffer: buf.to_vec(),
@@ -173,7 +173,7 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("set_bytes", buf.len() as i32) {
             return Err(Error::from(error));
         }
-        let src_ptr = buf.iter().fold(0, |result, &bit| (result << 1) ^ bit) as *const i32;
+        let src_ptr = buf.as_ptr() as *const i32;
         let dst_ptr = (self.data_start as i32 + self.byte_offset) as *mut i32;
         unsafe {
             std::ptr::copy(src_ptr, dst_ptr, buf.len());

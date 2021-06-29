@@ -35,14 +35,10 @@ pub fn w3_subinvoke(
     let module_buf = module.as_bytes();
     let method_buf = method.as_bytes();
 
-    let uri_buf_u32 = uri_buf.iter().fold(0, |result, &bit| (result << 1) ^ bit) as u32;
-    let module_buf_u32 = module_buf
-        .iter()
-        .fold(0, |result, &bit| (result << 1) ^ bit) as u32;
-    let method_buf_u32 = method_buf
-        .iter()
-        .fold(0, |result, &bit| (result << 1) ^ bit) as u32;
-    let input_u32 = input.iter().fold(0, |result, &bit| (result << 1) ^ bit) as u32;
+    let uri_buf_u32 = uri_buf.as_ptr() as u32;
+    let module_buf_u32 = module_buf.as_ptr() as u32;
+    let method_buf_u32 = method_buf.as_ptr() as u32;
+    let input_u32 = input.as_ptr() as u32;
 
     let success = unsafe {
         __w3_subinvoke(
@@ -59,18 +55,14 @@ pub fn w3_subinvoke(
     if !success {
         let error_len = unsafe { __w3_subinvoke_error_len() };
         let message_buf: Vec<u8> = Vec::with_capacity(error_len as usize);
-        let message_buf_u32 = message_buf
-            .iter()
-            .fold(0, |result, &bit| (result << 1) ^ bit) as u32;
+        let message_buf_u32 = message_buf.as_ptr() as u32;
         unsafe { __w3_subinvoke_error(message_buf_u32) };
         let message = std::str::from_utf8(message_buf.as_slice()).unwrap();
         return Err(message.to_string());
     }
     let result_len = unsafe { __w3_subinvoke_result_len() };
     let result_buf: Vec<u8> = Vec::with_capacity(result_len as usize);
-    let result_buf_u32 = result_buf
-        .iter()
-        .fold(0, |result, &bit| (result << 1) ^ bit) as u32;
+    let result_buf_u32 = result_buf.as_ptr() as u32;
     unsafe { __w3_subinvoke_result(result_buf_u32) };
     Ok(result_buf)
 }

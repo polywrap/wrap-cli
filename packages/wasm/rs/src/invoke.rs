@@ -33,8 +33,8 @@ pub fn w3_invoke(method_size: u32, args_size: u32) -> bool {
     let method_buf: Vec<u8> = Vec::with_capacity(method_size as usize);
     let args_buf: Vec<u8> = Vec::with_capacity(args_size as usize);
 
-    let method_buf_u32 = method_buf.iter().fold(0, |res, &bit| (res << 1) ^ bit) as u32;
-    let args_buf_u32 = args_buf.iter().fold(0, |res, &bit| (res << 1) ^ bit) as u32;
+    let method_buf_u32 = method_buf.as_ptr() as u32;
+    let args_buf_u32 = args_buf.as_ptr() as u32;
 
     unsafe { __w3_invoke_args(method_buf_u32, args_buf_u32) };
 
@@ -44,16 +44,13 @@ pub fn w3_invoke(method_size: u32, args_size: u32) -> bool {
     if maybe_func.is_some() {
         let func = maybe_func.unwrap();
         let result = func(args_buf.as_slice());
-        let result_u32 = result.iter().fold(0, |res, &bit| (res << 1) ^ bit) as u32;
+        let result_u32 = result.as_ptr() as u32;
 
         unsafe { __w3_invoke_result(result_u32, result.len() as u32) };
         return true;
     } else {
         let message = format!("Could not find invoke function {}", method);
-        let message_u32 = message
-            .as_bytes()
-            .iter()
-            .fold(0, |res, &bit| (res << 1) ^ bit) as u32;
+        let message_u32 = message.as_ptr() as u32;
         unsafe { __w3_invoke_error(message_u32, message.len() as u32) };
         return false;
     }

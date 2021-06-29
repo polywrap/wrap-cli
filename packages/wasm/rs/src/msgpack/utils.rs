@@ -1,3 +1,5 @@
+//! Utility functions for better error handling
+
 use super::context::Context;
 use std::io::{Error, ErrorKind};
 
@@ -5,6 +7,8 @@ pub const BLOCK_MAX_SIZE: usize = 1 << 30;
 pub const E_INDEX_OUT_OF_RANGE: &str = "Index out of range";
 pub const E_INVALID_LENGTH: &str = "Invalid length";
 
+/// Returns an error message for when the provided length plus the byte_offset
+/// is greater than the byte_length
 pub fn throw_index_out_of_range(
     context: Context,
     method: &str,
