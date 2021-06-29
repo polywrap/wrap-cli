@@ -1,4 +1,5 @@
 use polywrap_wasm_rs::Context;
+use wasm_bindgen::UnwrapThrowExt;
 
 #[test]
 fn push_and_pop_values() {
@@ -10,9 +11,9 @@ fn push_and_pop_values() {
     context.push("property", "bool", "");
     assert_eq!(context.get_length(), 3);
     assert!(!context.is_empty());
-    let _ = context.pop();
-    let _ = context.pop();
-    let _ = context.pop();
+    context.pop().expect_throw("Failed to pop value");
+    context.pop().expect_throw("Failed to pop value");
+    context.pop().expect_throw("Failed to pop value");
     assert_eq!(context.get_length(), 0);
     assert!(context.is_empty());
 }

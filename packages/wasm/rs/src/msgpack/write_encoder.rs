@@ -4,6 +4,7 @@ use super::format::Format;
 use super::write::Write;
 use num_bigint::BigInt;
 use serde::{Deserialize, Serialize};
+use wasm_bindgen::UnwrapThrowExt;
 use std::collections::HashMap;
 use std::hash::Hash;
 use std::io::Result;
@@ -18,21 +19,21 @@ impl WriteEncoder {
     pub fn new(ua: &[u8], context: Context) -> Self {
         Self {
             context: context.clone(),
-            view: DataView::new(ua, context).unwrap(),
+            view: DataView::new(ua, context).expect_throw("Error creating new data view"),
         }
     }
 }
 
 impl Write for WriteEncoder {
     fn write_nil(&mut self) {
-        let _ = self.view.set_u8(Format::NIL);
+        self.view.set_u8(Format::NIL).expect_throw("Failed to set u8 to data view");
     }
 
     fn write_bool(&mut self, value: bool) {
         if value {
-            let _ = self.view.set_u8(Format::TRUE);
+            self.view.set_u8(Format::TRUE).expect_throw("Failed to set u8 to data view");
         } else {
-            let _ = self.view.set_u8(Format::FALSE);
+            self.view.set_u8(Format::FALSE).expect_throw("Failed to set u8 to data view");
         }
     }
 
@@ -50,25 +51,25 @@ impl Write for WriteEncoder {
 
     fn write_i64(&mut self, value: i64) {
         if value >= 0 && (value < 1 << 7) {
-            let _ = self.view.set_u8(value as u8);
+            self.view.set_u8(value as u8).expect_throw("Failed to set u8 to data view");
         } else if value < 0 && value >= -(1 << 5) {
             if Format::is_negative_fixed_int(value as u8) {
-                let _ = self.view.set_u8(Format::NEGATIVE_FIXINT);
+                self.view.set_u8(Format::NEGATIVE_FIXINT).expect_throw("Failed to set u8 to data view");
             } else {
-                let _ = self.view.set_u8(value as u8);
+                self.view.set_u8(value as u8).expect_throw("Failed to set u8 to data view");
             }
         } else if (value <= i8::MAX as i64) && (value >= i8::MIN as i64) {
-            let _ = self.view.set_u8(Format::INT8);
-            let _ = self.view.set_i8(value as i8);
+            self.view.set_u8(Format::INT8).expect_throw("Failed to set u8 to data view");
+            self.view.set_i8(value as i8).expect_throw("Failed to set i8 to data view");
         } else if (value <= i16::MAX as i64) && (value >= i16::MIN as i64) {
-            let _ = self.view.set_u8(Format::INT16);
-            let _ = self.view.set_i16(value as i16);
+            self.view.set_u8(Format::INT16).expect_throw("Failed to set u8 to data view");
+            self.view.set_i16(value as i16).expect_throw("Failed to set i16 to data view");
         } else if (value <= i32::MAX as i64) && (value >= i32::MIN as i64) {
-            let _ = self.view.set_u8(Format::INT32);
-            let _ = self.view.set_i32(value as i32);
+            self.view.set_u8(Format::INT32).expect_throw("Failed to set u8 to data view");
+            self.view.set_i32(value as i32).expect_throw("Failed to set i32 to data view");
         } else {
-            let _ = self.view.set_u8(Format::INT64);
-            let _ = self.view.set_i64(value);
+            self.view.set_u8(Format::INT64).expect_throw("Failed to set u8 to data view");
+            self.view.set_i64(value).expect_throw("Failed to set i64 to data view");
         }
     }
 
@@ -86,66 +87,66 @@ impl Write for WriteEncoder {
 
     fn write_u64(&mut self, value: u64) {
         if value < 1 << 7 {
-            let _ = self.view.set_u8(value as u8);
+            self.view.set_u8(value as u8).expect_throw("Failed to set u8 to data view");
         } else if value <= u8::MAX as u64 {
-            let _ = self.view.set_u8(Format::UINT8);
-            let _ = self.view.set_u8(value as u8);
+            self.view.set_u8(Format::UINT8).expect_throw("Failed to set u8 to data view");
+            self.view.set_u8(value as u8).expect_throw("Failed to set u8 to data view");
         } else if value <= u16::MAX as u64 {
-            let _ = self.view.set_u8(Format::UINT16);
-            let _ = self.view.set_u16(value as u16);
+            self.view.set_u8(Format::UINT16).expect_throw("Failed to set u8 to data view");
+            self.view.set_u16(value as u16).expect_throw("Failed to set u16 to data view");
         } else if value <= u32::MAX as u64 {
-            let _ = self.view.set_u8(Format::UINT32);
-            let _ = self.view.set_u32(value as u32);
+            self.view.set_u8(Format::UINT32).expect_throw("Failed to set u8 to data view");
+            self.view.set_u32(value as u32).expect_throw("Failed to set u32 to data view");
         } else {
-            let _ = self.view.set_u8(Format::UINT64);
-            let _ = self.view.set_u64(value);
+            self.view.set_u8(Format::UINT64).expect_throw("Failed to set u8 to data view");
+            self.view.set_u64(value).expect_throw("Failed to set u64 to data view");
         }
     }
 
     fn write_f32(&mut self, value: f32) {
-        let _ = self.view.set_u8(Format::FLOAT32);
-        let _ = self.view.set_f32(value);
+        self.view.set_u8(Format::FLOAT32).expect_throw("Failed to set u8 to data view");
+        self.view.set_f32(value).expect_throw("Failed to set f32 to data view");
     }
 
     fn write_f64(&mut self, value: f64) {
-        let _ = self.view.set_u8(Format::FLOAT64);
-        let _ = self.view.set_f64(value);
+        self.view.set_u8(Format::FLOAT64).expect_throw("Failed to set u8 to data view");
+        self.view.set_f64(value).expect_throw("Failed to set f64 to data view");
     }
 
     fn write_string_length(&mut self, length: u32) {
         if length < 32 {
             if Format::is_fixed_string(length as u8) {
-                let _ = self.view.set_u8(Format::FIXSTR);
+                self.view.set_u8(Format::FIXSTR).expect_throw("Failed to set u8 to data view");
             }
-            let _ = self.view.set_u8(length as u8);
+            self.view.set_u8(length as u8).expect_throw("Failed to set u8 to data view");
         } else if length <= u8::MAX as u32 {
-            let _ = self.view.set_u8(Format::STR8);
-            let _ = self.view.set_u8(length as u8);
+            self.view.set_u8(Format::STR8).expect_throw("Failed to set u8 to data view");
+            self.view.set_u8(length as u8).expect_throw("Failed to set u8 to data view");
         } else if length <= u16::MAX as u32 {
-            let _ = self.view.set_u8(Format::STR16);
-            let _ = self.view.set_u16(length as u16);
+            self.view.set_u8(Format::STR16).expect_throw("Failed to set u8 to data view");
+            self.view.set_u16(length as u16).expect_throw("Failed to set u16 to data view");
         } else {
-            let _ = self.view.set_u8(Format::STR32);
-            let _ = self.view.set_u32(length);
+            self.view.set_u8(Format::STR32).expect_throw("Failed to set u8 to data view");
+            self.view.set_u32(length).expect_throw("Failed to set u32 to data view");
         }
     }
 
     fn write_string(&mut self, value: &String) {
         let buf = String::as_bytes(&value);
         self.write_string_length(buf.len() as u32);
-        let _ = self.view.set_bytes(buf);
+        self.view.set_bytes(buf).expect_throw("Failed to set bytes to data view");
     }
 
     fn write_bytes_length(&mut self, length: u32) {
         if length <= u8::MAX as u32 {
-            let _ = self.view.set_u8(Format::BIN8);
-            let _ = self.view.set_u8(length as u8);
+            self.view.set_u8(Format::BIN8).expect_throw("Failed to set u8 to data view");
+            self.view.set_u8(length as u8).expect_throw("Failed to set u8 to data view");
         } else if length <= u16::MAX as u32 {
-            let _ = self.view.set_u8(Format::BIN16);
-            let _ = self.view.set_u16(length as u16);
+            self.view.set_u8(Format::BIN16).expect_throw("Failed to set u8 to data view");
+            self.view.set_u16(length as u16).expect_throw("Failed to set u16 to data view");
         } else {
-            let _ = self.view.set_u8(Format::BIN32);
-            let _ = self.view.set_u32(length);
+            self.view.set_u8(Format::BIN32).expect_throw("Failed to set u8 to data view");
+            self.view.set_u32(length).expect_throw("Failed to set u32 to data view");
         }
     }
 
@@ -154,7 +155,7 @@ impl Write for WriteEncoder {
             self.write_nil();
         } else {
             self.write_bytes_length(buf.len() as u32);
-            let _ = self.view.set_bytes(buf.as_slice());
+            self.view.set_bytes(buf.as_slice()).expect_throw("Failed to set bytes to data view");
         }
     }
 
@@ -166,15 +167,15 @@ impl Write for WriteEncoder {
     fn write_array_length(&mut self, length: u32) {
         if length < 16 {
             if Format::is_fixed_array(length as u8) {
-                let _ = self.view.set_u8(Format::FIXARRAY);
+                self.view.set_u8(Format::FIXARRAY).expect_throw("Failed to set u8 to data view");
             }
-            let _ = self.view.set_u8(length as u8);
+            self.view.set_u8(length as u8).expect_throw("Failed to set u8 to data view");
         } else if length <= u16::MAX as u32 {
-            let _ = self.view.set_u8(Format::ARRAY16);
-            let _ = self.view.set_u16(length as u16);
+            self.view.set_u8(Format::ARRAY16).expect_throw("Failed to set u8 to data view");
+            self.view.set_u16(length as u16).expect_throw("Failed to set u16 to data view");
         } else {
-            let _ = self.view.set_u8(Format::ARRAY32);
-            let _ = self.view.set_u32(length);
+            self.view.set_u8(Format::ARRAY32).expect_throw("Failed to set u8 to data view");
+            self.view.set_u32(length).expect_throw("Failed to set u32 to data view");
         }
     }
 
@@ -188,15 +189,15 @@ impl Write for WriteEncoder {
     fn write_map_length(&mut self, length: u32) {
         if length < 16 {
             if Format::is_fixed_map(length as u8) {
-                let _ = self.view.set_u8(Format::FIXMAP);
+                self.view.set_u8(Format::FIXMAP).expect_throw("Failed to set u8 to data view");
             }
-            let _ = self.view.set_u8(length as u8);
+            self.view.set_u8(length as u8).expect_throw("Failed to set u8 to data view");
         } else if length <= u16::MAX as u32 {
-            let _ = self.view.set_u8(Format::MAP16);
-            let _ = self.view.set_u16(length as u16);
+            self.view.set_u8(Format::MAP16).expect_throw("Failed to set u8 to data view");
+            self.view.set_u16(length as u16).expect_throw("Failed to set u16 to data view");
         } else {
-            let _ = self.view.set_u8(Format::MAP32);
-            let _ = self.view.set_u32(length);
+            self.view.set_u8(Format::MAP32).expect_throw("Failed to set u8 to data view");
+            self.view.set_u32(length).expect_throw("Failed to set u32 to data view");
         }
     }
 
@@ -329,7 +330,7 @@ impl Write for WriteEncoder {
             self.write_nil();
             return Ok(());
         }
-        let _ = self.write_bytes(&buf.unwrap_or_default());
+        self.write_bytes(&buf.unwrap_or_default());
         Ok(())
     }
 

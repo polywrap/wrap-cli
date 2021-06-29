@@ -1,6 +1,7 @@
 use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind, Result};
+use wasm_bindgen::UnwrapThrowExt;
 
 #[derive(Debug, Clone)]
 pub struct Sanity {
@@ -136,7 +137,7 @@ impl Sanity {
 fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
     writer.write_map_length(23);
     writer.write_string(&"nil".to_string());
-    let _ = writer.write_nullable_string(sanity.nil.clone());
+    writer.write_nullable_string(sanity.nil.clone()).expect_throw("Failed to write nullable string");
     writer.write_string(&"int8".to_string());
     writer.write_i8(sanity.int8);
     writer.write_string(&"int16".to_string());
@@ -156,11 +157,11 @@ fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
     writer.write_string(&"boolean".to_string());
     writer.write_bool(sanity.boolean);
     writer.write_string(&"opt_uint32".to_string());
-    let _ = writer.write_nullable_u32(sanity.opt_uint32);
+    writer.write_nullable_u32(sanity.opt_uint32).expect_throw("Failed to write nullable u32");
     writer.write_string(&"opt_uint64".to_string());
-    let _ = writer.write_nullable_u64(sanity.opt_uint64);
+    writer.write_nullable_u64(sanity.opt_uint64).expect_throw("Failed to write nullable u64");
     writer.write_string(&"opt_bool".to_string());
-    let _ = writer.write_nullable_bool(sanity.opt_bool);
+    writer.write_nullable_bool(sanity.opt_bool).expect_throw("Failed to write nullable bool");
     writer.write_string(&"float32".to_string());
     writer.write_f32(sanity.float32);
     writer.write_string(&"float64".to_string());
@@ -170,9 +171,9 @@ fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
     writer.write_string(&"large_string".to_string());
     writer.write_string(&sanity.large_string.clone());
     writer.write_string(&"bytes".to_string());
-    let _ = writer.write_bytes(&sanity.bytes);
+    writer.write_bytes(&sanity.bytes);
     writer.write_string(&"large_bytes".to_string());
-    let _ = writer.write_bytes(&sanity.large_bytes);
+    writer.write_bytes(&sanity.large_bytes);
     writer.write_string(&"array".to_string());
     writer.write_array(sanity.array.as_slice(), W::write_u8);
     writer.write_string(&"large_string_array".to_string());
@@ -427,7 +428,7 @@ fn serialize_and_deserialize() {
     let mut sanity_input = Sanity::new();
     let mut input = sanity_input.init();
     let mut output = Sanity::new();
-    let _ = output.from_buffer(input.to_buffer().as_slice());
+    output.from_buffer(input.to_buffer().as_slice()).expect_throw("Failed to to write output from buffer");
     assert_ne!(output, input);
 }
 
