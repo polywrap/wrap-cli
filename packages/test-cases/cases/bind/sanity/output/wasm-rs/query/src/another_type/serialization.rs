@@ -1,3 +1,5 @@
+use wasm_bindgen::UnwrapThrowExt;
+
 use super::{AnotherType, CustomType};
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
@@ -20,8 +22,13 @@ pub fn write_another_type<W: Write>(object: AnotherType, mut writer: W) {
         .context()
         .push("prop", "Option<String>", "writing property");
     writer.write_string(&"prop".to_string());
-    let _ = writer.write_nullable_string(object.prop.clone());
-    let _ = writer.context().pop();
+    writer
+        .write_nullable_string(object.prop.clone())
+        .expect_throw("Failed to write nullable string");
+    writer
+        .context()
+        .pop()
+        .expect_throw("Failed to pop object from Context");
     writer
         .context()
         .push("circular", "Option<CustomType>", "writing property");
@@ -31,7 +38,10 @@ pub fn write_another_type<W: Write>(object: AnotherType, mut writer: W) {
     } else {
         writer.write_nil();
     }
-    let _ = writer.context().pop();
+    writer
+        .context()
+        .pop()
+        .expect_throw("Failed to pop object from Context");
 }
 
 pub fn deserialize_another_type(buffer: &[u8]) -> AnotherType {
@@ -56,7 +66,10 @@ pub fn read_another_type<R: Read>(mut reader: R) -> AnotherType {
                     .context()
                     .push(&field, "Option<String>", "type found, reading property");
                 prop = reader.read_nullable_string();
-                let _ = reader.context().pop();
+                reader
+                    .context()
+                    .pop()
+                    .expect_throw("Failed to pop prop from Context");
             }
             "circular" => {
                 reader
@@ -67,19 +80,28 @@ pub fn read_another_type<R: Read>(mut reader: R) -> AnotherType {
                     object = Some(CustomType::read(reader.clone()));
                 }
                 circular = object;
-                let _ = reader.context().pop();
+                reader
+                    .context()
+                    .pop()
+                    .expect_throw("Failed to pop circular from Context");
             }
             _ => {
                 reader
                     .context()
                     .push(&field, "unknown", "searching for property type");
-                let _ = reader.context().pop();
+                reader
+                    .context()
+                    .pop()
+                    .expect_throw("Failed to pop unknown object from Context");
             }
         }
         reader
             .context()
             .push(&field, "unknown", "searching for property type");
-        let _ = reader.context().pop();
+        reader
+            .context()
+            .pop()
+            .expect_throw("Failed to pop object from Context");
     }
     AnotherType {
         prop,

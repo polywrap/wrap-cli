@@ -1,9 +1,8 @@
+pub use super::{
+    mutation_method_wrapped, object_method_wrapped, InputMutationMethod, InputObjectMethod,
+};
 use crate::{abort, invoke};
-
 use wasm_bindgen::prelude::*;
-
-pub use super::{mutation_method_wrapped, object_method_wrapped};
-pub use super::{InputMutationMethod, InputObjectMethod};
 
 #[wasm_bindgen]
 pub fn _w3_init() {

@@ -1,11 +1,11 @@
 pub mod serialization;
-pub use serialization::{
-    deserialize_custom_type, read_custom_type, serialize_custom_type, write_custom_type,
-};
-
 use crate::{AnotherType, CustomEnum, Read, Write};
 use num_bigint::BigInt;
 use serde::{Deserialize, Serialize};
+pub use serialization::{
+    deserialize_custom_type, read_custom_type, serialize_custom_type, write_custom_type,
+};
+use wasm_bindgen::UnwrapThrowExt;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CustomType {
@@ -60,6 +60,6 @@ impl CustomType {
     }
 
     pub fn read<R: Read>(reader: R) -> Self {
-        read_custom_type(reader).expect("Failed to read CustomType")
+        read_custom_type(reader).expect_throw("Failed to read CustomType")
     }
 }

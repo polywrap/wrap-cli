@@ -6,7 +6,7 @@ pub use super::serialization::{
 pub fn mutation_method_wrapped(args_buf: &[u8]) -> Vec<u8> {
     let query_method = deserialize_mutation_method_args(args_buf).unwrap();
     let args = bincode::serialize(&query_method).unwrap_or_default();
-    let result = args.iter().fold(0, |result, &bit| (result << 1) ^ bit) as i32;
+    let result = args.as_ptr() as i32;
     serialize_mutation_method_result(result)
 }
 

@@ -1,8 +1,9 @@
 use super::TestImportAnotherObject;
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use std::io::{Error, ErrorKind, Result};
+use wasm_bindgen::UnwrapThrowExt;
 
-pub fn serialize_test_import_another_object(mut object: TestImportAnotherObject) -> Vec<u8> {
+pub fn serialize_test_import_another_object(object: TestImportAnotherObject) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description =
         "Serializing (sizing) imported object-type: TestImportAnotherObject".to_string();
@@ -18,18 +19,18 @@ pub fn serialize_test_import_another_object(mut object: TestImportAnotherObject)
     buffer
 }
 
-pub fn write_test_import_another_object<W: Write>(
-    mut object: TestImportAnotherObject,
-    mut writer: W,
-) {
+pub fn write_test_import_another_object<W: Write>(object: TestImportAnotherObject, mut writer: W) {
     writer.write_map_length(1);
     writer.context().push("prop", "string", "writing property");
     writer.write_string(&"prop".to_string());
     writer.write_string(&object.prop);
-    let _ = writer.context().pop();
+    writer
+        .context()
+        .pop()
+        .expect_throw("Failed to pop prop from Context");
 }
 
-pub fn deserialize_test_import_another_object(mut buffer: &[u8]) -> TestImportAnotherObject {
+pub fn deserialize_test_import_another_object(buffer: &[u8]) -> TestImportAnotherObject {
     let mut context = Context::new();
     context.description = "Deserializing imported object-type: TestImportAnotherObject".to_string();
     let reader = ReadDecoder::new(buffer, context);
@@ -53,13 +54,19 @@ pub fn read_test_import_another_object<R: Read>(mut reader: R) -> Result<TestImp
                     .push(&field, "String", "type found, reading property");
                 prop = reader.read_string().unwrap_or_default();
                 prop_set = true;
-                let _ = reader.context().pop();
+                reader
+                    .context()
+                    .pop()
+                    .expect_throw("Failed to pop prop from Context");
             }
             _ => {
                 reader
                     .context()
                     .push(&field, "unknown", "searching for property type");
-                let _ = reader.context().pop();
+                reader
+                    .context()
+                    .pop()
+                    .expect_throw("Failed to pop unknown object from Context");
             }
         }
     }

@@ -1,11 +1,11 @@
 pub mod serialization;
+use crate::{Read, Write};
+use serde::{Deserialize, Serialize};
 pub use serialization::{
     deserialize_test_import_another_object, read_test_import_another_object,
     serialize_test_import_another_object, write_test_import_another_object,
 };
-
-use crate::{Read, Write};
-use serde::{Deserialize, Serialize};
+use wasm_bindgen::UnwrapThrowExt;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct TestImportAnotherObject {
@@ -34,6 +34,7 @@ impl TestImportAnotherObject {
     }
 
     pub fn read<R: Read>(reader: R) -> Self {
-        read_test_import_another_object(reader).expect("Failed to read TestImportObject")
+        read_test_import_another_object(reader)
+            .expect_throw("Failed to read TestImportAnotherObject")
     }
 }

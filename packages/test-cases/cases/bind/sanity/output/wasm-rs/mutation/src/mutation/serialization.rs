@@ -3,6 +3,7 @@ use crate::{AnotherType, Context, CustomEnum, Read, ReadDecoder, Write, WriteEnc
 use serde::{Deserialize, Serialize};
 use std::convert::TryInto;
 use std::io::{Error, ErrorKind, Result};
+use wasm_bindgen::UnwrapThrowExt;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InputMutationMethod {
@@ -42,14 +43,20 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
                     string = reader.read_string().unwrap_or_default();
                     string_set = true;
                 }
-                let _ = reader.context().pop();
+                reader
+                    .context()
+                    .pop()
+                    .expect_throw("Failed to string from Context");
             }
             "opt_string" => {
                 reader
                     .context()
                     .push(&field, "Option<String>", "type found, reading property");
                 opt_string = reader.read_nullable_string();
-                let _ = reader.context().pop();
+                reader
+                    .context()
+                    .pop()
+                    .expect_throw("Failed to optional string from Context");
             }
             "en" => {
                 reader
@@ -57,13 +64,17 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
                     .push(&field, "CustomEnum", "type found, reading property");
                 if reader.is_next_string() && !en_set {
                     en = get_custom_enum_value(reader.read_string().unwrap_or_default().as_str())
-                        .unwrap();
+                        .expect_throw("Failed to get custom enum value");
                 } else {
                     en = reader.read_i32().unwrap_or_default().try_into().unwrap();
-                    let _ = sanitize_custom_enum_value(en.clone() as i32);
+                    sanitize_custom_enum_value(en.clone() as i32)
+                        .expect_throw("Failed to sanitize custom enum value");
                 }
                 en_set = true;
-                let _ = reader.context().pop();
+                reader
+                    .context()
+                    .pop()
+                    .expect_throw("Failed to enum from Context");
             }
             "opt_enum" => {
                 reader
@@ -75,16 +86,20 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
                             get_custom_enum_value(
                                 reader.read_string().unwrap_or_default().as_str(),
                             )
-                            .unwrap(),
+                            .expect_throw("Failed to get optional custom enum value"),
                         );
                     } else {
                         opt_enum = Some(reader.read_i32().unwrap_or_default().try_into().unwrap());
-                        let _ = sanitize_custom_enum_value(opt_enum.clone().unwrap() as i32);
+                        sanitize_custom_enum_value(opt_enum.clone().unwrap() as i32)
+                            .expect_throw("Failed to sanitize optional custom enum value");
                     }
                 } else {
                     opt_enum = None;
                 }
-                let _ = reader.context().pop();
+                reader
+                    .context()
+                    .pop()
+                    .expect_throw("Failed to optional enum from Context");
             }
             "enum_array" => {
                 reader
@@ -92,7 +107,10 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
                     .push(&field, "Vec<CustomEnum>", "type found, reading property");
                 // TODO: enum_array = reader.read_array()
                 //enum_array_set = true;
-                let _ = reader.context().pop();
+                reader
+                    .context()
+                    .pop()
+                    .expect_throw("Failed to enum array from Context");
             }
             "opt_enum_array" => {
                 reader.context().push(
@@ -102,7 +120,10 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
                 );
                 // TODO: opt_enum_array = reader.read_nullable_array()
 
-                let _ = reader.context().pop();
+                reader
+                    .context()
+                    .pop()
+                    .expect_throw("Failed to optional object array from Context");
             }
             _ => {
                 reader
@@ -159,7 +180,10 @@ pub fn write_mutation_method_result<W: Write>(mut writer: W, result: i32) {
         .context()
         .push("mutation_method", "i32", "writing property");
     writer.write_i32(result);
-    let _ = writer.context().pop();
+    writer
+        .context()
+        .pop()
+        .expect_throw("Failed to mutation method from Context");
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -195,7 +219,10 @@ pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMeth
                     object = AnotherType::read(reader.clone());
                     object_set = true;
                 }
-                let _ = reader.context().pop();
+                reader
+                    .context()
+                    .pop()
+                    .expect_throw("Failed to object from Context");
             }
             "opt_object" => {
                 reader.context().push(
@@ -206,7 +233,10 @@ pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMeth
                 if !reader.is_next_nil() {
                     opt_object = Some(AnotherType::read(reader.clone()));
                 }
-                let _ = reader.context().pop();
+                reader
+                    .context()
+                    .pop()
+                    .expect_throw("Failed to optional object from Context");
             }
             "object_array" => {
                 reader
@@ -216,7 +246,10 @@ pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMeth
                     // TODO: object_array = reader.read_array();
                     object_array_set = true;
                 }
-                let _ = reader.context().pop();
+                reader
+                    .context()
+                    .pop()
+                    .expect_throw("Failed to object array from Context");
             }
             "opt_object_array" => {
                 reader.context().push(
@@ -225,7 +258,10 @@ pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMeth
                     "type found, reading property",
                 );
                 // TODO: opt_object_array = reader.read_nullable_array();
-                let _ = reader.context().pop();
+                reader
+                    .context()
+                    .pop()
+                    .expect_throw("Failed to optional object array from Context");
             }
             _ => {
                 reader
@@ -278,5 +314,8 @@ pub fn write_object_method_result<W: Write>(mut writer: W, result: Option<Anothe
     } else {
         writer.write_nil();
     }
-    let _ = writer.context().pop();
+    writer
+        .context()
+        .pop()
+        .expect_throw("Failed to pop `object method` from Context");
 }
