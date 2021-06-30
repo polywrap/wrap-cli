@@ -3,12 +3,12 @@ use super::data_view::DataView;
 use super::format::Format;
 use super::read::Read;
 use num_bigint::BigInt;
-use wasm_bindgen::UnwrapThrowExt;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::hash::Hash;
 use std::io::{Error, ErrorKind, Result};
 use std::str::FromStr;
+use wasm_bindgen::UnwrapThrowExt;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct ReadDecoder {
@@ -45,7 +45,9 @@ impl ReadDecoder {
             // noop, will just discard the leadbyte
         } else if Format::is_fixed_string(lead_byte) {
             let str_len = lead_byte & 0x1f;
-            self.view.discard(str_len as i32).expect_throw("Failed to discard fixed string");
+            self.view
+                .discard(str_len as i32)
+                .expect_throw("Failed to discard fixed string");
         } else if Format::is_fixed_array(lead_byte) {
             objects_to_discard = (lead_byte & Format::FOUR_LEAST_SIG_BITS_IN_BYTE) as i32;
         } else if Format::is_fixed_map(lead_byte) {
@@ -57,33 +59,49 @@ impl ReadDecoder {
                 Format::FALSE => {}
                 Format::BIN8 => {
                     let length = self.view.get_u8().unwrap_or_default();
-                    self.view.discard(length as i32).expect_throw("Failed to discard BIN8");
+                    self.view
+                        .discard(length as i32)
+                        .expect_throw("Failed to discard BIN8");
                 }
                 Format::BIN16 => {
                     let length = self.view.get_u16().unwrap_or_default();
-                    self.view.discard(length as i32).expect_throw("Failed to discard BIN16");
+                    self.view
+                        .discard(length as i32)
+                        .expect_throw("Failed to discard BIN16");
                 }
                 Format::BIN32 => {
                     let length = self.view.get_u32().unwrap_or_default();
-                    self.view.discard(length as i32).expect_throw("Failed to discard BIN32");
+                    self.view
+                        .discard(length as i32)
+                        .expect_throw("Failed to discard BIN32");
                 }
                 Format::FLOAT32 => {
-                    self.view.discard(4).expect_throw("Failed to discard FLOAT32");
+                    self.view
+                        .discard(4)
+                        .expect_throw("Failed to discard FLOAT32");
                 }
                 Format::FLOAT64 => {
-                    self.view.discard(8).expect_throw("Failed to discard FLOAT64");
+                    self.view
+                        .discard(8)
+                        .expect_throw("Failed to discard FLOAT64");
                 }
                 Format::UINT8 => {
                     self.view.discard(1).expect_throw("Failed to discard UINT8");
                 }
                 Format::UINT16 => {
-                    self.view.discard(2).expect_throw("Failed to discard UINT16");
+                    self.view
+                        .discard(2)
+                        .expect_throw("Failed to discard UINT16");
                 }
                 Format::UINT32 => {
-                    self.view.discard(4).expect_throw("Failed to discard UINT32");
+                    self.view
+                        .discard(4)
+                        .expect_throw("Failed to discard UINT32");
                 }
                 Format::UINT64 => {
-                    self.view.discard(8).expect_throw("Failed to discard UINT64");
+                    self.view
+                        .discard(8)
+                        .expect_throw("Failed to discard UINT64");
                 }
                 Format::INT8 => {
                     self.view.discard(1).expect_throw("Failed to discard INT8");
@@ -98,31 +116,47 @@ impl ReadDecoder {
                     self.view.discard(8).expect_throw("Failed to discard INT64");
                 }
                 Format::FIXEXT1 => {
-                    self.view.discard(2).expect_throw("Failed to discard FIXEXT1");
+                    self.view
+                        .discard(2)
+                        .expect_throw("Failed to discard FIXEXT1");
                 }
                 Format::FIXEXT2 => {
-                    self.view.discard(3).expect_throw("Failed to discard FIXEXT2");
+                    self.view
+                        .discard(3)
+                        .expect_throw("Failed to discard FIXEXT2");
                 }
                 Format::FIXEXT4 => {
-                    self.view.discard(5).expect_throw("Failed to discard FIXEXT4");
+                    self.view
+                        .discard(5)
+                        .expect_throw("Failed to discard FIXEXT4");
                 }
                 Format::FIXEXT8 => {
-                    self.view.discard(9).expect_throw("Failed to discard FIXEXT8");
+                    self.view
+                        .discard(9)
+                        .expect_throw("Failed to discard FIXEXT8");
                 }
                 Format::FIXEXT16 => {
-                    self.view.discard(17).expect_throw("Failed to discard FIXEXT16");
+                    self.view
+                        .discard(17)
+                        .expect_throw("Failed to discard FIXEXT16");
                 }
                 Format::STR8 => {
                     let length = self.view.get_u8().unwrap_or_default();
-                    self.view.discard(length as i32).expect_throw("Failed to discard STR8");
+                    self.view
+                        .discard(length as i32)
+                        .expect_throw("Failed to discard STR8");
                 }
                 Format::STR16 => {
                     let length = self.view.get_u16().unwrap_or_default();
-                    self.view.discard(length as i32).expect_throw("Failed to discard STR16");
+                    self.view
+                        .discard(length as i32)
+                        .expect_throw("Failed to discard STR16");
                 }
                 Format::STR32 => {
                     let length = self.view.get_u32().unwrap_or_default();
-                    self.view.discard(length as i32).expect_throw("Failed to discard STR32");
+                    self.view
+                        .discard(length as i32)
+                        .expect_throw("Failed to discard STR32");
                 }
                 Format::ARRAY16 => {
                     objects_to_discard = self.view.get_u16().unwrap_or_default() as i32;

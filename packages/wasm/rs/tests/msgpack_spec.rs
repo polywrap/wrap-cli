@@ -137,7 +137,7 @@ impl Sanity {
 fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
     writer.write_map_length(23);
     writer.write_string(&"nil".to_string());
-    writer.write_nullable_string(sanity.nil.clone()).expect_throw("Failed to write nullable string");
+    writer.write_nullable_string(&sanity.nil);
     writer.write_string(&"int8".to_string());
     writer.write_i8(sanity.int8);
     writer.write_string(&"int16".to_string());
@@ -151,17 +151,19 @@ fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
     writer.write_string(&"uint16".to_string());
     writer.write_u16(sanity.uint16);
     writer.write_string(&"uint32".to_string());
-    writer.write_u32(sanity.uint32);
+    writer.write_u32(&sanity.uint32);
     writer.write_string(&"uint64".to_string());
-    writer.write_u64(sanity.uint64);
+    writer.write_u64(&sanity.uint64);
     writer.write_string(&"boolean".to_string());
     writer.write_bool(sanity.boolean);
     writer.write_string(&"opt_uint32".to_string());
-    writer.write_nullable_u32(sanity.opt_uint32).expect_throw("Failed to write nullable u32");
+    writer.write_nullable_u32(&sanity.opt_uint32);
     writer.write_string(&"opt_uint64".to_string());
-    writer.write_nullable_u64(sanity.opt_uint64).expect_throw("Failed to write nullable u64");
+    writer.write_nullable_u64(&sanity.opt_uint64);
     writer.write_string(&"opt_bool".to_string());
-    writer.write_nullable_bool(sanity.opt_bool).expect_throw("Failed to write nullable bool");
+    writer
+        .write_nullable_bool(sanity.opt_bool)
+        .expect_throw("Failed to write nullable bool");
     writer.write_string(&"float32".to_string());
     writer.write_f32(sanity.float32);
     writer.write_string(&"float64".to_string());
@@ -428,7 +430,9 @@ fn serialize_and_deserialize() {
     let mut sanity_input = Sanity::new();
     let mut input = sanity_input.init();
     let mut output = Sanity::new();
-    output.from_buffer(input.to_buffer().as_slice()).expect_throw("Failed to to write output from buffer");
+    output
+        .from_buffer(input.to_buffer().as_slice())
+        .expect_throw("Failed to to write output from buffer");
     assert_ne!(output, input);
 }
 
