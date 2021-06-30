@@ -16,7 +16,8 @@ export enum DefinitionKind {
   ImportedEnum = 1 << 9,
   ImportedObject = (1 << 10) | DefinitionKind.Object,
   InterfaceImplemented = 1 << 11,
-  UnresolvedObjectOrEnum = 1 << 12
+  UnresolvedObjectOrEnum = 1 << 12,
+  ObjectRef = 1 << 13,
 }
 
 export function isKind(type: GenericDefinition, kind: DefinitionKind): boolean {
@@ -62,6 +63,19 @@ export function createObjectDefinition(args: {
     properties: args.properties ? args.properties : [],
     interfaces: args.interfaces ? args.interfaces : [],
     kind: DefinitionKind.Object,
+  };
+}
+
+export interface ObjectDefinitionRef extends GenericDefinition { }
+export function createObjectDefinitionRef(args: {
+  type: string;
+  name?: string | null;
+  required?: boolean;
+  comment?: string;
+}): ObjectDefinitionRef {
+  return {
+    ...createGenericDefinition(args),
+    kind: DefinitionKind.ObjectRef,
   };
 }
 
