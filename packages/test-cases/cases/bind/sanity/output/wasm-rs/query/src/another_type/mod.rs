@@ -20,15 +20,15 @@ impl AnotherType {
         }
     }
 
-    pub fn to_buffer(object: Self) -> Vec<u8> {
-        serialize_another_type(object)
+    pub fn to_buffer(mut object: &mut Self) -> Vec<u8> {
+        serialize_another_type(&mut object)
     }
 
     pub fn from_buffer(buffer: &[u8]) -> Self {
         deserialize_another_type(buffer)
     }
 
-    pub fn write<W: Write>(object: Self, writer: W) {
+    pub fn write<W: Write>(object: &mut Self, writer: &mut W) {
         write_another_type(object, writer);
     }
 

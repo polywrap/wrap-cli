@@ -340,7 +340,7 @@ pub fn write_object_method_result<W: Write>(mut writer: W, result: &Option<Anoth
         .context()
         .push("object_method", "Option<AnotherType", "writing property");
     if result.is_some() {
-        AnotherType::write(result.clone().unwrap(), writer.clone());
+        AnotherType::write(&mut result.clone().unwrap(), &mut writer);
     } else {
         writer.write_nil();
     }

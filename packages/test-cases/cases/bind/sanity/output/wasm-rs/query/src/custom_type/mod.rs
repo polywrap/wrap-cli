@@ -31,7 +31,7 @@ pub struct CustomType {
     pub u_array: Vec<u32>,
     pub u_opt_array: Option<Vec<u32>>,
     pub opt_u_opt_array: Option<Vec<Option<u32>>>,
-    pub opt_str_opt_array: Option<Option<Vec<String>>>,
+    pub opt_str_opt_array: Option<Vec<Option<String>>>,
     pub u_array_array: Vec<Vec<u32>>,
     pub u_opt_array_opt_array: Vec<Option<Vec<u64>>>,
     pub u_array_opt_array_array: Vec<Option<Vec<Vec<u64>>>>,

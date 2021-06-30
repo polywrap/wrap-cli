@@ -3,20 +3,20 @@ use wasm_bindgen::UnwrapThrowExt;
 use super::{AnotherType, CustomType};
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
-pub fn serialize_another_type(object: AnotherType) -> Vec<u8> {
+pub fn serialize_another_type(mut object: &mut AnotherType) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) object-type: AnotherType".to_string();
-    let sizer = WriteSizer::new(sizer_context);
-    write_another_type(object.clone(), sizer.clone());
+    let mut sizer = WriteSizer::new(sizer_context);
+    write_another_type(&mut object, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) object-type: AnotherType".to_string();
-    let encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-    write_another_type(object, encoder);
+    let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
+    write_another_type(&mut object, &mut encoder);
     buffer
 }
 
-pub fn write_another_type<W: Write>(object: AnotherType, mut writer: W) {
+pub fn write_another_type<W: Write>(object: &mut AnotherType, writer: &mut W) {
     writer.write_map_length(2);
     writer
         .context()
@@ -32,7 +32,7 @@ pub fn write_another_type<W: Write>(object: AnotherType, mut writer: W) {
         .push("circular", "Option<CustomType>", "writing property");
     writer.write_string(&"circular".to_string());
     if object.circular.is_some() {
-        CustomType::write(object.circular.unwrap(), writer.clone());
+        CustomType::write(object.circular.clone().unwrap(), writer.clone());
     } else {
         writer.write_nil();
     }
