@@ -54,8 +54,6 @@ export interface W3Imports {
 
   env: {
     memory: WebAssembly.Memory;
-    // sleep: () => void;
-    // wakeUp: () => void;
   };
 }
 

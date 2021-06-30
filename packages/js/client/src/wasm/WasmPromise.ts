@@ -1,6 +1,15 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+interface Exports extends WebAssembly.Exports {
+  [key: string]: (...args: unknown[]) => void;
+
+  asyncify_start_unwind: (dataAddr: number) => void;
+  asyncify_start_rewind: (dataAddr: number) => void;
+  asyncify_stop_rewind: () => void;
+}
+
 export class WasmPromise<T> {
   private _result: T;
-  private _exports: any;
+  private _exports: Exports;
   private _view: Int32Array;
   private _dataAddr: number;
   private _sleeping = false;
@@ -9,26 +18,25 @@ export class WasmPromise<T> {
     func: (...args: unknown[]) => Promise<T>,
     getRootMethod: () => string,
     args: {
-      memory: WebAssembly.Memory,
-      module: WebAssembly.Module
+      memory: WebAssembly.Memory;
+      module: WebAssembly.Instance;
     }
   ): (...args: unknown[]) => T {
     const instance = new WasmPromise<T>();
-    instance._exports = args.module.exports;
+    instance._exports = args.module.exports as Exports;
     instance._view = new Int32Array(args.memory.buffer);
     instance._dataAddr = 16;
 
     return (...args: unknown[]) => {
       instance.saveState();
 
-      func(args)
-        .then((result: T) => {
-          instance.resumeState(getRootMethod())(result);
-        });
+      void func(args).then((result: T) => {
+        instance.resumeState(getRootMethod())(result);
+      });
 
       return instance._result;
-    }
-  };
+    };
+  }
 
   private resumeState(rootMethod: string): (resolvedData: T) => void {
     return (resolvedData: T) => {
@@ -36,8 +44,8 @@ export class WasmPromise<T> {
       this._exports[rootMethod]();
 
       this._result = resolvedData;
-    }
-  };
+    };
+  }
 
   private saveState() {
     if (!this._sleeping) {
@@ -47,10 +55,8 @@ export class WasmPromise<T> {
       this._exports.asyncify_start_unwind(this._dataAddr);
       this._sleeping = true;
     } else {
-      // We are called as part of a resume/rewind. Stop sleeping.
-      console.log("...resume");
       this._exports.asyncify_stop_rewind();
       this._sleeping = false;
     }
-  };
+  }
 }

@@ -1,10 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable @typescript-eslint/no-var-requires */
-
-import { HostAction, maxThreads, maxTransferBytes } from "./types";
-import { sleep } from "./utils";
-import { WasmPromise } from "./thread";
+import { W3Exports } from "./types";
+import { createImports } from "./imports";
 
 import {
   InvokeApiOptions,
@@ -19,14 +15,18 @@ import {
 import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
 
-const Worker = require("web-worker");
-
-let threadsActive = 0;
-const threadIds: number[] = Array.from({ length: maxThreads }, (_, i) => i);
-const threadMutexesBuffer = new SharedArrayBuffer(
-  maxThreads * Int32Array.BYTES_PER_ELEMENT
-);
-const threadMutexes = new Int32Array(threadMutexesBuffer, 0, maxThreads);
+export interface State {
+  method?: string;
+  args?: ArrayBuffer;
+  invoke: {
+    result?: ArrayBuffer;
+    error?: string;
+  };
+  subinvoke: {
+    result?: ArrayBuffer;
+    error?: string;
+  };
+}
 
 export class WasmWeb3Api extends Api {
   private _schema?: string;
@@ -62,115 +62,87 @@ export class WasmWeb3Api extends Api {
         options: InvokeApiOptions,
         client: Client
       ): Promise<InvokeApiResult<unknown | ArrayBuffer>> => {
-        const { module, method, input, decode } = options;
+        const { module: invokableModule, method, input, decode } = options;
+        const wasm = await this.getWasmModule(invokableModule, client);
 
-        // Fetch the WASM module
-        const wasm = await this.getWasmModule(module, client);
-
-        // TODO: come up with a better future-proof solution
-        while (threadsActive >= maxThreads || threadIds.length === 0) {
-          // Wait for another thread to become available
-          await sleep(500);
-        }
-
-        threadsActive++;
-        const threadId = threadIds.pop() as number;
-
-        Tracer.addEvent("threadId", threadId);
-
-        Atomics.store(threadMutexes, threadId, 0);
-
-        // Spawn the worker thread
-        let modulePath = process.env.WEB3API_THREAD_PATH || "./thread.js";
-
-        // If we're in node.js
-        if (typeof process === "object" && typeof window === "undefined") {
-          modulePath = `file://${__dirname}/thread.js`;
-
-          if (process.env.TEST) {
-            modulePath = `file://${__dirname}/thread-loader.js`;
-          }
-        }
-
-        const worker = new Worker(modulePath);
-
-        // Our transfer buffer, used to send data to the thread atomically.
-        // The first byte in the transfer array specifies how many bytes are in the array (max 255).
-        const transferBuffer = new SharedArrayBuffer(
-          maxTransferBytes * Uint8Array.BYTES_PER_ELEMENT
-        );
-
-        let state: "Abort" | "LogQueryError" | "LogQueryResult" | undefined;
         let abortMessage: string | undefined;
         let queryResult: ArrayBuffer | undefined;
         let queryError: string | undefined;
 
-        Tracer.addEvent("worker-started", {
-          method,
-          input,
-          threadId,
-        });
+        const args =
+          input instanceof ArrayBuffer
+            ? input
+            : MsgPack.encode(input, { ignoreUndefined: true });
+        const module = new WebAssembly.Module(wasm);
+        const memory = new WebAssembly.Memory({ initial: 1 });
+        const state: State = {
+          invoke: {},
+          subinvoke: {},
+        };
 
-        // Start the thread
-        worker.postMessage({
-          wasm,
-          method,
-          input,
-          threadMutexesBuffer,
-          threadId,
-          transferBuffer,
-        });
+        const source: WebAssembly.Instance = new WebAssembly.Instance(
+          module,
+          createImports({
+            args,
+            getModule: () => source,
+            state,
+            client,
+            memory,
+          })
+        );
 
-        // await awaitCompletion;
+        const exports = source.exports as W3Exports;
 
-        WasmPromise.create<void>((resolve) => {
-          worker.addEventListener(
-            "message",
-            async (event: { data: HostAction }) => {
-              const action = event.data;
+        const hasExport = (
+          name: string,
+          exports: Record<string, unknown>
+        ): boolean => {
+          if (!exports[name]) {
+            abort(`A required export was not found: ${name}`);
+            return false;
+          }
 
-              Tracer.addEvent("worker-message", action);
+          return true;
+        };
 
-              switch (action.type) {
-                case "Abort": {
-                  abortMessage = action.message;
-                  state = action.type;
-                  resolve();
-                  break;
-                }
-                case "LogQueryError": {
-                  queryError = action.error;
-                  state = action.type;
-                  resolve();
-                  break;
-                }
-                case "LogQueryResult": {
-                  queryResult = action.result;
-                  state = action.type;
-                  resolve();
-                  break;
-                }
-                // TODO: replace with proper logging
-                case "LogInfo": {
-                  break;
-                }
-                case "SubInvoke": {
-                  break;
-                }
-                case "TransferComplete": {
-                  break;
-                }
-              }
-            }
-          );
-        });
+        // Make sure _w3_init exists
+        if (!hasExport("_w3_init", exports)) {
+          return;
+        }
 
-        // Atomics.store(threadMutexes, threadId, 0);
-        worker.terminate();
-        threadsActive--;
-        threadIds.push(threadId);
+        // Initialize the Web3Api module
+        exports._w3_init();
 
-        Tracer.addEvent("worker-terminated", state);
+        // Make sure _w3_invoke exists
+        if (!hasExport("_w3_invoke", exports)) {
+          return;
+        }
+
+        const result = exports._w3_invoke(
+          state.method.length,
+          state.args.byteLength
+        );
+
+        if (result) {
+          if (!state.invoke.result) {
+            abort(`Invoke result is missing.`);
+            return;
+          }
+
+          // __w3_invoke_result has already been called
+          queryResult = state.invoke.result;
+          state = "LogQueryResult";
+        } else {
+          if (!state.invoke.error) {
+            abortMessage = `Invoke error is missing.`;
+            state = "Abort";
+            return;
+          }
+
+          // __w3_invoke_error has already been called
+          queryError = state.invoke.error;
+          state = "LogQueryError";
+        }
 
         if (!state) {
           throw Error("WasmWeb3Api: query state was never set.");
