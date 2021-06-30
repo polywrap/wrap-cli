@@ -9,7 +9,7 @@ pub trait Write: Clone {
     fn write_bool(&mut self, value: bool);
     fn write_i8(&mut self, value: i8);
     fn write_i16(&mut self, value: i16);
-    fn write_i32(&mut self, value: i32);
+    fn write_i32(&mut self, value: &i32);
     fn write_i64(&mut self, value: i64);
     fn write_u8(&mut self, value: &u8);
     fn write_u16(&mut self, value: u16);

@@ -51,8 +51,8 @@ impl Write for WriteEncoder {
         self.write_i64(value as i64);
     }
 
-    fn write_i32(&mut self, value: i32) {
-        self.write_i64(value as i64);
+    fn write_i32(&mut self, value: &i32) {
+        self.write_i64(*value as i64);
     }
 
     fn write_i64(&mut self, value: i64) {
@@ -358,7 +358,7 @@ impl Write for WriteEncoder {
             self.write_nil();
             return Ok(());
         }
-        self.write_i32(value.unwrap_or_default());
+        self.write_i32(&value.unwrap_or_default());
         Ok(())
     }
 

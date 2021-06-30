@@ -143,7 +143,7 @@ fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
     writer.write_string(&"int16".to_string());
     writer.write_i16(sanity.int16);
     writer.write_string(&"int32".to_string());
-    writer.write_i32(sanity.int32);
+    writer.write_i32(&sanity.int32);
     writer.write_string(&"int64".to_string());
     writer.write_i64(sanity.int64);
     writer.write_string(&"uint8".to_string());
@@ -183,7 +183,11 @@ fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
     writer.write_string(&"large_bytes_array".to_string());
     writer.write_array(sanity.large_bytes_array.as_slice(), W::write_bytes);
     writer.write_string(&"map".to_string());
-    // TODO: writer.write_map(sanity.map.clone(), W::write_string, W::write_array);
+    writer.write_map(
+        sanity.map.clone(),
+        |writer: &mut W, key| writer.write_string(key),
+        |writer: &mut W, value| writer.write_array(value.as_slice(), Write::write_i32),
+    );
 }
 
 fn deserialize_sanity<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<()> {
