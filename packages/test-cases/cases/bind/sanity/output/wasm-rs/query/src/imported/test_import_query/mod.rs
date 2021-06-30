@@ -29,7 +29,7 @@ impl TestImportQuery {
         deserialize_imported_method_result(result.as_slice())
     }
 
-    pub fn another_method(input: InputAnotherMethod) -> i64 {
+    pub fn another_method(input: &mut InputAnotherMethod) -> i64 {
         let uri = Self::URI;
         let args = serialize_another_method_args(input);
         let result = subinvoke::w3_subinvoke(

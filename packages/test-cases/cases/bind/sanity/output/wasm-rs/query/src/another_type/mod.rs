@@ -32,7 +32,7 @@ impl AnotherType {
         write_another_type(object, writer);
     }
 
-    pub fn read<R: Read>(reader: R) -> Self {
+    pub fn read<R: Read>(reader: &mut R) -> Self {
         read_another_type(reader)
     }
 }

@@ -45,11 +45,11 @@ pub fn write_another_type<W: Write>(object: &mut AnotherType, writer: &mut W) {
 pub fn deserialize_another_type(buffer: &[u8]) -> AnotherType {
     let mut context = Context::new();
     context.description = "Deserializing object-type AnotherType".to_string();
-    let reader = ReadDecoder::new(buffer, context);
-    read_another_type(reader)
+    let mut reader = ReadDecoder::new(buffer, context);
+    read_another_type(&mut reader)
 }
 
-pub fn read_another_type<R: Read>(mut reader: R) -> AnotherType {
+pub fn read_another_type<R: Read>(reader: &mut R) -> AnotherType {
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
     let mut prop: Option<String> = None;
     let mut circular: Option<CustomType> = None;

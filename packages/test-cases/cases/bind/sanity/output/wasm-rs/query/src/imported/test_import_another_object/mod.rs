@@ -29,11 +29,11 @@ impl TestImportAnotherObject {
         deserialize_test_import_another_object(buffer)
     }
 
-    pub fn write<W: Write>(object: Self, writer: W) {
+    pub fn write<W: Write>(object: &mut Self, writer: &mut W) {
         write_test_import_another_object(object, writer);
     }
 
-    pub fn read<R: Read>(reader: R) -> Self {
+    pub fn read<R: Read>(reader: &mut R) -> Self {
         read_test_import_another_object(reader)
             .expect_throw("Failed to read TestImportAnotherObject")
     }

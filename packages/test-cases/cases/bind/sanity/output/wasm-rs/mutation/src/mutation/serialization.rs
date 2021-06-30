@@ -1,7 +1,7 @@
 use super::super::custom_enum::{get_custom_enum_value, sanitize_custom_enum_value};
 use crate::{AnotherType, Context, CustomEnum, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use serde::{Deserialize, Serialize};
-use std::convert::TryInto;
+use std::convert::{TryFrom, TryInto};
 use std::io::{Error, ErrorKind, Result};
 use wasm_bindgen::UnwrapThrowExt;
 
@@ -105,8 +105,24 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
                 reader
                     .context()
                     .push(&field, "Vec<CustomEnum>", "type found, reading property");
-                // TODO: enum_array = reader.read_array()
-                //enum_array_set = true;
+                enum_array = reader
+                    .read_array(|reader| {
+                        let mut value = CustomEnum::_MAX_;
+                        if reader.is_next_string() {
+                            value = get_custom_enum_value(
+                                reader.read_string().unwrap_or_default().as_str(),
+                            )
+                            .expect_throw("Failed to get custom enum value");
+                        } else {
+                            value = CustomEnum::try_from(reader.read_i32().unwrap_or_default())
+                                .expect_throw("Failed to convert i32 to CustomEnum");
+                            sanitize_custom_enum_value(value.clone() as i32)
+                                .expect_throw("Failed to sanitize custom enum");
+                        }
+                        return value;
+                    })
+                    .expect_throw("Failed to read array");
+                enum_array_set = true;
                 reader
                     .context()
                     .pop()
@@ -118,7 +134,21 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
                     "Option<Vec<CustomEnum>>",
                     "type found, reading property",
                 );
-                // TODO: opt_enum_array = reader.read_nullable_array()
+                opt_enum_array = reader.read_nullable_array(|reader| {
+                    let mut value = CustomEnum::_MAX_;
+                    if reader.is_next_string() {
+                        value = get_custom_enum_value(
+                            reader.read_string().unwrap_or_default().as_str(),
+                        )
+                        .expect_throw("Failed to get custom enum value");
+                    } else {
+                        value = CustomEnum::try_from(reader.read_i32().unwrap_or_default())
+                            .expect_throw("Failed to convert i32 to CustomEnum");
+                        sanitize_custom_enum_value(value.clone() as i32)
+                            .expect_throw("Failed to sanitize custom enum");
+                    }
+                    return value;
+                });
 
                 reader
                     .context()
@@ -216,7 +246,7 @@ pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMeth
                     .context()
                     .push(&field, "AnotherType", "type found, reading property");
                 if !object_set {
-                    object = AnotherType::read(reader.clone());
+                    object = AnotherType::read(&mut reader);
                     object_set = true;
                 }
                 reader
@@ -231,7 +261,7 @@ pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMeth
                     "type found, reading property",
                 );
                 if !reader.is_next_nil() {
-                    opt_object = Some(AnotherType::read(reader.clone()));
+                    opt_object = Some(AnotherType::read(&mut reader));
                 }
                 reader
                     .context()
@@ -243,7 +273,9 @@ pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMeth
                     .context()
                     .push(&field, "Vec<AnotherType>", "type found, reading property");
                 if !object_array_set {
-                    // TODO: object_array = reader.read_array();
+                    object_array = reader
+                        .read_array(|reader| AnotherType::read(reader))
+                        .expect_throw("Failed to read array");
                     object_array_set = true;
                 }
                 reader
@@ -257,7 +289,7 @@ pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMeth
                     "Option<Vec<AnotherType>>",
                     "type found, reading property",
                 );
-                // TODO: opt_object_array = reader.read_nullable_array();
+                opt_object_array = reader.read_nullable_array(|reader| AnotherType::read(reader));
                 reader
                     .context()
                     .pop()

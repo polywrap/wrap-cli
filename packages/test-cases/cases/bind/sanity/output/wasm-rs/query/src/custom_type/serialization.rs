@@ -236,9 +236,10 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
         "writing property",
     );
     writer.write_string(&"u_opt_array_opt_array".to_string());
-    writer.write_array(object.u_opt_array_opt_array.as_slice(), |writer: &mut W, arr_fn| {
-        writer.write_nullable_array(&arr_fn, Write::write_u64)
-    });
+    writer.write_array(
+        object.u_opt_array_opt_array.as_slice(),
+        |writer: &mut W, arr_fn| writer.write_nullable_array(&arr_fn, Write::write_u64),
+    );
     writer
         .context()
         .pop()
@@ -249,11 +250,14 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
         "writing property",
     );
     writer.write_string(&"u_array_opt_array_array".to_string());
-    writer.write_array(object.u_array_opt_array_array.as_slice(), |writer: &mut W, arr_fn| {
-        writer.write_nullable_array(&arr_fn, |writer: &mut W, arr_fn| {
-            writer.write_array(arr_fn.as_slice(), Write::write_u64)
-        })
-    });
+    writer.write_array(
+        object.u_array_opt_array_array.as_slice(),
+        |writer: &mut W, arr_fn| {
+            writer.write_nullable_array(&arr_fn, |writer: &mut W, arr_fn| {
+                writer.write_array(arr_fn.as_slice(), Write::write_u64)
+            })
+        },
+    );
     writer
         .context()
         .pop()
@@ -625,7 +629,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .push(&field, "bool", "type found, reading property");
-                int64 = reader.read_i64().unwrap_or_default();
+                boolean = reader.read_bool().unwrap();
                 boolean_set = true;
                 reader
                     .context()
@@ -646,7 +650,9 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .push(&field, "Vec<u32>", "type found, reading property");
-                // TODO: u_array = reader.read_array().unwrap_or_default();
+                u_array = reader
+                    .read_array(|reader| reader.read_u32().expect_throw("Failed to read u32"))
+                    .expect_throw("Failed to read u_array");
                 u_array_set = true;
                 reader
                     .context()
@@ -657,7 +663,9 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .push(&field, "Option<Vec<u32>>", "type found, reading property");
-                // TODO: u_opt_array = reader.read_nullable_array();
+                u_opt_array = reader.read_nullable_array(|reader| {
+                    reader.read_u32().expect_throw("Failed to read u32")
+                });
                 reader
                     .context()
                     .pop()
@@ -669,7 +677,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                     "Option<Vec<Option<u32>>>",
                     "type found, reading property",
                 );
-                // TODO: opt_u_opt_array = reader.read_nullable_array();
+                opt_u_opt_array = reader.read_nullable_array(|reader| reader.read_nullable_u32());
                 reader
                     .context()
                     .pop()
@@ -681,7 +689,8 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                     "Option<Option<Vec<String>>>",
                     "type found, reading property",
                 );
-                // TODO: opt_str_opt_array = reader.read_nullable_array();
+                opt_str_opt_array =
+                    reader.read_nullable_array(|reader| reader.read_nullable_string());
                 reader
                     .context()
                     .pop()
@@ -691,7 +700,15 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .push(&field, "Vec<Vec<u32>>", "type found, reading property");
-                // TODO: u_array_array = reader.read_array();
+                u_array_array = reader
+                    .read_array(|reader| {
+                        reader
+                            .read_array(|reader| {
+                                reader.read_u32().expect_throw("Failed to read u32")
+                            })
+                            .expect_throw("Failed to read array")
+                    })
+                    .expect_throw("Failed to read array");
                 u_array_array_set = true;
                 reader
                     .context()
@@ -704,7 +721,13 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                     "Vec<Option<Vec<u64>>>",
                     "type found, reading property",
                 );
-                // TODO: u_opt_array_opt_array = reader.read_array();
+                u_opt_array_opt_array = reader
+                    .read_array(|reader| {
+                        reader.read_nullable_array(|reader| {
+                            reader.read_u64().expect_throw("Failed to read u64")
+                        })
+                    })
+                    .expect_throw("Failed to read array");
                 u_opt_array_opt_array_set = true;
                 reader
                     .context()
@@ -717,7 +740,17 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                     "Vec<Option<Vec<Vec<u64>>>>",
                     "type found, reading property",
                 );
-                // TODO: u_array_opt_array_array = reader.read_array();
+                u_array_opt_array_array = reader
+                    .read_array(|reader| {
+                        reader.read_nullable_array(|reader| {
+                            reader
+                                .read_array(|reader| {
+                                    reader.read_u64().expect_throw("Failed to read u64")
+                                })
+                                .expect_throw("Failed to read array")
+                        })
+                    })
+                    .expect_throw("Failed to read array");
                 u_array_opt_array_array_set = true;
                 reader
                     .context()
@@ -730,7 +763,13 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                     "Option<Vec<Option<Vec<Option<Vec<u64>>>>>>",
                     "type found, reading property",
                 );
-                // TODO: crazy_array = reader.read_nullable_array();
+                crazy_array = reader.read_nullable_array(|reader| {
+                    reader.read_nullable_array(|reader| {
+                        reader.read_nullable_array(|reader| {
+                            reader.read_u64().expect_throw("Failed to read u64")
+                        })
+                    })
+                });
                 reader
                     .context()
                     .pop()
@@ -740,7 +779,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .push(&field, "AnotherType", "type found, reading property");
-                object = AnotherType::read(reader.clone());
+                object = AnotherType::read(&mut reader);
                 object_set = true;
                 reader
                     .context()
@@ -754,7 +793,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                     "type found, reading property",
                 );
                 if !reader.is_next_nil() {
-                    opt_object = Some(AnotherType::read(reader.clone()));
+                    opt_object = Some(AnotherType::read(&mut reader));
                 }
                 reader
                     .context()
@@ -765,7 +804,9 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .push(&field, "Vec<AnotherType>", "type found, reading property");
-                // TODO: object_array = reader.read_array();
+                object_array = reader
+                    .read_array(|reader| AnotherType::read(reader))
+                    .expect_throw("Failed to read array");
                 object_array_set = true;
                 reader
                     .context()
@@ -778,7 +819,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                     "Option<Vec<AnotherType>>",
                     "type found, reading property",
                 );
-                // TODO: opt_object_array = reader.read_nullable_array();
+                opt_object_array = reader.read_nullable_array(|reader| AnotherType::read(reader));
                 reader
                     .context()
                     .pop()
@@ -835,7 +876,23 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .push(&field, "Vec<CustomEnum>", "type found, reading property");
-                // TODO: en_array = reader.read_array();
+                en_array = reader
+                    .read_array(|reader| {
+                        let mut value = CustomEnum::_MAX_;
+                        if reader.is_next_string() {
+                            value = get_custom_enum_value(
+                                reader.read_string().unwrap_or_default().as_str(),
+                            )
+                            .expect_throw("Failed to get custom enum value");
+                        } else {
+                            value = CustomEnum::try_from(reader.read_i32().unwrap_or_default())
+                                .expect_throw("Failed to convert i32 to CustomEnum");
+                            sanitize_custom_enum_value(value.clone() as i32)
+                                .expect_throw("Failed to sanitize custom enum");
+                        }
+                        return value;
+                    })
+                    .expect_throw("Failed to read array");
                 en_array_set = true;
                 reader
                     .context()
@@ -848,7 +905,21 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                     "Option<Vec<CustomEnum>>",
                     "type found, reading property",
                 );
-                // TODO: opt_en_array = reader.read_nullable_array();
+                opt_en_array = reader.read_nullable_array(|reader| {
+                    let mut value = CustomEnum::_MAX_;
+                    if reader.is_next_string() {
+                        value = get_custom_enum_value(
+                            reader.read_string().unwrap_or_default().as_str(),
+                        )
+                        .expect_throw("Failed to get custom enum value");
+                    } else {
+                        value = CustomEnum::try_from(reader.read_i32().unwrap_or_default())
+                            .expect_throw("Failed to convert i32 to CustomEnum");
+                        sanitize_custom_enum_value(value.clone() as i32)
+                            .expect_throw("Failed to sanitize custom enum");
+                    }
+                    return value;
+                });
                 reader
                     .context()
                     .pop()

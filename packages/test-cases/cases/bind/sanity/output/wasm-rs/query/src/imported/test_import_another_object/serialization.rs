@@ -3,23 +3,26 @@ use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use std::io::{Error, ErrorKind, Result};
 use wasm_bindgen::UnwrapThrowExt;
 
-pub fn serialize_test_import_another_object(object: TestImportAnotherObject) -> Vec<u8> {
+pub fn serialize_test_import_another_object(mut object: TestImportAnotherObject) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description =
         "Serializing (sizing) imported object-type: TestImportAnotherObject".to_string();
-    let sizer = WriteSizer::new(sizer_context);
-    write_test_import_another_object(object.clone(), sizer.clone());
+    let mut sizer = WriteSizer::new(sizer_context);
+    write_test_import_another_object(&mut object, &mut sizer);
 
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description =
         "Serializing (encoding) imported object-type: TestImportAnotherObject".to_string();
-    let encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-    write_test_import_another_object(object, encoder);
+    let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
+    write_test_import_another_object(&mut object, &mut encoder);
     buffer
 }
 
-pub fn write_test_import_another_object<W: Write>(object: TestImportAnotherObject, mut writer: W) {
+pub fn write_test_import_another_object<W: Write>(
+    object: &mut TestImportAnotherObject,
+    writer: &mut W,
+) {
     writer.write_map_length(1);
     writer.context().push("prop", "string", "writing property");
     writer.write_string(&"prop".to_string());
@@ -33,11 +36,12 @@ pub fn write_test_import_another_object<W: Write>(object: TestImportAnotherObjec
 pub fn deserialize_test_import_another_object(buffer: &[u8]) -> TestImportAnotherObject {
     let mut context = Context::new();
     context.description = "Deserializing imported object-type: TestImportAnotherObject".to_string();
-    let reader = ReadDecoder::new(buffer, context);
-    read_test_import_another_object(reader).expect("Failed to deserialize TestImportAnotherObject")
+    let mut reader = ReadDecoder::new(buffer, context);
+    read_test_import_another_object(&mut reader)
+        .expect("Failed to deserialize TestImportAnotherObject")
 }
 
-pub fn read_test_import_another_object<R: Read>(mut reader: R) -> Result<TestImportAnotherObject> {
+pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestImportAnotherObject> {
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
     let mut prop = "".to_string();
