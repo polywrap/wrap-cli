@@ -289,10 +289,6 @@ impl DataView {
         Ok(())
     }
 
-    pub fn to_string() -> String {
-        format!("[object DataView]")
-    }
-
     fn load_from_memory<T: FromPrimitive + Copy>(&mut self, mut p: T) -> T {
         let val_ptr = AtomicPtr::new(&mut p);
         let value = val_ptr.load(Ordering::Relaxed);
