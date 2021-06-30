@@ -50,16 +50,14 @@ pub fn write_imported_method_args<W: Write>(mut writer: W, input: InputImportedM
         .context()
         .push("opt_string", "Option<String>", "writing property");
     writer.write_string(&"opt_string".to_string());
-    writer
-        .write_nullable_string(input.opt_string.to_owned())
-        .expect_throw("Failed to write nullable string");
+    writer.write_nullable_string(&input.opt_string);
     writer
         .context()
         .pop()
         .expect_throw("Failed to pop optional string from Context");
     writer.context().push("u", "u32", "writing property");
     writer.write_string(&"u".to_string());
-    writer.write_u32(input.u);
+    writer.write_u32(&input.u);
     writer
         .context()
         .pop()
@@ -68,9 +66,7 @@ pub fn write_imported_method_args<W: Write>(mut writer: W, input: InputImportedM
         .context()
         .push("opt_u", "Option<u32>", "writing property");
     writer.write_string(&"opt_u".to_string());
-    writer
-        .write_nullable_u32(input.opt_u)
-        .expect_throw("Failed to write nullable u32");
+    writer.write_nullable_u32(&input.opt_u);
     writer
         .context()
         .pop()

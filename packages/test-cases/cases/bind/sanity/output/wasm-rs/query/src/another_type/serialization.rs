@@ -22,9 +22,7 @@ pub fn write_another_type<W: Write>(object: AnotherType, mut writer: W) {
         .context()
         .push("prop", "Option<String>", "writing property");
     writer.write_string(&"prop".to_string());
-    writer
-        .write_nullable_string(object.prop.clone())
-        .expect_throw("Failed to write nullable string");
+    writer.write_nullable_string(&object.prop);
     writer
         .context()
         .pop()

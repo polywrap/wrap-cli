@@ -37,16 +37,14 @@ pub fn write_custom_type<W: Write>(object: CustomType, mut writer: W) {
         .context()
         .push("opt_string", "Option<String>", "writing property");
     writer.write_string(&"opt_string".to_string());
-    writer
-        .write_nullable_string(object.opt_string.to_owned())
-        .expect_throw("Failed to write nullable string");
+    writer.write_nullable_string(&object.opt_string);
     writer
         .context()
         .pop()
         .expect_throw("Failed to pop nullable string from Context");
     writer.context().push("u", "u32", "writing property");
     writer.write_string(&"u".to_string());
-    writer.write_u32(object.u);
+    writer.write_u32(&object.u);
     writer
         .context()
         .pop()
@@ -55,9 +53,7 @@ pub fn write_custom_type<W: Write>(object: CustomType, mut writer: W) {
         .context()
         .push("opt_u", "Option<u32>", "writing property");
     writer.write_string(&"opt_u".to_string());
-    writer
-        .write_nullable_u32(object.opt_u)
-        .expect_throw("Failed to write nullable u32");
+    writer.write_nullable_u32(&object.opt_u);
     writer
         .context()
         .pop()
@@ -78,14 +74,14 @@ pub fn write_custom_type<W: Write>(object: CustomType, mut writer: W) {
         .expect_throw("Failed to pop u16 from Context");
     writer.context().push("u32", "u32", "writing property");
     writer.write_string(&"u32".to_string());
-    writer.write_u32(object.uint32);
+    writer.write_u32(&object.uint32);
     writer
         .context()
         .pop()
         .expect_throw("Failed to pop u32 from Context");
     writer.context().push("u64", "u64", "writing property");
     writer.write_string(&"u64".to_string());
-    writer.write_u64(object.uint64);
+    writer.write_u64(&object.uint64);
     writer
         .context()
         .pop()
