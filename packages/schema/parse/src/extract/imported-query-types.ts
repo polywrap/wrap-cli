@@ -13,7 +13,6 @@ import {
   State,
 } from "./query-types-utils";
 import { extractImportedDefinition } from "./imported-types-utils";
-import { Blackboard } from "./Blackboard";
 
 import {
   ObjectTypeDefinitionNode,
@@ -28,7 +27,6 @@ import {
 const visitorEnter = (
   importedQueryTypes: ImportedQueryDefinition[],
   state: State,
-  blackboard: Blackboard
 ) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const imported = extractImportedDefinition(node, true);
@@ -85,7 +83,7 @@ const visitorEnter = (
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    extractNamedType(node, state, blackboard);
+    extractNamedType(node, state);
   },
   ListType: (_node: ListTypeNode) => {
     extractListType(state);
@@ -110,12 +108,11 @@ const visitorLeave = (state: State) => ({
 
 export const getImportedQueryTypesVisitor = (
   typeInfo: TypeInfo,
-  blackboard: Blackboard
 ): ASTVisitor => {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo.importedQueryTypes, state, blackboard),
+    enter: visitorEnter(typeInfo.importedQueryTypes, state),
     leave: visitorLeave(state),
   };
 };

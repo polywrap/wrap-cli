@@ -24,8 +24,6 @@ import {
   visitQueryDefinition,
   ImportedQueryDefinition,
   DefinitionKind,
-  PropertyDefinition,
-  populatePropertyType,
   visitImportedQueryDefinition,
   visitImportedObjectDefinition,
   ImportedEnumDefinition,
@@ -217,13 +215,7 @@ const extractObjectImportDependencies = (
               rootTypeInfo,
               namespace,
               uri
-            ),
-            leave: {
-              PropertyDefinition: (def: PropertyDefinition) => {
-                populatePropertyType(def);
-                return def;
-              },
-            },
+            )
           });
         }
 
@@ -260,13 +252,7 @@ const extractObjectImportDependencies = (
               rootTypeInfo,
               namespace,
               uri
-            ),
-            leave: {
-              PropertyDefinition: (def: PropertyDefinition) => {
-                populatePropertyType(def);
-                return def;
-              },
-            },
+            )
           });
         }
 
@@ -298,7 +284,7 @@ const extractObjectImportDependencies = (
   };
 };
 
-const namespaceTypes = (namespace: string): TypeInfoTransforms => ({
+const namespaceTypes = (namespace: string, typeInfo: TypeInfo): TypeInfoTransforms => ({
   enter: {
     ObjectDefinition: (def: ObjectDefinition & Namespaced) => {
       if (def.__namespaced) {
@@ -335,13 +321,7 @@ const namespaceTypes = (namespace: string): TypeInfoTransforms => ({
         __namespaced: true,
       };
     },
-  },
-  leave: {
-    PropertyDefinition: (def: PropertyDefinition) => {
-      populatePropertyType(def);
-      return def;
-    },
-  },
+  }
 });
 
 function appendNamespace(namespace: string, str: string) {
@@ -605,7 +585,7 @@ async function resolveExternalImports(
           const importDef = importType as ImportedObjectDefinition;
           // Namespace all object types
           typeInfo.importedObjectTypes.push(
-            visitImportedObjectDefinition(importDef, namespaceTypes(namespace))
+            visitImportedObjectDefinition(importDef, namespaceTypes(namespace, typeInfo))
           );
         };
       } else if (importType.kind === DefinitionKind.ImportedQuery) {
@@ -614,7 +594,7 @@ async function resolveExternalImports(
           const importDef = importType as ImportedQueryDefinition;
           // Namespace all object types
           typeInfo.importedQueryTypes.push(
-            visitImportedQueryDefinition(importDef, namespaceTypes(namespace))
+            visitImportedQueryDefinition(importDef, namespaceTypes(namespace, typeInfo))
           );
         };
       } else if (importType.kind === DefinitionKind.ImportedEnum) {
@@ -623,7 +603,7 @@ async function resolveExternalImports(
           typeInfo.importedEnumTypes.push(
             visitImportedEnumDefinition(
               importType as ImportedEnumDefinition,
-              namespaceTypes(namespace)
+              namespaceTypes(namespace, typeInfo)
             )
           );
         };

@@ -16,6 +16,7 @@ export enum DefinitionKind {
   ImportedEnum = 1 << 9,
   ImportedObject = (1 << 10) | DefinitionKind.Object,
   InterfaceImplemented = 1 << 11,
+  UnresolvedObjectOrEnum = 1 << 12
 }
 
 export function isKind(type: GenericDefinition, kind: DefinitionKind): boolean {
@@ -69,6 +70,7 @@ export interface AnyDefinition extends GenericDefinition {
   scalar: ScalarDefinition | null;
   object: ObjectDefinition | null;
   enum: EnumDefinition | null;
+  unresolvedObjectOrEnum: (ObjectDefinition & EnumDefinition) | null;
 }
 export function createAnyDefinition(args: {
   type: string;
@@ -86,6 +88,7 @@ export function createAnyDefinition(args: {
     scalar: args.scalar ? args.scalar : null,
     object: args.object ? args.object : null,
     enum: args.enum ? args.enum : null,
+    unresolvedObjectOrEnum: null,
     kind: DefinitionKind.Any,
   };
 }
@@ -125,6 +128,22 @@ export function createEnumDefinition(args: {
     type: args.type,
     kind: DefinitionKind.Enum,
     constants: args.constants ? args.constants : [],
+  };
+}
+
+export function createUnresolvedObjectOrEnumDefinition(args: {
+  type: string;
+  name?: string | null;
+  required?: boolean;
+  comment?: string;
+}): ObjectDefinition & EnumDefinition {
+  return {
+    ...createGenericDefinition(args),
+    type: args.type,
+    kind: DefinitionKind.UnresolvedObjectOrEnum,
+    constants: [],
+    properties: [],
+    interfaces: []
   };
 }
 

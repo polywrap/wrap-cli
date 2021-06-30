@@ -7,7 +7,6 @@ import {
   createArrayDefinition,
 } from "../typeInfo";
 import { setPropertyType } from "./property-utils";
-import { Blackboard } from "./Blackboard";
 
 import { InputValueDefinitionNode, NamedTypeNode } from "graphql";
 
@@ -23,7 +22,6 @@ export interface State {
 export function extractNamedType(
   node: NamedTypeNode,
   state: State,
-  blackboard: Blackboard
 ): void {
   const argument = state.currentArgument;
   const method = state.currentMethod;
@@ -47,8 +45,7 @@ export function extractNamedType(
       {
         type: node.name.value,
         required: state.nonNullType,
-      },
-      blackboard
+      }
     );
 
     state.nonNullType = false;
@@ -75,8 +72,7 @@ export function extractNamedType(
       {
         type: node.name.value,
         required: state.nonNullType,
-      },
-      blackboard
+      }
     );
 
     state.nonNullType = false;
