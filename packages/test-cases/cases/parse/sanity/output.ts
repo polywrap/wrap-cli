@@ -262,11 +262,14 @@ export const output: TypeInfo = {
           }),
           arguments: [
             createObjectPropertyDefinition({ name: "userObject", type: "UserObject", comment: "userObject comment" }),
-            createArrayPropertyDefinition({ name: "arrayObject", type: "[UserObject]", required: true, comment: "arrayObject comment", item: createObjectDefinition({
-              type: "UserObject",
-              name: "arrayObject",
-              required: true
-            })}),
+            createArrayPropertyDefinition({ 
+              name: "arrayObject", type: "[UserObject]", required: true, comment: "arrayObject comment", 
+              item: createObjectRef({
+                type: "UserObject",
+                name: "arrayObject",
+                required: true
+              })
+            }),
           ],
         },
         {
@@ -282,11 +285,14 @@ export const output: TypeInfo = {
           }),
           arguments: [
             createEnumPropertyDefinition({ name: "enum", type: "CustomEnum", comment: "enum comment" }),
-            createArrayPropertyDefinition({ name: "arrayEnum", type: "[CustomEnum]", required: true, comment: "arrayEnum comment", item: createEnumDefinition({
-              type: "CustomEnum",
-              name: "arrayEnum",
-              required: true
-            })})
+            createArrayPropertyDefinition({ 
+              name: "arrayEnum", type: "[CustomEnum]", required: true, comment: "arrayEnum comment", 
+              item: createEnumRef({
+                type: "CustomEnum",
+                name: "arrayEnum",
+                required: true
+              })
+            })
           ],
         },
         {
