@@ -1,6 +1,6 @@
 import {
   createScalarDefinition,
-  createUnresolvedObjectOrEnumDefinition,
+  createUnresolvedObjectOrEnumRef,
   isScalarType,
   PropertyDefinition,
 } from "../typeInfo";
@@ -19,7 +19,7 @@ export function setPropertyType(
     return;
   }
 
-  property.unresolvedObjectOrEnum = createUnresolvedObjectOrEnumDefinition({
+  property.unresolvedObjectOrEnum = createUnresolvedObjectOrEnumRef({
     name: name,
     type: type.type,
     required: type.required,

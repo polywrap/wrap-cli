@@ -13,7 +13,9 @@ import {
   createEnumDefinition,
   createEnumPropertyDefinition,
   createImportedEnumDefinition,
-  createInterfaceImplementedDefinition
+  createInterfaceImplementedDefinition,
+  createObjectRef,
+  createEnumRef
 } from "../../../../schema/parse/src/typeInfo";
 
 export const output: TypeInfo = {
@@ -124,7 +126,7 @@ export const output: TypeInfo = {
           name: "objectArray",
           type: "[UserObject]",
           required: true,
-          item: createObjectDefinition({ name: "objectArray", type: "UserObject", required: true })
+          item: createObjectRef({ name: "objectArray", type: "UserObject", required: true })
         }),
         createArrayPropertyDefinition({
           name: "objectArrayArray",
@@ -134,7 +136,7 @@ export const output: TypeInfo = {
             name: "objectArrayArray",
             type: "[UserObject]",
             required: true,
-            item: createObjectDefinition({ name: "objectArrayArray", type: "UserObject", required: true })
+            item: createObjectRef({ name: "objectArrayArray", type: "UserObject", required: true })
           })
         }),
         createObjectPropertyDefinition({
@@ -159,7 +161,7 @@ export const output: TypeInfo = {
           name: "enumArray",
           type: "[CustomEnum]",
           required: true,
-          item: createEnumDefinition({
+          item: createEnumRef({
             name: "enumArray",
             type: "CustomEnum",
             required: true,
@@ -169,7 +171,7 @@ export const output: TypeInfo = {
           name: "optEnumArray",
           type: "[CustomEnum]",
           required: false,
-          item: createEnumDefinition({
+          item: createEnumRef({
             name: "optEnumArray",
             type: "CustomEnum",
             required: false
@@ -463,7 +465,7 @@ export const output: TypeInfo = {
                 required: true
               }),
               object: {
-                ...createObjectDefinition({
+                ...createObjectRef({
                   name: "importedObjectMethod",
                   type: "TestImport_Object",
                   required: true
@@ -479,7 +481,7 @@ export const output: TypeInfo = {
                 required: true
               }),
               object: {
-                ...createObjectDefinition({
+                ...createObjectRef({
                   name: "importedObject",
                   type: "TestImport_Object",
                   required: true

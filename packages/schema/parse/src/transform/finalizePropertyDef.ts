@@ -1,8 +1,8 @@
 import { TypeInfoTransforms } from ".";
 import {
   ArrayDefinition,
-  createEnumDefinition,
-  createObjectDefinition,
+  createEnumRef,
+  createObjectRef,
   GenericDefinition,
   PropertyDefinition,
   TypeInfo,
@@ -118,7 +118,7 @@ function resolveObjectOrEnumKind(property: PropertyDefinition, typeInfo: TypeInf
       throw new Error(`Unsupported type ${property.unresolvedObjectOrEnum.type}`);
     }
 
-    property.enum = createEnumDefinition({
+    property.enum = createEnumRef({
       name: property.unresolvedObjectOrEnum.name,
       required: property.unresolvedObjectOrEnum.required ?? undefined,
       type: property.unresolvedObjectOrEnum.type
@@ -128,7 +128,7 @@ function resolveObjectOrEnumKind(property: PropertyDefinition, typeInfo: TypeInf
    
     return property.enum;
   } else {
-    property.object = createObjectDefinition({
+    property.object = createObjectRef({
       name: property.unresolvedObjectOrEnum.name,
       required: property.unresolvedObjectOrEnum.required ?? undefined,
       type: property.unresolvedObjectOrEnum.type

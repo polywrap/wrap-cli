@@ -18,6 +18,7 @@ export enum DefinitionKind {
   InterfaceImplemented = 1 << 11,
   UnresolvedObjectOrEnum = 1 << 12,
   ObjectRef = 1 << 13,
+  EnumRef = 1 << 14,
 }
 
 export function isKind(type: GenericDefinition, kind: DefinitionKind): boolean {
@@ -66,13 +67,12 @@ export function createObjectDefinition(args: {
   };
 }
 
-export interface ObjectDefinitionRef extends GenericDefinition { }
-export function createObjectDefinitionRef(args: {
+export interface ObjectRef extends GenericDefinition { }
+export function createObjectRef(args: {
   type: string;
   name?: string | null;
   required?: boolean;
-  comment?: string;
-}): ObjectDefinitionRef {
+}): ObjectRef {
   return {
     ...createGenericDefinition(args),
     kind: DefinitionKind.ObjectRef,
@@ -82,9 +82,9 @@ export function createObjectDefinitionRef(args: {
 export interface AnyDefinition extends GenericDefinition {
   array: ArrayDefinition | null;
   scalar: ScalarDefinition | null;
-  object: ObjectDefinition | null;
-  enum: EnumDefinition | null;
-  unresolvedObjectOrEnum: (ObjectDefinition & EnumDefinition) | null;
+  object: ObjectRef | null;
+  enum: EnumRef | null;
+  unresolvedObjectOrEnum: UnresolvedObjectOrEnumRef | null;
 }
 export function createAnyDefinition(args: {
   type: string;
@@ -92,8 +92,8 @@ export function createAnyDefinition(args: {
   required?: boolean;
   array?: ArrayDefinition;
   scalar?: ScalarDefinition;
-  object?: ObjectDefinition;
-  enum?: EnumDefinition;
+  object?: ObjectRef;
+  enum?: EnumRef;
   comment?: string;
 }): AnyDefinition {
   return {
@@ -145,19 +145,28 @@ export function createEnumDefinition(args: {
   };
 }
 
-export function createUnresolvedObjectOrEnumDefinition(args: {
+export interface EnumRef extends GenericDefinition { }
+export function createEnumRef(args: {
   type: string;
   name?: string | null;
   required?: boolean;
-  comment?: string;
-}): ObjectDefinition & EnumDefinition {
+}): EnumRef {
+  return {
+    ...createGenericDefinition(args),
+    kind: DefinitionKind.EnumRef,
+  };
+}
+
+export interface UnresolvedObjectOrEnumRef extends GenericDefinition { }
+export function createUnresolvedObjectOrEnumRef(args: {
+  type: string;
+  name?: string | null;
+  required?: boolean;
+}): UnresolvedObjectOrEnumRef {
   return {
     ...createGenericDefinition(args),
     type: args.type,
-    kind: DefinitionKind.UnresolvedObjectOrEnum,
-    constants: [],
-    properties: [],
-    interfaces: []
+    kind: DefinitionKind.UnresolvedObjectOrEnum
   };
 }
 
@@ -202,8 +211,8 @@ export function createPropertyDefinition(args: {
   required?: boolean;
   array?: ArrayDefinition;
   scalar?: ScalarDefinition;
-  object?: ObjectDefinition;
-  enum?: EnumDefinition;
+  object?: ObjectRef;
+  enum?: EnumRef;
   comment?: string;
 }): PropertyDefinition {
   return {
@@ -268,10 +277,7 @@ export function createEnumPropertyDefinition(args: {
 }): PropertyDefinition {
   return createPropertyDefinition({
     ...args,
-    enum: {
-      ...createEnumDefinition(args),
-      comment: undefined,
-    },
+    enum: createEnumRef(args)
   });
 }
 
@@ -284,10 +290,7 @@ export function createObjectPropertyDefinition(args: {
 }): PropertyDefinition {
   return createPropertyDefinition({
     ...args,
-    object: {
-      ...createObjectDefinition(args),
-      comment: undefined,
-    },
+    object: createObjectRef(args)
   });
 }
 
