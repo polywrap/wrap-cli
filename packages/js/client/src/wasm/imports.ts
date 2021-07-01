@@ -1,19 +1,20 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { u32, W3Imports } from "./types";
+import { u32, W3Exports, W3Imports } from "./types";
 import { WasmPromise } from "./WasmPromise";
 import { readBytes, readString, writeBytes, writeString } from "./utils";
 import { Client, InvokableModules } from "..";
-import { State } from "./WasmWeb3API";
+import { State } from "./WasmWeb3Api";
+
+import * as MsgPack from "@msgpack/msgpack";
 
 export const createImports = (importArgs: {
   client: Client;
-  getModule: () => WebAssembly.Instance;
+  exports: { values: W3Exports };
   memory: WebAssembly.Memory;
-  args: ArrayBuffer;
   state: State;
 }): W3Imports => {
-  const { memory, client, getModule, state } = importArgs;
+  const { memory, client, exports, state } = importArgs;
 
   return {
     w3: {
@@ -32,7 +33,10 @@ export const createImports = (importArgs: {
           state.subinvoke.result = undefined;
           state.subinvoke.error = undefined;
 
+          console.log("URI 2: ", memory.buffer, " ", uriPtr, " ", uriLen);
+
           const uri = readString(memory.buffer, uriPtr, uriLen);
+          console.log("URI 1: ", uri);
           const moduleToInvoke = readString(
             memory.buffer,
             modulePtr,
@@ -48,6 +52,8 @@ export const createImports = (importArgs: {
             input: input,
           });
 
+          console.log("RESULT: ", data, " ", error);
+
           if (!error) {
             let msgpack: ArrayBuffer;
             if (data instanceof ArrayBuffer) {
@@ -58,10 +64,7 @@ export const createImports = (importArgs: {
 
             state.subinvoke.result = msgpack;
           } else {
-            const encoder = new TextEncoder();
-            const bytes = encoder.encode(`${error.name}: ${error.message}`);
-
-            state.subinvoke.error = bytes;
+            state.subinvoke.error = `${error.name}: ${error.message}`;
           }
 
           return !error;
@@ -71,13 +74,16 @@ export const createImports = (importArgs: {
         },
         {
           memory,
-          module: getModule(),
+          exports,
         }
       ),
       // Give WASM the size of the result
       __w3_subinvoke_result_len: (): u32 => {
         if (!state.subinvoke.result) {
-          abort("__w3_subinvoke_result_len: subinvoke.result is not set");
+          state.invokeResult = {
+            type: "Abort",
+            message: "__w3_subinvoke_result_len: subinvoke.result is not set",
+          };
           return 0;
         }
         return state.subinvoke.result.byteLength;
@@ -85,7 +91,10 @@ export const createImports = (importArgs: {
       // Copy the subinvoke result into WASM
       __w3_subinvoke_result: (ptr: u32): void => {
         if (!state.subinvoke.result) {
-          abort("__w3_subinvoke_result: subinvoke.result is not set");
+          state.invokeResult = {
+            type: "Abort",
+            message: "__w3_subinvoke_result: subinvoke.result is not set",
+          };
           return;
         }
         writeBytes(state.subinvoke.result, memory.buffer, ptr);
@@ -93,7 +102,10 @@ export const createImports = (importArgs: {
       // Give WASM the size of the error
       __w3_subinvoke_error_len: (): u32 => {
         if (!state.subinvoke.error) {
-          abort("__w3_subinvoke_error_len: subinvoke.error is not set");
+          state.invokeResult = {
+            type: "Abort",
+            message: "__w3_subinvoke_error_len: subinvoke.error is not set",
+          };
           return 0;
         }
         return state.subinvoke.error.length;
@@ -101,7 +113,10 @@ export const createImports = (importArgs: {
       // Copy the subinvoke error into WASM
       __w3_subinvoke_error: (ptr: u32): void => {
         if (!state.subinvoke.error) {
-          abort("__w3_subinvoke_error: subinvoke.error is not set");
+          state.invokeResult = {
+            type: "Abort",
+            message: "__w3_subinvoke_error: subinvoke.error is not set",
+          };
           return;
         }
         writeString(state.subinvoke.error, memory.buffer, ptr);
@@ -109,11 +124,17 @@ export const createImports = (importArgs: {
       // Copy the invocation's method & args into WASM
       __w3_invoke_args: (methodPtr: u32, argsPtr: u32): void => {
         if (!state.method) {
-          abort("__w3_invoke_args: method is not set");
+          state.invokeResult = {
+            type: "Abort",
+            message: "__w3_invoke_args: method is not set",
+          };
           return;
         }
         if (!state.args) {
-          abort("__w3_invoke_args: args is not set");
+          state.invokeResult = {
+            type: "Abort",
+            message: "__w3_invoke_args: args is not set",
+          };
           return;
         }
         writeString(state.method, memory.buffer, methodPtr);
@@ -137,13 +158,14 @@ export const createImports = (importArgs: {
       ): void => {
         const msg = readString(memory.buffer, msgPtr, msgLen);
         const file = readString(memory.buffer, filePtr, fileLen);
-        abort(
-          `__w3_abort: ${msg}\nFile: ${file}\nLocation: [${line},${column}]`
-        );
+        state.invokeResult = {
+          type: "Abort",
+          message: `__w3_abort: ${msg}\nFile: ${file}\nLocation: [${line},${column}]`,
+        };
       },
-      env: {
-        memory,
-      },
+    },
+    env: {
+      memory,
     },
   };
 };

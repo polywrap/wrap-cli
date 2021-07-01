@@ -15,9 +15,14 @@ import {
 import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
 
+type InvokeResult =
+  | { type: "Abort"; message: string }
+  | { type: "LogQueryResult"; queryResult: ArrayBuffer }
+  | { type: "LogQueryError"; queryError: string };
+
 export interface State {
-  method?: string;
-  args?: ArrayBuffer;
+  method: string;
+  args: ArrayBuffer;
   invoke: {
     result?: ArrayBuffer;
     error?: string;
@@ -26,7 +31,36 @@ export interface State {
     result?: ArrayBuffer;
     error?: string;
   };
+  invokeResult: InvokeResult;
 }
+
+const processInvokeResult = (state: State, result: boolean): InvokeResult => {
+  if (result) {
+    if (!state.invoke.result) {
+      return {
+        type: "Abort",
+        message: "Invoke result is missing.",
+      };
+    }
+
+    return {
+      type: "LogQueryResult",
+      queryResult: state.invoke.result,
+    };
+  } else {
+    if (!state.invoke.error) {
+      return {
+        type: "Abort",
+        message: "Invoke error is missing.",
+      };
+    }
+
+    return {
+      type: "LogQueryError",
+      queryError: state.invoke.error,
+    };
+  }
+};
 
 export class WasmWeb3Api extends Api {
   private _schema?: string;
@@ -63,105 +97,76 @@ export class WasmWeb3Api extends Api {
         client: Client
       ): Promise<InvokeApiResult<unknown | ArrayBuffer>> => {
         const { module: invokableModule, method, input, decode } = options;
+        console.log("INPUT: ", input);
         const wasm = await this.getWasmModule(invokableModule, client);
-
-        let abortMessage: string | undefined;
-        let queryResult: ArrayBuffer | undefined;
-        let queryError: string | undefined;
-
-        const args =
-          input instanceof ArrayBuffer
-            ? input
-            : MsgPack.encode(input, { ignoreUndefined: true });
-        const module = new WebAssembly.Module(wasm);
-        const memory = new WebAssembly.Memory({ initial: 1 });
+        const exports = { values: {} as W3Exports };
         const state: State = {
           invoke: {},
           subinvoke: {},
+          invokeResult: {} as InvokeResult,
+          method,
+          args:
+            input instanceof ArrayBuffer
+              ? input
+              : MsgPack.encode(input, { ignoreUndefined: true }),
         };
+
+        const module = new WebAssembly.Module(wasm);
+        const memory = new WebAssembly.Memory({ initial: 1 });
 
         const source: WebAssembly.Instance = new WebAssembly.Instance(
           module,
           createImports({
-            args,
-            getModule: () => source,
+            exports,
             state,
             client,
             memory,
           })
         );
 
-        const exports = source.exports as W3Exports;
+        exports.values = source.exports as W3Exports;
+        const exportKeys = Object.keys(exports.values);
+        const requiredExports = ["_w3_init", "_w3_invoke"];
+        const missingExports = requiredExports.filter(
+          (name) => !exportKeys.includes(name)
+        );
 
-        const hasExport = (
-          name: string,
-          exports: Record<string, unknown>
-        ): boolean => {
-          if (!exports[name]) {
-            abort(`A required export was not found: ${name}`);
-            return false;
-          }
-
-          return true;
-        };
-
-        // Make sure _w3_init exists
-        if (!hasExport("_w3_init", exports)) {
-          return;
+        if (missingExports.length) {
+          return {
+            error: new Error(
+              `WasmWeb3Api: Thread aborted execution.\nURI: ${this._uri.uri}\n` +
+                `Module: ${module}\nMethod: ${method}\n` +
+                `Input: ${JSON.stringify(
+                  input,
+                  null,
+                  2
+                )}\nMessage: ${`Required exports were not found: ${missingExports.join(
+                  ", "
+                )}`}\n`
+            ),
+          };
         }
 
-        // Initialize the Web3Api module
-        exports._w3_init();
+        exports.values._w3_init();
 
-        // Make sure _w3_invoke exists
-        if (!hasExport("_w3_invoke", exports)) {
-          return;
-        }
-
-        const result = exports._w3_invoke(
+        const result = exports.values._w3_invoke(
           state.method.length,
           state.args.byteLength
         );
 
-        if (result) {
-          if (!state.invoke.result) {
-            abort(`Invoke result is missing.`);
-            return;
-          }
+        const invokeResult = processInvokeResult(state, result);
 
-          // __w3_invoke_result has already been called
-          queryResult = state.invoke.result;
-          state = "LogQueryResult";
-        } else {
-          if (!state.invoke.error) {
-            abortMessage = `Invoke error is missing.`;
-            state = "Abort";
-            return;
-          }
-
-          // __w3_invoke_error has already been called
-          queryError = state.invoke.error;
-          state = "LogQueryError";
-        }
-
-        if (!state) {
-          throw Error("WasmWeb3Api: query state was never set.");
-        }
-
-        switch (state) {
-          case "Abort": {
+        switch (invokeResult.type) {
+          case "Abort":
             return {
               error: new Error(
                 `WasmWeb3Api: Thread aborted execution.\nURI: ${this._uri.uri}\n` +
                   `Module: ${module}\nMethod: ${method}\n` +
-                  `Input: ${JSON.stringify(
-                    input,
-                    null,
-                    2
-                  )}\nMessage: ${abortMessage}\n`
+                  `Input: ${JSON.stringify(input, null, 2)}\nMessage: ${
+                    invokeResult.message
+                  }\n`
               ),
             };
-          }
           case "LogQueryError": {
             return {
               error: new Error(
@@ -169,23 +174,25 @@ export class WasmWeb3Api extends Api {
                   `uri: ${this._uri.uri}\nmodule: ${module}\n` +
                   `method: ${method}\n` +
                   `input: ${JSON.stringify(input, null, 2)}\n` +
-                  `exception: ${queryError}`
+                  `exception: ${invokeResult.queryError}`
               ),
             };
           }
           case "LogQueryResult": {
             if (decode) {
               try {
-                return { data: MsgPack.decode(queryResult as ArrayBuffer) };
+                return {
+                  data: MsgPack.decode(invokeResult.queryResult as ArrayBuffer),
+                };
               } catch (err) {
                 throw Error(
                   `WasmWeb3Api: Failed to decode query result.\nResult: ${JSON.stringify(
-                    queryResult
+                    invokeResult.queryResult
                   )}\nError: ${err}`
                 );
               }
             } else {
-              return { data: queryResult };
+              return { data: invokeResult.queryResult };
             }
           }
           default: {
