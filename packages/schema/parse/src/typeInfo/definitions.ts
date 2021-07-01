@@ -172,7 +172,7 @@ export function createPropertyDefinition(args: {
   };
 }
 
-export type InterfaceImplementedDefinition = AnyDefinition;
+export type InterfaceImplementedDefinition = GenericDefinition;
 export function createInterfaceImplementedDefinition(args: {
   type: string;
 }): InterfaceImplementedDefinition {
