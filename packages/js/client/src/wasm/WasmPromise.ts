@@ -19,9 +19,9 @@ export class WasmPromise<T> {
     const instance = new WasmPromise<T>();
     instance._exports = config.exports;
     instance._view = new Int32Array(config.memory.buffer);
-    instance._dataAddr = 16;
 
     return (...args: unknown[]) => {
+      instance._dataAddr = instance._exports.values._w3_asyncify_storage();
       instance.execAsyncFunc(() => {
         console.log("executing")
         func(...args).then((result: T) => {

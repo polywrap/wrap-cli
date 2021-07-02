@@ -8,11 +8,13 @@ export interface W3Exports {
   [key: string]: unknown;
 
   asyncify_start_unwind: (dataAddr: number) => void;
+  asyncify_stop_unwind: () => void;
   asyncify_start_rewind: (dataAddr: number) => void;
   asyncify_stop_rewind: () => void;
 
   _w3_init: () => void;
   _w3_invoke: (nameLen: u32, argsLen: u32) => boolean;
+  _w3_asyncify_storage: () => u32;
 }
 
 export interface W3Imports {

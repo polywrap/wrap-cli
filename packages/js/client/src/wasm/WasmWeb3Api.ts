@@ -128,6 +128,7 @@ export class WasmWeb3Api extends Api {
         const requiredExports = [
           "_w3_init",
           "_w3_invoke",
+          "_w3_asyncify_storage",
           "asyncify_start_unwind",
           "asyncify_stop_unwind",
           "asyncify_start_rewind",
