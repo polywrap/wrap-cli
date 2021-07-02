@@ -26,7 +26,7 @@ import {
 
 const visitorEnter = (
   importedQueryTypes: ImportedQueryDefinition[],
-  state: State,
+  state: State
 ) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const imported = extractImportedDefinition(node, true);
@@ -107,7 +107,7 @@ const visitorLeave = (state: State) => ({
 });
 
 export const getImportedQueryTypesVisitor = (
-  typeInfo: TypeInfo,
+  typeInfo: TypeInfo
 ): ASTVisitor => {
   const state: State = {};
 

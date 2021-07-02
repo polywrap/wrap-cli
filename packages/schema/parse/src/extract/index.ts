@@ -8,9 +8,7 @@ import { getImportedEnumTypesVisitor } from "./imported-enum-types";
 
 import { ASTVisitor } from "graphql";
 
-export type SchemaExtractorBuilder = (
-  typeInfo: TypeInfo,
-) => ASTVisitor;
+export type SchemaExtractorBuilder = (typeInfo: TypeInfo) => ASTVisitor;
 
 export const extractors: SchemaExtractorBuilder[] = [
   getEnumTypesVisitor,

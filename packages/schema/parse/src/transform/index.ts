@@ -138,7 +138,6 @@ export function visitObjectDefinition(
   return transformType(result, transforms.leave);
 }
 
-
 export function visitObjectRef(
   def: ObjectRef,
   transforms: TypeInfoTransforms

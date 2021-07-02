@@ -71,9 +71,7 @@ const extract = (
   typeInfo: TypeInfo,
   extractors: SchemaExtractorBuilder[]
 ) => {
-  const allVisitors = extractors.map((getVisitor) =>
-    getVisitor(typeInfo)
-  );
+  const allVisitors = extractors.map((getVisitor) => getVisitor(typeInfo));
 
   visit(astNode, visitInParallel(allVisitors));
 };

@@ -217,7 +217,7 @@ const extractObjectImportDependencies = (
               rootTypeInfo,
               namespace,
               uri
-            )
+            ),
           });
         }
 
@@ -254,7 +254,7 @@ const extractObjectImportDependencies = (
               rootTypeInfo,
               namespace,
               uri
-            )
+            ),
           });
         }
 
@@ -286,7 +286,7 @@ const extractObjectImportDependencies = (
   };
 };
 
-const namespaceTypes = (namespace: string, typeInfo: TypeInfo): TypeInfoTransforms => ({
+const namespaceTypes = (namespace: string): TypeInfoTransforms => ({
   enter: {
     ObjectRef: (def: ObjectRef & Namespaced) => {
       if (def.__namespaced) {
@@ -323,7 +323,7 @@ const namespaceTypes = (namespace: string, typeInfo: TypeInfo): TypeInfoTransfor
         __namespaced: true,
       };
     },
-  }
+  },
 });
 
 function appendNamespace(namespace: string, str: string) {
@@ -587,7 +587,10 @@ async function resolveExternalImports(
           const importDef = importType as ImportedObjectDefinition;
           // Namespace all object types
           typeInfo.importedObjectTypes.push(
-            visitImportedObjectDefinition(importDef, namespaceTypes(namespace, typeInfo))
+            visitImportedObjectDefinition(
+              importDef,
+              namespaceTypes(namespace, typeInfo)
+            )
           );
         };
       } else if (importType.kind === DefinitionKind.ImportedQuery) {
@@ -596,7 +599,10 @@ async function resolveExternalImports(
           const importDef = importType as ImportedQueryDefinition;
           // Namespace all object types
           typeInfo.importedQueryTypes.push(
-            visitImportedQueryDefinition(importDef, namespaceTypes(namespace, typeInfo))
+            visitImportedQueryDefinition(
+              importDef,
+              namespaceTypes(namespace, typeInfo)
+            )
           );
         };
       } else if (importType.kind === DefinitionKind.ImportedEnum) {

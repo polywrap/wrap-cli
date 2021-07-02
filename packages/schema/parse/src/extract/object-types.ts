@@ -21,10 +21,7 @@ import {
   ASTVisitor,
 } from "graphql";
 
-const visitorEnter = (
-  objectTypes: ObjectDefinition[],
-  state: State,
-) => ({
+const visitorEnter = (objectTypes: ObjectDefinition[], state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     // Skip non-custom types
     if (node.name.value === "Query" || node.name.value === "Mutation") {
@@ -78,9 +75,7 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export const getObjectTypesVisitor = (
-  typeInfo: TypeInfo,
-): ASTVisitor => {
+export const getObjectTypesVisitor = (typeInfo: TypeInfo): ASTVisitor => {
   const state: State = {};
 
   return {

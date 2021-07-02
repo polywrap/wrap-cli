@@ -68,7 +68,7 @@ export function createObjectDefinition(args: {
   };
 }
 
-export interface ObjectRef extends GenericDefinition { }
+export type ObjectRef = GenericDefinition;
 export function createObjectRef(args: {
   type: string;
   name?: string | null;
@@ -146,7 +146,7 @@ export function createEnumDefinition(args: {
   };
 }
 
-export interface EnumRef extends GenericDefinition { }
+export type EnumRef = GenericDefinition;
 export function createEnumRef(args: {
   type: string;
   name?: string | null;
@@ -158,7 +158,7 @@ export function createEnumRef(args: {
   };
 }
 
-export interface UnresolvedObjectOrEnumRef extends GenericDefinition { }
+export type UnresolvedObjectOrEnumRef = GenericDefinition;
 export function createUnresolvedObjectOrEnumRef(args: {
   type: string;
   name?: string | null;
@@ -167,7 +167,7 @@ export function createUnresolvedObjectOrEnumRef(args: {
   return {
     ...createGenericDefinition(args),
     type: args.type,
-    kind: DefinitionKind.UnresolvedObjectOrEnum
+    kind: DefinitionKind.UnresolvedObjectOrEnum,
   };
 }
 
@@ -273,7 +273,7 @@ export function createEnumPropertyDefinition(args: {
 }): PropertyDefinition {
   return createPropertyDefinition({
     ...args,
-    enum: createEnumRef(args)
+    enum: createEnumRef(args),
   });
 }
 
@@ -286,7 +286,7 @@ export function createObjectPropertyDefinition(args: {
 }): PropertyDefinition {
   return createPropertyDefinition({
     ...args,
-    object: createObjectRef(args)
+    object: createObjectRef(args),
   });
 }
 

@@ -40,10 +40,7 @@ export function extractFieldDefinition(
   importDef.properties.push(property);
 }
 
-export function extractNamedType(
-  node: NamedTypeNode,
-  state: State,
-): void {
+export function extractNamedType(node: NamedTypeNode, state: State): void {
   const property = state.currentProperty;
 
   if (!property) {
@@ -65,14 +62,10 @@ export function extractNamedType(
     );
   }
 
-  setPropertyType(
-    property,
-    property.name,
-    {
-      type: node.name.value,
-      required: state.nonNullType,
-    }
-  );
+  setPropertyType(property, property.name, {
+    type: node.name.value,
+    required: state.nonNullType,
+  });
 
   state.nonNullType = false;
 }

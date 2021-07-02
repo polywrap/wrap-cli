@@ -23,7 +23,7 @@ import {
 
 const visitorEnter = (
   importedObjectTypes: ImportedObjectDefinition[],
-  state: State,
+  state: State
 ) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const imported = extractImportedDefinition(node);
@@ -72,7 +72,7 @@ const visitorLeave = (state: State) => ({
 });
 
 export const getImportedObjectTypesVisitor = (
-  typeInfo: TypeInfo,
+  typeInfo: TypeInfo
 ): ASTVisitor => {
   const state: State = {};
 

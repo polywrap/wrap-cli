@@ -20,7 +20,10 @@ export const finalizePropertyDef = (typeInfo: TypeInfo): TypeInfoTransforms => {
   };
 };
 
-export function populatePropertyType(property: PropertyDefinition, typeInfo: TypeInfo): void {
+export function populatePropertyType(
+  property: PropertyDefinition,
+  typeInfo: TypeInfo
+): void {
   let propertyType: GenericDefinition | undefined;
   if (property.array) {
     populateArrayType(property.array, typeInfo);
@@ -36,7 +39,7 @@ export function populatePropertyType(property: PropertyDefinition, typeInfo: Typ
   } else {
     throw Error("Property type is undefined, this should never happen.");
   }
-  
+
   property.type = propertyType.type;
   property.required = propertyType.required;
 }
@@ -86,8 +89,11 @@ function populateArrayType(array: ArrayDefinition, typeInfo: TypeInfo) {
   array.type = "[" + array.item.type + "]";
 }
 
-function resolveObjectOrEnumKind(property: PropertyDefinition, typeInfo: TypeInfo): GenericDefinition {
-  if(!property.unresolvedObjectOrEnum) {
+function resolveObjectOrEnumKind(
+  property: PropertyDefinition,
+  typeInfo: TypeInfo
+): GenericDefinition {
+  if (!property.unresolvedObjectOrEnum) {
     throw Error("Type reference is undefined, this should never happen.");
   }
 
@@ -96,45 +102,47 @@ function resolveObjectOrEnumKind(property: PropertyDefinition, typeInfo: TypeInf
     (type) => type.type === property.unresolvedObjectOrEnum!.type
   );
 
-  customType = customType 
+  customType = customType
     ? customType
     : typeInfo.importedObjectTypes.find(
-      (type) => type.type === property.unresolvedObjectOrEnum!.type
-    );
+        (type) => type.type === property.unresolvedObjectOrEnum!.type
+      );
 
   if (!customType) {
     customType = typeInfo.enumTypes.find(
       (type) => type.type === property.unresolvedObjectOrEnum!.type
     );
 
-    customType = customType 
+    customType = customType
       ? customType
       : typeInfo.importedEnumTypes.find(
-        (type) => type.type === property.unresolvedObjectOrEnum!.type
-      );
-      
+          (type) => type.type === property.unresolvedObjectOrEnum!.type
+        );
+
     if (!customType) {
-      throw new Error(`Unsupported type ${property.unresolvedObjectOrEnum.type}`);
+      throw new Error(
+        `Unsupported type ${property.unresolvedObjectOrEnum.type}`
+      );
     }
 
     property.enum = createEnumRef({
       name: property.unresolvedObjectOrEnum.name,
       required: property.unresolvedObjectOrEnum.required ?? undefined,
-      type: property.unresolvedObjectOrEnum.type
+      type: property.unresolvedObjectOrEnum.type,
     });
-  
+
     property.unresolvedObjectOrEnum = null;
-   
+
     return property.enum;
   } else {
     property.object = createObjectRef({
       name: property.unresolvedObjectOrEnum.name,
       required: property.unresolvedObjectOrEnum.required ?? undefined,
-      type: property.unresolvedObjectOrEnum.type
+      type: property.unresolvedObjectOrEnum.type,
     });
 
     property.unresolvedObjectOrEnum = null;
-  
+
     return property.object;
   }
 }

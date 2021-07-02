@@ -19,10 +19,7 @@ export interface State {
   currentImport?: ImportedQueryDefinition;
 }
 
-export function extractNamedType(
-  node: NamedTypeNode,
-  state: State,
-): void {
+export function extractNamedType(node: NamedTypeNode, state: State): void {
   const argument = state.currentArgument;
   const method = state.currentMethod;
 
@@ -39,14 +36,10 @@ export function extractNamedType(
     }
 
     // Argument value
-    setPropertyType(
-      argument,
-      argument.name,
-      {
-        type: node.name.value,
-        required: state.nonNullType,
-      }
-    );
+    setPropertyType(argument, argument.name, {
+      type: node.name.value,
+      required: state.nonNullType,
+    });
 
     state.nonNullType = false;
   } else if (method) {
@@ -66,14 +59,10 @@ export function extractNamedType(
       );
     }
 
-    setPropertyType(
-      state.currentReturn,
-      method.name,
-      {
-        type: node.name.value,
-        required: state.nonNullType,
-      }
-    );
+    setPropertyType(state.currentReturn, method.name, {
+      type: node.name.value,
+      required: state.nonNullType,
+    });
 
     state.nonNullType = false;
   }

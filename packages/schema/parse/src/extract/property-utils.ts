@@ -8,7 +8,7 @@ import {
 export function setPropertyType(
   property: PropertyDefinition,
   name: string,
-  type: { type: string; required: boolean | undefined },
+  type: { type: string; required: boolean | undefined }
 ): void {
   if (isScalarType(type.type)) {
     property.scalar = createScalarDefinition({
