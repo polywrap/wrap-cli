@@ -30,6 +30,10 @@ export interface W3Imports {
       inputPtr: u32,
       inputLen: u32
     ) => boolean;
+    __w3_log: (
+      msgPtr: u32,
+      msgLen: u32
+    ) => void;
     __w3_subinvoke_result_len: () => u32;
     __w3_subinvoke_result: (ptr: u32) => void;
     __w3_subinvoke_error_len: () => u32;

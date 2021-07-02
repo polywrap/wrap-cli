@@ -28,6 +28,8 @@ export class WasmPromise<T> {
           const rootCall = getRootCall();
           instance.resumeState(rootCall.method, rootCall.args)(result);
         });
+        console.log("stop_unwind");
+        (instance._exports.values as any).asyncify_stop_unwind();
       });
 
       return instance._result;
@@ -38,7 +40,7 @@ export class WasmPromise<T> {
     return (resolvedData: T) => {
       console.log("start_rewind");
       this._exports.values.asyncify_start_rewind(this._dataAddr);
-      console.log("calling root method");
+      console.log("calling root method", rootMethod, rootArgs);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (this._exports.values as any)[rootMethod](...rootArgs);
 

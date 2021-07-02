@@ -125,7 +125,14 @@ export class WasmWeb3Api extends Api {
 
         exports.values = source.exports as W3Exports;
         const exportKeys = Object.keys(exports.values);
-        const requiredExports = ["_w3_init", "_w3_invoke"];
+        const requiredExports = [
+          "_w3_init",
+          "_w3_invoke",
+          "asyncify_start_unwind",
+          "asyncify_stop_unwind",
+          "asyncify_start_rewind",
+          "asyncify_stop_rewind"
+        ];
         const missingExports = requiredExports.filter(
           (name) => !exportKeys.includes(name)
         );
@@ -148,6 +155,7 @@ export class WasmWeb3Api extends Api {
 
         exports.values._w3_init();
 
+        console.log("STARTING", "_w3_invoke", state.method.length, state.args.byteLength)
         const result = exports.values._w3_invoke(
           state.method.length,
           state.args.byteLength
