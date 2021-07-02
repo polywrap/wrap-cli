@@ -34,6 +34,8 @@ import {
   isKind,
   header,
   InterfaceImplementedDefinition,
+  ObjectRef,
+  EnumRef,
 } from "@web3api/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -186,7 +188,7 @@ const extractObjectImportDependencies = (
 
   return {
     enter: {
-      ObjectDefinition: (def: ObjectDefinition & Namespaced) => {
+      ObjectRef: (def: ObjectRef & Namespaced) => {
         if (def.__namespaced) {
           return def;
         }
@@ -258,7 +260,7 @@ const extractObjectImportDependencies = (
 
         return def;
       },
-      EnumDefinition: (def: EnumDefinition & Namespaced) => {
+      EnumRef: (def: EnumRef & Namespaced) => {
         if (def.__namespaced) {
           return def;
         }
@@ -286,7 +288,7 @@ const extractObjectImportDependencies = (
 
 const namespaceTypes = (namespace: string, typeInfo: TypeInfo): TypeInfoTransforms => ({
   enter: {
-    ObjectDefinition: (def: ObjectDefinition & Namespaced) => {
+    ObjectRef: (def: ObjectRef & Namespaced) => {
       if (def.__namespaced) {
         return def;
       }
@@ -310,7 +312,7 @@ const namespaceTypes = (namespace: string, typeInfo: TypeInfo): TypeInfoTransfor
         __namespaced: true,
       };
     },
-    EnumDefinition: (def: EnumDefinition & Namespaced) => {
+    EnumRef: (def: EnumRef & Namespaced) => {
       if (def.__namespaced) {
         return def;
       }
@@ -726,10 +728,10 @@ async function resolveLocalImports(
 
         visitorFunc(type, {
           enter: {
-            ObjectDefinition: (def: ObjectDefinition) => {
+            ObjectRef: (def: ObjectRef) => {
               return findImport(def, localTypeInfo.objectTypes);
             },
-            EnumDefinition: (def: EnumDefinition) => {
+            EnumRef: (def: EnumRef) => {
               return findImport(def, localTypeInfo.enumTypes);
             },
           },

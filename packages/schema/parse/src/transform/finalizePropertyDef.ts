@@ -67,7 +67,6 @@ function populateArrayType(array: ArrayDefinition, typeInfo: TypeInfo) {
     }
   }
 
-  
   if (array.array) {
     array.item = array.array;
   } else if (array.unresolvedObjectOrEnum) {

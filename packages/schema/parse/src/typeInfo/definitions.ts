@@ -192,12 +192,12 @@ export function createArrayDefinition(args: {
           ? (args.item as ScalarDefinition)
           : undefined,
       object:
-        args.item && isKind(args.item, DefinitionKind.Object)
-          ? (args.item as ObjectDefinition)
+        args.item && isKind(args.item, DefinitionKind.ObjectRef)
+          ? (args.item as ObjectRef)
           : undefined,
       enum:
-        args.item && isKind(args.item, DefinitionKind.Enum)
-          ? (args.item as EnumDefinition)
+        args.item && isKind(args.item, DefinitionKind.EnumRef)
+          ? (args.item as EnumRef)
           : undefined,
     }),
     item: args.item ? args.item : null,
