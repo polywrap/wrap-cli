@@ -5,7 +5,6 @@ pub use serialization::{
     deserialize_test_import_another_object, read_test_import_another_object,
     serialize_test_import_another_object, write_test_import_another_object,
 };
-use wasm_bindgen::UnwrapThrowExt;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct TestImportAnotherObject {
@@ -34,7 +33,6 @@ impl TestImportAnotherObject {
     }
 
     pub fn read<R: Read>(reader: &mut R) -> Self {
-        read_test_import_another_object(reader)
-            .expect_throw("Failed to read TestImportAnotherObject")
+        read_test_import_another_object(reader).expect("Failed to read TestImportAnotherObject")
     }
 }

@@ -2,12 +2,10 @@ use super::{
     deserialize_object_method_args, deserialize_query_method_args, serialize_object_method_result,
     serialize_query_method_result,
 };
-use wasm_bindgen::UnwrapThrowExt;
 
 pub fn query_method_wrapped(args_buf: &[u8]) -> Vec<u8> {
     let query_method = deserialize_query_method_args(args_buf).unwrap();
-    let args =
-        bincode::serialize(&query_method).expect_throw("Failed to serialize InputQueryMethod");
+    let args = bincode::serialize(&query_method).expect("Failed to serialize InputQueryMethod");
     let result = args.as_ptr() as i32;
     serialize_query_method_result(result)
 }

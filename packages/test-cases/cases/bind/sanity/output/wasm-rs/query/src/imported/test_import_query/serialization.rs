@@ -1,7 +1,6 @@
 use super::{TestImportEnum, TestImportObject};
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use serde::{Deserialize, Serialize};
-use wasm_bindgen::UnwrapThrowExt;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InputImportedMethod {
@@ -45,7 +44,7 @@ pub fn write_imported_method_args<W: Write>(writer: &mut W, input: &mut InputImp
     writer
         .context()
         .pop()
-        .expect_throw("Failed to pop string from Context");
+        .expect("Failed to pop string from Context");
     writer
         .context()
         .push("opt_string", "Option<String>", "writing property");
@@ -54,14 +53,14 @@ pub fn write_imported_method_args<W: Write>(writer: &mut W, input: &mut InputImp
     writer
         .context()
         .pop()
-        .expect_throw("Failed to pop optional string from Context");
+        .expect("Failed to pop optional string from Context");
     writer.context().push("u", "u32", "writing property");
     writer.write_string(&"u".to_string());
     writer.write_u32(&input.u);
     writer
         .context()
         .pop()
-        .expect_throw("Failed to pop unsigned int from Context");
+        .expect("Failed to pop unsigned int from Context");
     writer
         .context()
         .push("opt_u", "Option<u32>", "writing property");
@@ -70,7 +69,7 @@ pub fn write_imported_method_args<W: Write>(writer: &mut W, input: &mut InputImp
     writer
         .context()
         .pop()
-        .expect_throw("Failed to pop optional uint from Context");
+        .expect("Failed to pop optional uint from Context");
 
     writer
         .context()
@@ -82,7 +81,7 @@ pub fn write_imported_method_args<W: Write>(writer: &mut W, input: &mut InputImp
     writer
         .context()
         .pop()
-        .expect_throw("Failed to pop array from Context");
+        .expect("Failed to pop array from Context");
 
     writer
         .context()
@@ -92,7 +91,7 @@ pub fn write_imported_method_args<W: Write>(writer: &mut W, input: &mut InputImp
     writer
         .context()
         .pop()
-        .expect_throw("Failed to pop object from Context");
+        .expect("Failed to pop object from Context");
     writer
         .context()
         .push("opt_object", "Option<TestImportObject>", "writing property");
@@ -105,7 +104,7 @@ pub fn write_imported_method_args<W: Write>(writer: &mut W, input: &mut InputImp
     writer
         .context()
         .pop()
-        .expect_throw("Failed to pop optional object from Context");
+        .expect("Failed to pop optional object from Context");
     writer
         .context()
         .push("object_array", "Vec<TestImportObject>", "writing property");
@@ -116,7 +115,7 @@ pub fn write_imported_method_args<W: Write>(writer: &mut W, input: &mut InputImp
     writer
         .context()
         .pop()
-        .expect_throw("Failed to pop object array from Context");
+        .expect("Failed to pop object array from Context");
     writer.context().push(
         "opt_object_array",
         "Option<Vec<TestImportObject>>",
@@ -129,38 +128,38 @@ pub fn write_imported_method_args<W: Write>(writer: &mut W, input: &mut InputImp
     writer
         .context()
         .pop()
-        .expect_throw("Failed to pop optional object array from Context");
+        .expect("Failed to pop optional object array from Context");
     writer
         .context()
         .push("en", "TestImportEnum", "writing property");
     writer.write_string(&"en".to_string());
-    writer.write_i32(input.en.clone() as i32);
+    writer.write_i32(&(input.en.clone() as i32));
     writer
         .context()
         .pop()
-        .expect_throw("Failed to pop optional enum array from Context");
+        .expect("Failed to pop optional enum array from Context");
     writer
         .context()
         .push("opt_enum", "Option<TestImportEnum>", "writing property");
     writer.write_string(&"opt_enum".to_string());
     writer
         .write_nullable_i32(Some(input.opt_enum.clone().unwrap() as i32))
-        .expect_throw("Failed to write nullable i32");
+        .expect("Failed to write nullable i32");
     writer
         .context()
         .pop()
-        .expect_throw("Failed to pop optional enum from Context");
+        .expect("Failed to pop optional enum from Context");
     writer
         .context()
         .push("enum_array", "Vec<TestImportEnum>>", "writing property");
     writer.write_string(&"enum_array".to_string());
     writer.write_array(input.enum_array.as_slice(), |writer: &mut W, arr_fn| {
-        writer.write_i32(arr_fn.clone() as i32)
+        writer.write_i32(&(arr_fn.clone() as i32))
     });
     writer
         .context()
         .pop()
-        .expect_throw("Failed to pop enum array from Context");
+        .expect("Failed to pop enum array from Context");
     writer.context().push(
         "opt_enum_array",
         "Option<Vec<CustomEnum>>>",
@@ -168,12 +167,12 @@ pub fn write_imported_method_args<W: Write>(writer: &mut W, input: &mut InputImp
     );
     writer.write_string(&"opt_enum_array".to_string());
     writer.write_nullable_array(&input.opt_enum_array, |writer: &mut W, arr_fn| {
-        writer.write_i32(arr_fn.clone() as i32)
+        writer.write_i32(&(arr_fn.clone() as i32))
     });
     writer
         .context()
         .pop()
-        .expect_throw("Failed to pop optional enum array from Context");
+        .expect("Failed to pop optional enum array from Context");
 }
 
 pub fn deserialize_imported_method_result(buffer: &[u8]) -> TestImportObject {
@@ -194,7 +193,7 @@ pub fn deserialize_imported_method_result(buffer: &[u8]) -> TestImportObject {
     reader
         .context()
         .pop()
-        .expect_throw("Failed to pop `imported method` from Context");
+        .expect("Failed to pop `imported method` from Context");
     object
 }
 
@@ -235,7 +234,7 @@ pub fn write_another_method_args<W: Write>(writer: &mut W, input: &mut InputAnot
     writer
         .context()
         .pop()
-        .expect_throw("Failed to pop `method arg` from Context");
+        .expect("Failed to pop `method arg` from Context");
 }
 
 pub fn deserialize_another_method_result(buffer: &[u8]) -> i64 {
@@ -249,6 +248,6 @@ pub fn deserialize_another_method_result(buffer: &[u8]) -> i64 {
     reader
         .context()
         .pop()
-        .expect_throw("Failed to pop `another method` from Context");
+        .expect("Failed to pop `another method` from Context");
     result
 }

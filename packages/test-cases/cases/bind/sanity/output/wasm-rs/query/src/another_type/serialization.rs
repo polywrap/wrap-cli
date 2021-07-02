@@ -1,5 +1,3 @@
-use wasm_bindgen::UnwrapThrowExt;
-
 use super::{AnotherType, CustomType};
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
@@ -26,7 +24,7 @@ pub fn write_another_type<W: Write>(object: &mut AnotherType, writer: &mut W) {
     writer
         .context()
         .pop()
-        .expect_throw("Failed to pop object from Context");
+        .expect("Failed to pop object from Context");
     writer
         .context()
         .push("circular", "Option<CustomType>", "writing property");
@@ -39,7 +37,7 @@ pub fn write_another_type<W: Write>(object: &mut AnotherType, writer: &mut W) {
     writer
         .context()
         .pop()
-        .expect_throw("Failed to pop object from Context");
+        .expect("Failed to pop object from Context");
 }
 
 pub fn deserialize_another_type(buffer: &[u8]) -> AnotherType {
@@ -67,7 +65,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> AnotherType {
                 reader
                     .context()
                     .pop()
-                    .expect_throw("Failed to pop prop from Context");
+                    .expect("Failed to pop prop from Context");
             }
             "circular" => {
                 reader
@@ -81,7 +79,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> AnotherType {
                 reader
                     .context()
                     .pop()
-                    .expect_throw("Failed to pop circular from Context");
+                    .expect("Failed to pop circular from Context");
             }
             _ => {
                 reader
@@ -90,7 +88,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> AnotherType {
                 reader
                     .context()
                     .pop()
-                    .expect_throw("Failed to pop unknown object from Context");
+                    .expect("Failed to pop unknown object from Context");
             }
         }
         reader
@@ -99,7 +97,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> AnotherType {
         reader
             .context()
             .pop()
-            .expect_throw("Failed to pop object from Context");
+            .expect("Failed to pop object from Context");
     }
     AnotherType {
         prop,

@@ -1,7 +1,6 @@
 use super::TestImportAnotherObject;
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use std::io::{Error, ErrorKind, Result};
-use wasm_bindgen::UnwrapThrowExt;
 
 pub fn serialize_test_import_another_object(mut object: TestImportAnotherObject) -> Vec<u8> {
     let mut sizer_context = Context::new();
@@ -30,7 +29,7 @@ pub fn write_test_import_another_object<W: Write>(
     writer
         .context()
         .pop()
-        .expect_throw("Failed to pop prop from Context");
+        .expect("Failed to pop prop from Context");
 }
 
 pub fn deserialize_test_import_another_object(buffer: &[u8]) -> TestImportAnotherObject {
@@ -61,7 +60,7 @@ pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestIm
                 reader
                     .context()
                     .pop()
-                    .expect_throw("Failed to pop prop from Context");
+                    .expect("Failed to pop prop from Context");
             }
             _ => {
                 reader
@@ -70,7 +69,7 @@ pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestIm
                 reader
                     .context()
                     .pop()
-                    .expect_throw("Failed to pop unknown object from Context");
+                    .expect("Failed to pop unknown object from Context");
             }
         }
     }
