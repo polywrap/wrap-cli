@@ -589,7 +589,7 @@ async function resolveExternalImports(
           typeInfo.importedObjectTypes.push(
             visitImportedObjectDefinition(
               importDef,
-              namespaceTypes(namespace, typeInfo)
+              namespaceTypes(namespace)
             )
           );
         };
@@ -601,7 +601,7 @@ async function resolveExternalImports(
           typeInfo.importedQueryTypes.push(
             visitImportedQueryDefinition(
               importDef,
-              namespaceTypes(namespace, typeInfo)
+              namespaceTypes(namespace)
             )
           );
         };
@@ -611,7 +611,7 @@ async function resolveExternalImports(
           typeInfo.importedEnumTypes.push(
             visitImportedEnumDefinition(
               importType as ImportedEnumDefinition,
-              namespaceTypes(namespace, typeInfo)
+              namespaceTypes(namespace)
             )
           );
         };
