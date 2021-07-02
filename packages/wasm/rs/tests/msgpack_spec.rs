@@ -1,7 +1,6 @@
 use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind, Result};
-use wasm_bindgen::UnwrapThrowExt;
 
 #[derive(Debug, Clone)]
 pub struct Sanity {
@@ -163,7 +162,7 @@ fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
     writer.write_string(&"opt_bool".to_string());
     writer
         .write_nullable_bool(sanity.opt_bool)
-        .expect_throw("Failed to write nullable bool");
+        .expect("Failed to write nullable bool");
     writer.write_string(&"float32".to_string());
     writer.write_f32(sanity.float32);
     writer.write_string(&"float64".to_string());
@@ -436,7 +435,7 @@ fn serialize_and_deserialize() {
     let mut output = Sanity::new();
     output
         .from_buffer(input.to_buffer().as_slice())
-        .expect_throw("Failed to to write output from buffer");
+        .expect("Failed to to write output from buffer");
     assert_ne!(output, input);
 }
 

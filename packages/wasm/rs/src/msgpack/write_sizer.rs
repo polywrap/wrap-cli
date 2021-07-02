@@ -285,7 +285,7 @@ impl Write for WriteSizer {
             self.write_nil();
             return Ok(());
         }
-        let _ = self.write_bytes(&value.unwrap_or_default());
+        self.write_bytes(&value.unwrap_or_default());
         Ok(())
     }
 

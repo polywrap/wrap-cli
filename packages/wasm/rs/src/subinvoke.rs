@@ -1,6 +1,4 @@
-use wasm_bindgen::prelude::*;
-
-#[wasm_bindgen(module = "w3")]
+#[link(wasm_import_module = "w3")]
 extern "C" {
     /// Subinvoke API
     pub fn __w3_subinvoke(

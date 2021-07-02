@@ -1,7 +1,5 @@
 use std::collections::HashMap;
-use wasm_bindgen::prelude::*;
-
-#[wasm_bindgen(module = "w3")]
+#[link(wasm_import_module = "w3")]
 extern "C" {
     /// Get Invoke Arguments
     pub fn __w3_invoke_args(method_ptr: u32, args_ptr: u32);
@@ -28,7 +26,6 @@ pub fn w3_add_invoke(method: &str, func: InvokeFunction) {
 
 /// Helper for handling _w3_invoke
 #[allow(unused_unsafe)]
-#[wasm_bindgen]
 pub fn w3_invoke(method_size: u32, args_size: u32) -> bool {
     let method_buf: Vec<u8> = Vec::with_capacity(method_size as usize);
     let args_buf: Vec<u8> = Vec::with_capacity(args_size as usize);

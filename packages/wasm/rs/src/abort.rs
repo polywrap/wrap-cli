@@ -1,6 +1,4 @@
-use wasm_bindgen::prelude::*;
-
-#[wasm_bindgen(module = "w3")]
+#[link(wasm_import_module = "w3")]
 extern "C" {
     /// Get Abort Arguments
     pub fn __w3_abort(
@@ -15,7 +13,6 @@ extern "C" {
 
 /// Helper for aborting
 #[allow(unused_unsafe)]
-#[wasm_bindgen]
 pub fn w3_abort(msg: &str, file: &str, line: u32, column: u32) {
     let msg_buf = msg.as_bytes();
     let file_buf = file.as_bytes();

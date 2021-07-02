@@ -8,7 +8,6 @@ use std::collections::HashMap;
 use std::hash::Hash;
 use std::io::{Error, ErrorKind, Result};
 use std::str::FromStr;
-use wasm_bindgen::UnwrapThrowExt;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct ReadDecoder {
@@ -21,7 +20,7 @@ impl ReadDecoder {
     pub fn new(buf: &[u8], context: Context) -> Self {
         Self {
             context: context.clone(),
-            view: DataView::new(buf, context).expect_throw("Failed to create new data view"),
+            view: DataView::new(buf, context).expect("Failed to create new data view"),
         }
     }
 
@@ -30,7 +29,7 @@ impl ReadDecoder {
         // get_size handles discarding `msgpack header` info
         let mut num_of_objects_to_discard = self.get_size().unwrap_or_default();
         while num_of_objects_to_discard > 0 {
-            self.get_size().expect_throw("Failed to get size"); // discard next object
+            self.get_size().expect("Failed to get size"); // discard next object
             num_of_objects_to_discard -= 1;
         }
     }
@@ -47,7 +46,7 @@ impl ReadDecoder {
             let str_len = lead_byte & 0x1f;
             self.view
                 .discard(str_len as i32)
-                .expect_throw("Failed to discard fixed string");
+                .expect("Failed to discard fixed string");
         } else if Format::is_fixed_array(lead_byte) {
             objects_to_discard = (lead_byte & Format::FOUR_LEAST_SIG_BITS_IN_BYTE) as i32;
         } else if Format::is_fixed_map(lead_byte) {
@@ -61,102 +60,82 @@ impl ReadDecoder {
                     let length = self.view.get_u8().unwrap_or_default();
                     self.view
                         .discard(length as i32)
-                        .expect_throw("Failed to discard BIN8");
+                        .expect("Failed to discard BIN8");
                 }
                 Format::BIN16 => {
                     let length = self.view.get_u16().unwrap_or_default();
                     self.view
                         .discard(length as i32)
-                        .expect_throw("Failed to discard BIN16");
+                        .expect("Failed to discard BIN16");
                 }
                 Format::BIN32 => {
                     let length = self.view.get_u32().unwrap_or_default();
                     self.view
                         .discard(length as i32)
-                        .expect_throw("Failed to discard BIN32");
+                        .expect("Failed to discard BIN32");
                 }
                 Format::FLOAT32 => {
-                    self.view
-                        .discard(4)
-                        .expect_throw("Failed to discard FLOAT32");
+                    self.view.discard(4).expect("Failed to discard FLOAT32");
                 }
                 Format::FLOAT64 => {
-                    self.view
-                        .discard(8)
-                        .expect_throw("Failed to discard FLOAT64");
+                    self.view.discard(8).expect("Failed to discard FLOAT64");
                 }
                 Format::UINT8 => {
-                    self.view.discard(1).expect_throw("Failed to discard UINT8");
+                    self.view.discard(1).expect("Failed to discard UINT8");
                 }
                 Format::UINT16 => {
-                    self.view
-                        .discard(2)
-                        .expect_throw("Failed to discard UINT16");
+                    self.view.discard(2).expect("Failed to discard UINT16");
                 }
                 Format::UINT32 => {
-                    self.view
-                        .discard(4)
-                        .expect_throw("Failed to discard UINT32");
+                    self.view.discard(4).expect("Failed to discard UINT32");
                 }
                 Format::UINT64 => {
-                    self.view
-                        .discard(8)
-                        .expect_throw("Failed to discard UINT64");
+                    self.view.discard(8).expect("Failed to discard UINT64");
                 }
                 Format::INT8 => {
-                    self.view.discard(1).expect_throw("Failed to discard INT8");
+                    self.view.discard(1).expect("Failed to discard INT8");
                 }
                 Format::INT16 => {
-                    self.view.discard(2).expect_throw("Failed to discard INT16");
+                    self.view.discard(2).expect("Failed to discard INT16");
                 }
                 Format::INT32 => {
-                    self.view.discard(4).expect_throw("Failed to discard INT32");
+                    self.view.discard(4).expect("Failed to discard INT32");
                 }
                 Format::INT64 => {
-                    self.view.discard(8).expect_throw("Failed to discard INT64");
+                    self.view.discard(8).expect("Failed to discard INT64");
                 }
                 Format::FIXEXT1 => {
-                    self.view
-                        .discard(2)
-                        .expect_throw("Failed to discard FIXEXT1");
+                    self.view.discard(2).expect("Failed to discard FIXEXT1");
                 }
                 Format::FIXEXT2 => {
-                    self.view
-                        .discard(3)
-                        .expect_throw("Failed to discard FIXEXT2");
+                    self.view.discard(3).expect("Failed to discard FIXEXT2");
                 }
                 Format::FIXEXT4 => {
-                    self.view
-                        .discard(5)
-                        .expect_throw("Failed to discard FIXEXT4");
+                    self.view.discard(5).expect("Failed to discard FIXEXT4");
                 }
                 Format::FIXEXT8 => {
-                    self.view
-                        .discard(9)
-                        .expect_throw("Failed to discard FIXEXT8");
+                    self.view.discard(9).expect("Failed to discard FIXEXT8");
                 }
                 Format::FIXEXT16 => {
-                    self.view
-                        .discard(17)
-                        .expect_throw("Failed to discard FIXEXT16");
+                    self.view.discard(17).expect("Failed to discard FIXEXT16");
                 }
                 Format::STR8 => {
                     let length = self.view.get_u8().unwrap_or_default();
                     self.view
                         .discard(length as i32)
-                        .expect_throw("Failed to discard STR8");
+                        .expect("Failed to discard STR8");
                 }
                 Format::STR16 => {
                     let length = self.view.get_u16().unwrap_or_default();
                     self.view
                         .discard(length as i32)
-                        .expect_throw("Failed to discard STR16");
+                        .expect("Failed to discard STR16");
                 }
                 Format::STR32 => {
                     let length = self.view.get_u32().unwrap_or_default();
                     self.view
                         .discard(length as i32)
-                        .expect_throw("Failed to discard STR32");
+                        .expect("Failed to discard STR32");
                 }
                 Format::ARRAY16 => {
                     objects_to_discard = self.view.get_u16().unwrap_or_default() as i32;
@@ -569,7 +548,7 @@ impl Read for ReadDecoder {
             array.push(item);
             self.context
                 .pop()
-                .expect_throw("Failed to pop value from Context");
+                .expect("Failed to pop value from Context");
         }
         Ok(array)
     }
@@ -606,7 +585,7 @@ impl Read for ReadDecoder {
             map.insert(key, value);
             self.context
                 .pop()
-                .expect_throw("Failed to pop value from Context");
+                .expect("Failed to pop value from Context");
         }
         map
     }
@@ -730,7 +709,7 @@ impl Read for ReadDecoder {
     fn is_next_nil(&mut self) -> bool {
         let format = self.view.peek_u8().unwrap_or_default();
         if format == Format::NIL {
-            self.view.discard(1).expect_throw("Failed to discard value");
+            self.view.discard(1).expect("Failed to discard value");
             return true;
         }
         false
