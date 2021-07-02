@@ -587,10 +587,7 @@ async function resolveExternalImports(
           const importDef = importType as ImportedObjectDefinition;
           // Namespace all object types
           typeInfo.importedObjectTypes.push(
-            visitImportedObjectDefinition(
-              importDef,
-              namespaceTypes(namespace)
-            )
+            visitImportedObjectDefinition(importDef, namespaceTypes(namespace))
           );
         };
       } else if (importType.kind === DefinitionKind.ImportedQuery) {
@@ -599,10 +596,7 @@ async function resolveExternalImports(
           const importDef = importType as ImportedQueryDefinition;
           // Namespace all object types
           typeInfo.importedQueryTypes.push(
-            visitImportedQueryDefinition(
-              importDef,
-              namespaceTypes(namespace)
-            )
+            visitImportedQueryDefinition(importDef, namespaceTypes(namespace))
           );
         };
       } else if (importType.kind === DefinitionKind.ImportedEnum) {
