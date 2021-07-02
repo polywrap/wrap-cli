@@ -15,6 +15,5 @@ bincode = "1.3.3"
 num-bigint = { version = "0.4.0", features = ["serde"] }
 num-traits = "0.2.14"
 serde = { version = "1.0.126", features = ["derive"] }
-wasm-bindgen = "0.2.63"
 polywrap-wasm-rs = { version = "0.1.0", path = "../../../../../../../wasm/rs" }
 polywrap-query-test-cases = { version = "0.1.0", path = "../query" }
