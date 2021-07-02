@@ -24,7 +24,7 @@ export function isKind(type: GenericDefinition, kind: DefinitionKind): boolean {
 
 export type WithComment = {
   comment?: string;
-}
+};
 export interface GenericDefinition {
   type: string;
   name: string | null;
@@ -125,7 +125,7 @@ export function createEnumDefinition(args: {
     type: args.type,
     kind: DefinitionKind.Enum,
     constants: args.constants ? args.constants : [],
-    comment: args.comment
+    comment: args.comment,
   };
 }
 
@@ -206,7 +206,7 @@ export function createArrayPropertyDefinition(args: {
 }): PropertyDefinition {
   return createPropertyDefinition({
     ...args,
-    array: createArrayDefinition(args)
+    array: createArrayDefinition(args),
   });
 }
 
@@ -218,7 +218,7 @@ export function createScalarPropertyDefinition(args: {
 }): PropertyDefinition {
   return createPropertyDefinition({
     ...args,
-    scalar: createScalarDefinition(args)
+    scalar: createScalarDefinition(args),
   });
 }
 
@@ -233,8 +233,8 @@ export function createEnumPropertyDefinition(args: {
     ...args,
     enum: {
       ...createEnumDefinition(args),
-      comment: undefined
-    }
+      comment: undefined,
+    },
   });
 }
 
@@ -249,8 +249,8 @@ export function createObjectPropertyDefinition(args: {
     ...args,
     object: {
       ...createObjectDefinition(args),
-      comment: undefined
-    }
+      comment: undefined,
+    },
   });
 }
 
@@ -321,7 +321,8 @@ export interface ImportedDefinition {
 
 export interface ImportedEnumDefinition
   extends EnumDefinition,
-    ImportedDefinition, WithComment {}
+    ImportedDefinition,
+    WithComment {}
 export function createImportedEnumDefinition(args: {
   type: string;
   constants: string[];
@@ -344,7 +345,8 @@ export function createImportedEnumDefinition(args: {
 
 export interface ImportedQueryDefinition
   extends GenericDefinition,
-    ImportedDefinition, WithComment {
+    ImportedDefinition,
+    WithComment {
   methods: MethodDefinition[];
 }
 export function createImportedQueryDefinition(args: {
@@ -375,7 +377,8 @@ export function createImportedQueryDefinition(args: {
 
 export interface ImportedObjectDefinition
   extends ObjectDefinition,
-    ImportedDefinition, WithComment {}
+    ImportedDefinition,
+    WithComment {}
 export function createImportedObjectDefinition(args: {
   type: string;
   name?: string;
