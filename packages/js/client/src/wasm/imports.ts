@@ -8,13 +8,13 @@ import { State } from "./WasmWeb3Api";
 
 import * as MsgPack from "@msgpack/msgpack";
 
-export const createImports = (importArgs: {
+export const createImports = (config: {
   client: Client;
   exports: { values: W3Exports };
   memory: WebAssembly.Memory;
   state: State;
 }): W3Imports => {
-  const { memory, client, exports, state } = importArgs;
+  const { memory, client, exports, state } = config;
 
   return {
     w3: {
@@ -70,7 +70,10 @@ export const createImports = (importArgs: {
           return !error;
         },
         () => {
-          return state.method as string;
+          return {
+            method:  "_w3_invoke",
+            args: [state.method.length, state.args.byteLength]
+          }
         },
         {
           memory,

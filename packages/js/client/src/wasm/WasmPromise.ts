@@ -10,15 +10,15 @@ export class WasmPromise<T> {
 
   static create<T>(
     func: (...args: unknown[]) => Promise<T>,
-    getRootMethod: () => string,
-    args: {
+    getRootCall: () => { method: string, args: unknown[] },
+    config: {
       memory: WebAssembly.Memory;
       exports: { values: W3Exports };
     }
   ): (...args: unknown[]) => T {
     const instance = new WasmPromise<T>();
-    instance._exports = args.exports;
-    instance._view = new Int32Array(args.memory.buffer);
+    instance._exports = config.exports;
+    instance._view = new Int32Array(config.memory.buffer);
     instance._dataAddr = 16;
     console.log("CREATED");
 
@@ -29,18 +29,19 @@ export class WasmPromise<T> {
       instance.saveState();
 
       void func(args).then((result: T) => {
-        instance.resumeState(getRootMethod())(result);
+        const rootCall = getRootCall();
+        instance.resumeState(rootCall.method, rootCall.args)(result);
       });
 
       return instance._result;
     };
   }
 
-  private resumeState(rootMethod: string): (resolvedData: T) => void {
+  private resumeState(rootMethod: string, rootArgs: unknown[]): (resolvedData: T) => void {
     return (resolvedData: T) => {
       this._exports.values.asyncify_start_rewind(this._dataAddr);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (this._exports.values as any)[rootMethod]();
+      (this._exports.values as any)[rootMethod](...rootArgs);
 
       this._result = resolvedData;
     };
