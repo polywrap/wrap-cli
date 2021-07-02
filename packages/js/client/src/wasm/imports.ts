@@ -33,10 +33,7 @@ export const createImports = (config: {
           state.subinvoke.result = undefined;
           state.subinvoke.error = undefined;
 
-          console.log("URI 2: ", memory.buffer, " ", uriPtr, " ", uriLen);
-
           const uri = readString(memory.buffer, uriPtr, uriLen);
-          console.log("URI 1: ", uri);
           const moduleToInvoke = readString(
             memory.buffer,
             modulePtr,
@@ -51,8 +48,6 @@ export const createImports = (config: {
             method: method,
             input: input,
           });
-
-          console.log("RESULT: ", data, " ", error);
 
           if (!error) {
             let msgpack: ArrayBuffer;

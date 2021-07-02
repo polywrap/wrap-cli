@@ -17,8 +17,8 @@ import { Tracer } from "@web3api/tracing-js";
 
 type InvokeResult =
   | { type: "Abort"; message: string }
-  | { type: "LogQueryResult"; queryResult: ArrayBuffer }
-  | { type: "LogQueryError"; queryError: string };
+  | { type: "InvokeResult"; invokeResult: ArrayBuffer }
+  | { type: "InvokeError"; invokeError: string };
 
 export interface State {
   method: string;
@@ -44,8 +44,8 @@ const processInvokeResult = (state: State, result: boolean): InvokeResult => {
     }
 
     return {
-      type: "LogQueryResult",
-      queryResult: state.invoke.result,
+      type: "InvokeResult",
+      invokeResult: state.invoke.result,
     };
   } else {
     if (!state.invoke.error) {
@@ -56,8 +56,8 @@ const processInvokeResult = (state: State, result: boolean): InvokeResult => {
     }
 
     return {
-      type: "LogQueryError",
-      queryError: state.invoke.error,
+      type: "InvokeError",
+      invokeError: state.invoke.error,
     };
   }
 };
@@ -97,7 +97,6 @@ export class WasmWeb3Api extends Api {
         client: Client
       ): Promise<InvokeApiResult<unknown | ArrayBuffer>> => {
         const { module: invokableModule, method, input, decode } = options;
-        console.log("INPUT: ", input);
         const wasm = await this.getWasmModule(invokableModule, client);
         const exports = { values: {} as W3Exports };
         const state: State = {
@@ -167,32 +166,32 @@ export class WasmWeb3Api extends Api {
                   }\n`
               ),
             };
-          case "LogQueryError": {
+          case "InvokeError": {
             return {
               error: new Error(
                 `WasmWeb3Api: invocation exception encountered.\n` +
                   `uri: ${this._uri.uri}\nmodule: ${module}\n` +
                   `method: ${method}\n` +
                   `input: ${JSON.stringify(input, null, 2)}\n` +
-                  `exception: ${invokeResult.queryError}`
+                  `exception: ${invokeResult.invokeError}`
               ),
             };
           }
-          case "LogQueryResult": {
+          case "InvokeResult": {
             if (decode) {
               try {
                 return {
-                  data: MsgPack.decode(invokeResult.queryResult as ArrayBuffer),
+                  data: MsgPack.decode(invokeResult.invokeResult as ArrayBuffer),
                 };
               } catch (err) {
                 throw Error(
                   `WasmWeb3Api: Failed to decode query result.\nResult: ${JSON.stringify(
-                    invokeResult.queryResult
+                    invokeResult.invokeResult
                   )}\nError: ${err}`
                 );
               }
             } else {
-              return { data: invokeResult.queryResult };
+              return { data: invokeResult.invokeResult };
             }
           }
           default: {

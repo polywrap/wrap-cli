@@ -20,15 +20,11 @@ export class WasmPromise<T> {
     instance._exports = config.exports;
     instance._view = new Int32Array(config.memory.buffer);
     instance._dataAddr = 16;
-    console.log("CREATED");
 
     return (...args: unknown[]) => {
-      console.log("HEY: ", Object.keys(instance._exports).join(" - "));
-      console.log("\n\n\n\n");
-
       instance.saveState();
 
-      void func(args).then((result: T) => {
+      func(...args).then((result: T) => {
         const rootCall = getRootCall();
         instance.resumeState(rootCall.method, rootCall.args)(result);
       });
