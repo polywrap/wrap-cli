@@ -22,11 +22,12 @@ export class WasmPromise<T> {
     instance._dataAddr = 16;
 
     return (...args: unknown[]) => {
-      instance.saveState();
-
-      func(...args).then((result: T) => {
-        const rootCall = getRootCall();
-        instance.resumeState(rootCall.method, rootCall.args)(result);
+      instance.execAsyncFunc(() => {
+        console.log("executing")
+        func(...args).then((result: T) => {
+          const rootCall = getRootCall();
+          instance.resumeState(rootCall.method, rootCall.args)(result);
+        });
       });
 
       return instance._result;
@@ -35,7 +36,9 @@ export class WasmPromise<T> {
 
   private resumeState(rootMethod: string, rootArgs: unknown[]): (resolvedData: T) => void {
     return (resolvedData: T) => {
+      console.log("start_rewind");
       this._exports.values.asyncify_start_rewind(this._dataAddr);
+      console.log("calling root method");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (this._exports.values as any)[rootMethod](...rootArgs);
 
@@ -43,14 +46,17 @@ export class WasmPromise<T> {
     };
   }
 
-  private saveState() {
+  private execAsyncFunc(exec: () => void) {
     if (!this._sleeping) {
       this._view[this._dataAddr >> 2] = this._dataAddr + 8;
       this._view[(this._dataAddr + 4) >> 2] = 1024;
 
+      console.log("start_unwind")
       this._exports.values.asyncify_start_unwind(this._dataAddr);
       this._sleeping = true;
+      exec();
     } else {
+      console.log("stop_rewind")
       this._exports.values.asyncify_stop_rewind();
       this._sleeping = false;
     }
