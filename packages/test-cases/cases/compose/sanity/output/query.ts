@@ -229,7 +229,6 @@ export const typeInfo: TypeInfo = {
           ...createMethodDefinition({
             type: "query",
             name: "abstractQueryMethod",
-            comment: "abstractQueryMethod comment",
             return: createObjectPropertyDefinition({
               name: "abstractQueryMethod",
               type: "Interface_InterfaceObject2",
@@ -240,7 +239,6 @@ export const typeInfo: TypeInfo = {
             createObjectPropertyDefinition({
               name: "arg",
               required: true,
-              comment: "arg comment",
               type: "Interface_QueryInterfaceArgument"
             })
           ]

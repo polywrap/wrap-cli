@@ -226,7 +226,7 @@ export const typeInfo: TypeInfo = {
       properties: [
         createScalarPropertyDefinition({ name: "anotherProp", type: "String", required: false, comment: "anotherProp comment" }),
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
-        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true, comment: "InterfaceObject1_uint8 comment" }),
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
         createScalarPropertyDefinition({ name: "str2", type: "String", required: true }),
         createObjectPropertyDefinition({ name: "object", type: "Interface_Object", required: false }),
       ]

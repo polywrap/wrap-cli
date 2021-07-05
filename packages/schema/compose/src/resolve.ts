@@ -411,6 +411,11 @@ function resolveInterfaces(
   schema: string,
   implementationsWithInterfaces: ImplementationWithInterfaces[]
 ): string {
+  const removeComments = (body: string) => {
+    const bodyWithoutComments = body.replace(/"""[^"]*"""[ \n\t]*/g, '');
+    return bodyWithoutComments;
+  };
+
   if (!implementationsWithInterfaces.length) {
     return schema;
   }
@@ -435,10 +440,12 @@ function resolveInterfaces(
       continue;
     }
 
-    const body = match[2];
+    let body = match[2];
     if (!body) {
       continue;
     }
+
+    body = removeComments(body);
 
     interfacesWithBodies.push({
       name: interfaceName,

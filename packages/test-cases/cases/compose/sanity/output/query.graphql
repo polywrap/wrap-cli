@@ -64,13 +64,7 @@ method2 comment
     arg: [String!]!
   ): [Int64!]!
 
-"""
-abstractQueryMethod comment
-"""
   abstractQueryMethod(
-"""
-arg comment
-"""
     arg: Interface_QueryInterfaceArgument!
   ): Interface_InterfaceObject2!
 }

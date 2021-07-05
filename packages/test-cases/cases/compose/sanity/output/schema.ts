@@ -118,7 +118,6 @@ export const typeInfo: TypeInfo = {
           ...createMethodDefinition({
             type: "query",
             name: "abstractQueryMethod",
-            comment: "abstractQueryMethod comment",
             return: createObjectPropertyDefinition({
               name: "abstractQueryMethod",
               type: "Interface_InterfaceObject2",
@@ -129,8 +128,7 @@ export const typeInfo: TypeInfo = {
             createObjectPropertyDefinition({
               name: "arg",
               required: true,
-              type: "Interface_QueryInterfaceArgument",
-              comment: "arg comment"
+              type: "Interface_QueryInterfaceArgument"
             })
           ]
         }
@@ -454,7 +452,7 @@ export const typeInfo: TypeInfo = {
       properties: [
         createScalarPropertyDefinition({ name: "anotherProp", type: "String", required: false, comment: "anotherProp comment" }),
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
-        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true, comment: "InterfaceObject1_uint8 comment" }),
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
         createScalarPropertyDefinition({ name: "str2", type: "String", required: true }),
         createObjectPropertyDefinition({ name: "object", type: "Interface_Object", required: false }),
       ]

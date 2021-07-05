@@ -125,9 +125,6 @@ anotherProp comment
 """
   anotherProp: String
   str: String!
-"""
-InterfaceObject1_uint8 comment
-"""
   uint8: UInt8!
   str2: String!
   object: Interface_Object
