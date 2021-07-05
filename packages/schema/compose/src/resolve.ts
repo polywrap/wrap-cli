@@ -412,7 +412,7 @@ function resolveInterfaces(
   implementationsWithInterfaces: ImplementationWithInterfaces[]
 ): string {
   const removeComments = (body: string) => {
-    const bodyWithoutComments = body.replace(/"""[^"]*"""[ \n\t]*/g, '');
+    const bodyWithoutComments = body.replace(/"""[^"]*"""[ \n\t]*/g, "");
     return bodyWithoutComments;
   };
 
