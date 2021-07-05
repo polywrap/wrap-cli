@@ -7,6 +7,7 @@ import {
   extendType,
   addFirstLast,
   toPrefixedGraphQLType,
+  hasImports,
   TypeInfo,
 } from "@web3api/schema-parse";
 import path from "path";
@@ -20,6 +21,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
     extendType(Functions),
     addFirstLast,
     toPrefixedGraphQLType,
+    hasImports,
   ];
 
   for (const transform of transforms) {

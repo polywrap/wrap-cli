@@ -1,9 +1,67 @@
-import { isBaseType } from "./types";
-
 type MustacheFunction = () => (
   value: string,
   render: (template: string) => string
 ) => string;
+
+function replaceAt(str: string, index: number, replacement: string): string {
+  return str.substr(0, index) + replacement + str.substr(index + replacement.length);
+}
+
+function insertAt(str: string, index: number, insert: string): string {
+  return str.substr(0, index) + insert + str.substr(index);
+}
+
+function removeAt(str: string, index: number): string {
+  return str.substr(0, index) + str.substr(index + 1);
+}
+
+export const toLower: MustacheFunction = () => {
+  return (value: string, render: (template: string) => string) => {
+    let type = render(value);
+
+    for (let i = 0; i < type.length; ++i) {
+      const char = type.charAt(i);
+      const lower = char.toLowerCase();
+
+      if (char !== lower) {
+        // Replace the uppercase char w/ the lowercase version
+        type = replaceAt(type, i, lower);
+
+        if (i !== 0 && type[i - 1] !== "_") {
+          // Make sure all lowercase conversions have an underscore before them
+          type = insertAt(type, i, "_");
+        }
+      }
+    }
+
+    return type;
+  }
+}
+
+export const toUpper: MustacheFunction = () => {
+  return (value: string, render: (template: string) => string) => {
+    let type = render(value);
+
+    // First character must always be upper case
+    const firstChar = type.charAt(0);
+    const firstUpper = firstChar.toUpperCase();
+    type = replaceAt(type, 0, firstUpper);
+
+    // Look for any underscores, remove them if they exist, and make next letter uppercase
+    for (let i = 0; i < type.length; ++i) {
+      const char = type.charAt(i);
+
+      if (char === "_") {
+        const nextChar = type.charAt(i + 1);
+        const nextCharUpper = nextChar.toUpperCase();
+        type = replaceAt(type, i + 1, nextCharUpper);
+        type = removeAt(type, i);
+      }
+    }
+
+    return type;
+  }
+}
 
 export const toMsgPack: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
@@ -13,21 +71,21 @@ export const toMsgPack: MustacheFunction = () => {
     if (type[type.length - 1] === "!") {
       type = type.substr(0, type.length - 1);
     } else {
-      modifier = "Nullable";
+      modifier = "nullable_";
     }
 
     if (type[0] === "[") {
-      return modifier + "Array";
+      return modifier + "array";
     }
     switch (type) {
-      case "Int":
-        return modifier + "Int32";
-      case "UInt":
-        return modifier + "UInt32";
-      case "Boolean":
-        return modifier + "Bool";
+      case "String":
+        return modifier + "string";
+      case "Bytes":
+        return modifier + "bytes";
+      case "BigInt":
+        return modifier + "bigint";
       default:
-        return modifier + type;
+        return modifier + toWasm()(type, (str) => str);
     }
   };
 };
@@ -39,19 +97,11 @@ export const toWasmInit: MustacheFunction = () => {
     if (type[type.length - 1] === "!") {
       type = type.substr(0, type.length - 1);
     } else {
-      const nullType = toWasm()(value, render);
-      const nullable = "Nullable";
-      const nullOptional = "| null";
-
-      if (nullType.substr(-nullOptional.length) === nullOptional) {
-        return "null";
-      } else if (nullType.substr(0, nullable.length) === nullable) {
-        return `new ${nullType}()`;
-      }
+      return "None";
     }
 
     if (type[0] === "[") {
-      return "[]";
+      return "vec![]";
     }
 
     switch (type) {
@@ -67,18 +117,18 @@ export const toWasmInit: MustacheFunction = () => {
       case "UInt64":
         return "0";
       case "String":
-        return `""`;
+        return "String::new()";
       case "Boolean":
         return "false";
       case "Bytes":
-        return `new ArrayBuffer(0)`;
+        return "vec![]";
       case "BigInt":
-        return `BigInt.fromUInt16(0)`;
+        return "BigInt::from_u16(0).unwrap_or_default()";
       default:
         if (type.includes("Enum_")) {
-          return "0";
+          return `${toWasm()(type, (str) => str)}::_MAX_`;
         } else {
-          return `new Types.${type}()`;
+          return `${toWasm()(type, (str) => str)}::new()`;
         }
     }
   };
@@ -87,7 +137,6 @@ export const toWasmInit: MustacheFunction = () => {
 export const toWasm: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
-    let isEnum = false;
 
     let nullable = false;
     if (type[type.length - 1] === "!") {
@@ -130,27 +179,26 @@ export const toWasm: MustacheFunction = () => {
         type = "u64";
         break;
       case "String":
-        type = "string";
+        type = "String";
         break;
       case "Boolean":
         type = "bool";
         break;
       case "Bytes":
-        type = "ArrayBuffer";
+        type = "Vec<u8>";
         break;
       case "BigInt":
         type = "BigInt";
         break;
       default:
         if (type.includes("Enum_")) {
-          type = `Types.${type.replace("Enum_", "")}`;
-          isEnum = true;
+          type = toUpper()(type.replace("Enum_", ""), (str) => str);
         } else {
-          type = `Types.${type}`;
+          type = toUpper()(type, (str) => str);
         }
     }
 
-    return applyNullable(type, nullable, isEnum);
+    return applyNullable(type, nullable);
   };
 };
 
@@ -162,24 +210,15 @@ const toWasmArray = (type: string, nullable: boolean): string => {
   }
 
   const wasmType = toWasm()(result[2], (str) => str);
-  return applyNullable("Array<" + wasmType + ">", nullable, false);
+  return applyNullable("Vec<" + wasmType + ">", nullable);
 };
 
 const applyNullable = (
   type: string,
-  nullable: boolean,
-  isEnum: boolean
+  nullable: boolean
 ): string => {
   if (nullable) {
-    if (
-      type.indexOf("Array") === 0 ||
-      type.indexOf("string") === 0 ||
-      (!isEnum && !isBaseType(type))
-    ) {
-      return `${type} | null`;
-    } else {
-      return `Nullable<${type}>`;
-    }
+    return `Option<${type}>`;
   } else {
     return type;
   }

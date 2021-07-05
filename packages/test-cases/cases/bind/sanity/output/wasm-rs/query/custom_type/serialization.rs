@@ -378,12 +378,12 @@ pub fn deserialize_custom_type(buffer: &[u8]) -> CustomType {
 pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
-    let mut string = "".to_string();
+    let mut string: String = String::new();
     let mut string_set = false;
     let mut opt_string: Option<String> = None;
     let mut u: u32 = 0;
     let mut u_set = false;
-    let mut opt_u: Option<u32> = Some(0);
+    let mut opt_u: Option<u32> = None;
     let mut uint8: u8 = 0;
     let mut uint8_set = false;
     let mut uint16: u16 = 0;
@@ -410,7 +410,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
     let mut opt_bytes: Option<Vec<u8>> = None;
     let mut boolean = false;
     let mut boolean_set = false;
-    let mut opt_boolean: Option<bool> = Some(false);
+    let mut opt_boolean: Option<bool> = None;
     let mut u_array: Vec<u32> = vec![];
     let mut u_array_set = false;
     let mut u_opt_array: Option<Vec<u32>> = None;

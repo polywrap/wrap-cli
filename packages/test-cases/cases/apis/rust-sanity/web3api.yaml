@@ -1,0 +1,9 @@
+format: 0.0.1-prealpha.2
+language: wasm/rust
+modules:
+  mutation:
+    schema: ./mutation/schema.graphql
+    module: ./mutation/cargo.toml
+  query:
+    schema: ./query/schema.graphql
+    module: ./query/cargo.toml

@@ -22,6 +22,7 @@ export * from "./finalizePropertyDef";
 export * from "./extendType";
 export * from "./addFirstLast";
 export * from "./toGraphQLType";
+export * from "./hasImports";
 
 export interface TypeInfoTransforms {
   enter?: TypeInfoTransformer;
