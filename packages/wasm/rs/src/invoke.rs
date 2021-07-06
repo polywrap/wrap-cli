@@ -11,17 +11,25 @@ extern "C" {
     pub fn __w3_invoke_error(ptr: u32, len: u32);
 }
 
-// Keep track of all invokable functions
 pub type InvokeFunction = fn(args_buf: &[u8]) -> Vec<u8>;
 
-pub fn invokes() -> HashMap<String, InvokeFunction> {
-    let invokes: HashMap<String, InvokeFunction> = HashMap::new();
-    invokes
+// Keep track of all invokable functions
+#[derive(Clone)]
+pub struct Invoke {
+    invokes: HashMap<String, InvokeFunction>,
+}
+
+impl Invoke {
+    pub fn new() -> Self {
+        Self {
+            invokes: HashMap::new(),
+        }
+    }
 }
 
 pub fn w3_add_invoke(method: &str, func: InvokeFunction) {
-    let mut invokes = invokes();
-    invokes.insert(method.to_string(), func);
+    let mut invoke = Invoke::new();
+    invoke.invokes.insert(method.to_string(), func);
 }
 
 /// Helper for handling _w3_invoke
@@ -36,10 +44,10 @@ pub fn w3_invoke(method_size: u32, args_size: u32) -> bool {
     unsafe { __w3_invoke_args(method_buf_u32, args_buf_u32) };
 
     let method = std::str::from_utf8(method_buf.as_slice()).unwrap();
-    let invoke_func = invokes();
-    let maybe_func = invoke_func.get(method);
-    if maybe_func.is_some() {
-        let func = maybe_func.unwrap();
+    let invoke = Invoke::new();
+    let opt_invoke_func = invoke.invokes.get(method);
+    if opt_invoke_func.is_some() {
+        let func = opt_invoke_func.unwrap();
         let result = func(args_buf.as_slice());
         let result_u32 = result.as_ptr() as u32;
 
