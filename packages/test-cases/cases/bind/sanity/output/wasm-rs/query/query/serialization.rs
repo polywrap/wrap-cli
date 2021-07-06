@@ -19,7 +19,7 @@ pub struct InputQueryMethod {
 impl InputQueryMethod {
     pub fn new() -> Self {
         Self {
-            string: "".to_string(),
+            string: String::new(),
             opt_string: None,
             en: CustomEnum::_MAX_,
             opt_enum: None,
@@ -54,7 +54,7 @@ pub fn deserialize_query_method_args(args_buf: &[u8]) -> Result<InputQueryMethod
     let mut reader = ReadDecoder::new(args_buf, context);
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
-    let mut string = "".to_string();
+    let mut string = String::new();
     let mut string_set = false;
     let mut opt_string: Option<String> = None;
     let mut en = CustomEnum::_MAX_;

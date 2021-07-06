@@ -20,12 +20,12 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
     let mut reader = ReadDecoder::new(args_buf, context);
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
-    let mut string = "".to_string();
+    let mut string = String::new();
     let mut string_set = false;
     let mut opt_string: Option<String> = None;
     let mut en = CustomEnum::_MAX_;
     let mut en_set = false;
-    let mut opt_enum: Option<CustomEnum> = Some(CustomEnum::_MAX_);
+    let mut opt_enum: Option<CustomEnum> = None;
     let mut enum_array: Vec<CustomEnum> = vec![];
     let mut enum_array_set = false;
     let mut opt_enum_array: Option<Vec<CustomEnum>> = None;

@@ -378,7 +378,7 @@ pub fn deserialize_custom_type(buffer: &[u8]) -> CustomType {
 pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
-    let mut string: String = String::new();
+    let mut string = String::new();
     let mut string_set = false;
     let mut opt_string: Option<String> = None;
     let mut u: u32 = 0;
