@@ -2,19 +2,34 @@
 #import { Query } into Interface from "interface.eth"
 #import { CommonType } from "../imports-local/common.graphql"
 
+"""
+Query comment
+"""
 type Query implements Interface_Query {
+"""
+method1 comment
+"""
   method1(
     str: String!
     optStr: String
     u: UInt!
+"""
+uArrayArray comment
+"""
     uArrayArray: [[UInt]]!
   ): String!
 
+"""
+method2 comment
+"""
   method2(
     arg: [String!]!
   ): [Int64!]!
 }
 
+"""
+CustomQueryType comment
+"""
 type CustomQueryType {
   str: String!
   optStr: String
@@ -31,6 +46,9 @@ type CustomQueryType {
   optStrOptArray: [String]
   crazyArray: [[[[UInt64!]]!]]
   commonType: CommonType!
+"""
+customType comment
+"""
   customType: Namespace_CustomType!
 }
 

@@ -47,6 +47,7 @@ const visitorEnter = (
       interfaces: node.interfaces?.map((x) =>
         createInterfaceImplementedDefinition({ type: x.name.value })
       ),
+      comment: node.description?.value,
     });
     queryTypes.push(query);
     state.currentQuery = query;
@@ -67,6 +68,7 @@ const visitorEnter = (
       type: query.type,
       name: node.name.value,
       return: returnType,
+      comment: node.description?.value,
     });
     query.methods.push(method);
     state.currentMethod = method;

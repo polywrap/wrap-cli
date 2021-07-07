@@ -130,7 +130,11 @@ export const getImportsDirectiveValidator = (): SchemaValidator => {
           ObjectTypeDefinition(node as ObjectTypeDefinitionNode);
         } else if (node.kind === "Directive") {
           Directive(node as DirectiveNode, key, parent, path);
-        } else if (node.kind !== "NamedType" && node.kind !== "Name") {
+        } else if (
+          node.kind !== "NamedType" &&
+          node.kind !== "Name" &&
+          node.kind !== "StringValue"
+        ) {
           isInsideObjectTypeDefinition = false;
         }
       },
@@ -208,7 +212,11 @@ export const getImportedDirectiveValidator = (): SchemaValidator => {
           node.kind === "EnumTypeDefinition"
         ) {
           isInsideObjectOrEnumTypeDefinition = true;
-        } else if (node.kind !== "NamedType" && node.kind !== "Name") {
+        } else if (
+          node.kind !== "NamedType" &&
+          node.kind !== "Name" &&
+          node.kind !== "StringValue"
+        ) {
           isInsideObjectOrEnumTypeDefinition = false;
         }
       },

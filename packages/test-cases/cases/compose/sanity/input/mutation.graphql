@@ -3,12 +3,30 @@
 #import { InterfaceObject1, InterfaceObject2, Mutation } into Interface from "interface.eth"
 #import { CommonType } from "../imports-local/common.graphql"
 
+"""
+Mutation comment
+"""
 type Mutation implements Interface_Mutation {
+"""
+method1 comment
+"""
   method1(
+"""
+str comment
+"""
     str: String!
+"""
+optStr comment
+"""
     optStr: String
     u: UInt!
+"""
+uArrayArray comment
+"""
     uArrayArray: [[UInt]]!
+"""
+implObject comment
+"""
     implObject: LocalImplementationObject!
   ): String!
 
@@ -17,8 +35,18 @@ type Mutation implements Interface_Mutation {
   ): [Int64!]!
 }
 
+"""
+CustomMutationType multi-line comment
+line 2
+"""
 type CustomMutationType {
+"""
+str comment
+"""
   str: String!
+"""
+optStr comment
+"""
   optStr: String
   u: UInt!
   optU: UInt
@@ -31,8 +59,14 @@ type CustomMutationType {
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optStrOptArray: [String]
+"""
+crazyArray comment
+"""
   crazyArray: [[[[UInt64!]]!]]
   commonType: CommonType!
+"""
+customType comment
+"""
   customType: Namespace_CustomType!
 }
 
@@ -40,7 +74,13 @@ type AnotherMutationType {
   prop: String
 }
 
+"""
+ImplementationObject comment
+"""
 type ImplementationObject implements Interface_InterfaceObject1 & Interface_InterfaceObject2 {
+"""
+anotherProp comment
+"""
   anotherProp: String
 }
 

@@ -34,6 +34,7 @@ export function extractFieldDefinition(
   const property = createPropertyDefinition({
     type: "N/A",
     name: node.name.value,
+    comment: node.description?.value,
   });
 
   state.currentProperty = property;

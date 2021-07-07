@@ -23,6 +23,9 @@ directive @imports(
 ) on OBJECT
 ### Web3API Header END ###
 
+"""
+Query comment
+"""
 type Query implements Interface_Query @imports(
   types: [
     "Namespace_Query",
@@ -41,13 +44,22 @@ type Query implements Interface_Query @imports(
     "Interface_NestedInterfaceObject"
   ]
 ) {
+"""
+method1 comment
+"""
   method1(
     str: String!
     optStr: String
     u: UInt!
+"""
+uArrayArray comment
+"""
     uArrayArray: [[UInt]]!
   ): String!
 
+"""
+method2 comment
+"""
   method2(
     arg: [String!]!
   ): [Int64!]!
@@ -57,6 +69,9 @@ type Query implements Interface_Query @imports(
   ): Interface_InterfaceObject2!
 }
 
+"""
+CustomQueryType comment
+"""
 type CustomQueryType {
   str: String!
   optStr: String
@@ -73,6 +88,9 @@ type CustomQueryType {
   optStrOptArray: [String]
   crazyArray: [[[[UInt64!]]!]]
   commonType: CommonType!
+"""
+customType comment
+"""
   customType: Namespace_CustomType!
 }
 
@@ -80,22 +98,37 @@ type AnotherQueryType {
   prop: String
 }
 
+"""
+CommonType comment
+"""
 type CommonType {
   prop: UInt8!
   nestedObject: NestedType!
+"""
+objectArray comment
+"""
   objectArray: [[ArrayObject]]!
 }
 
+"""
+NestedType comment
+"""
 type NestedType {
   prop: String!
 }
 
+"""
+ArrayObject comment
+"""
 type ArrayObject {
   prop: String!
 }
 
 ### Imported Queries START ###
 
+"""
+Query comment
+"""
 type Namespace_Query @imported(
   uri: "test.eth",
   namespace: "Namespace",
@@ -109,17 +142,32 @@ type Namespace_Query @imported(
     uArrayArray: [[UInt]]!
   ): String!
 
+"""
+method2 comment
+"""
   method2(
+"""
+arg comment
+"""
     arg: [String!]!
   ): [Int64!]!
 }
 
+"""
+Query comment
+"""
 type Interface_Query @imported(
   uri: "interface.eth",
   namespace: "Interface",
   nativeType: "Query"
 ) {
+"""
+abstractQueryMethod comment
+"""
   abstractQueryMethod(
+"""
+arg comment
+"""
     arg: Interface_QueryInterfaceArgument!
   ): Interface_InterfaceObject2!
 }
@@ -128,6 +176,9 @@ type Interface_Query @imported(
 
 ### Imported Objects START ###
 
+"""
+CustomType comment
+"""
 type Namespace_CustomType @imported(
   uri: "test.eth",
   namespace: "Namespace",
@@ -165,6 +216,9 @@ type Namespace_CustomType @imported(
   enum: Namespace_CustomEnum!
   optEnum: Namespace_CustomEnum
   importedEnum: Namespace_Imported_Enum!
+"""
+optImportedEnum comment
+"""
   optImportedEnum: Namespace_Imported_Enum
 }
 
@@ -184,6 +238,9 @@ type Namespace_NestedObjectType @imported(
   nestedObject: Namespace_ObjectType!
 }
 
+"""
+Imported_NestedObjectType comment
+"""
 type Namespace_Imported_NestedObjectType @imported(
   uri: "test.eth",
   namespace: "Namespace",
@@ -200,15 +257,24 @@ type Namespace_Imported_ObjectType @imported(
   prop: String!
 }
 
+"""
+QueryInterfaceArgument comment
+"""
 type Interface_QueryInterfaceArgument implements Interface_NestedQueryInterfaceArgument @imported(
   uri: "interface.eth",
   namespace: "Interface",
   nativeType: "QueryInterfaceArgument"
 ) {
   str: String!
+"""
+uint8 comment
+"""
   uint8: UInt8!
 }
 
+"""
+NestedQueryInterfaceArgument comment
+"""
 type Interface_NestedQueryInterfaceArgument @imported(
   uri: "interface.eth",
   namespace: "Interface",
@@ -217,6 +283,9 @@ type Interface_NestedQueryInterfaceArgument @imported(
   uint8: UInt8!
 }
 
+"""
+InterfaceObject2 comment
+"""
 type Interface_InterfaceObject2 implements Interface_NestedInterfaceObject @imported(
   uri: "interface.eth",
   namespace: "Interface",
@@ -226,6 +295,9 @@ type Interface_InterfaceObject2 implements Interface_NestedInterfaceObject @impo
   object: Interface_Object
 }
 
+"""
+Object comment
+"""
 type Interface_Object @imported(
   uri: "interface.eth",
   namespace: "Interface",
@@ -234,11 +306,17 @@ type Interface_Object @imported(
   uint8: UInt8!
 }
 
+"""
+NestedInterfaceObject comment
+"""
 type Interface_NestedInterfaceObject @imported(
   uri: "interface.eth",
   namespace: "Interface",
   nativeType: "NestedInterfaceObject"
 ) {
+"""
+object comment
+"""
   object: Interface_Object
 }
 
@@ -251,6 +329,9 @@ enum Namespace_CustomEnum @imported(
   BYTES
 }
 
+"""
+Imported_Enum comment
+"""
 enum Namespace_Imported_Enum @imported(
   namespace: "Namespace",
   uri: "test.eth",

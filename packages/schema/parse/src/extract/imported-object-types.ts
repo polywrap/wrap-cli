@@ -42,6 +42,7 @@ const visitorEnter = (
       interfaces: node.interfaces?.map((x) =>
         createInterfaceImplementedDefinition({ type: x.name.value })
       ),
+      comment: node.description?.value,
     });
     importedObjectTypes.push(importedType);
     state.currentType = importedType;

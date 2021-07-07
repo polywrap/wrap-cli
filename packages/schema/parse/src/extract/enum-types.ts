@@ -24,6 +24,7 @@ const visitorEnter = (enumTypes: EnumDefinition[]) => ({
     const enumType = createEnumDefinition({
       type: node.name.value,
       constants,
+      comment: node.description?.value,
     });
     enumTypes.push(enumType);
   },
