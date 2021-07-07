@@ -1,4 +1,4 @@
-import { PluginManifest, Uri } from "@web3api/core-js";
+import { PluginManifest, coreInterfaceUris } from "@web3api/core-js";
 
 export const manifest: PluginManifest = {
   // TODO: use the schema.graphql
@@ -21,6 +21,5 @@ type Query {
   ): Boolean!
 }
 `,
-  implemented: [new Uri("w3://ens/logger.core.web3api.eth")],
-  imported: [],
+  implements: [coreInterfaceUris.logger],
 };

@@ -120,8 +120,7 @@ describe("Web3ApiClient", () => {
               factory: () => ({} as Plugin),
               manifest: {
                 schema: "",
-                implemented: [],
-                imported: [],
+                implements: [],
               }
             }
           }
@@ -206,8 +205,7 @@ describe("Web3ApiClient", () => {
             factory: () => ({} as Plugin),
             manifest: {
               schema: "",
-              implemented: [],
-              imported: [],
+              implements: [],
             }
           }
         }
@@ -274,8 +272,7 @@ describe("Web3ApiClient", () => {
               factory: () => ({} as Plugin),
               manifest: {
                 schema: "",
-                implemented: [],
-                imported: [],
+                implements: [],
               }
             }
           },
@@ -285,8 +282,7 @@ describe("Web3ApiClient", () => {
               factory: () => ({} as Plugin),
               manifest: {
                 schema: "",
-                implemented: [],
-                imported: [],
+                implements: [],
               }
             }
           }
@@ -329,8 +325,7 @@ describe("Web3ApiClient", () => {
               factory: () => ({} as Plugin),
               manifest: {
                 schema: "",
-                implemented: [],
-                imported: [],
+                implements: [],
               }
             }
           }
@@ -363,8 +358,7 @@ describe("Web3ApiClient", () => {
             factory: () => ({} as Plugin),
             manifest: {
               schema: '',
-              implemented: [new Uri(interfaceUri)],
-              imported: [],
+              implements: [new Uri(interfaceUri)],
             }
           }
         }
@@ -403,8 +397,7 @@ describe("Web3ApiClient", () => {
             factory: () => ({} as Plugin),
             manifest: {
               schema: '',
-              implemented: [],
-              imported: [],
+              implements: [],
             }
           }
         }
@@ -1335,8 +1328,7 @@ describe("Web3ApiClient", () => {
               factory: () => ({} as Plugin),
               manifest: {
                 schema: schemaStr,
-                implemented: [],
-                imported: [],
+                implements: [],
               }
             }
           }

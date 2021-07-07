@@ -54,6 +54,5 @@ type ApiResolver_MaybeUriOrManifest {
   uri: String
   manifest: String
 }`,
-  implemented: [coreInterfaceUris.apiResolver],
-  imported: [],
+  implements: [coreInterfaceUris.apiResolver],
 };

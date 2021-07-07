@@ -116,8 +116,7 @@ describe("resolveUri", () => {
         factory: () => ({} as Plugin),
         manifest: {
           schema: "",
-          implemented: [coreInterfaceUris.apiResolver],
-          imported: [],
+          implements: [coreInterfaceUris.apiResolver],
         },
       },
     },
@@ -321,8 +320,7 @@ describe("resolveUri", () => {
           factory: () => ({} as Plugin),
           manifest: {
             schema: "",
-            implemented: [coreInterfaceUris.apiResolver],
-            imported: [],
+            implements: [coreInterfaceUris.apiResolver],
           },
         },
       },

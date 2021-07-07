@@ -33,6 +33,5 @@ type Connection {
   node: String
   networkNameOrChainId: String
 }`,
-  implemented: [],
-  imported: [],
+  implements: [],
 };
