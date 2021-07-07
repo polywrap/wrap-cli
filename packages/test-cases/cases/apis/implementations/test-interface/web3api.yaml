@@ -1,0 +1,8 @@
+format: 0.0.1-prealpha.1
+interface: true
+mutation:
+  schema:
+    file: ./mutation/schema.graphql
+query:
+  schema:
+    file: ./query/schema.graphql

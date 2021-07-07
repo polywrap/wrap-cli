@@ -1395,4 +1395,97 @@ describe("Web3ApiClient", () => {
     result2 = client.getImplementations(new Uri(oldInterfaceUri), { applyRedirects: true });
     expect(result2).toEqual([new Uri(implementation1Uri), new Uri(implementation2Uri)]);
   });
+
+  it("e2e interface implementations", async () => {
+    let interfaceApi = await buildAndDeployApi(
+      `${GetPathToTestApis()}/implementations/test-interface`,
+      ipfsProvider,
+      ensAddress
+    );
+    const interfaceUri = `w3://ens/testnet/${interfaceApi.ensDomain}`;
+    
+    const implementationApi = await buildAndDeployApi(
+      `${GetPathToTestApis()}/implementations/test-api`,
+      ipfsProvider,
+      ensAddress
+    );
+    const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
+   
+    const client = await getClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [
+            implementationUri
+          ]
+        }
+      ]
+    });
+
+    expect(
+      client.getImplementations(interfaceUri)
+      )
+    .toEqual([implementationUri]);
+
+    const query = await client.query<{
+      queryMethod: string;
+      abstractQueryMethod: string;
+    }>({
+      uri: implementationUri,
+      query: `
+        query {
+          queryMethod(
+            arg: $argument1
+          )
+          abstractQueryMethod(
+            arg: $argument2
+          )
+        }
+      `,
+      variables: {
+        argument1: {
+          uint8: 1,
+          str: "Test String 1"
+        },
+        argument2: {
+          str: "Test String 2"
+        }
+      }
+    });
+
+    expect(query.errors).toBeFalsy();
+    expect(query.data).toBeTruthy();
+    expect(query.data?.queryMethod).toEqual({
+      uint8: 1,
+      str: "Test String 1"
+    });
+
+    expect(query.data?.abstractQueryMethod).toBe("Test String 2");
+
+    const mutation = await client.query<{
+      mutationMethod: string;
+      abstractMutationMethod: string;
+    }>({
+      uri: implementationUri,
+      query: `
+      mutation {
+          mutationMethod(
+            arg: $argument1
+          )
+          abstractMutationMethod(
+            arg: $argument2
+          )
+        }
+      `,
+      variables: {
+        argument1: 1,
+        argument2: 2
+      }
+    });
+
+    expect(mutation.errors).toBeFalsy();
+    expect(mutation.data).toBeTruthy();
+    expect(mutation.data?.mutationMethod).toBe(1);
+    expect(mutation.data?.abstractMutationMethod).toBe(2);
+  });
 });
