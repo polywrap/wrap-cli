@@ -18,6 +18,8 @@ import {
   InvokeApiResult,
   Web3ApiManifest,
   sanitizeUriRedirects,
+  Subscription,
+  SubscribeOptions,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -185,6 +187,52 @@ export class Web3ApiClient implements Client {
     );
 
     return run(options);
+  }
+
+  public subscribe<
+    TData extends Record<string, unknown> = Record<string, unknown>,
+    TVariables extends Record<string, unknown> = Record<string, unknown>
+  >(options: SubscribeOptions<TVariables, string>): Subscription<TData> {
+    const { uri, query, variables, frequency: freq } = options;
+
+    let queryApiResult: QueryApiResult<TData> = {
+      data: undefined,
+      errors: undefined,
+    };
+
+    let _pipe: ((result?: TData) => void) | undefined = undefined;
+
+    /* eslint-disable prettier/prettier */
+    const delay = (
+        (freq.hours ?? 0) * 3600 +
+        (freq.min ?? 0) * 60 +
+        (freq.sec ?? 0)
+      ) * 1000;
+    /* eslint-enable  prettier/prettier */
+
+    const timeout: NodeJS.Timeout = setInterval(async () => {
+      queryApiResult = await this.query({ uri, query, variables });
+      if (_pipe) {
+        _pipe(queryApiResult.data);
+      }
+    }, delay);
+
+    const subscription: Subscription<TData> = {
+      data: queryApiResult.data,
+      errors: queryApiResult.errors,
+      stop: () => clearInterval(timeout),
+      pipe: (
+        fn: (result?: TData) => void | Promise<void>
+      ): Subscription<TData> => {
+        _pipe = fn;
+        if (queryApiResult.data) {
+          _pipe(queryApiResult.data);
+        }
+        return subscription;
+      },
+    };
+
+    return subscription;
   }
 
   public async loadWeb3Api(uri: Uri): Promise<Api> {
