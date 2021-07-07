@@ -15,6 +15,7 @@ export enum DefinitionKind {
   ImportedQuery = 1 << 8,
   ImportedEnum = 1 << 9,
   ImportedObject = (1 << 10) | DefinitionKind.Object,
+  InterfaceImplemented = 1 << 11,
 }
 
 export function isKind(type: GenericDefinition, kind: DefinitionKind): boolean {
@@ -42,16 +43,19 @@ export function createGenericDefinition(args: {
 
 export interface ObjectDefinition extends GenericDefinition {
   properties: PropertyDefinition[];
+  interfaces: InterfaceImplementedDefinition[];
 }
 export function createObjectDefinition(args: {
   type: string;
   name?: string | null;
   required?: boolean;
   properties?: PropertyDefinition[];
+  interfaces?: InterfaceImplementedDefinition[];
 }): ObjectDefinition {
   return {
     ...createGenericDefinition(args),
     properties: args.properties ? args.properties : [],
+    interfaces: args.interfaces ? args.interfaces : [],
     kind: DefinitionKind.Object,
   };
 }
@@ -168,6 +172,16 @@ export function createPropertyDefinition(args: {
   };
 }
 
+export type InterfaceImplementedDefinition = GenericDefinition;
+export function createInterfaceImplementedDefinition(args: {
+  type: string;
+}): InterfaceImplementedDefinition {
+  return {
+    ...createAnyDefinition(args),
+    kind: DefinitionKind.InterfaceImplemented,
+  };
+}
+
 export function createArrayPropertyDefinition(args: {
   type: string;
   name?: string | null;
@@ -246,10 +260,12 @@ export interface QueryDefinition extends GenericDefinition {
   type: QueryType;
   methods: MethodDefinition[];
   imports: { type: string }[];
+  interfaces: InterfaceImplementedDefinition[];
 }
 export function createQueryDefinition(args: {
   type: string;
   imports?: { type: string }[];
+  interfaces?: InterfaceImplementedDefinition[];
   required?: boolean;
 }): QueryDefinition {
   if (!isQueryType(args.type)) {
@@ -263,6 +279,7 @@ export function createQueryDefinition(args: {
     type: args.type,
     methods: [],
     imports: args.imports ? args.imports : [],
+    interfaces: args.interfaces ? args.interfaces : [],
     kind: DefinitionKind.Query,
   };
 }
@@ -305,6 +322,7 @@ export function createImportedQueryDefinition(args: {
   uri: string;
   namespace: string;
   nativeType: string;
+  interfaces?: InterfaceImplementedDefinition[];
 }): ImportedQueryDefinition {
   if (!isQueryType(args.nativeType)) {
     throw Error(
@@ -332,6 +350,7 @@ export function createImportedObjectDefinition(args: {
   uri: string;
   namespace: string;
   nativeType: string;
+  interfaces?: InterfaceImplementedDefinition[];
 }): ImportedObjectDefinition {
   return {
     ...createObjectDefinition(args),

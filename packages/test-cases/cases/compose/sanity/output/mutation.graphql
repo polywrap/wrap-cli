@@ -23,7 +23,7 @@ directive @imports(
 ) on OBJECT
 ### Web3API Header END ###
 
-type Mutation @imports(
+type Mutation implements Interface_Mutation @imports(
   types: [
     "Namespace_Query",
     "Namespace_Mutation",
@@ -34,7 +34,12 @@ type Mutation @imports(
     "Namespace_CustomType",
     "Namespace_CustomEnum",
     "Namespace_Imported_Enum",
-    "JustMutation_Mutation"
+    "JustMutation_Mutation",
+    "Interface_InterfaceObject1",
+    "Interface_InterfaceObject2",
+    "Interface_Object",
+    "Interface_NestedInterfaceObject",
+    "Interface_Mutation"
   ]
 ) {
   method1(
@@ -42,11 +47,16 @@ type Mutation @imports(
     optStr: String
     u: UInt!
     uArrayArray: [[UInt]]!
+    implObject: LocalImplementationObject!
   ): String!
 
   method2(
     arg: [String!]!
   ): [Int64!]!
+
+  abstractMutationMethod(
+    arg: UInt8!
+  ): String!
 }
 
 type CustomMutationType {
@@ -70,6 +80,23 @@ type CustomMutationType {
 
 type AnotherMutationType {
   prop: String
+}
+
+type ImplementationObject implements Interface_InterfaceObject1 & Interface_InterfaceObject2 {
+  anotherProp: String
+  str: String!
+  uint8: UInt8!
+  str2: String!
+  object: Interface_Object
+}
+
+type LocalImplementationObject implements LocalInterfaceObject {
+  uint8: UInt8!
+  str: String!
+}
+
+type LocalInterfaceObject {
+  str: String!
 }
 
 type CommonType {
@@ -142,6 +169,16 @@ type JustMutation_Mutation @imported(
   method(
     arg: [String!]!
   ): [Int64!]!
+}
+
+type Interface_Mutation @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "Mutation"
+) {
+  abstractMutationMethod(
+    arg: UInt8!
+  ): String!
 }
 
 ### Imported Queries END ###
@@ -218,6 +255,40 @@ type Namespace_CustomType @imported(
   optEnum: Namespace_CustomEnum
   importedEnum: Namespace_Imported_Enum!
   optImportedEnum: Namespace_Imported_Enum
+}
+
+type Interface_InterfaceObject1 @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "InterfaceObject1"
+) {
+  str: String!
+  uint8: UInt8!
+}
+
+type Interface_InterfaceObject2 implements Interface_NestedInterfaceObject @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "InterfaceObject2"
+) {
+  str2: String!
+  object: Interface_Object
+}
+
+type Interface_Object @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "Object"
+) {
+  uint8: UInt8!
+}
+
+type Interface_NestedInterfaceObject @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "NestedInterfaceObject"
+) {
+  object: Interface_Object
 }
 
 enum Namespace_CustomEnum @imported(

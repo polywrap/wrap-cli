@@ -187,6 +187,21 @@ export const output: TypeInfo = {
         createScalarPropertyDefinition({ name: "fieldB", type: "Int", required: true }),
       ],
     },
+    {
+      ...createObjectDefinition({
+        type: "ImplementationObject",
+        interfaces: [
+          { type: "Interface_Object" },
+          { type: "Interface_Object2" }
+        ]
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "anotherProp", type: "String", required: false }),
+        createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
+        createScalarPropertyDefinition({ name: "str2", type: "String", required: true }),
+      ],
+    },
   ],
   enumTypes: [
     createEnumDefinition({
@@ -207,7 +222,12 @@ export const output: TypeInfo = {
     {
       ...createQueryDefinition({
         type: "Query",
-        imports: [{ type: "TestImport_Query" }]
+        imports: [{ type: "TestImport_Query" }, { type: "Interface_Query" }],
+        interfaces: [
+          {
+            type: "Interface_Query",
+          },
+        ]
       }),
       methods: [
         {
@@ -261,6 +281,24 @@ export const output: TypeInfo = {
             })}),
           ],
         },
+        {
+          ...createMethodDefinition({
+            type: "query",
+            name: "abstractMethod",
+            return: createScalarPropertyDefinition({
+              name: "abstractMethod",
+              type: "String",
+              required: true
+            }),
+          }),
+          arguments: [
+            createScalarPropertyDefinition({
+              name: "arg",
+              type: "UInt8",
+              required: true
+            }),
+          ],
+        },
       ],
     },
   ],
@@ -301,7 +339,42 @@ export const output: TypeInfo = {
           required: false,
         })
       ],
-    }
+    },
+    {
+      ...createImportedObjectDefinition({
+        uri: "interface.uri.eth",
+        namespace: "Interface",
+        type: "Interface_Object",
+        nativeType: "Object"
+      }),
+      properties: [
+        createScalarPropertyDefinition({
+          name: "str",
+          type: "String",
+          required: true
+        }),
+        createScalarPropertyDefinition({
+          name: "uint8",
+          type: "UInt8",
+          required: true,
+        })
+      ],
+    },
+    {
+      ...createImportedObjectDefinition({
+        uri: "interface.uri.eth",
+        namespace: "Interface",
+        type: "Interface_Object2",
+        nativeType: "Object2"
+      }),
+      properties: [
+        createScalarPropertyDefinition({
+          name: "str2",
+          type: "String",
+          required: true
+        })
+      ],
+    },
   ],
   importedQueryTypes: [
     {
@@ -448,6 +521,28 @@ export const output: TypeInfo = {
             }),
           }),
           arguments: [createScalarPropertyDefinition({ name: "str", type: "String", required: true })],
+        },
+      ],
+    },
+    {
+      ...createImportedQueryDefinition({
+        uri: "interface.uri.eth",
+        namespace: "Interface",
+        type: "Interface_Query",
+        nativeType: "Query"
+      }),
+      methods: [
+        {
+          ...createMethodDefinition({
+            type: "query",
+            name: "abstractMethod",
+            return: createScalarPropertyDefinition({
+              name: "abstractMethod",
+              type: "String",
+              required: true
+            }),
+          }),
+          arguments: [createScalarPropertyDefinition({ name: "arg", type: "UInt8", required: true })],
         },
       ],
     },

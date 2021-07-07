@@ -1,13 +1,13 @@
 const template = `
 {{#typeInfo}}
 {{#queryTypes}}
-type {{type}} {{#imports.length}}@imports(
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}}{{#imports.length}} @imports(
   types: [
     {{#imports}}
     "{{type}}"{{^last}},{{/last}}
     {{/imports}}
   ]
-) {{/imports.length}}{
+){{/imports.length}} {
   {{#methods}}
   {{name}}{{#arguments.length}}(
     {{#arguments}}
@@ -22,7 +22,7 @@ type {{type}} {{#imports.length}}@imports(
 
 {{/queryTypes}}
 {{#objectTypes}}
-type {{type}} {
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}} {
   {{#properties}}
   {{name}}: {{toGraphQLType}}
   {{/properties}}
@@ -40,7 +40,7 @@ enum {{type}} {
 ### Imported Queries START ###
 
 {{#importedQueryTypes}}
-type {{type}} @imported(
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}} @imported(
   uri: "{{uri}}",
   namespace: "{{namespace}}",
   nativeType: "{{nativeType}}"
@@ -63,7 +63,7 @@ type {{type}} @imported(
 ### Imported Objects START ###
 
 {{#importedObjectTypes}}
-type {{type}} @imported(
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}} @imported(
   uri: "{{uri}}",
   namespace: "{{namespace}}",
   nativeType: "{{nativeType}}"

@@ -11,7 +11,8 @@ import {
   createEnumPropertyDefinition,
   createImportedQueryDefinition,
   createImportedObjectDefinition,
-  createImportedEnumDefinition
+  createImportedEnumDefinition,
+  createInterfaceImplementedDefinition
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
@@ -135,6 +136,15 @@ export const typeInfo: TypeInfo = {
         { type: "Namespace_Imported_ObjectType" },
         { type: "Namespace_CustomEnum" },
         { type: "Namespace_Imported_Enum" },
+        { type: "Interface_Query" },
+        { type: "Interface_QueryInterfaceArgument" },
+        { type: "Interface_NestedQueryInterfaceArgument" },
+        { type: "Interface_InterfaceObject2" },
+        { type: "Interface_Object" },
+        { type: "Interface_NestedInterfaceObject" },
+      ],
+      interfaces: [
+        createInterfaceImplementedDefinition({ type: "Interface_Query" }),
       ],
       methods: [
         {
@@ -205,6 +215,24 @@ export const typeInfo: TypeInfo = {
                 required: true,
                 type: "String"
               })
+            })
+          ]
+        },
+        {
+          ...createMethodDefinition({
+            type: "query",
+            name: "abstractQueryMethod",
+            return: createObjectPropertyDefinition({
+              name: "abstractQueryMethod",
+              type: "Interface_InterfaceObject2",
+              required: true
+            })
+          }),
+          arguments: [
+            createObjectPropertyDefinition({
+              name: "arg",
+              required: true,
+              type: "Interface_QueryInterfaceArgument"
             })
           ]
         }
@@ -421,6 +449,69 @@ export const typeInfo: TypeInfo = {
       }),
       properties: [createScalarPropertyDefinition({ name: "prop", type: "String", required: true })],
     },
+    {
+      ...createImportedObjectDefinition({
+        uri: "interface.eth",
+        namespace: "Interface",
+        nativeType: "QueryInterfaceArgument",
+        type: "Interface_QueryInterfaceArgument"
+      }),
+      interfaces: [
+        createInterfaceImplementedDefinition({ type: "Interface_NestedQueryInterfaceArgument" })
+      ],
+      properties: [
+        createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
+      ]
+    },
+    {
+      ...createImportedObjectDefinition({
+        uri: "interface.eth",
+        namespace: "Interface",
+        nativeType: "NestedQueryInterfaceArgument",
+        type: "Interface_NestedQueryInterfaceArgument"
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
+      ]
+    },
+    {
+      ...createImportedObjectDefinition({
+        uri: "interface.eth",
+        namespace: "Interface",
+        nativeType: "InterfaceObject2",
+        type: "Interface_InterfaceObject2"
+      }),
+      interfaces: [
+        createInterfaceImplementedDefinition({ type: "Interface_NestedInterfaceObject" })
+      ],
+      properties: [
+        createScalarPropertyDefinition({ name: "str2", type: "String", required: true }),
+        createObjectPropertyDefinition({ name: "object", type: "Interface_Object", required: false }),
+      ]
+    },
+    {
+      ...createImportedObjectDefinition({
+        uri: "interface.eth",
+        namespace: "Interface",
+        nativeType: "Object",
+        type: "Interface_Object"
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
+      ]
+    },
+    {
+      ...createImportedObjectDefinition({
+        uri: "interface.eth",
+        namespace: "Interface",
+        nativeType: "NestedInterfaceObject",
+        type: "Interface_NestedInterfaceObject"
+      }),
+      properties: [
+        createObjectPropertyDefinition({ name: "object", type: "Interface_Object", required: false }),
+      ]
+    },
   ],
   importedQueryTypes: [
     {
@@ -506,9 +597,37 @@ export const typeInfo: TypeInfo = {
               })
             })
           ]
-        }
+        },
+      ],
+    },
+    {
+      ...createImportedQueryDefinition({
+        uri: "interface.eth",
+        namespace: "Interface",
+        nativeType: "Query",
+        type: "Interface_Query"
+      }),
+      methods: [
+        {
+          ...createMethodDefinition({
+            type: "query",
+            name: "abstractQueryMethod",
+            return: createObjectPropertyDefinition({
+              name: "abstractQueryMethod",
+              type: "Interface_InterfaceObject2",
+              required: true
+            })
+          }),
+          arguments: [
+            createObjectPropertyDefinition({
+              name: "arg",
+              required: true,
+              type: "Interface_QueryInterfaceArgument"
+            }),
+          ]
+        },
       ]
-    }
+    },
   ],
   importedEnumTypes: [
     {

@@ -4,6 +4,7 @@ import {
   createQueryDefinition,
   createMethodDefinition,
   createPropertyDefinition,
+  createInterfaceImplementedDefinition,
 } from "../typeInfo";
 import {
   extractInputValueDefinition,
@@ -39,58 +40,14 @@ const visitorEnter = (
       return;
     }
 
-    // Look for the imports directive, and gather imported types
-    const imports: { type: string }[] = [];
-
-    if (node.directives) {
-      const importsIndex = node.directives.findIndex(
-        (dir: DirectiveNode) => dir.name.value === "imports"
-      );
-
-      if (importsIndex !== -1) {
-        const importsDir = node.directives[importsIndex];
-
-        if (!importsDir.arguments) {
-          throw Error(
-            `@imports directive is incomplete, missing arguments. See type ${nodeName}.`
-          );
-        }
-
-        const typesIndex = importsDir.arguments.findIndex(
-          (arg: ArgumentNode) => arg.name.value === "types"
-        );
-
-        if (typesIndex === -1) {
-          throw Error(
-            `@imports directive missing required argument "types". See type ${nodeName}.`
-          );
-        }
-
-        const typesArg = importsDir.arguments[typesIndex];
-
-        if (typesArg.value.kind !== "ListValue") {
-          throw Error(
-            `@imports directive's types argument must be a List type. See type ${nodeName}.`
-          );
-        }
-
-        const listValue = typesArg.value;
-
-        listValue.values.forEach((value: ValueNode) => {
-          if (value.kind !== "StringValue") {
-            throw Error(
-              `@imports directive's types list must only contain strings. See type ${nodeName}.`
-            );
-          }
-
-          imports.push({ type: value.value });
-        });
-      }
-    }
+    const imports = parseImportsDirective(nodeName, node);
 
     const query = createQueryDefinition({
       type: nodeName,
       imports,
+      interfaces: node.interfaces?.map((x) =>
+        createInterfaceImplementedDefinition({ type: x.name.value })
+      ),
     });
     queryTypes.push(query);
     state.currentQuery = query;
@@ -129,6 +86,64 @@ const visitorEnter = (
     extractListType(state);
   },
 });
+
+const parseImportsDirective = (
+  nodeName: string,
+  node: ObjectTypeDefinitionNode
+): { type: string }[] => {
+  // Look for the imports directive, and gather imported types
+  const imports: { type: string }[] = [];
+
+  if (!node.directives) {
+    return imports;
+  }
+
+  const importsIndex = node.directives.findIndex(
+    (dir: DirectiveNode) => dir.name.value === "imports"
+  );
+
+  if (importsIndex !== -1) {
+    const importsDir = node.directives[importsIndex];
+
+    if (!importsDir.arguments) {
+      throw Error(
+        `@imports directive is incomplete, missing arguments. See type ${nodeName}.`
+      );
+    }
+
+    const typesIndex = importsDir.arguments.findIndex(
+      (arg: ArgumentNode) => arg.name.value === "types"
+    );
+
+    if (typesIndex === -1) {
+      throw Error(
+        `@imports directive missing required argument "types". See type ${nodeName}.`
+      );
+    }
+
+    const typesArg = importsDir.arguments[typesIndex];
+
+    if (typesArg.value.kind !== "ListValue") {
+      throw Error(
+        `@imports directive's types argument must be a List type. See type ${nodeName}.`
+      );
+    }
+
+    const listValue = typesArg.value;
+
+    listValue.values.forEach((value: ValueNode) => {
+      if (value.kind !== "StringValue") {
+        throw Error(
+          `@imports directive's types list must only contain strings. See type ${nodeName}.`
+        );
+      }
+
+      imports.push({ type: value.value });
+    });
+  }
+
+  return imports;
+};
 
 const visitorLeave = (state: State) => ({
   ObjectTypeDefinition: (_node: ObjectTypeDefinitionNode) => {
