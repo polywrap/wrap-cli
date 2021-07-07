@@ -426,7 +426,7 @@ function resolveInterfaces(
   const allInterfaces = getAllUniqueInterfaces();
   const interfacesWithBodies: { name: string; body: string }[] = [];
 
-  const typeCapture = /type[ \n\t]*([a-zA-Z0-9_]+)[a-zA-Z0-9_,.:@"&!\(\)\[\] \n\t]+{([a-zA-Z0-9_,.:@"&!\(\)\[\] \n\t]*)}/g;
+  const typeCapture = /type[ \n\t]*([a-zA-Z0-9_]+)[a-zA-Z0-9_,.:@"&!/\(\)\[\] \n\t]+{([a-zA-Z0-9_,.:@"&!\(\)\[\] \n\t]*)}/g;
   const typeMatches = [...schema.matchAll(typeCapture)];
 
   for (const interfaceName of allInterfaces) {
@@ -461,7 +461,7 @@ function resolveInterfaces(
 
     const bodiesOfInterfacesStr = bodiesOfInterfaces
       .filter((x) => x)
-      .reduce((acc: string, x: string) => acc + "\n" + x);
+      .reduce((acc: string, x: string) => acc + "\n" + x, "");
 
     schema = schema.replace(
       implementationTypeCapture,
