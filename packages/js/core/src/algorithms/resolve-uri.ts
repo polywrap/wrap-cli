@@ -43,7 +43,6 @@ export const resolveUri = Tracer.traceFunc(
     const uriResolverImplementations = getImplementations(
       coreInterfaceUris.apiResolver,
       redirects,
-      plugins,
       interfaces
     );
 

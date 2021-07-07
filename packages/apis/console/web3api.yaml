@@ -9,4 +9,4 @@ query:
     file: ./src/query/index.ts
 import_redirects:
   - uri: w3://ens/js-logger.web3api.eth
-    schema: ../../core-apis/logger/schema.graphql
+    schema: ../../core-interfaces/logger/schema.graphql

@@ -318,18 +318,10 @@ export class Web3ApiClient implements Client {
       "Web3ApiClient: getImplementations - getImplementationsWithRedirects",
       (uri: Uri): (string | Uri)[] => {
         return isUriTypeString
-          ? getImplementations(
-              uri,
-              this.redirects(),
-              this.plugins(),
-              this.interfaces()
-            ).map((x) => x.uri)
-          : getImplementations(
-              uri,
-              this.redirects(),
-              this.plugins(),
-              this.interfaces()
-            );
+          ? getImplementations(uri, this.redirects(), this.interfaces()).map(
+              (x) => x.uri
+            )
+          : getImplementations(uri, this.redirects(), this.interfaces());
       }
     );
 
