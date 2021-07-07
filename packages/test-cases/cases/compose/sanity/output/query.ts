@@ -12,7 +12,8 @@ import {
   createImportedQueryDefinition,
   createImportedObjectDefinition,
   createImportedEnumDefinition,
-  createInterfaceImplementedDefinition
+  createInterfaceImplementedDefinition,
+  createObjectRef
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
@@ -100,7 +101,7 @@ export const typeInfo: TypeInfo = {
             name: "objectArray",
             type: "[ArrayObject]",
             required: false,
-            item: createObjectDefinition({
+            item: createObjectRef({
               name: "objectArray",
               type: "ArrayObject",
               required: false
@@ -378,7 +379,7 @@ export const typeInfo: TypeInfo = {
           name: "optNestedObjectArray",
           type: "[Namespace_NestedObjectType]",
           required: true,
-          item: createObjectDefinition({
+          item: createObjectRef({
             name: "optNestedObjectArray",
             type: "Namespace_NestedObjectType",
             required: false
@@ -393,7 +394,7 @@ export const typeInfo: TypeInfo = {
           name: "optImportedNestedObjectArray",
           type: "[Namespace_Imported_NestedObjectType]",
           required: true,
-          item: createObjectDefinition({
+          item: createObjectRef({
             name: "optImportedNestedObjectArray",
             type: "Namespace_Imported_NestedObjectType",
             required: false

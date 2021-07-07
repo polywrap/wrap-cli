@@ -5,7 +5,6 @@ import {
   PropertyDefinition,
 } from "../typeInfo";
 import { setPropertyType } from "./property-utils";
-import { Blackboard } from "./Blackboard";
 
 import { FieldDefinitionNode, NamedTypeNode } from "graphql";
 
@@ -41,11 +40,7 @@ export function extractFieldDefinition(
   importDef.properties.push(property);
 }
 
-export function extractNamedType(
-  node: NamedTypeNode,
-  state: State,
-  blackboard: Blackboard
-): void {
+export function extractNamedType(node: NamedTypeNode, state: State): void {
   const property = state.currentProperty;
 
   if (!property) {
@@ -67,15 +62,10 @@ export function extractNamedType(
     );
   }
 
-  setPropertyType(
-    property,
-    property.name,
-    {
-      type: node.name.value,
-      required: state.nonNullType,
-    },
-    blackboard
-  );
+  setPropertyType(property, property.name, {
+    type: node.name.value,
+    required: state.nonNullType,
+  });
 
   state.nonNullType = false;
 }

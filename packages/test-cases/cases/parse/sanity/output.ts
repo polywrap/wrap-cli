@@ -13,7 +13,9 @@ import {
   createEnumDefinition,
   createEnumPropertyDefinition,
   createImportedEnumDefinition,
-  createInterfaceImplementedDefinition
+  createInterfaceImplementedDefinition,
+  createObjectRef,
+  createEnumRef
 } from "../../../../schema/parse/src/typeInfo";
 
 export const output: TypeInfo = {
@@ -124,7 +126,7 @@ export const output: TypeInfo = {
           name: "objectArray",
           type: "[UserObject]",
           required: true,
-          item: createObjectDefinition({ name: "objectArray", type: "UserObject", required: true })
+          item: createObjectRef({ name: "objectArray", type: "UserObject", required: true })
         }),
         createArrayPropertyDefinition({
           name: "objectArrayArray",
@@ -134,7 +136,7 @@ export const output: TypeInfo = {
             name: "objectArrayArray",
             type: "[UserObject]",
             required: true,
-            item: createObjectDefinition({ name: "objectArrayArray", type: "UserObject", required: true })
+            item: createObjectRef({ name: "objectArrayArray", type: "UserObject", required: true })
           })
         }),
         createObjectPropertyDefinition({
@@ -159,7 +161,7 @@ export const output: TypeInfo = {
           name: "enumArray",
           type: "[CustomEnum]",
           required: true,
-          item: createEnumDefinition({
+          item: createEnumRef({
             name: "enumArray",
             type: "CustomEnum",
             required: true,
@@ -169,7 +171,7 @@ export const output: TypeInfo = {
           name: "optEnumArray",
           type: "[CustomEnum]",
           required: false,
-          item: createEnumDefinition({
+          item: createEnumRef({
             name: "optEnumArray",
             type: "CustomEnum",
             required: false
@@ -260,11 +262,14 @@ export const output: TypeInfo = {
           }),
           arguments: [
             createObjectPropertyDefinition({ name: "userObject", type: "UserObject", comment: "userObject comment" }),
-            createArrayPropertyDefinition({ name: "arrayObject", type: "[UserObject]", required: true, comment: "arrayObject comment", item: createObjectDefinition({
-              type: "UserObject",
-              name: "arrayObject",
-              required: true
-            })}),
+            createArrayPropertyDefinition({ 
+              name: "arrayObject", type: "[UserObject]", required: true, comment: "arrayObject comment", 
+              item: createObjectRef({
+                type: "UserObject",
+                name: "arrayObject",
+                required: true
+              })
+            }),
           ],
         },
         {
@@ -280,11 +285,14 @@ export const output: TypeInfo = {
           }),
           arguments: [
             createEnumPropertyDefinition({ name: "enum", type: "CustomEnum", comment: "enum comment" }),
-            createArrayPropertyDefinition({ name: "arrayEnum", type: "[CustomEnum]", required: true, comment: "arrayEnum comment", item: createEnumDefinition({
-              type: "CustomEnum",
-              name: "arrayEnum",
-              required: true
-            })})
+            createArrayPropertyDefinition({ 
+              name: "arrayEnum", type: "[CustomEnum]", required: true, comment: "arrayEnum comment", 
+              item: createEnumRef({
+                type: "CustomEnum",
+                name: "arrayEnum",
+                required: true
+              })
+            })
           ],
         },
         {
@@ -463,7 +471,7 @@ export const output: TypeInfo = {
                 required: true
               }),
               object: {
-                ...createObjectDefinition({
+                ...createObjectRef({
                   name: "importedObjectMethod",
                   type: "TestImport_Object",
                   required: true
@@ -479,7 +487,7 @@ export const output: TypeInfo = {
                 required: true
               }),
               object: {
-                ...createObjectDefinition({
+                ...createObjectRef({
                   name: "importedObject",
                   type: "TestImport_Object",
                   required: true

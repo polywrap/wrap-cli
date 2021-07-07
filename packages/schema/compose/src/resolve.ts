@@ -24,8 +24,6 @@ import {
   visitQueryDefinition,
   ImportedQueryDefinition,
   DefinitionKind,
-  PropertyDefinition,
-  populatePropertyType,
   visitImportedQueryDefinition,
   visitImportedObjectDefinition,
   ImportedEnumDefinition,
@@ -36,6 +34,8 @@ import {
   isKind,
   header,
   InterfaceImplementedDefinition,
+  ObjectRef,
+  EnumRef,
 } from "@web3api/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -188,7 +188,7 @@ const extractObjectImportDependencies = (
 
   return {
     enter: {
-      ObjectDefinition: (def: ObjectDefinition & Namespaced) => {
+      ObjectRef: (def: ObjectRef & Namespaced) => {
         if (def.__namespaced) {
           return def;
         }
@@ -218,12 +218,6 @@ const extractObjectImportDependencies = (
               namespace,
               uri
             ),
-            leave: {
-              PropertyDefinition: (def: PropertyDefinition) => {
-                populatePropertyType(def);
-                return def;
-              },
-            },
           });
         }
 
@@ -261,18 +255,12 @@ const extractObjectImportDependencies = (
               namespace,
               uri
             ),
-            leave: {
-              PropertyDefinition: (def: PropertyDefinition) => {
-                populatePropertyType(def);
-                return def;
-              },
-            },
           });
         }
 
         return def;
       },
-      EnumDefinition: (def: EnumDefinition & Namespaced) => {
+      EnumRef: (def: EnumRef & Namespaced) => {
         if (def.__namespaced) {
           return def;
         }
@@ -300,7 +288,7 @@ const extractObjectImportDependencies = (
 
 const namespaceTypes = (namespace: string): TypeInfoTransforms => ({
   enter: {
-    ObjectDefinition: (def: ObjectDefinition & Namespaced) => {
+    ObjectRef: (def: ObjectRef & Namespaced) => {
       if (def.__namespaced) {
         return def;
       }
@@ -324,7 +312,7 @@ const namespaceTypes = (namespace: string): TypeInfoTransforms => ({
         __namespaced: true,
       };
     },
-    EnumDefinition: (def: EnumDefinition & Namespaced) => {
+    EnumRef: (def: EnumRef & Namespaced) => {
       if (def.__namespaced) {
         return def;
       }
@@ -334,12 +322,6 @@ const namespaceTypes = (namespace: string): TypeInfoTransforms => ({
         type: appendNamespace(namespace, def.type),
         __namespaced: true,
       };
-    },
-  },
-  leave: {
-    PropertyDefinition: (def: PropertyDefinition) => {
-      populatePropertyType(def);
-      return def;
     },
   },
 });
@@ -753,10 +735,10 @@ async function resolveLocalImports(
 
         visitorFunc(type, {
           enter: {
-            ObjectDefinition: (def: ObjectDefinition) => {
+            ObjectRef: (def: ObjectRef) => {
               return findImport(def, localTypeInfo.objectTypes);
             },
-            EnumDefinition: (def: EnumDefinition) => {
+            EnumRef: (def: EnumRef) => {
               return findImport(def, localTypeInfo.enumTypes);
             },
           },

@@ -11,7 +11,6 @@ import {
   State,
 } from "./object-types-utils";
 import { extractImportedDefinition } from "./imported-types-utils";
-import { Blackboard } from "./Blackboard";
 
 import {
   ObjectTypeDefinitionNode,
@@ -24,8 +23,7 @@ import {
 
 const visitorEnter = (
   importedObjectTypes: ImportedObjectDefinition[],
-  state: State,
-  blackboard: Blackboard
+  state: State
 ) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const imported = extractImportedDefinition(node);
@@ -51,7 +49,7 @@ const visitorEnter = (
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    extractNamedType(node, state, blackboard);
+    extractNamedType(node, state);
   },
   ListType: (_node: ListTypeNode) => {
     extractListType(state);
@@ -74,13 +72,12 @@ const visitorLeave = (state: State) => ({
 });
 
 export const getImportedObjectTypesVisitor = (
-  typeInfo: TypeInfo,
-  blackboard: Blackboard
+  typeInfo: TypeInfo
 ): ASTVisitor => {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo.importedObjectTypes, state, blackboard),
+    enter: visitorEnter(typeInfo.importedObjectTypes, state),
     leave: visitorLeave(state),
   };
 };

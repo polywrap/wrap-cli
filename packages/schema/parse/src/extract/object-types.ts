@@ -10,7 +10,6 @@ import {
   extractNamedType,
   State,
 } from "./object-types-utils";
-import { Blackboard } from "./Blackboard";
 
 import {
   ObjectTypeDefinitionNode,
@@ -22,11 +21,7 @@ import {
   ASTVisitor,
 } from "graphql";
 
-const visitorEnter = (
-  objectTypes: ObjectDefinition[],
-  state: State,
-  blackboard: Blackboard
-) => ({
+const visitorEnter = (objectTypes: ObjectDefinition[], state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     // Skip non-custom types
     if (node.name.value === "Query" || node.name.value === "Mutation") {
@@ -58,7 +53,7 @@ const visitorEnter = (
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    extractNamedType(node, state, blackboard);
+    extractNamedType(node, state);
   },
   ListType: (_node: ListTypeNode) => {
     extractListType(state);
@@ -80,14 +75,11 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export const getObjectTypesVisitor = (
-  typeInfo: TypeInfo,
-  blackboard: Blackboard
-): ASTVisitor => {
+export const getObjectTypesVisitor = (typeInfo: TypeInfo): ASTVisitor => {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo.objectTypes, state, blackboard),
+    enter: visitorEnter(typeInfo.objectTypes, state),
     leave: visitorLeave(state),
   };
 };

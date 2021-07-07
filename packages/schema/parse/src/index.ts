@@ -3,7 +3,6 @@ import { extractors, SchemaExtractorBuilder } from "./extract";
 import { TypeInfoTransforms, transformTypeInfo } from "./transform";
 import { finalizePropertyDef } from "./transform/finalizePropertyDef";
 import { SchemaValidatorBuilder, validators } from "./validate";
-import { Blackboard } from "./extract/Blackboard";
 
 import { DocumentNode, parse, visit, visitInParallel } from "graphql";
 
@@ -30,17 +29,14 @@ export function parseSchema(
     validate(astNode, validates);
   }
 
-  // Create a blackboard for shared metadata
-  const blackboard = new Blackboard(astNode);
-
   // Extract & Build TypeInfo
   let info = createTypeInfo();
 
   const extracts = options.extractors || extractors;
-  extract(astNode, info, blackboard, extracts);
+  extract(astNode, info, extracts);
 
   // Finalize & Transform TypeInfo
-  info = transformTypeInfo(info, finalizePropertyDef);
+  info = transformTypeInfo(info, finalizePropertyDef(info));
 
   if (options && options.transforms) {
     for (const transform of options.transforms) {
@@ -73,12 +69,9 @@ const validate = (
 const extract = (
   astNode: DocumentNode,
   typeInfo: TypeInfo,
-  blackboard: Blackboard,
   extractors: SchemaExtractorBuilder[]
 ) => {
-  const allVisitors = extractors.map((getVisitor) =>
-    getVisitor(typeInfo, blackboard)
-  );
+  const allVisitors = extractors.map((getVisitor) => getVisitor(typeInfo));
 
   visit(astNode, visitInParallel(allVisitors));
 };

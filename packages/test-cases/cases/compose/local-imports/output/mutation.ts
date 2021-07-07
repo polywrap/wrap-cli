@@ -9,7 +9,8 @@ import {
   createObjectDefinition,
   createEnumDefinition,
   TypeInfo,
-  createEnumPropertyDefinition
+  createEnumPropertyDefinition,
+  createObjectRef
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
@@ -171,7 +172,7 @@ export const typeInfo: TypeInfo = {
             name: "objectArray",
             type: "[ArrayObject]",
             required: false,
-            item: createObjectDefinition({
+            item: createObjectRef({
               name: "objectArray",
               type: "ArrayObject",
               required: false
