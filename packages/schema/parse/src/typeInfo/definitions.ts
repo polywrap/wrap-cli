@@ -175,6 +175,12 @@ export function createPropertyDefinition(args: {
 export type InterfaceImplementedDefinition = GenericDefinition;
 export function createInterfaceImplementedDefinition(args: {
   type: string;
+  name?: string | null;
+  required?: boolean;
+  array?: ArrayDefinition;
+  scalar?: ScalarDefinition;
+  object?: ObjectDefinition;
+  enum?: EnumDefinition;
 }): InterfaceImplementedDefinition {
   return {
     ...createAnyDefinition(args),

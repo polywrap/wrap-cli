@@ -16,14 +16,13 @@ import { extractImportedDefinition } from "./imported-types-utils";
 import { Blackboard } from "./Blackboard";
 
 import {
-  DocumentNode,
   ObjectTypeDefinitionNode,
   NonNullTypeNode,
   NamedTypeNode,
   ListTypeNode,
   FieldDefinitionNode,
   InputValueDefinitionNode,
-  visit,
+  ASTVisitor,
 } from "graphql";
 
 const visitorEnter = (
@@ -107,15 +106,14 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export function extractImportedQueryTypes(
-  astNode: DocumentNode,
+export const getImportedQueryTypesVisitor = (
   typeInfo: TypeInfo,
   blackboard: Blackboard
-): void {
+): ASTVisitor => {
   const state: State = {};
 
-  visit(astNode, {
+  return {
     enter: visitorEnter(typeInfo.importedQueryTypes, state, blackboard),
     leave: visitorLeave(state),
-  });
-}
+  };
+};

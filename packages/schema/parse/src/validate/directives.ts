@@ -1,39 +1,37 @@
 import { ImportedDefinition } from "../typeInfo";
+import { SchemaValidator } from "./SchemaValidator";
 
-import {
-  visit,
-  DirectiveNode,
-  DocumentNode,
-  ASTNode,
-  ObjectTypeDefinitionNode,
-} from "graphql";
+import { DirectiveNode, ASTNode, ObjectTypeDefinitionNode } from "graphql";
 
-export function supportedDirectives(astNode: DocumentNode): void {
+export const getSupportedDirectivesValidator = (): SchemaValidator => {
   const supportedDirectives = ["imported", "imports"];
   const unsupportedUsages: string[] = [];
 
-  visit(astNode, {
-    enter: {
-      Directive: (node: DirectiveNode) => {
-        const name = node.name.value;
+  return {
+    visitor: {
+      enter: {
+        Directive: (node: DirectiveNode) => {
+          const name = node.name.value;
 
-        if (!supportedDirectives.includes(name)) {
-          unsupportedUsages.push(name);
-        }
+          if (!supportedDirectives.includes(name)) {
+            unsupportedUsages.push(name);
+          }
+        },
       },
     },
-  });
+    displayValidationMessagesIfExist: () => {
+      if (unsupportedUsages.length) {
+        throw new Error(
+          `Found the following usages of unsupported directives:${unsupportedUsages.map(
+            (u) => `\n@${u}`
+          )}`
+        );
+      }
+    },
+  };
+};
 
-  if (unsupportedUsages.length) {
-    throw new Error(
-      `Found the following usages of unsupported directives:${unsupportedUsages.map(
-        (u) => `\n@${u}`
-      )}`
-    );
-  }
-}
-
-export function importsDirective(astNode: DocumentNode): void {
+export const getImportsDirectiveValidator = (): SchemaValidator => {
   let isInsideObjectTypeDefinition = false;
 
   const ObjectTypeDefinition = (node: ObjectTypeDefinitionNode) => {
@@ -120,25 +118,27 @@ export function importsDirective(astNode: DocumentNode): void {
     }
   };
 
-  visit(astNode, {
-    enter: (
-      node: ASTNode,
-      key: string | number | undefined,
-      parent: ASTNode | undefined,
-      path: ReadonlyArray<string | number>
-    ) => {
-      if (node.kind === "ObjectTypeDefinition") {
-        ObjectTypeDefinition(node as ObjectTypeDefinitionNode);
-      } else if (node.kind === "Directive") {
-        Directive(node as DirectiveNode, key, parent, path);
-      } else if (node.kind !== "NamedType" && node.kind !== "Name") {
-        isInsideObjectTypeDefinition = false;
-      }
+  return {
+    visitor: {
+      enter: (
+        node: ASTNode,
+        key: string | number | undefined,
+        parent: ASTNode | undefined,
+        path: ReadonlyArray<string | number>
+      ) => {
+        if (node.kind === "ObjectTypeDefinition") {
+          ObjectTypeDefinition(node as ObjectTypeDefinitionNode);
+        } else if (node.kind === "Directive") {
+          Directive(node as DirectiveNode, key, parent, path);
+        } else if (node.kind !== "NamedType" && node.kind !== "Name") {
+          isInsideObjectTypeDefinition = false;
+        }
+      },
     },
-  });
-}
+  };
+};
 
-export function importedDirective(astNode: ASTNode): void {
+export const getImportedDirectiveValidator = (): SchemaValidator => {
   let isInsideObjectOrEnumTypeDefinition = false;
 
   const Directive = (
@@ -193,23 +193,25 @@ export function importedDirective(astNode: ASTNode): void {
     }
   };
 
-  visit(astNode, {
-    enter: (
-      node: ASTNode,
-      key: string | number | undefined,
-      parent: ASTNode | undefined,
-      path: ReadonlyArray<string | number>
-    ) => {
-      if (node.kind === "Directive") {
-        Directive(node as DirectiveNode, key, parent, path);
-      } else if (
-        node.kind === "ObjectTypeDefinition" ||
-        node.kind === "EnumTypeDefinition"
-      ) {
-        isInsideObjectOrEnumTypeDefinition = true;
-      } else if (node.kind !== "NamedType" && node.kind !== "Name") {
-        isInsideObjectOrEnumTypeDefinition = false;
-      }
+  return {
+    visitor: {
+      enter: (
+        node: ASTNode,
+        key: string | number | undefined,
+        parent: ASTNode | undefined,
+        path: ReadonlyArray<string | number>
+      ) => {
+        if (node.kind === "Directive") {
+          Directive(node as DirectiveNode, key, parent, path);
+        } else if (
+          node.kind === "ObjectTypeDefinition" ||
+          node.kind === "EnumTypeDefinition"
+        ) {
+          isInsideObjectOrEnumTypeDefinition = true;
+        } else if (node.kind !== "NamedType" && node.kind !== "Name") {
+          isInsideObjectOrEnumTypeDefinition = false;
+        }
+      },
     },
-  });
-}
+  };
+};
