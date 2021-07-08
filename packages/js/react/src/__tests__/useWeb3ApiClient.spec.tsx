@@ -1,22 +1,24 @@
+import { UseWeb3ApiClientProps } from '../client';
 import {
   Web3ApiProvider,
   createWeb3ApiProvider,
   useWeb3ApiClient
 } from "..";
+import { createPlugins } from "./plugins";
+
+import { PluginRegistration } from "@web3api/core-js";
+import {
+  initTestEnvironment,
+  stopTestEnvironment
+} from "@web3api/test-env-js";
 
 import {
   renderHook,
   RenderHookOptions,
   cleanup
 } from "@testing-library/react-hooks";
-import { PluginRegistration } from "@web3api/core-js";
-import {
-  initTestEnvironment,
-  stopTestEnvironment
-} from "@web3api/test-env-js";
-import { UseWeb3ApiClientProps } from '../client';
 
-jest.setTimeout(60000);
+jest.setTimeout(360000);
 
 describe("useWeb3ApiClient hook", () => {
   let plugins: PluginRegistration<string>[];
@@ -24,10 +26,13 @@ describe("useWeb3ApiClient hook", () => {
 
   beforeAll(async () => {
     const {
-      plugins: testPlugins,
+      ethereum,
+      ipfs,
+      ensAddress
     } = await initTestEnvironment();
 
-    plugins = testPlugins;
+    plugins = createPlugins(ensAddress, ethereum, ipfs);
+
     WrapperProvider = {
       wrapper: Web3ApiProvider,
       initialProps: {

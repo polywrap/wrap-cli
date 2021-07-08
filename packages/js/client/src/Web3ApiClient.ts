@@ -1,4 +1,4 @@
-import { getDefaultClientConfig } from "./get-default-client-config";
+import { getDefaultClientConfig } from "./default-client-config";
 import { PluginWeb3Api } from "./plugin/PluginWeb3Api";
 import { WasmWeb3Api } from "./wasm/WasmWeb3Api";
 
@@ -18,7 +18,7 @@ import {
   resolveUri,
   InvokeApiOptions,
   InvokeApiResult,
-  Manifest,
+  Web3ApiManifest,
   sanitizeUriRedirects,
   sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
@@ -261,7 +261,7 @@ export class Web3ApiClient implements Client {
             this.plugins(),
             this.interfaces(),
             (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
-            (uri: Uri, manifest: Manifest, apiResolver: Uri) =>
+            (uri: Uri, manifest: Web3ApiManifest, apiResolver: Uri) =>
               new WasmWeb3Api(uri, manifest, apiResolver)
           );
 

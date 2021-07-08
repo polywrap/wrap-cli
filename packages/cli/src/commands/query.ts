@@ -73,7 +73,7 @@ export default {
       const { data } = await axios.get("http://localhost:4040/ens");
       ensAddress = data.ensAddress;
     } catch (e) {
-      print.error(`w3 test-env not found, please run "w3 test-env up"`);
+      print.error(intlMsg.commands_query_error_noTestEnvFound());
       return;
     }
 

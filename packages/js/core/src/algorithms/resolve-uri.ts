@@ -7,7 +7,7 @@ import {
   PluginRegistration,
   UriRedirect,
 } from "../types";
-import { Manifest, deserializeManifest } from "../manifest";
+import { Web3ApiManifest, deserializeWeb3ApiManifest } from "../manifest";
 import * as ApiResolver from "../apis/api-resolver";
 import { applyRedirects } from "./apply-redirects";
 import { findPluginPackage } from "./find-plugin-package";
@@ -25,7 +25,7 @@ export const resolveUri = Tracer.traceFunc(
     plugins: readonly PluginRegistration<Uri>[],
     interfaces: readonly InterfaceImplementations<Uri>[],
     createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
-    createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api,
+    createApi: (uri: Uri, manifest: Web3ApiManifest, apiResolver: Uri) => Api,
     noValidate?: boolean
   ): Promise<Api> => {
     const finalRedirectedUri = applyRedirects(uri, redirects);
@@ -60,7 +60,7 @@ const resolveUriWithApiResolvers = async (
   uri: Uri,
   apiResolverImplementationUris: Uri[],
   client: Client,
-  createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api,
+  createApi: (uri: Uri, manifest: Web3ApiManifest, apiResolver: Uri) => Api,
   noValidate?: boolean
 ): Promise<Api> => {
   let resolvedUri = uri;
@@ -97,7 +97,7 @@ const resolveUriWithApiResolvers = async (
     const { data } = await ApiResolver.Query.tryResolveUri(
       client,
       uriResolver,
-      resolvedUri
+      uri
     );
 
     // If nothing was returned, the URI is not supported
@@ -137,11 +137,13 @@ const resolveUriWithApiResolvers = async (
     } else if (result.manifest) {
       // We've found our manifest at the current URI resolver
       // meaning the URI resolver can also be used as an API resolver
-      const manifest = deserializeManifest(result.manifest, { noValidate });
+      const manifest = deserializeWeb3ApiManifest(result.manifest, {
+        noValidate,
+      });
 
       return Tracer.traceFunc(
         "resolveUri: createApi",
-        (uri: Uri, manifest: Manifest, apiResolver: Uri) =>
+        (uri: Uri, manifest: Web3ApiManifest, apiResolver: Uri) =>
           createApi(uri, manifest, apiResolver)
       )(resolvedUri, manifest, uriResolver);
     }

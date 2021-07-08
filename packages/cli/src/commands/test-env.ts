@@ -1,4 +1,4 @@
-import { startupTestEnv, shutdownTestEnv } from "../lib/env/test";
+import { startupTestEnv, shutdownTestEnv } from "../lib/test-env";
 import { withSpinner } from "../lib/helpers/spinner";
 import { intlMsg } from "../lib/intl";
 

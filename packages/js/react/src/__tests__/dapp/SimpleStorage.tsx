@@ -56,12 +56,12 @@ const SimpleStorage = ({ uri }: { uri: string }) => {
   return (
     <>
       {!deployData ? (
-        <button onClick={deployContract}>Deploy</button>
+        <button onClick={() => deployContract()}>Deploy</button>
       ) : (
         <>
           <p>SimpleStorage Contract: {deployData.deployContract}</p>
           <button onClick={updateStorageData}>Set the storage to 5!</button>
-          <button onClick={getStorageData}>Check storage</button>
+          <button onClick={() => getStorageData()}>Check storage</button>
           <div>{currentStorage?.getData} </div>
           <div>
             {

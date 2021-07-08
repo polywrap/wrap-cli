@@ -1,7 +1,7 @@
 import {
   getImplementations,
   Uri,
-  UriRedirect
+  UriRedirect,
 } from "../";
 import { InterfaceImplementations } from "../types";
 

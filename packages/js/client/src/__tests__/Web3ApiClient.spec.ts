@@ -11,10 +11,10 @@ import {
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 import { Web3ApiClient } from "../Web3ApiClient";
-import { getDefaultClientConfig } from "../get-default-client-config";
+import { getDefaultClientConfig } from "../default-client-config";
 import { coreInterfaceUris } from '@web3api/core-js';
 
-jest.setTimeout(50000);
+jest.setTimeout(200000);
 
 describe("Web3ApiClient", () => {
   let ipfsProvider: string;
@@ -57,10 +57,12 @@ describe("Web3ApiClient", () => {
     expect(
         client.plugins().map(x => x.uri)
       ).toStrictEqual([ 
-        new Uri("w3://ens/ipfs.web3api.eth"), 
-        new Uri("w3://ens/ens.web3api.eth"), 
-        new Uri("w3://ens/ethereum.web3api.eth"), 
-        new Uri("w3://ens/js-logger.web3api.eth")
+        new Uri("w3://ens/ipfs.web3api.eth"),
+        new Uri("w3://ens/ens.web3api.eth"),
+        new Uri("w3://ens/ethereum.web3api.eth"),
+        new Uri("w3://ens/js-logger.web3api.eth"),
+        new Uri("w3://ens/uts46.web3api.eth"),
+        new Uri("w3://ens/sha3.web3api.eth"),
       ]);
     expect(
         client.interfaces()
@@ -106,10 +108,12 @@ describe("Web3ApiClient", () => {
   it("plugin registration - with default plugins", () => {
     const implementationUri = "w3://ens/some-implementation.eth";
     const defaultPlugins = [
-      "w3://ens/ipfs.web3api.eth", 
-      "w3://ens/ens.web3api.eth", 
-      "w3://ens/ethereum.web3api.eth", 
-      "w3://ens/js-logger.web3api.eth"
+      "w3://ens/ipfs.web3api.eth",
+      "w3://ens/ens.web3api.eth",
+      "w3://ens/ethereum.web3api.eth",
+      "w3://ens/js-logger.web3api.eth",
+      "w3://ens/uts46.web3api.eth",
+      "w3://ens/sha3.web3api.eth",
     ];
 
     const client = new Web3ApiClient({
@@ -1395,14 +1399,14 @@ describe("Web3ApiClient", () => {
       ensAddress
     );
     const interfaceUri = `w3://ens/testnet/${interfaceApi.ensDomain}`;
-    
+
     const implementationApi = await buildAndDeployApi(
       `${GetPathToTestApis()}/implementations/test-api`,
       ipfsProvider,
       ensAddress
     );
     const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
-   
+
     const client = await getClient({
       interfaces: [
         {

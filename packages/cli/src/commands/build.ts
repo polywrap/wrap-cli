@@ -32,6 +32,7 @@ ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -o, --output-dir <${pathStr}>            ${intlMsg.commands_build_options_o()}
   -e, --test-ens <[${addrStr},]${domStr}>  ${intlMsg.commands_build_options_e()}
   -w, --watch                        ${intlMsg.commands_build_options_w()}
+  -v, --verbose                      ${intlMsg.commands_build_options_v()}
 `;
 
 export default {
@@ -40,14 +41,15 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
 
-    const { h, i, o, w, e } = parameters.options;
-    let { help, ipfs, outputDir, watch, testEns } = parameters.options;
+    const { h, i, o, w, e, v } = parameters.options;
+    let { help, ipfs, outputDir, watch, testEns, verbose } = parameters.options;
 
     help = help || h;
     ipfs = ipfs || i;
     outputDir = outputDir || o;
     watch = watch || w;
     testEns = testEns || e;
+    verbose = verbose || v;
 
     let manifestPath;
     try {
@@ -62,6 +64,8 @@ export default {
           help,
           w,
           watch,
+          v,
+          verbose,
         }
       );
     } catch (e) {
@@ -161,7 +165,8 @@ export default {
     }
 
     const project = new Project({
-      manifestPath,
+      web3apiManifestPath: manifestPath,
+      quiet: verbose ? false : true,
     });
 
     const schemaComposer = new SchemaComposer({
@@ -178,7 +183,7 @@ export default {
     });
 
     const execute = async (): Promise<boolean> => {
-      compiler.clearCache();
+      compiler.reset();
       const result = await compiler.compile();
 
       if (!result) {
@@ -188,8 +193,8 @@ export default {
       const uris: string[][] = [];
 
       // publish to IPFS
-      if (ipfs) {
-        const cid = await publishToIPFS(outputDir, ipfs);
+      if (ipfsProvider) {
+        const cid = await publishToIPFS(outputDir, ipfsProvider);
 
         print.success(`IPFS { ${cid} }`);
         uris.push(["Web3API IPFS", `ipfs://${cid}`]);
@@ -252,9 +257,7 @@ export default {
       const keyPressListener = () => {
         // Watch for escape key presses
         print.info(
-          `${intlMsg.commands_build_keypressListener_watching()}: ${
-            project.manifestDir
-          }`
+          `${intlMsg.commands_build_keypressListener_watching()}: ${project.getWeb3ApiManifestDir()}`
         );
         print.info(intlMsg.commands_build_keypressListener_exit());
         readline.emitKeypressEvents(process.stdin);
@@ -281,8 +284,11 @@ export default {
       // Watch the directory
       const watcher = new Watcher();
 
-      watcher.start(project.manifestDir, {
-        ignored: [outputDir + "/**", project.manifestDir + "/**/w3/**"],
+      watcher.start(project.getWeb3ApiManifestDir(), {
+        ignored: [
+          outputDir + "/**",
+          project.getWeb3ApiManifestDir() + "/**/w3/**",
+        ],
         ignoreInitial: true,
         execute: async (events: WatchEvent[]) => {
           // Log all of the events encountered

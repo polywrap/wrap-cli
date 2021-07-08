@@ -3,6 +3,7 @@ import { supportedLangs } from "../../commands/create";
 import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
+import rimraf from "rimraf";
 
 const HELP = `
 w3 create command <project-name> [options]
@@ -109,7 +110,6 @@ ${HELP}`);
   });
 
   test("Should successfully generate project", async () => {
-    const rimraf = require("rimraf");
     rimraf.sync(`${projectRoot}/test`);
 
     const { exitCode: code, stdout: output } = await runCLI({
