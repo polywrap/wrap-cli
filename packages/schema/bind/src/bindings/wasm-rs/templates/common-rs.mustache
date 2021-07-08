@@ -1,31 +1,31 @@
 {{#__commonPath}}
-export * from "{{__commonPath}}";
+pub use crate::"{{__commonPath}}";
 {{/__commonPath}}
 {{^__commonPath}}
 {{#objectTypes}}
 {{#__common}}
-export * from "./{{type}}";
+pub use crate::{{#toLower}}{{type}}{{/toLower}}::*;
 {{/__common}}
 {{/objectTypes}}
 {{#enumTypes}}
 {{#__common}}
-export * from "./{{type}}";
+pub use crate::{{#toLower}}{{type}}{{/toLower}}::*;
 {{/__common}}
 {{/enumTypes}}
 
 {{#importedQueryTypes}}
 {{#__common}}
-export * from "./imported/{{type}}";
+pub use crate::imported::{{#toLower}}{{type}}{{/toLower}}::*;
 {{/__common}}
 {{/importedQueryTypes}}
 {{#importedObjectTypes}}
 {{#__common}}
-export * from "./imported/{{type}}";
+pub use crate::imported::{{#toLower}}{{type}}{{/toLower}}::*;
 {{/__common}}
 {{/importedObjectTypes}}
 {{#importedEnumTypes}}
 {{#__common}}
-export * from "./imported/{{type}}";
+pub use crate::imported::{{#toLower}}{{type}}{{/toLower}}::*;
 {{/__common}}
 {{/importedEnumTypes}}
 {{/__commonPath}}

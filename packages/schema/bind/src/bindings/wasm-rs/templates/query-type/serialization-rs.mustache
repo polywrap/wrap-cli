@@ -1,0 +1,165 @@
+use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer,};
+use serde::{Deserialize, Serialize};
+use std::convert::TryFrom;
+use std::io::{Error, ErrorKind, Result};
+use crate::{
+    {{#enumTypes}}
+    get_{{#toLower}}{{type}}{{/toLower}}_value, 
+    sanitize_{{#toLower}}{{type}}{{/toLower}}_value, 
+    {{type}},
+    {{/enumTypes}}
+    {{#objectTypes}}
+    {{type}},
+    {{/objectTypes}}
+};
+{{#methods}}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
+    {{#arguments}}
+    pub {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    {{/arguments}}
+}
+
+impl Input{{#toUpper}}{{name}}{{/toUpper}} {
+    pub fn new() -> Input{{#toUpper}}{{name}}{{/toUpper}} {
+        Input{{#toUpper}}{{name}}{{/toUpper}} {
+            {{#toLower}}{{name}}{{/toLower}}: {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}},
+        }
+    }
+}
+
+pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args_buf: &[u8]) -> Result<Input{{#toUpper}}{{name}}{{/toUpper}}> {
+    let mut context = Context::new();
+    context.description = "Deserializing query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
+    {{#arguments.length}}
+    let mut reader = ReadDecoder::new(args_buf, context);
+    let mut num_of_fields = reader.read_map_length().unwrap_or_default();
+
+    {{#arguments}}
+    {{^object}}
+    let mut {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+    {{/object}}
+    {{#object}}
+    {{#required}}
+    let mut {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = None;
+    {{/required}}
+    {{^required}}
+    let mut {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+    {{/required}}
+    {{/object}}
+    {{#required}}
+    let mut {{#toLower}}{{name}}{{/toLower}}_set: bool = false;
+    {{/required}}
+    {{/arguments}}
+
+    while num_of_fields > 0 {
+        num_of_fields -= 1;
+        let field = reader.read_string().unwrap_or_default();
+
+        {{#arguments}}
+        match field.as_str() {
+            "{{#toLower}}{{name}}{{/toLower}}" => {
+                reader
+                    .context()
+                    .push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property");
+                {{#scalar}}
+                {{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}().unwrap_or_default();
+                {{/scalar}}
+                {{#array}}
+                {{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
+                  {{> deserialize_array}}
+                }).expect("Failed to read array");
+                {{/array}}
+                {{#enum}}
+                {{> deserialize_enum}}
+                {{/enum}}
+                {{#object}}
+                {{> deserialize_object}}
+                {{/object}}
+                {{#required}}
+                {{#toLower}}{{name}}{{/toLower}}_set = true;
+                {{/required}}
+                reader
+                    .context()
+                    .pop()
+                    .expect("Failed to pop `{{#toLower}}{{name}}{{/toLower}}` from Context");
+            }
+        }
+        {{/arguments}}
+    }
+
+    {{#arguments}}
+    {{#required}}
+    {{^object}}
+    if !{{#toLower}}{{name}}{{/toLower}}_set {
+    {{/object}}
+      let custom_error = reader.context().print_with_context("Missing required argument: '{{#toLower}}{{name}}{{/toLower}}: {{type}}'");
+      return Err(Error::new(ErrorKind::Other, custom_error));
+    }
+    {{/required}}
+    {{/arguments}}
+    {{/arguments.length}}
+
+    Ok(Input{{#toUpper}}{{name}}{{/toUpper}} {
+        {{#arguments}}
+        {{#toLower}}{{name}}{{/toLower}},
+        {{/arguments}}
+    })
+}
+
+pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) -> Vec<u8> {
+    let mut sizer_context = Context::new();
+    sizer_context.description = "Serializing (sizing) query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
+    let sizer = WriteSizer::new(sizer_context);
+    write_{{#toLower}}{{name}}{{/toLower}}_result(sizer.clone(), result);
+    let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+    let mut encoder_context = Context::new();
+    encoder_context.description = "Serializing (encoding) query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
+    let encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
+    write_{{#toLower}}{{name}}{{/toLower}}_result(encoder, result);
+    buffer
+}
+
+pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(mut writer: W, result: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) {
+    {{#return}}
+    writer
+        .context()
+        .push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
+    {{#scalar}}
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&result);
+    {{/scalar}}
+    {{#array}}
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(result, |writer: &mut W, {{#toWasm}}{{toGraphQLType}}{{/toWasm}}| {
+        {{> serialize_array}}
+    });
+    {{/array}}
+    {{#enum}}
+    {{#required}}
+    writer.write_i32(&(result.{{#toLower}}{{name}}{{/toLower}}.clone() as i32));
+    {{/required}}
+    {{^required}}
+    writer
+        .write_nullable_i32(Some(result.{{#toLower}}{{name}}{{/toLower}}.clone().unwrap() as i32))
+        .expect("Failed to write nullable i32");
+    {{/required}}
+    {{/enum}}
+    {{#object}}
+    {{#required}}
+    {{type}}::write(&mut result.{{#toLower}}{{name}}{{/toLower}}.clone(), &mut writer);
+    {{/required}}
+    {{^required}}
+    if result.{{#toLower}}{{name}}{{/toLower}}.is_some() {
+        {{type}}::write(&mut result.{{#toLower}}{{name}}{{/toLower}}.clone().unwrap(), &mut writer);
+    } else {
+        writer.write_nil();
+    }
+    {{/required}}
+    {{/object}}
+    writer
+        .context()
+        .pop()
+        .expect("Failed to pop {{#toLower}}{{name}}{{/toLower}} from Context");
+    {{/return}}
+}
+{{/methods}}

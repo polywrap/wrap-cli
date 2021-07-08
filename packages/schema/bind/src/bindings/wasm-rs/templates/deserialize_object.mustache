@@ -1,9 +1,9 @@
 {{#required}}
-const object = Types.{{type}}.read(reader);
+let object = {{type}}::read(&mut reader);
 {{/required}}
 {{^required}}
-var object: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = null;
-if (!reader.isNextNil()) {
-  object = Types.{{type}}.read(reader);
+let opt_object: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = None;
+if !reader.is_next_nil() {
+  opt_object = Some({{type}}::read(&mut reader));
 }
 {{/required}}

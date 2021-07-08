@@ -1,26 +1,32 @@
 {{#required}}
-let value: Types.{{type}};
-if (reader.isNextString()) {
-  value = Types.get{{type}}Value(reader.readString());
+if reader.is_next_string() {
+  en = get_{{#toLower}}{{type}}{{/toLower}}_value(reader.read_string().unwrap_or_default().as_str())
+      .expect("Failed to get {{type}} value");
 } else {
-  value = reader.readInt32();
-  Types.sanitize{{type}}Value(value);
+  en = {{type}}::try_from(reader.read_i32().unwrap_or_default())
+      .expect("Failed to convert i32 to {{type}}");
+  sanitize_{{#toLower}}{{type}}{{/toLower}}_value(en.clone() as i32)
+      .expect("Failed to sanitize {{type}}");
 }
 {{/required}}
 {{^required}}
-let value: Nullable<Types.{{type}}>;
-if (!reader.isNextNil()) {
-  if (reader.isNextString()) {
-    value = Nullable.fromValue(
-      Types.get{{type}}Value(reader.readString())
-    );
-  } else {
-    value = Nullable.fromValue(
-      reader.readInt32()
-    );
-    Types.sanitize{{type}}Value(value.value);
-  }
+if !reader.is_next_nil() {
+    if reader.is_next_string() {
+        {{#toLower}}{{name}}{{/toLower}} = Some(
+            get_{{#toLower}}{{type}}{{/toLower}}_value(
+                reader.read_string().unwrap_or_default().as_str(),
+            )
+            .expect("Failed to get {{type}} value"),
+        );
+    } else {
+        {{#toLower}}{{type}}{{/toLower}} = Some(
+            {{type}}::try_from(reader.read_i32().unwrap_or_default())
+                .expect("Failed to convert i32 to {{type}}"),
+        );
+        sanitize_{{#toLower}}{{type}}{{/toLower}}_value(opt_en.clone().unwrap() as i32)
+            .expect("Failed to sanitize optional {{type}}");
+    }
 } else {
-  value = Nullable.fromNull<Types.{{type}}>();
+    {{#toLower}}{{type}}{{/toLower}} = None;
 }
 {{/required}}

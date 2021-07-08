@@ -1,10 +1,10 @@
 {{#required}}
-Types.{{type}}.write(writer, item);
+{{type}}::write(&mut object.{{#toLower}}{{name}}{{/toLower}}.clone(), &mut writer);
 {{/required}}
 {{^required}}
-if (item) {
-  Types.{{type}}.write(writer, item as Types.{{type}});
+if object.{{#toLower}}{{name}}{{/toLower}}.is_some() {
+    {{type}}::write(&mut object.{{#toLower}}{{name}}{{/toLower}}.clone().unwrap(), &mut writer);
 } else {
-  writer.writeNil();
+    writer.write_nil();
 }
 {{/required}}

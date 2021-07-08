@@ -1,10 +1,13 @@
 {{#scalar}}
-return reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
+{{#toLower}}{{name}}{{/toLower}} = reader
+    .read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}().unwrap_or_default();
 {{/scalar}}
 {{#array}}
-return reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}} => {
-  {{> deserialize_array}}
-});
+{{#toLower}}{{name}}{{/toLower}} = reader
+    .read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {{#toWasm}}{{toGraphQLType}}{{/toWasm}} {
+        {{> deserialize_array}}
+    })
+    .expect("Failed to read {{#toLower}}{{name}}{{/toLower}}");
 {{/array}}
 {{#enum}}
 {{> deserialize_enum}}

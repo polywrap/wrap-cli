@@ -1,0 +1,113 @@
+{{^__commonPath}}
+{{#methods.length}}
+use super::{{{type}},};
+use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
+use serde::{Deserialize, Serialize};
+
+{{#methods}}
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
+    {{#arguments}}
+    pub {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    {{/arguments}}
+}
+
+pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_args(mut input: Input{{#toUpper}}{{name}}{{/toUpper}}) -> Vec<u8> {
+    let mut sizer_context = Context::new();
+    sizer_context.description =
+        "Serializing (sizing) imported query-type: Input{{#toUpper}}{{name}}{{/toUpper}}".to_string();
+    let mut sizer = WriteSizer::new(sizer_context);
+    write_{{#toLower}}{{name}}{{/toLower}}_args(&mut sizer, &mut input);
+    let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+    let mut encoder_context = Context::new();
+    encoder_context.description =
+        "Serializing (encoding) imported query-type: Input{{#toUpper}}{{name}}{{/toUpper}}".to_string();
+    let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
+    write_{{#toLower}}{{name}}{{/toLower}}_args(&mut encoder, &mut input);
+    buffer
+}
+
+pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(writer: &mut W, input: &mut Input{{#toUpper}}{{name}}{{/toUpper}}) {
+    writer.write_map_length({{arguments.length}});
+    {{#arguments}}
+    writer
+        .context()
+        .push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
+    writer.write_string(&"{{#toLower}}{{name}}{{/toLower}}".to_string());
+    {{#scalar}}
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{name}});
+    {{/scalar}}
+    {{#array}}
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(input.{{name}}.as_slice(), |writer: &mut W, {{#toWasm}}{{toGraphQLType}}{{/toWasm}}| {
+        {{> serialize_array}}
+    });
+    {{/array}}
+    {{#enum}}
+    {{#required}}
+    writer.write_i32(&(input.{{#toLower}}{{name}}{{/toLower}}.clone() as i32));
+    {{/required}}
+    {{^required}}
+    writer
+        .write_nullable_i32(Some(input.{{#toLower}}{{name}}{{/toLower}}.clone().unwrap() as i32))
+        .expect("Failed to write nullable i32");
+    {{/required}}
+    {{/enum}}
+    {{#object}}
+    {{#required}}
+    {{type}}::write(&mut input.{{#toLower}}{{name}}{{/toLower}}.clone(), &mut writer);
+    {{/required}}
+    {{^required}}
+    if input.{{#toLower}}{{name}}{{/toLower}}.is_some() {
+        {{type}}::write(&mut input.{{#toLower}}{{name}}{{/toLower}}.clone().unwrap(), &mut writer);
+    } else {
+        writer.write_nil();
+    }
+    {{/required}}
+    {{/object}}
+    writer
+        .context()
+        .pop()
+        .expect("Failed to pop {{#toLower}}{{name}}{{/toLower}} from Context");
+    {{/arguments}}
+}
+
+pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(buffer: &[u8]) -> {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
+    let mut context = Context::new();
+    context.description = "Deserializing imported query-type: {{#toUpper}}{{name}}{{/toUpper}}".to_string();
+    let mut reader = ReadDecoder::new(buffer, context);
+
+    {{#return}}
+    reader.context().push(
+        "{{#toLower}}{{name}}{{/toLower}}",
+        "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}",
+        "reading function output",
+    );
+    {{#scalar}}
+    let result: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}().unwrap_or_default();
+    {{/scalar}}
+    {{#array}}
+    let result: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = reader
+        .read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {{#toWasm}}{{toGraphQLType}}{{/toWasm}} {
+            {{> deserialize_array}}
+        })
+        .expect("Failed to read {{#toLower}}{{name}}{{/toLower}}");
+    {{/array}}
+    {{#enum}}
+    {{> deserialize_enum}}
+    {{/enum}}
+    {{#object}}
+    {{> deserialize_object}}
+    {{/object}}
+    {{/return}}
+    reader
+        .context()
+        .pop()
+        .expect("Failed to pop `{{#toLower}}{{name}}{{/toLower}}` from Context");
+    result
+}
+{{^last}}
+
+{{/last}}
+{{/methods}}
+{{/methods.length}}
+{{/__commonImport}}

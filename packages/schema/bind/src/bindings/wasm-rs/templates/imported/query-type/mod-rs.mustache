@@ -1,0 +1,43 @@
+{{#__commonPath}}
+use super::{{{type}},}
+pub use super::super::common::{{type}};
+{{/__commonPath}}
+{{^__commonPath}}
+{{#methods.length}}
+pub mod serialization;
+pub use serialization::{
+    {{#methods}}
+    Input{{#toUpper}}{{name}}{{/toUpper}},
+    deserialize_{{#toLower}}{{name}}{{/toLower}}_result,
+    serialize_{{#toLower}}{{name}}{{/toLower}}_args,
+    {{/methods}}
+};
+{{/methods.length}}
+use crate::subinvoke;
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct {{type}};
+
+{{methods}}
+impl {{type}} {
+    pub const URI: &'static str = "{{uri}}";
+    
+    pub fn {{#toLower}}{{name}}{{/toLower}}(input: Input{{#toUpper}}{{name}}{{/toUpper}}) -> {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
+        let uri = {{type}}::URI;
+        let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(input);
+        let result = subinvoke::w3_subinvoke(
+            uri.to_string(),
+            "{{#toLower}}{{type}}{{/toLower}}".to_string(),
+            "{{#toLower}}{{name}}{{/toLower}}".to_string(),
+            args,
+        )
+        .unwrap_or_default();
+        deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result.as_slice())
+    }
+    {{^last}}
+
+    {{/last}}
+}
+{{/methods}}
+{{/__commonPath}}
