@@ -1,8 +1,8 @@
-{{#__commonPath}}
-use super::{{{type}},}
+{{#__commonImport}}
+use super::{ {{type}}, }
 pub use super::super::common::{{type}};
-{{/__commonPath}}
-{{^__commonPath}}
+{{/__commonImport}}
+{{^__commonImport}}
 {{#methods.length}}
 pub mod serialization;
 pub use serialization::{
@@ -19,7 +19,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{type}};
 
-{{methods}}
+{{#methods}}
 impl {{type}} {
     pub const URI: &'static str = "{{uri}}";
     
@@ -40,4 +40,4 @@ impl {{type}} {
     {{/last}}
 }
 {{/methods}}
-{{/__commonPath}}
+{{/__commonImport}}

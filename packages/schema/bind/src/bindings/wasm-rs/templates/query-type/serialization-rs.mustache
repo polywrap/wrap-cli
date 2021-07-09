@@ -94,7 +94,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args_buf: &[u8]) -> Res
     {{^object}}
     if !{{#toLower}}{{name}}{{/toLower}}_set {
     {{/object}}
-      let custom_error = reader.context().print_with_context("Missing required argument: '{{#toLower}}{{name}}{{/toLower}}: {{type}}'");
+      let custom_error = reader.context().print_with_context("Missing required argument: '{{#toLower}}{{name}}{{/toLower}}: {{#toUpper}}{{type}}{{/toUpper}}'");
       return Err(Error::new(ErrorKind::Other, custom_error));
     }
     {{/required}}

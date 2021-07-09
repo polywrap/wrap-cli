@@ -8,7 +8,7 @@ pub use crate::common::{{type}};
 pub use super::super::common::{{type}};
 {{/__commonImport}}
 {{^__commonImport}}
-use crate::{{{type}},};
+use crate::{ {{type}}, };
 pub use serialization::{
     deserialize_{{#toLower}}{{type}}{{/toLower}}, 
     read_{{#toLower}}{{type}}{{/toLower}}, 

@@ -1,6 +1,6 @@
-{{^__commonPath}}
+{{^__commonImport}}
 {{#methods.length}}
-use super::{{{type}},};
+use super::{ {{type}}, };
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use serde::{Deserialize, Serialize};
 
