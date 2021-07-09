@@ -1,4 +1,4 @@
-#import { Query, LogLevel } into Logger from "w3://w3/logger"
+#import { Query } into Logger from "w3://ens/js-logger.web3api.eth"
 
 type Query {
   debug(

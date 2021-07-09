@@ -9,10 +9,10 @@ describe("IDNA UTS #46", () => {
 
   beforeAll(() => {
     client = new Web3ApiClient({
-      redirects: [
+      plugins: [
         {
-          from: "w3://ens/uts46.web3api.eth",
-          to: uts46Plugin(),
+          uri: "w3://ens/uts46.web3api.eth",
+          plugin: uts46Plugin(),
         },
       ],
     });
