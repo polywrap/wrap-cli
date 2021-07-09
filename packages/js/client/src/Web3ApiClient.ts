@@ -124,9 +124,7 @@ export class Web3ApiClient implements Client {
   public async query<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>
-  >(
-    options: QueryApiOptions<TVariables, Uri>
-  ): Promise<QueryApiResult<TData>>;
+  >(options: QueryApiOptions<TVariables, Uri>): Promise<QueryApiResult<TData>>;
   public async query<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>

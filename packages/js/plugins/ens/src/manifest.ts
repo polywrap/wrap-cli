@@ -3,8 +3,7 @@ import { PluginManifest, coreInterfaceUris } from "@web3api/core-js";
 export const manifest: PluginManifest = {
   // TODO: use the schema.graphql
   // https://github.com/web3-api/monorepo/issues/101
-  schema:
-`### Web3API Header START ###
+  schema: `### Web3API Header START ###
 scalar UInt
 scalar UInt8
 scalar UInt16
