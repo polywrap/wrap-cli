@@ -15,10 +15,14 @@ Console Logger plugin implements the `w3://ens/logger.core.web3api.eth` core Web
 import { loggerPlugin, LogLevel } from "@web3api/logger-plugin-js";
 
 const client = new Web3ApiClient({
-  plugins: {
+  plugins: [{
     from: "w3://ens/js-logger.web3api.eth",
     to: loggerPlugin()
-  }
+  }],
+  interfaces: [{
+    interface: "w3://ens/logger.core.web3api.eth",
+    implementations: ["w3://ens/js-logger.web3api.eth"],
+  }]
 });
 
 // For custom logging logic, initialize the logger like so:

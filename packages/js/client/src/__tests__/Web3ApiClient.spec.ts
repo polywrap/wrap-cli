@@ -68,7 +68,7 @@ describe("Web3ApiClient", () => {
         client.interfaces()
       ).toStrictEqual([
       {
-        interface: coreInterfaceUris.apiResolver,
+        interface: coreInterfaceUris.uriResolver,
         implementations: [
           new Uri("w3://ens/ipfs.web3api.eth"), 
           new Uri("w3://ens/ens.web3api.eth")

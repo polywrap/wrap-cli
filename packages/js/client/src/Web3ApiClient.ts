@@ -124,7 +124,9 @@ export class Web3ApiClient implements Client {
   public async query<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>
-  >(options: QueryApiOptions<TVariables, Uri>): Promise<QueryApiResult<TData>>;
+  >(
+    options: QueryApiOptions<TVariables, Uri>
+  ): Promise<QueryApiResult<TData>>;
   public async query<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>
@@ -261,8 +263,8 @@ export class Web3ApiClient implements Client {
             this.plugins(),
             this.interfaces(),
             (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
-            (uri: Uri, manifest: Web3ApiManifest, apiResolver: Uri) =>
-              new WasmWeb3Api(uri, manifest, apiResolver)
+            (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
+              new WasmWeb3Api(uri, manifest, uriResolver)
           );
 
           if (!api) {

@@ -22,7 +22,7 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
   }): Promise<ResolveResult> => {
     return await ipfs.resolve(input.cid, input.options);
   },
-  // apiResolver
+  // uri-resolver.core.web3api.eth
   tryResolveUri: async (input: { authority: string; path: string }) => {
     if (input.authority !== "ipfs") {
       return null;

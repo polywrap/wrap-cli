@@ -8,11 +8,10 @@ import {
   UriRedirect,
 } from "../types";
 import { Web3ApiManifest, deserializeWeb3ApiManifest } from "../manifest";
-import * as ApiResolver from "../apis/api-resolver";
 import { applyRedirects } from "./apply-redirects";
 import { findPluginPackage } from "./find-plugin-package";
 import { getImplementations } from "./get-implementations";
-import { coreInterfaceUris } from "../interfaces";
+import { coreInterfaceUris, UriResolver } from "../interfaces";
 
 import { Tracer } from "@web3api/tracing-js";
 
@@ -25,7 +24,7 @@ export const resolveUri = Tracer.traceFunc(
     plugins: readonly PluginRegistration<Uri>[],
     interfaces: readonly InterfaceImplementations<Uri>[],
     createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
-    createApi: (uri: Uri, manifest: Web3ApiManifest, apiResolver: Uri) => Api,
+    createApi: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) => Api,
     noValidate?: boolean
   ): Promise<Api> => {
     const finalRedirectedUri = applyRedirects(uri, redirects);
@@ -41,12 +40,12 @@ export const resolveUri = Tracer.traceFunc(
 
     // The final URI has been resolved, let's now resolve the Web3API package
     const uriResolverImplementations = getImplementations(
-      coreInterfaceUris.apiResolver,
+      coreInterfaceUris.uriResolver,
       redirects,
       interfaces
     );
 
-    return await resolveUriWithApiResolvers(
+    return await resolveUriWithUriResolvers(
       finalRedirectedUri,
       uriResolverImplementations,
       client,
@@ -56,11 +55,11 @@ export const resolveUri = Tracer.traceFunc(
   }
 );
 
-const resolveUriWithApiResolvers = async (
+const resolveUriWithUriResolvers = async (
   uri: Uri,
-  apiResolverImplementationUris: Uri[],
+  uriResolverImplementationUris: Uri[],
   client: Client,
-  createApi: (uri: Uri, manifest: Web3ApiManifest, apiResolver: Uri) => Api,
+  createApi: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) => Api,
   noValidate?: boolean
 ): Promise<Api> => {
   let resolvedUri = uri;
@@ -90,11 +89,11 @@ const resolveUriWithApiResolvers = async (
     }
   };
 
-  const tryResolveUriWithApiResolver = async (
+  const tryResolveUriWithUriResolver = async (
     uri: Uri,
     uriResolver: Uri
-  ): Promise<ApiResolver.MaybeUriOrManifest | undefined> => {
-    const { data } = await ApiResolver.Query.tryResolveUri(
+  ): Promise<UriResolver.MaybeUriOrManifest | undefined> => {
+    const { data } = await UriResolver.Query.tryResolveUri(
       client,
       uriResolver,
       uri
@@ -109,12 +108,12 @@ const resolveUriWithApiResolvers = async (
     return data;
   };
 
-  // Iterate through all api-resolver implementations,
+  // Iterate through all uri-resolver implementations,
   // iteratively resolving the URI until we reach the Web3API manifest
-  for (let i = 0; i < apiResolverImplementationUris.length; ++i) {
-    const uriResolver = apiResolverImplementationUris[i];
+  for (let i = 0; i < uriResolverImplementationUris.length; ++i) {
+    const uriResolver = uriResolverImplementationUris[i];
 
-    const result = await tryResolveUriWithApiResolver(resolvedUri, uriResolver);
+    const result = await tryResolveUriWithUriResolver(resolvedUri, uriResolver);
 
     if (!result) {
       continue;
@@ -125,7 +124,7 @@ const resolveUriWithApiResolvers = async (
       const convertedUri = new Uri(result.uri);
       trackUriRedirect(convertedUri.uri, uriResolver.uri);
 
-      Tracer.addEvent("api-resolver-redirect", {
+      Tracer.addEvent("uri-resolver-redirect", {
         from: resolvedUri.uri,
         to: convertedUri.uri,
       });
@@ -143,8 +142,8 @@ const resolveUriWithApiResolvers = async (
 
       return Tracer.traceFunc(
         "resolveUri: createApi",
-        (uri: Uri, manifest: Web3ApiManifest, apiResolver: Uri) =>
-          createApi(uri, manifest, apiResolver)
+        (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
+          createApi(uri, manifest, uriResolver)
       )(resolvedUri, manifest, uriResolver);
     }
   }
@@ -153,6 +152,6 @@ const resolveUriWithApiResolvers = async (
   throw Error(
     `No Web3API found at URI: ${resolvedUri.uri}` +
       `\nResolution Path: ${JSON.stringify(uriHistory, null, 2)}` +
-      `\nResolvers Used: ${apiResolverImplementationUris}`
+      `\nResolvers Used: ${uriResolverImplementationUris}`
   );
 };

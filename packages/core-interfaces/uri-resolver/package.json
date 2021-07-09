@@ -1,6 +1,6 @@
 {
-  "name": "resolver-interface",
-  "description": "Web3API Resolver Interface",
+  "name": "uri-resolver-interface",
+  "description": "URI Resolver Interface",
   "private": true,
   "version": "0.0.1-prealpha.28",
   "scripts": {

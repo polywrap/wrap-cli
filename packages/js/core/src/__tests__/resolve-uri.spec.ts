@@ -1,6 +1,6 @@
 import {
   Api,
-  ApiResolver,
+  UriResolver,
   Client,
   InvokeApiOptions,
   InvokeApiResult,
@@ -24,7 +24,7 @@ describe("resolveUri", () => {
     query: <
       TData extends Record<string, unknown> = Record<string, unknown>,
       TVariables extends Record<string, unknown> = Record<string, unknown>,
-    >(_options: QueryApiOptions<TVariables, string>): Promise<QueryApiResult<TData>> => {
+    >(_options: QueryApiOptions<TVariables, string | Uri>): Promise<QueryApiResult<TData>> => {
       return Promise.resolve({
         data: ({
           foo: "foo",
@@ -32,10 +32,14 @@ describe("resolveUri", () => {
       });
     },
     invoke: <TData = unknown>(
-      options: InvokeApiOptions<string>
+      options: InvokeApiOptions<string | Uri>
     ): Promise<InvokeApiResult<TData>> => {
+      let uri = options.uri;
+      if (Uri.isUri(uri)) {
+        uri = uri.uri;
+      }
       return Promise.resolve({
-        data: apis[options.uri]?.[options.module]?.[options.method](
+        data: apis[uri]?.[options.module]?.[options.method](
           options.input as Record<string, unknown>,
           {} as Client
         ) as TData,
@@ -55,13 +59,13 @@ describe("resolveUri", () => {
     };
   };
 
-  const createApi = (uri: Uri, manifest: Web3ApiManifest, apiResolver: Uri): Api => {
+  const createApi = (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri): Api => {
     return {
       invoke: () =>
         Promise.resolve({
           uri,
           manifest,
-          apiResolver,
+          uriResolver,
         } as InvokeApiResult),
       getSchema: (_client: Client): Promise<string> =>
         Promise.resolve("")
@@ -116,7 +120,7 @@ describe("resolveUri", () => {
         factory: () => ({} as Plugin),
         manifest: {
           schema: "",
-          implements: [coreInterfaceUris.apiResolver],
+          implements: [coreInterfaceUris.uriResolver],
         },
       },
     },
@@ -124,7 +128,7 @@ describe("resolveUri", () => {
   
   const interfaces: InterfaceImplementations<Uri>[] = [
     {
-      interface: coreInterfaceUris.apiResolver,
+      interface: coreInterfaceUris.uriResolver,
       implementations: [
         new Uri("ens/ens"),
         new Uri("ens/ipfs"),
@@ -143,7 +147,7 @@ describe("resolveUri", () => {
     const api = new Uri("w3://ens/ens");
     const file = new Uri("w3/some-file");
     const path = "w3/some-path";
-    const query = ApiResolver.Query;
+    const query = UriResolver.Query;
     const uri = new Uri("w3/some-uri");
 
     expect(query.tryResolveUri(client(apis), api, uri)).toBeDefined();
@@ -172,11 +176,11 @@ describe("resolveUri", () => {
       manifest: {
         format: "0.0.1-prealpha.3"
       },
-      apiResolver: new Uri("ens/ipfs"),
+      uriResolver: new Uri("ens/ipfs"),
     });
   });
 
-  it("uses a plugin that implements api-resolver", async () => {
+  it("uses a plugin that implements uri-resolver", async () => {
     const result = await resolveUri(
       new Uri("my/something-different"),
       client(apis),
@@ -198,11 +202,11 @@ describe("resolveUri", () => {
       manifest: {
         format: "0.0.1-prealpha.3"
       },
-      apiResolver: new Uri("ens/my-plugin"),
+      uriResolver: new Uri("ens/my-plugin"),
     });
   });
 
-  it("works when direct query a Web3API that implements the api-resolver", async () => {
+  it("works when direct query a Web3API that implements the uri-resolver", async () => {
     const result = await resolveUri(
       new Uri("ens/ens"),
       client(apis),
@@ -225,11 +229,11 @@ describe("resolveUri", () => {
         format: "0.0.1-prealpha.3",
         dog: "cat"
       },
-      apiResolver: new Uri("ens/ipfs"),
+      uriResolver: new Uri("ens/ipfs"),
     });
   });
 
-  it("works when direct query a plugin Web3API that implements the api-resolver", async () => {
+  it("works when direct query a plugin Web3API that implements the uri-resolver", async () => {
     const result = await resolveUri(
       new Uri("my/something-different"),
       client(apis),
@@ -251,7 +255,7 @@ describe("resolveUri", () => {
       manifest: {
         format: "0.0.1-prealpha.3"
       },
-      apiResolver: new Uri("ens/my-plugin"),
+      uriResolver: new Uri("ens/my-plugin"),
     });
   });
 
@@ -320,7 +324,7 @@ describe("resolveUri", () => {
           factory: () => ({} as Plugin),
           manifest: {
             schema: "",
-            implements: [coreInterfaceUris.apiResolver],
+            implements: [coreInterfaceUris.uriResolver],
           },
         },
       },

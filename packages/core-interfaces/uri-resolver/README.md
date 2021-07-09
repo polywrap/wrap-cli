@@ -1,4 +1,4 @@
-# Web3API Resolver Interface
+# URI Resolver Interface
 
 # How To Run
 
