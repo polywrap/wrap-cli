@@ -7,6 +7,3 @@ query:
   module:
     language: wasm/assemblyscript
     file: ./src/query/index.ts
-import_redirects:
-  - uri: w3://ens/logger.core.web3api.eth
-    schema: ../../core-interfaces/logger/src/schema.graphql
