@@ -1,7 +1,9 @@
 {
   "id": "BuildManifest_WasmAsExt",
   "type": "object",
-  "required": [],
+  "required": [
+    "config"
+  ],
   "properties": {
     "config": {
       "type": "object",
