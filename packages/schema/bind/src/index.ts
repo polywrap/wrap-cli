@@ -39,7 +39,7 @@ export interface BindOutput {
 
 export interface BindModuleOptions {
   typeInfo: TypeInfo;
-  schema?: string;
+  schema: string;
   outputDirAbs: string;
 }
 

@@ -22,6 +22,5 @@ type ApiResolver_MaybeUriOrManifest {
   manifest: String
 }
 `,
-  implemented: [new Uri("w3/api-resolver")],
-  imported: [new Uri("ens/ethereum.web3api.eth")],
+  implements: [new Uri("w3/api-resolver")],
 };

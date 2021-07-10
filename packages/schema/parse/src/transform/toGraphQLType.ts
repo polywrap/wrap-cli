@@ -30,10 +30,12 @@ function anyToGraphQL(any: AnyDefinition, prefixed: boolean): string {
 function toGraphQL(def: GenericDefinition, prefixed = false): string {
   switch (def.kind) {
     case DefinitionKind.Object:
+    case DefinitionKind.ObjectRef:
     case DefinitionKind.Scalar:
     case DefinitionKind.ImportedObject:
       return applyRequired(def.type, def.required);
     case DefinitionKind.Enum:
+    case DefinitionKind.EnumRef:
     case DefinitionKind.ImportedEnum:
       if (prefixed) {
         return applyRequired(`Enum_${def.type}`, def.required);

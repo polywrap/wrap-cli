@@ -1,5 +1,5 @@
 import { isBaseType } from "./types";
-import { MustacheFunction } from "../functions";
+import { MustacheFunction } from "../types";
 
 export const toMsgPack: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
@@ -68,6 +68,8 @@ export const toWasmInit: MustacheFunction = () => {
         return "false";
       case "Bytes":
         return `new ArrayBuffer(0)`;
+      case "BigInt":
+        return `BigInt.fromUInt16(0)`;
       default:
         if (type.includes("Enum_")) {
           return "0";
@@ -131,6 +133,9 @@ export const toWasm: MustacheFunction = () => {
         break;
       case "Bytes":
         type = "ArrayBuffer";
+        break;
+      case "BigInt":
+        type = "BigInt";
         break;
       default:
         if (type.includes("Enum_")) {

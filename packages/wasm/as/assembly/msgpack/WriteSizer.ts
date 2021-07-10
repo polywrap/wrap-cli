@@ -1,11 +1,19 @@
 import { Write } from "./Write";
 import { Nullable } from "./Nullable";
+import { BigInt } from "../BigInt";
+import { Context } from "./Context";
 
 export class WriteSizer extends Write {
   length: i32;
+  private readonly _context: Context;
 
-  constructor() {
+  constructor(context: Context = new Context()) {
     super();
+    this._context = context;
+  }
+
+  context(): Context {
+    return this._context;
   }
 
   writeNil(): void {
@@ -19,9 +27,11 @@ export class WriteSizer extends Write {
   writeInt8(value: i8): void {
     this.writeInt64(<i64>value);
   }
+
   writeInt16(value: i16): void {
     this.writeInt64(<i64>value);
   }
+
   writeInt32(value: i32): void {
     this.writeInt64(<i64>value);
   }
@@ -59,7 +69,7 @@ export class WriteSizer extends Write {
       this.length += 2;
     } else if (value < 1 << 16) {
       this.length += 3;
-    } else if (value < 1 << 32) {
+    } else if (value < (<u64>1) << 32) {
       this.length += 5;
     } else {
       this.length += 9;
@@ -109,6 +119,11 @@ export class WriteSizer extends Write {
     }
     this.writeBytesLength(value.byteLength);
     this.length += value.byteLength;
+  }
+
+  writeBigInt(value: BigInt): void {
+    const str = value.toString();
+    this.writeString(str);
   }
 
   writeArrayLength(length: u32): void {
@@ -268,6 +283,15 @@ export class WriteSizer extends Write {
     }
 
     this.writeBytes(value);
+  }
+
+  writeNullableBigInt(value: BigInt | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeBigInt(value);
   }
 
   writeNullableArray<T>(

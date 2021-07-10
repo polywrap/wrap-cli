@@ -16,6 +16,9 @@ import {
   isKind,
   EnumDefinition,
   ImportedEnumDefinition,
+  InterfaceImplementedDefinition,
+  EnumRef,
+  ObjectRef,
 } from "../typeInfo";
 
 export * from "./finalizePropertyDef";
@@ -32,9 +35,11 @@ export interface TypeInfoTransformer {
   TypeInfo?: (typeInfo: TypeInfo) => TypeInfo;
   GenericDefinition?: (def: GenericDefinition) => GenericDefinition;
   ObjectDefinition?: (def: ObjectDefinition) => ObjectDefinition;
+  ObjectRef?: (def: ObjectRef) => ObjectRef;
   AnyDefinition?: (def: AnyDefinition) => AnyDefinition;
   ScalarDefinition?: (def: ScalarDefinition) => ScalarDefinition;
   EnumDefinition?: (def: EnumDefinition) => EnumDefinition;
+  EnumRef?: (def: EnumRef) => EnumRef;
   PropertyDefinition?: (def: PropertyDefinition) => PropertyDefinition;
   ArrayDefinition?: (def: ArrayDefinition) => ArrayDefinition;
   MethodDefinition?: (def: MethodDefinition) => MethodDefinition;
@@ -48,6 +53,9 @@ export interface TypeInfoTransformer {
   ImportedObjectDefinition?: (
     def: ImportedObjectDefinition
   ) => ImportedObjectDefinition;
+  InterfaceImplementedDefinition?: (
+    def: InterfaceImplementedDefinition
+  ) => InterfaceImplementedDefinition;
 }
 
 export function transformTypeInfo(
@@ -120,6 +128,33 @@ export function visitObjectDefinition(
     );
   }
 
+  for (let i = 0; i < result.interfaces.length; ++i) {
+    result.interfaces[i] = visitInterfaceImplementedDefinition(
+      result.interfaces[i],
+      transforms
+    );
+  }
+
+  return transformType(result, transforms.leave);
+}
+
+export function visitObjectRef(
+  def: ObjectRef,
+  transforms: TypeInfoTransforms
+): ObjectRef {
+  let result = Object.assign({}, def);
+  result = transformType(result, transforms.enter);
+
+  return transformType(result, transforms.leave);
+}
+
+export function visitInterfaceImplementedDefinition(
+  def: InterfaceImplementedDefinition,
+  transforms: TypeInfoTransforms
+): InterfaceImplementedDefinition {
+  let result = Object.assign({}, def);
+  result = transformType(result, transforms.enter);
+
   return transformType(result, transforms.leave);
 }
 
@@ -139,11 +174,11 @@ export function visitAnyDefinition(
   }
 
   if (result.object) {
-    result.object = visitObjectDefinition(result.object, transforms);
+    result.object = visitObjectRef(result.object, transforms);
   }
 
   if (result.enum) {
-    result.enum = visitEnumDefinition(result.enum, transforms);
+    result.enum = visitEnumRef(result.enum, transforms);
   }
 
   return result;
@@ -162,6 +197,15 @@ export function visitEnumDefinition(
   def: EnumDefinition,
   transforms: TypeInfoTransforms
 ): EnumDefinition {
+  let result = Object.assign({}, def);
+  result = transformType(result, transforms.enter);
+  return transformType(result, transforms.leave);
+}
+
+export function visitEnumRef(
+  def: EnumRef,
+  transforms: TypeInfoTransforms
+): EnumRef {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
   return transformType(result, transforms.leave);
@@ -271,9 +315,11 @@ export function transformType<TDefinition extends GenericDefinition>(
   const {
     GenericDefinition,
     ObjectDefinition,
+    ObjectRef,
     AnyDefinition,
     ScalarDefinition,
     EnumDefinition,
+    EnumRef,
     ArrayDefinition,
     PropertyDefinition,
     MethodDefinition,
@@ -281,6 +327,7 @@ export function transformType<TDefinition extends GenericDefinition>(
     ImportedEnumDefinition,
     ImportedQueryDefinition,
     ImportedObjectDefinition,
+    InterfaceImplementedDefinition,
   } = transform;
 
   if (GenericDefinition && isKind(result, DefinitionKind.Generic)) {
@@ -288,6 +335,9 @@ export function transformType<TDefinition extends GenericDefinition>(
   }
   if (ObjectDefinition && isKind(result, DefinitionKind.Object)) {
     result = Object.assign(result, ObjectDefinition(result as any));
+  }
+  if (ObjectRef && isKind(result, DefinitionKind.ObjectRef)) {
+    result = Object.assign(result, ObjectRef(result as any));
   }
   if (AnyDefinition && isKind(result, DefinitionKind.Any)) {
     result = Object.assign(result, AnyDefinition(result as any));
@@ -297,6 +347,9 @@ export function transformType<TDefinition extends GenericDefinition>(
   }
   if (EnumDefinition && isKind(result, DefinitionKind.Enum)) {
     result = Object.assign(result, EnumDefinition(result as any));
+  }
+  if (EnumRef && isKind(result, DefinitionKind.EnumRef)) {
+    result = Object.assign(result, EnumRef(result as any));
   }
   if (ArrayDefinition && isKind(result, DefinitionKind.Array)) {
     result = Object.assign(result, ArrayDefinition(result as any));
@@ -321,6 +374,15 @@ export function transformType<TDefinition extends GenericDefinition>(
     isKind(result, DefinitionKind.ImportedObject)
   ) {
     result = Object.assign(result, ImportedObjectDefinition(result as any));
+  }
+  if (
+    InterfaceImplementedDefinition &&
+    isKind(result, DefinitionKind.InterfaceImplemented)
+  ) {
+    result = Object.assign(
+      result,
+      InterfaceImplementedDefinition(result as any)
+    );
   }
 
   return result;

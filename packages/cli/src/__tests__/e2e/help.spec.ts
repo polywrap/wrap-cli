@@ -1,5 +1,5 @@
 import path from "path";
-import { clearStyle } from "./utils";
+import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
 
@@ -18,13 +18,10 @@ describe("e2e tests for no help", () => {
   const projectRoot = path.resolve(__dirname, "../project/");
 
   test("Should display the help content", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["help"],
-        cwd: projectRoot,
-      },
-      "../../../bin/w3"
-    );
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["help"],
+      cwd: projectRoot
+    }, w3Cli);
 
     expect(code).toEqual(0);
     expect(error).toBe("");

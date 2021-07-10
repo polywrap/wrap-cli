@@ -1,5 +1,5 @@
 import { isBaseType } from "./types";
-import { MustacheFunction } from "../functions";
+import { MustacheFunction } from "../types";
 
 export const toTypescript: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {

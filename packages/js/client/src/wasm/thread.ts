@@ -13,7 +13,7 @@ import {
 } from "./types";
 import { readBytes, readString, writeBytes, writeString } from "./utils";
 
-import { encode } from "@msgpack/msgpack";
+import * as MsgPack from "@msgpack/msgpack";
 
 interface State {
   method?: string;
@@ -114,7 +114,9 @@ const imports = (memory: WebAssembly.Memory): W3Imports => ({
           const newLength = progress + numBytes;
 
           if (data.byteLength < newLength) {
-            data = new Uint8Array(data, 0, newLength);
+            const buf = new Uint8Array(newLength);
+            buf.set(data);
+            data = buf;
           }
 
           for (let i = 1; i <= numBytes; ++i) {
@@ -259,7 +261,7 @@ addEventListener(
       state.args = data.input;
     } else {
       // We must serialize the input object into msgpack
-      state.args = encode(data.input);
+      state.args = MsgPack.encode(data.input, { ignoreUndefined: true });
     }
 
     const module = new WebAssembly.Module(data.wasm);

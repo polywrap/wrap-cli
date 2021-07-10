@@ -10,6 +10,7 @@ scalar Int16
 scalar Int32
 scalar Int64
 scalar Bytes
+scalar BigInt
 
 directive @imported(
   uri: String!
@@ -28,6 +29,9 @@ enum CustomEnum {
   BYTES
 }
 
+"""
+Query comment
+"""
 type Query {
   method1(
     str: String!
@@ -37,11 +41,20 @@ type Query {
     uArrayArray: [[UInt]]!
   ): String!
 
+"""
+method2 comment
+"""
   method2(
+"""
+arg comment
+"""
     arg: [String!]!
   ): [Int64!]!
 }
 
+"""
+Mutation comment
+"""
 type Mutation @imports(
   types: [
     "Imported_NestedObjectType",
@@ -71,6 +84,9 @@ type Mutation @imports(
   ): Imported_NestedObjectType
 }
 
+"""
+CustomType comment
+"""
 type CustomType {
   str: String!
   optStr: String
@@ -104,6 +120,9 @@ type CustomType {
   enum: CustomEnum!
   optEnum: CustomEnum
   importedEnum: Imported_Enum!
+"""
+optImportedEnum comment
+"""
   optImportedEnum: Imported_Enum
 }
 
@@ -115,6 +134,9 @@ type ObjectType {
   prop: String!
 }
 
+"""
+Imported_NestedObjectType comment
+"""
 type Imported_NestedObjectType @imported(
   uri: "imported.eth",
   namespace: "Imported",
@@ -131,6 +153,9 @@ type Imported_ObjectType @imported(
   prop: String!
 }
 
+"""
+Imported_Enum comment
+"""
 enum Imported_Enum @imported(
   namespace: "Imported",
   uri: "imported.eth",

@@ -128,7 +128,7 @@ export default {
     outputDir = outputDir && filesystem.resolve(outputDir);
 
     const project = new Project({
-      manifestPath,
+      web3apiManifestPath: manifestPath,
     });
 
     const schemaComposer = new SchemaComposer({

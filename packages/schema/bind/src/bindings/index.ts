@@ -7,7 +7,7 @@ import { TypeInfo } from "@web3api/schema-parse";
 export function generateBinding(
   language: TargetLanguage,
   typeInfo: TypeInfo,
-  schema?: string
+  schema: string
 ): OutputDirectory {
   switch (language) {
     case "wasm-as":

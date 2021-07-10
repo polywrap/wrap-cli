@@ -1,5 +1,4 @@
 import { Uri } from "../";
-import { PluginPackage } from "../types";
 import { sanitizeUriRedirects } from "../types/UriRedirect";
 
 describe("sanitizeUriRedirects", () => {
@@ -14,10 +13,6 @@ describe("sanitizeUriRedirects", () => {
       {
         from: "w3://w3/api",
         to: "w3://w3/api"
-      },
-      {
-        from: "w3://w3/api",
-        to: {} as PluginPackage,
       }
     ]);
 
@@ -25,10 +20,6 @@ describe("sanitizeUriRedirects", () => {
       {
         from: new Uri("w3://w3/api"),
         to: new Uri("w3://w3/api")
-      },
-      {
-        from: new Uri("w3://w3/api"),
-        to: {} as PluginPackage,
       }
     ]);
   });
