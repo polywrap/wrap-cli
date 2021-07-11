@@ -13,6 +13,6 @@
   },
   "devDependencies": {
     "@web3api/cli": "0.0.1-prealpha.25",
-    "@web3api/wasm-as": "0.0.1-prealpha.25"
+    "@namestys/wasm-as": "0.0.1-prealpha.36"
   }
 }

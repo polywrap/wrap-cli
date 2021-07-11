@@ -1,4 +1,4 @@
-import { Nullable } from "@web3api/wasm-as";
+import { Nullable } from "@namestys/wasm-as";
 import { createRoute } from "../../query";
 import {
   bestTradeExactIn,

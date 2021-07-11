@@ -51,7 +51,7 @@ export class WasmPromise<T> {
   private execAsyncFunc(exec: () => void) {
     if (!this._sleeping) {
       this._view[this._dataAddr >> 2] = this._dataAddr + 8;
-      this._view[(this._dataAddr + 4) >> 2] = 1024;
+      this._view[(this._dataAddr + 4) >> 2] = 8 * 1024;
 
       console.log("start_unwind")
       this._exports.values.asyncify_start_unwind(this._dataAddr);

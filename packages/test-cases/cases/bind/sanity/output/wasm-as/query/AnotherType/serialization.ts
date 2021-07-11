@@ -7,7 +7,7 @@ import {
   Nullable,
   BigInt,
   Context
-} from "@web3api/wasm-as";
+} from "@namestys/wasm-as";
 import { AnotherType } from "./";
 import * as Types from "..";
 

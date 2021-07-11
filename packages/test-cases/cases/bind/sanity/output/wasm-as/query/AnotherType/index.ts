@@ -3,7 +3,7 @@ import {
   Write,
   Nullable,
   BigInt
-} from "@web3api/wasm-as";
+} from "@namestys/wasm-as";
 import {
   serializeAnotherType,
   deserializeAnotherType,

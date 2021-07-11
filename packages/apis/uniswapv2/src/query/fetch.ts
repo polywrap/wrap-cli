@@ -14,7 +14,7 @@ import {
 import { pairAddress } from "./pair";
 import { wrapIfEther } from "../utils/utils";
 
-import { BigInt } from "@web3api/wasm-as";
+import { BigInt } from "@namestys/wasm-as";
 
 export function fetchTokenData(input: Input_fetchTokenData): Token {
   const address: string = input.address;

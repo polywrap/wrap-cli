@@ -16,7 +16,7 @@ import { currencyEquals } from "./token";
 import { UNISWAP_ROUTER_CONTRACT } from "../utils/constants";
 import { getSwapMethodAbi } from "../mutation/abi";
 
-import { BigInt, Nullable } from "@web3api/wasm-as";
+import { BigInt, Nullable } from "@namestys/wasm-as";
 
 const ZERO_HEX = "0x0";
 

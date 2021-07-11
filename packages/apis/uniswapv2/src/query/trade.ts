@@ -23,9 +23,9 @@ import { TradeOptions } from "../utils/TradeOptions";
 import { ETHER } from "../utils/Currency";
 import { copyTokenAmount, wrapIfEther } from "../utils/utils";
 
-import { BigInt } from "@web3api/wasm-as";
+import { BigInt } from "@namestys/wasm-as";
 import { BigFloat } from "as-bigfloat";
-import { Nullable } from "@web3api/wasm-as";
+import { Nullable } from "@namestys/wasm-as";
 
 export function createTrade(input: Input_createTrade): Trade {
   const amounts: TokenAmount[] = new Array(input.route.path.length);

@@ -22,7 +22,7 @@ import { ProcessedPair } from "../utils/ProcessedPair";
 import Price from "../utils/Price";
 import { concat, getChecksumAddress } from "../utils/addressUtils";
 
-import { BigInt } from "@web3api/wasm-as";
+import { BigInt } from "@namestys/wasm-as";
 
 // returns address of pair liquidity token contract
 // see https://uniswap.org/docs/v2/javascript-SDK/getting-pair-addresses/
