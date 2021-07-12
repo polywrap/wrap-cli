@@ -248,10 +248,28 @@ export class Web3ApiClient implements Client {
   public subscribe<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>
-  >(options: SubscribeOptions<TVariables, string>): Subscription<TData> {
+  >(options: SubscribeOptions<TVariables, string>): Subscription<TData>;
+  public subscribe<
+    TData extends Record<string, unknown> = Record<string, unknown>,
+    TVariables extends Record<string, unknown> = Record<string, unknown>
+  >(options: SubscribeOptions<TVariables, Uri>): Subscription<TData>;
+  public subscribe<
+    TData extends Record<string, unknown> = Record<string, unknown>,
+    TVariables extends Record<string, unknown> = Record<string, unknown>
+  >(options: SubscribeOptions<TVariables, string | Uri>): Subscription<TData> {
+    let typedOptions: SubscribeOptions<TVariables, Uri>;
+    if (typeof options.uri === "string") {
+      typedOptions = {
+        ...options,
+        uri: new Uri(options.uri),
+      };
+    } else {
+      typedOptions = options as QueryApiOptions<TVariables, Uri>;
+    }
+
     const run = Tracer.traceFunc(
       "Web3ApiClient: subscribe",
-      (options: SubscribeOptions<TVariables, string>): Subscription<TData> => {
+      (options: SubscribeOptions<TVariables, Uri>): Subscription<TData> => {
         const { uri, query, variables, frequency: freq } = options;
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const client: Web3ApiClient = this;
@@ -318,7 +336,7 @@ export class Web3ApiClient implements Client {
       }
     );
 
-    return run(options);
+    return run(typedOptions);
   }
 
   public async loadWeb3Api(uri: string): Promise<Api>;
