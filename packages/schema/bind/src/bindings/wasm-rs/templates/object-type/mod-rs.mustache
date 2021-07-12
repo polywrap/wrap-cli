@@ -14,6 +14,7 @@ use serde::{Deserialize, Serialize};
 {{#propertyTypes}}
 use {{crate}}::{{type}};
 {{/propertyTypes}}
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{type}} {
     {{#properties}}

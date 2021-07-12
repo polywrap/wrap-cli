@@ -12,7 +12,7 @@ use crate::CustomType;
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct AnotherType {
     pub prop: Option<String>,
-    pub circular: Box<Option<CustomType>>,
+    pub circular: Option<CustomType>,
 }
 
 impl AnotherType {

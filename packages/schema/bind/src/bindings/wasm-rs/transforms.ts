@@ -26,10 +26,6 @@ export function propertyTypes(): TypeInfoTransforms {
   return {
     enter: {
       ObjectDefinition: (def: ObjectDefinition) => {
-        if (state.importedQueryDefinition || state.queryDefinition || state.objectDefinition) {
-          return def;
-        }
-
         state.objectDefinition = def;
         state.propertyTypes = [];
         return def;
@@ -55,8 +51,6 @@ export function propertyTypes(): TypeInfoTransforms {
             return array;
           }
 
-          console.log("appending", def.type, rootType)
-
           const appendUnique = (item: CrateAndType) => {
             if (array.findIndex((i) => i.crate === item.crate && i.type === item.type) === -1) {
               array.push(item);
@@ -70,7 +64,7 @@ export function propertyTypes(): TypeInfoTransforms {
             });
           } else {
             appendUnique({
-              crate: "super",
+              crate: "crate",
               type: def.type
             });
           }
@@ -100,44 +94,31 @@ export function propertyTypes(): TypeInfoTransforms {
     },
     leave: {
       ObjectDefinition: (def: ObjectDefinition) => {
-        if (state.objectDefinition) {
-          const propertyTypes = state.propertyTypes;
-          state.propertyTypes = undefined;
-          state.objectDefinition = undefined;
-          console.log("HERERE", def.type, propertyTypes);
-          return {
-            ...def,
-            propertyTypes
-          };
-        } else {
-          return def;
-        }
+        const propertyTypes = state.propertyTypes;
+        state.propertyTypes = undefined;
+        state.objectDefinition = undefined;
+        return {
+          ...def,
+          propertyTypes
+        };
       },
       QueryDefinition: (def: QueryDefinition) => {
-        if (state.queryDefinition) {
-          const propertyTypes = state.propertyTypes;
-          state.propertyTypes = undefined;
-          state.queryDefinition = undefined;
-          return {
-            ...def,
-            propertyTypes
-          };
-        } else {
-          return def;
-        }
+        const propertyTypes = state.propertyTypes;
+        state.propertyTypes = undefined;
+        state.queryDefinition = undefined;
+        return {
+          ...def,
+          propertyTypes
+        };
       },
       ImportedQueryDefinition: (def: ImportedQueryDefinition) => {
-        if (state.importedQueryDefinition) {
-          const propertyTypes = state.propertyTypes;
-          state.propertyTypes = undefined;
-          state.importedQueryDefinition = undefined;
-          return {
-            ...def,
-            propertyTypes
-          };
-        } else {
-          return def;
-        }
+        const propertyTypes = state.propertyTypes;
+        state.propertyTypes = undefined;
+        state.importedQueryDefinition = undefined;
+        return {
+          ...def,
+          propertyTypes
+        };
       }
     }
   }
