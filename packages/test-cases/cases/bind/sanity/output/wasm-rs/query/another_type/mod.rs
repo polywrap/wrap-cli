@@ -1,9 +1,12 @@
 pub mod serialization;
 pub use serialization::{
-    deserialize_another_type, read_another_type, serialize_another_type, write_another_type,
+    deserialize_another_type,
+    read_another_type,
+    serialize_another_type,
+    write_another_type,
 };
-
-use crate::{CustomType, Read, Write};
+use crate::{Read, Write};
+use crate::CustomType;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

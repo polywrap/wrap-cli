@@ -1,7 +1,12 @@
-use crate::{get_custom_enum_value, sanitize_custom_enum_value};
 use crate::{
-    AnotherType, Context, CustomEnum, CustomType, Read, ReadDecoder, Write, WriteEncoder,
-    WriteSizer,
+    get_custom_enum_value,
+    sanitize_custom_enum_value,
+};
+use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer,};
+use crate::{
+    AnotherType,
+    CustomEnum,
+    CustomType,
 };
 use num_bigint::BigInt;
 use num_traits::cast::FromPrimitive;
@@ -25,13 +30,13 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer.write_map_length(35);
     writer
         .context()
-        .push("string", "string", "writing property");
+        .push("string", "String", "writing property");
     writer.write_string(&"string".to_string());
     writer.write_string(&object.string.to_owned());
     writer
         .context()
         .pop()
-        .expect("Failed to pop string from Context");
+        .expect("Failed to pop String from Context");
     writer
         .context()
         .push("opt_string", "Option<String>", "writing property");
@@ -40,14 +45,14 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop nullable string from Context");
+        .expect("Failed to pop Option<String> from Context");
     writer.context().push("u", "u32", "writing property");
     writer.write_string(&"u".to_string());
     writer.write_u32(&object.u);
     writer
         .context()
         .pop()
-        .expect("Failed to pop unsigned int from Context");
+        .expect("Failed to pop u32 from Context");
     writer
         .context()
         .push("opt_u", "Option<u32>", "writing property");
@@ -56,7 +61,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop optional uint from Context");
+        .expect("Failed to pop Option<u32> from Context");
     writer.context().push("u8", "u8", "writing property");
     writer.write_string(&"u8".to_string());
     writer.write_u8(&object.uint8);
@@ -91,7 +96,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop signed int from Context");
+        .expect("Failed to pop i32 from Context");
     writer.context().push("i8", "i8", "writing property");
     writer.write_string(&"i8".to_string());
     writer.write_i8(object.int8);
@@ -128,7 +133,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop bigint from Context");
+        .expect("Failed to pop BigInt from Context");
     writer
         .context()
         .push("opt_bigint", "Option<BigInt>", "writing property");
@@ -139,7 +144,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop nullable bigint from Context");
+        .expect("Failed to pop Option<BigInt> from Context");
     writer
         .context()
         .push("bytes", "Vec<u8>", "writing property");
@@ -148,7 +153,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop bytes from Context");
+        .expect("Failed to pop Vec<u8> from Context");
     writer
         .context()
         .push("opt_bytes", "Option<Vec<u8>>", "writing property");
@@ -159,14 +164,14 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop nullable bytes from Context");
+        .expect("Failed to pop Option<Vec<u8>> from Context");
     writer.context().push("boolean", "bool", "writing property");
     writer.write_string(&"boolean".to_string());
     writer.write_bool(object.boolean);
     writer
         .context()
         .pop()
-        .expect("Failed to pop boolean value from Context");
+        .expect("Failed to pop boolean from Context");
     writer
         .context()
         .push("opt_boolean", "Option<bool>", "writing property");
@@ -177,7 +182,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop nullable bool from Context");
+        .expect("Failed to pop Option<bool> from Context");
     writer
         .context()
         .push("u_array", "Vec<u32>", "writing property");
@@ -186,7 +191,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop array from Context");
+        .expect("Failed to pop Vec<u32> from Context");
     writer
         .context()
         .push("u_opt_array", "Option<Vec<u32>>", "writing property");
@@ -195,7 +200,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop optional array from Context");
+        .expect("Failed to pop Option<Vec<u32>> from Context");
     writer.context().push(
         "opt_u_opt_array",
         "Option<Vec<Option<u32>>>",
@@ -206,7 +211,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop optional array from Context");
+        .expect("Failed to pop Option<Vec<Option<u32>>> from Context");
     writer.context().push(
         "opt_string_opt_array",
         "Option<Vec<Option<String>>>",
@@ -217,7 +222,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop optional array from Context");
+        .expect("Failed to pop Option<Vec<Option<String>>> from Context");
     writer
         .context()
         .push("u_array_array", "Vec<Vec<u32>>", "writing property");
@@ -228,7 +233,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop array from Context");
+        .expect("Failed to pop Vec<Vec<u32>> from Context");
     writer.context().push(
         "u_opt_array_opt_array",
         "Vec<Option<Vec<u64>>>",
@@ -242,7 +247,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop array from Context");
+        .expect("Failed to pop Vec<Option<Vec<u64>>> from Context");
     writer.context().push(
         "u_array_opt_array_array",
         "Vec<Option<Vec<Vec<u64>>>>",
@@ -260,7 +265,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop array from Context");
+        .expect("Failed to pop Vec<Option<Vec<Vec<u64>>>> from Context");
     writer.context().push(
         "crazy_array",
         "Option<Vec<Option<Vec<Option<Vec<u64>>>>>>",
@@ -275,7 +280,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop crazy array from Context");
+        .expect("Failed to pop Option<Vec<Option<Vec<Option<Vec<u64>>>>>> from Context");
     writer
         .context()
         .push("object", "AnotherType", "writing property");
@@ -284,7 +289,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop object from Context");
+        .expect("Failed to pop AnotherType from Context");
     writer
         .context()
         .push("opt_object", "Option<AnotherType>", "writing property");
@@ -297,7 +302,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop string from Context");
+        .expect("Failed to pop Option<AnotherType> from Context");
     writer
         .context()
         .push("object_array", "Vec<AnotherType>", "writing property");
@@ -308,7 +313,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop object array from Context");
+        .expect("Failed to pop Vec<AnotherType> from Context");
     writer.context().push(
         "opt_object_array",
         "Option<Vec<AnotherType>>",
@@ -321,7 +326,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop optional object array from Context");
+        .expect("Failed to pop Option<Vec<AnotherType>> from Context");
     writer
         .context()
         .push("en", "CustomEnum", "writing property");
@@ -330,7 +335,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop enum from Context");
+        .expect("Failed to pop CustomEnum from Context");
     writer
         .context()
         .push("opt_en", "Option<CustomEnum>", "writing property");
@@ -341,10 +346,10 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop optional enum from Context");
+        .expect("Failed to pop Option<CustomEnum> from Context");
     writer
         .context()
-        .push("en_array", "Vec<CustomEnum>>", "writing property");
+        .push("en_array", "Vec<CustomEnum>", "writing property");
     writer.write_string(&"en_array".to_string());
     writer.write_array(object.en_array.as_slice(), |writer: &mut W, arr_fn| {
         writer.write_i32(&(arr_fn.clone() as i32))
@@ -352,10 +357,10 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop enum array from Context");
+        .expect("Failed to pop Vec<CustomEnum> from Context");
     writer.context().push(
         "opt_en_array",
-        "Option<Vec<CustomEnum>>>",
+        "Option<Vec<CustomEnum>>",
         "writing property",
     );
     writer.write_string(&"opt_en_array".to_string());
@@ -365,7 +370,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop optional array from Context");
+        .expect("Failed to pop Option<Vec<CustomEnum>> from Context");
 }
 
 pub fn deserialize_custom_type(buffer: &[u8]) -> CustomType {
@@ -450,7 +455,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop string from Context");
+                    .expect("Failed to pop String from Context");
             }
             "opt_string" => {
                 reader
@@ -460,7 +465,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop optional string from Context");
+                    .expect("Failed to pop Option<String> from Context");
             }
             "u" => {
                 reader
@@ -471,7 +476,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop unsigned int from Context");
+                    .expect("Failed to pop u32 from Context");
             }
             "opt_u" => {
                 reader
@@ -481,7 +486,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop optional uint from Context");
+                    .expect("Failed to pop Option<u32> from Context");
             }
             "uint8" => {
                 reader
@@ -536,7 +541,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop signed int from Context");
+                    .expect("Failed to pop i32 from Context");
             }
             "int8" => {
                 reader
@@ -591,7 +596,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop bigint from Context");
+                    .expect("Failed to pop BigInt from Context");
             }
             "opt_bigint" => {
                 reader
@@ -601,7 +606,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop optional bigint from Context");
+                    .expect("Failed to pop Option<BigInt> from Context");
             }
             "bytes" => {
                 reader
@@ -612,7 +617,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop bytes from Context");
+                    .expect("Failed to pop Vec<u8> from Context");
             }
             "opt_bytes" => {
                 reader
@@ -622,7 +627,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop optional bytes from Context");
+                    .expect("Failed to pop Option<Vec<u8>> from Context");
             }
             "boolean" => {
                 reader
@@ -633,7 +638,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop boolean from Context");
+                    .expect("Failed to pop bool from Context");
             }
             "opt_boolean" => {
                 reader
@@ -643,7 +648,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop optional bool from Context");
+                    .expect("Failed to pop Option<bool> from Context");
             }
             "u_array" => {
                 reader
@@ -656,7 +661,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop array from Context");
+                    .expect("Failed to pop Vec<u32> from Context");
             }
             "u_opt_array" => {
                 reader
@@ -667,7 +672,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop optional array from Context");
+                    .expect("Failed to pop Option<Vec<u32>> from Context");
             }
             "opt_u_opt_array" => {
                 reader.context().push(
@@ -679,7 +684,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop optional nullable array from Context");
+                    .expect("Failed to pop Option<Vec<Option<u32>>> from Context");
             }
             "opt_str_opt_array" => {
                 reader.context().push(
@@ -692,7 +697,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop optional string array from Context");
+                    .expect("Failed to pop Option<Option<Vec<String>>> from Context");
             }
             "u_array_array" => {
                 reader
@@ -709,7 +714,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop array from Context");
+                    .expect("Failed to pop Vec<Vec<u32>> from Context");
             }
             "u_opt_array_opt_array" => {
                 reader.context().push(
@@ -728,7 +733,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop array from Context");
+                    .expect("Failed to pop Vec<Option<Vec<u64>>> from Context");
             }
             "u_array_opt_array_array" => {
                 reader.context().push(
@@ -749,7 +754,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop array from Context");
+                    .expect("Failed to pop Vec<Option<Vec<Vec<u64>>>> from Context");
             }
             "crazy_array" => {
                 reader.context().push(
@@ -767,7 +772,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop crazy array from Context");
+                    .expect("Failed to pop Option<Vec<Option<Vec<Option<Vec<u64>>>>>> from Context");
             }
             "object" => {
                 reader
@@ -778,7 +783,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop object from Context");
+                    .expect("Failed to pop AnotherType from Context");
             }
             "opt_object" => {
                 reader.context().push(
@@ -792,7 +797,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop optional object from Context");
+                    .expect("Failed to pop Option<AnotherType> from Context");
             }
             "object_array" => {
                 reader
@@ -805,7 +810,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop object array from Context");
+                    .expect("Failed to pop Vec<AnotherType> from Context");
             }
             "opt_object_array" => {
                 reader.context().push(
@@ -817,7 +822,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop optional object array from Context");
+                    .expect("Failed to pop Option<Vec<AnotherType>> from Context");
             }
             "en" => {
                 reader
@@ -825,18 +830,18 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                     .push(&field, "CustomEnum", "type found, reading property");
                 if reader.is_next_string() {
                     en = get_custom_enum_value(reader.read_string().unwrap_or_default().as_str())
-                        .expect("Failed to get custom enum value");
+                        .expect("Failed to get CustomEnum value");
                 } else {
                     en = CustomEnum::try_from(reader.read_i32().unwrap_or_default())
                         .expect("Failed to convert i32 to CustomEnum");
                     sanitize_custom_enum_value(en.clone() as i32)
-                        .expect("Failed to sanitize custom enum");
+                        .expect("Failed to sanitize CustomEnum");
                 }
                 en_set = true;
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop enum from Context");
+                    .expect("Failed to pop CustomEnum from Context");
             }
             "opt_en" => {
                 reader
@@ -848,15 +853,15 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                             get_custom_enum_value(
                                 reader.read_string().unwrap_or_default().as_str(),
                             )
-                            .expect("Failed to get custom enum value"),
+                            .expect("Failed to get Option<CustomEnum> value"),
                         );
                     } else {
                         opt_en = Some(
                             CustomEnum::try_from(reader.read_i32().unwrap_or_default())
-                                .expect("Failed to convert i32 to CustomEnum"),
+                                .expect("Failed to convert i32 to Option<CustomEnum>"),
                         );
                         sanitize_custom_enum_value(opt_en.clone().unwrap() as i32)
-                            .expect("Failed to sanitize optional custom enum");
+                            .expect("Failed to sanitize Option<CustomEnum>");
                     }
                 } else {
                     opt_en = None;
@@ -864,7 +869,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop optional enum from Context");
+                    .expect("Failed to pop Option<CustomEnum> from Context");
             }
             "en_array" => {
                 reader
@@ -877,12 +882,12 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                             value = get_custom_enum_value(
                                 reader.read_string().unwrap_or_default().as_str(),
                             )
-                            .expect("Failed to get custom enum value");
+                            .expect("Failed to get Vec<CustomEnum> value");
                         } else {
                             value = CustomEnum::try_from(reader.read_i32().unwrap_or_default())
-                                .expect("Failed to convert i32 to CustomEnum");
+                                .expect("Failed to convert i32 to Vec<CustomEnum>");
                             sanitize_custom_enum_value(value.clone() as i32)
-                                .expect("Failed to sanitize custom enum");
+                                .expect("Failed to sanitize Vec<CustomEnum>");
                         }
                         return value;
                     })
@@ -891,7 +896,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop enum array from Context");
+                    .expect("Failed to pop Vec<CustomEnum> from Context");
             }
             "opt_en_array" => {
                 reader.context().push(
@@ -905,19 +910,19 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                         value = get_custom_enum_value(
                             reader.read_string().unwrap_or_default().as_str(),
                         )
-                        .expect("Failed to get custom enum value");
+                        .expect("Failed to get Option<Vec<CustomEnum>> value");
                     } else {
                         value = CustomEnum::try_from(reader.read_i32().unwrap_or_default())
-                            .expect("Failed to convert i32 to CustomEnum");
+                            .expect("Failed to convert i32 to Option<Vec<CustomEnum>>");
                         sanitize_custom_enum_value(value.clone() as i32)
-                            .expect("Failed to sanitize custom enum");
+                            .expect("Failed to sanitize Option<Vec<CustomEnum>>");
                     }
                     return value;
                 });
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop optional enum array from Context");
+                    .expect("Failed to pop Option<Vec<CustomEnum>> from Context");
             }
             _ => {
                 reader
@@ -940,7 +945,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
     if !u_set {
         let custom_error = reader
             .context()
-            .print_with_context("Missing required property: 'u: uint'");
+            .print_with_context("Missing required property: 'u: u32'");
         return Err(Error::new(ErrorKind::Other, custom_error));
     }
     if !uint8_set {
@@ -970,7 +975,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
     if !i_set {
         let custom_error = reader
             .context()
-            .print_with_context("Missing required property: 'i: int'");
+            .print_with_context("Missing required property: 'i: i32'");
         return Err(Error::new(ErrorKind::Other, custom_error));
     }
     if !int8_set {

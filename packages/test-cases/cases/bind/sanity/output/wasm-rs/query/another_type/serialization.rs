@@ -1,4 +1,7 @@
-use super::{AnotherType, CustomType};
+use super::{
+    AnotherType,
+    CustomType,
+};
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
 pub fn serialize_another_type(mut object: &mut AnotherType) -> Vec<u8> {
@@ -24,7 +27,7 @@ pub fn write_another_type<W: Write>(object: &mut AnotherType, writer: &mut W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop object from Context");
+        .expect("Failed to pop Option<String> from Context");
     writer
         .context()
         .push("circular", "Option<CustomType>", "writing property");
@@ -37,7 +40,7 @@ pub fn write_another_type<W: Write>(object: &mut AnotherType, writer: &mut W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop object from Context");
+        .expect("Failed to pop Option<CustomType> from Context");
 }
 
 pub fn deserialize_another_type(buffer: &[u8]) -> AnotherType {
@@ -65,7 +68,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> AnotherType {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop prop from Context");
+                    .expect("Failed to pop Option<String> from Context");
             }
             "circular" => {
                 reader
@@ -79,7 +82,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> AnotherType {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop circular from Context");
+                    .expect("Failed to pop Option<CustomType> from Context");
             }
             _ => {
                 reader
@@ -91,13 +94,6 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> AnotherType {
                     .expect("Failed to pop unknown object from Context");
             }
         }
-        reader
-            .context()
-            .push(&field, "unknown", "searching for property type");
-        reader
-            .context()
-            .pop()
-            .expect("Failed to pop object from Context");
     }
     AnotherType {
         prop,

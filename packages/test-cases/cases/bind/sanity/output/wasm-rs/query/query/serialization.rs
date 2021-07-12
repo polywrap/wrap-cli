@@ -1,6 +1,9 @@
+use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer,};
 use crate::{
-    get_custom_enum_value, sanitize_custom_enum_value, AnotherType, Context, CustomEnum, Read,
-    ReadDecoder, Write, WriteEncoder, WriteSizer,
+    get_custom_enum_value,
+    sanitize_custom_enum_value,
+    AnotherType,
+    CustomEnum,
 };
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
@@ -72,13 +75,13 @@ pub fn deserialize_query_method_args(args_buf: &[u8]) -> Result<InputQueryMethod
             "string" => {
                 reader
                     .context()
-                    .push(&field, "string", "type found, reading property");
+                    .push(&field, "String", "type found, reading property");
                 string = reader.read_string().unwrap_or_default();
                 string_set = true;
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop value from Context");
+                    .expect("Failed to pop String from Context");
             }
             "opt_string" => {
                 reader
@@ -88,7 +91,7 @@ pub fn deserialize_query_method_args(args_buf: &[u8]) -> Result<InputQueryMethod
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop value from Context");
+                    .expect("Failed to pop Option<String> from Context");
             }
             "en" => {
                 reader
@@ -101,13 +104,13 @@ pub fn deserialize_query_method_args(args_buf: &[u8]) -> Result<InputQueryMethod
                     en = CustomEnum::try_from(reader.read_i32().unwrap_or_default())
                         .expect("Failed to convert i32 to CustomEnum");
                     sanitize_custom_enum_value(en.clone() as i32)
-                        .expect("Failed to sanitize custom enum value");
+                        .expect("Failed to sanitize CustomEnum value");
                 }
                 en_set = true;
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop value from Context");
+                    .expect("Failed to pop CustomEnum from Context");
             }
             "opt_enum" => {
                 reader
@@ -119,15 +122,15 @@ pub fn deserialize_query_method_args(args_buf: &[u8]) -> Result<InputQueryMethod
                             get_custom_enum_value(
                                 reader.read_string().unwrap_or_default().as_str(),
                             )
-                            .expect("Failed to get custom enum value"),
+                            .expect("Failed to get Option<CustomEnum> value"),
                         );
                     } else {
                         opt_enum = Some(
                             CustomEnum::try_from(reader.read_i32().unwrap_or_default())
-                                .expect("Failed to convert i32 to CustomEnum"),
+                                .expect("Failed to convert i32 to Option<CustomEnum>"),
                         );
                         sanitize_custom_enum_value(opt_enum.clone().unwrap() as i32)
-                            .expect("Failed to sanitize optional custom enum value");
+                            .expect("Failed to sanitize Option<CustomEnum> value");
                     }
                 } else {
                     opt_enum = None;
@@ -135,7 +138,7 @@ pub fn deserialize_query_method_args(args_buf: &[u8]) -> Result<InputQueryMethod
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop value from Context");
+                    .expect("Failed to pop Option<CustomEnum> from Context");
             }
             "enum_array" => {
                 reader
@@ -148,12 +151,12 @@ pub fn deserialize_query_method_args(args_buf: &[u8]) -> Result<InputQueryMethod
                             value = get_custom_enum_value(
                                 reader.read_string().unwrap_or_default().as_str(),
                             )
-                            .expect("Failed to get custom enum value");
+                            .expect("Failed to get Vec<CustomEnum> value");
                         } else {
                             value = CustomEnum::try_from(reader.read_i32().unwrap_or_default())
-                                .expect("Failed to convert i32 to CustomEnum");
+                                .expect("Failed to convert i32 to Vec<CustomEnum>");
                             sanitize_custom_enum_value(value.clone() as i32)
-                                .expect("Failed to sanitize custom enum");
+                                .expect("Failed to sanitize Vec<CustomEnum>");
                         }
                         return value;
                     })
@@ -162,7 +165,7 @@ pub fn deserialize_query_method_args(args_buf: &[u8]) -> Result<InputQueryMethod
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop enum array from Context");
+                    .expect("Failed to pop Vec<CustomEnum> from Context");
             }
             "opt_enum_array" => {
                 reader.context().push(
@@ -176,19 +179,19 @@ pub fn deserialize_query_method_args(args_buf: &[u8]) -> Result<InputQueryMethod
                         value = get_custom_enum_value(
                             reader.read_string().unwrap_or_default().as_str(),
                         )
-                        .expect("Failed to get custom enum value");
+                        .expect("Failed to get Option<Vec<CustomEnum>> value");
                     } else {
                         value = CustomEnum::try_from(reader.read_i32().unwrap_or_default())
-                            .expect("Failed to convert i32 to CustomEnum");
+                            .expect("Failed to convert i32 to Option<Vec<CustomEnum>>");
                         sanitize_custom_enum_value(value.clone() as i32)
-                            .expect("Failed to sanitize custom enum");
+                            .expect("Failed to sanitize Option<Vec<CustomEnum>>");
                     }
                     return value;
                 });
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop optional enum array from Context");
+                    .expect("Failed to pop optional Option<Vec<CustomEnum>> from Context");
             }
             _ => {
                 reader
@@ -213,7 +216,7 @@ pub fn deserialize_query_method_args(args_buf: &[u8]) -> Result<InputQueryMethod
     if !enum_array_set {
         let custom_error = reader
             .context()
-            .print_with_context("Missing required argument: 'enum_array: Vec<CustomEnum'");
+            .print_with_context("Missing required argument: 'enum_array: Vec<CustomEnum>'");
         return Err(Error::new(ErrorKind::Other, custom_error));
     }
 
@@ -248,7 +251,7 @@ pub fn write_query_method_result<W: Write>(mut writer: W, result: i32) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop value from Context");
+        .expect("Failed to pop i32 from Context");
 }
 
 pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMethod> {
@@ -278,7 +281,7 @@ pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMeth
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop object from Context");
+                    .expect("Failed to pop AnotherType from Context");
             }
             "opt_object" => {
                 reader.context().push(
@@ -292,12 +295,12 @@ pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMeth
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop optional object from Context");
+                    .expect("Failed to pop Option<AnotherType> from Context");
             }
             "object_array" => {
                 reader
                     .context()
-                    .push(&field, "Vec<AnotherType", "type found, reading property");
+                    .push(&field, "Vec<AnotherType>", "type found, reading property");
                 object_array = reader
                     .read_array(|reader| AnotherType::read(reader))
                     .expect("Failed to read array");
@@ -305,7 +308,7 @@ pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMeth
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop object array from Context");
+                    .expect("Failed to pop Vec<AnotherType> from Context");
             }
             "opt_object_array" => {
                 reader.context().push(
@@ -317,7 +320,7 @@ pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMeth
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop optional object array from Context");
+                    .expect("Failed to pop Option<Vec<AnotherType>> from Context");
             }
             _ => {
                 reader
@@ -369,7 +372,7 @@ pub fn serialize_object_method_result(result: Option<AnotherType>) -> Vec<u8> {
 pub fn write_object_method_result<W: Write>(mut writer: W, result: &Option<AnotherType>) {
     writer
         .context()
-        .push("object_method", "Option<AnotherType", "writing property");
+        .push("object_method", "Option<AnotherType>", "writing property");
     if result.is_some() {
         AnotherType::write(&mut result.clone().unwrap(), &mut writer);
     } else {
@@ -378,5 +381,5 @@ pub fn write_object_method_result<W: Write>(mut writer: W, result: &Option<Anoth
     writer
         .context()
         .pop()
-        .expect("Failed to pop object from Context");
+        .expect("Failed to pop Option<AnotherType> from Context");
 }

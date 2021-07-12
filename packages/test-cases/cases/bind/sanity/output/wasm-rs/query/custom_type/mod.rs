@@ -1,9 +1,16 @@
 pub mod serialization;
-use crate::{AnotherType, CustomEnum, Read, Write};
+use crate::{Read, Write,};
+use crate::{
+    AnotherType,
+    CustomEnum,
+};
 use num_bigint::BigInt;
 use serde::{Deserialize, Serialize};
 pub use serialization::{
-    deserialize_custom_type, read_custom_type, serialize_custom_type, write_custom_type,
+    deserialize_custom_type,
+    read_custom_type,
+    serialize_custom_type,
+    write_custom_type,
 };
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

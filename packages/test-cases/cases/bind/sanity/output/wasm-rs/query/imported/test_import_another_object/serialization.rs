@@ -23,13 +23,13 @@ pub fn write_test_import_another_object<W: Write>(
     writer: &mut W,
 ) {
     writer.write_map_length(1);
-    writer.context().push("prop", "string", "writing property");
+    writer.context().push("prop", "String", "writing property");
     writer.write_string(&"prop".to_string());
     writer.write_string(&object.prop);
     writer
         .context()
         .pop()
-        .expect("Failed to pop prop from Context");
+        .expect("Failed to pop String from Context");
 }
 
 pub fn deserialize_test_import_another_object(buffer: &[u8]) -> TestImportAnotherObject {
@@ -60,7 +60,7 @@ pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestIm
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop prop from Context");
+                    .expect("Failed to pop String from Context");
             }
             _ => {
                 reader
