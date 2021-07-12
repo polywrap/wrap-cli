@@ -31,7 +31,7 @@ export interface ClientConfig<TUri = string> {
 export class Web3ApiClient implements Client {
   // TODO: the API cache needs to be more like a routing table.
   // It should help us keep track of what URI's map to what APIs,
-  // and handle cases where the are multiple jumps. For exmaple, if
+  // and handle cases where the are multiple jumps. For example, if
   // A => B => C, then the cache should have A => C, and B => C.
   private _apiCache: ApiCache = new Map<string, Api>();
   private _config: ClientConfig<Uri> = {};
@@ -194,41 +194,62 @@ export class Web3ApiClient implements Client {
     TVariables extends Record<string, unknown> = Record<string, unknown>
   >(options: SubscribeOptions<TVariables, string>): Subscription<TData> {
     const { uri, query, variables, frequency: freq } = options;
-
-    let queryApiResult: QueryApiResult<TData> = {
-      data: undefined,
-      errors: undefined,
-    };
-
-    let _pipe: ((result?: TData) => void) | undefined = undefined;
-
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const client: Web3ApiClient = this;
+    // calculate interval between queries, in milliseconds, 1 min default value
     /* eslint-disable prettier/prettier */
-    const delay = (
+    let frequency: number;
+    if (freq && (freq.ms || freq.sec || freq.min || freq.hours)) {
+      frequency = (freq.ms ?? 0) + (
         (freq.hours ?? 0) * 3600 +
         (freq.min ?? 0) * 60 +
         (freq.sec ?? 0)
-      ) * 1000;
+      ) * 1000
+    } else {
+      frequency = 60000;
+    }
     /* eslint-enable  prettier/prettier */
 
-    const timeout: NodeJS.Timeout = setInterval(async () => {
-      queryApiResult = await this.query({ uri, query, variables });
-      if (_pipe) {
-        _pipe(queryApiResult.data);
-      }
-    }, delay);
-
     const subscription: Subscription<TData> = {
-      data: queryApiResult.data,
-      errors: queryApiResult.errors,
-      stop: () => clearInterval(timeout),
-      pipe: (
-        fn: (result?: TData) => void | Promise<void>
-      ): Subscription<TData> => {
-        _pipe = fn;
-        if (queryApiResult.data) {
-          _pipe(queryApiResult.data);
+      frequency: frequency,
+      isActive: false,
+      stop(): void {
+        subscription.isActive = false;
+      },
+      async *[Symbol.asyncIterator](): AsyncGenerator<QueryApiResult<TData>> {
+        subscription.isActive = true;
+        let timeout: NodeJS.Timeout | undefined = undefined;
+        try {
+          let readyVals = 0;
+          let sleep: ((value?: unknown) => void) | undefined;
+          timeout = setInterval(async () => {
+            readyVals++;
+            if (sleep) {
+              sleep();
+              sleep = undefined;
+            }
+          }, frequency);
+
+          while (subscription.isActive) {
+            if (readyVals === 0) {
+              await new Promise((r) => (sleep = r));
+            }
+            for (; readyVals > 0; readyVals--) {
+              if (!subscription.isActive) break;
+              const result: QueryApiResult<TData> = await client.query({
+                uri: uri,
+                query: query,
+                variables: variables,
+              });
+              yield result;
+            }
+          }
+        } finally {
+          if (timeout) {
+            clearInterval(timeout);
+          }
+          subscription.isActive = false;
         }
-        return subscription;
       },
     };
 
