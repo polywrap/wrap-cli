@@ -1,1 +1,1 @@
-pub use crate::common::AnotherType;
+pub use super::common::AnotherType;

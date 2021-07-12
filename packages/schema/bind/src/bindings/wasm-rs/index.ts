@@ -1,6 +1,7 @@
 import { OutputDirectory, OutputEntry } from "../../";
 import { readDirectory } from "../../utils/fs";
 import * as Functions from "./functions";
+import * as Transforms from "./transforms";
 
 import {
   transformTypeInfo,
@@ -22,6 +23,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
     addFirstLast,
     toPrefixedGraphQLType,
     hasImports,
+    Transforms.propertyTypes(),
   ];
 
   for (const transform of transforms) {
@@ -36,7 +38,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
   for (const objectType of typeInfo.objectTypes) {
     entries.push({
       type: "Directory",
-      name: objectType.type,
+      name: Functions.toLower()(objectType.type, (str) => str),
       data: generateFiles("./templates/object-type", objectType, subTemplates),
     });
   }
@@ -52,7 +54,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
     for (const importedQueryType of typeInfo.importedQueryTypes) {
       importEntries.push({
         type: "Directory",
-        name: importedQueryType.type,
+        name: Functions.toLower()(importedQueryType.type, (str) => str),
         data: generateFiles(
           "./templates/imported/query-type",
           importedQueryType,
@@ -65,7 +67,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
     for (const importedEnumType of typeInfo.importedEnumTypes) {
       importEntries.push({
         type: "Directory",
-        name: importedEnumType.type,
+        name: Functions.toLower()(importedEnumType.type, (str) => str),
         data: generateFiles(
           "./templates/imported/enum-type",
           importedEnumType,
@@ -78,7 +80,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
     for (const importedObectType of typeInfo.importedObjectTypes) {
       importEntries.push({
         type: "Directory",
-        name: importedObectType.type,
+        name: Functions.toLower()(importedObectType.type, (str) => str),
         data: generateFiles(
           "./templates/imported/object-type",
           importedObectType,
@@ -101,7 +103,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
   for (const queryType of typeInfo.queryTypes) {
     entries.push({
       type: "Directory",
-      name: queryType.type,
+      name: Functions.toLower()(queryType.type, (str) => str),
       data: generateFiles("./templates/query-type", queryType, subTemplates),
     });
   }
@@ -110,7 +112,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
   for (const enumType of typeInfo.enumTypes) {
     entries.push({
       type: "Directory",
-      name: enumType.type,
+      name: Functions.toLower()(enumType.type, (str) => str),
       data: generateFiles("./templates/enum-type", enumType, subTemplates),
     });
   }
@@ -149,7 +151,7 @@ function generateFiles(
           if (data) {
             output.push({
               type: "File",
-              name: name.replace("-", "."),
+              name: Functions.toLower()(name.replace("-", "."), (str) => str),
               data,
             });
           }
@@ -161,7 +163,7 @@ function generateFiles(
 
         output.push({
           type: "Directory",
-          name: dirent.name,
+          name: Functions.toLower()(dirent.name, (str) => str),
           data: subOutput,
         });
       }

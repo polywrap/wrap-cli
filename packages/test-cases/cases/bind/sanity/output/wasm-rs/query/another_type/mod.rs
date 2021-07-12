@@ -6,8 +6,8 @@ pub use serialization::{
     write_another_type,
 };
 use crate::{Read, Write};
-use crate::CustomType;
 use serde::{Deserialize, Serialize};
+use crate::CustomType;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct AnotherType {
