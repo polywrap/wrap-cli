@@ -193,67 +193,76 @@ export class Web3ApiClient implements Client {
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>
   >(options: SubscribeOptions<TVariables, string>): Subscription<TData> {
-    const { uri, query, variables, frequency: freq } = options;
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const client: Web3ApiClient = this;
-    // calculate interval between queries, in milliseconds, 1 min default value
-    /* eslint-disable prettier/prettier */
-    let frequency: number;
-    if (freq && (freq.ms || freq.sec || freq.min || freq.hours)) {
-      frequency = (freq.ms ?? 0) + (
-        (freq.hours ?? 0) * 3600 +
-        (freq.min ?? 0) * 60 +
-        (freq.sec ?? 0)
-      ) * 1000
-    } else {
-      frequency = 60000;
-    }
-    /* eslint-enable  prettier/prettier */
-
-    const subscription: Subscription<TData> = {
-      frequency: frequency,
-      isActive: false,
-      stop(): void {
-        subscription.isActive = false;
-      },
-      async *[Symbol.asyncIterator](): AsyncGenerator<QueryApiResult<TData>> {
-        subscription.isActive = true;
-        let timeout: NodeJS.Timeout | undefined = undefined;
-        try {
-          let readyVals = 0;
-          let sleep: ((value?: unknown) => void) | undefined;
-          timeout = setInterval(async () => {
-            readyVals++;
-            if (sleep) {
-              sleep();
-              sleep = undefined;
-            }
-          }, frequency);
-
-          while (subscription.isActive) {
-            if (readyVals === 0) {
-              await new Promise((r) => (sleep = r));
-            }
-            for (; readyVals > 0; readyVals--) {
-              if (!subscription.isActive) break;
-              const result: QueryApiResult<TData> = await client.query({
-                uri: uri,
-                query: query,
-                variables: variables,
-              });
-              yield result;
-            }
-          }
-        } finally {
-          if (timeout) {
-            clearInterval(timeout);
-          }
-          subscription.isActive = false;
+    const run = Tracer.traceFunc(
+      "Web3ApiClient: subscribe",
+      (options: SubscribeOptions<TVariables, string>): Subscription<TData> => {
+        const { uri, query, variables, frequency: freq } = options;
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const client: Web3ApiClient = this;
+        // calculate interval between queries, in milliseconds, 1 min default value
+        /* eslint-disable prettier/prettier */
+        let frequency: number;
+        if (freq && (freq.ms || freq.sec || freq.min || freq.hours)) {
+          frequency = (freq.ms ?? 0) + (
+            (freq.hours ?? 0) * 3600 +
+            (freq.min ?? 0) * 60 +
+            (freq.sec ?? 0)
+          ) * 1000
+        } else {
+          frequency = 60000;
         }
-      },
-    };
+        /* eslint-enable  prettier/prettier */
 
-    return subscription;
+        const subscription: Subscription<TData> = {
+          frequency: frequency,
+          isActive: false,
+          stop(): void {
+            subscription.isActive = false;
+          },
+          async *[Symbol.asyncIterator](): AsyncGenerator<
+            QueryApiResult<TData>
+          > {
+            subscription.isActive = true;
+            let timeout: NodeJS.Timeout | undefined = undefined;
+            try {
+              let readyVals = 0;
+              let sleep: ((value?: unknown) => void) | undefined;
+              timeout = setInterval(async () => {
+                readyVals++;
+                if (sleep) {
+                  sleep();
+                  sleep = undefined;
+                }
+              }, frequency);
+
+              while (subscription.isActive) {
+                if (readyVals === 0) {
+                  await new Promise((r) => (sleep = r));
+                }
+                for (; readyVals > 0; readyVals--) {
+                  if (!subscription.isActive) break;
+                  const result: QueryApiResult<TData> = await client.query({
+                    uri: uri,
+                    query: query,
+                    variables: variables,
+                  });
+                  yield result;
+                }
+              }
+            } finally {
+              if (timeout) {
+                clearInterval(timeout);
+              }
+              subscription.isActive = false;
+            }
+          },
+        };
+
+        return subscription;
+      }
+    );
+
+    return run(options);
   }
 
   public async loadWeb3Api(uri: Uri): Promise<Api> {
