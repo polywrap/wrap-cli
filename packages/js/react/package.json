@@ -25,8 +25,8 @@
     "@web3api/core-js": "0.0.1-prealpha.28"
   },
   "devDependencies": {
-    "@testing-library/react": "^11.2.5",
-    "@testing-library/react-hooks": "^5.1.0",
+    "@testing-library/react": "11.2.5",
+    "@testing-library/react-hooks": "5.1.0",
     "@types/jest": "26.0.8",
     "@web3api/cli": "0.0.1-prealpha.28",
     "@web3api/ens-plugin-js": "0.0.1-prealpha.28",

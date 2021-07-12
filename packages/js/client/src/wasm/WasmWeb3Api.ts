@@ -17,7 +17,7 @@ import {
   Web3ApiManifest,
   Uri,
   Client,
-  ApiResolver,
+  UriResolver,
   InvokableModules,
 } from "@web3api/core-js";
 import * as MsgPack from "@msgpack/msgpack";
@@ -43,7 +43,7 @@ export class WasmWeb3Api extends Api {
   constructor(
     private _uri: Uri,
     private _manifest: Web3ApiManifest,
-    private _apiResolver: Uri
+    private _uriResolver: Uri
   ) {
     super();
 
@@ -51,7 +51,7 @@ export class WasmWeb3Api extends Api {
     Tracer.setAttribute("input", {
       uri: this._uri,
       manifest: this._manifest,
-      apiResolver: this._apiResolver,
+      uriResolver: this._uriResolver,
     });
     Tracer.endSpan();
   }
@@ -343,9 +343,9 @@ export class WasmWeb3Api extends Api {
           throw Error(`WasmWeb3Api: No module was found.`);
         }
 
-        const { data, error } = await ApiResolver.Query.getFile(
+        const { data, error } = await UriResolver.Query.getFile(
           client,
-          this._apiResolver,
+          this._uriResolver,
           this.combinePaths(this._uri.path, module.schema)
         );
 
@@ -398,14 +398,20 @@ export class WasmWeb3Api extends Api {
           );
         }
 
-        const { data, error } = await ApiResolver.Query.getFile(
+        if (!moduleManifest.module) {
+          throw Error(
+            `Package manifest module ${module} does not contain a definition for module"`
+          );
+        }
+
+        const { data, error } = await UriResolver.Query.getFile(
           client,
-          this._apiResolver,
+          this._uriResolver,
           this.combinePaths(this._uri.path, moduleManifest.module)
         );
 
         if (error) {
-          throw Error(`ApiResolver.Query.getFile Failed: ${error}`);
+          throw Error(`UriResolver.Query.getFile Failed: ${error}`);
         }
 
         // If nothing is returned, the module was not found

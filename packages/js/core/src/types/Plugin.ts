@@ -5,11 +5,8 @@ export interface PluginManifest {
   /** The API's schema */
   schema: string;
 
-  /** All API dependencies imported by this plugin. */
-  imported: Uri[];
-
-  /** All abstract APIs implemented by this plugin. */
-  implemented: Uri[];
+  /** All interface schemas implemented by this plugin. */
+  implements: Uri[];
 }
 
 /**

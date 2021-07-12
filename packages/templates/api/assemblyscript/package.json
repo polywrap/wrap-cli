@@ -20,7 +20,6 @@
     "@web3api/wasm-as": "0.0.1-prealpha.28",
     "assemblyscript": "0.19.1",
     "ethers": "5.0.7",
-    "js-yaml": "3.14.0",
     "solc": "0.8.3"
   }
 }

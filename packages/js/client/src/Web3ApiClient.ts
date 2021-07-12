@@ -1,4 +1,4 @@
-import { getDefaultRedirects } from "./default-redirects";
+import { getDefaultClientConfig } from "./default-client-config";
 import { PluginWeb3Api } from "./plugin/PluginWeb3Api";
 import { WasmWeb3Api } from "./wasm/WasmWeb3Api";
 
@@ -13,11 +13,16 @@ import {
   QueryApiResult,
   Uri,
   UriRedirect,
+  InterfaceImplementations,
+  PluginRegistration,
   resolveUri,
   InvokeApiOptions,
   InvokeApiResult,
   Web3ApiManifest,
   sanitizeUriRedirects,
+  sanitizeInterfaceImplementations,
+  sanitizePluginRegistrations,
+  getImplementations,
   Subscription,
   SubscribeOptions,
 } from "@web3api/core-js";
@@ -25,6 +30,8 @@ import { Tracer } from "@web3api/tracing-js";
 
 export interface ClientConfig<TUri = string> {
   redirects?: UriRedirect<TUri>[];
+  plugins?: PluginRegistration<TUri>[];
+  interfaces?: InterfaceImplementations<TUri>[];
   tracingEnabled?: boolean;
 }
 
@@ -34,36 +41,50 @@ export class Web3ApiClient implements Client {
   // and handle cases where the are multiple jumps. For example, if
   // A => B => C, then the cache should have A => C, and B => C.
   private _apiCache: ApiCache = new Map<string, Api>();
-  private _config: ClientConfig<Uri> = {};
+  private _config: Required<ClientConfig<Uri>> = {
+    redirects: [],
+    plugins: [],
+    interfaces: [],
+    tracingEnabled: false,
+  };
 
   constructor(config?: ClientConfig) {
     try {
-      if (!config) {
-        this._config = {
-          redirects: [],
-          tracingEnabled: false,
-        };
-      }
-
       this.tracingEnabled(!!config?.tracingEnabled);
 
       Tracer.startSpan("Web3ApiClient: constructor");
 
       if (config) {
         this._config = {
-          ...config,
           redirects: config.redirects
             ? sanitizeUriRedirects(config.redirects)
             : [],
+          plugins: config.plugins
+            ? sanitizePluginRegistrations(config.plugins)
+            : [],
+          interfaces: config.interfaces
+            ? sanitizeInterfaceImplementations(config.interfaces)
+            : [],
+          tracingEnabled: !!config.tracingEnabled,
         };
       }
 
-      if (!this._config.redirects) {
-        this._config.redirects = [];
+      // Add the default config
+      const defaultClientConfig = getDefaultClientConfig();
+
+      if (defaultClientConfig.redirects) {
+        this._config.redirects.push(...defaultClientConfig.redirects);
       }
 
-      // Add all default redirects
-      this._config.redirects.push(...getDefaultRedirects());
+      if (defaultClientConfig.plugins) {
+        this._config.plugins.push(...defaultClientConfig.plugins);
+      }
+
+      if (defaultClientConfig.interfaces) {
+        this._config.interfaces.push(...defaultClientConfig.interfaces);
+      }
+
+      this.requirePluginsToUseNonInterfaceUris();
 
       Tracer.setAttribute("config", this._config);
     } catch (error) {
@@ -88,16 +109,45 @@ export class Web3ApiClient implements Client {
     return this._config.redirects || [];
   }
 
+  public plugins(): readonly PluginRegistration<Uri>[] {
+    return this._config.plugins || [];
+  }
+
+  public interfaces(): readonly InterfaceImplementations<Uri>[] {
+    return this._config.interfaces || [];
+  }
+
   public async query<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>
   >(
     options: QueryApiOptions<TVariables, string>
+  ): Promise<QueryApiResult<TData>>;
+  public async query<
+    TData extends Record<string, unknown> = Record<string, unknown>,
+    TVariables extends Record<string, unknown> = Record<string, unknown>
+  >(options: QueryApiOptions<TVariables, Uri>): Promise<QueryApiResult<TData>>;
+  public async query<
+    TData extends Record<string, unknown> = Record<string, unknown>,
+    TVariables extends Record<string, unknown> = Record<string, unknown>
+  >(
+    options: QueryApiOptions<TVariables, string | Uri>
   ): Promise<QueryApiResult<TData>> {
+    let typedOptions: QueryApiOptions<TVariables, Uri>;
+
+    if (typeof options.uri === "string") {
+      typedOptions = {
+        ...options,
+        uri: new Uri(options.uri),
+      };
+    } else {
+      typedOptions = options as QueryApiOptions<TVariables, Uri>;
+    }
+
     const run = Tracer.traceFunc(
       "Web3ApiClient: query",
       async (
-        options: QueryApiOptions<TVariables, string>
+        options: QueryApiOptions<TVariables, Uri>
       ): Promise<QueryApiResult<TData>> => {
         const { uri, query, variables } = options;
 
@@ -106,11 +156,7 @@ export class Web3ApiClient implements Client {
           typeof query === "string" ? createQueryDocument(query) : query;
 
         // Parse the query to understand what's being invoked
-        const queryInvocations = parseQuery(
-          new Uri(uri),
-          queryDocument,
-          variables
-        );
+        const queryInvocations = parseQuery(uri, queryDocument, variables);
 
         // Execute all invocations in parallel
         const parallelInvocations: Promise<{
@@ -122,7 +168,7 @@ export class Web3ApiClient implements Client {
           parallelInvocations.push(
             this.invoke({
               ...queryInvocations[invocationName],
-              uri: queryInvocations[invocationName].uri.uri,
+              uri: queryInvocations[invocationName].uri,
               decode: true,
             }).then((result) => ({
               name: invocationName,
@@ -154,7 +200,7 @@ export class Web3ApiClient implements Client {
       }
     );
 
-    return await run(options).catch((error) => {
+    return await run(typedOptions).catch((error) => {
       if (error.length) {
         return { errors: error };
       } else {
@@ -165,28 +211,38 @@ export class Web3ApiClient implements Client {
 
   public async invoke<TData = unknown>(
     options: InvokeApiOptions<string>
+  ): Promise<InvokeApiResult<TData>>;
+  public async invoke<TData = unknown>(
+    options: InvokeApiOptions<Uri>
+  ): Promise<InvokeApiResult<TData>>;
+  public async invoke<TData = unknown>(
+    options: InvokeApiOptions<string | Uri>
   ): Promise<InvokeApiResult<TData>> {
+    let typedOptions: InvokeApiOptions<Uri>;
+
+    if (typeof options.uri === "string") {
+      typedOptions = {
+        ...options,
+        uri: new Uri(options.uri),
+      };
+    } else {
+      typedOptions = options as InvokeApiOptions<Uri>;
+    }
+
     const run = Tracer.traceFunc(
       "Web3ApiClient: invoke",
       async (
-        options: InvokeApiOptions<string>
+        options: InvokeApiOptions<Uri>
       ): Promise<InvokeApiResult<TData>> => {
-        const uri = new Uri(options.uri);
-        const api = await this.loadWeb3Api(uri);
+        const api = await this.loadWeb3Api(options.uri);
 
-        const result = (await api.invoke(
-          {
-            ...options,
-            uri,
-          },
-          this
-        )) as TData;
+        const result = (await api.invoke(options, this)) as TData;
 
         return result;
       }
     );
 
-    return run(options);
+    return run(typedOptions);
   }
 
   public subscribe<
@@ -265,7 +321,11 @@ export class Web3ApiClient implements Client {
     return run(options);
   }
 
-  public async loadWeb3Api(uri: Uri): Promise<Api> {
+  public async loadWeb3Api(uri: string): Promise<Api>;
+  public async loadWeb3Api(uri: Uri): Promise<Api>;
+  public async loadWeb3Api(uri: string | Uri): Promise<Api> {
+    const typedUri = typeof uri === "string" ? new Uri(uri) : uri;
+
     const run = Tracer.traceFunc(
       "Web3ApiClient: loadWeb3Api",
       async (uri: Uri): Promise<Api> => {
@@ -275,9 +335,12 @@ export class Web3ApiClient implements Client {
           api = await resolveUri(
             uri,
             this,
+            this.redirects(),
+            this.plugins(),
+            this.interfaces(),
             (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
-            (uri: Uri, manifest: Web3ApiManifest, apiResolver: Uri) =>
-              new WasmWeb3Api(uri, manifest, apiResolver)
+            (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
+              new WasmWeb3Api(uri, manifest, uriResolver)
           );
 
           if (!api) {
@@ -291,6 +354,72 @@ export class Web3ApiClient implements Client {
       }
     );
 
-    return run(uri);
+    return run(typedUri);
+  }
+
+  public getImplementations(
+    uri: string,
+    filters?: { applyRedirects: boolean }
+  ): string[];
+  public getImplementations(
+    uri: Uri,
+    filters?: { applyRedirects: boolean }
+  ): Uri[];
+  public getImplementations(
+    uri: string | Uri,
+    filters: { applyRedirects: boolean } = { applyRedirects: false }
+  ): (string | Uri)[] {
+    const isUriTypeString = typeof uri === "string";
+
+    const typedUri: Uri = isUriTypeString
+      ? new Uri(uri as string)
+      : (uri as Uri);
+
+    const getImplementationsWithoutRedirects = Tracer.traceFunc(
+      "Web3ApiClient: getImplementations - getImplementationsWithoutRedirects",
+      (uri: Uri): (string | Uri)[] => {
+        const interfaceImplementations = this.interfaces().find((x) =>
+          Uri.equals(x.interface, uri)
+        );
+
+        if (!interfaceImplementations) {
+          throw Error(`Interface: ${uri} has no implementations registered`);
+        }
+
+        return isUriTypeString
+          ? interfaceImplementations.implementations.map((x) => x.uri)
+          : interfaceImplementations.implementations;
+      }
+    );
+
+    const getImplementationsWithRedirects = Tracer.traceFunc(
+      "Web3ApiClient: getImplementations - getImplementationsWithRedirects",
+      (uri: Uri): (string | Uri)[] => {
+        return isUriTypeString
+          ? getImplementations(uri, this.redirects(), this.interfaces()).map(
+              (x) => x.uri
+            )
+          : getImplementations(uri, this.redirects(), this.interfaces());
+      }
+    );
+
+    return filters.applyRedirects
+      ? getImplementationsWithRedirects(typedUri)
+      : getImplementationsWithoutRedirects(typedUri);
+  }
+
+  private requirePluginsToUseNonInterfaceUris(): void {
+    const pluginUris = this.plugins().map((x) => x.uri.uri);
+    const interfaceUris = this.interfaces().map((x) => x.interface.uri);
+
+    const pluginsWithInterfaceUris = pluginUris.filter((plugin) =>
+      interfaceUris.includes(plugin)
+    );
+
+    if (pluginsWithInterfaceUris.length) {
+      throw Error(
+        `Plugins can't use interfaces for their URI. Invalid plugins: ${pluginsWithInterfaceUris}`
+      );
+    }
   }
 }

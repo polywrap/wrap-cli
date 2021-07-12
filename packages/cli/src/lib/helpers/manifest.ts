@@ -74,12 +74,6 @@ export async function loadBuildManifest(
     );
     let extSchema: JsonSchema | undefined = undefined;
 
-    if (!fs.existsSync(configSchemaPath)) {
-      configSchemaPath = project.getCachePath(
-        "build/env/web3api.build.ext.json"
-      );
-    }
-
     if (fs.existsSync(configSchemaPath)) {
       extSchema = JSON.parse(
         fs.readFileSync(configSchemaPath, "utf-8")

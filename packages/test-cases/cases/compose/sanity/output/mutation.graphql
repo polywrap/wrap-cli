@@ -23,7 +23,10 @@ directive @imports(
 ) on OBJECT
 ### Web3API Header END ###
 
-type Mutation @imports(
+"""
+Mutation comment
+"""
+type Mutation implements Interface_Mutation @imports(
   types: [
     "Namespace_Query",
     "Namespace_Mutation",
@@ -34,23 +37,58 @@ type Mutation @imports(
     "Namespace_CustomType",
     "Namespace_CustomEnum",
     "Namespace_Imported_Enum",
-    "JustMutation_Mutation"
+    "JustMutation_Mutation",
+    "Interface_InterfaceObject1",
+    "Interface_InterfaceObject2",
+    "Interface_Object",
+    "Interface_NestedInterfaceObject",
+    "Interface_Mutation"
   ]
 ) {
+"""
+method1 comment
+"""
   method1(
+"""
+str comment
+"""
     str: String!
+"""
+optStr comment
+"""
     optStr: String
     u: UInt!
+"""
+uArrayArray comment
+"""
     uArrayArray: [[UInt]]!
+"""
+implObject comment
+"""
+    implObject: LocalImplementationObject!
   ): String!
 
   method2(
     arg: [String!]!
   ): [Int64!]!
+
+  abstractMutationMethod(
+    arg: UInt8!
+  ): String!
 }
 
+"""
+CustomMutationType multi-line comment
+line 2
+"""
 type CustomMutationType {
+"""
+str comment
+"""
   str: String!
+"""
+optStr comment
+"""
   optStr: String
   u: UInt!
   optU: UInt
@@ -63,8 +101,14 @@ type CustomMutationType {
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optStrOptArray: [String]
+"""
+crazyArray comment
+"""
   crazyArray: [[[[UInt64!]]!]]
   commonType: CommonType!
+"""
+customType comment
+"""
   customType: Namespace_CustomType!
 }
 
@@ -72,22 +116,60 @@ type AnotherMutationType {
   prop: String
 }
 
+"""
+ImplementationObject comment
+"""
+type ImplementationObject implements Interface_InterfaceObject1 & Interface_InterfaceObject2 {
+"""
+anotherProp comment
+"""
+  anotherProp: String
+  str: String!
+  uint8: UInt8!
+  str2: String!
+  object: Interface_Object
+}
+
+type LocalImplementationObject implements LocalInterfaceObject {
+  uint8: UInt8!
+  str: String!
+}
+
+type LocalInterfaceObject {
+  str: String!
+}
+
+"""
+CommonType comment
+"""
 type CommonType {
   prop: UInt8!
   nestedObject: NestedType!
+"""
+objectArray comment
+"""
   objectArray: [[ArrayObject]]!
 }
 
+"""
+NestedType comment
+"""
 type NestedType {
   prop: String!
 }
 
+"""
+ArrayObject comment
+"""
 type ArrayObject {
   prop: String!
 }
 
 ### Imported Queries START ###
 
+"""
+Query comment
+"""
 type Namespace_Query @imported(
   uri: "test.eth",
   namespace: "Namespace",
@@ -101,11 +183,20 @@ type Namespace_Query @imported(
     uArrayArray: [[UInt]]!
   ): String!
 
+"""
+method2 comment
+"""
   method2(
+"""
+arg comment
+"""
     arg: [String!]!
   ): [Int64!]!
 }
 
+"""
+Mutation comment
+"""
 type Namespace_Mutation @imported(
   uri: "test.eth",
   namespace: "Namespace",
@@ -144,6 +235,19 @@ type JustMutation_Mutation @imported(
   ): [Int64!]!
 }
 
+"""
+Mutation comment
+"""
+type Interface_Mutation @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "Mutation"
+) {
+  abstractMutationMethod(
+    arg: UInt8!
+  ): String!
+}
+
 ### Imported Queries END ###
 
 ### Imported Objects START ###
@@ -164,6 +268,9 @@ type Namespace_ObjectType @imported(
   prop: String!
 }
 
+"""
+Imported_NestedObjectType comment
+"""
 type Namespace_Imported_NestedObjectType @imported(
   uri: "test.eth",
   namespace: "Namespace",
@@ -180,6 +287,9 @@ type Namespace_Imported_ObjectType @imported(
   prop: String!
 }
 
+"""
+CustomType comment
+"""
 type Namespace_CustomType @imported(
   uri: "test.eth",
   namespace: "Namespace",
@@ -217,7 +327,62 @@ type Namespace_CustomType @imported(
   enum: Namespace_CustomEnum!
   optEnum: Namespace_CustomEnum
   importedEnum: Namespace_Imported_Enum!
+"""
+optImportedEnum comment
+"""
   optImportedEnum: Namespace_Imported_Enum
+}
+
+"""
+InterfaceObject1 comment
+"""
+type Interface_InterfaceObject1 @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "InterfaceObject1"
+) {
+  str: String!
+"""
+InterfaceObject1_uint8 comment
+"""
+  uint8: UInt8!
+}
+
+"""
+InterfaceObject2 comment
+"""
+type Interface_InterfaceObject2 implements Interface_NestedInterfaceObject @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "InterfaceObject2"
+) {
+  str2: String!
+  object: Interface_Object
+}
+
+"""
+Object comment
+"""
+type Interface_Object @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "Object"
+) {
+  uint8: UInt8!
+}
+
+"""
+NestedInterfaceObject comment
+"""
+type Interface_NestedInterfaceObject @imported(
+  uri: "interface.eth",
+  namespace: "Interface",
+  nativeType: "NestedInterfaceObject"
+) {
+"""
+object comment
+"""
+  object: Interface_Object
 }
 
 enum Namespace_CustomEnum @imported(
@@ -229,6 +394,9 @@ enum Namespace_CustomEnum @imported(
   BYTES
 }
 
+"""
+Imported_Enum comment
+"""
 enum Namespace_Imported_Enum @imported(
   namespace: "Namespace",
   uri: "test.eth",
