@@ -1,0 +1,38 @@
+FROM node:{{node_version}}-alpine as base
+
+RUN apk --no-cache --virtual build-dependencies add \
+    bash \
+    git \
+    openssh \
+    make \
+    g++
+
+WORKDIR /project
+
+# Install deps in its own step, making rebuilds faster
+# when just the Web3API schema & implementation files change
+COPY package.json .
+RUN yarn
+
+# Copy all manifest files
+{{#web3api_manifests}}
+COPY {{.}} .
+{{/web3api_manifests}}
+
+# Copy all source files
+{{#include}}
+COPY {{.}} {{.}}
+{{/include}}
+{{#web3api_modules}}
+COPY {{dir}} {{dir}}
+{{/web3api_modules}}
+
+{{#web3api_modules}}
+# Build the module at {{dir}}
+RUN ./node_modules/.bin/asc {{dir}}/w3/entry.ts \
+    --path ./node_modules \
+    --outFile ./build/{{name}}.wasm \
+    --use abort={{dir}}/w3/entry/w3Abort \
+    --optimize --debug --importMemory \
+    --runtime stub
+{{/web3api_modules}}

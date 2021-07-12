@@ -81,20 +81,20 @@ export function deserializeTestImport_Object(buffer: ArrayBuffer): TestImport_Ob
 }
 
 export function readTestImport_Object(reader: Read): TestImport_Object {
-  var numFields = reader.readMapLength();
+  let numFields = reader.readMapLength();
 
-  var _object: Types.TestImport_AnotherObject | null = null;
-  var _objectSet: bool = false;
-  var _optObject: Types.TestImport_AnotherObject | null = null;
-  var _objectArray: Array<Types.TestImport_AnotherObject> = [];
-  var _objectArraySet: bool = false;
-  var _optObjectArray: Array<Types.TestImport_AnotherObject | null> | null = null;
-  var _en: Types.TestImport_Enum = 0;
-  var _enSet: bool = false;
-  var _optEnum: Nullable<Types.TestImport_Enum> = new Nullable<Types.TestImport_Enum>();
-  var _enumArray: Array<Types.TestImport_Enum> = [];
-  var _enumArraySet: bool = false;
-  var _optEnumArray: Array<Nullable<Types.TestImport_Enum>> | null = null;
+  let _object: Types.TestImport_AnotherObject | null = null;
+  let _objectSet: bool = false;
+  let _optObject: Types.TestImport_AnotherObject | null = null;
+  let _objectArray: Array<Types.TestImport_AnotherObject> = [];
+  let _objectArraySet: bool = false;
+  let _optObjectArray: Array<Types.TestImport_AnotherObject | null> | null = null;
+  let _en: Types.TestImport_Enum = 0;
+  let _enSet: bool = false;
+  let _optEnum: Nullable<Types.TestImport_Enum> = new Nullable<Types.TestImport_Enum>();
+  let _enumArray: Array<Types.TestImport_Enum> = [];
+  let _enumArraySet: bool = false;
+  let _optEnumArray: Array<Nullable<Types.TestImport_Enum>> | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -110,7 +110,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
     }
     else if (field == "optObject") {
       reader.context().push(field, "Types.TestImport_AnotherObject | null", "type found, reading property");
-      var object: Types.TestImport_AnotherObject | null = null;
+      let object: Types.TestImport_AnotherObject | null = null;
       if (!reader.isNextNil()) {
         object = Types.TestImport_AnotherObject.read(reader);
       }
@@ -129,7 +129,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
     else if (field == "optObjectArray") {
       reader.context().push(field, "Array<Types.TestImport_AnotherObject | null> | null", "type found, reading property");
       _optObjectArray = reader.readNullableArray((reader: Read): Types.TestImport_AnotherObject | null => {
-        var object: Types.TestImport_AnotherObject | null = null;
+        let object: Types.TestImport_AnotherObject | null = null;
         if (!reader.isNextNil()) {
           object = Types.TestImport_AnotherObject.read(reader);
         }

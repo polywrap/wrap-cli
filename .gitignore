@@ -6,3 +6,4 @@ coverage
 .vscode
 *.log
 w3
+.w3

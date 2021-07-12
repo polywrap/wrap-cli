@@ -9,6 +9,18 @@ const defaultReplyHeaders = {
 }
 
 describe("e2e tests for HttpPlugin", () => {
+  let web3ApiClient: Web3ApiClient;
+
+  beforeEach(() => {
+    web3ApiClient = new Web3ApiClient({
+      plugins: [
+        {
+          uri: "w3://ens/http.web3api.eth",
+          plugin: httpPlugin(),
+        },
+      ]
+    });
+  });
 
   describe("get method", () => {
 
@@ -17,15 +29,6 @@ describe("e2e tests for HttpPlugin", () => {
         .defaultReplyHeaders(defaultReplyHeaders)
         .get("/api")
         .reply(200, '{data: "test-response"}')
-
-      const web3ApiClient = new Web3ApiClient({
-        redirects: [
-          {
-            from: "w3://ens/http.web3api.eth",
-            to: httpPlugin(),
-          },
-        ]
-      })
 
       const response = await web3ApiClient.query<{ get: Response }>({
         uri: "w3://ens/http.web3api.eth",
@@ -55,16 +58,6 @@ describe("e2e tests for HttpPlugin", () => {
         .get("/api")
         .reply(200, '{data: "test-response"}')
 
-
-      const web3ApiClient = new Web3ApiClient({
-        redirects: [
-          {
-            from: "w3://ens/http.web3api.eth",
-            to: httpPlugin(),
-          },
-        ]
-      })
-
       const response = await web3ApiClient.query<{ get: Response }>({
         uri: "w3://ens/http.web3api.eth",
         query: `
@@ -93,15 +86,6 @@ describe("e2e tests for HttpPlugin", () => {
         .get("/api")
         .query({ query: "foo" })
         .reply(200, '{data: "test-response"}', { 'X-Response-Header': "resp-foo" })
-
-      const web3ApiClient = new Web3ApiClient({
-        redirects: [
-          {
-            from: "w3://ens/http.web3api.eth",
-            to: httpPlugin(),
-          },
-        ]
-      })
 
       const response = await web3ApiClient.query<{ get: Response }>({
         uri: "w3://ens/http.web3api.eth",
@@ -137,16 +121,6 @@ describe("e2e tests for HttpPlugin", () => {
         .get("/api")
         .reply(404)
 
-
-      const web3ApiClient = new Web3ApiClient({
-        redirects: [
-          {
-            from: "w3://ens/http.web3api.eth",
-            to: httpPlugin(),
-          },
-        ]
-      })
-
       const response = await web3ApiClient.query<{ get: Response }>({
         uri: "w3://ens/http.web3api.eth",
         query: `
@@ -174,16 +148,6 @@ describe("e2e tests for HttpPlugin", () => {
         .defaultReplyHeaders(defaultReplyHeaders)
         .post("/api", "{data: 'test-request'}")
         .reply(200, '{data: "test-response"}')
-
-
-      const web3ApiClient = new Web3ApiClient({
-        redirects: [
-          {
-            from: "w3://ens/http.web3api.eth",
-            to: httpPlugin(),
-          },
-        ]
-      })
 
       const response = await web3ApiClient.query<{ post: Response }>({
         uri: "w3://ens/http.web3api.eth",
@@ -214,16 +178,6 @@ describe("e2e tests for HttpPlugin", () => {
         .post("/api", "{data: 'test-request'}")
         .reply(200, '{data: "test-response"}')
 
-
-      const web3ApiClient = new Web3ApiClient({
-        redirects: [
-          {
-            from: "w3://ens/http.web3api.eth",
-            to: httpPlugin(),
-          },
-        ]
-      })
-
       const response = await web3ApiClient.query<{ post: Response }>({
         uri: "w3://ens/http.web3api.eth",
         query: `
@@ -253,15 +207,6 @@ describe("e2e tests for HttpPlugin", () => {
         .post("/api", "{data: 'test-request'}")
         .query({ query: "foo" })
         .reply(200, '{data: "test-response"}', { 'X-Response-Header': "resp-foo" })
-
-      const web3ApiClient = new Web3ApiClient({
-        redirects: [
-          {
-            from: "w3://ens/http.web3api.eth",
-            to: httpPlugin(),
-          },
-        ]
-      })
 
       const response = await web3ApiClient.query<{ post: Response }>({
         uri: "w3://ens/http.web3api.eth",
@@ -297,16 +242,6 @@ describe("e2e tests for HttpPlugin", () => {
         .defaultReplyHeaders(defaultReplyHeaders)
         .post("/api")
         .reply(404)
-
-
-      const web3ApiClient = new Web3ApiClient({
-        redirects: [
-          {
-            from: "w3://ens/http.web3api.eth",
-            to: httpPlugin(),
-          },
-        ]
-      })
 
       const response = await web3ApiClient.query<{ get: Response }>({
         uri: "w3://ens/http.web3api.eth",

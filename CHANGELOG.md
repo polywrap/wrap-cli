@@ -1,3 +1,25 @@
+# Web3API 0.0.1-prealpha.28
+## Bugs
+* Fixed API template project
+
+# Web3API 0.0.1-prealpha.27
+## Bugs
+* Fixed API template project
+
+# Web3API 0.0.1-prealpha.26
+## Feature
+* `@web3api/uniswapV2-api`: Completed the Uniswap V2 Web3API implementation.
+* `@web3api/ethereum-plugin-js`: Upgraded the Ethereum plugin, added lots of new functionality.
+* `@web3api/cli`: Implemented a "reproducible build pipeline", where Web3APIs are now built in an isolated docker container. These builds can be fully configurable by developers. This also paves the way for implementing Web3APIs in any Wasm compatible language. Rust support on the way!
+* `@web3api/react`: Added the ability to set query `variables` within the `execute` function returned by the `useWeb3ApiQuery` hook.
+* `@web3api/sha3-plugin-js`: A SHA3 plugin has been implemented, and added to the client as a "default plugin".
+* `@web3api/uts46-plugin-js`: A UTS46 plugin has been implemented, and added to the client as a "default plugin".
+* CI: Windows CI has been implemented using appveyor.
+
+## Bugs
+* `@web3api/client-js`: Fixed threading issue causing the "unknown wake status" error.
+* Fixed Windows specific errors.
+
 # Web3API 0.0.1-prealpha.25
 ## Feature
 * `@web3api/client-js`: Added the `WEB3API_THREAD_PATH` env variable, allowing integrators to customize where the `thread.js` worker thread module is imported from.

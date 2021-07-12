@@ -19,3 +19,7 @@ export function normalizeLineEndings(
 ): string {
   return data.replace(/\r\n|\r|\n/g, eol);
 }
+
+export function normalizePath(data: string, seperator = "/"): string {
+  return data.replace(/\\|\//g, seperator);
+}

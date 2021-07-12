@@ -1,20 +1,19 @@
 import { TypeInfo, createTypeInfo } from "./typeInfo";
-import { extractors, SchemaExtractor } from "./extract";
+import { extractors, SchemaExtractorBuilder } from "./extract";
 import { TypeInfoTransforms, transformTypeInfo } from "./transform";
 import { finalizePropertyDef } from "./transform/finalizePropertyDef";
-import { validators, SchemaValidator } from "./validate";
-import { Blackboard } from "./extract/Blackboard";
+import { SchemaValidatorBuilder, validators } from "./validate";
 
-import { parse } from "graphql";
+import { DocumentNode, parse, visit, visitInParallel } from "graphql";
 
 export * from "./typeInfo";
 export * from "./transform";
 export * from "./header";
 
 interface ParserOptions {
-  extractors?: SchemaExtractor[];
+  extractors?: SchemaExtractorBuilder[];
   transforms?: TypeInfoTransforms[];
-  validators?: SchemaValidator[];
+  validators?: SchemaValidatorBuilder[];
   noValidate?: boolean;
 }
 
@@ -27,34 +26,17 @@ export function parseSchema(
   // Validate GraphQL Schema
   if (!options.noValidate) {
     const validates = options.validators || validators;
-    const errors: Error[] = [];
-
-    for (const validate of validates) {
-      try {
-        validate(astNode);
-      } catch (e) {
-        errors.push(e);
-      }
-    }
-
-    if (errors.length) {
-      throw errors;
-    }
+    validate(astNode, validates);
   }
-
-  // Create a blackboard for shared metadata
-  const blackboard = new Blackboard(astNode);
 
   // Extract & Build TypeInfo
   let info = createTypeInfo();
-  const extracts = options.extractors || extractors;
 
-  for (const extract of extracts) {
-    extract(astNode, info, blackboard);
-  }
+  const extracts = options.extractors || extractors;
+  extract(astNode, info, extracts);
 
   // Finalize & Transform TypeInfo
-  info = transformTypeInfo(info, finalizePropertyDef);
+  info = transformTypeInfo(info, finalizePropertyDef(info));
 
   if (options && options.transforms) {
     for (const transform of options.transforms) {
@@ -64,3 +46,32 @@ export function parseSchema(
 
   return info;
 }
+
+const validate = (
+  astNode: DocumentNode,
+  validators: SchemaValidatorBuilder[]
+) => {
+  const allValidators = validators.map((getValidator) => getValidator());
+  const allVisitors = allValidators.map((x) => x.visitor);
+  const allDisplayValidationMessages = allValidators.map(
+    (x) => x.displayValidationMessagesIfExist
+  );
+
+  visit(astNode, visitInParallel(allVisitors));
+
+  for (const displayValidationMessagesIfExist of allDisplayValidationMessages) {
+    if (displayValidationMessagesIfExist) {
+      displayValidationMessagesIfExist(astNode);
+    }
+  }
+};
+
+const extract = (
+  astNode: DocumentNode,
+  typeInfo: TypeInfo,
+  extractors: SchemaExtractorBuilder[]
+) => {
+  const allVisitors = extractors.map((getVisitor) => getVisitor(typeInfo));
+
+  visit(astNode, visitInParallel(allVisitors));
+};

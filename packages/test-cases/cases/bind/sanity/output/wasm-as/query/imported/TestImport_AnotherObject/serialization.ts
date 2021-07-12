@@ -37,10 +37,10 @@ export function deserializeTestImport_AnotherObject(buffer: ArrayBuffer): TestIm
 }
 
 export function readTestImport_AnotherObject(reader: Read): TestImport_AnotherObject {
-  var numFields = reader.readMapLength();
+  let numFields = reader.readMapLength();
 
-  var _prop: string = "";
-  var _propSet: bool = false;
+  let _prop: string = "";
+  let _propSet: bool = false;
 
   while (numFields > 0) {
     numFields--;

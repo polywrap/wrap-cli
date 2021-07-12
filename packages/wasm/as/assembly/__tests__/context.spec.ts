@@ -24,26 +24,17 @@ describe("Context class", () => {
     context.push("propertyOne", "unknown", "searching for property type");
 
     expect("\n" + context.toString()).toStrictEqual(
-      `
-Context: Deserializing MyObject
-  at propertyOne: unknown >> searching for property type`
+      `\nContext: Deserializing MyObject\n  at propertyOne: unknown >> searching for property type`
     )
 
     expect(context.printWithContext("\nInvalid length")).toStrictEqual(
-      `
-Invalid length
-  Context: Deserializing MyObject
-    at propertyOne: unknown >> searching for property type`
+      `\nInvalid length\n  Context: Deserializing MyObject\n    at propertyOne: unknown >> searching for property type`
     )
 
     context.push("propertyOne", "i32", "type found, reading property");
 
     expect(context.printWithContext("\nInvalid length")).toStrictEqual(
-      `
-Invalid length
-  Context: Deserializing MyObject
-    at propertyOne: i32 >> type found, reading property
-      at propertyOne: unknown >> searching for property type`
+      `\nInvalid length\n  Context: Deserializing MyObject\n    at propertyOne: i32 >> type found, reading property\n      at propertyOne: unknown >> searching for property type`
     )
 
   });

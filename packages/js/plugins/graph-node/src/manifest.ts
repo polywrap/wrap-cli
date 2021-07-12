@@ -12,6 +12,5 @@ type Query {
   """TODO: support JSON type as base type?"""
   """I think this would be helpful for dynamic data"""
 }`,
-  implemented: [],
-  imported: [],
+  implements: [],
 };
