@@ -18,7 +18,7 @@ use {{crate}}::{{type}};
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{type}} {
     {{#properties}}
-    pub {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    pub {{#toLower}}{{name}}{{/toLower}}: {{#object}}Box<{{/object}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{#object}}>{{/object}},
     {{/properties}}
 }
 

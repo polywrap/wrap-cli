@@ -12,17 +12,10 @@ use crate::CustomType;
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct AnotherType {
     pub prop: Option<String>,
-    pub circular: Option<CustomType>,
+    pub circular: Box<Option<CustomType>>,
 }
 
 impl AnotherType {
-    pub fn new() -> Self {
-        Self {
-            prop: None,
-            circular: Box::new(None),
-        }
-    }
-
     pub fn to_buffer(mut object: &mut Self) -> Vec<u8> {
         serialize_another_type(&mut object)
     }

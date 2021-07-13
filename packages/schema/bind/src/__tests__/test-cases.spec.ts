@@ -3,6 +3,11 @@ import { readDirectory } from "../utils/fs";
 import { alphabeticalNamedSort } from "../utils/sort";
 import { bindSchema, OutputEntry, TargetLanguage } from "../";
 
+import { writeFileSync } from "@web3api/os-js";
+
+import fs from "fs";
+import path from "path";
+
 describe("Web3API Binding Test Suite", () => {
   const cases = fetchTestCases();
 
@@ -18,6 +23,10 @@ describe("Web3API Binding Test Suite", () => {
       for (const outputLanguage of testCase.outputLanguages) {
         // Verify it binds correctly
         const { language, directories } = outputLanguage;
+
+        if (language !== "wasm-rs") {
+          continue;
+        }
 
         // Read the expected output directories
         const expectedOutput = {
@@ -50,6 +59,21 @@ describe("Web3API Binding Test Suite", () => {
         if (output.mutation) {
           output.mutation.entries = sort(output.mutation.entries);
         }
+
+        const testResultDir = path.join(__dirname, "/test-results/");
+
+        if (!fs.existsSync(testResultDir)) {
+          fs.mkdirSync(__dirname + "/test-results");
+        }
+
+        writeFileSync(
+          path.join(testResultDir, `${language}-output.json`),
+          JSON.stringify(output, null, 2),
+        );
+        writeFileSync(
+          path.join(testResultDir, `${language}-expected.json`),
+          JSON.stringify(expectedOutput, null, 2),
+        );
 
         expect(output).toMatchObject(expectedOutput);
       }

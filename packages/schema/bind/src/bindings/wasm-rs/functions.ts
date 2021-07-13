@@ -215,7 +215,7 @@ const toWasmArray = (type: string, nullable: boolean): string => {
 
 const applyNullable = (
   type: string,
-  nullable: boolean
+  nullable: boolean,
 ): string => {
   if (nullable) {
     return `Option<${type}>`;
