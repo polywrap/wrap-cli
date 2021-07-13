@@ -16,6 +16,13 @@ pub struct AnotherType {
 }
 
 impl AnotherType {
+    pub fn new() -> Self {
+        Self {
+            prop: None,
+            circular: Box::new(None),
+        }
+    }
+
     pub fn to_buffer(mut object: &mut Self) -> Vec<u8> {
         serialize_another_type(&mut object)
     }
