@@ -2,7 +2,6 @@ use crate::{get_custom_enum_value, sanitize_custom_enum_value, AnotherType, Cust
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
-use std::io::{Error, ErrorKind, Result};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InputQueryMethod {
@@ -46,7 +45,7 @@ impl InputObjectMethod {
     }
 }
 
-pub fn deserialize_query_method_args(args_buf: &[u8]) -> Result<InputQueryMethod> {
+pub fn deserialize_query_method_args(args_buf: &[u8]) -> Result<InputQueryMethod, String> {
     let mut context = Context::new();
     context.description = "Deserializing query-type: query_method".to_string();
     let mut reader = ReadDecoder::new(args_buf, context);
@@ -200,19 +199,19 @@ pub fn deserialize_query_method_args(args_buf: &[u8]) -> Result<InputQueryMethod
         let custom_error = reader
             .context()
             .print_with_context("Missing required argument: 'string: String'");
-        return Err(Error::new(ErrorKind::Other, custom_error));
+        return Err(custom_error);
     }
     if !en_set {
         let custom_error = reader
             .context()
             .print_with_context("Missing required argument: 'en: CustomEnum'");
-        return Err(Error::new(ErrorKind::Other, custom_error));
+        return Err(custom_error);
     }
     if !enum_array_set {
         let custom_error = reader
             .context()
             .print_with_context("Missing required argument: 'enum_array: Vec<CustomEnum>'");
-        return Err(Error::new(ErrorKind::Other, custom_error));
+        return Err(custom_error);
     }
 
     Ok(InputQueryMethod {
@@ -249,7 +248,7 @@ pub fn write_query_method_result<W: Write>(result: i32, writer: &mut W) {
         .expect("Failed to pop i32 from Context");
 }
 
-pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMethod> {
+pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMethod, String> {
     let mut context = Context::new();
     context.description = "Deserializing query-type: object_method".to_string();
     let mut reader = ReadDecoder::new(args_buf, context);
@@ -333,14 +332,14 @@ pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMeth
         let custom_error = reader
             .context()
             .print_with_context("Missing required argument: 'object: AnotherType'");
-        return Err(Error::new(ErrorKind::Other, custom_error));
+        return Err(custom_error);
     }
 
     if !object_array_set {
         let custom_error = reader
             .context()
             .print_with_context("Missing required argument: 'object_array: Vec<AnotherType>'");
-        return Err(Error::new(ErrorKind::Other, custom_error));
+        return Err(custom_error);
     }
 
     Ok(InputObjectMethod {

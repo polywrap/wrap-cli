@@ -2,7 +2,6 @@ use super::super::{get_test_import_enum_value, sanitize_test_import_enum_value};
 use super::{TestImportAnotherObject, TestImportEnum, TestImportObject};
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use std::convert::TryFrom;
-use std::io::{Error, ErrorKind, Result};
 
 pub fn serialize_test_import_object(object: &TestImportObject) -> Vec<u8> {
     let mut sizer_context = Context::new();
@@ -125,7 +124,7 @@ pub fn deserialize_test_import_object(buffer: &[u8]) -> TestImportObject {
     read_test_import_object(&mut reader).expect("Failed to deserialize TestImportObject")
 }
 
-pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObject> {
+pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObject, String> {
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
     let mut object = TestImportAnotherObject::new();
@@ -323,25 +322,25 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
         let custom_error = reader
             .context()
             .print_with_context("Missing required property: 'object: TestImportAnotherObject'");
-        return Err(Error::new(ErrorKind::Other, custom_error));
+        return Err(custom_error);
     }
     if !object_array_set {
         let custom_error = reader.context().print_with_context(
             "Missing required property: 'object_array: Vec<TestImportAnotherObject>'",
         );
-        return Err(Error::new(ErrorKind::Other, custom_error));
+        return Err(custom_error);
     }
     if !en_set {
         let custom_error = reader
             .context()
             .print_with_context("Missing required property: 'en: TestImportEnum'");
-        return Err(Error::new(ErrorKind::Other, custom_error));
+        return Err(custom_error);
     }
     if !enum_array_set {
         let custom_error = reader
             .context()
             .print_with_context("Missing required property: 'en_array: Vec<TestImportEnum>'");
-        return Err(Error::new(ErrorKind::Other, custom_error));
+        return Err(custom_error);
     }
 
     Ok(TestImportObject {

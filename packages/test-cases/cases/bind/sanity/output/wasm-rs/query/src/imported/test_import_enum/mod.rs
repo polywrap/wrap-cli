@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
-use std::io::{Error, ErrorKind};
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 #[repr(i32)]
@@ -23,7 +22,7 @@ impl TryFrom<i32> for TestImportEnum {
     }
 }
 
-pub fn sanitize_test_import_enum_value(value: i32) -> Result<(), Error> {
+pub fn sanitize_test_import_enum_value(value: i32) -> Result<(), String> {
     let max_as_i32 = TestImportEnum::_MAX_ as i32;
     let valid = value >= 0 && value < max_as_i32;
     if !valid {
@@ -31,12 +30,12 @@ pub fn sanitize_test_import_enum_value(value: i32) -> Result<(), Error> {
             "Invalid value for enum 'TestImportEnum': {}",
             value.to_string()
         );
-        return Err(Error::new(ErrorKind::Other, custom_error));
+        return Err(custom_error);
     }
     Ok(())
 }
 
-pub fn get_test_import_enum_value(key: &str) -> Result<TestImportEnum, Error> {
+pub fn get_test_import_enum_value(key: &str) -> Result<TestImportEnum, String> {
     if key == "STRING" {
         return Ok(TestImportEnum::STRING);
     }
@@ -44,7 +43,7 @@ pub fn get_test_import_enum_value(key: &str) -> Result<TestImportEnum, Error> {
         return Ok(TestImportEnum::BYTES);
     }
     let custom_error = format!("Invalid key for enum 'TestImportEnum': {}", key);
-    return Err(Error::new(ErrorKind::Other, custom_error));
+    return Err(custom_error);
 }
 
 pub fn get_test_import_enum_key(value: TestImportEnum) -> String {

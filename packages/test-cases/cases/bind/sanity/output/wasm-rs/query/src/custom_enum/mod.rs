@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
-use std::io::{Error, ErrorKind};
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 #[repr(i32)]
@@ -23,17 +22,17 @@ impl TryFrom<i32> for CustomEnum {
     }
 }
 
-pub fn sanitize_custom_enum_value(value: i32) -> Result<(), Error> {
+pub fn sanitize_custom_enum_value(value: i32) -> Result<(), String> {
     let max_as_i32 = CustomEnum::_MAX_ as i32;
     let valid = value >= 0 && value < max_as_i32;
     if !valid {
         let custom_error = format!("Invalid value for enum 'CustomEnum': {}", value.to_string());
-        return Err(Error::new(ErrorKind::Other, custom_error));
+        return Err(custom_error);
     }
     Ok(())
 }
 
-pub fn get_custom_enum_value(key: &str) -> Result<CustomEnum, Error> {
+pub fn get_custom_enum_value(key: &str) -> Result<CustomEnum, String> {
     if key == "STRING" {
         return Ok(CustomEnum::STRING);
     }
@@ -41,7 +40,7 @@ pub fn get_custom_enum_value(key: &str) -> Result<CustomEnum, Error> {
         return Ok(CustomEnum::BYTES);
     }
     let custom_error = format!("Invalid key for enum 'CustomEnum': {}", key);
-    return Err(Error::new(ErrorKind::Other, custom_error));
+    return Err(custom_error);
 }
 
 pub fn get_custom_enum_key(value: CustomEnum) -> String {

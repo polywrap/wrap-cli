@@ -1,6 +1,5 @@
 use super::TestImportAnotherObject;
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
-use std::io::{Error, ErrorKind, Result};
 
 pub fn serialize_test_import_another_object(object: &TestImportAnotherObject) -> Vec<u8> {
     let mut sizer_context = Context::new();
@@ -40,7 +39,9 @@ pub fn deserialize_test_import_another_object(buffer: &[u8]) -> TestImportAnothe
         .expect("Failed to deserialize TestImportAnotherObject")
 }
 
-pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestImportAnotherObject> {
+pub fn read_test_import_another_object<R: Read>(
+    reader: &mut R,
+) -> Result<TestImportAnotherObject, String> {
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
     let mut prop = "".to_string();
@@ -78,7 +79,7 @@ pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestIm
         let custom_error = reader
             .context()
             .print_with_context("Missing required property: 'prop: String'");
-        return Err(Error::new(ErrorKind::Other, custom_error));
+        return Err(custom_error);
     }
 
     Ok(TestImportAnotherObject { prop })
