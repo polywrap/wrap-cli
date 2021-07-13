@@ -68,17 +68,11 @@ export async function loadBuildManifest(
     }
 
     // Load the custom json-schema extension if it exists
-    let configSchemaPath = path.join(
+    const configSchemaPath = path.join(
       path.dirname(manifestPath),
       "/web3api.build.ext.json"
     );
     let extSchema: JsonSchema | undefined = undefined;
-
-    if (!fs.existsSync(configSchemaPath)) {
-      configSchemaPath = project.getCachePath(
-        "build/env/web3api.build.ext.json"
-      );
-    }
 
     if (fs.existsSync(configSchemaPath)) {
       extSchema = JSON.parse(

@@ -11,6 +11,5 @@ type Query {
 type Mutation {
   sampleMutation(data: Bytes!): Boolean!
 }`,
-  implemented: [],
-  imported: [],
+  implements: [],
 };

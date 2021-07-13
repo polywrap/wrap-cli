@@ -37,10 +37,10 @@ describe("Ethereum Plugin", () => {
     registrarAddress = data.registrarAddress
 
     client = new Web3ApiClient({
-      redirects: [
+      plugins: [
         {
-          from: "w3://ens/ethereum.web3api.eth",
-          to: ethereumPlugin({
+          uri: "w3://ens/ethereum.web3api.eth",
+          plugin: ethereumPlugin({
             networks: {
               testnet: {
                 provider: ethereum
@@ -50,15 +50,15 @@ describe("Ethereum Plugin", () => {
           }),
         },
         {
-          from: "w3://ens/ipfs.web3api.eth",
-          to: ipfsPlugin({
+          uri: "w3://ens/ipfs.web3api.eth",
+          plugin: ipfsPlugin({
             provider: ipfs,
             fallbackProviders: ["https://ipfs.io"]
           })
         },
         {
-          from: "w3://ens/ens.web3api.eth",
-          to: ensPlugin({
+          uri: "w3://ens/ens.web3api.eth",
+          plugin: ensPlugin({
             addresses: {
               testnet: ensAddress
             }
@@ -152,7 +152,7 @@ describe("Ethereum Plugin", () => {
       expect(response.errors).toBeUndefined();
       expect(response.data?.callContractStatic).toBeDefined();
       expect(response.data?.callContractStatic.error).toBeTruthy();
-      expect(response.data?.callContractStatic.result).toBe("processing response error");
+      expect(response.data?.callContractStatic.result).toBe("missing revert data in call exception");
     });
 
     it("encodeParams", async () => {
@@ -351,8 +351,8 @@ describe("Ethereum Plugin", () => {
         `,
       });
 
-      expect(awaitResponse.data?.awaitTransaction).toBeDefined()
       expect(awaitResponse.errors).toBeUndefined()
+      expect(awaitResponse.data?.awaitTransaction).toBeDefined()
       expect(awaitResponse.data?.awaitTransaction.transactionHash).toBeDefined()
     });
 

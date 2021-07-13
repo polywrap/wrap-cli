@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 export const toTxReceipt = (
   receipt: ethers.providers.TransactionReceipt
 ): TxReceipt => ({
-  to: receipt.to,
+  to: receipt.to || "",
   from: receipt.from,
   contractAddress: receipt.contractAddress,
   transactionIndex: receipt.transactionIndex,
@@ -18,7 +18,9 @@ export const toTxReceipt = (
   blockHash: receipt.blockHash,
   confirmations: receipt.confirmations,
   cumulativeGasUsed: receipt.cumulativeGasUsed.toString(),
+  effectiveGasPrice: receipt.effectiveGasPrice?.toString() || "0",
   byzantium: receipt.byzantium,
+  type: receipt.type,
   status: receipt.status,
 });
 
@@ -40,6 +42,8 @@ export const fromTxReceipt = (
   cumulativeGasUsed: ethers.BigNumber.from(receipt.cumulativeGasUsed),
   byzantium: receipt.byzantium,
   status: receipt.status,
+  effectiveGasPrice: ethers.BigNumber.from(receipt.effectiveGasPrice),
+  type: receipt.type,
 });
 
 export const toTxResponse = (
@@ -50,7 +54,7 @@ export const toTxResponse = (
   from: response.from,
   nonce: response.nonce,
   gasLimit: response.gasLimit.toString(),
-  gasPrice: response.gasPrice.toString(),
+  gasPrice: response.gasPrice?.toString(),
   data: response.data,
   value: response.value.toString(),
   chainId: response.chainId,

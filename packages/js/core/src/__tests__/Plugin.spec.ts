@@ -3,7 +3,7 @@ import {
   Plugin,
   PluginModules,
   PluginManifest,
-  Uri
+  Uri,
 } from "..";
 
 const testPluginManifest: PluginManifest = {
@@ -16,8 +16,7 @@ const testPluginManifest: PluginManifest = {
       testMutation: Boolean!
     }
   `,
-  imported: [new Uri("host/path")],
-  implemented: [new Uri("host2/path2")],
+  implements: [new Uri("host2/path2")],
 };
 
 class TestPlugin extends Plugin {
@@ -43,7 +42,7 @@ describe("Plugin", () => {
   it("sanity", () => {
     const modules = plugin.getModules({} as Client);
 
-    expect(testPluginManifest.implemented.length).toBe(1);
+    expect(testPluginManifest.implements.length).toBe(1);
     expect(modules.mutation).toBeTruthy();
     expect(modules.mutation?.testMutation).toBeTruthy();
   });
