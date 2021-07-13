@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.29
+## Bugs
+* `@web3api/cli`: Fix MacOS specific issue w/ PATH not being retained.
+
 # Web3API 0.0.1-prealpha.28
 ## Bugs
 * Fixed API template project
