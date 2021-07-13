@@ -12,5 +12,5 @@ pub fn query_method_wrapped(args_buf: &[u8]) -> Vec<u8> {
 
 pub fn object_method_wrapped(args_buf: &[u8]) -> Vec<u8> {
     let object_method = deserialize_object_method_args(args_buf).unwrap();
-    serialize_object_method_result(object_method.opt_object)
+    serialize_object_method_result(&object_method.opt_object)
 }

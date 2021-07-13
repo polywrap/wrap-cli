@@ -47,7 +47,7 @@ pub struct CustomType {
 }
 
 impl CustomType {
-    pub fn to_buffer(object: Self) -> Vec<u8> {
+    pub fn to_buffer(object: &Self) -> Vec<u8> {
         serialize_custom_type(object)
     }
 
@@ -55,11 +55,11 @@ impl CustomType {
         deserialize_custom_type(buffer)
     }
 
-    pub fn write<W: Write>(object: Self, writer: W) {
+    pub fn write<W: Write>(object: &Self, writer: &mut W) {
         write_custom_type(object, writer);
     }
 
-    pub fn read<R: Read>(reader: R) -> Self {
+    pub fn read<R: Read>(reader: &mut R) -> Self {
         read_custom_type(reader).expect("Failed to read CustomType")
     }
 }

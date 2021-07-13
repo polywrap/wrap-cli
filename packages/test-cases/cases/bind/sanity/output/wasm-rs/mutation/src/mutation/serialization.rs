@@ -67,7 +67,7 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
                         .expect("Failed to get CustomEnum value");
                 } else {
                     en = reader.read_i32().unwrap_or_default().try_into().unwrap();
-                    sanitize_custom_enum_value(en.clone() as i32)
+                    sanitize_custom_enum_value(en as i32)
                         .expect("Failed to sanitize CustomEnum value");
                 }
                 en_set = true;
@@ -90,7 +90,7 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
                         );
                     } else {
                         opt_enum = Some(reader.read_i32().unwrap_or_default().try_into().unwrap());
-                        sanitize_custom_enum_value(opt_enum.clone().unwrap() as i32)
+                        sanitize_custom_enum_value(opt_enum.unwrap() as i32)
                             .expect("Failed to sanitize Option<CustomEnum> value");
                     }
                 } else {
@@ -116,7 +116,7 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
                         } else {
                             value = CustomEnum::try_from(reader.read_i32().unwrap_or_default())
                                 .expect("Failed to convert i32 to Vec<CustomEnum>");
-                            sanitize_custom_enum_value(value.clone() as i32)
+                            sanitize_custom_enum_value(value as i32)
                                 .expect("Failed to sanitize Vec<CustomEnum>");
                         }
                         return value;
@@ -144,7 +144,7 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
                     } else {
                         value = CustomEnum::try_from(reader.read_i32().unwrap_or_default())
                             .expect("Failed to convert i32 to Option<Vec<CustomEnum>>");
-                        sanitize_custom_enum_value(value.clone() as i32)
+                        sanitize_custom_enum_value(value as i32)
                             .expect("Failed to sanitize Option<Vec<CustomEnum>>");
                     }
                     return value;
@@ -199,17 +199,17 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
 pub fn serialize_mutation_method_result(result: i32) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) query-type: mutation_method".to_string();
-    let sizer = WriteSizer::new(sizer_context);
-    write_mutation_method_result(sizer.clone(), result);
+    let mut sizer = WriteSizer::new(sizer_context);
+    write_mutation_method_result(result, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) query-type: mutation_method".to_string();
-    let encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-    write_mutation_method_result(encoder, result);
+    let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
+    write_mutation_method_result(result, &mut encoder);
     buffer
 }
 
-pub fn write_mutation_method_result<W: Write>(mut writer: W, result: i32) {
+pub fn write_mutation_method_result<W: Write>(result: i32, writer: &mut W) {
     writer
         .context()
         .push("mutation_method", "i32", "writing property");
@@ -332,25 +332,25 @@ pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMeth
     })
 }
 
-pub fn serialize_object_method_result(result: Option<AnotherType>) -> Vec<u8> {
+pub fn serialize_object_method_result(result: &Option<AnotherType>) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) query-type: object_method".to_string();
-    let sizer = WriteSizer::new(sizer_context);
-    write_object_method_result(sizer.clone(), result.clone());
+    let mut sizer = WriteSizer::new(sizer_context);
+    write_object_method_result(result, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) query-type: object_method".to_string();
-    let encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-    write_object_method_result(encoder, result);
+    let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
+    write_object_method_result(result, &mut encoder);
     buffer
 }
 
-pub fn write_object_method_result<W: Write>(mut writer: W, result: Option<AnotherType>) {
+pub fn write_object_method_result<W: Write>(result: &Option<AnotherType>, writer: &mut W) {
     writer
         .context()
         .push("object_method", "Option<AnotherType>", "writing property");
     if result.is_some() {
-        AnotherType::write(&mut result.unwrap(), &mut writer);
+        AnotherType::write(&result.as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }

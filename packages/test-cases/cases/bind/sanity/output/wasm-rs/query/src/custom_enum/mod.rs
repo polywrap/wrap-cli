@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::io::{Error, ErrorKind};
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 #[repr(i32)]
 pub enum CustomEnum {
     STRING,
@@ -45,7 +45,7 @@ pub fn get_custom_enum_value(key: &str) -> Result<CustomEnum, Error> {
 }
 
 pub fn get_custom_enum_key(value: CustomEnum) -> String {
-    if let Ok(_) = sanitize_custom_enum_value(value.clone() as i32) {
+    if let Ok(_) = sanitize_custom_enum_value(value as i32) {
         return match value {
             CustomEnum::STRING => "STRING".to_string(),
             CustomEnum::BYTES => "BYTES".to_string(),

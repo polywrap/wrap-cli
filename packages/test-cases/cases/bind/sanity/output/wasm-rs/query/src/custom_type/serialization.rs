@@ -6,20 +6,20 @@ use num_traits::cast::FromPrimitive;
 use std::convert::TryFrom;
 use std::io::{Error, ErrorKind, Result};
 
-pub fn serialize_custom_type(object: CustomType) -> Vec<u8> {
+pub fn serialize_custom_type(object: &CustomType) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) object-type: CustomType".to_string();
-    let sizer = WriteSizer::new(sizer_context);
-    write_custom_type(object.clone(), sizer.clone());
+    let mut sizer = WriteSizer::new(sizer_context);
+    write_custom_type(&object, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) object-type: CustomType".to_string();
-    let encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-    write_custom_type(object, encoder);
+    let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
+    write_custom_type(object, &mut encoder);
     buffer
 }
 
-pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
+pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
     writer.write_map_length(35);
     writer
         .context()
@@ -142,7 +142,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
         .context()
         .push("bytes", "Vec<u8>", "writing property");
     writer.write_string(&"bytes".to_string());
-    writer.write_bytes(&object.bytes.clone());
+    writer.write_bytes(&object.bytes);
     writer
         .context()
         .pop()
@@ -220,8 +220,8 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
         .context()
         .push("u_array_array", "Vec<Vec<u32>>", "writing property");
     writer.write_string(&"u_array_array".to_string());
-    writer.write_array(object.u_array_array.as_slice(), |writer: &mut W, arr_fn| {
-        writer.write_array(arr_fn.as_slice(), Write::write_u32)
+    writer.write_array(object.u_array_array.as_slice(), |writer: &mut W, item| {
+        writer.write_array(item.as_slice(), Write::write_u32)
     });
     writer
         .context()
@@ -235,7 +235,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer.write_string(&"u_opt_array_opt_array".to_string());
     writer.write_array(
         object.u_opt_array_opt_array.as_slice(),
-        |writer: &mut W, arr_fn| writer.write_nullable_array(&arr_fn, Write::write_u64),
+        |writer: &mut W, item| writer.write_nullable_array(&item, Write::write_u64),
     );
     writer
         .context()
@@ -249,9 +249,9 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
     writer.write_string(&"u_array_opt_array_array".to_string());
     writer.write_array(
         object.u_array_opt_array_array.as_slice(),
-        |writer: &mut W, arr_fn| {
-            writer.write_nullable_array(&arr_fn, |writer: &mut W, arr_fn| {
-                writer.write_array(arr_fn.as_slice(), Write::write_u64)
+        |writer: &mut W, item| {
+            writer.write_nullable_array(&item, |writer: &mut W, item| {
+                writer.write_array(item.as_slice(), Write::write_u64)
             })
         },
     );
@@ -265,9 +265,9 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
         "writing property",
     );
     writer.write_string(&"crazy_array".to_string());
-    writer.write_nullable_array(&object.crazy_array, |writer: &mut W, arr_fn| {
-        writer.write_nullable_array(&arr_fn, |writer: &mut W, arr_fn| {
-            writer.write_nullable_array(&arr_fn, Write::write_u64)
+    writer.write_nullable_array(&object.crazy_array, |writer: &mut W, item| {
+        writer.write_nullable_array(&item, |writer: &mut W, item| {
+            writer.write_nullable_array(&item, Write::write_u64)
         })
     });
     writer
@@ -278,7 +278,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
         .context()
         .push("object", "AnotherType", "writing property");
     writer.write_string(&"object".to_string());
-    AnotherType::write(&mut object.object, &mut writer);
+    AnotherType::write(&object.object, writer);
     writer
         .context()
         .pop()
@@ -288,7 +288,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
         .push("opt_object", "Option<AnotherType>", "writing property");
     writer.write_string(&"opt_object".to_string());
     if object.opt_object.is_some() {
-        AnotherType::write(&mut object.opt_object.unwrap(), &mut writer);
+        AnotherType::write(&object.opt_object.as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }
@@ -300,8 +300,8 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
         .context()
         .push("object_array", "Vec<AnotherType>", "writing property");
     writer.write_string(&"object_array".to_string());
-    writer.write_array(object.object_array.as_slice(), |writer: &mut W, arr_fn| {
-        AnotherType::write(&mut arr_fn.clone(), writer)
+    writer.write_array(object.object_array.as_slice(), |writer: &mut W, object| {
+        AnotherType::write(&object, writer)
     });
     writer
         .context()
@@ -313,8 +313,8 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
         "writing property",
     );
     writer.write_string(&"opt_object_array".to_string());
-    writer.write_nullable_array(&object.opt_object_array, |writer: &mut W, arr_fn| {
-        AnotherType::write(&mut arr_fn.clone(), writer)
+    writer.write_nullable_array(&object.opt_object_array, |writer: &mut W, item| {
+        AnotherType::write(&item, writer)
     });
     writer
         .context()
@@ -324,7 +324,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
         .context()
         .push("en", "CustomEnum", "writing property");
     writer.write_string(&"en".to_string());
-    writer.write_i32(&(object.en.clone() as i32));
+    writer.write_i32(&(object.en as i32));
     writer
         .context()
         .pop()
@@ -334,7 +334,7 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
         .push("opt_en", "Option<CustomEnum>", "writing property");
     writer.write_string(&"opt_en".to_string());
     writer
-        .write_nullable_i32(Some(object.opt_en.clone().unwrap() as i32))
+        .write_nullable_i32(Some(object.opt_en.unwrap() as i32))
         .expect("Failed to write nullable i32");
     writer
         .context()
@@ -344,8 +344,8 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
         .context()
         .push("en_array", "Vec<CustomEnum>", "writing property");
     writer.write_string(&"en_array".to_string());
-    writer.write_array(object.en_array.as_slice(), |writer: &mut W, arr_fn| {
-        writer.write_i32(&(arr_fn.clone() as i32))
+    writer.write_array(object.en_array.as_slice(), |writer: &mut W, item| {
+        writer.write_i32(&(item.clone() as i32))
     });
     writer
         .context()
@@ -357,8 +357,8 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
         "writing property",
     );
     writer.write_string(&"opt_en_array".to_string());
-    writer.write_nullable_array(&object.opt_en_array, |writer: &mut W, arr_fn| {
-        writer.write_i32(&(arr_fn.clone() as i32))
+    writer.write_nullable_array(&object.opt_en_array, |writer: &mut W, item| {
+        writer.write_i32(&(item.clone() as i32))
     });
     writer
         .context()
@@ -369,11 +369,11 @@ pub fn write_custom_type<W: Write>(mut object: CustomType, mut writer: W) {
 pub fn deserialize_custom_type(buffer: &[u8]) -> CustomType {
     let mut context = Context::new();
     context.description = "Deserializing object-type: CustomType".to_string();
-    let reader = ReadDecoder::new(buffer, context);
-    read_custom_type(reader).expect("Failed to deserialize CustomType")
+    let mut reader = ReadDecoder::new(buffer, context);
+    read_custom_type(&mut reader).expect("Failed to deserialize CustomType")
 }
 
-pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
+pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType> {
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
     let mut string = String::new();
@@ -770,7 +770,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 reader
                     .context()
                     .push(&field, "AnotherType", "type found, reading property");
-                object = AnotherType::read(&mut reader);
+                object = AnotherType::read(reader);
                 object_set = true;
                 reader
                     .context()
@@ -784,7 +784,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                     "type found, reading property",
                 );
                 if !reader.is_next_nil() {
-                    opt_object = Some(AnotherType::read(&mut reader));
+                    opt_object = Some(AnotherType::read(reader));
                 }
                 reader
                     .context()
@@ -826,8 +826,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                 } else {
                     en = CustomEnum::try_from(reader.read_i32().unwrap_or_default())
                         .expect("Failed to convert i32 to CustomEnum");
-                    sanitize_custom_enum_value(en.clone() as i32)
-                        .expect("Failed to sanitize CustomEnum");
+                    sanitize_custom_enum_value(en as i32).expect("Failed to sanitize CustomEnum");
                 }
                 en_set = true;
                 reader
@@ -852,7 +851,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                             CustomEnum::try_from(reader.read_i32().unwrap_or_default())
                                 .expect("Failed to convert i32 to Option<CustomEnum>"),
                         );
-                        sanitize_custom_enum_value(opt_en.clone().unwrap() as i32)
+                        sanitize_custom_enum_value(opt_en.unwrap() as i32)
                             .expect("Failed to sanitize Option<CustomEnum>");
                     }
                 } else {
@@ -878,7 +877,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                         } else {
                             value = CustomEnum::try_from(reader.read_i32().unwrap_or_default())
                                 .expect("Failed to convert i32 to Vec<CustomEnum>");
-                            sanitize_custom_enum_value(value.clone() as i32)
+                            sanitize_custom_enum_value(value as i32)
                                 .expect("Failed to sanitize Vec<CustomEnum>");
                         }
                         return value;
@@ -906,7 +905,7 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                     } else {
                         value = CustomEnum::try_from(reader.read_i32().unwrap_or_default())
                             .expect("Failed to convert i32 to Option<Vec<CustomEnum>>");
-                        sanitize_custom_enum_value(value.clone() as i32)
+                        sanitize_custom_enum_value(value as i32)
                             .expect("Failed to sanitize Option<Vec<CustomEnum>>");
                     }
                     return value;

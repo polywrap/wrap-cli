@@ -23,7 +23,7 @@ pub struct TestImportObject {
 impl TestImportObject {
     pub const URI: &'static str = "testimport.uri.eth";
 
-    pub fn to_buffer(object: Self) -> Vec<u8> {
+    pub fn to_buffer(object: &Self) -> Vec<u8> {
         serialize_test_import_object(object)
     }
 
@@ -31,8 +31,8 @@ impl TestImportObject {
         deserialize_test_import_object(buffer)
     }
 
-    pub fn write<W: Write>(writer: &mut W, object: &mut Self) {
-        write_test_import_object(writer, object);
+    pub fn write<W: Write>(object: &Self, writer: &mut W) {
+        write_test_import_object(object, writer);
     }
 
     pub fn read<R: Read>(reader: &mut R) -> Self {

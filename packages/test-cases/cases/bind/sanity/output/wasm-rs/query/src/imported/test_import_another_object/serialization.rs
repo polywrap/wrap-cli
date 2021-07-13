@@ -2,24 +2,24 @@ use super::TestImportAnotherObject;
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use std::io::{Error, ErrorKind, Result};
 
-pub fn serialize_test_import_another_object(mut object: TestImportAnotherObject) -> Vec<u8> {
+pub fn serialize_test_import_another_object(object: &TestImportAnotherObject) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description =
         "Serializing (sizing) imported object-type: TestImportAnotherObject".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
-    write_test_import_another_object(&mut object, &mut sizer);
+    write_test_import_another_object(&object, &mut sizer);
 
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description =
         "Serializing (encoding) imported object-type: TestImportAnotherObject".to_string();
     let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-    write_test_import_another_object(&mut object, &mut encoder);
+    write_test_import_another_object(object, &mut encoder);
     buffer
 }
 
 pub fn write_test_import_another_object<W: Write>(
-    object: &mut TestImportAnotherObject,
+    object: &TestImportAnotherObject,
     writer: &mut W,
 ) {
     writer.write_map_length(1);

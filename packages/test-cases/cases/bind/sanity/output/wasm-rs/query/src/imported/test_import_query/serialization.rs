@@ -19,22 +19,22 @@ pub struct InputImportedMethod {
     pub opt_enum_array: Option<Vec<TestImportEnum>>,
 }
 
-pub fn serialize_imported_method_args(mut input: InputImportedMethod) -> Vec<u8> {
+pub fn serialize_imported_method_args(input: &InputImportedMethod) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description =
         "Serializing (sizing) imported query-type: InputImportedMethod".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
-    write_imported_method_args(&mut sizer, &mut input);
+    write_imported_method_args(&input, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description =
         "Serializing (encoding) imported query-type: InputImportedMethod".to_string();
     let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-    write_imported_method_args(&mut encoder, &mut input);
+    write_imported_method_args(input, &mut encoder);
     buffer
 }
 
-pub fn write_imported_method_args<W: Write>(writer: &mut W, input: &mut InputImportedMethod) {
+pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer: &mut W) {
     writer.write_map_length(13);
     writer
         .context()
@@ -75,8 +75,8 @@ pub fn write_imported_method_args<W: Write>(writer: &mut W, input: &mut InputImp
         .context()
         .push("u_array_array", "Vec<Vec<u32>>", "writing property");
     writer.write_string(&"u_array_array".to_string());
-    writer.write_array(input.u_array_array.as_slice(), |writer: &mut W, arr_fn| {
-        writer.write_array(arr_fn.as_slice(), Write::write_u32)
+    writer.write_array(input.u_array_array.as_slice(), |writer: &mut W, item| {
+        writer.write_array(item.as_slice(), Write::write_u32)
     });
     writer
         .context()
@@ -87,7 +87,7 @@ pub fn write_imported_method_args<W: Write>(writer: &mut W, input: &mut InputImp
         .context()
         .push("object", "TestImportObject", "writing property");
     writer.write_string(&"object".to_string());
-    TestImportObject::write(writer, &mut input.object);
+    TestImportObject::write(&input.object, writer);
     writer
         .context()
         .pop()
@@ -97,7 +97,7 @@ pub fn write_imported_method_args<W: Write>(writer: &mut W, input: &mut InputImp
         .push("opt_object", "Option<TestImportObject>", "writing property");
     writer.write_string(&"opt_object".to_string());
     if input.opt_object.is_some() {
-        TestImportObject::write(writer, &mut input.opt_object.clone().unwrap());
+        TestImportObject::write(&input.opt_object.as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }
@@ -109,8 +109,8 @@ pub fn write_imported_method_args<W: Write>(writer: &mut W, input: &mut InputImp
         .context()
         .push("object_array", "Vec<TestImportObject>", "writing property");
     writer.write_string(&"object_array".to_string());
-    writer.write_array(input.object_array.as_slice(), |writer: &mut W, arr_fn| {
-        TestImportObject::write(writer, &mut arr_fn.clone())
+    writer.write_array(input.object_array.as_slice(), |writer: &mut W, item| {
+        TestImportObject::write(item, writer)
     });
     writer
         .context()
@@ -122,8 +122,8 @@ pub fn write_imported_method_args<W: Write>(writer: &mut W, input: &mut InputImp
         "writing property",
     );
     writer.write_string(&"opt_object_array".to_string());
-    writer.write_nullable_array(&input.opt_object_array, |writer: &mut W, arr_fn| {
-        TestImportObject::write(writer, &mut arr_fn.clone())
+    writer.write_nullable_array(&input.opt_object_array, |writer: &mut W, item| {
+        TestImportObject::write(item, writer)
     });
     writer
         .context()
@@ -133,7 +133,7 @@ pub fn write_imported_method_args<W: Write>(writer: &mut W, input: &mut InputImp
         .context()
         .push("en", "TestImportEnum", "writing property");
     writer.write_string(&"en".to_string());
-    writer.write_i32(&(input.en.clone() as i32));
+    writer.write_i32(&(input.en as i32));
     writer
         .context()
         .pop()
@@ -143,7 +143,7 @@ pub fn write_imported_method_args<W: Write>(writer: &mut W, input: &mut InputImp
         .push("opt_enum", "Option<TestImportEnum>", "writing property");
     writer.write_string(&"opt_enum".to_string());
     writer
-        .write_nullable_i32(Some(input.opt_enum.clone().unwrap() as i32))
+        .write_nullable_i32(Some(input.opt_enum.unwrap() as i32))
         .expect("Failed to write nullable i32");
     writer
         .context()
@@ -153,8 +153,8 @@ pub fn write_imported_method_args<W: Write>(writer: &mut W, input: &mut InputImp
         .context()
         .push("enum_array", "Vec<TestImportEnum>", "writing property");
     writer.write_string(&"enum_array".to_string());
-    writer.write_array(input.enum_array.as_slice(), |writer: &mut W, arr_fn| {
-        writer.write_i32(&(arr_fn.clone() as i32))
+    writer.write_array(input.enum_array.as_slice(), |writer: &mut W, item| {
+        writer.write_i32(&(item.clone() as i32))
     });
     writer
         .context()
@@ -166,8 +166,8 @@ pub fn write_imported_method_args<W: Write>(writer: &mut W, input: &mut InputImp
         "writing property",
     );
     writer.write_string(&"opt_enum_array".to_string());
-    writer.write_nullable_array(&input.opt_enum_array, |writer: &mut W, arr_fn| {
-        writer.write_i32(&(arr_fn.clone() as i32))
+    writer.write_nullable_array(&input.opt_enum_array, |writer: &mut W, item| {
+        writer.write_i32(&(item.clone() as i32))
     });
     writer
         .context()
@@ -208,23 +208,23 @@ impl InputAnotherMethod {
     }
 }
 
-pub fn serialize_another_method_args(mut input: &mut InputAnotherMethod) -> Vec<u8> {
+pub fn serialize_another_method_args(input: &InputAnotherMethod) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description =
         "Serializing (sizing) imported query-type: InputAnotherMethod".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
-    write_another_method_args(&mut sizer, &mut input);
+    write_another_method_args(&input, &mut sizer);
 
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description =
         "Serializing (encoding) imported query-type: InputAnotherMethod".to_string();
     let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-    write_another_method_args(&mut encoder, &mut input);
+    write_another_method_args(input, &mut encoder);
     buffer
 }
 
-pub fn write_another_method_args<W: Write>(writer: &mut W, input: &mut InputAnotherMethod) {
+pub fn write_another_method_args<W: Write>(input: &InputAnotherMethod, writer: &mut W) {
     writer.write_map_length(1);
     writer
         .context()

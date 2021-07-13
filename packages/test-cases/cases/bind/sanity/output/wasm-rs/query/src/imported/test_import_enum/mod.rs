@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::io::{Error, ErrorKind};
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 #[repr(i32)]
 pub enum TestImportEnum {
     STRING,
@@ -48,7 +48,7 @@ pub fn get_test_import_enum_value(key: &str) -> Result<TestImportEnum, Error> {
 }
 
 pub fn get_test_import_enum_key(value: TestImportEnum) -> String {
-    if let Ok(_) = sanitize_test_import_enum_value(value.clone() as i32) {
+    if let Ok(_) = sanitize_test_import_enum_value(value as i32) {
         return match value {
             TestImportEnum::STRING => "STRING".to_string(),
             TestImportEnum::BYTES => "BYTES".to_string(),
