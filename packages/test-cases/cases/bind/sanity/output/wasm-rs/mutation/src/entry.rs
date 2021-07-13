@@ -1,7 +1,5 @@
-pub use super::{
-    mutation_method_wrapped, object_method_wrapped, InputMutationMethod, InputObjectMethod,
-};
 use crate::{abort, invoke};
+use crate::{mutation_method_wrapped, object_method_wrapped};
 
 pub fn _w3_init() {
     invoke::w3_add_invoke("mutation_method", mutation_method_wrapped);

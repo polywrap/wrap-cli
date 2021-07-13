@@ -13,38 +13,6 @@ pub struct InputQueryMethod {
     pub opt_enum_array: Option<Vec<CustomEnum>>,
 }
 
-impl InputQueryMethod {
-    pub fn new() -> Self {
-        Self {
-            string: String::new(),
-            opt_string: None,
-            en: CustomEnum::_MAX_,
-            opt_enum: None,
-            enum_array: vec![],
-            opt_enum_array: None,
-        }
-    }
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct InputObjectMethod {
-    pub object: AnotherType,
-    pub opt_object: Option<AnotherType>,
-    pub object_array: Vec<AnotherType>,
-    pub opt_object_array: Option<Vec<AnotherType>>,
-}
-
-impl InputObjectMethod {
-    pub fn new() -> Self {
-        Self {
-            object: AnotherType::new(),
-            opt_object: None,
-            object_array: vec![],
-            opt_object_array: None,
-        }
-    }
-}
-
 pub fn deserialize_query_method_args(args_buf: &[u8]) -> Result<InputQueryMethod, String> {
     let mut context = Context::new();
     context.description = "Deserializing query-type: query_method".to_string();
@@ -246,6 +214,14 @@ pub fn write_query_method_result<W: Write>(result: i32, writer: &mut W) {
         .context()
         .pop()
         .expect("Failed to pop i32 from Context");
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct InputObjectMethod {
+    pub object: AnotherType,
+    pub opt_object: Option<AnotherType>,
+    pub object_array: Vec<AnotherType>,
+    pub opt_object_array: Option<Vec<AnotherType>>,
 }
 
 pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMethod, String> {

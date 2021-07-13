@@ -1,5 +1,5 @@
-use super::{TestImportAnotherObject, TestImportEnum};
 use crate::{Read, Write};
+use crate::{TestImportAnotherObject, TestImportEnum};
 use serde::{Deserialize, Serialize};
 
 pub mod serialization;

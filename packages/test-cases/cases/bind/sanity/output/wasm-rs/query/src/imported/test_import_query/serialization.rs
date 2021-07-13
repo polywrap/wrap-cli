@@ -1,5 +1,5 @@
-use super::{TestImportEnum, TestImportObject};
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
+use crate::{TestImportEnum, TestImportObject};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

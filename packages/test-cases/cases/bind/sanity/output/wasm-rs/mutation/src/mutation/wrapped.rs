@@ -1,4 +1,4 @@
-pub use super::serialization::{
+use crate::{
     deserialize_mutation_method_args, deserialize_object_method_args,
     serialize_mutation_method_result, serialize_object_method_result,
 };

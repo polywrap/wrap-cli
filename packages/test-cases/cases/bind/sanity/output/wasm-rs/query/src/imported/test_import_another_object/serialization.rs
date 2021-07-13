@@ -1,4 +1,4 @@
-use super::TestImportAnotherObject;
+use crate::TestImportAnotherObject;
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
 pub fn serialize_test_import_another_object(object: &TestImportAnotherObject) -> Vec<u8> {

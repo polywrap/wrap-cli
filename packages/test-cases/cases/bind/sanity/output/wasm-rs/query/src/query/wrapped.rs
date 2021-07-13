@@ -1,4 +1,4 @@
-use super::{
+use crate::{
     deserialize_object_method_args, deserialize_query_method_args, serialize_object_method_result,
     serialize_query_method_result,
 };

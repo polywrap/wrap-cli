@@ -1,4 +1,4 @@
-use super::{AnotherType, CustomType};
+use crate::{AnotherType, CustomType};
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
 pub fn serialize_another_type(object: &AnotherType) -> Vec<u8> {
