@@ -250,7 +250,7 @@ export class Compiler {
     const { web3ApiManifest, modulesToBuild } = state;
 
     if (web3ApiManifest.interface) {
-      throw Error("TODO")
+      throw Error(intlMsg.lib_compiler_cannotBuildInterfaceModules())
     }
 
     // Build the sources
