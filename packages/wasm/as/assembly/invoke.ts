@@ -4,6 +4,10 @@
 @external("w3", "__w3_invoke_args")
 export declare function __w3_invoke_args(method_ptr: u32, args_ptr: u32): void;
 
+// Get Enviroment
+@external("w3", "__w3_load_env")
+export declare function __w3_load_env(enviroment_ptr: u32): void;
+
 // Set Invoke Result
 @external("w3", "__w3_invoke_result")
 export declare function __w3_invoke_result(ptr: u32, len: u32): void;

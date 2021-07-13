@@ -12,6 +12,7 @@ export interface W3Exports {
 
   _w3_init: () => void;
   _w3_invoke: (nameLen: u32, argsLen: u32) => boolean;
+  _w3_load_env: (environmentLen: u32) => void;
 }
 
 export interface W3Imports {
@@ -44,6 +45,7 @@ export interface W3Imports {
       line: u32,
       column: u32
     ) => void;
+    __w3_load_env: (ptr: u32) => void;
   };
 
   env: {

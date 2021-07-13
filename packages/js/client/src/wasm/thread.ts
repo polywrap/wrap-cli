@@ -29,6 +29,7 @@ interface State {
   threadMutexes?: Int32Array;
   threadId?: number;
   transfer?: Uint8Array;
+  environment?: ArrayBuffer;
 }
 
 const state: State = {
@@ -209,6 +210,11 @@ const imports = (memory: WebAssembly.Memory): W3Imports => ({
     __w3_invoke_error: (ptr: u32, len: u32): void => {
       state.invoke.error = readString(memory.buffer, ptr, len);
     },
+    __w3_load_env: (ptr: u32): void => {
+      if (state.environment) {
+        writeBytes(state.environment, memory.buffer, ptr);
+      }
+    },
     __w3_abort: (
       msgPtr: u32,
       msgLen: u32,
@@ -235,6 +241,7 @@ addEventListener(
       wasm: ArrayBuffer;
       method: string;
       input: Record<string, unknown> | ArrayBuffer;
+      environment: Record<string, unknown>;
       threadMutexesBuffer: SharedArrayBuffer;
       threadId: number;
       transferBuffer: SharedArrayBuffer;
@@ -289,6 +296,17 @@ addEventListener(
 
     // Initialize the Web3Api module
     exports._w3_init();
+
+    // Make sure _w3_load_env exists
+    if (!hasExport("_w3_load_env", exports)) {
+      return;
+    }
+
+    const encodedEnviroment = MsgPack.encode(input.data.environment, {
+      ignoreUndefined: true,
+    });
+    state.environment = encodedEnviroment;
+    exports._w3_load_env(encodedEnviroment.length);
 
     // Make sure _w3_invoke exists
     if (!hasExport("_w3_invoke", exports)) {

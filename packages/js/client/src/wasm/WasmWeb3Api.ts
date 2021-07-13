@@ -9,6 +9,7 @@ import {
   maxTransferBytes,
 } from "./types";
 import { sleep } from "./utils";
+import { Web3ApiEnvironment } from "../Web3ApiClient";
 
 import {
   InvokeApiOptions,
@@ -43,7 +44,8 @@ export class WasmWeb3Api extends Api {
   constructor(
     private _uri: Uri,
     private _manifest: Web3ApiManifest,
-    private _apiResolver: Uri
+    private _apiResolver: Uri,
+    private _clientEnvironment?: Web3ApiEnvironment
   ) {
     super();
 
@@ -52,6 +54,7 @@ export class WasmWeb3Api extends Api {
       uri: this._uri,
       manifest: this._manifest,
       apiResolver: this._apiResolver,
+      clientEnviroment: this._clientEnvironment,
     });
     Tracer.endSpan();
   }
@@ -253,6 +256,7 @@ export class WasmWeb3Api extends Api {
           wasm,
           method,
           input,
+          environment: this._clientEnvironment?.query,
           threadMutexesBuffer,
           threadId,
           transferBuffer,

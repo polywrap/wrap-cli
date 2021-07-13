@@ -1,7 +1,9 @@
 import {
   w3_add_invoke,
   w3_invoke,
-  w3_abort
+  w3_abort,
+  Context,
+  ReadDecoder,
 } from "@web3api/wasm-as";
 {{#queryTypes}}
 {{#methods.length}}
@@ -12,6 +14,7 @@ import {
 } from "./{{type}}/wrapped";
 {{/methods.length}}
 {{/queryTypes}}
+import { env } from "./environment";
 
 export function _w3_init(): void {
   {{#queryTypes}}
@@ -19,6 +22,32 @@ export function _w3_init(): void {
   w3_add_invoke("{{name}}", {{name}}Wrapped);
   {{/methods}}
   {{/queryTypes}}
+}
+
+// Get Enviroment
+@external("w3", "__w3_load_env")
+export declare function __w3_load_env(enviroment_ptr: u32): void;
+
+export function _w3_load_env(environment_size: u32): void {
+  const environmentBuf = new ArrayBuffer(environment_size);
+  __w3_load_env(changetype<u32>(environmentBuf));
+
+  const context: Context = new Context("Loading enviroment");
+  const reader = new ReadDecoder(environmentBuf, context);
+
+  let numFields = reader.readMapLength();
+
+  while (numFields > 0) {
+    numFields--;
+    const field = reader.readString();
+
+    if (field == "uri") {
+      env.uri = reader.readNullableString();
+    }
+    if (field == "number") {
+      env.number = reader.readNullableInt8();
+    }
+  }
 }
 
 export function _w3_invoke(method_size: u32, args_size: u32): bool {

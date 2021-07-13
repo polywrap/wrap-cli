@@ -21,9 +21,19 @@ import {
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
+export interface Web3ApiEnvironment {
+  query?: Record<string, unknown>;
+  mutation?: Record<string, unknown>;
+}
+
+export interface Environment {
+  [key: string]: Web3ApiEnvironment;
+}
+
 export interface ClientConfig<TUri = string> {
   redirects?: UriRedirect<TUri>[];
   tracingEnabled?: boolean;
+  environment?: Environment;
 }
 
 export class Web3ApiClient implements Client {
@@ -193,13 +203,16 @@ export class Web3ApiClient implements Client {
       async (uri: Uri): Promise<Api> => {
         let api = this._apiCache.get(uri.uri);
 
+        console.log("LOAD: " + uri.uri);
+
         if (!api) {
+          const enviroment = this.environment[uri.uri];
           api = await resolveUri(
             uri,
             this,
             (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
             (uri: Uri, manifest: Web3ApiManifest, apiResolver: Uri) =>
-              new WasmWeb3Api(uri, manifest, apiResolver)
+              new WasmWeb3Api(uri, manifest, apiResolver, enviroment)
           );
 
           if (!api) {

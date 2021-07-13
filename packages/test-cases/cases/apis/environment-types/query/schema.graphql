@@ -1,0 +1,8 @@
+type Query {
+  environment(arg: String!): String
+}
+
+type QueryEnv {
+  uri: String
+  number: Int8
+}

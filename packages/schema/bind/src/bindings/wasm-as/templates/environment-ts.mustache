@@ -1,0 +1,14 @@
+import {
+  Nullable
+} from "@web3api/wasm-as";
+import * as Types from ".";
+
+class Env {
+  {{#environment.query.sanitized.properties}}
+  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} | null;
+  {{/environment.query.sanitized.properties}}
+
+  public constructor() {}
+}
+
+export const env: Env = new Env();
