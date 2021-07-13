@@ -1,6 +1,6 @@
 pub mod serialization;
 use crate::subinvoke;
-use crate::{TestImportEnum, TestImportObject};
+use crate::TestImportObject;
 use serde::{Deserialize, Serialize};
 pub use serialization::{
     deserialize_another_method_result, deserialize_imported_method_result,

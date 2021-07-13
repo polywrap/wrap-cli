@@ -86,9 +86,7 @@ pub fn write_test_import_object<W: Write>(object: &TestImportObject, writer: &mu
         .context()
         .push("opt_enum", "Option<TestImportEnum>", "writing property");
     writer.write_string(&"opt_enum".to_string());
-    writer
-        .write_nullable_i32(Some(object.opt_enum.unwrap() as i32))
-        .expect("Failed to write nullable i32");
+    writer.write_nullable_i32(Some(object.opt_enum.unwrap() as i32));
     writer
         .context()
         .pop()

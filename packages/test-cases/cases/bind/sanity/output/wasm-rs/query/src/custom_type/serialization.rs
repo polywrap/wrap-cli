@@ -131,9 +131,7 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("opt_bigint", "Option<BigInt>", "writing property");
     writer.write_string(&"opt_bigint".to_string());
-    writer
-        .write_nullable_bigint(object.opt_bigint.to_owned())
-        .expect("Failed to write nullable bigint");
+    writer.write_nullable_bigint(object.opt_bigint.to_owned());
     writer
         .context()
         .pop()
@@ -151,9 +149,7 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("opt_bytes", "Option<Vec<u8>>", "writing property");
     writer.write_string(&"opt_bytes".to_string());
-    writer
-        .write_nullable_bytes(object.opt_bytes.to_owned())
-        .expect("Failed to write nullable bytes");
+    writer.write_nullable_bytes(object.opt_bytes.to_owned());
     writer
         .context()
         .pop()
@@ -169,9 +165,7 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("opt_boolean", "Option<bool>", "writing property");
     writer.write_string(&"opt_boolean".to_string());
-    writer
-        .write_nullable_bool(object.opt_boolean)
-        .expect("Failed to write nullable boolean value");
+    writer.write_nullable_bool(object.opt_boolean);
     writer
         .context()
         .pop()
@@ -333,9 +327,7 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("opt_en", "Option<CustomEnum>", "writing property");
     writer.write_string(&"opt_en".to_string());
-    writer
-        .write_nullable_i32(Some(object.opt_en.unwrap() as i32))
-        .expect("Failed to write nullable i32");
+    writer.write_nullable_i32(Some(object.opt_en.unwrap() as i32));
     writer
         .context()
         .pop()
