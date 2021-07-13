@@ -2,7 +2,6 @@
 //! prints it in a clear format
 
 use serde::{Deserialize, Serialize};
-use std::io::{Error, ErrorKind, Result};
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct Context {
@@ -35,12 +34,9 @@ impl Context {
         self.nodes.push(node);
     }
 
-    pub fn pop(&mut self) -> Result<String> {
+    pub fn pop(&mut self) -> Result<String, String> {
         if self.is_empty() {
-            return Err(Error::new(
-                ErrorKind::NotFound,
-                "Error: tried to pop an item from an empty Context stack",
-            ));
+            return Err("Error: tried to pop an item from an empty Context stack".to_string());
         }
         let node = self.nodes.pop().unwrap_or_default();
         Ok(format!(

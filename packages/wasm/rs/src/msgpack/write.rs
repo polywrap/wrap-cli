@@ -2,7 +2,6 @@ use crate::Context;
 use num_bigint::BigInt;
 use std::collections::HashMap;
 use std::hash::Hash;
-use std::io::Result;
 
 pub trait Write: Clone {
     fn write_nil(&mut self);
@@ -31,20 +30,20 @@ pub trait Write: Clone {
         key_fn: impl FnMut(&mut Self, &K),
         val_fn: impl FnMut(&mut Self, &V),
     );
-    fn write_nullable_bool(&mut self, value: Option<bool>) -> Result<()>;
-    fn write_nullable_i8(&mut self, value: Option<i8>) -> Result<()>;
-    fn write_nullable_i16(&mut self, value: Option<i16>) -> Result<()>;
-    fn write_nullable_i32(&mut self, value: Option<i32>) -> Result<()>;
-    fn write_nullable_i64(&mut self, value: Option<i64>) -> Result<()>;
-    fn write_nullable_u8(&mut self, value: Option<u8>) -> Result<()>;
-    fn write_nullable_u16(&mut self, value: Option<u16>) -> Result<()>;
+    fn write_nullable_bool(&mut self, value: Option<bool>);
+    fn write_nullable_i8(&mut self, value: Option<i8>);
+    fn write_nullable_i16(&mut self, value: Option<i16>);
+    fn write_nullable_i32(&mut self, value: Option<i32>);
+    fn write_nullable_i64(&mut self, value: Option<i64>);
+    fn write_nullable_u8(&mut self, value: Option<u8>);
+    fn write_nullable_u16(&mut self, value: Option<u16>);
     fn write_nullable_u32(&mut self, value: &Option<u32>);
     fn write_nullable_u64(&mut self, value: &Option<u64>);
-    fn write_nullable_f32(&mut self, value: Option<f32>) -> Result<()>;
-    fn write_nullable_f64(&mut self, value: Option<f64>) -> Result<()>;
+    fn write_nullable_f32(&mut self, value: Option<f32>);
+    fn write_nullable_f64(&mut self, value: Option<f64>);
     fn write_nullable_string(&mut self, value: &Option<String>);
-    fn write_nullable_bytes(&mut self, buf: Option<Vec<u8>>) -> Result<()>;
-    fn write_nullable_bigint(&mut self, value: Option<BigInt>) -> Result<()>;
+    fn write_nullable_bytes(&mut self, buf: Option<Vec<u8>>);
+    fn write_nullable_bigint(&mut self, value: Option<BigInt>);
     fn write_nullable_array<T>(&mut self, a: &Option<Vec<T>>, arr_fn: impl FnMut(&mut Self, &T));
     fn write_nullable_map<K: Eq + Hash, V>(
         &mut self,

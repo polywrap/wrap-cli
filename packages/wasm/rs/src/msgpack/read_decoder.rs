@@ -6,7 +6,6 @@ use num_bigint::BigInt;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::hash::Hash;
-use std::io::{Error, ErrorKind, Result};
 use std::str::FromStr;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -34,7 +33,7 @@ impl ReadDecoder {
         }
     }
 
-    fn get_size(&mut self) -> Result<i32> {
+    fn get_size(&mut self) -> Result<i32, String> {
         let lead_byte = self.view.get_u8().unwrap_or_default(); // will discard one
         let mut objects_to_discard: i32 = 0;
         // handle for fixed values
@@ -154,7 +153,7 @@ impl ReadDecoder {
                         "invalid prefix, bad encoding for val: {}",
                         lead_byte.to_string()
                     );
-                    return Err(Error::new(ErrorKind::Other, custom_error));
+                    return Err(custom_error);
                 }
             }
         }
@@ -162,7 +161,7 @@ impl ReadDecoder {
         Ok(objects_to_discard)
     }
 
-    fn get_error_message(lead_byte: u8) -> Result<String> {
+    fn get_error_message(lead_byte: u8) -> Result<String, String> {
         if Format::is_negative_fixed_int(lead_byte) {
             return Ok("Found `int`".to_string());
         } else if Format::is_fixed_int(lead_byte) {
@@ -264,7 +263,7 @@ impl ReadDecoder {
                         "invalid prefix, bad encoding for val: {}",
                         lead_byte.to_string()
                     );
-                    return Err(Error::new(ErrorKind::Other, custom_error));
+                    return Err(custom_error);
                 }
             }
         }
@@ -272,7 +271,7 @@ impl ReadDecoder {
 }
 
 impl Read for ReadDecoder {
-    fn read_bool(&mut self) -> Result<bool> {
+    fn read_bool(&mut self) -> Result<bool, String> {
         let value = self.view.get_u8().unwrap_or_default();
         if value == Format::TRUE {
             return Ok(true);
@@ -283,49 +282,37 @@ impl Read for ReadDecoder {
         custom_error.push_str("Property must be of type `bool`");
         let msg = Self::get_error_message(value).unwrap_or_default();
         custom_error.push_str(&msg);
-        Err(Error::new(
-            ErrorKind::Other,
-            self.context.print_with_context(&custom_error),
-        ))
+        Err(self.context.print_with_context(&custom_error))
     }
 
-    fn read_i8(&mut self) -> Result<i8> {
+    fn read_i8(&mut self) -> Result<i8, String> {
         let value = self.read_i64().unwrap_or_default();
         if (value <= i8::MAX as i64) && (value >= i8::MIN as i64) {
             return Ok(value as i8);
         }
         let custom_error = format!("integer overflow: value = {}; bits = 8", value.to_string());
-        Err(Error::new(
-            ErrorKind::Other,
-            self.context.print_with_context(&custom_error),
-        ))
+        Err(self.context.print_with_context(&custom_error))
     }
 
-    fn read_i16(&mut self) -> Result<i16> {
+    fn read_i16(&mut self) -> Result<i16, String> {
         let value = self.read_i64().unwrap_or_default();
         if (value <= i16::MAX as i64) && (value >= i16::MIN as i64) {
             return Ok(value as i16);
         }
         let custom_error = format!("integer overflow: value = {}; bits = 16", value.to_string());
-        Err(Error::new(
-            ErrorKind::Other,
-            self.context.print_with_context(&custom_error),
-        ))
+        Err(self.context.print_with_context(&custom_error))
     }
 
-    fn read_i32(&mut self) -> Result<i32> {
+    fn read_i32(&mut self) -> Result<i32, String> {
         let value = self.read_i64().unwrap_or_default();
         if (value <= i32::MAX as i64) && (value >= i32::MIN as i64) {
             return Ok(value as i32);
         }
         let custom_error = format!("integer overflow: value = {}; bits = 32", value.to_string());
-        Err(Error::new(
-            ErrorKind::Other,
-            self.context.print_with_context(&custom_error),
-        ))
+        Err(self.context.print_with_context(&custom_error))
     }
 
-    fn read_i64(&mut self) -> Result<i64> {
+    fn read_i64(&mut self) -> Result<i64, String> {
         let prefix = self.view.get_u8().unwrap_or_default();
         if Format::is_fixed_int(prefix) {
             return Ok(prefix as i64);
@@ -342,15 +329,12 @@ impl Read for ReadDecoder {
                 let mut custom_error = String::from("Property must be of type `int`");
                 let msg = Self::get_error_message(prefix).unwrap_or_default();
                 custom_error.push_str(&msg);
-                Err(Error::new(
-                    ErrorKind::Other,
-                    self.context.print_with_context(&custom_error),
-                ))
+                Err(self.context.print_with_context(&custom_error))
             }
         }
     }
 
-    fn read_u8(&mut self) -> Result<u8> {
+    fn read_u8(&mut self) -> Result<u8, String> {
         let value = self.read_u64().unwrap_or_default();
         if (value <= u8::MAX as u64) && (value >= u8::MIN as u64) {
             return Ok(value as u8);
@@ -359,13 +343,10 @@ impl Read for ReadDecoder {
             "unsigned integer overflow: value = {}; bits = 8",
             value.to_string()
         );
-        Err(Error::new(
-            ErrorKind::Other,
-            self.context.print_with_context(&custom_error),
-        ))
+        Err(self.context.print_with_context(&custom_error))
     }
 
-    fn read_u16(&mut self) -> Result<u16> {
+    fn read_u16(&mut self) -> Result<u16, String> {
         let value = self.read_u64().unwrap_or_default();
         if (value <= u16::MAX as u64) && (value >= u16::MIN as u64) {
             return Ok(value as u16);
@@ -374,13 +355,10 @@ impl Read for ReadDecoder {
             "unsigned integer overflow: value = {}; bits = 16",
             value.to_string()
         );
-        Err(Error::new(
-            ErrorKind::Other,
-            self.context.print_with_context(&custom_error),
-        ))
+        Err(self.context.print_with_context(&custom_error))
     }
 
-    fn read_u32(&mut self) -> Result<u32> {
+    fn read_u32(&mut self) -> Result<u32, String> {
         let value = self.read_u64().unwrap_or_default();
         if (value <= u32::MAX as u64) && (value >= u32::MIN as u64) {
             return Ok(value as u32);
@@ -389,13 +367,10 @@ impl Read for ReadDecoder {
             "unsigned integer overflow: value = {}; bits = 32",
             value.to_string()
         );
-        Err(Error::new(
-            ErrorKind::Other,
-            self.context.print_with_context(&custom_error),
-        ))
+        Err(self.context.print_with_context(&custom_error))
     }
 
-    fn read_u64(&mut self) -> Result<u64> {
+    fn read_u64(&mut self) -> Result<u64, String> {
         let prefix = self.view.get_u8().unwrap_or_default();
         if Format::is_fixed_int(prefix) {
             return Ok(prefix as u64);
@@ -404,7 +379,7 @@ impl Read for ReadDecoder {
                 "unsigned integer cannot be negative: prefix = {}",
                 prefix.to_string()
             );
-            return Err(Error::new(ErrorKind::Other, custom_error));
+            return Err(custom_error);
         }
         match prefix {
             Format::UINT8 => Ok(self.view.get_u8().unwrap_or_default() as u64),
@@ -415,15 +390,12 @@ impl Read for ReadDecoder {
                 let mut custom_error = String::from("Property must be of type `uint`");
                 let msg = Self::get_error_message(prefix).unwrap_or_default();
                 custom_error.push_str(&msg);
-                Err(Error::new(
-                    ErrorKind::Other,
-                    self.context.print_with_context(&custom_error),
-                ))
+                Err(self.context.print_with_context(&custom_error))
             }
         }
     }
 
-    fn read_f32(&mut self) -> Result<f32> {
+    fn read_f32(&mut self) -> Result<f32, String> {
         let prefix = self.view.get_u8().unwrap_or_default();
         if Format::is_float_32(prefix) {
             return Ok(self.view.get_f32().unwrap_or_default());
@@ -431,13 +403,10 @@ impl Read for ReadDecoder {
         let mut custom_error = String::from("Property must be of type `float32`");
         let msg = Self::get_error_message(prefix).unwrap_or_default();
         custom_error.push_str(&msg);
-        Err(Error::new(
-            ErrorKind::Other,
-            self.context.print_with_context(&custom_error),
-        ))
+        Err(self.context.print_with_context(&custom_error))
     }
 
-    fn read_f64(&mut self) -> Result<f64> {
+    fn read_f64(&mut self) -> Result<f64, String> {
         let prefix = self.view.get_u8().unwrap_or_default();
         if Format::is_float_64(prefix) {
             return Ok(self.view.get_f64().unwrap_or_default());
@@ -445,13 +414,10 @@ impl Read for ReadDecoder {
         let mut custom_error = String::from("Property must be of type `float64`");
         let msg = Self::get_error_message(prefix).unwrap_or_default();
         custom_error.push_str(&msg);
-        Err(Error::new(
-            ErrorKind::Other,
-            self.context.print_with_context(&custom_error),
-        ))
+        Err(self.context.print_with_context(&custom_error))
     }
 
-    fn read_string_length(&mut self) -> Result<u32> {
+    fn read_string_length(&mut self) -> Result<u32, String> {
         let lead_byte = self.view.get_u8().unwrap_or_default();
         if Format::is_fixed_string(lead_byte) {
             return Ok((lead_byte & 0x1f) as u32);
@@ -467,21 +433,18 @@ impl Read for ReadDecoder {
                 let mut custom_error = String::from("Property must be of type `string`");
                 let msg = Self::get_error_message(lead_byte).unwrap_or_default();
                 custom_error.push_str(&msg);
-                Err(Error::new(
-                    ErrorKind::Other,
-                    self.context.print_with_context(&custom_error),
-                ))
+                Err(self.context.print_with_context(&custom_error))
             }
         }
     }
 
-    fn read_string(&mut self) -> Result<String> {
+    fn read_string(&mut self) -> Result<String, String> {
         let str_len = self.read_string_length().unwrap_or_default();
         let str_bytes = self.view.get_bytes(str_len as i32).unwrap_or_default();
         Ok(String::from_utf8(str_bytes).unwrap_or_default())
     }
 
-    fn read_bytes_length(&mut self) -> Result<u32> {
+    fn read_bytes_length(&mut self) -> Result<u32, String> {
         if self.is_next_nil() {
             return Ok(0);
         }
@@ -500,25 +463,22 @@ impl Read for ReadDecoder {
                 let mut custom_error = String::from("Property must be of type `bytes`");
                 let msg = Self::get_error_message(lead_byte).unwrap_or_default();
                 custom_error.push_str(&msg);
-                Err(Error::new(
-                    ErrorKind::Other,
-                    self.context.print_with_context(&custom_error),
-                ))
+                Err(self.context.print_with_context(&custom_error))
             }
         }
     }
 
-    fn read_bytes(&mut self) -> Result<Vec<u8>> {
+    fn read_bytes(&mut self) -> Result<Vec<u8>, String> {
         let array_length = self.read_bytes_length().unwrap_or_default();
         Ok(self.view.get_bytes(array_length as i32).unwrap_or_default())
     }
 
-    fn read_bigint(&mut self) -> Result<BigInt> {
+    fn read_bigint(&mut self) -> Result<BigInt, String> {
         let s = self.read_string().unwrap_or_default();
         Ok(BigInt::from_str(&s).unwrap_or_default())
     }
 
-    fn read_array_length(&mut self) -> Result<u32> {
+    fn read_array_length(&mut self) -> Result<u32, String> {
         let lead_byte = self.view.get_u8().unwrap_or_default();
         if Format::is_fixed_array(lead_byte) {
             return Ok((lead_byte & Format::FOUR_LEAST_SIG_BITS_IN_BYTE) as u32);
@@ -533,13 +493,10 @@ impl Read for ReadDecoder {
         let mut custom_error = String::from("Property must be of type `array`");
         let msg = Self::get_error_message(lead_byte).unwrap_or_default();
         custom_error.push_str(&msg);
-        Err(Error::new(
-            ErrorKind::Other,
-            self.context.print_with_context(&custom_error),
-        ))
+        Err(self.context.print_with_context(&custom_error))
     }
 
-    fn read_array<T>(&mut self, mut reader: impl FnMut(&mut Self) -> T) -> Result<Vec<T>> {
+    fn read_array<T>(&mut self, mut reader: impl FnMut(&mut Self) -> T) -> Result<Vec<T>, String> {
         let size = self.read_array_length().unwrap_or_default();
         let mut array: Vec<T> = vec![];
         for i in 0..size {
@@ -553,7 +510,7 @@ impl Read for ReadDecoder {
         Ok(array)
     }
 
-    fn read_map_length(&mut self) -> Result<u32> {
+    fn read_map_length(&mut self) -> Result<u32, String> {
         let lead_byte = self.view.get_u8().unwrap_or_default();
         if Format::is_fixed_map(lead_byte) {
             return Ok((lead_byte & Format::FOUR_LEAST_SIG_BITS_IN_BYTE) as u32);
@@ -565,10 +522,7 @@ impl Read for ReadDecoder {
         let mut custom_error = String::from("Property must be of type `map`");
         let msg = Self::get_error_message(lead_byte).unwrap_or_default();
         custom_error.push_str(&msg);
-        Err(Error::new(
-            ErrorKind::Other,
-            self.context.print_with_context(&custom_error),
-        ))
+        Err(self.context.print_with_context(&custom_error))
     }
 
     fn read_map<K: Eq + Hash, V>(

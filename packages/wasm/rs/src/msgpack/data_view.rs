@@ -3,7 +3,6 @@ use super::utils::throw_index_out_of_range;
 use super::{BLOCK_MAX_SIZE, E_INVALID_LENGTH};
 use num::FromPrimitive;
 use serde::{Deserialize, Serialize};
-use std::io::{Error, ErrorKind, Result};
 use std::sync::atomic::{AtomicPtr, Ordering};
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -16,7 +15,7 @@ pub struct DataView {
 }
 
 impl DataView {
-    pub fn new(buf: &[u8], context: Context) -> Result<Self> {
+    pub fn new(buf: &[u8], context: Context) -> Result<Self, String> {
         let byte_offset = 0;
         let byte_length = buf.len() as i32;
 
@@ -28,8 +27,7 @@ impl DataView {
                 byte_offset.to_string(),
                 byte_length.to_string()
             );
-            let ctx = context.print_with_context(&msg);
-            return Err(Error::new(ErrorKind::Interrupted, ctx));
+            return Err(context.print_with_context(&msg));
         }
         let data_start = buf.as_ptr() as u32;
         Ok(Self {
@@ -41,9 +39,9 @@ impl DataView {
         })
     }
 
-    pub fn get_bytes(&mut self, length: i32) -> Result<Vec<u8>> {
+    pub fn get_bytes(&mut self, length: i32) -> Result<Vec<u8>, String> {
         if let Err(error) = self.check_index_in_range("get_bytes", length) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let buf = self.buffer.as_slice();
         let (b_off, b_len) = (
@@ -55,26 +53,26 @@ impl DataView {
         Ok(result.to_vec())
     }
 
-    pub fn peek_u8(&mut self) -> Result<u8> {
+    pub fn peek_u8(&mut self) -> Result<u8, String> {
         if let Err(error) = self.check_index_in_range("peek_u8", 0) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let p = (self.data_start + self.byte_offset as u32) as u8;
         let result = self.load_from_memory(p);
         Ok(result.swap_bytes())
     }
 
-    pub fn discard(&mut self, length: i32) -> Result<()> {
+    pub fn discard(&mut self, length: i32) -> Result<(), String> {
         if let Err(error) = self.check_index_in_range("discard", length) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         self.byte_offset += length;
         Ok(())
     }
 
-    pub fn get_f32(&mut self) -> Result<f32> {
+    pub fn get_f32(&mut self) -> Result<f32, String> {
         if let Err(error) = self.check_index_in_range("get_f32", 4) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let p = self.data_start + self.byte_offset as u32;
         let result = self.load_from_memory(p).swap_bytes();
@@ -83,9 +81,9 @@ impl DataView {
         Ok(result as f32)
     }
 
-    pub fn get_f64(&mut self) -> Result<f64> {
+    pub fn get_f64(&mut self) -> Result<f64, String> {
         if let Err(error) = self.check_index_in_range("get_f64", 8) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let p = (self.data_start + self.byte_offset as u32) as u64;
         let result = self.load_from_memory(p).swap_bytes();
@@ -94,9 +92,9 @@ impl DataView {
         Ok(result as f64)
     }
 
-    pub fn get_i8(&mut self) -> Result<i8> {
+    pub fn get_i8(&mut self) -> Result<i8, String> {
         if let Err(error) = self.check_index_in_range("get_i8", 1) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let p = (self.data_start + self.byte_offset as u32) as i8;
         let result = self.load_from_memory(p);
@@ -104,9 +102,9 @@ impl DataView {
         Ok(result.swap_bytes())
     }
 
-    pub fn get_i16(&mut self) -> Result<i16> {
+    pub fn get_i16(&mut self) -> Result<i16, String> {
         if let Err(error) = self.check_index_in_range("get_i16", 2) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let p = (self.data_start + self.byte_offset as u32) as i16;
         let result = self.load_from_memory(p);
@@ -114,9 +112,9 @@ impl DataView {
         Ok(result.swap_bytes())
     }
 
-    pub fn get_i32(&mut self) -> Result<i32> {
+    pub fn get_i32(&mut self) -> Result<i32, String> {
         if let Err(error) = self.check_index_in_range("get_i32", 4) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let p = (self.data_start + self.byte_offset as u32) as i32;
         let result = self.load_from_memory(p);
@@ -124,9 +122,9 @@ impl DataView {
         Ok(result.swap_bytes())
     }
 
-    pub fn get_i64(&mut self) -> Result<i64> {
+    pub fn get_i64(&mut self) -> Result<i64, String> {
         if let Err(error) = self.check_index_in_range("get_i64", 8) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let p = (self.data_start + self.byte_offset as u32) as i64;
         let result = self.load_from_memory(p);
@@ -134,9 +132,9 @@ impl DataView {
         Ok(result.swap_bytes())
     }
 
-    pub fn get_u8(&mut self) -> Result<u8> {
+    pub fn get_u8(&mut self) -> Result<u8, String> {
         if let Err(error) = self.check_index_in_range("get_u8", 1) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let p = (self.data_start + self.byte_offset as u32) as u8;
         let result = self.load_from_memory(p);
@@ -144,9 +142,9 @@ impl DataView {
         Ok(result.swap_bytes())
     }
 
-    pub fn get_u16(&mut self) -> Result<u16> {
+    pub fn get_u16(&mut self) -> Result<u16, String> {
         if let Err(error) = self.check_index_in_range("get_u16", 2) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let p = (self.data_start + self.byte_offset as u32) as u16;
         let result = self.load_from_memory(p);
@@ -154,9 +152,9 @@ impl DataView {
         Ok(result.swap_bytes())
     }
 
-    pub fn get_u32(&mut self) -> Result<u32> {
+    pub fn get_u32(&mut self) -> Result<u32, String> {
         if let Err(error) = self.check_index_in_range("get_u32", 4) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let p = self.data_start + self.byte_offset as u32;
         let result = self.load_from_memory(p);
@@ -164,9 +162,9 @@ impl DataView {
         Ok(result.swap_bytes())
     }
 
-    pub fn get_u64(&mut self) -> Result<u64> {
+    pub fn get_u64(&mut self) -> Result<u64, String> {
         if let Err(error) = self.check_index_in_range("get_u64", 8) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let p = (self.data_start + self.byte_offset as u32) as u64;
         let result = self.load_from_memory(p);
@@ -174,9 +172,9 @@ impl DataView {
         Ok(result.swap_bytes())
     }
 
-    pub fn set_bytes(&mut self, buf: &[u8]) -> Result<()> {
+    pub fn set_bytes(&mut self, buf: &[u8]) -> Result<(), String> {
         if let Err(error) = self.check_index_in_range("set_bytes", buf.len() as i32) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let src_ptr = buf.as_ptr() as *const i32;
         let dst_ptr = (self.data_start as i32 + self.byte_offset) as *mut i32;
@@ -187,9 +185,9 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_f32(&mut self, value: f32) -> Result<()> {
+    pub fn set_f32(&mut self, value: f32) -> Result<(), String> {
         if let Err(error) = self.check_index_in_range("set_f32", 4) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let ptr = self.data_start + self.byte_offset as u32;
         let val = value as u32;
@@ -198,9 +196,9 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_f64(&mut self, value: f64) -> Result<()> {
+    pub fn set_f64(&mut self, value: f64) -> Result<(), String> {
         if let Err(error) = self.check_index_in_range("set_f64", 8) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let ptr = (self.data_start + self.byte_offset as u32) as u64;
         let val = value as u64;
@@ -209,9 +207,9 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_i8(&mut self, value: i8) -> Result<()> {
+    pub fn set_i8(&mut self, value: i8) -> Result<(), String> {
         if let Err(error) = self.check_index_in_range("set_i8", 1) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let ptr = (self.data_start + self.byte_offset as u32) as i8;
         self.store_to_memory(ptr, value.swap_bytes());
@@ -219,9 +217,9 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_i16(&mut self, value: i16) -> Result<()> {
+    pub fn set_i16(&mut self, value: i16) -> Result<(), String> {
         if let Err(error) = self.check_index_in_range("set_i16", 2) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let ptr = (self.data_start + self.byte_offset as u32) as i16;
         self.store_to_memory(ptr, value.swap_bytes());
@@ -229,9 +227,9 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_i32(&mut self, value: i32) -> Result<()> {
+    pub fn set_i32(&mut self, value: i32) -> Result<(), String> {
         if let Err(error) = self.check_index_in_range("set_i32", 4) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let ptr = (self.data_start + self.byte_offset as u32) as i32;
         self.store_to_memory(ptr, value.swap_bytes());
@@ -239,9 +237,9 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_i64(&mut self, value: i64) -> Result<()> {
+    pub fn set_i64(&mut self, value: i64) -> Result<(), String> {
         if let Err(error) = self.check_index_in_range("set_i64", 8) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let ptr = (self.data_start + self.byte_offset as u32) as i64;
         self.store_to_memory(ptr, value.swap_bytes());
@@ -249,9 +247,9 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_u8(&mut self, value: u8) -> Result<()> {
+    pub fn set_u8(&mut self, value: u8) -> Result<(), String> {
         if let Err(error) = self.check_index_in_range("set_u8", 1) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let ptr = (self.data_start + self.byte_offset as u32) as u8;
         self.store_to_memory(ptr, value.swap_bytes());
@@ -259,9 +257,9 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_u16(&mut self, value: u16) -> Result<()> {
+    pub fn set_u16(&mut self, value: u16) -> Result<(), String> {
         if let Err(error) = self.check_index_in_range("set_u16", 2) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let ptr = (self.data_start + self.byte_offset as u32) as u16;
         self.store_to_memory(ptr, value.swap_bytes());
@@ -269,9 +267,9 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_u32(&mut self, value: u32) -> Result<()> {
+    pub fn set_u32(&mut self, value: u32) -> Result<(), String> {
         if let Err(error) = self.check_index_in_range("set_u32", 4) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let ptr = self.data_start + self.byte_offset as u32;
         self.store_to_memory(ptr, value.swap_bytes());
@@ -279,9 +277,9 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_u64(&mut self, value: u64) -> Result<()> {
+    pub fn set_u64(&mut self, value: u64) -> Result<(), String> {
         if let Err(error) = self.check_index_in_range("set_u64", 8) {
-            return Err(Error::from(error));
+            return Err(error);
         }
         let ptr = (self.data_start + self.byte_offset as u32) as u64;
         self.store_to_memory(ptr, value.swap_bytes());
@@ -303,7 +301,7 @@ impl DataView {
         ptr.store(value, Ordering::Relaxed);
     }
 
-    fn check_index_in_range(&self, method: &str, length: i32) -> Result<()> {
+    fn check_index_in_range(&self, method: &str, length: i32) -> Result<(), String> {
         if self.byte_offset + length > self.byte_length {
             let custom = throw_index_out_of_range(
                 self.context.clone(),
@@ -312,7 +310,7 @@ impl DataView {
                 self.byte_offset,
                 self.byte_length,
             );
-            return Err(Error::new(ErrorKind::Interrupted, custom));
+            return Err(custom);
         }
         Ok(())
     }

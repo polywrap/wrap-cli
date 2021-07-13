@@ -2,28 +2,27 @@ use crate::Context;
 use num_bigint::BigInt;
 use std::collections::HashMap;
 use std::hash::Hash;
-use std::io::Result;
 
 pub trait Read: Clone + Sized {
-    fn read_bool(&mut self) -> Result<bool>;
-    fn read_i8(&mut self) -> Result<i8>;
-    fn read_i16(&mut self) -> Result<i16>;
-    fn read_i32(&mut self) -> Result<i32>;
-    fn read_i64(&mut self) -> Result<i64>;
-    fn read_u8(&mut self) -> Result<u8>;
-    fn read_u16(&mut self) -> Result<u16>;
-    fn read_u32(&mut self) -> Result<u32>;
-    fn read_u64(&mut self) -> Result<u64>;
-    fn read_f32(&mut self) -> Result<f32>;
-    fn read_f64(&mut self) -> Result<f64>;
-    fn read_string_length(&mut self) -> Result<u32>;
-    fn read_string(&mut self) -> Result<String>;
-    fn read_bytes_length(&mut self) -> Result<u32>;
-    fn read_bytes(&mut self) -> Result<Vec<u8>>;
-    fn read_bigint(&mut self) -> Result<BigInt>;
-    fn read_array_length(&mut self) -> Result<u32>;
-    fn read_array<T>(&mut self, reader: impl FnMut(&mut Self) -> T) -> Result<Vec<T>>;
-    fn read_map_length(&mut self) -> Result<u32>;
+    fn read_bool(&mut self) -> Result<bool, String>;
+    fn read_i8(&mut self) -> Result<i8, String>;
+    fn read_i16(&mut self) -> Result<i16, String>;
+    fn read_i32(&mut self) -> Result<i32, String>;
+    fn read_i64(&mut self) -> Result<i64, String>;
+    fn read_u8(&mut self) -> Result<u8, String>;
+    fn read_u16(&mut self) -> Result<u16, String>;
+    fn read_u32(&mut self) -> Result<u32, String>;
+    fn read_u64(&mut self) -> Result<u64, String>;
+    fn read_f32(&mut self) -> Result<f32, String>;
+    fn read_f64(&mut self) -> Result<f64, String>;
+    fn read_string_length(&mut self) -> Result<u32, String>;
+    fn read_string(&mut self) -> Result<String, String>;
+    fn read_bytes_length(&mut self) -> Result<u32, String>;
+    fn read_bytes(&mut self) -> Result<Vec<u8>, String>;
+    fn read_bigint(&mut self) -> Result<BigInt, String>;
+    fn read_array_length(&mut self) -> Result<u32, String>;
+    fn read_array<T>(&mut self, reader: impl FnMut(&mut Self) -> T) -> Result<Vec<T>, String>;
+    fn read_map_length(&mut self) -> Result<u32, String>;
     fn read_map<K: Eq + Hash, V>(
         &mut self,
         key_fn: impl FnMut(&mut Self) -> K,

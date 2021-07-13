@@ -1,7 +1,6 @@
 //! Utility functions for better error handling
 
 use super::context::Context;
-use std::io::{Error, ErrorKind};
 
 pub const BLOCK_MAX_SIZE: usize = 1 << 30;
 pub const E_INDEX_OUT_OF_RANGE: &str = "Index out of range";
@@ -15,7 +14,7 @@ pub fn throw_index_out_of_range(
     length: i32,
     byte_offset: i32,
     byte_length: i32,
-) -> Error {
+) -> String {
     let mut ctx = String::from(method);
     let msg = format!(
         ": {}, [length: {}, byte_offset: {}, byte_length: {}]",
@@ -25,6 +24,5 @@ pub fn throw_index_out_of_range(
         byte_length.to_string()
     );
     ctx.push_str(&msg);
-    let error = context.print_with_context(&ctx);
-    Error::new(ErrorKind::Interrupted, error)
+    context.print_with_context(&ctx)
 }

@@ -164,9 +164,7 @@ fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
     writer.write_string(&"opt_uint64".to_string());
     writer.write_nullable_u64(&sanity.opt_uint64);
     writer.write_string(&"opt_bool".to_string());
-    writer
-        .write_nullable_bool(sanity.opt_bool)
-        .expect("Failed to write nullable bool");
+    writer.write_nullable_bool(sanity.opt_bool);
     writer.write_string(&"float32".to_string());
     writer.write_f32(sanity.float32);
     writer.write_string(&"float64".to_string());

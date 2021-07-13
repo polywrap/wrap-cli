@@ -6,7 +6,6 @@ use num_bigint::BigInt;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::hash::Hash;
-use std::io::Result;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct WriteEncoder {
@@ -325,67 +324,60 @@ impl Write for WriteEncoder {
         }
     }
 
-    fn write_nullable_bool(&mut self, value: Option<bool>) -> Result<()> {
+    fn write_nullable_bool(&mut self, value: Option<bool>) {
         if value.is_none() {
             self.write_nil();
-            return Ok(());
+        } else {
+            self.write_bool(value.unwrap_or_default());
         }
-        self.write_bool(value.unwrap_or_default());
-        Ok(())
     }
 
-    fn write_nullable_i8(&mut self, value: Option<i8>) -> Result<()> {
+    fn write_nullable_i8(&mut self, value: Option<i8>) {
         if value.is_none() {
             self.write_nil();
-            return Ok(());
+        } else {
+            self.write_i8(value.unwrap_or_default());
         }
-        self.write_i8(value.unwrap_or_default());
-        Ok(())
     }
 
-    fn write_nullable_i16(&mut self, value: Option<i16>) -> Result<()> {
+    fn write_nullable_i16(&mut self, value: Option<i16>) {
         if value.is_none() {
             self.write_nil();
-            return Ok(());
+        } else {
+            self.write_i16(value.unwrap_or_default());
         }
-        self.write_i16(value.unwrap_or_default());
-        Ok(())
     }
 
-    fn write_nullable_i32(&mut self, value: Option<i32>) -> Result<()> {
+    fn write_nullable_i32(&mut self, value: Option<i32>) {
         if value.is_none() {
             self.write_nil();
-            return Ok(());
+        } else {
+            self.write_i32(&value.unwrap_or_default());
         }
-        self.write_i32(&value.unwrap_or_default());
-        Ok(())
     }
 
-    fn write_nullable_i64(&mut self, value: Option<i64>) -> Result<()> {
+    fn write_nullable_i64(&mut self, value: Option<i64>) {
         if value.is_none() {
             self.write_nil();
-            return Ok(());
+        } else {
+            self.write_i64(value.unwrap_or_default());
         }
-        self.write_i64(value.unwrap_or_default());
-        Ok(())
     }
 
-    fn write_nullable_u8(&mut self, value: Option<u8>) -> Result<()> {
+    fn write_nullable_u8(&mut self, value: Option<u8>) {
         if value.is_none() {
             self.write_nil();
-            return Ok(());
+        } else {
+            self.write_u8(&value.unwrap_or_default());
         }
-        self.write_u8(&value.unwrap_or_default());
-        Ok(())
     }
 
-    fn write_nullable_u16(&mut self, value: Option<u16>) -> Result<()> {
+    fn write_nullable_u16(&mut self, value: Option<u16>) {
         if value.is_none() {
             self.write_nil();
-            return Ok(());
+        } else {
+            self.write_u16(value.unwrap_or_default());
         }
-        self.write_u16(value.unwrap_or_default());
-        Ok(())
     }
 
     fn write_nullable_u32(&mut self, value: &Option<u32>) {
@@ -404,22 +396,20 @@ impl Write for WriteEncoder {
         }
     }
 
-    fn write_nullable_f32(&mut self, value: Option<f32>) -> Result<()> {
+    fn write_nullable_f32(&mut self, value: Option<f32>) {
         if value.is_none() {
             self.write_nil();
-            return Ok(());
+        } else {
+            self.write_f32(value.unwrap_or_default());
         }
-        self.write_f32(value.unwrap_or_default());
-        Ok(())
     }
 
-    fn write_nullable_f64(&mut self, value: Option<f64>) -> Result<()> {
+    fn write_nullable_f64(&mut self, value: Option<f64>) {
         if value.is_none() {
             self.write_nil();
-            return Ok(());
+        } else {
+            self.write_f64(value.unwrap_or_default());
         }
-        self.write_f64(value.unwrap_or_default());
-        Ok(())
     }
 
     fn write_nullable_string(&mut self, value: &Option<String>) {
@@ -430,22 +420,20 @@ impl Write for WriteEncoder {
         }
     }
 
-    fn write_nullable_bytes(&mut self, buf: Option<Vec<u8>>) -> Result<()> {
-        if buf.is_none() {
-            self.write_nil();
-            return Ok(());
-        }
-        self.write_bytes(&buf.unwrap_or_default());
-        Ok(())
-    }
-
-    fn write_nullable_bigint(&mut self, value: Option<BigInt>) -> Result<()> {
+    fn write_nullable_bytes(&mut self, value: Option<Vec<u8>>) {
         if value.is_none() {
             self.write_nil();
-            return Ok(());
+        } else {
+            self.write_bytes(&value.unwrap_or_default());
         }
-        self.write_bigint(value.unwrap_or_default());
-        Ok(())
+    }
+
+    fn write_nullable_bigint(&mut self, value: Option<BigInt>) {
+        if value.is_none() {
+            self.write_nil();
+        } else {
+            self.write_bigint(value.unwrap_or_default());
+        }
     }
 
     fn write_nullable_array<T>(&mut self, a: &Option<Vec<T>>, arr_fn: impl FnMut(&mut Self, &T)) {
