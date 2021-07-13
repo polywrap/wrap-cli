@@ -148,13 +148,13 @@ ${HELP}`);
     expect(code).toEqual(0);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`- Generate types
-- Load web3api from web3api.yaml
-✔ Load web3api from web3api.yaml
+- Manifest loaded from ./web3api.yaml
+✔ Manifest loaded from ./web3api.yaml
 ✔ Generate types
 `);
 
-    const expected = readFileSync(`${projectRoot}/sample-types.ts`);
-    const actual = readFileSync(`${projectRoot}/src/types.ts`);
+    const expected = readFileSync(`${projectRoot}/sample-types.ts`, { encoding: "utf-8" });
+    const actual = readFileSync(`${projectRoot}/src/types.ts`, { encoding: "utf-8" });
     expect(actual).toEqual(expected);
 
     unlinkSync(`${projectRoot}/src/types.ts`);
@@ -172,11 +172,11 @@ ${HELP}`);
     expect(code).toEqual(0);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`- Generate types
-- Load web3api from web3api.yaml
-✔ Load web3api from web3api.yaml
+- Manifest loaded from ./web3api.yaml
+✔ Manifest loaded from ./web3api.yaml
 ✔ Generate types
-- Build schema
-✔ Build schema
+- Codegen Web3API schema bindings
+✔ Codegen Web3API schema bindings
 `);
 
     unlinkSync(`${projectRoot}/src/types.ts`);

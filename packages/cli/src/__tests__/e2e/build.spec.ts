@@ -13,6 +13,7 @@ Options:
   -e, --test-ens <[address,]domain>  Publish the package to a test ENS domain locally (requires --ipfs)
   -w, --watch                        Automatically rebuild when changes are made (default: false)
   -v, --verbose                      Verbose output (default: false)
+
 `;
 
 describe("e2e tests for build command", () => {
@@ -135,18 +136,5 @@ ${HELP}`);
     expect(sanitizedOutput).toContain("Artifacts written to ./build from the image `build-env`");
     expect(sanitizedOutput).toContain("Manifest written to ./build/web3api.yaml");
     expect(sanitizedOutput).toContain(manifestPath);
-  });
-
-  test("Errors when dockerfile config property is missing", async () => {
-    const { exitCode: code, stdout: output } = await runCLI({
-      args: ["build", "web3api.wrong-config.yaml", "-v"],
-      cwd: projectRoot
-    }, w3Cli);
-
-    const sanitizedOutput = clearStyle(output);
-
-    expect(code).toEqual(1);
-    expect(sanitizedOutput).toContain("Validation errors encountered while sanitizing BuildManifest");
-    expect(sanitizedOutput).toContain("instance.config requires property \"include\"");
   });
 });
