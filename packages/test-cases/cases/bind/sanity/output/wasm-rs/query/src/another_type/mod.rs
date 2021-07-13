@@ -1,13 +1,10 @@
 pub mod serialization;
-pub use serialization::{
-    deserialize_another_type,
-    read_another_type,
-    serialize_another_type,
-    write_another_type,
-};
+use crate::CustomType;
 use crate::{Read, Write};
 use serde::{Deserialize, Serialize};
-use crate::CustomType;
+pub use serialization::{
+    deserialize_another_type, read_another_type, serialize_another_type, write_another_type,
+};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct AnotherType {

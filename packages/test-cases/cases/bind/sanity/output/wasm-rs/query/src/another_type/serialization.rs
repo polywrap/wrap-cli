@@ -1,7 +1,4 @@
-use super::{
-    AnotherType,
-    CustomType,
-};
+use super::{AnotherType, CustomType};
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
 pub fn serialize_another_type(mut object: &mut AnotherType) -> Vec<u8> {

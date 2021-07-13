@@ -1,12 +1,6 @@
-use super::super::custom_enum::{
-    get_custom_enum_value,
-    sanitize_custom_enum_value,
-};
+use super::super::custom_enum::{get_custom_enum_value, sanitize_custom_enum_value};
+use crate::{AnotherType, CustomEnum};
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
-use crate::{
-    AnotherType,
-    CustomEnum,
-};
 use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
 use std::io::{Error, ErrorKind, Result};
@@ -77,7 +71,10 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
                         .expect("Failed to sanitize CustomEnum value");
                 }
                 en_set = true;
-                reader.context().pop().expect("Failed to pop CustomEnum from Context");
+                reader
+                    .context()
+                    .pop()
+                    .expect("Failed to pop CustomEnum from Context");
             }
             "opt_enum" => {
                 reader

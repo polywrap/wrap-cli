@@ -1,7 +1,4 @@
-use super::{
-    TestImportEnum,
-    TestImportObject,
-};
+use super::{TestImportEnum, TestImportObject};
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use serde::{Deserialize, Serialize};
 

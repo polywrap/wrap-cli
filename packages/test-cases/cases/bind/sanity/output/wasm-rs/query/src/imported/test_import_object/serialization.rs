@@ -1,12 +1,5 @@
-use super::super::{
-    get_test_import_enum_value,
-    sanitize_test_import_enum_value,
-};
-use super::{
-    TestImportAnotherObject,
-    TestImportEnum,
-    TestImportObject,
-};
+use super::super::{get_test_import_enum_value, sanitize_test_import_enum_value};
+use super::{TestImportAnotherObject, TestImportEnum, TestImportObject};
 use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use std::convert::TryFrom;
 use std::io::{Error, ErrorKind, Result};

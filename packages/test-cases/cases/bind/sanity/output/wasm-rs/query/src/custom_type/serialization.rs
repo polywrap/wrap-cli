@@ -1,13 +1,6 @@
-use crate::{
-    get_custom_enum_value,
-    sanitize_custom_enum_value,
-};
-use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer,};
-use crate::{
-    AnotherType,
-    CustomEnum,
-    CustomType,
-};
+use crate::{get_custom_enum_value, sanitize_custom_enum_value};
+use crate::{AnotherType, CustomEnum, CustomType};
+use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use num_bigint::BigInt;
 use num_traits::cast::FromPrimitive;
 use std::convert::TryFrom;
@@ -769,10 +762,9 @@ pub fn read_custom_type<R: Read>(mut reader: R) -> Result<CustomType> {
                         })
                     })
                 });
-                reader
-                    .context()
-                    .pop()
-                    .expect("Failed to pop Option<Vec<Option<Vec<Option<Vec<u64>>>>>> from Context");
+                reader.context().pop().expect(
+                    "Failed to pop Option<Vec<Option<Vec<Option<Vec<u64>>>>>> from Context",
+                );
             }
             "object" => {
                 reader
