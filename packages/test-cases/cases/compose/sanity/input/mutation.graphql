@@ -32,7 +32,7 @@ implObject comment
 
   method2(
     arg: [String!]!
-  ): [Int64!]!
+  ): [Int32!]!
 }
 
 """
@@ -51,10 +51,8 @@ optStr comment
   u: UInt!
   optU: UInt
   u8: UInt8!
-  u64: UInt64!
   i: Int!
   i8: Int8!
-  i64: Int64!
   bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]
@@ -62,7 +60,7 @@ optStr comment
 """
 crazyArray comment
 """
-  crazyArray: [[[[UInt64!]]!]]
+  crazyArray: [[[[UInt32!]]!]]
   commonType: CommonType!
 """
 customType comment

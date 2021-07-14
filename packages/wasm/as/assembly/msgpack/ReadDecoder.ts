@@ -78,7 +78,7 @@ export class ReadDecoder extends Read {
     );
   }
 
-  readInt64(): i64 {
+  private readInt64(): i64 {
     const prefix = this.view.getUint8();
 
     if (isFixedInt(prefix)) {
@@ -141,7 +141,7 @@ export class ReadDecoder extends Read {
     );
   }
 
-  readUInt64(): u64 {
+  private readUInt64(): u64 {
     const prefix = this.view.getUint8();
 
     if (isFixedInt(prefix)) {
@@ -369,13 +369,6 @@ export class ReadDecoder extends Read {
     return Nullable.fromValue<i32>(this.readInt32());
   }
 
-  readNullableInt64(): Nullable<i64> {
-    if (this.isNextNil()) {
-      return Nullable.fromNull<i64>();
-    }
-    return Nullable.fromValue<i64>(this.readInt64());
-  }
-
   readNullableUInt8(): Nullable<u8> {
     if (this.isNextNil()) {
       return Nullable.fromNull<u8>();
@@ -395,13 +388,6 @@ export class ReadDecoder extends Read {
       return Nullable.fromNull<u32>();
     }
     return Nullable.fromValue<u32>(this.readUInt32());
-  }
-
-  readNullableUInt64(): Nullable<u64> {
-    if (this.isNextNil()) {
-      return Nullable.fromNull<u64>();
-    }
-    return Nullable.fromValue<u64>(this.readUInt64());
   }
 
   readNullableFloat32(): Nullable<f32> {
