@@ -118,7 +118,7 @@ export default {
 
     const middlewareState: SharedMiddlewareState = await middleware.run({
       name: toolbox.command?.name,
-      options: { help, ipfs, outputDir, watch, testEns, verbose },
+      options: { help, ipfs, outputDir, watch, testEns, verbose, manifestPath },
     });
 
     if (!middlewareState.dockerPath) {
