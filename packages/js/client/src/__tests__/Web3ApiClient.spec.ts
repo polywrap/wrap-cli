@@ -1440,17 +1440,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("simple-storage: subscribe", async () => {
-    // set up client and api
-    const client = await getClient();
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
       ensAddress
     );
+
+    const client = await getClient();
+
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
 
-    // deploy simple-storage contract
     const deploy = await client.query<{
       deployContract: string;
     }>({
@@ -1465,13 +1465,12 @@ describe("Web3ApiClient", () => {
         }
       `,
     });
+
     expect(deploy.errors).toBeFalsy();
     expect(deploy.data).toBeTruthy();
     expect(deploy.data?.deployContract.indexOf("0x")).toBeGreaterThan(-1);
-    if (!deploy.data) {
-      return;
-    }
-    const address = deploy.data.deployContract;
+
+    const address = deploy.data?.deployContract;
 
     // test subscription
     let results: number[] = [];
@@ -1487,6 +1486,9 @@ describe("Web3ApiClient", () => {
           setData(
             address: $address
             value: $value
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
           )
         }
       `,
@@ -1495,7 +1497,7 @@ describe("Web3ApiClient", () => {
           value: value++,
         },
       });
-    }, 4500);
+    }, 3000);
 
     const getSubscription: Subscription<{
       getData: number;
@@ -1507,13 +1509,16 @@ describe("Web3ApiClient", () => {
         query {
           getData(
             address: $address
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
           )
         }
       `,
       variables: {
         address
       },
-      frequency: { ms: 5000 }
+      frequency: { ms: 3500 }
     });
 
     for await (let query of getSubscription) {
@@ -1532,38 +1537,37 @@ describe("Web3ApiClient", () => {
   });
 
   it("simple-storage: subscription early stop", async () => {
-    // set up client and api
-    const client = await getClient();
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
       ensAddress
     );
+
+    const client = await getClient();
+
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
 
-    // deploy simple-storage contract
     const deploy = await client.query<{
       deployContract: string;
     }>({
       uri: ensUri,
       query: `
-          mutation {
-            deployContract(
-              connection: {
-                networkNameOrChainId: "testnet"
-              }
-            )
-          }
-        `,
+        mutation {
+          deployContract(
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
     });
+
     expect(deploy.errors).toBeFalsy();
     expect(deploy.data).toBeTruthy();
     expect(deploy.data?.deployContract.indexOf("0x")).toBeGreaterThan(-1);
-    if (!deploy.data) {
-      return;
-    }
-    const address = deploy.data.deployContract;
+
+    const address = deploy.data?.deployContract;
 
     // test subscription
     let results: number[] = [];
@@ -1579,6 +1583,9 @@ describe("Web3ApiClient", () => {
             setData(
               address: $address
               value: $value
+              connection: {
+                networkNameOrChainId: "testnet"
+              }
             )
           }
         `,
@@ -1587,7 +1594,7 @@ describe("Web3ApiClient", () => {
           value: value++,
         },
       });
-    }, 4500);
+    }, 3000);
 
     const getSubscription: Subscription<{
       getData: number;
@@ -1599,13 +1606,16 @@ describe("Web3ApiClient", () => {
           query {
             getData(
               address: $address
+              connection: {
+                networkNameOrChainId: "testnet"
+              }
             )
           }
         `,
       variables: {
         address
       },
-      frequency: { ms: 5000 }
+      frequency: { ms: 3500 }
     });
 
     new Promise(async () => {
@@ -1621,7 +1631,7 @@ describe("Web3ApiClient", () => {
         }
       }
     );
-    await new Promise(r => setTimeout(r, 10000));
+    await new Promise(r => setTimeout(r, 7000));
     getSubscription.stop();
     clearInterval(setter);
 
