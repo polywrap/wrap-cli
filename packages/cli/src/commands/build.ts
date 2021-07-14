@@ -116,11 +116,16 @@ export default {
       return;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const middlewareState: SharedMiddlewareState = await middleware.run({
-      name: "build",
+      name: toolbox.command?.name,
       options: { help, ipfs, outputDir, watch, testEns, verbose },
     });
+
+    if (!middlewareState.dockerPath) {
+      // TODO: internationalize
+      print.error("Docker executable not found in PATH");
+      return;
+    }
 
     // Resolve manifest & output directories
     manifestPath =
