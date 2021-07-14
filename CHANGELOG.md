@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.30
+## Bugs
+* `@web3api/ethereum-plugin-js`: Fix ethers.js inconsistencies.
+
 # Web3API 0.0.1-prealpha.29
 ## Feature
 * Web3API Interfaces are now fully supported in the tool-chain.
