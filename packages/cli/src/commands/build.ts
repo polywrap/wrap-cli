@@ -10,6 +10,7 @@ import {
 import { fixParameters } from "../lib/helpers/parameters";
 import { publishToIPFS } from "../lib/publishers/ipfs-publisher";
 import { intlMsg } from "../lib/intl";
+import { SharedMiddlewareState } from "../lib/middleware";
 
 import chalk from "chalk";
 import axios from "axios";
@@ -39,7 +40,7 @@ export default {
   alias: ["b"],
   description: intlMsg.commands_build_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { filesystem, parameters, print } = toolbox;
+    const { filesystem, parameters, print, middleware } = toolbox;
 
     const { h, i, o, w, e, v } = parameters.options;
     let { help, ipfs, outputDir, watch, testEns, verbose } = parameters.options;
@@ -114,6 +115,12 @@ export default {
       print.info(HELP);
       return;
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const middlewareState: SharedMiddlewareState = await middleware.run({
+      name: "build",
+      options: { help, ipfs, outputDir, watch, testEns, verbose },
+    });
 
     // Resolve manifest & output directories
     manifestPath =
