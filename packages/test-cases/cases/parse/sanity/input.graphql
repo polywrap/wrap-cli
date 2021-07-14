@@ -2,12 +2,10 @@ scalar UInt
 scalar UInt8
 scalar UInt16
 scalar UInt32
-scalar UInt64
 scalar Int
 scalar Int8
 scalar Int16
 scalar Int32
-scalar Int64
 scalar Bytes
 scalar BigInt
 
@@ -47,12 +45,10 @@ optStr comment
   u8: UInt8!
   u16: UInt16!
   u32: UInt32!
-  u64: UInt64!
   i: Int!
   i8: Int8!
   i16: Int16!
   i32: Int32!
-  i64: Int64!
   bigint: BigInt!
   optBigint: BigInt
   bytes: Bytes!
@@ -61,9 +57,9 @@ optStr comment
   optUOptArray: [UInt]
   optStrOptArray: [String]
   uArrayArray: [[UInt!]!]!
-  uOptArrayOptArray: [[UInt64]]!
-  uArrayOptArrayArray: [[[UInt64!]!]]!
-  crazyArray: [[[[UInt64!]]!]]
+  uOptArrayOptArray: [[UInt32]]!
+  uArrayOptArrayArray: [[[UInt32!]!]]!
+  crazyArray: [[[[UInt32!]]!]]
   objectArray: [UserObject!]!
   objectArrayArray: [[UserObject!]!]!
   nestedObject: UserObject!
@@ -178,7 +174,7 @@ uArrayArray comment
 
   anotherMethod(
     arg: [String!]!
-  ): [Int64]!
+  ): [Int32]!
 
   importedObjectMethod(
     importedObject: TestImport_Object!
