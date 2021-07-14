@@ -78,33 +78,6 @@ export class ReadDecoder extends Read {
     );
   }
 
-  private readInt64(): i64 {
-    const prefix = this.view.getUint8();
-
-    if (isFixedInt(prefix)) {
-      return i64(prefix);
-    }
-    if (isNegativeFixedInt(prefix)) {
-      return i64(i8(prefix));
-    }
-    switch (prefix) {
-      case Format.INT8:
-        return i64(this.view.getInt8());
-      case Format.INT16:
-        return i64(this.view.getInt16());
-      case Format.INT32:
-        return i64(this.view.getInt32());
-      case Format.INT64:
-        return this.view.getInt64();
-      default:
-        throw new TypeError(
-          this._context.printWithContext(
-            "Property must be of type 'int'. " + this.getErrorMessage(prefix)
-          )
-        );
-    }
-  }
-
   readUInt8(): u8 {
     const value = this.readUInt64();
     if (value <= u64(u8.MAX_VALUE) && value >= u64(u8.MIN_VALUE)) {
@@ -139,37 +112,6 @@ export class ReadDecoder extends Read {
         "unsigned integer overflow: value = " + value.toString() + "; bits = 32"
       )
     );
-  }
-
-  private readUInt64(): u64 {
-    const prefix = this.view.getUint8();
-
-    if (isFixedInt(prefix)) {
-      return u64(prefix);
-    } else if (isNegativeFixedInt(prefix)) {
-      throw new RangeError(
-        this._context.printWithContext(
-          "unsigned integer cannot be negative: prefix = " + prefix.toString()
-        )
-      );
-    }
-
-    switch (prefix) {
-      case Format.UINT8:
-        return u64(this.view.getUint8());
-      case Format.UINT16:
-        return u64(this.view.getUint16());
-      case Format.UINT32:
-        return u64(this.view.getUint32());
-      case Format.UINT64:
-        return this.view.getUint64();
-      default:
-        throw new TypeError(
-          this._context.printWithContext(
-            "Property must be of type 'uint'. " + this.getErrorMessage(prefix)
-          )
-        );
-    }
   }
 
   readFloat32(): f32 {
@@ -459,6 +401,64 @@ export class ReadDecoder extends Read {
       format == Format.STR16 ||
       format == Format.STR32
     );
+  }
+
+  private readInt64(): i64 {
+    const prefix = this.view.getUint8();
+
+    if (isFixedInt(prefix)) {
+      return i64(prefix);
+    }
+    if (isNegativeFixedInt(prefix)) {
+      return i64(i8(prefix));
+    }
+    switch (prefix) {
+      case Format.INT8:
+        return i64(this.view.getInt8());
+      case Format.INT16:
+        return i64(this.view.getInt16());
+      case Format.INT32:
+        return i64(this.view.getInt32());
+      case Format.INT64:
+        return this.view.getInt64();
+      default:
+        throw new TypeError(
+          this._context.printWithContext(
+            "Property must be of type 'int'. " + this.getErrorMessage(prefix)
+          )
+        );
+    }
+  }
+
+  private readUInt64(): u64 {
+    const prefix = this.view.getUint8();
+
+    if (isFixedInt(prefix)) {
+      return u64(prefix);
+    } else if (isNegativeFixedInt(prefix)) {
+      throw new RangeError(
+        this._context.printWithContext(
+          "unsigned integer cannot be negative: prefix = " + prefix.toString()
+        )
+      );
+    }
+
+    switch (prefix) {
+      case Format.UINT8:
+        return u64(this.view.getUint8());
+      case Format.UINT16:
+        return u64(this.view.getUint16());
+      case Format.UINT32:
+        return u64(this.view.getUint32());
+      case Format.UINT64:
+        return this.view.getUint64();
+      default:
+        throw new TypeError(
+          this._context.printWithContext(
+            "Property must be of type 'uint'. " + this.getErrorMessage(prefix)
+          )
+        );
+    }
   }
 
   private skip(): void {
