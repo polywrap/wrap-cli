@@ -3,12 +3,10 @@ scalar UInt
 scalar UInt8
 scalar UInt16
 scalar UInt32
-scalar UInt64
 scalar Int
 scalar Int8
 scalar Int16
 scalar Int32
-scalar Int64
 scalar Bytes
 scalar BigInt
 
@@ -62,7 +60,7 @@ method2 comment
 """
   method2(
     arg: [String!]!
-  ): [Int64!]!
+  ): [Int32!]!
 
   abstractQueryMethod(
     arg: Interface_QueryInterfaceArgument!
@@ -116,7 +114,7 @@ implObject comment
 
   method2(
     arg: [String!]!
-  ): [Int64!]!
+  ): [Int32!]!
 
   abstractMutationMethod(
     arg: UInt8!
@@ -132,15 +130,13 @@ type CustomQueryType {
   u: UInt!
   optU: UInt
   u8: UInt8!
-  u64: UInt64!
   i: Int!
   i8: Int8!
-  i64: Int64!
   bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optStrOptArray: [String]
-  crazyArray: [[[[UInt64!]]!]]
+  crazyArray: [[[[UInt32!]]!]]
   commonType: CommonType!
 """
 customType comment
@@ -194,10 +190,8 @@ optStr comment
   u: UInt!
   optU: UInt
   u8: UInt8!
-  u64: UInt64!
   i: Int!
   i8: Int8!
-  i64: Int64!
   bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]
@@ -205,7 +199,7 @@ optStr comment
 """
 crazyArray comment
 """
-  crazyArray: [[[[UInt64!]]!]]
+  crazyArray: [[[[UInt32!]]!]]
   commonType: CommonType!
 """
 customType comment
@@ -266,7 +260,7 @@ method2 comment
 arg comment
 """
     arg: [String!]!
-  ): [Int64!]!
+  ): [Int32!]!
 }
 
 """
@@ -306,7 +300,7 @@ type Namespace_Mutation @imported(
 
   method2(
     arg: [String!]!
-  ): [Int64!]!
+  ): [Int32!]!
 
   localObjects(
     nestedLocalObject: Namespace_NestedObjectType
@@ -326,7 +320,7 @@ type JustMutation_Mutation @imported(
 ) {
   method(
     arg: [String!]!
-  ): [Int64!]!
+  ): [Int32!]!
 }
 
 """
@@ -361,21 +355,19 @@ type Namespace_CustomType @imported(
   u8: UInt8!
   u16: UInt16!
   u32: UInt32!
-  u64: UInt64!
   i: Int!
   i8: Int8!
   i16: Int16!
   i32: Int32!
-  i64: Int64!
   bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optUOptArray: [UInt]
   optStrOptArray: [String]
   uArrayArray: [[UInt!]!]!
-  uOptArrayOptArray: [[UInt64]]!
-  uArrayOptArrayArray: [[[UInt64!]!]]!
-  crazyArray: [[[[UInt64!]]!]]
+  uOptArrayOptArray: [[UInt32]]!
+  uArrayOptArrayArray: [[[UInt32!]!]]!
+  crazyArray: [[[[UInt32!]]!]]
   object: Namespace_ObjectType!
   optObject: Namespace_ObjectType
   nestedObject: Namespace_NestedObjectType!

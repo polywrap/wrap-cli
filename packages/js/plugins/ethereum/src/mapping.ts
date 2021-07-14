@@ -20,7 +20,7 @@ export const toTxReceipt = (
   cumulativeGasUsed: receipt.cumulativeGasUsed.toString(),
   effectiveGasPrice: receipt.effectiveGasPrice?.toString() || "0",
   byzantium: receipt.byzantium,
-  type: receipt.type,
+  type: receipt.type || 0,
   status: receipt.status,
 });
 
