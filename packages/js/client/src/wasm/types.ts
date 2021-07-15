@@ -15,7 +15,6 @@ export interface W3Exports {
 
   _w3_init: () => void;
   _w3_invoke: (nameLen: u32, argsLen: u32) => boolean;
-  _w3_asyncify_storage: () => u32;
 }
 
 export interface W3Imports {

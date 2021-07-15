@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { createImports } from "./imports";
-import { instantiate } from "./asyncify";
+import { AsyncWASMInstance } from "./asyncify";
 
 import {
   InvokeApiOptions,
@@ -115,45 +115,17 @@ export class WasmWeb3Api extends Api {
 
         const module = new WebAssembly.Module(wasm);
         const memory = new WebAssembly.Memory({ initial: 1 });
-
-        const { exports } = await instantiate(
-          wasm,
-          createImports({
+        const instance = new AsyncWASMInstance({
+          module,
+          imports: createImports({
             state,
             client,
             memory,
-          })
-        );
+          }),
+          requiredExports: ["_w3_init", "_w3_invoke"],
+        });
 
-        const exportKeys = Object.keys(exports);
-        const requiredExports = [
-          "_w3_init",
-          "_w3_invoke",
-          "_w3_asyncify_storage",
-          "asyncify_start_unwind",
-          "asyncify_stop_unwind",
-          "asyncify_start_rewind",
-          "asyncify_stop_rewind",
-        ];
-        const missingExports = requiredExports.filter(
-          (name) => !exportKeys.includes(name)
-        );
-
-        if (missingExports.length) {
-          return {
-            error: new Error(
-              `WasmWeb3Api: Thread aborted execution.\nURI: ${this._uri.uri}\n` +
-                `Module: ${module}\nMethod: ${method}\n` +
-                `Input: ${JSON.stringify(
-                  input,
-                  null,
-                  2
-                )}\nMessage: ${`Required exports were not found: ${missingExports.join(
-                  ", "
-                )}`}\n`
-            ),
-          };
-        }
+        const exports = instance.exports;
 
         exports._w3_init();
 

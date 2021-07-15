@@ -2,7 +2,6 @@ import {
   w3_add_invoke,
   w3_invoke,
   w3_abort,
-  w3_asyncify_storage,
   __w3_subinvoke
 } from "@namestys/wasm-as";
 {{#queryTypes}}
@@ -25,10 +24,6 @@ export function _w3_init(): void {
 
 export function _w3_invoke(method_size: u32, args_size: u32): bool {
   return w3_invoke(method_size, args_size);
-}
-
-export function _w3_asyncify_storage(): u32 {
-  return w3_asyncify_storage();
 }
 
 export function w3Abort(
