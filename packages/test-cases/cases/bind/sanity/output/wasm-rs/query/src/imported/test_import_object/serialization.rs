@@ -96,7 +96,7 @@ pub fn write_test_import_object<W: Write>(object: &TestImportObject, writer: &mu
         .push("enum_array", "Vec<TestImportEnum>", "writing property");
     writer.write_string(&"enum_array".to_string());
     writer.write_array(object.enum_array.as_slice(), |writer: &mut W, item| {
-        writer.write_i32(&(item.clone() as i32))
+        writer.write_i32(&(*item as i32))
     });
     writer
         .context()
@@ -109,7 +109,7 @@ pub fn write_test_import_object<W: Write>(object: &TestImportObject, writer: &mu
     );
     writer.write_string(&"opt_enum_array".to_string());
     writer.write_nullable_array(&object.opt_enum_array, |writer: &mut W, item| {
-        writer.write_i32(&(item.clone() as i32))
+        writer.write_i32(&(*item as i32))
     });
     writer
         .context()
@@ -271,7 +271,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                             sanitize_test_import_enum_value(value as i32)
                                 .expect("Failed to sanitize Vec<TestImportEnum>");
                         }
-                        return value;
+                        value
                     })
                     .expect("Failed to read array");
                 enum_array_set = true;
@@ -299,7 +299,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                         sanitize_test_import_enum_value(value as i32)
                             .expect("Failed to sanitize Option<Vec<TestImportEnum>>");
                     }
-                    return value;
+                    value
                 });
                 reader
                     .context()

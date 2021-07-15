@@ -40,11 +40,11 @@ pub fn get_custom_enum_value(key: &str) -> Result<CustomEnum, String> {
         return Ok(CustomEnum::BYTES);
     }
     let custom_error = format!("Invalid key for enum 'CustomEnum': {}", key);
-    return Err(custom_error);
+    Err(custom_error)
 }
 
 pub fn get_custom_enum_key(value: CustomEnum) -> String {
-    if let Ok(_) = sanitize_custom_enum_value(value as i32) {
+    if sanitize_custom_enum_value(value as i32).is_ok() {
         return match value {
             CustomEnum::STRING => "STRING".to_string(),
             CustomEnum::BYTES => "BYTES".to_string(),

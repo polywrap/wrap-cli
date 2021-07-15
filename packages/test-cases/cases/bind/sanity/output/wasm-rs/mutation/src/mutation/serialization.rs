@@ -117,7 +117,7 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
                             sanitize_custom_enum_value(value as i32)
                                 .expect("Failed to sanitize Vec<CustomEnum>");
                         }
-                        return value;
+                        value
                     })
                     .expect("Failed to read array");
                 enum_array_set = true;
@@ -145,7 +145,7 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
                         sanitize_custom_enum_value(value as i32)
                             .expect("Failed to sanitize Option<Vec<CustomEnum>>");
                     }
-                    return value;
+                    value
                 });
 
                 reader

@@ -43,11 +43,11 @@ pub fn get_test_import_enum_value(key: &str) -> Result<TestImportEnum, String> {
         return Ok(TestImportEnum::BYTES);
     }
     let custom_error = format!("Invalid key for enum 'TestImportEnum': {}", key);
-    return Err(custom_error);
+    Err(custom_error)
 }
 
 pub fn get_test_import_enum_key(value: TestImportEnum) -> String {
-    if let Ok(_) = sanitize_test_import_enum_value(value as i32) {
+    if sanitize_test_import_enum_value(value as i32).is_ok() {
         return match value {
             TestImportEnum::STRING => "STRING".to_string(),
             TestImportEnum::BYTES => "BYTES".to_string(),

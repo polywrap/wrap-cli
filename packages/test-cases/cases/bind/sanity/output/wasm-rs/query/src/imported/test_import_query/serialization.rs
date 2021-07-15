@@ -152,7 +152,7 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
         .push("enum_array", "Vec<TestImportEnum>", "writing property");
     writer.write_string(&"enum_array".to_string());
     writer.write_array(input.enum_array.as_slice(), |writer: &mut W, item| {
-        writer.write_i32(&(item.clone() as i32))
+        writer.write_i32(&(*item as i32))
     });
     writer
         .context()
@@ -165,7 +165,7 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     );
     writer.write_string(&"opt_enum_array".to_string());
     writer.write_nullable_array(&input.opt_enum_array, |writer: &mut W, item| {
-        writer.write_i32(&(item.clone() as i32))
+        writer.write_i32(&(*item as i32))
     });
     writer
         .context()
@@ -195,7 +195,7 @@ pub fn deserialize_imported_method_result(buffer: &[u8]) -> TestImportObject {
     object
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct InputAnotherMethod {
     args: Vec<String>,
 }

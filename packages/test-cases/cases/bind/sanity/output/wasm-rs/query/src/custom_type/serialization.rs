@@ -337,7 +337,7 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .push("en_array", "Vec<CustomEnum>", "writing property");
     writer.write_string(&"en_array".to_string());
     writer.write_array(object.en_array.as_slice(), |writer: &mut W, item| {
-        writer.write_i32(&(item.clone() as i32))
+        writer.write_i32(&(*item as i32))
     });
     writer
         .context()
@@ -350,7 +350,7 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
     );
     writer.write_string(&"opt_en_array".to_string());
     writer.write_nullable_array(&object.opt_en_array, |writer: &mut W, item| {
-        writer.write_i32(&(item.clone() as i32))
+        writer.write_i32(&(*item as i32))
     });
     writer
         .context()
@@ -872,7 +872,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                             sanitize_custom_enum_value(value as i32)
                                 .expect("Failed to sanitize Vec<CustomEnum>");
                         }
-                        return value;
+                        value
                     })
                     .expect("Failed to read array");
                 en_array_set = true;
@@ -900,7 +900,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                         sanitize_custom_enum_value(value as i32)
                             .expect("Failed to sanitize Option<Vec<CustomEnum>>");
                     }
-                    return value;
+                    value
                 });
                 reader
                     .context()
