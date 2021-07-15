@@ -26,7 +26,7 @@ describe("Web3ApiClient", () => {
     await stopTestEnvironment();
   });
 
-  const getClient = async (ensUri: string) => {
+  const getClient = async (ensUri?: string) => {
     return createWeb3ApiClient({
       ethereum: {
         networks: {
@@ -59,50 +59,7 @@ describe("Web3ApiClient", () => {
     });
   }
 
-  it("environment types", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/environment-types`,
-      ipfsProvider,
-      ensAddress
-    );
-
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-    const client = await getClient(ensUri);
-
-    const env = await client.query({
-      uri: ensUri,
-      query: `
-        query {
-          environment(
-            arg: "string"
-          )
-        }
-      `,
-    });
-
-    expect(env.errors).toBeFalsy();
-    expect(env.data?.environment).toEqual({
-      str: "string",
-      optFilledStr: "optional string",
-      optStr: null,
-      number: 10,
-      optNumber: null,
-      bool: true,
-      optBool: null,
-      object: {
-        prop: "object string"
-      },
-      optObject: null
-    });
-  });
-
-  /*
   it("simple-storage", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
-      ipfsProvider,
-      ensAddress
-    );it("simple-storage", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
@@ -198,6 +155,44 @@ describe("Web3ApiClient", () => {
     expect(get.data?.secondGetData).toBe(55);
     expect(get.data?.thirdGetData).toBe(55);
   });
+
+  it("environment types", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/environment-types`,
+      ipfsProvider,
+      ensAddress
+    );
+
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+    const client = await getClient(ensUri);
+
+    const env = await client.query({
+      uri: ensUri,
+      query: `
+        query {
+          environment(
+            arg: "string"
+          )
+        }
+      `,
+    });
+
+    expect(env.errors).toBeFalsy();
+    expect(env.data?.environment).toEqual({
+      str: "string",
+      optFilledStr: "optional string",
+      optStr: null,
+      number: 10,
+      optNumber: null,
+      bool: true,
+      optBool: null,
+      object: {
+        prop: "object string"
+      },
+      optObject: null
+    });
+  });
+
 
   it("object-types", async () => {
     const api = await buildAndDeployApi(
@@ -1278,5 +1273,4 @@ describe("Web3ApiClient", () => {
       /Property must be of type 'array'. Found 'map'./
     );
   });
-  */
 });

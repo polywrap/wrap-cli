@@ -45,4 +45,6 @@ export {
 } from "./imported/{{type}}";
 {{/importedEnumTypes}}
 
+{{#environment.query.sanitized}}
 export { env } from "./environment";
+{{/environment.query.sanitized}}

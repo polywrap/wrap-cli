@@ -302,6 +302,7 @@ addEventListener(
       return;
     }
 
+    // Load environment into wasm
     const encodedEnviroment = MsgPack.encode(input.data.environment, {
       ignoreUndefined: true,
     });
