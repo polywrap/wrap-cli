@@ -46,8 +46,13 @@ describe("Web3ApiClient", () => {
       environment: {
         ["w3://" + ensUri]: {
           query: {
-            uri: "custom-uri",
-            number: 18
+            str: "string",
+            optFilledStr: "optional string",
+            number: 10,
+            bool: true,
+            object: {
+              prop: "object string"
+            }
           }
         }
       }
@@ -75,10 +80,20 @@ describe("Web3ApiClient", () => {
       `,
     });
 
-    console.log(env)
-
     expect(env.errors).toBeFalsy();
-    expect(env.data).toBeTruthy();
+    expect(env.data?.environment).toEqual({
+      str: "string",
+      optFilledStr: "optional string",
+      optStr: null,
+      number: 10,
+      optNumber: null,
+      bool: true,
+      optBool: null,
+      object: {
+        prop: "object string"
+      },
+      optObject: null
+    });
   });
 
   /*

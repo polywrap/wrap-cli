@@ -1,14 +1,8 @@
+{{#environment.query.sanitized}}
+
 import {
-  Nullable
-} from "@web3api/wasm-as";
-import * as Types from ".";
+  QueryEnv
+} from "./QueryEnv";
 
-class Env {
-  {{#environment.query.sanitized.properties}}
-  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} | null;
-  {{/environment.query.sanitized.properties}}
-
-  public constructor() {}
-}
-
-export const env: Env = new Env();
+export let env: QueryEnv | null = null;
+{{/environment.query.sanitized}}

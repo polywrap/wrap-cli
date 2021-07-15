@@ -42,7 +42,9 @@ export class Web3ApiClient implements Client {
   // and handle cases where the are multiple jumps. For exmaple, if
   // A => B => C, then the cache should have A => C, and B => C.
   private _apiCache: ApiCache = new Map<string, Api>();
-  private _config: ClientConfig<Uri> = {};
+  private _config: ClientConfig<Uri> = {
+    environment: {},
+  };
 
   constructor(config?: ClientConfig) {
     try {
@@ -50,6 +52,7 @@ export class Web3ApiClient implements Client {
         this._config = {
           redirects: [],
           tracingEnabled: false,
+          environment: {},
         };
       }
 
@@ -203,10 +206,10 @@ export class Web3ApiClient implements Client {
       async (uri: Uri): Promise<Api> => {
         let api = this._apiCache.get(uri.uri);
 
-        console.log("LOAD: " + uri.uri);
-
         if (!api) {
-          const enviroment = this.environment[uri.uri];
+          const enviroment = this._config.environment
+            ? this._config.environment[uri.uri]
+            : undefined;
           api = await resolveUri(
             uri,
             this,

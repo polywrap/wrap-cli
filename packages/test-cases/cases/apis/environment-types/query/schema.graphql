@@ -1,8 +1,19 @@
 type Query {
-  environment(arg: String!): String
+  environment(arg: String!): QueryEnv
+}
+
+type EnvObject {
+  prop: String!
 }
 
 type QueryEnv {
-  uri: String
-  number: Int8
+  str: String!
+  optStr: String
+  optFilledStr: String
+  number: Int8!
+  optNumber: Int8
+  bool: Boolean!
+  optBool: Boolean
+  object: EnvObject!
+  optObject: EnvObject
 }
