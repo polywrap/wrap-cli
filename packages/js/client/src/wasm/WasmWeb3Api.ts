@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { W3Exports } from "./types";
 import { createImports } from "./imports";
+import { instantiate } from "./asyncify";
 
 import {
   InvokeApiOptions,
@@ -30,6 +30,8 @@ export interface State {
   subinvoke: {
     result?: ArrayBuffer;
     error?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    args: any[];
   };
   invokeResult: InvokeResult;
 }
@@ -98,10 +100,11 @@ export class WasmWeb3Api extends Api {
       ): Promise<InvokeApiResult<unknown | ArrayBuffer>> => {
         const { module: invokableModule, method, input, decode } = options;
         const wasm = await this.getWasmModule(invokableModule, client);
-        const exports = { values: {} as W3Exports };
         const state: State = {
           invoke: {},
-          subinvoke: {},
+          subinvoke: {
+            args: [],
+          },
           invokeResult: {} as InvokeResult,
           method,
           args:
@@ -113,18 +116,16 @@ export class WasmWeb3Api extends Api {
         const module = new WebAssembly.Module(wasm);
         const memory = new WebAssembly.Memory({ initial: 1 });
 
-        const source: WebAssembly.Instance = new WebAssembly.Instance(
-          module,
+        const { exports } = await instantiate(
+          wasm,
           createImports({
-            exports,
             state,
             client,
             memory,
           })
         );
 
-        exports.values = source.exports as W3Exports;
-        const exportKeys = Object.keys(exports.values);
+        const exportKeys = Object.keys(exports);
         const requiredExports = [
           "_w3_init",
           "_w3_invoke",
@@ -132,7 +133,7 @@ export class WasmWeb3Api extends Api {
           "asyncify_start_unwind",
           "asyncify_stop_unwind",
           "asyncify_start_rewind",
-          "asyncify_stop_rewind"
+          "asyncify_stop_rewind",
         ];
         const missingExports = requiredExports.filter(
           (name) => !exportKeys.includes(name)
@@ -154,10 +155,9 @@ export class WasmWeb3Api extends Api {
           };
         }
 
-        exports.values._w3_init();
+        exports._w3_init();
 
-        console.log("STARTING", "_w3_invoke", state.method.length, state.args.byteLength)
-        const result = exports.values._w3_invoke(
+        const result = await exports._w3_invoke(
           state.method.length,
           state.args.byteLength
         );
@@ -190,7 +190,9 @@ export class WasmWeb3Api extends Api {
             if (decode) {
               try {
                 return {
-                  data: MsgPack.decode(invokeResult.invokeResult as ArrayBuffer),
+                  data: MsgPack.decode(
+                    invokeResult.invokeResult as ArrayBuffer
+                  ),
                 };
               } catch (err) {
                 throw Error(
