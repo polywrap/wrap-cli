@@ -2,7 +2,7 @@ use crate::{abort, invoke};
 {{#queryTypes}}
 {{#methods.length}}
 {{#methods}}
-use crate::{{#toLower}}{{type}}{{/toLower}}::wrapped::*;
+use crate::{ {{#toLower}}{{name}}{{/toLower}}_wrapped, };
 {{/methods}}
 {{/methods.length}}
 {{/queryTypes}}

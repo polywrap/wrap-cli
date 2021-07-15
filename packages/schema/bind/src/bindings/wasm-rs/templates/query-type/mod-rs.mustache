@@ -1,15 +1,19 @@
-pub use crate::{ {{type}}, };
-
 {{#methods.length}}
 pub mod serialization;
 pub mod wrapped;
 {{/methods.length}}
+
 {{#methods.length}}
 pub use serialization::{
   {{#methods}}
   deserialize_{{#toLower}}{{name}}{{/toLower}}_args,
   serialize_{{#toLower}}{{name}}{{/toLower}}_result,
   Input{{#toUpper}}{{name}}{{/toUpper}},
+  {{/methods}}
+};
+pub use wrapped::{
+  {{#methods}}
+  {{#toLower}}{{name}}{{/toLower}}_wrapped,
   {{/methods}}
 };
 {{/methods.length}}

@@ -1,6 +1,6 @@
 {{#__commonImport}}
-use super::{ {{type}}, }
 pub use super::super::common::{{type}};
+use super::{ {{type}}, }
 {{/__commonImport}}
 {{^__commonImport}}
 {{#methods.length}}
@@ -23,7 +23,7 @@ pub struct {{type}};
 impl {{type}} {
     pub const URI: &'static str = "{{uri}}";
     
-    pub fn {{#toLower}}{{name}}{{/toLower}}(input: Input{{#toUpper}}{{name}}{{/toUpper}}) -> {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
+    pub fn {{#toLower}}{{name}}{{/toLower}}(input: &Input{{#toUpper}}{{name}}{{/toUpper}}) -> {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
         let uri = {{type}}::URI;
         let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(input);
         let result = subinvoke::w3_subinvoke(

@@ -1,7 +1,4 @@
 {{#__commonImport}}
-use serde::{Deserialize, Serialize};
-use std::convert::TryFrom;
-use std::io::{Error, ErrorKind};
 pub use super::common::{
     get_{{#toLower}}{{type}}{{/toLower}}_key, 
     get_{{#toLower}}{{type}}{{/toLower}}_value, 
@@ -10,7 +7,10 @@ pub use super::common::{
 };
 {{/__commonImport}}
 {{^__commonImport}}
-#[derive(Clone, Debug, Deserialize, Serialize)]
+use serde::{Deserialize, Serialize};
+use std::convert::TryFrom;
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 #[repr(i32)]
 pub enum {{type}} {
     {{#constants}}
@@ -33,28 +33,28 @@ impl TryFrom<i32> for {{type}} {
     }
 }
 
-pub fn sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value: i32) -> Result<(), Error> {
+pub fn sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value: i32) -> Result<(), String> {
     let max_as_i32 = {{type}}::_MAX_ as i32;
     let valid = value >= 0 && value < max_as_i32;
     if !valid {
         let custom_error = format!("Invalid value for enum '{{type}}': {}", value.to_string());
-        return Err(Error::new(ErrorKind::Other, custom_error));
+        return Err(custom_error);
     }
     Ok(())
 }
 
-pub fn get_{{#toLower}}{{type}}{{/toLower}}_value(key: &str) -> Result<{{type}}, Error> {
+pub fn get_{{#toLower}}{{type}}{{/toLower}}_value(key: &str) -> Result<{{type}}, String> {
     {{#constants}}
     if key == "{{.}}" {
         return Ok({{type}}::{{.}});
     }
     {{/constants}}
     let custom_error = format!("Invalid key for enum '{{type}}': {}", key);
-    return Err(Error::new(ErrorKind::Other, custom_error));
+    Err(custom_error)
 }
 
 pub fn get_{{#toLower}}{{type}}{{/toLower}}_key(value: {{type}}) -> String {
-    if let Ok(_) = sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value.clone() as i32) {
+    if sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value as i32).is_ok() {
         return match value {
             {{#constants}}
             {{type}}::{{.}} => "{{.}}".to_string(),

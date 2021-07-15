@@ -1,11 +1,11 @@
 {{#required}}
 if reader.is_next_string() {
-  en = get_{{#toLower}}{{type}}{{/toLower}}_value(reader.read_string().unwrap_or_default().as_str())
+  {{#toLower}}{{name}}{{/toLower}} = get_{{#toLower}}{{type}}{{/toLower}}_value(reader.read_string().unwrap_or_default().as_str())
       .expect("Failed to get {{type}} value");
 } else {
-  en = {{type}}::try_from(reader.read_i32().unwrap_or_default())
+  {{#toLower}}{{name}}{{/toLower}} = {{type}}::try_from(reader.read_i32().unwrap_or_default())
       .expect("Failed to convert i32 to {{type}}");
-  sanitize_{{#toLower}}{{type}}{{/toLower}}_value(en.clone() as i32)
+  sanitize_{{#toLower}}{{type}}{{/toLower}}_value({{#toLower}}{{name}}{{/toLower}} as i32)
       .expect("Failed to sanitize {{type}}");
 }
 {{/required}}
@@ -16,15 +16,15 @@ if !reader.is_next_nil() {
             get_{{#toLower}}{{type}}{{/toLower}}_value(
                 reader.read_string().unwrap_or_default().as_str(),
             )
-            .expect("Failed to get {{type}} value"),
+            .expect("Failed to get {{#toWasm}}{{toGraphQLType}}{{/toWasm}} value"),
         );
     } else {
         {{#toLower}}{{type}}{{/toLower}} = Some(
             {{type}}::try_from(reader.read_i32().unwrap_or_default())
                 .expect("Failed to convert i32 to {{type}}"),
         );
-        sanitize_{{#toLower}}{{type}}{{/toLower}}_value(opt_en.clone().unwrap() as i32)
-            .expect("Failed to sanitize optional {{type}}");
+        sanitize_{{#toLower}}{{type}}{{/toLower}}_value({{#toLower}}{{name}}{{/toLower}}.unwrap() as i32)
+            .expect("Failed to sanitize {{#toWasm}}{{toGraphQLType}}{{/toWasm}}");
     }
 } else {
     {{#toLower}}{{type}}{{/toLower}} = None;

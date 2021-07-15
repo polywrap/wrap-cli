@@ -1,5 +1,5 @@
 {{#__commonPath}}
-pub use crate::"{{__commonPath}}";
+pub use crate::{{__commonPath}}::*;
 {{/__commonPath}}
 {{^__commonPath}}
 {{#objectTypes}}
@@ -13,11 +13,6 @@ pub use crate::{{#toLower}}{{type}}{{/toLower}}::*;
 {{/__common}}
 {{/enumTypes}}
 
-{{#importedQueryTypes}}
-{{#__common}}
-pub use crate::imported::{{#toLower}}{{type}}{{/toLower}}::*;
-{{/__common}}
-{{/importedQueryTypes}}
 {{#importedObjectTypes}}
 {{#__common}}
 pub use crate::imported::{{#toLower}}{{type}}{{/toLower}}::*;
@@ -28,4 +23,9 @@ pub use crate::imported::{{#toLower}}{{type}}{{/toLower}}::*;
 pub use crate::imported::{{#toLower}}{{type}}{{/toLower}}::*;
 {{/__common}}
 {{/importedEnumTypes}}
+{{#importedQueryTypes}}
+{{#__common}}
+pub use crate::imported::{{#toLower}}{{type}}{{/toLower}}::*;
+{{/__common}}
+{{/importedQueryTypes}}
 {{/__commonPath}}

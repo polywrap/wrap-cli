@@ -4,16 +4,16 @@
 {{/scalar}}
 {{#array}}
 {{#toLower}}{{name}}{{/toLower}} = reader
-    .read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {{#toWasm}}{{toGraphQLType}}{{/toWasm}} {
+    .read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
         {{> deserialize_array}}
     })
-    .expect("Failed to read {{#toLower}}{{name}}{{/toLower}}");
+    .expect("Failed to read array");
 {{/array}}
 {{#enum}}
 {{> deserialize_enum}}
-return value;
+value
 {{/enum}}
 {{#object}}
 {{> deserialize_object}}
-return object;
+object
 {{/object}}

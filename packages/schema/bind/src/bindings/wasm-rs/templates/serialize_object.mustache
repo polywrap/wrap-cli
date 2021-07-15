@@ -1,9 +1,9 @@
 {{#required}}
-{{type}}::write(&mut object.{{#toLower}}{{name}}{{/toLower}}.clone(), &mut writer);
+{{type}}::write(&object.{{#toLower}}{{name}}{{/toLower}}, writer);
 {{/required}}
 {{^required}}
 if object.{{#toLower}}{{name}}{{/toLower}}.is_some() {
-    {{type}}::write(&mut object.{{#toLower}}{{name}}{{/toLower}}.clone().unwrap(), &mut writer);
+    {{type}}::write(&object.{{#toLower}}{{name}}{{/toLower}}.as_ref().unwrap(), writer);
 } else {
     writer.write_nil();
 }
