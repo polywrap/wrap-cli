@@ -12,7 +12,6 @@ export const createImports = (config: {
   memory: WebAssembly.Memory;
   state: State;
 }): W3Imports => {
-  console.log(config);
   const { memory, state, client } = config;
 
   return {
@@ -43,16 +42,12 @@ export const createImports = (config: {
           input,
         ];
 
-        console.log("BEFORE ASYNC CALL");
-
         const { data, error } = await client.invoke<unknown | ArrayBuffer>({
           uri: uri,
           module: moduleToInvoke as InvokableModules,
           method: method,
           input: input,
         });
-
-        console.log("AFTER ASYNC CALL", data, error);
 
         if (!error) {
           let msgpack: ArrayBuffer;

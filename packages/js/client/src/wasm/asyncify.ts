@@ -121,7 +121,6 @@ class Asyncify {
 
     for (const exportName in exports) {
       let value = exports[exportName];
-      console.log(exportName, " ", typeof value);
       if (typeof value === "function" && !exportName.startsWith("asyncify_")) {
         value = this.wrapExportFn(value);
       }
