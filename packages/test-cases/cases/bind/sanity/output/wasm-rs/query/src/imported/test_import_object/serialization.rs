@@ -54,7 +54,7 @@ pub fn write_test_import_object<W: Write>(object: &TestImportObject, writer: &mu
     );
     writer.write_string(&"object_array".to_string());
     writer.write_array(object.object_array.as_slice(), |writer: &mut W, item| {
-        TestImportAnotherObject::write(&item, writer)
+        TestImportAnotherObject::write(item, writer)
     });
     writer
         .context()
@@ -67,7 +67,7 @@ pub fn write_test_import_object<W: Write>(object: &TestImportObject, writer: &mu
     );
     writer.write_string(&"opt_object_array".to_string());
     writer.write_nullable_array(&object.opt_object_array, |writer: &mut W, item| {
-        TestImportAnotherObject::write(&item, writer)
+        TestImportAnotherObject::write(item, writer)
     });
     writer
         .context()

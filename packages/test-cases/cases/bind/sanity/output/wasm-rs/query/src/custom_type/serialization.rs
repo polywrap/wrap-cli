@@ -229,7 +229,7 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
     writer.write_string(&"u_opt_array_opt_array".to_string());
     writer.write_array(
         object.u_opt_array_opt_array.as_slice(),
-        |writer: &mut W, item| writer.write_nullable_array(&item, Write::write_u64),
+        |writer: &mut W, item| writer.write_nullable_array(item, Write::write_u64),
     );
     writer
         .context()
@@ -294,8 +294,8 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("object_array", "Vec<AnotherType>", "writing property");
     writer.write_string(&"object_array".to_string());
-    writer.write_array(object.object_array.as_slice(), |writer: &mut W, object| {
-        AnotherType::write(&object, writer)
+    writer.write_array(object.object_array.as_slice(), |writer: &mut W, item| {
+        AnotherType::write(item, writer)
     });
     writer
         .context()
