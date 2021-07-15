@@ -2,7 +2,7 @@
   "name": "test-case-bytes-type",
   "private": true,
   "dependencies": {
-    "@namestys/wasm-as": "0.0.1-prealpha.36",
+    "@namestys/wasm-as": "0.0.1-prealpha.52",
     "assemblyscript": "0.19.1"
   }
 }

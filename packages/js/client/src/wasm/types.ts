@@ -5,7 +5,8 @@ export type u32 = number;
 
 export interface W3Exports {
   // Needed to comply with WebAssembly's typings
-  [key: string]: unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
 
   asyncify_start_unwind: (dataAddr: number) => void;
   asyncify_stop_unwind: () => void;
@@ -14,7 +15,6 @@ export interface W3Exports {
 
   _w3_init: () => void;
   _w3_invoke: (nameLen: u32, argsLen: u32) => boolean;
-  _w3_asyncify_storage: () => u32;
 }
 
 export interface W3Imports {
@@ -31,11 +31,8 @@ export interface W3Imports {
       methodLen: u32,
       inputPtr: u32,
       inputLen: u32
-    ) => boolean;
-    __w3_log: (
-      msgPtr: u32,
-      msgLen: u32
-    ) => void;
+    ) => Promise<boolean>;
+    __w3_log: (msgPtr: u32, msgLen: u32) => void;
     __w3_subinvoke_result_len: () => u32;
     __w3_subinvoke_result: (ptr: u32) => void;
     __w3_subinvoke_error_len: () => u32;

@@ -12,5 +12,4 @@ export { BigInt } from "./BigInt";
 
 export * from "./abort";
 export * from "./invoke";
-export * from "./asyncify";
 export * from "./subinvoke";

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { u32, W3Exports, W3Imports } from "./types";
-import { WasmPromise } from "./WasmPromise";
+import { u32, W3Imports } from "./types";
 import { readBytes, readString, writeBytes, writeString } from "./utils";
 import { Client, InvokableModules } from "..";
 import { State } from "./WasmWeb3Api";
@@ -10,71 +9,66 @@ import * as MsgPack from "@msgpack/msgpack";
 
 export const createImports = (config: {
   client: Client;
-  exports: { values: W3Exports };
   memory: WebAssembly.Memory;
   state: State;
 }): W3Imports => {
-  const { memory, client, exports, state } = config;
+  console.log(config);
+  const { memory, state, client } = config;
 
   return {
     w3: {
-      __w3_subinvoke: WasmPromise.create(
-        async (
-          uriPtr: u32,
-          uriLen: u32,
-          modulePtr: u32,
-          moduleLen: u32,
-          methodPtr: u32,
-          methodLen: u32,
-          inputPtr: u32,
-          inputLen: u32
-        ): Promise<boolean> => {
-          // Reset our state
-          state.subinvoke.result = undefined;
-          state.subinvoke.error = undefined;
+      __w3_subinvoke: async (
+        uriPtr: u32,
+        uriLen: u32,
+        modulePtr: u32,
+        moduleLen: u32,
+        methodPtr: u32,
+        methodLen: u32,
+        inputPtr: u32,
+        inputLen: u32
+      ): Promise<boolean> => {
+        // Reset our state
+        state.subinvoke.result = undefined;
+        state.subinvoke.error = undefined;
 
-          const uri = readString(memory.buffer, uriPtr, uriLen);
-          const moduleToInvoke = readString(
-            memory.buffer,
-            modulePtr,
-            moduleLen
-          );
-          const method = readString(memory.buffer, methodPtr, methodLen);
-          const input = readBytes(memory.buffer, inputPtr, inputLen);
+        const uri = readString(memory.buffer, uriPtr, uriLen);
+        const moduleToInvoke = readString(memory.buffer, modulePtr, moduleLen);
+        const method = readString(memory.buffer, methodPtr, methodLen);
+        const input = readBytes(memory.buffer, inputPtr, inputLen);
 
-          const { data, error } = await client.invoke<unknown | ArrayBuffer>({
-            uri: uri,
-            module: moduleToInvoke as InvokableModules,
-            method: method,
-            input: input,
-          });
+        state.subinvoke.args = [
+          uri,
+          moduleToInvoke as InvokableModules,
+          method,
+          input,
+        ];
 
-          if (!error) {
-            let msgpack: ArrayBuffer;
-            if (data instanceof ArrayBuffer) {
-              msgpack = data;
-            } else {
-              msgpack = MsgPack.encode(data);
-            }
+        console.log("BEFORE ASYNC CALL");
 
-            state.subinvoke.result = msgpack;
+        const { data, error } = await client.invoke<unknown | ArrayBuffer>({
+          uri: uri,
+          module: moduleToInvoke as InvokableModules,
+          method: method,
+          input: input,
+        });
+
+        console.log("AFTER ASYNC CALL", data, error);
+
+        if (!error) {
+          let msgpack: ArrayBuffer;
+          if (data instanceof ArrayBuffer) {
+            msgpack = data;
           } else {
-            state.subinvoke.error = `${error.name}: ${error.message}`;
+            msgpack = MsgPack.encode(data);
           }
 
-          return !error;
-        },
-        () => {
-          return {
-            method:  "_w3_invoke",
-            args: [state.method.length, state.args.byteLength]
-          }
-        },
-        {
-          memory,
-          exports,
+          state.subinvoke.result = msgpack;
+        } else {
+          state.subinvoke.error = `${error.name}: ${error.message}`;
         }
-      ),
+
+        return !error;
+      },
       __w3_log: (msgPtr: u32, msgLen: u32) => {
         console.log("__w3_log:", readString(memory.buffer, msgPtr, msgLen));
       },

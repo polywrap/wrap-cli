@@ -141,7 +141,7 @@ describe("Web3ApiClient", () => {
     expect(get.data?.thirdGetData).toBe(55);*/
   });
 
-  it.skip("object-types", async () => {
+  it("object-types", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/object-types`,
       ipfsProvider,
@@ -373,7 +373,7 @@ describe("Web3ApiClient", () => {
     });
   });
 
-  it.skip("bigint-type", async () => {
+  it("bigint-type", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/bigint-type`,
       ipfsProvider,
@@ -437,7 +437,7 @@ describe("Web3ApiClient", () => {
     }
   });
 
-  it.skip("bytes-type", async () => {
+  it("bytes-type", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/bytes-type`,
       ipfsProvider,
@@ -472,7 +472,7 @@ describe("Web3ApiClient", () => {
     });
   });
 
-  it.skip("enum-types", async () => {
+  it("enum-types", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/enum-types`,
       ipfsProvider,
@@ -552,7 +552,7 @@ describe("Web3ApiClient", () => {
     });
   });
 
-  it.skip("should work with large types", async () => {
+  it("should work with large types", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/large-types`,
       ipfsProvider,
@@ -604,7 +604,7 @@ describe("Web3ApiClient", () => {
     });
   });
 
-  it.skip("number-types under and overflows", async () => {
+  it("number-types under and overflows", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/number-types`,
       ipfsProvider,
@@ -798,7 +798,7 @@ describe("Web3ApiClient", () => {
     expect(u64Overflow.data?.u64Method).toBeUndefined();
   });
 
-  it.skip("invalid type errors", async () => {
+  it("invalid type errors", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/invalid-types`,
       ipfsProvider,
