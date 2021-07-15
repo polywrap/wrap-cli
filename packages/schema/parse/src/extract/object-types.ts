@@ -7,7 +7,6 @@ import {
   extractFieldDefinition,
   extractListType,
   extractNamedType,
-  isEnviromentType,
   State,
 } from "./object-types-utils";
 import { Blackboard } from "./Blackboard";
@@ -31,11 +30,6 @@ const visitorEnter = (
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     // Skip non-custom types
     if (node.name.value === "Query" || node.name.value === "Mutation") {
-      return;
-    }
-
-    // Skip env types
-    if (isEnviromentType(node.name.value)) {
       return;
     }
 
