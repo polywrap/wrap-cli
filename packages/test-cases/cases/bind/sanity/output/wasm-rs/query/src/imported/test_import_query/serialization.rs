@@ -195,7 +195,7 @@ pub fn deserialize_imported_method_result(buffer: &[u8]) -> TestImportObject {
     object
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InputAnotherMethod {
     args: Vec<String>,
 }
