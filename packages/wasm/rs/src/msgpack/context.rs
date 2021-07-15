@@ -2,6 +2,7 @@
 //! prints it in a clear format
 
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct Context {
@@ -45,7 +46,7 @@ impl Context {
         ))
     }
 
-    pub fn to_string(&self) -> String {
+    pub fn context_to_string(&self) -> String {
         self.print_with_tabs(0, 2)
     }
 
@@ -89,4 +90,10 @@ pub struct Node {
     node_item: String,
     node_type: String,
     node_info: String,
+}
+
+impl fmt::Display for Context {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "({}, {:?})", self.description, self.nodes)
+    }
 }

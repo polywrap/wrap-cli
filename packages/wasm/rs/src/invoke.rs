@@ -27,6 +27,12 @@ impl Invoke {
     }
 }
 
+impl Default for Invoke {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 pub fn w3_add_invoke(method: &str, func: InvokeFunction) {
     let mut invoke = Invoke::new();
     invoke.invokes.insert(method.to_string(), func);
@@ -47,16 +53,19 @@ pub fn w3_invoke(method_size: u32, args_size: u32) -> bool {
     let invoke = Invoke::new();
     let opt_invoke_func = invoke.invokes.get(method);
     if opt_invoke_func.is_some() {
-        let func = opt_invoke_func.unwrap();
-        let result = func(args_buf.as_slice());
-        let result_u32 = result.as_ptr() as u32;
+        if let Some(func) = opt_invoke_func {
+            let result = func(args_buf.as_slice());
+            let result_u32 = result.as_ptr() as u32;
 
-        unsafe { __w3_invoke_result(result_u32, result.len() as u32) };
-        return true;
+            unsafe { __w3_invoke_result(result_u32, result.len() as u32) };
+            true
+        } else {
+            false
+        }
     } else {
         let message = format!("Could not find invoke function {}", method);
         let message_u32 = message.as_ptr() as u32;
         unsafe { __w3_invoke_error(message_u32, message.len() as u32) };
-        return false;
+        false
     }
 }

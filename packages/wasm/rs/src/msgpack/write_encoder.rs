@@ -54,7 +54,7 @@ impl Write for WriteEncoder {
     }
 
     fn write_i64(&mut self, value: i64) {
-        if value >= 0 && (value < 1 << 7) {
+        if (0..1 << 7).contains(&value) {
             self.view
                 .set_u8(value as u8)
                 .expect("Failed to set u8 to data view");
@@ -233,7 +233,7 @@ impl Write for WriteEncoder {
     }
 
     fn write_bytes(&mut self, buf: &Vec<u8>) {
-        if buf.len() == 0 {
+        if buf.is_empty() {
             self.write_nil();
         } else {
             self.write_bytes_length(buf.len() as u32);

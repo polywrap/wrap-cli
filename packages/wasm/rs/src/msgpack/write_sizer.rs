@@ -119,7 +119,7 @@ impl Write for WriteSizer {
     }
 
     fn write_bytes(&mut self, value: &Vec<u8>) {
-        if value.len() == 0 {
+        if value.is_empty() {
             self.length += 1;
         } else {
             self.write_bytes_length(value.len() as u32);

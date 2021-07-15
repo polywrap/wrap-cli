@@ -37,10 +37,11 @@ impl ReadDecoder {
         let lead_byte = self.view.get_u8().unwrap_or_default(); // will discard one
         let mut objects_to_discard: i32 = 0;
         // handle for fixed values
-        if Format::is_negative_fixed_int(lead_byte) {
+        if Format::is_negative_fixed_int(lead_byte) || Format::is_fixed_int(lead_byte) {
             // noop, will just discard the leadbyte
-        } else if Format::is_fixed_int(lead_byte) {
-            // noop, will just discard the leadbyte
+            self.view
+                .discard(lead_byte as i32)
+                .expect("Failed to discard fixed int");
         } else if Format::is_fixed_string(lead_byte) {
             let str_len = lead_byte & 0x1f;
             self.view
@@ -162,108 +163,50 @@ impl ReadDecoder {
     }
 
     fn get_error_message(lead_byte: u8) -> Result<String, String> {
-        if Format::is_negative_fixed_int(lead_byte) {
-            return Ok("Found `int`".to_string());
-        } else if Format::is_fixed_int(lead_byte) {
-            return Ok("Found `int`".to_string());
+        if Format::is_negative_fixed_int(lead_byte) || Format::is_fixed_int(lead_byte) {
+            Ok("Found `int`".to_string())
         } else if Format::is_fixed_string(lead_byte) {
-            return Ok("Found `string`".to_string());
+            Ok("Found `string`".to_string())
         } else if Format::is_fixed_array(lead_byte) {
-            return Ok("Found `array`".to_string());
+            Ok("Found `array`".to_string())
         } else if Format::is_fixed_map(lead_byte) {
-            return Ok("Found `map`".to_string());
+            Ok("Found `map`".to_string())
         } else {
             match lead_byte {
-                Format::NIL => {
-                    return Ok("Found `nil`".to_string());
-                }
-                Format::TRUE => {
-                    return Ok("Found `bool`".to_string());
-                }
-                Format::FALSE => {
-                    return Ok("Found `bool`".to_string());
-                }
-                Format::BIN8 => {
-                    return Ok("Found `BIN8`".to_string());
-                }
-                Format::BIN16 => {
-                    return Ok("Found `BIN16`".to_string());
-                }
-                Format::BIN32 => {
-                    return Ok("Found `BIN32`".to_string());
-                }
-                Format::FLOAT32 => {
-                    return Ok("Found `float32`".to_string());
-                }
-                Format::FLOAT64 => {
-                    return Ok("Found `float64`".to_string());
-                }
-                Format::UINT8 => {
-                    return Ok("Found `uint8`".to_string());
-                }
-                Format::UINT16 => {
-                    return Ok("Found `uint16`".to_string());
-                }
-                Format::UINT32 => {
-                    return Ok("Found `uint32`".to_string());
-                }
-                Format::UINT64 => {
-                    return Ok("Found `uint64`".to_string());
-                }
-                Format::INT8 => {
-                    return Ok("Found `int8`".to_string());
-                }
-                Format::INT16 => {
-                    return Ok("Found `int16`".to_string());
-                }
-                Format::INT32 => {
-                    return Ok("Found `int32`".to_string());
-                }
-                Format::INT64 => {
-                    return Ok("Found `int64`".to_string());
-                }
-                Format::FIXEXT1 => {
-                    return Ok("Found `FIXEXT1`".to_string());
-                }
-                Format::FIXEXT2 => {
-                    return Ok("Found `FIXEXT2`".to_string());
-                }
-                Format::FIXEXT4 => {
-                    return Ok("Found `FIXEXT4`".to_string());
-                }
-                Format::FIXEXT8 => {
-                    return Ok("Found `FIXEXT8`".to_string());
-                }
-                Format::FIXEXT16 => {
-                    return Ok("Found `FIXEXT16`".to_string());
-                }
-                Format::STR8 => {
-                    return Ok("Found `string`".to_string());
-                }
-                Format::STR16 => {
-                    return Ok("Found `string`".to_string());
-                }
-                Format::STR32 => {
-                    return Ok("Found `string`".to_string());
-                }
-                Format::ARRAY16 => {
-                    return Ok("Found `array`".to_string());
-                }
-                Format::ARRAY32 => {
-                    return Ok("Found `array`".to_string());
-                }
-                Format::MAP16 => {
-                    return Ok("Found `map`".to_string());
-                }
-                Format::MAP32 => {
-                    return Ok("Found `map`".to_string());
-                }
+                Format::NIL => Ok("Found `nil`".to_string()),
+                Format::TRUE => Ok("Found `bool`".to_string()),
+                Format::FALSE => Ok("Found `bool`".to_string()),
+                Format::BIN8 => Ok("Found `BIN8`".to_string()),
+                Format::BIN16 => Ok("Found `BIN16`".to_string()),
+                Format::BIN32 => Ok("Found `BIN32`".to_string()),
+                Format::FLOAT32 => Ok("Found `float32`".to_string()),
+                Format::FLOAT64 => Ok("Found `float64`".to_string()),
+                Format::UINT8 => Ok("Found `uint8`".to_string()),
+                Format::UINT16 => Ok("Found `uint16`".to_string()),
+                Format::UINT32 => Ok("Found `uint32`".to_string()),
+                Format::UINT64 => Ok("Found `uint64`".to_string()),
+                Format::INT8 => Ok("Found `int8`".to_string()),
+                Format::INT16 => Ok("Found `int16`".to_string()),
+                Format::INT32 => Ok("Found `int32`".to_string()),
+                Format::INT64 => Ok("Found `int64`".to_string()),
+                Format::FIXEXT1 => Ok("Found `FIXEXT1`".to_string()),
+                Format::FIXEXT2 => Ok("Found `FIXEXT2`".to_string()),
+                Format::FIXEXT4 => Ok("Found `FIXEXT4`".to_string()),
+                Format::FIXEXT8 => Ok("Found `FIXEXT8`".to_string()),
+                Format::FIXEXT16 => Ok("Found `FIXEXT16`".to_string()),
+                Format::STR8 => Ok("Found `string`".to_string()),
+                Format::STR16 => Ok("Found `string`".to_string()),
+                Format::STR32 => Ok("Found `string`".to_string()),
+                Format::ARRAY16 => Ok("Found `array`".to_string()),
+                Format::ARRAY32 => Ok("Found `array`".to_string()),
+                Format::MAP16 => Ok("Found `map`".to_string()),
+                Format::MAP32 => Ok("Found `map`".to_string()),
                 _ => {
                     let custom_error = format!(
                         "invalid prefix, bad encoding for val: {}",
                         lead_byte.to_string()
                     );
-                    return Err(custom_error);
+                    Err(custom_error)
                 }
             }
         }
@@ -671,10 +614,10 @@ impl Read for ReadDecoder {
 
     fn is_next_string(&mut self) -> bool {
         let format = self.view.peek_u8().unwrap_or_default();
-        return Format::is_fixed_string(format)
+        Format::is_fixed_string(format)
             || format == Format::STR8
             || format == Format::STR16
-            || format == Format::STR32;
+            || format == Format::STR32
     }
 
     fn context(&mut self) -> &mut Context {
