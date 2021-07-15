@@ -14,9 +14,9 @@ pub struct InputImportedMethod {
     pub object_array: Vec<TestImportObject>,
     pub opt_object_array: Option<Vec<TestImportObject>>,
     pub en: TestImportEnum,
-    pub opt_enum: Option<TestImportEnum>,
-    pub enum_array: Vec<TestImportEnum>,
-    pub opt_enum_array: Option<Vec<TestImportEnum>>,
+    pub opt_en: Option<TestImportEnum>,
+    pub en_array: Vec<TestImportEnum>,
+    pub opt_en_array: Option<Vec<TestImportEnum>>,
 }
 
 pub fn serialize_imported_method_args(input: &InputImportedMethod) -> Vec<u8> {
@@ -140,18 +140,18 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
         .expect("Failed to pop TestImportEnum from Context");
     writer
         .context()
-        .push("opt_enum", "Option<TestImportEnum>", "writing property");
-    writer.write_string(&"opt_enum".to_string());
-    writer.write_nullable_i32(Some(input.opt_enum.unwrap() as i32));
+        .push("opt_en", "Option<TestImportEnum>", "writing property");
+    writer.write_string(&"opt_en".to_string());
+    writer.write_nullable_i32(Some(input.opt_en.unwrap() as i32));
     writer
         .context()
         .pop()
         .expect("Failed to pop Option<TestImportEnum> from Context");
     writer
         .context()
-        .push("enum_array", "Vec<TestImportEnum>", "writing property");
-    writer.write_string(&"enum_array".to_string());
-    writer.write_array(input.enum_array.as_slice(), |writer: &mut W, item| {
+        .push("en_array", "Vec<TestImportEnum>", "writing property");
+    writer.write_string(&"en_array".to_string());
+    writer.write_array(input.en_array.as_slice(), |writer: &mut W, item| {
         writer.write_i32(&(*item as i32))
     });
     writer
@@ -159,12 +159,12 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
         .pop()
         .expect("Failed to pop Vec<TestImportEnum> from Context");
     writer.context().push(
-        "opt_enum_array",
+        "opt_en_array",
         "Option<Vec<CustomEnum>>",
         "writing property",
     );
-    writer.write_string(&"opt_enum_array".to_string());
-    writer.write_nullable_array(&input.opt_enum_array, |writer: &mut W, item| {
+    writer.write_string(&"opt_en_array".to_string());
+    writer.write_nullable_array(&input.opt_en_array, |writer: &mut W, item| {
         writer.write_i32(&(*item as i32))
     });
     writer

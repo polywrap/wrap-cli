@@ -15,9 +15,9 @@ pub struct TestImportObject {
     pub object_array: Vec<TestImportAnotherObject>,
     pub opt_object_array: Option<Vec<TestImportAnotherObject>>,
     pub en: TestImportEnum,
-    pub opt_enum: Option<TestImportEnum>,
-    pub enum_array: Vec<TestImportEnum>,
-    pub opt_enum_array: Option<Vec<TestImportEnum>>,
+    pub opt_en: Option<TestImportEnum>,
+    pub en_array: Vec<TestImportEnum>,
+    pub opt_en_array: Option<Vec<TestImportEnum>>,
 }
 
 impl TestImportObject {

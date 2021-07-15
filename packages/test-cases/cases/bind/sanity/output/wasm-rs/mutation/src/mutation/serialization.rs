@@ -8,9 +8,9 @@ pub struct InputMutationMethod {
     pub string: String,
     pub opt_string: Option<String>,
     pub en: CustomEnum,
-    pub opt_enum: Option<CustomEnum>,
-    pub enum_array: Vec<CustomEnum>,
-    pub opt_enum_array: Option<Vec<CustomEnum>>,
+    pub opt_en: Option<CustomEnum>,
+    pub en_array: Vec<CustomEnum>,
+    pub opt_en_array: Option<Vec<CustomEnum>>,
 }
 
 pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutationMethod, String> {
@@ -24,10 +24,10 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
     let mut opt_string: Option<String> = None;
     let mut en = CustomEnum::_MAX_;
     let mut en_set = false;
-    let mut opt_enum: Option<CustomEnum> = None;
-    let mut enum_array: Vec<CustomEnum> = vec![];
-    let mut enum_array_set = false;
-    let mut opt_enum_array: Option<Vec<CustomEnum>> = None;
+    let mut opt_en: Option<CustomEnum> = None;
+    let mut en_array: Vec<CustomEnum> = vec![];
+    let mut en_array_set = false;
+    let mut opt_en_array: Option<Vec<CustomEnum>> = None;
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -74,36 +74,36 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
                     .pop()
                     .expect("Failed to pop CustomEnum from Context");
             }
-            "opt_enum" => {
+            "opt_en" => {
                 reader
                     .context()
                     .push(&field, "Option<CustomEnum>", "type found, reading property");
                 if !reader.is_next_nil() {
                     if reader.is_next_string() {
-                        opt_enum = Some(
+                        opt_en = Some(
                             get_custom_enum_value(
                                 reader.read_string().unwrap_or_default().as_str(),
                             )
                             .expect("Failed to get Option<CustomEnum> value"),
                         );
                     } else {
-                        opt_enum = Some(reader.read_i32().unwrap_or_default().try_into().unwrap());
-                        sanitize_custom_enum_value(opt_enum.unwrap() as i32)
+                        opt_en = Some(reader.read_i32().unwrap_or_default().try_into().unwrap());
+                        sanitize_custom_enum_value(opt_en.unwrap() as i32)
                             .expect("Failed to sanitize Option<CustomEnum> value");
                     }
                 } else {
-                    opt_enum = None;
+                    opt_en = None;
                 }
                 reader
                     .context()
                     .pop()
                     .expect("Failed to pop Option<CustomEnum> from Context");
             }
-            "enum_array" => {
+            "en_array" => {
                 reader
                     .context()
                     .push(&field, "Vec<CustomEnum>", "type found, reading property");
-                enum_array = reader
+                en_array = reader
                     .read_array(|reader| {
                         let mut value = CustomEnum::_MAX_;
                         if reader.is_next_string() {
@@ -120,19 +120,19 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
                         value
                     })
                     .expect("Failed to read array");
-                enum_array_set = true;
+                en_array_set = true;
                 reader
                     .context()
                     .pop()
                     .expect("Failed to pop Vec<CustomEnum> from Context");
             }
-            "opt_enum_array" => {
+            "opt_en_array" => {
                 reader.context().push(
                     &field,
                     "Option<Vec<CustomEnum>>",
                     "type found, reading property",
                 );
-                opt_enum_array = reader.read_nullable_array(|reader| {
+                opt_en_array = reader.read_nullable_array(|reader| {
                     let mut value = CustomEnum::_MAX_;
                     if reader.is_next_string() {
                         value = get_custom_enum_value(
@@ -177,10 +177,10 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
             .print_with_context("Missing required argument: 'en: CustomEnum'");
         return Err(custom_error);
     }
-    if !enum_array_set {
+    if !en_array_set {
         let custom_error = reader
             .context()
-            .print_with_context("Missing required argument: 'enum_array: Vec<CustomEnum>'");
+            .print_with_context("Missing required argument: 'en_array: Vec<CustomEnum>'");
         return Err(custom_error);
     }
 
@@ -188,9 +188,9 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
         string,
         opt_string,
         en,
-        opt_enum,
-        enum_array,
-        opt_enum_array,
+        opt_en,
+        en_array,
+        opt_en_array,
     })
 }
 
