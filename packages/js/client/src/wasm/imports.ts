@@ -129,13 +129,16 @@ export const createImports = (config: {
         }
         writeString(state.method, memory.buffer, methodPtr);
         writeBytes(state.args, memory.buffer, argsPtr);
+        console.log("WROTE ARGS");
       },
       // Store the invocation's result
       __w3_invoke_result: (ptr: u32, len: u32): void => {
+        console.log("INV RESULT: ", ptr, len);
         state.invoke.result = readBytes(memory.buffer, ptr, len);
       },
       // Store the invocation's error
       __w3_invoke_error: (ptr: u32, len: u32): void => {
+        console.log("INV ERROR: ", ptr, len);
         state.invoke.error = readString(memory.buffer, ptr, len);
       },
       __w3_abort: (

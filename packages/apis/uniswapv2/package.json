@@ -27,7 +27,7 @@
     "@web3api/client-js": "0.0.1-prealpha.25",
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.25",
     "@web3api/test-env-js": "0.0.1-prealpha.25",
-    "@namestys/wasm-as": "0.0.1-prealpha.52",
+    "@namestys/wasm-as": "0.0.1-prealpha.54",
     "assemblyscript": "0.19.1",
     "axios": "0.21.1",
     "ethers": "5.0.7",

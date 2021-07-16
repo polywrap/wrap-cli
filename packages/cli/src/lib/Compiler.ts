@@ -310,59 +310,16 @@ export class Compiler {
     moduleName: InvokableModules,
     buildDir: string
   ) {
-    let sleeping = false;
-
-    const DATA_ADDR = 16;
     const wasmSource = fs.readFileSync(
       path.join(buildDir, `${moduleName}.wasm`)
     );
 
     const mod = await WebAssembly.compile(wasmSource);
     const memory = new WebAssembly.Memory({ initial: 1 });
-    const view = new Int32Array(memory.buffer);
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let wasmExports: any = undefined;
 
     const instance = await WebAssembly.instantiate(mod, {
       env: {
         memory,
-        before: function () {
-          console.log("before!");
-          setTimeout(function () {
-            console.log("(an event that happens during the sleep)");
-          }, 1000);
-        },
-        sleep: function (ms: number) {
-          if (!sleeping) {
-            // We are called in order to start a sleep/unwind.
-            console.log("sleep...");
-            // Fill in the data structure. The first value has the stack location,
-            // which for simplicity we can start right after the data structure itself.
-            view[DATA_ADDR >> 2] = DATA_ADDR + 8;
-            // The end of the stack will not be reached here anyhow.
-            view[(DATA_ADDR + 4) >> 2] = 1024;
-
-            wasmExports.asyncify_start_unwind(DATA_ADDR);
-            sleeping = true;
-            // Resume after the proper delay.
-            setTimeout(function () {
-              console.log("timeout ended, starting to rewind the stack");
-              wasmExports.asyncify_start_rewind(DATA_ADDR);
-              // The code is now ready to rewind; to start the process, enter the
-              // first function that should be on the call stack.
-              wasmExports.main();
-            }, ms);
-          } else {
-            // We are called as part of a resume/rewind. Stop sleeping.
-            console.log("...resume");
-            wasmExports.asyncify_stop_rewind();
-            sleeping = false;
-          }
-        },
-        after: function () {
-          console.log("after!");
-        },
       },
       w3: {
         __w3_subinvoke: () => {},
@@ -377,8 +334,6 @@ export class Compiler {
         __w3_log: () => {},
       },
     });
-
-    wasmExports = instance.exports;
 
     if (!instance.exports._w3_init) {
       throw Error(intlMsg.lib_compiler_missing_export__w3_init({ moduleName }));

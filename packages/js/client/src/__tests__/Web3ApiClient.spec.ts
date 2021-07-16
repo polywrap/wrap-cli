@@ -44,7 +44,7 @@ describe("Web3ApiClient", () => {
     })
   }
 
-  it.only("simple-storage", async () => {
+  it("simple-storage", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
@@ -54,7 +54,7 @@ describe("Web3ApiClient", () => {
     const client = await getClient();
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
-    // const ipfsUri = `ipfs/${api.ipfsCid}`;
+    const ipfsUri = `ipfs/${api.ipfsCid}`;
 
     const deploy = await client.query<{
       deployContract: string;
@@ -79,7 +79,7 @@ describe("Web3ApiClient", () => {
       return;
     }
 
-    /*const address = deploy.data.deployContract;
+    const address = deploy.data.deployContract;
     const set = await client.query<{
       setData: string;
     }>({
@@ -138,7 +138,7 @@ describe("Web3ApiClient", () => {
     expect(get.data).toBeTruthy();
     expect(get.data?.getData).toBe(55);
     expect(get.data?.secondGetData).toBe(55);
-    expect(get.data?.thirdGetData).toBe(55);*/
+    expect(get.data?.thirdGetData).toBe(55);
   });
 
   it("object-types", async () => {
@@ -604,7 +604,7 @@ describe("Web3ApiClient", () => {
     });
   });
 
-  it("number-types under and overflows", async () => {
+  it.only("number-types under and overflows", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/number-types`,
       ipfsProvider,

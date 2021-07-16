@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.25",
-    "@namestys/wasm-as": "0.0.1-prealpha.52",
+    "@namestys/wasm-as": "0.0.1-prealpha.54",
     "assemblyscript": "0.19.1",
     "ethers": "5.0.7",
     "js-yaml": "3.14.0"
