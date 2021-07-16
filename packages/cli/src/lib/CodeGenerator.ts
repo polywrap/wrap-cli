@@ -1,6 +1,11 @@
 import { SchemaComposer } from "./SchemaComposer";
 import { Project } from "./Project";
-import { step, withSpinner } from "./helpers";
+import {
+  step,
+  withSpinner,
+  isTypescriptFile,
+  loadTsNode
+} from "./helpers";
 import { intlMsg } from "./intl";
 
 import { TypeInfo } from "@web3api/schema-parse";
@@ -15,10 +20,22 @@ import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import Mustache from "mustache";
 
+export interface CustomScriptConfig {
+  typeInfo: TypeInfo,
+  generate: (templatePath: string, config: unknown) => string;
+}
+
+export { OutputDirectory };
+
+export type CustomScriptRunFn = (
+  output: OutputDirectory,
+  config: CustomScriptConfig
+) => void;
+
 export interface CodeGeneratorConfig {
   outputDir?: string;
   outputTypes?: string;
-  generationFile?: string;
+  customScript?: string;
   project: Project;
   schemaComposer: SchemaComposer;
 }
@@ -46,7 +63,7 @@ export class CodeGenerator {
     const run = async (spinner?: Ora) => {
       // Make sure that the output dir exists, if not create a new one
       if (
-        this._config.generationFile &&
+        this._config.customScript &&
         this._config.outputDir &&
         !fs.existsSync(this._config.outputDir)
       ) {
@@ -63,19 +80,27 @@ export class CodeGenerator {
       const typeInfo = composed.combined.typeInfo;
       this._schema = composed.combined.schema;
 
-      if (this._config.generationFile) {
+      if (!typeInfo) {
+        throw Error(intlMsg.lib_codeGenerator_typeInfoMissing());
+      }
+
+      if (this._config.customScript) {
         const output: OutputDirectory = {
           entries: [],
         };
 
+        if (isTypescriptFile(this._config.customScript)) {
+          loadTsNode();
+        }
+
         // Check the generation file if it has the proper run() method
         // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
-        const generator = await require(this._config.generationFile);
+        const generator = await require(this._config.customScript);
         if (!generator) {
           throw Error(intlMsg.lib_codeGenerator_wrongGenFile());
         }
 
-        const { run } = generator;
+        const { run } = generator as { run: CustomScriptRunFn };
         if (!run) {
           throw Error(intlMsg.lib_codeGenerator_noRunMethod());
         }
@@ -137,10 +162,10 @@ export class CodeGenerator {
       step(spinner, stepMessage);
     }
 
-    if (this._config.generationFile) {
+    if (this._config.customScript) {
       // Update template path when the generation file is given
       templatePath = path.join(
-        path.dirname(this._config.generationFile),
+        path.dirname(this._config.customScript),
         templatePath
       );
     }

@@ -9,6 +9,7 @@ import {
   generateDockerfile,
   createBuildImage,
   copyArtifactsFromBuildImage,
+  manifestLanguageToTargetLanguage
 } from "./helpers";
 import { intlMsg } from "./intl";
 
@@ -210,7 +211,9 @@ export class Compiler {
 
     // Generate the bindings
     const output = bindSchema({
-      language: "wasm-as",
+      language: web3ApiManifest.language ?
+        manifestLanguageToTargetLanguage(web3ApiManifest.language) :
+        "wasm-as",
       query: modulesToBuild.query
         ? {
             typeInfo: composerOutput.query?.typeInfo as TypeInfo,

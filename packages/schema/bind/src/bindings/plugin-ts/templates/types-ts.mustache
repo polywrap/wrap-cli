@@ -1,0 +1,68 @@
+import {
+  Client,
+  PluginManifest,
+  PluginModule,
+  Uri
+} from "@web3api/core-js";
+
+type UInt = number;
+type UInt8 = number;
+type UInt16 = number;
+type UInt32 = number;
+type Int = number;
+type Int8 = number;
+type Int16 = number;
+type Int32 = number;
+type Bytes = ArrayBuffer;
+type BigInt = string;
+type String = string;
+type Boolean = boolean;
+
+{{#objectTypes}}
+export interface {{type}} {
+  {{#properties}}
+  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{type}}{{/toTypescript}};
+  {{/properties}}
+}
+{{/objectTypes}}
+
+{{#enumTypes}}
+
+{{/enumTypes}}
+
+{{#queryTypes}}
+export interface {{type}}Module extends PluginModule {
+  {{#methods}}
+  {{name}}: (
+    input: Input_{{name}}
+  ) => {{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}};
+  {{/methods}}
+}
+
+{{#methods}}
+export interface Input_{{name}} {
+  {{#arguments}}
+  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
+  {{/arguments}}
+}
+{{/methods}}
+{{/queryTypes}}
+
+{{#importedQueryTypes}}
+TODO: client query functions
+{{/importedQueryTypes}}
+
+{{#importedObjectTypes}}
+
+{{/importedObjectTypes}}
+
+export const schema = `{{schema}}`;
+
+export const manifest: PluginManifest = {
+  schema,
+  implements: [
+    {{#interfaceUris}}
+    new Uri({{.}}),
+    {{/interfaceUris}}
+  ],
+}

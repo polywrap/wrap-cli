@@ -4,60 +4,70 @@
 // https://github.com/web3-api/monorepo/issues/101
 import { PluginModule, Client } from "@web3api/core-js";
 
+type UInt = number;
+type UInt8 = number;
+type UInt16 = number;
 type UInt32 = number;
+type Int = number;
+type Int8 = number;
+type Int16 = number;
+type Int32 = number;
+type Bytes = ArrayBuffer;
 type BigInt = string;
+type String = string;
+type Boolean = boolean;
 
 /// Objects
 
 export interface TxReceipt {
-  to: string;
-  from: string;
-  contractAddress: string;
+  to: String;
+  from: String;
+  contractAddress: String;
   transactionIndex: UInt32;
-  root?: string;
+  root?: String;
   gasUsed: BigInt;
-  logsBloom: string;
-  transactionHash: string;
+  logsBloom: String;
+  transactionHash: String;
   logs: Log[];
   blockNumber: BigInt;
-  blockHash: string;
+  blockHash: String;
   confirmations: UInt32;
   cumulativeGasUsed: BigInt;
   effectiveGasPrice: BigInt;
-  byzantium: boolean;
+  byzantium: Boolean;
   type: UInt32;
   status?: UInt32;
 }
 
 export interface TxResponse {
-  hash: string;
-  to?: string;
-  from: string;
+  hash: String;
+  to?: String;
+  from: String;
   nonce: UInt32;
   gasLimit: BigInt;
   gasPrice?: BigInt;
-  data: string;
+  data: String;
   value: BigInt;
   chainId: UInt32;
   blockNumber?: BigInt;
-  blockHash?: string;
+  blockHash?: String;
   timestamp?: UInt32;
   confirmations: UInt32;
-  raw?: string;
-  r?: string;
-  s?: string;
+  raw?: String;
+  r?: String;
+  s?: String;
   v?: UInt32;
   type?: UInt32;
   accessList?: Access[];
 }
 
 export interface TxRequest {
-  to?: string;
-  from?: string;
+  to?: String;
+  from?: String;
   nonce?: UInt32;
   gasLimit?: BigInt;
   gasPrice?: BigInt;
-  data?: string;
+  data?: String;
   value?: BigInt;
   chainId?: UInt32;
   type?: UInt32;
@@ -70,58 +80,58 @@ export interface TxOverrides {
 }
 
 export interface StaticTxResult {
-  result: string;
-  error: boolean;
+  result: String;
+  error: Boolean;
 }
 
 export interface Log {
   blockNumber: BigInt;
-  blockHash: string;
+  blockHash: String;
   transactionIndex: UInt32;
-  removed: boolean;
-  address: string;
-  data: string;
-  topics: string[];
-  transactionHash: string;
+  removed: Boolean;
+  address: String;
+  data: String;
+  topics: String[];
+  transactionHash: String;
   logIndex: UInt32;
 }
 
 export interface EventNotification {
-  data: string;
-  address: string;
+  data: String;
+  address: String;
   log: Log;
 }
 
 export interface Access {
-  address: string;
-  storageKeys: string[];
+  address: String;
+  storageKeys: String[];
 }
 
 export interface Connection {
-  node?: string;
-  networkNameOrChainId?: string;
+  node?: String;
+  networkNameOrChainId?: String;
 }
 
 /// Queries
 
 export interface Input_callContractView extends Record<string, unknown> {
-  address: string;
-  method: string;
-  args?: string[];
+  address: String;
+  method: String;
+  args?: String[];
   connection?: Connection;
 }
 
 export interface Input_callContractStatic extends Record<string, unknown> {
-  address: string;
-  method: string;
-  args?: string[];
+  address: String;
+  method: String;
+  args?: String[];
   connection?: Connection;
   txOverrides?: TxOverrides;
 }
 
 export interface Input_encodeParams extends Record<string, unknown> {
-  types: string[];
-  values: string[];
+  types: String[];
+  values: String[];
 }
 
 export interface Input_getSignerAddress extends Record<string, unknown> {
@@ -149,19 +159,19 @@ export interface Input_estimateTransactionGas extends Record<string, unknown> {
 }
 
 export interface Input_estimateContractCallGas extends Record<string, unknown> {
-  address: string;
-  method: string;
-  args?: string[];
+  address: String;
+  method: String;
+  args?: String[];
   connection?: Connection;
   txOverrides?: TxOverrides;
 }
 
 export interface Input_checkAddress extends Record<string, unknown> {
-  address: string;
+  address: String;
 }
 
 export interface Input_toWei extends Record<string, unknown> {
-  eth: string;
+  eth: String;
 }
 
 export interface Input_toEth extends Record<string, unknown> {
@@ -169,16 +179,16 @@ export interface Input_toEth extends Record<string, unknown> {
 }
 
 export interface Input_awaitTransaction extends Record<string, unknown> {
-  txHash: string;
+  txHash: String;
   confirmations: UInt32;
   timeout: UInt32;
   connection?: Connection;
 }
 
 export interface Input_waitForEvent extends Record<string, unknown> {
-  address: string;
-  event: string;
-  args?: string[];
+  address: String;
+  event: String;
+  args?: String[];
   timeout?: UInt32;
   connection?: Connection;
 }
@@ -241,18 +251,18 @@ export interface Query extends PluginModule {
 }
 
 export interface Input_callContractMethod extends Record<string, unknown> {
-  address: string;
-  method: string;
-  args?: string[];
+  address: String;
+  method: String;
+  args?: String[];
   connection?: Connection;
   txOverrides?: TxOverrides;
 }
 
 export interface Input_callContractMethodAndWait
   extends Record<string, unknown> {
-  address: string;
-  method: string;
-  args?: string[];
+  address: String;
+  method: String;
+  args?: String[];
   connection?: Connection;
   txOverrides?: TxOverrides;
 }
@@ -268,20 +278,20 @@ export interface Input_sendTransactionAndWait extends Record<string, unknown> {
 }
 
 export interface Input_deployContract extends Record<string, unknown> {
-  abi: string;
-  bytecode: string;
-  args?: string[];
+  abi: String;
+  bytecode: String;
+  args?: String[];
   connection?: Connection;
 }
 
 export interface Input_signMessage extends Record<string, unknown> {
-  message: string;
+  message: String;
   connection?: Connection;
 }
 
 export interface Input_sendRPC extends Record<string, unknown> {
-  method: string;
-  params: string[];
+  method: String;
+  params: String[];
   connection?: Connection;
 }
 
