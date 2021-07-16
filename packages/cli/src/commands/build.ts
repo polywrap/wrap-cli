@@ -122,8 +122,7 @@ export default {
     });
 
     if (!middlewareState.dockerPath) {
-      // TODO: internationalize
-      print.error("Docker executable not found in PATH");
+      print.error(intlMsg.dockerVerifyMiddleware_noDocker());
       return;
     }
 
@@ -196,7 +195,9 @@ export default {
 
     const execute = async (): Promise<boolean> => {
       compiler.reset();
+      await middlewareState.dockerLock?.request();
       const result = await compiler.compile();
+      void middlewareState.dockerLock?.release();
 
       if (!result) {
         return result;

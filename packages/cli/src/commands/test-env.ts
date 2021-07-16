@@ -44,8 +44,7 @@ export default {
     });
 
     if (!middlewareState.dockerPath) {
-      // TODO: internationalize
-      print.error("Docker executable not found in PATH");
+      print.error(intlMsg.dockerVerifyMiddleware_noDocker());
       return;
     }
 
