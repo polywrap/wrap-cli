@@ -1497,7 +1497,7 @@ describe("Web3ApiClient", () => {
           value: value++,
         },
       });
-    }, 3000);
+    }, 4000);
 
     const getSubscription: Subscription<{
       getData: number;
@@ -1518,7 +1518,7 @@ describe("Web3ApiClient", () => {
       variables: {
         address
       },
-      frequency: { ms: 3500 }
+      frequency: { ms: 4500 }
     });
 
     for await (let query of getSubscription) {
@@ -1594,7 +1594,7 @@ describe("Web3ApiClient", () => {
           value: value++,
         },
       });
-    }, 3000);
+    }, 4000);
 
     const getSubscription: Subscription<{
       getData: number;
@@ -1615,7 +1615,7 @@ describe("Web3ApiClient", () => {
       variables: {
         address
       },
-      frequency: { ms: 3500 }
+      frequency: { ms: 4500 }
     });
 
     new Promise(async () => {
@@ -1631,7 +1631,7 @@ describe("Web3ApiClient", () => {
         }
       }
     );
-    await new Promise(r => setTimeout(r, 7000));
+    await new Promise(r => setTimeout(r, 8000));
     getSubscription.stop();
     clearInterval(setter);
 
