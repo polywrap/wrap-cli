@@ -1526,14 +1526,14 @@ describe("Web3ApiClient", () => {
       const val = query.data?.getData;
       if (val !== undefined) {
         results.push(val);
-        if (val >= 3) {
+        if (val >= 2) {
           break;
         }
       }
     }
     clearInterval(setter);
 
-    expect(results).toStrictEqual([0, 1, 2, 3]);
+    expect(results).toStrictEqual([0, 1, 2]);
   });
 
   it("simple-storage: subscription early stop", async () => {
@@ -1624,7 +1624,7 @@ describe("Web3ApiClient", () => {
           const val = query.data?.getData;
           if (val !== undefined) {
             results.push(val);
-            if (val >= 3) {
+            if (val >= 2) {
               break;
             }
           }
@@ -1636,6 +1636,6 @@ describe("Web3ApiClient", () => {
     clearInterval(setter);
 
     expect(results).toContain(0);
-    expect(results).not.toContain(3);
+    expect(results).not.toContain(2);
   });
 });
