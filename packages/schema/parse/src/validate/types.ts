@@ -146,8 +146,6 @@ export function propertyTypes(astNode: DocumentNode): void {
   // Ensure all property types are either a
   // supported scalar, enum or an object type definition
   for (const field of fieldTypes) {
-    console.log(field);
-    console.log(objectTypes);
     if (
       !isScalarType(field.type) &&
       !objectTypes[field.type] &&

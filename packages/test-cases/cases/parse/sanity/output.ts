@@ -217,6 +217,30 @@ export const output: TypeInfo = {
         createScalarPropertyDefinition({ name: "fieldB", type: "Int", required: true }),
       ],
     },
+    {
+      ...createObjectDefinition({ type: "QueryEnv" }),
+      properties: [
+        createScalarPropertyDefinition({ name: "prop", type: "String", required: true })
+      ]
+    },
+    {
+        ...createObjectDefinition({ type: "QueryClientEnv" }),
+        properties: [
+          createScalarPropertyDefinition({ name: "prop", type: "String", required: true })
+        ]
+    }
+    {
+        ...createObjectDefinition({ type: "MutationEnv" }),
+        properties: [
+          createScalarPropertyDefinition({ name: "prop", type: "Int", required: true })
+        ]
+    },
+    {
+        ...createObjectDefinition({ type: "MutationClientEnv" }),
+        properties: [
+          createScalarPropertyDefinition({ name: "prop", type: "String", required: false })
+        ]
+    },
   ],
   enumTypes: [
     createEnumDefinition({

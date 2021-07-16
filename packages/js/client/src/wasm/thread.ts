@@ -241,7 +241,7 @@ addEventListener(
       wasm: ArrayBuffer;
       method: string;
       input: Record<string, unknown> | ArrayBuffer;
-      environment: Record<string, unknown>;
+      clientEnvironment: Record<string, unknown>;
       threadMutexesBuffer: SharedArrayBuffer;
       threadId: number;
       transferBuffer: SharedArrayBuffer;
@@ -303,7 +303,7 @@ addEventListener(
     }
 
     // Load environment into wasm
-    const encodedEnviroment = MsgPack.encode(input.data.environment, {
+    const encodedEnviroment = MsgPack.encode(input.data.clientEnvironment, {
       ignoreUndefined: true,
     });
     state.environment = encodedEnviroment;
