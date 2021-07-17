@@ -1170,52 +1170,6 @@ describe("Web3ApiClient", () => {
       /unsigned integer overflow: value = 4294967296; bits = 32/
     );
     expect(u32Overflow.data?.u32Method).toBeUndefined();
-
-    const i64Underflow = await client.query<{
-      i64Method: number
-    }>({
-      uri: ensUri,
-      query: `
-      query {
-        i64Method(
-          first: $firstInt
-          second: $secondInt
-        )
-      }
-    `,
-      variables: {
-        firstInt: -9223372036854775809, // min i32 = -9223372036854775808
-        secondInt: 10
-      }
-    });
-    expect(i64Underflow.errors).toBeTruthy();
-    expect(i64Underflow.errors?.[0].message).toMatch(
-      /Property must be of type 'int'. Found 'float64'./
-    );
-    expect(i64Underflow.data?.i64Method).toBeUndefined();
-
-    const u64Overflow = await client.query<{
-      u64Method: number
-    }>({
-      uri: ensUri,
-      query: `
-        query {
-          u64Method(
-            first: $firstInt
-            second: $secondInt
-          )
-        }
-      `,
-      variables: {
-        firstInt: 18446744073709551616, // max u64 = 18446744073709551615
-        secondInt: 10
-      }
-    });
-    expect(u64Overflow.errors).toBeTruthy();
-    expect(u64Overflow.errors?.[0].message).toMatch(
-      /Property must be of type 'uint'. Found 'float64'/
-    );
-    expect(u64Overflow.data?.u64Method).toBeUndefined();
   });
 
   it("invalid type errors", async () => {

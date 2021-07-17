@@ -1,3 +1,17 @@
+# Web3API 0.0.1-prealpha.30
+## Bugs
+* `@web3api/ethereum-plugin-js`: Fix ethers.js inconsistencies.
+
+# Web3API 0.0.1-prealpha.29
+## Feature
+* Web3API Interfaces are now fully supported in the tool-chain.
+* GraphQL schema comments are now retained, and will show up in the build folder.
+* `@web3api/parse`: Reference types definitions are now differentiated from the root definitions the reference.
+
+## Bugs
+* `@web3api/cli`: Fix MacOS specific issue w/ PATH not being retained.
+* The `config` property in `web3api.build.yaml` is now optional.
+
 # Web3API 0.0.1-prealpha.28
 ## Bugs
 * Fixed API template project

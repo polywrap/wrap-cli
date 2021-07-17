@@ -30,12 +30,10 @@ export const output: TypeInfo = {
         createScalarPropertyDefinition({ name: "u8", type: "UInt8", required: true }),
         createScalarPropertyDefinition({ name: "u16", type: "UInt16", required: true }),
         createScalarPropertyDefinition({ name: "u32", type: "UInt32", required: true }),
-        createScalarPropertyDefinition({ name: "u64", type: "UInt64", required: true }),
         createScalarPropertyDefinition({ name: "i", type: "Int", required: true }),
         createScalarPropertyDefinition({ name: "i8", type: "Int8", required: true }),
         createScalarPropertyDefinition({ name: "i16", type: "Int16", required: true }),
         createScalarPropertyDefinition({ name: "i32", type: "Int32", required: true }),
-        createScalarPropertyDefinition({ name: "i64", type: "Int64", required: true }),
         createScalarPropertyDefinition({ name: "bigint", type: "BigInt", required: true }),
         createScalarPropertyDefinition({ name: "optBigint", type: "BigInt", required: false }),
         createScalarPropertyDefinition({ name: "bytes", type: "Bytes", required: true }),
@@ -76,48 +74,48 @@ export const output: TypeInfo = {
         }),
         createArrayPropertyDefinition({
           name: "uOptArrayOptArray",
-          type: "[[UInt64]]",
+          type: "[[UInt32]]",
           required: true,
           item: createArrayDefinition({
             name: "uOptArrayOptArray",
-            type: "[UInt64]",
+            type: "[UInt32]",
             required: false,
-            item: createScalarDefinition({ name: "uOptArrayOptArray", type: "UInt64", required: false })
+            item: createScalarDefinition({ name: "uOptArrayOptArray", type: "UInt32", required: false })
           })
         }),
         createArrayPropertyDefinition({
           name: "uArrayOptArrayArray",
-          type: "[[[UInt64]]]",
+          type: "[[[UInt32]]]",
           required: true,
           item: createArrayDefinition({
             name: "uArrayOptArrayArray",
-            type: "[[UInt64]]",
+            type: "[[UInt32]]",
             required: false,
             item: createArrayDefinition({
               name: "uArrayOptArrayArray",
-              type: "[UInt64]",
+              type: "[UInt32]",
               required: true,
-              item: createScalarDefinition({ name: "uArrayOptArrayArray", type: "UInt64", required: true })
+              item: createScalarDefinition({ name: "uArrayOptArrayArray", type: "UInt32", required: true })
             })
           })
         }),
         createArrayPropertyDefinition({
           name: "crazyArray",
-          type: "[[[[UInt64]]]]",
+          type: "[[[[UInt32]]]]",
           required: false,
           item: createArrayDefinition({
             name: "crazyArray",
-            type: "[[[UInt64]]]",
+            type: "[[[UInt32]]]",
             required: false,
             item: createArrayDefinition({
               name: "crazyArray",
-              type: "[[UInt64]]",
+              type: "[[UInt32]]",
               required: true,
               item: createArrayDefinition({
                 name: "crazyArray",
-                type: "[UInt64]",
+                type: "[UInt32]",
                 required: false,
-                item: createScalarDefinition({ name: "crazyArray", type: "UInt64", required: true })
+                item: createScalarDefinition({ name: "crazyArray", type: "UInt32", required: true })
               })
             })
           })
@@ -442,11 +440,11 @@ export const output: TypeInfo = {
             name: "anotherMethod",
             return: createArrayPropertyDefinition({
               name: "anotherMethod",
-              type: "[Int64]",
+              type: "[Int32]",
               required: true,
               item: createScalarDefinition({
                 name: "anotherMethod",
-                type: "Int64",
+                type: "Int32",
                 required: false
               }),
             }),

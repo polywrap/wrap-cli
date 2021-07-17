@@ -55,12 +55,10 @@ export const toWasmInit: MustacheFunction = () => {
       case "Int8":
       case "Int16":
       case "Int32":
-      case "Int64":
       case "UInt":
       case "UInt8":
       case "UInt16":
       case "UInt32":
-      case "UInt64":
         return "0";
       case "String":
         return `""`;
@@ -109,9 +107,6 @@ export const toWasm: MustacheFunction = () => {
       case "Int32":
         type = "i32";
         break;
-      case "Int64":
-        type = "i64";
-        break;
       case "UInt":
       case "UInt32":
         type = "u32";
@@ -121,9 +116,6 @@ export const toWasm: MustacheFunction = () => {
         break;
       case "UInt16":
         type = "u16";
-        break;
-      case "UInt64":
-        type = "u64";
         break;
       case "String":
         type = "string";
