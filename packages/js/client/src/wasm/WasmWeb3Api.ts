@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { createImports } from "./imports";
-import { AsyncWASMInstance } from "./asyncify";
+import { AsyncWasmInstance } from "./AsyncWasmInstance";
 
 import {
   InvokeApiOptions,
@@ -115,7 +115,7 @@ export class WasmWeb3Api extends Api {
 
         const module = new WebAssembly.Module(wasm);
         const memory = new WebAssembly.Memory({ initial: 1 });
-        const instance = new AsyncWASMInstance({
+        const instance = new AsyncWasmInstance({
           module,
           imports: createImports({
             state,
