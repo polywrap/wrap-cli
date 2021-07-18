@@ -1,5 +1,6 @@
 import { query } from "./resolvers";
 import { manifest } from "./manifest";
+import { RequestData, RequestError } from "./types";
 
 import {
   Plugin,
@@ -7,16 +8,15 @@ import {
   PluginManifest,
   PluginModules,
 } from "@web3api/core-js";
-import { execute, makePromise } from "apollo-link";
-import { createHttpLink } from "apollo-link-http";
-import fetch from "cross-fetch";
-import gql from "graphql-tag";
+import { HttpPlugin } from "@web3api/http-plugin-js";
 
 export interface GraphNodeConfig {
   provider: string;
 }
 
 export class GraphNodePlugin extends Plugin {
+  private _http = new HttpPlugin();
+
   constructor(private _config: GraphNodeConfig) {
     super();
   }
@@ -33,16 +33,43 @@ export class GraphNodePlugin extends Plugin {
     };
   }
 
-  public async query(subgraphId: string, query: string): Promise<string> {
-    const link = createHttpLink({
-      uri: `${this._config.provider}/subgraphs/id/${subgraphId}`,
-      fetch,
-    });
+  public async query(
+    author: string,
+    name: string,
+    query: string
+  ): Promise<string> {
+    const response = await this._http.post(
+      `${this._config.provider}/subgraphs/name/${author}/${name}`,
+      {
+        body: JSON.stringify({
+          query,
+        }),
+        responseType: "TEXT",
+      }
+    );
 
-    // TODO: get the errors, query typos are getting swallowed
-    const result = await makePromise(execute(link, { query: gql(query) }));
+    const responseJson = (response.body as unknown) as
+      | RequestError
+      | RequestData;
 
-    return JSON.stringify(result);
+    const errors = (responseJson as RequestError).errors;
+    console.log(errors);
+
+    if (errors) {
+      throw new Error(`GraphNodePlugin: errors in query string. Errors:
+        ${errors
+          .map((err) =>
+            err.locations
+              ? `\n -Locations: ${err.locations
+                  .map((loc) => `(col: ${loc.column}, line: ${loc.line})`)
+                  .join(", ")} \n-Message: ${err.message}`
+              : `\n-Message: ${err.message}`
+          )
+          .join("\n")}
+      `);
+    }
+
+    return JSON.stringify(responseJson);
   }
 }
 
