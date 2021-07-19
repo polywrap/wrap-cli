@@ -45,13 +45,17 @@ describe("Web3ApiClient", () => {
     {
       environment: {
         ["w3://" + ensUri]: {
+          queryStr: "query string",
+          object: {
+            prop: "object string"
+          },
+          mutStr: "mutation string",
           str: "string",
           optFilledStr: "optional string",
           number: 10,
           bool: true,
-          object: {
-            prop: "object string"
-          }
+          en: "FIRST",
+          invalid: true
         }
       }
     });
@@ -923,7 +927,7 @@ describe("Web3ApiClient", () => {
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient(ensUri);
 
-    const env = await client.query({
+    const queryEnv = await client.query({
       uri: ensUri,
       query: `
         query {
@@ -933,9 +937,8 @@ describe("Web3ApiClient", () => {
         }
       `,
     });
-
-    expect(env.errors).toBeFalsy();
-    expect(env.data?.environment).toEqual({
+    expect(queryEnv.errors).toBeFalsy();
+    expect(queryEnv.data?.environment).toEqual({
       str: "string",
       optFilledStr: "optional string",
       optStr: null,
@@ -946,7 +949,38 @@ describe("Web3ApiClient", () => {
       object: {
         prop: "object string"
       },
-      optObject: null
+      optObject: null,
+      en: 0,
+      optEnum: null,
+      queryStr: "query string"
+    });
+
+    const mutationEnv = await client.query({
+      uri: ensUri,
+      query: `
+        mutation {
+          mutEnvironment(
+            arg: "string"
+          )
+        }
+      `,
+    });
+    expect(mutationEnv.errors).toBeFalsy();
+    expect(mutationEnv.data?.mutEnvironment).toEqual({
+      str: "string",
+      optFilledStr: "optional string",
+      optStr: null,
+      number: 10,
+      optNumber: null,
+      bool: true,
+      optBool: null,
+      object: {
+        prop: "object string"
+      },
+      en: 0,
+      optEnum: null,
+      optObject: null,
+      mutStr: "mutation string"
     });
   });
 

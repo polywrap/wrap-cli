@@ -5,5 +5,5 @@ type Query {
 }
 
 type QueryEnv {
-  queryStr: String!
+  queryStr: String
 }

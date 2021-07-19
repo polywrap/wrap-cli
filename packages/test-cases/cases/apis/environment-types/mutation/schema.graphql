@@ -5,5 +5,5 @@ type Mutation {
 }
 
 type MutationEnv {
-  mutString: String!
+  mutStr: String!
 }
