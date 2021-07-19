@@ -90,7 +90,6 @@ export async function composeSchema(
     typeInfo: includeTypeInfo ? typeInfo : undefined,
   });
 
-  console.log(JSON.stringify(typeInfos, null, 2));
   if (typeInfos.query) {
     output.query = createSchemaInfo(typeInfos.query);
   }

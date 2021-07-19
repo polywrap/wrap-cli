@@ -76,7 +76,7 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export function extractenvironmentTypes(
+export function extractEnvironmentTypes(
   astNode: DocumentNode,
   typeInfo: TypeInfo,
   blackboard: Blackboard

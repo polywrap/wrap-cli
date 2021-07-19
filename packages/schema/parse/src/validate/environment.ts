@@ -1,35 +1,53 @@
-import { EnvironmentType, TypeInfo } from "../typeInfo";
+import { ObjectDefinition, TypeInfo } from "../typeInfo";
 
 export function validateEnvironment(info: TypeInfo): void {
   if (info.environment.query.client) {
-    validateQueryEnvironment(info);
+    validateClientEnvironment(
+      info,
+      "Query",
+      info.environment.query.client,
+      "sanitizeQueryEnv",
+      info.environment.query.sanitized
+    );
   }
 
   if (info.environment.mutation.client) {
-    validateMutationEnvironment(info);
+    validateClientEnvironment(
+      info,
+      "Mutation",
+      info.environment.mutation.client,
+      "sanitizeMutationEnv",
+      info.environment.mutation.sanitized
+    );
   }
 }
 
-export function validateQueryEnvironment(info: TypeInfo): void {
-  if (!info.environment.query.sanitized) {
+export function validateClientEnvironment(
+  info: TypeInfo,
+  module: "Mutation" | "Query",
+  client: ObjectDefinition,
+  sanitizeMethod: "sanitizeQueryEnv" | "sanitizeMutationEnv",
+  sanitized?: ObjectDefinition
+): void {
+  if (!sanitized) {
     throw new Error(
-      `Client environment type '${EnvironmentType.QueryClientEnvType}' should have matching sanitized environment type '${EnvironmentType.QueryEnvType}'`
+      `Client environment type '${client.type}' should have matching sanitized environment type`
     );
   }
 
-  const query = info.queryTypes.find((type) => type.type === "Query");
-  if (!query) {
+  const moduleObject = info.queryTypes.find((type) => type.type === module);
+  if (!moduleObject) {
     throw new Error(
-      `Must have 'sanitizeQueryEnv' method inside Query methods when using '${EnvironmentType.QueryClientEnvType}'`
+      `Must have '${sanitizeMethod}' method inside module methods when using '${client.type}'`
     );
   }
 
-  const sanitizeEnvMethod = query.methods.find(
-    (method) => method.name === "sanitizeQueryEnv"
+  const sanitizeEnvMethod = moduleObject.methods.find(
+    (method) => method.name === sanitizeMethod
   );
   if (!sanitizeEnvMethod) {
     throw new Error(
-      `Must have 'sanitizeQueryEnv' method inside Query methods when using '${EnvironmentType.QueryClientEnvType}'`
+      `Must have '${sanitizeMethod}' method inside module methods when using '${client.type}'`
     );
   }
 
@@ -37,69 +55,21 @@ export function validateQueryEnvironment(info: TypeInfo): void {
     sanitizeEnvMethod.arguments.length === 0 ||
     sanitizeEnvMethod.arguments.length > 1 ||
     sanitizeEnvMethod.arguments[0].name !== "env" ||
-    sanitizeEnvMethod.arguments[0].type !==
-      EnvironmentType.QueryClientEnvType ||
+    sanitizeEnvMethod.arguments[0].type !== client.type ||
     sanitizeEnvMethod.arguments[0].required === false
   ) {
     throw new Error(
-      `'sanitizeQueryEnv' query method should have single argument 'env: ${EnvironmentType.QueryClientEnvType}'`
+      `'${sanitizeMethod}' module method should have single argument 'env: ${client.type}'`
     );
   }
 
   if (
     !sanitizeEnvMethod.return ||
-    sanitizeEnvMethod.return.type !== EnvironmentType.QueryEnvType ||
+    sanitizeEnvMethod.return.type !== sanitized.type ||
     sanitizeEnvMethod.return.required === false
   ) {
     throw new Error(
-      `'sanitizeQueryEnv' query method should have required return type '${EnvironmentType.QueryEnvType}'`
-    );
-  }
-}
-
-export function validateMutationEnvironment(info: TypeInfo): void {
-  if (!info.environment.mutation.sanitized) {
-    throw new Error(
-      `Client environment type '${EnvironmentType.MutationClientEnvType}' should have matching sanitized environment type '${EnvironmentType.MutationEnvType}'`
-    );
-  }
-
-  const mutation = info.queryTypes.find((type) => type.type === "Mutation");
-  if (!mutation) {
-    throw new Error(
-      `Must have 'sanitizeMutationEnv' method inside Mutation methods when using '${EnvironmentType.MutationClientEnvType}'`
-    );
-  }
-
-  const sanitizeEnvMethod = mutation.methods.find(
-    (method) => method.name === "sanitizeMutationEnv"
-  );
-  if (!sanitizeEnvMethod) {
-    throw new Error(
-      `Must have 'sanitizeMutationEnv' method inside Mutation methods when using '${EnvironmentType.MutationClientEnvType}'`
-    );
-  }
-
-  if (
-    sanitizeEnvMethod.arguments.length === 0 ||
-    sanitizeEnvMethod.arguments.length > 1 ||
-    sanitizeEnvMethod.arguments[0].name !== "env" ||
-    sanitizeEnvMethod.arguments[0].type !==
-      EnvironmentType.MutationClientEnvType ||
-    sanitizeEnvMethod.arguments[0].required === false
-  ) {
-    throw new Error(
-      `'sanitizeMutationEnv' mutation method should have single argument 'env: ${EnvironmentType.MutationClientEnvType}'`
-    );
-  }
-
-  if (
-    !sanitizeEnvMethod.return ||
-    sanitizeEnvMethod.return.type !== EnvironmentType.MutationEnvType ||
-    sanitizeEnvMethod.return.required === false
-  ) {
-    throw new Error(
-      `'sanitizeMutationEnv' mutation method should have required return type '${EnvironmentType.MutationEnvType}'`
+      `'${sanitizeMethod}' module method should have required return type '${sanitized.type}'`
     );
   }
 }
