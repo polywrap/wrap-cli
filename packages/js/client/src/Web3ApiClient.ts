@@ -21,13 +21,8 @@ import {
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
-export interface Web3ApiEnvironment {
-  query?: Record<string, unknown>;
-  mutation?: Record<string, unknown>;
-}
-
 export interface Environment {
-  [key: string]: Web3ApiEnvironment;
+  [key: string]: Record<string, unknown>;
 }
 
 export interface ClientConfig<TUri = string> {

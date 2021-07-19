@@ -9,7 +9,6 @@ import {
   maxTransferBytes,
 } from "./types";
 import { sleep } from "./utils";
-import { Web3ApiEnvironment } from "../Web3ApiClient";
 
 import {
   InvokeApiOptions,
@@ -41,11 +40,13 @@ export class WasmWeb3Api extends Api {
     mutation?: ArrayBuffer;
   } = {};
 
+  private _sanitizedEnviroment?: ArrayBuffer;
+
   constructor(
     private _uri: Uri,
     private _manifest: Web3ApiManifest,
     private _apiResolver: Uri,
-    private _clientEnvironment?: Web3ApiEnvironment
+    private _clientEnvironment?: Record<string, unknown>
   ) {
     super();
 
@@ -256,10 +257,11 @@ export class WasmWeb3Api extends Api {
           wasm,
           method,
           input,
-          environment: this._clientEnvironment?.query,
           threadMutexesBuffer,
           threadId,
           transferBuffer,
+          clientEnvironment: this._clientEnvironment,
+          sanitizedEnvironment: this._sanitizedEnviroment,
         });
 
         await awaitCompletion;

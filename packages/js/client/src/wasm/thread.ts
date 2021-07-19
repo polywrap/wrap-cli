@@ -241,10 +241,11 @@ addEventListener(
       wasm: ArrayBuffer;
       method: string;
       input: Record<string, unknown> | ArrayBuffer;
-      clientEnvironment: Record<string, unknown>;
       threadMutexesBuffer: SharedArrayBuffer;
       threadId: number;
       transferBuffer: SharedArrayBuffer;
+      clientEnvironment?: Record<string, unknown>;
+      sanitizedEnvironment?: ArrayBuffer;
     };
   }) => {
     const data = input.data;
@@ -282,7 +283,6 @@ addEventListener(
       exports: Record<string, unknown>
     ): boolean => {
       if (!exports[name]) {
-        abort(`A required export was not found: ${name}`);
         return false;
       }
 
@@ -291,27 +291,30 @@ addEventListener(
 
     // Make sure _w3_init exists
     if (!hasExport("_w3_init", exports)) {
+      abort(`A required export was not found: _w3_init`);
+      return;
+    }
+
+    // Make sure _w3_invoke exists
+    if (!hasExport("_w3_invoke", exports)) {
+      abort(`A required export was not found: _w3_invoke`);
       return;
     }
 
     // Initialize the Web3Api module
     exports._w3_init();
 
-    // Make sure _w3_load_env exists
-    if (!hasExport("_w3_load_env", exports)) {
-      return;
-    }
+    // Load environment if _w3_load_env exists
+    if (hasExport("_w3_load_env", exports)) {
+      if (input.data.sanitizedEnvironment) {
+        state.environment = input.data.sanitizedEnvironment;
+      } else {
+        state.environment = MsgPack.encode(input.data.clientEnvironment, {
+          ignoreUndefined: true,
+        });
+      }
 
-    // Load environment into wasm
-    const encodedEnviroment = MsgPack.encode(input.data.clientEnvironment, {
-      ignoreUndefined: true,
-    });
-    state.environment = encodedEnviroment;
-    exports._w3_load_env(encodedEnviroment.length);
-
-    // Make sure _w3_invoke exists
-    if (!hasExport("_w3_invoke", exports)) {
-      return;
+      exports._w3_load_env(state.environment.byteLength);
     }
 
     const result = exports._w3_invoke(

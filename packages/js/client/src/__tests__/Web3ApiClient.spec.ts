@@ -45,14 +45,12 @@ describe("Web3ApiClient", () => {
     {
       environment: {
         ["w3://" + ensUri]: {
-          query: {
-            str: "string",
-            optFilledStr: "optional string",
-            number: 10,
-            bool: true,
-            object: {
-              prop: "object string"
-            }
+          str: "string",
+          optFilledStr: "optional string",
+          number: 10,
+          bool: true,
+          object: {
+            prop: "object string"
           }
         }
       }
