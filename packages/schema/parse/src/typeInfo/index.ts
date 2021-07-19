@@ -21,14 +21,8 @@ export enum EnvironmentType {
 }
 
 export interface Environment {
-  mutation: {
-    sanitized?: ObjectDefinition;
-    client?: ObjectDefinition;
-  };
-  query: {
-    sanitized?: ObjectDefinition;
-    client?: ObjectDefinition;
-  };
+  sanitized?: ObjectDefinition;
+  client?: ObjectDefinition;
 }
 
 export interface TypeInfo {
@@ -38,7 +32,10 @@ export interface TypeInfo {
   importedObjectTypes: ImportedObjectDefinition[];
   importedQueryTypes: ImportedQueryDefinition[];
   importedEnumTypes: ImportedEnumDefinition[];
-  environment: Environment;
+  environment: {
+    mutation: Environment;
+    query: Environment;
+  };
 }
 
 export function createTypeInfo(): TypeInfo {

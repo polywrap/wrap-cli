@@ -24,7 +24,10 @@ import {
 } from "graphql";
 
 const visitorEnter = (
-  environment: Environment,
+  environment: {
+    mutation: Environment;
+    query: Environment;
+  },
   state: State,
   blackboard: Blackboard
 ) => ({

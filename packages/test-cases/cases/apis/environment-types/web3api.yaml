@@ -1,4 +1,10 @@
 format: 0.0.1-prealpha.1
+mutation:
+  schema:
+    file: ./mutation/schema.graphql
+  module:
+    language: wasm/assemblyscript
+    file: ./mutation/index.ts
 query:
   schema:
     file: ./query/schema.graphql
