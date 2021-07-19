@@ -254,7 +254,7 @@ export class Web3ApiClient implements Client {
         let api = this._apiCache.get(uri.uri);
 
         if (!api) {
-          api = await resolveUri(
+          const { api: resolvedApi, resolvedUris } = await resolveUri(
             uri,
             this,
             this.redirects(),
@@ -264,12 +264,16 @@ export class Web3ApiClient implements Client {
             (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
               new WasmWeb3Api(uri, manifest, uriResolver)
           );
+          api = resolvedApi;
 
           if (!api) {
             throw Error(`Unable to resolve Web3API at uri: ${uri}`);
           }
 
           this._apiCache.set(uri.uri, api);
+          for (const uri of resolvedUris) {
+            this._apiCache.set(uri, api);
+          }
         }
 
         return api;

@@ -26,16 +26,17 @@ export const resolveUri = Tracer.traceFunc(
     createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
     createApi: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) => Api,
     noValidate?: boolean
-  ): Promise<Api> => {
+  ): Promise<{ api: Api; resolvedUris: string[] }> => {
     const finalRedirectedUri = applyRedirects(uri, redirects);
 
     const plugin = findPluginPackage(finalRedirectedUri, plugins);
 
     if (plugin) {
-      return Tracer.traceFunc(
+      const api = Tracer.traceFunc(
         "resolveUri: createPluginApi",
         (uri: Uri, plugin: PluginPackage) => createPluginApi(uri, plugin)
       )(finalRedirectedUri, plugin);
+      return { api, resolvedUris: [] };
     }
 
     // The final URI has been resolved, let's now resolve the Web3API package
@@ -61,7 +62,7 @@ const resolveUriWithUriResolvers = async (
   client: Client,
   createApi: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) => Api,
   noValidate?: boolean
-): Promise<Api> => {
+): Promise<{ api: Api; resolvedUris: string[] }> => {
   let resolvedUri = uri;
 
   // Keep track of past URIs to avoid infinite loops
@@ -140,11 +141,21 @@ const resolveUriWithUriResolvers = async (
         noValidate,
       });
 
-      return Tracer.traceFunc(
+      const api: Api = Tracer.traceFunc(
         "resolveUri: createApi",
         (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
           createApi(uri, manifest, uriResolver)
       )(resolvedUri, manifest, uriResolver);
+
+      const resolvedUris: string[] = uriHistory.reduce<string[]>(
+        (prev, curr) => {
+          prev.push(curr.uri);
+          return prev;
+        },
+        []
+      );
+
+      return { api, resolvedUris };
     }
   }
 
