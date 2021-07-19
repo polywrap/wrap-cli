@@ -36,6 +36,7 @@ import {
   isKind,
   header,
   AnyDefinition,
+  EnvironmentType,
 } from "@web3api/schema-parse";
 
 export async function resolveImportsAndParseSchemas(
@@ -612,7 +613,7 @@ async function resolveLocalImports(
 
 export function resolveEnviromentTypes(
   typeInfo: TypeInfo,
-  envTypeName: "QueryEnv" | "MutationEnv",
+  envTypeName: EnvironmentType.QueryEnvType | EnvironmentType.MutationEnvType,
   specificEnvType?: ObjectDefinition
 ): void {
   const genericEnvType = typeInfo.objectTypes.find(
@@ -632,9 +633,7 @@ export function resolveEnviromentTypes(
   });
 
   checkDuplicateEnvProperties(specificEnvType, genericEnvType.properties);
-
   specificEnvType.properties.push(...genericEnvType.properties);
-  typeInfo.objectTypes.push(specificEnvType);
 }
 
 export function checkDuplicateEnvProperties(

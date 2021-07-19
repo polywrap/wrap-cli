@@ -48,7 +48,6 @@ export async function composeSchema(
     query?: TypeInfo;
     mutation?: TypeInfo;
   } = {};
-
   if (query && query.schema) {
     typeInfos.query = await resolveImportsAndParseSchemas(
       query.schema,
@@ -59,7 +58,9 @@ export async function composeSchema(
     resolveEnviromentTypes(
       typeInfos.query,
       EnvironmentType.QueryEnvType,
-      typeInfos.query.environment.query.sanitized
+      typeInfos.query.objectTypes.find(
+        (type) => type.type === EnvironmentType.QueryEnvType
+      )
     );
   }
 
@@ -73,7 +74,9 @@ export async function composeSchema(
     resolveEnviromentTypes(
       typeInfos.mutation,
       EnvironmentType.MutationEnvType,
-      typeInfos.mutation.environment.mutation.sanitized
+      typeInfos.mutation.objectTypes.find(
+        (type) => type.type === EnvironmentType.MutationEnvType
+      )
     );
   }
 
@@ -87,6 +90,7 @@ export async function composeSchema(
     typeInfo: includeTypeInfo ? typeInfo : undefined,
   });
 
+  console.log(JSON.stringify(typeInfos, null, 2));
   if (typeInfos.query) {
     output.query = createSchemaInfo(typeInfos.query);
   }
