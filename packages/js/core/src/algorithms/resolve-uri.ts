@@ -36,7 +36,7 @@ export const resolveUri = Tracer.traceFunc(
         "resolveUri: createPluginApi",
         (uri: Uri, plugin: PluginPackage) => createPluginApi(uri, plugin)
       )(finalRedirectedUri, plugin);
-      return { api, resolvedUris: [] };
+      return { api, resolvedUris: [uri.uri] };
     }
 
     // The final URI has been resolved, let's now resolve the Web3API package

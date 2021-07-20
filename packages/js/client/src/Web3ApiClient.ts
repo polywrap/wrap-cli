@@ -5,6 +5,8 @@ import { WasmWeb3Api } from "./wasm/WasmWeb3Api";
 import {
   Api,
   ApiCache,
+  ApiCacheConfig,
+  ManagedApiCache,
   Client,
   createQueryDocument,
   parseQuery,
@@ -31,6 +33,7 @@ export interface ClientConfig<TUri = string> {
   plugins?: PluginRegistration<TUri>[];
   interfaces?: InterfaceImplementations<TUri>[];
   tracingEnabled?: boolean;
+  cacheOptions?: ApiCacheConfig;
 }
 
 export class Web3ApiClient implements Client {
@@ -38,12 +41,13 @@ export class Web3ApiClient implements Client {
   // It should help us keep track of what URI's map to what APIs,
   // and handle cases where the are multiple jumps. For exmaple, if
   // A => B => C, then the cache should have A => C, and B => C.
-  private _apiCache: ApiCache = new Map<string, Api>();
+  private _apiCache: ApiCache | ManagedApiCache;
   private _config: Required<ClientConfig<Uri>> = {
     redirects: [],
     plugins: [],
     interfaces: [],
     tracingEnabled: false,
+    cacheOptions: {},
   };
 
   constructor(config?: ClientConfig) {
@@ -64,6 +68,10 @@ export class Web3ApiClient implements Client {
             ? sanitizeInterfaceImplementations(config.interfaces)
             : [],
           tracingEnabled: !!config.tracingEnabled,
+          cacheOptions: config.cacheOptions ?? {
+            maxWrappers: 2,
+            staleThreshold: 10,
+          },
         };
       }
 
@@ -83,6 +91,10 @@ export class Web3ApiClient implements Client {
       }
 
       this.requirePluginsToUseNonInterfaceUris();
+
+      this._apiCache = this._config.cacheOptions
+        ? new ManagedApiCache(this._config.cacheOptions)
+        : new Map<string, Api>();
 
       Tracer.setAttribute("config", this._config);
     } catch (error) {
@@ -270,9 +282,13 @@ export class Web3ApiClient implements Client {
             throw Error(`Unable to resolve Web3API at uri: ${uri}`);
           }
 
-          this._apiCache.set(uri.uri, api);
-          for (const uri of resolvedUris) {
-            this._apiCache.set(uri, api);
+          for (const resolvedUri of resolvedUris) {
+            // TODO: this check is necessary. Can we make it unnecessary?
+            //  The cause seems to be due to asynchronous calls, which can cause an API to be created more than once
+            //  The get() can return false before the api creation, then true before this loop
+            if (!this._apiCache.get(resolvedUri)) {
+              this._apiCache.set(resolvedUri, api);
+            }
           }
         }
 
