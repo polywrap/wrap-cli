@@ -1,8 +1,6 @@
 import {
   Client,
-  PluginManifest,
-  PluginModule,
-  Uri
+  InvokeApiResult
 } from "@web3api/core-js";
 
 type UInt = number;
@@ -21,48 +19,68 @@ type Boolean = boolean;
 {{#objectTypes}}
 export interface {{type}} {
   {{#properties}}
-  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{type}}{{/toTypescript}};
+  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
 }
 {{/objectTypes}}
 
 {{#enumTypes}}
-
+export enum {{type}} {
+  {{#constants}}
+  {{.}}{{^last}},{{/last}}
+  {{/constants}}
+}
 {{/enumTypes}}
 
-{{#queryTypes}}
-export interface {{type}}Module extends PluginModule {
-  {{#methods}}
-  {{name}}: (
-    input: Input_{{name}}
-  ) => {{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}};
-  {{/methods}}
-}
+/// Imported Objects START ///
 
+{{#importedObjectTypes}}
+/* URI: "{{uri}}" */
+export interface {{type}} {
+  {{#properties}}
+  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
+  {{/properties}}
+}
+{{/importedObjectTypes}}
+
+{{#importedEnumTypes}}
+/* URI: "{{uri}}" */
+export enum {{type}} {
+  {{#constants}}
+  {{.}}{{^last}},{{/last}}
+  {{/constants}}
+}
+{{/importedEnumTypes}}
+
+/// Imported Objects END ///
+
+/// Imported Queries START ///
+
+{{#importedQueryTypes}}
 {{#methods}}
-export interface Input_{{name}} {
+/* URI: "{{parent.uri}}" */
+interface {{parent.type}}_Input_{{name}} extends Record<string, unknown> {
   {{#arguments}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/arguments}}
 }
 {{/methods}}
-{{/queryTypes}}
 
-{{#importedQueryTypes}}
-TODO: client query functions
+export const {{type}} = {
+  {{#methods}}
+  {{name}}: async (
+    input: {{parent.type}}_Input_{{name}},
+    client: Client
+  ): Promise<InvokeApiResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> => {
+    return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
+      uri: "{{parent.uri}}",
+      module: "{{type}}",
+      method: "{{name}}",
+      input
+    });
+  }
+  {{/methods}}
+}
 {{/importedQueryTypes}}
 
-{{#importedObjectTypes}}
-
-{{/importedObjectTypes}}
-
-export const schema = `{{schema}}`;
-
-export const manifest: PluginManifest = {
-  schema,
-  implements: [
-    {{#interfaceUris}}
-    new Uri({{.}}),
-    {{/interfaceUris}}
-  ],
-}
+/// Imported Queries END ///
