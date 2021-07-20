@@ -42,7 +42,7 @@ export class Asyncify {
     }
   ) {}
 
-  init(instance: WebAssembly.Instance, imports: W3Imports) {
+  init(instance: WebAssembly.Instance, imports: W3Imports): void {
     const exports = instance.exports as W3Exports;
 
     const memory = exports.memory || (imports.env && imports.env.memory);
@@ -55,7 +55,7 @@ export class Asyncify {
     this.exports = this._wrapExports(exports);
   }
 
-  wrapImports(imports: W3Imports) {
+  wrapImports(imports: W3Imports): any {
     if (imports === undefined) return;
 
     return proxyGet(imports, (moduleImports = {}) =>
