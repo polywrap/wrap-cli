@@ -21,18 +21,18 @@ import {
 
 export interface Input_queryMethod extends Record<string, unknown> {
   str: String;
-  optStr?: String;
+  optStr?: String | undefined;
   en: Types.CustomEnum;
-  optEnum?: Types.CustomEnum;
+  optEnum?: Types.CustomEnum | undefined;
   enumArray: Array<Types.CustomEnum>;
-  optEnumArray?: Array<Types.CustomEnum>;
+  optEnumArray?: Array<Types.CustomEnum | undefined> | undefined;
 }
 
 export interface Input_objectMethod extends Record<string, unknown> {
   object: Types.AnotherType;
-  optObject?: Types.AnotherType;
+  optObject?: Types.AnotherType | undefined;
   objectArray: Array<Types.AnotherType>;
-  optObjectArray?: Array<Types.AnotherType | undefined>
+  optObjectArray?: Array<Types.AnotherType | undefined> | undefined;
 }
 
 export interface Module extends PluginModule {

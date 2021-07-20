@@ -119,7 +119,7 @@ export class CodeGenerator {
         );
       } else {
         const content = bindSchema({
-          query: {
+          combined: {
             typeInfo: composed.combined?.typeInfo as TypeInfo,
             schema: composed.combined?.schema as string,
             outputDirAbs: "",
@@ -127,9 +127,10 @@ export class CodeGenerator {
           language: "plugin-ts",
         });
 
+        // TODO
         writeFileSync(
           this._config.outputTypes as string,
-          content.query?.entries[0].data
+          content.combined?.entries[0].data
         );
       }
     };

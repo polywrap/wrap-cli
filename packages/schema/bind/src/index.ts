@@ -33,6 +33,7 @@ export interface OutputDirectory {
 }
 
 export interface BindOutput {
+  combined?: OutputDirectory;
   query?: OutputDirectory;
   mutation?: OutputDirectory;
 }
@@ -45,12 +46,13 @@ export interface BindModuleOptions {
 
 export interface BindOptions {
   language: TargetLanguage;
+  combined?: BindModuleOptions;
   query?: BindModuleOptions;
   mutation?: BindModuleOptions;
 }
 
 export function bindSchema(options: BindOptions): BindOutput {
-  const { query, mutation, language } = options;
+  const { combined, query, mutation, language } = options;
 
   // If both Query & Mutation modules are present,
   // determine which types are shared between them,
@@ -80,6 +82,9 @@ export function bindSchema(options: BindOptions): BindOutput {
   }
 
   return {
+    combined: combined
+      ? generateBinding(language, combined.typeInfo, combined.schema)
+      : undefined,
     query: query
       ? generateBinding(language, query.typeInfo, query.schema)
       : undefined,

@@ -1,10 +1,8 @@
-import { isBaseType } from "./types";
 import { MustacheFunction } from "../types";
 
 export const toTypescript: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
-    let isEnum = false;
 
     let nullable = false;
     if (type[type.length - 1] === "!") {
@@ -28,27 +26,20 @@ export const toTypescript: MustacheFunction = () => {
       case "UInt8":
       case "UInt16":
       case "UInt64":
-        type = "number";
-        break;
       case "String":
-        type = "string";
-        break;
       case "Boolean":
-        type = "boolean";
-        break;
       case "Bytes":
-        type = "ArrayBuffer";
+      case "BigInt":
         break;
       default:
         if (type.includes("Enum_")) {
           type = `Types.${type.replace("Enum_", "")}`;
-          isEnum = true;
         } else {
           type = `Types.${type}`;
         }
     }
 
-    return applyNullable(type, nullable, isEnum);
+    return applyNullable(type, nullable);
   };
 };
 
@@ -60,24 +51,15 @@ const toTypescriptArray = (type: string, nullable: boolean): string => {
   }
 
   const tsType = toTypescript()(result[2], (str) => str);
-  return applyNullable("Array<" + tsType + ">", nullable, false);
+  return applyNullable("Array<" + tsType + ">", nullable);
 };
 
 const applyNullable = (
   type: string,
-  nullable: boolean,
-  isEnum: boolean
+  nullable: boolean
 ): string => {
   if (nullable) {
-    if (
-      type.indexOf("Array") === 0 ||
-      type.indexOf("string") === 0 ||
-      (!isEnum && !isBaseType(type))
-    ) {
-      return `${type} | null`;
-    } else {
-      return `Nullable<${type}>`;
-    }
+    return `${type} | undefined`;
   } else {
     return type;
   }
