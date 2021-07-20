@@ -7,7 +7,7 @@ import {
   pairToken1Price,
   tokenSortsBefore
 } from "../../query";
-import { Nullable } from "@namestys/wasm-as";
+import { Nullable } from "@web3api/wasm-as";
 import { BigFloat } from "as-bigfloat";
 import { BigInt } from "as-bigint";
 

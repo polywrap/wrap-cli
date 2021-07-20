@@ -3,7 +3,7 @@ import {
   Write,
   Nullable,
   BigInt
-} from "@namestys/wasm-as";
+} from "@web3api/wasm-as";
 import {
   serializeTestImport_Object,
   deserializeTestImport_Object,

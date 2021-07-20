@@ -1,4 +1,4 @@
-import { Nullable } from "@namestys/wasm-as";
+import { Nullable } from "@web3api/wasm-as";
 
 import { createRoute, createTrade, swapCallParameters, toHex } from "../../query";
 import { ChainId, Pair, Token, TradeType, } from "../../query/w3";

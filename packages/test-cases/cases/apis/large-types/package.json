@@ -2,7 +2,7 @@
   "name": "test-case-large-types",
   "private": true,
   "dependencies": {
-    "@namestys/wasm-as": "0.0.1-prealpha.54",
+    "@web3api/wasm-as": "0.0.1-prealpha.25",
     "assemblyscript": "0.19.1"
   }
 }

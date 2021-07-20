@@ -2,7 +2,7 @@
 
 import { Rounding } from "../query/w3";
 
-import { BigInt } from "@namestys/wasm-as";
+import { BigInt } from "@web3api/wasm-as";
 import { BigFloat } from "as-bigfloat";
 
 export default class Fraction {

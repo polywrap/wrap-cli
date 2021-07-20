@@ -2,7 +2,7 @@ import {
   w3_add_invoke,
   w3_invoke,
   w3_abort
-} from "@namestys/wasm-as";
+} from "@web3api/wasm-as";
 import {
   mutationMethodWrapped,
   objectMethodWrapped

@@ -2,7 +2,7 @@ import { Pair, Token, TokenAmount } from "../query/w3";
 import { tokenEquals } from "../query";
 import { wrapIfEther } from "./utils";
 
-import { BigInt } from "@namestys/wasm-as";
+import { BigInt } from "@web3api/wasm-as";
 
 export class ProcessedPair {
   amount: TokenAmount;

@@ -15,11 +15,6 @@ export declare function __w3_invoke_error(ptr: u32, len: u32): void;
 @external("w3", "__w3_log")
 export declare function __w3_log(msgPtr: u32, msgLen: u32): void;
 
-export function w3Log(value: string): void {
-  const valueBuf = String.UTF8.encode(value);
-  __w3_log(changetype<u32>(valueBuf), valueBuf.byteLength);
-}
-
 // Keep track of all invokable functions
 export type InvokeFunction = (argsBuf: ArrayBuffer) => ArrayBuffer;
 
@@ -46,10 +41,8 @@ export function w3_invoke(method_size: u32, args_size: u32): bool {
 
   const method = String.UTF8.decode(methodBuf);
   __w3_log(changetype<u32>(msgBuf), msgBuf.byteLength);
-  w3Log(method)
   const fn = invokes.has(method) ? invokes.get(method) : null;
   if (fn) {
-    w3Log(String.UTF8.decode(argsBuf))
     const result = fn(argsBuf);
     __w3_invoke_result(
       changetype<u32>(result),

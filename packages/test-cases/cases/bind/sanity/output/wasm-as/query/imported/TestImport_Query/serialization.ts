@@ -6,7 +6,7 @@ import {
   ReadDecoder,
   BigInt,
   Context
-} from "@namestys/wasm-as";
+} from "@web3api/wasm-as";
 import * as Types from "../..";
 
 export class Input_importedMethod {

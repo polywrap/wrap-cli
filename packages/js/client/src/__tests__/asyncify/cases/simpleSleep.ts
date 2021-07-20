@@ -9,5 +9,3 @@ export function main(): void {
   asyncFunc();
   log(1)
 }
-
-
