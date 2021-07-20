@@ -135,9 +135,6 @@ export class WasmWeb3Api extends Api {
 
         exports._w3_init();
 
-        console.log(memory.buffer);
-        console.log(exports.memory.buffer);
-
         const result = await exports._w3_invoke(
           state.method.length,
           state.args.byteLength

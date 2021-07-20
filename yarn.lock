@@ -4147,13 +4147,6 @@
     "@uniswap/lib" "1.1.1"
     "@uniswap/v2-core" "1.0.0"
 
-"@web3api/wasm-as@0.0.1-prealpha.25":
-  version "0.0.1-prealpha.25"
-  resolved "https://registry.yarnpkg.com/@web3api/wasm-as/-/wasm-as-0.0.1-prealpha.25.tgz#8a3c45e8fa5d88fcb822a451c27856efd90ecb77"
-  integrity sha512-b12FqHyxhDVEeyyEhXD7IpnztUC9Aqj/v9uI/EcJRGfnjtV+ryOdKdVV1ret9zjKmUPkhXxqQxaZ1nuEOhGR9w==
-  dependencies:
-    as-bigint "0.2.4"
-
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.8.5.tgz#51b1c5fe6576a34953bf4b253df9f0d490d9e359"
