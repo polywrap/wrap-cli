@@ -26,21 +26,14 @@ export function w3_add_invoke(method: string, fn: InvokeFunction): void {
 
 // Helper for handling _w3_invoke
 export function w3_invoke(method_size: u32, args_size: u32): bool {
-  const msg = "HERE";
-  const msgBuf = String.UTF8.encode(msg);
-  __w3_log(changetype<u32>(msgBuf), msgBuf.byteLength);
-
   const methodBuf = new ArrayBuffer(method_size);
   const argsBuf = new ArrayBuffer(args_size);
-  __w3_log(changetype<u32>(msgBuf), msgBuf.byteLength);
   __w3_invoke_args(
     changetype<u32>(methodBuf),
     changetype<u32>(argsBuf)
   );
-  __w3_log(changetype<u32>(msgBuf), msgBuf.byteLength);
 
   const method = String.UTF8.decode(methodBuf);
-  __w3_log(changetype<u32>(msgBuf), msgBuf.byteLength);
   const fn = invokes.has(method) ? invokes.get(method) : null;
   if (fn) {
     const result = fn(argsBuf);

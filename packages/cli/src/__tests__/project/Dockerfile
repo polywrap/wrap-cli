@@ -29,8 +29,7 @@ RUN ./node_modules/.bin/asc src/mutation/w3/entry.ts \
     --use abort=src/mutation/w3/entry/w3Abort \
     --optimize --debug --importMemory \
     --runtime stub \
-    --runPasses asyncify \
-    --debug
+    --runPasses asyncify
 # Build the module at src/query
 RUN ./node_modules/.bin/asc src/query/w3/entry.ts \
     --path ./node_modules \
@@ -38,5 +37,4 @@ RUN ./node_modules/.bin/asc src/query/w3/entry.ts \
     --use abort=src/query/w3/entry/w3Abort \
     --optimize --debug --importMemory \
     --runtime stub \
-    --runPasses asyncify \
-    --debug
+    --runPasses asyncify
