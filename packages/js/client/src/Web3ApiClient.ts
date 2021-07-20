@@ -68,10 +68,7 @@ export class Web3ApiClient implements Client {
             ? sanitizeInterfaceImplementations(config.interfaces)
             : [],
           tracingEnabled: !!config.tracingEnabled,
-          cacheOptions: config.cacheOptions ?? {
-            maxWrappers: 2,
-            staleThreshold: 10,
-          },
+          cacheOptions: config.cacheOptions ?? {},
         };
       }
 
