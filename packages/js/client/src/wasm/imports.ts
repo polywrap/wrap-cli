@@ -11,8 +11,9 @@ export const createImports = (config: {
   client: Client;
   memory: WebAssembly.Memory;
   state: State;
+  abort: (message: string) => never;
 }): W3Imports => {
-  const { memory, state, client } = config;
+  const { memory, state, client, abort } = config;
 
   return {
     w3: {
@@ -70,10 +71,7 @@ export const createImports = (config: {
       // Give WASM the size of the result
       __w3_subinvoke_result_len: (): u32 => {
         if (!state.subinvoke.result) {
-          state.invokeResult = {
-            type: "Abort",
-            message: "__w3_subinvoke_result_len: subinvoke.result is not set",
-          };
+          abort("__w3_subinvoke_result_len: subinvoke.result is not set");
           return 0;
         }
         return state.subinvoke.result.byteLength;
@@ -81,10 +79,7 @@ export const createImports = (config: {
       // Copy the subinvoke result into WASM
       __w3_subinvoke_result: (ptr: u32): void => {
         if (!state.subinvoke.result) {
-          state.invokeResult = {
-            type: "Abort",
-            message: "__w3_subinvoke_result: subinvoke.result is not set",
-          };
+          abort("__w3_subinvoke_result: subinvoke.result is not set");
           return;
         }
         writeBytes(state.subinvoke.result, memory.buffer, ptr);
@@ -92,10 +87,7 @@ export const createImports = (config: {
       // Give WASM the size of the error
       __w3_subinvoke_error_len: (): u32 => {
         if (!state.subinvoke.error) {
-          state.invokeResult = {
-            type: "Abort",
-            message: "__w3_subinvoke_error_len: subinvoke.error is not set",
-          };
+          abort("__w3_subinvoke_error_len: subinvoke.error is not set");
           return 0;
         }
         return state.subinvoke.error.length;
@@ -103,10 +95,7 @@ export const createImports = (config: {
       // Copy the subinvoke error into WASM
       __w3_subinvoke_error: (ptr: u32): void => {
         if (!state.subinvoke.error) {
-          state.invokeResult = {
-            type: "Abort",
-            message: "__w3_subinvoke_error: subinvoke.error is not set",
-          };
+          abort("__w3_subinvoke_error: subinvoke.error is not set");
           return;
         }
         writeString(state.subinvoke.error, memory.buffer, ptr);
@@ -114,31 +103,22 @@ export const createImports = (config: {
       // Copy the invocation's method & args into WASM
       __w3_invoke_args: (methodPtr: u32, argsPtr: u32): void => {
         if (!state.method) {
-          state.invokeResult = {
-            type: "Abort",
-            message: "__w3_invoke_args: method is not set",
-          };
+          abort("__w3_invoke_args: method is not set");
           return;
         }
         if (!state.args) {
-          state.invokeResult = {
-            type: "Abort",
-            message: "__w3_invoke_args: args is not set",
-          };
+          abort("__w3_invoke_args: args is not set");
           return;
         }
         writeString(state.method, memory.buffer, methodPtr);
         writeBytes(state.args, memory.buffer, argsPtr);
-        console.log("WROTE ARGS");
       },
       // Store the invocation's result
       __w3_invoke_result: (ptr: u32, len: u32): void => {
-        console.log("INV RESULT: ", ptr, len);
         state.invoke.result = readBytes(memory.buffer, ptr, len);
       },
       // Store the invocation's error
       __w3_invoke_error: (ptr: u32, len: u32): void => {
-        console.log("INV ERROR: ", ptr, len);
         state.invoke.error = readString(memory.buffer, ptr, len);
       },
       __w3_abort: (
@@ -151,10 +131,10 @@ export const createImports = (config: {
       ): void => {
         const msg = readString(memory.buffer, msgPtr, msgLen);
         const file = readString(memory.buffer, filePtr, fileLen);
-        state.invokeResult = {
-          type: "Abort",
-          message: `__w3_abort: ${msg}\nFile: ${file}\nLocation: [${line},${column}]`,
-        };
+
+        abort(
+          `__w3_abort: ${msg}\nFile: ${file}\nLocation: [${line},${column}]`
+        );
       },
     },
     env: {

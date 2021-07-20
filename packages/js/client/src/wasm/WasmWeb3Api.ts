@@ -16,7 +16,6 @@ import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
 
 type InvokeResult =
-  | { type: "Abort"; message: string }
   | { type: "InvokeResult"; invokeResult: ArrayBuffer }
   | { type: "InvokeError"; invokeError: string };
 
@@ -36,13 +35,14 @@ export interface State {
   invokeResult: InvokeResult;
 }
 
-const processInvokeResult = (state: State, result: boolean): InvokeResult => {
+const processInvokeResult = (
+  state: State,
+  result: boolean,
+  abort: (message: string) => never
+): InvokeResult => {
   if (result) {
     if (!state.invoke.result) {
-      return {
-        type: "Abort",
-        message: "Invoke result is missing.",
-      };
+      abort("Invoke result is missing.");
     }
 
     return {
@@ -51,10 +51,7 @@ const processInvokeResult = (state: State, result: boolean): InvokeResult => {
     };
   } else {
     if (!state.invoke.error) {
-      return {
-        type: "Abort",
-        message: "Invoke error is missing.",
-      };
+      abort("Invoke error is missing.");
     }
 
     return {
@@ -113,6 +110,14 @@ export class WasmWeb3Api extends Api {
               : MsgPack.encode(input, { ignoreUndefined: true }),
         };
 
+        const abort = (message: string) => {
+          throw new Error(
+            `WasmWeb3Api: Thread aborted execution.\nURI: ${this._uri.uri}\n` +
+              `Module: ${module}\nMethod: ${method}\n` +
+              `Input: ${JSON.stringify(input, null, 2)}\nMessage: ${message}.\n`
+          );
+        };
+
         const module = new WebAssembly.Module(wasm);
         const memory = new WebAssembly.Memory({ initial: 1 });
         const instance = new AsyncWasmInstance({
@@ -121,6 +126,7 @@ export class WasmWeb3Api extends Api {
             state,
             client,
             memory,
+            abort,
           }),
           requiredExports: ["_w3_init", "_w3_invoke"],
         });
@@ -137,19 +143,9 @@ export class WasmWeb3Api extends Api {
           state.args.byteLength
         );
 
-        const invokeResult = processInvokeResult(state, result);
+        const invokeResult = processInvokeResult(state, result, abort);
 
         switch (invokeResult.type) {
-          case "Abort":
-            return {
-              error: new Error(
-                `WasmWeb3Api: Thread aborted execution.\nURI: ${this._uri.uri}\n` +
-                  `Module: ${module}\nMethod: ${method}\n` +
-                  `Input: ${JSON.stringify(input, null, 2)}\nMessage: ${
-                    invokeResult.message
-                  }\n`
-              ),
-            };
           case "InvokeError": {
             return {
               error: new Error(
