@@ -78,11 +78,9 @@ export class ManagedApiCache {
           `ApiInfo missing for polywrapper at ${key}. This should never happen.`
         );
       }
-      stats.lastQuery = 0;
+      stats.lastQuery = -1;
       // gc
-      if (this.config.staleThreshold) {
-        this.collectStale();
-      }
+      this.collectStale();
     }
     return api;
   }
