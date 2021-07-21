@@ -65,6 +65,36 @@ export const toUpper: MustacheFunction = () => {
   };
 };
 
+// this is barebones, not final; refactor later.
+export const toRustProp: MustacheFunction = () => {
+  return (value: string, render: (template: string) => string) => {
+    let type = render(value);
+
+    // hardcode some strict, weak, and reserved keywords in Rust
+    const keywords: string[] = [
+      "&str",
+      "enum",
+      "struct",
+      "type",
+      "String",
+      "Option",
+      "ref",
+      "trait",
+      "pub",
+    ];
+
+    // check if any of the keywords match the property name;
+    // if there's a match, insert `m_` at the beginning of the property name.
+    for (let i = 0; i < keywords.length; i++) {
+      if (type === keywords[i]) {
+        type = insertAt(type, 0, "m_");
+      }
+    }
+
+    return type;
+  };
+};
+
 export const toMsgPack: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
