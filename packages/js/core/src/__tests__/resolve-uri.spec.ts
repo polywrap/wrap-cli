@@ -166,7 +166,7 @@ describe("resolveUri", () => {
       true
     );
 
-    const apiIdentity = await result.invoke(
+    const apiIdentity = await result.api.invoke(
       {} as InvokeApiOptions,
       {} as Client
     );
@@ -192,7 +192,7 @@ describe("resolveUri", () => {
       true
     );
 
-    const apiIdentity = await result.invoke(
+    const apiIdentity = await result.api.invoke(
       {} as InvokeApiOptions,
       {} as Client
     );
@@ -218,7 +218,7 @@ describe("resolveUri", () => {
       true
     );
 
-    const apiIdentity = await result.invoke(
+    const apiIdentity = await result.api.invoke(
       {} as InvokeApiOptions,
       {} as Client
     );
@@ -245,7 +245,7 @@ describe("resolveUri", () => {
       true
     );
 
-    const apiIdentity = await result.invoke(
+    const apiIdentity = await result.api.invoke(
       {} as InvokeApiOptions,
       {} as Client
     );
@@ -341,7 +341,7 @@ describe("resolveUri", () => {
       true
     );
 
-    const apiIdentity = await result.invoke(
+    const apiIdentity = await result.api.invoke(
       {} as InvokeApiOptions,
       {} as Client
     );
