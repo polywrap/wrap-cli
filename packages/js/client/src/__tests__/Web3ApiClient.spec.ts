@@ -1438,4 +1438,63 @@ describe("Web3ApiClient", () => {
     expect(mutation.data?.mutationMethod).toBe(1);
     expect(mutation.data?.abstractMutationMethod).toBe(2);
   });
+
+  it("cache garbage collection", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/bytes-type`,
+      ipfsProvider,
+      ensAddress
+    );
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    // strict options to make sure cache gc isn't breaking client
+    let client = await getClient({ cacheOptions: { maxWrappers: 1, staleThreshold: 1 } });
+    let response = await client.query<{
+      bytesMethod: Buffer;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          bytesMethod(
+            arg: {
+              prop: $buffer
+            }
+          )
+        }
+      `,
+      variables: {
+        buffer: Buffer.from("Strict Cache GC Options"),
+      },
+    });
+    expect(response.errors).toBeFalsy();
+    expect(response.data).toBeTruthy();
+    expect(response.data).toMatchObject({
+      bytesMethod: Buffer.from("Strict Cache GC Options Sanity!").buffer,
+    });
+
+    // sane cache gc options
+    client = await getClient({ cacheOptions: { maxWrappers: 10, staleThreshold: 100 } });
+    response = await client.query<{
+      bytesMethod: Buffer;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          bytesMethod(
+            arg: {
+              prop: $buffer
+            }
+          )
+        }
+      `,
+      variables: {
+        buffer: Buffer.from("Reasonable Cache GC Options"),
+      },
+    });
+    expect(response.errors).toBeFalsy();
+    expect(response.data).toBeTruthy();
+    expect(response.data).toMatchObject({
+      bytesMethod: Buffer.from("Reasonable Cache GC Options Sanity!").buffer,
+    });
+  });
 });
