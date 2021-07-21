@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 const baseTypes = {
   UInt: "UInt",
   UInt8: "UInt8",

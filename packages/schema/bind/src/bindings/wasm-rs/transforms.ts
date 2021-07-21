@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { isBaseType } from "./types";
 
 import {
@@ -5,7 +6,7 @@ import {
   ObjectDefinition,
   PropertyDefinition,
   QueryDefinition,
-  TypeInfoTransforms
+  TypeInfoTransforms,
 } from "@web3api/schema-parse";
 
 interface CrateAndType {
@@ -41,7 +42,10 @@ export function propertyTypes(): TypeInfoTransforms {
         return def;
       },
       PropertyDefinition: (def: PropertyDefinition) => {
-        const appendCrateAndType = (rootType: string, array: CrateAndType[]): CrateAndType[] => {
+        const appendCrateAndType = (
+          rootType: string,
+          array: CrateAndType[]
+        ): CrateAndType[] => {
           if (
             isBaseType(def.type) ||
             def.type.indexOf("[") === 0 ||
@@ -52,20 +56,24 @@ export function propertyTypes(): TypeInfoTransforms {
           }
 
           const appendUnique = (item: CrateAndType) => {
-            if (array.findIndex((i) => i.crate === item.crate && i.type === item.type) === -1) {
+            if (
+              array.findIndex(
+                (i) => i.crate === item.crate && i.type === item.type
+              ) === -1
+            ) {
               array.push(item);
             }
-          }
+          };
 
           if (def.type === "BigInt") {
             appendUnique({
               crate: "big_int",
-              type: "BigInt"
+              type: "BigInt",
             });
           } else {
             appendUnique({
               crate: "crate",
-              type: def.type
+              type: def.type,
             });
           }
 
@@ -90,7 +98,7 @@ export function propertyTypes(): TypeInfoTransforms {
         }
 
         return def;
-      }
+      },
     },
     leave: {
       ObjectDefinition: (def: ObjectDefinition) => {
@@ -99,7 +107,7 @@ export function propertyTypes(): TypeInfoTransforms {
         state.objectDefinition = undefined;
         return {
           ...def,
-          propertyTypes
+          propertyTypes,
         };
       },
       QueryDefinition: (def: QueryDefinition) => {
@@ -108,7 +116,7 @@ export function propertyTypes(): TypeInfoTransforms {
         state.queryDefinition = undefined;
         return {
           ...def,
-          propertyTypes
+          propertyTypes,
         };
       },
       ImportedQueryDefinition: (def: ImportedQueryDefinition) => {
@@ -117,9 +125,9 @@ export function propertyTypes(): TypeInfoTransforms {
         state.importedQueryDefinition = undefined;
         return {
           ...def,
-          propertyTypes
+          propertyTypes,
         };
-      }
-    }
-  }
-};
+      },
+    },
+  };
+}

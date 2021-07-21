@@ -4,7 +4,9 @@ type MustacheFunction = () => (
 ) => string;
 
 function replaceAt(str: string, index: number, replacement: string): string {
-  return str.substr(0, index) + replacement + str.substr(index + replacement.length);
+  return (
+    str.substr(0, index) + replacement + str.substr(index + replacement.length)
+  );
 }
 
 function insertAt(str: string, index: number, insert: string): string {
@@ -35,8 +37,8 @@ export const toLower: MustacheFunction = () => {
     }
 
     return type;
-  }
-}
+  };
+};
 
 export const toUpper: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
@@ -60,8 +62,8 @@ export const toUpper: MustacheFunction = () => {
     }
 
     return type;
-  }
-}
+  };
+};
 
 export const toMsgPack: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
@@ -213,10 +215,7 @@ const toWasmArray = (type: string, nullable: boolean): string => {
   return applyNullable("Vec<" + wasmType + ">", nullable);
 };
 
-const applyNullable = (
-  type: string,
-  nullable: boolean,
-): string => {
+const applyNullable = (type: string, nullable: boolean): string => {
   if (nullable) {
     return `Option<${type}>`;
   } else {
