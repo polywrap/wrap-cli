@@ -43,21 +43,27 @@ describe("Web3ApiClient", () => {
       },
     },
     {
-      environment: {
-        ["w3://" + ensUri]: {
-          queryStr: "query string",
-          object: {
-            prop: "object string"
+      environments: [
+        {
+          uri: "w3://" + (ensUri ? ensUri : "ens/helloworld.eth"),
+          common: {
+            object: {
+              prop: "object string"
+            },
+            str: "string",
+            optFilledStr: "optional string",
+            number: 10,
+            bool: true,
+            en: "FIRST",
           },
-          mutStr: "mutation string",
-          str: "string",
-          optFilledStr: "optional string",
-          number: 10,
-          bool: true,
-          en: "FIRST",
-          invalid: true
+          mutation: {
+            mutStr: "mutation string",
+          },
+          query: {
+            queryStr: "query string",
+          }
         }
-      }
+      ]
     });
   }
 

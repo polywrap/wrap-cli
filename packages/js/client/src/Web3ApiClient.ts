@@ -18,17 +18,15 @@ import {
   InvokeApiResult,
   Web3ApiManifest,
   sanitizeUriRedirects,
+  sanitizeEnvironments,
+  Environment,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
-export interface Environment {
-  [key: string]: Record<string, unknown>;
-}
-
 export interface ClientConfig<TUri = string> {
   redirects?: UriRedirect<TUri>[];
+  environments?: Environment<TUri>[];
   tracingEnabled?: boolean;
-  environment?: Environment;
 }
 
 export class Web3ApiClient implements Client {
@@ -37,9 +35,7 @@ export class Web3ApiClient implements Client {
   // and handle cases where the are multiple jumps. For exmaple, if
   // A => B => C, then the cache should have A => C, and B => C.
   private _apiCache: ApiCache = new Map<string, Api>();
-  private _config: ClientConfig<Uri> = {
-    environment: {},
-  };
+  private _config: ClientConfig<Uri> = {};
 
   constructor(config?: ClientConfig) {
     try {
@@ -47,7 +43,7 @@ export class Web3ApiClient implements Client {
         this._config = {
           redirects: [],
           tracingEnabled: false,
-          environment: {},
+          environments: [],
         };
       }
 
@@ -60,6 +56,9 @@ export class Web3ApiClient implements Client {
           ...config,
           redirects: config.redirects
             ? sanitizeUriRedirects(config.redirects)
+            : [],
+          environments: config.environments
+            ? sanitizeEnvironments(config.environments)
             : [],
         };
       }
@@ -202,15 +201,13 @@ export class Web3ApiClient implements Client {
         let api = this._apiCache.get(uri.uri);
 
         if (!api) {
-          const enviroment = this._config.environment
-            ? this._config.environment[uri.uri]
-            : undefined;
+          const environment = this.getEnvironment(uri);
           api = await resolveUri(
             uri,
             this,
             (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
             (uri: Uri, manifest: Web3ApiManifest, apiResolver: Uri) =>
-              new WasmWeb3Api(uri, manifest, apiResolver, enviroment)
+              new WasmWeb3Api(uri, manifest, apiResolver, environment)
           );
 
           if (!api) {
@@ -225,5 +222,11 @@ export class Web3ApiClient implements Client {
     );
 
     return run(uri);
+  }
+
+  private getEnvironment(uri: Uri): Environment<Uri> | undefined {
+    return this._config.environments?.find(
+      (environment) => environment.uri.uri === uri.uri
+    );
   }
 }

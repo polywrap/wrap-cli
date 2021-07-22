@@ -19,6 +19,7 @@ import {
   Client,
   ApiResolver,
   InvokableModules,
+  Environment,
 } from "@web3api/core-js";
 import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
@@ -46,7 +47,7 @@ export class WasmWeb3Api extends Api {
     private _uri: Uri,
     private _manifest: Web3ApiManifest,
     private _apiResolver: Uri,
-    private _clientEnvironment?: Record<string, unknown>
+    private _clientEnvironment?: Environment<Uri>
   ) {
     super();
 
@@ -260,7 +261,10 @@ export class WasmWeb3Api extends Api {
           threadMutexesBuffer,
           threadId,
           transferBuffer,
-          clientEnvironment: this._clientEnvironment,
+          clientEnvironment: this.getModuleEnvironment(
+            module,
+            this._clientEnvironment
+          ),
           sanitizedEnvironment: this._sanitizedEnviroment,
         });
 
@@ -445,5 +449,30 @@ export class WasmWeb3Api extends Api {
     }
 
     return a + b;
+  }
+
+  private getModuleEnvironment(
+    module: InvokableModules,
+    environment?: Environment<Uri>
+  ): Record<string, unknown> {
+    if (!environment) {
+      return {};
+    }
+
+    const env: Record<string, unknown> = environment.common
+      ? environment.common
+      : {};
+
+    if (module === "query") {
+      return {
+        ...env,
+        ...environment.query,
+      };
+    } else {
+      return {
+        ...env,
+        ...environment.mutation,
+      };
+    }
   }
 }
