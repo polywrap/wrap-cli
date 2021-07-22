@@ -25,13 +25,8 @@ export const typeInfo: TypeInfo = {
           {
             ...createScalarPropertyDefinition({ name: "bar", type: "Int", required: false }),
             first: true,
-            last: null
+            last: true
           } as AnyDefinition,
-          {
-            ...createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
-            first: null,
-            last: true,
-          } as AnyDefinition
         ],
       }
     },
@@ -128,6 +123,13 @@ export const typeInfo: TypeInfo = {
     }
   ],
   objectTypes: [
+    {
+      ...createObjectDefinition({ type: "MutationEnv" }),
+      properties: [
+        { ...createScalarPropertyDefinition({ name: "bar", type: "Int", required: false }) },
+        createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
+      ]
+    },
     {
       ...createObjectDefinition({ type: "CustomMutationType" }),
       properties: [
@@ -234,13 +236,6 @@ export const typeInfo: TypeInfo = {
         createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
       ],
     },
-    {
-      ...createObjectDefinition({ type: "MutationEnv" }),
-      properties: [
-        { ...createScalarPropertyDefinition({ name: "bar", type: "Int", required: false }) },
-        createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
-      ]
-    }
   ],
   importedQueryTypes: [
     {

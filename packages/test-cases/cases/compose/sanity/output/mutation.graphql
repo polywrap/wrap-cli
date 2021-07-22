@@ -49,6 +49,11 @@ type Mutation @imports(
   ): [Int64!]!
 }
 
+type MutationEnv {
+  bar: Int
+  foo: String!
+}
+
 type CustomMutationType {
   str: String!
   optStr: String
@@ -84,11 +89,6 @@ type NestedType {
 
 type ArrayObject {
   prop: String!
-}
-
-type MutationEnv {
-  bar: Int
-  foo: String!
 }
 
 ### Imported Queries START ###

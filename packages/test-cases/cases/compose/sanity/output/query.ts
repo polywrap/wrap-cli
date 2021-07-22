@@ -11,7 +11,8 @@ import {
   createEnumPropertyDefinition,
   createImportedQueryDefinition,
   createImportedObjectDefinition,
-  createImportedEnumDefinition
+  createImportedEnumDefinition,
+  AnyDefinition
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
@@ -20,8 +21,11 @@ export const typeInfo: TypeInfo = {
       sanitized: {
         ...createObjectDefinition({ type: "QueryEnv" }),
         properties: [
-          createScalarPropertyDefinition({ name: "bar", type: "Bytes", required: false }),
-          createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
+          {
+            ...createScalarPropertyDefinition({ name: "bar", type: "Bytes", required: false }),
+            first: true,
+            last: true
+          } as AnyDefinition
         ],
       }
     },
@@ -97,6 +101,13 @@ export const typeInfo: TypeInfo = {
       properties: [createScalarPropertyDefinition({ name: "prop", type: "String" })],
     },
     {
+      ...createObjectDefinition({ type: "QueryEnv" }),
+      properties: [
+        createScalarPropertyDefinition({ name: "bar", type: "Bytes", required: false }),
+        createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
+      ],
+    },
+    {
       ...createObjectDefinition({ type: "CommonType" }),
       properties: [
         createScalarPropertyDefinition({ name: "prop", type: "UInt8", required: true }),
@@ -134,13 +145,6 @@ export const typeInfo: TypeInfo = {
         createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
       ],
     },
-    {
-      ...createObjectDefinition({ type: "QueryEnv" }),
-      properties: [
-        createScalarPropertyDefinition({ name: "bar", type: "Bytes", required: false }),
-        createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
-      ],
-    }
   ],
   queryTypes: [
     {

@@ -70,6 +70,11 @@ type AnotherQueryType {
   prop: String
 }
 
+type QueryEnv {
+  bar: Bytes
+  foo: String!
+}
+
 type CommonType {
   prop: UInt8!
   nestedObject: NestedType!
@@ -82,11 +87,6 @@ type NestedType {
 
 type ArrayObject {
   prop: String!
-}
-
-type QueryEnv {
-  bar: Bytes
-  foo: String!
 }
 
 ### Imported Queries START ###

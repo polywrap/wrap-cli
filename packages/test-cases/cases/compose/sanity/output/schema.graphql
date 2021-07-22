@@ -96,6 +96,11 @@ type AnotherQueryType {
   prop: String
 }
 
+type QueryEnv {
+  bar: Bytes
+  foo: String!
+}
+
 type CommonType {
   prop: UInt8!
   nestedObject: NestedType!
@@ -110,8 +115,8 @@ type ArrayObject {
   prop: String!
 }
 
-type QueryEnv {
-  bar: Bytes
+type MutationEnv {
+  bar: Int
   foo: String!
 }
 
@@ -136,11 +141,6 @@ type CustomMutationType {
 
 type AnotherMutationType {
   prop: String
-}
-
-type MutationEnv {
-  bar: Int
-  foo: String!
 }
 
 ### Imported Queries START ###
