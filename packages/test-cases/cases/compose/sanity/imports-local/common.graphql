@@ -1,13 +1,25 @@
+"""
+CommonType comment
+"""
 type CommonType {
   prop: UInt8!
   nestedObject: NestedType!
+"""
+objectArray comment
+"""
   objectArray: [[ArrayObject]]!
 }
 
+"""
+NestedType comment
+"""
 type NestedType {
   prop: String!
 }
 
+"""
+ArrayObject comment
+"""
 type ArrayObject {
   prop: String!
 }

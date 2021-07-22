@@ -24,8 +24,6 @@ import {
   visitQueryDefinition,
   ImportedQueryDefinition,
   DefinitionKind,
-  PropertyDefinition,
-  populatePropertyType,
   visitImportedQueryDefinition,
   visitImportedObjectDefinition,
   ImportedEnumDefinition,
@@ -37,7 +35,15 @@ import {
   header,
   AnyDefinition,
   EnvironmentType,
+  InterfaceImplementedDefinition,
+  ObjectRef,
+  EnumRef,
 } from "@web3api/schema-parse";
+
+type ImplementationWithInterfaces = {
+  typeName: string;
+  interfaces: string[];
+};
 
 export async function resolveImportsAndParseSchemas(
   schema: string,
@@ -46,7 +52,7 @@ export async function resolveImportsAndParseSchemas(
   resolvers: SchemaResolvers
 ): Promise<TypeInfo> {
   const importKeywordCapture = /^[#]*["{3}]*import[ \n\t]/gm;
-  const externalImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*into[ \n\t]*(\w+?)[ \n\t]*from[ \n\t]*[\"'`]([a-zA-Z0-9_~.:\/]+?)[\"'`]/g;
+  const externalImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*into[ \n\t]*(\w+?)[ \n\t]*from[ \n\t]*[\"'`]([\-a-zA-Z0-9_~.:\/]+?)[\"'`]/g;
   const localImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*from[ \n\t]*[\"'`]([a-zA-Z0-9_~\-:.\/]+?)[\"'`]/g;
 
   const keywords = [...schema.matchAll(importKeywordCapture)];
@@ -60,6 +66,13 @@ export async function resolveImportsAndParseSchemas(
       `Invalid import statement found in file ${schemaPath}.\nPlease use one of the following syntaxes...\n${SYNTAX_REFERENCE}`
     );
   }
+
+  const interfaceCapture = /type[ \n\t]*[a-zA-Z0-9_]+[ \n\t]+implements ([a-zA-Z0-9_&\n\t ]*){/g;
+  const implementInterfaceStatments = [...schema.matchAll(interfaceCapture)];
+
+  const implementationsWithInterfaces = parseInterfaces(
+    implementInterfaceStatments
+  );
 
   const externalImportsToResolve: ExternalImport[] = parseExternalImports(
     externalImportStatements,
@@ -103,8 +116,13 @@ export async function resolveImportsAndParseSchemas(
   // Add the @imports directive
   newSchema = addQueryImportsDirective(newSchema, externalImports, mutation);
 
-  // Parse the newly formed schema, and combine it with the subTypeInfo
-  return parseSchema(header + newSchema + renderSchema(subTypeInfo, false));
+  //Combine the new schema with the subTypeInfo
+  newSchema = header + newSchema + renderSchema(subTypeInfo, false);
+
+  newSchema = resolveInterfaces(newSchema, implementationsWithInterfaces);
+
+  // Parse the newly formed schema
+  return parseSchema(newSchema);
 }
 
 interface Namespaced {
@@ -133,18 +151,18 @@ const extractObjectImportDependencies = (
   uri: string
 ): TypeInfoTransforms => {
   const findImport = (
-    def: GenericDefinition,
+    type: string,
     namespaceType: string,
     rootTypes: EnumOrObject[],
     importedTypes: ImportedEnumOrObject[],
     kind: DefinitionKind
   ): ImportedEnumOrObject & Namespaced => {
     // Find this type's ObjectDefinition in the root type info
-    let idx = rootTypes.findIndex((obj) => obj.type === def.type);
+    let idx = rootTypes.findIndex((obj) => obj.type === type);
     let obj = undefined;
 
     if (idx === -1) {
-      idx = importedTypes.findIndex((obj) => obj.type === def.type);
+      idx = importedTypes.findIndex((obj) => obj.type === type);
     } else {
       obj = rootTypes[idx];
     }
@@ -152,7 +170,7 @@ const extractObjectImportDependencies = (
     if (idx === -1) {
       throw Error(
         `extractObjectImportDependencies: Cannot find the dependent type within the root type info.\n` +
-          `Type: ${def.type}\nTypeInfo: ${JSON.stringify(
+          `Type: ${type}\nTypeInfo: ${JSON.stringify(
             rootTypeInfo
           )}\n${namespace}\n${JSON.stringify(Object.keys(importsFound))}`
       );
@@ -170,23 +188,25 @@ const extractObjectImportDependencies = (
       kind,
       uri,
       namespace,
-      nativeType: def.type,
+      nativeType: type,
     };
   };
 
   return {
     enter: {
-      ObjectDefinition: (def: ObjectDefinition & Namespaced) => {
+      ObjectRef: (def: ObjectRef & Namespaced) => {
         if (def.__namespaced) {
           return def;
         }
 
-        const namespaceType = appendNamespace(namespace, def.type);
+        const type = def.type;
+
+        const namespaceType = appendNamespace(namespace, type);
 
         if (!importsFound[namespaceType]) {
           // Find the import
           const importFound = findImport(
-            def,
+            type,
             namespaceType,
             rootTypeInfo.objectTypes,
             rootTypeInfo.importedObjectTypes,
@@ -204,18 +224,49 @@ const extractObjectImportDependencies = (
               namespace,
               uri
             ),
-            leave: {
-              PropertyDefinition: (def: PropertyDefinition) => {
-                populatePropertyType(def);
-                return def;
-              },
-            },
           });
         }
 
         return def;
       },
-      EnumDefinition: (def: EnumDefinition & Namespaced) => {
+      InterfaceImplementedDefinition: (
+        def: InterfaceImplementedDefinition & Namespaced
+      ) => {
+        if (def.__namespaced) {
+          return def;
+        }
+
+        const type = def.type;
+
+        const namespaceType = appendNamespace(namespace, type);
+
+        if (!importsFound[namespaceType]) {
+          // Find the import
+          const importFound = findImport(
+            type,
+            namespaceType,
+            rootTypeInfo.objectTypes,
+            rootTypeInfo.importedObjectTypes,
+            DefinitionKind.ImportedObject
+          ) as ImportedObjectDefinition;
+
+          // Keep track of it
+          importsFound[importFound.type] = importFound;
+
+          // Traverse this newly added object
+          visitObjectDefinition(importFound, {
+            ...extractObjectImportDependencies(
+              importsFound,
+              rootTypeInfo,
+              namespace,
+              uri
+            ),
+          });
+        }
+
+        return def;
+      },
+      EnumRef: (def: EnumRef & Namespaced) => {
         if (def.__namespaced) {
           return def;
         }
@@ -224,7 +275,7 @@ const extractObjectImportDependencies = (
         if (!importsFound[namespaceType]) {
           // Find the import
           const importFound = findImport(
-            def,
+            def.type,
             namespaceType,
             rootTypeInfo.enumTypes,
             rootTypeInfo.importedEnumTypes,
@@ -243,7 +294,7 @@ const extractObjectImportDependencies = (
 
 const namespaceTypes = (namespace: string): TypeInfoTransforms => ({
   enter: {
-    ObjectDefinition: (def: ObjectDefinition & Namespaced) => {
+    ObjectRef: (def: ObjectRef & Namespaced) => {
       if (def.__namespaced) {
         return def;
       }
@@ -254,7 +305,9 @@ const namespaceTypes = (namespace: string): TypeInfoTransforms => ({
         __namespaced: true,
       };
     },
-    EnumDefinition: (def: EnumDefinition & Namespaced) => {
+    InterfaceImplementedDefinition: (
+      def: InterfaceImplementedDefinition & Namespaced
+    ) => {
       if (def.__namespaced) {
         return def;
       }
@@ -265,11 +318,16 @@ const namespaceTypes = (namespace: string): TypeInfoTransforms => ({
         __namespaced: true,
       };
     },
-  },
-  leave: {
-    PropertyDefinition: (def: PropertyDefinition) => {
-      populatePropertyType(def);
-      return def;
+    EnumRef: (def: EnumRef & Namespaced) => {
+      if (def.__namespaced) {
+        return def;
+      }
+
+      return {
+        ...def,
+        type: appendNamespace(namespace, def.type),
+        __namespaced: true,
+      };
     },
   },
 });
@@ -289,19 +347,124 @@ function addQueryImportsDirective(
 
   // Append the @imports(...) directive to the query type
   const typeCapture = mutation
-    ? /type[ \n\t]*Mutation[ \n\t]*{/g
-    : /type[ \n\t]*Query[ \n\t]*{/g;
+    ? /type[ \n\t]*Mutation[ \n\t]*([^{]*)[ \n\t]*{/g
+    : /type[ \n\t]*Query[ \n\t]*([^{]*)[ \n\t]*{/g;
 
   const importedTypes = `${externalImports
     .map((type) => `\"${type}\"`)
     .join(",\n    ")}`;
-  const replacementQueryStr = `type ${mutation ? "Mutation" : "Query"} @imports(
+
+  const replacementQueryStr = `type ${
+    mutation ? "Mutation" : "Query"
+  } $1@imports(
   types: [
     ${importedTypes}
   ]
 ) {`;
 
   return schema.replace(typeCapture, replacementQueryStr);
+}
+
+function parseInterfaces(
+  implementInterfaceStatments: RegExpMatchArray[]
+): ImplementationWithInterfaces[] {
+  const implementationsWithInterfaces: ImplementationWithInterfaces[] = [];
+
+  for (const implementMatch of implementInterfaceStatments) {
+    const implementStr = implementMatch[1].trim();
+    const typeCapture = /type[ \n\t]*([a-zA-Z0-9_]+)[ \n\t]*/g;
+
+    const typeNameMatches = typeCapture.exec(implementMatch[0]);
+
+    if (!typeNameMatches) {
+      continue;
+    }
+
+    const typeName = typeNameMatches[1];
+
+    const interfaces = [
+      ...implementStr.matchAll(/([a-zA-Z0-9_]+)(&\s*\d+)*/g),
+    ].map((x) => x[0]);
+
+    implementationsWithInterfaces.push({
+      typeName,
+      interfaces,
+    });
+  }
+
+  return implementationsWithInterfaces;
+}
+
+function resolveInterfaces(
+  schema: string,
+  implementationsWithInterfaces: ImplementationWithInterfaces[]
+): string {
+  const removeComments = (body: string) => {
+    const bodyWithoutComments = body.replace(/"""[^"]*"""[ \n\t]*/g, "");
+    return bodyWithoutComments;
+  };
+
+  if (!implementationsWithInterfaces.length) {
+    return schema;
+  }
+
+  const getAllUniqueInterfaces = (): string[] => {
+    const allIntefaces = implementationsWithInterfaces
+      .map((x) => x.interfaces)
+      .reduce((acc, x) => acc.concat(x), []);
+
+    return [...new Set(allIntefaces)];
+  };
+
+  const allInterfaces = getAllUniqueInterfaces();
+  const interfacesWithBodies: { name: string; body: string }[] = [];
+
+  const typeCapture = /type[ \n\t]*([a-zA-Z0-9_]+)[a-zA-Z0-9_,.:@"&!/\(\)\[\] \n\t]+{([a-zA-Z0-9_,.:@"&!\(\)\[\] \n\t]*)}/g;
+  const typeMatches = [...schema.matchAll(typeCapture)];
+
+  for (const interfaceName of allInterfaces) {
+    const match = typeMatches.find((x) => x[1] === interfaceName);
+    if (!match) {
+      continue;
+    }
+
+    let body = match[2];
+    if (!body) {
+      continue;
+    }
+
+    body = removeComments(body);
+
+    interfacesWithBodies.push({
+      name: interfaceName,
+      body: body,
+    });
+  }
+
+  for (const implementationWithInterfaces of implementationsWithInterfaces) {
+    const implementationTypeCapture = new RegExp(
+      `(type[ \\n\\t]*${implementationWithInterfaces.typeName}[a-zA-Z0-9_,.:@"&!\\(\\)\\[\\] \\n\\t]*{)([a-zA-Z0-9_,.:@"&!\\(\\)\\[\\] \\n\\t]*)}`
+    );
+
+    const bodiesOfInterfaces = implementationWithInterfaces.interfaces.map(
+      (interfaceName) => {
+        return interfacesWithBodies
+          .find((iwb) => iwb.name === interfaceName)
+          ?.body.trim();
+      }
+    );
+
+    const bodiesOfInterfacesStr = bodiesOfInterfaces
+      .filter((x) => x)
+      .reduce((acc: string, x: string) => acc + "\n" + x, "");
+
+    schema = schema.replace(
+      implementationTypeCapture,
+      `$1$2${bodiesOfInterfacesStr}}`
+    );
+  }
+
+  return schema;
 }
 
 async function resolveExternalImports(
@@ -578,10 +741,10 @@ async function resolveLocalImports(
 
         visitorFunc(type, {
           enter: {
-            ObjectDefinition: (def: ObjectDefinition) => {
+            ObjectRef: (def: ObjectRef) => {
               return findImport(def, localTypeInfo.objectTypes);
             },
-            EnumDefinition: (def: EnumDefinition) => {
+            EnumRef: (def: EnumRef) => {
               return findImport(def, localTypeInfo.enumTypes);
             },
           },

@@ -1,11 +1,6 @@
 import { TypeInfo, EnumDefinition, createEnumDefinition } from "../typeInfo";
 
-import {
-  DirectiveNode,
-  DocumentNode,
-  EnumTypeDefinitionNode,
-  visit,
-} from "graphql";
+import { ASTVisitor, DirectiveNode, EnumTypeDefinitionNode } from "graphql";
 
 const visitorEnter = (enumTypes: EnumDefinition[]) => ({
   EnumTypeDefinition: (node: EnumTypeDefinitionNode) => {
@@ -29,16 +24,12 @@ const visitorEnter = (enumTypes: EnumDefinition[]) => ({
     const enumType = createEnumDefinition({
       type: node.name.value,
       constants,
+      comment: node.description?.value,
     });
     enumTypes.push(enumType);
   },
 });
 
-export function extractEnumTypes(
-  astNode: DocumentNode,
-  typeInfo: TypeInfo
-): void {
-  visit(astNode, {
-    enter: visitorEnter(typeInfo.enumTypes),
-  });
-}
+export const getEnumTypesVisitor = (typeInfo: TypeInfo): ASTVisitor => ({
+  enter: visitorEnter(typeInfo.enumTypes),
+});

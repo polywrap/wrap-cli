@@ -8,6 +8,5 @@ export const manifest: PluginManifest = {
   toUnicode(value: String!): String!
   convert(value: String!): String!
 }`,
-  implemented: [],
-  imported: [],
+  implements: [],
 };

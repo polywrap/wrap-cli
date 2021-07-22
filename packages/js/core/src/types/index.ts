@@ -7,3 +7,5 @@ export * from "./Invoke";
 export * from "./Uri";
 export * from "./UriRedirect";
 export * from "./Environment";
+export * from "./InterfaceImplementations";
+export * from "./PluginRegistration";

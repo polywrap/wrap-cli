@@ -4,10 +4,10 @@
 import { Project } from "./Project";
 
 import {
-  Web3ApiManifest,
   Uri,
   Web3ApiClient,
-  UriRedirect,
+  PluginRegistration,
+  Web3ApiManifest,
 } from "@web3api/client-js";
 import {
   composeSchema,
@@ -38,12 +38,12 @@ export class SchemaComposer {
 
   constructor(private _config: SchemaConfig) {
     const { ensAddress, ethProvider, ipfsProvider } = this._config;
-    const redirects: UriRedirect[] = [];
+    const plugins: PluginRegistration[] = [];
 
     if (ensAddress) {
-      redirects.push({
-        from: "w3://ens/ens.web3api.eth",
-        to: ensPlugin({
+      plugins.push({
+        uri: "w3://ens/ens.web3api.eth",
+        plugin: ensPlugin({
           addresses: {
             testnet: ensAddress,
           },
@@ -52,9 +52,9 @@ export class SchemaComposer {
     }
 
     if (ethProvider) {
-      redirects.push({
-        from: "w3://ens/ethereum.web3api.eth",
-        to: ethereumPlugin({
+      plugins.push({
+        uri: "w3://ens/ethereum.web3api.eth",
+        plugin: ethereumPlugin({
           networks: {
             testnet: {
               provider: ethProvider,
@@ -65,16 +65,16 @@ export class SchemaComposer {
     }
 
     if (ipfsProvider) {
-      redirects.push({
-        from: "w3://ens/ipfs.web3api.eth",
-        to: ipfsPlugin({
+      plugins.push({
+        uri: "w3://ens/ipfs.web3api.eth",
+        plugin: ipfsPlugin({
           provider: ipfsProvider,
           fallbackProviders: ["https://ipfs.io"],
         }),
       });
     }
 
-    this._client = new Web3ApiClient({ redirects });
+    this._client = new Web3ApiClient({ plugins });
   }
 
   public async getComposedSchemas(

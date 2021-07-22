@@ -32,7 +32,7 @@ export function createWeb3ApiProvider(
     ClientContext: React.createContext({} as Web3ApiClient)
   };
 
-  return ({ redirects, children }) => {
+  return ({ redirects, plugins, interfaces, children }) => {
 
     const [clientCreated, setClientCreated] = React.useState(false);
 
@@ -46,7 +46,7 @@ export function createWeb3ApiProvider(
       }
 
       // Instantiate the client
-      PROVIDERS[name].client = new Web3ApiClient({ redirects });
+      PROVIDERS[name].client = new Web3ApiClient({ redirects, plugins, interfaces });
 
       setClientCreated(true);
 

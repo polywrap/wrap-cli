@@ -30,6 +30,16 @@ export async function runCommand(
       }
     };
 
-    exec(command, { cwd: __dirname, env }, callback);
+    exec(
+      command,
+      {
+        cwd: __dirname,
+        env: {
+          ...process.env,
+          ...env,
+        },
+      },
+      callback
+    );
   });
 }

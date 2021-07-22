@@ -1,27 +1,22 @@
 import { TypeInfo } from "../typeInfo";
-import { extractEnumTypes } from "./enum-types";
-import { extractObjectTypes } from "./object-types";
-import { extractQueryTypes } from "./query-types";
-import { extractImportedObjectTypes } from "./imported-object-types";
-import { extractImportedQueryTypes } from "./imported-query-types";
-import { extractImportedEnumTypes } from "./imported-enum-types";
-import { extractEnvironmentTypes } from "./environment-types";
-import { Blackboard } from "./Blackboard";
+import { getEnumTypesVisitor } from "./enum-types";
+import { getObjectTypesVisitor } from "./object-types";
+import { getQueryTypesVisitor } from "./query-types";
+import { getImportedObjectTypesVisitor } from "./imported-object-types";
+import { getImportedQueryTypesVisitor } from "./imported-query-types";
+import { getImportedEnumTypesVisitor } from "./imported-enum-types";
+import { getEnvironmentTypesVisitor } from "./environment-types";
 
-import { DocumentNode } from "graphql";
+import { ASTVisitor } from "graphql";
 
-export type SchemaExtractor = (
-  astNode: DocumentNode,
-  typeInfo: TypeInfo,
-  blackboard: Blackboard
-) => void;
+export type SchemaExtractorBuilder = (typeInfo: TypeInfo) => ASTVisitor;
 
-export const extractors: SchemaExtractor[] = [
-  extractEnumTypes,
-  extractImportedEnumTypes,
-  extractObjectTypes,
-  extractImportedObjectTypes,
-  extractQueryTypes,
-  extractImportedQueryTypes,
-  extractEnvironmentTypes,
+export const extractors: SchemaExtractorBuilder[] = [
+  getEnumTypesVisitor,
+  getImportedEnumTypesVisitor,
+  getObjectTypesVisitor,
+  getImportedObjectTypesVisitor,
+  getQueryTypesVisitor,
+  getImportedQueryTypesVisitor,
+  getEnvironmentTypesVisitor,
 ];

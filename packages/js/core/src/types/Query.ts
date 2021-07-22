@@ -85,4 +85,11 @@ export interface QueryHandler {
   >(
     options: QueryApiOptions<TVariables, string>
   ): Promise<QueryApiResult<TData>>;
+
+  query<
+    TData extends Record<string, unknown> = Record<string, unknown>,
+    TVariables extends Record<string, unknown> = Record<string, unknown>
+  >(
+    options: QueryApiOptions<TVariables, Uri>
+  ): Promise<QueryApiResult<TData>>;
 }
