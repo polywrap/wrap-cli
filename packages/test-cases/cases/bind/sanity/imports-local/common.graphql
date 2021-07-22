@@ -45,3 +45,8 @@ enum CustomEnum {
   STRING
   BYTES
 }
+
+type Env {
+  prop: String!
+  optProp: String
+}

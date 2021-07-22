@@ -8,6 +8,7 @@ export {
   Input_objectMethod
 };
 
+export { MutationEnv } from "./MutationEnv";
 export { AnotherType } from "./AnotherType";
 export { CustomType } from "./CustomType";
 export {
@@ -26,3 +27,5 @@ export {
   getTestImport_EnumValue,
   sanitizeTestImport_EnumValue
 } from "./imported/TestImport_Enum";
+
+export { env } from "./environment";
