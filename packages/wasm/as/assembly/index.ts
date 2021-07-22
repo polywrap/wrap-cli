@@ -13,3 +13,4 @@ export { BigInt } from "./BigInt";
 export * from "./abort";
 export * from "./invoke";
 export * from "./subinvoke";
+export * from "./environment";
