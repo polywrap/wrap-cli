@@ -15,27 +15,27 @@ pub struct TestImportObject {
     pub object_array: Vec<TestImportAnotherObject>,
     pub opt_object_array: Option<Vec<TestImportAnotherObject>>,
     pub en: TestImportEnum,
-    pub opt_en: Option<TestImportEnum>,
-    pub en_array: Vec<TestImportEnum>,
-    pub opt_en_array: Option<Vec<TestImportEnum>>,
+    pub opt_enum: Option<TestImportEnum>,
+    pub enum_array: Vec<TestImportEnum>,
+    pub opt_enum_array: Option<Vec<TestImportEnum>>,
 }
 
 impl TestImportObject {
     pub const URI: &'static str = "testimport.uri.eth";
 
-    pub fn to_buffer(object: &Self) -> Vec<u8> {
+    pub fn to_buffer(object: &TestImportObject) -> Vec<u8> {
         serialize_test_import_object(object)
     }
 
-    pub fn from_buffer(buffer: &[u8]) -> Self {
+    pub fn from_buffer(buffer: &[u8]) -> TestImportObject {
         deserialize_test_import_object(buffer)
     }
 
-    pub fn write<W: Write>(object: &Self, writer: &mut W) {
+    pub fn write<W: Write>(object: &TestImportObject, writer: &mut W) {
         write_test_import_object(object, writer);
     }
 
-    pub fn read<R: Read>(reader: &mut R) -> Self {
+    pub fn read<R: Read>(reader: &mut R) -> TestImportObject {
         read_test_import_object(reader).expect("Failed to read TestImportObject")
     }
 }

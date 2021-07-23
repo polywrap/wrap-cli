@@ -14,25 +14,25 @@ pub struct TestImportAnotherObject {
 impl TestImportAnotherObject {
     pub const URI: &'static str = "testimport.uri.eth";
 
-    pub fn new() -> Self {
-        Self {
+    pub fn new() -> TestImportAnotherObject {
+        TestImportAnotherObject {
             prop: String::new(),
         }
     }
 
-    pub fn to_buffer(object: &Self) -> Vec<u8> {
+    pub fn to_buffer(object: &TestImportAnotherObject) -> Vec<u8> {
         serialize_test_import_another_object(object)
     }
 
-    pub fn from_buffer(buffer: &[u8]) -> Self {
+    pub fn from_buffer(buffer: &[u8]) -> TestImportAnotherObject {
         deserialize_test_import_another_object(buffer)
     }
 
-    pub fn write<W: Write>(object: &Self, writer: &mut W) {
+    pub fn write<W: Write>(object: &TestImportAnotherObject, writer: &mut W) {
         write_test_import_another_object(object, writer);
     }
 
-    pub fn read<R: Read>(reader: &mut R) -> Self {
+    pub fn read<R: Read>(reader: &mut R) -> TestImportAnotherObject {
         read_test_import_another_object(reader).expect("Failed to read TestImportAnotherObject")
     }
 }

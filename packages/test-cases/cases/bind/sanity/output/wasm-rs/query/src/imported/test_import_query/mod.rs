@@ -15,7 +15,7 @@ impl TestImportQuery {
     pub const URI: &'static str = "testimport.uri.eth";
 
     pub fn imported_method(input: &InputImportedMethod) -> TestImportObject {
-        let uri = Self::URI;
+        let uri = TestImportQuery::URI;
         let args = serialize_imported_method_args(input);
         let result = subinvoke::w3_subinvoke(
             uri.to_string(),
@@ -28,7 +28,7 @@ impl TestImportQuery {
     }
 
     pub fn another_method(input: &InputAnotherMethod) -> i64 {
-        let uri = Self::URI;
+        let uri = TestImportQuery::URI;
         let args = serialize_another_method_args(input);
         let result = subinvoke::w3_subinvoke(
             uri.to_string(),

@@ -10,7 +10,7 @@ pub use serialization::{
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CustomType {
     pub string: String,
-    pub opt_string: Option<String>,
+    pub opt_str: Option<String>,
     pub u: u32,
     pub opt_u: Option<u32>,
     pub uint8: u8,
@@ -41,25 +41,25 @@ pub struct CustomType {
     pub object_array: Vec<AnotherType>,
     pub opt_object_array: Option<Vec<AnotherType>>,
     pub en: CustomEnum,
-    pub opt_en: Option<CustomEnum>,
-    pub en_array: Vec<CustomEnum>,
-    pub opt_en_array: Option<Vec<CustomEnum>>,
+    pub opt_enum: Option<CustomEnum>,
+    pub enum_array: Vec<CustomEnum>,
+    pub opt_enum_array: Option<Vec<CustomEnum>>,
 }
 
 impl CustomType {
-    pub fn to_buffer(object: &Self) -> Vec<u8> {
+    pub fn to_buffer(object: &CustomType) -> Vec<u8> {
         serialize_custom_type(object)
     }
 
-    pub fn from_buffer(buffer: &[u8]) -> Self {
+    pub fn from_buffer(buffer: &[u8]) -> CustomType {
         deserialize_custom_type(buffer)
     }
 
-    pub fn write<W: Write>(object: &Self, writer: &mut W) {
+    pub fn write<W: Write>(object: &CustomType, writer: &mut W) {
         write_custom_type(object, writer);
     }
 
-    pub fn read<R: Read>(reader: &mut R) -> Self {
+    pub fn read<R: Read>(reader: &mut R) -> CustomType {
         read_custom_type(reader).expect("Failed to read CustomType")
     }
 }

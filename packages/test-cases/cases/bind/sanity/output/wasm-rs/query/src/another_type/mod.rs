@@ -13,26 +13,26 @@ pub struct AnotherType {
 }
 
 impl AnotherType {
-    pub fn new() -> Self {
-        Self {
+    pub fn new() -> AnotherType {
+        AnotherType {
             prop: None,
             circular: Box::new(None),
         }
     }
 
-    pub fn to_buffer(object: &Self) -> Vec<u8> {
+    pub fn to_buffer(object: &AnotherType) -> Vec<u8> {
         serialize_another_type(object)
     }
 
-    pub fn from_buffer(buffer: &[u8]) -> Self {
+    pub fn from_buffer(buffer: &[u8]) -> AnotherType {
         deserialize_another_type(buffer)
     }
 
-    pub fn write<W: Write>(object: &Self, writer: &mut W) {
+    pub fn write<W: Write>(object: &AnotherType, writer: &mut W) {
         write_another_type(object, writer);
     }
 
-    pub fn read<R: Read>(reader: &mut R) -> Self {
+    pub fn read<R: Read>(reader: &mut R) -> AnotherType {
         read_another_type(reader)
     }
 }

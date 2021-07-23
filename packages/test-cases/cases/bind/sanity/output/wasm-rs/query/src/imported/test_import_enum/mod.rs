@@ -12,11 +12,11 @@ pub enum TestImportEnum {
 impl TryFrom<i32> for TestImportEnum {
     type Error = &'static str;
 
-    fn try_from(v: i32) -> Result<Self, Self::Error> {
+    fn try_from(v: i32) -> Result<TestImportEnum, Self::Error> {
         match v {
-            x if x == Self::STRING as i32 => Ok(Self::STRING),
-            x if x == Self::BYTES as i32 => Ok(Self::BYTES),
-            x if x == Self::_MAX_ as i32 => Ok(Self::_MAX_),
+            x if x == TestImportEnum::STRING as i32 => Ok(TestImportEnum::STRING),
+            x if x == TestImportEnum::BYTES as i32 => Ok(TestImportEnum::BYTES),
+            x if x == TestImportEnum::_MAX_ as i32 => Ok(TestImportEnum::_MAX_),
             _ => Err("Error converting TestImportEnum to i32"),
         }
     }
