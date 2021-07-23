@@ -108,12 +108,6 @@ type Mutation {
   sanitizeMutationEnv(env: MutationClientEnv!): MutationEnv!
 }
 
-type Query @imports(
-  types: [ "TestImport_Query" ]
-) {
-  sanitizeQueryEnv(env: QueryClientEnv!): QueryEnv!
-}
-
 """
 ImplementationObject comment
 """
@@ -133,6 +127,7 @@ Query comment
 type Query implements Interface_Query @imports(
   types: [ "TestImport_Query", "Interface_Query" ]
 ) {
+  sanitizeQueryEnv(env: QueryClientEnv!): QueryEnv!
 """
 queryMethod comment
 """

@@ -347,8 +347,8 @@ function addQueryImportsDirective(
 
   // Append the @imports(...) directive to the query type
   const typeCapture = mutation
-    ? /type[ \n\t]*Mutation[ \n\t]*([^{]*)[ \n\t]*{/g
-    : /type[ \n\t]*Query[ \n\t]*([^{]*)[ \n\t]*{/g;
+    ? /type[ \n\t]*Mutation[^a-zA-Z][ \n\t]*([^{]*)[ \n\t]*{/g
+    : /type[ \n\t]*Query[^a-zA-Z][ \n\t]*([^{]*)[ \n\t]*{/g;
 
   const importedTypes = `${externalImports
     .map((type) => `\"${type}\"`)

@@ -229,7 +229,7 @@ export const output: TypeInfo = {
         properties: [
           createScalarPropertyDefinition({ name: "prop", type: "String", required: true })
         ]
-    }
+    },
     {
         ...createObjectDefinition({ type: "MutationEnv" }),
         properties: [

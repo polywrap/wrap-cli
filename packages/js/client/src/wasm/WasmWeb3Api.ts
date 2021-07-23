@@ -19,6 +19,7 @@ import {
   Client,
   InvokableModules,
   Environment,
+  UriResolver,
 } from "@web3api/core-js";
 import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
