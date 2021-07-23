@@ -31,7 +31,7 @@ impl {{type}} {
         deserialize_{{#toLower}}{{type}}{{/toLower}}(buffer)
     }
 
-    pub fn write<W: Write>(object: &{{type}}, writer: 7mut W) {
+    pub fn write<W: Write>(object: &{{type}}, writer: &mut W) {
         write_{{#toLower}}{{type}}{{/toLower}}(object, writer);
     }
 
