@@ -11,16 +11,14 @@ import {
   isEnviromentType,
   State,
 } from "./object-types-utils";
-import { Blackboard } from "./Blackboard";
 
 import {
-  DocumentNode,
   ObjectTypeDefinitionNode,
   NonNullTypeNode,
   NamedTypeNode,
   ListTypeNode,
   FieldDefinitionNode,
-  visit,
+  ASTVisitor,
 } from "graphql";
 
 const visitorEnter = (
@@ -28,8 +26,7 @@ const visitorEnter = (
     mutation: Environment;
     query: Environment;
   },
-  state: State,
-  blackboard: Blackboard
+  state: State
 ) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     if (isEnviromentType(node.name.value)) {
@@ -54,7 +51,7 @@ const visitorEnter = (
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    extractNamedType(node, state, blackboard);
+    extractNamedType(node, state);
   },
   ListType: (_node: ListTypeNode) => {
     extractListType(state);
@@ -76,15 +73,11 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export function extractEnvironmentTypes(
-  astNode: DocumentNode,
-  typeInfo: TypeInfo,
-  blackboard: Blackboard
-): void {
+export function getEnvironmentTypesVisitor(typeInfo: TypeInfo): ASTVisitor {
   const state: State = {};
 
-  visit(astNode, {
-    enter: visitorEnter(typeInfo.environment, state, blackboard),
+  return {
+    enter: visitorEnter(typeInfo.environment, state),
     leave: visitorLeave(state),
-  });
+  };
 }

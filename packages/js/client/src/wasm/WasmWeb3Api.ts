@@ -17,7 +17,6 @@ import {
   Web3ApiManifest,
   Uri,
   Client,
-  UriResolver,
   InvokableModules,
   Environment,
 } from "@web3api/core-js";
@@ -46,7 +45,6 @@ export class WasmWeb3Api extends Api {
   constructor(
     private _uri: Uri,
     private _manifest: Web3ApiManifest,
-    private _apiResolver: Uri,
     private _uriResolver: Uri,
     private _clientEnvironment?: Environment<Uri>
   ) {
@@ -56,7 +54,6 @@ export class WasmWeb3Api extends Api {
     Tracer.setAttribute("input", {
       uri: this._uri,
       manifest: this._manifest,
-      apiResolver: this._apiResolver,
       clientEnviroment: this._clientEnvironment,
       uriResolver: this._uriResolver,
     });

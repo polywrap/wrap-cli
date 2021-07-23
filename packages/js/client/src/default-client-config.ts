@@ -13,6 +13,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
   "client-js: getDefaultClientConfig",
   (): ClientConfig<Uri> => {
     return {
+      environments: [],
       redirects: [],
       plugins: [
         // IPFS is required for downloading Web3API packages

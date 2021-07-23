@@ -10,7 +10,6 @@ import {
   DirectiveNode,
   DocumentNode,
   EnumTypeDefinitionNode,
-  FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
   InterfaceTypeDefinitionNode,
