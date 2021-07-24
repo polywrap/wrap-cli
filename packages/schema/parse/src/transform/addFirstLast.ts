@@ -1,39 +1,33 @@
 import { TypeInfoTransforms } from ".";
 import {
-  MethodDefinition,
-  ObjectDefinition,
-  QueryDefinition,
   TypeInfo,
-  ImportedQueryDefinition,
+  GenericDefinition
 } from "../typeInfo";
 
 export const addFirstLast: TypeInfoTransforms = {
   enter: {
+    GenericDefinition: (def: GenericDefinition) => {
+      const arrays: Record<string, unknown[]> = {};
+
+      for (const key of Object.keys(def)) {
+        const value = (def as any)[key];
+
+        if (Array.isArray(value)) {
+          arrays[key] = setFirstLast(value);
+        }
+      }
+
+      return {
+        ...def,
+        ...arrays,
+      };
+    },
     TypeInfo: (typeInfo: TypeInfo) => ({
       ...typeInfo,
       objectTypes: setFirstLast(typeInfo.objectTypes),
       queryTypes: setFirstLast(typeInfo.queryTypes),
       importedObjectTypes: setFirstLast(typeInfo.importedObjectTypes),
       importedQueryTypes: setFirstLast(typeInfo.importedQueryTypes),
-    }),
-    ObjectDefinition: (def: ObjectDefinition) => ({
-      ...def,
-      properties: setFirstLast(def.properties),
-      interfaces: setFirstLast(def.interfaces),
-    }),
-    MethodDefinition: (def: MethodDefinition) => ({
-      ...def,
-      arguments: setFirstLast(def.arguments),
-    }),
-    QueryDefinition: (def: QueryDefinition) => ({
-      ...def,
-      methods: setFirstLast(def.methods),
-      imports: setFirstLast(def.imports),
-      interfaces: setFirstLast(def.interfaces),
-    }),
-    ImportedQueryDefinition: (def: ImportedQueryDefinition) => ({
-      ...def,
-      methods: setFirstLast(def.methods),
     }),
   },
 };

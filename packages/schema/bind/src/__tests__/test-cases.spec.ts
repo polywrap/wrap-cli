@@ -23,6 +23,7 @@ describe("Web3API Binding Test Suite", () => {
       for (const outputLanguage of testCase.outputLanguages) {
         // Verify it binds correctly
         const { language, directories } = outputLanguage;
+
         // Read the expected output directories
         const expectedOutput = {
           query: directories.query
