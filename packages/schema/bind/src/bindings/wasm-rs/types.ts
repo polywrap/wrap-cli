@@ -22,3 +22,23 @@ export type BaseType = keyof BaseTypes;
 export function isBaseType(type: string): type is BaseType {
   return type in baseTypes;
 }
+
+const keywords = {
+  str: "str",
+  enum: "enum",
+  struct: "struct",
+  type: "type",
+  String: "String",
+  Option: "Option",
+  ref: "ref",
+  trait: "trait",
+  pub: "pub",
+};
+
+export type KeyWords = typeof keywords;
+
+export type KeyWord = keyof KeyWords;
+
+export function isKeyWord(keyword: string): keyword is KeyWord {
+  return keyword in keywords;
+}
