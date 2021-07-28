@@ -1,7 +1,25 @@
-use crate::{get_custom_enum_value, sanitize_custom_enum_value, AnotherType, CustomEnum};
-use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
-use serde::{Deserialize, Serialize};
-use std::convert::{TryFrom, TryInto};
+use crate::{
+    get_custom_enum_value, 
+    sanitize_custom_enum_value, 
+    AnotherType, 
+    CustomEnum,
+};
+use crate::{
+    Context, 
+    Read, 
+    ReadDecoder, 
+    Write, 
+    WriteEncoder, 
+    WriteSizer,
+};
+use serde::{
+    Deserialize, 
+    Serialize,
+};
+use std::convert::{
+    TryFrom, 
+    TryInto,
+};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InputMutationMethod {
