@@ -16,17 +16,11 @@ pub use serialization::{
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct TestImportAnotherObject {
-    prop: String,
+    pub prop: String,
 }
 
 impl TestImportAnotherObject {
     pub const URI: &'static str = "testimport.uri.eth";
-
-    pub fn new() -> TestImportAnotherObject {
-        TestImportAnotherObject {
-            prop: String::new(),
-        }
-    }
 
     pub fn to_buffer(object: &TestImportAnotherObject) -> Vec<u8> {
         serialize_test_import_another_object(object)

@@ -22,13 +22,6 @@ pub struct AnotherType {
 }
 
 impl AnotherType {
-    pub fn new() -> AnotherType {
-        AnotherType {
-            prop: None,
-            circular: Box::new(None),
-        }
-    }
-
     pub fn to_buffer(object: &AnotherType) -> Vec<u8> {
         serialize_another_type(object)
     }

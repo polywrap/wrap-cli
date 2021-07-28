@@ -137,7 +137,7 @@ pub fn deserialize_test_import_object(buffer: &[u8]) -> TestImportObject {
 pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObject, String> {
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
-    let mut object = TestImportAnotherObject::new();
+    let mut object = TestImportAnotherObject { prop: String::new(), };
     let mut object_set = false;
     let mut opt_object: Option<TestImportAnotherObject> = None;
     let mut object_array: Vec<TestImportAnotherObject> = vec![];

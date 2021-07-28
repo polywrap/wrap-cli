@@ -250,7 +250,7 @@ pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMeth
     let mut reader = ReadDecoder::new(args_buf, context);
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
-    let mut object = AnotherType::new();
+    let mut object = AnotherType { prop: None, circular: Box::new(None), };
     let mut object_set = false;
     let mut opt_object: Option<AnotherType> = None;
     let mut object_array: Vec<AnotherType> = vec![];

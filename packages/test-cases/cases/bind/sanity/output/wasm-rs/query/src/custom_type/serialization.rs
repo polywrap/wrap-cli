@@ -424,7 +424,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
     let mut u_array_opt_array_array: Vec<Option<Vec<Vec<u64>>>> = vec![];
     let mut u_array_opt_array_array_set = false;
     let mut crazy_array: Option<Vec<Option<Vec<Option<Vec<u64>>>>>> = None;
-    let mut object = AnotherType::new();
+    let mut object = AnotherType { prop: None, circular: Box::new(None), };
     let mut object_set = false;
     let mut opt_object: Option<AnotherType> = None;
     let mut object_array: Vec<AnotherType> = vec![];
