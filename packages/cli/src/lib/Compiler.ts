@@ -423,7 +423,8 @@ export class Compiler {
   private async _validateExports(
     moduleName: InvokableModules,
     buildDir: string
-  ) {
+  ): Promise<void> {
+    let missingExport: string | undefined;
     const wasmSource = fs.readFileSync(
       path.join(buildDir, `${moduleName}.wasm`)
     );
@@ -447,12 +448,20 @@ export class Compiler {
     });
 
     if (!instance.exports._w3_init) {
-      throw Error(intlMsg.lib_compiler_missing_export__w3_init({ moduleName }));
+      missingExport = "_w3_init";
     }
 
     if (!instance.exports._w3_invoke) {
+      missingExport = "_w3_invoke";
+    }
+
+    if (!instance.exports.w3Abort) {
+      missingExport = "w3Abort";
+    }
+
+    if (missingExport) {
       throw Error(
-        intlMsg.lib_compiler_missing_export__w3_invoke({ moduleName })
+        intlMsg.lib_compiler_missing_export({ missingExport, moduleName })
       );
     }
   }
