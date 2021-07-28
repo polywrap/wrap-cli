@@ -6,6 +6,7 @@ export type u32 = number;
 export interface W3Exports extends WebAssembly.Exports {
   _w3_invoke: (nameLen: u32, argsLen: u32) => boolean;
   _w3_load_env: (environmentLen: u32) => void;
+  _w3_sanitize_env: (nameLen: u32, argsLen: u32) => boolean;
 }
 
 export interface W3Imports extends WebAssembly.Imports {
