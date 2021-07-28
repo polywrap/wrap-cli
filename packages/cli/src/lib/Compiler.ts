@@ -16,7 +16,6 @@ import {
   InvokableModules,
   Web3ApiManifest,
   BuildManifest,
-  validateModuleExports,
 } from "@web3api/core-js";
 import {
   bindSchema,
@@ -310,11 +309,41 @@ export class Compiler {
   private async _validateExports(
     moduleName: InvokableModules,
     buildDir: string
-  ) {
+  ): Promise<void> {
+    let missingExport: string | undefined;
     const wasmSource = fs.readFileSync(
       path.join(buildDir, `${moduleName}.wasm`)
     );
-    const missingExport = await validateModuleExports(wasmSource);
+    const mod = await WebAssembly.compile(wasmSource);
+    const memory = new WebAssembly.Memory({ initial: 1 });
+    const instance = await WebAssembly.instantiate(mod, {
+      env: {
+        memory,
+      },
+      w3: {
+        __w3_subinvoke: () => {},
+        __w3_subinvoke_result_len: () => {},
+        __w3_subinvoke_result: () => {},
+        __w3_subinvoke_error_len: () => {},
+        __w3_subinvoke_error: () => {},
+        __w3_invoke_args: () => {},
+        __w3_invoke_result: () => {},
+        __w3_invoke_error: () => {},
+        __w3_abort: () => {},
+      },
+    });
+
+    if (!instance.exports._w3_init) {
+      missingExport = "_w3_init";
+    }
+
+    if (!instance.exports._w3_invoke) {
+      missingExport = "_w3_invoke";
+    }
+
+    if (!instance.exports.w3Abort) {
+      missingExport = "w3Abort";
+    }
 
     if (missingExport) {
       throw Error(
