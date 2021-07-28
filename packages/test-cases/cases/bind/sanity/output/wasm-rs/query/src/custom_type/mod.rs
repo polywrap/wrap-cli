@@ -21,7 +21,7 @@ pub use serialization::{
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CustomType {
-    pub string: String,
+    pub str: String,
     pub opt_str: Option<String>,
     pub u: u32,
     pub opt_u: Option<u32>,

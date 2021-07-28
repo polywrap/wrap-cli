@@ -34,9 +34,9 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
     writer.write_map_length(35);
     writer
         .context()
-        .push("string", "String", "writing property");
-    writer.write_string(&"string".to_string());
-    writer.write_string(&object.string.to_owned());
+        .push("str", "String", "writing property");
+    writer.write_string(&"str".to_string());
+    writer.write_string(&object.str.to_owned());
     writer
         .context()
         .pop()
@@ -379,8 +379,8 @@ pub fn deserialize_custom_type(buffer: &[u8]) -> CustomType {
 pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
-    let mut string = String::new();
-    let mut string_set = false;
+    let mut str = String::new();
+    let mut str_set = false;
     let mut opt_str: Option<String> = None;
     let mut u: u32 = 0;
     let mut u_set = false;
@@ -431,7 +431,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
     let mut object_array_set = false;
     let mut opt_object_array: Option<Vec<AnotherType>> = None;
     let mut en = CustomEnum::_MAX_;
-    let mut enum_set = false;
+    let mut en_set = false;
     let mut opt_enum: Option<CustomEnum> = None;
     let mut enum_array: Vec<CustomEnum> = vec![];
     let mut enum_array_set = false;
@@ -442,12 +442,12 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
         let field = reader.read_string().unwrap_or_default();
 
         match field.as_str() {
-            "string" => {
+            "str" => {
                 reader
                     .context()
                     .push(&field, "String", "type found, reading property");
-                string = reader.read_string().unwrap_or_default();
-                string_set = true;
+                str = reader.read_string().unwrap_or_default();
+                str_set = true;
                 reader
                     .context()
                     .pop()
@@ -831,7 +831,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                         .expect("Failed to convert i32 to CustomEnum");
                     sanitize_custom_enum_value(en as i32).expect("Failed to sanitize CustomEnum");
                 }
-                enum_set = true;
+                en_set = true;
                 reader
                     .context()
                     .pop()
@@ -930,7 +930,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
         }
     }
 
-    if !string_set {
+    if !str_set {
         let custom_error = reader
             .context()
             .print_with_context("Missing required property: 'string: String'");
@@ -1050,7 +1050,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
             .print_with_context("Missing required property: 'object_array: Vec<AnotherType>'");
         return Err(custom_error);
     }
-    if !enum_set {
+    if !en_set {
         let custom_error = reader
             .context()
             .print_with_context("Missing required property: 'en: CustomEnum'");
@@ -1064,7 +1064,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
     }
 
     Ok(CustomType {
-        string,
+        str,
         opt_str,
         u,
         opt_u,

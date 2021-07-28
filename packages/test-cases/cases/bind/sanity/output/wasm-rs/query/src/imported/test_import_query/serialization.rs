@@ -17,7 +17,7 @@ use serde::{
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InputImportedMethod {
-    pub string: String,
+    pub str: String,
     pub opt_str: Option<String>,
     pub u: u32,
     pub opt_uint: Option<u32>,
@@ -51,9 +51,9 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     writer.write_map_length(13);
     writer
         .context()
-        .push("string", "String", "writing property");
-    writer.write_string(&"string".to_string());
-    writer.write_string(&input.string);
+        .push("str", "String", "writing property");
+    writer.write_string(&"str".to_string());
+    writer.write_string(&input.str);
     writer
         .context()
         .pop()

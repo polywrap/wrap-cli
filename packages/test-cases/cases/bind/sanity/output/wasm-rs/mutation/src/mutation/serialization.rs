@@ -23,7 +23,7 @@ use std::convert::{
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InputMutationMethod {
-    pub string: String,
+    pub str: String,
     pub opt_str: Option<String>,
     pub en: CustomEnum,
     pub opt_enum: Option<CustomEnum>,
@@ -37,11 +37,11 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
     let mut reader = ReadDecoder::new(args_buf, context);
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
-    let mut string = String::new();
-    let mut string_set = false;
+    let mut str = String::new();
+    let mut str_set = false;
     let mut opt_str: Option<String> = None;
     let mut en = CustomEnum::_MAX_;
-    let mut enum_set = false;
+    let mut en_set = false;
     let mut opt_enum: Option<CustomEnum> = None;
     let mut enum_array: Vec<CustomEnum> = vec![];
     let mut enum_array_set = false;
@@ -51,13 +51,13 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
         num_of_fields -= 1;
         let field = reader.read_string().unwrap_or_default();
         match field.as_str() {
-            "string" => {
+            "str" => {
                 reader
                     .context()
                     .push(&field, "String", "type found, reading property");
-                if !string_set {
-                    string = reader.read_string().unwrap_or_default();
-                    string_set = true;
+                if !str_set {
+                    str = reader.read_string().unwrap_or_default();
+                    str_set = true;
                 }
                 reader
                     .context()
@@ -78,7 +78,7 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
                 reader
                     .context()
                     .push(&field, "CustomEnum", "type found, reading property");
-                if reader.is_next_string() && !enum_set {
+                if reader.is_next_string() && !en_set {
                     en = get_custom_enum_value(reader.read_string().unwrap_or_default().as_str())
                         .expect("Failed to get CustomEnum value");
                 } else {
@@ -86,7 +86,7 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
                     sanitize_custom_enum_value(en as i32)
                         .expect("Failed to sanitize CustomEnum value");
                 }
-                enum_set = true;
+                en_set = true;
                 reader
                     .context()
                     .pop()
@@ -183,13 +183,13 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
         }
     }
 
-    if !string_set {
+    if !str_set {
         let custom_error = reader
             .context()
             .print_with_context("Missing required argument: 'string: String'");
         return Err(custom_error);
     }
-    if !enum_set {
+    if !en_set {
         let custom_error = reader
             .context()
             .print_with_context("Missing required argument: 'en: CustomEnum'");
@@ -203,7 +203,7 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
     }
 
     Ok(InputMutationMethod {
-        string,
+        str,
         opt_str,
         en,
         opt_enum,

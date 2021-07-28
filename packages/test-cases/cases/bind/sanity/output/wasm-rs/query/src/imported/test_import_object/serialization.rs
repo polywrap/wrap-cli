@@ -144,7 +144,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
     let mut object_array_set = false;
     let mut opt_object_array: Option<Vec<TestImportAnotherObject>> = None;
     let mut en = TestImportEnum::_MAX_;
-    let mut enum_set = false;
+    let mut en_set = false;
     let mut opt_enum: Option<TestImportEnum> = None;
     let mut enum_array: Vec<TestImportEnum> = vec![];
     let mut enum_array_set = false;
@@ -225,7 +225,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                     sanitize_test_import_enum_value(en as i32)
                         .expect("Failed to sanitize TestImportEnum value");
                 }
-                enum_set = true;
+                en_set = true;
                 reader
                     .context()
                     .pop()
@@ -340,7 +340,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
         );
         return Err(custom_error);
     }
-    if !enum_set {
+    if !en_set {
         let custom_error = reader
             .context()
             .print_with_context("Missing required property: 'en: TestImportEnum'");
