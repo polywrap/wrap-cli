@@ -19,14 +19,14 @@ if !reader.is_next_nil() {
             .expect("Failed to get {{#toWasm}}{{toGraphQLType}}{{/toWasm}} value"),
         );
     } else {
-        {{#toLower}}{{type}}{{/toLower}} = Some(
+        {{#toLower}}{{name}}{{/toLower}} = Some(
             {{type}}::try_from(reader.read_i32().unwrap_or_default())
-                .expect("Failed to convert i32 to {{type}}"),
+                .expect("Failed to convert i32 to {{#toWasm}}{{toGraphQLType}}{{/toWasm}}"),
         );
         sanitize_{{#toLower}}{{type}}{{/toLower}}_value({{#toLower}}{{name}}{{/toLower}}.unwrap() as i32)
             .expect("Failed to sanitize {{#toWasm}}{{toGraphQLType}}{{/toWasm}}");
     }
 } else {
-    {{#toLower}}{{type}}{{/toLower}} = None;
+    {{#toLower}}{{name}}{{/toLower}} = None;
 }
 {{/required}}

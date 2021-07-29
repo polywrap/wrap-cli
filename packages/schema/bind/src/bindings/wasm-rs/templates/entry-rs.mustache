@@ -1,9 +1,14 @@
-use crate::{abort, invoke};
+use crate::{
+  abort, 
+  invoke,
+};
 {{#queryTypes}}
 {{#methods.length}}
-{{#methods}}
-use crate::{ {{#toLower}}{{name}}{{/toLower}}_wrapped, };
-{{/methods}}
+use crate::{
+  {{#methods}}
+  {{#toLower}}{{name}}{{/toLower}}_wrapped, 
+  {{/methods}}
+};
 {{/methods.length}}
 {{/queryTypes}}
 

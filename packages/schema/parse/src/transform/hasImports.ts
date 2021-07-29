@@ -6,10 +6,12 @@ export const hasImports: TypeInfoTransforms = {
     TypeInfo: (typeInfo: TypeInfo) => ({
       ...typeInfo,
       hasImports: () => {
-        return typeInfo.importedEnumTypes.length ||
-        typeInfo.importedObjectTypes.length ||
-        typeInfo.importedQueryTypes.length;
-      }
+        return (
+          typeInfo.importedEnumTypes.length ||
+          typeInfo.importedObjectTypes.length ||
+          typeInfo.importedQueryTypes.length
+        );
+      },
     }),
   },
 };
