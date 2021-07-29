@@ -1,8 +1,16 @@
 {{#__commonImport}}
 pub use super::super::common::{{type}};
-use crate::{Read, Write};
-use crate::{ {{type}}, };
-use serde::{Deserialize, Serialize};
+use crate::{
+    Read, 
+    Write,
+};
+use crate::{ 
+    {{type}}, 
+};
+use serde::{
+    Deserialize, 
+    Serialize,
+};
 {{/__commonImport}}
 {{^__commonImport}}
 pub mod serialization;
@@ -16,7 +24,7 @@ pub use serialization::{
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{type}} {
     {{#properties}}
-    pub {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    pub {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
     {{/properties}}
 }
 
