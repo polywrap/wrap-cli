@@ -3,10 +3,18 @@ pub use super::common::{{type}};
 {{/__commonImport}}
 {{^__commonImport}}
 pub mod serialization;
-use crate::{ {{type}}, };
-use crate::{Read, Write};
+use crate::{ 
+    {{type}}, 
+};
+use crate::{
+    Read, 
+    Write,
+};
 use num_bigint::BigInt;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize, 
+    Serialize,
+};
 pub use serialization::{
     deserialize_{{#toLower}}{{type}}{{/toLower}},
     read_{{#toLower}}{{type}}{{/toLower}},
@@ -17,19 +25,11 @@ pub use serialization::{
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{type}} {
     {{#properties}}
-    pub {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    pub {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
     {{/properties}}
 }
 
 impl {{type}} {
-    {{^required}}
-    pub fn new() -> {{type}} {
-        {{type}} {
-            prop: None,
-            circular: Box::new(None),
-        }
-    }
-    {{/required}}
     pub fn to_buffer(object: &{{type}}) -> Vec<u8> {
         serialize_{{#toLower}}{{name}}{{/toLower}}(object)
     }

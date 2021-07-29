@@ -51,7 +51,6 @@ const keywords = {
   Self: "Self",
   static: "static",
   struct: "struct",
-  str: "str",
   super: "super",
   trait: "trait",
   true: "true",
