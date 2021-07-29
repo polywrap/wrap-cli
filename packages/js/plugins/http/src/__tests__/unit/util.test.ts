@@ -86,7 +86,6 @@ describe("creating axios config", () => {
         }
       },
     });
-    console.log(axiosReq)
     expect(axiosReq.config.headers["content-type"].startsWith("multipart/form-data;"))
       .toBeTruthy()
     expect(axiosReq.config.params).toBeUndefined();

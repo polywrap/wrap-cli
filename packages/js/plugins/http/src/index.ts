@@ -2,10 +2,10 @@
 
 import { query, mutation } from "./resolvers";
 import { Request, Response } from "./types";
-import { fromAxiosResponse, toAxiosRequest } from "./util";
+import { fromAxiosError, fromAxiosResponse, toAxiosRequest } from "./util";
 import { manifest } from "./manifest";
 
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import {
   Client,
   Plugin,
@@ -31,10 +31,15 @@ export class HttpPlugin extends Plugin {
   }
 
   public async get(url: string, request: Request): Promise<Response> {
-    const response = await axios.get<string>(
-      url,
-      toAxiosRequest(request).config
-    );
+    let response: AxiosResponse<string>;
+    try {
+      response = await axios.get<string>(
+        url,
+        toAxiosRequest(request).config
+      );
+    } catch (e) {
+      return fromAxiosError(e);
+    }
     return fromAxiosResponse(response);
   }
 

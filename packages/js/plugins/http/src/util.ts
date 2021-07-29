@@ -1,6 +1,6 @@
 import { Request, Response, ResponseType, Header } from "./types";
 
-import { AxiosResponse, AxiosRequestConfig } from "axios";
+import axios, { AxiosResponse, AxiosRequestConfig, AxiosError } from "axios";
 import FormData from "form-data";
 
 /**
@@ -11,15 +11,10 @@ import FormData from "form-data";
 export function fromAxiosResponse(
   axiosResponse: AxiosResponse<string>
 ): Response {
-  const responseHeaders: Header[] = [];
-  for (const key of Object.keys(axiosResponse.headers)) {
-    responseHeaders.push({ key: key, value: axiosResponse.headers[key] });
-  }
-
   const response = {
     status: axiosResponse.status,
     statusText: axiosResponse.statusText,
-    headers: responseHeaders,
+    headers: mapObjectToHeadersArray(axiosResponse.headers),
   };
 
   // encode bytes as base64 string if response is array buffer
@@ -41,6 +36,48 @@ export function fromAxiosResponse(
     };
   }
 }
+
+export function mapObjectToHeadersArray(headers: any): Header[] {
+  const responseHeaders: Header[] = [];
+  for (const key of Object.keys(headers)) {
+    responseHeaders.push({ key: key, value: headers[key] });
+  }
+  return responseHeaders;
+}
+
+
+const DEFAULT_ERROR_CODE = "UNKNOWNERROR"
+const DEFAULT_ERROR_MESSAGE = "Unknown error"
+const TIMEOUT_ERROR_CODE = "ECONNABORTED"
+
+export function fromAxiosError(e: Error | AxiosError): Response {
+  if(axios.isAxiosError(e)) {
+    if(e.response) {
+      return {
+        status: e.response.status,
+        statusText: e.response.statusText,
+        headers: mapObjectToHeadersArray(e.response.headers),
+        body: e.response.data,
+      }
+    } else {
+      return {
+        error: {
+          errorCode: e.code ? e.code : DEFAULT_ERROR_CODE,
+          errorMessage: e.message ? e.message : DEFAULT_ERROR_MESSAGE,
+          timeoutExcided: e.code == TIMEOUT_ERROR_CODE ? true : false
+        }
+      }
+    }
+  } else {
+    throw e;
+  }  
+}
+
+    //  ---- 
+    // -0--0-
+    // --db--
+    // -\__/-
+    //  ---- 
 
 export type AxiosData = string | ArrayBuffer | FormData | undefined;
 
@@ -66,11 +103,13 @@ export function toAxiosRequest(
   };
 
   if (urlParams) {
-    config = { ...config, params: urlParams };
+    config.params = urlParams;
   }
-
   if (requestHeaders) {
-    config = { ...config, headers: requestHeaders };
+    config.headers = requestHeaders;
+  }
+  if (request.timeout) {
+    config.timeout = request.timeout;
   }
 
   let data: AxiosData;

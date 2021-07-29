@@ -21,6 +21,7 @@ export class Request {
   urlParams?: UrlParam[];
   responseType: ResponseType;
   body?: Body;
+  timeout?: number;
 }
 
 export class Body {
@@ -46,8 +47,15 @@ export class FormDataOptions {
 }
 
 export class Response {
-  status: number;
-  statusText: string;
-  headers: Header[];
+  status?: number;
+  statusText?: string;
+  headers?: Header[];
   body?: string;
+  error?: ResponseError;
+}
+
+export class ResponseError {
+  errorMessage: string;
+  errorCode: string;
+  timeoutExcided: boolean;
 }

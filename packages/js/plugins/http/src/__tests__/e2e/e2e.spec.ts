@@ -38,7 +38,7 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.get.status).toBe(200)
       // expect(response.data?.get.statusText).toBe("OK")
       expect(response.data?.get.body).toBe('{data: "test-response"}')
-      expect(response.data?.get.headers.length).toEqual(2) // default reply headers
+      expect(response.data?.get.headers?.length).toEqual(2) // default reply headers
     });
 
     test("succesfull request with response type as BINARY", async () => {
@@ -69,7 +69,7 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.get.status).toBe(200)
       // expect(response.data?.get.statusText).toBe("OK")
       expect(response.data?.get.body).toBe(Buffer.from('{data: "test-response"}').toString('base64'))
-      expect(response.data?.get.headers.length).toEqual(2) // default reply headers
+      expect(response.data?.get.headers?.length).toEqual(2) // default reply headers
     });
 
     test("succesfull request with query params and request headers", async () => {
@@ -109,11 +109,48 @@ describe("e2e tests for HttpPlugin", () => {
       ])
     });
 
-    test("failed request", async () => {
+    test("failed request because of timeout exided", async () => {
       nock("http://www.example.com")
         .defaultReplyHeaders(defaultReplyHeaders)
         .get("/api")
-        .reply(404)
+        .delayConnection(5000)
+        .reply(200, '{data: "test-response"}')
+
+      const web3ApiClient = new Web3ApiClient()
+
+      const response = await web3ApiClient.query<{ get: Response }>({
+        uri: "w3://ens/http.web3api.eth",
+        query: `
+          query {
+            get(
+              url: "http://www.example.com/api"
+              request: {
+                responseType: 0,
+                timeout: 1000
+              }
+            )
+          }
+        `
+      })
+
+      expect(response.data).toBeDefined();
+      expect(response.errors).toBeUndefined();
+
+      expect(response.data?.get.status).toBeUndefined();
+      expect(response.data?.get.body).toBeUndefined();
+      expect(response.data?.get.headers).toBeUndefined();
+
+      expect(response.data?.get.error).toBeDefined();
+      expect(response.data?.get.error?.errorCode).toBe("ECONNABORTED");
+      expect(response.data?.get.error?.errorMessage).toBe("timeout of 1000ms exceeded");
+      expect(response.data?.get.error?.timeoutExcided).toBeTruthy();
+    });
+
+    test("failed request with 500 status", async () => {
+      nock("http://www.example.com")
+        .defaultReplyHeaders(defaultReplyHeaders)
+        .get("/api")
+        .reply(500)
 
 
       const web3ApiClient = new Web3ApiClient()
@@ -132,8 +169,52 @@ describe("e2e tests for HttpPlugin", () => {
         `
       })
 
-      expect(response.data?.get).toBeUndefined()
-      expect(response.errors).toBeDefined()
+      expect(response.data).toBeDefined();
+      expect(response.errors).toBeUndefined();
+
+      expect(response.data?.get.status).toBe(500);
+      expect(response.data?.get.body).toBe("");
+      expect(response.data?.get.headers).toStrictEqual([
+        {key: "access-control-allow-origin", value: "*"},
+        {key: "access-control-allow-credentials", value: "true"},
+      ]);
+
+      expect(response.data?.get.error).toBeUndefined();
+    });
+
+    test("failed request with unknown error", async () => {
+      nock("http://www.example.com")
+        .defaultReplyHeaders(defaultReplyHeaders)
+        .get("/api")
+        .replyWithError("Not found")
+
+
+      const web3ApiClient = new Web3ApiClient()
+
+      const response = await web3ApiClient.query<{ get: Response }>({
+        uri: "w3://ens/http.web3api.eth",
+        query: `
+          query {
+            get(
+              url: "http://www.example.com/api"
+              request: {
+                responseType: 0
+              }
+            )
+          }
+        `
+      })
+      expect(response.data).toBeDefined();
+      expect(response.errors).toBeUndefined();
+
+      expect(response.data?.get.status).toBeUndefined();
+      expect(response.data?.get.body).toBeUndefined();
+      expect(response.data?.get.headers).toBeUndefined();
+
+      expect(response.data?.get.error).toBeDefined();
+      expect(response.data?.get.error?.errorCode).toBe("UNKNOWNERROR");
+      expect(response.data?.get.error?.errorMessage).toBe("Not found");
+      expect(response.data?.get.error?.timeoutExcided).toBeFalsy();
     });
 
   });
@@ -172,7 +253,7 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.post.status).toBe(200)
       // expect(response.data?.get.statusText).toBe("OK")
       expect(response.data?.post.body).toBe('{data: "test-response"}')
-      expect(response.data?.post.headers.length).toEqual(2) // default reply headers
+      expect(response.data?.post.headers?.length).toEqual(2) // default reply headers
     });
 
     test("succesfull request with response type as BINARY", async () => {
@@ -207,7 +288,7 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.post.status).toBe(200)
       // expect(response.data?.get.statusText).toBe("OK")
       expect(response.data?.post.body).toBe(Buffer.from('{data: "test-response"}').toString('base64'))
-      expect(response.data?.post.headers.length).toEqual(2) // default reply headers
+      expect(response.data?.post.headers?.length).toEqual(2) // default reply headers
     });
 
     test("succesfull request with multipart form data", async () => {
@@ -245,7 +326,7 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.post.status).toBe(200)
       // expect(response.data?.get.statusText).toBe("OK")
       // expect(response.data?.post.body).toBe(Buffer.from('{data: "test-response"}').toString('base64'))
-      expect(response.data?.post.headers.length).toEqual(2) // default reply headers
+      expect(response.data?.post.headers?.length).toEqual(2) // default reply headers
     });
 
     test("succesfull request with query params and request headers", async () => {

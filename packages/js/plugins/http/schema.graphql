@@ -9,10 +9,17 @@ type UrlParam {
 }
 
 type Response {
-  status: UInt64!
-  statusText: String!
+  status: UInt64
+  statusText: String
   headers: [Header!]
   body: String
+  error: ResponseError
+}
+
+type ResponseError {
+  errorMessage: String!
+  errorCode: String!
+  timeoutExcided: Bool!
 }
 
 type Request {
@@ -20,6 +27,7 @@ type Request {
   urlParams: [UrlParam!]
   responseType: ResponseType!
   body: Body
+  timeout: UInt64
 }
 
 enum ResponseType {
