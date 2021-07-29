@@ -7,11 +7,13 @@ pub use super::super::common::{
 };
 {{/__commonImport}}
 {{^__commonImport}}
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize, 
+    Serialize,
+};
 use std::convert::TryFrom;
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
-#[repr(i32)]
 pub enum {{type}} {
     {{#constants}}
     {{.}},
@@ -22,7 +24,7 @@ pub enum {{type}} {
 impl TryFrom<i32> for {{type}} {
     type Error = &'static str;
 
-    fn try_from(v: i32) -> Result<{{type}}, {{type}}::Error> {
+    fn try_from(v: i32) -> Result<{{type}}, Self::Error> {
         match v {
             {{#constants}}
             x if x == {{type}}::{{.}} as i32 => Ok({{type}}::{{.}}),
