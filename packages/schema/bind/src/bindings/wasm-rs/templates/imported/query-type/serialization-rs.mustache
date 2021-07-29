@@ -1,14 +1,26 @@
 {{^__commonImport}}
 {{#methods.length}}
-use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
-use crate::{ {{type}}, };
-use serde::{Deserialize, Serialize};
+use crate::{
+    Context, 
+    Read, 
+    ReadDecoder, 
+    Write, 
+    WriteEncoder, 
+    WriteSizer,
+};
+use crate::{ 
+    {{type}}, 
+};
+use serde::{
+    Deserialize, 
+    Serialize,
+};
 
 {{#methods}}
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
     {{#arguments}}
-    pub {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    pub {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
     {{/arguments}}
 }
 
@@ -35,28 +47,28 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toU
         .push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
     writer.write_string(&"{{#toLower}}{{name}}{{/toLower}}".to_string());
     {{#scalar}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#toLower}}{{name}}{{/toLower}});
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}});
     {{/scalar}}
     {{#array}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(input.{{#toLower}}{{name}}{{/toLower}}.as_slice(), |writer: &mut W, {{#toWasm}}{{toGraphQLType}}{{/toWasm}}| {
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_slice(), |writer: &mut W, {{#toWasm}}{{toGraphQLType}}{{/toWasm}}| {
         {{> serialize_array}}
     });
     {{/array}}
     {{#enum}}
     {{#required}}
-    writer.write_i32(&(input.{{#toLower}}{{name}}{{/toLower}} as i32));
+    writer.write_i32(&(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}} as i32));
     {{/required}}
     {{^required}}
-    writer.write_nullable_i32(Some(input.{{#toLower}}{{name}}{{/toLower}}.unwrap() as i32));
+    writer.write_nullable_i32(Some(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.unwrap() as i32));
     {{/required}}
     {{/enum}}
     {{#object}}
     {{#required}}
-    {{type}}::write(&input.{{#toLower}}{{name}}{{/toLower}}.clone(), writer);
+    {{type}}::write(&input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}, writer);
     {{/required}}
     {{^required}}
-    if input.{{#toLower}}{{name}}{{/toLower}}.is_some() {
-        {{type}}::write(&input.{{#toLower}}{{name}}{{/toLower}}.as_ref().unwrap(), writer);
+    if input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.is_some() {
+        {{type}}::write(&input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }
@@ -88,7 +100,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(buffer: &[u8]) -> {{#
         .read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {{#toWasm}}{{toGraphQLType}}{{/toWasm}} {
             {{> deserialize_array}}
         })
-        .expect("Failed to read {{#toLower}}{{name}}{{/toLower}}");
+        .expect("Failed to read array");
     {{/array}}
     {{#enum}}
     {{> deserialize_enum}}
