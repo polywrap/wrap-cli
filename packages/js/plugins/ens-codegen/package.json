@@ -3,6 +3,7 @@
   "description": "Web3API ENS Javascript Plugin",
   "version": "0.0.1-prealpha.28",
   "license": "MIT",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/web3-api/monorepo.git"

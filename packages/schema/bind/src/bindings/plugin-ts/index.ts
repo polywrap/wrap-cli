@@ -6,7 +6,7 @@ import {
   extendType,
   addFirstLast,
   toPrefixedGraphQLType,
-  parentPointers,
+  methodParentPointers,
   TypeInfo,
   QueryDefinition,
 } from "@web3api/schema-parse";
@@ -25,7 +25,7 @@ export function generateBinding(
     extendType(Functions),
     addFirstLast,
     toPrefixedGraphQLType,
-    parentPointers(),
+    methodParentPointers(),
   ];
 
   for (const transform of transforms) {

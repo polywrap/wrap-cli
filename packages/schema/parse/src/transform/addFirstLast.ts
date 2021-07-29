@@ -1,7 +1,7 @@
 import { TypeInfoTransforms } from ".";
 import {
   TypeInfo,
-  GenericDefinition
+  GenericDefinition,
 } from "../typeInfo";
 
 export const addFirstLast: TypeInfoTransforms = {
@@ -33,9 +33,15 @@ export const addFirstLast: TypeInfoTransforms = {
 };
 
 function setFirstLast<T>(array: T[]): T[] {
-  return array.map((item, index) => ({
-    ...item,
-    first: index === 0 ? true : null,
-    last: index === array.length - 1 ? true : null,
-  }));
+  return array.map((item, index) => {
+    if (typeof item === "object") {
+      return {
+        ...item,
+        first: index === 0 ? true : null,
+        last: index === array.length - 1 ? true : null,
+        };
+    } else {
+      return item;
+    }
+  });
 }

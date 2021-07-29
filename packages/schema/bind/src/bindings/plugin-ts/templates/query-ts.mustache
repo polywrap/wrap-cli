@@ -25,13 +25,16 @@ export interface Input_{{name}} extends Record<string, unknown> {
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/arguments}}
 }
-{{/methods}}
 
+{{/methods}}
 export interface Module extends PluginModule {
   {{#methods}}
   {{name}}(
     input: Input_{{name}},
     client: Client
   ): Promise<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>;
+  {{^last}}
+
+  {{/last}}
   {{/methods}}
 }

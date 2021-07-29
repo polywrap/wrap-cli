@@ -61,7 +61,7 @@ export interface AnotherType {
 
 export enum CustomEnum {
   STRING,
-  BYTES
+  BYTES,
 }
 
 /// Imported Objects START ///
@@ -86,7 +86,7 @@ export interface TestImport_AnotherObject {
 /* URI: "testimport.uri.eth" */
 export enum TestImport_Enum {
   STRING,
-  BYTES
+  BYTES,
 }
 
 /// Imported Objects END ///
@@ -120,8 +120,8 @@ export const TestImport_Query = {
   importedMethod: async (
     input: TestImport_Query_Input_importedMethod,
     client: Client
-  ): Promise<InvokeApiResult<TestImport_Object>> => {
-    return client.invoke<TestImport_Object>({
+  ): Promise<InvokeApiResult<Types.TestImport_Object | undefined>> => {
+    return client.invoke<Types.TestImport_Object | undefined>({
       uri: "testimport.uri.eth",
       module: "query",
       method: "importedMethod",
@@ -159,8 +159,8 @@ export const TestImport_Mutation = {
   importedMethod: async (
     input: TestImport_Mutation_Input_importedMethod,
     client: Client
-  ): Promise<InvokeApiResult<TestImport_Object>> => {
-    return client.invoke<TestImport_Object>({
+  ): Promise<InvokeApiResult<Types.TestImport_Object | undefined>> => {
+    return client.invoke<Types.TestImport_Object | undefined>({
       uri: "testimport.uri.eth",
       module: "mutation",
       method: "importedMethod",

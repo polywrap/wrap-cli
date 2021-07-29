@@ -51,7 +51,8 @@ type Mutation @imports(
     "TestImport_Query",
     "TestImport_Object",
     "TestImport_AnotherObject",
-    "TestImport_Enum"
+    "TestImport_Enum",
+    "TestImport_Mutation"
   ]
 ) {
   mutationMethod(
@@ -138,6 +139,22 @@ type TestImport_Query @imported(
     optEnum: TestImport_Enum
     enumArray: [TestImport_Enum!]!
     optEnumArray: [TestImport_Enum]
+  ): TestImport_Object
+
+  anotherMethod(
+    arg: [String!]!
+  ): Int32!
+}
+
+type TestImport_Mutation @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Mutation"
+) {
+  importedMethod(
+    str: String!
+    object: TestImport_Object!
+    objectArray: [TestImport_Object!]!
   ): TestImport_Object
 
   anotherMethod(

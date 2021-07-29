@@ -4,18 +4,18 @@
 // https://github.com/web3-api/monorepo/issues/101
 import { PluginModule, Client } from "@web3api/core-js";
 
-type UInt = number;
-type UInt8 = number;
-type UInt16 = number;
-type UInt32 = number;
-type Int = number;
-type Int8 = number;
-type Int16 = number;
-type Int32 = number;
-type Bytes = ArrayBuffer;
-type BigInt = string;
-type String = string;
-type Boolean = boolean;
+export type UInt = number;
+export type UInt8 = number;
+export type UInt16 = number;
+export type UInt32 = number;
+export type Int = number;
+export type Int8 = number;
+export type Int16 = number;
+export type Int32 = number;
+export type Bytes = ArrayBuffer;
+export type BigInt = string;
+export type String = string;
+export type Boolean = boolean;
 
 /// Objects
 

@@ -24,7 +24,7 @@ import {
 export * from "./finalizePropertyDef";
 export * from "./extendType";
 export * from "./addFirstLast";
-export * from "./parentPointers";
+export * from "./methodParentPointers";
 export * from "./toGraphQLType";
 
 export interface TypeInfoTransforms {
