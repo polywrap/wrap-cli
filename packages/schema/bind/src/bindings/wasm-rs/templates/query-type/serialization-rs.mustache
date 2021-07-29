@@ -1,14 +1,33 @@
-use crate::{get_custom_enum_value, sanitize_custom_enum_value, AnotherType, CustomEnum};
-use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer,};
-use serde::{Deserialize, Serialize};
-use std::convert::TryFrom;
+{{#__commonImport}}
+use crate::{
+    get_{{#toLower}}{{type}}{{/toLower}}_value, 
+    sanitize_{{#toLower}}{{type}}{{/toLower}}_value, 
+    {{type}},
+};
+use crate::{
+    Context, 
+    Read, 
+    ReadDecoder, 
+    Write, 
+    WriteEncoder, 
+    WriteSizer,
+};
+use serde::{
+    Deserialize, 
+    Serialize,
+};
+use std::convert::{
+    TryFrom, 
+    TryInto,
+};
+{{/__commonImport}}
 
 {{#methods}}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
     {{#arguments}}
-    pub {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    pub {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
     {{/arguments}}
 }
 
@@ -21,14 +40,14 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args_buf: &[u8]) -> Res
 
     {{#arguments}}
     {{^object}}
-    let mut {{#toLower}}{{name}}{{/toLower}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+    let mut {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
     {{/object}}
     {{#object}}
     {{#required}}
-    let mut {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = None;
+    let mut {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = None;
     {{/required}}
     {{^required}}
-    let mut {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+    let mut {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
     {{/required}}
     {{/object}}
     {{#required}}
@@ -42,16 +61,16 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args_buf: &[u8]) -> Res
 
         {{#arguments}}
         match field.as_str() {
-            "{{#toLower}}{{name}}{{/toLower}}" => {
+            "{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}" => {
                 reader
                     .context()
                     .push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property");
                 {{#scalar}}
-                {{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}().unwrap_or_default();
+                {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}().unwrap_or_default();
                 {{/scalar}}
                 {{#array}}
-                {{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
-                  {{> deserialize_array}}
+                {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
+                    {{> deserialize_array}}
                 }).expect("Failed to read array");
                 {{/array}}
                 {{#enum}}
@@ -86,7 +105,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args_buf: &[u8]) -> Res
 
     Ok(Input{{#toUpper}}{{name}}{{/toUpper}} {
         {{#arguments}}
-        {{#toLower}}{{name}}{{/toLower}},
+        {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}},
         {{/arguments}}
     })
 }
@@ -104,34 +123,17 @@ pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}{{#t
     buffer
 }
 
-pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, writer: &mut W) {
-    {{#return}}
+pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#toWasm}}{{toGraphQLType}}{{/toWasm}}, writer: &mut W) {
     writer
         .context()
         .push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
     {{#scalar}}
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&result);
     {{/scalar}}
-    {{#array}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(result, |writer: &mut W, {{#toWasm}}{{toGraphQLType}}{{/toWasm}}| {
-        {{> serialize_array}}
-    });
-    {{/array}}
-    {{#enum}}
-    {{#required}}
-    writer.write_i32(&(result.{{#toLower}}{{name}}{{/toLower}} as i32));
-    {{/required}}
-    {{^required}}
-    writer.write_nullable_i32(Some(result.{{#toLower}}{{name}}{{/toLower}}.unwrap() as i32));
-    {{/required}}
-    {{/enum}}
     {{#object}}
-    {{#required}}
-    {{type}}::write(&result.{{#toLower}}{{name}}{{/toLower}}, writer);
-    {{/required}}
     {{^required}}
-    if result.{{#toLower}}{{name}}{{/toLower}}.is_some() {
-        {{type}}::write(&result.{{#toLower}}{{name}}{{/toLower}}.as_ref().unwrap(), writer);
+    if result.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.is_some() {
+        {{type}}::write(&result.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }
@@ -141,6 +143,5 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return
         .context()
         .pop()
         .expect("Failed to pop {{#toWasm}}{{toGraphQLType}}{{/toWasm}} from Context");
-    {{/return}}
 }
 {{/methods}}

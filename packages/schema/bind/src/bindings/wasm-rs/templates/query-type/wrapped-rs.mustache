@@ -7,7 +7,7 @@ use crate::{
 };
 {{/methods.length}}
 
-
+{{#methods}}
 pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(args_buf: &[u8]) -> Vec<u8> {
     let query_method = deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args_buf).unwrap();
     let args = bincode::serialize(&query_method).expect("Failed to serialize Input{{#toUpper}}{{name}}{{/toUpper}}");
@@ -15,7 +15,8 @@ pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(args_buf: &[u8]) -> Vec<u8> {
     serialize_{{#toLower}}{{name}}{{/toLower}}_result(result)
 }
 
-pub fn object_method_wrapped(args_buf: &[u8]) -> Vec<u8> {
+pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(args_buf: &[u8]) -> Vec<u8> {
     let object_method = deserialize_object_method_args(args_buf).unwrap();
     serialize_object_method_result(&object_method.opt_object)
 }
+{{/methods}}
