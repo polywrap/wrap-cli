@@ -55,8 +55,10 @@ export class WasmWeb3Api extends Api {
     query?: ArrayBuffer;
     mutation?: ArrayBuffer;
   } = {};
-
-  private _sanitizedEnviroment?: ArrayBuffer;
+  private _sanitizedEnviroment: {
+    query?: ArrayBuffer;
+    mutation?: ArrayBuffer;
+  } = {};
 
   constructor(
     private _uri: Uri,
