@@ -49,8 +49,8 @@ impl Write for WriteEncoder {
         self.write_i64(value as i64);
     }
 
-    fn write_i32(&mut self, value: &i32) {
-        self.write_i64(*value as i64);
+    fn write_i32(&mut self, value: i32) {
+        self.write_i64(value as i64);
     }
 
     fn write_i64(&mut self, value: i64) {
@@ -99,50 +99,50 @@ impl Write for WriteEncoder {
         }
     }
 
-    fn write_u8(&mut self, value: &u8) {
-        self.write_u64(&(*value as u64));
+    fn write_u8(&mut self, value: u8) {
+        self.write_u64(value as u64);
     }
 
     fn write_u16(&mut self, value: u16) {
-        self.write_u64(&(value as u64));
+        self.write_u64(value as u64);
     }
 
-    fn write_u32(&mut self, value: &u32) {
-        self.write_u64(&(*value as u64));
+    fn write_u32(&mut self, value: u32) {
+        self.write_u64(value as u64);
     }
 
-    fn write_u64(&mut self, value: &u64) {
-        if value < &(1 << 7) {
+    fn write_u64(&mut self, value: u64) {
+        if value < (1 << 7) {
             self.view
-                .set_u8(*value as u8)
+                .set_u8(value as u8)
                 .expect("Failed to set u8 to data view");
-        } else if value <= &(u8::MAX as u64) {
+        } else if value <= (u8::MAX as u64) {
             self.view
                 .set_u8(Format::UINT8)
                 .expect("Failed to set u8 to data view");
             self.view
-                .set_u8(*value as u8)
+                .set_u8(value as u8)
                 .expect("Failed to set u8 to data view");
-        } else if value <= &(u16::MAX as u64) {
+        } else if value <= (u16::MAX as u64) {
             self.view
                 .set_u8(Format::UINT16)
                 .expect("Failed to set u8 to data view");
             self.view
-                .set_u16(*value as u16)
+                .set_u16(value as u16)
                 .expect("Failed to set u16 to data view");
-        } else if value <= &(u32::MAX as u64) {
+        } else if value <= (u32::MAX as u64) {
             self.view
                 .set_u8(Format::UINT32)
                 .expect("Failed to set u8 to data view");
             self.view
-                .set_u32(*value as u32)
+                .set_u32(value as u32)
                 .expect("Failed to set u32 to data view");
         } else {
             self.view
                 .set_u8(Format::UINT64)
                 .expect("Failed to set u8 to data view");
             self.view
-                .set_u64(*value)
+                .set_u64(value)
                 .expect("Failed to set u64 to data view");
         }
     }
@@ -199,7 +199,7 @@ impl Write for WriteEncoder {
         }
     }
 
-    fn write_string(&mut self, value: &String) {
+    fn write_string(&mut self, value: String) {
         let buf = String::as_bytes(&value);
         self.write_string_length(buf.len() as u32);
         self.view
@@ -232,20 +232,20 @@ impl Write for WriteEncoder {
         }
     }
 
-    fn write_bytes(&mut self, buf: &Vec<u8>) {
+    fn write_bytes(&mut self, buf: Vec<u8>) {
         if buf.is_empty() {
             self.write_nil();
         } else {
             self.write_bytes_length(buf.len() as u32);
             self.view
-                .set_bytes(buf.as_slice())
+                .set_bytes(&buf)
                 .expect("Failed to set bytes to data view");
         }
     }
 
     fn write_bigint(&mut self, value: BigInt) {
         let val_str = value.to_string();
-        self.write_string(&val_str);
+        self.write_string(val_str);
     }
 
     fn write_array_length(&mut self, length: u32) {
@@ -275,10 +275,10 @@ impl Write for WriteEncoder {
         }
     }
 
-    fn write_array<T>(&mut self, a: &[T], mut arr_fn: impl FnMut(&mut Self, &T)) {
+    fn write_array<T: Clone>(&mut self, a: &[T], mut arr_fn: impl FnMut(&mut Self, T)) {
         self.write_array_length(a.len() as u32);
         for element in a {
-            arr_fn(self, &element);
+            arr_fn(self, element.clone());
         }
     }
 
@@ -309,18 +309,18 @@ impl Write for WriteEncoder {
         }
     }
 
-    fn write_map<K: Eq + Hash, V>(
+    fn write_map<K: Clone + Eq + Hash, V: Clone>(
         &mut self,
         map: HashMap<K, V>,
-        mut key_fn: impl FnMut(&mut Self, &K),
-        mut val_fn: impl FnMut(&mut Self, &V),
+        mut key_fn: impl FnMut(&mut Self, K),
+        mut val_fn: impl FnMut(&mut Self, V),
     ) {
         self.write_map_length(map.len() as u32);
         let keys: Vec<_> = map.keys().into_iter().collect();
         for key in keys {
             let value = map.get(&key).unwrap();
-            key_fn(self, key);
-            val_fn(self, value);
+            key_fn(self, key.clone());
+            val_fn(self, value.clone());
         }
     }
 
@@ -352,7 +352,7 @@ impl Write for WriteEncoder {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_i32(&value.unwrap_or_default());
+            self.write_i32(value.unwrap_or_default());
         }
     }
 
@@ -368,7 +368,7 @@ impl Write for WriteEncoder {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_u8(&value.unwrap_or_default());
+            self.write_u8(value.unwrap_or_default());
         }
     }
 
@@ -380,19 +380,19 @@ impl Write for WriteEncoder {
         }
     }
 
-    fn write_nullable_u32(&mut self, value: &Option<u32>) {
+    fn write_nullable_u32(&mut self, value: Option<u32>) {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_u32(&value.unwrap_or_default());
+            self.write_u32(value.unwrap_or_default());
         }
     }
 
-    fn write_nullable_u64(&mut self, value: &Option<u64>) {
+    fn write_nullable_u64(&mut self, value: Option<u64>) {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_u64(&value.unwrap_or_default());
+            self.write_u64(value.unwrap_or_default());
         }
     }
 
@@ -412,11 +412,11 @@ impl Write for WriteEncoder {
         }
     }
 
-    fn write_nullable_string(&mut self, value: &Option<String>) {
+    fn write_nullable_string(&mut self, value: Option<String>) {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_string(&value.as_ref().unwrap());
+            self.write_string(value.unwrap());
         }
     }
 
@@ -424,7 +424,7 @@ impl Write for WriteEncoder {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_bytes(&value.unwrap_or_default());
+            self.write_bytes(value.unwrap());
         }
     }
 
@@ -432,23 +432,27 @@ impl Write for WriteEncoder {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_bigint(value.unwrap_or_default());
+            self.write_bigint(value.unwrap());
         }
     }
 
-    fn write_nullable_array<T>(&mut self, a: &Option<Vec<T>>, arr_fn: impl FnMut(&mut Self, &T)) {
+    fn write_nullable_array<T: Clone>(
+        &mut self,
+        a: Option<Vec<T>>,
+        arr_fn: impl FnMut(&mut Self, T),
+    ) {
         if a.is_none() {
             self.write_nil();
         } else {
-            self.write_array(a.as_ref().unwrap().as_slice(), arr_fn);
+            self.write_array(a.unwrap().as_slice(), arr_fn);
         }
     }
 
-    fn write_nullable_map<K: Eq + Hash, V>(
+    fn write_nullable_map<K: Clone + Eq + Hash, V: Clone>(
         &mut self,
         map: Option<HashMap<K, V>>,
-        key_fn: impl FnMut(&mut Self, &K),
-        val_fn: impl FnMut(&mut Self, &V),
+        key_fn: impl FnMut(&mut Self, K),
+        val_fn: impl FnMut(&mut Self, V),
     ) {
         if map.is_none() {
             self.write_nil();
