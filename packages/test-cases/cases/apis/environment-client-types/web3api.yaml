@@ -5,3 +5,9 @@ query:
   module:
     language: wasm/assemblyscript
     file: ./query/index.ts
+mutation:
+  schema:
+    file: ./mutation/schema.graphql
+  module:
+    language: wasm/assemblyscript
+    file: ./mutation/index.ts

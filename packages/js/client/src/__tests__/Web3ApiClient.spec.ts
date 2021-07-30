@@ -1920,7 +1920,7 @@ describe("Web3ApiClient", () => {
         {
           uri: "w3://" + ensUri,
           mutation: {
-            mutStr: "mutation string",
+            str: "string",
           },
           query: {
             str: "string",
@@ -1946,7 +1946,6 @@ describe("Web3ApiClient", () => {
       defStr: "default string"
     });
 
-    /*
     const mutationEnv = await client.query({
       uri: ensUri,
       query: `
@@ -1960,21 +1959,9 @@ describe("Web3ApiClient", () => {
     expect(mutationEnv.errors).toBeFalsy();
     expect(mutationEnv.data?.mutEnvironment).toEqual({
       str: "string",
-      optFilledStr: "optional string",
       optStr: null,
-      number: 10,
-      optNumber: null,
-      bool: true,
-      optBool: null,
-      object: {
-        prop: "object string"
-      },
-      en: 0,
-      optEnum: null,
-      optObject: null,
-      mutStr: "mutation string"
+      defMutStr: "default mutation string"
     });
-    */
   });
 
   it("loadWeb3Api - pass string or Uri", async () => {
