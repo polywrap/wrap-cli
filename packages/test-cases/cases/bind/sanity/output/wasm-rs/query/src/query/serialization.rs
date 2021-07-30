@@ -1,21 +1,6 @@
-use crate::{
-    get_custom_enum_value, 
-    sanitize_custom_enum_value, 
-    AnotherType, 
-    CustomEnum,
-};
-use crate::{
-    Context, 
-    Read, 
-    ReadDecoder, 
-    Write, 
-    WriteEncoder, 
-    WriteSizer,
-};
-use serde::{
-    Deserialize, 
-    Serialize,
-};
+use crate::{get_custom_enum_value, sanitize_custom_enum_value, AnotherType, CustomEnum};
+use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
+use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -224,7 +209,7 @@ pub fn write_query_method_result<W: Write>(result: i32, writer: &mut W) {
     writer
         .context()
         .push("query_method", "i32", "writing property");
-    writer.write_i32(&result);
+    writer.write_i32(result);
     writer
         .context()
         .pop()
@@ -245,7 +230,10 @@ pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMeth
     let mut reader = ReadDecoder::new(args_buf, context);
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
-    let mut object = AnotherType { prop: None, circular: Box::new(None), };
+    let mut object = AnotherType {
+        prop: None,
+        circular: Box::new(None),
+    };
     let mut object_set = false;
     let mut opt_object: Option<AnotherType> = None;
     let mut object_array: Vec<AnotherType> = vec![];
@@ -345,7 +333,7 @@ pub fn serialize_object_method_result(result: &Option<AnotherType>) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) query-type: object_method".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
-    write_object_method_result(&result, &mut sizer);
+    write_object_method_result(result, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) query-type: object_method".to_string();
@@ -359,7 +347,7 @@ pub fn write_object_method_result<W: Write>(result: &Option<AnotherType>, writer
         .context()
         .push("object_method", "Option<AnotherType>", "writing property");
     if result.is_some() {
-        AnotherType::write(&result.as_ref().unwrap(), writer);
+        AnotherType::write(result.as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }

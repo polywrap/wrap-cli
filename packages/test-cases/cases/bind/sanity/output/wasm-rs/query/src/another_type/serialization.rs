@@ -1,26 +1,16 @@
-use crate::{
-    AnotherType, 
-    CustomType,
-};
-use crate::{
-    Context, 
-    Read, 
-    ReadDecoder, 
-    Write, 
-    WriteEncoder, 
-    WriteSizer,
-};
+use crate::{AnotherType, CustomType};
+use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
 pub fn serialize_another_type(object: &AnotherType) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) object-type: AnotherType".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
-    write_another_type(&object, &mut sizer);
+    write_another_type(object, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) object-type: AnotherType".to_string();
     let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-    write_another_type(&object, &mut encoder);
+    write_another_type(object, &mut encoder);
     buffer
 }
 
@@ -29,8 +19,8 @@ pub fn write_another_type<W: Write>(object: &AnotherType, writer: &mut W) {
     writer
         .context()
         .push("prop", "Option<String>", "writing property");
-    writer.write_string(&"prop".to_string());
-    writer.write_nullable_string(&object.prop);
+    writer.write_string("prop".to_string());
+    writer.write_nullable_string(object.prop.clone());
     writer
         .context()
         .pop()
@@ -38,9 +28,9 @@ pub fn write_another_type<W: Write>(object: &AnotherType, writer: &mut W) {
     writer
         .context()
         .push("circular", "Option<CustomType>", "writing property");
-    writer.write_string(&"circular".to_string());
+    writer.write_string("circular".to_string());
     if object.circular.is_some() {
-        CustomType::write(&object.circular.as_ref().as_ref().unwrap(), writer);
+        CustomType::write(object.circular.as_ref().as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }

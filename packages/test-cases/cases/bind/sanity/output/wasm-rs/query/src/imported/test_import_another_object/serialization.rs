@@ -1,19 +1,12 @@
 use crate::TestImportAnotherObject;
-use crate::{
-    Context, 
-    Read, 
-    ReadDecoder, 
-    Write, 
-    WriteEncoder, 
-    WriteSizer,
-};
+use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
 pub fn serialize_test_import_another_object(object: &TestImportAnotherObject) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description =
         "Serializing (sizing) imported object-type: TestImportAnotherObject".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
-    write_test_import_another_object(&object, &mut sizer);
+    write_test_import_another_object(object, &mut sizer);
 
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
@@ -30,8 +23,8 @@ pub fn write_test_import_another_object<W: Write>(
 ) {
     writer.write_map_length(1);
     writer.context().push("prop", "String", "writing property");
-    writer.write_string(&"prop".to_string());
-    writer.write_string(&object.prop);
+    writer.write_string("prop".to_string());
+    writer.write_string(object.prop.clone());
     writer
         .context()
         .pop()

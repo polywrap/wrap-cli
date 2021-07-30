@@ -1,11 +1,5 @@
-use crate::{
-    abort, 
-    invoke,
-};
-use crate::{
-    object_method_wrapped, 
-    query_method_wrapped,
-};
+use crate::{abort, invoke};
+use crate::{object_method_wrapped, query_method_wrapped};
 
 pub fn _w3_init() {
     invoke::w3_add_invoke("query_method", query_method_wrapped);
