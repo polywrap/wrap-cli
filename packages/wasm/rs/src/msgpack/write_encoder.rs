@@ -318,7 +318,7 @@ impl Write for WriteEncoder {
         self.write_map_length(map.len() as u32);
         let keys: Vec<_> = map.keys().into_iter().collect();
         for key in keys {
-            let value = map.get(&key).unwrap();
+            let value = map.get(key).unwrap();
             key_fn(self, key.clone());
             val_fn(self, value.clone());
         }
@@ -416,7 +416,7 @@ impl Write for WriteEncoder {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_string(value.unwrap());
+            self.write_string(value.unwrap_or_default());
         }
     }
 
@@ -424,7 +424,7 @@ impl Write for WriteEncoder {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_bytes(value.unwrap());
+            self.write_bytes(value.unwrap_or_default());
         }
     }
 
@@ -432,7 +432,7 @@ impl Write for WriteEncoder {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_bigint(value.unwrap());
+            self.write_bigint(value.unwrap_or_default());
         }
     }
 
@@ -444,7 +444,7 @@ impl Write for WriteEncoder {
         if a.is_none() {
             self.write_nil();
         } else {
-            self.write_array(a.unwrap().as_slice(), arr_fn);
+            self.write_array(a.unwrap_or_default().as_slice(), arr_fn);
         }
     }
 
@@ -457,7 +457,7 @@ impl Write for WriteEncoder {
         if map.is_none() {
             self.write_nil();
         } else {
-            self.write_map(map.unwrap(), key_fn, val_fn);
+            self.write_map(map.unwrap_or_default(), key_fn, val_fn);
         }
     }
 

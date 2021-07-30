@@ -91,8 +91,8 @@ impl Sanity {
             opt_uint32: Some(234234234),
             opt_uint64: None,
             opt_bool: Some(true),
-            float32: 3.40282344818115234375,
-            float64: 3124124512.598273468017578125,
+            float32: 3.402_823_4,
+            float64: 3_124_124_512.598_273_3,
             string: "Hello, world!".to_string(),
             large_string,
             bytes: Vec::with_capacity(12),
@@ -104,7 +104,7 @@ impl Sanity {
         }
     }
 
-    fn to_buffer(&mut self) -> Vec<u8> {
+    fn convert_to_buffer(&mut self) -> Vec<u8> {
         let mut context = Context::new();
         context.description = "Serialize sanity (to buffer)...".to_string();
         let sizer = WriteSizer::new(context.clone());
@@ -436,7 +436,7 @@ fn serialize_and_deserialize() {
     let mut input = sanity_input.init();
     let mut output = Sanity::new();
     output
-        .from_buffer(input.to_buffer().as_slice())
+        .from_buffer(input.convert_to_buffer().as_slice())
         .expect("Failed to to write output from buffer");
     assert_ne!(output, input);
 }
@@ -447,7 +447,7 @@ fn serialize_and_deserialize_with_overflow() {
     let mut input = sanity_input.init();
     let mut output = Sanity::new();
     assert!(output
-        .from_buffer_with_overflows(input.to_buffer().as_slice())
+        .from_buffer_with_overflows(input.convert_to_buffer().as_slice())
         .is_ok());
 }
 
@@ -457,6 +457,6 @@ fn throw_error_if_invalid_type_found() {
     let mut input = sanity_input.init();
     let mut output = Sanity::new();
     assert!(output
-        .from_buffer_with_invalid_types(input.to_buffer().as_slice())
+        .from_buffer_with_invalid_types(input.convert_to_buffer().as_slice())
         .is_ok());
 }
