@@ -1,5 +1,5 @@
 {{#scalar}}
-writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&{{#toLower}}{{#argument}}{{/argument}}{{/toLower}}.{{#toLower}}{{name}}{{/toLower}});
+writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}({{#toLower}}{{#argument}}{{/argument}}{{/toLower}}.{{#toLower}}{{name}}{{/toLower}});
 {{/scalar}}
 {{#array}}
 writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}({{#toLower}}{{#argument}}{{/argument}}{{/toLower}}.{{#toLower}}{{name}}{{/toLower}}.as_slice(), |writer: &mut W, {{#toWasm}}{{toGraphQLType}}{{/toWasm}}| {

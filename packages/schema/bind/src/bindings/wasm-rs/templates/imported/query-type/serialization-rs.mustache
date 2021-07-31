@@ -29,7 +29,7 @@ pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &Input{{#toUpper}}
     sizer_context.description =
         "Serializing (sizing) imported query-type: Input{{#toUpper}}{{name}}{{/toUpper}}".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
-    write_{{#toLower}}{{name}}{{/toLower}}_args(&input, &mut sizer);
+    write_{{#toLower}}{{name}}{{/toLower}}_args(input, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description =
@@ -45,9 +45,9 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toU
     writer
         .context()
         .push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
-    writer.write_string(&"{{#toLower}}{{name}}{{/toLower}}".to_string());
+    writer.write_string("{{#toLower}}{{name}}{{/toLower}}".to_string());
     {{#scalar}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}});
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}});
     {{/scalar}}
     {{#array}}
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_slice(), |writer: &mut W, {{#toWasm}}{{toGraphQLType}}{{/toWasm}}| {
@@ -56,7 +56,7 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toU
     {{/array}}
     {{#enum}}
     {{#required}}
-    writer.write_i32(&(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}} as i32));
+    writer.write_i32(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}} as i32);
     {{/required}}
     {{^required}}
     writer.write_nullable_i32(Some(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.unwrap() as i32));
@@ -68,7 +68,7 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toU
     {{/required}}
     {{^required}}
     if input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.is_some() {
-        {{type}}::write(&input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_ref().unwrap(), writer);
+        {{type}}::write(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }

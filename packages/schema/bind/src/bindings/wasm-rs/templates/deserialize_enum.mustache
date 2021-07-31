@@ -1,9 +1,9 @@
 {{#required}}
 if reader.is_next_string() {
-  {{#toLower}}{{name}}{{/toLower}} = get_{{#toLower}}{{type}}{{/toLower}}_value(reader.read_string().unwrap_or_default().as_str())
+  {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}} = get_{{#toLower}}{{type}}{{/toLower}}_value(reader.read_string().unwrap_or_default().as_str())
       .expect("Failed to get {{type}} value");
 } else {
-  {{#toLower}}{{name}}{{/toLower}} = {{type}}::try_from(reader.read_i32().unwrap_or_default())
+  {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}} = {{type}}::try_from(reader.read_i32().unwrap_or_default())
       .expect("Failed to convert i32 to {{type}}");
   sanitize_{{#toLower}}{{type}}{{/toLower}}_value({{#toLower}}{{name}}{{/toLower}} as i32)
       .expect("Failed to sanitize {{type}}");
