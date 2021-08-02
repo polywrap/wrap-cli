@@ -1,14 +1,13 @@
 use crate::{
-    deserialize_object_method_args, 
-    deserialize_query_method_args, 
-    serialize_object_method_result,
+    deserialize_query_method_args,
     serialize_query_method_result,
+    deserialize_object_method_args,
+    serialize_object_method_result,
 };
 
 pub fn query_method_wrapped(args_buf: &[u8]) -> Vec<u8> {
-    let query_method = deserialize_query_method_args(args_buf).unwrap();
-    let args = bincode::serialize(&query_method).expect("Failed to serialize InputQueryMethod");
-    let result = args.as_ptr() as i32;
+    let args = deserialize_query_method_args(args_buf).unwrap();
+    query_method(TODO)
     serialize_query_method_result(result)
 }
 
