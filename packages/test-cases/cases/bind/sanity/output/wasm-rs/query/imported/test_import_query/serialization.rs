@@ -20,16 +20,16 @@ pub struct InputImportedMethod {
     pub str: String,
     pub opt_str: Option<String>,
     pub u: u32,
-    pub opt_uint: Option<u32>,
-    pub u_array_array: Vec<Vec<u32>>,
+    pub opt_u: Option<u32>,
+    pub u_array_array: Vec<Option<Vec<Option<u32>>>>,
     pub object: TestImportObject,
     pub opt_object: Option<TestImportObject>,
     pub object_array: Vec<TestImportObject>,
-    pub opt_object_array: Option<Vec<TestImportObject>>,
+    pub opt_object_array: Option<Vec<Option<TestImportObject>>>,
     pub en: TestImportEnum,
     pub opt_enum: Option<TestImportEnum>,
     pub enum_array: Vec<TestImportEnum>,
-    pub opt_enum_array: Option<Vec<TestImportEnum>>,
+    pub opt_enum_array: Option<Vec<Option<TestImportEnum>>>,
 }
 
 pub fn serialize_imported_method_args(input: &InputImportedMethod) -> Vec<u8> {
