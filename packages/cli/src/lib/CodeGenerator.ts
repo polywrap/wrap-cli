@@ -1,5 +1,5 @@
 import { SchemaComposer } from "./SchemaComposer";
-import { Project } from "./Project";
+import { Project } from "./project";
 import {
   step,
   withSpinner,

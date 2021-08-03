@@ -1,36 +1,26 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { loadWeb3ApiManifest, loadBuildManifest } from "./helpers";
-import { intlMsg } from "./intl";
+import { Project, ProjectConfig } from "./Project";
+import { loadWeb3ApiManifest, loadBuildManifest } from "../helpers";
+import { intlMsg } from "../intl";
 
 import { Web3ApiManifest, BuildManifest } from "@web3api/core-js";
 import { normalizePath } from "@web3api/os-js";
 import path from "path";
 import fs from "fs";
-import rimraf from "rimraf";
-import copyfiles from "copyfiles";
 
-export interface ProjectConfig {
+export interface Web3ApiProjectConfig extends ProjectConfig {
   web3apiManifestPath: string;
   buildManifestPath?: string;
-  quiet?: boolean;
 }
 
-export class Project {
+export class Web3ApiProject extends Project {
   private _web3apiManifest: Web3ApiManifest | undefined;
   private _buildManifest: BuildManifest | undefined;
   private _defaultBuildManifestCached = false;
 
-  constructor(private _config: ProjectConfig) {}
-
-  get quiet(): boolean {
-    return !!this._config.quiet;
-  }
-
-  public reset(): void {
-    this._web3apiManifest = undefined;
-    this._buildManifest = undefined;
-    this._defaultBuildManifestCached = false;
+  constructor(protected _config: Web3ApiProjectConfig) {
+    super(_config);
   }
 
   public async getManifestPaths(absolute = false): Promise<string[]> {
@@ -43,6 +33,44 @@ export class Project {
         ? await this.getBuildManifestPath()
         : path.relative(root, await this.getBuildManifestPath()),
     ];
+  }
+
+  /// Project Base Methods
+
+  public reset(): void {
+    this._web3apiManifest = undefined;
+    this._buildManifest = undefined;
+    this._defaultBuildManifestCached = false;
+  }
+
+  public getRootDir(): string {
+    return this.getWeb3ApiManifestDir();
+  }
+
+  public async getSchemaNamedPaths(): Promise<{
+    [name: string]: string
+  }> {
+    const manifest = await this.getWeb3ApiManifest();
+    const dir = this.getWeb3ApiManifestDir();
+    const namedPaths: { [name: string]: string } = { };
+
+    if (manifest.modules.mutation) {
+      namedPaths["mutation"] = path.join(dir, manifest.modules.mutation.schema);
+    }
+
+    if (manifest.modules.query) {
+      namedPaths["query"] = path.join(dir, manifest.modules.query.schema);
+    }
+
+    return namedPaths;
+  }
+
+  public async getImportRedirects(): Promise<{
+    uri: string;
+    schema: string;
+  }[]> {
+    const manifest = await this.getWeb3ApiManifest();
+    return manifest.import_redirects || [];
   }
 
   /// Web3API Manifest (web3api.yaml)
@@ -150,7 +178,6 @@ export class Project {
     if (!this._buildManifest) {
       this._buildManifest = await loadBuildManifest(
         await this.getBuildManifestPath(),
-        this,
         this.quiet
       );
 
@@ -210,51 +237,5 @@ export class Project {
       `${__dirname}/build-envs/${language}/*`
     );
     this._defaultBuildManifestCached = true;
-  }
-
-  /// Cache (.w3 folder)
-
-  public getCacheDir(): string {
-    return path.join(this.getWeb3ApiManifestDir(), ".w3");
-  }
-
-  public readCacheFile(file: string): string | undefined {
-    const filePath = path.join(this.getCacheDir(), file);
-
-    if (!fs.existsSync(filePath)) {
-      return undefined;
-    }
-
-    return fs.readFileSync(filePath, "utf-8");
-  }
-
-  public removeCacheDir(subfolder: string): void {
-    const folderPath = path.join(this.getCacheDir(), subfolder);
-    rimraf.sync(folderPath);
-  }
-
-  public getCachePath(subpath: string): string {
-    return path.join(this.getCacheDir(), subpath);
-  }
-
-  public async copyFilesIntoCache(
-    destSubfolder: string,
-    sourceFolder: string
-  ): Promise<void> {
-    const dest = this.getCachePath(destSubfolder);
-
-    if (!fs.existsSync(dest)) {
-      fs.mkdirSync(dest, { recursive: true });
-    }
-
-    await new Promise((resolve, reject) => {
-      copyfiles([sourceFolder, dest], { up: true }, (error) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve();
-        }
-      });
-    });
   }
 }

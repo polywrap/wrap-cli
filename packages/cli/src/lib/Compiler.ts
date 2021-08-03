@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Project } from "./Project";
+import { Web3ApiProject } from "./project";
 import { SchemaComposer } from "./SchemaComposer";
 import {
   withSpinner,
@@ -42,7 +42,7 @@ interface CompilerState {
 
 export interface CompilerConfig {
   outputDir: string;
-  project: Project;
+  project: Web3ApiProject;
   schemaComposer: SchemaComposer;
 }
 
@@ -286,6 +286,7 @@ export class Compiler {
     // Create the BuildManifest
     const buildManifest: BuildManifest = {
       format: "0.0.1-prealpha.2",
+      __type: "BuildManifest",
       docker: {
         buildImageId: dockerImageId,
       },

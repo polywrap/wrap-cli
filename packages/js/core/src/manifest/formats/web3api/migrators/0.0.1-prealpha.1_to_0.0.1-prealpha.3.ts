@@ -13,6 +13,7 @@ export function migrate(old: OldManifest): NewManifest {
   const language = module.module.language;
 
   return {
+    __type: "Web3ApiManifest",
     format: "0.0.1-prealpha.3",
     repository: old.repository,
     language,

@@ -1,3 +1,16 @@
+/*
+TODO:
+polywrap plugin codegen // generates types
+polywrap plugin codegen --custom ./web3api.gen.ts
+
+format: 0.0.1-prealpha.3
+language: plugin/typescript
+schema: ./schema.graphql
+import_redirects:
+  - uri: w3://ens/ethereum.web3api.eth
+    schema: ../ethereum/schema.graphql
+*/
+
 /* eslint-disable prefer-const */
 import { CodeGenerator, Compiler, Project, SchemaComposer } from "../lib";
 import { fixParameters } from "../lib/helpers";
@@ -8,7 +21,6 @@ import axios from "axios";
 import chalk from "chalk";
 
 export const supportedLangs: { [key: string]: string[] } = {
-  build: ["typescript"],
   codegen: ["typescript"],
 };
 export const defaultManifest = ["web3api.yaml", "web3api.yml"];
@@ -17,7 +29,6 @@ const cmdStr = intlMsg.commands_plugin_options_command();
 const optionsStr = intlMsg.commands_options_options();
 const langsStr = intlMsg.commands_plugin_options_langs();
 const langStr = intlMsg.commands_plugin_options_lang();
-const buildStr = intlMsg.commands_plugin_options_build();
 const codegenStr = intlMsg.commands_plugin_options_codegen();
 const pathStr = intlMsg.commands_plugin_options_path();
 const defaultManifestStr = defaultManifest.join(" | ");
@@ -28,8 +39,6 @@ const HELP = `
 ${chalk.bold("w3 plugin")} ${cmdStr} [${optionsStr}]
 
 Commands:
-  ${chalk.bold("build")} <${langStr}>     ${buildStr}
-    ${langsStr}: ${supportedLangs.build.join(", ")}
   ${chalk.bold("codegen")} <${langStr}>   ${codegenStr}
     ${langsStr}: ${supportedLangs.codegen.join(", ")}
 

@@ -96,51 +96,66 @@ export function fetchTestCases(): TestCases {
       return Promise.resolve(fetchIfExists(path, true) || "");
     };
 
+    const input: ComposerOptions = {
+      schemas: { },
+      resolvers: {
+        external: resolveExternal,
+        local: resolveLocal,
+      },
+      output: ComposerFilter.All
+    };
+
+    if (queryInput) {
+      input.schemas.query = {
+        schema: queryInput,
+        absolutePath: path.join(
+          root,
+          dirent.name,
+          "input/query.graphql"
+        ),
+      };
+    }
+
+    if (mutationInput) {
+      input.schemas.mutation = {
+        schema: mutationInput,
+        absolutePath: path.join(
+          root,
+          dirent.name,
+          "input/mutation.graphql"
+        ),
+      };
+    }
+
+    const output: ComposerOutput = {
+      combined: {}
+    };
+
+    if (querySchema && queryTypeInfo) {
+      output.query = {
+        schema: querySchema,
+        typeInfo: queryTypeInfo
+      };
+    }
+
+    if (mutationSchema && mutationTypeInfo) {
+      output.mutation = {
+        schema: mutationSchema,
+        typeInfo: mutationTypeInfo
+      };
+    }
+
+    if (schemaSchema && schemaTypeInfo) {
+      output.combined = {
+        schema: schemaSchema,
+        typeInfo: schemaTypeInfo
+      };
+    }
+
     return {
       name: dirent.name,
-      input: {
-        schemas: {
-          query: queryInput
-            ? {
-                schema: queryInput,
-                absolutePath: path.join(
-                  root,
-                  dirent.name,
-                  "input/query.graphql"
-                ),
-              }
-            : undefined,
-          mutation: mutationInput
-            ? {
-                schema: mutationInput,
-                absolutePath: path.join(
-                  root,
-                  dirent.name,
-                  "input/mutation.graphql"
-                ),
-              }
-            : undefined,
-        },
-        resolvers: {
-          external: resolveExternal,
-          local: resolveLocal,
-        },
-        output: ComposerFilter.All
-      },
-      output: {
-        query: querySchema && queryTypeInfo ? {
-          schema: querySchema,
-          typeInfo: queryTypeInfo
-        } : undefined,
-        mutation: mutationSchema && mutationTypeInfo ? {
-          schema: mutationSchema,
-          typeInfo: mutationTypeInfo
-        } : undefined,
-        combined: schemaSchema && schemaTypeInfo ? {
-          schema: schemaSchema,
-          typeInfo: schemaTypeInfo
-        } : undefined
-      },
+      input,
+      output,
     };
   };
 

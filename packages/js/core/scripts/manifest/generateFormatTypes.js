@@ -37,6 +37,16 @@ async function generateFormatTypes() {
           fs.readFileSync(formatSchemaPath, { encoding: "utf-8" })
         );
 
+        // Insert the __type property for introspection
+        formatSchema.properties["__type"] = {
+          type: "string",
+          const: formatSchema.id
+        };
+        formatSchema.required = [
+          ...formatSchema.required,
+          "__type"
+        ];
+
         formatSchemas.push(formatSchema);
 
         // Convert it to a TypeScript interface

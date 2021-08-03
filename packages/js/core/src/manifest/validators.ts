@@ -15,45 +15,21 @@ export function file(path: unknown): boolean {
 }
 
 export function dockerImageName(name: unknown): boolean {
-  if (typeof name !== "string") {
-    return false;
-  }
-
-  return true;
+  return typeof name === "string";
 }
 
 export function dockerfileName(value: unknown): boolean {
-  if (typeof value !== "string") {
-    return false;
-  }
-
-  if (file(value) && value.indexOf("Dockerfile") > -1) {
-    return true;
-  }
-
-  return true;
+  return typeof value === "string" && file(value) && value.indexOf("Dockerfile") > -1;
 }
 
 export function dockerImageId(value: unknown): boolean {
-  if (typeof value !== "string") {
-    return false;
-  }
-
-  if (value.indexOf("sha256:") === -1) {
-    return false;
-  }
-
-  return true;
+  return typeof value === "string" && value.indexOf("sha256:") > -1;
 }
 
 export function wasmLanguage(language: unknown): boolean {
-  if (typeof language !== "string") {
-    return false;
-  }
+  return typeof language === "string" && language.indexOf("wasm/") > -1;
+}
 
-  if (language.indexOf("wasm/") > -1) {
-    return true;
-  }
-
-  return false;
+export function pluginLanguage(language: unknown): boolean {
+  return typeof language === "string" && language.indexOf("plugin/") > -1;
 }

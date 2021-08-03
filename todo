@@ -15,3 +15,11 @@ x polywrap codegen --custom ./web3api.gen.ts // compose schema, custom generate
 - polywrap plugin compose // compose schema
 polywrap plugin codegen // generates types
 polywrap plugin codegen --custom ./web3api.gen.ts
+
+TODO
+
+SchemaComposer.ts
+- Have the Project class return the schema + import_redirects
+
+- Finish implementing the plugin codegen command
+

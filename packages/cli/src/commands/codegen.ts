@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import { CodeGenerator, Compiler, Project, SchemaComposer } from "../lib";
+import { CodeGenerator, Compiler, Web3ApiProject, SchemaComposer } from "../lib";
 import { intlMsg } from "../lib/intl";
 
 import chalk from "chalk";
@@ -113,7 +113,7 @@ export default {
         : filesystem.resolve(defaultManifest[1]));
     outputDir = outputDir && filesystem.resolve(outputDir);
 
-    const project = new Project({
+    const project = new Web3ApiProject({
       web3apiManifestPath: manifestPath,
     });
 

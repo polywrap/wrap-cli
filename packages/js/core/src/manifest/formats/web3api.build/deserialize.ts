@@ -29,6 +29,8 @@ export const deserializeBuildManifest = Tracer.traceFunc(
       throw Error(`Unable to parse BuildManifest: ${manifest}`);
     }
 
+    anyBuildManifest.__type = "BuildManifest";
+
     if (!options || !options.noValidate) {
       validateBuildManifest(anyBuildManifest, options?.extSchema);
     }

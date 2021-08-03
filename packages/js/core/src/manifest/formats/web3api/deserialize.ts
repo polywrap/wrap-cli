@@ -29,6 +29,8 @@ export const deserializeWeb3ApiManifest = Tracer.traceFunc(
       throw Error(`Unable to parse Web3ApiManifest: ${manifest}`);
     }
 
+    anyWeb3ApiManifest.__type = "Web3ApiManifest";
+
     if (!options || !options.noValidate) {
       validateWeb3ApiManifest(anyWeb3ApiManifest, options?.extSchema);
     }

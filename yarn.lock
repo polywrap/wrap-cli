@@ -4086,41 +4086,6 @@
     "@uniswap/lib" "1.1.1"
     "@uniswap/v2-core" "1.0.0"
 
-"@web3api/core-js@0.0.1-prealpha.28":
-  version "0.0.1-prealpha.28"
-  resolved "https://registry.yarnpkg.com/@web3api/core-js/-/core-js-0.0.1-prealpha.28.tgz#22aac794999d1bcb6eaed0109f9e903fdd63ec1a"
-  integrity sha512-iThLuXAtVLBqlG8RzTLJhcdeA5hvJxWnd5VhuDQOKVf6YQBYg7yJVdyjTKDLafc1bnPDolIcD9/kXgBXDbOwPw==
-  dependencies:
-    "@web3api/manifest-schemas" "0.0.1-prealpha.28"
-    "@web3api/tracing-js" "0.0.1-prealpha.28"
-    graphql "15.5.0"
-    graphql-tag "2.10.4"
-    js-yaml "3.14.0"
-    jsonschema "1.4.0"
-    semver "7.3.4"
-
-"@web3api/manifest-schemas@0.0.1-prealpha.28":
-  version "0.0.1-prealpha.28"
-  resolved "https://registry.yarnpkg.com/@web3api/manifest-schemas/-/manifest-schemas-0.0.1-prealpha.28.tgz#c138119a4569041e1441a0d5265485c3a4db38fc"
-  integrity sha512-3p1Mb+YnxNAjTPU/ZV0S3Mr66qWiLLlXTB1Sui0WG9/sx/6NPHftuLFvuxNScvRjIixZwuvsR57zBx7tRpm8Uw==
-
-"@web3api/tracing-js@0.0.1-prealpha.28":
-  version "0.0.1-prealpha.28"
-  resolved "https://registry.yarnpkg.com/@web3api/tracing-js/-/tracing-js-0.0.1-prealpha.28.tgz#c677d209a7ef154f754821457051966591e3dbaf"
-  integrity sha512-D7qh3kyBJnncmavlsvdBnCKqmPbaln6idmvBMPkyXD1VhqF8fq4DtDrsJ5UtUxOZIh7N5wrL1P9NlL+iCAr0QQ==
-  dependencies:
-    "@opentelemetry/api" "0.20.0"
-    "@opentelemetry/context-zone" "0.20.0"
-    "@opentelemetry/core" "0.20.0"
-    "@opentelemetry/exporter-collector" "0.20.0"
-    "@opentelemetry/exporter-jaeger" "0.20.0"
-    "@opentelemetry/exporter-zipkin" "0.20.0"
-    "@opentelemetry/node" "0.20.0"
-    "@opentelemetry/propagator-b3" "0.20.0"
-    "@opentelemetry/tracing" "0.20.0"
-    "@opentelemetry/web" "0.20.0"
-    util-inspect "0.1.8"
-
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.8.5.tgz#51b1c5fe6576a34953bf4b253df9f0d490d9e359"
