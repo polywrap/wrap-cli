@@ -2,6 +2,8 @@ import { Nullable } from "./Nullable";
 import { BigInt } from "../BigInt";
 import { Context } from "./Context";
 
+import { JSON } from "assemblyscript-json";
+
 export abstract class Read {
   abstract readBool(): bool;
   abstract readInt8(): i8;
@@ -17,6 +19,7 @@ export abstract class Read {
   abstract readBytesLength(): u32;
   abstract readBytes(): ArrayBuffer;
   abstract readBigInt(): BigInt;
+  abstract readJSON(): JSON.Obj;
   abstract readArrayLength(): u32;
   abstract readArray<T>(fn: (reader: Read) => T): Array<T>;
   abstract readMapLength(): u32;
@@ -37,6 +40,7 @@ export abstract class Read {
   abstract readNullableString(): string | null;
   abstract readNullableBytes(): ArrayBuffer | null;
   abstract readNullableBigInt(): BigInt | null;
+  abstract readNullableJSON(): JSON.Obj | null;
   abstract readNullableArray<T>(fn: (decoder: Read) => T): Array<T> | null;
   abstract readNullableMap<K, V>(
     key_fn: (reader: Read) => K,

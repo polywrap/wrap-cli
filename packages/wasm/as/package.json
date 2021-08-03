@@ -21,7 +21,8 @@
     "test:ci": "asp --summary"
   },
   "dependencies": {
-    "as-bigint": "0.2.4"
+    "as-bigint": "0.2.4",
+    "assemblyscript-json": "1.1.0"
   },
   "devDependencies": {
     "@as-pect/cli": "5.0.1",

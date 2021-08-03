@@ -3,6 +3,8 @@ import { Nullable } from "./Nullable";
 import { BigInt } from "../BigInt";
 import { Context } from "./Context";
 
+import { JSON } from "assemblyscript-json";
+
 export class WriteSizer extends Write {
   length: i32;
   private readonly _context: Context;
@@ -111,6 +113,11 @@ export class WriteSizer extends Write {
 
   writeBigInt(value: BigInt): void {
     const str = value.toString();
+    this.writeString(str);
+  }
+
+  writeJSON(value: JSON.Obj): void {
+    const str = value.stringify();
     this.writeString(str);
   }
 
@@ -262,6 +269,15 @@ export class WriteSizer extends Write {
     }
 
     this.writeBigInt(value);
+  }
+
+  writeNullableJSON(value: JSON.Obj | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeJSON(value);
   }
 
   writeNullableArray<T>(

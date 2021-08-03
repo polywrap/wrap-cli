@@ -14,6 +14,8 @@ import { Read } from "./Read";
 import { BigInt } from "../BigInt";
 import { Context } from "./Context";
 
+import { JSON } from "assemblyscript-json";
+
 export class ReadDecoder extends Read {
   private readonly _context: Context;
   private view: DataView;
@@ -209,6 +211,11 @@ export class ReadDecoder extends Read {
     return BigInt.fromString(str);
   }
 
+  readJSON(): JSON.Obj {
+    const str = this.readString();
+    return <JSON.Obj>JSON.parse(str);
+  }
+
   readArrayLength(): u32 {
     if (this.isNextNil()) {
       return 0;
@@ -365,6 +372,14 @@ export class ReadDecoder extends Read {
       return null;
     }
     return this.readBigInt();
+  }
+
+  readNullableJSON(): JSON.Obj | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+
+    return this.readJSON();
   }
 
   readNullableArray<T>(fn: (decoder: Read) => T): Array<T> | null {

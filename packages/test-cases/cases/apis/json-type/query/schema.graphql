@@ -1,0 +1,9 @@
+type Query {
+  stringifyMethod(
+    arg: JSON!
+  ): String!
+
+  parseMethod(
+    arg: String!
+  ): JSON!
+}

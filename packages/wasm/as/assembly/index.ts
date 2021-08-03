@@ -10,6 +10,12 @@ export {
 
 export { BigInt } from "./BigInt";
 
+export {
+  JSON,
+  JSONDecoder,
+  JSONEncoder,
+  JSONHandler,
+} from "assemblyscript-json";
 export * from "./abort";
 export * from "./invoke";
 export * from "./subinvoke";
