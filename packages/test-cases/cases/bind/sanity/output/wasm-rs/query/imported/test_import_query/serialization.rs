@@ -1,6 +1,19 @@
-use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
-use crate::{TestImportEnum, TestImportObject};
-use serde::{Deserialize, Serialize};
+use crate::{
+    Context, 
+    Read, 
+    ReadDecoder, 
+    Write, 
+    WriteEncoder, 
+    WriteSizer,
+};
+use crate::{
+    TestImportEnum, 
+    TestImportObject,
+};
+use serde::{
+    Deserialize, 
+    Serialize,
+};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InputImportedMethod {

@@ -1,6 +1,21 @@
-use crate::{get_custom_enum_value, sanitize_custom_enum_value, AnotherType, CustomEnum};
-use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
-use serde::{Deserialize, Serialize};
+use crate::{
+    get_custom_enum_value, 
+    sanitize_custom_enum_value, 
+    AnotherType, 
+    CustomEnum,
+};
+use crate::{
+    Context, 
+    Read, 
+    ReadDecoder, 
+    Write, 
+    WriteEncoder, 
+    WriteSizer,
+};
+use serde::{
+    Deserialize, 
+    Serialize,
+};
 use std::convert::TryFrom;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

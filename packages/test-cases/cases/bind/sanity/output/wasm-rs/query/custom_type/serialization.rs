@@ -1,7 +1,18 @@
 use crate::{
-    get_custom_enum_value, sanitize_custom_enum_value, AnotherType, CustomEnum, CustomType,
+    get_custom_enum_value, 
+    sanitize_custom_enum_value, 
+    AnotherType, 
+    CustomEnum, 
+    CustomType,
 };
-use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
+use crate::{
+    Context, 
+    Read, 
+    ReadDecoder, 
+    Write, 
+    WriteEncoder, 
+    WriteSizer,
+};
 use num_bigint::BigInt;
 use num_traits::cast::FromPrimitive;
 use std::convert::TryFrom;

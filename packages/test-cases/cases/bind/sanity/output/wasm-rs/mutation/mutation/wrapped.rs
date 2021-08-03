@@ -1,9 +1,15 @@
 use crate::{
-    deserialize_mutation_method_args, deserialize_object_method_args,
-    serialize_mutation_method_result, serialize_object_method_result,
+    deserialize_mutation_method_args, 
+    deserialize_object_method_args,
+    serialize_mutation_method_result, 
+    serialize_object_method_result,
 };
-use crate::{mutation_method, object_method};
-use crate::{InputMutationMethod, InputObjectMethod};
+use crate::{
+    mutation_method, 
+    object_method,
+    InputMutationMethod, 
+    InputObjectMethod,
+};
 
 pub fn mutation_method_wrapped(args_buf: &[u8]) -> Vec<u8> {
     let args = deserialize_mutation_method_args(args_buf).expect("Failed to deserialize buffer");

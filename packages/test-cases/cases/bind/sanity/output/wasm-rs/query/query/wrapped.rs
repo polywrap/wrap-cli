@@ -1,9 +1,15 @@
 use crate::{
-    deserialize_object_method_args, deserialize_query_method_args, serialize_object_method_result,
+    deserialize_object_method_args, 
+    deserialize_query_method_args, 
+    serialize_object_method_result,
     serialize_query_method_result,
 };
-use crate::{object_method, query_method};
-use crate::{InputObjectMethod, InputQueryMethod};
+use crate::{
+    object_method, 
+    query_method,
+    InputObjectMethod, 
+    InputQueryMethod,
+};
 
 pub fn query_method_wrapped(args_buf: &[u8]) -> Vec<u8> {
     let args = deserialize_query_method_args(args_buf).expect("Failed to deserialize buffer");
