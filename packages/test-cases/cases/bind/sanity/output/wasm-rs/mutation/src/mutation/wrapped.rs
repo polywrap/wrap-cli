@@ -1,18 +1,30 @@
 use crate::{
-    deserialize_mutation_method_args, 
-    deserialize_object_method_args,
-    serialize_mutation_method_result, 
-    serialize_object_method_result,
+    deserialize_mutation_method_args, deserialize_object_method_args,
+    serialize_mutation_method_result, serialize_object_method_result,
 };
+use crate::{mutation_method, object_method};
+use crate::{InputMutationMethod, InputObjectMethod};
 
 pub fn mutation_method_wrapped(args_buf: &[u8]) -> Vec<u8> {
-    let query_method = deserialize_mutation_method_args(args_buf).unwrap();
-    let args = bincode::serialize(&query_method).expect("Failed to serialize InputMutationMethod");
-    let result = args.as_ptr() as i32;
+    let args = deserialize_mutation_method_args(args_buf).expect("Failed to deserialize buffer");
+    let result = mutation_method(InputMutationMethod {
+        str: args.str,
+        opt_str: args.opt_str,
+        en: args.en,
+        opt_enum: args.opt_enum,
+        enum_array: args.enum_array,
+        opt_enum_array: args.opt_enum_array,
+    });
     serialize_mutation_method_result(result)
 }
 
 pub fn object_method_wrapped(args_buf: &[u8]) -> Vec<u8> {
-    let object_method = deserialize_object_method_args(args_buf).unwrap();
-    serialize_object_method_result(&object_method.opt_object)
+    let args = deserialize_object_method_args(args_buf).expect("Failed to deserialize buffer");
+    let result = object_method(InputObjectMethod {
+        object: args.object,
+        opt_object: args.opt_object,
+        object_array: args.object_array,
+        opt_object_array: args.opt_object_array,
+    });
+    serialize_object_method_result(result)
 }

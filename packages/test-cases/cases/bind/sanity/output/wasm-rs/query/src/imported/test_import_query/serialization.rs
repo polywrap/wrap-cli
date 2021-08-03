@@ -1,19 +1,6 @@
-use crate::{
-    Context, 
-    Read, 
-    ReadDecoder, 
-    Write, 
-    WriteEncoder, 
-    WriteSizer,
-};
-use crate::{
-    TestImportEnum, 
-    TestImportObject,
-};
-use serde::{
-    Deserialize, 
-    Serialize,
-};
+use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
+use crate::{TestImportEnum, TestImportObject};
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InputImportedMethod {
@@ -74,25 +61,27 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
         .expect("Failed to pop u32 from Context");
     writer
         .context()
-        .push("opt_uint", "Option<u32>", "writing property");
-    writer.write_string("opt_uint".to_string());
-    writer.write_nullable_u32(input.opt_uint);
+        .push("opt_u", "Option<u32>", "writing property");
+    writer.write_string("opt_u".to_string());
+    writer.write_nullable_u32(input.opt_u);
     writer
         .context()
         .pop()
         .expect("Failed to pop Option<u32> from Context");
 
-    writer
-        .context()
-        .push("u_array_array", "Vec<Vec<u32>>", "writing property");
+    writer.context().push(
+        "u_array_array",
+        "Vec<Option<Vec<Option<u32>>>>",
+        "writing property",
+    );
     writer.write_string("u_array_array".to_string());
     writer.write_array(input.u_array_array.as_slice(), |writer: &mut W, item| {
-        writer.write_array(item.as_slice(), Write::write_u32)
+        writer.write_nullable_array(item, |writer: &mut W, item| writer.write_nullable_u32(item))
     });
     writer
         .context()
         .pop()
-        .expect("Failed to pop Vec<Vec<u32>> from Context");
+        .expect("Failed to pop Vec<Option<Vec<Option<u32>>>> from Context");
 
     writer
         .context()
@@ -129,17 +118,21 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
         .expect("Failed to pop Vec<TestImportObject> from Context");
     writer.context().push(
         "opt_object_array",
-        "Option<Vec<TestImportObject>>",
+        "Option<Vec<Option<TestImportObject>>>",
         "writing property",
     );
     writer.write_string("opt_object_array".to_string());
     writer.write_nullable_array(input.opt_object_array.clone(), |writer: &mut W, item| {
-        TestImportObject::write(&item, writer)
+        if item.is_some() {
+            TestImportObject::write(&item.expect("Error unwrapping"), writer)
+        } else {
+            writer.write_nil()
+        }
     });
     writer
         .context()
         .pop()
-        .expect("Failed to pop Option<Vec<TestImportObject>> from Context");
+        .expect("Failed to pop Option<Vec<Option<TestImportObject>>> from Context");
     writer
         .context()
         .push("en", "TestImportEnum", "writing property");
@@ -171,17 +164,17 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
         .expect("Failed to pop Vec<TestImportEnum> from Context");
     writer.context().push(
         "opt_enum_array",
-        "Option<Vec<CustomEnum>>",
+        "Option<Vec<Option<CustomEnum>>>",
         "writing property",
     );
     writer.write_string("opt_enum_array".to_string());
     writer.write_nullable_array(input.opt_enum_array.clone(), |writer: &mut W, item| {
-        writer.write_i32(item as i32)
+        writer.write_nullable_i32(Some(item.unwrap() as i32))
     });
     writer
         .context()
         .pop()
-        .expect("Failed to pop Option<Vec<CustomEnum>> from Context");
+        .expect("Failed to pop Option<Vec<Option<CustomEnum>>> from Context");
 }
 
 pub fn deserialize_imported_method_result(buffer: &[u8]) -> TestImportObject {

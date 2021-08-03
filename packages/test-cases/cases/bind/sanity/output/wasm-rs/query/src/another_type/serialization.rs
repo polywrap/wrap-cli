@@ -1,15 +1,5 @@
-use crate::{
-    AnotherType, 
-    CustomType,
-};
-use crate::{
-    Context, 
-    Read, 
-    ReadDecoder, 
-    Write, 
-    WriteEncoder, 
-    WriteSizer,
-};
+use crate::{AnotherType, CustomType};
+use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
 pub fn serialize_another_type(object: &AnotherType) -> Vec<u8> {
     let mut sizer_context = Context::new();
@@ -37,7 +27,7 @@ pub fn write_another_type<W: Write>(object: &AnotherType, writer: &mut W) {
         .expect("Failed to pop Option<String> from Context");
     writer
         .context()
-        .push("circular", "Option<CustomType>", "writing property");
+        .push("circular", "Box<Option<CustomType>>", "writing property");
     writer.write_string("circular".to_string());
     if object.circular.is_some() {
         CustomType::write(object.circular.as_ref().as_ref().unwrap(), writer);
@@ -47,7 +37,7 @@ pub fn write_another_type<W: Write>(object: &AnotherType, writer: &mut W) {
     writer
         .context()
         .pop()
-        .expect("Failed to pop Option<CustomType> from Context");
+        .expect("Failed to pop Box<Option<CustomType>> from Context");
 }
 
 pub fn deserialize_another_type(buffer: &[u8]) -> AnotherType {
@@ -60,7 +50,7 @@ pub fn deserialize_another_type(buffer: &[u8]) -> AnotherType {
 pub fn read_another_type<R: Read>(reader: &mut R) -> AnotherType {
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
     let mut prop: Option<String> = None;
-    let mut circular: Option<CustomType> = None;
+    let mut circular: Box<Option<CustomType>> = Box::new(None);
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -78,18 +68,18 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> AnotherType {
                     .expect("Failed to pop Option<String> from Context");
             }
             "circular" => {
-                reader
-                    .context()
-                    .push(&field, "Option<CustomType>", "type found, reading property");
-                let mut object: Option<CustomType> = None;
+                reader.context().push(
+                    &field,
+                    "Box<Option<CustomType>>",
+                    "type found, reading property",
+                );
                 if !reader.is_next_nil() {
-                    object = Some(CustomType::read(reader));
+                    circular = Box::new(Some(CustomType::read(reader)));
                 }
-                circular = object;
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop Option<CustomType> from Context");
+                    .expect("Failed to pop Box<Option<CustomType>> from Context");
             }
             _ => {
                 reader
@@ -102,8 +92,5 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> AnotherType {
             }
         }
     }
-    AnotherType {
-        prop,
-        circular: Box::new(circular),
-    }
+    AnotherType { prop, circular }
 }

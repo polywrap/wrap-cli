@@ -1,20 +1,9 @@
-use crate::{
-    Read, 
-    Write,
-};
-use crate::{
-    TestImportAnotherObject, 
-    TestImportEnum,
-};
-use serde::{
-    Deserialize, 
-    Serialize,
-};
+use crate::{Read, Write};
+use crate::{TestImportAnotherObject, TestImportEnum};
+use serde::{Deserialize, Serialize};
 pub mod serialization;
 pub use serialization::{
-    deserialize_test_import_object, 
-    read_test_import_object, 
-    serialize_test_import_object,
+    deserialize_test_import_object, read_test_import_object, serialize_test_import_object,
     write_test_import_object,
 };
 
@@ -23,11 +12,11 @@ pub struct TestImportObject {
     pub object: TestImportAnotherObject,
     pub opt_object: Option<TestImportAnotherObject>,
     pub object_array: Vec<TestImportAnotherObject>,
-    pub opt_object_array: Option<Vec<TestImportAnotherObject>>,
+    pub opt_object_array: Option<Vec<Option<TestImportAnotherObject>>>,
     pub en: TestImportEnum,
     pub opt_enum: Option<TestImportEnum>,
     pub enum_array: Vec<TestImportEnum>,
-    pub opt_enum_array: Option<Vec<TestImportEnum>>,
+    pub opt_enum_array: Option<Vec<Option<TestImportEnum>>>,
 }
 
 impl TestImportObject {

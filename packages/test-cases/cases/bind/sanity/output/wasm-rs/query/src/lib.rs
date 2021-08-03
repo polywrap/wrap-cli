@@ -27,3 +27,13 @@ pub use query::{
     query_method_wrapped, serialize_object_method_result, serialize_query_method_result,
     InputObjectMethod, InputQueryMethod,
 };
+
+// Temporary "imaginary" query_method()
+pub fn query_method(_input: InputQueryMethod) -> i32 {
+    unimplemented!()
+}
+
+// Temporary "imaginary" object_method()
+pub fn object_method(_input: InputObjectMethod) -> Option<AnotherType> {
+    unimplemented!()
+}
