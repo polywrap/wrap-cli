@@ -20,14 +20,14 @@ use serde::{
 };
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct {{type}};
+pub struct {{#toUpper}}{{type}}{{/toUpper}};
 
-impl {{type}} {
+impl {{#toUpper}}{{type}}{{/toUpper}} {
     pub const URI: &'static str = "{{uri}}";
     
     {{#methods}}
     pub fn {{#toLower}}{{name}}{{/toLower}}(input: &Input{{#toUpper}}{{name}}{{/toUpper}}) -> {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
-        let uri = {{type}}::URI;
+        let uri = {{#toUpper}}{{type}}{{/toUpper}}::URI;
         let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(input);
         let result = subinvoke::w3_subinvoke(
             uri.to_string(),

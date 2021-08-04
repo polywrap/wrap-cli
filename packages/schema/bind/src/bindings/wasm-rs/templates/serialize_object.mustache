@@ -1,9 +1,9 @@
 {{#required}}
-{{type}}::write(&object.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}, writer);
+{{#toUpper}}{{type}}{{/toUpper}}::write(&object.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}, writer);
 {{/required}}
 {{^required}}
 if object.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.is_some() {
-    {{type}}::write(object.{{#toLower}}{{name}}{{/toLower}}.as_ref().unwrap(), writer);
+    {{#toUpper}}{{type}}{{/toUpper}}::write(object.{{#toLower}}{{name}}{{/toLower}}.as_ref().unwrap(), writer);
 } else {
     writer.write_nil();
 }

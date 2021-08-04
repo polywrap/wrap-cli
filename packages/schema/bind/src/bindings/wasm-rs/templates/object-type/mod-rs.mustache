@@ -1,10 +1,10 @@
 {{#__commonImport}}
-pub use super::common::{{type}};
+pub use super::common::{{#toUpper}}{{type}}{{/toUpper}};
 {{/__commonImport}}
 {{^__commonImport}}
 pub mod serialization;
 use crate::{ 
-    {{type}}, 
+    {{#toUpper}}{{type}}{{/toUpper}}, 
 };
 use crate::{
     Read, 
@@ -23,27 +23,27 @@ pub use serialization::{
 };
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct {{type}} {
+pub struct {{#toUpper}}{{type}}{{/toUpper}} {
     {{#properties}}
     pub {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
     {{/properties}}
 }
 
-impl {{type}} {
-    pub fn to_buffer(object: &{{type}}) -> Vec<u8> {
+impl {{#toUpper}}{{type}}{{/toUpper}} {
+    pub fn to_buffer(object: &{{#toUpper}}{{type}}{{/toUpper}}) -> Vec<u8> {
         serialize_{{#toLower}}{{name}}{{/toLower}}(object)
     }
 
-    pub fn from_buffer(buffer: &[u8]) -> {{type}} {
+    pub fn from_buffer(buffer: &[u8]) -> {{#toUpper}}{{type}}{{/toUpper}} {
         deserialize_{{#toLower}}{{name}}{{/toLower}}(buffer)
     }
 
-    pub fn write<W: Write>(object: &{{type}}, writer: &mut W) {
+    pub fn write<W: Write>(object: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) {
         write_{{#toLower}}{{name}}{{/toLower}}(object, writer);
     }
 
-    pub fn read<R: Read>(reader: &mut R) -> {{type}} {
-        read_{{#toLower}}{{name}}{{/toLower}}(reader).expect("Failed to read {{type}}")
+    pub fn read<R: Read>(reader: &mut R) -> {{#toUpper}}{{type}}{{/toUpper}} {
+        read_{{#toLower}}{{name}}{{/toLower}}(reader).expect("Failed to read {{#toUpper}}{{type}}{{/toUpper}}")
     }
 }
 {{/__commonImport}}

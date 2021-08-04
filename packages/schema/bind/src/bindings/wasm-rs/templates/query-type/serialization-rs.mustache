@@ -2,7 +2,7 @@
 use crate::{
     get_{{#toLower}}{{type}}{{/toLower}}_value, 
     sanitize_{{#toLower}}{{type}}{{/toLower}}_value, 
-    {{type}},
+    {{#toUpper}}{{type}}{{/toUpper}},
 };
 use crate::{
     Context, 
@@ -145,11 +145,11 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return
     {{/enum}}
     {{#object}}
     {{#required}}
-    {{type}}::write(&result.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}, writer);
+    {{#toUpper}}{{type}}{{/toUpper}}::write(&result.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}, writer);
     {{/required}}
     {{^required}}
     if result.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.is_some() {
-        {{type}}::write(result.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_ref().unwrap(), writer);
+        {{#toUpper}}{{type}}{{/toUpper}}::write(result.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }

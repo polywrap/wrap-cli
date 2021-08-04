@@ -9,7 +9,7 @@ use crate::{
     WriteSizer,
 };
 use crate::{ 
-    {{type}}, 
+    {{#toUpper}}{{type}}{{/toUpper}}, 
 };
 use serde::{
     Deserialize, 
@@ -64,11 +64,11 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toU
     {{/enum}}
     {{#object}}
     {{#required}}
-    {{type}}::write(&input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}, writer);
+    {{#toUpper}}{{type}}{{/toUpper}}::write(&input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}, writer);
     {{/required}}
     {{^required}}
     if input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.is_some() {
-        {{type}}::write(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_ref().unwrap(), writer);
+        {{#toUpper}}{{type}}{{/toUpper}}::write(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }

@@ -1,12 +1,12 @@
 {{#required}}
 if reader.is_next_string() {
   {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}} = get_{{#toLower}}{{type}}{{/toLower}}_value(reader.read_string().unwrap_or_default().as_str())
-      .expect("Failed to get {{type}} value");
+      .expect("Failed to get {{#toUpper}}{{type}}{{/toUpper}} value");
 } else {
-  {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}} = {{type}}::try_from(reader.read_i32().unwrap_or_default())
-      .expect("Failed to convert i32 to {{type}}");
+  {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}} = {{#toUpper}}{{type}}{{/toUpper}}::try_from(reader.read_i32().unwrap_or_default())
+      .expect("Failed to convert i32 to {{#toUpper}}{{type}}{{/toUpper}}");
   sanitize_{{#toLower}}{{type}}{{/toLower}}_value({{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}} as i32)
-      .expect("Failed to sanitize {{type}}");
+      .expect("Failed to sanitize {{#toUpper}}{{type}}{{/toUpper}}");
 }
 {{/required}}
 {{^required}}
@@ -20,7 +20,7 @@ if !reader.is_next_nil() {
         );
     } else {
         {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}} = Some(
-            {{type}}::try_from(reader.read_i32().unwrap_or_default())
+            {{#toUpper}}{{type}}{{/toUpper}}::try_from(reader.read_i32().unwrap_or_default())
                 .expect("Failed to convert i32 to {{#toWasm}}{{toGraphQLType}}{{/toWasm}}"),
         );
         sanitize_{{#toLower}}{{type}}{{/toLower}}_value({{#toLower}}{{name}}{{/toLower}}.unwrap() as i32)

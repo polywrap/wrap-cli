@@ -53,7 +53,7 @@ pub use imported::{{#toLower}}{{type}}{{/toLower}}::{
     get_{{#toLower}}{{type}}{{/toLower}}_key,
     get_{{#toLower}}{{type}}{{/toLower}}_value,
     sanitize_{{#toLower}}{{type}}{{/toLower}}_value,
-    {{type}},
+    {{#toUpper}}{{type}}{{/toUpper}},
 };
 {{/importedEnumTypes}}
 {{#importedQueryTypes}}

@@ -2,7 +2,7 @@
 use crate::{
     get_{{#toLower}}{{type}}{{/toLower}}_value, 
     sanitize_{{#toLower}}{{type}}{{/toLower}}_value, 
-    {{type}},
+    {{#toUpper}}{{type}}{{/toUpper}},
 };
 use crate::{
     Context, 
@@ -16,20 +16,20 @@ use num_bigint::BigInt;
 use num_traits::cast::FromPrimitive;
 use std::convert::TryFrom;
 
-pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(object: &{{type}}) -> Vec<u8> {
+pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(object: &{{#toUpper}}{{type}}{{/toUpper}}) -> Vec<u8> {
     let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) object-type: {{type}}".to_string();
+    sizer_context.description = "Serializing (sizing) object-type: {{#toUpper}}{{type}}{{/toUpper}}".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
     write_{{#toLower}}{{type}}{{/toLower}}(object, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
-    encoder_context.description = "Serializing (encoding) object-type: {{type}}".to_string();
+    encoder_context.description = "Serializing (encoding) object-type: {{#toUpper}}{{type}}{{/toUpper}}".to_string();
     let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
     write_{{#toLower}}{{type}}{{/toLower}}(object, &mut encoder);
     buffer
 }
 
-pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(object: &{{type}}, writer: &mut W) {
+pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(object: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) {
     writer.write_map_length({{properties.length}});
     {{#properties}}
     writer
@@ -46,11 +46,11 @@ pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(object: &{{type}}, write
     {{/array}}
     {{#object}}
     {{#required}}
-    {{type}}::write(&object.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}, writer);
+    {{#toUpper}}{{type}}{{/toUpper}}::write(&object.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}, writer);
     {{/required}}
     {{^required}}
     if object.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.is_some() {
-        {{type}}::write(object.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_ref().unwrap(), writer);
+        {{#toUpper}}{{type}}{{/toUpper}}::write(object.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }
@@ -71,14 +71,14 @@ pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(object: &{{type}}, write
     {{/properties}}
 }
 
-pub fn deserialize_{{#toLower}}{{type}}{{/toLower}}(buffer: &[u8]) -> {{type}} {
+pub fn deserialize_{{#toLower}}{{type}}{{/toLower}}(buffer: &[u8]) -> {{#toUpper}}{{type}}{{/toUpper}} {
     let mut context = Context::new();
-    context.description = "Deserializing object-type: {{type}}".to_string();
+    context.description = "Deserializing object-type: {{#toUpper}}{{type}}{{/toUpper}}".to_string();
     let mut reader = ReadDecoder::new(buffer, context);
-    read_{{#toLower}}{{type}}{{/toLower}}(&mut reader).expect("Failed to deserialize {{type}}")
+    read_{{#toLower}}{{type}}{{/toLower}}(&mut reader).expect("Failed to deserialize {{#toUpper}}{{type}}{{/toUpper}}")
 }
 
-pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<{{type}}, String> {
+pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, String> {
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
     {{#properties}}
@@ -151,7 +151,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
     {{/required}}
     {{/properties}}
 
-    Ok({{type}} {
+    Ok({{#toUpper}}{{type}}{{/toUpper}} {
         {{#properties}}
         {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}},
         {{/properties}}
