@@ -22,7 +22,7 @@ pub use {{#toLower}}{{type}}{{/toLower}}::{{type}};
 {{/objectTypes}}
 {{#enumTypes}}
 pub mod {{#toLower}}{{type}}{{/toLower}};
-pub use {{type}}::{
+pub use {{#toLower}}{{type}}{{/toLower}}::{
     get_{{#toLower}}{{type}}{{/toLower}}_key,
     get_{{#toLower}}{{type}}{{/toLower}}_value,
     sanitize_{{#toLower}}{{type}}{{/toLower}}_value,

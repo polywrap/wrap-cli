@@ -8,7 +8,7 @@ use crate::{
 use crate::{
     {{#methods}}
     {{#toLower}}{{name}}{{/toLower}},
-    {{#toUpper}}{{name}}{{/toUpper}},
+    Input{{#toUpper}}{{name}}{{/toUpper}},
     {{/methods}}
 };
 {{/methods.length}}
@@ -18,7 +18,7 @@ pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(args_buf: &[u8]) -> Vec<u8> {
     {{#arguments.length}}
     let args = deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args_buf).expect("Failed to deserialize buffer");
     {{/arguments.length}}
-    let result = {{#toLower}}{{name}}{{/toLower}}({{#toUpper}}{{name}}{{/toUpper}} {{#arguments.length}}{
+    let result = {{#toLower}}{{name}}{{/toLower}}(Input{{#toUpper}}{{name}}{{/toUpper}} {{#arguments.length}}{
         {{#arguments}}
         {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}: args.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}},
         {{/arguments}}
