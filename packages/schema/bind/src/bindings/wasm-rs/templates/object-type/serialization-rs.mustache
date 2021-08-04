@@ -40,7 +40,7 @@ pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(object: &{{type}}, write
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(object.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}});
     {{/scalar}}
     {{#array}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(object.{{#toLower}}{{name}}{{/toLower}}.as_slice(), |writer: &mut W, {{#toWasm}}{{toGraphQLType}}{{/toWasm}}| {
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(object.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_slice(), |writer: &mut W, {{#toWasm}}{{toGraphQLType}}{{/toWasm}}| {
         {{> serialize_array}}
     });
     {{/array}}

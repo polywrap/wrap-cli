@@ -1,6 +1,6 @@
 {{#required}}
-writer.write_i32(object.{{#toLower}}{{name}}{{/toLower}} as i32);
+writer.write_i32(object.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}} as i32);
 {{/required}}
 {{^required}}
-writer.write_nullable_i32(Some(object.{{#toLower}}{{name}}{{/toLower}}.unwrap() as i32));
+writer.write_nullable_i32(Some(object.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.unwrap() as i32));
 {{/required}}

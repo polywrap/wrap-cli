@@ -123,14 +123,30 @@ pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}{{#t
     buffer
 }
 
-pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#toWasm}}{{toGraphQLType}}{{/toWasm}}, writer: &mut W) {
+pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, writer: &mut W) {
     writer
         .context()
         .push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
     {{#scalar}}
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(result);
     {{/scalar}}
+    {{#array}}
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(result.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_slice(), |writer: &mut W, {{#toWasm}}{{toGraphQLType}}{{/toWasm}}| {
+        {{> serialize_array}}
+    });
+    {{/array}}
+    {{#enum}}
+    {{#required}}
+    writer.write_i32(result.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}} as i32);
+    {{/required}}
+    {{^required}}
+    writer.write_nullable_i32(Some(result.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.unwrap() as i32));
+    {{/required}}
+    {{/enum}}
     {{#object}}
+    {{#required}}
+    {{type}}::write(&result.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}, writer);
+    {{/required}}
     {{^required}}
     if result.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.is_some() {
         {{type}}::write(result.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_ref().unwrap(), writer);
