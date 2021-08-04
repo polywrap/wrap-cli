@@ -44,6 +44,135 @@ describe("Web3ApiClient", () => {
     })
   }
 
+  it("asyncify", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/asyncify`,
+      ipfsProvider,
+      ensAddress
+    );
+
+    const client = await getClient();
+
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+    const ipfsUri = `ipfs/${api.ipfsCid}`;
+
+    const deploy = await client.query<{
+      deployContract: string;
+    }>({
+      uri: ensUri,
+      query: `
+        mutation {
+          deployContract(
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(deploy.errors).toBeFalsy();
+    expect(deploy.data).toBeTruthy();
+    expect(deploy.data?.deployContract.indexOf("0x")).toBeGreaterThan(-1);
+
+    if (!deploy.data) {
+      return;
+    }
+
+    const address = deploy.data.deployContract;
+
+    const subsequentInvokes = await client.query<{
+      subsequentInvokes: string;
+    }>({
+      uri: ipfsUri,
+      query: `
+        mutation {
+          subsequentInvokes(
+            address: "${address}"
+            numberOfTimes: 40
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+    });
+
+    const expected = Array.from(new Array(40),(_,index)=> index.toString())
+
+    expect(subsequentInvokes.errors).toBeFalsy();
+    expect(subsequentInvokes.data).toBeTruthy();
+    expect(subsequentInvokes.data.subsequentInvokes).toEqual(expected)
+
+
+    const localVarMethod = await client.query<{
+      localVarMethod: boolean;
+    }>({
+      uri: ipfsUri,
+      query: `
+        mutation {
+          localVarMethod(
+            address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(localVarMethod.errors).toBeFalsy();
+    expect(localVarMethod.data).toBeTruthy();
+    expect(localVarMethod.data.localVarMethod).toEqual(true)
+
+    const globalVarMethod = await client.query<{
+      globalVarMethod: boolean;
+    }>({
+      uri: ipfsUri,
+      query: `
+        mutation {
+          globalVarMethod(
+            address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(globalVarMethod.errors).toBeFalsy();
+    expect(globalVarMethod.data).toBeTruthy();
+    expect(globalVarMethod.data.globalVarMethod).toEqual(true)
+
+    const largeStr = new Array(10000).join("web3api ")
+
+    const setDataWithLargeArgs = await client.query<{
+      setDataWithLargeArgs: string;
+    }>({
+      uri: ipfsUri,
+      query: `
+        mutation {
+          setDataWithLargeArgs(
+            address: "${address}"
+            value: $largeStr
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+      variables: {
+        largeStr
+      }
+    });
+
+    expect(setDataWithLargeArgs.errors).toBeFalsy();
+    expect(setDataWithLargeArgs.data).toBeTruthy();
+    expect(setDataWithLargeArgs.data.setDataWithLargeArgs).toEqual(largeStr)
+
+  });
+
   it("simple-storage", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,

@@ -1,0 +1,29 @@
+#import { Mutation, Connection, Query } into Ethereum from "w3://ens/ethereum.web3api.eth"
+
+type Mutation {
+  setDataWithLargeArgs(
+    address: String!
+    value: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  deployContract(
+    connection: Ethereum_Connection
+  ): String!
+
+  localVarMethod(
+    address: String!
+    connection: Ethereum_Connection
+  ): Boolean!
+
+  globalVarMethod(
+    address: String!
+    connection: Ethereum_Connection
+  ): Boolean!
+
+  subsequentInvokes(
+    address: String!
+    numberOfTimes: Int!
+    connection: Ethereum_Connection
+  ): [String!]!
+}
