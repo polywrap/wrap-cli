@@ -1,26 +1,26 @@
 use crate::{AnotherType, CustomType};
 use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
-pub fn serialize_another_type(object: &AnotherType) -> Vec<u8> {
+pub fn serialize_another_type(input: &AnotherType) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) object-type: AnotherType".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
-    write_another_type(object, &mut sizer);
+    write_another_type(input, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) object-type: AnotherType".to_string();
     let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-    write_another_type(object, &mut encoder);
+    write_another_type(input, &mut encoder);
     buffer
 }
 
-pub fn write_another_type<W: Write>(object: &AnotherType, writer: &mut W) {
+pub fn write_another_type<W: Write>(input: &AnotherType, writer: &mut W) {
     writer.write_map_length(2);
     writer
         .context()
         .push("prop", "Option<String>", "writing property");
     writer.write_string("prop".to_string());
-    writer.write_nullable_string(object.prop.clone());
+    writer.write_nullable_string(input.prop.clone());
     writer
         .context()
         .pop()
@@ -29,8 +29,8 @@ pub fn write_another_type<W: Write>(object: &AnotherType, writer: &mut W) {
         .context()
         .push("circular", "Box<Option<CustomType>>", "writing property");
     writer.write_string("circular".to_string());
-    if object.circular.is_some() {
-        CustomType::write(object.circular.as_ref().as_ref().unwrap(), writer);
+    if input.circular.is_some() {
+        CustomType::write(input.circular.as_ref().as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }
@@ -40,10 +40,10 @@ pub fn write_another_type<W: Write>(object: &AnotherType, writer: &mut W) {
         .expect("Failed to pop Box<Option<CustomType>> from Context");
 }
 
-pub fn deserialize_another_type(buffer: &[u8]) -> AnotherType {
+pub fn deserialize_another_type(input: &[u8]) -> AnotherType {
     let mut context = Context::new();
     context.description = "Deserializing object-type AnotherType".to_string();
-    let mut reader = ReadDecoder::new(buffer, context);
+    let mut reader = ReadDecoder::new(input, context);
     read_another_type(&mut reader)
 }
 
@@ -88,7 +88,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> AnotherType {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop unknown object from Context");
+                    .expect("Failed to pop unknown from Context");
             }
         }
     }

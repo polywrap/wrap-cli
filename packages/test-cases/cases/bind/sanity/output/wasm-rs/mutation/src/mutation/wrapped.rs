@@ -4,8 +4,8 @@ use crate::{
 };
 use crate::{mutation_method, object_method, InputMutationMethod, InputObjectMethod};
 
-pub fn mutation_method_wrapped(args_buf: &[u8]) -> Vec<u8> {
-    let args = deserialize_mutation_method_args(args_buf).expect("Failed to deserialize buffer");
+pub fn mutation_method_wrapped(input: &[u8]) -> Vec<u8> {
+    let args = deserialize_mutation_method_args(input).expect("Failed to deserialize buffer");
     let result = mutation_method(InputMutationMethod {
         str: args.str,
         opt_str: args.opt_str,
@@ -17,8 +17,8 @@ pub fn mutation_method_wrapped(args_buf: &[u8]) -> Vec<u8> {
     serialize_mutation_method_result(result)
 }
 
-pub fn object_method_wrapped(args_buf: &[u8]) -> Vec<u8> {
-    let args = deserialize_object_method_args(args_buf).expect("Failed to deserialize buffer");
+pub fn object_method_wrapped(input: &[u8]) -> Vec<u8> {
+    let args = deserialize_object_method_args(input).expect("Failed to deserialize buffer");
     let result = object_method(InputObjectMethod {
         object: args.object,
         opt_object: args.opt_object,

@@ -6,24 +6,24 @@ use num_traits::cast::FromPrimitive;
 use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use std::convert::TryFrom;
 
-pub fn serialize_custom_type(object: &CustomType) -> Vec<u8> {
+pub fn serialize_custom_type(input: &CustomType) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) object-type: CustomType".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
-    write_custom_type(object, &mut sizer);
+    write_custom_type(input, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) object-type: CustomType".to_string();
     let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-    write_custom_type(object, &mut encoder);
+    write_custom_type(input, &mut encoder);
     buffer
 }
 
-pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
+pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) {
     writer.write_map_length(35);
     writer.context().push("str", "String", "writing property");
     writer.write_string("str".to_string());
-    writer.write_string(object.str.to_string());
+    writer.write_string(input.str.clone());
     writer
         .context()
         .pop()
@@ -32,14 +32,14 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("opt_str", "Option<String>", "writing property");
     writer.write_string("opt_str".to_string());
-    writer.write_nullable_string(object.opt_str.clone());
+    writer.write_nullable_string(input.opt_str.clone());
     writer
         .context()
         .pop()
         .expect("Failed to pop Option<String> from Context");
     writer.context().push("u", "u32", "writing property");
     writer.write_string("u".to_string());
-    writer.write_u32(object.u);
+    writer.write_u32(input.u);
     writer
         .context()
         .pop()
@@ -48,70 +48,70 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("opt_u", "Option<u32>", "writing property");
     writer.write_string("opt_u".to_string());
-    writer.write_nullable_u32(object.opt_u);
+    writer.write_nullable_u32(input.opt_u);
     writer
         .context()
         .pop()
         .expect("Failed to pop Option<u32> from Context");
     writer.context().push("u8", "u8", "writing property");
     writer.write_string("u8".to_string());
-    writer.write_u8(object.u8);
+    writer.write_u8(input.u8);
     writer
         .context()
         .pop()
         .expect("Failed to pop u8 from Context");
     writer.context().push("u16", "u16", "writing property");
     writer.write_string("u16".to_string());
-    writer.write_u16(object.u16);
+    writer.write_u16(input.u16);
     writer
         .context()
         .pop()
         .expect("Failed to pop u16 from Context");
     writer.context().push("u32", "u32", "writing property");
     writer.write_string("u32".to_string());
-    writer.write_u32(object.u32);
+    writer.write_u32(input.u32);
     writer
         .context()
         .pop()
         .expect("Failed to pop u32 from Context");
     writer.context().push("u64", "u64", "writing property");
     writer.write_string("u64".to_string());
-    writer.write_u64(object.u64);
+    writer.write_u64(input.u64);
     writer
         .context()
         .pop()
         .expect("Failed to pop u64 from Context");
     writer.context().push("i", "i32", "writing property");
     writer.write_string("i".to_string());
-    writer.write_i32(object.i);
+    writer.write_i32(input.i);
     writer
         .context()
         .pop()
         .expect("Failed to pop i32 from Context");
     writer.context().push("i8", "i8", "writing property");
     writer.write_string("i8".to_string());
-    writer.write_i8(object.i8);
+    writer.write_i8(input.i8);
     writer
         .context()
         .pop()
         .expect("Failed to pop i8 from Context");
     writer.context().push("i16", "i16", "writing property");
     writer.write_string("i16".to_string());
-    writer.write_i16(object.i16);
+    writer.write_i16(input.i16);
     writer
         .context()
         .pop()
         .expect("Failed to pop i16 from Context");
     writer.context().push("i32", "i32", "writing property");
     writer.write_string("i32".to_string());
-    writer.write_i32(object.i32);
+    writer.write_i32(input.i32);
     writer
         .context()
         .pop()
         .expect("Failed to pop i32 from Context");
     writer.context().push("i64", "i64", "writing property");
     writer.write_string("i64".to_string());
-    writer.write_i64(object.i64);
+    writer.write_i64(input.i64);
     writer
         .context()
         .pop()
@@ -120,7 +120,7 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("bigint", "BigInt", "writing property");
     writer.write_string("bigint".to_string());
-    writer.write_bigint(object.bigint.clone());
+    writer.write_bigint(input.bigint.clone());
     writer
         .context()
         .pop()
@@ -129,7 +129,7 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("opt_bigint", "Option<BigInt>", "writing property");
     writer.write_string("opt_bigint".to_string());
-    writer.write_nullable_bigint(object.opt_bigint.clone());
+    writer.write_nullable_bigint(input.opt_bigint.clone());
     writer
         .context()
         .pop()
@@ -138,7 +138,7 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("bytes", "Vec<u8>", "writing property");
     writer.write_string("bytes".to_string());
-    writer.write_bytes(object.bytes.clone());
+    writer.write_bytes(input.bytes.clone());
     writer
         .context()
         .pop()
@@ -147,14 +147,14 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("opt_bytes", "Option<Vec<u8>>", "writing property");
     writer.write_string("opt_bytes".to_string());
-    writer.write_nullable_bytes(object.opt_bytes.clone());
+    writer.write_nullable_bytes(input.opt_bytes.clone());
     writer
         .context()
         .pop()
         .expect("Failed to pop Option<Vec<u8>> from Context");
     writer.context().push("boolean", "bool", "writing property");
     writer.write_string("boolean".to_string());
-    writer.write_bool(object.boolean);
+    writer.write_bool(input.boolean);
     writer
         .context()
         .pop()
@@ -163,7 +163,7 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("opt_boolean", "Option<bool>", "writing property");
     writer.write_string("opt_boolean".to_string());
-    writer.write_nullable_bool(object.opt_boolean);
+    writer.write_nullable_bool(input.opt_boolean);
     writer
         .context()
         .pop()
@@ -172,7 +172,7 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("u_array", "Vec<u32>", "writing property");
     writer.write_string("u_array".to_string());
-    writer.write_array(object.u_array.as_slice(), Write::write_u32);
+    writer.write_array(input.u_array.as_slice(), Write::write_u32);
     writer
         .context()
         .pop()
@@ -181,7 +181,7 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("u_opt_array", "Option<Vec<u32>>", "writing property");
     writer.write_string("u_opt_array".to_string());
-    writer.write_nullable_array(object.u_opt_array.clone(), Write::write_u32);
+    writer.write_nullable_array(input.u_opt_array.clone(), Write::write_u32);
     writer
         .context()
         .pop()
@@ -192,7 +192,7 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         "writing property",
     );
     writer.write_string("opt_u_opt_array".to_string());
-    writer.write_nullable_array(object.opt_u_opt_array.clone(), Write::write_nullable_u32);
+    writer.write_nullable_array(input.opt_u_opt_array.clone(), Write::write_nullable_u32);
     writer
         .context()
         .pop()
@@ -204,7 +204,7 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
     );
     writer.write_string("opt_string_opt_array".to_string());
     writer.write_nullable_array(
-        object.opt_str_opt_array.clone(),
+        input.opt_str_opt_array.clone(),
         Write::write_nullable_string,
     );
     writer
@@ -215,8 +215,8 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("u_array_array", "Vec<Vec<u32>>", "writing property");
     writer.write_string("u_array_array".to_string());
-    writer.write_array(object.u_array_array.as_slice(), |writer: &mut W, item| {
-        writer.write_array(item.as_slice(), Write::write_u32)
+    writer.write_array(input.u_array_array.as_slice(), |writer: &mut W, input| {
+        writer.write_array(input.as_slice(), Write::write_u32)
     });
     writer
         .context()
@@ -229,8 +229,8 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
     );
     writer.write_string("u_opt_array_opt_array".to_string());
     writer.write_array(
-        object.u_opt_array_opt_array.as_slice(),
-        |writer: &mut W, item| writer.write_nullable_array(item, Write::write_u64),
+        input.u_opt_array_opt_array.as_slice(),
+        |writer: &mut W, input| writer.write_nullable_array(input, Write::write_u64),
     );
     writer
         .context()
@@ -243,10 +243,10 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
     );
     writer.write_string("u_array_opt_array_array".to_string());
     writer.write_array(
-        object.u_array_opt_array_array.as_slice(),
-        |writer: &mut W, item| {
-            writer.write_nullable_array(item, |writer: &mut W, item| {
-                writer.write_array(item.as_slice(), Write::write_u64)
+        input.u_array_opt_array_array.as_slice(),
+        |writer: &mut W, input| {
+            writer.write_nullable_array(input, |writer: &mut W, input| {
+                writer.write_array(input.as_slice(), Write::write_u64)
             })
         },
     );
@@ -260,9 +260,9 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         "writing property",
     );
     writer.write_string("crazy_array".to_string());
-    writer.write_nullable_array(object.crazy_array.clone(), |writer: &mut W, item| {
-        writer.write_nullable_array(item, |writer: &mut W, item| {
-            writer.write_nullable_array(item, Write::write_u64)
+    writer.write_nullable_array(input.crazy_array.clone(), |writer: &mut W, input| {
+        writer.write_nullable_array(input, |writer: &mut W, input| {
+            writer.write_nullable_array(input, Write::write_u64)
         })
     });
     writer
@@ -273,7 +273,7 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("object", "AnotherType", "writing property");
     writer.write_string("object".to_string());
-    AnotherType::write(&object.object, writer);
+    AnotherType::write(&input.object, writer);
     writer
         .context()
         .pop()
@@ -282,8 +282,8 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("opt_object", "Option<AnotherType>", "writing property");
     writer.write_string("opt_object".to_string());
-    if object.opt_object.is_some() {
-        AnotherType::write(object.opt_object.as_ref().unwrap(), writer);
+    if input.opt_object.is_some() {
+        AnotherType::write(input.opt_object.as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }
@@ -295,8 +295,8 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("object_array", "Vec<AnotherType>", "writing property");
     writer.write_string("object_array".to_string());
-    writer.write_array(object.object_array.as_slice(), |writer: &mut W, item| {
-        AnotherType::write(&item, writer)
+    writer.write_array(input.object_array.as_slice(), |writer: &mut W, input| {
+        AnotherType::write(&input, writer)
     });
     writer
         .context()
@@ -308,9 +308,9 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         "writing property",
     );
     writer.write_string("opt_object_array".to_string());
-    writer.write_nullable_array(object.opt_object_array.clone(), |writer: &mut W, item| {
-        if item.is_some() {
-            AnotherType::write(&item.expect("Error unwrapping"), writer)
+    writer.write_nullable_array(input.opt_object_array.clone(), |writer: &mut W, input| {
+        if input.is_some() {
+            AnotherType::write(input.as_ref().unwrap(), writer)
         } else {
             writer.write_nil()
         }
@@ -323,7 +323,7 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("en", "CustomEnum", "writing property");
     writer.write_string("en".to_string());
-    writer.write_i32(object.en as i32);
+    writer.write_i32(input.en as i32);
     writer
         .context()
         .pop()
@@ -332,7 +332,7 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("opt_enum", "Option<CustomEnum>", "writing property");
     writer.write_string("opt_enum".to_string());
-    writer.write_nullable_i32(Some(object.opt_enum.unwrap() as i32));
+    writer.write_nullable_i32(Some(input.opt_enum.unwrap() as i32));
     writer
         .context()
         .pop()
@@ -341,8 +341,8 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .context()
         .push("enum_array", "Vec<CustomEnum>", "writing property");
     writer.write_string("enum_array".to_string());
-    writer.write_array(object.enum_array.as_slice(), |writer: &mut W, item| {
-        writer.write_i32(item as i32)
+    writer.write_array(input.enum_array.as_slice(), |writer: &mut W, input| {
+        writer.write_i32(input as i32)
     });
     writer
         .context()
@@ -354,8 +354,8 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         "writing property",
     );
     writer.write_string("opt_enum_array".to_string());
-    writer.write_nullable_array(object.opt_enum_array.clone(), |writer: &mut W, item| {
-        writer.write_i32(item.unwrap() as i32)
+    writer.write_nullable_array(input.opt_enum_array.clone(), |writer: &mut W, input| {
+        writer.write_i32(input.unwrap() as i32)
     });
     writer
         .context()
@@ -363,10 +363,10 @@ pub fn write_custom_type<W: Write>(object: &CustomType, writer: &mut W) {
         .expect("Failed to pop Option<Vec<Option<CustomEnum>>> from Context");
 }
 
-pub fn deserialize_custom_type(buffer: &[u8]) -> CustomType {
+pub fn deserialize_custom_type(input: &[u8]) -> CustomType {
     let mut context = Context::new();
     context.description = "Deserializing object-type: CustomType".to_string();
-    let mut reader = ReadDecoder::new(buffer, context);
+    let mut reader = ReadDecoder::new(input, context);
     read_custom_type(&mut reader).expect("Failed to deserialize CustomType")
 }
 
@@ -937,7 +937,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop unknown object from Context");
+                    .expect("Failed to pop unknown from Context");
             }
         }
     }
@@ -945,7 +945,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
     if !str_set {
         let custom_error = reader
             .context()
-            .print_with_context("Missing required property: 'string: String'");
+            .print_with_context("Missing required property: 'str: String'");
         return Err(custom_error);
     }
     if !u_set {
@@ -1046,7 +1046,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
     }
     if !u_array_opt_array_array_set {
         let custom_error = reader.context().print_with_context(
-            "Missing required property: 'u_array_opt_array_array_set: Vec<Option<Vec<Vec<u64>>>>'",
+            "Missing required property: 'u_array_opt_array_array: Vec<Option<Vec<Vec<u64>>>>'",
         );
         return Err(custom_error);
     }

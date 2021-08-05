@@ -13,10 +13,10 @@ pub struct InputMutationMethod {
     pub opt_enum_array: Option<Vec<Option<CustomEnum>>>,
 }
 
-pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutationMethod, String> {
+pub fn deserialize_mutation_method_args(input: &[u8]) -> Result<InputMutationMethod, String> {
     let mut context = Context::new();
     context.description = "Deserializing query-type: mutation_method".to_string();
-    let mut reader = ReadDecoder::new(args_buf, context);
+    let mut reader = ReadDecoder::new(input, context);
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
     let mut str = String::new();
@@ -168,7 +168,7 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop unknown object from Context");
+                    .expect("Failed to pop unknown from Context");
             }
         }
     }
@@ -176,7 +176,7 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
     if !str_set {
         let custom_error = reader
             .context()
-            .print_with_context("Missing required argument: 'string: String'");
+            .print_with_context("Missing required argument: 'str: String'");
         return Err(custom_error);
     }
     if !en_set {
@@ -202,24 +202,24 @@ pub fn deserialize_mutation_method_args(args_buf: &[u8]) -> Result<InputMutation
     })
 }
 
-pub fn serialize_mutation_method_result(result: i32) -> Vec<u8> {
+pub fn serialize_mutation_method_result(input: i32) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) query-type: mutation_method".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
-    write_mutation_method_result(result, &mut sizer);
+    write_mutation_method_result(input, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) query-type: mutation_method".to_string();
     let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-    write_mutation_method_result(result, &mut encoder);
+    write_mutation_method_result(input, &mut encoder);
     buffer
 }
 
-pub fn write_mutation_method_result<W: Write>(result: i32, writer: &mut W) {
+pub fn write_mutation_method_result<W: Write>(input: i32, writer: &mut W) {
     writer
         .context()
         .push("mutation_method", "i32", "writing property");
-    writer.write_i32(result);
+    writer.write_i32(input);
     writer
         .context()
         .pop()
@@ -234,10 +234,10 @@ pub struct InputObjectMethod {
     pub opt_object_array: Option<Vec<Option<AnotherType>>>,
 }
 
-pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMethod, String> {
+pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod, String> {
     let mut context = Context::new();
     context.description = "Deserializing query-type: object_method".to_string();
-    let mut reader = ReadDecoder::new(args_buf, context);
+    let mut reader = ReadDecoder::new(input, context);
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
     let mut object = AnotherType {
@@ -347,25 +347,25 @@ pub fn deserialize_object_method_args(args_buf: &[u8]) -> Result<InputObjectMeth
     })
 }
 
-pub fn serialize_object_method_result(result: Option<AnotherType>) -> Vec<u8> {
+pub fn serialize_object_method_result(input: Option<AnotherType>) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) query-type: object_method".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
-    write_object_method_result(result.clone(), &mut sizer);
+    write_object_method_result(input.clone(), &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) query-type: object_method".to_string();
     let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-    write_object_method_result(result, &mut encoder);
+    write_object_method_result(input, &mut encoder);
     buffer
 }
 
-pub fn write_object_method_result<W: Write>(result: Option<AnotherType>, writer: &mut W) {
+pub fn write_object_method_result<W: Write>(input: Option<AnotherType>, writer: &mut W) {
     writer
         .context()
         .push("object_method", "Option<AnotherType>", "writing property");
-    if result.is_some() {
-        AnotherType::write(result.as_ref().unwrap(), writer);
+    if input.is_some() {
+        AnotherType::write(input.as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }

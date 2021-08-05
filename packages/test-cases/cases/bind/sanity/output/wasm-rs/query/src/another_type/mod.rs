@@ -13,16 +13,16 @@ pub struct AnotherType {
 }
 
 impl AnotherType {
-    pub fn to_buffer(object: &AnotherType) -> Vec<u8> {
-        serialize_another_type(object)
+    pub fn to_buffer(input: &AnotherType) -> Vec<u8> {
+        serialize_another_type(input)
     }
 
-    pub fn from_buffer(buffer: &[u8]) -> AnotherType {
-        deserialize_another_type(buffer)
+    pub fn from_buffer(input: &[u8]) -> AnotherType {
+        deserialize_another_type(input)
     }
 
-    pub fn write<W: Write>(object: &AnotherType, writer: &mut W) {
-        write_another_type(object, writer);
+    pub fn write<W: Write>(input: &AnotherType, writer: &mut W) {
+        write_another_type(input, writer);
     }
 
     pub fn read<R: Read>(reader: &mut R) -> AnotherType {

@@ -47,16 +47,16 @@ pub struct CustomType {
 }
 
 impl CustomType {
-    pub fn to_buffer(object: &CustomType) -> Vec<u8> {
-        serialize_custom_type(object)
+    pub fn to_buffer(input: &CustomType) -> Vec<u8> {
+        serialize_custom_type(input)
     }
 
-    pub fn from_buffer(buffer: &[u8]) -> CustomType {
-        deserialize_custom_type(buffer)
+    pub fn from_buffer(input: &[u8]) -> CustomType {
+        deserialize_custom_type(input)
     }
 
-    pub fn write<W: Write>(object: &CustomType, writer: &mut W) {
-        write_custom_type(object, writer);
+    pub fn write<W: Write>(input: &CustomType, writer: &mut W) {
+        write_custom_type(input, writer);
     }
 
     pub fn read<R: Read>(reader: &mut R) -> CustomType {

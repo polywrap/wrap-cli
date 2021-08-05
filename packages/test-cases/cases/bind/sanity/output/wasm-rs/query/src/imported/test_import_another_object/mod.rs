@@ -6,7 +6,7 @@ pub use serialization::{
     serialize_test_import_another_object, write_test_import_another_object,
 };
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TestImportAnotherObject {
     pub prop: String,
 }
@@ -14,16 +14,16 @@ pub struct TestImportAnotherObject {
 impl TestImportAnotherObject {
     pub const URI: &'static str = "testimport.uri.eth";
 
-    pub fn to_buffer(object: &TestImportAnotherObject) -> Vec<u8> {
-        serialize_test_import_another_object(object)
+    pub fn to_buffer(input: &TestImportAnotherObject) -> Vec<u8> {
+        serialize_test_import_another_object(input)
     }
 
-    pub fn from_buffer(buffer: &[u8]) -> TestImportAnotherObject {
-        deserialize_test_import_another_object(buffer)
+    pub fn from_buffer(input: &[u8]) -> TestImportAnotherObject {
+        deserialize_test_import_another_object(input)
     }
 
-    pub fn write<W: Write>(object: &TestImportAnotherObject, writer: &mut W) {
-        write_test_import_another_object(object, writer);
+    pub fn write<W: Write>(input: &TestImportAnotherObject, writer: &mut W) {
+        write_test_import_another_object(input, writer);
     }
 
     pub fn read<R: Read>(reader: &mut R) -> TestImportAnotherObject {

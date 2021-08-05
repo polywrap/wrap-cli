@@ -75,8 +75,10 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
         "writing property",
     );
     writer.write_string("u_array_array".to_string());
-    writer.write_array(input.u_array_array.as_slice(), |writer: &mut W, item| {
-        writer.write_nullable_array(item, |writer: &mut W, item| writer.write_nullable_u32(item))
+    writer.write_array(input.u_array_array.as_slice(), |writer: &mut W, input| {
+        writer.write_nullable_array(input, |writer: &mut W, input| {
+            writer.write_nullable_u32(input)
+        })
     });
     writer
         .context()
@@ -97,7 +99,7 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
         .push("opt_object", "Option<TestImportObject>", "writing property");
     writer.write_string("opt_object".to_string());
     if input.opt_object.is_some() {
-        TestImportObject::write(&input.opt_object.clone().unwrap(), writer);
+        TestImportObject::write(input.opt_object.as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }
@@ -109,8 +111,8 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
         .context()
         .push("object_array", "Vec<TestImportObject>", "writing property");
     writer.write_string("object_array".to_string());
-    writer.write_array(input.object_array.as_slice(), |writer: &mut W, item| {
-        TestImportObject::write(&item, writer)
+    writer.write_array(input.object_array.as_slice(), |writer: &mut W, input| {
+        TestImportObject::write(&input, writer)
     });
     writer
         .context()
@@ -122,11 +124,11 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
         "writing property",
     );
     writer.write_string("opt_object_array".to_string());
-    writer.write_nullable_array(input.opt_object_array.clone(), |writer: &mut W, item| {
-        if item.is_some() {
-            TestImportObject::write(&item.expect("Error unwrapping"), writer)
+    writer.write_nullable_array(input.opt_object_array.clone(), |writer: &mut W, input| {
+        if input.is_some() {
+            TestImportObject::write(input.as_ref().unwrap(), writer)
         } else {
-            writer.write_nil()
+            writer.write_nil();
         }
     });
     writer
@@ -155,8 +157,8 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
         .context()
         .push("enum_array", "Vec<TestImportEnum>", "writing property");
     writer.write_string("enum_array".to_string());
-    writer.write_array(input.enum_array.as_slice(), |writer: &mut W, item| {
-        writer.write_i32(item as i32)
+    writer.write_array(input.enum_array.as_slice(), |writer: &mut W, input| {
+        writer.write_i32(input as i32)
     });
     writer
         .context()
@@ -168,8 +170,8 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
         "writing property",
     );
     writer.write_string("opt_enum_array".to_string());
-    writer.write_nullable_array(input.opt_enum_array.clone(), |writer: &mut W, item| {
-        writer.write_nullable_i32(Some(item.unwrap() as i32))
+    writer.write_nullable_array(input.opt_enum_array.clone(), |writer: &mut W, input| {
+        writer.write_nullable_i32(Some(input.unwrap() as i32))
     });
     writer
         .context()
@@ -177,10 +179,10 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
         .expect("Failed to pop Option<Vec<Option<CustomEnum>>> from Context");
 }
 
-pub fn deserialize_imported_method_result(buffer: &[u8]) -> TestImportObject {
+pub fn deserialize_imported_method_result(input: &[u8]) -> TestImportObject {
     let mut context = Context::new();
     context.description = "Deserializing imported query-type: ImportedMethod".to_string();
-    let mut reader = ReadDecoder::new(buffer, context);
+    let mut reader = ReadDecoder::new(input, context);
 
     reader.context().push(
         "imported_method",
@@ -195,7 +197,7 @@ pub fn deserialize_imported_method_result(buffer: &[u8]) -> TestImportObject {
     reader
         .context()
         .pop()
-        .expect("Failed to pop `ImportedMethod` from Context");
+        .expect("Failed to pop ImportedMethod from Context");
     object
 }
 
@@ -210,7 +212,6 @@ pub fn serialize_another_method_args(input: &InputAnotherMethod) -> Vec<u8> {
         "Serializing (sizing) imported query-type: InputAnotherMethod".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
     write_another_method_args(input, &mut sizer);
-
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description =
@@ -230,13 +231,13 @@ pub fn write_another_method_args<W: Write>(input: &InputAnotherMethod, writer: &
     writer
         .context()
         .pop()
-        .expect("Failed to pop `Vec<String>` from Context");
+        .expect("Failed to pop Vec<String> from Context");
 }
 
-pub fn deserialize_another_method_result(buffer: &[u8]) -> i64 {
+pub fn deserialize_another_method_result(input: &[u8]) -> i64 {
     let mut context = Context::new();
     context.description = "Deserializing imported query-type: InputAnotherMethod".to_string();
-    let mut reader = ReadDecoder::new(buffer, context);
+    let mut reader = ReadDecoder::new(input, context);
     reader
         .context()
         .push("another_method", "i64", "reading function output");
@@ -244,6 +245,6 @@ pub fn deserialize_another_method_result(buffer: &[u8]) -> i64 {
     reader
         .context()
         .pop()
-        .expect("Failed to pop `i64` from Context");
+        .expect("Failed to pop i64 from Context");
     result
 }

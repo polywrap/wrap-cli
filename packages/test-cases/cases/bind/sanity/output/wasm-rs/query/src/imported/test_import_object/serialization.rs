@@ -5,29 +5,28 @@ use crate::{
 use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use std::convert::TryFrom;
 
-pub fn serialize_test_import_object(object: &TestImportObject) -> Vec<u8> {
+pub fn serialize_test_import_object(input: &TestImportObject) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description =
         "Serializing (sizing) imported object-type: TestImportObject".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
-    write_test_import_object(object, &mut sizer);
-
+    write_test_import_object(input, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description =
         "Serializing (encoding) imported object-type: TestImportObject".to_string();
     let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-    write_test_import_object(object, &mut encoder);
+    write_test_import_object(input, &mut encoder);
     buffer
 }
 
-pub fn write_test_import_object<W: Write>(object: &TestImportObject, writer: &mut W) {
+pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut W) {
     writer.write_map_length(8);
     writer
         .context()
         .push("object", "TestImportAnotherObject", "writing property");
     writer.write_string("object".to_string());
-    TestImportObject::write(object, writer);
+    TestImportObject::write(input, writer);
     writer
         .context()
         .pop()
@@ -38,8 +37,8 @@ pub fn write_test_import_object<W: Write>(object: &TestImportObject, writer: &mu
         "writing property",
     );
     writer.write_string("opt_object".to_string());
-    if object.opt_object.is_some() {
-        TestImportAnotherObject::write(object.opt_object.as_ref().unwrap(), writer);
+    if input.opt_object.is_some() {
+        TestImportAnotherObject::write(input.opt_object.as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }
@@ -53,8 +52,8 @@ pub fn write_test_import_object<W: Write>(object: &TestImportObject, writer: &mu
         "writing property",
     );
     writer.write_string("object_array".to_string());
-    writer.write_array(object.object_array.as_slice(), |writer: &mut W, item| {
-        TestImportAnotherObject::write(&item, writer)
+    writer.write_array(input.object_array.as_slice(), |writer: &mut W, input| {
+        TestImportAnotherObject::write(&input, writer)
     });
     writer
         .context()
@@ -66,9 +65,9 @@ pub fn write_test_import_object<W: Write>(object: &TestImportObject, writer: &mu
         "writing property",
     );
     writer.write_string("opt_object_array".to_string());
-    writer.write_nullable_array(object.opt_object_array.clone(), |writer: &mut W, item| {
-        if item.is_some() {
-            TestImportAnotherObject::write(&item.unwrap(), writer);
+    writer.write_nullable_array(input.opt_object_array.clone(), |writer: &mut W, input| {
+        if input.is_some() {
+            TestImportAnotherObject::write(input.as_ref().unwrap(), writer);
         } else {
             writer.write_nil();
         }
@@ -81,7 +80,7 @@ pub fn write_test_import_object<W: Write>(object: &TestImportObject, writer: &mu
         .context()
         .push("en", "TestImportEnum", "writing property");
     writer.write_string("en".to_string());
-    writer.write_i32(object.en as i32);
+    writer.write_i32(input.en as i32);
     writer
         .context()
         .pop()
@@ -90,7 +89,7 @@ pub fn write_test_import_object<W: Write>(object: &TestImportObject, writer: &mu
         .context()
         .push("opt_enum", "Option<TestImportEnum>", "writing property");
     writer.write_string("opt_enum".to_string());
-    writer.write_nullable_i32(Some(object.opt_enum.unwrap() as i32));
+    writer.write_nullable_i32(Some(input.opt_enum.unwrap() as i32));
     writer
         .context()
         .pop()
@@ -99,8 +98,8 @@ pub fn write_test_import_object<W: Write>(object: &TestImportObject, writer: &mu
         .context()
         .push("enum_array", "Vec<TestImportEnum>", "writing property");
     writer.write_string("enum_array".to_string());
-    writer.write_array(object.enum_array.as_slice(), |writer: &mut W, item| {
-        writer.write_i32(item as i32)
+    writer.write_array(input.enum_array.as_slice(), |writer: &mut W, input| {
+        writer.write_i32(input as i32)
     });
     writer
         .context()
@@ -112,8 +111,8 @@ pub fn write_test_import_object<W: Write>(object: &TestImportObject, writer: &mu
         "writing property",
     );
     writer.write_string("opt_enum_array".to_string());
-    writer.write_nullable_array(object.opt_enum_array.clone(), |writer: &mut W, item| {
-        writer.write_nullable_i32(Some(item.unwrap() as i32));
+    writer.write_nullable_array(input.opt_enum_array.clone(), |writer: &mut W, input| {
+        writer.write_nullable_i32(Some(input.unwrap() as i32));
     });
     writer
         .context()
@@ -121,10 +120,10 @@ pub fn write_test_import_object<W: Write>(object: &TestImportObject, writer: &mu
         .expect("Failed to pop Option<Vec<Option<TestImportEnum>>> from Context");
 }
 
-pub fn deserialize_test_import_object(buffer: &[u8]) -> TestImportObject {
+pub fn deserialize_test_import_object(input: &[u8]) -> TestImportObject {
     let mut context = Context::new();
     context.description = "Deserializing imported object-type: TestImportObject".to_string();
-    let mut reader = ReadDecoder::new(buffer, context);
+    let mut reader = ReadDecoder::new(input, context);
     read_test_import_object(&mut reader).expect("Failed to deserialize TestImportObject")
 }
 
@@ -333,7 +332,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                 reader
                     .context()
                     .pop()
-                    .expect("Failed to pop unknown object from Context");
+                    .expect("Failed to pop unknown from Context");
             }
         }
     }
