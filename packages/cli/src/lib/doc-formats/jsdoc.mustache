@@ -1,7 +1,7 @@
 {{#queryTypes}}
   {{#methods}}
     /**
-     * @callback {{name}}
+     * @function {{name}}
     {{#arguments}}
       {{#required}}
      * @param { {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}} } {{name}}
@@ -18,17 +18,17 @@
 
 {{#objectTypes}}
   /**
-   * @typedef {Object} {{type}}
+  * @typedef {Object} {{type}}
   {{#properties}}
-   * @property { {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}} } {{name}}
+    * @property { {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}} } {{name}}
   {{/properties}}
-   */
+  */
 
 {{/objectTypes}}
 
 {{#enumTypes}}
   /**
-   * @typedef { {{#unionTypeTrim}}{{#constants}}"{{.}}" | {{/constants}}{{/unionTypeTrim}} } {{type}}
-   */
+  * @typedef { {{#unionTypeTrim}}{{#constants}}"{{.}}" | {{/constants}}{{/unionTypeTrim}} } {{type}}
+  */
 
 {{/enumTypes}}
