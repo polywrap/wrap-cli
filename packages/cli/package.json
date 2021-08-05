@@ -16,8 +16,9 @@
     "w3": "bin/w3"
   },
   "scripts": {
-    "build": "rimraf ./build && tsc --project tsconfig.build.json && yarn build:envs",
+    "build": "rimraf ./build && tsc --project tsconfig.build.json && yarn build:envs && yarn build:docgen",
     "build:envs": "copyfiles ./src/lib/build-envs/**/**/* ./build/lib/build-envs/ -u 3",
+    "build:docgen": "copyfiles src/lib/doc-formats/**/**/* ./build/lib/doc-formats/ -u 3",
     "prebuild": "ts-node ./scripts/generateIntlTypes.ts",
     "lint": "eslint --color --ext .ts src/",
     "test": "jest --passWithNoTests --runInBand --verbose",

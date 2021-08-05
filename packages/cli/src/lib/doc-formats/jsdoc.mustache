@@ -1,0 +1,34 @@
+{{#queryTypes}}
+  {{#methods}}
+    /**
+     * @callback {{name}}
+    {{#arguments}}
+      {{#required}}
+     * @param { {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}} } {{name}}
+      {{/required}}
+      {{^required}}
+     * @param { {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}} | null } {{name}}
+      {{/required}}
+    {{/arguments}}
+     * @returns { {{#return}}{{#typeFormatFilter}}{{type}}{{/typeFormatFilter}}{{/return}} }
+     */
+
+  {{/methods}}
+{{/queryTypes}}
+
+{{#objectTypes}}
+  /**
+   * @typedef {Object} {{type}}
+  {{#properties}}
+   * @property { {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}} } {{name}}
+  {{/properties}}
+   */
+
+{{/objectTypes}}
+
+{{#enumTypes}}
+  /**
+   * @typedef { {{#unionTypeTrim}}{{#constants}}"{{.}}" | {{/constants}}{{/unionTypeTrim}} } {{type}}
+   */
+
+{{/enumTypes}}

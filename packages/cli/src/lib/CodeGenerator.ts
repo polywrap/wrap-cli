@@ -119,6 +119,8 @@ export class CodeGenerator {
     let content = Mustache.render(template.toString(), {
       ...types,
       schema: this._schema,
+      unionTypeTrim: this.unionTypeTrim,
+      typeFormatFilter: this.typeFormatFilter,
     });
 
     content = `// ${intlMsg.lib_codeGenerator_templateNoModify()}
@@ -127,5 +129,27 @@ ${content}
 `;
 
     return content;
+  }
+
+  private unionTypeTrim() {
+    return (text: string, render: (text: string) => string): string => {
+      const rendered: string = render(text);
+      if (rendered.endsWith(" | ")) {
+        return rendered.substring(0, rendered.length - 3);
+      } else if (rendered.startsWith(" | ")) {
+        return rendered.substring(3);
+      }
+      return rendered;
+    };
+  }
+
+  private typeFormatFilter() {
+    return (text: string, render: (text: string) => string): string => {
+      const rendered: string = render(text);
+      if (rendered.startsWith("[")) {
+        return rendered.substring(1, rendered.length - 1) + "[]";
+      }
+      return rendered;
+    };
   }
 }
