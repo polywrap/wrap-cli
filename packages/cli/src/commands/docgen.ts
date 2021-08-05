@@ -22,20 +22,20 @@ const defaultManifestStr = defaultManifest.join(" | ");
 const HELP = `
 ${chalk.bold("w3 docgen")} ${chalk.bold(`[<${genFileOp}>]`)} [${optionsStr}]
 
-${"Supported doc-formats"}:
-  ${"JSDoc (default)"}
+${intlMsg.commands_docgen_supported()}:
+  ${`JSDoc (${intlMsg.commands_docgen_default()})`}
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
   -m, --manifest-path <${pathStr}>              ${intlMsg.commands_codegen_options_m()}: ${defaultManifestStr})
   -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
-  -o, --output-dir <${pathStr}>                 ${"Output directory for generated docs (default: docs/)"}
+  -o, --output-dir <${pathStr}>                 ${intlMsg.commands_docgen_o()}
   -e, --ens [<${addrStr}>]                   ${intlMsg.commands_codegen_options_e()}
 `;
 
 export default {
   alias: ["d"],
-  description: "Auto-generate API Documentation",
+  description: intlMsg.commands_docgen_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
 
