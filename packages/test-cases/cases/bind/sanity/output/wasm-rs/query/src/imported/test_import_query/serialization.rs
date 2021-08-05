@@ -1,5 +1,5 @@
-use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use crate::{TestImportEnum, TestImportObject};
+use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

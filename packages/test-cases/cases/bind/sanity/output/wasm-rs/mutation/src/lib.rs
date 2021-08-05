@@ -1,7 +1,4 @@
 pub use polywrap_query_test_cases::common::*;
-pub use polywrap_wasm_rs::{
-    abort, invoke, subinvoke, Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer,
-};
 pub mod another_type;
 pub mod common;
 pub mod custom_enum;

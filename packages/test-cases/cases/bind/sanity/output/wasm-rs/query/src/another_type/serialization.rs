@@ -1,5 +1,5 @@
 use crate::{AnotherType, CustomType};
-use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
+use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
 pub fn serialize_another_type(object: &AnotherType) -> Vec<u8> {
     let mut sizer_context = Context::new();

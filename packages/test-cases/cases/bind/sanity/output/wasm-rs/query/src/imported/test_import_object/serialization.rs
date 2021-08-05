@@ -2,7 +2,7 @@ use crate::{
     get_test_import_enum_value, sanitize_test_import_enum_value, TestImportAnotherObject,
     TestImportEnum, TestImportObject,
 };
-use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
+use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use std::convert::TryFrom;
 
 pub fn serialize_test_import_object(object: &TestImportObject) -> Vec<u8> {

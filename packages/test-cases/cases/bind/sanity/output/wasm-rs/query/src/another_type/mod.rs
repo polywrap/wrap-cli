@@ -1,6 +1,6 @@
 pub mod serialization;
 use crate::CustomType;
-use crate::{Read, Write};
+use polywrap_wasm_rs::{Read, Write};
 use serde::{Deserialize, Serialize};
 pub use serialization::{
     deserialize_another_type, read_another_type, serialize_another_type, write_another_type,

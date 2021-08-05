@@ -1,5 +1,5 @@
 pub mod serialization;
-use crate::{Read, Write};
+use polywrap_wasm_rs::{Read, Write};
 use serde::{Deserialize, Serialize};
 pub use serialization::{
     deserialize_test_import_another_object, read_test_import_another_object,

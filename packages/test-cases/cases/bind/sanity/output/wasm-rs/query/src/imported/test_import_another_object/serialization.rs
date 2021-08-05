@@ -1,5 +1,5 @@
 use crate::TestImportAnotherObject;
-use crate::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
+use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
 pub fn serialize_test_import_another_object(object: &TestImportAnotherObject) -> Vec<u8> {
     let mut sizer_context = Context::new();

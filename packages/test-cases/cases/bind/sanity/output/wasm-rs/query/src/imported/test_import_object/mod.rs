@@ -1,5 +1,5 @@
-use crate::{Read, Write};
 use crate::{TestImportAnotherObject, TestImportEnum};
+use polywrap_wasm_rs::{Read, Write};
 use serde::{Deserialize, Serialize};
 pub mod serialization;
 pub use serialization::{
