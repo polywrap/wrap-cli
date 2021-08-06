@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { u32, W3Imports } from "./types";
-import { readBytes, readString, writeBytes, writeString } from "./utils";
+import { readBytes, readString, writeBytes, writeString } from "./buffer";
 import { Client, InvokableModules } from "..";
 import { State } from "./WasmWeb3Api";
 

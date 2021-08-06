@@ -16,12 +16,12 @@ import { Context } from "./Context";
 
 export class ReadDecoder extends Read {
   private readonly _context: Context;
-  private view: DataView;
+  private _view: DataView;
 
   constructor(ua: ArrayBuffer, context: Context = new Context()) {
     super();
     this._context = context;
-    this.view = new DataView(ua, 0, ua.byteLength, context);
+    this._view = new DataView(ua, 0, ua.byteLength, context);
   }
 
   context(): Context {
@@ -29,7 +29,7 @@ export class ReadDecoder extends Read {
   }
 
   readBool(): bool {
-    const value = this.view.getUint8();
+    const value = this._view.getUint8();
     if (value == Format.TRUE) {
       return true;
     } else if (value == Format.FALSE) {
@@ -37,7 +37,7 @@ export class ReadDecoder extends Read {
     }
     throw new TypeError(
       this._context.printWithContext(
-        "Property must be of type 'bool'. " + this.getErrorMessage(value)
+        "Property must be of type 'bool'. " + this._getErrorMessage(value)
       )
     );
   }
@@ -79,7 +79,7 @@ export class ReadDecoder extends Read {
   }
 
   readInt64(): i64 {
-    const prefix = this.view.getUint8();
+    const prefix = this._view.getUint8();
 
     if (isFixedInt(prefix)) {
       return i64(prefix);
@@ -89,17 +89,17 @@ export class ReadDecoder extends Read {
     }
     switch (prefix) {
       case Format.INT8:
-        return i64(this.view.getInt8());
+        return i64(this._view.getInt8());
       case Format.INT16:
-        return i64(this.view.getInt16());
+        return i64(this._view.getInt16());
       case Format.INT32:
-        return i64(this.view.getInt32());
+        return i64(this._view.getInt32());
       case Format.INT64:
-        return this.view.getInt64();
+        return this._view.getInt64();
       default:
         throw new TypeError(
           this._context.printWithContext(
-            "Property must be of type 'int'. " + this.getErrorMessage(prefix)
+            "Property must be of type 'int'. " + this._getErrorMessage(prefix)
           )
         );
     }
@@ -142,7 +142,7 @@ export class ReadDecoder extends Read {
   }
 
   readUInt64(): u64 {
-    const prefix = this.view.getUint8();
+    const prefix = this._view.getUint8();
 
     if (isFixedInt(prefix)) {
       return u64(prefix);
@@ -156,42 +156,42 @@ export class ReadDecoder extends Read {
 
     switch (prefix) {
       case Format.UINT8:
-        return u64(this.view.getUint8());
+        return u64(this._view.getUint8());
       case Format.UINT16:
-        return u64(this.view.getUint16());
+        return u64(this._view.getUint16());
       case Format.UINT32:
-        return u64(this.view.getUint32());
+        return u64(this._view.getUint32());
       case Format.UINT64:
-        return this.view.getUint64();
+        return this._view.getUint64();
       default:
         throw new TypeError(
           this._context.printWithContext(
-            "Property must be of type 'uint'. " + this.getErrorMessage(prefix)
+            "Property must be of type 'uint'. " + this._getErrorMessage(prefix)
           )
         );
     }
   }
 
   readFloat32(): f32 {
-    const prefix = this.view.getUint8();
+    const prefix = this._view.getUint8();
     if (isFloat32(prefix)) {
-      return <f32>this.view.getFloat32();
+      return <f32>this._view.getFloat32();
     }
     throw new TypeError(
       this._context.printWithContext(
-        "Property must be of type 'float32'. " + this.getErrorMessage(prefix)
+        "Property must be of type 'float32'. " + this._getErrorMessage(prefix)
       )
     );
   }
 
   readFloat64(): f64 {
-    const prefix = this.view.getUint8();
+    const prefix = this._view.getUint8();
     if (isFloat64(prefix)) {
-      return <f64>this.view.getFloat64();
+      return <f64>this._view.getFloat64();
     }
     throw new Error(
       this._context.printWithContext(
-        "Property must be of type 'float64'. " + this.getErrorMessage(prefix)
+        "Property must be of type 'float64'. " + this._getErrorMessage(prefix)
       )
     );
   }
@@ -200,7 +200,7 @@ export class ReadDecoder extends Read {
     if (this.isNextNil()) {
       return 0;
     }
-    const leadByte = this.view.getUint8();
+    const leadByte = this._view.getUint8();
     if (isFixedString(leadByte)) {
       return leadByte & 0x1f;
     }
@@ -209,25 +209,25 @@ export class ReadDecoder extends Read {
     }
     switch (leadByte) {
       case Format.STR8:
-        return <u32>this.view.getUint8();
+        return <u32>this._view.getUint8();
       case Format.STR16:
-        return <u32>this.view.getUint16();
+        return <u32>this._view.getUint16();
       case Format.STR32:
-        return this.view.getUint32();
+        return this._view.getUint32();
       case Format.NIL:
         return 0;
     }
 
     throw new TypeError(
       this._context.printWithContext(
-        "Property must be of type 'string'. " + this.getErrorMessage(leadByte)
+        "Property must be of type 'string'. " + this._getErrorMessage(leadByte)
       )
     );
   }
 
   readString(): string {
     const strLen = this.readStringLength();
-    const stringBytes = this.view.getBytes(strLen);
+    const stringBytes = this._view.getBytes(strLen);
     return String.UTF8.decode(stringBytes);
   }
 
@@ -235,30 +235,30 @@ export class ReadDecoder extends Read {
     if (this.isNextNil()) {
       return 0;
     }
-    const leadByte = this.view.getUint8();
+    const leadByte = this._view.getUint8();
     if (isFixedArray(leadByte)) {
       return <u32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
     }
     switch (leadByte) {
       case Format.BIN8:
-        return <u32>this.view.getUint8();
+        return <u32>this._view.getUint8();
       case Format.BIN16:
-        return <u32>this.view.getUint16();
+        return <u32>this._view.getUint16();
       case Format.BIN32:
-        return this.view.getUint32();
+        return this._view.getUint32();
       case Format.NIL:
         return 0;
     }
     throw new TypeError(
       this._context.printWithContext(
-        "Property must be of type 'bytes'. " + this.getErrorMessage(leadByte)
+        "Property must be of type 'bytes'. " + this._getErrorMessage(leadByte)
       )
     );
   }
 
   readBytes(): ArrayBuffer {
     const arrLength = this.readBytesLength();
-    const arrBytes = this.view.getBytes(arrLength);
+    const arrBytes = this._view.getBytes(arrLength);
     return arrBytes;
   }
 
@@ -271,21 +271,21 @@ export class ReadDecoder extends Read {
     if (this.isNextNil()) {
       return 0;
     }
-    const leadByte = this.view.getUint8();
+    const leadByte = this._view.getUint8();
     if (isFixedArray(leadByte)) {
       return <u32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
     }
     switch (leadByte) {
       case Format.ARRAY16:
-        return <u32>this.view.getUint16();
+        return <u32>this._view.getUint16();
       case Format.ARRAY32:
-        return this.view.getUint32();
+        return this._view.getUint32();
       case Format.NIL:
         return 0;
     }
     throw new TypeError(
       this._context.printWithContext(
-        "Property must be of type 'array'. " + this.getErrorMessage(leadByte)
+        "Property must be of type 'array'. " + this._getErrorMessage(leadByte)
       )
     );
   }
@@ -306,21 +306,21 @@ export class ReadDecoder extends Read {
     if (this.isNextNil()) {
       return 0;
     }
-    const leadByte = this.view.getUint8();
+    const leadByte = this._view.getUint8();
     if (isFixedMap(leadByte)) {
       return <u32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
     }
     switch (leadByte) {
       case Format.MAP16:
-        return <u32>this.view.getUint16();
+        return <u32>this._view.getUint16();
       case Format.MAP32:
-        return this.view.getUint32();
+        return this._view.getUint32();
       case Format.NIL:
         return 0;
     }
     throw new TypeError(
       this._context.printWithContext(
-        "Property must be of type 'map'. " + this.getErrorMessage(leadByte)
+        "Property must be of type 'map'. " + this._getErrorMessage(leadByte)
       )
     );
   }
@@ -457,16 +457,16 @@ export class ReadDecoder extends Read {
   }
 
   isNextNil(): bool {
-    const format = this.view.peekUint8();
+    const format = this._view.peekUint8();
     if (format == Format.NIL) {
-      this.view.discard(1);
+      this._view.discard(1);
       return true;
     }
     return false;
   }
 
   isNextString(): bool {
-    const format = this.view.peekUint8();
+    const format = this._view.peekUint8();
     return (
       isFixedString(format) ||
       format == Format.STR8 ||
@@ -475,7 +475,7 @@ export class ReadDecoder extends Read {
     );
   }
 
-  private skip(): void {
+  private _skip(): void {
     // getSize handles discarding 'msgpack header' info
     let numberOfObjectsToDiscard = this.getSize();
 
@@ -485,8 +485,8 @@ export class ReadDecoder extends Read {
     }
   }
 
-  private getSize(): i32 {
-    const leadByte = this.view.getUint8(); // will discard one
+  private _getSize(): i32 {
+    const leadByte = this._view.getUint8(); // will discard one
     let objectsToDiscard = <i32>0;
     // Handled for fixed values
     if (isNegativeFixedInt(leadByte)) {
@@ -495,7 +495,7 @@ export class ReadDecoder extends Read {
       // noop, will just discard the leadbyte
     } else if (isFixedString(leadByte)) {
       const strLength = leadByte & 0x1f;
-      this.view.discard(strLength);
+      this._view.discard(strLength);
     } else if (isFixedArray(leadByte)) {
       objectsToDiscard = <i32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
     } else if (isFixedMap(leadByte)) {
@@ -510,79 +510,79 @@ export class ReadDecoder extends Read {
         case Format.FALSE:
           break;
         case Format.BIN8:
-          this.view.discard(<i32>this.view.getUint8());
+          this._view.discard(<i32>this._view.getUint8());
           break;
         case Format.BIN16:
-          this.view.discard(<i32>this.view.getUint16());
+          this._view.discard(<i32>this._view.getUint16());
           break;
         case Format.BIN32:
-          this.view.discard(<i32>this.view.getUint32());
+          this._view.discard(<i32>this._view.getUint32());
           break;
         case Format.FLOAT32:
-          this.view.discard(4);
+          this._view.discard(4);
           break;
         case Format.FLOAT64:
-          this.view.discard(8);
+          this._view.discard(8);
           break;
         case Format.UINT8:
-          this.view.discard(1);
+          this._view.discard(1);
           break;
         case Format.UINT16:
-          this.view.discard(2);
+          this._view.discard(2);
           break;
         case Format.UINT32:
-          this.view.discard(4);
+          this._view.discard(4);
           break;
         case Format.UINT64:
-          this.view.discard(8);
+          this._view.discard(8);
           break;
         case Format.INT8:
-          this.view.discard(1);
+          this._view.discard(1);
           break;
         case Format.INT16:
-          this.view.discard(2);
+          this._view.discard(2);
           break;
         case Format.INT32:
-          this.view.discard(4);
+          this._view.discard(4);
           break;
         case Format.INT64:
-          this.view.discard(8);
+          this._view.discard(8);
           break;
         case Format.FIXEXT1:
-          this.view.discard(2);
+          this._view.discard(2);
           break;
         case Format.FIXEXT2:
-          this.view.discard(3);
+          this._view.discard(3);
           break;
         case Format.FIXEXT4:
-          this.view.discard(5);
+          this._view.discard(5);
           break;
         case Format.FIXEXT8:
-          this.view.discard(9);
+          this._view.discard(9);
           break;
         case Format.FIXEXT16:
-          this.view.discard(17);
+          this._view.discard(17);
           break;
         case Format.STR8:
-          this.view.discard(this.view.getUint8());
+          this._view.discard(this._view.getUint8());
           break;
         case Format.STR16:
-          this.view.discard(this.view.getUint16());
+          this._view.discard(this._view.getUint16());
           break;
         case Format.STR32:
-          this.view.discard(this.view.getUint32());
+          this._view.discard(this._view.getUint32());
           break;
         case Format.ARRAY16:
-          objectsToDiscard = <i32>this.view.getUint16();
+          objectsToDiscard = <i32>this._view.getUint16();
           break;
         case Format.ARRAY32:
-          objectsToDiscard = <i32>this.view.getUint32();
+          objectsToDiscard = <i32>this._view.getUint32();
           break;
         case Format.MAP16:
-          objectsToDiscard = 2 * <i32>this.view.getUint16();
+          objectsToDiscard = 2 * <i32>this._view.getUint16();
           break;
         case Format.MAP32:
-          objectsToDiscard = 2 * <i32>this.view.getUint32();
+          objectsToDiscard = 2 * <i32>this._view.getUint32();
           break;
         default:
           throw new TypeError(
@@ -598,7 +598,7 @@ export class ReadDecoder extends Read {
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  private getErrorMessage(leadByte: u8): string {
+  private _getErrorMessage(leadByte: u8): string {
     if (isNegativeFixedInt(leadByte)) {
       return "Found 'int'.";
     } else if (isFixedInt(leadByte)) {

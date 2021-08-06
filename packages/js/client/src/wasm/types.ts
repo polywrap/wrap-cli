@@ -5,8 +5,7 @@ export type u32 = number;
 
 export interface W3Exports {
   // Needed to comply with WebAssembly's typings
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
+  [key: string]: unknown;
 
   asyncify_start_unwind: (dataAddr: number) => void;
   asyncify_stop_unwind: () => void;

@@ -29,37 +29,10 @@ export interface State {
   subinvoke: {
     result?: ArrayBuffer;
     error?: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    args: any[];
+    args: unknown[];
   };
   invokeResult: InvokeResult;
 }
-
-const processInvokeResult = (
-  state: State,
-  result: boolean,
-  abort: (message: string) => never
-): InvokeResult => {
-  if (result) {
-    if (!state.invoke.result) {
-      abort("Invoke result is missing.");
-    }
-
-    return {
-      type: "InvokeResult",
-      invokeResult: state.invoke.result,
-    };
-  } else {
-    if (!state.invoke.error) {
-      abort("Invoke error is missing.");
-    }
-
-    return {
-      type: "InvokeError",
-      invokeError: state.invoke.error,
-    };
-  }
-};
 
 export class WasmWeb3Api extends Api {
   private _schema?: string;
@@ -96,7 +69,7 @@ export class WasmWeb3Api extends Api {
         client: Client
       ): Promise<InvokeApiResult<unknown | ArrayBuffer>> => {
         const { module: invokableModule, method, input, decode } = options;
-        const wasm = await this.getWasmModule(invokableModule, client);
+        const wasm = await this._getWasmModule(invokableModule, client);
         const state: State = {
           invoke: {},
           subinvoke: {
@@ -140,7 +113,7 @@ export class WasmWeb3Api extends Api {
           state.args.byteLength
         );
 
-        const invokeResult = processInvokeResult(state, result, abort);
+        const invokeResult = this._processInvokeResult(state, result, abort);
 
         switch (invokeResult.type) {
           case "InvokeError": {
@@ -208,7 +181,7 @@ export class WasmWeb3Api extends Api {
         const { data, error } = await ApiResolver.Query.getFile(
           client,
           this._apiResolver,
-          this.combinePaths(this._uri.path, module.schema)
+          this._combinePaths(this._uri.path, module.schema)
         );
 
         if (error) {
@@ -238,7 +211,7 @@ export class WasmWeb3Api extends Api {
     return run(client);
   }
 
-  private async getWasmModule(
+  private async _getWasmModule(
     module: InvokableModules,
     client: Client
   ): Promise<ArrayBuffer> {
@@ -263,7 +236,7 @@ export class WasmWeb3Api extends Api {
         const { data, error } = await ApiResolver.Query.getFile(
           client,
           this._apiResolver,
-          this.combinePaths(this._uri.path, moduleManifest.module)
+          this._combinePaths(this._uri.path, moduleManifest.module)
         );
 
         if (error) {
@@ -285,7 +258,7 @@ export class WasmWeb3Api extends Api {
     return run(module, client);
   }
 
-  private combinePaths(a: string, b: string) {
+  private _combinePaths(a: string, b: string) {
     // Normalize all path seperators
     a = a.replace(/\\/g, "/");
     b = b.replace(/\\/g, "/");
@@ -301,5 +274,31 @@ export class WasmWeb3Api extends Api {
     }
 
     return a + b;
+  }
+
+  private _processInvokeResult(
+    state: State,
+    result: boolean,
+    abort: (message: string) => never
+  ): InvokeResult {
+    if (result) {
+      if (!state.invoke.result) {
+        abort("Invoke result is missing.");
+      }
+  
+      return {
+        type: "InvokeResult",
+        invokeResult: state.invoke.result,
+      };
+    } else {
+      if (!state.invoke.error) {
+        abort("Invoke error is missing.");
+      }
+  
+      return {
+        type: "InvokeError",
+        invokeError: state.invoke.error,
+      };
+    }
   }
 }
