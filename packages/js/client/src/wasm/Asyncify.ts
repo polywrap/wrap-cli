@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { W3Exports, W3Imports } from "./types";
 
 enum State {
@@ -45,7 +44,7 @@ export class Asyncify {
   init(instance: WebAssembly.Instance, imports: W3Imports): void {
     const exports = instance.exports as W3Exports;
 
-    const memory = exports.memory || (imports.env && imports.env.memory);
+    const memory = (exports.memory || (imports.env && imports.env.memory)) as WebAssembly.Memory;
 
     new Int32Array(memory.buffer, this._config.dataAddr).set([
       this._config.dataStart,
@@ -55,19 +54,17 @@ export class Asyncify {
     this.exports = this._wrapExports(exports);
   }
 
-  wrapImports(imports: W3Imports): any {
-    if (imports === undefined) return;
-
+  wrapImports(imports: W3Imports): W3Imports {
     return proxyGet(imports, (moduleImports = {}) =>
       this._wrapModuleImports(moduleImports)
     );
   }
 
-  private _getState() {
+  private _getState(): number {
     return this.exports.asyncify_get_state();
   }
 
-  private _assertNoneState() {
+  private _assertNoneState(): void {
     const state = this._getState();
     if (state !== State.None) {
       throw new Error(`Invalid async state ${state}, expected 0.`);
@@ -99,7 +96,7 @@ export class Asyncify {
     });
   }
 
-  private _wrapExportFn(fn: (...args: any[]) => any) {
+  private _wrapExportFn(fn: Function) {
     let newExport = this._config.wrappedExports.get(fn);
 
     if (newExport !== undefined) {
@@ -129,7 +126,7 @@ export class Asyncify {
     return newExport;
   }
 
-  private _wrapExports(exports: W3Exports) {
+  private _wrapExports(exports: W3Exports): W3Exports {
     const newExports = Object.create(null);
 
     for (const exportName in exports) {

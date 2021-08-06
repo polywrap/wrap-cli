@@ -11,6 +11,7 @@ export interface W3Exports {
   asyncify_stop_unwind: () => void;
   asyncify_start_rewind: (dataAddr: number) => void;
   asyncify_stop_rewind: () => void;
+  asyncify_get_state: () => u32;
 
   _w3_init: () => void;
   _w3_invoke: (nameLen: u32, argsLen: u32) => boolean;

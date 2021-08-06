@@ -117,15 +117,13 @@ export class WasmWeb3Api extends Api {
 
         switch (invokeResult.type) {
           case "InvokeError": {
-            return {
-              error: new Error(
-                `WasmWeb3Api: invocation exception encountered.\n` +
-                  `uri: ${this._uri.uri}\nmodule: ${module}\n` +
-                  `method: ${method}\n` +
-                  `input: ${JSON.stringify(input, null, 2)}\n` +
-                  `exception: ${invokeResult.invokeError}`
-              ),
-            };
+            throw Error(
+              `WasmWeb3Api: invocation exception encountered.\n` +
+                `uri: ${this._uri.uri}\nmodule: ${module}\n` +
+                `method: ${method}\n` +
+                `input: ${JSON.stringify(input, null, 2)}\n` +
+                `exception: ${invokeResult.invokeError}`
+            );
           }
           case "InvokeResult": {
             if (decode) {

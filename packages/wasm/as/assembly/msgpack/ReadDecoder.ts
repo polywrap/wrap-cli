@@ -477,10 +477,10 @@ export class ReadDecoder extends Read {
 
   private _skip(): void {
     // getSize handles discarding 'msgpack header' info
-    let numberOfObjectsToDiscard = this.getSize();
+    let numberOfObjectsToDiscard = this._getSize();
 
     while (numberOfObjectsToDiscard > 0) {
-      this.getSize(); // discard next object
+      this._getSize(); // discard next object
       numberOfObjectsToDiscard--;
     }
   }

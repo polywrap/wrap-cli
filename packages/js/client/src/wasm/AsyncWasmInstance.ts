@@ -6,7 +6,10 @@ export class AsyncWasmInstance {
   private _dataAddr = 16;
   private _dataStart = this._dataAddr + 8;
   private _dataEnd = 1024;
-  private _wrappedExports = new WeakMap();
+  private _wrappedExports = new WeakMap<
+    WebAssembly.Exports,
+    W3Exports
+  >();
   private _asyncify: Asyncify;
 
   private _requiredExports = [
@@ -53,6 +56,6 @@ export class AsyncWasmInstance {
   }
 
   get exports(): W3Exports {
-    return this._wrappedExports.get(this._instance.exports);
+    return this._wrappedExports.get(this._instance.exports) as W3Exports;
   }
 }
