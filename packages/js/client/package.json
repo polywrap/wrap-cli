@@ -12,9 +12,6 @@
     "build",
     "bin"
   ],
-  "bin": {
-    "web3api-worker-install": "bin/web3api-worker-install"
-  },
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "prebuild": "ts-node ./scripts/extractPluginConfigs.ts",
