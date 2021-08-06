@@ -42,7 +42,7 @@ describe("Web3ApiClient", () => {
     });
   };
 
-  it.only("asyncify", async () => {
+  it("asyncify", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/asyncify`,
       ipfsProvider,
