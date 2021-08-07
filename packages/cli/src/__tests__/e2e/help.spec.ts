@@ -13,7 +13,7 @@ const HELP = `
   codegen (g)    Auto-generate API Types                              
   build (b)      Builds a Web3API and (optionally) uploads it to IPFS 
 `;
-]
+
 describe("e2e tests for no help", () => {
   const projectRoot = path.resolve(__dirname, "../project/");
   
