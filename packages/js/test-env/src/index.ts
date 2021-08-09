@@ -51,7 +51,7 @@ export const runCLI = async (
     args: string[];
     cwd?: string;
   },
-  cli = "npx w3"
+  cli = `node ${__dirname}/../../../cli/bin/w3`
 ): Promise<{
   exitCode: number;
   stdout: string;

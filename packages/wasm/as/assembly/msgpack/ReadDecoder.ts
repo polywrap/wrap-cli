@@ -43,7 +43,7 @@ export class ReadDecoder extends Read {
   }
 
   readInt8(): i8 {
-    const value = this.readInt64();
+    const value = this._readInt64();
     if (value <= i64(i8.MAX_VALUE) && value >= i64(i8.MIN_VALUE)) {
       return i8(value);
     }
@@ -55,7 +55,7 @@ export class ReadDecoder extends Read {
   }
 
   readInt16(): i16 {
-    const value = this.readInt64();
+    const value = this._readInt64();
     if (value <= i64(i16.MAX_VALUE) && value >= i64(i16.MIN_VALUE)) {
       return i16(value);
     }
@@ -67,7 +67,7 @@ export class ReadDecoder extends Read {
   }
 
   readInt32(): i32 {
-    const value = this.readInt64();
+    const value = this._readInt64();
     if (value <= i64(i32.MAX_VALUE) && value >= i64(i32.MIN_VALUE)) {
       return i32(value);
     }
@@ -78,35 +78,8 @@ export class ReadDecoder extends Read {
     );
   }
 
-  readInt64(): i64 {
-    const prefix = this._view.getUint8();
-
-    if (isFixedInt(prefix)) {
-      return i64(prefix);
-    }
-    if (isNegativeFixedInt(prefix)) {
-      return i64(i8(prefix));
-    }
-    switch (prefix) {
-      case Format.INT8:
-        return i64(this._view.getInt8());
-      case Format.INT16:
-        return i64(this._view.getInt16());
-      case Format.INT32:
-        return i64(this._view.getInt32());
-      case Format.INT64:
-        return this._view.getInt64();
-      default:
-        throw new TypeError(
-          this._context.printWithContext(
-            "Property must be of type 'int'. " + this._getErrorMessage(prefix)
-          )
-        );
-    }
-  }
-
   readUInt8(): u8 {
-    const value = this.readUInt64();
+    const value = this._readUInt64();
     if (value <= u64(u8.MAX_VALUE) && value >= u64(u8.MIN_VALUE)) {
       return u8(value);
     }
@@ -118,7 +91,7 @@ export class ReadDecoder extends Read {
   }
 
   readUInt16(): u16 {
-    const value = this.readUInt64();
+    const value = this._readUInt64();
     if (value <= u64(u16.MAX_VALUE) && value >= u64(u16.MIN_VALUE)) {
       return u16(value);
     }
@@ -130,7 +103,7 @@ export class ReadDecoder extends Read {
   }
 
   readUInt32(): u32 {
-    const value = this.readUInt64();
+    const value = this._readUInt64();
     if (value <= u64(u32.MAX_VALUE) && value >= u64(u32.MIN_VALUE)) {
       return u32(value);
     }
@@ -139,37 +112,6 @@ export class ReadDecoder extends Read {
         "unsigned integer overflow: value = " + value.toString() + "; bits = 32"
       )
     );
-  }
-
-  readUInt64(): u64 {
-    const prefix = this._view.getUint8();
-
-    if (isFixedInt(prefix)) {
-      return u64(prefix);
-    } else if (isNegativeFixedInt(prefix)) {
-      throw new RangeError(
-        this._context.printWithContext(
-          "unsigned integer cannot be negative: prefix = " + prefix.toString()
-        )
-      );
-    }
-
-    switch (prefix) {
-      case Format.UINT8:
-        return u64(this._view.getUint8());
-      case Format.UINT16:
-        return u64(this._view.getUint16());
-      case Format.UINT32:
-        return u64(this._view.getUint32());
-      case Format.UINT64:
-        return this._view.getUint64();
-      default:
-        throw new TypeError(
-          this._context.printWithContext(
-            "Property must be of type 'uint'. " + this._getErrorMessage(prefix)
-          )
-        );
-    }
   }
 
   readFloat32(): f32 {
@@ -369,13 +311,6 @@ export class ReadDecoder extends Read {
     return Nullable.fromValue<i32>(this.readInt32());
   }
 
-  readNullableInt64(): Nullable<i64> {
-    if (this.isNextNil()) {
-      return Nullable.fromNull<i64>();
-    }
-    return Nullable.fromValue<i64>(this.readInt64());
-  }
-
   readNullableUInt8(): Nullable<u8> {
     if (this.isNextNil()) {
       return Nullable.fromNull<u8>();
@@ -395,13 +330,6 @@ export class ReadDecoder extends Read {
       return Nullable.fromNull<u32>();
     }
     return Nullable.fromValue<u32>(this.readUInt32());
-  }
-
-  readNullableUInt64(): Nullable<u64> {
-    if (this.isNextNil()) {
-      return Nullable.fromNull<u64>();
-    }
-    return Nullable.fromValue<u64>(this.readUInt64());
   }
 
   readNullableFloat32(): Nullable<f32> {
@@ -473,6 +401,64 @@ export class ReadDecoder extends Read {
       format == Format.STR16 ||
       format == Format.STR32
     );
+  }
+
+  private _readInt64(): i64 {
+    const prefix = this._view.getUint8();
+
+    if (isFixedInt(prefix)) {
+      return i64(prefix);
+    }
+    if (isNegativeFixedInt(prefix)) {
+      return i64(i8(prefix));
+    }
+    switch (prefix) {
+      case Format.INT8:
+        return i64(this._view.getInt8());
+      case Format.INT16:
+        return i64(this._view.getInt16());
+      case Format.INT32:
+        return i64(this._view.getInt32());
+      case Format.INT64:
+        return this._view.getInt64();
+      default:
+        throw new TypeError(
+          this._context.printWithContext(
+            "Property must be of type 'int'. " + this._getErrorMessage(prefix)
+          )
+        );
+    }
+  }
+
+  private _readUInt64(): u64 {
+    const prefix = this._view.getUint8();
+
+    if (isFixedInt(prefix)) {
+      return u64(prefix);
+    } else if (isNegativeFixedInt(prefix)) {
+      throw new RangeError(
+        this._context.printWithContext(
+          "unsigned integer cannot be negative: prefix = " + prefix.toString()
+        )
+      );
+    }
+
+    switch (prefix) {
+      case Format.UINT8:
+        return u64(this._view.getUint8());
+      case Format.UINT16:
+        return u64(this._view.getUint16());
+      case Format.UINT32:
+        return u64(this._view.getUint32());
+      case Format.UINT64:
+        return this._view.getUint64();
+      default:
+        throw new TypeError(
+          this._context.printWithContext(
+            "Property must be of type 'uint'. " + this._getErrorMessage(prefix)
+          )
+        );
+    }
   }
 
   private _skip(): void {

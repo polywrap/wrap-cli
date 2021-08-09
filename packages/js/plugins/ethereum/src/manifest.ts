@@ -9,12 +9,10 @@ scalar UInt
 scalar UInt8
 scalar UInt16
 scalar UInt32
-scalar UInt64
 scalar Int
 scalar Int8
 scalar Int16
 scalar Int32
-scalar Int64
 scalar Bytes
 scalar BigInt
 
@@ -43,7 +41,9 @@ type TxReceipt {
   blockHash: String!
   confirmations: UInt32!
   cumulativeGasUsed: BigInt!
+  effectiveGasPrice: BigInt!
   byzantium: Boolean!
+  type: UInt32!
   status: UInt32
 }
 
@@ -53,7 +53,7 @@ type TxResponse {
   from: String!
   nonce: UInt32!
   gasLimit: BigInt!
-  gasPrice: BigInt!
+  gasPrice: BigInt
   data: String!
   value: BigInt!
   chainId: UInt32!
@@ -245,6 +245,5 @@ type Mutation {
     connection: Connection
   ): String
 }`,
-  implemented: [],
-  imported: [],
+  implements: [],
 };

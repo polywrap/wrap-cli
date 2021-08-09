@@ -28,64 +28,50 @@ export class WriteEncoder extends Write {
   }
 
   writeInt8(value: i8): void {
-    this.writeInt64(<i64>value);
+    this.writeInt32(<i32>value);
   }
 
   writeInt16(value: i16): void {
-    this.writeInt64(<i64>value);
+    this.writeInt32(<i32>value);
   }
 
   writeInt32(value: i32): void {
-    this.writeInt64(<i64>value);
-  }
-
-  writeInt64(value: i64): void {
     if (value >= 0 && value < 1 << 7) {
       this._view.setUint8(<u8>value);
     } else if (value < 0 && value >= -(1 << 5)) {
       this._view.setUint8((<u8>value) | (<u8>Format.NEGATIVE_FIXINT));
-    } else if (value <= <i64>i8.MAX_VALUE && value >= <i64>i8.MIN_VALUE) {
+    } else if (value <= <i32>i8.MAX_VALUE && value >= <i32>i8.MIN_VALUE) {
       this._view.setUint8(<u8>Format.INT8);
       this._view.setInt8(<i8>value);
-    } else if (value <= <i64>i16.MAX_VALUE && value >= <i64>i16.MIN_VALUE) {
+    } else if (value <= <i32>i16.MAX_VALUE && value >= <i32>i16.MIN_VALUE) {
       this._view.setUint8(<u8>Format.INT16);
       this._view.setInt16(<i16>value);
-    } else if (value <= <i64>i32.MAX_VALUE && value >= <i64>i32.MIN_VALUE) {
+    } else {
       this._view.setUint8(<u8>Format.INT32);
       this._view.setInt32(<i32>value);
-    } else {
-      this._view.setUint8(<u8>Format.INT64);
-      this._view.setInt64(value);
     }
   }
 
   writeUInt8(value: u8): void {
-    this.writeUInt64(<u64>value);
+    this.writeUInt32(<u32>value);
   }
 
   writeUInt16(value: u16): void {
-    this.writeUInt64(<u64>value);
+    this.writeUInt32(<u32>value);
   }
 
   writeUInt32(value: u32): void {
-    this.writeUInt64(<u64>value);
-  }
-
-  writeUInt64(value: u64): void {
     if (value < 1 << 7) {
       this._view.setUint8(<u8>value);
-    } else if (value <= <u64>u8.MAX_VALUE) {
+    } else if (value <= <u32>u8.MAX_VALUE) {
       this._view.setUint8(<u8>Format.UINT8);
       this._view.setUint8(<u8>value);
-    } else if (value <= <u64>u16.MAX_VALUE) {
+    } else if (value <= <u32>u16.MAX_VALUE) {
       this._view.setUint8(<u8>Format.UINT16);
       this._view.setUint16(<u16>value);
-    } else if (value <= <u64>u32.MAX_VALUE) {
+    } else {
       this._view.setUint8(<u8>Format.UINT32);
       this._view.setUint32(<u32>value);
-    } else {
-      this._view.setUint8(<u8>Format.UINT64);
-      this._view.setUint64(value);
     }
   }
 
@@ -229,15 +215,6 @@ export class WriteEncoder extends Write {
     this.writeInt32(value.value);
   }
 
-  writeNullableInt64(value: Nullable<i64>): void {
-    if (value.isNull) {
-      this.writeNil();
-      return;
-    }
-
-    this.writeInt64(value.value);
-  }
-
   writeNullableUInt8(value: Nullable<u8>): void {
     if (value.isNull) {
       this.writeNil();
@@ -263,15 +240,6 @@ export class WriteEncoder extends Write {
     }
 
     this.writeUInt32(value.value);
-  }
-
-  writeNullableUInt64(value: Nullable<u64>): void {
-    if (value.isNull) {
-      this.writeNil();
-      return;
-    }
-
-    this.writeUInt64(value.value);
   }
 
   writeNullableFloat32(value: Nullable<f32>): void {

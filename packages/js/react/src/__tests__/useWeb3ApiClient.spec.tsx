@@ -4,9 +4,9 @@ import {
   createWeb3ApiProvider,
   useWeb3ApiClient
 } from "..";
-import { createRedirects } from "./redirects";
+import { createPlugins } from "./plugins";
 
-import { UriRedirect } from "@web3api/core-js";
+import { PluginRegistration } from "@web3api/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment
@@ -18,10 +18,10 @@ import {
   cleanup
 } from "@testing-library/react-hooks";
 
-jest.setTimeout(60000);
+jest.setTimeout(360000);
 
 describe("useWeb3ApiClient hook", () => {
-  let redirects: UriRedirect<string>[];
+  let plugins: PluginRegistration<string>[];
   let WrapperProvider: RenderHookOptions<unknown>;
 
   beforeAll(async () => {
@@ -31,12 +31,12 @@ describe("useWeb3ApiClient hook", () => {
       ensAddress
     } = await initTestEnvironment();
 
-    redirects = createRedirects(ensAddress, ethereum, ipfs);
+    plugins = createPlugins(ensAddress, ethereum, ipfs);
 
     WrapperProvider = {
       wrapper: Web3ApiProvider,
       initialProps: {
-        redirects,
+        plugins,
       },
     };
   });
@@ -57,11 +57,11 @@ describe("useWeb3ApiClient hook", () => {
     return result;
   }
 
-  it("Should return client with redirects", async () => {
+  it("Should return client with plugins", async () => {
     const client = getClient();
 
     expect(client).toBeTruthy();
-    expect(client.redirects().length).toBeGreaterThan(0);
+    expect(client.plugins().length).toBeGreaterThan(0);
   });
 
   it("Should throw error because there's no provider with expected key ", async () => {

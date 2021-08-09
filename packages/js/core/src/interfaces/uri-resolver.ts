@@ -3,7 +3,7 @@ import { Uri, Client, InvokeApiResult } from "../";
 
 import { Tracer } from "@web3api/tracing-js";
 
-interface MaybeUriOrManifest {
+export interface MaybeUriOrManifest {
   uri?: string;
   manifest?: string;
 }
@@ -11,7 +11,7 @@ interface MaybeUriOrManifest {
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const Query = {
   tryResolveUri: Tracer.traceFunc(
-    "core: api-resolver: tryResolveUri",
+    "core: uri-resolver: tryResolveUri",
     async (
       client: Client,
       api: Uri,
@@ -29,7 +29,7 @@ export const Query = {
     }
   ),
   getFile: Tracer.traceFunc(
-    "core: api-resolver: getFile",
+    "core: uri-resolver: getFile",
     async (
       client: Client,
       api: Uri,

@@ -23,7 +23,9 @@ export interface TxReceipt {
   blockHash: string;
   confirmations: UInt32;
   cumulativeGasUsed: BigInt;
+  effectiveGasPrice: BigInt;
   byzantium: boolean;
+  type: UInt32;
   status?: UInt32;
 }
 
@@ -33,7 +35,7 @@ export interface TxResponse {
   from: string;
   nonce: UInt32;
   gasLimit: BigInt;
-  gasPrice: BigInt;
+  gasPrice?: BigInt;
   data: string;
   value: BigInt;
   chainId: UInt32;

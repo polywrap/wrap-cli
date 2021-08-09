@@ -5,7 +5,7 @@ import {
 } from "../typeInfo";
 import { extractImportedDefinition } from "./imported-types-utils";
 
-import { DocumentNode, EnumTypeDefinitionNode, visit } from "graphql";
+import { ASTVisitor, EnumTypeDefinitionNode } from "graphql";
 
 const visitorEnter = (importedEnumTypes: ImportedEnumDefinition[]) => ({
   EnumTypeDefinition: (node: EnumTypeDefinitionNode) => {
@@ -28,16 +28,14 @@ const visitorEnter = (importedEnumTypes: ImportedEnumDefinition[]) => ({
       uri: imported.uri,
       namespace: imported.namespace,
       nativeType: imported.nativeType,
+      comment: node.description?.value,
     });
     importedEnumTypes.push(enumType);
   },
 });
 
-export function extractImportedEnumTypes(
-  astNode: DocumentNode,
+export const getImportedEnumTypesVisitor = (
   typeInfo: TypeInfo
-): void {
-  visit(astNode, {
-    enter: visitorEnter(typeInfo.importedEnumTypes),
-  });
-}
+): ASTVisitor => ({
+  enter: visitorEnter(typeInfo.importedEnumTypes),
+});

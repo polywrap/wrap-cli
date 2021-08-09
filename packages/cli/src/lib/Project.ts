@@ -4,6 +4,7 @@ import { loadWeb3ApiManifest, loadBuildManifest } from "./helpers";
 import { intlMsg } from "./intl";
 
 import { Web3ApiManifest, BuildManifest } from "@web3api/core-js";
+import { normalizePath } from "@web3api/os-js";
 import path from "path";
 import fs from "fs";
 import rimraf from "rimraf";
@@ -77,7 +78,7 @@ export class Project {
       name: string;
     }[] = [];
 
-    if (web3apiManifest.modules.mutation) {
+    if (web3apiManifest.modules.mutation?.module) {
       web3apiModules.push({
         dir: path
           .dirname(web3apiManifest.modules.mutation.module)
@@ -85,7 +86,7 @@ export class Project {
         name: "mutation",
       });
     }
-    if (web3apiManifest.modules.query) {
+    if (web3apiManifest.modules.query?.module) {
       web3apiModules.push({
         dir: path
           .dirname(web3apiManifest.modules.query.module)
@@ -155,8 +156,19 @@ export class Project {
 
       // Add default env variables
       const defaultConfig = {
-        web3api_modules: await this.getWeb3ApiModules(),
-        web3api_manifests: await this.getManifestPaths(),
+        web3api_modules: (await this.getWeb3ApiModules()).map(
+          (module: { dir: string; name: string }) => {
+            return {
+              name: module.name,
+              dir: normalizePath(module.dir),
+            };
+          }
+        ),
+        web3api_manifests: (await this.getManifestPaths()).map(
+          (path: string) => {
+            return normalizePath(path);
+          }
+        ),
       };
 
       if (!this._buildManifest.config) {
@@ -178,6 +190,10 @@ export class Project {
     }
 
     const language = (await this.getWeb3ApiManifest()).language;
+
+    if (!language) {
+      throw Error(intlMsg.lib_project_language_not_found());
+    }
 
     const defaultPath = `${__dirname}/build-envs/${language}/web3api.build.yaml`;
 

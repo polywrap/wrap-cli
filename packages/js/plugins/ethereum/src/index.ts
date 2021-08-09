@@ -386,13 +386,16 @@ export class EthereumPlugin extends Plugin {
     return result;
   }
 
-  public parseArgs(args?: string[]): (string | string[])[] {
+  public parseArgs(args?: string[]): unknown[] {
     if (!args) {
       return [];
     }
 
     return args.map((arg: string) =>
-      arg.startsWith("[") && arg.endsWith("]") ? JSON.parse(arg) : arg
+      (arg.startsWith("[") && arg.endsWith("]")) ||
+      (arg.startsWith("{") && arg.endsWith("}"))
+        ? JSON.parse(arg)
+        : arg
     );
   }
 

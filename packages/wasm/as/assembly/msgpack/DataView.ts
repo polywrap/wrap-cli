@@ -204,18 +204,6 @@ export class DataView {
     return bswap(result);
   }
 
-  setInt64(value: i64): void {
-    this._checkIndexInRange("setInt64", 8);
-    store<i64>(this.dataStart + this._byteOffset, bswap(value));
-    this._byteOffset += 8;
-  }
-
-  setUint64(value: u64): void {
-    this._checkIndexInRange("setUint64", 8);
-    store<u64>(this.dataStart + this._byteOffset, bswap(value));
-    this._byteOffset += 8;
-  }
-
   toString(): string {
     return "[object DataView]";
   }

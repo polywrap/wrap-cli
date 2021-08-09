@@ -9,7 +9,7 @@ import {
   deserializeWeb3ApiManifest,
   deserializeBuildManifest,
 } from "@web3api/core-js";
-import { writeFileSync } from "@web3api/os-js";
+import { writeFileSync, normalizePath } from "@web3api/os-js";
 import { Schema as JsonSchema } from "jsonschema";
 import YAML from "js-yaml";
 import path from "path";
@@ -68,17 +68,11 @@ export async function loadBuildManifest(
     }
 
     // Load the custom json-schema extension if it exists
-    let configSchemaPath = path.join(
+    const configSchemaPath = path.join(
       path.dirname(manifestPath),
       "/web3api.build.ext.json"
     );
     let extSchema: JsonSchema | undefined = undefined;
-
-    if (!fs.existsSync(configSchemaPath)) {
-      configSchemaPath = project.getCachePath(
-        "build/env/web3api.build.ext.json"
-      );
-    }
 
     if (fs.existsSync(configSchemaPath)) {
       extSchema = JSON.parse(
@@ -169,9 +163,15 @@ export async function outputManifest(
   } else {
     manifestPath = displayPath(manifestPath);
     return await withSpinner(
-      intlMsg.lib_helpers_manifest_outputText({ path: manifestPath }),
-      intlMsg.lib_helpers_manifest_outputError({ path: manifestPath }),
-      intlMsg.lib_helpers_manifest_outputWarning({ path: manifestPath }),
+      intlMsg.lib_helpers_manifest_outputText({
+        path: normalizePath(manifestPath),
+      }),
+      intlMsg.lib_helpers_manifest_outputError({
+        path: normalizePath(manifestPath),
+      }),
+      intlMsg.lib_helpers_manifest_outputWarning({
+        path: normalizePath(manifestPath),
+      }),
       (_spinner): Promise<unknown> => {
         return Promise.resolve(run());
       }
