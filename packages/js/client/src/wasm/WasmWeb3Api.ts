@@ -284,7 +284,7 @@ export class WasmWeb3Api extends Api {
       if (!state.invoke.result) {
         abort("Invoke result is missing.");
       }
-  
+
       return {
         type: "InvokeResult",
         invokeResult: state.invoke.result,
@@ -293,7 +293,7 @@ export class WasmWeb3Api extends Api {
       if (!state.invoke.error) {
         abort("Invoke error is missing.");
       }
-  
+
       return {
         type: "InvokeError",
         invokeError: state.invoke.error,

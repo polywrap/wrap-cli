@@ -1,9 +1,12 @@
-function isPromise(obj: any) {
-  return (
-    !!obj &&
-    (typeof obj === "object" || typeof obj === "function") &&
-    typeof obj.then === "function"
-  );
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/ban-types */
+
+type MaybeAsync<T> = Promise<T> | T;
+
+function isPromise<T extends unknown>(
+  test?: MaybeAsync<T>
+): test is Promise<T> {
+  return !!test && typeof (test as Promise<T>).then === "function";
 }
 
 function proxyGet<T extends Record<string, unknown>>(
@@ -11,8 +14,7 @@ function proxyGet<T extends Record<string, unknown>>(
   transform: (value: unknown) => unknown
 ): T {
   return new Proxy<T>(obj, {
-    get: (obj: T, name: string) =>
-      transform(obj[name]),
+    get: (obj: T, name: string) => transform(obj[name]),
   });
 }
 
@@ -39,11 +41,6 @@ enum AsyncifyState {
 }
 
 export class AsyncWasmInstance {
-  private _instance: WasmInstance;
-  private _wrappedImports: WasmImports;
-  private _wrappedExports: AsyncifyExports;
-  private _returnValue: Promise<unknown> | unknown;
-
   private static _dataAddr = 16;
   private static _dataStart = AsyncWasmInstance._dataAddr + 8;
   private static _dataEnd = 1024;
@@ -53,15 +50,19 @@ export class AsyncWasmInstance {
     "asyncify_stop_unwind",
     "asyncify_start_rewind",
     "asyncify_stop_rewind",
-    "asyncify_get_state"
+    "asyncify_get_state",
   ];
+
+  private _instance: WasmInstance;
+  private _wrappedImports: WasmImports;
+  private _wrappedExports: AsyncifyExports;
+  private _returnValue: Promise<unknown> | unknown;
 
   constructor(config: {
     module: WasmModule;
     imports: WasmImports;
     requiredExports?: string[];
   }) {
-
     // Wrap imports
     this._wrappedImports = this._wrapImports(config.imports);
 
@@ -90,10 +91,8 @@ export class AsyncWasmInstance {
     this._wrappedExports = this._wrapExports(exports);
 
     // Initialize Asyncify stack pointers
-    const memory = (
-      exports.memory ||
-      (config.imports.env && config.imports.env.memory)
-    ) as WasmMemory;
+    const memory = (exports.memory ||
+      (config.imports.env && config.imports.env.memory)) as WasmMemory;
 
     new Int32Array(memory.buffer, AsyncWasmInstance._dataAddr).set([
       AsyncWasmInstance._dataStart,
