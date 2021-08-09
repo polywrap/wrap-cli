@@ -16,8 +16,7 @@
     "lint": "eslint --color --ext \"src/**/*.{ts|tsx}\"",
     "test:ci": "yarn test",
     "test": "jest --passWithNoTests --runInBand --verbose --env=./src/__tests__/env/index.ts",
-    "test:watch": "yarn test --watch",
-    "pretest": "yarn install:web3api"
+    "test:watch": "yarn test --watch"
   },
   "dependencies": {
     "@web3api/client-js": "0.0.1-prealpha.25",

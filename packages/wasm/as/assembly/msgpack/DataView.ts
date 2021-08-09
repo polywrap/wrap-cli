@@ -47,7 +47,10 @@ export class DataView {
 
   getBytes(length: i32): ArrayBuffer {
     this._checkIndexInRange("getBytes", length);
-    const result = this.buffer.slice(this._byteOffset, this._byteOffset + length);
+    const result = this.buffer.slice(
+      this._byteOffset,
+      this._byteOffset + length
+    );
     this._byteOffset += length;
     return result;
   }

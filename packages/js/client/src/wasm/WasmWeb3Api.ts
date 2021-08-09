@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import { W3Exports } from "./types";
 import { createImports } from "./imports";
 import { AsyncWasmInstance } from "./AsyncWasmInstance";
 
@@ -104,7 +105,7 @@ export class WasmWeb3Api extends Api {
           requiredExports: ["_w3_init", "_w3_invoke"],
         });
 
-        const exports = instance.exports;
+        const exports = instance.exports as W3Exports;
 
         exports._w3_init();
 
@@ -283,7 +284,7 @@ export class WasmWeb3Api extends Api {
       if (!state.invoke.result) {
         abort("Invoke result is missing.");
       }
-  
+
       return {
         type: "InvokeResult",
         invokeResult: state.invoke.result,
@@ -292,7 +293,7 @@ export class WasmWeb3Api extends Api {
       if (!state.invoke.error) {
         abort("Invoke error is missing.");
       }
-  
+
       return {
         type: "InvokeError",
         invokeError: state.invoke.error,
