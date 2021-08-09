@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
-
 function isPromise(obj: any) {
   return (
     !!obj &&
@@ -22,6 +20,8 @@ type WasmModule = WebAssembly.Module;
 type WasmMemory = WebAssembly.Memory;
 type WasmExports = WebAssembly.Exports;
 type WasmImports = WebAssembly.Imports;
+type WasmModuleImports = WebAssembly.ModuleImports;
+type WasmImportValue = WebAssembly.ImportValue;
 type WasmInstance = WebAssembly.Instance;
 
 interface AsyncifyExports extends WebAssembly.Exports {
@@ -47,8 +47,6 @@ export class AsyncWasmInstance {
   private static _dataAddr = 16;
   private static _dataStart = AsyncWasmInstance._dataAddr + 8;
   private static _dataEnd = 1024;
-
-  private _removeMe = new WeakMap();
 
   private static _requiredExports: string[] = [
     "asyncify_start_unwind",
@@ -119,9 +117,34 @@ export class AsyncWasmInstance {
   }
 
   private _wrapImports(imports: WasmImports): WasmImports {
-    return proxyGet(imports, (moduleImports: WasmImports) =>
+    return proxyGet(imports, (moduleImports: WasmModuleImports) =>
       this._wrapModuleImports(moduleImports)
     );
+  }
+
+  private _wrapModuleImports(imports: WasmModuleImports) {
+    return proxyGet(imports, (importValue: WasmImportValue) => {
+      if (typeof importValue === "function") {
+        return this._wrapImportFn(importValue);
+      }
+      return importValue;
+    });
+  }
+
+  private _wrapImportFn(fn: Function) {
+    return (...args: unknown[]) => {
+      if (this._getAsyncifyState() === AsyncifyState.Rewinding) {
+        this._wrappedExports.asyncify_stop_rewind();
+        return this._returnValue;
+      }
+      this._assertNoneState();
+      const value = fn(...args);
+      if (!isPromise(value)) {
+        return value;
+      }
+      this._wrappedExports.asyncify_start_unwind(AsyncWasmInstance._dataAddr);
+      this._returnValue = value;
+    };
   }
 
   private _wrapExports(exports: AsyncifyExports): AsyncifyExports {
@@ -142,13 +165,7 @@ export class AsyncWasmInstance {
   }
 
   private _wrapExportFn(fn: Function) {
-    let newExport = this._removeMe.get(fn);
-
-    if (newExport !== undefined) {
-      return newExport;
-    }
-
-    newExport = async (...args: unknown[]) => {
+    return async (...args: unknown[]) => {
       this._assertNoneState();
 
       let result = fn(...args);
@@ -164,35 +181,6 @@ export class AsyncWasmInstance {
       this._assertNoneState();
 
       return result;
-    };
-
-    this._removeMe.set(fn, newExport);
-
-    return newExport;
-  }
-
-  private _wrapModuleImports(imports: WasmImports) {
-    return proxyGet(imports, (importVal: unknown) => {
-      if (typeof importVal === "function") {
-        return this._wrapImportFn(importVal);
-      }
-      return importVal;
-    });
-  }
-
-  private _wrapImportFn(fn: Function) {
-    return (...args: unknown[]) => {
-      if (this._getAsyncifyState() === AsyncifyState.Rewinding) {
-        this._wrappedExports.asyncify_stop_rewind();
-        return this._returnValue;
-      }
-      this._assertNoneState();
-      const value = fn(...args);
-      if (!isPromise(value)) {
-        return value;
-      }
-      this._wrappedExports.asyncify_start_unwind(AsyncWasmInstance._dataAddr);
-      this._returnValue = value;
     };
   }
 }
