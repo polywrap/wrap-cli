@@ -65,9 +65,6 @@ export const createImports = (config: {
 
         return !error;
       },
-      __w3_log: (msgPtr: u32, msgLen: u32) => {
-        console.log("__w3_log:", readString(memory.buffer, msgPtr, msgLen));
-      },
       // Give WASM the size of the result
       __w3_subinvoke_result_len: (): u32 => {
         if (!state.subinvoke.result) {

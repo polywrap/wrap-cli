@@ -12,9 +12,6 @@ export declare function __w3_invoke_result(ptr: u32, len: u32): void;
 @external("w3", "__w3_invoke_error")
 export declare function __w3_invoke_error(ptr: u32, len: u32): void;
 
-@external("w3", "__w3_log")
-export declare function __w3_log(msgPtr: u32, msgLen: u32): void;
-
 // Keep track of all invokable functions
 export type InvokeFunction = (argsBuf: ArrayBuffer) => ArrayBuffer;
 
