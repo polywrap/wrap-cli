@@ -1,5 +1,0 @@
-- one "isPromise" function
-- Asyncify.ts: constructor + init function? why is this needed / desired?
-- Asyncify.ts: this._config.exports: WeakMap ? why is this a good idea?
-- Asyncify.ts: Proxy get?
-- AsyncifyWasmInstance.ts: each import is wrapped? Does this mean each one will result in rewinding?
