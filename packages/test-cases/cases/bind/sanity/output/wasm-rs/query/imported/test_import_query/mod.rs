@@ -1,10 +1,16 @@
 pub mod serialization;
 use crate::TestImportObject;
 use polywrap_wasm_rs::subinvoke;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize, 
+    Serialize,
+};
 pub use serialization::{
-    deserialize_another_method_result, deserialize_imported_method_result,
-    serialize_another_method_args, serialize_imported_method_args, InputAnotherMethod,
+    deserialize_another_method_result, 
+    deserialize_imported_method_result,
+    serialize_another_method_args, 
+    serialize_imported_method_args, 
+    InputAnotherMethod,
     InputImportedMethod,
 };
 
@@ -22,8 +28,7 @@ impl TestImportQuery {
             "query".to_string(),
             "imported_method".to_string(),
             args,
-        )
-        .unwrap_or_default();
+        ).unwrap_or_default();
         deserialize_imported_method_result(result.as_slice())
     }
 
@@ -35,8 +40,7 @@ impl TestImportQuery {
             "query".to_string(),
             "another_method".to_string(),
             args,
-        )
-        .unwrap_or_default();
+        ).unwrap_or_default();
         deserialize_another_method_result(result.as_slice())
     }
 }

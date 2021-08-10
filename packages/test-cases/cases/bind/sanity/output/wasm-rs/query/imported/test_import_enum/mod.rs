@@ -1,4 +1,7 @@
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize, 
+    Serialize,
+};
 use std::convert::TryFrom;
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
@@ -12,10 +15,7 @@ pub fn sanitize_test_import_enum_value(value: i32) -> Result<(), String> {
     let max_as_i32 = TestImportEnum::_MAX_ as i32;
     let valid = value >= 0 && value < max_as_i32;
     if !valid {
-        return Err(format!(
-            "Invalid value for enum 'TestImportEnum': {}",
-            value.to_string()
-        ));
+        return Err(format!("Invalid value for enum 'TestImportEnum': {}", value.to_string()));
     }
     Ok(())
 }
@@ -35,12 +35,7 @@ pub fn get_test_import_enum_key(value: TestImportEnum) -> String {
         return match value {
             TestImportEnum::STRING => "STRING".to_string(),
             TestImportEnum::BYTES => "BYTES".to_string(),
-            _ => {
-                format!(
-                    "Invalid value for enum 'TestImportEnum': {}",
-                    (value as i32).to_string()
-                )
-            }
+            _ => {format!("Invalid value for enum 'TestImportEnum': {}", (value as i32).to_string())}
         };
     } else {
         format!("")

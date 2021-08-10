@@ -1,7 +1,25 @@
-use crate::{get_custom_enum_value, sanitize_custom_enum_value, AnotherType, CustomEnum};
-use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
-use serde::{Deserialize, Serialize};
-use std::convert::{TryFrom, TryInto};
+use crate::{
+    get_custom_enum_value, 
+    sanitize_custom_enum_value, 
+    AnotherType, 
+    CustomEnum,
+};
+use polywrap_wasm_rs::{
+    Context, 
+    Read, 
+    ReadDecoder, 
+    Write, 
+    WriteEncoder, 
+    WriteSizer,
+};
+use serde::{
+    Deserialize, 
+    Serialize,
+};
+use std::convert::{
+    TryFrom, 
+    TryInto,
+};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InputMutationMethod {
@@ -34,32 +52,20 @@ pub fn deserialize_mutation_method_args(input: &[u8]) -> Result<InputMutationMet
         let field = reader.read_string().unwrap_or_default();
         match field.as_str() {
             "str" => {
-                reader
-                    .context()
-                    .push(&field, "String", "type found, reading property");
+                reader.context().push(&field, "String", "type found, reading property");
                 if !str_set {
                     str = reader.read_string().unwrap_or_default();
                     str_set = true;
                 }
-                reader
-                    .context()
-                    .pop()
-                    .expect("Failed to pop String from Context");
+                reader.context().pop().expect("Failed to pop String from Context");
             }
             "opt_str" => {
-                reader
-                    .context()
-                    .push(&field, "Option<String>", "type found, reading property");
+                reader.context().push(&field, "Option<String>", "type found, reading property");
                 opt_str = reader.read_nullable_string();
-                reader
-                    .context()
-                    .pop()
-                    .expect("Failed to pop Option<String> from Context");
+                reader.context().pop().expect("Failed to pop Option<String> from Context");
             }
             "en" => {
-                reader
-                    .context()
-                    .push(&field, "CustomEnum", "type found, reading property");
+                reader.context().push(&field, "CustomEnum", "type found, reading property");
                 let mut value = CustomEnum::_MAX_;
                 if reader.is_next_string() {
                     value = get_custom_enum_value(&reader.read_string().unwrap_or_default())
@@ -71,22 +77,15 @@ pub fn deserialize_mutation_method_args(input: &[u8]) -> Result<InputMutationMet
                 }
                 en = value;
                 en_set = true;
-                reader
-                    .context()
-                    .pop()
-                    .expect("Failed to pop CustomEnum from Context");
+                reader.context().pop().expect("Failed to pop CustomEnum from Context");
             }
             "opt_enum" => {
-                reader
-                    .context()
-                    .push(&field, "Option<CustomEnum>", "type found, reading property");
+                reader.context().push(&field, "Option<CustomEnum>", "type found, reading property");
                 let mut value: Option<CustomEnum> = None;
                 if !reader.is_next_nil() {
                     if reader.is_next_string() {
-                        value = Some(
-                            get_custom_enum_value(&reader.read_string().unwrap_or_default())
-                                .expect("Failed to get Option<CustomEnum> value"),
-                        );
+                        value = Some(get_custom_enum_value(&reader.read_string().unwrap_or_default())
+                            .expect("Failed to get Option<CustomEnum> value"));
                     } else {
                         value = Some(reader.read_i32().unwrap_or_default().try_into().unwrap());
                         sanitize_custom_enum_value(value.unwrap() as i32)
@@ -96,57 +95,37 @@ pub fn deserialize_mutation_method_args(input: &[u8]) -> Result<InputMutationMet
                     value = None;
                 }
                 opt_enum = value;
-                reader
-                    .context()
-                    .pop()
-                    .expect("Failed to pop Option<CustomEnum> from Context");
+                reader.context().pop().expect("Failed to pop Option<CustomEnum> from Context");
             }
             "enum_array" => {
-                reader
-                    .context()
-                    .push(&field, "Vec<CustomEnum>", "type found, reading property");
-                enum_array = reader
-                    .read_array(|reader| {
-                        let mut value = CustomEnum::_MAX_;
-                        if reader.is_next_string() {
-                            value =
-                                get_custom_enum_value(&reader.read_string().unwrap_or_default())
-                                    .expect("Failed to get Vec<CustomEnum> value");
-                        } else {
-                            value = CustomEnum::try_from(reader.read_i32().unwrap_or_default())
-                                .expect("Failed to convert i32 to Vec<CustomEnum>");
-                            sanitize_custom_enum_value(value as i32)
-                                .expect("Failed to sanitize Vec<CustomEnum>");
-                        }
-                        value
-                    })
-                    .expect("Failed to read array");
+                reader.context().push(&field, "Vec<CustomEnum>", "type found, reading property");
+                enum_array = reader.read_array(|reader| {
+                    let mut value = CustomEnum::_MAX_;
+                    if reader.is_next_string() {
+                        value = get_custom_enum_value(&reader.read_string().unwrap_or_default())
+                            .expect("Failed to get Vec<CustomEnum> value");
+                    } else {
+                        value = CustomEnum::try_from(reader.read_i32().unwrap_or_default())
+                            .expect("Failed to convert i32 to Vec<CustomEnum>");
+                        sanitize_custom_enum_value(value as i32)
+                            .expect("Failed to sanitize Vec<CustomEnum>");
+                    }
+                    value
+                }).expect("Failed to read array");
                 enum_array_set = true;
-                reader
-                    .context()
-                    .pop()
-                    .expect("Failed to pop Vec<CustomEnum> from Context");
+                reader.context().pop().expect("Failed to pop Vec<CustomEnum> from Context");
             }
             "opt_enum_array" => {
-                reader.context().push(
-                    &field,
-                    "Option<Vec<Option<CustomEnum>>>",
-                    "type found, reading property",
-                );
+                reader.context().push(&field, "Option<Vec<Option<CustomEnum>>>", "type found, reading property");
                 opt_enum_array = reader.read_nullable_array(|reader| {
                     let mut value: Option<CustomEnum> = None;
                     if !reader.is_next_nil() {
                         if reader.is_next_string() {
-                            value = Some(
-                                get_custom_enum_value(&reader.read_string().unwrap_or_default())
-                                    .expect("Failed to get Option<Vec<Option<CustomEnum>>> value"),
-                            );
+                            value = Some(get_custom_enum_value(&reader.read_string().unwrap_or_default())
+                                .expect("Failed to get Option<Vec<Option<CustomEnum>>> value"));
                         } else {
-                            value = Some(
-                                CustomEnum::try_from(reader.read_i32().unwrap_or_default()).expect(
-                                    "Failed to convert i32 to Option<Vec<Option<CustomEnum>>>",
-                                ),
-                            );
+                            value = Some(CustomEnum::try_from(reader.read_i32().unwrap_or_default())
+                                .expect("Failed to convert i32 to Option<Vec<Option<CustomEnum>>>"));
                             sanitize_custom_enum_value(value.unwrap() as i32)
                                 .expect("Failed to sanitize Option<Vec<Option<CustomEnum>>>");
                         }
@@ -155,39 +134,24 @@ pub fn deserialize_mutation_method_args(input: &[u8]) -> Result<InputMutationMet
                     }
                     value
                 });
-                reader
-                    .context()
-                    .pop()
-                    .expect("Failed to pop optional Option<Vec<Option<CustomEnum>>> from Context");
+                reader.context().pop().expect("Failed to pop optional Option<Vec<Option<CustomEnum>>> from Context");
             }
             _ => {
-                reader
-                    .context()
-                    .push(&field, "unknown", "searching for property type");
-                reader
-                    .context()
-                    .pop()
-                    .expect("Failed to pop unknown from Context");
+                reader.context().push(&field, "unknown", "searching for property type");
+                reader.context().pop().expect("Failed to pop unknown from Context");
             }
         }
     }
-
     if !str_set {
-        let custom_error = reader
-            .context()
-            .print_with_context("Missing required argument: 'str: String'");
+        let custom_error = reader.context().print_with_context("Missing required argument: 'str: String'");
         return Err(custom_error);
     }
     if !en_set {
-        let custom_error = reader
-            .context()
-            .print_with_context("Missing required argument: 'en: CustomEnum'");
+        let custom_error = reader.context().print_with_context("Missing required argument: 'en: CustomEnum'");
         return Err(custom_error);
     }
     if !enum_array_set {
-        let custom_error = reader
-            .context()
-            .print_with_context("Missing required argument: 'en_array: Vec<CustomEnum>'");
+        let custom_error = reader.context().print_with_context("Missing required argument: 'en_array: Vec<CustomEnum>'");
         return Err(custom_error);
     }
 
@@ -215,14 +179,9 @@ pub fn serialize_mutation_method_result(input: i32) -> Vec<u8> {
 }
 
 pub fn write_mutation_method_result<W: Write>(input: i32, writer: &mut W) {
-    writer
-        .context()
-        .push("mutation_method", "i32", "writing property");
+    writer.context().push("mutation_method", "i32", "writing property");
     writer.write_i32(input);
-    writer
-        .context()
-        .pop()
-        .expect("Failed to pop i32 from Context");
+    writer.context().pop().expect("Failed to pop i32 from Context");
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -254,57 +213,34 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
         let field = reader.read_string().unwrap_or_default();
         match field.as_str() {
             "object" => {
-                reader
-                    .context()
-                    .push(&field, "AnotherType", "type found, reading property");
+                reader.context().push(&field, "AnotherType", "type found, reading property");
                 let obj = AnotherType::read(&mut reader);
                 object = obj;
                 object_set = true;
-                reader
-                    .context()
-                    .pop()
-                    .expect("Failed to pop AnotherType from Context");
+                reader.context().pop().expect("Failed to pop AnotherType from Context");
             }
             "opt_object" => {
-                reader.context().push(
-                    &field,
-                    "Option<AnotherType>",
-                    "type found, reading property",
-                );
+                reader.context().push(&field, "Option<AnotherType>", "type found, reading property");
                 let mut opt_obj: Option<AnotherType> = None;
                 if !reader.is_next_nil() {
                     opt_obj = Some(AnotherType::read(&mut reader));
                 }
                 opt_object = opt_obj;
-                reader
-                    .context()
-                    .pop()
-                    .expect("Failed to pop Option<AnotherType> from Context");
+                reader.context().pop().expect("Failed to pop Option<AnotherType> from Context");
             }
             "object_array" => {
-                reader
-                    .context()
-                    .push(&field, "Vec<AnotherType>", "type found, reading property");
+                reader.context().push(&field, "Vec<AnotherType>", "type found, reading property");
                 if !object_array_set {
-                    object_array = reader
-                        .read_array(|reader| {
-                            let obj = AnotherType::read(reader);
-                            obj
-                        })
-                        .expect("Failed to read array");
+                    object_array = reader.read_array(|reader| {
+                        let obj = AnotherType::read(reader);
+                        obj
+                    }).expect("Failed to read array");
                     object_array_set = true;
                 }
-                reader
-                    .context()
-                    .pop()
-                    .expect("Failed to pop Vec<AnotherType> from Context");
+                reader.context().pop().expect("Failed to pop Vec<AnotherType> from Context");
             }
             "opt_object_array" => {
-                reader.context().push(
-                    &field,
-                    "Option<Vec<Option<AnotherType>>>",
-                    "type found, reading property",
-                );
+                reader.context().push(&field, "Option<Vec<Option<AnotherType>>>", "type found, reading property");
                 opt_object_array = reader.read_nullable_array(|reader| {
                     let mut opt_obj: Option<AnotherType> = None;
                     if !reader.is_next_nil() {
@@ -312,33 +248,20 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
                     }
                     opt_obj
                 });
-                reader
-                    .context()
-                    .pop()
-                    .expect("Failed to pop Option<Vec<Option<AnotherType>>> from Context");
+                reader.context().pop().expect("Failed to pop Option<Vec<Option<AnotherType>>> from Context");
             }
             _ => {
-                reader
-                    .context()
-                    .push(&field, "unknown", "searching for property type");
-                reader
-                    .context()
-                    .pop()
-                    .expect("Failed to pop unknown object from Context");
+                reader.context().push(&field, "unknown", "searching for property type");
+                reader.context().pop().expect("Failed to pop unknown object from Context");
             }
         }
     }
-
     if !object_set {
-        let custom_error = reader
-            .context()
-            .print_with_context("Missing required argument: 'object: AnotherType'");
+        let custom_error = reader.context().print_with_context("Missing required argument: 'object: AnotherType'");
         return Err(custom_error);
     }
     if !object_array_set {
-        let custom_error = reader
-            .context()
-            .print_with_context("Missing required argument: 'object_array: Vec<AnotherType>'");
+        let custom_error = reader.context().print_with_context("Missing required argument: 'object_array: Vec<AnotherType>'");
         return Err(custom_error);
     }
 
@@ -364,16 +287,11 @@ pub fn serialize_object_method_result(input: Option<AnotherType>) -> Vec<u8> {
 }
 
 pub fn write_object_method_result<W: Write>(input: Option<AnotherType>, writer: &mut W) {
-    writer
-        .context()
-        .push("object_method", "Option<AnotherType>", "writing property");
+    writer.context().push("object_method", "Option<AnotherType>", "writing property");
     if input.is_some() {
         AnotherType::write(input.as_ref().as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }
-    writer
-        .context()
-        .pop()
-        .expect("Failed to pop Option<AnotherType> from Context");
+    writer.context().pop().expect("Failed to pop Option<AnotherType> from Context");
 }

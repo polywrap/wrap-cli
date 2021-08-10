@@ -1,9 +1,17 @@
 pub mod serialization;
-use polywrap_wasm_rs::{Read, Write};
-use serde::{Deserialize, Serialize};
+use polywrap_wasm_rs::{
+    Read, 
+    Write,
+};
+use serde::{
+    Deserialize, 
+    Serialize,
+};
 pub use serialization::{
-    deserialize_test_import_another_object, read_test_import_another_object,
-    serialize_test_import_another_object, write_test_import_another_object,
+    deserialize_test_import_another_object, 
+    read_test_import_another_object,
+    serialize_test_import_another_object, 
+    write_test_import_another_object,
 };
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

@@ -1,10 +1,22 @@
 pub mod serialization;
-use crate::{AnotherType, CustomEnum};
+use crate::{
+    AnotherType, 
+    CustomEnum,
+};
 use num_bigint::BigInt;
-use polywrap_wasm_rs::{Read, Write};
-use serde::{Deserialize, Serialize};
+use polywrap_wasm_rs::{
+    Read, 
+    Write,
+};
+use serde::{
+    Deserialize, 
+    Serialize,
+};
 pub use serialization::{
-    deserialize_custom_type, read_custom_type, serialize_custom_type, write_custom_type,
+    deserialize_custom_type, 
+    read_custom_type, 
+    serialize_custom_type, 
+    write_custom_type,
 };
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
