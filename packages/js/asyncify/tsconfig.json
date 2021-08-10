@@ -12,5 +12,7 @@
   "include": [
     "./src/**/*.ts"
   ],
-  "exclude": []
+  "exclude": [
+    "./src/__tests__/cases/*.ts"
+  ]
 }
