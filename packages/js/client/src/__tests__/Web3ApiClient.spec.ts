@@ -176,7 +176,7 @@ describe("Web3ApiClient", () => {
       ]);
   });
 
-  it.only("get all implementations of interface", async () => {
+  it("get all implementations of interface", async () => {
 
     const interface1Uri = "w3://ens/some-interface1.eth";
     const interface2Uri = "w3://ens/some-interface2.eth";
