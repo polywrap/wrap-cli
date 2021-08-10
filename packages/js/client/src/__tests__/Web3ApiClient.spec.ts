@@ -47,8 +47,8 @@ describe("Web3ApiClient", () => {
           testnet: ensAddress,
         },
       },
-    });
-  };
+    }, config);
+  }
 
   it("default client config", () => {
     const client = new Web3ApiClient();
@@ -176,7 +176,7 @@ describe("Web3ApiClient", () => {
       ]);
   });
 
-  it("get all implementations of interface", async () => {
+  it.only("get all implementations of interface", async () => {
 
     const interface1Uri = "w3://ens/some-interface1.eth";
     const interface2Uri = "w3://ens/some-interface2.eth";
