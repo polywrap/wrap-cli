@@ -14,6 +14,8 @@ export function namehash (inputName: string): string {
       const labelSha = SHA3_Query.buffer_keccak_256({
         message: String.UTF8.encode(labels[i])
       });
+
+
       const combined = new Uint8Array(node.byteLength + labelSha.byteLength);
       combined.set(node);
       combined.set(Uint8Array.wrap(labelSha), node.byteLength);

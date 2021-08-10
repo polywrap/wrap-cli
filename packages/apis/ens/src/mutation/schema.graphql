@@ -110,7 +110,7 @@ type Mutation {
     tld: String!
     connection: Ethereum_Connection
     txOverrides: TxOverrides
-  ): Ethereum_TxResponse!
+  ): String!
 
   registerSubnodeOwnerWithFIFSRegistrar(
     label: String!

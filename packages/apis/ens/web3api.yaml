@@ -8,3 +8,8 @@ modules:
   query:
     schema: ./src/query/schema.graphql
     module: ./src/query/index.ts
+import_redirects:
+  - uri: w3://ens/sha3.web3api.eth
+    schema: ../../../node_modules/@web3api/sha3-plugin-js/schema.graphql
+  - uri: w3://ens/uts46.web3api.eth
+    schema: ../../../node_modules/@web3api/uts46-plugin-js/schema.graphql
