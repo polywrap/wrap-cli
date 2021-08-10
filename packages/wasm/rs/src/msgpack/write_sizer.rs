@@ -103,7 +103,7 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_string(&mut self, value: String) {
+    fn write_string(&mut self, value: &str) {
         self.write_string_length(value.len() as u32);
         self.length += value.len() as i32;
     }
@@ -118,7 +118,7 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_bytes(&mut self, value: Vec<u8>) {
+    fn write_bytes(&mut self, value: &[u8]) {
         if value.is_empty() {
             self.length += 1;
         } else {
@@ -127,9 +127,9 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_bigint(&mut self, value: BigInt) {
+    fn write_bigint(&mut self, value: &BigInt) {
         let val_str = value.to_string();
-        self.write_string(val_str);
+        self.write_string(&val_str);
     }
 
     fn write_array_length(&mut self, length: u32) {
@@ -142,10 +142,10 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_array<T: Clone>(&mut self, a: &[T], mut arr_fn: impl FnMut(&mut Self, T)) {
+    fn write_array<T: Clone>(&mut self, a: &[T], mut arr_fn: impl FnMut(&mut Self, &T)) {
         self.write_array_length(a.len() as u32);
         for element in a {
-            arr_fn(self, element.clone());
+            arr_fn(self, element);
         }
     }
 
@@ -161,20 +161,20 @@ impl Write for WriteSizer {
 
     fn write_map<K: Clone + Eq + Hash, V: Clone>(
         &mut self,
-        map: HashMap<K, V>,
-        mut key_fn: impl FnMut(&mut Self, K),
-        mut val_fn: impl FnMut(&mut Self, V),
+        map: &HashMap<K, V>,
+        mut key_fn: impl FnMut(&mut Self, &K),
+        mut val_fn: impl FnMut(&mut Self, &V),
     ) {
         self.write_map_length(map.len() as u32);
         let keys: Vec<_> = map.keys().into_iter().collect();
         for key in keys {
             let value = map.get(key).unwrap();
-            key_fn(self, key.clone());
-            val_fn(self, value.clone());
+            key_fn(self, key);
+            val_fn(self, value);
         }
     }
 
-    fn write_nullable_bool(&mut self, value: Option<bool>) {
+    fn write_nullable_bool(&mut self, value: &Option<bool>) {
         if value.is_none() {
             self.write_nil();
         } else {
@@ -182,7 +182,7 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_nullable_i8(&mut self, value: Option<i8>) {
+    fn write_nullable_i8(&mut self, value: &Option<i8>) {
         if value.is_none() {
             self.write_nil();
         } else {
@@ -190,7 +190,7 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_nullable_i16(&mut self, value: Option<i16>) {
+    fn write_nullable_i16(&mut self, value: &Option<i16>) {
         if value.is_none() {
             self.write_nil();
         } else {
@@ -198,7 +198,7 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_nullable_i32(&mut self, value: Option<i32>) {
+    fn write_nullable_i32(&mut self, value: &Option<i32>) {
         if value.is_none() {
             self.write_nil();
         } else {
@@ -206,7 +206,7 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_nullable_i64(&mut self, value: Option<i64>) {
+    fn write_nullable_i64(&mut self, value: &Option<i64>) {
         if value.is_none() {
             self.write_nil();
         } else {
@@ -214,7 +214,7 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_nullable_u8(&mut self, value: Option<u8>) {
+    fn write_nullable_u8(&mut self, value: &Option<u8>) {
         if value.is_none() {
             self.write_nil();
         } else {
@@ -222,7 +222,7 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_nullable_u16(&mut self, value: Option<u16>) {
+    fn write_nullable_u16(&mut self, value: &Option<u16>) {
         if value.is_none() {
             self.write_nil();
         } else {
@@ -230,7 +230,7 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_nullable_u32(&mut self, value: Option<u32>) {
+    fn write_nullable_u32(&mut self, value: &Option<u32>) {
         if value.is_none() {
             self.write_nil();
         } else {
@@ -238,7 +238,7 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_nullable_u64(&mut self, value: Option<u64>) {
+    fn write_nullable_u64(&mut self, value: &Option<u64>) {
         if value.is_none() {
             self.write_nil();
         } else {
@@ -246,7 +246,7 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_nullable_f32(&mut self, value: Option<f32>) {
+    fn write_nullable_f32(&mut self, value: &Option<f32>) {
         if value.is_none() {
             self.write_nil();
         } else {
@@ -254,7 +254,7 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_nullable_f64(&mut self, value: Option<f64>) {
+    fn write_nullable_f64(&mut self, value: &Option<f64>) {
         if value.is_none() {
             self.write_nil();
         } else {
@@ -262,52 +262,52 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_nullable_string(&mut self, value: Option<String>) {
+    fn write_nullable_string(&mut self, value: &Option<String>) {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_string(value.unwrap_or_default());
+            self.write_string(value.as_ref().unwrap());
         }
     }
 
-    fn write_nullable_bytes(&mut self, value: Option<Vec<u8>>) {
+    fn write_nullable_bytes(&mut self, value: &Option<Vec<u8>>) {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_bytes(value.unwrap_or_default());
+            self.write_bytes(value.as_ref().unwrap());
         }
     }
 
-    fn write_nullable_bigint(&mut self, value: Option<BigInt>) {
+    fn write_nullable_bigint(&mut self, value: &Option<BigInt>) {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_bigint(value.unwrap_or_default());
+            self.write_bigint(value.as_ref().unwrap());
         }
     }
 
     fn write_nullable_array<T: Clone>(
         &mut self,
-        a: Option<Vec<T>>,
-        arr_fn: impl FnMut(&mut Self, T),
+        a: &Option<Vec<T>>,
+        arr_fn: impl FnMut(&mut Self, &T),
     ) {
         if a.is_none() {
             self.write_nil();
         } else {
-            self.write_array(a.unwrap_or_default().as_slice(), arr_fn);
+            self.write_array(a.as_ref().unwrap(), arr_fn);
         }
     }
 
     fn write_nullable_map<K: Clone + Eq + Hash, V: Clone>(
         &mut self,
-        map: Option<HashMap<K, V>>,
-        key_fn: impl FnMut(&mut Self, K),
-        val_fn: impl FnMut(&mut Self, V),
+        map: &Option<HashMap<K, V>>,
+        key_fn: impl FnMut(&mut Self, &K),
+        val_fn: impl FnMut(&mut Self, &V),
     ) {
         if map.is_none() {
             self.write_nil();
         } else {
-            self.write_map(map.unwrap_or_default(), key_fn, val_fn);
+            self.write_map(map.as_ref().unwrap(), key_fn, val_fn);
         }
     }
 
