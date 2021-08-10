@@ -26,6 +26,6 @@ impl AnotherType {
     }
 
     pub fn read<R: Read>(reader: &mut R) -> AnotherType {
-        read_another_type(reader)
+        read_another_type(reader).expect("Failed to read AnotherType")
     }
 }

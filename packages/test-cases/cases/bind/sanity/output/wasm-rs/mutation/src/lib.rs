@@ -26,9 +26,9 @@ pub use mutation::{
 
 /* TEMPORARY */
 pub fn object_method(_input: InputObjectMethod) -> Option<AnotherType> {
-    todo!()
+    unimplemented!()
 }
 
 pub fn mutation_method(_input: InputMutationMethod) -> i32 {
-    todo!()
+    unimplemented!()
 }

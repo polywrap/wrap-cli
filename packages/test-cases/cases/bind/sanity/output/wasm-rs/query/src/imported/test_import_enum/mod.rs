@@ -8,28 +8,14 @@ pub enum TestImportEnum {
     _MAX_,
 }
 
-impl TryFrom<i32> for TestImportEnum {
-    type Error = &'static str;
-
-    fn try_from(v: i32) -> Result<TestImportEnum, Self::Error> {
-        match v {
-            x if x == TestImportEnum::STRING as i32 => Ok(TestImportEnum::STRING),
-            x if x == TestImportEnum::BYTES as i32 => Ok(TestImportEnum::BYTES),
-            x if x == TestImportEnum::_MAX_ as i32 => Ok(TestImportEnum::_MAX_),
-            _ => Err("Error converting TestImportEnum to i32"),
-        }
-    }
-}
-
 pub fn sanitize_test_import_enum_value(value: i32) -> Result<(), String> {
     let max_as_i32 = TestImportEnum::_MAX_ as i32;
     let valid = value >= 0 && value < max_as_i32;
     if !valid {
-        let custom_error = format!(
+        return Err(format!(
             "Invalid value for enum 'TestImportEnum': {}",
             value.to_string()
-        );
-        return Err(custom_error);
+        ));
     }
     Ok(())
 }
@@ -41,8 +27,7 @@ pub fn get_test_import_enum_value(key: &str) -> Result<TestImportEnum, String> {
     if key == "BYTES" {
         return Ok(TestImportEnum::BYTES);
     }
-    let custom_error = format!("Invalid key for enum 'TestImportEnum': {}", key);
-    Err(custom_error)
+    Err(format!("Invalid key for enum 'TestImportEnum': {}", key))
 }
 
 pub fn get_test_import_enum_key(value: TestImportEnum) -> String {
@@ -59,5 +44,18 @@ pub fn get_test_import_enum_key(value: TestImportEnum) -> String {
         };
     } else {
         format!("")
+    }
+}
+
+impl TryFrom<i32> for TestImportEnum {
+    type Error = &'static str;
+
+    fn try_from(v: i32) -> Result<TestImportEnum, Self::Error> {
+        match v {
+            x if x == TestImportEnum::STRING as i32 => Ok(TestImportEnum::STRING),
+            x if x == TestImportEnum::BYTES as i32 => Ok(TestImportEnum::BYTES),
+            x if x == TestImportEnum::_MAX_ as i32 => Ok(TestImportEnum::_MAX_),
+            _ => Err("Error converting TestImportEnum to i32"),
+        }
     }
 }

@@ -25,9 +25,9 @@ pub use query::{
 
 /* TEMPORARY */
 pub fn object_method(_input: InputObjectMethod) -> Option<AnotherType> {
-    todo!()
+    unimplemented!()
 }
 
 pub fn query_method(_input: InputQueryMethod) -> i32 {
-    todo!()
+    unimplemented!()
 }

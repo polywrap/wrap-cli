@@ -11,7 +11,7 @@ pub fn serialize_test_import_another_object(input: &TestImportAnotherObject) -> 
     let mut encoder_context = Context::new();
     encoder_context.description =
         "Serializing (encoding) imported object-type: TestImportAnotherObject".to_string();
-    let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
+    let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_test_import_another_object(input, &mut encoder);
     buffer
 }
@@ -19,8 +19,8 @@ pub fn serialize_test_import_another_object(input: &TestImportAnotherObject) -> 
 pub fn write_test_import_another_object<W: Write>(input: &TestImportAnotherObject, writer: &mut W) {
     writer.write_map_length(1);
     writer.context().push("prop", "String", "writing property");
-    writer.write_string("prop".to_string());
-    writer.write_string(input.prop.clone());
+    writer.write_string("prop");
+    writer.write_string(&input.prop);
     writer
         .context()
         .pop()

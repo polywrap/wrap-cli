@@ -9,7 +9,7 @@ pub fn serialize_another_type(input: &AnotherType) -> Vec<u8> {
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) object-type: AnotherType".to_string();
-    let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
+    let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_another_type(input, &mut encoder);
     buffer
 }
@@ -19,8 +19,8 @@ pub fn write_another_type<W: Write>(input: &AnotherType, writer: &mut W) {
     writer
         .context()
         .push("prop", "Option<String>", "writing property");
-    writer.write_string("prop".to_string());
-    writer.write_nullable_string(input.prop.clone());
+    writer.write_string("prop");
+    writer.write_nullable_string(&input.prop);
     writer
         .context()
         .pop()
@@ -28,7 +28,7 @@ pub fn write_another_type<W: Write>(input: &AnotherType, writer: &mut W) {
     writer
         .context()
         .push("circular", "Box<Option<CustomType>>", "writing property");
-    writer.write_string("circular".to_string());
+    writer.write_string("circular");
     if input.circular.is_some() {
         CustomType::write(input.circular.as_ref().as_ref().unwrap(), writer);
     } else {
@@ -44,10 +44,10 @@ pub fn deserialize_another_type(input: &[u8]) -> AnotherType {
     let mut context = Context::new();
     context.description = "Deserializing object-type AnotherType".to_string();
     let mut reader = ReadDecoder::new(input, context);
-    read_another_type(&mut reader)
+    read_another_type(&mut reader).expect("Failed to deserialize AnotherType")
 }
 
-pub fn read_another_type<R: Read>(reader: &mut R) -> AnotherType {
+pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, String> {
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
     let mut prop: Option<String> = None;
     let mut circular: Box<Option<CustomType>> = Box::new(None);
@@ -92,5 +92,5 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> AnotherType {
             }
         }
     }
-    AnotherType { prop, circular }
+    Ok(AnotherType { prop, circular })
 }
