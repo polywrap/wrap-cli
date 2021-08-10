@@ -1,7 +1,7 @@
 import { SHA3_Query } from "./mutation/w3/imported/SHA3_Query";
 import { UTS46_Query } from "./mutation/w3/imported/UTS46_Query";
 
-export function namehash (inputName: string): string {
+export function namehash(inputName: string): string {
   let node = new Uint8Array(32);
   node.fill(0);
 
