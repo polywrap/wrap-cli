@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { W3Exports } from "./types";
 import { createImports } from "./imports";
-import { AsyncWasmInstance } from "@web3api/asyncify-js";
 
 import {
   InvokeApiOptions,
@@ -15,6 +14,7 @@ import {
 } from "@web3api/core-js";
 import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
+import { AsyncWasmInstance } from "@web3api/asyncify-js";
 
 type InvokeResult =
   | { type: "InvokeResult"; invokeResult: ArrayBuffer }
