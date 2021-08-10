@@ -16,7 +16,7 @@
     "reset": "yarn clean && yarn && yarn build",
     "clean": "npx rimraf ./**/node_modules ./**/build ./**/coverage ./**/.w3",
     "build": "lerna run build --no-private --ignore @web3api/cli* --ignore @web3api/react && lerna run build --scope @web3api/client-js --scope @web3api/react && lerna run build --scope @web3api/cli",
-    "lint": "lerna run lint --scope @web3api/uts46-plugin-js && lerna run lint --ignore @web3api/uts46-plugin-js",
+    "lint": "lerna run lint --ignore @web3api/uts46-plugin-js",
     "lint:fix": "lerna run lint -- --fix",
     "lint:ci": "yarn lint",
     "test": "lerna run test --no-private --ignore @web3api/client-js && lerna run test --scope @web3api/client-js",
