@@ -1,0 +1,10 @@
+mutation {
+  setContentHash(
+    domain: $domain
+    cid: $cid
+    resolverAddress: $resolverAddress
+    connection: {
+      networkNameOrChainId: $network
+    }
+  )
+}

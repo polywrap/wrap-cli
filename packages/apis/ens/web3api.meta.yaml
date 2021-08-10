@@ -1,0 +1,9 @@
+name: ENS Domains
+subtext: Wrapper for ENS domains
+description: Protocol that allows you to attach your address to a human readable string
+icon: ./meta/imgs/logo.png
+queries:
+  - name: Set Resolver
+    query: ./meta/queries/setResolver.graphql
+  - name: Get Resolver
+    query: ./meta/queries/getResolver.graphql
