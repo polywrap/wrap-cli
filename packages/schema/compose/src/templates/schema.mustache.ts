@@ -1,16 +1,28 @@
 const template = `
 {{#typeInfo}}
-{{#queryTypes}}
-type {{type}} {{#imports.length}}@imports(
+{{#queryTypes}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}}{{#imports.length}} @imports(
   types: [
     {{#imports}}
     "{{type}}"{{^last}},{{/last}}
     {{/imports}}
   ]
-) {{/imports.length}}{
-  {{#methods}}
+){{/imports.length}} {
+  {{#methods}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
   {{name}}{{#arguments.length}}(
-    {{#arguments}}
+    {{#arguments}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
     {{name}}: {{toGraphQLType}}
     {{/arguments}}
   ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}
@@ -21,15 +33,27 @@ type {{type}} {{#imports.length}}@imports(
 }
 
 {{/queryTypes}}
-{{#objectTypes}}
-type {{type}} {
-  {{#properties}}
+{{#objectTypes}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}} {
+  {{#properties}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
   {{name}}: {{toGraphQLType}}
   {{/properties}}
 }
 
 {{/objectTypes}}
-{{#enumTypes}}
+{{#enumTypes}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
 enum {{type}} {
   {{#constants}}
   {{.}}
@@ -39,15 +63,27 @@ enum {{type}} {
 {{/enumTypes}}
 ### Imported Queries START ###
 
-{{#importedQueryTypes}}
-type {{type}} @imported(
+{{#importedQueryTypes}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}} @imported(
   uri: "{{uri}}",
   namespace: "{{namespace}}",
   nativeType: "{{nativeType}}"
 ) {
-  {{#methods}}
+  {{#methods}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
   {{name}}(
-    {{#arguments}}
+    {{#arguments}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
     {{name}}: {{toGraphQLType}}
     {{/arguments}}
   ): {{#return}}{{toGraphQLType}}{{/return}}
@@ -62,20 +98,32 @@ type {{type}} @imported(
 
 ### Imported Objects START ###
 
-{{#importedObjectTypes}}
-type {{type}} @imported(
+{{#importedObjectTypes}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}} @imported(
   uri: "{{uri}}",
   namespace: "{{namespace}}",
   nativeType: "{{nativeType}}"
 ) {
-  {{#properties}}
+  {{#properties}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
   {{name}}: {{toGraphQLType}}
   {{/properties}}
 }
 
 {{/importedObjectTypes}}
 
-{{#importedEnumTypes}}
+{{#importedEnumTypes}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
 enum {{type}} @imported(
   namespace: "{{namespace}}",
   uri: "{{uri}}",

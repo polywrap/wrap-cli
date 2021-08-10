@@ -1,6 +1,6 @@
 [
   {
-    "api": "ens/console.eth",
+    "api": "ens/testnet/console.eth",
     "constants": "./constants.json"
   },
   {

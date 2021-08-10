@@ -2,6 +2,7 @@ import {
   TypeInfo,
   ObjectDefinition,
   createObjectDefinition,
+  createInterfaceImplementedDefinition,
 } from "../typeInfo";
 import {
   extractFieldDefinition,
@@ -9,24 +10,18 @@ import {
   extractNamedType,
   State,
 } from "./object-types-utils";
-import { Blackboard } from "./Blackboard";
 
 import {
-  DocumentNode,
   ObjectTypeDefinitionNode,
   NonNullTypeNode,
   NamedTypeNode,
   ListTypeNode,
   FieldDefinitionNode,
-  visit,
   DirectiveNode,
+  ASTVisitor,
 } from "graphql";
 
-const visitorEnter = (
-  objectTypes: ObjectDefinition[],
-  state: State,
-  blackboard: Blackboard
-) => ({
+const visitorEnter = (objectTypes: ObjectDefinition[], state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     // Skip non-custom types
     if (node.name.value === "Query" || node.name.value === "Mutation") {
@@ -44,7 +39,13 @@ const visitorEnter = (
     }
 
     // Create a new TypeDefinition
-    const type = createObjectDefinition({ type: node.name.value });
+    const type = createObjectDefinition({
+      type: node.name.value,
+      interfaces: node.interfaces?.map((x) =>
+        createInterfaceImplementedDefinition({ type: x.name.value })
+      ),
+      comment: node.description?.value,
+    });
     objectTypes.push(type);
     state.currentType = type;
   },
@@ -52,7 +53,7 @@ const visitorEnter = (
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    extractNamedType(node, state, blackboard);
+    extractNamedType(node, state);
   },
   ListType: (_node: ListTypeNode) => {
     extractListType(state);
@@ -74,15 +75,11 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export function extractObjectTypes(
-  astNode: DocumentNode,
-  typeInfo: TypeInfo,
-  blackboard: Blackboard
-): void {
+export const getObjectTypesVisitor = (typeInfo: TypeInfo): ASTVisitor => {
   const state: State = {};
 
-  visit(astNode, {
-    enter: visitorEnter(typeInfo.objectTypes, state, blackboard),
+  return {
+    enter: visitorEnter(typeInfo.objectTypes, state),
     leave: visitorLeave(state),
-  });
-}
+  };
+};

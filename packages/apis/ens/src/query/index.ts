@@ -16,44 +16,44 @@ import {
 export function getResolver(input: Input_getResolver): string {
   const domain = namehash(input.domain);
 
-  const resolverAddress = Ethereum_Query.callView({
+  const resolverAddress = Ethereum_Query.callContractView({
     address: input.registryAddress,
     method: "function resolver(bytes32 node) external view returns (address)",
     args: [domain],
-    connection: input.connection
+    connection: input.connection,
   });
 
   return resolverAddress;
 }
 
 export function getOwner(input: Input_getOwner): string {
-  const owner = Ethereum_Query.callView({
+  const owner = Ethereum_Query.callContractView({
     address: input.registryAddress,
     method: "function owner(bytes32 node) external view returns (address)",
     args: [namehash(input.domain)],
-    connection: input.connection
+    connection: input.connection,
   });
 
   return owner;
 }
 
 export function getAddress(input: Input_getAddress): string {
-  const address = Ethereum_Query.callView({
+  const address = Ethereum_Query.callContractView({
     address: input.resolverAddress,
     method: "function addr(bytes32 node) external view returns (address)",
     args: [namehash(input.domain)],
-    connection: input.connection
+    connection: input.connection,
   });
 
   return address;
 }
 
 export function getContentHash(input: Input_getContentHash): string {
-  const hash = Ethereum_Query.callView({
+  const hash = Ethereum_Query.callContractView({
     address: input.resolverAddress,
     method: "function contenthash(bytes32 node) external view returns (bytes)",
     args: [namehash(input.domain)],
-    connection: input.connection
+    connection: input.connection,
   });
 
   return hash;
@@ -65,13 +65,14 @@ export function getAddressFromDomain(
   const resolverAddress = getResolver({
     registryAddress: input.registryAddress,
     domain: input.domain,
+    connection: input.connection,
   });
 
-  const address = Ethereum_Query.callView({
+  const address = Ethereum_Query.callContractView({
     address: resolverAddress,
     method: "function addr(bytes32 node) external view returns (address)",
     args: [namehash(input.domain)],
-    connection: input.connection
+    connection: input.connection,
   });
 
   return address;
@@ -83,13 +84,14 @@ export function getContentHashFromDomain(
   const resolverAddress = getResolver({
     registryAddress: input.registryAddress,
     domain: input.domain,
+    connection: input.connection,
   });
 
-  const hash = Ethereum_Query.callView({
+  const hash = Ethereum_Query.callContractView({
     address: resolverAddress,
     method: "function contenthash(bytes32 node) external view returns (bytes)",
     args: [namehash(input.domain)],
-    connection: input.connection
+    connection: input.connection,
   });
 
   return hash;
@@ -98,12 +100,12 @@ export function getContentHashFromDomain(
 export function getExpiryTimes(input: Input_getExpiryTimes): string {
   const label = input.domain.split(".")[0];
 
-  const expiryTime = Ethereum_Query.callView({
+  const expiryTime = Ethereum_Query.callContractView({
     address: input.registrarAddress,
     method:
       "function expiryTimes(bytes32 label) external view returns (uint256)",
     args: [keccak256(label)],
-    connection: input.connection
+    connection: input.connection,
   });
 
   return expiryTime;
@@ -112,11 +114,11 @@ export function getExpiryTimes(input: Input_getExpiryTimes): string {
 export function getReverseResolver(input: Input_getReverseResolver): string {
   const address = namehash(input.address.substr(2) + ".addr.reverse");
 
-  const resolverAddress = Ethereum_Query.callView({
+  const resolverAddress = Ethereum_Query.callContractView({
     address: input.registryAddress,
     method: "function resolver(bytes32 node) external view returns (address)",
     args: [address],
-    connection: input.connection
+    connection: input.connection,
   });
 
   return resolverAddress;
@@ -127,14 +129,15 @@ export function getNameFromAddress(input: Input_getNameFromAddress): string {
 
   const resolverAddress = getReverseResolver({
     registryAddress: input.registryAddress,
-    address: input.address
-  })
+    address: input.address,
+    connection: input.connection,
+  });
 
-  const name = Ethereum_Query.callView({
+  const name = Ethereum_Query.callContractView({
     address: resolverAddress,
     method: "function name(bytes32 node) external view returns (string)",
     args: [address],
-    connection: input.connection
+    connection: input.connection,
   });
 
   return name;
@@ -145,11 +148,11 @@ export function getNameFromReverseResolver(
 ): string {
   const address = namehash(input.address.substr(2) + ".addr.reverse");
 
-  const name = Ethereum_Query.callView({
+  const name = Ethereum_Query.callContractView({
     address: input.resolverAddress,
     method: "function name(bytes32 node) external view returns (string)",
     args: [address],
-    connection: input.connection
+    connection: input.connection,
   });
 
   return name;

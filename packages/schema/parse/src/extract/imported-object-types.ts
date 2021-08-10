@@ -2,6 +2,7 @@ import {
   TypeInfo,
   ImportedObjectDefinition,
   createImportedObjectDefinition,
+  createInterfaceImplementedDefinition,
 } from "../typeInfo";
 import {
   extractFieldDefinition,
@@ -10,22 +11,19 @@ import {
   State,
 } from "./object-types-utils";
 import { extractImportedDefinition } from "./imported-types-utils";
-import { Blackboard } from "./Blackboard";
 
 import {
-  DocumentNode,
   ObjectTypeDefinitionNode,
   NonNullTypeNode,
   NamedTypeNode,
   ListTypeNode,
   FieldDefinitionNode,
-  visit,
+  ASTVisitor,
 } from "graphql";
 
 const visitorEnter = (
   importedObjectTypes: ImportedObjectDefinition[],
-  state: State,
-  blackboard: Blackboard
+  state: State
 ) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const imported = extractImportedDefinition(node);
@@ -39,6 +37,10 @@ const visitorEnter = (
       uri: imported.uri,
       namespace: imported.namespace,
       nativeType: imported.nativeType,
+      interfaces: node.interfaces?.map((x) =>
+        createInterfaceImplementedDefinition({ type: x.name.value })
+      ),
+      comment: node.description?.value,
     });
     importedObjectTypes.push(importedType);
     state.currentType = importedType;
@@ -47,7 +49,7 @@ const visitorEnter = (
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    extractNamedType(node, state, blackboard);
+    extractNamedType(node, state);
   },
   ListType: (_node: ListTypeNode) => {
     extractListType(state);
@@ -69,15 +71,13 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export function extractImportedObjectTypes(
-  astNode: DocumentNode,
-  typeInfo: TypeInfo,
-  blackboard: Blackboard
-): void {
+export const getImportedObjectTypesVisitor = (
+  typeInfo: TypeInfo
+): ASTVisitor => {
   const state: State = {};
 
-  visit(astNode, {
-    enter: visitorEnter(typeInfo.importedObjectTypes, state, blackboard),
+  return {
+    enter: visitorEnter(typeInfo.importedObjectTypes, state),
     leave: visitorLeave(state),
-  });
-}
+  };
+};

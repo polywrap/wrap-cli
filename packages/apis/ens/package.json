@@ -2,7 +2,7 @@
   "name": "ens-web3api",
   "description": "ENS Web3API",
   "private": true,
-  "version": "0.0.1-prealpha.21",
+  "version": "0.0.1-prealpha.30",
   "scripts": {
     "build": "npx w3 build",
     "test:env:up": "npx w3 test-env up",
@@ -13,9 +13,9 @@
     "test": "npx w3 query ./recipes/e2e.json --redirects ./redirects.js"
   },
   "devDependencies": {
-    "@web3api/cli": "0.0.1-prealpha.21",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.21",
-    "@web3api/wasm-as": "0.0.1-prealpha.21",
+    "@web3api/cli": "0.0.1-prealpha.30",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.30",
+    "@web3api/wasm-as": "0.0.1-prealpha.30",
     "ethers": "5.0.8",
     "js-yaml": "3.14.0",
     "dotenv": "8.2.0",

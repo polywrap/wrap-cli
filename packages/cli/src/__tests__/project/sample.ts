@@ -195,7 +195,9 @@ type Ethereum_TxReceipt @imported(
   blockHash: String!
   confirmations: UInt32!
   cumulativeGasUsed: BigInt!
+  effectiveGasPrice: BigInt!
   byzantium: Boolean!
+  type: UInt32!
   status: UInt32
 }
 
@@ -370,7 +372,7 @@ type Ethereum_TxResponse @imported(
   from: String!
   nonce: UInt32!
   gasLimit: BigInt!
-  gasPrice: BigInt!
+  gasPrice: BigInt
   data: String!
   value: BigInt!
   chainId: UInt32!
@@ -413,7 +415,9 @@ type Ethereum_TxReceipt @imported(
   blockHash: String!
   confirmations: UInt32!
   cumulativeGasUsed: BigInt!
+  effectiveGasPrice: BigInt!
   byzantium: Boolean!
+  type: UInt32!
   status: UInt32
 }
 
@@ -729,7 +733,9 @@ type Ethereum_TxReceipt @imported(
   blockHash: String!
   confirmations: UInt32!
   cumulativeGasUsed: BigInt!
+  effectiveGasPrice: BigInt!
   byzantium: Boolean!
+  type: UInt32!
   status: UInt32
 }
 
@@ -769,7 +775,7 @@ type Ethereum_TxResponse @imported(
   from: String!
   nonce: UInt32!
   gasLimit: BigInt!
-  gasPrice: BigInt!
+  gasPrice: BigInt
   data: String!
   value: BigInt!
   chainId: UInt32!

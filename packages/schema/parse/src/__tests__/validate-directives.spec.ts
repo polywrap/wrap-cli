@@ -72,7 +72,7 @@ describe("Web3API Schema Directives Validation", () => {
   it("supportedDirectives", () => {
     expect(() => parseSchema(supportedDirectivesSchema, {
       validators: [
-        directiveValidators.supportedDirectives
+        directiveValidators.getSupportedDirectivesValidator
       ]
     })).toThrow(
       /Found the following usages of unsupported directives:\n@unknown,\n@anotherUnknown/gm
@@ -82,7 +82,7 @@ describe("Web3API Schema Directives Validation", () => {
   it("importsDirective: Query Object Only", () => {
     expect(() => parseSchema(importsDirectiveSchema1, {
       validators: [
-        directiveValidators.importsDirective
+        directiveValidators.getImportsDirectiveValidator
       ]
     })).toThrow(
       /@imports directive should only be used on QUERY or MUTATION type definitions, but it is being used on the following ObjectTypeDefinitions:\nObject/gm
@@ -92,7 +92,7 @@ describe("Web3API Schema Directives Validation", () => {
   it("importsDirective: Improper Placement", () => {
     expect(() => parseSchema(importsDirectiveSchema2, {
       validators: [
-        directiveValidators.importsDirective
+        directiveValidators.getImportsDirectiveValidator
       ]
     })).toThrow(
       /@imports directive should only be used on QUERY or MUTATION type definitions, but it is being used in the following location: definitions -> 0 -> fields -> 0 -> directives -> 0/gm
@@ -102,7 +102,7 @@ describe("Web3API Schema Directives Validation", () => {
   it("importsDirective: Incorrect Arguments", () => {
     expect(() => parseSchema(importsDirectiveSchema3, {
       validators: [
-        directiveValidators.importsDirective
+        directiveValidators.getImportsDirectiveValidator
       ]
     })).toThrow(
       /@imports directive requires argument 'types' of type \[String!\]!/
@@ -112,7 +112,7 @@ describe("Web3API Schema Directives Validation", () => {
   it("importedDirective: Incorrect Arguments", () => {
     expect(() => parseSchema(importedDirectiveSchema1, {
       validators: [
-        directiveValidators.importedDirective
+        directiveValidators.getImportedDirectiveValidator
       ]
     })).toThrow(
       /@imported directive is missing the following arguments:\n- uri/gm
@@ -122,7 +122,7 @@ describe("Web3API Schema Directives Validation", () => {
   it("importedDirective: Improper Placement", () => {
     expect(() => parseSchema(importedDirectiveSchema2, {
       validators: [
-        directiveValidators.importedDirective
+        directiveValidators.getImportedDirectiveValidator
       ]
     })).toThrow(
       /@imported directive should only be used on object or enum type definitions, but it is being used in the following location: definitions -> 0 -> fields -> 0 -> directives -> 0/gm

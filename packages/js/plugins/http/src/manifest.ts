@@ -43,6 +43,5 @@ type Mutation {
   post(url: String!, request: Request): Response
 }
 `,
-  implemented: [],
-  imported: [],
+  implements: [],
 };

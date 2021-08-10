@@ -1,6 +1,7 @@
 #import { Mutation, Connection } into Ethereum from "w3://ens/ethereum.web3api.eth"
 #import { Query } into UTS46 from "w3://ens/uts46.web3api.eth"
 #import { Query } into SHA3 from "w3://ens/sha3.web3api.eth"
+#import { TxOverrides } from "../common/schema.graphql"
 
 type Mutation {
   setResolver(
@@ -8,7 +9,8 @@ type Mutation {
     resolverAddress: String!
     registryAddress: String!
     connection: Ethereum_Connection
-  ): String!
+    txOverrides: TxOverrides
+  ): Ethereum_TxResponse!
 
   registerDomain(
     domain: String!
@@ -16,41 +18,47 @@ type Mutation {
     registryAddress: String!
     owner: String!
     connection: Ethereum_Connection
-  ): String!
+    txOverrides: TxOverrides
+  ): Ethereum_TxResponse!
 
   reverseRegisterDomain(
     domain: String!
     reverseRegistryAddress: String!
     owner: String!
     connection: Ethereum_Connection
-  ): String!
+    txOverrides: TxOverrides
+  ): Ethereum_TxResponse!
 
   setName(
     domain: String!
     reverseRegistryAddress: String!
     connection: Ethereum_Connection
-  ): String!
+    txOverrides: TxOverrides
+  ): Ethereum_TxResponse!
 
   setAddress(
     domain: String!
     address: String!
     resolverAddress: String!
     connection: Ethereum_Connection
-  ): String!
+    txOverrides: TxOverrides
+  ): Ethereum_TxResponse!
 
   setOwner(
     domain: String!
     newOwner: String!
     registryAddress: String!
     connection: Ethereum_Connection
-  ): String!
+    txOverrides: TxOverrides
+  ): Ethereum_TxResponse!
 
   setSubdomainOwner(
     subdomain: String!
     owner: String!
     registryAddress: String!
     connection: Ethereum_Connection
-  ): String!
+    txOverrides: TxOverrides
+  ): Ethereum_TxResponse!
 
   setRecord(
     domain: String!
@@ -59,7 +67,8 @@ type Mutation {
     ttl: String!
     registryAddress: String!
     connection: Ethereum_Connection
-  ): String!
+    txOverrides: TxOverrides
+  ): Ethereum_TxResponse!
 
   setSubdomainRecord(
     domain: String!
@@ -69,39 +78,45 @@ type Mutation {
     ttl: String!
     registryAddress: String!
     connection: Ethereum_Connection
-  ): String!
+    txOverrides: TxOverrides
+  ): Ethereum_TxResponse!
 
   setContentHash(
     domain: String!
     cid: String!
     resolverAddress: String!
     connection: Ethereum_Connection
-  ): String!
+    txOverrides: TxOverrides
+  ): Ethereum_TxResponse!
 
   setAddressFromDomain(
     domain: String!
     address: String!
     registryAddress: String!
     connection: Ethereum_Connection
-  ): String!
+    txOverrides: TxOverrides
+  ): Ethereum_TxResponse!
 
   setContentHashFromDomain(
     domain: String!
     cid: String!
     registryAddress: String!
     connection: Ethereum_Connection
-  ): String!
+    txOverrides: TxOverrides
+  ): Ethereum_TxResponse!
 
   deployFIFSRegistrar(
     registryAddress: String!
     tld: String!
     connection: Ethereum_Connection
-  ): String!
+    txOverrides: TxOverrides
+  ): Ethereum_TxResponse!
 
   registerSubnodeOwnerWithFIFSRegistrar(
     label: String!
     owner: String!
     fifsRegistrarAddress: String!
     connection: Ethereum_Connection
-  ): String!
+    txOverrides: TxOverrides
+  ): Ethereum_TxResponse!
 }

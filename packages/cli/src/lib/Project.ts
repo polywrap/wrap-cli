@@ -78,7 +78,7 @@ export class Project {
       name: string;
     }[] = [];
 
-    if (web3apiManifest.modules.mutation) {
+    if (web3apiManifest.modules.mutation?.module) {
       web3apiModules.push({
         dir: path
           .dirname(web3apiManifest.modules.mutation.module)
@@ -86,7 +86,7 @@ export class Project {
         name: "mutation",
       });
     }
-    if (web3apiManifest.modules.query) {
+    if (web3apiManifest.modules.query?.module) {
       web3apiModules.push({
         dir: path
           .dirname(web3apiManifest.modules.query.module)
@@ -190,6 +190,10 @@ export class Project {
     }
 
     const language = (await this.getWeb3ApiManifest()).language;
+
+    if (!language) {
+      throw Error(intlMsg.lib_project_language_not_found());
+    }
 
     const defaultPath = `${__dirname}/build-envs/${language}/web3api.build.yaml`;
 
