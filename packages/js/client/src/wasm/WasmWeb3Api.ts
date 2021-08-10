@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { W3Exports } from "./types";
 import { createImports } from "./imports";
-import { AsyncWasmInstance } from "./AsyncWasmInstance";
+import { AsyncWasmInstance } from "@web3api/asyncify-js";
 
 import {
   InvokeApiOptions,
