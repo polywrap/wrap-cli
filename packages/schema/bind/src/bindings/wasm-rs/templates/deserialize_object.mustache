@@ -1,8 +1,9 @@
 {{#required}}
-object = {{#toUpper}}{{type}}{{/toUpper}}::read(reader);
+let obj = {{#toUpper}}{{type}}{{/toUpper}}::read(reader);
 {{/required}}
 {{^required}}
+let mut opt_obj: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = None;
 if !reader.is_next_nil() {
-  opt_object = Some({{#toUpper}}{{type}}{{/toUpper}}::read(reader));
+    opt_obj = Some({{#toUpper}}{{type}}{{/toUpper}}::read(reader));
 }
 {{/required}}

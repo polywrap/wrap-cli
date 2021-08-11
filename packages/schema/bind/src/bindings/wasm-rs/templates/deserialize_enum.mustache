@@ -13,16 +13,16 @@ en = value;
 en_set = true;
 {{/required}}
 {{^required}}
-let mut value: Option<{{#toUpper}}{{type}}{{/toUpper}}> = None;
+let mut value: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = None;
 if !reader.is_next_nil() {
     if reader.is_next_string() {
         value = Some(get_{{#toLower}}{{type}}{{/toLower}}_value(&reader.read_string().unwrap_or_default())
-            .expect("Failed to get Option<{{#toUpper}}{{type}}{{/toUpper}}> value"));
+            .expect("Failed to get {{#toWasm}}{{toGraphQLType}}{{/toWasm}} value"));
     } else {
         value = Some({{#toUpper}}{{type}}{{/toUpper}}::try_from(reader.read_i32().unwrap_or_default())
-            .expect("Failed to convert i32 to Option<{{#toUpper}}{{type}}{{/toUpper}}>"));
+            .expect("Failed to convert i32 to {{#toWasm}}{{toGraphQLType}}{{/toWasm}}"));
         sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value.unwrap() as i32)
-            .expect("Failed to sanitize Option<{{#toUpper}}{{type}}{{/toUpper}}>");
+            .expect("Failed to sanitize {{#toWasm}}{{toGraphQLType}}{{/toWasm}}");
     }
 } else {
     value = None;
