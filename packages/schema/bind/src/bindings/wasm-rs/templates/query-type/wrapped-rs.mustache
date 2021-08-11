@@ -1,22 +1,16 @@
 {{#methods.length}}
 use crate::{
-    {{#methods}}
-    deserialize_{{#toLower}}{{name}}{{/toLower}}_args,
-    serialize_{{#toLower}}{{name}}{{/toLower}}_result,
-    {{/methods}}
-};
-use crate::{
-    {{#methods}}
-    {{#toLower}}{{name}}{{/toLower}},
+    deserialize_{{#toLower}}{{name}}{{/toLower}}_args, 
+    {{#toLower}}{{name}}{{/toLower}}, 
+    serialize_{{#toLower}}{{name}}{{/toLower}}_result, 
     Input{{#toUpper}}{{name}}{{/toUpper}},
-    {{/methods}}
 };
 {{/methods.length}}
 
 {{#methods}}
-pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(args_buf: &[u8]) -> Vec<u8> {
+pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(input: &[u8]) -> Vec<u8> {
     {{#arguments.length}}
-    let args = deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args_buf).expect("Failed to deserialize buffer");
+    let args = deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input).expect("Failed to deserialize buffer");
     {{/arguments.length}}
     let result = {{#toLower}}{{name}}{{/toLower}}(Input{{#toUpper}}{{name}}{{/toUpper}} {{#arguments.length}}{
         {{#arguments}}

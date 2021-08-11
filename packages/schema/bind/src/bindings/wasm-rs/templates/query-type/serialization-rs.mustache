@@ -4,7 +4,7 @@ use crate::{
     sanitize_{{#toLower}}{{type}}{{/toLower}}_value, 
     {{#toUpper}}{{type}}{{/toUpper}},
 };
-use crate::{
+use polywrap_wasm_rs::{
     Context, 
     Read, 
     ReadDecoder, 
@@ -31,11 +31,11 @@ pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
     {{/arguments}}
 }
 
-pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args_buf: &[u8]) -> Result<Input{{#toUpper}}{{name}}{{/toUpper}}, String> {
+pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result<Input{{#toUpper}}{{name}}{{/toUpper}}, String> {
     let mut context = Context::new();
     context.description = "Deserializing query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     {{#arguments.length}}
-    let mut reader = ReadDecoder::new(args_buf, context);
+    let mut reader = ReadDecoder::new(input, context);
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
     {{#arguments}}
@@ -59,12 +59,10 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args_buf: &[u8]) -> Res
         num_of_fields -= 1;
         let field = reader.read_string().unwrap_or_default();
 
-        {{#arguments}}
         match field.as_str() {
+            {{^arguments}}
             "{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}" => {
-                reader
-                    .context()
-                    .push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property");
+                reader.context().push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property");
                 {{#scalar}}
                 {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}().unwrap_or_default();
                 {{/scalar}}
@@ -82,82 +80,82 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args_buf: &[u8]) -> Res
                 {{#required}}
                 {{#toLower}}{{name}}{{/toLower}}_set = true;
                 {{/required}}
-                reader
-                    .context()
-                    .pop()
-                    .expect("Failed to pop {{#toWasm}}{{toGraphQLType}}{{/toWasm}} from Context");
+                reader.context().pop().expect("Failed to pop {{#toWasm}}{{toGraphQLType}}{{/toWasm}} from Context");
             }
+            {{/arguments}}
+            {{#arguments}}
+            {{#required}}
+            _ => {
+                reader.context().push(&field, "unknown", "searching for property type");
+                reader.context().pop().expect("Failed to pop unknown from Context");
+            }
+            {{/required}}
+            {{/arguments}}
         }
-        {{/arguments}}
     }
-
     {{#arguments}}
     {{#required}}
-    {{^object}}
+    {{#object}}
     if !{{#toLower}}{{name}}{{/toLower}}_set {
     {{/object}}
-      let custom_error = reader.context().print_with_context("Missing required argument: '{{#toLower}}{{name}}{{/toLower}}: {{#toUpper}}{{type}}{{/toUpper}}'");
-      return Err(custom_error);
+        let custom_error = reader.context().print_with_context("Missing required property: '{{#toLower}}{{name}}{{/toLower}}: {{#toUpper}}{{type}}{{/toUpper}}'");
+        return Err(custom_error);
     }
     {{/required}}
     {{/arguments}}
-    {{/arguments.length}}
 
-    Ok(Input{{#toUpper}}{{name}}{{/toUpper}} {
+    Ok({{#toUpper}}{{type}}{{/toUpper}} {
         {{#arguments}}
         {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}},
         {{/arguments}}
     })
 }
 
-pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) -> Vec<u8> {
+pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(input: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
-    write_{{#toLower}}{{name}}{{/toLower}}_result(result, &mut sizer);
+    write_{{#toLower}}{{name}}{{/toLower}}_result(input, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
-    let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
-    write_{{#toLower}}{{name}}{{/toLower}}_result(result, &mut encoder);
+    let mut encoder = WriteEncoder::new(&buffer, encoder_context);
+    write_{{#toLower}}{{name}}{{/toLower}}_result(input, &mut encoder);
     buffer
 }
 
-pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, writer: &mut W) {
-    writer
-        .context()
-        .push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
+pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(input: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, writer: &mut W) {
+    {{#return}}
+    writer.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
     {{#scalar}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(result);
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(input);
     {{/scalar}}
     {{#array}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(result.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_slice(), |writer: &mut W, {{#toWasm}}{{toGraphQLType}}{{/toWasm}}| {
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}, |writer: &mut W, input| {
         {{> serialize_array}}
     });
     {{/array}}
     {{#enum}}
     {{#required}}
-    writer.write_i32(result.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}} as i32);
+    writer.write_i32(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}} as i32);
     {{/required}}
     {{^required}}
-    writer.write_nullable_i32(Some(result.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.unwrap() as i32));
+    writer.write_nullable_i32(&Some(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.unwrap() as i32));
     {{/required}}
     {{/enum}}
     {{#object}}
     {{#required}}
-    {{#toUpper}}{{type}}{{/toUpper}}::write(&result.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}, writer);
+    {{#toUpper}}{{type}}{{/toUpper}}::write(&input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}, writer);
     {{/required}}
     {{^required}}
-    if result.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.is_some() {
-        {{#toUpper}}{{type}}{{/toUpper}}::write(result.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_ref().unwrap(), writer);
+    if input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.is_some() {
+        {{#toUpper}}{{type}}{{/toUpper}}::write(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_ref().as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }
     {{/required}}
     {{/object}}
-    writer
-        .context()
-        .pop()
-        .expect("Failed to pop {{#toWasm}}{{toGraphQLType}}{{/toWasm}} from Context");
+    writer.context().pop().expect("Failed to pop {{#toWasm}}{{toGraphQLType}}{{/toWasm}} from Context");
+    {{/return}}
 }
 {{/methods}}
