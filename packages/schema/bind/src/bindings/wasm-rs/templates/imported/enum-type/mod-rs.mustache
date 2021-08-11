@@ -21,6 +21,37 @@ pub enum {{#toUpper}}{{type}}{{/toUpper}} {
     _MAX_,
 }
 
+pub fn sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value: i32) -> Result<(), String> {
+    let max_as_i32 = {{#toUpper}}{{type}}{{/toUpper}}::_MAX_ as i32;
+    let valid = value >= 0 && value < max_as_i32;
+    if !valid {
+        return Err(format!("Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", value.to_string()));
+    }
+    Ok(())
+}
+
+pub fn get_{{#toLower}}{{type}}{{/toLower}}_value(key: &str) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, String> {
+    {{#constants}}
+    if key == "{{.}}" {
+        return Ok({{#toUpper}}{{type}}{{/toUpper}}::{{.}});
+    }
+    {{/constants}}
+    Err(format!("Invalid key for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", key))
+}
+
+pub fn get_{{#toLower}}{{type}}{{/toLower}}_key(value: {{#toUpper}}{{type}}{{/toUpper}}) -> String {
+    if sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value as i32).is_ok() {
+        return match value {
+            {{#constants}}
+            {{#toUpper}}{{type}}{{/toUpper}}::{{.}} => "{{.}}".to_string(),
+            {{/constants}}
+            _ => {format!("Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", (value as i32).to_string())}
+        };
+    } else {
+        format!("")
+    }
+}
+
 impl TryFrom<i32> for {{#toUpper}}{{type}}{{/toUpper}} {
     type Error = &'static str;
 
@@ -32,44 +63,6 @@ impl TryFrom<i32> for {{#toUpper}}{{type}}{{/toUpper}} {
             x if x == {{#toUpper}}{{type}}{{/toUpper}}::_MAX_ as i32 => Ok({{#toUpper}}{{type}}{{/toUpper}}::_MAX_),
             _ => Err("Error converting {{#toUpper}}{{type}}{{/toUpper}} to i32"),
         }
-    }
-}
-
-pub fn sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value: i32) -> Result<(), String> {
-    let max_as_i32 = {{#toUpper}}{{type}}{{/toUpper}}::_MAX_ as i32;
-    let valid = value >= 0 && value < max_as_i32;
-    if !valid {
-        let custom_error = format!("Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", value.to_string());
-        return Err(custom_error);
-    }
-    Ok(())
-}
-
-pub fn get_{{#toLower}}{{type}}{{/toLower}}_value(key: &str) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, String> {
-    {{#constants}}
-    if key == "{{.}}" {
-        return Ok({{#toUpper}}{{type}}{{/toUpper}}::{{.}});
-    }
-    {{/constants}}
-    let custom_error = format!("Invalid key for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", key);
-    Err(custom_error)
-}
-
-pub fn get_{{#toLower}}{{type}}{{/toLower}}_key(value: {{#toUpper}}{{type}}{{/toUpper}}) -> String {
-    if sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value as i32).is_ok() {
-        return match value {
-            {{#constants}}
-            {{#toUpper}}{{type}}{{/toUpper}}::{{.}} => "{{.}}".to_string(),
-            {{/constants}}
-            _ => {
-                format!(
-                    "Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}",
-                    (value as i32).to_string()
-                )
-            }
-        };
-    } else {
-        format!("")
     }
 }
 {{/__commonImport}}
