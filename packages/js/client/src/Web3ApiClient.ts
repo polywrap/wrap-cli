@@ -82,7 +82,7 @@ export class Web3ApiClient implements Client {
         this._config.interfaces.push(...defaultClientConfig.interfaces);
       }
 
-      this.requirePluginsToUseNonInterfaceUris();
+      this._requirePluginsToUseNonInterfaceUris();
 
       Tracer.setAttribute("config", this._config);
     } catch (error) {
@@ -330,7 +330,7 @@ export class Web3ApiClient implements Client {
       : getImplementationsWithoutRedirects(typedUri);
   }
 
-  private requirePluginsToUseNonInterfaceUris(): void {
+  private _requirePluginsToUseNonInterfaceUris(): void {
     const pluginUris = this.plugins().map((x) => x.uri.uri);
     const interfaceUris = this.interfaces().map((x) => x.interface.uri);
 

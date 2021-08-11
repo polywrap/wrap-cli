@@ -428,8 +428,10 @@ export class Compiler {
     const wasmSource = fs.readFileSync(
       path.join(buildDir, `${moduleName}.wasm`)
     );
+
     const mod = await WebAssembly.compile(wasmSource);
     const memory = new WebAssembly.Memory({ initial: 1 });
+
     const instance = await WebAssembly.instantiate(mod, {
       env: {
         memory,

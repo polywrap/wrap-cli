@@ -1,5 +1,5 @@
 {
-  "name": "test-case-implementation",
+  "name": "test-case-asyncify",
   "private": true,
   "dependencies": {
     "@web3api/wasm-as": "0.0.1-prealpha.30",

@@ -6,8 +6,8 @@ export class DataView {
   readonly dataStart: u32;
   readonly buffer: ArrayBuffer;
   readonly byteLength: i32;
-  private byteOffset: i32;
-  private context: Context;
+  private _byteOffset: i32;
+  private _context: Context;
 
   constructor(
     buffer: ArrayBuffer,
@@ -41,163 +41,166 @@ export class DataView {
     const dataStart = changetype<u32>(buffer);
     this.dataStart = dataStart;
     this.byteLength = byte_length;
-    this.byteOffset = byte_offset;
-    this.context = context;
+    this._byteOffset = byte_offset;
+    this._context = context;
   }
 
   getBytes(length: i32): ArrayBuffer {
-    this.checkIndexInRange("getBytes", length);
-    const result = this.buffer.slice(this.byteOffset, this.byteOffset + length);
-    this.byteOffset += length;
+    this._checkIndexInRange("getBytes", length);
+    const result = this.buffer.slice(
+      this._byteOffset,
+      this._byteOffset + length
+    );
+    this._byteOffset += length;
     return result;
   }
 
   setBytes(buf: ArrayBuffer): void {
-    this.checkIndexInRange("setBytes", buf.byteLength);
+    this._checkIndexInRange("setBytes", buf.byteLength);
     memory.copy(
-      changetype<i32>(this.dataStart) + this.byteOffset,
+      changetype<i32>(this.dataStart) + this._byteOffset,
       changetype<i32>(buf),
       buf.byteLength
     );
-    this.byteOffset += buf.byteLength;
+    this._byteOffset += buf.byteLength;
   }
 
   peekUint8(): u8 {
-    this.checkIndexInRange("peekUint8", 0);
-    return bswap(load<u8>(this.dataStart + this.byteOffset));
+    this._checkIndexInRange("peekUint8", 0);
+    return bswap(load<u8>(this.dataStart + this._byteOffset));
   }
 
   discard(length: i32): void {
-    this.checkIndexInRange("discard", length);
-    this.byteOffset += length;
+    this._checkIndexInRange("discard", length);
+    this._byteOffset += length;
   }
 
   getFloat32(): f32 {
-    this.checkIndexInRange("getFloat32", 4);
+    this._checkIndexInRange("getFloat32", 4);
     const result = reinterpret<f32>(
-      bswap(load<u32>(this.dataStart + this.byteOffset))
+      bswap(load<u32>(this.dataStart + this._byteOffset))
     );
-    this.byteOffset += 4;
+    this._byteOffset += 4;
     return result;
   }
 
   getFloat64(): f64 {
-    this.checkIndexInRange("getFloat64", 8);
+    this._checkIndexInRange("getFloat64", 8);
     const result = reinterpret<f64>(
-      bswap(load<u64>(this.dataStart + this.byteOffset))
+      bswap(load<u64>(this.dataStart + this._byteOffset))
     );
-    this.byteOffset += 8;
+    this._byteOffset += 8;
     return result;
   }
 
   getInt8(): i8 {
-    this.checkIndexInRange("getInt8", 1);
-    const result = load<i8>(this.dataStart + this.byteOffset);
-    this.byteOffset++;
+    this._checkIndexInRange("getInt8", 1);
+    const result = load<i8>(this.dataStart + this._byteOffset);
+    this._byteOffset++;
     return bswap(result);
   }
 
   getInt16(): i16 {
-    this.checkIndexInRange("getInt16", 2);
-    const result = load<i16>(this.dataStart + this.byteOffset);
-    this.byteOffset += 2;
+    this._checkIndexInRange("getInt16", 2);
+    const result = load<i16>(this.dataStart + this._byteOffset);
+    this._byteOffset += 2;
     return bswap(result);
   }
 
   getInt32(): i32 {
-    this.checkIndexInRange("getInt32", 4);
-    const result = load<i32>(this.dataStart + this.byteOffset);
-    this.byteOffset += 4;
+    this._checkIndexInRange("getInt32", 4);
+    const result = load<i32>(this.dataStart + this._byteOffset);
+    this._byteOffset += 4;
     return bswap(result);
   }
 
   getUint8(): u8 {
-    this.checkIndexInRange("getUint8", 1);
-    const result = load<u8>(this.dataStart + this.byteOffset);
-    this.byteOffset++;
+    this._checkIndexInRange("getUint8", 1);
+    const result = load<u8>(this.dataStart + this._byteOffset);
+    this._byteOffset++;
     return bswap(result);
   }
 
   getUint16(): u16 {
-    this.checkIndexInRange("getUint16", 2);
-    const result = load<u16>(this.dataStart + this.byteOffset);
-    this.byteOffset += 2;
+    this._checkIndexInRange("getUint16", 2);
+    const result = load<u16>(this.dataStart + this._byteOffset);
+    this._byteOffset += 2;
     return bswap(result);
   }
 
   getUint32(): u32 {
-    this.checkIndexInRange("getUint32", 4);
-    const result = load<u32>(this.dataStart + this.byteOffset);
-    this.byteOffset += 4;
+    this._checkIndexInRange("getUint32", 4);
+    const result = load<u32>(this.dataStart + this._byteOffset);
+    this._byteOffset += 4;
     return bswap(result);
   }
 
   setFloat32(value: f32): void {
-    this.checkIndexInRange("setFloat32", 4);
+    this._checkIndexInRange("setFloat32", 4);
     store<u32>(
-      this.dataStart + this.byteOffset,
+      this.dataStart + this._byteOffset,
       bswap(reinterpret<u32>(value))
     );
-    this.byteOffset += 4;
+    this._byteOffset += 4;
   }
 
   setFloat64(value: f64): void {
-    this.checkIndexInRange("setFloat64", 8);
+    this._checkIndexInRange("setFloat64", 8);
     store<u64>(
-      this.dataStart + this.byteOffset,
+      this.dataStart + this._byteOffset,
       bswap(reinterpret<u64>(value))
     );
-    this.byteOffset += 8;
+    this._byteOffset += 8;
   }
 
   setInt8(value: i8): void {
-    this.checkIndexInRange("setInt8", 1);
-    store<i8>(this.dataStart + this.byteOffset, bswap(value));
-    this.byteOffset++;
+    this._checkIndexInRange("setInt8", 1);
+    store<i8>(this.dataStart + this._byteOffset, bswap(value));
+    this._byteOffset++;
   }
 
   setInt16(value: i16): void {
-    this.checkIndexInRange("setInt16", 2);
-    store<i16>(this.dataStart + this.byteOffset, bswap(value));
-    this.byteOffset += 2;
+    this._checkIndexInRange("setInt16", 2);
+    store<i16>(this.dataStart + this._byteOffset, bswap(value));
+    this._byteOffset += 2;
   }
 
   setInt32(value: i32): void {
-    this.checkIndexInRange("setInt32", 4);
-    store<i32>(this.dataStart + this.byteOffset, bswap(value));
-    this.byteOffset += 4;
+    this._checkIndexInRange("setInt32", 4);
+    store<i32>(this.dataStart + this._byteOffset, bswap(value));
+    this._byteOffset += 4;
   }
 
   setUint8(value: u8): void {
-    this.checkIndexInRange("setUint8", 1);
-    store<u8>(this.dataStart + this.byteOffset, bswap(value));
-    this.byteOffset++;
+    this._checkIndexInRange("setUint8", 1);
+    store<u8>(this.dataStart + this._byteOffset, bswap(value));
+    this._byteOffset++;
   }
 
   setUint16(value: u16): void {
-    this.checkIndexInRange("setUint16", 2);
-    store<i32>(this.dataStart + this.byteOffset, bswap(value));
-    this.byteOffset += 2;
+    this._checkIndexInRange("setUint16", 2);
+    store<i32>(this.dataStart + this._byteOffset, bswap(value));
+    this._byteOffset += 2;
   }
 
   setUint32(value: u32): void {
-    this.checkIndexInRange("setUint32", 4);
-    store<u32>(this.dataStart + this.byteOffset, bswap(value));
-    this.byteOffset += 4;
+    this._checkIndexInRange("setUint32", 4);
+    store<u32>(this.dataStart + this._byteOffset, bswap(value));
+    this._byteOffset += 4;
   }
 
   // Non-standard additions that make sense in WebAssembly, but won't work in JS:
   getInt64(): i64 {
-    this.checkIndexInRange("getInt64", 8);
-    const result = load<i64>(this.dataStart + this.byteOffset);
-    this.byteOffset += 8;
+    this._checkIndexInRange("getInt64", 8);
+    const result = load<i64>(this.dataStart + this._byteOffset);
+    this._byteOffset += 8;
     return bswap(result);
   }
 
   getUint64(): u64 {
-    this.checkIndexInRange("getUint64", 8);
-    const result = load<u64>(this.dataStart + this.byteOffset);
-    this.byteOffset += 8;
+    this._checkIndexInRange("getUint64", 8);
+    const result = load<u64>(this.dataStart + this._byteOffset);
+    this._byteOffset += 8;
     return bswap(result);
   }
 
@@ -205,13 +208,13 @@ export class DataView {
     return "[object DataView]";
   }
 
-  private checkIndexInRange(method: string, length: i32): void {
-    if (this.byteOffset + length > this.byteLength) {
+  private _checkIndexInRange(method: string, length: i32): void {
+    if (this._byteOffset + length > this.byteLength) {
       throwIndexOutOfRange(
-        this.context,
+        this._context,
         method,
         length,
-        this.byteOffset,
+        this._byteOffset,
         this.byteLength
       );
     }
