@@ -124,6 +124,8 @@ export class CodeGenerator {
       typeFormatFilter: this.typeFormatFilter,
       isMutation: this.isMutation,
       isQuery: this.isQuery,
+      hashtagPrefix: this.hashtagPrefix,
+      markdownItalics: this.markdownItalics,
     });
 
     if (this._config.isDoc) {
@@ -181,6 +183,26 @@ ${content}
         return rendered.substring(firstReturn + 1);
       }
       return "";
+    };
+  }
+
+  private hashtagPrefix() {
+    return (text: string, render: (text: string) => string): string => {
+      const rendered: string = render(text);
+      if (rendered === "") {
+        return "";
+      }
+      return "# " + rendered;
+    };
+  }
+
+  private markdownItalics() {
+    return (text: string, render: (text: string) => string): string => {
+      const rendered: string = render(text);
+      if (rendered === "") {
+        return "";
+      }
+      return "_" + rendered + "_";
     };
   }
 }

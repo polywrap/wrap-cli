@@ -15,6 +15,8 @@ export const standardGenerationFile =
   __dirname + "/../lib/doc-formats/standard.gen.js";
 export const jsdocGenerationFile =
   __dirname + "/../lib/doc-formats/jsdoc.gen.js";
+export const docusaurusGenerationFile =
+  __dirname + "/../lib/doc-formats/docusaurus/docusaurus.gen.js";
 export const defaultGenerationFile = standardGenerationFile;
 export const defaultManifest = ["web3api.yaml", "web3api.yml"];
 
@@ -31,6 +33,7 @@ ${chalk.bold("w3 docgen")} ${chalk.bold(`[<${genFileOp}>]`)} [${optionsStr}]
 ${intlMsg.commands_docgen_supported()}:
   ${`standard (${intlMsg.commands_docgen_default()})`}
   jsdoc
+  docusaurus
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
@@ -74,6 +77,8 @@ export default {
         ? filesystem.resolve(standardGenerationFile)
         : generationFile && generationFile.toLowerCase() === "jsdoc"
         ? filesystem.resolve(jsdocGenerationFile)
+        : generationFile && generationFile.toLowerCase() === "docusaurus"
+        ? filesystem.resolve(docusaurusGenerationFile)
         : filesystem.resolve(defaultGenerationFile);
     manifestPath = await resolveManifestPath(filesystem, manifestPath);
     outputDir =

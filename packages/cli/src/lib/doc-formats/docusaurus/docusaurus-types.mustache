@@ -1,0 +1,21 @@
+---
+id: types
+title: Types
+---
+
+## Object Types
+
+
+{{#objectTypes}}
+### {{type}}
+{{#markdownItalics}}{{comment}}{{/markdownItalics}}
+
+```graphql
+type {{type}} {
+  {{#properties}}
+  {{name}}: {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}}{{#required}}!{{/required}} {{#hashtagPrefix}}{{comment}}{{/hashtagPrefix}}
+  {{/properties}}
+}
+```
+
+{{/objectTypes}}
