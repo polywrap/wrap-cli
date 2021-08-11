@@ -49,6 +49,11 @@ const getModule = async (name: string) => {
 describe("AsyncWasmInstance", () => {
   beforeAll(async () => {
     const buildDir = path.join(__dirname, "cases", "build");
+
+    if (!fs.existsSync(buildDir)) {
+      fs.mkdirSync(buildDir);
+    }
+
     const files = fs.readdirSync(buildDir);
 
     for (const file of files) {
