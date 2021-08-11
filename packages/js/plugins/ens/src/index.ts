@@ -5,7 +5,7 @@ import { manifest } from "./manifest";
 import {
   Client,
   Plugin,
-  PluginManifest,
+  PluginPackageManifest,
   PluginModules,
   PluginFactory,
 } from "@web3api/core-js";
@@ -36,7 +36,7 @@ export class EnsPlugin extends Plugin {
     }
   }
 
-  public static manifest(): PluginManifest {
+  public static manifest(): PluginPackageManifest {
     return manifest;
   }
 

@@ -3,13 +3,13 @@ import { query } from "./resolvers";
 
 import {
   Plugin,
-  PluginManifest,
+  PluginPackageManifest,
   PluginModules,
   PluginPackage,
 } from "@web3api/core-js";
 
 export class UTS46Plugin extends Plugin {
-  public static manifest(): PluginManifest {
+  public static manifest(): PluginPackageManifest {
     return manifest;
   }
 

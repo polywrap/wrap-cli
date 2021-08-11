@@ -4,7 +4,7 @@ import { manifest } from "./manifest";
 import {
   Plugin,
   PluginFactory,
-  PluginManifest,
+  PluginPackageManifest,
   PluginModules,
 } from "@web3api/core-js";
 
@@ -17,7 +17,7 @@ export class SamplePlugin extends Plugin {
     super();
   }
 
-  public static manifest(): PluginManifest {
+  public static manifest(): PluginPackageManifest {
     return manifest;
   }
 

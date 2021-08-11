@@ -4,7 +4,7 @@ import { manifest } from "./manifest";
 import {
   Plugin,
   PluginFactory,
-  PluginManifest,
+  PluginPackageManifest,
   PluginModules,
 } from "@web3api/core-js";
 import { execute, makePromise } from "apollo-link";
@@ -21,7 +21,7 @@ export class GraphNodePlugin extends Plugin {
     super();
   }
 
-  public static manifest(): PluginManifest {
+  public static manifest(): PluginPackageManifest {
     return manifest;
   }
 

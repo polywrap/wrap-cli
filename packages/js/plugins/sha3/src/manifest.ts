@@ -1,6 +1,6 @@
-import { PluginManifest } from "@web3api/core-js";
+import { PluginPackageManifest } from "@web3api/core-js";
 
-export const manifest: PluginManifest = {
+export const manifest: PluginPackageManifest = {
   // TODO: use the schema.graphql
   // https://github.com/Web3-API/prototype/issues/101
   schema: `type Query {

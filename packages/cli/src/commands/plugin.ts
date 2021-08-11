@@ -12,7 +12,7 @@ import_redirects:
 */
 
 /* eslint-disable prefer-const */
-import { CodeGenerator, Compiler, Project, SchemaComposer } from "../lib";
+import { CodeGenerator, PluginProject, SchemaComposer } from "../lib";
 import { fixParameters } from "../lib/helpers";
 import { intlMsg } from "../lib/intl";
 
@@ -191,8 +191,8 @@ export default {
     outputSchema = outputSchema && filesystem.resolve(outputSchema);
     outputTypes = outputTypes && filesystem.resolve(outputTypes);
 
-    const project = new Project({
-      web3apiManifestPath: manifestPath,
+    const project = new PluginProject({
+      pluginManifestPath: manifestPath,
     });
 
     const schemaComposer = new SchemaComposer({
@@ -211,16 +211,6 @@ export default {
     });
 
     result = await codeGenerator.generate();
-
-    if (command == "build") {
-      const compiler = new Compiler({
-        project,
-        outputDir: outputSchema || filesystem.path("build"),
-        schemaComposer,
-      });
-
-      result = await compiler.codegen();
-    }
 
     if (result) {
       process.exitCode = 0;

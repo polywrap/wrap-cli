@@ -6,7 +6,7 @@ import {
   Client,
   Plugin,
   PluginFactory,
-  PluginManifest,
+  PluginPackageManifest,
   PluginModules,
 } from "@web3api/core-js";
 import CID from "cids";
@@ -53,7 +53,7 @@ export class IpfsPlugin extends Plugin {
     this.setProvider(this._config.provider);
   }
 
-  public static manifest(): PluginManifest {
+  public static manifest(): PluginPackageManifest {
     return manifest;
   }
 

@@ -3,7 +3,7 @@ import { manifest } from "./manifest";
 
 import {
   Plugin,
-  PluginManifest,
+  PluginPackageManifest,
   PluginModules,
   PluginPackage,
 } from "@web3api/core-js";
@@ -25,7 +25,7 @@ export class LoggerPlugin extends Plugin {
     this._logFunc = logFunc;
   }
 
-  public static manifest(): PluginManifest {
+  public static manifest(): PluginPackageManifest {
     return manifest;
   }
 
