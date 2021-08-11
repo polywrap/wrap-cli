@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<root>
+  <head>
+    <meta charset="utf-8">
+    <title>Polywrapper Documentation</title>
+    <link type="text/css" rel="stylesheet" href="style.css">
+  </head>
+
+  <body>
+    <div id="page-container">
+      <nav id="navbar">
+        <header class="navi-header">Polywrapper Documentation</header>
+        <a class="nav-link" href="#introduction">Introduction</a>
+        <a class="nav-link" href="#queries">Queries</a>
+        <a class="nav-link" href="#mutations">Mutations</a>
+        <a class="nav-link" href="#types">Types</a>
+        <a class="nav-link" href="#enums">Enums</a>
+      </nav>
+
+      <main id="main-doc">
+        <section class="main-section" id="introduction">
+          <header>Introduction</header>
+          <p>add some introductory readme text here</p>
+        </section>
+
+        <section class="main-section" id="queries">
+          <header>Queries</header>
+            {{#queryTypes}}
+              {{#methods}}
+                {{#isQuery}}
+                  {{type}}
+                  <div class="entry">
+                    <h1>{{name}}</h1>
+                    <p>{{comment}}</p>
+                    <code class="function">{{name}}(...args): {{#return}}{{#typeFormatFilter}}{{type}}{{/typeFormatFilter}}{{/return}}</code>
+                    <h2>Parameters</h2>
+                    <div class="grid-table">
+                      <div class="grid-item table-header">Name</div>
+                      <div class="grid-item table-header">Type</div>
+                      <div class="grid-item table-header">Description</div>
+                      {{#arguments}}
+                        <div class="name grid-item">
+                          <code>{{name}}</code>
+                        </div>
+                        <div class="type grid-item">
+                          <div class="param-type">
+                            {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}}{{^required}} | null{{/required}}
+                          </div>
+                        </div>
+                        <div class="description grid-item">{{comment}}</div>
+                      {{/arguments}}
+                    </div>
+                  </div>
+                {{/isQuery}}
+              {{/methods}}
+            {{/queryTypes}}
+        </section>
+
+        <section class="main-section" id="mutations">
+          <header>Mutations</header>
+          {{#queryTypes}}
+            {{#methods}}
+              {{#isMutation}}
+                {{type}}
+                <div class="entry">
+                  <h1>{{name}}</h1>
+                  <p>{{comment}}</p>
+                  <code class="function">{{name}}(...args): {{#return}}{{#typeFormatFilter}}{{type}}{{/typeFormatFilter}}{{/return}}</code>
+                  <h2>Parameters</h2>
+                  <div class="grid-table">
+                    <div class="grid-item table-header">Name</div>
+                    <div class="grid-item table-header">Type</div>
+                    <div class="grid-item table-header">Description</div>
+                    {{#arguments}}
+                      <div class="name grid-item">
+                        <code>{{name}}</code>
+                      </div>
+                      <div class="type grid-item">
+                        <div class="param-type">
+                          {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}}{{^required}} | null{{/required}}
+                        </div>
+                      </div>
+                      <div class="description grid-item">{{comment}}</div>
+                    {{/arguments}}
+                  </div>
+                </div>
+              {{/isMutation}}
+            {{/methods}}
+          {{/queryTypes}}
+        </section>
+
+      <section class="main-section" id="types">
+        <header>Types</header>
+          {{#objectTypes}}
+            <div class="entry">
+              <h1>{{type}}</h1>
+              <p>{{comment}}</p>
+              <h2>Properties</h2>
+              <div class="grid-table">
+                <div class="grid-item table-header">Name</div>
+                <div class="grid-item table-header">Type</div>
+                <div class="grid-item table-header">Description</div>
+                {{#properties}}
+                  <div class="name grid-item">
+                    <code>{{name}}</code>
+                  </div>
+                  <div class="type grid-item">
+                    <div class="property-type">
+                      {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}}{{^required}} | null{{/required}}
+                    </div>
+                  </div>
+                  <div class="description grid-item">{{comment}}</div>
+                {{/properties}}
+              </div>
+            </div>
+          {{/objectTypes}}
+      </section>
+
+        <section class="main-section" id="enums">
+          <header>Enums</header>
+            {{#enumTypes}}
+              <div class="entry">
+                <h1>{{type}}</h1>
+                <p>{{comment}}</p>
+                <code class="typedef">{{#unionTypeTrim}}{{#constants}}"{{.}}" | {{/constants}}{{/unionTypeTrim}}</code>
+              </div>
+            {{/enumTypes}}
+        </section>
+
+      </main>
+    </div>
+  </body>
+</root>

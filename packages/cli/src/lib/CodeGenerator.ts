@@ -15,6 +15,7 @@ export interface CodeGeneratorConfig {
   generationFile: string;
   project: Project;
   schemaComposer: SchemaComposer;
+  isDoc?: boolean;
 }
 
 export class CodeGenerator {
@@ -121,12 +122,18 @@ export class CodeGenerator {
       schema: this._schema,
       unionTypeTrim: this.unionTypeTrim,
       typeFormatFilter: this.typeFormatFilter,
+      isMutation: this.isMutation,
+      isQuery: this.isQuery,
     });
 
-    content = `// ${intlMsg.lib_codeGenerator_templateNoModify()}
+    if (this._config.isDoc) {
+      content = `${content}`;
+    } else {
+      content = `// ${intlMsg.lib_codeGenerator_templateNoModify()}
 
 ${content}
 `;
+    }
 
     return content;
   }
@@ -150,6 +157,30 @@ ${content}
         return rendered.substring(1, rendered.length - 1) + "[]";
       }
       return rendered;
+    };
+  }
+
+  private isMutation() {
+    return (text: string, render: (text: string) => string): string => {
+      const rendered: string = render(text);
+      const firstReturn: number = rendered.indexOf("\n", 1);
+      const queryType: string = rendered.substring(1, firstReturn).trim();
+      if (queryType === "mutation") {
+        return rendered.substring(firstReturn + 1);
+      }
+      return "";
+    };
+  }
+
+  private isQuery() {
+    return (text: string, render: (text: string) => string): string => {
+      const rendered: string = render(text);
+      const firstReturn: number = rendered.indexOf("\n", 1);
+      const queryType: string = rendered.substring(1, firstReturn).trim();
+      if (queryType === "query") {
+        return rendered.substring(firstReturn + 1);
+      }
+      return "";
     };
   }
 }
