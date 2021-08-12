@@ -1,13 +1,13 @@
 TODO
-* polywrap plugin codegen --custom ./web3api.gen.ts
 * Convert all plugins
 * Update the template project
 * Create tests for plugin command
+* polywrap plugin codegen --custom ./web3api.gen.ts
+* * Make sure TypeScript integration works correctly
 * Go through each CLI command
 * * output should only be when --verbose is passed in
 * * arguments and things like that should be consistent
 * * make sure they all have proper tests
-* Make sure TypeScript integration works correctly
 
 ## Misc
 - polywrap compose // compose schema

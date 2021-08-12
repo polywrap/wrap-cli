@@ -1,6 +1,0 @@
-format: 0.0.1-prealpha.3
-language: plugin/typescript
-schema: ./schema.graphql
-import_redirects:
-  - uri: w3://ens/ethereum.web3api.eth
-    schema: ../ethereum/schema.graphql
