@@ -20,18 +20,15 @@ import { GluegunToolbox, print } from "gluegun";
 import axios from "axios";
 import chalk from "chalk";
 
-export const supportedLangs: { [key: string]: string[] } = {
-  codegen: ["typescript"],
-};
-export const defaultManifest = ["web3api.yaml", "web3api.yml"];
+export const defaultManifest = ["web3api.plugin.yaml", "web3api.plugin.yml"];
 
 const cmdStr = intlMsg.commands_plugin_options_command();
 const optionsStr = intlMsg.commands_options_options();
-const langsStr = intlMsg.commands_plugin_options_langs();
-const langStr = intlMsg.commands_plugin_options_lang();
 const codegenStr = intlMsg.commands_plugin_options_codegen();
 const pathStr = intlMsg.commands_plugin_options_path();
 const defaultManifestStr = defaultManifest.join(" | ");
+const defaultOutputSchemaStr = "./build/schema.graphql";
+const defaultOutputTypesStr = "./src/w3";
 const nodeStr = intlMsg.commands_plugin_options_i_node();
 const addrStr = intlMsg.commands_plugin_options_e_address();
 
@@ -39,16 +36,15 @@ const HELP = `
 ${chalk.bold("w3 plugin")} ${cmdStr} [${optionsStr}]
 
 Commands:
-  ${chalk.bold("codegen")} <${langStr}>   ${codegenStr}
-    ${langsStr}: ${supportedLangs.codegen.join(", ")}
+  ${chalk.bold("codegen")}   ${codegenStr}
 
 Options:
-  -h, --help                        ${intlMsg.commands_plugin_options_h()}
-  -m, --manifest-path <${pathStr}>  ${intlMsg.commands_plugin_options_m()}: ${defaultManifestStr})
-  -s, --output-schema <${pathStr}>  ${intlMsg.commands_plugins_options_schema()}
-  -t, --output-types <${pathStr}>   ${intlMsg.commands_plugins_options_types()}
+  -h, --help                  ${intlMsg.commands_plugin_options_h()}
+  -m, --manifest-path <${pathStr}>  ${intlMsg.commands_plugin_options_m({ default: defaultManifestStr })}
+  -s, --output-schema-path <${pathStr}>  ${intlMsg.commands_plugins_options_schema({ default: defaultOutputSchemaStr })}
+  -t, --output-types-dir <${pathStr}>   ${intlMsg.commands_plugins_options_types({ default: defaultOutputTypesStr })}
   -i, --ipfs [<${nodeStr}>]         ${intlMsg.commands_plugin_options_i()}
-  -e, --ens [<${addrStr}>]          ${intlMsg.commands_plugin_options_e()}
+  -e, --ens [<${addrStr}>]       ${intlMsg.commands_plugin_options_e()}
 `;
 
 export default {
@@ -61,8 +57,8 @@ export default {
     let {
       help,
       manifestPath,
-      outputSchema,
-      outputTypes,
+      outputSchemaPath,
+      outputTypesDir,
       ipfs,
       ens,
     } = parameters.options;
@@ -70,16 +66,15 @@ export default {
 
     help = help || h;
     manifestPath = manifestPath || m;
-    outputSchema = outputSchema || s;
-    outputTypes = outputTypes || t;
+    outputSchemaPath = outputSchemaPath || s;
+    outputTypesDir = outputTypesDir || t;
     ipfs = ipfs || i;
     ens = ens || e;
 
-    let command = "",
-      lang = "";
+    let command = "";
     try {
       const params = parameters;
-      [command, lang] = fixParameters(
+      [command] = fixParameters(
         {
           options: params.options,
           array: params.array,
@@ -106,27 +101,7 @@ export default {
       return;
     }
 
-    if (!lang) {
-      print.error(intlMsg.commands_plugin_error_noLang());
-      print.info(HELP);
-      return;
-    }
-
-    if (!supportedLangs[command]) {
-      const unrecognizedCommand = intlMsg.commands_plugin_error_unrecognizedCommand();
-      print.error(`${unrecognizedCommand} "${command}"`);
-      print.info(HELP);
-      return;
-    }
-
-    if (supportedLangs[command].indexOf(lang) === -1) {
-      const unrecognizedLanguage = intlMsg.commands_plugin_error_unrecognizedLanguage();
-      print.error(`${unrecognizedLanguage} "${lang}"`);
-      print.info(HELP);
-      return;
-    }
-
-    if (outputSchema === true) {
+    if (outputSchemaPath === true) {
       const outputSchemaMissingPathMessage = intlMsg.commands_plugin_error_outputDirMissingPath(
         {
           option: "--output-schema",
@@ -136,9 +111,11 @@ export default {
       print.error(outputSchemaMissingPathMessage);
       print.info(HELP);
       return;
+    } else if (!outputSchemaPath) {
+      outputSchemaPath = defaultOutputSchemaStr;
     }
 
-    if (outputTypes === true) {
+    if (outputTypesDir === true) {
       const outputTypesMissingPathMessage = intlMsg.commands_plugin_error_outputDirMissingPath(
         {
           option: "--output-types",
@@ -148,6 +125,8 @@ export default {
       print.error(outputTypesMissingPathMessage);
       print.info(HELP);
       return;
+    } else if (!outputTypesDir) {
+      outputTypesDir = defaultOutputTypesStr;
     }
 
     if (ens === true) {
@@ -188,8 +167,8 @@ export default {
       ((await filesystem.existsAsync(defaultManifest[0]))
         ? filesystem.resolve(defaultManifest[0])
         : filesystem.resolve(defaultManifest[1]));
-    outputSchema = outputSchema && filesystem.resolve(outputSchema);
-    outputTypes = outputTypes && filesystem.resolve(outputTypes);
+    outputSchemaPath = outputSchemaPath && filesystem.resolve(outputSchemaPath);
+    outputTypesDir = outputTypesDir && filesystem.resolve(outputTypesDir);
 
     const project = new PluginProject({
       pluginManifestPath: manifestPath,
@@ -207,7 +186,7 @@ export default {
     const codeGenerator = new CodeGenerator({
       project,
       schemaComposer,
-      outputTypes: outputTypes || filesystem.resolve("./src/types.ts"),
+      outputDir: outputTypesDir,
     });
 
     result = await codeGenerator.generate();

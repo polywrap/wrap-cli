@@ -15,7 +15,7 @@ import {
   bindSchema,
 } from "@web3api/schema-bind";
 import path from "path";
-import fs, { readFileSync, writeFileSync } from "fs";
+import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import Mustache from "mustache";
@@ -33,11 +33,10 @@ export type CustomScriptRunFn = (
 ) => void;
 
 export interface CodeGeneratorConfig {
-  outputDir?: string;
-  outputTypes?: string;
-  customScript?: string;
+  outputDir: string;
   project: Project;
   schemaComposer: SchemaComposer;
+  customScript?: string;
 }
 
 export class CodeGenerator {
@@ -62,11 +61,7 @@ export class CodeGenerator {
 
     const run = async (spinner?: Ora) => {
       // Make sure that the output dir exists, if not create a new one
-      if (
-        this._config.customScript &&
-        this._config.outputDir &&
-        !fs.existsSync(this._config.outputDir)
-      ) {
+      if (!fs.existsSync(this._config.outputDir)) {
         fs.mkdirSync(this._config.outputDir);
       }
 
@@ -112,7 +107,7 @@ export class CodeGenerator {
         });
 
         writeDirectory(
-          this._config.outputDir || "build",
+          this._config.outputDir,
           output,
           (templatePath: string) =>
             this._generateTemplate(templatePath, typeInfo, spinner)
@@ -124,13 +119,12 @@ export class CodeGenerator {
             schema: composed.combined?.schema as string,
             outputDirAbs: "",
           },
-          language: "plugin-ts",
+          language: await project.getLanguage(),
         });
 
-        // TODO
-        writeFileSync(
-          this._config.outputTypes as string,
-          content.combined?.entries[0].data
+        writeDirectory(
+          this._config.outputDir,
+          content.combined as OutputDirectory
         );
       }
     };

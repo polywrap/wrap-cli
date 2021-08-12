@@ -3,6 +3,8 @@ import path from "path";
 import rimraf from "rimraf";
 import copyfiles from "copyfiles";
 
+import { TargetLanguage } from "@web3api/schema-bind";
+
 export interface ProjectConfig {
   quiet?: boolean;
 }
@@ -10,19 +12,21 @@ export interface ProjectConfig {
 export abstract class Project {
   constructor(protected _config: ProjectConfig) { }
 
-  get quiet(): boolean {
+  public get quiet(): boolean {
     return !!this._config.quiet;
   }
 
-  abstract reset(): void;
+  public abstract reset(): void;
 
-  abstract getRootDir(): string;
+  public abstract getRootDir(): string;
 
-  abstract getSchemaNamedPaths(): Promise<{
+  public abstract getLanguage(): Promise<TargetLanguage>;
+
+  public abstract getSchemaNamedPaths(): Promise<{
     [name: string]: string
   }>;
 
-  abstract getImportRedirects(): Promise<{
+  public abstract getImportRedirects(): Promise<{
     uri: string;
     schema: string;
   }[]>;

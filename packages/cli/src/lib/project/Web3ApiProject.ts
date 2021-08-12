@@ -1,10 +1,15 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { Project, ProjectConfig } from "./Project";
-import { loadWeb3ApiManifest, loadBuildManifest } from "../helpers";
+import {
+  loadWeb3ApiManifest,
+  loadBuildManifest,
+  manifestLanguageToTargetLanguage
+} from "../helpers";
 import { intlMsg } from "../intl";
 
 import { Web3ApiManifest, BuildManifest } from "@web3api/core-js";
+import { TargetLanguage } from "@web3api/schema-bind";
 import { normalizePath } from "@web3api/os-js";
 import path from "path";
 import fs from "fs";
@@ -45,6 +50,11 @@ export class Web3ApiProject extends Project {
 
   public getRootDir(): string {
     return this.getWeb3ApiManifestDir();
+  }
+
+  public async getLanguage(): Promise<TargetLanguage> {
+    const language = (await this.getWeb3ApiManifest()).language;
+    return manifestLanguageToTargetLanguage(language);
   }
 
   public async getSchemaNamedPaths(): Promise<{

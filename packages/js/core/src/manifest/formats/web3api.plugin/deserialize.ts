@@ -29,11 +29,11 @@ export const deserializePluginManifest = Tracer.traceFunc(
       throw Error(`Unable to parse PluginManifest: ${manifest}`);
     }
 
-    anyPluginManifest.__type = "PluginManifest";
-
     if (!options || !options.noValidate) {
       validatePluginManifest(anyPluginManifest, options?.extSchema);
     }
+
+    anyPluginManifest.__type = "PluginManifest";
 
     const versionCompare = compare(
       anyPluginManifest.format,

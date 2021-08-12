@@ -1,25 +1,29 @@
-Compiler + CodeGenerator
+TODO
+* polywrap plugin codegen --custom ./web3api.gen.ts
+* Convert all plugins
+* Update the template project
+* Create tests for plugin command
+* Go through each CLI command
+* * output should only be when --verbose is passed in
+* * arguments and things like that should be consistent
+* * make sure they all have proper tests
+* Make sure TypeScript integration works correctly
+
+## Misc
+- polywrap compose // compose schema
+- polywrap compose --output ./schema.graphql
+- polywrap plugin compose // compose schema
+
+# DONE
 x hardcode wasm-as
 x support .ts codegen files
 x move all code generation into codegenerator?
-hardecode plugin-ts
-language: plugin/typescript ?
-
+x hardecode plugin-ts
+x language: plugin/typescript
 x polywrap build   // compose schema, generate w3 folder, builds in docker
 x polywrap codegen // compose schema, generate w3 folder
 x polywrap codegen --custom ./web3api.gen.js // compose schema, custom generate
 x polywrap codegen --custom ./web3api.gen.ts // compose schema, custom generate
-- polywrap compose // compose schema
-- polywrap compose --output ./schema.graphql
-
-- polywrap plugin compose // compose schema
-polywrap plugin codegen // generates types
-polywrap plugin codegen --custom ./web3api.gen.ts
-
-TODO
-
-SchemaComposer.ts
-- Have the Project class return the schema + import_redirects
-
-- Finish implementing the plugin codegen command
-
+x polywrap plugin codegen // generates types
+x Have the Project class return the schema + import_redirects
+x Finish implementing the plugin codegen command

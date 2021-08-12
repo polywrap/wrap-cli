@@ -4,7 +4,8 @@
   "additionalProperties": false,
   "required": [
     "format",
-    "modules"
+    "modules",
+    "language"
   ],
   "properties": {
     "format": {

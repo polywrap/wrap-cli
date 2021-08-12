@@ -29,11 +29,11 @@ export const deserialize{{type}} = Tracer.traceFunc(
       throw Error(`Unable to parse {{type}}: ${manifest}`);
     }
 
-    any{{type}}.__type = "{{type}}";
-
     if (!options || !options.noValidate) {
       validate{{type}}(any{{type}}, options?.extSchema);
     }
+
+    any{{type}}.__type = "{{type}}";
 
     const versionCompare = compare(
       any{{type}}.format,
