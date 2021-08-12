@@ -7,6 +7,7 @@ import {
   addFirstLast,
   toPrefixedGraphQLType,
   methodParentPointers,
+  interfaceUris,
   TypeInfo,
   QueryDefinition,
 } from "@web3api/schema-parse";
@@ -26,6 +27,7 @@ export function generateBinding(
     addFirstLast,
     toPrefixedGraphQLType,
     methodParentPointers(),
+    interfaceUris(),
   ];
 
   for (const transform of transforms) {
@@ -51,10 +53,6 @@ export function generateBinding(
     });
   }
 
-  const rootContext = {
-    ...typeInfo,
-    schema
-  };
   const queryContext = typeInfo.queryTypes.find((def: QueryDefinition) => {
     return def.type === "Query"
   });
@@ -62,10 +60,21 @@ export function generateBinding(
     return def.type === "Mutation"
   });
 
+  const rootContext = {
+    ...typeInfo,
+    schema,
+    __mutation: !!mutationContext,
+    __query: !!queryContext,
+  };
+
   renderTemplate("./templates/index-ts.mustache", rootContext);
   renderTemplate("./templates/manifest-ts.mustache", rootContext);
-  renderTemplate("./templates/mutation-ts.mustache", mutationContext);
-  renderTemplate("./templates/query-ts.mustache", queryContext);
+  if (mutationContext) {
+    renderTemplate("./templates/mutation-ts.mustache", mutationContext);
+  }
+  if (queryContext) {
+    renderTemplate("./templates/query-ts.mustache", queryContext);
+  }
   renderTemplate("./templates/schema-ts.mustache", rootContext);
   renderTemplate("./templates/types-ts.mustache", rootContext);
 

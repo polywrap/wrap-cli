@@ -7,7 +7,7 @@ export const manifest: PluginPackageManifest = {
   schema,
   implements: [
     {{#interfaceUris}}
-    new Uri({{.}}),
+    new Uri("{{.}}"),
     {{/interfaceUris}}
   ],
 }

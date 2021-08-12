@@ -23,9 +23,6 @@
       "type": "string",
       "format": "wasmLanguage"
     },
-    "interface": {
-      "type": "boolean"
-    },
     "modules": {
       "type": "object",
       "additionalProperties": false,

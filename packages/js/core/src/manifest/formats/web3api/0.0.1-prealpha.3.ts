@@ -11,7 +11,6 @@ export interface Web3ApiManifest {
   repository?: string;
   build?: string;
   language: string;
-  interface?: boolean;
   modules: {
     mutation?: {
       schema: string;

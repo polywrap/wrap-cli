@@ -55,7 +55,7 @@ export class Compiler {
     const run = async (): Promise<void> => {
       const state = await this._getCompilerState();
 
-      if (!state.web3ApiManifest.interface) {
+      if (!await this._isInterface()) {
         // Generate the bindings
         await this._generateCode(state);
       }
@@ -100,7 +100,7 @@ export class Compiler {
 
       let buildManifest: BuildManifest | undefined;
 
-      if (!state.web3ApiManifest.interface) {
+      if (!await this._isInterface()) {
         // Generate the bindings
         await this._generateCode(state);
 
@@ -163,6 +163,11 @@ export class Compiler {
     this._validateState(state);
 
     return state;
+  }
+
+  private async _isInterface(): Promise<boolean> {
+    const state = await this._getCompilerState();
+    return state.web3ApiManifest.language === "interface"
   }
 
   private async _composeSchema(): Promise<ComposerOutput> {
@@ -252,7 +257,7 @@ export class Compiler {
     const { outputDir } = this._config;
     const { web3ApiManifest, modulesToBuild } = state;
 
-    if (web3ApiManifest.interface) {
+    if (await this._isInterface()) {
       throw Error(intlMsg.lib_compiler_cannotBuildInterfaceModules())
     }
 
@@ -453,7 +458,7 @@ export class Compiler {
 
     if (
       modulesToBuild.query &&
-      !web3ApiManifest.interface &&
+      web3ApiManifest.language !== "interface" &&
       !web3ApiManifest.modules.query?.module
     ) {
       throwMissingModule("query");
@@ -461,7 +466,7 @@ export class Compiler {
 
     if (
       modulesToBuild.mutation &&
-      !web3ApiManifest.interface &&
+      web3ApiManifest.language !== "interface" &&
       !web3ApiManifest.modules.mutation?.module
     ) {
       throwMissingModule("mutation");
@@ -474,11 +479,11 @@ export class Compiler {
       throw Error(noInterfaceModule);
     };
 
-    if (web3ApiManifest.interface && web3ApiManifest.modules.query?.module) {
+    if (web3ApiManifest.language === "interface" && web3ApiManifest.modules.query?.module) {
       throwNoInterfaceModule("query");
     }
 
-    if (web3ApiManifest.interface && web3ApiManifest.modules.mutation?.module) {
+    if (web3ApiManifest.language === "interface" && web3ApiManifest.modules.mutation?.module) {
       throwNoInterfaceModule("mutation");
     }
   }

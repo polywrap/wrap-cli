@@ -27,7 +27,9 @@ export function dockerImageId(value: unknown): boolean {
 }
 
 export function wasmLanguage(language: unknown): boolean {
-  return typeof language === "string" && language.indexOf("wasm/") > -1;
+  return typeof language === "string" && (
+    language === "interface" || language.indexOf("wasm/") > -1
+  );
 }
 
 export function pluginLanguage(language: unknown): boolean {

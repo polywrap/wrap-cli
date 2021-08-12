@@ -173,7 +173,7 @@ export async function outputManifest(
             if (result) {
               newObj[key] = result;
             }
-          } else {
+          } else if (!key.startsWith("__")) {
             newObj[key] = input[key];
           }
         }
