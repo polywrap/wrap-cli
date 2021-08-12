@@ -1,11 +1,11 @@
 {{#__commonImport}}
 pub use super::super::common::{{#toUpper}}{{type}}{{/toUpper}};
-use crate::{
-    Read, 
-    Write,
-};
 use crate::{ 
     {{#toUpper}}{{type}}{{/toUpper}}, 
+};
+use polywrap_wasm_rs::{
+    Read, 
+    Write,
 };
 use serde::{
     Deserialize, 
@@ -31,16 +31,16 @@ pub struct {{#toUpper}}{{type}}{{/toUpper}} {
 impl {{#toUpper}}{{type}}{{/toUpper}} {
     pub const URI: &'static str = "{{uri}}";
 
-    pub fn to_buffer(object: &{{#toUpper}}{{type}}{{/toUpper}}) -> Vec<u8> {
-        serialize_{{#toLower}}{{type}}{{/toLower}}(object)
+    pub fn to_buffer(input: &{{#toUpper}}{{type}}{{/toUpper}}) -> Vec<u8> {
+        serialize_{{#toLower}}{{type}}{{/toLower}}(input)
     }
 
-    pub fn from_buffer(buffer: &[u8]) -> {{#toUpper}}{{type}}{{/toUpper}} {
-        deserialize_{{#toLower}}{{type}}{{/toLower}}(buffer)
+    pub fn from_buffer(input: &[u8]) -> {{#toUpper}}{{type}}{{/toUpper}} {
+        deserialize_{{#toLower}}{{type}}{{/toLower}}(input)
     }
 
-    pub fn write<W: Write>(object: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) {
-        write_{{#toLower}}{{type}}{{/toLower}}(object, writer);
+    pub fn write<W: Write>(input: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) {
+        write_{{#toLower}}{{type}}{{/toLower}}(input, writer);
     }
 
     pub fn read<R: Read>(reader: &mut R) -> {{#toUpper}}{{type}}{{/toUpper}} {
