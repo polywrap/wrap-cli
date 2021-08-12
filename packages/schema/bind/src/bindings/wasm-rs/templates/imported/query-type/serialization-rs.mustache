@@ -1,6 +1,6 @@
 {{^__commonImport}}
 {{#methods.length}}
-use crate::{
+use polywrap_wasm_rs::{
     Context, 
     Read, 
     ReadDecoder, 
@@ -26,15 +26,13 @@ pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
 
 pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &Input{{#toUpper}}{{name}}{{/toUpper}}) -> Vec<u8> {
     let mut sizer_context = Context::new();
-    sizer_context.description =
-        "Serializing (sizing) imported query-type: Input{{#toUpper}}{{name}}{{/toUpper}}".to_string();
+    sizer_context.description = "Serializing (sizing) imported query-type: Input{{#toUpper}}{{name}}{{/toUpper}}".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
     write_{{#toLower}}{{name}}{{/toLower}}_args(input, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
-    encoder_context.description =
-        "Serializing (encoding) imported query-type: Input{{#toUpper}}{{name}}{{/toUpper}}".to_string();
-    let mut encoder = WriteEncoder::new(buffer.as_slice(), encoder_context);
+    encoder_context.description = "Serializing (encoding) imported query-type: Input{{#toUpper}}{{name}}{{/toUpper}}".to_string();
+    let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_{{#toLower}}{{name}}{{/toLower}}_args(input, &mut encoder);
     buffer
 }
@@ -42,15 +40,13 @@ pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &Input{{#toUpper}}
 pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toUpper}}{{name}}{{/toUpper}}, writer: &mut W) {
     writer.write_map_length({{arguments.length}});
     {{#arguments}}
-    writer
-        .context()
-        .push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
-    writer.write_string("{{#toLower}}{{name}}{{/toLower}}".to_string());
+    writer.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
+    writer.write_string("{{#toLower}}{{name}}{{/toLower}}");
     {{#scalar}}
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}});
     {{/scalar}}
     {{#array}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_slice(), |writer: &mut W, {{#toWasm}}{{toGraphQLType}}{{/toWasm}}| {
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}, |writer: &mut W, input| {
         {{> serialize_array}}
     });
     {{/array}}
@@ -59,7 +55,7 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toU
     writer.write_i32(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}} as i32);
     {{/required}}
     {{^required}}
-    writer.write_nullable_i32(Some(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.unwrap() as i32));
+    writer.write_nullable_i32(&Some(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.unwrap() as i32));
     {{/required}}
     {{/enum}}
     {{#object}}
@@ -68,39 +64,29 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toU
     {{/required}}
     {{^required}}
     if input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.is_some() {
-        {{#toUpper}}{{type}}{{/toUpper}}::write(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_ref().unwrap(), writer);
+        {{#toUpper}}{{type}}{{/toUpper}}::write(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}.as_ref().as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }
     {{/required}}
     {{/object}}
-    writer
-        .context()
-        .pop()
-        .expect("Failed to pop {{#toWasm}}{{toGraphQLType}}{{/toWasm}} from Context");
+    writer.context().pop().expect("Failed to pop {{#toWasm}}{{toGraphQLType}}{{/toWasm}} from Context");
     {{/arguments}}
 }
 
-pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(buffer: &[u8]) -> {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
+pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(input: &[u8]) -> {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
     let mut context = Context::new();
     context.description = "Deserializing imported query-type: {{#toUpper}}{{name}}{{/toUpper}}".to_string();
-    let mut reader = ReadDecoder::new(buffer, context);
-
+    let mut reader = ReadDecoder::new(input, context);
     {{#return}}
-    reader.context().push(
-        "{{#toLower}}{{name}}{{/toLower}}",
-        "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}",
-        "reading function output",
-    );
+    reader.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "reading function output");
     {{#scalar}}
-    let result: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}().unwrap_or_default();
+    let res = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}().unwrap_or_default();
     {{/scalar}}
     {{#array}}
-    let result: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = reader
-        .read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {{#toWasm}}{{toGraphQLType}}{{/toWasm}} {
-            {{> deserialize_array}}
-        })
-        .expect("Failed to read array");
+    let res = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
+        {{> deserialize_array}}
+    }).expect("Failed to read array");
     {{/array}}
     {{#enum}}
     {{> deserialize_enum}}
@@ -109,11 +95,8 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(buffer: &[u8]) -> {{#
     {{> deserialize_object}}
     {{/object}}
     {{/return}}
-    reader
-        .context()
-        .pop()
-        .expect("Failed to pop {{#toWasm}}{{toGraphQLType}}{{/toWasm}} from Context");
-    result
+    reader.context().pop().expect("Failed to pop {{#toWasm}}{{toGraphQLType}}{{/toWasm}} from Context");
+    res
 }
 {{^last}}
 

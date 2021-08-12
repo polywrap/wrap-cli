@@ -3,8 +3,13 @@ pub use super::super::common::TestImportQuery;
 use crate::TestImportObject;
 {{/__commonImport}}
 {{^__commonImport}}
-{{#methods.length}}
+use polywrap_wasm_rs::subinvoke;
+use serde::{
+    Deserialize, 
+    Serialize,
+};
 pub mod serialization;
+{{#methods.length}}
 pub use serialization::{
     {{#methods}}
     deserialize_{{#toLower}}{{name}}{{/toLower}}_result,
@@ -13,11 +18,6 @@ pub use serialization::{
     {{/methods}}
 };
 {{/methods.length}}
-use crate::subinvoke;
-use serde::{
-    Deserialize, 
-    Serialize,
-};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{#toUpper}}{{type}}{{/toUpper}};
@@ -34,8 +34,7 @@ impl {{#toUpper}}{{type}}{{/toUpper}} {
             "{{#toLower}}{{type}}{{/toLower}}".to_string(),
             "{{#toLower}}{{name}}{{/toLower}}".to_string(),
             args,
-        )
-        .unwrap_or_default();
+        ).unwrap_or_default();
         deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result.as_slice())
     }
     {{^last}}
