@@ -99,6 +99,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
     }
     {{/required}}
     {{/arguments}}
+    {{/arguments.length}}
 
     Ok({{#toUpper}}{{type}}{{/toUpper}} {
         {{#arguments}}
