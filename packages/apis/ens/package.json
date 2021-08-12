@@ -10,15 +10,22 @@
     "deploy": "yarn deploy:contract && yarn deploy:web3api",
     "deploy:web3api": "npx w3 build --ipfs http://localhost:5001 --test-ens ens.eth",
     "deploy:contract": "node ./deploy-contracts.js",
-    "test": "npx w3 query ./recipes/e2e.json --redirects ./redirects.js"
+    "test": "yarn test:e2e && yarn test:recipe",
+    "test:e2e": "jest --passWithNoTests --runInBand --verbose",
+    "test:recipe": "npx w3 query ./recipes/e2e.json --redirects ./redirects.js"
   },
   "devDependencies": {
+    "@types/jest": "22.2.3",
     "@web3api/cli": "0.0.1-prealpha.30",
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.30",
+    "@web3api/test-env-js": "0.0.1-prealpha.30",
     "@web3api/wasm-as": "0.0.1-prealpha.30",
+    "assemblyscript": "0.19.10",
     "ethers": "5.0.8",
+    "jest": "27.0.6",
     "js-yaml": "3.14.0",
     "dotenv": "8.2.0",
+    "ts-jest": "27.0.4",
     "ts-node": "9.1.1"
   }
 }
