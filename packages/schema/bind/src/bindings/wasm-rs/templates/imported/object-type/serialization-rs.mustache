@@ -119,14 +119,10 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
                 reader.context().pop().expect("Failed to pop {{#toWasm}}{{toGraphQLType}}{{/toWasm}} from Context");
             }
             {{/properties}}
-            {{#properties}}
-            {{#required}}
             _ => {
                 reader.context().push(&field, "unknown", "searching for property type");
                 reader.context().pop().expect("Failed to pop unknown from Context");
             }
-            {{/required}}
-            {{/properties}}
         }
     }
     {{#properties}}
