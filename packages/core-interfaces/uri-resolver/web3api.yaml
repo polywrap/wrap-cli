@@ -1,0 +1,5 @@
+format: 0.0.1-prealpha.3
+interface: true
+modules:
+  query:
+    schema: ./src/query.graphql

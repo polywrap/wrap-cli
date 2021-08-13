@@ -6,9 +6,9 @@ import {
 import {
   UseWeb3ApiQueryProps
 } from "../query"
-import { createRedirects } from "./redirects";
+import { createPlugins } from "./plugins";
 
-import { UriRedirect } from "@web3api/core-js";
+import { PluginRegistration } from "@web3api/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
@@ -27,7 +27,7 @@ jest.setTimeout(360000);
 
 describe("useWeb3ApiQuery hook", () => {
   let uri: string;
-  let redirects: UriRedirect<string>[];
+  let plugins: PluginRegistration<string>[];
   let WrapperProvider: RenderHookOptions<unknown>;
 
   beforeAll(async () => {
@@ -44,11 +44,11 @@ describe("useWeb3ApiQuery hook", () => {
     );
 
     uri = `ens/testnet/${ensDomain}`;
-    redirects = createRedirects(ensAddress, ethereum, ipfs);
+    plugins = createPlugins(ensAddress, ethereum, ipfs);
     WrapperProvider = {
       wrapper: Web3ApiProvider,
       initialProps: {
-        redirects,
+        plugins,
       },
     };
   });

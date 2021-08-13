@@ -10,7 +10,7 @@ type Mutation {
 
   method2(
     arg: [String!]!
-  ): [Int64!]!
+  ): [Int32!]!
 }
 
 type CustomMutationType {
@@ -19,15 +19,13 @@ type CustomMutationType {
   u: UInt!
   optU: UInt
   u8: UInt8!
-  u64: UInt64!
   i: Int!
   i8: Int8!
-  i64: Int64!
   bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optStrOptArray: [String]
-  crazyArray: [[[[UInt64!]]!]]
+  crazyArray: [[[[UInt32!]]!]]
   commonType: CommonType!
 }
 

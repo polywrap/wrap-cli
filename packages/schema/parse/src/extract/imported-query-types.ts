@@ -4,6 +4,7 @@ import {
   createImportedQueryDefinition,
   createMethodDefinition,
   createPropertyDefinition,
+  createInterfaceImplementedDefinition,
 } from "../typeInfo";
 import {
   extractInputValueDefinition,
@@ -12,23 +13,20 @@ import {
   State,
 } from "./query-types-utils";
 import { extractImportedDefinition } from "./imported-types-utils";
-import { Blackboard } from "./Blackboard";
 
 import {
-  DocumentNode,
   ObjectTypeDefinitionNode,
   NonNullTypeNode,
   NamedTypeNode,
   ListTypeNode,
   FieldDefinitionNode,
   InputValueDefinitionNode,
-  visit,
+  ASTVisitor,
 } from "graphql";
 
 const visitorEnter = (
   importedQueryTypes: ImportedQueryDefinition[],
-  state: State,
-  blackboard: Blackboard
+  state: State
 ) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const imported = extractImportedDefinition(node, true);
@@ -42,6 +40,10 @@ const visitorEnter = (
       uri: imported.uri,
       namespace: imported.namespace,
       nativeType: imported.nativeType,
+      interfaces: node.interfaces?.map((x) =>
+        createInterfaceImplementedDefinition({ type: x.name.value })
+      ),
+      comment: node.description?.value,
     });
     importedQueryTypes.push(importedType);
     state.currentImport = importedType;
@@ -68,6 +70,7 @@ const visitorEnter = (
       type: importDef.nativeType,
       name: node.name.value,
       return: returnType,
+      comment: node.description?.value,
     });
     importDef.methods.push(method);
     state.currentMethod = method;
@@ -80,7 +83,7 @@ const visitorEnter = (
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    extractNamedType(node, state, blackboard);
+    extractNamedType(node, state);
   },
   ListType: (_node: ListTypeNode) => {
     extractListType(state);
@@ -103,15 +106,13 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export function extractImportedQueryTypes(
-  astNode: DocumentNode,
-  typeInfo: TypeInfo,
-  blackboard: Blackboard
-): void {
+export const getImportedQueryTypesVisitor = (
+  typeInfo: TypeInfo
+): ASTVisitor => {
   const state: State = {};
 
-  visit(astNode, {
-    enter: visitorEnter(typeInfo.importedQueryTypes, state, blackboard),
+  return {
+    enter: visitorEnter(typeInfo.importedQueryTypes, state),
     leave: visitorLeave(state),
-  });
-}
+  };
+};

@@ -1,0 +1,6 @@
+format: 0.0.1-prealpha.3
+repository: https://github.com/web3-api/monorepo
+interface: true
+modules:
+  query:
+    schema: ./src/query.graphql
