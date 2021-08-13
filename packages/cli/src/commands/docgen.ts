@@ -12,7 +12,7 @@ import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 
 export const standardGenerationFile =
-  __dirname + "/../lib/doc-formats/standard.gen.js";
+  __dirname + "/../lib/doc-formats/html/html-doc.gen.js";
 export const jsdocGenerationFile =
   __dirname + "/../lib/doc-formats/jsdoc.gen.js";
 export const docusaurusGenerationFile =
@@ -31,7 +31,7 @@ const HELP = `
 ${chalk.bold("w3 docgen")} ${chalk.bold(`[<${genFileOp}>]`)} [${optionsStr}]
 
 ${intlMsg.commands_docgen_supported()}:
-  ${`standard (${intlMsg.commands_docgen_default()})`}
+  ${`html (${intlMsg.commands_docgen_default()})`}
   jsdoc
   docusaurus
 
@@ -73,7 +73,7 @@ export default {
 
     // Resolve generation file & output directories
     generationFile =
-      generationFile && generationFile.toLowerCase() === "standard"
+      generationFile && generationFile.toLowerCase() === "html"
         ? filesystem.resolve(standardGenerationFile)
         : generationFile && generationFile.toLowerCase() === "jsdoc"
         ? filesystem.resolve(jsdocGenerationFile)

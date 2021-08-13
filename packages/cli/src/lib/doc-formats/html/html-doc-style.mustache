@@ -9,6 +9,7 @@
   --color-code-bg: #d8d8d8;
   --color-header: #74dd9f;
   --font-family: 'arial', sans-serif;
+  --font-family-code: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 body {
@@ -47,17 +48,13 @@ nav header {
   padding: 0 0.5em;
 }
 
-.nav-header {
-  font-size: 1rem;
-}
-
 .nav-link {
   text-decoration: none;
   display: block;
   color: inherit;
   font-size: 1rem;
   padding: 0.5em 1em;
-  font: var(--font-family);
+  font-family: var(--font-family);
 }
 
   a:hover {
@@ -82,13 +79,13 @@ nav header {
 }
 
 main header {
-  font-size: 2rem;
+  font-size: 3rem;
 }
 
 header {
   margin-top: 1em;
   color: var(--color-header);
-  font: var(--font-family);
+  font-family: var(--font-family);
 }
 
 section ul {
@@ -100,26 +97,33 @@ section ul li {
 }
 
 h1 {
-  font: var(--font-family);
-  font-size: 1.5rem;
+  font-family: var(--font-family);
+  color: var(--color-header);
+  font-size: 2rem;
 }
 
 h2 {
-  font: var(--font-family);
-  font-size: 1.1rem
+  font-family: var(--font-family);
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0 0 0.1em 0;
+}
+
+code {
+  font-family: var(--font-family-code);
 }
 
 /*----------- ENTRIES -----------*/
 
 .entry {
-  margin-top: 1em;
+ margin-top: 4em;
 }
 
 .function {
   padding: 0.5em 0em;
   margin-bottom: 0.75em;
   font-size: 1.25rem;
-  font: var(--font-family);
+  font-family: var(--font-family-code);
 }
 
 /*----------- TABLES -----------*/
@@ -134,13 +138,14 @@ h2 {
 .table-header {
   border-top: 1px solid;
   font-weight: bold;
+  font-size: 1rem;
 }
 
 .grid-item {
   border-left: 1px solid;
   border-bottom: 1px solid;
   padding: 0.2em;
-  font: var(--font-family);
+  font-family: var(--font-family);
 }
 
 .param-type {
