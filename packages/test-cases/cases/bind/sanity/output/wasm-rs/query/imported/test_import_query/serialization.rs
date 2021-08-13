@@ -65,9 +65,9 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     writer.context().pop().expect("Failed to pop Option<u32> from Context");
     writer.context().push("u_array_array", "Vec<Option<Vec<Option<u32>>>>", "writing property");
     writer.write_string("u_array_array");
-    writer.write_array(&input.u_array_array, |writer: &mut W, input| {
-        writer.write_nullable_array(input, |writer: &mut W, input| {
-            writer.write_nullable_u32(input);
+    writer.write_array(&input.u_array_array, |writer: &mut W, item1| {
+        writer.write_nullable_array(item1, |writer: &mut W, item2| {
+            writer.write_nullable_u32(item2);
         });
     });
     writer.context().pop().expect("Failed to pop Vec<Option<Vec<Option<u32>>>> from Context");
@@ -85,15 +85,15 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     writer.context().pop().expect("Failed to pop Option<TestImportObject> from Context");
     writer.context().push("object_array", "Vec<TestImportObject>", "writing property");
     writer.write_string("object_array");
-    writer.write_array(&input.object_array, |writer: &mut W, input| {
-        TestImportObject::write(input, writer);
+    writer.write_array(&input.object_array, |writer: &mut W, item1| {
+        TestImportObject::write(item1, writer);
     });
     writer.context().pop().expect("Failed to pop Vec<TestImportObject> from Context");
     writer.context().push("opt_object_array", "Option<Vec<Option<TestImportObject>>>", "writing property");
     writer.write_string("opt_object_array");
-    writer.write_nullable_array(&input.opt_object_array, |writer: &mut W, input| {
-        if input.is_some() {
-            TestImportObject::write(input.as_ref().as_ref().unwrap(), writer);
+    writer.write_nullable_array(&input.opt_object_array, |writer: &mut W, item1| {
+        if item1.is_some() {
+            TestImportObject::write(item1.as_ref().as_ref().unwrap(), writer);
         } else {
             writer.write_nil();
         }
@@ -109,14 +109,14 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     writer.context().pop().expect("Failed to pop Option<TestImportEnum> from Context");
     writer.context().push("enum_array", "Vec<TestImportEnum>", "writing property");
     writer.write_string("enum_array");
-    writer.write_array(&input.enum_array, |writer: &mut W, input| {
-        writer.write_i32(*input as i32);
+    writer.write_array(&input.enum_array, |writer: &mut W, item1| {
+        writer.write_i32(*item1 as i32);
     });
     writer.context().pop().expect("Failed to pop Vec<TestImportEnum> from Context");
     writer.context().push("opt_enum_array", "Option<Vec<Option<CustomEnum>>>", "writing property");
     writer.write_string("opt_enum_array");
-    writer.write_nullable_array(&input.opt_enum_array, |writer: &mut W, input| {
-        writer.write_nullable_i32(&Some(input.unwrap() as i32));
+    writer.write_nullable_array(&input.opt_enum_array, |writer: &mut W, item1| {
+        writer.write_nullable_i32(&Some(item1.unwrap() as i32));
     });
     writer.context().pop().expect("Failed to pop Option<Vec<Option<CustomEnum>>> from Context");
 }
@@ -157,8 +157,8 @@ pub fn write_another_method_args<W: Write>(input: &InputAnotherMethod, writer: &
     writer.write_map_length(1);
     writer.context().push("args", "Vec<String>", "writing property");
     writer.write_string("args");
-    writer.write_array(&input.args, |writer: &mut W, input| {
-        writer.write_string(input);
+    writer.write_array(&input.args, |writer: &mut W, item1| {
+        writer.write_string(item1);
     });
     writer.context().pop().expect("Failed to pop Vec<String> from Context");
 }

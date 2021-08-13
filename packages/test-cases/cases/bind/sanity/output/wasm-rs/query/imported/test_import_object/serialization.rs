@@ -44,20 +44,20 @@ pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut
     writer.context().pop().expect("Failed to pop Option<TestImportAnotherObject> from Context");
     writer.context().push("object_array", "Vec<TestImportAnotherObject>", "writing property");
     writer.write_string("object_array");
-    writer.write_array(&input.object_array, |writer: &mut W, input| {
-        TestImportAnotherObject::write(input, writer);
+    writer.write_array(&input.object_array, |writer: &mut W, item1| {
+        TestImportAnotherObject::write(item1, writer);
     });
     writer.context().pop().expect("Failed to pop Vec<TestImportAnotherObject> from Context");
     writer.context().push("opt_object_array", "Option<Vec<Option<TestImportAnotherObject>>>", "writing property");
     writer.write_string("opt_object_array");
-    writer.write_nullable_array(&input.opt_object_array, |writer: &mut W, input| {
-        if input.is_some() {
-            TestImportAnotherObject::write(input.as_ref().as_ref().unwrap(), writer);
+    writer.write_nullable_array(&input.opt_object_array, |writer: &mut W, item1| {
+        if item1.is_some() {
+            TestImportAnotherObject::write(item1.as_ref().as_ref().unwrap(), writer);
         } else {
             writer.write_nil();
         }
     });
-    writer.context().pop().expect("Failed to pop Option<Vec<TestImportAnotherObject>> from Context");
+    writer.context().pop().expect("Failed to pop Option<Vec<Option<TestImportAnotherObject>>> from Context");
     writer.context().push("en", "TestImportEnum", "writing property");
     writer.write_string("en");
     writer.write_i32(input.en as i32);
@@ -68,14 +68,14 @@ pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut
     writer.context().pop().expect("Failed to pop Option<TestImportEnum> from Context");
     writer.context().push("enum_array", "Vec<TestImportEnum>", "writing property");
     writer.write_string("enum_array");
-    writer.write_array(&input.enum_array, |writer: &mut W, input| {
-        writer.write_i32(*input as i32);
+    writer.write_array(&input.enum_array, |writer: &mut W, item1| {
+        writer.write_i32(*item1 as i32);
     });
     writer.context().pop().expect("Failed to pop Vec<TestImportEnum> from Context");
     writer.context().push("opt_enum_array", "Option<Vec<Option<TestImportEnum>>>", "writing property");
     writer.write_string("opt_enum_array");
-    writer.write_nullable_array(&input.opt_enum_array, |writer: &mut W, input| {
-        writer.write_nullable_i32(&Some(input.unwrap() as i32));
+    writer.write_nullable_array(&input.opt_enum_array, |writer: &mut W, item1| {
+        writer.write_nullable_i32(&Some(item1.unwrap() as i32));
     });
     writer.context().pop().expect("Failed to pop Option<Vec<Option<TestImportEnum>>> from Context");
 }
