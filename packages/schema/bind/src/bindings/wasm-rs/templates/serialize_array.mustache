@@ -1,5 +1,5 @@
 {{#scalar}}
-writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(input.{{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}});
+writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(*input.{{#toLower}}{{name}}{{/toLower}});
 {{/scalar}}
 {{#array}}
 writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#toLower}}{{name}}{{/toLower}}, |writer: &mut W, input| {

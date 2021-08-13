@@ -23,6 +23,7 @@ export function isBaseType(type: string): type is BaseType {
   return type in baseTypes;
 }
 
+/*
 const keywords = {
   as: "as",
   break: "break",
@@ -86,3 +87,4 @@ export type KeyWord = keyof KeyWords;
 export function isKeyWord(keyword: string): keyword is KeyWord {
   return keyword in keywords;
 }
+*/

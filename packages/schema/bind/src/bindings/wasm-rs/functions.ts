@@ -1,4 +1,4 @@
-import { isKeyWord } from "./types";
+//import { isKeyWord } from "./types";
 
 type MustacheFunction = () => (
   value: string,
@@ -67,7 +67,10 @@ export const toUpper: MustacheFunction = () => {
   };
 };
 
-// this is barebones, not final; refactor later.
+/*
+// Under no circumstances will Rust allow keywords to go undetected, 
+// so this function may be relevant in other languages, but not Rust.
+
 export const toRustProp: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
@@ -81,6 +84,7 @@ export const toRustProp: MustacheFunction = () => {
     return type;
   };
 };
+*/
 
 export const toMsgPack: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {

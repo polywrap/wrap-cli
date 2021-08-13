@@ -24,7 +24,7 @@ pub use serialization::{
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{#toUpper}}{{type}}{{/toUpper}} {
     {{#properties}}
-    pub {{#toRustProp}}{{#toLower}}{{name}}{{/toLower}}{{/toRustProp}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    pub {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
     {{/properties}}
 }
 
