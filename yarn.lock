@@ -4086,6 +4086,121 @@
     "@uniswap/lib" "1.1.1"
     "@uniswap/v2-core" "1.0.0"
 
+"@web3api/client-js@0.0.1-prealpha.29":
+  version "0.0.1-prealpha.29"
+  resolved "https://registry.yarnpkg.com/@web3api/client-js/-/client-js-0.0.1-prealpha.29.tgz#f0251fac996a9d5af1a9472ea70c120fdfc7e653"
+  integrity sha512-qGob/PDBtIrPQS52zSrR9ix/+X/PdH2lRzi9ZYIB0JRRLKLMu08gS/ghaQ9VieUwafCvs781TVwpnd5XmDrR5Q==
+  dependencies:
+    "@msgpack/msgpack" "2.3.0"
+    "@web3api/core-js" "0.0.1-prealpha.29"
+    "@web3api/ens-plugin-js" "0.0.1-prealpha.29"
+    "@web3api/ethereum-plugin-js" "0.0.1-prealpha.29"
+    "@web3api/ipfs-plugin-js" "0.0.1-prealpha.29"
+    "@web3api/logger-plugin-js" "0.0.1-prealpha.29"
+    "@web3api/schema-parse" "0.0.1-prealpha.29"
+    "@web3api/sha3-plugin-js" "0.0.1-prealpha.29"
+    "@web3api/tracing-js" "0.0.1-prealpha.29"
+    "@web3api/uts46-plugin-js" "0.0.1-prealpha.29"
+    graphql "15.5.0"
+    js-yaml "3.14.0"
+    web-worker "1.0.0"
+
+"@web3api/core-js@0.0.1-prealpha.29":
+  version "0.0.1-prealpha.29"
+  resolved "https://registry.yarnpkg.com/@web3api/core-js/-/core-js-0.0.1-prealpha.29.tgz#c1193d463a38cae88418f1560f84eb08ab36a041"
+  integrity sha512-qlTSWDjED/EN7gSV9w/0s5WFsyuiCGk20zFGJA5d9Viy5205mNBwfX0E+NCwH7YCEWVQ115kUaF6xe9ucwi0GA==
+  dependencies:
+    "@web3api/manifest-schemas" "0.0.1-prealpha.29"
+    "@web3api/tracing-js" "0.0.1-prealpha.29"
+    graphql "15.5.0"
+    graphql-tag "2.10.4"
+    js-yaml "3.14.0"
+    jsonschema "1.4.0"
+    semver "7.3.4"
+
+"@web3api/ens-plugin-js@0.0.1-prealpha.29":
+  version "0.0.1-prealpha.29"
+  resolved "https://registry.yarnpkg.com/@web3api/ens-plugin-js/-/ens-plugin-js-0.0.1-prealpha.29.tgz#f086c43205b9d03198591b4acc1774f544ce1690"
+  integrity sha512-43u5hHAVUlF3Cqn1FY3Jqw4yjNftnOqvkaIkpAACaLq9kCmC/McNIMxEXpPfUsj90fRoLC614MpqmhuzDIpAhQ==
+  dependencies:
+    "@ethersproject/address" "5.0.7"
+    "@web3api/core-js" "0.0.1-prealpha.29"
+    ethers "5.0.7"
+
+"@web3api/ethereum-plugin-js@0.0.1-prealpha.29":
+  version "0.0.1-prealpha.29"
+  resolved "https://registry.yarnpkg.com/@web3api/ethereum-plugin-js/-/ethereum-plugin-js-0.0.1-prealpha.29.tgz#8086db342bbdd74928b14cca9b23d253482ecdc2"
+  integrity sha512-iJFi9m2lEl6El/+s4dhdYZ2fC+QWKk0xNzrF3Rdv3OePFYyoo/v26nW/JJKuDT/ZL13IGckx+u6sFqc5db8A5w==
+  dependencies:
+    "@ethersproject/address" "5.0.7"
+    "@ethersproject/providers" "5.0.7"
+    "@web3api/core-js" "0.0.1-prealpha.29"
+    ethers "5.0.7"
+
+"@web3api/ipfs-plugin-js@0.0.1-prealpha.29":
+  version "0.0.1-prealpha.29"
+  resolved "https://registry.yarnpkg.com/@web3api/ipfs-plugin-js/-/ipfs-plugin-js-0.0.1-prealpha.29.tgz#8262a1e588462dec1f01b14478767b8489331821"
+  integrity sha512-xnAs690vs3n6Wl3D6mbFvS8XeY/iqLZ/b/CyX/ILBYtTHnLyy6ZgyJtNF49d7oJR9B3StmSdAdY/iPSBOcDBpA==
+  dependencies:
+    "@dorgjelli-test/ipfs-http-client-lite" "0.3.1"
+    "@web3api/core-js" "0.0.1-prealpha.29"
+    abort-controller "3.0.0"
+    cids "^1.1.4"
+    is-ipfs "1.0.3"
+
+"@web3api/logger-plugin-js@0.0.1-prealpha.29":
+  version "0.0.1-prealpha.29"
+  resolved "https://registry.yarnpkg.com/@web3api/logger-plugin-js/-/logger-plugin-js-0.0.1-prealpha.29.tgz#d1e9d2053d45512da15650780bbfcc4a0842efe7"
+  integrity sha512-IuJcFmxB79y7dDsWVhT6Rw94bLgIZBnZZsIci2AXDuU1VOj3t3qhFg1Qr8wtVmsLfEd93zF5INcn15mknPc11A==
+  dependencies:
+    "@web3api/core-js" "0.0.1-prealpha.29"
+
+"@web3api/manifest-schemas@0.0.1-prealpha.29":
+  version "0.0.1-prealpha.29"
+  resolved "https://registry.yarnpkg.com/@web3api/manifest-schemas/-/manifest-schemas-0.0.1-prealpha.29.tgz#d9188f6b7487ef3a01c8bd5470ca169e7d8475a5"
+  integrity sha512-RY9dm4C70IsRdLZ9M+Hls/80WsyLOhaqa98QGdMRj1vKt0q3uRqKqFJiHpqvobrHpVqe3FyL0sj3xW1mxHlFHg==
+
+"@web3api/schema-parse@0.0.1-prealpha.29":
+  version "0.0.1-prealpha.29"
+  resolved "https://registry.yarnpkg.com/@web3api/schema-parse/-/schema-parse-0.0.1-prealpha.29.tgz#796da2879d9bd833508a565e7748c3b3ae464f76"
+  integrity sha512-Y9EEV+prtaw2gMDjLQDwpwUNZ4ubkK2PebLbRJ60st1w1AL1Hm1Fl61jwk3+LBTjDrG8nFSUELsCZx4DdHM8dQ==
+  dependencies:
+    graphql "15.5.0"
+    graphql-schema-cycles "1.1.3"
+
+"@web3api/sha3-plugin-js@0.0.1-prealpha.29":
+  version "0.0.1-prealpha.29"
+  resolved "https://registry.yarnpkg.com/@web3api/sha3-plugin-js/-/sha3-plugin-js-0.0.1-prealpha.29.tgz#5b5977a25456bd5cd15900af96fb27b138215a04"
+  integrity sha512-wzb6liAVrkvZCQOStJ/ghB1ss29/K5O4Ut1wXhNf9Z3Czt7cxrRO1qR+kxLwBMauLljRKwCtbl9qDNvH3lssPg==
+  dependencies:
+    "@web3api/core-js" "0.0.1-prealpha.29"
+    js-sha3 "0.8.0"
+
+"@web3api/tracing-js@0.0.1-prealpha.29":
+  version "0.0.1-prealpha.29"
+  resolved "https://registry.yarnpkg.com/@web3api/tracing-js/-/tracing-js-0.0.1-prealpha.29.tgz#bfbc480f72f113a54dbfd7057a9d08687960f617"
+  integrity sha512-BkalByB5Rj0qJgQLhFz5Np9c5RwybnT1HtMMxIDNLgnb2KFBuC2INr/y8aw/eTtm2p4EnTyvChBKR7BtQOVQ1g==
+  dependencies:
+    "@opentelemetry/api" "0.20.0"
+    "@opentelemetry/context-zone" "0.20.0"
+    "@opentelemetry/core" "0.20.0"
+    "@opentelemetry/exporter-collector" "0.20.0"
+    "@opentelemetry/exporter-jaeger" "0.20.0"
+    "@opentelemetry/exporter-zipkin" "0.20.0"
+    "@opentelemetry/node" "0.20.0"
+    "@opentelemetry/propagator-b3" "0.20.0"
+    "@opentelemetry/tracing" "0.20.0"
+    "@opentelemetry/web" "0.20.0"
+    util-inspect "0.1.8"
+
+"@web3api/uts46-plugin-js@0.0.1-prealpha.29":
+  version "0.0.1-prealpha.29"
+  resolved "https://registry.yarnpkg.com/@web3api/uts46-plugin-js/-/uts46-plugin-js-0.0.1-prealpha.29.tgz#263e2ed72a14381f7e1569398e4ca7c4b6c5f337"
+  integrity sha512-ijOBvS2TLRtsfVDSMZvGOpb4+uhbFFQKh52Q/XmBYm1BlRdK/eBGGGjPtT6S1OT8zhJz2w/mn3D5p75oO663dg==
+  dependencies:
+    "@web3api/core-js" "0.0.1-prealpha.29"
+    idna-uts46-hx "3.4.0"
+
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.8.5.tgz#51b1c5fe6576a34953bf4b253df9f0d490d9e359"
@@ -17504,7 +17619,7 @@ semver@7.3.4:
   dependencies:
     lru-cache "^6.0.0"
 
-semver@7.x, semver@^7.0.0, semver@^7.1.3, semver@^7.2.1, semver@^7.3.2, semver@^7.3.4:
+semver@7.3.5, semver@7.x, semver@^7.0.0, semver@^7.1.3, semver@^7.2.1, semver@^7.3.2, semver@^7.3.4:
   version "7.3.5"
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.3.5.tgz#0b621c879348d8998e4b0e4be94b3f12e6018ef7"
   integrity sha512-PoeGJYh8HK4BTO/a9Tf6ZG3veo/A7ZVsYrSA6J8ny9nb3B1VrpkuN+z9OE5wfE5p6H4LchYZsegiQgbJD94ZFQ==

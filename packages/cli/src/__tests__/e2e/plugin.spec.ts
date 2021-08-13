@@ -182,3 +182,13 @@ ${HELP}`);
     unlinkSync(`${projectRoot}/src/types.ts`);
   });
 });
+
+/*
+TODO:
+- import_redirects
+- invalid schema
+- invalid schema path
+- valid everything
+- invalid language
+- arguments
+*/

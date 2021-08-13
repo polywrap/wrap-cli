@@ -1,16 +1,3 @@
-/*
-TODO:
-polywrap plugin codegen // generates types
-polywrap plugin codegen --custom ./web3api.gen.ts
-
-format: 0.0.1-prealpha.3
-language: plugin/typescript
-schema: ./schema.graphql
-import_redirects:
-  - uri: w3://ens/ethereum.web3api.eth
-    schema: ../ethereum/schema.graphql
-*/
-
 /* eslint-disable prefer-const */
 import { CodeGenerator, PluginProject, SchemaComposer } from "../lib";
 import { fixParameters } from "../lib/helpers";

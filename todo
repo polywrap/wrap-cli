@@ -1,5 +1,19 @@
+Circular Deps Fix
+- The CLI->client is using an old version of the manifests. This fails when using the uri-resolver package.
+- - We could get around this with an import_redirect
+- - We could get around this by not making the change to the manifest schema
+- The CLI shouldn't really be dependent upon the client + plugins... it feels very strange...
+- - Maybe we make it so that it only uses the core?
+- - not sure if this is even possible...
+- The plugins could not be dependent upon the CLI?
+- We could release a version of the CLI to "unblock" the migration of the plugins...
+- - I feel like this makes sense. We've identified a circular dependency so instead of building
+    custom code to mess w/ how deps are used, we should just upgrade past this so we can use
+    the proper version in the things that need it.
+- - Build plugins, build client, build CLI, publish v31, use v31 in plugins, migrate plugins (codegen w/ live version, not local -> build)
+
 TODO
-* Convert all plugins
+* Convert all (non-default) plugins
 * Update the template project
 * Create tests for plugin command
 * polywrap plugin codegen --custom ./web3api.gen.ts
@@ -8,6 +22,7 @@ TODO
 * * output should only be when --verbose is passed in
 * * arguments and things like that should be consistent
 * * make sure they all have proper tests
+* Convert all default plugins
 
 ## Misc
 - polywrap compose // compose schema
