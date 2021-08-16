@@ -133,6 +133,9 @@ describe("e2e tests for HttpPlugin", () => {
         `
       })
 
+      console.log("TIMEOUT EXIDED");
+      console.log(response.data);
+
       expect(response.data).toBeDefined();
       expect(response.errors).toBeUndefined();
 
@@ -171,6 +174,9 @@ describe("e2e tests for HttpPlugin", () => {
 
       expect(response.data).toBeDefined();
       expect(response.errors).toBeUndefined();
+
+      console.log("FAILED WITH 500");
+      console.log(response.data);
 
       expect(response.data?.get.status).toBe(500);
       expect(response.data?.get.body).toBe("");

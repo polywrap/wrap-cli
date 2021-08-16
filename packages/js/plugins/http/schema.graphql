@@ -8,18 +8,18 @@ type UrlParam {
   value: String!
 }
 
+type ResponseError {
+  errorMessage: String!
+  errorCode: String!
+  timeoutExcided: Boolean!
+}
+
 type Response {
   status: UInt64
   statusText: String
   headers: [Header!]
   body: String
   error: ResponseError
-}
-
-type ResponseError {
-  errorMessage: String!
-  errorCode: String!
-  timeoutExcided: Bool!
 }
 
 type Request {
