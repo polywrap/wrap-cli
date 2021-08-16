@@ -1,6 +1,12 @@
 export class IpfsError extends Error {
-  constructor(method: string, status: number, statusText: string) {
-    super(`IPFS ${method} Failed.\nStatus: ${status}\nMessage:${statusText}`);
-    this.name = "IPFSError"
+  constructor(method: string, status?: number, statusText?: string, errorMessage?: string) {
+    super(
+      `IPFS ${method} Failed.\n`+
+      `${status ? "" : "Status: " + status + "\n"}`+
+      `${statusText ? "" : "Status message: " + statusText + "\n"}`+
+      `${errorMessage ? "" : "Error message:" + errorMessage}`
+    );
+    this.name = "IPFSError";
   }
 }
+

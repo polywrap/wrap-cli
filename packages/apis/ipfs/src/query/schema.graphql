@@ -3,6 +3,7 @@
 type Query {
   # Returns byte content of file, defined by provided cid
   catFile(ipfsUrl: String!, cid: String!, catFileOptions: CatFileOptions): Bytes!
+  catFileToString(ipfsUrl: String!, cid: String!, catFileOptions: CatFileOptions): String!
 }
 
 type CatFileOptions {
