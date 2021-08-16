@@ -1,20 +1,17 @@
 {{^__commonImport}}
-use crate::{
-    get_{{#toLower}}{{type}}{{/toLower}}_value, 
-    sanitize_{{#toLower}}{{type}}{{/toLower}}_value, 
-    {{#toUpper}}{{type}}{{/toUpper}},
-};
-use num_bigint::BigInt;
-use num_traits::cast::FromPrimitive;
 use polywrap_wasm_rs::{
-    Context, 
-    Read, 
-    ReadDecoder, 
-    Write, 
-    WriteEncoder, 
+    Context,
+    Read,
+    ReadDecoder,
+    Write,
+    WriteEncoder,
     WriteSizer,
 };
-use std::convert::TryFrom;
+
+use crate::{{#toUpper}}{{type}}{{/toUpper}};
+{{#propertyTypes}}
+use {{crate}}::{{type}};
+{{/propertyTypes}}
 
 pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(input: &{{#toUpper}}{{type}}{{/toUpper}}) -> Vec<u8> {
     let mut sizer_context = Context::new();
@@ -35,7 +32,7 @@ pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(input: &{{#toUpper}}{{ty
     writer.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
     writer.write_string("{{#toLower}}{{name}}{{/toLower}}");
     {{#scalar}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(input.{{#toLower}}{{name}}{{/toLower}});
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}({{#byRef}}&{{/byRef}}input.{{#toLower}}{{name}}{{/toLower}});
     {{/scalar}}
     {{#array}}
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#toLower}}{{name}}{{/toLower}}, |writer: &mut W, input| {
@@ -77,17 +74,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
     {{#properties}}
-    {{^object}}
-    let mut {{#toLower}}{{name}}{{/toLower}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
-    {{/object}}
-    {{#object}}
-    {{#required}}
-    let mut {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = None;
-    {{/required}}
-    {{^required}}
     let mut {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
-    {{/required}}
-    {{/object}}
     {{#required}}
     let mut {{#toLower}}{{name}}{{/toLower}}_set = false;
     {{/required}}
@@ -98,7 +85,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
         let field = reader.read_string().unwrap_or_default();
 
         match field.as_str() {
-            {{^properties}}
+            {{#properties}}
             "{{#toLower}}{{name}}{{/toLower}}" => {
                 reader.context().push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property");
                 {{#scalar}}

@@ -24,6 +24,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
     toPrefixedGraphQLType,
     hasImports,
     Transforms.propertyTypes(),
+    Transforms.byRef(),
   ];
 
   for (const transform of transforms) {

@@ -1,19 +1,20 @@
 pub mod serialization;
-use crate::CustomType;
 use polywrap_wasm_rs::{
-    Read, 
+    Read,
     Write,
 };
 use serde::{
-    Deserialize, 
+    Deserialize,
     Serialize,
 };
 pub use serialization::{
-    deserialize_another_type, 
-    read_another_type, 
-    serialize_another_type, 
+    deserialize_another_type,
+    read_another_type,
+    serialize_another_type,
     write_another_type,
 };
+
+use crate::CustomType;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct AnotherType {

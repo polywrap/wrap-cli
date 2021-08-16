@@ -1,15 +1,14 @@
-use crate::{
-    AnotherType, 
-    CustomType,
-};
 use polywrap_wasm_rs::{
-    Context, 
-    Read, 
-    ReadDecoder, 
-    Write, 
-    WriteEncoder, 
+    Context,
+    Read,
+    ReadDecoder,
+    Write,
+    WriteEncoder,
     WriteSizer,
 };
+
+use crate::AnotherType;
+use crate::CustomType;
 
 pub fn serialize_another_type(input: &AnotherType) -> Vec<u8> {
     let mut sizer_context = Context::new();
@@ -42,13 +41,14 @@ pub fn write_another_type<W: Write>(input: &AnotherType, writer: &mut W) {
 
 pub fn deserialize_another_type(input: &[u8]) -> AnotherType {
     let mut context = Context::new();
-    context.description = "Deserializing object-type AnotherType".to_string();
+    context.description = "Deserializing object-type: AnotherType".to_string();
     let mut reader = ReadDecoder::new(input, context);
     read_another_type(&mut reader).expect("Failed to deserialize AnotherType")
 }
 
 pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, String> {
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
+
     let mut prop: Option<String> = None;
     let mut circular: Box<Option<CustomType>> = Box::new(None);
 
@@ -59,7 +59,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, String>
         match field.as_str() {
             "prop" => {
                 reader.context().push(&field, "Option<String>", "type found, reading property");
-                prop = reader.read_nullable_string();
+                prop = reader.read_nullable_string().unwrap_or_default();
                 reader.context().pop().expect("Failed to pop Option<String> from Context");
             }
             "circular" => {
@@ -75,8 +75,9 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, String>
             }
         }
     }
-    Ok(AnotherType { 
-        prop, 
-        circular, 
+
+    Ok(AnotherType {
+        prop,
+        circular,
     })
 }

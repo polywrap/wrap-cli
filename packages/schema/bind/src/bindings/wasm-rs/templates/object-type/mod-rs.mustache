@@ -3,16 +3,12 @@ pub use super::common::{{#toUpper}}{{type}}{{/toUpper}};
 {{/__commonImport}}
 {{^__commonImport}}
 pub mod serialization;
-use crate::{ 
-    {{#toUpper}}{{type}}{{/toUpper}}, 
-};
-use num_bigint::BigInt;
 use polywrap_wasm_rs::{
-    Read, 
+    Read,
     Write,
 };
 use serde::{
-    Deserialize, 
+    Deserialize,
     Serialize,
 };
 pub use serialization::{
@@ -21,6 +17,10 @@ pub use serialization::{
     serialize_{{#toLower}}{{type}}{{/toLower}},
     write_{{#toLower}}{{type}}{{/toLower}},
 };
+
+{{#propertyTypes}}
+use {{crate}}::{{type}};
+{{/propertyTypes}}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{#toUpper}}{{type}}{{/toUpper}} {
@@ -31,19 +31,19 @@ pub struct {{#toUpper}}{{type}}{{/toUpper}} {
 
 impl {{#toUpper}}{{type}}{{/toUpper}} {
     pub fn to_buffer(input: &{{#toUpper}}{{type}}{{/toUpper}}) -> Vec<u8> {
-        serialize_{{#toLower}}{{name}}{{/toLower}}(input)
+        serialize_{{#toLower}}{{type}}{{/toLower}}(input)
     }
 
     pub fn from_buffer(input: &[u8]) -> {{#toUpper}}{{type}}{{/toUpper}} {
-        deserialize_{{#toLower}}{{name}}{{/toLower}}(input)
+        deserialize_{{#toLower}}{{type}}{{/toLower}}(input)
     }
 
     pub fn write<W: Write>(input: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) {
-        write_{{#toLower}}{{name}}{{/toLower}}(input, writer);
+        write_{{#toLower}}{{type}}{{/toLower}}(input, writer);
     }
 
     pub fn read<R: Read>(reader: &mut R) -> {{#toUpper}}{{type}}{{/toUpper}} {
-        read_{{#toLower}}{{name}}{{/toLower}}(reader).expect("Failed to read {{#toUpper}}{{type}}{{/toUpper}}")
+        read_{{#toLower}}{{type}}{{/toLower}}(reader).expect("Failed to read {{#toUpper}}{{type}}{{/toUpper}}")
     }
 }
 {{/__commonImport}}

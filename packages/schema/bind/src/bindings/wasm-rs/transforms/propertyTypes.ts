@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { isBaseType } from "./types";
+import { isBaseType } from "../types";
 
 import {
   ImportedQueryDefinition,

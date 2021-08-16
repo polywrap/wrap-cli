@@ -116,15 +116,24 @@ export const toMsgPack: MustacheFunction = () => {
 export const toWasmInit: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
+    let nullable = false;
+
+    const nullableModifier = (str: string, isObject: boolean = false): string => {
+      if (isObject) {
+        return !nullable ? str : "Box::new(None)";
+      } else {
+        return !nullable ? str : "None";
+      }
+    }
 
     if (type[type.length - 1] === "!") {
       type = type.substr(0, type.length - 1);
     } else {
-      return "None";
+      nullable = true;
     }
 
     if (type[0] === "[") {
-      return "vec![]";
+      return nullableModifier("vec![]");
     }
 
     switch (type) {
@@ -138,20 +147,20 @@ export const toWasmInit: MustacheFunction = () => {
       case "UInt16":
       case "UInt32":
       case "UInt64":
-        return "0";
+        return nullableModifier("0");
       case "String":
-        return "String::new()";
+        return nullableModifier("String::new()");
       case "Boolean":
-        return "false";
+        return nullableModifier("false");
       case "Bytes":
-        return "vec![]";
+        return nullableModifier("vec![]");
       case "BigInt":
-        return "BigInt::from_u16(0).unwrap_or_default()";
+        return nullableModifier("BigInt::from_u16(0).unwrap_or_default()");
       default:
         if (type.includes("Enum_")) {
-          return `${toWasm()(type, (str) => str)}::_MAX_`;
+          return nullableModifier(`${toWasm()(type, (str) => str)}::_MAX_`);
         } else {
-          return `${toWasm()(type, (str) => str)}::new()`;
+          return nullableModifier(`Box::new(${toWasm()(type, (str) => str)}::new())`, true);
         }
     }
   };
@@ -160,6 +169,7 @@ export const toWasmInit: MustacheFunction = () => {
 export const toWasm: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
+    let objectType = false;
 
     let nullable = false;
     if (type[type.length - 1] === "!") {
@@ -217,11 +227,14 @@ export const toWasm: MustacheFunction = () => {
         if (type.includes("Enum_")) {
           type = toUpper()(type.replace("Enum_", ""), (str) => str);
         } else {
+          objectType = true;
           type = toUpper()(type, (str) => str);
         }
     }
 
-    return applyNullable(type, nullable);
+    return objectType ?
+      `Box<${applyNullable(type, nullable)}>` :
+      applyNullable(type, nullable);
   };
 };
 
