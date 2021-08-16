@@ -10,4 +10,5 @@ type CatFileOptions {
   queryString: [Http_UrlParam!]
   offset: Int64
   length: Int64
+  timeout: UInt64
 }

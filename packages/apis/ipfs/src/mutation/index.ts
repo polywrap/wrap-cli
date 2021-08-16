@@ -3,6 +3,7 @@ import { Input_addFile, AddResult, Input_addFolder, Http_Response, DirectoryBlob
 import { IpfsError } from "../error";
 import { convertDirectoryBlobToFormData } from "./convert";
 import { parseAddDirectoryResponse, parseAddFileResponse } from "./parse";
+import { Nullable } from "@web3api/wasm-as";
 
 export function addFile(input: Input_addFile): AddResult {
   const addResponse = executeAddFileRequest(
@@ -43,11 +44,12 @@ function executeAddFileRequest(name: string, data: ArrayBuffer, ipfsUrl: string,
         rawBody: null,
         stringBody: null
       },
+      timeout: Nullable.fromNull<u64>()
     }
   });
   // return response
-  if (addResponse == null || addResponse.status != 200) {
-    throw new IpfsError("addFile", addResponse.status, addResponse.statusText);
+  if (addResponse == null || addResponse.status.value != 200) {
+    throw new IpfsError("addFile", addResponse.status.value, addResponse.statusText);
   }
   return addResponse;
 }
@@ -71,12 +73,13 @@ function executeAddFolderRequest(directoryEntry: DirectoryBlob, ipfsUrl: string,
         },
         stringBody: null,
         rawBody: null
-      }
+      },
+      timeout: Nullable.fromNull<u64>()
     }
   });
   // return response
-  if (addResponse == null || addResponse.status != 200) {
-    throw new IpfsError("addFolder", addResponse.status, addResponse.statusText);
+  if (addResponse == null || addResponse.status.value != 200) {
+    throw new IpfsError("addFolder", addResponse.status.value, addResponse.statusText);
   }
   return addResponse;
 }
