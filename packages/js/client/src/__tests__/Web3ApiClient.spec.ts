@@ -1,8 +1,6 @@
 import {
   ClientConfig,
   createWeb3ApiClient,
-  Plugin,
-  Uri
 } from "../";
 import {
   buildAndDeployApi,
@@ -12,8 +10,7 @@ import {
 import { GetPathToTestApis } from "@web3api/test-cases";
 import { Web3ApiClient } from "../Web3ApiClient";
 import { getDefaultClientConfig } from "../default-client-config";
-import { coreInterfaceUris } from '@web3api/core-js';
-import { Uri, PluginManifest, Web3ApiManifest, deserializeWeb3ApiManifest } from "@web3api/core-js";
+import { Plugin, coreInterfaceUris, Uri, PluginManifest, Web3ApiManifest, deserializeWeb3ApiManifest } from '@web3api/core-js';
 import { readFileSync } from "fs";
 
 jest.setTimeout(200000);
@@ -1697,13 +1694,14 @@ describe("Web3ApiClient", () => {
 
     const manifest: Web3ApiManifest = await client.getManifest({
       uri: ensUri,
-      manifest: 'web3api.yaml'
+      type: 'web3api'
     })
     expect(manifest).toStrictEqual(actualManifest);
 
     const defaultManifest: Web3ApiManifest = (await client.getManifest({
       uri: ensUri,
-    })) as Web3ApiManifest;
+      type: 'web3api'
+    }));
     expect(defaultManifest).toStrictEqual(actualManifest);
   });
 
@@ -1711,36 +1709,127 @@ describe("Web3ApiClient", () => {
     const client = await getClient();
 
     const manifest: PluginManifest = await client.getManifest({
-      uri: "w3://w3/logger",
-      manifest: "manifest.ts"
+      uri: "w3://ens/js-logger.web3api.eth",
+      type: "plugin"
     });
 
     expect(manifest).toStrictEqual({
-      schema: `
-# TODO: should import and "implements" the logger core-api schema
-# https://github.com/Web3-API/monorepo/issues/75
+      schema: `### Web3API Header START ###
+scalar UInt
+scalar UInt8
+scalar UInt16
+scalar UInt32
+scalar Int
+scalar Int8
+scalar Int16
+scalar Int32
+scalar Bytes
+scalar BigInt
 
-enum LogLevel {
-  DEBUG,
-  INFO,
-  WARN,
-  ERROR,
-}
+directive @imported(
+  uri: String!
+  namespace: String!
+  nativeType: String!
+) on OBJECT | ENUM
 
-type Query {
+directive @imports(
+  types: [String!]!
+) on OBJECT
+### Web3API Header END ###
+
+type Query implements Logger_Query @imports(
+  types: [
+    "Logger_Query",
+    "Logger_LogLevel"
+  ]
+) {
   log(
-    level: LogLevel!
+    level: Logger_LogLevel!
     message: String!
   ): Boolean!
 }
+
+### Imported Queries START ###
+
+type Logger_Query @imported(
+  uri: "w3://ens/logger.core.web3api.eth",
+  namespace: "Logger",
+  nativeType: "Query"
+) {
+  log(
+    level: Logger_LogLevel!
+    message: String!
+  ): Boolean!
+}
+
+### Imported Queries END ###
+
+### Imported Objects START ###
+
+enum Logger_LogLevel @imported(
+  uri: "w3://ens/logger.core.web3api.eth",
+  namespace: "Logger",
+  nativeType: "LogLevel"
+) {
+  DEBUG
+  INFO
+  WARN
+  ERROR
+}
+
+### Imported Objects END ###
 `,
-      implemented: [new Uri("w3/logger")],
-      imported: [],
+      implements: [coreInterfaceUris.logger],
     });
 
-    const defaultManifest: PluginManifest = (await client.getManifest({
-      uri: "w3://w3/logger",
-    })) as PluginManifest;
+    const defaultManifest: PluginManifest = await client.getManifest({
+      uri: "w3://ens/js-logger.web3api.eth",
+      type: 'plugin',
+    });
     expect(defaultManifest).toStrictEqual(manifest);
   });
+
+  it("getFile -- simple-storage web3api", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensAddress
+    );
+    const client = await getClient();
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const manifest: Web3ApiManifest = await client.getManifest({
+      uri: ensUri,
+      type: 'web3api'
+    });
+
+    const fileStr: string = await client.getFile({
+      uri: ensUri,
+      path: manifest.modules.query?.schema!,
+      encoding: 'utf8'
+    }) as string;
+    expect(fileStr).toContain(`getData(
+    address: String!
+    connection: Ethereum_Connection
+  ): Int!
+`);
+
+    const fileBuffer: ArrayBuffer = await client.getFile({
+      uri: ensUri,
+      path: manifest.modules.query?.schema!,
+    }) as ArrayBuffer;
+    const decoder = new TextDecoder('utf8');
+    const text = decoder.decode(fileBuffer);
+    expect(text).toContain(`getData(
+    address: String!
+    connection: Ethereum_Connection
+  ): Int!
+`);
+
+    await expect(() => client.getFile({
+      uri: new Uri("w3://ens/ipfs.web3api.eth"),
+      path: "./index.js",
+    })).rejects.toThrow("client.getFile(...) is not implemented for Plugins.");
+  });
 });
+

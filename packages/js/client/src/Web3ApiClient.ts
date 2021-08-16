@@ -26,6 +26,7 @@ import {
   getImplementations,
   Manifest,
   ManifestFile,
+  GetFileOptions,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -333,6 +334,30 @@ export class Web3ApiClient implements Client {
       : getImplementationsWithoutRedirects(typedUri);
   }
 
+  public async getManifest<T extends ManifestFile>(
+    options: GetManifestOptions<T>
+  ): Promise<Manifest<T>> {
+    let uri: Uri;
+    if (typeof options.uri === "string") {
+      uri = new Uri(options.uri);
+    } else {
+      uri = options.uri;
+    }
+    const api = await this.loadWeb3Api(uri);
+    return (await api.getManifest(options, this)) as Manifest<T>;
+  }
+
+  public async getFile(options: GetFileOptions): Promise<string | ArrayBuffer> {
+    let uri: Uri;
+    if (typeof options.uri === "string") {
+      uri = new Uri(options.uri);
+    } else {
+      uri = options.uri;
+    }
+    const api = await this.loadWeb3Api(uri);
+    return await api.getFile(options, this);
+  }
+
   private _requirePluginsToUseNonInterfaceUris(): void {
     const pluginUris = this.plugins().map((x) => x.uri.uri);
     const interfaceUris = this.interfaces().map((x) => x.interface.uri);
@@ -346,18 +371,5 @@ export class Web3ApiClient implements Client {
         `Plugins can't use interfaces for their URI. Invalid plugins: ${pluginsWithInterfaceUris}`
       );
     }
-  }
-
-  public async getManifest<T extends ManifestFile>(
-    options: GetManifestOptions<T>
-  ): Promise<Manifest<T>> {
-    let uri: Uri;
-    if (typeof options.uri === "string") {
-      uri = new Uri(options.uri);
-    } else {
-      uri = options.uri;
-    }
-    const api = await this.loadWeb3Api(uri);
-    return (await api.getManifest(options, this)) as Manifest<T>;
   }
 }

@@ -12,6 +12,7 @@ import {
   Manifest,
   ManifestFile,
   PluginManifest,
+  GetFileOptions,
 } from "@web3api/core-js";
 import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
@@ -141,6 +142,13 @@ export class PluginWeb3Api extends Api {
     client: Client // eslint-disable-line @typescript-eslint/no-unused-vars
   ): Promise<Manifest<T>> {
     return ({ ...this._plugin.manifest } as PluginManifest) as Manifest<T>;
+  }
+
+  public async getFile(
+    options: GetFileOptions, // eslint-disable-line @typescript-eslint/no-unused-vars
+    client: Client // eslint-disable-line @typescript-eslint/no-unused-vars
+  ): Promise<ArrayBuffer | string> {
+    throw Error("client.getFile(...) is not implemented for Plugins.");
   }
 
   private _getInstance(): Plugin {
