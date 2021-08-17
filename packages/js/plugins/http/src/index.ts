@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { query, mutation } from "./resolvers";
+import { query } from "./resolvers";
 import { Request, Response } from "./types";
 import { fromAxiosResponse, toAxiosRequestConfig } from "./util";
 import { manifest } from "./manifest";
@@ -25,7 +25,6 @@ export class HttpPlugin extends Plugin {
   public getModules(_client: Client): PluginModules {
     return {
       query: query(this),
-      mutation: mutation(this),
     };
   }
 
