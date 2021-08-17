@@ -14,8 +14,6 @@
   ],
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
-    "prebuild": "yarn codegen",
-    "codegen": "npx w3 plugin codegen",
     "lint": "eslint --color --ext .ts src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
@@ -28,7 +26,6 @@
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
-    "@web3api/cli": "0.0.1-prealpha.30",
     "jest": "26.6.3",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",

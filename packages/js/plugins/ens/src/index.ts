@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { query } from "./resolvers";
-import { manifest } from "./w3";
+import { manifest } from "./manifest";
 
 import {
   Client,
