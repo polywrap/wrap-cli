@@ -152,7 +152,7 @@ describe("e2e tests for HttpPlugin", () => {
       const response = await web3ApiClient.query<{ post: Response }>({
         uri: "w3://ens/http.web3api.eth",
         query: `
-          mutation {
+          query {
             post(
               url: "http://www.example.com/api"
               request: {
@@ -181,7 +181,7 @@ describe("e2e tests for HttpPlugin", () => {
       const response = await web3ApiClient.query<{ post: Response }>({
         uri: "w3://ens/http.web3api.eth",
         query: `
-          mutation {
+          query {
             post(
               url: "http://www.example.com/api"
               request: {
@@ -211,7 +211,7 @@ describe("e2e tests for HttpPlugin", () => {
       const response = await web3ApiClient.query<{ post: Response }>({
         uri: "w3://ens/http.web3api.eth",
         query: `
-          mutation {
+          query {
             post(
               url: "http://www.example.com/api"
               request: {
@@ -246,7 +246,7 @@ describe("e2e tests for HttpPlugin", () => {
       const response = await web3ApiClient.query<{ get: Response }>({
         uri: "w3://ens/http.web3api.eth",
         query: `
-          mutation {
+          query {
             post(
               url: "http://www.example.com/api"
               request: {

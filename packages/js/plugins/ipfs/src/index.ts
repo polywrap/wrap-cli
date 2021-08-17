@@ -93,7 +93,7 @@ export class IpfsPlugin extends Plugin {
   }
 
   public async cat(cid: string, options?: Options): Promise<Buffer> {
-    return await this.execWithOptions(
+    return await this._execWithOptions(
       "cat",
       (ipfs: IpfsClient, _provider: string, options: unknown) => {
         return ipfs.cat(cid, options);
@@ -108,7 +108,7 @@ export class IpfsPlugin extends Plugin {
   }
 
   public async resolve(cid: string, options?: Options): Promise<ResolveResult> {
-    return await this.execWithOptions(
+    return await this._execWithOptions(
       "resolve",
       async (ipfs: IpfsClient, provider: string, options: unknown) => {
         const { path } = await ipfs.resolve(cid, options);
@@ -121,7 +121,7 @@ export class IpfsPlugin extends Plugin {
     );
   }
 
-  private async execWithOptions<TReturn>(
+  private async _execWithOptions<TReturn>(
     operation: string,
     exec: (
       ipfs: IpfsClient,

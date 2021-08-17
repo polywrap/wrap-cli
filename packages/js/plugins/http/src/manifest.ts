@@ -37,9 +37,6 @@ type Request {
 
 type Query {
   get(url: String!, request: Request): Response
-}
-
-type Mutation {
   post(url: String!, request: Request): Response
 }
 `,

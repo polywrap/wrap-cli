@@ -8,9 +8,7 @@ type Query {
   querySubgraph(
     subgraphId: String!
     query: String!
-  ): String! """JSON!"""
-  """TODO: support JSON type as base type?"""
-  """I think this would be helpful for dynamic data"""
+  ): String!
 }`,
   implements: [],
 };

@@ -31,10 +31,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "prebuild": "yarn install:web3api",
-    "prestart": "yarn install:web3api",
-    "install:web3api": "npx web3api-worker-install ./public"
+    "eject": "react-scripts eject"
   },
   "browserslist": {
     "production": [
