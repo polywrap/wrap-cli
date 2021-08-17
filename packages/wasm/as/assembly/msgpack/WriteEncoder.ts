@@ -4,8 +4,7 @@ import { Nullable } from "./Nullable";
 import { Write } from "./Write";
 import { BigInt } from "../BigInt";
 import { Context } from "./Context";
-
-import { JSON } from "assemblyscript-json";
+import { JSON } from "../JSON";
 
 export class WriteEncoder extends Write {
   private readonly _context: Context;

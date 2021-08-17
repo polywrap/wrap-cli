@@ -25,8 +25,8 @@
     "assemblyscript-json": "1.1.0"
   },
   "devDependencies": {
-    "@as-pect/cli": "5.0.1",
-    "assemblyscript": "0.17.14"
+    "@as-pect/cli": "6.2.4",
+    "assemblyscript": "0.19.5"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {

@@ -72,6 +72,8 @@ export const toWasmInit: MustacheFunction = () => {
         return `new ArrayBuffer(0)`;
       case "BigInt":
         return `BigInt.fromUInt16(0)`;
+      case "JSON":
+        return `JSON.Value.Object()`;
       default:
         if (type.includes("Enum_")) {
           return "0";
@@ -132,6 +134,9 @@ export const toWasm: MustacheFunction = () => {
         break;
       case "BigInt":
         type = "BigInt";
+        break;
+      case "JSON":
+        type = "JSON";
         break;
       default:
         if (type.includes("Enum_")) {

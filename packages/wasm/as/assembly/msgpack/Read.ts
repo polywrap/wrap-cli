@@ -1,8 +1,7 @@
 import { Nullable } from "./Nullable";
 import { BigInt } from "../BigInt";
 import { Context } from "./Context";
-
-import { JSON } from "assemblyscript-json";
+import { JSON } from "../JSON";
 
 export abstract class Read {
   abstract readBool(): bool;

@@ -9,13 +9,8 @@ export {
 } from "./msgpack";
 
 export { BigInt } from "./BigInt";
+export * from "./JSON";
 
-export {
-  JSON,
-  JSONDecoder,
-  JSONEncoder,
-  JSONHandler,
-} from "assemblyscript-json";
 export * from "./abort";
 export * from "./invoke";
 export * from "./subinvoke";

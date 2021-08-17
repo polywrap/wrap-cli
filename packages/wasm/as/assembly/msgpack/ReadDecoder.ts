@@ -13,8 +13,7 @@ import { Nullable } from "./Nullable";
 import { Read } from "./Read";
 import { BigInt } from "../BigInt";
 import { Context } from "./Context";
-
-import { JSON } from "assemblyscript-json";
+import { JSON } from "../JSON";
 
 export class ReadDecoder extends Read {
   private readonly _context: Context;
