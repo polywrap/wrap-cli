@@ -1,5 +1,5 @@
 import path from "path";
-import { supportedLangs, defaultManifest } from "../../commands/plugin";
+import { defaultManifest } from "../../commands/plugin";
 import { clearStyle } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
@@ -9,20 +9,17 @@ const HELP = `
 w3 plugin command [options]
 
 Commands:
-  build <lang>     Build the plugin
-    langs: ${supportedLangs.build.join(", ")}
-  codegen <lang>   Generate code for the plugin
-    langs: ${supportedLangs.codegen.join(", ")}
+  codegen   Generate code for the plugin
 
 Options:
-  -h, --help                        Show usage information
+  -h, --help                  Show usage information
   -m, --manifest-path <path>  Path to the Web3API manifest file (default: ${defaultManifest.join(
     " | "
   )})
-  -s, --output-schema <path>  Output directory for the built schema
-  -t, --output-types <path>   Output dierctory for the generated types
+  -s, --output-schema-path <path>  Output path for the built schema (default: ./build/schema.graphql)
+  -t, --output-types-dir <path>   Output directory for the generated types (default: ./src/w3)
   -i, --ipfs [<node>]         IPFS node to load external schemas (default: dev-server's node)
-  -e, --ens [<address>]          ENS address to lookup external schemas (default: 0x0000...2e1e)
+  -e, --ens [<address>]       ENS address to lookup external schemas (default: 0x0000...2e1e)
 
 `;
 

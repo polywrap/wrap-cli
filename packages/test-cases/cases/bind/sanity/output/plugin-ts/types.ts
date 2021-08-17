@@ -1,3 +1,4 @@
+// @ts-noCheck
 import * as Types from "./";
 
 import {

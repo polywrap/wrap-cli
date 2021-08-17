@@ -18,7 +18,7 @@ export interface TestCase {
 type TestCases = {
   promise: Promise<TestCase | undefined>;
   name: string;
-}[]
+}[];
 
 export function fetchTestCases(): TestCases {
 

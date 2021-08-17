@@ -1,3 +1,4 @@
+// @ts-noCheck
 import {
   UInt,
   UInt8,
