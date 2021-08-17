@@ -11,6 +11,7 @@ import {
   Input_getNameFromAddress,
   Input_getContentHashFromDomain,
   Input_getAddressFromDomain,
+  Input_getTextRecord,
 } from "./w3";
 
 export function getResolver(input: Input_getResolver): string {
@@ -156,4 +157,15 @@ export function getNameFromReverseResolver(
   });
 
   return name;
+}
+
+export function getTextRecord(input: Input_getTextRecord): string {
+  const value = Ethereum_Query.callContractView({
+    address: input.resolverAddress,
+    method: "function text(bytes32 node, string value) external view returns (string)",
+    args: [namehash(input.subdomain), input.key],
+    connection: input.connection,
+  });
+
+  return value;
 }

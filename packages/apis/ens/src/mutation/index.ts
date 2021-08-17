@@ -17,6 +17,7 @@ import {
   Input_setRecord,
   Input_deployFIFSRegistrar,
   Input_registerSubnodeOwnerWithFIFSRegistrar,
+  Input_setTextRecord,
   Ethereum_TxResponse,
   TxOverrides,
 } from "./w3";
@@ -340,6 +341,26 @@ export function registerSubnodeOwnerWithFIFSRegistrar(
     address: input.fifsRegistrarAddress,
     method: "function register(bytes32 label, address owner) external",
     args: [keccak256(input.label), input.owner],
+    connection: input.connection,
+    txOverrides: {
+      gasLimit: txOverrides.gasLimit,
+      gasPrice: txOverrides.gasPrice,
+      value: null,
+    },
+  });
+
+  return txHash;
+}
+
+export function setTextRecord(input: Input_setTextRecord): Ethereum_TxResponse {
+  const txOverrides: TxOverrides =
+    input.txOverrides === null
+      ? { gasLimit: null, gasPrice: null }
+      : input.txOverrides!;
+  const txHash = Ethereum_Mutation.callContractMethod({
+    address: input.resolverAddress,
+    method: "function setText(bytes32 node, string key, string value)",
+    args: [namehash(input.subdomain), input.key, input.value],
     connection: input.connection,
     txOverrides: {
       gasLimit: txOverrides.gasLimit,

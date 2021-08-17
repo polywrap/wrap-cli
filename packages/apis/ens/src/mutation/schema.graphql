@@ -119,4 +119,13 @@ type Mutation {
     connection: Ethereum_Connection
     txOverrides: TxOverrides
   ): Ethereum_TxResponse!
+
+  setTextRecord(
+    subdomain: String!
+    resolverAddress: String!
+    key: String!
+    value: String!
+    connection: Ethereum_Connection
+    txOverrides: TxOverrides
+  ): Ethereum_TxResponse!
 }

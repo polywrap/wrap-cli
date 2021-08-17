@@ -62,4 +62,11 @@ type Query {
     registryAddress: String!
     connection: Ethereum_Connection
   ): String!
+
+  getTextRecord(
+    subdomain: String!
+    resolverAddress: String!
+    key: String!
+    connection: Ethereum_Connection
+  ): String!
 }

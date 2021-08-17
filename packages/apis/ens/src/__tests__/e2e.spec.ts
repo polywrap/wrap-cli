@@ -6,6 +6,7 @@ import {
 import { Web3ApiClient } from "@web3api/client-js";
 import path from "path";
 import { providers } from "ethers";
+
 import { getPlugins } from "./utils";
 
 jest.setTimeout(300000);
@@ -672,5 +673,72 @@ describe("ENS Wrapper", () => {
 
     expect(getNewOwnerData?.getOwner).toEqual(AddressOne);
     expect(getNewOwnerErrors).toBeUndefined();
+  });
+
+  it("should set and get text record from subdomain", async () => {
+    const key = "snapshot";
+    const value = "QmHash";
+
+    const setTextRecordVariables = {
+      subdomain,
+      resolver: resolverAddress,
+      key,
+      value,
+      network,
+    };
+
+    const {
+      data: setTextRecordData,
+      errors: setTextRecordErrors,
+    } = await client.query({
+      uri: ensUri,
+      query: `
+        mutation {
+          setTextRecord(
+            subdomain: $subdomain
+            resolverAddress: $resolver
+            key: $key
+            value: $value
+            connection: {
+              networkNameOrChainId: $network
+            }
+          )
+        }
+      `,
+      variables: setTextRecordVariables,
+    });
+
+    expect(setTextRecordData?.setTextRecord).toBeDefined();
+    expect(setTextRecordErrors).toBeUndefined();
+
+    const getTextRecordVariables = {
+      subdomain,
+      resolver: resolverAddress,
+      key,
+      network,
+    };
+
+    const {
+      data: getTextRecordData,
+      errors: getTextRecordErrors,
+    } = await client.query({
+      uri: ensUri,
+      query: `
+        query {
+          getTextRecord(
+            subdomain: $subdomain
+            resolverAddress: $resolver
+            key: $key
+            connection: {
+              networkNameOrChainId: $network
+            }
+          )
+        }
+      `,
+      variables: getTextRecordVariables,
+    });
+
+    expect(getTextRecordData?.getTextRecord).toEqual(value);
+    expect(getTextRecordErrors).toBeUndefined();
   });
 });
