@@ -4,14 +4,22 @@ export function byRef(): TypeInfoTransforms {
   return {
     enter: {
       AnyDefinition: (def: AnyDefinition) => {
-        if (def.scalar && def.scalar.type === "String") {
-          return {
-            ...def,
-            byRef: true,
-          };
-        } else {
-          return def;
+        const byRefScalars = [
+          "String",
+          "BigInt",
+          "Bytes"
+        ];
+
+        if (def.scalar) {
+          if (byRefScalars.indexOf(def.scalar.type) > -1 || !def.required) {
+            return {
+              ...def,
+              byRef: true,
+            };
+          }
         }
+
+        return def;
       }
     }
   }

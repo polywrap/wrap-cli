@@ -46,7 +46,7 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toU
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}({{#byRef}}&{{/byRef}}input.{{#toLower}}{{name}}{{/toLower}});
     {{/scalar}}
     {{#array}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#toLower}}{{name}}{{/toLower}}, |writer: &mut W, input| {
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#toLower}}{{name}}{{/toLower}}, |writer: &mut W, item| {
         {{> serialize_array}}
     });
     {{/array}}
@@ -70,7 +70,7 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toU
     }
     {{/required}}
     {{/object}}
-    writer.context().pop().expect("Failed to pop {{#toWasm}}{{toGraphQLType}}{{/toWasm}} from Context");
+    writer.context().pop();
     {{/arguments}}
 }
 
@@ -95,7 +95,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(input: &[u8]) -> {{#r
     {{> deserialize_object}}
     {{/object}}
     {{/return}}
-    reader.context().pop().expect("Failed to pop {{#toWasm}}{{toGraphQLType}}{{/toWasm}} from Context");
+    reader.context().pop();
     res
 }
 {{^last}}

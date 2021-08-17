@@ -23,7 +23,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
     addFirstLast,
     toPrefixedGraphQLType,
     hasImports,
-    Transforms.propertyTypes(),
+    Transforms.propertyDeps(),
     Transforms.byRef(),
   ];
 

@@ -9,53 +9,53 @@ import {
   TypeInfoTransforms,
 } from "@web3api/schema-parse";
 
-interface CrateAndType {
+interface PropertyDep {
   crate: string;
   type: string;
+  isEnum: boolean;
 }
 
-interface IPropertyTypesState {
+interface PropertyDepsState {
   objectDefinition?: ObjectDefinition;
   queryDefinition?: QueryDefinition;
   importedQueryDefinition?: ImportedQueryDefinition;
-  propertyTypes?: CrateAndType[];
+  propertyDeps?: PropertyDep[];
 }
 
-export function propertyTypes(): TypeInfoTransforms {
-  const state: IPropertyTypesState = {};
+export function propertyDeps(): TypeInfoTransforms {
+  const state: PropertyDepsState = {};
 
   return {
     enter: {
       ObjectDefinition: (def: ObjectDefinition) => {
         state.objectDefinition = def;
-        state.propertyTypes = [];
+        state.propertyDeps = [];
         return def;
       },
       QueryDefinition: (def: QueryDefinition) => {
         state.queryDefinition = def;
-        state.propertyTypes = [];
+        state.propertyDeps = [];
         return def;
       },
       ImportedQueryDefinition: (def: ImportedQueryDefinition) => {
         state.importedQueryDefinition = def;
-        state.propertyTypes = [];
+        state.propertyDeps = [];
         return def;
       },
       PropertyDefinition: (def: PropertyDefinition) => {
-        const appendCrateAndType = (
+        const appendPropertyDep = (
           rootType: string,
-          array: CrateAndType[]
-        ): CrateAndType[] => {
+          array: PropertyDep[]
+        ): PropertyDep[] => {
           if (
             isBaseType(def.type) ||
             def.type.indexOf("[") === 0 ||
-            def.type.indexOf("Enum_") === 0 ||
             def.type === rootType
           ) {
             return array;
           }
 
-          const appendUnique = (item: CrateAndType) => {
+          const appendUnique = (item: PropertyDep) => {
             if (
               array.findIndex(
                 (i) => i.crate === item.crate && i.type === item.type
@@ -67,33 +67,35 @@ export function propertyTypes(): TypeInfoTransforms {
 
           if (def.type === "BigInt") {
             appendUnique({
-              crate: "big_int",
+              crate: "num_bigint",
               type: "BigInt",
+              isEnum: false,
             });
           } else {
             appendUnique({
               crate: "crate",
               type: def.type,
+              isEnum: !!def.enum
             });
           }
 
           return array;
         };
 
-        if (state.objectDefinition && state.propertyTypes) {
-          state.propertyTypes = appendCrateAndType(
+        if (state.objectDefinition && state.propertyDeps) {
+          state.propertyDeps = appendPropertyDep(
             state.objectDefinition.type,
-            state.propertyTypes
+            state.propertyDeps
           );
-        } else if (state.queryDefinition && state.propertyTypes) {
-          state.propertyTypes = appendCrateAndType(
+        } else if (state.queryDefinition && state.propertyDeps) {
+          state.propertyDeps = appendPropertyDep(
             state.queryDefinition.type,
-            state.propertyTypes
+            state.propertyDeps
           );
-        } else if (state.importedQueryDefinition && state.propertyTypes) {
-          state.propertyTypes = appendCrateAndType(
+        } else if (state.importedQueryDefinition && state.propertyDeps) {
+          state.propertyDeps = appendPropertyDep(
             state.importedQueryDefinition.type,
-            state.propertyTypes
+            state.propertyDeps
           );
         }
 
@@ -102,30 +104,30 @@ export function propertyTypes(): TypeInfoTransforms {
     },
     leave: {
       ObjectDefinition: (def: ObjectDefinition) => {
-        const propertyTypes = state.propertyTypes;
-        state.propertyTypes = undefined;
+        const propertyDeps = state.propertyDeps;
+        state.propertyDeps = undefined;
         state.objectDefinition = undefined;
         return {
           ...def,
-          propertyTypes,
+          propertyDeps,
         };
       },
       QueryDefinition: (def: QueryDefinition) => {
-        const propertyTypes = state.propertyTypes;
-        state.propertyTypes = undefined;
+        const propertyDeps = state.propertyDeps;
+        state.propertyDeps = undefined;
         state.queryDefinition = undefined;
         return {
           ...def,
-          propertyTypes,
+          propertyDeps,
         };
       },
       ImportedQueryDefinition: (def: ImportedQueryDefinition) => {
-        const propertyTypes = state.propertyTypes;
-        state.propertyTypes = undefined;
+        const propertyDeps = state.propertyDeps;
+        state.propertyDeps = undefined;
         state.importedQueryDefinition = undefined;
         return {
           ...def,
-          propertyTypes,
+          propertyDeps,
         };
       },
     },

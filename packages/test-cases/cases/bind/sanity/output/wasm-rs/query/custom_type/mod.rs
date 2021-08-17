@@ -1,23 +1,22 @@
 pub mod serialization;
-use crate::{
-    AnotherType, 
-    CustomEnum,
-};
-use num_bigint::BigInt;
 use polywrap_wasm_rs::{
-    Read, 
+    Read,
     Write,
 };
 use serde::{
-    Deserialize, 
+    Deserialize,
     Serialize,
 };
 pub use serialization::{
-    deserialize_custom_type, 
-    read_custom_type, 
-    serialize_custom_type, 
+    deserialize_custom_type,
+    read_custom_type,
+    serialize_custom_type,
     write_custom_type,
 };
+
+use num_bigint::BigInt;
+use crate::AnotherType;
+use crate::CustomEnum;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CustomType {
@@ -28,12 +27,10 @@ pub struct CustomType {
     pub u8: u8,
     pub u16: u16,
     pub u32: u32,
-    pub u64: u64,
     pub i: i32,
     pub i8: i8,
     pub i16: i16,
     pub i32: i32,
-    pub i64: i64,
     pub bigint: BigInt,
     pub opt_bigint: Option<BigInt>,
     pub bytes: Vec<u8>,
@@ -45,13 +42,13 @@ pub struct CustomType {
     pub opt_u_opt_array: Option<Vec<Option<u32>>>,
     pub opt_str_opt_array: Option<Vec<Option<String>>>,
     pub u_array_array: Vec<Vec<u32>>,
-    pub u_opt_array_opt_array: Vec<Option<Vec<u64>>>,
-    pub u_array_opt_array_array: Vec<Option<Vec<Vec<u64>>>>,
-    pub crazy_array: Option<Vec<Option<Vec<Vec<Option<Vec<u64>>>>>>>,
-    pub object: AnotherType,
-    pub opt_object: Option<AnotherType>,
-    pub object_array: Vec<AnotherType>,
-    pub opt_object_array: Option<Vec<Option<AnotherType>>>,
+    pub u_opt_array_opt_array: Vec<Option<Vec<Option<u32>>>>,
+    pub u_array_opt_array_array: Vec<Option<Vec<Vec<u32>>>>,
+    pub crazy_array: Option<Vec<Option<Vec<Vec<Option<Vec<u32>>>>>>>,
+    pub object: Box<AnotherType>,
+    pub opt_object: Option<Box<AnotherType>>,
+    pub object_array: Vec<Box<AnotherType>>,
+    pub opt_object_array: Option<Vec<Option<Box<AnotherType>>>>,
     pub en: CustomEnum,
     pub opt_enum: Option<CustomEnum>,
     pub enum_array: Vec<CustomEnum>,

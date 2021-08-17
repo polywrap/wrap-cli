@@ -53,12 +53,12 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, S
                 reader.context().push(&field, "String", "type found, reading property");
                 str = reader.read_string().unwrap_or_default();
                 str_set = true;
-                reader.context().pop().expect("Failed to pop String from Context");
+                reader.context().pop();
             }
             "opt_str" => {
                 reader.context().push(&field, "Option<String>", "type found, reading property");
                 opt_str = reader.read_nullable_string();
-                reader.context().pop().expect("Failed to pop Option<String> from Context");
+                reader.context().pop();
             }
             "en" => {
                 reader.context().push(&field, "CustomEnum", "type found, reading property");
@@ -74,7 +74,7 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, S
                 }
                 en = value;
                 en_set = true;
-                reader.context().pop().expect("Failed to pop CustomEnum from Context");
+                reader.context().pop();
             }
             "opt_enum" => {
                 reader.context().push(&field, "Option<CustomEnum>", "type found, reading property");
@@ -93,7 +93,7 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, S
                     value = None;
                 }
                 opt_enum = value;
-                reader.context().pop().expect("Failed to pop Option<CustomEnum> from Context");
+                reader.context().pop();
             }
             "enum_array" => {
                 reader.context().push(&field, "Vec<CustomEnum>", "type found, reading property");
@@ -111,7 +111,7 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, S
                     value
                 }).expect("Failed to read array");
                 enum_array_set = true;
-                reader.context().pop().expect("Failed to pop Vec<CustomEnum> from Context");
+                reader.context().pop();
             }
             "opt_enum_array" => {
                 reader.context().push(&field, "Option<Vec<Option<CustomEnum>>>", "type found, reading property");
@@ -132,11 +132,11 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, S
                     }
                     value
                 });
-                reader.context().pop().expect("Failed to pop Option<Vec<Option<CustomEnum>>> from Context");
+                reader.context().pop();
             }
             _ => {
                 reader.context().push(&field, "unknown", "searching for property type");
-                reader.context().pop().expect("Failed to pop unknown from Context");
+                reader.context().pop();
             }
         }
     }
@@ -179,7 +179,7 @@ pub fn serialize_query_method_result(input: i32) -> Vec<u8> {
 pub fn write_query_method_result<W: Write>(input: i32, writer: &mut W) {
     writer.context().push("query_method", "i32", "writing property");
     writer.write_i32(input);
-    writer.context().pop().expect("Failed to pop i32 from Context");
+    writer.context().pop();
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -216,7 +216,7 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
                 let obj = AnotherType::read(&mut reader);
                 object = obj;
                 object_set = true;
-                reader.context().pop().expect("Failed to pop AnotherType from Context");
+                reader.context().pop();
             }
             "opt_object" => {
                 reader.context().push(&field, "Option<AnotherType>", "type found, reading property");
@@ -225,7 +225,7 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
                     opt_obj = Some(AnotherType::read(&mut reader));
                 }
                 opt_object = opt_obj;
-                reader.context().pop().expect("Failed to pop Option<AnotherType> from Context");
+                reader.context().pop();
             }
             "object_array" => {
                 reader.context().push(&field, "Vec<AnotherType>", "type found, reading property");
@@ -234,7 +234,7 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
                     obj
                 }).expect("Failed to read array");
                 object_array_set = true;
-                reader.context().pop().expect("Failed to pop Vec<AnotherType> from Context");
+                reader.context().pop();
             }
             "opt_object_array" => {
                 reader.context().push(&field, "Option<Vec<Option<AnotherType>>>", "type found, reading property");
@@ -245,11 +245,11 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
                     }
                     opt_obj
                 });
-                reader.context().pop().expect("Failed to pop Option<Vec<Option<AnotherType>>> from Context");
+                reader.context().pop();
             }
             _ => {
                 reader.context().push(&field, "unknown", "searching for property type");
-                reader.context().pop().expect("Failed to pop unknown from Context");
+                reader.context().pop();
             }
         }
     }
@@ -290,5 +290,5 @@ pub fn write_object_method_result<W: Write>(input: Option<AnotherType>, writer: 
     } else {
         writer.write_nil();
     }
-    writer.context().pop().expect("Failed to pop Option<AnotherType> from Context");
+    writer.context().pop();
 }

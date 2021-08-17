@@ -26,7 +26,7 @@ pub fn write_test_import_another_object<W: Write>(input: &TestImportAnotherObjec
     writer.context().push("prop", "String", "writing property");
     writer.write_string("prop");
     writer.write_string(&input.prop);
-    writer.context().pop().expect("Failed to pop String from Context");
+    writer.context().pop();
 }
 
 pub fn deserialize_test_import_another_object(input: &[u8]) -> TestImportAnotherObject {
@@ -51,11 +51,7 @@ pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestIm
                 reader.context().push(&field, "String", "type found, reading property");
                 prop = reader.read_string().unwrap_or_default();
                 prop_set = true;
-                reader.context().pop().expect("Failed to pop String from Context");
-            }
-            _ => {
-                reader.context().push(&field, "unknown", "searching for property type");
-                reader.context().pop().expect("Failed to pop unknown from Context");
+                reader.context().pop();
             }
         }
     }

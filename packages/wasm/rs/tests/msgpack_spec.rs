@@ -178,24 +178,24 @@ fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
     writer.write_string("large_bytes");
     writer.write_bytes(&sanity.large_bytes);
     writer.write_string("array");
-    writer.write_array(&sanity.array, |writer: &mut W, input| {
-        writer.write_u8(*input);
+    writer.write_array(&sanity.array, |writer: &mut W, item| {
+        writer.write_u8(*item);
     });
     writer.write_string("large_string_array");
-    writer.write_array(&sanity.large_string_array, |writer: &mut W, input| {
-        writer.write_string(input);
+    writer.write_array(&sanity.large_string_array, |writer: &mut W, item| {
+        writer.write_string(item);
     });
     writer.write_string("large_bytes_array");
-    writer.write_array(&sanity.large_bytes_array, |writer: &mut W, input| {
-        writer.write_bytes(input);
+    writer.write_array(&sanity.large_bytes_array, |writer: &mut W, item| {
+        writer.write_bytes(item);
     });
     writer.write_string("map");
     writer.write_map(
         &sanity.map,
         |writer: &mut W, key| writer.write_string(key),
         |writer: &mut W, value| {
-            writer.write_array(value, |writer: &mut W, input| {
-                writer.write_i32(*input);
+            writer.write_array(value, |writer: &mut W, item| {
+                writer.write_i32(*item);
             });
         },
     );

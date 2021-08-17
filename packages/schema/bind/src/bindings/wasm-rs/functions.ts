@@ -100,15 +100,37 @@ export const toMsgPack: MustacheFunction = () => {
     if (type[0] === "[") {
       return modifier + "array";
     }
+
     switch (type) {
+      case "Int":
+        return modifier + "i32";
+      case "Int8":
+        return modifier + "i8";
+      case "Int16":
+        return modifier + "i16";
+      case "Int32":
+        return modifier + "i32";
+      case "Int64":
+        return modifier + "i64";
+      case "UInt":
+      case "UInt32":
+        return modifier + "u32";
+      case "UInt8":
+        return modifier + "u8";
+      case "UInt16":
+        return modifier + "u16";
+      case "UInt64":
+        return modifier + "u64";
       case "String":
         return modifier + "string";
+      case "Boolean":
+        return modifier + "bool";
       case "Bytes":
         return modifier + "bytes";
       case "BigInt":
         return modifier + "bigint";
       default:
-        return modifier + toWasm()(type, (str) => str);
+        throw Error(`Unknown toWasm type "${type}"`);
     }
   };
 };
@@ -118,12 +140,8 @@ export const toWasmInit: MustacheFunction = () => {
     let type = render(value);
     let nullable = false;
 
-    const nullableModifier = (str: string, isObject: boolean = false): string => {
-      if (isObject) {
-        return !nullable ? str : "Box::new(None)";
-      } else {
-        return !nullable ? str : "None";
-      }
+    const nullableModifier = (str: string): string => {
+      return !nullable ? str : "None";
     }
 
     if (type[type.length - 1] === "!") {
@@ -160,7 +178,7 @@ export const toWasmInit: MustacheFunction = () => {
         if (type.includes("Enum_")) {
           return nullableModifier(`${toWasm()(type, (str) => str)}::_MAX_`);
         } else {
-          return nullableModifier(`Box::new(${toWasm()(type, (str) => str)}::new())`, true);
+          return nullableModifier(`${toWasm()(type, (str) => str)}::new()`);
         }
     }
   };
@@ -233,7 +251,7 @@ export const toWasm: MustacheFunction = () => {
     }
 
     return objectType ?
-      `Box<${applyNullable(type, nullable)}>` :
+      applyNullable(`Box<${type}>`, nullable) :
       applyNullable(type, nullable);
   };
 };

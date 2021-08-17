@@ -10,9 +10,9 @@ fn push_and_pop_values() {
     context.push("property", "bool", "");
     assert_eq!(context.get_length(), 3);
     assert!(!context.is_empty());
-    context.pop().expect("Failed to pop value");
-    context.pop().expect("Failed to pop value");
-    context.pop().expect("Failed to pop value");
+    context.pop();
+    context.pop();
+    context.pop();
     assert_eq!(context.get_length(), 0);
     assert!(context.is_empty());
 }

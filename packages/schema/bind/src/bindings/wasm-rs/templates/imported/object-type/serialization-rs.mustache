@@ -36,7 +36,7 @@ pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(input: &{{#toUpper}}{{ty
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}({{#byRef}}&{{/byRef}}input.{{#toLower}}{{name}}{{/toLower}});
     {{/scalar}}
     {{#array}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#toLower}}{{name}}{{/toLower}}, |writer: &mut W, input| {
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#toLower}}{{name}}{{/toLower}}, |writer: &mut W, item| {
         {{> serialize_array}}
     });
     {{/array}}
@@ -60,7 +60,7 @@ pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(input: &{{#toUpper}}{{ty
     writer.write_nullable_i32(&Some(input.{{#toLower}}{{name}}{{/toLower}}.unwrap() as i32));
     {{/required}}
     {{/enum}}
-    writer.context().pop().expect("Failed to pop {{#toWasm}}{{toGraphQLType}}{{/toWasm}} from Context");
+    writer.context().pop();
     {{/properties}}
 }
 
@@ -116,13 +116,9 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
                 {{#required}}
                 {{#toLower}}{{name}}{{/toLower}}_set = true;
                 {{/required}}
-                reader.context().pop().expect("Failed to pop {{#toWasm}}{{toGraphQLType}}{{/toWasm}} from Context");
+                reader.context().pop();
             }
             {{/properties}}
-            _ => {
-                reader.context().push(&field, "unknown", "searching for property type");
-                reader.context().pop().expect("Failed to pop unknown from Context");
-            }
         }
     }
     {{#properties}}

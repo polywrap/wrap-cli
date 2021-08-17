@@ -28,15 +28,15 @@ pub fn write_another_type<W: Write>(input: &AnotherType, writer: &mut W) {
     writer.context().push("prop", "Option<String>", "writing property");
     writer.write_string("prop");
     writer.write_nullable_string(&input.prop);
-    writer.context().pop().expect("Failed to pop Option<String> from Context");
-    writer.context().push("circular", "Box<Option<CustomType>>", "writing property");
+    writer.context().pop();
+    writer.context().push("circular", "Option<Box<CustomType>>", "writing property");
     writer.write_string("circular");
     if input.circular.is_some() {
         CustomType::write(input.circular.as_ref().as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }
-    writer.context().pop().expect("Failed to pop Box<Option<CustomType>> from Context");
+    writer.context().pop();
 }
 
 pub fn deserialize_another_type(input: &[u8]) -> AnotherType {
@@ -50,7 +50,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, String>
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
 
     let mut prop: Option<String> = None;
-    let mut circular: Box<Option<CustomType>> = Box::new(None);
+    let mut circular: Option<Box<CustomType>> = None;
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -60,18 +60,14 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, String>
             "prop" => {
                 reader.context().push(&field, "Option<String>", "type found, reading property");
                 prop = reader.read_nullable_string().unwrap_or_default();
-                reader.context().pop().expect("Failed to pop Option<String> from Context");
+                reader.context().pop();
             }
             "circular" => {
-                reader.context().push(&field, "Box<Option<CustomType>>", "type found, reading property");
+                reader.context().push(&field, "Option<Box<CustomType>>", "type found, reading property");
                 if !reader.is_next_nil() {
                     circular = Box::new(Some(CustomType::read(reader)));
                 }
-                reader.context().pop().expect("Failed to pop Box<Option<CustomType>> from Context");
-            }
-            _ => {
-                reader.context().push(&field, "unknown", "searching for property type");
-                reader.context().pop().expect("Failed to pop unknown from Context");
+                reader.context().pop();
             }
         }
     }

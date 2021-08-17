@@ -18,9 +18,9 @@ pub use serialization::{
     write_{{#toLower}}{{type}}{{/toLower}},
 };
 
-{{#propertyTypes}}
+{{#propertyDeps}}
 use {{crate}}::{{type}};
-{{/propertyTypes}}
+{{/propertyDeps}}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{#toUpper}}{{type}}{{/toUpper}} {

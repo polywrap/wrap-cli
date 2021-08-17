@@ -1,8 +1,8 @@
 {{#scalar}}
-writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(*input.{{#toLower}}{{name}}{{/toLower}});
+writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}({{#required}}*{{/required}}item);
 {{/scalar}}
 {{#array}}
-writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#toLower}}{{name}}{{/toLower}}, |writer: &mut W, input| {
+writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(item, |writer: &mut W, item| {
     {{> serialize_array}}
 });
 {{/array}}

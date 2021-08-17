@@ -1,2 +1,2 @@
 export * from "./byRef";
-export * from "./propertyTypes";
+export * from "./propertyDeps";

@@ -33,7 +33,7 @@ pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut
     writer.context().push("object", "TestImportAnotherObject", "writing property");
     writer.write_string("object");
     TestImportObject::write(input, writer);
-    writer.context().pop().expect("Failed to pop TestImportAnotherObject from Context");
+    writer.context().pop();
     writer.context().push("opt_object", "Option<TestImportAnotherObject>", "writing property");
     writer.write_string("opt_object");
     if input.opt_object.is_some() {
@@ -41,43 +41,43 @@ pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut
     } else {
         writer.write_nil();
     }
-    writer.context().pop().expect("Failed to pop Option<TestImportAnotherObject> from Context");
+    writer.context().pop();
     writer.context().push("object_array", "Vec<TestImportAnotherObject>", "writing property");
     writer.write_string("object_array");
-    writer.write_array(&input.object_array, |writer: &mut W, item1| {
-        TestImportAnotherObject::write(item1, writer);
+    writer.write_array(&input.object_array, |writer: &mut W, item| {
+        TestImportAnotherObject::write(item, writer);
     });
-    writer.context().pop().expect("Failed to pop Vec<TestImportAnotherObject> from Context");
+    writer.context().pop();
     writer.context().push("opt_object_array", "Option<Vec<Option<TestImportAnotherObject>>>", "writing property");
     writer.write_string("opt_object_array");
-    writer.write_nullable_array(&input.opt_object_array, |writer: &mut W, item1| {
-        if item1.is_some() {
-            TestImportAnotherObject::write(item1.as_ref().as_ref().unwrap(), writer);
+    writer.write_nullable_array(&input.opt_object_array, |writer: &mut W, item| {
+        if item.is_some() {
+            TestImportAnotherObject::write(item.as_ref().as_ref().unwrap(), writer);
         } else {
             writer.write_nil();
         }
     });
-    writer.context().pop().expect("Failed to pop Option<Vec<Option<TestImportAnotherObject>>> from Context");
+    writer.context().pop();
     writer.context().push("en", "TestImportEnum", "writing property");
     writer.write_string("en");
     writer.write_i32(input.en as i32);
-    writer.context().pop().expect("Failed to pop TestImportEnum from Context");
+    writer.context().pop();
     writer.context().push("opt_enum", "Option<TestImportEnum>", "writing property");
     writer.write_string("opt_enum");
     writer.write_nullable_i32(&Some(input.opt_enum.unwrap() as i32));
-    writer.context().pop().expect("Failed to pop Option<TestImportEnum> from Context");
+    writer.context().pop();
     writer.context().push("enum_array", "Vec<TestImportEnum>", "writing property");
     writer.write_string("enum_array");
-    writer.write_array(&input.enum_array, |writer: &mut W, item1| {
-        writer.write_i32(*item1 as i32);
+    writer.write_array(&input.enum_array, |writer: &mut W, item| {
+        writer.write_i32(*item as i32);
     });
-    writer.context().pop().expect("Failed to pop Vec<TestImportEnum> from Context");
+    writer.context().pop();
     writer.context().push("opt_enum_array", "Option<Vec<Option<TestImportEnum>>>", "writing property");
     writer.write_string("opt_enum_array");
-    writer.write_nullable_array(&input.opt_enum_array, |writer: &mut W, item1| {
-        writer.write_nullable_i32(&Some(item1.unwrap() as i32));
+    writer.write_nullable_array(&input.opt_enum_array, |writer: &mut W, item| {
+        writer.write_nullable_i32(&Some(item.unwrap() as i32));
     });
-    writer.context().pop().expect("Failed to pop Option<Vec<Option<TestImportEnum>>> from Context");
+    writer.context().pop();
 }
 
 pub fn deserialize_test_import_object(input: &[u8]) -> TestImportObject {
@@ -115,7 +115,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                 let obj = TestImportAnotherObject::read(reader);
                 object = obj;
                 object_set = true;
-                reader.context().pop().expect("Failed to pop TestImportAnotherObject from Context");
+                reader.context().pop();
             }
             "opt_object" => {
                 reader.context().push(&field, "Option<TestImportAnotherObject>", "type found, reading property");
@@ -124,7 +124,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                     opt_obj = Some(TestImportAnotherObject::read(reader));
                 }
                 opt_object = opt_obj;
-                reader.context().pop().expect("Failed to pop Option<TestImportAnotherObject> from Context");
+                reader.context().pop();
             }
             "object_array" => {
                 reader.context().push(&field, "Vec<TestImportAnotherObject>", "type found, reading property");
@@ -133,7 +133,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                     obj
                 }).expect("Failed to read array");
                 object_array_set = true;
-                reader.context().pop().expect("Failed to pop Vec<TestImportAnotherObject> from Context");
+                reader.context().pop();
             }
             "opt_object_array" => {
                 reader.context().push(&field, "Option<Vec<Option<TestImportAnotherObject>>>", "type found, reading property");
@@ -144,7 +144,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                     }
                     opt_obj
                 });
-                reader.context().pop().expect("Failed to pop Option<Vec<Option<TestImportAnotherObject>>> from Context");
+                reader.context().pop();
             }
             "en" => {
                 reader.context().push(&field, "TestImportEnum", "type found, reading property");
@@ -160,7 +160,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                 }
                 en = value;
                 en_set = true;
-                reader.context().pop().expect("Failed to pop TestImportEnum from Context");
+                reader.context().pop();
             }
             "opt_enum" => {
                 reader.context().push(&field, "Option<TestImportEnum>", "type found, reading property");
@@ -179,7 +179,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                     value = None;
                 }
                 opt_enum = value;
-                reader.context().pop().expect("Failed to pop Option<TestImportEnum> from Context");
+                reader.context().pop();
             }
             "enum_array" => {
                 reader.context().push(&field, "Vec<TestImportEnum>", "type found, reading property");
@@ -197,7 +197,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                     value
                 }).expect("Failed to read array");
                 enum_array_set = true;
-                reader.context().pop().expect("Failed to pop Vec<TestImportEnum> from Context");
+                reader.context().pop();
             }
             "opt_enum_array" => {
                 reader.context().push(&field, "Option<Vec<Option<TestImportEnum>>>", "type found, reading property");
@@ -218,11 +218,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                     }
                     value
                 });
-                reader.context().pop().expect("Failed to pop Option<Vec<Option<CustomEnum>>> from Context");
-            }
-            _ => {
-                reader.context().push(&field, "unknown", "searching for property type");
-                reader.context().pop().expect("Failed to pop unknown from Context");
+                reader.context().pop();
             }
         }
     }
