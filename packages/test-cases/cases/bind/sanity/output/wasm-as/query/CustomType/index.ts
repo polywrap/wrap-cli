@@ -20,12 +20,10 @@ export class CustomType {
   u8: u8;
   u16: u16;
   u32: u32;
-  u64: u64;
   i: i32;
   i8: i8;
   i16: i16;
   i32: i32;
-  i64: i64;
   bigint: BigInt;
   optBigint: BigInt | null;
   bytes: ArrayBuffer;
@@ -37,9 +35,9 @@ export class CustomType {
   optUOptArray: Array<Nullable<u32>> | null;
   optStrOptArray: Array<string | null> | null;
   uArrayArray: Array<Array<u32>>;
-  uOptArrayOptArray: Array<Array<Nullable<u64>> | null>;
-  uArrayOptArrayArray: Array<Array<Array<u64>> | null>;
-  crazyArray: Array<Array<Array<Array<u64> | null>> | null> | null;
+  uOptArrayOptArray: Array<Array<Nullable<u32>> | null>;
+  uArrayOptArrayArray: Array<Array<Array<u32>> | null>;
+  crazyArray: Array<Array<Array<Array<u32> | null>> | null> | null;
   object: Types.AnotherType;
   optObject: Types.AnotherType | null;
   objectArray: Array<Types.AnotherType>;

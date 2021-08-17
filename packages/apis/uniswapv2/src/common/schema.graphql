@@ -20,7 +20,7 @@ enum Rounding {
 type TradeOptions {
   allowedSlippage: String!
   recipient: String!
-  unixTimestamp: UInt64!
+  unixTimestamp: UInt32!
   ttl: UInt32
   deadline: UInt32
   feeOnTransfer: Boolean

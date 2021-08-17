@@ -20,6 +20,5 @@ export const manifest: PluginManifest = {
   shake_128(message: String!, outputBits: Int!): String!
   shake_256(message: String!, outputBits: Int!): String!
 }`,
-  implemented: [],
-  imported: [],
+  implements: [],
 };

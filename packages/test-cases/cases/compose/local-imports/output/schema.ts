@@ -9,7 +9,8 @@ import {
   createObjectDefinition,
   createEnumDefinition,
   TypeInfo,
-  createEnumPropertyDefinition
+  createEnumPropertyDefinition,
+  createObjectRef
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
@@ -69,12 +70,12 @@ export const typeInfo: TypeInfo = {
             name: "method2",
             return: createArrayPropertyDefinition({
               name: "method2",
-              type: "[Int64]",
+              type: "[Int32]",
               required: true,
               item: createScalarDefinition({
                 name: "method2",
                 required: true,
-                type: "Int64"
+                type: "Int32"
               })
             })
           }),
@@ -145,12 +146,12 @@ export const typeInfo: TypeInfo = {
             name: "method2",
             return: createArrayPropertyDefinition({
               name: "method2",
-              type: "[Int64]",
+              type: "[Int32]",
               required: true,
               item: createScalarDefinition({
                 name: "method2",
                 required: true,
-                type: "Int64"
+                type: "Int32"
               })
             })
           }),
@@ -179,10 +180,8 @@ export const typeInfo: TypeInfo = {
         createScalarPropertyDefinition({ name: "u", type: "UInt", required: true }),
         createScalarPropertyDefinition({ name: "optU", type: "UInt", required: false }),
         createScalarPropertyDefinition({ name: "u8", type: "UInt8", required: true }),
-        createScalarPropertyDefinition({ name: "u64", type: "UInt64", required: true }),
         createScalarPropertyDefinition({ name: "i", type: "Int", required: true }),
         createScalarPropertyDefinition({ name: "i8", type: "Int8", required: true }),
-        createScalarPropertyDefinition({ name: "i64", type: "Int64", required: true }),
         createScalarPropertyDefinition({ name: "bytes", type: "Bytes", required: true }),
         createArrayPropertyDefinition({
           name: "uArray",
@@ -204,21 +203,21 @@ export const typeInfo: TypeInfo = {
         }),
         createArrayPropertyDefinition({
           name: "crazyArray",
-          type: "[[[[UInt64]]]]",
+          type: "[[[[UInt32]]]]",
           required: false,
           item: createArrayDefinition({
             name: "crazyArray",
-            type: "[[[UInt64]]]",
+            type: "[[[UInt32]]]",
             required: false,
             item: createArrayDefinition({
               name: "crazyArray",
-              type: "[[UInt64]]",
+              type: "[[UInt32]]",
               required: true,
               item: createArrayDefinition({
                 name: "crazyArray",
-                type: "[UInt64]",
+                type: "[UInt32]",
                 required: false,
-                item: createScalarDefinition({ name: "crazyArray", type: "UInt64", required: true })
+                item: createScalarDefinition({ name: "crazyArray", type: "UInt32", required: true })
               })
             })
           })
@@ -247,7 +246,7 @@ export const typeInfo: TypeInfo = {
             name: "objectArray",
             type: "[ArrayObject]",
             required: false,
-            item: createObjectDefinition({
+            item: createObjectRef({
               name: "objectArray",
               type: "ArrayObject",
               required: false
@@ -285,10 +284,8 @@ export const typeInfo: TypeInfo = {
         createScalarPropertyDefinition({ name: "u", type: "UInt", required: true }),
         createScalarPropertyDefinition({ name: "optU", type: "UInt", required: false }),
         createScalarPropertyDefinition({ name: "u8", type: "UInt8", required: true }),
-        createScalarPropertyDefinition({ name: "u64", type: "UInt64", required: true }),
         createScalarPropertyDefinition({ name: "i", type: "Int", required: true }),
         createScalarPropertyDefinition({ name: "i8", type: "Int8", required: true }),
-        createScalarPropertyDefinition({ name: "i64", type: "Int64", required: true }),
         createScalarPropertyDefinition({ name: "bytes", type: "Bytes", required: true }),
         createArrayPropertyDefinition({
           name: "uArray",
@@ -310,21 +307,21 @@ export const typeInfo: TypeInfo = {
         }),
         createArrayPropertyDefinition({
           name: "crazyArray",
-          type: "[[[[UInt64]]]]",
+          type: "[[[[UInt32]]]]",
           required: false,
           item: createArrayDefinition({
             name: "crazyArray",
-            type: "[[[UInt64]]]",
+            type: "[[[UInt32]]]",
             required: false,
             item: createArrayDefinition({
               name: "crazyArray",
-              type: "[[UInt64]]",
+              type: "[[UInt32]]",
               required: true,
               item: createArrayDefinition({
                 name: "crazyArray",
-                type: "[UInt64]",
+                type: "[UInt32]",
                 required: false,
-                item: createScalarDefinition({ name: "crazyArray", type: "UInt64", required: true })
+                item: createScalarDefinition({ name: "crazyArray", type: "UInt32", required: true })
               })
             })
           })

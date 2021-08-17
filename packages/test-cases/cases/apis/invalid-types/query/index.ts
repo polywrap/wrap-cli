@@ -10,11 +10,11 @@ export function boolMethod(input: Input_boolMethod): bool {
   return input.arg;
 }
 
-export function intMethod(input: Input_intMethod): i64 {
+export function intMethod(input: Input_intMethod): i32 {
   return input.arg;
 }
 
-export function uIntMethod(input: Input_uIntMethod): u64 {
+export function uIntMethod(input: Input_uIntMethod): u32 {
   return input.arg;
 }
 

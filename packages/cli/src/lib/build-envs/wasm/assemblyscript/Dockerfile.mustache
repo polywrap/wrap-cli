@@ -34,5 +34,6 @@ RUN ./node_modules/.bin/asc {{dir}}/w3/entry.ts \
     --outFile ./build/{{name}}.wasm \
     --use abort={{dir}}/w3/entry/w3Abort \
     --optimize --debug --importMemory \
-    --runtime stub
+    --runtime stub \
+    --runPasses asyncify
 {{/web3api_modules}}

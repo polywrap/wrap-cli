@@ -25,7 +25,7 @@ type Migrator = {
 
 export const migrators: Migrator = {
 {{#prevFormats}}
-  "{{version}}": migrate_{{tsVersion}}_to_{{#latest}}{{tsVersion}}{{/latest}}
+  "{{version}}": migrate_{{tsVersion}}_to_{{#latest}}{{tsVersion}}{{/latest}},
 {{/prevFormats}}
 };
 
