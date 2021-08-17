@@ -416,7 +416,7 @@ describe("ENS Wrapper", () => {
     expect(setSubdomainRecordErrors).toBeUndefined();
   });
 
-  it("should set address and fetch it", async () => {
+  it.skip("should set address and fetch it", async () => {
     const setAddressVariables = {
       domain,
       address: owner,
