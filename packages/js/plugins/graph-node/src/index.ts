@@ -3,20 +3,18 @@ import { manifest } from "./manifest";
 import { RequestData, RequestError } from "./types";
 
 import {
+  Client,
   Plugin,
   PluginFactory,
   PluginManifest,
   PluginModules,
 } from "@web3api/core-js";
-import { HttpPlugin } from "@web3api/http-plugin-js";
 
 export interface GraphNodeConfig {
   provider: string;
 }
 
 export class GraphNodePlugin extends Plugin {
-  private _http = new HttpPlugin();
-
   constructor(private _config: GraphNodeConfig) {
     super();
   }
@@ -27,37 +25,63 @@ export class GraphNodePlugin extends Plugin {
 
   // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
   // https://github.com/web3-api/monorepo/issues/101
-  public getModules(): PluginModules {
+  public getModules(client: Client): PluginModules {
     return {
-      query: query(this),
+      query: query(this, client),
     };
   }
 
   public async query(
     author: string,
     name: string,
-    query: string
+    query: string,
+    client: Client
   ): Promise<string> {
-    const response = await this._http.post(
-      `${this._config.provider}/subgraphs/name/${author}/${name}`,
-      {
-        body: JSON.stringify({
-          query,
-        }),
-        responseType: "TEXT",
-      }
-    );
+    const { data, errors } = await client.query<{
+      post: {
+        status: number;
+        statusText: string;
+        headers: { key: string; value: string }[];
+        body: string;
+      };
+    }>({
+      uri: "ens/http.web3api.eth",
+      query: `query {
+        post(
+          url: $url,
+          request: $request
+        )
+      }`,
+      variables: {
+        url: `${this._config.provider}/subgraphs/name/${author}/${name}`,
+        request: {
+          body: JSON.stringify({
+            query,
+          }),
+          responseType: "TEXT",
+        },
+      },
+    });
 
-    const responseJson = (response.body as unknown) as
+    if (errors) {
+      throw new Error(`GraphNodePlugin: errors encountered. Errors:
+        ${errors.map((err: Error) => JSON.stringify(err)).join("\n")}
+      `);
+    }
+
+    if (!data || !data.post) {
+      throw new Error(`GraphNodePlugin: data is undefined.`);
+    }
+
+    const responseJson = (data.post.body as unknown) as
       | RequestError
       | RequestData;
 
-    const errors = (responseJson as RequestError).errors;
-    console.log(errors);
+    const responseErrors = (responseJson as RequestError).errors;
 
-    if (errors) {
+    if (responseErrors) {
       throw new Error(`GraphNodePlugin: errors in query string. Errors:
-        ${errors
+        ${responseErrors
           .map((err) =>
             err.locations
               ? `\n -Locations: ${err.locations
