@@ -64,7 +64,7 @@ type Query {
   ): String!
 
   getTextRecord(
-    subdomain: String!
+    domain: String!
     resolverAddress: String!
     key: String!
     connection: Ethereum_Connection

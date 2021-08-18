@@ -2,32 +2,12 @@ import { PluginRegistration } from "@web3api/client-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
-import axios from "axios";
-
-interface TestEnvironment {
-  ipfs: string;
-  ethereum: string;
-  ensAddress: string;
-  plugins: PluginRegistration[];
-}
-
-export async function getProviders(): Promise<TestEnvironment> {
-  const {
-    data: { ipfs, ethereum },
-  } = await axios.get("http://localhost:4040/providers");
-  const { data } = await axios.get("http://localhost:4040/deploy-ens");
-  const plugins: PluginRegistration[] = getPlugins(
-    ethereum,
-    ipfs,
-    data.ensAddress
-  );
-  return { ipfs, ethereum, ensAddress: data.ensAddress, plugins };
-}
 
 export function getPlugins(
   ethereum: string,
   ipfs: string,
-  ensAddress: string
+  ensAddress: string,
+  signer?: string
 ): PluginRegistration[] {
   return [
     {
@@ -36,6 +16,7 @@ export function getPlugins(
         networks: {
           testnet: {
             provider: ethereum,
+            signer,
           },
         },
         defaultNetwork: "testnet",

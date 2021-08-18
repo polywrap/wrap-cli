@@ -18,7 +18,11 @@ import {
   Input_deployFIFSRegistrar,
   Input_registerSubnodeOwnerWithFIFSRegistrar,
   Input_setTextRecord,
+  Input_configureOpenDomain,
+  Input_createSubdomainInOpenDomain,
   Ethereum_TxResponse,
+  ConfigureOpenDomainResponse,
+  CreateSubdomainInOpenDomainResponse,
   TxOverrides,
 } from "./w3";
 
@@ -329,7 +333,6 @@ export function deployFIFSRegistrar(input: Input_deployFIFSRegistrar): string {
   return address;
 }
 
-//TODO: needs testing here with a recipe. Was tested in the Web3Hub
 export function registerSubnodeOwnerWithFIFSRegistrar(
   input: Input_registerSubnodeOwnerWithFIFSRegistrar
 ): Ethereum_TxResponse {
@@ -360,7 +363,7 @@ export function setTextRecord(input: Input_setTextRecord): Ethereum_TxResponse {
   const txHash = Ethereum_Mutation.callContractMethod({
     address: input.resolverAddress,
     method: "function setText(bytes32 node, string key, string value)",
-    args: [namehash(input.subdomain), input.key, input.value],
+    args: [namehash(input.domain), input.key, input.value],
     connection: input.connection,
     txOverrides: {
       gasLimit: txOverrides.gasLimit,
@@ -370,4 +373,79 @@ export function setTextRecord(input: Input_setTextRecord): Ethereum_TxResponse {
   });
 
   return txHash;
+}
+
+export function configureOpenDomain(
+  input: Input_configureOpenDomain
+): ConfigureOpenDomainResponse {
+  const txOverrides: TxOverrides =
+    input.txOverrides === null
+      ? { gasLimit: null, gasPrice: null }
+      : input.txOverrides!;
+
+  const fifsRegistrarAddress = deployFIFSRegistrar({
+    registryAddress: input.registryAddress,
+    tld: input.tld,
+    connection: input.connection,
+    txOverrides,
+  });
+
+  const registerOpenDomainTxReceipt = registerDomain({
+    registrarAddress: fifsRegistrarAddress,
+    registryAddress: input.registryAddress,
+    domain: input.tld,
+    owner: input.owner,
+    connection: input.connection,
+    txOverrides,
+  });
+
+  const setResolverTxReceipt = setResolver({
+    domain: input.tld,
+    resolverAddress: input.resolverAddress,
+    registryAddress: input.registryAddress,
+    connection: input.connection,
+    txOverrides,
+  });
+
+  const setOwnerTxReceipt = setOwner({
+    domain: input.tld,
+    newOwner: fifsRegistrarAddress,
+    registryAddress: input.registryAddress,
+    connection: input.connection,
+    txOverrides,
+  });
+
+  return {
+    fifsRegistrarAddress,
+    registerOpenDomainTxReceipt,
+    setResolverTxReceipt,
+    setOwnerTxReceipt,
+  };
+}
+
+export function createSubdomainInOpenDomain(
+  input: Input_createSubdomainInOpenDomain
+): CreateSubdomainInOpenDomainResponse {
+  const txOverrides: TxOverrides =
+    input.txOverrides === null
+      ? { gasLimit: null, gasPrice: null }
+      : input.txOverrides!;
+
+  const registerSubdomainTxReceipt = registerSubnodeOwnerWithFIFSRegistrar({
+    label: input.label,
+    owner: input.owner,
+    fifsRegistrarAddress: input.fifsRegistrarAddress,
+    connection: input.connection,
+    txOverrides,
+  });
+
+  const setResolverTxReceipt = setResolver({
+    domain: input.label + input.domain,
+    registryAddress: input.registryAddress,
+    resolverAddress: input.resolverAddress,
+    connection: input.connection,
+    txOverrides,
+  });
+
+  return { setResolverTxReceipt, registerSubdomainTxReceipt };
 }

@@ -163,7 +163,7 @@ export function getTextRecord(input: Input_getTextRecord): string {
   const value = Ethereum_Query.callContractView({
     address: input.resolverAddress,
     method: "function text(bytes32 node, string value) external view returns (string)",
-    args: [namehash(input.subdomain), input.key],
+    args: [namehash(input.domain), input.key],
     connection: input.connection,
   });
 

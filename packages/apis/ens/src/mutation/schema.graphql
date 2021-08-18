@@ -3,6 +3,18 @@
 #import { Query } into SHA3 from "w3://ens/sha3.web3api.eth"
 #import { TxOverrides } from "../common/schema.graphql"
 
+type ConfigureOpenDomainResponse {
+  fifsRegistrarAddress: String!
+  registerOpenDomainTxReceipt: Ethereum_TxResponse!
+  setResolverTxReceipt: Ethereum_TxResponse!
+  setOwnerTxReceipt: Ethereum_TxResponse!
+}
+
+type CreateSubdomainInOpenDomainResponse {
+  registerSubdomainTxReceipt: Ethereum_TxResponse!
+  setResolverTxReceipt: Ethereum_TxResponse!
+}
+
 type Mutation {
   setResolver(
     domain: String!
@@ -121,11 +133,31 @@ type Mutation {
   ): Ethereum_TxResponse!
 
   setTextRecord(
-    subdomain: String!
+    domain: String!
     resolverAddress: String!
     key: String!
     value: String!
     connection: Ethereum_Connection
     txOverrides: TxOverrides
   ): Ethereum_TxResponse!
+
+  configureOpenDomain(
+    tld: String!
+    owner: String!
+    registryAddress: String!
+    resolverAddress: String!
+    connection: Ethereum_Connection
+    txOverrides: TxOverrides
+  ): ConfigureOpenDomainResponse!
+
+  createSubdomainInOpenDomain(
+    label: String!
+    domain: String!
+    owner: String!
+    fifsRegistrarAddress: String!
+    registryAddress: String!
+    resolverAddress: String!
+    connection: Ethereum_Connection
+    txOverrides: TxOverrides
+  ): CreateSubdomainInOpenDomainResponse!
 }
