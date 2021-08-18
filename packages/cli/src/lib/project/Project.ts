@@ -2,7 +2,6 @@ import fs from "fs";
 import path from "path";
 import rimraf from "rimraf";
 import copyfiles from "copyfiles";
-
 import { TargetLanguage } from "@web3api/schema-bind";
 
 export interface ProjectConfig {
@@ -10,26 +9,11 @@ export interface ProjectConfig {
 }
 
 export abstract class Project {
-  constructor(protected _config: ProjectConfig) { }
+  constructor(protected _config: ProjectConfig) {}
 
   public get quiet(): boolean {
     return !!this._config.quiet;
   }
-
-  public abstract reset(): void;
-
-  public abstract getRootDir(): string;
-
-  public abstract getLanguage(): Promise<TargetLanguage>;
-
-  public abstract getSchemaNamedPaths(): Promise<{
-    [name: string]: string
-  }>;
-
-  public abstract getImportRedirects(): Promise<{
-    uri: string;
-    schema: string;
-  }[]>;
 
   /// Cache (.w3 folder)
 
@@ -76,4 +60,22 @@ export abstract class Project {
       });
     });
   }
+
+  /// Abstract Interface
+  public abstract reset(): void;
+
+  public abstract getRootDir(): string;
+
+  public abstract getLanguage(): Promise<TargetLanguage>;
+
+  public abstract getSchemaNamedPaths(): Promise<{
+    [name: string]: string;
+  }>;
+
+  public abstract getImportRedirects(): Promise<
+    {
+      uri: string;
+      schema: string;
+    }[]
+  >;
 }

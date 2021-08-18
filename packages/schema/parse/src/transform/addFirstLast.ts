@@ -1,16 +1,13 @@
 import { TypeInfoTransforms } from ".";
-import {
-  TypeInfo,
-  GenericDefinition,
-} from "../typeInfo";
+import { TypeInfo, GenericDefinition } from "../typeInfo";
 
 export const addFirstLast: TypeInfoTransforms = {
   enter: {
-    GenericDefinition: (def: GenericDefinition) => {
+    GenericDefinition: (def: GenericDefinition): GenericDefinition => {
       const arrays: Record<string, unknown[]> = {};
 
       for (const key of Object.keys(def)) {
-        const value = (def as any)[key];
+        const value = ((def as unknown) as Record<string, unknown>)[key];
 
         if (Array.isArray(value)) {
           arrays[key] = setFirstLast(value);
@@ -22,7 +19,7 @@ export const addFirstLast: TypeInfoTransforms = {
         ...arrays,
       };
     },
-    TypeInfo: (typeInfo: TypeInfo) => ({
+    TypeInfo: (typeInfo: TypeInfo): TypeInfo => ({
       ...typeInfo,
       objectTypes: setFirstLast(typeInfo.objectTypes),
       queryTypes: setFirstLast(typeInfo.queryTypes),
@@ -39,7 +36,7 @@ function setFirstLast<T>(array: T[]): T[] {
         ...item,
         first: index === 0 ? true : null,
         last: index === array.length - 1 ? true : null,
-        };
+      };
     } else {
       return item;
     }

@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { intlMsg } from "../intl";
 
-export function loadTsNode() {
+export function loadTsNode(): void {
   try {
     require.resolve("typescript");
   } catch (error) {

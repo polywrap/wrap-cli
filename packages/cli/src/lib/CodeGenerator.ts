@@ -1,11 +1,6 @@
 import { SchemaComposer } from "./SchemaComposer";
 import { Project } from "./project";
-import {
-  step,
-  withSpinner,
-  isTypescriptFile,
-  loadTsNode
-} from "./helpers";
+import { step, withSpinner, isTypescriptFile, loadTsNode } from "./helpers";
 import { intlMsg } from "./intl";
 
 import { TypeInfo } from "@web3api/schema-parse";
@@ -21,7 +16,7 @@ import { Ora } from "ora";
 import Mustache from "mustache";
 
 export interface CustomScriptConfig {
-  typeInfo: TypeInfo,
+  typeInfo: TypeInfo;
   generate: (templatePath: string, config: unknown) => string;
 }
 
@@ -106,11 +101,8 @@ export class CodeGenerator {
             this._generateTemplate(templatePath, config, spinner),
         });
 
-        writeDirectory(
-          this._config.outputDir,
-          output,
-          (templatePath: string) =>
-            this._generateTemplate(templatePath, typeInfo, spinner)
+        writeDirectory(this._config.outputDir, output, (templatePath: string) =>
+          this._generateTemplate(templatePath, typeInfo, spinner)
         );
       } else {
         const content = bindSchema({

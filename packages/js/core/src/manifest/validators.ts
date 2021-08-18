@@ -19,7 +19,9 @@ export function dockerImageName(name: unknown): boolean {
 }
 
 export function dockerfileName(value: unknown): boolean {
-  return typeof value === "string" && file(value) && value.indexOf("Dockerfile") > -1;
+  return (
+    typeof value === "string" && file(value) && value.indexOf("Dockerfile") > -1
+  );
 }
 
 export function dockerImageId(value: unknown): boolean {
@@ -27,8 +29,9 @@ export function dockerImageId(value: unknown): boolean {
 }
 
 export function wasmLanguage(language: unknown): boolean {
-  return typeof language === "string" && (
-    language === "interface" || language.indexOf("wasm/") > -1
+  return (
+    typeof language === "string" &&
+    (language === "interface" || language.indexOf("wasm/") > -1)
   );
 }
 

@@ -2,7 +2,7 @@ import { TypeInfoTransforms } from ".";
 import {
   QueryDefinition,
   ImportedQueryDefinition,
-  MethodDefinition
+  MethodDefinition,
 } from "../typeInfo";
 
 export function methodParentPointers(): TypeInfoTransforms {
@@ -19,17 +19,16 @@ export function methodParentPointers(): TypeInfoTransforms {
         return def;
       },
       MethodDefinition: (def: MethodDefinition) => {
-        let parent: QueryDefinition | ImportedQueryDefinition | undefined;
-
-        if (visitorStack.length > 0) {
-          parent = visitorStack[visitorStack.length - 1];
-        }
+        const parent =
+          visitorStack.length > 0
+            ? visitorStack[visitorStack.length - 1]
+            : undefined;
 
         return {
           ...def,
-          parent
+          parent,
         };
-      }
+      },
     },
     leave: {
       QueryDefinition: (def: QueryDefinition) => {
@@ -39,7 +38,7 @@ export function methodParentPointers(): TypeInfoTransforms {
       ImportedQueryDefinition: (def: ImportedQueryDefinition) => {
         visitorStack.pop();
         return def;
-      }
-    }
+      },
+    },
   };
 }

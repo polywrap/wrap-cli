@@ -1,5 +1,5 @@
 import { mutation, query } from "./resolvers";
-import { manifest } from "./manifest";
+import { manifest } from "./w3";
 
 import {
   Plugin,

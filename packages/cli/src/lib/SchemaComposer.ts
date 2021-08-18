@@ -3,11 +3,7 @@
 
 import { Project } from "./project";
 
-import {
-  Uri,
-  Web3ApiClient,
-  PluginRegistration,
-} from "@web3api/client-js";
+import { Uri, Web3ApiClient, PluginRegistration } from "@web3api/client-js";
 import {
   composeSchema,
   ComposerOutput,
@@ -87,7 +83,7 @@ export class SchemaComposer {
     const { project } = this._config;
 
     const schemaNamedPaths = await project.getSchemaNamedPaths();
-    const import_redirects = await project.getImportRedirects()
+    const import_redirects = await project.getImportRedirects();
 
     const getSchemaFile = (schemaPath?: string): SchemaFile | undefined =>
       schemaPath
@@ -98,12 +94,13 @@ export class SchemaComposer {
         : undefined;
 
     const options: ComposerOptions = {
-      schemas: { },
+      schemas: {},
       resolvers: {
-        external: (uri: string) => this._fetchExternalSchema(uri, import_redirects),
+        external: (uri: string) =>
+          this._fetchExternalSchema(uri, import_redirects),
         local: (path: string) => Promise.resolve(this._fetchLocalSchema(path)),
       },
-      output
+      output,
     };
 
     for (const name of Object.keys(schemaNamedPaths)) {
@@ -129,8 +126,8 @@ export class SchemaComposer {
   private async _fetchExternalSchema(
     uri: string,
     import_redirects?: {
-        uri: string;
-        schema: string;
+      uri: string;
+      schema: string;
     }[]
   ): Promise<string> {
     // Check to see if we have any import redirects that match

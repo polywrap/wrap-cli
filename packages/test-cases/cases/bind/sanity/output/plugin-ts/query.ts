@@ -17,7 +17,8 @@ import * as Types from "./types";
 
 import {
   Client,
-  PluginModule
+  PluginModule,
+  MaybeAsync
 } from "@web3api/core-js";
 
 export interface Input_queryMethod extends Record<string, unknown> {
@@ -40,10 +41,10 @@ export interface Module extends PluginModule {
   queryMethod(
     input: Input_queryMethod,
     client: Client
-  ): Promise<Int>;
+  ): MaybeAsync<Int>;
 
   objectMethod(
     input: Input_objectMethod,
     client: Client
-  ): Promise<Types.AnotherType | undefined>;
+  ): MaybeAsync<Types.AnotherType | undefined>;
 }

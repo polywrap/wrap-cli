@@ -8,7 +8,7 @@
   "properties": {
     "format": {
       "type": "string",
-      "const": "0.0.1-prealpha.2"
+      "const": "0.0.1-prealpha.1"
     },
     "docker": {
       "type": "object",

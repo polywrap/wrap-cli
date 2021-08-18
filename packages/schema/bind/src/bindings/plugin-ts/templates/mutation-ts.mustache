@@ -17,7 +17,8 @@ import * as Types from "./types";
 
 import {
   Client,
-  PluginModule
+  PluginModule,
+  MaybeAsync
 } from "@web3api/core-js";
 
 {{#methods}}
@@ -33,7 +34,7 @@ export interface Module extends PluginModule {
   {{name}}(
     input: Input_{{name}},
     client: Client
-  ): Promise<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>;
+  ): MaybeAsync<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>;
   {{^last}}
 
   {{/last}}

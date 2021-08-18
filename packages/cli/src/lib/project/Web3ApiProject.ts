@@ -4,7 +4,7 @@ import { Project, ProjectConfig } from "./Project";
 import {
   loadWeb3ApiManifest,
   loadBuildManifest,
-  manifestLanguageToTargetLanguage
+  manifestLanguageToTargetLanguage,
 } from "../helpers";
 import { intlMsg } from "../intl";
 
@@ -58,11 +58,11 @@ export class Web3ApiProject extends Project {
   }
 
   public async getSchemaNamedPaths(): Promise<{
-    [name: string]: string
+    [name: string]: string;
   }> {
     const manifest = await this.getWeb3ApiManifest();
     const dir = this.getWeb3ApiManifestDir();
-    const namedPaths: { [name: string]: string } = { };
+    const namedPaths: { [name: string]: string } = {};
 
     if (manifest.modules.mutation) {
       namedPaths["mutation"] = path.join(dir, manifest.modules.mutation.schema);
@@ -75,10 +75,12 @@ export class Web3ApiProject extends Project {
     return namedPaths;
   }
 
-  public async getImportRedirects(): Promise<{
-    uri: string;
-    schema: string;
-  }[]> {
+  public async getImportRedirects(): Promise<
+    {
+      uri: string;
+      schema: string;
+    }[]
+  > {
     const manifest = await this.getWeb3ApiManifest();
     return manifest.import_redirects || [];
   }
@@ -232,7 +234,7 @@ export class Web3ApiProject extends Project {
       throw Error(intlMsg.lib_project_language_not_found());
     }
 
-    const defaultPath = `${__dirname}/build-envs/${language}/web3api.build.yaml`;
+    const defaultPath = `${__dirname}/../build-envs/${language}/web3api.build.yaml`;
 
     if (!fs.existsSync(defaultPath)) {
       throw Error(
@@ -244,7 +246,7 @@ export class Web3ApiProject extends Project {
     this.removeCacheDir("build/env");
     await this.copyFilesIntoCache(
       "build/env/",
-      `${__dirname}/build-envs/${language}/*`
+      `${__dirname}/../build-envs/${language}/*`
     );
     this._defaultBuildManifestCached = true;
   }

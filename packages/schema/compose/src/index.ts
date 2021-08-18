@@ -50,7 +50,7 @@ export async function composeSchema(
       schema.absolutePath,
       name === "mutation",
       resolvers
-    )
+    );
   }
 
   const output: ComposerOutput = {

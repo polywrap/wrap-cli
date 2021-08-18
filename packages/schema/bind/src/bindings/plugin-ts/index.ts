@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { OutputDirectory, OutputEntry } from "../..";
 import * as Functions from "./functions";
 
@@ -36,9 +37,7 @@ export function generateBinding(
 
   const renderTemplate = (subPath: string, context: unknown) => {
     const absPath = path.join(__dirname, subPath);
-    const template = readFileSync(
-      absPath, { encoding: "utf-8" }
-    );
+    const template = readFileSync(absPath, { encoding: "utf-8" });
     const fileName = absPath
       .replace(path.dirname(absPath), "")
       .replace(".mustache", "")
@@ -49,15 +48,15 @@ export function generateBinding(
     entries.push({
       type: "File",
       name: fileName,
-      data: Mustache.render(template, context)
+      data: Mustache.render(template, context),
     });
-  }
+  };
 
   const queryContext = typeInfo.queryTypes.find((def: QueryDefinition) => {
-    return def.type === "Query"
+    return def.type === "Query";
   });
   const mutationContext = typeInfo.queryTypes.find((def: QueryDefinition) => {
-    return def.type === "Mutation"
+    return def.type === "Mutation";
   });
 
   const rootContext = {

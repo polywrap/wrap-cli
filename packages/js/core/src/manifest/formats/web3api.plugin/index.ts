@@ -6,23 +6,23 @@
  */
 
 import {
-  PluginManifest as PluginManifest0_0_1_prealpha_3
-} from "./0.0.1-prealpha.3";
+  PluginManifest as PluginManifest0_0_1_prealpha_1
+} from "./0.0.1-prealpha.1";
 
 export {
-  PluginManifest0_0_1_prealpha_3,
+  PluginManifest0_0_1_prealpha_1,
 };
 
 export enum PluginManifestFormats {
-  "0.0.1-prealpha.3" = "0.0.1-prealpha.3",
+  "0.0.1-prealpha.1" = "0.0.1-prealpha.1",
 }
 
 export type AnyPluginManifest =
-  | PluginManifest0_0_1_prealpha_3
+  | PluginManifest0_0_1_prealpha_1
 
-export type PluginManifest = PluginManifest0_0_1_prealpha_3;
+export type PluginManifest = PluginManifest0_0_1_prealpha_1;
 
-export const latestPluginManifestFormat = PluginManifestFormats["0.0.1-prealpha.3"]
+export const latestPluginManifestFormat = PluginManifestFormats["0.0.1-prealpha.1"]
 
 export { migratePluginManifest } from "./migrate";
 

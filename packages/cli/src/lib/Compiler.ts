@@ -9,7 +9,7 @@ import {
   generateDockerfile,
   createBuildImage,
   copyArtifactsFromBuildImage,
-  manifestLanguageToTargetLanguage
+  manifestLanguageToTargetLanguage,
 } from "./helpers";
 import { intlMsg } from "./intl";
 
@@ -18,10 +18,7 @@ import {
   Web3ApiManifest,
   BuildManifest,
 } from "@web3api/core-js";
-import {
-  bindSchema,
-  writeDirectory,
-} from "@web3api/schema-bind";
+import { bindSchema, writeDirectory } from "@web3api/schema-bind";
 import { TypeInfo } from "@web3api/schema-parse";
 import { ComposerOutput } from "@web3api/schema-compose";
 import { writeFileSync } from "@web3api/os-js";
@@ -55,11 +52,11 @@ export class Compiler {
     const run = async (): Promise<void> => {
       const state = await this._getCompilerState();
 
-      if (!await this._isInterface()) {
+      if (!(await this._isInterface())) {
         // Generate the bindings
         await this._generateCode(state);
       }
-    }
+    };
 
     if (project.quiet) {
       try {
@@ -98,9 +95,9 @@ export class Compiler {
 
       await this._outputComposedSchema(state);
 
-      let buildManifest: BuildManifest | undefined;
+      let buildManifest: BuildManifest | undefined = undefined;
 
-      if (!await this._isInterface()) {
+      if (!(await this._isInterface())) {
         // Generate the bindings
         await this._generateCode(state);
 
@@ -109,7 +106,7 @@ export class Compiler {
       }
 
       await this._outputManifests(state.web3ApiManifest, buildManifest);
-    }
+    };
 
     if (project.quiet) {
       try {
@@ -167,7 +164,7 @@ export class Compiler {
 
   private async _isInterface(): Promise<boolean> {
     const state = await this._getCompilerState();
-    return state.web3ApiManifest.language === "interface"
+    return state.web3ApiManifest.language === "interface";
   }
 
   private async _composeSchema(): Promise<ComposerOutput> {
@@ -216,9 +213,9 @@ export class Compiler {
 
     // Generate the bindings
     const output = bindSchema({
-      language: web3ApiManifest.language ?
-        manifestLanguageToTargetLanguage(web3ApiManifest.language) :
-        "wasm-as",
+      language: web3ApiManifest.language
+        ? manifestLanguageToTargetLanguage(web3ApiManifest.language)
+        : "wasm-as",
       query: modulesToBuild.query
         ? {
             typeInfo: composerOutput.query?.typeInfo as TypeInfo,
@@ -232,22 +229,18 @@ export class Compiler {
             schema: composerOutput.combined?.schema as string,
             outputDirAbs: mutationDirectory as string,
           }
-        : undefined
+        : undefined,
     });
 
     // Output the bindings
     const filesWritten: string[] = [];
 
     if (output.query && queryDirectory) {
-      filesWritten.push(
-        ...writeDirectory(queryDirectory, output.query)
-      );
+      filesWritten.push(...writeDirectory(queryDirectory, output.query));
     }
 
     if (output.mutation && mutationDirectory) {
-      filesWritten.push(
-        ...writeDirectory(mutationDirectory, output.mutation)
-      );
+      filesWritten.push(...writeDirectory(mutationDirectory, output.mutation));
     }
 
     return filesWritten;
@@ -258,7 +251,7 @@ export class Compiler {
     const { web3ApiManifest, modulesToBuild } = state;
 
     if (await this._isInterface()) {
-      throw Error(intlMsg.lib_compiler_cannotBuildInterfaceModules())
+      throw Error(intlMsg.lib_compiler_cannotBuildInterfaceModules());
     }
 
     // Build the sources
@@ -266,9 +259,11 @@ export class Compiler {
 
     // Validate the WASM exports
     await Promise.all(
-      Object.keys(modulesToBuild).map((module: InvokableModules) =>
-        this._validateExports(module, outputDir)
-      )
+      Object.keys(modulesToBuild)
+        .filter((module: InvokableModules) => modulesToBuild[module])
+        .map((module: InvokableModules) =>
+          this._validateExports(module, outputDir)
+        )
     );
 
     // Update the Web3ApiManifest
@@ -290,7 +285,7 @@ export class Compiler {
 
     // Create the BuildManifest
     const buildManifest: BuildManifest = {
-      format: "0.0.1-prealpha.2",
+      format: "0.0.1-prealpha.1",
       __type: "BuildManifest",
       docker: {
         buildImageId: dockerImageId,
@@ -300,9 +295,7 @@ export class Compiler {
     return buildManifest;
   }
 
-  private _getModulesToBuild(
-    manifest: Web3ApiManifest
-  ): ModulesToBuild {
+  private _getModulesToBuild(manifest: Web3ApiManifest): ModulesToBuild {
     const manifestMutation = manifest.modules.mutation;
     const manifestQuery = manifest.modules.query;
     const modulesToBuild: ModulesToBuild = {
@@ -392,14 +385,17 @@ export class Compiler {
     if (state.modulesToBuild.query && state.web3ApiManifest.modules.query) {
       state.web3ApiManifest.modules.query = {
         schema: "./schema.graphql",
-        module: state.web3ApiManifest.modules.query.module
+        module: state.web3ApiManifest.modules.query.module,
       };
     }
 
-    if (state.modulesToBuild.mutation && state.web3ApiManifest.modules.mutation) {
+    if (
+      state.modulesToBuild.mutation &&
+      state.web3ApiManifest.modules.mutation
+    ) {
       state.web3ApiManifest.modules.mutation = {
         schema: "./schema.graphql",
-        module: state.web3ApiManifest.modules.mutation.module
+        module: state.web3ApiManifest.modules.mutation.module,
       };
     }
   }
@@ -479,11 +475,17 @@ export class Compiler {
       throw Error(noInterfaceModule);
     };
 
-    if (web3ApiManifest.language === "interface" && web3ApiManifest.modules.query?.module) {
+    if (
+      web3ApiManifest.language === "interface" &&
+      web3ApiManifest.modules.query?.module
+    ) {
       throwNoInterfaceModule("query");
     }
 
-    if (web3ApiManifest.language === "interface" && web3ApiManifest.modules.mutation?.module) {
+    if (
+      web3ApiManifest.language === "interface" &&
+      web3ApiManifest.modules.mutation?.module
+    ) {
       throwNoInterfaceModule("mutation");
     }
   }

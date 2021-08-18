@@ -1,5 +1,10 @@
 /* eslint-disable prefer-const */
-import { CodeGenerator, Compiler, Web3ApiProject, SchemaComposer } from "../lib";
+import {
+  CodeGenerator,
+  Compiler,
+  Web3ApiProject,
+  SchemaComposer,
+} from "../lib";
 import { intlMsg } from "../lib/intl";
 
 import chalk from "chalk";
@@ -33,7 +38,14 @@ export default {
     const { filesystem, parameters, print } = toolbox;
 
     const { h, c, m, i, o, e } = parameters.options;
-    let { help, custom, manifestPath, ipfs, outputDir, ens } = parameters.options;
+    let {
+      help,
+      custom,
+      manifestPath,
+      ipfs,
+      outputDir,
+      ens,
+    } = parameters.options;
 
     help = help || h;
     custom = custom || c;

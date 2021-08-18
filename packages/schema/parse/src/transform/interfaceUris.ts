@@ -1,14 +1,10 @@
 import { TypeInfoTransforms } from ".";
-import {
-  TypeInfo,
-  QueryDefinition,
-  ObjectDefinition,
-} from "../typeInfo";
+import { TypeInfo, QueryDefinition, ObjectDefinition } from "../typeInfo";
 
 export function interfaceUris(): TypeInfoTransforms {
-  const uniqueInterfaceUris: Record<string, boolean> = { };
-  const uniqueQueryInterfaceTypes: Record<string, boolean> = { };
-  const uniqueObjectInterfaceTypes: Record<string, boolean> = { };
+  const uniqueInterfaceUris: Record<string, boolean> = {};
+  const uniqueQueryInterfaceTypes: Record<string, boolean> = {};
+  const uniqueObjectInterfaceTypes: Record<string, boolean> = {};
 
   return {
     enter: {
@@ -49,9 +45,9 @@ export function interfaceUris(): TypeInfoTransforms {
 
         return {
           ...typeInfo,
-          interfaceUris: Object.keys(uniqueInterfaceUris)
-        }
-      }
-    }
+          interfaceUris: Object.keys(uniqueInterfaceUris),
+        };
+      },
+    },
   };
 }

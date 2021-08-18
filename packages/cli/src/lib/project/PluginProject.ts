@@ -1,7 +1,7 @@
 import { Project, ProjectConfig } from "./Project";
 import {
   loadPluginManifest,
-  manifestLanguageToTargetLanguage
+  manifestLanguageToTargetLanguage,
 } from "../helpers";
 
 import { PluginManifest } from "@web3api/core-js";
@@ -35,21 +35,23 @@ export class PluginProject extends Project {
   }
 
   public async getSchemaNamedPaths(): Promise<{
-    [name: string]: string
+    [name: string]: string;
   }> {
     const manifest = await this.getPluginManifest();
     const dir = this.getPluginManifestDir();
-    const namedPaths: { [name: string]: string } = { };
+    const namedPaths: { [name: string]: string } = {};
 
     namedPaths["combined"] = path.join(dir, manifest.schema);
-    loadPluginManifest
+    loadPluginManifest;
     return namedPaths;
   }
 
-  public async getImportRedirects(): Promise<{
-    uri: string;
-    schema: string;
-  }[]> {
+  public async getImportRedirects(): Promise<
+    {
+      uri: string;
+      schema: string;
+    }[]
+  > {
     const manifest = await this.getPluginManifest();
     return manifest.import_redirects || [];
   }

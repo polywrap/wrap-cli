@@ -3,9 +3,13 @@ import { CodeGenerator, PluginProject, SchemaComposer } from "../lib";
 import { fixParameters } from "../lib/helpers";
 import { intlMsg } from "../lib/intl";
 
+import { ComposerFilter } from "@web3api/schema-compose";
+import { writeFileSync } from "@web3api/os-js";
 import { GluegunToolbox, print } from "gluegun";
 import axios from "axios";
 import chalk from "chalk";
+import path from "path";
+import fs from "fs";
 
 export const defaultManifest = ["web3api.plugin.yaml", "web3api.plugin.yml"];
 
@@ -26,12 +30,18 @@ Commands:
   ${chalk.bold("codegen")}   ${codegenStr}
 
 Options:
-  -h, --help                  ${intlMsg.commands_plugin_options_h()}
-  -m, --manifest-path <${pathStr}>  ${intlMsg.commands_plugin_options_m({ default: defaultManifestStr })}
-  -s, --output-schema-path <${pathStr}>  ${intlMsg.commands_plugins_options_schema({ default: defaultOutputSchemaStr })}
-  -t, --output-types-dir <${pathStr}>   ${intlMsg.commands_plugins_options_types({ default: defaultOutputTypesStr })}
-  -i, --ipfs [<${nodeStr}>]         ${intlMsg.commands_plugin_options_i()}
-  -e, --ens [<${addrStr}>]       ${intlMsg.commands_plugin_options_e()}
+  -h, --help                       ${intlMsg.commands_plugin_options_h()}
+  -m, --manifest-path <${pathStr}>       ${intlMsg.commands_plugin_options_m({
+  default: defaultManifestStr,
+})}
+  -s, --output-schema-path <${pathStr}>  ${intlMsg.commands_plugins_options_schema(
+  { default: defaultOutputSchemaStr }
+)}
+  -t, --output-types-dir <${pathStr}>    ${intlMsg.commands_plugins_options_types(
+  { default: defaultOutputTypesStr }
+)}
+  -i, --ipfs [<${nodeStr}>]              ${intlMsg.commands_plugin_options_i()}
+  -e, --ens [<${addrStr}>]            ${intlMsg.commands_plugin_options_e()}
 `;
 
 export default {
@@ -91,7 +101,7 @@ export default {
     if (outputSchemaPath === true) {
       const outputSchemaMissingPathMessage = intlMsg.commands_plugin_error_outputDirMissingPath(
         {
-          option: "--output-schema",
+          option: "--output-schema-path",
           argument: `<${pathStr}>`,
         }
       );
@@ -105,7 +115,7 @@ export default {
     if (outputTypesDir === true) {
       const outputTypesMissingPathMessage = intlMsg.commands_plugin_error_outputDirMissingPath(
         {
-          option: "--output-types",
+          option: "--output-types-dir",
           argument: `<${pathStr}>`,
         }
       );
@@ -183,5 +193,17 @@ export default {
     } else {
       process.exitCode = 1;
     }
+
+    // Output the built schema file
+    const schemas = await schemaComposer.getComposedSchemas(
+      ComposerFilter.Schema
+    );
+    const outputSchemaDir = path.dirname(outputSchemaPath);
+
+    if (!fs.existsSync(outputSchemaDir)) {
+      fs.mkdirSync(outputSchemaDir);
+    }
+
+    writeFileSync(outputSchemaPath, schemas.combined.schema);
   },
 };

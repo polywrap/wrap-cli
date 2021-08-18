@@ -4,8 +4,7 @@
   "additionalProperties": false,
   "required": [
     "format",
-    "modules",
-    "language"
+    "modules"
   ],
   "properties": {
     "format": {
@@ -22,6 +21,9 @@
     "language": {
       "type": "string",
       "format": "wasmLanguage"
+    },
+    "interface": {
+      "type": "boolean"
     },
     "modules": {
       "type": "object",
