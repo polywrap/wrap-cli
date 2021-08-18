@@ -6,6 +6,7 @@ import { decode } from "as-base64"
 import { IpfsError } from "../error";
 
 import { Nullable } from "@web3api/wasm-as";
+import { IpfsOptions } from "./w3/IpfsOptions";
 
 function createRequest(catFileOptions: CatFileOptions | null, cid: string, responseType: Http_ResponseType): Http_Request {
   let headers: Http_Header[];
@@ -47,46 +48,73 @@ function createRequest(catFileOptions: CatFileOptions | null, cid: string, respo
   }
 }
 
-function getResponseContent(response: Http_Response | null): string {
-  // no response - shouldn't happen
-  if (response == null) {
-    throw new IpfsError("catFile", response.status.value, response.statusText);
-  }
-
-  // error happend in http plugin
-  if(response.error != null) {
-    const err = response.error as Http_ResponseError;
-    if(err.timeoutExcided) {
-      throw new IpfsError("catFile", null, null, "Timeout excided");
-    } else {
-      throw new IpfsError("catFile", null, null, err.errorMessage);
-    }
-  }
-
-  // not 200 response error
-  if (response.status.value != 200) {
-    throw new IpfsError("catFile", response.status.value, response.statusText);
-  }
-
-  return response.body as string;
-}
-
 export function catFileToString(input: Input_catFileToString): String {
-  const url = input.ipfsUrl + "/api/v0/cat";
-  const catResponse = Http_Query.get({
-    url: url,
-    request: createRequest(input.catFileOptions, input.cid, Http_ResponseType.TEXT)
-  });
-
-  return getResponseContent(catResponse);
+  const result = executeCatOperation(
+    input.ipfs,
+    input.cid,
+    input.catFileOptions,
+    Http_ResponseType.TEXT
+  );
+  return result;
 }
 
 export function catFile(input: Input_catFile): ArrayBuffer {
-  const url = input.ipfsUrl + "/api/v0/cat";
-  const catResponse = Http_Query.get({
-    url: url,
-    request: createRequest(input.catFileOptions, input.cid, Http_ResponseType.BINARY)
-  });
+  const result = executeCatOperation(
+    input.ipfs,
+    input.cid,
+    input.catFileOptions,
+    Http_ResponseType.BINARY
+  );
+  return decode(result).buffer;
+}
 
-  return decode(getResponseContent(catResponse)).buffer;
+export function executeCatOperation(ipfs: IpfsOptions, cid: string, catFileOptions: CatFileOptions | null, responseType: Http_ResponseType): string {
+  // make request
+  const provider = ipfs.provider;
+  const fallbackProviders = ipfs.fallbackProviders != null ? ipfs.fallbackProviders as string[] : [];
+  let complete = false;
+  let fallbackIdx = -1;
+  let result: string;
+  
+  while (!complete) {
+    const url = provider + "/api/v0/cat";
+    const response = Http_Query.get({
+      url: url,
+      request: createRequest(catFileOptions, cid, responseType)
+    });
+
+    // no response - shouldn't happen
+    if (response == null) {
+      throw new IpfsError("catFile", response.status.value, response.statusText);
+    }
+
+    // error happend in http plugin
+    if (response.error != null) {
+      const err = response.error as Http_ResponseError;
+      if (err.timeoutExcided) {
+        fallbackIdx += 1;
+        if(fallbackIdx >= fallbackProviders.length) {
+          complete = true;
+        }
+        continue;
+      } else {
+        throw new IpfsError("catFile", null, null, err.errorMessage);
+      }
+    }
+
+    // not 200 response error
+    if (response.status.value != 200) {
+      throw new IpfsError("catFile", response.status.value, response.statusText);
+    }
+
+    // succesfull request
+    result = response.body as string;
+    complete = true;
+  }
+
+  if(!result) {
+    throw new IpfsError("Timeout has been exceeded, and all providers have been exhausted."); // TODO
+  }
+
+  return result;
 }

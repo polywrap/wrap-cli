@@ -2,8 +2,11 @@
 
 type Query {
   # Returns byte content of file, defined by provided cid
-  catFile(ipfsUrl: String!, cid: String!, catFileOptions: CatFileOptions): Bytes!
-  catFileToString(ipfsUrl: String!, cid: String!, catFileOptions: CatFileOptions): String!
+  catFile(ipfs: IpfsOptions!, cid: String!, catFileOptions: CatFileOptions): Bytes!
+  catFileToString(ipfs: IpfsOptions!, cid: String!, catFileOptions: CatFileOptions): String!
+  # resolve(ipfsUrl: String!, cid: String!): String
+  # tryResolveUri(authority: String!, path: String!): String
+  # getFile(path: String!): Bytes
 }
 
 type CatFileOptions {
@@ -12,4 +15,9 @@ type CatFileOptions {
   offset: Int64
   length: Int64
   timeout: UInt64
+}
+
+type IpfsOptions {
+  provider: String!
+  fallbackProviders: [String!]
 }
