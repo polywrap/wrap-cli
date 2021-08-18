@@ -1,5 +1,5 @@
 query {
-  catFile(
+  catFileToString(
     ipfs: {
       provider: $ipfsUrl
     }
