@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { Web3ApiManifest as OldManifest } from "../0.0.1-prealpha.1";
-import { Web3ApiManifest as NewManifest } from "../0.0.1-prealpha.3";
+import { Web3ApiManifest as NewManifest } from "../0.0.1-prealpha.4";
 
 export function migrate(old: OldManifest): NewManifest {
   const module = old.mutation || old.query;
@@ -13,7 +13,8 @@ export function migrate(old: OldManifest): NewManifest {
   const language = module.module.language;
 
   return {
-    format: "0.0.1-prealpha.3",
+    __type: "Web3ApiManifest",
+    format: "0.0.1-prealpha.4",
     repository: old.repository,
     language,
     modules: {

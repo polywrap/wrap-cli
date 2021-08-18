@@ -17,7 +17,7 @@ import * as Mapping from "./mapping";
 import {
   Client,
   Plugin,
-  PluginManifest,
+  PluginPackageManifest,
   PluginModules,
   PluginFactory,
 } from "@web3api/core-js";
@@ -63,7 +63,7 @@ export class EthereumPlugin extends Plugin {
     }
   }
 
-  public static manifest(): PluginManifest {
+  public static manifest(): PluginPackageManifest {
     return manifest;
   }
 

@@ -33,6 +33,8 @@ export const deserialize{{type}} = Tracer.traceFunc(
       validate{{type}}(any{{type}}, options?.extSchema);
     }
 
+    any{{type}}.__type = "{{type}}";
+
     const versionCompare = compare(
       any{{type}}.format,
       latest{{type}}Format

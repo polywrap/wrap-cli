@@ -6,7 +6,7 @@ import {
   Client,
   Plugin,
   PluginFactory,
-  PluginManifest,
+  PluginPackageManifest,
   PluginModules,
 } from "@web3api/core-js";
 
@@ -19,7 +19,7 @@ export class GraphNodePlugin extends Plugin {
     super();
   }
 
-  public static manifest(): PluginManifest {
+  public static manifest(): PluginPackageManifest {
     return manifest;
   }
 

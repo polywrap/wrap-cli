@@ -1,47 +1,44 @@
 import { TypeInfoTransforms } from ".";
-import {
-  MethodDefinition,
-  ObjectDefinition,
-  QueryDefinition,
-  TypeInfo,
-  ImportedQueryDefinition,
-} from "../typeInfo";
+import { TypeInfo, GenericDefinition } from "../typeInfo";
 
 export const addFirstLast: TypeInfoTransforms = {
   enter: {
-    TypeInfo: (typeInfo: TypeInfo) => ({
+    GenericDefinition: (def: GenericDefinition): GenericDefinition => {
+      const arrays: Record<string, unknown[]> = {};
+
+      for (const key of Object.keys(def)) {
+        const value = ((def as unknown) as Record<string, unknown>)[key];
+
+        if (Array.isArray(value)) {
+          arrays[key] = setFirstLast(value);
+        }
+      }
+
+      return {
+        ...def,
+        ...arrays,
+      };
+    },
+    TypeInfo: (typeInfo: TypeInfo): TypeInfo => ({
       ...typeInfo,
       objectTypes: setFirstLast(typeInfo.objectTypes),
       queryTypes: setFirstLast(typeInfo.queryTypes),
       importedObjectTypes: setFirstLast(typeInfo.importedObjectTypes),
       importedQueryTypes: setFirstLast(typeInfo.importedQueryTypes),
     }),
-    ObjectDefinition: (def: ObjectDefinition) => ({
-      ...def,
-      properties: setFirstLast(def.properties),
-      interfaces: setFirstLast(def.interfaces),
-    }),
-    MethodDefinition: (def: MethodDefinition) => ({
-      ...def,
-      arguments: setFirstLast(def.arguments),
-    }),
-    QueryDefinition: (def: QueryDefinition) => ({
-      ...def,
-      methods: setFirstLast(def.methods),
-      imports: setFirstLast(def.imports),
-      interfaces: setFirstLast(def.interfaces),
-    }),
-    ImportedQueryDefinition: (def: ImportedQueryDefinition) => ({
-      ...def,
-      methods: setFirstLast(def.methods),
-    }),
   },
 };
 
 function setFirstLast<T>(array: T[]): T[] {
-  return array.map((item, index) => ({
-    ...item,
-    first: index === 0 ? true : null,
-    last: index === array.length - 1 ? true : null,
-  }));
+  return array.map((item, index) => {
+    if (typeof item === "object") {
+      return {
+        ...item,
+        first: index === 0 ? true : null,
+        last: index === array.length - 1 ? true : null,
+      };
+    } else {
+      return item;
+    }
+  });
 }
