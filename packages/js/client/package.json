@@ -38,7 +38,6 @@
   "devDependencies": {
     "@types/jest": "26.0.8",
     "@types/js-yaml": "3.11.1",
-    "@types/semver": "^7.3.4",
     "@web3api/cli": "0.0.1-prealpha.31",
     "@web3api/os-js": "0.0.1-prealpha.31",
     "@web3api/test-cases": "0.0.1-prealpha.31",
