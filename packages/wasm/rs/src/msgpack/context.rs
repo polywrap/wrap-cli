@@ -35,15 +35,22 @@ impl Context {
         self.nodes.push(node);
     }
 
-    pub fn pop(&mut self) -> Result<String, String> {
+    // pub fn _pop(&mut self) -> Result<String, String> {
+    //     if self.is_empty() {
+    //         return Err("Error: tried to pop an item from an empty Context stack".to_string());
+    //     }
+    //     let node = self.nodes.pop().unwrap_or_default();
+    //     Ok(format!(
+    //         "{} : {} >> {}",
+    //         node.node_item, node.node_type, node.node_info
+    //     ))
+    // }
+
+    pub fn pop(&mut self) {
         if self.is_empty() {
-            return Err("Error: tried to pop an item from an empty Context stack".to_string());
+            panic!("Error: tried to pop an item from an empty Context stack");
         }
-        let node = self.nodes.pop().unwrap_or_default();
-        Ok(format!(
-            "{} : {} >> {}",
-            node.node_item, node.node_type, node.node_info
-        ))
+        let _ = self.nodes.pop();
     }
 
     pub fn context_to_string(&self) -> String {
