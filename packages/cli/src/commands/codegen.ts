@@ -24,10 +24,10 @@ ${chalk.bold("w3 codegen")} [${optionsStr}]
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
-  -c, --custom <${pathStr}>                     ${intlMsg.commands_codegen_options_c()}
   -m, --manifest-path <${pathStr}>              ${intlMsg.commands_codegen_options_m()}: ${defaultManifestStr})
+  -c, --custom <${pathStr}>                     ${intlMsg.commands_codegen_options_c()}
+  -o, --output-dir <${pathStr}>           ${intlMsg.commands_codegen_options_o()}
   -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
-  -o, --output-dir <${pathStr}>                 ${intlMsg.commands_codegen_options_o()}
   -e, --ens [<${addrStr}>]                   ${intlMsg.commands_codegen_options_e()}
 `;
 
@@ -150,7 +150,7 @@ export default {
     } else {
       const compiler = new Compiler({
         project,
-        outputDir: outputDir || filesystem.path("build"),
+        outputDir: filesystem.path("build"),
         schemaComposer,
       });
 
