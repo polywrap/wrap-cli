@@ -26,7 +26,7 @@ ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
   -m, --manifest-path <${pathStr}>              ${intlMsg.commands_codegen_options_m()}: ${defaultManifestStr})
   -c, --custom <${pathStr}>                     ${intlMsg.commands_codegen_options_c()}
-  -o, --output-dir <${pathStr}>           ${intlMsg.commands_codegen_options_o()}
+  -o, --output-dir <${pathStr}>                 ${intlMsg.commands_codegen_options_o()}
   -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
   -e, --ens [<${addrStr}>]                   ${intlMsg.commands_codegen_options_e()}
 `;

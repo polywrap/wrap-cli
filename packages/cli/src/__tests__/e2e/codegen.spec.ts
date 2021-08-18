@@ -10,12 +10,12 @@ w3 codegen [options]
 
 Options:
   -h, --help                              Show usage information
-  -c, --custom <path>                     Path to a custom generation script (JavaScript | TypeScript)
   -m, --manifest-path <path>              Path to the Web3API manifest file (default: ${defaultManifest.join(
     " | "
   )})
+  -c, --custom <path>                     Path to a custom generation script (JavaScript | TypeScript)
+  -o, --output-dir <path>                 Output directory for custom generated types (default: 'types/')
   -i, --ipfs [<node>]                     IPFS node to load external schemas (default: ipfs.io & localhost)
-  -o, --output-dir <path>                 Output directory for generated types (default: ['build/', 'types/'])
   -e, --ens [<address>]                   ENS address to lookup external schemas (default: 0x0000...2e1e)
 
 `;
