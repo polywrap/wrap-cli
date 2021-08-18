@@ -23,7 +23,7 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
 }
 
 export function writeCustomType(writer: Write, type: CustomType): void {
-  writer.writeMapLength(35);
+  writer.writeMapLength(33);
   writer.context().push("str", "string", "writing property");
   writer.writeString("str");
   writer.writeString(type.str);
@@ -52,10 +52,6 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.writeString("u32");
   writer.writeUInt32(type.u32);
   writer.context().pop();
-  writer.context().push("u64", "u64", "writing property");
-  writer.writeString("u64");
-  writer.writeUInt64(type.u64);
-  writer.context().pop();
   writer.context().push("i", "i32", "writing property");
   writer.writeString("i");
   writer.writeInt32(type.i);
@@ -71,10 +67,6 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.context().push("i32", "i32", "writing property");
   writer.writeString("i32");
   writer.writeInt32(type.i32);
-  writer.context().pop();
-  writer.context().push("i64", "i64", "writing property");
-  writer.writeString("i64");
-  writer.writeInt64(type.i64);
   writer.context().pop();
   writer.context().push("bigint", "BigInt", "writing property");
   writer.writeString("bigint");
@@ -132,31 +124,31 @@ export function writeCustomType(writer: Write, type: CustomType): void {
     });
   });
   writer.context().pop();
-  writer.context().push("uOptArrayOptArray", "Array<Array<Nullable<u64>> | null>", "writing property");
+  writer.context().push("uOptArrayOptArray", "Array<Array<Nullable<u32>> | null>", "writing property");
   writer.writeString("uOptArrayOptArray");
-  writer.writeArray(type.uOptArrayOptArray, (writer: Write, item: Array<Nullable<u64>> | null): void => {
-    writer.writeNullableArray(item, (writer: Write, item: Nullable<u64>): void => {
-      writer.writeNullableUInt64(item);
+  writer.writeArray(type.uOptArrayOptArray, (writer: Write, item: Array<Nullable<u32>> | null): void => {
+    writer.writeNullableArray(item, (writer: Write, item: Nullable<u32>): void => {
+      writer.writeNullableUInt32(item);
     });
   });
   writer.context().pop();
-  writer.context().push("uArrayOptArrayArray", "Array<Array<Array<u64>> | null>", "writing property");
+  writer.context().push("uArrayOptArrayArray", "Array<Array<Array<u32>> | null>", "writing property");
   writer.writeString("uArrayOptArrayArray");
-  writer.writeArray(type.uArrayOptArrayArray, (writer: Write, item: Array<Array<u64>> | null): void => {
-    writer.writeNullableArray(item, (writer: Write, item: Array<u64>): void => {
-      writer.writeArray(item, (writer: Write, item: u64): void => {
-        writer.writeUInt64(item);
+  writer.writeArray(type.uArrayOptArrayArray, (writer: Write, item: Array<Array<u32>> | null): void => {
+    writer.writeNullableArray(item, (writer: Write, item: Array<u32>): void => {
+      writer.writeArray(item, (writer: Write, item: u32): void => {
+        writer.writeUInt32(item);
       });
     });
   });
   writer.context().pop();
-  writer.context().push("crazyArray", "Array<Array<Array<Array<u64> | null>> | null> | null", "writing property");
+  writer.context().push("crazyArray", "Array<Array<Array<Array<u32> | null>> | null> | null", "writing property");
   writer.writeString("crazyArray");
-  writer.writeNullableArray(type.crazyArray, (writer: Write, item: Array<Array<Array<u64> | null>> | null): void => {
-    writer.writeNullableArray(item, (writer: Write, item: Array<Array<u64> | null>): void => {
-      writer.writeArray(item, (writer: Write, item: Array<u64> | null): void => {
-        writer.writeNullableArray(item, (writer: Write, item: u64): void => {
-          writer.writeUInt64(item);
+  writer.writeNullableArray(type.crazyArray, (writer: Write, item: Array<Array<Array<u32> | null>> | null): void => {
+    writer.writeNullableArray(item, (writer: Write, item: Array<Array<u32> | null>): void => {
+      writer.writeArray(item, (writer: Write, item: Array<u32> | null): void => {
+        writer.writeNullableArray(item, (writer: Write, item: u32): void => {
+          writer.writeUInt32(item);
         });
       });
     });
@@ -233,8 +225,6 @@ export function readCustomType(reader: Read): CustomType {
   let _u16Set: bool = false;
   let _u32: u32 = 0;
   let _u32Set: bool = false;
-  let _u64: u64 = 0;
-  let _u64Set: bool = false;
   let _i: i32 = 0;
   let _iSet: bool = false;
   let _i8: i8 = 0;
@@ -243,8 +233,6 @@ export function readCustomType(reader: Read): CustomType {
   let _i16Set: bool = false;
   let _i32: i32 = 0;
   let _i32Set: bool = false;
-  let _i64: i64 = 0;
-  let _i64Set: bool = false;
   let _bigint: BigInt = BigInt.fromUInt16(0);
   let _bigintSet: bool = false;
   let _optBigint: BigInt | null = null;
@@ -261,11 +249,11 @@ export function readCustomType(reader: Read): CustomType {
   let _optStrOptArray: Array<string | null> | null = null;
   let _uArrayArray: Array<Array<u32>> = [];
   let _uArrayArraySet: bool = false;
-  let _uOptArrayOptArray: Array<Array<Nullable<u64>> | null> = [];
+  let _uOptArrayOptArray: Array<Array<Nullable<u32>> | null> = [];
   let _uOptArrayOptArraySet: bool = false;
-  let _uArrayOptArrayArray: Array<Array<Array<u64>> | null> = [];
+  let _uArrayOptArrayArray: Array<Array<Array<u32>> | null> = [];
   let _uArrayOptArrayArraySet: bool = false;
-  let _crazyArray: Array<Array<Array<Array<u64> | null>> | null> | null = null;
+  let _crazyArray: Array<Array<Array<Array<u32> | null>> | null> | null = null;
   let _object: Types.AnotherType | null = null;
   let _objectSet: bool = false;
   let _optObject: Types.AnotherType | null = null;
@@ -324,12 +312,6 @@ export function readCustomType(reader: Read): CustomType {
       _u32Set = true;
       reader.context().pop();
     }
-    else if (field == "u64") {
-      reader.context().push(field, "u64", "type found, reading property");
-      _u64 = reader.readUInt64();
-      _u64Set = true;
-      reader.context().pop();
-    }
     else if (field == "i") {
       reader.context().push(field, "i32", "type found, reading property");
       _i = reader.readInt32();
@@ -352,12 +334,6 @@ export function readCustomType(reader: Read): CustomType {
       reader.context().push(field, "i32", "type found, reading property");
       _i32 = reader.readInt32();
       _i32Set = true;
-      reader.context().pop();
-    }
-    else if (field == "i64") {
-      reader.context().push(field, "i64", "type found, reading property");
-      _i64 = reader.readInt64();
-      _i64Set = true;
       reader.context().pop();
     }
     else if (field == "bigint") {
@@ -433,21 +409,21 @@ export function readCustomType(reader: Read): CustomType {
       reader.context().pop();
     }
     else if (field == "uOptArrayOptArray") {
-      reader.context().push(field, "Array<Array<Nullable<u64>> | null>", "type found, reading property");
-      _uOptArrayOptArray = reader.readArray((reader: Read): Array<Nullable<u64>> | null => {
-        return reader.readNullableArray((reader: Read): Nullable<u64> => {
-          return reader.readNullableUInt64();
+      reader.context().push(field, "Array<Array<Nullable<u32>> | null>", "type found, reading property");
+      _uOptArrayOptArray = reader.readArray((reader: Read): Array<Nullable<u32>> | null => {
+        return reader.readNullableArray((reader: Read): Nullable<u32> => {
+          return reader.readNullableUInt32();
         });
       });
       _uOptArrayOptArraySet = true;
       reader.context().pop();
     }
     else if (field == "uArrayOptArrayArray") {
-      reader.context().push(field, "Array<Array<Array<u64>> | null>", "type found, reading property");
-      _uArrayOptArrayArray = reader.readArray((reader: Read): Array<Array<u64>> | null => {
-        return reader.readNullableArray((reader: Read): Array<u64> => {
-          return reader.readArray((reader: Read): u64 => {
-            return reader.readUInt64();
+      reader.context().push(field, "Array<Array<Array<u32>> | null>", "type found, reading property");
+      _uArrayOptArrayArray = reader.readArray((reader: Read): Array<Array<u32>> | null => {
+        return reader.readNullableArray((reader: Read): Array<u32> => {
+          return reader.readArray((reader: Read): u32 => {
+            return reader.readUInt32();
           });
         });
       });
@@ -455,12 +431,12 @@ export function readCustomType(reader: Read): CustomType {
       reader.context().pop();
     }
     else if (field == "crazyArray") {
-      reader.context().push(field, "Array<Array<Array<Array<u64> | null>> | null> | null", "type found, reading property");
-      _crazyArray = reader.readNullableArray((reader: Read): Array<Array<Array<u64> | null>> | null => {
-        return reader.readNullableArray((reader: Read): Array<Array<u64> | null> => {
-          return reader.readArray((reader: Read): Array<u64> | null => {
-            return reader.readNullableArray((reader: Read): u64 => {
-              return reader.readUInt64();
+      reader.context().push(field, "Array<Array<Array<Array<u32> | null>> | null> | null", "type found, reading property");
+      _crazyArray = reader.readNullableArray((reader: Read): Array<Array<Array<u32> | null>> | null => {
+        return reader.readNullableArray((reader: Read): Array<Array<u32> | null> => {
+          return reader.readArray((reader: Read): Array<u32> | null => {
+            return reader.readNullableArray((reader: Read): u32 => {
+              return reader.readUInt32();
             });
           });
         });
@@ -591,9 +567,6 @@ export function readCustomType(reader: Read): CustomType {
   if (!_u32Set) {
     throw new Error(reader.context().printWithContext("Missing required property: 'u32: UInt32'"));
   }
-  if (!_u64Set) {
-    throw new Error(reader.context().printWithContext("Missing required property: 'u64: UInt64'"));
-  }
   if (!_iSet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'i: Int'"));
   }
@@ -605,9 +578,6 @@ export function readCustomType(reader: Read): CustomType {
   }
   if (!_i32Set) {
     throw new Error(reader.context().printWithContext("Missing required property: 'i32: Int32'"));
-  }
-  if (!_i64Set) {
-    throw new Error(reader.context().printWithContext("Missing required property: 'i64: Int64'"));
   }
   if (!_bigintSet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'bigint: BigInt'"));
@@ -625,10 +595,10 @@ export function readCustomType(reader: Read): CustomType {
     throw new Error(reader.context().printWithContext("Missing required property: 'uArrayArray: [[UInt]]'"));
   }
   if (!_uOptArrayOptArraySet) {
-    throw new Error(reader.context().printWithContext("Missing required property: 'uOptArrayOptArray: [[UInt64]]'"));
+    throw new Error(reader.context().printWithContext("Missing required property: 'uOptArrayOptArray: [[UInt32]]'"));
   }
   if (!_uArrayOptArrayArraySet) {
-    throw new Error(reader.context().printWithContext("Missing required property: 'uArrayOptArrayArray: [[[UInt64]]]'"));
+    throw new Error(reader.context().printWithContext("Missing required property: 'uArrayOptArrayArray: [[[UInt32]]]'"));
   }
   if (!_object || !_objectSet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'object: AnotherType'"));
@@ -651,12 +621,10 @@ export function readCustomType(reader: Read): CustomType {
     u8: _u8,
     u16: _u16,
     u32: _u32,
-    u64: _u64,
     i: _i,
     i8: _i8,
     i16: _i16,
     i32: _i32,
-    i64: _i64,
     bigint: _bigint,
     optBigint: _optBigint,
     bytes: _bytes,

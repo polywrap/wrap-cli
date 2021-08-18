@@ -1,3 +1,13 @@
+# Web3API 0.0.1-prealpha.31
+## Features
+* Use Binaryen's Asyncify to support async Wasm import calls. Deprecate the Wasm threading model we were using previously. This now means that the client now supports all browsers, as it no longer requires `SharedArrayBuffer` & the `atomics` library.
+* `@web3api/graph-node-plugin-js`: Finalized the graph-node plugin implementation, added e2e tests. It currently only works with the hosted service.
+
+## Bugs
+* Removed support for UInt64 & Int64 base types. More info [here](https://github.com/polywrap/monorepo/pull/414).
+* `@web3api/cli`: Properly validate all required exports from Web3API Wasm modules at compile-time.
+* `@web3api/ethereum-plugin-js`: Properly support smart contract methods with structures as arguments.
+
 # Web3API 0.0.1-prealpha.30
 ## Bugs
 * `@web3api/ethereum-plugin-js`: Fix ethers.js inconsistencies.

@@ -3,12 +3,10 @@ scalar UInt
 scalar UInt8
 scalar UInt16
 scalar UInt32
-scalar UInt64
 scalar Int
 scalar Int8
 scalar Int16
 scalar Int32
-scalar Int64
 scalar Bytes
 scalar BigInt
 
@@ -49,7 +47,7 @@ method2 comment
 arg comment
 """
     arg: [String!]!
-  ): [Int64!]!
+  ): [Int32!]!
 }
 
 """
@@ -71,7 +69,7 @@ type Mutation @imports(
 
   method2(
     arg: [String!]!
-  ): [Int64!]!
+  ): [Int32!]!
 
   localObjects(
     nestedLocalObject: NestedObjectType
@@ -95,21 +93,19 @@ type CustomType {
   u8: UInt8!
   u16: UInt16!
   u32: UInt32!
-  u64: UInt64!
   i: Int!
   i8: Int8!
   i16: Int16!
   i32: Int32!
-  i64: Int64!
   bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optUOptArray: [UInt]
   optStrOptArray: [String]
   uArrayArray: [[UInt!]!]!
-  uOptArrayOptArray: [[UInt64]]!
-  uArrayOptArrayArray: [[[UInt64!]!]]!
-  crazyArray: [[[[UInt64!]]!]]
+  uOptArrayOptArray: [[UInt32]]!
+  uArrayOptArrayArray: [[[UInt32!]!]]!
+  crazyArray: [[[[UInt32!]]!]]
   object: ObjectType!
   optObject: ObjectType
   nestedObject: NestedObjectType!
