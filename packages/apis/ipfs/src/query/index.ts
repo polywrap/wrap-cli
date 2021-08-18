@@ -1,6 +1,8 @@
 import { Http_Query, Http_ResponseType } from "./w3/imported";
 import {
-  Input_catFile, Input_catFileToString, Http_Header, Http_UrlParam, CatFileOptions, Http_ResponseError, Http_Request, Http_Response
+  Input_catFile, Input_catFileToString, Http_Header, 
+  Http_UrlParam, CatFileOptions, Http_ResponseError, 
+  Http_Request, ResolveResult, Input_resolve
 } from "./w3";
 import { decode } from "as-base64"
 import { IpfsError } from "../error";
@@ -26,6 +28,16 @@ export function catFile(input: Input_catFile): ArrayBuffer {
     "/api/v0/cat"
   );
   return decode(result.data).buffer;
+}
+
+export function resolve(input: Input_resolve): ResolveResult {
+  const result = executeOperation(
+    input.ipfs,
+    createRequest(null, input.cid, Http_ResponseType.TEXT),
+    "resolve",
+    "/api/v0/resolve"
+  );
+  return {cid: result.data, provider: result.provider}
 }
 
 class ExecutionResult {
