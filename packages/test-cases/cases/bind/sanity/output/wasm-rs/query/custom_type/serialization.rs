@@ -561,6 +561,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<Box<CustomType>, Stri
                 });
                 reader.context().pop();
             }
+            _ => {}
         }
     }
     if !str_set {

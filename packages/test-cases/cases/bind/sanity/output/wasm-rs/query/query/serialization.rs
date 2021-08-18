@@ -134,10 +134,7 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, S
                 });
                 reader.context().pop();
             }
-            _ => {
-                reader.context().push(&field, "unknown", "searching for property type");
-                reader.context().pop();
-            }
+            _ => {}
         }
     }
     if !str_set {

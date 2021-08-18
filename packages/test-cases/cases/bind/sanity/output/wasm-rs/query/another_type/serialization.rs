@@ -69,6 +69,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, String>
                 }
                 reader.context().pop();
             }
+            _ => {}
         }
     }
 
