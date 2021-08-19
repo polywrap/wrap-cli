@@ -18,6 +18,8 @@ import {
   Web3ApiManifest,
   BuildManifest,
 } from "@web3api/core-js";
+import { WasmWeb3Api } from "@web3api/client-js";
+import { AsyncWasmInstance } from "@web3api/asyncify-js";
 import { bindSchema, writeDirectory } from "@web3api/schema-bind";
 import { TypeInfo } from "@web3api/schema-parse";
 import { ComposerOutput } from "@web3api/schema-compose";
@@ -494,7 +496,6 @@ export class Compiler {
     moduleName: InvokableModules,
     buildDir: string
   ): Promise<void> {
-    let missingExport: string | undefined;
     const wasmSource = fs.readFileSync(
       path.join(buildDir, `${moduleName}.wasm`)
     );
@@ -519,21 +520,34 @@ export class Compiler {
       },
     });
 
-    if (!instance.exports._w3_init) {
-      missingExport = "_w3_init";
+    const requiredExports = [
+      ...WasmWeb3Api.requiredExports,
+      ...AsyncWasmInstance.requiredExports,
+    ];
+    const missingExports: string[] = [];
+
+    for (const requiredExport of requiredExports) {
+      if (!instance.exports[requiredExport]) {
+        missingExports.push(requiredExport);
+      }
     }
 
-    if (!instance.exports._w3_invoke) {
-      missingExport = "_w3_invoke";
-    }
-
-    if (!instance.exports.w3Abort) {
-      missingExport = "w3Abort";
-    }
-
-    if (missingExport) {
+    if (missingExports.length) {
       throw Error(
-        intlMsg.lib_compiler_missing_export({ missingExport, moduleName })
+        intlMsg.lib_compiler_missing_export({
+          missingExport: missingExports
+            .map((missingExport, index) => {
+              if (missingExports.length === 1) {
+                return missingExport;
+              } else if (index === missingExports.length - 1) {
+                return "& " + missingExport;
+              } else {
+                return missingExport + ", ";
+              }
+            })
+            .join(),
+          moduleName,
+        })
       );
     }
   }

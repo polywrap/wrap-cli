@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@formatjs/intl": "1.8.2",
+    "@web3api/asyncify-js": "0.0.1-prealpha.31",
     "@web3api/client-js": "0.0.1-prealpha.31",
     "@web3api/client-test-env": "0.0.1-prealpha.31",
     "@web3api/core-js": "0.0.1-prealpha.31",
