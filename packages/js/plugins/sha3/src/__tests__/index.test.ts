@@ -143,9 +143,11 @@ describe("js-sha3 algorithms returned values match the plugin's", () => {
 
   it("keccak256 buffer matches", async () => {
     const encoder = new TextEncoder();
-    const testMessageBuffer = encoder.encode(testMessage);
-    const expected = keccak256(testMessageBuffer)
-    const response = await client.query<{ buffer_keccak_256: string }>({
+    const message = encoder.encode(testMessage);
+    const hexValues = keccak256(message).match(/[\da-f]{2}/gi)
+    const expected = new Uint8Array(hexValues!.map(h => parseInt(h, 16)));
+
+    const response = await client.query<{ buffer_keccak_256: Uint8Array }>({
       uri: "w3://ens/sha3.web3api.eth",
       query: `
         query {
@@ -153,13 +155,13 @@ describe("js-sha3 algorithms returned values match the plugin's", () => {
         }
       `,
       variables: {
-        message: testMessageBuffer
+        message: message.buffer
       }
     })
 
     expect(response.data).toBeDefined()
     expect(response.errors).toBeUndefined()
-    expect(response.data?.buffer_keccak_256).toMatch(expected)
+    expect(response.data?.buffer_keccak_256.toString()).toMatch(expected.toString())
   })
 
   it("keccak224 matches", async () => {

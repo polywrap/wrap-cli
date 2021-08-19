@@ -20,9 +20,11 @@ import {
   Input_setTextRecord,
   Input_configureOpenDomain,
   Input_createSubdomainInOpenDomain,
+  Input_createSubdomainInOpenDomainAndSetContentHash,
   Ethereum_TxResponse,
   ConfigureOpenDomainResponse,
   CreateSubdomainInOpenDomainResponse,
+  CreateSubdomainInOpenDomainAndSetContentHashResponse,
   TxOverrides,
 } from "./w3";
 
@@ -390,8 +392,12 @@ export function configureOpenDomain(
     txOverrides,
   });
 
+  const splitDomain = input.tld.split(".");
+  const tldLabel = splitDomain[0];
+  const tld = splitDomain.slice(1, splitDomain.length).join(".");
+
   const registerOpenDomainTxReceipt = registerDomain({
-    registrarAddress: fifsRegistrarAddress,
+    registrarAddress: input.registrarAddress,
     registryAddress: input.registryAddress,
     domain: input.tld,
     owner: input.owner,
@@ -399,18 +405,13 @@ export function configureOpenDomain(
     txOverrides,
   });
 
-  const setResolverTxReceipt = setResolver({
-    domain: input.tld,
+  const setSubdomainRecordTxReceipt = setSubdomainRecord({
+    domain: tld,
+    label: tldLabel,
+    owner: fifsRegistrarAddress,
+    registryAddress: input.registryAddress,
     resolverAddress: input.resolverAddress,
-    registryAddress: input.registryAddress,
-    connection: input.connection,
-    txOverrides,
-  });
-
-  const setOwnerTxReceipt = setOwner({
-    domain: input.tld,
-    newOwner: fifsRegistrarAddress,
-    registryAddress: input.registryAddress,
+    ttl: "0",
     connection: input.connection,
     txOverrides,
   });
@@ -418,8 +419,7 @@ export function configureOpenDomain(
   return {
     fifsRegistrarAddress,
     registerOpenDomainTxReceipt,
-    setResolverTxReceipt,
-    setOwnerTxReceipt,
+    setSubdomainRecordTxReceipt,
   };
 }
 
@@ -440,12 +440,46 @@ export function createSubdomainInOpenDomain(
   });
 
   const setResolverTxReceipt = setResolver({
-    domain: input.label + input.domain,
+    domain: input.label + "." + input.domain,
     registryAddress: input.registryAddress,
     resolverAddress: input.resolverAddress,
     connection: input.connection,
     txOverrides,
   });
 
-  return { setResolverTxReceipt, registerSubdomainTxReceipt };
+  return { registerSubdomainTxReceipt, setResolverTxReceipt };
+}
+
+export function createSubdomainInOpenDomainAndSetContentHash(
+  input: Input_createSubdomainInOpenDomainAndSetContentHash
+): CreateSubdomainInOpenDomainAndSetContentHashResponse {
+  const txOverrides: TxOverrides =
+    input.txOverrides === null
+      ? { gasLimit: null, gasPrice: null }
+      : input.txOverrides!;
+
+  const createSubdomainInOpenDomainTxReceipt = createSubdomainInOpenDomain({
+    label: input.label,
+    domain: input.domain,
+    resolverAddress: input.resolverAddress,
+    registryAddress: input.registryAddress,
+    owner: input.owner,
+    fifsRegistrarAddress: input.fifsRegistrarAddress,
+    connection: input.connection,
+    txOverrides,
+  });
+
+  const setContentHashReceiptTx = setContentHash({
+    domain: input.label + "." + input.domain,
+    cid: input.cid,
+    resolverAddress: input.resolverAddress,
+    connection: input.connection,
+    txOverrides,
+  });
+
+  return {
+    registerSubdomainTxReceipt: createSubdomainInOpenDomainTxReceipt.registerSubdomainTxReceipt,
+    setResolverTxReceipt: createSubdomainInOpenDomainTxReceipt.setResolverTxReceipt,
+    setContentHashReceiptTx,
+  };
 }

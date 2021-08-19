@@ -6,13 +6,16 @@
 type ConfigureOpenDomainResponse {
   fifsRegistrarAddress: String!
   registerOpenDomainTxReceipt: Ethereum_TxResponse!
-  setResolverTxReceipt: Ethereum_TxResponse!
-  setOwnerTxReceipt: Ethereum_TxResponse!
+  setSubdomainRecordTxReceipt: Ethereum_TxResponse!
 }
 
 type CreateSubdomainInOpenDomainResponse {
   registerSubdomainTxReceipt: Ethereum_TxResponse!
   setResolverTxReceipt: Ethereum_TxResponse!
+}
+
+type CreateSubdomainInOpenDomainAndSetContentHashResponse implements CreateSubdomainInOpenDomainResponse {
+  setContentHashReceiptTx: Ethereum_TxResponse!
 }
 
 type Mutation {
@@ -146,6 +149,7 @@ type Mutation {
     owner: String!
     registryAddress: String!
     resolverAddress: String!
+    registrarAddress: String!
     connection: Ethereum_Connection
     txOverrides: TxOverrides
   ): ConfigureOpenDomainResponse!
@@ -160,4 +164,16 @@ type Mutation {
     connection: Ethereum_Connection
     txOverrides: TxOverrides
   ): CreateSubdomainInOpenDomainResponse!
+
+  createSubdomainInOpenDomainAndSetContentHash(
+    label: String!
+    domain: String!
+    owner: String!
+    fifsRegistrarAddress: String!
+    registryAddress: String!
+    resolverAddress: String!
+    cid: String!
+    connection: Ethereum_Connection
+    txOverrides: TxOverrides
+  ): CreateSubdomainInOpenDomainAndSetContentHashResponse
 }

@@ -23,6 +23,7 @@ describe("ENS Wrapper", () => {
   let registrarAddress: string;
   let resolverAddress: string;
   let reverseRegistryAddress: string;
+  let customFifsRegistrarAddress: string;
 
   let owner: string;
   let anotherOwner: string;
@@ -723,10 +724,11 @@ describe("ENS Wrapper", () => {
     expect(getTextRecordErrors).toBeUndefined();
   });
 
-  it.skip("should configure open domain", async () => {
+  it("should configure open domain", async () => {
     const configureOpenDomainVariables = {
       registry: ensAddress,
       resolver: resolverAddress,
+      registrar: registrarAddress,
       tld: openSubdomain,
       owner,
       network,
@@ -749,6 +751,7 @@ describe("ENS Wrapper", () => {
             owner: $owner,
             registryAddress: $registry
             resolverAddress: $resolver
+            registrarAddress: $registrar
             connection: {
               networkNameOrChainId: $network
             }
@@ -758,7 +761,6 @@ describe("ENS Wrapper", () => {
       variables: configureOpenDomainVariables,
     });
 
-    console.log({ configureOpenDomainErrors });
     expect(configureOpenDomainData?.configureOpenDomain).toBeDefined();
     expect(configureOpenDomainErrors).toBeUndefined();
 
@@ -785,9 +787,118 @@ describe("ENS Wrapper", () => {
     expect(getOwnerData?.getOwner).toEqual(
       configureOpenDomainData?.configureOpenDomain.fifsRegistrarAddress
     );
+
+    customFifsRegistrarAddress = configureOpenDomainData?.configureOpenDomain.fifsRegistrarAddress!;
   });
 
-  // it("should create subdomain in open domain", async () => {
-  //   const createSubdomainInOpenDomainVariables = {};
-  // });
+  it("should create subdomain in open domain", async () => {
+    const createSubdomainInOpenDomainVariables = {
+      label: "label",
+      domain: openSubdomain,
+      fifsRegistrarAddress: customFifsRegistrarAddress,
+      registry: ensAddress,
+      owner: anotherOwner,
+      resolver: resolverAddress,
+      network,
+    };
+
+    const {
+      data: createSubdomainInOpenDomainData,
+      errors: createSubdomainInOpenDomainErrors,
+    } = await anotherOwnerClient.query({
+      uri: ensUri,
+      query: `
+        mutation {
+          createSubdomainInOpenDomain(
+            label: $label,
+            domain: $domain,
+            owner: $owner,
+            fifsRegistrarAddress: $fifsRegistrarAddress,
+            registryAddress: $registry
+            resolverAddress: $resolver
+            connection: {
+              networkNameOrChainId: $network
+            }
+          )
+        }
+      `,
+      variables: createSubdomainInOpenDomainVariables,
+    });
+
+    expect(
+      createSubdomainInOpenDomainData?.createSubdomainInOpenDomain
+    ).toBeDefined();
+    expect(createSubdomainInOpenDomainErrors).toBeUndefined();
+  });
+
+  it("should create subdomain in open domain and set content hash", async () => {
+    const cid = "0x64EC88CA00B268E5BA1A35678A1B5316D212F4F366B2477232534A8AECA37F3C".toLowerCase();
+    const createSubdomainInOpenDomainAndSetContentHashVariables = {
+      label: "label2",
+      cid,
+      domain: openSubdomain,
+      fifsRegistrarAddress: customFifsRegistrarAddress,
+      registry: ensAddress,
+      owner: anotherOwner,
+      resolver: resolverAddress,
+      network,
+    };
+
+    const {
+      data: createSubdomainInOpenDomainAndSetContentHashData,
+      errors: createSubdomainInOpenDomainAndSetContentHashErrors,
+    } = await anotherOwnerClient.query({
+      uri: ensUri,
+      query: `
+        mutation {
+          createSubdomainInOpenDomainAndSetContentHash(
+            cid: $cid,
+            label: $label,
+            domain: $domain,
+            owner: $owner,
+            fifsRegistrarAddress: $fifsRegistrarAddress,
+            registryAddress: $registry
+            resolverAddress: $resolver
+            connection: {
+              networkNameOrChainId: $network
+            }
+          )
+        }
+      `,
+      variables: createSubdomainInOpenDomainAndSetContentHashVariables,
+    });
+
+    expect(
+      createSubdomainInOpenDomainAndSetContentHashData?.createSubdomainInOpenDomainAndSetContentHash
+    ).toBeDefined();
+    expect(createSubdomainInOpenDomainAndSetContentHashErrors).toBeUndefined();
+
+    const getContentHashFromDomainVariables = {
+      domain: "label2." + openSubdomain,
+      registry: ensAddress,
+      network,
+    };
+
+    const {
+      data: getContentHashFromDomainData,
+      errors: getContentHashFromDomainErrors,
+    } = await ownerClient.query({
+      uri: ensUri,
+      query: `
+        query {
+          getContentHashFromDomain(
+            domain: $domain
+            registryAddress: $registry
+            connection: {
+              networkNameOrChainId: $network
+            }
+          )
+        }
+      `,
+      variables: getContentHashFromDomainVariables,
+    });
+
+    expect(getContentHashFromDomainData?.getContentHashFromDomain).toEqual(cid);
+    expect(getContentHashFromDomainErrors).toBeUndefined();
+  });
 });
