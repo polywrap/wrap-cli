@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.33
+## Bugs
+* `@web3api/schema-bind`: Fixed plugin code generation oversight. Should be using `null` instead of `undefined`.
+
 # Web3API 0.0.1-prealpha.32
 ## Features
 * Improved the plugin developer experience by creating a new `w3 plugin codegen` command, which generated types based on the plugin's schema. For an example of how this works, see the updated plugin template project by running `w3 create plugin typescript my-plugin`.
