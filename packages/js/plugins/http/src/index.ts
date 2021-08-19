@@ -9,7 +9,7 @@ import {
   Client,
   Plugin,
   PluginModules,
-  PluginManifest,
+  PluginPackageManifest,
   PluginPackage,
 } from "@web3api/core-js";
 
@@ -18,7 +18,7 @@ export class HttpPlugin extends Plugin {
     super();
   }
 
-  public static manifest(): PluginManifest {
+  public static manifest(): PluginPackageManifest {
     return manifest;
   }
 

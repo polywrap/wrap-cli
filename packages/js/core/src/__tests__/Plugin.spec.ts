@@ -2,11 +2,11 @@ import {
   Client,
   Plugin,
   PluginModules,
-  PluginManifest,
+  PluginPackageManifest,
   Uri,
 } from "..";
 
-const testPluginManifest: PluginManifest = {
+const testPluginManifest: PluginPackageManifest = {
   schema: `
     type Query {
       testQuery: Number!

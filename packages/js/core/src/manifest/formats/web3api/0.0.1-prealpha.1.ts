@@ -28,12 +28,9 @@ export interface Web3ApiManifest {
       file: string;
     };
   };
-  import_redirects?:
-    | []
-    | [
-        {
-          uri: string;
-          schema: string;
-        }
-      ];
+  import_redirects?: {
+    uri: string;
+    schema: string;
+  }[];
+  __type: "Web3ApiManifest";
 }
