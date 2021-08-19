@@ -22,22 +22,22 @@ export type Boolean = boolean;
 export interface Object {
   u: UInt;
   array: Array<Boolean>;
-  bytes?: Bytes | undefined;
+  bytes?: Bytes | null;
 }
 
 /// Imported Objects START ///
 
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_Connection {
-  node?: String | undefined;
-  networkNameOrChainId?: String | undefined;
+  node?: String | null;
+  networkNameOrChainId?: String | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_TxOverrides {
-  gasLimit?: BigInt | undefined;
-  gasPrice?: BigInt | undefined;
-  value?: BigInt | undefined;
+  gasLimit?: BigInt | null;
+  gasPrice?: BigInt | null;
+  value?: BigInt | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
@@ -48,15 +48,15 @@ export interface Ethereum_StaticTxResult {
 
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_TxRequest {
-  to?: String | undefined;
-  from?: String | undefined;
-  nonce?: UInt32 | undefined;
-  gasLimit?: BigInt | undefined;
-  gasPrice?: BigInt | undefined;
-  data?: String | undefined;
-  value?: BigInt | undefined;
-  chainId?: UInt32 | undefined;
-  type?: UInt32 | undefined;
+  to?: String | null;
+  from?: String | null;
+  nonce?: UInt32 | null;
+  gasLimit?: BigInt | null;
+  gasPrice?: BigInt | null;
+  data?: String | null;
+  value?: BigInt | null;
+  chainId?: UInt32 | null;
+  type?: UInt32 | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
@@ -65,7 +65,7 @@ export interface Ethereum_TxReceipt {
   from: String;
   contractAddress: String;
   transactionIndex: UInt32;
-  root?: String | undefined;
+  root?: String | null;
   gasUsed: BigInt;
   logsBloom: String;
   transactionHash: String;
@@ -77,7 +77,7 @@ export interface Ethereum_TxReceipt {
   effectiveGasPrice: BigInt;
   byzantium: Boolean;
   type: UInt32;
-  status?: UInt32 | undefined;
+  status?: UInt32 | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
@@ -108,17 +108,17 @@ export interface Ethereum_EventNotification {
 interface Ethereum_Query_Input_callContractView extends Record<string, unknown> {
   address: String;
   method: String;
-  args?: Array<String> | undefined;
-  connection?: Types.Ethereum_Connection | undefined;
+  args?: Array<String> | null;
+  connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_callContractStatic extends Record<string, unknown> {
   address: String;
   method: String;
-  args?: Array<String> | undefined;
-  connection?: Types.Ethereum_Connection | undefined;
-  txOverrides?: Types.Ethereum_TxOverrides | undefined;
+  args?: Array<String> | null;
+  connection?: Types.Ethereum_Connection | null;
+  txOverrides?: Types.Ethereum_TxOverrides | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
@@ -129,39 +129,39 @@ interface Ethereum_Query_Input_encodeParams extends Record<string, unknown> {
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_getSignerAddress extends Record<string, unknown> {
-  connection?: Types.Ethereum_Connection | undefined;
+  connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_getSignerBalance extends Record<string, unknown> {
-  blockTag?: BigInt | undefined;
-  connection?: Types.Ethereum_Connection | undefined;
+  blockTag?: BigInt | null;
+  connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_getSignerTransactionCount extends Record<string, unknown> {
-  blockTag?: BigInt | undefined;
-  connection?: Types.Ethereum_Connection | undefined;
+  blockTag?: BigInt | null;
+  connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_getGasPrice extends Record<string, unknown> {
-  connection?: Types.Ethereum_Connection | undefined;
+  connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_estimateTransactionGas extends Record<string, unknown> {
   tx: Types.Ethereum_TxRequest;
-  connection?: Types.Ethereum_Connection | undefined;
+  connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_estimateContractCallGas extends Record<string, unknown> {
   address: String;
   method: String;
-  args?: Array<String> | undefined;
-  connection?: Types.Ethereum_Connection | undefined;
-  txOverrides?: Types.Ethereum_TxOverrides | undefined;
+  args?: Array<String> | null;
+  connection?: Types.Ethereum_Connection | null;
+  txOverrides?: Types.Ethereum_TxOverrides | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
@@ -184,16 +184,16 @@ interface Ethereum_Query_Input_awaitTransaction extends Record<string, unknown> 
   txHash: String;
   confirmations: UInt32;
   timeout: UInt32;
-  connection?: Types.Ethereum_Connection | undefined;
+  connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_waitForEvent extends Record<string, unknown> {
   address: String;
   event: String;
-  args?: Array<String> | undefined;
-  timeout?: UInt32 | undefined;
-  connection?: Types.Ethereum_Connection | undefined;
+  args?: Array<String> | null;
+  timeout?: UInt32 | null;
+  connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */

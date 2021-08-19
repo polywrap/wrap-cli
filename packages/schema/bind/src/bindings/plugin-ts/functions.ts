@@ -20,12 +20,10 @@ export const toTypescript: MustacheFunction = () => {
       case "Int8":
       case "Int16":
       case "Int32":
-      case "Int64":
       case "UInt":
       case "UInt32":
       case "UInt8":
       case "UInt16":
-      case "UInt64":
       case "String":
       case "Boolean":
       case "Bytes":
@@ -56,7 +54,7 @@ const toTypescriptArray = (type: string, nullable: boolean): string => {
 
 const applyNullable = (type: string, nullable: boolean): string => {
   if (nullable) {
-    return `${type} | undefined`;
+    return `${type} | null`;
   } else {
     return type;
   }

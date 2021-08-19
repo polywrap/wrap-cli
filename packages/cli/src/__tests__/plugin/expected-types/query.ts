@@ -23,7 +23,7 @@ import {
 
 export interface Input_method extends Record<string, unknown> {
   str: String;
-  optStr?: String | undefined;
+  optStr?: String | null;
 }
 
 export interface Module extends PluginModule {

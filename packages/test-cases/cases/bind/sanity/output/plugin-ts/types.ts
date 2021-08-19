@@ -21,9 +21,9 @@ export type Boolean = boolean;
 
 export interface CustomType {
   str: String;
-  optStr?: String | undefined;
+  optStr?: String | null;
   u: UInt;
-  optU?: UInt | undefined;
+  optU?: UInt | null;
   u8: UInt8;
   u16: UInt16;
   u32: UInt32;
@@ -32,32 +32,32 @@ export interface CustomType {
   i16: Int16;
   i32: Int32;
   bigint: BigInt;
-  optBigint?: BigInt | undefined;
+  optBigint?: BigInt | null;
   bytes: Bytes;
-  optBytes?: Bytes | undefined;
+  optBytes?: Bytes | null;
   boolean: Boolean;
-  optBoolean?: Boolean | undefined;
+  optBoolean?: Boolean | null;
   uArray: Array<UInt>;
-  uOptArray?: Array<UInt> | undefined;
-  optUOptArray?: Array<UInt | undefined> | undefined;
-  optStrOptArray?: Array<String | undefined> | undefined;
+  uOptArray?: Array<UInt> | null;
+  optUOptArray?: Array<UInt | null> | null;
+  optStrOptArray?: Array<String | null> | null;
   uArrayArray: Array<Array<UInt>>;
-  uOptArrayOptArray: Array<Array<UInt32 | undefined> | undefined>;
-  uArrayOptArrayArray: Array<Array<Array<UInt32>> | undefined>;
-  crazyArray?: Array<Array<Array<Array<UInt32> | undefined>> | undefined> | undefined;
+  uOptArrayOptArray: Array<Array<UInt32 | null> | null>;
+  uArrayOptArrayArray: Array<Array<Array<UInt32>> | null>;
+  crazyArray?: Array<Array<Array<Array<UInt32> | null>> | null> | null;
   object: Types.AnotherType;
-  optObject?: Types.AnotherType | undefined;
+  optObject?: Types.AnotherType | null;
   objectArray: Array<Types.AnotherType>;
-  optObjectArray?: Array<Types.AnotherType | undefined> | undefined;
+  optObjectArray?: Array<Types.AnotherType | null> | null;
   en: Types.CustomEnum;
-  optEnum?: Types.CustomEnum | undefined;
+  optEnum?: Types.CustomEnum | null;
   enumArray: Array<Types.CustomEnum>;
-  optEnumArray?: Array<Types.CustomEnum | undefined> | undefined;
+  optEnumArray?: Array<Types.CustomEnum | null> | null;
 }
 
 export interface AnotherType {
-  prop?: String | undefined;
-  circular?: Types.CustomType | undefined;
+  prop?: String | null;
+  circular?: Types.CustomType | null;
 }
 
 export enum CustomEnum {
@@ -70,13 +70,13 @@ export enum CustomEnum {
 /* URI: "testimport.uri.eth" */
 export interface TestImport_Object {
   object: Types.TestImport_AnotherObject;
-  optObject?: Types.TestImport_AnotherObject | undefined;
+  optObject?: Types.TestImport_AnotherObject | null;
   objectArray: Array<Types.TestImport_AnotherObject>;
-  optObjectArray?: Array<Types.TestImport_AnotherObject | undefined> | undefined;
+  optObjectArray?: Array<Types.TestImport_AnotherObject | null> | null;
   en: Types.TestImport_Enum;
-  optEnum?: Types.TestImport_Enum | undefined;
+  optEnum?: Types.TestImport_Enum | null;
   enumArray: Array<Types.TestImport_Enum>;
-  optEnumArray?: Array<Types.TestImport_Enum | undefined> | undefined;
+  optEnumArray?: Array<Types.TestImport_Enum | null> | null;
 }
 
 /* URI: "testimport.uri.eth" */
@@ -97,18 +97,18 @@ export enum TestImport_Enum {
 /* URI: "testimport.uri.eth" */
 interface TestImport_Query_Input_importedMethod extends Record<string, unknown> {
   str: String;
-  optStr?: String | undefined;
+  optStr?: String | null;
   u: UInt;
-  optU?: UInt | undefined;
-  uArrayArray: Array<Array<UInt | undefined> | undefined>;
+  optU?: UInt | null;
+  uArrayArray: Array<Array<UInt | null> | null>;
   object: Types.TestImport_Object;
-  optObject?: Types.TestImport_Object | undefined;
+  optObject?: Types.TestImport_Object | null;
   objectArray: Array<Types.TestImport_Object>;
-  optObjectArray?: Array<Types.TestImport_Object | undefined> | undefined;
+  optObjectArray?: Array<Types.TestImport_Object | null> | null;
   en: Types.TestImport_Enum;
-  optEnum?: Types.TestImport_Enum | undefined;
+  optEnum?: Types.TestImport_Enum | null;
   enumArray: Array<Types.TestImport_Enum>;
-  optEnumArray?: Array<Types.TestImport_Enum | undefined> | undefined;
+  optEnumArray?: Array<Types.TestImport_Enum | null> | null;
 }
 
 /* URI: "testimport.uri.eth" */
@@ -121,8 +121,8 @@ export const TestImport_Query = {
   importedMethod: async (
     input: TestImport_Query_Input_importedMethod,
     client: Client
-  ): Promise<InvokeApiResult<Types.TestImport_Object | undefined>> => {
-    return client.invoke<Types.TestImport_Object | undefined>({
+  ): Promise<InvokeApiResult<Types.TestImport_Object | null>> => {
+    return client.invoke<Types.TestImport_Object | null>({
       uri: "testimport.uri.eth",
       module: "query",
       method: "importedMethod",
@@ -160,8 +160,8 @@ export const TestImport_Mutation = {
   importedMethod: async (
     input: TestImport_Mutation_Input_importedMethod,
     client: Client
-  ): Promise<InvokeApiResult<Types.TestImport_Object | undefined>> => {
-    return client.invoke<Types.TestImport_Object | undefined>({
+  ): Promise<InvokeApiResult<Types.TestImport_Object | null>> => {
+    return client.invoke<Types.TestImport_Object | null>({
       uri: "testimport.uri.eth",
       module: "mutation",
       method: "importedMethod",
