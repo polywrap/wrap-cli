@@ -1,3 +1,11 @@
+# Web3API 0.0.1-prealpha.32
+## Features
+* Improved the plugin developer experience by creating a new `w3 plugin codegen` command, which generated types based on the plugin's schema. For an example of how this works, see the updated plugin template project by running `w3 create plugin typescript my-plugin`.
+* `@web3api/cli`: Refactored the `w3 codegen` command, making its default behavior the generation of types for Web3APIs. It's "old" behavior of loading a custom generation script is now usable through the `--custom` option.
+
+## Bugs
+* `@web3api/cli`: Properly validate all required Wasm exports when compiling Web3APIs.
+
 # Web3API 0.0.1-prealpha.31
 ## Features
 * Use Binaryen's Asyncify to support async Wasm import calls. Deprecate the Wasm threading model we were using previously. This now means that the client now supports all browsers, as it no longer requires `SharedArrayBuffer` & the `atomics` library.
