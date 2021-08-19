@@ -1,14 +1,9 @@
-import {
-  Read,
-  Write,
-  Nullable,
-  BigInt
-} from "@web3api/wasm-as";
+import { Read, Write, Nullable, BigInt } from "@namestys/wasm-as";
 import {
   serializeCustomType,
   deserializeCustomType,
   writeCustomType,
-  readCustomType
+  readCustomType,
 } from "./serialization";
 import * as Types from "..";
 

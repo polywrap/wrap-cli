@@ -1,1 +1,1 @@
-export * from "assemblyscript-json";
+export * from "@web3api/assemblyscript-json";

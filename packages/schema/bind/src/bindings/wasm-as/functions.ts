@@ -136,7 +136,7 @@ export const toWasm: MustacheFunction = () => {
         type = "BigInt";
         break;
       case "JSON":
-        type = "JSON";
+        type = "JSON.Obj";
         break;
       default:
         if (type.includes("Enum_")) {

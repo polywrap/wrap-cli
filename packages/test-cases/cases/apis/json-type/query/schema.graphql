@@ -1,8 +1,6 @@
 type Query {
   parse(value: String!): JSON!
 
-  stringify(value: JSON!): String!
-
   methodString(valueA: Int!, valueB: String!, valueC: Boolean!): String!
 
   methodJSON(valueA: Int!, valueB: String!, valueC: Boolean!): JSON!

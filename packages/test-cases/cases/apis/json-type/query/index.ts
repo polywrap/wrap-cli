@@ -1,28 +1,24 @@
-import { Input_stringify, Input_parse } from "./w3";
-import { JSON } from "@web3api/wasm-as";
+import { Input_parse, Input_methodString, Input_methodJSON } from "./w3";
+import { JSON as ASJSON } from "@namestys/wasm-as";
 
-export function stringify(input: Input_stringify): string {
-  return input.value.stringify();
-}
-
-export function parse(input: Input_parse): JSON.Obj {
-  return <JSON.Obj>JSON.parse(input.value);
+export function parse(input: Input_parse): ASJSON.Obj {
+  return <ASJSON.Obj>ASJSON.parse(input.value);
 }
 
 export function methodString(input: Input_methodString): string {
-  const result = JSON.Value.Object();
-  result.set("valueA", JSON.from(input.valueA));
-  result.set("valueB", JSON.from(input.valueA));
-  result.set("valueC", JSON.from(input.valueA));
+  const result = ASJSON.Value.Object();
+  result.set("valueA", ASJSON.from(input.valueA));
+  result.set("valueB", ASJSON.from(input.valueB));
+  result.set("valueC", ASJSON.from(input.valueC));
 
   return result.stringify();
 }
 
-export function methodJSON(input: Input_methodJSON): JSON.Obj {
-  const result = JSON.Value.Object();
-  result.set("valueA", JSON.from(input.valueA));
-  result.set("valueB", JSON.from(input.valueA));
-  result.set("valueC", JSON.from(input.valueA));
+export function methodJSON(input: Input_methodJSON): ASJSON.Obj {
+  const result = ASJSON.Value.Object();
+  result.set("valueA", ASJSON.from(input.valueA));
+  result.set("valueB", ASJSON.from(input.valueB));
+  result.set("valueC", ASJSON.from(input.valueC));
 
   return result;
 }

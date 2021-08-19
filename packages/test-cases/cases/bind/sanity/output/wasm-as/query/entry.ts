@@ -1,12 +1,5 @@
-import {
-  w3_add_invoke,
-  w3_invoke,
-  w3_abort
-} from "@web3api/wasm-as";
-import {
-  queryMethodWrapped,
-  objectMethodWrapped
-} from "./Query/wrapped";
+import { w3_add_invoke, w3_invoke, w3_abort } from "@namestys/wasm-as";
+import { queryMethodWrapped, objectMethodWrapped } from "./Query/wrapped";
 
 export function _w3_init(): void {
   w3_add_invoke("queryMethod", queryMethodWrapped);
@@ -23,10 +16,5 @@ export function w3Abort(
   line: u32,
   column: u32
 ): void {
-  w3_abort(
-    msg ? msg : "",
-    file ? file : "",
-    line,
-    column
-  );
+  w3_abort(msg ? msg : "", file ? file : "", line, column);
 }

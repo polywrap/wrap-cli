@@ -6,17 +6,21 @@ import {
   WriteEncoder,
   Nullable,
   BigInt,
-  Context
-} from "@web3api/wasm-as";
+  Context,
+} from "@namestys/wasm-as";
 import { AnotherType } from "./";
 import * as Types from "..";
 
 export function serializeAnotherType(type: AnotherType): ArrayBuffer {
-  const sizerContext: Context = new Context("Serializing (sizing) object-type: AnotherType");
+  const sizerContext: Context = new Context(
+    "Serializing (sizing) object-type: AnotherType"
+  );
   const sizer = new WriteSizer(sizerContext);
   writeAnotherType(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
-  const encoderContext: Context = new Context("Serializing (encoding) object-type: AnotherType");
+  const encoderContext: Context = new Context(
+    "Serializing (encoding) object-type: AnotherType"
+  );
   const encoder = new WriteEncoder(buffer, encoderContext);
   writeAnotherType(encoder, type);
   return buffer;
@@ -28,7 +32,9 @@ export function writeAnotherType(writer: Write, type: AnotherType): void {
   writer.writeString("prop");
   writer.writeNullableString(type.prop);
   writer.context().pop();
-  writer.context().push("circular", "Types.CustomType | null", "writing property");
+  writer
+    .context()
+    .push("circular", "Types.CustomType | null", "writing property");
   writer.writeString("circular");
   if (type.circular) {
     Types.CustomType.write(writer, type.circular as Types.CustomType);
@@ -56,12 +62,15 @@ export function readAnotherType(reader: Read): AnotherType {
 
     reader.context().push(field, "unknown", "searching for property type");
     if (field == "prop") {
-      reader.context().push(field, "string | null", "type found, reading property");
+      reader
+        .context()
+        .push(field, "string | null", "type found, reading property");
       _prop = reader.readNullableString();
       reader.context().pop();
-    }
-    else if (field == "circular") {
-      reader.context().push(field, "Types.CustomType | null", "type found, reading property");
+    } else if (field == "circular") {
+      reader
+        .context()
+        .push(field, "Types.CustomType | null", "type found, reading property");
       let object: Types.CustomType | null = null;
       if (!reader.isNextNil()) {
         object = Types.CustomType.read(reader);
@@ -72,9 +81,8 @@ export function readAnotherType(reader: Read): AnotherType {
     reader.context().pop();
   }
 
-
   return {
     prop: _prop,
-    circular: _circular
+    circular: _circular,
   };
 }

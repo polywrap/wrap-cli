@@ -8,7 +8,6 @@ import { GetPathToTestApis } from "@web3api/test-cases";
 import { Web3ApiClient } from "../Web3ApiClient";
 import { getDefaultClientConfig } from "../default-client-config";
 import { coreInterfaceUris } from "@web3api/core-js";
-import { JSON as ASJSON } from "@web3api/wasm-as";
 
 jest.setTimeout(200000);
 
@@ -845,28 +844,19 @@ describe("Web3ApiClient", () => {
     const client = await getClient();
 
     const parseResponse = await client.query<{
-      parse: string;
+      parse: any;
     }>({
       uri: ensUri,
       query: `query {
-        parse(value: '{ "foo": "bar", "bar": "baz" }')
+        parse(value: $value)
       }`,
+      variables: {
+        value: `{ "foo": "bar", "bar": "baz" }`,
+      },
     });
 
-    const parseResult = ASJSON.parse(`{ "foo": "bar", "bar": "baz" }`);
-    expect(parseResponse.parse).toEqual(parseResult);
-
-    const stringifyResponse = await client.query<{
-      stringify: string;
-    }>({
-      uri: ensUri,
-      query: `query {
-        stringify(value: ${ASJSON.parse('{ "foo": "bar", "bar": "baz" }')})
-      }`,
-    });
-
-    const stringifyResult = `{ "foo": "bar", "bar": "baz" }`;
-    expect(stringifyResponse.stringify).toEqual(stringifyResult);
+    const parseResult = JSON.stringify({ foo: "bar", bar: "baz" });
+    expect(parseResponse.data?.parse).toEqual(parseResult);
 
     const methodStringResponse = await client.query<{
       methodString: string;
@@ -877,8 +867,8 @@ describe("Web3ApiClient", () => {
       }`,
     });
 
-    const methodStringResult = `{ "valueA": 5, "valueB": "foo", "valueC": true }`;
-    expect(methodStringResponse.methodString).toEqual(methodStringResult);
+    const methodStringResult = `{"valueA":5,"valueB":"foo","valueC":true}`;
+    expect(methodStringResponse.data?.methodString).toEqual(methodStringResult);
 
     const methodJSONResponse = await client.query<{
       methodJSON: string;
@@ -889,10 +879,12 @@ describe("Web3ApiClient", () => {
       }`,
     });
 
-    const methodJSONResult = ASJSON.parse(
-      `{ "valueA": 5, "valueB": "foo", "valueC": true }`
-    );
-    expect(methodJSONResponse.methodJSON).toEqual(methodJSONResult);
+    const methodJSONResult = JSON.stringify({
+      valueA: 5,
+      valueB: "foo",
+      valueC: true,
+    });
+    expect(methodJSONResponse.data?.methodJSON).toEqual(methodJSONResult);
   });
 
   it("bytes-type", async () => {
