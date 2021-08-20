@@ -1,5 +1,5 @@
 import { query } from "./resolvers";
-import { manifest } from "./manifest";
+import { manifest, Logger_LogLevel } from "./w3";
 
 import {
   Plugin,
@@ -8,14 +8,7 @@ import {
   PluginPackage,
 } from "@web3api/core-js";
 
-export enum LogLevel {
-  DEBUG,
-  INFO,
-  WARN,
-  ERROR,
-}
-
-export type LogFunc = (level: LogLevel, message: string) => boolean;
+export type LogFunc = (level: Logger_LogLevel, message: string) => boolean;
 
 export class LoggerPlugin extends Plugin {
   private _logFunc?: LogFunc;
@@ -35,22 +28,22 @@ export class LoggerPlugin extends Plugin {
     };
   }
 
-  public log(level: LogLevel, message: string): boolean {
+  public log(level: Logger_LogLevel, message: string): boolean {
     if (this._logFunc) {
       return this._logFunc(level, message);
     }
 
     switch (level) {
-      case LogLevel.DEBUG:
+      case Logger_LogLevel.DEBUG:
         console.debug(message);
         break;
-      case LogLevel.WARN:
+      case Logger_LogLevel.WARN:
         console.warn(message);
         break;
-      case LogLevel.ERROR:
+      case Logger_LogLevel.ERROR:
         console.error(message);
         break;
-      case LogLevel.INFO:
+      case Logger_LogLevel.INFO:
         console.log(message);
         break;
       default:

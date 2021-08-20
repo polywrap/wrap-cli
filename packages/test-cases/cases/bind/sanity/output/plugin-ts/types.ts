@@ -60,12 +60,12 @@ export interface AnotherType {
   circular?: Types.CustomType | null;
 }
 
-enum CustomEnumEnum {
+export enum CustomEnumEnum {
   STRING,
   BYTES,
 }
 
-type CustomEnumString =
+export type CustomEnumString =
   | "STRING"
   | "BYTES"
 
@@ -91,10 +91,16 @@ export interface TestImport_AnotherObject {
 }
 
 /* URI: "testimport.uri.eth" */
-export enum TestImport_Enum {
+export enum TestImport_EnumEnum {
   STRING,
   BYTES,
 }
+
+export type TestImport_EnumString =
+  | "STRING"
+  | "BYTES"
+
+export type TestImport_Enum = TestImport_EnumEnum | TestImport_EnumString;
 
 /// Imported Objects END ///
 

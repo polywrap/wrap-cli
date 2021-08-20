@@ -28,13 +28,13 @@ export interface {{type}} {
 
 {{/objectTypes}}
 {{#enumTypes}}
-enum {{type}}Enum {
+export enum {{type}}Enum {
   {{#constants}}
   {{.}},
   {{/constants}}
 }
 
-type {{type}}String =
+export type {{type}}String =
   {{#constants}}
   | "{{.}}"
   {{/constants}}
@@ -55,11 +55,18 @@ export interface {{type}} {
 {{/importedObjectTypes}}
 {{#importedEnumTypes}}
 /* URI: "{{uri}}" */
-export enum {{type}} {
+export enum {{type}}Enum {
   {{#constants}}
   {{.}},
   {{/constants}}
 }
+
+export type {{type}}String =
+  {{#constants}}
+  | "{{.}}"
+  {{/constants}}
+
+export type {{type}} = {{type}}Enum | {{type}}String;
 
 {{/importedEnumTypes}}
 /// Imported Objects END ///

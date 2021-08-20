@@ -1,6 +1,5 @@
 import { query, mutation } from "./resolvers";
-import { manifest } from "./manifest";
-import { Options, ResolveResult } from "./types";
+import { manifest, Options, ResolveResult } from "./w3";
 
 import {
   Client,

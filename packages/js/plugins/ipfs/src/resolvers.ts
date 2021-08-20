@@ -1,18 +1,14 @@
 import { IpfsPlugin } from "./";
-import { ResolveResult, Options } from "./types";
+import { ResolveResult, Options, Query, Mutation } from "./w3";
 
-import { PluginModule } from "@web3api/core-js";
-
-// TODO: generate types from the schema
-// https://github.com/web3-api/monorepo/issues/101
-export const mutation = (ipfs: IpfsPlugin): PluginModule => ({
-  addFile: async (input: { data: Uint8Array }) => {
+export const mutation = (ipfs: IpfsPlugin): Mutation.Module => ({
+  addFile: async (input: Mutation.Input_addFile) => {
     const { hash } = await ipfs.add(input.data);
-    return hash;
+    return hash.toString();
   },
 });
 
-export const query = (ipfs: IpfsPlugin): PluginModule => ({
+export const query = (ipfs: IpfsPlugin): Query.Module => ({
   catFile: async (input: { cid: string; options?: Options }) => {
     return await ipfs.cat(input.cid, input.options);
   },

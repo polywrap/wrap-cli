@@ -1,4 +1,4 @@
-import { Request, Response, ResponseType, Header } from "./w3";
+import { Request, Response, Header } from "./w3";
 
 import { AxiosResponse, AxiosRequestConfig } from "axios";
 
@@ -49,8 +49,16 @@ export function toAxiosRequestConfig(request: Request): AxiosRequestConfig {
     return { ...headers, [h.key]: h.value };
   }, {});
 
+  let responseType: "text" | "arraybuffer" = "text";
+
+  switch (request.responseType) {
+    case "BINARY":
+    case 1: // ResponseTypeEnum.BINARY:
+      responseType = "arraybuffer";
+  }
+
   let config: AxiosRequestConfig = {
-    responseType: request.responseType === ResponseType.BINARY ? "arraybuffer" : "text",
+    responseType,
   };
 
   if (urlParams) {
