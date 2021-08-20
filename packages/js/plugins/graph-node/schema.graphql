@@ -1,6 +1,7 @@
 type Query {
   querySubgraph(
-    subgraphId: String!
+    subgraphAuthor: String!
+    subgraphName: String!
     query: String!
   ): String!
 }
