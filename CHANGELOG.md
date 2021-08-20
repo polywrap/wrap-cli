@@ -1,3 +1,8 @@
+# Web3API 0.0.1-prealpha.34
+## Bugs
+* `@web3api/schema-bind`: Fix TypeScript enum bindings.
+* `@web3api/graph-node-plugin-js`: Fix mismatched schema.
+
 # Web3API 0.0.1-prealpha.33
 ## Bugs
 * `@web3api/schema-bind`: Fixed plugin code generation oversight. Should be using `null` instead of `undefined`.

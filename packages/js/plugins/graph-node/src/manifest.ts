@@ -6,9 +6,11 @@ export const manifest: PluginPackageManifest = {
   schema: `
 type Query {
   querySubgraph(
-    subgraphId: String!
+    subgraphAuthor: String!
+    subgraphName: String!
     query: String!
   ): String!
-}`,
+}
+`,
   implements: [],
 };
