@@ -1,4 +1,5 @@
 import { HttpPlugin } from "../../index";
+import { ResponseType } from "../../w3";
 
 import axios, { AxiosResponse, AxiosRequestConfig } from "axios";
 
@@ -35,7 +36,7 @@ describe("test http plugin", () => {
           { key: "X-Test-Header", value: "test-header-value" },
         ],
         urlParams: [{ key: "q", value: "test-param" }],
-        responseType: "TEXT",
+        responseType: ResponseType.TEXT,
       });
 
       expect(mockedAxios.get).lastCalledWith("/api/test", {
@@ -72,7 +73,7 @@ describe("test http plugin", () => {
           { key: "X-Test-Header", value: "test-header-value" },
         ],
         urlParams: [{ key: "q", value: "test-param" }],
-        responseType: "BINARY",
+        responseType: ResponseType.BINARY,
       });
 
       expect(mockedAxios.get).lastCalledWith("/api/test", {
@@ -89,7 +90,10 @@ describe("test http plugin", () => {
       expect(response.headers).toStrictEqual([
         { key: "Content-Type", value: "application/json; charset=utf-8" },
       ]);
-      expect(Buffer.from(response.body, 'base64').toString()).toBe("{result: 1001}");
+      expect(response.body).toBeTruthy();
+      if (response.body) {
+        expect(Buffer.from(response.body, 'base64').toString()).toBe("{result: 1001}");
+      }
     });
   });
 
@@ -114,7 +118,7 @@ describe("test http plugin", () => {
         ],
         urlParams: [{ key: "q", value: "test-param" }],
         body: "{request: 1001}",
-        responseType: "TEXT",
+        responseType: ResponseType.TEXT,
       });
 
       expect(mockedAxios.post).lastCalledWith("/api/test", "{request: 1001}", {
@@ -152,7 +156,7 @@ describe("test http plugin", () => {
         ],
         urlParams: [{ key: "q", value: "test-param" }],
         body: "{request: 1001}",
-        responseType: "BINARY",
+        responseType: ResponseType.BINARY,
       });
 
       expect(mockedAxios.post).lastCalledWith("/api/test", "{request: 1001}", {
@@ -169,7 +173,10 @@ describe("test http plugin", () => {
       expect(response.headers).toStrictEqual([
         { key: "Content-Type", value: "application/json; charset=utf-8" },
       ]);
-      expect(Buffer.from(response.body, 'base64').toString()).toBe("{response: 1001}");
+      expect(response.body).toBeTruthy();
+      if (response.body) {
+        expect(Buffer.from(response.body, 'base64').toString()).toBe("{response: 1001}");
+      }
     });
   });
 });

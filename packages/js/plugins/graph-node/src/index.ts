@@ -1,5 +1,5 @@
 import { query } from "./resolvers";
-import { manifest } from "./manifest";
+import { manifest, HTTP_Query } from "./w3";
 import { RequestData, RequestError } from "./types";
 
 import {
@@ -37,43 +37,32 @@ export class GraphNodePlugin extends Plugin {
     query: string,
     client: Client
   ): Promise<string> {
-    const { data, errors } = await client.query<{
-      post: {
-        status: number;
-        statusText: string;
-        headers: { key: string; value: string }[];
-        body: string;
-      };
-    }>({
-      uri: "ens/http.web3api.eth",
-      query: `query {
-        post(
-          url: $url,
-          request: $request
-        )
-      }`,
-      variables: {
+    const { data, error } = await HTTP_Query.post(
+      {
         url: `${this._config.provider}/subgraphs/name/${author}/${name}`,
         request: {
           body: JSON.stringify({
             query,
           }),
           responseType: "TEXT",
-        },
+        }
       },
-    });
+      client,
+    );
 
-    if (errors) {
-      throw new Error(`GraphNodePlugin: errors encountered. Errors:
-        ${errors.map((err: Error) => JSON.stringify(err)).join("\n")}
-      `);
+    if (error) {
+      throw new Error(`GraphNodePlugin: errors encountered. Error: ${error}`);
     }
 
-    if (!data || !data.post) {
+    if (!data) {
       throw new Error(`GraphNodePlugin: data is undefined.`);
     }
 
-    const responseJson = (data.post.body as unknown) as
+    if (!data.body) {
+      throw Error(`GraphNodePlugin: body is undefined.`);
+    }
+
+    const responseJson = (data.body as unknown) as
       | RequestError
       | RequestData;
 
