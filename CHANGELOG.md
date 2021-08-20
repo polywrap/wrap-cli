@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.35
+## Bugs
+* `@web3api/schema-bind`: Fix TypeScript plugin enum bindings.
+
 # Web3API 0.0.1-prealpha.34
 ## Bugs
 * `@web3api/schema-bind`: Fix TypeScript enum bindings.
