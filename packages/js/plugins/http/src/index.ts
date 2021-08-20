@@ -20,8 +20,10 @@ export class HttpPlugin extends Plugin {
     return manifest;
   }
 
-  public getModules(_client: Client): {
-    query: Query.Module
+  public getModules(
+    _client: Client
+  ): {
+    query: Query.Module;
   } {
     return {
       query: query(this),

@@ -1,12 +1,7 @@
 import { query } from "./resolvers";
-import { manifest, Logger_LogLevel } from "./w3";
+import { manifest, Query, Logger_LogLevel, Logger_LogLevelEnum } from "./w3";
 
-import {
-  Plugin,
-  PluginPackageManifest,
-  PluginModules,
-  PluginPackage,
-} from "@web3api/core-js";
+import { Plugin, PluginPackageManifest, PluginPackage } from "@web3api/core-js";
 
 export type LogFunc = (level: Logger_LogLevel, message: string) => boolean;
 
@@ -22,7 +17,9 @@ export class LoggerPlugin extends Plugin {
     return manifest;
   }
 
-  public getModules(): PluginModules {
+  public getModules(): {
+    query: Query.Module;
+  } {
     return {
       query: query(this),
     };
@@ -34,16 +31,20 @@ export class LoggerPlugin extends Plugin {
     }
 
     switch (level) {
-      case Logger_LogLevel.DEBUG:
+      case "DEBUG":
+      case Logger_LogLevelEnum.DEBUG:
         console.debug(message);
         break;
-      case Logger_LogLevel.WARN:
+      case "WARN":
+      case Logger_LogLevelEnum.WARN:
         console.warn(message);
         break;
-      case Logger_LogLevel.ERROR:
+      case "ERROR":
+      case Logger_LogLevelEnum.ERROR:
         console.error(message);
         break;
-      case Logger_LogLevel.INFO:
+      case "INFO":
+      case Logger_LogLevelEnum.INFO:
         console.log(message);
         break;
       default:

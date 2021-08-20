@@ -13,7 +13,8 @@
     "schema.graphql"
   ],
   "scripts": {
-    "build": "rimraf build && tsc --project tsconfig.build.json",
+    "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
+    "codegen": "npx @web3api/cli plugin codegen",
     "lint": "eslint --color --ext .ts --ignore-pattern **/*.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",

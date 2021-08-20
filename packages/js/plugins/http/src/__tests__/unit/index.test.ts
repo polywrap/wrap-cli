@@ -1,4 +1,5 @@
-import { HttpPlugin } from "../../index";
+import { HttpPlugin, } from "../../index";
+import { ResponseTypeEnum } from "../../w3";
 
 import axios, { AxiosResponse, AxiosRequestConfig } from "axios";
 
@@ -35,7 +36,7 @@ describe("test http plugin", () => {
           { key: "X-Test-Header", value: "test-header-value" },
         ],
         urlParams: [{ key: "q", value: "test-param" }],
-        responseType: 0,
+        responseType: ResponseTypeEnum.TEXT,
       });
 
       expect(mockedAxios.get).lastCalledWith("/api/test", {

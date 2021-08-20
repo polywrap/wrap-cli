@@ -43,8 +43,10 @@ export class EnsPlugin extends Plugin {
     return ethers.utils.isValidName(domain) && domain.indexOf(".eth") !== -1;
   }
 
-  public getModules(client: Client): {
-    query: Query.Module
+  public getModules(
+    client: Client
+  ): {
+    query: Query.Module;
   } {
     return {
       query: query(this, client),

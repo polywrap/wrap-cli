@@ -66,11 +66,11 @@ export class EthereumPlugin extends Plugin {
     return manifest;
   }
 
-  // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
-  // https://github.com/web3-api/monorepo/issues/101
-  public getModules(_client: Client): {
-    query: Query.Module,
-    mutation: Mutation.Module
+  public getModules(
+    _client: Client
+  ): {
+    query: Query.Module;
+    mutation: Mutation.Module;
   } {
     return {
       query: query(this),
@@ -109,7 +109,9 @@ export class EthereumPlugin extends Plugin {
   ): Promise<Types.TxReceipt> {
     const connection = await this.getConnection(input.connection);
     const signer = connection.getSigner();
-    const response = await signer.sendTransaction(Mapping.fromTxRequest(input.tx));
+    const response = await signer.sendTransaction(
+      Mapping.fromTxRequest(input.tx)
+    );
     const receipt = await response.wait();
     return Mapping.toTxReceipt(receipt);
   }
@@ -207,7 +209,9 @@ export class EthereumPlugin extends Plugin {
     input: Query.Input_getSignerBalance
   ): Promise<string> {
     const connection = await this.getConnection(input.connection);
-    return (await connection.getSigner().getBalance(input.blockTag || undefined)).toString();
+    return (
+      await connection.getSigner().getBalance(input.blockTag || undefined)
+    ).toString();
   }
 
   public async getSignerTransactionCount(
@@ -215,7 +219,9 @@ export class EthereumPlugin extends Plugin {
   ): Promise<string> {
     const connection = await this.getConnection(input.connection);
     return (
-      await connection.getSigner().getTransactionCount(input.blockTag || undefined)
+      await connection
+        .getSigner()
+        .getTransactionCount(input.blockTag || undefined)
     ).toString();
   }
 

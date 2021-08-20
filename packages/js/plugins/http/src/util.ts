@@ -1,4 +1,4 @@
-import { Request, Response, Header } from "./w3";
+import { Request, Response, ResponseTypeEnum, Header } from "./w3";
 
 import { AxiosResponse, AxiosRequestConfig } from "axios";
 
@@ -53,7 +53,7 @@ export function toAxiosRequestConfig(request: Request): AxiosRequestConfig {
 
   switch (request.responseType) {
     case "BINARY":
-    case 1: // ResponseTypeEnum.BINARY:
+    case ResponseTypeEnum.BINARY:
       responseType = "arraybuffer";
   }
 

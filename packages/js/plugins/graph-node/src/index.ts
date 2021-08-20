@@ -1,5 +1,5 @@
 import { query } from "./resolvers";
-import { manifest, HTTP_Query } from "./w3";
+import { manifest, Query, HTTP_Query } from "./w3";
 import { RequestData, RequestError } from "./types";
 
 import {
@@ -7,7 +7,6 @@ import {
   Plugin,
   PluginFactory,
   PluginPackageManifest,
-  PluginModules,
 } from "@web3api/core-js";
 
 export interface GraphNodeConfig {
@@ -23,9 +22,11 @@ export class GraphNodePlugin extends Plugin {
     return manifest;
   }
 
-  // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
-  // https://github.com/web3-api/monorepo/issues/101
-  public getModules(client: Client): PluginModules {
+  public getModules(
+    client: Client
+  ): {
+    query: Query.Module;
+  } {
     return {
       query: query(this, client),
     };
@@ -45,9 +46,9 @@ export class GraphNodePlugin extends Plugin {
             query,
           }),
           responseType: "TEXT",
-        }
+        },
       },
-      client,
+      client
     );
 
     if (error) {
@@ -62,9 +63,7 @@ export class GraphNodePlugin extends Plugin {
       throw Error(`GraphNodePlugin: body is undefined.`);
     }
 
-    const responseJson = (data.body as unknown) as
-      | RequestError
-      | RequestData;
+    const responseJson = (data.body as unknown) as RequestError | RequestData;
 
     const responseErrors = (responseJson as RequestError).errors;
 

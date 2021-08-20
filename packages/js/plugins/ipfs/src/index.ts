@@ -1,12 +1,11 @@
 import { query, mutation } from "./resolvers";
-import { manifest, Options, ResolveResult } from "./w3";
+import { manifest, Query, Mutation, Options, ResolveResult } from "./w3";
 
 import {
   Client,
   Plugin,
   PluginFactory,
   PluginPackageManifest,
-  PluginModules,
 } from "@web3api/core-js";
 import CID from "cids";
 import AbortController from "abort-controller";
@@ -60,9 +59,12 @@ export class IpfsPlugin extends Plugin {
     return isIPFS.cid(cid) || isIPFS.cidPath(cid) || isIPFS.ipfsPath(cid);
   }
 
-  // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
-  // https://github.com/web3-api/monorepo/issues/101
-  public getModules(_client: Client): PluginModules {
+  public getModules(
+    _client: Client
+  ): {
+    query: Query.Module;
+    mutation: Mutation.Module;
+  } {
     return {
       query: query(this),
       mutation: mutation(this),
