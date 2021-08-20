@@ -60,10 +60,16 @@ export interface AnotherType {
   circular?: Types.CustomType | null;
 }
 
-export enum CustomEnum {
+enum CustomEnumEnum {
   STRING,
   BYTES,
 }
+
+type CustomEnumString =
+  | "STRING"
+  | "BYTES"
+
+export type CustomEnum = CustomEnumEnum | CustomEnumString;
 
 /// Imported Objects START ///
 
