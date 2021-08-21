@@ -1,10 +1,9 @@
-import { manifest } from "./manifest";
+import { manifest, Query } from "./w3";
 import { query } from "./resolvers";
 
 import {
   Plugin,
   PluginPackageManifest,
-  PluginModules,
   PluginPackage,
 } from "@web3api/core-js";
 
@@ -13,7 +12,9 @@ export class UTS46Plugin extends Plugin {
     return manifest;
   }
 
-  getModules(): PluginModules {
+  getModules(): {
+    query: Query.Module,
+  } {
     return {
       query: query(),
     };

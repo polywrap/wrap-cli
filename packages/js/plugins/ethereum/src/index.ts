@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { query, mutation } from "./resolvers";
-import { manifest } from "./manifest";
-import * as Schema from "./types";
+import { manifest, Query, Mutation } from "./w3";
+import * as Types from "./w3";
 import {
   Address,
   AccountIndex,
@@ -18,7 +18,6 @@ import {
   Client,
   Plugin,
   PluginPackageManifest,
-  PluginModules,
   PluginFactory,
 } from "@web3api/core-js";
 import { ethers } from "ethers";
@@ -67,9 +66,12 @@ export class EthereumPlugin extends Plugin {
     return manifest;
   }
 
-  // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
-  // https://github.com/web3-api/monorepo/issues/101
-  public getModules(_client: Client): PluginModules {
+  public getModules(
+    _client: Client
+  ): {
+    query: Query.Module;
+    mutation: Mutation.Module;
+  } {
     return {
       query: query(this),
       mutation: mutation(this),
@@ -79,41 +81,43 @@ export class EthereumPlugin extends Plugin {
   /// Mutation
 
   public async callContractMethod(
-    input: Schema.Input_callContractMethod
-  ): Promise<Schema.TxResponse> {
+    input: Mutation.Input_callContractMethod
+  ): Promise<Types.TxResponse> {
     const res = await this._callContractMethod(input);
     return Mapping.toTxResponse(res);
   }
 
   public async callContractMethodAndWait(
-    input: Schema.Input_callContractMethodAndWait
-  ): Promise<Schema.TxReceipt> {
+    input: Mutation.Input_callContractMethodAndWait
+  ): Promise<Types.TxReceipt> {
     const response = await this._callContractMethod(input);
     const res = await response.wait();
     return Mapping.toTxReceipt(res);
   }
 
   public async sendTransaction(
-    input: Schema.Input_sendTransaction
-  ): Promise<Schema.TxResponse> {
+    input: Mutation.Input_sendTransaction
+  ): Promise<Types.TxResponse> {
     const connection = await this.getConnection(input.connection);
     const signer = connection.getSigner();
-    const res = await signer.sendTransaction(input.tx);
+    const res = await signer.sendTransaction(Mapping.fromTxRequest(input.tx));
     return Mapping.toTxResponse(res);
   }
 
   public async sendTransactionAndWait(
-    input: Schema.Input_sendTransactionAndWait
-  ): Promise<Schema.TxReceipt> {
+    input: Mutation.Input_sendTransactionAndWait
+  ): Promise<Types.TxReceipt> {
     const connection = await this.getConnection(input.connection);
     const signer = connection.getSigner();
-    const response = await signer.sendTransaction(input.tx);
+    const response = await signer.sendTransaction(
+      Mapping.fromTxRequest(input.tx)
+    );
     const receipt = await response.wait();
     return Mapping.toTxReceipt(receipt);
   }
 
   public async deployContract(
-    input: Schema.Input_deployContract
+    input: Mutation.Input_deployContract
   ): Promise<string> {
     const connection = await this.getConnection(input.connection);
     const signer = connection.getSigner();
@@ -128,14 +132,14 @@ export class EthereumPlugin extends Plugin {
     return contract.address;
   }
 
-  public async signMessage(input: Schema.Input_signMessage): Promise<string> {
+  public async signMessage(input: Mutation.Input_signMessage): Promise<string> {
     const connection = await this.getConnection(input.connection);
     const messageHash = ethers.utils.id(input.message);
     const messageHashBytes = ethers.utils.arrayify(messageHash);
     return await connection.getSigner().signMessage(messageHashBytes);
   }
 
-  public async sendRPC(input: Schema.Input_sendRPC): Promise<string> {
+  public async sendRPC(input: Mutation.Input_sendRPC): Promise<string> {
     const connection = await this.getConnection(input.connection);
     const provider = connection.getProvider();
     const response = await provider.send(input.method, input.params);
@@ -145,7 +149,7 @@ export class EthereumPlugin extends Plugin {
   /// Query
 
   public async callContractView(
-    input: Schema.Input_callContractView
+    input: Query.Input_callContractView
   ): Promise<string> {
     const connection = await this.getConnection(input.connection);
     const contract = connection.getContract(
@@ -159,8 +163,8 @@ export class EthereumPlugin extends Plugin {
   }
 
   public async callContractStatic(
-    input: Schema.Input_callContractStatic
-  ): Promise<Schema.StaticTxResult> {
+    input: Query.Input_callContractStatic
+  ): Promise<Types.StaticTxResult> {
     const connection = await this.getConnection(input.connection);
     const contract = connection.getContract(input.address, [input.method]);
     const funcs = Object.keys(contract.interface.functions);
@@ -190,40 +194,44 @@ export class EthereumPlugin extends Plugin {
     }
   }
 
-  public encodeParams(input: Schema.Input_encodeParams): string {
+  public encodeParams(input: Query.Input_encodeParams): string {
     return defaultAbiCoder.encode(input.types, input.values);
   }
 
   public async getSignerAddress(
-    input: Schema.Input_getSignerAddress
+    input: Query.Input_getSignerAddress
   ): Promise<string> {
     const connection = await this.getConnection(input.connection);
     return await connection.getSigner().getAddress();
   }
 
   public async getSignerBalance(
-    input: Schema.Input_getSignerBalance
-  ): Promise<string> {
-    const connection = await this.getConnection(input.connection);
-    return (await connection.getSigner().getBalance(input.blockTag)).toString();
-  }
-
-  public async getSignerTransactionCount(
-    input: Schema.Input_getSignerTransactionCount
+    input: Query.Input_getSignerBalance
   ): Promise<string> {
     const connection = await this.getConnection(input.connection);
     return (
-      await connection.getSigner().getTransactionCount(input.blockTag)
+      await connection.getSigner().getBalance(input.blockTag || undefined)
     ).toString();
   }
 
-  public async getGasPrice(input: Schema.Input_getGasPrice): Promise<string> {
+  public async getSignerTransactionCount(
+    input: Query.Input_getSignerTransactionCount
+  ): Promise<string> {
+    const connection = await this.getConnection(input.connection);
+    return (
+      await connection
+        .getSigner()
+        .getTransactionCount(input.blockTag || undefined)
+    ).toString();
+  }
+
+  public async getGasPrice(input: Query.Input_getGasPrice): Promise<string> {
     const connection = await this.getConnection(input.connection);
     return (await connection.getSigner().getGasPrice()).toString();
   }
 
   public async estimateTransactionGas(
-    input: Schema.Input_estimateTransactionGas
+    input: Query.Input_estimateTransactionGas
   ): Promise<string> {
     const connection = await this.getConnection(input.connection);
     return (
@@ -232,15 +240,15 @@ export class EthereumPlugin extends Plugin {
   }
 
   public async estimateContractCallGas(
-    input: Schema.Input_estimateContractCallGas
+    input: Query.Input_estimateContractCallGas
   ): Promise<string> {
     const connection = await this.getConnection(input.connection);
     const contract = connection.getContract(input.address, [input.method]);
     const funcs = Object.keys(contract.interface.functions);
 
-    const gasPrice: string | undefined = input.txOverrides?.gasPrice;
-    const gasLimit: string | undefined = input.txOverrides?.gasLimit;
-    const value: string | undefined = input.txOverrides?.value;
+    const gasPrice: string | null | undefined = input.txOverrides?.gasPrice;
+    const gasLimit: string | null | undefined = input.txOverrides?.gasLimit;
+    const value: string | null | undefined = input.txOverrides?.value;
 
     const gas = await contract.estimateGas[funcs[0]](
       ...this.parseArgs(input.args),
@@ -254,7 +262,7 @@ export class EthereumPlugin extends Plugin {
     return gas.toString();
   }
 
-  public checkAddress(input: Schema.Input_checkAddress): boolean {
+  public checkAddress(input: Query.Input_checkAddress): boolean {
     let address = input.address;
 
     try {
@@ -274,26 +282,26 @@ export class EthereumPlugin extends Plugin {
     }
   }
 
-  public toWei(input: Schema.Input_toWei): string {
+  public toWei(input: Query.Input_toWei): string {
     const weiAmount = ethers.utils.parseEther(input.eth);
     return weiAmount.toString();
   }
 
-  public toEth(input: Schema.Input_toEth): string {
+  public toEth(input: Query.Input_toEth): string {
     const etherAmount = ethers.utils.formatEther(input.wei);
     return etherAmount.toString();
   }
 
   public async waitForEvent(
-    input: Schema.Input_waitForEvent
-  ): Promise<Schema.EventNotification> {
+    input: Query.Input_waitForEvent
+  ): Promise<Types.EventNotification> {
     const connection = await this.getConnection(input.connection);
     const contract = connection.getContract(input.address, [input.event]);
     const events = Object.keys(contract.interface.events);
     const filter = contract.filters[events[0]](...this.parseArgs(input.args));
 
     return Promise.race([
-      new Promise<Schema.EventNotification>((resolve) => {
+      new Promise<Types.EventNotification>((resolve) => {
         contract.once(
           filter,
           (data: string, address: string, log: ethers.providers.Log) => {
@@ -301,11 +309,11 @@ export class EthereumPlugin extends Plugin {
               data,
               address,
               log: Mapping.toLog(log),
-            } as Schema.EventNotification);
+            } as Types.EventNotification);
           }
         );
       }),
-      new Promise<Schema.EventNotification>((_, reject) => {
+      new Promise<Types.EventNotification>((_, reject) => {
         setTimeout(function () {
           reject(
             `Waiting for event "${input.event}" on contract "${input.address}" timed out`
@@ -316,8 +324,8 @@ export class EthereumPlugin extends Plugin {
   }
 
   public async awaitTransaction(
-    input: Schema.Input_awaitTransaction
-  ): Promise<Schema.TxReceipt> {
+    input: Query.Input_awaitTransaction
+  ): Promise<Types.TxReceipt> {
     const connection = await this.getConnection(input.connection);
     const provider = connection.getProvider();
 
@@ -333,7 +341,7 @@ export class EthereumPlugin extends Plugin {
   /// Utils
 
   public async getConnection(
-    connection?: Schema.Connection
+    connection?: Types.Connection | null
   ): Promise<Connection> {
     if (!connection) {
       return this._connections[this._defaultNetwork];
@@ -386,7 +394,7 @@ export class EthereumPlugin extends Plugin {
     return result;
   }
 
-  public parseArgs(args?: string[]): unknown[] {
+  public parseArgs(args?: string[] | null): unknown[] {
     if (!args) {
       return [];
     }
@@ -400,15 +408,15 @@ export class EthereumPlugin extends Plugin {
   }
 
   private async _callContractMethod(
-    input: Schema.Input_callContractMethod
+    input: Mutation.Input_callContractMethod
   ): Promise<ethers.providers.TransactionResponse> {
     const connection = await this.getConnection(input.connection);
     const contract = connection.getContract(input.address, [input.method]);
     const funcs = Object.keys(contract.interface.functions);
 
-    const gasPrice: string | undefined = input.txOverrides?.gasPrice;
-    const gasLimit: string | undefined = input.txOverrides?.gasLimit;
-    const value: string | undefined = input.txOverrides?.value;
+    const gasPrice: string | null | undefined = input.txOverrides?.gasPrice;
+    const gasLimit: string | null | undefined = input.txOverrides?.gasLimit;
+    const value: string | null | undefined = input.txOverrides?.value;
 
     return await contract[funcs[0]](...this.parseArgs(input.args), {
       gasPrice: gasPrice ? ethers.BigNumber.from(gasPrice) : undefined,

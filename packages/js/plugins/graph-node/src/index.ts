@@ -1,5 +1,5 @@
 import { query } from "./resolvers";
-import { manifest } from "./manifest";
+import { manifest, Query, HTTP_Query } from "./w3";
 import { RequestData, RequestError } from "./types";
 
 import {
@@ -7,7 +7,6 @@ import {
   Plugin,
   PluginFactory,
   PluginPackageManifest,
-  PluginModules,
 } from "@web3api/core-js";
 
 export interface GraphNodeConfig {
@@ -23,9 +22,11 @@ export class GraphNodePlugin extends Plugin {
     return manifest;
   }
 
-  // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
-  // https://github.com/web3-api/monorepo/issues/101
-  public getModules(client: Client): PluginModules {
+  public getModules(
+    client: Client
+  ): {
+    query: Query.Module;
+  } {
     return {
       query: query(this, client),
     };
@@ -37,22 +38,8 @@ export class GraphNodePlugin extends Plugin {
     query: string,
     client: Client
   ): Promise<string> {
-    const { data, errors } = await client.query<{
-      post: {
-        status: number;
-        statusText: string;
-        headers: { key: string; value: string }[];
-        body: string;
-      };
-    }>({
-      uri: "ens/http.web3api.eth",
-      query: `query {
-        post(
-          url: $url,
-          request: $request
-        )
-      }`,
-      variables: {
+    const { data, error } = await HTTP_Query.post(
+      {
         url: `${this._config.provider}/subgraphs/name/${author}/${name}`,
         request: {
           body: JSON.stringify({
@@ -61,21 +48,22 @@ export class GraphNodePlugin extends Plugin {
           responseType: "TEXT",
         },
       },
-    });
+      client
+    );
 
-    if (errors) {
-      throw new Error(`GraphNodePlugin: errors encountered. Errors:
-        ${errors.map((err: Error) => JSON.stringify(err)).join("\n")}
-      `);
+    if (error) {
+      throw new Error(`GraphNodePlugin: errors encountered. Error: ${error}`);
     }
 
-    if (!data || !data.post) {
+    if (!data) {
       throw new Error(`GraphNodePlugin: data is undefined.`);
     }
 
-    const responseJson = (data.post.body as unknown) as
-      | RequestError
-      | RequestData;
+    if (!data.body) {
+      throw Error(`GraphNodePlugin: body is undefined.`);
+    }
+
+    const responseJson = JSON.parse(data.body) as RequestError | RequestData;
 
     const responseErrors = (responseJson as RequestError).errors;
 
