@@ -63,7 +63,7 @@ export class GraphNodePlugin extends Plugin {
       throw Error(`GraphNodePlugin: body is undefined.`);
     }
 
-    const responseJson = (data.body as unknown) as RequestError | RequestData;
+    const responseJson = JSON.parse(data.body) as RequestError | RequestData;
 
     const responseErrors = (responseJson as RequestError).errors;
 

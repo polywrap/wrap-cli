@@ -8,7 +8,7 @@ import { AxiosResponse, AxiosRequestConfig } from "axios";
  * @param axiosResponse
  */
 export function fromAxiosResponse(
-  axiosResponse: AxiosResponse<string>
+  axiosResponse: AxiosResponse<unknown>
 ): Response {
   const responseHeaders: Header[] = [];
   for (const key of Object.keys(axiosResponse.headers)) {
@@ -23,15 +23,30 @@ export function fromAxiosResponse(
 
   // encode bytes as base64 string if response is array buffer
   if (axiosResponse.config.responseType == "arraybuffer") {
+    if (!Buffer.isBuffer(axiosResponse.data)) {
+      throw Error(
+        "HttpPlugin: Axios response data malformed, must be a buffer. Type: " + typeof axiosResponse.data
+      );
+    }
+
     return {
       ...response,
       body: Buffer.from(axiosResponse.data).toString("base64"),
     };
   } else {
-    return {
-      ...response,
-      body: axiosResponse.data,
-    };
+    switch (typeof axiosResponse.data) {
+      case "string":
+      case "undefined":
+        return {
+          ...response,
+          body: axiosResponse.data,
+        };
+      default:
+        return {
+          ...response,
+          body: JSON.stringify(axiosResponse.data),
+        };
+    }
   }
 }
 
