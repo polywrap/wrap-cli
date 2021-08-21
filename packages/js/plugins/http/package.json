@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
-    "codegen": "npx @web3api/cli plugin codegen",
+    "codegen": "npx -p @web3api/cli plugin codegen",
     "lint": "eslint --color --ext .ts src/",
     "lint:fix": "eslint --color --fix --ext .ts src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
