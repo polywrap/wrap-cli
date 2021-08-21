@@ -25,7 +25,8 @@ export function fromAxiosResponse(
   if (axiosResponse.config.responseType == "arraybuffer") {
     if (!Buffer.isBuffer(axiosResponse.data)) {
       throw Error(
-        "HttpPlugin: Axios response data malformed, must be a buffer. Type: " + typeof axiosResponse.data
+        "HttpPlugin: Axios response data malformed, must be a buffer. Type: " +
+          typeof axiosResponse.data
       );
     }
 
