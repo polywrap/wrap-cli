@@ -1,29 +1,22 @@
 import { IpfsPlugin } from "./";
-import { ResolveResult, Options } from "./types";
+import { ResolveResult, Query, Mutation } from "./w3";
 
-import { PluginModule } from "@web3api/core-js";
-
-// TODO: generate types from the schema
-// https://github.com/web3-api/monorepo/issues/101
-export const mutation = (ipfs: IpfsPlugin): PluginModule => ({
-  addFile: async (input: { data: Uint8Array }) => {
+export const mutation = (ipfs: IpfsPlugin): Mutation.Module => ({
+  addFile: async (input: Mutation.Input_addFile) => {
     const { hash } = await ipfs.add(input.data);
-    return hash;
+    return hash.toString();
   },
 });
 
-export const query = (ipfs: IpfsPlugin): PluginModule => ({
-  catFile: async (input: { cid: string; options?: Options }) => {
-    return await ipfs.cat(input.cid, input.options);
+export const query = (ipfs: IpfsPlugin): Query.Module => ({
+  catFile: async (input: Query.Input_catFile) => {
+    return await ipfs.cat(input.cid, input.options || undefined);
   },
-  resolve: async (input: {
-    cid: string;
-    options?: Options;
-  }): Promise<ResolveResult> => {
-    return await ipfs.resolve(input.cid, input.options);
+  resolve: async (input: Query.Input_resolve): Promise<ResolveResult> => {
+    return await ipfs.resolve(input.cid, input.options || undefined);
   },
   // uri-resolver.core.web3api.eth
-  tryResolveUri: async (input: { authority: string; path: string }) => {
+  tryResolveUri: async (input: Query.Input_tryResolveUri) => {
     if (input.authority !== "ipfs") {
       return null;
     }
@@ -59,7 +52,7 @@ export const query = (ipfs: IpfsPlugin): PluginModule => ({
     // Nothing found
     return { manifest: null, uri: null };
   },
-  getFile: async (input: { path: string }) => {
+  getFile: async (input: Query.Input_getFile) => {
     try {
       const { cid, provider } = await ipfs.resolve(input.path, {
         timeout: 5000,

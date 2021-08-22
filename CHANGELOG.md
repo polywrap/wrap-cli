@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.36
+## Features
+* Upgrade all JavaScript plugins to use the new `w3 plugin codegen` command. The command generates typings based on the GraphQL schema of the plugin. This ensures the plugin's resolvers match 1:1 with the GraphQL schema.
+
 # Web3API 0.0.1-prealpha.35
 ## Bugs
 * `@web3api/schema-bind`: Fix TypeScript plugin enum bindings.
