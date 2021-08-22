@@ -176,3 +176,30 @@ const applyNullable = (
     return type;
   }
 };
+
+export const fromReservedWord = (reservedWords: string[]) => {
+  return () => {
+    return (text: string, render: (text: string) => string): string => {
+      const rendered: string = render(text);
+      if (reservedWords.includes(rendered)) {
+        return "m_" + rendered;
+      }
+      return rendered;
+    };
+  };
+};
+
+export const toReservedWord = (reservedWords: string[]) => {
+  return () => {
+    return (text: string, render: (text: string) => string): string => {
+      const rendered: string = render(text);
+      if (rendered.startsWith("m_")) {
+        const maybeReserved: string = rendered.substring(2);
+        if (reservedWords.includes(maybeReserved)) {
+          return maybeReserved;
+        }
+      }
+      return rendered;
+    };
+  };
+};

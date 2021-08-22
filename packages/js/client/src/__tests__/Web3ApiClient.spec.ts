@@ -1680,4 +1680,40 @@ describe("Web3ApiClient", () => {
     expect(mutation.data?.mutationMethod).toBe(1);
     expect(mutation.data?.abstractMutationMethod).toBe(2);
   });
+
+  it("queries schemas that use reserved keywords", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/reserved-words`,
+      ipfsProvider,
+      ensAddress
+    );
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const client = await getClient();
+
+    const query = await client.query<{
+      method1: {
+        const: string;
+      };
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          method1(
+            const: {
+              const: "successfully used reserved keyword"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(query.errors).toBeFalsy();
+    expect(query.data).toBeTruthy();
+    expect(query.data).toMatchObject({
+      method1: {
+        const: "result: successfully used reserved keyword",
+      },
+    });
+  });
 });

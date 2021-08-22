@@ -14,7 +14,7 @@ import * as Types from "../..";
 {{#methods}}
 export class Input_{{name}} {
   {{#arguments}}
-  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
+  {{#toAscProp}}{{name}}{{/toAscProp}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/arguments}}
 }
 
@@ -38,28 +38,28 @@ export function write{{name}}Args(
   writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
   writer.writeString("{{name}}");
   {{#scalar}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{name}});
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{#toAscProp}}{{name}}{{/toAscProp}});
   {{/scalar}}
   {{#array}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{name}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{#toAscProp}}{{name}}{{/toAscProp}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
     {{> serialize_array}}
   });
   {{/array}}
   {{#enum}}
   {{#required}}
-  writer.writeInt32(input.{{name}});
+  writer.writeInt32(input.{{#toAscProp}}{{name}}{{/toAscProp}});
   {{/required}}
   {{^required}}
-  writer.writeNullableInt32(input.{{name}});
+  writer.writeNullableInt32(input.{{#toAscProp}}{{name}}{{/toAscProp}});
   {{/required}}
   {{/enum}}
   {{#object}}
   {{#required}}
-  Types.{{type}}.write(writer, input.{{name}});
+  Types.{{type}}.write(writer, input.{{#toAscProp}}{{name}}{{/toAscProp}});
   {{/required}}
   {{^required}}
-  if (input.{{name}}) {
-    Types.{{type}}.write(writer, input.{{name}} as Types.{{type}});
+  if (input.{{#toAscProp}}{{name}}{{/toAscProp}}) {
+    Types.{{type}}.write(writer, input.{{#toAscProp}}{{name}}{{/toAscProp}} as Types.{{type}});
   } else {
     writer.writeNil();
   }
