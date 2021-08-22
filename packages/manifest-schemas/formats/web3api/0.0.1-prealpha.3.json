@@ -67,24 +67,22 @@
     },
     "import_redirects": {
       "type": "array",
-      "items": [
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "uri": {
-              "type": "string"
-            },
-            "schema": {
-              "type": "string"
-            }
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "uri": {
+            "type": "string"
           },
-          "required": [
-            "uri",
-            "schema"
-          ]
-        }
-      ]
+          "schema": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "uri",
+          "schema"
+        ]
+      }
     }
   }
 }

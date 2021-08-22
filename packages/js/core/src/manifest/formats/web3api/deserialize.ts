@@ -33,6 +33,8 @@ export const deserializeWeb3ApiManifest = Tracer.traceFunc(
       validateWeb3ApiManifest(anyWeb3ApiManifest, options?.extSchema);
     }
 
+    anyWeb3ApiManifest.__type = "Web3ApiManifest";
+
     const versionCompare = compare(
       anyWeb3ApiManifest.format,
       latestWeb3ApiManifestFormat
