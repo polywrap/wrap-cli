@@ -1,20 +1,20 @@
 pub mod serialization;
 use polywrap_wasm_rs::{
-    Read, 
+    Read,
     Write,
 };
 use serde::{
-    Deserialize, 
+    Deserialize,
     Serialize,
 };
 pub use serialization::{
-    deserialize_test_import_another_object, 
+    deserialize_test_import_another_object,
     read_test_import_another_object,
-    serialize_test_import_another_object, 
+    serialize_test_import_another_object,
     write_test_import_another_object,
 };
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TestImportAnotherObject {
     pub prop: String,
 }

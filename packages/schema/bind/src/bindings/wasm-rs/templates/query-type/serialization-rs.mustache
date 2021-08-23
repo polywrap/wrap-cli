@@ -85,10 +85,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
                 reader.context().pop();
             }
             {{/arguments}}
-            _ => {
-                reader.context().push(&field, "unknown", "searching for property type");
-                reader.context().pop();
-            }
+            _ => {}
         }
     }
     {{#arguments}}

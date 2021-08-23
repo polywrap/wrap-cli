@@ -1,29 +1,28 @@
-use crate::{
-    TestImportAnotherObject, 
-    TestImportEnum,
-};
+pub mod serialization;
 use polywrap_wasm_rs::{
-    Read, 
+    Read,
     Write,
 };
 use serde::{
-    Deserialize, 
+    Deserialize,
     Serialize,
 };
-pub mod serialization;
 pub use serialization::{
-    deserialize_test_import_object, 
-    read_test_import_object, 
+    deserialize_test_import_object,
+    read_test_import_object,
     serialize_test_import_object,
     write_test_import_object,
 };
 
+use crate::TestImportAnotherObject;
+use crate::TestImportEnum;
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TestImportObject {
-    pub object: TestImportAnotherObject,
-    pub opt_object: Option<TestImportAnotherObject>,
-    pub object_array: Vec<TestImportAnotherObject>,
-    pub opt_object_array: Option<Vec<Option<TestImportAnotherObject>>>,
+    pub object: Box<TestImportAnotherObject>,
+    pub opt_object: Option<Box<TestImportAnotherObject>>,
+    pub object_array: Vec<Box<TestImportAnotherObject>>,
+    pub opt_object_array: Option<Vec<Option<Box<TestImportAnotherObject>>>>,
     pub en: TestImportEnum,
     pub opt_enum: Option<TestImportEnum>,
     pub enum_array: Vec<TestImportEnum>,

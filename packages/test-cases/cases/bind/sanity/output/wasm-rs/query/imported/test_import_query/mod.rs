@@ -1,18 +1,20 @@
-pub mod serialization;
-use crate::TestImportObject;
 use polywrap_wasm_rs::subinvoke;
 use serde::{
     Deserialize, 
     Serialize,
 };
+pub mod serialization;
 pub use serialization::{
-    deserialize_another_method_result, 
     deserialize_imported_method_result,
-    serialize_another_method_args, 
-    serialize_imported_method_args, 
-    InputAnotherMethod,
+    serialize_imported_method_args,
     InputImportedMethod,
+    deserialize_another_method_result,
+    serialize_another_method_args,
+    InputAnotherMethod,
 };
+
+use crate::TestImportObject; 
+use crate::TestImportEnum;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TestImportQuery;

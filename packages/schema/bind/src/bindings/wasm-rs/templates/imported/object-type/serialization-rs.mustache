@@ -1,18 +1,26 @@
 {{^__commonImport}}
-use crate::{
-    get_{{#toLower}}{{type}}{{/toLower}}_value, 
-    sanitize_{{#toLower}}{{type}}{{/toLower}}_value, 
-    {{#toUpper}}{{type}}{{/toUpper}}, 
-};
 use polywrap_wasm_rs::{
-    Context, 
-    Read, 
-    ReadDecoder, 
-    Write, 
-    WriteEncoder, 
+    Context,
+    Read,
+    ReadDecoder,
+    Write,
+    WriteEncoder,
     WriteSizer,
 };
-use std::convert::TryFrom;
+
+use crate::{{#toUpper}}{{type}}{{/toUpper}};
+{{#propertyDeps}}
+{{^isEnum}}
+use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
+{{/isEnum}}
+{{#isEnum}}
+use crate::{
+    {{#toUpper}}{{type}}{{/toUpper}},
+    get_{{#toLower}}{{type}}{{/toLower}}_value,
+    sanitize_{{#toLower}}{{type}}{{/toLower}}_value,
+};
+{{/isEnum}}
+{{/propertyDeps}}
 
 pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(input: &{{#toUpper}}{{type}}{{/toUpper}}) -> Vec<u8> {
     let mut sizer_context = Context::new();
@@ -76,11 +84,11 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
 
     {{#properties}}
     {{^object}}
-    let mut _{{#toLower}}{{name}}{{/toLower}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+    let mut _{{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
     {{/object}}
     {{#object}}
     {{#required}}
-    let mut _{{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = None;
+    let mut _{{#toLower}}{{name}}{{/toLower}}: Option<{{#toWasm}}{{toGraphQLType}}{{/toWasm}}> = None;
     {{/required}}
     {{^required}}
     let mut _{{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
@@ -96,7 +104,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
         let field = reader.read_string().unwrap();
 
         match field.as_str() {
-            {{^properties}}
+            {{#properties}}
             "{{#toLower}}{{name}}{{/toLower}}" => {
                 reader.context().push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property");
                 {{#scalar}}
@@ -121,6 +129,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
                 reader.context().pop();
             }
             {{/properties}}
+            _ => {}
         }
     }
     {{#properties}}
@@ -142,7 +151,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
         {{#toLower}}{{name}}{{/toLower}}: _{{#toLower}}{{name}}{{/toLower}},
         {{/required}}
         {{#required}}
-        {{#toLower}}{{name}}{{/toLower}}: match {{#toLower}}{{name}}{{/toLower}} {
+        {{#toLower}}{{name}}{{/toLower}}: match _{{#toLower}}{{name}}{{/toLower}} {
             Some(x) => return x,
             None => panic!("'{{#toLower}}{{name}}{{/toLower}}' is required, but its value is still 'None'. This should never happen."),
         },

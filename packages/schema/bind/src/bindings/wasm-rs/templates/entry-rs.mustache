@@ -1,27 +1,27 @@
 {{#queryTypes}}
 {{#methods.length}}
 use crate::{
-  {{#methods}}
-  {{#toLower}}{{name}}{{/toLower}}_wrapped, 
-  {{/methods}}
+    {{#methods}}
+    {{#toLower}}{{name}}{{/toLower}}_wrapped,
+    {{/methods}}
 };
 {{/methods.length}}
 {{/queryTypes}}
 use polywrap_wasm_rs::{
-    abort, 
+    abort,
     invoke,
 };
 
 pub fn _w3_init() {
-  {{#queryTypes}}
-  {{#methods}}
-  invoke::w3_add_invoke("{{#toLower}}{{name}}{{/toLower}}", {{#toLower}}{{name}}{{/toLower}}_wrapped);
-  {{/methods}}
-  {{/queryTypes}}
+    {{#queryTypes}}
+    {{#methods}}
+    invoke::w3_add_invoke("{{#toLower}}{{name}}{{/toLower}}", {{#toLower}}{{name}}{{/toLower}}_wrapped);
+    {{/methods}}
+    {{/queryTypes}}
 }
 
 pub fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
-    invoke::w3_invoke(method_size, args_size)
+    invoke::w3_invoke(method_size, args_size);
 }
 
 pub fn w3_abort(msg: &str, file: &str, line: u32, column: u32) {

@@ -1,6 +1,5 @@
 {{#__commonImport}}
 pub use super::super::common::TestImportQuery;
-use crate::TestImportObject;
 {{/__commonImport}}
 {{^__commonImport}}
 use polywrap_wasm_rs::subinvoke;
@@ -18,6 +17,12 @@ pub use serialization::{
     {{/methods}}
 };
 {{/methods.length}}
+{{#propertyDeps.length}}
+
+{{#propertyDeps}}
+use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
+{{/propertyDeps}}
+{{/propertyDeps.length}}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{#toUpper}}{{type}}{{/toUpper}};

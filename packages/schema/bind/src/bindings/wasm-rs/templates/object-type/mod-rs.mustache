@@ -19,7 +19,7 @@ pub use serialization::{
 };
 
 {{#propertyDeps}}
-use {{crate}}::{{type}};
+use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
 {{/propertyDeps}}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

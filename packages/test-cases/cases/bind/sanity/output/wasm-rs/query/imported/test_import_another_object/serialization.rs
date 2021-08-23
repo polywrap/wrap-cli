@@ -1,12 +1,13 @@
-use crate::TestImportAnotherObject;
 use polywrap_wasm_rs::{
-    Context, 
-    Read, 
-    ReadDecoder, 
-    Write, 
-    WriteEncoder, 
+    Context,
+    Read,
+    ReadDecoder,
+    Write,
+    WriteEncoder,
     WriteSizer,
 };
+
+use crate::TestImportAnotherObject;
 
 pub fn serialize_test_import_another_object(input: &TestImportAnotherObject) -> Vec<u8> {
     let mut sizer_context = Context::new();
@@ -37,19 +38,19 @@ pub fn deserialize_test_import_another_object(input: &[u8]) -> TestImportAnother
 }
 
 pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestImportAnotherObject, String> {
-    let mut num_of_fields = reader.read_map_length();
+    let mut num_of_fields = reader.read_map_length().unwrap();
 
-    let mut _prop = "".to_string();
+    let mut _prop: String = String::new();
     let mut _prop_set = false;
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
-        let field = reader.read_string();
+        let field = reader.read_string().unwrap();
 
         match field.as_str() {
             "prop" => {
                 reader.context().push(&field, "String", "type found, reading property");
-                _prop = reader.read_string();
+                _prop = reader.read_string().unwrap();
                 _prop_set = true;
                 reader.context().pop();
             }
@@ -61,7 +62,7 @@ pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestIm
         return Err(custom_error);
     }
 
-    Ok(TestImportAnotherObject { 
+    Ok(TestImportAnotherObject {
         prop: _prop,
-    })
+    });
 }

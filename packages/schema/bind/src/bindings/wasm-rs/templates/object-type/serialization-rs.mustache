@@ -11,7 +11,7 @@ use polywrap_wasm_rs::{
 use crate::{{#toUpper}}{{type}}{{/toUpper}};
 {{#propertyDeps}}
 {{^isEnum}}
-use {{crate}}::{{type}};
+use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
 {{/isEnum}}
 {{#isEnum}}
 use crate::{
@@ -129,6 +129,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
                 reader.context().pop();
             }
             {{/properties}}
+            _ => {}
         }
     }
     {{#properties}}

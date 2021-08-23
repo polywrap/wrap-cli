@@ -1,9 +1,9 @@
 use crate::{
-    object_method_wrapped, 
     query_method_wrapped,
+    object_method_wrapped,
 };
 use polywrap_wasm_rs::{
-    abort, 
+    abort,
     invoke,
 };
 
@@ -13,7 +13,7 @@ pub fn _w3_init() {
 }
 
 pub fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
-    invoke::w3_invoke(method_size, args_size)
+    invoke::w3_invoke(method_size, args_size);
 }
 
 pub fn w3_abort(msg: &str, file: &str, line: u32, column: u32) {

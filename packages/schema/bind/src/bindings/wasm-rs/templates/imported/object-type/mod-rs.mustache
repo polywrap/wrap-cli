@@ -1,25 +1,28 @@
 {{#__commonImport}}
 pub use super::super::common::{{#toUpper}}{{type}}{{/toUpper}};
-use crate::{ 
-    {{#toUpper}}{{type}}{{/toUpper}}, 
-};
-use polywrap_wasm_rs::{
-    Read, 
-    Write,
-};
-use serde::{
-    Deserialize, 
-    Serialize,
-};
 {{/__commonImport}}
 {{^__commonImport}}
 pub mod serialization;
+use polywrap_wasm_rs::{
+    Read,
+    Write,
+};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 pub use serialization::{
-    deserialize_{{#toLower}}{{type}}{{/toLower}}, 
-    read_{{#toLower}}{{type}}{{/toLower}}, 
-    serialize_{{#toLower}}{{type}}{{/toLower}}, 
+    deserialize_{{#toLower}}{{type}}{{/toLower}},
+    read_{{#toLower}}{{type}}{{/toLower}},
+    serialize_{{#toLower}}{{type}}{{/toLower}},
     write_{{#toLower}}{{type}}{{/toLower}},
 };
+{{#propertyDeps.length}}
+
+{{#propertyDeps}}
+use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
+{{/propertyDeps}}
+{{/propertyDeps.length}}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{#toUpper}}{{type}}{{/toUpper}} {
