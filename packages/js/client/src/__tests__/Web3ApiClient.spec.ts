@@ -10,7 +10,7 @@ import {
 import { GetPathToTestApis } from "@web3api/test-cases";
 import { Web3ApiClient } from "../Web3ApiClient";
 import { getDefaultClientConfig } from "../default-client-config";
-import { Plugin, coreInterfaceUris, Uri, PluginManifest, Web3ApiManifest, deserializeWeb3ApiManifest } from '@web3api/core-js';
+import { Plugin, coreInterfaceUris, Uri, PluginManifest, Web3ApiManifest, BuildManifest, deserializeWeb3ApiManifest, deserializeBuildManifest } from '@web3api/core-js';
 import { readFileSync } from "fs";
 
 jest.setTimeout(200000);
@@ -1680,7 +1680,7 @@ describe("Web3ApiClient", () => {
     expect(mutation.data?.abstractMutationMethod).toBe(2);
   });
 
-  it("getManifest -- simple-storage web3api", async () => {
+  it.only("getManifest -- web3api manifest, build manifest", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
@@ -1691,21 +1691,22 @@ describe("Web3ApiClient", () => {
 
     const actualManifestStr: string = readFileSync(`${GetPathToTestApis()}/simple-storage/build/web3api.yaml`, 'utf8');
     const actualManifest: Web3ApiManifest = deserializeWeb3ApiManifest(actualManifestStr);
-
     const manifest: Web3ApiManifest = await client.getManifest({
       uri: ensUri,
       type: 'web3api'
-    })
+    });
     expect(manifest).toStrictEqual(actualManifest);
 
-    const defaultManifest: Web3ApiManifest = (await client.getManifest({
+    const actualBuildManifestStr: string = readFileSync(`${GetPathToTestApis()}/simple-storage/build/web3api.build.yaml`, 'utf8');
+    const actualBuildManifest: BuildManifest = deserializeBuildManifest(actualBuildManifestStr);
+    const buildManifest: BuildManifest = await client.getManifest({
       uri: ensUri,
-      type: 'web3api'
-    }));
-    expect(defaultManifest).toStrictEqual(actualManifest);
+      type: 'build'
+    });
+    expect(buildManifest).toStrictEqual(actualBuildManifest);
   });
 
-  it("getManifest -- Logger plugin", async () => {
+  it("getManifest -- plugin manifest", async () => {
     const client = await getClient();
 
     const manifest: PluginManifest = await client.getManifest({
