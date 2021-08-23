@@ -16,4 +16,5 @@ export interface BuildManifest {
   config?: {
     [k: string]: unknown;
   };
+  __type: "BuildManifest";
 }

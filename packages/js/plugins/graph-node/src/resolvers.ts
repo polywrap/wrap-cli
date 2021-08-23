@@ -1,16 +1,13 @@
 import { GraphNodePlugin } from ".";
+import { Query } from "./w3";
 
-import { Client, PluginModule } from "@web3api/core-js";
+import { Client } from "@web3api/core-js";
 
 export const query = (
   graphnode: GraphNodePlugin,
   client: Client
-): PluginModule => ({
-  querySubgraph: async (input: {
-    subgraphAuthor: string;
-    subgraphName: string;
-    query: string;
-  }): Promise<string> => {
+): Query.Module => ({
+  querySubgraph: async (input: Query.Input_querySubgraph): Promise<string> => {
     return await graphnode.query(
       input.subgraphAuthor,
       input.subgraphName,

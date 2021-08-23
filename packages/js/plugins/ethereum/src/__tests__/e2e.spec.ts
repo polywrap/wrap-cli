@@ -1,5 +1,5 @@
 import { ethereumPlugin } from "..";
-import * as Schema from "../types";
+import * as Schema from "../w3";
 
 import { Web3ApiClient } from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";

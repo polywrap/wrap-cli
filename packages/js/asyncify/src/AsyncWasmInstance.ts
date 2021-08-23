@@ -41,17 +41,17 @@ enum AsyncifyState {
 }
 
 export class AsyncWasmInstance {
-  private static _dataAddr = 16;
-  private static _dataStart = AsyncWasmInstance._dataAddr + 8;
-  private static _dataEnd = 1024;
-
-  private static _requiredExports: string[] = [
+  public static requiredExports: readonly string[] = [
     "asyncify_start_unwind",
     "asyncify_stop_unwind",
     "asyncify_start_rewind",
     "asyncify_stop_rewind",
     "asyncify_get_state",
   ];
+
+  private static _dataAddr = 16;
+  private static _dataStart = AsyncWasmInstance._dataAddr + 8;
+  private static _dataEnd = 1024;
 
   private _instance: WasmInstance;
   private _wrappedImports: WasmImports;
@@ -61,7 +61,7 @@ export class AsyncWasmInstance {
   constructor(config: {
     module: WasmModule;
     imports: WasmImports;
-    requiredExports?: string[];
+    requiredExports?: readonly string[];
   }) {
     // Wrap imports
     this._wrappedImports = this._wrapImports(config.imports);
@@ -75,7 +75,7 @@ export class AsyncWasmInstance {
     // Ensure all required exports exist on Wasm module
     const exportKeys = Object.keys(this._instance.exports);
     const missingExports = [
-      ...AsyncWasmInstance._requiredExports,
+      ...AsyncWasmInstance.requiredExports,
       ...(config.requiredExports || []),
     ].filter((name) => !exportKeys.includes(name));
 

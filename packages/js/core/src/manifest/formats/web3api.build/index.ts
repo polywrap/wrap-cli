@@ -6,23 +6,23 @@
  */
 
 import {
-  BuildManifest as BuildManifest0_0_1_prealpha_2
-} from "./0.0.1-prealpha.2";
+  BuildManifest as BuildManifest0_0_1_prealpha_1
+} from "./0.0.1-prealpha.1";
 
 export {
-  BuildManifest0_0_1_prealpha_2,
+  BuildManifest0_0_1_prealpha_1,
 };
 
 export enum BuildManifestFormats {
-  "0.0.1-prealpha.2" = "0.0.1-prealpha.2",
+  "0.0.1-prealpha.1" = "0.0.1-prealpha.1",
 }
 
 export type AnyBuildManifest =
-  | BuildManifest0_0_1_prealpha_2
+  | BuildManifest0_0_1_prealpha_1
 
-export type BuildManifest = BuildManifest0_0_1_prealpha_2;
+export type BuildManifest = BuildManifest0_0_1_prealpha_1;
 
-export const latestBuildManifestFormat = BuildManifestFormats["0.0.1-prealpha.2"]
+export const latestBuildManifestFormat = BuildManifestFormats["0.0.1-prealpha.1"]
 
 export { migrateBuildManifest } from "./migrate";
 
