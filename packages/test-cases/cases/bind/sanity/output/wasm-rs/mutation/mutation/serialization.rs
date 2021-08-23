@@ -136,6 +136,7 @@ pub fn deserialize_mutation_method_args(input: &[u8]) -> Result<InputMutationMet
                 });
                 reader.context().pop();
             }
+            _ => {}
         }
     }
     if !str_set {

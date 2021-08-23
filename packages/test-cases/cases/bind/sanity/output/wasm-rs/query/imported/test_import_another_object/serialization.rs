@@ -53,6 +53,7 @@ pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestIm
                 _prop_set = true;
                 reader.context().pop();
             }
+            _ => {}
         }
     }
     if !_prop_set {

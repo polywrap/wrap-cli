@@ -238,7 +238,7 @@ impl Write for WriteEncoder {
         } else {
             self.write_bytes_length(buf.len() as u32);
             self.view
-                .set_bytes(&buf)
+                .set_bytes(buf)
                 .expect("Failed to set bytes to data view");
         }
     }

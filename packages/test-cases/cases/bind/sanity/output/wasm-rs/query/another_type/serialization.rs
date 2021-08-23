@@ -71,6 +71,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, String>
                 _circular = object;
                 reader.context().pop();
             }
+            _ => {}
         }
     }
 

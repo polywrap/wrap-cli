@@ -446,9 +446,7 @@ impl Read for ReadDecoder {
             self.context.push("array[", i.to_string().as_str(), "]");
             let item = reader(self);
             array.push(item);
-            self.context
-                .pop()
-                .expect("Failed to pop value from Context");
+            self.context.pop();
         }
         Ok(array)
     }
@@ -480,9 +478,7 @@ impl Read for ReadDecoder {
             let key = key_fn(self);
             let value = val_fn(self);
             map.insert(key, value);
-            self.context
-                .pop()
-                .expect("Failed to pop value from Context");
+            self.context.pop();
         }
         map
     }

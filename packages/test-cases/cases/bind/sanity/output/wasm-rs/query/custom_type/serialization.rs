@@ -561,6 +561,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                 });
                 reader.context().pop();
             }
+            _ => {}
         }
     }
     if !_str_set {

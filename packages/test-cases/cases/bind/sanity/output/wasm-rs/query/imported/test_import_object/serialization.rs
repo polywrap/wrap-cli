@@ -220,6 +220,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                 });
                 reader.context().pop();
             }
+            _ => {}
         }
     }
     if !_object_set {
