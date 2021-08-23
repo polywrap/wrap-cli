@@ -124,3 +124,15 @@ export class Uri {
     return this._config.uri;
   }
 }
+
+export interface GetUriPathOptions {
+  ignorePlugins?: boolean;
+  ignoreRedirects?: boolean;
+}
+
+/** An array of URI Path Nodes is returned from client.getUriPath(...) */
+export interface UriPathNode {
+  uri: Uri;
+  fromRedirect: boolean;
+  isPlugin?: boolean;
+}

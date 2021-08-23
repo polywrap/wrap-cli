@@ -6,9 +6,11 @@ import {
   InterfaceImplementations,
   PluginRegistration,
   UriRedirect,
+  GetUriPathOptions,
+  UriPathNode,
 } from "../types";
 import { Web3ApiManifest, deserializeWeb3ApiManifest } from "../manifest";
-import { applyRedirects } from "./apply-redirects";
+import { applyRedirects, followRedirects } from "./apply-redirects";
 import { findPluginPackage } from "./find-plugin-package";
 import { getImplementations } from "./get-implementations";
 import { coreInterfaceUris, UriResolver } from "../interfaces";
@@ -46,13 +48,81 @@ export const resolveUri = Tracer.traceFunc(
       interfaces
     );
 
-    return await resolveUriWithUriResolvers(
+    const {
+      manifest,
+      uriResolver,
+      resolvedUris,
+    } = await resolveUriWithUriResolvers(
       finalRedirectedUri,
       uriResolverImplementations,
       client,
-      createApi,
       noValidate
     );
+
+    const resolvedUri: Uri = new Uri(resolvedUris[resolvedUris.length - 1]);
+
+    const api: Api = Tracer.traceFunc(
+      "resolveUri: createApi",
+      (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
+        createApi(uri, manifest, uriResolver)
+    )(resolvedUri, manifest, uriResolver);
+
+    return { api, resolvedUris };
+  }
+);
+
+export const resolveUriToPath = Tracer.traceFunc(
+  "core: resolveUriToPath",
+  async (
+    uri: Uri,
+    client: Client,
+    redirects: readonly UriRedirect<Uri>[],
+    plugins: readonly PluginRegistration<Uri>[],
+    interfaces: readonly InterfaceImplementations<Uri>[],
+    noValidate?: boolean,
+    options?: GetUriPathOptions
+  ): Promise<UriPathNode[]> => {
+    const { ignorePlugins, ignoreRedirects } = options ?? {};
+
+    let path: UriPathNode[];
+    if (ignoreRedirects) {
+      path = [{ uri, fromRedirect: false }];
+    } else {
+      path = followRedirects(uri, redirects);
+    }
+    const finalRedirectedUri: Uri = path[path.length - 1].uri;
+
+    if (!ignorePlugins) {
+      const plugin = findPluginPackage(finalRedirectedUri, plugins);
+      if (plugin) {
+        path[path.length - 1].isPlugin = true;
+        return path;
+      }
+    }
+    path[path.length - 1].isPlugin = false;
+
+    // The final URI has been resolved, let's now resolve the Web3API package
+    const uriResolverImplementations = getImplementations(
+      coreInterfaceUris.uriResolver,
+      redirects,
+      interfaces
+    );
+
+    const { resolvedUris } = await resolveUriWithUriResolvers(
+      finalRedirectedUri,
+      uriResolverImplementations,
+      client,
+      noValidate
+    );
+
+    resolvedUris.forEach((v: string) =>
+      path.push({
+        uri: new Uri(v),
+        fromRedirect: false,
+        isPlugin: false,
+      })
+    );
+    return path;
   }
 );
 
@@ -60,9 +130,12 @@ const resolveUriWithUriResolvers = async (
   uri: Uri,
   uriResolverImplementationUris: Uri[],
   client: Client,
-  createApi: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) => Api,
   noValidate?: boolean
-): Promise<{ api: Api; resolvedUris: string[] }> => {
+): Promise<{
+  manifest: Web3ApiManifest;
+  uriResolver: Uri;
+  resolvedUris: string[];
+}> => {
   let resolvedUri = uri;
 
   // Keep track of past URIs to avoid infinite loops
@@ -141,12 +214,6 @@ const resolveUriWithUriResolvers = async (
         noValidate,
       });
 
-      const api: Api = Tracer.traceFunc(
-        "resolveUri: createApi",
-        (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
-          createApi(uri, manifest, uriResolver)
-      )(resolvedUri, manifest, uriResolver);
-
       const resolvedUris: string[] = uriHistory.reduce<string[]>(
         (prev, curr) => {
           prev.push(curr.uri);
@@ -155,7 +222,7 @@ const resolveUriWithUriResolvers = async (
         []
       );
 
-      return { api, resolvedUris };
+      return { manifest, uriResolver, resolvedUris };
     }
   }
 

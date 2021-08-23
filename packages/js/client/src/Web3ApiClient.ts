@@ -25,6 +25,9 @@ import {
   sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
   getImplementations,
+  GetUriPathOptions,
+  UriPathNode,
+  resolveUriToPath,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -343,6 +346,32 @@ export class Web3ApiClient implements Client {
     return filters.applyRedirects
       ? getImplementationsWithRedirects(typedUri)
       : getImplementationsWithoutRedirects(typedUri);
+  }
+
+  public async getUriPath(
+    uri: Uri | string,
+    options?: GetUriPathOptions
+  ): Promise<UriPathNode[]> {
+    const isUriTypeString = typeof uri === "string";
+    const typedUri: Uri = isUriTypeString
+      ? new Uri(uri as string)
+      : (uri as Uri);
+
+    const run = Tracer.traceFunc(
+      "Web3ApiClient: getUriPath",
+      async (uri: Uri, options?: GetUriPathOptions): Promise<UriPathNode[]> => {
+        return await resolveUriToPath(
+          typedUri,
+          this,
+          this.redirects(),
+          this.plugins(),
+          this.interfaces(),
+          undefined,
+          options
+        );
+      }
+    );
+    return run(typedUri, options);
   }
 
   private _requirePluginsToUseNonInterfaceUris(): void {
