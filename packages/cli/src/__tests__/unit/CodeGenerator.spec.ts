@@ -1,17 +1,17 @@
 import fs from "fs";
 import path from "path";
-import { SchemaComposer, Project, CodeGenerator } from "../../lib";
+import { SchemaComposer, Web3ApiProject, CodeGenerator } from "../../lib";
 import { composedSchema } from "../project/sample";
 
 import rimraf from "rimraf";
 
 describe("CodeGenerator validation", () => {
   const manifestPath = path.join(__dirname, "../project", "web3api.yaml");
-  const generationFile = path.join(__dirname, "../project", "web3api.gen.js");
+  const customScript = path.join(__dirname, "../project", "web3api.gen.js");
   const outputDir = path.join(__dirname, "../project", "types");
 
   it("Should fail with invalid manifest path", async () => {
-    const project = new Project({
+    const project = new Web3ApiProject({
       web3apiManifestPath: "invalidManifest",
       quiet: true,
     });
@@ -21,7 +21,7 @@ describe("CodeGenerator validation", () => {
     const generator = new CodeGenerator({
       project,
       schemaComposer,
-      generationFile,
+      customScript,
       outputDir,
     });
 
@@ -30,7 +30,7 @@ describe("CodeGenerator validation", () => {
   });
 
   it("Should fail with invalid generation file", async () => {
-    const project = new Project({
+    const project = new Web3ApiProject({
       web3apiManifestPath: manifestPath,
       quiet: true,
     });
@@ -40,7 +40,7 @@ describe("CodeGenerator validation", () => {
     const generator = new CodeGenerator({
       project,
       schemaComposer,
-      generationFile: path.join(
+      customScript: path.join(
         __dirname,
         "../project",
         "web3api-norun.gen.js"
@@ -57,7 +57,7 @@ describe("CodeGenerator validation", () => {
       rimraf.sync(outputDir);
     }
 
-    const project = new Project({
+    const project = new Web3ApiProject({
       web3apiManifestPath: manifestPath,
       quiet: true,
     });
@@ -67,7 +67,7 @@ describe("CodeGenerator validation", () => {
     const generator = new CodeGenerator({
       project,
       schemaComposer,
-      generationFile,
+      customScript,
       outputDir,
     });
 

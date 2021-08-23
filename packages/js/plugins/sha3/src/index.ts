@@ -1,19 +1,16 @@
-import { manifest } from "./manifest";
+import { manifest, Query } from "./w3";
 import { query } from "./resolvers";
 
-import {
-  Plugin,
-  PluginManifest,
-  PluginModules,
-  PluginPackage,
-} from "@web3api/core-js";
+import { Plugin, PluginPackageManifest, PluginPackage } from "@web3api/core-js";
 
 export class SHA3Plugin extends Plugin {
-  public static manifest(): PluginManifest {
+  public static manifest(): PluginPackageManifest {
     return manifest;
   }
 
-  getModules(): PluginModules {
+  getModules(): {
+    query: Query.Module;
+  } {
     return {
       query: query(),
     };

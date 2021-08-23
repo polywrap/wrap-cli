@@ -14,27 +14,33 @@ import {
 import {
   Web3ApiManifest as Web3ApiManifest0_0_1_prealpha_3
 } from "./0.0.1-prealpha.3";
+import {
+  Web3ApiManifest as Web3ApiManifest0_0_1_prealpha_4
+} from "./0.0.1-prealpha.4";
 
 export {
   Web3ApiManifest0_0_1_prealpha_1,
   Web3ApiManifest0_0_1_prealpha_2,
   Web3ApiManifest0_0_1_prealpha_3,
+  Web3ApiManifest0_0_1_prealpha_4,
 };
 
 export enum Web3ApiManifestFormats {
   "0.0.1-prealpha.1" = "0.0.1-prealpha.1",
   "0.0.1-prealpha.2" = "0.0.1-prealpha.2",
   "0.0.1-prealpha.3" = "0.0.1-prealpha.3",
+  "0.0.1-prealpha.4" = "0.0.1-prealpha.4",
 }
 
 export type AnyWeb3ApiManifest =
   | Web3ApiManifest0_0_1_prealpha_1
   | Web3ApiManifest0_0_1_prealpha_2
   | Web3ApiManifest0_0_1_prealpha_3
+  | Web3ApiManifest0_0_1_prealpha_4
 
-export type Web3ApiManifest = Web3ApiManifest0_0_1_prealpha_3;
+export type Web3ApiManifest = Web3ApiManifest0_0_1_prealpha_4;
 
-export const latestWeb3ApiManifestFormat = Web3ApiManifestFormats["0.0.1-prealpha.3"]
+export const latestWeb3ApiManifestFormat = Web3ApiManifestFormats["0.0.1-prealpha.4"]
 
 export { migrateWeb3ApiManifest } from "./migrate";
 

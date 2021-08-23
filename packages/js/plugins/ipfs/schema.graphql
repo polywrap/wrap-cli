@@ -1,32 +1,6 @@
-### Web3API Header START ###
-scalar UInt
-scalar UInt8
-scalar UInt16
-scalar UInt32
-scalar Int
-scalar Int8
-scalar Int16
-scalar Int32
-scalar Bytes
-scalar BigInt
+#import { Query, MaybeUriOrManifest } into UriResolver from "ens/uri-resolver.core.web3api.eth"
 
-directive @imported(
-  uri: String!
-  namespace: String!
-  nativeType: String!
-) on OBJECT | ENUM
-
-directive @imports(
-  types: [String!]!
-) on OBJECT
-### Web3API Header END ###
-
-type Query implements UriResolver_Query @imports(
-  types: [
-    "UriResolver_Query",
-    "UriResolver_MaybeUriOrManifest"
-  ]
-) {
+type Query implements UriResolver_Query {
   catFile(
     cid: String!
     options: Options
@@ -66,35 +40,3 @@ type Options {
   # The IPFS provider to be used
   provider: String
 }
-
-### Imported Queries START ###
-
-type UriResolver_Query @imported(
-  uri: "w3://ens/uri-resolver.core.web3api.eth",
-  namespace: "UriResolver",
-  nativeType: "Query"
-) {
-  tryResolveUri(
-    authority: String!
-    path: String!
-  ): UriResolver_MaybeUriOrManifest
-
-  getFile(
-    path: String!
-  ): Bytes
-}
-
-### Imported Queries END ###
-
-### Imported Objects START ###
-
-type UriResolver_MaybeUriOrManifest @imported(
-  uri: "w3://ens/uri-resolver.core.web3api.eth",
-  namespace: "UriResolver",
-  nativeType: "MaybeUriOrManifest"
-) {
-  uri: String
-  manifest: String
-}
-
-### Imported Objects END ###
