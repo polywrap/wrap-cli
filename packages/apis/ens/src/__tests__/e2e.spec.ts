@@ -140,6 +140,7 @@ describe("ENS Wrapper", () => {
       variables: setResolverVariables,
     });
 
+    console.log({ setResolverErrors });
     expect(setResolverData?.setResolver).toBeDefined();
     expect(setResolverErrors).toBeUndefined();
 
@@ -788,7 +789,8 @@ describe("ENS Wrapper", () => {
       configureOpenDomainData?.configureOpenDomain.fifsRegistrarAddress
     );
 
-    customFifsRegistrarAddress = configureOpenDomainData?.configureOpenDomain.fifsRegistrarAddress!;
+    customFifsRegistrarAddress = configureOpenDomainData?.configureOpenDomain
+      .fifsRegistrarAddress!;
   });
 
   it("should create subdomain in open domain", async () => {

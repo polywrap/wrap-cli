@@ -14,7 +14,7 @@ export function namehash(inputName: string): string {
 
     for(let i = labels.length - 1; i >= 0; i--) {
       let labelSha = SHA3_Query.keccak_256({ message: labels[i] })
-      node = SHA3_Query.buffer_keccak_256({ message: (node + labelSha) })
+      node = SHA3_Query.hex_keccak_256({ message: node + labelSha })
     }
   }
 
