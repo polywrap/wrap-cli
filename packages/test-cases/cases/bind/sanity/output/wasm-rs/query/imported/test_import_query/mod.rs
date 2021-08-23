@@ -28,7 +28,7 @@ impl TestImportQuery {
             "query".to_string(),
             "imported_method".to_string(),
             args,
-        ).unwrap_or_default();
+        );
         deserialize_imported_method_result(result.as_slice())
     }
 
@@ -40,7 +40,7 @@ impl TestImportQuery {
             "query".to_string(),
             "another_method".to_string(),
             args,
-        ).unwrap_or_default();
+        );
         deserialize_another_method_result(result.as_slice())
     }
 }

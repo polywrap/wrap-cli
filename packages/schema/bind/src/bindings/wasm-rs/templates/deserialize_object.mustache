@@ -1,8 +1,9 @@
 {{#required}}
-let obj = {{#toUpper}}{{type}}{{/toUpper}}::read(reader);
+let object = Box::new({{#toUpper}}{{type}}{{/toUpper}}::read(reader));
 {{/required}}
 {{^required}}
+let mut object: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = None;
 if !reader.is_next_nil() {
-    {{#toLower}}{{name}}{{/toLower}} = Box::new(Some({{#toUpper}}{{type}}{{/toUpper}}::read(reader)));
+    object = Some(Box::new({{#toUpper}}{{type}}{{/toUpper}}::read(reader)));
 }
 {{/required}}

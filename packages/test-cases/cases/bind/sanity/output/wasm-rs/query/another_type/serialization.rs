@@ -47,33 +47,35 @@ pub fn deserialize_another_type(input: &[u8]) -> AnotherType {
 }
 
 pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, String> {
-    let mut num_of_fields = reader.read_map_length().unwrap_or_default();
+    let mut num_of_fields = reader.read_map_length().unwrap();
 
-    let mut prop: Option<String> = None;
-    let mut circular: Option<Box<CustomType>> = None;
+    let mut _prop: Option<String> = None;
+    let mut _circular: Option<Box<CustomType>> = None;
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
-        let field = reader.read_string().unwrap_or_default();
+        let field = reader.read_string().unwrap();
 
         match field.as_str() {
             "prop" => {
                 reader.context().push(&field, "Option<String>", "type found, reading property");
-                prop = reader.read_nullable_string().unwrap_or_default();
+                _prop = reader.read_nullable_string();
                 reader.context().pop();
             }
             "circular" => {
                 reader.context().push(&field, "Option<Box<CustomType>>", "type found, reading property");
+                let mut object: Option<Box<CustomType>> = None;
                 if !reader.is_next_nil() {
-                    circular = Box::new(Some(CustomType::read(reader)));
+                    object = Some(Box::new(CustomType::read(reader)));
                 }
+                _circular = object;
                 reader.context().pop();
             }
         }
     }
 
     Ok(AnotherType {
-        prop,
-        circular,
-    })
+        prop: _prop,
+        circular: _circular,
+    });
 }

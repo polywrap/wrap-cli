@@ -168,7 +168,7 @@ pub fn deserialize_another_method_result(input: &[u8]) -> i64 {
     context.description = "Deserializing imported query-type: InputAnotherMethod".to_string();
     let mut reader = ReadDecoder::new(input, context);
     reader.context().push("another_method", "i64", "reading function output");
-    let res = reader.read_i64().unwrap_or_default();
+    let res = reader.read_i64();
     reader.context().pop();
     res
 }

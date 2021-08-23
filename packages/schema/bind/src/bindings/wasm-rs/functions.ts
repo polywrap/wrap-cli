@@ -176,9 +176,9 @@ export const toWasmInit: MustacheFunction = () => {
         return nullableModifier("BigInt::from_u16(0).unwrap_or_default()");
       default:
         if (type.includes("Enum_")) {
-          return nullableModifier(`${toWasm()(type, (str) => str)}::_MAX_`);
+          return nullableModifier(`${toWasm()(value, render)}::_MAX_`);
         } else {
-          return nullableModifier(`${toWasm()(type, (str) => str)}::new()`);
+          return nullableModifier(`${toWasm()(value, render)}::new()`);
         }
     }
   };

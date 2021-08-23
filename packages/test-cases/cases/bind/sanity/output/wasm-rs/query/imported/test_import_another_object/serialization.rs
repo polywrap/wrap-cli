@@ -37,30 +37,30 @@ pub fn deserialize_test_import_another_object(input: &[u8]) -> TestImportAnother
 }
 
 pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestImportAnotherObject, String> {
-    let mut num_of_fields = reader.read_map_length().unwrap_or_default();
+    let mut num_of_fields = reader.read_map_length();
 
-    let mut prop = "".to_string();
-    let mut prop_set = false;
+    let mut _prop = "".to_string();
+    let mut _prop_set = false;
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
-        let field = reader.read_string().unwrap_or_default();
+        let field = reader.read_string();
 
         match field.as_str() {
             "prop" => {
                 reader.context().push(&field, "String", "type found, reading property");
-                prop = reader.read_string().unwrap_or_default();
-                prop_set = true;
+                _prop = reader.read_string();
+                _prop_set = true;
                 reader.context().pop();
             }
         }
     }
-    if !prop_set {
+    if !_prop_set {
         let custom_error = reader.context().print_with_context("Missing required property: 'prop: String'");
         return Err(custom_error);
     }
 
     Ok(TestImportAnotherObject { 
-        prop, 
+        prop: _prop,
     })
 }

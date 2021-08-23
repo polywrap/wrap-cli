@@ -81,18 +81,20 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(input: &[u8]) -> {{#r
     {{#return}}
     reader.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "reading function output");
     {{#scalar}}
-    let res = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}().unwrap_or_default();
+    let res = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(){{#required}}.unwrap(){{/required}};
     {{/scalar}}
     {{#array}}
     let res = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
         {{> deserialize_array}}
-    }).expect("Failed to read array");
+    }){{#required}}.expect("Failed to read array"){{/required}};
     {{/array}}
     {{#enum}}
     {{> deserialize_enum}}
+    let res = value;
     {{/enum}}
     {{#object}}
     {{> deserialize_object}}
+    let res = object;
     {{/object}}
     {{/return}}
     reader.context().pop();
