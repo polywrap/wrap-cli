@@ -1,23 +1,14 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/ban-types */
 
-export const maxTransferBytes = 256; // do not change
-export const maxThreads = 128;
-
 export type u32 = number;
 
-export interface W3Exports {
-  // Needed to comply with WebAssembly's typings
-  [key: string]: unknown;
-
+export interface W3Exports extends WebAssembly.Exports {
   _w3_init: () => void;
   _w3_invoke: (nameLen: u32, argsLen: u32) => boolean;
 }
 
-export interface W3Imports {
-  // Needed to comply with WebAssembly's typings
-  [key: string]: Record<string, Function | WebAssembly.Memory>;
-
+export interface W3Imports extends WebAssembly.Imports {
   w3: {
     __w3_subinvoke: (
       uriPtr: u32,
@@ -28,7 +19,7 @@ export interface W3Imports {
       methodLen: u32,
       inputPtr: u32,
       inputLen: u32
-    ) => boolean;
+    ) => Promise<boolean>;
     __w3_subinvoke_result_len: () => u32;
     __w3_subinvoke_result: (ptr: u32) => void;
     __w3_subinvoke_error_len: () => u32;
@@ -49,51 +40,4 @@ export interface W3Imports {
   env: {
     memory: WebAssembly.Memory;
   };
-}
-
-export enum ThreadWakeStatus {
-  SUBINVOKE_RESULT = 1,
-  SUBINVOKE_ERROR = 2,
-  SUBINVOKE_DONE = 3,
-}
-
-// Host (main thread) actions
-export type HostAction =
-  | SubInvokeAction
-  | AbortAction
-  | LogQueryResultAction
-  | LogQueryErrorAction
-  | LogInfoAction
-  | TransferCompleteAction;
-
-export interface SubInvokeAction {
-  readonly type: "SubInvoke";
-  readonly uri: string;
-  readonly module: string;
-  readonly method: string;
-  readonly input: ArrayBuffer;
-}
-
-export interface AbortAction {
-  readonly type: "Abort";
-  readonly message: string;
-}
-
-export interface LogQueryResultAction {
-  readonly type: "LogQueryResult";
-  readonly result: ArrayBuffer;
-}
-
-export interface LogQueryErrorAction {
-  readonly type: "LogQueryError";
-  readonly error: string;
-}
-
-export interface LogInfoAction {
-  readonly type: "LogInfo";
-  readonly message: string;
-}
-
-export interface TransferCompleteAction {
-  readonly type: "TransferComplete";
 }

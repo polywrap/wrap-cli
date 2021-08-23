@@ -1,10 +1,11 @@
 import { EnsPlugin } from "./";
+import { Query } from "./w3";
 
-import { Client, PluginModule } from "@web3api/core-js";
+import { Client } from "@web3api/core-js";
 
-export const query = (ens: EnsPlugin, client: Client): PluginModule => ({
+export const query = (ens: EnsPlugin, client: Client): Query.Module => ({
   // uri-resolver.core.web3api.eth
-  tryResolveUri: async (input: { authority: string; path: string }) => {
+  tryResolveUri: async (input: Query.Input_tryResolveUri) => {
     if (input.authority !== "ens") {
       return null;
     }
@@ -27,7 +28,7 @@ export const query = (ens: EnsPlugin, client: Client): PluginModule => ({
     // Nothing found
     return { uri: null, manifest: null };
   },
-  getFile: (_input: { path: string }) => {
+  getFile: (_input: Query.Input_getFile) => {
     return null;
   },
 });

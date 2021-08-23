@@ -38,7 +38,7 @@ Below is sample invocation of the `POST` request with custom request headers and
 const response = await web3ApiClient.query<{ get: Response }>({
   uri: new Uri("w3://ens/http.web3api.eth"),
   query: `
-    mutation {
+    query {
       post(
         url: "http://www.example.com/api"
         request: {
