@@ -25,6 +25,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
     hasImports,
     Transforms.propertyDeps(),
     Transforms.byRef(),
+    Transforms.queryPointer(),
   ];
 
   for (const transform of transforms) {

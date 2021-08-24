@@ -4,7 +4,7 @@ pub use super::super::common::TestImportQuery;
 {{^__commonImport}}
 use polywrap_wasm_rs::subinvoke;
 use serde::{
-    Deserialize, 
+    Deserialize,
     Serialize,
 };
 pub mod serialization;
@@ -29,10 +29,10 @@ pub struct {{#toUpper}}{{type}}{{/toUpper}};
 
 impl {{#toUpper}}{{type}}{{/toUpper}} {
     pub const URI: &'static str = "{{uri}}";
-    
+
     {{#methods}}
     pub fn {{#toLower}}{{name}}{{/toLower}}(input: &Input{{#toUpper}}{{name}}{{/toUpper}}) -> {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
-        let uri = {{#toUpper}}{{type}}{{/toUpper}}::URI;
+        let uri = {{#query}}{{#toUpper}}{{type}}{{/toUpper}}{{/query}}::URI;
         let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(input);
         let result = subinvoke::w3_subinvoke(
             uri.to_string(),

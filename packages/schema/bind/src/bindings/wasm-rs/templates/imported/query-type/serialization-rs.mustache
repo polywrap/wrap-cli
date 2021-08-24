@@ -1,20 +1,32 @@
 {{^__commonImport}}
 {{#methods.length}}
 use polywrap_wasm_rs::{
-    Context, 
-    Read, 
-    ReadDecoder, 
-    Write, 
-    WriteEncoder, 
+    Context,
+    Read,
+    ReadDecoder,
+    Write,
+    WriteEncoder,
     WriteSizer,
 };
-use crate::{ 
-    {{#toUpper}}{{type}}{{/toUpper}}, 
-};
 use serde::{
-    Deserialize, 
+    Deserialize,
     Serialize,
 };
+{{#propertyDeps.length}}
+
+{{#propertyDeps}}
+{{^isEnum}}
+use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
+{{/isEnum}}
+{{#isEnum}}
+use crate::{
+    {{#toUpper}}{{type}}{{/toUpper}},
+    get_{{#toLower}}{{type}}{{/toLower}}_value,
+    sanitize_{{#toLower}}{{type}}{{/toLower}}_value,
+};
+{{/isEnum}}
+{{/propertyDeps}}
+{{/propertyDeps.length}}
 
 {{#methods}}
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -26,12 +38,12 @@ pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
 
 pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &Input{{#toUpper}}{{name}}{{/toUpper}}) -> Vec<u8> {
     let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) imported query-type: Input{{#toUpper}}{{name}}{{/toUpper}}".to_string();
+    sizer_context.description = "Serializing (sizing) imported query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
     write_{{#toLower}}{{name}}{{/toLower}}_args(input, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
-    encoder_context.description = "Serializing (encoding) imported query-type: Input{{#toUpper}}{{name}}{{/toUpper}}".to_string();
+    encoder_context.description = "Serializing (encoding) imported query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_{{#toLower}}{{name}}{{/toLower}}_args(input, &mut encoder);
     buffer
@@ -76,7 +88,7 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toU
 
 pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(input: &[u8]) -> {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
     let mut context = Context::new();
-    context.description = "Deserializing imported query-type: {{#toUpper}}{{name}}{{/toUpper}}".to_string();
+    context.description = "Deserializing imported query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut reader = ReadDecoder::new(input, context);
     {{#return}}
     reader.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "reading function output");

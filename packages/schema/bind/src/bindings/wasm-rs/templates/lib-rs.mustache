@@ -1,6 +1,7 @@
-{{^__commonPath}}
+{{#__commonPath}}
 pub use polywrap_query_test_cases::common::*;
 {{/__commonPath}}
+{{^__commonPath}}
 pub mod common;
 pub mod entry;
 {{#objectTypes}}
@@ -38,9 +39,10 @@ pub mod {{#toLower}}{{type}}{{/toLower}};
 pub use {{#toLower}}{{type}}{{/toLower}}::{
     {{#methods}}
     deserialize_{{#toLower}}{{name}}{{/toLower}}_args,
-    {{#toLower}}{{type}}{{/toLower}}_wrapped,
-    serialize_{{#toLower}}{{type}}{{/toLower}}_result,
+    serialize_{{#toLower}}{{name}}{{/toLower}}_result,
+    {{#toLower}}{{name}}{{/toLower}}_wrapped,
     Input{{#toUpper}}{{name}}{{/toUpper}},
     {{/methods}}
 };
 {{/queryTypes}}
+{{/__commonPath}}

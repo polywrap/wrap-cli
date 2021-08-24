@@ -1,27 +1,15 @@
-{{#__commonImport}}
-use crate::{
-    get_{{#toLower}}{{type}}{{/toLower}}_value, 
-    sanitize_{{#toLower}}{{type}}{{/toLower}}_value, 
-    {{#toUpper}}{{type}}{{/toUpper}},
-};
 use polywrap_wasm_rs::{
-    Context, 
-    Read, 
-    ReadDecoder, 
-    Write, 
-    WriteEncoder, 
+    Context,
+    Read,
+    ReadDecoder,
+    Write,
+    WriteEncoder,
     WriteSizer,
 };
 use serde::{
-    Deserialize, 
+    Deserialize,
     Serialize,
 };
-use std::convert::{
-    TryFrom, 
-    TryInto,
-};
-{{/__commonImport}}
-
 {{#methods}}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
