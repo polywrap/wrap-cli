@@ -328,7 +328,7 @@ impl Write for WriteEncoder {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_bool(value.unwrap_or_default());
+            self.write_bool(value.unwrap());
         }
     }
 
@@ -336,7 +336,7 @@ impl Write for WriteEncoder {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_i8(value.unwrap_or_default());
+            self.write_i8(value.unwrap());
         }
     }
 
@@ -344,7 +344,7 @@ impl Write for WriteEncoder {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_i16(value.unwrap_or_default());
+            self.write_i16(value.unwrap());
         }
     }
 
@@ -352,7 +352,7 @@ impl Write for WriteEncoder {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_i32(value.unwrap_or_default());
+            self.write_i32(value.unwrap());
         }
     }
 
@@ -360,7 +360,7 @@ impl Write for WriteEncoder {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_i64(value.unwrap_or_default());
+            self.write_i64(value.unwrap());
         }
     }
 
@@ -368,7 +368,7 @@ impl Write for WriteEncoder {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_u8(value.unwrap_or_default());
+            self.write_u8(value.unwrap());
         }
     }
 
@@ -376,7 +376,7 @@ impl Write for WriteEncoder {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_u16(value.unwrap_or_default());
+            self.write_u16(value.unwrap());
         }
     }
 
@@ -384,7 +384,7 @@ impl Write for WriteEncoder {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_u32(value.unwrap_or_default());
+            self.write_u32(value.unwrap());
         }
     }
 
@@ -392,7 +392,7 @@ impl Write for WriteEncoder {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_u64(value.unwrap_or_default());
+            self.write_u64(value.unwrap());
         }
     }
 
@@ -400,7 +400,7 @@ impl Write for WriteEncoder {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_f32(value.unwrap_or_default());
+            self.write_f32(value.unwrap());
         }
     }
 
@@ -408,7 +408,7 @@ impl Write for WriteEncoder {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_f64(value.unwrap_or_default());
+            self.write_f64(value.unwrap());
         }
     }
 
