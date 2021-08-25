@@ -21,6 +21,7 @@ pub use imported::test_import_enum::{
     TestImportEnum,
 };
 pub use imported::test_import_query::TestImportQuery;
+pub use imported::test_import_mutation::TestImportMutation;
 pub mod mutation;
 pub use mutation::{
     deserialize_mutation_method_args,

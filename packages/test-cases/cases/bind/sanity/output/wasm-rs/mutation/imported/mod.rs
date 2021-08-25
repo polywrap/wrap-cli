@@ -6,3 +6,5 @@ pub mod test_import_enum;
 pub use test_import_enum::*;
 pub mod test_import_query;
 pub use test_import_query::*;
+pub mod test_import_mutation;
+pub use test_import_mutation::*;
