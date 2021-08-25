@@ -181,10 +181,10 @@ pub fn write_query_method_result<W: Write>(input: i32, writer: &mut W) {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InputObjectMethod {
-    pub object: Box<AnotherType>,
-    pub opt_object: Option<Box<AnotherType>>,
-    pub object_array: Vec<Box<AnotherType>>,
-    pub opt_object_array: Option<Vec<Option<Box<AnotherType>>>>,
+    pub object: AnotherType,
+    pub opt_object: Option<AnotherType>,
+    pub object_array: Vec<AnotherType>,
+    pub opt_object_array: Option<Vec<Option<AnotherType>>>,
 }
 
 pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod, String> {

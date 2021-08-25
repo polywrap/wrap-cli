@@ -67,6 +67,21 @@ export const toUpper: MustacheFunction = () => {
   };
 };
 
+export const noBox: MustacheFunction = () => {
+  return (value: string, render: (template: string) => string) => {
+    let type = render(value);
+    const extract = /(.*)Box<([a-zA-Z0-9]*)>(.*)/gm;
+    const match = [...type.matchAll(extract)];
+
+    if (match.length === 0) {
+      return type;
+    }
+
+    const strings = match[0] as string[];
+    return strings[1] + strings[2] + strings[3];
+  }
+}
+
 /*
 // Under no circumstances will Rust allow keywords to go undetected, 
 // so this function may be relevant in other languages, but not Rust.
