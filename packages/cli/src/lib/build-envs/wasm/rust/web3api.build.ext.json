@@ -1,0 +1,27 @@
+{
+  "id": "BuildManifest_WasmRsExt",
+  "type": "object",
+  "required": [
+    "config"
+  ],
+  "properties": {
+    "config": {
+      "type": "object",
+      "required": [
+        "rust_version",
+        "include"
+      ],
+      "properties": {
+        "rust_version": {
+          "type": "string"
+        },
+        "include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
