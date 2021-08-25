@@ -32,12 +32,16 @@ describe("Web3API Binding Test Suite", () => {
           mutation: directories.mutation
             ? readDirectory(directories.mutation)
             : undefined,
+          combined: directories.combined
+            ? readDirectory(directories.combined)
+            : undefined,
         };
 
         const output = bindSchema({
           language: language as TargetLanguage,
-          query: testCase.input.query,
-          mutation: testCase.input.mutation
+          query: expectedOutput.query ? testCase.input.query : undefined,
+          mutation: expectedOutput.mutation ? testCase.input.mutation : undefined,
+          combined: expectedOutput.combined ? testCase.input.combined : undefined,
         });
 
         const sort = (array: OutputEntry[]): OutputEntry[] => {
@@ -56,10 +60,14 @@ describe("Web3API Binding Test Suite", () => {
           output.mutation.entries = sort(output.mutation.entries);
         }
 
+        if (output.combined) {
+          output.combined.entries = sort(output.combined.entries);
+        }
+
         const testResultDir = path.join(__dirname, "/test-results/");
 
         if (!fs.existsSync(testResultDir)) {
-          fs.mkdirSync(__dirname + "/test-results");
+          fs.mkdirSync(testResultDir);
         }
 
         writeFileSync(

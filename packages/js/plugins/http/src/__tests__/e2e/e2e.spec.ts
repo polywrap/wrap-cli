@@ -1,6 +1,6 @@
 import { Web3ApiClient } from "@web3api/client-js"
 import { httpPlugin } from "../..";
-import { Response } from "../../types";
+import { Response } from "../../w3";
 import nock from "nock"
 
 const defaultReplyHeaders = {
@@ -49,7 +49,7 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.get.status).toBe(200)
       // expect(response.data?.get.statusText).toBe("OK")
       expect(response.data?.get.body).toBe('{data: "test-response"}')
-      expect(response.data?.get.headers.length).toEqual(2) // default reply headers
+      expect(response.data?.get.headers?.length).toEqual(2) // default reply headers
     });
 
     test("succesfull request with response type as BINARY", async () => {
@@ -77,7 +77,7 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.get.status).toBe(200)
       // expect(response.data?.get.statusText).toBe("OK")
       expect(response.data?.get.body).toBe(Buffer.from('{data: "test-response"}').toString('base64'))
-      expect(response.data?.get.headers.length).toEqual(2) // default reply headers
+      expect(response.data?.get.headers?.length).toEqual(2) // default reply headers
     });
 
     test("succesfull request with query params and request headers", async () => {
@@ -152,7 +152,7 @@ describe("e2e tests for HttpPlugin", () => {
       const response = await web3ApiClient.query<{ post: Response }>({
         uri: "w3://ens/http.web3api.eth",
         query: `
-          mutation {
+          query {
             post(
               url: "http://www.example.com/api"
               request: {
@@ -169,7 +169,7 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.post.status).toBe(200)
       // expect(response.data?.get.statusText).toBe("OK")
       expect(response.data?.post.body).toBe('{data: "test-response"}')
-      expect(response.data?.post.headers.length).toEqual(2) // default reply headers
+      expect(response.data?.post.headers?.length).toEqual(2) // default reply headers
     });
 
     test("succesfull request with response type as BINARY", async () => {
@@ -181,7 +181,7 @@ describe("e2e tests for HttpPlugin", () => {
       const response = await web3ApiClient.query<{ post: Response }>({
         uri: "w3://ens/http.web3api.eth",
         query: `
-          mutation {
+          query {
             post(
               url: "http://www.example.com/api"
               request: {
@@ -198,7 +198,7 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.post.status).toBe(200)
       // expect(response.data?.get.statusText).toBe("OK")
       expect(response.data?.post.body).toBe(Buffer.from('{data: "test-response"}').toString('base64'))
-      expect(response.data?.post.headers.length).toEqual(2) // default reply headers
+      expect(response.data?.post.headers?.length).toEqual(2) // default reply headers
     });
 
     test("succesfull request with query params and request headers", async () => {
@@ -211,7 +211,7 @@ describe("e2e tests for HttpPlugin", () => {
       const response = await web3ApiClient.query<{ post: Response }>({
         uri: "w3://ens/http.web3api.eth",
         query: `
-          mutation {
+          query {
             post(
               url: "http://www.example.com/api"
               request: {
@@ -246,7 +246,7 @@ describe("e2e tests for HttpPlugin", () => {
       const response = await web3ApiClient.query<{ get: Response }>({
         uri: "w3://ens/http.web3api.eth",
         query: `
-          mutation {
+          query {
             post(
               url: "http://www.example.com/api"
               request: {

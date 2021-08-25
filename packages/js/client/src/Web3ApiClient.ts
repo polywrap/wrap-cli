@@ -1,6 +1,6 @@
 import { getDefaultClientConfig } from "./default-client-config";
 import { PluginWeb3Api } from "./plugin/PluginWeb3Api";
-import { WasmWeb3Api } from "./wasm/WasmWeb3Api";
+import { WasmWeb3Api } from "./wasm";
 
 import {
   Api,
@@ -25,6 +25,8 @@ import {
   getImplementations,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
+
+export { WasmWeb3Api };
 
 export interface ClientConfig<TUri = string> {
   redirects?: UriRedirect<TUri>[];
@@ -82,7 +84,7 @@ export class Web3ApiClient implements Client {
         this._config.interfaces.push(...defaultClientConfig.interfaces);
       }
 
-      this.requirePluginsToUseNonInterfaceUris();
+      this._requirePluginsToUseNonInterfaceUris();
 
       Tracer.setAttribute("config", this._config);
     } catch (error) {
@@ -330,7 +332,7 @@ export class Web3ApiClient implements Client {
       : getImplementationsWithoutRedirects(typedUri);
   }
 
-  private requirePluginsToUseNonInterfaceUris(): void {
+  private _requirePluginsToUseNonInterfaceUris(): void {
     const pluginUris = this.plugins().map((x) => x.uri.uri);
     const interfaceUris = this.interfaces().map((x) => x.interface.uri);
 

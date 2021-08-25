@@ -65,7 +65,7 @@ export const getTypeDefinitionsValidator = (): SchemaValidator => {
         ScalarTypeDefinition: (node: ScalarTypeDefinitionNode) => {
           if (!isScalarType(node.name.value)) {
             throw Error(
-              `Custom scalar types are not supported. Supported scalars: ${scalarTypeNames}`
+              `Custom scalar types are not supported. Found: "${node.name.value}". Supported scalars: ${scalarTypeNames}`
             );
           }
         },
