@@ -247,7 +247,7 @@ export class Project {
 
       // Return the cached manifest
       this._config.metaManifestPath = path.join(
-        this.getCachePath("build/env"),
+        this.getCachePath("build/meta"),
         "web3api.meta.yaml"
       );
       return this._config.metaManifestPath;
@@ -268,7 +268,6 @@ export class Project {
     return this._metaManifest;
   }
 
-  // TODO: optimize this (it currently just copies the pattern from cacheDefaultBuildManifestFiles)
   public async cacheDefaultMetaManifestFiles(): Promise<void> {
     if (this._defaultMetaManifestCached) {
       return;
@@ -280,7 +279,7 @@ export class Project {
       throw Error(intlMsg.lib_project_language_not_found());
     }
 
-    const defaultPath = `${__dirname}/build-envs/${language}/web3api.meta.yaml`;
+    const defaultPath = `${__dirname}/build-envs/wasm/meta/web3api.meta.yaml`;
 
     if (!fs.existsSync(defaultPath)) {
       throw Error(
@@ -289,10 +288,10 @@ export class Project {
     }
 
     // Update the cache
-    this.removeCacheDir("build/env");
+    this.removeCacheDir("build/meta");
     await this.copyFilesIntoCache(
-      "meta/env/",
-      `${__dirname}/build-envs/${language}/*`
+      "build/meta/",
+      `${__dirname}/build-envs/wasm/meta/*`
     );
     this._defaultMetaManifestCached = true;
   }
