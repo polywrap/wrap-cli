@@ -1,5 +1,5 @@
 use serde::{
-    Deserialize, 
+    Deserialize,
     Serialize,
 };
 use std::convert::TryFrom;

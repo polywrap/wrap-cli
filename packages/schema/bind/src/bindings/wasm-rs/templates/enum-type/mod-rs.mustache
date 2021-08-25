@@ -1,14 +1,14 @@
 {{#__commonImport}}
 pub use super::common::{
-    get_{{#toLower}}{{type}}{{/toLower}}_key, 
-    get_{{#toLower}}{{type}}{{/toLower}}_value, 
-    sanitize_{{#toLower}}{{type}}{{/toLower}}_value, 
+    get_{{#toLower}}{{type}}{{/toLower}}_key,
+    get_{{#toLower}}{{type}}{{/toLower}}_value,
+    sanitize_{{#toLower}}{{type}}{{/toLower}}_value,
     {{#toUpper}}{{type}}{{/toUpper}},
 };
 {{/__commonImport}}
 {{^__commonImport}}
 use serde::{
-    Deserialize, 
+    Deserialize,
     Serialize,
 };
 use std::convert::TryFrom;

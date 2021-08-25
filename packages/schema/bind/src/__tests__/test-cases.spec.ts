@@ -24,10 +24,6 @@ describe("Web3API Binding Test Suite", () => {
         // Verify it binds correctly
         const { language, directories } = outputLanguage;
 
-        if (language !== "wasm-rs") {
-          continue;
-        }
-
         // Read the expected output directories
         const expectedOutput = {
           query: directories.query

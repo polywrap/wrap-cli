@@ -1,7 +1,3 @@
-{{#__commonPath}}
-pub use polywrap_query_test_cases::common::*;
-{{/__commonPath}}
-{{^__commonPath}}
 pub mod common;
 pub mod entry;
 {{#objectTypes}}
@@ -45,4 +41,3 @@ pub use {{#toLower}}{{type}}{{/toLower}}::{
     {{/methods}}
 };
 {{/queryTypes}}
-{{/__commonPath}}

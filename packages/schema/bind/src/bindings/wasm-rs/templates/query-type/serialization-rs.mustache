@@ -10,6 +10,21 @@ use serde::{
     Deserialize,
     Serialize,
 };
+{{#propertyDeps.length}}
+
+{{#propertyDeps}}
+{{^isEnum}}
+use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
+{{/isEnum}}
+{{#isEnum}}
+use crate::{
+    {{#toUpper}}{{type}}{{/toUpper}},
+    get_{{#toLower}}{{type}}{{/toLower}}_value,
+    sanitize_{{#toLower}}{{type}}{{/toLower}}_value,
+};
+{{/isEnum}}
+{{/propertyDeps}}
+{{/propertyDeps.length}}
 {{#methods}}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -28,18 +43,18 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
 
     {{#arguments}}
     {{^object}}
-    let mut {{#toLower}}{{name}}{{/toLower}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+    let mut _{{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
     {{/object}}
     {{#object}}
     {{#required}}
-    let mut {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = None;
+    let mut _{{#toLower}}{{name}}{{/toLower}}: Option<{{#toWasm}}{{toGraphQLType}}{{/toWasm}}> = None;
     {{/required}}
     {{^required}}
-    let mut {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+    let mut _{{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
     {{/required}}
     {{/object}}
     {{#required}}
-    let mut {{#toLower}}{{name}}{{/toLower}}_set = false;
+    let mut _{{#toLower}}{{name}}{{/toLower}}_set = false;
     {{/required}}
     {{/arguments}}
 
@@ -48,27 +63,27 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
         let field = reader.read_string().unwrap();
 
         match field.as_str() {
-            {{^arguments}}
+            {{#arguments}}
             "{{#toLower}}{{name}}{{/toLower}}" => {
-                reader.context().push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property");
+                reader.context().push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading argument");
                 {{#scalar}}
-                {{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(){{#required}}.unwrap(){{/required}};
+                _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(){{#required}}.unwrap(){{/required}};
                 {{/scalar}}
                 {{#array}}
-                {{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
+                _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
                     {{> deserialize_array}}
                 }){{#required}}.expect("Failed to read array"){{/required}};
                 {{/array}}
                 {{#enum}}
                 {{> deserialize_enum}}
-                {{#toLower}}{{name}}{{/toLower}} = value;
+                _{{#toLower}}{{name}}{{/toLower}} = value;
                 {{/enum}}
                 {{#object}}
                 {{> deserialize_object}}
-                {{#toLower}}{{name}}{{/toLower}} = object;
+                _{{#toLower}}{{name}}{{/toLower}} = object;
                 {{/object}}
                 {{#required}}
-                {{#toLower}}{{name}}{{/toLower}}_set = true;
+                _{{#toLower}}{{name}}{{/toLower}}_set = true;
                 {{/required}}
                 reader.context().pop();
             }
@@ -78,19 +93,32 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
     }
     {{#arguments}}
     {{#required}}
-    if !{{#toLower}}{{name}}{{/toLower}}_set {
-        let custom_error = reader.context().print_with_context("Missing required property: '{{name}}: {{type}}'");
+    if !_{{#toLower}}{{name}}{{/toLower}}_set {
+        let custom_error = reader.context().print_with_context("Missing required argument: '{{name}}: {{type}}'");
         return Err(custom_error);
     }
     {{/required}}
     {{/arguments}}
     {{/arguments.length}}
 
-    Ok({{#toUpper}}{{type}}{{/toUpper}} {
+    Ok(Input{{#toUpper}}{{name}}{{/toUpper}} {
         {{#arguments}}
-        {{#toLower}}{{name}}{{/toLower}},
+        {{^object}}
+        {{#toLower}}{{name}}{{/toLower}}: _{{#toLower}}{{name}}{{/toLower}},
+        {{/object}}
+        {{#object}}
+        {{^required}}
+        {{#toLower}}{{name}}{{/toLower}}: _{{#toLower}}{{name}}{{/toLower}},
+        {{/required}}
+        {{#required}}
+        {{#toLower}}{{name}}{{/toLower}}: match _{{#toLower}}{{name}}{{/toLower}} {
+            Some(x) => return x,
+            None => panic!("'{{#toLower}}{{name}}{{/toLower}}' is required, but its value is still 'None'. This should never happen."),
+        },
+        {{/required}}
+        {{/object}}
         {{/arguments}}
-    })
+    });
 }
 
 pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(input: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) -> Vec<u8> {
@@ -108,7 +136,7 @@ pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(input: {{#return}}{{#to
 
 pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(input: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, writer: &mut W) {
     {{#return}}
-    writer.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
+    writer.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing result");
     {{#scalar}}
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(input);
     {{/scalar}}
@@ -127,11 +155,11 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(input: {{#return}
     {{/enum}}
     {{#object}}
     {{#required}}
-    {{#toUpper}}{{type}}{{/toUpper}}::write(&input.{{#toLower}}{{name}}{{/toLower}}, writer);
+    {{#toUpper}}{{name}}{{/toUpper}}::write(&input.{{#toLower}}{{name}}{{/toLower}}, writer);
     {{/required}}
     {{^required}}
     if input.{{#toLower}}{{name}}{{/toLower}}.is_some() {
-        {{#toUpper}}{{type}}{{/toUpper}}::write(input.{{#toLower}}{{name}}{{/toLower}}.as_ref().as_ref().unwrap(), writer);
+        {{#toUpper}}{{name}}{{/toUpper}}::write(input.{{#toLower}}{{name}}{{/toLower}}.as_ref().as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }

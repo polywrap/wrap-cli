@@ -1,1 +1,1 @@
-pub use polywrap_query_test_cases::common::*;
+pub use crate::../query/common::*;
