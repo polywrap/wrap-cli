@@ -1,5 +1,8 @@
 FROM rust:{{rust_version}}
 
+# Install the wasm32 rust build target
+RUN rustup target add wasm32-unknown-unknown
+
 WORKDIR /project
 
 # Copy all manifest files

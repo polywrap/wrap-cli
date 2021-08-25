@@ -1,0 +1,4 @@
+* w3/lib.rs -> w3/mod.rs
+* Try to remove the use of "Box" where ever possible
+* 1. Remove Box from Input... objects
+* 2. Remove Box for non-circular objects (only use for circular relationships)

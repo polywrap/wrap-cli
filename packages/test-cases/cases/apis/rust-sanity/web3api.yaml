@@ -1,9 +1,9 @@
-format: 0.0.1-prealpha.2
+format: 0.0.1-prealpha.4
 language: wasm/rust
 modules:
   mutation:
     schema: ./mutation/schema.graphql
-    module: ./mutation/cargo.toml
+    module: ./mutation/src/lib.rs
   query:
     schema: ./query/schema.graphql
-    module: ./query/cargo.toml
+    module: ./query/src/lib.rs
