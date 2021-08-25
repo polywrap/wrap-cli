@@ -16,6 +16,7 @@ import {
   InvokableModules,
   Web3ApiManifest,
   BuildManifest,
+  MetaManifest,
 } from "@web3api/core-js";
 import {
   bindSchema,
@@ -243,6 +244,14 @@ export class Compiler {
       await outputManifest(
         outputBuildManifest,
         `${outputDir}/web3api.build.yaml`,
+        project.quiet
+      );
+
+      const outputMetaManifest: MetaManifest = await project.getMetaManifest();
+
+      await outputManifest(
+        outputMetaManifest,
+        `${outputDir}/web3api.meta.yaml`,
         project.quiet
       );
     }

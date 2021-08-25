@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { loadWeb3ApiManifest, loadBuildManifest } from "./helpers";
+import {
+  loadWeb3ApiManifest,
+  loadBuildManifest,
+  loadMetaManifest,
+} from "./helpers";
 import { intlMsg } from "./intl";
 
-import { Web3ApiManifest, BuildManifest } from "@web3api/core-js";
+import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
 import { normalizePath } from "@web3api/os-js";
 import path from "path";
 import fs from "fs";
@@ -13,13 +17,16 @@ import copyfiles from "copyfiles";
 export interface ProjectConfig {
   web3apiManifestPath: string;
   buildManifestPath?: string;
+  metaManifestPath?: string;
   quiet?: boolean;
 }
 
 export class Project {
   private _web3apiManifest: Web3ApiManifest | undefined;
   private _buildManifest: BuildManifest | undefined;
+  private _metaManifest: MetaManifest | undefined;
   private _defaultBuildManifestCached = false;
+  private _defaultMetaManifestCached = false;
 
   constructor(private _config: ProjectConfig) {}
 
@@ -30,7 +37,9 @@ export class Project {
   public reset(): void {
     this._web3apiManifest = undefined;
     this._buildManifest = undefined;
+    this._metaManifest = undefined;
     this._defaultBuildManifestCached = false;
+    this._defaultMetaManifestCached = false;
   }
 
   public async getManifestPaths(absolute = false): Promise<string[]> {
@@ -42,6 +51,9 @@ export class Project {
       absolute
         ? await this.getBuildManifestPath()
         : path.relative(root, await this.getBuildManifestPath()),
+      absolute
+        ? await this.getMetaManifestPath()
+        : path.relative(root, await this.getMetaManifestPath()),
     ];
   }
 
@@ -210,6 +222,79 @@ export class Project {
       `${__dirname}/build-envs/${language}/*`
     );
     this._defaultBuildManifestCached = true;
+  }
+
+  /// Web3API Meta Manifest (web3api.build.yaml)
+
+  public async getMetaManifestPath(): Promise<string> {
+    const web3apiManifest = await this.getWeb3ApiManifest();
+
+    // If a custom meta manifest path is configured
+    if (this._config.metaManifestPath) {
+      return this._config.metaManifestPath;
+    }
+    // If the web3api.yaml manifest specifies a custom meta manifest
+    else if (web3apiManifest.meta) {
+      this._config.metaManifestPath = path.join(
+        this.getWeb3ApiManifestDir(),
+        web3apiManifest.meta
+      );
+      return this._config.metaManifestPath;
+    }
+    // Use a default meta manifest for the provided language
+    else {
+      await this.cacheDefaultMetaManifestFiles();
+
+      // Return the cached manifest
+      this._config.metaManifestPath = path.join(
+        this.getCachePath("build/env"),
+        "web3api.meta.yaml"
+      );
+      return this._config.metaManifestPath;
+    }
+  }
+
+  public async getMetaManifestDir(): Promise<string> {
+    return path.dirname(await this.getMetaManifestPath());
+  }
+
+  public async getMetaManifest(): Promise<MetaManifest> {
+    if (!this._metaManifest) {
+      this._metaManifest = await loadMetaManifest(
+        await this.getMetaManifestPath(),
+        this.quiet
+      );
+    }
+    return this._metaManifest;
+  }
+
+  // TODO: optimize this (it currently just copies the pattern from cacheDefaultBuildManifestFiles)
+  public async cacheDefaultMetaManifestFiles(): Promise<void> {
+    if (this._defaultMetaManifestCached) {
+      return;
+    }
+
+    const language = (await this.getWeb3ApiManifest()).language;
+
+    if (!language) {
+      throw Error(intlMsg.lib_project_language_not_found());
+    }
+
+    const defaultPath = `${__dirname}/build-envs/${language}/web3api.meta.yaml`;
+
+    if (!fs.existsSync(defaultPath)) {
+      throw Error(
+        intlMsg.lib_project_invalid_build_language({ language, defaultPath })
+      );
+    }
+
+    // Update the cache
+    this.removeCacheDir("build/env");
+    await this.copyFilesIntoCache(
+      "meta/env/",
+      `${__dirname}/build-envs/${language}/*`
+    );
+    this._defaultMetaManifestCached = true;
   }
 
   /// Cache (.w3 folder)
