@@ -14,6 +14,7 @@ import {
   GetManifestOptions,
   deserializeWeb3ApiManifest,
   deserializeBuildManifest,
+  deserializeMetaManifest,
   Manifest,
   ManifestFile,
   combinePaths,
@@ -213,6 +214,8 @@ export class WasmWeb3Api extends Api {
     switch (options.type) {
       case "build":
         return deserializeBuildManifest(manifest) as Manifest<T>;
+      case "meta":
+        return deserializeMetaManifest(manifest) as Manifest<T>;
       default:
         return deserializeWeb3ApiManifest(manifest) as Manifest<T>;
     }

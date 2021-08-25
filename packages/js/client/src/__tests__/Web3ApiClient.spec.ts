@@ -10,7 +10,7 @@ import {
 import { GetPathToTestApis } from "@web3api/test-cases";
 import { Web3ApiClient } from "../Web3ApiClient";
 import { getDefaultClientConfig } from "../default-client-config";
-import { Plugin, coreInterfaceUris, Uri, PluginManifest, Web3ApiManifest, BuildManifest, deserializeWeb3ApiManifest, deserializeBuildManifest } from '@web3api/core-js';
+import { Plugin, coreInterfaceUris, Uri, PluginManifest, Web3ApiManifest, BuildManifest, MetaManifest, deserializeWeb3ApiManifest, deserializeBuildManifest, deserializeMetaManifest, } from '@web3api/core-js';
 import { readFileSync } from "fs";
 
 jest.setTimeout(200000);
@@ -1680,7 +1680,7 @@ describe("Web3ApiClient", () => {
     expect(mutation.data?.abstractMutationMethod).toBe(2);
   });
 
-  it.only("getManifest -- web3api manifest, build manifest", async () => {
+  it.only("getManifest -- web3api manifest, build manifest, meta manifest", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
@@ -1704,6 +1704,14 @@ describe("Web3ApiClient", () => {
       type: 'build'
     });
     expect(buildManifest).toStrictEqual(actualBuildManifest);
+
+    const actualMetaManifestStr: string = readFileSync(`${GetPathToTestApis()}/simple-storage/build/web3api.meta.yaml`, 'utf8');
+    const actualMetaManifest: MetaManifest = deserializeMetaManifest(actualMetaManifestStr);
+    const metaManifest: MetaManifest = await client.getManifest({
+      uri: ensUri,
+      type: 'meta'
+    });
+    expect(metaManifest).toStrictEqual(actualMetaManifest);
   });
 
   it("getManifest -- plugin manifest", async () => {

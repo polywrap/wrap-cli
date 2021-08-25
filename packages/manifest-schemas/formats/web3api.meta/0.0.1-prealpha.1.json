@@ -1,0 +1,47 @@
+{
+  "id": "MetaManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format"
+  ],
+  "properties": {
+    "format": {
+      "type": "string",
+      "const": "0.0.1-prealpha.1"
+    },
+    "name": {
+      "type": "string"
+    },
+    "subtext": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "string",
+      "format": "file"
+    },
+    "queries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "query": {
+            "type": "string",
+            "format": "file"
+          }
+        },
+        "required": [
+          "name",
+          "query"
+        ]
+      }
+    }
+  }
+}

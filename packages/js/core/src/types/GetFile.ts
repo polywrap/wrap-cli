@@ -1,5 +1,5 @@
 import { PluginManifest, Uri } from "./index";
-import { BuildManifest, Web3ApiManifest } from "../manifest";
+import { BuildManifest, Web3ApiManifest, MetaManifest } from "../manifest";
 
 export type ManifestFile = "plugin" | "web3api" | "meta" | "build";
 
@@ -8,7 +8,7 @@ export type Manifest<T> = T extends "plugin"
   : T extends "web3api"
   ? Web3ApiManifest
   : T extends "meta"
-  ? Web3ApiManifest
+  ? MetaManifest
   : T extends "build"
   ? BuildManifest
   : PluginManifest | Web3ApiManifest;
