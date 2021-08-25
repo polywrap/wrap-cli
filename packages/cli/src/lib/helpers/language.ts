@@ -8,6 +8,8 @@ export function manifestLanguageToTargetLanguage(
   switch (manifestLanguage) {
     case "wasm/assemblyscript":
       return "wasm-as";
+    case "wasm/rust":
+      return "wasm-rs";
     case "plugin/typescript":
       return "plugin-ts";
     default:
