@@ -254,14 +254,11 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
     }
 
     Ok(InputObjectMethod {
-        object: match _object {
-            Some(x) => return x,
-            None => panic!("'object' is required, but its value is still 'None'. This should never happen."),
-        },
+        object: _object,
         opt_object: _opt_object,
         object_array: _object_array,
         opt_object_array: _opt_object_array,
-    });
+    })
 }
 
 pub fn serialize_object_method_result(input: Option<Box<AnotherType>>) -> Vec<u8> {

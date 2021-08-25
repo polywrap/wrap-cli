@@ -19,7 +19,7 @@ pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(input: &[u8]) -> Vec<u8> {
         {{#toLower}}{{name}}{{/toLower}}: args.{{#toLower}}{{name}}{{/toLower}},
         {{/arguments}}
     }{{/arguments.length}});
-    serialize_{{#toLower}}{{name}}{{/toLower}}_result(result);
+    serialize_{{#toLower}}{{name}}{{/toLower}}_result(result)
 }
 {{^last}}
 

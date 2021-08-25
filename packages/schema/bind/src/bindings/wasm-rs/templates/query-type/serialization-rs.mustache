@@ -118,7 +118,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
         {{/required}}
         {{/object}}
         {{/arguments}}
-    });
+    })
 }
 
 pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(input: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) -> Vec<u8> {

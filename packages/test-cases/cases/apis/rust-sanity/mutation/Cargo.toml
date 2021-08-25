@@ -1,5 +1,5 @@
 [package]
-name = "polywrap-mutation-test-cases"
+name = "polywrap-mutation"
 version = "0.1.0"
 description = "Polywrap Mutation Test Cases"
 authors = ["Kobby Pentangeli <kobbypentangeli@gmail.com>"]

@@ -78,5 +78,5 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, String>
     Ok(AnotherType {
         prop: _prop,
         circular: _circular,
-    });
+    })
 }

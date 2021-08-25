@@ -682,5 +682,5 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
         opt_enum: _opt_enum,
         enum_array: _enum_array,
         opt_enum_array: _opt_enum_array,
-    });
+    })
 }
