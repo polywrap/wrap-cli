@@ -93,7 +93,7 @@ describe("resolveUri", () => {
       ) => {
         return {
           manifest:
-            input.authority === "ipfs" ? "format: 0.0.1-prealpha.3\ndog: cat" : undefined,
+            input.authority === "ipfs" ? "format: 0.0.1-prealpha.4\ndog: cat" : undefined,
         };
       },
     },
@@ -107,7 +107,7 @@ describe("resolveUri", () => {
       ) => {
         return {
           manifest:
-            input.authority === "my" ? "format: 0.0.1-prealpha.3" : undefined,
+            input.authority === "my" ? "format: 0.0.1-prealpha.4" : undefined,
         };
       },
     },
@@ -174,7 +174,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
       manifest: {
-        format: "0.0.1-prealpha.3"
+        format: "0.0.1-prealpha.4"
       },
       uriResolver: new Uri("ens/ipfs"),
     });
@@ -200,7 +200,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("my/something-different"),
       manifest: {
-        format: "0.0.1-prealpha.3"
+        format: "0.0.1-prealpha.4"
       },
       uriResolver: new Uri("ens/my-plugin"),
     });
@@ -226,7 +226,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
       manifest: {
-        format: "0.0.1-prealpha.3",
+        format: "0.0.1-prealpha.4",
         dog: "cat"
       },
       uriResolver: new Uri("ens/ipfs"),
@@ -253,7 +253,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("my/something-different"),
       manifest: {
-        format: "0.0.1-prealpha.3"
+        format: "0.0.1-prealpha.4"
       },
       uriResolver: new Uri("ens/my-plugin"),
     });

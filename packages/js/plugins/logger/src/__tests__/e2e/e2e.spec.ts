@@ -1,5 +1,4 @@
-import { Web3ApiClient } from "@web3api/client-js"
-import { LogLevel } from "../..";
+import { Web3ApiClient } from "@web3api/client-js";
 
 describe("log method", () => {
 
@@ -11,7 +10,7 @@ describe("log method", () => {
       query: `
         query {
           log(
-            level: ${LogLevel.DEBUG}
+            level: DEBUG
             message: "Test message"
           )
         }

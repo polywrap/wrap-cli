@@ -1,0 +1,20 @@
+#import { Query } into Ethereum from "ens/ethereum.web3api.eth"
+
+type Query {
+  method(
+    str: String!
+    optStr: String
+  ): Object!
+}
+
+type Mutation {
+  method(
+    arg: UInt32!
+  ): String!
+}
+
+type Object {
+  u: UInt!
+  array: [Boolean!]!
+  bytes: Bytes
+}

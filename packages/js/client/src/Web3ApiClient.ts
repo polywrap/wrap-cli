@@ -1,6 +1,6 @@
 import { getDefaultClientConfig } from "./default-client-config";
 import { PluginWeb3Api } from "./plugin/PluginWeb3Api";
-import { WasmWeb3Api } from "./wasm/WasmWeb3Api";
+import { WasmWeb3Api } from "./wasm";
 
 import {
   Api,
@@ -29,6 +29,8 @@ import {
   GetFileOptions,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
+
+export { WasmWeb3Api };
 
 export interface ClientConfig<TUri = string> {
   redirects?: UriRedirect<TUri>[];

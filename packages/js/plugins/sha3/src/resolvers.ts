@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { PluginModule } from "@web3api/core-js";
+import { Query } from "./w3";
+
 import {
   sha3_512,
   sha3_384,
@@ -13,29 +14,29 @@ import {
   shake_256,
 } from "js-sha3";
 
-export const query = (): PluginModule => ({
-  sha3_512: (input: { message: string }) => {
+export const query = (): Query.Module => ({
+  sha3_512: (input: Query.Input_sha3_512) => {
     return sha3_512(input.message);
   },
-  sha3_384: (input: { message: string }) => {
+  sha3_384: (input: Query.Input_sha3_384) => {
     return sha3_384(input.message);
   },
-  sha3_256: (input: { message: string }) => {
+  sha3_256: (input: Query.Input_sha3_256) => {
     return sha3_256(input.message);
   },
-  sha3_224: (input: { message: string }) => {
+  sha3_224: (input: Query.Input_sha3_224) => {
     return sha3_224(input.message);
   },
-  keccak_512: (input: { message: string }) => {
+  keccak_512: (input: Query.Input_keccak_512) => {
     return keccak_512(input.message);
   },
-  keccak_384: (input: { message: string }) => {
+  keccak_384: (input: Query.Input_keccak_384) => {
     return keccak_384(input.message);
   },
-  keccak_256: (input: { message: string }) => {
+  keccak_256: (input: Query.Input_keccak_256) => {
     return keccak_256(input.message);
   },
-  hex_keccak_256: (input: { message: string }) => {
+  hex_keccak_256: (input: Query.Input_hex_keccak_256) => {
     // remove the leading 0x
     const hexString = input.message.replace(/^0x/, "");
 
@@ -66,16 +67,16 @@ export const query = (): PluginModule => ({
 
     return keccak_256(new Uint8Array(integers));
   },
-  buffer_keccak_256: (input: { message: ArrayBuffer }) => {
+  buffer_keccak_256: (input: Query.Input_buffer_keccak_256) => {
     return keccak_256(input.message);
   },
-  keccak_224: (input: { message: string }) => {
+  keccak_224: (input: Query.Input_keccak_224) => {
     return keccak_224(input.message);
   },
-  shake_128: (input: { message: string; outputBits: number }) => {
+  shake_128: (input: Query.Input_shake_128) => {
     return shake_128(input.message, input.outputBits);
   },
-  shake_256: (input: { message: string; outputBits: number }) => {
+  shake_256: (input: Query.Input_shake_256) => {
     return shake_256(input.message, input.outputBits);
   },
 });
