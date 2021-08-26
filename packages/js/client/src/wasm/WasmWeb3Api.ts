@@ -206,13 +206,24 @@ export class WasmWeb3Api extends Api {
     if (!options?.type) {
       return this._manifest as Manifest<T>;
     }
-    const path: string =
-      (options.type === "web3api" ? "web3api" : "web3api." + options.type) +
-      ".yaml";
-    const manifest = (await this.getFile(
-      { uri: this._uri, path, encoding: "utf8" },
-      client
-    )) as string;
+    let manifest: string;
+    const fileTitle: string =
+      options.type === "web3api" ? "web3api" : "web3api." + options.type;
+    try {
+      // try common yaml suffix
+      const path: string = fileTitle + ".yaml";
+      manifest = (await this.getFile(
+        { uri: this._uri, path, encoding: "utf8" },
+        client
+      )) as string;
+    } catch {
+      // try alternate yaml suffix
+      const path: string = fileTitle + ".yml";
+      manifest = (await this.getFile(
+        { uri: this._uri, path, encoding: "utf8" },
+        client
+      )) as string;
+    }
     switch (options.type) {
       case "build":
         return deserializeBuildManifest(manifest) as Manifest<T>;

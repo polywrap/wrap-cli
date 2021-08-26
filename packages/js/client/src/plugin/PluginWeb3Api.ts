@@ -8,10 +8,10 @@ import {
   InvokeApiResult,
   Plugin,
   PluginPackage,
+  PluginPackageManifest,
   Uri,
   Manifest,
   ManifestFile,
-  PluginManifest,
   GetFileOptions,
 } from "@web3api/core-js";
 import * as MsgPack from "@msgpack/msgpack";
@@ -141,7 +141,9 @@ export class PluginWeb3Api extends Api {
     options: GetManifestOptions<T>, // eslint-disable-line @typescript-eslint/no-unused-vars
     client: Client // eslint-disable-line @typescript-eslint/no-unused-vars
   ): Promise<Manifest<T>> {
-    return ({ ...this._plugin.manifest } as PluginManifest) as Manifest<T>;
+    return ({
+      ...this._plugin.manifest,
+    } as PluginPackageManifest) as Manifest<T>;
   }
 
   public async getFile(

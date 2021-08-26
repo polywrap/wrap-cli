@@ -108,7 +108,14 @@ export class Compiler {
         buildManifest = await this._buildModules(state);
       }
 
-      await this._outputManifests(state.web3ApiManifest, buildManifest);
+      // get the meta manifest
+      const metaManifest: MetaManifest = await project.getMetaManifest();
+
+      await this._outputManifests(
+        state.web3ApiManifest,
+        buildManifest,
+        metaManifest
+      );
     };
 
     if (project.quiet) {
@@ -269,15 +276,6 @@ export class Compiler {
         )
     );
 
-    // output the meta manifest
-    const outputMetaManifest: MetaManifest = await project.getMetaManifest();
-
-    await outputManifest(
-      outputMetaManifest,
-      `${outputDir}/web3api.meta.yaml`,
-      project.quiet
-    );
-
     // Update the Web3ApiManifest
     if (modulesToBuild.query && web3ApiManifest.modules.query) {
       web3ApiManifest.modules.query = {
@@ -414,7 +412,8 @@ export class Compiler {
 
   private async _outputManifests(
     web3ApiManifest: Web3ApiManifest,
-    buildManifest?: BuildManifest
+    buildManifest?: BuildManifest,
+    metaManifest?: MetaManifest
   ): Promise<void> {
     const { outputDir, project } = this._config;
 
@@ -428,6 +427,14 @@ export class Compiler {
       await outputManifest(
         buildManifest,
         `${outputDir}/web3api.build.yaml`,
+        project.quiet
+      );
+    }
+
+    if (metaManifest) {
+      await outputManifest(
+        metaManifest,
+        `${outputDir}/web3api.meta.yaml`,
         project.quiet
       );
     }
