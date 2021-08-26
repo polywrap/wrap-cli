@@ -93,7 +93,7 @@ export class WasmWeb3Api extends Api {
               `Input: ${JSON.stringify(input, null, 2)}\nMessage: ${message}.\n`
           );
         };
-        
+
         const memory = new WebAssembly.Memory({ initial: 1 });
         const instance = await AsyncWasmInstance.createInstance({
           module: wasm,

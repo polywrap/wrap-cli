@@ -43,7 +43,7 @@ const getModule = async (name: string) => {
   const wasmPath = path.join(__dirname, "cases", "build", `${name}.wasm`);
   const buffer = fs.readFileSync(wasmPath);
   const bytes = new Uint8Array(buffer).buffer;
-  return new WebAssembly.Module(bytes);
+  return bytes;
 };
 
 describe("AsyncWasmInstance", () => {
@@ -71,7 +71,7 @@ describe("AsyncWasmInstance", () => {
     const module = await getModule("simpleSleep");
     const memory = new WebAssembly.Memory({ initial: 1 });
     const logs: number[] = [];
-    const instance = new AsyncWasmInstance({
+    const instance = await AsyncWasmInstance.createInstance({
       module,
       imports: {
         w3: {
@@ -106,7 +106,7 @@ describe("AsyncWasmInstance", () => {
     const module = await getModule("simpleSleep");
     const memory = new WebAssembly.Memory({ initial: 1 });
     const logs: number[] = [];
-    const instance = new AsyncWasmInstance({
+    const instance = await AsyncWasmInstance.createInstance({
       module,
       imports: {
         w3: {
@@ -141,7 +141,7 @@ describe("AsyncWasmInstance", () => {
     const module = await getModule("multipleSleep");
     const memory = new WebAssembly.Memory({ initial: 1 });
     const logs: number[] = [];
-    const instance = new AsyncWasmInstance({
+    const instance = await AsyncWasmInstance.createInstance({
       module,
       imports: {
         w3: {
@@ -180,7 +180,7 @@ describe("AsyncWasmInstance", () => {
         }, ms);
       });
 
-    const instance = new AsyncWasmInstance({
+    const instance = await AsyncWasmInstance.createInstance({
       module,
       imports: {
         w3: {
@@ -247,7 +247,7 @@ describe("AsyncWasmInstance", () => {
       })
     };
 
-    const instance = new AsyncWasmInstance({
+    const instance = await AsyncWasmInstance.createInstance({
       module,
       imports: {
         w3: {
