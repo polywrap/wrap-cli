@@ -35,6 +35,10 @@
           "query": {
             "type": "string",
             "format": "file"
+          },
+          "recipe": {
+            "type": "string",
+            "format": "file"
           }
         },
         "required": [

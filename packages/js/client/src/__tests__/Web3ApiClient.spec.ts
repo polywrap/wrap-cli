@@ -1680,7 +1680,7 @@ describe("Web3ApiClient", () => {
     expect(mutation.data?.abstractMutationMethod).toBe(2);
   });
 
-  it.only("getManifest -- web3api manifest, build manifest, meta manifest", async () => {
+  it("getManifest -- web3api manifest, build manifest, meta manifest", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,

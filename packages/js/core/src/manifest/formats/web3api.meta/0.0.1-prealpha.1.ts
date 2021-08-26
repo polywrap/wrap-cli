@@ -15,5 +15,6 @@ export interface MetaManifest {
   queries?: {
     name: string;
     query: string;
+    recipe?: string;
   }[];
 }
