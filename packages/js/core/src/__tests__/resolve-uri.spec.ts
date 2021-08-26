@@ -163,7 +163,7 @@ describe("resolveUri", () => {
       interfaces,
       createPluginApi,
       createApi,
-      true
+      { noValidate: true }
     );
 
     const apiIdentity = await result.api.invoke(
@@ -189,7 +189,7 @@ describe("resolveUri", () => {
       interfaces,
       createPluginApi,
       createApi,
-      true
+      { noValidate: true }
     );
 
     const apiIdentity = await result.api.invoke(
@@ -215,7 +215,7 @@ describe("resolveUri", () => {
       interfaces, 
       createPluginApi,
       createApi,
-      true
+      { noValidate: true }
     );
 
     const apiIdentity = await result.api.invoke(
@@ -242,7 +242,7 @@ describe("resolveUri", () => {
       interfaces,
       createPluginApi,
       createApi,
-      true
+      { noValidate: true }
     );
 
     const apiIdentity = await result.api.invoke(
@@ -281,7 +281,7 @@ describe("resolveUri", () => {
       interfaces,
       createPluginApi,
       createApi,
-      true
+      { noValidate: true }
     ).catch((e) =>
       expect(e.message).toMatch(/Infinite loop while resolving URI/)
     );
@@ -309,7 +309,7 @@ describe("resolveUri", () => {
       interfaces,
       createPluginApi,
       createApi,
-      true
+      { noValidate: true }
     ).catch((e) =>
       expect(e.message).toMatch("Redirect missing the from property.\nEncountered while resolving w3://some/api")
     );
@@ -338,7 +338,7 @@ describe("resolveUri", () => {
       interfaces, 
       createPluginApi,
       createApi,
-      true
+      { noValidate: true }
     );
 
     const apiIdentity = await result.api.invoke(
@@ -379,7 +379,7 @@ describe("resolveUri", () => {
       interfaces,
       createPluginApi,
       createApi,
-      true
+      { noValidate: true }
     ).catch((e) =>
       expect(e.message).toMatch(`No Web3API found at URI: ${uri.uri}`)
     );

@@ -2,7 +2,7 @@ import {
   ClientConfig,
   createWeb3ApiClient,
   Plugin,
-  Uri
+  Uri, UriPathNode
 } from "../";
 import {
   buildAndDeployApi,
@@ -1740,5 +1740,166 @@ describe("Web3ApiClient", () => {
     expect(response.data).toMatchObject({
       bytesMethod: Buffer.from("Reasonable Cache GC Options Sanity!").buffer,
     });
+  });
+
+  it.only("getUriPath", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/bytes-type`,
+      ipfsProvider,
+      ensAddress
+    );
+    const ensUri = `w3://ens/testnet/${api.ensDomain}`;
+    const ipfsUri = `w3://ipfs/${api.ipfsCid}`;
+    const apiRedirect = "w3://ens/uts46.web3api.eth";
+    const apiRedirectHop = "w3://ens/apiLocation2.eth";
+    const pluginUri = "w3://ens/js-logger.web3api.eth";
+    const pluginRedirect = "w3://ens/pluginLocation.eth";
+
+    const client = await getClient({ redirects: [
+        {
+          from: apiRedirect,
+          to: apiRedirectHop,
+        },
+        {
+          from: apiRedirectHop,
+          to: ensUri,
+        },
+        {
+          from: pluginRedirect,
+          to: pluginUri,
+        },
+      ]});
+
+    const toStringUriPath = (arr: UriPathNode[]): { uri: string; fromRedirect: boolean; isPlugin?: boolean }[] => {
+      return arr.map((v: UriPathNode) => ({
+          ...v,
+          uri: v.uri.uri,
+        })
+      );
+    }
+
+    // should resolve to api uri path
+    expect(toStringUriPath(await client.getUriPath(ensUri))).toStrictEqual([
+        {
+          uri: ensUri,
+          fromRedirect: false,
+          isPlugin: false
+        },
+        {
+          uri: ipfsUri,
+          fromRedirect: false,
+          isPlugin: false
+        }
+      ]
+    );
+    // should resolve to redirected api uri path
+    expect(toStringUriPath(await client.getUriPath(apiRedirect))).toStrictEqual([
+        {
+          uri: apiRedirect,
+          fromRedirect: false,
+          isPlugin: false
+        },
+        {
+          uri: apiRedirectHop,
+          fromRedirect: true,
+          isPlugin: false
+        },
+        {
+          uri: ensUri,
+          fromRedirect: true,
+          isPlugin: false
+        },
+        {
+          uri: ipfsUri,
+          fromRedirect: false,
+          isPlugin: false
+        }
+      ]
+    );
+    // should resolve to plugin uri
+    expect(toStringUriPath(await client.getUriPath(pluginUri))).toStrictEqual( [
+        {
+          uri: pluginUri,
+          fromRedirect: false,
+          isPlugin: true
+        }
+      ]
+    );
+    // should resolve to redirected plugin uri path
+    expect(toStringUriPath(await client.getUriPath(pluginRedirect))).toStrictEqual([
+        {
+          uri: pluginRedirect,
+          fromRedirect: false,
+          isPlugin: false
+        },
+        {
+          uri: pluginUri,
+          fromRedirect: true,
+          isPlugin: true
+        }
+      ]
+    );
+
+    // ignoring plugins should not affect this api uri resolution
+    expect(toStringUriPath(await client.getUriPath(ensUri, { ignorePlugins: true }))).toStrictEqual([
+        {
+          uri: ensUri,
+          fromRedirect: false,
+          isPlugin: false
+        },
+        {
+          uri: ipfsUri,
+          fromRedirect: false,
+          isPlugin: false
+        }
+      ]
+    );
+    // ignoring plugins should not affect this api uri resolution
+    expect(toStringUriPath(await client.getUriPath(apiRedirect, { ignorePlugins: true }))).toStrictEqual([
+        {
+          uri: apiRedirect,
+          fromRedirect: false,
+          isPlugin: false
+        },
+        {
+          uri: apiRedirectHop,
+          fromRedirect: true,
+          isPlugin: false
+        },
+        {
+          uri: ensUri,
+          fromRedirect: true,
+          isPlugin: false
+        },
+        {
+          uri: ipfsUri,
+          fromRedirect: false,
+          isPlugin: false
+        }
+      ]
+    );
+
+    // ignore redirects should treat initial uri as final redirected uri
+    expect(toStringUriPath(await client.getUriPath(apiRedirect, { ignoreRedirects: true }))).toStrictEqual( [
+        {
+          uri: apiRedirect,
+          fromRedirect: false,
+          isPlugin: true
+        }
+      ]
+    );
+    // ignoring redirects should not affect this plugin uri resolution
+    expect(toStringUriPath(await client.getUriPath(pluginUri, { ignoreRedirects: true }))).toStrictEqual([
+        {
+          uri: pluginUri,
+          fromRedirect: false,
+          isPlugin: true
+        }
+      ]
+    );
+    // ignoring redirects and plugins should throw if initial uri has no api
+    await expect(client.getUriPath(apiRedirect, { ignoreRedirects: true, ignorePlugins: true })).rejects.toThrow();
+    // ignoring plugins should throw for plugin uri if there is no api at uri location
+    await expect(client.getUriPath(pluginUri, { ignorePlugins: true })).rejects.toThrow();
   });
 });

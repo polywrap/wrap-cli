@@ -125,9 +125,10 @@ export class Uri {
   }
 }
 
-export interface GetUriPathOptions {
+export interface UriResolutionOptions {
   ignorePlugins?: boolean;
   ignoreRedirects?: boolean;
+  noValidate?: boolean;
 }
 
 /** An array of URI Path Nodes is returned from client.getUriPath(...) */

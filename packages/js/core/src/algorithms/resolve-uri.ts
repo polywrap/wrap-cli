@@ -6,7 +6,7 @@ import {
   InterfaceImplementations,
   PluginRegistration,
   UriRedirect,
-  GetUriPathOptions,
+  UriResolutionOptions,
   UriPathNode,
 } from "../types";
 import { Web3ApiManifest, deserializeWeb3ApiManifest } from "../manifest";
@@ -27,18 +27,28 @@ export const resolveUri = Tracer.traceFunc(
     interfaces: readonly InterfaceImplementations<Uri>[],
     createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
     createApi: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) => Api,
-    noValidate?: boolean
+    options?: UriResolutionOptions
   ): Promise<{ api: Api; resolvedUris: string[] }> => {
-    const finalRedirectedUri = applyRedirects(uri, redirects);
+    const { ignorePlugins, ignoreRedirects, noValidate } = options ?? {};
 
-    const plugin = findPluginPackage(finalRedirectedUri, plugins);
+    // apply redirects if not ignoring redirects
+    let finalRedirectedUri: Uri;
+    if (ignoreRedirects) {
+      finalRedirectedUri = uri;
+    } else {
+      finalRedirectedUri = applyRedirects(uri, redirects);
+    }
 
-    if (plugin) {
-      const api = Tracer.traceFunc(
-        "resolveUri: createPluginApi",
-        (uri: Uri, plugin: PluginPackage) => createPluginApi(uri, plugin)
-      )(finalRedirectedUri, plugin);
-      return { api, resolvedUris: [uri.uri] };
+    // check for plugin if not ignoring plugins
+    if (!ignorePlugins) {
+      const plugin = findPluginPackage(finalRedirectedUri, plugins);
+      if (plugin) {
+        const api = Tracer.traceFunc(
+          "resolveUri: createPluginApi",
+          (uri: Uri, plugin: PluginPackage) => createPluginApi(uri, plugin)
+        )(finalRedirectedUri, plugin);
+        return { api, resolvedUris: [uri.uri] };
+      }
     }
 
     // The final URI has been resolved, let's now resolve the Web3API package
@@ -79,12 +89,13 @@ export const resolveUriToPath = Tracer.traceFunc(
     redirects: readonly UriRedirect<Uri>[],
     plugins: readonly PluginRegistration<Uri>[],
     interfaces: readonly InterfaceImplementations<Uri>[],
-    noValidate?: boolean,
-    options?: GetUriPathOptions
+    options?: UriResolutionOptions
   ): Promise<UriPathNode[]> => {
-    const { ignorePlugins, ignoreRedirects } = options ?? {};
+    const { ignorePlugins, ignoreRedirects, noValidate } = options ?? {};
 
     let path: UriPathNode[];
+
+    // apply redirects if not ignoring redirects
     if (ignoreRedirects) {
       path = [{ uri, fromRedirect: false }];
     } else {
@@ -92,6 +103,7 @@ export const resolveUriToPath = Tracer.traceFunc(
     }
     const finalRedirectedUri: Uri = path[path.length - 1].uri;
 
+    // check for plugin if not ignoring plugins
     if (!ignorePlugins) {
       const plugin = findPluginPackage(finalRedirectedUri, plugins);
       if (plugin) {
@@ -115,13 +127,14 @@ export const resolveUriToPath = Tracer.traceFunc(
       noValidate
     );
 
-    resolvedUris.forEach((v: string) =>
+    for (let i = 1; i < resolvedUris.length; i++) {
       path.push({
-        uri: new Uri(v),
+        uri: new Uri(resolvedUris[i]),
         fromRedirect: false,
         isPlugin: false,
-      })
-    );
+      });
+    }
+
     return path;
   }
 );

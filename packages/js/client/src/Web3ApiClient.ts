@@ -25,7 +25,7 @@ import {
   sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
   getImplementations,
-  GetUriPathOptions,
+  UriResolutionOptions,
   UriPathNode,
   resolveUriToPath,
 } from "@web3api/core-js";
@@ -350,7 +350,7 @@ export class Web3ApiClient implements Client {
 
   public async getUriPath(
     uri: Uri | string,
-    options?: GetUriPathOptions
+    options?: UriResolutionOptions
   ): Promise<UriPathNode[]> {
     const isUriTypeString = typeof uri === "string";
     const typedUri: Uri = isUriTypeString
@@ -359,14 +359,16 @@ export class Web3ApiClient implements Client {
 
     const run = Tracer.traceFunc(
       "Web3ApiClient: getUriPath",
-      async (uri: Uri, options?: GetUriPathOptions): Promise<UriPathNode[]> => {
+      async (
+        uri: Uri,
+        options?: UriResolutionOptions
+      ): Promise<UriPathNode[]> => {
         return await resolveUriToPath(
           typedUri,
           this,
           this.redirects(),
           this.plugins(),
           this.interfaces(),
-          undefined,
           options
         );
       }
