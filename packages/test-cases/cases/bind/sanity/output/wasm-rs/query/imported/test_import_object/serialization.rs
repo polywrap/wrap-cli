@@ -31,11 +31,11 @@ pub fn serialize_test_import_object(input: &TestImportObject) -> Vec<u8> {
 pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut W) {
     writer.write_map_length(8);
     writer.context().push("object", "Box<TestImportAnotherObject>", "writing property");
-    writer.write_string("object");
+    writer.write_str("object");
     TestImportAnotherObject::write(&input.object, writer);
     writer.context().pop();
     writer.context().push("opt_object", "Option<Box<TestImportAnotherObject>>", "writing property");
-    writer.write_string("opt_object");
+    writer.write_str("opt_object");
     if input.opt_object.is_some() {
         TestImportAnotherObject::write(input.opt_object.as_ref().as_ref().unwrap(), writer);
     } else {
@@ -43,13 +43,13 @@ pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut
     }
     writer.context().pop();
     writer.context().push("object_array", "Vec<Box<TestImportAnotherObject>>", "writing property");
-    writer.write_string("object_array");
+    writer.write_str("object_array");
     writer.write_array(&input.object_array, |writer: &mut W, item| {
         TestImportAnotherObject::write(item, writer);
     });
     writer.context().pop();
     writer.context().push("opt_object_array", "Option<Vec<Option<Box<TestImportAnotherObject>>>>", "writing property");
-    writer.write_string("opt_object_array");
+    writer.write_str("opt_object_array");
     writer.write_nullable_array(&input.opt_object_array, |writer: &mut W, item| {
         if item.is_some() {
             TestImportAnotherObject::write(item.as_ref().as_ref().unwrap(), writer);
@@ -59,21 +59,21 @@ pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut
     });
     writer.context().pop();
     writer.context().push("en", "TestImportEnum", "writing property");
-    writer.write_string("en");
+    writer.write_str("en");
     writer.write_i32(input.en as i32);
     writer.context().pop();
     writer.context().push("opt_enum", "Option<TestImportEnum>", "writing property");
-    writer.write_string("opt_enum");
+    writer.write_str("opt_enum");
     writer.write_nullable_i32(&Some(input.opt_enum.unwrap() as i32));
     writer.context().pop();
     writer.context().push("enum_array", "Vec<TestImportEnum>", "writing property");
-    writer.write_string("enum_array");
+    writer.write_str("enum_array");
     writer.write_array(&input.enum_array, |writer: &mut W, item| {
         writer.write_i32(*item as i32);
     });
     writer.context().pop();
     writer.context().push("opt_enum_array", "Option<Vec<Option<TestImportEnum>>>", "writing property");
-    writer.write_string("opt_enum_array");
+    writer.write_str("opt_enum_array");
     writer.write_nullable_array(&input.opt_enum_array, |writer: &mut W, item| {
         writer.write_nullable_i32(&Some(item.unwrap() as i32));
     });

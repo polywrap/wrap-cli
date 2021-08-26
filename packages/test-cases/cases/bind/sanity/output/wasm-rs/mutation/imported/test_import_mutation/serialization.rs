@@ -36,15 +36,15 @@ pub fn serialize_imported_method_args(input: &InputImportedMethod) -> Vec<u8> {
 pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer: &mut W) {
     writer.write_map_length(3);
     writer.context().push("str", "String", "writing property");
-    writer.write_string("str");
+    writer.write_str("str");
     writer.write_string(&input.str);
     writer.context().pop();
     writer.context().push("object", "Box<TestImportObject>", "writing property");
-    writer.write_string("object");
+    writer.write_str("object");
     TestImportObject::write(&input.object, writer);
     writer.context().pop();
     writer.context().push("object_array", "Vec<Box<TestImportObject>>", "writing property");
-    writer.write_string("object_array");
+    writer.write_str("object_array");
     writer.write_array(&input.object_array, |writer: &mut W, item| {
         TestImportObject::write(item, writer);
     });
@@ -86,7 +86,7 @@ pub fn serialize_another_method_args(input: &InputAnotherMethod) -> Vec<u8> {
 pub fn write_another_method_args<W: Write>(input: &InputAnotherMethod, writer: &mut W) {
     writer.write_map_length(1);
     writer.context().push("arg", "Vec<String>", "writing property");
-    writer.write_string("arg");
+    writer.write_str("arg");
     writer.write_array(&input.arg, |writer: &mut W, item| {
         writer.write_string(*item);
     });

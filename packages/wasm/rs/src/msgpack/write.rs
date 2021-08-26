@@ -17,7 +17,8 @@ pub trait Write: Clone {
     fn write_f32(&mut self, value: f32);
     fn write_f64(&mut self, value: f64);
     fn write_string_length(&mut self, length: u32);
-    fn write_string(&mut self, value: &str);
+    fn write_string(&mut self, value: &String);
+    fn write_str(&mut self, value: &str);
     fn write_bytes_length(&mut self, length: u32);
     fn write_bytes(&mut self, buf: &[u8]);
     fn write_bigint(&mut self, value: &BigInt);

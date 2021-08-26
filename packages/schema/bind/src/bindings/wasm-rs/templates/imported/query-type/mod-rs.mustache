@@ -31,7 +31,7 @@ impl {{#toUpper}}{{type}}{{/toUpper}} {
     pub const URI: &'static str = "{{uri}}";
 
     {{#methods}}
-    pub fn {{#toLower}}{{name}}{{/toLower}}(input: &Input{{#toUpper}}{{name}}{{/toUpper}}) -> {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
+    pub fn {{#toLower}}{{name}}{{/toLower}}(input: &Input{{#toUpper}}{{name}}{{/toUpper}}) -> {{#return}}{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}{{/return}} {
         let uri = {{#query}}{{#toUpper}}{{type}}{{/toUpper}}{{/query}}::URI;
         let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(input);
         let result = subinvoke::w3_subinvoke(

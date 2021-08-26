@@ -103,7 +103,12 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_string(&mut self, value: &str) {
+    fn write_string(&mut self, value: &String) {
+        self.write_string_length(value.len() as u32);
+        self.length += value.len() as i32;
+    }
+
+    fn write_str(&mut self, value: &str) {
         self.write_string_length(value.len() as u32);
         self.length += value.len() as i32;
     }

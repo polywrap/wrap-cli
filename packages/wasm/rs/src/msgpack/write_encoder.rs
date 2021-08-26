@@ -199,7 +199,15 @@ impl Write for WriteEncoder {
         }
     }
 
-    fn write_string(&mut self, value: &str) {
+    fn write_string(&mut self, value: &String) {
+        let buf = value.as_bytes();
+        self.write_string_length(buf.len() as u32);
+        self.view
+            .set_bytes(buf)
+            .expect("Failed to set bytes to data view");
+    }
+
+    fn write_str(&mut self, value: &str) {
         let buf = value.as_bytes();
         self.write_string_length(buf.len() as u32);
         self.view

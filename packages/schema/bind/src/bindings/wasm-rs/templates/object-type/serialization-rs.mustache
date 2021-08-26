@@ -39,7 +39,7 @@ pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(input: &{{#toUpper}}{{ty
     writer.write_map_length({{properties.length}});
     {{#properties}}
     writer.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
-    writer.write_string("{{#toLower}}{{name}}{{/toLower}}");
+    writer.write_str("{{#toLower}}{{name}}{{/toLower}}");
     {{#scalar}}
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}({{#byRef}}&{{/byRef}}input.{{#toLower}}{{name}}{{/toLower}});
     {{/scalar}}
@@ -121,7 +121,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
                 {{/enum}}
                 {{#object}}
                 {{> deserialize_object}}
-                _{{#toLower}}{{name}}{{/toLower}} = object;
+                _{{#toLower}}{{name}}{{/toLower}} = Some(object);
                 {{/object}}
                 {{#required}}
                 _{{#toLower}}{{name}}{{/toLower}}_set = true;

@@ -26,11 +26,11 @@ pub fn serialize_another_type(input: &AnotherType) -> Vec<u8> {
 pub fn write_another_type<W: Write>(input: &AnotherType, writer: &mut W) {
     writer.write_map_length(2);
     writer.context().push("prop", "Option<String>", "writing property");
-    writer.write_string("prop");
+    writer.write_str("prop");
     writer.write_nullable_string(&input.prop);
     writer.context().pop();
     writer.context().push("circular", "Option<Box<CustomType>>", "writing property");
-    writer.write_string("circular");
+    writer.write_str("circular");
     if input.circular.is_some() {
         CustomType::write(input.circular.as_ref().as_ref().unwrap(), writer);
     } else {

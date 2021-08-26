@@ -32,7 +32,7 @@ use crate::{
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
     {{#arguments}}
-    pub {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    pub {{#toLower}}{{name}}{{/toLower}}: {{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}},
     {{/arguments}}
 }
 
@@ -52,8 +52,8 @@ pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &Input{{#toUpper}}
 pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toUpper}}{{name}}{{/toUpper}}, writer: &mut W) {
     writer.write_map_length({{arguments.length}});
     {{#arguments}}
-    writer.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
-    writer.write_string("{{#toLower}}{{name}}{{/toLower}}");
+    writer.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}", "writing property");
+    writer.write_str("{{#toLower}}{{name}}{{/toLower}}");
     {{#scalar}}
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}({{#byRef}}&{{/byRef}}input.{{#toLower}}{{name}}{{/toLower}});
     {{/scalar}}
@@ -86,18 +86,18 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toU
     {{/arguments}}
 }
 
-pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(input: &[u8]) -> {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
+pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result: &[u8]) -> {{#return}}{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}{{/return}} {
     let mut context = Context::new();
     context.description = "Deserializing imported query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
-    let mut reader = ReadDecoder::new(input, context);
+    let mut reader = ReadDecoder::new(result, context);
     {{#return}}
-    reader.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "reading function output");
+    reader.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}", "reading function output");
     {{#scalar}}
     let res = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(){{#required}}.unwrap(){{/required}};
     {{/scalar}}
     {{#array}}
     let res = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
-        {{> deserialize_array}}
+        {{> deserialize_array_nobox}}
     }){{#required}}.expect("Failed to read array"){{/required}};
     {{/array}}
     {{#enum}}
@@ -105,7 +105,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(input: &[u8]) -> {{#r
     let res = value;
     {{/enum}}
     {{#object}}
-    {{> deserialize_object}}
+    {{> deserialize_object_nobox}}
     let res = object;
     {{/object}}
     {{/return}}

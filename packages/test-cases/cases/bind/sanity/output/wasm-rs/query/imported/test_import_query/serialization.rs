@@ -51,23 +51,23 @@ pub fn serialize_imported_method_args(input: &InputImportedMethod) -> Vec<u8> {
 pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer: &mut W) {
     writer.write_map_length(13);
     writer.context().push("str", "String", "writing property");
-    writer.write_string("str");
+    writer.write_str("str");
     writer.write_string(&input.str);
     writer.context().pop();
     writer.context().push("opt_str", "Option<String>", "writing property");
-    writer.write_string("opt_str");
+    writer.write_str("opt_str");
     writer.write_nullable_string(&input.opt_str);
     writer.context().pop();
     writer.context().push("u", "u32", "writing property");
-    writer.write_string("u");
+    writer.write_str("u");
     writer.write_u32(input.u);
     writer.context().pop();
     writer.context().push("opt_u", "Option<u32>", "writing property");
-    writer.write_string("opt_u");
+    writer.write_str("opt_u");
     writer.write_nullable_u32(&input.opt_u);
     writer.context().pop();
     writer.context().push("u_array_array", "Vec<Option<Vec<Option<u32>>>>", "writing property");
-    writer.write_string("u_array_array");
+    writer.write_str("u_array_array");
     writer.write_array(&input.u_array_array, |writer: &mut W, item| {
         writer.write_nullable_array(item, |writer: &mut W, item| {
             writer.write_nullable_u32(item);
@@ -75,11 +75,11 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     });
     writer.context().pop();
     writer.context().push("object", "Box<TestImportObject>", "writing property");
-    writer.write_string("object");
+    writer.write_str("object");
     TestImportObject::write(&input.object, writer);
     writer.context().pop();
     writer.context().push("opt_object", "Option<Box<TestImportObject>>", "writing property");
-    writer.write_string("opt_object");
+    writer.write_str("opt_object");
     if input.opt_object.is_some() {
         TestImportObject::write(input.opt_object.as_ref().as_ref().unwrap(), writer);
     } else {
@@ -87,13 +87,13 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     }
     writer.context().pop();
     writer.context().push("object_array", "Vec<Box<TestImportObject>>", "writing property");
-    writer.write_string("object_array");
+    writer.write_str("object_array");
     writer.write_array(&input.object_array, |writer: &mut W, item| {
         TestImportObject::write(item, writer);
     });
     writer.context().pop();
     writer.context().push("opt_object_array", "Option<Vec<Option<Box<TestImportObject>>>>", "writing property");
-    writer.write_string("opt_object_array");
+    writer.write_str("opt_object_array");
     writer.write_nullable_array(&input.opt_object_array, |writer: &mut W, item| {
         if item.is_some() {
             TestImportObject::write(item.as_ref().as_ref().unwrap(), writer);
@@ -103,21 +103,21 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     });
     writer.context().pop();
     writer.context().push("en", "TestImportEnum", "writing property");
-    writer.write_string("en");
+    writer.write_str("en");
     writer.write_i32(input.en as i32);
     writer.context().pop();
     writer.context().push("opt_enum", "Option<TestImportEnum>", "writing property");
-    writer.write_string("opt_enum");
+    writer.write_str("opt_enum");
     writer.write_nullable_i32(&Some(input.opt_enum.unwrap() as i32));
     writer.context().pop();
     writer.context().push("enum_array", "Vec<TestImportEnum>", "writing property");
-    writer.write_string("enum_array");
+    writer.write_str("enum_array");
     writer.write_array(&input.enum_array, |writer: &mut W, item| {
         writer.write_i32(*item as i32);
     });
     writer.context().pop();
     writer.context().push("opt_enum_array", "Option<Vec<Option<TestImportEnum>>>", "writing property");
-    writer.write_string("opt_enum_array");
+    writer.write_str("opt_enum_array");
     writer.write_nullable_array(&input.opt_enum_array, |writer: &mut W, item| {
         writer.write_nullable_i32(&Some(item.unwrap() as i32));
     });
@@ -159,7 +159,7 @@ pub fn serialize_another_method_args(input: &InputAnotherMethod) -> Vec<u8> {
 pub fn write_another_method_args<W: Write>(input: &InputAnotherMethod, writer: &mut W) {
     writer.write_map_length(1);
     writer.context().push("arg", "Vec<String>", "writing property");
-    writer.write_string("arg");
+    writer.write_str("arg");
     writer.write_array(&input.arg, |writer: &mut W, item| {
         writer.write_string(*item);
     });

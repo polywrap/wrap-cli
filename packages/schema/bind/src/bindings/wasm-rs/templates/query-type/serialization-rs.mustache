@@ -30,7 +30,7 @@ use crate::{
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
     {{#arguments}}
-    pub {{#toLower}}{{name}}{{/toLower}}: {{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}},
+    pub {{#toLower}}{{name}}{{/toLower}}: {{#noBox}}{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}{{/noBox}},
     {{/arguments}}
 }
 
@@ -43,14 +43,14 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
 
     {{#arguments}}
     {{^object}}
-    let mut _{{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+    let mut _{{#toLower}}{{name}}{{/toLower}}: {{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
     {{/object}}
     {{#object}}
     {{#required}}
-    let mut _{{#toLower}}{{name}}{{/toLower}}: Option<{{#toWasm}}{{toGraphQLType}}{{/toWasm}}> = None;
+    let mut _{{#toLower}}{{name}}{{/toLower}}: Option<{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}> = None;
     {{/required}}
     {{^required}}
-    let mut _{{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+    let mut _{{#toLower}}{{name}}{{/toLower}}: {{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
     {{/required}}
     {{/object}}
     {{#required}}
@@ -65,13 +65,13 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
         match field.as_str() {
             {{#arguments}}
             "{{#toLower}}{{name}}{{/toLower}}" => {
-                reader.context().push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading argument");
+                reader.context().push(&field, "{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}", "type found, reading argument");
                 {{#scalar}}
                 _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(){{#required}}.unwrap(){{/required}};
                 {{/scalar}}
                 {{#array}}
                 _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
-                    {{> deserialize_array}}
+                    {{> deserialize_array_nobox}}
                 }){{#required}}.expect("Failed to read array"){{/required}};
                 {{/array}}
                 {{#enum}}
@@ -79,8 +79,8 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
                 _{{#toLower}}{{name}}{{/toLower}} = value;
                 {{/enum}}
                 {{#object}}
-                {{> deserialize_object}}
-                _{{#toLower}}{{name}}{{/toLower}} = object;
+                {{> deserialize_object_nobox}}
+                _{{#toLower}}{{name}}{{/toLower}} = Some(object);
                 {{/object}}
                 {{#required}}
                 _{{#toLower}}{{name}}{{/toLower}}_set = true;
@@ -112,7 +112,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
         {{/required}}
         {{#required}}
         {{#toLower}}{{name}}{{/toLower}}: match _{{#toLower}}{{name}}{{/toLower}} {
-            Some(x) => return x,
+            Some(x) => x,
             None => panic!("'{{#toLower}}{{name}}{{/toLower}}' is required, but its value is still 'None'. This should never happen."),
         },
         {{/required}}
@@ -121,45 +121,45 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
     })
 }
 
-pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(input: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) -> Vec<u8> {
+pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}{{#byRef}}&{{/byRef}}{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}{{/return}}) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
-    write_{{#toLower}}{{name}}{{/toLower}}_result(input, &mut sizer);
+    write_{{#toLower}}{{name}}{{/toLower}}_result(result, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
-    write_{{#toLower}}{{name}}{{/toLower}}_result(input, &mut encoder);
+    write_{{#toLower}}{{name}}{{/toLower}}_result(result, &mut encoder);
     buffer
 }
 
-pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(input: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, writer: &mut W) {
+pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return}}{{#byRef}}&{{/byRef}}{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}{{/return}}, writer: &mut W) {
     {{#return}}
-    writer.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing result");
+    writer.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}", "writing result");
     {{#scalar}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(input);
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(result);
     {{/scalar}}
     {{#array}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#toLower}}{{name}}{{/toLower}}, |writer: &mut W, item| {
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&result.{{#toLower}}{{name}}{{/toLower}}, |writer: &mut W, item| {
         {{> serialize_array}}
     });
     {{/array}}
     {{#enum}}
     {{#required}}
-    writer.write_i32(input.{{#toLower}}{{name}}{{/toLower}} as i32);
+    writer.write_i32(result.{{#toLower}}{{name}}{{/toLower}} as i32);
     {{/required}}
     {{^required}}
-    writer.write_nullable_i32(&Some(input.{{#toLower}}{{name}}{{/toLower}}.unwrap() as i32));
+    writer.write_nullable_i32(&Some(result.{{#toLower}}{{name}}{{/toLower}}.unwrap() as i32));
     {{/required}}
     {{/enum}}
     {{#object}}
     {{#required}}
-    {{#toUpper}}{{name}}{{/toUpper}}::write(&input.{{#toLower}}{{name}}{{/toLower}}, writer);
+    {{#toUpper}}{{name}}{{/toUpper}}::write(&result.{{#toLower}}{{name}}{{/toLower}}, writer);
     {{/required}}
     {{^required}}
-    if input.{{#toLower}}{{name}}{{/toLower}}.is_some() {
-        {{#toUpper}}{{name}}{{/toUpper}}::write(input.{{#toLower}}{{name}}{{/toLower}}.as_ref().as_ref().unwrap(), writer);
+    if result.{{#toLower}}{{name}}{{/toLower}}.is_some() {
+        {{#toUpper}}{{name}}{{/toUpper}}::write(result.{{#toLower}}{{name}}{{/toLower}}.as_ref().as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }

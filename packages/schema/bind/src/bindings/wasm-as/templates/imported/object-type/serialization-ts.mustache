@@ -108,7 +108,7 @@ export function read{{type}}(reader: Read): {{type}} {
       {{/enum}}
       {{#object}}
       {{> deserialize_object }}
-      _{{name}} = object;
+      _{{name}} = Some(object);
       {{/object}}
       {{#required}}
       _{{name}}Set = true;
