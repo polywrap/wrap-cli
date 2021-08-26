@@ -18,7 +18,6 @@ function proxyGet<T extends Record<string, unknown>>(
   });
 }
 
-type WasmModule = WebAssembly.Module;
 type WasmMemory = WebAssembly.Memory;
 type WasmExports = WebAssembly.Exports;
 type WasmImports = WebAssembly.Imports;
@@ -58,22 +57,24 @@ export class AsyncWasmInstance {
   private _wrappedExports: AsyncifyExports;
   private _returnValue: Promise<unknown> | unknown;
 
-  constructor(config: {
-    module: WasmModule;
+  private constructor() {}
+
+  public static async createInstance(config: {
+    module: ArrayBuffer;
     imports: WasmImports;
     requiredExports?: readonly string[];
-  }) {
+  }): Promise<AsyncWasmInstance> {
+    const instance = new AsyncWasmInstance();
     // Wrap imports
-    this._wrappedImports = this._wrapImports(config.imports);
+    instance._wrappedImports = instance._wrapImports(config.imports);
 
     // Create Wasm module instance
-    this._instance = new WebAssembly.Instance(
-      config.module,
-      this._wrappedImports
-    );
+    instance._instance = (
+      await WebAssembly.instantiate(config.module, instance._wrappedImports)
+    ).instance;
 
     // Ensure all required exports exist on Wasm module
-    const exportKeys = Object.keys(this._instance.exports);
+    const exportKeys = Object.keys(instance._instance.exports);
     const missingExports = [
       ...AsyncWasmInstance.requiredExports,
       ...(config.requiredExports || []),
@@ -85,10 +86,10 @@ export class AsyncWasmInstance {
       );
     }
 
-    const exports = this._instance.exports as AsyncifyExports;
+    const exports = instance._instance.exports as AsyncifyExports;
 
     // Wrap exports
-    this._wrappedExports = this._wrapExports(exports);
+    instance._wrappedExports = instance._wrapExports(exports);
 
     // Initialize Asyncify stack pointers
     const memory = (exports.memory ||
@@ -98,6 +99,7 @@ export class AsyncWasmInstance {
       AsyncWasmInstance._dataStart,
       AsyncWasmInstance._dataEnd,
     ]);
+    return instance;
   }
 
   get exports(): WasmExports {
