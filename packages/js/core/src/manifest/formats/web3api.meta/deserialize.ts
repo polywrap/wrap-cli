@@ -33,6 +33,8 @@ export const deserializeMetaManifest = Tracer.traceFunc(
       validateMetaManifest(anyMetaManifest, options?.extSchema);
     }
 
+    anyMetaManifest.__type = "MetaManifest";
+
     const versionCompare = compare(
       anyMetaManifest.format,
       latestMetaManifestFormat

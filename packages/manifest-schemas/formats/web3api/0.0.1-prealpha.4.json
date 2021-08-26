@@ -19,6 +19,10 @@
       "type": "string",
       "format": "file"
     },
+    "meta": {
+      "type": "string",
+      "format": "file"
+    },
     "language": {
       "type": "string",
       "format": "wasmLanguage"

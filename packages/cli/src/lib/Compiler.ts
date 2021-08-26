@@ -108,7 +108,8 @@ export class Compiler {
         buildManifest = await this._buildModules(state);
       }
 
-      let metaManifest = await project.getMetaManifest();
+      // get the meta manifest
+      const metaManifest: MetaManifest = await project.getMetaManifest();
 
       await this._outputManifests(
         state.web3ApiManifest,
@@ -413,7 +414,7 @@ export class Compiler {
   private async _outputManifests(
     web3ApiManifest: Web3ApiManifest,
     buildManifest?: BuildManifest,
-    metaManifest?: MetaManifest,
+    metaManifest?: MetaManifest
   ): Promise<void> {
     const { outputDir, project } = this._config;
 

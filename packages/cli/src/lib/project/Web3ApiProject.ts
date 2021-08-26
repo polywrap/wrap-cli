@@ -19,7 +19,6 @@ export interface Web3ApiProjectConfig extends ProjectConfig {
   web3apiManifestPath: string;
   buildManifestPath?: string;
   metaManifestPath?: string;
-  quiet?: boolean;
 }
 
 export class Web3ApiProject extends Project {
@@ -64,6 +63,9 @@ export class Web3ApiProject extends Project {
 
   public async getLanguage(): Promise<TargetLanguage> {
     const language = (await this.getWeb3ApiManifest()).language;
+    if (!language) {
+      throw Error(intlMsg.lib_project_language_not_found());
+    }
     return manifestLanguageToTargetLanguage(language);
   }
 
@@ -316,7 +318,7 @@ export class Web3ApiProject extends Project {
       throw Error(intlMsg.lib_project_language_not_found());
     }
 
-    const defaultPath = `${__dirname}/build-envs/wasm/meta/web3api.meta.yaml`;
+    const defaultPath = `${__dirname}/../build-envs/wasm/meta/web3api.meta.yaml`;
 
     if (!fs.existsSync(defaultPath)) {
       throw Error(
@@ -328,7 +330,7 @@ export class Web3ApiProject extends Project {
     this.removeCacheDir("build/meta");
     await this.copyFilesIntoCache(
       "build/meta/",
-      `${__dirname}/build-envs/wasm/meta/*`
+      `${__dirname}/../build-envs/wasm/meta/*`
     );
     this._defaultMetaManifestCached = true;
   }

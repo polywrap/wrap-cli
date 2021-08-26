@@ -17,4 +17,5 @@ export interface MetaManifest {
     query: string;
     recipe?: string;
   }[];
+  __type: "MetaManifest";
 }
