@@ -150,6 +150,12 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
         {{^required}}
         {{#toLower}}{{name}}{{/toLower}}: _{{#toLower}}{{name}}{{/toLower}},
         {{/required}}
+        {{#required}}
+        {{#toLower}}{{name}}{{/toLower}}: match _{{#toLower}}{{name}}{{/toLower}} {
+            Some(x) => x,
+            None => panic!("'{{#toLower}}{{name}}{{/toLower}}' is required, but its value is still 'None'. This should never happen."),
+        },
+        {{/required}}
         {{/object}}
         {{/properties}}
     })
