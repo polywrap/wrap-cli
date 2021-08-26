@@ -1,15 +1,13 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { query, mutation } from "./resolvers";
-import { Request, Response } from "./types";
+import { query } from "./resolvers";
 import { fromAxiosResponse, toAxiosRequestConfig } from "./util";
-import { manifest } from "./manifest";
+import { manifest, Response, Request, Query } from "./w3";
 
 import axios from "axios";
 import {
   Client,
   Plugin,
-  PluginModules,
-  PluginManifest,
+  PluginPackageManifest,
   PluginPackage,
 } from "@web3api/core-js";
 
@@ -18,30 +16,33 @@ export class HttpPlugin extends Plugin {
     super();
   }
 
-  public static manifest(): PluginManifest {
+  public static manifest(): PluginPackageManifest {
     return manifest;
   }
 
-  public getModules(_client: Client): PluginModules {
+  public getModules(
+    _client: Client
+  ): {
+    query: Query.Module;
+  } {
     return {
       query: query(this),
-      mutation: mutation(this),
     };
   }
 
-  public async get(url: string, request: Request): Promise<Response> {
+  public async get(url: string, request?: Request): Promise<Response> {
     const response = await axios.get<string>(
       url,
-      toAxiosRequestConfig(request)
+      request ? toAxiosRequestConfig(request) : undefined
     );
     return fromAxiosResponse(response);
   }
 
-  public async post(url: string, request: Request): Promise<Response> {
+  public async post(url: string, request?: Request): Promise<Response> {
     const response = await axios.post(
       url,
-      request.body,
-      toAxiosRequestConfig(request)
+      request ? request.body : undefined,
+      request ? toAxiosRequestConfig(request) : undefined
     );
     return fromAxiosResponse(response);
   }

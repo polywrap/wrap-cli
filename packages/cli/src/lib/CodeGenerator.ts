@@ -1,20 +1,37 @@
 import { SchemaComposer } from "./SchemaComposer";
-import { Project } from "./Project";
-import { step, withSpinner } from "./helpers";
+import { Project } from "./project";
+import { step, withSpinner, isTypescriptFile, loadTsNode } from "./helpers";
 import { intlMsg } from "./intl";
 
-import { OutputDirectory, writeDirectory } from "@web3api/schema-bind";
+import { TypeInfo } from "@web3api/schema-parse";
+import {
+  OutputDirectory,
+  writeDirectory,
+  bindSchema,
+} from "@web3api/schema-bind";
 import path from "path";
 import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import Mustache from "mustache";
 
+export interface CustomScriptConfig {
+  typeInfo: TypeInfo;
+  generate: (templatePath: string, config: unknown) => string;
+}
+
+export { OutputDirectory };
+
+export type CustomScriptRunFn = (
+  output: OutputDirectory,
+  config: CustomScriptConfig
+) => void;
+
 export interface CodeGeneratorConfig {
   outputDir: string;
-  generationFile: string;
   project: Project;
   schemaComposer: SchemaComposer;
+  customScript?: string;
 }
 
 export class CodeGenerator {
@@ -53,31 +70,55 @@ export class CodeGenerator {
       const typeInfo = composed.combined.typeInfo;
       this._schema = composed.combined.schema;
 
-      // Check the generation file if it has the proper run() method
-      // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
-      const generator = await require(this._config.generationFile);
-      if (!generator) {
-        throw Error(intlMsg.lib_codeGenerator_wrongGenFile());
+      if (!typeInfo) {
+        throw Error(intlMsg.lib_codeGenerator_typeInfoMissing());
       }
 
-      const { run } = generator;
-      if (!run) {
-        throw Error(intlMsg.lib_codeGenerator_noRunMethod());
+      if (this._config.customScript) {
+        const output: OutputDirectory = {
+          entries: [],
+        };
+
+        if (isTypescriptFile(this._config.customScript)) {
+          loadTsNode();
+        }
+
+        // Check the generation file if it has the proper run() method
+        // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
+        const generator = await require(this._config.customScript);
+        if (!generator) {
+          throw Error(intlMsg.lib_codeGenerator_wrongGenFile());
+        }
+
+        const { run } = generator as { run: CustomScriptRunFn };
+        if (!run) {
+          throw Error(intlMsg.lib_codeGenerator_noRunMethod());
+        }
+
+        await run(output, {
+          typeInfo,
+          generate: (templatePath: string, config: unknown) =>
+            this._generateTemplate(templatePath, config, spinner),
+        });
+
+        writeDirectory(this._config.outputDir, output, (templatePath: string) =>
+          this._generateTemplate(templatePath, typeInfo, spinner)
+        );
+      } else {
+        const content = bindSchema({
+          combined: {
+            typeInfo: composed.combined?.typeInfo as TypeInfo,
+            schema: composed.combined?.schema as string,
+            outputDirAbs: "",
+          },
+          language: await project.getLanguage(),
+        });
+
+        writeDirectory(
+          this._config.outputDir,
+          content.combined as OutputDirectory
+        );
       }
-
-      const output: OutputDirectory = {
-        entries: [],
-      };
-
-      await run(output, {
-        typeInfo,
-        generate: (templatePath: string, config: unknown) =>
-          this._generateTemplate(templatePath, config, spinner),
-      });
-
-      writeDirectory(this._config.outputDir, output, (templatePath: string) =>
-        this._generateTemplate(templatePath, typeInfo, spinner)
-      );
     };
 
     if (project.quiet) {
@@ -108,10 +149,13 @@ export class CodeGenerator {
       step(spinner, stepMessage);
     }
 
-    templatePath = path.join(
-      path.dirname(this._config.generationFile),
-      templatePath
-    );
+    if (this._config.customScript) {
+      // Update template path when the generation file is given
+      templatePath = path.join(
+        path.dirname(this._config.customScript),
+        templatePath
+      );
+    }
 
     const template = readFileSync(templatePath);
     const types =
