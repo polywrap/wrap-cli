@@ -291,7 +291,6 @@ export class Compiler {
       };
     }
 
-
     web3ApiManifest.build = "./web3api.build.yaml";
 
     // Create the BuildManifest
