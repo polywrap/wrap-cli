@@ -1,3 +1,8 @@
+# Web3API 0.0.1-prealpha.37
+## Bugs
+* `@web3api/asyncify-js`: Fixed problem when Wasm modules are larger than 4 KB. More info [here](https://github.com/polywrap/monorepo/pull/450).
+* `@web3api/client-js`: Use new asyncify-js package, where instantiation is asynchronous.
+
 # Web3API 0.0.1-prealpha.36
 ## Features
 * Upgrade all JavaScript plugins to use the new `w3 plugin codegen` command. The command generates typings based on the GraphQL schema of the plugin. This ensures the plugin's resolvers match 1:1 with the GraphQL schema.
