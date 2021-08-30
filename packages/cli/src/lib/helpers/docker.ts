@@ -69,6 +69,10 @@ export async function copyArtifactsFromBuildImage(
     }
 
     await runCommand(`docker rm -f root-${imageName}`, quiet);
+
+    await runCommand(
+      `docker save ${imageName} > ${path.join(outputDir, "image")}.tar`
+    );
   };
 
   if (quiet) {
