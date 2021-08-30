@@ -1,8 +1,6 @@
-format: 0.0.1-prealpha.2
+format: 0.0.1-prealpha.1
 docker:
   name: build-env
   dockerfile: ./Dockerfile.mustache
 config:
   rust_version: "1.31"
-  include:
-    - ./cargo.toml

@@ -1,4 +1,4 @@
-FROM rust:{{rust_version}}
+FROM rust:{{rust_version}} as base
 
 # Install the wasm32 rust build target
 RUN rustup target add wasm32-unknown-unknown
@@ -16,14 +16,14 @@ COPY {{.}} {{.}}
 {{/include}}
 {{#web3api_modules}}
 COPY {{dir}} {{dir}}
+
+# Remove any Cargo.lock files
+RUN rm -rf {{dir}}/Cargo.lock
 {{/web3api_modules}}
 
 {{#web3api_modules}}
 # Build the module at {{dir}}
-RUN cargo build --path {{dir}}/w3/ \
-    --target wasm32-unknown-unknown
-
-# Use wasm-opt to add Asyncify support
-RUN wasm-opt -O2 --asyncify ./target/wasm32/{{name}}.wasm
+RUN cargo build --manifest-path {{dir}}/Cargo.toml \
+    --release --target wasm32-unknown-unknown
 
 {{/web3api_modules}}

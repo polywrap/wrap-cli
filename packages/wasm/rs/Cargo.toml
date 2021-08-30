@@ -1,11 +1,17 @@
 [package]
 name = "polywrap-wasm-rs"
-version = "0.1.0"
-description = "Polywrap Rust-WASM Runtime"
-authors = ["Kobby Pentangeli <kobbypentangeli@gmail.com>"]
-repository = "https://github.com/polywrap/monorepo"
+version = "0.0.1-prealpha.36"
 license = "MIT"
-edition = "2018"
+description = "Polywrap's Rust-Wasm Runtime"
+homepage = "https://polywrap.io"
+documentation = "https://docs.polywrap.io"
+repository = "https://github.com/polywrap/monorepo"
+authors = [
+  "Kobby Pentangeli <kobbypentangeli@gmail.com>",
+  "Jordan Ellis <jelli@dorg.tech>"
+]
+keywords = ["polywrap", "wasm", "webassembly"]
+categories = ["wasm"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]

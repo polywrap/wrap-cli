@@ -1,5 +1,5 @@
 [package]
-name = "polywrap-query"
+name = "query"
 version = "0.1.0"
 description = "Polywrap Query Test Cases"
 authors = ["Kobby Pentangeli <kobbypentangeli@gmail.com>"]

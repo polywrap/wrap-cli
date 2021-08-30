@@ -3,7 +3,7 @@ language: wasm/rust
 modules:
   mutation:
     schema: ./mutation/schema.graphql
-    module: ./mutation/src/lib.rs
+    module: ./mutation/Cargo.toml
   query:
     schema: ./query/schema.graphql
-    module: ./query/src/lib.rs
+    module: ./query/Cargo.toml

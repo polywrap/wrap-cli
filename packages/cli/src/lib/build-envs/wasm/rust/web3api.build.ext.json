@@ -8,8 +8,7 @@
     "config": {
       "type": "object",
       "required": [
-        "rust_version",
-        "include"
+        "rust_version"
       ],
       "properties": {
         "rust_version": {

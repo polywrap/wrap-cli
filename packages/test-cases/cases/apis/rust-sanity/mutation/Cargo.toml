@@ -1,5 +1,5 @@
 [package]
-name = "polywrap-mutation"
+name = "mutation"
 version = "0.1.0"
 description = "Polywrap Mutation Test Cases"
 authors = ["Kobby Pentangeli <kobbypentangeli@gmail.com>"]
@@ -16,7 +16,7 @@ num-bigint = { version = "0.4.0", features = ["serde"] }
 num-traits = "0.2.14"
 serde = { version = "1.0.126", features = ["derive"] }
 polywrap-wasm-rs = { version = "0.1.0", path = "../../../../../wasm/rs" }
-polywrap-query = { version = "0.1.0", path = "../query" }
+query = { version = "0.1.0", path = "../query" }
 
 [profile.release]
 opt-level = "s"

@@ -37,6 +37,11 @@ interface CompilerState {
   web3ApiManifest: Web3ApiManifest;
   composerOutput: ComposerOutput;
   modulesToBuild: ModulesToBuild;
+  compilerOverrides?: CompilerOverrides;
+}
+
+export interface CompilerOverrides {
+  getGenerationDirectory: (entryPoint: string) => string;
 }
 
 export interface CompilerConfig {
@@ -46,6 +51,8 @@ export interface CompilerConfig {
 }
 
 export class Compiler {
+  private _state: CompilerState | undefined;
+
   constructor(private _config: CompilerConfig) {}
 
   public async codegen(): Promise<boolean> {
@@ -139,9 +146,14 @@ export class Compiler {
   public reset(): void {
     this._config.project.reset();
     this._config.schemaComposer.reset();
+    this._state = undefined;
   }
 
   private async _getCompilerState(): Promise<CompilerState> {
+    if (this._state) {
+      return this._state;
+    }
+
     const { project } = this._config;
 
     // Get the Web3ApiManifest
@@ -153,15 +165,38 @@ export class Compiler {
     // Compose the schema
     const composerOutput = await this._composeSchema();
 
+    // Allow the build-env to validate the manifest & override functionality
+    const buildEnvDir = `${__dirname}/build-envs/${web3ApiManifest.language}`;
+    const buildEnvEntryFile = path.join(buildEnvDir, "index.ts");
+    let compilerOverrides: CompilerOverrides | undefined;
+
+    if (fs.existsSync(buildEnvEntryFile)) {
+      const module = await import(buildEnvDir);
+
+      // Validate the manifest for the given build-env
+      if (module.validateManifest) { 
+        module.validateManifest(web3ApiManifest);
+      }
+
+      // Get any compiler overrides for the given build-env
+      if (module.getCompilerOverrides) {
+        compilerOverrides = module.getCompilerOverrides(
+          project
+        ) as CompilerOverrides;
+      }
+    }
+
     const state: CompilerState = {
       web3ApiManifest: Object.assign({}, web3ApiManifest),
       composerOutput,
       modulesToBuild,
+      compilerOverrides,
     };
 
     this._validateState(state);
 
-    return state;
+    this._state = state;
+    return this._state;
   }
 
   private async _isInterface(): Promise<boolean> {
@@ -317,6 +352,14 @@ export class Compiler {
   }
 
   private _getGenerationDirectory(entryPoint: string): string {
+    const state = this._state;
+
+    if (state && state.compilerOverrides && state.compilerOverrides.getGenerationDirectory) {
+      return state.compilerOverrides.getGenerationDirectory(
+        entryPoint
+      );
+    }
+
     const { project } = this._config;
 
     const absolute = path.isAbsolute(entryPoint)
