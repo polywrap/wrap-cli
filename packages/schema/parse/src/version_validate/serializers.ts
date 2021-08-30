@@ -1,21 +1,22 @@
-import { GenericDefinition, EnumDefinition } from "../typeInfo";
+export function stringifyObjects(unknownObj: unknown): unknown { 
+    let objType = typeof unknownObj;
+    let obj: Record<string, unknown> = unknownObj as Record<string, unknown>;
 
-export function stringifyGenericTypes(value: GenericDefinition): string {
-  return JSON.stringify([value.type, value.name, value.required, value.kind]);
-}
-
-export function stringifyGenericSet(arr: GenericDefinition[]): Set<string> {
-  return new Set(arr.map((x) => stringifyGenericTypes(x)));
-}
-
-export function stringifyEnumTypes(enumDefs: EnumDefinition[]): Set<string> {
-  let enumSets: Set<string> = new Set<string>();
-  for (let i = 0; i < enumDefs.length; i++) {
-    let enumStr: string = JSON.stringify({
-      generics: stringifyGenericTypes(enumDefs[i]),
-      constants: enumDefs[i].constants.sort(),
-    });
-    enumSets.add(enumStr);
-  }
-  return enumSets;
+    if (obj && objType == "object") {
+        let output = [];
+        if( Array.isArray(obj) ){
+            obj = obj.sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)))
+        }
+        let sortedKeys = Object.keys(obj).sort();
+        for(let i=0; i<sortedKeys.length; i++) {
+            if(sortedKeys[i] != "comment"){
+                let propObj = obj[sortedKeys[i]];
+                let prop = stringifyObjects(propObj);
+                output.push(prop)
+            }
+        }
+        return output;
+    } else {
+        return String(obj);
+    }
 }
