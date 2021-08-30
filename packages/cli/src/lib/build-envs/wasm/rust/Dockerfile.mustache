@@ -5,6 +5,12 @@ RUN rustup target add wasm32-unknown-unknown
 
 WORKDIR /project
 
+# Install wasm-opt
+RUN curl -L https://github.com/WebAssembly/binaryen/releases/download/version_101/binaryen-version_101-x86_64-linux.tar.gz | tar -xz \
+    && chmod +x binaryen-version_101/bin/wasm-opt \
+    && cp binaryen-version_101/bin/wasm-opt /usr/local/bin/ \
+    && rm -rf binary-version_101
+
 # Copy all manifest files
 {{#web3api_manifests}}
 COPY {{.}} .
@@ -14,6 +20,7 @@ COPY {{.}} .
 {{#include}}
 COPY {{.}} {{.}}
 {{/include}}
+
 {{#web3api_modules}}
 COPY {{dir}} {{dir}}
 
@@ -23,7 +30,14 @@ RUN rm -rf {{dir}}/Cargo.lock
 
 {{#web3api_modules}}
 # Build the module at {{dir}}
-RUN cargo build --manifest-path {{dir}}/Cargo.toml \
+RUN cargo build --manifest-path ./{{dir}}/Cargo.toml \
     --release --target wasm32-unknown-unknown
+{{/web3api_modules}}
 
+# Make the build directory
+RUN mkdir ./build
+
+# Use wasm-opt to perform the "asyncify" post-processing step over all modules
+{{#web3api_modules}}
+RUN wasm-opt --asyncify -O2 ./{{dir}}/target/wasm32-unknown-unknown/release/{{name}}.wasm -o ./build/{{name}}.wasm
 {{/web3api_modules}}

@@ -6,10 +6,6 @@ use polywrap_wasm_rs::{
     WriteEncoder,
     WriteSizer,
 };
-use serde::{
-    Deserialize,
-    Serialize,
-};
 {{#propertyDeps.length}}
 
 {{#propertyDeps}}
@@ -27,7 +23,7 @@ use crate::{
 {{/propertyDeps.length}}
 {{#methods}}
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug)]
 pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
     {{#arguments}}
     pub {{#toLower}}{{name}}{{/toLower}}: {{#noBox}}{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}{{/noBox}},

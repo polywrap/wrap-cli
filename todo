@@ -1,2 +1,3 @@
-* 1. Remove Box from Input... objects
-* 2. Remove Box for non-circular objects (only use for circular relationships)
+* 1. Remove Box for non-circular objects (only use for circular relationships)
+* 2. size
+* 3. full test coverage

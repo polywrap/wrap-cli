@@ -1,0 +1,14 @@
+[
+  {
+    "api": "ens/testnet/rust-sanity.eth"
+  },
+  {
+    "query": "./query-method.graphql",
+    "variables": {
+      "arg": {
+        "propA": "foo",
+        "propB": "bar"
+      }
+    }
+  }
+]

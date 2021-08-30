@@ -7,13 +7,9 @@ pub use super::super::common::{
 };
 {{/__commonImport}}
 {{^__commonImport}}
-use serde::{
-    Deserialize,
-    Serialize,
-};
 use std::convert::TryFrom;
 
-#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
+#[derive(Clone, Copy, Debug)]
 pub enum {{#toUpper}}{{type}}{{/toUpper}} {
     {{#constants}}
     {{.}},

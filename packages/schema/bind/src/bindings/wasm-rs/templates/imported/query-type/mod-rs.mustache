@@ -3,10 +3,6 @@ pub use super::super::common::TestImportQuery;
 {{/__commonImport}}
 {{^__commonImport}}
 use polywrap_wasm_rs::subinvoke;
-use serde::{
-    Deserialize,
-    Serialize,
-};
 pub mod serialization;
 {{#methods.length}}
 pub use serialization::{
@@ -24,7 +20,7 @@ use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
 {{/propertyDeps}}
 {{/propertyDeps.length}}
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug)]
 pub struct {{#toUpper}}{{type}}{{/toUpper}};
 
 impl {{#toUpper}}{{type}}{{/toUpper}} {

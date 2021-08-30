@@ -7,10 +7,6 @@ use polywrap_wasm_rs::{
     Read,
     Write,
 };
-use serde::{
-    Deserialize,
-    Serialize,
-};
 pub use serialization::{
     deserialize_{{#toLower}}{{type}}{{/toLower}},
     read_{{#toLower}}{{type}}{{/toLower}},
@@ -24,7 +20,7 @@ use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
 {{/propertyDeps}}
 {{/propertyDeps.length}}
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug)]
 pub struct {{#toUpper}}{{type}}{{/toUpper}} {
     {{#properties}}
     pub {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
