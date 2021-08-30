@@ -59,6 +59,11 @@ export const typeInfo: TypeInfo = {
               type: "String",
             }),
             createScalarPropertyDefinition({
+              name: "realjhajkhaj",
+              required: false,
+              type: "String",
+            }),
+            createScalarPropertyDefinition({
               name: "str",
               required: true,
               type: "String",
