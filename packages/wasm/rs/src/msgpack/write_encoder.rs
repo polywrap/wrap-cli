@@ -3,11 +3,10 @@ use super::data_view::DataView;
 use super::format::Format;
 use super::write::Write;
 use num_bigint::BigInt;
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::hash::Hash;
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default)]
 pub struct WriteEncoder {
     context: Context,
     view: DataView,

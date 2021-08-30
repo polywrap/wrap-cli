@@ -1,10 +1,9 @@
 //! Context stores debug information in a stack, and
 //! prints it in a clear format
 
-use serde::{Deserialize, Serialize};
 use std::fmt;
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default)]
 pub struct Context {
     pub description: String,
     nodes: Vec<Node>,
@@ -92,7 +91,7 @@ impl Context {
 }
 
 #[allow(dead_code)]
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default)]
 pub struct Node {
     node_item: String,
     node_type: String,

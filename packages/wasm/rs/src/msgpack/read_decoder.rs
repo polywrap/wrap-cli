@@ -3,12 +3,11 @@ use super::data_view::DataView;
 use super::format::Format;
 use super::read::Read;
 use num_bigint::BigInt;
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::hash::Hash;
 use std::str::FromStr;
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default)]
 pub struct ReadDecoder {
     context: Context,
     view: DataView,

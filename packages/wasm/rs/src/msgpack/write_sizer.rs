@@ -1,11 +1,10 @@
 use super::write::Write;
 use crate::Context;
 use num_bigint::BigInt;
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::hash::Hash;
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default)]
 pub struct WriteSizer {
     pub length: i32,
     context: Context,

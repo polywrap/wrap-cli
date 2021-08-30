@@ -1,7 +1,5 @@
-use serde::{Deserialize, Serialize};
-
 #[non_exhaustive]
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default)]
 pub struct Format;
 
 impl Format {

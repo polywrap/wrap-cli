@@ -12,6 +12,7 @@ authors = [
 ]
 keywords = ["polywrap", "wasm", "webassembly"]
 categories = ["wasm"]
+edition = "2018"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -19,4 +20,3 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 num = "0.4.0"
 num-bigint = "0.4.0"
-serde = { version = "1.0.126", features = ["derive"] }

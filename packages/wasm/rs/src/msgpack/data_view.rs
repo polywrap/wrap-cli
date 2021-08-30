@@ -2,10 +2,9 @@ use super::context::Context;
 use super::utils::throw_index_out_of_range;
 use super::{BLOCK_MAX_SIZE, E_INVALID_LENGTH};
 use num::FromPrimitive;
-use serde::{Deserialize, Serialize};
 use std::sync::atomic::{AtomicPtr, Ordering};
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default)]
 pub struct DataView {
     data_start: u32,
     buffer: Vec<u8>,
