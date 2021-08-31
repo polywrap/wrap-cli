@@ -62,7 +62,7 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
       {{/enum}}
       {{#object}}
       {{> deserialize_object}}
-      _{{name}} = Some(object);
+      _{{name}} = object;
       {{/object}}
       {{#required}}
       _{{name}}Set = true;

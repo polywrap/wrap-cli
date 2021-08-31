@@ -1,3 +1,4 @@
+* 0. Remove _w3_init
 * 1. Remove Box for non-circular objects (only use for circular relationships)
 * 2. size
 * 3. full test coverage

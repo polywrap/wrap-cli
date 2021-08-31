@@ -1,4 +1,4 @@
-FROM rust:{{rust_version}} as base
+FROM rust:1.45 as base
 
 # Install the wasm32 rust build target
 RUN rustup target add wasm32-unknown-unknown
@@ -12,34 +12,30 @@ RUN curl -L https://github.com/WebAssembly/binaryen/releases/download/version_10
     && rm -rf binary-version_101
 
 # Copy all manifest files
-{{#web3api_manifests}}
-COPY {{.}} .
-{{/web3api_manifests}}
+COPY web3api.yaml .
+COPY .w3/build/env/web3api.build.yaml .
 
 # Copy all source files
-{{#include}}
-COPY {{.}} {{.}}
-{{/include}}
 
-{{#web3api_modules}}
-COPY {{dir}} {{dir}}
-{{/web3api_modules}}
+COPY mutation mutation
 
 # Remove any Cargo.lock files
-{{#web3api_modules}}
-RUN rm -rf {{dir}}/Cargo.lock
-{{/web3api_modules}}
+RUN rm -rf mutation/Cargo.lock
+COPY query query
 
-{{#web3api_modules}}
-# Build the module at {{dir}}
-RUN cargo build --manifest-path ./{{dir}}/Cargo.toml \
+# Remove any Cargo.lock files
+RUN rm -rf query/Cargo.lock
+
+# Build the module at mutation
+RUN cargo build --manifest-path ./mutation/Cargo.toml \
     --release --target wasm32-unknown-unknown
-{{/web3api_modules}}
+# Build the module at query
+RUN cargo build --manifest-path ./query/Cargo.toml \
+    --release --target wasm32-unknown-unknown
 
 # Make the build directory
 RUN mkdir ./build
 
 # Use wasm-opt to perform the "asyncify" post-processing step over all modules
-{{#web3api_modules}}
-RUN wasm-opt --asyncify -O2 ./{{dir}}/target/wasm32-unknown-unknown/release/{{name}}.wasm -o ./build/{{name}}.wasm
-{{/web3api_modules}}
+RUN wasm-opt --asyncify -O2 ./mutation/target/wasm32-unknown-unknown/release/mutation.wasm -o ./build/mutation.wasm
+RUN wasm-opt --asyncify -O2 ./query/target/wasm32-unknown-unknown/release/query.wasm -o ./build/query.wasm
