@@ -36,7 +36,7 @@ export interface State {
 }
 
 export class WasmWeb3Api extends Api {
-  public static requiredExports: readonly string[] = ["_w3_init", "_w3_invoke"];
+  public static requiredExports: readonly string[] = ["_w3_invoke"];
 
   private _schema?: string;
 
@@ -106,8 +106,6 @@ export class WasmWeb3Api extends Api {
         });
 
         const exports = instance.exports as W3Exports;
-
-        exports._w3_init();
 
         const result = await exports._w3_invoke(
           state.method.length,
