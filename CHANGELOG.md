@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.38
+## Breaking-Change
+* `@web3api/client-js`: Removed the usage of `_w3_init`, as it's unnecessary and caused issues with adding Rust-Wasm support.
+
 # Web3API 0.0.1-prealpha.37
 ## Bugs
 * `@web3api/asyncify-js`: Fixed problem when Wasm modules are larger than 4 KB. More info [here](https://github.com/polywrap/monorepo/pull/450).
