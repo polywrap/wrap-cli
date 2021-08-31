@@ -1,3 +1,5 @@
+use crate::memory::alloc;
+
 #[link(wasm_import_module = "w3")]
 extern "C" {
     /// Subinvoke API
@@ -52,15 +54,18 @@ pub fn w3_subinvoke(
     };
     if !success {
         let error_len = unsafe { __w3_subinvoke_error_len() };
-        let message_buf: Vec<u8> = Vec::with_capacity(error_len as usize);
-        let message_buf_u32 = message_buf.as_ptr() as u32;
-        unsafe { __w3_subinvoke_error(message_buf_u32) };
-        let message = std::str::from_utf8(message_buf.as_slice()).unwrap();
-        return Err(message.to_string());
+        let error_buf_ptr = alloc(error_len as usize);
+        unsafe { __w3_subinvoke_error(error_buf_ptr as u32) };
+        let error = unsafe {
+            String::from_raw_parts(error_buf_ptr, error_len as usize, error_len as usize)
+        };
+        return Err(error);
     }
-    let result_len = unsafe { __w3_subinvoke_result_len() };
-    let result_buf: Vec<u8> = Vec::with_capacity(result_len as usize);
-    let result_buf_u32 = result_buf.as_ptr() as u32;
-    unsafe { __w3_subinvoke_result(result_buf_u32) };
+    let result_len = unsafe { __w3_subinvoke_result_len() }; 
+    let result_buf_ptr = alloc(result_len as usize);
+    unsafe { __w3_subinvoke_result(result_buf_ptr as u32) };
+    let result_buf = unsafe {
+        Vec::from_raw_parts(result_buf_ptr, result_len as usize, result_len as usize)
+    };
     Ok(result_buf)
 }

@@ -1,3 +1,5 @@
+use crate::memory::alloc;
+
 #[link(wasm_import_module = "w3")]
 extern "C" {
     /// Get Invoke Arguments
@@ -21,21 +23,23 @@ pub struct InvokeArgs {
 
 #[allow(unused_unsafe)]
 pub fn w3_invoke_args(method_size: u32, args_size: u32) -> InvokeArgs {
-    let method_buf: Vec<u8> = Vec::with_capacity(method_size as usize);
-    let args_buf: Vec<u8> = Vec::with_capacity(args_size as usize);
+    let method_buf_ptr = alloc(method_size as usize);
+    let args_buf_ptr = alloc(args_size as usize);
 
-    let method_buf_u32 = method_buf.as_ptr() as u32;
-    let args_buf_u32 = args_buf.as_ptr() as u32;
+    unsafe { __w3_invoke_args(method_buf_ptr as u32, args_buf_ptr as u32) };
 
-    unsafe { __w3_invoke_args(method_buf_u32, args_buf_u32) };
-
-    let method = String::from_utf8(method_buf).unwrap();
+    let method = unsafe {
+        String::from_raw_parts(method_buf_ptr, method_size as usize, method_size as usize)
+    };
+    let args = unsafe {
+        Vec::from_raw_parts(args_buf_ptr, args_size as usize, args_size as usize)
+    };
 
     unsafe { __w3_log(method.as_ptr() as u32, method.len() as u32) };
 
     InvokeArgs {
         method: method,
-        args: args_buf
+        args: args,
     }
 }
 
