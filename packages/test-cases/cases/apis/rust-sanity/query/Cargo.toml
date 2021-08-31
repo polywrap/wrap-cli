@@ -13,7 +13,7 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 num = "0.4.0"
 num-bigint = "0.4.0"
-polywrap-wasm-rs = "0.0.1-prealpha-dev.36"
+polywrap-wasm-rs = "0.0.1-prealpha-dev.37"
 
 [profile.release]
 opt-level = "s"
