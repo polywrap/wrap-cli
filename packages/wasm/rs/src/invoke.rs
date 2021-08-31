@@ -8,6 +8,8 @@ extern "C" {
 
     /// Set Invoke Error
     pub fn __w3_invoke_error(ptr: u32, len: u32);
+
+    pub fn __w3_log(ptr: u32, len: u32);
 }
 
 pub type InvokeFunction = fn(args_buf: &[u8]) -> Vec<u8>;
@@ -29,6 +31,8 @@ pub fn w3_invoke_args(method_size: u32, args_size: u32) -> InvokeArgs {
 
     let method = std::str::from_utf8(method_buf.as_slice()).unwrap();
 
+    unsafe { __w3_log(method.as_ptr() as u32, method.len() as u32) };
+
     InvokeArgs {
         method: String::from(method),
         args: args_buf
@@ -38,6 +42,7 @@ pub fn w3_invoke_args(method_size: u32, args_size: u32) -> InvokeArgs {
 /// Helper for handling _w3_invoke
 #[allow(unused_unsafe)]
 pub fn w3_invoke(options: InvokeArgs, opt_invoke_func: Option<InvokeFunction>) -> bool {
+    unsafe { __w3_log(options.method.as_ptr() as u32, options.method.len() as u32) };
     if opt_invoke_func.is_some() {
         if let Some(func) = opt_invoke_func {
             let result = func(options.args.as_slice());
