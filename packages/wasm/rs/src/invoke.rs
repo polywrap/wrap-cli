@@ -29,12 +29,12 @@ pub fn w3_invoke_args(method_size: u32, args_size: u32) -> InvokeArgs {
 
     unsafe { __w3_invoke_args(method_buf_u32, args_buf_u32) };
 
-    let method = std::str::from_utf8(method_buf.as_slice()).unwrap();
+    let method = String::from_utf8(method_buf).unwrap();
 
     unsafe { __w3_log(method.as_ptr() as u32, method.len() as u32) };
 
     InvokeArgs {
-        method: String::from(method),
+        method: method,
         args: args_buf
     }
 }
