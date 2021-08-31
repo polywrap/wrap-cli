@@ -13,8 +13,8 @@ extern "C" {
 pub type InvokeFunction = fn(args_buf: &[u8]) -> Vec<u8>;
 
 pub struct InvokeArgs {
-    method: String,
-    args: Vec<u8>
+    pub method: String,
+    pub args: Vec<u8>
 }
 
 #[allow(unused_unsafe)]
