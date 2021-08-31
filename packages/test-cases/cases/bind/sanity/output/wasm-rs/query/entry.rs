@@ -5,15 +5,22 @@ use crate::{
 use polywrap_wasm_rs::{
     abort,
     invoke,
+    InvokeArgs,
 };
 
-pub fn _w3_init() {
-    invoke::w3_add_invoke("query_method", query_method_wrapped);
-    invoke::w3_add_invoke("object_method", object_method_wrapped);
-}
-
 pub fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
-    invoke::w3_invoke(method_size, args_size)
+    let args: InvokeArgs = invoke::w3_invoke_args(
+        method_size,
+        args_size
+    );
+
+    match args.method {
+        "queryMethod" =>
+            return invoke::w3_invoke(args, query_method_wrapped);
+        "objectMethod" =>
+            return invoke::w3_invoke(args, mutation_method_wrapped);
+        _ => return invoke::w3_invoke(args, None);
+    }
 }
 
 pub fn w3_abort(msg: &str, file: &str, line: u32, column: u32) {

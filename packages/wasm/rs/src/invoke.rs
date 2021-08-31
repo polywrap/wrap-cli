@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 #[link(wasm_import_module = "w3")]
 extern "C" {
     /// Get Invoke Arguments
@@ -13,34 +12,13 @@ extern "C" {
 
 pub type InvokeFunction = fn(args_buf: &[u8]) -> Vec<u8>;
 
-// Keep track of all invokable functions
-#[derive(Clone)]
-pub struct Invoke {
-    invokes: HashMap<String, InvokeFunction>,
+pub struct InvokeArgs {
+    method: String,
+    args: Vec<u8>
 }
 
-impl Invoke {
-    pub fn new() -> Self {
-        Self {
-            invokes: HashMap::new(),
-        }
-    }
-}
-
-impl Default for Invoke {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-pub fn w3_add_invoke(method: &str, func: InvokeFunction) {
-    let mut invoke = Invoke::new();
-    invoke.invokes.insert(method.to_string(), func);
-}
-
-/// Helper for handling _w3_invoke
 #[allow(unused_unsafe)]
-pub fn w3_invoke(method_size: u32, args_size: u32) -> bool {
+pub fn w3_invoke_args(method_size: u32, args_size: u32) -> InvokeArgs {
     let method_buf: Vec<u8> = Vec::with_capacity(method_size as usize);
     let args_buf: Vec<u8> = Vec::with_capacity(args_size as usize);
 
@@ -50,11 +28,19 @@ pub fn w3_invoke(method_size: u32, args_size: u32) -> bool {
     unsafe { __w3_invoke_args(method_buf_u32, args_buf_u32) };
 
     let method = std::str::from_utf8(method_buf.as_slice()).unwrap();
-    let invoke = Invoke::new();
-    let opt_invoke_func = invoke.invokes.get(method);
+
+    InvokeArgs {
+        method: String::from(method),
+        args: args_buf
+    }
+}
+
+/// Helper for handling _w3_invoke
+#[allow(unused_unsafe)]
+pub fn w3_invoke(options: InvokeArgs, opt_invoke_func: Option<InvokeFunction>) -> bool {
     if opt_invoke_func.is_some() {
         if let Some(func) = opt_invoke_func {
-            let result = func(args_buf.as_slice());
+            let result = func(options.args.as_slice());
             let result_u32 = result.as_ptr() as u32;
 
             unsafe { __w3_invoke_result(result_u32, result.len() as u32) };
@@ -63,7 +49,7 @@ pub fn w3_invoke(method_size: u32, args_size: u32) -> bool {
             false
         }
     } else {
-        let message = format!("Could not find invoke function {}", method);
+        let message = format!("Could not find invoke function {}", options.method);
         let message_u32 = message.as_ptr() as u32;
         unsafe { __w3_invoke_error(message_u32, message.len() as u32) };
         false
