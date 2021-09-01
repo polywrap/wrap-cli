@@ -13,7 +13,7 @@ RUN curl -L https://github.com/WebAssembly/binaryen/releases/download/version_10
 
 # Copy all manifest files
 COPY web3api.yaml .
-COPY .w3/build/env/web3api.build.yaml .
+COPY web3api.build.yaml .
 
 # Copy all source files
 

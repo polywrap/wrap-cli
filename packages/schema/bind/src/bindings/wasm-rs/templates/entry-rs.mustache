@@ -10,24 +10,42 @@ use crate::{
 use polywrap_wasm_rs::{
     abort,
     invoke,
-    InvokeArgs
 };
+
+#[link(wasm_import_module = "w3")]
+extern "C" {
+    pub fn __w3_log(ptr: u32, len: u32);
+}
 
 #[no_mangle]
 pub extern "C" fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
-    let args: InvokeArgs = invoke::w3_invoke_args(
+    let args = invoke::w3_invoke_args(
         method_size,
         args_size
     );
 
-    match args.method {
+    let test = String::from("test test test");
+
+    unsafe { __w3_log(test.as_ptr() as u32, test.len() as u32) };
+
+    let other = "other other other";
+
+    unsafe { __w3_log(other.as_ptr() as u32, other.len() as u32) };
+
+    let info = format!("{} {}", method_size, args_size);
+    let argInfo = format!("{} {}", args.method, args.args.len());
+
+    unsafe { __w3_log(info.as_ptr() as u32, info.len() as u32) };
+    unsafe { __w3_log(argInfo.as_ptr() as u32, argInfo.len() as u32) };
+
+    match args.method.as_str() {
         {{#queryTypes}}
         {{#methods}}
         "{{name}}" =>
-            return invoke::w3_invoke(args, {{#toLower}}{{name}}{{/toLower}}_wrapped);
+            return invoke::w3_invoke(args, Some({{#toLower}}{{name}}{{/toLower}}_wrapped)),
         {{/methods}}
         {{/queryTypes}}
-        _ => return invoke::w3_invoke(options, None);
+        _ => return invoke::w3_invoke(args, None),
     }
 }
 

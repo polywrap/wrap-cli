@@ -124,6 +124,10 @@ export const createImports = (config: {
         const memory = getMemory();
         state.invoke.error = readString(memory.buffer, ptr, len);
       },
+      __w3_log: (ptr: u32, len: u32): void => {
+        const memory = getMemory();
+        console.log("LOG: ", readString(memory.buffer, ptr, len));
+      },
       __w3_abort: (
         msgPtr: u32,
         msgLen: u32,
