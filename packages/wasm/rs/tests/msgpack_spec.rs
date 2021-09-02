@@ -1,6 +1,5 @@
 use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use std::collections::HashMap;
-use std::io::{Error, ErrorKind, Result};
 
 #[derive(Debug, Clone)]
 pub struct Sanity {
@@ -115,21 +114,21 @@ impl Sanity {
         buffer.to_vec()
     }
 
-    fn from_buffer(&mut self, buffer: &[u8]) -> Result<()> {
+    fn from_buffer(&mut self, buffer: &[u8]) -> Result<(), String> {
         let mut context = Context::new();
         context.description = "Deserialize sanity (from buffer)...".to_string();
         let decoder = ReadDecoder::new(buffer, context);
         deserialize_sanity(decoder, self)
     }
 
-    fn from_buffer_with_invalid_types(&mut self, buffer: &[u8]) -> Result<()> {
+    fn from_buffer_with_invalid_types(&mut self, buffer: &[u8]) -> Result<(), String> {
         let mut context = Context::new();
         context.description = "Deserialize sanity (from buffer with invalid types)...".to_string();
         let decoder = ReadDecoder::new(buffer, context);
         deserialize_with_invalid_types(decoder, self)
     }
 
-    fn from_buffer_with_overflows(&mut self, buffer: &[u8]) -> Result<()> {
+    fn from_buffer_with_overflows(&mut self, buffer: &[u8]) -> Result<(), String> {
         let mut context = Context::new();
         context.description = "Deserialize sanity (from buffer with overflows)...".to_string();
         let decoder = ReadDecoder::new(buffer, context);
@@ -201,7 +200,7 @@ fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
     );
 }
 
-fn deserialize_sanity<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<()> {
+fn deserialize_sanity<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<(), String> {
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -270,15 +269,14 @@ fn deserialize_sanity<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<()>
             "large_bytes_array" => {}
             "map" => {}
             _ => {
-                let custom_error = format!("Sanity.decode: Unknown field name '{}'", field);
-                return Err(Error::new(ErrorKind::InvalidInput, custom_error));
+                return Err(format!("Sanity.decode: Unknown field name '{}'", field));
             }
         }
     }
     Ok(())
 }
 
-fn deserialize_with_overflow<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<()> {
+fn deserialize_with_overflow<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<(), String> {
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -347,15 +345,17 @@ fn deserialize_with_overflow<R: Read>(mut reader: R, sanity: &mut Sanity) -> Res
             "large_bytes_array" => {}
             "map" => {}
             _ => {
-                let custom_error = format!("Sanity.decode: Unknown field name '{}'", field);
-                return Err(Error::new(ErrorKind::InvalidInput, custom_error));
+                return Err(format!("Sanity.decode: Unknown field name '{}'", field));
             }
         }
     }
     Ok(())
 }
 
-fn deserialize_with_invalid_types<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<()> {
+fn deserialize_with_invalid_types<R: Read>(
+    mut reader: R,
+    sanity: &mut Sanity,
+) -> Result<(), String> {
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -424,8 +424,7 @@ fn deserialize_with_invalid_types<R: Read>(mut reader: R, sanity: &mut Sanity) -
             "large_bytes_array" => {}
             "map" => {}
             _ => {
-                let custom_error = format!("Sanity.decode: Unknown field name '{}'", field);
-                return Err(Error::new(ErrorKind::InvalidInput, custom_error));
+                return Err(format!("Sanity.decode: Unknown field name '{}'", field));
             }
         }
     }
