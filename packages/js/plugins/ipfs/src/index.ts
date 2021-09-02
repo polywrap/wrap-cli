@@ -155,7 +155,6 @@ export class IpfsPlugin extends Plugin {
           clearTimeout(timer);
 
           if (
-            controller.signal.aborted &&
             this._config.fallbackProviders &&
             !providerOverride
           ) {

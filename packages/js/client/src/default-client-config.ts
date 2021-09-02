@@ -22,7 +22,8 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           plugin: ipfsPlugin({
             provider: "https://ipfs.io",
             fallbackProviders: [
-              "https://polywrap-dev.mypinata.cloud/"
+              "https://polywrap-dev.mypinata.cloud",
+              "https://ipfs.infura.io"
             ]
           }),
         },
