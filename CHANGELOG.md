@@ -1,5 +1,12 @@
+# Web3API 0.0.1-prealpha.39
+## Features
+* `@web3api/client-js`: Added `https://polywrap-dev.mypinata.cloud` and `https://ipfs.infura.io` as default fallback IPFS providers.
+
+## Bugs
+* `@web3api/ipfs-plugin-js`: Fallback providers are now used if an error is encountered, not just for timeouts.
+
 # Web3API 0.0.1-prealpha.38
-## Breaking-Change
+## Breaking Changes
 * `@web3api/client-js`: Removed the usage of `_w3_init`, as it's unnecessary and caused issues with adding Rust-Wasm support.
 
 # Web3API 0.0.1-prealpha.37

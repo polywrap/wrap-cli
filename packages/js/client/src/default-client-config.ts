@@ -19,7 +19,13 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         // IPFS is required for downloading Web3API packages
         {
           uri: new Uri("w3://ens/ipfs.web3api.eth"),
-          plugin: ipfsPlugin({ provider: "https://ipfs.io" }),
+          plugin: ipfsPlugin({
+            provider: "https://ipfs.io",
+            fallbackProviders: [
+              "https://polywrap-dev.mypinata.cloud",
+              "https://ipfs.infura.io"
+            ]
+          }),
         },
         // ENS is required for resolving domain to IPFS hashes
         {
