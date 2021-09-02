@@ -1428,12 +1428,12 @@ describe("Web3ApiClient", () => {
     const invalidBoolIntSent = await client.query({
       uri: ensUri,
       query: `
-      query {
-        boolMethod(
-          arg: $integer
-        )
-      }
-    `,
+        query {
+          boolMethod(
+            arg: $integer
+          )
+        }
+      `,
       variables: {
         integer: 10,
       },

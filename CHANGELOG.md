@@ -1,3 +1,19 @@
+# Web3API 0.0.1-prealpha.39
+## Features
+* `@web3api/client-js`: Added `https://polywrap-dev.mypinata.cloud` and `https://ipfs.infura.io` as default fallback IPFS providers.
+
+## Bugs
+* `@web3api/ipfs-plugin-js`: Fallback providers are now used if an error is encountered, not just for timeouts.
+
+# Web3API 0.0.1-prealpha.38
+## Breaking Changes
+* `@web3api/client-js`: Removed the usage of `_w3_init`, as it's unnecessary and caused issues with adding Rust-Wasm support.
+
+# Web3API 0.0.1-prealpha.37
+## Bugs
+* `@web3api/asyncify-js`: Fixed problem when Wasm modules are larger than 4 KB. More info [here](https://github.com/polywrap/monorepo/pull/450).
+* `@web3api/client-js`: Use new asyncify-js package, where instantiation is asynchronous.
+
 # Web3API 0.0.1-prealpha.36
 ## Features
 * Upgrade all JavaScript plugins to use the new `w3 plugin codegen` command. The command generates typings based on the GraphQL schema of the plugin. This ensures the plugin's resolvers match 1:1 with the GraphQL schema.

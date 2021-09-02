@@ -1,19 +1,8 @@
 import { Uri, InvokeApiOptions } from "./";
 
 import { Tracer } from "@web3api/tracing-js";
-import { DocumentNode, parse } from "graphql";
+import { DocumentNode } from "graphql";
 import gql from "graphql-tag";
-
-/** GraphQL SchemaDocument */
-export type SchemaDocument = DocumentNode;
-
-/** Create a GraphQL SchemaDocument by parsing a string */
-export const createSchemaDocument = Tracer.traceFunc(
-  "core: createSchemaDocument",
-  (schema: string): SchemaDocument => {
-    return parse(schema);
-  }
-);
 
 /** GraphQL QueryDocument */
 export type QueryDocument = DocumentNode;
