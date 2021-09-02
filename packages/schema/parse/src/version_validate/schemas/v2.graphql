@@ -1,0 +1,293 @@
+scalar UInt
+scalar UInt8
+scalar UInt16
+scalar UInt32
+scalar Int
+scalar Int8
+scalar Int16
+scalar Int32
+scalar Bytes
+scalar BigInt
+
+directive @imported(
+  uri: String!
+  namespace: String!
+  nativeType: String!
+) on OBJECT | ENUM
+
+directive @imports(
+  types: [String!]!
+) on OBJECT
+
+"""
+CustomEnum comment
+"""
+enum CustomEnum {
+  TEXT
+  BINARY
+}
+
+"""
+CustomType multi-line comment
+line 2
+"""
+type CustomType {
+"""
+str comment
+"""
+  str: String!
+"""
+optStr comment
+"""
+  optStr: String
+  u: UInt!
+  optU: UInt
+  u8: UInt8!
+  u16: UInt16!
+  u32: UInt32!
+  i: Int!
+  i8: Int8!
+  i16: Int16!
+  i32: Int32!
+  bigint: BigInt!
+  optBigint: BigInt
+  bytes: Bytes!
+  uArray: [UInt!]!
+  uOptArray: [UInt!]
+  optUOptArray: [UInt]
+  optStrOptArray: [String]
+  uArrayArray: [[UInt!]!]!
+  uOptArrayOptArray: [[UInt32]]!
+  uArrayOptArrayArray: [[[UInt32!]!]]!
+  crazyArray: [[[[UInt32!]]!]]
+  objectArray: [UserObject!]!
+  objectArrayArray: [[UserObject!]!]!
+  nestedObject: UserObject!
+  optNestedObject: UserObject
+  optEnum: CustomEnum
+  enum: CustomEnum!
+  enumArray: [CustomEnum!]!,
+  optEnumArray: [CustomEnum]
+}
+
+"""
+AnotherType comment
+"""
+type AnotherType {
+"""
+prop comment
+"""
+  prop: String
+}
+
+"""
+UserObject comment
+"""
+type UserObject {
+  fieldA: String
+  fieldB: Int!
+  nostr: String
+}
+
+"""
+ImplementationObject comment
+"""
+type ImplementationObject implements Interface_Object & Interface_Object2 {
+"""
+anotherProp comment
+"""
+  anotherProp: String
+  str: String!
+  uint8: UInt8!
+  str2: String!
+}
+
+"""
+Query comment
+"""
+type Query implements Interface_Query @imports(
+  types: [ "TestImport_Query", "Interface_Query" ]
+) {
+"""
+queryMethod comment
+"""
+  queryMethod(
+"""
+arg comment
+"""
+    arg: String!
+  ): [Int]!
+"""
+userObjectMethod comment
+"""
+  userObjectMethod(
+"""
+userObject comment
+"""
+    userObject: UserObject
+"""
+arrayObject comment
+"""
+    arrayObject: [UserObject!]!
+  ): UserObject!
+"""
+enumMethod comment
+"""
+  enumMethod(
+"""
+enum comment
+"""
+    enum: CustomEnum,
+"""
+arrayEnum comment
+"""
+    arrayEnum: [CustomEnum!]!
+  ): CustomEnum!
+"""
+abstractMethod comment
+"""
+  abstractMethod(
+    arg: UInt8!
+  ): String!
+}
+
+"""
+TestImport_Query comment
+"""
+type TestImport_Query @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Query"
+) {
+"""
+importedMethod comment
+"""
+  importedMethod(
+    str: String!
+    optStr: String
+    u: UInt!
+    optU: UInt
+"""
+uArrayArray comment
+"""
+    uArrayArray: [[UInt]]!
+  ): String!
+
+  anotherMethod(
+    arg: [String!]!
+  ): [Int32]!
+
+  importedObjectMethod(
+    importedObject: TestImport_Object!
+  ): TestImport_Object!
+
+  importedEnumMethod(
+    enum: TestImport_Enum!
+    optEnum: TestImport_Enum
+  ): TestImport_Enum!
+}
+
+"""
+TestImport_Mutation comment
+"""
+type TestImport_Mutation @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Mutation"
+) {
+"""
+importedMethod comment
+"""
+  importedMethod(
+"""
+str comment
+"""
+    str: String!
+  ): String!
+}
+
+"""
+TestImport_Object comment
+"""
+type TestImport_Object @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Object"
+) {
+"""
+prop comment
+"""
+  prop: String!
+"""
+nested comment
+"""
+  nested: TestImport_NestedObject!
+}
+
+"""
+TestImport_NestedObject comment
+"""
+type TestImport_NestedObject @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "NestedObject"
+) {
+"""
+foo comment
+"""
+  foo: [String!]!
+  circular: TestImport_Object
+}
+
+"""
+TestImport_Enum comment
+"""
+enum TestImport_Enum @imported(
+  namespace: "TestImport",
+  uri: "testimport.uri.eth",
+  nativeType: "Enum"
+) {
+  TEXT
+  BYTES
+}
+
+"""
+Interface_Query comment
+"""
+type Interface_Query @imported(
+  uri: "interface.uri.eth",
+  namespace: "Interface",
+  nativeType: "Query"
+) {
+"""
+abstractMethod comment
+"""
+  abstractMethod(
+    arg: UInt8!
+  ): String!
+}
+
+"""
+Interface_Object commentdddd
+"""
+type Interface_Object @imported(
+  uri: "interface.uri.eth",
+  namespace: "Interface",
+  nativeType: "Object"
+) {
+
+      uint8: UInt8!
+  str: String!
+
+}
+
+"""
+Interface_Object2 comment
+"""
+type Interface_Object2 @imported(
+  uri: "interface.uri.eth",
+  namespace: "Interface",
+  nativeType: "Object2"
+) {
+  str2: String!
+}

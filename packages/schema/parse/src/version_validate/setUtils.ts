@@ -21,7 +21,7 @@ export function symmentric_difference<T>(set1: Set<T>, set2: Set<T>): Set<T> {
 }
 
 export function compareSets<T>(set1: Set<T>, set2: Set<T>): SetComparisionType {
-  let sd: Set<T> = symmentric_difference(set1, set2);
+  const sd: Set<T> = symmentric_difference(set1, set2);
   if (sd.size === 0) {
     return SetComparisionType.EQUAL;
   } else if (difference(set1, set2).size === 0) {
