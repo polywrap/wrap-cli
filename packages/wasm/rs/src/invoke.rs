@@ -18,7 +18,7 @@ pub type InvokeFunction = fn(args_buf: &[u8]) -> Vec<u8>;
 
 pub struct InvokeArgs {
     pub method: String,
-    pub args: Vec<u8>
+    pub args: Vec<u8>,
 }
 
 #[allow(unused_unsafe)]
@@ -31,9 +31,7 @@ pub fn w3_invoke_args(method_size: u32, args_size: u32) -> InvokeArgs {
     let method = unsafe {
         String::from_raw_parts(method_buf_ptr, method_size as usize, method_size as usize)
     };
-    let args = unsafe {
-        Vec::from_raw_parts(args_buf_ptr, args_size as usize, args_size as usize)
-    };
+    let args = unsafe { Vec::from_raw_parts(args_buf_ptr, args_size as usize, args_size as usize) };
 
     unsafe { __w3_log(method.as_ptr() as u32, method.len() as u32) };
 

@@ -37,9 +37,9 @@
 
 pub mod abort;
 pub mod invoke;
+pub mod memory;
 pub mod msgpack;
 pub mod subinvoke;
-pub mod memory;
 
 pub use msgpack::{
     context::Context, read::Read, read_decoder::ReadDecoder, write::Write,
