@@ -23,8 +23,8 @@ export const getDefaultClientConfig = Tracer.traceFunc(
             provider: "https://ipfs.io",
             fallbackProviders: [
               "https://polywrap-dev.mypinata.cloud",
-              "https://ipfs.infura.io"
-            ]
+              "https://ipfs.infura.io",
+            ],
           }),
         },
         // ENS is required for resolving domain to IPFS hashes

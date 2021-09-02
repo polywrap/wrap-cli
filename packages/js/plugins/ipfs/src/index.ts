@@ -154,10 +154,7 @@ export class IpfsPlugin extends Plugin {
 
           clearTimeout(timer);
 
-          if (
-            this._config.fallbackProviders &&
-            !providerOverride
-          ) {
+          if (this._config.fallbackProviders && !providerOverride) {
             // Retry with a new provider
             fallbackIdx += 1;
 
