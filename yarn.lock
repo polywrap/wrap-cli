@@ -12,28 +12,10 @@
     call-me-maybe "^1.0.1"
     js-yaml "^4.1.0"
 
-"@as-pect/assembly@^5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@as-pect/assembly/-/assembly-5.0.1.tgz#052bb0082db81ec11c4756312ab182ec6eda3025"
-  integrity sha512-8tkBALZa8jjUmBoz67gRyl8X501IWzkyRl7rxIcJq6HycudlmL8zfxtZL4x70gtvK4nDcb885FmrnnknH5L+hQ==
-
 "@as-pect/assembly@^6.0.0", "@as-pect/assembly@^6.2.0":
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/@as-pect/assembly/-/assembly-6.2.0.tgz#29a0efa173df321354b76d92228e46944159ba95"
   integrity sha512-jYr1jdlr0xNndIhOpTMBaPHmlhD/c3PcVCzow8wIkzLxgcSOzhBkqjip+LWPWGsiFK1vsZ8ZUaMTeK3fcnXQhw==
-
-"@as-pect/cli@5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@as-pect/cli/-/cli-5.0.1.tgz#2f66026aac759c837048dfd43cdf94c332a64aef"
-  integrity sha512-ceQFmeBpBqqbs8yJnyG2ZRfyaOUg8df7UFjoX8d++rlMOLHW0ZP/QByXZgmCpYo1aLP1wwvB2so6zUj2NeWECw==
-  dependencies:
-    "@as-pect/assembly" "^5.0.1"
-    "@as-pect/core" "^5.0.1"
-    chalk "^4.1.0"
-    glob "^7.1.6"
-  optionalDependencies:
-    "@as-pect/csv-reporter" "^5.0.1"
-    "@as-pect/json-reporter" "^5.0.1"
 
 "@as-pect/cli@6.0.0":
   version "6.0.0"
@@ -48,16 +30,6 @@
     "@as-pect/csv-reporter" "^6.0.0"
     "@as-pect/json-reporter" "^6.0.0"
 
-"@as-pect/core@^5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@as-pect/core/-/core-5.0.1.tgz#eab6d5a578c963d163ec43626e926d96a8ec294e"
-  integrity sha512-xG9UPngMZSXqfrvmRaeLuM/HVGsXQ1ftCuAqcBfx4HSoCEfrvda0XchEwO7ftWSuNv2tkfBscANGn4vOEjBcMg==
-  dependencies:
-    "@as-pect/assembly" "^5.0.1"
-    "@as-pect/snapshots" "^5.0.1"
-    chalk "^4.1.0"
-    long "^4.0.0"
-
 "@as-pect/core@^6.0.0", "@as-pect/core@^6.2.1":
   version "6.2.1"
   resolved "https://registry.yarnpkg.com/@as-pect/core/-/core-6.2.1.tgz#fa1f3658e337506c19df7944f75a8ba7b13aed97"
@@ -68,13 +40,6 @@
     chalk "^4.1.1"
     long "^4.0.0"
 
-"@as-pect/csv-reporter@^5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@as-pect/csv-reporter/-/csv-reporter-5.0.1.tgz#9eb2b3fbdd659306762cfdfbd0177127dd5d835f"
-  integrity sha512-XbzbVqXrB7Wds5yYgWiqFe9fNnYMZJQRdZafd7iETlkHhhfZgtYvLbYsdJfMeLMZSdhKInA91y+GkDi0fHEmDQ==
-  dependencies:
-    "@as-pect/core" "^5.0.1"
-
 "@as-pect/csv-reporter@^6.0.0":
   version "6.2.1"
   resolved "https://registry.yarnpkg.com/@as-pect/csv-reporter/-/csv-reporter-6.2.1.tgz#fe7e23ac2d811e2519006ccc82f5245adcaad526"
@@ -82,27 +47,12 @@
   dependencies:
     "@as-pect/core" "^6.2.1"
 
-"@as-pect/json-reporter@^5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@as-pect/json-reporter/-/json-reporter-5.0.1.tgz#c594773e867ad50f7958e6259a3d35855bcb1476"
-  integrity sha512-pE3GFihSSgNCSVvJtOWJiZfzIOARALPj/U3c5j5D9ZcCG8N1lb/Ge2doOEb9cuVpVKymi5+e6+GCH8+PU3W5bA==
-  dependencies:
-    "@as-pect/core" "^5.0.1"
-
 "@as-pect/json-reporter@^6.0.0":
   version "6.2.1"
   resolved "https://registry.yarnpkg.com/@as-pect/json-reporter/-/json-reporter-6.2.1.tgz#a77c3257aed8e5b1e5175509fb1046c1f94851cf"
   integrity sha512-vsTYOiqB42+WPpec0M3apm9P2SjstUe6MfXepDvVIu2DCZzt1rkEuIIXro13LLQCnOzwXgHO/00sn+uPEjsmSQ==
   dependencies:
     "@as-pect/core" "^6.2.1"
-
-"@as-pect/snapshots@^5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@as-pect/snapshots/-/snapshots-5.0.1.tgz#7945db8ce5a771699658febe0cf20454afda6c35"
-  integrity sha512-+fQbJ2FfYcILPphKILFQmxf9Fbck4TmmQTLEJS0MbIv3tt2LeyTk5n8y/+JMAQ3pTb029EJjjAX8g1b83cCVig==
-  dependencies:
-    diff "^5.0.0"
-    nearley "^2.20.1"
 
 "@as-pect/snapshots@^6.2.1":
   version "6.2.1"
@@ -5009,14 +4959,6 @@ asn1@~0.2.3:
   dependencies:
     safer-buffer "~2.1.0"
 
-assemblyscript@0.17.14:
-  version "0.17.14"
-  resolved "https://registry.yarnpkg.com/assemblyscript/-/assemblyscript-0.17.14.tgz#9ea4a04a50dc53042b35d492fff947101ae00248"
-  integrity sha512-TLuwNvZAIH26wu2puKpAJokzLp10kJkVXxbgDjFFmbW9VF/qg7rkmi0hjsiu41bjoH1UaVgY4vYvbbUeOHtKyg==
-  dependencies:
-    binaryen "98.0.0-nightly.20201109"
-    long "^4.0.0"
-
 assemblyscript@0.19.1:
   version "0.19.1"
   resolved "https://registry.yarnpkg.com/assemblyscript/-/assemblyscript-0.19.1.tgz#8d52332b7cef88e03d15b633e70c5febddd1f444"
@@ -5958,11 +5900,6 @@ binaryen@101.0.0-nightly.20210723:
   version "101.0.0-nightly.20210723"
   resolved "https://registry.yarnpkg.com/binaryen/-/binaryen-101.0.0-nightly.20210723.tgz#b6bb7f3501341727681a03866c0856500eec3740"
   integrity sha512-eioJNqhHlkguVSbblHOtLqlhtC882SOEPKmNFZaDuz1hzQjolxZ+eu3/kaS10n3sGPONsIZsO7R9fR00UyhEUA==
-
-binaryen@98.0.0-nightly.20201109:
-  version "98.0.0-nightly.20201109"
-  resolved "https://registry.yarnpkg.com/binaryen/-/binaryen-98.0.0-nightly.20201109.tgz#512bf6ca15c67bf7402144734a4836e63993aa05"
-  integrity sha512-iRarAqdH5lMWlMBzrDuJgLYJR2g4QXk93iYE2zpr6gEZkb/jCgDpPUXdhuN11Ge1zZ/6By4DwA1mmifcx7FWaw==
 
 bindings@^1.5.0:
   version "1.5.0"
@@ -18462,7 +18399,7 @@ source-map-support@0.5.12:
     buffer-from "^1.0.0"
     source-map "^0.6.0"
 
-source-map-support@^0.5.17, source-map-support@^0.5.6, source-map-support@~0.5.12:
+source-map-support@0.5.19, source-map-support@^0.5.17, source-map-support@^0.5.6, source-map-support@~0.5.12:
   version "0.5.19"
   resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.19.tgz#a98b62f86dcaf4f67399648c085291ab9e8fed61"
   integrity sha512-Wonm7zOCIJzBGQdB+thsPar0kYuCIzYvxZwlBa87yi/Mdjv7Tip2cyVbLj5o0cFPN4EVkuTwb3GDDyUx2DGnGw==
