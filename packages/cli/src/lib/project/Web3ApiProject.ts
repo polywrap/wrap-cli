@@ -26,7 +26,6 @@ export class Web3ApiProject extends Project {
   private _buildManifest: BuildManifest | undefined;
   private _metaManifest: MetaManifest | undefined;
   private _defaultBuildManifestCached = false;
-  private _defaultMetaManifestCached = false;
 
   constructor(protected _config: Web3ApiProjectConfig) {
     super(_config);
@@ -35,16 +34,22 @@ export class Web3ApiProject extends Project {
   public async getManifestPaths(absolute = false): Promise<string[]> {
     const web3apiManifestPath = this.getWeb3ApiManifestPath();
     const root = path.dirname(web3apiManifestPath);
-
-    return [
+    const paths = [
       absolute ? web3apiManifestPath : path.relative(root, web3apiManifestPath),
       absolute
         ? await this.getBuildManifestPath()
         : path.relative(root, await this.getBuildManifestPath()),
-      absolute
-        ? await this.getMetaManifestPath()
-        : path.relative(root, await this.getMetaManifestPath()),
     ];
+
+    const metaManifestPath = await this.getMetaManifestPath();
+
+    if (metaManifestPath) {
+      paths.push(
+        absolute ? metaManifestPath : path.relative(root, metaManifestPath)
+      );
+    }
+
+    return paths;
   }
 
   /// Project Base Methods
@@ -54,7 +59,6 @@ export class Web3ApiProject extends Project {
     this._buildManifest = undefined;
     this._metaManifest = undefined;
     this._defaultBuildManifestCached = false;
-    this._defaultMetaManifestCached = false;
   }
 
   public getRootDir(): string {
@@ -265,7 +269,7 @@ export class Web3ApiProject extends Project {
 
   /// Web3API Meta Manifest (web3api.build.yaml)
 
-  public async getMetaManifestPath(): Promise<string> {
+  public async getMetaManifestPath(): Promise<string | undefined> {
     const web3apiManifest = await this.getWeb3ApiManifest();
 
     // If a custom meta manifest path is configured
@@ -280,58 +284,30 @@ export class Web3ApiProject extends Project {
       );
       return this._config.metaManifestPath;
     }
-    // Use a default meta manifest for the provided language
+    // No meta manifest found
     else {
-      await this.cacheDefaultMetaManifestFiles();
-
-      // Return the cached manifest
-      this._config.metaManifestPath = path.join(
-        this.getCachePath("build/meta"),
-        "web3api.meta.yaml"
-      );
-      return this._config.metaManifestPath;
+      return undefined;
     }
   }
 
-  public async getMetaManifestDir(): Promise<string> {
-    return path.dirname(await this.getMetaManifestPath());
+  public async getMetaManifestDir(): Promise<string | undefined> {
+    const manifestPath = await this.getMetaManifestPath();
+
+    if (manifestPath) {
+      return path.dirname(manifestPath);
+    } else {
+      return undefined;
+    }
   }
 
-  public async getMetaManifest(): Promise<MetaManifest> {
+  public async getMetaManifest(): Promise<MetaManifest | undefined> {
     if (!this._metaManifest) {
-      this._metaManifest = await loadMetaManifest(
-        await this.getMetaManifestPath(),
-        this.quiet
-      );
+      const manifestPath = await this.getMetaManifestPath();
+
+      if (manifestPath) {
+        this._metaManifest = await loadMetaManifest(manifestPath, this.quiet);
+      }
     }
     return this._metaManifest;
-  }
-
-  public async cacheDefaultMetaManifestFiles(): Promise<void> {
-    if (this._defaultMetaManifestCached) {
-      return;
-    }
-
-    const language = (await this.getWeb3ApiManifest()).language;
-
-    if (!language) {
-      throw Error(intlMsg.lib_project_language_not_found());
-    }
-
-    const defaultPath = `${__dirname}/../build-envs/wasm/meta/web3api.meta.yaml`;
-
-    if (!fs.existsSync(defaultPath)) {
-      throw Error(
-        intlMsg.lib_project_invalid_build_language({ language, defaultPath })
-      );
-    }
-
-    // Update the cache
-    this.removeCacheDir("build/meta");
-    await this.copyFilesIntoCache(
-      "build/meta/",
-      `${__dirname}/../build-envs/wasm/meta/*`
-    );
-    this._defaultMetaManifestCached = true;
   }
 }

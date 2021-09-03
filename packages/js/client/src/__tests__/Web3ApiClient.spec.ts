@@ -10,7 +10,18 @@ import {
 import { GetPathToTestApis } from "@web3api/test-cases";
 import { Web3ApiClient } from "../Web3ApiClient";
 import { getDefaultClientConfig } from "../default-client-config";
-import { Plugin, coreInterfaceUris, Uri, PluginManifest, Web3ApiManifest, BuildManifest, MetaManifest, deserializeWeb3ApiManifest, deserializeBuildManifest, deserializeMetaManifest, } from '@web3api/core-js';
+import {
+  Uri,
+  Plugin,
+  PluginPackageManifest,
+  Web3ApiManifest,
+  BuildManifest,
+  MetaManifest,
+  deserializeWeb3ApiManifest,
+  deserializeBuildManifest,
+  deserializeMetaManifest,
+  coreInterfaceUris,
+} from '@web3api/core-js';
 import { readFileSync } from "fs";
 
 jest.setTimeout(200000);
@@ -1080,6 +1091,7 @@ describe("Web3ApiClient", () => {
             arg2: "123456789123456789123456789123456789"
             obj: {
               prop1: "987654321987654321"
+              prop1: "987654321987654321"
               prop2: "987654321987654321987654321987654321"
             }
           )
@@ -1719,7 +1731,7 @@ describe("Web3ApiClient", () => {
   it("getManifest -- plugin manifest", async () => {
     const client = await getClient();
 
-    const manifest: PluginManifest = await client.getManifest({
+    const manifest: PluginPackageManifest = await client.getManifest({
       uri: "w3://ens/js-logger.web3api.eth",
       type: "plugin"
     });
@@ -1793,7 +1805,7 @@ enum Logger_LogLevel @imported(
       implements: [coreInterfaceUris.logger],
     });
 
-    const defaultManifest: PluginManifest = await client.getManifest({
+    const defaultManifest: PluginPackageManifest = await client.getManifest({
       uri: "w3://ens/js-logger.web3api.eth",
       type: 'plugin',
     });

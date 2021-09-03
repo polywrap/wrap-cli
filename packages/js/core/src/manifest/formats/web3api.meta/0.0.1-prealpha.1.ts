@@ -8,14 +8,21 @@
 
 export interface MetaManifest {
   format: "0.0.1-prealpha.1";
-  name?: string;
+  name: string;
   subtext?: string;
   description?: string;
+  repository?: string;
   icon?: string;
+  links?: {
+    name: string;
+    icon?: string;
+    url: string;
+  }[];
   queries?: {
     name: string;
+    description?: string;
     query: string;
-    recipe?: string;
+    vars?: string;
   }[];
   __type: "MetaManifest";
 }

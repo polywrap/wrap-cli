@@ -6,6 +6,7 @@ import { SchemaComposer } from "./SchemaComposer";
 import {
   withSpinner,
   outputManifest,
+  outputMetadata,
   generateDockerfile,
   createBuildImage,
   copyArtifactsFromBuildImage,
@@ -108,8 +109,8 @@ export class Compiler {
         buildManifest = await this._buildModules(state);
       }
 
-      // get the meta manifest
-      const metaManifest: MetaManifest = await project.getMetaManifest();
+      // Output all metadata if present
+      const metaManifest = await this._outputMetadata();
 
       await this._outputManifests(
         state.web3ApiManifest,
@@ -419,14 +420,14 @@ export class Compiler {
 
     await outputManifest(
       web3ApiManifest,
-      `${outputDir}/web3api.yaml`,
+      path.join(outputDir, "web3api.yaml"),
       project.quiet
     );
 
     if (buildManifest) {
       await outputManifest(
         buildManifest,
-        `${outputDir}/web3api.build.yaml`,
+        path.join(outputDir, "web3api.build.yaml"),
         project.quiet
       );
     }
@@ -434,10 +435,26 @@ export class Compiler {
     if (metaManifest) {
       await outputManifest(
         metaManifest,
-        `${outputDir}/web3api.meta.yaml`,
+        path.join(outputDir, "web3api.meta.yaml"),
         project.quiet
       );
     }
+  }
+
+  private async _outputMetadata(): Promise<MetaManifest | undefined> {
+    const { outputDir, project } = this._config;
+    const metaManifest = await project.getMetaManifest();
+
+    if (!metaManifest) {
+      return undefined;
+    }
+
+    return await outputMetadata(
+      metaManifest,
+      outputDir,
+      project.getRootDir(),
+      project.quiet
+    );
   }
 
   private _validateState(state: CompilerState) {

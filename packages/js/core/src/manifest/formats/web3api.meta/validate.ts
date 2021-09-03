@@ -30,7 +30,10 @@ const schemas: MetaManifestSchemas = {
 
 const validator = new Validator();
 
-Validator.prototype.customFormats.file = Validators.file;
+Validator.prototype.customFormats.websiteUrl = Validators.websiteUrl;
+Validator.prototype.customFormats.imageFile = Validators.imageFile;
+Validator.prototype.customFormats.graphqlFile = Validators.graphqlFile;
+Validator.prototype.customFormats.jsonFile = Validators.jsonFile;
 
 export const validateMetaManifest = Tracer.traceFunc(
   "core: validateMetaManifest",

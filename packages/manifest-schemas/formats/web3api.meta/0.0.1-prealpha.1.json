@@ -3,7 +3,8 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "format"
+    "format",
+    "name"
   ],
   "properties": {
     "format": {
@@ -19,9 +20,37 @@
     "description": {
       "type": "string"
     },
+    "repository": {
+      "type": "string",
+      "format": "websiteUrl"
+    },
     "icon": {
       "type": "string",
-      "format": "file"
+      "format": "imageFile"
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string",
+            "format": "imageFile"
+          },
+          "url": {
+            "type": "string",
+            "format": "websiteUrl"
+          }
+        },
+        "required": [
+          "name",
+          "url"
+        ]
+      }
     },
     "queries": {
       "type": "array",
@@ -32,13 +61,16 @@
           "name": {
             "type": "string"
           },
+          "description": {
+            "type": "string"
+          },
           "query": {
             "type": "string",
-            "format": "file"
+            "format": "graphqlFile"
           },
-          "recipe": {
+          "vars": {
             "type": "string",
-            "format": "file"
+            "format": "jsonFile"
           }
         },
         "required": [

@@ -4,26 +4,25 @@
   "additionalProperties": false,
   "required": [
     "format",
-    "modules"
+    "modules",
+    "language"
   ],
   "properties": {
     "format": {
       "type": "string",
-      "const": "0.0.1-prealpha.3"
-    },
-    "repository": {
-      "type": "string"
+      "const": "0.0.1-prealpha.5"
     },
     "build": {
       "type": "string",
-      "format": "file"
+      "format": "yamlFile"
+    },
+    "meta": {
+      "type": "string",
+      "format": "yamlFile"
     },
     "language": {
       "type": "string",
       "format": "wasmLanguage"
-    },
-    "interface": {
-      "type": "boolean"
     },
     "modules": {
       "type": "object",
@@ -35,7 +34,7 @@
           "properties": {
             "schema": {
               "type": "string",
-              "format": "file"
+              "format": "graphqlFile"
             },
             "module": {
               "type": "string",
@@ -52,7 +51,7 @@
           "properties": {
             "schema": {
               "type": "string",
-              "format": "file"
+              "format": "graphqlFile"
             },
             "module": {
               "type": "string",

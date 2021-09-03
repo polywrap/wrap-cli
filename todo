@@ -1,0 +1,12 @@
+x default meta manifest doesn't make sense
+x make sure meta format is correct
+x make sure root format is a new version
+x make sure meta files get copied into the output build folder
+x add tests for web3api.meta.yaml
+- fix typings in core/types/Client.ts
+- make sure getFile / getManifest works w/ garbage collection
+- is the plugin manifest necessary? correct? should we use it for importing schemas?
+- automatically associate "meta" with "web3api.meta.yaml" and "Web3ApiManifest
+- - no hard-coding for new formats
+- logger plugin has a method overriding the interface method... should this be allowed for adding optional params?
+- - either way, we need to detect this, and not output duplicate methods into the output TypeInfo & GraphQL schema
