@@ -287,7 +287,7 @@ export class Compiler {
 
     // Create the BuildManifest
     const buildManifest: BuildManifest = {
-      format: "0.0.1-prealpha.1",
+      format: "0.0.1-prealpha.2",
       __type: "BuildManifest",
       docker: {
         buildImageId: dockerImageId,
@@ -325,6 +325,51 @@ export class Compiler {
     return `${path.dirname(absolute)}/w3`;
   }
 
+  private async _addLinkedPackagesToProjectConfig(): Promise<void> {
+    const project = this._config.project;
+    const buildManifest = await project.getBuildManifest();
+    const destinationDir = project.getCachePath("build/env/linked-packages");
+
+    const web3apiManifestPath = project.getWeb3ApiManifestPath();
+    const root = path.dirname(web3apiManifestPath);
+
+    if (buildManifest["linked-packages"]) {
+      buildManifest.config = {
+        ...buildManifest.config,
+        web3api_linked_packages: [],
+      };
+
+      fsExtra.ensureDirSync(destinationDir);
+      buildManifest["linked-packages"].map((linkedPackage) => {
+        fsExtra.copySync(
+          linkedPackage.path,
+          path.join(destinationDir, linkedPackage.name),
+          {
+            clobber: true,
+            filter: (src: string) => {
+              if (fs.lstatSync(src).isDirectory()) {
+                return true;
+              }
+              const isNotTestFile = /^(?!.*\.(test|spec)\.(js|ts)$).*\.*$/gm;
+              return isNotTestFile.test(src);
+            },
+          }
+        );
+
+        (buildManifest.config?.web3api_linked_packages as {
+          dir: string;
+          name: string;
+        }[]).push({
+          dir: path.relative(
+            root,
+            path.join(destinationDir, linkedPackage.name)
+          ),
+          name: linkedPackage.name,
+        });
+      });
+    }
+  }
+
   private async _buildSourcesInDocker(): Promise<string> {
     const { project, outputDir } = this._config;
     const buildManifestDir = await project.getBuildManifestDir();
@@ -338,11 +383,14 @@ export class Compiler {
     if (!buildManifest?.docker?.dockerfile) {
       // Make sure the default template is in the cached .w3/build/env folder
       await project.cacheDefaultBuildManifestFiles();
+
       dockerfile = generateDockerfile(
         project.getCachePath("build/env/Dockerfile.mustache"),
         buildManifest.config || {}
       );
     }
+
+    await this._addLinkedPackagesToProjectConfig();
 
     // If the dockerfile path contains ".mustache", generate
     if (dockerfile.indexOf(".mustache") > -1) {

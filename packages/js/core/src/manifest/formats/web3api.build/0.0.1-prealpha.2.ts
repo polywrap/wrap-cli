@@ -16,5 +16,9 @@ export interface BuildManifest {
   config?: {
     [k: string]: unknown;
   };
+  "linked-packages"?: {
+    name: string;
+    path: string;
+  }[];
   __type: "BuildManifest";
 }
