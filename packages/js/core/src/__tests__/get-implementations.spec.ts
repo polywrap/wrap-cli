@@ -54,19 +54,19 @@ describe("getImplementations", () => {
     ];
 
     const getImplementationsResult1 = getImplementations(
-        new Uri(interface1Uri), 
-        redirects,
-        interfaces
+        new Uri(interface1Uri),
+        interfaces,
+        redirects
       );
     const getImplementationsResult2 = getImplementations(
-        new Uri(interface2Uri), 
-        redirects,
-        interfaces
+        new Uri(interface2Uri),
+        interfaces,
+        redirects
       );
     const getImplementationsResult3 = getImplementations(
-        new Uri(interface3Uri), 
-        redirects,
-        interfaces
+        new Uri(interface3Uri),
+        interfaces,
+        redirects
       );
 
     expect(getImplementationsResult1).toEqual([
@@ -109,11 +109,11 @@ describe("getImplementations", () => {
     ];
 
     const getImplementationsResult = getImplementations(
-        new Uri(interface1Uri), 
-        redirects,
-        interfaces
+        new Uri(interface1Uri),
+        interfaces,
+        redirects
       );
-  
+
     expect(getImplementationsResult).toEqual([
       new Uri(implementation1Uri)
     ]);
