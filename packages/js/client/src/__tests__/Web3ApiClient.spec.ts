@@ -13,7 +13,6 @@ import { getDefaultClientConfig } from "../default-client-config";
 import {
   Uri,
   Plugin,
-  PluginPackageManifest,
   Web3ApiManifest,
   BuildManifest,
   MetaManifest,
@@ -781,7 +780,7 @@ describe("Web3ApiClient", () => {
       secondGetData: number;
       thirdGetData: number;
     }>({
-      uri: new Uri(ensUri),
+      uri: ensUri,
       query: `
         query {
           getData(
@@ -1548,11 +1547,8 @@ describe("Web3ApiClient", () => {
         ]
       });
 
-    const apiWhenString = await client.loadWeb3Api(implementationUri);
-    const apiWhenUri = await client.loadWeb3Api(new Uri(implementationUri));
-
-    const schemaWhenString = await apiWhenString.getSchema(client);
-    const schemaWhenUri = await apiWhenUri.getSchema(client);
+    const schemaWhenString = await client.getSchema(implementationUri);
+    const schemaWhenUri = await client.getSchema(new Uri(implementationUri));
 
     expect(schemaWhenString).toEqual(schemaStr);
     expect(schemaWhenUri).toEqual(schemaStr);
@@ -1627,10 +1623,8 @@ describe("Web3ApiClient", () => {
       ]
     });
 
-    expect(
-      client.getImplementations(interfaceUri)
-      )
-    .toEqual([implementationUri]);
+    expect(client.getImplementations(interfaceUri))
+      .toEqual([implementationUri]);
 
     const query = await client.query<{
       queryMethod: string;
@@ -1705,39 +1699,34 @@ describe("Web3ApiClient", () => {
 
     const actualManifestStr: string = readFileSync(`${GetPathToTestApis()}/simple-storage/build/web3api.yaml`, 'utf8');
     const actualManifest: Web3ApiManifest = deserializeWeb3ApiManifest(actualManifestStr);
-    const manifest: Web3ApiManifest = await client.getManifest({
-      uri: ensUri,
+    const manifest: Web3ApiManifest = await client.getManifest(ensUri, {
       type: 'web3api'
     });
     expect(manifest).toStrictEqual(actualManifest);
 
     const actualBuildManifestStr: string = readFileSync(`${GetPathToTestApis()}/simple-storage/build/web3api.build.yaml`, 'utf8');
     const actualBuildManifest: BuildManifest = deserializeBuildManifest(actualBuildManifestStr);
-    const buildManifest: BuildManifest = await client.getManifest({
-      uri: ensUri,
+    const buildManifest: BuildManifest = await client.getManifest(ensUri, {
       type: 'build'
     });
     expect(buildManifest).toStrictEqual(actualBuildManifest);
 
     const actualMetaManifestStr: string = readFileSync(`${GetPathToTestApis()}/simple-storage/build/web3api.meta.yaml`, 'utf8');
     const actualMetaManifest: MetaManifest = deserializeMetaManifest(actualMetaManifestStr);
-    const metaManifest: MetaManifest = await client.getManifest({
-      uri: ensUri,
+    const metaManifest: MetaManifest = await client.getManifest(ensUri, {
       type: 'meta'
     });
     expect(metaManifest).toStrictEqual(actualMetaManifest);
   });
 
-  it("getManifest -- plugin manifest", async () => {
+  it("getSchema -- plugin schema", async () => {
     const client = await getClient();
+    const schema: string = await client.getSchema(
+      "w3://ens/js-logger.web3api.eth"
+    );
 
-    const manifest: PluginPackageManifest = await client.getManifest({
-      uri: "w3://ens/js-logger.web3api.eth",
-      type: "plugin"
-    });
-
-    expect(manifest).toStrictEqual({
-      schema: `### Web3API Header START ###
+    expect(schema).toStrictEqual(
+`### Web3API Header START ###
 scalar UInt
 scalar UInt8
 scalar UInt16
@@ -1775,7 +1764,7 @@ type Query implements Logger_Query @imports(
 ### Imported Queries START ###
 
 type Logger_Query @imported(
-  uri: "w3://ens/logger.core.web3api.eth",
+  uri: "ens/logger.core.web3api.eth",
   namespace: "Logger",
   nativeType: "Query"
 ) {
@@ -1790,7 +1779,7 @@ type Logger_Query @imported(
 ### Imported Objects START ###
 
 enum Logger_LogLevel @imported(
-  uri: "w3://ens/logger.core.web3api.eth",
+  uri: "ens/logger.core.web3api.eth",
   namespace: "Logger",
   nativeType: "LogLevel"
 ) {
@@ -1801,15 +1790,7 @@ enum Logger_LogLevel @imported(
 }
 
 ### Imported Objects END ###
-`,
-      implements: [coreInterfaceUris.logger],
-    });
-
-    const defaultManifest: PluginPackageManifest = await client.getManifest({
-      uri: "w3://ens/js-logger.web3api.eth",
-      type: 'plugin',
-    });
-    expect(defaultManifest).toStrictEqual(manifest);
+`);
   });
 
   it("getFile -- simple-storage web3api", async () => {
@@ -1821,14 +1802,12 @@ enum Logger_LogLevel @imported(
     const client = await getClient();
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
-    const manifest: Web3ApiManifest = await client.getManifest({
-      uri: ensUri,
+    const manifest: Web3ApiManifest = await client.getManifest(ensUri, {
       type: 'web3api'
     });
 
-    const fileStr: string = await client.getFile({
-      uri: ensUri,
-      path: manifest.modules.query?.schema!,
+    const fileStr: string = await client.getFile(ensUri, {
+      path: manifest.modules.query?.schema as string,
       encoding: 'utf8'
     }) as string;
     expect(fileStr).toContain(`getData(
@@ -1837,8 +1816,7 @@ enum Logger_LogLevel @imported(
   ): Int!
 `);
 
-    const fileBuffer: ArrayBuffer = await client.getFile({
-      uri: ensUri,
+    const fileBuffer: ArrayBuffer = await client.getFile(ensUri, {
       path: manifest.modules.query?.schema!,
     }) as ArrayBuffer;
     const decoder = new TextDecoder('utf8');
@@ -1849,8 +1827,10 @@ enum Logger_LogLevel @imported(
   ): Int!
 `);
 
-    await expect(() => client.getFile({
-      uri: new Uri("w3://ens/ipfs.web3api.eth"),
+    await expect(() => client.getManifest(new Uri("w3://ens/ipfs.web3api.eth"), {
+      type: "web3api"
+    })).rejects.toThrow("client.getManifest(...) is not implemented for Plugins.");
+    await expect(() => client.getFile(new Uri("w3://ens/ipfs.web3api.eth"), {
       path: "./index.js",
     })).rejects.toThrow("client.getFile(...) is not implemented for Plugins.");
   });

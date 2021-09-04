@@ -1,37 +1,34 @@
-import {
-  QueryHandler,
-  InvokeHandler,
-  Uri,
-  PluginPackageManifest
-} from "./";
-import {
-  BuildManifest,
-  Web3ApiManifest,
-  MetaManifest,
-} from "../manifest";
+import { QueryHandler, InvokeHandler, Uri } from "./";
+import { ManifestType, AnyManifest } from "../manifest";
 
-export type ManifestFile = "plugin" | "web3api" | "meta" | "build";
-
-export type Manifest<T> =
-  T extends "plugin" ? PluginPackageManifest :
-  T extends "web3api" ? Web3ApiManifest :
-  T extends "build" ? BuildManifest :
-  T extends "meta" ? MetaManifest :
-  never;
-
-export interface GetManifestOptions<T extends ManifestFile> {
-  uri: Uri | string;
-  type: T;
+export interface GetManifestOptions<TManifestType extends ManifestType> {
+  type: TManifestType;
 }
 
 export interface GetFileOptions {
-  uri: Uri | string;
   path: string;
-  encoding?: string;
+  encoding?: "utf-8" | string;
+}
+
+export interface GetImplementationsOptions {
+  applyRedirects?: boolean;
 }
 
 export interface Client extends QueryHandler, InvokeHandler {
+  getSchema<TUri extends Uri | string>(uri: TUri): Promise<string>;
 
+  getManifest<TUri extends Uri | string, TManifestType extends ManifestType>(
+    uri: TUri,
+    options: GetManifestOptions<TManifestType>
+  ): Promise<AnyManifest<TManifestType>>;
+
+  getFile<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetFileOptions
+  ): Promise<string | ArrayBuffer>;
+
+  getImplementations<TUri extends Uri | string>(
+    uri: TUri,
+    options?: GetImplementationsOptions
+  ): TUri[];
 }
-
-// TODO: typings + client methods + plugin(package)manifest

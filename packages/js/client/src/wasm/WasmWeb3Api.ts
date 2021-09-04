@@ -15,8 +15,8 @@ import {
   deserializeWeb3ApiManifest,
   deserializeBuildManifest,
   deserializeMetaManifest,
-  Manifest,
-  ManifestFile,
+  AnyManifest,
+  ManifestType,
   combinePaths,
   GetFileOptions,
 } from "@web3api/core-js";
@@ -188,7 +188,7 @@ export class WasmWeb3Api extends Api {
         }
 
         this._schema = (await this.getFile(
-          { uri: this._uri, path: module.schema, encoding: "utf8" },
+          { path: module.schema, encoding: "utf8" },
           client
         )) as string;
 
@@ -199,12 +199,12 @@ export class WasmWeb3Api extends Api {
     return run(client);
   }
 
-  public async getManifest<T extends ManifestFile>(
-    options: GetManifestOptions<T>,
+  public async getManifest<TManifest extends ManifestType>(
+    options: GetManifestOptions<TManifest>,
     client: Client
-  ): Promise<Manifest<T>> {
+  ): Promise<AnyManifest<TManifest>> {
     if (!options?.type) {
-      return this._manifest as Manifest<T>;
+      return this._manifest as AnyManifest<TManifest>;
     }
     let manifest: string;
     const fileTitle: string =
@@ -213,24 +213,24 @@ export class WasmWeb3Api extends Api {
       // try common yaml suffix
       const path: string = fileTitle + ".yaml";
       manifest = (await this.getFile(
-        { uri: this._uri, path, encoding: "utf8" },
+        { path, encoding: "utf8" },
         client
       )) as string;
     } catch {
       // try alternate yaml suffix
       const path: string = fileTitle + ".yml";
       manifest = (await this.getFile(
-        { uri: this._uri, path, encoding: "utf8" },
+        { path, encoding: "utf8" },
         client
       )) as string;
     }
     switch (options.type) {
       case "build":
-        return deserializeBuildManifest(manifest) as Manifest<T>;
+        return deserializeBuildManifest(manifest) as AnyManifest<TManifest>;
       case "meta":
-        return deserializeMetaManifest(manifest) as Manifest<T>;
+        return deserializeMetaManifest(manifest) as AnyManifest<TManifest>;
       default:
-        return deserializeWeb3ApiManifest(manifest) as Manifest<T>;
+        return deserializeWeb3ApiManifest(manifest) as AnyManifest<TManifest>;
     }
   }
 
@@ -299,7 +299,7 @@ export class WasmWeb3Api extends Api {
         }
 
         const data = (await this.getFile(
-          { uri: this._uri, path: moduleManifest.module },
+          { path: moduleManifest.module },
           client
         )) as ArrayBuffer;
 

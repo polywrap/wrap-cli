@@ -53,11 +53,7 @@ export interface InvokeApiResult<TData = unknown> {
 }
 
 export interface InvokeHandler {
-  invoke<TData = unknown>(
-    options: InvokeApiOptions<string>
-  ): Promise<InvokeApiResult<TData>>;
-
-  invoke<TData = unknown>(
-    options: InvokeApiOptions<Uri>
+  invoke<TData = unknown, TUri extends Uri | string = string>(
+    options: InvokeApiOptions<TUri>
   ): Promise<InvokeApiResult<TData>>;
 }

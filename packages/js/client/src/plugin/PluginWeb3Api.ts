@@ -8,10 +8,9 @@ import {
   InvokeApiResult,
   Plugin,
   PluginPackage,
-  PluginPackageManifest,
   Uri,
-  Manifest,
-  ManifestFile,
+  AnyManifest,
+  ManifestType,
   GetFileOptions,
 } from "@web3api/core-js";
 import * as MsgPack from "@msgpack/msgpack";
@@ -137,18 +136,16 @@ export class PluginWeb3Api extends Api {
     return Promise.resolve(this._plugin.manifest.schema);
   }
 
-  public async getManifest<T extends ManifestFile>(
-    options: GetManifestOptions<T>, // eslint-disable-line @typescript-eslint/no-unused-vars
-    client: Client // eslint-disable-line @typescript-eslint/no-unused-vars
-  ): Promise<Manifest<T>> {
-    return ({
-      ...this._plugin.manifest,
-    } as PluginPackageManifest) as Manifest<T>;
+  public async getManifest<T extends ManifestType>(
+    _options: GetManifestOptions<T>,
+    _client: Client
+  ): Promise<AnyManifest<T>> {
+    throw Error("client.getManifest(...) is not implemented for Plugins.");
   }
 
   public async getFile(
-    options: GetFileOptions, // eslint-disable-line @typescript-eslint/no-unused-vars
-    client: Client // eslint-disable-line @typescript-eslint/no-unused-vars
+    _options: GetFileOptions,
+    _client: Client
   ): Promise<ArrayBuffer | string> {
     throw Error("client.getFile(...) is not implemented for Plugins.");
   }
