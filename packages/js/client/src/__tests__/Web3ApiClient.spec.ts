@@ -1778,8 +1778,8 @@ type Logger_Query @imported(
 ### Imported Objects START ###
 
 enum Logger_LogLevel @imported(
-  uri: "ens/logger.core.web3api.eth",
   namespace: "Logger",
+  uri: "ens/logger.core.web3api.eth",
   nativeType: "LogLevel"
 ) {
   DEBUG
