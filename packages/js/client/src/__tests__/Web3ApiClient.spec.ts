@@ -1,26 +1,19 @@
-import {
-  ClientConfig,
-  createWeb3ApiClient, Dependency
-} from "../";
-import {
-  buildAndDeployApi,
-  initTestEnvironment,
-  stopTestEnvironment,
-} from "@web3api/test-env-js";
+import { ClientConfig, createWeb3ApiClient, Dependency, DependencyType } from "../";
+import { buildAndDeployApi, initTestEnvironment, stopTestEnvironment } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 import { Web3ApiClient } from "../Web3ApiClient";
 import { getDefaultClientConfig } from "../default-client-config";
 import {
-  Uri,
-  Plugin,
-  Web3ApiManifest,
   BuildManifest,
-  MetaManifest,
-  deserializeWeb3ApiManifest,
+  coreInterfaceUris,
   deserializeBuildManifest,
   deserializeMetaManifest,
-  coreInterfaceUris,
-} from '@web3api/core-js';
+  deserializeWeb3ApiManifest,
+  MetaManifest,
+  Plugin,
+  Uri,
+  Web3ApiManifest
+} from "@web3api/core-js";
 import { readFileSync } from "fs";
 
 jest.setTimeout(200000);
@@ -1834,7 +1827,7 @@ enum Logger_LogLevel @imported(
     })).rejects.toThrow("client.getFile(...) is not implemented for Plugins.");
   });
 
-  it.only("getDependencies -- simple-storage web3api", async () => {
+  it("getDependencies -- simple-storage web3api", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
@@ -1844,7 +1837,45 @@ enum Logger_LogLevel @imported(
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const dependencies: Dependency[] = await client.getDependencies(ensUri);
-    console.log(JSON.stringify(dependencies, null, 2));
+    expect(dependencies.length).toEqual(1);
+    expect(dependencies[0].uri).toEqual("w3://ens/ethereum.web3api.eth");
+    expect(dependencies[0].namespace).toEqual("Ethereum");
+
+    // check if Connection type is present
+    let includesConnection = false;
+    for (const type of dependencies[0].types) {
+      if (type.name === "Connection" && type.type === DependencyType.Object && !type.interface) {
+        includesConnection = true;
+        break;
+      }
+    }
+    expect(includesConnection).toBeTruthy();
+
+    // check if Mutation methods are present
+    let includesMutation = false;
+    for (const type of dependencies[0].types) {
+      if (type.name === "Mutation" && type.type === DependencyType.Query && !type.interface) {
+        includesMutation = true;
+        break;
+      }
+    }
+    expect(includesMutation).toBeTruthy();
   });
+
+  // TODO: need to split typeInfo into query/mutation modules
+  // it.only("getDependencies with optional filters -- simple-storage web3api", async () => {
+  //   const api = await buildAndDeployApi(
+  //     `${GetPathToTestApis()}/simple-storage`,
+  //     ipfsProvider,
+  //     ensAddress
+  //   );
+  //   const client = await getClient();
+  //   const ensUri = `ens/testnet/${api.ensDomain}`;
+  //
+  //   const dependencies: Dependency[] = await client.getDependencies(ensUri, {
+  //     include: [DependencyType.Query]
+  //   });
+  //
+  // });
 });
 

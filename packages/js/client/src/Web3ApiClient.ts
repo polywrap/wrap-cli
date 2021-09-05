@@ -3,34 +3,34 @@ import { PluginWeb3Api } from "./plugin/PluginWeb3Api";
 import { WasmWeb3Api } from "./wasm";
 
 import {
+  AnyManifest,
   Api,
   ApiCache,
   Client,
+  createQueryDocument,
   Dependency,
   DependencyType,
   GetDependenciesOptions,
+  GetFileOptions,
+  getImplementations,
+  GetImplementationsOptions,
+  GetManifestOptions,
+  InterfaceImplementations,
   InvokeApiOptions,
   InvokeApiResult,
+  ManifestType,
+  parseQuery,
   PluginPackage,
   PluginRegistration,
   QueryApiOptions,
   QueryApiResult,
-  Uri,
-  UriRedirect,
-  InterfaceImplementations,
-  Web3ApiManifest,
-  parseQuery,
   resolveUri,
-  AnyManifest,
-  ManifestType,
-  GetImplementationsOptions,
-  GetManifestOptions,
-  GetFileOptions,
-  createQueryDocument,
-  getImplementations,
   sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
   sanitizeUriRedirects,
+  Uri,
+  UriRedirect,
+  Web3ApiManifest,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 import {
@@ -404,7 +404,7 @@ export class Web3ApiClient implements Client {
             };
           }
           dependenciesMap[definition.uri]?.types.push({
-            name: definition.type,
+            name: definition.nativeType,
             type: dependencyType,
             interface: isInterface,
           });
