@@ -9,7 +9,7 @@ import {
   generateDockerfile,
   createBuildImage,
   copyArtifactsFromBuildImage,
-  manifestLanguageToTargetLanguage,
+  manifestLanguageToTargetLanguage, displayPath
 } from "./helpers";
 import { intlMsg } from "./intl";
 
@@ -23,7 +23,7 @@ import { AsyncWasmInstance } from "@web3api/asyncify-js";
 import { bindSchema, writeDirectory } from "@web3api/schema-bind";
 import { TypeInfo } from "@web3api/schema-parse";
 import { ComposerOutput } from "@web3api/schema-compose";
-import { writeFileSync } from "@web3api/os-js";
+import { normalizePath, writeFileSync } from "@web3api/os-js";
 import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";
@@ -108,6 +108,7 @@ export class Compiler {
       }
 
       await this._outputManifests(state.web3ApiManifest, buildManifest);
+      await this._outputTypeInfo(state.composerOutput.combined.typeInfo);
     };
 
     if (project.quiet) {
@@ -419,6 +420,42 @@ export class Compiler {
         buildManifest,
         `${outputDir}/web3api.build.yaml`,
         project.quiet
+      );
+    }
+  }
+
+  // TODO: update CLI text output
+  private async _outputTypeInfo(typeInfo?: TypeInfo): Promise<void> {
+    if (!typeInfo) {
+      throw Error(
+        "Cannot output TypeInfo JSON because TypeInfo is not defined."
+      );
+    }
+
+    const { outputDir, project } = this._config;
+    let outputPath = `${outputDir}/typeInfo.json`;
+
+    const run = () => {
+      writeFileSync(outputPath, JSON.stringify(typeInfo), "utf-8");
+    };
+
+    if (project.quiet) {
+      run();
+    } else {
+      outputPath = displayPath(outputPath);
+      await withSpinner(
+        intlMsg.lib_helpers_manifest_outputText({
+          path: normalizePath(outputPath),
+        }),
+        intlMsg.lib_helpers_manifest_outputError({
+          path: normalizePath(outputPath),
+        }),
+        intlMsg.lib_helpers_manifest_outputWarning({
+          path: normalizePath(outputPath),
+        }),
+        (_spinner): Promise<unknown> => {
+          return Promise.resolve(run());
+        }
       );
     }
   }

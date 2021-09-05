@@ -7,24 +7,28 @@ import {
   ApiCache,
   Client,
   createQueryDocument,
-  parseQuery,
-  PluginPackage,
-  QueryApiOptions,
-  QueryApiResult,
-  Uri,
-  UriRedirect,
+  Dependency,
+  GetDependenciesOptions,
+  getImplementations,
   InterfaceImplementations,
-  PluginRegistration,
-  resolveUri,
   InvokeApiOptions,
   InvokeApiResult,
-  Web3ApiManifest,
-  sanitizeUriRedirects,
+  parseQuery,
+  PluginPackage,
+  PluginRegistration,
+  QueryApiOptions,
+  QueryApiResult,
+  resolveUri,
   sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
-  getImplementations,
+  sanitizeUriRedirects,
+  Uri,
+  UriRedirect,
+  Web3ApiManifest
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
+import { DefinitionKind, TypeInfo } from "@web3api/schema-parse";
+import { DependencyType } from "@web3api/core-js/build/src";
 
 export { WasmWeb3Api };
 
@@ -330,6 +334,63 @@ export class Web3ApiClient implements Client {
     return filters.applyRedirects
       ? getImplementationsWithRedirects(typedUri)
       : getImplementationsWithoutRedirects(typedUri);
+  }
+
+  public async getDependencies(
+    options: GetDependenciesOptions
+  ): Promise<Dependency[]> {
+    const getDependencies = Tracer.traceFunc(
+      "Web3ApiClient: getDependencies",
+      async (options: GetDependenciesOptions): Promise<Dependency[]> => {
+        const typeInfo: TypeInfo = JSON.parse(
+          await this.getFile({
+            uri: options.uri,
+            path: "typeInfo.json",
+            encoding: "utf-8",
+          })
+        );
+
+        const kindToType = (kind: DefinitionKind): DependencyType => {
+          switch (kind) {
+            case DefinitionKind.ImportedObject:
+              return DependencyType.Object;
+            case DefinitionKind.ImportedQuery:
+              return DependencyType.Query;
+            case DefinitionKind.ImportedEnum:
+              return DependencyType.Enum;
+            case DefinitionKind.InterfaceImplemented:
+              return DependencyType.Interface;
+            default:
+              throw Error("Unknown dependency type");
+          }
+        };
+
+        const dependenciesMap: Record<string, Dependency> = {};
+        for (const definition of [
+          ...typeInfo.importedObjectTypes,
+          ...typeInfo.importedEnumTypes,
+          ...typeInfo.importedQueryTypes,
+        ]) {
+          if (!dependenciesMap[definition.uri]) {
+            dependenciesMap[definition.uri] = {
+              uri: definition.uri,
+              types: [],
+              namespace: definition.namespace,
+            };
+          }
+          const type: DependencyType = kindToType(definition.kind);
+          dependenciesMap[definition.uri]?.types.push({
+            name: definition.name,
+            type: type,
+            interface: type === DependencyType.Interface,
+          });
+        }
+
+        return Object.keys(dependenciesMap).map<Dependency>((uri: string) => dependenciesMap[uri]);
+      }
+    );
+
+    return getDependencies(options);
   }
 
   private _requirePluginsToUseNonInterfaceUris(): void {

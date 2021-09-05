@@ -1,5 +1,6 @@
 export * from "./Api";
 export * from "./Client";
+export * from "./Dependency";
 export * from "./MaybeAsync";
 export * from "./Plugin";
 export * from "./Query";
