@@ -6,10 +6,12 @@ import { SchemaComposer } from "./SchemaComposer";
 import {
   withSpinner,
   outputManifest,
+  outputMetadata,
   generateDockerfile,
   createBuildImage,
   copyArtifactsFromBuildImage,
-  manifestLanguageToTargetLanguage, displayPath
+  manifestLanguageToTargetLanguage,
+  displayPath,
 } from "./helpers";
 import { intlMsg } from "./intl";
 
@@ -17,6 +19,7 @@ import {
   InvokableModules,
   Web3ApiManifest,
   BuildManifest,
+  MetaManifest,
 } from "@web3api/core-js";
 import { WasmWeb3Api } from "@web3api/client-js";
 import { AsyncWasmInstance } from "@web3api/asyncify-js";
@@ -107,7 +110,14 @@ export class Compiler {
         buildManifest = await this._buildModules(state);
       }
 
-      await this._outputManifests(state.web3ApiManifest, buildManifest);
+      // Output all metadata if present
+      const metaManifest = await this._outputMetadata();
+
+      await this._outputManifests(
+        state.web3ApiManifest,
+        buildManifest,
+        metaManifest
+      );
       await this._outputTypeInfo(state.composerOutput.combined.typeInfo);
     };
 
@@ -405,23 +415,48 @@ export class Compiler {
 
   private async _outputManifests(
     web3ApiManifest: Web3ApiManifest,
-    buildManifest?: BuildManifest
+    buildManifest?: BuildManifest,
+    metaManifest?: MetaManifest
   ): Promise<void> {
     const { outputDir, project } = this._config;
 
     await outputManifest(
       web3ApiManifest,
-      `${outputDir}/web3api.yaml`,
+      path.join(outputDir, "web3api.yaml"),
       project.quiet
     );
 
     if (buildManifest) {
       await outputManifest(
         buildManifest,
-        `${outputDir}/web3api.build.yaml`,
+        path.join(outputDir, "web3api.build.yaml"),
         project.quiet
       );
     }
+
+    if (metaManifest) {
+      await outputManifest(
+        metaManifest,
+        path.join(outputDir, "web3api.meta.yaml"),
+        project.quiet
+      );
+    }
+  }
+
+  private async _outputMetadata(): Promise<MetaManifest | undefined> {
+    const { outputDir, project } = this._config;
+    const metaManifest = await project.getMetaManifest();
+
+    if (!metaManifest) {
+      return undefined;
+    }
+
+    return await outputMetadata(
+      metaManifest,
+      outputDir,
+      project.getRootDir(),
+      project.quiet
+    );
   }
 
   // TODO: update CLI text output

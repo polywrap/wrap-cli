@@ -1,6 +1,12 @@
 import * as directiveValidators from "./directives";
 import * as typeValidators from "./types";
-import { SchemaValidator } from "./SchemaValidator";
+
+import { ASTVisitor, DocumentNode } from "graphql";
+
+export type SchemaValidator = {
+  visitor: ASTVisitor;
+  displayValidationMessagesIfExist?: (documentNode: DocumentNode) => void;
+};
 
 export type SchemaValidatorBuilder = () => SchemaValidator;
 
