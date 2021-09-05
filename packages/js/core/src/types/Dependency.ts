@@ -14,15 +14,14 @@ export interface DependencyTypeDefinition {
 }
 
 export enum DependencyType {
-  Object,
-  Query,
-  Enum,
-  Interface,
+  Object = "Object",
+  Query = "Query",
+  Enum = "Enum",
+  Interface = "Interface",
 }
 
 export interface GetDependenciesOptions {
-  uri: Uri | string;
   module?: InvokableModules;
-  include?: DependencyType | DependencyType[]
-  ignore?: DependencyType | DependencyType[]
+  include?: DependencyType[];
+  ignore?: DependencyType[];
 }

@@ -1,6 +1,6 @@
 import {
   ClientConfig,
-  createWeb3ApiClient,
+  createWeb3ApiClient, Dependency
 } from "../";
 import {
   buildAndDeployApi,
@@ -1778,8 +1778,8 @@ type Logger_Query @imported(
 ### Imported Objects START ###
 
 enum Logger_LogLevel @imported(
-  namespace: "Logger",
   uri: "ens/logger.core.web3api.eth",
+  namespace: "Logger",
   nativeType: "LogLevel"
 ) {
   DEBUG
@@ -1832,6 +1832,19 @@ enum Logger_LogLevel @imported(
     await expect(() => client.getFile(new Uri("w3://ens/ipfs.web3api.eth"), {
       path: "./index.js",
     })).rejects.toThrow("client.getFile(...) is not implemented for Plugins.");
+  });
+
+  it.only("getDependencies -- simple-storage web3api", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensAddress
+    );
+    const client = await getClient();
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const dependencies: Dependency[] = await client.getDependencies(ensUri);
+    console.log(JSON.stringify(dependencies, null, 2));
   });
 });
 

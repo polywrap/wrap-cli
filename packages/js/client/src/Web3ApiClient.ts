@@ -18,7 +18,6 @@ import {
   Uri,
   UriRedirect,
   InterfaceImplementations,
-  PluginRegistration,
   Web3ApiManifest,
   parseQuery,
   resolveUri,
@@ -34,7 +33,13 @@ import {
   sanitizeUriRedirects,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
-import { DefinitionKind, TypeInfo } from "@web3api/schema-parse";
+import {
+  DefinitionKind,
+  ImportedEnumDefinition,
+  ImportedObjectDefinition,
+  ImportedQueryDefinition,
+  TypeInfo,
+} from "@web3api/schema-parse";
 
 export { WasmWeb3Api };
 
@@ -289,19 +294,75 @@ export class Web3ApiClient implements Client {
   }
 
   public async getDependencies(
-    options: GetDependenciesOptions
+    uri: Uri | string,
+    options?: GetDependenciesOptions
   ): Promise<Dependency[]> {
+    const typedUri: Uri = this._toUri(uri);
+
     const getDependencies = Tracer.traceFunc(
       "Web3ApiClient: getDependencies",
-      async (options: GetDependenciesOptions): Promise<Dependency[]> => {
+      async (
+        uri: Uri,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        options?: GetDependenciesOptions
+      ): Promise<Dependency[]> => {
+        // retrieve type info
         const typeInfo: TypeInfo = JSON.parse(
-          await this.getFile({
-            uri: options.uri,
+          (await this.getFile(uri, {
             path: "typeInfo.json",
             encoding: "utf-8",
-          })
+          })) as string
         );
 
+        // apply type filters
+        let includedTypeInfo: (
+          | ImportedObjectDefinition
+          | ImportedEnumDefinition
+          | ImportedQueryDefinition
+        )[] = [];
+        if (options) {
+          if (
+            options.include === undefined ||
+            options.include.includes(DependencyType.Object)
+          ) {
+            if (!options.ignore?.includes(DependencyType.Object)) {
+              typeInfo.importedObjectTypes.forEach((v) =>
+                includedTypeInfo.push(v)
+              );
+            }
+          }
+          if (
+            options.include === undefined ||
+            options.include.includes(DependencyType.Enum)
+          ) {
+            if (!options.ignore?.includes(DependencyType.Enum)) {
+              typeInfo.importedEnumTypes.forEach((v) =>
+                includedTypeInfo.push(v)
+              );
+            }
+          }
+          if (
+            options.include === undefined ||
+            options.include.includes(DependencyType.Query)
+          ) {
+            if (!options.ignore?.includes(DependencyType.Query)) {
+              const includedModules: ImportedQueryDefinition[] = typeInfo.importedQueryTypes.filter(
+                (v) =>
+                  options.module === undefined ||
+                  options.module === v.type.toLowerCase()
+              );
+              includedModules.forEach((v) => includedTypeInfo.push(v));
+            }
+          }
+        } else {
+          includedTypeInfo = [
+            ...typeInfo.importedObjectTypes,
+            ...typeInfo.importedEnumTypes,
+            ...typeInfo.importedQueryTypes,
+          ];
+        }
+
+        // used to simplify returned types
         const kindToType = (kind: DefinitionKind): DependencyType => {
           switch (kind) {
             case DefinitionKind.ImportedObject:
@@ -317,12 +378,24 @@ export class Web3ApiClient implements Client {
           }
         };
 
+        // add dependencies to collection
         const dependenciesMap: Record<string, Dependency> = {};
-        for (const definition of [
-          ...typeInfo.importedObjectTypes,
-          ...typeInfo.importedEnumTypes,
-          ...typeInfo.importedQueryTypes,
-        ]) {
+        for (const definition of includedTypeInfo) {
+          const dependencyType: DependencyType = kindToType(definition.kind);
+          const isInterface = dependencyType === DependencyType.Interface;
+
+          // apply interface filter
+          if (isInterface) {
+            if (
+              (options?.include &&
+                !options.include.includes(DependencyType.Interface)) ||
+              options?.ignore?.includes(DependencyType.Interface)
+            ) {
+              continue;
+            }
+          }
+
+          // add to collection
           if (!dependenciesMap[definition.uri]) {
             dependenciesMap[definition.uri] = {
               uri: definition.uri,
@@ -330,19 +403,20 @@ export class Web3ApiClient implements Client {
               namespace: definition.namespace,
             };
           }
-          const type: DependencyType = kindToType(definition.kind);
           dependenciesMap[definition.uri]?.types.push({
-            name: definition.name,
-            type: type,
-            interface: type === DependencyType.Interface,
+            name: definition.type,
+            type: dependencyType,
+            interface: isInterface,
           });
         }
 
-        return Object.keys(dependenciesMap).map<Dependency>((uri: string) => dependenciesMap[uri]);
+        return Object.keys(dependenciesMap).map<Dependency>(
+          (uri: string) => dependenciesMap[uri]
+        );
       }
     );
 
-    return getDependencies(options);
+    return getDependencies(typedUri, options);
   }
 
   private async _loadWeb3Api(uri: Uri): Promise<Api> {
