@@ -1862,7 +1862,7 @@ enum Logger_LogLevel @imported(
     expect(includesMutation).toBeTruthy();
   });
 
-  it.only("getDependencies with optional filters -- simple-storage web3api", async () => {
+  it("getDependencies with optional filters -- simple-storage web3api", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
