@@ -190,8 +190,8 @@ type TestImport_AnotherObject @imported(
 }
 
 enum TestImport_Enum @imported(
-  namespace: "TestImport",
   uri: "testimport.uri.eth",
+  namespace: "TestImport",
   nativeType: "Enum"
 ) {
   STRING

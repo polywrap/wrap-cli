@@ -41,8 +41,8 @@ export const resolveUri = Tracer.traceFunc(
     // The final URI has been resolved, let's now resolve the Web3API package
     const uriResolverImplementations = getImplementations(
       coreInterfaceUris.uriResolver,
-      redirects,
-      interfaces
+      interfaces,
+      redirects
     );
 
     return await resolveUriWithUriResolvers(
