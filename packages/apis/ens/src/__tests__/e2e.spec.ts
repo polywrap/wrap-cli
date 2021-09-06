@@ -140,7 +140,6 @@ describe("ENS Wrapper", () => {
       variables: setResolverVariables,
     });
 
-    console.log({ setResolverErrors });
     expect(setResolverData?.setResolver).toBeDefined();
     expect(setResolverErrors).toBeUndefined();
 
