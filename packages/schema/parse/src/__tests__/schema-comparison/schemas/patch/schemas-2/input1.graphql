@@ -1,0 +1,5 @@
+type Vehicle {
+  price: Int  # price of the vehicle
+  model: String!
+  brand: String
+}

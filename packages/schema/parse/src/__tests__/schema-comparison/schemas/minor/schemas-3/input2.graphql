@@ -1,0 +1,50 @@
+scalar Int
+scalar Int8
+scalar Int16
+scalar Int32
+scalar Bytes
+scalar BigInt
+
+directive @imported(
+  uri: String!
+  namespace: String!
+  nativeType: String!
+) on OBJECT | ENUM
+
+directive @imports(
+    types: [String!]!
+) on OBJECT
+
+type Interface_Query @imported(
+  uri: "interface.uri.eth",
+  namespace: "Interface",
+  nativeType: "Query"
+) {
+  abstractMethod(
+    arg: UInt8!
+  ): String!
+}
+
+type TestImport_Query @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Query"
+) {
+  importedMethod(
+    u: UInt!
+    optU: UInt
+    optI: Int
+    str: String!
+    optStr: String
+    uArrayArray: [[UInt]]!
+  ): String!
+}
+
+type Query implements Interface_Query @imports(
+  types: [ "TestImport_Query", "Interface_Query" ]
+) {
+  queryMethod(
+    arg: String!
+    name: String
+  ): [Int]!
+}

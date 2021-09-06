@@ -1,0 +1,18 @@
+type Vehicle {
+  """
+  Reduced fields
+  """
+  price: Int  # price of the vehicle in ETH
+  model: String!  # model of the vehicle
+}
+
+enum VehicleType {
+  """
+  reordered and more types
+  """
+  BUS,
+  CAR,
+  TRUCK,
+  SCOOTER,
+  BIKE
+}
