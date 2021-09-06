@@ -1841,7 +1841,7 @@ enum Logger_LogLevel @imported(
     expect(dependencies[0].uri).toEqual("w3://ens/ethereum.web3api.eth");
     expect(dependencies[0].namespace).toEqual("Ethereum");
 
-    // check if Connection type is present
+    // check if Connection type is present in Ethereum plugin dependency
     let includesConnection = false;
     for (const type of dependencies[0].types) {
       if (type.name === "Connection" && type.type === DependencyType.Object && !type.interface) {
@@ -1862,20 +1862,151 @@ enum Logger_LogLevel @imported(
     expect(includesMutation).toBeTruthy();
   });
 
-  // TODO: need to split typeInfo into query/mutation modules
-  // it.only("getDependencies with optional filters -- simple-storage web3api", async () => {
-  //   const api = await buildAndDeployApi(
-  //     `${GetPathToTestApis()}/simple-storage`,
-  //     ipfsProvider,
-  //     ensAddress
-  //   );
-  //   const client = await getClient();
-  //   const ensUri = `ens/testnet/${api.ensDomain}`;
-  //
-  //   const dependencies: Dependency[] = await client.getDependencies(ensUri, {
-  //     include: [DependencyType.Query]
-  //   });
-  //
-  // });
+  it.only("getDependencies with optional filters -- simple-storage web3api", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensAddress
+    );
+    const client = await getClient();
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    // module filter
+    const combined: Dependency[] = await client.getDependencies(ensUri, {
+    });
+    let combinedIncludesMutationType = false;
+    for (const type of combined[0].types) {
+      if (type.name === "Mutation") {
+        combinedIncludesMutationType = true;
+        break;
+      }
+    }
+    expect(combinedIncludesMutationType).toBeTruthy();
+
+    const mutations: Dependency[] = await client.getDependencies(ensUri, {
+      module: "mutation"
+    });
+    let mutationIncludesMutationType = false;
+    for (const type of mutations[0].types) {
+      if (type.name === "Mutation") {
+        mutationIncludesMutationType = true;
+        break;
+      }
+    }
+    expect(mutationIncludesMutationType).toBeTruthy();
+
+    const queries: Dependency[] = await client.getDependencies(ensUri, {
+      module: "query"
+    });
+    let queryIncludesMutationType = false;
+    for (const type of queries[0].types) {
+      if (type.name === "Mutation") {
+        queryIncludesMutationType = true;
+        break;
+      }
+    }
+    expect(queryIncludesMutationType).toBeFalsy();
+
+    // whitelist filter
+    const whitelistObjects: Dependency[] = await client.getDependencies(ensUri, {
+      include: [DependencyType.Object]
+    });
+    let whitelistObjectsIncludesQueryType = false;
+    let whitelistObjectsIncludesObjectType = false;
+    for (const type of whitelistObjects[0].types) {
+      if (type.type === DependencyType.Object) {
+        whitelistObjectsIncludesObjectType = true;
+      } else if (type.type === DependencyType.Query) {
+        whitelistObjectsIncludesQueryType = true;
+      }
+    }
+    expect(whitelistObjectsIncludesQueryType).toBeFalsy();
+    expect(whitelistObjectsIncludesObjectType).toBeTruthy();
+
+    const whitelistQueries: Dependency[] = await client.getDependencies(ensUri, {
+      include: [DependencyType.Query]
+    });
+    let whitelistQueriesIncludesQueryType = false;
+    let whitelistQueriesIncludesObjectType = false;
+    for (const type of whitelistQueries[0].types) {
+      if (type.type === DependencyType.Query) {
+        whitelistQueriesIncludesQueryType = true;
+      } else if (type.type === DependencyType.Object) {
+        whitelistQueriesIncludesObjectType = true;
+      }
+    }
+    expect(whitelistQueriesIncludesQueryType).toBeTruthy();
+    expect(whitelistQueriesIncludesObjectType).toBeFalsy();
+
+    // blacklist filter
+    const blacklistObjects: Dependency[] = await client.getDependencies(ensUri, {
+      ignore: [DependencyType.Query]
+    });
+    let blacklistObjectsIncludesQueryType = false;
+    let blacklistObjectsIncludesObjectType = false;
+    for (const type of blacklistObjects[0].types) {
+      if (type.type === DependencyType.Object) {
+        blacklistObjectsIncludesObjectType = true;
+      } else if (type.type === DependencyType.Query) {
+        blacklistObjectsIncludesQueryType = true;
+      }
+    }
+    expect(blacklistObjectsIncludesQueryType).toBeFalsy();
+    expect(blacklistObjectsIncludesObjectType).toBeTruthy();
+
+    const blacklistQueries: Dependency[] = await client.getDependencies(ensUri, {
+      ignore: [DependencyType.Object]
+    });
+    let blacklistQueriesIncludesQueryType = false;
+    let blacklistQueriesIncludesObjectType = false;
+    for (const type of blacklistQueries[0].types) {
+      if (type.type === DependencyType.Query) {
+        blacklistQueriesIncludesQueryType = true;
+      } else if (type.type === DependencyType.Object) {
+        blacklistQueriesIncludesObjectType = true;
+      }
+    }
+    expect(blacklistQueriesIncludesQueryType).toBeTruthy();
+    expect(blacklistQueriesIncludesObjectType).toBeFalsy();
+
+    // multiple filters
+    const grayListObjects: Dependency[] = await client.getDependencies(ensUri, {
+      include:[DependencyType.Object],
+      ignore: [DependencyType.Query]
+    });
+    let grayListObjectsIncludesQueryType = false;
+    let grayListObjectsIncludesObjectType = false;
+    for (const type of grayListObjects[0].types) {
+      if (type.type === DependencyType.Object) {
+        grayListObjectsIncludesObjectType = true;
+      } else if (type.type === DependencyType.Query) {
+        grayListObjectsIncludesQueryType = true;
+      }
+    }
+    expect(grayListObjectsIncludesQueryType).toBeFalsy();
+    expect(grayListObjectsIncludesObjectType).toBeTruthy();
+
+    const grayListQueries: Dependency[] = await client.getDependencies(ensUri, {
+      include: [DependencyType.Query],
+      ignore: [DependencyType.Object]
+    });
+    let grayListQueriesIncludesQueryType = false;
+    let grayListQueriesIncludesObjectType = false;
+    for (const type of grayListQueries[0].types) {
+      if (type.type === DependencyType.Query) {
+        grayListQueriesIncludesQueryType = true;
+      } else if (type.type === DependencyType.Object) {
+        grayListQueriesIncludesObjectType = true;
+      }
+    }
+    expect(grayListQueriesIncludesQueryType).toBeTruthy();
+    expect(grayListQueriesIncludesObjectType).toBeFalsy();
+
+    const grayListEmpty: Dependency[] = await client.getDependencies(ensUri, {
+      include: [DependencyType.Query],
+      ignore: [DependencyType.Query],
+    });
+    expect(grayListEmpty.length).toEqual(0);
+  });
 });
 

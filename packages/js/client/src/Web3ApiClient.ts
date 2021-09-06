@@ -38,6 +38,7 @@ import {
   ImportedEnumDefinition,
   ImportedObjectDefinition,
   ImportedQueryDefinition,
+  QueryDefinition,
   TypeInfo,
 } from "@web3api/schema-parse";
 
@@ -321,14 +322,27 @@ export class Web3ApiClient implements Client {
           | ImportedQueryDefinition
         )[] = [];
         if (options) {
+          // filter list of imports by module
+          const importList: Set<string> = new Set();
+          typeInfo.queryTypes.forEach((queryType: QueryDefinition) => {
+            if (
+              !options.module ||
+              options.module === queryType.type.toLowerCase()
+            ) {
+              queryType.imports.forEach((v) => importList.add(v.type));
+            }
+          });
+          // filter typeInfo
           if (
             options.include === undefined ||
             options.include.includes(DependencyType.Object)
           ) {
             if (!options.ignore?.includes(DependencyType.Object)) {
-              typeInfo.importedObjectTypes.forEach((v) =>
-                includedTypeInfo.push(v)
-              );
+              typeInfo.importedObjectTypes.forEach((v) => {
+                if (importList.has(v.type)) {
+                  includedTypeInfo.push(v);
+                }
+              });
             }
           }
           if (
@@ -336,9 +350,11 @@ export class Web3ApiClient implements Client {
             options.include.includes(DependencyType.Enum)
           ) {
             if (!options.ignore?.includes(DependencyType.Enum)) {
-              typeInfo.importedEnumTypes.forEach((v) =>
-                includedTypeInfo.push(v)
-              );
+              typeInfo.importedEnumTypes.forEach((v) => {
+                if (importList.has(v.type)) {
+                  includedTypeInfo.push(v);
+                }
+              });
             }
           }
           if (
@@ -346,12 +362,11 @@ export class Web3ApiClient implements Client {
             options.include.includes(DependencyType.Query)
           ) {
             if (!options.ignore?.includes(DependencyType.Query)) {
-              const includedModules: ImportedQueryDefinition[] = typeInfo.importedQueryTypes.filter(
-                (v) =>
-                  options.module === undefined ||
-                  options.module === v.type.toLowerCase()
-              );
-              includedModules.forEach((v) => includedTypeInfo.push(v));
+              typeInfo.importedQueryTypes.forEach((v) => {
+                if (importList.has(v.type)) {
+                  includedTypeInfo.push(v);
+                }
+              });
             }
           }
         } else {
