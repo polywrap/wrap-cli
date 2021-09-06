@@ -1,6 +1,6 @@
-import { compare } from "../version_compare";
+import { compare } from "../schema-comparision";
 import { parseSchema, TypeInfo } from "..";
-import { VersionRelease } from "../version_compare/comparators";
+import { VersionRelease } from "../schema-comparision/comparers";
 
 const schemas_1: string[] = [
   `
