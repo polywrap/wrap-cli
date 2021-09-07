@@ -3,6 +3,15 @@ subtext: Wrapper for ENS domains
 description: Protocol that allows you to attach your address to a human readable string
 icon: ./meta/imgs/logo.png
 queries:
+  - name: Configure open domain
+    query: ./meta/queries/configureOpenDomain.graphql
+    recipe: ./meta/recipes/configureOpenDomain.json
+  - name: Create subdomain in open domain
+    query: ./meta/queries/createSubdomainInOpenDomain.graphql
+    recipe: ./meta/recipes/createSubdomainInOpenDomain.json
+  - name: Create subdomain in open domain and set content hash
+    query: ./meta/queries/createSubdomainInOpenDomainAndSetContentHash.graphql
+    recipe: ./meta/recipes/createSubdomainInOpenDomainAndSetContentHash.json
   - name: Deploy FIFS Registrar
     query: ./meta/queries/deployFIFSRegistrar.graphql
     recipe: ./meta/recipes/deployFIFSRegistrar.json
@@ -48,10 +57,3 @@ queries:
   - name: Set subdomain record
     query: ./meta/queries/setSubdomainRecord.graphql
     recipe: ./meta/recipes/setSubdomainRecord.json
-
-  - name: Set Resolver
-    query: ./meta/queries/setResolver.graphql
-  - name: Get Resolver
-    query: ./meta/queries/getResolver.graphql
-  - name: Get Resolver
-    query: ./meta/queries/getResolver.graphql
