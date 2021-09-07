@@ -12,7 +12,7 @@ import {
   ImportedDefinition,
 } from "../typeInfo/definitions";
 import { TypeInfo } from "../typeInfo";
-import { compareSets, SetComparisionType } from "./compareSets";
+import { compareSets, SetComparisonType } from "./compareSets";
 
 export type ImportDefinition = { type: string };
 
@@ -74,12 +74,12 @@ export function compareEnumType(
 
     const c1: Set<string> = new Set<string>(obj1.constants);
     const c2: Set<string> = new Set<string>(obj2.constants);
-    const result: SetComparisionType = compareSets(c1, c2);
+    const result: SetComparisonType = compareSets(c1, c2);
 
     switch (result) {
-      case SetComparisionType.EQUAL:
+      case SetComparisonType.EQUAL:
         return VersionRelease.PATCH;
-      case SetComparisionType.SUBSET:
+      case SetComparisonType.SUBSET:
         return VersionRelease.MINOR;
       default:
         return VersionRelease.MAJOR;
@@ -262,12 +262,12 @@ export function compareImportTypes(
 ): VersionRelease {
   const s1 = new Set(arr1.map((x) => x.type));
   const s2 = new Set(arr2.map((x) => x.type));
-  const result: SetComparisionType = compareSets(s1, s2);
+  const result: SetComparisonType = compareSets(s1, s2);
 
   switch (result) {
-    case SetComparisionType.EQUAL:
+    case SetComparisonType.EQUAL:
       return VersionRelease.PATCH;
-    case SetComparisionType.SUBSET:
+    case SetComparisonType.SUBSET:
       return VersionRelease.MINOR;
     default:
       return VersionRelease.MAJOR;
