@@ -1,7 +1,8 @@
-import path from "path";
 import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
+import fs from "fs";
+import path from "path";
 
 const HELP = `
 w3 build [options] [<web3api-manifest>]
@@ -203,5 +204,33 @@ ${HELP}`);
       "Manifest written to ./build/web3api.yaml"
     );
     expect(sanitizedOutput).toContain(manifestPath);
+  });
+
+  test("Successfully builds project w/ metadata", async () => {
+    const { exitCode: code, stdout: output } = await runCLI({
+      args: ["build", "web3api-meta.yaml", "-v"],
+      cwd: projectRoot
+    }, w3Cli);
+
+    const manifestPath = "build/web3api.meta.yaml";
+    const queryPath = "build/meta/queries/test.graphql";
+    const queryVarPath = "build/meta/queries/test.json";
+    const linkIconPath = "build/meta/links/link.svg";
+    const iconPath = "build/meta/icon/icon.png";
+    const sanitizedOutput = clearStyle(output);
+
+    expect(code).toEqual(0);
+    expect(sanitizedOutput).toContain("Artifacts written to ./build from the image `build-env`");
+    expect(sanitizedOutput).toContain("Manifest written to ./build/web3api.yaml");
+    expect(sanitizedOutput).toContain(manifestPath);
+    expect(sanitizedOutput).toContain(queryPath);
+    expect(sanitizedOutput).toContain(queryVarPath);
+    expect(sanitizedOutput).toContain(linkIconPath);
+    expect(sanitizedOutput).toContain(iconPath);
+
+    expect(fs.existsSync(path.join(projectRoot, queryPath))).toBeTruthy();
+    expect(fs.existsSync(path.join(projectRoot, queryVarPath))).toBeTruthy();
+    expect(fs.existsSync(path.join(projectRoot, linkIconPath))).toBeTruthy();
+    expect(fs.existsSync(path.join(projectRoot, iconPath))).toBeTruthy();
   });
 });

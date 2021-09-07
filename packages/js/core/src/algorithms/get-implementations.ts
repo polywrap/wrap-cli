@@ -7,8 +7,8 @@ export const getImplementations = Tracer.traceFunc(
   "core: getImplementations",
   (
     apiInterfaceUri: Uri,
-    redirects: readonly UriRedirect<Uri>[],
-    interfaces: readonly InterfaceImplementations<Uri>[]
+    interfaces: readonly InterfaceImplementations<Uri>[],
+    redirects?: readonly UriRedirect<Uri>[]
   ): Uri[] => {
     const result: Uri[] = [];
 
@@ -24,10 +24,9 @@ export const getImplementations = Tracer.traceFunc(
       apiInterfaceUri: Uri
     ) => {
       for (const interfaceImplementations of implementationsArray) {
-        const fullyResolvedUri = applyRedirects(
-          interfaceImplementations.interface,
-          redirects
-        );
+        const fullyResolvedUri = redirects
+          ? applyRedirects(interfaceImplementations.interface, redirects)
+          : interfaceImplementations.interface;
 
         if (Uri.equals(fullyResolvedUri, apiInterfaceUri)) {
           for (const implementation of interfaceImplementations.implementations) {
@@ -37,15 +36,13 @@ export const getImplementations = Tracer.traceFunc(
       }
     };
 
-    const finalRedirectedApiInterface = applyRedirects(
-      apiInterfaceUri,
-      redirects
-    );
+    let finalUri = apiInterfaceUri;
 
-    addAllImplementationsFromImplementationsArray(
-      interfaces,
-      finalRedirectedApiInterface
-    );
+    if (redirects) {
+      finalUri = applyRedirects(apiInterfaceUri, redirects);
+    }
+
+    addAllImplementationsFromImplementationsArray(interfaces, finalUri);
 
     return result;
   }
