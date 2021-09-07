@@ -12,7 +12,7 @@ import {
   ImportedDefinition,
 } from "../typeInfo/definitions";
 import { TypeInfo } from "../typeInfo";
-import { compareSets, SetComparisionType } from "./setUtils";
+import { compareSets, SetComparisionType } from "./compareSets";
 
 export type ImportDefinition = { type: string };
 

@@ -57,7 +57,7 @@ export function fetchTestCases(): TestCases {
     const typeInfo2 = parseSchema(schema2);
 
     cases.push({
-      name: `${versionDirent.name}-${schemaDirent.name}`,
+      name: `${versionDirent.name}: ${schemaDirent.name}`,
       input1: typeInfo1,
       input2: typeInfo2,
       output: VersionReleaseType[versionDirent.name],

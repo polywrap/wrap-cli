@@ -1,0 +1,6 @@
+enum Enum {
+  A,
+  B,
+  C,
+  D
+}

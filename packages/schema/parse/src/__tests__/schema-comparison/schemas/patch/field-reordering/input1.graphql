@@ -1,0 +1,11 @@
+type Object {
+  a: Int  # a
+  b: String!
+  c: String
+}
+
+enum Enum {
+  A,
+  B,
+  C
+}

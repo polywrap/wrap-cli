@@ -1,0 +1,8 @@
+type Object {
+  """
+  New docstring
+  """
+  a: Int  # a
+  b: String! # new comment
+  c: String
+}

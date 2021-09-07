@@ -1,0 +1,4 @@
+type Object {
+  field: String!
+  anotherField: String!
+}

@@ -1,8 +1,0 @@
-type Vehicle {
-  """
-  Vehicle type
-  """
-  price: Int  # price of the vehicle in ETH
-  model: String!  # model of the vehicle
-  brand: String
-}

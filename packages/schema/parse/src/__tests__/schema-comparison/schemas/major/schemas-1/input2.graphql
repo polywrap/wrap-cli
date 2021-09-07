@@ -1,6 +1,0 @@
-type Vehicle {
-  price: Int
-  hasFourWheel: Boolean!
-  model: String!
-  brand: String
-}

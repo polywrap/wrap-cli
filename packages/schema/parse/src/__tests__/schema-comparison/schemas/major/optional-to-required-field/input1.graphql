@@ -1,0 +1,4 @@
+type Object {
+  default: String!
+  change: Int
+}
