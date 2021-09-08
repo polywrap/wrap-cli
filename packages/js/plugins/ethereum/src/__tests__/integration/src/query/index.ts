@@ -16,16 +16,18 @@ import {
   Input_toWei,
   Input_toEth,
   Input_awaitTransaction,
-  Input_waitForEvent,
+  Input_waitForEvent
 } from "./w3";
 import { BigInt } from "@web3api/wasm-as";
 
-export function callContractView(input: Input_callContractView): string {
+export function callContractView(
+  input: Input_callContractView
+): string {
   return Ethereum_Query.callContractView({
     address: input.address,
     method: input.method,
     args: input.args,
-    connection: input.connection,
+    connection: input.connection
   });
 }
 
@@ -37,27 +39,33 @@ export function callContractStatic(
     method: input.method,
     args: input.args,
     connection: input.connection,
-    txOverrides: input.txOverrides,
+    txOverrides: input.txOverrides
   });
 }
 
-export function encodeParams(input: Input_encodeParams): string {
+export function encodeParams(
+  input: Input_encodeParams
+): string {
   return Ethereum_Query.encodeParams({
     types: input.types,
-    values: input.values,
+    values: input.values
   });
 }
 
-export function getSignerAddress(input: Input_getSignerAddress): string {
+export function getSignerAddress(
+  input: Input_getSignerAddress
+): string {
   return Ethereum_Query.getSignerAddress({
-    connection: input.connection,
+    connection: input.connection
   });
 }
 
-export function getSignerBalance(input: Input_getSignerBalance): BigInt {
+export function getSignerBalance(
+  input: Input_getSignerBalance
+): BigInt {
   return Ethereum_Query.getSignerBalance({
     blockTag: input.blockTag,
-    connection: input.connection,
+    connection: input.connection
   });
 }
 
@@ -66,13 +74,15 @@ export function getSignerTransactionCount(
 ): BigInt {
   return Ethereum_Query.getSignerTransactionCount({
     blockTag: input.blockTag,
-    connection: input.connection,
+    connection: input.connection
   });
 }
 
-export function getGasPrice(input: Input_getGasPrice): BigInt {
+export function getGasPrice(
+  input: Input_getGasPrice
+): BigInt {
   return Ethereum_Query.getGasPrice({
-    connection: input.connection,
+    connection: input.connection
   });
 }
 
@@ -81,7 +91,7 @@ export function estimateTransactionGas(
 ): BigInt {
   return Ethereum_Query.estimateTransactionGas({
     tx: input.tx,
-    connection: input.connection,
+    connection: input.connection
   });
 }
 
@@ -93,25 +103,31 @@ export function estimateContractCallGas(
     method: input.method,
     args: input.args,
     connection: input.connection,
-    txOverrides: input.txOverrides,
+    txOverrides: input.txOverrides
   });
 }
 
-export function checkAddress(input: Input_checkAddress): bool {
+export function checkAddress(
+  input: Input_checkAddress
+): bool {
   return Ethereum_Query.checkAddress({
-    address: input.address,
+    address: input.address
   });
 }
 
-export function toWei(input: Input_toWei): BigInt {
+export function toWei(
+  input: Input_toWei
+): BigInt {
   return Ethereum_Query.toWei({
-    eth: input.eth,
+    eth: input.eth
   });
 }
 
-export function toEth(input: Input_toEth): String {
+export function toEth(
+  input: Input_toEth
+): String {
   return Ethereum_Query.toEth({
-    wei: input.wei,
+    wei: input.wei
   });
 }
 
@@ -122,7 +138,7 @@ export function awaitTransaction(
     txHash: input.txHash,
     confirmations: input.confirmations,
     timeout: input.timeout,
-    connection: input.connection,
+    connection: input.connection
   });
 }
 
@@ -134,6 +150,6 @@ export function waitForEvent(
     event: input.event,
     args: input.args,
     timeout: input.timeout,
-    connection: input.connection,
+    connection: input.connection
   });
 }
