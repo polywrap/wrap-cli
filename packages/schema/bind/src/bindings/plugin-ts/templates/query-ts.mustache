@@ -10,6 +10,7 @@ import {
   Int32,
   Bytes,
   BigInt,
+  Json,
   String,
   Boolean
 } from "./types";
