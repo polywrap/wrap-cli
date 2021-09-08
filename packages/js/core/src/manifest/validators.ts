@@ -86,3 +86,18 @@ export function yamlFile(filePath: unknown): boolean {
     !!filePath.match(/(\.yaml)$/)?.length
   );
 }
+
+export function regexString(regex: unknown): boolean {
+  if (typeof regex !== "string") {
+    return false;
+  }
+
+  let isValid = true;
+  try {
+    new RegExp(regex);
+  } catch (e) {
+    isValid = false;
+  }
+
+  return isValid;
+}
