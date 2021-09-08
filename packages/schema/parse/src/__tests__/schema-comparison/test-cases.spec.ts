@@ -1,4 +1,4 @@
-import { compare } from "../../schema-comparison";
+import { compare } from "../../comparison";
 import { fetchTestCases } from "./index";
 
 describe("Web3API Version Comparison Test Cases", () => {
@@ -7,7 +7,7 @@ describe("Web3API Version Comparison Test Cases", () => {
   for (const test of cases) {
     it(`Case: ${test.name}`, () => {
       const result = compare(test.input1, test.input2);
-      expect(result).toBe(test.output);
+      expect(result.versionRelease).toBe(test.output);
     });
   }
 });
