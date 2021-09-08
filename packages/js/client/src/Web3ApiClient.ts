@@ -8,8 +8,8 @@ import {
   ApiCacheConfig,
   ManagedApiCache,
   Client,
-  createQueryDocument,
-  parseQuery,
+  InvokeApiOptions,
+  InvokeApiResult,
   PluginPackage,
   QueryApiOptions,
   QueryApiResult,
@@ -17,17 +17,21 @@ import {
   UriRedirect,
   InterfaceImplementations,
   PluginRegistration,
-  resolveUri,
-  InvokeApiOptions,
-  InvokeApiResult,
   Web3ApiManifest,
-  sanitizeUriRedirects,
+  parseQuery,
+  resolveUri,
+  AnyManifest,
+  ManifestType,
+  GetManifestOptions,
+  GetFileOptions,
+  createQueryDocument,
+  getImplementations,
   sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
-  getImplementations,
   UriResolutionOptions,
   UriPathNode,
   resolveUriToPath,
+  sanitizeUriRedirects,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -127,19 +131,10 @@ export class Web3ApiClient implements Client {
 
   public async query<
     TData extends Record<string, unknown> = Record<string, unknown>,
-    TVariables extends Record<string, unknown> = Record<string, unknown>
+    TVariables extends Record<string, unknown> = Record<string, unknown>,
+    TUri extends Uri | string = string
   >(
-    options: QueryApiOptions<TVariables, string>
-  ): Promise<QueryApiResult<TData>>;
-  public async query<
-    TData extends Record<string, unknown> = Record<string, unknown>,
-    TVariables extends Record<string, unknown> = Record<string, unknown>
-  >(options: QueryApiOptions<TVariables, Uri>): Promise<QueryApiResult<TData>>;
-  public async query<
-    TData extends Record<string, unknown> = Record<string, unknown>,
-    TVariables extends Record<string, unknown> = Record<string, unknown>
-  >(
-    options: QueryApiOptions<TVariables, string | Uri>
+    options: QueryApiOptions<TVariables, TUri>
   ): Promise<QueryApiResult<TData>> {
     let typedOptions: QueryApiOptions<TVariables, Uri>;
 
@@ -217,32 +212,20 @@ export class Web3ApiClient implements Client {
     });
   }
 
-  public async invoke<TData = unknown>(
-    options: InvokeApiOptions<string>
-  ): Promise<InvokeApiResult<TData>>;
-  public async invoke<TData = unknown>(
-    options: InvokeApiOptions<Uri>
-  ): Promise<InvokeApiResult<TData>>;
-  public async invoke<TData = unknown>(
-    options: InvokeApiOptions<string | Uri>
+  public async invoke<TData = unknown, TUri extends Uri | string = string>(
+    options: InvokeApiOptions<TUri>
   ): Promise<InvokeApiResult<TData>> {
-    let typedOptions: InvokeApiOptions<Uri>;
-
-    if (typeof options.uri === "string") {
-      typedOptions = {
-        ...options,
-        uri: new Uri(options.uri),
-      };
-    } else {
-      typedOptions = options as InvokeApiOptions<Uri>;
-    }
+    const typedOptions: InvokeApiOptions<Uri> = {
+      ...options,
+      uri: this._toUri(options.uri),
+    };
 
     const run = Tracer.traceFunc(
       "Web3ApiClient: invoke",
       async (
         options: InvokeApiOptions<Uri>
       ): Promise<InvokeApiResult<TData>> => {
-        const api = await this.loadWeb3Api(options.uri);
+        const api = await this._loadWeb3Api(options.uri);
 
         const result = (await api.invoke(options, this)) as TData;
 
@@ -253,13 +236,38 @@ export class Web3ApiClient implements Client {
     return run(typedOptions);
   }
 
-  public async loadWeb3Api(uri: string): Promise<Api>;
-  public async loadWeb3Api(uri: Uri): Promise<Api>;
-  public async loadWeb3Api(uri: string | Uri): Promise<Api> {
+  public async getSchema<TUri extends Uri | string>(
+    uri: TUri
+  ): Promise<string> {
+    const api = await this._loadWeb3Api(this._toUri(uri));
+    return await api.getSchema(this);
+  }
+
+  public async getManifest<
+    TUri extends Uri | string,
+    TManifestType extends ManifestType
+  >(
+    uri: TUri,
+    options: GetManifestOptions<TManifestType>
+  ): Promise<AnyManifest<TManifestType>> {
+    const api = await this._loadWeb3Api(this._toUri(uri));
+    return await api.getManifest(options, this);
+  }
+
+  public async getFile<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetFileOptions
+  ): Promise<string | ArrayBuffer> {
+    const api = await this._loadWeb3Api(this._toUri(uri));
+    return await api.getFile(options, this);
+  }
+
+
+  private async _loadWeb3Api(uri: Uri): Promise<Api> {
     const typedUri = typeof uri === "string" ? new Uri(uri) : uri;
 
     const run = Tracer.traceFunc(
-      "Web3ApiClient: loadWeb3Api",
+      "Web3ApiClient: _loadWeb3Api",
       async (uri: Uri): Promise<Api> => {
         let api = this._apiCache.get(uri.uri);
 
@@ -336,10 +344,10 @@ export class Web3ApiClient implements Client {
       "Web3ApiClient: getImplementations - getImplementationsWithRedirects",
       (uri: Uri): (string | Uri)[] => {
         return isUriTypeString
-          ? getImplementations(uri, this.redirects(), this.interfaces()).map(
+          ? getImplementations(uri, this.interfaces(), this.redirects()).map(
               (x) => x.uri
             )
-          : getImplementations(uri, this.redirects(), this.interfaces());
+          : getImplementations(uri, this.interfaces(), this.redirects());
       }
     );
 
@@ -388,6 +396,16 @@ export class Web3ApiClient implements Client {
       throw Error(
         `Plugins can't use interfaces for their URI. Invalid plugins: ${pluginsWithInterfaceUris}`
       );
+    }
+  }
+
+  private _toUri(uri: Uri | string): Uri {
+    if (typeof uri === "string") {
+      return new Uri(uri);
+    } else if (Uri.isUri(uri)) {
+      return uri;
+    } else {
+      throw Error(`Unknown uri type, cannot convert. ${JSON.stringify(uri)}`);
     }
   }
 }

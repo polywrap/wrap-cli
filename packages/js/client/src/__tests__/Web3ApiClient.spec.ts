@@ -1,9 +1,4 @@
-import {
-  ClientConfig,
-  createWeb3ApiClient,
-  Plugin,
-  Uri, UriPathNode
-} from "../";
+import { ClientConfig, createWeb3ApiClient } from "../";
 import {
   buildAndDeployApi,
   initTestEnvironment,
@@ -12,7 +7,19 @@ import {
 import { GetPathToTestApis } from "@web3api/test-cases";
 import { Web3ApiClient } from "../Web3ApiClient";
 import { getDefaultClientConfig } from "../default-client-config";
-import { coreInterfaceUris } from '@web3api/core-js';
+import {
+  Uri,
+  Plugin,
+  Web3ApiManifest,
+  BuildManifest,
+  MetaManifest,
+  deserializeWeb3ApiManifest,
+  deserializeBuildManifest,
+  deserializeMetaManifest,
+  coreInterfaceUris,
+  UriPathNode,
+} from "@web3api/core-js";
+import { readFileSync } from "fs";
 
 jest.setTimeout(200000);
 
@@ -33,68 +40,66 @@ describe("Web3ApiClient", () => {
   });
 
   const getClient = async (config?: ClientConfig) => {
-    return createWeb3ApiClient({
-      ethereum: {
-        networks: {
-          testnet: {
-            provider: ethProvider,
+    return createWeb3ApiClient(
+      {
+        ethereum: {
+          networks: {
+            testnet: {
+              provider: ethProvider,
+            },
+          },
+        },
+        ipfs: { provider: ipfsProvider },
+        ens: {
+          addresses: {
+            testnet: ensAddress,
           },
         },
       },
-      ipfs: { provider: ipfsProvider },
-      ens: {
-        addresses: {
-          testnet: ensAddress,
-        },
-      },
-    }, config);
-  }
+      config
+    );
+  };
 
   it("default client config", () => {
     const client = new Web3ApiClient();
 
     expect(client.redirects()).toStrictEqual([]);
-    expect(
-        client.plugins().map(x => x.uri)
-      ).toStrictEqual([ 
-        new Uri("w3://ens/ipfs.web3api.eth"),
-        new Uri("w3://ens/ens.web3api.eth"),
-        new Uri("w3://ens/ethereum.web3api.eth"),
-        new Uri("w3://ens/http.web3api.eth"),
-        new Uri("w3://ens/js-logger.web3api.eth"),
-        new Uri("w3://ens/uts46.web3api.eth"),
-        new Uri("w3://ens/sha3.web3api.eth"),
-      ]);
-    expect(
-        client.interfaces()
-      ).toStrictEqual([
+    expect(client.plugins().map((x) => x.uri)).toStrictEqual([
+      new Uri("w3://ens/ipfs.web3api.eth"),
+      new Uri("w3://ens/ens.web3api.eth"),
+      new Uri("w3://ens/ethereum.web3api.eth"),
+      new Uri("w3://ens/http.web3api.eth"),
+      new Uri("w3://ens/js-logger.web3api.eth"),
+      new Uri("w3://ens/uts46.web3api.eth"),
+      new Uri("w3://ens/sha3.web3api.eth"),
+    ]);
+    expect(client.interfaces()).toStrictEqual([
       {
         interface: coreInterfaceUris.uriResolver,
         implementations: [
-          new Uri("w3://ens/ipfs.web3api.eth"), 
-          new Uri("w3://ens/ens.web3api.eth")
-        ]
+          new Uri("w3://ens/ipfs.web3api.eth"),
+          new Uri("w3://ens/ens.web3api.eth"),
+        ],
       },
       {
         interface: coreInterfaceUris.logger,
-        implementations: [
-          new Uri("w3://ens/js-logger.web3api.eth")
-        ]
-      }]);
+        implementations: [new Uri("w3://ens/js-logger.web3api.eth")],
+      },
+    ]);
   });
 
   it("redirect registration", () => {
     const implementation1Uri = "w3://ens/some-implementation1.eth";
     const implementation2Uri = "w3://ens/some-implementation2.eth";
-    
+
     const client = new Web3ApiClient({
-        redirects: [
-          {
-            from: implementation1Uri,
-            to: implementation2Uri
-          }
-        ]
-      });
+      redirects: [
+        {
+          from: implementation1Uri,
+          to: implementation2Uri,
+        },
+      ],
+    });
 
     const redirects = client.redirects();
 
@@ -102,7 +107,7 @@ describe("Web3ApiClient", () => {
       {
         from: new Uri(implementation1Uri),
         to: new Uri(implementation2Uri),
-      }
+      },
     ]);
   });
 
@@ -119,21 +124,21 @@ describe("Web3ApiClient", () => {
     ];
 
     const client = new Web3ApiClient({
-        plugins: [
-          {
-            uri: implementationUri,
-            plugin: {
-              factory: () => ({} as Plugin),
-              manifest: {
-                schema: "",
-                implements: [],
-              }
-            }
-          }
-        ]
-      });
+      plugins: [
+        {
+          uri: implementationUri,
+          plugin: {
+            factory: () => ({} as Plugin),
+            manifest: {
+              schema: "",
+              implements: [],
+            },
+          },
+        },
+      ],
+    });
 
-    const pluginUris = client.plugins().map(x => x.uri.uri);
+    const pluginUris = client.plugins().map((x) => x.uri.uri);
 
     expect(pluginUris).toEqual([implementationUri].concat(defaultPlugins));
   });
@@ -142,44 +147,38 @@ describe("Web3ApiClient", () => {
     const interfaceUri = "w3://ens/some-interface1.eth";
     const implementation1Uri = "w3://ens/some-implementation1.eth";
     const implementation2Uri = "w3://ens/some-implementation2.eth";
-    
+
     const client = new Web3ApiClient({
-        interfaces: [
-          {
-            interface: interfaceUri,
-            implementations: [
-              implementation1Uri,
-              implementation2Uri
-            ]
-          }
-        ]
-      });
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementation1Uri, implementation2Uri],
+        },
+      ],
+    });
 
     const interfaces = client.interfaces();
 
-
     const defaultClientConfig = getDefaultClientConfig();
 
-    expect(interfaces).toEqual([
+    expect(interfaces).toEqual(
+      [
         {
           interface: new Uri(interfaceUri),
           implementations: [
             new Uri(implementation1Uri),
-            new Uri(implementation2Uri)
-          ]
-        }
-      ].concat(defaultClientConfig.interfaces ?? []));
+            new Uri(implementation2Uri),
+          ],
+        },
+      ].concat(defaultClientConfig.interfaces ?? [])
+    );
 
     const implementations = client.getImplementations(interfaceUri);
 
-    expect(implementations).toEqual([
-        implementation1Uri,
-        implementation2Uri
-      ]);
+    expect(implementations).toEqual([implementation1Uri, implementation2Uri]);
   });
 
   it("get all implementations of interface", async () => {
-
     const interface1Uri = "w3://ens/some-interface1.eth";
     const interface2Uri = "w3://ens/some-interface2.eth";
     const interface3Uri = "w3://ens/some-interface3.eth";
@@ -193,16 +192,16 @@ describe("Web3ApiClient", () => {
       redirects: [
         {
           from: interface1Uri,
-          to: interface2Uri
+          to: interface2Uri,
         },
         {
           from: implementation1Uri,
-          to: implementation2Uri
+          to: implementation2Uri,
         },
         {
           from: implementation2Uri,
-          to: implementation3Uri
-        }
+          to: implementation3Uri,
+        },
       ],
       plugins: [
         {
@@ -212,54 +211,49 @@ describe("Web3ApiClient", () => {
             manifest: {
               schema: "",
               implements: [],
-            }
-          }
-        }
+            },
+          },
+        },
       ],
       interfaces: [
         {
           interface: interface1Uri,
-          implementations: [
-            implementation1Uri,
-            implementation2Uri
-          ]
+          implementations: [implementation1Uri, implementation2Uri],
         },
         {
           interface: interface2Uri,
-          implementations: [
-            implementation3Uri
-          ]
+          implementations: [implementation3Uri],
         },
         {
           interface: interface3Uri,
-          implementations: [
-            implementation3Uri,
-            implementation4Uri
-          ]
-        }
-      ]
+          implementations: [implementation3Uri, implementation4Uri],
+        },
+      ],
     });
-    
-    const implementations1 = client.getImplementations(interface1Uri, { applyRedirects: true });
-    const implementations2 = client.getImplementations(interface2Uri, { applyRedirects: true });
-    const implementations3 = client.getImplementations(interface3Uri, { applyRedirects: true });
+
+    const implementations1 = client.getImplementations(interface1Uri, {
+      applyRedirects: true,
+    });
+    const implementations2 = client.getImplementations(interface2Uri, {
+      applyRedirects: true,
+    });
+    const implementations3 = client.getImplementations(interface3Uri, {
+      applyRedirects: true,
+    });
 
     expect(implementations1).toEqual([
-        implementation1Uri,
-        implementation2Uri,
-        implementation3Uri
-      ]);
+      implementation1Uri,
+      implementation2Uri,
+      implementation3Uri,
+    ]);
 
     expect(implementations2).toEqual([
-        implementation1Uri,
-        implementation2Uri,
-        implementation3Uri
-      ]);
+      implementation1Uri,
+      implementation2Uri,
+      implementation3Uri,
+    ]);
 
-    expect(implementations3).toEqual([
-        implementation3Uri,
-        implementation4Uri
-      ]);
+    expect(implementations3).toEqual([implementation3Uri, implementation4Uri]);
   });
 
   it("plugins should not get registered with an interface uri (without default plugins)", () => {
@@ -268,7 +262,7 @@ describe("Web3ApiClient", () => {
     const interface3Uri = "w3://ens/some-interface3.eth";
 
     const implementationUri = "w3://ens/some-implementation.eth";
-    
+
     expect(() => {
       new Web3ApiClient({
         plugins: [
@@ -279,8 +273,8 @@ describe("Web3ApiClient", () => {
               manifest: {
                 schema: "",
                 implements: [],
-              }
-            }
+              },
+            },
           },
           {
             uri: interface2Uri,
@@ -289,39 +283,38 @@ describe("Web3ApiClient", () => {
               manifest: {
                 schema: "",
                 implements: [],
-              }
-            }
-          }
+              },
+            },
+          },
         ],
         interfaces: [
           {
             interface: interface1Uri,
-            implementations: [
-              implementationUri
-            ]
+            implementations: [implementationUri],
           },
           {
             interface: interface2Uri,
-            implementations: [
-              implementationUri
-            ]
+            implementations: [implementationUri],
           },
           {
             interface: interface3Uri,
-            implementations: [
-              implementationUri
-            ]
-          }
-        ]
+            implementations: [implementationUri],
+          },
+        ],
       });
-    }).toThrow(`Plugins can't use interfaces for their URI. Invalid plugins: ${[interface1Uri, interface2Uri]}`);
+    }).toThrow(
+      `Plugins can't use interfaces for their URI. Invalid plugins: ${[
+        interface1Uri,
+        interface2Uri,
+      ]}`
+    );
   });
 
   it("plugins should not get registered with an interface uri (with default plugins)", async () => {
     const interfaceUri = "w3://ens/some-interface.eth";
 
     const implementationUri = "w3://ens/some-implementation.eth";
-    
+
     await expect(async () => {
       await getClient({
         plugins: [
@@ -332,22 +325,22 @@ describe("Web3ApiClient", () => {
               manifest: {
                 schema: "",
                 implements: [],
-              }
-            }
-          }
+              },
+            },
+          },
         ],
         interfaces: [
           {
             interface: interfaceUri,
-            implementations: [
-              implementationUri
-            ]
-          }
-        ]
+            implementations: [implementationUri],
+          },
+        ],
       });
-    })
-    .rejects
-    .toThrow(`Plugins can't use interfaces for their URI. Invalid plugins: ${[interfaceUri]}`);
+    }).rejects.toThrow(
+      `Plugins can't use interfaces for their URI. Invalid plugins: ${[
+        interfaceUri,
+      ]}`
+    );
   });
 
   it("get implementations - do not return plugins that are not explicitly registered", () => {
@@ -363,30 +356,26 @@ describe("Web3ApiClient", () => {
           plugin: {
             factory: () => ({} as Plugin),
             manifest: {
-              schema: '',
+              schema: "",
               implements: [new Uri(interfaceUri)],
-            }
-          }
-        }
+            },
+          },
+        },
       ],
       interfaces: [
         {
           interface: interfaceUri,
-          implementations: [
-            implementation2Uri
-          ]
-        }
-      ]
+          implementations: [implementation2Uri],
+        },
+      ],
     });
 
     const getImplementationsResult = client.getImplementations(
-        new Uri(interfaceUri),
-        { applyRedirects: true }
-      );
-  
-    expect(getImplementationsResult).toEqual([
-      new Uri(implementation2Uri)
-    ]);
+      new Uri(interfaceUri),
+      { applyRedirects: true }
+    );
+
+    expect(getImplementationsResult).toEqual([new Uri(implementation2Uri)]);
   });
 
   it("get implementations - return implementations for plugins which don't have interface stated in manifest", () => {
@@ -402,21 +391,18 @@ describe("Web3ApiClient", () => {
           plugin: {
             factory: () => ({} as Plugin),
             manifest: {
-              schema: '',
+              schema: "",
               implements: [],
-            }
-          }
-        }
-      ], 
+            },
+          },
+        },
+      ],
       interfaces: [
         {
           interface: interfaceUri,
-          implementations: [
-            implementation1Uri,
-            implementation2Uri
-          ]
-        }
-      ]
+          implementations: [implementation1Uri, implementation2Uri],
+        },
+      ],
     });
 
     const getImplementationsResult = client.getImplementations(
@@ -426,7 +412,7 @@ describe("Web3ApiClient", () => {
 
     expect(getImplementationsResult).toEqual([
       new Uri(implementation1Uri),
-      new Uri(implementation2Uri)
+      new Uri(implementation2Uri),
     ]);
   });
 
@@ -771,7 +757,7 @@ describe("Web3ApiClient", () => {
       secondGetData: number;
       thirdGetData: number;
     }>({
-      uri: new Uri(ensUri),
+      uri: ensUri,
       query: `
         query {
           getData(
@@ -1428,12 +1414,12 @@ describe("Web3ApiClient", () => {
     const invalidBoolIntSent = await client.query({
       uri: ensUri,
       query: `
-      query {
-        boolMethod(
-          arg: $integer
-        )
-      }
-    `,
+        query {
+          boolMethod(
+            arg: $integer
+          )
+        }
+      `,
       variables: {
         integer: 10,
       },
@@ -1521,27 +1507,24 @@ describe("Web3ApiClient", () => {
   it("loadWeb3Api - pass string or Uri", async () => {
     const implementationUri = "w3://ens/some-implementation.eth";
     const schemaStr = "test-schema";
-    
-    const client = new Web3ApiClient({
-        plugins: [
-          {
-            uri: implementationUri,
-            plugin: {
-              factory: () => ({} as Plugin),
-              manifest: {
-                schema: schemaStr,
-                implements: [],
-              }
-            }
-          }
-        ]
-      });
-      
-    const apiWhenString = await client.loadWeb3Api(implementationUri);
-    const apiWhenUri = await client.loadWeb3Api(new Uri(implementationUri));
 
-    const schemaWhenString = await apiWhenString.getSchema(client);
-    const schemaWhenUri = await apiWhenUri.getSchema(client);
+    const client = new Web3ApiClient({
+      plugins: [
+        {
+          uri: implementationUri,
+          plugin: {
+            factory: () => ({} as Plugin),
+            manifest: {
+              schema: schemaStr,
+              implements: [],
+            },
+          },
+        },
+      ],
+    });
+
+    const schemaWhenString = await client.getSchema(implementationUri);
+    const schemaWhenUri = await client.getSchema(new Uri(implementationUri));
 
     expect(schemaWhenString).toEqual(schemaStr);
     expect(schemaWhenUri).toEqual(schemaStr);
@@ -1558,36 +1541,39 @@ describe("Web3ApiClient", () => {
       redirects: [
         {
           from: oldInterfaceUri,
-          to: newInterfaceUri
-        }
+          to: newInterfaceUri,
+        },
       ],
       interfaces: [
         {
           interface: oldInterfaceUri,
-          implementations: [
-            implementation1Uri,
-          ]
+          implementations: [implementation1Uri],
         },
         {
           interface: newInterfaceUri,
-          implementations: [
-            implementation2Uri,
-          ]
-        }
-      ]
+          implementations: [implementation2Uri],
+        },
+      ],
     });
-    
+
     let result = client.getImplementations(oldInterfaceUri);
     expect(result).toEqual([implementation1Uri]);
-    
-    result = client.getImplementations(oldInterfaceUri, { applyRedirects: true });
+
+    result = client.getImplementations(oldInterfaceUri, {
+      applyRedirects: true,
+    });
     expect(result).toEqual([implementation1Uri, implementation2Uri]);
 
     let result2 = client.getImplementations(new Uri(oldInterfaceUri));
     expect(result2).toEqual([new Uri(implementation1Uri)]);
-    
-    result2 = client.getImplementations(new Uri(oldInterfaceUri), { applyRedirects: true });
-    expect(result2).toEqual([new Uri(implementation1Uri), new Uri(implementation2Uri)]);
+
+    result2 = client.getImplementations(new Uri(oldInterfaceUri), {
+      applyRedirects: true,
+    });
+    expect(result2).toEqual([
+      new Uri(implementation1Uri),
+      new Uri(implementation2Uri),
+    ]);
   });
 
   it("e2e interface implementations", async () => {
@@ -1609,17 +1595,14 @@ describe("Web3ApiClient", () => {
       interfaces: [
         {
           interface: interfaceUri,
-          implementations: [
-            implementationUri
-          ]
-        }
-      ]
+          implementations: [implementationUri],
+        },
+      ],
     });
 
-    expect(
-      client.getImplementations(interfaceUri)
-      )
-    .toEqual([implementationUri]);
+    expect(client.getImplementations(interfaceUri)).toEqual([
+      implementationUri,
+    ]);
 
     const query = await client.query<{
       queryMethod: string;
@@ -1639,19 +1622,19 @@ describe("Web3ApiClient", () => {
       variables: {
         argument1: {
           uint8: 1,
-          str: "Test String 1"
+          str: "Test String 1",
         },
         argument2: {
-          str: "Test String 2"
-        }
-      }
+          str: "Test String 2",
+        },
+      },
     });
 
     expect(query.errors).toBeFalsy();
     expect(query.data).toBeTruthy();
     expect(query.data?.queryMethod).toEqual({
       uint8: 1,
-      str: "Test String 1"
+      str: "Test String 1",
     });
 
     expect(query.data?.abstractQueryMethod).toBe("Test String 2");
@@ -1673,8 +1656,8 @@ describe("Web3ApiClient", () => {
       `,
       variables: {
         argument1: 1,
-        argument2: 2
-      }
+        argument2: 2,
+      },
     });
 
     expect(mutation.errors).toBeFalsy();
@@ -1692,7 +1675,9 @@ describe("Web3ApiClient", () => {
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
     // strict options to make sure cache gc isn't breaking client
-    let client = await getClient({ cacheOptions: { maxWrappers: 1, staleThreshold: 1 } });
+    let client = await getClient({
+      cacheOptions: { maxWrappers: 1, staleThreshold: 1 },
+    });
     let response = await client.query<{
       bytesMethod: Buffer;
     }>({
@@ -1717,7 +1702,9 @@ describe("Web3ApiClient", () => {
     });
 
     // sane cache gc options
-    client = await getClient({ cacheOptions: { maxWrappers: 10, staleThreshold: 100 } });
+    client = await getClient({
+      cacheOptions: { maxWrappers: 10, staleThreshold: 100 },
+    });
     response = await client.query<{
       bytesMethod: Buffer;
     }>({
@@ -1742,7 +1729,7 @@ describe("Web3ApiClient", () => {
     });
   });
 
-  it.only("getUriPath", async () => {
+  it("getUriPath", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/bytes-type`,
       ipfsProvider,
@@ -1755,7 +1742,8 @@ describe("Web3ApiClient", () => {
     const pluginUri = "w3://ens/js-logger.web3api.eth";
     const pluginRedirect = "w3://ens/pluginLocation.eth";
 
-    const client = await getClient({ redirects: [
+    const client = await getClient({
+      redirects: [
         {
           from: apiRedirect,
           to: apiRedirectHop,
@@ -1768,138 +1756,319 @@ describe("Web3ApiClient", () => {
           from: pluginRedirect,
           to: pluginUri,
         },
-      ]});
+      ],
+    });
 
-    const toStringUriPath = (arr: UriPathNode[]): { uri: string; fromRedirect: boolean; isPlugin?: boolean }[] => {
+    const toStringUriPath = (
+      arr: UriPathNode[]
+    ): { uri: string; fromRedirect: boolean; isPlugin?: boolean }[] => {
       return arr.map((v: UriPathNode) => ({
-          ...v,
-          uri: v.uri.uri,
-        })
-      );
-    }
+        ...v,
+        uri: v.uri.uri,
+      }));
+    };
 
     // should resolve to api uri path
     expect(toStringUriPath(await client.getUriPath(ensUri))).toStrictEqual([
-        {
-          uri: ensUri,
-          fromRedirect: false,
-          isPlugin: false
-        },
-        {
-          uri: ipfsUri,
-          fromRedirect: false,
-          isPlugin: false
-        }
-      ]
-    );
+      {
+        uri: ensUri,
+        fromRedirect: false,
+        isPlugin: false,
+      },
+      {
+        uri: ipfsUri,
+        fromRedirect: false,
+        isPlugin: false,
+      },
+    ]);
     // should resolve to redirected api uri path
-    expect(toStringUriPath(await client.getUriPath(apiRedirect))).toStrictEqual([
+    expect(toStringUriPath(await client.getUriPath(apiRedirect))).toStrictEqual(
+      [
         {
           uri: apiRedirect,
           fromRedirect: false,
-          isPlugin: false
+          isPlugin: false,
         },
         {
           uri: apiRedirectHop,
           fromRedirect: true,
-          isPlugin: false
+          isPlugin: false,
         },
         {
           uri: ensUri,
           fromRedirect: true,
-          isPlugin: false
+          isPlugin: false,
         },
         {
           uri: ipfsUri,
           fromRedirect: false,
-          isPlugin: false
-        }
+          isPlugin: false,
+        },
       ]
     );
     // should resolve to plugin uri
-    expect(toStringUriPath(await client.getUriPath(pluginUri))).toStrictEqual( [
-        {
-          uri: pluginUri,
-          fromRedirect: false,
-          isPlugin: true
-        }
-      ]
-    );
+    expect(toStringUriPath(await client.getUriPath(pluginUri))).toStrictEqual([
+      {
+        uri: pluginUri,
+        fromRedirect: false,
+        isPlugin: true,
+      },
+    ]);
     // should resolve to redirected plugin uri path
-    expect(toStringUriPath(await client.getUriPath(pluginRedirect))).toStrictEqual([
-        {
-          uri: pluginRedirect,
-          fromRedirect: false,
-          isPlugin: false
-        },
-        {
-          uri: pluginUri,
-          fromRedirect: true,
-          isPlugin: true
-        }
-      ]
-    );
+    expect(
+      toStringUriPath(await client.getUriPath(pluginRedirect))
+    ).toStrictEqual([
+      {
+        uri: pluginRedirect,
+        fromRedirect: false,
+        isPlugin: false,
+      },
+      {
+        uri: pluginUri,
+        fromRedirect: true,
+        isPlugin: true,
+      },
+    ]);
 
     // ignoring plugins should not affect this api uri resolution
-    expect(toStringUriPath(await client.getUriPath(ensUri, { ignorePlugins: true }))).toStrictEqual([
-        {
-          uri: ensUri,
-          fromRedirect: false,
-          isPlugin: false
-        },
-        {
-          uri: ipfsUri,
-          fromRedirect: false,
-          isPlugin: false
-        }
-      ]
-    );
+    expect(
+      toStringUriPath(await client.getUriPath(ensUri, { ignorePlugins: true }))
+    ).toStrictEqual([
+      {
+        uri: ensUri,
+        fromRedirect: false,
+        isPlugin: false,
+      },
+      {
+        uri: ipfsUri,
+        fromRedirect: false,
+        isPlugin: false,
+      },
+    ]);
     // ignoring plugins should not affect this api uri resolution
-    expect(toStringUriPath(await client.getUriPath(apiRedirect, { ignorePlugins: true }))).toStrictEqual([
-        {
-          uri: apiRedirect,
-          fromRedirect: false,
-          isPlugin: false
-        },
-        {
-          uri: apiRedirectHop,
-          fromRedirect: true,
-          isPlugin: false
-        },
-        {
-          uri: ensUri,
-          fromRedirect: true,
-          isPlugin: false
-        },
-        {
-          uri: ipfsUri,
-          fromRedirect: false,
-          isPlugin: false
-        }
-      ]
-    );
+    expect(
+      toStringUriPath(
+        await client.getUriPath(apiRedirect, { ignorePlugins: true })
+      )
+    ).toStrictEqual([
+      {
+        uri: apiRedirect,
+        fromRedirect: false,
+        isPlugin: false,
+      },
+      {
+        uri: apiRedirectHop,
+        fromRedirect: true,
+        isPlugin: false,
+      },
+      {
+        uri: ensUri,
+        fromRedirect: true,
+        isPlugin: false,
+      },
+      {
+        uri: ipfsUri,
+        fromRedirect: false,
+        isPlugin: false,
+      },
+    ]);
 
     // ignore redirects should treat initial uri as final redirected uri
-    expect(toStringUriPath(await client.getUriPath(apiRedirect, { ignoreRedirects: true }))).toStrictEqual( [
-        {
-          uri: apiRedirect,
-          fromRedirect: false,
-          isPlugin: true
-        }
-      ]
-    );
+    expect(
+      toStringUriPath(
+        await client.getUriPath(apiRedirect, { ignoreRedirects: true })
+      )
+    ).toStrictEqual([
+      {
+        uri: apiRedirect,
+        fromRedirect: false,
+        isPlugin: true,
+      },
+    ]);
     // ignoring redirects should not affect this plugin uri resolution
-    expect(toStringUriPath(await client.getUriPath(pluginUri, { ignoreRedirects: true }))).toStrictEqual([
-        {
-          uri: pluginUri,
-          fromRedirect: false,
-          isPlugin: true
-        }
-      ]
-    );
+    expect(
+      toStringUriPath(
+        await client.getUriPath(pluginUri, { ignoreRedirects: true })
+      )
+    ).toStrictEqual([
+      {
+        uri: pluginUri,
+        fromRedirect: false,
+        isPlugin: true,
+      },
+    ]);
     // ignoring redirects and plugins should throw if initial uri has no api
-    await expect(client.getUriPath(apiRedirect, { ignoreRedirects: true, ignorePlugins: true })).rejects.toThrow();
+    await expect(
+      client.getUriPath(apiRedirect, {
+        ignoreRedirects: true,
+        ignorePlugins: true,
+      })
+    ).rejects.toThrow();
     // ignoring plugins should throw for plugin uri if there is no api at uri location
-    await expect(client.getUriPath(pluginUri, { ignorePlugins: true })).rejects.toThrow();
+    await expect(
+      client.getUriPath(pluginUri, { ignorePlugins: true })
+    ).rejects.toThrow();
+  });
+  it("getManifest -- web3api manifest, build manifest, meta manifest", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensAddress
+    );
+    const client = await getClient();
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const actualManifestStr: string = readFileSync(
+      `${GetPathToTestApis()}/simple-storage/build/web3api.yaml`,
+      "utf8"
+    );
+    const actualManifest: Web3ApiManifest = deserializeWeb3ApiManifest(
+      actualManifestStr
+    );
+    const manifest: Web3ApiManifest = await client.getManifest(ensUri, {
+      type: "web3api",
+    });
+    expect(manifest).toStrictEqual(actualManifest);
+
+    const actualBuildManifestStr: string = readFileSync(
+      `${GetPathToTestApis()}/simple-storage/build/web3api.build.yaml`,
+      "utf8"
+    );
+    const actualBuildManifest: BuildManifest = deserializeBuildManifest(
+      actualBuildManifestStr
+    );
+    const buildManifest: BuildManifest = await client.getManifest(ensUri, {
+      type: "build",
+    });
+    expect(buildManifest).toStrictEqual(actualBuildManifest);
+
+    const actualMetaManifestStr: string = readFileSync(
+      `${GetPathToTestApis()}/simple-storage/build/web3api.meta.yaml`,
+      "utf8"
+    );
+    const actualMetaManifest: MetaManifest = deserializeMetaManifest(
+      actualMetaManifestStr
+    );
+    const metaManifest: MetaManifest = await client.getManifest(ensUri, {
+      type: "meta",
+    });
+    expect(metaManifest).toStrictEqual(actualMetaManifest);
+  });
+
+  it("getSchema -- plugin schema", async () => {
+    const client = await getClient();
+    const schema: string = await client.getSchema(
+      "w3://ens/js-logger.web3api.eth"
+    );
+
+    expect(schema).toStrictEqual(
+      `### Web3API Header START ###
+scalar UInt
+scalar UInt8
+scalar UInt16
+scalar UInt32
+scalar Int
+scalar Int8
+scalar Int16
+scalar Int32
+scalar Bytes
+scalar BigInt
+
+directive @imported(
+  uri: String!
+  namespace: String!
+  nativeType: String!
+) on OBJECT | ENUM
+
+directive @imports(
+  types: [String!]!
+) on OBJECT
+### Web3API Header END ###
+
+type Query implements Logger_Query @imports(
+  types: [
+    "Logger_Query",
+    "Logger_LogLevel"
+  ]
+) {
+  log(
+    level: Logger_LogLevel!
+    message: String!
+  ): Boolean!
+}
+
+### Imported Queries START ###
+
+type Logger_Query @imported(
+  uri: "ens/logger.core.web3api.eth",
+  namespace: "Logger",
+  nativeType: "Query"
+) {
+  log(
+    level: Logger_LogLevel!
+    message: String!
+  ): Boolean!
+}
+
+### Imported Queries END ###
+
+### Imported Objects START ###
+
+enum Logger_LogLevel @imported(
+  uri: "ens/logger.core.web3api.eth",
+  namespace: "Logger",
+  nativeType: "LogLevel"
+) {
+  DEBUG
+  INFO
+  WARN
+  ERROR
+}
+
+### Imported Objects END ###
+`
+    );
+  });
+
+  it("getFile -- simple-storage web3api", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensAddress
+    );
+    const client = await getClient();
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const manifest: Web3ApiManifest = await client.getManifest(ensUri, {
+      type: 'web3api'
+    });
+
+    const fileStr: string = await client.getFile(ensUri, {
+      path: manifest.modules.query?.schema as string,
+      encoding: 'utf8'
+    }) as string;
+    expect(fileStr).toContain(`getData(
+    address: String!
+    connection: Ethereum_Connection
+  ): Int!
+`);
+
+    const fileBuffer: ArrayBuffer = await client.getFile(ensUri, {
+      path: manifest.modules.query?.schema!,
+    }) as ArrayBuffer;
+    const decoder = new TextDecoder('utf8');
+    const text = decoder.decode(fileBuffer);
+    expect(text).toContain(`getData(
+    address: String!
+    connection: Ethereum_Connection
+  ): Int!
+`);
+
+    await expect(() => client.getManifest(new Uri("w3://ens/ipfs.web3api.eth"), {
+      type: "web3api"
+    })).rejects.toThrow("client.getManifest(...) is not implemented for Plugins.");
+    await expect(() => client.getFile(new Uri("w3://ens/ipfs.web3api.eth"), {
+      path: "./index.js",
+    })).rejects.toThrow("client.getFile(...) is not implemented for Plugins.");
   });
 });
