@@ -12,8 +12,10 @@ import { intlMsg } from "../intl";
 import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
 import { TargetLanguage } from "@web3api/schema-bind";
 import { normalizePath } from "@web3api/os-js";
+import regexParser from "regex-parser";
 import path from "path";
 import fs from "fs";
+import fsExtra from "fs-extra";
 
 export interface Web3ApiProjectConfig extends ProjectConfig {
   web3apiManifestPath: string;
@@ -209,6 +211,9 @@ export class Web3ApiProject extends Project {
         this.quiet
       );
 
+      const root = this.getRootDir();
+      const cacheDir = this.getCachePath(this.getLinkedPackagesCacheSubPath());
+
       // Add default env variables
       const defaultConfig = {
         web3api_modules: (await this.getWeb3ApiModules()).map(
@@ -223,6 +228,12 @@ export class Web3ApiProject extends Project {
           (path: string) => {
             return normalizePath(path);
           }
+        ),
+        web3api_linked_packages: this._buildManifest.linked_packages?.map(
+          (linkedPackage: { name: string }) => ({
+            dir: path.relative(root, path.join(cacheDir, linkedPackage.name)),
+            name: linkedPackage.name,
+          })
         ),
       };
 
@@ -262,9 +273,55 @@ export class Web3ApiProject extends Project {
     this.removeCacheDir("build/env");
     await this.copyFilesIntoCache(
       "build/env/",
-      `${__dirname}/../build-envs/${language}/*`
+      `${__dirname}/../build-envs/${language}/*`,
+      { up: true }
     );
     this._defaultBuildManifestCached = true;
+  }
+
+  public async cacheBuildManifestLinkedPackages(): Promise<void> {
+    const buildManifest = await this.getBuildManifest();
+
+    if (buildManifest.linked_packages) {
+      const rootDir = this.getRootDir();
+      const cacheSubPath = this.getCachePath(
+        this.getLinkedPackagesCacheSubPath()
+      );
+
+      buildManifest.linked_packages.map(
+        (linkedPackage: { path: string; name: string; filter?: string }) => {
+          const sourceDir = path.join(rootDir, linkedPackage.path);
+          const destinationDir = path.join(cacheSubPath, linkedPackage.name);
+
+          // Update the cache
+          this.removeCacheDir(destinationDir);
+          fsExtra.copySync(sourceDir, destinationDir, {
+            overwrite: true,
+            dereference: true,
+            recursive: true,
+            filter: (src: string) => {
+              if (fs.lstatSync(src).isSymbolicLink()) {
+                return false;
+              }
+
+              if (linkedPackage.filter) {
+                const regexFilter = regexParser(linkedPackage.filter);
+                const result = regexFilter.test(src);
+                if (result) {
+                  return false;
+                }
+              }
+
+              return true;
+            },
+          });
+        }
+      );
+    }
+  }
+
+  public getLinkedPackagesCacheSubPath(): string {
+    return "build/linked-packages";
   }
 
   /// Web3API Meta Manifest (web3api.build.yaml)

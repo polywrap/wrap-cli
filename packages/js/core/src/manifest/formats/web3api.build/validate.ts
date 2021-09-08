@@ -35,6 +35,7 @@ const validator = new Validator();
 Validator.prototype.customFormats.dockerImageName = Validators.dockerImageName;
 Validator.prototype.customFormats.dockerfileName = Validators.dockerfileName;
 Validator.prototype.customFormats.dockerImageId = Validators.dockerImageId;
+Validator.prototype.customFormats.regexString = Validators.regexString;
 
 export const validateBuildManifest = Tracer.traceFunc(
   "core: validateBuildManifest",

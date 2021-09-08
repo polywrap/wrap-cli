@@ -6,8 +6,10 @@ config:
   include:
     - ./src
     - ./package.json
-linked-packages:
+linked_packages:
   - name: "@web3api/wasm-as"
     path: ../../../../wasm/as
+    filter: /\.(test|spec)\.(js|ts)$/gm
   - name: "@web3api/ethereum-plugin-js"
     path: ../../../../js/plugins/ethereum
+    filter: /\.(test|spec)\.(js|ts)$/gm

@@ -29,7 +29,7 @@
     "config": {
       "type": "object"
     },
-    "linked-packages": {
+    "linked_packages": {
       "type": "array",
       "items": {
         "type": "object",
@@ -40,6 +40,10 @@
           },
           "path": {
             "type": "string"
+          },
+          "filter": {
+            "type": "string",
+            "format": "regexString"
           }
         },
         "required": ["name", "path"]

@@ -29,9 +29,7 @@ import { writeFileSync } from "@web3api/os-js";
 import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-const fsExtra = require("fs-extra");
+import rimraf from "rimraf";
 
 type ModulesToBuild = Record<InvokableModules, boolean>;
 
@@ -95,7 +93,7 @@ export class Compiler {
       const state = await this._getCompilerState();
 
       // Init & clean output directory
-      this._cleanDir(this._config.outputDir);
+      this._resetDir(this._config.outputDir);
 
       await this._outputComposedSchema(state);
 
@@ -215,11 +213,11 @@ export class Compiler {
 
     // Clean the code generation
     if (queryDirectory) {
-      this._cleanDir(queryDirectory);
+      this._resetDir(queryDirectory);
     }
 
     if (mutationDirectory) {
-      this._cleanDir(mutationDirectory);
+      this._resetDir(mutationDirectory);
     }
 
     // Generate the bindings
@@ -334,51 +332,6 @@ export class Compiler {
     return `${path.dirname(absolute)}/w3`;
   }
 
-  private async _addLinkedPackagesToProjectConfig(): Promise<void> {
-    const project = this._config.project;
-    const buildManifest = await project.getBuildManifest();
-    const destinationDir = project.getCachePath("build/env/linked-packages");
-
-    const web3apiManifestPath = project.getWeb3ApiManifestPath();
-    const root = path.dirname(web3apiManifestPath);
-
-    if (buildManifest["linked-packages"]) {
-      buildManifest.config = {
-        ...buildManifest.config,
-        web3api_linked_packages: [],
-      };
-
-      fsExtra.ensureDirSync(destinationDir);
-      buildManifest["linked-packages"].map((linkedPackage) => {
-        fsExtra.copySync(
-          linkedPackage.path,
-          path.join(destinationDir, linkedPackage.name),
-          {
-            clobber: true,
-            filter: (src: string) => {
-              if (fs.lstatSync(src).isDirectory()) {
-                return true;
-              }
-              const isNotTestFile = /^(?!.*\.(test|spec)\.(js|ts)$).*\.*$/gm;
-              return isNotTestFile.test(src);
-            },
-          }
-        );
-
-        (buildManifest.config?.web3api_linked_packages as {
-          dir: string;
-          name: string;
-        }[]).push({
-          dir: path.relative(
-            root,
-            path.join(destinationDir, linkedPackage.name)
-          ),
-          name: linkedPackage.name,
-        });
-      });
-    }
-  }
-
   private async _buildSourcesInDocker(): Promise<string> {
     const { project, outputDir } = this._config;
     const buildManifestDir = await project.getBuildManifestDir();
@@ -387,6 +340,8 @@ export class Compiler {
     let dockerfile = buildManifest?.docker?.dockerfile
       ? path.join(buildManifestDir, buildManifest?.docker?.dockerfile)
       : path.join(buildManifestDir, "Dockerfile");
+
+    await project.cacheBuildManifestLinkedPackages();
 
     // If the dockerfile path isn't provided, generate it
     if (!buildManifest?.docker?.dockerfile) {
@@ -398,8 +353,6 @@ export class Compiler {
         buildManifest.config || {}
       );
     }
-
-    await this._addLinkedPackagesToProjectConfig();
 
     // If the dockerfile path contains ".mustache", generate
     if (dockerfile.indexOf(".mustache") > -1) {
@@ -423,12 +376,12 @@ export class Compiler {
     return dockerImageId;
   }
 
-  private _cleanDir(dir: string) {
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
+  private _resetDir(dir: string) {
+    if (fs.existsSync(dir)) {
+      rimraf.sync(dir);
     }
 
-    fsExtra.emptyDirSync(dir);
+    fs.mkdirSync(dir, { recursive: true });
   }
 
   private async _outputComposedSchema(state: CompilerState): Promise<void> {

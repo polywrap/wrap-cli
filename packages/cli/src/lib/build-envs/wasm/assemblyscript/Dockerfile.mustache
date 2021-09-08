@@ -7,11 +7,22 @@ RUN apk --no-cache --virtual build-dependencies add \
     make \
     g++
 
+{{#web3api_linked_packages.length}}
+WORKDIR /linked-packages
+{{/web3api_linked_packages.length}}
+
+{{#web3api_linked_packages}}
+COPY {{dir}} ./{{name}}
+{{/web3api_linked_packages}}
+
 WORKDIR /project
 
 # Install deps in its own step, making rebuilds faster
 # when just the Web3API schema & implementation files change
 COPY package.json .
+{{#web3api_linked_packages}}
+RUN npx json -I -f package.json -e "this.dependencies['{{name}}']='../linked-packages/{{name}}'"
+{{/web3api_linked_packages}}
 RUN yarn
 
 # Copy all manifest files
@@ -30,12 +41,6 @@ COPY {{dir}} {{dir}}
 {{#web3api_modules}}
 COPY {{dir}} {{dir}}
 {{/web3api_modules}}
-
-{{#web3api_linked_packages}}
-COPY {{dir}} ./linked-packages/{{name}}
-RUN cd ./linked-packages/{{name}} && yarn link
-RUN yarn link {{name}}
-{{/web3api_linked_packages}}
 
 {{#web3api_modules}}
 # Build the module at {{dir}}
