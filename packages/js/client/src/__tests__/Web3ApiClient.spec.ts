@@ -86,7 +86,9 @@ describe("Web3ApiClient", () => {
       },
       {
         interface: coreInterfaceUris.logger,
-        implementations: [new Uri("w3://ens/js-logger.web3api.eth")],
+        implementations: [
+          new Uri("w3://ens/js-logger.web3api.eth")
+        ],
       },
     ]);
   });
@@ -178,7 +180,10 @@ describe("Web3ApiClient", () => {
 
     const implementations = client.getImplementations(interfaceUri);
 
-    expect(implementations).toEqual([implementation1Uri, implementation2Uri]);
+    expect(implementations).toEqual([
+      implementation1Uri,
+      implementation2Uri
+    ]);
   });
 
   it("get all implementations of interface", async () => {
@@ -221,15 +226,23 @@ describe("Web3ApiClient", () => {
       interfaces: [
         {
           interface: interface1Uri,
-          implementations: [implementation1Uri, implementation2Uri],
+          implementations: [
+            implementation1Uri,
+            implementation2Uri
+          ],
         },
         {
           interface: interface2Uri,
-          implementations: [implementation3Uri],
+          implementations: [
+            implementation3Uri
+          ],
         },
         {
           interface: interface3Uri,
-          implementations: [implementation3Uri, implementation4Uri],
+          implementations: [
+            implementation3Uri,
+            implementation4Uri
+          ],
         },
       ],
     });
@@ -293,15 +306,21 @@ describe("Web3ApiClient", () => {
         interfaces: [
           {
             interface: interface1Uri,
-            implementations: [implementationUri],
+            implementations: [
+              implementationUri
+            ],
           },
           {
             interface: interface2Uri,
-            implementations: [implementationUri],
+            implementations: [
+              implementationUri
+            ],
           },
           {
             interface: interface3Uri,
-            implementations: [implementationUri],
+            implementations: [
+              implementationUri
+            ],
           },
         ],
       });
@@ -335,7 +354,9 @@ describe("Web3ApiClient", () => {
         interfaces: [
           {
             interface: interfaceUri,
-            implementations: [implementationUri],
+            implementations: [
+              implementationUri
+            ],
           },
         ],
       });
@@ -368,7 +389,9 @@ describe("Web3ApiClient", () => {
       interfaces: [
         {
           interface: interfaceUri,
-          implementations: [implementation2Uri],
+          implementations: [
+            implementation2Uri
+          ],
         },
       ],
     });
@@ -405,7 +428,10 @@ describe("Web3ApiClient", () => {
       interfaces: [
         {
           interface: interfaceUri,
-          implementations: [implementation1Uri, implementation2Uri],
+          implementations: [
+            implementation1Uri,
+            implementation2Uri
+          ],
         },
       ],
     });
