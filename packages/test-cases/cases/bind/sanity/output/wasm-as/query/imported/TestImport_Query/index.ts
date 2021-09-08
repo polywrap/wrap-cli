@@ -1,4 +1,4 @@
-import { w3_subinvoke, Nullable, BigInt } from "@namestys/wasm-as";
+import { w3_subinvoke, Nullable, BigInt } from "@web3api/wasm-as";
 import {
   serializeimportedMethodArgs,
   deserializeimportedMethodResult,

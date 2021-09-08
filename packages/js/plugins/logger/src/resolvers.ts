@@ -1,9 +1,8 @@
-import { LoggerPlugin, LogLevel } from ".";
+import { LoggerPlugin } from ".";
+import { Query } from "./w3";
 
-import { PluginModule } from "@web3api/core-js";
-
-export const query = (plugin: LoggerPlugin): PluginModule => ({
-  log: (input: { level: LogLevel; message: string }) => {
+export const query = (plugin: LoggerPlugin): Query.Module => ({
+  log: (input: Query.Input_log) => {
     return plugin.log(input.level, input.message);
   },
 });

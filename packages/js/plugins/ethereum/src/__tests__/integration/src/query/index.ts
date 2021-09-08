@@ -18,7 +18,7 @@ import {
   Input_awaitTransaction,
   Input_waitForEvent,
 } from "./w3";
-import { BigInt } from "@namestys/wasm-as";
+import { BigInt } from "@web3api/wasm-as";
 
 export function callContractView(input: Input_callContractView): string {
   return Ethereum_Query.callContractView({

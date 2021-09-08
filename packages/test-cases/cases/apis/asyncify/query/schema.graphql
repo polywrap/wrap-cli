@@ -1,0 +1,8 @@
+#import { Query, Connection } into Ethereum from "w3://ens/ethereum.web3api.eth"
+
+type Query {
+  getData(
+    address: String!
+    connection: Ethereum_Connection
+  ): Int!
+}

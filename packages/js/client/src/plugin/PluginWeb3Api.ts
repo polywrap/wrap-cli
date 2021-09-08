@@ -3,11 +3,15 @@ import {
   Client,
   executeMaybeAsyncFunction,
   filterResults,
+  GetManifestOptions,
   InvokeApiOptions,
   InvokeApiResult,
   Plugin,
   PluginPackage,
   Uri,
+  AnyManifest,
+  ManifestType,
+  GetFileOptions,
 } from "@web3api/core-js";
 import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
@@ -37,7 +41,7 @@ export class PluginWeb3Api extends Api {
         client: Client
       ): Promise<InvokeApiResult<TData>> => {
         const { module, method, input, resultFilter } = options;
-        const modules = this.getInstance().getModules(client);
+        const modules = this._getInstance().getModules(client);
         const pluginModule = modules[module];
 
         if (!pluginModule) {
@@ -132,7 +136,21 @@ export class PluginWeb3Api extends Api {
     return Promise.resolve(this._plugin.manifest.schema);
   }
 
-  private getInstance(): Plugin {
+  public async getManifest<T extends ManifestType>(
+    _options: GetManifestOptions<T>,
+    _client: Client
+  ): Promise<AnyManifest<T>> {
+    throw Error("client.getManifest(...) is not implemented for Plugins.");
+  }
+
+  public async getFile(
+    _options: GetFileOptions,
+    _client: Client
+  ): Promise<ArrayBuffer | string> {
+    throw Error("client.getFile(...) is not implemented for Plugins.");
+  }
+
+  private _getInstance(): Plugin {
     return this._instance || this._plugin.factory();
   }
 }

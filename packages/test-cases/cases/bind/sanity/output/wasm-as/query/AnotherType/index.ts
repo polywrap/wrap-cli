@@ -1,4 +1,4 @@
-import { Read, Write, Nullable, BigInt } from "@namestys/wasm-as";
+import { Read, Write, Nullable, BigInt } from "@web3api/wasm-as";
 import {
   serializeAnotherType,
   deserializeAnotherType,

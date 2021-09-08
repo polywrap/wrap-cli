@@ -1,5 +1,5 @@
 import { Input_parse, Input_methodString, Input_methodJSON } from "./w3";
-import { JSON as ASJSON } from "@namestys/wasm-as";
+import { JSON as ASJSON } from "@web3api/wasm-as";
 
 export function parse(input: Input_parse): ASJSON.Obj {
   return <ASJSON.Obj>ASJSON.parse(input.value);

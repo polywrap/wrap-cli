@@ -1,21 +1,9 @@
 import { query } from "./resolvers";
-import { manifest } from "./manifest";
+import { manifest, Query, Logger_LogLevel, Logger_LogLevelEnum } from "./w3";
 
-import {
-  Plugin,
-  PluginManifest,
-  PluginModules,
-  PluginPackage,
-} from "@web3api/core-js";
+import { Plugin, PluginPackageManifest, PluginPackage } from "@web3api/core-js";
 
-export enum LogLevel {
-  DEBUG,
-  INFO,
-  WARN,
-  ERROR,
-}
-
-export type LogFunc = (level: LogLevel, message: string) => boolean;
+export type LogFunc = (level: Logger_LogLevel, message: string) => boolean;
 
 export class LoggerPlugin extends Plugin {
   private _logFunc?: LogFunc;
@@ -25,32 +13,38 @@ export class LoggerPlugin extends Plugin {
     this._logFunc = logFunc;
   }
 
-  public static manifest(): PluginManifest {
+  public static manifest(): PluginPackageManifest {
     return manifest;
   }
 
-  public getModules(): PluginModules {
+  public getModules(): {
+    query: Query.Module;
+  } {
     return {
       query: query(this),
     };
   }
 
-  public log(level: LogLevel, message: string): boolean {
+  public log(level: Logger_LogLevel, message: string): boolean {
     if (this._logFunc) {
       return this._logFunc(level, message);
     }
 
     switch (level) {
-      case LogLevel.DEBUG:
+      case "DEBUG":
+      case Logger_LogLevelEnum.DEBUG:
         console.debug(message);
         break;
-      case LogLevel.WARN:
+      case "WARN":
+      case Logger_LogLevelEnum.WARN:
         console.warn(message);
         break;
-      case LogLevel.ERROR:
+      case "ERROR":
+      case Logger_LogLevelEnum.ERROR:
         console.error(message);
         break;
-      case LogLevel.INFO:
+      case "INFO":
+      case Logger_LogLevelEnum.INFO:
         console.log(message);
         break;
       default:

@@ -7,7 +7,7 @@ import {
   Nullable,
   BigInt,
   Context,
-} from "@namestys/wasm-as";
+} from "@web3api/wasm-as";
 import { TestImport_Object } from "./";
 import * as Types from "../..";
 

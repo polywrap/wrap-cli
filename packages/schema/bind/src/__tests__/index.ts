@@ -3,7 +3,7 @@ import { BindModuleOptions } from "../";
 import fs from "fs";
 import path from "path";
 import { TypeInfo } from "@web3api/schema-parse";
-import { composeSchema, ComposerFilter } from "@web3api/schema-compose";
+import { composeSchema, SchemaFile, ComposerFilter } from "@web3api/schema-compose";
 import { GetPathToBindTestFiles } from "@web3api/test-cases";
 import { normalizeLineEndings } from "@web3api/os-js";
 
@@ -15,12 +15,14 @@ export type TestCase = {
   input: {
     query?: BindModuleOptions;
     mutation?: BindModuleOptions;
+    combined?: BindModuleOptions;
   },
   outputLanguages: {
     language: string;
     directories: {
       query?: string;
       mutation?: string;
+      combined?: string;
     };
   }[];
 };
@@ -63,29 +65,48 @@ export function fetchTestCases(): TestCases {
     const outputDir = path.join(root, dirent.name, "output");
     const outputLanguages = fs.readdirSync(outputDir, { withFileTypes: true })
       .filter((item: fs.Dirent) => item.isDirectory())
-      .map((item: fs.Dirent) => ({
-        language: item.name,
-        directories: {
-          query: querySchema
-            ? path.join(outputDir, item.name, "query")
-            : undefined,
-          mutation: mutationSchema
-            ? path.join(outputDir, item.name, "mutation")
-            : undefined,
-        }
-      }));
+      .map((item: fs.Dirent) => {
+        const outputMutationDir = path.join(outputDir, item.name, "mutation");
+        const outputMutation = fs.existsSync(outputMutationDir);
+        const outputQueryDir = path.join(outputDir, item.name, "query");
+        const outputQuery = fs.existsSync(outputQueryDir);
+
+        return {
+          language: item.name,
+          directories: {
+            query: outputMutation
+              ? path.join(outputDir, item.name, "query")
+              : undefined,
+            mutation: outputQuery
+              ? path.join(outputDir, item.name, "mutation")
+              : undefined,
+            combined: !outputMutation && !outputQuery
+              ? path.join(outputDir, item.name)
+              : undefined,
+          }
+        };
+      });
+
+    let schemas: Record<string, SchemaFile> = { };
+
+    if (querySchema) {
+      schemas["query"] = {
+        schema: querySchema,
+        absolutePath: querySchemaFile
+      };
+    }
+
+    if (mutationSchema) {
+      schemas["mutation"] = {
+        schema: mutationSchema,
+        absolutePath: mutationSchemaFile
+      };
+    }
 
     // Compose the input schemas into TypeInfo structures
     const composed = await composeSchema({
       schemas: {
-        query: querySchema ? {
-          schema: querySchema,
-          absolutePath: querySchemaFile
-        } : undefined,
-        mutation: mutationSchema ? {
-          schema: mutationSchema,
-          absolutePath: mutationSchemaFile
-        } : undefined
+        ...schemas,
       },
       resolvers: {
         external: (uri: string): Promise<string> => {
@@ -99,7 +120,7 @@ export function fetchTestCases(): TestCases {
           return Promise.resolve(fetchIfExists(path) || "");
         }
       },
-      output: ComposerFilter.TypeInfo
+      output: ComposerFilter.All
     })
 
     // Add the newly formed test case
@@ -109,12 +130,19 @@ export function fetchTestCases(): TestCases {
       input: {
         query: querySchema ? {
           typeInfo: composed.query?.typeInfo as TypeInfo,
+          schema: composed.query?.schema as string,
           outputDirAbs: path.join(root, "query")
         } : undefined,
         mutation: mutationSchema ? {
           typeInfo: composed.mutation?.typeInfo as TypeInfo,
+          schema: composed.mutation?.schema as string,
           outputDirAbs: path.join(root, "mutation")
         }: undefined,
+        combined: {
+          typeInfo: composed.combined.typeInfo as TypeInfo,
+          schema: composed.combined.schema as string,
+          outputDirAbs: ""
+        }
       },
       outputLanguages
     };
