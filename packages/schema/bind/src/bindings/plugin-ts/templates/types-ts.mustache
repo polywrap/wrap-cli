@@ -16,7 +16,7 @@ export type Int16 = number;
 export type Int32 = number;
 export type Bytes = Uint8Array;
 export type BigInt = string;
-export type Json = unknown;
+export type Json = string;
 export type String = string;
 export type Boolean = boolean;
 
