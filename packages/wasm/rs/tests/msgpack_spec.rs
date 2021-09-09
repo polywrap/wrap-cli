@@ -83,7 +83,7 @@ impl Sanity {
         let buffer: Vec<u8> = Vec::with_capacity(sizer.length as usize);
         let encoder = WriteEncoder::new(buffer.as_slice(), context);
         serialize_sanity(encoder, self);
-        buffer.to_vec()
+        buffer
     }
 
     fn from_buffer(&mut self, buffer: &[u8]) -> Result<(), String> {
@@ -109,7 +109,7 @@ impl Sanity {
 }
 
 fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
-    writer.write_map_length(23);
+    writer.write_map_length(20);
     writer.write_str("nil");
     writer.write_nullable_string(&sanity.nil);
     writer.write_str("int8");
@@ -173,41 +173,41 @@ fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
 }
 
 fn deserialize_sanity<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<(), String> {
-    let mut num_of_fields = reader.read_map_length().unwrap_or_default();
+    let mut num_of_fields = reader.read_map_length().unwrap();
     while num_of_fields > 0 {
         num_of_fields -= 1;
-        let field = reader.read_string().unwrap_or_default();
+        let field = reader.read_string().unwrap();
 
         match field.as_str() {
             "nil" => {
                 sanity.nil = reader.read_nullable_string();
             }
             "int8" => {
-                sanity.int8 = reader.read_i8().unwrap_or_default();
+                sanity.int8 = reader.read_i8().unwrap();
             }
             "int16" => {
-                sanity.int16 = reader.read_i16().unwrap_or_default();
+                sanity.int16 = reader.read_i16().unwrap();
             }
             "int32" => {
-                sanity.int32 = reader.read_i32().unwrap_or_default();
+                sanity.int32 = reader.read_i32().unwrap();
             }
             "int64" => {
-                sanity.int64 = reader.read_i64().unwrap_or_default();
+                sanity.int64 = reader.read_i64().unwrap();
             }
             "uint8" => {
-                sanity.uint8 = reader.read_u8().unwrap_or_default();
+                sanity.uint8 = reader.read_u8().unwrap();
             }
             "uint16" => {
-                sanity.uint16 = reader.read_u16().unwrap_or_default();
+                sanity.uint16 = reader.read_u16().unwrap();
             }
             "uint32" => {
-                sanity.uint32 = reader.read_u32().unwrap_or_default();
+                sanity.uint32 = reader.read_u32().unwrap();
             }
             "uint64" => {
-                sanity.uint64 = reader.read_u64().unwrap_or_default();
+                sanity.uint64 = reader.read_u64().unwrap();
             }
             "boolean" => {
-                sanity.boolean = reader.read_bool().unwrap_or_default();
+                sanity.boolean = reader.read_bool().unwrap();
             }
             "opt_uint32" => {
                 sanity.opt_uint32 = reader.read_nullable_u32();
@@ -219,27 +219,48 @@ fn deserialize_sanity<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<(),
                 sanity.opt_bool = reader.read_nullable_bool();
             }
             "float32" => {
-                sanity.float32 = reader.read_f32().unwrap_or_default();
+                sanity.float32 = reader.read_f32().unwrap();
             }
             "float64" => {
-                sanity.float64 = reader.read_f64().unwrap_or_default();
+                sanity.float64 = reader.read_f64().unwrap();
             }
             "string" => {
-                sanity.string = reader.read_string().unwrap_or_default();
+                sanity.string = reader.read_string().unwrap();
             }
             "large_string" => {
-                sanity.large_string = reader.read_string().unwrap_or_default();
+                sanity.large_string = reader.read_string().unwrap();
             }
             "bytes" => {
-                sanity.bytes = reader.read_bytes().unwrap_or_default();
+                sanity.bytes = reader.read_bytes().unwrap();
             }
             "large_bytes" => {
-                sanity.large_bytes = reader.read_bytes().unwrap_or_default();
+                sanity.large_bytes = reader.read_bytes().unwrap();
             }
-            "array" => {}
-            "large_string_array" => {}
-            "large_bytes_array" => {}
-            "map" => {}
+            "array" => {
+                sanity.array = reader
+                    .read_array(|reader| reader.read_u8().unwrap())
+                    .unwrap();
+            }
+            "large_string_array" => {
+                sanity.large_string_array = reader
+                    .read_array(|reader| reader.read_string().unwrap())
+                    .unwrap();
+            }
+            "large_bytes_array" => {
+                sanity.large_bytes_array = reader
+                    .read_array(|reader| reader.read_bytes().unwrap())
+                    .unwrap();
+            }
+            "map" => {
+                sanity.map = reader.read_map(
+                    |key_fn| key_fn.read_string().unwrap(),
+                    |val_fn| {
+                        val_fn
+                            .read_array(|reader| reader.read_i32().unwrap())
+                            .unwrap()
+                    },
+                )
+            }
             _ => {
                 return Err(format!("Sanity.decode: Unknown field name '{}'", field));
             }
@@ -249,41 +270,41 @@ fn deserialize_sanity<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<(),
 }
 
 fn deserialize_with_overflow<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<(), String> {
-    let mut num_of_fields = reader.read_map_length().unwrap_or_default();
+    let mut num_of_fields = reader.read_map_length().unwrap();
     while num_of_fields > 0 {
         num_of_fields -= 1;
-        let field = reader.read_string().unwrap_or_default();
+        let field = reader.read_string().unwrap();
 
         match field.as_str() {
             "nil" => {
                 sanity.nil = reader.read_nullable_string();
             }
             "int8" => {
-                sanity.int8 = reader.read_i16().unwrap_or_default() as i8;
+                sanity.int8 = reader.read_i16().unwrap() as i8;
             }
             "int16" => {
-                sanity.int16 = reader.read_i8().unwrap_or_default() as i16;
+                sanity.int16 = reader.read_i8().unwrap() as i16;
             }
             "int32" => {
-                sanity.int32 = reader.read_i16().unwrap_or_default() as i32;
+                sanity.int32 = reader.read_i16().unwrap() as i32;
             }
             "int64" => {
-                sanity.int64 = reader.read_i8().unwrap_or_default() as i64;
+                sanity.int64 = reader.read_i8().unwrap() as i64;
             }
             "uint8" => {
-                sanity.uint8 = reader.read_u64().unwrap_or_default() as u8;
+                sanity.uint8 = reader.read_u64().unwrap() as u8;
             }
             "uint16" => {
-                sanity.uint16 = reader.read_u8().unwrap_or_default() as u16;
+                sanity.uint16 = reader.read_u8().unwrap() as u16;
             }
             "uint32" => {
-                sanity.uint32 = reader.read_u16().unwrap_or_default() as u32;
+                sanity.uint32 = reader.read_u16().unwrap() as u32;
             }
             "uint64" => {
-                sanity.uint64 = reader.read_u8().unwrap_or_default() as u64;
+                sanity.uint64 = reader.read_u8().unwrap() as u64;
             }
             "boolean" => {
-                sanity.boolean = reader.read_bool().unwrap_or_default();
+                sanity.boolean = reader.read_bool().unwrap();
             }
             "opt_uint32" => {
                 sanity.opt_uint32 = reader.read_nullable_u32();
@@ -295,27 +316,38 @@ fn deserialize_with_overflow<R: Read>(mut reader: R, sanity: &mut Sanity) -> Res
                 sanity.opt_bool = reader.read_nullable_bool();
             }
             "float32" => {
-                sanity.float32 = reader.read_f64().unwrap_or_default() as f32;
+                sanity.float32 = reader.read_f64().unwrap() as f32;
             }
             "float64" => {
-                sanity.float64 = reader.read_f32().unwrap_or_default() as f64;
+                sanity.float64 = reader.read_f32().unwrap() as f64;
             }
             "string" => {
-                sanity.string = reader.read_string().unwrap_or_default();
+                sanity.string = reader.read_string().unwrap();
             }
             "large_string" => {
-                sanity.large_string = reader.read_string().unwrap_or_default();
+                sanity.large_string = reader.read_string().unwrap();
             }
             "bytes" => {
-                sanity.bytes = reader.read_bytes().unwrap_or_default();
+                sanity.bytes = reader.read_bytes().unwrap();
             }
             "large_bytes" => {
-                sanity.large_bytes = reader.read_bytes().unwrap_or_default();
+                sanity.large_bytes = reader.read_bytes().unwrap();
             }
-            "array" => {}
-            "large_string_array" => {}
-            "large_bytes_array" => {}
-            "map" => {}
+            "array" => {
+                sanity.array = reader
+                    .read_array(|reader| reader.read_u8().unwrap())
+                    .unwrap();
+            }
+            "map" => {
+                sanity.map = reader.read_map(
+                    |key_fn| key_fn.read_string().unwrap(),
+                    |val_fn| {
+                        val_fn
+                            .read_array(|reader| reader.read_i32().unwrap())
+                            .unwrap()
+                    },
+                )
+            }
             _ => {
                 return Err(format!("Sanity.decode: Unknown field name '{}'", field));
             }
@@ -328,41 +360,41 @@ fn deserialize_with_invalid_types<R: Read>(
     mut reader: R,
     sanity: &mut Sanity,
 ) -> Result<(), String> {
-    let mut num_of_fields = reader.read_map_length().unwrap_or_default();
+    let mut num_of_fields = reader.read_map_length().unwrap();
     while num_of_fields > 0 {
         num_of_fields -= 1;
-        let field = reader.read_string().unwrap_or_default();
+        let field = reader.read_string().unwrap();
 
         match field.as_str() {
             "nil" => {
                 sanity.nil = reader.read_nullable_string();
             }
             "int8" => {
-                sanity.int8 = reader.read_i8().unwrap_or_default();
+                sanity.int8 = reader.read_i8().unwrap();
             }
             "int16" => {
-                sanity.int16 = reader.read_i16().unwrap_or_default();
+                sanity.int16 = reader.read_i16().unwrap();
             }
             "int32" => {
-                sanity.int32 = reader.read_i32().unwrap_or_default();
+                sanity.int32 = reader.read_i32().unwrap();
             }
             "int64" => {
-                sanity.int64 = reader.read_i64().unwrap_or_default();
+                sanity.int64 = reader.read_i64().unwrap();
             }
             "uint8" => {
-                sanity.uint8 = reader.read_u8().unwrap_or_default();
+                sanity.uint8 = reader.read_u8().unwrap();
             }
             "uint16" => {
-                sanity.uint16 = reader.read_u16().unwrap_or_default();
+                sanity.uint16 = reader.read_u16().unwrap();
             }
             "uint32" => {
-                sanity.uint32 = reader.read_u32().unwrap_or_default();
+                sanity.uint32 = reader.read_u32().unwrap();
             }
             "uint64" => {
-                sanity.uint64 = reader.read_u64().unwrap_or_default();
+                sanity.uint64 = reader.read_u64().unwrap();
             }
             "boolean" => {
-                sanity.boolean = reader.read_bool().unwrap_or_default();
+                sanity.boolean = reader.read_bool().unwrap();
             }
             "opt_uint32" => {
                 sanity.opt_uint32 = reader.read_nullable_u32();
@@ -374,27 +406,48 @@ fn deserialize_with_invalid_types<R: Read>(
                 sanity.opt_bool = reader.read_nullable_bool();
             }
             "float32" => {
-                sanity.float32 = reader.read_f32().unwrap_or_default();
+                sanity.float32 = reader.read_f32().unwrap();
             }
             "float64" => {
-                sanity.float64 = reader.read_f64().unwrap_or_default();
+                sanity.float64 = reader.read_f64().unwrap();
             }
             "string" => {
-                sanity.string = reader.read_string().unwrap_or_default();
+                sanity.string = reader.read_string().unwrap();
             }
             "large_string" => {
-                sanity.large_string = reader.read_string().unwrap_or_default();
+                sanity.large_string = reader.read_string().unwrap();
             }
             "bytes" => {
-                sanity.bytes = reader.read_bytes().unwrap_or_default();
+                sanity.bytes = reader.read_bytes().unwrap();
             }
             "large_bytes" => {
-                sanity.large_bytes = reader.read_bytes().unwrap_or_default();
+                sanity.large_bytes = reader.read_bytes().unwrap();
             }
-            "array" => {}
-            "large_string_array" => {}
-            "large_bytes_array" => {}
-            "map" => {}
+            "array" => {
+                sanity.array = reader
+                    .read_array(|reader| reader.read_u8().unwrap())
+                    .unwrap();
+            }
+            "large_string_array" => {
+                sanity.large_string_array = reader
+                    .read_array(|reader| reader.read_string().unwrap())
+                    .unwrap();
+            }
+            "large_bytes_array" => {
+                sanity.large_bytes_array = reader
+                    .read_array(|reader| reader.read_bytes().unwrap())
+                    .unwrap();
+            }
+            "map" => {
+                sanity.map = reader.read_map(
+                    |key_fn| key_fn.read_string().unwrap(),
+                    |val_fn| {
+                        val_fn
+                            .read_array(|reader| reader.read_i32().unwrap())
+                            .unwrap()
+                    },
+                )
+            }
             _ => {
                 return Err(format!("Sanity.decode: Unknown field name '{}'", field));
             }

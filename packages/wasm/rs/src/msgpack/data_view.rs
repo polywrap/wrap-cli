@@ -61,8 +61,8 @@ impl DataView {
             return Err(error);
         }
         let p = &mut ((self.data_start + self.byte_offset as u32) as u8);
-        let u64_ptr = AtomicPtr::new(p);
-        let result = u64_ptr.load(Ordering::Relaxed);
+        let u8_ptr = AtomicPtr::new(p);
+        let result = u8_ptr.load(Ordering::Relaxed);
         let result = unsafe { result.as_ref().unwrap() };
         Ok(result.swap_bytes())
     }
