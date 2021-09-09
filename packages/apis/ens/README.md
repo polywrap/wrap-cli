@@ -9,7 +9,7 @@ npx w3 test-env up
 ## 2. Build & Deploy SimpleStorage Contract
 
 ```
-node ./deploy-contracts.js
+node ./scripts/deploy-contracts.js
 ```
 
 This will output the deployed ENS contract addresses.
