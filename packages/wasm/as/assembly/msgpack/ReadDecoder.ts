@@ -210,9 +210,9 @@ export class ReadDecoder extends Read {
     return BigInt.fromString(str);
   }
 
-  readJSON(): JSON.Obj {
+  readJSON(): JSON.Value {
     const str = this.readString();
-    return <JSON.Obj>JSON.parse(str);
+    return JSON.parse(str);
   }
 
   readArrayLength(): u32 {
@@ -373,7 +373,7 @@ export class ReadDecoder extends Read {
     return this.readBigInt();
   }
 
-  readNullableJSON(): JSON.Obj | null {
+  readNullableJSON(): JSON.Value | null {
     if (this.isNextNil()) {
       return null;
     }

@@ -1119,44 +1119,75 @@ describe("Web3ApiClient", () => {
   });
 
   it("JSON-type", async () => {
+    type Json = string;
+
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/json-type`,
       ipfsProvider,
       ensAddress
     );
     const ensUri = `ens/testnet/${api.ensDomain}`;
-
     const client = await getClient();
 
+    const value = { foo: "bar", bar: "baz" };
     const parseResponse = await client.query<{
-      parse: any;
+      parse: Json;
     }>({
       uri: ensUri,
       query: `query {
         parse(value: $value)
       }`,
       variables: {
-        value: `{ "foo": "bar", "bar": "baz" }`,
+        value: JSON.stringify(value),
       },
     });
 
-    const parseResult = JSON.stringify({ foo: "bar", bar: "baz" });
-    expect(parseResponse.data?.parse).toEqual(parseResult);
+    expect(parseResponse.data?.parse).toEqual(JSON.stringify(value));
 
-    const methodStringResponse = await client.query<{
-      methodString: string;
+    const values = [
+      JSON.stringify({ bar: "foo" }),
+      JSON.stringify({ baz: "fuz" })
+    ]
+    const stringifyResponse = await client.query<{
+      stringify: Json;
     }>({
       uri: ensUri,
       query: `query {
-        methodString(valueA: 5, valueB: "foo", valueC: true)
+        stringify(
+          values: $values
+        )
       }`,
+      variables: {
+        values,
+      },
     });
 
-    const methodStringResult = `{"valueA":5,"valueB":"foo","valueC":true}`;
-    expect(methodStringResponse.data?.methodString).toEqual(methodStringResult);
+    expect(stringifyResponse.data?.stringify).toEqual(values.join(""));
+
+    const object = {
+      jsonA: JSON.stringify({ foo: "bar" }),
+      jsonB: JSON.stringify({ fuz: "baz" }),
+    };
+    const stringifyObjectResponse = await client.query<{
+      stringifyObject: string;
+    }>({
+      uri: ensUri,
+      query: `query {
+        stringifyObject(
+          object: $object
+        )
+      }`,
+      variables: {
+        object,
+      },
+    });
+
+    expect(stringifyObjectResponse.data?.stringifyObject).toEqual(
+      object.jsonA + object.jsonB
+    );
 
     const methodJSONResponse = await client.query<{
-      methodJSON: string;
+      methodJSON: Json;
     }>({
       uri: ensUri,
       query: `query {

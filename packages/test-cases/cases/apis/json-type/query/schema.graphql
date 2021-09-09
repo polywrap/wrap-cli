@@ -4,7 +4,11 @@ type Query {
   ): JSON!
 
   stringify(
-    value: JSON!
+    values: [JSON!]!
+  ): String!
+
+  stringifyObject(
+    object: Object!
   ): String!
 
   methodJSON(
@@ -12,4 +16,9 @@ type Query {
     valueB: String!
     valueC: Boolean!
   ): JSON!
+}
+
+type Object {
+  jsonA: JSON!
+  jsonB: JSON!
 }

@@ -115,7 +115,7 @@ export class WriteSizer extends Write {
     this.writeString(str);
   }
 
-  writeJSON(value: JSON.Obj): void {
+  writeJSON(value: JSON.Value): void {
     const str = value.stringify();
     this.writeString(str);
   }
@@ -270,7 +270,7 @@ export class WriteSizer extends Write {
     this.writeBigInt(value);
   }
 
-  writeNullableJSON(value: JSON.Obj | null): void {
+  writeNullableJSON(value: JSON.Value | null): void {
     if (value === null) {
       this.writeNil();
       return;

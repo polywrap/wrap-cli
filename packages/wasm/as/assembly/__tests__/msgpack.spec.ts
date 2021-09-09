@@ -24,7 +24,7 @@ class Sanity {
   float32: f32;
   float64: f64;
   str: string = "";
-  json: JSON.Obj = JSON.Value.Object();
+  json: JSON.Value = JSON.Value.Object();
   largeStr: string = "";
   bytes: ArrayBuffer = new ArrayBuffer(1);
   largeBytes: ArrayBuffer = new ArrayBuffer(1);
@@ -50,7 +50,7 @@ class Sanity {
     this.float32 = 3.40282344818115234375;
     this.float64 = 3124124512.598273468017578125;
     this.str = "Hello, world!";
-    this.json = <JSON.Obj>JSON.parse(`{"foo": "bar", "bar": "baz"}`);
+    this.json = JSON.parse(`{"foo": "bar", "bar": "baz"}`);
     this.largeStr = new Array<string>(10).join("web3api ");
     this.bytes = new ArrayBuffer(12);
     this.largeBytes = largeBytes;
