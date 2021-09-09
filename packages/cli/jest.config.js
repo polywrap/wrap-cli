@@ -8,5 +8,14 @@ module.exports = {
       diagnostics: false
     },
   },
+  modulePathIgnorePatterns: [
+    "<rootDir>/src/__tests__/project"
+  ],
+  testPathIgnorePatterns: [
+    "<rootDir>/src/__tests__/project"
+  ],
+  transformIgnorePatterns: [
+    "<rootDir>/src/__tests__/project"
+  ],
   setupFilesAfterEnv: ["./jest.setup.js"],
 };
