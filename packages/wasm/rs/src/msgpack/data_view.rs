@@ -1,6 +1,4 @@
-use super::context::Context;
-use super::utils::throw_index_out_of_range;
-use super::{BLOCK_MAX_SIZE, E_INVALID_LENGTH};
+use super::{context::Context, utils::throw_index_out_of_range, BLOCK_MAX_SIZE, E_INVALID_LENGTH};
 use std::sync::atomic::{AtomicPtr, Ordering};
 
 #[derive(Clone, Debug, Default)]
@@ -15,10 +13,11 @@ pub struct DataView {
 impl DataView {
     pub fn new(
         buf: &[u8],
-        context: Context,
+        cxt: Option<Context>,
         offset: Option<usize>,
         length: Option<usize>,
     ) -> Result<Self, String> {
+        let context = cxt.unwrap_or(Context::new());
         let byte_offset = offset.unwrap_or(0) as i32;
         let byte_length = length.unwrap_or(buf.len()) as i32;
 

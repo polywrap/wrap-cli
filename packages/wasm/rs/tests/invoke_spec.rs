@@ -16,10 +16,7 @@ fn w3_invoke_args(method_size: u32, args_size: u32) -> InvokeArgs {
     };
     let args = unsafe { Vec::from_raw_parts(args_buf_ptr, args_size as usize, args_size as usize) };
 
-    InvokeArgs {
-        method: method,
-        args: args,
-    }
+    InvokeArgs { method, args }
 }
 
 /// Helper for handling _w3_invoke

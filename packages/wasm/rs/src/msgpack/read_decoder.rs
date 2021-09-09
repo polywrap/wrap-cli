@@ -1,7 +1,4 @@
-use super::context::Context;
-use super::data_view::DataView;
-use super::format::Format;
-use super::read::Read;
+use super::{context::Context, data_view::DataView, format::Format, read::Read};
 use num_bigint::BigInt;
 use std::collections::HashMap;
 use std::hash::Hash;
@@ -18,7 +15,8 @@ impl ReadDecoder {
     pub fn new(buf: &[u8], context: Context) -> Self {
         Self {
             context: context.clone(),
-            view: DataView::new(buf, context, None, None).expect("Failed to create new data view"),
+            view: DataView::new(buf, Some(context), None, None)
+                .expect("Failed to create new data view"),
         }
     }
 

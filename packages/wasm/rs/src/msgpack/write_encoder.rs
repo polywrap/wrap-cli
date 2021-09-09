@@ -1,7 +1,4 @@
-use super::context::Context;
-use super::data_view::DataView;
-use super::format::Format;
-use super::write::Write;
+use super::{context::Context, data_view::DataView, format::Format, write::Write};
 use num_bigint::BigInt;
 use std::collections::HashMap;
 use std::hash::Hash;
@@ -16,7 +13,8 @@ impl WriteEncoder {
     pub fn new(ua: &[u8], context: Context) -> Self {
         Self {
             context: context.clone(),
-            view: DataView::new(ua, context, None, None).expect("Error creating new data view"),
+            view: DataView::new(ua, Some(context), None, None)
+                .expect("Error creating new data view"),
         }
     }
 }

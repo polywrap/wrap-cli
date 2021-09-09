@@ -1,8 +1,6 @@
 //! Context stores debug information in a stack, and
 //! prints it in a clear format
 
-use std::fmt;
-
 #[derive(Clone, Debug, Default)]
 pub struct Context {
     pub description: String,
@@ -87,8 +85,8 @@ pub struct Node {
     node_info: String,
 }
 
-impl fmt::Display for Context {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl std::fmt::Display for Context {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "({}, {:?})", self.description, self.nodes)
     }
 }
