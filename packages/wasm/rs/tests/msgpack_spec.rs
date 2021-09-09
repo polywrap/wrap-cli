@@ -1,7 +1,7 @@
 use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 use std::collections::HashMap;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Sanity {
     nil: Option<String>,
     int8: i8,
@@ -29,34 +29,6 @@ pub struct Sanity {
 }
 
 impl Sanity {
-    fn new() -> Self {
-        Self {
-            nil: None,
-            int8: 0,
-            int16: 0,
-            int32: 0,
-            int64: 0,
-            uint8: 0,
-            uint16: 0,
-            uint32: 0,
-            uint64: 0,
-            boolean: false,
-            opt_uint32: None,
-            opt_uint64: None,
-            opt_bool: None,
-            float32: 0.0,
-            float64: 0.0,
-            string: String::new(),
-            large_string: String::new(),
-            bytes: vec![],
-            large_bytes: vec![],
-            array: vec![],
-            large_string_array: vec![],
-            large_bytes_array: vec![],
-            map: HashMap::new(),
-        }
-    }
-
     fn init(&mut self) -> Self {
         let huge_vec = vec!["web3api".to_string(); 10_000];
         let huge_string = huge_vec.join(",");
@@ -441,9 +413,9 @@ impl Eq for Sanity {}
 
 #[test]
 fn serialize_and_deserialize() {
-    let mut sanity_input = Sanity::new();
+    let mut sanity_input = Sanity::default();
     let mut input = sanity_input.init();
-    let mut output = Sanity::new();
+    let mut output = Sanity::default();
     output
         .from_buffer(input.to_buffer().as_slice())
         .expect("Failed to to write output from buffer");
@@ -452,9 +424,9 @@ fn serialize_and_deserialize() {
 
 #[test]
 fn serialize_and_deserialize_with_overflow() {
-    let mut sanity_input = Sanity::new();
+    let mut sanity_input = Sanity::default();
     let mut input = sanity_input.init();
-    let mut output = Sanity::new();
+    let mut output = Sanity::default();
     assert!(output
         .from_buffer_with_overflows(input.to_buffer().as_slice())
         .is_ok());
@@ -462,9 +434,9 @@ fn serialize_and_deserialize_with_overflow() {
 
 #[test]
 fn throw_error_if_invalid_type_found() {
-    let mut sanity_input = Sanity::new();
+    let mut sanity_input = Sanity::default();
     let mut input = sanity_input.init();
-    let mut output = Sanity::new();
+    let mut output = Sanity::default();
     assert!(output
         .from_buffer_with_invalid_types(input.to_buffer().as_slice())
         .is_ok());
