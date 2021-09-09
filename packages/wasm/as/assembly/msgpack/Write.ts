@@ -1,6 +1,7 @@
 import { Nullable } from "./Nullable";
 import { BigInt } from "../BigInt";
 import { Context } from "./Context";
+import { JSON } from "../JSON";
 
 export abstract class Write {
   abstract writeNil(): void;
@@ -18,6 +19,7 @@ export abstract class Write {
   abstract writeBytesLength(length: u32): void;
   abstract writeBytes(value: ArrayBuffer): void;
   abstract writeBigInt(value: BigInt): void;
+  abstract writeJSON(value: JSON.Value): void;
   abstract writeArrayLength(length: u32): void;
   abstract writeArray<T>(
     a: Array<T>,
@@ -42,6 +44,7 @@ export abstract class Write {
   abstract writeNullableString(value: string | null): void;
   abstract writeNullableBytes(value: ArrayBuffer | null): void;
   abstract writeNullableBigInt(value: BigInt | null): void;
+  abstract writeNullableJSON(value: JSON.Value | null): void;
   abstract writeNullableArray<T>(
     a: Array<T> | null,
     fn: (writer: Write, item: T) => void
