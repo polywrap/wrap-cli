@@ -1,13 +1,20 @@
-import { Read, Write, Nullable, BigInt } from "@web3api/wasm-as";
+import {
+  Read,
+  Write,
+  Nullable,
+  BigInt,
+  JSON
+} from "@web3api/wasm-as"
 import {
   serializeTestImport_AnotherObject,
   deserializeTestImport_AnotherObject,
   writeTestImport_AnotherObject,
-  readTestImport_AnotherObject,
+  readTestImport_AnotherObject
 } from "./serialization";
 import * as Types from "../..";
 
 export class TestImport_AnotherObject {
+
   public static uri: string = "testimport.uri.eth";
 
   prop: string;

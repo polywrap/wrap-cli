@@ -32,5 +32,10 @@ export function w3Abort(
   line: u32,
   column: u32
 ): void {
-  w3_abort(msg ? msg : "", file ? file : "", line, column);
+  w3_abort(
+    msg ? msg : "",
+    file ? file : "",
+    line,
+    column
+  );
 }

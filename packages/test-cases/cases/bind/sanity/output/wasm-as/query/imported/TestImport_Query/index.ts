@@ -1,20 +1,24 @@
-import { w3_subinvoke, Nullable, BigInt } from "@web3api/wasm-as";
+import {
+  w3_subinvoke,
+  Nullable,
+  BigInt,
+  JSON
+} from "@web3api/wasm-as";
 import {
   serializeimportedMethodArgs,
   deserializeimportedMethodResult,
   Input_importedMethod,
   serializeanotherMethodArgs,
   deserializeanotherMethodResult,
-  Input_anotherMethod,
+  Input_anotherMethod
 } from "./serialization";
 import * as Types from "../..";
 
 export class TestImport_Query {
+
   public static uri: string = "testimport.uri.eth";
 
-  public static importedMethod(
-    input: Input_importedMethod
-  ): Types.TestImport_Object | null {
+  public static importedMethod(input: Input_importedMethod): Types.TestImport_Object | null {
     const args = serializeimportedMethodArgs(input);
     const result = w3_subinvoke(
       "testimport.uri.eth",
