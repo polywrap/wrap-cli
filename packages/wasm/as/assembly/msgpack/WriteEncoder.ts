@@ -4,6 +4,7 @@ import { Nullable } from "./Nullable";
 import { Write } from "./Write";
 import { BigInt } from "../BigInt";
 import { Context } from "./Context";
+import { JSON } from "../JSON";
 
 export class WriteEncoder extends Write {
   private readonly _context: Context;
@@ -130,6 +131,11 @@ export class WriteEncoder extends Write {
 
   writeBigInt(value: BigInt): void {
     const str = value.toString();
+    this.writeString(str);
+  }
+
+  writeJSON(value: JSON.Value): void {
+    const str = value.stringify();
     this.writeString(str);
   }
 
@@ -285,6 +291,15 @@ export class WriteEncoder extends Write {
     }
 
     this.writeBigInt(value);
+  }
+
+  writeNullableJSON(value: JSON.Value | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeJSON(value);
   }
 
   writeNullableArray<T>(
