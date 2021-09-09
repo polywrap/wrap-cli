@@ -55,7 +55,7 @@ export const resolveUri = Tracer.traceFunc(
     const uriResolverImplementations = getImplementations(
       coreInterfaceUris.uriResolver,
       interfaces,
-      redirects,
+      redirects
     );
 
     const {

@@ -1,7 +1,7 @@
-format: 0.0.1-prealpha.1
-query:
-  schema:
-    file: ./query/schema.graphql
-  module:
-    language: wasm/assemblyscript
-    file: ./query/index.ts
+format: 0.0.1-prealpha.5
+build: ./web3api.build.yaml
+language: wasm/assemblyscript
+modules:
+  query:
+    schema: ./query/schema.graphql
+    module: ./query/index.ts

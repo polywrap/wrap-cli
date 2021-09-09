@@ -6,6 +6,7 @@ import {
   Write,
   Nullable,
   BigInt,
+  JSON,
   Context
 } from "@web3api/wasm-as";
 import * as Types from "..";
