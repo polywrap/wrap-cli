@@ -1862,6 +1862,36 @@ enum Logger_LogLevel @imported(
     expect(includesMutation).toBeTruthy();
   });
 
+  it("getDependencies -- interface implementations web3api", async () => {
+    await buildAndDeployApi(
+      `${GetPathToTestApis()}/implementations/test-interface`,
+      ipfsProvider,
+      ensAddress
+    );
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/implementations/test-api`,
+      ipfsProvider,
+      ensAddress
+    );
+    const client = await getClient();
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const dependencies: Dependency[] = await client.getDependencies(ensUri);
+    expect(dependencies.length).toEqual(1);
+    expect(dependencies[0].uri).toEqual("w3://ens/interface.eth");
+    expect(dependencies[0].namespace).toEqual("Interface");
+
+    // check if InterfaceType type is present in Interface dependency
+    let includesInterfaceType = false;
+    for (const type of dependencies[0].types) {
+      if (type.name === "InterfaceType" && type.type === DependencyType.Object && type.interface) {
+        includesInterfaceType = true;
+        break;
+      }
+    }
+    expect(includesInterfaceType).toBeTruthy();
+  });
+
   it("getDependencies with optional filters -- simple-storage web3api", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
