@@ -194,11 +194,8 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("set_bytes", buf.len() as i32) {
             return Err(error);
         }
-        let src_ptr = buf.as_ptr() as *const i32;
-        let dst_ptr = (self.data_start as i32 + self.byte_offset) as *mut i32;
-        unsafe {
-            std::ptr::copy(src_ptr, dst_ptr, buf.len());
-        }
+        let n = self.buffer.len();
+        self.buffer.copy_from_slice(&buf[n..]);
         self.byte_offset += buf.len() as i32;
         Ok(())
     }
