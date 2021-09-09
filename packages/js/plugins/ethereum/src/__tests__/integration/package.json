@@ -11,8 +11,10 @@
     "deploy": "yarn deploy:web3api",
     "deploy:web3api": "npx w3 build --ipfs http://localhost:5001 --test-ens simplestorage.eth"
   },
-  "devDependencies": {
-    "@web3api/cli": "0.0.1-prealpha.40",
+  "dependencies": {
     "@web3api/wasm-as": "0.0.1-prealpha.40"
+  },
+  "devDependencies": {
+    "@web3api/cli": "0.0.1-prealpha.40"
   }
 }
