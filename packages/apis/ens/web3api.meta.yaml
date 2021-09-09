@@ -1,3 +1,4 @@
+format: 0.0.1-prealpha.1
 name: ENS Domains
 subtext: Wrapper for ENS domains
 description: Protocol that allows you to attach your address to a human readable string
@@ -5,55 +6,55 @@ icon: ./meta/imgs/logo.png
 queries:
   - name: Configure open domain
     query: ./meta/queries/configureOpenDomain.graphql
-    recipe: ./meta/recipes/configureOpenDomain.json
+    vars: ./meta/recipes/configureOpenDomain.json
   - name: Create subdomain in open domain
     query: ./meta/queries/createSubdomainInOpenDomain.graphql
-    recipe: ./meta/recipes/createSubdomainInOpenDomain.json
+    vars: ./meta/recipes/createSubdomainInOpenDomain.json
   - name: Create subdomain in open domain and set content hash
     query: ./meta/queries/createSubdomainInOpenDomainAndSetContentHash.graphql
-    recipe: ./meta/recipes/createSubdomainInOpenDomainAndSetContentHash.json
+    vars: ./meta/recipes/createSubdomainInOpenDomainAndSetContentHash.json
   - name: Deploy FIFS Registrar
     query: ./meta/queries/deployFIFSRegistrar.graphql
-    recipe: ./meta/recipes/deployFIFSRegistrar.json
+    vars: ./meta/recipes/deployFIFSRegistrar.json
   - name: Get address
     query: ./meta/queries/getAddress.graphql
-    recipe: ./meta/recipes/getAddress.json
+    vars: ./meta/recipes/getAddress.json
   - name: Get address from domain
     query: ./meta/queries/getAddressFromDomain.graphql
-    recipe: ./meta/recipes/getAddressFromDomain.json
+    vars: ./meta/recipes/getAddressFromDomain.json
   - name: Get content hash
     query: ./meta/queries/getContentHash.graphql
-    recipe: ./meta/recipes/getContentHash.json
+    vars: ./meta/recipes/getContentHash.json
   - name: Get expiry times
     query: ./meta/queries/getExpiryTimes.graphql
-    recipe: ./meta/recipes/getExpiryTimes.json
+    vars: ./meta/recipes/getExpiryTimes.json
   - name: Get owner
     query: ./meta/queries/getOwner.graphql
-    recipe: ./meta/recipes/getOwner.json
+    vars: ./meta/recipes/getOwner.json
   - name: Get resolver
     query: ./meta/queries/getResolver.graphql
-    recipe: ./meta/recipes/getResolver.json
+    vars: ./meta/recipes/getResolver.json
   - name: Register domain
     query: ./meta/queries/register.graphql
-    recipe: ./meta/recipes/register.json
+    vars: ./meta/recipes/register.json
   - name: Set reverse register
-    query: ./meta/queries/reverseRegistrer.graphql
-    recipe: ./meta/recipes/reverseRegistrer.json
+    query: ./meta/queries/reverseRegister.graphql
+    vars: ./meta/recipes/reverseRegister.json
   - name: Set address
     query: ./meta/queries/setAddress.graphql
-    recipe: ./meta/recipes/setAddress.json
+    vars: ./meta/recipes/setAddress.json
   - name: Set content hash
     query: ./meta/queries/setContentHash.graphql
-    recipe: ./meta/recipes/setContentHash.json
+    vars: ./meta/recipes/setContentHash.json
   - name: Set owner
     query: ./meta/queries/setOwner.graphql
-    recipe: ./meta/recipes/setOwner.json
+    vars: ./meta/recipes/setOwner.json
   - name: Set record
     query: ./meta/queries/setRecord.graphql
-    recipe: ./meta/recipes/setRecord.json
+    vars: ./meta/recipes/setRecord.json
   - name: Set subdomain owner
     query: ./meta/queries/setSubdomainOwner.graphql
-    recipe: ./meta/recipes/setSubdomainOwner.json
+    vars: ./meta/recipes/setSubdomainOwner.json
   - name: Set subdomain record
     query: ./meta/queries/setSubdomainRecord.graphql
-    recipe: ./meta/recipes/setSubdomainRecord.json
+    vars: ./meta/recipes/setSubdomainRecord.json

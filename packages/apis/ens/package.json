@@ -12,14 +12,16 @@
     "deploy:contract": "node ./deploy-contracts.js",
     "test": "yarn test:e2e && yarn test:recipe",
     "test:e2e": "jest --passWithNoTests --runInBand --verbose",
-    "test:recipe": "npx w3 query ./recipes/e2e.json --redirects ./redirects.js"
+    "test:recipe": "npx w3 query ./recipes/e2e.json"
+  },
+  "dependencies": {
+    "@web3api/wasm-as": "0.0.1-prealpha.40"
   },
   "devDependencies": {
     "@types/jest": "22.2.3",
-    "@web3api/cli": "0.0.1-prealpha.39",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.39",
-    "@web3api/test-env-js": "0.0.1-prealpha.39",
-    "@web3api/wasm-as": "0.0.1-prealpha.39",
+    "@web3api/cli": "0.0.1-prealpha.40",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.40",
+    "@web3api/test-env-js": "0.0.1-prealpha.40",
     "ethers": "5.0.8",
     "jest": "27.0.6",
     "js-yaml": "3.14.0",
