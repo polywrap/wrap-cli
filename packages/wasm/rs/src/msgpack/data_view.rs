@@ -1,4 +1,9 @@
-use super::{context::Context, utils::throw_index_out_of_range, BLOCK_MAX_SIZE, E_INVALID_LENGTH};
+use super::{
+    context::Context,
+    //utils::throw_index_out_of_range,
+    BLOCK_MAX_SIZE,
+    E_INVALID_LENGTH,
+};
 use std::sync::atomic::{AtomicPtr, Ordering};
 
 #[derive(Clone, Debug, Default)]
@@ -42,9 +47,9 @@ impl DataView {
     }
 
     pub fn get_bytes(&mut self, length: i32) -> Result<Vec<u8>, String> {
-        if let Err(error) = self.check_index_in_range("get_bytes", length) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("get_bytes", length) {
+        //     return Err(error);
+        // }
         let buf = self.buffer.as_slice();
         let (b_off, b_len) = (
             self.byte_offset as usize,
@@ -56,9 +61,9 @@ impl DataView {
     }
 
     pub fn peek_u8(&mut self) -> Result<u8, String> {
-        if let Err(error) = self.check_index_in_range("peek_u8", 0) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("peek_u8", 0) {
+        //     return Err(error);
+        // }
         let p = &mut ((self.data_start + self.byte_offset as u32) as u8);
         let u8_ptr = AtomicPtr::new(p);
         let result = u8_ptr.load(Ordering::Relaxed);
@@ -67,17 +72,17 @@ impl DataView {
     }
 
     pub fn discard(&mut self, length: i32) -> Result<(), String> {
-        if let Err(error) = self.check_index_in_range("discard", length) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("discard", length) {
+        //     return Err(error);
+        // }
         self.byte_offset += length;
         Ok(())
     }
 
     pub fn get_f32(&mut self) -> Result<f32, String> {
-        if let Err(error) = self.check_index_in_range("get_f32", 4) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("get_f32", 4) {
+        //     return Err(error);
+        // }
         let p = &mut (self.data_start + self.byte_offset as u32);
         let f32_ptr = AtomicPtr::new(p);
         let result = f32_ptr.load(Ordering::Relaxed);
@@ -87,9 +92,9 @@ impl DataView {
     }
 
     pub fn get_f64(&mut self) -> Result<f64, String> {
-        if let Err(error) = self.check_index_in_range("get_f64", 8) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("get_f64", 8) {
+        //     return Err(error);
+        // }
         let p = &mut ((self.data_start + self.byte_offset as u32) as u64);
         let f64_ptr = AtomicPtr::new(p);
         let result = f64_ptr.load(Ordering::Relaxed);
@@ -99,9 +104,9 @@ impl DataView {
     }
 
     pub fn get_i8(&mut self) -> Result<i8, String> {
-        if let Err(error) = self.check_index_in_range("get_i8", 1) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("get_i8", 1) {
+        //     return Err(error);
+        // }
         let p = &mut ((self.data_start + self.byte_offset as u32) as i8);
         let i8_ptr = AtomicPtr::new(p);
         let result = i8_ptr.load(Ordering::Relaxed);
@@ -111,9 +116,9 @@ impl DataView {
     }
 
     pub fn get_i16(&mut self) -> Result<i16, String> {
-        if let Err(error) = self.check_index_in_range("get_i16", 2) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("get_i16", 2) {
+        //     return Err(error);
+        // }
         let p = &mut ((self.data_start + self.byte_offset as u32) as i16);
         let i16_ptr = AtomicPtr::new(p);
         let result = i16_ptr.load(Ordering::Relaxed);
@@ -123,9 +128,9 @@ impl DataView {
     }
 
     pub fn get_i32(&mut self) -> Result<i32, String> {
-        if let Err(error) = self.check_index_in_range("get_i32", 4) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("get_i32", 4) {
+        //     return Err(error);
+        // }
         let p = &mut ((self.data_start + self.byte_offset as u32) as i32);
         let i32_ptr = AtomicPtr::new(p);
         let result = i32_ptr.load(Ordering::Relaxed);
@@ -135,9 +140,9 @@ impl DataView {
     }
 
     pub fn get_i64(&mut self) -> Result<i64, String> {
-        if let Err(error) = self.check_index_in_range("get_i64", 8) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("get_i64", 8) {
+        //     return Err(error);
+        // }
         let p = &mut ((self.data_start + self.byte_offset as u32) as i64);
         let i64_ptr = AtomicPtr::new(p);
         let result = i64_ptr.load(Ordering::Relaxed);
@@ -147,9 +152,9 @@ impl DataView {
     }
 
     pub fn get_u8(&mut self) -> Result<u8, String> {
-        if let Err(error) = self.check_index_in_range("get_u8", 1) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("get_u8", 1) {
+        //     return Err(error);
+        // }
         let p = &mut ((self.data_start + self.byte_offset as u32) as u8);
         let u8_ptr = AtomicPtr::new(p);
         let result = u8_ptr.load(Ordering::Relaxed);
@@ -159,9 +164,9 @@ impl DataView {
     }
 
     pub fn get_u16(&mut self) -> Result<u16, String> {
-        if let Err(error) = self.check_index_in_range("get_u16", 2) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("get_u16", 2) {
+        //     return Err(error);
+        // }
         let p = &mut ((self.data_start + self.byte_offset as u32) as u16);
         let u16_ptr = AtomicPtr::new(p);
         let result = u16_ptr.load(Ordering::Relaxed);
@@ -171,9 +176,9 @@ impl DataView {
     }
 
     pub fn get_u32(&mut self) -> Result<u32, String> {
-        if let Err(error) = self.check_index_in_range("get_u32", 4) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("get_u32", 4) {
+        //     return Err(error);
+        // }
         let p = &mut (self.data_start + self.byte_offset as u32);
         let u32_ptr = AtomicPtr::new(p);
         let result = u32_ptr.load(Ordering::Relaxed);
@@ -183,9 +188,9 @@ impl DataView {
     }
 
     pub fn get_u64(&mut self) -> Result<u64, String> {
-        if let Err(error) = self.check_index_in_range("get_u64", 8) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("get_u64", 8) {
+        //     return Err(error);
+        // }
         let p = &mut ((self.data_start + self.byte_offset as u32) as u64);
         let u64_ptr = AtomicPtr::new(p);
         let result = u64_ptr.load(Ordering::Relaxed);
@@ -195,19 +200,20 @@ impl DataView {
     }
 
     pub fn set_bytes(&mut self, buf: &[u8]) -> Result<(), String> {
-        if let Err(error) = self.check_index_in_range("set_bytes", buf.len() as i32) {
-            return Err(error);
+        // if let Err(error) = self.check_index_in_range("set_bytes", buf.len() as i32) {
+        //     return Err(error);
+        // }
+        for (dst, src) in self.buffer.iter_mut().zip(buf.iter()) {
+            *dst = *src
         }
-        let n = self.buffer.len();
-        self.buffer.copy_from_slice(&buf[..n + 1]);
         self.byte_offset += buf.len() as i32;
         Ok(())
     }
 
     pub fn set_f32(&mut self, value: f32) -> Result<(), String> {
-        if let Err(error) = self.check_index_in_range("set_f32", 4) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("set_f32", 4) {
+        //     return Err(error);
+        // }
         let ptr = &mut (self.data_start + self.byte_offset as u32);
         let val_ptr = &mut (value as u32).swap_bytes();
         let f32_ptr = AtomicPtr::new(ptr);
@@ -217,9 +223,9 @@ impl DataView {
     }
 
     pub fn set_f64(&mut self, value: f64) -> Result<(), String> {
-        if let Err(error) = self.check_index_in_range("set_f64", 8) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("set_f64", 8) {
+        //     return Err(error);
+        // }
         let ptr = &mut ((self.data_start + self.byte_offset as u32) as u64);
         let val_ptr = &mut (value as u64).swap_bytes();
         let f64_ptr = AtomicPtr::new(ptr);
@@ -229,9 +235,9 @@ impl DataView {
     }
 
     pub fn set_i8(&mut self, value: i8) -> Result<(), String> {
-        if let Err(error) = self.check_index_in_range("set_i8", 1) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("set_i8", 1) {
+        //     return Err(error);
+        // }
         let ptr = &mut ((self.data_start + self.byte_offset as u32) as i8);
         let val_ptr = &mut value.swap_bytes();
         let i8_ptr = AtomicPtr::new(ptr);
@@ -241,9 +247,9 @@ impl DataView {
     }
 
     pub fn set_i16(&mut self, value: i16) -> Result<(), String> {
-        if let Err(error) = self.check_index_in_range("set_i16", 2) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("set_i16", 2) {
+        //     return Err(error);
+        // }
         let ptr = &mut ((self.data_start + self.byte_offset as u32) as i16);
         let val_ptr = &mut value.swap_bytes();
         let i16_ptr = AtomicPtr::new(ptr);
@@ -253,9 +259,9 @@ impl DataView {
     }
 
     pub fn set_i32(&mut self, value: i32) -> Result<(), String> {
-        if let Err(error) = self.check_index_in_range("set_i32", 4) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("set_i32", 4) {
+        //     return Err(error);
+        // }
         let ptr = &mut ((self.data_start + self.byte_offset as u32) as i32);
         let val_ptr = &mut value.swap_bytes();
         let i32_ptr = AtomicPtr::new(ptr);
@@ -265,9 +271,9 @@ impl DataView {
     }
 
     pub fn set_i64(&mut self, value: i64) -> Result<(), String> {
-        if let Err(error) = self.check_index_in_range("set_i64", 8) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("set_i64", 8) {
+        //     return Err(error);
+        // }
         let ptr = &mut ((self.data_start + self.byte_offset as u32) as i64);
         let val_ptr = &mut value.swap_bytes();
         let i64_ptr = AtomicPtr::new(ptr);
@@ -277,9 +283,9 @@ impl DataView {
     }
 
     pub fn set_u8(&mut self, value: u8) -> Result<(), String> {
-        if let Err(error) = self.check_index_in_range("set_u8", 1) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("set_u8", 1) {
+        //     return Err(error);
+        // }
         let ptr = &mut ((self.data_start + self.byte_offset as u32) as u8);
         let val_ptr = &mut value.swap_bytes();
         let u8_ptr = AtomicPtr::new(ptr);
@@ -289,9 +295,9 @@ impl DataView {
     }
 
     pub fn set_u16(&mut self, value: u16) -> Result<(), String> {
-        if let Err(error) = self.check_index_in_range("set_u16", 2) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("set_u16", 2) {
+        //     return Err(error);
+        // }
         let ptr = &mut ((self.data_start + self.byte_offset as u32) as u16);
         let val_ptr = &mut value.swap_bytes();
         let u16_ptr = AtomicPtr::new(ptr);
@@ -301,9 +307,9 @@ impl DataView {
     }
 
     pub fn set_u32(&mut self, value: u32) -> Result<(), String> {
-        if let Err(error) = self.check_index_in_range("set_u32", 4) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("set_u32", 4) {
+        //     return Err(error);
+        // }
         let ptr = &mut (self.data_start + self.byte_offset as u32);
         let val_ptr = &mut value.swap_bytes();
         let u32_ptr = AtomicPtr::new(ptr);
@@ -313,9 +319,9 @@ impl DataView {
     }
 
     pub fn set_u64(&mut self, value: u64) -> Result<(), String> {
-        if let Err(error) = self.check_index_in_range("set_u64", 8) {
-            return Err(error);
-        }
+        // if let Err(error) = self.check_index_in_range("set_u64", 8) {
+        //     return Err(error);
+        // }
         let ptr = &mut ((self.data_start + self.byte_offset as u32) as u64);
         let val_ptr = &mut value.swap_bytes();
         let u64_ptr = AtomicPtr::new(ptr);
@@ -324,17 +330,17 @@ impl DataView {
         Ok(())
     }
 
-    fn check_index_in_range(&self, method: &str, length: i32) -> Result<(), String> {
-        if self.byte_offset + length > self.byte_length {
-            let custom = throw_index_out_of_range(
-                self.context.clone(),
-                method,
-                length,
-                self.byte_offset,
-                self.byte_length,
-            );
-            return Err(custom);
-        }
-        Ok(())
-    }
+    // fn check_index_in_range(&self, method: &str, length: i32) -> Result<(), String> {
+    //     if self.byte_offset + length > self.byte_length {
+    //         let custom = throw_index_out_of_range(
+    //             self.context.clone(),
+    //             method,
+    //             length,
+    //             self.byte_offset,
+    //             self.byte_length,
+    //         );
+    //         return Err(custom);
+    //     }
+    //     Ok(())
+    // }
 }

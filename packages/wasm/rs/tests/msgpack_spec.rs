@@ -80,10 +80,12 @@ impl Sanity {
         context.description = "Serialize sanity (to buffer)...".to_string();
         let sizer = WriteSizer::new(context.clone());
         serialize_sanity(sizer.clone(), self);
-        let buffer: Vec<u8> = Vec::with_capacity(sizer.length as usize);
-        let encoder = WriteEncoder::new(buffer.as_slice(), context);
+        // let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+        let buf: Vec<u8> = vec![0x1, 0x2, 0x3];
+        let encoder = WriteEncoder::new(&buf, context);
         serialize_sanity(encoder, self);
-        buffer
+        buf
+        // buffer
     }
 
     fn from_buffer(&mut self, buffer: &[u8]) -> Result<(), String> {
@@ -173,7 +175,7 @@ fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
 }
 
 fn deserialize_sanity<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<(), String> {
-    let mut num_of_fields = reader.read_map_length().unwrap();
+    let mut num_of_fields = reader.read_map_length().unwrap_or_default();
     while num_of_fields > 0 {
         num_of_fields -= 1;
         let field = reader.read_string().unwrap();
@@ -270,7 +272,7 @@ fn deserialize_sanity<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<(),
 }
 
 fn deserialize_with_overflow<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<(), String> {
-    let mut num_of_fields = reader.read_map_length().unwrap();
+    let mut num_of_fields = reader.read_map_length().unwrap_or_default();
     while num_of_fields > 0 {
         num_of_fields -= 1;
         let field = reader.read_string().unwrap();
@@ -360,7 +362,7 @@ fn deserialize_with_invalid_types<R: Read>(
     mut reader: R,
     sanity: &mut Sanity,
 ) -> Result<(), String> {
-    let mut num_of_fields = reader.read_map_length().unwrap();
+    let mut num_of_fields = reader.read_map_length().unwrap_or_default();
     while num_of_fields > 0 {
         num_of_fields -= 1;
         let field = reader.read_string().unwrap();
