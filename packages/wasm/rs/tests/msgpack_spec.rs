@@ -103,13 +103,12 @@ impl Sanity {
         }
     }
 
-    fn convert_to_buffer(&mut self) -> Vec<u8> {
+    fn convert_to_buffer(&mut self, buffer: &[u8]) -> Vec<u8> {
         let mut context = Context::new();
         context.description = "Serialize sanity (to buffer)...".to_string();
         let sizer = WriteSizer::new(context.clone());
         serialize_sanity(sizer.clone(), self);
-        let buffer: Vec<u8> = Vec::with_capacity(sizer.length as usize);
-        let encoder = WriteEncoder::new(buffer.as_slice(), context);
+        let encoder = WriteEncoder::new(buffer, context);
         serialize_sanity(encoder, self);
         buffer.to_vec()
     }
@@ -444,8 +443,11 @@ fn serialize_and_deserialize() {
     let mut sanity_input = Sanity::new();
     let mut input = sanity_input.init();
     let mut output = Sanity::new();
+    let buffer: Vec<u8> = vec![
+        0, 1, 3, 2, 5, 6, 8, 12, 14, 1, 10, 23, 100, 20, 201, 2, 6, 15, 8, 9, 11, 2, 3, 3, 4,
+    ];
     output
-        .from_buffer(input.convert_to_buffer().as_slice())
+        .from_buffer(input.convert_to_buffer(&buffer).as_slice())
         .expect("Failed to to write output from buffer");
     assert_ne!(output, input);
 }
@@ -455,8 +457,11 @@ fn serialize_and_deserialize_with_overflow() {
     let mut sanity_input = Sanity::new();
     let mut input = sanity_input.init();
     let mut output = Sanity::new();
+    let buffer: Vec<u8> = vec![
+        0, 1, 3, 2, 5, 6, 8, 12, 14, 1, 10, 23, 100, 20, 201, 2, 6, 15, 8, 9, 11, 2, 3, 3, 4,
+    ];
     assert!(output
-        .from_buffer_with_overflows(input.convert_to_buffer().as_slice())
+        .from_buffer_with_overflows(input.convert_to_buffer(&buffer).as_slice())
         .is_ok());
 }
 
@@ -465,7 +470,10 @@ fn throw_error_if_invalid_type_found() {
     let mut sanity_input = Sanity::new();
     let mut input = sanity_input.init();
     let mut output = Sanity::new();
+    let buffer: Vec<u8> = vec![
+        0, 1, 3, 2, 5, 6, 8, 12, 14, 1, 10, 23, 100, 20, 201, 2, 6, 15, 8, 9, 11, 2, 3, 3, 4,
+    ];
     assert!(output
-        .from_buffer_with_invalid_types(input.convert_to_buffer().as_slice())
+        .from_buffer_with_invalid_types(input.convert_to_buffer(&buffer).as_slice())
         .is_ok());
 }

@@ -1,7 +1,6 @@
 use super::context::Context;
 use super::utils::throw_index_out_of_range;
 use super::{BLOCK_MAX_SIZE, E_INVALID_LENGTH};
-use num::FromPrimitive;
 use std::sync::atomic::{AtomicPtr, Ordering};
 
 #[derive(Clone, Debug, Default)]
@@ -56,8 +55,10 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("peek_u8", 0) {
             return Err(error);
         }
-        let p = (self.data_start + self.byte_offset as u32) as u8;
-        let result = self.load_from_memory(p);
+        let p = &mut ((self.data_start + self.byte_offset as u32) as u8);
+        let u64_ptr = AtomicPtr::new(p);
+        let result = u64_ptr.load(Ordering::Relaxed);
+        let result = unsafe { result.as_ref().unwrap() };
         Ok(result.swap_bytes())
     }
 
@@ -73,30 +74,34 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("get_f32", 4) {
             return Err(error);
         }
-        let p = self.data_start + self.byte_offset as u32;
-        let result = self.load_from_memory(p).swap_bytes();
-
+        let p = &mut (self.data_start + self.byte_offset as u32);
+        let f32_ptr = AtomicPtr::new(p);
+        let result = f32_ptr.load(Ordering::Relaxed);
+        let result = unsafe { result.as_ref().unwrap() };
         self.byte_offset += 4;
-        Ok(result as f32)
+        Ok(*result as f32)
     }
 
     pub fn get_f64(&mut self) -> Result<f64, String> {
         if let Err(error) = self.check_index_in_range("get_f64", 8) {
             return Err(error);
         }
-        let p = (self.data_start + self.byte_offset as u32) as u64;
-        let result = self.load_from_memory(p).swap_bytes();
-
+        let p = &mut ((self.data_start + self.byte_offset as u32) as u64);
+        let f64_ptr = AtomicPtr::new(p);
+        let result = f64_ptr.load(Ordering::Relaxed);
+        let result = unsafe { result.as_ref().unwrap() };
         self.byte_offset += 8;
-        Ok(result as f64)
+        Ok(*result as f64)
     }
 
     pub fn get_i8(&mut self) -> Result<i8, String> {
         if let Err(error) = self.check_index_in_range("get_i8", 1) {
             return Err(error);
         }
-        let p = (self.data_start + self.byte_offset as u32) as i8;
-        let result = self.load_from_memory(p);
+        let p = &mut ((self.data_start + self.byte_offset as u32) as i8);
+        let i8_ptr = AtomicPtr::new(p);
+        let result = i8_ptr.load(Ordering::Relaxed);
+        let result = unsafe { result.as_ref().unwrap() };
         self.byte_offset += 1;
         Ok(result.swap_bytes())
     }
@@ -105,8 +110,10 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("get_i16", 2) {
             return Err(error);
         }
-        let p = (self.data_start + self.byte_offset as u32) as i16;
-        let result = self.load_from_memory(p);
+        let p = &mut ((self.data_start + self.byte_offset as u32) as i16);
+        let i16_ptr = AtomicPtr::new(p);
+        let result = i16_ptr.load(Ordering::Relaxed);
+        let result = unsafe { result.as_ref().unwrap() };
         self.byte_offset += 2;
         Ok(result.swap_bytes())
     }
@@ -115,8 +122,10 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("get_i32", 4) {
             return Err(error);
         }
-        let p = (self.data_start + self.byte_offset as u32) as i32;
-        let result = self.load_from_memory(p);
+        let p = &mut ((self.data_start + self.byte_offset as u32) as i32);
+        let i32_ptr = AtomicPtr::new(p);
+        let result = i32_ptr.load(Ordering::Relaxed);
+        let result = unsafe { result.as_ref().unwrap() };
         self.byte_offset += 4;
         Ok(result.swap_bytes())
     }
@@ -125,8 +134,10 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("get_i64", 8) {
             return Err(error);
         }
-        let p = (self.data_start + self.byte_offset as u32) as i64;
-        let result = self.load_from_memory(p);
+        let p = &mut ((self.data_start + self.byte_offset as u32) as i64);
+        let i64_ptr = AtomicPtr::new(p);
+        let result = i64_ptr.load(Ordering::Relaxed);
+        let result = unsafe { result.as_ref().unwrap() };
         self.byte_offset += 8;
         Ok(result.swap_bytes())
     }
@@ -135,8 +146,10 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("get_u8", 1) {
             return Err(error);
         }
-        let p = (self.data_start + self.byte_offset as u32) as u8;
-        let result = self.load_from_memory(p);
+        let p = &mut ((self.data_start + self.byte_offset as u32) as u8);
+        let u8_ptr = AtomicPtr::new(p);
+        let result = u8_ptr.load(Ordering::Relaxed);
+        let result = unsafe { result.as_ref().unwrap() };
         self.byte_offset += 1;
         Ok(result.swap_bytes())
     }
@@ -145,8 +158,10 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("get_u16", 2) {
             return Err(error);
         }
-        let p = (self.data_start + self.byte_offset as u32) as u16;
-        let result = self.load_from_memory(p);
+        let p = &mut ((self.data_start + self.byte_offset as u32) as u16);
+        let u16_ptr = AtomicPtr::new(p);
+        let result = u16_ptr.load(Ordering::Relaxed);
+        let result = unsafe { result.as_ref().unwrap() };
         self.byte_offset += 2;
         Ok(result.swap_bytes())
     }
@@ -155,8 +170,10 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("get_u32", 4) {
             return Err(error);
         }
-        let p = self.data_start + self.byte_offset as u32;
-        let result = self.load_from_memory(p);
+        let p = &mut (self.data_start + self.byte_offset as u32);
+        let u32_ptr = AtomicPtr::new(p);
+        let result = u32_ptr.load(Ordering::Relaxed);
+        let result = unsafe { result.as_ref().unwrap() };
         self.byte_offset += 4;
         Ok(result.swap_bytes())
     }
@@ -165,8 +182,10 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("get_u64", 8) {
             return Err(error);
         }
-        let p = (self.data_start + self.byte_offset as u32) as u64;
-        let result = self.load_from_memory(p);
+        let p = &mut ((self.data_start + self.byte_offset as u32) as u64);
+        let u64_ptr = AtomicPtr::new(p);
+        let result = u64_ptr.load(Ordering::Relaxed);
+        let result = unsafe { result.as_ref().unwrap() };
         self.byte_offset += 8;
         Ok(result.swap_bytes())
     }
@@ -188,9 +207,10 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("set_f32", 4) {
             return Err(error);
         }
-        let ptr = self.data_start + self.byte_offset as u32;
-        let val = value as u32;
-        self.store_to_memory(ptr, val.swap_bytes());
+        let ptr = &mut (self.data_start + self.byte_offset as u32);
+        let val_ptr = &mut (value as u32).swap_bytes();
+        let f32_ptr = AtomicPtr::new(ptr);
+        f32_ptr.store(val_ptr, Ordering::Relaxed);
         self.byte_offset += 4;
         Ok(())
     }
@@ -199,9 +219,10 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("set_f64", 8) {
             return Err(error);
         }
-        let ptr = (self.data_start + self.byte_offset as u32) as u64;
-        let val = value as u64;
-        self.store_to_memory(ptr, val.swap_bytes());
+        let ptr = &mut ((self.data_start + self.byte_offset as u32) as u64);
+        let val_ptr = &mut (value as u64).swap_bytes();
+        let f64_ptr = AtomicPtr::new(ptr);
+        f64_ptr.store(val_ptr, Ordering::Relaxed);
         self.byte_offset += 8;
         Ok(())
     }
@@ -210,8 +231,10 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("set_i8", 1) {
             return Err(error);
         }
-        let ptr = (self.data_start + self.byte_offset as u32) as i8;
-        self.store_to_memory(ptr, value.swap_bytes());
+        let ptr = &mut ((self.data_start + self.byte_offset as u32) as i8);
+        let val_ptr = &mut value.swap_bytes();
+        let i8_ptr = AtomicPtr::new(ptr);
+        i8_ptr.store(val_ptr, Ordering::Relaxed);
         self.byte_offset += 1;
         Ok(())
     }
@@ -220,8 +243,10 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("set_i16", 2) {
             return Err(error);
         }
-        let ptr = (self.data_start + self.byte_offset as u32) as i16;
-        self.store_to_memory(ptr, value.swap_bytes());
+        let ptr = &mut ((self.data_start + self.byte_offset as u32) as i16);
+        let val_ptr = &mut value.swap_bytes();
+        let i16_ptr = AtomicPtr::new(ptr);
+        i16_ptr.store(val_ptr, Ordering::Relaxed);
         self.byte_offset += 2;
         Ok(())
     }
@@ -230,8 +255,10 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("set_i32", 4) {
             return Err(error);
         }
-        let ptr = (self.data_start + self.byte_offset as u32) as i32;
-        self.store_to_memory(ptr, value.swap_bytes());
+        let ptr = &mut ((self.data_start + self.byte_offset as u32) as i32);
+        let val_ptr = &mut value.swap_bytes();
+        let i32_ptr = AtomicPtr::new(ptr);
+        i32_ptr.store(val_ptr, Ordering::Relaxed);
         self.byte_offset += 4;
         Ok(())
     }
@@ -240,8 +267,10 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("set_i64", 8) {
             return Err(error);
         }
-        let ptr = (self.data_start + self.byte_offset as u32) as i64;
-        self.store_to_memory(ptr, value.swap_bytes());
+        let ptr = &mut ((self.data_start + self.byte_offset as u32) as i64);
+        let val_ptr = &mut value.swap_bytes();
+        let i64_ptr = AtomicPtr::new(ptr);
+        i64_ptr.store(val_ptr, Ordering::Relaxed);
         self.byte_offset += 8;
         Ok(())
     }
@@ -250,8 +279,10 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("set_u8", 1) {
             return Err(error);
         }
-        let ptr = (self.data_start + self.byte_offset as u32) as u8;
-        self.store_to_memory(ptr, value.swap_bytes());
+        let ptr = &mut ((self.data_start + self.byte_offset as u32) as u8);
+        let val_ptr = &mut value.swap_bytes();
+        let u8_ptr = AtomicPtr::new(ptr);
+        u8_ptr.store(val_ptr, Ordering::Relaxed);
         self.byte_offset += 1;
         Ok(())
     }
@@ -260,8 +291,10 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("set_u16", 2) {
             return Err(error);
         }
-        let ptr = (self.data_start + self.byte_offset as u32) as u16;
-        self.store_to_memory(ptr, value.swap_bytes());
+        let ptr = &mut ((self.data_start + self.byte_offset as u32) as u16);
+        let val_ptr = &mut value.swap_bytes();
+        let u16_ptr = AtomicPtr::new(ptr);
+        u16_ptr.store(val_ptr, Ordering::Relaxed);
         self.byte_offset += 2;
         Ok(())
     }
@@ -270,8 +303,10 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("set_u32", 4) {
             return Err(error);
         }
-        let ptr = self.data_start + self.byte_offset as u32;
-        self.store_to_memory(ptr, value.swap_bytes());
+        let ptr = &mut (self.data_start + self.byte_offset as u32);
+        let val_ptr = &mut value.swap_bytes();
+        let u32_ptr = AtomicPtr::new(ptr);
+        u32_ptr.store(val_ptr, Ordering::Relaxed);
         self.byte_offset += 4;
         Ok(())
     }
@@ -280,24 +315,12 @@ impl DataView {
         if let Err(error) = self.check_index_in_range("set_u64", 8) {
             return Err(error);
         }
-        let ptr = (self.data_start + self.byte_offset as u32) as u64;
-        self.store_to_memory(ptr, value.swap_bytes());
+        let ptr = &mut ((self.data_start + self.byte_offset as u32) as u64);
+        let val_ptr = &mut value.swap_bytes();
+        let u64_ptr = AtomicPtr::new(ptr);
+        u64_ptr.store(val_ptr, Ordering::Relaxed);
         self.byte_offset += 8;
         Ok(())
-    }
-
-    fn load_from_memory<T: FromPrimitive + Copy>(&mut self, mut p: T) -> T {
-        let val_ptr = AtomicPtr::new(&mut p);
-        let value = val_ptr.load(Ordering::Relaxed);
-        let result = unsafe { value.as_ref().unwrap() };
-        *result
-    }
-
-    fn store_to_memory<T: FromPrimitive + Copy>(&mut self, mut p: T, mut value: T) {
-        let p = &mut p;
-        let ptr = AtomicPtr::new(p);
-        let value = &mut value;
-        ptr.store(value, Ordering::Relaxed);
     }
 
     fn check_index_in_range(&self, method: &str, length: i32) -> Result<(), String> {
