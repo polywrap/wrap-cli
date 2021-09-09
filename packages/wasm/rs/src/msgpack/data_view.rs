@@ -23,7 +23,7 @@ impl DataView {
 
         if byte_length > BLOCK_MAX_SIZE as i32 || byte_offset + byte_length > buf.len() as i32 {
             let msg = format!(
-                "DataView::new(): {} [byte_length: {} byte_offset: {} buffer.byte_length: {} ]",
+                "DataView::new(): {} [ byte_length: {} byte_offset: {} buffer.byte_length: {} ]",
                 E_INVALID_LENGTH,
                 byte_length.to_string(),
                 byte_offset.to_string(),

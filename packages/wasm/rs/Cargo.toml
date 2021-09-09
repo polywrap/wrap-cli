@@ -19,4 +19,4 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 num = "0.4.0"
-num-bigint = "0.4.0"
+num-bigint = "0.4.2"

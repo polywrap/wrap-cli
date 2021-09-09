@@ -30,7 +30,7 @@ pub struct Sanity {
 
 impl Sanity {
     fn init(&mut self) -> Self {
-        let huge_vec = vec!["web3api".to_string(); 10_000];
+        let huge_vec = vec!["Polywrap".to_string(); 10_000];
         let huge_string = huge_vec.join(",");
         let huge_bytes = huge_string.as_bytes();
 
@@ -41,7 +41,7 @@ impl Sanity {
             large_bytes_array.push(huge_bytes.to_vec());
         }
 
-        let big_vec = vec!["web3api".to_string(); 10];
+        let big_vec = vec!["Polywrap".to_string(); 10];
         let large_string = big_vec.join(",");
 
         let mut map: HashMap<String, Vec<i32>> = HashMap::new();

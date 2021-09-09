@@ -10,10 +10,10 @@ pub struct WriteEncoder {
 }
 
 impl WriteEncoder {
-    pub fn new(ua: &[u8], context: Context) -> Self {
+    pub fn new(buf: &[u8], context: Context) -> Self {
         Self {
             context: context.clone(),
-            view: DataView::new(ua, Some(context), None, None)
+            view: DataView::new(buf, Some(context), None, None)
                 .expect("Error creating new data view"),
         }
     }
