@@ -16,7 +16,7 @@ impl WriteEncoder {
     pub fn new(ua: &[u8], context: Context) -> Self {
         Self {
             context: context.clone(),
-            view: DataView::new(ua, context).expect("Error creating new data view"),
+            view: DataView::new(ua, context, None, None).expect("Error creating new data view"),
         }
     }
 }

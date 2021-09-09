@@ -18,7 +18,7 @@ impl ReadDecoder {
     pub fn new(buf: &[u8], context: Context) -> Self {
         Self {
             context: context.clone(),
-            view: DataView::new(buf, context).expect("Failed to create new data view"),
+            view: DataView::new(buf, context, None, None).expect("Failed to create new data view"),
         }
     }
 
