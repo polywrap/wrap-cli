@@ -4,7 +4,7 @@
     "constants": "./constants.json"
   },
   {
-    "query": "./mutations/deployFIFSRegistrar.graphql",
+    "query": "../meta/queries/deployFIFSRegistrar.graphql",
     "variables": {
       "registryAddress": "$Registry",
       "tld": "$Tld",
@@ -12,7 +12,7 @@
     }
   },
   {
-    "query": "./mutations/register.graphql",
+    "query": "../meta/queries/registerDomain.graphql",
     "variables": {
       "domain": "$Domain",
       "registrarAddress": "$Registrar",
@@ -22,7 +22,7 @@
     }
   },
   {
-    "query": "./mutations/setResolver.graphql",
+    "query": "../meta/queries/setResolver.graphql",
     "variables": {
       "domain": "$Domain",
       "resolverAddress": "$Resolver",
@@ -32,7 +32,7 @@
     }
   },
   {
-    "query": "./mutations/setSubdomainRecord.graphql",
+    "query": "../meta/queries/setSubdomainRecord.graphql",
     "variables": {
       "domain": "$Domain",
       "label": "$Label",
@@ -44,7 +44,7 @@
     }
   },
   {
-    "query": "./mutations/setAddress.graphql",
+    "query": "../meta/queries/setAddress.graphql",
     "variables": {
       "domain": "$Domain",
       "address": "$Signer",
@@ -53,7 +53,7 @@
     }
   },
   {
-    "query": "./mutations/setContentHash.graphql",
+    "query": "../meta/queries/setContentHash.graphql",
     "variables": {
       "domain": "$Domain",
       "cid": "$CID",
@@ -62,7 +62,7 @@
     }
   },
   {
-    "query": "./mutations/reverseRegister.graphql",
+    "query": "../meta/queries/reverseRegister.graphql",
     "variables": {
       "domain": "$Domain",
       "reverseRegistryAddress": "$Reverse",
@@ -71,7 +71,7 @@
     }
   },
   {
-    "query": "./mutations/setSubdomainOwner.graphql",
+    "query": "../meta/queries/setSubdomainOwner.graphql",
     "variables": {
       "subdomain": "$Subdomain",
       "owner": "$Signer",
@@ -80,7 +80,7 @@
     }
   },
   {
-    "query": "./mutations/setResolver.graphql",
+    "query": "../meta/queries/setResolver.graphql",
     "variables": {
       "domain": "$Subdomain",
       "resolverAddress": "$Resolver",
@@ -98,7 +98,7 @@
     }
   },
   {
-    "query": "./mutations/setOwner.graphql",
+    "query": "../meta/queries/setOwner.graphql",
     "variables": {
       "domain": "$Domain",
       "registryAddress": "$Registry",
