@@ -2068,7 +2068,7 @@ enum Logger_LogLevel @imported(
       type: "web3api"
     })).rejects.toThrow("client.getManifest(...) is not implemented for Plugins.");
     await expect(() => client.getFile(new Uri("w3://ens/ipfs.web3api.eth"), {
-      path: "./index.js",
+      path: "./index.js"
     })).rejects.toThrow("client.getFile(...) is not implemented for Plugins.");
   });
 });

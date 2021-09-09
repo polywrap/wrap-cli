@@ -94,7 +94,7 @@ export class Web3ApiClient implements Client {
 
       this._requirePluginsToUseNonInterfaceUris();
 
-      this._apiCache = this._config.cacheOptions
+      this._apiCache = Object.keys(this._config.cacheOptions).length
         ? new ManagedApiCache(this._config.cacheOptions)
         : new Map<string, Api>();
 
@@ -372,7 +372,7 @@ export class Web3ApiClient implements Client {
         options?: UriResolutionOptions
       ): Promise<UriPathNode[]> => {
         return await resolveUriToPath(
-          typedUri,
+          uri,
           this,
           this.redirects(),
           this.plugins(),
