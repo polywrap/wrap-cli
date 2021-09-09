@@ -1823,7 +1823,6 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
-scalar JSON
 
 directive @imported(
   uri: String!
