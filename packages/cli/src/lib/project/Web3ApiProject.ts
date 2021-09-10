@@ -4,11 +4,12 @@ import { Project, ProjectConfig } from "./Project";
 import {
   loadWeb3ApiManifest,
   loadBuildManifest,
+  loadMetaManifest,
   manifestLanguageToTargetLanguage,
 } from "../helpers";
 import { intlMsg } from "../intl";
 
-import { Web3ApiManifest, BuildManifest } from "@web3api/core-js";
+import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
 import { TargetLanguage } from "@web3api/schema-bind";
 import { normalizePath } from "@web3api/os-js";
 import path from "path";
@@ -17,11 +18,13 @@ import fs from "fs";
 export interface Web3ApiProjectConfig extends ProjectConfig {
   web3apiManifestPath: string;
   buildManifestPath?: string;
+  metaManifestPath?: string;
 }
 
 export class Web3ApiProject extends Project {
   private _web3apiManifest: Web3ApiManifest | undefined;
   private _buildManifest: BuildManifest | undefined;
+  private _metaManifest: MetaManifest | undefined;
   private _defaultBuildManifestCached = false;
 
   constructor(protected _config: Web3ApiProjectConfig) {
@@ -31,13 +34,22 @@ export class Web3ApiProject extends Project {
   public async getManifestPaths(absolute = false): Promise<string[]> {
     const web3apiManifestPath = this.getWeb3ApiManifestPath();
     const root = path.dirname(web3apiManifestPath);
-
-    return [
+    const paths = [
       absolute ? web3apiManifestPath : path.relative(root, web3apiManifestPath),
       absolute
         ? await this.getBuildManifestPath()
         : path.relative(root, await this.getBuildManifestPath()),
     ];
+
+    const metaManifestPath = await this.getMetaManifestPath();
+
+    if (metaManifestPath) {
+      paths.push(
+        absolute ? metaManifestPath : path.relative(root, metaManifestPath)
+      );
+    }
+
+    return paths;
   }
 
   /// Project Base Methods
@@ -45,6 +57,7 @@ export class Web3ApiProject extends Project {
   public reset(): void {
     this._web3apiManifest = undefined;
     this._buildManifest = undefined;
+    this._metaManifest = undefined;
     this._defaultBuildManifestCached = false;
   }
 
@@ -54,6 +67,9 @@ export class Web3ApiProject extends Project {
 
   public async getLanguage(): Promise<TargetLanguage> {
     const language = (await this.getWeb3ApiManifest()).language;
+    if (!language) {
+      throw Error(intlMsg.lib_project_language_not_found());
+    }
     return manifestLanguageToTargetLanguage(language);
   }
 
@@ -249,5 +265,49 @@ export class Web3ApiProject extends Project {
       `${__dirname}/../build-envs/${language}/*`
     );
     this._defaultBuildManifestCached = true;
+  }
+
+  /// Web3API Meta Manifest (web3api.build.yaml)
+
+  public async getMetaManifestPath(): Promise<string | undefined> {
+    const web3apiManifest = await this.getWeb3ApiManifest();
+
+    // If a custom meta manifest path is configured
+    if (this._config.metaManifestPath) {
+      return this._config.metaManifestPath;
+    }
+    // If the web3api.yaml manifest specifies a custom meta manifest
+    else if (web3apiManifest.meta) {
+      this._config.metaManifestPath = path.join(
+        this.getWeb3ApiManifestDir(),
+        web3apiManifest.meta
+      );
+      return this._config.metaManifestPath;
+    }
+    // No meta manifest found
+    else {
+      return undefined;
+    }
+  }
+
+  public async getMetaManifestDir(): Promise<string | undefined> {
+    const manifestPath = await this.getMetaManifestPath();
+
+    if (manifestPath) {
+      return path.dirname(manifestPath);
+    } else {
+      return undefined;
+    }
+  }
+
+  public async getMetaManifest(): Promise<MetaManifest | undefined> {
+    if (!this._metaManifest) {
+      const manifestPath = await this.getMetaManifestPath();
+
+      if (manifestPath) {
+        this._metaManifest = await loadMetaManifest(manifestPath, this.quiet);
+      }
+    }
+    return this._metaManifest;
   }
 }

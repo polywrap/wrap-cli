@@ -18,7 +18,7 @@ export const createQueryDocument = Tracer.traceFunc(
 /** Options required for an API query. */
 export interface QueryApiOptions<
   TVariables extends Record<string, unknown> = Record<string, unknown>,
-  TUri = Uri
+  TUri extends Uri | string = string
 > {
   /** The API's URI */
   uri: TUri;
@@ -54,8 +54,6 @@ export interface QueryApiResult<
    * Errors should be populated with information as to what happened.
    * Null is used to represent an intentionally null result.
    */
-  // TODO: is it correct to have this optionally undefined? Should it instead be { } for "undefined" cases?
-  //       axios follows this pattern, does GraphQL/Apollo?
   data?: TData;
 
   /** Errors encountered during the query. */
@@ -70,15 +68,9 @@ export interface QueryApiInvocations {
 export interface QueryHandler {
   query<
     TData extends Record<string, unknown> = Record<string, unknown>,
-    TVariables extends Record<string, unknown> = Record<string, unknown>
+    TVariables extends Record<string, unknown> = Record<string, unknown>,
+    TUri extends Uri | string = string
   >(
-    options: QueryApiOptions<TVariables, string>
-  ): Promise<QueryApiResult<TData>>;
-
-  query<
-    TData extends Record<string, unknown> = Record<string, unknown>,
-    TVariables extends Record<string, unknown> = Record<string, unknown>
-  >(
-    options: QueryApiOptions<TVariables, Uri>
+    options: QueryApiOptions<TVariables, TUri>
   ): Promise<QueryApiResult<TData>>;
 }

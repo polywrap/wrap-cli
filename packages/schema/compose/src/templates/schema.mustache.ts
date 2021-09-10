@@ -125,8 +125,8 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
 """
 {{/comment}}
 enum {{type}} @imported(
-  namespace: "{{namespace}}",
   uri: "{{uri}}",
+  namespace: "{{namespace}}",
   nativeType: "{{nativeType}}"
 ) {
   {{#constants}}

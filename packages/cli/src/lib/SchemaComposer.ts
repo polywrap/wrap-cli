@@ -143,8 +143,7 @@ export class SchemaComposer {
     }
 
     try {
-      const api = await this._client.loadWeb3Api(new Uri(uri));
-      return await api.getSchema(this._client);
+      return await this._client.getSchema(new Uri(uri));
     } catch (e) {
       gluegun.print.error(e);
       throw e;
