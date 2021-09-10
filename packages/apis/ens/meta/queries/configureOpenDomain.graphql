@@ -1,0 +1,10 @@
+mutation {
+  configureOpenDomain(
+    tld: $tld
+    owner: $owner
+    registrarAddress: $registrarAddress
+    registryAddress: $registryAddress
+    resolverAddress: $resolverAddress
+    connection: { networkNameOrChainId: $network }
+  )
+}

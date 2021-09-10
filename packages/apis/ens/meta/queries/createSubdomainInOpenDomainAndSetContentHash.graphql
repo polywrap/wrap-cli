@@ -1,0 +1,12 @@
+mutation {
+  createSubdomainInOpenDomainAndSetContentHash(
+    label: $label
+    domain: $domain
+    owner: $owner
+    fifsRegistrarAddress: $fifsRegistrarAddress
+    registryAddress: $registryAddress
+    resolverAddress: $resolverAddress
+    cid: $cid
+    connection: { networkNameOrChainId: $network }
+  )
+}
