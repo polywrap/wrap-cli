@@ -10,7 +10,7 @@
     "deploy": "yarn deploy:contract && yarn deploy:web3api",
     "deploy:web3api": "npx w3 build --ipfs http://localhost:5001 --test-ens ens.eth",
     "deploy:contract": "node ./scripts/deploy-contracts.js",
-    "test": "yarn test:e2e && yarn test:recipe",
+    "test": "yarn test:e2e && yarn test:env:up && yarn deploy && yarn test:recipe && yarn test:env:down",
     "test:e2e": "jest --passWithNoTests --runInBand --verbose",
     "test:recipe": "npx w3 query ./recipes/e2e.json"
   },

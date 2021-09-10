@@ -90,7 +90,7 @@
     }
   },
   {
-    "query": "./queries/getOwner.graphql",
+    "query": "../meta/queries/getOwner.graphql",
     "variables": {
       "registryAddress": "$Registry",
       "domain": "$Domain",
@@ -107,7 +107,7 @@
     }
   },
   {
-    "query": "./queries/getOwner.graphql",
+    "query": "../meta/queries/getOwner.graphql",
     "variables": {
       "registryAddress": "$Registry",
       "domain": "$Domain",
@@ -115,23 +115,7 @@
     }
   },
   {
-    "query": "./queries/getOwner.graphql",
-    "variables": {
-      "registryAddress": "$Registry",
-      "domain": "$Subdomain",
-      "network": "testnet"
-    }
-  },
-  {
-    "query": "./queries/getResolver.graphql",
-    "variables": {
-      "registryAddress": "$Registry",
-      "domain": "$Domain",
-      "network": "testnet"
-    }
-  },
-  {
-    "query": "./queries/getResolver.graphql",
+    "query": "../meta/queries/getOwner.graphql",
     "variables": {
       "registryAddress": "$Registry",
       "domain": "$Subdomain",
@@ -139,7 +123,23 @@
     }
   },
   {
-    "query": "./queries/getAddress.graphql",
+    "query": "../meta/queries/getResolver.graphql",
+    "variables": {
+      "registryAddress": "$Registry",
+      "domain": "$Domain",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "../meta/queries/getResolver.graphql",
+    "variables": {
+      "registryAddress": "$Registry",
+      "domain": "$Subdomain",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "../meta/queries/getAddress.graphql",
     "variables": {
       "resolverAddress": "$Resolver",
       "domain": "$Domain",
@@ -147,7 +147,7 @@
     }
   },
   {
-    "query": "./queries/getContentHash.graphql",
+    "query": "../meta/queries/getContentHash.graphql",
     "variables": {
       "resolverAddress": "$Resolver",
       "domain": "$Domain",
@@ -155,7 +155,7 @@
     }
   },
   {
-    "query": "./queries/getNameFromAddress.graphql",
+    "query": "../meta/queries/getNameFromAddress.graphql",
     "variables": {
       "address": "$Signer",
       "registryAddress": "$Registry",
