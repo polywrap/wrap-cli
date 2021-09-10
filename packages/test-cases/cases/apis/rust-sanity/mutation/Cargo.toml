@@ -19,4 +19,10 @@ polywrap-wasm-rs = "0.0.1-prealpha-dev.37.4"
 query = { version = "0.1.0", path = "../query" }
 
 [profile.release]
-opt-level = "s"
+lto = true
+codegen-units = 1
+overflow-checks = true
+# Tell `rustc` to optimize for small code size.
+opt-level = "z"
+debug = false
+panic = "abort"
