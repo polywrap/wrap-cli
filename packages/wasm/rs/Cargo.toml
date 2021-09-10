@@ -28,4 +28,3 @@ overflow-checks = true
 # Tell `rustc` to optimize for small code size.
 opt-level = "z"
 debug = false
-panic = "abort"
