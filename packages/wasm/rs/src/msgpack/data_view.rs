@@ -1,6 +1,6 @@
 use super::{
     context::Context,
-    //utils::throw_index_out_of_range,
+    // utils::throw_index_out_of_range,
     BLOCK_MAX_SIZE,
     E_INVALID_LENGTH,
 };

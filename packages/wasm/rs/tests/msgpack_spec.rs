@@ -80,12 +80,10 @@ impl Sanity {
         context.description = "Serialize sanity (to buffer)...".to_string();
         let sizer = WriteSizer::new(context.clone());
         serialize_sanity(sizer.clone(), self);
-        // let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
-        let buf: Vec<u8> = vec![0x1, 0x2, 0x3];
-        let encoder = WriteEncoder::new(&buf, context);
+        let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+        let encoder = WriteEncoder::new(&buffer, context);
         serialize_sanity(encoder, self);
-        buf
-        // buffer
+        buffer
     }
 
     fn from_buffer(&mut self, buffer: &[u8]) -> Result<(), String> {
