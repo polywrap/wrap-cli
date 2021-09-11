@@ -49,18 +49,10 @@ export const kindToType = (kind: DefinitionKind): DependencyType => {
   switch (kind) {
     case DefinitionKind.ImportedObject:
       return DependencyType.Object;
-    case DefinitionKind.Object:
-      return DependencyType.Object;
     case DefinitionKind.ImportedQuery:
-      return DependencyType.Query;
-    case DefinitionKind.Query:
       return DependencyType.Query;
     case DefinitionKind.ImportedEnum:
       return DependencyType.Enum;
-    case DefinitionKind.Enum:
-      return DependencyType.Enum;
-    case DefinitionKind.InterfaceImplemented:
-      return DependencyType.Interface;
     default:
       throw Error("Unknown dependency type");
   }
