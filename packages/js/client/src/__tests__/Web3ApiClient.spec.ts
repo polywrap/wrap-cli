@@ -1,4 +1,11 @@
-import { ClientConfig, createWeb3ApiClient, Dependency, DependencyType } from "../";
+import {
+  ClientConfig,
+  createWeb3ApiClient,
+  Dependency,
+  DependencyType,
+  ImplementedInterface,
+  ImplementedType
+} from "../";
 import { buildAndDeployApi, initTestEnvironment, stopTestEnvironment } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 import { Web3ApiClient } from "../Web3ApiClient";
@@ -2032,11 +2039,48 @@ enum Logger_LogLevel @imported(
     expect(grayListQueriesIncludesQueryType).toBeTruthy();
     expect(grayListQueriesIncludesObjectType).toBeFalsy();
 
-    const grayListEmpty: Dependency[] = await client.getDependencies(ensUri, {
+    // throws on use of contradictory filter options
+    await expect(() => client.getDependencies(ensUri, {
       include: [DependencyType.Query],
       ignore: [DependencyType.Query],
-    });
-    expect(grayListEmpty.length).toEqual(0);
+    })).rejects.toThrow("Cannot both include and ignore a DependencyType");
+  });
+
+  it("getImplementedInterfaces -- interface implementations web3api", async () => {
+    await buildAndDeployApi(
+      `${GetPathToTestApis()}/implementations/test-interface`,
+      ipfsProvider,
+      ensAddress
+    );
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/implementations/test-api`,
+      ipfsProvider,
+      ensAddress
+    );
+    const client = await getClient();
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const implemented: ImplementedInterface[] = await client.getImplementedInterfaces(ensUri);
+    expect(implemented.length).toEqual(3);
+
+    // check if ImplementationType type is present and implements InterfaceType interface
+    let includesInterfaceType = false;
+    for (const type of implemented) {
+      if (type.type === "ImplemenationType") {
+        expect(type.interfaces[0].uri).toEqual("w3://ens/interface.eth");
+        expect(type.interfaces[0].type).toEqual("InterfaceType");
+        expect(type.interfaces[0].namespace).toEqual("Interface");
+        includesInterfaceType = true;
+        break;
+      }
+    }
+    expect(includesInterfaceType).toBeTruthy();
+
+    // with blacklist filter
+    const implementedObjects: ImplementedInterface[] = await client.getImplementedInterfaces(ensUri, { ignore: ImplementedType.Query });
+    expect(implementedObjects.length).toEqual(1);
+    const implementedQueries: ImplementedInterface[] = await client.getImplementedInterfaces(ensUri, { ignore: ImplementedType.Object });
+    expect(implementedQueries.length).toEqual(2);
   });
 });
 

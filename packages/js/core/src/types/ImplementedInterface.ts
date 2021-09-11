@@ -1,12 +1,9 @@
-import { Uri } from "./Uri";
-import { DependencyType } from "./Dependency";
-
 export interface GetImplementedInterfacesOptions {
   ignore?: ImplementedType;
 }
 
 export interface ImplementedInterface {
-  type: ImplementedType;
+  type: string;
   interfaces: Interface[];
 }
 
@@ -16,7 +13,7 @@ export enum ImplementedType {
 }
 
 export interface Interface {
-  uri: Uri | string;
-  type: DependencyType;
+  uri: string;
+  type: string;
   namespace: string;
 }
