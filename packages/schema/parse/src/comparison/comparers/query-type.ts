@@ -1,7 +1,7 @@
 import { QueryDefinition } from "../../typeInfo";
-import { compareGenericTypes } from "./GenericType";
-import { compareImportTypes } from "./ImportType";
-import { compareMethodTypes } from "./MethodType";
+import { compareGenericTypes } from "./generic-type";
+import { compareImportTypes } from "./import-type";
+import { compareMethodTypes } from "./method-type";
 import { CompareOptions, CompareResult, VersionRelease } from "./utils";
 
 export function compareQueryType(

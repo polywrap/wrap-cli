@@ -1,6 +1,6 @@
 import { ObjectDefinition } from "../../typeInfo";
-import { compareGenericTypes } from "./GenericType";
-import { comparePropertyTypes } from "./PropertyType";
+import { compareGenericTypes } from "./generic-type";
+import { comparePropertyTypes } from "./property-type";
 import { CompareOptions, CompareResult, VersionRelease } from "./utils";
 
 export function compareObjectType(

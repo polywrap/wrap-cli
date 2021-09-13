@@ -1,5 +1,5 @@
 import { MethodDefinition } from "../../typeInfo";
-import { comparePropertyType, comparePropertyTypes } from "./PropertyType";
+import { comparePropertyType, comparePropertyTypes } from "./property-type";
 import { CompareOptions, CompareResult, VersionRelease } from "./utils";
 
 export function compareMethodType(

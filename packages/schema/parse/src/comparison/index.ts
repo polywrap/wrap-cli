@@ -1,15 +1,15 @@
 import { TypeInfo } from "../typeInfo";
-import { compareEnumTypes } from "./compapers/EnumType";
-import { compareImportedEnumTypes } from "./compapers/ImportedEnumType";
-import { compareImportedObjectTypes } from "./compapers/ImportedObjectType";
-import { compareImportedQueryTypes } from "./compapers/ImportedQueryType";
-import { compareObjectTypes } from "./compapers/ObjectType";
-import { compareQueryTypes } from "./compapers/QueryType";
+import { compareEnumTypes } from "./comparers/enum-type";
+import { compareImportedEnumTypes } from "./comparers/imported-enum-type";
+import { compareImportedObjectTypes } from "./comparers/imported-object-type";
+import { compareImportedQueryTypes } from "./comparers/imported-query-type";
+import { compareObjectTypes } from "./comparers/object-type";
+import { compareQueryTypes } from "./comparers/query-type";
 import {
   CompareOptions,
   CompareResult,
   VersionRelease,
-} from "./compapers/utils";
+} from "./comparers/utils";
 
 export function compare(
   t1: TypeInfo,

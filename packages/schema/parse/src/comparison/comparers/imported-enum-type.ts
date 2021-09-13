@@ -1,11 +1,11 @@
-import { ImportedObjectDefinition } from "../../typeInfo";
-import { compareImportedType } from "./ImportedType";
-import { compareObjectType } from "./ObjectType";
+import { ImportedEnumDefinition } from "../../typeInfo";
+import { compareEnumType } from "./enum-type";
+import { compareImportedType } from "./imported-type";
 import { CompareOptions, CompareResult, VersionRelease } from "./utils";
 
-export function compareImportedObjectTypes(
-  arr1: ImportedObjectDefinition[],
-  arr2: ImportedObjectDefinition[],
+export function compareImportedEnumTypes(
+  arr1: ImportedEnumDefinition[],
+  arr2: ImportedEnumDefinition[],
   options?: CompareOptions
 ): CompareResult {
   const result: CompareResult = {
@@ -18,20 +18,20 @@ export function compareImportedObjectTypes(
   }
 
   for (let i = 0; i < arr1.length; i++) {
-    const obj1: ImportedObjectDefinition = arr1[i];
+    const obj1: ImportedEnumDefinition = arr1[i];
     if (indexMap2.get(obj1.type) == undefined) {
       result.versionRelease = VersionRelease.MAJOR;
       result.hasShortCircuit = true;
       return result;
     }
-    const obj2: ImportedObjectDefinition =
+    const obj2: ImportedEnumDefinition =
       arr2[indexMap2.get(obj1.type) as number];
 
-    const objectResult = compareObjectType(obj1, obj2, options);
-    if (objectResult.hasShortCircuit) return objectResult;
+    const enumResult = compareEnumType(obj1, obj2, options);
+    if (enumResult.hasShortCircuit) return enumResult;
     result.versionRelease = Math.max(
       result.versionRelease,
-      objectResult.versionRelease
+      enumResult.versionRelease
     );
 
     const importedResult = compareImportedType(obj1, obj2, options);

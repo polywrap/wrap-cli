@@ -1,12 +1,11 @@
-import { ImportedQueryDefinition } from "../../typeInfo";
-import { compareGenericType } from "./GenericType";
-import { compareImportedType } from "./ImportedType";
-import { compareMethodTypes } from "./MethodType";
+import { ImportedObjectDefinition } from "../../typeInfo";
+import { compareImportedType } from "./imported-type";
+import { compareObjectType } from "./object-type";
 import { CompareOptions, CompareResult, VersionRelease } from "./utils";
 
-export function compareImportedQueryTypes(
-  arr1: ImportedQueryDefinition[],
-  arr2: ImportedQueryDefinition[],
+export function compareImportedObjectTypes(
+  arr1: ImportedObjectDefinition[],
+  arr2: ImportedObjectDefinition[],
   options?: CompareOptions
 ): CompareResult {
   const result: CompareResult = {
@@ -19,32 +18,20 @@ export function compareImportedQueryTypes(
   }
 
   for (let i = 0; i < arr1.length; i++) {
-    const obj1: ImportedQueryDefinition = arr1[i];
-
-    if (indexMap2.get(arr1[i].type) == undefined) {
+    const obj1: ImportedObjectDefinition = arr1[i];
+    if (indexMap2.get(obj1.type) == undefined) {
       result.versionRelease = VersionRelease.MAJOR;
       result.hasShortCircuit = true;
       return result;
     }
-    const obj2: ImportedQueryDefinition =
+    const obj2: ImportedObjectDefinition =
       arr2[indexMap2.get(obj1.type) as number];
 
-    const genericResult = compareGenericType(obj1, obj2, options);
-    if (genericResult.hasShortCircuit) return genericResult;
+    const objectResult = compareObjectType(obj1, obj2, options);
+    if (objectResult.hasShortCircuit) return objectResult;
     result.versionRelease = Math.max(
       result.versionRelease,
-      genericResult.versionRelease
-    );
-
-    const methodResult = compareMethodTypes(
-      obj1.methods,
-      obj2.methods,
-      options
-    );
-    if (methodResult.hasShortCircuit) return methodResult;
-    result.versionRelease = Math.max(
-      result.versionRelease,
-      methodResult.versionRelease
+      objectResult.versionRelease
     );
 
     const importedResult = compareImportedType(obj1, obj2, options);
