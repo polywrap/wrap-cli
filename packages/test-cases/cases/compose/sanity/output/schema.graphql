@@ -498,8 +498,8 @@ InterfaceObject1_uint8 comment
 }
 
 enum Namespace_CustomEnum @imported(
-  namespace: "Namespace",
   uri: "test.eth",
+  namespace: "Namespace",
   nativeType: "CustomEnum"
 ) {
   STRING
@@ -510,8 +510,8 @@ enum Namespace_CustomEnum @imported(
 Imported_Enum comment
 """
 enum Namespace_Imported_Enum @imported(
-  namespace: "Namespace",
   uri: "test.eth",
+  namespace: "Namespace",
   nativeType: "Imported_Enum"
 ) {
   STRING

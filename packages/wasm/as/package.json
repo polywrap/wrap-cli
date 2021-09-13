@@ -1,7 +1,7 @@
 {
   "name": "@web3api/wasm-as",
   "description": "Web3API Assemblyscript Runtime",
-  "version": "0.0.1-prealpha.35",
+  "version": "0.0.1-prealpha.39",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -24,8 +24,9 @@
     "as-bigint": "0.2.4"
   },
   "devDependencies": {
-    "@as-pect/cli": "5.0.1",
-    "assemblyscript": "0.17.14"
+    "@as-pect/cli": "6.0.0",
+    "assemblyscript": "0.19.1",
+    "source-map-support": "0.5.19"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {

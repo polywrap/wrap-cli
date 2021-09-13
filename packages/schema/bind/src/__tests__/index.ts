@@ -3,7 +3,7 @@ import { BindModuleOptions } from "../";
 import fs from "fs";
 import path from "path";
 import { TypeInfo } from "@web3api/schema-parse";
-import { composeSchema, ComposerFilter } from "@web3api/schema-compose";
+import { composeSchema, SchemaFile, ComposerFilter } from "@web3api/schema-compose";
 import { GetPathToBindTestFiles } from "@web3api/test-cases";
 import { normalizeLineEndings } from "@web3api/os-js";
 
@@ -87,17 +87,26 @@ export function fetchTestCases(): TestCases {
         };
       });
 
+    let schemas: Record<string, SchemaFile> = { };
+
+    if (querySchema) {
+      schemas["query"] = {
+        schema: querySchema,
+        absolutePath: querySchemaFile
+      };
+    }
+
+    if (mutationSchema) {
+      schemas["mutation"] = {
+        schema: mutationSchema,
+        absolutePath: mutationSchemaFile
+      };
+    }
+
     // Compose the input schemas into TypeInfo structures
     const composed = await composeSchema({
       schemas: {
-        query: querySchema ? {
-          schema: querySchema,
-          absolutePath: querySchemaFile
-        } : undefined,
-        mutation: mutationSchema ? {
-          schema: mutationSchema,
-          absolutePath: mutationSchemaFile
-        } : undefined
+        ...schemas,
       },
       resolvers: {
         external: (uri: string): Promise<string> => {
