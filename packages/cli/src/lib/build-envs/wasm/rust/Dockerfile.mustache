@@ -42,7 +42,9 @@ RUN cargo install toml-cli
 {{#web3api_linked_packages}}
 RUN PACKAGE_NAME={{name}}; \
 {{#web3api_modules}}
-    toml set ./{{dir}}/Cargo.toml dependencies.$PACKAGE_NAME.path ../linked-packages/$PACKAGE_NAME > ./{{dir}}/Cargo.toml && \
+    toml set ./{{dir}}/Cargo.toml dependencies.$PACKAGE_NAME.path /linked-packages/$PACKAGE_NAME > ./{{dir}}/Cargo-local.toml && \
+    rm -rf ./{{dir}}/Cargo.toml && \
+    mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml && \
 {{/web3api_modules}}
     true
 {{/web3api_linked_packages}}

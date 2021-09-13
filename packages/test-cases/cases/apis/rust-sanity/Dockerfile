@@ -1,9 +1,13 @@
-FROM rust:1.45 as base
+FROM rust:1.55 as base
 
 # Install the wasm32 rust build target
 RUN rustup target add wasm32-unknown-unknown
 
-WORKDIR /project
+WORKDIR /linked-packages
+
+COPY .w3/build/linked-packages/polywrap-wasm-rs ./polywrap-wasm-rs
+
+WORKDIR /build-deps
 
 # Install wasm-opt
 RUN curl -L https://github.com/WebAssembly/binaryen/releases/download/version_101/binaryen-version_101-x86_64-linux.tar.gz | tar -xz \
@@ -11,19 +15,27 @@ RUN curl -L https://github.com/WebAssembly/binaryen/releases/download/version_10
     && cp binaryen-version_101/bin/wasm-opt /usr/local/bin/ \
     && rm -rf binary-version_101
 
+WORKDIR /project
+
 # Copy all manifest files
 COPY web3api.yaml .
 COPY web3api.build.yaml .
 
 # Copy all source files
-
 COPY mutation mutation
+COPY query query
+
+# Install the toml-cli
+RUN cargo install toml-cli
+
+# Link any local packages
+RUN PACKAGE_NAME=polywrap-wasm-rs; \
+    toml set ./mutation/Cargo.toml dependencies.$PACKAGE_NAME.path ../linked-packages/$PACKAGE_NAME > ./mutation/Cargo.toml && \
+    toml set ./query/Cargo.toml dependencies.$PACKAGE_NAME.path ../linked-packages/$PACKAGE_NAME > ./query/Cargo.toml && \
+    true
 
 # Remove any Cargo.lock files
 RUN rm -rf mutation/Cargo.lock
-COPY query query
-
-# Remove any Cargo.lock files
 RUN rm -rf query/Cargo.lock
 
 # Build the module at mutation
