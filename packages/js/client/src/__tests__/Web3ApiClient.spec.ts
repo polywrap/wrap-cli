@@ -2066,7 +2066,7 @@ enum Logger_LogLevel @imported(
     // check if ImplementationType type is present and implements InterfaceType interface
     let includesInterfaceType = false;
     for (const type of implemented) {
-      if (type.type === "ImplemenationType") {
+      if (type.type === "ImplementationType") {
         expect(type.interfaces[0].uri).toEqual("w3://ens/interface.eth");
         expect(type.interfaces[0].type).toEqual("InterfaceType");
         expect(type.interfaces[0].namespace).toEqual("Interface");
