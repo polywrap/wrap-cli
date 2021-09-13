@@ -1,7 +1,7 @@
 import { parseSchema, TypeInfo } from '../..';
 import path from "path";
 import { readdirSync, readFileSync, Dirent } from "fs";
-import { VersionRelease } from "../../comparison/comparers";
+import { VersionRelease } from '../../comparison/compapers/utils';
 
 const root = `${__dirname}/schemas/`
 

@@ -1,7 +1,86 @@
-import { TypeInfo } from "..";
-import { compare, VersionRelease } from "./comparers";
+import { TypeInfo } from "../typeInfo";
+import { compareEnumTypes } from "./compapers/EnumType";
+import { compareImportedEnumTypes } from "./compapers/ImportedEnumType";
+import { compareImportedObjectTypes } from "./compapers/ImportedObjectType";
+import { compareImportedQueryTypes } from "./compapers/ImportedQueryType";
+import { compareObjectTypes } from "./compapers/ObjectType";
+import { compareQueryTypes } from "./compapers/QueryType";
+import {
+  CompareOptions,
+  CompareResult,
+  VersionRelease,
+} from "./compapers/utils";
 
-export { compare };
+export function compare(
+  t1: TypeInfo,
+  t2: TypeInfo,
+  options?: CompareOptions
+): CompareResult {
+  const result: CompareResult = {
+    versionRelease: VersionRelease.PATCH,
+    hasShortCircuit: false,
+  };
+
+  const enumResult = compareEnumTypes(t1.enumTypes, t2.enumTypes, options);
+  if (enumResult.hasShortCircuit) return enumResult;
+  result.versionRelease = Math.max(
+    result.versionRelease,
+    enumResult.versionRelease
+  );
+
+  const objectResult = compareObjectTypes(
+    t1.objectTypes,
+    t2.objectTypes,
+    options
+  );
+  if (objectResult.hasShortCircuit) return objectResult;
+  result.versionRelease = Math.max(
+    result.versionRelease,
+    objectResult.versionRelease
+  );
+
+  const queryResult = compareQueryTypes(t1.queryTypes, t2.queryTypes, options);
+  if (queryResult.hasShortCircuit) return queryResult;
+  result.versionRelease = Math.max(
+    result.versionRelease,
+    queryResult.versionRelease
+  );
+
+  const importedEnumResult = compareImportedEnumTypes(
+    t1.importedEnumTypes,
+    t2.importedEnumTypes,
+    options
+  );
+  if (importedEnumResult.hasShortCircuit) return importedEnumResult;
+  result.versionRelease = Math.max(
+    result.versionRelease,
+    importedEnumResult.versionRelease
+  );
+
+  const importedObjectResult = compareImportedObjectTypes(
+    t1.importedObjectTypes,
+    t2.importedObjectTypes,
+    options
+  );
+  if (importedObjectResult.hasShortCircuit) return importedObjectResult;
+  result.versionRelease = Math.max(
+    result.versionRelease,
+    importedObjectResult.versionRelease
+  );
+
+  const importedQueryResult = compareImportedQueryTypes(
+    t1.importedQueryTypes,
+    t2.importedQueryTypes,
+    options
+  );
+  if (importedQueryResult.hasShortCircuit) return importedQueryResult;
+  result.versionRelease = Math.max(
+    result.versionRelease,
+    importedQueryResult.versionRelease
+  );
+
+  return result;
+}
 
 export function areTypeInfosFunctionallyIdentical(
   typeInfoA: TypeInfo,
