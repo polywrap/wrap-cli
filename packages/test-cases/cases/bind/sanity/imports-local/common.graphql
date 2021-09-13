@@ -45,3 +45,26 @@ enum CustomEnum {
   STRING
   BYTES
 }
+
+type UnionTypeA {
+  propA: String
+}
+
+type UnionTypeB {
+  propB: String
+}
+
+type UnionTypeC {
+  propC: String
+}
+
+# TODO: should we support base-types in the union? (UInt32, String, Bytes, BigInt, JSON)
+
+union TestUnion = UnionTypeA | UnionTypeB | UnionTypeC
+
+type UnionPropertyObject {
+  union: TestUnion!
+  optUnion: TestUnion
+  unionArray: [TestUnion!]!
+  optUnionArray: [TestUnion]
+}
