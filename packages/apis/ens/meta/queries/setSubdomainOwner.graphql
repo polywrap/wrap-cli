@@ -1,0 +1,10 @@
+mutation {
+  setSubdomainOwner(
+    subdomain: $subdomain
+    owner: $owner
+    registryAddress: $registryAddress
+    connection: {
+      networkNameOrChainId: $network
+    }
+  )
+}

@@ -21,12 +21,12 @@
     "test:ci": "asp --summary"
   },
   "dependencies": {
-    "as-bigint": "0.2.4"
+    "as-bigint": "0.2.4",
+    "@web3api/assemblyscript-json": "1.2.0"
   },
   "devDependencies": {
-    "@as-pect/cli": "6.0.0",
-    "assemblyscript": "0.19.1",
-    "source-map-support": "0.5.19"
+    "@as-pect/cli": "6.2.4",
+    "assemblyscript": "0.19.5"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {

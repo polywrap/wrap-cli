@@ -6,6 +6,7 @@ import {
   WriteEncoder,
   Nullable,
   BigInt,
+  JSON,
   Context
 } from "@web3api/wasm-as";
 import { CustomType } from "./";
@@ -23,7 +24,7 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
 }
 
 export function writeCustomType(writer: Write, type: CustomType): void {
-  writer.writeMapLength(33);
+  writer.writeMapLength(35);
   writer.context().push("str", "string", "writing property");
   writer.writeString("str");
   writer.writeString(type.str);
@@ -75,6 +76,14 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.context().push("optBigint", "BigInt | null", "writing property");
   writer.writeString("optBigint");
   writer.writeNullableBigInt(type.optBigint);
+  writer.context().pop();
+  writer.context().push("json", "JSON.Value", "writing property");
+  writer.writeString("json");
+  writer.writeJSON(type.json);
+  writer.context().pop();
+  writer.context().push("optJson", "JSON.Value | null", "writing property");
+  writer.writeString("optJson");
+  writer.writeNullableJSON(type.optJson);
   writer.context().pop();
   writer.context().push("bytes", "ArrayBuffer", "writing property");
   writer.writeString("bytes");
@@ -236,6 +245,9 @@ export function readCustomType(reader: Read): CustomType {
   let _bigint: BigInt = BigInt.fromUInt16(0);
   let _bigintSet: bool = false;
   let _optBigint: BigInt | null = null;
+  let _json: JSON.Value = JSON.Value.Null();
+  let _jsonSet: bool = false;
+  let _optJson: JSON.Value | null = null;
   let _bytes: ArrayBuffer = new ArrayBuffer(0);
   let _bytesSet: bool = false;
   let _optBytes: ArrayBuffer | null = null;
@@ -345,6 +357,17 @@ export function readCustomType(reader: Read): CustomType {
     else if (field == "optBigint") {
       reader.context().push(field, "BigInt | null", "type found, reading property");
       _optBigint = reader.readNullableBigInt();
+      reader.context().pop();
+    }
+    else if (field == "json") {
+      reader.context().push(field, "JSON.Value", "type found, reading property");
+      _json = reader.readJSON();
+      _jsonSet = true;
+      reader.context().pop();
+    }
+    else if (field == "optJson") {
+      reader.context().push(field, "JSON.Value | null", "type found, reading property");
+      _optJson = reader.readNullableJSON();
       reader.context().pop();
     }
     else if (field == "bytes") {
@@ -582,6 +605,9 @@ export function readCustomType(reader: Read): CustomType {
   if (!_bigintSet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'bigint: BigInt'"));
   }
+  if (!_jsonSet) {
+    throw new Error(reader.context().printWithContext("Missing required property: 'json: JSON'"));
+  }
   if (!_bytesSet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'bytes: Bytes'"));
   }
@@ -627,6 +653,8 @@ export function readCustomType(reader: Read): CustomType {
     i32: _i32,
     bigint: _bigint,
     optBigint: _optBigint,
+    json: _json,
+    optJson: _optJson,
     bytes: _bytes,
     optBytes: _optBytes,
     boolean: _boolean,

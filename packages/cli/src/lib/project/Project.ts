@@ -42,7 +42,8 @@ export abstract class Project {
 
   public async copyFilesIntoCache(
     destSubfolder: string,
-    sourceFolder: string
+    sourceFolder: string,
+    options: copyfiles.Options = {}
   ): Promise<void> {
     const dest = this.getCachePath(destSubfolder);
 
@@ -51,7 +52,7 @@ export abstract class Project {
     }
 
     await new Promise<void>((resolve, reject) => {
-      copyfiles([sourceFolder, dest], { up: true }, (error) => {
+      copyfiles([sourceFolder, dest], options, (error) => {
         if (error) {
           reject(error);
         } else {

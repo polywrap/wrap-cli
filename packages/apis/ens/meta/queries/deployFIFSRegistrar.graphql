@@ -1,0 +1,9 @@
+mutation {
+  deployFIFSRegistrar(
+    registryAddress: $registryAddress
+    tld: $tld
+    connection: {
+      networkNameOrChainId: $network
+    }
+  )
+}
