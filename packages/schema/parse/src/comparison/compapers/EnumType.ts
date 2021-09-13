@@ -1,5 +1,5 @@
 import { EnumDefinition } from "../../typeInfo";
-import { SetComparisonType, compareSets } from "../compareSets";
+import { SetComparisonResult, compareSets } from "../compareSets";
 import { CompareOptions, CompareResult, VersionRelease } from "./utils";
 
 export function compareEnumType(
@@ -25,13 +25,13 @@ export function compareEnumType(
 
     const c1: Set<string> = new Set<string>(obj1.constants);
     const c2: Set<string> = new Set<string>(obj2.constants);
-    const setResult: SetComparisonType = compareSets(c1, c2);
+    const setResult: SetComparisonResult = compareSets(c1, c2);
 
     switch (setResult) {
-      case SetComparisonType.EQUAL:
+      case SetComparisonResult.EQUAL:
         result.versionRelease = VersionRelease.PATCH;
         break;
-      case SetComparisonType.SUBSET:
+      case SetComparisonResult.SUBSET:
         result.versionRelease = VersionRelease.MINOR;
         break;
       default:

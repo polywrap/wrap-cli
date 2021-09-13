@@ -1,24 +1,27 @@
-export enum SetComparisonType {
+export enum SetComparisonResult {
   EQUAL,
   SUBSET,
   DIFFERENT,
 }
 
-export function compareSets<T>(set1: Set<T>, set2: Set<T>): SetComparisonType {
+export function compareSets<T>(
+  set1: Set<T>,
+  set2: Set<T>
+): SetComparisonResult {
   if (set1.size > set2.size) {
     //No need to check anything else in this case, so we will return early
-    return SetComparisonType.DIFFERENT;
+    return SetComparisonResult.DIFFERENT;
   }
 
   for (const item of set1) {
     if (!set2.has(item)) {
-      return SetComparisonType.DIFFERENT;
+      return SetComparisonResult.DIFFERENT;
     }
   }
 
   if (set1.size === set2.size) {
-    return SetComparisonType.EQUAL;
+    return SetComparisonResult.EQUAL;
   } else {
-    return SetComparisonType.SUBSET;
+    return SetComparisonResult.SUBSET;
   }
 }

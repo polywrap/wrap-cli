@@ -1,4 +1,4 @@
-import { SetComparisonType, compareSets } from "../compareSets";
+import { SetComparisonResult, compareSets } from "../compareSets";
 import {
   ImportDefinition,
   CompareOptions,
@@ -17,13 +17,13 @@ export function compareImportTypes(
   };
   const s1 = new Set(arr1.map((x) => x.type));
   const s2 = new Set(arr2.map((x) => x.type));
-  const setResult: SetComparisonType = compareSets(s1, s2);
+  const setResult: SetComparisonResult = compareSets(s1, s2);
 
   switch (setResult) {
-    case SetComparisonType.EQUAL:
+    case SetComparisonResult.EQUAL:
       result.versionRelease = VersionRelease.PATCH;
       break;
-    case SetComparisonType.SUBSET:
+    case SetComparisonResult.SUBSET:
       result.versionRelease = VersionRelease.MINOR;
       break;
     default:
