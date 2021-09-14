@@ -30,9 +30,7 @@ import { normalizePath, writeFileSync } from "@web3api/os-js";
 import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-const fsExtra = require("fs-extra");
+import rimraf from "rimraf";
 
 type ModulesToBuild = Record<InvokableModules, boolean>;
 
@@ -96,7 +94,7 @@ export class Compiler {
       const state = await this._getCompilerState();
 
       // Init & clean output directory
-      this._cleanDir(this._config.outputDir);
+      this._resetDir(this._config.outputDir);
 
       await this._outputComposedSchema(state);
 
@@ -217,11 +215,11 @@ export class Compiler {
 
     // Clean the code generation
     if (queryDirectory) {
-      this._cleanDir(queryDirectory);
+      this._resetDir(queryDirectory);
     }
 
     if (mutationDirectory) {
-      this._cleanDir(mutationDirectory);
+      this._resetDir(mutationDirectory);
     }
 
     // Generate the bindings
@@ -298,7 +296,7 @@ export class Compiler {
 
     // Create the BuildManifest
     const buildManifest: BuildManifest = {
-      format: "0.0.1-prealpha.1",
+      format: "0.0.1-prealpha.2",
       __type: "BuildManifest",
       docker: {
         buildImageId: dockerImageId,
@@ -345,10 +343,13 @@ export class Compiler {
       ? path.join(buildManifestDir, buildManifest?.docker?.dockerfile)
       : path.join(buildManifestDir, "Dockerfile");
 
+    await project.cacheBuildManifestLinkedPackages();
+
     // If the dockerfile path isn't provided, generate it
     if (!buildManifest?.docker?.dockerfile) {
       // Make sure the default template is in the cached .w3/build/env folder
       await project.cacheDefaultBuildManifestFiles();
+
       dockerfile = generateDockerfile(
         project.getCachePath("build/env/Dockerfile.mustache"),
         buildManifest.config || {}
@@ -377,12 +378,12 @@ export class Compiler {
     return dockerImageId;
   }
 
-  private _cleanDir(dir: string) {
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
+  private _resetDir(dir: string) {
+    if (fs.existsSync(dir)) {
+      rimraf.sync(dir);
     }
 
-    fsExtra.emptyDirSync(dir);
+    fs.mkdirSync(dir, { recursive: true });
   }
 
   private async _outputComposedSchema(state: CompilerState): Promise<void> {

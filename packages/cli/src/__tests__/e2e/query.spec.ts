@@ -103,5 +103,5 @@ mutation {
       args: ["test-env", "down"],
       cwd: projectRoot
     }, w3Cli);
-  }, 240000);
+  }, 480000);
 });
