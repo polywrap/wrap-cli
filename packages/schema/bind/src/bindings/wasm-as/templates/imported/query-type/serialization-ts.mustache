@@ -14,7 +14,7 @@ import * as Types from "../..";
 {{#methods}}
 export class Input_{{name}} {
   {{#arguments}}
-  {{#toAscProp}}{{name}}{{/toAscProp}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
+  {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/arguments}}
 }
 
@@ -38,28 +38,28 @@ export function write{{name}}Args(
   writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
   writer.writeString("{{name}}");
   {{#scalar}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{#toAscProp}}{{name}}{{/toAscProp}});
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/scalar}}
   {{#array}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{#toAscProp}}{{name}}{{/toAscProp}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
     {{> serialize_array}}
   });
   {{/array}}
   {{#enum}}
   {{#required}}
-  writer.writeInt32(input.{{#toAscProp}}{{name}}{{/toAscProp}});
+  writer.writeInt32(input.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/required}}
   {{^required}}
-  writer.writeNullableInt32(input.{{#toAscProp}}{{name}}{{/toAscProp}});
+  writer.writeNullableInt32(input.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/required}}
   {{/enum}}
   {{#object}}
   {{#required}}
-  Types.{{type}}.write(writer, input.{{#toAscProp}}{{name}}{{/toAscProp}});
+  Types.{{type}}.write(writer, input.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/required}}
   {{^required}}
-  if (input.{{#toAscProp}}{{name}}{{/toAscProp}}) {
-    Types.{{type}}.write(writer, input.{{#toAscProp}}{{name}}{{/toAscProp}} as Types.{{type}});
+  if (input.{{#handleKeywords}}{{name}}{{/handleKeywords}}) {
+    Types.{{type}}.write(writer, input.{{#handleKeywords}}{{name}}{{/handleKeywords}} as Types.{{type}});
   } else {
     writer.writeNil();
   }

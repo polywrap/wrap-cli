@@ -111,6 +111,7 @@ type CustomType {
 type AnotherType {
   prop: String
   circular: CustomType
+  const: String
 }
 
 enum CustomEnum {

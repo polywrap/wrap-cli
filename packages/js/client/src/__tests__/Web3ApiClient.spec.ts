@@ -1834,7 +1834,7 @@ enum Logger_LogLevel @imported(
     })).rejects.toThrow("client.getFile(...) is not implemented for Plugins.");
   });
 
-  it("queries schemas that use reserved keywords", async () => {
+  it("queries API schemas that use reserved keywords", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/reserved-words`,
       ipfsProvider,
@@ -1847,7 +1847,7 @@ enum Logger_LogLevel @imported(
     const query = await client.query<{
       method1: {
         const: string;
-      };
+      }
     }>({
       uri: ensUri,
       query: `

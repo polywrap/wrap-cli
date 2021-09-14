@@ -13,7 +13,7 @@ import * as Types from "..";
 
 export class Input_{{name}} {
   {{#arguments}}
-  {{#toAscProp}}{{name}}{{/toAscProp}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
+  {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/arguments}}
 }
 
@@ -89,7 +89,7 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
 
   return {
     {{#arguments}}
-    {{#toAscProp}}{{name}}{{/toAscProp}}: _{{name}}{{^last}},{{/last}}
+    {{#handleKeywords}}{{name}}{{/handleKeywords}}: _{{name}}{{^last}},{{/last}}
     {{/arguments}}
   };
 }

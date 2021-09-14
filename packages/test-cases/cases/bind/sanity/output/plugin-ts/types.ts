@@ -58,6 +58,7 @@ export interface CustomType {
 export interface AnotherType {
   prop?: String | null;
   circular?: Types.CustomType | null;
+  const?: String | null;
 }
 
 export enum CustomEnumEnum {

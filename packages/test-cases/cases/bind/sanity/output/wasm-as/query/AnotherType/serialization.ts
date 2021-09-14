@@ -36,8 +36,8 @@ export function writeAnotherType(writer: Write, type: AnotherType): void {
     writer.writeNil();
   }
   writer.context().pop();
-  writer.context().push("m_const", "string | null", "writing property");
-  writer.writeString("m_const");
+  writer.context().push("const", "string | null", "writing property");
+  writer.writeString("const");
   writer.writeNullableString(type.m_const);
   writer.context().pop();
 }

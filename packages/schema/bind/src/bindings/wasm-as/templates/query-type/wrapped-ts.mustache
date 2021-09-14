@@ -19,7 +19,7 @@ export function {{name}}Wrapped(argsBuf: ArrayBuffer): ArrayBuffer {
   {{/arguments.length}}
   const result = {{name}}({{#arguments.length}}{
     {{#arguments}}
-    {{#toAscProp}}{{name}}{{/toAscProp}}: args.{{#toAscProp}}{{name}}{{/toAscProp}}{{^last}},{{/last}}
+    {{#handleKeywords}}{{name}}{{/handleKeywords}}: args.{{#handleKeywords}}{{name}}{{/handleKeywords}}{{^last}},{{/last}}
     {{/arguments}}
   }{{/arguments.length}});
   return serialize{{name}}Result(result);

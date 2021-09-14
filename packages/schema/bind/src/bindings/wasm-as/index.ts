@@ -1,8 +1,8 @@
 import { OutputDirectory, OutputEntry } from "../../";
 import { readDirectory } from "../../utils/fs";
 import * as Functions from "./functions";
-import { fromReservedWord } from "./functions";
 import { reservedWordsAS } from "./reservedWords";
+import { fromReservedWord } from "../../utils/templateFunctions";
 
 import {
   transformTypeInfo,
@@ -147,7 +147,7 @@ function generateFiles(
             dirent.data,
             {
               ...(config as Record<string, unknown>),
-              toAscProp: fromReservedWord(reservedWordsAS),
+              handleKeywords: fromReservedWord(reservedWordsAS),
             },
             subTemplates
           );

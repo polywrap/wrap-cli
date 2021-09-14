@@ -29,20 +29,20 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
   writer.writeString("{{name}}");
   {{#scalar}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#toAscProp}}{{name}}{{/toAscProp}});
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/scalar}}
   {{#array}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#toAscProp}}{{name}}{{/toAscProp}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
     {{> serialize_array}}
   });
   {{/array}}
   {{#object}}
   {{#required}}
-  Types.{{type}}.write(writer, type.{{#toAscProp}}{{name}}{{/toAscProp}});
+  Types.{{type}}.write(writer, type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/required}}
   {{^required}}
-  if (type.{{#toAscProp}}{{name}}{{/toAscProp}}) {
-    Types.{{type}}.write(writer, type.{{#toAscProp}}{{name}}{{/toAscProp}} as Types.{{type}});
+  if (type.{{#handleKeywords}}{{name}}{{/handleKeywords}}) {
+    Types.{{type}}.write(writer, type.{{#handleKeywords}}{{name}}{{/handleKeywords}} as Types.{{type}});
   } else {
     writer.writeNil();
   }
@@ -50,10 +50,10 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   {{/object}}
   {{#enum}}
   {{#required}}
-  writer.writeInt32(type.{{#toAscProp}}{{name}}{{/toAscProp}});
+  writer.writeInt32(type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/required}}
   {{^required}}
-  writer.writeNullableInt32(type.{{#toAscProp}}{{name}}{{/toAscProp}});
+  writer.writeNullableInt32(type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/required}}
   {{/enum}}
   writer.context().pop();
@@ -134,7 +134,7 @@ export function read{{type}}(reader: Read): {{type}} {
 
   return {
     {{#properties}}
-    {{#toAscProp}}{{name}}{{/toAscProp}}: _{{name}}{{^last}},{{/last}}
+    {{#handleKeywords}}{{name}}{{/handleKeywords}}: _{{name}}{{^last}},{{/last}}
     {{/properties}}
   };
 }
