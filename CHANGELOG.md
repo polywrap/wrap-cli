@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.42
+## Bugs
+* `@web3api/schema-parse`: Removed unnecessary sanitization for imported methods without any arguments.
+
 # Web3API 0.0.1-prealpha.41
 ## Features
 * `@web3api/schema-parse`: Added support for `JSON` as a base type.
