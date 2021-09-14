@@ -8,6 +8,7 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar JSON
 
 directive @imported(
   uri: String!
@@ -51,6 +52,8 @@ optStr comment
   i32: Int32!
   bigint: BigInt!
   optBigint: BigInt
+  json: JSON!
+  optJson: JSON
   bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]

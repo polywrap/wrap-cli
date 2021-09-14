@@ -1,0 +1,10 @@
+mutation {
+  reverseRegisterDomain(
+    domain: $domain
+    reverseRegistryAddress: $reverseRegistryAddress
+    owner: $owner
+    connection: {
+      networkNameOrChainId: $network
+    }
+  )
+}

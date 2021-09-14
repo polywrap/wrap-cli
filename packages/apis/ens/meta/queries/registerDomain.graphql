@@ -1,0 +1,11 @@
+mutation {
+  registerDomain(
+    domain: $domain
+    registrarAddress: $registrarAddress
+    registryAddress: $registryAddress
+    owner: $owner
+    connection: {
+      networkNameOrChainId: $network
+    }
+  )
+}
