@@ -43,22 +43,22 @@ type Query implements Interface_Query @imports(
     "Interface_NestedInterfaceObject"
   ]
 ) {
-"""
-method1 comment
-"""
+  """
+  method1 comment
+  """
   method1(
     str: String!
     optStr: String
     u: UInt!
-"""
-uArrayArray comment
-"""
+    """
+    uArrayArray comment
+    """
     uArrayArray: [[UInt]]!
   ): String!
 
-"""
-method2 comment
-"""
+  """
+  method2 comment
+  """
   method2(
     arg: [String!]!
   ): [Int32!]!
@@ -85,9 +85,9 @@ type CustomQueryType {
   optStrOptArray: [String]
   crazyArray: [[[[UInt32!]]!]]
   commonType: CommonType!
-"""
-customType comment
-"""
+  """
+  customType comment
+  """
   customType: Namespace_CustomType!
 }
 
@@ -101,9 +101,9 @@ CommonType comment
 type CommonType {
   prop: UInt8!
   nestedObject: NestedType!
-"""
-objectArray comment
-"""
+  """
+  objectArray comment
+  """
   objectArray: [[ArrayObject]]!
 }
 
@@ -139,13 +139,13 @@ type Namespace_Query @imported(
     uArrayArray: [[UInt]]!
   ): String!
 
-"""
-method2 comment
-"""
+  """
+  method2 comment
+  """
   method2(
-"""
-arg comment
-"""
+    """
+    arg comment
+    """
     arg: [String!]!
   ): [Int32!]!
 }
@@ -158,13 +158,13 @@ type Interface_Query @imported(
   namespace: "Interface",
   nativeType: "Query"
 ) {
-"""
-abstractQueryMethod comment
-"""
+  """
+  abstractQueryMethod comment
+  """
   abstractQueryMethod(
-"""
-arg comment
-"""
+    """
+    arg comment
+    """
     arg: Interface_QueryInterfaceArgument!
   ): Interface_InterfaceObject2!
 }
@@ -211,9 +211,9 @@ type Namespace_CustomType @imported(
   enum: Namespace_CustomEnum!
   optEnum: Namespace_CustomEnum
   importedEnum: Namespace_Imported_Enum!
-"""
-optImportedEnum comment
-"""
+  """
+  optImportedEnum comment
+  """
   optImportedEnum: Namespace_Imported_Enum
 }
 
@@ -261,9 +261,9 @@ type Interface_QueryInterfaceArgument implements Interface_NestedQueryInterfaceA
   nativeType: "QueryInterfaceArgument"
 ) {
   str: String!
-"""
-uint8 comment
-"""
+  """
+  uint8 comment
+  """
   uint8: UInt8!
 }
 
@@ -309,9 +309,9 @@ type Interface_NestedInterfaceObject @imported(
   namespace: "Interface",
   nativeType: "NestedInterfaceObject"
 ) {
-"""
-object comment
-"""
+  """
+  object comment
+  """
   object: Interface_Object
 }
 
