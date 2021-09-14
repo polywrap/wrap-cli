@@ -98,7 +98,7 @@ export function comparePropertyTypes(
 
   for (let i = 0; i < arr1.length; i++) {
     const obj1: PropertyDefinition = arr1[i];
-    if (indexMap2.get(obj1.name as string) == undefined) {
+    if (indexMap2.get(obj1.name as string) === undefined) {
       result.versionRelease = VersionRelease.MAJOR;
       result.hasShortCircuit = true;
       return result;

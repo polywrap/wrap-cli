@@ -65,7 +65,7 @@ export function compareEnumTypes(
 
   for (let i = 0; i < arr1.length; i++) {
     const obj1: EnumDefinition = arr1[i];
-    if (indexMap2.get(obj1.type) == undefined) {
+    if (indexMap2.get(obj1.type) === undefined) {
       result.versionRelease = VersionRelease.MAJOR;
       result.hasShortCircuit = true;
       return result;

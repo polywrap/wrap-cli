@@ -44,7 +44,7 @@ export function compareGenericTypes(
 
   for (let i = 0; i < arr1.length; i++) {
     const obj1: GenericDefinition = arr1[i];
-    if (indexMap2.get(obj1.type as string) == undefined) {
+    if (indexMap2.get(obj1.type as string) === undefined) {
       result.versionRelease = VersionRelease.MAJOR;
       result.hasShortCircuit = true;
       return result;
