@@ -43,22 +43,22 @@ type Query implements Interface_Query @imports(
     "Interface_NestedInterfaceObject"
   ]
 ) {
-"""
-method1 comment
-"""
+  """
+  method1 comment
+  """
   method1(
     str: String!
     optStr: String
     u: UInt!
-"""
-uArrayArray comment
-"""
+    """
+    uArrayArray comment
+    """
     uArrayArray: [[UInt]]!
   ): String!
 
-"""
-method2 comment
-"""
+  """
+  method2 comment
+  """
   method2(
     arg: [String!]!
   ): [Int32!]!
@@ -90,26 +90,26 @@ type Mutation implements Interface_Mutation @imports(
     "Interface_Mutation"
   ]
 ) {
-"""
-method1 comment
-"""
+  """
+  method1 comment
+  """
   method1(
-"""
-str comment
-"""
+    """
+    str comment
+    """
     str: String!
-"""
-optStr comment
-"""
+    """
+    optStr comment
+    """
     optStr: String
     u: UInt!
-"""
-uArrayArray comment
-"""
+    """
+    uArrayArray comment
+    """
     uArrayArray: [[UInt]]!
-"""
-implObject comment
-"""
+    """
+    implObject comment
+    """
     implObject: LocalImplementationObject!
   ): String!
 
@@ -139,9 +139,9 @@ type CustomQueryType {
   optStrOptArray: [String]
   crazyArray: [[[[UInt32!]]!]]
   commonType: CommonType!
-"""
-customType comment
-"""
+  """
+  customType comment
+  """
   customType: Namespace_CustomType!
 }
 
@@ -155,9 +155,9 @@ CommonType comment
 type CommonType {
   prop: UInt8!
   nestedObject: NestedType!
-"""
-objectArray comment
-"""
+  """
+  objectArray comment
+  """
   objectArray: [[ArrayObject]]!
 }
 
@@ -180,13 +180,13 @@ CustomMutationType multi-line comment
 line 2
 """
 type CustomMutationType {
-"""
-str comment
-"""
+  """
+  str comment
+  """
   str: String!
-"""
-optStr comment
-"""
+  """
+  optStr comment
+  """
   optStr: String
   u: UInt!
   optU: UInt
@@ -197,14 +197,14 @@ optStr comment
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optStrOptArray: [String]
-"""
-crazyArray comment
-"""
+  """
+  crazyArray comment
+  """
   crazyArray: [[[[UInt32!]]!]]
   commonType: CommonType!
-"""
-customType comment
-"""
+  """
+  customType comment
+  """
   customType: Namespace_CustomType!
 }
 
@@ -216,9 +216,9 @@ type AnotherMutationType {
 ImplementationObject comment
 """
 type ImplementationObject implements Interface_InterfaceObject1 & Interface_InterfaceObject2 {
-"""
-anotherProp comment
-"""
+  """
+  anotherProp comment
+  """
   anotherProp: String
   str: String!
   uint8: UInt8!
@@ -253,13 +253,13 @@ type Namespace_Query @imported(
     uArrayArray: [[UInt]]!
   ): String!
 
-"""
-method2 comment
-"""
+  """
+  method2 comment
+  """
   method2(
-"""
-arg comment
-"""
+    """
+    arg comment
+    """
     arg: [String!]!
   ): [Int32!]!
 }
@@ -272,13 +272,13 @@ type Interface_Query @imported(
   namespace: "Interface",
   nativeType: "Query"
 ) {
-"""
-abstractQueryMethod comment
-"""
+  """
+  abstractQueryMethod comment
+  """
   abstractQueryMethod(
-"""
-arg comment
-"""
+    """
+    arg comment
+    """
     arg: Interface_QueryInterfaceArgument!
   ): Interface_InterfaceObject2!
 }
@@ -379,9 +379,9 @@ type Namespace_CustomType @imported(
   enum: Namespace_CustomEnum!
   optEnum: Namespace_CustomEnum
   importedEnum: Namespace_Imported_Enum!
-"""
-optImportedEnum comment
-"""
+  """
+  optImportedEnum comment
+  """
   optImportedEnum: Namespace_Imported_Enum
 }
 
@@ -429,9 +429,9 @@ type Interface_QueryInterfaceArgument implements Interface_NestedQueryInterfaceA
   nativeType: "QueryInterfaceArgument"
 ) {
   str: String!
-"""
-uint8 comment
-"""
+  """
+  uint8 comment
+  """
   uint8: UInt8!
 }
 
@@ -477,9 +477,9 @@ type Interface_NestedInterfaceObject @imported(
   namespace: "Interface",
   nativeType: "NestedInterfaceObject"
 ) {
-"""
-object comment
-"""
+  """
+  object comment
+  """
   object: Interface_Object
 }
 
@@ -492,9 +492,9 @@ type Interface_InterfaceObject1 @imported(
   nativeType: "InterfaceObject1"
 ) {
   str: String!
-"""
-InterfaceObject1_uint8 comment
-"""
+  """
+  InterfaceObject1_uint8 comment
+  """
   uint8: UInt8!
 }
 

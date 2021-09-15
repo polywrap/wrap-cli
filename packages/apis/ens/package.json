@@ -2,7 +2,7 @@
   "name": "@web3api/ens-api",
   "description": "ENS Web3API",
   "private": true,
-  "version": "0.0.1-prealpha.40",
+  "version": "0.0.1-prealpha.42",
   "scripts": {
     "build": "npx w3 build",
     "test:env:up": "npx w3 test-env up",
@@ -15,17 +15,17 @@
     "test:recipe": "npx w3 query ./recipes/e2e.json"
   },
   "dependencies": {
-    "@web3api/wasm-as": "0.0.1-prealpha.40"
+    "@web3api/wasm-as": "0.0.1-prealpha.42"
   },
   "devDependencies": {
     "@types/jest": "22.2.3",
-    "@web3api/cli": "0.0.1-prealpha.40",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.40",
-    "@web3api/test-env-js": "0.0.1-prealpha.40",
+    "@web3api/cli": "0.0.1-prealpha.42",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.42",
+    "@web3api/test-env-js": "0.0.1-prealpha.42",
+    "dotenv": "8.2.0",
     "ethers": "5.0.8",
     "jest": "27.0.6",
     "js-yaml": "3.14.0",
-    "dotenv": "8.2.0",
     "ts-jest": "27.0.4",
     "ts-node": "9.1.1"
   }
