@@ -2,7 +2,10 @@
 name = "query"
 version = "0.1.0"
 description = "Polywrap Query Test Cases"
-authors = ["Kobby Pentangeli <kobbypentangeli@gmail.com>"]
+authors = [
+  "Kobby Pentangeli <kobbypentangeli@gmail.com>",
+  "Jordan Ellis <jelli@dorg.tech>"
+]
 repository = "https://github.com/polywrap/monorepo"
 license = "MIT"
 edition = "2018"
@@ -12,13 +15,13 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 num = "0.4.0"
-num-bigint = "0.4.0"
-polywrap-wasm-rs = "0.0.1-prealpha-dev.37.4"
+num-bigint = "0.4.2"
+polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../../wasm/rs"}
 
 [profile.release]
 lto = true
 codegen-units = 1
 overflow-checks = true
 # Tell `rustc` to optimize for small code size.
-opt-level = "z"
+opt-level = "s"
 debug = false
