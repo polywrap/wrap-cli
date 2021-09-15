@@ -1,5 +1,4 @@
 use alloc::vec::Vec;
-extern crate std;
 
 pub fn internal_alloc(len: usize) -> *mut u8 {
     // create a new mutable buffer with capacity `len`

@@ -19,7 +19,11 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 num = "0.4.0"
-num-bigint = "0.4.2"
+num-bigint = { version = "0.4", default-features = false }
+
+[features]
+# enable support for the standard library
+std = []
 
 [profile.release]
 lto = true
@@ -28,3 +32,7 @@ overflow-checks = true
 # Tell `rustc` to optimize for small code size.
 opt-level = "s"
 debug = false
+panic = "abort"
+
+[profile.dev]
+panic = "abort"
