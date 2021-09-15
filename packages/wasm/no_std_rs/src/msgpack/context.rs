@@ -2,8 +2,9 @@
 //! prints it in a clear format
 
 use alloc::{
-    format,
+    fmt, format,
     string::{String, ToString},
+    vec,
     vec::Vec,
 };
 
@@ -17,7 +18,7 @@ impl Context {
     pub fn new() -> Self {
         Self {
             description: "context description not set".to_string(),
-            nodes: std::vec![],
+            nodes: vec![],
         }
     }
 
@@ -91,8 +92,8 @@ pub struct Node {
     node_info: String,
 }
 
-impl std::fmt::Display for Context {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl fmt::Display for Context {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "({}, {:?})", self.description, self.nodes)
     }
 }

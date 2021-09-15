@@ -1,12 +1,12 @@
 use super::write::Write;
 use crate::Context;
 use alloc::{
+    collections::BTreeMap,
     string::{String, ToString},
     vec::Vec,
 };
+use core::hash::Hash;
 use num_bigint::BigInt;
-use std::collections::HashMap;
-use std::hash::Hash;
 
 #[derive(Clone, Debug, Default)]
 pub struct WriteSizer {
@@ -167,12 +167,14 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_map<K: Clone + Eq + Hash, V: Clone>(
+    fn write_map<K, V: Clone>(
         &mut self,
-        map: &HashMap<K, V>,
+        map: &BTreeMap<K, V>,
         mut key_fn: impl FnMut(&mut Self, &K),
         mut val_fn: impl FnMut(&mut Self, &V),
-    ) {
+    ) where
+        K: Clone + Eq + Hash + Ord,
+    {
         self.write_map_length(map.len() as u32);
         let keys: Vec<_> = map.keys().into_iter().collect();
         for key in keys {
@@ -306,12 +308,14 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_nullable_map<K: Clone + Eq + Hash, V: Clone>(
+    fn write_nullable_map<K, V: Clone>(
         &mut self,
-        map: &Option<HashMap<K, V>>,
+        map: &Option<BTreeMap<K, V>>,
         key_fn: impl FnMut(&mut Self, &K),
         val_fn: impl FnMut(&mut Self, &V),
-    ) {
+    ) where
+        K: Clone + Eq + Hash + Ord,
+    {
         if map.is_none() {
             self.write_nil();
         } else {

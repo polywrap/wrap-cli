@@ -1,5 +1,6 @@
+extern crate alloc;
+use alloc::collections::BTreeMap;
 use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
-use std::collections::HashMap;
 
 #[derive(Debug, Clone, Default)]
 pub struct Sanity {
@@ -25,7 +26,7 @@ pub struct Sanity {
     array: Vec<u8>,
     large_string_array: Vec<String>,
     large_bytes_array: Vec<Vec<u8>>,
-    map: HashMap<String, Vec<i32>>,
+    map: BTreeMap<String, Vec<i32>>,
 }
 
 impl Sanity {
@@ -44,7 +45,7 @@ impl Sanity {
         let big_vec = vec!["Polywrap".to_string(); 10];
         let large_string = big_vec.join(",");
 
-        let mut map: HashMap<String, Vec<i32>> = HashMap::new();
+        let mut map: BTreeMap<String, Vec<i32>> = BTreeMap::new();
         map.insert("foo".to_string(), vec![1, -1, 42]);
         map.insert("baz".to_string(), vec![12412, -98987]);
 

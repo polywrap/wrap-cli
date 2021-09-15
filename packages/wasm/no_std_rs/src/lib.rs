@@ -4,6 +4,22 @@
 
 extern crate alloc;
 extern crate std;
+use std::alloc::{GlobalAlloc, Layout, System};
+
+struct PolywrapAlloc;
+
+unsafe impl GlobalAlloc for PolywrapAlloc {
+    unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
+        System.alloc(layout)
+    }
+
+    unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
+        System.dealloc(ptr, layout)
+    }
+}
+
+#[global_allocator]
+static GLOBAL: PolywrapAlloc = PolywrapAlloc;
 
 pub mod abort;
 pub mod invoke;

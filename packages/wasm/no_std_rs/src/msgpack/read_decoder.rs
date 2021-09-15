@@ -1,12 +1,14 @@
 use super::{context::Context, data_view::DataView, format::Format, read::Read};
 use alloc::{
+    collections::BTreeMap,
     format,
+    str::FromStr,
     string::{String, ToString},
     vec,
     vec::Vec,
 };
+use core::hash::Hash;
 use num_bigint::BigInt;
-use std::{collections::HashMap, hash::Hash, str::FromStr};
 
 #[derive(Clone, Debug, Default)]
 pub struct ReadDecoder {
@@ -467,13 +469,16 @@ impl Read for ReadDecoder {
         Err(self.context.print_with_context(&custom_error))
     }
 
-    fn read_map<K: Eq + Hash, V>(
+    fn read_map<K, V>(
         &mut self,
         mut key_fn: impl FnMut(&mut Self) -> K,
         mut val_fn: impl FnMut(&mut Self) -> V,
-    ) -> HashMap<K, V> {
+    ) -> BTreeMap<K, V>
+    where
+        K: Eq + Hash + Ord,
+    {
         let size = self.read_map_length().unwrap();
-        let mut map: HashMap<K, V> = HashMap::new();
+        let mut map: BTreeMap<K, V> = BTreeMap::new();
         for i in 0..size {
             self.context.push("map[", i.to_string().as_str(), "]");
             let key = key_fn(self);
@@ -589,11 +594,14 @@ impl Read for ReadDecoder {
         Some(self.read_array(reader).unwrap())
     }
 
-    fn read_nullable_map<K: Eq + Hash, V>(
+    fn read_nullable_map<K, V>(
         &mut self,
         key_fn: impl FnMut(&mut Self) -> K,
         val_fn: impl FnMut(&mut Self) -> V,
-    ) -> Option<HashMap<K, V>> {
+    ) -> Option<BTreeMap<K, V>>
+    where
+        K: Eq + Hash + Ord,
+    {
         if self.is_next_nil() {
             return None;
         }

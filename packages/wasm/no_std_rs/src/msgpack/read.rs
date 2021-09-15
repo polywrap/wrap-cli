@@ -1,7 +1,7 @@
 use crate::Context;
-use alloc::{string::String, vec::Vec};
+use alloc::{collections::BTreeMap, string::String, vec::Vec};
+use core::hash::Hash;
 use num_bigint::BigInt;
-use std::{collections::HashMap, hash::Hash};
 
 pub trait Read: Clone + Sized {
     fn read_bool(&mut self) -> Result<bool, String>;
@@ -23,11 +23,13 @@ pub trait Read: Clone + Sized {
     fn read_array_length(&mut self) -> Result<u32, String>;
     fn read_array<T>(&mut self, reader: impl FnMut(&mut Self) -> T) -> Result<Vec<T>, String>;
     fn read_map_length(&mut self) -> Result<u32, String>;
-    fn read_map<K: Eq + Hash, V>(
+    fn read_map<K, V>(
         &mut self,
         key_fn: impl FnMut(&mut Self) -> K,
         val_fn: impl FnMut(&mut Self) -> V,
-    ) -> HashMap<K, V>;
+    ) -> BTreeMap<K, V>
+    where
+        K: Eq + Hash + Ord;
     fn read_nullable_bool(&mut self) -> Option<bool>;
     fn read_nullable_i8(&mut self) -> Option<i8>;
     fn read_nullable_i16(&mut self) -> Option<i16>;
@@ -43,11 +45,13 @@ pub trait Read: Clone + Sized {
     fn read_nullable_bytes(&mut self) -> Option<Vec<u8>>;
     fn read_nullable_bigint(&mut self) -> Option<BigInt>;
     fn read_nullable_array<T>(&mut self, reader: impl FnMut(&mut Self) -> T) -> Option<Vec<T>>;
-    fn read_nullable_map<K: Eq + Hash, V>(
+    fn read_nullable_map<K, V>(
         &mut self,
         key_fn: impl FnMut(&mut Self) -> K,
         val_fn: impl FnMut(&mut Self) -> V,
-    ) -> Option<HashMap<K, V>>;
+    ) -> Option<BTreeMap<K, V>>
+    where
+        K: Eq + Hash + Ord;
     fn is_next_nil(&mut self) -> bool;
     fn is_next_string(&mut self) -> bool;
     fn context(&mut self) -> &mut Context;

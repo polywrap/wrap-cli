@@ -18,12 +18,7 @@ edition = "2018"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-num = "0.4.0"
 num-bigint = { version = "0.4", default-features = false }
-
-[features]
-# enable support for the standard library
-std = []
 
 [profile.release]
 lto = true
