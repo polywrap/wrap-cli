@@ -1,12 +1,17 @@
 //! Context stores debug information in a stack, and
 //! prints it in a clear format
 
-use alloc::{fmt, format, string::String, vec, vec::Vec};
+use alloc::{
+    fmt, format,
+    string::{String, ToString},
+    vec,
+    vec::Vec,
+};
 
 #[derive(Clone, Debug, Default)]
 pub struct Context<'a> {
     pub description: &'a str,
-    nodes: Vec<Node<'a>>,
+    nodes: Vec<Node>,
 }
 
 impl<'a> Context<'a> {
@@ -25,11 +30,11 @@ impl<'a> Context<'a> {
         self.nodes.len() as i32
     }
 
-    pub fn push(&mut self, node_item: &'a str, node_type: &'a str, node_info: &'a str) {
+    pub fn push(&mut self, node_item: &str, node_type: &str, node_info: &str) {
         let node = Node {
-            node_item,
-            node_type,
-            node_info,
+            node_item: node_item.to_string(),
+            node_type: node_type.to_string(),
+            node_info: node_info.to_string(),
         };
         self.nodes.push(node);
     }
@@ -81,10 +86,10 @@ impl<'a> Context<'a> {
 
 #[allow(dead_code)]
 #[derive(Clone, Debug, Default)]
-pub struct Node<'a> {
-    node_item: &'a str,
-    node_type: &'a str,
-    node_info: &'a str,
+pub struct Node {
+    node_item: String,
+    node_type: String,
+    node_info: String,
 }
 
 impl<'a> fmt::Display for Context<'a> {

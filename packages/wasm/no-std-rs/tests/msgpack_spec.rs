@@ -78,7 +78,7 @@ impl Sanity {
 
     fn to_buffer(&mut self) -> Vec<u8> {
         let mut context = Context::new();
-        context.description = "Serialize sanity (to buffer)...".to_string();
+        context.description = "Serialize sanity (to buffer)...";
         let sizer = WriteSizer::new(context.clone());
         serialize_sanity(sizer.clone(), self);
         let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
@@ -89,21 +89,21 @@ impl Sanity {
 
     fn from_buffer(&mut self, buffer: &[u8]) -> Result<(), String> {
         let mut context = Context::new();
-        context.description = "Deserialize sanity (from buffer)...".to_string();
+        context.description = "Deserialize sanity (from buffer)...";
         let decoder = ReadDecoder::new(buffer, context);
         deserialize_sanity(decoder, self)
     }
 
     fn from_buffer_with_invalid_types(&mut self, buffer: &[u8]) -> Result<(), String> {
         let mut context = Context::new();
-        context.description = "Deserialize sanity (from buffer with invalid types)...".to_string();
+        context.description = "Deserialize sanity (from buffer with invalid types)...";
         let decoder = ReadDecoder::new(buffer, context);
         deserialize_with_invalid_types(decoder, self)
     }
 
     fn from_buffer_with_overflows(&mut self, buffer: &[u8]) -> Result<(), String> {
         let mut context = Context::new();
-        context.description = "Deserialize sanity (from buffer with overflows)...".to_string();
+        context.description = "Deserialize sanity (from buffer with overflows)...";
         let decoder = ReadDecoder::new(buffer, context);
         deserialize_with_overflow(decoder, self)
     }

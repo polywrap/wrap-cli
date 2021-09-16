@@ -4,7 +4,7 @@ use super::{
     BLOCK_MAX_SIZE,
     E_INVALID_LENGTH,
 };
-use alloc::{format, vec::Vec};
+use alloc::{format, string::String, vec::Vec};
 use core::sync::atomic::{AtomicPtr, Ordering};
 
 #[derive(Clone, Debug, Default)]
@@ -22,7 +22,7 @@ impl<'a> DataView<'a> {
         cxt: Option<Context<'a>>,
         offset: Option<usize>,
         length: Option<usize>,
-    ) -> Result<Self, &'static str> {
+    ) -> Result<Self, String> {
         let context = cxt.unwrap_or(Context::new());
         let byte_offset = offset.unwrap_or(0) as i32;
         let byte_length = length.unwrap_or(buf.len()) as i32;
@@ -32,7 +32,7 @@ impl<'a> DataView<'a> {
                 "DataView::new(): {} [ byte_length: {} byte_offset: {} buffer.byte_length: {} ]",
                 E_INVALID_LENGTH, byte_length, byte_offset, byte_length
             );
-            return Err(&context.print_with_context(&msg));
+            return Err(context.print_with_context(&msg));
         }
         let data_start = buf.as_ptr() as u32;
         Ok(Self {

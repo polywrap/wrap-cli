@@ -20,7 +20,7 @@ fn push_and_pop_values() {
 #[test]
 fn print_in_desired_format() {
     let mut context = Context::new();
-    context.description = "Deserializing MyObject".to_string();
+    context.description = "Deserializing MyObject";
     context.push("propertyOne", "unknown", "searching for property type");
 
     assert_eq!(context.context_to_string(), "  Context: Deserializing MyObject\n   at propertyOne : unknown >> searching for property type".to_string());

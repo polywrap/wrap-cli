@@ -464,7 +464,7 @@ impl<'a> Read for ReadDecoder<'a> {
         let size = self.read_array_length().unwrap();
         let mut array: Vec<T> = vec![];
         for i in 0..size {
-            self.context.push("array[", i.to_string().as_str(), "]");
+            self.context.push("array[", &i.to_string(), "]");
             let item = reader(self);
             array.push(item);
             self.context.pop();
@@ -498,8 +498,7 @@ impl<'a> Read for ReadDecoder<'a> {
         let size = self.read_map_length().unwrap();
         let mut map: BTreeMap<K, V> = BTreeMap::new();
         for i in 0..size {
-            let i_str = i.to_string();
-            self.context.push("map[", &i_str, "]");
+            self.context.push("map[", &i.to_string(), "]");
             let key = key_fn(self);
             let value = val_fn(self);
             map.insert(key, value);
@@ -644,7 +643,7 @@ impl<'a> Read for ReadDecoder<'a> {
             || format == Format::STR32
     }
 
-    fn context(&mut self) -> &mut Context {
-        &mut self.context
+    fn context(&mut self) -> &Context {
+        &self.context
     }
 }

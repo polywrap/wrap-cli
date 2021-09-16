@@ -58,5 +58,5 @@ pub trait Write: Clone {
         val_fn: impl FnMut(&mut Self, &V),
     ) where
         K: Clone + Eq + Hash + Ord;
-    fn context(&mut self) -> &mut Context;
+    fn context(&mut self) -> &Context;
 }
