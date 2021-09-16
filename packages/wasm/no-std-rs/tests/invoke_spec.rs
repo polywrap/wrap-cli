@@ -1,3 +1,5 @@
+#![no_std]
+
 use polywrap_wasm_rs::memory::internal_alloc;
 
 type InvokeFunction = fn(args_buf: &[u8]) -> Vec<u8>;

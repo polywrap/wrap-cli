@@ -1,25 +1,28 @@
 //! Polywrap Rust/WASM Runtime Library
 
 #![no_std]
+#![feature(alloc_error_handler)]
 
 extern crate alloc;
-extern crate std;
-use std::alloc::{GlobalAlloc, Layout, System};
 
-struct PolywrapAlloc;
+// Use `wee_alloc` as the global allocator.
+#[global_allocator]
+static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-unsafe impl GlobalAlloc for PolywrapAlloc {
-    unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-        System.alloc(layout)
-    }
-
-    unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
-        System.dealloc(ptr, layout)
-    }
+#[alloc_error_handler]
+pub fn alloc_error_handler(_: core::alloc::Layout) -> ! {
+    loop {}
 }
 
-#[global_allocator]
-static GLOBAL: PolywrapAlloc = PolywrapAlloc;
+#[panic_handler]
+fn panic_handler(_info: &core::panic::PanicInfo) -> ! {
+    loop {}
+}
+
+// #[no_mangle]
+// pub extern "C" fn _start() -> ! {
+//     loop {}
+// }
 
 pub mod abort;
 pub mod invoke;

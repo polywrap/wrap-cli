@@ -341,4 +341,14 @@ impl<'a> DataView<'a> {
     //     }
     //     Ok(())
     // }
+
+    /// Get a reference to the data view's byte length.
+    pub fn byte_length(&self) -> &i32 {
+        &self.byte_length
+    }
+
+    /// Get a reference to the data view's context.
+    pub fn context(&self) -> &Context<'a> {
+        &self.context
+    }
 }
