@@ -38,3 +38,66 @@ export function wasmLanguage(language: unknown): boolean {
 export function pluginLanguage(language: unknown): boolean {
   return typeof language === "string" && language.indexOf("plugin/") > -1;
 }
+
+export function imageFile(filePath: unknown): boolean {
+  return (
+    typeof filePath === "string" &&
+    file(filePath) &&
+    !!filePath.match(/(\.svg|\.png)$/)?.length
+  );
+}
+
+export function websiteUrl(url: unknown): boolean {
+  function validUrl(str: string) {
+    const pattern = new RegExp(
+      "^(https?:\\/\\/)?" + // protocol
+        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
+        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+        "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+        "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+        "(\\#[-a-z\\d_]*)?$", // fragment locator
+      "i"
+    );
+    return !!pattern.test(str);
+  }
+  return typeof url === "string" && validUrl(url);
+}
+
+export function graphqlFile(filePath: unknown): boolean {
+  return (
+    typeof filePath === "string" &&
+    file(filePath) &&
+    !!filePath.match(/(\.graphql)$/)?.length
+  );
+}
+
+export function jsonFile(filePath: unknown): boolean {
+  return (
+    typeof filePath === "string" &&
+    file(filePath) &&
+    !!filePath.match(/(\.json)$/)?.length
+  );
+}
+
+export function yamlFile(filePath: unknown): boolean {
+  return (
+    typeof filePath === "string" &&
+    file(filePath) &&
+    !!filePath.match(/(\.yaml)$/)?.length
+  );
+}
+
+export function regexString(regex: unknown): boolean {
+  if (typeof regex !== "string") {
+    return false;
+  }
+
+  let isValid = true;
+  try {
+    new RegExp(regex);
+  } catch (e) {
+    isValid = false;
+  }
+
+  return isValid;
+}

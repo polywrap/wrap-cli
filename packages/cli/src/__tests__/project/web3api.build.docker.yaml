@@ -1,4 +1,4 @@
-format: 0.0.1-prealpha.1
+format: 0.0.1-prealpha.2
 docker:
   name: build-env
   dockerfile: ./Dockerfile
@@ -7,3 +7,6 @@ config:
   include:
     - ./src
     - ./package.json
+linked_packages:
+  - name: "@web3api/wasm-as"
+    path: ../../../../wasm/as

@@ -6,6 +6,7 @@ import { SchemaComposer } from "./SchemaComposer";
 import {
   withSpinner,
   outputManifest,
+  outputMetadata,
   generateDockerfile,
   createBuildImage,
   copyArtifactsFromBuildImage,
@@ -17,6 +18,7 @@ import {
   InvokableModules,
   Web3ApiManifest,
   BuildManifest,
+  MetaManifest,
 } from "@web3api/core-js";
 import { WasmWeb3Api } from "@web3api/client-js";
 import { AsyncWasmInstance } from "@web3api/asyncify-js";
@@ -27,9 +29,7 @@ import { writeFileSync } from "@web3api/os-js";
 import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-const fsExtra = require("fs-extra");
+import rimraf from "rimraf";
 
 type ModulesToBuild = Record<InvokableModules, boolean>;
 
@@ -93,7 +93,7 @@ export class Compiler {
       const state = await this._getCompilerState();
 
       // Init & clean output directory
-      this._cleanDir(this._config.outputDir);
+      this._resetDir(this._config.outputDir);
 
       await this._outputComposedSchema(state);
 
@@ -107,7 +107,14 @@ export class Compiler {
         buildManifest = await this._buildModules(state);
       }
 
-      await this._outputManifests(state.web3ApiManifest, buildManifest);
+      // Output all metadata if present
+      const metaManifest = await this._outputMetadata();
+
+      await this._outputManifests(
+        state.web3ApiManifest,
+        buildManifest,
+        metaManifest
+      );
     };
 
     if (project.quiet) {
@@ -206,11 +213,11 @@ export class Compiler {
 
     // Clean the code generation
     if (queryDirectory) {
-      this._cleanDir(queryDirectory);
+      this._resetDir(queryDirectory);
     }
 
     if (mutationDirectory) {
-      this._cleanDir(mutationDirectory);
+      this._resetDir(mutationDirectory);
     }
 
     // Generate the bindings
@@ -287,7 +294,7 @@ export class Compiler {
 
     // Create the BuildManifest
     const buildManifest: BuildManifest = {
-      format: "0.0.1-prealpha.1",
+      format: "0.0.1-prealpha.2",
       __type: "BuildManifest",
       docker: {
         buildImageId: dockerImageId,
@@ -334,10 +341,13 @@ export class Compiler {
       ? path.join(buildManifestDir, buildManifest?.docker?.dockerfile)
       : path.join(buildManifestDir, "Dockerfile");
 
+    await project.cacheBuildManifestLinkedPackages();
+
     // If the dockerfile path isn't provided, generate it
     if (!buildManifest?.docker?.dockerfile) {
       // Make sure the default template is in the cached .w3/build/env folder
       await project.cacheDefaultBuildManifestFiles();
+
       dockerfile = generateDockerfile(
         project.getCachePath("build/env/Dockerfile.mustache"),
         buildManifest.config || {}
@@ -366,12 +376,12 @@ export class Compiler {
     return dockerImageId;
   }
 
-  private _cleanDir(dir: string) {
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
+  private _resetDir(dir: string) {
+    if (fs.existsSync(dir)) {
+      rimraf.sync(dir);
     }
 
-    fsExtra.emptyDirSync(dir);
+    fs.mkdirSync(dir, { recursive: true });
   }
 
   private async _outputComposedSchema(state: CompilerState): Promise<void> {
@@ -404,23 +414,48 @@ export class Compiler {
 
   private async _outputManifests(
     web3ApiManifest: Web3ApiManifest,
-    buildManifest?: BuildManifest
+    buildManifest?: BuildManifest,
+    metaManifest?: MetaManifest
   ): Promise<void> {
     const { outputDir, project } = this._config;
 
     await outputManifest(
       web3ApiManifest,
-      `${outputDir}/web3api.yaml`,
+      path.join(outputDir, "web3api.yaml"),
       project.quiet
     );
 
     if (buildManifest) {
       await outputManifest(
         buildManifest,
-        `${outputDir}/web3api.build.yaml`,
+        path.join(outputDir, "web3api.build.yaml"),
         project.quiet
       );
     }
+
+    if (metaManifest) {
+      await outputManifest(
+        metaManifest,
+        path.join(outputDir, "web3api.meta.yaml"),
+        project.quiet
+      );
+    }
+  }
+
+  private async _outputMetadata(): Promise<MetaManifest | undefined> {
+    const { outputDir, project } = this._config;
+    const metaManifest = await project.getMetaManifest();
+
+    if (!metaManifest) {
+      return undefined;
+    }
+
+    return await outputMetadata(
+      metaManifest,
+      outputDir,
+      project.getRootDir(),
+      project.quiet
+    );
   }
 
   private _validateState(state: CompilerState) {
