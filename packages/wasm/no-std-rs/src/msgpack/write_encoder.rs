@@ -8,13 +8,13 @@ use core::hash::Hash;
 use num_bigint::BigInt;
 
 #[derive(Clone, Debug, Default)]
-pub struct WriteEncoder {
-    context: Context,
-    view: DataView,
+pub struct WriteEncoder<'a> {
+    context: Context<'a>,
+    view: DataView<'a>,
 }
 
-impl WriteEncoder {
-    pub fn new(buf: &[u8], context: Context) -> Self {
+impl<'a> WriteEncoder<'a> {
+    pub fn new(buf: &[u8], context: Context<'a>) -> Self {
         Self {
             context: context.clone(),
             view: DataView::new(buf, Some(context), None, None)
@@ -23,7 +23,7 @@ impl WriteEncoder {
     }
 }
 
-impl Write for WriteEncoder {
+impl<'a> Write for WriteEncoder<'a> {
     fn write_nil(&mut self) {
         self.view
             .set_u8(Format::NIL)

@@ -9,14 +9,14 @@ use core::hash::Hash;
 use num_bigint::BigInt;
 
 #[derive(Clone, Debug, Default)]
-pub struct WriteSizer {
+pub struct WriteSizer<'a> {
     pub length: i32,
-    context: Context,
+    context: Context<'a>,
 }
 
-impl WriteSizer {
+impl<'a> WriteSizer<'a> {
     #[allow(dead_code)]
-    pub fn new(context: Context) -> Self {
+    pub fn new(context: Context<'a>) -> Self {
         Self { length: 0, context }
     }
 
@@ -25,7 +25,7 @@ impl WriteSizer {
     }
 }
 
-impl Write for WriteSizer {
+impl<'a> Write for WriteSizer<'a> {
     fn write_nil(&mut self) {
         self.length += 1;
     }

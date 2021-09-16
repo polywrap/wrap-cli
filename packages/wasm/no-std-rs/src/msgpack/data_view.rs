@@ -4,29 +4,25 @@ use super::{
     BLOCK_MAX_SIZE,
     E_INVALID_LENGTH,
 };
-use alloc::{
-    format,
-    string::{String, ToString},
-    vec::Vec,
-};
+use alloc::{format, vec::Vec};
 use core::sync::atomic::{AtomicPtr, Ordering};
 
 #[derive(Clone, Debug, Default)]
-pub struct DataView {
+pub struct DataView<'a> {
     data_start: u32,
     buffer: Vec<u8>,
     byte_length: i32,
     byte_offset: i32,
-    context: Context,
+    context: Context<'a>,
 }
 
-impl DataView {
+impl<'a> DataView<'a> {
     pub fn new(
         buf: &[u8],
-        cxt: Option<Context>,
+        cxt: Option<Context<'a>>,
         offset: Option<usize>,
         length: Option<usize>,
-    ) -> Result<Self, String> {
+    ) -> Result<Self, &'static str> {
         let context = cxt.unwrap_or(Context::new());
         let byte_offset = offset.unwrap_or(0) as i32;
         let byte_length = length.unwrap_or(buf.len()) as i32;
@@ -34,12 +30,9 @@ impl DataView {
         if byte_length > BLOCK_MAX_SIZE as i32 || byte_offset + byte_length > buf.len() as i32 {
             let msg = format!(
                 "DataView::new(): {} [ byte_length: {} byte_offset: {} buffer.byte_length: {} ]",
-                E_INVALID_LENGTH,
-                byte_length.to_string(),
-                byte_offset.to_string(),
-                byte_length.to_string()
+                E_INVALID_LENGTH, byte_length, byte_offset, byte_length
             );
-            return Err(context.print_with_context(&msg));
+            return Err(&context.print_with_context(&msg));
         }
         let data_start = buf.as_ptr() as u32;
         Ok(Self {
@@ -51,7 +44,7 @@ impl DataView {
         })
     }
 
-    pub fn get_bytes(&mut self, length: i32) -> Result<Vec<u8>, String> {
+    pub fn get_bytes(&mut self, length: i32) -> Result<Vec<u8>, &'static str> {
         // if let Err(error) = self.check_index_in_range("get_bytes", length) {
         //     return Err(error);
         // }
@@ -65,7 +58,7 @@ impl DataView {
         Ok(result.to_vec())
     }
 
-    pub fn peek_u8(&mut self) -> Result<u8, String> {
+    pub fn peek_u8(&mut self) -> Result<u8, &'static str> {
         // if let Err(error) = self.check_index_in_range("peek_u8", 0) {
         //     return Err(error);
         // }
@@ -76,7 +69,7 @@ impl DataView {
         Ok(result.swap_bytes())
     }
 
-    pub fn discard(&mut self, length: i32) -> Result<(), String> {
+    pub fn discard(&mut self, length: i32) -> Result<(), &'static str> {
         // if let Err(error) = self.check_index_in_range("discard", length) {
         //     return Err(error);
         // }
@@ -84,7 +77,7 @@ impl DataView {
         Ok(())
     }
 
-    pub fn get_f32(&mut self) -> Result<f32, String> {
+    pub fn get_f32(&mut self) -> Result<f32, &'static str> {
         // if let Err(error) = self.check_index_in_range("get_f32", 4) {
         //     return Err(error);
         // }
@@ -96,7 +89,7 @@ impl DataView {
         Ok(*result as f32)
     }
 
-    pub fn get_f64(&mut self) -> Result<f64, String> {
+    pub fn get_f64(&mut self) -> Result<f64, &'static str> {
         // if let Err(error) = self.check_index_in_range("get_f64", 8) {
         //     return Err(error);
         // }
@@ -108,7 +101,7 @@ impl DataView {
         Ok(*result as f64)
     }
 
-    pub fn get_i8(&mut self) -> Result<i8, String> {
+    pub fn get_i8(&mut self) -> Result<i8, &'static str> {
         // if let Err(error) = self.check_index_in_range("get_i8", 1) {
         //     return Err(error);
         // }
@@ -120,7 +113,7 @@ impl DataView {
         Ok(result.swap_bytes())
     }
 
-    pub fn get_i16(&mut self) -> Result<i16, String> {
+    pub fn get_i16(&mut self) -> Result<i16, &'static str> {
         // if let Err(error) = self.check_index_in_range("get_i16", 2) {
         //     return Err(error);
         // }
@@ -132,7 +125,7 @@ impl DataView {
         Ok(result.swap_bytes())
     }
 
-    pub fn get_i32(&mut self) -> Result<i32, String> {
+    pub fn get_i32(&mut self) -> Result<i32, &'static str> {
         // if let Err(error) = self.check_index_in_range("get_i32", 4) {
         //     return Err(error);
         // }
@@ -144,7 +137,7 @@ impl DataView {
         Ok(result.swap_bytes())
     }
 
-    pub fn get_i64(&mut self) -> Result<i64, String> {
+    pub fn get_i64(&mut self) -> Result<i64, &'static str> {
         // if let Err(error) = self.check_index_in_range("get_i64", 8) {
         //     return Err(error);
         // }
@@ -156,7 +149,7 @@ impl DataView {
         Ok(result.swap_bytes())
     }
 
-    pub fn get_u8(&mut self) -> Result<u8, String> {
+    pub fn get_u8(&mut self) -> Result<u8, &'static str> {
         // if let Err(error) = self.check_index_in_range("get_u8", 1) {
         //     return Err(error);
         // }
@@ -168,7 +161,7 @@ impl DataView {
         Ok(result.swap_bytes())
     }
 
-    pub fn get_u16(&mut self) -> Result<u16, String> {
+    pub fn get_u16(&mut self) -> Result<u16, &'static str> {
         // if let Err(error) = self.check_index_in_range("get_u16", 2) {
         //     return Err(error);
         // }
@@ -180,7 +173,7 @@ impl DataView {
         Ok(result.swap_bytes())
     }
 
-    pub fn get_u32(&mut self) -> Result<u32, String> {
+    pub fn get_u32(&mut self) -> Result<u32, &'static str> {
         // if let Err(error) = self.check_index_in_range("get_u32", 4) {
         //     return Err(error);
         // }
@@ -192,7 +185,7 @@ impl DataView {
         Ok(result.swap_bytes())
     }
 
-    pub fn get_u64(&mut self) -> Result<u64, String> {
+    pub fn get_u64(&mut self) -> Result<u64, &'static str> {
         // if let Err(error) = self.check_index_in_range("get_u64", 8) {
         //     return Err(error);
         // }
@@ -204,7 +197,7 @@ impl DataView {
         Ok(result.swap_bytes())
     }
 
-    pub fn set_bytes(&mut self, buf: &[u8]) -> Result<(), String> {
+    pub fn set_bytes(&mut self, buf: &[u8]) -> Result<(), &'static str> {
         // if let Err(error) = self.check_index_in_range("set_bytes", buf.len() as i32) {
         //     return Err(error);
         // }
@@ -215,7 +208,7 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_f32(&mut self, value: f32) -> Result<(), String> {
+    pub fn set_f32(&mut self, value: f32) -> Result<(), &'static str> {
         // if let Err(error) = self.check_index_in_range("set_f32", 4) {
         //     return Err(error);
         // }
@@ -227,7 +220,7 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_f64(&mut self, value: f64) -> Result<(), String> {
+    pub fn set_f64(&mut self, value: f64) -> Result<(), &'static str> {
         // if let Err(error) = self.check_index_in_range("set_f64", 8) {
         //     return Err(error);
         // }
@@ -239,7 +232,7 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_i8(&mut self, value: i8) -> Result<(), String> {
+    pub fn set_i8(&mut self, value: i8) -> Result<(), &'static str> {
         // if let Err(error) = self.check_index_in_range("set_i8", 1) {
         //     return Err(error);
         // }
@@ -251,7 +244,7 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_i16(&mut self, value: i16) -> Result<(), String> {
+    pub fn set_i16(&mut self, value: i16) -> Result<(), &'static str> {
         // if let Err(error) = self.check_index_in_range("set_i16", 2) {
         //     return Err(error);
         // }
@@ -263,7 +256,7 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_i32(&mut self, value: i32) -> Result<(), String> {
+    pub fn set_i32(&mut self, value: i32) -> Result<(), &'static str> {
         // if let Err(error) = self.check_index_in_range("set_i32", 4) {
         //     return Err(error);
         // }
@@ -275,7 +268,7 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_i64(&mut self, value: i64) -> Result<(), String> {
+    pub fn set_i64(&mut self, value: i64) -> Result<(), &'static str> {
         // if let Err(error) = self.check_index_in_range("set_i64", 8) {
         //     return Err(error);
         // }
@@ -287,7 +280,7 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_u8(&mut self, value: u8) -> Result<(), String> {
+    pub fn set_u8(&mut self, value: u8) -> Result<(), &'static str> {
         // if let Err(error) = self.check_index_in_range("set_u8", 1) {
         //     return Err(error);
         // }
@@ -299,7 +292,7 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_u16(&mut self, value: u16) -> Result<(), String> {
+    pub fn set_u16(&mut self, value: u16) -> Result<(), &'static str> {
         // if let Err(error) = self.check_index_in_range("set_u16", 2) {
         //     return Err(error);
         // }
@@ -311,7 +304,7 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_u32(&mut self, value: u32) -> Result<(), String> {
+    pub fn set_u32(&mut self, value: u32) -> Result<(), &'static str> {
         // if let Err(error) = self.check_index_in_range("set_u32", 4) {
         //     return Err(error);
         // }
@@ -323,7 +316,7 @@ impl DataView {
         Ok(())
     }
 
-    pub fn set_u64(&mut self, value: u64) -> Result<(), String> {
+    pub fn set_u64(&mut self, value: u64) -> Result<(), &'static str> {
         // if let Err(error) = self.check_index_in_range("set_u64", 8) {
         //     return Err(error);
         // }

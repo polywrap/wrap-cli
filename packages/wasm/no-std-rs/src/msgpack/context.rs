@@ -1,23 +1,18 @@
 //! Context stores debug information in a stack, and
 //! prints it in a clear format
 
-use alloc::{
-    fmt, format,
-    string::{String, ToString},
-    vec,
-    vec::Vec,
-};
+use alloc::{fmt, format, string::String, vec, vec::Vec};
 
 #[derive(Clone, Debug, Default)]
-pub struct Context {
-    pub description: String,
-    nodes: Vec<Node>,
+pub struct Context<'a> {
+    pub description: &'a str,
+    nodes: Vec<Node<'a>>,
 }
 
-impl Context {
+impl<'a> Context<'a> {
     pub fn new() -> Self {
         Self {
-            description: "context description not set".to_string(),
+            description: "context description not set",
             nodes: vec![],
         }
     }
@@ -30,11 +25,11 @@ impl Context {
         self.nodes.len() as i32
     }
 
-    pub fn push(&mut self, node_item: &str, node_type: &str, node_info: &str) {
+    pub fn push(&mut self, node_item: &'a str, node_type: &'a str, node_info: &'a str) {
         let node = Node {
-            node_item: node_item.to_string(),
-            node_type: node_type.to_string(),
-            node_info: node_info.to_string(),
+            node_item,
+            node_type,
+            node_info,
         };
         self.nodes.push(node);
     }
@@ -51,7 +46,7 @@ impl Context {
     }
 
     pub fn print_with_context(&self, message: &str) -> String {
-        format!("{} \n {}", message.to_string(), self.print_with_tabs(1, 0))
+        [message, "\n", &self.print_with_tabs(1, 0)].concat()
     }
 
     fn print_with_tabs(&self, tabs: i32, size: i32) -> String {
@@ -62,7 +57,7 @@ impl Context {
         let mut result = String::new();
         result.push_str(&pad_start);
 
-        let ctx = format!("Context: {}", self.description);
+        let ctx = ["Context: ", self.description].concat();
         result.push_str(&ctx);
 
         if self.is_empty() {
@@ -86,14 +81,14 @@ impl Context {
 
 #[allow(dead_code)]
 #[derive(Clone, Debug, Default)]
-pub struct Node {
-    node_item: String,
-    node_type: String,
-    node_info: String,
+pub struct Node<'a> {
+    node_item: &'a str,
+    node_type: &'a str,
+    node_info: &'a str,
 }
 
-impl fmt::Display for Context {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl<'a> fmt::Display for Context<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({}, {:?})", self.description, self.nodes)
     }
 }

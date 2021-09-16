@@ -1,7 +1,6 @@
 use super::{context::Context, data_view::DataView, format::Format, read::Read};
 use alloc::{
     collections::BTreeMap,
-    format,
     str::FromStr,
     string::{String, ToString},
     vec,
@@ -11,14 +10,14 @@ use core::hash::Hash;
 use num_bigint::BigInt;
 
 #[derive(Clone, Debug, Default)]
-pub struct ReadDecoder {
-    context: Context,
-    view: DataView,
+pub struct ReadDecoder<'a> {
+    context: Context<'a>,
+    view: DataView<'a>,
 }
 
-impl ReadDecoder {
+impl<'a> ReadDecoder<'a> {
     #[allow(dead_code)]
-    pub fn new(buf: &[u8], context: Context) -> Self {
+    pub fn new(buf: &[u8], context: Context<'a>) -> Self {
         Self {
             context: context.clone(),
             view: DataView::new(buf, Some(context), None, None)
@@ -153,10 +152,11 @@ impl ReadDecoder {
                     objects_to_discard = 2 * (self.view.get_u32().unwrap() as i32);
                 }
                 _ => {
-                    let custom_error = format!(
-                        "invalid prefix, bad encoding for val: {}",
-                        lead_byte.to_string()
-                    );
+                    let custom_error = [
+                        "invalid prefix, bad encoding for val: ",
+                        &lead_byte.to_string(),
+                    ]
+                    .concat();
                     return Err(custom_error);
                 }
             }
@@ -165,50 +165,51 @@ impl ReadDecoder {
         Ok(objects_to_discard)
     }
 
-    fn get_error_message(lead_byte: u8) -> Result<String, String> {
+    fn get_error_message(lead_byte: u8) -> Result<&'static str, String> {
         if Format::is_negative_fixed_int(lead_byte) || Format::is_fixed_int(lead_byte) {
-            Ok("Found `int`".to_string())
+            Ok("Found `int`")
         } else if Format::is_fixed_string(lead_byte) {
-            Ok("Found `string`".to_string())
+            Ok("Found `string`")
         } else if Format::is_fixed_array(lead_byte) {
-            Ok("Found `array`".to_string())
+            Ok("Found `array`")
         } else if Format::is_fixed_map(lead_byte) {
-            Ok("Found `map`".to_string())
+            Ok("Found `map`")
         } else {
             match lead_byte {
-                Format::NIL => Ok("Found `nil`".to_string()),
-                Format::TRUE => Ok("Found `bool`".to_string()),
-                Format::FALSE => Ok("Found `bool`".to_string()),
-                Format::BIN8 => Ok("Found `BIN8`".to_string()),
-                Format::BIN16 => Ok("Found `BIN16`".to_string()),
-                Format::BIN32 => Ok("Found `BIN32`".to_string()),
-                Format::FLOAT32 => Ok("Found `float32`".to_string()),
-                Format::FLOAT64 => Ok("Found `float64`".to_string()),
-                Format::UINT8 => Ok("Found `uint8`".to_string()),
-                Format::UINT16 => Ok("Found `uint16`".to_string()),
-                Format::UINT32 => Ok("Found `uint32`".to_string()),
-                Format::UINT64 => Ok("Found `uint64`".to_string()),
-                Format::INT8 => Ok("Found `int8`".to_string()),
-                Format::INT16 => Ok("Found `int16`".to_string()),
-                Format::INT32 => Ok("Found `int32`".to_string()),
-                Format::INT64 => Ok("Found `int64`".to_string()),
-                Format::FIXEXT1 => Ok("Found `FIXEXT1`".to_string()),
-                Format::FIXEXT2 => Ok("Found `FIXEXT2`".to_string()),
-                Format::FIXEXT4 => Ok("Found `FIXEXT4`".to_string()),
-                Format::FIXEXT8 => Ok("Found `FIXEXT8`".to_string()),
-                Format::FIXEXT16 => Ok("Found `FIXEXT16`".to_string()),
-                Format::STR8 => Ok("Found `string`".to_string()),
-                Format::STR16 => Ok("Found `string`".to_string()),
-                Format::STR32 => Ok("Found `string`".to_string()),
-                Format::ARRAY16 => Ok("Found `array`".to_string()),
-                Format::ARRAY32 => Ok("Found `array`".to_string()),
-                Format::MAP16 => Ok("Found `map`".to_string()),
-                Format::MAP32 => Ok("Found `map`".to_string()),
+                Format::NIL => Ok("Found `nil`"),
+                Format::TRUE => Ok("Found `bool`"),
+                Format::FALSE => Ok("Found `bool`"),
+                Format::BIN8 => Ok("Found `BIN8`"),
+                Format::BIN16 => Ok("Found `BIN16`"),
+                Format::BIN32 => Ok("Found `BIN32`"),
+                Format::FLOAT32 => Ok("Found `float32`"),
+                Format::FLOAT64 => Ok("Found `float64`"),
+                Format::UINT8 => Ok("Found `uint8`"),
+                Format::UINT16 => Ok("Found `uint16`"),
+                Format::UINT32 => Ok("Found `uint32`"),
+                Format::UINT64 => Ok("Found `uint64`"),
+                Format::INT8 => Ok("Found `int8`"),
+                Format::INT16 => Ok("Found `int16`"),
+                Format::INT32 => Ok("Found `int32`"),
+                Format::INT64 => Ok("Found `int64`"),
+                Format::FIXEXT1 => Ok("Found `FIXEXT1`"),
+                Format::FIXEXT2 => Ok("Found `FIXEXT2`"),
+                Format::FIXEXT4 => Ok("Found `FIXEXT4`"),
+                Format::FIXEXT8 => Ok("Found `FIXEXT8`"),
+                Format::FIXEXT16 => Ok("Found `FIXEXT16`"),
+                Format::STR8 => Ok("Found `string`"),
+                Format::STR16 => Ok("Found `string`"),
+                Format::STR32 => Ok("Found `string`"),
+                Format::ARRAY16 => Ok("Found `array`"),
+                Format::ARRAY32 => Ok("Found `array`"),
+                Format::MAP16 => Ok("Found `map`"),
+                Format::MAP32 => Ok("Found `map`"),
                 _ => {
-                    let custom_error = format!(
+                    let custom_error = [
                         "invalid prefix, bad encoding for val: {}",
-                        lead_byte.to_string()
-                    );
+                        &lead_byte.to_string(),
+                    ]
+                    .concat();
                     Err(custom_error)
                 }
             }
@@ -216,7 +217,7 @@ impl ReadDecoder {
     }
 }
 
-impl Read for ReadDecoder {
+impl<'a> Read for ReadDecoder<'a> {
     fn read_bool(&mut self) -> Result<bool, String> {
         let value = self.view.get_u8().unwrap();
         if value == Format::TRUE {
@@ -236,7 +237,7 @@ impl Read for ReadDecoder {
         if (value <= i8::MAX as i64) && (value >= i8::MIN as i64) {
             return Ok(value as i8);
         }
-        let custom_error = format!("integer overflow: value = {}; bits = 8", value.to_string());
+        let custom_error = ["integer overflow: value = ", &value.to_string(), "bits = 8"].concat();
         Err(self.context.print_with_context(&custom_error))
     }
 
@@ -245,7 +246,12 @@ impl Read for ReadDecoder {
         if (value <= i16::MAX as i64) && (value >= i16::MIN as i64) {
             return Ok(value as i16);
         }
-        let custom_error = format!("integer overflow: value = {}; bits = 16", value.to_string());
+        let custom_error = [
+            "integer overflow: value = ",
+            &value.to_string(),
+            "bits = 16",
+        ]
+        .concat();
         Err(self.context.print_with_context(&custom_error))
     }
 
@@ -254,7 +260,12 @@ impl Read for ReadDecoder {
         if (value <= i32::MAX as i64) && (value >= i32::MIN as i64) {
             return Ok(value as i32);
         }
-        let custom_error = format!("integer overflow: value = {}; bits = 32", value.to_string());
+        let custom_error = [
+            "integer overflow: value = ",
+            &value.to_string(),
+            "bits = 32",
+        ]
+        .concat();
         Err(self.context.print_with_context(&custom_error))
     }
 
@@ -285,10 +296,12 @@ impl Read for ReadDecoder {
         if (value <= u8::MAX as u64) && (value >= u8::MIN as u64) {
             return Ok(value as u8);
         }
-        let custom_error = format!(
-            "unsigned integer overflow: value = {}; bits = 8",
-            value.to_string()
-        );
+        let custom_error = [
+            "unsigned integer overflow: value = ",
+            &value.to_string(),
+            "bits = 8",
+        ]
+        .concat();
         Err(self.context.print_with_context(&custom_error))
     }
 
@@ -297,10 +310,12 @@ impl Read for ReadDecoder {
         if (value <= u16::MAX as u64) && (value >= u16::MIN as u64) {
             return Ok(value as u16);
         }
-        let custom_error = format!(
-            "unsigned integer overflow: value = {}; bits = 16",
-            value.to_string()
-        );
+        let custom_error = [
+            "unsigned integer overflow: value = ",
+            &value.to_string(),
+            "bits = 16",
+        ]
+        .concat();
         Err(self.context.print_with_context(&custom_error))
     }
 
@@ -309,10 +324,12 @@ impl Read for ReadDecoder {
         if (value <= u32::MAX as u64) && (value >= u32::MIN as u64) {
             return Ok(value as u32);
         }
-        let custom_error = format!(
-            "unsigned integer overflow: value = {}; bits = 32",
-            value.to_string()
-        );
+        let custom_error = [
+            "unsigned integer overflow: value = ",
+            &value.to_string(),
+            "bits = 32",
+        ]
+        .concat();
         Err(self.context.print_with_context(&custom_error))
     }
 
@@ -321,10 +338,11 @@ impl Read for ReadDecoder {
         if Format::is_fixed_int(prefix) {
             return Ok(prefix as u64);
         } else if Format::is_negative_fixed_int(prefix) {
-            let custom_error = format!(
-                "unsigned integer cannot be negative: prefix = {}",
-                prefix.to_string()
-            );
+            let custom_error = [
+                "unsigned integer cannot be negative: prefix = ",
+                &prefix.to_string(),
+            ]
+            .concat();
             return Err(custom_error);
         }
         match prefix {
@@ -480,7 +498,8 @@ impl Read for ReadDecoder {
         let size = self.read_map_length().unwrap();
         let mut map: BTreeMap<K, V> = BTreeMap::new();
         for i in 0..size {
-            self.context.push("map[", i.to_string().as_str(), "]");
+            let i_str = i.to_string();
+            self.context.push("map[", &i_str, "]");
             let key = key_fn(self);
             let value = val_fn(self);
             map.insert(key, value);
