@@ -16,7 +16,7 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 num = "0.4.0"
 num-bigint = "0.4.2"
-polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../../wasm/no-std-rs"}
+polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../../wasm/rs"}
 
 [profile.release]
 lto = true
@@ -25,7 +25,3 @@ overflow-checks = true
 # Tell `rustc` to optimize for small code size.
 opt-level = "s"
 debug = false
-panic = "abort"
-
-[profile.dev]
-panic = "abort"
