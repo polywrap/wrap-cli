@@ -3,9 +3,7 @@ import { Uri } from ".";
 export type InvokableModules = "query" | "mutation";
 
 /** Options required for an API invocation. */
-export interface InvokeApiOptions<
-  TUri extends Uri | string = string
-> {
+export interface InvokeApiOptions<TUri extends Uri | string = string> {
   /** The API's URI */
   uri: TUri;
 
@@ -55,10 +53,7 @@ export interface InvokeApiResult<TData = unknown> {
 }
 
 export interface InvokeHandler {
-  invoke<
-    TData = unknown,
-    TUri extends Uri | string = string
-  >(
+  invoke<TData = unknown, TUri extends Uri | string = string>(
     options: InvokeApiOptions<TUri>
   ): Promise<InvokeApiResult<TData>>;
 }

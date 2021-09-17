@@ -133,7 +133,7 @@ export class Web3ApiClient implements Client {
   ): Promise<QueryApiResult<TData>> {
     const typedOptions: QueryApiOptions<TVariables, Uri> = {
       ...options,
-      uri: this._toUri(options.uri)
+      uri: this._toUri(options.uri),
     };
 
     const run = Tracer.traceFunc(
@@ -232,7 +232,7 @@ export class Web3ApiClient implements Client {
   >(options: SubscribeOptions<TVariables, TUri>): Subscription<TData> {
     const typedOptions: SubscribeOptions<TVariables, Uri> = {
       ...options,
-      uri: this._toUri(options.uri)
+      uri: this._toUri(options.uri),
     };
 
     const run = Tracer.traceFunc(

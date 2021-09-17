@@ -60,9 +60,7 @@ export interface QueryApiResult<
   errors?: Error[];
 }
 
-export interface QueryApiInvocations<
-  TUri extends Uri | string = string
-> {
+export interface QueryApiInvocations<TUri extends Uri | string = string> {
   [methodOrAlias: string]: InvokeApiOptions<TUri>;
 }
 
