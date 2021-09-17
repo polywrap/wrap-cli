@@ -6,7 +6,7 @@ import { getPlugins, getTokenList } from "../testUtils";
 import { Contract, ethers, providers } from "ethers";
 import erc20ABI from "./testData/erc20ABI.json";
 
-jest.setTimeout(120000);
+jest.setTimeout(360000);
 
 describe("Swap", () => {
 

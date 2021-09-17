@@ -4,6 +4,7 @@ import { Web3ApiManifest as OldManifest } from "../0.0.1-prealpha.1";
 import { Web3ApiManifest as NewManifest } from "../0.0.1-prealpha.5";
 
 export function migrate(old: OldManifest): NewManifest {
+  delete old.repository;
   const module = old.mutation || old.query;
 
   if (!module) {
