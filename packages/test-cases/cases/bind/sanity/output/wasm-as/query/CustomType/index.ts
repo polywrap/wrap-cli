@@ -2,7 +2,8 @@ import {
   Read,
   Write,
   Nullable,
-  BigInt
+  BigInt,
+  JSON
 } from "@web3api/wasm-as";
 import {
   serializeCustomType,
@@ -26,6 +27,8 @@ export class CustomType {
   i32: i32;
   bigint: BigInt;
   optBigint: BigInt | null;
+  json: JSON.Value;
+  optJson: JSON.Value | null;
   bytes: ArrayBuffer;
   optBytes: ArrayBuffer | null;
   boolean: bool;

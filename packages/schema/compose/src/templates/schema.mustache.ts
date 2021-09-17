@@ -13,16 +13,16 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   ]
 ){{/imports.length}} {
   {{#methods}}{{#comment}}
-"""
-{{comment}}
-"""
-{{/comment}}
+  """
+  {{comment}}
+  """
+  {{/comment}}
   {{name}}{{#arguments.length}}(
     {{#arguments}}{{#comment}}
-"""
-{{comment}}
-"""
-{{/comment}}
+    """
+    {{comment}}
+    """
+    {{/comment}}
     {{name}}: {{toGraphQLType}}
     {{/arguments}}
   ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}
@@ -40,10 +40,10 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
 {{/comment}}
 type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}} {
   {{#properties}}{{#comment}}
-"""
-{{comment}}
-"""
-{{/comment}}
+  """
+  {{comment}}
+  """
+  {{/comment}}
   {{name}}: {{toGraphQLType}}
   {{/properties}}
 }
@@ -74,19 +74,19 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   nativeType: "{{nativeType}}"
 ) {
   {{#methods}}{{#comment}}
-"""
-{{comment}}
-"""
-{{/comment}}
-  {{name}}(
+  """
+  {{comment}}
+  """
+  {{/comment}}
+  {{name}}{{#arguments.length}}(
     {{#arguments}}{{#comment}}
-"""
-{{comment}}
-"""
-{{/comment}}
+    """
+    {{comment}}
+    """
+    {{/comment}}
     {{name}}: {{toGraphQLType}}
     {{/arguments}}
-  ): {{#return}}{{toGraphQLType}}{{/return}}
+  ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}
   {{^last}}
 
   {{/last}}
@@ -109,10 +109,10 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   nativeType: "{{nativeType}}"
 ) {
   {{#properties}}{{#comment}}
-"""
-{{comment}}
-"""
-{{/comment}}
+  """
+  {{comment}}
+  """
+  {{/comment}}
   {{name}}: {{toGraphQLType}}
   {{/properties}}
 }
@@ -125,8 +125,8 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
 """
 {{/comment}}
 enum {{type}} @imported(
-  namespace: "{{namespace}}",
   uri: "{{uri}}",
+  namespace: "{{namespace}}",
   nativeType: "{{nativeType}}"
 ) {
   {{#constants}}

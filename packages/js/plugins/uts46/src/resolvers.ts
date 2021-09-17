@@ -1,5 +1,5 @@
 import { Query } from "./w3";
-import uts46 from "idna-uts46-hx";
+const uts46 = require("idna-uts46-hx/uts46bundle.js");
 
 export const query = (): Query.Module => ({
   toAscii: (input: Query.Input_toAscii) => {

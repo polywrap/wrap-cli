@@ -1,5 +1,5 @@
 import { ImportedDefinition } from "../typeInfo";
-import { SchemaValidator } from "./SchemaValidator";
+import { SchemaValidator } from ".";
 
 import { DirectiveNode, ASTNode, ObjectTypeDefinitionNode } from "graphql";
 
