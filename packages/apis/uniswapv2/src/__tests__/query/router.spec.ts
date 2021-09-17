@@ -82,7 +82,7 @@ describe("swapCallParameters", () => {
         tradeOptions: {
           ttl: Nullable.fromValue<u32>(50),
           recipient: "0x0000000000000000000000000000000000000004",
-          unixTimestamp: Date.now() / 1000,
+          unixTimestamp: <u32>Date.now() / 1000,
           allowedSlippage: "0.01",
           deadline: Nullable.fromNull<u32>(),
           feeOnTransfer: Nullable.fromNull<boolean>()
@@ -96,7 +96,7 @@ describe("swapCallParameters", () => {
         "0x0000000000000000000000000000000000000004"
       ]);
       expect(result.value).toStrictEqual("0x64");
-      const deadlineDifference = (Date.now() / 1000) as number - parseInt(result.args[result.args.length - 1]) as number;
+      const deadlineDifference = (<u32>Date.now() / 1000) as number - parseInt(result.args[result.args.length - 1]) as number;
       expect(deadlineDifference < 5).toBe(true);
     });
 
@@ -126,7 +126,7 @@ describe("swapCallParameters", () => {
         tradeOptions: {
           ttl: Nullable.fromNull<u32>(),
           recipient: "0x0000000000000000000000000000000000000004",
-          unixTimestamp: Date.now() / 1000,
+          unixTimestamp: <u32>Date.now() / 1000,
           allowedSlippage: "0.01",
           deadline: Nullable.fromValue<u32>(50),
           feeOnTransfer: Nullable.fromNull<boolean>()
@@ -164,7 +164,7 @@ describe("swapCallParameters", () => {
         tradeOptions: {
           ttl: Nullable.fromValue<u32>(50),
           recipient: "0x0000000000000000000000000000000000000004",
-          unixTimestamp: Date.now() / 1000,
+          unixTimestamp: <u32>Date.now() / 1000,
           allowedSlippage: "0.01",
           deadline: Nullable.fromNull<u32>(),
           feeOnTransfer: Nullable.fromNull<boolean>()
@@ -179,7 +179,7 @@ describe("swapCallParameters", () => {
         "0x0000000000000000000000000000000000000004"
       ]);
       expect(result.value).toStrictEqual("0x0");
-      const deadlineDifference = (Date.now() / 1000) as number - parseInt(result.args[result.args.length - 1]) as number;
+      const deadlineDifference = (<u32>Date.now() / 1000) as number - parseInt(result.args[result.args.length - 1]) as number;
       expect(deadlineDifference < 5).toBe(true);
     });
 
@@ -201,7 +201,7 @@ describe("swapCallParameters", () => {
         tradeOptions: {
           ttl: Nullable.fromValue<u32>(50),
           recipient: "0x0000000000000000000000000000000000000004",
-          unixTimestamp: Date.now() / 1000,
+          unixTimestamp: <u32>Date.now() / 1000,
           allowedSlippage: "0.01",
           deadline: Nullable.fromNull<u32>(),
           feeOnTransfer: Nullable.fromNull<boolean>()
@@ -216,7 +216,7 @@ describe("swapCallParameters", () => {
         "0x0000000000000000000000000000000000000004"
       ]);
       expect(result.value).toStrictEqual("0x0");
-      const deadlineDifference = (Date.now() / 1000) as number - parseInt(result.args[result.args.length - 1]) as number;
+      const deadlineDifference = (<u32>Date.now() / 1000) as number - parseInt(result.args[result.args.length - 1]) as number;
       expect(deadlineDifference < 5).toBe(true);
     });
   });
@@ -244,7 +244,7 @@ describe("swapCallParameters", () => {
         tradeOptions: {
           ttl: Nullable.fromValue<u32>(50),
           recipient: "0x0000000000000000000000000000000000000004",
-          unixTimestamp: Date.now() / 1000,
+          unixTimestamp: <u32>Date.now() / 1000,
           allowedSlippage: "0.01",
           deadline: Nullable.fromNull<u32>(),
           feeOnTransfer: Nullable.fromNull<boolean>()
@@ -258,7 +258,7 @@ describe("swapCallParameters", () => {
         "0x0000000000000000000000000000000000000004"
       ]);
       expect(result.value).toStrictEqual("0x80");
-      const deadlineDifference = (Date.now() / 1000) as number - parseInt(result.args[result.args.length - 1]) as number;
+      const deadlineDifference = (<u32>Date.now() / 1000) as number - parseInt(result.args[result.args.length - 1]) as number;
       expect(deadlineDifference < 5).toBe(true);
     });
 
@@ -288,7 +288,7 @@ describe("swapCallParameters", () => {
         tradeOptions: {
           ttl: Nullable.fromValue<u32>(50),
           recipient: "0x0000000000000000000000000000000000000004",
-          unixTimestamp: Date.now() / 1000,
+          unixTimestamp: <u32>Date.now() / 1000,
           allowedSlippage: "0.01",
           deadline: Nullable.fromNull<u32>(),
           feeOnTransfer: Nullable.fromNull<boolean>()
@@ -303,7 +303,7 @@ describe("swapCallParameters", () => {
         "0x0000000000000000000000000000000000000004"
       ]);
       expect(result.value).toStrictEqual("0x0");
-      const deadlineDifference = (Date.now() / 1000) as number - parseInt(result.args[result.args.length - 1]) as number;
+      const deadlineDifference = (<u32>Date.now() / 1000) as number - parseInt(result.args[result.args.length - 1]) as number;
       expect(deadlineDifference < 5).toBe(true);
     });
 
@@ -325,7 +325,7 @@ describe("swapCallParameters", () => {
         tradeOptions: {
           ttl: Nullable.fromValue<u32>(50),
           recipient: "0x0000000000000000000000000000000000000004",
-          unixTimestamp: Date.now() / 1000,
+          unixTimestamp: <u32>Date.now() / 1000,
           allowedSlippage: "0.01",
           deadline: Nullable.fromNull<u32>(),
           feeOnTransfer: Nullable.fromNull<boolean>()
@@ -340,7 +340,7 @@ describe("swapCallParameters", () => {
         "0x0000000000000000000000000000000000000004"
       ]);
       expect(result.value).toStrictEqual("0x0");
-      const deadlineDifference = (Date.now() / 1000) as number - parseInt(result.args[result.args.length - 1]) as number;
+      const deadlineDifference = (<u32>Date.now() / 1000) as number - parseInt(result.args[result.args.length - 1]) as number;
       expect(deadlineDifference < 5).toBe(true);
     });
   });
@@ -373,7 +373,7 @@ describe("swapCallParameters", () => {
           tradeOptions: {
             ttl: Nullable.fromValue<u32>(50),
             recipient: "0x0000000000000000000000000000000000000004",
-            unixTimestamp: Date.now() / 1000,
+            unixTimestamp: <u32>Date.now() / 1000,
             allowedSlippage: "0.01",
             deadline: Nullable.fromNull<u32>(),
             feeOnTransfer: Nullable.fromValue<boolean>(true)
@@ -387,7 +387,7 @@ describe("swapCallParameters", () => {
           "0x0000000000000000000000000000000000000004"
         ]);
         expect(result.value).toStrictEqual("0x64");
-        const deadlineDifference = (Date.now() / 1000) as number - parseInt(result.args[result.args.length - 1]) as number;
+        const deadlineDifference = (<u32>Date.now() / 1000) as number - parseInt(result.args[result.args.length - 1]) as number;
         expect(deadlineDifference < 5).toBe(true);
       });
 
@@ -413,7 +413,7 @@ describe("swapCallParameters", () => {
           tradeOptions: {
             ttl: Nullable.fromValue<u32>(50),
             recipient: "0x0000000000000000000000000000000000000004",
-            unixTimestamp: Date.now() / 1000,
+            unixTimestamp: <u32>Date.now() / 1000,
             allowedSlippage: "0.01",
             deadline: Nullable.fromNull<u32>(),
             feeOnTransfer: Nullable.fromValue<boolean>(true)
@@ -428,7 +428,7 @@ describe("swapCallParameters", () => {
           "0x0000000000000000000000000000000000000004"
         ]);
         expect(result.value).toStrictEqual("0x0");
-        const deadlineDifference = (Date.now() / 1000) as number - parseInt(result.args[result.args.length - 1]) as number;
+        const deadlineDifference = (<u32>Date.now() / 1000) as number - parseInt(result.args[result.args.length - 1]) as number;
         expect(deadlineDifference < 5).toBe(true);
       });
 
@@ -450,7 +450,7 @@ describe("swapCallParameters", () => {
           tradeOptions: {
             ttl: Nullable.fromValue<u32>(50),
             recipient: "0x0000000000000000000000000000000000000004",
-            unixTimestamp: Date.now() / 1000,
+            unixTimestamp: <u32>Date.now() / 1000,
             allowedSlippage: "0.01",
             deadline: Nullable.fromNull<u32>(),
             feeOnTransfer: Nullable.fromValue<boolean>(true)
@@ -465,7 +465,7 @@ describe("swapCallParameters", () => {
           "0x0000000000000000000000000000000000000004"
         ]);
         expect(result.value).toStrictEqual("0x0");
-        const deadlineDifference = (Date.now() / 1000) as number - parseInt(result.args[result.args.length - 1]) as number;
+        const deadlineDifference = (<u32>Date.now() / 1000) as number - parseInt(result.args[result.args.length - 1]) as number;
         expect(deadlineDifference < 5).toBe(true);
       });
     });
@@ -494,7 +494,7 @@ describe("swapCallParameters", () => {
             tradeOptions: {
               ttl: Nullable.fromValue<u32>(50),
               recipient: "0x0000000000000000000000000000000000000004",
-              unixTimestamp: Date.now() / 1000,
+              unixTimestamp: <u32>Date.now() / 1000,
               allowedSlippage: "0.01",
               deadline: Nullable.fromNull<u32>(),
               feeOnTransfer: Nullable.fromValue<boolean>(true)
@@ -530,7 +530,7 @@ describe("swapCallParameters", () => {
             tradeOptions: {
               ttl: Nullable.fromValue<u32>(50),
               recipient: "0x0000000000000000000000000000000000000004",
-              unixTimestamp: Date.now() / 1000,
+              unixTimestamp: <u32>Date.now() / 1000,
               allowedSlippage: "0.01",
               deadline: Nullable.fromNull<u32>(),
               feeOnTransfer: Nullable.fromValue<boolean>(true)
@@ -558,7 +558,7 @@ describe("swapCallParameters", () => {
             tradeOptions: {
               ttl: Nullable.fromValue<u32>(50),
               recipient: "0x0000000000000000000000000000000000000004",
-              unixTimestamp: Date.now() / 1000,
+              unixTimestamp: <u32>Date.now() / 1000,
               allowedSlippage: "0.01",
               deadline: Nullable.fromNull<u32>(),
               feeOnTransfer: Nullable.fromValue<boolean>(true)

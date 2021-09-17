@@ -31,13 +31,13 @@ export class PluginWeb3Api extends Api {
   }
 
   public async invoke<TData = unknown>(
-    options: InvokeApiOptions,
+    options: InvokeApiOptions<Uri>,
     client: Client
   ): Promise<InvokeApiResult<TData>> {
     const run = Tracer.traceFunc(
       "PluginWeb3Api: invoke",
       async (
-        options: InvokeApiOptions,
+        options: InvokeApiOptions<Uri>,
         client: Client
       ): Promise<InvokeApiResult<TData>> => {
         const { module, method, input, resultFilter } = options;
