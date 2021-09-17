@@ -29,7 +29,7 @@
     "@opentelemetry/propagator-b3": "0.20.0",
     "@opentelemetry/tracing": "0.20.0",
     "@opentelemetry/web": "0.20.0",
-    "util-inspect": "0.1.8"
+    "browser-util-inspect": "0.2.0"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
