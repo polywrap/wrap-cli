@@ -1,7 +1,5 @@
-#![no_std]
-
-extern crate alloc;
-use alloc::string::ToString;
+// extern crate alloc;
+// use alloc::string::ToString;
 use polywrap_wasm_rs::Context;
 
 #[test]
@@ -29,8 +27,8 @@ fn print_in_desired_format() {
 
     assert_eq!(context.context_to_string(), "  Context: Deserializing MyObject\n   at propertyOne : unknown >> searching for property type".to_string());
 
-    assert_eq!(context.print_with_context("Invalid length"), "Invalid length \n  Context: Deserializing MyObject\n at propertyOne : unknown >> searching for property type");
+    assert_eq!(context.print_with_context("Invalid length"), "Invalid length\n Context: Deserializing MyObject\n at propertyOne : unknown >> searching for property type");
 
     context.push("propertyOne", "i32", "type found, reading property");
-    assert_eq!(context.print_with_context("\nInvalid length"), "\nInvalid length \n  Context: Deserializing MyObject\n at propertyOne : i32 >> type found, reading property\n at propertyOne : unknown >> searching for property type");
+    assert_eq!(context.print_with_context("\nInvalid length"), "\nInvalid length\n Context: Deserializing MyObject\n at propertyOne : i32 >> type found, reading property\n at propertyOne : unknown >> searching for property type");
 }

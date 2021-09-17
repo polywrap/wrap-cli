@@ -1,13 +1,5 @@
-#![no_std]
-
 extern crate alloc;
-use alloc::{
-    collections::BTreeMap,
-    format,
-    string::{String, ToString},
-    vec,
-    vec::Vec,
-};
+use alloc::collections::BTreeMap;
 use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
 #[derive(Debug, Clone, Default)]
