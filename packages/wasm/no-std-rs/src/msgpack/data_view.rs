@@ -69,12 +69,11 @@ impl<'a> DataView<'a> {
         Ok(result.swap_bytes())
     }
 
-    pub fn discard(&mut self, length: i32) -> Result<(), &'static str> {
+    pub fn discard(&mut self, length: i32) {
         // if let Err(error) = self.check_index_in_range("discard", length) {
         //     return Err(error);
         // }
         self.byte_offset += length;
-        Ok(())
     }
 
     pub fn get_f32(&mut self) -> Result<f32, &'static str> {
