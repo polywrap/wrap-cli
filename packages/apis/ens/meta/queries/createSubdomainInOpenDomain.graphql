@@ -1,0 +1,11 @@
+mutation {
+  createSubdomainInOpenDomain(
+    label: $label
+    domain: $domain
+    owner: $owner
+    fifsRegistrarAddress: $fifsRegistrarAddress
+    registryAddress: $registryAddress
+    resolverAddress: $resolverAddress
+    connection: { networkNameOrChainId: $network }
+  )
+}

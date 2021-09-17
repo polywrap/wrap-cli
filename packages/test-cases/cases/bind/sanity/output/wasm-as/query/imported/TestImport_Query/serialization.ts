@@ -5,6 +5,7 @@ import {
   WriteEncoder,
   ReadDecoder,
   BigInt,
+  JSON,
   Context
 } from "@web3api/wasm-as";
 import * as Types from "../..";

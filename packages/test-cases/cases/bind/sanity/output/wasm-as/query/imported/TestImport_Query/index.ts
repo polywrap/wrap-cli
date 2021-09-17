@@ -1,7 +1,8 @@
 import {
   w3_subinvoke,
   Nullable,
-  BigInt
+  BigInt,
+  JSON
 } from "@web3api/wasm-as";
 import {
   serializeimportedMethodArgs,

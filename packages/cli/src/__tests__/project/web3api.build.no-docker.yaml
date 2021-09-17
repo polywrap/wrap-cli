@@ -6,3 +6,6 @@ config:
   include:
     - ./src
     - ./package.json
+linked_packages:
+  - name: "@web3api/wasm-as"
+    path: ../../../../wasm/as

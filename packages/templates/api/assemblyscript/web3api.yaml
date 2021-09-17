@@ -1,5 +1,5 @@
 repository: https://github.com/web3-api/monorepo
-format: 0.0.1-prealpha.2
+format: 0.0.1-prealpha.4
 language: wasm/assemblyscript
 build: ./web3api.build.yaml
 modules:

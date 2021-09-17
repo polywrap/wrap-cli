@@ -1,5 +1,4 @@
 /* eslint-disable */
-
 // Subinvoke API
 
 @external("w3", "__w3_subinvoke")
@@ -32,6 +31,7 @@ export function w3_subinvoke(
   const uriBuf = String.UTF8.encode(uri);
   const moduleBuf = String.UTF8.encode(module);
   const methodBuf = String.UTF8.encode(method);
+  
   const success = __w3_subinvoke(
     changetype<u32>(uriBuf), uriBuf.byteLength,
     changetype<u32>(moduleBuf), moduleBuf.byteLength,

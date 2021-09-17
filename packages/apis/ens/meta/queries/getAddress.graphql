@@ -1,0 +1,9 @@
+query {
+  getAddress(
+    domain: $domain
+    resolverAddress: $resolverAddress
+    connection: {
+      networkNameOrChainId: $network
+    }
+  )
+}

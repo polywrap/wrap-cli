@@ -1,3 +1,78 @@
+# Web3API 0.0.1-prealpha.42
+## Bugs
+* `@web3api/schema-parse`: Removed unnecessary sanitization for imported methods without any arguments.
+
+# Web3API 0.0.1-prealpha.41
+## Features
+* `@web3api/schema-parse`: Added support for `JSON` as a base type.
+* `@web3api/ens-api`: Merged in an initial version of the ENS Wasm based Web3Api.
+* `web3api.build.yaml`: Added support for the `linked_packages` property, allowing you to link local packages into the dockerized build-env.
+
+## Bugs
+* `@web3api/schema-compose`: Fixed an invalid GraphQL bug that occured when an imported query method did not have any arguments.
+
+# Web3API 0.0.1-prealpha.40
+## Features
+* `@web3api/client-js`: Added `getManifest(...)`, `getFile(...)`, and `getSchema(...)` methods to the client, simply provide a URI.
+* `@web3api/cli`: APIs can now define metadata via the `web3api.meta.yaml` manifest file. Upon compiling your project, the CLI will copy all referenced metadata files into the build directory. Applications such as The Polywrap Hub will use this metadata file to display details about your package such as: title, description, icon, example queries, etc.
+
+## Bugs
+* `@web3api/schema-parse`: Duplicate fields on object & query types are not detected, and will cause a compiler error.
+
+## Breaking Changes
+* `@web3api/client-js`: Removed the `loadWeb3Api(...)` method from the client. This is because we do not want to give the user of the client a direct reference to the underlying API class object. Since garbage collection will delete these, having the user able to hang onto references, will result in them staying in memory.
+
+# Web3API 0.0.1-prealpha.39
+## Features
+* `@web3api/client-js`: Added `https://polywrap-dev.mypinata.cloud` and `https://ipfs.infura.io` as default fallback IPFS providers.
+
+## Bugs
+* `@web3api/ipfs-plugin-js`: Fallback providers are now used if an error is encountered, not just for timeouts.
+
+# Web3API 0.0.1-prealpha.38
+## Breaking Changes
+* `@web3api/client-js`: Removed the usage of `_w3_init`, as it's unnecessary and caused issues with adding Rust-Wasm support.
+
+# Web3API 0.0.1-prealpha.37
+## Bugs
+* `@web3api/asyncify-js`: Fixed problem when Wasm modules are larger than 4 KB. More info [here](https://github.com/polywrap/monorepo/pull/450).
+* `@web3api/client-js`: Use new asyncify-js package, where instantiation is asynchronous.
+
+# Web3API 0.0.1-prealpha.36
+## Features
+* Upgrade all JavaScript plugins to use the new `w3 plugin codegen` command. The command generates typings based on the GraphQL schema of the plugin. This ensures the plugin's resolvers match 1:1 with the GraphQL schema.
+
+# Web3API 0.0.1-prealpha.35
+## Bugs
+* `@web3api/schema-bind`: Fix TypeScript plugin enum bindings.
+
+# Web3API 0.0.1-prealpha.34
+## Bugs
+* `@web3api/schema-bind`: Fix TypeScript enum bindings.
+* `@web3api/graph-node-plugin-js`: Fix mismatched schema.
+
+# Web3API 0.0.1-prealpha.33
+## Bugs
+* `@web3api/schema-bind`: Fixed plugin code generation oversight. Should be using `null` instead of `undefined`.
+
+# Web3API 0.0.1-prealpha.32
+## Features
+* Improved the plugin developer experience by creating a new `w3 plugin codegen` command, which generated types based on the plugin's schema. For an example of how this works, see the updated plugin template project by running `w3 create plugin typescript my-plugin`.
+* `@web3api/cli`: Refactored the `w3 codegen` command, making its default behavior the generation of types for Web3APIs. It's "old" behavior of loading a custom generation script is now usable through the `--custom` option.
+
+## Bugs
+* `@web3api/cli`: Properly validate all required Wasm exports when compiling Web3APIs.
+
+# Web3API 0.0.1-prealpha.31
+## Features
+* Use Binaryen's Asyncify to support async Wasm import calls. Deprecate the Wasm threading model we were using previously. This now means that the client now supports all browsers, as it no longer requires `SharedArrayBuffer` & the `atomics` library.
+* `@web3api/graph-node-plugin-js`: Finalized the graph-node plugin implementation, added e2e tests. It currently only works with the hosted service.
+
+## Bugs
+* Removed support for UInt64 & Int64 base types. More info [here](https://github.com/polywrap/monorepo/pull/414).
+* `@web3api/cli`: Properly validate all required exports from Web3API Wasm modules at compile-time.
+* `@web3api/ethereum-plugin-js`: Properly support smart contract methods with structures as arguments.
+
 # Web3API 0.0.1-prealpha.30
 ## Bugs
 * `@web3api/ethereum-plugin-js`: Fix ethers.js inconsistencies.

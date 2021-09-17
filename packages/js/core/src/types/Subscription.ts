@@ -12,7 +12,7 @@ export interface SubscriptionFrequency {
 /** Options required for an API subscription. */
 export interface SubscribeOptions<
   TVariables extends Record<string, unknown> = Record<string, unknown>,
-  TUri = Uri
+  TUri extends Uri | string = string
 > extends QueryApiOptions<TVariables, TUri> {
   /**
    * The frequency of API invocations. Defaults to one query per minute.
@@ -46,4 +46,14 @@ export interface Subscription<
    * AsyncIterable, allowing use in for await...of loops.
    */
   [Symbol.asyncIterator](): AsyncGenerator<QueryApiResult<TData>>;
+}
+
+export interface SubscriptionHandler {
+  subscribe<
+    TData extends Record<string, unknown> = Record<string, unknown>,
+    TVariables extends Record<string, unknown> = Record<string, unknown>,
+    TUri extends Uri | string = string
+  >(
+    options: SubscribeOptions<TVariables, TUri>
+  ): Subscription<TData>;
 }
