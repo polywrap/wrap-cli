@@ -36,7 +36,7 @@ impl<'a> ReadDecoder<'a> {
     }
 
     fn get_size(&mut self) -> Result<i32, String> {
-        let lead_byte = self.view.get_u8().unwrap(); // will discard one
+        let lead_byte = self.view.get_u8(); // will discard one
         let mut objects_to_discard: i32 = 0;
         // handle for fixed values
         if Format::is_negative_fixed_int(lead_byte) || Format::is_fixed_int(lead_byte) {
@@ -55,15 +55,15 @@ impl<'a> ReadDecoder<'a> {
                 Format::TRUE => {}
                 Format::FALSE => {}
                 Format::BIN8 => {
-                    let length = self.view.get_u8().unwrap();
+                    let length = self.view.get_u8();
                     self.view.discard(length as i32);
                 }
                 Format::BIN16 => {
-                    let length = self.view.get_u16().unwrap();
+                    let length = self.view.get_u16();
                     self.view.discard(length as i32);
                 }
                 Format::BIN32 => {
-                    let length = self.view.get_u32().unwrap();
+                    let length = self.view.get_u32();
                     self.view.discard(length as i32);
                 }
                 Format::FLOAT32 => {
@@ -112,28 +112,28 @@ impl<'a> ReadDecoder<'a> {
                     self.view.discard(17);
                 }
                 Format::STR8 => {
-                    let length = self.view.get_u8().unwrap();
+                    let length = self.view.get_u8();
                     self.view.discard(length as i32);
                 }
                 Format::STR16 => {
-                    let length = self.view.get_u16().unwrap();
+                    let length = self.view.get_u16();
                     self.view.discard(length as i32);
                 }
                 Format::STR32 => {
-                    let length = self.view.get_u32().unwrap();
+                    let length = self.view.get_u32();
                     self.view.discard(length as i32);
                 }
                 Format::ARRAY16 => {
-                    objects_to_discard = self.view.get_u16().unwrap() as i32;
+                    objects_to_discard = self.view.get_u16() as i32;
                 }
                 Format::ARRAY32 => {
-                    objects_to_discard = self.view.get_u32().unwrap() as i32;
+                    objects_to_discard = self.view.get_u32() as i32;
                 }
                 Format::MAP16 => {
-                    objects_to_discard = 2 * (self.view.get_u16().unwrap() as i32);
+                    objects_to_discard = 2 * (self.view.get_u16() as i32);
                 }
                 Format::MAP32 => {
-                    objects_to_discard = 2 * (self.view.get_u32().unwrap() as i32);
+                    objects_to_discard = 2 * (self.view.get_u32() as i32);
                 }
                 _ => {
                     return Err([
@@ -198,7 +198,7 @@ impl<'a> ReadDecoder<'a> {
 
 impl<'a> Read for ReadDecoder<'a> {
     fn read_bool(&mut self) -> Result<bool, String> {
-        let value = self.view.get_u8().unwrap();
+        let value = self.view.get_u8();
         if value == Format::TRUE {
             return Ok(true);
         } else if value == Format::FALSE {
@@ -251,7 +251,7 @@ impl<'a> Read for ReadDecoder<'a> {
     }
 
     fn read_i64(&mut self) -> Result<i64, String> {
-        let prefix = self.view.get_u8().unwrap();
+        let prefix = self.view.get_u8();
         if Format::is_fixed_int(prefix) {
             return Ok(prefix as i64);
         }
@@ -259,10 +259,10 @@ impl<'a> Read for ReadDecoder<'a> {
             return Ok((prefix as i8) as i64);
         }
         match prefix {
-            Format::INT8 => Ok(self.view.get_i8()? as i64),
-            Format::INT16 => Ok(self.view.get_i16()? as i64),
-            Format::INT32 => Ok(self.view.get_i32()? as i64),
-            Format::INT64 => Ok(self.view.get_i64()?),
+            Format::INT8 => Ok(self.view.get_i8() as i64),
+            Format::INT16 => Ok(self.view.get_i16() as i64),
+            Format::INT32 => Ok(self.view.get_i32() as i64),
+            Format::INT64 => Ok(self.view.get_i64()),
             _ => {
                 let mut custom_error = String::from("Property must be of type `int`");
                 custom_error.push_str(Self::get_error_message(prefix).unwrap());
@@ -317,7 +317,7 @@ impl<'a> Read for ReadDecoder<'a> {
     }
 
     fn read_u64(&mut self) -> Result<u64, String> {
-        let prefix = self.view.get_u8().unwrap();
+        let prefix = self.view.get_u8();
         if Format::is_fixed_int(prefix) {
             return Ok(prefix as u64);
         } else if Format::is_negative_fixed_int(prefix) {
@@ -328,10 +328,10 @@ impl<'a> Read for ReadDecoder<'a> {
             .concat());
         }
         match prefix {
-            Format::UINT8 => Ok(self.view.get_u8().unwrap() as u64),
-            Format::UINT16 => Ok(self.view.get_u16().unwrap() as u64),
-            Format::UINT32 => Ok(self.view.get_u32().unwrap() as u64),
-            Format::UINT64 => Ok(self.view.get_u64().unwrap()),
+            Format::UINT8 => Ok(self.view.get_u8() as u64),
+            Format::UINT16 => Ok(self.view.get_u16() as u64),
+            Format::UINT32 => Ok(self.view.get_u32() as u64),
+            Format::UINT64 => Ok(self.view.get_u64()),
             _ => {
                 let mut custom_error = String::from("Property must be of type `uint`");
                 custom_error.push_str(Self::get_error_message(prefix).unwrap());
@@ -341,9 +341,9 @@ impl<'a> Read for ReadDecoder<'a> {
     }
 
     fn read_f32(&mut self) -> Result<f32, String> {
-        let prefix = self.view.get_u8().unwrap();
+        let prefix = self.view.get_u8();
         if Format::is_float_32(prefix) {
-            return Ok(self.view.get_f32().unwrap());
+            return Ok(self.view.get_f32());
         }
         let mut custom_error = String::from("Property must be of type `float32`");
         custom_error.push_str(Self::get_error_message(prefix).unwrap());
@@ -351,9 +351,9 @@ impl<'a> Read for ReadDecoder<'a> {
     }
 
     fn read_f64(&mut self) -> Result<f64, String> {
-        let prefix = self.view.get_u8().unwrap();
+        let prefix = self.view.get_u8();
         if Format::is_float_64(prefix) {
-            return Ok(self.view.get_f64().unwrap());
+            return Ok(self.view.get_f64());
         }
         let mut custom_error = String::from("Property must be of type `float64`");
         custom_error.push_str(Self::get_error_message(prefix).unwrap());
@@ -361,7 +361,7 @@ impl<'a> Read for ReadDecoder<'a> {
     }
 
     fn read_string_length(&mut self) -> Result<u32, String> {
-        let lead_byte = self.view.get_u8().unwrap();
+        let lead_byte = self.view.get_u8();
         if Format::is_fixed_string(lead_byte) {
             return Ok((lead_byte & 0x1f) as u32);
         }
@@ -369,9 +369,9 @@ impl<'a> Read for ReadDecoder<'a> {
             return Ok((lead_byte & Format::FOUR_LEAST_SIG_BITS_IN_BYTE) as u32);
         }
         match lead_byte {
-            Format::STR8 => Ok(self.view.get_u8().unwrap() as u32),
-            Format::STR16 => Ok(self.view.get_u16().unwrap() as u32),
-            Format::STR32 => Ok(self.view.get_u32().unwrap()),
+            Format::STR8 => Ok(self.view.get_u8() as u32),
+            Format::STR16 => Ok(self.view.get_u16() as u32),
+            Format::STR32 => Ok(self.view.get_u32()),
             _ => {
                 let mut custom_error = String::from("Property must be of type `string`");
                 custom_error.push_str(Self::get_error_message(lead_byte).unwrap());
@@ -380,17 +380,17 @@ impl<'a> Read for ReadDecoder<'a> {
         }
     }
 
-    fn read_string(&mut self) -> Result<String, String> {
+    fn read_string(&mut self) -> String {
         let str_len = self.read_string_length().unwrap();
-        let str_bytes = self.view.get_bytes(str_len as i32).unwrap();
-        Ok(String::from_utf8(str_bytes).unwrap())
+        let str_bytes = self.view.get_bytes(str_len as i32);
+        String::from_utf8(str_bytes).unwrap()
     }
 
     fn read_bytes_length(&mut self) -> Result<u32, String> {
         if self.is_next_nil() {
             return Ok(0);
         }
-        let lead_byte = self.view.get_u8().unwrap();
+        let lead_byte = self.view.get_u8();
         if Format::is_fixed_string(lead_byte) {
             return Ok((lead_byte & 0x1f) as u32);
         }
@@ -398,9 +398,9 @@ impl<'a> Read for ReadDecoder<'a> {
             return Ok((lead_byte & Format::FOUR_LEAST_SIG_BITS_IN_BYTE) as u32);
         }
         match lead_byte {
-            Format::STR8 => Ok(self.view.get_u8().unwrap() as u32),
-            Format::STR16 => Ok(self.view.get_u16().unwrap() as u32),
-            Format::STR32 => Ok(self.view.get_u32().unwrap()),
+            Format::STR8 => Ok(self.view.get_u8() as u32),
+            Format::STR16 => Ok(self.view.get_u16() as u32),
+            Format::STR32 => Ok(self.view.get_u32()),
             _ => {
                 let mut custom_error = String::from("Property must be of type `bytes`");
                 custom_error.push_str(Self::get_error_message(lead_byte).unwrap());
@@ -409,25 +409,25 @@ impl<'a> Read for ReadDecoder<'a> {
         }
     }
 
-    fn read_bytes(&mut self) -> Result<Vec<u8>, String> {
+    fn read_bytes(&mut self) -> Vec<u8> {
         let array_length = self.read_bytes_length().unwrap();
-        Ok(self.view.get_bytes(array_length as i32).unwrap())
+        self.view.get_bytes(array_length as i32)
     }
 
-    fn read_bigint(&mut self) -> Result<BigInt, String> {
-        let s = self.read_string().unwrap();
-        Ok(BigInt::from_str(&s).unwrap())
+    fn read_bigint(&mut self) -> BigInt {
+        let s = self.read_string();
+        BigInt::from_str(&s).unwrap()
     }
 
     fn read_array_length(&mut self) -> Result<u32, String> {
-        let lead_byte = self.view.get_u8().unwrap();
+        let lead_byte = self.view.get_u8();
         if Format::is_fixed_array(lead_byte) {
             return Ok((lead_byte & Format::FOUR_LEAST_SIG_BITS_IN_BYTE) as u32);
         } else if lead_byte == Format::ARRAY16 {
-            let r = self.view.get_u16().unwrap();
+            let r = self.view.get_u16();
             return Ok(r as u32);
         } else if lead_byte == Format::ARRAY32 {
-            return Ok(self.view.get_u32().unwrap());
+            return Ok(self.view.get_u32());
         } else if lead_byte == Format::NIL {
             return Ok(0);
         }
@@ -436,7 +436,7 @@ impl<'a> Read for ReadDecoder<'a> {
         Err(self.context.print_with_context(&custom_error))
     }
 
-    fn read_array<T>(&mut self, mut reader: impl FnMut(&mut Self) -> T) -> Result<Vec<T>, String> {
+    fn read_array<T>(&mut self, mut reader: impl FnMut(&mut Self) -> T) -> Vec<T> {
         let size = self.read_array_length().unwrap();
         let mut array: Vec<T> = vec![];
         for i in 0..size {
@@ -445,17 +445,17 @@ impl<'a> Read for ReadDecoder<'a> {
             array.push(item);
             self.context.pop();
         }
-        Ok(array)
+        array
     }
 
     fn read_map_length(&mut self) -> Result<u32, String> {
-        let lead_byte = self.view.get_u8().unwrap();
+        let lead_byte = self.view.get_u8();
         if Format::is_fixed_map(lead_byte) {
             return Ok((lead_byte & Format::FOUR_LEAST_SIG_BITS_IN_BYTE) as u32);
         } else if lead_byte == Format::MAP16 {
-            return Ok((self.view.get_u16().unwrap()) as u32);
+            return Ok((self.view.get_u16()) as u32);
         } else if lead_byte == Format::MAP32 {
-            return Ok(self.view.get_u32().unwrap());
+            return Ok(self.view.get_u32());
         }
         let mut custom_error = String::from("Property must be of type `map`");
         custom_error.push_str(Self::get_error_message(lead_byte).unwrap());
@@ -563,28 +563,28 @@ impl<'a> Read for ReadDecoder<'a> {
         if self.is_next_nil() {
             return None;
         }
-        Some(self.read_string().unwrap())
+        Some(self.read_string())
     }
 
     fn read_nullable_bytes(&mut self) -> Option<Vec<u8>> {
         if self.is_next_nil() {
             return None;
         }
-        Some(self.read_bytes().unwrap())
+        Some(self.read_bytes())
     }
 
     fn read_nullable_bigint(&mut self) -> Option<BigInt> {
         if self.is_next_nil() {
             return None;
         }
-        Some(self.read_bigint().unwrap())
+        Some(self.read_bigint())
     }
 
     fn read_nullable_array<T>(&mut self, reader: impl FnMut(&mut Self) -> T) -> Option<Vec<T>> {
         if self.is_next_nil() {
             return None;
         }
-        Some(self.read_array(reader).unwrap())
+        Some(self.read_array(reader))
     }
 
     fn read_nullable_map<K, V>(
@@ -602,7 +602,7 @@ impl<'a> Read for ReadDecoder<'a> {
     }
 
     fn is_next_nil(&mut self) -> bool {
-        let format = self.view.peek_u8().unwrap();
+        let format = self.view.peek_u8();
         if format == Format::NIL {
             self.view.discard(1);
             return true;
@@ -611,7 +611,7 @@ impl<'a> Read for ReadDecoder<'a> {
     }
 
     fn is_next_string(&mut self) -> bool {
-        let format = self.view.peek_u8().unwrap();
+        let format = self.view.peek_u8();
         Format::is_fixed_string(format)
             || format == Format::STR8
             || format == Format::STR16

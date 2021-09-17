@@ -39,7 +39,7 @@ impl<'a> DataView<'a> {
         })
     }
 
-    pub fn get_bytes(&mut self, length: i32) -> Result<Vec<u8>, &'static str> {
+    pub fn get_bytes(&mut self, length: i32) -> Vec<u8> {
         let buf = self.buffer.as_slice();
         let (b_off, b_len) = (
             self.byte_offset as usize,
@@ -47,176 +47,165 @@ impl<'a> DataView<'a> {
         );
         let result = &buf[b_off..b_len];
         self.byte_offset += length;
-        Ok(result.to_vec())
+        result.to_vec()
     }
 
-    pub fn peek_u8(&mut self) -> Result<u8, &'static str> {
+    pub fn peek_u8(&mut self) -> u8 {
         let ptr = AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u8))
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
-        Ok(result.swap_bytes())
+        result.swap_bytes()
     }
 
     pub fn discard(&mut self, length: i32) {
         self.byte_offset += length;
     }
 
-    pub fn get_f32(&mut self) -> Result<f32, &'static str> {
+    pub fn get_f32(&mut self) -> f32 {
         let ptr = AtomicPtr::new(&mut (self.data_start + self.byte_offset as u32))
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         self.byte_offset += 4;
-        Ok(*result as f32)
+        *result as f32
     }
 
-    pub fn get_f64(&mut self) -> Result<f64, &'static str> {
+    pub fn get_f64(&mut self) -> f64 {
         let ptr = AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u64))
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         self.byte_offset += 8;
-        Ok(*result as f64)
+        *result as f64
     }
 
-    pub fn get_i8(&mut self) -> Result<i8, &'static str> {
+    pub fn get_i8(&mut self) -> i8 {
         let ptr = AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i8))
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         self.byte_offset += 1;
-        Ok(result.swap_bytes())
+        result.swap_bytes()
     }
 
-    pub fn get_i16(&mut self) -> Result<i16, &'static str> {
+    pub fn get_i16(&mut self) -> i16 {
         let ptr = AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i16))
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         self.byte_offset += 2;
-        Ok(result.swap_bytes())
+        result.swap_bytes()
     }
 
-    pub fn get_i32(&mut self) -> Result<i32, &'static str> {
+    pub fn get_i32(&mut self) -> i32 {
         let ptr = AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i32))
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         self.byte_offset += 4;
-        Ok(result.swap_bytes())
+        result.swap_bytes()
     }
 
-    pub fn get_i64(&mut self) -> Result<i64, &'static str> {
+    pub fn get_i64(&mut self) -> i64 {
         let ptr = AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i64))
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         self.byte_offset += 8;
-        Ok(result.swap_bytes())
+        result.swap_bytes()
     }
 
-    pub fn get_u8(&mut self) -> Result<u8, &'static str> {
+    pub fn get_u8(&mut self) -> u8 {
         let ptr = AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u8))
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         self.byte_offset += 1;
-        Ok(result.swap_bytes())
+        result.swap_bytes()
     }
 
-    pub fn get_u16(&mut self) -> Result<u16, &'static str> {
+    pub fn get_u16(&mut self) -> u16 {
         let ptr = AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u16))
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         self.byte_offset += 2;
-        Ok(result.swap_bytes())
+        result.swap_bytes()
     }
 
-    pub fn get_u32(&mut self) -> Result<u32, &'static str> {
+    pub fn get_u32(&mut self) -> u32 {
         let ptr = AtomicPtr::new(&mut (self.data_start + self.byte_offset as u32))
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         self.byte_offset += 4;
-        Ok(result.swap_bytes())
+        result.swap_bytes()
     }
 
-    pub fn get_u64(&mut self) -> Result<u64, &'static str> {
+    pub fn get_u64(&mut self) -> u64 {
         let ptr = AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u64))
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         self.byte_offset += 8;
-        Ok(result.swap_bytes())
+        result.swap_bytes()
     }
 
-    pub fn set_bytes(&mut self, buf: &[u8]) -> Result<(), &'static str> {
+    pub fn set_bytes(&mut self, buf: &[u8]) {
         for (dst, src) in self.buffer.iter_mut().zip(buf.iter()) {
             *dst = *src
         }
         self.byte_offset += buf.len() as i32;
-        Ok(())
     }
 
-    pub fn set_f32(&mut self, value: f32) -> Result<(), &'static str> {
+    pub fn set_f32(&mut self, value: f32) {
         AtomicPtr::new(&mut (self.data_start + self.byte_offset as u32))
             .store(&mut (value as u32).swap_bytes(), Ordering::Relaxed);
         self.byte_offset += 4;
-        Ok(())
     }
 
-    pub fn set_f64(&mut self, value: f64) -> Result<(), &'static str> {
+    pub fn set_f64(&mut self, value: f64) {
         AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u64))
             .store(&mut (value as u64).swap_bytes(), Ordering::Relaxed);
         self.byte_offset += 8;
-        Ok(())
     }
 
-    pub fn set_i8(&mut self, value: i8) -> Result<(), &'static str> {
+    pub fn set_i8(&mut self, value: i8) {
         AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i8))
             .store(&mut value.swap_bytes(), Ordering::Relaxed);
         self.byte_offset += 1;
-        Ok(())
     }
 
-    pub fn set_i16(&mut self, value: i16) -> Result<(), &'static str> {
+    pub fn set_i16(&mut self, value: i16) {
         AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i16))
             .store(&mut value.swap_bytes(), Ordering::Relaxed);
         self.byte_offset += 2;
-        Ok(())
     }
 
-    pub fn set_i32(&mut self, value: i32) -> Result<(), &'static str> {
+    pub fn set_i32(&mut self, value: i32) {
         AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i32))
             .store(&mut value.swap_bytes(), Ordering::Relaxed);
         self.byte_offset += 4;
-        Ok(())
     }
 
-    pub fn set_i64(&mut self, value: i64) -> Result<(), &'static str> {
+    pub fn set_i64(&mut self, value: i64) {
         AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i64))
             .store(&mut value.swap_bytes(), Ordering::Relaxed);
         self.byte_offset += 8;
-        Ok(())
     }
 
-    pub fn set_u8(&mut self, value: u8) -> Result<(), &'static str> {
+    pub fn set_u8(&mut self, value: u8) {
         AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u8))
             .store(&mut value.swap_bytes(), Ordering::Relaxed);
         self.byte_offset += 1;
-        Ok(())
     }
 
-    pub fn set_u16(&mut self, value: u16) -> Result<(), &'static str> {
+    pub fn set_u16(&mut self, value: u16) {
         AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u16))
             .store(&mut value.swap_bytes(), Ordering::Relaxed);
         self.byte_offset += 2;
-        Ok(())
     }
 
-    pub fn set_u32(&mut self, value: u32) -> Result<(), &'static str> {
+    pub fn set_u32(&mut self, value: u32) {
         AtomicPtr::new(&mut (self.data_start + self.byte_offset as u32))
             .store(&mut value.swap_bytes(), Ordering::Relaxed);
         self.byte_offset += 4;
-        Ok(())
     }
 
-    pub fn set_u64(&mut self, value: u64) -> Result<(), &'static str> {
+    pub fn set_u64(&mut self, value: u64) {
         AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u64))
             .store(&mut value.swap_bytes(), Ordering::Relaxed);
         self.byte_offset += 8;
-        Ok(())
     }
 
     /// Get a reference to the data view's byte length.

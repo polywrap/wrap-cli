@@ -16,12 +16,12 @@ pub trait Read: Clone + Sized {
     fn read_f32(&mut self) -> Result<f32, String>;
     fn read_f64(&mut self) -> Result<f64, String>;
     fn read_string_length(&mut self) -> Result<u32, String>;
-    fn read_string(&mut self) -> Result<String, String>;
+    fn read_string(&mut self) -> String;
     fn read_bytes_length(&mut self) -> Result<u32, String>;
-    fn read_bytes(&mut self) -> Result<Vec<u8>, String>;
-    fn read_bigint(&mut self) -> Result<BigInt, String>;
+    fn read_bytes(&mut self) -> Vec<u8>;
+    fn read_bigint(&mut self) -> BigInt;
     fn read_array_length(&mut self) -> Result<u32, String>;
-    fn read_array<T>(&mut self, reader: impl FnMut(&mut Self) -> T) -> Result<Vec<T>, String>;
+    fn read_array<T>(&mut self, reader: impl FnMut(&mut Self) -> T) -> Vec<T>;
     fn read_map_length(&mut self) -> Result<u32, String>;
     fn read_map<K, V>(
         &mut self,
