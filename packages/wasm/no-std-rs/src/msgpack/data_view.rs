@@ -23,7 +23,7 @@ impl<'a> DataView<'a> {
         offset: Option<usize>,
         length: Option<usize>,
     ) -> Result<Self, String> {
-        let context = cxt.unwrap_or(Context::new());
+        let context = cxt.unwrap_or_default();
         let byte_offset = offset.unwrap_or(0) as i32;
         let byte_length = length.unwrap_or(buf.len()) as i32;
 

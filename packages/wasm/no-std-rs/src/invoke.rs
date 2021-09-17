@@ -36,10 +36,7 @@ pub fn w3_invoke_args(method_size: u32, args_size: u32) -> InvokeArgs {
 
     unsafe { __w3_log(method.as_ptr() as u32, method.len() as u32) };
 
-    InvokeArgs {
-        method: method,
-        args: args,
-    }
+    InvokeArgs { method, args }
 }
 
 /// Helper for handling _w3_invoke

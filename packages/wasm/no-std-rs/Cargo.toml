@@ -26,11 +26,13 @@ num-bigint = { version = "0.4", default-features = false }
 # Unfortunately, `wee_alloc` requires nightly Rust when targeting wasm for now.
 wee_alloc = "0.4.5"
 
+[profile.dev]
+panic = "abort"
+
 [profile.release]
 lto = true
 # Tell `rustc` to optimize for small code size.
-opt-level = "z"
-panic = "abort"
-
-[profile.dev]
+debug = false
+debug-assertions = false
+codegen-units = 1
 panic = "abort"

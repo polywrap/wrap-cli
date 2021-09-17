@@ -228,7 +228,7 @@ impl<'a> Read for ReadDecoder<'a> {
         let mut custom_error = String::new();
         custom_error.push_str("Property must be of type `bool`");
         let msg = Self::get_error_message(value).unwrap();
-        custom_error.push_str(&msg);
+        custom_error.push_str(msg);
         Err(self.context.print_with_context(&custom_error))
     }
 
@@ -285,7 +285,7 @@ impl<'a> Read for ReadDecoder<'a> {
             _ => {
                 let mut custom_error = String::from("Property must be of type `int`");
                 let msg = Self::get_error_message(prefix).unwrap();
-                custom_error.push_str(&msg);
+                custom_error.push_str(msg);
                 Err(self.context.print_with_context(&custom_error))
             }
         }
@@ -353,7 +353,7 @@ impl<'a> Read for ReadDecoder<'a> {
             _ => {
                 let mut custom_error = String::from("Property must be of type `uint`");
                 let msg = Self::get_error_message(prefix).unwrap();
-                custom_error.push_str(&msg);
+                custom_error.push_str(msg);
                 Err(self.context.print_with_context(&custom_error))
             }
         }
@@ -366,7 +366,7 @@ impl<'a> Read for ReadDecoder<'a> {
         }
         let mut custom_error = String::from("Property must be of type `float32`");
         let msg = Self::get_error_message(prefix).unwrap();
-        custom_error.push_str(&msg);
+        custom_error.push_str(msg);
         Err(self.context.print_with_context(&custom_error))
     }
 
@@ -377,7 +377,7 @@ impl<'a> Read for ReadDecoder<'a> {
         }
         let mut custom_error = String::from("Property must be of type `float64`");
         let msg = Self::get_error_message(prefix).unwrap();
-        custom_error.push_str(&msg);
+        custom_error.push_str(msg);
         Err(self.context.print_with_context(&custom_error))
     }
 
@@ -396,7 +396,7 @@ impl<'a> Read for ReadDecoder<'a> {
             _ => {
                 let mut custom_error = String::from("Property must be of type `string`");
                 let msg = Self::get_error_message(lead_byte).unwrap();
-                custom_error.push_str(&msg);
+                custom_error.push_str(msg);
                 Err(self.context.print_with_context(&custom_error))
             }
         }
@@ -426,7 +426,7 @@ impl<'a> Read for ReadDecoder<'a> {
             _ => {
                 let mut custom_error = String::from("Property must be of type `bytes`");
                 let msg = Self::get_error_message(lead_byte).unwrap();
-                custom_error.push_str(&msg);
+                custom_error.push_str(msg);
                 Err(self.context.print_with_context(&custom_error))
             }
         }
@@ -456,7 +456,7 @@ impl<'a> Read for ReadDecoder<'a> {
         }
         let mut custom_error = String::from("Property must be of type `array`");
         let msg = Self::get_error_message(lead_byte).unwrap();
-        custom_error.push_str(&msg);
+        custom_error.push_str(msg);
         Err(self.context.print_with_context(&custom_error))
     }
 
@@ -483,7 +483,7 @@ impl<'a> Read for ReadDecoder<'a> {
         }
         let mut custom_error = String::from("Property must be of type `map`");
         let msg = Self::get_error_message(lead_byte).unwrap();
-        custom_error.push_str(&msg);
+        custom_error.push_str(msg);
         Err(self.context.print_with_context(&custom_error))
     }
 
