@@ -31,12 +31,11 @@ impl<'a> Context<'a> {
     }
 
     pub fn push(&mut self, node_item: &str, node_type: &str, node_info: &str) {
-        let node = Node {
+        self.nodes.push(Node {
             node_item: node_item.to_string(),
             node_type: node_type.to_string(),
             node_info: node_info.to_string(),
-        };
-        self.nodes.push(node);
+        });
     }
 
     pub fn pop(&mut self) {
@@ -70,8 +69,8 @@ impl<'a> Context<'a> {
             result.push_str("context stack is empty");
             return result;
         }
-        let len = self.get_length() as usize;
-        for i in (0..len).rev() {
+
+        for i in (0..self.get_length() as usize).rev() {
             let node = &self.nodes[i];
             result.push_str(&pad_end);
             let msg = format!(

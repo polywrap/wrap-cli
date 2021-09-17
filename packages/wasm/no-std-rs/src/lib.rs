@@ -1,6 +1,6 @@
 //! Polywrap Rust/WASM Runtime Library
 
-#![cfg_attr(not(test), no_std)]
+#![no_std]
 #![feature(
     alloc_error_handler,
     default_alloc_error_handler,
@@ -20,6 +20,9 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 extern "C" fn panic(_: &core::panic::PanicInfo) -> ! {
     core::intrinsics::abort();
 }
+
+#[lang = "eh_personality"]
+extern "C" fn eh_personality() {}
 
 pub mod abort;
 pub mod invoke;
