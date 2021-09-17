@@ -1,4 +1,4 @@
-import { QueryHandler, InvokeHandler, Uri } from "./";
+import { QueryHandler, InvokeHandler, SubscriptionHandler, Uri } from "./";
 import { ManifestType, AnyManifest } from "../manifest";
 
 export interface GetManifestOptions<TManifestType extends ManifestType> {
@@ -14,7 +14,10 @@ export interface GetImplementationsOptions {
   applyRedirects?: boolean;
 }
 
-export interface Client extends QueryHandler, InvokeHandler {
+export interface Client
+  extends QueryHandler,
+    SubscriptionHandler,
+    InvokeHandler {
   getSchema<TUri extends Uri | string>(uri: TUri): Promise<string>;
 
   getManifest<TUri extends Uri | string, TManifestType extends ManifestType>(

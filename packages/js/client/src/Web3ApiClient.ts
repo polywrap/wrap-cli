@@ -16,6 +16,8 @@ import {
   InterfaceImplementations,
   PluginRegistration,
   Web3ApiManifest,
+  Subscription,
+  SubscribeOptions,
   parseQuery,
   resolveUri,
   AnyManifest,
@@ -43,7 +45,7 @@ export interface ClientConfig<TUri = string> {
 export class Web3ApiClient implements Client {
   // TODO: the API cache needs to be more like a routing table.
   // It should help us keep track of what URI's map to what APIs,
-  // and handle cases where the are multiple jumps. For exmaple, if
+  // and handle cases where the are multiple jumps. For example, if
   // A => B => C, then the cache should have A => C, and B => C.
   private _apiCache: ApiCache = new Map<string, Api>();
   private _config: Required<ClientConfig<Uri>> = {
@@ -129,16 +131,10 @@ export class Web3ApiClient implements Client {
   >(
     options: QueryApiOptions<TVariables, TUri>
   ): Promise<QueryApiResult<TData>> {
-    let typedOptions: QueryApiOptions<TVariables, Uri>;
-
-    if (typeof options.uri === "string") {
-      typedOptions = {
-        ...options,
-        uri: new Uri(options.uri),
-      };
-    } else {
-      typedOptions = options as QueryApiOptions<TVariables, Uri>;
-    }
+    const typedOptions: QueryApiOptions<TVariables, Uri> = {
+      ...options,
+      uri: this._toUri(options.uri),
+    };
 
     const run = Tracer.traceFunc(
       "Web3ApiClient: query",
@@ -196,8 +192,8 @@ export class Web3ApiClient implements Client {
       }
     );
 
-    return await run(typedOptions).catch((error) => {
-      if (error.length) {
+    return await run(typedOptions).catch((error: Error | Error[]) => {
+      if (Array.isArray(error)) {
         return { errors: error };
       } else {
         return { errors: [error] };
@@ -223,6 +219,96 @@ export class Web3ApiClient implements Client {
         const result = (await api.invoke(options, this)) as TData;
 
         return result;
+      }
+    );
+
+    return run(typedOptions);
+  }
+
+  public subscribe<
+    TData extends Record<string, unknown> = Record<string, unknown>,
+    TVariables extends Record<string, unknown> = Record<string, unknown>,
+    TUri extends Uri | string = string
+  >(options: SubscribeOptions<TVariables, TUri>): Subscription<TData> {
+    const typedOptions: SubscribeOptions<TVariables, Uri> = {
+      ...options,
+      uri: this._toUri(options.uri),
+    };
+
+    const run = Tracer.traceFunc(
+      "Web3ApiClient: subscribe",
+      (options: SubscribeOptions<TVariables, Uri>): Subscription<TData> => {
+        const { uri, query, variables, frequency: freq } = options;
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const client: Web3ApiClient = this;
+
+        // calculate interval between queries, in milliseconds, 1 min default value
+        /* eslint-disable prettier/prettier */
+        let frequency: number;
+        if (freq && (freq.ms || freq.sec || freq.min || freq.hours)) {
+          frequency = (freq.ms ?? 0) + ((
+            (freq.hours ?? 0) * 3600 +
+            (freq.min ?? 0) * 60 +
+            (freq.sec ?? 0)
+          ) * 1000);
+        } else {
+          frequency = 60000;
+        }
+        /* eslint-enable  prettier/prettier */
+
+        const subscription: Subscription<TData> = {
+          frequency: frequency,
+          isActive: false,
+          stop(): void {
+            subscription.isActive = false;
+          },
+          async *[Symbol.asyncIterator](): AsyncGenerator<
+            QueryApiResult<TData>
+          > {
+            let timeout: NodeJS.Timeout | undefined = undefined;
+            subscription.isActive = true;
+
+            try {
+              let readyVals = 0;
+              let sleep: ((value?: unknown) => void) | undefined;
+
+              timeout = setInterval(() => {
+                readyVals++;
+                if (sleep) {
+                  sleep();
+                  sleep = undefined;
+                }
+              }, frequency);
+
+              while (subscription.isActive) {
+                if (readyVals === 0) {
+                  await new Promise((r) => (sleep = r));
+                }
+
+                for (; readyVals > 0; readyVals--) {
+                  if (!subscription.isActive) {
+                    break;
+                  }
+
+                  const result: QueryApiResult<TData> = await client.query({
+                    uri: uri,
+                    query: query,
+                    variables: variables,
+                  });
+
+                  yield result;
+                }
+              }
+            } finally {
+              if (timeout) {
+                clearInterval(timeout);
+              }
+              subscription.isActive = false;
+            }
+          },
+        };
+
+        return subscription;
       }
     );
 
@@ -271,7 +357,7 @@ export class Web3ApiClient implements Client {
               this._toUri(uri),
               this.interfaces(),
               applyRedirects ? this.redirects() : undefined
-            ).map((x) => x.uri) as TUri[])
+            ).map((x: Uri) => x.uri) as TUri[])
           : (getImplementations(
               this._toUri(uri),
               this.interfaces(),
