@@ -1,3 +1,14 @@
+# Web3API 0.0.1-prealpha.44
+## Features
+* `@web3api/client-js`: Use Fleek's IPFS gateway.
+
+# Web3API 0.0.1-prealpha.43
+## Features
+* `@web3api/client-js`: Added the `client.subscribe(...)` method, enabling users to easily send queries at a specified frequency.
+
+## Bugs
+* `@web3api/tracing-js`: Replaced the `util-inspect` dependency with a browser compatible one.
+
 # Web3API 0.0.1-prealpha.42
 ## Bugs
 * `@web3api/schema-parse`: Removed unnecessary sanitization for imported methods without any arguments.
