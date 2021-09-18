@@ -1,4 +1,5 @@
 import {
+  Uri,
   Client,
   GetFileOptions,
   GetManifestOptions,
@@ -22,7 +23,7 @@ export abstract class Api {
    * This client will be used for any sub-queries that occur.
    */
   public abstract async invoke(
-    options: InvokeApiOptions,
+    options: InvokeApiOptions<Uri>,
     client: Client
   ): Promise<InvokeApiResult<unknown>>;
 

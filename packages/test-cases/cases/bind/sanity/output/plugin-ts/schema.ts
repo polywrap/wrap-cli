@@ -9,6 +9,7 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar JSON
 
 directive @imported(
   uri: String!
@@ -86,6 +87,8 @@ type CustomType {
   i32: Int32!
   bigint: BigInt!
   optBigint: BigInt
+  json: JSON!
+  optJson: JSON
   bytes: Bytes!
   optBytes: Bytes
   boolean: Boolean!

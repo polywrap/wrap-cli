@@ -1,0 +1,9 @@
+query {
+  getNameFromAddress(
+    address: $address
+    registryAddress: $registryAddress
+    connection: {
+      networkNameOrChainId: $network
+    }
+  )
+}

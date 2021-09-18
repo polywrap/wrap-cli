@@ -29,6 +29,9 @@ export const toTypescript: MustacheFunction = () => {
       case "Bytes":
       case "BigInt":
         break;
+      case "JSON":
+        type = "Json";
+        break;
       default:
         if (type.includes("Enum_")) {
           type = `Types.${type.replace("Enum_", "")}`;

@@ -12,6 +12,8 @@ type CustomType {
   i32: Int32!
   bigint: BigInt!
   optBigint: BigInt
+  json: JSON!
+  optJson: JSON
   bytes: Bytes!
   optBytes: Bytes
   boolean: Boolean!

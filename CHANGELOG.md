@@ -1,3 +1,27 @@
+# Web3API 0.0.1-prealpha.44
+## Features
+* `@web3api/client-js`: Use Fleek's IPFS gateway.
+
+# Web3API 0.0.1-prealpha.43
+## Features
+* `@web3api/client-js`: Added the `client.subscribe(...)` method, enabling users to easily send queries at a specified frequency.
+
+## Bugs
+* `@web3api/tracing-js`: Replaced the `util-inspect` dependency with a browser compatible one.
+
+# Web3API 0.0.1-prealpha.42
+## Bugs
+* `@web3api/schema-parse`: Removed unnecessary sanitization for imported methods without any arguments.
+
+# Web3API 0.0.1-prealpha.41
+## Features
+* `@web3api/schema-parse`: Added support for `JSON` as a base type.
+* `@web3api/ens-api`: Merged in an initial version of the ENS Wasm based Web3Api.
+* `web3api.build.yaml`: Added support for the `linked_packages` property, allowing you to link local packages into the dockerized build-env.
+
+## Bugs
+* `@web3api/schema-compose`: Fixed an invalid GraphQL bug that occured when an imported query method did not have any arguments.
+
 # Web3API 0.0.1-prealpha.40
 ## Features
 * `@web3api/client-js`: Added `getManifest(...)`, `getFile(...)`, and `getSchema(...)` methods to the client, simply provide a URI.
