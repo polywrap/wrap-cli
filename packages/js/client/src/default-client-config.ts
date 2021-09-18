@@ -21,10 +21,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           uri: new Uri("w3://ens/ipfs.web3api.eth"),
           plugin: ipfsPlugin({
             provider: "https://ipfs.fleek.co",
-            fallbackProviders: [
-              "https://ipfs.io",
-              "https://ipfs.infura.io",
-            ],
+            fallbackProviders: ["https://ipfs.io", "https://ipfs.infura.io"],
           }),
         },
         // ENS is required for resolving domain to IPFS hashes
