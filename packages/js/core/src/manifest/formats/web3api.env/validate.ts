@@ -9,7 +9,7 @@ import {
   EnvManifestFormats
 } from ".";
 
-import schema_0_0_1_prealpha_2 from "@web3api/manifest-schemas/formats/web3api.env/0.0.1-prealpha.2.json";
+import schema_0_0_1_prealpha_1 from "@web3api/manifest-schemas/formats/web3api.env/0.0.1-prealpha.1.json";
 import { Tracer } from "@web3api/tracing-js"
 
 import {
@@ -24,7 +24,7 @@ type EnvManifestSchemas = {
 };
 
 const schemas: EnvManifestSchemas = {
-  "0.0.1-prealpha.2": schema_0_0_1_prealpha_2,
+  "0.0.1-prealpha.1": schema_0_0_1_prealpha_1,
 };
 
 const validator = new Validator();

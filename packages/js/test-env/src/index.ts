@@ -1,7 +1,3 @@
-import { UriRedirect } from "@web3api/core-js";
-import { plugin as ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { plugin as ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import { plugin as ensPlugin } from "@web3api/ens-plugin-js";
 import path from "path";
 import spawn from "spawn-command";
 import axios from "axios";
@@ -10,7 +6,9 @@ interface TestEnvironment {
   ipfs: string;
   ethereum: string;
   ensAddress: string;
-  redirects: UriRedirect[];
+  registrarAddress: string;
+  reverseAddress: string;
+  resolverAddress: string;
 }
 
 export const initTestEnvironment = async (): Promise<TestEnvironment> => {
@@ -34,38 +32,7 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
 
   // re-deploy ENS
   const { data } = await axios.get("http://localhost:4040/deploy-ens");
-
-  // Test env redirects for ethereum, ipfs, and ENS.
-  // Will be used to fetch APIs.
-  const redirects: UriRedirect[] = [
-    {
-      from: "w3://ens/ethereum.web3api.eth",
-      to: ethereumPlugin({
-        networks: {
-          testnet: {
-            provider: ethereum as string,
-          },
-        },
-      }),
-    },
-    {
-      from: "w3://ens/ipfs.web3api.eth",
-      to: ipfsPlugin({
-        provider: ipfs as string,
-        fallbackProviders: ["https://ipfs.io"],
-      }),
-    },
-    {
-      from: "w3://ens/ens.web3api.eth",
-      to: ensPlugin({
-        addresses: {
-          testnet: data.ensAddress as string,
-        },
-      }),
-    },
-  ];
-
-  return { ipfs, ethereum, ensAddress: data.ensAddress, redirects };
+  return { ipfs, ethereum, ...data };
 };
 
 export const stopTestEnvironment = async (): Promise<void> => {
@@ -86,7 +53,7 @@ export const runCLI = async (
     args: string[];
     cwd?: string;
   },
-  cli = "npx w3"
+  cli = `node ${__dirname}/../../../cli/bin/w3`
 ): Promise<{
   exitCode: number;
   stdout: string;

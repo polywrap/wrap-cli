@@ -6,23 +6,23 @@
  */
 
 import {
-  EnvManifest as EnvManifest0_0_1_prealpha_2
-} from "./0.0.1-prealpha.2";
+  EnvManifest as EnvManifest0_0_1_prealpha_1
+} from "./0.0.1-prealpha.1";
 
 export {
-  EnvManifest0_0_1_prealpha_2,
+  EnvManifest0_0_1_prealpha_1,
 };
 
 export enum EnvManifestFormats {
-  "0.0.1-prealpha.2" = "0.0.1-prealpha.2",
+  "0.0.1-prealpha.1" = "0.0.1-prealpha.1",
 }
 
 export type AnyEnvManifest =
-  | EnvManifest0_0_1_prealpha_2
+  | EnvManifest0_0_1_prealpha_1
 
-export type EnvManifest = EnvManifest0_0_1_prealpha_2;
+export type EnvManifest = EnvManifest0_0_1_prealpha_1;
 
-export const latestEnvManifestFormat = EnvManifestFormats["0.0.1-prealpha.2"]
+export const latestEnvManifestFormat = EnvManifestFormats["0.0.1-prealpha.1"]
 
 export { migrateEnvManifest } from "./migrate";
 

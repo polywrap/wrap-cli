@@ -1,6 +1,8 @@
 import {
   w3_subinvoke,
-  Nullable
+  Nullable,
+  BigInt,
+  JSON
 } from "@web3api/wasm-as";
 import {
   serializeimportedMethodArgs,
@@ -27,7 +29,7 @@ export class TestImport_Query {
     return deserializeimportedMethodResult(result);
   }
 
-  public static anotherMethod(input: Input_anotherMethod): i64 {
+  public static anotherMethod(input: Input_anotherMethod): i32 {
     const args = serializeanotherMethodArgs(input);
     const result = w3_subinvoke(
       "testimport.uri.eth",

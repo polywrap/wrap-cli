@@ -3,13 +3,17 @@ import {
   Client,
   executeMaybeAsyncFunction,
   filterResults,
+  GetManifestOptions,
   InvokeApiOptions,
   InvokeApiResult,
   Plugin,
   PluginPackage,
   Uri,
+  AnyManifest,
+  ManifestType,
+  GetFileOptions,
 } from "@web3api/core-js";
-import { decode } from "@msgpack/msgpack";
+import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
 
 export class PluginWeb3Api extends Api {
@@ -27,17 +31,17 @@ export class PluginWeb3Api extends Api {
   }
 
   public async invoke<TData = unknown>(
-    options: InvokeApiOptions,
+    options: InvokeApiOptions<Uri>,
     client: Client
   ): Promise<InvokeApiResult<TData>> {
     const run = Tracer.traceFunc(
       "PluginWeb3Api: invoke",
       async (
-        options: InvokeApiOptions,
+        options: InvokeApiOptions<Uri>,
         client: Client
       ): Promise<InvokeApiResult<TData>> => {
         const { module, method, input, resultFilter } = options;
-        const modules = this.getInstance().getModules(client);
+        const modules = this._getInstance().getModules(client);
         const pluginModule = modules[module];
 
         if (!pluginModule) {
@@ -52,7 +56,7 @@ export class PluginWeb3Api extends Api {
 
         // If the input is a msgpack buffer, deserialize it
         if (input instanceof ArrayBuffer) {
-          const result = decode(input);
+          const result = MsgPack.decode(input);
 
           Tracer.addEvent("msgpack-decoded", result);
 
@@ -78,6 +82,23 @@ export class PluginWeb3Api extends Api {
 
           if (result !== undefined) {
             let data = result as unknown;
+
+            if (process.env.TEST_PLUGIN) {
+              // try to encode the returned result,
+              // ensuring it's msgpack compliant
+              try {
+                MsgPack.encode(data);
+              } catch (e) {
+                throw Error(
+                  `TEST_PLUGIN msgpack encode failure.` +
+                    `uri: ${this._uri.uri}\nmodule: ${module}\n` +
+                    `method: ${method}\n` +
+                    `input: ${JSON.stringify(jsInput, null, 2)}\n` +
+                    `result: ${JSON.stringify(data, null, 2)}\n` +
+                    `exception: ${e}`
+                );
+              }
+            }
 
             if (resultFilter) {
               data = filterResults(result, resultFilter);
@@ -115,7 +136,21 @@ export class PluginWeb3Api extends Api {
     return Promise.resolve(this._plugin.manifest.schema);
   }
 
-  private getInstance(): Plugin {
+  public async getManifest<T extends ManifestType>(
+    _options: GetManifestOptions<T>,
+    _client: Client
+  ): Promise<AnyManifest<T>> {
+    throw Error("client.getManifest(...) is not implemented for Plugins.");
+  }
+
+  public async getFile(
+    _options: GetFileOptions,
+    _client: Client
+  ): Promise<ArrayBuffer | string> {
+    throw Error("client.getFile(...) is not implemented for Plugins.");
+  }
+
+  private _getInstance(): Plugin {
     return this._instance || this._plugin.factory();
   }
 }

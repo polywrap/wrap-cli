@@ -33,6 +33,8 @@ export const deserializeEnvManifest = Tracer.traceFunc(
       validateEnvManifest(anyEnvManifest, options?.extSchema);
     }
 
+    anyEnvManifest.__type = "EnvManifest";
+
     const versionCompare = compare(
       anyEnvManifest.format,
       latestEnvManifestFormat

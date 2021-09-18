@@ -4,6 +4,7 @@ import {
   JsonRpcProvider,
   Web3Provider,
   Networkish,
+  WebSocketProvider,
   getNetwork,
 } from "@ethersproject/providers";
 import { getAddress } from "@ethersproject/address";
@@ -45,11 +46,12 @@ export class Connection {
     for (const network of Object.keys(configs)) {
       // Create the connection
       const connection = new Connection(configs[network]);
+      const networkStr = network.toLowerCase();
 
-      connections[network] = connection;
+      connections[networkStr] = connection;
 
       // Handle the case where `network` is a number
-      const networkNumber = Number.parseInt(network);
+      const networkNumber = Number.parseInt(networkStr);
 
       if (networkNumber) {
         const namedNetwork = getNetwork(networkNumber);
@@ -61,6 +63,10 @@ export class Connection {
   }
 
   static fromNetwork(networkish: Networkish): Connection {
+    if (typeof networkish === "string") {
+      networkish = networkish.toLowerCase();
+    }
+
     return new Connection({
       provider: (ethers.providers.getDefaultProvider(
         ethers.providers.getNetwork(networkish)
@@ -83,7 +89,7 @@ export class Connection {
     if (typeof provider === "string") {
       this._client = (ethers.providers.getDefaultProvider(
         provider
-      ) as unknown) as JsonRpcProvider;
+      ) as unknown) as JsonRpcProvider | WebSocketProvider;
     } else {
       if ((provider as JsonRpcProvider).anyNetwork !== undefined) {
         this._client = provider as JsonRpcProvider;

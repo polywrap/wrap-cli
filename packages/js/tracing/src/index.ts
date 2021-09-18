@@ -6,9 +6,7 @@ import {
 import { ZipkinExporter } from "@opentelemetry/exporter-zipkin";
 import { WebTracerProvider } from "@opentelemetry/web";
 import * as api from "@opentelemetry/api";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-const inspect = require("util-inspect");
+import inspect from "browser-util-inspect";
 
 type MaybeAsync<T> = Promise<T> | T;
 
@@ -32,7 +30,7 @@ export class Tracer {
     this._initProvider();
 
     if (this._provider) {
-      this._tracer = this._provider.getTracer(tracerName);
+      this._tracer = this._provider.getTracer(tracerName) as otTracer;
     }
   }
 
@@ -48,7 +46,10 @@ export class Tracer {
       spanName,
       {},
       currentSpan
-        ? api.setSpanContext(api.context.active(), currentSpan.context())
+        ? api.trace.setSpanContext(
+            api.context.active(),
+            currentSpan.spanContext()
+          )
         : undefined
     );
     this._pushSpan(span);

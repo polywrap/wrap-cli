@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import { displayPath } from "./path";
 import { runCommand } from "./command";
 import { withSpinner } from "./spinner";
 import { intlMsg } from "../intl";
 
-import { writeFileSync } from "@web3api/os-js";
+import { isWin, writeFileSync } from "@web3api/os-js";
 import Mustache from "mustache";
 import path from "path";
 import fs from "fs";
@@ -97,8 +99,13 @@ export async function createBuildImage(
   const run = async (): Promise<string> => {
     // Build the docker image
     await runCommand(
-      `DOCKER_BUILDKIT=1 docker build -f ${dockerfile} -t ${imageName} ${rootDir}`,
-      quiet
+      `docker build -f ${dockerfile} -t ${imageName} ${rootDir}`,
+      quiet,
+      isWin()
+        ? undefined
+        : {
+            DOCKER_BUILDKIT: "true",
+          }
     );
 
     // Get the docker image ID

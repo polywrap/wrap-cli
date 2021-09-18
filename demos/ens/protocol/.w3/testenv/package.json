@@ -1,9 +1,0 @@
-{
-  "name": "@web3api/w3-testenv",
-  "version": "1.0.0",
-  "private": true,
-  "dependencies": {
-    "@namestys/ipfs-service": "0.0.1",
-    "@namestys/devserver": "0.0.2"
-  }
-}

@@ -10,7 +10,6 @@ export interface Web3ApiManifest {
   format: "0.0.1-prealpha.2";
   repository?: string;
   build?: string;
-  env?: string;
   language: string;
   modules: {
     mutation?: {
@@ -22,12 +21,9 @@ export interface Web3ApiManifest {
       module: string;
     };
   };
-  import_redirects?:
-    | []
-    | [
-        {
-          uri: string;
-          schema: string;
-        }
-      ];
+  import_redirects?: {
+    uri: string;
+    schema: string;
+  }[];
+  __type: "Web3ApiManifest";
 }

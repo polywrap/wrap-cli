@@ -6,12 +6,14 @@ import {
 import { abi, bytecode } from "../contracts/SimpleStorage";
 
 export function setData(input: Input_setData): string {
-  return Ethereum_Mutation.sendTransaction({
+  const res = Ethereum_Mutation.callContractMethod({
     address: input.address,
     method: "function set(uint256 value)",
     args: [input.value.toString()],
     connection: input.connection
   });
+
+  return res.hash;
 }
 
 export function deployContract(input: Input_deployContract): string {

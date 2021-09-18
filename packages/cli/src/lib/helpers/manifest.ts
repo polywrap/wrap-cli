@@ -1,17 +1,20 @@
 import { displayPath } from "./path";
 import { withSpinner } from "./spinner";
-import { Project } from "../Project";
 import { intlMsg } from "../intl";
 
 import {
-  BuildManifest,
   Web3ApiManifest,
+  BuildManifest,
+  EnvManifest,
+  MetaManifest,
+  PluginManifest,
   deserializeWeb3ApiManifest,
   deserializeBuildManifest,
   deserializeEnvManifest,
-  EnvManifest,
+  deserializeMetaManifest,
+  deserializePluginManifest,
 } from "@web3api/core-js";
-import { writeFileSync } from "@web3api/os-js";
+import { writeFileSync, normalizePath } from "@web3api/os-js";
 import { Schema as JsonSchema } from "jsonschema";
 import YAML from "js-yaml";
 import path from "path";
@@ -56,7 +59,6 @@ export async function loadWeb3ApiManifest(
 
 export async function loadBuildManifest(
   manifestPath: string,
-  project: Project,
   quiet = false
 ): Promise<BuildManifest> {
   const run = (): Promise<BuildManifest> => {
@@ -70,17 +72,11 @@ export async function loadBuildManifest(
     }
 
     // Load the custom json-schema extension if it exists
-    let configSchemaPath = path.join(
+    const configSchemaPath = path.join(
       path.dirname(manifestPath),
       "/web3api.build.ext.json"
     );
     let extSchema: JsonSchema | undefined = undefined;
-
-    if (!fs.existsSync(configSchemaPath)) {
-      configSchemaPath = project.getCachePath(
-        "build/env/web3api.build.ext.json"
-      );
-    }
 
     if (fs.existsSync(configSchemaPath)) {
       extSchema = JSON.parse(
@@ -153,8 +149,82 @@ export async function loadEnvManifest(
   }
 }
 
+export async function loadMetaManifest(
+  manifestPath: string,
+  quiet = false
+): Promise<MetaManifest> {
+  const run = (): Promise<MetaManifest> => {
+    const manifest = fs.readFileSync(manifestPath, "utf-8");
+
+    if (!manifest) {
+      const noLoadMessage = intlMsg.lib_helpers_manifest_unableToLoad({
+        path: `${manifestPath}`,
+      });
+      throw Error(noLoadMessage);
+    }
+
+    try {
+      const result = deserializeMetaManifest(manifest);
+      return Promise.resolve(result);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  };
+
+  if (quiet) {
+    return await run();
+  } else {
+    manifestPath = displayPath(manifestPath);
+    return (await withSpinner(
+      intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
+      intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
+      intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
+      async (_spinner) => {
+        return await run();
+      }
+    )) as MetaManifest;
+  }
+}
+
+export async function loadPluginManifest(
+  manifestPath: string,
+  quiet = false
+): Promise<PluginManifest> {
+  const run = (): Promise<PluginManifest> => {
+    const manifest = fs.readFileSync(manifestPath, "utf-8");
+
+    if (!manifest) {
+      const noLoadMessage = intlMsg.lib_helpers_manifest_unableToLoad({
+        path: `${manifestPath}`,
+      });
+      throw Error(noLoadMessage);
+    }
+
+    try {
+      const result = deserializePluginManifest(manifest);
+      return Promise.resolve(result);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  };
+
+  if (quiet) {
+    return await run();
+  } else {
+    manifestPath = displayPath(manifestPath);
+    return (await withSpinner(
+      intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
+      intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
+      intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
+      async (_spinner) => {
+        return await run();
+      }
+    )) as PluginManifest;
+  }
+}
+
 export async function outputManifest(
-  manifest: Web3ApiManifest | BuildManifest,
+  manifest: Web3ApiManifest | BuildManifest | MetaManifest,
   manifestPath: string,
   quiet = false
 ): Promise<unknown> {
@@ -181,7 +251,7 @@ export async function outputManifest(
             if (result) {
               newObj[key] = result;
             }
-          } else {
+          } else if (!key.startsWith("__")) {
             newObj[key] = input[key];
           }
         }
@@ -208,9 +278,15 @@ export async function outputManifest(
   } else {
     manifestPath = displayPath(manifestPath);
     return await withSpinner(
-      intlMsg.lib_helpers_manifest_outputText({ path: manifestPath }),
-      intlMsg.lib_helpers_manifest_outputError({ path: manifestPath }),
-      intlMsg.lib_helpers_manifest_outputWarning({ path: manifestPath }),
+      intlMsg.lib_helpers_manifest_outputText({
+        path: normalizePath(manifestPath),
+      }),
+      intlMsg.lib_helpers_manifest_outputError({
+        path: normalizePath(manifestPath),
+      }),
+      intlMsg.lib_helpers_manifest_outputWarning({
+        path: normalizePath(manifestPath),
+      }),
       (_spinner): Promise<unknown> => {
         return Promise.resolve(run());
       }

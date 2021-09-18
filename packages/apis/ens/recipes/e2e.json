@@ -1,0 +1,165 @@
+[
+  {
+    "api": "ens/testnet/ens.eth",
+    "constants": "./constants.json"
+  },
+  {
+    "query": "../meta/queries/deployFIFSRegistrar.graphql",
+    "variables": {
+      "registryAddress": "$Registry",
+      "tld": "$Tld",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "../meta/queries/registerDomain.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "registrarAddress": "$Registrar",
+      "registryAddress": "$Registry",
+      "owner": "$Signer",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "../meta/queries/setResolver.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "resolverAddress": "$Resolver",
+      "registryAddress": "$Registry",
+      "owner": "$Signer",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "../meta/queries/setSubdomainRecord.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "label": "$Label",
+      "owner": "$Signer",
+      "resolverAddress": "$Resolver",
+      "ttl": "$Ttl",
+      "registryAddress": "$Registry",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "../meta/queries/setAddress.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "address": "$Signer",
+      "resolverAddress": "$Resolver",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "../meta/queries/setContentHash.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "cid": "$CID",
+      "resolverAddress": "$Resolver",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "../meta/queries/reverseRegister.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "reverseRegistryAddress": "$Reverse",
+      "owner": "$Signer",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "../meta/queries/setSubdomainOwner.graphql",
+    "variables": {
+      "subdomain": "$Subdomain",
+      "owner": "$Signer",
+      "registryAddress": "$Registry",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "../meta/queries/setResolver.graphql",
+    "variables": {
+      "domain": "$Subdomain",
+      "resolverAddress": "$Resolver",
+      "registryAddress": "$Registry",
+      "owner": "$Signer",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "../meta/queries/getOwner.graphql",
+    "variables": {
+      "registryAddress": "$Registry",
+      "domain": "$Domain",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "../meta/queries/setOwner.graphql",
+    "variables": {
+      "domain": "$Domain",
+      "registryAddress": "$Registry",
+      "newOwner": "$AlternateOwner",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "../meta/queries/getOwner.graphql",
+    "variables": {
+      "registryAddress": "$Registry",
+      "domain": "$Domain",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "../meta/queries/getOwner.graphql",
+    "variables": {
+      "registryAddress": "$Registry",
+      "domain": "$Subdomain",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "../meta/queries/getResolver.graphql",
+    "variables": {
+      "registryAddress": "$Registry",
+      "domain": "$Domain",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "../meta/queries/getResolver.graphql",
+    "variables": {
+      "registryAddress": "$Registry",
+      "domain": "$Subdomain",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "../meta/queries/getAddress.graphql",
+    "variables": {
+      "resolverAddress": "$Resolver",
+      "domain": "$Domain",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "../meta/queries/getContentHash.graphql",
+    "variables": {
+      "resolverAddress": "$Resolver",
+      "domain": "$Domain",
+      "network": "testnet"
+    }
+  },
+  {
+    "query": "../meta/queries/getNameFromAddress.graphql",
+    "variables": {
+      "address": "$Signer",
+      "registryAddress": "$Registry",
+      "network": "testnet"
+    }
+  }
+]

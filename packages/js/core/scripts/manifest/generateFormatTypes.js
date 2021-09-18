@@ -1,4 +1,5 @@
 const SchemaToTypescript = require("json-schema-to-typescript");
+const os = require("@web3api/os-js");
 const fs = require("fs");
 const path = require("path");
 const Mustache = require("mustache");
@@ -36,6 +37,16 @@ async function generateFormatTypes() {
           fs.readFileSync(formatSchemaPath, { encoding: "utf-8" })
         );
 
+        // Insert the __type property for introspection
+        formatSchema.properties["__type"] = {
+          type: "string",
+          const: formatSchema.id
+        };
+        formatSchema.required = [
+          ...formatSchema.required,
+          "__type"
+        ];
+
         formatSchemas.push(formatSchema);
 
         // Convert it to a TypeScript interface
@@ -47,7 +58,7 @@ async function generateFormatTypes() {
         // Emit the result
         const tsOutputPath = path.join(__dirname, `/../../src/manifest/formats/${formatTypeName}/${formatVersion}.ts`);
         fs.mkdirSync(path.dirname(tsOutputPath), { recursive: true });
-        fs.writeFileSync(
+        os.writeFileSync(
           tsOutputPath,
           `/* eslint-disable @typescript-eslint/naming-convention */\n${tsFile}`
         );
@@ -74,7 +85,7 @@ async function generateFormatTypes() {
       // Emit the source
       const tsOutputPath = path.join(__dirname, `/../../src/manifest/formats/${formatTypeName}/${name}.ts`);
       fs.mkdirSync(path.dirname(tsOutputPath), { recursive: true });
-      fs.writeFileSync(tsOutputPath, tsSrc);
+      os.writeFileSync(tsOutputPath, tsSrc);
     }
 
     const lastItem = (arr) => arr[arr.length - 1];
