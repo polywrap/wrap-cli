@@ -30,9 +30,9 @@ wee_alloc = "0.4.5"
 panic = "abort"
 
 [profile.release]
+panic = "abort"
 lto = true
 # Tell `rustc` to optimize for small code size.
 debug = false
 debug-assertions = false
 codegen-units = 1
-panic = "abort"

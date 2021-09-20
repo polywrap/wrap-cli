@@ -15,14 +15,12 @@ extern crate wee_alloc;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-#[cfg(not(test))]
 #[panic_handler]
-// #[lang = "panic_impl"]
+#[lang = "panic_impl"]
 extern "C" fn panic(_: &core::panic::PanicInfo) -> ! {
     core::intrinsics::abort();
 }
 
-#[cfg(not(test))]
 #[lang = "eh_personality"]
 extern "C" fn eh_personality() {}
 
