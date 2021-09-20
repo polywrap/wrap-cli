@@ -1,20 +1,18 @@
-use polywrap_wasm_rs::{
-    Context,
-    Read,
-    ReadDecoder,
-    Write,
-    WriteEncoder,
-    WriteSizer,
+use alloc::{
+    boxed::Box,
+    collections::BTreeMap,
+    format,
+    str::FromStr,
+    string::{String, ToString},
+    vec,
+    vec::Vec,
 };
+use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
-use crate::CustomType;
-use num_bigint::BigInt;
 use crate::AnotherType;
-use crate::{
-    CustomEnum,
-    get_custom_enum_value,
-    sanitize_custom_enum_value,
-};
+use crate::CustomType;
+use crate::{get_custom_enum_value, sanitize_custom_enum_value, CustomEnum};
+use num_bigint::BigInt;
 
 pub fn serialize_custom_type(input: &CustomType) -> Vec<u8> {
     let mut sizer_context = Context::new();
@@ -35,7 +33,9 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) {
     writer.write_str("str");
     writer.write_string(&input.str);
     writer.context().pop();
-    writer.context().push("opt_str", "Option<String>", "writing property");
+    writer
+        .context()
+        .push("opt_str", "Option<String>", "writing property");
     writer.write_str("opt_str");
     writer.write_nullable_string(&input.opt_str);
     writer.context().pop();
@@ -43,7 +43,9 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) {
     writer.write_str("u");
     writer.write_u32(input.u);
     writer.context().pop();
-    writer.context().push("opt_u", "Option<u32>", "writing property");
+    writer
+        .context()
+        .push("opt_u", "Option<u32>", "writing property");
     writer.write_str("opt_u");
     writer.write_nullable_u32(&input.opt_u);
     writer.context().pop();
@@ -75,19 +77,27 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) {
     writer.write_str("i32");
     writer.write_i32(input.i32);
     writer.context().pop();
-    writer.context().push("bigint", "BigInt", "writing property");
+    writer
+        .context()
+        .push("bigint", "BigInt", "writing property");
     writer.write_str("bigint");
     writer.write_bigint(&input.bigint);
     writer.context().pop();
-    writer.context().push("opt_bigint", "Option<BigInt>", "writing property");
+    writer
+        .context()
+        .push("opt_bigint", "Option<BigInt>", "writing property");
     writer.write_str("opt_bigint");
     writer.write_nullable_bigint(&input.opt_bigint);
     writer.context().pop();
-    writer.context().push("bytes", "Vec<u8>", "writing property");
+    writer
+        .context()
+        .push("bytes", "Vec<u8>", "writing property");
     writer.write_str("bytes");
     writer.write_bytes(&input.bytes);
     writer.context().pop();
-    writer.context().push("opt_bytes", "Option<Vec<u8>>", "writing property");
+    writer
+        .context()
+        .push("opt_bytes", "Option<Vec<u8>>", "writing property");
     writer.write_str("opt_bytes");
     writer.write_nullable_bytes(&input.opt_bytes);
     writer.context().pop();
@@ -95,35 +105,51 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) {
     writer.write_str("boolean");
     writer.write_bool(input.boolean);
     writer.context().pop();
-    writer.context().push("opt_boolean", "Option<bool>", "writing property");
+    writer
+        .context()
+        .push("opt_boolean", "Option<bool>", "writing property");
     writer.write_str("opt_boolean");
     writer.write_nullable_bool(&input.opt_boolean);
     writer.context().pop();
-    writer.context().push("u_array", "Vec<u32>", "writing property");
+    writer
+        .context()
+        .push("u_array", "Vec<u32>", "writing property");
     writer.write_str("u_array");
     writer.write_array(&input.u_array, |writer: &mut W, item| {
         writer.write_u32(*item);
     });
     writer.context().pop();
-    writer.context().push("u_opt_array", "Option<Vec<u32>>", "writing property");
+    writer
+        .context()
+        .push("u_opt_array", "Option<Vec<u32>>", "writing property");
     writer.write_str("u_opt_array");
     writer.write_nullable_array(&input.u_opt_array, |writer: &mut W, item| {
         writer.write_u32(*item);
     });
     writer.context().pop();
-    writer.context().push("opt_u_opt_array", "Option<Vec<Option<u32>>>", "writing property");
+    writer.context().push(
+        "opt_u_opt_array",
+        "Option<Vec<Option<u32>>>",
+        "writing property",
+    );
     writer.write_str("opt_u_opt_array");
     writer.write_nullable_array(&input.opt_u_opt_array, |writer: &mut W, item| {
         writer.write_nullable_u32(item);
     });
     writer.context().pop();
-    writer.context().push("opt_str_opt_array", "Option<Vec<Option<String>>>", "writing property");
+    writer.context().push(
+        "opt_str_opt_array",
+        "Option<Vec<Option<String>>>",
+        "writing property",
+    );
     writer.write_str("opt_str_opt_array");
     writer.write_nullable_array(&input.opt_str_opt_array, |writer: &mut W, item| {
         writer.write_nullable_string(item);
     });
     writer.context().pop();
-    writer.context().push("u_array_array", "Vec<Vec<u32>>", "writing property");
+    writer
+        .context()
+        .push("u_array_array", "Vec<Vec<u32>>", "writing property");
     writer.write_str("u_array_array");
     writer.write_array(&input.u_array_array, |writer: &mut W, item| {
         writer.write_array(item, |writer: &mut W, item| {
@@ -131,7 +157,11 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) {
         });
     });
     writer.context().pop();
-    writer.context().push("u_opt_array_opt_array", "Vec<Option<Vec<Option<u32>>>>", "writing property");
+    writer.context().push(
+        "u_opt_array_opt_array",
+        "Vec<Option<Vec<Option<u32>>>>",
+        "writing property",
+    );
     writer.write_str("u_opt_array_opt_array");
     writer.write_array(&input.u_opt_array_opt_array, |writer: &mut W, item| {
         writer.write_nullable_array(item, |writer: &mut W, item| {
@@ -139,7 +169,11 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) {
         });
     });
     writer.context().pop();
-    writer.context().push("u_array_opt_array_array", "Vec<Option<Vec<Vec<u32>>>>", "writing property");
+    writer.context().push(
+        "u_array_opt_array_array",
+        "Vec<Option<Vec<Vec<u32>>>>",
+        "writing property",
+    );
     writer.write_str("u_array_opt_array_array");
     writer.write_array(&input.u_array_opt_array_array, |writer: &mut W, item| {
         writer.write_nullable_array(item, |writer: &mut W, item| {
@@ -149,7 +183,11 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) {
         });
     });
     writer.context().pop();
-    writer.context().push("crazy_array", "Option<Vec<Option<Vec<Vec<Option<Vec<u32>>>>>>>", "writing property");
+    writer.context().push(
+        "crazy_array",
+        "Option<Vec<Option<Vec<Vec<Option<Vec<u32>>>>>>>",
+        "writing property",
+    );
     writer.write_str("crazy_array");
     writer.write_nullable_array(&input.crazy_array, |writer: &mut W, item| {
         writer.write_nullable_array(item, |writer: &mut W, item| {
@@ -161,11 +199,15 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) {
         });
     });
     writer.context().pop();
-    writer.context().push("object", "Box<AnotherType>", "writing property");
+    writer
+        .context()
+        .push("object", "Box<AnotherType>", "writing property");
     writer.write_str("object");
     AnotherType::write(&input.object, writer);
     writer.context().pop();
-    writer.context().push("opt_object", "Option<Box<AnotherType>>", "writing property");
+    writer
+        .context()
+        .push("opt_object", "Option<Box<AnotherType>>", "writing property");
     writer.write_str("opt_object");
     if input.opt_object.is_some() {
         AnotherType::write(input.opt_object.as_ref().as_ref().unwrap(), writer);
@@ -173,13 +215,19 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) {
         writer.write_nil();
     }
     writer.context().pop();
-    writer.context().push("object_array", "Vec<Box<AnotherType>>", "writing property");
+    writer
+        .context()
+        .push("object_array", "Vec<Box<AnotherType>>", "writing property");
     writer.write_str("object_array");
     writer.write_array(&input.object_array, |writer: &mut W, item| {
         AnotherType::write(item, writer);
     });
     writer.context().pop();
-    writer.context().push("opt_object_array", "Option<Vec<Option<Box<AnotherType>>>>", "writing property");
+    writer.context().push(
+        "opt_object_array",
+        "Option<Vec<Option<Box<AnotherType>>>>",
+        "writing property",
+    );
     writer.write_str("opt_object_array");
     writer.write_nullable_array(&input.opt_object_array, |writer: &mut W, item| {
         if item.is_some() {
@@ -189,21 +237,31 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) {
         }
     });
     writer.context().pop();
-    writer.context().push("en", "CustomEnum", "writing property");
+    writer
+        .context()
+        .push("en", "CustomEnum", "writing property");
     writer.write_str("en");
     writer.write_i32(input.en as i32);
     writer.context().pop();
-    writer.context().push("opt_enum", "Option<CustomEnum>", "writing property");
+    writer
+        .context()
+        .push("opt_enum", "Option<CustomEnum>", "writing property");
     writer.write_str("opt_enum");
     writer.write_nullable_i32(&Some(input.opt_enum.unwrap() as i32));
     writer.context().pop();
-    writer.context().push("enum_array", "Vec<CustomEnum>", "writing property");
+    writer
+        .context()
+        .push("enum_array", "Vec<CustomEnum>", "writing property");
     writer.write_str("enum_array");
     writer.write_array(&input.enum_array, |writer: &mut W, item| {
         writer.write_i32(*item as i32);
     });
     writer.context().pop();
-    writer.context().push("opt_enum_array", "Option<Vec<Option<CustomEnum>>>", "writing property");
+    writer.context().push(
+        "opt_enum_array",
+        "Option<Vec<Option<CustomEnum>>>",
+        "writing property",
+    );
     writer.write_str("opt_enum_array");
     writer.write_nullable_array(&input.opt_enum_array, |writer: &mut W, item| {
         writer.write_nullable_i32(&Some(item.unwrap() as i32));
@@ -281,185 +339,265 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
 
         match field.as_str() {
             "str" => {
-                reader.context().push(&field, "String", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "String", "type found, reading property");
                 _str = reader.read_string().unwrap();
                 _str_set = true;
                 reader.context().pop();
             }
             "opt_str" => {
-                reader.context().push(&field, "Option<String>", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "Option<String>", "type found, reading property");
                 _opt_str = reader.read_nullable_string();
                 reader.context().pop();
             }
             "u" => {
-                reader.context().push(&field, "u32", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "u32", "type found, reading property");
                 _u = reader.read_u32().unwrap();
                 _u_set = true;
                 reader.context().pop();
             }
             "opt_u" => {
-                reader.context().push(&field, "Option<u32>", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "Option<u32>", "type found, reading property");
                 _opt_u = reader.read_nullable_u32();
                 reader.context().pop();
             }
             "u8" => {
-                reader.context().push(&field, "u8", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "u8", "type found, reading property");
                 _u8 = reader.read_u8().unwrap();
                 _u8_set = true;
                 reader.context().pop();
             }
             "u16" => {
-                reader.context().push(&field, "u16", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "u16", "type found, reading property");
                 _u16 = reader.read_u16().unwrap();
                 _u16_set = true;
                 reader.context().pop();
             }
             "u32" => {
-                reader.context().push(&field, "u32", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "u32", "type found, reading property");
                 _u32 = reader.read_u32().unwrap();
                 _u32_set = true;
                 reader.context().pop();
             }
             "i" => {
-                reader.context().push(&field, "i32", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "i32", "type found, reading property");
                 _i = reader.read_i32().unwrap();
                 _i_set = true;
                 reader.context().pop();
             }
             "i8" => {
-                reader.context().push(&field, "i8", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "i8", "type found, reading property");
                 _i8 = reader.read_i8().unwrap();
                 _i8_set = true;
                 reader.context().pop();
             }
             "i16" => {
-                reader.context().push(&field, "i16", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "i16", "type found, reading property");
                 _i16 = reader.read_i16().unwrap();
                 _i16_set = true;
                 reader.context().pop();
             }
             "i32" => {
-                reader.context().push(&field, "i32", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "i32", "type found, reading property");
                 _i32 = reader.read_i32().unwrap();
                 _i32_set = true;
                 reader.context().pop();
             }
             "bigint" => {
-                reader.context().push(&field, "BigInt", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "BigInt", "type found, reading property");
                 _bigint = reader.read_bigint().unwrap();
                 _bigint_set = true;
                 reader.context().pop();
             }
             "opt_bigint" => {
-                reader.context().push(&field, "Option<BigInt>", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "Option<BigInt>", "type found, reading property");
                 _opt_bigint = reader.read_nullable_bigint();
                 reader.context().pop();
             }
             "bytes" => {
-                reader.context().push(&field, "Vec<u8>", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "Vec<u8>", "type found, reading property");
                 _bytes = reader.read_bytes().unwrap();
                 _bytes_set = true;
                 reader.context().pop();
             }
             "opt_bytes" => {
-                reader.context().push(&field, "Option<Vec<u8>>", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "Option<Vec<u8>>", "type found, reading property");
                 _opt_bytes = reader.read_nullable_bytes();
                 reader.context().pop();
             }
             "boolean" => {
-                reader.context().push(&field, "bool", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "bool", "type found, reading property");
                 _boolean = reader.read_bool().unwrap();
                 _boolean_set = true;
                 reader.context().pop();
             }
             "opt_boolean" => {
-                reader.context().push(&field, "Option<bool>", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "Option<bool>", "type found, reading property");
                 _opt_boolean = reader.read_nullable_bool();
                 reader.context().pop();
             }
             "u_array" => {
-                reader.context().push(&field, "Vec<u32>", "type found, reading property");
-                _u_array = reader.read_array(|reader| {
-                    reader.read_u32().unwrap();
-                }).expect("Failed to read array");
+                reader
+                    .context()
+                    .push(&field, "Vec<u32>", "type found, reading property");
+                _u_array = reader
+                    .read_array(|reader| {
+                        reader.read_u32().unwrap();
+                    })
+                    .expect("Failed to read array");
                 _u_array_set = true;
                 reader.context().pop();
             }
             "u_opt_array" => {
-                reader.context().push(&field, "Option<Vec<u32>>", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "Option<Vec<u32>>", "type found, reading property");
                 _u_opt_array = reader.read_nullable_array(|reader| {
                     reader.read_u32().unwrap();
                 });
                 reader.context().pop();
             }
             "opt_u_opt_array" => {
-                reader.context().push(&field, "Option<Vec<Option<u32>>>", "type found, reading property");
+                reader.context().push(
+                    &field,
+                    "Option<Vec<Option<u32>>>",
+                    "type found, reading property",
+                );
                 _opt_u_opt_array = reader.read_nullable_array(|reader| {
                     reader.read_nullable_u32();
                 });
                 reader.context().pop();
             }
             "opt_str_opt_array" => {
-                reader.context().push(&field, "Option<Vec<Option<String>>>", "type found, reading property");
+                reader.context().push(
+                    &field,
+                    "Option<Vec<Option<String>>>",
+                    "type found, reading property",
+                );
                 _opt_str_opt_array = reader.read_nullable_array(|reader| {
                     reader.read_nullable_string();
                 });
                 reader.context().pop();
             }
             "u_array_array" => {
-                reader.context().push(&field, "Vec<Vec<u32>>", "type found, reading property");
-                _u_array_array = reader.read_array(|reader| {
-                    reader.read_array(|reader| {
-                        reader.read_u32().unwrap();
-                    }).expect("Failed to read array");
-                }).expect("Failed to read array");
+                reader
+                    .context()
+                    .push(&field, "Vec<Vec<u32>>", "type found, reading property");
+                _u_array_array = reader
+                    .read_array(|reader| {
+                        reader
+                            .read_array(|reader| {
+                                reader.read_u32().unwrap();
+                            })
+                            .expect("Failed to read array");
+                    })
+                    .expect("Failed to read array");
                 _u_array_array_set = true;
                 reader.context().pop();
             }
             "u_opt_array_opt_array" => {
-                reader.context().push(&field, "Vec<Option<Vec<Option<u32>>>>", "type found, reading property");
-                _u_opt_array_opt_array = reader.read_array(|reader| {
-                    reader.read_nullable_array(|reader| {
-                        reader.read_nullable_u32();
-                    });
-                }).expect("Failed to read array");
+                reader.context().push(
+                    &field,
+                    "Vec<Option<Vec<Option<u32>>>>",
+                    "type found, reading property",
+                );
+                _u_opt_array_opt_array = reader
+                    .read_array(|reader| {
+                        reader.read_nullable_array(|reader| {
+                            reader.read_nullable_u32();
+                        });
+                    })
+                    .expect("Failed to read array");
                 _u_opt_array_opt_array_set = true;
                 reader.context().pop();
             }
             "u_array_opt_array_array" => {
-                reader.context().push(&field, "Vec<Option<Vec<Vec<u32>>>>", "type found, reading property");
-                _u_array_opt_array_array = reader.read_array(|reader| {
-                    reader.read_nullable_array(|reader| {
-                        reader.read_array(|reader| {
-                            reader.read_u32().unwrap();
-                        }).expect("Failed to read array");
-                    });
-                }).expect("Failed to read array");
+                reader.context().push(
+                    &field,
+                    "Vec<Option<Vec<Vec<u32>>>>",
+                    "type found, reading property",
+                );
+                _u_array_opt_array_array = reader
+                    .read_array(|reader| {
+                        reader.read_nullable_array(|reader| {
+                            reader
+                                .read_array(|reader| {
+                                    reader.read_u32().unwrap();
+                                })
+                                .expect("Failed to read array");
+                        });
+                    })
+                    .expect("Failed to read array");
                 _u_array_opt_array_array_set = true;
                 reader.context().pop();
             }
             "crazy_array" => {
-                reader.context().push(&field, "Option<Vec<Option<Vec<Vec<Option<Vec<u32>>>>>>>", "type found, reading property");
+                reader.context().push(
+                    &field,
+                    "Option<Vec<Option<Vec<Vec<Option<Vec<u32>>>>>>>",
+                    "type found, reading property",
+                );
                 _crazy_array = reader.read_nullable_array(|reader| {
                     reader.read_nullable_array(|reader| {
-                        reader.read_array(|reader| {
-                            reader.read_nullable_array(|reader| {
-                                reader.read_u32().unwrap();
-                            });
-                        }).expect("Failed to read array");
+                        reader
+                            .read_array(|reader| {
+                                reader.read_nullable_array(|reader| {
+                                    reader.read_u32().unwrap();
+                                });
+                            })
+                            .expect("Failed to read array");
                     });
                 });
                 reader.context().pop();
             }
             "object" => {
-                reader.context().push(&field, "Box<AnotherType>", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "Box<AnotherType>", "type found, reading property");
                 let object = Box::new(AnotherType::read(reader));
                 _object = object;
                 _object_set = true;
                 reader.context().pop();
             }
             "opt_object" => {
-                reader.context().push(&field, "Option<Box<AnotherType>>", "type found, reading property");
+                reader.context().push(
+                    &field,
+                    "Option<Box<AnotherType>>",
+                    "type found, reading property",
+                );
                 let mut object: Option<Box<AnotherType>> = None;
                 if !reader.is_next_nil() {
                     object = Some(Box::new(AnotherType::read(reader)));
@@ -468,16 +606,26 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                 reader.context().pop();
             }
             "object_array" => {
-                reader.context().push(&field, "Vec<Box<AnotherType>>", "type found, reading property");
-                _object_array = reader.read_array(|reader| {
-                    let object = Box::new(AnotherType::read(reader));
-                    return object;
-                }).expect("Failed to read array");
+                reader.context().push(
+                    &field,
+                    "Vec<Box<AnotherType>>",
+                    "type found, reading property",
+                );
+                _object_array = reader
+                    .read_array(|reader| {
+                        let object = Box::new(AnotherType::read(reader));
+                        return object;
+                    })
+                    .expect("Failed to read array");
                 _object_array_set = true;
                 reader.context().pop();
             }
             "opt_object_array" => {
-                reader.context().push(&field, "Option<Vec<Option<Box<AnotherType>>>>", "type found, reading property");
+                reader.context().push(
+                    &field,
+                    "Option<Vec<Option<Box<AnotherType>>>>",
+                    "type found, reading property",
+                );
                 _opt_object_array = reader.read_nullable_array(|reader| {
                     let mut object: Option<Box<AnotherType>> = None;
                     if !reader.is_next_nil() {
@@ -488,7 +636,9 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                 reader.context().pop();
             }
             "en" => {
-                reader.context().push(&field, "CustomEnum", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "CustomEnum", "type found, reading property");
                 let mut value = CustomEnum::_MAX_;
                 if reader.is_next_string() {
                     value = get_custom_enum_value(&reader.read_string().unwrap())
@@ -504,15 +654,21 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                 reader.context().pop();
             }
             "opt_enum" => {
-                reader.context().push(&field, "Option<CustomEnum>", "type found, reading property");
+                reader
+                    .context()
+                    .push(&field, "Option<CustomEnum>", "type found, reading property");
                 let mut value: Option<CustomEnum> = None;
                 if !reader.is_next_nil() {
                     if reader.is_next_string() {
-                        value = Some(get_custom_enum_value(&reader.read_string().unwrap())
-                            .expect("Failed to get Option<CustomEnum> value"));
+                        value = Some(
+                            get_custom_enum_value(&reader.read_string().unwrap())
+                                .expect("Failed to get Option<CustomEnum> value"),
+                        );
                     } else {
-                        value = Some(CustomEnum::try_from(reader.read_i32().unwrap())
-                            .expect("Failed to convert i32 to Option<CustomEnum>"));
+                        value = Some(
+                            CustomEnum::try_from(reader.read_i32().unwrap())
+                                .expect("Failed to convert i32 to Option<CustomEnum>"),
+                        );
                         sanitize_custom_enum_value(value.unwrap() as i32)
                             .expect("Failed to sanitize Option<CustomEnum>");
                     }
@@ -523,34 +679,46 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                 reader.context().pop();
             }
             "enum_array" => {
-                reader.context().push(&field, "Vec<CustomEnum>", "type found, reading property");
-                _enum_array = reader.read_array(|reader| {
-                    let mut value = CustomEnum::_MAX_;
-                    if reader.is_next_string() {
-                        value = get_custom_enum_value(&reader.read_string().unwrap())
-                            .expect("Failed to get CustomEnum value");
-                    } else {
-                        value = CustomEnum::try_from(reader.read_i32().unwrap())
-                            .expect("Failed to convert i32 to CustomEnum");
-                        sanitize_custom_enum_value(value as i32)
-                            .expect("Failed to sanitize CustomEnum");
-                    }
-                    return value;
-                }).expect("Failed to read array");
+                reader
+                    .context()
+                    .push(&field, "Vec<CustomEnum>", "type found, reading property");
+                _enum_array = reader
+                    .read_array(|reader| {
+                        let mut value = CustomEnum::_MAX_;
+                        if reader.is_next_string() {
+                            value = get_custom_enum_value(&reader.read_string().unwrap())
+                                .expect("Failed to get CustomEnum value");
+                        } else {
+                            value = CustomEnum::try_from(reader.read_i32().unwrap())
+                                .expect("Failed to convert i32 to CustomEnum");
+                            sanitize_custom_enum_value(value as i32)
+                                .expect("Failed to sanitize CustomEnum");
+                        }
+                        return value;
+                    })
+                    .expect("Failed to read array");
                 _enum_array_set = true;
                 reader.context().pop();
             }
             "opt_enum_array" => {
-                reader.context().push(&field, "Option<Vec<Option<CustomEnum>>>", "type found, reading property");
+                reader.context().push(
+                    &field,
+                    "Option<Vec<Option<CustomEnum>>>",
+                    "type found, reading property",
+                );
                 _opt_enum_array = reader.read_nullable_array(|reader| {
                     let mut value: Option<CustomEnum> = None;
                     if !reader.is_next_nil() {
                         if reader.is_next_string() {
-                            value = Some(get_custom_enum_value(&reader.read_string().unwrap())
-                                .expect("Failed to get Option<CustomEnum> value"));
+                            value = Some(
+                                get_custom_enum_value(&reader.read_string().unwrap())
+                                    .expect("Failed to get Option<CustomEnum> value"),
+                            );
                         } else {
-                            value = Some(CustomEnum::try_from(reader.read_i32().unwrap())
-                                .expect("Failed to convert i32 to Option<CustomEnum>"));
+                            value = Some(
+                                CustomEnum::try_from(reader.read_i32().unwrap())
+                                    .expect("Failed to convert i32 to Option<CustomEnum>"),
+                            );
                             sanitize_custom_enum_value(value.unwrap() as i32)
                                 .expect("Failed to sanitize Option<CustomEnum>");
                         }
@@ -565,83 +733,123 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
         }
     }
     if !_str_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'str: String'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'str: String'");
         return Err(custom_error);
     }
     if !_u_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'u: UInt'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'u: UInt'");
         return Err(custom_error);
     }
     if !_u8_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'u8: UInt8'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'u8: UInt8'");
         return Err(custom_error);
     }
     if !_u16_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'u16: UInt16'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'u16: UInt16'");
         return Err(custom_error);
     }
     if !_u32_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'u32: UInt32'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'u32: UInt32'");
         return Err(custom_error);
     }
     if !_i_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'i: Int'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'i: Int'");
         return Err(custom_error);
     }
     if !_i8_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'i8: Int8'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'i8: Int8'");
         return Err(custom_error);
     }
     if !_i16_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'i16: Int16'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'i16: Int16'");
         return Err(custom_error);
     }
     if !_i32_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'i32: Int32'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'i32: Int32'");
         return Err(custom_error);
     }
     if !_bigint_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'bigint: BigInt'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'bigint: BigInt'");
         return Err(custom_error);
     }
     if !_bytes_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'bytes: Bytes'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'bytes: Bytes'");
         return Err(custom_error);
     }
     if !_boolean_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'boolean: Boolean'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'boolean: Boolean'");
         return Err(custom_error);
     }
     if !_u_array_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'uArray: [UInt]'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'uArray: [UInt]'");
         return Err(custom_error);
     }
     if !_u_array_array_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'uArrayArray: [[UInt]]'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'uArrayArray: [[UInt]]'");
         return Err(custom_error);
     }
     if !_u_opt_array_opt_array_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'uOptArrayOptArray: [[UInt32]]'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'uOptArrayOptArray: [[UInt32]]'");
         return Err(custom_error);
     }
     if !_u_array_opt_array_array_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'uArrayOptArrayArray: [[[UInt32]]]'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'uArrayOptArrayArray: [[[UInt32]]]'");
         return Err(custom_error);
     }
     if !_object_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'object: AnotherType'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'object: AnotherType'");
         return Err(custom_error);
     }
     if !_object_array_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'objectArray: [AnotherType]'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'objectArray: [AnotherType]'");
         return Err(custom_error);
     }
     if !_en_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'en: CustomEnum'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'en: CustomEnum'");
         return Err(custom_error);
     }
     if !_enum_array_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'enumArray: [CustomEnum]'");
+        let custom_error = reader
+            .context()
+            .print_with_context("Missing required property: 'enumArray: [CustomEnum]'");
         return Err(custom_error);
     }
 
@@ -673,7 +881,9 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
         crazy_array: _crazy_array,
         object: match _object {
             Some(x) => return x,
-            None => panic!("'object' is required, but its value is still 'None'. This should never happen."),
+            None => panic!(
+                "'object' is required, but its value is still 'None'. This should never happen."
+            ),
         },
         opt_object: _opt_object,
         object_array: _object_array,

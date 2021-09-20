@@ -1,22 +1,22 @@
+use alloc::{
+    boxed::Box,
+    collections::BTreeMap,
+    format,
+    str::FromStr,
+    string::{String, ToString},
+    vec,
+    vec::Vec,
+};
 pub mod serialization;
-use polywrap_wasm_rs::{
-    Read,
-    Write,
-};
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use polywrap_wasm_rs::{Read, Write};
+use serde::{Deserialize, Serialize};
 pub use serialization::{
-    deserialize_custom_type,
-    read_custom_type,
-    serialize_custom_type,
-    write_custom_type,
+    deserialize_custom_type, read_custom_type, serialize_custom_type, write_custom_type,
 };
 
-use num_bigint::BigInt;
 use crate::AnotherType;
 use crate::CustomEnum;
+use num_bigint::BigInt;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CustomType {

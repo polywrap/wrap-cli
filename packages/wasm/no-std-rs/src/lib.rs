@@ -1,6 +1,6 @@
 //! Polywrap Rust/WASM Runtime Library
 
-#![cfg_attr(not(test), no_std)]
+#![no_std]
 #![feature(
     alloc_error_handler,
     default_alloc_error_handler,
