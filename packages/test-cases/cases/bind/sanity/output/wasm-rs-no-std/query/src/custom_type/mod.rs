@@ -1,12 +1,4 @@
-use alloc::{
-    boxed::Box,
-    collections::BTreeMap,
-    format,
-    str::FromStr,
-    string::{String, ToString},
-    vec,
-    vec::Vec,
-};
+use alloc::{boxed::Box, string::String, vec::Vec};
 pub mod serialization;
 use polywrap_wasm_rs::{Read, Write};
 pub use serialization::{

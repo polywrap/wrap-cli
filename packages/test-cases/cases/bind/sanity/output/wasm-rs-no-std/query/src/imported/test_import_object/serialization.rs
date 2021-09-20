@@ -1,3 +1,5 @@
+use core::convert::TryFrom;
+
 use alloc::{
     boxed::Box,
     collections::BTreeMap,
@@ -15,14 +17,12 @@ use crate::{get_test_import_enum_value, sanitize_test_import_enum_value, TestImp
 
 pub fn serialize_test_import_object(input: &TestImportObject) -> Vec<u8> {
     let mut sizer_context = Context::new();
-    sizer_context.description =
-        "Serializing (sizing) imported object-type: TestImportObject".to_string();
+    sizer_context.description = "Serializing (sizing) imported object-type: TestImportObject";
     let mut sizer = WriteSizer::new(sizer_context);
     write_test_import_object(input, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
-    encoder_context.description =
-        "Serializing (encoding) imported object-type: TestImportObject".to_string();
+    encoder_context.description = "Serializing (encoding) imported object-type: TestImportObject";
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_test_import_object(input, &mut encoder);
     buffer
@@ -106,7 +106,7 @@ pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut
 
 pub fn deserialize_test_import_object(input: &[u8]) -> TestImportObject {
     let mut context = Context::new();
-    context.description = "Deserializing imported object-type: TestImportObject".to_string();
+    context.description = "Deserializing imported object-type: TestImportObject";
     let mut reader = ReadDecoder::new(input, context);
     read_test_import_object(&mut reader).expect("Failed to deserialize TestImportObject")
 }
@@ -129,7 +129,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
-        let field = reader.read_string().unwrap();
+        let field = reader.read_string();
 
         match field.as_str() {
             "object" => {
@@ -139,7 +139,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                     "type found, reading property",
                 );
                 let object = Box::new(TestImportAnotherObject::read(reader));
-                _object = object;
+                _object = Some(object);
                 _object_set = true;
                 reader.context().pop();
             }
@@ -162,12 +162,10 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                     "Vec<Box<TestImportAnotherObject>>",
                     "type found, reading property",
                 );
-                _object_array = reader
-                    .read_array(|reader| {
-                        let object = Box::new(TestImportAnotherObject::read(reader));
-                        return object;
-                    })
-                    .expect("Failed to read array");
+                _object_array = reader.read_array(|reader| {
+                    let object = Box::new(TestImportAnotherObject::read(reader));
+                    return object;
+                });
                 _object_array_set = true;
                 reader.context().pop();
             }
@@ -192,7 +190,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                     .push(&field, "TestImportEnum", "type found, reading property");
                 let mut value = TestImportEnum::_MAX_;
                 if reader.is_next_string() {
-                    value = get_test_import_enum_value(&reader.read_string().unwrap())
+                    value = get_test_import_enum_value(&reader.read_string())
                         .expect("Failed to get TestImportEnum value");
                 } else {
                     value = TestImportEnum::try_from(reader.read_i32().unwrap())
@@ -214,7 +212,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                 if !reader.is_next_nil() {
                     if reader.is_next_string() {
                         value = Some(
-                            get_test_import_enum_value(&reader.read_string().unwrap())
+                            get_test_import_enum_value(&reader.read_string())
                                 .expect("Failed to get Option<TestImportEnum> value"),
                         );
                     } else {
@@ -237,21 +235,19 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                     "Vec<TestImportEnum>",
                     "type found, reading property",
                 );
-                _enum_array = reader
-                    .read_array(|reader| {
-                        let mut value = TestImportEnum::_MAX_;
-                        if reader.is_next_string() {
-                            value = get_test_import_enum_value(&reader.read_string().unwrap())
-                                .expect("Failed to get TestImportEnum value");
-                        } else {
-                            value = TestImportEnum::try_from(reader.read_i32().unwrap())
-                                .expect("Failed to convert i32 to TestImportEnum");
-                            sanitize_test_import_enum_value(value as i32)
-                                .expect("Failed to sanitize TestImportEnum");
-                        }
-                        return value;
-                    })
-                    .expect("Failed to read array");
+                _enum_array = reader.read_array(|reader| {
+                    let mut value = TestImportEnum::_MAX_;
+                    if reader.is_next_string() {
+                        value = get_test_import_enum_value(&reader.read_string())
+                            .expect("Failed to get TestImportEnum value");
+                    } else {
+                        value = TestImportEnum::try_from(reader.read_i32().unwrap())
+                            .expect("Failed to convert i32 to TestImportEnum");
+                        sanitize_test_import_enum_value(value as i32)
+                            .expect("Failed to sanitize TestImportEnum");
+                    }
+                    return value;
+                });
                 _enum_array_set = true;
                 reader.context().pop();
             }
@@ -266,7 +262,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                     if !reader.is_next_nil() {
                         if reader.is_next_string() {
                             value = Some(
-                                get_test_import_enum_value(&reader.read_string().unwrap())
+                                get_test_import_enum_value(&reader.read_string())
                                     .expect("Failed to get Option<TestImportEnum> value"),
                             );
                         } else {
@@ -313,12 +309,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
     }
 
     Ok(TestImportObject {
-        object: match _object {
-            Some(x) => return x,
-            None => panic!(
-                "'object' is required, but its value is still 'None'. This should never happen."
-            ),
-        },
+        object: _object.unwrap(),
         opt_object: _opt_object,
         object_array: _object_array,
         opt_object_array: _opt_object_array,
@@ -326,5 +317,5 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
         opt_enum: _opt_enum,
         enum_array: _enum_array,
         opt_enum_array: _opt_enum_array,
-    });
+    })
 }

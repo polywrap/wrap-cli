@@ -331,10 +331,10 @@ pub fn write_object_method_result<W: Write>(input: Option<Box<AnotherType>>, wri
         "Option<Box<AnotherType>>",
         "writing result",
     );
-    if input.object_method.is_some() {
-        ObjectMethod::write(input.object_method.as_ref().as_ref().unwrap(), writer);
-    } else {
-        writer.write_nil();
-    }
+    // if input.object_method.is_some() {
+    //     ObjectMethod::write(input.object_method.as_ref().as_ref().unwrap(), writer);
+    // } else {
+    //     writer.write_nil();
+    // }
     writer.context().pop();
 }

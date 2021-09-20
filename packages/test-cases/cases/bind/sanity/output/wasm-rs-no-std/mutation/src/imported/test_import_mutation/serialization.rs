@@ -102,7 +102,7 @@ pub fn write_another_method_args<W: Write>(input: &InputAnotherMethod, writer: &
         .push("arg", "Vec<String>", "writing property");
     writer.write_str("arg");
     writer.write_array(&input.arg, |writer: &mut W, item| {
-        writer.write_string(*item);
+        writer.write_string(item);
     });
     writer.context().pop();
 }
