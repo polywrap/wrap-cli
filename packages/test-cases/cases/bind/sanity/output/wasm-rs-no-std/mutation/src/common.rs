@@ -1,1 +1,1 @@
-pub use crate::../query/common::*;
+pub use query::common::*;
