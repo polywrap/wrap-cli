@@ -8,10 +8,10 @@
     lang_items
 )]
 
-// Set up the global allocator.
 extern crate alloc;
 extern crate wee_alloc;
 
+// Set up the global allocator.
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
