@@ -1,4 +1,4 @@
-use super::{
+use crate::{
     deserialize_mutation_method_args, deserialize_object_method_args, mutation_method,
     object_method, serialize_mutation_method_result, serialize_object_method_result,
     InputMutationMethod, InputObjectMethod,

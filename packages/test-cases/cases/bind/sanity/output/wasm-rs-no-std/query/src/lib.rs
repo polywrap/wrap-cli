@@ -22,6 +22,16 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 // #[lang = "eh_personality"]
 // extern "C" fn eh_personality() {}
 
+use alloc::{
+    boxed::Box,
+    collections::BTreeMap,
+    format,
+    str::FromStr,
+    string::{String, ToString},
+    vec,
+    vec::Vec,
+};
+
 pub mod common;
 pub mod custom_type;
 pub mod entry;
@@ -46,3 +56,13 @@ pub use query::{
     query_method_wrapped, serialize_object_method_result, serialize_query_method_result,
     InputObjectMethod, InputQueryMethod,
 };
+
+/**
+TEMPORARY
+ */
+pub fn object_method(_: InputObjectMethod) -> Option<Box<AnotherType>> {
+    unimplemented!()
+}
+pub fn query_method(_: InputQueryMethod) -> i32 {
+    unimplemented!()
+}
