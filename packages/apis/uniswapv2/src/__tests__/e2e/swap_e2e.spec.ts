@@ -1,12 +1,12 @@
 import { buildAndDeployApi, initTestEnvironment, stopTestEnvironment } from "@web3api/test-env-js";
-import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
+import { ClientConfig, Web3ApiClient } from "@web3api/client-js";
 import { Currency, Pair, Token, Trade, TxResponse } from "./types";
 import path from "path";
-import { getRedirects, getTokenList } from "../testUtils";
+import { getPlugins, getTokenList } from "../testUtils";
 import { Contract, ethers, providers } from "ethers";
 import erc20ABI from "./testData/erc20ABI.json";
 
-jest.setTimeout(120000);
+jest.setTimeout(360000);
 
 describe("Swap", () => {
 
@@ -23,8 +23,8 @@ describe("Swap", () => {
   beforeAll(async () => {
     const { ethereum: testEnvEtherem, ensAddress, ipfs } = await initTestEnvironment();
     // get client
-    const redirects: UriRedirect[] = getRedirects(testEnvEtherem, ipfs, ensAddress);
-    client = new Web3ApiClient({ redirects: redirects, tracingEnabled: true });
+    const config: ClientConfig = getPlugins(testEnvEtherem, ipfs, ensAddress);
+    client = new Web3ApiClient(config);
 
     // deploy api
     const apiPath: string = path.resolve(__dirname + "../../../../");

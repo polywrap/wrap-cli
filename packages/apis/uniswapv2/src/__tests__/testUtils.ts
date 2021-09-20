@@ -1,5 +1,5 @@
 import { BestTradeOptions, ChainId, Pair, Token, TokenAmount, Trade } from "./e2e/types";
-import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
+import { ClientConfig, coreInterfaceUris, Web3ApiClient } from "@web3api/client-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
@@ -13,7 +13,7 @@ interface TestEnvironment {
   ipfs: string;
   ethereum: string;
   ensAddress: string;
-  redirects: UriRedirect[];
+  clientConfig: ClientConfig;
 }
 
 export async function getEnsUri(): Promise<string> {
@@ -26,15 +26,25 @@ export async function getEnsUri(): Promise<string> {
 export async function getProviders(): Promise<TestEnvironment> {
   const { data: { ipfs, ethereum }, } = await axios.get("http://localhost:4040/providers");
   const { data } = await axios.get("http://localhost:4040/deploy-ens");
-  const redirects: UriRedirect[] = getRedirects(ethereum, ipfs, data.ensAddress);
-  return { ipfs, ethereum, ensAddress: data.ensAddress, redirects };
+  const clientConfig: ClientConfig = getPlugins(ethereum, ipfs, data.ensAddress);
+  return { ipfs, ethereum, ensAddress: data.ensAddress, clientConfig, };
 }
 
-export function getRedirects(ethereum: string, ipfs: string, ensAddress: string): UriRedirect[] {
-  return [
-    {
-      from: "ens/ethereum.web3api.eth",
-      to: ethereumPlugin({
+export function getPlugins(ethereum: string, ipfs: string, ensAddress: string): ClientConfig {
+ return {
+   redirects: [],
+   plugins: [
+     {
+       uri: "w3://ens/ipfs.web3api.eth",
+       plugin: ipfsPlugin({ provider: ipfs }),
+     },
+     {
+       uri: "w3://ens/ens.web3api.eth",
+       plugin: ensPlugin({ addresses: { testnet: ensAddress } }),
+     },
+     {
+      uri: "w3://ens/ethereum.web3api.eth",
+      plugin: ethereumPlugin({
         networks: {
           testnet: {
             provider: ethereum
@@ -44,17 +54,23 @@ export function getRedirects(ethereum: string, ipfs: string, ensAddress: string)
           },
         },
         defaultNetwork: "testnet"
-      })
+      }),
+    },
+    ],
+    interfaces: [
+    {
+      interface: coreInterfaceUris.uriResolver.uri,
+      implementations: [
+        "w3://ens/ipfs.web3api.eth",
+        "w3://ens/ens.web3api.eth",
+      ],
     },
     {
-      from: "w3://ens/ipfs.web3api.eth",
-      to: ipfsPlugin({ provider: ipfs }),
+      interface: coreInterfaceUris.logger.uri,
+      implementations: ["w3://ens/js-logger.web3api.eth"],
     },
-    {
-      from: "w3://ens/ens.web3api.eth",
-        to: ensPlugin({ addresses: { testnet: ensAddress } }),
-    }
-  ];
+  ],
+  };
 }
 
 export async function getTokenList(): Promise<Token[]> {
