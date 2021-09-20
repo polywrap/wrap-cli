@@ -9,7 +9,6 @@ use alloc::{
 };
 pub mod serialization;
 use polywrap_wasm_rs::{Read, Write};
-use serde::{Deserialize, Serialize};
 pub use serialization::{
     deserialize_custom_type, read_custom_type, serialize_custom_type, write_custom_type,
 };
@@ -18,7 +17,7 @@ use crate::AnotherType;
 use crate::CustomEnum;
 use num_bigint::BigInt;
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug)]
 pub struct CustomType {
     pub str: String,
     pub opt_str: Option<String>,

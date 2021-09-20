@@ -7,11 +7,10 @@ use alloc::{
     vec,
     vec::Vec,
 };
-use serde::{Deserialize, Serialize};
 extern crate std;
 use std::convert::TryFrom;
 
-#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
+#[derive(Clone, Copy, Debug)]
 pub enum CustomEnum {
     STRING,
     BYTES,

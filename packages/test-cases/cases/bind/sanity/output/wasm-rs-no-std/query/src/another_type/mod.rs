@@ -9,14 +9,13 @@ use alloc::{
 };
 pub mod serialization;
 use polywrap_wasm_rs::{Read, Write};
-use serde::{Deserialize, Serialize};
 pub use serialization::{
     deserialize_another_type, read_another_type, serialize_another_type, write_another_type,
 };
 
 use crate::CustomType;
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug)]
 pub struct AnotherType {
     pub prop: Option<String>,
     pub circular: Option<Box<CustomType>>,

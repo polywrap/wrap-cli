@@ -8,11 +8,10 @@ use alloc::{
     vec::Vec,
 };
 use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
-use serde::{Deserialize, Serialize};
 
 use crate::TestImportObject;
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug)]
 pub struct InputImportedMethod {
     pub str: String,
     pub object: Box<TestImportObject>,
@@ -76,7 +75,7 @@ pub fn deserialize_imported_method_result(input: &[u8]) -> Option<Box<TestImport
     res
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug)]
 pub struct InputAnotherMethod {
     pub arg: Vec<String>,
 }

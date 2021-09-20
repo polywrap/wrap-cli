@@ -13,7 +13,6 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 num-bigint = { version = "0.4", default-features = false }
 num-traits = { version = "0.2.14", default-features = false }
-serde = { version = "1.0.126", features = ["derive"] }
 polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../../../../wasm/no-std-rs" }
 query = { version = "0.1.0", path = "../query" }
 # `wee_alloc` is a tiny allocator for wasm that is only ~1K in code size

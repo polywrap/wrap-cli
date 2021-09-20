@@ -8,7 +8,6 @@ use alloc::{
     vec::Vec,
 };
 use polywrap_wasm_rs::subinvoke;
-use serde::{Deserialize, Serialize};
 pub mod serialization;
 pub use serialization::{
     deserialize_another_method_result, deserialize_imported_method_result,
@@ -19,7 +18,7 @@ pub use serialization::{
 use crate::TestImportEnum;
 use crate::TestImportObject;
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug)]
 pub struct TestImportQuery;
 
 impl TestImportQuery {

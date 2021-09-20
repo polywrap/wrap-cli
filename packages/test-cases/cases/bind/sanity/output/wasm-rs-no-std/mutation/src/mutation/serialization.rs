@@ -8,12 +8,11 @@ use alloc::{
     vec::Vec,
 };
 use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
-use serde::{Deserialize, Serialize};
 
 use crate::AnotherType;
 use crate::{get_custom_enum_value, sanitize_custom_enum_value, CustomEnum};
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug)]
 pub struct InputMutationMethod {
     pub str: String,
     pub opt_str: Option<String>,
@@ -206,7 +205,7 @@ pub fn write_mutation_method_result<W: Write>(input: i32, writer: &mut W) {
     writer.context().pop();
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug)]
 pub struct InputObjectMethod {
     pub object: AnotherType,
     pub opt_object: Option<AnotherType>,

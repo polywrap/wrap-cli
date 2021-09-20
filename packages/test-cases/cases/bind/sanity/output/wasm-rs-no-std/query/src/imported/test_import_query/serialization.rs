@@ -8,12 +8,11 @@ use alloc::{
     vec::Vec,
 };
 use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
-use serde::{Deserialize, Serialize};
 
 use crate::TestImportObject;
 use crate::{get_test_import_enum_value, sanitize_test_import_enum_value, TestImportEnum};
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug)]
 pub struct InputImportedMethod {
     pub str: String,
     pub opt_str: Option<String>,
