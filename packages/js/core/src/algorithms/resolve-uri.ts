@@ -31,7 +31,10 @@ export const resolveUri = Tracer.traceFunc(
   ): Promise<Api> => {
     const invokeContext = client.getInvokeContext(id);
 
-    const finalRedirectedUri = applyRedirects(uri, invokeContext.redirects);
+    const finalRedirects = invokeContext.redirects
+      ? invokeContext.redirects
+      : redirects;
+    const finalRedirectedUri = applyRedirects(uri, finalRedirects);
 
     const plugin = findPluginPackage(finalRedirectedUri, plugins);
 
@@ -46,7 +49,7 @@ export const resolveUri = Tracer.traceFunc(
     const uriResolverImplementations = getImplementations(
       coreInterfaceUris.uriResolver,
       interfaces,
-      invokeContext.redirects
+      finalRedirects
     );
 
     return await resolveUriWithUriResolvers(

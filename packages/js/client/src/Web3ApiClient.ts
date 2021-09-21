@@ -98,10 +98,6 @@ export class Web3ApiClient implements Client {
         this._config.interfaces.push(...defaultClientConfig.interfaces);
       }
 
-      this._invokeContextMap.set(DEFAULT_CONTEXT_ID, {
-        redirects: this._config.redirects,
-      });
-
       this._requirePluginsToUseNonInterfaceUris();
 
       Tracer.setAttribute("config", this._config);
@@ -227,8 +223,6 @@ export class Web3ApiClient implements Client {
         result = { errors: [error] };
       }
     }
-    // await run(typedOptions).catch((error: Error | Error[]) => {
-    // });
 
     if (shouldClearContext) {
       this.clearInvokeContext(queryId);

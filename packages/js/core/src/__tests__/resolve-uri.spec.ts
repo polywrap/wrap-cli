@@ -21,9 +21,9 @@ describe("resolveUri", () => {
   const client = (
     apis: Record<string, PluginModules>,
   ): Client => ({
-    getInvokeContext: () => {
+    getInvokeContext: (id: string) => {
       return {
-        redirects: redirects,
+        redirects: []
       }
     },
     query: <
@@ -168,7 +168,6 @@ describe("resolveUri", () => {
       interfaces,
       createPluginApi,
       createApi,
-      "id",
       true
     );
 
@@ -195,7 +194,6 @@ describe("resolveUri", () => {
       interfaces,
       createPluginApi,
       createApi,
-      "id",
       true
     );
 
@@ -222,13 +220,12 @@ describe("resolveUri", () => {
       interfaces, 
       createPluginApi,
       createApi,
-      "id",
       true
     );
 
     const apiIdentity = await result.invoke(
       {} as InvokeApiOptions,
-      {} as Client,
+      {} as Client
     );
 
     expect(apiIdentity).toMatchObject({
@@ -250,13 +247,12 @@ describe("resolveUri", () => {
       interfaces,
       createPluginApi,
       createApi,
-      "id",
       true
     );
 
     const apiIdentity = await result.invoke(
       {} as InvokeApiOptions,
-      {} as Client,
+      {} as Client
     );
 
     expect(apiIdentity).toMatchObject({
@@ -290,7 +286,6 @@ describe("resolveUri", () => {
       interfaces,
       createPluginApi,
       createApi,
-      "id",
       true
     ).catch((e) =>
       expect(e.message).toMatch(/Infinite loop while resolving URI/)
@@ -319,7 +314,6 @@ describe("resolveUri", () => {
       interfaces,
       createPluginApi,
       createApi,
-      "id",
       true
     ).catch((e) =>
       expect(e.message).toMatch("Redirect missing the from property.\nEncountered while resolving w3://some/api")
@@ -349,17 +343,17 @@ describe("resolveUri", () => {
       interfaces, 
       createPluginApi,
       createApi,
-      "id",
       true
     );
 
     const apiIdentity = await result.invoke(
       {} as InvokeApiOptions,
-      {} as Client,
+      {} as Client
     );
 
     expect(apiIdentity.error).toBeUndefined();
   });
+
   it("throw when URI does not resolve to an API", async () => {
 
     const faultyIpfsApi: PluginModules = {
@@ -390,7 +384,6 @@ describe("resolveUri", () => {
       interfaces,
       createPluginApi,
       createApi,
-      "id",
       true
     ).catch((e) =>
       expect(e.message).toMatch(`No Web3API found at URI: ${uri.uri}`)

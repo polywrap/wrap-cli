@@ -22,7 +22,7 @@ export abstract class Api {
    * @param client The client instance requesting this invocation.
    * This client will be used for any sub-queries that occur.
    */
-  public abstract invoke(
+  public abstract async invoke(
     options: InvokeApiOptions<Uri>,
     client: Client
   ): Promise<InvokeApiResult<unknown>>;
@@ -32,7 +32,7 @@ export abstract class Api {
    *
    * @param client The client instance the schema.
    */
-  public abstract getSchema(client: Client): Promise<string>;
+  public abstract async getSchema(client: Client): Promise<string>;
 
   /**
    * Get the API's manifest
@@ -40,7 +40,7 @@ export abstract class Api {
    * @param options Configuration options for manifest retrieval
    * @param client The client instance requesting the manifest.
    */
-  public abstract getManifest<TManifestType extends ManifestType>(
+  public abstract async getManifest<TManifestType extends ManifestType>(
     options: GetManifestOptions<TManifestType>,
     client: Client
   ): Promise<AnyManifest<TManifestType>>;
@@ -52,7 +52,7 @@ export abstract class Api {
    * @param options Configuration options for file retrieval
    * @param client The client instance requesting the file.
    */
-  public abstract getFile(
+  public abstract async getFile(
     options: GetFileOptions,
     client: Client
   ): Promise<ArrayBuffer | string>;
