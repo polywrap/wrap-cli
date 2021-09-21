@@ -1,6 +1,5 @@
 import { TypeInfo } from "../typeInfo";
 
-import { create } from "ts-node";
 import path from "path";
 import { readdirSync, readFileSync, Dirent } from "fs";
 
@@ -21,7 +20,6 @@ export type TestCases = {
 
 export function fetchTestCases(): TestCases {
   const cases: TestCases = [];
-  const _compiler = create();
 
   const importCase = (dirent: Dirent) => {
     // The case must be a folder
@@ -38,7 +36,7 @@ export function fetchTestCases(): TestCases {
     );
 
     // Fetch the output TypeInfo
-    const outputTypeInfo = outputs[dirent.name];
+    const outputTypeInfo = (outputs as any)[dirent.name];
 
     if (!outputTypeInfo) {
       throw Error(

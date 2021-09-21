@@ -29,15 +29,4 @@ type Query {
     first: UInt32!
     second: UInt32!
   ): UInt32!
-
-  i64Method(
-    first: Int64!
-    second: Int64!
-  ): Int64!
-
-  u64Method(
-    first: UInt64!
-    second: UInt64!
-  ): UInt64!
-
 }

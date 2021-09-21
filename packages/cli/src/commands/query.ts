@@ -6,7 +6,7 @@ import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 import gql from "graphql-tag";
 import path from "path";
-import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
+import { PluginRegistration, Web3ApiClient } from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
@@ -73,16 +73,16 @@ export default {
       const { data } = await axios.get("http://localhost:4040/ens");
       ensAddress = data.ensAddress;
     } catch (e) {
-      print.error(`w3 test-env not found, please run "w3 test-env up"`);
+      print.error(intlMsg.commands_query_error_noTestEnvFound());
       return;
     }
 
     // TODO: move this into its own package, since it's being used everywhere?
     // maybe have it exported from test-env.
-    const redirects: UriRedirect[] = [
+    const plugins: PluginRegistration[] = [
       {
-        from: "w3://ens/ethereum.web3api.eth",
-        to: ethereumPlugin({
+        uri: "w3://ens/ethereum.web3api.eth",
+        plugin: ethereumPlugin({
           networks: {
             testnet: {
               provider: ethereumProvider,
@@ -95,12 +95,15 @@ export default {
         }),
       },
       {
-        from: "w3://ens/ipfs.web3api.eth",
-        to: ipfsPlugin({ provider: ipfsProvider }),
+        uri: "w3://ens/ipfs.web3api.eth",
+        plugin: ipfsPlugin({
+          provider: ipfsProvider,
+          fallbackProviders: ["https://ipfs.io"],
+        }),
       },
       {
-        from: "w3://ens/ens.web3api.eth",
-        to: ensPlugin({
+        uri: "w3://ens/ens.web3api.eth",
+        plugin: ensPlugin({
           addresses: {
             testnet: ensAddress,
           },
@@ -108,7 +111,7 @@ export default {
       },
     ];
 
-    const client = new Web3ApiClient({ redirects });
+    const client = new Web3ApiClient({ plugins });
 
     const recipe = JSON.parse(filesystem.read(recipePath) as string);
     const dir = path.dirname(recipePath);
@@ -192,13 +195,11 @@ export default {
           for (const error of errors) {
             print.error("-----------------------------------");
             print.fancy(error.message);
+            print.fancy(error.stack || "");
             print.error("-----------------------------------");
           }
         }
       }
     }
-
-    // Setup Web3API
-    // Iterate through recipe and execute it
   },
 };

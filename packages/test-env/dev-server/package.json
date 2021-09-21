@@ -1,6 +1,6 @@
 {
   "name": "@web3api/dev-server",
-  "version": "0.0.1-prealpha.16",
+  "version": "0.0.1-prealpha.44",
   "private": true,
   "main": "build/index.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "babel-polyfill": "6.26.0",
     "babel-preset-env": "1.7.0",
     "content-hash": "2.5.2",
-    "dotenv": "8.2.0",
+    "dotenv": "10.0.0",
     "eth-ens-namehash": "2.0.8",
     "express": "4.17.1",
     "web3": "1.2.11",

@@ -1,28 +1,17 @@
+# SimpleStorage Demo Web3API
+A simple starter template that uses a SimpleStorage.sol contract ethereum. For more information on how this project works, and a step by step on how to extend its behavior, see the documentation [here](https://docs.web3api.dev/developers/create-as-web3api).
+
 # How To Run
 
-## 1. Setup Test Env
+## Install Dependencies
+`nvm install && nvm use`  
+`yarn`  
 
-```
-npx w3 test-env up
-```
+## Start Test Environment
+`yarn test:env:up`  
 
-## 2. Build & Deploy SimpleStorage Contract
+## Build & Deploy Web3API
+`yarn deploy`  
 
-```
-node ./deploy-contracts.js
-```
-
-## 3. Build & Deploy The Web3API
-
-```
-npx w3 build \
---ipfs http://localhost:5001 \
---graph simplestorage,http://localhost:8020 \
---test-ens simplestorage.eth
-```
-
-## 4. Test The Web3API Using A Query Recipe
-
-```
-npx w3 query ./recipes/e2e.json --test-ens
-```
+## Run Test Query Recipe
+`yarn test`  

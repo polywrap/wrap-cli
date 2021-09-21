@@ -1,17 +1,20 @@
-import { Manifest as Manifest0_0_1_prealpha_1 } from "./0.0.1-prealpha.1";
-// TODO: Uncomment when a new version exists
-// import { Manifest as Manifest0_0_1_prealpha_2 } from "./0.0.1-prealpha.2";
+export * from "./web3api";
+export * from "./web3api.build";
+export * from "./web3api.meta";
+export * from "./web3api.plugin";
 
-export enum ManifestFormats {
-  "0.0.1-prealpha.1" = "0.0.1-prealpha.1",
-  // TODO: Uncomment when a new version exists
-  // "0.0.1-prealpha.2" = "0.0.1-prealpha.2",
-}
+import { Web3ApiManifest } from "./web3api";
+import { BuildManifest } from "./web3api.build";
+import { MetaManifest } from "./web3api.meta";
 
-export type AnyManifest = Manifest0_0_1_prealpha_1;
-// TODO: Uncomment when a new version exists
-// Manifest0_0_1_prealpha_2;
+export type ManifestType = "web3api" | "meta" | "build";
 
-export type Manifest = Manifest0_0_1_prealpha_1;
-
-export const latest = ManifestFormats["0.0.1-prealpha.1"];
+export type AnyManifest<
+  TManifestType extends ManifestType
+> = TManifestType extends "web3api"
+  ? Web3ApiManifest
+  : TManifestType extends "build"
+  ? BuildManifest
+  : TManifestType extends "meta"
+  ? MetaManifest
+  : never;

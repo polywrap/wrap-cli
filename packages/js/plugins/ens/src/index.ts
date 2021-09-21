@@ -1,12 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { query } from "./resolvers";
-import { manifest } from "./manifest";
+import { manifest, Query, Ethereum_Query } from "./w3";
 
 import {
   Client,
   Plugin,
-  PluginManifest,
-  PluginModules,
+  PluginPackageManifest,
   PluginFactory,
 } from "@web3api/core-js";
 import { ethers } from "ethers";
@@ -36,7 +35,7 @@ export class EnsPlugin extends Plugin {
     }
   }
 
-  public static manifest(): PluginManifest {
+  public static manifest(): PluginPackageManifest {
     return manifest;
   }
 
@@ -44,9 +43,11 @@ export class EnsPlugin extends Plugin {
     return ethers.utils.isValidName(domain) && domain.indexOf(".eth") !== -1;
   }
 
-  // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
-  // https://github.com/web3-api/monorepo/issues/101
-  public getModules(client: Client): PluginModules {
+  public getModules(
+    client: Client
+  ): {
+    query: Query.Module;
+  } {
     return {
       query: query(this, client),
     };
@@ -98,23 +99,14 @@ export class EnsPlugin extends Plugin {
 
     const domainNode = ethers.utils.namehash(domain);
 
-    const callView = async (
+    const callContractView = async (
       address: string,
       method: string,
       args: string[],
       networkNameOrChainId?: string
     ): Promise<string> => {
-      const { data, errors } = await client.query({
-        uri: "ens/ethereum.web3api.eth",
-        query: `query {
-          callView(
-            address: $address,
-            method: $method,
-            args: $args,
-            connection: $connection
-          )
-        }`,
-        variables: {
+      const { data, error } = await Ethereum_Query.callContractView(
+        {
           address,
           method,
           args,
@@ -124,29 +116,30 @@ export class EnsPlugin extends Plugin {
               }
             : undefined,
         },
-      });
+        client
+      );
 
-      if (errors && errors.length) {
-        throw errors;
+      if (error) {
+        throw error;
       }
 
-      if (data && data.callView) {
-        if (typeof data.callView !== "string") {
+      if (data) {
+        if (typeof data !== "string") {
           throw Error(
-            `Malformed data returned from Ethereum.callView: ${data.callView}`
+            `Malformed data returned from Ethereum.callContractView: ${data}`
           );
         }
 
-        return data.callView;
+        return data;
       }
 
       throw Error(
-        `Ethereum.callView returned nothing.\nData: ${data}\nErrors: ${errors}`
+        `Ethereum.callContractView returned nothing.\nData: ${data}\nError: ${error}`
       );
     };
 
     // Get the node's resolver address
-    const resolverAddress = await callView(
+    const resolverAddress = await callContractView(
       ensAddress,
       ensAbi.resolver,
       [domainNode],
@@ -156,7 +149,7 @@ export class EnsPlugin extends Plugin {
     // Get the CID stored at this domain
     let hash;
     try {
-      hash = await callView(
+      hash = await callContractView(
         resolverAddress,
         resolverAbi.contenthash,
         [domainNode],
@@ -165,7 +158,7 @@ export class EnsPlugin extends Plugin {
     } catch (e) {
       try {
         // Fallback, contenthash doesn't exist, try content
-        hash = await callView(
+        hash = await callContractView(
           resolverAddress,
           resolverAbi.content,
           [domainNode],

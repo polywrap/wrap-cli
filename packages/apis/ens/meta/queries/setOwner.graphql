@@ -1,0 +1,10 @@
+mutation {
+  setOwner(
+    domain: $domain
+    newOwner: $newOwner
+    registryAddress: $registryAddress
+    connection: {
+      networkNameOrChainId: $network
+    }
+  )
+}

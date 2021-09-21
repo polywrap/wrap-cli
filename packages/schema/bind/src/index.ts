@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { generateBinding } from "./bindings";
+import { getRelativePath, findCommonTypes, extendCommonTypes } from "./utils";
 
-export * from "./utils/fs";
+import { transformTypeInfo, TypeInfo } from "@web3api/schema-parse";
 
-export type TargetLanguage = "wasm-as";
+export * from "./utils";
+
+export type TargetLanguage = "wasm-as" | "plugin-ts";
 
 export type OutputEntry = FileEntry | DirectoryEntry | TemplateEntry;
 
@@ -28,9 +32,64 @@ export interface OutputDirectory {
   entries: OutputEntry[];
 }
 
-export function bindSchema(
-  language: TargetLanguage,
-  schema: string
-): OutputDirectory {
-  return generateBinding(language, schema);
+export interface BindOutput {
+  combined?: OutputDirectory;
+  query?: OutputDirectory;
+  mutation?: OutputDirectory;
+}
+
+export interface BindModuleOptions {
+  typeInfo: TypeInfo;
+  schema: string;
+  outputDirAbs: string;
+}
+
+export interface BindOptions {
+  language: TargetLanguage;
+  combined?: BindModuleOptions;
+  query?: BindModuleOptions;
+  mutation?: BindModuleOptions;
+}
+
+export function bindSchema(options: BindOptions): BindOutput {
+  const { combined, query, mutation, language } = options;
+
+  // If both Query & Mutation modules are present,
+  // determine which types are shared between them,
+  // and add the __common & __commonPath properties
+  if (query && mutation) {
+    // Find all common types
+    const commonTypes = findCommonTypes(query.typeInfo, mutation.typeInfo);
+
+    if (commonTypes.length) {
+      query.typeInfo = transformTypeInfo(
+        query.typeInfo,
+        extendCommonTypes(commonTypes)
+      );
+
+      // Compute the __commonPath
+      const commonPath =
+        getRelativePath(mutation.outputDirAbs, query.outputDirAbs) + "/common";
+
+      mutation.typeInfo = {
+        ...transformTypeInfo(
+          mutation.typeInfo,
+          extendCommonTypes(commonTypes, commonPath)
+        ),
+        __commonPath: commonPath,
+      } as TypeInfo;
+    }
+  }
+
+  return {
+    combined: combined
+      ? generateBinding(language, combined.typeInfo, combined.schema)
+      : undefined,
+    query: query
+      ? generateBinding(language, query.typeInfo, query.schema)
+      : undefined,
+    mutation: mutation
+      ? generateBinding(language, mutation.typeInfo, mutation.schema)
+      : undefined,
+  };
 }

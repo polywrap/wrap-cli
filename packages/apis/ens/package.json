@@ -1,0 +1,32 @@
+{
+  "name": "@web3api/ens-api",
+  "description": "ENS Web3API",
+  "private": true,
+  "version": "0.0.1-prealpha.44",
+  "scripts": {
+    "build": "npx w3 build",
+    "test:env:up": "npx w3 test-env up",
+    "test:env:down": "npx w3 test-env down",
+    "deploy": "yarn deploy:contract && yarn deploy:web3api",
+    "deploy:web3api": "npx w3 build --ipfs http://localhost:5001 --test-ens ens.eth",
+    "deploy:contract": "node ./scripts/deploy-contracts.js",
+    "test": "yarn test:e2e && yarn test:env:up && yarn deploy && yarn test:recipe && yarn test:env:down",
+    "test:e2e": "jest --passWithNoTests --runInBand --verbose",
+    "test:recipe": "npx w3 query ./recipes/e2e.json"
+  },
+  "dependencies": {
+    "@web3api/wasm-as": "0.0.1-prealpha.44"
+  },
+  "devDependencies": {
+    "@types/jest": "22.2.3",
+    "@web3api/cli": "0.0.1-prealpha.44",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.44",
+    "@web3api/test-env-js": "0.0.1-prealpha.44",
+    "dotenv": "8.2.0",
+    "ethers": "5.0.8",
+    "jest": "27.0.6",
+    "js-yaml": "3.14.0",
+    "ts-jest": "27.0.4",
+    "ts-node": "9.1.1"
+  }
+}

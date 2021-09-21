@@ -75,7 +75,13 @@ router.get('/register-ens', async (req, res) => {
   res.send({
     success: true
   });
-})
+});
+
+router.get('/status', (req, res) => {
+  res.send({
+    running: true
+  });
+});
 
 app.use('/', router);
 app.listen(process.env.DEV_SERVER_PORT, () => {

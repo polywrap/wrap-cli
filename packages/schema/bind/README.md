@@ -16,15 +16,15 @@ MessagePack encoded data is sent between module boundaries. Decoding of the mess
 | UInt8 | uint 8 | 8-bit unsigned integer. |
 | UInt16 | uint 16 | 16-bit unsigned integer. |
 | UInt32 | uint 32 | 32-bit unsigned integer. |
-| UInt64 | uint 64 | 64-bit unsigned integer. |
 | Int | int 32 | 32-bit signed integer. |
 | Int8 | int 8 | 8-bit signed integer. |
 | Int16 | int 16 | 16-bit signed integer. |
 | Int32 | int 32 | 32-bit signed integer. |
-| Int64 | int 64 | 64-bit signed integer. |
 | String | fixstr or str 8/16/32 | UTF-8 string. |
 | Boolean | bool | true or false stored as 1 byte. |
 | Bytes | bin 8/16/32 | array of 8-bit unsigned integer. |
+| BigInt | fixstr or str 8/16/32 | UTF-8 string. |
+| JSON | fixstr or str 8/16/32 | UTF-8 string. |
 | [Type] | fixarray or array 16/32 | Array of elements. |
 | type CustomObject {<br/>&nbsp;&nbsp;prop: Type<br/>} | fixmap or map 16/32 | sdf |
 

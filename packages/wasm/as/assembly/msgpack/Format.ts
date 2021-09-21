@@ -1,6 +1,5 @@
 export const enum Format {
   ERROR = 0,
-  Four_Bytes = 0xffffffff,
   FOUR_LEAST_SIG_BITS_IN_BYTE = 0x0f,
   FOUR_SIG_BITS_IN_BYTE = 0xf0,
   POSITIVE_FIXINT = 0x00,
