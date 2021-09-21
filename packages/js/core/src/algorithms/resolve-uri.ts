@@ -52,7 +52,7 @@ export const resolveUri = Tracer.traceFunc(
     return await resolveUriWithUriResolvers(
       finalRedirectedUri,
       uriResolverImplementations,
-      wrapClient(client, id) as Client,
+      wrapClient(client, id),
       createApi,
       noValidate
     );
