@@ -31,6 +31,7 @@ export interface Client
   extends QueryHandler,
     SubscriptionHandler,
     InvokeHandler {
+  getInvokeContext: (id: string) => InvokeContext;
   getSchema<TUri extends Uri | string>(uri: TUri): Promise<string>;
 
   getManifest<TUri extends Uri | string, TManifestType extends ManifestType>(
@@ -47,8 +48,6 @@ export interface Client
     uri: TUri,
     options?: GetImplementationsOptions
   ): TUri[];
-
-  getInvokeContext: (id: string) => InvokeContext;
 }
 
 export const wrapClient = (client: Client, id: string): Client => ({
