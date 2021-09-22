@@ -118,10 +118,109 @@ type Bar {
 }
 `;
 
+const circularTypes1 = `
+type A {
+  prop: B!
+}
+
+type B {
+  prop: A!
+}
+`
+
+const circularTypes2 = `
+type A {
+  prop: B!
+}
+
+type B {
+  prop: C!
+}
+
+type C {
+  prop: A!
+}
+`
+
+const circularTypes3 = `
+type A {
+  prop: B!
+  root: D!
+}
+
+type B {
+  prop: C!
+}
+
+type C {
+  prop: A!
+  root: D!
+}
+
+type D {
+  prop: B!
+  root: A!
+}
+`
+
+const circularTypes4 = `
+type Mutation {
+  method1(
+    arg1: String!
+    arg2: String
+    arg3: Boolean
+  ): String!
+}
+
+type TestImport_Query @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Query"
+) {
+  importedMethod(
+    str: String!
+  ): String!
+
+  anotherMethod(
+    str: String!
+  ): String!
+}
+`
+
+const circularTypes5 = `
+type TestImport_Object @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Object"
+) {
+  prop: String!
+  nested: TestImport_NestedObject!
+}
+
+type TestImport_NestedObject @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "NestedObject"
+) {
+  foo: [String!]!
+  circular: TestImport_Object!
+}
+`
+
+const circularTypes6 = `
+type A {
+  prop: B!
+}
+
+type B {
+  prop: A
+}
+`
+
 describe("Web3API Schema Type Validation", () => {
   it("typeDefinitions", () => {
     const exec = (schema: string) => () => parseSchema(schema, {
-      validators: [typeValidators.typeDefinitions]
+      validators: [typeValidators.getTypeDefinitionsValidator]
     });
 
     expect(exec(typeDefinitions1)).toThrow(
@@ -147,7 +246,7 @@ describe("Web3API Schema Type Validation", () => {
 
   it("propertyTypes", () => {
     const exec = (schema: string) => () => parseSchema(schema, {
-      validators: [typeValidators.propertyTypes]
+      validators: [typeValidators.getPropertyTypesValidator]
     });
 
     expect(exec(propertyTypes1)).toThrow(
@@ -177,5 +276,33 @@ describe("Web3API Schema Type Validation", () => {
     expect(exec(propertyTypes7)).toThrow(
       /Methods can only be defined on query types \(Mutation, Query\)\.\nFound: type Queryy { method\(prop\) }/gm
     );
+  })
+
+  it("Circular type definitions", () => {
+    const exec = (schema: string) => () => parseSchema(schema, {
+      validators: [typeValidators.getCircularDefinitionsValidator]
+    })
+
+    expect(exec(circularTypes1)).toThrow(
+      /Graphql cycles are not supported. \nFound: \n- { B -\[prop\]-> A -\[prop\]-> B }/gm
+    )
+
+    expect(exec(circularTypes2)).toThrow(
+      /Graphql cycles are not supported. \nFound: \n- { C -\[prop\]-> A -\[prop\]-> B -\[prop\]-> C }/gm
+    )
+
+    expect(exec(circularTypes3)).toThrow(
+      /Graphql cycles are not supported. \nFound: \n- { D -\[prop\]-> B -\[prop\]-> C -\[prop\]-> A -\[root\]-> D }/gm
+    )
+
+    //Should ignore Operation Types
+    expect(exec(circularTypes4)).not.toThrow()
+
+    expect(exec(circularTypes5)).toThrow(
+      /Graphql cycles are not supported. \nFound: \n- { TestImport_NestedObject -\[circular\]-> TestImport_Object -\[nested\]-> TestImport_NestedObject }/gm
+    )
+
+    //Should allow circular references on nullable fields
+    expect(exec(circularTypes6)).not.toThrow()
   })
 });

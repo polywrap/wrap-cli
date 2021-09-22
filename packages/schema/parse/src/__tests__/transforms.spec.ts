@@ -81,6 +81,8 @@ describe("Web3API Schema TypeInfo Transformations", () => {
       transforms: [addFirstLast],
     });
     const expected: TypeInfo = {
+      enumTypes: [],
+      importedEnumTypes: [],
       objectTypes: [
         {
           ...createObjectDefinition({ type: "MyType" }),
@@ -336,6 +338,8 @@ describe("Web3API Schema TypeInfo Transformations", () => {
       ],
     });
     const expected: TypeInfo = {
+      enumTypes: [],
+      importedEnumTypes: [],
       objectTypes: [
         {
           ...createObjectDefinition({ type: "MyType" }),

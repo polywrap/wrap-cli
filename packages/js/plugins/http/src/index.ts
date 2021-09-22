@@ -1,16 +1,14 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
-import { query, mutation } from "./resolvers";
-import { Request, Response } from "./types";
+import { query } from "./resolvers";
 import { fromAxiosError, fromAxiosResponse, toAxiosRequest } from "./util";
-import { manifest } from "./manifest";
+import { manifest, Response, Request, Query } from "./w3";
 
 import axios, { AxiosResponse } from "axios";
 import {
   Client,
   Plugin,
-  PluginModules,
-  PluginManifest,
+  PluginPackageManifest,
   PluginPackage,
 } from "@web3api/core-js";
 
@@ -19,23 +17,26 @@ export class HttpPlugin extends Plugin {
     super();
   }
 
-  public static manifest(): PluginManifest {
+  public static manifest(): PluginPackageManifest {
     return manifest;
   }
 
-  public getModules(_client: Client): PluginModules {
+  public getModules(
+    _client: Client
+  ): {
+    query: Query.Module;
+  } {
     return {
       query: query(this),
-      mutation: mutation(this),
     };
   }
 
-  public async get(url: string, request: Request): Promise<Response> {
+  public async get(url: string, request?: Request): Promise<Response> {
     let response: AxiosResponse<string>;
     try {
       response = await axios.get<string>(
         url,
-        toAxiosRequest(request).config
+        request ? toAxiosRequest(request).config : undefined
       );
     } catch (e) {
       return fromAxiosError(e);
@@ -43,12 +44,12 @@ export class HttpPlugin extends Plugin {
     return fromAxiosResponse(response);
   }
 
-  public async post(url: string, request: Request): Promise<Response> {
-    const axiosRequest = toAxiosRequest(request);
+  public async post(url: string, request?: Request): Promise<Response> {
+    const axiosRequest = request ? toAxiosRequest(request) : undefined;
     const response = await axios.post(
       url,
-      axiosRequest.data,
-      axiosRequest.config
+      axiosRequest ? axiosRequest.data : undefined,
+      axiosRequest ? axiosRequest.config : undefined
     );
     return fromAxiosResponse(response);
   }

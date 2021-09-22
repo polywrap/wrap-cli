@@ -1,7 +1,13 @@
+{{#__commonImport}}
+export { {{type}} } from "../common";
+{{/__commonImport}}
+{{^__commonImport}}
 import {
   Read,
   Write,
-  Nullable
+  Nullable,
+  BigInt,
+  JSON
 } from "@web3api/wasm-as";
 import {
   serialize{{type}},
@@ -32,3 +38,4 @@ export class {{type}} {
     return read{{type}}(reader);
   }
 }
+{{/__commonImport}}

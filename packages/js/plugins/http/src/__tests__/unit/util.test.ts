@@ -1,5 +1,5 @@
 import { fromAxiosResponse, toAxiosRequest } from "../../util";
-import {ResponseType} from "../../types"
+import { ResponseTypeEnum } from "../../w3";
 
 describe("converting axios response", () => {
   test("response type: text", () => {
@@ -46,7 +46,7 @@ describe("creating axios config", () => {
         { key: "Accept", value: "application-json" },
         { key: "X-Header", value: "test-value" },
       ],
-      responseType: ResponseType.TEXT,
+      responseType: ResponseTypeEnum.TEXT,
     });
 
     expect(axiosReq.config.headers).toStrictEqual({
@@ -60,7 +60,7 @@ describe("creating axios config", () => {
   test("with url params", () => {
     const config = toAxiosRequest({
       urlParams: [{ key: "tag", value: "data" }],
-      responseType: ResponseType.BINARY,
+      responseType: ResponseTypeEnum.BINARY,
     });
 
     expect(config.config.headers).toBeUndefined();
@@ -71,7 +71,7 @@ describe("creating axios config", () => {
   test("with body as form data", () => {
     const axiosReq = toAxiosRequest({
       headers: [],
-      responseType: ResponseType.TEXT,
+      responseType: ResponseTypeEnum.TEXT,
       body: {
         formDataBody: {
           data: [
@@ -100,7 +100,7 @@ describe("creating axios config", () => {
         { key: "Accept", value: "application-json" },
         { key: "X-Header", value: "test-value" },
       ],
-      responseType: ResponseType.TEXT,
+      responseType: ResponseTypeEnum.TEXT,
       body: {stringBody: "test-string-body"}
     });
 
@@ -119,7 +119,7 @@ describe("creating axios config", () => {
         { key: "Accept", value: "application-json" },
         { key: "X-Header", value: "test-value" },
       ],
-      responseType: ResponseType.TEXT,
+      responseType: ResponseTypeEnum.TEXT,
       body: {rawBody: Uint8Array.from([21, 34, 45])}
     });
 

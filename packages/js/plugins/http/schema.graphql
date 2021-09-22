@@ -15,7 +15,7 @@ type ResponseError {
 }
 
 type Response {
-  status: UInt64
+  status: UInt32
   statusText: String
   headers: [Header!]
   body: String
@@ -27,7 +27,7 @@ type Request {
   urlParams: [UrlParam!]
   responseType: ResponseType!
   body: Body
-  timeout: UInt64
+  timeout: UInt32
 }
 
 enum ResponseType {
@@ -59,8 +59,5 @@ type FormDataOptions {
 
 type Query {
   get(url: String!, request: Request): Response
-}
-
-type Mutation {
   post(url: String!, request: Request): Response
 }

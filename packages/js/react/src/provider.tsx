@@ -1,4 +1,4 @@
-import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
+import { Web3ApiClient, ClientConfig } from "@web3api/client-js";
 import React from "react";
 
 type ClientContext = React.Context<Web3ApiClient>
@@ -14,10 +14,7 @@ interface Web3ApiProviderMap {
 
 export const PROVIDERS: Web3ApiProviderMap = {};
 
-interface Web3ApiProviderProps {
-  redirects: UriRedirect<string>[];
-  children: React.ReactNode;
-}
+interface Web3ApiProviderProps extends ClientConfig { }
 
 export type Web3ApiProviderFC = React.FC<Web3ApiProviderProps>;
 
@@ -35,7 +32,7 @@ export function createWeb3ApiProvider(
     ClientContext: React.createContext({} as Web3ApiClient)
   };
 
-  return ({ redirects, children }) => {
+  return ({ redirects, plugins, interfaces, children }) => {
 
     const [clientCreated, setClientCreated] = React.useState(false);
 
@@ -49,7 +46,7 @@ export function createWeb3ApiProvider(
       }
 
       // Instantiate the client
-      PROVIDERS[name].client = new Web3ApiClient({ redirects });
+      PROVIDERS[name].client = new Web3ApiClient({ redirects, plugins, interfaces });
 
       setClientCreated(true);
 

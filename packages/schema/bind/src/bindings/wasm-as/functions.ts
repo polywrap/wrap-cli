@@ -1,9 +1,5 @@
 import { isBaseType } from "./types";
-
-type MustacheFunction = () => (
-  value: string,
-  render: (template: string) => string
-) => string;
+import { MustacheFunction } from "../types";
 
 export const toMsgPack: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
@@ -59,12 +55,10 @@ export const toWasmInit: MustacheFunction = () => {
       case "Int8":
       case "Int16":
       case "Int32":
-      case "Int64":
       case "UInt":
       case "UInt8":
       case "UInt16":
       case "UInt32":
-      case "UInt64":
         return "0";
       case "String":
         return `""`;
@@ -72,6 +66,10 @@ export const toWasmInit: MustacheFunction = () => {
         return "false";
       case "Bytes":
         return `new ArrayBuffer(0)`;
+      case "BigInt":
+        return `BigInt.fromUInt16(0)`;
+      case "JSON":
+        return `JSON.Value.Null()`;
       default:
         if (type.includes("Enum_")) {
           return "0";
@@ -111,9 +109,6 @@ export const toWasm: MustacheFunction = () => {
       case "Int32":
         type = "i32";
         break;
-      case "Int64":
-        type = "i64";
-        break;
       case "UInt":
       case "UInt32":
         type = "u32";
@@ -124,9 +119,6 @@ export const toWasm: MustacheFunction = () => {
       case "UInt16":
         type = "u16";
         break;
-      case "UInt64":
-        type = "u64";
-        break;
       case "String":
         type = "string";
         break;
@@ -135,6 +127,12 @@ export const toWasm: MustacheFunction = () => {
         break;
       case "Bytes":
         type = "ArrayBuffer";
+        break;
+      case "BigInt":
+        type = "BigInt";
+        break;
+      case "JSON":
+        type = "JSON.Value";
         break;
       default:
         if (type.includes("Enum_")) {

@@ -1,6 +1,7 @@
 {
   "name": "@web3api/ipfs-api",
   "version": "0.0.1-prealpha.8",
+  "private": true,
   "license": "MIT",
   "scripts": {
     "build": "w3 build",

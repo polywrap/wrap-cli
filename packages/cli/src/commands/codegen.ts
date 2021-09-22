@@ -1,77 +1,97 @@
 /* eslint-disable prefer-const */
-import { CodeGenerator, Project, SchemaComposer } from "../lib";
-import { fixParameters } from "../lib/helpers/parameters";
+import {
+  CodeGenerator,
+  Compiler,
+  Web3ApiProject,
+  SchemaComposer,
+} from "../lib";
+import { intlMsg } from "../lib/intl";
 
 import chalk from "chalk";
 import axios from "axios";
 import { GluegunToolbox } from "gluegun";
 
-export const defaultGenerationFile = "web3api.gen.js";
 export const defaultManifest = ["web3api.yaml", "web3api.yml"];
 
+const optionsStr = intlMsg.commands_options_options();
+const nodeStr = intlMsg.commands_codegen_options_i_node();
+const pathStr = intlMsg.commands_codegen_options_o_path();
+const addrStr = intlMsg.commands_codegen_options_e_address();
+const defaultManifestStr = defaultManifest.join(" | ");
+
 const HELP = `
-${chalk.bold("w3 codegen")} ${chalk.bold("[<generation-file>]")} [options]
+${chalk.bold("w3 codegen")} [${optionsStr}]
 
-Generation file:
-  Path to the generation file (default: ${defaultGenerationFile})
-
-Options:
-  -h, --help                              Show usage information
-  -m, --manifest-path <path>              Path to the Web3API manifest file (default: ${defaultManifest.join(
-    " | "
-  )})
-  -i, --ipfs [<node>]                     IPFS node to load external schemas (default: dev-server's node)
-  -o, --output-dir <path>                 Output directory for generated types (default: types/)
-  -e, --ens [<address>]                   ENS address to lookup external schemas (default: 0x0000...2e1e)
+${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
+  -h, --help                              ${intlMsg.commands_codegen_options_h()}
+  -m, --manifest-path <${pathStr}>              ${intlMsg.commands_codegen_options_m()}: ${defaultManifestStr})
+  -c, --custom <${pathStr}>                     ${intlMsg.commands_codegen_options_c()}
+  -o, --output-dir <${pathStr}>                 ${intlMsg.commands_codegen_options_o()}
+  -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
+  -e, --ens [<${addrStr}>]                   ${intlMsg.commands_codegen_options_e()}
 `;
 
 export default {
   alias: ["g"],
-  description: "Auto-generate API Types",
+  description: intlMsg.commands_codegen_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
 
-    const { h, m, i, o, e } = parameters.options;
-    let { help, manifestPath, ipfs, outputDir, ens } = parameters.options;
+    const { h, c, m, i, o, e } = parameters.options;
+    let {
+      help,
+      custom,
+      manifestPath,
+      ipfs,
+      outputDir,
+      ens,
+    } = parameters.options;
 
     help = help || h;
+    custom = custom || c;
     manifestPath = manifestPath || m;
     ipfs = ipfs || i;
     outputDir = outputDir || o;
     ens = ens || e;
-
-    let generationFile;
-    try {
-      const params = toolbox.parameters;
-      [generationFile] = fixParameters(
-        {
-          options: params.options,
-          array: params.array,
-        },
-        {
-          h,
-          help,
-        }
-      );
-    } catch (e) {
-      print.error(e.message);
-      process.exitCode = 1;
-      return;
-    }
 
     if (help) {
       print.info(HELP);
       return;
     }
 
+    if (custom === true) {
+      const customScriptMissingPathMessage = intlMsg.commands_codegen_error_customScriptMissingPath(
+        {
+          option: "--custom",
+          argument: `<${pathStr}>`,
+        }
+      );
+      print.error(customScriptMissingPathMessage);
+      print.info(HELP);
+      return;
+    }
+
     if (outputDir === true) {
-      print.error("--output-dir option missing <path> argument");
+      const outputDirMissingPathMessage = intlMsg.commands_build_error_outputDirMissingPath(
+        {
+          option: "--output-dir",
+          argument: `<${pathStr}>`,
+        }
+      );
+      print.error(outputDirMissingPathMessage);
       print.info(HELP);
       return;
     }
 
     if (ens === true) {
-      print.error("--ens option missing <[address,]domain> argument");
+      const domStr = intlMsg.commands_codegen_error_domain();
+      const ensAddressMissingMessage = intlMsg.commands_build_error_testEnsAddressMissing(
+        {
+          option: "--ens",
+          argument: `<[${addrStr},]${domStr}>`,
+        }
+      );
+      print.error(ensAddressMissingMessage);
       print.info(HELP);
       return;
     }
@@ -97,19 +117,16 @@ export default {
     }
 
     // Resolve generation file & output directories
-    generationFile =
-      (generationFile && filesystem.resolve(generationFile)) ||
-      filesystem.resolve(defaultGenerationFile);
+    const customScript = custom && filesystem.resolve(custom);
     manifestPath =
       (manifestPath && filesystem.resolve(manifestPath)) ||
       ((await filesystem.existsAsync(defaultManifest[0]))
         ? filesystem.resolve(defaultManifest[0])
         : filesystem.resolve(defaultManifest[1]));
-    outputDir =
-      (outputDir && filesystem.resolve(outputDir)) || filesystem.path("types");
+    outputDir = outputDir && filesystem.resolve(outputDir);
 
-    const project = new Project({
-      manifestPath,
+    const project = new Web3ApiProject({
+      web3apiManifestPath: manifestPath,
     });
 
     const schemaComposer = new SchemaComposer({
@@ -119,15 +136,29 @@ export default {
       ensAddress,
     });
 
-    const codeGenerator = new CodeGenerator({
-      project,
-      schemaComposer,
-      generationFile,
-      outputDir,
-    });
+    let result = false;
 
-    if (await codeGenerator.generate()) {
-      print.success(`🔥 Types were generated successfully 🔥`);
+    if (customScript) {
+      const codeGenerator = new CodeGenerator({
+        project,
+        schemaComposer,
+        customScript,
+        outputDir: outputDir || filesystem.path("types"),
+      });
+
+      result = await codeGenerator.generate();
+    } else {
+      const compiler = new Compiler({
+        project,
+        outputDir: filesystem.path("build"),
+        schemaComposer,
+      });
+
+      result = await compiler.codegen();
+    }
+
+    if (result) {
+      print.success(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
       process.exitCode = 0;
     } else {
       process.exitCode = 1;

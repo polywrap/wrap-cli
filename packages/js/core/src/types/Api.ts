@@ -1,4 +1,12 @@
-import { Client, InvokeApiOptions, InvokeApiResult } from ".";
+import {
+  Uri,
+  Client,
+  GetFileOptions,
+  GetManifestOptions,
+  InvokeApiOptions,
+  InvokeApiResult,
+} from ".";
+import { AnyManifest, ManifestType } from "../manifest";
 
 /**
  * The API definition, which can be used to spawn
@@ -15,12 +23,39 @@ export abstract class Api {
    * This client will be used for any sub-queries that occur.
    */
   public abstract async invoke(
-    options: InvokeApiOptions,
+    options: InvokeApiOptions<Uri>,
     client: Client
   ): Promise<InvokeApiResult<unknown>>;
 
-  /** Get the API's schema */
+  /**
+   * Get the API's schema
+   *
+   * @param client The client instance the schema.
+   */
   public abstract async getSchema(client: Client): Promise<string>;
+
+  /**
+   * Get the API's manifest
+   *
+   * @param options Configuration options for manifest retrieval
+   * @param client The client instance requesting the manifest.
+   */
+  public abstract async getManifest<TManifestType extends ManifestType>(
+    options: GetManifestOptions<TManifestType>,
+    client: Client
+  ): Promise<AnyManifest<TManifestType>>;
+
+  /**
+   * Get a file from the API package.
+   * Not implemented for plugin packages.
+   *
+   * @param options Configuration options for file retrieval
+   * @param client The client instance requesting the file.
+   */
+  public abstract async getFile(
+    options: GetFileOptions,
+    client: Client
+  ): Promise<ArrayBuffer | string>;
 }
 
 /** Cache of API definitions, mapping the API's URI to its definition */

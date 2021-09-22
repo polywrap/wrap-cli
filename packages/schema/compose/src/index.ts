@@ -1,101 +1,83 @@
 import { SchemaFile, SchemaResolvers } from "./types";
-import { resolveImports, addHeader } from "./resolve";
-import { template as schemaTemplate } from "./templates/schema.mustache";
+import { resolveImportsAndParseSchemas } from "./resolve";
+import { renderSchema } from "./render";
 
-import Mustache from "mustache";
-import {
-  TypeInfo,
-  combineTypeInfo,
-  addFirstLast,
-  toGraphQLType,
-  performTransforms,
-} from "@web3api/schema-parse";
+import { TypeInfo, combineTypeInfo } from "@web3api/schema-parse";
 
-// Remove mustache's built-in HTML escaping
-Mustache.escape = (value) => value;
+export * from "./types";
 
-export interface ComposerOptions {
-  schemas: {
-    query?: SchemaFile;
-    mutation?: SchemaFile;
-  };
-  resolvers: SchemaResolvers;
+export interface SchemaInfo {
+  schema?: string;
+  typeInfo?: TypeInfo;
 }
 
 export interface ComposerOutput {
-  query?: string;
-  mutation?: string;
-  combined?: string;
+  [name: string]: SchemaInfo;
+  combined: SchemaInfo;
+}
+
+export enum ComposerFilter {
+  Schema = 1 << 0,
+  TypeInfo = 1 << 1,
+  All = Schema | TypeInfo,
+}
+
+export interface ComposerOptions {
+  schemas: {
+    [name: string]: SchemaFile;
+  };
+  resolvers: SchemaResolvers;
+  output: ComposerFilter;
 }
 
 export async function composeSchema(
   options: ComposerOptions
 ): Promise<ComposerOutput> {
   const { schemas, resolvers } = options;
-  const { query, mutation } = schemas;
-  const results: {
-    query?: { schema: string; typeInfo: TypeInfo };
-    mutation?: { schema: string; typeInfo: TypeInfo };
+  const typeInfos: {
+    [name: string]: TypeInfo;
   } = {};
 
-  if (query && query.schema && query.absolutePath !== undefined) {
-    results.query = await resolveImports(
-      query.schema,
-      query.absolutePath,
-      false,
+  if (Object.keys(schemas).length === 0) {
+    throw Error("No schema provided");
+  }
+
+  for (const name of Object.keys(schemas)) {
+    const schema = schemas[name];
+
+    typeInfos[name] = await resolveImportsAndParseSchemas(
+      schema.schema,
+      schema.absolutePath,
+      name === "mutation",
       resolvers
     );
   }
 
-  if (mutation && mutation.schema && mutation.absolutePath !== undefined) {
-    results.mutation = await resolveImports(
-      mutation.schema,
-      mutation.absolutePath,
-      true,
-      resolvers
+  const output: ComposerOutput = {
+    combined: {},
+  };
+  const includeSchema = options.output & ComposerFilter.Schema;
+  const includeTypeInfo = options.output & ComposerFilter.TypeInfo;
+  const createSchemaInfo = (typeInfo: TypeInfo): SchemaInfo => ({
+    schema: includeSchema ? renderSchema(typeInfo, true) : undefined,
+    typeInfo: includeTypeInfo ? typeInfo : undefined,
+  });
+  const typeInfoNames = Object.keys(typeInfos);
+
+  for (const name of typeInfoNames) {
+    const typeInfo = typeInfos[name];
+    output[name] = createSchemaInfo(typeInfo);
+  }
+
+  if (typeInfoNames.length > 1) {
+    const combinedTypeInfo = combineTypeInfo(
+      typeInfoNames.map((name) => typeInfos[name])
     );
+
+    output.combined = createSchemaInfo(combinedTypeInfo);
+  } else {
+    output.combined = output[typeInfoNames[0]];
   }
 
-  const result: ComposerOutput = {};
-
-  if (results.query) {
-    result.query = renderSchema(results.query.schema, results.query.typeInfo);
-  }
-
-  if (results.mutation) {
-    result.mutation = renderSchema(
-      results.mutation.schema,
-      results.mutation.typeInfo
-    );
-  }
-
-  if (results.query && results.mutation) {
-    const typeInfo = combineTypeInfo([
-      results.query.typeInfo,
-      results.mutation.typeInfo,
-    ]);
-    result.combined = renderSchema(
-      results.query.schema + results.mutation.schema,
-      typeInfo
-    );
-  } else if (results.query) {
-    result.combined = results.query.schema;
-  } else if (results.mutation) {
-    result.combined = results.mutation.schema;
-  }
-
-  return result;
-}
-
-function renderSchema(schema: string, typeInfo: TypeInfo) {
-  // Prepare the TypeInfo for the renderer
-  typeInfo = performTransforms(typeInfo, addFirstLast);
-  typeInfo = performTransforms(typeInfo, toGraphQLType);
-
-  return addHeader(
-    Mustache.render(schemaTemplate, {
-      schema,
-      typeInfo,
-    })
-  ).replace(/[\n]{2,}/gm, "\n\n"); // Remove needless whitespace
+  return output;
 }

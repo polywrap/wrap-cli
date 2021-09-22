@@ -1,19 +1,25 @@
+{{^__commonImport}}
 import {
   Read,
   ReadDecoder,
   Write,
   WriteSizer,
   WriteEncoder,
-  Nullable
+  Nullable,
+  BigInt,
+  JSON,
+  Context
 } from "@web3api/wasm-as";
 import { {{type}} } from "./";
 import * as Types from "../..";
 
 export function serialize{{type}}(type: {{type}}): ArrayBuffer {
-  const sizer = new WriteSizer();
+  const sizerContext: Context = new Context("Serializing (sizing)  imported object-type: {{type}}");
+  const sizer = new WriteSizer(sizerContext);
   write{{type}}(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
-  const encoder = new WriteEncoder(buffer);
+  const encoderContext: Context = new Context("Serializing (encoding) import object-type: {{type}}");
+  const encoder = new WriteEncoder(buffer, encoderContext);
   write{{type}}(encoder, type);
   return buffer;
 }
@@ -21,6 +27,7 @@ export function serialize{{type}}(type: {{type}}): ArrayBuffer {
 export function write{{type}}(writer: Write, type: {{type}}): void {
   writer.writeMapLength({{properties.length}});
   {{#properties}}
+  writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
   writer.writeString("{{name}}");
   {{#scalar}}
   writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{name}});
@@ -50,31 +57,33 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   writer.writeNullableInt32(type.{{name}});
   {{/required}}
   {{/enum}}
+  writer.context().pop();
   {{/properties}}
 }
 
 export function deserialize{{type}}(buffer: ArrayBuffer): {{type}} {
-  const reader = new ReadDecoder(buffer);
+  const context: Context = new Context("Deserializing imported object-type {{type}}");
+  const reader = new ReadDecoder(buffer, context);
   return read{{type}}(reader);
 }
 
 export function read{{type}}(reader: Read): {{type}} {
-  var numFields = reader.readMapLength();
+  let numFields = reader.readMapLength();
 
   {{#properties}}
   {{^object}}
-  var _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+  let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
   {{/object}}
   {{#object}}
   {{#required}}
-  var _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} | null = null;
+  let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} | null = null;
   {{/required}}
   {{^required}}
-  var _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+  let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
   {{/required}}
   {{/object}}
   {{#required}}
-  var _{{name}}Set: bool = false;
+  let _{{name}}Set: bool = false;
   {{/required}}
   {{/properties}}
 
@@ -82,8 +91,10 @@ export function read{{type}}(reader: Read): {{type}} {
     numFields--;
     const field = reader.readString();
 
+    reader.context().push(field, "unknown", "searching for property type");
     {{#properties}}
     {{^first}}else {{/first}}if (field == "{{name}}") {
+      reader.context().push(field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property");
       {{#scalar}}
       _{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
       {{/scalar}}
@@ -103,8 +114,10 @@ export function read{{type}}(reader: Read): {{type}} {
       {{#required}}
       _{{name}}Set = true;
       {{/required}}
+      reader.context().pop();
     }
     {{/properties}}
+    reader.context().pop();
   }
 
   {{#properties}}
@@ -115,7 +128,7 @@ export function read{{type}}(reader: Read): {{type}} {
   {{#object}}
   if (!_{{name}} || !_{{name}}Set) {
   {{/object}}
-    throw new Error("Missing required property: '{{name}}: {{type}}'");
+    throw new Error(reader.context().printWithContext("Missing required property: '{{name}}: {{type}}'"));
   }
   {{/required}}
   {{/properties}}
@@ -126,3 +139,4 @@ export function read{{type}}(reader: Read): {{type}} {
     {{/properties}}
   };
 }
+{{/__commonImport}}

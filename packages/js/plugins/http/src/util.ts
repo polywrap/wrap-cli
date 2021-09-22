@@ -1,4 +1,4 @@
-import { Request, Response, ResponseType, Header } from "./types";
+import { Request, Response, ResponseTypeEnum, Header } from "./w3";
 
 import axios, { AxiosResponse, AxiosRequestConfig, AxiosError } from "axios";
 import FormData from "form-data";
@@ -9,7 +9,7 @@ import FormData from "form-data";
  * @param axiosResponse
  */
 export function fromAxiosResponse(
-  axiosResponse: AxiosResponse<string>
+  axiosResponse: AxiosResponse<unknown>
 ): Response {
   const response = {
     status: axiosResponse.status,
@@ -19,21 +19,31 @@ export function fromAxiosResponse(
 
   // encode bytes as base64 string if response is array buffer
   if (axiosResponse.config.responseType == "arraybuffer") {
+    if (!Buffer.isBuffer(axiosResponse.data)) {
+      throw Error(
+        "HttpPlugin: Axios response data malformed, must be a buffer. Type: " +
+          typeof axiosResponse.data
+      );
+    }
+
     return {
       ...response,
       body: Buffer.from(axiosResponse.data).toString("base64"),
     };
   } else {
-    if (typeof axiosResponse.data == "object") {
-      return {
-        ...response,
-        body: JSON.stringify(axiosResponse.data),
-      };
+    switch (typeof axiosResponse.data) {
+      case "string":
+      case "undefined":
+        return {
+          ...response,
+          body: axiosResponse.data,
+        };
+      default:
+        return {
+          ...response,
+          body: JSON.stringify(axiosResponse.data),
+        };
     }
-    return {
-      ...response,
-      body: axiosResponse.data,
-    };
   }
 }
 
@@ -73,12 +83,6 @@ export function fromAxiosError(e: Error | AxiosError): Response {
   }  
 }
 
-    //  ---- 
-    // -0--0-
-    // --db--
-    // -\__/-
-    //  ---- 
-
 export type AxiosData = string | ArrayBuffer | FormData | undefined;
 
 /**
@@ -97,9 +101,16 @@ export function toAxiosRequest(
     return { ...headers, [h.key]: h.value };
   }, {});
 
+  let responseType: "text" | "arraybuffer" = "text";
+
+  switch (request.responseType) {
+    case "BINARY":
+    case ResponseTypeEnum.BINARY:
+      responseType = "arraybuffer";
+  }
+
   let config: AxiosRequestConfig = {
-    responseType:
-      request.responseType == ResponseType.BINARY ? "arraybuffer" : "text",
+    responseType,
   };
 
   if (urlParams) {
@@ -117,6 +128,7 @@ export function toAxiosRequest(
   if (request.body) {
     if (
       request.body.formDataBody &&
+      request.body.formDataBody.data &&
       request.body.formDataBody.data.length > 0
     ) {
       // body is defined as form data

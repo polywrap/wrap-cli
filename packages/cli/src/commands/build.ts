@@ -1,7 +1,7 @@
 /* eslint-disable prefer-const */
 import {
   Compiler,
-  Project,
+  Web3ApiProject,
   SchemaComposer,
   Watcher,
   WatchEvent,
@@ -9,37 +9,47 @@ import {
 } from "../lib";
 import { fixParameters } from "../lib/helpers/parameters";
 import { publishToIPFS } from "../lib/publishers/ipfs-publisher";
+import { intlMsg } from "../lib/intl";
 
 import chalk from "chalk";
 import axios from "axios";
 import readline from "readline";
 import { GluegunToolbox } from "gluegun";
 
-const HELP = `
-${chalk.bold("w3 build")} [options] ${chalk.bold("[<web3api-manifest>]")}
+const optionsStr = intlMsg.commands_build_options_options();
+const manStr = intlMsg.commands_build_options_manifest();
+const nodeStr = intlMsg.commands_build_options_i_node();
+const pathStr = intlMsg.commands_build_options_o_path();
+const addrStr = intlMsg.commands_build_options_e_address();
+const domStr = intlMsg.commands_build_options_e_domain();
 
-Options:
-  -h, --help                         Show usage information
-  -i, --ipfs [<node>]                Upload build results to an IPFS node (default: dev-server's node)
-  -o, --output-dir <path>            Output directory for build results (default: build/)
-  -e, --test-ens <[address,]domain>  Publish the package to a test ENS domain locally (requires --ipfs)
-  -w, --watch                        Automatically rebuild when changes are made (default: false)
+const HELP = `
+${chalk.bold("w3 build")} [${optionsStr}] ${chalk.bold(`[<web3api-${manStr}>]`)}
+
+${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
+  -h, --help                         ${intlMsg.commands_build_options_h()}
+  -i, --ipfs [<${nodeStr}>]                ${intlMsg.commands_build_options_i()}
+  -o, --output-dir <${pathStr}>            ${intlMsg.commands_build_options_o()}
+  -e, --test-ens <[${addrStr},]${domStr}>  ${intlMsg.commands_build_options_e()}
+  -w, --watch                        ${intlMsg.commands_build_options_w()}
+  -v, --verbose                      ${intlMsg.commands_build_options_v()}
 `;
 
 export default {
   alias: ["b"],
-  description: "Builds a Web3API and (optionally) uploads it to IPFS",
+  description: intlMsg.commands_build_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
 
-    const { h, i, o, w, e } = parameters.options;
-    let { help, ipfs, outputDir, watch, testEns } = parameters.options;
+    const { h, i, o, w, e, v } = parameters.options;
+    let { help, ipfs, outputDir, watch, testEns, verbose } = parameters.options;
 
     help = help || h;
     ipfs = ipfs || i;
     outputDir = outputDir || o;
     watch = watch || w;
     testEns = testEns || e;
+    verbose = verbose || v;
 
     let manifestPath;
     try {
@@ -54,6 +64,8 @@ export default {
           help,
           w,
           watch,
+          v,
+          verbose,
         }
       );
     } catch (e) {
@@ -68,19 +80,37 @@ export default {
     }
 
     if (outputDir === true) {
-      print.error("--output-dir option missing <path> argument");
+      const outputDirMissingPathMessage = intlMsg.commands_build_error_outputDirMissingPath(
+        {
+          option: "--output-dir",
+          argument: `<${pathStr}>`,
+        }
+      );
+      print.error(outputDirMissingPathMessage);
       print.info(HELP);
       return;
     }
 
     if (testEns === true) {
-      print.error("--test-ens option missing <[address,]domain> argument");
+      const testEnsAddressMissingMessage = intlMsg.commands_build_error_testEnsAddressMissing(
+        {
+          option: "--test-ens",
+          argument: `<[${addrStr},]${domStr}>`,
+        }
+      );
+      print.error(testEnsAddressMissingMessage);
       print.info(HELP);
       return;
     }
 
     if (testEns && !ipfs) {
-      print.error("--test-ens option requires the --ipfs [<node>] option");
+      const testEnsNodeMissingMessage = intlMsg.commands_build_error_testEnsNodeMissing(
+        {
+          option: "--test-ens",
+          required: `--ipfs [<${nodeStr}>]`,
+        }
+      );
+      print.error(testEnsNodeMissingMessage);
       print.info(HELP);
       return;
     }
@@ -134,8 +164,9 @@ export default {
       }
     }
 
-    const project = new Project({
-      manifestPath,
+    const project = new Web3ApiProject({
+      web3apiManifestPath: manifestPath,
+      quiet: verbose ? false : true,
     });
 
     const schemaComposer = new SchemaComposer({
@@ -152,7 +183,7 @@ export default {
     });
 
     const execute = async (): Promise<boolean> => {
-      compiler.clearCache();
+      compiler.reset();
       const result = await compiler.compile();
 
       if (!result) {
@@ -162,15 +193,18 @@ export default {
       const uris: string[][] = [];
 
       // publish to IPFS
-      if (ipfs) {
-        const cid = await publishToIPFS(outputDir, ipfs);
+      if (ipfsProvider) {
+        const cid = await publishToIPFS(outputDir, ipfsProvider);
 
         print.success(`IPFS { ${cid} }`);
         uris.push(["Web3API IPFS", `ipfs://${cid}`]);
 
         if (testEns) {
           if (!ensAddress) {
-            uris.push(["ENS Registry", `${ethProvider}/${ensAddress}`]);
+            uris.push([
+              intlMsg.commands_build_ensRegistry(),
+              `${ethProvider}/${ensAddress}`,
+            ]);
           }
 
           // ask the dev server to publish the CID to ENS
@@ -188,9 +222,9 @@ export default {
             uris.push(["Web3API ENS", `${testEns} => ${cid}`]);
           } else {
             print.error(
-              `ENS Resolution Failed { ${testEns} => ${cid} }\n` +
-                `Ethereum Provider: ${ethProvider}\n` +
-                `ENS Address: ${ensAddress}`
+              `${intlMsg.commands_build_error_resolution()} { ${testEns} => ${cid} }\n` +
+                `${intlMsg.commands_build_ethProvider()}: ${ethProvider}\n` +
+                `${intlMsg.commands_build_address()}: ${ensAddress}`
             );
           }
 
@@ -198,7 +232,7 @@ export default {
         }
 
         if (uris.length) {
-          print.success("URI Viewers:");
+          print.success(`${intlMsg.commands_build_uriViewers()}:`);
           print.table(uris);
           return true;
         } else {
@@ -222,8 +256,10 @@ export default {
 
       const keyPressListener = () => {
         // Watch for escape key presses
-        print.info(`Watching: ${project.manifestDir}`);
-        print.info("Exit: [CTRL + C], [ESC], or [Q]");
+        print.info(
+          `${intlMsg.commands_build_keypressListener_watching()}: ${project.getWeb3ApiManifestDir()}`
+        );
+        print.info(intlMsg.commands_build_keypressListener_exit());
         readline.emitKeypressEvents(process.stdin);
         process.stdin.on("keypress", async (str, key) => {
           if (
@@ -248,8 +284,11 @@ export default {
       // Watch the directory
       const watcher = new Watcher();
 
-      watcher.start(project.manifestDir, {
-        ignored: [outputDir + "/**", project.manifestDir + "/**/w3/**"],
+      watcher.start(project.getWeb3ApiManifestDir(), {
+        ignored: [
+          outputDir + "/**",
+          project.getWeb3ApiManifestDir() + "/**/w3/**",
+        ],
         ignoreInitial: true,
         execute: async (events: WatchEvent[]) => {
           // Log all of the events encountered

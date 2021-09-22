@@ -1,20 +1,37 @@
 import { SchemaComposer } from "./SchemaComposer";
-import { Project } from "./Project";
-import { step, withSpinner } from "./helpers";
+import { Project } from "./project";
+import { step, withSpinner, isTypescriptFile, loadTsNode } from "./helpers";
+import { intlMsg } from "./intl";
 
-import { OutputDirectory, writeDirectory } from "@web3api/schema-bind";
-import { parseSchema } from "@web3api/schema-parse";
+import { TypeInfo } from "@web3api/schema-parse";
+import {
+  OutputDirectory,
+  writeDirectory,
+  bindSchema,
+} from "@web3api/schema-bind";
 import path from "path";
 import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import Mustache from "mustache";
 
+export interface CustomScriptConfig {
+  typeInfo: TypeInfo;
+  generate: (templatePath: string, config: unknown) => string;
+}
+
+export { OutputDirectory };
+
+export type CustomScriptRunFn = (
+  output: OutputDirectory,
+  config: CustomScriptConfig
+) => void;
+
 export interface CodeGeneratorConfig {
   outputDir: string;
-  generationFile: string;
   project: Project;
   schemaComposer: SchemaComposer;
+  customScript?: string;
 }
 
 export class CodeGenerator {
@@ -45,45 +62,72 @@ export class CodeGenerator {
 
       // Get the fully composed schema
       const composed = await schemaComposer.getComposedSchemas();
-      const typeInfo = parseSchema(composed.combined || "");
-      this._schema = composed.combined;
 
-      // Check the generation file if it has the proper run() method
-      // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
-      const generator = await require(this._config.generationFile);
-      if (!generator) {
-        throw Error("The generation file provided is wrong.");
+      if (!composed.combined) {
+        throw Error(intlMsg.lib_codeGenerator_noComposedSchema());
       }
 
-      const { run } = generator;
-      if (!run) {
-        throw Error(
-          "The generation file provided doesn't have the 'run' method."
+      const typeInfo = composed.combined.typeInfo;
+      this._schema = composed.combined.schema;
+
+      if (!typeInfo) {
+        throw Error(intlMsg.lib_codeGenerator_typeInfoMissing());
+      }
+
+      if (this._config.customScript) {
+        const output: OutputDirectory = {
+          entries: [],
+        };
+
+        if (isTypescriptFile(this._config.customScript)) {
+          loadTsNode();
+        }
+
+        // Check the generation file if it has the proper run() method
+        // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
+        const generator = await require(this._config.customScript);
+        if (!generator) {
+          throw Error(intlMsg.lib_codeGenerator_wrongGenFile());
+        }
+
+        const { run } = generator as { run: CustomScriptRunFn };
+        if (!run) {
+          throw Error(intlMsg.lib_codeGenerator_noRunMethod());
+        }
+
+        await run(output, {
+          typeInfo,
+          generate: (templatePath: string, config: unknown) =>
+            this._generateTemplate(templatePath, config, spinner),
+        });
+
+        writeDirectory(this._config.outputDir, output, (templatePath: string) =>
+          this._generateTemplate(templatePath, typeInfo, spinner)
+        );
+      } else {
+        const content = bindSchema({
+          combined: {
+            typeInfo: composed.combined?.typeInfo as TypeInfo,
+            schema: composed.combined?.schema as string,
+            outputDirAbs: "",
+          },
+          language: await project.getLanguage(),
+        });
+
+        writeDirectory(
+          this._config.outputDir,
+          content.combined as OutputDirectory
         );
       }
-
-      const output: OutputDirectory = {
-        entries: [],
-      };
-
-      await run(output, {
-        typeInfo,
-        generate: (templatePath: string, config: unknown) =>
-          this._generateTemplate(templatePath, config, spinner),
-      });
-
-      writeDirectory(this._config.outputDir, output, (templatePath: string) =>
-        this._generateTemplate(templatePath, typeInfo, spinner)
-      );
     };
 
     if (project.quiet) {
       await run();
     } else {
       await withSpinner(
-        "Generate types",
-        "Failed to generate types",
-        "Warnings while generating types",
+        intlMsg.lib_codeGenerator_genCodeText(),
+        intlMsg.lib_codeGenerator_genCodeError(),
+        intlMsg.lib_codeGenerator_genCodeWarning(),
         async (spinner) => {
           return run(spinner);
         }
@@ -99,13 +143,19 @@ export class CodeGenerator {
     const { project } = this._config;
 
     if (!project.quiet && spinner) {
-      step(spinner, `Generating types from ${templatePath}`);
+      const stepMessage = intlMsg.lib_codeGenerator_genTemplateStep({
+        path: `${templatePath}`,
+      });
+      step(spinner, stepMessage);
     }
 
-    templatePath = path.join(
-      path.dirname(this._config.generationFile),
-      templatePath
-    );
+    if (this._config.customScript) {
+      // Update template path when the generation file is given
+      templatePath = path.join(
+        path.dirname(this._config.customScript),
+        templatePath
+      );
+    }
 
     const template = readFileSync(templatePath);
     const types =
@@ -115,7 +165,7 @@ export class CodeGenerator {
       schema: this._schema,
     });
 
-    content = `// NOTE: This is generated by 'w3 codegen', DO NOT MODIFY
+    content = `// ${intlMsg.lib_codeGenerator_templateNoModify()}
 
 ${content}
 `;

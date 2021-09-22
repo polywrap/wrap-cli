@@ -1,6 +1,12 @@
+{{#__commonImport}}
+export { {{type}} } from "../../common";
+{{/__commonImport}}
+{{^__commonImport}}
 import {
   w3_subinvoke,
-  Nullable
+  Nullable,
+  BigInt,
+  JSON
 } from "@web3api/wasm-as";
 {{#methods.length}}
 import {
@@ -33,3 +39,4 @@ export class {{type}} {
   {{/last}}
   {{/methods}}
 }
+{{/__commonImport}}

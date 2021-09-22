@@ -7,7 +7,6 @@ import {
   createArrayDefinition,
 } from "../typeInfo";
 import { setPropertyType } from "./property-utils";
-import { Blackboard } from "./Blackboard";
 
 import { InputValueDefinitionNode, NamedTypeNode } from "graphql";
 
@@ -20,11 +19,7 @@ export interface State {
   currentImport?: ImportedQueryDefinition;
 }
 
-export function extractNamedType(
-  node: NamedTypeNode,
-  state: State,
-  blackboard: Blackboard
-): void {
+export function extractNamedType(node: NamedTypeNode, state: State): void {
   const argument = state.currentArgument;
   const method = state.currentMethod;
 
@@ -41,27 +36,15 @@ export function extractNamedType(
     }
 
     // Argument value
-    setPropertyType(
-      argument,
-      argument.name,
-      {
-        type: node.name.value,
-        required: state.nonNullType,
-      },
-      blackboard
-    );
+    setPropertyType(argument, argument.name, {
+      type: node.name.value,
+      required: state.nonNullType,
+    });
 
     state.nonNullType = false;
   } else if (method) {
     // Return value
-    if (!method.return) {
-      method.return = createPropertyDefinition({
-        type: "N/A",
-        name: method.name,
-      });
-
-      state.currentReturn = method.return;
-    } else if (!state.currentReturn) {
+    if (!state.currentReturn) {
       state.currentReturn = method.return;
     }
 
@@ -76,15 +59,10 @@ export function extractNamedType(
       );
     }
 
-    setPropertyType(
-      state.currentReturn,
-      method.name,
-      {
-        type: node.name.value,
-        required: state.nonNullType,
-      },
-      blackboard
-    );
+    setPropertyType(state.currentReturn, method.name, {
+      type: node.name.value,
+      required: state.nonNullType,
+    });
 
     state.nonNullType = false;
   }
@@ -138,6 +116,7 @@ export function extractInputValueDefinition(
   const argument = createPropertyDefinition({
     type: "N/A",
     name: node.name.value,
+    comment: node.description?.value,
   });
   method.arguments.push(argument);
   state.currentArgument = argument;

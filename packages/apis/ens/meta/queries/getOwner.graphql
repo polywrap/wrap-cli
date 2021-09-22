@@ -1,0 +1,9 @@
+query {
+  getOwner(
+    domain: $domain
+    registryAddress: $registryAddress
+    connection: {
+      networkNameOrChainId: $network
+    }
+  )
+}
