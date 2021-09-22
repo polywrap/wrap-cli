@@ -130,7 +130,7 @@ ${HELP}`);
     expect(code).toEqual(0);
     expect(sanitizedOutput).toContain("IPFS_PORT");
     expect(sanitizedOutput).toContain("DEV_SERVER_PORT");
-    expect(sanitizedOutput).toContain("ETHEREUM_PORT");
+    expect(sanitizedOutput).toContain("ETH_TESTNET_PORT");
   });
 
   test("Validates and displays composed docker manifest", async () => {

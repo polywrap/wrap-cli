@@ -16,7 +16,7 @@
       "type": "string",
       "format": "yamlFile"
     },
-    "env": {
+    "infra": {
       "type": "string",
       "format": "file"
     },

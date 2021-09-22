@@ -12,7 +12,7 @@ const getWeb3 = () => {
     new Web3.providers.HttpProvider(
       process.env.ganache
         ? `http://${process.env.ganache}`
-        : `http://localhost:${process.env.ETHEREUM_PORT}`
+        : `http://localhost:${process.env.ETH_TESTNET_PORT}`
     )
   );
 };
@@ -32,7 +32,7 @@ router.use((req, res, next) => {
 router.get("/providers", (req, res) => {
   res.send({
     ipfs: `http://localhost:${process.env.IPFS_PORT}`,
-    ethereum: `http://localhost:${process.env.ETHEREUM_PORT}`,
+    ethereum: `http://localhost:${process.env.ETH_TESTNET_PORT}`,
   });
 });
 

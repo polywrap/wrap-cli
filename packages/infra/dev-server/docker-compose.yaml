@@ -1,0 +1,11 @@
+version: '3'
+services:
+  dev-server:
+    build: ./
+    ports:
+      - '${DEV_SERVER_PORT}:${DEV_SERVER_PORT}'
+    links:
+      - ganache
+    environment:
+      ganache: 'ganache:${ETH_TESTNET_PORT}'
+      DEV_SERVER_PORT: '${DEV_SERVER_PORT}'

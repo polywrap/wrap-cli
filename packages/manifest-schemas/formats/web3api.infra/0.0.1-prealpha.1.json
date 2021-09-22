@@ -1,12 +1,12 @@
 {
-  "id": "EnvManifest",
+  "id": "InfraManifest",
   "type": "object",
   "additionalProperties": false,
   "required": ["format"],
   "properties": {
     "format": {
       "type": "string",
-      "const": "0.0.1-prealpha.2"
+      "const": "0.0.1-prealpha.1"
     },
     "dockerCompose": {
       "type": "any"
@@ -19,7 +19,7 @@
       },
       "additionalProperties": false
     },
-    "modules": {
+    "packages": {
       "type": "array",
       "items": {
         "type": "object",
@@ -28,17 +28,20 @@
           "name": {
             "type": "string"
           },
-          "dockerComposePath": {
-            "type": "string"
-          },
-          "module": {
+          "package": {
             "type": "string"
           },
           "version": {
             "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "dockerComposePath": {
+            "type": "string"
           }
         },
-        "required": ["module", "name", "version"]
+        "required": ["name", "package", "version"]
       }
     }
   }

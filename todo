@@ -1,0 +1,41 @@
+* Make the Infra.ts interface similar to the Compiler where you only have to call a single function ("up"?)
+
+* move Client into its own class, and make schema composer dependent upon it
+* * Client could be dependent upon "Env", that way it doesn't have to hard-code deps on ipfs, eth, ens, etc?
+
+* Improve the cache manipulation logic in Infra.ts, move it into the project for things like "createCacheDir" and "writeCacheFile"?
+* * Shouldn't have much fs. manipulation within Infra.ts & Compiler.ts
+
+* Move the installing of infra packages into sub-folder (infra/packages)
+
+* ensure "cd .w3/infra/packages && npm i" is platform agnostic. Maybe make a helper for this?
+* * Look at the create command.
+
+* Don't have hard-coded "infra" and "build" cache paths in compiller & env.ts, this should be encapsulated to make sure they don't get inconsistent in the future.
+* * Maybe make cache manipulation "protected" and force the project class to expose methods for it.
+
+* "dockerCompose" & "env" properties in web3api.infra.yaml file?
+
+* rename "test-env" JS testingn package to "test-infra"
+* * Rename the functions "createTestEnv" to "createTestInfra"?
+
+* Local linking of packages
+* * property "path" which points to the package directory
+
+* CLI infra command's interface, wording & dev-exp
+
+* Use intl strings for all cli/src/lib error messages
+
+* service link dependency checking (ensure links are satisfied)
+
+* what's the "environment" for in the docker-compose file?
+
+* Rename "dev-server" to "ens-eth-testnet-deployer"?
+
+* web3api.infra.yaml improvments
+* * Package name || path to docker-compose?
+* * overrides property (name, links, etc etc)
+* * don't require name? Use what's in the docker-compose?
+
+* Remove needless "providers" functionality from "dev-server". Since this is all ona project-by-project basis now, there's no need for it.
+* * Should we always have an "orchestrator" available where you query exposed ports for services?

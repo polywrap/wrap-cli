@@ -6,8 +6,8 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface EnvManifest {
-  format: "0.0.1-prealpha.2";
+export interface InfraManifest {
+  format: "0.0.1-prealpha.1";
   dockerCompose?: unknown;
   env?: {
     /**
@@ -16,11 +16,12 @@ export interface EnvManifest {
      */
     [k: string]: string | number;
   };
-  modules?: {
+  packages?: {
     name: string;
-    dockerComposePath?: string;
-    module: string;
+    package: string;
     version: string;
+    path?: string;
+    dockerComposePath?: string;
   }[];
-  __type: "EnvManifest";
+  __type: "InfraManifest";
 }

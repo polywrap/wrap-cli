@@ -4,12 +4,18 @@ import { Project, ProjectConfig } from "./Project";
 import {
   loadWeb3ApiManifest,
   loadBuildManifest,
+  loadInfraManifest,
   loadMetaManifest,
   manifestLanguageToTargetLanguage,
 } from "../helpers";
 import { intlMsg } from "../intl";
 
-import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
+import {
+  Web3ApiManifest,
+  BuildManifest,
+  InfraManifest,
+  MetaManifest
+} from "@web3api/core-js";
 import { TargetLanguage } from "@web3api/schema-bind";
 import { normalizePath } from "@web3api/os-js";
 import regexParser from "regex-parser";
@@ -20,14 +26,17 @@ import fsExtra from "fs-extra";
 export interface Web3ApiProjectConfig extends ProjectConfig {
   web3apiManifestPath: string;
   buildManifestPath?: string;
+  infraManifestPath?: string;
   metaManifestPath?: string;
 }
 
 export class Web3ApiProject extends Project {
   private _web3apiManifest: Web3ApiManifest | undefined;
   private _buildManifest: BuildManifest | undefined;
+  private _infraManifest: InfraManifest | undefined;
   private _metaManifest: MetaManifest | undefined;
   private _defaultBuildManifestCached = false;
+  private _defaultInfraManifestCached = false;
 
   constructor(protected _config: Web3ApiProjectConfig) {
     super(_config);
@@ -38,6 +47,9 @@ export class Web3ApiProject extends Project {
     const root = path.dirname(web3apiManifestPath);
     const paths = [
       absolute ? web3apiManifestPath : path.relative(root, web3apiManifestPath),
+      absolute
+        ? await this.getInfraManifestPath()
+        : path.relative(root, await this.getInfraManifestPath()),
       absolute
         ? await this.getBuildManifestPath()
         : path.relative(root, await this.getBuildManifestPath()),
@@ -60,7 +72,9 @@ export class Web3ApiProject extends Project {
     this._web3apiManifest = undefined;
     this._buildManifest = undefined;
     this._metaManifest = undefined;
+    this._infraManifest = undefined;
     this._defaultBuildManifestCached = false;
+    this._defaultInfraManifestCached = false;
   }
 
   public getRootDir(): string {
@@ -189,11 +203,11 @@ export class Web3ApiProject extends Project {
     }
     // Use a default build manifest for the provided language
     else {
-      await this.cacheDefaultBuildManifestFiles();
+      await this.cacheDefaultBuildConfig();
 
       // Return the cached manifest
       this._config.buildManifestPath = path.join(
-        this.getCachePath("build/env"),
+        this.getCachePath("build/config"),
         "web3api.build.yaml"
       );
       return this._config.buildManifestPath;
@@ -214,7 +228,7 @@ export class Web3ApiProject extends Project {
       const root = this.getRootDir();
       const cacheDir = this.getCachePath(this.getLinkedPackagesCacheSubPath());
 
-      // Add default env variables
+      // Add default config variables
       const defaultConfig = {
         web3api_modules: (await this.getWeb3ApiModules()).map(
           (module: { dir: string; name: string }) => {
@@ -250,7 +264,7 @@ export class Web3ApiProject extends Project {
     return this._buildManifest;
   }
 
-  public async cacheDefaultBuildManifestFiles(): Promise<void> {
+  public async cacheDefaultBuildConfig(): Promise<void> {
     if (this._defaultBuildManifestCached) {
       return;
     }
@@ -261,7 +275,7 @@ export class Web3ApiProject extends Project {
       throw Error(intlMsg.lib_project_language_not_found());
     }
 
-    const defaultPath = `${__dirname}/../build-envs/${language}/web3api.build.yaml`;
+    const defaultPath = `${__dirname}/../build-configs/${language}/web3api.build.yaml`;
 
     if (!fs.existsSync(defaultPath)) {
       throw Error(
@@ -270,10 +284,10 @@ export class Web3ApiProject extends Project {
     }
 
     // Update the cache
-    this.removeCacheDir("build/env");
+    this.removeCacheDir("build/config");
     await this.copyFilesIntoCache(
-      "build/env/",
-      `${__dirname}/../build-envs/${language}/*`,
+      "build/config/",
+      `${__dirname}/../build-configs/${language}/*`,
       { up: true }
     );
     this._defaultBuildManifestCached = true;
@@ -322,6 +336,64 @@ export class Web3ApiProject extends Project {
 
   public getLinkedPackagesCacheSubPath(): string {
     return "build/linked-packages";
+  }
+
+  /// Web3API Infra Manifest (web3api.infra.yaml)
+
+  public async getInfraManifestPath(): Promise<string> {
+    const web3apiManifest = await this.getWeb3ApiManifest();
+
+    // If a custom infra manifest path is configured
+    if (this._config.infraManifestPath) {
+      return this._config.infraManifestPath;
+    }
+    // If the web3api.yaml manifest specifies a custom infra manifest
+    else if (web3apiManifest.infra) {
+      this._config.infraManifestPath = path.join(
+        this.getWeb3ApiManifestDir(),
+        web3apiManifest.infra
+      );
+
+      return this._config.infraManifestPath;
+    }
+    // Use the default infra manifest
+    else {
+      await this.cacheDefaultInfraConfig();
+
+      // Return the cached manifest
+      this._config.infraManifestPath = path.join(
+        this.getCachePath("infra/config"),
+        "web3api.infra.yaml"
+      );
+      return this._config.infraManifestPath;
+    }
+  }
+
+  public async getInfraManifestDir(): Promise<string> {
+    return path.dirname(await this.getInfraManifestPath());
+  }
+
+  public async getInfraManifest(): Promise<InfraManifest> {
+    if (!this._infraManifest) {
+      this._infraManifest = await loadInfraManifest(
+        await this.getInfraManifestPath(),
+        this.quiet
+      );
+    }
+
+    return this._infraManifest;
+  }
+
+  public async cacheDefaultInfraConfig(): Promise<void> {
+    if (this._defaultInfraManifestCached) {
+      return;
+    }
+
+    // Update the cache
+    this.removeCacheDir("infra/config");
+    await this.copyFilesIntoCache("infra/config", `${__dirname}/../infra-configs/default/*`);
+
+    this._defaultInfraManifestCached = true;
   }
 
   /// Web3API Meta Manifest (web3api.build.yaml)

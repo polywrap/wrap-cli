@@ -1,0 +1,7 @@
+{
+  "name": "@web3api/ipfs-infra",
+  "version": "0.0.1-prealpha.44",
+  "files": [
+    "docker-compose.yaml"
+  ]
+}

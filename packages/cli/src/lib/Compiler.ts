@@ -345,11 +345,11 @@ export class Compiler {
 
     // If the dockerfile path isn't provided, generate it
     if (!buildManifest?.docker?.dockerfile) {
-      // Make sure the default template is in the cached .w3/build/env folder
-      await project.cacheDefaultBuildManifestFiles();
+      // Make sure the default template is in the cached .w3/build/config folder
+      await project.cacheDefaultBuildConfig();
 
       dockerfile = generateDockerfile(
-        project.getCachePath("build/env/Dockerfile.mustache"),
+        project.getCachePath("build/config/Dockerfile.mustache"),
         buildManifest.config || {}
       );
     }

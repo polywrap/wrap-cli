@@ -1,8 +1,7 @@
-format: 0.0.1-prealpha.2
-repository: https://github.com
+format: 0.0.1-prealpha.6
 language: wasm/assemblyscript
 build: ./web3api.build.docker.yaml
-env: ./web3api.env.no-docker.yaml
+infra: ./web3api.infra.no-docker.yaml
 modules:
   mutation:
     schema: ./src/mutation/schema.graphql

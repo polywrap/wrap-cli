@@ -1,43 +1,43 @@
 import { intlMsg } from "../lib/intl";
 import { withSpinner } from "../lib/helpers";
-import { ProjectEnv } from "../lib/ProjectEnv";
+import { Infra } from "../lib/Infra";
 import { runCommand } from "../lib/helpers/command";
 
 import { GluegunToolbox } from "gluegun";
 import chalk from "chalk";
 import fs from "fs";
 
-const optionsStr = intlMsg.commands_env_options_options();
-const manStr = intlMsg.commands_env_options_manifest();
-const moduleNameStr = intlMsg.commands_env_moduleName();
+const optionsStr = intlMsg.commands_infra_options_options();
+const manStr = intlMsg.commands_infra_options_manifest();
+const moduleNameStr = intlMsg.commands_infra_moduleName();
 
 const cmdStr = intlMsg.commands_create_options_command();
-const upStr = intlMsg.commands_env_command_up();
-const downStr = intlMsg.commands_env_command_down();
+const upStr = intlMsg.commands_infra_command_up();
+const downStr = intlMsg.commands_infra_command_down();
 const varsStr = intlMsg.commands_env_command_vars();
-const configStr = intlMsg.commands_env_command_config();
-const helpStr = intlMsg.commands_env_options_h();
+const configStr = intlMsg.commands_infra_command_config();
+const helpStr = intlMsg.commands_infra_options_h();
 
 const COMMANDS = ["config", "down", "help", "up", "vars"];
 
 const HELP = `
-${chalk.bold("w3 env")} <${cmdStr}> <web3api-${manStr}> [${optionsStr}]
+${chalk.bold("w3 infra")} <${cmdStr}> <web3api-${manStr}> [${optionsStr}]
 
 ${intlMsg.commands_create_options_commands()}:
-  ${chalk.bold("config")}  ${configStr}
-  ${chalk.bold("down")}     ${downStr}
-  ${chalk.bold("help")}     ${helpStr}
   ${chalk.bold("up")}     ${upStr}
+  ${chalk.bold("down")}     ${downStr}
+  ${chalk.bold("config")}  ${configStr}
   ${chalk.bold("vars")}  ${varsStr}
+  ${chalk.bold("help")}     ${helpStr}
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
-  -m, --modules [<${moduleNameStr}>]       ${intlMsg.commands_env_options_m()}
-  -v, --verbose                      ${intlMsg.commands_env_options_v()}
+  -m, --modules [<${moduleNameStr}>]       ${intlMsg.commands_infra_options_m()}
+  -v, --verbose                      ${intlMsg.commands_infra_options_v()}
 `;
 
 export default {
   alias: ["t"],
-  description: intlMsg.commands_env_description(),
+  description: intlMsg.commands_infra_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { parameters, print, filesystem } = toolbox;
     const command = parameters.first;
@@ -58,7 +58,7 @@ export default {
     }
 
     if (!command) {
-      print.error(intlMsg.commands_env_error_noCommand());
+      print.error(intlMsg.commands_infra_error_noCommand());
       print.info(HELP);
       return;
     }
@@ -68,7 +68,7 @@ export default {
       filesystem.resolve("web3api.yaml");
 
     if (!COMMANDS.includes(command)) {
-      const unrecognizedCommandMessage = intlMsg.commands_env_error_unrecognizedCommand(
+      const unrecognizedCommandMessage = intlMsg.commands_infra_error_unrecognizedCommand(
         {
           command: command,
         }
@@ -78,13 +78,18 @@ export default {
       return;
     }
 
-    const project = await ProjectEnv.getInstance({
+    // TODO
+    // - create Project w/ web3apimanifestpath & inframanifestpath
+    // - create infra w/ project
+    // - infra.up()
+
+    const infra = await Infra.getInstance({
       web3apiManifestPath: manifestPath,
       quiet: !verbose,
       modulesToUse: modules,
     });
 
-    const manifest = await project.getEnvManifest();
+    const manifest = await infra.getInfraManifest();
 
     if (manifest.modules && modules) {
       const manifestModuleNames = manifest.modules.map((module) => module.name);
@@ -115,9 +120,9 @@ export default {
       let vars = "";
 
       await withSpinner(
-        intlMsg.commands_env_vars_text(),
-        intlMsg.commands_env_vars_error(),
-        intlMsg.commands_env_vars_warning(),
+        intlMsg.commands_infra_vars_text(),
+        intlMsg.commands_infra_vars_error(),
+        intlMsg.commands_infra_vars_warning(),
         async (_spinner) => {
           const envVarRegex = /\${([^}]+)}/gm;
           const composePaths = await project.getCorrectedDockerComposePaths();

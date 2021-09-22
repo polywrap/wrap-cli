@@ -3,7 +3,7 @@
 
 import { Project } from "./project";
 
-import { Uri, Web3ApiClient, PluginRegistration } from "@web3api/client-js";
+import { Uri, Web3ApiClient, PluginRegistration, Client } from "@web3api/client-js";
 import {
   composeSchema,
   ComposerOutput,
@@ -70,6 +70,10 @@ export class SchemaComposer {
       });
     }
 
+    // TODO: move this into its own object, called "Client"
+    // this can then be passed in the same way the "Project"
+    // is passed in, making the configuration of the client
+    // a seperate process to be done before constructing the composer.
     this._client = new Web3ApiClient({ plugins });
   }
 

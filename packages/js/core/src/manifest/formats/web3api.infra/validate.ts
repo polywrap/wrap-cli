@@ -5,11 +5,11 @@
  * and run node ./scripts/manifest/generateFormatTypes.js to regenerate this file.
  */
 import {
-  AnyEnvManifest,
-  EnvManifestFormats
+  AnyInfraManifest,
+  InfraManifestFormats
 } from ".";
 
-import schema_0_0_1_prealpha_1 from "@web3api/manifest-schemas/formats/web3api.env/0.0.1-prealpha.1.json";
+import schema_0_0_1_prealpha_1 from "@web3api/manifest-schemas/formats/web3api.infra/0.0.1-prealpha.1.json";
 import { Tracer } from "@web3api/tracing-js"
 
 import {
@@ -19,33 +19,33 @@ import {
   ValidatorResult
 } from "jsonschema";
 
-type EnvManifestSchemas = {
-  [key in EnvManifestFormats]: Schema | undefined
+type InfraManifestSchemas = {
+  [key in InfraManifestFormats]: Schema | undefined
 };
 
-const schemas: EnvManifestSchemas = {
+const schemas: InfraManifestSchemas = {
   "0.0.1-prealpha.1": schema_0_0_1_prealpha_1,
 };
 
 const validator = new Validator();
 
 
-export const validateEnvManifest = Tracer.traceFunc(
-  "core: validateEnvManifest",
+export const validateInfraManifest = Tracer.traceFunc(
+  "core: validateInfraManifest",
   (
-    manifest: AnyEnvManifest,
+    manifest: AnyInfraManifest,
     extSchema: Schema | undefined = undefined
   ): void => {
-    const schema = schemas[manifest.format as EnvManifestFormats];
+    const schema = schemas[manifest.format as InfraManifestFormats];
 
     if (!schema) {
-      throw Error(`Unrecognized EnvManifest schema format "${manifest.format}"`);
+      throw Error(`Unrecognized InfraManifest schema format "${manifest.format}"`);
     }
 
     const throwIfErrors = (result: ValidatorResult) => {
       if (result.errors.length) {
         throw new Error([
-          `Validation errors encountered while sanitizing EnvManifest format ${manifest.format}`,
+          `Validation errors encountered while sanitizing InfraManifest format ${manifest.format}`,
           ...result.errors.map((error: ValidationError) => error.toString())
         ].join("\n"));
       }
