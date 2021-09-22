@@ -1,14 +1,6 @@
 use crate::AnotherType;
 use crate::{get_custom_enum_value, sanitize_custom_enum_value, CustomEnum};
-use alloc::{
-    boxed::Box,
-    collections::BTreeMap,
-    format,
-    str::FromStr,
-    string::{String, ToString},
-    vec,
-    vec::Vec,
-};
+use alloc::{boxed::Box, string::String, vec, vec::Vec};
 use core::convert::TryFrom;
 use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 

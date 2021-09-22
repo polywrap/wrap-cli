@@ -1,12 +1,4 @@
-use alloc::{
-    boxed::Box,
-    collections::BTreeMap,
-    format,
-    str::FromStr,
-    string::{String, ToString},
-    vec,
-    vec::Vec,
-};
+use alloc::{boxed::Box, string::String, vec::Vec};
 use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
 use crate::TestImportObject;

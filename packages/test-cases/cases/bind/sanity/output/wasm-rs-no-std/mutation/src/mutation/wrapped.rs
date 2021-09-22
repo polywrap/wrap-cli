@@ -3,15 +3,7 @@ use crate::{
     object_method, serialize_mutation_method_result, serialize_object_method_result,
     InputMutationMethod, InputObjectMethod,
 };
-use alloc::{
-    boxed::Box,
-    collections::BTreeMap,
-    format,
-    str::FromStr,
-    string::{String, ToString},
-    vec,
-    vec::Vec,
-};
+use alloc::vec::Vec;
 
 pub fn mutation_method_wrapped(input: &[u8]) -> Vec<u8> {
     let args = deserialize_mutation_method_args(input).expect("Failed to deserialize buffer");

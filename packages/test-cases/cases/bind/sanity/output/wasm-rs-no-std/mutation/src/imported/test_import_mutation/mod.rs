@@ -1,12 +1,4 @@
-use alloc::{
-    boxed::Box,
-    collections::BTreeMap,
-    format,
-    str::FromStr,
-    string::{String, ToString},
-    vec,
-    vec::Vec,
-};
+use alloc::{boxed::Box, string::ToString};
 use polywrap_wasm_rs::subinvoke;
 pub mod serialization;
 pub use serialization::{
@@ -31,7 +23,8 @@ impl TestImportMutation {
             "mutation".to_string(),
             "imported_method".to_string(),
             args,
-        );
+        )
+        .unwrap();
         deserialize_imported_method_result(result.as_slice())
     }
 
@@ -43,7 +36,8 @@ impl TestImportMutation {
             "mutation".to_string(),
             "another_method".to_string(),
             args,
-        );
+        )
+        .unwrap();
         deserialize_another_method_result(result.as_slice())
     }
 }

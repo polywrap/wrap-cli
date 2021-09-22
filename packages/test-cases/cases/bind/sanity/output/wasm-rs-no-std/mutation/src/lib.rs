@@ -1,36 +1,7 @@
 #![no_std]
-// #![feature(
-//     alloc_error_handler,
-//     default_alloc_error_handler,
-//     core_intrinsics,
-//     lang_items
-// )]
 
 extern crate alloc;
-// extern crate wee_alloc;
-
-// // Set up the global allocator.
-// #[global_allocator]
-// static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-
-// #[panic_handler]
-// // #[lang = "panic_impl"]
-// extern "C" fn panic(_: &core::panic::PanicInfo) -> ! {
-//     core::intrinsics::abort();
-// }
-
-// #[lang = "eh_personality"]
-// extern "C" fn eh_personality() {}
-
-use alloc::{
-    boxed::Box,
-    collections::BTreeMap,
-    format,
-    str::FromStr,
-    string::{String, ToString},
-    vec,
-    vec::Vec,
-};
+use alloc::boxed::Box;
 pub mod another_type;
 pub mod common;
 pub mod entry;
