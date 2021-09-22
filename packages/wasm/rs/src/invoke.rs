@@ -1,4 +1,5 @@
-use crate::memory::alloc;
+use crate::memory::internal_alloc;
+use alloc::{format, string::String, vec::Vec};
 
 #[link(wasm_import_module = "w3")]
 extern "C" {
@@ -23,8 +24,8 @@ pub struct InvokeArgs {
 
 #[allow(unused_unsafe)]
 pub fn w3_invoke_args(method_size: u32, args_size: u32) -> InvokeArgs {
-    let method_buf_ptr = alloc(method_size as usize);
-    let args_buf_ptr = alloc(args_size as usize);
+    let method_buf_ptr = internal_alloc(method_size as usize);
+    let args_buf_ptr = internal_alloc(args_size as usize);
 
     unsafe { __w3_invoke_args(method_buf_ptr as u32, args_buf_ptr as u32) };
 
@@ -35,10 +36,7 @@ pub fn w3_invoke_args(method_size: u32, args_size: u32) -> InvokeArgs {
 
     unsafe { __w3_log(method.as_ptr() as u32, method.len() as u32) };
 
-    InvokeArgs {
-        method: method,
-        args: args,
-    }
+    InvokeArgs { method, args }
 }
 
 /// Helper for handling _w3_invoke

@@ -1,7 +1,7 @@
 use crate::Context;
+use alloc::{collections::BTreeMap, string::String, vec::Vec};
+use core::hash::Hash;
 use num_bigint::BigInt;
-use std::collections::HashMap;
-use std::hash::Hash;
 
 pub trait Write: Clone {
     fn write_nil(&mut self);
@@ -25,12 +25,13 @@ pub trait Write: Clone {
     fn write_array_length(&mut self, length: u32);
     fn write_array<T: Clone>(&mut self, a: &[T], arr_fn: impl FnMut(&mut Self, &T));
     fn write_map_length(&mut self, length: u32);
-    fn write_map<K: Clone + Eq + Hash, V: Clone>(
+    fn write_map<K, V: Clone>(
         &mut self,
-        map: &HashMap<K, V>,
+        map: &BTreeMap<K, V>,
         key_fn: impl FnMut(&mut Self, &K),
         val_fn: impl FnMut(&mut Self, &V),
-    );
+    ) where
+        K: Clone + Eq + Hash + Ord;
     fn write_nullable_bool(&mut self, value: &Option<bool>);
     fn write_nullable_i8(&mut self, value: &Option<i8>);
     fn write_nullable_i16(&mut self, value: &Option<i16>);
@@ -50,11 +51,12 @@ pub trait Write: Clone {
         a: &Option<Vec<T>>,
         arr_fn: impl FnMut(&mut Self, &T),
     );
-    fn write_nullable_map<K: Clone + Eq + Hash, V: Clone>(
+    fn write_nullable_map<K, V: Clone>(
         &mut self,
-        map: &Option<HashMap<K, V>>,
+        map: &Option<BTreeMap<K, V>>,
         key_fn: impl FnMut(&mut Self, &K),
         val_fn: impl FnMut(&mut Self, &V),
-    );
-    fn context(&mut self) -> &mut Context;
+    ) where
+        K: Clone + Eq + Hash + Ord;
+    fn context(&mut self) -> &Context;
 }

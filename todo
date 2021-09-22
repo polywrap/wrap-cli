@@ -2,3 +2,5 @@
 * 1. Remove Box for non-circular objects (only use for circular relationships)
 * 2. size
 * 3. full test coverage
+
+* 4. Handle JSON types in MsgPack, Test-Cases, and Schema Bindings
