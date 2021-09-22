@@ -30,6 +30,7 @@ pub mod memory;
 pub mod msgpack;
 pub mod subinvoke;
 
+pub use invoke::InvokeArgs;
 pub use msgpack::{
     context::Context, read::Read, read_decoder::ReadDecoder, write::Write,
     write_encoder::WriteEncoder, write_sizer::WriteSizer,
