@@ -1,3 +1,4 @@
+use alloc::{boxed::Box, string::String, vec::Vec};
 {{^__commonImport}}
 {{#methods.length}}
 use polywrap_wasm_rs::{
@@ -34,12 +35,12 @@ pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
 
 pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &Input{{#toUpper}}{{name}}{{/toUpper}}) -> Vec<u8> {
     let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) imported query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
+    sizer_context.description = "Serializing (sizing) imported query-type: {{#toLower}}{{name}}{{/toLower}}";
     let mut sizer = WriteSizer::new(sizer_context);
     write_{{#toLower}}{{name}}{{/toLower}}_args(input, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
-    encoder_context.description = "Serializing (encoding) imported query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
+    encoder_context.description = "Serializing (encoding) imported query-type: {{#toLower}}{{name}}{{/toLower}}";
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_{{#toLower}}{{name}}{{/toLower}}_args(input, &mut encoder);
     buffer
@@ -84,7 +85,7 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toU
 
 pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result: &[u8]) -> {{#return}}{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}{{/return}} {
     let mut context = Context::new();
-    context.description = "Deserializing imported query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
+    context.description = "Deserializing imported query-type: {{#toLower}}{{name}}{{/toLower}}";
     let mut reader = ReadDecoder::new(result, context);
     {{#return}}
     reader.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}", "reading function output");

@@ -1,7 +1,7 @@
 {{#required}}
 let mut value = {{#toUpper}}{{type}}{{/toUpper}}::_MAX_;
 if reader.is_next_string() {
-    value = get_{{#toLower}}{{type}}{{/toLower}}_value(&reader.read_string().unwrap())
+    value = get_{{#toLower}}{{type}}{{/toLower}}_value(&reader.read_string())
         .expect("Failed to get {{#toUpper}}{{type}}{{/toUpper}} value");
 } else {
     value = {{#toUpper}}{{type}}{{/toUpper}}::try_from(reader.read_i32().unwrap())
@@ -14,7 +14,7 @@ if reader.is_next_string() {
 let mut value: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = None;
 if !reader.is_next_nil() {
     if reader.is_next_string() {
-        value = Some(get_{{#toLower}}{{type}}{{/toLower}}_value(&reader.read_string().unwrap())
+        value = Some(get_{{#toLower}}{{type}}{{/toLower}}_value(&reader.read_string())
             .expect("Failed to get {{#toWasm}}{{toGraphQLType}}{{/toWasm}} value"));
     } else {
         value = Some({{#toUpper}}{{type}}{{/toUpper}}::try_from(reader.read_i32().unwrap())

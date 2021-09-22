@@ -1,3 +1,4 @@
+use alloc::{boxed::Box, string::ToString};
 {{#__commonImport}}
 pub use super::super::common::TestImportQuery;
 {{/__commonImport}}
@@ -35,7 +36,7 @@ impl {{#toUpper}}{{type}}{{/toUpper}} {
             "{{#toLower}}{{type}}{{/toLower}}".to_string(),
             "{{#toLower}}{{name}}{{/toLower}}".to_string(),
             args,
-        );
+        ).unwrap();
         deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result.as_slice())
     }
     {{^last}}

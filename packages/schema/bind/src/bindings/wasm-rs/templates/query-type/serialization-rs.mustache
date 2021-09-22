@@ -1,3 +1,4 @@
+use alloc::{boxed::Box, string::String, vec, vec::Vec};
 use polywrap_wasm_rs::{
     Context,
     Read,
@@ -38,7 +39,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
     let mark = String::from("mark_des {{#toLower}}{{name}}{{/toLower}}");
     unsafe { __w3_log(mark.as_ptr() as u32, mark.len() as u32) };
     let mut context = Context::new();
-    context.description = "Deserializing query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
+    context.description = "Deserializing query-type: {{#toLower}}{{name}}{{/toLower}}";
     unsafe { __w3_log(mark.as_ptr() as u32, mark.len() as u32) };
     {{#arguments.length}}
     let mut reader = ReadDecoder::new(input, context);
@@ -68,7 +69,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
     while num_of_fields > 0 {
         unsafe { __w3_log(mark.as_ptr() as u32, mark.len() as u32) };
         num_of_fields -= 1;
-        let field = reader.read_string().unwrap();
+        let field = reader.read_string();
 
         match field.as_str() {
             {{#arguments}}
@@ -80,7 +81,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
                 {{#array}}
                 _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
                     {{> deserialize_array_nobox}}
-                }){{#required}}.expect("Failed to read array"){{/required}};
+                });
                 {{/array}}
                 {{#enum}}
                 {{> deserialize_enum}}
@@ -131,12 +132,12 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
 
 pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}{{#byRef}}&{{/byRef}}{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}{{/return}}) -> Vec<u8> {
     let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
+    sizer_context.description = "Serializing (sizing) query-type: {{#toLower}}{{name}}{{/toLower}}";
     let mut sizer = WriteSizer::new(sizer_context);
     write_{{#toLower}}{{name}}{{/toLower}}_result(result, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
-    encoder_context.description = "Serializing (encoding) query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
+    encoder_context.description = "Serializing (encoding) query-type: {{#toLower}}{{name}}{{/toLower}}";
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_{{#toLower}}{{name}}{{/toLower}}_result(result, &mut encoder);
     buffer
