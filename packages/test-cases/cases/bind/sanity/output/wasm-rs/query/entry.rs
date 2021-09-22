@@ -14,12 +14,10 @@ pub fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
         args_size
     );
 
-    match args.method {
-        "queryMethod" =>
-            return invoke::w3_invoke(args, query_method_wrapped);
-        "objectMethod" =>
-            return invoke::w3_invoke(args, mutation_method_wrapped);
-        _ => return invoke::w3_invoke(args, None);
+    match args.method.as_str() {
+        "queryMethod" => invoke::w3_invoke(args, Some(query_method_wrapped)),
+        "objectMethod" => invoke::w3_invoke(args, Some(object_method_wrapped)),
+        _ => invoke::w3_invoke(args, None),
     }
 }
 

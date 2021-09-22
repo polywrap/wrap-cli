@@ -1,3 +1,9 @@
+use alloc::{
+    boxed::Box,
+    string::{String, ToString},
+    vec,
+    vec::Vec,
+};
 use polywrap_wasm_rs::{
     Context,
     Read,
@@ -11,12 +17,12 @@ use crate::TestImportAnotherObject;
 
 pub fn serialize_test_import_another_object(input: &TestImportAnotherObject) -> Vec<u8> {
     let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) imported object-type: TestImportAnotherObject".to_string();
+    sizer_context.description = "Serializing (sizing) imported object-type: TestImportAnotherObject";
     let mut sizer = WriteSizer::new(sizer_context);
     write_test_import_another_object(input, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
-    encoder_context.description = "Serializing (encoding) imported object-type: TestImportAnotherObject".to_string();
+    encoder_context.description = "Serializing (encoding) imported object-type: TestImportAnotherObject";
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_test_import_another_object(input, &mut encoder);
     buffer
@@ -32,7 +38,7 @@ pub fn write_test_import_another_object<W: Write>(input: &TestImportAnotherObjec
 
 pub fn deserialize_test_import_another_object(input: &[u8]) -> TestImportAnotherObject {
     let mut context = Context::new();
-    context.description = "Deserializing imported object-type: TestImportAnotherObject".to_string();
+    context.description = "Deserializing imported object-type: TestImportAnotherObject";
     let mut reader = ReadDecoder::new(input, context);
     read_test_import_another_object(&mut reader).expect("Failed to deserialize TestImportAnotherObject")
 }
@@ -45,12 +51,12 @@ pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestIm
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
-        let field = reader.read_string().unwrap();
+        let field = reader.read_string();
 
         match field.as_str() {
             "prop" => {
                 reader.context().push(&field, "String", "type found, reading property");
-                _prop = reader.read_string().unwrap();
+                _prop = reader.read_string();
                 _prop_set = true;
                 reader.context().pop();
             }
@@ -64,5 +70,5 @@ pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestIm
 
     Ok(TestImportAnotherObject {
         prop: _prop,
-    });
+    })
 }

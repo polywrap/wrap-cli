@@ -1,11 +1,12 @@
+use alloc::{
+    boxed::Box,
+    string::{String, ToString},
+    vec::Vec,
+};
 pub mod serialization;
 use polywrap_wasm_rs::{
     Read,
     Write,
-};
-use serde::{
-    Deserialize,
-    Serialize,
 };
 pub use serialization::{
     deserialize_test_import_another_object,
@@ -14,7 +15,7 @@ pub use serialization::{
     write_test_import_another_object,
 };
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug)]
 pub struct TestImportAnotherObject {
     pub prop: String,
 }

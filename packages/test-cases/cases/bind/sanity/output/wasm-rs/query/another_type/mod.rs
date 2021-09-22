@@ -1,11 +1,8 @@
+use alloc::{boxed::Box, string::String, vec::Vec};
 pub mod serialization;
 use polywrap_wasm_rs::{
     Read,
     Write,
-};
-use serde::{
-    Deserialize,
-    Serialize,
 };
 pub use serialization::{
     deserialize_another_type,
@@ -16,7 +13,7 @@ pub use serialization::{
 
 use crate::CustomType;
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug)]
 pub struct AnotherType {
     pub prop: Option<String>,
     pub circular: Option<Box<CustomType>>,
