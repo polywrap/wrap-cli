@@ -303,13 +303,12 @@ describe("e2e tests for HttpPlugin", () => {
         })
         .reply(200)
 
-
       const web3ApiClient = new Web3ApiClient()
 
       const response = await web3ApiClient.query<{ post: Response }>({
         uri: "w3://ens/http.web3api.eth",
         query: `
-          mutation {
+          query {
             post(
               url: "http://www.example.com/api"
               request: {
