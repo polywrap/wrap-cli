@@ -50,11 +50,10 @@ export function fromAxiosResponse(
 export function mapObjectToHeadersArray(headers: any): Header[] {
   const responseHeaders: Header[] = [];
   for (const key of Object.keys(headers)) {
-    responseHeaders.push({ key: key, value: headers[key] });
+    responseHeaders.push({ key: key, value: JSON.stringify(headers[key]) });
   }
   return responseHeaders;
 }
-
 
 const DEFAULT_ERROR_CODE = "UNKNOWNERROR"
 const DEFAULT_ERROR_MESSAGE = "Unknown error"

@@ -45,12 +45,17 @@ export class HttpPlugin extends Plugin {
   }
 
   public async post(url: string, request?: Request): Promise<Response> {
-    const axiosRequest = request ? toAxiosRequest(request) : undefined;
-    const response = await axios.post(
-      url,
-      axiosRequest ? axiosRequest.data : undefined,
-      axiosRequest ? axiosRequest.config : undefined
-    );
+    let response: AxiosResponse<string>;
+    try {
+      const axiosRequest = request ? toAxiosRequest(request) : undefined;
+      response = await axios.post(
+        url,
+        axiosRequest ? axiosRequest.data : undefined,
+        axiosRequest ? axiosRequest.config : undefined
+      );
+    } catch (e) {
+      return fromAxiosError(e);
+    }
     return fromAxiosResponse(response);
   }
 }

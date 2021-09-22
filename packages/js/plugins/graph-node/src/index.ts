@@ -42,9 +42,11 @@ export class GraphNodePlugin extends Plugin {
       {
         url: `${this._config.provider}/subgraphs/name/${author}/${name}`,
         request: {
-          body: JSON.stringify({
-            query,
-          }),
+          body: {
+            stringBody: JSON.stringify({
+              query,
+            }),
+          },
           responseType: "TEXT",
         },
       },
