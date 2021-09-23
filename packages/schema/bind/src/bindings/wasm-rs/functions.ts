@@ -145,7 +145,7 @@ export const toMsgPack: MustacheFunction = () => {
       case "BigInt":
         return modifier + "bigint";
       case "JSON":
-        return modifier + "string";
+        return modifier + "json";
       default:
         throw Error(`Unknown toWasm type "${type}"`);
     }
@@ -192,7 +192,7 @@ export const toWasmInit: MustacheFunction = () => {
       case "BigInt":
         return nullableModifier("BigInt::from_u16(0).unwrap_or_default()");
       case "JSON":
-        return nullableModifier("String::new()");
+        return nullableModifier("Value::Null");
       default:
         if (type.includes("Enum_")) {
           return nullableModifier(`${toWasm()(value, render)}::_MAX_`);
@@ -261,7 +261,7 @@ export const toWasm: MustacheFunction = () => {
         type = "BigInt";
         break;
       case "JSON":
-        type = "String";
+        type = "Value";
         break;
       default:
         if (type.includes("Enum_")) {
