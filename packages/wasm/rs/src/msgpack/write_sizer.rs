@@ -7,6 +7,7 @@ use alloc::{
 };
 use core::hash::Hash;
 use num_bigint::BigInt;
+use serde_json::{self, value::Value};
 
 #[derive(Clone, Debug, Default)]
 pub struct WriteSizer<'a> {
@@ -138,6 +139,10 @@ impl<'a> Write for WriteSizer<'a> {
     fn write_bigint(&mut self, value: &BigInt) {
         let val_str = value.to_string();
         self.write_string(&val_str);
+    }
+
+    fn write_json(&mut self, value: &Value) {
+        self.write_str(value.as_str().unwrap());
     }
 
     fn write_array_length(&mut self, length: u32) {
@@ -293,6 +298,14 @@ impl<'a> Write for WriteSizer<'a> {
             self.write_nil();
         } else {
             self.write_bigint(value.as_ref().unwrap());
+        }
+    }
+
+    fn write_nullable_json(&mut self, value: &Option<Value>) {
+        if value.is_none() {
+            self.write_nil();
+        } else {
+            self.write_json(value.as_ref().unwrap());
         }
     }
 

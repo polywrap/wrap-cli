@@ -19,6 +19,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 num-bigint = { version = "0.4", default-features = false }
+serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 # `wee_alloc` is a tiny allocator for wasm that is only ~1K in code size
 # compared to the default allocator's ~10K. It is slower than the default
 # allocator, however.

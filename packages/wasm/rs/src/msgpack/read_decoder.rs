@@ -8,6 +8,7 @@ use alloc::{
 };
 use core::hash::Hash;
 use num_bigint::BigInt;
+use serde_json::{self, value::Value};
 
 #[derive(Clone, Debug, Default)]
 pub struct ReadDecoder<'a> {
@@ -419,6 +420,10 @@ impl<'a> Read for ReadDecoder<'a> {
         BigInt::from_str(&s).unwrap()
     }
 
+    fn read_json(&mut self) -> Value {
+        serde_json::to_value(self.read_string()).unwrap()
+    }
+
     fn read_array_length(&mut self) -> Result<u32, String> {
         let lead_byte = self.view.get_u8();
         if Format::is_fixed_array(lead_byte) {
@@ -578,6 +583,13 @@ impl<'a> Read for ReadDecoder<'a> {
             return None;
         }
         Some(self.read_bigint())
+    }
+
+    fn read_nullable_json(&mut self) -> Option<Value> {
+        if self.is_next_nil() {
+            return None;
+        }
+        Some(self.read_json())
     }
 
     fn read_nullable_array<T>(&mut self, reader: impl FnMut(&mut Self) -> T) -> Option<Vec<T>> {
