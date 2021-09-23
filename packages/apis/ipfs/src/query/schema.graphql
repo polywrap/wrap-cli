@@ -2,9 +2,23 @@
 
 type Query {
   # Returns byte content of file, defined by provided cid
-  catFile(ipfs: IpfsOptions!, cid: String!, catFileOptions: CatFileOptions): Bytes!
-  catFileToString(ipfs: IpfsOptions!, cid: String!, catFileOptions: CatFileOptions): String!
-  resolve(ipfs: IpfsOptions!, cid: String!): ResolveResult!
+  catFile(
+    cid: String!
+    catFileOptions: CatFileOptions
+    ipfs: IpfsOptions!
+  ): Bytes!
+
+  catFileToString(
+    cid: String!
+    catFileOptions: CatFileOptions
+    ipfs: IpfsOptions!
+  ): String!
+
+  resolve(
+    cid: String!
+    ipfs: IpfsOptions!
+  ): ResolveResult!
+
   # tryResolveUri(authority: String!, path: String!): String
   # getFile(path: String!): Bytes
 }
@@ -12,9 +26,9 @@ type Query {
 type CatFileOptions {
   headers: [Http_Header!]
   queryString: [Http_UrlParam!]
-  offset: Int64
-  length: Int64
-  timeout: UInt64
+  offset: Int32
+  length: Int32
+  timeout: UInt32
 }
 
 type IpfsOptions {

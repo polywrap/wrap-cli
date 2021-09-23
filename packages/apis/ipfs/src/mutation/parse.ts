@@ -1,5 +1,5 @@
 import { AddResult } from "./w3";
-import { JSON } from "assemblyscript-json";
+import { JSON } from "@web3api/wasm-as";
 
 export function parseAddDirectoryResponse(body: string | null): AddResult[] {
     let results: AddResult[] = []

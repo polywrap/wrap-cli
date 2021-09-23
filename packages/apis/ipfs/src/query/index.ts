@@ -104,7 +104,7 @@ function executeOperation(
 function createRequest(catFileOptions: CatFileOptions | null, cid: string, responseType: Http_ResponseType): Http_Request {
   let headers: Http_Header[];
   let urlParams: Http_UrlParam[];
-  let timeout: Nullable<u64>;
+  let timeout: Nullable<u32>;
 
   urlParams = [{ key: "arg", value: cid }];
 

@@ -1,4 +1,4 @@
-import { Http_Mutation, Http_ResponseType } from "./w3/imported";
+import { Http_Query, Http_ResponseType } from "./w3/imported";
 import { Input_addFile, AddResult, Input_addFolder, Http_Response, DirectoryBlob, AddFileOptions } from "./w3";
 import { IpfsError } from "../error";
 import { convertDirectoryBlobToFormData } from "./convert";
@@ -31,7 +31,7 @@ function executeAddFileRequest(name: string, data: ArrayBuffer, ipfsUrl: string,
     url = generateUrlWithOptions(url, options);
   }
   // invoke add method
-  const addResponse = Http_Mutation.post({
+  const addResponse = Http_Query.post({
     url: url,
     request: {
       headers: [],
@@ -44,7 +44,7 @@ function executeAddFileRequest(name: string, data: ArrayBuffer, ipfsUrl: string,
         rawBody: null,
         stringBody: null
       },
-      timeout: Nullable.fromNull<u64>()
+      timeout: Nullable.fromNull<u32>()
     }
   });
   // return response
@@ -61,7 +61,7 @@ function executeAddFolderRequest(directoryEntry: DirectoryBlob, ipfsUrl: string,
     url = generateUrlWithOptions(url, options);
   }
   // invoke add method
-  const addResponse = Http_Mutation.post({
+  const addResponse = Http_Query.post({
     url: url,
     request: {
       headers: [],
@@ -74,7 +74,7 @@ function executeAddFolderRequest(directoryEntry: DirectoryBlob, ipfsUrl: string,
         stringBody: null,
         rawBody: null
       },
-      timeout: Nullable.fromNull<u64>()
+      timeout: Nullable.fromNull<u32>()
     }
   });
   // return response

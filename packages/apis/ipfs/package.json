@@ -1,6 +1,6 @@
 {
   "name": "@web3api/ipfs-api",
-  "version": "0.0.1-prealpha.8",
+  "version": "0.0.1-prealpha.44",
   "private": true,
   "license": "MIT",
   "scripts": {
@@ -8,16 +8,20 @@
     "deploy": "w3 build --ipfs http://127.0.0.1:5001 --test-ens ipfs.eth",
     "test": "w3 query ./recipes/e2e.json",
     "test:unit": "asp --verbose",
-    "test:ci": "yarn test:env:up && yarn deploy && yarn test && yarn test:env:down",
+    "test:e2e": "jest --passWithNoTests --runInBand --verbose",
+    "test:ci": "yarn test:env:up && yarn deploy && yarn test && yarn test:env:down && yarn test:unit",
     "test:env:up": "w3 test-env up && jsipfs add ./recipes/test.txt --silent --api http://localhost:5001",
     "test:env:down": "w3 test-env down"
   },
+  "dependencies": {
+    "@web3api/wasm-as": "0.0.1-prealpha.44",
+    "as-base64": "0.1.1"
+  },
   "devDependencies": {
     "@as-pect/cli": "^6.0.0",
-    "@web3api/cli": "0.0.1-prealpha.8",
-    "@web3api/wasm-as": "0.0.1-prealpha.8",
-    "as-base64": "0.1.1",
-    "assemblyscript-json": "1.0.0",
-    "ipfs": "0.52.0"
+    "@types/jest": "26.0.8",
+    "@web3api/cli": "0.0.1-prealpha.44",
+    "jest": "26.6.3",
+    "ts-jest": "26.5.4"
   }
 }

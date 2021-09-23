@@ -161,11 +161,11 @@ describe('Convert functions tests', () => {
           }
         },
         {
-          key: "file_AA_0",
-          data: "file_AA_0_data",
+          key: "file_AB_0",
+          data: "file_AB_0_data",
           opts: {
             contentType: "application/octet-stream",
-            fileName: "dirA%2FdirAB%2Ffile_AA_0",
+            fileName: "dirA%2FdirAB%2Ffile_AB_0",
             filePath: null
           }
         },

@@ -1,6 +1,6 @@
 [
   {
-    "api": "ens/ipfs.eth",
+    "api": "ens/testnet/ipfs.eth",
     "constants": "./constants.json"
   },
   {

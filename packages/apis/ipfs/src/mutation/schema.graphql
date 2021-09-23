@@ -1,10 +1,19 @@
-#import { Mutation, ResponseType } into Http from "w3://ens/http.web3api.eth"
+#import { Query, ResponseType } into Http from "w3://ens/http.web3api.eth"
 
 type Mutation {
   # Saves file to ipfs, returns _name_, _hash_ and _size_ as `AddResult`.
-  addFile(ipfsUrl: String!, fileEntry: FileEntry!, options: AddFileOptions): AddResult!
+  addFile(
+    ipfsUrl: String!
+    fileEntry: FileEntry!
+    options: AddFileOptions
+  ): AddResult!
+
   # Saves folder structure to ipfs, returns _name_, _hash_ and _size_ as `AddResult` for each entry as array.
-  addFolder(ipfsUrl: String!, directoryEntry: DirectoryBlob!, options: AddFileOptions): [AddResult!]!
+  addFolder(
+    ipfsUrl: String!
+    directoryEntry: DirectoryBlob!
+    options: AddFileOptions
+  ): [AddResult!]!
 }
 
 type AddResult {
