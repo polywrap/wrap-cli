@@ -29,9 +29,8 @@ impl<'a> DataView<'a> {
             );
             return Err(context.print_with_context(&msg));
         }
-        let data_start = buf.as_ptr() as u32;
         Ok(Self {
-            data_start,
+            data_start: buf.as_ptr() as u32,
             buffer: buf.to_vec(),
             byte_length,
             byte_offset,

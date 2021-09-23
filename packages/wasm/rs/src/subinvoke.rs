@@ -36,20 +36,15 @@ pub fn w3_subinvoke(
     let module_buf = module.as_bytes();
     let method_buf = method.as_bytes();
 
-    let uri_buf_u32 = uri_buf.as_ptr() as u32;
-    let module_buf_u32 = module_buf.as_ptr() as u32;
-    let method_buf_u32 = method_buf.as_ptr() as u32;
-    let input_u32 = input.as_ptr() as u32;
-
     let success = unsafe {
         __w3_subinvoke(
-            uri_buf_u32,
+            uri_buf.as_ptr() as u32,
             uri_buf.len() as u32,
-            module_buf_u32,
+            module_buf.as_ptr() as u32,
             module_buf.len() as u32,
-            method_buf_u32,
+            method_buf.as_ptr() as u32,
             method_buf.len() as u32,
-            input_u32,
+            input.as_ptr() as u32,
             input.len() as u32,
         )
     };

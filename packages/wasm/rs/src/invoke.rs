@@ -1,5 +1,5 @@
 use crate::memory::internal_alloc;
-use alloc::{format, string::String, vec::Vec};
+use alloc::{string::String, vec::Vec};
 
 #[link(wasm_import_module = "w3")]
 extern "C" {
@@ -46,17 +46,15 @@ pub fn w3_invoke(options: InvokeArgs, opt_invoke_func: Option<InvokeFunction>) -
     if opt_invoke_func.is_some() {
         if let Some(func) = opt_invoke_func {
             let result = func(options.args.as_slice());
-            let result_u32 = result.as_ptr() as u32;
 
-            unsafe { __w3_invoke_result(result_u32, result.len() as u32) };
+            unsafe { __w3_invoke_result(result.as_ptr() as u32, result.len() as u32) };
             true
         } else {
             false
         }
     } else {
-        let message = format!("Could not find invoke function {}", options.method);
-        let message_u32 = message.as_ptr() as u32;
-        unsafe { __w3_invoke_error(message_u32, message.len() as u32) };
+        let message = ["Could not find invoke function ", &options.method].concat();
+        unsafe { __w3_invoke_error(message.as_ptr() as u32, message.len() as u32) };
         false
     }
 }

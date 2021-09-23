@@ -166,8 +166,7 @@ impl<'a> Write for WriteEncoder<'a> {
     }
 
     fn write_bigint(&mut self, value: &BigInt) {
-        let val_str = value.to_string();
-        self.write_string(&val_str);
+        self.write_string(&value.to_string());
     }
 
     fn write_json(&mut self, value: &Value) {

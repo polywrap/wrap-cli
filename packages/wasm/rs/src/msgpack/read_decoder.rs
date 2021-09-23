@@ -205,10 +205,13 @@ impl<'a> Read for ReadDecoder<'a> {
         } else if value == Format::FALSE {
             return Ok(false);
         }
-        let mut custom_error = String::new();
-        custom_error.push_str("Property must be of type `bool`");
-        custom_error.push_str(Self::get_error_message(value).unwrap());
-        Err(self.context.print_with_context(&custom_error))
+        Err(self.context.print_with_context(
+            &[
+                "Property must be of type `bool`",
+                &Self::get_error_message(value).unwrap(),
+            ]
+            .concat(),
+        ))
     }
 
     fn read_i8(&mut self) -> Result<i8, String> {
@@ -264,11 +267,13 @@ impl<'a> Read for ReadDecoder<'a> {
             Format::INT16 => Ok(self.view.get_i16() as i64),
             Format::INT32 => Ok(self.view.get_i32() as i64),
             Format::INT64 => Ok(self.view.get_i64()),
-            _ => {
-                let mut custom_error = String::from("Property must be of type `int`");
-                custom_error.push_str(Self::get_error_message(prefix).unwrap());
-                Err(self.context.print_with_context(&custom_error))
-            }
+            _ => Err(self.context.print_with_context(
+                &[
+                    "Property must be of type `int`",
+                    &Self::get_error_message(prefix).unwrap(),
+                ]
+                .concat(),
+            )),
         }
     }
 
@@ -333,11 +338,13 @@ impl<'a> Read for ReadDecoder<'a> {
             Format::UINT16 => Ok(self.view.get_u16() as u64),
             Format::UINT32 => Ok(self.view.get_u32() as u64),
             Format::UINT64 => Ok(self.view.get_u64()),
-            _ => {
-                let mut custom_error = String::from("Property must be of type `uint`");
-                custom_error.push_str(Self::get_error_message(prefix).unwrap());
-                Err(self.context.print_with_context(&custom_error))
-            }
+            _ => Err(self.context.print_with_context(
+                &[
+                    "Property must be of type `uint`",
+                    &Self::get_error_message(prefix).unwrap(),
+                ]
+                .concat(),
+            )),
         }
     }
 
@@ -346,9 +353,13 @@ impl<'a> Read for ReadDecoder<'a> {
         if Format::is_float_32(prefix) {
             return Ok(self.view.get_f32());
         }
-        let mut custom_error = String::from("Property must be of type `float32`");
-        custom_error.push_str(Self::get_error_message(prefix).unwrap());
-        Err(self.context.print_with_context(&custom_error))
+        Err(self.context.print_with_context(
+            &[
+                "Property must be of type `float32`",
+                &Self::get_error_message(prefix).unwrap(),
+            ]
+            .concat(),
+        ))
     }
 
     fn read_f64(&mut self) -> Result<f64, String> {
@@ -356,9 +367,13 @@ impl<'a> Read for ReadDecoder<'a> {
         if Format::is_float_64(prefix) {
             return Ok(self.view.get_f64());
         }
-        let mut custom_error = String::from("Property must be of type `float64`");
-        custom_error.push_str(Self::get_error_message(prefix).unwrap());
-        Err(self.context.print_with_context(&custom_error))
+        Err(self.context.print_with_context(
+            &[
+                "Property must be of type `float64`",
+                &Self::get_error_message(prefix).unwrap(),
+            ]
+            .concat(),
+        ))
     }
 
     fn read_string_length(&mut self) -> Result<u32, String> {
@@ -373,11 +388,13 @@ impl<'a> Read for ReadDecoder<'a> {
             Format::STR8 => Ok(self.view.get_u8() as u32),
             Format::STR16 => Ok(self.view.get_u16() as u32),
             Format::STR32 => Ok(self.view.get_u32()),
-            _ => {
-                let mut custom_error = String::from("Property must be of type `string`");
-                custom_error.push_str(Self::get_error_message(lead_byte).unwrap());
-                Err(self.context.print_with_context(&custom_error))
-            }
+            _ => Err(self.context.print_with_context(
+                &[
+                    "Property must be of type `string`",
+                    &Self::get_error_message(lead_byte).unwrap(),
+                ]
+                .concat(),
+            )),
         }
     }
 
@@ -402,11 +419,13 @@ impl<'a> Read for ReadDecoder<'a> {
             Format::STR8 => Ok(self.view.get_u8() as u32),
             Format::STR16 => Ok(self.view.get_u16() as u32),
             Format::STR32 => Ok(self.view.get_u32()),
-            _ => {
-                let mut custom_error = String::from("Property must be of type `bytes`");
-                custom_error.push_str(Self::get_error_message(lead_byte).unwrap());
-                Err(self.context.print_with_context(&custom_error))
-            }
+            _ => Err(self.context.print_with_context(
+                &[
+                    "Property must be of type `bytes`",
+                    &Self::get_error_message(lead_byte).unwrap(),
+                ]
+                .concat(),
+            )),
         }
     }
 
@@ -416,8 +435,7 @@ impl<'a> Read for ReadDecoder<'a> {
     }
 
     fn read_bigint(&mut self) -> BigInt {
-        let s = self.read_string();
-        BigInt::from_str(&s).unwrap()
+        BigInt::from_str(&self.read_string()).unwrap()
     }
 
     fn read_json(&mut self) -> Value {
@@ -429,16 +447,19 @@ impl<'a> Read for ReadDecoder<'a> {
         if Format::is_fixed_array(lead_byte) {
             return Ok((lead_byte & Format::FOUR_LEAST_SIG_BITS_IN_BYTE) as u32);
         } else if lead_byte == Format::ARRAY16 {
-            let r = self.view.get_u16();
-            return Ok(r as u32);
+            return Ok(self.view.get_u16() as u32);
         } else if lead_byte == Format::ARRAY32 {
             return Ok(self.view.get_u32());
         } else if lead_byte == Format::NIL {
             return Ok(0);
         }
-        let mut custom_error = String::from("Property must be of type `array`");
-        custom_error.push_str(Self::get_error_message(lead_byte).unwrap());
-        Err(self.context.print_with_context(&custom_error))
+        Err(self.context.print_with_context(
+            &[
+                "Property must be of type `array`",
+                &Self::get_error_message(lead_byte).unwrap(),
+            ]
+            .concat(),
+        ))
     }
 
     fn read_array<T>(&mut self, mut reader: impl FnMut(&mut Self) -> T) -> Vec<T> {
@@ -462,9 +483,13 @@ impl<'a> Read for ReadDecoder<'a> {
         } else if lead_byte == Format::MAP32 {
             return Ok(self.view.get_u32());
         }
-        let mut custom_error = String::from("Property must be of type `map`");
-        custom_error.push_str(Self::get_error_message(lead_byte).unwrap());
-        Err(self.context.print_with_context(&custom_error))
+        Err(self.context.print_with_context(
+            &[
+                "Property must be of type `map`",
+                &Self::get_error_message(lead_byte).unwrap(),
+            ]
+            .concat(),
+        ))
     }
 
     fn read_map<K, V>(
