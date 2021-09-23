@@ -1,4 +1,5 @@
 use alloc::{boxed::Box, string::String, vec::Vec};
+use serde_json::{self, value::Value};
 pub mod serialization;
 use polywrap_wasm_rs::{
     Read,
@@ -30,6 +31,8 @@ pub struct CustomType {
     pub i32: i32,
     pub bigint: BigInt,
     pub opt_bigint: Option<BigInt>,
+    pub json: Value,
+    pub opt_json: Option<Value>,
     pub bytes: Vec<u8>,
     pub opt_bytes: Option<Vec<u8>>,
     pub boolean: bool,

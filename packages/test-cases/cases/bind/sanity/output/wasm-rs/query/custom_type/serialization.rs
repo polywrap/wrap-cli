@@ -4,6 +4,7 @@ use alloc::{
     vec,
     vec::Vec,
 };
+use serde_json::{self, value::Value};
 use polywrap_wasm_rs::{
     Context,
     Read,
@@ -88,6 +89,14 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) {
     writer.context().push("opt_bigint", "Option<BigInt>", "writing property");
     writer.write_str("opt_bigint");
     writer.write_nullable_bigint(&input.opt_bigint);
+    writer.context().pop();
+    writer.context().push("json", "JSON.Value", "writing property");
+    writer.write_str("json");
+    writer.write_json(&input.json);
+    writer.context().pop();
+    writer.context().push("opt_json", "Option<JSON.Value>", "writing property");
+    writer.write_str("opt_json");
+    writer.write_nullable_json(&input.opt_json);
     writer.context().pop();
     writer.context().push("bytes", "Vec<u8>", "writing property");
     writer.write_str("bytes");
@@ -250,6 +259,9 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
     let mut _bigint: BigInt = BigInt::from_u16(0).unwrap_or_default();
     let mut _bigint_set = false;
     let mut _opt_bigint: Option<BigInt> = None;
+    let mut _json: Value = Value::Null;
+    let mut _json_set = false;
+    let mut _opt_json: Option<Value> = None;
     let mut _bytes: Vec<u8> = vec![];
     let mut _bytes_set = false;
     let mut _opt_bytes: Option<Vec<u8>> = None;
@@ -359,6 +371,17 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
             "opt_bigint" => {
                 reader.context().push(&field, "Option<BigInt>", "type found, reading property");
                 _opt_bigint = reader.read_nullable_bigint();
+                reader.context().pop();
+            }
+            "json" => {
+                reader.context().push(&field, "JSON.Value", "type found, reading property");
+                _json = reader.read_json();
+                _json_set = true;
+                reader.context().pop();
+            }
+            "opt_json" => {
+                reader.context().push(&field, "Option<JSON.Value>", "type found, reading property");
+                _opt_json = reader.read_nullable_json();
                 reader.context().pop();
             }
             "bytes" => {
@@ -610,6 +633,10 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
         let custom_error = reader.context().print_with_context("Missing required property: 'bigint: BigInt'");
         return Err(custom_error);
     }
+    if !_json_set {
+        let custom_error = reader.context().print_with_context("Missing required property: 'json: JSON.Value'");
+        return Err(custom_error);
+    }
     if !_bytes_set {
         let custom_error = reader.context().print_with_context("Missing required property: 'bytes: Bytes'");
         return Err(custom_error);
@@ -665,6 +692,8 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
         i32: _i32,
         bigint: _bigint,
         opt_bigint: _opt_bigint,
+        json: _json,
+        opt_json: _opt_json,
         bytes: _bytes,
         opt_bytes: _opt_bytes,
         boolean: _boolean,

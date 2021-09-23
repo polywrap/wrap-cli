@@ -1,4 +1,5 @@
 use alloc::{boxed::Box, string::String, vec::Vec};
+use serde_json::{self, value::Value};
 pub mod serialization;
 use polywrap_wasm_rs::{
     Read,

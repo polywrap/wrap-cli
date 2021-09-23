@@ -4,6 +4,7 @@ use alloc::{
     vec,
     vec::Vec,
 };
+use serde_json::{self, value::Value};
 use polywrap_wasm_rs::{
     Context,
     Read,
