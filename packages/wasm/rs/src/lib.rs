@@ -1,28 +1,28 @@
 //! Polywrap Rust/WASM Runtime Library
 
-#![no_std]
-#![feature(
-    alloc_error_handler,
-    default_alloc_error_handler,
-    core_intrinsics,
-    lang_items
-)]
+// #![no_std]
+// #![feature(
+//     alloc_error_handler,
+//     default_alloc_error_handler,
+//     core_intrinsics,
+//     lang_items
+// )]
 
 extern crate alloc;
-extern crate wee_alloc;
+// extern crate wee_alloc;
 
-// Set up the global allocator.
-#[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+// // Set up the global allocator.
+// #[global_allocator]
+// static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-#[panic_handler]
-#[lang = "panic_impl"]
-extern "C" fn panic(_: &core::panic::PanicInfo) -> ! {
-    core::intrinsics::abort();
-}
+// #[panic_handler]
+// #[lang = "panic_impl"]
+// extern "C" fn panic(_: &core::panic::PanicInfo) -> ! {
+//     core::intrinsics::abort();
+// }
 
-#[lang = "eh_personality"]
-extern "C" fn eh_personality() {}
+// #[lang = "eh_personality"]
+// extern "C" fn eh_personality() {}
 
 pub mod abort;
 pub mod big_int;
