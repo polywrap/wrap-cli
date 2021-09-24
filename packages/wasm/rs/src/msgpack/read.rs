@@ -15,19 +15,19 @@ pub trait Read: Clone + Sized {
     fn read_f32(&mut self) -> Result<f32, String>;
     fn read_f64(&mut self) -> Result<f64, String>;
     fn read_string_length(&mut self) -> Result<u32, String>;
-    fn read_string(&mut self) -> String;
+    fn read_string(&mut self) -> Result<String, String>;
     fn read_bytes_length(&mut self) -> Result<u32, String>;
-    fn read_bytes(&mut self) -> Vec<u8>;
-    fn read_bigint(&mut self) -> BigInt;
-    fn read_json(&mut self) -> JSON::Value;
+    fn read_bytes(&mut self) -> Result<Vec<u8>, String>;
+    fn read_bigint(&mut self) -> Result<BigInt, String>;
+    fn read_json(&mut self) -> Result<JSON::Value, String>;
     fn read_array_length(&mut self) -> Result<u32, String>;
-    fn read_array<T>(&mut self, reader: impl FnMut(&mut Self) -> T) -> Vec<T>;
+    fn read_array<T>(&mut self, reader: impl FnMut(&mut Self) -> T) -> Result<Vec<T>, String>;
     fn read_map_length(&mut self) -> Result<u32, String>;
     fn read_map<K, V>(
         &mut self,
         key_fn: impl FnMut(&mut Self) -> K,
         val_fn: impl FnMut(&mut Self) -> V,
-    ) -> BTreeMap<K, V>
+    ) -> Result<BTreeMap<K, V>, String>
     where
         K: Eq + Hash + Ord;
     fn read_nullable_bool(&mut self) -> Option<bool>;

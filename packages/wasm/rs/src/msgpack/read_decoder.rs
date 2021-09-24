@@ -207,14 +207,14 @@ impl<'a> Read for ReadDecoder<'a> {
         Err(self.context.print_with_context(
             &[
                 "Property must be of type `bool`",
-                &Self::get_error_message(value).unwrap(),
+                &Self::get_error_message(value)?,
             ]
             .concat(),
         ))
     }
 
     fn read_i8(&mut self) -> Result<i8, String> {
-        let value = self.read_i64().unwrap();
+        let value = self.read_i64()?;
         if (value <= i8::MAX as i64) && (value >= i8::MIN as i64) {
             return Ok(value as i8);
         }
@@ -224,7 +224,7 @@ impl<'a> Read for ReadDecoder<'a> {
     }
 
     fn read_i16(&mut self) -> Result<i16, String> {
-        let value = self.read_i64().unwrap();
+        let value = self.read_i64()?;
         if (value <= i16::MAX as i64) && (value >= i16::MIN as i64) {
             return Ok(value as i16);
         }
@@ -239,7 +239,7 @@ impl<'a> Read for ReadDecoder<'a> {
     }
 
     fn read_i32(&mut self) -> Result<i32, String> {
-        let value = self.read_i64().unwrap();
+        let value = self.read_i64()?;
         if (value <= i32::MAX as i64) && (value >= i32::MIN as i64) {
             return Ok(value as i32);
         }
@@ -269,7 +269,7 @@ impl<'a> Read for ReadDecoder<'a> {
             _ => Err(self.context.print_with_context(
                 &[
                     "Property must be of type `int`",
-                    &Self::get_error_message(prefix).unwrap(),
+                    &Self::get_error_message(prefix)?,
                 ]
                 .concat(),
             )),
@@ -277,7 +277,7 @@ impl<'a> Read for ReadDecoder<'a> {
     }
 
     fn read_u8(&mut self) -> Result<u8, String> {
-        let value = self.read_u64().unwrap();
+        let value = self.read_u64()?;
         if (value <= u8::MAX as u64) && (value >= u8::MIN as u64) {
             return Ok(value as u8);
         }
@@ -292,7 +292,7 @@ impl<'a> Read for ReadDecoder<'a> {
     }
 
     fn read_u16(&mut self) -> Result<u16, String> {
-        let value = self.read_u64().unwrap();
+        let value = self.read_u64()?;
         if (value <= u16::MAX as u64) && (value >= u16::MIN as u64) {
             return Ok(value as u16);
         }
@@ -307,7 +307,7 @@ impl<'a> Read for ReadDecoder<'a> {
     }
 
     fn read_u32(&mut self) -> Result<u32, String> {
-        let value = self.read_u64().unwrap();
+        let value = self.read_u64()?;
         if (value <= u32::MAX as u64) && (value >= u32::MIN as u64) {
             return Ok(value as u32);
         }
@@ -340,7 +340,7 @@ impl<'a> Read for ReadDecoder<'a> {
             _ => Err(self.context.print_with_context(
                 &[
                     "Property must be of type `uint`",
-                    &Self::get_error_message(prefix).unwrap(),
+                    &Self::get_error_message(prefix)?,
                 ]
                 .concat(),
             )),
@@ -355,7 +355,7 @@ impl<'a> Read for ReadDecoder<'a> {
         Err(self.context.print_with_context(
             &[
                 "Property must be of type `float32`",
-                &Self::get_error_message(prefix).unwrap(),
+                &Self::get_error_message(prefix)?,
             ]
             .concat(),
         ))
@@ -369,7 +369,7 @@ impl<'a> Read for ReadDecoder<'a> {
         Err(self.context.print_with_context(
             &[
                 "Property must be of type `float64`",
-                &Self::get_error_message(prefix).unwrap(),
+                &Self::get_error_message(prefix)?,
             ]
             .concat(),
         ))
@@ -390,17 +390,17 @@ impl<'a> Read for ReadDecoder<'a> {
             _ => Err(self.context.print_with_context(
                 &[
                     "Property must be of type `string`",
-                    &Self::get_error_message(lead_byte).unwrap(),
+                    &Self::get_error_message(lead_byte)?,
                 ]
                 .concat(),
             )),
         }
     }
 
-    fn read_string(&mut self) -> String {
-        let str_len = self.read_string_length().unwrap();
+    fn read_string(&mut self) -> Result<String, String> {
+        let str_len = self.read_string_length()?;
         let str_bytes = self.view.get_bytes(str_len as i32);
-        String::from_utf8(str_bytes).unwrap()
+        Ok(String::from_utf8(str_bytes).unwrap())
     }
 
     fn read_bytes_length(&mut self) -> Result<u32, String> {
@@ -421,24 +421,24 @@ impl<'a> Read for ReadDecoder<'a> {
             _ => Err(self.context.print_with_context(
                 &[
                     "Property must be of type `bytes`",
-                    &Self::get_error_message(lead_byte).unwrap(),
+                    &Self::get_error_message(lead_byte)?,
                 ]
                 .concat(),
             )),
         }
     }
 
-    fn read_bytes(&mut self) -> Vec<u8> {
-        let array_length = self.read_bytes_length().unwrap();
-        self.view.get_bytes(array_length as i32)
+    fn read_bytes(&mut self) -> Result<Vec<u8>, String> {
+        let array_length = self.read_bytes_length()?;
+        Ok(self.view.get_bytes(array_length as i32))
     }
 
-    fn read_bigint(&mut self) -> BigInt {
-        BigInt::from_str(&self.read_string()).unwrap()
+    fn read_bigint(&mut self) -> Result<BigInt, String> {
+        Ok(BigInt::from_str(&self.read_string()?).unwrap())
     }
 
-    fn read_json(&mut self) -> JSON::Value {
-        serde_json::to_value(self.read_string()).unwrap()
+    fn read_json(&mut self) -> Result<JSON::Value, String> {
+        Ok(serde_json::to_value(self.read_string()?).unwrap())
     }
 
     fn read_array_length(&mut self) -> Result<u32, String> {
@@ -455,14 +455,14 @@ impl<'a> Read for ReadDecoder<'a> {
         Err(self.context.print_with_context(
             &[
                 "Property must be of type `array`",
-                &Self::get_error_message(lead_byte).unwrap(),
+                &Self::get_error_message(lead_byte)?,
             ]
             .concat(),
         ))
     }
 
-    fn read_array<T>(&mut self, mut reader: impl FnMut(&mut Self) -> T) -> Vec<T> {
-        let size = self.read_array_length().unwrap();
+    fn read_array<T>(&mut self, mut reader: impl FnMut(&mut Self) -> T) -> Result<Vec<T>, String> {
+        let size = self.read_array_length()?;
         let mut array: Vec<T> = vec![];
         for i in 0..size {
             self.context.push("array[", &i.to_string(), "]");
@@ -470,7 +470,7 @@ impl<'a> Read for ReadDecoder<'a> {
             array.push(item);
             self.context.pop();
         }
-        array
+        Ok(array)
     }
 
     fn read_map_length(&mut self) -> Result<u32, String> {
@@ -485,7 +485,7 @@ impl<'a> Read for ReadDecoder<'a> {
         Err(self.context.print_with_context(
             &[
                 "Property must be of type `map`",
-                &Self::get_error_message(lead_byte).unwrap(),
+                &Self::get_error_message(lead_byte)?,
             ]
             .concat(),
         ))
@@ -495,11 +495,11 @@ impl<'a> Read for ReadDecoder<'a> {
         &mut self,
         mut key_fn: impl FnMut(&mut Self) -> K,
         mut val_fn: impl FnMut(&mut Self) -> V,
-    ) -> BTreeMap<K, V>
+    ) -> Result<BTreeMap<K, V>, String>
     where
         K: Eq + Hash + Ord,
     {
-        let size = self.read_map_length().unwrap();
+        let size = self.read_map_length()?;
         let mut map: BTreeMap<K, V> = BTreeMap::new();
         for i in 0..size {
             self.context.push("map[", &i.to_string(), "]");
@@ -508,7 +508,7 @@ impl<'a> Read for ReadDecoder<'a> {
             map.insert(key, value);
             self.context.pop();
         }
-        map
+        Ok(map)
     }
 
     fn read_nullable_bool(&mut self) -> Option<bool> {
@@ -592,35 +592,35 @@ impl<'a> Read for ReadDecoder<'a> {
         if self.is_next_nil() {
             return None;
         }
-        Some(self.read_string())
+        Some(self.read_string().unwrap())
     }
 
     fn read_nullable_bytes(&mut self) -> Option<Vec<u8>> {
         if self.is_next_nil() {
             return None;
         }
-        Some(self.read_bytes())
+        Some(self.read_bytes().unwrap())
     }
 
     fn read_nullable_bigint(&mut self) -> Option<BigInt> {
         if self.is_next_nil() {
             return None;
         }
-        Some(self.read_bigint())
+        Some(self.read_bigint().unwrap())
     }
 
     fn read_nullable_json(&mut self) -> Option<JSON::Value> {
         if self.is_next_nil() {
             return None;
         }
-        Some(self.read_json())
+        Some(self.read_json().unwrap())
     }
 
     fn read_nullable_array<T>(&mut self, reader: impl FnMut(&mut Self) -> T) -> Option<Vec<T>> {
         if self.is_next_nil() {
             return None;
         }
-        Some(self.read_array(reader))
+        Some(self.read_array(reader).unwrap())
     }
 
     fn read_nullable_map<K, V>(
@@ -634,7 +634,7 @@ impl<'a> Read for ReadDecoder<'a> {
         if self.is_next_nil() {
             return None;
         }
-        Some(self.read_map(key_fn, val_fn))
+        Some(self.read_map(key_fn, val_fn).unwrap())
     }
 
     fn is_next_nil(&mut self) -> bool {
