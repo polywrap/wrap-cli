@@ -1,8 +1,6 @@
-use crate::Context;
+use crate::{BigInt, Context, JSON};
 use alloc::{collections::BTreeMap, string::String, vec::Vec};
 use core::hash::Hash;
-use num_bigint::BigInt;
-use serde_json::value::Value;
 
 pub trait Write: Clone {
     fn write_nil(&mut self);
@@ -23,7 +21,7 @@ pub trait Write: Clone {
     fn write_bytes_length(&mut self, length: u32);
     fn write_bytes(&mut self, buf: &[u8]);
     fn write_bigint(&mut self, value: &BigInt);
-    fn write_json(&mut self, value: &Value);
+    fn write_json(&mut self, value: &JSON::Value);
     fn write_array_length(&mut self, length: u32);
     fn write_array<T: Clone>(&mut self, a: &[T], arr_fn: impl FnMut(&mut Self, &T));
     fn write_map_length(&mut self, length: u32);
@@ -48,7 +46,7 @@ pub trait Write: Clone {
     fn write_nullable_string(&mut self, value: &Option<String>);
     fn write_nullable_bytes(&mut self, buf: &Option<Vec<u8>>);
     fn write_nullable_bigint(&mut self, value: &Option<BigInt>);
-    fn write_nullable_json(&mut self, value: &Option<Value>);
+    fn write_nullable_json(&mut self, value: &Option<JSON::Value>);
     fn write_nullable_array<T: Clone>(
         &mut self,
         a: &Option<Vec<T>>,

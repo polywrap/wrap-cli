@@ -1,13 +1,11 @@
-use super::write::Write;
-use crate::Context;
+use super::{Context, Write};
+use crate::{BigInt, JSON};
 use alloc::{
     collections::BTreeMap,
     string::{String, ToString},
     vec::Vec,
 };
 use core::hash::Hash;
-use num_bigint::BigInt;
-use serde_json::{self, value::Value};
 
 #[derive(Clone, Debug, Default)]
 pub struct WriteSizer<'a> {
@@ -140,7 +138,7 @@ impl<'a> Write for WriteSizer<'a> {
         self.write_string(&value.to_string());
     }
 
-    fn write_json(&mut self, value: &Value) {
+    fn write_json(&mut self, value: &JSON::Value) {
         self.write_str(value.as_str().unwrap());
     }
 
@@ -300,7 +298,7 @@ impl<'a> Write for WriteSizer<'a> {
         }
     }
 
-    fn write_nullable_json(&mut self, value: &Option<Value>) {
+    fn write_nullable_json(&mut self, value: &Option<JSON::Value>) {
         if value.is_none() {
             self.write_nil();
         } else {

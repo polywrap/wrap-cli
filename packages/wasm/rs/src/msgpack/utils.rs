@@ -1,6 +1,6 @@
 //! Utility functions for better error handling
 
-use super::context::Context;
+use super::Context;
 use alloc::{
     format,
     string::{String, ToString},

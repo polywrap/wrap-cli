@@ -1,8 +1,6 @@
-use crate::Context;
+use crate::{BigInt, Context, JSON};
 use alloc::{collections::BTreeMap, string::String, vec::Vec};
 use core::hash::Hash;
-use num_bigint::BigInt;
-use serde_json::value::Value;
 
 pub trait Read: Clone + Sized {
     fn read_bool(&mut self) -> Result<bool, String>;
@@ -21,7 +19,7 @@ pub trait Read: Clone + Sized {
     fn read_bytes_length(&mut self) -> Result<u32, String>;
     fn read_bytes(&mut self) -> Vec<u8>;
     fn read_bigint(&mut self) -> BigInt;
-    fn read_json(&mut self) -> Value;
+    fn read_json(&mut self) -> JSON::Value;
     fn read_array_length(&mut self) -> Result<u32, String>;
     fn read_array<T>(&mut self, reader: impl FnMut(&mut Self) -> T) -> Vec<T>;
     fn read_map_length(&mut self) -> Result<u32, String>;
@@ -46,7 +44,7 @@ pub trait Read: Clone + Sized {
     fn read_nullable_string(&mut self) -> Option<String>;
     fn read_nullable_bytes(&mut self) -> Option<Vec<u8>>;
     fn read_nullable_bigint(&mut self) -> Option<BigInt>;
-    fn read_nullable_json(&mut self) -> Option<Value>;
+    fn read_nullable_json(&mut self) -> Option<JSON::Value>;
     fn read_nullable_array<T>(&mut self, reader: impl FnMut(&mut Self) -> T) -> Option<Vec<T>>;
     fn read_nullable_map<K, V>(
         &mut self,

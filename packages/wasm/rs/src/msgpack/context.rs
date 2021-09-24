@@ -85,7 +85,7 @@ impl<'a> Context<'a> {
 
 #[allow(dead_code)]
 #[derive(Clone, Debug, Default)]
-pub struct Node {
+struct Node {
     node_item: String,
     node_type: String,
     node_info: String,

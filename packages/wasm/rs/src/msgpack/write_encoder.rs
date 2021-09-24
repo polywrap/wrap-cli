@@ -1,12 +1,11 @@
-use super::{context::Context, data_view::DataView, format::Format, write::Write};
+use super::{Context, DataView, Format, Write};
+use crate::{BigInt, JSON};
 use alloc::{
     collections::BTreeMap,
     string::{String, ToString},
     vec::Vec,
 };
 use core::hash::Hash;
-use num_bigint::BigInt;
-use serde_json::{self, value::Value};
 
 #[derive(Clone, Debug, Default)]
 pub struct WriteEncoder<'a> {
@@ -169,7 +168,7 @@ impl<'a> Write for WriteEncoder<'a> {
         self.write_string(&value.to_string());
     }
 
-    fn write_json(&mut self, value: &Value) {
+    fn write_json(&mut self, value: &JSON::Value) {
         self.write_str(value.as_str().unwrap());
     }
 
@@ -339,7 +338,7 @@ impl<'a> Write for WriteEncoder<'a> {
         }
     }
 
-    fn write_nullable_json(&mut self, value: &Option<Value>) {
+    fn write_nullable_json(&mut self, value: &Option<JSON::Value>) {
         if value.is_none() {
             self.write_nil();
         } else {

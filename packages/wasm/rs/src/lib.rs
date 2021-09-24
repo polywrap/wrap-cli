@@ -25,13 +25,14 @@ extern "C" fn panic(_: &core::panic::PanicInfo) -> ! {
 extern "C" fn eh_personality() {}
 
 pub mod abort;
+pub mod big_int;
 pub mod invoke;
+pub mod json;
 pub mod memory;
 pub mod msgpack;
 pub mod subinvoke;
 
+pub use big_int::BigInt;
 pub use invoke::InvokeArgs;
-pub use msgpack::{
-    context::Context, read::Read, read_decoder::ReadDecoder, write::Write,
-    write_encoder::WriteEncoder, write_sizer::WriteSizer,
-};
+pub use json::JSON;
+pub use msgpack::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};

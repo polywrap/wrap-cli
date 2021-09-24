@@ -1,4 +1,5 @@
-use super::{context::Context, data_view::DataView, format::Format, read::Read};
+use super::{Context, DataView, Format, Read};
+use crate::{BigInt, JSON};
 use alloc::{
     collections::BTreeMap,
     str::FromStr,
@@ -7,8 +8,6 @@ use alloc::{
     vec::Vec,
 };
 use core::hash::Hash;
-use num_bigint::BigInt;
-use serde_json::{self, value::Value};
 
 #[derive(Clone, Debug, Default)]
 pub struct ReadDecoder<'a> {
@@ -438,7 +437,7 @@ impl<'a> Read for ReadDecoder<'a> {
         BigInt::from_str(&self.read_string()).unwrap()
     }
 
-    fn read_json(&mut self) -> Value {
+    fn read_json(&mut self) -> JSON::Value {
         serde_json::to_value(self.read_string()).unwrap()
     }
 
@@ -610,7 +609,7 @@ impl<'a> Read for ReadDecoder<'a> {
         Some(self.read_bigint())
     }
 
-    fn read_nullable_json(&mut self) -> Option<Value> {
+    fn read_nullable_json(&mut self) -> Option<JSON::Value> {
         if self.is_next_nil() {
             return None;
         }
