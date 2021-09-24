@@ -11,11 +11,9 @@ edition = "2018"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-num-bigint = { version = "0.4", default-features = false }
 num-traits = { version = "0.2.14", default-features = false }
 polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../../../../wasm/rs" }
 query = { version = "0.1.0", path = "../query" }
-serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 
 [profile.dev]
 panic = "abort"

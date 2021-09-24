@@ -1,7 +1,7 @@
 #![no_std]
 
 extern crate alloc;
-use alloc::boxed::Box;
+
 pub mod another_type;
 pub mod common;
 pub mod entry;
@@ -30,7 +30,7 @@ pub use mutation::{
 /**
 TEMPORARY
  */
-pub fn object_method(_: InputObjectMethod) -> Option<Box<AnotherType>> {
+pub fn object_method(_: InputObjectMethod) -> Option<AnotherType> {
     unimplemented!()
 }
 pub fn mutation_method(_: InputMutationMethod) -> i32 {

@@ -1,26 +1,24 @@
+use alloc::{string::String, vec::Vec};
 pub mod serialization;
-use polywrap_wasm_rs::{
-    Read,
-    Write,
-};
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use polywrap_wasm_rs::{Read, Write};
 pub use serialization::{
-    deserialize_test_import_another_object,
-    read_test_import_another_object,
-    serialize_test_import_another_object,
-    write_test_import_another_object,
+    deserialize_test_import_another_object, read_test_import_another_object,
+    serialize_test_import_another_object, write_test_import_another_object,
 };
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug)]
 pub struct TestImportAnotherObject {
     pub prop: String,
 }
 
 impl TestImportAnotherObject {
     pub const URI: &'static str = "testimport.uri.eth";
+
+    pub fn new() -> TestImportAnotherObject {
+        TestImportAnotherObject {
+            prop: String::new(),
+        }
+    }
 
     pub fn to_buffer(input: &TestImportAnotherObject) -> Vec<u8> {
         serialize_test_import_another_object(input)

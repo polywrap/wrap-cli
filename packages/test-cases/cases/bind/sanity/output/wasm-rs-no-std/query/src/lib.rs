@@ -1,7 +1,7 @@
 #![no_std]
 
 extern crate alloc;
-use alloc::boxed::Box;
+
 pub mod common;
 pub mod custom_type;
 pub mod entry;
@@ -30,7 +30,7 @@ pub use query::{
 /**
 TEMPORARY
  */
-pub fn object_method(_: InputObjectMethod) -> Option<Box<AnotherType>> {
+pub fn object_method(_: InputObjectMethod) -> Option<AnotherType> {
     unimplemented!()
 }
 pub fn query_method(_: InputQueryMethod) -> i32 {
