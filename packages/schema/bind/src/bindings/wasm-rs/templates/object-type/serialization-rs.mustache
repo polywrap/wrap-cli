@@ -1,10 +1,3 @@
-use alloc::{
-    boxed::Box,
-    string::{String, ToString},
-    vec,
-    vec::Vec,
-};
-use serde_json::value::Value;
 {{^__commonImport}}
 use polywrap_wasm_rs::{
     Context,
@@ -31,12 +24,12 @@ use crate::{
 
 pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(input: &{{#toUpper}}{{type}}{{/toUpper}}) -> Vec<u8> {
     let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) object-type: {{#toUpper}}{{type}}{{/toUpper}}";
+    sizer_context.description = "Serializing (sizing) object-type: {{#toUpper}}{{type}}{{/toUpper}}".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
     write_{{#toLower}}{{type}}{{/toLower}}(input, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
-    encoder_context.description = "Serializing (encoding) object-type: {{#toUpper}}{{type}}{{/toUpper}}";
+    encoder_context.description = "Serializing (encoding) object-type: {{#toUpper}}{{type}}{{/toUpper}}".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_{{#toLower}}{{type}}{{/toLower}}(input, &mut encoder);
     buffer
@@ -81,7 +74,7 @@ pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(input: &{{#toUpper}}{{ty
 
 pub fn deserialize_{{#toLower}}{{type}}{{/toLower}}(input: &[u8]) -> {{#toUpper}}{{type}}{{/toUpper}} {
     let mut context = Context::new();
-    context.description = "Deserializing object-type: {{#toUpper}}{{type}}{{/toUpper}}";
+    context.description = "Deserializing object-type: {{#toUpper}}{{type}}{{/toUpper}}".to_string();
     let mut reader = ReadDecoder::new(input, context);
     read_{{#toLower}}{{type}}{{/toLower}}(&mut reader).expect("Failed to deserialize {{#toUpper}}{{type}}{{/toUpper}}")
 }
@@ -108,7 +101,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
-        let field = reader.read_string();
+        let field = reader.read_string().unwrap();
 
         match field.as_str() {
             {{#properties}}
@@ -120,7 +113,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
                 {{#array}}
                 _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
                     {{> deserialize_array}}
-                });
+                }){{#required}}.expect("Failed to read array"){{/required}};
                 {{/array}}
                 {{#enum}}
                 {{> deserialize_enum}}

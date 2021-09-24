@@ -1,5 +1,3 @@
-//import { isKeyWord } from "./types";
-
 type MustacheFunction = () => (
   value: string,
   render: (template: string) => string
@@ -81,25 +79,6 @@ export const noBox: MustacheFunction = () => {
     return strings[1] + strings[2] + strings[3];
   }
 }
-
-/*
-// Under no circumstances will Rust allow keywords to go undetected, 
-// so this function may be relevant in other languages, but not Rust.
-
-export const toRustProp: MustacheFunction = () => {
-  return (value: string, render: (template: string) => string) => {
-    let type = render(value);
-
-    // check if any of the keywords match the property name;
-    // if there's a match, insert `m_` at the beginning of the property name.
-    if (isKeyWord(type)) {
-      type = "m_" + type;
-    }
-
-    return type;
-  };
-};
-*/
 
 export const toMsgPack: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
@@ -192,7 +171,7 @@ export const toWasmInit: MustacheFunction = () => {
       case "BigInt":
         return nullableModifier("BigInt::from_u16(0).unwrap_or_default()");
       case "JSON":
-        return nullableModifier("Value::Null");
+        return nullableModifier("JSON::Value::Null");
       default:
         if (type.includes("Enum_")) {
           return nullableModifier(`${toWasm()(value, render)}::_MAX_`);
@@ -261,7 +240,7 @@ export const toWasm: MustacheFunction = () => {
         type = "BigInt";
         break;
       case "JSON":
-        type = "Value";
+        type = "JSON::Value";
         break;
       default:
         if (type.includes("Enum_")) {

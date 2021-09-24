@@ -41,10 +41,11 @@ pub extern "C" fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
     match args.method.as_str() {
         {{#queryTypes}}
         {{#methods}}
-        "{{name}}" => invoke::w3_invoke(args, Some({{#toLower}}{{name}}{{/toLower}}_wrapped)),
+        "{{name}}" =>
+            return invoke::w3_invoke(args, Some({{#toLower}}{{name}}{{/toLower}}_wrapped)),
         {{/methods}}
         {{/queryTypes}}
-        _ => invoke::w3_invoke(args, None),
+        _ => return invoke::w3_invoke(args, None),
     }
 }
 
