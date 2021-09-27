@@ -333,7 +333,7 @@ impl Write for WriteSizer {
         }
     }
 
-    fn context(&mut self) -> &Context {
-        &self.context
+    fn context(&mut self) -> &mut Context {
+        &mut self.context
     }
 }
