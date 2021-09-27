@@ -3,18 +3,18 @@ use alloc::{format, string::String, vec::Vec};
 use core::sync::atomic::{AtomicPtr, Ordering};
 
 #[derive(Clone, Debug, Default)]
-pub struct DataView<'a> {
+pub struct DataView {
     data_start: u32,
     buffer: Vec<u8>,
     byte_length: i32,
     byte_offset: i32,
-    context: Context<'a>,
+    context: Context,
 }
 
-impl<'a> DataView<'a> {
+impl DataView {
     pub fn new(
         buf: &[u8],
-        cxt: Option<Context<'a>>,
+        cxt: Option<Context>,
         offset: Option<usize>,
         length: Option<usize>,
     ) -> Result<Self, String> {
@@ -213,7 +213,7 @@ impl<'a> DataView<'a> {
     }
 
     /// Get a reference to the data view's context.
-    pub fn context(&self) -> &Context<'a> {
+    pub fn context(&self) -> &Context {
         &self.context
     }
 }

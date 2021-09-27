@@ -8,13 +8,13 @@ use alloc::{
 use core::hash::Hash;
 
 #[derive(Clone, Debug, Default)]
-pub struct WriteEncoder<'a> {
-    context: Context<'a>,
-    view: DataView<'a>,
+pub struct WriteEncoder {
+    context: Context,
+    view: DataView,
 }
 
-impl<'a> WriteEncoder<'a> {
-    pub fn new(buf: &[u8], context: Context<'a>) -> Self {
+impl WriteEncoder {
+    pub fn new(buf: &[u8], context: Context) -> Self {
         Self {
             context: context.clone(),
             view: DataView::new(buf, Some(context), None, None)
@@ -23,7 +23,7 @@ impl<'a> WriteEncoder<'a> {
     }
 }
 
-impl<'a> Write for WriteEncoder<'a> {
+impl Write for WriteEncoder {
     fn write_nil(&mut self) {
         self.view.set_u8(Format::NIL);
     }

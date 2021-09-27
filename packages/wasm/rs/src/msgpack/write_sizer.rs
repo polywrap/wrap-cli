@@ -8,14 +8,14 @@ use alloc::{
 use core::hash::Hash;
 
 #[derive(Clone, Debug, Default)]
-pub struct WriteSizer<'a> {
+pub struct WriteSizer {
     pub length: i32,
-    context: Context<'a>,
+    context: Context,
 }
 
-impl<'a> WriteSizer<'a> {
+impl WriteSizer {
     #[allow(dead_code)]
-    pub fn new(context: Context<'a>) -> Self {
+    pub fn new(context: Context) -> Self {
         Self { length: 0, context }
     }
 
@@ -24,7 +24,7 @@ impl<'a> WriteSizer<'a> {
     }
 }
 
-impl<'a> Write for WriteSizer<'a> {
+impl Write for WriteSizer {
     fn write_nil(&mut self) {
         self.length += 1;
     }

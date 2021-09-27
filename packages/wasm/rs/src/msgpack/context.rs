@@ -9,15 +9,15 @@ use alloc::{
 };
 
 #[derive(Clone, Debug, Default)]
-pub struct Context<'a> {
-    pub description: &'a str,
+pub struct Context {
+    pub description: String,
     nodes: Vec<Node>,
 }
 
-impl<'a> Context<'a> {
+impl Context {
     pub fn new() -> Self {
         Self {
-            description: "context description not set",
+            description: "context description not set".to_string(),
             nodes: vec![],
         }
     }
@@ -61,7 +61,7 @@ impl<'a> Context<'a> {
         let mut result = String::new();
         result.push_str(&pad_start);
 
-        let ctx = ["Context: ", self.description].concat();
+        let ctx = ["Context: ", &self.description].concat();
         result.push_str(&ctx);
 
         if self.is_empty() {
@@ -91,7 +91,7 @@ struct Node {
     node_info: String,
 }
 
-impl<'a> fmt::Display for Context<'a> {
+impl fmt::Display for Context {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({}, {:?})", self.description, self.nodes)
     }

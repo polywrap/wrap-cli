@@ -55,5 +55,5 @@ pub trait Read: Clone + Sized {
         K: Eq + Hash + Ord;
     fn is_next_nil(&mut self) -> bool;
     fn is_next_string(&mut self) -> bool;
-    fn context(&mut self) -> &Context;
+    fn context(&mut self) -> &mut Context;
 }

@@ -10,14 +10,14 @@ use alloc::{
 use core::hash::Hash;
 
 #[derive(Clone, Debug, Default)]
-pub struct ReadDecoder<'a> {
-    context: Context<'a>,
-    view: DataView<'a>,
+pub struct ReadDecoder {
+    context: Context,
+    view: DataView,
 }
 
-impl<'a> ReadDecoder<'a> {
+impl ReadDecoder {
     #[allow(dead_code)]
-    pub fn new(buf: &[u8], context: Context<'a>) -> Self {
+    pub fn new(buf: &[u8], context: Context) -> Self {
         Self {
             context: context.clone(),
             view: DataView::new(buf, Some(context), None, None)
@@ -196,7 +196,7 @@ impl<'a> ReadDecoder<'a> {
     }
 }
 
-impl<'a> Read for ReadDecoder<'a> {
+impl Read for ReadDecoder {
     fn read_bool(&mut self) -> Result<bool, String> {
         let value = self.view.get_u8();
         if value == Format::TRUE {
@@ -654,7 +654,7 @@ impl<'a> Read for ReadDecoder<'a> {
             || format == Format::STR32
     }
 
-    fn context(&mut self) -> &Context {
-        &self.context
+    fn context(&mut self) -> &mut Context {
+        &mut self.context
     }
 }
