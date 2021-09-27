@@ -111,25 +111,25 @@ export class Tracer {
         ...args: TArgs[]
       ): TReturn {
         try {
-          this.startSpan(span);
-          this.setAttribute("input", { ...args });
+          Tracer.startSpan(span);
+          Tracer.setAttribute("input", { ...args });
 
-          const result = original(...args);
+          const result = original.apply(this, args);
 
           if (isPromise(result)) {
             return (result.then((result) => {
-              this.setAttribute("output", result);
-              this.endSpan();
+              Tracer.setAttribute("output", result);
+              Tracer.endSpan();
               return result;
             }) as unknown) as TReturn;
           } else {
-            this.setAttribute("output", result);
-            this.endSpan();
+            Tracer.setAttribute("output", result);
+            Tracer.endSpan();
             return result;
           }
         } catch (error) {
-          this.recordException(error);
-          this.endSpan();
+          Tracer.recordException(error);
+          Tracer.endSpan();
           throw error;
         }
       };
