@@ -1,10 +1,3 @@
-use alloc::{
-    boxed::Box,
-    string::{String, ToString},
-    vec,
-    vec::Vec,
-};
-use serde_json::value::Value;
 use polywrap_wasm_rs::{
     Context,
     Read,
@@ -19,12 +12,12 @@ use crate::CustomType;
 
 pub fn serialize_another_type(input: &AnotherType) -> Vec<u8> {
     let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) object-type: AnotherType";
+    sizer_context.description = "Serializing (sizing) object-type: AnotherType".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
     write_another_type(input, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
-    encoder_context.description = "Serializing (encoding) object-type: AnotherType";
+    encoder_context.description = "Serializing (encoding) object-type: AnotherType".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_another_type(input, &mut encoder);
     buffer
@@ -48,7 +41,7 @@ pub fn write_another_type<W: Write>(input: &AnotherType, writer: &mut W) {
 
 pub fn deserialize_another_type(input: &[u8]) -> AnotherType {
     let mut context = Context::new();
-    context.description = "Deserializing object-type: AnotherType";
+    context.description = "Deserializing object-type: AnotherType".to_string();
     let mut reader = ReadDecoder::new(input, context);
     read_another_type(&mut reader).expect("Failed to deserialize AnotherType")
 }
@@ -61,7 +54,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, String>
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
-        let field = reader.read_string();
+        let field = reader.read_string().unwrap();
 
         match field.as_str() {
             "prop" => {

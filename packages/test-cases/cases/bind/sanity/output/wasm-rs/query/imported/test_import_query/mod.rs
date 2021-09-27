@@ -1,5 +1,8 @@
-use alloc::{boxed::Box, string::ToString};
 use polywrap_wasm_rs::subinvoke;
+use serde::{
+    Deserialize,
+    Serialize,
+};
 pub mod serialization;
 pub use serialization::{
     deserialize_imported_method_result,
@@ -13,7 +16,7 @@ pub use serialization::{
 use crate::TestImportObject;
 use crate::TestImportEnum;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TestImportQuery;
 
 impl TestImportQuery {
@@ -27,7 +30,7 @@ impl TestImportQuery {
             "query".to_string(),
             "imported_method".to_string(),
             args,
-        ).unwrap();
+        );
         deserialize_imported_method_result(result.as_slice())
     }
 
@@ -39,7 +42,7 @@ impl TestImportQuery {
             "query".to_string(),
             "another_method".to_string(),
             args,
-        ).unwrap();
+        );
         deserialize_another_method_result(result.as_slice())
     }
 }

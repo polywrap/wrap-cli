@@ -1,7 +1,6 @@
 use crate::TestImportObject;
 use alloc::{
     string::{String, ToString},
-    vec,
     vec::Vec,
 };
 use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};

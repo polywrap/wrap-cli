@@ -6,7 +6,7 @@ use alloc::{
     vec::Vec,
 };
 use core::convert::TryFrom;
-use polywrap_wasm_rs::{BigInt, Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer, JSON};
+use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
 #[derive(Clone, Debug)]
 pub struct InputMutationMethod {

@@ -1,10 +1,3 @@
-use alloc::{
-    boxed::Box,
-    string::{String, ToString},
-    vec,
-    vec::Vec,
-};
-use serde_json::value::Value;
 use polywrap_wasm_rs::{
     Context,
     Read,
@@ -25,12 +18,12 @@ use crate::{
 
 pub fn serialize_custom_type(input: &CustomType) -> Vec<u8> {
     let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) object-type: CustomType";
+    sizer_context.description = "Serializing (sizing) object-type: CustomType".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
     write_custom_type(input, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
-    encoder_context.description = "Serializing (encoding) object-type: CustomType";
+    encoder_context.description = "Serializing (encoding) object-type: CustomType".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_custom_type(input, &mut encoder);
     buffer
@@ -89,14 +82,6 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) {
     writer.context().push("opt_bigint", "Option<BigInt>", "writing property");
     writer.write_str("opt_bigint");
     writer.write_nullable_bigint(&input.opt_bigint);
-    writer.context().pop();
-    writer.context().push("json", "JSON.Value", "writing property");
-    writer.write_str("json");
-    writer.write_json(&input.json);
-    writer.context().pop();
-    writer.context().push("opt_json", "Option<JSON.Value>", "writing property");
-    writer.write_str("opt_json");
-    writer.write_nullable_json(&input.opt_json);
     writer.context().pop();
     writer.context().push("bytes", "Vec<u8>", "writing property");
     writer.write_str("bytes");
@@ -228,7 +213,7 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) {
 
 pub fn deserialize_custom_type(input: &[u8]) -> CustomType {
     let mut context = Context::new();
-    context.description = "Deserializing object-type: CustomType";
+    context.description = "Deserializing object-type: CustomType".to_string();
     let mut reader = ReadDecoder::new(input, context);
     read_custom_type(&mut reader).expect("Failed to deserialize CustomType")
 }
@@ -259,9 +244,6 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
     let mut _bigint: BigInt = BigInt::from_u16(0).unwrap_or_default();
     let mut _bigint_set = false;
     let mut _opt_bigint: Option<BigInt> = None;
-    let mut _json: Value = Value::Null;
-    let mut _json_set = false;
-    let mut _opt_json: Option<Value> = None;
     let mut _bytes: Vec<u8> = vec![];
     let mut _bytes_set = false;
     let mut _opt_bytes: Option<Vec<u8>> = None;
@@ -295,12 +277,12 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
-        let field = reader.read_string();
+        let field = reader.read_string().unwrap();
 
         match field.as_str() {
             "str" => {
                 reader.context().push(&field, "String", "type found, reading property");
-                _str = reader.read_string();
+                _str = reader.read_string().unwrap();
                 _str_set = true;
                 reader.context().pop();
             }
@@ -373,17 +355,6 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                 _opt_bigint = reader.read_nullable_bigint();
                 reader.context().pop();
             }
-            "json" => {
-                reader.context().push(&field, "JSON.Value", "type found, reading property");
-                _json = reader.read_json();
-                _json_set = true;
-                reader.context().pop();
-            }
-            "opt_json" => {
-                reader.context().push(&field, "Option<JSON.Value>", "type found, reading property");
-                _opt_json = reader.read_nullable_json();
-                reader.context().pop();
-            }
             "bytes" => {
                 reader.context().push(&field, "Vec<u8>", "type found, reading property");
                 _bytes = reader.read_bytes().unwrap();
@@ -409,29 +380,29 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
             "u_array" => {
                 reader.context().push(&field, "Vec<u32>", "type found, reading property");
                 _u_array = reader.read_array(|reader| {
-                    reader.read_u32().unwrap()
-                });
+                    reader.read_u32().unwrap();
+                }).expect("Failed to read array");
                 _u_array_set = true;
                 reader.context().pop();
             }
             "u_opt_array" => {
                 reader.context().push(&field, "Option<Vec<u32>>", "type found, reading property");
                 _u_opt_array = reader.read_nullable_array(|reader| {
-                    reader.read_u32().unwrap()
+                    reader.read_u32().unwrap();
                 });
                 reader.context().pop();
             }
             "opt_u_opt_array" => {
                 reader.context().push(&field, "Option<Vec<Option<u32>>>", "type found, reading property");
                 _opt_u_opt_array = reader.read_nullable_array(|reader| {
-                    reader.read_nullable_u32()
+                    reader.read_nullable_u32();
                 });
                 reader.context().pop();
             }
             "opt_str_opt_array" => {
                 reader.context().push(&field, "Option<Vec<Option<String>>>", "type found, reading property");
                 _opt_str_opt_array = reader.read_nullable_array(|reader| {
-                    reader.read_nullable_string()
+                    reader.read_nullable_string();
                 });
                 reader.context().pop();
             }
@@ -439,9 +410,9 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                 reader.context().push(&field, "Vec<Vec<u32>>", "type found, reading property");
                 _u_array_array = reader.read_array(|reader| {
                     reader.read_array(|reader| {
-                        reader.read_u32().unwrap()
-                    })
-                });
+                        reader.read_u32().unwrap();
+                    }).expect("Failed to read array");
+                }).expect("Failed to read array");
                 _u_array_array_set = true;
                 reader.context().pop();
             }
@@ -449,9 +420,9 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                 reader.context().push(&field, "Vec<Option<Vec<Option<u32>>>>", "type found, reading property");
                 _u_opt_array_opt_array = reader.read_array(|reader| {
                     reader.read_nullable_array(|reader| {
-                        reader.read_nullable_u32()
-                    })
-                });
+                        reader.read_nullable_u32();
+                    });
+                }).expect("Failed to read array");
                 _u_opt_array_opt_array_set = true;
                 reader.context().pop();
             }
@@ -460,10 +431,10 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                 _u_array_opt_array_array = reader.read_array(|reader| {
                     reader.read_nullable_array(|reader| {
                         reader.read_array(|reader| {
-                            reader.read_u32().unwrap()
-                        })
-                    })
-                });
+                            reader.read_u32().unwrap();
+                        }).expect("Failed to read array");
+                    });
+                }).expect("Failed to read array");
                 _u_array_opt_array_array_set = true;
                 reader.context().pop();
             }
@@ -473,10 +444,10 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                     reader.read_nullable_array(|reader| {
                         reader.read_array(|reader| {
                             reader.read_nullable_array(|reader| {
-                                reader.read_u32().unwrap()
-                            })
-                        })
-                    })
+                                reader.read_u32().unwrap();
+                            });
+                        }).expect("Failed to read array");
+                    });
                 });
                 reader.context().pop();
             }
@@ -501,7 +472,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                 _object_array = reader.read_array(|reader| {
                     let object = Box::new(AnotherType::read(reader));
                     return object;
-                });
+                }).expect("Failed to read array");
                 _object_array_set = true;
                 reader.context().pop();
             }
@@ -520,7 +491,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                 reader.context().push(&field, "CustomEnum", "type found, reading property");
                 let mut value = CustomEnum::_MAX_;
                 if reader.is_next_string() {
-                    value = get_custom_enum_value(&reader.read_string())
+                    value = get_custom_enum_value(&reader.read_string().unwrap())
                         .expect("Failed to get CustomEnum value");
                 } else {
                     value = CustomEnum::try_from(reader.read_i32().unwrap())
@@ -537,7 +508,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                 let mut value: Option<CustomEnum> = None;
                 if !reader.is_next_nil() {
                     if reader.is_next_string() {
-                        value = Some(get_custom_enum_value(&reader.read_string())
+                        value = Some(get_custom_enum_value(&reader.read_string().unwrap())
                             .expect("Failed to get Option<CustomEnum> value"));
                     } else {
                         value = Some(CustomEnum::try_from(reader.read_i32().unwrap())
@@ -556,7 +527,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                 _enum_array = reader.read_array(|reader| {
                     let mut value = CustomEnum::_MAX_;
                     if reader.is_next_string() {
-                        value = get_custom_enum_value(&reader.read_string())
+                        value = get_custom_enum_value(&reader.read_string().unwrap())
                             .expect("Failed to get CustomEnum value");
                     } else {
                         value = CustomEnum::try_from(reader.read_i32().unwrap())
@@ -565,7 +536,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                             .expect("Failed to sanitize CustomEnum");
                     }
                     return value;
-                });
+                }).expect("Failed to read array");
                 _enum_array_set = true;
                 reader.context().pop();
             }
@@ -575,7 +546,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
                     let mut value: Option<CustomEnum> = None;
                     if !reader.is_next_nil() {
                         if reader.is_next_string() {
-                            value = Some(get_custom_enum_value(&reader.read_string())
+                            value = Some(get_custom_enum_value(&reader.read_string().unwrap())
                                 .expect("Failed to get Option<CustomEnum> value"));
                         } else {
                             value = Some(CustomEnum::try_from(reader.read_i32().unwrap())
@@ -633,10 +604,6 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
         let custom_error = reader.context().print_with_context("Missing required property: 'bigint: BigInt'");
         return Err(custom_error);
     }
-    if !_json_set {
-        let custom_error = reader.context().print_with_context("Missing required property: 'json: JSON.Value'");
-        return Err(custom_error);
-    }
     if !_bytes_set {
         let custom_error = reader.context().print_with_context("Missing required property: 'bytes: Bytes'");
         return Err(custom_error);
@@ -692,8 +659,6 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
         i32: _i32,
         bigint: _bigint,
         opt_bigint: _opt_bigint,
-        json: _json,
-        opt_json: _opt_json,
         bytes: _bytes,
         opt_bytes: _opt_bytes,
         boolean: _boolean,

@@ -1,11 +1,10 @@
-use alloc::{
-    format,
-    string::{String, ToString},
+use serde::{
+    Deserialize,
+    Serialize,
 };
-extern crate std;
 use std::convert::TryFrom;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub enum CustomEnum {
     STRING,
     BYTES,

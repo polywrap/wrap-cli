@@ -1,7 +1,3 @@
-#![no_std]
-
-extern crate alloc;
-use alloc::boxed::Box;
 pub mod common;
 pub mod entry;
 pub mod another_type;

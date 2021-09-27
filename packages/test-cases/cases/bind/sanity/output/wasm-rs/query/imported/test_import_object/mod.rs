@@ -1,12 +1,11 @@
-use alloc::{
-    boxed::Box,
-    string::{String, ToString},
-    vec::Vec,
-};
 pub mod serialization;
 use polywrap_wasm_rs::{
     Read,
     Write,
+};
+use serde::{
+    Deserialize,
+    Serialize,
 };
 pub use serialization::{
     deserialize_test_import_object,
@@ -18,7 +17,7 @@ pub use serialization::{
 use crate::TestImportAnotherObject;
 use crate::TestImportEnum;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TestImportObject {
     pub object: Box<TestImportAnotherObject>,
     pub opt_object: Option<Box<TestImportAnotherObject>>,

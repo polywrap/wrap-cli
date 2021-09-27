@@ -1,9 +1,11 @@
-use alloc::{boxed::Box, string::String, vec::Vec};
-use serde_json::value::Value;
 pub mod serialization;
 use polywrap_wasm_rs::{
     Read,
     Write,
+};
+use serde::{
+    Deserialize,
+    Serialize,
 };
 pub use serialization::{
     deserialize_custom_type,
@@ -16,7 +18,7 @@ use num_bigint::BigInt;
 use crate::AnotherType;
 use crate::CustomEnum;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CustomType {
     pub str: String,
     pub opt_str: Option<String>,
@@ -31,8 +33,6 @@ pub struct CustomType {
     pub i32: i32,
     pub bigint: BigInt,
     pub opt_bigint: Option<BigInt>,
-    pub json: Value,
-    pub opt_json: Option<Value>,
     pub bytes: Vec<u8>,
     pub opt_bytes: Option<Vec<u8>>,
     pub boolean: bool,
