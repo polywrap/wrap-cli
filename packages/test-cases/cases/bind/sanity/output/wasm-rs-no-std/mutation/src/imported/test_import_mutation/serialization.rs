@@ -1,4 +1,9 @@
 use crate::TestImportObject;
+use alloc::{
+    string::{String, ToString},
+    vec,
+    vec::Vec,
+};
 use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
 #[derive(Clone, Debug)]
@@ -10,12 +15,14 @@ pub struct InputImportedMethod {
 
 pub fn serialize_imported_method_args(input: &InputImportedMethod) -> Vec<u8> {
     let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) imported query-type: imported_method";
+    sizer_context.description =
+        "Serializing (sizing) imported query-type: imported_method".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
     write_imported_method_args(input, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
-    encoder_context.description = "Serializing (encoding) imported query-type: imported_method";
+    encoder_context.description =
+        "Serializing (encoding) imported query-type: imported_method".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_imported_method_args(input, &mut encoder);
     buffer
@@ -54,7 +61,7 @@ pub fn deserialize_imported_method_result(result: &[u8]) -> Option<TestImportObj
     );
     let mut object: Option<TestImportObject> = None;
     if !reader.is_next_nil() {
-        object = Some(TestImportObject::read(reader));
+        object = Some(TestImportObject::read(&mut reader));
     }
     let res = object;
     reader.context().pop();
@@ -68,12 +75,14 @@ pub struct InputAnotherMethod {
 
 pub fn serialize_another_method_args(input: &InputAnotherMethod) -> Vec<u8> {
     let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) imported query-type: another_method";
+    sizer_context.description =
+        "Serializing (sizing) imported query-type: another_method".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
     write_another_method_args(input, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
-    encoder_context.description = "Serializing (encoding) imported query-type: another_method";
+    encoder_context.description =
+        "Serializing (encoding) imported query-type: another_method".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_another_method_args(input, &mut encoder);
     buffer
@@ -86,14 +95,14 @@ pub fn write_another_method_args<W: Write>(input: &InputAnotherMethod, writer: &
         .push("arg", "Vec<String>", "writing property");
     writer.write_str("arg");
     writer.write_array(&input.arg, |writer: &mut W, item| {
-        writer.write_string(*item);
+        writer.write_string(item);
     });
     writer.context().pop();
 }
 
 pub fn deserialize_another_method_result(result: &[u8]) -> i32 {
     let mut context = Context::new();
-    context.description = "Deserializing imported query-type: another_method";
+    context.description = "Deserializing imported query-type: another_method".to_string();
     let mut reader = ReadDecoder::new(result, context);
     reader
         .context()

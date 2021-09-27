@@ -1,17 +1,20 @@
 use crate::TestImportAnotherObject;
-use alloc::{string::String, vec::Vec};
+use alloc::{
+    string::{String, ToString},
+    vec::Vec,
+};
 use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
 
 pub fn serialize_test_import_another_object(input: &TestImportAnotherObject) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description =
-        "Serializing (sizing) imported object-type: TestImportAnotherObject";
+        "Serializing (sizing) imported object-type: TestImportAnotherObject".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
     write_test_import_another_object(input, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description =
-        "Serializing (encoding) imported object-type: TestImportAnotherObject";
+        "Serializing (encoding) imported object-type: TestImportAnotherObject".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_test_import_another_object(input, &mut encoder);
     buffer
@@ -27,7 +30,7 @@ pub fn write_test_import_another_object<W: Write>(input: &TestImportAnotherObjec
 
 pub fn deserialize_test_import_another_object(input: &[u8]) -> TestImportAnotherObject {
     let mut context = Context::new();
-    context.description = "Deserializing imported object-type: TestImportAnotherObject";
+    context.description = "Deserializing imported object-type: TestImportAnotherObject".to_string();
     let mut reader = ReadDecoder::new(input, context);
     read_test_import_another_object(&mut reader)
         .expect("Failed to deserialize TestImportAnotherObject")

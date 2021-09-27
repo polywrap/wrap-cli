@@ -1,4 +1,8 @@
-use alloc::{string::String, vec, vec::Vec};
+use alloc::{
+    string::{String, ToString},
+    vec,
+    vec::Vec,
+};
 use core::convert::TryFrom;
 use polywrap_wasm_rs::{BigInt, Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer, JSON};
 
@@ -8,12 +12,12 @@ use crate::{get_custom_enum_value, sanitize_custom_enum_value, CustomEnum};
 
 pub fn serialize_custom_type(input: &CustomType) -> Vec<u8> {
     let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) object-type: CustomType";
+    sizer_context.description = "Serializing (sizing) object-type: CustomType".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
     write_custom_type(input, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
-    encoder_context.description = "Serializing (encoding) object-type: CustomType";
+    encoder_context.description = "Serializing (encoding) object-type: CustomType".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_custom_type(input, &mut encoder);
     buffer
@@ -275,7 +279,7 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) {
 
 pub fn deserialize_custom_type(input: &[u8]) -> CustomType {
     let mut context = Context::new();
-    context.description = "Deserializing object-type: CustomType";
+    context.description = "Deserializing object-type: CustomType".to_string();
     let mut reader = ReadDecoder::new(input, context);
     read_custom_type(&mut reader).expect("Failed to deserialize CustomType")
 }
