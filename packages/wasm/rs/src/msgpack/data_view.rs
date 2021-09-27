@@ -213,7 +213,7 @@ impl DataView {
     }
 
     /// Get a reference to the data view's context.
-    pub fn context(&self) -> &Context {
-        &self.context
+    pub fn context(&mut self) -> &mut Context {
+        &mut self.context
     }
 }
