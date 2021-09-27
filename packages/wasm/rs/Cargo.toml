@@ -12,7 +12,7 @@ authors = [
 ]
 keywords = ["polywrap", "wasm", "webassembly"]
 categories = ["wasm"]
-edition = "2018"
+edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -25,7 +25,7 @@ serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 # allocator, however.
 #
 # Unfortunately, `wee_alloc` requires nightly Rust when targeting wasm for now.
-# wee_alloc = "0.4.5"
+wee_alloc = "0.4.5"
 
 [profile.dev]
 panic = "abort"
