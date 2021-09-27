@@ -12,30 +12,22 @@ authors = [
 ]
 keywords = ["polywrap", "wasm", "webassembly"]
 categories = ["wasm"]
-edition = "2021"
-
-[lib]
-crate-type = ["cdylib", "rlib"]
+edition = "2018"
 
 [dependencies]
 num-bigint = { version = "0.4", default-features = false }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
-# # `wee_alloc` is a tiny allocator for wasm that is only ~1K in code size
-# # compared to the default allocator's ~10K. It is slower than the default
-# # allocator, however.
-# #
-# # Unfortunately, `wee_alloc` requires nightly Rust when targeting wasm for now.
-# wee_alloc = "0.4.5"
 
-# [profile.release]
-# lto = true          # turn on Link-Time Optimizations
-# codegen-units = 1   # trade compile time with maximum optimization
-# opt-level = "z"     # optimize for size
-# debug = false
-# debug-assertions = false
-# incremental = false
-# overflow-checks = true
-# panic = 'abort'
 
-# [profile.dev]
-# panic = "abort"
+[profile.release]
+lto = true          # turn on Link-Time Optimizations
+codegen-units = 1   # trade compile time with maximum optimization
+opt-level = "z"     # optimize for size
+debug = false
+debug-assertions = false
+incremental = false
+overflow-checks = true
+panic = 'abort'
+
+[profile.dev]
+panic = "abort"
