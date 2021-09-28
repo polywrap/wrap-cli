@@ -1,12 +1,13 @@
+use crate::TestImportAnotherObject;
+use crate::TestImportObject;
 use crate::{get_test_import_enum_value, sanitize_test_import_enum_value, TestImportEnum};
-use crate::{TestImportAnotherObject, TestImportObject};
 use alloc::{
     string::{String, ToString},
     vec,
     vec::Vec,
 };
 use core::convert::TryFrom;
-use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
+use polywrap_wasm_rs::{BigInt, Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer, JSON};
 
 pub fn serialize_test_import_object(input: &TestImportObject) -> Vec<u8> {
     let mut sizer_context = Context::new();

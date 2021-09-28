@@ -1,12 +1,11 @@
-use crate::AnotherType;
-use crate::{get_custom_enum_value, sanitize_custom_enum_value, CustomEnum};
+use crate::{get_custom_enum_value, sanitize_custom_enum_value, AnotherType, CustomEnum};
 use alloc::{
     string::{String, ToString},
     vec,
     vec::Vec,
 };
 use core::convert::TryFrom;
-use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
+use polywrap_wasm_rs::{BigInt, Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer, JSON};
 
 #[derive(Clone, Debug)]
 pub struct InputMutationMethod {

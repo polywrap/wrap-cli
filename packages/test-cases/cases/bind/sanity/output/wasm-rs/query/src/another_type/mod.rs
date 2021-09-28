@@ -1,7 +1,7 @@
-use alloc::{boxed::Box, string::String, vec::Vec};
+use alloc::{boxed::Box, string::String, vec, vec::Vec};
 pub mod serialization;
 use crate::CustomType;
-use polywrap_wasm_rs::{Read, Write};
+use polywrap_wasm_rs::{BigInt, Read, Write, JSON};
 pub use serialization::{
     deserialize_another_type, read_another_type, serialize_another_type, write_another_type,
 };

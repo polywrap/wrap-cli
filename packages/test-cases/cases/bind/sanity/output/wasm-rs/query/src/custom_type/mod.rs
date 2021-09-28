@@ -1,4 +1,4 @@
-use alloc::{string::String, vec, vec::Vec};
+use alloc::{boxed::Box, string::String, vec, vec::Vec};
 pub mod serialization;
 use crate::AnotherType;
 use crate::CustomEnum;
