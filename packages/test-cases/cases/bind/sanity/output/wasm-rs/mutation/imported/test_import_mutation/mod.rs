@@ -29,8 +29,7 @@ impl TestImportMutation {
             "mutation".to_string(),
             "imported_method".to_string(),
             args,
-        )
-        .unwrap();
+        ).unwrap();
         deserialize_imported_method_result(result.as_slice())
     }
 
@@ -42,8 +41,7 @@ impl TestImportMutation {
             "mutation".to_string(),
             "another_method".to_string(),
             args,
-        )
-        .unwrap();
+        ).unwrap();
         deserialize_another_method_result(result.as_slice())
     }
 }
