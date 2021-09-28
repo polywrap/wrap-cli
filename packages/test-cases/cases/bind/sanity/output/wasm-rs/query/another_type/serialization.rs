@@ -41,15 +41,11 @@ pub fn serialize_another_type(input: &AnotherType) -> Vec<u8> {
 
 pub fn write_another_type<W: Write>(input: &AnotherType, writer: &mut W) {
     writer.write_map_length(2);
-    writer
-        .context()
-        .push("prop", "Option<String>", "writing property");
+    writer.context().push("prop", "Option<String>", "writing property");
     writer.write_str("prop");
     writer.write_nullable_string(&input.prop);
     writer.context().pop();
-    writer
-        .context()
-        .push("circular", "Option<Box<CustomType>>", "writing property");
+    writer.context().push("circular", "Option<Box<CustomType>>", "writing property");
     writer.write_str("circular");
     if input.circular.is_some() {
         CustomType::write(input.circular.as_ref().as_ref().unwrap(), writer);
@@ -78,18 +74,12 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, String>
 
         match field.as_str() {
             "prop" => {
-                reader
-                    .context()
-                    .push(&field, "Option<String>", "type found, reading property");
+                reader.context().push(&field, "Option<String>", "type found, reading property");
                 _prop = reader.read_nullable_string();
                 reader.context().pop();
             }
             "circular" => {
-                reader.context().push(
-                    &field,
-                    "Option<Box<CustomType>>",
-                    "type found, reading property",
-                );
+                reader.context().push(&field, "Option<Box<CustomType>>", "type found, reading property");
                 let mut object: Option<Box<CustomType>> = None;
                 if !reader.is_next_nil() {
                     object = Some(Box::new(CustomType::read(reader)));
