@@ -1,24 +1,10 @@
-use alloc::{
-    boxed::Box,
-    string::String,
-    vec,
-    vec::Vec,
-};
+use alloc::{boxed::Box, string::String, vec::Vec};
 pub mod serialization;
-use polywrap_wasm_rs::{
-    BigInt,
-    Read,
-    Write,
-    JSON,
-};
-pub use serialization::{
-    deserialize_another_type,
-    read_another_type,
-    serialize_another_type,
-    write_another_type,
-};
-
 use crate::CustomType;
+use polywrap_wasm_rs::{Read, Write};
+pub use serialization::{
+    deserialize_another_type, read_another_type, serialize_another_type, write_another_type,
+};
 
 #[derive(Clone, Debug)]
 pub struct AnotherType {
@@ -27,6 +13,13 @@ pub struct AnotherType {
 }
 
 impl AnotherType {
+    pub fn new() -> AnotherType {
+        AnotherType {
+            prop: None,
+            circular: None,
+        }
+    }
+
     pub fn to_buffer(input: &AnotherType) -> Vec<u8> {
         serialize_another_type(input)
     }

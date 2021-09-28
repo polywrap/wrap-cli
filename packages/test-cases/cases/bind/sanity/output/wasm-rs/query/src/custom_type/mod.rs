@@ -1,25 +1,11 @@
-use alloc::{
-    boxed::Box,
-    string::String,
-    vec,
-    vec::Vec,
-};
+use alloc::{string::String, vec, vec::Vec};
 pub mod serialization;
-use polywrap_wasm_rs::{
-    BigInt,
-    Read,
-    Write,
-    JSON,
-};
-pub use serialization::{
-    deserialize_custom_type,
-    read_custom_type,
-    serialize_custom_type,
-    write_custom_type,
-};
-
 use crate::AnotherType;
 use crate::CustomEnum;
+use polywrap_wasm_rs::{BigInt, Read, Write, JSON};
+pub use serialization::{
+    deserialize_custom_type, read_custom_type, serialize_custom_type, write_custom_type,
+};
 
 #[derive(Clone, Debug)]
 pub struct CustomType {
@@ -50,10 +36,10 @@ pub struct CustomType {
     pub u_opt_array_opt_array: Vec<Option<Vec<Option<u32>>>>,
     pub u_array_opt_array_array: Vec<Option<Vec<Vec<u32>>>>,
     pub crazy_array: Option<Vec<Option<Vec<Vec<Option<Vec<u32>>>>>>>,
-    pub object: Box<AnotherType>,
-    pub opt_object: Option<Box<AnotherType>>,
-    pub object_array: Vec<Box<AnotherType>>,
-    pub opt_object_array: Option<Vec<Option<Box<AnotherType>>>>,
+    pub object: AnotherType,
+    pub opt_object: Option<AnotherType>,
+    pub object_array: Vec<AnotherType>,
+    pub opt_object_array: Option<Vec<Option<AnotherType>>>,
     pub en: CustomEnum,
     pub opt_enum: Option<CustomEnum>,
     pub enum_array: Vec<CustomEnum>,
@@ -61,6 +47,46 @@ pub struct CustomType {
 }
 
 impl CustomType {
+    pub fn new() -> CustomType {
+        CustomType {
+            str: String::new(),
+            opt_str: None,
+            u: 0,
+            opt_u: None,
+            u8: 0,
+            u16: 0,
+            u32: 0,
+            i: 0,
+            i8: 0,
+            i16: 0,
+            i32: 0,
+            bigint: BigInt::default(),
+            opt_bigint: None,
+            json: JSON::Value::Null,
+            opt_json: None,
+            bytes: vec![],
+            opt_bytes: None,
+            boolean: false,
+            opt_boolean: None,
+            u_array: vec![],
+            u_opt_array: None,
+            opt_u_opt_array: None,
+            opt_str_opt_array: None,
+            u_array_array: vec![],
+            u_opt_array_opt_array: vec![],
+            u_array_opt_array_array: vec![],
+            crazy_array: None,
+            object: AnotherType::new(),
+            opt_object: None,
+            object_array: vec![],
+            opt_object_array: None,
+            en: CustomEnum::_MAX_,
+            opt_enum: None,
+            enum_array: vec![],
+            opt_enum_array: None,
+        }
+    }
+
     pub fn to_buffer(input: &CustomType) -> Vec<u8> {
         serialize_custom_type(input)
     }

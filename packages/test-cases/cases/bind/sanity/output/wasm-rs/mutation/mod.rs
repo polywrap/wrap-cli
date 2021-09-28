@@ -1,3 +1,6 @@
+#![no_std]
+
+extern crate alloc;
 pub mod common;
 pub mod entry;
 pub mod another_type;
