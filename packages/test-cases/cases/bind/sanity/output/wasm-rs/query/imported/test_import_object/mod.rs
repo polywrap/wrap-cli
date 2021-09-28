@@ -1,10 +1,21 @@
-use alloc::{string::String, vec, vec::Vec};
+use alloc::{
+    string::String,
+    vec,
+    vec::Vec,
+};
 pub mod serialization;
 use crate::TestImportAnotherObject;
 use crate::TestImportEnum;
-use polywrap_wasm_rs::{BigInt, Read, Write, JSON};
+use polywrap_wasm_rs::{
+    BigInt,
+    Read,
+    Write,
+    JSON,
+};
 pub use serialization::{
-    deserialize_test_import_object, read_test_import_object, serialize_test_import_object,
+    deserialize_test_import_object,
+    read_test_import_object,
+    serialize_test_import_object,
     write_test_import_object,
 };
 

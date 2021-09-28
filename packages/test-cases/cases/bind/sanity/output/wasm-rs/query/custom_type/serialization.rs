@@ -1,14 +1,30 @@
 use crate::{
-    get_custom_enum_value, sanitize_custom_enum_value, AnotherType, CustomEnum, CustomType,
+    get_custom_enum_value,
+    sanitize_custom_enum_value,
+    AnotherType,
+    CustomEnum,
+    CustomType,
 };
 use alloc::{
     boxed::Box,
-    string::{String, ToString},
+    string::{
+        String,
+        ToString,
+    },
     vec,
     vec::Vec,
 };
 use core::convert::TryFrom;
-use polywrap_wasm_rs::{BigInt, Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer, JSON};
+use polywrap_wasm_rs::{
+    BigInt,
+    Context,
+    Read,
+    ReadDecoder,
+    Write,
+    WriteEncoder,
+    WriteSizer,
+    JSON,
+};
 
 pub fn serialize_custom_type(input: &CustomType) -> Vec<u8> {
     let mut sizer_context = Context::new();

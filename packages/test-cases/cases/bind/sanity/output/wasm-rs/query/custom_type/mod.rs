@@ -1,10 +1,23 @@
-use alloc::{boxed::Box, string::String, vec, vec::Vec};
+use alloc::{
+    boxed::Box,
+    string::String,
+    vec,
+    vec::Vec,
+};
 pub mod serialization;
 use crate::AnotherType;
 use crate::CustomEnum;
-use polywrap_wasm_rs::{BigInt, Read, Write, JSON};
+use polywrap_wasm_rs::{
+    BigInt,
+    Read,
+    Write,
+    JSON,
+};
 pub use serialization::{
-    deserialize_custom_type, read_custom_type, serialize_custom_type, write_custom_type,
+    deserialize_custom_type,
+    read_custom_type,
+    serialize_custom_type,
+    write_custom_type,
 };
 
 #[derive(Clone, Debug)]

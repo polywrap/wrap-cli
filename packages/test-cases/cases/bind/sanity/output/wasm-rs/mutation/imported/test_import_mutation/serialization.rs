@@ -1,10 +1,22 @@
 use crate::TestImportEnum;
 use crate::TestImportObject;
 use alloc::{
-    string::{String, ToString},
+    string::{
+        String,
+        ToString,
+    },
     vec::Vec,
 };
-use polywrap_wasm_rs::{BigInt, Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer, JSON};
+use polywrap_wasm_rs::{
+    BigInt,
+    Context,
+    Read,
+    ReadDecoder,
+    Write,
+    WriteEncoder,
+    WriteSizer,
+    JSON,
+};
 
 #[derive(Clone, Debug)]
 pub struct InputImportedMethod {

@@ -1,6 +1,9 @@
 use alloc::{
     format,
-    string::{String, ToString},
+    string::{
+        String,
+        ToString,
+    },
 };
 extern crate std;
 use std::convert::TryFrom;

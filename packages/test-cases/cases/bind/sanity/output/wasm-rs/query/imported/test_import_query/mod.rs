@@ -3,8 +3,11 @@ use polywrap_wasm_rs::subinvoke;
 pub mod serialization;
 use crate::TestImportObject;
 pub use serialization::{
-    deserialize_another_method_result, deserialize_imported_method_result,
-    serialize_another_method_args, serialize_imported_method_args, InputAnotherMethod,
+    deserialize_another_method_result,
+    deserialize_imported_method_result,
+    serialize_another_method_args,
+    serialize_imported_method_args,
+    InputAnotherMethod,
     InputImportedMethod,
 };
 
