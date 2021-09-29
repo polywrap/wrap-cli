@@ -1,26 +1,33 @@
 {{^__commonImport}}
+{{#propertyDeps}}
+use crate::{{#toUpper}}{{type}}{{/toUpper}};
+{{#isEnum}}
+use crate::{
+    get_{{#toLower}}{{type}}{{/toLower}}_value,
+    sanitize_{{#toLower}}{{type}}{{/toLower}}_value,
+    {{#toUpper}}{{type}}{{/toUpper}},
+};
+{{/isEnum}}
+{{/propertyDeps}}
+use alloc::{
+    string::{
+        String,
+        ToString,
+    },
+    vec,
+    vec::Vec,
+};
+use core::convert::TryFrom;
 use polywrap_wasm_rs::{
+    BigInt,
     Context,
     Read,
     ReadDecoder,
     Write,
     WriteEncoder,
     WriteSizer,
+    JSON,
 };
-
-use crate::{{#toUpper}}{{type}}{{/toUpper}};
-{{#propertyDeps}}
-{{^isEnum}}
-use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
-{{/isEnum}}
-{{#isEnum}}
-use crate::{
-    {{#toUpper}}{{type}}{{/toUpper}},
-    get_{{#toLower}}{{type}}{{/toLower}}_value,
-    sanitize_{{#toLower}}{{type}}{{/toLower}}_value,
-};
-{{/isEnum}}
-{{/propertyDeps}}
 
 pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(input: &{{#toUpper}}{{type}}{{/toUpper}}) -> Vec<u8> {
     let mut sizer_context = Context::new();
@@ -112,7 +119,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
                 {{/scalar}}
                 {{#array}}
                 _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
-                    {{> deserialize_array}}
+                    {{> deserialize_array_nobox}}
                 }){{#required}}.expect("Failed to read array"){{/required}};
                 {{/array}}
                 {{#enum}}
@@ -120,7 +127,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
                 _{{#toLower}}{{name}}{{/toLower}} = value;
                 {{/enum}}
                 {{#object}}
-                {{> deserialize_object}}
+                {{> deserialize_object_nobox}}
                 _{{#toLower}}{{name}}{{/toLower}} = Some(object);
                 {{/object}}
                 {{#required}}
@@ -135,29 +142,15 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
     {{#properties}}
     {{#required}}
     if !_{{#toLower}}{{name}}{{/toLower}}_set {
-        let custom_error = reader.context().print_with_context("Missing required property: '{{name}}: {{type}}'");
-        return Err(custom_error);
+        return Err(reader.context().print_with_context("Missing required property: '{{name}}: {{type}}'"));
     }
     {{/required}}
     {{/properties}}
 
     Ok({{#toUpper}}{{type}}{{/toUpper}} {
         {{#properties}}
-        {{^object}}
         {{#toLower}}{{name}}{{/toLower}}: _{{#toLower}}{{name}}{{/toLower}},
-        {{/object}}
-        {{#object}}
-        {{^required}}
-        {{#toLower}}{{name}}{{/toLower}}: _{{#toLower}}{{name}}{{/toLower}},
-        {{/required}}
-        {{#required}}
-        {{#toLower}}{{name}}{{/toLower}}: match _{{#toLower}}{{name}}{{/toLower}} {
-            Some(x) => x,
-            None => panic!("'{{#toLower}}{{name}}{{/toLower}}' is required, but its value is still 'None'. This should never happen."),
-        },
-        {{/required}}
-        {{/object}}
         {{/properties}}
-    });
+    })
 }
 {{/__commonImport}}

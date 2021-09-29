@@ -2,10 +2,22 @@
 pub use super::super::common::{{#toUpper}}{{type}}{{/toUpper}};
 {{/__commonImport}}
 {{^__commonImport}}
+use alloc::{
+    string::String,
+    vec,
+    vec::Vec,
+};
 pub mod serialization;
+{{#propertyDeps.length}}
+{{#propertyDeps}}
+use crate::{{#toUpper}}{{type}}{{/toUpper}};
+{{/propertyDeps}}
+{{/propertyDeps.length}}
 use polywrap_wasm_rs::{
+    BigInt,
     Read,
     Write,
+    JSON,
 };
 pub use serialization::{
     deserialize_{{#toLower}}{{type}}{{/toLower}},
@@ -13,12 +25,6 @@ pub use serialization::{
     serialize_{{#toLower}}{{type}}{{/toLower}},
     write_{{#toLower}}{{type}}{{/toLower}},
 };
-{{#propertyDeps.length}}
-
-{{#propertyDeps}}
-use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
-{{/propertyDeps}}
-{{/propertyDeps.length}}
 
 #[derive(Clone, Debug)]
 pub struct {{#toUpper}}{{type}}{{/toUpper}} {
@@ -29,6 +35,14 @@ pub struct {{#toUpper}}{{type}}{{/toUpper}} {
 
 impl {{#toUpper}}{{type}}{{/toUpper}} {
     pub const URI: &'static str = "{{uri}}";
+
+    pub fn new() -> {{#toUpper}}{{type}}{{/toUpper}} {
+        {{#toUpper}}{{type}}{{/toUpper}} {
+            {{#properties}}
+            {{#toLower}}{{name}}{{/toLower}}: {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}},
+            {{/properties}}
+        }
+    }
 
     pub fn to_buffer(input: &{{#toUpper}}{{type}}{{/toUpper}}) -> Vec<u8> {
         serialize_{{#toLower}}{{type}}{{/toLower}}(input)
