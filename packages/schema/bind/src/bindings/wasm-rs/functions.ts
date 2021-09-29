@@ -169,7 +169,7 @@ export const toWasmInit: MustacheFunction = () => {
       case "Bytes":
         return nullableModifier("vec![]");
       case "BigInt":
-        return nullableModifier("BigInt::from_u16(0).unwrap_or_default()");
+        return nullableModifier("BigInt::default()");
       case "JSON":
         return nullableModifier("JSON::Value::Null");
       default:
@@ -250,10 +250,12 @@ export const toWasm: MustacheFunction = () => {
           type = toUpper()(type, (str) => str);
         }
     }
-
-    return objectType ?
-      applyNullable(`Box<${type}>`, nullable) :
+    if (objectType) {
       applyNullable(type, nullable);
+    }
+    // return objectType ?
+    //   applyNullable(`Box<${type}>`, nullable) :
+    //   applyNullable(type, nullable);
   };
 };
 
@@ -269,8 +271,10 @@ const toWasmArray = (type: string, nullable: boolean): string => {
 };
 
 const applyNullable = (type: string, nullable: boolean): string => {
-  if (nullable) {
+  if (nullable && !type.includes("Box")) {
     return `Option<${type}>`;
+  } else if (nullable && type.includes("Box")) {
+    return `Option<Box<${type}>>`;
   } else {
     return type;
   }

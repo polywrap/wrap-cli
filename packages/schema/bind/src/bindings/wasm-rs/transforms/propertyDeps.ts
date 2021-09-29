@@ -55,29 +55,29 @@ export function propertyDeps(): TypeInfoTransforms {
             return array;
           }
 
-          const appendUnique = (item: PropertyDep) => {
-            if (
-              array.findIndex(
-                (i) => i.crate === item.crate && i.type === item.type
-              ) === -1
-            ) {
-              array.push(item);
-            }
-          };
+          // const appendUnique = (item: PropertyDep) => {
+          //   if (
+          //     array.findIndex(
+          //       (i) => i.crate === item.crate && i.type === item.type
+          //     ) === -1
+          //   ) {
+          //     array.push(item);
+          //   }
+          // };
 
-          if (def.type === "BigInt") {
-            appendUnique({
-              crate: "num_bigint",
-              type: "BigInt",
-              isEnum: false,
-            });
-          } else {
-            appendUnique({
-              crate: "crate",
-              type: def.type,
-              isEnum: !!def.enum
-            });
-          }
+          // if (def.type === "BigInt") {
+          //   appendUnique({
+          //     crate: "num_bigint",
+          //     type: "BigInt",
+          //     isEnum: false,
+          //   });
+          // } else {
+          //   appendUnique({
+          //     crate: "crate",
+          //     type: def.type,
+          //     isEnum: !!def.enum
+          //   });
+          // }
 
           return array;
         };
