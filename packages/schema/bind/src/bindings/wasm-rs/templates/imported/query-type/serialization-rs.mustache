@@ -13,12 +13,14 @@ use alloc::{
 };
 {{#methods.length}}
 use polywrap_wasm_rs::{
+    BigInt,
     Context,
     Read,
     ReadDecoder,
     Write,
     WriteEncoder,
     WriteSizer,
+    JSON,
 };
 {{#propertyDeps.length}}
 

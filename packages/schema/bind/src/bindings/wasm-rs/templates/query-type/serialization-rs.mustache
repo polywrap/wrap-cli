@@ -11,12 +11,14 @@ use alloc::{
     vec::Vec,
 };
 use polywrap_wasm_rs::{
+    BigInt,
     Context,
     Read,
     ReadDecoder,
     Write,
     WriteEncoder,
     WriteSizer,
+    JSON,
 };
 #[link(wasm_import_module = "w3")]
 extern "C" {
@@ -114,8 +116,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
     {{#arguments}}
     {{#required}}
     if !_{{#toLower}}{{name}}{{/toLower}}_set {
-        let custom_error = reader.context().print_with_context("Missing required argument: '{{name}}: {{type}}'");
-        return Err(custom_error);
+        return Err(reader.context().print_with_context("Missing required argument: '{{name}}: {{type}}'"));
     }
     {{/required}}
     {{/arguments}}
@@ -123,20 +124,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
 
     Ok(Input{{#toUpper}}{{name}}{{/toUpper}} {
         {{#arguments}}
-        {{^object}}
         {{#toLower}}{{name}}{{/toLower}}: _{{#toLower}}{{name}}{{/toLower}},
-        {{/object}}
-        {{#object}}
-        {{^required}}
-        {{#toLower}}{{name}}{{/toLower}}: _{{#toLower}}{{name}}{{/toLower}},
-        {{/required}}
-        {{#required}}
-        {{#toLower}}{{name}}{{/toLower}}: match _{{#toLower}}{{name}}{{/toLower}} {
-            Some(x) => x,
-            None => panic!("'{{#toLower}}{{name}}{{/toLower}}' is required, but its value is still 'None'. This should never happen."),
-        },
-        {{/required}}
-        {{/object}}
         {{/arguments}}
     })
 }

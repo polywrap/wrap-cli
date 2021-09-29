@@ -15,9 +15,6 @@ use alloc::{
     vec::Vec,
 };
 pub mod serialization;
-{{#propertyDeps}}
-use crate::{{#toUpper}}{{type}}{{/toUpper}};
-{{/propertyDeps}}
 use polywrap_wasm_rs::{
     BigInt,
     Read,
@@ -30,6 +27,10 @@ pub use serialization::{
     serialize_{{#toLower}}{{type}}{{/toLower}},
     write_{{#toLower}}{{type}}{{/toLower}},
 };
+
+{{#propertyDeps}}
+use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
+{{/propertyDeps}}
 
 #[derive(Clone, Debug)]
 pub struct {{#toUpper}}{{type}}{{/toUpper}} {
