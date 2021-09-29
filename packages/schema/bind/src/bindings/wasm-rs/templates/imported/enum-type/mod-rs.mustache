@@ -7,6 +7,14 @@ pub use super::super::common::{
 };
 {{/__commonImport}}
 {{^__commonImport}}
+use alloc::{
+    format,
+    string::{
+        String,
+        ToString,
+    },
+};
+extern crate std;
 use std::convert::TryFrom;
 
 #[derive(Clone, Copy, Debug)]
@@ -21,7 +29,10 @@ pub fn sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value: i32) -> Result<(),
     let max_as_i32 = {{#toUpper}}{{type}}{{/toUpper}}::_MAX_ as i32;
     let valid = value >= 0 && value < max_as_i32;
     if !valid {
-        return Err(format!("Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", value.to_string()));
+        return Err(format!(
+            "Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}",
+            value.to_string()
+        ));
     }
     Ok(())
 }
@@ -41,7 +52,12 @@ pub fn get_{{#toLower}}{{type}}{{/toLower}}_key(value: {{#toUpper}}{{type}}{{/to
             {{#constants}}
             {{#toUpper}}{{type}}{{/toUpper}}::{{.}} => "{{.}}".to_string(),
             {{/constants}}
-            _ => {format!("Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", (value as i32).to_string())}
+            _ => {
+                format!(
+                    "Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}",
+                    (value as i32).to_string()
+                )
+            }
         };
     } else {
         format!("")
