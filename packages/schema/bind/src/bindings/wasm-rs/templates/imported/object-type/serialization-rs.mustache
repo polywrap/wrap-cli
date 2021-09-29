@@ -1,4 +1,16 @@
 {{^__commonImport}}
+use alloc::{
+    boxed::Box,
+    collections::BTreeMap,
+    format,
+    str::FromStr,
+    string::{
+        String,
+        ToString,
+    },
+    vec,
+    vec::Vec,
+};
 {{#propertyDeps}}
 use crate::{{#toUpper}}{{type}}{{/toUpper}};
 {{#isEnum}}
@@ -9,14 +21,6 @@ use crate::{
 };
 {{/isEnum}}
 {{/propertyDeps}}
-use alloc::{
-    string::{
-        String,
-        ToString,
-    },
-    vec,
-    vec::Vec,
-};
 use core::convert::TryFrom;
 use polywrap_wasm_rs::{
     BigInt,

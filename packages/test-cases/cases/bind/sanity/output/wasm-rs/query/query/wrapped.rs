@@ -8,7 +8,18 @@ use crate::{
     InputObjectMethod,
     InputQueryMethod,
 };
-use alloc::vec::Vec;
+use alloc::{
+    boxed::Box,
+    collections::BTreeMap,
+    format,
+    str::FromStr,
+    string::{
+        String,
+        ToString,
+    },
+    vec,
+    vec::Vec,
+};
 
 pub fn query_method_wrapped(input: &[u8]) -> Vec<u8> {
     let args = deserialize_query_method_args(input).expect("Failed to deserialize buffer");

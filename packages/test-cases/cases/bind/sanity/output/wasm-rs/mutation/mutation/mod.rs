@@ -1,3 +1,15 @@
+use alloc::{
+    boxed::Box,
+    collections::BTreeMap,
+    format,
+    str::FromStr,
+    string::{
+        String,
+        ToString,
+    },
+    vec,
+    vec::Vec,
+};
 pub mod wrapped;
 pub use wrapped::{
     mutation_method_wrapped,

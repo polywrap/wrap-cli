@@ -3,7 +3,14 @@ pub use super::super::common::{{#toUpper}}{{type}}{{/toUpper}};
 {{/__commonImport}}
 {{^__commonImport}}
 use alloc::{
-    string::String,
+    boxed::Box,
+    collections::BTreeMap,
+    format,
+    str::FromStr,
+    string::{
+        String,
+        ToString,
+    },
     vec,
     vec::Vec,
 };

@@ -1,3 +1,15 @@
+use alloc::{
+    boxed::Box,
+    collections::BTreeMap,
+    format,
+    str::FromStr,
+    string::{
+        String,
+        ToString,
+    },
+    vec,
+    vec::Vec,
+};
 use crate::{
     mutation_method_wrapped,
     object_method_wrapped,

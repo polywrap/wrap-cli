@@ -1,4 +1,15 @@
-use alloc::string::ToString;
+use alloc::{
+    boxed::Box,
+    collections::BTreeMap,
+    format,
+    str::FromStr,
+    string::{
+        String,
+        ToString,
+    },
+    vec,
+    vec::Vec,
+};
 use polywrap_wasm_rs::subinvoke;
 pub mod serialization;
 use crate::TestImportObject;

@@ -1,3 +1,15 @@
+use alloc::{
+    boxed::Box,
+    collections::BTreeMap,
+    format,
+    str::FromStr,
+    string::{
+        String,
+        ToString,
+    },
+    vec,
+    vec::Vec,
+};
 use crate::{
     object_method_wrapped,
     query_method_wrapped,
