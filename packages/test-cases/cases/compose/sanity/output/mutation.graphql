@@ -44,26 +44,26 @@ type Mutation implements Interface_Mutation @imports(
     "Interface_Mutation"
   ]
 ) {
-"""
-method1 comment
-"""
+  """
+  method1 comment
+  """
   method1(
-"""
-str comment
-"""
+    """
+    str comment
+    """
     str: String!
-"""
-optStr comment
-"""
+    """
+    optStr comment
+    """
     optStr: String
     u: UInt!
-"""
-uArrayArray comment
-"""
+    """
+    uArrayArray comment
+    """
     uArrayArray: [[UInt]]!
-"""
-implObject comment
-"""
+    """
+    implObject comment
+    """
     implObject: LocalImplementationObject!
   ): String!
 
@@ -81,13 +81,13 @@ CustomMutationType multi-line comment
 line 2
 """
 type CustomMutationType {
-"""
-str comment
-"""
+  """
+  str comment
+  """
   str: String!
-"""
-optStr comment
-"""
+  """
+  optStr comment
+  """
   optStr: String
   u: UInt!
   optU: UInt
@@ -98,14 +98,14 @@ optStr comment
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optStrOptArray: [String]
-"""
-crazyArray comment
-"""
+  """
+  crazyArray comment
+  """
   crazyArray: [[[[UInt32!]]!]]
   commonType: CommonType!
-"""
-customType comment
-"""
+  """
+  customType comment
+  """
   customType: Namespace_CustomType!
 }
 
@@ -117,9 +117,9 @@ type AnotherMutationType {
 ImplementationObject comment
 """
 type ImplementationObject implements Interface_InterfaceObject1 & Interface_InterfaceObject2 {
-"""
-anotherProp comment
-"""
+  """
+  anotherProp comment
+  """
   anotherProp: String
   str: String!
   uint8: UInt8!
@@ -142,9 +142,9 @@ CommonType comment
 type CommonType {
   prop: UInt8!
   nestedObject: NestedType!
-"""
-objectArray comment
-"""
+  """
+  objectArray comment
+  """
   objectArray: [[ArrayObject]]!
 }
 
@@ -180,13 +180,13 @@ type Namespace_Query @imported(
     uArrayArray: [[UInt]]!
   ): String!
 
-"""
-method2 comment
-"""
+  """
+  method2 comment
+  """
   method2(
-"""
-arg comment
-"""
+    """
+    arg comment
+    """
     arg: [String!]!
   ): [Int32!]!
 }
@@ -322,9 +322,9 @@ type Namespace_CustomType @imported(
   enum: Namespace_CustomEnum!
   optEnum: Namespace_CustomEnum
   importedEnum: Namespace_Imported_Enum!
-"""
-optImportedEnum comment
-"""
+  """
+  optImportedEnum comment
+  """
   optImportedEnum: Namespace_Imported_Enum
 }
 
@@ -337,9 +337,9 @@ type Interface_InterfaceObject1 @imported(
   nativeType: "InterfaceObject1"
 ) {
   str: String!
-"""
-InterfaceObject1_uint8 comment
-"""
+  """
+  InterfaceObject1_uint8 comment
+  """
   uint8: UInt8!
 }
 
@@ -374,9 +374,9 @@ type Interface_NestedInterfaceObject @imported(
   namespace: "Interface",
   nativeType: "NestedInterfaceObject"
 ) {
-"""
-object comment
-"""
+  """
+  object comment
+  """
   object: Interface_Object
 }
 

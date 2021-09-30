@@ -70,13 +70,13 @@ export class WasmWeb3Api extends Api {
   }
 
   public async invoke(
-    options: InvokeApiOptions,
+    options: InvokeApiOptions<Uri>,
     client: Client
   ): Promise<InvokeApiResult<unknown | ArrayBuffer>> {
     const run = Tracer.traceFunc(
       "WasmWeb3Api: invoke",
       async (
-        options: InvokeApiOptions,
+        options: InvokeApiOptions<Uri>,
         client: Client
       ): Promise<InvokeApiResult<unknown | ArrayBuffer>> => {
         const { module: invokableModule, method, input, decode } = options;

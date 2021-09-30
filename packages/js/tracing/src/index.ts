@@ -6,9 +6,7 @@ import {
 import { ZipkinExporter } from "@opentelemetry/exporter-zipkin";
 import { WebTracerProvider } from "@opentelemetry/web";
 import * as api from "@opentelemetry/api";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-const inspect = require("util-inspect");
+import inspect from "browser-util-inspect";
 
 type MaybeAsync<T> = Promise<T> | T;
 
@@ -27,9 +25,9 @@ export class Tracer {
     | null = null;
   private static _spans: Array<api.Span> = [];
 
-  static enableTracing(tracerName: string): void {
+  static enableTracing(tracerName: string, serviceName = "Polywrap"): void {
     this.traceEnabled = true;
-    this._initProvider();
+    this._initProvider(serviceName);
 
     if (this._provider) {
       this._tracer = this._provider.getTracer(tracerName) as otTracer;
@@ -131,7 +129,7 @@ export class Tracer {
     };
   }
 
-  static _initProvider(): void {
+  static _initProvider(serviceName: string): void {
     if (this._provider) return;
 
     if (typeof window === "undefined") {
@@ -142,7 +140,11 @@ export class Tracer {
 
     // Configure span processor to send spans to the exporter
     this._provider.addSpanProcessor(
-      new SimpleSpanProcessor(new ZipkinExporter())
+      new SimpleSpanProcessor(
+        new ZipkinExporter({
+          serviceName: serviceName,
+        })
+      )
     );
 
     this._provider.register();

@@ -18,10 +18,13 @@ import {
   InterfaceImplementations,
   PluginRegistration,
   Web3ApiManifest,
+  Subscription,
+  SubscribeOptions,
   parseQuery,
   resolveUri,
   AnyManifest,
   ManifestType,
+  GetImplementationsOptions,
   GetManifestOptions,
   GetFileOptions,
   createQueryDocument,
@@ -136,16 +139,10 @@ export class Web3ApiClient implements Client {
   >(
     options: QueryApiOptions<TVariables, TUri>
   ): Promise<QueryApiResult<TData>> {
-    let typedOptions: QueryApiOptions<TVariables, Uri>;
-
-    if (typeof options.uri === "string") {
-      typedOptions = {
-        ...options,
-        uri: new Uri(options.uri),
-      };
-    } else {
-      typedOptions = options as QueryApiOptions<TVariables, Uri>;
-    }
+    const typedOptions: QueryApiOptions<TVariables, Uri> = {
+      ...options,
+      uri: this._toUri(options.uri),
+    };
 
     const run = Tracer.traceFunc(
       "Web3ApiClient: query",
@@ -203,8 +200,8 @@ export class Web3ApiClient implements Client {
       }
     );
 
-    return await run(typedOptions).catch((error) => {
-      if (error.length) {
+    return await run(typedOptions).catch((error: Error | Error[]) => {
+      if (Array.isArray(error)) {
         return { errors: error };
       } else {
         return { errors: [error] };
@@ -230,6 +227,96 @@ export class Web3ApiClient implements Client {
         const result = (await api.invoke(options, this)) as TData;
 
         return result;
+      }
+    );
+
+    return run(typedOptions);
+  }
+
+  public subscribe<
+    TData extends Record<string, unknown> = Record<string, unknown>,
+    TVariables extends Record<string, unknown> = Record<string, unknown>,
+    TUri extends Uri | string = string
+  >(options: SubscribeOptions<TVariables, TUri>): Subscription<TData> {
+    const typedOptions: SubscribeOptions<TVariables, Uri> = {
+      ...options,
+      uri: this._toUri(options.uri),
+    };
+
+    const run = Tracer.traceFunc(
+      "Web3ApiClient: subscribe",
+      (options: SubscribeOptions<TVariables, Uri>): Subscription<TData> => {
+        const { uri, query, variables, frequency: freq } = options;
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const client: Web3ApiClient = this;
+
+        // calculate interval between queries, in milliseconds, 1 min default value
+        /* eslint-disable prettier/prettier */
+        let frequency: number;
+        if (freq && (freq.ms || freq.sec || freq.min || freq.hours)) {
+          frequency = (freq.ms ?? 0) + ((
+            (freq.hours ?? 0) * 3600 +
+            (freq.min ?? 0) * 60 +
+            (freq.sec ?? 0)
+          ) * 1000);
+        } else {
+          frequency = 60000;
+        }
+        /* eslint-enable  prettier/prettier */
+
+        const subscription: Subscription<TData> = {
+          frequency: frequency,
+          isActive: false,
+          stop(): void {
+            subscription.isActive = false;
+          },
+          async *[Symbol.asyncIterator](): AsyncGenerator<
+            QueryApiResult<TData>
+          > {
+            let timeout: NodeJS.Timeout | undefined = undefined;
+            subscription.isActive = true;
+
+            try {
+              let readyVals = 0;
+              let sleep: ((value?: unknown) => void) | undefined;
+
+              timeout = setInterval(() => {
+                readyVals++;
+                if (sleep) {
+                  sleep();
+                  sleep = undefined;
+                }
+              }, frequency);
+
+              while (subscription.isActive) {
+                if (readyVals === 0) {
+                  await new Promise((r) => (sleep = r));
+                }
+
+                for (; readyVals > 0; readyVals--) {
+                  if (!subscription.isActive) {
+                    break;
+                  }
+
+                  const result: QueryApiResult<TData> = await client.query({
+                    uri: uri,
+                    query: query,
+                    variables: variables,
+                  });
+
+                  yield result;
+                }
+              }
+            } finally {
+              if (timeout) {
+                clearInterval(timeout);
+              }
+              subscription.isActive = false;
+            }
+          },
+        };
+
+        return subscription;
       }
     );
 
@@ -262,6 +349,61 @@ export class Web3ApiClient implements Client {
     return await api.getFile(options, this);
   }
 
+  public getImplementations<TUri extends Uri | string>(
+    uri: TUri,
+    options?: GetImplementationsOptions
+  ): TUri[] {
+    const isUriTypeString = typeof uri === "string";
+
+    const run = Tracer.traceFunc(
+      "Web3ApiClient: getImplementations",
+      (): TUri[] => {
+        const applyRedirects = !!options?.applyRedirects;
+
+        return isUriTypeString
+          ? (getImplementations(
+              this._toUri(uri),
+              this.interfaces(),
+              applyRedirects ? this.redirects() : undefined
+            ).map((x: Uri) => x.uri) as TUri[])
+          : (getImplementations(
+              this._toUri(uri),
+              this.interfaces(),
+              applyRedirects ? this.redirects() : undefined
+            ) as TUri[]);
+      }
+    );
+
+    return run();
+  }
+
+  public async getUriPath(
+    uri: Uri | string,
+    options?: UriResolutionOptions
+  ): Promise<UriPathNode[]> {
+    const isUriTypeString = typeof uri === "string";
+    const typedUri: Uri = isUriTypeString
+      ? new Uri(uri as string)
+      : (uri as Uri);
+
+    const run = Tracer.traceFunc(
+      "Web3ApiClient: getUriPath",
+      async (
+        uri: Uri,
+        options?: UriResolutionOptions
+      ): Promise<UriPathNode[]> => {
+        return await resolveUriToPath(
+          uri,
+          this,
+          this.redirects(),
+          this.plugins(),
+          this.interfaces(),
+          options
+        );
+      }
+    );
+    return run(typedUri, options);
+  }
 
   private async _loadWeb3Api(uri: Uri): Promise<Api> {
     const typedUri = typeof uri === "string" ? new Uri(uri) : uri;
@@ -303,85 +445,6 @@ export class Web3ApiClient implements Client {
     );
 
     return run(typedUri);
-  }
-
-  public getImplementations(
-    uri: string,
-    filters?: { applyRedirects: boolean }
-  ): string[];
-  public getImplementations(
-    uri: Uri,
-    filters?: { applyRedirects: boolean }
-  ): Uri[];
-  public getImplementations(
-    uri: string | Uri,
-    filters: { applyRedirects: boolean } = { applyRedirects: false }
-  ): (string | Uri)[] {
-    const isUriTypeString = typeof uri === "string";
-
-    const typedUri: Uri = isUriTypeString
-      ? new Uri(uri as string)
-      : (uri as Uri);
-
-    const getImplementationsWithoutRedirects = Tracer.traceFunc(
-      "Web3ApiClient: getImplementations - getImplementationsWithoutRedirects",
-      (uri: Uri): (string | Uri)[] => {
-        const interfaceImplementations = this.interfaces().find((x) =>
-          Uri.equals(x.interface, uri)
-        );
-
-        if (!interfaceImplementations) {
-          throw Error(`Interface: ${uri} has no implementations registered`);
-        }
-
-        return isUriTypeString
-          ? interfaceImplementations.implementations.map((x) => x.uri)
-          : interfaceImplementations.implementations;
-      }
-    );
-
-    const getImplementationsWithRedirects = Tracer.traceFunc(
-      "Web3ApiClient: getImplementations - getImplementationsWithRedirects",
-      (uri: Uri): (string | Uri)[] => {
-        return isUriTypeString
-          ? getImplementations(uri, this.interfaces(), this.redirects()).map(
-              (x) => x.uri
-            )
-          : getImplementations(uri, this.interfaces(), this.redirects());
-      }
-    );
-
-    return filters.applyRedirects
-      ? getImplementationsWithRedirects(typedUri)
-      : getImplementationsWithoutRedirects(typedUri);
-  }
-
-  public async getUriPath(
-    uri: Uri | string,
-    options?: UriResolutionOptions
-  ): Promise<UriPathNode[]> {
-    const isUriTypeString = typeof uri === "string";
-    const typedUri: Uri = isUriTypeString
-      ? new Uri(uri as string)
-      : (uri as Uri);
-
-    const run = Tracer.traceFunc(
-      "Web3ApiClient: getUriPath",
-      async (
-        uri: Uri,
-        options?: UriResolutionOptions
-      ): Promise<UriPathNode[]> => {
-        return await resolveUriToPath(
-          uri,
-          this,
-          this.redirects(),
-          this.plugins(),
-          this.interfaces(),
-          options
-        );
-      }
-    );
-    return run(typedUri, options);
   }
 
   private _requirePluginsToUseNonInterfaceUris(): void {
