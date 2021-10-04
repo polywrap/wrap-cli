@@ -1,7 +1,4 @@
 use alloc::{
-    boxed::Box,
-    collections::BTreeMap,
-    format,
     str::FromStr,
     string::{
         String,
@@ -11,14 +8,12 @@ use alloc::{
     vec::Vec,
 };
 use polywrap_wasm_rs::{
-    BigInt,
     Context,
     Read,
     ReadDecoder,
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON,
 };
 #[link(wasm_import_module = "w3")]
 extern "C" {

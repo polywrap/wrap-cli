@@ -1,6 +1,5 @@
 use alloc::{
     boxed::Box,
-    collections::BTreeMap,
     format,
     str::FromStr,
     string::{
@@ -9,13 +8,6 @@ use alloc::{
     },
     vec,
     vec::Vec,
-};
-use crate::{
-    get_custom_enum_value,
-    sanitize_custom_enum_value,
-    AnotherType,
-    CustomEnum,
-    CustomType,
 };
 use core::convert::TryFrom;
 use polywrap_wasm_rs::{
@@ -27,6 +19,14 @@ use polywrap_wasm_rs::{
     WriteEncoder,
     WriteSizer,
     JSON,
+};
+
+use crate::CustomType;
+use crate::AnotherType;
+use crate::{
+    CustomEnum,
+    get_custom_enum_value,
+    sanitize_custom_enum_value,
 };
 
 pub fn serialize_custom_type(input: &CustomType) -> Vec<u8> {

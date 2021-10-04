@@ -14,14 +14,19 @@ edition = "2018"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-num = "0.4.0"
-num-bigint = "0.4.2"
+num-traits = { version = "0.2.14", default-features = false }
 polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../../wasm/rs"}
+wee_alloc = "0.4.5"
 
 [profile.release]
-lto = true
-codegen-units = 1
-overflow-checks = true
-# Tell `rustc` to optimize for small code size.
-opt-level = "s"
+lto = true          # turn on Link-Time Optimizations
+codegen-units = 1   # trade compile time with maximum optimization
+opt-level = "z"     # optimize for size
 debug = false
+debug-assertions = false
+incremental = false
+overflow-checks = true
+panic = 'abort'
+
+[profile.dev]
+panic = "abort"

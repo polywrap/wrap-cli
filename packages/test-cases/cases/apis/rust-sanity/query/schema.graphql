@@ -1,7 +1,5 @@
 type Query {
-  method(
-    arg: TestObject!
-  ): String!
+  method(arg: TestObject!): String!
 }
 
 type TestObject {

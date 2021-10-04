@@ -3,23 +3,15 @@ pub use super::super::common::{{#toUpper}}{{type}}{{/toUpper}};
 {{/__commonImport}}
 {{^__commonImport}}
 use alloc::{
-    boxed::Box,
-    collections::BTreeMap,
-    format,
     str::FromStr,
-    string::{
-        String,
-        ToString,
-    },
+    string::String,
     vec,
     vec::Vec,
 };
 pub mod serialization;
 use polywrap_wasm_rs::{
-    BigInt,
     Read,
     Write,
-    JSON,
 };
 pub use serialization::{
     deserialize_{{#toLower}}{{type}}{{/toLower}},

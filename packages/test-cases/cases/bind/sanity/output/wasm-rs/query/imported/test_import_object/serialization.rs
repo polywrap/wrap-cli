@@ -1,7 +1,4 @@
 use alloc::{
-    boxed::Box,
-    collections::BTreeMap,
-    format,
     str::FromStr,
     string::{
         String,
@@ -10,23 +7,21 @@ use alloc::{
     vec,
     vec::Vec,
 };
-use crate::TestImportAnotherObject;
-use crate::TestImportObject;
-use crate::{
-    get_test_import_enum_value,
-    sanitize_test_import_enum_value,
-    TestImportEnum,
-};
-use core::convert::TryFrom;
 use polywrap_wasm_rs::{
-    BigInt,
     Context,
     Read,
     ReadDecoder,
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON,
+};
+
+use crate::TestImportObject;
+use crate::TestImportAnotherObject;
+use crate::{
+    TestImportEnum,
+    get_test_import_enum_value,
+    sanitize_test_import_enum_value,
 };
 
 pub fn serialize_test_import_object(input: &TestImportObject) -> Vec<u8> {

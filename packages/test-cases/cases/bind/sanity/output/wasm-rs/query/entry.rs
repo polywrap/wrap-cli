@@ -1,6 +1,5 @@
 use alloc::{
     boxed::Box,
-    collections::BTreeMap,
     format,
     str::FromStr,
     string::{
@@ -11,8 +10,8 @@ use alloc::{
     vec::Vec,
 };
 use crate::{
-    object_method_wrapped,
     query_method_wrapped,
+    object_method_wrapped,
 };
 use polywrap_wasm_rs::{
     abort,

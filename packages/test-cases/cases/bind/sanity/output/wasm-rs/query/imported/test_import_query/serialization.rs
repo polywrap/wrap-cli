@@ -1,26 +1,25 @@
 use alloc::{
-    boxed::Box,
-    collections::BTreeMap,
-    format,
     str::FromStr,
     string::{
         String,
         ToString,
     },
-    vec,
     vec::Vec,
 };
-use crate::TestImportEnum;
-use crate::TestImportObject;
 use polywrap_wasm_rs::{
-    BigInt,
     Context,
     Read,
     ReadDecoder,
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON,
+};
+
+use crate::TestImportObject;
+use crate::{
+    TestImportEnum,
+    get_test_import_enum_value,
+    sanitize_test_import_enum_value,
 };
 
 #[derive(Clone, Debug)]

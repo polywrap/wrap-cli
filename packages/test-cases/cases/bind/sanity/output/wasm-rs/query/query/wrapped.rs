@@ -1,24 +1,20 @@
-use crate::{
-    deserialize_object_method_args,
-    deserialize_query_method_args,
-    object_method,
-    query_method,
-    serialize_object_method_result,
-    serialize_query_method_result,
-    InputObjectMethod,
-    InputQueryMethod,
-};
 use alloc::{
-    boxed::Box,
-    collections::BTreeMap,
-    format,
     str::FromStr,
     string::{
         String,
         ToString,
     },
-    vec,
     vec::Vec,
+};
+use crate::{
+    query_method,
+    InputQueryMethod,
+    deserialize_query_method_args,
+    serialize_query_method_result,
+    object_method,
+    InputObjectMethod,
+    deserialize_object_method_args,
+    serialize_object_method_result,
 };
 
 pub fn query_method_wrapped(input: &[u8]) -> Vec<u8> {

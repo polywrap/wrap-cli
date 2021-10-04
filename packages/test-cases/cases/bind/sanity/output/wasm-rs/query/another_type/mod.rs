@@ -1,6 +1,5 @@
 use alloc::{
     boxed::Box,
-    collections::BTreeMap,
     format,
     str::FromStr,
     string::{
@@ -11,7 +10,6 @@ use alloc::{
     vec::Vec,
 };
 pub mod serialization;
-use crate::CustomType;
 use polywrap_wasm_rs::{
     BigInt,
     Read,
@@ -24,6 +22,8 @@ pub use serialization::{
     serialize_another_type,
     write_another_type,
 };
+
+use crate::CustomType;
 
 #[derive(Clone, Debug)]
 pub struct AnotherType {

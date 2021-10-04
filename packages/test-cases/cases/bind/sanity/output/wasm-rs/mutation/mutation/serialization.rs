@@ -1,7 +1,4 @@
 use alloc::{
-    boxed::Box,
-    collections::BTreeMap,
-    format,
     str::FromStr,
     string::{
         String,
@@ -10,23 +7,21 @@ use alloc::{
     vec,
     vec::Vec,
 };
-use crate::{
-    get_custom_enum_value,
-    sanitize_custom_enum_value,
-    AnotherType,
-    CustomEnum,
-};
-use core::convert::TryFrom;
 use polywrap_wasm_rs::{
-    BigInt,
     Context,
     Read,
     ReadDecoder,
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON,
 };
+
+use crate::{
+    CustomEnum,
+    get_custom_enum_value,
+    sanitize_custom_enum_value,
+};
+use crate::AnotherType;
 
 #[derive(Clone, Debug)]
 pub struct InputMutationMethod {

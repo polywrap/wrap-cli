@@ -2,9 +2,9 @@
 
 extern crate alloc;
 
-pub mod another_type;
 pub mod common;
 pub mod entry;
+pub mod another_type;
 pub use another_type::AnotherType;
 pub mod custom_type;
 pub use custom_type::CustomType;
@@ -16,6 +16,7 @@ pub use custom_enum::{
     CustomEnum,
 };
 pub mod imported;
+pub use imported::test_import_object::TestImportObject;
 pub use imported::test_import_another_object::TestImportAnotherObject;
 pub use imported::test_import_enum::{
     get_test_import_enum_key,
@@ -23,17 +24,16 @@ pub use imported::test_import_enum::{
     sanitize_test_import_enum_value,
     TestImportEnum,
 };
-pub use imported::test_import_mutation::TestImportMutation;
-pub use imported::test_import_object::TestImportObject;
 pub use imported::test_import_query::TestImportQuery;
+pub use imported::test_import_mutation::TestImportMutation;
 pub mod mutation;
 pub use mutation::{
     deserialize_mutation_method_args,
-    deserialize_object_method_args,
-    mutation_method_wrapped,
-    object_method_wrapped,
     serialize_mutation_method_result,
-    serialize_object_method_result,
+    mutation_method_wrapped,
     InputMutationMethod,
+    deserialize_object_method_args,
+    serialize_object_method_result,
+    object_method_wrapped,
     InputObjectMethod,
 };
