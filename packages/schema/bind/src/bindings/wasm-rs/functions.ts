@@ -273,10 +273,8 @@ const toWasmArray = (type: string, nullable: boolean): string => {
 };
 
 const applyNullable = (type: string, nullable: boolean): string => {
-  if (nullable && !type.includes("Box")) {
+  if (nullable) {
     return `Option<${type}>`;
-  } else if (nullable && type.includes("Box")) {
-    return `Option<Box<${type}>>`;
   } else {
     return type;
   }

@@ -36,8 +36,12 @@ RUN cargo install toml-cli
 
 # Link any local packages
 RUN PACKAGE_NAME=polywrap-wasm-rs; \
-    toml set ./mutation/Cargo.toml dependencies.$PACKAGE_NAME.path ../linked-packages/$PACKAGE_NAME > ./mutation/Cargo.toml && \
-    toml set ./query/Cargo.toml dependencies.$PACKAGE_NAME.path ../linked-packages/$PACKAGE_NAME > ./query/Cargo.toml && \
+    toml set ./mutation/Cargo.toml dependencies.$PACKAGE_NAME.path /linked-packages/$PACKAGE_NAME > ./mutation/Cargo-local.toml && \
+    rm -rf ./mutation/Cargo.toml && \
+    mv ./mutation/Cargo-local.toml ./mutation/Cargo.toml && \
+    toml set ./query/Cargo.toml dependencies.$PACKAGE_NAME.path /linked-packages/$PACKAGE_NAME > ./query/Cargo-local.toml && \
+    rm -rf ./query/Cargo.toml && \
+    mv ./query/Cargo-local.toml ./query/Cargo.toml && \
     true
 
 # Remove any Cargo.lock files

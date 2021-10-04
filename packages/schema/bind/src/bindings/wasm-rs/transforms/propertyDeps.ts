@@ -65,18 +65,15 @@ export function propertyDeps(): TypeInfoTransforms {
             }
           };
 
-          // if (def.type === "BigInt") {
-          //   appendUnique({
-          //     crate: "num_bigint",
-          //     type: "BigInt",
-          //     isEnum: false,
-          //   });
-          // } else {
-          appendUnique({
-            crate: "crate",
-            type: def.type,
-            isEnum: !!def.enum
-          });
+          if (def.type === "BigInt") {
+            return array;
+          } else {
+            appendUnique({
+              crate: "super",
+              type: def.type,
+              isEnum: !!def.enum
+            });
+          }
 
           return array;
         };

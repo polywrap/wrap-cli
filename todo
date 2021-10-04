@@ -4,3 +4,6 @@
 * 3. full test coverage
 
 * [DONE]   4. Handle JSON types in MsgPack, Test-Cases, and Schema Bindings
+
+* Add logic for detecting circular object properties, add a "circular" flag if they are
+* * Remove needless boxes for non-circular object props
