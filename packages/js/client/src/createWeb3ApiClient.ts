@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prefer-const */
 
-import { Web3ApiClient, ClientConfig } from "./Web3ApiClient";
+import { Web3ApiClient } from "./Web3ApiClient";
 import { PluginConfigs, modules, uris } from "./pluginConfigs";
 
-import { PluginRegistration } from "@web3api/core-js";
+import { PluginRegistration, ClientConfig } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
 export { PluginConfigs };

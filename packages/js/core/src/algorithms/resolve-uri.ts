@@ -26,14 +26,19 @@ export const resolveUri = Tracer.traceFunc(
     interfaces: readonly InterfaceImplementations<Uri>[],
     createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
     createApi: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) => Api,
-    id: string,
+    id?: string,
     noValidate?: boolean
   ): Promise<Api> => {
-    const invokeContext = client.getInvokeContext(id);
+    let finalRedirects = redirects;
+    if (id) {
+      const invokeContext = client.getInvokeContext(id);
+      if (invokeContext.config.redirects) {
+        finalRedirects = invokeContext.config.redirects;
+      }
+    }
 
-    const finalRedirects = invokeContext.redirects
-      ? invokeContext.redirects
-      : redirects;
+
+    console.log("final redirects: ", JSON.stringify(finalRedirects, null, 2))
     const finalRedirectedUri = applyRedirects(uri, finalRedirects);
 
     const plugin = findPluginPackage(finalRedirectedUri, plugins);
@@ -52,10 +57,13 @@ export const resolveUri = Tracer.traceFunc(
       finalRedirects
     );
 
+    let clientInstance = client;
+    if (id) clientInstance = wrapClient(client, id);
+
     return await resolveUriWithUriResolvers(
       finalRedirectedUri,
       uriResolverImplementations,
-      wrapClient(client, id),
+      clientInstance,
       createApi,
       noValidate
     );

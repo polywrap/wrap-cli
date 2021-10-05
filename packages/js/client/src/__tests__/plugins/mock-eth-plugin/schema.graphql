@@ -1,0 +1,17 @@
+type Connection {
+  node: String
+  networkNameOrChainId: String
+}
+
+type Query {
+  callContractView(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Connection
+  ): String!
+}
+
+type Mutation {
+  deployContract(connection: Connection): String!
+}

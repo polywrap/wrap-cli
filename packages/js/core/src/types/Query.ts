@@ -1,4 +1,4 @@
-import { Uri, UriRedirect, InvokeApiOptions } from "./";
+import { Uri, InvokeApiOptions, ClientConfig } from "./";
 
 import { Tracer } from "@web3api/tracing-js";
 import { DocumentNode } from "graphql";
@@ -35,9 +35,9 @@ export interface QueryApiOptions<
   variables?: TVariables;
 
   /**
-   * Custom redirects valid only in this query call.
+   * Override the client's config for all invokes within this query
    */
-  redirects?: UriRedirect<string>[];
+  overrides?: ClientConfig;
 
   /**
    * Query id used to track query context data set internally.

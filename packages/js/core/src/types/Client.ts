@@ -6,6 +6,8 @@ import {
   Uri,
   InvokeApiOptions,
   QueryApiOptions,
+  PluginRegistration,
+  InterfaceImplementations,
 } from "./";
 import { ManifestType, AnyManifest } from "../manifest";
 import { SubscribeOptions } from "./Subscription";
@@ -20,7 +22,13 @@ export interface GetFileOptions {
 }
 
 export interface InvokeContext {
-  readonly redirects: UriRedirect<Uri>[];
+  readonly config: ClientConfig<Uri>;
+}
+
+export interface ClientConfig<TUri = string> {
+  redirects?: UriRedirect<TUri>[];
+  plugins?: PluginRegistration<TUri>[];
+  interfaces?: InterfaceImplementations<TUri>[];
 }
 
 export interface GetImplementationsOptions {

@@ -1,5 +1,4 @@
-import { Uri } from ".";
-import { UriRedirect } from "./UriRedirect";
+import { ClientConfig, Uri } from ".";
 
 export type InvokableModules = "query" | "mutation";
 
@@ -37,7 +36,7 @@ export interface InvokeApiOptions<TUri extends Uri | string = string> {
   /**
    * Custom redirects valid only during current invoke.
    */
-  redirects?: UriRedirect<Uri>[];
+  overrides?: ClientConfig<Uri>;
 
   /**
    * Invoke id used to track query context data set internally.

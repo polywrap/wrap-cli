@@ -1,0 +1,18 @@
+when would you set query-time redirects?
+- dApp = client.query(uri, query, args, redirects)
+  * dApp = client.invoke(uri, module, method, args, redirects)
+
+where do we generate an ID?
+- query ID
+  - invoke ID
+
+clientOverrides: Record<UUID, overrides: ClientConfig>
+
+query({
+  ...,
+  config: {
+    
+  }
+}) & invoke()
+- if id is provided
+- - use the overrides at that ID

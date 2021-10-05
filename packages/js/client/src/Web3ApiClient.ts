@@ -33,17 +33,13 @@ import {
   sanitizeUriRedirects,
   InvokeContext,
   wrapClient,
+  ClientConfig,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
 export { WasmWeb3Api };
 
-const DEFAULT_CONTEXT_ID = "default";
-
-export interface ClientConfig<TUri = string> {
-  redirects?: UriRedirect<TUri>[];
-  plugins?: PluginRegistration<TUri>[];
-  interfaces?: InterfaceImplementations<TUri>[];
+export interface Web3ApiClientConfig<TUri = string> extends ClientConfig<TUri> {
   tracingEnabled?: boolean;
 }
 
@@ -53,16 +49,15 @@ export class Web3ApiClient implements Client {
   // and handle cases where the are multiple jumps. For example, if
   // A => B => C, then the cache should have A => C, and B => C.
   private _apiCache: ApiCache = new Map<string, Api>();
-  private _config: Required<ClientConfig<Uri>> = {
+  private _config: Required<Web3ApiClientConfig<Uri>> = {
     redirects: [],
     plugins: [],
     interfaces: [],
     tracingEnabled: false,
   };
+  private _overrides: Map<string, InvokeContext> = new Map();
 
-  private _invokeContextMap = new Map<string, InvokeContext>();
-
-  constructor(config?: ClientConfig) {
+  constructor(config?: Web3ApiClientConfig) {
     try {
       this.tracingEnabled(!!config?.tracingEnabled);
 
@@ -119,7 +114,7 @@ export class Web3ApiClient implements Client {
   }
 
   public getInvokeContext(id: string): InvokeContext {
-    const context = this._invokeContextMap.get(id);
+    const context = this._overrides.get(id);
     if (!context) {
       throw new Error(`No invoke context found with id: ${id}`);
     }
@@ -150,12 +145,24 @@ export class Web3ApiClient implements Client {
       ...options,
       uri: this._toUri(options.uri),
     };
-    let result: QueryApiResult<TData>;
 
-    const { id: queryId, shouldClearContext } = this.setInvokeContext(
-      options.id,
-      options.redirects ? sanitizeUriRedirects(options.redirects) : undefined
-    );
+    let result: QueryApiResult<TData>;
+    // let overwrittenConfig: ClientConfig<Uri> | undefined;
+
+    // This will allow us to also receive custom plugins + interfaces
+    // if (options.overrides) {
+    //   const overwrittenRedirects = options.overrides.redirects;
+    //   if (overwrittenRedirects) {
+    //     overwrittenConfig = {
+    //       redirects: sanitizeUriRedirects(overwrittenRedirects),
+    //     };
+    //   }
+    // }
+
+    // const { id: queryId, shouldClearContext } = this.setInvokeContext(
+    //   options.id,
+    //   overwrittenConfig
+    // );
 
     const run = Tracer.traceFunc(
       "Web3ApiClient: query",
@@ -183,6 +190,7 @@ export class Web3ApiClient implements Client {
               ...queryInvocations[invocationName],
               uri: queryInvocations[invocationName].uri,
               decode: true,
+              // id: queryId,
             }).then((result) => ({
               name: invocationName,
               result,
@@ -224,15 +232,21 @@ export class Web3ApiClient implements Client {
       }
     }
 
-    if (shouldClearContext) {
-      this.clearInvokeContext(queryId);
-    }
+    // if (shouldClearContext) {
+    //   this.clearInvokeContext(queryId);
+    // }
     return result;
   }
 
   public async invoke<TData = unknown, TUri extends Uri | string = string>(
     options: InvokeApiOptions<TUri>
   ): Promise<InvokeApiResult<TData>> {
+
+    const { id: invokeId, shouldClearContext } = this.setInvokeContext(
+      options.id,
+      options.overrides
+    );
+
     const typedOptions: InvokeApiOptions<Uri> = {
       ...options,
       uri: this._toUri(options.uri),
@@ -243,17 +257,13 @@ export class Web3ApiClient implements Client {
       async (
         options: InvokeApiOptions<Uri>
       ): Promise<InvokeApiResult<TData>> => {
-        const { id: invokeId, shouldClearContext } = this.setInvokeContext(
-          options.id,
-          options.redirects
-        );
-
-        const api = await this._loadWeb3Api(options.uri);
+        const api = await this._loadWeb3Api(options.uri, invokeId);
 
         const result = (await api.invoke(
           options,
-          wrapClient(this, invokeId) as Client
+          wrapClient(this, invokeId)
         )) as TData;
+
         if (shouldClearContext) {
           this.clearInvokeContext(invokeId);
         }
@@ -409,10 +419,7 @@ export class Web3ApiClient implements Client {
     return run();
   }
 
-  private async _loadWeb3Api(
-    uri: Uri,
-    invokeContextId = DEFAULT_CONTEXT_ID
-  ): Promise<Api> {
+  private async _loadWeb3Api(uri: Uri, invokeContextId?: string): Promise<Api> {
     const typedUri = typeof uri === "string" ? new Uri(uri) : uri;
 
     const run = Tracer.traceFunc(
@@ -473,50 +480,39 @@ export class Web3ApiClient implements Client {
   }
 
   /**
-   * Sets invoke context based on 3 cases:
-   *  1. id sent and no query time redirects sent -> use existing invoke context
-   *  2. id sent and query time redirects specified -> create new subinvoke context
-   *  3. id not sent -> create new parent invoke context
+   * Sets invoke context based on 2 cases:
+   *  1. id sent andconfig sent -> use existing invoke context
+   *  2. id not sent -> create new parent invoke context
    */
   private setInvokeContext(
     id?: string,
-    redirects?: UriRedirect<Uri>[]
+    config?: ClientConfig<Uri>
   ): {
     id: string;
     shouldClearContext: boolean;
   } {
-    if (id && (!redirects || !redirects.length)) {
+    if (id && !config) {
       return {
-        id: id,
+        id,
         shouldClearContext: false,
-      };
-    } else if (id && redirects?.length) {
-      const subInvokeId = uuid();
-      const parentContext = this.getInvokeContext(id);
-      redirects.push(...parentContext.redirects);
-
-      this._invokeContextMap.set(subInvokeId, {
-        redirects: redirects,
-      });
-      return {
-        id: subInvokeId,
-        shouldClearContext: true,
       };
     }
 
     const invokeId = uuid();
 
-    let invokeRedirects: UriRedirect<Uri>[];
-    if (redirects && redirects.length) {
-      redirects.push(...(this._config.redirects as UriRedirect<Uri>[]));
-      invokeRedirects = redirects;
-    } else {
-      invokeRedirects = this._config.redirects as UriRedirect<Uri>[];
+    const invokeRedirects = this.redirects() as UriRedirect<Uri>[];
+    if (config?.redirects) {
+      invokeRedirects.push(...config.redirects);
     }
 
-    this._invokeContextMap.set(invokeId, {
-      redirects: invokeRedirects,
+    this._overrides.set(invokeId, {
+      config: {
+        redirects: invokeRedirects,
+        plugins: this.plugins() as PluginRegistration<Uri>[],
+        interfaces: this.interfaces() as InterfaceImplementations<Uri>[],
+      },
     });
+
     return {
       id: invokeId,
       shouldClearContext: true,
@@ -524,6 +520,6 @@ export class Web3ApiClient implements Client {
   }
 
   private clearInvokeContext(id: string): void {
-    this._invokeContextMap.delete(id);
+    this._overrides.delete(id);
   }
 }
