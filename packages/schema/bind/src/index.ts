@@ -5,6 +5,7 @@ import { getRelativePath, findCommonTypes, extendCommonTypes } from "./utils";
 import { transformTypeInfo, TypeInfo } from "@web3api/schema-parse";
 
 export * from "./utils";
+export { toTypescript } from "./bindings";
 
 export type TargetLanguage = "wasm-as" | "plugin-ts";
 

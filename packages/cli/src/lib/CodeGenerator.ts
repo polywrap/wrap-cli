@@ -3,11 +3,12 @@ import { Project } from "./project";
 import { step, withSpinner, isTypescriptFile, loadTsNode } from "./helpers";
 import { intlMsg } from "./intl";
 
-import { TypeInfo } from "@web3api/schema-parse";
+import { TypeInfo, toGraphQLType } from "@web3api/schema-parse";
 import {
   OutputDirectory,
   writeDirectory,
   bindSchema,
+  toTypescript,
 } from "@web3api/schema-bind";
 import path from "path";
 import fs, { readFileSync } from "fs";
@@ -163,6 +164,8 @@ export class CodeGenerator {
     let content = Mustache.render(template.toString(), {
       ...types,
       schema: this._schema,
+      toGraphQLType,
+      toTypescriptType: this.toTypescriptType,
     });
 
     content = `// ${intlMsg.lib_codeGenerator_templateNoModify()}
@@ -171,5 +174,13 @@ ${content}
 `;
 
     return content;
+  }
+
+  private toTypescriptType() {
+    return (value: string, render: (template: string) => string) => {
+      const type = render(value);
+      const tsType = toTypescript()(type, (str) => str);
+      return tsType.replace("Types.", "");
+    };
   }
 }

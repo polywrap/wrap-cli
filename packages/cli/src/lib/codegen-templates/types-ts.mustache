@@ -1,0 +1,65 @@
+export type UInt = number;
+export type UInt8 = number;
+export type UInt16 = number;
+export type UInt32 = number;
+export type Int = number;
+export type Int8 = number;
+export type Int16 = number;
+export type Int32 = number;
+export type Bytes = Uint8Array;
+export type BigInt = string;
+export type Json = string;
+export type String = string;
+export type Boolean = boolean;
+
+{{#objectTypes}}
+export interface {{type}} {
+  {{#properties}}
+  {{name}}{{^required}}?{{/required}}: {{#toTypescriptType}}{{type}}{{#required}}!{{/required}}{{/toTypescriptType}};
+  {{/properties}}
+}
+
+{{/objectTypes}}
+{{#enumTypes}}
+export enum {{type}}Enum {
+  {{#constants}}
+  {{.}},
+  {{/constants}}
+}
+
+export type {{type}}String =
+  {{#constants}}
+  | "{{.}}"
+  {{/constants}}
+
+export type {{type}} = {{type}}Enum | {{type}}String;
+
+{{/enumTypes}}
+/// Imported Objects START ///
+
+{{#importedObjectTypes}}
+/* URI: "{{uri}}" */
+export interface {{type}} {
+  {{#properties}}
+  {{name}}{{^required}}?{{/required}}: {{#toTypescriptType}}{{type}}{{#required}}!{{/required}}{{/toTypescriptType}};
+  {{/properties}}
+}
+
+{{/importedObjectTypes}}
+{{#importedEnumTypes}}
+/* URI: "{{uri}}" */
+export enum {{type}}Enum {
+  {{#constants}}
+  {{.}},
+  {{/constants}}
+}
+
+export type {{type}}String =
+  {{#constants}}
+  | "{{.}}"
+  {{/constants}}
+
+export type {{type}} = {{type}}Enum | {{type}}String;
+
+{{/importedEnumTypes}}
+/// Imported Objects END ///

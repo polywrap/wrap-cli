@@ -16,6 +16,8 @@ import Mustache from "mustache";
 import { readFileSync } from "fs";
 import path from "path";
 
+export { toTypescript } from "./functions";
+
 export function generateBinding(
   typeInfo: TypeInfo,
   schema?: string

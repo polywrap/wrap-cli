@@ -4,6 +4,8 @@ import * as PluginTs from "./plugin-ts";
 
 import { TypeInfo } from "@web3api/schema-parse";
 
+export { toTypescript } from "./plugin-ts";
+
 export function generateBinding(
   language: TargetLanguage,
   typeInfo: TypeInfo,
