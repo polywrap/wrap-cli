@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.45
+## Features
+* `@web3api/tracing-js`: Support service name configuration.
+
 # Web3API 0.0.1-prealpha.44
 ## Features
 * `@web3api/client-js`: Use Fleek's IPFS gateway.
