@@ -15,7 +15,7 @@ export type Boolean = boolean;
 {{#objectTypes}}
 export interface {{type}} {
   {{#properties}}
-  {{name}}{{^required}}?{{/required}}: {{#toTypescriptType}}{{type}}{{#required}}!{{/required}}{{/toTypescriptType}};
+  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
 }
 
@@ -41,7 +41,7 @@ export type {{type}} = {{type}}Enum | {{type}}String;
 /* URI: "{{uri}}" */
 export interface {{type}} {
   {{#properties}}
-  {{name}}{{^required}}?{{/required}}: {{#toTypescriptType}}{{type}}{{#required}}!{{/required}}{{/toTypescriptType}};
+  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
 }
 
