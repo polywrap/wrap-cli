@@ -341,13 +341,14 @@ export class Compiler {
       ? path.join(buildManifestDir, buildManifest?.docker?.dockerfile)
       : path.join(buildManifestDir, "Dockerfile");
 
+    // Cache all linked packages
     await project.cacheBuildManifestLinkedPackages();
+
+    // Cache the default template is in the cached .w3/build/env folder
+    await project.cacheDefaultBuildManifestFiles();
 
     // If the dockerfile path isn't provided, generate it
     if (!buildManifest?.docker?.dockerfile) {
-      // Make sure the default template is in the cached .w3/build/env folder
-      await project.cacheDefaultBuildManifestFiles();
-
       dockerfile = generateDockerfile(
         project.getCachePath("build/env/Dockerfile.mustache"),
         buildManifest.config || {}

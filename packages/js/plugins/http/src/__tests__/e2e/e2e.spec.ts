@@ -1,6 +1,6 @@
 import { Web3ApiClient } from "@web3api/client-js"
 import { httpPlugin } from "../..";
-import { Response } from "../../w3";
+import { Response, ResponseTypeEnum } from "../../w3";
 import nock from "nock"
 
 const defaultReplyHeaders = {
@@ -48,7 +48,8 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.errors).toBeUndefined()
       expect(response.data?.get.status).toBe(200)
       // expect(response.data?.get.statusText).toBe("OK")
-      expect(response.data?.get.body).toBe('{data: "test-response"}')
+      expect(response.data?.get.type).toBe(ResponseTypeEnum.TEXT);
+      expect(response.data?.get.body?.stringBody).toBe('{data: "test-response"}')
       expect(response.data?.get.headers?.length).toEqual(2) // default reply headers
     });
 
@@ -76,7 +77,8 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.errors).toBeUndefined()
       expect(response.data?.get.status).toBe(200)
       // expect(response.data?.get.statusText).toBe("OK")
-      expect(response.data?.get.body).toBe(Buffer.from('{data: "test-response"}').toString('base64'))
+      expect(response.data?.get.type).toBe(ResponseTypeEnum.TEXT);
+      expect(response.data?.get.body?.stringBody).toBe(Buffer.from('{data: "test-response"}').toString('base64'))
       expect(response.data?.get.headers?.length).toEqual(2) // default reply headers
     });
 
@@ -107,7 +109,8 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.errors).toBeUndefined()
       expect(response.data?.get.status).toBe(200)
       // expect(response.data?.get.statusText).toBe("OK")
-      expect(response.data?.get.body).toBe('{data: "test-response"}')
+      expect(response.data?.get.type).toBe(ResponseTypeEnum.TEXT);
+      expect(response.data?.get.body?.stringBody).toBe('{data: "test-response"}')
       expect(response.data?.get.headers).toEqual([
         { key: "x-response-header", value: "resp-foo" },
         { key: "access-control-allow-origin", value: "*" },
@@ -183,7 +186,7 @@ describe("e2e tests for HttpPlugin", () => {
       console.log(response.data);
 
       expect(response.data?.get.status).toBe(500);
-      expect(response.data?.get.body).toBe("");
+      expect(response.data?.get.body?.stringBody).toBe("");
       expect(response.data?.get.headers).toStrictEqual([
         {key: "access-control-allow-origin", value: "*"},
         {key: "access-control-allow-credentials", value: "true"},
@@ -259,7 +262,7 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.errors).toBeUndefined()
       expect(response.data?.post.status).toBe(200)
       // expect(response.data?.get.statusText).toBe("OK")
-      expect(response.data?.post.body).toBe('{data: "test-response"}')
+      expect(response.data?.post.body?.stringBody).toBe('{data: "test-response"}')
       expect(response.data?.post.headers?.length).toEqual(2) // default reply headers
     });
 
@@ -291,7 +294,7 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.errors).toBeUndefined()
       expect(response.data?.post.status).toBe(200)
       // expect(response.data?.get.statusText).toBe("OK")
-      expect(response.data?.post.body).toBe(Buffer.from('{data: "test-response"}').toString('base64'))
+      expect(response.data?.post.body?.stringBody).toBe(Buffer.from('{data: "test-response"}').toString('base64'))
       expect(response.data?.post.headers?.length).toEqual(2) // default reply headers
     });
 
@@ -312,7 +315,7 @@ describe("e2e tests for HttpPlugin", () => {
             post(
               url: "http://www.example.com/api"
               request: {
-                responseType: 1
+                responseType: ${ResponseTypeEnum.BINARY}
                 body: {
                   formDataBody: {
                     data: [{key: "testfile.txt", data: "Lorem ipsum"}]
@@ -327,8 +330,7 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data).toBeDefined()
       expect(response.errors).toBeUndefined()
       expect(response.data?.post.status).toBe(200)
-      // expect(response.data?.get.statusText).toBe("OK")
-      // expect(response.data?.post.body).toBe(Buffer.from('{data: "test-response"}').toString('base64'))
+      expect(response.data?.post.body?.rawBody).toBe(Buffer.from('{data: "test-response"}'))
       expect(response.data?.post.headers?.length).toEqual(2) // default reply headers
     });
 
@@ -363,7 +365,7 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.errors).toBeUndefined()
       expect(response.data?.post.status).toBe(200)
       // expect(response.data?.get.statusText).toBe("OK")
-      expect(response.data?.post.body).toBe('{data: "test-response"}')
+      expect(response.data?.post.body?.stringBody).toBe('{data: "test-response"}')
       expect(response.data?.post.headers).toEqual([
         { key: "x-response-header", value: "resp-foo" },
         { key: "access-control-allow-origin", value: "*" },

@@ -9,7 +9,8 @@ import FormData from "form-data";
  * @param axiosResponse
  */
 export function fromAxiosResponse(
-  axiosResponse: AxiosResponse<unknown>
+  axiosResponse: AxiosResponse<unknown>,
+  responseType?: ResponseTypeEnum
 ): Response {
   const response = {
     status: axiosResponse.status,
@@ -17,8 +18,10 @@ export function fromAxiosResponse(
     headers: mapObjectToHeadersArray(axiosResponse.headers),
   };
 
-  // encode bytes as base64 string if response is array buffer
-  if (axiosResponse.config.responseType == "arraybuffer") {
+  if (
+    axiosResponse.config.responseType == "arraybuffer" ||
+    axiosResponse.config.responseType === "blob"
+  ) {
     if (!Buffer.isBuffer(axiosResponse.data)) {
       throw Error(
         "HttpPlugin: Axios response data malformed, must be a buffer. Type: " +
@@ -26,22 +29,55 @@ export function fromAxiosResponse(
       );
     }
 
+    const bodyType = responseType ? responseType : ResponseTypeEnum.BUFFER;
+
     return {
-      ...response,
-      body: Buffer.from(axiosResponse.data).toString("base64"),
+      data: {
+        ...response,
+        type: responseType,
+        body: {
+          buffer: bodyType === ResponseTypeEnum.BUFFER ? axiosResponse.data : undefined,
+          text: bodyType === ResponseTypeEnum.TEXT ? axiosResponse.data.toString("utf-8") : undefined,
+          json: bodyType === ResponseTypeEnum.JSON ? JSON.stringify(axiosResponse.data) : undefined
+        },
+      }
     };
+  } else if (axiosResponse.config.responseType === "text") {
+    
+  } else if (axiosResponse.config.responseType === "json") {
+    
+  } else if (axiosResponse.config.responseType === "document") {
+    
+  } else if (axiosResponse.config.responseType === "stream") {
+    
   } else {
+    // TODO: throw
     switch (typeof axiosResponse.data) {
       case "string":
+        return {
+          data: {
+            ...response,
+            type: ResponseTypeEnum.TEXT,
+            body: {
+              text: axiosResponse.data,
+            },
+          },
+        };
       case "undefined":
         return {
-          ...response,
-          body: axiosResponse.data,
+          data: {
+            ...response
+          },
         };
       default:
         return {
-          ...response,
-          body: JSON.stringify(axiosResponse.data),
+          data: {
+            ...response,
+            type: ResponseTypeEnum.TEXT,
+            body: {
+              text: JSON.stringify(axiosResponse.data)
+            },
+          },
         };
     }
   }
@@ -62,18 +98,26 @@ const TIMEOUT_ERROR_CODE = "ECONNABORTED"
 export function fromAxiosError(e: Error | AxiosError): Response {
   if(axios.isAxiosError(e)) {
     if(e.response) {
+      const responseType = typeof e.response?.data === "string"
+        ? ResponseTypeEnum.TEXT
+        : ResponseTypeEnum.BINARY;
+
       return {
         status: e.response.status,
         statusText: e.response.statusText,
         headers: mapObjectToHeadersArray(e.response.headers),
-        body: e.response.data,
+        type: responseType,
+        body: {
+          stringBody: responseType === ResponseTypeEnum.TEXT ? e.response.data as string : undefined,
+          rawBody: responseType === ResponseTypeEnum.BINARY ? e.response.data as Uint8Array : undefined
+        }
       }
     } else {
       return {
         error: {
           errorCode: e.code ? e.code : DEFAULT_ERROR_CODE,
           errorMessage: e.message ? e.message : DEFAULT_ERROR_MESSAGE,
-          timeoutExcided: e.code == TIMEOUT_ERROR_CODE ? true : false
+          timeoutExcided: e.code == TIMEOUT_ERROR_CODE ? true : false,
         }
       }
     }
@@ -102,6 +146,7 @@ export function toAxiosRequest(
 
   let responseType: "text" | "arraybuffer" = "text";
 
+  // TODO
   switch (request.responseType) {
     case "BINARY":
     case ResponseTypeEnum.BINARY:

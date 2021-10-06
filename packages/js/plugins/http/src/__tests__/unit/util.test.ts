@@ -2,7 +2,7 @@ import { fromAxiosResponse, toAxiosRequest } from "../../util";
 import { ResponseTypeEnum } from "../../w3";
 
 describe("converting axios response", () => {
-  test("response type: text", () => {
+  test.only("response type: text", () => {
     const response = fromAxiosResponse({
       status: 200,
       statusText: "Ok",

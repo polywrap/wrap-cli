@@ -1,11 +1,19 @@
-type Header {
-  key: String!
-  value: String!
+type Query {
+  get(url: String!, request: Request): Response
+  post(url: String!, request: Request): Response
 }
 
-type UrlParam {
-  key: String!
-  value: String!
+type Response {
+  data: ResponseData
+  error: ResponseError
+}
+
+type ResponseData {
+  status: UInt32!
+  statusText: String!
+  headers: [Header!]
+  type: ResponseType
+  body: ResponseBody
 }
 
 type ResponseError {
@@ -14,31 +22,40 @@ type ResponseError {
   timeoutExcided: Boolean!
 }
 
-type Response {
-  status: UInt32
-  statusText: String
-  headers: [Header!]
-  body: String
-  error: ResponseError
+enum ResponseType {
+  TEXT
+  BUFFER
+  JSON
+}
+
+type ResponseBody {
+  text: String
+  buffer: Bytes
+  json: JSON
 }
 
 type Request {
   headers: [Header!]
   urlParams: [UrlParam!]
   responseType: ResponseType!
-  body: Body
+  data: RequestData
   timeout: UInt32
 }
 
-enum ResponseType {
-  TEXT
-  BINARY
+type RequestData {
+  text: String
+  buffer: Bytes
+  form: FormData
 }
 
-type Body {
-  stringBody: String
-  rawBody: Bytes
-  formDataBody: FormData
+type Header {
+  key: String!
+  value: JSON!
+}
+
+type UrlParam {
+  key: String!
+  value: JSON!
 }
 
 type FormData {
@@ -55,9 +72,4 @@ type FormDataOptions {
   contentType: String
   fileName: String
   filePath: String
-}
-
-type Query {
-  get(url: String!, request: Request): Response
-  post(url: String!, request: Request): Response
 }

@@ -91,8 +91,8 @@ describe("test http plugin", () => {
         { key: "Content-Type", value: "application/json; charset=utf-8" },
       ]);
       expect(response.body).toBeTruthy();
-      if (response.body) {
-        expect(Buffer.from(response.body, 'base64').toString()).toBe("{result: 1001}");
+      if (response.body?.rawBody) {
+        expect(response.body?.rawBody).toBe(Buffer.from("{result: 1001}"));
       }
     });
   });
@@ -174,8 +174,8 @@ describe("test http plugin", () => {
         { key: "Content-Type", value: "application/json; charset=utf-8" },
       ]);
       expect(response.body).toBeTruthy();
-      if (response.body) {
-        expect(Buffer.from(response.body, 'base64').toString()).toBe("{response: 1001}");
+      if (response.body?.rawBody) {
+        expect(response.body.rawBody).toBe(Buffer.from("{response: 1001}"));
       }
     });
   });

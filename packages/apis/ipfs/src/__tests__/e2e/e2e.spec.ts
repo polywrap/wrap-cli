@@ -23,14 +23,23 @@ jest.setTimeout(360000);
 describe("e2e", () => {
 
   let client: Web3ApiClient;
+  let ipfsProvider: string;
   let ensUri: string;
   let ipfsUri: string;
 
   beforeAll(async () => {
     // Create Client
-    const { ipfs, ensAddress } = await initTestEnvironment();
+    const { ethereum, ipfs, ensAddress } = await initTestEnvironment();
 
     client = await createWeb3ApiClient({
+      ethereum: {
+        networks: {
+          testnet: {
+            provider: ethereum
+          }
+        },
+        defaultNetwork: "testnet"
+      },
       ipfs: {
         provider: ipfs
       },
@@ -41,15 +50,14 @@ describe("e2e", () => {
       },
     });
 
+    ipfsProvider = ipfs;
+
     // Deploy API
     const apiPath = path.join(__dirname, "/../../../");
-    console.log("building");
     const api = await buildAndDeployApi(apiPath, ipfs, ensAddress);
 
     // Cache the API's URI
-    console.log("set")
     ensUri = `/ens/testnet/${api.ensDomain}`;
-    console.log(ensUri);
     ipfsUri = `/ipfs/${api.ipfsCid}`;
   });
 
@@ -60,26 +68,61 @@ describe("e2e", () => {
   describe("Query", () => {
     it("catFile", async () => {
       const expected = fs.readFileSync(
-        `${__dirname}/../../../build/schema.graphql`
+        `${__dirname}/../../../build/schema.graphql`,
+        "utf-8"
       );
+      const decoder = new TextDecoder();
 
-      console.log("querying", ensUri)
-      const { data, errors } = await client.query<{
-        catFile: Uint8Array
-      }>({
-        uri: ensUri,
-        query: `
-          query {
-            catFile(
-              cid: "${ipfsUri}/schema.graphql"
-            )
-          }
-        `
-      });
+      {
+        const { data, errors } = await client.query<{
+          catFile: Uint8Array
+        }>({
+          uri: ensUri,
+          query: `
+            query {
+              catFile(
+                cid: "${ipfsUri}/schema.graphql"
+                ipfs: {
+                  provider: "${ipfsProvider}"
+                }
+              )
+            }
+          `
+        });
 
-      expect(errors).toBeFalsy();
-      expect(data).toBeTruthy();
-      expect(data?.catFile?.toString()).toBe(expected.toString());
+        expect(errors).toBeFalsy();
+        expect(data).toBeTruthy();
+        expect(
+          decoder.decode(data?.catFile?.buffer)
+        ).toBe(expected);
+      }
+      {
+        const { data, errors } = await client.query<{
+          catFile: Uint8Array
+        }>({
+          uri: ensUri,
+          query: `
+            query {
+              catFile(
+                cid: "${ipfsUri}/schema.graphql"
+                ipfs: {
+                  provider: "http://test.com"
+                  fallbackProviders: [
+                    "http://foo.com",
+                    "${ipfsProvider}"
+                  ]
+                }
+              )
+            }
+          `
+        });
+
+        expect(errors).toBeFalsy();
+        expect(data).toBeTruthy();
+        expect(
+          decoder.decode(data?.catFile?.buffer)
+        ).toBe(expected);
+      }
     });
 
     /*it("catFileToString", async () => {

@@ -1,0 +1,11 @@
+- Refactor the HTTP plugin, use JSON type
+- - finish refactor, need to handle all response types + conversions if needed
+- - ensure tests are updated
+- IPFS e2e w/ client test
+- "uri-resolver.core.web3api.eth" implementaton
+- release new graphql-schema-cycles package
+
+- Merge
+-> publish new graphql-cycles
+-> publish new http plugin
+-> merge this branch

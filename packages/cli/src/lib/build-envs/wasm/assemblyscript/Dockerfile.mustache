@@ -1,11 +1,6 @@
 FROM node:{{node_version}}-alpine as base
 
-RUN apk --no-cache --virtual build-dependencies add \
-    bash \
-    git \
-    openssh \
-    make \
-    g++
+RUN apk --no-cache --virtual add bash
 
 {{#web3api_linked_packages.length}}
 WORKDIR /linked-packages
@@ -23,7 +18,13 @@ COPY package.json .
 {{#web3api_linked_packages}}
 RUN npx json -I -f package.json -e "this.dependencies['{{name}}']='../linked-packages/{{name}}'"
 {{/web3api_linked_packages}}
-RUN yarn
+RUN apk add --no-cache --virtual yarn-dependencies \
+  make \
+  g++ \
+  python && \
+  yarn && \
+  yarn cache clean && \
+  apk del yarn-dependencies
 
 # Copy all manifest files
 {{#web3api_manifests}}
