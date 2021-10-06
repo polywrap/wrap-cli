@@ -21,10 +21,6 @@ export interface GetFileOptions {
   encoding?: "utf-8" | string;
 }
 
-export interface InvokeContext {
-  readonly config: ClientConfig<Uri>;
-}
-
 export interface ClientConfig<TUri = string> {
   redirects?: UriRedirect<TUri>[];
   plugins?: PluginRegistration<TUri>[];
@@ -39,7 +35,7 @@ export interface Client
   extends QueryHandler,
     SubscriptionHandler,
     InvokeHandler {
-  getInvokeContext: (id: string) => InvokeContext;
+  getInvokeContext: (id: string) => ClientConfig<Uri>;
   getSchema<TUri extends Uri | string>(uri: TUri): Promise<string>;
 
   getManifest<TUri extends Uri | string, TManifestType extends ManifestType>(

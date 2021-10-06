@@ -32,13 +32,11 @@ export const resolveUri = Tracer.traceFunc(
     let finalRedirects = redirects;
     if (id) {
       const invokeContext = client.getInvokeContext(id);
-      if (invokeContext.config.redirects) {
-        finalRedirects = invokeContext.config.redirects;
+      if (invokeContext.redirects && invokeContext.redirects.length) {
+        finalRedirects = invokeContext.redirects;
       }
     }
 
-
-    console.log("final redirects: ", JSON.stringify(finalRedirects, null, 2))
     const finalRedirectedUri = applyRedirects(uri, finalRedirects);
 
     const plugin = findPluginPackage(finalRedirectedUri, plugins);

@@ -31,7 +31,6 @@ import {
   sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
   sanitizeUriRedirects,
-  InvokeContext,
   wrapClient,
   ClientConfig,
 } from "@web3api/core-js";
@@ -55,7 +54,7 @@ export class Web3ApiClient implements Client {
     interfaces: [],
     tracingEnabled: false,
   };
-  private _overrides: Map<string, InvokeContext> = new Map();
+  private _overrides: Map<string, ClientConfig<Uri>> = new Map();
 
   constructor(config?: Web3ApiClientConfig) {
     try {
@@ -113,7 +112,7 @@ export class Web3ApiClient implements Client {
     this._config.tracingEnabled = enable;
   }
 
-  public getInvokeContext(id: string): InvokeContext {
+  public getInvokeContext(id: string): ClientConfig<Uri> {
     const context = this._overrides.get(id);
     if (!context) {
       throw new Error(`No invoke context found with id: ${id}`);
@@ -147,22 +146,22 @@ export class Web3ApiClient implements Client {
     };
 
     let result: QueryApiResult<TData>;
-    // let overwrittenConfig: ClientConfig<Uri> | undefined;
+    let overwrittenConfig: ClientConfig<Uri> | undefined;
 
     // This will allow us to also receive custom plugins + interfaces
-    // if (options.overrides) {
-    //   const overwrittenRedirects = options.overrides.redirects;
-    //   if (overwrittenRedirects) {
-    //     overwrittenConfig = {
-    //       redirects: sanitizeUriRedirects(overwrittenRedirects),
-    //     };
-    //   }
-    // }
+    if (options.overrides) {
+      const overwrittenRedirects = options.overrides.redirects;
+      if (overwrittenRedirects) {
+        overwrittenConfig = {
+          redirects: sanitizeUriRedirects(overwrittenRedirects),
+        };
+      }
+    }
 
-    // const { id: queryId, shouldClearContext } = this.setInvokeContext(
-    //   options.id,
-    //   overwrittenConfig
-    // );
+    const { id: queryId, shouldClearContext } = this.setInvokeContext(
+      options.id,
+      overwrittenConfig
+    );
 
     const run = Tracer.traceFunc(
       "Web3ApiClient: query",
@@ -190,7 +189,7 @@ export class Web3ApiClient implements Client {
               ...queryInvocations[invocationName],
               uri: queryInvocations[invocationName].uri,
               decode: true,
-              // id: queryId,
+              id: queryId,
             }).then((result) => ({
               name: invocationName,
               result,
@@ -232,16 +231,15 @@ export class Web3ApiClient implements Client {
       }
     }
 
-    // if (shouldClearContext) {
-    //   this.clearInvokeContext(queryId);
-    // }
+    if (shouldClearContext) {
+      this.clearInvokeContext(queryId);
+    }
     return result;
   }
 
   public async invoke<TData = unknown, TUri extends Uri | string = string>(
     options: InvokeApiOptions<TUri>
   ): Promise<InvokeApiResult<TData>> {
-
     const { id: invokeId, shouldClearContext } = this.setInvokeContext(
       options.id,
       options.overrides
@@ -506,11 +504,9 @@ export class Web3ApiClient implements Client {
     }
 
     this._overrides.set(invokeId, {
-      config: {
-        redirects: invokeRedirects,
-        plugins: this.plugins() as PluginRegistration<Uri>[],
-        interfaces: this.interfaces() as InterfaceImplementations<Uri>[],
-      },
+      redirects: invokeRedirects,
+      plugins: this.plugins() as PluginRegistration<Uri>[],
+      interfaces: this.interfaces() as InterfaceImplementations<Uri>[],
     });
 
     return {
