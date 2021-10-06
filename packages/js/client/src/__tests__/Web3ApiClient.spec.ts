@@ -63,6 +63,47 @@ describe("Web3ApiClient", () => {
     );
   };
 
+  const mockPlugin = () => {
+    class MockPlugin extends Plugin {
+      getModules(_client: Client): PluginModules {
+        return {
+          query: {
+            getData: async (_: unknown) => 100,
+          },
+          mutation: {
+            deployContract: (_: unknown): string => "0x100",
+          },
+        };
+      }
+    }
+
+    return {
+      factory: () => new MockPlugin(),
+      manifest: {
+        schema: `
+          type Query {
+            getData(
+              address: String!
+              connection: Connection
+            ): Int!
+          }
+          
+          type Mutation {
+            deployContract(
+              connection: Connection
+            ): String!
+          }
+          
+          type Connection {
+            node: String
+            networkNameOrChainId: String
+          }
+        `,
+        implements: [],
+      },
+    };
+  };
+
   it("default client config", () => {
     const client = new Web3ApiClient();
 
@@ -91,46 +132,46 @@ describe("Web3ApiClient", () => {
     ]);
   });
 
-  it("simple-storage with query time redirects", async () => {
-    class MockPlugin extends Plugin {
-      getModules(_client: Client): PluginModules {
-        return {
-          query: {
-            getData: async (_: unknown) => "100",
-          },
-          mutation: {
-            deployContract: (_: unknown): string => "0x100",
-          },
-        };
-      }
-    }
+  it("invoke simple-storage with custom redirects", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensAddress
+    );
 
-    const mockPlugin = () => ({
-      factory: () => new MockPlugin(),
-      manifest: {
-        schema: `
-          type Query {
-            getData(
-              address: String!
-              connection: Connection
-            ): Int!
-          }
-          
-          type Mutation {
-            deployContract(
-              connection: Connection
-            ): String!
-          }
-          
-          type Connection {
-            node: String
-            networkNameOrChainId: String
-          }
-        `,
-        implements: [],
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const redirects = [
+      {
+        from: new Uri(ensUri),
+        to: new Uri("w3://ens/mock.web3api.eth"),
+      },
+    ];
+
+    const client = await getClient({
+      plugins: [
+        {
+          uri: "w3://ens/mock.web3api.eth",
+          plugin: mockPlugin(),
+        },
+      ],
+    });
+
+    const result = await client.invoke({
+      uri: ensUri,
+      module: "mutation",
+      method: "deployContract",
+      input: {},
+      overrides: {
+        redirects,
       },
     });
 
+    expect(result.data).toBeTruthy();
+    expect(result.data).toBe("0x100");
+  });
+
+  it("simple-storage with query time redirects", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
@@ -195,7 +236,7 @@ describe("Web3ApiClient", () => {
 
     expect(get.errors).toBeFalsy();
     expect(get.data).toBeTruthy();
-    expect(get.data?.getData).toBe("100");
+    expect(get.data?.getData).toBe(100);
   });
 
   it("redirect registration", () => {

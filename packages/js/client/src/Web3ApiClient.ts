@@ -151,7 +151,8 @@ export class Web3ApiClient implements Client {
     // This will allow us to also receive custom plugins + interfaces
     if (options.overrides) {
       const overwrittenRedirects = options.overrides.redirects;
-      if (overwrittenRedirects) {
+      if (overwrittenRedirects && overwrittenRedirects.length) {
+        // eslint-disable-next-line
         overwrittenConfig = {
           redirects: sanitizeUriRedirects(overwrittenRedirects),
         };
@@ -498,7 +499,7 @@ export class Web3ApiClient implements Client {
 
     const invokeId = uuid();
 
-    const invokeRedirects = this.redirects() as UriRedirect<Uri>[];
+    const invokeRedirects = [...this.redirects()];
     if (config?.redirects) {
       invokeRedirects.push(...config.redirects);
     }
