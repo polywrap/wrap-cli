@@ -31,14 +31,6 @@ use alloc::{
     string::String,
 };
 
-// pub mod w3;
-// pub use w3::entry;
-// use w3::*;
-pub mod w3;
-pub use w3::*;
-pub use w3::query::*;
-pub use w3::test_object::*;
-
 pub fn method(input: InputMethod) -> String {
     format!("{}{}", input.arg.prop_a, input.arg.prop_b)
 }
