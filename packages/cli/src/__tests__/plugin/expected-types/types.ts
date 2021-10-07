@@ -1,6 +1,4 @@
 // @ts-noCheck
-import * as Types from "./";
-
 import {
   Client,
   InvokeApiResult
@@ -70,7 +68,7 @@ export interface Ethereum_TxReceipt {
   gasUsed: BigInt;
   logsBloom: String;
   transactionHash: String;
-  logs: Array<Types.Ethereum_Log>;
+  logs: Array<Ethereum_Log>;
   blockNumber: BigInt;
   blockHash: String;
   confirmations: UInt32;
@@ -98,7 +96,7 @@ export interface Ethereum_Log {
 export interface Ethereum_EventNotification {
   data: String;
   address: String;
-  log: Types.Ethereum_Log;
+  log: Ethereum_Log;
 }
 
 /// Imported Objects END ///
@@ -110,7 +108,7 @@ interface Ethereum_Query_Input_callContractView extends Record<string, unknown> 
   address: String;
   method: String;
   args?: Array<String> | null;
-  connection?: Types.Ethereum_Connection | null;
+  connection?: Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
@@ -118,8 +116,8 @@ interface Ethereum_Query_Input_callContractStatic extends Record<string, unknown
   address: String;
   method: String;
   args?: Array<String> | null;
-  connection?: Types.Ethereum_Connection | null;
-  txOverrides?: Types.Ethereum_TxOverrides | null;
+  connection?: Ethereum_Connection | null;
+  txOverrides?: Ethereum_TxOverrides | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
@@ -130,30 +128,30 @@ interface Ethereum_Query_Input_encodeParams extends Record<string, unknown> {
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_getSignerAddress extends Record<string, unknown> {
-  connection?: Types.Ethereum_Connection | null;
+  connection?: Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_getSignerBalance extends Record<string, unknown> {
   blockTag?: BigInt | null;
-  connection?: Types.Ethereum_Connection | null;
+  connection?: Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_getSignerTransactionCount extends Record<string, unknown> {
   blockTag?: BigInt | null;
-  connection?: Types.Ethereum_Connection | null;
+  connection?: Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_getGasPrice extends Record<string, unknown> {
-  connection?: Types.Ethereum_Connection | null;
+  connection?: Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_estimateTransactionGas extends Record<string, unknown> {
-  tx: Types.Ethereum_TxRequest;
-  connection?: Types.Ethereum_Connection | null;
+  tx: Ethereum_TxRequest;
+  connection?: Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
@@ -161,8 +159,8 @@ interface Ethereum_Query_Input_estimateContractCallGas extends Record<string, un
   address: String;
   method: String;
   args?: Array<String> | null;
-  connection?: Types.Ethereum_Connection | null;
-  txOverrides?: Types.Ethereum_TxOverrides | null;
+  connection?: Ethereum_Connection | null;
+  txOverrides?: Ethereum_TxOverrides | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
@@ -185,7 +183,7 @@ interface Ethereum_Query_Input_awaitTransaction extends Record<string, unknown> 
   txHash: String;
   confirmations: UInt32;
   timeout: UInt32;
-  connection?: Types.Ethereum_Connection | null;
+  connection?: Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
@@ -194,7 +192,7 @@ interface Ethereum_Query_Input_waitForEvent extends Record<string, unknown> {
   event: String;
   args?: Array<String> | null;
   timeout?: UInt32 | null;
-  connection?: Types.Ethereum_Connection | null;
+  connection?: Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
@@ -214,8 +212,8 @@ export const Ethereum_Query = {
   callContractStatic: async (
     input: Ethereum_Query_Input_callContractStatic,
     client: Client
-  ): Promise<InvokeApiResult<Types.Ethereum_StaticTxResult>> => {
-    return client.invoke<Types.Ethereum_StaticTxResult>({
+  ): Promise<InvokeApiResult<Ethereum_StaticTxResult>> => {
+    return client.invoke<Ethereum_StaticTxResult>({
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "callContractStatic",
@@ -346,8 +344,8 @@ export const Ethereum_Query = {
   awaitTransaction: async (
     input: Ethereum_Query_Input_awaitTransaction,
     client: Client
-  ): Promise<InvokeApiResult<Types.Ethereum_TxReceipt>> => {
-    return client.invoke<Types.Ethereum_TxReceipt>({
+  ): Promise<InvokeApiResult<Ethereum_TxReceipt>> => {
+    return client.invoke<Ethereum_TxReceipt>({
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "awaitTransaction",
@@ -358,8 +356,8 @@ export const Ethereum_Query = {
   waitForEvent: async (
     input: Ethereum_Query_Input_waitForEvent,
     client: Client
-  ): Promise<InvokeApiResult<Types.Ethereum_EventNotification>> => {
-    return client.invoke<Types.Ethereum_EventNotification>({
+  ): Promise<InvokeApiResult<Ethereum_EventNotification>> => {
+    return client.invoke<Ethereum_EventNotification>({
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "waitForEvent",

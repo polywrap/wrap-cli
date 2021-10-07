@@ -19,7 +19,7 @@ const cmdStr = intlMsg.commands_plugin_options_command();
 const optionsStr = intlMsg.commands_options_options();
 const codegenStr = intlMsg.commands_plugin_options_codegen();
 const defaultManifestStr = defaultManifest.join(" | ");
-const defaultOutputTypesStr = "./types";
+const defaultOutputTypesStr = "types/";
 const outputDirStr = `${intlMsg.commands_plugins_options_types({
   default: defaultOutputTypesStr,
 })}`;
@@ -65,7 +65,7 @@ export default {
     ipfs = ipfs || i;
     ens = ens || e;
 
-    if (help || !validateCodegenParams(print, outputDir, ens)) {
+    if (help || !validateCodegenParams(print, outputDir, ens, false)) {
       print.info(HELP);
       return;
     }

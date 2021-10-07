@@ -21,6 +21,7 @@ const defaultManifestStr = defaultManifest.join(" | ");
 
 const HELP = `
 ${chalk.bold("w3 codegen")} [${optionsStr}]
+
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
   -m, --manifest-path <${pathStr}>              ${intlMsg.commands_codegen_options_m()}: ${defaultManifestStr})
@@ -53,19 +54,7 @@ export default {
     outputDir = outputDir || o;
     ens = ens || e;
 
-    if (help || !validateCodegenParams(print, outputDir, ens)) {
-      print.info(HELP);
-      return;
-    }
-
-    if (custom === true) {
-      const customScriptMissingPathMessage = intlMsg.commands_codegen_error_customScriptMissingPath(
-        {
-          option: "--custom",
-          argument: `<${pathStr}>`,
-        }
-      );
-      print.error(customScriptMissingPathMessage);
+    if (help || !validateCodegenParams(print, outputDir, ens, custom)) {
       print.info(HELP);
       return;
     }
@@ -122,7 +111,8 @@ export default {
 export function validateCodegenParams(
   print: GluegunPrint,
   outputDir: unknown,
-  ens: unknown
+  ens: unknown,
+  custom: unknown
 ): boolean {
   if (outputDir === true) {
     const outputDirMissingPathMessage = intlMsg.commands_build_error_outputDirMissingPath(
@@ -144,6 +134,17 @@ export function validateCodegenParams(
       }
     );
     print.error(ensAddressMissingMessage);
+    return false;
+  }
+
+  if (custom === true) {
+    const customScriptMissingPathMessage = intlMsg.commands_codegen_error_customScriptMissingPath(
+      {
+        option: "--custom",
+        argument: `<${pathStr}>`,
+      }
+    );
+    print.error(customScriptMissingPathMessage);
     return false;
   }
 
