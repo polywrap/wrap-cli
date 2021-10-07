@@ -1,11 +1,11 @@
-import { UriRedirect, Web3ApiClient } from "@web3api/client-js";
+import { ClientConfig, Web3ApiClient } from "@web3api/client-js";
 import { buildAndDeployApi, initTestEnvironment, stopTestEnvironment } from "@web3api/test-env-js";
 import * as path from "path";
 import { Pair, Route, Token } from "./types";
-import { getPairData, getRedirects, getTokenList, getUniPairs } from "../testUtils";
+import { getPairData, getPlugins, getTokenList, getUniPairs } from "../testUtils";
 import * as uni from "@uniswap/sdk";
 
-jest.setTimeout(90000);
+jest.setTimeout(360000);
 
 describe('Route', () => {
 
@@ -19,8 +19,8 @@ describe('Route', () => {
   beforeAll(async () => {
     const { ethereum: testEnvEtherem, ensAddress, ipfs } = await initTestEnvironment();
     // get client
-    const redirects: UriRedirect[] = getRedirects(testEnvEtherem, ipfs, ensAddress);
-    client = new Web3ApiClient({ redirects });
+    const config: ClientConfig = getPlugins(testEnvEtherem, ipfs, ensAddress);
+    client = new Web3ApiClient(config);
     // deploy api
     const apiPath: string = path.resolve(__dirname + "/../../../");
     const api = await buildAndDeployApi(apiPath, ipfs, ensAddress);

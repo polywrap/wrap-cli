@@ -1,6 +1,6 @@
 import { Web3ApiClient } from "@web3api/client-js";
-import uts46 from "idna-uts46-hx";
 import { uts46Plugin } from "..";
+const uts46 = require("idna-uts46-hx/uts46bundle.js");
 
 const textToConvert = "xn-bb-eka.at";
 

@@ -1,18 +1,14 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Project } from "./Project";
+import { Project } from "./project";
 
-import {
-  Uri,
-  Web3ApiClient,
-  PluginRegistration,
-  Web3ApiManifest,
-} from "@web3api/client-js";
+import { Uri, Web3ApiClient, PluginRegistration } from "@web3api/client-js";
 import {
   composeSchema,
   ComposerOutput,
   ComposerFilter,
+  ComposerOptions,
 } from "@web3api/schema-compose";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
@@ -22,7 +18,7 @@ import path from "path";
 import * as gluegun from "gluegun";
 import { SchemaFile } from "@web3api/schema-compose";
 
-export interface SchemaConfig {
+export interface SchemaComposerConfig {
   project: Project;
 
   // TODO: add this to the project configuration
@@ -36,7 +32,7 @@ export class SchemaComposer {
   private _client: Web3ApiClient;
   private _composerOutput: ComposerOutput | undefined;
 
-  constructor(private _config: SchemaConfig) {
+  constructor(private _config: SchemaComposerConfig) {
     const { ensAddress, ethProvider, ipfsProvider } = this._config;
     const plugins: PluginRegistration[] = [];
 
@@ -86,10 +82,10 @@ export class SchemaComposer {
 
     const { project } = this._config;
 
-    const manifest = await project.getWeb3ApiManifest();
-    const querySchemaPath = manifest.modules.query?.schema;
-    const mutationSchemaPath = manifest.modules.mutation?.schema;
-    const getSchema = (schemaPath?: string): SchemaFile | undefined =>
+    const schemaNamedPaths = await project.getSchemaNamedPaths();
+    const import_redirects = await project.getImportRedirects();
+
+    const getSchemaFile = (schemaPath?: string): SchemaFile | undefined =>
       schemaPath
         ? {
             schema: this._fetchLocalSchema(schemaPath),
@@ -97,17 +93,28 @@ export class SchemaComposer {
           }
         : undefined;
 
-    this._composerOutput = await composeSchema({
-      schemas: {
-        query: getSchema(querySchemaPath),
-        mutation: getSchema(mutationSchemaPath),
-      },
+    const options: ComposerOptions = {
+      schemas: {},
       resolvers: {
-        external: (uri: string) => this._fetchExternalSchema(uri, manifest),
+        external: (uri: string) =>
+          this._fetchExternalSchema(uri, import_redirects),
         local: (path: string) => Promise.resolve(this._fetchLocalSchema(path)),
       },
       output,
-    });
+    };
+
+    for (const name of Object.keys(schemaNamedPaths)) {
+      const schemaPath = schemaNamedPaths[name];
+      const schemaFile = getSchemaFile(schemaPath);
+
+      if (!schemaFile) {
+        throw Error(`Schema "${name}" cannot be loaded at path: ${schemaPath}`);
+      }
+
+      options.schemas[name] = schemaFile;
+    }
+
+    this._composerOutput = await composeSchema(options);
 
     return this._composerOutput;
   }
@@ -118,11 +125,14 @@ export class SchemaComposer {
 
   private async _fetchExternalSchema(
     uri: string,
-    manifest: Web3ApiManifest
+    import_redirects?: {
+      uri: string;
+      schema: string;
+    }[]
   ): Promise<string> {
     // Check to see if we have any import redirects that match
-    if (manifest.import_redirects) {
-      for (const redirect of manifest.import_redirects) {
+    if (import_redirects) {
+      for (const redirect of import_redirects) {
         const redirectUri = new Uri(redirect.uri);
         const uriParsed = new Uri(uri);
 
@@ -133,8 +143,7 @@ export class SchemaComposer {
     }
 
     try {
-      const api = await this._client.loadWeb3Api(new Uri(uri));
-      return await api.getSchema(this._client);
+      return await this._client.getSchema(new Uri(uri));
     } catch (e) {
       gluegun.print.error(e);
       throw e;
@@ -145,7 +154,7 @@ export class SchemaComposer {
     return fs.readFileSync(
       path.isAbsolute(schemaPath)
         ? schemaPath
-        : path.join(this._config.project.getWeb3ApiManifestDir(), schemaPath),
+        : path.join(this._config.project.getRootDir(), schemaPath),
       "utf-8"
     );
   }

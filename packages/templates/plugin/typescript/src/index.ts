@@ -1,10 +1,10 @@
 import { mutation, query } from "./resolvers";
-import { manifest } from "./manifest";
+import { manifest } from "./w3";
 
 import {
   Plugin,
   PluginFactory,
-  PluginManifest,
+  PluginPackageManifest,
   PluginModules,
 } from "@web3api/core-js";
 
@@ -17,7 +17,7 @@ export class SamplePlugin extends Plugin {
     super();
   }
 
-  public static manifest(): PluginManifest {
+  public static manifest(): PluginPackageManifest {
     return manifest;
   }
 

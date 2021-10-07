@@ -6,6 +6,9 @@ interface TestEnvironment {
   ipfs: string;
   ethereum: string;
   ensAddress: string;
+  registrarAddress: string;
+  reverseAddress: string;
+  resolverAddress: string;
 }
 
 export const initTestEnvironment = async (): Promise<TestEnvironment> => {
@@ -29,8 +32,7 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
 
   // re-deploy ENS
   const { data } = await axios.get("http://localhost:4040/deploy-ens");
-
-  return { ipfs, ethereum, ensAddress: data.ensAddress };
+  return { ipfs, ethereum, ...data };
 };
 
 export const stopTestEnvironment = async (): Promise<void> => {

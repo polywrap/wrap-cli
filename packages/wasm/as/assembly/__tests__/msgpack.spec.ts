@@ -7,6 +7,7 @@ import {
   Write,
   WriteEncoder,
   WriteSizer,
+  JSON,
 } from "../";
 
 class Sanity {
@@ -23,6 +24,7 @@ class Sanity {
   float32: f32;
   float64: f64;
   str: string = "";
+  json: JSON.Value = JSON.Value.Object();
   largeStr: string = "";
   bytes: ArrayBuffer = new ArrayBuffer(1);
   largeBytes: ArrayBuffer = new ArrayBuffer(1);
@@ -48,6 +50,7 @@ class Sanity {
     this.float32 = 3.40282344818115234375;
     this.float64 = 3124124512.598273468017578125;
     this.str = "Hello, world!";
+    this.json = JSON.parse(`{"foo": "bar", "bar": "baz"}`);
     this.largeStr = new Array<string>(10).join("web3api ");
     this.bytes = new ArrayBuffer(12);
     this.largeBytes = largeBytes;
@@ -90,7 +93,7 @@ class Sanity {
 }
 
 function serializeSanity(writer: Write, type: Sanity): void {
-  writer.writeMapLength(20);
+  writer.writeMapLength(21);
   writer.writeString("nil");
   writer.writeNullableString(type.nil);
   writer.writeString("int8");
@@ -123,6 +126,8 @@ function serializeSanity(writer: Write, type: Sanity): void {
   writer.writeBytes(type.bytes);
   writer.writeString("largeBytes");
   writer.writeBytes(type.largeBytes);
+  writer.writeString("json");
+  writer.writeJSON(type.json);
   writer.writeString("array");
   writer.writeArray(type.array, (writer: Write, item: u8) => {
     writer.writeUInt8(item);
@@ -132,9 +137,12 @@ function serializeSanity(writer: Write, type: Sanity): void {
     writer.writeString(item);
   });
   writer.writeString("largeBytesArray");
-  writer.writeArray(type.largeBytesArray, (writer: Write, item: ArrayBuffer) => {
-    writer.writeBytes(item);
-  });
+  writer.writeArray(
+    type.largeBytesArray,
+    (writer: Write, item: ArrayBuffer) => {
+      writer.writeBytes(item);
+    }
+  );
   writer.writeString("map");
   writer.writeMap(
     type.map,
@@ -151,7 +159,6 @@ function serializeSanity(writer: Write, type: Sanity): void {
 
 function deserializeSanity(reader: Read, type: Sanity): void {
   let numFields = reader.readMapLength();
-
   while (numFields > 0) {
     numFields--;
     const field = reader.readString();
@@ -182,6 +189,8 @@ function deserializeSanity(reader: Read, type: Sanity): void {
       type.float64 = reader.readFloat64();
     } else if (field == "str") {
       type.str = reader.readString();
+    } else if (field == "json") {
+      type.json = reader.readJSON();
     } else if (field == "largeStr") {
       type.largeStr = reader.readString();
     } else if (field == "bytes") {
@@ -195,11 +204,9 @@ function deserializeSanity(reader: Read, type: Sanity): void {
         }
       );
     } else if (field == "largeStrArray") {
-      type.largeStrArray = reader.readArray(
-        (reader: Read): string => {
-          return reader.readString();
-        }
-      );
+      type.largeStrArray = reader.readArray((reader: Read): string => {
+        return reader.readString();
+      });
     } else if (field == "largeBytesArray") {
       type.largeBytesArray = reader.readArray(
         (reader: Read): ArrayBuffer => {
@@ -243,7 +250,7 @@ function deserializeWithOverflow(reader: Read, type: Sanity): void {
     } else if (field == "uint8") {
       type.uint8 = <u8>reader.readUInt32();
     } else if (field == "uint16") {
-      type.uint16 = <u16>reader.readUInt8()
+      type.uint16 = <u16>reader.readUInt8();
     } else if (field == "uint32") {
       type.uint32 = <u32>reader.readUInt16();
     } else if (field == "boolean") {
@@ -258,6 +265,8 @@ function deserializeWithOverflow(reader: Read, type: Sanity): void {
       type.float64 = <f64>reader.readFloat32();
     } else if (field == "str") {
       type.str = reader.readString();
+    } else if (field == "json") {
+      type.json = reader.readJSON();
     } else if (field == "bytes") {
       type.bytes = reader.readBytes();
     } else if (field == "array") {
@@ -320,6 +329,8 @@ function deserializeWithInvalidTypes(reader: Read, type: Sanity): void {
       type.float64 = reader.readFloat64();
     } else if (field == "str") {
       type.str = reader.readString();
+    } else if (field == "json") {
+      type.json = reader.readJSON();
     } else if (field == "largeStr") {
       type.largeStr = reader.readString();
     } else if (field == "bytes") {
@@ -333,11 +344,9 @@ function deserializeWithInvalidTypes(reader: Read, type: Sanity): void {
         }
       );
     } else if (field == "largeStrArray") {
-      type.largeStrArray = reader.readArray(
-        (reader: Read): string => {
-          return reader.readString();
-        }
-      );
+      type.largeStrArray = reader.readArray((reader: Read): string => {
+        return reader.readString();
+      });
     } else if (field == "largeBytesArray") {
       type.largeBytesArray = reader.readArray(
         (reader: Read): ArrayBuffer => {
@@ -380,7 +389,6 @@ describe("MsgPack: Sanity", () => {
       output.fromBufferWithOverflows(input.toBuffer());
     }).toThrow();
   });
-
 });
 
 describe("MsgPack: Sanity", () => {

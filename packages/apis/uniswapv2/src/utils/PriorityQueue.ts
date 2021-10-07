@@ -8,68 +8,68 @@
   It is assumed that any mutations of Key don't change sort order.
 */
 export class PriorityQueue<Key> {
-  private readonly pq: (Key | null)[];
-  private n: i32 = 0;
-  private readonly compareTo: (left: Key, right: Key) => i32;
+  private readonly _pq: (Key | null)[];
+  private _n: i32 = 0;
+  private readonly _compareTo: (left: Key, right: Key) => i32;
 
   constructor(comparator: (left: Key, right: Key) => i32, capacity: i32 = 0) {
-    this.pq = new Array<Key | null>(capacity + 1);
-    this.pq[0] = null; // 0 index must be null for heap tree math
-    this.compareTo = comparator;
+    this._pq = new Array<Key | null>(capacity + 1);
+    this._pq[0] = null; // 0 index must be null for heap tree math
+    this._compareTo = comparator;
   }
 
   public toArray(): Key[] {
-    return this.pq
+    return this._pq
       .filter((v: Key | null) => v != null)
       .map<Key>((v: Key | null) => v!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
   }
 
   public isEmpty(): boolean {
-    return this.n == 0;
+    return this._n == 0;
   }
 
   public length(): i32 {
-    return this.n;
+    return this._n;
   }
 
   public insert(v: Key): void {
-    this.pq.push(v);
-    this.swim(++this.n);
+    this._pq.push(v);
+    this._swim(++this._n);
   }
 
   public delMax(): Key | null {
-    if (this.n < 1) return null;
-    const max: Key | null = this.pq[1];
-    this.exch(1, this.n--);
-    this.pq.pop();
-    this.sink(1);
+    if (this._n < 1) return null;
+    const max: Key | null = this._pq[1];
+    this._exch(1, this._n--);
+    this._pq.pop();
+    this._sink(1);
     return max;
   }
 
-  private less(i: i32, j: i32): boolean {
+  private _less(i: i32, j: i32): boolean {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.compareTo(this.pq[i]!, this.pq[j]!) < 0;
+    return this._compareTo(this._pq[i]!, this._pq[j]!) < 0;
   }
 
-  private exch(i: i32, j: i32): void {
-    const t: Key | null = this.pq[i];
-    this.pq[i] = this.pq[j];
-    this.pq[j] = t;
+  private _exch(i: i32, j: i32): void {
+    const t: Key | null = this._pq[i];
+    this._pq[i] = this._pq[j];
+    this._pq[j] = t;
   }
 
-  private swim(k: i32): void {
-    while (k > 1 && this.less(k / 2, k)) {
-      this.exch(k / 2, k);
+  private _swim(k: i32): void {
+    while (k > 1 && this._less(k / 2, k)) {
+      this._exch(k / 2, k);
       k = k / 2;
     }
   }
 
-  private sink(k: i32): void {
-    while (2 * k <= this.n) {
+  private _sink(k: i32): void {
+    while (2 * k <= this._n) {
       let j: i32 = 2 * k;
-      if (j < this.n && this.less(j, j + 1)) j++;
-      if (!this.less(k, j)) break;
-      this.exch(k, j);
+      if (j < this._n && this._less(j, j + 1)) j++;
+      if (!this._less(k, j)) break;
+      this._exch(k, j);
       k = j;
     }
   }

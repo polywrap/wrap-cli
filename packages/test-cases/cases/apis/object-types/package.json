@@ -2,7 +2,7 @@
   "name": "test-case-object-types",
   "private": true,
   "dependencies": {
-    "@web3api/wasm-as": "0.0.1-prealpha.28",
+    "@web3api/wasm-as": "0.0.1-prealpha.40",
     "assemblyscript": "0.19.1"
   }
 }

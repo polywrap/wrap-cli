@@ -36,6 +36,8 @@ export const output: TypeInfo = {
         createScalarPropertyDefinition({ name: "i32", type: "Int32", required: true }),
         createScalarPropertyDefinition({ name: "bigint", type: "BigInt", required: true }),
         createScalarPropertyDefinition({ name: "optBigint", type: "BigInt", required: false }),
+        createScalarPropertyDefinition({ name: "json", type: "JSON", required: true }),
+        createScalarPropertyDefinition({ name: "optJson", type: "JSON", required: false }),
         createScalarPropertyDefinition({ name: "bytes", type: "Bytes", required: true }),
         createArrayPropertyDefinition({
           name: "uArray",

@@ -55,12 +55,6 @@ const visitorEnter = (
       return;
     }
 
-    if (!node.arguments || node.arguments.length === 0) {
-      throw Error(
-        `Imported Query types must only have methods. See property: ${node.name.value}`
-      );
-    }
-
     const returnType = createPropertyDefinition({
       type: "N/A",
       name: node.name.value,

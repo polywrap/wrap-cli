@@ -1,5 +1,10 @@
 /* eslint-disable prefer-const */
-import { CodeGenerator, Project, SchemaComposer } from "../lib";
+import {
+  CodeGenerator,
+  Compiler,
+  Web3ApiProject,
+  SchemaComposer,
+} from "../lib";
 import { fixParameters } from "../lib/helpers";
 import { intlMsg } from "../lib/intl";
 
@@ -7,13 +12,8 @@ import chalk from "chalk";
 import axios from "axios";
 import { GluegunToolbox, GluegunFilesystem, GluegunPrint } from "gluegun";
 
-export const defaultGenerationFile = "web3api.gen.js";
 export const defaultManifest = ["web3api.yaml", "web3api.yml"];
 
-const genFileOp = intlMsg
-  .commands_codegen_options_genFile()
-  .toLowerCase()
-  .replace(" ", "-");
 const optionsStr = intlMsg.commands_options_options();
 const nodeStr = intlMsg.commands_codegen_options_i_node();
 const pathStr = intlMsg.commands_codegen_options_o_path();
@@ -21,16 +21,14 @@ const addrStr = intlMsg.commands_codegen_options_e_address();
 const defaultManifestStr = defaultManifest.join(" | ");
 
 const HELP = `
-${chalk.bold("w3 codegen")} ${chalk.bold(`[<${genFileOp}>]`)} [${optionsStr}]
-
-${intlMsg.commands_codegen_options_genFile()}:
-  ${intlMsg.commands_codegen_options_genFilePath()}: ${defaultGenerationFile})
+${chalk.bold("w3 codegen")} [${optionsStr}]
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
   -m, --manifest-path <${pathStr}>              ${intlMsg.commands_codegen_options_m()}: ${defaultManifestStr})
-  -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
+  -c, --custom <${pathStr}>                     ${intlMsg.commands_codegen_options_c()}
   -o, --output-dir <${pathStr}>                 ${intlMsg.commands_codegen_options_o()}
+  -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
   -e, --ens [<${addrStr}>]                   ${intlMsg.commands_codegen_options_e()}
 `;
 
@@ -40,10 +38,18 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
 
-    const { h, m, i, o, e } = parameters.options;
-    let { help, manifestPath, ipfs, outputDir, ens } = parameters.options;
+    const { h, c, m, i, o, e } = parameters.options;
+    let {
+      help,
+      custom,
+      manifestPath,
+      ipfs,
+      outputDir,
+      ens,
+    } = parameters.options;
 
     help = help || h;
+    custom = custom || c;
     manifestPath = manifestPath || m;
     ipfs = ipfs || i;
     outputDir = outputDir || o;
@@ -59,18 +65,27 @@ export default {
       return;
     }
 
+    if (custom === true) {
+      const customScriptMissingPathMessage = intlMsg.commands_codegen_error_customScriptMissingPath(
+        {
+          option: "--custom",
+          argument: `<${pathStr}>`,
+        }
+      );
+      print.error(customScriptMissingPathMessage);
+      print.info(HELP);
+      return;
+    }
+
     const { ipfsProvider, ethProvider } = await getCodegenProviders(ipfs);
     const ensAddress: string | undefined = ens;
 
     // Resolve generation file & output directories
-    generationFile =
-      (generationFile && filesystem.resolve(generationFile)) ||
-      filesystem.resolve(defaultGenerationFile);
+    const customScript = custom && filesystem.resolve(custom);
     manifestPath = await resolveManifestPath(filesystem, manifestPath);
-    outputDir =
-      (outputDir && filesystem.resolve(outputDir)) || filesystem.path("types");
+    outputDir = outputDir && filesystem.resolve(outputDir);
 
-    const project = new Project({
+    const project = new Web3ApiProject({
       web3apiManifestPath: manifestPath,
     });
 
@@ -81,14 +96,28 @@ export default {
       ensAddress,
     });
 
-    const codeGenerator = new CodeGenerator({
-      project,
-      schemaComposer,
-      generationFile,
-      outputDir,
-    });
+    let result = false;
 
-    if (await codeGenerator.generate()) {
+    if (customScript) {
+      const codeGenerator = new CodeGenerator({
+        project,
+        schemaComposer,
+        customScript,
+        outputDir: outputDir || filesystem.path("types"),
+      });
+
+      result = await codeGenerator.generate();
+    } else {
+      const compiler = new Compiler({
+        project,
+        outputDir: filesystem.path("build"),
+        schemaComposer,
+      });
+
+      result = await compiler.codegen();
+    }
+
+    if (result) {
       print.success(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
       process.exitCode = 0;
     } else {
@@ -96,28 +125,6 @@ export default {
     }
   },
 };
-
-export function getGenerationFile(toolbox: GluegunToolbox): string | null {
-  let generationFile;
-  try {
-    const params = toolbox.parameters;
-    [generationFile] = fixParameters(
-      {
-        options: params.options,
-        array: params.array,
-      },
-      {
-        h: params.options.h,
-        help: params.options.help,
-      }
-    );
-  } catch (e) {
-    toolbox.print.error(e.message);
-    process.exitCode = 1;
-    return null;
-  }
-  return generationFile;
-}
 
 export function validateCodegenParams(
   print: GluegunPrint,
