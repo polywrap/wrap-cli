@@ -69,7 +69,7 @@ export function propertyDeps(): TypeInfoTransforms {
             return array;
           } else {
             appendUnique({
-              crate: "super",
+              crate: "crate",
               type: def.type,
               isEnum: !!def.enum
             });

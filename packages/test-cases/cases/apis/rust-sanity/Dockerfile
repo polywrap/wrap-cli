@@ -1,10 +1,13 @@
 FROM rust:1.55 as base
 
-# # Install nightly rust
-# RUN rustup toolchain install nightly
+# Install nightly rust
+RUN rustup toolchain install nightly
 
-# # Override default rust (stable channel) installation
-# RUN rustup override set nightly
+# Update all installed rust toolchains
+RUN rustup update
+
+# Set the nightly channel as the default
+RUN rustup default nightly
 
 # Install the wasm32 rust build target
 RUN rustup target add wasm32-unknown-unknown

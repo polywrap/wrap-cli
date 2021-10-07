@@ -1,6 +1,5 @@
 // Set up for no-std.
 #![no_std]
-
 // Currently, no_std requires the nightly compiler due to the crates that it uses.
 #![feature(alloc_error_handler, core_intrinsics, lang_items)]
 
@@ -26,10 +25,9 @@ extern "C" fn rust_begin_panic(_: &core::panic::PanicInfo) -> ! {
 #[lang = "eh_personality"]
 extern "C" fn eh_personality() {}
 
-use alloc::{
-    format,
-    string::String,
-};
+use alloc::{format, string::String};
+pub mod w3;
+pub use w3::*;
 
 pub fn method(input: InputMethod) -> String {
     format!("{}{}", input.arg.prop_a, input.arg.prop_b)
