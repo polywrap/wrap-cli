@@ -8,8 +8,8 @@ const HELP = `
   help (h)       -                                                    
   test-env (t)   Manage a test environment for Web3API                
   query (q)      Query Web3APIs using recipe scripts                  
-  plugin (p)     Build/generate types for the plugin
-  docgen (d)     Auto-generate API Documentation                  
+  plugin (p)     Build/generate types for the plugin                  
+  docgen (d)     Auto-generate API Documentation                      
   create (c)     Create a new project with w3 CLI                     
   codegen (g)    Auto-generate API Types                              
   build (b)      Builds a Web3API and (optionally) uploads it to IPFS 

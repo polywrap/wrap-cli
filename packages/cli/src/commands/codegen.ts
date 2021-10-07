@@ -5,7 +5,6 @@ import {
   Web3ApiProject,
   SchemaComposer,
 } from "../lib";
-import { fixParameters } from "../lib/helpers";
 import { intlMsg } from "../lib/intl";
 
 import chalk from "chalk";
@@ -54,11 +53,6 @@ export default {
     ipfs = ipfs || i;
     outputDir = outputDir || o;
     ens = ens || e;
-
-    let generationFile: string | null = getGenerationFile(toolbox);
-    if (generationFile === null) {
-      return;
-    }
 
     if (help || !validateCodegenParams(print, outputDir, ens)) {
       print.info(HELP);
