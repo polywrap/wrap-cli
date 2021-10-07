@@ -67,6 +67,7 @@
   "commands_dapp_description": "Build/generate types for your dApp",
   "commands_dapp_options_l": "Output language for generated types (default: {default})",
   "commands_dapp_supported": "supported languages",
+  "commands_dapp_error_noLang": "--lang option must specify a supported language",
   "commands_plugin_description": "Build/generate types for the plugin",
   "commands_plugin_error_domain": "domain",
   "commands_plugin_error_noCommand": "Please provide a command",
