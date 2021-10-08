@@ -12,7 +12,7 @@ import {
 
 import { ethers } from "ethers";
 import { keccak256 } from "js-sha3";
-import axios from "axios"
+import axios from "axios";
 
 const { hash: namehash } = require("eth-ens-namehash");
 const contracts = {
