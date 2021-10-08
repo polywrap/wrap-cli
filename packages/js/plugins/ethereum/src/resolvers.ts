@@ -59,7 +59,9 @@ export const query = (plugin: Plugin): Query.Module => ({
     return plugin.encodeParams(input);
   },
 
-  encodeFunction: async (input: Query.Input_encodeFunction): Promise<string> => {
+  encodeFunction: async (
+    input: Query.Input_encodeFunction
+  ): Promise<string> => {
     return plugin.encodeFunction(input);
   },
 

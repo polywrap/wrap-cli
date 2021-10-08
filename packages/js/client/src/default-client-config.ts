@@ -60,9 +60,9 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         {
           uri: new Uri("w3://ens/graph-node.web3api.eth"),
           plugin: graphNodePlugin({
-            provider: "https://api.thegraph.com"
-          })
-        }
+            provider: "https://api.thegraph.com",
+          }),
+        },
       ],
       interfaces: [
         {

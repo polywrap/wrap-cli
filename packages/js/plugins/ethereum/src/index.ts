@@ -201,9 +201,7 @@ export class EthereumPlugin extends Plugin {
   public encodeFunction(input: Query.Input_encodeFunction): string {
     const functionInterface = ethers.Contract.getInterface([input.method]);
     return functionInterface.encodeFunctionData(
-      functionInterface.functions[
-        Object.keys(functionInterface.functions)[0]
-      ],
+      functionInterface.functions[Object.keys(functionInterface.functions)[0]],
       input.args || undefined
     );
   }
