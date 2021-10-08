@@ -96,8 +96,8 @@ export class WasmWeb3Api extends Api {
 
         const abort = (message: string) => {
           throw new Error(
-            `WasmWeb3Api: Thread aborted execution.\nURI: ${this._uri.uri}\n` +
-              `Module: ${module}\nMethod: ${method}\n` +
+            `WasmWeb3Api: Wasm module aborted execution.\nURI: ${this._uri.uri}\n` +
+              `Module: ${invokableModule}\nMethod: ${method}\n` +
               `Input: ${JSON.stringify(input, null, 2)}\nMessage: ${message}.\n`
           );
         };
@@ -126,7 +126,7 @@ export class WasmWeb3Api extends Api {
           case "InvokeError": {
             throw Error(
               `WasmWeb3Api: invocation exception encountered.\n` +
-                `uri: ${this._uri.uri}\nmodule: ${module}\n` +
+                `uri: ${this._uri.uri}\nmodule: ${invokableModule}\n` +
                 `method: ${method}\n` +
                 `input: ${JSON.stringify(input, null, 2)}\n` +
                 `exception: ${invokeResult.invokeError}`

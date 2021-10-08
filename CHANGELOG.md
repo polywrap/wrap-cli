@@ -1,3 +1,8 @@
+# Web3API 0.0.1-prealpha.46
+## Bugs
+* `@web3api/core-js`: Properly check for "undefined" values in query arguments.
+* `@web3api/wasm-as`: Improved MsgPack deserialization of integers (signed & unsigned).
+
 # Web3API 0.0.1-prealpha.45
 ## Features
 * `@web3api/tracing-js`: Support service name configuration.
