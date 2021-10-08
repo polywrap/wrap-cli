@@ -14,7 +14,7 @@ export const query = (fsPlugin: FilesystemPlugin): Query.Module => ({
 
     // Try reading uri/web3api.yaml
     try {
-      const manifestPath = path.resolve(input.path, "web3.yaml");
+      const manifestPath = path.resolve(input.path, "web3api.yaml");
       const manifest = await fs.promises.readFile(manifestPath, "utf8");
       return { uri: null, manifest: manifest };
     } catch (e) {
