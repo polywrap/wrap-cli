@@ -435,6 +435,23 @@ export class ReadDecoder extends Read {
         return i64(this._view.getInt32());
       case Format.INT64:
         return this._view.getInt64();
+      case Format.UINT8:
+        return i64(this._view.getUint8());
+      case Format.UINT16:
+        return i64(this._view.getUint16());
+      case Format.UINT32:
+        return i64(this._view.getUint32());
+      case Format.UINT64: {
+        const value = this._view.getUint64();
+        if (value <= u64(i64.MAX_VALUE)) {
+          return i64(value);
+        }
+        throw new RangeError(
+          this._context.printWithContext(
+            "integer overflow: value = " + value.toString() + "; bits = 64"
+          )
+        );
+      }
       default:
         throw new TypeError(
           this._context.printWithContext(
@@ -452,7 +469,8 @@ export class ReadDecoder extends Read {
     } else if (isNegativeFixedInt(prefix)) {
       throw new RangeError(
         this._context.printWithContext(
-          "unsigned integer cannot be negative: prefix = " + prefix.toString()
+          "unsigned integer cannot be negative. " +
+            this._getErrorMessage(prefix)
         )
       );
     }
@@ -466,6 +484,54 @@ export class ReadDecoder extends Read {
         return u64(this._view.getUint32());
       case Format.UINT64:
         return this._view.getUint64();
+      case Format.INT8: {
+        const int8 = this._view.getInt8();
+        if (int8 >= 0) {
+          return u64(int8);
+        }
+        throw new RangeError(
+          this._context.printWithContext(
+            "unsigned integer cannot be negative. " +
+              this._getErrorMessage(prefix)
+          )
+        );
+      }
+      case Format.INT16: {
+        const int16 = this._view.getInt16();
+        if (int16 >= 0) {
+          return u64(int16);
+        }
+        throw new RangeError(
+          this._context.printWithContext(
+            "unsigned integer cannot be negative. " +
+              this._getErrorMessage(prefix)
+          )
+        );
+      }
+      case Format.INT32: {
+        const int32 = this._view.getInt32();
+        if (int32 >= 0) {
+          return u64(int32);
+        }
+        throw new RangeError(
+          this._context.printWithContext(
+            "unsigned integer cannot be negative. " +
+              this._getErrorMessage(prefix)
+          )
+        );
+      }
+      case Format.INT64: {
+        const int64 = this._view.getInt64();
+        if (int64 >= 0) {
+          return u64(int64);
+        }
+        throw new RangeError(
+          this._context.printWithContext(
+            "unsigned integer cannot be negative. " +
+              this._getErrorMessage(prefix)
+          )
+        );
+      }
       default:
         throw new TypeError(
           this._context.printWithContext(
