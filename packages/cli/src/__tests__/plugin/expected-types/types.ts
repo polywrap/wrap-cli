@@ -129,6 +129,12 @@ interface Ethereum_Query_Input_encodeParams extends Record<string, unknown> {
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
+interface Ethereum_Query_Input_encodeFunction extends Record<string, unknown> {
+  method: String;
+  args?: Array<String> | null;
+}
+
+/* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_getSignerAddress extends Record<string, unknown> {
   connection?: Types.Ethereum_Connection | null;
 }
@@ -231,6 +237,18 @@ export const Ethereum_Query = {
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "encodeParams",
+      input
+    });
+  },
+
+  encodeFunction: async (
+    input: Ethereum_Query_Input_encodeFunction,
+    client: Client
+  ): Promise<InvokeApiResult<String>> => {
+    return client.invoke<String>({
+      uri: "ens/ethereum.web3api.eth",
+      module: "query",
+      method: "encodeFunction",
       input
     });
   },
