@@ -14,14 +14,11 @@ pub struct Sanity {
     int8: i8,
     int16: i16,
     int32: i32,
-    int64: i64,
     uint8: u8,
     uint16: u16,
     uint32: u32,
-    uint64: u64,
     boolean: bool,
     opt_uint32: Option<u32>,
-    opt_uint64: Option<u64>,
     opt_bool: Option<bool>,
     float32: f32,
     float64: f64,
@@ -60,14 +57,11 @@ impl Sanity {
             int8: -128,
             int16: -32768,
             int32: -2147483648,
-            int64: -9223372036854775808,
             uint8: 255,
             uint16: 65535,
             uint32: 4294967295,
-            uint64: 18446744073709551615,
             boolean: true,
             opt_uint32: Some(234234234),
-            opt_uint64: None,
             opt_bool: Some(true),
             float32: 3.402_823_4,
             float64: 3_124_124_512.598_273_3,
@@ -125,22 +119,16 @@ fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
     writer.write_i16(sanity.int16);
     writer.write_str("int32");
     writer.write_i32(sanity.int32);
-    writer.write_str("int64");
-    writer.write_i64(sanity.int64);
     writer.write_str("uint8");
     writer.write_u8(sanity.uint8);
     writer.write_str("uint16");
     writer.write_u16(sanity.uint16);
     writer.write_str("uint32");
     writer.write_u32(sanity.uint32);
-    writer.write_str("uint64");
-    writer.write_u64(sanity.uint64);
     writer.write_str("boolean");
     writer.write_bool(sanity.boolean);
     writer.write_str("opt_uint32");
     writer.write_nullable_u32(&sanity.opt_uint32);
-    writer.write_str("opt_uint64");
-    writer.write_nullable_u64(&sanity.opt_uint64);
     writer.write_str("opt_bool");
     writer.write_nullable_bool(&sanity.opt_bool);
     writer.write_str("float32");

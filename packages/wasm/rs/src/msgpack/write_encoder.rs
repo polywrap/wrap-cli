@@ -37,19 +37,15 @@ impl Write for WriteEncoder {
     }
 
     fn write_i8(&mut self, value: i8) {
-        self.write_i64(value as i64);
+        self.write_i32(value as i32);
     }
 
     fn write_i16(&mut self, value: i16) {
-        self.write_i64(value as i64);
+        self.write_i32(value as i32);
     }
 
     fn write_i32(&mut self, value: i32) {
-        self.write_i64(value as i64);
-    }
-
-    fn write_i64(&mut self, value: i64) {
-        if (0..1 << 7).contains(&value) {
+        if value >= 0 && value < 1 << 7 {
             self.view.set_u8(value as u8);
         } else if value < 0 && value >= -(1 << 5) {
             if Format::is_negative_fixed_int(value as u8) {
@@ -57,48 +53,38 @@ impl Write for WriteEncoder {
             } else {
                 self.view.set_u8(value as u8);
             }
-        } else if (value <= i8::MAX as i64) && (value >= i8::MIN as i64) {
+        } else if (value <= i8::MAX as i32) && (value >= i8::MIN as i32) {
             self.view.set_u8(Format::INT8);
             self.view.set_i8(value as i8);
-        } else if (value <= i16::MAX as i64) && (value >= i16::MIN as i64) {
+        } else if (value <= i16::MAX as i32) && (value >= i16::MIN as i32) {
             self.view.set_u8(Format::INT16);
             self.view.set_i16(value as i16);
-        } else if (value <= i32::MAX as i64) && (value >= i32::MIN as i64) {
-            self.view.set_u8(Format::INT32);
-            self.view.set_i32(value as i32);
         } else {
-            self.view.set_u8(Format::INT64);
-            self.view.set_i64(value);
+            self.view.set_u8(Format::INT32);
+            self.view.set_i32(value);
         }
     }
 
     fn write_u8(&mut self, value: u8) {
-        self.write_u64(value as u64);
+        self.write_u32(value as u32);
     }
 
     fn write_u16(&mut self, value: u16) {
-        self.write_u64(value as u64);
+        self.write_u32(value as u32);
     }
 
     fn write_u32(&mut self, value: u32) {
-        self.write_u64(value as u64);
-    }
-
-    fn write_u64(&mut self, value: u64) {
         if value < (1 << 7) {
             self.view.set_u8(value as u8);
-        } else if value <= (u8::MAX as u64) {
+        } else if value <= (u8::MAX as u32) {
             self.view.set_u8(Format::UINT8);
             self.view.set_u8(value as u8);
-        } else if value <= (u16::MAX as u64) {
+        } else if value <= (u16::MAX as u32) {
             self.view.set_u8(Format::UINT16);
             self.view.set_u16(value as u16);
-        } else if value <= (u32::MAX as u64) {
-            self.view.set_u8(Format::UINT32);
-            self.view.set_u32(value as u32);
         } else {
-            self.view.set_u8(Format::UINT64);
-            self.view.set_u64(value);
+            self.view.set_u8(Format::UINT32);
+            self.view.set_u32(value);
         }
     }
 
@@ -258,14 +244,6 @@ impl Write for WriteEncoder {
         }
     }
 
-    fn write_nullable_i64(&mut self, value: &Option<i64>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_i64(value.unwrap());
-        }
-    }
-
     fn write_nullable_u8(&mut self, value: &Option<u8>) {
         if value.is_none() {
             self.write_nil();
@@ -287,14 +265,6 @@ impl Write for WriteEncoder {
             self.write_nil();
         } else {
             self.write_u32(value.unwrap());
-        }
-    }
-
-    fn write_nullable_u64(&mut self, value: &Option<u64>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_u64(value.unwrap());
         }
     }
 

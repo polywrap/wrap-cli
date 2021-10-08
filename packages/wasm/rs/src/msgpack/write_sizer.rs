@@ -34,54 +34,42 @@ impl Write for WriteSizer {
     }
 
     fn write_i8(&mut self, value: i8) {
-        self.write_i64(value as i64);
+        self.write_i32(value as i32);
     }
 
     fn write_i16(&mut self, value: i16) {
-        self.write_i64(value as i64);
+        self.write_i32(value as i32);
     }
 
     fn write_i32(&mut self, value: i32) {
-        self.write_i64(value as i64);
-    }
-
-    fn write_i64(&mut self, value: i64) {
         if value >= -(1 << 5) && value < 1 << 7 {
             self.length += 1;
         } else if value < 1 << 7 && value >= -(1 << 7) {
             self.length += 2;
         } else if value < 1 << 15 && value >= -(1 << 15) {
             self.length += 3;
-        } else if value < 1 << 31 && value >= -(1 << 31) {
-            self.length += 5;
         } else {
-            self.length += 9;
+            self.length += 5;
         }
     }
 
     fn write_u8(&mut self, value: u8) {
-        self.write_u64(value as u64);
+        self.write_u32(value as u32);
     }
 
     fn write_u16(&mut self, value: u16) {
-        self.write_u64(value as u64);
+        self.write_u32(value as u32);
     }
 
     fn write_u32(&mut self, value: u32) {
-        self.write_u64(value as u64);
-    }
-
-    fn write_u64(&mut self, value: u64) {
         if value < (1 << 7) {
             self.length += 1;
         } else if value < (1 << 8) {
             self.length += 2;
         } else if value < (1 << 16) {
             self.length += 3;
-        } else if value < (1 << 32) {
-            self.length += 5;
         } else {
-            self.length += 9;
+            self.length += 5;
         }
     }
 
@@ -218,14 +206,6 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_nullable_i64(&mut self, value: &Option<i64>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_i64(value.unwrap());
-        }
-    }
-
     fn write_nullable_u8(&mut self, value: &Option<u8>) {
         if value.is_none() {
             self.write_nil();
@@ -247,14 +227,6 @@ impl Write for WriteSizer {
             self.write_nil();
         } else {
             self.write_u32(value.unwrap());
-        }
-    }
-
-    fn write_nullable_u64(&mut self, value: &Option<u64>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_u64(value.unwrap());
         }
     }
 
