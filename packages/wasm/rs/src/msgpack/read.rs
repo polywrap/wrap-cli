@@ -7,11 +7,9 @@ pub trait Read: Clone + Sized {
     fn read_i8(&mut self) -> Result<i8, String>;
     fn read_i16(&mut self) -> Result<i16, String>;
     fn read_i32(&mut self) -> Result<i32, String>;
-    fn read_i64(&mut self) -> Result<i64, String>;
     fn read_u8(&mut self) -> Result<u8, String>;
     fn read_u16(&mut self) -> Result<u16, String>;
     fn read_u32(&mut self) -> Result<u32, String>;
-    fn read_u64(&mut self) -> Result<u64, String>;
     fn read_f32(&mut self) -> Result<f32, String>;
     fn read_f64(&mut self) -> Result<f64, String>;
     fn read_string_length(&mut self) -> Result<u32, String>;
@@ -34,11 +32,9 @@ pub trait Read: Clone + Sized {
     fn read_nullable_i8(&mut self) -> Option<i8>;
     fn read_nullable_i16(&mut self) -> Option<i16>;
     fn read_nullable_i32(&mut self) -> Option<i32>;
-    fn read_nullable_i64(&mut self) -> Option<i64>;
     fn read_nullable_u8(&mut self) -> Option<u8>;
     fn read_nullable_u16(&mut self) -> Option<u16>;
     fn read_nullable_u32(&mut self) -> Option<u32>;
-    fn read_nullable_u64(&mut self) -> Option<u64>;
     fn read_nullable_f32(&mut self) -> Option<f32>;
     fn read_nullable_f64(&mut self) -> Option<f64>;
     fn read_nullable_string(&mut self) -> Option<String>;

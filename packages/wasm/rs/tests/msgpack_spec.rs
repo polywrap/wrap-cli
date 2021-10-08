@@ -198,9 +198,6 @@ fn deserialize_sanity<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<(),
             "int32" => {
                 sanity.int32 = reader.read_i32().unwrap();
             }
-            "int64" => {
-                sanity.int64 = reader.read_i64().unwrap();
-            }
             "uint8" => {
                 sanity.uint8 = reader.read_u8().unwrap();
             }
@@ -210,17 +207,11 @@ fn deserialize_sanity<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<(),
             "uint32" => {
                 sanity.uint32 = reader.read_u32().unwrap();
             }
-            "uint64" => {
-                sanity.uint64 = reader.read_u64().unwrap();
-            }
             "boolean" => {
                 sanity.boolean = reader.read_bool().unwrap();
             }
             "opt_uint32" => {
                 sanity.opt_uint32 = reader.read_nullable_u32();
-            }
-            "opt_uint64" => {
-                sanity.opt_uint64 = reader.read_nullable_u64();
             }
             "opt_bool" => {
                 sanity.opt_bool = reader.read_nullable_bool();
@@ -297,11 +288,8 @@ fn deserialize_with_overflow<R: Read>(mut reader: R, sanity: &mut Sanity) -> Res
             "int32" => {
                 sanity.int32 = reader.read_i16().unwrap() as i32;
             }
-            "int64" => {
-                sanity.int64 = reader.read_i8().unwrap() as i64;
-            }
             "uint8" => {
-                sanity.uint8 = reader.read_u64().unwrap() as u8;
+                sanity.uint8 = reader.read_u32().unwrap() as u8;
             }
             "uint16" => {
                 sanity.uint16 = reader.read_u8().unwrap() as u16;
@@ -309,17 +297,11 @@ fn deserialize_with_overflow<R: Read>(mut reader: R, sanity: &mut Sanity) -> Res
             "uint32" => {
                 sanity.uint32 = reader.read_u16().unwrap() as u32;
             }
-            "uint64" => {
-                sanity.uint64 = reader.read_u8().unwrap() as u64;
-            }
             "boolean" => {
                 sanity.boolean = reader.read_bool().unwrap();
             }
             "opt_uint32" => {
                 sanity.opt_uint32 = reader.read_nullable_u32();
-            }
-            "opt_uint64" => {
-                sanity.opt_uint64 = reader.read_nullable_u64();
             }
             "opt_bool" => {
                 sanity.opt_bool = reader.read_nullable_bool();
@@ -389,9 +371,6 @@ fn deserialize_with_invalid_types<R: Read>(
             "int32" => {
                 sanity.int32 = reader.read_i32().unwrap();
             }
-            "int64" => {
-                sanity.int64 = reader.read_i64().unwrap();
-            }
             "uint8" => {
                 sanity.uint8 = reader.read_u8().unwrap();
             }
@@ -401,17 +380,11 @@ fn deserialize_with_invalid_types<R: Read>(
             "uint32" => {
                 sanity.uint32 = reader.read_u32().unwrap();
             }
-            "uint64" => {
-                sanity.uint64 = reader.read_u64().unwrap();
-            }
             "boolean" => {
                 sanity.boolean = reader.read_bool().unwrap();
             }
             "opt_uint32" => {
                 sanity.opt_uint32 = reader.read_nullable_u32();
-            }
-            "opt_uint64" => {
-                sanity.opt_uint64 = reader.read_nullable_u64();
             }
             "opt_bool" => {
                 sanity.opt_bool = reader.read_nullable_bool();

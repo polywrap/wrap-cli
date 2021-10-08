@@ -16,7 +16,6 @@ pub struct ReadDecoder {
 }
 
 impl ReadDecoder {
-    #[allow(dead_code)]
     pub fn new(buf: &[u8], context: Context) -> Self {
         Self {
             context: context.clone(),
@@ -194,6 +193,130 @@ impl ReadDecoder {
             }
         }
     }
+
+    fn read_i64(&mut self) -> Result<i64, String> {
+        let prefix = self.view.get_u8();
+
+        if Format::is_fixed_int(prefix) {
+            return Ok(prefix as i64);
+        }
+        if Format::is_negative_fixed_int(prefix) {
+            return Ok((prefix as i8) as i64);
+        }
+        match prefix {
+            Format::INT8 => Ok(self.view.get_i8() as i64),
+            Format::INT16 => Ok(self.view.get_i16() as i64),
+            Format::INT32 => Ok(self.view.get_i32() as i64),
+            Format::INT64 => Ok(self.view.get_i64()),
+            Format::UINT8 => Ok(self.view.get_u8() as i64),
+            Format::UINT16 => Ok(self.view.get_u16() as i64),
+            Format::UINT32 => Ok(self.view.get_u32() as i64),
+            Format::UINT64 => {
+                let value = self.view.get_u64();
+                if value <= i64::MAX as u64 {
+                    return Ok(value as i64);
+                } else {
+                    return Err(self.context.print_with_context(
+                        &[
+                            "Integer overflow: value = ",
+                            &value.to_string(),
+                            "; bits = 64",
+                        ]
+                        .concat(),
+                    ));
+                }
+            }
+            _ => Err(self.context.print_with_context(
+                &[
+                    "Property must be of type `int`",
+                    &Self::get_error_message(prefix)?,
+                ]
+                .concat(),
+            )),
+        }
+    }
+
+    fn read_u64(&mut self) -> Result<u64, String> {
+        let prefix = self.view.get_u8();
+        if Format::is_fixed_int(prefix) {
+            return Ok(prefix as u64);
+        } else if Format::is_negative_fixed_int(prefix) {
+            return Err([
+                "unsigned integer cannot be negative: prefix = ",
+                &prefix.to_string(),
+            ]
+            .concat());
+        }
+        match prefix {
+            Format::UINT8 => Ok(self.view.get_u8() as u64),
+            Format::UINT16 => Ok(self.view.get_u16() as u64),
+            Format::UINT32 => Ok(self.view.get_u32() as u64),
+            Format::UINT64 => Ok(self.view.get_u64()),
+            Format::INT8 => {
+                let int8 = self.view.get_i8();
+                if int8 >= 0 {
+                    return Ok(int8 as u64);
+                } else {
+                    return Err(self.context.print_with_context(
+                        &[
+                            "Unsigned integer cannot be negative. ",
+                            &Self::get_error_message(prefix)?,
+                        ]
+                        .concat(),
+                    ));
+                }
+            }
+            Format::INT16 => {
+                let int16 = self.view.get_i16();
+                if int16 >= 0 {
+                    return Ok(int16 as u64);
+                } else {
+                    return Err(self.context.print_with_context(
+                        &[
+                            "Unsigned integer cannot be negative. ",
+                            &Self::get_error_message(prefix)?,
+                        ]
+                        .concat(),
+                    ));
+                }
+            }
+            Format::INT32 => {
+                let int32 = self.view.get_i32();
+                if int32 >= 0 {
+                    return Ok(int32 as u64);
+                } else {
+                    return Err(self.context.print_with_context(
+                        &[
+                            "Unsigned integer cannot be negative. ",
+                            &Self::get_error_message(prefix)?,
+                        ]
+                        .concat(),
+                    ));
+                }
+            }
+            Format::INT64 => {
+                let int64 = self.view.get_i64();
+                if int64 >= 0 {
+                    return Ok(int64 as u64);
+                } else {
+                    return Err(self.context.print_with_context(
+                        &[
+                            "Unsigned integer cannot be negative. ",
+                            &Self::get_error_message(prefix)?,
+                        ]
+                        .concat(),
+                    ));
+                }
+            }
+            _ => Err(self.context.print_with_context(
+                &[
+                    "Property must be of type `uint`",
+                    &Self::get_error_message(prefix)?,
+                ]
+                .concat(),
+            )),
+        }
+    }
 }
 
 impl Read for ReadDecoder {
@@ -253,29 +376,6 @@ impl Read for ReadDecoder {
         ))
     }
 
-    fn read_i64(&mut self) -> Result<i64, String> {
-        let prefix = self.view.get_u8();
-        if Format::is_fixed_int(prefix) {
-            return Ok(prefix as i64);
-        }
-        if Format::is_negative_fixed_int(prefix) {
-            return Ok((prefix as i8) as i64);
-        }
-        match prefix {
-            Format::INT8 => Ok(self.view.get_i8() as i64),
-            Format::INT16 => Ok(self.view.get_i16() as i64),
-            Format::INT32 => Ok(self.view.get_i32() as i64),
-            Format::INT64 => Ok(self.view.get_i64()),
-            _ => Err(self.context.print_with_context(
-                &[
-                    "Property must be of type `int`",
-                    &Self::get_error_message(prefix)?,
-                ]
-                .concat(),
-            )),
-        }
-    }
-
     fn read_u8(&mut self) -> Result<u8, String> {
         let value = self.read_u64()?;
         if (value <= u8::MAX as u64) && (value >= u8::MIN as u64) {
@@ -319,32 +419,6 @@ impl Read for ReadDecoder {
             ]
             .concat(),
         ))
-    }
-
-    fn read_u64(&mut self) -> Result<u64, String> {
-        let prefix = self.view.get_u8();
-        if Format::is_fixed_int(prefix) {
-            return Ok(prefix as u64);
-        } else if Format::is_negative_fixed_int(prefix) {
-            return Err([
-                "unsigned integer cannot be negative: prefix = ",
-                &prefix.to_string(),
-            ]
-            .concat());
-        }
-        match prefix {
-            Format::UINT8 => Ok(self.view.get_u8() as u64),
-            Format::UINT16 => Ok(self.view.get_u16() as u64),
-            Format::UINT32 => Ok(self.view.get_u32() as u64),
-            Format::UINT64 => Ok(self.view.get_u64()),
-            _ => Err(self.context.print_with_context(
-                &[
-                    "Property must be of type `uint`",
-                    &Self::get_error_message(prefix)?,
-                ]
-                .concat(),
-            )),
-        }
     }
 
     fn read_f32(&mut self) -> Result<f32, String> {
@@ -539,13 +613,6 @@ impl Read for ReadDecoder {
         Some(self.read_i32().unwrap())
     }
 
-    fn read_nullable_i64(&mut self) -> Option<i64> {
-        if self.is_next_nil() {
-            return None;
-        }
-        Some(self.read_i64().unwrap())
-    }
-
     fn read_nullable_u8(&mut self) -> Option<u8> {
         if self.is_next_nil() {
             return None;
@@ -565,13 +632,6 @@ impl Read for ReadDecoder {
             return None;
         }
         Some(self.read_u32().unwrap())
-    }
-
-    fn read_nullable_u64(&mut self) -> Option<u64> {
-        if self.is_next_nil() {
-            return None;
-        }
-        Some(self.read_u64().unwrap())
     }
 
     fn read_nullable_f32(&mut self) -> Option<f32> {
