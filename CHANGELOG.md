@@ -1,3 +1,8 @@
+# Web3API 0.0.1-prealpha.47
+## Features
+* `@web3api/client-js`: Add the Graph Node plugin to the client's default configuration.
+* `@web3api/ethereum-plugin-js`: Add the `encodeFunction` query method, allowing callers to encode smart contract methods w/ argument values.
+
 # Web3API 0.0.1-prealpha.46
 ## Bugs
 * `@web3api/core-js`: Properly check for "undefined" values in query arguments.
