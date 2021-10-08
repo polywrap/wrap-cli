@@ -107,7 +107,7 @@ const extractValue = Tracer.traceFunc(
         );
       }
 
-      if (!variables[node.name.value]) {
+      if (variables[node.name.value] === undefined) {
         throw Error(`Missing variable: ${node.name.value}`);
       }
 
