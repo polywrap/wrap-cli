@@ -4,7 +4,7 @@ import { filesystemPlugin } from "../index";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { GetPathToTestApis } from "@web3api/test-cases";
+import * as path from "path";
 
 jest.setTimeout(360000);
 
@@ -73,7 +73,7 @@ describe("Filesystem plugin", () => {
   });
 
   it("queries simple-storage api on local drive", async () => {
-    const apiPath = `${GetPathToTestApis()}/simple-storage`;
+    const apiPath = path.resolve(`${__dirname}/../../../../../test-cases/cases/apis/simple-storage`);
     await buildAndDeployApi(
       apiPath,
       ipfsProvider,

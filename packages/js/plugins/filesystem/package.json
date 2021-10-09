@@ -26,7 +26,6 @@
   "devDependencies": {
     "@web3api/client-js": "0.0.1-prealpha.45",
     "@web3api/test-env-js":  "0.0.1-prealpha.45",
-    "@web3api/test-cases": "0.0.1-prealpha.45",
     "@web3api/ipfs-plugin-js": "0.0.1-prealpha.45",
     "@web3api/ens-plugin-js": "0.0.1-prealpha.45",
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.45",
