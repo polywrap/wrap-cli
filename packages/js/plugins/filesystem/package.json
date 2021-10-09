@@ -1,7 +1,7 @@
 {
   "name": "@web3api/fs-plugin-js",
   "description": "Web3API File System Javascript Plugin",
-  "version": "0.0.1-prealpha.44",
+  "version": "0.0.1-prealpha.45",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -21,15 +21,15 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@web3api/core-js": "0.0.1-prealpha.44"
+    "@web3api/core-js": "0.0.1-prealpha.45"
   },
   "devDependencies": {
-    "@web3api/client-js": "0.0.1-prealpha.44",
-    "@web3api/test-env-js":  "0.0.1-prealpha.44",
-    "@web3api/test-cases": "0.0.1-prealpha.44",
-    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.44",
-    "@web3api/ens-plugin-js": "0.0.1-prealpha.44",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.44",
+    "@web3api/client-js": "0.0.1-prealpha.45",
+    "@web3api/test-env-js":  "0.0.1-prealpha.45",
+    "@web3api/test-cases": "0.0.1-prealpha.45",
+    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.45",
+    "@web3api/ens-plugin-js": "0.0.1-prealpha.45",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.45",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",
     "ts-node": "8.10.2",
