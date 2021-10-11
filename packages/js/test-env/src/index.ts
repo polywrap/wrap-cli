@@ -3,36 +3,63 @@ import spawn from "spawn-command";
 import axios from "axios";
 
 interface TestEnvironment {
-  ipfs: string;
-  ethereum: string;
-  ensAddress: string;
-  registrarAddress: string;
-  reverseAddress: string;
-  resolverAddress: string;
+  cliLogs: {
+    stdout: string;
+    stderr: string;
+    exitCode: number;
+  };
+  results: {
+    ipfs: string;
+    ethereum: string;
+    ensAddress: string;
+    registrarAddress: string;
+    reverseAddress: string;
+    resolverAddress: string;
+  };
 }
 
 export const initTestEnvironment = async (): Promise<TestEnvironment> => {
   // Start the test environment
-  const { exitCode, stderr } = await runCLI({ args: ["test-env", "up"] });
+  const { exitCode, stderr, stdout } = await runCLI({ args: ["test-env", "up"] });
+
+  console.log("herere")
+  console.log(exitCode)
+  console.log(stderr)
+  console.log(stdout)
 
   if (exitCode) {
     throw Error(
-      `initTestEnvironment failed to start test environment.\nExit Code: ${exitCode}\nStdErr: ${stderr}`
+      `initTestEnvironment failed to start test environment.\nExit Code: ${exitCode}\nStdErr: ${stderr}\nStdOut: ${stdout}`
     );
   }
 
-  // fetch providers from dev server
-  const {
-    data: { ipfs, ethereum },
-  } = await axios.get("http://localhost:4040/providers");
+  let ipfs: string;
+  let ethereum: string;
 
-  if (!ipfs) {
-    throw Error("Dev server must be running at port 4040");
+  try {
+    // fetch providers from dev server
+    const { data: providers } = await axios.get("http://localhost:4040/providers");
+
+    ipfs = providers.ipfs;
+    ethereum = providers.ethereum;
+
+    // re-deploy ENS
+    const { data: ensAddresses } = await axios.get("http://localhost:4040/deploy-ens");
+    return {
+      cliLogs: {
+        stdout,
+        stderr,
+        exitCode,
+      },
+      results: {
+        ipfs,
+        ethereum,
+        ...ensAddresses
+      },
+    };
+  } catch (e) {
+    throw Error(`Dev server must be running at port 4040\n${e}`);
   }
-
-  // re-deploy ENS
-  const { data } = await axios.get("http://localhost:4040/deploy-ens");
-  return { ipfs, ethereum, ...data };
 };
 
 export const stopTestEnvironment = async (): Promise<void> => {
