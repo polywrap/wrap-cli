@@ -12,7 +12,7 @@ import {
 
 import { ethers } from "ethers";
 import { keccak256 } from "js-sha3";
-import axios from "axios"
+import axios from "axios";
 
 const { hash: namehash } = require("eth-ens-namehash");
 const contracts = {
@@ -177,6 +177,23 @@ describe("Ethereum Plugin", () => {
       });
 
       expect(response.data?.encodeParams).toBe("0x000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000")
+    });
+
+    it("encodeFunction", async () => {
+      const response = await client.query<{ encodeFunction: string }>({
+        uri,
+        query: `
+          query {
+            encodeFunction(
+              method: "function increaseCount(uint256)",
+              args: ["100"]
+            )
+          }
+        `,
+      });
+
+      expect(response.errors).toBeUndefined();
+      expect(response.data?.encodeFunction).toBe("0x46d4adf20000000000000000000000000000000000000000000000000000000000000064")
     });
 
     it("getSignerAddress", async () => {

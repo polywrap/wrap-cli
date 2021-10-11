@@ -1,6 +1,6 @@
 {
-  "name": "ethereum-js-plugin-integration-test",
-  "description": "Ethereum JS Plugin Integration Test",
+  "name": "http-js-plugin-integration-test",
+  "description": "HTTP JS Plugin Integration Test",
   "private": true,
   "version": "0.0.1-prealpha.47",
   "scripts": {
