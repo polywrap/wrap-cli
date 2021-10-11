@@ -1,4 +1,5 @@
 FROM rust:1.55 as base
+# FROM rustlang/rust:nightly
 
 # Install nightly rust
 RUN rustup toolchain install nightly
@@ -7,7 +8,7 @@ RUN rustup toolchain install nightly
 RUN rustup update
 
 # Set the nightly channel as the default
-RUN rustup default nightly
+RUN rustup override set nightly
 
 # Install the wasm32 rust build target
 RUN rustup target add wasm32-unknown-unknown
@@ -52,10 +53,10 @@ RUN rm -rf mutation/Cargo.lock
 RUN rm -rf query/Cargo.lock
 
 # Build the module at mutation
-RUN cargo build --manifest-path ./mutation/Cargo.toml \
+RUN cargo +nightly build --manifest-path ./mutation/Cargo.toml \
     --release --target wasm32-unknown-unknown
 # Build the module at query
-RUN cargo build --manifest-path ./query/Cargo.toml \
+RUN cargo +nightly build --manifest-path ./query/Cargo.toml \
     --release --target wasm32-unknown-unknown
 
 # Make the build directory
