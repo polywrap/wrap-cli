@@ -79,6 +79,11 @@ type Ethereum_Query @imported(
     values: [String!]!
   ): String!
 
+  encodeFunction(
+    method: String!
+    args: [String!]
+  ): String!
+
   getSignerAddress(
     connection: Ethereum_Connection
   ): String!

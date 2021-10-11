@@ -4,6 +4,7 @@ import { Uri, coreInterfaceUris } from "@web3api/core-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
+import { graphNodePlugin } from "@web3api/graph-node-plugin-js";
 import { httpPlugin } from "@web3api/http-plugin-js";
 import { uts46Plugin } from "@web3api/uts46-plugin-js";
 import { sha3Plugin } from "@web3api/sha3-plugin-js";
@@ -55,6 +56,12 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         {
           uri: new Uri("w3://ens/sha3.web3api.eth"),
           plugin: sha3Plugin(),
+        },
+        {
+          uri: new Uri("w3://ens/graph-node.web3api.eth"),
+          plugin: graphNodePlugin({
+            provider: "https://api.thegraph.com",
+          }),
         },
       ],
       interfaces: [
