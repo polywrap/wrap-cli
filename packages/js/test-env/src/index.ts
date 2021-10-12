@@ -1,31 +1,25 @@
 import path from "path";
 import spawn from "spawn-command";
 import axios from "axios";
+import fs from "fs";
 
 interface TestEnvironment {
-  cliLogs: {
-    stdout: string;
-    stderr: string;
-    exitCode: number;
-  };
-  results: {
-    ipfs: string;
-    ethereum: string;
-    ensAddress: string;
-    registrarAddress: string;
-    reverseAddress: string;
-    resolverAddress: string;
-  };
+  ipfs: string;
+  ethereum: string;
+  ensAddress: string;
+  registrarAddress: string;
+  reverseAddress: string;
+  resolverAddress: string;
 }
 
-export const initTestEnvironment = async (): Promise<TestEnvironment> => {
-  // Start the test environment
-  const { exitCode, stderr, stdout } = await runCLI({ args: ["test-env", "up"] });
+const monorepoCli = `${__dirname}/../../../cli/bin/w3`;
+const npmCli = `${__dirname}/../../cli/bin/w3`;
 
-  console.log("herere")
-  console.log(exitCode)
-  console.log(stderr)
-  console.log(stdout)
+export const initTestEnvironment = async (
+  cli?: string
+): Promise<TestEnvironment> => {
+  // Start the test environment
+  const { exitCode, stderr, stdout } = await runCLI({ args: ["test-env", "up"], cli });
 
   if (exitCode) {
     throw Error(
@@ -33,38 +27,30 @@ export const initTestEnvironment = async (): Promise<TestEnvironment> => {
     );
   }
 
-  let ipfs: string;
-  let ethereum: string;
-
   try {
     // fetch providers from dev server
     const { data: providers } = await axios.get("http://localhost:4040/providers");
 
-    ipfs = providers.ipfs;
-    ethereum = providers.ethereum;
+    const ipfs = providers.ipfs;
+    const ethereum = providers.ethereum;
 
     // re-deploy ENS
     const { data: ensAddresses } = await axios.get("http://localhost:4040/deploy-ens");
     return {
-      cliLogs: {
-        stdout,
-        stderr,
-        exitCode,
-      },
-      results: {
-        ipfs,
-        ethereum,
-        ...ensAddresses
-      },
+      ipfs,
+      ethereum,
+      ...ensAddresses
     };
   } catch (e) {
     throw Error(`Dev server must be running at port 4040\n${e}`);
   }
 };
 
-export const stopTestEnvironment = async (): Promise<void> => {
+export const stopTestEnvironment = async (
+  cli?: string
+): Promise<void> => {
   // Stop the test environment
-  const { exitCode, stderr } = await runCLI({ args: ["test-env", "down"] });
+  const { exitCode, stderr } = await runCLI({ args: ["test-env", "down"], cli });
 
   if (exitCode) {
     throw Error(
@@ -79,8 +65,8 @@ export const runCLI = async (
   options: {
     args: string[];
     cwd?: string;
+    cli?: string;
   },
-  cli = `node ${__dirname}/../../../cli/bin/w3`
 ): Promise<{
   exitCode: number;
   stdout: string;
@@ -93,7 +79,20 @@ export const runCLI = async (
       options.cwd = cwd[0] !== "/" ? path.resolve(__dirname, cwd) : cwd;
     }
 
-    const command = `${cli} ${options.args.join(" ")}`;
+    // Resolve the CLI
+    if (!options.cli) {
+      if (fs.existsSync(monorepoCli)) {
+        options.cli = monorepoCli;
+      } else if (fs.existsSync(npmCli)) {
+        options.cli = npmCli;
+      } else {
+        throw Error(
+          `runCli is missing a valid CLI path, please provide one`
+        )
+      }
+    }
+
+    const command = `node ${options.cli} ${options.args.join(" ")}`;
     const child = spawn(command, { cwd: options.cwd });
 
     let stdout = "";
