@@ -2,7 +2,6 @@
 #![no_std]
 // Currently, no_std requires the nightly compiler due to the crates that it uses.
 #![feature(alloc_error_handler, core_intrinsics, lang_items)]
-
 // Set up the global allocator.
 extern crate alloc;
 extern crate wee_alloc;

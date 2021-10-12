@@ -61,10 +61,10 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
     {{/object}}
     {{#object}}
     {{#required}}
-    let mut _{{#toLower}}{{name}}{{/toLower}}: Option<{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}> = None;
+    let mut _{{#toLower}}{{name}}{{/toLower}}: {{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
     {{/required}}
     {{^required}}
-    let mut _{{#toLower}}{{name}}{{/toLower}}: {{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+    let mut _{{#toLower}}{{name}}{{/toLower}}: Option<{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}> = None;
     {{/required}}
     {{/object}}
     {{#required}}
