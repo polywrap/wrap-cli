@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.48
+## Bugs
+* `@web3api/test-env-js`: Allow the usage of this package as an npm package outside of the monorepo folder structure.
+
 # Web3API 0.0.1-prealpha.47
 ## Features
 * `@web3api/client-js`: Add the Graph Node plugin to the client's default configuration.
