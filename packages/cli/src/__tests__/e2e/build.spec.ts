@@ -25,8 +25,8 @@ describe("e2e tests for build command", () => {
       {
         args: ["build", "--help"],
         cwd: projectRoot,
+        cli: w3Cli,
       },
-      w3Cli
     );
 
     expect(code).toEqual(0);
@@ -39,8 +39,8 @@ describe("e2e tests for build command", () => {
       {
         args: ["build", "--output-dir"],
         cwd: projectRoot,
+        cli: w3Cli,
       },
-      w3Cli
     );
 
     expect(code).toEqual(0);
@@ -55,8 +55,8 @@ ${HELP}`);
       {
         args: ["build", "--test-ens"],
         cwd: projectRoot,
+        cli: w3Cli,
       },
-      w3Cli
     );
 
     expect(code).toEqual(0);
@@ -71,8 +71,8 @@ ${HELP}`);
       {
         args: ["build", "--test-ens", "test.eth"],
         cwd: projectRoot,
+        cli: w3Cli,
       },
-      w3Cli
     );
 
     expect(code).toEqual(0);
@@ -87,8 +87,8 @@ ${HELP}`);
       {
         args: ["build", "invalid-web3api-1.yaml"],
         cwd: projectRoot,
+        cli: w3Cli,
       },
-      w3Cli
     );
 
     const schemaPath = path.normalize(
@@ -107,8 +107,9 @@ ${HELP}`);
       {
         args: ["build", "invalid-web3api-2.yaml"],
         cwd: projectRoot,
+        cli: w3Cli,
       },
-      w3Cli
+    
     );
 
     expect(code).toEqual(1);
@@ -123,8 +124,8 @@ ${HELP}`);
       {
         args: ["build", "-v"],
         cwd: projectRoot,
+       cli: w3Cli,
       },
-      w3Cli
     );
 
     const manifestPath = "build/web3api.yaml";
@@ -145,8 +146,8 @@ ${HELP}`);
       {
         args: ["build", "web3api.no-docker.yaml", "-v"],
         cwd: projectRoot,
+        cli: w3Cli,
       },
-      w3Cli
     );
 
     const manifestPath = "build/web3api.yaml";
@@ -167,8 +168,8 @@ ${HELP}`);
       {
         args: ["build", "web3api.linked-packages.yaml", "-v"],
         cwd: projectRoot,
+        cli: w3Cli,
       },
-      w3Cli
     );
 
     const manifestPath = "build/web3api.yaml";
@@ -189,8 +190,8 @@ ${HELP}`);
       {
         args: ["build", "web3api.docker.yaml", "-v"],
         cwd: projectRoot,
+        cli: w3Cli,
       },
-      w3Cli
     );
 
     const manifestPath = "build/web3api.yaml";
@@ -209,8 +210,9 @@ ${HELP}`);
   test("Successfully builds project w/ metadata", async () => {
     const { exitCode: code, stdout: output } = await runCLI({
       args: ["build", "web3api-meta.yaml", "-v"],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     const manifestPath = "build/web3api.meta.yaml";
     const queryPath = "build/meta/queries/test.graphql";
