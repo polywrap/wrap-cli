@@ -19,7 +19,10 @@ export const initTestEnvironment = async (
   cli?: string
 ): Promise<TestEnvironment> => {
   // Start the test environment
-  const { exitCode, stderr, stdout } = await runCLI({ args: ["test-env", "up"], cli });
+  const { exitCode, stderr, stdout } = await runCLI({
+    args: ["test-env", "up"],
+    cli,
+  });
 
   if (exitCode) {
     throw Error(
@@ -29,28 +32,33 @@ export const initTestEnvironment = async (
 
   try {
     // fetch providers from dev server
-    const { data: providers } = await axios.get("http://localhost:4040/providers");
+    const { data: providers } = await axios.get(
+      "http://localhost:4040/providers"
+    );
 
     const ipfs = providers.ipfs;
     const ethereum = providers.ethereum;
 
     // re-deploy ENS
-    const { data: ensAddresses } = await axios.get("http://localhost:4040/deploy-ens");
+    const { data: ensAddresses } = await axios.get(
+      "http://localhost:4040/deploy-ens"
+    );
     return {
       ipfs,
       ethereum,
-      ...ensAddresses
+      ...ensAddresses,
     };
   } catch (e) {
     throw Error(`Dev server must be running at port 4040\n${e}`);
   }
 };
 
-export const stopTestEnvironment = async (
-  cli?: string
-): Promise<void> => {
+export const stopTestEnvironment = async (cli?: string): Promise<void> => {
   // Stop the test environment
-  const { exitCode, stderr } = await runCLI({ args: ["test-env", "down"], cli });
+  const { exitCode, stderr } = await runCLI({
+    args: ["test-env", "down"],
+    cli,
+  });
 
   if (exitCode) {
     throw Error(
@@ -61,13 +69,11 @@ export const stopTestEnvironment = async (
   return Promise.resolve();
 };
 
-export const runCLI = async (
-  options: {
-    args: string[];
-    cwd?: string;
-    cli?: string;
-  },
-): Promise<{
+export const runCLI = async (options: {
+  args: string[];
+  cwd?: string;
+  cli?: string;
+}): Promise<{
   exitCode: number;
   stdout: string;
   stderr: string;
@@ -86,9 +92,7 @@ export const runCLI = async (
       } else if (fs.existsSync(npmCli)) {
         options.cli = npmCli;
       } else {
-        throw Error(
-          `runCli is missing a valid CLI path, please provide one`
-        )
+        throw Error(`runCli is missing a valid CLI path, please provide one`);
       }
     }
 
