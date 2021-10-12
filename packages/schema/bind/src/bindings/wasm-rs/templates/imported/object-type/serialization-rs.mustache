@@ -129,7 +129,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
                 {{/enum}}
                 {{#object}}
                 {{> deserialize_object_nobox}}
-                _{{#toLower}}{{name}}{{/toLower}} = Some(object);
+                _{{#toLower}}{{name}}{{/toLower}} = object;
                 {{/object}}
                 {{#required}}
                 _{{#toLower}}{{name}}{{/toLower}}_set = true;
