@@ -1,11 +1,9 @@
-import { FilesystemPlugin } from "./";
 import { Query } from "./w3";
 
 import path from "path";
 import fs from "fs";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const query = (fsPlugin: FilesystemPlugin): Query.Module => ({
+export const query = (): Query.Module => ({
   // uri-resolver.core.web3api.eth
   tryResolveUri: async (input: Query.Input_tryResolveUri) => {
     if (input.authority !== "fs") {

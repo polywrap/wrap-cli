@@ -70,6 +70,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           implementations: [
             new Uri("w3://ens/ipfs.web3api.eth"),
             new Uri("w3://ens/ens.web3api.eth"),
+            new Uri("w3://ens/fs.web3api.eth"),
           ],
         },
         {

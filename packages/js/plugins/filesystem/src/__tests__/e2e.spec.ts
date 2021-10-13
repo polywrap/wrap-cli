@@ -1,5 +1,12 @@
-import { buildAndDeployApi, initTestEnvironment, stopTestEnvironment } from "@web3api/test-env-js";
-import { coreInterfaceUris, Web3ApiClient, ClientConfig } from "@web3api/client-js";
+import {
+  buildAndDeployApi,
+  initTestEnvironment,
+  stopTestEnvironment,
+} from "@web3api/test-env-js";
+import {
+  Web3ApiClient,
+  ClientConfig,
+} from "@web3api/client-js";
 import { filesystemPlugin } from "../index";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
@@ -23,14 +30,18 @@ describe("Filesystem plugin", () => {
       plugins: [
         {
           uri: "w3://ens/fs.web3api.eth",
-          plugin: filesystemPlugin({}),
+          plugin: filesystemPlugin(),
         },
         // IPFS is required for downloading Web3API packages
         {
           uri: "w3://ens/ipfs.web3api.eth",
           plugin: ipfsPlugin({
             provider: ipfs,
-            fallbackProviders: ["https://ipfs.fleek.co", "https://ipfs.io", "https://ipfs.infura.io"],
+            fallbackProviders: [
+              "https://ipfs.fleek.co",
+              "https://ipfs.io",
+              "https://ipfs.infura.io",
+            ],
           }),
         },
         // ENS is required for resolving domain to IPFS hashes
@@ -54,16 +65,6 @@ describe("Filesystem plugin", () => {
           }),
         },
       ],
-      interfaces: [
-        {
-          interface: coreInterfaceUris.uriResolver.uri,
-          implementations: [
-            "w3://ens/fs.web3api.eth",
-            "w3://ens/ipfs.web3api.eth",
-            "w3://ens/ens.web3api.eth",
-          ],
-        },
-      ],
     };
     client = new Web3ApiClient(config);
   });
@@ -73,12 +74,10 @@ describe("Filesystem plugin", () => {
   });
 
   it("queries simple-storage api on local drive", async () => {
-    const apiPath = path.resolve(`${__dirname}/../../../../../test-cases/cases/apis/simple-storage`);
-    await buildAndDeployApi(
-      apiPath,
-      ipfsProvider,
-      ensAddress
+    const apiPath = path.resolve(
+      `${__dirname}/../../../../../test-cases/cases/apis/simple-storage`
     );
+    await buildAndDeployApi(apiPath, ipfsProvider, ensAddress);
     const fsUri = `fs/${apiPath}/build`;
 
     // query api from filesystem

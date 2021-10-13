@@ -1,35 +1,23 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { query } from "./resolvers";
 import { manifest, Query } from "./w3";
 
-import { Plugin, PluginPackageManifest, PluginFactory } from "@web3api/core-js";
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface FilesystemConfig {}
+import { Plugin, PluginPackage, PluginPackageManifest } from "@web3api/core-js";
 
 export class FilesystemPlugin extends Plugin {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  constructor(private _config: FilesystemConfig) {
-    super();
-  }
-
   public static manifest(): PluginPackageManifest {
     return manifest;
   }
 
   public getModules(): { query: Query.Module } {
     return {
-      query: query(this),
+      query: query(),
     };
   }
 }
 
-export const filesystemPlugin: PluginFactory<FilesystemConfig> = (
-  opts: FilesystemConfig
-) => {
+export const filesystemPlugin = (): PluginPackage => {
   return {
-    factory: () => new FilesystemPlugin(opts),
+    factory: () => new FilesystemPlugin(),
     manifest: manifest,
   };
 };
