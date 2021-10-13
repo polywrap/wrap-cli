@@ -12,9 +12,9 @@ For detailed information about our toolchain, visit our [developer documentation
 
 The documentation is divided into helpful sections:
 
-- [What is Polywrap?](https://docs.polywrap.io/whatis)
-- [Creating a wrapper](https://docs.polywrap.io/guides/create-as-wrapper/pt1)
-- [Integrating into a JS dapp](https://docs.polywrap.io/guides/create-js-dapp/01)
+- [What is Polywrap?](https://docs.polywrap.io/getting-started/what-is-polywrap)
+- [Creating a wrapper](https://docs.polywrap.io/guides/create-as-wrapper/project-setup)
+- [Integrating into a JS dapp](https://docs.polywrap.io/guides/create-js-dapp/install-client)
 
 ## Overview of the Polywrap project
 
