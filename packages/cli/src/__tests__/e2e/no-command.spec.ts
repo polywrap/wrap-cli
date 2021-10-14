@@ -9,8 +9,9 @@ describe("e2e tests for no command", () => {
   test("Should throw error for unrecognized command", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["unknown"],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli
+    });
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -20,8 +21,9 @@ describe("e2e tests for no command", () => {
   test("Should let the user to type w3 help", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: [],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(code).toEqual(0);
     expect(error).toBe("");

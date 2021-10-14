@@ -52,7 +52,7 @@ export const validateWeb3ApiManifest = Tracer.traceFunc(
     const schema = schemas[manifest.format as Web3ApiManifestFormats];
 
     if (!schema) {
-      throw Error(`Unrecognized Web3ApiManifest schema format "${manifest.format}"`);
+      throw Error(`Unrecognized Web3ApiManifest schema format "${manifest.format}"\nmanifest: ${JSON.stringify(manifest, null, 2)}`);
     }
 
     const throwIfErrors = (result: ValidatorResult) => {
