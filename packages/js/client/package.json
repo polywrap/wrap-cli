@@ -28,6 +28,7 @@
     "@web3api/graph-node-plugin-js": "0.0.1-prealpha.47",
     "@web3api/http-plugin-js": "0.0.1-prealpha.47",
     "@web3api/ipfs-plugin-js": "0.0.1-prealpha.47",
+    "@web3api/fs-plugin-js": "0.0.1-prealpha.47",
     "@web3api/logger-plugin-js": "0.0.1-prealpha.47",
     "@web3api/schema-parse": "0.0.1-prealpha.47",
     "@web3api/sha3-plugin-js": "0.0.1-prealpha.47",
