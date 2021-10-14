@@ -18,7 +18,6 @@ edition = "2018"
 num-bigint = { version = "0.4", default-features = false }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 
-
 [profile.release]
 lto = true          # turn on Link-Time Optimizations
 codegen-units = 1   # trade compile time with maximum optimization
@@ -27,7 +26,7 @@ debug = false
 debug-assertions = false
 incremental = false
 overflow-checks = true
-panic = 'abort'
+panic = "abort"
 
 [profile.dev]
 panic = "abort"
