@@ -75,6 +75,7 @@ describe("Web3ApiClient", () => {
         new Uri("w3://ens/uts46.web3api.eth"),
         new Uri("w3://ens/sha3.web3api.eth"),
         new Uri("w3://ens/graph-node.web3api.eth"),
+        new Uri("w3://ens/fs.web3api.eth")
       ]);
     expect(
         client.interfaces()

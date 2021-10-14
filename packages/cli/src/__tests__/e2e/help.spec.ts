@@ -20,8 +20,9 @@ describe("e2e tests for no help", () => {
   test("Should display the help content", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["help"],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(code).toEqual(0);
     expect(error).toBe("");
