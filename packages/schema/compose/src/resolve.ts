@@ -27,6 +27,7 @@ import {
   visitImportedQueryDefinition,
   visitImportedObjectDefinition,
   ImportedEnumDefinition,
+  ImportedUnionDefinition,
   EnumDefinition,
   visitEnumDefinition,
   visitImportedEnumDefinition,
@@ -36,6 +37,10 @@ import {
   InterfaceImplementedDefinition,
   ObjectRef,
   EnumRef,
+  UnionRef,
+  UnionDefinition,
+  visitImportedUnionDefinition,
+  visitUnionDefinition,
 } from "@web3api/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -86,9 +91,11 @@ export async function resolveImportsAndParseSchemas(
     objectTypes: [],
     queryTypes: [],
     enumTypes: [],
+    unionTypes: [],
     importedEnumTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
+    importedUnionTypes: [],
   };
 
   const externalImports = await resolveExternalImports(
@@ -129,12 +136,16 @@ type ImportMap = Record<
     | ImportedObjectDefinition
     | ImportedQueryDefinition
     | ImportedEnumDefinition
+    | ImportedUnionDefinition
   ) &
     Namespaced
 >;
 
-type EnumOrObject = ObjectDefinition | EnumDefinition;
-type ImportedEnumOrObject = ImportedObjectDefinition | ImportedEnumDefinition;
+type EnumOrUnionOrObject = ObjectDefinition | EnumDefinition | UnionDefinition;
+type ImportedEnumOrUnionOrObject =
+  | ImportedObjectDefinition
+  | ImportedEnumDefinition
+  | ImportedUnionDefinition;
 
 // A transformation that converts all object definitions into
 // imported object definitions
@@ -147,10 +158,10 @@ const extractObjectImportDependencies = (
   const findImport = (
     type: string,
     namespaceType: string,
-    rootTypes: EnumOrObject[],
-    importedTypes: ImportedEnumOrObject[],
+    rootTypes: EnumOrUnionOrObject[],
+    importedTypes: ImportedEnumOrUnionOrObject[],
     kind: DefinitionKind
-  ): ImportedEnumOrObject & Namespaced => {
+  ): ImportedEnumOrUnionOrObject & Namespaced => {
     // Find this type's ObjectDefinition in the root type info
     let idx = rootTypes.findIndex((obj) => obj.type === type);
     let obj = undefined;
@@ -282,6 +293,27 @@ const extractObjectImportDependencies = (
 
         return def;
       },
+      UnionRef: (def: UnionRef & Namespaced) => {
+        if (def.__namespaced) {
+          return def;
+        }
+
+        const namespaceType = appendNamespace(namespace, def.type);
+        if (!importsFound[namespaceType]) {
+          // Find the import
+          const importFound = findImport(
+            def.type,
+            namespaceType,
+            rootTypeInfo.unionTypes,
+            rootTypeInfo.importedUnionTypes,
+            DefinitionKind.ImportedUnion
+          ) as ImportedUnionDefinition;
+
+          importsFound[importFound.type] = importFound;
+        }
+
+        return def;
+      },
     },
   };
 };
@@ -313,6 +345,17 @@ const namespaceTypes = (namespace: string): TypeInfoTransforms => ({
       };
     },
     EnumRef: (def: EnumRef & Namespaced) => {
+      if (def.__namespaced) {
+        return def;
+      }
+
+      return {
+        ...def,
+        type: appendNamespace(namespace, def.type),
+        __namespaced: true,
+      };
+    },
+    UnionRef: (def: UnionRef & Namespaced) => {
       if (def.__namespaced) {
         return def;
       }
@@ -488,6 +531,7 @@ async function resolveExternalImports(
         | QueryDefinition
         | ObjectDefinition
         | EnumDefinition
+        | UnionDefinition
       )[] = [];
       let visitorFunc: Function;
       let trueTypeKind: DefinitionKind;
@@ -529,10 +573,25 @@ async function resolveExternalImports(
           extTypes = extTypeInfo.importedEnumTypes;
           visitorFunc = visitEnumDefinition;
           trueTypeKind = DefinitionKind.ImportedEnum;
-        } else {
+        } else if (
+          extTypeInfo.enumTypes.findIndex((def) => def.type === importedType) >
+          -1
+        ) {
           extTypes = extTypeInfo.enumTypes;
           visitorFunc = visitEnumDefinition;
           trueTypeKind = DefinitionKind.ImportedEnum;
+        } else if (
+          extTypeInfo.importedUnionTypes.findIndex(
+            (def) => def.type === importedType
+          ) > -1
+        ) {
+          extTypes = extTypeInfo.importedUnionTypes;
+          visitorFunc = visitUnionDefinition;
+          trueTypeKind = DefinitionKind.ImportedUnion;
+        } else {
+          extTypes = extTypeInfo.unionTypes;
+          visitorFunc = visitUnionDefinition;
+          trueTypeKind = DefinitionKind.ImportedUnion;
         }
       }
 
@@ -585,7 +644,8 @@ async function resolveExternalImports(
       let destArray:
         | ImportedObjectDefinition[]
         | ImportedQueryDefinition[]
-        | ImportedEnumDefinition[];
+        | ImportedEnumDefinition[]
+        | ImportedUnionDefinition[];
       let append;
 
       if (importType.kind === DefinitionKind.ImportedObject) {
@@ -616,6 +676,16 @@ async function resolveExternalImports(
             )
           );
         };
+      } else if (importType.kind === DefinitionKind.ImportedUnion) {
+        destArray = typeInfo.importedUnionTypes;
+        append = () => {
+          typeInfo.importedUnionTypes.push(
+            visitImportedUnionDefinition(
+              importType as ImportedUnionDefinition,
+              namespaceTypes(namespace)
+            )
+          );
+        };
       } else {
         throw Error(
           `resolveExternalImports: This should never happen, unknown kind.\n${JSON.stringify(
@@ -633,6 +703,7 @@ async function resolveExternalImports(
               | ImportedObjectDefinition
               | ImportedQueryDefinition
               | ImportedEnumDefinition
+              | ImportedUnionDefinition
           ) => def.type === importType.type
         ) > -1;
 
@@ -689,9 +760,18 @@ async function resolveLocalImports(
           type = localTypeInfo.objectTypes.find(
             (type) => type.type === importedType
           );
-        } else {
+        } else if (
+          localTypeInfo.enumTypes.findIndex(
+            (type) => type.type === importedType
+          ) > -1
+        ) {
           visitorFunc = visitEnumDefinition;
           type = localTypeInfo.enumTypes.find(
+            (type) => type.type === importedType
+          );
+        } else {
+          visitorFunc = visitUnionDefinition;
+          type = localTypeInfo.unionTypes.find(
             (type) => type.type === importedType
           );
         }
@@ -708,7 +788,7 @@ async function resolveLocalImports(
 
         const findImport = (
           def: GenericDefinition,
-          rootTypes: EnumOrObject[]
+          rootTypes: EnumOrUnionOrObject[]
         ) => {
           // Skip objects that we've already processed
           if (typesToImport[def.type]) {
@@ -741,6 +821,9 @@ async function resolveLocalImports(
             EnumRef: (def: EnumRef) => {
               return findImport(def, localTypeInfo.enumTypes);
             },
+            UnionRef: (def: UnionRef) => {
+              return findImport(def, localTypeInfo.unionTypes);
+            },
           },
         });
       }
@@ -757,11 +840,19 @@ async function resolveLocalImports(
             typesToImport[importType] as ObjectDefinition
           );
         }
-      } else {
+      } else if (isKind(typesToImport[importType], DefinitionKind.Enum)) {
         if (
           typeInfo.enumTypes.findIndex((def) => def.type === importType) === -1
         ) {
           typeInfo.enumTypes.push(typesToImport[importType] as EnumDefinition);
+        }
+      } else {
+        if (
+          typeInfo.unionTypes.findIndex((def) => def.type === importType) === -1
+        ) {
+          typeInfo.unionTypes.push(
+            typesToImport[importType] as UnionDefinition
+          );
         }
       }
     }
