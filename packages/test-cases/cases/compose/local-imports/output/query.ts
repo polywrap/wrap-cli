@@ -204,7 +204,9 @@ export const typeInfo: TypeInfo = {
       constants: ["STRING", "BYTES"]
     })
   ],
+  unionTypes: [],
   importedObjectTypes: [],
   importedQueryTypes: [],
   importedEnumTypes: [],
+  importedUnionTypes: []
 }

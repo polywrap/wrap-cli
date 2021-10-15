@@ -292,6 +292,7 @@ export const typeInfo: TypeInfo = {
       ],
     }
   ],
+  unionTypes: [],
   importedQueryTypes: [
     {
       ...createImportedQueryDefinition({
@@ -884,4 +885,5 @@ export const typeInfo: TypeInfo = {
       })
     }
   ],
+  importedUnionTypes: []
 }

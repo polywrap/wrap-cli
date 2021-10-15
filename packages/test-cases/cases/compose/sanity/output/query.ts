@@ -246,6 +246,7 @@ export const typeInfo: TypeInfo = {
     }
   ],
   enumTypes: [],
+  unionTypes: [],
   importedObjectTypes: [
     {
       ...createImportedObjectDefinition({
@@ -674,4 +675,5 @@ export const typeInfo: TypeInfo = {
       })
     }
   ],
+  importedUnionTypes: []
 }

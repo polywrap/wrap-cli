@@ -1,39 +1,41 @@
-import {
-  Read,
-  Write,
-  Nullable,
-  BigInt,
-  JSON
-} from "@web3api/wasm-as";
+import { Read, Write, Nullable, BigInt, JSON } from "@web3api/wasm-as";
 import {
   serializeTestUnion,
   deserializeTestUnion,
   writeTestUnion,
-  readTestUnion
+  readTestUnion,
 } from "./serialization";
 import * as Types from "..";
 
 export abstract class TestUnion {
-
   get isUnionTypeA(): boolean {
-    return this instanceof TestUnionUnionTypeA;
+    return this instanceof Types.UnionTypeA;
   }
 
-  function getUnionTypeA(): Types.UnionTypeA {
-    if (!this.isUnionTypeA) {
-      throw Error("...")
+  get UnionTypeA(): Types.UnionTypeA {
+    if (this instanceof UnionTypeA) {
+      return this.instance;
     }
-    return (this as TestUnionUnionTypeA).instance;
+
+    throw new Error("Union '{{__commonImport.type}}' is not of type '{{type}}'");
   }
 
-  // TODO:
-  // x is${type} checkers
-  // x get${type} getters
+  get isUnionTypeB(): boolean {
+    return this instanceof Types.UnionTypeB;
+  }
+
+  get UnionTypeB(): Types.UnionTypeB {
+    if (this instanceof UnionTypeB) {
+      return this.instance;
+    }
+
+    throw new Error("Union '{{__commonImport.type}}' is not of type '{{type}}'");
+  }
 }
 
-class TestUnionUnionTypeA extends TestUnion {
-  constructor(public _instance: Types.UnionTypeA) {
-    super(TestUnionType.UnionTypeA);
+class UnionTypeA extends TestUnion {
+  constructor(private _instance: Types.UnionTypeA) {
+    super();
   }
 
   get instance(): Types.UnionTypeA {
@@ -41,13 +43,12 @@ class TestUnionUnionTypeA extends TestUnion {
   }
 }
 
-const vals: TestUnion[] = [
-  new TestUnionUnionTypeA(new UnionTypeA())
-]
+class UnionTypeB extends TestUnion {
+  constructor(public _instance: Types.UnionTypeB) {
+    super();
+  }
 
-for (const val of vals) {
-  if (val.isUnionTypeA) {
-    const unionTypeA = val.getUnionTypeA()
+  get instance(): Types.UnionTypeB {
+    return this._instance;
   }
 }
-

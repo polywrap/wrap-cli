@@ -18,6 +18,7 @@ import {
 
 export const typeInfo: TypeInfo = {
   enumTypes: [],
+  unionTypes: [],
   queryTypes: [
     {
       ...createQueryDefinition({ type: "Query", comment: "Query comment" }),
@@ -1126,4 +1127,5 @@ export const typeInfo: TypeInfo = {
       })
     }
   ],
+  importedUnionTypes: []
 }

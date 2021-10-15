@@ -72,7 +72,13 @@ type AnotherObject {
   prop: String!
 }
 
+type YetAnotherObject {
+  prop: Boolean!
+}
+
 enum Enum {
   STRING
   BYTES
 }
+
+union IUnion = AnotherObject | YetAnotherObject

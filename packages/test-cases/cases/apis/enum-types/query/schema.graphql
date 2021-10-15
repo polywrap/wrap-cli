@@ -1,17 +1,33 @@
-type Query {
-  method1(
-    en: Enum!
-    optEnum: Enum
-  ): Enum!
-
-  method2(
-    enumArray: [Enum!]!
-    optEnumArray: [Enum]
-  ): [Enum!]!
+type ArgUnionA {
+  prop: String!
 }
 
-enum Enum {
-  OPTION1
-  OPTION2
-  OPTION3
+type ArgUnionB {
+  prop: Boolean!
+}
+
+union ArgUnion = ArgUnionA | ArgUnionB
+
+type TypeUnionA {
+  propA: Int!
+}
+
+type TypeUnionB {
+  propB: Boolean!
+}
+
+union TypeUnion = TypeUnionA | TypeUnionB
+
+type Query {
+  method1(
+    arg: ArgUnion!
+  ): Boolean!
+
+  method2(
+    arg: Boolean!
+  ): TypeUnion!
+
+  method3(
+    arg: ArgUnion!
+  ): TypeUnion!
 }

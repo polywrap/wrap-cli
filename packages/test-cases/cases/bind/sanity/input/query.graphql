@@ -1,5 +1,5 @@
 #import { CustomType, CustomEnum, AnotherType, TestUnion } from "../imports-local/common.graphql"
-#import { Query, Object, AnotherObject, Enum } into TestImport from "testimport.uri.eth"
+#import { Query, Object, AnotherObject, Enum, IUnion } into TestImport from "testimport.uri.eth"
 
 type Query {
   queryMethod(
@@ -21,5 +21,5 @@ type Query {
   unionMethod(
     union: TestUnion!
     unionArray: [TestUnion!]!
-  ): [TestUnion!]!
+  ): [IUnion!]!
 }

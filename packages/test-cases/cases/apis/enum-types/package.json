@@ -1,5 +1,5 @@
 {
-  "name": "test-case-enum-types",
+  "name": "test-case-union-types",
   "private": true,
   "dependencies": {
     "@web3api/wasm-as": "0.0.1-prealpha.40",

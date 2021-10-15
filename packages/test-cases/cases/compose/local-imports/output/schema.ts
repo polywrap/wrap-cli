@@ -17,6 +17,7 @@ export const typeInfo: TypeInfo = {
   importedObjectTypes: [],
   importedEnumTypes: [],
   importedQueryTypes: [],
+  importedUnionTypes: [],
   queryTypes: [
     {
       ...createQueryDefinition({ type: "Query" }),
@@ -343,5 +344,6 @@ export const typeInfo: TypeInfo = {
       type: "CommonEnum",
       constants: ["STRING", "BYTES"]
     })
-  ]
+  ],
+  unionTypes: []
 }
