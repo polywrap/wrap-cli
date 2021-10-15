@@ -19,6 +19,9 @@ import {
   InterfaceImplementedDefinition,
   EnumRef,
   ObjectRef,
+  UnionDefinition,
+  UnionRef,
+  ImportedUnionDefinition,
 } from "../typeInfo";
 
 export * from "./finalizePropertyDef";
@@ -42,6 +45,8 @@ export interface TypeInfoTransformer {
   ScalarDefinition?: (def: ScalarDefinition) => ScalarDefinition;
   EnumDefinition?: (def: EnumDefinition) => EnumDefinition;
   EnumRef?: (def: EnumRef) => EnumRef;
+  UnionDefinition?: (def: UnionDefinition) => UnionDefinition;
+  UnionRef?: (def: UnionRef) => UnionRef;
   PropertyDefinition?: (def: PropertyDefinition) => PropertyDefinition;
   ArrayDefinition?: (def: ArrayDefinition) => ArrayDefinition;
   MethodDefinition?: (def: MethodDefinition) => MethodDefinition;
@@ -49,6 +54,9 @@ export interface TypeInfoTransformer {
   ImportedEnumDefinition?: (
     def: ImportedEnumDefinition
   ) => ImportedEnumDefinition;
+  ImportedUnionDefinition?: (
+    def: ImportedUnionDefinition
+  ) => ImportedUnionDefinition;
   ImportedQueryDefinition?: (
     def: ImportedQueryDefinition
   ) => ImportedQueryDefinition;
@@ -72,6 +80,13 @@ export function transformTypeInfo(
 
   for (let i = 0; i < result.enumTypes.length; ++i) {
     result.enumTypes[i] = visitEnumDefinition(result.enumTypes[i], transforms);
+  }
+
+  for (let i = 0; i < result.unionTypes.length; ++i) {
+    result.unionTypes[i] = visitUnionDefinition(
+      result.unionTypes[i],
+      transforms
+    );
   }
 
   for (let i = 0; i < result.objectTypes.length; ++i) {
@@ -105,6 +120,13 @@ export function transformTypeInfo(
   for (let i = 0; i < result.importedEnumTypes.length; ++i) {
     result.importedEnumTypes[i] = visitImportedEnumDefinition(
       result.importedEnumTypes[i],
+      transforms
+    );
+  }
+
+  for (let i = 0; i < result.importedUnionTypes.length; ++i) {
+    result.importedUnionTypes[i] = visitImportedUnionDefinition(
+      result.importedUnionTypes[i],
       transforms
     );
   }
@@ -183,6 +205,10 @@ export function visitAnyDefinition(
     result.enum = visitEnumRef(result.enum, transforms);
   }
 
+  if (result.union) {
+    result.union = visitUnionRef(result.union, transforms);
+  }
+
   return result;
 }
 
@@ -208,6 +234,24 @@ export function visitEnumRef(
   def: EnumRef,
   transforms: TypeInfoTransforms
 ): EnumRef {
+  let result = Object.assign({}, def);
+  result = transformType(result, transforms.enter);
+  return transformType(result, transforms.leave);
+}
+
+export function visitUnionDefinition(
+  def: UnionDefinition,
+  transforms: TypeInfoTransforms
+): UnionDefinition {
+  let result = Object.assign({}, def);
+  result = transformType(result, transforms.enter);
+  return transformType(result, transforms.leave);
+}
+
+export function visitUnionRef(
+  def: UnionRef,
+  transforms: TypeInfoTransforms
+): UnionRef {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
   return transformType(result, transforms.leave);
@@ -305,6 +349,13 @@ export function visitImportedEnumDefinition(
   return visitEnumDefinition(def, transforms) as ImportedEnumDefinition;
 }
 
+export function visitImportedUnionDefinition(
+  def: ImportedUnionDefinition,
+  transforms: TypeInfoTransforms
+): ImportedUnionDefinition {
+  return visitUnionDefinition(def, transforms) as ImportedUnionDefinition;
+}
+
 export function transformType<TDefinition extends GenericDefinition>(
   type: TDefinition,
   transform?: TypeInfoTransformer
@@ -322,11 +373,14 @@ export function transformType<TDefinition extends GenericDefinition>(
     ScalarDefinition,
     EnumDefinition,
     EnumRef,
+    UnionDefinition,
+    UnionRef,
     ArrayDefinition,
     PropertyDefinition,
     MethodDefinition,
     QueryDefinition,
     ImportedEnumDefinition,
+    ImportedUnionDefinition,
     ImportedQueryDefinition,
     ImportedObjectDefinition,
     InterfaceImplementedDefinition,
@@ -353,6 +407,12 @@ export function transformType<TDefinition extends GenericDefinition>(
   if (EnumRef && isKind(result, DefinitionKind.EnumRef)) {
     result = Object.assign(result, EnumRef(result as any));
   }
+  if (UnionDefinition && isKind(result, DefinitionKind.Union)) {
+    result = Object.assign(result, UnionDefinition(result as any));
+  }
+  if (UnionRef && isKind(result, DefinitionKind.UnionRef)) {
+    result = Object.assign(result, UnionRef(result as any));
+  }
   if (ArrayDefinition && isKind(result, DefinitionKind.Array)) {
     result = Object.assign(result, ArrayDefinition(result as any));
   }
@@ -370,6 +430,9 @@ export function transformType<TDefinition extends GenericDefinition>(
   }
   if (ImportedEnumDefinition && isKind(result, DefinitionKind.ImportedEnum)) {
     result = Object.assign(result, ImportedEnumDefinition(result as any));
+  }
+  if (ImportedUnionDefinition && isKind(result, DefinitionKind.ImportedUnion)) {
+    result = Object.assign(result, ImportedUnionDefinition(result as any));
   }
   if (
     ImportedObjectDefinition &&

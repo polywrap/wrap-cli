@@ -3,6 +3,7 @@ import {
   ArrayDefinition,
   createEnumRef,
   createObjectRef,
+  createUnionRef,
   GenericDefinition,
   PropertyDefinition,
   TypeInfo,
@@ -28,14 +29,16 @@ export function populatePropertyType(
   if (property.array) {
     populateArrayType(property.array, typeInfo);
     propertyType = property.array;
-  } else if (property.unresolvedObjectOrEnum) {
-    propertyType = resolveObjectOrEnumKind(property, typeInfo);
+  } else if (property.unresolvedObjectOrUnionOrEnum) {
+    propertyType = resolveObjectOrUnionOrEnumKind(property, typeInfo);
   } else if (property.scalar) {
     propertyType = property.scalar;
   } else if (property.object) {
     propertyType = property.object;
   } else if (property.enum) {
     propertyType = property.enum;
+  } else if (property.union) {
+    propertyType = property.union;
   } else {
     throw Error("Property type is undefined, this should never happen.");
   }
@@ -56,7 +59,8 @@ function populateArrayType(array: ArrayDefinition, typeInfo: TypeInfo) {
       currentArray.scalar ||
       currentArray.object ||
       currentArray.enum ||
-      currentArray.unresolvedObjectOrEnum
+      currentArray.union ||
+      currentArray.unresolvedObjectOrUnionOrEnum
     ) {
       baseTypeFound = true;
     } else {
@@ -72,12 +76,14 @@ function populateArrayType(array: ArrayDefinition, typeInfo: TypeInfo) {
 
   if (array.array) {
     array.item = array.array;
-  } else if (array.unresolvedObjectOrEnum) {
-    array.item = resolveObjectOrEnumKind(array, typeInfo);
+  } else if (array.unresolvedObjectOrUnionOrEnum) {
+    array.item = resolveObjectOrUnionOrEnumKind(array, typeInfo);
   } else if (array.scalar) {
     array.item = array.scalar;
   } else if (array.enum) {
     array.item = array.enum;
+  } else if (array.union) {
+    array.item = array.union;
   } else {
     array.item = array.object;
   }
@@ -89,60 +95,78 @@ function populateArrayType(array: ArrayDefinition, typeInfo: TypeInfo) {
   array.type = "[" + array.item.type + "]";
 }
 
-function resolveObjectOrEnumKind(
+function resolveObjectOrUnionOrEnumKind(
   property: PropertyDefinition,
   typeInfo: TypeInfo
 ): GenericDefinition {
-  if (!property.unresolvedObjectOrEnum) {
+  if (!property.unresolvedObjectOrUnionOrEnum) {
     throw Error("Type reference is undefined, this should never happen.");
   }
 
-  // Check to see if the type is a part of the custom types defined inside the schema (objects, enums)
-  let customType: GenericDefinition | undefined = typeInfo.objectTypes.find(
-    (type) => type.type === property.unresolvedObjectOrEnum!.type
+  // Check to see if the type is a part of the custom types defined inside the schema (objects, enums, unions)
+  const objectType = typeInfo.objectTypes.find(
+    (type) => type.type === property.unresolvedObjectOrUnionOrEnum!.type
   );
 
-  customType = customType
-    ? customType
-    : typeInfo.importedObjectTypes.find(
-        (type) => type.type === property.unresolvedObjectOrEnum!.type
-      );
+  const importedObjectType = typeInfo.importedObjectTypes.find(
+    (type) => type.type === property.unresolvedObjectOrUnionOrEnum!.type
+  );
 
-  if (!customType) {
-    customType = typeInfo.enumTypes.find(
-      (type) => type.type === property.unresolvedObjectOrEnum!.type
-    );
+  const objectCustomType = objectType || importedObjectType;
 
-    customType = customType
-      ? customType
-      : typeInfo.importedEnumTypes.find(
-          (type) => type.type === property.unresolvedObjectOrEnum!.type
-        );
+  const enumType = typeInfo.enumTypes.find(
+    (type) => type.type === property.unresolvedObjectOrUnionOrEnum!.type
+  );
 
-    if (!customType) {
-      throw new Error(
-        `Unsupported type ${property.unresolvedObjectOrEnum.type}`
-      );
-    }
+  const importedEnumType = typeInfo.importedEnumTypes.find(
+    (type) => type.type === property.unresolvedObjectOrUnionOrEnum!.type
+  );
 
-    property.enum = createEnumRef({
-      name: property.unresolvedObjectOrEnum.name,
-      required: property.unresolvedObjectOrEnum.required ?? undefined,
-      type: property.unresolvedObjectOrEnum.type,
-    });
+  const enumCustomType = enumType || importedEnumType;
 
-    property.unresolvedObjectOrEnum = null;
+  const unionType = typeInfo.unionTypes.find(
+    (type) => type.type === property.unresolvedObjectOrUnionOrEnum!.type
+  );
 
-    return property.enum;
-  } else {
+  const importedUnionType = typeInfo.importedUnionTypes.find(
+    (type) => type.type === property.unresolvedObjectOrUnionOrEnum!.type
+  );
+
+  const unionCustomType = unionType || importedUnionType;
+
+  if (objectCustomType) {
     property.object = createObjectRef({
-      name: property.unresolvedObjectOrEnum.name,
-      required: property.unresolvedObjectOrEnum.required ?? undefined,
-      type: property.unresolvedObjectOrEnum.type,
+      name: property.unresolvedObjectOrUnionOrEnum.name,
+      required: property.unresolvedObjectOrUnionOrEnum.required ?? undefined,
+      type: property.unresolvedObjectOrUnionOrEnum.type,
     });
 
-    property.unresolvedObjectOrEnum = null;
+    property.unresolvedObjectOrUnionOrEnum = null;
 
     return property.object;
+  } else if (enumCustomType) {
+    property.enum = createEnumRef({
+      name: property.unresolvedObjectOrUnionOrEnum.name,
+      required: property.unresolvedObjectOrUnionOrEnum.required ?? undefined,
+      type: property.unresolvedObjectOrUnionOrEnum.type,
+    });
+
+    property.unresolvedObjectOrUnionOrEnum = null;
+
+    return property.enum;
+  } else if (unionCustomType) {
+    property.union = createUnionRef({
+      name: property.unresolvedObjectOrUnionOrEnum.name,
+      required: property.unresolvedObjectOrUnionOrEnum.required ?? undefined,
+      type: property.unresolvedObjectOrUnionOrEnum.type,
+    });
+
+    property.unresolvedObjectOrUnionOrEnum = null;
+
+    return property.union;
+  } else {
+    throw new Error(
+      `Unsupported type ${property.unresolvedObjectOrUnionOrEnum.type}`
+    );
   }
 }

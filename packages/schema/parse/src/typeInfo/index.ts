@@ -6,6 +6,8 @@ import {
   GenericDefinition,
   EnumDefinition,
   ImportedEnumDefinition,
+  UnionDefinition,
+  ImportedUnionDefinition,
 } from "./definitions";
 
 export * from "./definitions";
@@ -17,18 +19,22 @@ export interface TypeInfo {
   objectTypes: ObjectDefinition[];
   queryTypes: QueryDefinition[];
   enumTypes: EnumDefinition[];
+  unionTypes: UnionDefinition[];
   importedObjectTypes: ImportedObjectDefinition[];
   importedQueryTypes: ImportedQueryDefinition[];
   importedEnumTypes: ImportedEnumDefinition[];
+  importedUnionTypes: ImportedUnionDefinition[];
 }
 export function createTypeInfo(): TypeInfo {
   return {
     objectTypes: [],
+    unionTypes: [],
     enumTypes: [],
     queryTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
     importedEnumTypes: [],
+    importedUnionTypes: [],
   };
 }
 
@@ -39,9 +45,11 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
     objectTypes: [],
     queryTypes: [],
     enumTypes: [],
+    unionTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
     importedEnumTypes: [],
+    importedUnionTypes: [],
   };
 
   const compareImportedType = (

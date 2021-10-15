@@ -69,13 +69,6 @@ export const getTypeDefinitionsValidator = (): SchemaValidator => {
             );
           }
         },
-        // No Unions
-        UnionTypeDefinition: (node: UnionTypeDefinitionNode) => {
-          throw Error(
-            "Union type definitions are not supported.\n" +
-              `Found: union ${node.name.value}`
-          );
-        },
       },
     },
   };
@@ -87,6 +80,7 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
   let currentField: string | undefined;
   const objectTypes: Record<string, boolean> = {};
   const enumTypes: Record<string, boolean> = {};
+  const unionTypes: Record<string, boolean> = {};
   const duplicateFields: Record<string, Record<string, boolean>> = {};
   const fieldTypes: {
     object: string;
@@ -119,6 +113,9 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
         },
         EnumTypeDefinition: (node: EnumTypeDefinitionNode) => {
           enumTypes[node.name.value] = true;
+        },
+        UnionTypeDefinition: (node: UnionTypeDefinitionNode) => {
+          unionTypes[node.name.value] = true;
         },
         Directive: (node: DirectiveNode) => {
           if (node.name.value === "imported") {
@@ -178,7 +175,8 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
         if (
           !isScalarType(field.type) &&
           !objectTypes[field.type] &&
-          !enumTypes[field.type]
+          !enumTypes[field.type] &&
+          !unionTypes[field.type]
         ) {
           throw Error(
             `Unknown property type found: type ${field.object} { ${field.field}: ${field.type} }`

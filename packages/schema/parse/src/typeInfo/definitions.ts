@@ -15,13 +15,24 @@ export enum DefinitionKind {
   ImportedQuery = 1 << 8,
   ImportedEnum = 1 << 9,
   ImportedObject = (1 << 10) | DefinitionKind.Object,
-  InterfaceImplemented = 1 << 11,
-  UnresolvedObjectOrEnum = 1 << 12,
-  ObjectRef = 1 << 13,
-  EnumRef = 1 << 14,
+  ImportedUnion = 1 << 11,
+  InterfaceImplemented = 1 << 12,
+  UnresolvedObjectOrUnionOrEnumRef = 1 << 13,
+  ObjectRef = 1 << 14,
+  EnumRef = 1 << 15,
+  Union = 1 << 16,
+  UnionRef = 1 << 17,
 }
 
-export function isKind(type: GenericDefinition, kind: DefinitionKind): boolean {
+export function isKind(
+  type: GenericDefinition,
+  kind: DefinitionKind,
+  name?: string
+): boolean {
+  if (name) {
+    console.log(type.kind, kind, type.kind & kind, name);
+  }
+
   return (type.kind & kind) === kind;
 }
 
@@ -85,7 +96,8 @@ export interface AnyDefinition extends GenericDefinition {
   scalar: ScalarDefinition | null;
   object: ObjectRef | null;
   enum: EnumRef | null;
-  unresolvedObjectOrEnum: UnresolvedObjectOrEnumRef | null;
+  union: UnionRef | null;
+  unresolvedObjectOrUnionOrEnum: UnresolvedObjectOrUnionOrEnumRef | null;
 }
 export function createAnyDefinition(args: {
   type: string;
@@ -95,14 +107,17 @@ export function createAnyDefinition(args: {
   scalar?: ScalarDefinition;
   object?: ObjectRef;
   enum?: EnumRef;
+  union?: UnionRef;
 }): AnyDefinition {
+  // console.log(args);
   return {
     ...createGenericDefinition(args),
     array: args.array ? args.array : null,
     scalar: args.scalar ? args.scalar : null,
     object: args.object ? args.object : null,
     enum: args.enum ? args.enum : null,
-    unresolvedObjectOrEnum: null,
+    union: args.union ? args.union : null,
+    unresolvedObjectOrUnionOrEnum: null,
     kind: DefinitionKind.Any,
   };
 }
@@ -130,6 +145,11 @@ export function createScalarDefinition(args: {
 export interface EnumDefinition extends GenericDefinition, WithComment {
   constants: string[];
 }
+
+export interface UnionDefinition extends GenericDefinition, WithComment {
+  unionTypes: (GenericDefinition | null)[];
+}
+
 export function createEnumDefinition(args: {
   type: string;
   name?: string | null;
@@ -158,16 +178,44 @@ export function createEnumRef(args: {
   };
 }
 
-export type UnresolvedObjectOrEnumRef = GenericDefinition;
-export function createUnresolvedObjectOrEnumRef(args: {
+export function createUnionDefinition(args: {
   type: string;
   name?: string | null;
   required?: boolean;
-}): UnresolvedObjectOrEnumRef {
+  unionTypes: (GenericDefinition | null)[];
+}): UnionDefinition {
   return {
     ...createGenericDefinition(args),
     type: args.type,
-    kind: DefinitionKind.UnresolvedObjectOrEnum,
+    name: args.name ? args.name : null,
+    required: args.required ? args.required : null,
+    unionTypes: args.unionTypes,
+    kind: DefinitionKind.Union,
+  };
+}
+
+export type UnionRef = GenericDefinition;
+export function createUnionRef(args: {
+  type: string;
+  name?: string | null;
+  required?: boolean;
+}): UnionRef {
+  return {
+    ...createGenericDefinition(args),
+    kind: DefinitionKind.UnionRef,
+  };
+}
+
+export type UnresolvedObjectOrUnionOrEnumRef = GenericDefinition;
+export function createUnresolvedObjectOrUnionOrEnumRef(args: {
+  type: string;
+  name?: string | null;
+  required?: boolean;
+}): UnresolvedObjectOrUnionOrEnumRef {
+  return {
+    ...createGenericDefinition(args),
+    type: args.type,
+    kind: DefinitionKind.UnresolvedObjectOrUnionOrEnumRef,
   };
 }
 
@@ -199,6 +247,10 @@ export function createArrayDefinition(args: {
         args.item && isKind(args.item, DefinitionKind.EnumRef)
           ? (args.item as EnumRef)
           : undefined,
+      union:
+        args.item && isKind(args.item, DefinitionKind.UnionRef)
+          ? (args.item as UnionDefinition)
+          : undefined,
     }),
     item: args.item ? args.item : null,
     kind: DefinitionKind.Array,
@@ -213,6 +265,7 @@ export function createPropertyDefinition(args: {
   array?: ArrayDefinition;
   scalar?: ScalarDefinition;
   object?: ObjectRef;
+  union?: UnionRef;
   enum?: EnumRef;
   comment?: string;
 }): PropertyDefinition {
@@ -232,6 +285,7 @@ export function createInterfaceImplementedDefinition(args: {
   scalar?: ScalarDefinition;
   object?: ObjectDefinition;
   enum?: EnumDefinition;
+  union?: UnionDefinition;
 }): InterfaceImplementedDefinition {
   return {
     ...createAnyDefinition(args),
@@ -274,6 +328,19 @@ export function createEnumPropertyDefinition(args: {
   return createPropertyDefinition({
     ...args,
     enum: createEnumRef(args),
+  });
+}
+
+export function createUnionPropertyDefinition(args: {
+  type: string;
+  name?: string | null;
+  required?: boolean;
+  constants?: string[];
+  comment?: string;
+}): PropertyDefinition {
+  return createPropertyDefinition({
+    ...args,
+    union: createUnionRef(args),
   });
 }
 
@@ -427,6 +494,30 @@ export function createImportedObjectDefinition(args: {
 }): ImportedObjectDefinition {
   return {
     ...createObjectDefinition(args),
+    uri: args.uri,
+    namespace: args.namespace,
+    nativeType: args.nativeType,
+    comment: args.comment,
+    kind: DefinitionKind.ImportedObject,
+  };
+}
+
+export interface ImportedUnionDefinition
+  extends UnionDefinition,
+    ImportedDefinition,
+    WithComment {}
+export function createImportedUnionDefinition(args: {
+  type: string;
+  name?: string;
+  required?: boolean;
+  unionTypes: GenericDefinition[];
+  uri: string;
+  namespace: string;
+  nativeType: string;
+  comment?: string;
+}): ImportedUnionDefinition {
+  return {
+    ...createUnionDefinition(args),
     uri: args.uri,
     namespace: args.namespace,
     nativeType: args.nativeType,

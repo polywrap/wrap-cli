@@ -20,6 +20,8 @@ function anyToGraphQL(any: AnyDefinition, prefixed: boolean): string {
     return toGraphQL(any.scalar, prefixed);
   } else if (any.enum) {
     return toGraphQL(any.enum, prefixed);
+  } else if (any.union) {
+    return toGraphQL(any.union, prefixed);
   } else {
     throw Error(
       `anyToGraphQL: Any type is invalid.\n${JSON.stringify(any, null, 2)}`
@@ -39,6 +41,14 @@ function toGraphQL(def: GenericDefinition, prefixed = false): string {
     case DefinitionKind.ImportedEnum:
       if (prefixed) {
         return applyRequired(`Enum_${def.type}`, def.required);
+      }
+
+      return applyRequired(def.type, def.required);
+    case DefinitionKind.Union:
+    case DefinitionKind.UnionRef:
+    case DefinitionKind.ImportedUnion:
+      if (prefixed) {
+        return applyRequired(`Union_${def.type}`, def.required);
       }
 
       return applyRequired(def.type, def.required);
