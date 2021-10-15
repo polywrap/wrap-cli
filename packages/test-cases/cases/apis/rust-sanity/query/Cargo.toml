@@ -18,14 +18,6 @@ polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../..
 crate-type = ["cdylib"]
 
 [profile.release]
-lto = true          # turn on Link-Time Optimizations
-codegen-units = 1   # trade compile time with maximum optimization
-opt-level = "z"     # optimize for size
-debug = false
-debug-assertions = false
-incremental = false
-overflow-checks = true
-panic = "abort"
-
-[profile.dev]
-panic = "abort"
+opt-level = 'z'
+lto = true
+panic = 'abort'
