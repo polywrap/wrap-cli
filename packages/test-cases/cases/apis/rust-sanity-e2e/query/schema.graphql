@@ -1,0 +1,14 @@
+type Query {
+  testObjectMethod(arg: TestObject!): String!
+  bigIntMethod(arg1: BigInt!, arg2: BigInt, obj: BigIntInput!): BigInt!
+}
+
+type TestObject {
+  propA: String!
+  propB: UInt32!
+}
+
+type BigIntInput {
+  prop1: BigInt!
+  prop2: BigInt
+}
