@@ -72,6 +72,19 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
       });
     }
 
+    // Generate imported union type folders
+    for (const importedUnionType of typeInfo.importedUnionTypes) {
+      importEntries.push({
+        type: "Directory",
+        name: importedUnionType.type,
+        data: generateFiles(
+          "./templates/imported/union-type",
+          importedUnionType,
+          subTemplates
+        ),
+      });
+    }
+
     // Generate imported object type folders
     for (const importedObectType of typeInfo.importedObjectTypes) {
       importEntries.push({
@@ -110,6 +123,15 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
       type: "Directory",
       name: enumType.type,
       data: generateFiles("./templates/enum-type", enumType, subTemplates),
+    });
+  }
+
+  // Generate union type folders
+  for (const unionType of typeInfo.unionTypes) {
+    entries.push({
+      type: "Directory",
+      name: unionType.type,
+      data: generateFiles("./templates/union-type", unionType, subTemplates),
     });
   }
 

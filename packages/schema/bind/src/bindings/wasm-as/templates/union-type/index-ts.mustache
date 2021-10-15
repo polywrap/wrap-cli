@@ -1,0 +1,38 @@
+{{#__commonImport}}
+export { {{type}} } from "../common";
+{{/__commonImport}}
+{{^__commonImport}}
+
+export abstract class {{type}} {
+  
+  {{#unionTypes}}
+
+  get is{{type}}(): boolean {
+    return this instanceof UnionType_{{type}};
+  }
+
+  get {{type}}(): {{type}} {
+    if (this instanceof UnionType_{{type}}) {
+      return this.instance;
+    }
+
+    throw new Error("Union '{{__commonImport.type}}' is not of type '{{type}}'");
+  }
+
+  {{/unionTypes}}
+}
+
+  {{#unionTypes}}
+
+class UnionType_{{type}} extends {{__commonImport.type}} {
+  constructor(private _instance: {{type}}) {
+    super();
+  }
+
+  get instance(): {{type}} {
+    return this._instance;
+  }
+}
+
+  {{/unionTypes}}
+{{/__commonImport}}
