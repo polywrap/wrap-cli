@@ -1,0 +1,51 @@
+#import { Mutation, Connection } into Ethereum from "w3://ens/ethereum.web3api.eth"
+
+type Mutation {
+  setData(
+    address: String!
+    value: UInt32!
+    connection: Ethereum_Connection
+  ): String!
+
+  deployContract(
+    connection: Ethereum_Connection
+  ): String!
+}
+
+# Options used to initiate signing and sending transactions
+type SignAndSendTransactionOptions {
+  receiverId: String!
+  actions: [Action!]!
+  walletMeta: String
+  walletCallbackUrl: String
+}
+
+type Action {}
+type DeployContract implements Action { code: Bytes! }
+type FunctionCall implements Action { methodName: String! args: Bytes! gas: BigInt! deposit: BigInt! }
+type Transfer implements Action { deposit: BigInt! }
+type Stake implements Action { stake: BigInt! publicKey: PublicKey! }
+type AddKey implements Action { publicKey: PublicKey! accessKey: AccessKey! }
+type DeleteKey implements Action { publicKey: PublicKey! }
+type DeleteAccount implements Action { beneficiaryId: String! }
+
+type PublicKey {
+  keyType: KeyType!
+  data: Bytes!
+}
+
+enum KeyType {
+  ED25519,
+}
+
+# Defines permission restrictions. If no permission is provided, full access is assumed.
+type AccessKey {
+  nonce: BigInt!
+  permission: FunctionCallPermission
+}
+
+type FunctionCallPermission {
+  allowance: BigInt!
+  receiverId: String!
+  methodNames: [String!]!
+}

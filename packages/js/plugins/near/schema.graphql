@@ -1,0 +1,169 @@
+type Query {
+  connect: Boolean!
+  signIn: Boolean!
+  signOut: Boolean!
+
+  createTransaction(
+    senderId: String!
+    receiverId: String!
+    actions: [Action!]!
+  ): Transaction!
+
+  # signs a transaction
+  signTransaction(
+    transaction: Transaction!
+  ): SignTransactionResult!
+}
+
+type Mutation {
+  # send one or more transactions to NEAR wallet to be signed and executed
+  requestSignTransactions(
+    # list of transactions to sign
+    transactions: [Transaction!]!
+    # url NEAR Wallet will redirect to after transaction signing is complete
+    callbackUrl: String
+    # meta information NEAR Wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param
+    meta: String
+  ): Boolean!
+
+  # sends a signed transaction and awaits execution
+  sendTransaction(
+    signedTx: SignedTransaction
+  ): FinalExecutionOutcome!
+
+  # sends a signed transaction and immediately returns transaction hash
+  sendTransactionAsync(
+    signedTx: SignedTransaction
+  ): FinalExecutionOutcome!
+
+  # creates, signs, and sends a transaction from senderId and awaits execution
+  signAndSendTransaction(
+    senderId: String!
+    receiverId: String!
+    actions: [Action!]!
+  ): FinalExecutionOutcome!
+
+  # creates, signs, and sends a transaction from senderId and immediately returns transaction hash
+  signAndSendTransactionAsync(
+    senderId: String!
+    receiverId: String!
+    actions: [Action!]!
+  ): FinalExecutionOutcome!
+}
+
+type Transaction {
+  signerId: String!
+  publicKey: PublicKey!
+  nonce: BigInt
+  receiverId: String!
+  blockHash:  Bytes!
+  actions: [Action!]!
+}
+
+type Signature {
+  keyType: KeyType!
+  data: Bytes!
+}
+
+type SignedTransaction {
+  transaction: Transaction!
+  signature: Signature!
+}
+
+# Return value of Mutation.signTransaction(...); contains transaction hash and signed transaction
+type SignTransactionResult {
+  hash: Bytes!
+  signedTx: SignedTransaction!
+}
+
+# Action types define the data necessary to complete a type of action in a transaction
+type Action {
+  _: String
+}
+
+# holds content necessary to create an account
+type CreateAccount implements Action { _: String }
+# holds content necessary to send a transaction that deploys a contract
+type DeployContract implements Action { code: Bytes! }
+# holds content necessary to send a transaction that calls a contract function
+type FunctionCall implements Action { methodName: String! args: Bytes! gas: BigInt! deposit: BigInt! }
+# holds content necessary to send a transaction that transfers NEAR?
+type Transfer implements Action { deposit: BigInt! }
+# holds content necessary to send a transaction that stakes NEAR
+type Stake implements Action { stake: BigInt! publicKey: PublicKey! }
+# holds content necessary to send a transaction that adds an access key
+type AddKey implements Action { publicKey: PublicKey! accessKey: AccessKey! }
+# holds content necessary to send a transaction that deletes an access key
+type DeleteKey implements Action { publicKey: PublicKey! }
+# holds content necessary to send a transaction that creates a NEAR account
+type DeleteAccount implements Action { beneficiaryId: String! }
+
+
+# Account public key data
+type PublicKey {
+  keyType: KeyType!
+  data: Bytes!
+}
+
+# Supported public key types
+enum KeyType {
+  ED25519
+}
+
+# Access keys contain access key permissions, which determine how an account is allowed to interact with a contract
+type AccessKey {
+  nonce: BigInt!
+  permission: AccessKeyPermission!
+}
+
+# Access key permissions determine how an account is allow to interact with a contract
+type AccessKeyPermission {
+  _: String
+}
+
+# Function call permissions describe which contract functions an account can call
+type FunctionCallPermission implements AccessKeyPermission {
+  receiverId: String!
+  methodNames: [String!]!
+  allowance: BigInt
+}
+
+# Full access permission allows an account to call all public contract functions
+type FullAccessPermission implements AccessKeyPermission {}
+
+type FinalExecutionStatus {
+  successValue: String
+  failure: ExecutionError
+}
+
+type ExecutionError {
+  error_message: String!
+  error_type: String!
+}
+
+type ExecutionStatus {
+  successValue: String
+  successReceiptId: String
+  failure: ExecutionError
+}
+
+type ExecutionOutcomeWithId {
+  id: String!
+  outcome: ExecutionOutcome!
+}
+
+# Execution status of a sent transaction
+type ExecutionOutcome {
+  logs: [String!]!
+  receipt_ids: [String!]!
+  gas_burnt: BigInt!
+  status: ExecutionStatus!
+}
+
+# Final outcome of a sent transaction
+type FinalExecutionOutcome {
+  status: FinalExecutionStatus!
+  transaction: Transaction!
+  transaction_outcome: ExecutionOutcomeWithId!
+  receipts_outcome: [ExecutionOutcomeWithId!]!
+}
