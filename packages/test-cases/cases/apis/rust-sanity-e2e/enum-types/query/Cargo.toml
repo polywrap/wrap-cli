@@ -1,0 +1,23 @@
+[package]
+name = "query"
+version = "0.1.0"
+description = "Query module of enum-types e2e test"
+authors = [
+  "Kobby Pentangeli <kobbypentangeli@gmail.com>",
+  "Jordan Ellis <jelli@dorg.tech>"
+]
+repository = "https://github.com/polywrap/monorepo"
+license = "MIT"
+edition = "2018"
+
+[dependencies]
+num-traits = { version = "0.2.14", default-features = false }
+polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../../../wasm/rs"}
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+opt-level = 'z'
+lto = true
+panic = 'abort'

@@ -1,0 +1,14 @@
+type Query {
+  sanityEnumMethod1(en: SanityEnum!, optEnum: SanityEnum): SanityEnum!
+
+  sanityEnumMethod2(
+    enumArray: [SanityEnum!]!
+    optEnumArray: [SanityEnum]
+  ): [SanityEnum!]!
+}
+
+enum SanityEnum {
+  OPTION1
+  OPTION2
+  OPTION3
+}
