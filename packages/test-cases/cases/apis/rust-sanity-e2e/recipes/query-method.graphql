@@ -1,5 +1,0 @@
-query {
-  method(
-    arg: $arg
-  )
-}
