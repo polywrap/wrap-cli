@@ -7,11 +7,11 @@ use polywrap_wasm_rs::BigInt;
 pub mod w3;
 pub use w3::*;
 
-pub fn test_object_method_sanity(input: InputTestObjectMethod) -> String {
+pub fn test_object_method(input: InputTestObjectMethod) -> String {
     format!("{}{}", input.arg.prop_a, input.arg.prop_b)
 }
 
-pub fn big_int_method_sanity(input: InputBigIntMethod) -> BigInt {
+pub fn big_int_method(input: InputBigIntMethod) -> BigInt {
     let mut result = input.arg1.mul(input.obj.prop1);
 
     if input.arg2.is_some() {
