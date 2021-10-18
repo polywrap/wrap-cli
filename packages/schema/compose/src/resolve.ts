@@ -115,7 +115,6 @@ export async function resolveImportsAndParseSchemas(
   // Remove all non documentation comments
   newSchema = newSchema.replace(/#[^\n]*\n/g, "");
 
-  console.log("aaaaaaaaa");
   // Add the @imports directive
   newSchema = addQueryImportsDirective(newSchema, externalImports, mutation);
 
