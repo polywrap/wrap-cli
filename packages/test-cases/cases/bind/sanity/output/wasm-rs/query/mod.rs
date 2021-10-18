@@ -1,5 +1,3 @@
-extern crate alloc;
-
 pub mod common;
 pub mod entry;
 pub mod custom_type;

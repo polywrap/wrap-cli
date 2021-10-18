@@ -1,12 +1,4 @@
-use alloc::{
-    str::FromStr,
-    string::{
-        String,
-        ToString,
-    },
-    vec,
-    vec::Vec,
-};
+use std::convert::TryFrom;
 use polywrap_wasm_rs::{
     BigInt,
     Context,
@@ -28,7 +20,7 @@ extern "C" {
 use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
 {{/isEnum}}
 {{#isEnum}}
-use super::{
+use crate::{
     {{#toUpper}}{{type}}{{/toUpper}},
     get_{{#toLower}}{{type}}{{/toLower}}_value,
     sanitize_{{#toLower}}{{type}}{{/toLower}}_value,

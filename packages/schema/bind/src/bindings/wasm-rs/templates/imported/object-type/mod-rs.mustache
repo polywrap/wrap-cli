@@ -2,12 +2,6 @@
 pub use super::super::common::{{#toUpper}}{{type}}{{/toUpper}};
 {{/__commonImport}}
 {{^__commonImport}}
-use alloc::{
-    str::FromStr,
-    string::String,
-    vec,
-    vec::Vec,
-};
 pub mod serialization;
 use polywrap_wasm_rs::{
     Read,

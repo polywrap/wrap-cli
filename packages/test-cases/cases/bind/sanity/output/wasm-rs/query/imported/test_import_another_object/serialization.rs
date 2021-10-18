@@ -1,12 +1,3 @@
-use alloc::{
-    str::FromStr,
-    string::{
-        String,
-        ToString,
-    },
-    vec,
-    vec::Vec,
-};
 use polywrap_wasm_rs::{
     Context,
     Read,

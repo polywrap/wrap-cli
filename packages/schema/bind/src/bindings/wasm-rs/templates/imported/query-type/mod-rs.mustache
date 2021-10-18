@@ -2,12 +2,6 @@
 pub use super::super::common::TestImportQuery;
 {{/__commonImport}}
 {{^__commonImport}}
-use alloc::{
-    str::FromStr,
-    string::{
-        ToString,
-    },
-};
 use polywrap_wasm_rs::subinvoke;
 pub mod serialization;
 {{#methods.length}}
