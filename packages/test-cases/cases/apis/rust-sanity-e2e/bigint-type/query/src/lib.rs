@@ -1,5 +1,3 @@
-extern crate alloc;
-
 use std::ops::Mul;
 
 use polywrap_wasm_rs::BigInt;

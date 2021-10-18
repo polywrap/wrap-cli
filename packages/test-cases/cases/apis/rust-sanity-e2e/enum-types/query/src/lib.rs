@@ -1,5 +1,3 @@
-extern crate alloc;
-
 pub mod w3;
 pub use w3::*;
 
