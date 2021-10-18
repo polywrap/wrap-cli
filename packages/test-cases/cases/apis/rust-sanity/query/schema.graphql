@@ -1,8 +1,0 @@
-type Query {
-  method(arg: TestObject!): String!
-}
-
-type TestObject {
-  propA: String!
-  propB: UInt32!
-}
