@@ -138,25 +138,25 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(result);
     {{/scalar}}
     {{#array}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&result.{{#toLower}}{{name}}{{/toLower}}, |writer: &mut W, item| {
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&result, |writer: &mut W, item| {
         {{> serialize_array}}
     });
     {{/array}}
     {{#enum}}
     {{#required}}
-    writer.write_i32(result.{{#toLower}}{{name}}{{/toLower}} as i32);
+    writer.write_i32(result as i32);
     {{/required}}
     {{^required}}
-    writer.write_nullable_i32(&Some(result.{{#toLower}}{{name}}{{/toLower}}.unwrap() as i32));
+    writer.write_nullable_i32(&Some(result.unwrap() as i32));
     {{/required}}
     {{/enum}}
     {{#object}}
     {{#required}}
-    {{#toUpper}}{{name}}{{/toUpper}}::write(&result.{{#toLower}}{{name}}{{/toLower}}, writer);
+    {{#toUpper}}{{name}}{{/toUpper}}::write(&result, writer);
     {{/required}}
     {{^required}}
     if result.{{#toLower}}{{name}}{{/toLower}}.is_some() {
-        {{#toUpper}}{{name}}{{/toUpper}}::write(result.{{#toLower}}{{name}}{{/toLower}}.as_ref().as_ref().unwrap(), writer);
+        {{#toUpper}}{{name}}{{/toUpper}}::write(result.as_ref().as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }
