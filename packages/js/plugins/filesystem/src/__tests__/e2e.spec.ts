@@ -1,3 +1,4 @@
+import { filesystemPlugin } from "../index";
 import {
   buildAndDeployApi,
   initTestEnvironment,
@@ -7,11 +8,12 @@ import {
   Web3ApiClient,
   ClientConfig,
 } from "@web3api/client-js";
-import { filesystemPlugin } from "../index";
+import { GetPathToTestApis } from "@web3api/test-cases";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import * as path from "path";
+import fs from "fs";
+import path from "path";
 
 jest.setTimeout(360000);
 
@@ -26,7 +28,6 @@ describe("Filesystem plugin", () => {
     ensAddress = ens;
 
     const config: ClientConfig = {
-      redirects: [],
       plugins: [
         {
           uri: "w3://ens/fs.web3api.eth",
@@ -75,10 +76,11 @@ describe("Filesystem plugin", () => {
 
   it("queries simple-storage api on local drive", async () => {
     const apiPath = path.resolve(
-      `${__dirname}/../../../../../test-cases/cases/apis/simple-storage`
+      `${GetPathToTestApis()}/simple-storage`
     );
     await buildAndDeployApi(apiPath, ipfsProvider, ensAddress);
-    const fsUri = `fs/${apiPath}/build`;
+    const fsPath = `${apiPath}/build`;
+    const fsUri = `fs/${fsPath}`;
 
     // query api from filesystem
     const deploy = await client.query<{
@@ -100,105 +102,22 @@ describe("Filesystem plugin", () => {
     expect(deploy.data).toBeTruthy();
     expect(deploy.data?.deployContract.indexOf("0x")).toBeGreaterThan(-1);
 
-    if (!deploy.data) {
-      return;
-    }
+    // get the schema
+    const schema = await client.getSchema(fsUri);
+    const expectedSchema = await fs.promises.readFile(`${fsPath}/schema.graphql`, "utf-8");
 
-    const address = deploy.data.deployContract;
-    const set = await client.query<{
-      setData: string;
-    }>({
-      uri: fsUri,
-      query: `
-        mutation {
-          setData(
-            address: "${address}"
-            value: $value
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
-      variables: {
-        value: 55,
-      },
-    });
+    expect(schema).toBe(expectedSchema);
 
-    expect(set.errors).toBeFalsy();
-    expect(set.data).toBeTruthy();
-    expect(set.data?.setData.indexOf("0x")).toBeGreaterThan(-1);
+    // get the manifest
+    const manifest = await client.getManifest(fsUri, { type: "web3api" });
 
-    const getWithStringType = await client.query<{
-      getData: number;
-      secondGetData: number;
-      thirdGetData: number;
-    }>({
-      uri: fsUri,
-      query: `
-        query {
-          getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-          secondGetData: getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-          thirdGetData: getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
-    });
+    expect(manifest).toBeTruthy();
+    expect(manifest.language).toBe("wasm/assemblyscript");
 
-    expect(getWithStringType.errors).toBeFalsy();
-    expect(getWithStringType.data).toBeTruthy();
-    expect(getWithStringType.data?.getData).toBe(55);
-    expect(getWithStringType.data?.secondGetData).toBe(55);
-    expect(getWithStringType.data?.thirdGetData).toBe(55);
+    // get a file
+    const file = await client.getFile(fsUri, { path: "web3api.yaml", encoding: "utf-8" });
+    const expectedFile = await fs.promises.readFile(`${fsPath}/web3api.yaml`, "utf-8");
 
-    const getWithUriType = await client.query<{
-      getData: number;
-      secondGetData: number;
-      thirdGetData: number;
-    }>({
-      uri: fsUri,
-      query: `
-        query {
-          getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-          secondGetData: getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-          thirdGetData: getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
-    });
-
-    expect(getWithUriType.errors).toBeFalsy();
-    expect(getWithUriType.data).toBeTruthy();
-    expect(getWithUriType.data?.getData).toBe(55);
-    expect(getWithUriType.data?.secondGetData).toBe(55);
-    expect(getWithUriType.data?.thirdGetData).toBe(55);
+    expect(file).toBe(expectedFile);
   });
 });

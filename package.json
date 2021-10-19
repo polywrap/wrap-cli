@@ -20,7 +20,7 @@
     "build:plugins": "lerna run build --scope @web3api/*-plugin-js --concurrency 1",
     "build:client": "lerna run build --scope @web3api/client-js --scope @web3api/react",
     "build:cli": "lerna run build --scope @web3api/cli",
-    "lint": "export NODE_OPTIONS='--max-old-space-size=8192' && lerna run lint --ignore @web3api/uts46-plugin-js",
+    "lint": "lerna run lint --ignore @web3api/uts46-plugin-js",
     "lint:fix": "lerna run lint --ignore @web3api/uts46-plugin-js -- --fix",
     "lint:ci": "yarn lint",
     "test": "lerna run test --no-private --ignore @web3api/client-js && lerna run test --scope @web3api/client-js",
