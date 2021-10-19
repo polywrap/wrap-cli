@@ -1,6 +1,18 @@
 type Query {
-  signIn: Boolean!
+  requestSignIn(
+    contractId: String
+    methodNames: [String!]
+    successUrl: String
+    failureUrl: String
+  ): Boolean!
+
   signOut: Boolean!
+
+  isSignedIn: Boolean!
+
+  getAccountId: String
+
+  accountState: AccountView
 
   createTransaction(
     senderId: String!
@@ -48,6 +60,19 @@ type Mutation {
     receiverId: String!
     actions: [Action!]!
   ): FinalExecutionOutcome!
+}
+
+type QueryResponseKind {
+  blockHeight: BigInt!
+  blockHash: String!
+}
+
+type AccountView implements QueryResponseKind {
+  amount: String!
+  locked: String!
+  codeHash: String!
+  storageUsage: BigInt!
+  storagePaidAt: BigInt!
 }
 
 type Transaction {

@@ -1,8 +1,29 @@
-#import { Query, Connection } into Ethereum from "w3://ens/ethereum.web3api.eth"
-
 type Query {
-  getData(
-    address: String!
-    connection: Ethereum_Connection
-  ): Int!
+  requestSignIn(
+    contractId: String
+    methodNames: [String!]
+    successUrl: String
+    failureUrl: String
+  ): Boolean!
+
+  signOut: Boolean!
+
+  isSignedIn: Boolean!
+
+  getAccountId: String
+
+  accountState: AccountView
+}
+
+type QueryResponseKind {
+  blockHeight: BigInt!
+  blockHash: String!
+}
+
+type AccountView implements QueryResponseKind {
+  amount: String!
+  locked: String!
+  codeHash: String!
+  storageUsage: BigInt!
+  storagePaidAt: BigInt!
 }

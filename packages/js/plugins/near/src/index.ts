@@ -7,13 +7,16 @@ import {
   SignedTransaction,
   SignTransactionResult,
   FinalExecutionOutcome,
+  AccountView,
 } from "./w3";
 import {
   fromAction,
   fromTx,
+  toAccountView,
   toFinalExecutionOutcome,
   toPublicKey,
 } from "./mapping";
+import { AccountView as NearAccountView } from "./typeUtils";
 
 import {
   Plugin,
@@ -41,10 +44,7 @@ export class NearPlugin extends Plugin {
 
   constructor(private _config: NearPluginConfig) {
     super();
-    this.near = new nearApi.Near(this._config);
-    if (typeof window !== "undefined") {
-      this.wallet = new nearApi.WalletConnection(this.near, null);
-    }
+    void this.connect();
   }
 
   public static manifest(): PluginPackageManifest {
@@ -58,23 +58,62 @@ export class NearPlugin extends Plugin {
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // private async connect(input?: Input_connect): Promise<boolean> {
-  //   this.near = new nearApi.Near(this._config);
-  //   this.wallet = new nearApi.WalletConnection(this.near, null);
-  //   return true;
-  // }
-
-  // TODO: write signIn(...) function
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async signIn(input: Query.Input_signIn): Promise<boolean> {
+  private async connect(): Promise<boolean> {
+    this.near = new nearApi.Near(this._config);
+    if (typeof window !== "undefined") {
+      this.wallet = new nearApi.WalletConnection(this.near, null);
+    }
     return true;
   }
 
-  // TODO: write signOut(...) function
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async signOut(input: Query.Input_signOut): Promise<boolean> {
+  public async requestSignIn(
+    input: Query.Input_requestSignIn
+  ): Promise<boolean> {
+    if (!this.wallet) {
+      throw Error(
+        "Near wallet is unavailable, likely because browser tools are unavailable."
+      );
+    }
+    const { contractId, methodNames, successUrl, failureUrl } = input;
+    await this.wallet.requestSignIn({
+      contractId: contractId ?? undefined,
+      methodNames: methodNames ?? undefined,
+      successUrl: successUrl ?? undefined,
+      failureUrl: failureUrl ?? undefined,
+    });
     return true;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public async signOut(input?: Query.Input_signOut): Promise<boolean> {
+    this.wallet?.signOut();
+    return true;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public async isSignedIn(input?: Query.Input_isSignedIn): Promise<boolean> {
+    return this.wallet?.isSignedIn() ?? false;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public async getAccountId(input?: Query.Input_getAccountId): Promise<string | null> {
+    return this.wallet?.getAccountId() ?? null;
+  }
+
+  public async accountState(
+    input?: Query.Input_accountState // eslint-disable-line @typescript-eslint/no-unused-vars
+  ): Promise<AccountView | null> {
+    if (!this.wallet || !this.isSignedIn()) {
+      return null;
+    }
+    const nearAccountView: NearAccountView = await this.near.connection.provider.query<NearAccountView>(
+      {
+        request_type: "view_account",
+        account_id: this.wallet.getAccountId(),
+        finality: "optimistic",
+      }
+    );
+    return toAccountView(nearAccountView);
   }
 
   public async createTransaction(

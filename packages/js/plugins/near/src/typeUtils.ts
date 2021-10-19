@@ -30,6 +30,19 @@ export type Action =
 
 export type AccessKeyPermission = FunctionCallPermission | FullAccessPermission;
 
+export interface QueryResponseKind {
+  block_height: number;
+  block_hash: string;
+}
+
+export interface AccountView extends QueryResponseKind {
+  amount: string;
+  locked: string;
+  code_hash: string;
+  storage_usage: number;
+  storage_paid_at: number;
+}
+
 // Type utility functions
 
 export function isCreateAccount(action: Action): action is CreateAccount {

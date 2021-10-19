@@ -10,11 +10,12 @@ import {
   ExecutionOutcome,
   ExecutionStatus,
   AccessKey,
-  AccessKeyPermission as IAccessKeyPermission,
+  AccessKeyPermission as IAccessKeyPermission, AccountView,
 } from "./w3";
 import {
   Action,
   AccessKeyPermission,
+  AccountView as NearAccountView,
   isNearDeployContract,
   isNearStake,
   isFunctionCall,
@@ -193,3 +194,13 @@ export const toExecutionOutcomeWithId = (
     outcome: outcome,
   };
 };
+
+export const toAccountView = (accountView: NearAccountView): AccountView => ({
+  amount: accountView.amount,
+  locked: accountView.locked,
+  codeHash: accountView.code_hash,
+  storageUsage: accountView.storage_usage.toString(),
+  storagePaidAt: accountView.storage_usage.toString(),
+  blockHeight: accountView.block_height.toString(),
+  blockHash: accountView.block_hash,
+});

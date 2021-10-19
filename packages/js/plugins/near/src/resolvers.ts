@@ -2,11 +2,20 @@ import { NearPlugin } from ".";
 import { Query, Mutation } from "./w3";
 
 export const query = (plugin: NearPlugin): Query.Module => ({
-  signIn: async (input: Query.Input_signIn) => {
-    return await plugin.signIn(input);
+  requestSignIn: async (input: Query.Input_requestSignIn) => {
+    return await plugin.requestSignIn(input);
   },
   signOut: async (input: Query.Input_signOut) => {
     return await plugin.signOut(input);
+  },
+  isSignedIn: async (input: Query.Input_isSignedIn) => {
+    return await plugin.isSignedIn(input);
+  },
+  getAccountId: async (input: Query.Input_getAccountId) => {
+    return await plugin.getAccountId(input);
+  },
+  accountState: async (input: Query.Input_accountState) => {
+    return await plugin.accountState(input);
   },
   createTransaction: async (input: Query.Input_createTransaction) => {
     return await plugin.createTransaction(input);
