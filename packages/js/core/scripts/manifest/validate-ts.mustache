@@ -47,7 +47,7 @@ export const validate{{#latest}}{{type}}{{/latest}} = Tracer.traceFunc(
     const schema = schemas[manifest.format as {{#latest}}{{type}}{{/latest}}Formats];
 
     if (!schema) {
-      throw Error(`Unrecognized {{#latest}}{{type}}{{/latest}} schema format "${manifest.format}"`);
+      throw Error(`Unrecognized {{#latest}}{{type}}{{/latest}} schema format "${manifest.format}"\nmanifest: ${JSON.stringify(manifest, null, 2)}`);
     }
 
     const throwIfErrors = (result: ValidatorResult) => {

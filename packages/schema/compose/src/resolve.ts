@@ -43,15 +43,17 @@ type ImplementationWithInterfaces = {
   interfaces: string[];
 };
 
+const TYPE_NAME_REGEX = `[a-zA-Z0-9_]+`;
+
 export async function resolveImportsAndParseSchemas(
   schema: string,
   schemaPath: string,
   mutation: boolean,
   resolvers: SchemaResolvers
 ): Promise<TypeInfo> {
-  const importKeywordCapture = /^[#]*["{3}]*import[ \n\t]/gm;
-  const externalImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*into[ \n\t]*(\w+?)[ \n\t]*from[ \n\t]*[\"'`]([\-a-zA-Z0-9_~.:\/]+?)[\"'`]/g;
-  const localImportCapture = /[#]*["{3}]*import[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*from[ \n\t]*[\"'`]([a-zA-Z0-9_~\-:.\/]+?)[\"'`]/g;
+  const importKeywordCapture = /^#+["{3}]*import\s/gm;
+  const externalImportCapture = /#+["{3}]*import\s*{([^}]+)}\s*into\s*(\w+?)\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;
+  const localImportCapture = /#+["{3}]*import\s*{([^}]+)}\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;
 
   const keywords = [...schema.matchAll(importKeywordCapture)];
   const externalImportStatements = [...schema.matchAll(externalImportCapture)];
@@ -65,7 +67,10 @@ export async function resolveImportsAndParseSchemas(
     );
   }
 
-  const interfaceCapture = /type[ \n\t]*[a-zA-Z0-9_]+[ \n\t]+implements ([a-zA-Z0-9_&\n\t ]*){/g;
+  const interfaceCapture = new RegExp(
+    `type\\s+${TYPE_NAME_REGEX}\\s+implements\\s([^{]*){`,
+    "g"
+  );
   const implementInterfaceStatments = [...schema.matchAll(interfaceCapture)];
 
   const implementationsWithInterfaces = parseInterfaces(
@@ -106,6 +111,9 @@ export async function resolveImportsAndParseSchemas(
   let newSchema = schema
     .replace(externalImportCapture, "")
     .replace(localImportCapture, "");
+
+  // Remove all non documentation comments
+  newSchema = newSchema.replace(/#[^\n]*\n/g, "");
 
   // Add the @imports directive
   newSchema = addQueryImportsDirective(newSchema, externalImports, mutation);
@@ -341,8 +349,8 @@ function addQueryImportsDirective(
 
   // Append the @imports(...) directive to the query type
   const typeCapture = mutation
-    ? /type[ \n\t]*Mutation[ \n\t]*([^{]*)[ \n\t]*{/g
-    : /type[ \n\t]*Query[ \n\t]*([^{]*)[ \n\t]*{/g;
+    ? /type\s+Mutation\s+([^{]*)\s*{/g
+    : /type\s+Query\s+([^{]*)\s*{/g;
 
   const importedTypes = `${externalImports
     .map((type) => `\"${type}\"`)
@@ -366,7 +374,7 @@ function parseInterfaces(
 
   for (const implementMatch of implementInterfaceStatments) {
     const implementStr = implementMatch[1].trim();
-    const typeCapture = /type[ \n\t]*([a-zA-Z0-9_]+)[ \n\t]*/g;
+    const typeCapture = new RegExp(`type\\s+(${TYPE_NAME_REGEX})\\s+`, "g");
 
     const typeNameMatches = typeCapture.exec(implementMatch[0]);
 
@@ -377,7 +385,7 @@ function parseInterfaces(
     const typeName = typeNameMatches[1];
 
     const interfaces = [
-      ...implementStr.matchAll(/([a-zA-Z0-9_]+)(&\s*\d+)*/g),
+      ...implementStr.matchAll(new RegExp(`(${TYPE_NAME_REGEX})(&\s+)*`, "g")),
     ].map((x) => x[0]);
 
     implementationsWithInterfaces.push({
@@ -394,7 +402,7 @@ function resolveInterfaces(
   implementationsWithInterfaces: ImplementationWithInterfaces[]
 ): string {
   const removeComments = (body: string) => {
-    const bodyWithoutComments = body.replace(/"""[^"]*"""[ \n\t]*/g, "");
+    const bodyWithoutComments = body.replace(/"""[^"]*"""\s*/g, "");
     return bodyWithoutComments;
   };
 
@@ -413,11 +421,15 @@ function resolveInterfaces(
   const allInterfaces = getAllUniqueInterfaces();
   const interfacesWithBodies: { name: string; body: string }[] = [];
 
-  const typeCapture = /type[ \n\t]*([a-zA-Z0-9_]+)[a-zA-Z0-9_,.:@"&!/\(\)\[\] \n\t]+{([a-zA-Z0-9_,.:@"&!\(\)\[\] \n\t]*)}/g;
+  const typeCapture = new RegExp(
+    `type\\s+(${TYPE_NAME_REGEX})[^{]+{([^}]*)}`,
+    "g"
+  );
   const typeMatches = [...schema.matchAll(typeCapture)];
 
   for (const interfaceName of allInterfaces) {
     const match = typeMatches.find((x) => x[1] === interfaceName);
+
     if (!match) {
       continue;
     }
@@ -437,7 +449,7 @@ function resolveInterfaces(
 
   for (const implementationWithInterfaces of implementationsWithInterfaces) {
     const implementationTypeCapture = new RegExp(
-      `(type[ \\n\\t]*${implementationWithInterfaces.typeName}[a-zA-Z0-9_,.:@"&!\\(\\)\\[\\] \\n\\t]*{)([a-zA-Z0-9_,.:@"&!\\(\\)\\[\\] \\n\\t]*)}`
+      `(type\\s+${implementationWithInterfaces.typeName}\\s+[^{]*){([^}]*)}`
     );
 
     const bodiesOfInterfaces = implementationWithInterfaces.interfaces.map(
@@ -454,7 +466,7 @@ function resolveInterfaces(
 
     schema = schema.replace(
       implementationTypeCapture,
-      `$1$2${bodiesOfInterfacesStr}}`
+      `$1{$2${bodiesOfInterfacesStr}\n}`
     );
   }
 

@@ -6,6 +6,7 @@ import {
   Input_callContractView,
   Input_callContractStatic,
   Input_encodeParams,
+  Input_encodeFunction,
   Input_getSignerAddress,
   Input_getSignerBalance,
   Input_getSignerTransactionCount,
@@ -49,6 +50,15 @@ export function encodeParams(
   return Ethereum_Query.encodeParams({
     types: input.types,
     values: input.values
+  });
+}
+
+export function encodeFunction(
+  input: Input_encodeFunction
+): string {
+  return Ethereum_Query.encodeFunction({
+    method: input.method,
+    args: input.args
   });
 }
 

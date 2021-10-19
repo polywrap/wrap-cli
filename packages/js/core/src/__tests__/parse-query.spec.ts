@@ -285,6 +285,22 @@ describe("parseQuery", () => {
     ).toThrowError(/Missing variable/);
   });
 
+  it("succeeds when variables is defined by falsy", () => {
+    const doc = createQueryDocument(`
+      mutation {
+        someMethod(
+          arg1: $arg_1
+        )
+      }
+    `);
+
+    expect(() =>
+      parseQuery(dummy, doc, {
+        arg_1: 0,
+      })
+    ).not.toThrowError(/Missing variable/);
+  });
+
   it("fails when duplicate input arguments are provided", () => {
     const doc = createQueryDocument(`
       mutation {
