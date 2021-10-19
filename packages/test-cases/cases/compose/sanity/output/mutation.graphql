@@ -236,7 +236,7 @@ type JustMutation_Mutation @imported(
 Mutation comment
 """
 type Interface_Mutation @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "Mutation"
 ) {
@@ -332,7 +332,7 @@ type Namespace_CustomType @imported(
 InterfaceObject1 comment
 """
 type Interface_InterfaceObject1 @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "InterfaceObject1"
 ) {
@@ -347,7 +347,7 @@ type Interface_InterfaceObject1 @imported(
 InterfaceObject2 comment
 """
 type Interface_InterfaceObject2 implements Interface_NestedInterfaceObject @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "InterfaceObject2"
 ) {
@@ -359,7 +359,7 @@ type Interface_InterfaceObject2 implements Interface_NestedInterfaceObject @impo
 Object comment
 """
 type Interface_Object @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "Object"
 ) {
@@ -370,7 +370,7 @@ type Interface_Object @imported(
 NestedInterfaceObject comment
 """
 type Interface_NestedInterfaceObject @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "NestedInterfaceObject"
 ) {
