@@ -1,5 +1,4 @@
 type Query {
-  connect: Boolean!
   signIn: Boolean!
   signOut: Boolean!
 

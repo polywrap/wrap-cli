@@ -2,9 +2,6 @@ import { NearPlugin } from ".";
 import { Query, Mutation } from "./w3";
 
 export const query = (plugin: NearPlugin): Query.Module => ({
-  connect: async (input: Query.Input_connect) => {
-    return await plugin.connect(input);
-  },
   signIn: async (input: Query.Input_signIn) => {
     return await plugin.signIn(input);
   },

@@ -1,6 +1,8 @@
 import { mutation, query } from "./resolvers";
 import {
   manifest,
+  Query,
+  Mutation,
   Transaction,
   SignedTransaction,
   SignTransactionResult,
@@ -12,20 +14,6 @@ import {
   toFinalExecutionOutcome,
   toPublicKey,
 } from "./mapping";
-import {
-  Input_connect,
-  Input_createTransaction,
-  Input_signIn,
-  Input_signOut,
-  Input_signTransaction,
-} from "./w3/query";
-import {
-  Input_requestSignTransactions,
-  Input_sendTransaction,
-  Input_sendTransactionAsync,
-  Input_signAndSendTransaction,
-  Input_signAndSendTransactionAsync,
-} from "./w3/mutation";
 
 import {
   Plugin,
@@ -36,28 +24,27 @@ import {
 import * as nearApi from "near-api-js";
 import sha256 from "js-sha256";
 
-export { keyStores } from "near-api-js";
+export { keyStores as KeyStores, KeyPair } from "near-api-js";
 
-export interface ConnectionConfig {
+export interface NearPluginConfig {
   networkId: string;
+  keyStore: nearApi.keyStores.KeyStore;
   nodeUrl: string;
   walletUrl?: string;
   helperUrl?: string;
   explorerUrl?: string;
 }
 
-export interface NearPluginConfig {
-  connectionConfig: ConnectionConfig;
-  keyStore?: nearApi.keyStores.KeyStore;
-}
-
 export class NearPlugin extends Plugin {
   private near: nearApi.Near;
-  private wallet: nearApi.WalletConnection;
+  private wallet?: nearApi.WalletConnection;
 
   constructor(private _config: NearPluginConfig) {
     super();
-    void this.connect();
+    this.near = new nearApi.Near(this._config);
+    if (typeof window !== "undefined") {
+      this.wallet = new nearApi.WalletConnection(this.near, null);
+    }
   }
 
   public static manifest(): PluginPackageManifest {
@@ -72,29 +59,30 @@ export class NearPlugin extends Plugin {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async connect(input?: Input_connect): Promise<boolean> {
-    const config = this._config.connectionConfig;
-    this.near = new nearApi.Near(config);
-    this.wallet = new nearApi.WalletConnection(this.near, null);
-    return true;
-  }
+  // private async connect(input?: Input_connect): Promise<boolean> {
+  //   this.near = new nearApi.Near(this._config);
+  //   this.wallet = new nearApi.WalletConnection(this.near, null);
+  //   return true;
+  // }
 
   // TODO: write signIn(...) function
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async signIn(input: Input_signIn): Promise<boolean> {
+  public async signIn(input: Query.Input_signIn): Promise<boolean> {
     return true;
   }
 
   // TODO: write signOut(...) function
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async signOut(input: Input_signOut): Promise<boolean> {
+  public async signOut(input: Query.Input_signOut): Promise<boolean> {
     return true;
   }
 
   public async createTransaction(
-    input: Input_createTransaction
+    input: Query.Input_createTransaction
   ): Promise<Transaction> {
     const { senderId, receiverId, actions } = input;
+    console.log(`calling createTransaction for sender ${senderId}`);
+
     const account = await this.near.account(senderId);
     const accessKeyInfo = await account.findAccessKey(
       receiverId,
@@ -127,7 +115,7 @@ export class NearPlugin extends Plugin {
   }
 
   public async signTransaction(
-    input: Input_signTransaction
+    input: Query.Input_signTransaction
   ): Promise<SignTransactionResult> {
     const { transaction } = input;
     const tx: nearApi.transactions.Transaction = fromTx(transaction);
@@ -152,8 +140,11 @@ export class NearPlugin extends Plugin {
   }
 
   public async requestSignTransactions(
-    input: Input_requestSignTransactions
+    input: Mutation.Input_requestSignTransactions
   ): Promise<boolean> {
+    if (!this.wallet) {
+      return false;
+    }
     const { transactions, callbackUrl, meta } = input;
     await this.wallet.requestSignTransactions({
       transactions: transactions.map(fromTx),
@@ -164,7 +155,7 @@ export class NearPlugin extends Plugin {
   }
 
   public async sendTransaction(
-    input: Input_sendTransaction
+    input: Mutation.Input_sendTransaction
   ): Promise<FinalExecutionOutcome> {
     const { signedTx } = input;
     const nearSignedTx = new nearApi.transactions.SignedTransaction(signedTx);
@@ -174,7 +165,7 @@ export class NearPlugin extends Plugin {
   }
 
   public async sendTransactionAsync(
-    input: Input_sendTransactionAsync
+    input: Mutation.Input_sendTransactionAsync
   ): Promise<FinalExecutionOutcome> {
     const { signedTx } = input;
     const nearSignedTx = new nearApi.transactions.SignedTransaction(signedTx);
@@ -184,7 +175,7 @@ export class NearPlugin extends Plugin {
   }
 
   public async signAndSendTransaction(
-    input: Input_signAndSendTransaction
+    input: Mutation.Input_signAndSendTransaction
   ): Promise<FinalExecutionOutcome> {
     const transaction = await this.createTransaction(input);
     const { signedTx } = await this.signTransaction({ transaction });
@@ -192,7 +183,7 @@ export class NearPlugin extends Plugin {
   }
 
   public async signAndSendTransactionAsync(
-    input: Input_signAndSendTransactionAsync
+    input: Mutation.Input_signAndSendTransactionAsync
   ): Promise<FinalExecutionOutcome> {
     const transaction = await this.createTransaction(input);
     const { signedTx } = await this.signTransaction({ transaction });
