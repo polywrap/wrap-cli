@@ -107,7 +107,7 @@ type Action {
 
 # holds content necessary to create an account
 type CreateAccount implements Action {
-  _: String!
+  _: String
 }
 # holds content necessary to send a transaction that deploys a contract
 type DeployContract implements Action { code: Bytes! }
