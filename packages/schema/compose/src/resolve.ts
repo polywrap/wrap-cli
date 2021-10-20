@@ -766,7 +766,7 @@ async function resolveLocalImports(
 
         const visitedTypes: Record<string, boolean> = {};
 
-        const visitType = (type: any) => {
+        const visitType = (type: GenericDefinition) => {
           visitorFunc(type, {
             enter: {
               ObjectRef: (def: ObjectRef) => {
