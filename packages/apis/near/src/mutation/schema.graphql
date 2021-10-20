@@ -12,14 +12,14 @@ type Mutation {
   ): Boolean!
 }
 
-type FinalExecutionStatus {
-  successValue: String
-  failure: ExecutionError
-}
-
 type ExecutionError {
   error_message: String!
   error_type: String!
+}
+
+type FinalExecutionStatus {
+  successValue: String
+  failure: ExecutionError
 }
 
 type ExecutionStatus {
@@ -28,17 +28,17 @@ type ExecutionStatus {
   failure: ExecutionError
 }
 
-type ExecutionOutcomeWithId {
-  id: String!
-  outcome: ExecutionOutcome!
-}
-
 # Execution status of a sent transaction
 type ExecutionOutcome {
   logs: [String!]!
   receipt_ids: [String!]!
   gas_burnt: BigInt!
   status: ExecutionStatus!
+}
+
+type ExecutionOutcomeWithId {
+  id: String!
+  outcome: ExecutionOutcome!
 }
 
 # Final outcome of a sent transaction

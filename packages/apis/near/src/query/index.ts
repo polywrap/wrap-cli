@@ -1,28 +1,24 @@
 import {
   Input_requestSignIn,
-  Input_signOut,
-  Input_isSignedIn,
-  Input_getAccountId,
-  Input_accountState,
-  AccountView
+  AccountView,
 } from "./w3";
 
 export function requestSignIn(input: Input_requestSignIn): boolean {
   return false;
 }
 
-export function signOut(input: Input_signOut): boolean {
+export function signOut(): boolean {
   return false;
 }
 
-export function isSignedIn(input: Input_isSignedIn): boolean {
+export function isSignedIn(): boolean {
   return false;
 }
 
-export function getAccountId(input: Input_getAccountId): string | null {
+export function getAccountId(): string | null {
   return null;
 }
 
-export function accountState(input: Input_accountState): AccountView | null {
+export function accountState(): AccountView | null {
   return null;
 }

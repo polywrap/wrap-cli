@@ -46,7 +46,7 @@ export interface AccountView extends QueryResponseKind {
 // Type utility functions
 
 export function isCreateAccount(action: Action): action is CreateAccount {
-  return "_" in action;
+  return Object.keys(action).length === 0;
 }
 
 export function isDeployContract(action: Action): action is DeployContract {

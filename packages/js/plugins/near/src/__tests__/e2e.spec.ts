@@ -5,7 +5,7 @@ import { SignTransactionResult, Transaction } from "../w3";
 describe("e2e", () => {
 
   let client: Web3ApiClient;
-  const uri = "ens/nearPlugin.eth";
+  const uri = "ens/nearPlugin.web3api.eth";
   const senderId = "polywraptest.testnet";
   const receiverId = "polywraptest.testnet";
   const PRIVATE_KEY = "3ZASru2hHvoDpT4jut4b8LqRBnz4GqMhtp24AzkLwdhuLDm6xgptkNmXVGWwfdyFHnnnG512Xb5RJcA7Cup3yjcG";

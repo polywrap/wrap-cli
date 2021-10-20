@@ -1,3 +1,5 @@
+#import { Query } into Near from "w3://ens/nearPlugin.web3api.eth"
+
 type Query {
   requestSignIn(
     contractId: String
