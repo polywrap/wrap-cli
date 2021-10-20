@@ -10,4 +10,4 @@ modules:
     module: ./src/query/index.ts
 import_redirects:
   - uri: w3://ens/nearPlugin.web3api.eth
-    schema: ../../js/plugins/near/schema.graphql
+    schema: ../../js/plugins/near/build/schema.graphql
