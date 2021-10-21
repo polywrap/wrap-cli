@@ -1,11 +1,7 @@
 use super::{Context, DataView, Format, Write};
 use crate::{BigInt, JSON};
-use alloc::{
-    collections::BTreeMap,
-    string::{String, ToString},
-    vec::Vec,
-};
 use core::hash::Hash;
+use std::collections::BTreeMap;
 
 #[derive(Clone, Debug, Default)]
 pub struct WriteEncoder {

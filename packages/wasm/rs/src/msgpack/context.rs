@@ -1,13 +1,6 @@
 //! Context stores debug information in a stack, and
 //! prints it in a clear format
 
-use alloc::{
-    fmt, format,
-    string::{String, ToString},
-    vec,
-    vec::Vec,
-};
-
 #[derive(Clone, Debug, Default)]
 pub struct Context {
     pub description: String,
@@ -91,8 +84,8 @@ struct Node {
     node_info: String,
 }
 
-impl fmt::Display for Context {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl std::fmt::Display for Context {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "({}, {:?})", self.description, self.nodes)
     }
 }

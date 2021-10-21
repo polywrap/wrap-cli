@@ -1,6 +1,6 @@
 pub fn internal_alloc(len: usize) -> *mut u8 {
     // create a new mutable buffer with capacity `len`
-    let mut buf = alloc::vec::Vec::with_capacity(len);
+    let mut buf = Vec::with_capacity(len);
     // take a mutable pointer to the buffer
     let ptr = buf.as_mut_ptr();
     // take ownership of the memory block and

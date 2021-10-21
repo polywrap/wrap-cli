@@ -1,5 +1,4 @@
 use crate::memory::internal_alloc;
-use alloc::{string::String, vec::Vec};
 
 #[link(wasm_import_module = "w3")]
 extern "C" {

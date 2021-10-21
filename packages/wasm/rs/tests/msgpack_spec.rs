@@ -1,12 +1,5 @@
-extern crate alloc;
-use alloc::{
-    collections::BTreeMap,
-    format,
-    string::{String, ToString},
-    vec,
-    vec::Vec,
-};
 use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
+use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, Default)]
 pub struct Sanity {

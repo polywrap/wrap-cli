@@ -1,6 +1,6 @@
 use crate::{BigInt, Context, JSON};
-use alloc::{collections::BTreeMap, string::String, vec::Vec};
 use core::hash::Hash;
+use std::collections::BTreeMap;
 
 pub trait Read: Clone + Sized {
     fn read_bool(&mut self) -> Result<bool, String>;

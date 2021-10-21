@@ -1,13 +1,7 @@
 use super::{Context, DataView, Format, Read};
 use crate::{BigInt, JSON};
-use alloc::{
-    collections::BTreeMap,
-    str::FromStr,
-    string::{String, ToString},
-    vec,
-    vec::Vec,
-};
 use core::hash::Hash;
+use std::{collections::BTreeMap, str::FromStr};
 
 #[derive(Clone, Debug, Default)]
 pub struct ReadDecoder {

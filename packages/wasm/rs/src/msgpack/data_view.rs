@@ -1,5 +1,4 @@
 use super::{Context, BLOCK_MAX_SIZE, E_INVALID_LENGTH};
-use alloc::{format, string::String, vec::Vec};
 use core::sync::atomic::{AtomicPtr, Ordering};
 
 #[derive(Clone, Debug, Default)]

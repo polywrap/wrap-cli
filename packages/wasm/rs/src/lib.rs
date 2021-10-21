@@ -1,9 +1,5 @@
 //! Polywrap Rust/WASM Runtime Library
 
-#![no_std]
-
-extern crate alloc;
-
 pub mod abort;
 pub mod big_int;
 pub mod invoke;

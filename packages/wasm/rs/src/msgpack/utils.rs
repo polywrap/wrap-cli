@@ -1,10 +1,6 @@
 //! Utility functions for better error handling
 
 use super::Context;
-use alloc::{
-    format,
-    string::{String, ToString},
-};
 
 pub const BLOCK_MAX_SIZE: usize = 1 << 30;
 pub const E_INDEX_OUT_OF_RANGE: &str = "Index out of range";

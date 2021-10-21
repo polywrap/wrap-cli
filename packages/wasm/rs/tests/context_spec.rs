@@ -1,5 +1,3 @@
-extern crate alloc;
-use alloc::string::ToString;
 use polywrap_wasm_rs::Context;
 
 #[test]
