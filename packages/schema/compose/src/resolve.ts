@@ -770,10 +770,22 @@ async function resolveLocalImports(
           visitorFunc(type, {
             enter: {
               ObjectRef: (def: ObjectRef) => {
-                return findImport(def, localTypeInfo.objectTypes);
+                return findImport(
+                  def,
+                  [
+                    ...localTypeInfo.objectTypes,
+                    ...localTypeInfo.importedObjectTypes,
+                  ],
+                );
               },
               EnumRef: (def: EnumRef) => {
-                return findImport(def, localTypeInfo.enumTypes);
+                return findImport(
+                  def,
+                  [
+                    ...localTypeInfo.enumTypes,
+                    ...localTypeInfo.importedEnumTypes,
+                  ],
+                );
               },
             },
           });
