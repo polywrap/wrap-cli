@@ -1,3 +1,4 @@
+use std::convert::TryFrom;
 use polywrap_wasm_rs::{
     Context,
     Read,

@@ -144,7 +144,7 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, S
     })
 }
 
-pub fn serialize_query_method_result(input: i32) -> Vec<u8> {
+pub fn serialize_query_method_result(input: &i32) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) query-type: query_method".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
@@ -157,9 +157,9 @@ pub fn serialize_query_method_result(input: i32) -> Vec<u8> {
     buffer
 }
 
-pub fn write_query_method_result<W: Write>(result: i32, writer: &mut W) {
+pub fn write_query_method_result<W: Write>(result: &i32, writer: &mut W) {
     writer.context().push("query_method", "i32", "writing result");
-    writer.write_i32(result);
+    writer.write_i32(*result);
     writer.context().pop();
 }
 

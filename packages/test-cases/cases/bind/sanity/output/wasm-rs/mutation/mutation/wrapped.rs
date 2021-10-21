@@ -19,7 +19,7 @@ pub fn mutation_method_wrapped(input: &[u8]) -> Vec<u8> {
         enum_array: args.enum_array,
         opt_enum_array: args.opt_enum_array,
     });
-    serialize_mutation_method_result(result)
+    serialize_mutation_method_result(&result)
 }
 
 pub fn object_method_wrapped(input: &[u8]) -> Vec<u8> {

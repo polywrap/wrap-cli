@@ -1,5 +1,5 @@
 {{#scalar}}
-reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(){{#required}}.unwrap(){{/required}};
+reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(){{#required}}.unwrap(){{/required}}
 {{/scalar}}
 {{#array}}
 reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {

@@ -144,7 +144,7 @@ pub fn deserialize_mutation_method_args(input: &[u8]) -> Result<InputMutationMet
     })
 }
 
-pub fn serialize_mutation_method_result(input: i32) -> Vec<u8> {
+pub fn serialize_mutation_method_result(input: &i32) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) query-type: mutation_method".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
@@ -157,9 +157,9 @@ pub fn serialize_mutation_method_result(input: i32) -> Vec<u8> {
     buffer
 }
 
-pub fn write_mutation_method_result<W: Write>(input: i32, writer: &mut W) {
+pub fn write_mutation_method_result<W: Write>(input: &i32, writer: &mut W) {
     writer.context().push("mutation_method", "i32", "writing result");
-    writer.write_i32(input);
+    writer.write_i32(*input);
     writer.context().pop();
 }
 
