@@ -131,7 +131,7 @@ pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}{{#b
     buffer
 }
 
-pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return}}{{#byRef}}&{{/byRef}}{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}{{/return}}, writer: &mut W) {
+pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return}}&{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}{{/return}}, writer: &mut W) {
     {{#return}}
     writer.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}", "writing result");
     {{#scalar}}
@@ -144,7 +144,7 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return
     {{/array}}
     {{#enum}}
     {{#required}}
-    writer.write_i32(result as i32);
+    writer.write_i32(&(*result as i32));
     {{/required}}
     {{^required}}
     writer.write_nullable_i32(&Some(result.unwrap() as i32));

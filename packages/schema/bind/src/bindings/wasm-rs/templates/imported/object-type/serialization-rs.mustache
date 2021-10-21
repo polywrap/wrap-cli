@@ -1,12 +1,14 @@
 {{^__commonImport}}
 use std::convert::TryFrom;
 use polywrap_wasm_rs::{
+    BigInt,
     Context,
     Read,
     ReadDecoder,
     Write,
     WriteEncoder,
     WriteSizer,
+    JSON
 };
 use crate::{{#toUpper}}{{type}}{{/toUpper}};
 {{#propertyDeps}}
@@ -62,7 +64,7 @@ pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(input: &{{#toUpper}}{{ty
     {{/object}}
     {{#enum}}
     {{#required}}
-    writer.write_i32(input.{{#toLower}}{{name}}{{/toLower}} as i32);
+    writer.write_i32(&(input.{{#toLower}}{{name}}{{/toLower}} as i32));
     {{/required}}
     {{^required}}
     writer.write_nullable_i32(&Some(input.{{#toLower}}{{name}}{{/toLower}}.unwrap() as i32));

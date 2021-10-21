@@ -4,8 +4,10 @@ pub use super::super::common::{{#toUpper}}{{type}}{{/toUpper}};
 {{^__commonImport}}
 pub mod serialization;
 use polywrap_wasm_rs::{
+    BigInt
     Read,
     Write,
+    JSON
 };
 pub use serialization::{
     deserialize_{{#toLower}}{{type}}{{/toLower}},

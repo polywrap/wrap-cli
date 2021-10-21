@@ -63,7 +63,7 @@ pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut
     writer.context().pop();
     writer.context().push("en", "TestImportEnum", "writing property");
     writer.write_str("en");
-    writer.write_i32(input.en as i32);
+    writer.write_i32(&(input.en as i32));
     writer.context().pop();
     writer.context().push("opt_enum", "Option<TestImportEnum>", "writing property");
     writer.write_str("opt_enum");
@@ -72,7 +72,7 @@ pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut
     writer.context().push("enum_array", "Vec<TestImportEnum>", "writing property");
     writer.write_str("enum_array");
     writer.write_array(&input.enum_array, |writer: &mut W, item| {
-        writer.write_i32(*item as i32);
+        writer.write_i32(&(*item as i32));
     });
     writer.context().pop();
     writer.context().push("opt_enum_array", "Option<Vec<Option<TestImportEnum>>>", "writing property");
