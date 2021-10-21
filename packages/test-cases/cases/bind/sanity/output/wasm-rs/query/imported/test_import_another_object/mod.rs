@@ -1,7 +1,9 @@
 pub mod serialization;
 use polywrap_wasm_rs::{
+    BigInt,
     Read,
     Write,
+    JSON
 };
 pub use serialization::{
     deserialize_test_import_another_object,

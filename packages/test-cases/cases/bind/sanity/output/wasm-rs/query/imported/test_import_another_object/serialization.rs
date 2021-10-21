@@ -1,10 +1,12 @@
 use polywrap_wasm_rs::{
+    BigInt,
     Context,
     Read,
     ReadDecoder,
     Write,
     WriteEncoder,
     WriteSizer,
+    JSON,
 };
 
 use crate::TestImportAnotherObject;

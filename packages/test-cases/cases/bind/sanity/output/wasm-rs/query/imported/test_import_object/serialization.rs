@@ -1,11 +1,13 @@
 use std::convert::TryFrom;
 use polywrap_wasm_rs::{
+    BigInt,
     Context,
     Read,
     ReadDecoder,
     Write,
     WriteEncoder,
     WriteSizer,
+    JSON,
 };
 
 use crate::TestImportObject;

@@ -159,7 +159,7 @@ pub fn serialize_query_method_result(input: &i32) -> Vec<u8> {
 
 pub fn write_query_method_result<W: Write>(result: &i32, writer: &mut W) {
     writer.context().push("query_method", "i32", "writing result");
-    writer.write_i32(*result);
+    writer.write_i32(result);
     writer.context().pop();
 }
 

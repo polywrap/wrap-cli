@@ -1,10 +1,12 @@
 use polywrap_wasm_rs::{
+    BigInt,
     Context,
     Read,
     ReadDecoder,
     Write,
     WriteEncoder,
     WriteSizer,
+    JSON,
 };
 
 use crate::TestImportObject;
@@ -56,7 +58,7 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     writer.context().pop();
     writer.context().push("u", "u32", "writing property");
     writer.write_str("u");
-    writer.write_u32(input.u);
+    writer.write_u32(&input.u);
     writer.context().pop();
     writer.context().push("opt_u", "Option<u32>", "writing property");
     writer.write_str("opt_u");
@@ -100,7 +102,7 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     writer.context().pop();
     writer.context().push("en", "TestImportEnum", "writing property");
     writer.write_str("en");
-    writer.write_i32(input.en as i32);
+    writer.write_i32(&(input.en as i32));
     writer.context().pop();
     writer.context().push("opt_enum", "Option<TestImportEnum>", "writing property");
     writer.write_str("opt_enum");
@@ -109,7 +111,7 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     writer.context().push("enum_array", "Vec<TestImportEnum>", "writing property");
     writer.write_str("enum_array");
     writer.write_array(&input.enum_array, |writer: &mut W, item| {
-        writer.write_i32(*item as i32);
+        writer.write_i32(&(*item as i32));
     });
     writer.context().pop();
     writer.context().push("opt_enum_array", "Option<Vec<Option<TestImportEnum>>>", "writing property");

@@ -159,7 +159,7 @@ pub fn serialize_mutation_method_result(input: &i32) -> Vec<u8> {
 
 pub fn write_mutation_method_result<W: Write>(input: &i32, writer: &mut W) {
     writer.context().push("mutation_method", "i32", "writing result");
-    writer.write_i32(*input);
+    writer.write_i32(input);
     writer.context().pop();
 }
 
