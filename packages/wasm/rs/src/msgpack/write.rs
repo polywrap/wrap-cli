@@ -4,15 +4,15 @@ use std::collections::BTreeMap;
 
 pub trait Write: Clone {
     fn write_nil(&mut self);
-    fn write_bool(&mut self, value: bool);
-    fn write_i8(&mut self, value: i8);
-    fn write_i16(&mut self, value: i16);
-    fn write_i32(&mut self, value: i32);
-    fn write_u8(&mut self, value: u8);
-    fn write_u16(&mut self, value: u16);
-    fn write_u32(&mut self, value: u32);
-    fn write_f32(&mut self, value: f32);
-    fn write_f64(&mut self, value: f64);
+    fn write_bool(&mut self, value: &bool);
+    fn write_i8(&mut self, value: &i8);
+    fn write_i16(&mut self, value: &i16);
+    fn write_i32(&mut self, value: &i32);
+    fn write_u8(&mut self, value: &u8);
+    fn write_u16(&mut self, value: &u16);
+    fn write_u32(&mut self, value: &u32);
+    fn write_f32(&mut self, value: &f32);
+    fn write_f64(&mut self, value: &f64);
     fn write_string_length(&mut self, length: u32);
     fn write_string(&mut self, value: &String);
     fn write_str(&mut self, value: &str);

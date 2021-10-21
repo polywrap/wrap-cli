@@ -25,55 +25,55 @@ impl Write for WriteSizer {
         self.length += 1;
     }
 
-    fn write_bool(&mut self, _value: bool) {
+    fn write_bool(&mut self, _value: &bool) {
         self.length += 1;
     }
 
-    fn write_i8(&mut self, value: i8) {
-        self.write_i32(value as i32);
+    fn write_i8(&mut self, value: &i8) {
+        self.write_i32(&(*value as i32));
     }
 
-    fn write_i16(&mut self, value: i16) {
-        self.write_i32(value as i32);
+    fn write_i16(&mut self, value: &i16) {
+        self.write_i32(&(*value as i32));
     }
 
-    fn write_i32(&mut self, value: i32) {
-        if value >= -(1 << 5) && value < 1 << 7 {
+    fn write_i32(&mut self, value: &i32) {
+        if *value >= -(1 << 5) && *value < 1 << 7 {
             self.length += 1;
-        } else if value < 1 << 7 && value >= -(1 << 7) {
+        } else if *value < 1 << 7 && *value >= -(1 << 7) {
             self.length += 2;
-        } else if value < 1 << 15 && value >= -(1 << 15) {
+        } else if *value < 1 << 15 && *value >= -(1 << 15) {
             self.length += 3;
         } else {
             self.length += 5;
         }
     }
 
-    fn write_u8(&mut self, value: u8) {
-        self.write_u32(value as u32);
+    fn write_u8(&mut self, value: &u8) {
+        self.write_u32(&(*value as u32));
     }
 
-    fn write_u16(&mut self, value: u16) {
-        self.write_u32(value as u32);
+    fn write_u16(&mut self, value: &u16) {
+        self.write_u32(&(*value as u32));
     }
 
-    fn write_u32(&mut self, value: u32) {
-        if value < (1 << 7) {
+    fn write_u32(&mut self, value: &u32) {
+        if *value < (1 << 7) {
             self.length += 1;
-        } else if value < (1 << 8) {
+        } else if *value < (1 << 8) {
             self.length += 2;
-        } else if value < (1 << 16) {
+        } else if *value < (1 << 16) {
             self.length += 3;
         } else {
             self.length += 5;
         }
     }
 
-    fn write_f32(&mut self, _value: f32) {
+    fn write_f32(&mut self, _value: &f32) {
         self.length += 5;
     }
 
-    fn write_f64(&mut self, _value: f64) {
+    fn write_f64(&mut self, _value: &f64) {
         self.length += 9;
     }
 
@@ -174,7 +174,7 @@ impl Write for WriteSizer {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_bool(value.unwrap());
+            self.write_bool(&value.unwrap());
         }
     }
 
@@ -182,7 +182,7 @@ impl Write for WriteSizer {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_i8(value.unwrap());
+            self.write_i8(&value.unwrap());
         }
     }
 
@@ -190,7 +190,7 @@ impl Write for WriteSizer {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_i16(value.unwrap());
+            self.write_i16(&value.unwrap());
         }
     }
 
@@ -198,7 +198,7 @@ impl Write for WriteSizer {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_i32(value.unwrap());
+            self.write_i32(&value.unwrap());
         }
     }
 
@@ -206,7 +206,7 @@ impl Write for WriteSizer {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_u8(value.unwrap());
+            self.write_u8(&value.unwrap());
         }
     }
 
@@ -214,7 +214,7 @@ impl Write for WriteSizer {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_u16(value.unwrap());
+            self.write_u16(&value.unwrap());
         }
     }
 
@@ -222,7 +222,7 @@ impl Write for WriteSizer {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_u32(value.unwrap());
+            self.write_u32(&value.unwrap());
         }
     }
 
@@ -230,7 +230,7 @@ impl Write for WriteSizer {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_f32(value.unwrap());
+            self.write_f32(&value.unwrap());
         }
     }
 
@@ -238,7 +238,7 @@ impl Write for WriteSizer {
         if value.is_none() {
             self.write_nil();
         } else {
-            self.write_f64(value.unwrap());
+            self.write_f64(&value.unwrap());
         }
     }
 

@@ -21,7 +21,7 @@ use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
 {{/propertyDeps.length}}
 
 #[derive(Clone, Debug)]
-pub struct {{#toUpper}}{{type}}{{/toUpper}} {};
+pub struct {{#toUpper}}{{type}}{{/toUpper}} {}
 
 impl {{#toUpper}}{{type}}{{/toUpper}} {
     pub const URI: &'static str = "{{uri}}";

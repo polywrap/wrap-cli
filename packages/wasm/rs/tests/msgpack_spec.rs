@@ -107,27 +107,27 @@ fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
     writer.write_str("nil");
     writer.write_nullable_string(&sanity.nil);
     writer.write_str("int8");
-    writer.write_i8(sanity.int8);
+    writer.write_i8(&sanity.int8);
     writer.write_str("int16");
-    writer.write_i16(sanity.int16);
+    writer.write_i16(&sanity.int16);
     writer.write_str("int32");
-    writer.write_i32(sanity.int32);
+    writer.write_i32(&sanity.int32);
     writer.write_str("uint8");
-    writer.write_u8(sanity.uint8);
+    writer.write_u8(&sanity.uint8);
     writer.write_str("uint16");
-    writer.write_u16(sanity.uint16);
+    writer.write_u16(&sanity.uint16);
     writer.write_str("uint32");
-    writer.write_u32(sanity.uint32);
+    writer.write_u32(&sanity.uint32);
     writer.write_str("boolean");
-    writer.write_bool(sanity.boolean);
+    writer.write_bool(&sanity.boolean);
     writer.write_str("opt_uint32");
     writer.write_nullable_u32(&sanity.opt_uint32);
     writer.write_str("opt_bool");
     writer.write_nullable_bool(&sanity.opt_bool);
     writer.write_str("float32");
-    writer.write_f32(sanity.float32);
+    writer.write_f32(&sanity.float32);
     writer.write_str("float64");
-    writer.write_f64(sanity.float64);
+    writer.write_f64(&sanity.float64);
     writer.write_str("string");
     writer.write_string(&sanity.string);
     writer.write_str("large_string");
@@ -138,7 +138,7 @@ fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
     writer.write_bytes(&sanity.large_bytes);
     writer.write_str("array");
     writer.write_array(&sanity.array, |writer: &mut W, item| {
-        writer.write_u8(*item);
+        writer.write_u8(item);
     });
     writer.write_str("large_string_array");
     writer.write_array(&sanity.large_string_array, |writer: &mut W, item| {
@@ -154,7 +154,7 @@ fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
         |writer: &mut W, key| writer.write_string(key),
         |writer: &mut W, value| {
             writer.write_array(value, |writer: &mut W, item| {
-                writer.write_i32(*item);
+                writer.write_i32(item);
             });
         },
     );
