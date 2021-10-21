@@ -10,7 +10,9 @@ import {
   createEnumDefinition,
   TypeInfo,
   createEnumPropertyDefinition,
-  createObjectRef
+  createObjectRef,
+  createUnionDefinition,
+  createUnionPropertyDefinition
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
@@ -99,6 +101,11 @@ export const typeInfo: TypeInfo = {
         createEnumPropertyDefinition({
           name: "enum",
           type: "CommonEnum",
+          required: true
+        }),
+        createUnionPropertyDefinition({
+          name: "union",
+          type: "CommonUnion",
           required: true
         })
       ],
@@ -204,7 +211,17 @@ export const typeInfo: TypeInfo = {
       constants: ["STRING", "BYTES"]
     })
   ],
-  unionTypes: [],
+  unionTypes: [createUnionDefinition({
+    type: "CommonUnion",
+    unionTypes: [
+      createObjectRef({
+        type: "NestedType"
+      }),
+      createObjectRef({
+        type: "ArrayObject"
+      })
+    ]
+  })],
   importedObjectTypes: [],
   importedQueryTypes: [],
   importedEnumTypes: [],

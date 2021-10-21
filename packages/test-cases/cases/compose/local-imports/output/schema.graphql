@@ -73,6 +73,7 @@ type CommonType {
   nestedObject: NestedType!
   objectArray: [[ArrayObject]]!
   enum: CommonEnum!
+  union: CommonUnion!
 }
 
 type NestedType {
@@ -107,6 +108,10 @@ enum CommonEnum {
   STRING
   BYTES
 }
+
+union CommonUnion =
+| NestedType
+| ArrayObject
 
 ### Imported Queries START ###
 

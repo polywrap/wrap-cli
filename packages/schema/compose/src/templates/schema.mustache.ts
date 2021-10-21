@@ -61,6 +61,17 @@ enum {{type}} {
 }
 
 {{/enumTypes}}
+{{#unionTypes}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
+union {{type}} =
+{{#unionTypes}}
+| {{type}}
+{{/unionTypes}}
+
+{{/unionTypes}}
 ### Imported Queries START ###
 
 {{#importedQueryTypes}}{{#comment}}
@@ -135,6 +146,21 @@ enum {{type}} @imported(
 }
 
 {{/importedEnumTypes}}
+{{#importedUnionTypes}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
+union {{type}} @imported(
+  uri: "{{uri}}",
+  namespace: "{{namespace}}",
+  nativeType: "{{nativeType}}"
+) =
+{{#unionTypes}}
+| {{type}}
+{{/unionTypes}}
+
+{{/importedUnionTypes}}
 ### Imported Objects END ###{{/typeInfo}}`;
 
 export { template };
