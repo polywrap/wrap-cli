@@ -1,12 +1,7 @@
 use crate::{
-    mutation_method,
-    InputMutationMethod,
-    deserialize_mutation_method_args,
-    serialize_mutation_method_result,
-    object_method,
-    InputObjectMethod,
-    deserialize_object_method_args,
-    serialize_object_method_result,
+    deserialize_mutation_method_args, deserialize_object_method_args, mutation_method,
+    object_method, serialize_mutation_method_result, serialize_object_method_result,
+    InputMutationMethod, InputObjectMethod,
 };
 
 pub fn mutation_method_wrapped(input: &[u8]) -> Vec<u8> {
@@ -19,7 +14,7 @@ pub fn mutation_method_wrapped(input: &[u8]) -> Vec<u8> {
         enum_array: args.enum_array,
         opt_enum_array: args.opt_enum_array,
     });
-    serialize_mutation_method_result(result)
+    serialize_mutation_method_result(&result) // HERE
 }
 
 pub fn object_method_wrapped(input: &[u8]) -> Vec<u8> {

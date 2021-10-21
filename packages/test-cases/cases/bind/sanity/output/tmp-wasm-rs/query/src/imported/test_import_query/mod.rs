@@ -1,16 +1,13 @@
 use polywrap_wasm_rs::subinvoke;
 pub mod serialization;
 pub use serialization::{
-    deserialize_imported_method_result,
-    serialize_imported_method_args,
+    deserialize_another_method_result, deserialize_imported_method_result,
+    serialize_another_method_args, serialize_imported_method_args, InputAnotherMethod,
     InputImportedMethod,
-    deserialize_another_method_result,
-    serialize_another_method_args,
-    InputAnotherMethod,
 };
 
-use crate::TestImportObject;
 use crate::TestImportEnum;
+use crate::TestImportObject;
 
 #[derive(Clone, Debug)]
 pub struct TestImportQuery {}
@@ -30,7 +27,8 @@ impl TestImportQuery {
             "query".to_string(),
             "imported_method".to_string(),
             args,
-        ).unwrap();
+        )
+        .unwrap();
         deserialize_imported_method_result(result.as_slice())
     }
 
@@ -42,7 +40,8 @@ impl TestImportQuery {
             "query".to_string(),
             "another_method".to_string(),
             args,
-        ).unwrap();
+        )
+        .unwrap();
         deserialize_another_method_result(result.as_slice())
     }
 }

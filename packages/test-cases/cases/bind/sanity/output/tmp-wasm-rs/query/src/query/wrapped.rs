@@ -1,12 +1,7 @@
 use crate::{
-    query_method,
+    deserialize_object_method_args, deserialize_query_method_args, object_method, query_method,
+    serialize_object_method_result, serialize_query_method_result, InputObjectMethod,
     InputQueryMethod,
-    deserialize_query_method_args,
-    serialize_query_method_result,
-    object_method,
-    InputObjectMethod,
-    deserialize_object_method_args,
-    serialize_object_method_result,
 };
 
 pub fn query_method_wrapped(input: &[u8]) -> Vec<u8> {
@@ -19,7 +14,7 @@ pub fn query_method_wrapped(input: &[u8]) -> Vec<u8> {
         enum_array: args.enum_array,
         opt_enum_array: args.opt_enum_array,
     });
-    serialize_query_method_result(result)
+    serialize_query_method_result(&result) // HERE
 }
 
 pub fn object_method_wrapped(input: &[u8]) -> Vec<u8> {

@@ -1,12 +1,7 @@
 pub mod serialization;
-use polywrap_wasm_rs::{
-    Read,
-    Write,
-};
+use polywrap_wasm_rs::{Read, Write};
 pub use serialization::{
-    deserialize_test_import_object,
-    read_test_import_object,
-    serialize_test_import_object,
+    deserialize_test_import_object, read_test_import_object, serialize_test_import_object,
     write_test_import_object,
 };
 
