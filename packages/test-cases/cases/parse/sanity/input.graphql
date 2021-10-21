@@ -20,6 +20,19 @@ directive @imports(
   types: [String!]!
 ) on OBJECT
 
+type TestUnionA {
+  prop: String!
+}
+
+type TestUnionB {
+  prop: Boolean!
+}
+
+"""
+CustomUnion comment
+"""
+union CustomUnion = TestUnionA | TestUnionB
+
 """
 CustomEnum comment
 """
@@ -71,6 +84,10 @@ optStr comment
   enum: CustomEnum!
   enumArray: [CustomEnum!]!,
   optEnumArray: [CustomEnum]
+  optUnion: CustomUnion
+  union: CustomUnion!
+  unionArray: [CustomUnion!]!,
+  optUnionArray: [CustomUnion]
 }
 
 """
@@ -146,6 +163,19 @@ arrayEnum comment
     arrayEnum: [CustomEnum!]!
   ): CustomEnum!
 """
+UnionMethod comment
+"""
+  unionMethod(
+"""
+Union comment
+"""
+    union: CustomUnion,
+"""
+arrayUnion comment
+"""
+    arrayUnion: [CustomUnion!]!
+  ): CustomUnion!
+"""
 abstractMethod comment
 """
   abstractMethod(
@@ -187,6 +217,11 @@ uArrayArray comment
     enum: TestImport_Enum!
     optEnum: TestImport_Enum
   ): TestImport_Enum!
+
+  importedUnionMethod(
+    union: TestImport_Union!
+    optUnion: TestImport_Union
+  ): TestImport_Union!
 }
 
 """
@@ -252,6 +287,15 @@ enum TestImport_Enum @imported(
   TEXT
   BYTES
 }
+
+"""
+TestImport_Union comment
+"""
+union TestImport_Union @imported(
+  namespace: "TestImport",
+  uri: "testimport.uri.eth",
+  nativeType: "Union"
+) = TestUnionA | TestUnionB
 
 """
 Interface_Query comment

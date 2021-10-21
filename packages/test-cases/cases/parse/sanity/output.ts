@@ -15,11 +15,27 @@ import {
   createImportedEnumDefinition,
   createInterfaceImplementedDefinition,
   createObjectRef,
-  createEnumRef
+  createEnumRef,
+  createUnionPropertyDefinition,
+  createUnionRef,
+  createImportedUnionDefinition,
+  createUnionDefinition
 } from "../../../../schema/parse/src/typeInfo";
 
 export const output: TypeInfo = {
   objectTypes: [
+    {
+      ...createObjectDefinition({ type: "TestUnionA" }),
+      properties: [
+        createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
+      ]
+    },
+    {
+      ...createObjectDefinition({ type: "TestUnionB" }),
+      properties: [
+        createScalarPropertyDefinition({ name: "prop", type: "Boolean", required: true }),
+      ]
+    },
     {
       ...createObjectDefinition({ type: "CustomType", comment: "CustomType multi-line comment\nline 2" }),
       properties: [
@@ -176,6 +192,35 @@ export const output: TypeInfo = {
             type: "CustomEnum",
             required: false
           })
+        }),
+        createUnionPropertyDefinition({
+          name: "optUnion",
+          type: "CustomUnion",
+        }),
+        createUnionPropertyDefinition({
+          name: "union",
+          type: "CustomUnion",
+          required: true
+        }),
+        createArrayPropertyDefinition({
+          name: "unionArray",
+          type: "[CustomUnion]",
+          required: true,
+          item: createUnionRef({
+            name: "unionArray",
+            type: "CustomUnion",
+            required: true,
+          })
+        }),
+        createArrayPropertyDefinition({
+          name: "optUnionArray",
+          type: "[CustomUnion]",
+          required: false,
+          item: createUnionRef({
+            name: "optUnionArray",
+            type: "CustomUnion",
+            required: false
+          })
         })
       ],
     },
@@ -222,6 +267,33 @@ export const output: TypeInfo = {
       nativeType: "Enum",
       constants: ["TEXT", "BYTES"], 
       comment: "TestImport_Enum comment"
+    })
+  ],
+
+  //TODO
+  unionTypes: [
+    createUnionDefinition({
+      type: "CustomUnion",
+      unionTypes: [createObjectRef({
+        type: "TestUnionA",
+      }), createObjectRef({
+        type: "TestUnionB"
+      })],
+      comment: "CustomUnion comment"
+    })
+  ],
+  importedUnionTypes: [
+    createImportedUnionDefinition({
+      type: "TestImport_Union",
+      uri: "testimport.uri.eth",
+      namespace: "TestImport",
+      nativeType: "Union",
+      unionTypes: [createObjectRef({
+        type: "TestUnionA",
+      }), createObjectRef({
+        type: "TestUnionB"
+      })], 
+      comment: "TestImport_Union comment"
     })
   ],
   queryTypes: [
@@ -290,6 +362,29 @@ export const output: TypeInfo = {
               item: createEnumRef({
                 type: "CustomEnum",
                 name: "arrayEnum",
+                required: true
+              })
+            })
+          ],
+        },
+        {
+          ...createMethodDefinition({
+            type: "query",
+            name: "unionMethod",
+            return: createUnionPropertyDefinition({
+              name: "unionMethod",
+              type: "CustomUnion",
+              required: true
+            }),
+            comment: "UnionMethod comment"
+          }),
+          arguments: [
+            createUnionPropertyDefinition({ name: "union", type: "CustomUnion", comment: "Union comment" }),
+            createArrayPropertyDefinition({ 
+              name: "arrayUnion", type: "[CustomUnion]", required: true, comment: "arrayUnion comment", 
+              item: createUnionRef({
+                type: "CustomUnion",
+                name: "arrayUnion",
                 required: true
               })
             })
@@ -518,6 +613,33 @@ export const output: TypeInfo = {
               ...createEnumPropertyDefinition({
                 name: "optEnum",
                 type: "TestImport_Enum",
+                required: false
+              }),
+            }
+          ]
+        },
+        {
+          ...createMethodDefinition({
+            type: "query",
+            name: "importedUnionMethod",
+            return: createUnionPropertyDefinition({
+              name: "importedUnionMethod",
+              type: "TestImport_Union",
+              required: true
+            }),
+          }),
+          arguments: [
+            {
+              ...createUnionPropertyDefinition({
+                name: "union",
+                type: "TestImport_Union",
+                required: true
+              }),
+            },
+            {
+              ...createUnionPropertyDefinition({
+                name: "optUnion",
+                type: "TestImport_Union",
                 required: false
               }),
             }

@@ -143,7 +143,7 @@ export const getImportsDirectiveValidator = (): SchemaValidator => {
 };
 
 export const getImportedDirectiveValidator = (): SchemaValidator => {
-  let isInsideObjectOrEnumTypeDefinition = false;
+  let isInsideObjectOrUnionOrEnumTypeDefinition = false;
 
   const Directive = (
     node: DirectiveNode,
@@ -155,9 +155,9 @@ export const getImportedDirectiveValidator = (): SchemaValidator => {
       return;
     }
 
-    if (!isInsideObjectOrEnumTypeDefinition) {
+    if (!isInsideObjectOrUnionOrEnumTypeDefinition) {
       throw new Error(
-        `@imported directive should only be used on object or enum type definitions, ` +
+        `@imported directive should only be used on object, or union, or enum type definitions, ` +
           `but it is being used in the following location: ${path.join(" -> ")}`
       );
     }
@@ -209,15 +209,16 @@ export const getImportedDirectiveValidator = (): SchemaValidator => {
           Directive(node as DirectiveNode, key, parent, path);
         } else if (
           node.kind === "ObjectTypeDefinition" ||
-          node.kind === "EnumTypeDefinition"
+          node.kind === "EnumTypeDefinition" ||
+          node.kind === "UnionTypeDefinition"
         ) {
-          isInsideObjectOrEnumTypeDefinition = true;
+          isInsideObjectOrUnionOrEnumTypeDefinition = true;
         } else if (
           node.kind !== "NamedType" &&
           node.kind !== "Name" &&
           node.kind !== "StringValue"
         ) {
-          isInsideObjectOrEnumTypeDefinition = false;
+          isInsideObjectOrUnionOrEnumTypeDefinition = false;
         }
       },
     },

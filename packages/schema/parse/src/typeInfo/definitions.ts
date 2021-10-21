@@ -183,6 +183,7 @@ export function createUnionDefinition(args: {
   name?: string | null;
   required?: boolean;
   unionTypes: (GenericDefinition | null)[];
+  comment?: string;
 }): UnionDefinition {
   return {
     ...createGenericDefinition(args),
@@ -191,6 +192,7 @@ export function createUnionDefinition(args: {
     required: args.required ? args.required : null,
     unionTypes: args.unionTypes,
     kind: DefinitionKind.Union,
+    comment: args.comment,
   };
 }
 

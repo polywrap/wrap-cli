@@ -24,19 +24,6 @@ type Bar {
   prop: String!
 }
 
-type Foo {
-  foo: String
-}
-
-union FooBar = Bar | Foo
-`;
-
-
-const typeDefinitions5 = `
-type Bar {
-  prop: String!
-}
-
 type Bar {
   other: String!
 }
@@ -236,10 +223,6 @@ describe("Web3API Schema Type Validation", () => {
     );
 
     expect(exec(typeDefinitions4)).toThrow(
-      /Union type definitions are not supported.\nFound: union FooBar/gm
-    );
-
-    expect(exec(typeDefinitions5)).toThrow(
       /Duplicate object type definition found: Bar/gm
     );
   });

@@ -1,5 +1,5 @@
 import {
-  createGenericDefinition,
+  createObjectRef,
   createUnionDefinition,
   TypeInfo,
   UnionDefinition,
@@ -17,11 +17,11 @@ const visitorEnter = (unionTypes: UnionDefinition[]) => ({
     }
 
     const union = createUnionDefinition({
-      type: "Union",
-      name: node.name.value,
+      type: node.name.value,
+      comment: node.description?.value,
       unionTypes: node.types
         ? node.types.map((type) =>
-            createGenericDefinition({
+            createObjectRef({
               type: type.name.value,
             })
           )
@@ -29,8 +29,6 @@ const visitorEnter = (unionTypes: UnionDefinition[]) => ({
     });
 
     unionTypes.push(union);
-
-    console.log(JSON.stringify(unionTypes, null, 2));
   },
 });
 

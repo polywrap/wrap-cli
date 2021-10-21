@@ -1,8 +1,8 @@
 import {
   TypeInfo,
   ImportedUnionDefinition,
-  createGenericDefinition,
   createImportedUnionDefinition,
+  createObjectRef,
 } from "../typeInfo";
 import { extractImportedDefinition } from "./imported-types-utils";
 
@@ -20,7 +20,7 @@ const visitorEnter = (importedUnionTypes: ImportedUnionDefinition[]) => ({
       type: node.name.value,
       unionTypes: node.types
         ? node.types.map((type) =>
-            createGenericDefinition({
+            createObjectRef({
               type: type.name.value,
             })
           )
