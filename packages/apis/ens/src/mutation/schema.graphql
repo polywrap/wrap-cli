@@ -1,21 +1,13 @@
-#import { Mutation, Connection } into Ethereum from "w3://ens/ethereum.web3api.eth"
+#import { Query, Mutation, Connection } into Ethereum from "w3://ens/ethereum.web3api.eth"
 #import { Query } into UTS46 from "w3://ens/uts46.web3api.eth"
 #import { Query } into SHA3 from "w3://ens/sha3.web3api.eth"
+#import { Mutation } into Multisend from "w3://ipfs/QmRWS3fsUaC8836V7AXw1WeXTYiCdGMFNLb3knKapZjHSc"
 #import { TxOverrides } from "../common/schema.graphql"
 
 type ConfigureOpenDomainResponse {
   fifsRegistrarAddress: String!
   registerOpenDomainTxReceipt: Ethereum_TxResponse!
   setSubdomainRecordTxReceipt: Ethereum_TxResponse!
-}
-
-type CreateSubdomainInOpenDomainResponse {
-  registerSubdomainTxReceipt: Ethereum_TxResponse!
-  setResolverTxReceipt: Ethereum_TxResponse!
-}
-
-type CreateSubdomainInOpenDomainAndSetContentHashResponse implements CreateSubdomainInOpenDomainResponse {
-  setContentHashReceiptTx: Ethereum_TxResponse!
 }
 
 type Mutation {
@@ -155,25 +147,14 @@ type Mutation {
   ): ConfigureOpenDomainResponse!
 
   createSubdomainInOpenDomain(
-    label: String!
     domain: String!
+    label: String!
     owner: String!
+    delegatorAddress: String!
     fifsRegistrarAddress: String!
     registryAddress: String!
     resolverAddress: String!
-    connection: Ethereum_Connection
-    txOverrides: TxOverrides
-  ): CreateSubdomainInOpenDomainResponse!
-
-  createSubdomainInOpenDomainAndSetContentHash(
-    label: String!
-    domain: String!
-    owner: String!
-    fifsRegistrarAddress: String!
-    registryAddress: String!
-    resolverAddress: String!
-    cid: String!
-    connection: Ethereum_Connection
-    txOverrides: TxOverrides
-  ): CreateSubdomainInOpenDomainAndSetContentHashResponse
+    connection: Multisend_Ethereum_Connection
+    txOverrides: Multisend_TxOverrides
+  ): Multisend_Ethereum_TxResponse
 }

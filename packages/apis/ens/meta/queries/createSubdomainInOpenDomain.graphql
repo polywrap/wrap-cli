@@ -1,11 +1,13 @@
 mutation {
   createSubdomainInOpenDomain(
-    label: $label
     domain: $domain
+    label: $label
     owner: $owner
+    delegatorAddress: $delegatorAddress
     fifsRegistrarAddress: $fifsRegistrarAddress
     registryAddress: $registryAddress
     resolverAddress: $resolverAddress
     connection: { networkNameOrChainId: $network }
+    txOverrides: $txOverrides
   )
 }

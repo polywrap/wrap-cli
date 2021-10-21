@@ -91,6 +91,13 @@ type Connection {
   networkNameOrChainId: String
 }
 
+type TransactionData {
+  operation: String!
+  to: String!
+  value: String!
+  data: String!
+}
+
 type Query {
   callContractView(
     address: String!
@@ -158,6 +165,11 @@ type Query {
 
   toEth(
     wei: BigInt!
+  ): String!
+
+  encodeTransaction(
+    types: [String!]!
+    values: TransactionData!
   ): String!
 
   awaitTransaction(

@@ -101,10 +101,13 @@ export async function resolveImportsAndParseSchemas(
     resolvers.external,
     subTypeInfo
   );
+
   await resolveLocalImports(
     localImportsToResolve,
     resolvers.local,
-    subTypeInfo
+    subTypeInfo,
+    mutation,
+    resolvers
   );
 
   // Remove all import statements
@@ -660,7 +663,9 @@ async function resolveExternalImports(
 async function resolveLocalImports(
   importsToResolve: LocalImport[],
   resolveSchema: SchemaResolver,
-  typeInfo: TypeInfo
+  typeInfo: TypeInfo,
+  mutation: boolean,
+  resolvers: SchemaResolvers
 ): Promise<void> {
   for (const importToResolve of importsToResolve) {
     const { importedTypes, path } = importToResolve;
@@ -678,7 +683,12 @@ async function resolveLocalImports(
     }
 
     // Parse the schema into TypeInfo
-    const localTypeInfo = parseSchema(schema);
+    const localTypeInfo = await resolveImportsAndParseSchemas(
+      schema,
+      path,
+      mutation,
+      resolvers
+    );
 
     // Keep track of all imported type names
     const typesToImport: Record<string, GenericDefinition> = {};
@@ -737,24 +747,46 @@ async function resolveLocalImports(
             );
           }
 
+          const objectDefinition = rootTypes[idx];
+
+          if (!visitedTypes[objectDefinition.type]) {
+            if (objectDefinition.kind === DefinitionKind.Object) {
+              visitedTypes[objectDefinition.type] = true;
+              visitType(objectDefinition);
+            }
+          }
+
           typesToImport[def.type] = {
-            ...rootTypes[idx],
+            ...objectDefinition,
             name: null,
             required: null,
           };
           return def;
         };
 
-        visitorFunc(type, {
-          enter: {
-            ObjectRef: (def: ObjectRef) => {
-              return findImport(def, localTypeInfo.objectTypes);
+        const visitedTypes: Record<string, boolean> = {};
+
+        const visitType = (type: GenericDefinition) => {
+          visitorFunc(type, {
+            enter: {
+              ObjectRef: (def: ObjectRef) => {
+                return findImport(def, [
+                  ...localTypeInfo.objectTypes,
+                  ...localTypeInfo.importedObjectTypes,
+                ]);
+              },
+              EnumRef: (def: EnumRef) => {
+                return findImport(def, [
+                  ...localTypeInfo.enumTypes,
+                  ...localTypeInfo.importedEnumTypes,
+                ]);
+              },
             },
-            EnumRef: (def: EnumRef) => {
-              return findImport(def, localTypeInfo.enumTypes);
-            },
-          },
-        });
+          });
+        };
+
+        visitedTypes[type.type] = true;
+        visitType(type);
       }
     }
 

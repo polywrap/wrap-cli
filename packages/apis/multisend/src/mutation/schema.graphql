@@ -1,0 +1,16 @@
+#import { Query, Mutation, Connection, TransactionData } into Ethereum from "w3://ens/ethereum.web3api.eth"
+
+type TxOverrides {
+  gasPrice: BigInt
+  gasLimit: BigInt
+}
+
+type Mutation {
+  executeTransactions(
+    delegatorAddress: String!
+    multisendAddress: String!
+    transactions: [Ethereum_TransactionData!]!
+    connection: Ethereum_Connection
+    txOverrides: TxOverrides
+  ): Ethereum_TxResponse!
+}

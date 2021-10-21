@@ -300,6 +300,19 @@ export class EthereumPlugin extends Plugin {
     return etherAmount.toString();
   }
 
+  public encodeTransaction(input: Query.Input_encodeTransaction): string {
+    const data = ethers.utils.arrayify(input.values.data);
+    const encoded = ethers.utils.solidityPack(input.types, [
+      input.values.operation,
+      input.values.to,
+      input.values.value,
+      data.length,
+      data,
+    ]);
+
+    return encoded;
+  }
+
   public async waitForEvent(
     input: Query.Input_waitForEvent
   ): Promise<Types.EventNotification> {

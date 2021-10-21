@@ -1,3 +1,5 @@
+#import { AnotherLocal } from "./another.graphql"
+
 """
 CommonType comment
 """
@@ -8,6 +10,7 @@ type CommonType {
 objectArray comment
 """
   objectArray: [[ArrayObject]]!
+  anotherLocal: AnotherLocal!
 }
 
 """

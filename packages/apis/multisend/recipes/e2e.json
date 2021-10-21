@@ -1,0 +1,14 @@
+[
+  {
+    "api": "ens/testnet/multisend.eth",
+    "constants": "./constants.json"
+  },
+  {
+    "query": "./multisend.graphql",
+    "variables": {
+      "network": "testnet",
+      "address": "$address",
+      "transactions": "$transactions"
+    }
+  }
+]

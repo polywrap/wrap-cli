@@ -2,7 +2,9 @@ import { getResolver } from "../query";
 import { namehash, keccak256 } from "../utils";
 import { abi, bytecode } from "../contracts/FIFSRegistrar";
 import {
+  Ethereum_Query,
   Ethereum_Mutation,
+  Multisend_Mutation,
   Input_registerDomain,
   Input_reverseRegisterDomain,
   Input_setAddress,
@@ -20,11 +22,10 @@ import {
   Input_setTextRecord,
   Input_configureOpenDomain,
   Input_createSubdomainInOpenDomain,
-  Input_createSubdomainInOpenDomainAndSetContentHash,
+  Multisend_TxOverrides,
   Ethereum_TxResponse,
   ConfigureOpenDomainResponse,
-  CreateSubdomainInOpenDomainResponse,
-  CreateSubdomainInOpenDomainAndSetContentHashResponse,
+  Multisend_Ethereum_TxResponse,
   TxOverrides,
 } from "./w3";
 
@@ -425,61 +426,41 @@ export function configureOpenDomain(
 
 export function createSubdomainInOpenDomain(
   input: Input_createSubdomainInOpenDomain
-): CreateSubdomainInOpenDomainResponse {
-  const txOverrides: TxOverrides =
+): Multisend_Ethereum_TxResponse | null {
+  const txOverrides: Multisend_TxOverrides =
     input.txOverrides === null
       ? { gasLimit: null, gasPrice: null }
       : input.txOverrides!;
 
-  const registerSubdomainTxReceipt = registerSubnodeOwnerWithFIFSRegistrar({
-    label: input.label,
-    owner: input.owner,
-    fifsRegistrarAddress: input.fifsRegistrarAddress,
+  const registerEncodedData = Ethereum_Query.encodeFunction({
+    method: "function register(bytes32 label, address owner)",
+    args: [keccak256(input.label), input.owner],
+  });
+
+  // const setResolverEncodedData = Ethereum_Query.encodeFunction({
+  //   method: "function setResolver(bytes32 node, address resolver)",
+  //   args: [namehash(input.domain), input.resolverAddress],
+  // });
+
+  const multisendTransactionReceipt = Multisend_Mutation.executeTransactions({
+    address: input.delegatorAddress,
+    transactions: [
+      {
+        operation: "1",
+        value: "0x",
+        to: input.fifsRegistrarAddress,
+        data: registerEncodedData,
+      },
+      // {
+      //   operation: "1",
+      //   value: "0",
+      //   to: input.registryAddress,
+      //   data: setResolverEncodedData,
+      // },
+    ],
     connection: input.connection,
     txOverrides,
   });
 
-  const setResolverTxReceipt = setResolver({
-    domain: input.label + "." + input.domain,
-    registryAddress: input.registryAddress,
-    resolverAddress: input.resolverAddress,
-    connection: input.connection,
-    txOverrides,
-  });
-
-  return { registerSubdomainTxReceipt, setResolverTxReceipt };
-}
-
-export function createSubdomainInOpenDomainAndSetContentHash(
-  input: Input_createSubdomainInOpenDomainAndSetContentHash
-): CreateSubdomainInOpenDomainAndSetContentHashResponse {
-  const txOverrides: TxOverrides =
-    input.txOverrides === null
-      ? { gasLimit: null, gasPrice: null }
-      : input.txOverrides!;
-
-  const createSubdomainInOpenDomainTxReceipt = createSubdomainInOpenDomain({
-    label: input.label,
-    domain: input.domain,
-    resolverAddress: input.resolverAddress,
-    registryAddress: input.registryAddress,
-    owner: input.owner,
-    fifsRegistrarAddress: input.fifsRegistrarAddress,
-    connection: input.connection,
-    txOverrides,
-  });
-
-  const setContentHashReceiptTx = setContentHash({
-    domain: input.label + "." + input.domain,
-    cid: input.cid,
-    resolverAddress: input.resolverAddress,
-    connection: input.connection,
-    txOverrides,
-  });
-
-  return {
-    registerSubdomainTxReceipt: createSubdomainInOpenDomainTxReceipt.registerSubdomainTxReceipt,
-    setResolverTxReceipt: createSubdomainInOpenDomainTxReceipt.setResolverTxReceipt,
-    setContentHashReceiptTx,
-  };
+  return multisendTransactionReceipt;
 }

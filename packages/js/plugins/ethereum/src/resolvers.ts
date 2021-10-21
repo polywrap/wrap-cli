@@ -122,4 +122,8 @@ export const query = (plugin: Plugin): Query.Module => ({
   ): Promise<Types.TxReceipt> => {
     return plugin.awaitTransaction(input);
   },
+
+  encodeTransaction: (input: Query.Input_encodeTransaction): string => {
+    return plugin.encodeTransaction(input);
+  },
 });

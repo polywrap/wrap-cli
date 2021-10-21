@@ -1,0 +1,9 @@
+#import { TransactionData } into Ethereum from "w3://ens/ethereum.web3api.eth"
+
+mutation executeTransactions($transactions: [Ethereum_TransactionData!]!) {
+  executeTransactions(
+    address: $address
+    transactions: $transactions
+    connection: { networkNameOrChainId: $network }
+  )
+}

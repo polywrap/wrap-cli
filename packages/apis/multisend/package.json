@@ -1,0 +1,36 @@
+{
+  "name": "@polywrap/multisend",
+  "description": "Wrapper to batch send transactions",
+  "private": true,
+  "version": "0.0.1-prealpha.48",
+  "scripts": {
+    "build": "yarn build:contract && yarn build:web3api",
+    "build:web3api": "npx w3 build",
+    "build:contract": "hardhat compile",
+    "test": "w3 query ./recipes/e2e.json",
+    "test:ci": "yarn test:env:up && yarn deploy && yarn test && yarn test:env:down",
+    "test:env:up": "w3 test-env up",
+    "test:env:down": "w3 test-env down",
+    "deploy": "yarn deploy:web3api && yarn deploy:contract",
+    "deploy:web3api": "npx w3 build --ipfs http://localhost:5001 --test-ens multisend.eth",
+    "deploy:contract": "hardhat deploy --network",
+    "deploy:contract:local": "hardhat run ./scripts/localDeploy.js --network localhost"
+  },
+  "dependencies": {
+    "@web3api/wasm-as": "0.0.1-prealpha.48"
+  },
+  "devDependencies": {
+    "@gnosis.pm/safe-contracts": "1.3.0",
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-etherscan": "2.1.6",
+    "@nomiclabs/hardhat-waffle": "2.0.1",
+    "@web3api/cli": "0.0.1-prealpha.48",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.48",
+    "@web3api/test-env-js": "0.0.1-prealpha.48",
+    "dotenv": "8.0.0",
+    "ethers": "5.4.7",
+    "js-yaml": "3.14.0",
+    "hardhat": "2.6.4",
+    "hardhat-deploy": "0.9.1"
+  }
+}
