@@ -355,7 +355,7 @@ export const typeInfo: TypeInfo = {
   unionTypes: [
     createUnionDefinition({
       type: "CommonUnion",
-      unionTypes: [
+      memberTypes: [
         createObjectRef({
           type: "NestedType"
         }),

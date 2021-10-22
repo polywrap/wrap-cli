@@ -43,6 +43,13 @@ export type {{type}}String =
 export type {{type}} = {{type}}Enum | {{type}}String;
 
 {{/enumTypes}}
+{{#unionTypes}}
+export type {{type}} = 
+  {{#memberTypes}}
+  | {{type}}
+  {{/memberTypes}}
+
+{{/unionTypes}}
 /// Imported Objects START ///
 
 {{#importedObjectTypes}}
@@ -70,6 +77,14 @@ export type {{type}}String =
 export type {{type}} = {{type}}Enum | {{type}}String;
 
 {{/importedEnumTypes}}
+{{#importedUnionTypes}}
+/* URI: "{{uri}}" */
+export type {{type}} = 
+  {{#memberTypes}}
+  | {{type}}
+  {{/memberTypes}}
+
+{{/importedUnionTypes}}
 /// Imported Objects END ///
 
 /// Imported Queries START ///

@@ -68,7 +68,9 @@ enum {{type}} {
 {{/comment}}
 union {{type}} =
 {{#unionTypes}}
+  {{#memberTypes}}
 | {{type}}
+  {{/memberTypes}}
 {{/unionTypes}}
 
 {{/unionTypes}}
@@ -157,7 +159,9 @@ union {{type}} @imported(
   nativeType: "{{nativeType}}"
 ) =
 {{#unionTypes}}
+  {{#memberTypes}}
 | {{type}}
+  {{/memberTypes}}
 {{/unionTypes}}
 
 {{/importedUnionTypes}}

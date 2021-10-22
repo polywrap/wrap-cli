@@ -34,6 +34,10 @@ type CustomType {
   optEnum: CustomEnum
   enumArray: [CustomEnum!]!
   optEnumArray: [CustomEnum]
+  union: CustomUnion!
+  optUnion: CustomUnion
+  unionArray: [CustomUnion!]!
+  optUnionArray: [CustomUnion]
 }
 
 type AnotherType {
@@ -46,19 +50,12 @@ enum CustomEnum {
   BYTES
 }
 
-type UnionTypeA {
-  propA: String
+type AnotherObject {
+  prop: String!
 }
 
-type UnionTypeB {
-  propB: String
+type YetAnotherObject {
+  prop: Boolean!
 }
 
-union TestUnion = UnionTypeA | UnionTypeB
-
-type UnionPropertyObject {
-  union: TestUnion!
-  optUnion: TestUnion
-  unionArray: [TestUnion!]!
-  optUnionArray: [TestUnion]
-}
+union CustomUnion = AnotherObject | YetAnotherObject

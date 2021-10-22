@@ -27,7 +27,9 @@ type Query @imports(
     "TestImport_Query",
     "TestImport_Object",
     "TestImport_AnotherObject",
-    "TestImport_Enum"
+    "TestImport_Enum",
+    "TestImport_YetAnotherObject",
+    "TestImport_Union"
   ]
 ) {
   queryMethod(
@@ -37,6 +39,10 @@ type Query @imports(
     optEnum: CustomEnum
     enumArray: [CustomEnum!]!
     optEnumArray: [CustomEnum]
+    union: CustomUnion!
+    optUnion: CustomUnion
+    unionArray: [CustomUnion!]!
+    optUnionArray: [CustomUnion]
   ): Int!
 
   objectMethod(
@@ -53,6 +59,8 @@ type Mutation @imports(
     "TestImport_Object",
     "TestImport_AnotherObject",
     "TestImport_Enum",
+    "TestImport_YetAnotherObject",
+    "TestImport_Union",
     "TestImport_Mutation"
   ]
 ) {
@@ -63,6 +71,10 @@ type Mutation @imports(
     optEnum: CustomEnum
     enumArray: [CustomEnum!]!
     optEnumArray: [CustomEnum]
+    union: CustomUnion!
+    optUnion: CustomUnion
+    unionArray: [CustomUnion!]!
+    optUnionArray: [CustomUnion]
   ): Int!
 
   objectMethod(
@@ -109,6 +121,10 @@ type CustomType {
   optEnum: CustomEnum
   enumArray: [CustomEnum!]!
   optEnumArray: [CustomEnum]
+  union: CustomUnion!
+  optUnion: CustomUnion
+  unionArray: [CustomUnion!]!
+  optUnionArray: [CustomUnion]
 }
 
 type AnotherType {
@@ -120,6 +136,16 @@ enum CustomEnum {
   STRING
   BYTES
 }
+
+type AnotherObject {
+  prop: String!
+}
+
+type YetAnotherObject {
+  prop: Boolean!
+}
+
+union CustomUnion = AnotherObject | YetAnotherObject
 
 ### Imported Queries START ###
 
@@ -142,6 +168,10 @@ type TestImport_Query @imported(
     optEnum: TestImport_Enum
     enumArray: [TestImport_Enum!]!
     optEnumArray: [TestImport_Enum]
+    union: TestImport_Union!
+    optUnion: TestImport_Union
+    unionArray: [TestImport_Union!]!
+    optUnionArray: [TestImport_Union]
   ): TestImport_Object
 
   anotherMethod(
@@ -182,6 +212,10 @@ type TestImport_Object @imported(
   optEnum: TestImport_Enum
   enumArray: [TestImport_Enum!]!
   optEnumArray: [TestImport_Enum]
+  union: TestImport_Union!
+  optUnion: TestImport_Union
+  unionArray: [TestImport_Union!]!
+  optUnionArray: [TestImport_Union]
 }
 
 type TestImport_AnotherObject @imported(
@@ -192,6 +226,14 @@ type TestImport_AnotherObject @imported(
   prop: String!
 }
 
+type TestImport_YetAnotherObject @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "YetAnotherObject"
+) {
+  prop: Boolean!
+}
+
 enum TestImport_Enum @imported(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
@@ -200,6 +242,14 @@ enum TestImport_Enum @imported(
   STRING
   BYTES
 }
+
+union TestImport_Union @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Union"
+) =
+| TestImport_AnotherObject
+| TestImport_YetAnotherObject
 
 ### Imported Objects END ###
 `;

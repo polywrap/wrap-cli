@@ -1,5 +1,5 @@
-#import { CustomType, CustomEnum, AnotherType, TestUnion } from "../imports-local/common.graphql"
-#import { Query, Object, AnotherObject, Enum, IUnion } into TestImport from "testimport.uri.eth"
+#import { CustomType, CustomEnum, AnotherType, CustomUnion } from "../imports-local/common.graphql"
+#import { Query, Object, AnotherObject, Enum, Union } into TestImport from "testimport.uri.eth"
 
 type Query {
   queryMethod(
@@ -9,6 +9,10 @@ type Query {
     optEnum: CustomEnum
     enumArray: [CustomEnum!]!
     optEnumArray: [CustomEnum]
+    union: CustomUnion!
+    optUnion: CustomUnion
+    unionArray: [CustomUnion!]!
+    optUnionArray: [CustomUnion]
   ): Int!
 
   objectMethod(
@@ -17,9 +21,4 @@ type Query {
     objectArray: [AnotherType!]!
     optObjectArray: [AnotherType]
   ): AnotherType
-
-  unionMethod(
-    union: TestUnion!
-    unionArray: [TestUnion!]!
-  ): [IUnion!]!
 }

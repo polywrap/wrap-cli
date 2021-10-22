@@ -56,11 +56,23 @@ export interface CustomType {
   optEnum?: Types.CustomEnum | null;
   enumArray: Array<Types.CustomEnum>;
   optEnumArray?: Array<Types.CustomEnum | null> | null;
+  union: Types.CustomUnion;
+  optUnion?: Types.CustomUnion | null;
+  unionArray: Array<Types.CustomUnion>;
+  optUnionArray?: Array<Types.CustomUnion | null> | null;
 }
 
 export interface AnotherType {
   prop?: String | null;
   circular?: Types.CustomType | null;
+}
+
+export interface AnotherObject {
+  prop: String;
+}
+
+export interface YetAnotherObject {
+  prop: Boolean;
 }
 
 export enum CustomEnumEnum {
@@ -74,6 +86,10 @@ export type CustomEnumString =
 
 export type CustomEnum = CustomEnumEnum | CustomEnumString;
 
+export type CustomUnion =
+  | AnotherObject
+  | YetAnotherObject
+
 /// Imported Objects START ///
 
 /* URI: "testimport.uri.eth" */
@@ -86,11 +102,20 @@ export interface TestImport_Object {
   optEnum?: Types.TestImport_Enum | null;
   enumArray: Array<Types.TestImport_Enum>;
   optEnumArray?: Array<Types.TestImport_Enum | null> | null;
+  union: Types.TestImport_Union;
+  optUnion?: Types.TestImport_Union | null;
+  unionArray: Array<Types.TestImport_Union>;
+  optUnionArray?: Array<Types.TestImport_Union | null> | null;
 }
 
 /* URI: "testimport.uri.eth" */
 export interface TestImport_AnotherObject {
   prop: String;
+}
+
+/* URI: "testimport.uri.eth" */
+export interface TestImport_YetAnotherObject {
+  prop: Boolean;
 }
 
 /* URI: "testimport.uri.eth" */
@@ -104,6 +129,10 @@ export type TestImport_EnumString =
   | "BYTES"
 
 export type TestImport_Enum = TestImport_EnumEnum | TestImport_EnumString;
+
+export type TestImport_Union =
+  | TestImport_AnotherObject
+  | TestImport_YetAnotherObject
 
 /// Imported Objects END ///
 
@@ -124,6 +153,10 @@ interface TestImport_Query_Input_importedMethod extends Record<string, unknown> 
   optEnum?: Types.TestImport_Enum | null;
   enumArray: Array<Types.TestImport_Enum>;
   optEnumArray?: Array<Types.TestImport_Enum | null> | null;
+  union: Types.TestImport_Union;
+  optUnion?: Types.TestImport_Union | null;
+  unionArray: Array<Types.TestImport_Union>;
+  optUnionArray?: Array<Types.TestImport_Union | null> | null;
 }
 
 /* URI: "testimport.uri.eth" */

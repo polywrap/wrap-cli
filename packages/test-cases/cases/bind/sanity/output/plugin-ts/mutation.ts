@@ -29,6 +29,10 @@ export interface Input_mutationMethod extends Record<string, unknown> {
   optEnum?: Types.CustomEnum | null;
   enumArray: Array<Types.CustomEnum>;
   optEnumArray?: Array<Types.CustomEnum | null> | null;
+  union: Types.CustomUnion;
+  optUnion?: Types.CustomUnion | null;
+  unionArray: Array<Types.CustomUnion>;
+  optUnionArray?: Array<Types.CustomUnion | null> | null;
 }
 
 export interface Input_objectMethod extends Record<string, unknown> {

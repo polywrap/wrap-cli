@@ -73,6 +73,18 @@ export function writeTestImport_Object(writer: Write, type: TestImport_Object): 
     writer.writeNullableInt32(item);
   });
   writer.context().pop();
+  writer.context().push("unionArray", "Array<Types.TestImport_Union>", "writing property");
+  writer.writeString("unionArray");
+  writer.writeArray(type.unionArray, (writer: Write, item: Types.TestImport_Union): void => {
+    writer.writeInt32(item);
+  });
+  writer.context().pop();
+  writer.context().push("optUnionArray", "Array<Nullable<Types.TestImport_Union>> | null", "writing property");
+  writer.writeString("optUnionArray");
+  writer.writeNullableArray(type.optUnionArray, (writer: Write, item: Nullable<Types.TestImport_Union>): void => {
+    writer.writeNullableInt32(item);
+  });
+  writer.context().pop();
 }
 
 export function deserializeTestImport_Object(buffer: ArrayBuffer): TestImport_Object {
@@ -96,6 +108,12 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
   let _enumArray: Array<Types.TestImport_Enum> = [];
   let _enumArraySet: bool = false;
   let _optEnumArray: Array<Nullable<Types.TestImport_Enum>> | null = null;
+  let _union: Types.TestImport_Union = 0;
+  let _unionSet: bool = false;
+  let _optUnion: Nullable<Types.TestImport_Union> = new Nullable<Types.TestImport_Union>();
+  let _unionArray: Array<Types.TestImport_Union> = [];
+  let _unionArraySet: bool = false;
+  let _optUnionArray: Array<Nullable<Types.TestImport_Union>> | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -208,6 +226,76 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
       });
       reader.context().pop();
     }
+    else if (field == "union") {
+      reader.context().push(field, "Types.TestImport_Union", "type found, reading property");
+      let value: Types.TestImport_Union;
+      if (reader.isNextString()) {
+        value = Types.getTestImport_UnionValue(reader.readString());
+      } else {
+        value = reader.readInt32();
+        Types.sanitizeTestImport_UnionValue(value);
+      }
+      _union = value;
+      _unionSet = true;
+      reader.context().pop();
+    }
+    else if (field == "optUnion") {
+      reader.context().push(field, "Nullable<Types.TestImport_Union>", "type found, reading property");
+      let value: Nullable<Types.TestImport_Union>;
+      if (!reader.isNextNil()) {
+        if (reader.isNextString()) {
+          value = Nullable.fromValue(
+            Types.getTestImport_UnionValue(reader.readString())
+          );
+        } else {
+          value = Nullable.fromValue(
+            reader.readInt32()
+          );
+          Types.sanitizeTestImport_UnionValue(value.value);
+        }
+      } else {
+        value = Nullable.fromNull<Types.TestImport_Union>();
+      }
+      _optUnion = value;
+      reader.context().pop();
+    }
+    else if (field == "unionArray") {
+      reader.context().push(field, "Array<Types.TestImport_Union>", "type found, reading property");
+      _unionArray = reader.readArray((reader: Read): Types.TestImport_Union => {
+        let value: Types.TestImport_Union;
+        if (reader.isNextString()) {
+          value = Types.getTestImport_UnionValue(reader.readString());
+        } else {
+          value = reader.readInt32();
+          Types.sanitizeTestImport_UnionValue(value);
+        }
+        return value;
+      });
+      _unionArraySet = true;
+      reader.context().pop();
+    }
+    else if (field == "optUnionArray") {
+      reader.context().push(field, "Array<Nullable<Types.TestImport_Union>> | null", "type found, reading property");
+      _optUnionArray = reader.readNullableArray((reader: Read): Nullable<Types.TestImport_Union> => {
+        let value: Nullable<Types.TestImport_Union>;
+        if (!reader.isNextNil()) {
+          if (reader.isNextString()) {
+            value = Nullable.fromValue(
+              Types.getTestImport_UnionValue(reader.readString())
+            );
+          } else {
+            value = Nullable.fromValue(
+              reader.readInt32()
+            );
+            Types.sanitizeTestImport_UnionValue(value.value);
+          }
+        } else {
+          value = Nullable.fromNull<Types.TestImport_Union>();
+        }
+        return value;
+      });
+      reader.context().pop();
+    }
     reader.context().pop();
   }
 
@@ -232,6 +320,10 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
     en: _en,
     optEnum: _optEnum,
     enumArray: _enumArray,
-    optEnumArray: _optEnumArray
+    optEnumArray: _optEnumArray,
+    union: _union,
+    optUnion: _optUnion,
+    unionArray: _unionArray,
+    optUnionArray: _optUnionArray,
   };
 }

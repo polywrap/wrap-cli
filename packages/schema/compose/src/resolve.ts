@@ -197,43 +197,45 @@ const extractObjectImportDependencies = (
     };
   };
 
+  const ObjectRefVisit = (def: ObjectRef & Namespaced) => {
+    if (def.__namespaced) {
+      return def;
+    }
+
+    const type = def.type;
+
+    const namespaceType = appendNamespace(namespace, type);
+
+    if (!importsFound[namespaceType]) {
+      // Find the import
+      const importFound = findImport(
+        type,
+        namespaceType,
+        rootTypeInfo.objectTypes,
+        rootTypeInfo.importedObjectTypes,
+        DefinitionKind.ImportedObject
+      ) as ImportedObjectDefinition;
+
+      // Keep track of it
+      importsFound[importFound.type] = importFound;
+
+      // Traverse this newly added object
+      visitObjectDefinition(importFound, {
+        ...extractObjectImportDependencies(
+          importsFound,
+          rootTypeInfo,
+          namespace,
+          uri
+        ),
+      });
+    }
+
+    return def;
+  };
+
   return {
     enter: {
-      ObjectRef: (def: ObjectRef & Namespaced) => {
-        if (def.__namespaced) {
-          return def;
-        }
-
-        const type = def.type;
-
-        const namespaceType = appendNamespace(namespace, type);
-
-        if (!importsFound[namespaceType]) {
-          // Find the import
-          const importFound = findImport(
-            type,
-            namespaceType,
-            rootTypeInfo.objectTypes,
-            rootTypeInfo.importedObjectTypes,
-            DefinitionKind.ImportedObject
-          ) as ImportedObjectDefinition;
-
-          // Keep track of it
-          importsFound[importFound.type] = importFound;
-
-          // Traverse this newly added object
-          visitObjectDefinition(importFound, {
-            ...extractObjectImportDependencies(
-              importsFound,
-              rootTypeInfo,
-              namespace,
-              uri
-            ),
-          });
-        }
-
-        return def;
-      },
+      ObjectRef: ObjectRefVisit,
       InterfaceImplementedDefinition: (
         def: InterfaceImplementedDefinition & Namespaced
       ) => {
@@ -308,6 +310,17 @@ const extractObjectImportDependencies = (
             rootTypeInfo.importedUnionTypes,
             DefinitionKind.ImportedUnion
           ) as ImportedUnionDefinition;
+
+          //Import memberTypes's types (they are all object refs)
+          importFound.memberTypes = importFound.memberTypes.map(
+            (memberType: GenericDefinition) => {
+              ObjectRefVisit(memberType);
+
+              // Namespace memberType refs
+              memberType.type = appendNamespace(namespace, memberType.type);
+              return memberType;
+            }
+          );
 
           importsFound[importFound.type] = importFound;
         }
@@ -626,7 +639,6 @@ async function resolveExternalImports(
         nativeType: type.type,
       };
 
-      // Extract all object dependencies
       visitorFunc(
         type,
         extractObjectImportDependencies(
@@ -792,7 +804,7 @@ async function resolveLocalImports(
         ) => {
           // Skip objects that we've already processed
           if (typesToImport[def.type]) {
-            return def;
+            return typesToImport[def.type];
           }
 
           // Find the ObjectDefinition
@@ -805,24 +817,50 @@ async function resolveLocalImports(
             );
           }
 
+          const foundImport = rootTypes[idx];
+
           typesToImport[def.type] = {
-            ...rootTypes[idx],
+            ...foundImport,
             name: null,
             required: null,
           };
-          return def;
+
+          return foundImport;
         };
 
         visitorFunc(type, {
           enter: {
             ObjectRef: (def: ObjectRef) => {
-              return findImport(def, localTypeInfo.objectTypes);
+              findImport(def, localTypeInfo.objectTypes);
+
+              return def;
+            },
+            UnionDefinition: (def: UnionDefinition) => {
+              def.memberTypes.forEach((memberType: GenericDefinition) => {
+                return findImport(memberType, localTypeInfo.objectTypes);
+              });
+
+              return def;
             },
             EnumRef: (def: EnumRef) => {
-              return findImport(def, localTypeInfo.enumTypes);
+              findImport(def, localTypeInfo.enumTypes);
+
+              return def;
             },
             UnionRef: (def: UnionRef) => {
-              return findImport(def, localTypeInfo.unionTypes);
+              const foundImport = findImport(
+                def,
+                localTypeInfo.unionTypes
+              ) as UnionDefinition;
+
+              //Import union's memberTypes
+              foundImport.memberTypes.forEach(
+                (memberType: GenericDefinition) => {
+                  return findImport(memberType, localTypeInfo.objectTypes);
+                }
+              );
+
+              return def;
             },
           },
         });

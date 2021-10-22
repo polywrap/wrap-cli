@@ -10,12 +10,15 @@ export {
 
 export { CustomType } from "./CustomType";
 export { AnotherType } from "./AnotherType";
+export { AnotherObject } from "./AnotherObject";
+export { YetAnotherObject } from "./YetAnotherObject";
 export {
   CustomEnum,
   getCustomEnumKey,
   getCustomEnumValue,
   sanitizeCustomEnumValue
 } from "./CustomEnum";
+export { CustomUnion } from "./CustomUnion";
 
 export { TestImport_Query } from "./imported/TestImport_Query";
 export { TestImport_Object } from "./imported/TestImport_Object";
@@ -26,3 +29,4 @@ export {
   getTestImport_EnumValue,
   sanitizeTestImport_EnumValue
 } from "./imported/TestImport_Enum";
+export { TestImport_Union } from "./imported/TestImport_Union";

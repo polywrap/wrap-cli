@@ -50,6 +50,10 @@ type Query {
     optEnum: Enum
     enumArray: [Enum!]!
     optEnumArray: [Enum]
+    union: Union!
+    optUnion: Union
+    unionArray: [Union!]!
+    optUnionArray: [Union]
   ): Object
 
   anotherMethod(
@@ -66,6 +70,10 @@ type Object {
   optEnum: Enum
   enumArray: [Enum!]!
   optEnumArray: [Enum]
+  union: Union!
+  optUnion: Union
+  unionArray: [Union!]!
+  optUnionArray: [Union]
 }
 
 type AnotherObject {
@@ -81,4 +89,4 @@ enum Enum {
   BYTES
 }
 
-union IUnion = AnotherObject | YetAnotherObject
+union Union = AnotherObject | YetAnotherObject

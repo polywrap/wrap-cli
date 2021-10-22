@@ -274,7 +274,7 @@ export const output: TypeInfo = {
   unionTypes: [
     createUnionDefinition({
       type: "CustomUnion",
-      unionTypes: [createObjectRef({
+      memberTypes: [createObjectRef({
         type: "TestUnionA",
       }), createObjectRef({
         type: "TestUnionB"
@@ -288,7 +288,7 @@ export const output: TypeInfo = {
       uri: "testimport.uri.eth",
       namespace: "TestImport",
       nativeType: "Union",
-      unionTypes: [createObjectRef({
+      memberTypes: [createObjectRef({
         type: "TestUnionA",
       }), createObjectRef({
         type: "TestUnionB"

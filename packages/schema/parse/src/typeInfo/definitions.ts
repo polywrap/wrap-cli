@@ -147,7 +147,7 @@ export interface EnumDefinition extends GenericDefinition, WithComment {
 }
 
 export interface UnionDefinition extends GenericDefinition, WithComment {
-  unionTypes: (GenericDefinition | null)[];
+  memberTypes: (GenericDefinition | null)[];
 }
 
 export function createEnumDefinition(args: {
@@ -182,7 +182,7 @@ export function createUnionDefinition(args: {
   type: string;
   name?: string | null;
   required?: boolean;
-  unionTypes: (GenericDefinition | null)[];
+  memberTypes: (GenericDefinition | null)[];
   comment?: string;
 }): UnionDefinition {
   return {
@@ -190,7 +190,7 @@ export function createUnionDefinition(args: {
     type: args.type,
     name: args.name ? args.name : null,
     required: args.required ? args.required : null,
-    unionTypes: args.unionTypes,
+    memberTypes: args.memberTypes,
     kind: DefinitionKind.Union,
     comment: args.comment,
   };
@@ -512,7 +512,7 @@ export function createImportedUnionDefinition(args: {
   type: string;
   name?: string;
   required?: boolean;
-  unionTypes: GenericDefinition[];
+  memberTypes: GenericDefinition[];
   uri: string;
   namespace: string;
   nativeType: string;

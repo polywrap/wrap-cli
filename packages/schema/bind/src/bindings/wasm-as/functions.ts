@@ -96,6 +96,8 @@ export const toWasm: MustacheFunction = () => {
       return toWasmArray(type, nullable);
     }
 
+    console.log(type);
+
     switch (type) {
       case "Int":
         type = "i32";
@@ -138,6 +140,8 @@ export const toWasm: MustacheFunction = () => {
         if (type.includes("Enum_")) {
           type = `Types.${type.replace("Enum_", "")}`;
           isEnum = true;
+        } else if (type.includes("Union_")) {
+          type = `Types.${type.replace("Union_", "")}`;
         } else {
           type = `Types.${type}`;
         }

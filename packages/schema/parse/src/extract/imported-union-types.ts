@@ -18,7 +18,7 @@ const visitorEnter = (importedUnionTypes: ImportedUnionDefinition[]) => ({
 
     const union = createImportedUnionDefinition({
       type: node.name.value,
-      unionTypes: node.types
+      memberTypes: node.types
         ? node.types.map((type) =>
             createObjectRef({
               type: type.name.value,

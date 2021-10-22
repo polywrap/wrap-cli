@@ -25,6 +25,10 @@ export class TestImport_Object {
   optEnum: Nullable<Types.TestImport_Enum>;
   enumArray: Array<Types.TestImport_Enum>;
   optEnumArray: Array<Nullable<Types.TestImport_Enum>> | null;
+  union: Types.TestImport_Union;
+  optUnion: Nullable<Types.TestImport_Union>;
+  unionArray: Array<Types.TestImport_Union>;
+  optUnionArray: Array<Nullable<Types.TestImport_Union>> | null;
 
   static toBuffer(type: TestImport_Object): ArrayBuffer {
     return serializeTestImport_Object(type);
