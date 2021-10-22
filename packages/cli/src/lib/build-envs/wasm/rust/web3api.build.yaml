@@ -3,4 +3,4 @@ docker:
   name: build-env
   dockerfile: ./Dockerfile.mustache
 config:
-  rust_version: "1.55"
+  rust_version: "1.56"
