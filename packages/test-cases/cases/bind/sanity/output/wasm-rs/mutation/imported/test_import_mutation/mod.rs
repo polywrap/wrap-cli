@@ -1,4 +1,10 @@
-use polywrap_wasm_rs::subinvoke;
+use polywrap_wasm_rs::{
+    BigInt,
+    Read,
+    Write,
+    JSON,
+    subinvoke
+};
 pub mod serialization;
 pub use serialization::{
     deserialize_imported_method_result,

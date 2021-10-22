@@ -2,7 +2,13 @@
 pub use super::super::common::TestImportQuery;
 {{/__commonImport}}
 {{^__commonImport}}
-use polywrap_wasm_rs::subinvoke;
+use polywrap_wasm_rs::{
+    BigInt,
+    Read,
+    Write,
+    JSON,
+    subinvoke
+};
 pub mod serialization;
 {{#methods.length}}
 pub use serialization::{

@@ -30,7 +30,7 @@ pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(input: &[u8]) -> Vec<u8> {
         {{#toLower}}{{name}}{{/toLower}}: args.{{#toLower}}{{name}}{{/toLower}},
         {{/arguments}}
     }{{/arguments.length}});
-    serialize_{{#toLower}}{{name}}{{/toLower}}_result({{#return}}{{#byRef}}&{{/byRef}}{{/return}}result)
+    serialize_{{#toLower}}{{name}}{{/toLower}}_result({{#return}}&{{/return}}result)
 }
 {{^last}}
 

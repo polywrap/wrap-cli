@@ -1,4 +1,3 @@
-extern crate std;
 use std::convert::TryFrom;
 
 #[derive(Clone, Copy, Debug)]
