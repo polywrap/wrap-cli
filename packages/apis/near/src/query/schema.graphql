@@ -1,4 +1,4 @@
-#import { Query } into Near from "w3://ens/nearPlugin.web3api.eth"
+#import { Query, AccountView, Transaction, Action } into Near from "w3://ens/nearPlugin.web3api.eth"
 
 type Query {
   requestSignIn(
@@ -14,18 +14,10 @@ type Query {
 
   getAccountId: String
 
-  accountState: AccountView
-}
+  accountState: Near_AccountView
 
-type QueryResponseKind {
-  blockHeight: BigInt!
-  blockHash: String!
-}
-
-type AccountView implements QueryResponseKind {
-  amount: String!
-  locked: String!
-  codeHash: String!
-  storageUsage: BigInt!
-  storagePaidAt: BigInt!
+  createTransaction(
+    receiverId: String!
+    actions: [Near_Action!]!
+  ): Near_Transaction!
 }

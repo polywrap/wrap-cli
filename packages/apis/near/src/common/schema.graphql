@@ -10,7 +10,7 @@ enum KeyType {
 #  keyType: KeyType!
 #  data: Bytes!
 #}
-type PublicKey implements Signature { _: String }
+type PublicKey implements Signature {}
 
 type Signature {
   keyType: KeyType!
@@ -22,15 +22,15 @@ type AccessKeyPermission {
   _: String
 }
 
+# Full access permission allows an account to call all public contract functions
+type FullAccessPermission implements AccessKeyPermission {}
+
 # Function call permissions describe which contract functions an account can call
 type FunctionCallPermission implements AccessKeyPermission {
   receiverId: String!
   methodNames: [String!]!
   allowance: BigInt
 }
-
-# Full access permission allows an account to call all public contract functions
-type FullAccessPermission implements AccessKeyPermission { _: String }
 
 # Access keys contain access key permissions, which determine how an account is allowed to interact with a contract
 type AccessKey {
@@ -44,7 +44,7 @@ type Action {
 }
 
 # holds content necessary to create an account
-type CreateAccount implements Action { _: String }
+type CreateAccount implements Action {}
 # holds content necessary to send a transaction that deploys a contract
 type DeployContract implements Action { code: Bytes! }
 # holds content necessary to send a transaction that calls a contract function
@@ -78,4 +78,55 @@ type SignedTransaction {
 type SignTransactionResult {
   hash: Bytes!
   signedTx: SignedTransaction!
+}
+
+
+type ExecutionError {
+  error_message: String!
+  error_type: String!
+}
+
+type FinalExecutionStatus {
+  successValue: String
+  failure: ExecutionError
+}
+
+type ExecutionStatus {
+  successValue: String
+  successReceiptId: String
+  failure: ExecutionError
+}
+
+# Execution status of a sent transaction
+type ExecutionOutcome {
+  logs: [String!]!
+  receipt_ids: [String!]!
+  gas_burnt: BigInt!
+  status: ExecutionStatus!
+}
+
+type ExecutionOutcomeWithId {
+  id: String!
+  outcome: ExecutionOutcome!
+}
+
+# Final outcome of a sent transaction
+type FinalExecutionOutcome {
+  status: FinalExecutionStatus!
+  transaction: Near_Transaction!
+  transaction_outcome: ExecutionOutcomeWithId!
+  receipts_outcome: [ExecutionOutcomeWithId!]!
+}
+
+type QueryResponseKind {
+  blockHeight: BigInt!
+  blockHash: String!
+}
+
+type AccountView implements QueryResponseKind {
+  amount: String!
+  locked: String!
+  codeHash: String!
+  storageUsage: BigInt!
+  storagePaidAt: BigInt!
 }

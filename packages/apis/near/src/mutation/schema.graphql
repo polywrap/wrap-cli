@@ -1,5 +1,4 @@
 #import { Mutation, Transaction } into Near from "w3://ens/nearPlugin.web3api.eth"
-#import { Transaction } from "../common/schema.graphql"
 
 type Mutation {
   # send one or more transactions to NEAR wallet to be signed and executed
@@ -11,41 +10,4 @@ type Mutation {
     # meta information NEAR Wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param
     meta: String
   ): Boolean!
-}
-
-type ExecutionError {
-  error_message: String!
-  error_type: String!
-}
-
-type FinalExecutionStatus {
-  successValue: String
-  failure: ExecutionError
-}
-
-type ExecutionStatus {
-  successValue: String
-  successReceiptId: String
-  failure: ExecutionError
-}
-
-# Execution status of a sent transaction
-type ExecutionOutcome {
-  logs: [String!]!
-  receipt_ids: [String!]!
-  gas_burnt: BigInt!
-  status: ExecutionStatus!
-}
-
-type ExecutionOutcomeWithId {
-  id: String!
-  outcome: ExecutionOutcome!
-}
-
-# Final outcome of a sent transaction
-type FinalExecutionOutcome {
-  status: FinalExecutionStatus!
-  transaction: Near_Transaction!
-  transaction_outcome: ExecutionOutcomeWithId!
-  receipts_outcome: [ExecutionOutcomeWithId!]!
 }

@@ -8,6 +8,7 @@ import {
   SignTransactionResult,
   FinalExecutionOutcome,
   AccountView,
+  Action,
 } from "./w3";
 import {
   fromAction,
@@ -58,20 +59,12 @@ export class NearPlugin extends Plugin {
     };
   }
 
-  private async connect(): Promise<boolean> {
-    this.near = new nearApi.Near(this._config);
-    if (typeof window !== "undefined") {
-      this.wallet = new nearApi.WalletConnection(this.near, null);
-    }
-    return true;
-  }
-
   public async requestSignIn(
     input: Query.Input_requestSignIn
   ): Promise<boolean> {
     if (!this.wallet) {
       throw Error(
-        "Near wallet is unavailable, likely because browser tools are unavailable."
+        "Near wallet is unavailable, likely because the NEAR plugin is operating outside of a browser."
       );
     }
     const { contractId, methodNames, successUrl, failureUrl } = input;
@@ -95,8 +88,9 @@ export class NearPlugin extends Plugin {
     return this.wallet?.isSignedIn() ?? false;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async getAccountId(input?: Query.Input_getAccountId): Promise<string | null> {
+  public async getAccountId(
+    input?: Query.Input_getAccountId // eslint-disable-line @typescript-eslint/no-unused-vars
+  ): Promise<string | null> {
     return this.wallet?.getAccountId() ?? null;
   }
 
@@ -108,8 +102,8 @@ export class NearPlugin extends Plugin {
     }
     const nearAccountView: NearAccountView = await this.near.connection.provider.query<NearAccountView>(
       {
-        request_type: "view_account",
-        account_id: this.wallet.getAccountId(),
+        request_type: "view_account", // eslint-disable-line @typescript-eslint/naming-convention
+        account_id: this.wallet.getAccountId(), // eslint-disable-line @typescript-eslint/naming-convention
         finality: "optimistic",
       }
     );
@@ -119,38 +113,19 @@ export class NearPlugin extends Plugin {
   public async createTransaction(
     input: Query.Input_createTransaction
   ): Promise<Transaction> {
-    const { senderId, receiverId, actions } = input;
-    console.log(`calling createTransaction for sender ${senderId}`);
-
-    const account = await this.near.account(senderId);
-    const accessKeyInfo = await account.findAccessKey(
-      receiverId,
-      actions.map(fromAction)
-    );
-    if (!accessKeyInfo) {
-      throw new Error(
-        `Can not sign transactions for account ${senderId} on network ${this.near.connection.networkId}, no matching key pair found in ${this.near.connection.signer}.`
-      );
+    const { signerId, receiverId, actions } = input;
+    // If a local account is not provided, create transaction with wallet
+    if (!signerId) {
+      if (this.wallet && this.wallet.isSignedIn()) {
+        return this.createTransactionWithWallet(receiverId, actions);
+      } else {
+        throw Error(
+          "Near wallet is unavailable, likely because the NEAR plugin is operating outside of a browser."
+        );
+      }
     }
-    const { accessKey } = accessKeyInfo;
-    const publicKey = await this.near.connection.signer.getPublicKey(
-      senderId,
-      this.near.connection.networkId
-    );
-    const block = await this.near.connection.provider.block({
-      finality: "final",
-    });
-    const blockHash = block.header.hash;
-    const nonce = ++accessKey.nonce;
-
-    return {
-      signerId: senderId,
-      publicKey: toPublicKey(publicKey),
-      nonce: nonce.toString(),
-      receiverId: receiverId,
-      blockHash: nearApi.utils.serialize.base_decode(blockHash),
-      actions: actions,
-    };
+    // create transaction without wallet
+    return this.createTransactionLocally(receiverId, actions, signerId);
   }
 
   public async signTransaction(
@@ -227,6 +202,99 @@ export class NearPlugin extends Plugin {
     const transaction = await this.createTransaction(input);
     const { signedTx } = await this.signTransaction({ transaction });
     return await this.sendTransactionAsync({ signedTx });
+  }
+
+  private async connect(): Promise<boolean> {
+    this.near = new nearApi.Near(this._config);
+    if (typeof window !== "undefined") {
+      this.wallet = new nearApi.WalletConnection(this.near, null);
+    }
+    return true;
+  }
+
+  private async createTransactionLocally(
+    receiverId: string,
+    actions: Action[],
+    signerId: string
+  ): Promise<Transaction> {
+    const account = await this.near.account(signerId);
+    const accessKeyInfo = await account.findAccessKey(
+      receiverId,
+      actions.map(fromAction)
+    );
+    if (!accessKeyInfo) {
+      throw new Error(
+        `Can not sign transactions for account ${signerId} on network ${this.near.connection.networkId}, no matching key pair found in ${this.near.connection.signer}.`
+      );
+    }
+    const { accessKey } = accessKeyInfo;
+    const block = await this.near.connection.provider.block({
+      finality: "final",
+    });
+    const blockHash = block.header.hash;
+    const nonce = ++accessKey.nonce;
+    const publicKey = await this.near.connection.signer.getPublicKey(
+      signerId,
+      this.near.connection.networkId
+    );
+
+    return {
+      signerId: signerId,
+      publicKey: toPublicKey(publicKey),
+      nonce: nonce.toString(),
+      receiverId: receiverId,
+      blockHash: nearApi.utils.serialize.base_decode(blockHash),
+      actions: actions,
+    };
+  }
+
+  private async createTransactionWithWallet(
+    receiverId: string,
+    actions: Action[]
+  ): Promise<Transaction> {
+    if (!this.wallet) {
+      throw Error(
+        "Near wallet is unavailable, likely because the NEAR plugin is operating outside of a browser."
+      );
+    }
+    const signerId = this.wallet.getAccountId();
+    if (!signerId) {
+      throw Error("User is not signed in to wallet.");
+    }
+    const walletAccount = new nearApi.ConnectedWalletAccount(
+      this.wallet,
+      this.near.connection,
+      signerId
+    );
+    const localKey = await this.near.connection.signer.getPublicKey(
+      signerId,
+      this.near.connection.networkId
+    );
+    const accessKey = await walletAccount.accessKeyForTransaction(
+      receiverId,
+      actions.map(fromAction),
+      localKey
+    );
+    if (!accessKey) {
+      throw new Error(
+        `Cannot find matching key for transaction sent to ${receiverId}`
+      );
+    }
+    const block = await this.near.connection.provider.block({
+      finality: "final",
+    });
+    const blockHash = block.header.hash;
+    const nonce = accessKey.access_key.nonce + 1;
+    const publicKey = nearApi.utils.PublicKey.from(accessKey.public_key);
+
+    return {
+      signerId: signerId,
+      publicKey: toPublicKey(publicKey),
+      nonce: nonce.toString(),
+      receiverId: receiverId,
+      blockHash: nearApi.utils.serialize.base_decode(blockHash),
+      actions: actions,
+    };
   }
 }
 

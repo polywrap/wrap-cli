@@ -14,13 +14,18 @@ type Query {
 
   accountState: AccountView
 
+  """
+  Creates a transaction.
+  If signerId is provided, the transaction will be signed using data from the KeyStore in the plugin config.
+  Otherwise, wallet authorization is expected.
+  """
   createTransaction(
-    senderId: String!
     receiverId: String!
     actions: [Action!]!
+    signerId: String
   ): Transaction!
 
-  # signs a transaction
+  # signs a transaction without wallet
   signTransaction(
     transaction: Transaction!
   ): SignTransactionResult!
@@ -47,18 +52,18 @@ type Mutation {
     signedTx: SignedTransaction
   ): FinalExecutionOutcome!
 
-  # creates, signs, and sends a transaction from senderId and awaits execution
+  # creates, signs, and sends a transaction without wallet and awaits execution
   signAndSendTransaction(
-    senderId: String!
     receiverId: String!
     actions: [Action!]!
+    signerId: String!
   ): FinalExecutionOutcome!
 
-  # creates, signs, and sends a transaction from senderId and immediately returns transaction hash
+  # creates, signs, and sends a transaction without wallet and immediately returns transaction hash
   signAndSendTransactionAsync(
-    senderId: String!
     receiverId: String!
     actions: [Action!]!
+    signerId: String!
   ): FinalExecutionOutcome!
 }
 
@@ -145,15 +150,15 @@ type AccessKeyPermission {
   _: String
 }
 
+# Full access permission allows an account to call all public contract functions
+type FullAccessPermission implements AccessKeyPermission {}
+
 # Function call permissions describe which contract functions an account can call
 type FunctionCallPermission implements AccessKeyPermission {
   receiverId: String!
   methodNames: [String!]!
   allowance: BigInt
 }
-
-# Full access permission allows an account to call all public contract functions
-type FullAccessPermission implements AccessKeyPermission {}
 
 type FinalExecutionStatus {
   successValue: String
