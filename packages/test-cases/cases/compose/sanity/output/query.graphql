@@ -105,6 +105,7 @@ type CommonType {
   objectArray comment
   """
   objectArray: [[ArrayObject]]!
+  anotherLocal: AnotherLocal!
 }
 
 """
@@ -118,6 +119,10 @@ type NestedType {
 ArrayObject comment
 """
 type ArrayObject {
+  prop: String!
+}
+
+type AnotherLocal {
   prop: String!
 }
 
