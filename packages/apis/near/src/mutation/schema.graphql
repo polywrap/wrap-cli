@@ -1,10 +1,11 @@
+#import { Mutation, Transaction } into Near from "w3://ens/nearPlugin.web3api.eth"
 #import { Transaction } from "../common/schema.graphql"
 
 type Mutation {
   # send one or more transactions to NEAR wallet to be signed and executed
   requestSignTransactions(
     # list of transactions to sign
-    transactions: [Transaction!]!
+    transactions: [Near_Transaction!]!
     # url NEAR Wallet will redirect to after transaction signing is complete
     callbackUrl: String
     # meta information NEAR Wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param
@@ -44,7 +45,7 @@ type ExecutionOutcomeWithId {
 # Final outcome of a sent transaction
 type FinalExecutionOutcome {
   status: FinalExecutionStatus!
-  transaction: Transaction!
+  transaction: Near_Transaction!
   transaction_outcome: ExecutionOutcomeWithId!
   receipts_outcome: [ExecutionOutcomeWithId!]!
 }
