@@ -12,7 +12,7 @@ authors = [
 ]
 keywords = ["polywrap", "wasm", "webassembly"]
 categories = ["wasm"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 num-bigint = { version = "0.4", default-features = false }

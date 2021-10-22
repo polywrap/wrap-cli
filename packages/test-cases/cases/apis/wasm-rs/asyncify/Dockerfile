@@ -1,4 +1,4 @@
-FROM rust:1.55 as base
+FROM rust:1.56 as base
 
 # Install nightly rust
 RUN rustup toolchain install nightly

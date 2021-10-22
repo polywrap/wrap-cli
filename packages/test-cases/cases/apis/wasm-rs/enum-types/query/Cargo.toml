@@ -8,7 +8,7 @@ authors = [
 ]
 repository = "https://github.com/polywrap/monorepo"
 license = "MIT"
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 num-traits = { version = "0.2.14", default-features = false }

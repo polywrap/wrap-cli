@@ -3,7 +3,7 @@ docker:
   name: build-env
   dockerfile: ./Dockerfile
 config:
-  rust_version: "1.55"
+  rust_version: "1.56"
 linked_packages:
   - name: polywrap-wasm-rs
     path: ../../../../../../wasm/rs
