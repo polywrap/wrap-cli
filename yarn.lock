@@ -4935,6 +4935,11 @@ arrify@^2.0.1:
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-2.0.1.tgz#c9655e9331e0abcd588d2a7cad7e9956f66701fa"
   integrity sha512-3duEwti880xqi4eAMN8AyR4a0ByT90zoYdLlevfrvU43vb0YZwZVfxOgxWrLXXXpyugL0hNZc9G6BiB5B3nUug==
 
+as-base58@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/as-base58/-/as-base58-0.1.1.tgz#c8e59413750affc3403bdf28c07704b28fbda0da"
+  integrity sha512-eeoW689sc2U29MeRdYx1Oh5Z1mtS3WLZ7Cmz9wVriBTyFR1oEGeq2spq39RW68snncMx7u9MLYB2z3cETni7xQ==
+
 as-bigfloat@0.0.4:
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/as-bigfloat/-/as-bigfloat-0.0.4.tgz#c1a6dc937b423b933f368dd3271641c27a991165"

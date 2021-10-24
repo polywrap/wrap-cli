@@ -17,6 +17,9 @@ export const query = (plugin: NearPlugin): Query.Module => ({
   accountState: async (input: Query.Input_accountState) => {
     return await plugin.accountState(input);
   },
+  findAccessKey: async (input: Query.Input_findAccessKey) => {
+    return await plugin.findAccessKey(input);
+  },
   createTransaction: async (input: Query.Input_createTransaction) => {
     return await plugin.createTransaction(input);
   },
@@ -26,6 +29,9 @@ export const query = (plugin: NearPlugin): Query.Module => ({
 });
 
 export const mutation = (plugin: NearPlugin): Mutation.Module => ({
+  sendJsonRpc: (input: Mutation.Input_sendJsonRpc) => {
+    return plugin.sendJsonRpc(input);
+  },
   requestSignTransactions: (input: Mutation.Input_requestSignTransactions) => {
     return plugin.requestSignTransactions(input);
   },

@@ -9,6 +9,9 @@ import {
   FinalExecutionOutcome,
   AccountView,
   Action,
+  AccessKeyView,
+  AccessKey,
+  AccessKeyInfo,
 } from "./w3";
 import {
   fromAction,
@@ -42,6 +45,7 @@ export interface NearPluginConfig {
 export class NearPlugin extends Plugin {
   private near: nearApi.Near;
   private wallet?: nearApi.WalletConnection;
+  private _nextId = 123;
 
   constructor(private _config: NearPluginConfig) {
     super();
@@ -110,6 +114,39 @@ export class NearPlugin extends Plugin {
     return toAccountView(nearAccountView);
   }
 
+  public async findAccessKey(
+    input: Query.Input_findAccessKey
+  ): Promise<AccessKeyInfo | null> {
+    const { accountId } = input;
+    const nearPublicKey = await this.near.connection.signer.getPublicKey(
+      accountId,
+      this.near.connection.networkId
+    );
+    if (!nearPublicKey) {
+      return null;
+    }
+    try {
+      const accessKeyView = await this.sendJsonRpc<AccessKeyView>({
+        method: "query",
+        params: JSON.stringify({
+          request_type: "view_access_key", // eslint-disable-line @typescript-eslint/naming-convention
+          account_id: accountId, // eslint-disable-line @typescript-eslint/naming-convention
+          public_key: nearPublicKey.toString(), // eslint-disable-line @typescript-eslint/naming-convention
+          finality: "optimistic",
+        }),
+      });
+      return {
+        accessKey: accessKeyView as AccessKey,
+        publicKey: toPublicKey(nearPublicKey),
+      };
+    } catch (e) {
+      if (e.type == "AccessKeyDoesNotExist") {
+        return null;
+      }
+      throw e;
+    }
+  }
+
   public async createTransaction(
     input: Query.Input_createTransaction
   ): Promise<Transaction> {
@@ -153,6 +190,29 @@ export class NearPlugin extends Plugin {
     return { hash, signedTx };
   }
 
+  // TODO: do generic work here or do I need to specify type as JSON?
+  public async sendJsonRpc<T>(input: Mutation.Input_sendJsonRpc): Promise<T> {
+    const { method, params } = input;
+    const request = {
+      method,
+      params: params ?? {},
+      id: this._nextId++,
+      jsonrpc: "2.0",
+    };
+    // { result?: T; error?: Record<string, unknown> }
+    const { result, error } = await nearApi.utils.web.fetchJson(
+      this._config.nodeUrl,
+      JSON.stringify(request)
+    );
+    if (error) {
+      throw Error(`[${error.code}] ${error.message}: ${error.data}`);
+    }
+    if (!result) {
+      throw Error(`Exceeded attempts for request to ${method}.`);
+    }
+    return result;
+  }
+
   public async requestSignTransactions(
     input: Mutation.Input_requestSignTransactions
   ): Promise<boolean> {
@@ -180,12 +240,14 @@ export class NearPlugin extends Plugin {
 
   public async sendTransactionAsync(
     input: Mutation.Input_sendTransactionAsync
-  ): Promise<FinalExecutionOutcome> {
+  ): Promise<string> {
     const { signedTx } = input;
     const nearSignedTx = new nearApi.transactions.SignedTransaction(signedTx);
-    const provider = this.near.connection.provider;
-    const outcome = await provider.sendTransactionAsync(nearSignedTx);
-    return toFinalExecutionOutcome(outcome);
+    const bytes = nearSignedTx.encode();
+    return this.sendJsonRpc({
+      method: "broadcast_tx_async",
+      params: JSON.stringify([Buffer.from(bytes).toString("base64")]),
+    });
   }
 
   public async signAndSendTransaction(
@@ -198,7 +260,7 @@ export class NearPlugin extends Plugin {
 
   public async signAndSendTransactionAsync(
     input: Mutation.Input_signAndSendTransactionAsync
-  ): Promise<FinalExecutionOutcome> {
+  ): Promise<string> {
     const transaction = await this.createTransaction(input);
     const { signedTx } = await this.signTransaction({ transaction });
     return await this.sendTransactionAsync({ signedTx });
@@ -212,35 +274,28 @@ export class NearPlugin extends Plugin {
     return true;
   }
 
+  // TODO: remove after testing polywrapper, due to redundancy
   private async createTransactionLocally(
     receiverId: string,
     actions: Action[],
     signerId: string
   ): Promise<Transaction> {
-    const account = await this.near.account(signerId);
-    const accessKeyInfo = await account.findAccessKey(
-      receiverId,
-      actions.map(fromAction)
-    );
+    const accessKeyInfo = await this.findAccessKey({ accountId: signerId });
     if (!accessKeyInfo) {
       throw new Error(
         `Can not sign transactions for account ${signerId} on network ${this.near.connection.networkId}, no matching key pair found in ${this.near.connection.signer}.`
       );
     }
-    const { accessKey } = accessKeyInfo;
+    const { accessKey, publicKey } = accessKeyInfo;
     const block = await this.near.connection.provider.block({
       finality: "final",
     });
     const blockHash = block.header.hash;
-    const nonce = ++accessKey.nonce;
-    const publicKey = await this.near.connection.signer.getPublicKey(
-      signerId,
-      this.near.connection.networkId
-    );
+    const nonce = Number.parseInt(accessKey.nonce) + 1;
 
     return {
       signerId: signerId,
-      publicKey: toPublicKey(publicKey),
+      publicKey: publicKey,
       nonce: nonce.toString(),
       receiverId: receiverId,
       blockHash: nearApi.utils.serialize.base_decode(blockHash),

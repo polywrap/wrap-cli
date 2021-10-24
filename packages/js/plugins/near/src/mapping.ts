@@ -59,7 +59,7 @@ export const toAction = (action: nearApi.transactions.Action): IAction => {
   } else if (isNearAddKey(action)) {
     result = {
       publicKey: toPublicKey(action.publicKey),
-      accessKey: toAccesskey(action.accessKey),
+      accessKey: toAccessKey(action.accessKey),
     };
   } else if (isNearDeleteKey(action)) {
     result = { publicKey: toPublicKey(action.publicKey) };
@@ -127,7 +127,7 @@ export const fromPublicKey = (key: PublicKey): nearApi.utils.PublicKey => {
   return nearApi.utils.PublicKey.from(`${keyTypeStr}:${encodedData}`);
 };
 
-export const toAccesskey = (key: nearApi.transactions.AccessKey): AccessKey => {
+export const toAccessKey = (key: nearApi.transactions.AccessKey): AccessKey => {
   let permission: AccessKeyPermission = {};
   if (isNearFunctionCallPermission(key.permission)) {
     permission = {
@@ -142,7 +142,7 @@ export const toAccesskey = (key: nearApi.transactions.AccessKey): AccessKey => {
   };
 };
 
-export const fromAccesskey = (
+export const fromAccessKey = (
   key: AccessKey
 ): nearApi.transactions.AccessKey => {
   return new nearApi.transactions.AccessKey(key);

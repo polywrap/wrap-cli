@@ -113,11 +113,12 @@ type ExecutionOutcomeWithId {
 # Final outcome of a sent transaction
 type FinalExecutionOutcome {
   status: FinalExecutionStatus!
-  transaction: Near_Transaction!
+  transaction: Transaction!
   transaction_outcome: ExecutionOutcomeWithId!
   receipts_outcome: [ExecutionOutcomeWithId!]!
 }
 
+# Query types
 type QueryResponseKind {
   blockHeight: BigInt!
   blockHash: String!
@@ -129,4 +130,72 @@ type AccountView implements QueryResponseKind {
   codeHash: String!
   storageUsage: BigInt!
   storagePaidAt: BigInt!
+}
+
+# Based on these types from near-api-js:
+# export type Finality = 'optimistic' | 'near-final' | 'final'
+# export type BlockReference = { blockId: BlockId } | { finality: Finality } | { sync_checkpoint: 'genesis' | 'earliest_available' }
+type BlockReference {
+  blockId: String
+  finality: String
+  syncCheckpoint: String
+}
+
+type BlockHeader {
+  height: BigInt!
+  epoch_id: String!
+  next_epoch_id: String!
+  hash: String!
+  prev_hash: String!
+  prev_state_root: String!
+  chunk_receipts_root: String!
+  chunk_headers_root: String!
+  chunk_tx_root: String!
+  outcome_root: String!
+  chunks_included: BigInt!
+  challenges_root: String!
+  timestamp: BigInt!
+  timestamp_nanosec: String!
+  random_value: String!
+  validator_proposals: [JSON!]!
+  chunk_mask: [Boolean!]!
+  gas_price: String!
+  rent_paid: String!
+  validator_reward: String!
+  total_supply: String!
+  challenges_result: [JSON!]!
+  last_final_block: String!
+  last_ds_final_block: String!
+  next_bp_hash: String!
+  block_merkle_root: String!
+  approvals: [String!]!
+  signature: String!
+  latest_protocol_version: BigInt!
+}
+
+type Chunk {
+  chunk_hash: String!
+  prev_block_hash: String!
+  outcome_root: String!
+  prev_state_root: String!
+  encoded_merkle_root: String!
+  encoded_length: BigInt!
+  height_created: BigInt!
+  height_included: BigInt!
+  shard_id: BigInt!
+  gas_used: BigInt!
+  gas_limit: BigInt!
+  rent_paid: String!
+  validator_reward: String!
+  balance_burnt: String!
+  outgoing_receipts_root: String!
+  tx_root: String!
+  validator_proposals: [JSON!]!
+  signature: String!
+}
+
+type BlockResult {
+  author: String!
+  header: BlockHeader!
+  chunks: [Chunk!]!
 }

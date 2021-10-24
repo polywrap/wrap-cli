@@ -14,6 +14,10 @@ type Query {
 
   accountState: AccountView
 
+  findAccessKey(
+    accountId: String!
+  ): AccessKeyInfo
+
   """
   Creates a transaction.
   If signerId is provided, the transaction will be signed using data from the KeyStore in the plugin config.
@@ -32,6 +36,11 @@ type Query {
 }
 
 type Mutation {
+  sendJsonRpc(
+    method: String!
+    params: JSON
+  ): JSON!
+
   # send one or more transactions to NEAR wallet to be signed and executed
   requestSignTransactions(
     # list of transactions to sign
@@ -50,7 +59,7 @@ type Mutation {
   # sends a signed transaction and immediately returns transaction hash
   sendTransactionAsync(
     signedTx: SignedTransaction
-  ): FinalExecutionOutcome!
+  ): String!
 
   # creates, signs, and sends a transaction without wallet and awaits execution
   signAndSendTransaction(
@@ -64,20 +73,7 @@ type Mutation {
     receiverId: String!
     actions: [Action!]!
     signerId: String!
-  ): FinalExecutionOutcome!
-}
-
-type QueryResponseKind {
-  blockHeight: BigInt!
-  blockHash: String!
-}
-
-type AccountView implements QueryResponseKind {
-  amount: String!
-  locked: String!
-  codeHash: String!
-  storageUsage: BigInt!
-  storagePaidAt: BigInt!
+  ): String!
 }
 
 type Transaction {
@@ -145,6 +141,11 @@ type AccessKey {
   permission: AccessKeyPermission!
 }
 
+type AccessKeyInfo {
+  publicKey: PublicKey!
+  accessKey: AccessKey!
+}
+
 # Access key permissions determine how an account is allow to interact with a contract
 type AccessKeyPermission {
   _: String
@@ -195,4 +196,23 @@ type FinalExecutionOutcome {
   transaction: Transaction!
   transaction_outcome: ExecutionOutcomeWithId!
   receipts_outcome: [ExecutionOutcomeWithId!]!
+}
+
+# All query responses implement QueryResponseKind
+type QueryResponseKind {
+  blockHeight: BigInt!
+  blockHash: String!
+}
+
+type AccountView implements QueryResponseKind {
+  amount: String!
+  locked: String!
+  codeHash: String!
+  storageUsage: BigInt!
+  storagePaidAt: BigInt!
+}
+
+type AccessKeyView implements QueryResponseKind {
+  nonce: BigInt!
+  permission: AccessKeyPermission!
 }

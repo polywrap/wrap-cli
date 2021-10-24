@@ -1,4 +1,5 @@
 #import { Query, AccountView, Transaction, Action } into Near from "w3://ens/nearPlugin.web3api.eth"
+#import { BlockReference, BlockResult } from "../common/schema.graphql"
 
 type Query {
   requestSignIn(
@@ -19,5 +20,6 @@ type Query {
   createTransaction(
     receiverId: String!
     actions: [Near_Action!]!
+    signerId: String
   ): Near_Transaction!
 }
