@@ -34,8 +34,7 @@ type Query @imports(
   method2: CustomType
 }
 
-type CustomType implements Base_ImportedBaseType {
-}
+type CustomType implements Base_ImportedBaseType
 
 ### Imported Queries START ###
 
@@ -47,21 +46,18 @@ type Base_ImportedBaseType @imported(
   uri: "base.eth",
   namespace: "Base",
   nativeType: "ImportedBaseType"
-) {
-}
+)
 
 type Derived_ImportedDerivedType implements Derived_ImportedBaseType @imported(
   uri: "derived.eth",
   namespace: "Derived",
   nativeType: "ImportedDerivedType"
-) {
-}
+)
 
 type Derived_ImportedBaseType @imported(
   uri: "derived.eth",
   namespace: "Derived",
   nativeType: "ImportedBaseType"
-) {
-}
+)
 
 ### Imported Objects END ###

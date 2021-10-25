@@ -34,17 +34,13 @@ type Mutation {
   method2: ImportedDerivedType
 }
 
-type BaseType {
-}
+type BaseType
 
-type DerivedType implements BaseType {
-}
+type DerivedType implements BaseType
 
-type ImportedDerivedType implements ImportedBaseType {
-}
+type ImportedDerivedType implements ImportedBaseType
 
-type ImportedBaseType {
-}
+type ImportedBaseType
 
 ### Imported Queries START ###
 

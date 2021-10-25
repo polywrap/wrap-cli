@@ -38,7 +38,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
 {{comment}}
 """
 {{/comment}}
-type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}} {
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}}{{#properties.length}} {
   {{#properties}}{{#comment}}
   """
   {{comment}}
@@ -46,7 +46,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   {{/comment}}
   {{name}}: {{toGraphQLType}}
   {{/properties}}
-}
+}{{/properties.length}}
 
 {{/objectTypes}}
 {{#enumTypes}}{{#comment}}
@@ -107,7 +107,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   uri: "{{uri}}",
   namespace: "{{namespace}}",
   nativeType: "{{nativeType}}"
-) {
+){{#properties.length}} {
   {{#properties}}{{#comment}}
   """
   {{comment}}
@@ -115,7 +115,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   {{/comment}}
   {{name}}: {{toGraphQLType}}
   {{/properties}}
-}
+}{{/properties.length}}
 
 {{/importedObjectTypes}}
 

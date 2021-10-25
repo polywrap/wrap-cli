@@ -30,8 +30,7 @@ type Mutation {
   method: CustomType
 }
 
-type CustomType {
-}
+type CustomType
 
 ### Imported Queries START ###
 

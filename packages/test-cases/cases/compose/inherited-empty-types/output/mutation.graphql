@@ -26,11 +26,9 @@ type Mutation {
   method: DerivedType
 }
 
-type BaseType {
-}
+type BaseType
 
-type DerivedType implements BaseType {
-}
+type DerivedType implements BaseType
 
 ### Imported Queries START ###
 
