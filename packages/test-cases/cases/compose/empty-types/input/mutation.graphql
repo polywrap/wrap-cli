@@ -1,0 +1,6 @@
+type Mutation {
+  method1: CustomType
+}
+
+type CustomType {
+}

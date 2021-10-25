@@ -1,0 +1,6 @@
+type Query {
+  method1: CustomType
+}
+
+type CustomType {
+}
