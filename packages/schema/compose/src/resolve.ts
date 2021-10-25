@@ -797,7 +797,7 @@ async function resolveLocalImports(
                   ...localTypeInfo.objectTypes,
                   ...localTypeInfo.importedObjectTypes,
                 ]);
-              }
+              },
             },
           });
         };
