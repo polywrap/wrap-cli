@@ -517,14 +517,14 @@ describe("Web3ApiClient", () => {
 
   it("e2e interface implementations", async () => {
     let interfaceApi = await buildAndDeployApi(
-      `${GetPathToTestAPIs()}/wasm-as/implementations/test-interface`,
+      `${GetPathToTestApis()}/wasm-as/implementations/test-interface`,
       ipfsProvider,
       ensAddress
     );
     const interfaceUri = `w3://ens/testnet/${interfaceApi.ensDomain}`;
 
     const implementationApi = await buildAndDeployApi(
-      `${GetPathToTestAPIs()}/wasm-as/implementations/test-api`,
+      `${GetPathToTestApis()}/wasm-as/implementations/test-api`,
       ipfsProvider,
       ensAddress
     );
@@ -606,28 +606,28 @@ describe("Web3ApiClient", () => {
 
   it("getManifest -- web3api manifest, build manifest, meta manifest", async () => {
     const api = await buildAndDeployApi(
-      `${GetPathToTestAPIs()}/wasm-as/simple-storage`,
+      `${GetPathToTestApis()}/wasm-as/simple-storage`,
       ipfsProvider,
       ensAddress
     );
     const client = await getClient();
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
-    const actualManifestStr: string = readFileSync(`${GetPathToTestAPIs()}/wasm-as/simple-storage/build/web3api.yaml`, 'utf8');
+    const actualManifestStr: string = readFileSync(`${GetPathToTestApis()}/wasm-as/simple-storage/build/web3api.yaml`, 'utf8');
     const actualManifest: Web3ApiManifest = deserializeWeb3ApiManifest(actualManifestStr);
     const manifest: Web3ApiManifest = await client.getManifest(ensUri, {
       type: 'web3api'
     });
     expect(manifest).toStrictEqual(actualManifest);
 
-    const actualBuildManifestStr: string = readFileSync(`${GetPathToTestAPIs()}/wasm-as/simple-storage/build/web3api.build.yaml`, 'utf8');
+    const actualBuildManifestStr: string = readFileSync(`${GetPathToTestApis()}/wasm-as/simple-storage/build/web3api.build.yaml`, 'utf8');
     const actualBuildManifest: BuildManifest = deserializeBuildManifest(actualBuildManifestStr);
     const buildManifest: BuildManifest = await client.getManifest(ensUri, {
       type: 'build'
     });
     expect(buildManifest).toStrictEqual(actualBuildManifest);
 
-    const actualMetaManifestStr: string = readFileSync(`${GetPathToTestAPIs()}/wasm-as/simple-storage/build/web3api.meta.yaml`, 'utf8');
+    const actualMetaManifestStr: string = readFileSync(`${GetPathToTestApis()}/wasm-as/simple-storage/build/web3api.meta.yaml`, 'utf8');
     const actualMetaManifest: MetaManifest = deserializeMetaManifest(actualMetaManifestStr);
     const metaManifest: MetaManifest = await client.getManifest(ensUri, {
       type: 'meta'
@@ -712,7 +712,7 @@ enum Logger_LogLevel @imported(
 
   it("getFile -- simple-storage web3api", async () => {
     const api = await buildAndDeployApi(
-      `${GetPathToTestAPIs()}/wasm-as/simple-storage`,
+      `${GetPathToTestApis()}/wasm-as/simple-storage`,
       ipfsProvider,
       ensAddress
     );
@@ -754,7 +754,7 @@ enum Logger_LogLevel @imported(
 
   it("simple-storage: subscribe", async () => {
     const api = await buildAndDeployApi(
-      `${GetPathToTestAPIs()}/wasm-as/simple-storage`,
+      `${GetPathToTestApis()}/wasm-as/simple-storage`,
       ipfsProvider,
       ensAddress
     );
@@ -849,7 +849,7 @@ enum Logger_LogLevel @imported(
 
   it("simple-storage: subscription early stop", async () => {
     const api = await buildAndDeployApi(
-      `${GetPathToTestAPIs()}/wasm-as/simple-storage`,
+      `${GetPathToTestApis()}/wasm-as/simple-storage`,
       ipfsProvider,
       ensAddress
     );
@@ -1318,7 +1318,7 @@ enum Logger_LogLevel @imported(
   describe("wasm-as test cases", () => {
     it("asyncify", async () => {
       const api = await buildAndDeployApi(
-        `${GetPathToTestAPIs()}/wasm-as/asyncify`,
+        `${GetPathToTestApis()}/wasm-as/asyncify`,
         ipfsProvider,
         ensAddress
       );
@@ -1328,7 +1328,7 @@ enum Logger_LogLevel @imported(
 
     it("simple-storage", async () => {
       const api = await buildAndDeployApi(
-        `${GetPathToTestAPIs()}/wasm-as/simple-storage`,
+        `${GetPathToTestApis()}/wasm-as/simple-storage`,
         ipfsProvider,
         ensAddress
       );
@@ -1338,7 +1338,7 @@ enum Logger_LogLevel @imported(
 
     it("object-types", async () => {
       const api = await buildAndDeployApi(
-        `${GetPathToTestAPIs()}/wasm-as/object-types`,
+        `${GetPathToTestApis()}/wasm-as/object-types`,
         ipfsProvider,
         ensAddress
       );
@@ -1570,7 +1570,7 @@ enum Logger_LogLevel @imported(
   
     it("bigint-type", async () => {
       const api = await buildAndDeployApi(
-        `${GetPathToTestAPIs()}/wasm-as/bigint-type`,
+        `${GetPathToTestApis()}/wasm-as/bigint-type`,
         ipfsProvider,
         ensAddress
       );
@@ -1638,7 +1638,7 @@ enum Logger_LogLevel @imported(
       type Json = string;
   
       const api = await buildAndDeployApi(
-        `${GetPathToTestAPIs()}/wasm-as/json-type`,
+        `${GetPathToTestApis()}/wasm-as/json-type`,
         ipfsProvider,
         ensAddress
       );
@@ -1721,7 +1721,7 @@ enum Logger_LogLevel @imported(
   
     it("bytes-type", async () => {
       const api = await buildAndDeployApi(
-        `${GetPathToTestAPIs()}/wasm-as/bytes-type`,
+        `${GetPathToTestApis()}/wasm-as/bytes-type`,
         ipfsProvider,
         ensAddress
       );
@@ -1756,7 +1756,7 @@ enum Logger_LogLevel @imported(
   
     it("enum-types", async () => {
       const api = await buildAndDeployApi(
-        `${GetPathToTestAPIs()}/wasm-as/enum-types`,
+        `${GetPathToTestApis()}/wasm-as/enum-types`,
         ipfsProvider,
         ensAddress
       );
@@ -1836,7 +1836,7 @@ enum Logger_LogLevel @imported(
   
     it("should work with large types", async () => {
       const api = await buildAndDeployApi(
-        `${GetPathToTestAPIs()}/wasm-as/large-types`,
+        `${GetPathToTestApis()}/wasm-as/large-types`,
         ipfsProvider,
         ensAddress
       );
@@ -1888,7 +1888,7 @@ enum Logger_LogLevel @imported(
   
     it("number-types under and overflows", async () => {
       const api = await buildAndDeployApi(
-        `${GetPathToTestAPIs()}/wasm-as/number-types`,
+        `${GetPathToTestApis()}/wasm-as/number-types`,
         ipfsProvider,
         ensAddress
       );
@@ -2036,7 +2036,7 @@ enum Logger_LogLevel @imported(
   
     it("invalid type errors", async () => {
       const api = await buildAndDeployApi(
-        `${GetPathToTestAPIs()}/wasm-as/invalid-types`,
+        `${GetPathToTestApis()}/wasm-as/invalid-types`,
         ipfsProvider,
         ensAddress
       );
@@ -2140,7 +2140,7 @@ enum Logger_LogLevel @imported(
   describe("wasm-rs test cases", () => {
     it("asyncify", async () => {
       const api = await buildAndDeployApi(
-        `${GetPathToTestAPIs()}/wasm-rs/asyncify`,
+        `${GetPathToTestApis()}/wasm-rs/asyncify`,
         ipfsProvider,
         ensAddress
       );
@@ -2150,7 +2150,7 @@ enum Logger_LogLevel @imported(
 
     it("simple-storage", async () => {
       const api = await buildAndDeployApi(
-        `${GetPathToTestAPIs()}/wasm-rs/simple-storage`,
+        `${GetPathToTestApis()}/wasm-rs/simple-storage`,
         ipfsProvider,
         ensAddress
       );
