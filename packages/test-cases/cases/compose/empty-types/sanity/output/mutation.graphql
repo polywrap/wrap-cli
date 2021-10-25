@@ -22,9 +22,7 @@ directive @imports(
 ) on OBJECT
 ### Web3API Header END ###
 
-type Mutation {
-  method: CustomType
-}
+type Mutation
 
 type CustomType
 

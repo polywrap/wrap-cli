@@ -22,18 +22,6 @@ export const typeInfo: TypeInfo = {
       imports: [],
       interfaces: [],
       methods: [
-        {
-          ...createMethodDefinition({
-            type: "query",
-            name: "method",
-            return: createObjectPropertyDefinition({
-              name: "method",
-              type: "CustomType",
-            }),
-          }),
-          arguments: [
-          ],
-        },
       ],
     },
   ],

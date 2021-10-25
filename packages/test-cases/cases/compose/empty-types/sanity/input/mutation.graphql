@@ -1,5 +1,4 @@
 type Mutation {
-  method: CustomType
 }
 
 type CustomType {

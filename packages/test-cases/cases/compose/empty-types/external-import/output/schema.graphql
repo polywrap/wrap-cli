@@ -22,11 +22,31 @@ directive @imports(
 ) on OBJECT
 ### Web3API Header END ###
 
-type Query
+type Query implements Namespace_Query @imports(
+  types: [
+    "Namespace_Query"
+  ]
+)
 
-type CustomType
+type Mutation implements Namespace_Mutation @imports(
+  types: [
+    "Namespace_Mutation"
+  ]
+)
 
 ### Imported Queries START ###
+
+type Namespace_Query @imported(
+  uri: "external.eth",
+  namespace: "Namespace",
+  nativeType: "Query"
+)
+
+type Namespace_Mutation @imported(
+  uri: "external.eth",
+  namespace: "Namespace",
+  nativeType: "Mutation"
+)
 
 ### Imported Queries END ###
 
