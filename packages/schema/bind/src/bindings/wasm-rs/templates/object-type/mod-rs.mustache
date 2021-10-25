@@ -23,7 +23,7 @@ use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
 #[derive(Clone, Debug)]
 pub struct {{#toUpper}}{{type}}{{/toUpper}} {
     {{#properties}}
-    pub {{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
     {{/properties}}
 }
 
@@ -31,7 +31,7 @@ impl {{#toUpper}}{{type}}{{/toUpper}} {
     pub fn new() -> {{#toUpper}}{{type}}{{/toUpper}} {
         {{#toUpper}}{{type}}{{/toUpper}} {
             {{#properties}}
-            {{#toLower}}{{name}}{{/toLower}}: {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}},
+            {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}},
             {{/properties}}
         }
     }

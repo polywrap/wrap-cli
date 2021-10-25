@@ -30,7 +30,7 @@ use crate::{
 #[derive(Clone, Debug)]
 pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
     {{#arguments}}
-    pub {{#toLower}}{{name}}{{/toLower}}: {{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}},
+    pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}},
     {{/arguments}}
 }
 
@@ -50,31 +50,31 @@ pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &Input{{#toUpper}}
 pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toUpper}}{{name}}{{/toUpper}}, writer: &mut W) {
     writer.write_map_length({{arguments.length}});
     {{#arguments}}
-    writer.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}", "writing property");
-    writer.write_str("{{#toLower}}{{name}}{{/toLower}}");
+    writer.context().push("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}", "{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}", "writing property");
+    writer.write_str("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}");
     {{#scalar}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#toLower}}{{name}}{{/toLower}});
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}});
     {{/scalar}}
     {{#array}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#toLower}}{{name}}{{/toLower}}, |writer: &mut W, item| {
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, |writer: &mut W, item| {
         {{> serialize_array}}
     });
     {{/array}}
     {{#enum}}
     {{#required}}
-    writer.write_i32(&(input.{{#toLower}}{{name}}{{/toLower}} as i32));
+    writer.write_i32(&(input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}} as i32));
     {{/required}}
     {{^required}}
-    writer.write_nullable_i32(&Some(input.{{#toLower}}{{name}}{{/toLower}}.unwrap() as i32));
+    writer.write_nullable_i32(&Some(input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.unwrap() as i32));
     {{/required}}
     {{/enum}}
     {{#object}}
     {{#required}}
-    {{#toUpper}}{{type}}{{/toUpper}}::write(&input.{{#toLower}}{{name}}{{/toLower}}, writer);
+    {{#toUpper}}{{type}}{{/toUpper}}::write(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, writer);
     {{/required}}
     {{^required}}
-    if input.{{#toLower}}{{name}}{{/toLower}}.is_some() {
-        {{#toUpper}}{{type}}{{/toUpper}}::write(input.{{#toLower}}{{name}}{{/toLower}}.as_ref().as_ref().unwrap(), writer);
+    if input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.is_some() {
+        {{#toUpper}}{{type}}{{/toUpper}}::write(input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.as_ref().as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }
@@ -89,7 +89,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result: &[u8]) -> {{#
     context.description = "Deserializing imported query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut reader = ReadDecoder::new(result, context);
     {{#return}}
-    reader.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}", "reading function output");
+    reader.context().push("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}", "{{#noBox}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/noBox}}", "reading function output");
     {{#scalar}}
     let res = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(){{#required}}.unwrap(){{/required}};
     {{/scalar}}

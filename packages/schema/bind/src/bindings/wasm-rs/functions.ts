@@ -1,3 +1,5 @@
+import { isKeyWord } from "./types";
+
 type MustacheFunction = () => (
   value: string,
   render: (template: string) => string
@@ -258,6 +260,18 @@ export const toWasm: MustacheFunction = () => {
     // return objectType ?
     //   applyNullable(`Box<${type}>`, nullable) :
     //   applyNullable(type, nullable);
+  };
+};
+
+export const detectKeyword: MustacheFunction = () => {
+  return (value: string, render: (template: string) => string) => {
+    let type = render(value);
+    // check if any of the keywords match the property name;
+    // if there's a match, insert `m_` at the beginning of the property name.
+    if (isKeyWord(type)) {
+      type = "m_" + type;
+    }
+    return type;
   };
 };
 

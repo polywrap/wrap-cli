@@ -41,23 +41,23 @@ pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(input: &{{#toUpper}}{{type}}{{
 pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(input: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) {
     writer.write_map_length({{properties.length}});
     {{#properties}}
-    writer.context().push("{{#toLower}}{{name}}{{/toLower}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
-    writer.write_str("{{#toLower}}{{name}}{{/toLower}}");
+    writer.context().push("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
+    writer.write_str("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}");
     {{#scalar}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#toLower}}{{name}}{{/toLower}});
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}});
     {{/scalar}}
     {{#array}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#toLower}}{{name}}{{/toLower}}, |writer: &mut W, item| {
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, |writer: &mut W, item| {
         {{> serialize_array}}
     });
     {{/array}}
     {{#object}}
     {{#required}}
-    {{#toUpper}}{{type}}{{/toUpper}}::write(&input.{{#toLower}}{{name}}{{/toLower}}, writer);
+    {{#toUpper}}{{type}}{{/toUpper}}::write(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, writer);
     {{/required}}
     {{^required}}
-    if input.{{#toLower}}{{name}}{{/toLower}}.is_some() {
-        {{#toUpper}}{{type}}{{/toUpper}}::write(input.{{#toLower}}{{name}}{{/toLower}}.as_ref().as_ref().unwrap(), writer);
+    if input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.is_some() {
+        {{#toUpper}}{{type}}{{/toUpper}}::write(input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.as_ref().as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }
@@ -65,10 +65,10 @@ pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(input: &{{#toUpper}}{{ty
     {{/object}}
     {{#enum}}
     {{#required}}
-    writer.write_i32(&(input.{{#toLower}}{{name}}{{/toLower}} as i32));
+    writer.write_i32(&(input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}} as i32));
     {{/required}}
     {{^required}}
-    writer.write_nullable_i32(&Some(input.{{#toLower}}{{name}}{{/toLower}}.unwrap() as i32));
+    writer.write_nullable_i32(&Some(input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.unwrap() as i32));
     {{/required}}
     {{/enum}}
     writer.context().pop();
@@ -108,7 +108,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
 
         match field.as_str() {
             {{#properties}}
-            "{{#toLower}}{{name}}{{/toLower}}" => {
+            "{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}" => {
                 reader.context().push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property");
                 {{#scalar}}
                 _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(){{#required}}.unwrap(){{/required}};
@@ -145,7 +145,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
 
     Ok({{#toUpper}}{{type}}{{/toUpper}} {
         {{#properties}}
-        {{#toLower}}{{name}}{{/toLower}}: _{{#toLower}}{{name}}{{/toLower}},
+        {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: _{{#toLower}}{{name}}{{/toLower}},
         {{/properties}}
     })
 }

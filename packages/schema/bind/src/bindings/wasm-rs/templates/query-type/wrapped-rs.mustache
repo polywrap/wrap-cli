@@ -27,7 +27,7 @@ pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(input: &[u8]) -> Vec<u8> {
     unsafe { __w3_log(end.as_ptr() as u32, end.len() as u32) };
     let result = {{#toLower}}{{name}}{{/toLower}}(Input{{#toUpper}}{{name}}{{/toUpper}} {{#arguments.length}}{
         {{#arguments}}
-        {{#toLower}}{{name}}{{/toLower}}: args.{{#toLower}}{{name}}{{/toLower}},
+        {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: args.{{#toLower}}{{name}}{{/toLower}},
         {{/arguments}}
     }{{/arguments.length}});
     serialize_{{#toLower}}{{name}}{{/toLower}}_result({{#return}}&{{/return}}result)

@@ -22,3 +22,68 @@ export type BaseType = keyof BaseTypes;
 export function isBaseType(type: string): type is BaseType {
   return type in baseTypes;
 }
+
+const keywords = {
+  as: "as",
+  break: "break",
+  const: "const",
+  continue: "continue",
+  crate: "crate",
+  else: "else",
+  enum: "enum",
+  extern: "extern",
+  false: "false",
+  fn: "fn",
+  for: "for",
+  if: "if",
+  impl: "impl",
+  in: "in",
+  let: "let",
+  loop: "loop",
+  match: "match",
+  mod: "mod",
+  move: "move",
+  mut: "mut",
+  pub: "pub",
+  ref: "ref",
+  return: "return",
+  self: "self",
+  Self: "Self",
+  static: "static",
+  struct: "struct",
+  super: "super",
+  trait: "trait",
+  true: "true",
+  type: "type",
+  unsafe: "unsafe",
+  use: "use",
+  where: "where",
+  while: "while",
+  async: "async",
+  await: "await",
+  dyn: "dyn",
+  abstract: "abstract",
+  become: "become",
+  box: "box",
+  Box: "Box",
+  do: "do",
+  final: "final",
+  macro: "macro",
+  override: "override",
+  priv: "priv",
+  typeof: "typeof",
+  unsized: "unsized",
+  virtual: "virtual",
+  yield: "yield",
+  try: "try",
+  macro_rules: "macro_rules",
+  union: "union",
+};
+
+export type KeyWords = typeof keywords;
+
+export type KeyWord = keyof KeyWords;
+
+export function isKeyWord(keyword: string): keyword is KeyWord {
+  return keyword in keywords;
+}
