@@ -34,12 +34,12 @@ type TypeA {
   prop: TypeB
 }
 
-type TypeB {
-  prop: TypeC
-}
-
 type TypeC {
   prop: String
+}
+
+type TypeB {
+  prop: TypeC
 }
 
 ### Imported Queries START ###

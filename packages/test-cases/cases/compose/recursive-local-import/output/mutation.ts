@@ -22,23 +22,23 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createObjectDefinition({
-        type: "TypeB",
-      }),
-      properties: [
-        createObjectPropertyDefinition({
-          name: "prop",
-          type: "TypeC",
-        }),
-      ],
-    },
-    {
-      ...createObjectDefinition({
         type: "TypeC",
       }),
       properties: [
         createScalarPropertyDefinition({
           name: "prop",
           type: "String",
+        }),
+      ],
+    },
+    {
+      ...createObjectDefinition({
+        type: "TypeB",
+      }),
+      properties: [
+        createObjectPropertyDefinition({
+          name: "prop",
+          type: "TypeC",
         }),
       ],
     },
