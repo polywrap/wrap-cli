@@ -1,5 +1,5 @@
 type Query {
-  method1: CustomType
+  method: CustomType
 }
 
 type CustomType {

@@ -23,7 +23,7 @@ directive @imports(
 ### Web3API Header END ###
 
 type Query {
-  method1: CustomType
+  method: CustomType
 }
 
 type CustomType {

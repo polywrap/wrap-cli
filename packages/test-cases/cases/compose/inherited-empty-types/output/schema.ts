@@ -4,14 +4,27 @@ import {
   createObjectDefinition,
   TypeInfo,
   createObjectPropertyDefinition,
+  createInterfaceImplementedDefinition,
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
   objectTypes: [
     {
       ...createObjectDefinition({
-        type: "CustomType",
+        type: "BaseType",
       }),
+      properties: [
+      ],
+    },
+    {
+      ...createObjectDefinition({
+        type: "DerivedType",
+      }),
+      interfaces: [
+        createInterfaceImplementedDefinition({
+          type: "BaseType"
+        })
+      ],
       properties: [
       ],
     },
@@ -28,7 +41,7 @@ export const typeInfo: TypeInfo = {
             name: "method",
             return: createObjectPropertyDefinition({
               name: "method",
-              type: "CustomType",
+              type: "DerivedType",
             }),
           }),
           arguments: [
@@ -47,12 +60,12 @@ export const typeInfo: TypeInfo = {
             name: "method",
             return: createObjectPropertyDefinition({
               name: "method",
-              type: "CustomType",
+              type: "DerivedType",
             }),
           }),
           arguments: [
           ],
-        },
+        }
       ],
     },
   ],

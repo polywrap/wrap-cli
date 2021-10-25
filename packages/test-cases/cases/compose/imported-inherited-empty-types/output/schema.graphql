@@ -23,14 +23,27 @@ directive @imports(
 ### Web3API Header END ###
 
 type Query {
-  method: CustomType
+  method1: DerivedType
+
+  method2: ImportedDerivedType
 }
 
 type Mutation {
-  method: CustomType
+  method1: DerivedType
+
+  method2: ImportedDerivedType
 }
 
-type CustomType {
+type BaseType {
+}
+
+type DerivedType implements BaseType {
+}
+
+type ImportedDerivedType implements ImportedBaseType {
+}
+
+type ImportedBaseType {
 }
 
 ### Imported Queries START ###

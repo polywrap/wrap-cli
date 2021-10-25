@@ -4,38 +4,32 @@ import {
   createObjectDefinition,
   TypeInfo,
   createObjectPropertyDefinition,
+  createInterfaceImplementedDefinition,
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
   objectTypes: [
     {
       ...createObjectDefinition({
-        type: "CustomType",
+        type: "BaseType",
       }),
+      properties: [
+      ],
+    },
+    {
+      ...createObjectDefinition({
+        type: "DerivedType",
+      }),
+      interfaces: [
+        createInterfaceImplementedDefinition({
+          type: "BaseType"
+        })
+      ],
       properties: [
       ],
     },
   ],
   queryTypes: [
-    {
-      ...createQueryDefinition({ type: "Query" }),
-      imports: [],
-      interfaces: [],
-      methods: [
-        {
-          ...createMethodDefinition({
-            type: "query",
-            name: "method",
-            return: createObjectPropertyDefinition({
-              name: "method",
-              type: "CustomType",
-            }),
-          }),
-          arguments: [
-          ],
-        }
-      ],
-    },
     {
       ...createQueryDefinition({ type: "Mutation" }),
       imports: [],
@@ -47,7 +41,7 @@ export const typeInfo: TypeInfo = {
             name: "method",
             return: createObjectPropertyDefinition({
               name: "method",
-              type: "CustomType",
+              type: "DerivedType",
             }),
           }),
           arguments: [

@@ -25,9 +25,9 @@ export const typeInfo: TypeInfo = {
         {
           ...createMethodDefinition({
             type: "query",
-            name: "method1",
+            name: "method",
             return: createObjectPropertyDefinition({
-              name: "method1",
+              name: "method",
               type: "CustomType",
             }),
           }),

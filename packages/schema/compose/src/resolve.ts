@@ -129,7 +129,7 @@ export async function resolveImportsAndParseSchemas(
   //Replace types that have empty curly brackets with types that have no curly brackets
   //because GraphQL parser doesn't support empty curly brackets but supports no curly brackets
   newSchema = newSchema.replace(
-    new RegExp(`(type\\s+${TYPE_NAME_REGEX})[^{]*{\\s*}`, "g"),
+    new RegExp(`(type\\s+${TYPE_NAME_REGEX}[^{]*){\\s*}`, "g"),
     "$1"
   );
 
@@ -759,7 +759,7 @@ async function resolveLocalImports(
           const objectDefinition = rootTypes[idx];
 
           if (!visitedTypes[objectDefinition.type]) {
-            if (objectDefinition.kind === DefinitionKind.Object) {
+            if (objectDefinition.kind !== DefinitionKind.Enum) {
               visitedTypes[objectDefinition.type] = true;
               visitType(objectDefinition);
             }
@@ -790,6 +790,14 @@ async function resolveLocalImports(
                   ...localTypeInfo.importedEnumTypes,
                 ]);
               },
+              InterfaceImplementedDefinition: (
+                def: InterfaceImplementedDefinition
+              ) => {
+                return findImport(def, [
+                  ...localTypeInfo.objectTypes,
+                  ...localTypeInfo.importedObjectTypes,
+                ]);
+              }
             },
           });
         };
