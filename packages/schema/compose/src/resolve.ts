@@ -9,7 +9,7 @@ import {
   SchemaResolvers,
   SYNTAX_REFERENCE,
 } from "./types";
-import { parseExternalImports, parseLocalImports } from "./parse";
+import { parseExternalImports, parseLocalImports, parseUse } from "./parse";
 import { renderSchema } from "./render";
 import { addHeader } from "./templates/header.mustache";
 
@@ -44,6 +44,44 @@ type ImplementationWithInterfaces = {
 };
 
 const TYPE_NAME_REGEX = `[a-zA-Z0-9_]+`;
+
+export async function resolveUseStatements(
+  schema: string,
+  schemaPath: string,
+  typeInfo: TypeInfo
+): Promise<TypeInfo> {
+  const useKeywordCapture = /^[#]*["{3}]*use[ \n\t]/gm;
+  const useCapture = /[#]*["{3}]*use[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*for[ \n\t]*(\w+)[ \n\t]/g;
+
+  const keywords = [...schema.matchAll(useKeywordCapture)];
+  const useStatements = [...schema.matchAll(useCapture)];
+
+  // console.log(keywords);
+  // console.log(useStatements);
+
+  if (keywords.length !== useStatements.length) {
+    throw Error(
+      `Invalid use statement found in file ${schemaPath}.\nPlease use one of the following syntaxes...\n${SYNTAX_REFERENCE}`
+    );
+  }
+
+  const importedQueryByNamespace: Record<string, ImportedQueryDefinition> = {};
+
+  typeInfo.importedQueryTypes.forEach((value) => {
+    importedQueryByNamespace[value.namespace] = value;
+  });
+
+  const parsedUses = parseUse(useStatements);
+  for (const parsedUse of parsedUses) {
+    if (!importedQueryByNamespace[parsedUse.namespace]) {
+      throw Error(`Invalid use statement: namespace used hasn't been imported`);
+    }
+
+    importedQueryByNamespace[parsedUse.namespace].getImplementations = true;
+  }
+
+  return typeInfo;
+}
 
 export async function resolveImportsAndParseSchemas(
   schema: string,

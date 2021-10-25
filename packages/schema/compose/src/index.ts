@@ -1,5 +1,5 @@
 import { SchemaFile, SchemaResolvers } from "./types";
-import { resolveImportsAndParseSchemas } from "./resolve";
+import { resolveImportsAndParseSchemas, resolveUseStatements } from "./resolve";
 import { renderSchema } from "./render";
 
 import { TypeInfo, combineTypeInfo } from "@web3api/schema-parse";
@@ -50,6 +50,12 @@ export async function composeSchema(
       schema.absolutePath,
       name === "mutation",
       resolvers
+    );
+
+    typeInfos[name] = await resolveUseStatements(
+      schema.schema,
+      schema.absolutePath,
+      typeInfos[name]
     );
   }
 

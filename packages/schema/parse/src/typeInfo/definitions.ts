@@ -379,9 +379,14 @@ export function createImportedEnumDefinition(args: {
   };
 }
 
+export interface ImportedQueryCapabilityDefinition {
+  getImplementations?: boolean;
+}
+
 export interface ImportedQueryDefinition
   extends GenericDefinition,
     ImportedDefinition,
+    ImportedQueryCapabilityDefinition,
     WithComment {
   methods: MethodDefinition[];
 }
@@ -393,6 +398,7 @@ export function createImportedQueryDefinition(args: {
   nativeType: string;
   interfaces?: InterfaceImplementedDefinition[];
   comment?: string;
+  getImplementations?: boolean;
 }): ImportedQueryDefinition {
   if (!isQueryType(args.nativeType)) {
     throw Error(
@@ -407,6 +413,7 @@ export function createImportedQueryDefinition(args: {
     namespace: args.namespace,
     nativeType: args.nativeType,
     comment: args.comment,
+    getImplementations: args.getImplementations,
     kind: DefinitionKind.ImportedQuery,
   };
 }

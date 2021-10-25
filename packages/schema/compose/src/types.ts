@@ -16,6 +16,11 @@ export interface ExternalImport {
   uri: string;
 }
 
+export interface Use {
+  usedTypes: string[];
+  namespace: string;
+}
+
 export interface LocalImport {
   importedTypes: string[];
   path: string;
