@@ -707,109 +707,117 @@ async function resolveLocalImports(
         throw Error(
           `Importing query types from local schemas is prohibited. Tried to import from ${path}.`
         );
-      } else {
-        let type: GenericDefinition | undefined;
-        let visitorFunc: Function;
-
-        if (
-          localTypeInfo.objectTypes.findIndex(
-            (type) => type.type === importedType
-          ) > -1
-        ) {
-          visitorFunc = visitObjectDefinition;
-          type = localTypeInfo.objectTypes.find(
-            (type) => type.type === importedType
-          );
-        } else {
-          visitorFunc = visitEnumDefinition;
-          type = localTypeInfo.enumTypes.find(
-            (type) => type.type === importedType
-          );
-        }
-
-        if (!type) {
-          throw Error(
-            `Cannot find type "${importedType}" in the schema at ${path}.\nFound: [ ${localTypeInfo.objectTypes.map(
-              (type) => type.type + " "
-            )}]`
-          );
-        }
-
-        typesToImport[type.type] = type;
-
-        const findImport = (
-          def: GenericDefinition,
-          rootTypes: EnumOrObject[]
-        ) => {
-          // Skip objects that we've already processed
-          if (typesToImport[def.type]) {
-            return def;
-          }
-
-          // Find the ObjectDefinition
-          const idx = rootTypes.findIndex((obj) => obj.type === def.type);
-
-          if (idx === -1) {
-            throw Error(
-              `resolveLocalImports: Cannot find the requested type within the TypeInfo.\n` +
-                `Type: ${def.type}\nTypeInfo: ${JSON.stringify(localTypeInfo)}`
-            );
-          }
-
-          const objectDefinition = rootTypes[idx];
-
-          if (!visitedTypes[objectDefinition.type]) {
-            if (objectDefinition.kind !== DefinitionKind.Enum) {
-              visitedTypes[objectDefinition.type] = true;
-              visitType(objectDefinition);
-            }
-          }
-
-          typesToImport[def.type] = {
-            ...objectDefinition,
-            name: null,
-            required: null,
-          };
-          return def;
-        };
-
-        const visitedTypes: Record<string, boolean> = {};
-
-        const visitType = (type: GenericDefinition) => {
-          visitorFunc(type, {
-            enter: {
-              ObjectRef: (def: ObjectRef) => {
-                return findImport(def, [
-                  ...localTypeInfo.objectTypes,
-                  ...localTypeInfo.importedObjectTypes,
-                ]);
-              },
-              EnumRef: (def: EnumRef) => {
-                return findImport(def, [
-                  ...localTypeInfo.enumTypes,
-                  ...localTypeInfo.importedEnumTypes,
-                ]);
-              },
-              InterfaceImplementedDefinition: (
-                def: InterfaceImplementedDefinition
-              ) => {
-                return findImport(def, [
-                  ...localTypeInfo.objectTypes,
-                  ...localTypeInfo.importedObjectTypes,
-                ]);
-              },
-            },
-          });
-        };
-
-        visitedTypes[type.type] = true;
-        visitType(type);
       }
+
+      let type: GenericDefinition | undefined;
+      let visitorFunc: Function;
+
+      const objectIdx = localTypeInfo.objectTypes.findIndex(
+        (type) => type.type === importedType
+      );
+
+      if (objectIdx > -1) {
+        visitorFunc = visitObjectDefinition;
+        type = localTypeInfo.objectTypes[objectIdx];
+      } else {
+        visitorFunc = visitEnumDefinition;
+        type = localTypeInfo.enumTypes.find(
+          (type) => type.type === importedType
+        );
+      }
+
+      if (!type) {
+        throw Error(
+          `Cannot find type "${importedType}" in the schema at ${path}.\nFound: [ ${localTypeInfo.objectTypes.map(
+            (type) => type.type + " "
+          )}]`
+        );
+      }
+
+      typesToImport[type.type] = type;
+
+      const findImport = (
+        def: GenericDefinition,
+        rootTypes: EnumOrObject[]
+      ) => {
+        // Skip objects that we've already processed
+        if (typesToImport[def.type]) {
+          return def;
+        }
+
+        // Find the ObjectDefinition
+        const idx = rootTypes.findIndex((obj) => obj.type === def.type);
+
+        if (idx === -1) {
+          throw Error(
+            `resolveLocalImports: Cannot find the requested type within the TypeInfo.\n` +
+              `Type: ${def.type}\nTypeInfo: ${JSON.stringify(localTypeInfo)}`
+          );
+        }
+
+        const objectDefinition = rootTypes[idx];
+
+        if (!visitedTypes[objectDefinition.type]) {
+          if (objectDefinition.kind !== DefinitionKind.Enum) {
+            visitedTypes[objectDefinition.type] = true;
+            visitType(objectDefinition);
+          }
+        }
+
+        typesToImport[def.type] = {
+          ...objectDefinition,
+          name: null,
+          required: null,
+        };
+        return def;
+      };
+
+      const visitedTypes: Record<string, boolean> = {};
+
+      const visitType = (type: GenericDefinition) => {
+        visitorFunc(type, {
+          enter: {
+            ObjectRef: (def: ObjectRef) => {
+              return findImport(def, [
+                ...localTypeInfo.objectTypes,
+                ...localTypeInfo.importedObjectTypes,
+              ]);
+            },
+            EnumRef: (def: EnumRef) => {
+              return findImport(def, [
+                ...localTypeInfo.enumTypes,
+                ...localTypeInfo.importedEnumTypes,
+              ]);
+            },
+            InterfaceImplementedDefinition: (
+              def: InterfaceImplementedDefinition
+            ) => {
+              return findImport(def, [
+                ...localTypeInfo.objectTypes,
+                ...localTypeInfo.importedObjectTypes,
+              ]);
+            },
+          },
+        });
+      };
+
+      visitedTypes[type.type] = true;
+      visitType(type);
     }
 
     // Add all imported types into the aggregate TypeInfo
     for (const importType of Object.keys(typesToImport)) {
-      if (isKind(typesToImport[importType], DefinitionKind.Object)) {
+      if (isKind(typesToImport[importType], DefinitionKind.ImportedObject)) {
+        if (
+          typeInfo.importedObjectTypes.findIndex((def) => def.type === importType) ===
+          -1
+        ) {
+          typeInfo.importedObjectTypes.push(
+            typesToImport[importType] as ImportedObjectDefinition
+          );
+        }
+      }
+      else if (isKind(typesToImport[importType], DefinitionKind.Object)) {
         if (
           typeInfo.objectTypes.findIndex((def) => def.type === importType) ===
           -1
@@ -818,7 +826,16 @@ async function resolveLocalImports(
             typesToImport[importType] as ObjectDefinition
           );
         }
-      } else {
+      } else if (isKind(typesToImport[importType], DefinitionKind.ImportedEnum)) {
+        if (
+          typeInfo.importedEnumTypes.findIndex((def) => def.type === importType) ===
+          -1
+        ) {
+          typeInfo.importedEnumTypes.push(
+            typesToImport[importType] as ImportedEnumDefinition
+          );
+        }
+      } else if (isKind(typesToImport[importType], DefinitionKind.Enum)) {
         if (
           typeInfo.enumTypes.findIndex((def) => def.type === importType) === -1
         ) {

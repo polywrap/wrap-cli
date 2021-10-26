@@ -27,7 +27,13 @@ type Query @imports(
     "Namespace_ExternalType"
   ]
 ) {
-  method: Namespace_ExternalType
+  method1: Namespace_ExternalType
+
+  method2: LocalType
+}
+
+type LocalType {
+  prop: Namespace_ExternalType
 }
 
 ### Imported Queries START ###

@@ -1,6 +1,7 @@
 import {
   createMethodDefinition,
   createQueryDefinition,
+  createObjectDefinition,
   TypeInfo,
   createObjectPropertyDefinition,
   createImportedObjectDefinition,
@@ -9,6 +10,15 @@ import {
 
 export const typeInfo: TypeInfo = {
   objectTypes: [
+    {
+      ...createObjectDefinition({ type: "LocalType" }),
+      properties: [
+        createObjectPropertyDefinition({
+          name: "prop",
+          type: "Namespace_ExternalType",
+        }),
+      ],
+    },
   ],
   queryTypes: [
     {
@@ -21,10 +31,22 @@ export const typeInfo: TypeInfo = {
         {
           ...createMethodDefinition({
             type: "query",
-            name: "method",
+            name: "method1",
             return: createObjectPropertyDefinition({
-              name: "method",
+              name: "method1",
               type: "Namespace_ExternalType",
+            }),
+          }),
+          arguments: [
+          ],
+        },
+        {
+          ...createMethodDefinition({
+            type: "query",
+            name: "method2",
+            return: createObjectPropertyDefinition({
+              name: "method2",
+              type: "LocalType",
             }),
           }),
           arguments: [
@@ -42,10 +64,22 @@ export const typeInfo: TypeInfo = {
         {
           ...createMethodDefinition({
             type: "mutation",
-            name: "method",
+            name: "method1",
             return: createObjectPropertyDefinition({
-              name: "method",
+              name: "method1",
               type: "Namespace_ExternalType",
+            }),
+          }),
+          arguments: [
+          ],
+        },
+        {
+          ...createMethodDefinition({
+            type: "mutation",
+            name: "method2",
+            return: createObjectPropertyDefinition({
+              name: "method2",
+              type: "LocalType",
             }),
           }),
           arguments: [
