@@ -41,6 +41,7 @@ export interface State {
     args: unknown[];
   };
   invokeResult: InvokeResult;
+  getImplementationsResult?: ArrayBuffer;
 }
 
 export class WasmWeb3Api extends Api {
