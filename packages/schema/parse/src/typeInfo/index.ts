@@ -100,6 +100,9 @@ const tryInsert = (
 
   if (index > -1) {
     // See if they're the same, error if they aren't
+    if ((<ImportedQueryDefinition>dest[index]).getImplementations) {
+      (<ImportedQueryDefinition>value).getImplementations = true;
+    }
     const destType = JSON.stringify(dest[index]);
     const valueType = JSON.stringify(value);
     if (destType !== valueType) {

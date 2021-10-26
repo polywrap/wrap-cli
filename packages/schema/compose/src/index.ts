@@ -57,6 +57,8 @@ export async function composeSchema(
       schema.absolutePath,
       typeInfos[name]
     );
+    // console.log(name)
+    // console.log(typeInfos[name])
   }
 
   const output: ComposerOutput = {

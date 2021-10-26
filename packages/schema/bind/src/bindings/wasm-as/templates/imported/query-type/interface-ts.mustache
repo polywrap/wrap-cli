@@ -1,0 +1,11 @@
+import {
+  w3_getImplementations
+} from "@web3api/wasm-as";
+
+export class {{namespace}} {
+  uri: string = "{{uri}}"
+
+  public static getImplementations() {
+    w3_getImplementations(this.uri);
+  }
+}

@@ -413,7 +413,7 @@ export function createImportedQueryDefinition(args: {
     namespace: args.namespace,
     nativeType: args.nativeType,
     comment: args.comment,
-    getImplementations: args.getImplementations,
+    getImplementations: args.getImplementations ?? false,
     kind: DefinitionKind.ImportedQuery,
   };
 }

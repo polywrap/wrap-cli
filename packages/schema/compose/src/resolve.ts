@@ -56,9 +56,6 @@ export async function resolveUseStatements(
   const keywords = [...schema.matchAll(useKeywordCapture)];
   const useStatements = [...schema.matchAll(useCapture)];
 
-  // console.log(keywords);
-  // console.log(useStatements);
-
   if (keywords.length !== useStatements.length) {
     throw Error(
       `Invalid use statement found in file ${schemaPath}.\nPlease use one of the following syntaxes...\n${SYNTAX_REFERENCE}`

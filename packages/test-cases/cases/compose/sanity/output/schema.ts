@@ -580,7 +580,8 @@ export const typeInfo: TypeInfo = {
         namespace: "Interface",
         nativeType: "Query",
         type: "Interface_Query",
-        comment: "Query comment"
+        comment: "Query comment",
+        getImplementations: true,
       }),
       methods: [
         {
