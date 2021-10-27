@@ -103,7 +103,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result: &[u8]) -> {{#
     let res = value;
     {{/enum}}
     {{#object}}
-    {{> deserialize_object_nobox}}
+    {{> deserialize_object_refmut}}
     let res = object;
     {{/object}}
     {{/return}}

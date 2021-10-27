@@ -90,7 +90,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
                 _{{#toLower}}{{name}}{{/toLower}} = value;
                 {{/enum}}
                 {{#object}}
-                {{> deserialize_object_nobox}}
+                {{> deserialize_object_refmut}}
                 _{{#toLower}}{{name}}{{/toLower}} = object;
                 {{/object}}
                 {{#required}}
