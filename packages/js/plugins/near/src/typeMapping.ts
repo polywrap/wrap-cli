@@ -1,42 +1,49 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import {
-  Action as IAction,
-  FinalExecutionOutcome,
-  FinalExecutionStatus,
-  PublicKey,
-  Transaction,
-  ExecutionOutcomeWithId,
-  ExecutionOutcome,
-  ExecutionStatus,
   AccessKey,
-  AccessKeyPermission as IAccessKeyPermission, AccountView,
+  AccessKeyPermission as IAccessKeyPermission,
+  AccountView,
+  Action as IAction,
+  ExecutionOutcome,
+  ExecutionOutcomeWithId,
+  ExecutionStatus,
+  FinalExecutionOutcome,
+  KeyTypeEnum,
+  PublicKey,
+  Signature,
+  SignedTransaction,
+  Transaction,
 } from "./w3";
 import {
-  Action,
   AccessKeyPermission,
   AccountView as NearAccountView,
-  isNearDeployContract,
-  isNearStake,
+  Action,
+  isAddKey,
+  isCreateAccount,
+  isDeleteAccount,
+  isDeleteKey,
+  isDeployContract,
   isFunctionCall,
+  isNearAddKey,
+  isNearDeleteAccount,
+  isNearDeleteKey,
+  isNearDeployContract,
+  isNearFunctionCall,
+  isNearFunctionCallPermission,
+  isNearStake,
+  isNearTransfer,
   isStake,
   isTransfer,
-  isDeleteAccount,
+  keyTypeFromStr,
   keyTypeToStr,
-  isAddKey,
-  isNearDeleteKey,
-  isNearDeleteAccount,
-  isDeployContract,
-  isDeleteKey,
-  isNearTransfer,
-  isNearFunctionCallPermission,
-  isNearAddKey,
-  isCreateAccount,
-  isNearFunctionCall,
 } from "./typeUtils";
+
+import { parseJsonResponseTx } from "./jsonMapping";
 
 import * as nearApi from "near-api-js";
 import BN from "bn.js";
+import { JsonExecutionStatus } from "./jsonTypes";
 
 export const toAction = (action: nearApi.transactions.Action): IAction => {
   let result: Action;
@@ -114,11 +121,48 @@ export const toTx = (tx: nearApi.transactions.Transaction): Transaction => ({
 });
 
 export const fromTx = (tx: Transaction): nearApi.transactions.Transaction => {
-  return new nearApi.transactions.Transaction(tx);
+  return new nearApi.transactions.Transaction({
+    signerId: tx.signerId,
+    publicKey: fromPublicKey(tx.publicKey),
+    nonce: Number.parseInt(tx.nonce),
+    receiverId: tx.receiverId,
+    blockHash: tx.blockHash,
+    actions: tx.actions.map(fromAction),
+  });
 };
 
-export const toPublicKey = (key: nearApi.utils.PublicKey): PublicKey => {
-  return { keyType: key.keyType as number, data: key.data };
+export const fromSignedTx = (
+  signedTx: SignedTransaction
+): nearApi.transactions.SignedTransaction => {
+  return new nearApi.transactions.SignedTransaction({
+    transaction: fromTx(signedTx.transaction),
+    signature: fromSignature(signedTx.signature),
+  });
+};
+
+export const fromSignature = (
+  signature: Signature
+): nearApi.transactions.Signature => {
+  const keyType =
+    typeof signature.keyType === "number"
+      ? (signature.keyType as number)
+      : KeyTypeEnum[signature.keyType];
+  return new nearApi.transactions.Signature({
+    keyType: keyType,
+    data: signature.data,
+  });
+};
+
+export const toPublicKey = (
+  key: nearApi.utils.PublicKey | string
+): PublicKey => {
+  if (typeof key === "string") {
+    const [keyTypeStr, keyStr] = key.split(":");
+    const decodedData: Uint8Array = nearApi.utils.serialize.base_decode(keyStr);
+    return { keyType: keyTypeFromStr(keyTypeStr), data: decodedData };
+  } else {
+    return { keyType: key.keyType as number, data: key.data };
+  }
 };
 
 export const fromPublicKey = (key: PublicKey): nearApi.utils.PublicKey => {
@@ -151,19 +195,9 @@ export const fromAccessKey = (
 export const toFinalExecutionOutcome = (
   outcome: nearApi.providers.FinalExecutionOutcome
 ): FinalExecutionOutcome => {
-  let status: FinalExecutionStatus;
-  if (typeof outcome.status === "string") {
-    status = { successValue: outcome.status };
-  } else {
-    status = {
-      successValue: outcome.status.SuccessValue,
-      failure: outcome.status.Failure,
-    };
-  }
-
   return {
-    status,
-    transaction: toTx(outcome.transaction),
+    status: toExecutionStatus(outcome.status),
+    transaction: parseJsonResponseTx(outcome.transaction),
     transaction_outcome: toExecutionOutcomeWithId(outcome.transaction_outcome),
     receipts_outcome: outcome.receipts_outcome.map(toExecutionOutcomeWithId),
   };
@@ -172,26 +206,28 @@ export const toFinalExecutionOutcome = (
 export const toExecutionOutcomeWithId = (
   outcomeWithId: nearApi.providers.ExecutionOutcomeWithId
 ): ExecutionOutcomeWithId => {
-  let status: ExecutionStatus;
-  if (typeof outcomeWithId.outcome.status === "string") {
-    status = { successValue: outcomeWithId.outcome.status };
-  } else {
-    status = {
-      successValue: outcomeWithId.outcome.status.SuccessValue,
-      successReceiptId: outcomeWithId.outcome.status.SuccessReceiptId,
-      failure: outcomeWithId.outcome.status.Failure,
-    };
-  }
-
   const outcome: ExecutionOutcome = {
     logs: outcomeWithId.outcome.logs,
-    receipt_ids: outcomeWithId.outcome.receipt_ids,
-    gas_burnt: outcomeWithId.outcome.gas_burnt.toString(),
-    status,
+    receiptIds: outcomeWithId.outcome.receipt_ids,
+    gasBurnt: outcomeWithId.outcome.gas_burnt.toString(),
+    status: toExecutionStatus(outcomeWithId.outcome.status),
   };
   return {
     id: outcomeWithId.id,
     outcome: outcome,
+  };
+};
+
+export const toExecutionStatus = (
+  status: JsonExecutionStatus | string
+): ExecutionStatus => {
+  if (typeof status === "string") {
+    return { successValue: status };
+  }
+  return {
+    successValue: status.SuccessValue,
+    successReceiptId: status.SuccessReceiptId,
+    failure: JSON.stringify(status.Failure),
   };
 };
 

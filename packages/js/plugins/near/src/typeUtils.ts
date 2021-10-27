@@ -141,8 +141,19 @@ export function isNearFunctionCallPermission(
 
 export function keyTypeToStr(keyType: KeyType): string {
   switch (keyType) {
-    case KeyTypeEnum.ED25519 || KeyTypeEnum[KeyTypeEnum.ED25519]:
+    case KeyTypeEnum.ed25519:
       return "ed25519";
+    case KeyTypeEnum[KeyTypeEnum.ed25519]:
+      return "ed25519";
+    default:
+      throw new Error(`Unknown key type ${keyType}`);
+  }
+}
+
+export function keyTypeFromStr(keyType: string): KeyTypeEnum {
+  switch (keyType) {
+    case "ed25519":
+      return KeyTypeEnum.ed25519;
     default:
       throw new Error(`Unknown key type ${keyType}`);
   }

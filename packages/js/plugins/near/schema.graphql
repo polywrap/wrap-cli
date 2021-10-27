@@ -53,12 +53,12 @@ type Mutation {
 
   # sends a signed transaction and awaits execution
   sendTransaction(
-    signedTx: SignedTransaction
+    signedTx: SignedTransaction!
   ): FinalExecutionOutcome!
 
   # sends a signed transaction and immediately returns transaction hash
   sendTransactionAsync(
-    signedTx: SignedTransaction
+    signedTx: SignedTransaction!
   ): String!
 
   # creates, signs, and sends a transaction without wallet and awaits execution
@@ -79,7 +79,7 @@ type Mutation {
 type Transaction {
   signerId: String!
   publicKey: PublicKey!
-  nonce: BigInt
+  nonce: BigInt!
   receiverId: String!
   blockHash:  Bytes!
   actions: [Action!]!
@@ -111,6 +111,7 @@ type CreateAccount implements Action {}
 # holds content necessary to send a transaction that deploys a contract
 type DeployContract implements Action { code: Bytes! }
 # holds content necessary to send a transaction that calls a contract function
+# TODO: accept "args" property as JSON object
 type FunctionCall implements Action { methodName: String! args: Bytes! gas: BigInt! deposit: BigInt! }
 # holds content necessary to send a transaction that transfers NEAR?
 type Transfer implements Action { deposit: BigInt! }
@@ -132,7 +133,7 @@ type PublicKey {
 
 # Supported public key types
 enum KeyType {
-  ED25519
+  ed25519
 }
 
 # Access keys contain access key permissions, which determine how an account is allowed to interact with a contract
@@ -163,18 +164,13 @@ type FunctionCallPermission implements AccessKeyPermission {
 
 type FinalExecutionStatus {
   successValue: String
-  failure: ExecutionError
-}
-
-type ExecutionError {
-  error_message: String!
-  error_type: String!
+  failure: JSON
 }
 
 type ExecutionStatus {
   successValue: String
   successReceiptId: String
-  failure: ExecutionError
+  failure: JSON
 }
 
 type ExecutionOutcomeWithId {
@@ -185,8 +181,8 @@ type ExecutionOutcomeWithId {
 # Execution status of a sent transaction
 type ExecutionOutcome {
   logs: [String!]!
-  receipt_ids: [String!]!
-  gas_burnt: BigInt!
+  receiptIds: [String!]!
+  gasBurnt: BigInt!
   status: ExecutionStatus!
 }
 
@@ -210,9 +206,4 @@ type AccountView implements QueryResponseKind {
   codeHash: String!
   storageUsage: BigInt!
   storagePaidAt: BigInt!
-}
-
-type AccessKeyView implements QueryResponseKind {
-  nonce: BigInt!
-  permission: AccessKeyPermission!
 }

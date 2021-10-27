@@ -1,5 +1,5 @@
 import { Web3ApiClient } from "@web3api/client-js";
-import { nearPlugin, KeyStores, KeyPair } from "../";
+import { nearPlugin, KeyPair, NearPluginConfig } from "../";
 import {
   ExecutionOutcomeWithId,
   FinalExecutionOutcome,
@@ -8,41 +8,57 @@ import {
   Transaction,
 } from "../w3";
 import { Action } from "../typeUtils";
+import * as testUtils from "./testUtils";
+import * as nearApi from "near-api-js";
+import BN from "bn.js";
+import { HELLO_WASM_METHODS } from "./testUtils";
+
+jest.setTimeout(360000);
 
 describe("e2e", () => {
 
-  // TODO: need to set up keystore correctly so this will work
   let client: Web3ApiClient;
-  const uri = "ens/nearPlugin.web3api.eth";
-  const signerId = "polywraptest.testnet";
-  const receiverId = "polywraptest.testnet";
-  const PRIVATE_KEY = "3ZASru2hHvoDpT4jut4b8LqRBnz4GqMhtp24AzkLwdhuLDm6xgptkNmXVGWwfdyFHnnnG512Xb5RJcA7Cup3yjcG";
+  const uri = "w3://ens/near.web3api.eth";
+
+  let config: NearPluginConfig;
+  let near: nearApi.Near;
+  let workingAccount: nearApi.Account;
+  let contractId: string;
+  // let contract: nearApi.Contract;
+
+  const prepActions = (): Action[] => {
+    const setCallValue = testUtils.generateUniqueString('setCallPrefix');
+    const args = { value: setCallValue };
+    const stringify = (obj: unknown): Buffer => Buffer.from(JSON.stringify(obj));
+    return [{ methodName: "setValue", args: stringify(args), gas: "3000000000000", deposit: "0" }];
+  }
 
   beforeAll(async () => {
-    // create test private and public keys
-    const keyStore = new KeyStores.InMemoryKeyStore();
-    const keyPair = KeyPair.fromString(PRIVATE_KEY);
-    await keyStore.setKey("testnet", keyPair.getPublicKey().toString(), keyPair);
-
+    config = await testUtils.setUpTestConfig();
+    near = await nearApi.connect(config);
     client = new Web3ApiClient({
       plugins: [
         {
           uri: uri,
-          plugin: nearPlugin({
-            networkId: "testnet",
-            keyStore: keyStore,
-            nodeUrl: "https://rpc.testnet.near.org",
-            walletUrl: "https://wallet.testnet.near.org",
-            helperUrl: "https://helper.testnet.near.org",
-            explorerUrl: "https://explorer.testnet.near.org",
-          })
+          plugin: nearPlugin(config)
         }
       ]
     });
   });
 
+  beforeEach(async () => {
+    // set up contract account
+    contractId = testUtils.generateUniqueString('test');
+    workingAccount = await testUtils.createAccount(near);
+    await testUtils.deployContract(workingAccount, contractId);
+    // set up access key
+    const keyPair = KeyPair.fromRandom('ed25519');
+    await workingAccount.addKey(keyPair.getPublicKey(), contractId, HELLO_WASM_METHODS.changeMethods, new BN("2000000000000000000000000"));
+    await config.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
+  });
+
   it("Creates a transaction without wallet", async () => {
-    const actions: Action[] = [{ deposit: "1" }];
+    const actions: Action[] = prepActions();
     const result = await client.query<{ createTransaction: Transaction }>({
       uri,
       query: `query {
@@ -53,16 +69,16 @@ describe("e2e", () => {
         )
       }`,
       variables: {
-        receiverId: receiverId,
+        receiverId: contractId,
         actions: actions,
-        signerId: signerId,
+        signerId: workingAccount.accountId,
       }
     });
     expect(result.errors).toBeFalsy();
     expect(result.data).toBeTruthy();
 
     const transaction: Transaction = result.data!.createTransaction;
-    expect(transaction.signerId).toEqual(signerId);
+    expect(transaction.signerId).toEqual(workingAccount.accountId);
     expect(transaction.publicKey).toBeTruthy();
     expect(transaction.nonce).toBeTruthy();
     expect(transaction.receiverId).toBeTruthy();
@@ -71,7 +87,8 @@ describe("e2e", () => {
   });
 
   it("Signs a transaction without wallet", async () => {
-    const actions: Action[] = [{ deposit: "1" }];
+    // create transaction
+    const actions: Action[] = prepActions();
     const txQuery = await client.query<{ createTransaction: Transaction }>({
       uri,
       query: `query {
@@ -82,21 +99,20 @@ describe("e2e", () => {
         )
       }`,
       variables: {
-        receiverId: receiverId,
+        receiverId: contractId,
         actions: actions,
-        signerId: signerId,
+        signerId: workingAccount.accountId,
       }
     });
     expect(txQuery.errors).toBeFalsy();
     expect(txQuery.data).toBeTruthy();
-
     const transaction: Transaction = txQuery.data!.createTransaction;
 
     const result = await client.query<{
       signTransaction: SignTransactionResult
     }>({
       uri,
-      query: `mutation {
+      query: `query {
         signTransaction(
           transaction: $transaction
         )
@@ -110,7 +126,7 @@ describe("e2e", () => {
 
     const signedTx = result.data!.signTransaction.signedTx;
     const txHash = result.data!.signTransaction.hash;
-    expect(signedTx.transaction.signerId).toEqual(signerId);
+    expect(signedTx.transaction.signerId).toEqual(workingAccount.accountId);
     expect(signedTx.transaction.publicKey).toBeTruthy();
     expect(signedTx.transaction.nonce).toBeTruthy();
     expect(signedTx.transaction.receiverId).toBeTruthy();
@@ -120,19 +136,20 @@ describe("e2e", () => {
   });
 
   it("creates, signs, sends, and awaits mining of a transaction without wallet", async () => {
-    const actions: Action[] = [{ deposit: "1" }];
+    const actions: Action[] = prepActions();
     const result = await client.query<{ signAndSendTransaction: FinalExecutionOutcome }>({
       uri,
-      query: `query {
+      query: `mutation {
         signAndSendTransaction(
-          receiverId: String!
-          actions: [Action!]!
-          signerId: String!
+          receiverId: $receiverId
+          actions: $actions
+          signerId: $signerId
+        )
       }`,
       variables: {
-        receiverId: receiverId,
+        receiverId: contractId,
         actions: actions,
-        signerId: signerId,
+        signerId: workingAccount.accountId,
       }
     });
     expect(result.errors).toBeFalsy();
@@ -142,33 +159,35 @@ describe("e2e", () => {
     expect(status.successValue).toBeTruthy();
     expect(status.failure).toBeFalsy();
     const transaction: Transaction = result.data!.signAndSendTransaction.transaction;
-    expect(transaction.signerId).toEqual(signerId);
+    expect(transaction.signerId).toEqual(workingAccount.accountId);
     expect(transaction.publicKey).toBeTruthy();
     expect(transaction.nonce).toBeTruthy();
     expect(transaction.receiverId).toBeTruthy();
     expect(transaction.blockHash).toBeTruthy();
     expect(transaction.actions).toEqual(actions);
     const txOutcome: ExecutionOutcomeWithId = result.data!.signAndSendTransaction.transaction_outcome;
-    expect(txOutcome.outcome.status.successValue).toBeTruthy();
+    expect(txOutcome.id).toBeTruthy();
+    expect(txOutcome.outcome.status.successReceiptId).toBeTruthy();
     expect(txOutcome.outcome.status.failure).toBeFalsy();
     const receiptsOutcome: ExecutionOutcomeWithId[] = result.data!.signAndSendTransaction.receipts_outcome;
     expect(receiptsOutcome.length).toBeGreaterThan(0);
   });
 
   it("creates, signs, and sends a transaction asynchronously without wallet", async () => {
-    const actions: Action[] = [{ deposit: "1" }];
+    const actions: Action[] = prepActions();
     const result = await client.query<{ signAndSendTransactionAsync: FinalExecutionOutcome }>({
       uri,
-      query: `query {
+      query: `mutation {
         signAndSendTransactionAsync(
-          receiverId: String!
-          actions: [Action!]!
-          signerId: String!
+          receiverId: $receiverId
+          actions: $actions
+          signerId: $signerId
+        )
       }`,
       variables: {
-        receiverId: receiverId,
+        receiverId: contractId,
         actions: actions,
-        signerId: signerId,
+        signerId: workingAccount.accountId,
       }
     });
     expect(result.errors).toBeFalsy();

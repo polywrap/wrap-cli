@@ -9,17 +9,15 @@ import {
   FinalExecutionOutcome,
   AccountView,
   Action,
-  AccessKeyView,
-  AccessKey,
   AccessKeyInfo,
 } from "./w3";
 import {
-  fromAction,
+  fromAction, fromSignedTx,
   fromTx,
   toAccountView,
   toFinalExecutionOutcome,
   toPublicKey,
-} from "./mapping";
+} from "./typeMapping";
 import { AccountView as NearAccountView } from "./typeUtils";
 
 import {
@@ -30,6 +28,8 @@ import {
 } from "@web3api/core-js";
 import * as nearApi from "near-api-js";
 import sha256 from "js-sha256";
+import { parseJsonResponseAccessKey } from "./jsonMapping";
+import { JsonAccessKey } from "./jsonTypes";
 
 export { keyStores as KeyStores, KeyPair } from "near-api-js";
 
@@ -40,6 +40,8 @@ export interface NearPluginConfig {
   walletUrl?: string;
   helperUrl?: string;
   explorerUrl?: string;
+  masterAccount?: string;
+  initialBalance?: string;
 }
 
 export class NearPlugin extends Plugin {
@@ -126,7 +128,7 @@ export class NearPlugin extends Plugin {
       return null;
     }
     try {
-      const accessKeyView = await this.sendJsonRpc<AccessKeyView>({
+      const jsonAccessKey = await this.sendJsonRpc<JsonAccessKey>({
         method: "query",
         params: JSON.stringify({
           request_type: "view_access_key", // eslint-disable-line @typescript-eslint/naming-convention
@@ -135,8 +137,9 @@ export class NearPlugin extends Plugin {
           finality: "optimistic",
         }),
       });
+
       return {
-        accessKey: accessKeyView as AccessKey,
+        accessKey: parseJsonResponseAccessKey(jsonAccessKey),
         publicKey: toPublicKey(nearPublicKey),
       };
     } catch (e) {
@@ -157,7 +160,7 @@ export class NearPlugin extends Plugin {
         return this.createTransactionWithWallet(receiverId, actions);
       } else {
         throw Error(
-          "Near wallet is unavailable, likely because the NEAR plugin is operating outside of a browser."
+          "Near wallet is unavailable, likely because the NEAR plugin is operating outside of a browser. Try providing a signerId to create the transaction from KeyStore provided in the NearPlugin config."
         );
       }
     }
@@ -190,16 +193,15 @@ export class NearPlugin extends Plugin {
     return { hash, signedTx };
   }
 
-  // TODO: do generic work here or do I need to specify type as JSON?
+  // TODO: do generics work here for the polywrapper or do I need to specify type as JSON?
   public async sendJsonRpc<T>(input: Mutation.Input_sendJsonRpc): Promise<T> {
     const { method, params } = input;
     const request = {
       method,
-      params: params ?? {},
+      params: JSON.parse(params ?? "{}"),
       id: this._nextId++,
       jsonrpc: "2.0",
     };
-    // { result?: T; error?: Record<string, unknown> }
     const { result, error } = await nearApi.utils.web.fetchJson(
       this._config.nodeUrl,
       JSON.stringify(request)
@@ -232,7 +234,7 @@ export class NearPlugin extends Plugin {
     input: Mutation.Input_sendTransaction
   ): Promise<FinalExecutionOutcome> {
     const { signedTx } = input;
-    const nearSignedTx = new nearApi.transactions.SignedTransaction(signedTx);
+    const nearSignedTx = fromSignedTx(signedTx);
     const provider = this.near.connection.provider;
     const outcome = await provider.sendTransaction(nearSignedTx);
     return toFinalExecutionOutcome(outcome);
@@ -242,7 +244,7 @@ export class NearPlugin extends Plugin {
     input: Mutation.Input_sendTransactionAsync
   ): Promise<string> {
     const { signedTx } = input;
-    const nearSignedTx = new nearApi.transactions.SignedTransaction(signedTx);
+    const nearSignedTx = fromSignedTx(signedTx);
     const bytes = nearSignedTx.encode();
     return this.sendJsonRpc({
       method: "broadcast_tx_async",
@@ -274,7 +276,7 @@ export class NearPlugin extends Plugin {
     return true;
   }
 
-  // TODO: remove after testing polywrapper, due to redundancy
+  // TODO: remove after completing polywrapper, due to redundancy
   private async createTransactionLocally(
     receiverId: string,
     actions: Action[],
@@ -292,7 +294,6 @@ export class NearPlugin extends Plugin {
     });
     const blockHash = block.header.hash;
     const nonce = Number.parseInt(accessKey.nonce) + 1;
-
     return {
       signerId: signerId,
       publicKey: publicKey,
