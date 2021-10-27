@@ -156,7 +156,7 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return
     {{/required}}
     {{^required}}
     if result.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.is_some() {
-        {{#toUpper}}{{type}}{{/toUpper}}::write(result.as_ref().as_ref().unwrap(), writer);
+        {{#toUpper}}{{type}}{{/toUpper}}::write(result.as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }

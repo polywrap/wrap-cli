@@ -1,7 +1,7 @@
 [package]
 name = "mutation"
 version = "0.1.0"
-description = "Mutation module of simple-storage api"
+description = "Mutation module of asyncify api"
 authors = [
   "Kobby Pentangeli <kobbypentangeli@gmail.com>",
   "Jordan Ellis <jelli@dorg.tech>"

@@ -10,12 +10,12 @@ use polywrap_wasm_rs::{
     JSON,
 };
 
+use crate::AnotherType;
 use crate::{
     CustomEnum,
     get_custom_enum_value,
     sanitize_custom_enum_value,
 };
-use crate::AnotherType;
 
 #[derive(Clone, Debug)]
 pub struct InputQueryMethod {
