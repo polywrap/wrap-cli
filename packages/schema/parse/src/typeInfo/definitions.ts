@@ -379,8 +379,16 @@ export function createImportedEnumDefinition(args: {
   };
 }
 
+export type CapabilityType = "getImplementations";
+export type InvokableModules = "query" | "mutation";
+
+export interface QueryCapability {
+  type: CapabilityType;
+  modules: Record<InvokableModules, boolean>;
+}
+
 export interface ImportedQueryCapabilityDefinition {
-  getImplementations?: boolean;
+  capabilities: QueryCapability[];
 }
 
 export interface ImportedQueryDefinition

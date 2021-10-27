@@ -6,6 +6,7 @@ import {
   GenericDefinition,
   EnumDefinition,
   ImportedEnumDefinition,
+  QueryCapability,
 } from "./definitions";
 
 export * from "./definitions";
@@ -76,7 +77,15 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       tryInsert(
         combined.importedQueryTypes,
         importedQueryType,
-        compareImportedType
+        compareImportedType,
+        (a: ImportedQueryDefinition, b: ImportedQueryDefinition) => {
+          // make sure a & b have the same capabilities
+          const capabilities: QueryCapability[] = a.capabilities;
+
+          for (const capability of b.capabilities) {
+            
+          }
+        }
       );
     }
 
@@ -91,18 +100,21 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
 const tryInsert = (
   dest: GenericDefinition[],
   value: GenericDefinition,
-  compare: (a: GenericDefinition, b: GenericDefinition) => boolean = (a, b) =>
+  compare: (a: GenericDefinition, b: GenericDefinition) => boolean = (a, b) => (
     a.type === b.type
+  ),
+  join?: (dest: GenericDefinition, source: GenericDefinition) => void,
 ) => {
   const index = dest.findIndex((item: GenericDefinition) =>
     compare(item, value)
   );
 
   if (index > -1) {
-    // See if they're the same, error if they aren't
-    if ((<ImportedQueryDefinition>dest[index]).getImplementations) {
-      (<ImportedQueryDefinition>value).getImplementations = true;
+
+    if (join) {
+      join(dest[index], value);
     }
+
     const destType = JSON.stringify(dest[index]);
     const valueType = JSON.stringify(value);
     if (destType !== valueType) {

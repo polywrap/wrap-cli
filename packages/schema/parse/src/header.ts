@@ -20,5 +20,10 @@ directive @imported(
 directive @imports(
   types: [String!]!
 ) on OBJECT
+
+directive @capability(
+  type: String!
+  modules: [String!]!
+) on OBJECT
 ### Web3API Header END ###
 `;

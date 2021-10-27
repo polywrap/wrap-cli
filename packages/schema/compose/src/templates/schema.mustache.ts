@@ -72,7 +72,10 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   uri: "{{uri}}",
   namespace: "{{namespace}}",
   nativeType: "{{nativeType}}"
-) {
+){{#capabilities}} @capability(
+  type: "{{type}}"
+  modules: {{#objectKeys}}{{modules}}{{/objectKeys}}
+){{/capabilities}} {
   {{#methods}}{{#comment}}
   """
   {{comment}}
