@@ -8,7 +8,7 @@ import {
   FunctionCall,
   FunctionCallPermission,
   KeyType,
-  KeyTypeEnum,
+  KeyTypeEnum, PublicKey,
   Stake,
   Transfer,
 } from "./w3";
@@ -158,3 +158,9 @@ export function keyTypeFromStr(keyType: string): KeyTypeEnum {
       throw new Error(`Unknown key type ${keyType}`);
   }
 }
+
+export const publicKeyToStr = (key: PublicKey): string => {
+  const keyTypeStr = keyTypeToStr(key.keyType);
+  const encodedData = nearApi.utils.serialize.base_encode(key.data);
+  return `${keyTypeStr}:${encodedData}`;
+};

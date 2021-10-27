@@ -12,11 +12,17 @@ type Query {
 
   getAccountId: String
 
-  accountState: AccountView
+  accountState(
+    accountId: String!
+  ): AccountView!
 
   findAccessKey(
     accountId: String!
   ): AccessKeyInfo
+
+  getPublicKey(
+    accountId: String!
+  ): PublicKey
 
   """
   Creates a transaction.
@@ -76,29 +82,41 @@ type Mutation {
   ): String!
 }
 
-type Transaction {
-  signerId: String!
-  publicKey: PublicKey!
-  nonce: BigInt!
-  receiverId: String!
-  blockHash:  Bytes!
-  actions: [Action!]!
-}
-
-type Signature {
+# Account public key data
+type PublicKey {
   keyType: KeyType!
   data: Bytes!
 }
 
-type SignedTransaction {
-  transaction: Transaction!
-  signature: Signature!
+# Supported public key types
+enum KeyType {
+  ed25519
 }
 
-# Return value of Mutation.signTransaction(...); contains transaction hash and signed transaction
-type SignTransactionResult {
-  hash: Bytes!
-  signedTx: SignedTransaction!
+# Access key permissions determine how an account is allow to interact with a contract
+type AccessKeyPermission {
+  _: String
+}
+
+# Full access permission allows an account to call all public contract functions
+type FullAccessPermission implements AccessKeyPermission {}
+
+# Function call permissions describe which contract functions an account can call
+type FunctionCallPermission implements AccessKeyPermission {
+  receiverId: String!
+  methodNames: [String!]!
+  allowance: BigInt
+}
+
+type AccessKey {
+  nonce: BigInt!
+  permission: AccessKeyPermission!
+}
+
+# Access keys contain access key permissions, which determine how an account is allowed to interact with a contract
+type AccessKeyInfo {
+  publicKey: PublicKey!
+  accessKey: AccessKey!
 }
 
 # Action types define the data necessary to complete a type of action in a transaction
@@ -124,42 +142,29 @@ type DeleteKey implements Action { publicKey: PublicKey! }
 # holds content necessary to send a transaction that creates a NEAR account
 type DeleteAccount implements Action { beneficiaryId: String! }
 
+type Transaction {
+  signerId: String!
+  publicKey: PublicKey!
+  nonce: BigInt!
+  receiverId: String!
+  blockHash:  Bytes!
+  actions: [Action!]!
+}
 
-# Account public key data
-type PublicKey {
+type Signature {
   keyType: KeyType!
   data: Bytes!
 }
 
-# Supported public key types
-enum KeyType {
-  ed25519
+type SignedTransaction {
+  transaction: Transaction!
+  signature: Signature!
 }
 
-# Access keys contain access key permissions, which determine how an account is allowed to interact with a contract
-type AccessKey {
-  nonce: BigInt!
-  permission: AccessKeyPermission!
-}
-
-type AccessKeyInfo {
-  publicKey: PublicKey!
-  accessKey: AccessKey!
-}
-
-# Access key permissions determine how an account is allow to interact with a contract
-type AccessKeyPermission {
-  _: String
-}
-
-# Full access permission allows an account to call all public contract functions
-type FullAccessPermission implements AccessKeyPermission {}
-
-# Function call permissions describe which contract functions an account can call
-type FunctionCallPermission implements AccessKeyPermission {
-  receiverId: String!
-  methodNames: [String!]!
-  allowance: BigInt
+# Return value of Mutation.signTransaction(...); contains transaction hash and signed transaction
+type SignTransactionResult {
+  hash: Bytes!
+  signedTx: SignedTransaction!
 }
 
 type FinalExecutionStatus {

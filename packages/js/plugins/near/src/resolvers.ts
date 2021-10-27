@@ -20,6 +20,9 @@ export const query = (plugin: NearPlugin): Query.Module => ({
   findAccessKey: async (input: Query.Input_findAccessKey) => {
     return await plugin.findAccessKey(input);
   },
+  getPublicKey: async (input: Query.Input_getPublicKey) => {
+    return await plugin.getPublicKey(input);
+  },
   createTransaction: async (input: Query.Input_createTransaction) => {
     return await plugin.createTransaction(input);
   },

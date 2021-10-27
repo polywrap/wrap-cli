@@ -24,7 +24,6 @@
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.48",
     "@web3api/ipfs-plugin-js": "0.0.1-prealpha.48",
     "@web3api/ens-plugin-js": "0.0.1-prealpha.48",
-    "@web3api/near-plugin-js": "0.0.1-prealpha.48",
     "assemblyscript": "0.19.1",
     "solc": "0.8.3",
     "jest": "27.0.6",

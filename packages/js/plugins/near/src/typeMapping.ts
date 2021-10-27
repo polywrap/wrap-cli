@@ -36,7 +36,7 @@ import {
   isStake,
   isTransfer,
   keyTypeFromStr,
-  keyTypeToStr,
+  publicKeyToStr,
 } from "./typeUtils";
 
 import { parseJsonResponseTx } from "./jsonMapping";
@@ -166,9 +166,7 @@ export const toPublicKey = (
 };
 
 export const fromPublicKey = (key: PublicKey): nearApi.utils.PublicKey => {
-  const keyTypeStr = keyTypeToStr(key.keyType);
-  const encodedData = nearApi.utils.serialize.base_encode(key.data);
-  return nearApi.utils.PublicKey.from(`${keyTypeStr}:${encodedData}`);
+  return nearApi.utils.PublicKey.from(publicKeyToStr(key));
 };
 
 export const toAccessKey = (key: nearApi.transactions.AccessKey): AccessKey => {

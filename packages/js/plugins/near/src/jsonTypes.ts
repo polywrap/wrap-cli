@@ -55,3 +55,13 @@ export interface JsonExecutionStatus {
   SuccessReceiptId?: string;
   Failure?: object;
 }
+
+export interface JsonAccountState {
+  amount: string;
+  locked: string;
+  code_hash: string;
+  storage_usage: number;
+  storage_paid_at: number;
+  block_height: number | string;
+  block_hash: string;
+}

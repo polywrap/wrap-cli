@@ -1,7 +1,13 @@
-import { AccessKey, Transaction, ExecutionOutcome } from "./w3";
+import { AccessKey, Transaction, ExecutionOutcome, AccountView } from "./w3";
 import { Action } from "./typeUtils";
 import { toExecutionStatus, toPublicKey } from "./typeMapping";
-import { JsonAccessKey, JsonAction, JsonExecutionOutcome, JsonTransaction } from "./jsonTypes";
+import {
+  JsonAccessKey,
+  JsonAccountState,
+  JsonAction,
+  JsonExecutionOutcome,
+  JsonTransaction,
+} from "./jsonTypes";
 
 export const parseJsonResponseTx = (tx: JsonTransaction): Transaction => {
   const jsonActions: JsonAction[] = tx.actions
@@ -65,3 +71,15 @@ export const parseJsonExecutionOutcome = (
     gasBurnt: jsonOutcome.gas_burnt.toString(),
     status: toExecutionStatus(jsonOutcome.status),
   } as ExecutionOutcome);
+
+export const parseJsonAccountState = (
+  state: JsonAccountState
+): AccountView => ({
+  amount: state.amount,
+  locked: state.locked,
+  codeHash: state.code_hash,
+  storageUsage: state.storage_usage.toString(),
+  storagePaidAt: state.storage_paid_at.toString(),
+  blockHash: state.block_hash.toString(),
+  blockHeight: state.block_height.toString(),
+});

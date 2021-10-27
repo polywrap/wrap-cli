@@ -1,5 +1,6 @@
-import { BlockReference, BlockResult, Chunk } from "../query/w3";
+import { BlockReference, BlockResult, Chunk, Near_AccessKey, Near_AccessKeyPermission } from "../query/w3";
 import { BigInt, JSON, JSONEncoder } from "@web3api/wasm-as";
+import { FunctionCallPermission } from "./hacks";
 
 export function fromBlockReference(blockQuery: BlockReference): JSON.Obj {
   const encoder = new JSONEncoder();
@@ -77,4 +78,19 @@ export function toBlockResult(json: JSON.Obj): BlockResult {
       };
     }),
   }
+}
+
+export function toAccessKey(json: JSON.Obj): Near_AccessKey {
+  return {
+    nonce: BigInt.fromString(json.getNum("nonce")!.valueOf().toString()),
+    // permission: { _: null },
+    permission: json.getObj("permission")!.getObj("FullAccess") != null
+      ? { _: null }
+      : {
+        _: null,
+        receiverId: json.getObj("permission")!.getObj("FunctionCall")!.getString("receiver_id")!.valueOf(),
+        methodNames: json.getObj("permission")!.getObj("FunctionCall")!.getArr("method_names")!.valueOf().map<string>(v => v.stringify()),
+        allowance: BigInt.fromString(json.getObj("permission")!.getObj("FunctionCall")!.getString("allowance")!.valueOf()),
+        } as FunctionCallPermission as Near_AccessKeyPermission,
+  };
 }

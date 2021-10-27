@@ -10,15 +10,17 @@ import {
   AccountView,
   Action,
   AccessKeyInfo,
+  PublicKey,
 } from "./w3";
 import {
-  fromAction, fromSignedTx,
+  fromAction,
+  fromSignedTx,
   fromTx,
-  toAccountView,
   toFinalExecutionOutcome,
   toPublicKey,
 } from "./typeMapping";
-import { AccountView as NearAccountView } from "./typeUtils";
+import { parseJsonAccountState, parseJsonResponseAccessKey } from "./jsonMapping";
+import { JsonAccessKey, JsonAccountState } from "./jsonTypes";
 
 import {
   Plugin,
@@ -28,8 +30,7 @@ import {
 } from "@web3api/core-js";
 import * as nearApi from "near-api-js";
 import sha256 from "js-sha256";
-import { parseJsonResponseAccessKey } from "./jsonMapping";
-import { JsonAccessKey } from "./jsonTypes";
+import { publicKeyToStr } from "./typeUtils";
 
 export { keyStores as KeyStores, KeyPair } from "near-api-js";
 
@@ -100,31 +101,38 @@ export class NearPlugin extends Plugin {
     return this.wallet?.getAccountId() ?? null;
   }
 
+  // TODO: remove after completing polywrapper due to redundancy
   public async accountState(
-    input?: Query.Input_accountState // eslint-disable-line @typescript-eslint/no-unused-vars
-  ): Promise<AccountView | null> {
-    if (!this.wallet || !this.isSignedIn()) {
+    input: Query.Input_accountState // eslint-disable-line @typescript-eslint/no-unused-vars
+  ): Promise<AccountView> {
+    const state: JsonAccountState = await this.sendJsonRpc<JsonAccountState>({
+      method: "query",
+      params: JSON.stringify({
+        request_type: "view_account", // eslint-disable-line @typescript-eslint/naming-convention
+        account_id: input.accountId, // eslint-disable-line @typescript-eslint/naming-convention
+        finality: "optimistic",
+      }),
+    });
+    return parseJsonAccountState(state);
+  }
+
+  public async getPublicKey(
+    input: Query.Input_getPublicKey
+  ): Promise<PublicKey | null> {
+    const { accountId } = input;
+    const keyPair = await this._config.keyStore.getKey(this._config.networkId, accountId);
+    if (keyPair === null) {
       return null;
     }
-    const nearAccountView: NearAccountView = await this.near.connection.provider.query<NearAccountView>(
-      {
-        request_type: "view_account", // eslint-disable-line @typescript-eslint/naming-convention
-        account_id: this.wallet.getAccountId(), // eslint-disable-line @typescript-eslint/naming-convention
-        finality: "optimistic",
-      }
-    );
-    return toAccountView(nearAccountView);
+    return toPublicKey(keyPair.getPublicKey());
   }
 
   public async findAccessKey(
     input: Query.Input_findAccessKey
   ): Promise<AccessKeyInfo | null> {
     const { accountId } = input;
-    const nearPublicKey = await this.near.connection.signer.getPublicKey(
-      accountId,
-      this.near.connection.networkId
-    );
-    if (!nearPublicKey) {
+    const publicKey = await this.getPublicKey(input);
+    if (!publicKey) {
       return null;
     }
     try {
@@ -133,14 +141,14 @@ export class NearPlugin extends Plugin {
         params: JSON.stringify({
           request_type: "view_access_key", // eslint-disable-line @typescript-eslint/naming-convention
           account_id: accountId, // eslint-disable-line @typescript-eslint/naming-convention
-          public_key: nearPublicKey.toString(), // eslint-disable-line @typescript-eslint/naming-convention
+          public_key: publicKeyToStr(publicKey), // eslint-disable-line @typescript-eslint/naming-convention
           finality: "optimistic",
         }),
       });
 
       return {
         accessKey: parseJsonResponseAccessKey(jsonAccessKey),
-        publicKey: toPublicKey(nearPublicKey),
+        publicKey: publicKey,
       };
     } catch (e) {
       if (e.type == "AccessKeyDoesNotExist") {
