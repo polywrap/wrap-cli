@@ -206,7 +206,7 @@ export class NearPlugin extends Plugin {
     const { method, params } = input;
     const request = {
       method,
-      params: JSON.parse(params ?? "{}"),
+      params: JSON.parse(params),
       id: this._nextId++,
       jsonrpc: "2.0",
     };

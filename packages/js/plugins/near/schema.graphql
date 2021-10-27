@@ -44,7 +44,7 @@ type Query {
 type Mutation {
   sendJsonRpc(
     method: String!
-    params: JSON
+    params: JSON!
   ): JSON!
 
   # send one or more transactions to NEAR wallet to be signed and executed
