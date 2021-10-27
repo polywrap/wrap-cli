@@ -208,22 +208,22 @@ impl ReadDecoder {
             Format::UINT64 => {
                 let value = self.view.get_u64();
                 if value <= i64::MAX as u64 {
-                    return Ok(value as i64);
+                    Ok(value as i64)
                 } else {
-                    return Err(self.context.print_with_context(
+                    Err(self.context.print_with_context(
                         &[
                             "Integer overflow: value = ",
                             &value.to_string(),
                             "; bits = 64",
                         ]
                         .concat(),
-                    ));
+                    ))
                 }
             }
             _ => Err(self.context.print_with_context(
                 &[
                     "Property must be of type `int`",
-                    &Self::get_error_message(prefix)?,
+                    Self::get_error_message(prefix)?,
                 ]
                 .concat(),
             )),
@@ -249,12 +249,12 @@ impl ReadDecoder {
             Format::INT8 => {
                 let int8 = self.view.get_i8();
                 if int8 >= 0 {
-                    return Ok(int8 as u64);
+                    Ok(int8 as u64)
                 } else {
                     return Err(self.context.print_with_context(
                         &[
                             "Unsigned integer cannot be negative. ",
-                            &Self::get_error_message(prefix)?,
+                            Self::get_error_message(prefix)?,
                         ]
                         .concat(),
                     ));
@@ -263,12 +263,12 @@ impl ReadDecoder {
             Format::INT16 => {
                 let int16 = self.view.get_i16();
                 if int16 >= 0 {
-                    return Ok(int16 as u64);
+                    Ok(int16 as u64)
                 } else {
                     return Err(self.context.print_with_context(
                         &[
                             "Unsigned integer cannot be negative. ",
-                            &Self::get_error_message(prefix)?,
+                            Self::get_error_message(prefix)?,
                         ]
                         .concat(),
                     ));
@@ -277,12 +277,12 @@ impl ReadDecoder {
             Format::INT32 => {
                 let int32 = self.view.get_i32();
                 if int32 >= 0 {
-                    return Ok(int32 as u64);
+                    Ok(int32 as u64)
                 } else {
                     return Err(self.context.print_with_context(
                         &[
                             "Unsigned integer cannot be negative. ",
-                            &Self::get_error_message(prefix)?,
+                            Self::get_error_message(prefix)?,
                         ]
                         .concat(),
                     ));
@@ -291,12 +291,12 @@ impl ReadDecoder {
             Format::INT64 => {
                 let int64 = self.view.get_i64();
                 if int64 >= 0 {
-                    return Ok(int64 as u64);
+                    Ok(int64 as u64)
                 } else {
                     return Err(self.context.print_with_context(
                         &[
                             "Unsigned integer cannot be negative. ",
-                            &Self::get_error_message(prefix)?,
+                            Self::get_error_message(prefix)?,
                         ]
                         .concat(),
                     ));
@@ -305,7 +305,7 @@ impl ReadDecoder {
             _ => Err(self.context.print_with_context(
                 &[
                     "Property must be of type `uint`",
-                    &Self::get_error_message(prefix)?,
+                    Self::get_error_message(prefix)?,
                 ]
                 .concat(),
             )),
@@ -324,7 +324,7 @@ impl Read for ReadDecoder {
         Err(self.context.print_with_context(
             &[
                 "Property must be of type `bool`",
-                &Self::get_error_message(value)?,
+                Self::get_error_message(value)?,
             ]
             .concat(),
         ))
@@ -423,7 +423,7 @@ impl Read for ReadDecoder {
         Err(self.context.print_with_context(
             &[
                 "Property must be of type `float32`",
-                &Self::get_error_message(prefix)?,
+                Self::get_error_message(prefix)?,
             ]
             .concat(),
         ))
@@ -437,7 +437,7 @@ impl Read for ReadDecoder {
         Err(self.context.print_with_context(
             &[
                 "Property must be of type `float64`",
-                &Self::get_error_message(prefix)?,
+                Self::get_error_message(prefix)?,
             ]
             .concat(),
         ))
@@ -458,7 +458,7 @@ impl Read for ReadDecoder {
             _ => Err(self.context.print_with_context(
                 &[
                     "Property must be of type `string`",
-                    &Self::get_error_message(lead_byte)?,
+                    Self::get_error_message(lead_byte)?,
                 ]
                 .concat(),
             )),
@@ -489,7 +489,7 @@ impl Read for ReadDecoder {
             _ => Err(self.context.print_with_context(
                 &[
                     "Property must be of type `bytes`",
-                    &Self::get_error_message(lead_byte)?,
+                    Self::get_error_message(lead_byte)?,
                 ]
                 .concat(),
             )),
@@ -523,7 +523,7 @@ impl Read for ReadDecoder {
         Err(self.context.print_with_context(
             &[
                 "Property must be of type `array`",
-                &Self::get_error_message(lead_byte)?,
+                Self::get_error_message(lead_byte)?,
             ]
             .concat(),
         ))
@@ -553,7 +553,7 @@ impl Read for ReadDecoder {
         Err(self.context.print_with_context(
             &[
                 "Property must be of type `map`",
-                &Self::get_error_message(lead_byte)?,
+                Self::get_error_message(lead_byte)?,
             ]
             .concat(),
         ))

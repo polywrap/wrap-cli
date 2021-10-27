@@ -22,11 +22,7 @@ fn w3_invoke_args(method_size: u32, args_size: u32) -> InvokeArgs {
 /// Helper for handling _w3_invoke
 fn w3_invoke(_options: InvokeArgs, opt_invoke_func: Option<InvokeFunction>) -> bool {
     if opt_invoke_func.is_some() {
-        if let Some(_func) = opt_invoke_func {
-            true
-        } else {
-            false
-        }
+        matches!(opt_invoke_func, Some(_func))
     } else {
         false
     }
