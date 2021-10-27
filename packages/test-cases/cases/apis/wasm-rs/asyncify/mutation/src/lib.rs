@@ -1,31 +1,129 @@
 pub mod w3;
-use query::return_true;
+use polywrap_wasm_rs::JSON;
 pub use w3::*;
 
+use crate::imported::ethereum_mutation::InputDeployContract;
+use crate::imported::InputCallContractMethod;
+use query::common::InputCallContractView;
+
+
 pub fn set_data_with_large_args(input: InputSetDataWithLargeArgs) -> String {
-    todo!()
+    let large_string = input.value;
+    let _ = EthereumMutation::call_contract_method(&InputCallContractMethod {
+        address: input.address,
+        method: "function set(value: u64)".to_string(),
+        args: Some(vec!["66".to_string()]),
+        connection: input.connection,
+        tx_overrides: None,
+    });
+    large_string
 }
 
 pub fn set_data_with_many_args(input: InputSetDataWithManyArgs) -> String {
-    todo!()
+    let (
+        args_a,
+        args_b,
+        args_c,
+        args_d,
+        args_e,
+        args_f,
+        args_g,
+        args_h,
+        args_i,
+        args_j,
+        args_k,
+        args_l,
+    ) = (
+        input.value_a,
+        input.value_b,
+        input.value_c,
+        input.value_d,
+        input.value_e,
+        input.value_f,
+        input.value_g,
+        input.value_h,
+        input.value_i,
+        input.value_j,
+        input.value_k,
+        input.value_l,
+    );
+    let _ = EthereumMutation::call_contract_method(&InputCallContractMethod {
+        address: input.address,
+        method: "function set(value: u64)".to_string(),
+        args: Some(vec!["55".to_string()]),
+        connection: input.connection,
+        tx_overrides: None,
+    });
+    [
+        args_a, args_b, args_c, args_d, args_e, args_f, args_g, args_h, args_i, args_j, args_k,
+        args_l,
+    ]
+    .concat()
 }
 
 pub fn set_data_with_many_structured_args(input: InputSetDataWithManyStructuredArgs) -> bool {
-    todo!()
+    let _ = EthereumMutation::call_contract_method(&InputCallContractMethod {
+        address: input.address,
+        method: "function set(value: u64)".to_string(),
+        args: Some(vec!["44".to_string()]),
+        connection: input.connection,
+        tx_overrides: None,
+    });
+    true
 }
 
 pub fn deploy_contract(input: InputDeployContract) -> String {
-    todo!()
+    let abi = JSON::json!([{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"from","type":"address"}],"name":"DataSet","type":"event"},{"inputs":[],"name":"get","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"x","type":"uint256"}],"name":"set","outputs":[],"stateMutability":"nonpayable","type":"function"}]).to_string();
+    let bytecode = "0x608060405234801561001057600080fd5b5061012a806100206000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c806360fe47b11460375780636d4ce63c146062575b600080fd5b606060048036036020811015604b57600080fd5b8101908080359060200190929190505050607e565b005b606860eb565b6040518082815260200191505060405180910390f35b806000819055507f3d38713ec8fb49acced894a52df2f06a371a15960550da9ba0f017cb7d07a8ec33604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390a150565b6000805490509056fea2646970667358221220f312fe8d32f77c74cc4eb4a1f5c805d8bb124755ca4e8a1db2cce10cbb133dc564736f6c63430006060033".to_string();
+
+    EthereumMutation::deploy_contract(&InputDeployContract {
+        abi,
+        bytecode,
+        args: None,
+        connection: input.connection,
+    })
 }
 
 pub fn local_var_method(input: InputLocalVarMethod) -> bool {
-    todo!()
+    let _ = EthereumMutation::call_contract_method(&InputCallContractMethod {
+        address: input.address,
+        method: "function set(value: u64)".to_string(),
+        args: Some(vec!["88".to_string()]),
+        connection: input.connection,
+        tx_overrides: None,
+    });
+    true
 }
 
 pub fn global_var_method(input: InputGlobalVarMethod) -> bool {
-    todo!()
+    let _ = EthereumMutation::call_contract_method(&InputCallContractMethod {
+        address: input.address,
+        method: "function set(value: u64)".to_string(),
+        args: Some(vec!["77".to_string()]),
+        connection: input.connection,
+        tx_overrides: None,
+    });
+    true
 }
 
 pub fn subsequent_invokes(input: InputSubsequentInvokes) -> Vec<String> {
-    todo!()
+    let mut result: Vec<String> = vec![];
+
+    for i in 0..input.number_of_times as usize {
+        let _ = EthereumMutation::call_contract_method(&InputCallContractMethod {
+            address: input.address.clone(),
+            method: "function set(value: u64)".to_string(),
+            args: Some(vec![i.to_string()]),
+            connection: input.connection.clone(),
+            tx_overrides: None,
+        });
+
+        result[i] = EthereumQuery::call_contract_view(&InputCallContractView {
+            address: input.address.clone(),
+            method: "function get() view returns (u64)".to_string(),
+            args: None,
+            connection: input.connection.clone(),
+        });
+    }
+    result
 }

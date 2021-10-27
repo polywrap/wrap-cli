@@ -12,7 +12,3 @@ pub fn get_data(input: InputGetData) -> i32 {
     .parse::<i32>()
     .unwrap()
 }
-
-pub fn return_true() -> bool {
-    true
-}

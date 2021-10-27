@@ -15,8 +15,8 @@ num-traits = { version = "0.2.14", default-features = false }
 polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../../../wasm/rs"}
 query = { version = "0.1.0", path = "../query" }
 
-[lib]
-crate-type = ["cdylib"]
+# [lib]
+# crate-type = ["cdylib"]
 
 [profile.release]
 opt-level = 'z'
