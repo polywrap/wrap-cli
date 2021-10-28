@@ -268,6 +268,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
             uri: "testimport.uri.eth",
             namespace: "TestImport",
             nativeType: "Query",
+            capabilities: [],
             type: "TestImport_Query"
           }),
           methods: [

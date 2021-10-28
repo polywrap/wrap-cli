@@ -308,7 +308,8 @@ export const typeInfo: TypeInfo = {
         namespace: "Namespace",
         nativeType: "Query",
         type: "Namespace_Query",
-        comment: "Query comment"
+        comment: "Query comment",
+        capabilities: [],
       }),
       methods: [
         {
@@ -397,7 +398,8 @@ export const typeInfo: TypeInfo = {
         namespace: "Namespace",
         nativeType: "Mutation",
         type: "Namespace_Mutation",
-        comment: "Mutation comment"
+        comment: "Mutation comment",
+        capabilities: [],
       }),
       methods: [
         {
@@ -539,7 +541,8 @@ export const typeInfo: TypeInfo = {
         uri: "just.mutation.eth",
         namespace: "JustMutation",
         nativeType: "Mutation",
-        type: "JustMutation_Mutation"
+        type: "JustMutation_Mutation",
+        capabilities: [],
       }),
       methods: [
         {
@@ -578,7 +581,8 @@ export const typeInfo: TypeInfo = {
         namespace: "Interface",
         nativeType: "Mutation",
         type: "Interface_Mutation",
-        comment: "Mutation comment"
+        comment: "Mutation comment",
+        capabilities: [],
       }),
       methods: [
         {

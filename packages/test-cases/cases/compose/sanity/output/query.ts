@@ -541,7 +541,8 @@ export const typeInfo: TypeInfo = {
         namespace: "Namespace",
         nativeType: "Query",
         type: "Namespace_Query",
-        comment: "Query comment"
+        comment: "Query comment",
+        capabilities: [],
       }),
       methods: [
         {
@@ -631,7 +632,7 @@ export const typeInfo: TypeInfo = {
         nativeType: "Query",
         type: "Interface_Query",
         comment: "Query comment",
-        getImplementations: true,
+        capabilities: [],
       }),
       methods: [
         {

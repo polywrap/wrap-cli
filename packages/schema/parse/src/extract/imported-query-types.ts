@@ -5,6 +5,9 @@ import {
   createMethodDefinition,
   createPropertyDefinition,
   createInterfaceImplementedDefinition,
+  QueryCapability,
+  CapabilityType,
+  InvokableModules,
 } from "../typeInfo";
 import {
   extractInputValueDefinition,
@@ -22,6 +25,8 @@ import {
   FieldDefinitionNode,
   InputValueDefinitionNode,
   ASTVisitor,
+  StringValueNode,
+  ListValueNode,
 } from "graphql";
 
 const visitorEnter = (
@@ -43,6 +48,49 @@ const visitorEnter = (
       interfaces: node.interfaces?.map((x) =>
         createInterfaceImplementedDefinition({ type: x.name.value })
       ),
+      capabilities:
+        (node.directives
+          ?.map((directive) => {
+            if (directive.name.value === "capability") {
+              const capability: Record<string, unknown> = {};
+              directive.arguments?.forEach((argument) => {
+                switch (argument.name.value) {
+                  case "type": {
+                    capability.type = (argument.value as StringValueNode)
+                      .value as CapabilityType;
+                    break;
+                  }
+                  case "modules": {
+                    const modules: Record<InvokableModules, boolean> = {
+                      query: false,
+                      mutation: false,
+                    };
+                    const invokableModules = (argument.value as ListValueNode).values.map(
+                      (module) => {
+                        return (module as StringValueNode)
+                          .value as InvokableModules;
+                      }
+                    );
+                    invokableModules.forEach((module) => {
+                      modules[module] = true;
+                    });
+                    capability.modules = modules;
+                    break;
+                  }
+                  default: {
+                    throw Error("Not implemented!");
+                  }
+                }
+              });
+              return capability
+                ? ((capability as unknown) as QueryCapability)
+                : undefined;
+            }
+            return undefined;
+          })
+          .filter(
+            (capability) => capability !== undefined
+          ) as QueryCapability[]) ?? [],
       comment: node.description?.value,
     });
     importedQueryTypes.push(importedType);

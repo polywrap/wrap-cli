@@ -403,6 +403,7 @@ export const output: TypeInfo = {
         namespace: "TestImport",
         type: "TestImport_Query",
         nativeType: "Query",
+        capabilities: [],
         comment: "TestImport_Query comment"
       }),
       methods: [
@@ -531,6 +532,7 @@ export const output: TypeInfo = {
         namespace: "TestImport",
         type: "TestImport_Mutation",
         nativeType: "Mutation",
+        capabilities: [],
         comment: "TestImport_Mutation comment"
       }),
       methods: [
@@ -555,6 +557,7 @@ export const output: TypeInfo = {
         namespace: "Interface",
         type: "Interface_Query",
         nativeType: "Query",
+        capabilities: [],
         comment: "Interface_Query comment"
       }),
       methods: [

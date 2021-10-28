@@ -2,8 +2,6 @@
 #import { Query } into Interface from "test-interface.eth"
 #import { CommonType } from "../imports-local/common.graphql"
 
-#use { getImplementations } for Interface
-
 """
 Query comment
 """

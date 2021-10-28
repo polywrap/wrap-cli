@@ -406,7 +406,7 @@ export function createImportedQueryDefinition(args: {
   nativeType: string;
   interfaces?: InterfaceImplementedDefinition[];
   comment?: string;
-  getImplementations?: boolean;
+  capabilities: QueryCapability[];
 }): ImportedQueryDefinition {
   if (!isQueryType(args.nativeType)) {
     throw Error(
@@ -421,7 +421,7 @@ export function createImportedQueryDefinition(args: {
     namespace: args.namespace,
     nativeType: args.nativeType,
     comment: args.comment,
-    getImplementations: args.getImplementations ?? false,
+    capabilities: args.capabilities,
     kind: DefinitionKind.ImportedQuery,
   };
 }

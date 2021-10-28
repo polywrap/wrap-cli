@@ -2,6 +2,7 @@ import { ExternalImport, LocalImport, SYNTAX_REFERENCE, Use } from "./types";
 import { getDuplicates } from "./utils";
 
 import Path from "path";
+import { CapabilityType } from "@web3api/schema-parse";
 
 export function parseUse(useStatements: RegExpMatchArray[]): Use[] {
   const uses: Use[] = [];
@@ -29,7 +30,10 @@ export function parseUse(useStatements: RegExpMatchArray[]): Use[] {
       );
     }
 
-    uses.push({ usedTypes, namespace: useForName });
+    uses.push({
+      usedTypes: usedTypes as CapabilityType[],
+      namespace: useForName,
+    });
   }
   return uses;
 }
