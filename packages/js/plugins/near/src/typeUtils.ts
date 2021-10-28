@@ -30,6 +30,7 @@ export type Action =
 
 export type AccessKeyPermission = FunctionCallPermission | FullAccessPermission;
 
+// TODO: move to json types
 export interface QueryResponseKind {
   block_height: number;
   block_hash: string;
