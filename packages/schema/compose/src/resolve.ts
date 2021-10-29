@@ -83,9 +83,10 @@ export async function resolveUseStatements(
       mutation: false,
     };
     modules[module] = true;
+    const capabilities: QueryCapability[] = [];
 
     for (const usedType of parsedUse.usedTypes) {
-      importedQuery.capabilities.push({
+      capabilities.push({
         type: usedType,
         modules: modules,
       });
@@ -94,10 +95,7 @@ export async function resolveUseStatements(
     newSchema = newSchema.replace(useCapture, "");
 
     // Add the @capability directive
-    newSchema = addQueryCapabilityDirective(
-      newSchema,
-      importedQuery.capabilities
-    );
+    newSchema = addQueryCapabilityDirective(newSchema, capabilities);
   }
 
   newSchema = header + newSchema + renderSchema(typeInfo, false);
@@ -186,6 +184,14 @@ export async function resolveImportsAndParseSchemas(
   newSchema = resolveInterfaces(newSchema, implementationsWithInterfaces);
 
   // Parse the newly formed schema
+  try {
+    return parseSchema(newSchema);
+  } catch (error) {
+    console.log(newSchema);
+    throw Error(
+      `Error parsing ${schemaPath} schema after resolving imports and interfaces:\n${error.message}`
+    );
+  }
   return parseSchema(newSchema);
 }
 

@@ -79,6 +79,9 @@ describe("Web3API Binding Test Suite", () => {
           JSON.stringify(expectedOutput, null, 2),
         );
 
+        console.log(output)
+        console.log(testResultDir)
+
         expect(output).toMatchObject(expectedOutput);
       }
     });
