@@ -532,7 +532,13 @@ export const output: TypeInfo = {
         namespace: "TestImport",
         type: "TestImport_Mutation",
         nativeType: "Mutation",
-        capabilities: [],
+        capabilities: [{
+          "type": "getImplementations",
+          "modules": {
+            "mutation": true,
+            "query": false,
+          }
+        }],
         comment: "TestImport_Mutation comment"
       }),
       methods: [

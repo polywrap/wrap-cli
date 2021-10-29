@@ -20,6 +20,11 @@ directive @imports(
   types: [String!]!
 ) on OBJECT
 
+directive @capability(
+  type: String!
+  modules: [String!]!
+) on OBJECT
+
 """
 CustomEnum comment
 """
@@ -196,6 +201,9 @@ type TestImport_Mutation @imported(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
   nativeType: "Mutation"
+) @capability(
+  type: "getImplementations",
+  modules: [ "mutation" ]
 ) {
 """
 importedMethod comment
