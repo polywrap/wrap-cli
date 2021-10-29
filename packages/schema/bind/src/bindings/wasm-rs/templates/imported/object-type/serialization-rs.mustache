@@ -55,7 +55,7 @@ pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(input: &{{#toUpper}}{{ty
     {{#toUpper}}{{type}}{{/toUpper}}::write(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, writer);
     {{/required}}
     {{^required}}
-    if input.is_some() {
+    if input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.is_some() {
         {{#toUpper}}{{type}}{{/toUpper}}::write(input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.as_ref().as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
