@@ -1,4 +1,9 @@
+{{#__commonPath}}
 pub mod common;
+{{/__commonPath}}
+{{^__commonPath}}
+pub mod common;
+{{/__commonPath}}
 pub mod entry;
 {{#objectTypes}}
 pub mod {{#toLower}}{{type}}{{/toLower}};

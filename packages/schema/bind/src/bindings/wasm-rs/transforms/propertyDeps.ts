@@ -47,11 +47,16 @@ export function propertyDeps(): TypeInfoTransforms {
           rootType: string,
           array: PropertyDep[]
         ): PropertyDep[] => {
+          let typeName = def.type;
+
+          if (typeName.indexOf("[") === 0) {
+            typeName = typeName.replace(/\[|\]|\!|\?/g, "");
+          }
+
           if (
-            isBaseType(def.type) ||
-            isBuiltInType(def.type) ||
-            def.type.indexOf("[") === 0 ||
-            def.type === rootType
+            isBaseType(typeName) ||
+            isBuiltInType(typeName) ||
+            typeName === rootType
           ) {
             return array;
           }
@@ -68,7 +73,7 @@ export function propertyDeps(): TypeInfoTransforms {
 
           appendUnique({
             crate: "crate",
-            type: def.type,
+            type: typeName,
             isEnum: !!def.enum,
           });
 

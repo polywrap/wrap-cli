@@ -67,7 +67,7 @@ RUN rm -rf {{dir}}/Cargo.lock
 {{#web3api_modules}}
 # Build the module at {{dir}}
 RUN cargo +nightly build --manifest-path ./{{dir}}/Cargo.toml \
-    --release --target wasm32-unknown-unknown
+    --release --crate-type=cdylib --target wasm32-unknown-unknown
 {{/web3api_modules}}
 
 # Make the build directory
