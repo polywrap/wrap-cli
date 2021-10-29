@@ -94,7 +94,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
     let mut _{{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
     {{/required}}
     {{^required}}
-    let mut _{{#toLower}}{{name}}{{/toLower}}: Option<{{#toWasm}}{{toGraphQLType}}{{/toWasm}}> = None;
+    let mut _{{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = None;
     {{/required}}
     {{/object}}
     {{#required}}
