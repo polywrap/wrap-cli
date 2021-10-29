@@ -1,8 +1,9 @@
 pub mod w3;
 use polywrap_wasm_rs::JSON;
 pub use w3::mutation;
-pub use w3::imported::EthereumMutation;
+pub use w3::*;
 pub use w3::imported::ethereum_mutation;
+pub use query::imported::ethereum_query;
 
 pub fn set_data_with_large_args(input: mutation::InputSetDataWithLargeArgs) -> String {
     let large_string = input.value;
@@ -82,7 +83,7 @@ pub fn deploy_contract(input: mutation::InputDeployContract) -> String {
 }
 
 pub fn local_var_method(input: mutation::InputLocalVarMethod) -> bool {
-    let _ = EthereumMutation::call_contract_method(&InputCallContractMethod {
+    let _ = EthereumMutation::call_contract_method(&ethereum_mutation::InputCallContractMethod {
         address: input.address,
         method: "function set(value: u64)".to_string(),
         args: Some(vec!["88".to_string()]),
@@ -93,7 +94,7 @@ pub fn local_var_method(input: mutation::InputLocalVarMethod) -> bool {
 }
 
 pub fn global_var_method(input: mutation::InputGlobalVarMethod) -> bool {
-    let _ = EthereumMutation::call_contract_method(&InputCallContractMethod {
+    let _ = EthereumMutation::call_contract_method(&ethereum_mutation::InputCallContractMethod {
         address: input.address,
         method: "function set(value: u64)".to_string(),
         args: Some(vec!["77".to_string()]),
@@ -107,7 +108,7 @@ pub fn subsequent_invokes(input: mutation::InputSubsequentInvokes) -> Vec<String
     let mut result: Vec<String> = vec![];
 
     for i in 0..input.number_of_times as usize {
-        let _ = EthereumMutation::call_contract_method(&InputCallContractMethod {
+        let _ = EthereumMutation::call_contract_method(&ethereum_mutation::InputCallContractMethod {
             address: input.address.clone(),
             method: "function set(value: u64)".to_string(),
             args: Some(vec![i.to_string()]),
@@ -115,7 +116,7 @@ pub fn subsequent_invokes(input: mutation::InputSubsequentInvokes) -> Vec<String
             tx_overrides: None,
         });
 
-        result[i] = EthereumQuery::call_contract_view(&InputCallContractView {
+        result[i] = EthereumQuery::call_contract_view(&ethereum_query::InputCallContractView {
             address: input.address.clone(),
             method: "function get() view returns (u64)".to_string(),
             args: None,

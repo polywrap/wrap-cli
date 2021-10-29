@@ -46,10 +46,6 @@ RUN PACKAGE_NAME=polywrap-wasm-rs; \
 # Remove any Cargo.lock files
 RUN rm -rf query/Cargo.lock
 
-# Clean up unused imports in the query module
-RUN cargo fix --manifest-path ./query/Cargo.toml \
-    --release
-
 # Build the module at query
 RUN cargo +nightly build --manifest-path ./query/Cargo.toml \
     --crate-type=cdylib --release --target wasm32-unknown-unknown

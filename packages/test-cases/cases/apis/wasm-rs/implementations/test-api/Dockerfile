@@ -51,13 +51,6 @@ RUN PACKAGE_NAME=polywrap-wasm-rs; \
 RUN rm -rf mutation/Cargo.lock
 RUN rm -rf query/Cargo.lock
 
-# Clean up unused imports in the mutation module
-RUN cargo fix --manifest-path ./mutation/Cargo.toml \
-    --release
-# Clean up unused imports in the query module
-RUN cargo fix --manifest-path ./query/Cargo.toml \
-    --release
-
 # Build the module at mutation
 RUN cargo +nightly build --manifest-path ./mutation/Cargo.toml \
     --crate-type=cdylib --release --target wasm32-unknown-unknown
