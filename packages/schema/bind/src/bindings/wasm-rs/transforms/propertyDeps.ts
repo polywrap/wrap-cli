@@ -65,13 +65,13 @@ export function propertyDeps(): TypeInfoTransforms {
             }
           };
 
-          if (def.type === "BigInt") {
+          if (def.type === "BigInt" || def.type === "JSON") {
             return array;
           } else {
             appendUnique({
               crate: "crate",
               type: def.type,
-              isEnum: !!def.enum
+              isEnum: !!def.enum,
             });
           }
 

@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import {
   TypeInfoTransforms,
   QueryDefinition,
   ImportedQueryDefinition,
-  MethodDefinition
+  MethodDefinition,
 } from "@web3api/schema-parse";
 
 export function queryPointer(): TypeInfoTransforms {
@@ -23,7 +24,7 @@ export function queryPointer(): TypeInfoTransforms {
           ...def,
           query: queryPointer,
         };
-      }
+      },
     },
   };
 }

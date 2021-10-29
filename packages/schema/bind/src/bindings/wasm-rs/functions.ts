@@ -69,7 +69,7 @@ export const toUpper: MustacheFunction = () => {
 
 export const noBox: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
-    let type = render(value);
+    const type = render(value);
     const extract = /(.*)Box<([a-zA-Z0-9]*)>(.*)/gm;
     const match = [...type.matchAll(extract)];
 
@@ -79,8 +79,8 @@ export const noBox: MustacheFunction = () => {
 
     const strings = match[0] as string[];
     return strings[1] + strings[2] + strings[3];
-  }
-}
+  };
+};
 
 export const toMsgPack: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
@@ -140,7 +140,7 @@ export const toWasmInit: MustacheFunction = () => {
 
     const nullableModifier = (str: string): string => {
       return !nullable ? str : "None";
-    }
+    };
 
     if (type[type.length - 1] === "!") {
       type = type.substr(0, type.length - 1);
@@ -253,9 +253,9 @@ export const toWasm: MustacheFunction = () => {
         }
     }
 
-    return objectType ?
-      applyNullable(type, nullable) :
-      applyNullable(type, nullable);
+    return objectType
+      ? applyNullable(type, nullable)
+      : applyNullable(type, nullable);
 
     // return objectType ?
     //   applyNullable(`Box<${type}>`, nullable) :
