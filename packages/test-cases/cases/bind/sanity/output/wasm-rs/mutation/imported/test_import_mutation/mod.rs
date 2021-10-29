@@ -12,7 +12,7 @@ pub use serialization::{
     InputImportedMethod,
     deserialize_another_method_result,
     serialize_another_method_args,
-    InputAnotherMethod,
+    InputAnotherMethod
 };
 
 use crate::TestImportObject;

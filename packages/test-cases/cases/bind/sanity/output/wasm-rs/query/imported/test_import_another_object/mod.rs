@@ -9,7 +9,7 @@ pub use serialization::{
     deserialize_test_import_another_object,
     read_test_import_another_object,
     serialize_test_import_another_object,
-    write_test_import_another_object,
+    write_test_import_another_object
 };
 
 #[derive(Clone, Debug)]

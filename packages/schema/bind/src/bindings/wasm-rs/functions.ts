@@ -256,10 +256,6 @@ export const toWasm: MustacheFunction = () => {
     return objectType
       ? applyNullable(type, nullable)
       : applyNullable(type, nullable);
-
-    // return objectType ?
-    //   applyNullable(`Box<${type}>`, nullable) :
-    //   applyNullable(type, nullable);
   };
 };
 

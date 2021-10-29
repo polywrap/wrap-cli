@@ -7,15 +7,15 @@ use polywrap_wasm_rs::{
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON,
+    JSON
 };
-
 use crate::CustomType;
+
 use crate::AnotherType;
 use crate::{
     CustomEnum,
     get_custom_enum_value,
-    sanitize_custom_enum_value,
+    sanitize_custom_enum_value
 };
 
 pub fn serialize_custom_type(input: &CustomType) -> Vec<u8> {
@@ -32,7 +32,7 @@ pub fn serialize_custom_type(input: &CustomType) -> Vec<u8> {
 }
 
 pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) {
-    writer.write_map_length(33);
+    writer.write_map_length(35);
     writer.context().push("str", "String", "writing property");
     writer.write_str("str");
     writer.write_string(&input.str);
@@ -607,7 +607,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
         return Err(reader.context().print_with_context("Missing required property: 'bigint: BigInt'"));
     }
     if !_json_set {
-        return Err(reader.context().print_with_context("Missing required property: 'json: JSON::Value'"));
+        return Err(reader.context().print_with_context("Missing required property: 'json: JSON'"));
     }
     if !_bytes_set {
         return Err(reader.context().print_with_context("Missing required property: 'bytes: Bytes'"));

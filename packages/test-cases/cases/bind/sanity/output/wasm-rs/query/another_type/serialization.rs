@@ -7,10 +7,10 @@ use polywrap_wasm_rs::{
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON,
+    JSON
 };
-
 use crate::AnotherType;
+
 use crate::CustomType;
 
 pub fn serialize_another_type(input: &AnotherType) -> Vec<u8> {
@@ -32,7 +32,7 @@ pub fn write_another_type<W: Write>(input: &AnotherType, writer: &mut W) {
     writer.write_str("prop");
     writer.write_nullable_string(&input.prop);
     writer.context().pop();
-    writer.context().push("circular", "Option<Box<CustomType>>", "writing property");
+    writer.context().push("circular", "Option<CustomType>", "writing property");
     writer.write_str("circular");
     if input.circular.is_some() {
         CustomType::write(input.circular.as_ref().as_ref().unwrap(), writer);
@@ -53,7 +53,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, String>
     let mut num_of_fields = reader.read_map_length().unwrap();
 
     let mut _prop: Option<String> = None;
-    let mut _circular: Option<Box<CustomType>> = None;
+    let mut _circular: Option<CustomType> = None;
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -66,10 +66,10 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, String>
                 reader.context().pop();
             }
             "circular" => {
-                reader.context().push(&field, "Option<Box<CustomType>>", "type found, reading property");
-                let mut object: Option<Box<CustomType>> = None;
+                reader.context().push(&field, "Option<CustomType>", "type found, reading property");
+                let mut object: Option<CustomType> = None;
                 if !reader.is_next_nil() {
-                    object = Some(Box::new(CustomType::read(reader)));
+                    object = Some(CustomType::read(reader));
                 }
                 _circular = object;
                 reader.context().pop();

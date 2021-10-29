@@ -7,15 +7,15 @@ use polywrap_wasm_rs::{
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON,
+    JSON
 };
-
 use crate::TestImportObject;
+
 use crate::TestImportAnotherObject;
 use crate::{
     TestImportEnum,
     get_test_import_enum_value,
-    sanitize_test_import_enum_value,
+    sanitize_test_import_enum_value
 };
 
 pub fn serialize_test_import_object(input: &TestImportObject) -> Vec<u8> {
@@ -40,7 +40,7 @@ pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut
     writer.context().push("opt_object", "Option<TestImportAnotherObject>", "writing property");
     writer.write_str("opt_object");
     if input.opt_object.is_some() {
-        TestImportAnotherObject::write(input.opt_object.as_ref().unwrap(), writer);
+        TestImportAnotherObject::write(input.opt_object.as_ref().as_ref().unwrap(), writer);
     } else {
         writer.write_nil();
     }
@@ -55,7 +55,7 @@ pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut
     writer.write_str("opt_object_array");
     writer.write_nullable_array(&input.opt_object_array, |writer: &mut W, item| {
         if item.is_some() {
-            TestImportAnotherObject::write(item.as_ref().unwrap(), writer);
+            TestImportAnotherObject::write(item.as_ref().as_ref().unwrap(), writer);
         } else {
             writer.write_nil();
         }

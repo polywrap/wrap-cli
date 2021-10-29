@@ -7,15 +7,15 @@ use polywrap_wasm_rs::{
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON,
+    JSON
 };
 
-use crate::AnotherType;
 use crate::{
     CustomEnum,
     get_custom_enum_value,
-    sanitize_custom_enum_value,
+    sanitize_custom_enum_value
 };
+use crate::AnotherType;
 
 #[derive(Clone, Debug)]
 pub struct InputQueryMethod {
@@ -144,22 +144,22 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, S
     })
 }
 
-pub fn serialize_query_method_result(input: &i32) -> Vec<u8> {
+pub fn serialize_query_method_result(result: &i32) -> Vec<u8> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) query-type: query_method".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
-    write_query_method_result(input, &mut sizer);
+    write_query_method_result(result, &mut sizer);
     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) query-type: query_method".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
-    write_query_method_result(input, &mut encoder);
+    write_query_method_result(result, &mut encoder);
     buffer
 }
 
 pub fn write_query_method_result<W: Write>(result: &i32, writer: &mut W) {
     writer.context().push("query_method", "i32", "writing result");
-    writer.write_i32(result);
+    writer.write_i32(&result);
     writer.context().pop();
 }
 

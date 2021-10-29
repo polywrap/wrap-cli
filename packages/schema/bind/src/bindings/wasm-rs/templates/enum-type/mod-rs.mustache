@@ -3,7 +3,7 @@ pub use super::common::{
     get_{{#toLower}}{{type}}{{/toLower}}_key,
     get_{{#toLower}}{{type}}{{/toLower}}_value,
     sanitize_{{#toLower}}{{type}}{{/toLower}}_value,
-    {{#toUpper}}{{type}}{{/toUpper}},
+    {{#toUpper}}{{type}}{{/toUpper}}
 };
 {{/__commonImport}}
 {{^__commonImport}}
@@ -14,7 +14,7 @@ pub enum {{#toUpper}}{{type}}{{/toUpper}} {
     {{#constants}}
     {{.}},
     {{/constants}}
-    _MAX_,
+    _MAX_
 }
 
 pub fn sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value: i32) -> Result<(), String> {

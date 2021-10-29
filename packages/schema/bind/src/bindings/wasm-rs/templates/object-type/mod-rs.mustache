@@ -7,13 +7,13 @@ use polywrap_wasm_rs::{
     BigInt,
     Read,
     Write,
-    JSON,
+    JSON
 };
 pub use serialization::{
     deserialize_{{#toLower}}{{type}}{{/toLower}},
     read_{{#toLower}}{{type}}{{/toLower}},
     serialize_{{#toLower}}{{type}}{{/toLower}},
-    write_{{#toLower}}{{type}}{{/toLower}},
+    write_{{#toLower}}{{type}}{{/toLower}}
 };
 
 {{#propertyDeps}}

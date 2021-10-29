@@ -6,7 +6,7 @@ use crate::{
     object_method,
     InputObjectMethod,
     deserialize_object_method_args,
-    serialize_object_method_result,
+    serialize_object_method_result
 };
 
 pub fn query_method_wrapped(input: &[u8]) -> Vec<u8> {

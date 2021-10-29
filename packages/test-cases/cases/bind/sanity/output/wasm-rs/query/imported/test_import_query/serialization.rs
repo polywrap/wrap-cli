@@ -6,14 +6,14 @@ use polywrap_wasm_rs::{
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON,
+    JSON
 };
 
 use crate::TestImportObject;
 use crate::{
     TestImportEnum,
     get_test_import_enum_value,
-    sanitize_test_import_enum_value,
+    sanitize_test_import_enum_value
 };
 
 #[derive(Clone, Debug)]

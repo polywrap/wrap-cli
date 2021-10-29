@@ -1,3 +1,4 @@
+use std::convert::TryFrom;
 use polywrap_wasm_rs::{
     BigInt,
     Context,
@@ -6,9 +7,8 @@ use polywrap_wasm_rs::{
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON,
+    JSON
 };
-
 use crate::TestImportAnotherObject;
 
 pub fn serialize_test_import_another_object(input: &TestImportAnotherObject) -> Vec<u8> {

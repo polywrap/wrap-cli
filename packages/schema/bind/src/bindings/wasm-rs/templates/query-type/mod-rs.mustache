@@ -2,7 +2,7 @@
 pub mod wrapped;
 pub use wrapped::{
     {{#methods}}
-    {{#toLower}}{{name}}{{/toLower}}_wrapped,
+    {{#toLower}}{{name}}{{/toLower}}_wrapped{{^last}},{{/last}}
     {{/methods}}
 };
 pub mod serialization;
@@ -10,7 +10,7 @@ pub use serialization::{
     {{#methods}}
     deserialize_{{#toLower}}{{name}}{{/toLower}}_args,
     serialize_{{#toLower}}{{name}}{{/toLower}}_result,
-    Input{{#toUpper}}{{name}}{{/toUpper}},
+    Input{{#toUpper}}{{name}}{{/toUpper}}{{^last}},{{/last}}
     {{/methods}}
 };
 {{/methods.length}}

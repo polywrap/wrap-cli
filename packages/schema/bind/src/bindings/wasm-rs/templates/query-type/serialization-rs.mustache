@@ -7,12 +7,8 @@ use polywrap_wasm_rs::{
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON,
+    JSON
 };
-#[link(wasm_import_module = "w3")]
-extern "C" {
-    pub fn __w3_log(ptr: u32, len: u32);
-}
 {{#propertyDeps.length}}
 
 {{#propertyDeps}}
@@ -23,7 +19,7 @@ use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
 use crate::{
     {{#toUpper}}{{type}}{{/toUpper}},
     get_{{#toLower}}{{type}}{{/toLower}}_value,
-    sanitize_{{#toLower}}{{type}}{{/toLower}}_value,
+    sanitize_{{#toLower}}{{type}}{{/toLower}}_value
 };
 {{/isEnum}}
 {{/propertyDeps}}
@@ -38,16 +34,11 @@ pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
 }
 
 pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result<Input{{#toUpper}}{{name}}{{/toUpper}}, String> {
-    let mark = String::from("mark_des {{#toLower}}{{name}}{{/toLower}}");
-    unsafe { __w3_log(mark.as_ptr() as u32, mark.len() as u32) };
     let mut context = Context::new();
     context.description = "Deserializing query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
-    unsafe { __w3_log(mark.as_ptr() as u32, mark.len() as u32) };
     {{#arguments.length}}
     let mut reader = ReadDecoder::new(input, context);
-    unsafe { __w3_log(mark.as_ptr() as u32, mark.len() as u32) };
     let mut num_of_fields = reader.read_map_length().unwrap();
-    unsafe { __w3_log(mark.as_ptr() as u32, mark.len() as u32) };
 
     {{#arguments}}
     {{^object}}
@@ -66,10 +57,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
     {{/required}}
     {{/arguments}}
 
-    unsafe { __w3_log(mark.as_ptr() as u32, mark.len() as u32) };
-
     while num_of_fields > 0 {
-        unsafe { __w3_log(mark.as_ptr() as u32, mark.len() as u32) };
         num_of_fields -= 1;
         let field = reader.read_string().unwrap();
 

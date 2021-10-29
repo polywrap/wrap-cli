@@ -8,11 +8,12 @@ use polywrap_wasm_rs::{
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON,
+    JSON
 };
-
 use crate::{{#toUpper}}{{type}}{{/toUpper}};
-{{#propertyDeps}}
+{{#propertyDeps.length}}
+
+{{/propertyDeps.length}}{{#propertyDeps}}
 {{^isEnum}}
 use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
 {{/isEnum}}
@@ -20,7 +21,7 @@ use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
 use crate::{
     {{#toUpper}}{{type}}{{/toUpper}},
     get_{{#toLower}}{{type}}{{/toLower}}_value,
-    sanitize_{{#toLower}}{{type}}{{/toLower}}_value,
+    sanitize_{{#toLower}}{{type}}{{/toLower}}_value
 };
 {{/isEnum}}
 {{/propertyDeps}}

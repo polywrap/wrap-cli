@@ -2,7 +2,7 @@
 {{#methods.length}}
 use crate::{
     {{#methods}}
-    {{#toLower}}{{name}}{{/toLower}}_wrapped,
+    {{#toLower}}{{name}}{{/toLower}}_wrapped{{^last}},{{/last}}
     {{/methods}}
 };
 {{/methods.length}}
@@ -10,31 +10,12 @@ use crate::{
 use polywrap_wasm_rs::{
     abort,
     invoke,
-    InvokeArgs,
+    InvokeArgs
 };
-
-#[link(wasm_import_module = "w3")]
-extern "C" {
-    pub fn __w3_log(ptr: u32, len: u32);
-}
 
 #[no_mangle]
 pub extern "C" fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
     let args: InvokeArgs = invoke::w3_invoke_args(method_size, args_size);
-
-    let test = String::from("test test test");
-
-    unsafe { __w3_log(test.as_ptr() as u32, test.len() as u32) };
-
-    let other = "other other other";
-
-    unsafe { __w3_log(other.as_ptr() as u32, other.len() as u32) };
-
-    let info = format!("{} {}", method_size, args_size);
-    let arg_info = format!("{} {}", args.method, args.args.len());
-
-    unsafe { __w3_log(info.as_ptr() as u32, info.len() as u32) };
-    unsafe { __w3_log(arg_info.as_ptr() as u32, arg_info.len() as u32) };
 
     match args.method.as_str() {
         {{#queryTypes}}

@@ -9,7 +9,7 @@ pub use serialization::{
     deserialize_test_import_object,
     read_test_import_object,
     serialize_test_import_object,
-    write_test_import_object,
+    write_test_import_object
 };
 
 use crate::TestImportAnotherObject;

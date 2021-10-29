@@ -1,7 +1,7 @@
 pub mod wrapped;
 pub use wrapped::{
     mutation_method_wrapped,
-    object_method_wrapped,
+    object_method_wrapped
 };
 pub mod serialization;
 pub use serialization::{
@@ -10,5 +10,5 @@ pub use serialization::{
     InputMutationMethod,
     deserialize_object_method_args,
     serialize_object_method_result,
-    InputObjectMethod,
+    InputObjectMethod
 };

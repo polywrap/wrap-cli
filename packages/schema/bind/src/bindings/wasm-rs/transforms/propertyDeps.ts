@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { isBaseType } from "../types";
+import { isBaseType, isBuiltInType } from "../types";
 
 import {
   ImportedQueryDefinition,
   ObjectDefinition,
-  PropertyDefinition,
+  AnyDefinition,
   QueryDefinition,
   TypeInfoTransforms,
 } from "@web3api/schema-parse";
@@ -42,13 +42,14 @@ export function propertyDeps(): TypeInfoTransforms {
         state.propertyDeps = [];
         return def;
       },
-      PropertyDefinition: (def: PropertyDefinition) => {
+      AnyDefinition: (def: AnyDefinition) => {
         const appendPropertyDep = (
           rootType: string,
           array: PropertyDep[]
         ): PropertyDep[] => {
           if (
             isBaseType(def.type) ||
+            isBuiltInType(def.type) ||
             def.type.indexOf("[") === 0 ||
             def.type === rootType
           ) {
@@ -65,15 +66,11 @@ export function propertyDeps(): TypeInfoTransforms {
             }
           };
 
-          if (def.type === "BigInt" || def.type === "JSON") {
-            return array;
-          } else {
-            appendUnique({
-              crate: "crate",
-              type: def.type,
-              isEnum: !!def.enum,
-            });
-          }
+          appendUnique({
+            crate: "crate",
+            type: def.type,
+            isEnum: !!def.enum,
+          });
 
           return array;
         };

@@ -3,13 +3,13 @@ use polywrap_wasm_rs::{
     BigInt,
     Read,
     Write,
-    JSON,
+    JSON
 };
 pub use serialization::{
     deserialize_custom_type,
     read_custom_type,
     serialize_custom_type,
-    write_custom_type,
+    write_custom_type
 };
 
 use crate::AnotherType;

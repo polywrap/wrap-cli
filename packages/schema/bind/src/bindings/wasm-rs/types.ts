@@ -23,6 +23,19 @@ export function isBaseType(type: string): type is BaseType {
   return type in baseTypes;
 }
 
+const builtInTypes = {
+  BigInt: "BigInt",
+  JSON: "JSON",
+};
+
+export type BuiltInTypes = typeof builtInTypes;
+
+export type BuiltInType = keyof BuiltInTypes;
+
+export function isBuiltInType(type: string): type is BuiltInType {
+  return type in builtInTypes;
+}
+
 const keywords = {
   as: "as",
   break: "break",

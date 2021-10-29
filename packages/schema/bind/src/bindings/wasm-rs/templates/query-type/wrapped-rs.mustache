@@ -4,27 +4,16 @@ use crate::{
     {{#toLower}}{{name}}{{/toLower}},
     Input{{#toUpper}}{{name}}{{/toUpper}},
     deserialize_{{#toLower}}{{name}}{{/toLower}}_args,
-    serialize_{{#toLower}}{{name}}{{/toLower}}_result,
+    serialize_{{#toLower}}{{name}}{{/toLower}}_result{{^last}},{{/last}}
     {{/methods}}
 };
 {{/methods.length}}
 
-#[link(wasm_import_module = "w3")]
-extern "C" {
-    pub fn __w3_log(ptr: u32, len: u32);
-}
-
 {{#methods}}
 pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(input: &[u8]) -> Vec<u8> {
-    let start = String::from("start {{#toLower}}{{name}}{{/toLower}}");
-    unsafe { __w3_log(start.as_ptr() as u32, start.len() as u32) };
     {{#arguments.length}}
-    let des = String::from("des {{#toLower}}{{name}}{{/toLower}}");
-    unsafe { __w3_log(des.as_ptr() as u32, des.len() as u32) };
     let args = deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input).expect("Failed to deserialize buffer");
     {{/arguments.length}}
-    let end = String::from("end {{#toLower}}{{name}}{{/toLower}}");
-    unsafe { __w3_log(end.as_ptr() as u32, end.len() as u32) };
     let result = {{#toLower}}{{name}}{{/toLower}}(Input{{#toUpper}}{{name}}{{/toUpper}} {{#arguments.length}}{
         {{#arguments}}
         {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: args.{{#toLower}}{{name}}{{/toLower}},

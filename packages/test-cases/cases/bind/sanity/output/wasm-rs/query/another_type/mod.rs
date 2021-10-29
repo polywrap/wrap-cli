@@ -3,13 +3,13 @@ use polywrap_wasm_rs::{
     BigInt,
     Read,
     Write,
-    JSON,
+    JSON
 };
 pub use serialization::{
     deserialize_another_type,
     read_another_type,
     serialize_another_type,
-    write_another_type,
+    write_another_type
 };
 
 use crate::CustomType;
@@ -17,7 +17,7 @@ use crate::CustomType;
 #[derive(Clone, Debug)]
 pub struct AnotherType {
     pub prop: Option<String>,
-    pub circular: Option<Box<CustomType>>,
+    pub circular: Option<CustomType>,
 }
 
 impl AnotherType {

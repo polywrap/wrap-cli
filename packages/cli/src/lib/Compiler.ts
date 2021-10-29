@@ -594,7 +594,6 @@ export class Compiler {
         __w3_invoke_args: () => {},
         __w3_invoke_result: () => {},
         __w3_invoke_error: () => {},
-        __w3_log: () => {},
         __w3_abort: () => {},
       },
     });

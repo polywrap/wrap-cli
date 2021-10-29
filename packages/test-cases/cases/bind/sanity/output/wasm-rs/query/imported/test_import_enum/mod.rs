@@ -4,7 +4,7 @@ use std::convert::TryFrom;
 pub enum TestImportEnum {
     STRING,
     BYTES,
-    _MAX_,
+    _MAX_
 }
 
 pub fn sanitize_test_import_enum_value(value: i32) -> Result<(), String> {

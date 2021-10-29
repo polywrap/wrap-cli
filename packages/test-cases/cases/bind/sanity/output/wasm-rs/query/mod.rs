@@ -9,7 +9,7 @@ pub use custom_enum::{
     get_custom_enum_key,
     get_custom_enum_value,
     sanitize_custom_enum_value,
-    CustomEnum,
+    CustomEnum
 };
 pub mod imported;
 pub use imported::test_import_object::TestImportObject;
@@ -18,7 +18,7 @@ pub use imported::test_import_enum::{
     get_test_import_enum_key,
     get_test_import_enum_value,
     sanitize_test_import_enum_value,
-    TestImportEnum,
+    TestImportEnum
 };
 pub use imported::test_import_query::TestImportQuery;
 pub mod query;
@@ -30,5 +30,5 @@ pub use query::{
     deserialize_object_method_args,
     serialize_object_method_result,
     object_method_wrapped,
-    InputObjectMethod,
+    InputObjectMethod
 };
