@@ -1,8 +1,7 @@
 pub mod w3;
 pub use w3::*;
 use polywrap_wasm_rs::JSON;
-use crate::imported::ethereum_mutation::InputDeployContract;
-use crate::imported::InputCallContractMethod;
+use w3::imported::ethereum_mutation::{InputDeployContract, InputCallContractMethod};
 
 pub fn set_data(input: InputSetData) -> String {
     let res = EthereumMutation::call_contract_method(&InputCallContractMethod {
