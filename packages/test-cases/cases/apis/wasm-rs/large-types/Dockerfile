@@ -48,7 +48,7 @@ RUN rm -rf query/Cargo.lock
 
 # Build the module at query
 RUN cargo +nightly build --manifest-path ./query/Cargo.toml \
-    --crate-type=cdylib --release --target wasm32-unknown-unknown
+    --release --target wasm32-unknown-unknown
 
 # Make the build directory
 RUN mkdir ./build
