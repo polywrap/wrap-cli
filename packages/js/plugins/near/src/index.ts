@@ -20,8 +20,12 @@ import {
   toFinalExecutionOutcome,
   toPublicKey,
 } from "./typeMapping";
-import { parseJsonAccountState, parseJsonResponseAccessKey } from "./jsonMapping";
+import {
+  parseJsonAccountState,
+  parseJsonResponseAccessKey,
+} from "./jsonMapping";
 import { JsonAccessKey, JsonAccountState } from "./jsonTypes";
+import { publicKeyToStr } from "./typeUtils";
 
 import {
   Plugin,
@@ -31,7 +35,6 @@ import {
 } from "@web3api/core-js";
 import * as nearApi from "near-api-js";
 import sha256 from "js-sha256";
-import { publicKeyToStr } from "./typeUtils";
 
 export { keyStores as KeyStores, KeyPair } from "near-api-js";
 
@@ -102,7 +105,7 @@ export class NearPlugin extends Plugin {
     return this.wallet?.getAccountId() ?? null;
   }
 
-  // TODO: remove after completing polywrapper due to redundancy
+  // TODO: deprecate
   public async accountState(
     input: Query.Input_accountState // eslint-disable-line @typescript-eslint/no-unused-vars
   ): Promise<AccountView> {
@@ -121,7 +124,10 @@ export class NearPlugin extends Plugin {
     input: Query.Input_getPublicKey
   ): Promise<PublicKey | null> {
     const { accountId } = input;
-    const keyPair = await this._config.keyStore.getKey(this._config.networkId, accountId);
+    const keyPair = await this._config.keyStore.getKey(
+      this._config.networkId,
+      accountId
+    );
     if (keyPair === null) {
       return null;
     }
@@ -159,6 +165,7 @@ export class NearPlugin extends Plugin {
     }
   }
 
+  // TODO: deprecate and replace with createTransactionWithWallet
   public async createTransaction(
     input: Query.Input_createTransaction
   ): Promise<Transaction> {
@@ -270,7 +277,7 @@ export class NearPlugin extends Plugin {
     return true;
   }
 
-  // TODO: remove after completing polywrapper, due to redundancy
+  // TODO: deprecate
   private async createTransactionLocally(
     receiverId: string,
     actions: Action[],
@@ -347,7 +354,10 @@ export class NearPlugin extends Plugin {
     };
   }
 
-  private async _sendJsonRpc<T>(input: { method: string, params: unknown }): Promise<T> {
+  private async _sendJsonRpc<T>(input: {
+    method: string;
+    params: unknown;
+  }): Promise<T> {
     const { method, params } = input;
     const request = {
       method,

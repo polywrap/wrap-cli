@@ -112,10 +112,10 @@ describe("e2e", () => {
   });
 
   it("Get account state", async () => {
-    const result = await client.query<{ accountState: AccountView }>({
+    const result = await client.query<{ getAccountState: AccountView }>({
       uri: apiUri,
       query: `query {
-        accountState(
+        getAccountState(
           accountId: $accountId
         )
       }`,
@@ -126,7 +126,7 @@ describe("e2e", () => {
     expect(result.errors).toBeFalsy();
     expect(result.data).toBeTruthy();
 
-    const state: AccountView = result.data!.accountState;
+    const state: AccountView = result.data!.getAccountState;
     expect(state).toBeTruthy();
 
     const nearState = await workingAccount.state();

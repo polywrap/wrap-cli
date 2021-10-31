@@ -47,7 +47,7 @@ export function getBlock(input: Input_getBlock): BlockResult {
   return provider.block(input.blockQuery);
 }
 
-export function accountState(input: Input_accountState): Near_AccountView {
+export function getAccountState(input: Input_accountState): Near_AccountView {
   // prepare params
   const encoder = new JSONEncoder();
   encoder.pushObject(null);

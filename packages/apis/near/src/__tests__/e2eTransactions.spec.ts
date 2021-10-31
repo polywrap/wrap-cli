@@ -73,28 +73,21 @@ describe("e2e", () => {
         },
       ]
     });
+    // set up contract account
+    contractId = testUtils.generateUniqueString('test');
+    workingAccount = await testUtils.createAccount(near);
+    await testUtils.deployContract(workingAccount, contractId);
+    // set up access key
+    const keyPair = KeyPair.fromRandom('ed25519');
+    await workingAccount.addKey(keyPair.getPublicKey(), contractId, HELLO_WASM_METHODS.changeMethods, new BN(  "2000000000000000000000000"));
+    await nearConfig.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
   });
 
   afterAll(async () => {
     await stopTestEnvironment();
   });
 
-  beforeEach(async () => {
-    // set up contract account
-    contractId = testUtils.generateUniqueString('test');
-    console.log("creating working account");
-    workingAccount = await testUtils.createAccount(near);
-    console.log("deploying contract");
-    await testUtils.deployContract(workingAccount, contractId);
-    console.log("set up contract and working account");
-    // set up access key
-    const keyPair = KeyPair.fromRandom('ed25519');
-    await workingAccount.addKey(keyPair.getPublicKey(), contractId, HELLO_WASM_METHODS.changeMethods, new BN("2000000000000000000000000"));
-    await nearConfig.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
-    console.log("set up access key");
-  });
-
-  it.only("Creates a transaction without wallet", async () => {
+  it("Creates a transaction without wallet", async () => {
     const actions: Action[] = prepActions();
     const result = await client.query<{ createTransaction: Transaction }>({
       uri: apiUri,
@@ -115,6 +108,9 @@ describe("e2e", () => {
     expect(result.data).toBeTruthy();
 
     const transaction: Transaction = result.data!.createTransaction;
+
+    console.log(JSON.stringify(transaction));
+
     expect(transaction.signerId).toEqual(workingAccount.accountId);
     expect(transaction.publicKey).toBeTruthy();
     expect(transaction.nonce).toBeTruthy();

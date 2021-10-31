@@ -1,6 +1,7 @@
-#import { Mutation, Action, Transaction, SignedTransaction, SignTransactionResult, FinalExecutionOutcome } into Near from "w3://ens/nearPlugin.web3api.eth"
+#import { Mutation, PublicKey, Action, Transaction, SignedTransaction, SignTransactionResult, FinalExecutionOutcome } into Near from "w3://ens/nearPlugin.web3api.eth"
 
 type Mutation {
+
   sendJsonRpc(
     method: String!
     params: JSON!

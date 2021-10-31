@@ -1,4 +1,4 @@
-#import { Query, AccountView, Transaction, Action, PublicKey, KeyType } into Near from "w3://ens/nearPlugin.web3api.eth"
+#import { Query, Transaction, Action, PublicKey, KeyType } into Near from "w3://ens/nearPlugin.web3api.eth"
 
 type Query {
   requestSignIn(
@@ -18,7 +18,7 @@ type Query {
     blockQuery: BlockReference!
   ): BlockResult!
 
-  accountState(
+  getAccountState(
     accountId: String!
   ): Near_AccountView!
 
@@ -110,7 +110,20 @@ type BlockResult {
   chunks: [Chunk!]!
 }
 
-# TODO: switch to using Near_AccessKeyInfo and Near_* types after union types are supported
+# All query responses implement QueryResponseKind
+type QueryResponseKind {
+  blockHeight: BigInt!
+  blockHash: String!
+}
+
+type AccountView implements QueryResponseKind {
+  amount: String!
+  locked: String!
+  codeHash: String!
+  storageUsage: BigInt!
+  storagePaidAt: BigInt!
+}
+
 # Access key permissions determine how an account is allow to interact with a contract
 type AccessKeyPermission {
   isFullAccess: Boolean!
