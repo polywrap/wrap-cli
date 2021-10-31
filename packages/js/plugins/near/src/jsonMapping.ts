@@ -53,13 +53,14 @@ export const parseJsonResponseAccessKey = (
 ): AccessKey =>
   ({
     nonce: jsonAccessKey.nonce.toString(),
-    permission: jsonAccessKey.permission.FullAccess
-      ? jsonAccessKey.permission.FullAccess
-      : {
-          allowance: jsonAccessKey.permission.FunctionCall?.allowance.toString(),
-          methodNames: jsonAccessKey.permission.FunctionCall?.method_names,
-          receiverId: jsonAccessKey.permission.FunctionCall?.receiver_id,
-        },
+    permission:
+      typeof jsonAccessKey.permission === "string"
+        ? {}
+        : {
+            allowance: jsonAccessKey.permission.FunctionCall?.allowance.toString(),
+            methodNames: jsonAccessKey.permission.FunctionCall?.method_names,
+            receiverId: jsonAccessKey.permission.FunctionCall?.receiver_id,
+          },
   } as AccessKey);
 
 export const parseJsonExecutionOutcome = (

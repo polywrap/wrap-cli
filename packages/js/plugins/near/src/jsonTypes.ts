@@ -5,14 +5,15 @@ export interface JsonAccessKey {
   block_hash?: string;
   block_height?: number | string;
   nonce: number | string;
-  permission: {
-    FunctionCall?: {
-      allowance: number | string;
-      method_names: string[];
-      receiver_id: string;
-    };
-    FullAccess?: object;
-  };
+  permission:
+    | string
+    | {
+        FunctionCall: {
+          allowance: number | string;
+          method_names: string[];
+          receiver_id: string;
+        };
+      };
 }
 
 export interface JsonAction {

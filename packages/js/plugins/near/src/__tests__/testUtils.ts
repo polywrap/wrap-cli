@@ -5,14 +5,14 @@ import * as nearApi from "near-api-js";
 import { KeyPair, KeyStores, NearPluginConfig } from "../index";
 import * as path from "path";
 
-export const networkId = 'ci-testnet';
-// export const testAccountId = "polywraptest.testnet";
-// const PRIVATE_KEY = "ed25519:3ZASru2hHvoDpT4jut4b8LqRBnz4GqMhtp24AzkLwdhuLDm6xgptkNmXVGWwfdyFHnnnG512Xb5RJcA7Cup3yjcG";
-export const testAccountId = "test.near";
-const PRIVATE_KEY = 'ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw';
+export const networkId = 'testnet';
+export const testAccountId = "polywraptest.testnet";
+const PRIVATE_KEY = "ed25519:3ZASru2hHvoDpT4jut4b8LqRBnz4GqMhtp24AzkLwdhuLDm6xgptkNmXVGWwfdyFHnnnG512Xb5RJcA7Cup3yjcG";
+// export const testAccountId = "test.near";
+// const PRIVATE_KEY = 'ed25519:2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw';
 
 const HELLO_WASM_PATH = path.resolve(__dirname + '../../../../../../../node_modules/near-hello/dist/main.wasm');
-const HELLO_WASM_BALANCE = new BN("10000000000000000000000000");
+const HELLO_WASM_BALANCE = new BN("1000000000000000000000000");
 export const HELLO_WASM_METHODS = {
   viewMethods: ['getValue', 'getLastResult'],
   changeMethods: ['setValue', 'callPromise']
@@ -28,8 +28,11 @@ export async function setUpTestConfig(): Promise<NearPluginConfig> {
   let config: NearPluginConfig = {
     networkId: networkId,
     keyStore: keyStore,
-    nodeUrl: "https://rpc.ci-testnet.near.org",
+    nodeUrl: "https://rpc.testnet.near.org",
+    walletUrl: 'https://wallet.testnet.near.org',
+    helperUrl: 'https://helper.testnet.near.org',
     masterAccount: testAccountId,
+    initialBalance: "2000000000000000000000000",
   };
 
   if (config.masterAccount) {

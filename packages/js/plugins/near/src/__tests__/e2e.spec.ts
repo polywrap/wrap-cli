@@ -53,7 +53,7 @@ describe("e2e", () => {
     await testUtils.deployContract(workingAccount, contractId);
     // set up access key
     const keyPair = KeyPair.fromRandom('ed25519');
-    await workingAccount.addKey(keyPair.getPublicKey(), contractId, HELLO_WASM_METHODS.changeMethods, new BN("2000000000000000000000000"));
+    await workingAccount.addKey(keyPair.getPublicKey(), contractId, HELLO_WASM_METHODS.changeMethods, new BN(  "2000000000000000000000000"));
     await config.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
   });
 

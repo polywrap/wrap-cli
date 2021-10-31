@@ -7,13 +7,13 @@ import {
   Input_signTransaction,
   Input_getPublicKey,
   Input_getBlock,
-  Near_AccessKey,
-  Near_AccessKeyInfo,
   Near_AccountView,
   Near_PublicKey,
   Near_Query,
   Near_Transaction,
   Near_SignTransactionResult,
+  AccessKeyInfo,
+  AccessKey,
 } from "./w3";
 import JsonRpcProvider from "../utils/JsonRpcProvider";
 import * as bs58 from "as-base58";
@@ -50,12 +50,12 @@ export function getBlock(input: Input_getBlock): BlockResult {
 export function accountState(input: Input_accountState): Near_AccountView {
   // prepare params
   const encoder = new JSONEncoder();
-  encoder.pushObject("params");
+  encoder.pushObject(null);
   encoder.setString("request_type", "view_account");
   encoder.setString("account_id", input.accountId);
   encoder.setString("finality", "optimistic");
   encoder.popObject();
-  const params: JSON.Obj = <JSON.Obj>JSON.parse(encoder.toString());
+  const params: JSON.Obj = <JSON.Obj>JSON.parse(encoder.serialize());
   // send rpc
   const provider: JsonRpcProvider = new JsonRpcProvider(null);
   const result: JSON.Obj = provider.sendJsonRpc("query", params);
@@ -64,14 +64,14 @@ export function accountState(input: Input_accountState): Near_AccountView {
     amount: result.getString("amount")!.valueOf(),
     locked: result.getString("locked")!.valueOf(),
     codeHash: result.getString("code_hash")!.valueOf(),
-    storageUsage: BigInt.fromString(result.getNum("storage_usage")!.valueOf().toString()),
-    storagePaidAt: BigInt.fromString(result.getNum("storage_paid_at")!.valueOf().toString()),
-    blockHeight: BigInt.fromString(result.getNum("blockHeight")!.valueOf().toString()),
-    blockHash: result.getString("blockHash")!.valueOf(),
+    storageUsage: BigInt.fromString(result.getValue("storage_usage")!.stringify()),
+    storagePaidAt: BigInt.fromString(result.getValue("storage_paid_at")!.stringify()),
+    blockHeight: BigInt.fromString(result.getValue("block_height")!.stringify()),
+    blockHash: result.getString("block_hash")!.valueOf(),
   }
 }
 
-export function findAccessKey(input: Input_findAccessKey): Near_AccessKeyInfo | null {
+export function findAccessKey(input: Input_findAccessKey): AccessKeyInfo | null {
   // get public key
   const publicKey: Near_PublicKey | null  = getPublicKey({ accountId: input.accountId });
   if (publicKey == null) {
@@ -79,13 +79,13 @@ export function findAccessKey(input: Input_findAccessKey): Near_AccessKeyInfo | 
   }
   // prepare params
   const encoder = new JSONEncoder();
-  encoder.pushObject("params");
+  encoder.pushObject(null);
   encoder.setString("request_type", "view_access_key");
   encoder.setString("account_id", input.accountId);
   encoder.setString("public_key", publicKeyToStr(publicKey));
   encoder.setString("finality", "optimistic");
   encoder.popObject();
-  const params: JSON.Obj = <JSON.Obj>JSON.parse(encoder.toString());
+  const params: JSON.Obj = <JSON.Obj>JSON.parse(encoder.serialize());
   // send rpc
   const provider: JsonRpcProvider = new JsonRpcProvider(null);
   const result: JSON.Obj = provider.sendJsonRpc("query", params);
@@ -108,13 +108,13 @@ export function createTransaction(input: Input_createTransaction): Near_Transact
     });
   }
   const signerId: string = input.signerId!
-  const accessKeyInfo: Near_AccessKeyInfo | null  = findAccessKey({ accountId: signerId });
+  const accessKeyInfo: AccessKeyInfo | null  = findAccessKey({ accountId: signerId });
   if (accessKeyInfo == null) {
     throw new Error(
       `Can not sign transactions for account ${signerId} on requested network, no matching key pair found in signer.`
     );
   }
-  const accessKey: Near_AccessKey = accessKeyInfo.accessKey;
+  const accessKey: AccessKey = accessKeyInfo.accessKey;
   const publicKey: Near_PublicKey = accessKeyInfo.publicKey;
   const block: BlockResult = getBlock({
     blockQuery: {

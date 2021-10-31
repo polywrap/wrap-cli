@@ -24,7 +24,7 @@ type Query {
 
   findAccessKey(
     accountId: String!
-  ): Near_AccessKeyInfo
+  ): AccessKeyInfo
 
   getPublicKey(
     accountId: String!
@@ -78,7 +78,7 @@ type BlockHeader {
   last_ds_final_block: String!
   next_bp_hash: String!
   block_merkle_root: String!
-  approvals: [String!]!
+  approvals: [String]!
   signature: String!
   latest_protocol_version: BigInt!
 }
@@ -108,4 +108,24 @@ type BlockResult {
   author: String!
   header: BlockHeader!
   chunks: [Chunk!]!
+}
+
+# TODO: switch to using Near_AccessKeyInfo and Near_* types after union types are supported
+# Access key permissions determine how an account is allow to interact with a contract
+type AccessKeyPermission {
+  isFullAccess: Boolean!
+  receiverId: String
+  methodNames: [String!]
+  allowance: BigInt
+}
+
+type AccessKey {
+  nonce: BigInt!
+  permission: AccessKeyPermission!
+}
+
+# Access keys contain access key permissions, which determine how an account is allowed to interact with a contract
+type AccessKeyInfo {
+  publicKey: Near_PublicKey!
+  accessKey: AccessKey!
 }

@@ -11,6 +11,7 @@ import {
   Action,
   AccessKeyInfo,
   PublicKey,
+  Json,
 } from "./w3";
 import {
   fromAction,
@@ -105,13 +106,13 @@ export class NearPlugin extends Plugin {
   public async accountState(
     input: Query.Input_accountState // eslint-disable-line @typescript-eslint/no-unused-vars
   ): Promise<AccountView> {
-    const state: JsonAccountState = await this.sendJsonRpc<JsonAccountState>({
+    const state: JsonAccountState = await this._sendJsonRpc<JsonAccountState>({
       method: "query",
-      params: JSON.stringify({
+      params: {
         request_type: "view_account", // eslint-disable-line @typescript-eslint/naming-convention
         account_id: input.accountId, // eslint-disable-line @typescript-eslint/naming-convention
         finality: "optimistic",
-      }),
+      },
     });
     return parseJsonAccountState(state);
   }
@@ -136,14 +137,14 @@ export class NearPlugin extends Plugin {
       return null;
     }
     try {
-      const jsonAccessKey = await this.sendJsonRpc<JsonAccessKey>({
+      const jsonAccessKey = await this._sendJsonRpc<JsonAccessKey>({
         method: "query",
-        params: JSON.stringify({
+        params: {
           request_type: "view_access_key", // eslint-disable-line @typescript-eslint/naming-convention
           account_id: accountId, // eslint-disable-line @typescript-eslint/naming-convention
           public_key: publicKeyToStr(publicKey), // eslint-disable-line @typescript-eslint/naming-convention
           finality: "optimistic",
-        }),
+        },
       });
 
       return {
@@ -201,26 +202,11 @@ export class NearPlugin extends Plugin {
     return { hash, signedTx };
   }
 
-  // TODO: do generics work here for the polywrapper or do I need to specify type as JSON?
-  public async sendJsonRpc<T>(input: Mutation.Input_sendJsonRpc): Promise<T> {
-    const { method, params } = input;
-    const request = {
-      method,
-      params: JSON.parse(params),
-      id: this._nextId++,
-      jsonrpc: "2.0",
-    };
-    const { result, error } = await nearApi.utils.web.fetchJson(
-      this._config.nodeUrl,
-      JSON.stringify(request)
-    );
-    if (error) {
-      throw Error(`[${error.code}] ${error.message}: ${error.data}`);
-    }
-    if (!result) {
-      throw Error(`Exceeded attempts for request to ${method}.`);
-    }
-    return result;
+  public async sendJsonRpc(input: Mutation.Input_sendJsonRpc): Promise<Json> {
+    const method = input.method;
+    const params = JSON.parse(input.params);
+    const result = await this._sendJsonRpc({ method, params });
+    return JSON.stringify(result);
   }
 
   public async requestSignTransactions(
@@ -254,9 +240,9 @@ export class NearPlugin extends Plugin {
     const { signedTx } = input;
     const nearSignedTx = fromSignedTx(signedTx);
     const bytes = nearSignedTx.encode();
-    return this.sendJsonRpc({
+    return this._sendJsonRpc({
       method: "broadcast_tx_async",
-      params: JSON.stringify([Buffer.from(bytes).toString("base64")]),
+      params: [Buffer.from(bytes).toString("base64")],
     });
   }
 
@@ -359,6 +345,27 @@ export class NearPlugin extends Plugin {
       blockHash: nearApi.utils.serialize.base_decode(blockHash),
       actions: actions,
     };
+  }
+
+  private async _sendJsonRpc<T>(input: { method: string, params: unknown }): Promise<T> {
+    const { method, params } = input;
+    const request = {
+      method,
+      params: params,
+      id: this._nextId++,
+      jsonrpc: "2.0",
+    };
+    const { result, error } = await nearApi.utils.web.fetchJson(
+      this._config.nodeUrl,
+      JSON.stringify(request)
+    );
+    if (error) {
+      throw Error(`[${error.code}] ${error.message}: ${error.data}`);
+    }
+    if (!result) {
+      throw Error(`Exceeded attempts for request to ${method}.`);
+    }
+    return result;
   }
 }
 
