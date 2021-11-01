@@ -54,6 +54,10 @@ export function extendCommonTypes(
 
   return {
     enter: {
+      TypeInfo: (typeinfo: TypeInfo) => ({
+        ...typeinfo,
+        __commonModule: true,
+      }),
       GenericDefinition: (def: GenericDefinition) => ({
         ...def,
         ...commonExtension(def.type),
