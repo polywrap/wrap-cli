@@ -809,15 +809,15 @@ async function resolveLocalImports(
     for (const importType of Object.keys(typesToImport)) {
       if (isKind(typesToImport[importType], DefinitionKind.ImportedObject)) {
         if (
-          typeInfo.importedObjectTypes.findIndex((def) => def.type === importType) ===
-          -1
+          typeInfo.importedObjectTypes.findIndex(
+            (def) => def.type === importType
+          ) === -1
         ) {
           typeInfo.importedObjectTypes.push(
             typesToImport[importType] as ImportedObjectDefinition
           );
         }
-      }
-      else if (isKind(typesToImport[importType], DefinitionKind.Object)) {
+      } else if (isKind(typesToImport[importType], DefinitionKind.Object)) {
         if (
           typeInfo.objectTypes.findIndex((def) => def.type === importType) ===
           -1
@@ -826,10 +826,13 @@ async function resolveLocalImports(
             typesToImport[importType] as ObjectDefinition
           );
         }
-      } else if (isKind(typesToImport[importType], DefinitionKind.ImportedEnum)) {
+      } else if (
+        isKind(typesToImport[importType], DefinitionKind.ImportedEnum)
+      ) {
         if (
-          typeInfo.importedEnumTypes.findIndex((def) => def.type === importType) ===
-          -1
+          typeInfo.importedEnumTypes.findIndex(
+            (def) => def.type === importType
+          ) === -1
         ) {
           typeInfo.importedEnumTypes.push(
             typesToImport[importType] as ImportedEnumDefinition
