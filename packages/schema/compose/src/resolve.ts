@@ -37,6 +37,9 @@ import {
   ObjectRef,
   EnumRef,
   InvokableModules,
+  createImportedObjectDefinition,
+  createImportedEnumDefinition,
+  createImportedQueryDefinition,
 } from "@web3api/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -549,14 +552,30 @@ async function resolveExternalImports(
         | ObjectDefinition
         | EnumDefinition
       )[] = [];
-      let visitorFunc: Function;
-      let trueTypeKind: DefinitionKind;
+      let visitorFunc: Function | undefined;
+      let trueType:
+        | ImportedQueryDefinition
+        | ImportedObjectDefinition
+        | ImportedEnumDefinition
+        | undefined;
 
       // If it's a query type
       if (importedType === "Query" || importedType === "Mutation") {
         extTypes = extTypeInfo.queryTypes;
         visitorFunc = visitQueryDefinition;
-        trueTypeKind = DefinitionKind.ImportedQuery;
+        const queryIdx = extTypeInfo.queryTypes.findIndex(
+          (def) => def.type === importedType
+        );
+        const type = extTypeInfo.queryTypes[queryIdx];
+        trueType = createImportedQueryDefinition({
+          ...type,
+          type: appendNamespace(namespace, importedType),
+          required: undefined,
+          uri,
+          nativeType: type.type,
+          namespace,
+          capabilities: [],
+        });
       } else if (
         importedType.endsWith("_Query") ||
         importedType.endsWith("_Mutation")
@@ -565,46 +584,85 @@ async function resolveExternalImports(
           `Cannot import an import's imported query type. Tried to import ${importedType} from ${uri}.`
         );
       } else {
-        if (
-          extTypeInfo.objectTypes.findIndex(
-            (def) => def.type === importedType
-          ) > -1
-        ) {
+        const objIdx = extTypeInfo.objectTypes.findIndex(
+          (def) => def.type === importedType
+        );
+        const impObjIdx = objIdx === -1 && extTypeInfo.importedObjectTypes.findIndex(
+          (def) => def.type === importedType
+        );
+        const enumIdx = impObjIdx === -1 && extTypeInfo.enumTypes.findIndex(
+          (def) => def.type === importedType
+        );
+        const impEnumIdx = enumIdx === -1 && extTypeInfo.importedEnumTypes.findIndex(
+          (def) => def.type === importedType
+        );
+
+
+        if (objIdx > -1) {
           extTypes = extTypeInfo.objectTypes;
           visitorFunc = visitObjectDefinition;
-          trueTypeKind = DefinitionKind.ImportedObject;
-        } else if (
-          extTypeInfo.importedObjectTypes.findIndex(
-            (def) => def.type === importedType
-          ) > -1
-        ) {
+          const type = extTypeInfo.objectTypes[objIdx];
+          trueType = createImportedObjectDefinition({
+            ...type,
+            type: appendNamespace(namespace, importedType),
+            name: undefined,
+            required: undefined,
+            uri,
+            nativeType: type.type,
+            namespace,
+          });
+        } else if (impObjIdx && impObjIdx > -1) {
           extTypes = extTypeInfo.importedObjectTypes;
           visitorFunc = visitObjectDefinition;
-          trueTypeKind = DefinitionKind.ImportedObject;
-        } else if (
-          extTypeInfo.importedEnumTypes.findIndex(
-            (def) => def.type === importedType
-          ) > -1
-        ) {
-          extTypes = extTypeInfo.importedEnumTypes;
-          visitorFunc = visitEnumDefinition;
-          trueTypeKind = DefinitionKind.ImportedEnum;
-        } else {
+          const type = extTypeInfo.importedObjectTypes[impObjIdx];
+          trueType = createImportedObjectDefinition({
+            ...type,
+            type: appendNamespace(namespace, importedType),
+            name: undefined,
+            required: undefined,
+            uri,
+            nativeType: type.type,
+            namespace,
+          });
+        } else if (enumIdx && enumIdx > -1) {
           extTypes = extTypeInfo.enumTypes;
           visitorFunc = visitEnumDefinition;
-          trueTypeKind = DefinitionKind.ImportedEnum;
+          const type = extTypeInfo.enumTypes[enumIdx];
+          trueType = createImportedEnumDefinition({
+            ...type,
+            type: appendNamespace(namespace, importedType),
+            name: undefined,
+            required: undefined,
+            uri,
+            nativeType: type.type,
+            namespace,
+          });
+        } else if (impEnumIdx && impEnumIdx > -1) {
+          extTypes = extTypeInfo.importedEnumTypes;
+          visitorFunc = visitEnumDefinition;
+          const type = extTypeInfo.importedEnumTypes[impEnumIdx];
+          trueType = createImportedEnumDefinition({
+            ...type,
+            type: appendNamespace(namespace, importedType),
+            name: undefined,
+            required: undefined,
+            uri,
+            nativeType: type.type,
+            namespace,
+          });
         }
       }
 
-      // Find the type's definition in the schema's TypeInfo
-      const type = extTypes.find((type) => type.type === importedType);
-
-      if (!type) {
+      if (!trueType) {
         throw Error(
           `Cannot find type "${importedType}" in the schema at ${uri}.\nFound: [ ${extTypes.map(
             (type) => type.type + " "
           )}]`
         );
+      }
+
+      if (!visitorFunc) {
+        throw Error(`visitorFunc has not been set, this should never happen.`);
       }
 
       const namespacedType = appendNamespace(namespace, importedType);
@@ -616,20 +674,13 @@ async function resolveExternalImports(
 
       // Append the base type to our TypeInfo
       typesToImport[namespacedType] = {
-        ...type,
-        name: null,
-        required: null,
-        type: namespacedType,
-        kind: trueTypeKind,
-        namespace,
+        ...trueType,
         __namespaced: true,
-        uri,
-        nativeType: type.type,
       };
 
       // Extract all object dependencies
       visitorFunc(
-        type,
+        trueType,
         extractObjectImportDependencies(
           typesToImport,
           extTypeInfo,

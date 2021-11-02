@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { ReadDecoder } from "./msgpack";
+import { ReadDecoder, Read } from "./msgpack";
 
 @external("w3", "__w3_getImplementations")
 export declare function __w3_getImplementations(
@@ -40,7 +40,7 @@ export function w3_getImplementations(
   );
 
   const result: string[] = decoder.readArray(
-    (reader: ReadDecoder): string => {
+    (reader: Read): string => {
       return reader.readString();
     }
   );
