@@ -142,7 +142,6 @@ export default {
         let variables: Record<string, unknown> = {};
 
         if (task.variables) {
-
           const resolveObjectConstants = (
             constants: Record<string, unknown>
           ): Record<string, unknown> => {
@@ -155,17 +154,13 @@ export default {
             return output;
           };
 
-          const resolveArrayConstants = (
-            arr: unknown[]
-          ): unknown[] => {
+          const resolveArrayConstants = (arr: unknown[]): unknown[] => {
             return arr.map((item) => {
               return resolveConstant(item);
             });
           };
 
-          const resolveConstant = (
-            constant: unknown
-          ): unknown => {
+          const resolveConstant = (constant: unknown): unknown => {
             if (typeof constant === "string" && constant[0] === "$") {
               return constants[constant.replace("$", "")];
             } else if (Array.isArray(constant)) {
@@ -177,7 +172,7 @@ export default {
             } else {
               return constant;
             }
-          }
+          };
 
           variables = resolveObjectConstants(task.variables);
         }
