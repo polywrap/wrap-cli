@@ -31,36 +31,40 @@ COPY web3api.yaml .
 COPY web3api.build.yaml .
 
 # Copy all source files
-COPY mutation mutation
 COPY query query
+COPY mutation mutation
 
 # Install the toml-cli
 RUN cargo install toml-cli
 
 # Link any local packages
 RUN PACKAGE_NAME=polywrap-wasm-rs; \
-    toml set ./mutation/Cargo.toml dependencies.$PACKAGE_NAME.path /linked-packages/$PACKAGE_NAME > ./mutation/Cargo-local.toml && \
-    rm -rf ./mutation/Cargo.toml && \
-    mv ./mutation/Cargo-local.toml ./mutation/Cargo.toml && \
     toml set ./query/Cargo.toml dependencies.$PACKAGE_NAME.path /linked-packages/$PACKAGE_NAME > ./query/Cargo-local.toml && \
     rm -rf ./query/Cargo.toml && \
     mv ./query/Cargo-local.toml ./query/Cargo.toml && \
+    toml set ./mutation/Cargo.toml dependencies.$PACKAGE_NAME.path /linked-packages/$PACKAGE_NAME > ./mutation/Cargo-local.toml && \
+    rm -rf ./mutation/Cargo.toml && \
+    mv ./mutation/Cargo-local.toml ./mutation/Cargo.toml && \
     true
 
 # Remove any Cargo.lock files
-RUN rm -rf mutation/Cargo.lock
 RUN rm -rf query/Cargo.lock
+RUN rm -rf mutation/Cargo.lock
 
-# Build the module at mutation
-RUN cargo +nightly build --manifest-path ./mutation/Cargo.toml \
-    --release --target wasm32-unknown-unknown
 # Build the module at query
 RUN cargo +nightly build --manifest-path ./query/Cargo.toml \
     --release --target wasm32-unknown-unknown
+# RUN cargo rustc --manifest-path ./query/Cargo.toml \
+#     --release --target wasm32-unknown-unknown -- --crate-type=cdylib
+# Build the module at mutation
+RUN cargo +nightly build --manifest-path ./mutation/Cargo.toml \
+    --release --target wasm32-unknown-unknown
+# RUN cargo rustc --manifest-path ./mutation/Cargo.toml \
+#     --release --target wasm32-unknown-unknown -- --crate-type=cdylib
 
 # Make the build directory
 RUN mkdir ./build
 
 # Use wasm-opt to perform the "asyncify" post-processing step over all modules
-RUN wasm-opt --asyncify -O2 ./mutation/target/wasm32-unknown-unknown/release/mutation.wasm -o ./build/mutation.wasm
 RUN wasm-opt --asyncify -O2 ./query/target/wasm32-unknown-unknown/release/query.wasm -o ./build/query.wasm
+RUN wasm-opt --asyncify -O2 ./mutation/target/wasm32-unknown-unknown/release/mutation.wasm -o ./build/mutation.wasm

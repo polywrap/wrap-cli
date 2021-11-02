@@ -16,7 +16,7 @@ polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../..
 query = { version = "0.1.0", path = "../query" }
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "lib"]
 
 [profile.release]
 opt-level = 'z'
