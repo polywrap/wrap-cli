@@ -73,6 +73,8 @@ export const toWasmInit: MustacheFunction = () => {
       default:
         if (type.includes("Enum_")) {
           return "0";
+        } else if (type.includes("Union_")) {
+          return `null`;
         } else {
           return `new Types.${type}()`;
         }
@@ -95,8 +97,6 @@ export const toWasm: MustacheFunction = () => {
     if (type[0] === "[") {
       return toWasmArray(type, nullable);
     }
-
-    console.log(type);
 
     switch (type) {
       case "Int":

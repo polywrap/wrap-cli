@@ -57,6 +57,18 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   writer.writeNullableInt32(type.{{name}});
   {{/required}}
   {{/enum}}
+  {{#union}}
+  {{#required}}
+  Types.{{type}}.write(writer, type.{{name}});
+  {{/required}}
+  {{^required}}
+  if (type.{{name}}) {
+    Types.{{type}}.write(writer, type.{{name}} as Types.{{type}});
+  } else {
+    writer.writeNil();
+  }
+  {{/required}}
+  {{/union}}
   writer.context().pop();
   {{/properties}}
 }
@@ -107,6 +119,10 @@ export function read{{type}}(reader: Read): {{type}} {
       {{> deserialize_enum}}
       _{{name}} = value;
       {{/enum}}
+      {{#union}}
+      {{> deserialize_union }}
+      _{{name}} = union;
+      {{/union}}
       {{#object}}
       {{> deserialize_object }}
       _{{name}} = object;

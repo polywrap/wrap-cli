@@ -44,7 +44,7 @@ export type {{type}} = {{type}}Enum | {{type}}String;
 
 {{/enumTypes}}
 {{#unionTypes}}
-export type {{type}} = 
+export type {{type}} =
   {{#memberTypes}}
   | {{type}}
   {{/memberTypes}}
@@ -79,7 +79,7 @@ export type {{type}} = {{type}}Enum | {{type}}String;
 {{/importedEnumTypes}}
 {{#importedUnionTypes}}
 /* URI: "{{uri}}" */
-export type {{type}} = 
+export type {{type}} =
   {{#memberTypes}}
   | {{type}}
   {{/memberTypes}}

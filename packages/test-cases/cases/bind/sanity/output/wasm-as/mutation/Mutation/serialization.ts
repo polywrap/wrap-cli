@@ -18,6 +18,10 @@ export class Input_mutationMethod {
   optEnum: Nullable<Types.CustomEnum>;
   enumArray: Array<Types.CustomEnum>;
   optEnumArray: Array<Nullable<Types.CustomEnum>> | null;
+  union: Types.CustomUnion;
+  optUnion: Types.CustomUnion | null;
+  unionArray: Array<Types.CustomUnion>;
+  optUnionArray: Array<Types.CustomUnion | null> | null;
 }
 
 export function deserializemutationMethodArgs(argsBuf: ArrayBuffer): Input_mutationMethod {
@@ -34,6 +38,12 @@ export function deserializemutationMethodArgs(argsBuf: ArrayBuffer): Input_mutat
   let _enumArray: Array<Types.CustomEnum> = [];
   let _enumArraySet: bool = false;
   let _optEnumArray: Array<Nullable<Types.CustomEnum>> | null = null;
+  let _union: Types.CustomUnion;
+  let _unionSet: bool = false;
+  let _optUnion: Types.CustomUnion | null = null;
+  let _unionArray: Array<Types.CustomUnion> = [];
+  let _unionArraySet: bool = false;
+  let _optUnionArray: Array<Types.CustomUnion | null> | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -120,6 +130,41 @@ export function deserializemutationMethodArgs(argsBuf: ArrayBuffer): Input_mutat
         return value;
       });
       reader.context().pop();
+    } else if (field == "union") {
+      reader.context().push(field, "Types.CustomUnion", "type found, reading property");
+
+      const value = Types.CustomUnion.read(reader);
+
+      _union = value;
+      _unionSet = true;
+      reader.context().pop();
+    } else if (field == "optUnion") {
+      reader.context().push(field, "Types.CustomUnion | null", "type found, reading property");
+
+      let union: Types.CustomUnion | null = null;
+      if (!reader.isNextNil()) {
+        union = Types.CustomUnion.read(reader);
+      }
+      _optUnion = union;
+      reader.context().pop();
+    } else if (field == "unionArray") {
+      reader.context().push(field, "Array<Types.CustomUnion>", "type found, reading property");
+      _unionArray = reader.readArray((reader: Read): Types.CustomUnion => {
+        const union = Types.CustomUnion.read(reader);
+        return union;
+      });
+      _unionArraySet = true;
+      reader.context().pop();
+    } else if (field == "optUnionArray") {
+      reader.context().push(field, "Array<Types.CustomUnion | null> | null", "type found, reading property");
+      _optUnionArray = reader.readNullableArray((reader: Read): Types.CustomUnion | null => {
+        let union: Types.CustomUnion | null = null;
+        if (!reader.isNextNil()) {
+          union = Types.CustomUnion.read(reader);
+        }
+        return union;
+      });
+      reader.context().pop();
     }
     reader.context().pop();
   }
@@ -140,7 +185,11 @@ export function deserializemutationMethodArgs(argsBuf: ArrayBuffer): Input_mutat
     en: _en,
     optEnum: _optEnum,
     enumArray: _enumArray,
-    optEnumArray: _optEnumArray
+    optEnumArray: _optEnumArray,
+    union: _union,
+    optUnion: _optUnion,
+    unionArray: _unionArray,
+    optUnionArray: _optUnionArray
   };
 }
 

@@ -524,6 +524,6 @@ export function createImportedUnionDefinition(args: {
     namespace: args.namespace,
     nativeType: args.nativeType,
     comment: args.comment,
-    kind: DefinitionKind.ImportedObject,
+    kind: DefinitionKind.ImportedUnion,
   };
 }

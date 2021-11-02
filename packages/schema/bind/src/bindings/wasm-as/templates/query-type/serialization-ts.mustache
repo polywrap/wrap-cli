@@ -61,6 +61,10 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
       {{> deserialize_enum}}
       _{{name}} = value;
       {{/enum}}
+      {{#union}}
+      {{> deserialize_union}}
+      _{{name}} = union;
+      {{/union}}
       {{#object}}
       {{> deserialize_object}}
       _{{name}} = object;
@@ -125,6 +129,18 @@ export function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}
   writer.writeNullableInt32(result);
   {{/required}}
   {{/enum}}
+  {{#union}}
+  {{#required}}
+  Types.{{type}}.write(writer, result);
+  {{/required}}
+  {{^required}}
+  if (result) {
+    Types.{{type}}.write(writer, result as Types.{{type}});
+  } else {
+    writer.writeNil();
+  }
+  {{/required}}
+  {{/union}}
   {{#object}}
   {{#required}}
   Types.{{type}}.write(writer, result);

@@ -54,6 +54,18 @@ export function write{{name}}Args(
   writer.writeNullableInt32(input.{{name}});
   {{/required}}
   {{/enum}}
+  {{#union}}
+  {{#required}}
+  Types.{{type}}.write(writer, input.{{name}});
+  {{/required}}
+  {{^required}}
+  if (input.{{name}}) {
+    Types.{{type}}.write(writer, input.{{name}} as Types.{{type}});
+  } else {
+    writer.writeNil();
+  }
+  {{/required}}
+  {{/union}}
   {{#object}}
   {{#required}}
   Types.{{type}}.write(writer, input.{{name}});
@@ -88,6 +100,10 @@ export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#return}}{{#to
   {{> deserialize_enum}}
   const res: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} =  value;
   {{/enum}}
+  {{#union}}
+  {{> deserialize_union}}
+  const res: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} =  union;
+  {{/union}}
   {{#object}}
   {{> deserialize_object}}
   const res: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} =  object;

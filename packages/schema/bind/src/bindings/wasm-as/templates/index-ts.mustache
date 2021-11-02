@@ -29,6 +29,10 @@ export {
   sanitize{{type}}Value
 } from "./{{type}}";
 {{/enumTypes}}
+{{#unionTypes}}
+export {
+  {{type}},
+{{/unionTypes}}
 
 {{#importedQueryTypes}}
 export { {{type}} } from "./imported/{{type}}";
@@ -44,3 +48,8 @@ export {
   sanitize{{type}}Value
 } from "./imported/{{type}}";
 {{/importedEnumTypes}}
+{{#importedUnionTypes}}
+export {
+  {{type}},
+} from "./imported/{{type}}";
+{{/importedUnionTypes}}

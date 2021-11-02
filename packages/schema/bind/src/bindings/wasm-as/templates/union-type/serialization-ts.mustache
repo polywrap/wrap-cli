@@ -1,0 +1,84 @@
+{{^__commonImport}}
+import {
+  Read,
+  ReadDecoder,
+  Write,
+  WriteSizer,
+  WriteEncoder,
+  Nullable,
+  BigInt,
+  JSON,
+  Context
+} from "@web3api/wasm-as";
+import { {{type}} } from "./";
+import * as Types from "..";
+
+export function serialize{{type}}(type: {{type}}): ArrayBuffer {
+  const sizerContext: Context = new Context("Serializing (sizing) union-type: {{type}}");
+  const sizer = new WriteSizer(sizerContext);
+  write{{type}}(sizer, type);
+  const buffer = new ArrayBuffer(sizer.length);
+  const encoderContext: Context = new Context("Serializing (encoding) union-type: {{type}}");
+  const encoder = new WriteEncoder(buffer, encoderContext);
+  write{{type}}(encoder, type);
+  return buffer;
+}
+
+export function write{{type}}(writer: Write, type: {{type}}): void {
+  writer.writeMapLength({{memberTypes.length}});
+  {{#memberTypes}}
+  writer.context().push("{{type}}", "Types.{{type}} | null", "writing property");
+  writer.writeString("{{type}}");
+
+  if(type.is{{type}}) {
+    Types.{{type}}.write(writer, type.{{type}})
+  } else {
+    writer.writeNil();
+  }
+
+  writer.context().pop();
+  {{/memberTypes}}
+}
+
+export function deserialize{{type}}(buffer: ArrayBuffer): {{type}} {
+  const context: Context = new Context("Deserializing union-type {{type}}");
+  const reader = new ReadDecoder(buffer, context);
+  return read{{type}}(reader);
+}
+
+export function read{{type}}(reader: Read): {{type}} {
+  let numFields = reader.readMapLength();
+
+  {{#memberTypes}}
+  let {{type}}: Types.{{type}} | null = null;
+  {{/memberTypes}}
+
+  while (numFields > 0) {
+    numFields--;
+    const field = reader.readString();
+
+    reader.context().push(field, "unknown", "searching for property type");
+    {{#memberTypes}}
+    {{^first}}else {{/first}}if (field == "{{type}}") {
+      reader.context().push(field, "Types.{{type}} | null", "type found, reading property");
+      
+      if (!reader.isNextNil()) {
+        {{type}} = Types.{{type}}.read(reader);
+      }
+    }
+    {{/memberTypes}}
+    reader.context().pop();
+  }
+
+  const definedMember = 
+  {{#memberTypes}}
+    {{^first}}|| {{/first}} {{type}}
+  {{/memberTypes}}
+  
+  if(!definedMember) {
+    throw new Error(`All serialized member types for {{type}} are null`)
+  }
+
+  return {{type}}.create(definedMember)
+}
+{{/__commonImport}}

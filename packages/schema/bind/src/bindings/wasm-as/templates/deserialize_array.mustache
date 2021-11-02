@@ -10,6 +10,10 @@ return reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): 
 {{> deserialize_enum}}
 return value;
 {{/enum}}
+{{#union}}
+{{> deserialize_union}}
+return value;
+{{/union}}
 {{#object}}
 {{> deserialize_object}}
 return object;

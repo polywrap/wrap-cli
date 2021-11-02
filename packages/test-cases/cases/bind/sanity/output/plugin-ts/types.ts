@@ -130,6 +130,7 @@ export type TestImport_EnumString =
 
 export type TestImport_Enum = TestImport_EnumEnum | TestImport_EnumString;
 
+/* URI: "testimport.uri.eth" */
 export type TestImport_Union =
   | TestImport_AnotherObject
   | TestImport_YetAnotherObject

@@ -132,11 +132,6 @@ type AnotherType {
   circular: CustomType
 }
 
-enum CustomEnum {
-  STRING
-  BYTES
-}
-
 type AnotherObject {
   prop: String!
 }
@@ -145,7 +140,14 @@ type YetAnotherObject {
   prop: Boolean!
 }
 
-union CustomUnion = AnotherObject | YetAnotherObject
+enum CustomEnum {
+  STRING
+  BYTES
+}
+
+union CustomUnion =
+| AnotherObject
+| YetAnotherObject
 
 ### Imported Queries START ###
 

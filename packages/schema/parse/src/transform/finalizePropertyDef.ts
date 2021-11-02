@@ -165,11 +165,6 @@ function resolveObjectOrUnionOrEnumKind(
 
     return property.union;
   } else {
-    console.log(JSON.stringify(property, null, 2));
-    console.log("----------------");
-    console.log(unionCustomType);
-    console.log("----------------");
-    console.log(JSON.stringify(typeInfo, null, 2));
     throw new Error(
       `Unsupported type ${property.unresolvedObjectOrUnionOrEnum.type}`
     );

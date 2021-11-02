@@ -24,6 +24,10 @@ export class Input_importedMethod {
   optEnum: Nullable<Types.TestImport_Enum>;
   enumArray: Array<Types.TestImport_Enum>;
   optEnumArray: Array<Nullable<Types.TestImport_Enum>> | null;
+  union: Types.TestImport_Union;
+  optUnion: Types.TestImport_Union | null;
+  unionArray: Array<Types.TestImport_Union>;
+  optUnionArray: Array<Types.TestImport_Union | null> | null;
 }
 
 export function serializeimportedMethodArgs(input: Input_importedMethod): ArrayBuffer {
@@ -114,6 +118,35 @@ export function writeimportedMethodArgs(
     writer.writeNullableInt32(item);
   });
   writer.context().pop();
+  writer.context().push("union", "Types.TestImport_Union", "writing property");
+  writer.writeString("union");
+  Types.TestImport_Union.write(writer, input.union);
+  writer.context().pop();
+  writer.context().push("optUnion", "Types.TestImport_Union | null", "writing property");
+  writer.writeString("optUnion");
+  
+  if(input.optUnion) {
+    Types.TestImport_Union.write(writer, input.optUnion);
+  } else {
+    writer.writeNil()
+  }
+
+  writer.context().pop();
+  writer.context().push("unionArray", "Array<Types.TestImport_Union>", "writing property");
+  writer.writeString("unionArray");
+  writer.writeArray(input.unionArray, (writer: Write, item: Types.TestImport_Union): void => {
+    Types.TestImport_Union.write(writer, item);
+  });
+  writer.context().pop();
+  writer.context().push("optUnionArray", "Array<Types.TestImport_Union | null> | null", "writing property");
+  writer.writeString("optUnionArray");
+  writer.writeNullableArray(input.optUnionArray, (writer: Write, item: Types.TestImport_Union | null): void => {
+    if(item) {
+      Types.TestImport_Union.write(writer, item);
+    } else {
+      writer.writeNil()
+    }
+  });
 }
 
 export function deserializeimportedMethodResult(buffer: ArrayBuffer): Types.TestImport_Object | null {

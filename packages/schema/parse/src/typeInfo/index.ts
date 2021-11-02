@@ -64,6 +64,10 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       tryInsert(combined.enumTypes, enumType);
     }
 
+    for (const unionType of typeInfo.unionTypes) {
+      tryInsert(combined.unionTypes, unionType);
+    }
+
     for (const objectType of typeInfo.objectTypes) {
       tryInsert(combined.objectTypes, objectType);
     }
@@ -90,6 +94,10 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
 
     for (const importedEnumType of typeInfo.importedEnumTypes) {
       tryInsert(combined.importedEnumTypes, importedEnumType);
+    }
+
+    for (const importedUnionType of typeInfo.importedUnionTypes) {
+      tryInsert(combined.importedUnionTypes, importedUnionType);
     }
   }
 

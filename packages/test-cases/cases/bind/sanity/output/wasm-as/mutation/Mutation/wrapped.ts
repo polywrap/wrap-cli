@@ -17,7 +17,11 @@ export function mutationMethodWrapped(argsBuf: ArrayBuffer): ArrayBuffer {
     en: args.en,
     optEnum: args.optEnum,
     enumArray: args.enumArray,
-    optEnumArray: args.optEnumArray
+    optEnumArray: args.optEnumArray,
+    union: args.union,
+    optUnion: args.optUnion,
+    unionArray: args.unionArray,
+    optUnionArray: args.optUnionArray
   });
   return serializemutationMethodResult(result);
 }

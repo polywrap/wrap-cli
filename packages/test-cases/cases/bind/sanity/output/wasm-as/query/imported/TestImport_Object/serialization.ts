@@ -108,12 +108,12 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
   let _enumArray: Array<Types.TestImport_Enum> = [];
   let _enumArraySet: bool = false;
   let _optEnumArray: Array<Nullable<Types.TestImport_Enum>> | null = null;
-  let _union: Types.TestImport_Union = 0;
+  let _union: Types.TestImport_Union = null;
   let _unionSet: bool = false;
-  let _optUnion: Nullable<Types.TestImport_Union> = new Nullable<Types.TestImport_Union>();
+  let _optUnion: Types.TestImport_Union = null;
   let _unionArray: Array<Types.TestImport_Union> = [];
   let _unionArraySet: bool = false;
-  let _optUnionArray: Array<Nullable<Types.TestImport_Union>> | null = null;
+  let _optUnionArray: Array<Types.TestImport_Union | null> | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -228,71 +228,37 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
     }
     else if (field == "union") {
       reader.context().push(field, "Types.TestImport_Union", "type found, reading property");
-      let value: Types.TestImport_Union;
-      if (reader.isNextString()) {
-        value = Types.getTestImport_UnionValue(reader.readString());
-      } else {
-        value = reader.readInt32();
-        Types.sanitizeTestImport_UnionValue(value);
-      }
+
+      const value = Types.TestImport_Union.read(reader);
+
       _union = value;
       _unionSet = true;
       reader.context().pop();
-    }
-    else if (field == "optUnion") {
-      reader.context().push(field, "Nullable<Types.TestImport_Union>", "type found, reading property");
-      let value: Nullable<Types.TestImport_Union>;
+    } else if (field == "optUnion") {
+      reader.context().push(field, "Types.TestImport_Union | null", "type found, reading property");
+
+      let union: Types.TestImport_Union | null = null;
       if (!reader.isNextNil()) {
-        if (reader.isNextString()) {
-          value = Nullable.fromValue(
-            Types.getTestImport_UnionValue(reader.readString())
-          );
-        } else {
-          value = Nullable.fromValue(
-            reader.readInt32()
-          );
-          Types.sanitizeTestImport_UnionValue(value.value);
-        }
-      } else {
-        value = Nullable.fromNull<Types.TestImport_Union>();
+        union = Types.TestImport_Union.read(reader);
       }
-      _optUnion = value;
+      _optUnion = union;
       reader.context().pop();
-    }
-    else if (field == "unionArray") {
+    } else if (field == "unionArray") {
       reader.context().push(field, "Array<Types.TestImport_Union>", "type found, reading property");
       _unionArray = reader.readArray((reader: Read): Types.TestImport_Union => {
-        let value: Types.TestImport_Union;
-        if (reader.isNextString()) {
-          value = Types.getTestImport_UnionValue(reader.readString());
-        } else {
-          value = reader.readInt32();
-          Types.sanitizeTestImport_UnionValue(value);
-        }
-        return value;
+        const union = Types.TestImport_Union.read(reader);
+        return union;
       });
       _unionArraySet = true;
       reader.context().pop();
-    }
-    else if (field == "optUnionArray") {
-      reader.context().push(field, "Array<Nullable<Types.TestImport_Union>> | null", "type found, reading property");
-      _optUnionArray = reader.readNullableArray((reader: Read): Nullable<Types.TestImport_Union> => {
-        let value: Nullable<Types.TestImport_Union>;
+    } else if (field == "optUnionArray") {
+      reader.context().push(field, "Array<Types.TestImport_Union | null> | null", "type found, reading property");
+      _optUnionArray = reader.readNullableArray((reader: Read): Types.TestImport_Union | null => {
+        let union: Types.TestImport_Union | null = null;
         if (!reader.isNextNil()) {
-          if (reader.isNextString()) {
-            value = Nullable.fromValue(
-              Types.getTestImport_UnionValue(reader.readString())
-            );
-          } else {
-            value = Nullable.fromValue(
-              reader.readInt32()
-            );
-            Types.sanitizeTestImport_UnionValue(value.value);
-          }
-        } else {
-          value = Nullable.fromNull<Types.TestImport_Union>();
+          union = Types.TestImport_Union.read(reader);
         }
-        return value;
+        return union;
       });
       reader.context().pop();
     }

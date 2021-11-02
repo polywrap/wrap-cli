@@ -9,6 +9,9 @@ writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(item, (writer: Write, 
 {{#enum}}
 {{> serialize_enum}}
 {{/enum}}
+{{#union}}
+{{> serialize_union}}
+{{/union}}
 {{#object}}
 {{> serialize_object}}
 {{/object}}

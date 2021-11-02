@@ -158,11 +158,9 @@ union {{type}} @imported(
   namespace: "{{namespace}}",
   nativeType: "{{nativeType}}"
 ) =
-{{#unionTypes}}
-  {{#memberTypes}}
+{{#memberTypes}}
 | {{type}}
-  {{/memberTypes}}
-{{/unionTypes}}
+{{/memberTypes}}
 
 {{/importedUnionTypes}}
 ### Imported Objects END ###{{/typeInfo}}`;
