@@ -51,14 +51,6 @@ export async function composeSchema(
       name === "mutation",
       resolvers
     );
-
-    // typeInfos[name] = await resolveUseStatements(
-    //   schema.schema,
-    //   schema.absolutePath,
-    //   typeInfos[name]
-    // );
-    // console.log(name)
-    // console.log(typeInfos[name])
   }
 
   const output: ComposerOutput = {

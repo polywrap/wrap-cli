@@ -534,10 +534,7 @@ export const output: TypeInfo = {
         nativeType: "Mutation",
         capabilities: [{
           "type": "getImplementations",
-          "modules": {
-            "mutation": true,
-            "query": false,
-          }
+          "modules": ["mutation"]
         }],
         comment: "TestImport_Mutation comment"
       }),

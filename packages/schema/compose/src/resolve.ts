@@ -37,7 +37,6 @@ import {
   ObjectRef,
   EnumRef,
   InvokableModules,
-  QueryCapability,
 } from "@web3api/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -51,7 +50,7 @@ export async function resolveUseStatements(
   schema: string,
   schemaPath: string,
   typeInfo: TypeInfo
-): Promise<TypeInfo> {
+): Promise<void> {
   const useKeywordCapture = /^[#]*["{3}]*use[ \n\t]/gm;
   const useCapture = /[#]*["{3}]*use[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*for[ \n\t]*(\w+)[ \n\t]/g;
 
@@ -71,35 +70,22 @@ export async function resolveUseStatements(
   });
 
   const parsedUses = parseUse(useStatements);
-  let newSchema = schema;
   for (const parsedUse of parsedUses) {
     const importedQuery = importedQueryByNamespace[parsedUse.namespace];
     if (!importedQuery) {
       throw Error(`Invalid use statement: namespace used hasn't been imported`);
     }
     const module = importedQuery.nativeType.toLowerCase() as InvokableModules;
-    const modules: Record<InvokableModules, boolean> = {
-      query: false,
-      mutation: false,
-    };
-    modules[module] = true;
-    const capabilities: QueryCapability[] = [];
+    const modules: InvokableModules[] = [module];
+    importedQuery.capabilities = [];
 
     for (const usedType of parsedUse.usedTypes) {
-      capabilities.push({
+      importedQuery.capabilities.push({
         type: usedType,
         modules: modules,
       });
     }
-
-    newSchema = newSchema.replace(useCapture, "");
-
-    // Add the @capability directive
-    newSchema = addQueryCapabilityDirective(newSchema, capabilities);
   }
-
-  newSchema = header + newSchema + renderSchema(typeInfo, false);
-  return parseSchema(newSchema);
 }
 
 export async function resolveImportsAndParseSchemas(
@@ -167,6 +153,8 @@ export async function resolveImportsAndParseSchemas(
     resolvers
   );
 
+  await resolveUseStatements(schema, schemaPath, subTypeInfo);
+
   // Remove all import statements
   let newSchema = schema
     .replace(externalImportCapture, "")
@@ -184,14 +172,6 @@ export async function resolveImportsAndParseSchemas(
   newSchema = resolveInterfaces(newSchema, implementationsWithInterfaces);
 
   // Parse the newly formed schema
-  try {
-    return parseSchema(newSchema);
-  } catch (error) {
-    console.log(newSchema);
-    throw Error(
-      `Error parsing ${schemaPath} schema after resolving imports and interfaces:\n${error.message}`
-    );
-  }
   return parseSchema(newSchema);
 }
 
@@ -435,42 +415,6 @@ function addQueryImportsDirective(
   return schema.replace(typeCapture, replacementQueryStr);
 }
 
-function addQueryCapabilityDirective(
-  schema: string,
-  capabilities: QueryCapability[]
-): string {
-  if (!capabilities.length) {
-    return schema;
-  }
-
-  for (const capability of capabilities) {
-    capability.type;
-    for (const [module, hasCapability] of Object.entries(capability.modules)) {
-      const typeCapture =
-        module === "mutation"
-          ? /type[ \n\t]*Mutation[ \n\t]*([^{]*)[ \n\t]*{/g
-          : /type[ \n\t]*Query[ \n\t]*([^{]*)[ \n\t]*{/g;
-
-      const modules = Object.entries(capability.modules)
-        .filter(([_, val]) => val)
-        .map(([key, _]) => key);
-
-      const replacementQueryStr = `type ${
-        module === "mutation" ? "Mutation" : "Query"
-      } $1@capability(
-  type: ${capability.type},
-  modules: ${modules.toString()}
-) {`;
-
-      if (hasCapability) {
-        schema = schema.replace(typeCapture, replacementQueryStr);
-      }
-    }
-  }
-
-  return schema;
-}
-
 function parseInterfaces(
   implementInterfaceStatments: RegExpMatchArray[]
 ): ImplementationWithInterfaces[] {
@@ -677,7 +621,6 @@ async function resolveExternalImports(
         required: null,
         type: namespacedType,
         kind: trueTypeKind,
-        properties: [], // Note: check this
         namespace,
         __namespaced: true,
         uri,

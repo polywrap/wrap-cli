@@ -384,7 +384,7 @@ export type InvokableModules = "query" | "mutation";
 
 export interface QueryCapability {
   type: CapabilityType;
-  modules: Record<InvokableModules, boolean>;
+  modules: InvokableModules[];
 }
 
 export interface ImportedQueryCapabilityDefinition {

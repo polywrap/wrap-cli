@@ -309,7 +309,10 @@ export const typeInfo: TypeInfo = {
         nativeType: "Query",
         type: "Namespace_Query",
         comment: "Query comment",
-        capabilities: [],
+        capabilities: [{
+          type: "getImplementations",
+          modules: ["query"]
+        }],
       }),
       methods: [
         {

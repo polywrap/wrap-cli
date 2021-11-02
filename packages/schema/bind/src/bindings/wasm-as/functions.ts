@@ -1,14 +1,6 @@
 import { isBaseType } from "./types";
 import { MustacheFunction } from "../types";
 
-export const objectKeys: MustacheFunction = () => {
-  return (value: string, render: (template: string) => string) => {
-    let rendered = render(value);
-    const object = JSON.parse(rendered);
-    return Object.keys(object).toString();
-  };
-};
-
 export const toMsgPack: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
