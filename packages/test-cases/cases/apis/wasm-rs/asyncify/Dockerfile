@@ -52,15 +52,11 @@ RUN rm -rf query/Cargo.lock
 RUN rm -rf mutation/Cargo.lock
 
 # Build the module at query
-RUN cargo +nightly build --manifest-path ./query/Cargo.toml \
+RUN cargo +nightly build --features w3invoke --manifest-path ./query/Cargo.toml \
     --release --target wasm32-unknown-unknown
-# RUN cargo rustc --manifest-path ./query/Cargo.toml \
-#     --release --target wasm32-unknown-unknown -- --crate-type=cdylib
 # Build the module at mutation
 RUN cargo +nightly build --manifest-path ./mutation/Cargo.toml \
     --release --target wasm32-unknown-unknown
-# RUN cargo rustc --manifest-path ./mutation/Cargo.toml \
-#     --release --target wasm32-unknown-unknown -- --crate-type=cdylib
 
 # Make the build directory
 RUN mkdir ./build

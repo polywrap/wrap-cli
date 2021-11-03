@@ -8,6 +8,7 @@ use polywrap_wasm_rs::{
     InvokeArgs
 };
 
+#[cfg(feature = "w3invoke")]
 #[no_mangle]
 pub extern "C" fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
     let args: InvokeArgs = invoke::w3_invoke_args(method_size, args_size);
