@@ -105,7 +105,8 @@ export const typeInfo: TypeInfo = {
               required: false
             })
           })
-        })
+        }),
+        createObjectPropertyDefinition({ name: "anotherLocal", type: "AnotherLocal", required: true }),
       ],
     },
     {
@@ -125,7 +126,15 @@ export const typeInfo: TypeInfo = {
       properties: [
         createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
       ],
-    }
+    },
+    {
+      ...createObjectDefinition({
+        type: "AnotherLocal",
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
+      ],
+    },
   ],
   queryTypes: [
     {
@@ -458,7 +467,7 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedObjectDefinition({
-        uri: "interface.eth",
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "QueryInterfaceArgument",
         type: "Interface_QueryInterfaceArgument",
@@ -474,7 +483,7 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedObjectDefinition({
-        uri: "interface.eth",
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "NestedQueryInterfaceArgument",
         type: "Interface_NestedQueryInterfaceArgument",
@@ -486,7 +495,7 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedObjectDefinition({
-        uri: "interface.eth",
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "InterfaceObject2",
         type: "Interface_InterfaceObject2",
@@ -502,7 +511,7 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedObjectDefinition({
-        uri: "interface.eth",
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "Object",
         type: "Interface_Object",
@@ -514,7 +523,7 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedObjectDefinition({
-        uri: "interface.eth",
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "NestedInterfaceObject",
         type: "Interface_NestedInterfaceObject",
@@ -617,7 +626,7 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedQueryDefinition({
-        uri: "interface.eth",
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "Query",
         type: "Interface_Query",
