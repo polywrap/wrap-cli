@@ -64,6 +64,15 @@ type Mutation {
     # meta information NEAR Wallet will send back to the application. `meta` will be attached to the `callbackUrl` as a url search param
     meta: String
   ): Boolean!
+
+  """
+  KeyStore, KeyPair, and Signer Query Functions (Not Implemented)
+  """
+
+  createKey(
+    accountId: String!
+    networkId: String!
+  ): PublicKey!
 }
 
 # Supported public key types
