@@ -1,11 +1,24 @@
-import { AccessKey, Transaction, ExecutionOutcome, AccountView } from "./w3";
-import { Action } from "./typeUtils";
-import { toExecutionStatus, toPublicKey } from "./typeMapping";
+/* eslint-disable @typescript-eslint/naming-convention */
+
+import {
+  AccessKey,
+  Transaction,
+  ExecutionOutcome,
+  AccountView,
+  Action,
+  ExecutionOutcomeWithId,
+  FinalExecutionOutcome,
+  ExecutionStatus,
+} from "./w3";
+import { toPublicKey } from "./typeMapping";
 import {
   JsonAccessKey,
   JsonAccountState,
   JsonAction,
   JsonExecutionOutcome,
+  JsonExecutionOutcomeWithId,
+  JsonExecutionStatus,
+  JsonFinalExecutionOutcome,
   JsonTransaction,
 } from "./jsonTypes";
 
@@ -16,7 +29,7 @@ export const parseJsonResponseTx = (tx: JsonTransaction): Transaction => {
   return {
     signerId: tx.signer_id,
     publicKey: toPublicKey(tx.public_key),
-    nonce: tx.nonce,
+    nonce: tx.nonce.toString(),
     receiverId: tx.receiver_id,
     blockHash: Buffer.from(tx.hash),
     actions: jsonActions.map(parseJsonResponseAction),
@@ -63,16 +76,6 @@ export const parseJsonResponseAccessKey = (
           },
   } as AccessKey);
 
-export const parseJsonExecutionOutcome = (
-  jsonOutcome: JsonExecutionOutcome
-): ExecutionOutcome =>
-  ({
-    logs: jsonOutcome.logs.map((log) => JSON.stringify(log)),
-    receiptIds: jsonOutcome.receipt_ids,
-    gasBurnt: jsonOutcome.gas_burnt.toString(),
-    status: toExecutionStatus(jsonOutcome.status),
-  } as ExecutionOutcome);
-
 export const parseJsonAccountState = (
   state: JsonAccountState
 ): AccountView => ({
@@ -84,3 +87,50 @@ export const parseJsonAccountState = (
   blockHash: state.block_hash.toString(),
   blockHeight: state.block_height.toString(),
 });
+
+export const parseJsonExecutionStatus = (
+  status: JsonExecutionStatus | string
+): ExecutionStatus => {
+  if (typeof status === "string") {
+    return { successValue: status };
+  }
+  return {
+    successValue: status.SuccessValue,
+    successReceiptId: status.SuccessReceiptId,
+    failure: JSON.stringify(status.Failure),
+  };
+};
+
+export const parseJsonExecutionOutcome = (
+  jsonOutcome: JsonExecutionOutcome
+): ExecutionOutcome =>
+  ({
+    logs: jsonOutcome.logs.map((log) => JSON.stringify(log)),
+    receipt_ids: jsonOutcome.receipt_ids,
+    gas_burnt: jsonOutcome.gas_burnt.toString(),
+    status: parseJsonExecutionStatus(jsonOutcome.status),
+  } as ExecutionOutcome);
+
+export const parseJsonExecutionOutcomeWithId = (
+  jsonOutcomeWithId: JsonExecutionOutcomeWithId
+): ExecutionOutcomeWithId => ({
+  id: jsonOutcomeWithId.id,
+  outcome: parseJsonExecutionOutcome(jsonOutcomeWithId.outcome),
+  block_hash: jsonOutcomeWithId.block_hash,
+  proof: jsonOutcomeWithId.proof ?? [],
+});
+
+export const parseJsonFinalExecutionOutcome = (
+  outcome: JsonFinalExecutionOutcome
+): FinalExecutionOutcome => {
+  return {
+    status: parseJsonExecutionStatus(outcome.status),
+    transaction: parseJsonResponseTx(outcome.transaction),
+    transaction_outcome: parseJsonExecutionOutcomeWithId(
+      outcome.transaction_outcome
+    ),
+    receipts_outcome: outcome.receipts_outcome.map(
+      parseJsonExecutionOutcomeWithId
+    ),
+  };
+};

@@ -448,11 +448,6 @@ type SignTransactionResult {
   signedTx: SignedTransaction!
 }
 
-type FinalExecutionStatus {
-  successValue: String
-  failure: JSON
-}
-
 type ExecutionStatus {
   successValue: String
   successReceiptId: String
@@ -460,21 +455,42 @@ type ExecutionStatus {
 }
 
 type ExecutionOutcomeWithId {
+  block_hash: String
   id: String!
   outcome: ExecutionOutcome!
+  proof: [ExecutionProof!]
+}
+
+type ExecutionProof {
+  direction: String!
+  hash: String!
 }
 
 # Execution status of a sent transaction
 type ExecutionOutcome {
-  logs: [String!]!
-  receiptIds: [String!]!
-  gasBurnt: BigInt!
+  executor_id: String
+  gas_burnt: BigInt!
+  logs: [String!]
+  metadata: OutcomeMetaData
+  receipt_ids: [String!]!
   status: ExecutionStatus!
+  tokens_burnt: String
+}
+
+type OutcomeMetaData {
+  gas_profile: [GasProfile]!
+  version: UInt!
+}
+
+type GasProfile {
+  cost: String!
+  cost_category: String!
+  gas_used: String!
 }
 
 # Final outcome of a sent transaction
 type FinalExecutionOutcome {
-  status: FinalExecutionStatus!
+  status: ExecutionStatus!
   transaction: Transaction!
   transaction_outcome: ExecutionOutcomeWithId!
   receipts_outcome: [ExecutionOutcomeWithId!]!

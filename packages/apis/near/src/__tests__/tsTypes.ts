@@ -1,3 +1,5 @@
+import * as Types from "@web3api/near-plugin-js/build/w3/types";
+
 export type UInt = number;
 export type UInt8 = number;
 export type UInt16 = number;
@@ -35,61 +37,15 @@ export interface AccessKeyInfo {
 }
 
 export interface Action {
-  _?: String | null;
-}
-
-export type ActionUnion =
-  | CreateAccount
-  | DeployContract
-  | FunctionCall
-  | Transfer
-  | Stake
-  | AddKey
-  | DeleteKey
-  | DeleteAccount;
-
-export interface CreateAccount {
-  _?: String | null;
-}
-
-export interface DeployContract {
-  code: Bytes;
-  _?: String | null;
-}
-
-export interface FunctionCall {
-  methodName: String;
-  args: Bytes;
-  gas: BigInt;
-  deposit: BigInt;
-  _?: String | null;
-}
-
-export interface Transfer {
-  deposit: BigInt;
-  _?: String | null;
-}
-
-export interface Stake {
-  stake: BigInt;
-  publicKey: PublicKey;
-  _?: String | null;
-}
-
-export interface AddKey {
-  publicKey: PublicKey;
-  accessKey: AccessKey;
-  _?: String | null;
-}
-
-export interface DeleteKey {
-  publicKey: PublicKey;
-  _?: String | null;
-}
-
-export interface DeleteAccount {
-  beneficiaryId: String;
-  _?: String | null;
+  code?: Bytes | null;
+  methodName?: String | null;
+  args?: Bytes | null;
+  gas?: BigInt | null;
+  deposit?: BigInt | null;
+  stake?: BigInt | null;
+  publicKey?: Types.PublicKey | null;
+  accessKey?: Types.AccessKey | null;
+  beneficiaryId?: String | null;
 }
 
 export interface Transaction {

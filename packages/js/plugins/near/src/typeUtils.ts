@@ -1,32 +1,16 @@
 import {
-  AddKey,
-  CreateAccount,
-  DeleteAccount,
-  DeleteKey,
-  DeployContract,
   FullAccessPermission,
-  FunctionCall,
   FunctionCallPermission,
   KeyType,
-  KeyTypeEnum, PublicKey,
-  Stake,
-  Transfer,
+  KeyTypeEnum,
+  PublicKey,
+  Action,
 } from "./w3";
 
 import * as nearApi from "near-api-js";
 
 // Type hacks
-// TODO: Remove these type hacks after completing https://github.com/polywrap/monorepo/issues/508
-
-export type Action =
-  | CreateAccount
-  | DeployContract
-  | FunctionCall
-  | Transfer
-  | Stake
-  | AddKey
-  | DeleteKey
-  | DeleteAccount;
+// TODO: Remove these type hacks after union types are supported
 
 export type AccessKeyPermission = FunctionCallPermission | FullAccessPermission;
 
@@ -45,42 +29,68 @@ export interface AccountView extends QueryResponseKind {
 }
 
 // Type utility functions
-
-export function isCreateAccount(action: Action): action is CreateAccount {
-  return Object.keys(action).length === 0;
+function isNotNullOrUndefined(prop: unknown): boolean {
+  return prop !== undefined && prop !== null;
 }
 
-export function isDeployContract(action: Action): action is DeployContract {
-  return "code" in action;
-}
-
-export function isFunctionCall(action: Action): action is FunctionCall {
+export function isCreateAccount(action: Action): boolean {
   return (
-    "methodName" in action &&
-    "args" in action &&
-    "gas" in action &&
-    "deposit" in action
+    !isNotNullOrUndefined(action.code) &&
+    !isNotNullOrUndefined(action.methodName) &&
+    !isNotNullOrUndefined(action.args) &&
+    !isNotNullOrUndefined(action.gas) &&
+    !isNotNullOrUndefined(action.deposit) &&
+    !isNotNullOrUndefined(action.stake) &&
+    !isNotNullOrUndefined(action.publicKey) &&
+    !isNotNullOrUndefined(action.accessKey) &&
+    !isNotNullOrUndefined(action.beneficiaryId)
   );
 }
 
-export function isTransfer(action: Action): action is Transfer {
-  return "deposit" in action && Object.keys(action).length === 1;
+export function isDeployContract(action: Action): boolean {
+  return isNotNullOrUndefined(action.code);
 }
 
-export function isStake(action: Action): action is Stake {
-  return "stake" in action && "publicKey" in action;
+export function isFunctionCall(action: Action): boolean {
+  return (
+    isNotNullOrUndefined(action.methodName) &&
+    isNotNullOrUndefined(action.gas) &&
+    isNotNullOrUndefined(action.deposit)
+  );
 }
 
-export function isAddKey(action: Action): action is AddKey {
-  return "publicKey" in action && "accessKey" in action;
+export function isTransfer(action: Action): boolean {
+  return (
+    !isNotNullOrUndefined(action.methodName) &&
+    !isNotNullOrUndefined(action.args) &&
+    !isNotNullOrUndefined(action.gas) &&
+    isNotNullOrUndefined(action.deposit)
+  );
 }
 
-export function isDeleteKey(action: Action): action is DeleteKey {
-  return "publicKey" in action && Object.keys(action).length === 1;
+export function isStake(action: Action): boolean {
+  return (
+    isNotNullOrUndefined(action.stake) && isNotNullOrUndefined(action.publicKey)
+  );
 }
 
-export function isDeleteAccount(action: Action): action is DeleteAccount {
-  return "beneficiaryId" in action;
+export function isAddKey(action: Action): boolean {
+  return (
+    isNotNullOrUndefined(action.publicKey) &&
+    isNotNullOrUndefined(action.accessKey)
+  );
+}
+
+export function isDeleteKey(action: Action): boolean {
+  return (
+    isNotNullOrUndefined(action.publicKey) &&
+    !isNotNullOrUndefined(action.accessKey) &&
+    !isNotNullOrUndefined(action.stake)
+  );
+}
+
+export function isDeleteAccount(action: Action): boolean {
+  return isNotNullOrUndefined(action.beneficiaryId);
 }
 
 export function isNearDeployContract(
@@ -92,12 +102,7 @@ export function isNearDeployContract(
 export function isNearFunctionCall(
   action: nearApi.transactions.IAction
 ): action is nearApi.transactions.FunctionCall {
-  return (
-    "methodName" in action &&
-    "args" in action &&
-    "gas" in action &&
-    "deposit" in action
-  );
+  return "methodName" in action && "gas" in action && "deposit" in action;
 }
 
 export function isNearTransfer(

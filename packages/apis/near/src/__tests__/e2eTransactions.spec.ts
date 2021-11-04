@@ -3,10 +3,10 @@ import { nearPlugin, KeyPair, NearPluginConfig, } from "@web3api/near-plugin-js"
 import {
   ExecutionOutcomeWithId,
   FinalExecutionOutcome,
-  FinalExecutionStatus,
+  ExecutionStatus,
   SignTransactionResult,
   Transaction,
-  ActionUnion as Action,
+  Action,
 } from "./tsTypes";
 import * as testUtils from "./testUtils";
 import * as nearApi from "near-api-js";
@@ -34,7 +34,8 @@ describe("e2e", () => {
     const setCallValue = testUtils.generateUniqueString('setCallPrefix');
     const args = { value: setCallValue };
     const stringify = (obj: unknown): Buffer => Buffer.from(JSON.stringify(obj));
-    return [{ methodName: "setValue", args: stringify(args), gas: "3000000000000", deposit: "0" }];
+    const value: Buffer = stringify(args);
+    return [{ methodName: "setValue", args: value, gas: "3000000000000", deposit: "0" }];
   }
 
   beforeAll(async () => {
@@ -79,7 +80,7 @@ describe("e2e", () => {
     await testUtils.deployContract(workingAccount, contractId);
     // set up access key
     const keyPair = KeyPair.fromRandom('ed25519');
-    await workingAccount.addKey(keyPair.getPublicKey(), contractId, HELLO_WASM_METHODS.changeMethods, new BN(  "2000000000000000000000000"));
+    await workingAccount.addKey(keyPair.getPublicKey(), contractId, HELLO_WASM_METHODS.allMethods, new BN(  "2000000000000000000000000"));
     await nearConfig.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
   });
 
@@ -109,14 +110,21 @@ describe("e2e", () => {
 
     const transaction: Transaction = result.data!.createTransaction;
 
-    console.log(JSON.stringify(transaction));
-
     expect(transaction.signerId).toEqual(workingAccount.accountId);
     expect(transaction.publicKey).toBeTruthy();
     expect(transaction.nonce).toBeTruthy();
     expect(transaction.receiverId).toBeTruthy();
     expect(transaction.blockHash).toBeTruthy();
-    expect(transaction.actions).toEqual(actions);
+    expect(transaction.actions.length).toEqual(1);
+    expect(transaction.actions[0].methodName).toEqual(actions[0].methodName);
+    expect(transaction.actions[0].args).toEqual(Uint8Array.from(actions[0].args!));
+    expect(transaction.actions[0].gas).toEqual(actions[0].gas);
+    expect(transaction.actions[0].deposit).toEqual(actions[0].deposit);
+    expect(transaction.actions[0].publicKey).toBeFalsy();
+    expect(transaction.actions[0].beneficiaryId).toBeFalsy();
+    expect(transaction.actions[0].accessKey).toBeFalsy();
+    expect(transaction.actions[0].stake).toBeFalsy();
+    expect(transaction.actions[0].code).toBeFalsy();
   });
 
   it("Signs a transaction without wallet", async () => {
@@ -159,13 +167,9 @@ describe("e2e", () => {
 
     const signedTx = result.data!.signTransaction.signedTx;
     const txHash = result.data!.signTransaction.hash;
-    expect(signedTx.transaction.signerId).toEqual(workingAccount.accountId);
-    expect(signedTx.transaction.publicKey).toBeTruthy();
-    expect(signedTx.transaction.nonce).toBeTruthy();
-    expect(signedTx.transaction.receiverId).toBeTruthy();
-    expect(signedTx.transaction.blockHash).toBeTruthy();
-    expect(signedTx.transaction.actions).toEqual(actions);
+    expect(signedTx.transaction).toStrictEqual(transaction);
     expect(txHash).toBeTruthy();
+    expect(signedTx.signature.data).toBeTruthy();
   });
 
   it("creates, signs, sends, and awaits mining of a transaction without wallet", async () => {
@@ -188,16 +192,9 @@ describe("e2e", () => {
     expect(result.errors).toBeFalsy();
     expect(result.data).toBeTruthy();
 
-    const status: FinalExecutionStatus = result.data!.signAndSendTransaction.status;
+    const status: ExecutionStatus = result.data!.signAndSendTransaction.status;
     expect(status.successValue).toBeTruthy();
     expect(status.failure).toBeFalsy();
-    const transaction: Transaction = result.data!.signAndSendTransaction.transaction;
-    expect(transaction.signerId).toEqual(workingAccount.accountId);
-    expect(transaction.publicKey).toBeTruthy();
-    expect(transaction.nonce).toBeTruthy();
-    expect(transaction.receiverId).toBeTruthy();
-    expect(transaction.blockHash).toBeTruthy();
-    expect(transaction.actions).toEqual(actions);
     const txOutcome: ExecutionOutcomeWithId = result.data!.signAndSendTransaction.transaction_outcome;
     expect(txOutcome.id).toBeTruthy();
     expect(txOutcome.outcome.status.successReceiptId).toBeTruthy();
@@ -206,9 +203,9 @@ describe("e2e", () => {
     expect(receiptsOutcome.length).toBeGreaterThan(0);
   });
 
-  it("creates, signs, and sends a transaction asynchronously without wallet", async () => {
+  it.only("creates, signs, and sends a transaction asynchronously without wallet", async () => {
     const actions: Action[] = prepActions();
-    const result = await client.query<{ signAndSendTransactionAsync: FinalExecutionOutcome }>({
+    const result = await client.query<{ signAndSendTransactionAsync: string }>({
       uri: apiUri,
       query: `mutation {
         signAndSendTransactionAsync(
@@ -225,5 +222,14 @@ describe("e2e", () => {
     });
     expect(result.errors).toBeFalsy();
     expect(result.data).toBeTruthy();
+
+    const txHash: string = result.data!.signAndSendTransactionAsync;
+    expect(txHash).toBeTruthy();
+
+    const txStatus = await near.connection.provider.txStatus(txHash, workingAccount.accountId);
+    console.log(JSON.stringify(txStatus, null, 2));
+
+    const txStatus2 = await near.connection.provider.txStatus(txHash, contractId);
+    console.log(JSON.stringify(txStatus2, null, 2));
   });
 });

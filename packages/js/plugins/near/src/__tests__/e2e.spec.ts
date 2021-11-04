@@ -3,11 +3,11 @@ import { nearPlugin, KeyPair, NearPluginConfig } from "../";
 import {
   ExecutionOutcomeWithId,
   FinalExecutionOutcome,
-  FinalExecutionStatus,
+  ExecutionStatus,
   SignTransactionResult,
   Transaction,
+  Action
 } from "../w3";
-import { Action } from "../typeUtils";
 import * as testUtils from "./testUtils";
 import * as nearApi from "near-api-js";
 import BN from "bn.js";
@@ -155,7 +155,7 @@ describe("e2e", () => {
     expect(result.errors).toBeFalsy();
     expect(result.data).toBeTruthy();
 
-    const status: FinalExecutionStatus = result.data!.signAndSendTransaction.status;
+    const status: ExecutionStatus = result.data!.signAndSendTransaction.status;
     expect(status.successValue).toBeTruthy();
     expect(status.failure).toBeFalsy();
     const transaction: Transaction = result.data!.signAndSendTransaction.transaction;

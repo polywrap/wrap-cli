@@ -121,26 +121,34 @@ type AccessKeyInfo {
 
 # Action types define the data necessary to complete a type of action in a transaction
 type Action {
-  _: String
+  code: Bytes
+  methodName: String
+  args: Bytes
+  gas: BigInt
+  deposit: BigInt
+  stake: BigInt
+  publicKey: PublicKey
+  accessKey: AccessKey
+  beneficiaryId: String
 }
 
-# holds content necessary to create an account
-type CreateAccount implements Action {}
-# holds content necessary to send a transaction that deploys a contract
-type DeployContract implements Action { code: Bytes! }
-# holds content necessary to send a transaction that calls a contract function
-# TODO: accept "args" property as JSON object
-type FunctionCall implements Action { methodName: String! args: Bytes! gas: BigInt! deposit: BigInt! }
-# holds content necessary to send a transaction that transfers NEAR?
-type Transfer implements Action { deposit: BigInt! }
-# holds content necessary to send a transaction that stakes NEAR
-type Stake implements Action { stake: BigInt! publicKey: PublicKey! }
-# holds content necessary to send a transaction that adds an access key
-type AddKey implements Action { publicKey: PublicKey! accessKey: AccessKey! }
-# holds content necessary to send a transaction that deletes an access key
-type DeleteKey implements Action { publicKey: PublicKey! }
-# holds content necessary to send a transaction that creates a NEAR account
-type DeleteAccount implements Action { beneficiaryId: String! }
+## holds content necessary to create an account
+#type CreateAccount implements Action {}
+## holds content necessary to send a transaction that deploys a contract
+#type DeployContract implements Action { code: Bytes! }
+## holds content necessary to send a transaction that calls a contract function
+## TODO: accept "args" property as JSON object
+#type FunctionCall implements Action { methodName: String! args: Bytes! gas: BigInt! deposit: BigInt! }
+## holds content necessary to send a transaction that transfers NEAR?
+#type Transfer implements Action { deposit: BigInt! }
+## holds content necessary to send a transaction that stakes NEAR
+#type Stake implements Action { stake: BigInt! publicKey: PublicKey! }
+## holds content necessary to send a transaction that adds an access key
+#type AddKey implements Action { publicKey: PublicKey! accessKey: AccessKey! }
+## holds content necessary to send a transaction that deletes an access key
+#type DeleteKey implements Action { publicKey: PublicKey! }
+## holds content necessary to send a transaction that creates a NEAR account
+#type DeleteAccount implements Action { beneficiaryId: String! }
 
 type Transaction {
   signerId: String!
@@ -167,11 +175,6 @@ type SignTransactionResult {
   signedTx: SignedTransaction!
 }
 
-type FinalExecutionStatus {
-  successValue: String
-  failure: JSON
-}
-
 type ExecutionStatus {
   successValue: String
   successReceiptId: String
@@ -179,21 +182,42 @@ type ExecutionStatus {
 }
 
 type ExecutionOutcomeWithId {
+  block_hash: String
   id: String!
   outcome: ExecutionOutcome!
+  proof: [ExecutionProof!]
+}
+
+type ExecutionProof {
+  direction: String!
+  hash: String!
 }
 
 # Execution status of a sent transaction
 type ExecutionOutcome {
-  logs: [String!]!
-  receiptIds: [String!]!
-  gasBurnt: BigInt!
+  executor_id: String
+  gas_burnt: BigInt!
+  logs: [String!]
+  metadata: OutcomeMetaData
+  receipt_ids: [String!]!
   status: ExecutionStatus!
+  tokens_burnt: String
+}
+
+type OutcomeMetaData {
+  gas_profile: [GasProfile]!
+  version: UInt!
+}
+
+type GasProfile {
+  cost: String!
+  cost_category: String!
+  gas_used: String!
 }
 
 # Final outcome of a sent transaction
 type FinalExecutionOutcome {
-  status: FinalExecutionStatus!
+  status: ExecutionStatus!
   transaction: Transaction!
   transaction_outcome: ExecutionOutcomeWithId!
   receipts_outcome: [ExecutionOutcomeWithId!]!

@@ -1,14 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import {
   AccessKey,
   AccessKeyPermission as IAccessKeyPermission,
   AccountView,
-  Action as IAction,
-  ExecutionOutcome,
-  ExecutionOutcomeWithId,
-  ExecutionStatus,
-  FinalExecutionOutcome,
+  Action,
   KeyTypeEnum,
   PublicKey,
   Signature,
@@ -18,7 +15,6 @@ import {
 import {
   AccessKeyPermission,
   AccountView as NearAccountView,
-  Action,
   isAddKey,
   isCreateAccount,
   isDeleteAccount,
@@ -39,13 +35,10 @@ import {
   publicKeyToStr,
 } from "./typeUtils";
 
-import { parseJsonResponseTx } from "./jsonMapping";
-
 import * as nearApi from "near-api-js";
 import BN from "bn.js";
-import { JsonExecutionStatus } from "./jsonTypes";
 
-export const toAction = (action: nearApi.transactions.Action): IAction => {
+export const toAction = (action: nearApi.transactions.Action): Action => {
   let result: Action;
   if (isNearDeployContract(action)) {
     result = { code: action.code };
@@ -77,35 +70,35 @@ export const toAction = (action: nearApi.transactions.Action): IAction => {
   } else {
     result = {};
   }
-  return result as IAction;
+  return result as Action;
 };
 
 export const fromAction = (action: Action): nearApi.transactions.Action => {
   if (isCreateAccount(action)) {
     return nearApi.transactions.createAccount();
   } else if (isDeployContract(action)) {
-    return nearApi.transactions.deployContract(action["code"]);
+    return nearApi.transactions.deployContract(action.code!);
   } else if (isFunctionCall(action)) {
     return nearApi.transactions.functionCall(
-      action["methodName"],
-      action["args"],
-      new BN(action["gas"]),
-      new BN(action["deposit"])
+      action.methodName!,
+      action.args ?? {},
+      new BN(action.gas!),
+      new BN(action.deposit!)
     );
   } else if (isTransfer(action)) {
-    return nearApi.transactions.transfer(new BN(action["deposit"]));
+    return nearApi.transactions.transfer(new BN(action.deposit!));
   } else if (isStake(action)) {
-    const publicKey = fromPublicKey(action["publicKey"]);
-    return nearApi.transactions.stake(new BN(action["stake"]), publicKey);
+    const publicKey = fromPublicKey(action.publicKey!);
+    return nearApi.transactions.stake(new BN(action.stake!), publicKey);
   } else if (isAddKey(action)) {
-    const publicKey = fromPublicKey(action["publicKey"]);
-    const accessKey = new nearApi.transactions.AccessKey(action["accessKey"]);
+    const publicKey = fromPublicKey(action.publicKey!);
+    const accessKey = new nearApi.transactions.AccessKey(action.accessKey!);
     return nearApi.transactions.addKey(publicKey, accessKey);
   } else if (isDeleteKey(action)) {
-    const publicKey = fromPublicKey(action["publicKey"]);
+    const publicKey = fromPublicKey(action.publicKey!);
     return nearApi.transactions.deleteKey(publicKey);
   } else if (isDeleteAccount(action)) {
-    return nearApi.transactions.deleteAccount(action["beneficiaryId"]);
+    return nearApi.transactions.deleteAccount(action.beneficiaryId!);
   } else {
     throw Error("Failed to map type Action to nearApi.transactions.Action");
   }
@@ -190,45 +183,6 @@ export const fromAccessKey = (
   return new nearApi.transactions.AccessKey(key);
 };
 
-export const toFinalExecutionOutcome = (
-  outcome: nearApi.providers.FinalExecutionOutcome
-): FinalExecutionOutcome => {
-  return {
-    status: toExecutionStatus(outcome.status),
-    transaction: parseJsonResponseTx(outcome.transaction),
-    transaction_outcome: toExecutionOutcomeWithId(outcome.transaction_outcome),
-    receipts_outcome: outcome.receipts_outcome.map(toExecutionOutcomeWithId),
-  };
-};
-
-export const toExecutionOutcomeWithId = (
-  outcomeWithId: nearApi.providers.ExecutionOutcomeWithId
-): ExecutionOutcomeWithId => {
-  const outcome: ExecutionOutcome = {
-    logs: outcomeWithId.outcome.logs,
-    receiptIds: outcomeWithId.outcome.receipt_ids,
-    gasBurnt: outcomeWithId.outcome.gas_burnt.toString(),
-    status: toExecutionStatus(outcomeWithId.outcome.status),
-  };
-  return {
-    id: outcomeWithId.id,
-    outcome: outcome,
-  };
-};
-
-export const toExecutionStatus = (
-  status: JsonExecutionStatus | string
-): ExecutionStatus => {
-  if (typeof status === "string") {
-    return { successValue: status };
-  }
-  return {
-    successValue: status.SuccessValue,
-    successReceiptId: status.SuccessReceiptId,
-    failure: JSON.stringify(status.Failure),
-  };
-};
-
 export const toAccountView = (accountView: NearAccountView): AccountView => ({
   amount: accountView.amount,
   locked: accountView.locked,
@@ -238,3 +192,43 @@ export const toAccountView = (accountView: NearAccountView): AccountView => ({
   blockHeight: accountView.block_height.toString(),
   blockHash: accountView.block_hash,
 });
+
+
+// export const toFinalExecutionOutcome = (
+//   outcome: nearApi.providers.FinalExecutionOutcome
+// ): FinalExecutionOutcome => {
+//   return {
+//     status: toExecutionStatus(outcome.status),
+//     transaction: parseJsonResponseTx(outcome.transaction),
+//     transaction_outcome: toExecutionOutcomeWithId(outcome.transaction_outcome),
+//     receipts_outcome: outcome.receipts_outcome.map(toExecutionOutcomeWithId),
+//   };
+// };
+//
+// export const toExecutionOutcomeWithId = (
+//   outcomeWithId: nearApi.providers.ExecutionOutcomeWithId
+// ): ExecutionOutcomeWithId => {
+//   const outcome: ExecutionOutcome = {
+//     logs: outcomeWithId.outcome.logs ? outcomeWithId.outcome.logs : null,
+//     receipt_ids: outcomeWithId.outcome.receipt_ids,
+//     gas_burnt: outcomeWithId.outcome.gas_burnt.toString(),
+//     status: toExecutionStatus(outcomeWithId.outcome.status),
+//   };
+//   return {
+//     id: outcomeWithId.id,
+//     outcome: outcome,
+//   };
+// };
+//
+// export const parseJsonExecutionStatus = (
+//   status: JsonExecutionStatus | string
+// ): ExecutionStatus => {
+//   if (typeof status === "string") {
+//     return { successValue: status };
+//   }
+//   return {
+//     successValue: status.SuccessValue,
+//     successReceiptId: status.SuccessReceiptId,
+//     failure: JSON.stringify(status.Failure),
+//   };
+// };

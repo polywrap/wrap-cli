@@ -14,7 +14,8 @@ const HELLO_WASM_PATH = path.resolve(__dirname + '../../../../../../node_modules
 const HELLO_WASM_BALANCE = new BN("1000000000000000000000000");
 export const HELLO_WASM_METHODS = {
   viewMethods: ['getValue', 'getLastResult'],
-  changeMethods: ['setValue', 'callPromise']
+  changeMethods: ['setValue', 'callPromise'],
+  allMethods: ['getValue', 'getLastResult', 'setValue', 'callPromise']
 };
 
 // Length of a random account. Set to 40 because in the protocol minimal allowed top-level account length should be at least 32.

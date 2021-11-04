@@ -17,14 +17,13 @@ import {
   fromAction,
   fromSignedTx,
   fromTx,
-  toFinalExecutionOutcome,
   toPublicKey,
 } from "./typeMapping";
 import {
-  parseJsonAccountState,
+  parseJsonAccountState, parseJsonFinalExecutionOutcome,
   parseJsonResponseAccessKey,
 } from "./jsonMapping";
-import { JsonAccessKey, JsonAccountState } from "./jsonTypes";
+import { JsonAccessKey, JsonAccountState, JsonFinalExecutionOutcome } from "./jsonTypes";
 import { publicKeyToStr } from "./typeUtils";
 
 import {
@@ -238,7 +237,9 @@ export class NearPlugin extends Plugin {
     const nearSignedTx = fromSignedTx(signedTx);
     const provider = this.near.connection.provider;
     const outcome = await provider.sendTransaction(nearSignedTx);
-    return toFinalExecutionOutcome(outcome);
+    return parseJsonFinalExecutionOutcome(
+      (outcome as unknown) as JsonFinalExecutionOutcome
+    );
   }
 
   public async sendTransactionAsync(
