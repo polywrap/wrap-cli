@@ -1,13 +1,6 @@
 import { Web3ApiClient } from "@web3api/client-js";
 import { nearPlugin, KeyPair, NearPluginConfig } from "../";
-import {
-  ExecutionOutcomeWithId,
-  FinalExecutionOutcome,
-  ExecutionStatus,
-  SignTransactionResult,
-  Transaction,
-  Action
-} from "../w3";
+import { Action } from "../w3";
 import * as testUtils from "./testUtils";
 import * as nearApi from "near-api-js";
 import BN from "bn.js";
@@ -57,121 +50,121 @@ describe("e2e", () => {
     await config.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
   });
 
-  it("Creates a transaction without wallet", async () => {
-    const actions: Action[] = prepActions();
-    const result = await client.query<{ createTransaction: Transaction }>({
-      uri,
-      query: `query {
-        createTransaction(
-          receiverId: $receiverId
-          actions: $actions
-          signerId: $signerId
-        )
-      }`,
-      variables: {
-        receiverId: contractId,
-        actions: actions,
-        signerId: workingAccount.accountId,
-      }
-    });
-    expect(result.errors).toBeFalsy();
-    expect(result.data).toBeTruthy();
+  // it("Creates a transaction without wallet", async () => {
+  //   const actions: Action[] = prepActions();
+  //   const result = await client.query<{ createTransaction: Transaction }>({
+  //     uri,
+  //     query: `query {
+  //       createTransaction(
+  //         receiverId: $receiverId
+  //         actions: $actions
+  //         signerId: $signerId
+  //       )
+  //     }`,
+  //     variables: {
+  //       receiverId: contractId,
+  //       actions: actions,
+  //       signerId: workingAccount.accountId,
+  //     }
+  //   });
+  //   expect(result.errors).toBeFalsy();
+  //   expect(result.data).toBeTruthy();
+  //
+  //   const transaction: Transaction = result.data!.createTransaction;
+  //   expect(transaction.signerId).toEqual(workingAccount.accountId);
+  //   expect(transaction.publicKey).toBeTruthy();
+  //   expect(transaction.nonce).toBeTruthy();
+  //   expect(transaction.receiverId).toBeTruthy();
+  //   expect(transaction.blockHash).toBeTruthy();
+  //   expect(transaction.actions).toEqual(actions);
+  // });
+  //
+  // it("Signs a transaction without wallet", async () => {
+  //   // create transaction
+  //   const actions: Action[] = prepActions();
+  //   const txQuery = await client.query<{ createTransaction: Transaction }>({
+  //     uri,
+  //     query: `query {
+  //       createTransaction(
+  //         receiverId: $receiverId
+  //         actions: $actions
+  //         signerId: $signerId
+  //       )
+  //     }`,
+  //     variables: {
+  //       receiverId: contractId,
+  //       actions: actions,
+  //       signerId: workingAccount.accountId,
+  //     }
+  //   });
+  //   expect(txQuery.errors).toBeFalsy();
+  //   expect(txQuery.data).toBeTruthy();
+  //   const transaction: Transaction = txQuery.data!.createTransaction;
+  //
+  //   const result = await client.query<{
+  //     signTransaction: SignTransactionResult
+  //   }>({
+  //     uri,
+  //     query: `query {
+  //       signTransaction(
+  //         transaction: $transaction
+  //       )
+  //     }`,
+  //     variables: {
+  //       transaction: transaction,
+  //     }
+  //   });
+  //   expect(result.errors).toBeFalsy();
+  //   expect(result.data).toBeTruthy();
+  //
+  //   const signedTx = result.data!.signTransaction.signedTx;
+  //   const txHash = result.data!.signTransaction.hash;
+  //   expect(signedTx.transaction.signerId).toEqual(workingAccount.accountId);
+  //   expect(signedTx.transaction.publicKey).toBeTruthy();
+  //   expect(signedTx.transaction.nonce).toBeTruthy();
+  //   expect(signedTx.transaction.receiverId).toBeTruthy();
+  //   expect(signedTx.transaction.blockHash).toBeTruthy();
+  //   expect(signedTx.transaction.actions).toEqual(actions);
+  //   expect(txHash).toBeTruthy();
+  // });
 
-    const transaction: Transaction = result.data!.createTransaction;
-    expect(transaction.signerId).toEqual(workingAccount.accountId);
-    expect(transaction.publicKey).toBeTruthy();
-    expect(transaction.nonce).toBeTruthy();
-    expect(transaction.receiverId).toBeTruthy();
-    expect(transaction.blockHash).toBeTruthy();
-    expect(transaction.actions).toEqual(actions);
-  });
-
-  it("Signs a transaction without wallet", async () => {
-    // create transaction
-    const actions: Action[] = prepActions();
-    const txQuery = await client.query<{ createTransaction: Transaction }>({
-      uri,
-      query: `query {
-        createTransaction(
-          receiverId: $receiverId
-          actions: $actions
-          signerId: $signerId
-        )
-      }`,
-      variables: {
-        receiverId: contractId,
-        actions: actions,
-        signerId: workingAccount.accountId,
-      }
-    });
-    expect(txQuery.errors).toBeFalsy();
-    expect(txQuery.data).toBeTruthy();
-    const transaction: Transaction = txQuery.data!.createTransaction;
-
-    const result = await client.query<{
-      signTransaction: SignTransactionResult
-    }>({
-      uri,
-      query: `query {
-        signTransaction(
-          transaction: $transaction
-        )
-      }`,
-      variables: {
-        transaction: transaction,
-      }
-    });
-    expect(result.errors).toBeFalsy();
-    expect(result.data).toBeTruthy();
-
-    const signedTx = result.data!.signTransaction.signedTx;
-    const txHash = result.data!.signTransaction.hash;
-    expect(signedTx.transaction.signerId).toEqual(workingAccount.accountId);
-    expect(signedTx.transaction.publicKey).toBeTruthy();
-    expect(signedTx.transaction.nonce).toBeTruthy();
-    expect(signedTx.transaction.receiverId).toBeTruthy();
-    expect(signedTx.transaction.blockHash).toBeTruthy();
-    expect(signedTx.transaction.actions).toEqual(actions);
-    expect(txHash).toBeTruthy();
-  });
-
-  it("creates, signs, sends, and awaits mining of a transaction without wallet", async () => {
-    const actions: Action[] = prepActions();
-    const result = await client.query<{ signAndSendTransaction: FinalExecutionOutcome }>({
-      uri,
-      query: `mutation {
-        signAndSendTransaction(
-          receiverId: $receiverId
-          actions: $actions
-          signerId: $signerId
-        )
-      }`,
-      variables: {
-        receiverId: contractId,
-        actions: actions,
-        signerId: workingAccount.accountId,
-      }
-    });
-    expect(result.errors).toBeFalsy();
-    expect(result.data).toBeTruthy();
-
-    const status: ExecutionStatus = result.data!.signAndSendTransaction.status;
-    expect(status.successValue).toBeTruthy();
-    expect(status.failure).toBeFalsy();
-    const transaction: Transaction = result.data!.signAndSendTransaction.transaction;
-    expect(transaction.signerId).toEqual(workingAccount.accountId);
-    expect(transaction.publicKey).toBeTruthy();
-    expect(transaction.nonce).toBeTruthy();
-    expect(transaction.receiverId).toBeTruthy();
-    expect(transaction.blockHash).toBeTruthy();
-    // expect(transaction.actions).toEqual(actions);
-    const txOutcome: ExecutionOutcomeWithId = result.data!.signAndSendTransaction.transaction_outcome;
-    expect(txOutcome.id).toBeTruthy();
-    expect(txOutcome.outcome.status.successReceiptId).toBeTruthy();
-    expect(txOutcome.outcome.status.failure).toBeFalsy();
-    const receiptsOutcome: ExecutionOutcomeWithId[] = result.data!.signAndSendTransaction.receipts_outcome;
-    expect(receiptsOutcome.length).toBeGreaterThan(0);
-  });
+  // it("creates, signs, sends, and awaits mining of a transaction without wallet", async () => {
+  //   const actions: Action[] = prepActions();
+  //   const result = await client.query<{ signAndSendTransaction: FinalExecutionOutcome }>({
+  //     uri,
+  //     query: `mutation {
+  //       signAndSendTransaction(
+  //         receiverId: $receiverId
+  //         actions: $actions
+  //         signerId: $signerId
+  //       )
+  //     }`,
+  //     variables: {
+  //       receiverId: contractId,
+  //       actions: actions,
+  //       signerId: workingAccount.accountId,
+  //     }
+  //   });
+  //   expect(result.errors).toBeFalsy();
+  //   expect(result.data).toBeTruthy();
+  //
+  //   const status: ExecutionStatus = result.data!.signAndSendTransaction.status;
+  //   expect(status.successValue).toBeTruthy();
+  //   expect(status.failure).toBeFalsy();
+  //   const transaction: Transaction = result.data!.signAndSendTransaction.transaction;
+  //   expect(transaction.signerId).toEqual(workingAccount.accountId);
+  //   expect(transaction.publicKey).toBeTruthy();
+  //   expect(transaction.nonce).toBeTruthy();
+  //   expect(transaction.receiverId).toBeTruthy();
+  //   expect(transaction.hash).toBeTruthy();
+  //   // expect(transaction.actions).toEqual(actions);
+  //   const txOutcome: ExecutionOutcomeWithId = result.data!.signAndSendTransaction.transaction_outcome;
+  //   expect(txOutcome.id).toBeTruthy();
+  //   expect(txOutcome.outcome.status.successReceiptId).toBeTruthy();
+  //   expect(txOutcome.outcome.status.failure).toBeFalsy();
+  //   const receiptsOutcome: ExecutionOutcomeWithId[] = result.data!.signAndSendTransaction.receipts_outcome;
+  //   expect(receiptsOutcome.length).toBeGreaterThan(0);
+  // });
 
   it("creates, signs, and sends a transaction asynchronously without wallet", async () => {
     const actions: Action[] = prepActions();

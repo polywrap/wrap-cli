@@ -140,14 +140,14 @@ getBlock(
   ): LightClientProof!
 
   accessKeyChanges(
-  accountIdArray: [String!]!
-  blockQuery: BlockReference!
+    accountIdArray: [String!]!
+    blockQuery: BlockReference!
   ): ChangeResult!
 
   singleAccessKeyChanges(
-  accessKeyArray: [AccessKeyWithPublicKey!]!,
-  blockQuery: BlockReference
-):   ChangeResult
+    accessKeyArray: [AccessKeyWithPublicKey!]!,
+    blockQuery: BlockReference
+  ):   ChangeResult
 
   accountChanges(
     accountIdArray: [String!]!

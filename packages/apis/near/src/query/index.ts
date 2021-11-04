@@ -7,13 +7,12 @@ import {
   Input_signTransaction,
   Input_getPublicKey,
   Input_getBlock,
-  Near_AccountView,
   Near_PublicKey,
   Near_Query,
   Near_Transaction,
   Near_SignTransactionResult,
   AccessKeyInfo,
-  AccessKey,
+  AccessKey, AccountView,
 } from "./w3";
 import JsonRpcProvider from "../utils/JsonRpcProvider";
 import * as bs58 from "as-base58";
@@ -47,7 +46,7 @@ export function getBlock(input: Input_getBlock): BlockResult {
   return provider.block(input.blockQuery);
 }
 
-export function getAccountState(input: Input_getAccountState): Near_AccountView {
+export function getAccountState(input: Input_getAccountState): AccountView {
   // prepare params
   const encoder = new JSONEncoder();
   encoder.pushObject(null);
@@ -101,10 +100,9 @@ export function getPublicKey(input: Input_getPublicKey): Near_PublicKey | null {
 
 export function createTransaction(input: Input_createTransaction): Near_Transaction {
   if (input.signerId == null) {
-    return Near_Query.createTransaction({
+    return Near_Query.createTransactionWithWallet({
       receiverId: input.receiverId,
       actions: input.actions,
-      signerId: input.signerId,
     });
   }
   const signerId: string = input.signerId!
@@ -132,6 +130,7 @@ export function createTransaction(input: Input_createTransaction): Near_Transact
     receiverId: input.receiverId,
     blockHash: blockHash,
     actions: input.actions,
+    hash: null,
   };
 }
 

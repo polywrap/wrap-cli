@@ -9,24 +9,23 @@ import {
 
 import * as nearApi from "near-api-js";
 
-// Type hacks
-// TODO: Remove these type hacks after union types are supported
+// Union types
+// TODO: Remove these union types after union types are supported natively by polywrap
 
 export type AccessKeyPermission = FunctionCallPermission | FullAccessPermission;
 
-// TODO: move to json types
-export interface QueryResponseKind {
-  block_height: number;
-  block_hash: string;
-}
-
-export interface AccountView extends QueryResponseKind {
-  amount: string;
-  locked: string;
-  code_hash: string;
-  storage_usage: number;
-  storage_paid_at: number;
-}
+// export interface QueryResponseKind {
+//   block_height: number;
+//   block_hash: string;
+// }
+//
+// export interface AccountView extends QueryResponseKind {
+//   amount: string;
+//   locked: string;
+//   code_hash: string;
+//   storage_usage: number;
+//   storage_paid_at: number;
+// }
 
 // Type utility functions
 function isNotNullOrUndefined(prop: unknown): boolean {

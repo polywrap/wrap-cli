@@ -20,7 +20,7 @@ type Query {
 
   getAccountState(
     accountId: String!
-  ): Near_AccountView!
+  ): AccountView!
 
   findAccessKey(
     accountId: String!

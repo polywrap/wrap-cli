@@ -75,6 +75,10 @@ type Mutation {
   ): PublicKey!
 }
 
+"""
+Plugin Types (can be imported by Polywrapper to prevent redundancy)
+"""
+
 # Supported public key types
 enum KeyType {
   ed25519

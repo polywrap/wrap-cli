@@ -12,14 +12,6 @@ type Query {
 
   getAccountId: String
 
-  accountState(
-    accountId: String!
-  ): AccountView!
-
-  findAccessKey(
-    accountId: String!
-  ): AccessKeyInfo
-
   getPublicKey(
     accountId: String!
   ): PublicKey
@@ -29,10 +21,9 @@ type Query {
   If signerId is provided, the transaction will be signed using data from the KeyStore in the plugin config.
   Otherwise, wallet authorization is expected.
   """
-  createTransaction(
+  createTransactionWithWallet(
     receiverId: String!
     actions: [Action!]!
-    signerId: String
   ): Transaction!
 
   # signs a transaction without wallet
@@ -66,13 +57,6 @@ type Mutation {
   sendTransactionAsync(
     signedTx: SignedTransaction!
   ): String!
-
-  # creates, signs, and sends a transaction without wallet and awaits execution
-  signAndSendTransaction(
-    receiverId: String!
-    actions: [Action!]!
-    signerId: String!
-  ): FinalExecutionOutcome!
 
   # creates, signs, and sends a transaction without wallet and immediately returns transaction hash
   signAndSendTransactionAsync(
@@ -222,18 +206,4 @@ type FinalExecutionOutcome {
   transaction: Transaction!
   transaction_outcome: ExecutionOutcomeWithId!
   receipts_outcome: [ExecutionOutcomeWithId!]!
-}
-
-# All query responses implement QueryResponseKind
-type QueryResponseKind {
-  blockHeight: BigInt!
-  blockHash: String!
-}
-
-type AccountView implements QueryResponseKind {
-  amount: String!
-  locked: String!
-  codeHash: String!
-  storageUsage: BigInt!
-  storagePaidAt: BigInt!
 }

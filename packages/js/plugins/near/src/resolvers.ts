@@ -14,17 +14,13 @@ export const query = (plugin: NearPlugin): Query.Module => ({
   getAccountId: async (input: Query.Input_getAccountId) => {
     return await plugin.getAccountId(input);
   },
-  accountState: async (input: Query.Input_accountState) => {
-    return await plugin.accountState(input);
-  },
-  findAccessKey: async (input: Query.Input_findAccessKey) => {
-    return await plugin.findAccessKey(input);
-  },
   getPublicKey: async (input: Query.Input_getPublicKey) => {
     return await plugin.getPublicKey(input);
   },
-  createTransaction: async (input: Query.Input_createTransaction) => {
-    return await plugin.createTransaction(input);
+  createTransactionWithWallet: async (
+    input: Query.Input_createTransactionWithWallet
+  ) => {
+    return await plugin.createTransactionWithWallet(input);
   },
   signTransaction: async (input: Query.Input_signTransaction) => {
     return await plugin.signTransaction(input);
@@ -43,9 +39,6 @@ export const mutation = (plugin: NearPlugin): Mutation.Module => ({
   },
   sendTransactionAsync: (input: Mutation.Input_sendTransactionAsync) => {
     return plugin.sendTransactionAsync(input);
-  },
-  signAndSendTransaction: (input: Mutation.Input_signAndSendTransaction) => {
-    return plugin.signAndSendTransaction(input);
   },
   signAndSendTransactionAsync: (
     input: Mutation.Input_signAndSendTransactionAsync

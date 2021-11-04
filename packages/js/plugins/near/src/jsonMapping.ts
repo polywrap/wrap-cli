@@ -4,7 +4,6 @@ import {
   AccessKey,
   Transaction,
   ExecutionOutcome,
-  AccountView,
   Action,
   ExecutionOutcomeWithId,
   FinalExecutionOutcome,
@@ -13,7 +12,6 @@ import {
 import { toPublicKey } from "./typeMapping";
 import {
   JsonAccessKey,
-  JsonAccountState,
   JsonAction,
   JsonExecutionOutcome,
   JsonExecutionOutcomeWithId,
@@ -76,17 +74,17 @@ export const parseJsonResponseAccessKey = (
           },
   } as AccessKey);
 
-export const parseJsonAccountState = (
-  state: JsonAccountState
-): AccountView => ({
-  amount: state.amount,
-  locked: state.locked,
-  codeHash: state.code_hash,
-  storageUsage: state.storage_usage.toString(),
-  storagePaidAt: state.storage_paid_at.toString(),
-  blockHash: state.block_hash.toString(),
-  blockHeight: state.block_height.toString(),
-});
+// export const parseJsonAccountState = (
+//   state: JsonAccountState
+// ): AccountView => ({
+//   amount: state.amount,
+//   locked: state.locked,
+//   codeHash: state.code_hash,
+//   storageUsage: state.storage_usage.toString(),
+//   storagePaidAt: state.storage_paid_at.toString(),
+//   blockHash: state.block_hash.toString(),
+//   blockHeight: state.block_height.toString(),
+// });
 
 export const parseJsonExecutionStatus = (
   status: JsonExecutionStatus | string

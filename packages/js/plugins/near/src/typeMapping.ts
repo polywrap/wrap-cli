@@ -4,7 +4,6 @@
 import {
   AccessKey,
   AccessKeyPermission as IAccessKeyPermission,
-  AccountView,
   Action,
   KeyTypeEnum,
   PublicKey,
@@ -14,7 +13,6 @@ import {
 } from "./w3";
 import {
   AccessKeyPermission,
-  AccountView as NearAccountView,
   isAddKey,
   isCreateAccount,
   isDeleteAccount,
@@ -183,16 +181,15 @@ export const fromAccessKey = (
   return new nearApi.transactions.AccessKey(key);
 };
 
-export const toAccountView = (accountView: NearAccountView): AccountView => ({
-  amount: accountView.amount,
-  locked: accountView.locked,
-  codeHash: accountView.code_hash,
-  storageUsage: accountView.storage_usage.toString(),
-  storagePaidAt: accountView.storage_usage.toString(),
-  blockHeight: accountView.block_height.toString(),
-  blockHash: accountView.block_hash,
-});
-
+// export const toAccountView = (accountView: NearAccountView): AccountView => ({
+//   amount: accountView.amount,
+//   locked: accountView.locked,
+//   codeHash: accountView.code_hash,
+//   storageUsage: accountView.storage_usage.toString(),
+//   storagePaidAt: accountView.storage_usage.toString(),
+//   blockHeight: accountView.block_height.toString(),
+//   blockHash: accountView.block_hash,
+// });
 
 // export const toFinalExecutionOutcome = (
 //   outcome: nearApi.providers.FinalExecutionOutcome
