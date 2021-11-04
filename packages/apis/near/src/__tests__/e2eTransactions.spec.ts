@@ -203,7 +203,7 @@ describe("e2e", () => {
     expect(receiptsOutcome.length).toBeGreaterThan(0);
   });
 
-  it.only("creates, signs, and sends a transaction asynchronously without wallet", async () => {
+  it("creates, signs, and sends a transaction asynchronously without wallet", async () => {
     const actions: Action[] = prepActions();
     const result = await client.query<{ signAndSendTransactionAsync: string }>({
       uri: apiUri,

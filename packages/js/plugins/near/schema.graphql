@@ -155,8 +155,9 @@ type Transaction {
   publicKey: PublicKey!
   nonce: BigInt!
   receiverId: String!
-  blockHash:  Bytes!
   actions: [Action!]!
+  blockHash:  Bytes
+  hash: String
 }
 
 type Signature {

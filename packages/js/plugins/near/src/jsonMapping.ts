@@ -31,8 +31,8 @@ export const parseJsonResponseTx = (tx: JsonTransaction): Transaction => {
     publicKey: toPublicKey(tx.public_key),
     nonce: tx.nonce.toString(),
     receiverId: tx.receiver_id,
-    blockHash: Buffer.from(tx.hash),
     actions: jsonActions.map(parseJsonResponseAction),
+    hash: tx.hash,
   };
 };
 
