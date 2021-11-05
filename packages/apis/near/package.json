@@ -7,7 +7,7 @@
     "build": "npx w3 build",
     "codegen": "node ../../cli/bin/w3 codegen",
     "deploy": "npx w3 build --ipfs http://localhost:5001 --test-ens near-api.eth",
-    "test:e2e": "jest --passWithNoTests --runInBand --verbose src/__tests__/e2eTransactions.spec.ts",
+    "test:e2e": "jest --passWithNoTests --runInBand --verbose",
     "test": "yarn test:e2e",
     "test:ci": "yarn test:e2e"
   },

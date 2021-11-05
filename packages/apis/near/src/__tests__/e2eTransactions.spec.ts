@@ -225,12 +225,6 @@ describe("e2e", () => {
 
     const txHash: string = result.data!.signAndSendTransactionAsync;
     expect(txHash).toBeTruthy();
-
-    const txStatus = await near.connection.provider.txStatus(txHash, workingAccount.accountId);
-    console.log(JSON.stringify(txStatus, null, 2));
-
-    const txStatus2 = await near.connection.provider.txStatus(txHash, contractId);
-    console.log(JSON.stringify(txStatus2, null, 2));
   });
 });
 

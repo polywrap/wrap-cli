@@ -185,6 +185,9 @@ describe("e2e", () => {
     });
     expect(result.errors).toBeFalsy();
     expect(result.data).toBeTruthy();
+
+    const txHash: string = result.data!.signAndSendTransactionAsync;
+    expect(txHash).toBeTruthy();
   });
 });
 
