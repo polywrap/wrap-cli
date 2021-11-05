@@ -16,9 +16,8 @@
     "w3": "bin/w3"
   },
   "scripts": {
-    "build": "rimraf ./build && tsc --project tsconfig.build.json && yarn copy:build-configs && yarn copy:infra-configs",
-    "copy:build-configs": "copyfiles ./src/lib/build-configs/**/**/* ./build/lib/build-configs/ -u 3",
-    "copy:infra-configs": "copyfiles ./src/lib/infra-configs/**/* ./build/lib/infra-configs/ -u 3",
+    "build": "rimraf ./build && tsc --project tsconfig.build.json && yarn copy:default-manifests",
+    "copy:default-manifests": "ts-node ./scripts/copyDefaultManifests.ts",
     "prebuild": "ts-node ./scripts/generateIntlTypes.ts",
     "lint": "eslint --color --ext .ts src/",
     "test": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose",

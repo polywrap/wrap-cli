@@ -5,12 +5,12 @@ import { intlMsg } from "../intl";
 import {
   Web3ApiManifest,
   BuildManifest,
-  EnvManifest,
+  InfraManifest,
   MetaManifest,
   PluginManifest,
   deserializeWeb3ApiManifest,
   deserializeBuildManifest,
-  deserializeEnvManifest,
+  deserializeInfraManifest,
   deserializeMetaManifest,
   deserializePluginManifest,
 } from "@web3api/core-js";
@@ -112,11 +112,11 @@ export async function loadBuildManifest(
   }
 }
 
-export async function loadEnvManifest(
+export async function loadInfraManifest(
   manifestPath: string,
   quiet = false
-): Promise<EnvManifest> {
-  const run = (): Promise<EnvManifest> => {
+): Promise<InfraManifest> {
+  const run = (): Promise<InfraManifest> => {
     const manifest = fs.readFileSync(manifestPath, "utf-8");
 
     if (!manifest) {
@@ -127,7 +127,7 @@ export async function loadEnvManifest(
     }
 
     try {
-      const result = deserializeEnvManifest(manifest);
+      const result = deserializeInfraManifest(manifest);
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);
@@ -145,7 +145,7 @@ export async function loadEnvManifest(
       async (_spinner) => {
         return await run();
       }
-    )) as EnvManifest;
+    )) as InfraManifest;
   }
 }
 

@@ -31,17 +31,14 @@
           "package": {
             "type": "string"
           },
-          "version": {
-            "type": "string"
-          },
-          "path": {
+          "versionOrPath": {
             "type": "string"
           },
           "dockerComposePath": {
             "type": "string"
           }
         },
-        "required": ["name", "package", "version"]
+        "required": ["name", "package", "versionOrPath"]
       }
     }
   }

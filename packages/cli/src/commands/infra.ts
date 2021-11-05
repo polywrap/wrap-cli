@@ -1,5 +1,6 @@
 import { intlMsg } from "../lib/intl";
 import { withSpinner } from "../lib/helpers";
+import { Web3ApiProject } from "../lib/project";
 import { Infra } from "../lib/Infra";
 import { runCommand } from "../lib/helpers/command";
 
@@ -9,12 +10,12 @@ import fs from "fs";
 
 const optionsStr = intlMsg.commands_infra_options_options();
 const manStr = intlMsg.commands_infra_options_manifest();
-const moduleNameStr = intlMsg.commands_infra_moduleName();
+const packageNameStr = intlMsg.commands_infra_packageName();
 
 const cmdStr = intlMsg.commands_create_options_command();
 const upStr = intlMsg.commands_infra_command_up();
 const downStr = intlMsg.commands_infra_command_down();
-const varsStr = intlMsg.commands_env_command_vars();
+const varsStr = intlMsg.commands_infra_command_vars();
 const configStr = intlMsg.commands_infra_command_config();
 const helpStr = intlMsg.commands_infra_options_h();
 
@@ -31,7 +32,7 @@ ${intlMsg.commands_create_options_commands()}:
   ${chalk.bold("help")}     ${helpStr}
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
-  -m, --modules [<${moduleNameStr}>]       ${intlMsg.commands_infra_options_m()}
+  -p, --packages [<${packageNameStr}>]       ${intlMsg.commands_infra_options_m()}
   -v, --verbose                      ${intlMsg.commands_infra_options_v()}
 `;
 
@@ -41,15 +42,15 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { parameters, print, filesystem } = toolbox;
     const command = parameters.first;
-    const { m, v } = parameters.options;
-    let { modules, verbose } = parameters.options;
+    const { p, v } = parameters.options;
+    let { packages, verbose } = parameters.options;
     let manifestPath = parameters.second;
 
-    modules = modules || m;
+    packages = packages || p;
     verbose = !!(verbose || v);
 
-    if (modules) {
-      modules = modules.split(",").map((m: string) => m.trim());
+    if (packages) {
+      packages = packages.split(",").map((m: string) => m.trim());
     }
 
     if (command === "help") {
@@ -83,13 +84,27 @@ export default {
     // - create infra w/ project
     // - infra.up()
 
-    const infra = await Infra.getInstance({
+    const project = new Web3ApiProject({
+      web3apiManifestPath: manifestPath,
+      quiet: verbose ? false : true,
+    });
+
+    const infra = new Infra({
+      project,
+      packagesToUse: packages
+    });
+
+
+
+    ///////
+
+    /*const infra = await Infra.getInstance({
       web3apiManifestPath: manifestPath,
       quiet: !verbose,
       modulesToUse: modules,
-    });
+    });*/
 
-    const manifest = await infra.getInfraManifest();
+    /*const manifest = await infra.getInfraManifest();
 
     if (manifest.modules && modules) {
       const manifestModuleNames = manifest.modules.map((module) => module.name);
@@ -105,9 +120,9 @@ export default {
           `Unrecognized modules: ${unrecognizedModules.join(", ")}`
         );
       }
-    }
+    }*/
 
-    await project.installModules();
+    // await project.installModules();
     await project.generateBaseDockerCompose();
 
     const baseCommand = await project.generateBaseComposedCommand();
@@ -159,7 +174,7 @@ export default {
 
       print.info(stdout);
     } else {
-      throw Error(intlMsg.commands_env_error_never());
+      throw Error(intlMsg.commands__error_never());
     }
   },
 };

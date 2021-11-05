@@ -8,7 +8,7 @@ env:
 packages:
   - name: ipfs
     package: "@web3api/ipfs-infra"
-    version: "0.0.1"
+    versionOrPath: "0.0.1"
   - name: dev-server
     package: "@web3api/dev-server-infra"
-    version: "0.0.2"
+    versionOrPath: "0.0.2"

@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import rimraf from "rimraf";
 import copyfiles from "copyfiles";
+import { writeFileSync } from "@web3api/os-js";
 import { TargetLanguage } from "@web3api/schema-bind";
 
 export interface ProjectConfig {
@@ -60,6 +61,18 @@ export abstract class Project {
         }
       });
     });
+  }
+
+  public writeFileIntoCache(
+    destSubFolder: string,
+    data: unknown,
+    options?: fs.WriteFileOptions
+  ): void {
+    writeFileSync(
+      this.getCachePath(destSubFolder),
+      data,
+      options
+    );
   }
 
   /// Abstract Interface

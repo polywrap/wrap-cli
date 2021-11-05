@@ -207,7 +207,7 @@ export class Web3ApiProject extends Project {
 
       // Return the cached manifest
       this._config.buildManifestPath = path.join(
-        this.getCachePath("build/config"),
+        this.getCachePath(this.getDefaultBuildManifestPath()),
         "web3api.build.yaml"
       );
       return this._config.buildManifestPath;
@@ -275,7 +275,7 @@ export class Web3ApiProject extends Project {
       throw Error(intlMsg.lib_project_language_not_found());
     }
 
-    const defaultPath = `${__dirname}/../build-configs/${language}/web3api.build.yaml`;
+    const defaultPath = `${__dirname}/../${this.getDefaultBuildManifestPath(language)}/web3api.build.yaml`;
 
     if (!fs.existsSync(defaultPath)) {
       throw Error(
@@ -284,10 +284,10 @@ export class Web3ApiProject extends Project {
     }
 
     // Update the cache
-    this.removeCacheDir("build/config");
+    this.removeCacheDir(this.getDefaultBuildManifestPath());
     await this.copyFilesIntoCache(
-      "build/config/",
-      `${__dirname}/../build-configs/${language}/*`,
+      this.getDefaultBuildManifestPath(),
+      `${__dirname}/../${this.getDefaultBuildManifestPath(language)}/*`,
       { up: true }
     );
     this._defaultBuildManifestCached = true;
@@ -334,8 +334,12 @@ export class Web3ApiProject extends Project {
     }
   }
 
+  public getDefaultBuildManifestPath(language?: string): string {
+    return `default-manifests/build` + language ? `/${language}` : ``;
+  }
+
   public getLinkedPackagesCacheSubPath(): string {
-    return "build/linked-packages";
+    return "linked-packages";
   }
 
   /// Web3API Infra Manifest (web3api.infra.yaml)
@@ -390,10 +394,21 @@ export class Web3ApiProject extends Project {
     }
 
     // Update the cache
-    this.removeCacheDir("infra/config");
-    await this.copyFilesIntoCache("infra/config", `${__dirname}/../infra-configs/default/*`);
+    this.removeCacheDir(this.getDefaultInfraManifestPath());
+    await this.copyFilesIntoCache(
+      this.getDefaultInfraManifestPath(),
+      `${__dirname}/../${this.getDefaultInfraManifestPath()}/*`
+    );
 
     this._defaultInfraManifestCached = true;
+  }
+
+  public getDefaultInfraManifestPath(): string {
+    return `default-manifests/infra/`;
+  }
+
+  public getInfraPackagesPath(): string {
+    return "infra/packages";
   }
 
   /// Web3API Meta Manifest (web3api.build.yaml)
