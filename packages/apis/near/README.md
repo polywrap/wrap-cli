@@ -1,5 +1,5 @@
-# SimpleStorage Demo Web3API
-A simple starter template that uses a SimpleStorage.sol contract ethereum. For more information on how this project works, and a step by step on how to extend its behavior, see the documentation [here](https://docs.web3api.dev/developers/create-as-web3api).
+# Near Wrapper (WIP)
+A work-in-progress implementation of a Near polywrapper.
 
 # How To Run
 
