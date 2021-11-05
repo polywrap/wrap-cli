@@ -53,8 +53,9 @@ export interface Transaction {
   publicKey: PublicKey;
   nonce: BigInt;
   receiverId: String;
-  blockHash: Bytes;
   actions: Array<Action>;
+  blockHash?: Bytes;
+  hash?: string;
 }
 
 export interface Signature {

@@ -79,7 +79,7 @@ export const fromAction = (action: Action): nearApi.transactions.Action => {
   } else if (isFunctionCall(action)) {
     return nearApi.transactions.functionCall(
       action.methodName!,
-      action.args ?? {},
+      action.args ?? new Uint8Array(),
       new BN(action.gas!),
       new BN(action.deposit!)
     );

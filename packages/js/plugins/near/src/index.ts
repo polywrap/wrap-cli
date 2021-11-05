@@ -213,11 +213,12 @@ export class NearPlugin extends Plugin {
   ): Promise<FinalExecutionOutcome> {
     const { signedTx } = input;
     const nearSignedTx = fromSignedTx(signedTx);
-    const provider = this.near.connection.provider;
-    const outcome = await provider.sendTransaction(nearSignedTx);
-    return parseJsonFinalExecutionOutcome(
-      (outcome as unknown) as JsonFinalExecutionOutcome
-    );
+    const bytes = nearSignedTx.encode();
+    const outcome = await this._sendJsonRpc<JsonFinalExecutionOutcome>({
+      method: "broadcast_tx_commit",
+      params: [Buffer.from(bytes).toString("base64")],
+    });
+    return parseJsonFinalExecutionOutcome(outcome);
   }
 
   public async sendTransactionAsync(
@@ -226,7 +227,7 @@ export class NearPlugin extends Plugin {
     const { signedTx } = input;
     const nearSignedTx = fromSignedTx(signedTx);
     const bytes = nearSignedTx.encode();
-    return this._sendJsonRpc({
+    return this._sendJsonRpc<string>({
       method: "broadcast_tx_async",
       params: [Buffer.from(bytes).toString("base64")],
     });
