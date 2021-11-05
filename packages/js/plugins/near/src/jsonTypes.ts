@@ -75,13 +75,3 @@ export interface JsonFinalExecutionOutcome {
   transaction_outcome: JsonExecutionOutcomeWithId;
   receipts_outcome: JsonExecutionOutcomeWithId[];
 }
-
-// export interface JsonAccountState {
-//   amount: string;
-//   locked: string;
-//   code_hash: string;
-//   storage_usage: number;
-//   storage_paid_at: number;
-//   block_height: number | string;
-//   block_hash: string;
-// }

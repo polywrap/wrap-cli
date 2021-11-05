@@ -40,9 +40,4 @@ export const mutation = (plugin: NearPlugin): Mutation.Module => ({
   sendTransactionAsync: (input: Mutation.Input_sendTransactionAsync) => {
     return plugin.sendTransactionAsync(input);
   },
-  signAndSendTransactionAsync: (
-    input: Mutation.Input_signAndSendTransactionAsync
-  ) => {
-    return plugin.signAndSendTransactionAsync(input);
-  },
 });

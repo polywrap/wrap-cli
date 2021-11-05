@@ -1,30 +1,32 @@
 import { Web3ApiClient } from "@web3api/client-js";
-import { nearPlugin, KeyPair, NearPluginConfig } from "../";
-import { Action } from "../w3";
+import { nearPlugin, NearPluginConfig } from "../";
+// import { Action } from "../w3";
 import * as testUtils from "./testUtils";
 import * as nearApi from "near-api-js";
-import BN from "bn.js";
-import { HELLO_WASM_METHODS } from "./testUtils";
+// import BN from "bn.js";
+// import { HELLO_WASM_METHODS } from "./testUtils";
 
 jest.setTimeout(360000);
 
 describe("e2e", () => {
 
+  // @ts-ignore
   let client: Web3ApiClient;
   const uri = "w3://ens/near.web3api.eth";
 
   let config: NearPluginConfig;
+  // @ts-ignore
   let near: nearApi.Near;
-  let workingAccount: nearApi.Account;
-  let contractId: string;
+  // let workingAccount: nearApi.Account;
+  // let contractId: string;
   // let contract: nearApi.Contract;
 
-  const prepActions = (): Action[] => {
-    const setCallValue = testUtils.generateUniqueString('setCallPrefix');
-    const args = { value: setCallValue };
-    const stringify = (obj: unknown): Buffer => Buffer.from(JSON.stringify(obj));
-    return [{ methodName: "setValue", args: stringify(args), gas: "3000000000000", deposit: "0" }];
-  }
+  // const prepActions = (): Action[] => {
+  //   const setCallValue = testUtils.generateUniqueString('setCallPrefix');
+  //   const args = { value: setCallValue };
+  //   const stringify = (obj: unknown): Buffer => Buffer.from(JSON.stringify(obj));
+  //   return [{ methodName: "setValue", args: stringify(args), gas: "3000000000000", deposit: "0" }];
+  // }
 
   beforeAll(async () => {
     config = await testUtils.setUpTestConfig();
@@ -39,16 +41,16 @@ describe("e2e", () => {
     });
   });
 
-  beforeEach(async () => {
-    // set up contract account
-    contractId = testUtils.generateUniqueString('test');
-    workingAccount = await testUtils.createAccount(near);
-    await testUtils.deployContract(workingAccount, contractId);
-    // set up access key
-    const keyPair = KeyPair.fromRandom('ed25519');
-    await workingAccount.addKey(keyPair.getPublicKey(), contractId, HELLO_WASM_METHODS.changeMethods, new BN(  "2000000000000000000000000"));
-    await config.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
-  });
+  // beforeEach(async () => {
+  //   // set up contract account
+  //   contractId = testUtils.generateUniqueString('test');
+  //   workingAccount = await testUtils.createAccount(near);
+  //   await testUtils.deployContract(workingAccount, contractId);
+  //   // set up access key
+  //   const keyPair = KeyPair.fromRandom('ed25519');
+  //   await workingAccount.addKey(keyPair.getPublicKey(), contractId, HELLO_WASM_METHODS.changeMethods, new BN(  "2000000000000000000000000"));
+  //   await config.keyStore.setKey(testUtils.networkId, workingAccount.accountId, keyPair);
+  // });
 
   // it("Creates a transaction without wallet", async () => {
   //   const actions: Action[] = prepActions();
@@ -166,29 +168,29 @@ describe("e2e", () => {
   //   expect(receiptsOutcome.length).toBeGreaterThan(0);
   // });
 
-  it("creates, signs, and sends a transaction asynchronously without wallet", async () => {
-    const actions: Action[] = prepActions();
-    const result = await client.query<{ signAndSendTransactionAsync: string }>({
-      uri,
-      query: `mutation {
-        signAndSendTransactionAsync(
-          receiverId: $receiverId
-          actions: $actions
-          signerId: $signerId
-        )
-      }`,
-      variables: {
-        receiverId: contractId,
-        actions: actions,
-        signerId: workingAccount.accountId,
-      }
-    });
-    expect(result.errors).toBeFalsy();
-    expect(result.data).toBeTruthy();
-
-    const txHash: string = result.data!.signAndSendTransactionAsync;
-    expect(txHash).toBeTruthy();
-  });
+  // it("creates, signs, and sends a transaction asynchronously without wallet", async () => {
+  //   const actions: Action[] = prepActions();
+  //   const result = await client.query<{ signAndSendTransactionAsync: string }>({
+  //     uri,
+  //     query: `mutation {
+  //       signAndSendTransactionAsync(
+  //         receiverId: $receiverId
+  //         actions: $actions
+  //         signerId: $signerId
+  //       )
+  //     }`,
+  //     variables: {
+  //       receiverId: contractId,
+  //       actions: actions,
+  //       signerId: workingAccount.accountId,
+  //     }
+  //   });
+  //   expect(result.errors).toBeFalsy();
+  //   expect(result.data).toBeTruthy();
+  //
+  //   const txHash: string = result.data!.signAndSendTransactionAsync;
+  //   expect(txHash).toBeTruthy();
+  // });
 });
 
 

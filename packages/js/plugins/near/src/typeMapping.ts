@@ -102,15 +102,6 @@ export const fromAction = (action: Action): nearApi.transactions.Action => {
   }
 };
 
-export const toTx = (tx: nearApi.transactions.Transaction): Transaction => ({
-  signerId: tx.signerId,
-  publicKey: toPublicKey(tx.publicKey),
-  nonce: tx.nonce.toString(),
-  receiverId: tx.receiverId,
-  blockHash: tx.blockHash,
-  actions: tx.actions.map(toAction),
-});
-
 export const fromTx = (tx: Transaction): nearApi.transactions.Transaction => {
   return new nearApi.transactions.Transaction({
     signerId: tx.signerId,
@@ -174,58 +165,3 @@ export const toAccessKey = (key: nearApi.transactions.AccessKey): AccessKey => {
     permission: permission as IAccessKeyPermission,
   };
 };
-
-export const fromAccessKey = (
-  key: AccessKey
-): nearApi.transactions.AccessKey => {
-  return new nearApi.transactions.AccessKey(key);
-};
-
-// export const toAccountView = (accountView: NearAccountView): AccountView => ({
-//   amount: accountView.amount,
-//   locked: accountView.locked,
-//   codeHash: accountView.code_hash,
-//   storageUsage: accountView.storage_usage.toString(),
-//   storagePaidAt: accountView.storage_usage.toString(),
-//   blockHeight: accountView.block_height.toString(),
-//   blockHash: accountView.block_hash,
-// });
-
-// export const toFinalExecutionOutcome = (
-//   outcome: nearApi.providers.FinalExecutionOutcome
-// ): FinalExecutionOutcome => {
-//   return {
-//     status: toExecutionStatus(outcome.status),
-//     transaction: parseJsonResponseTx(outcome.transaction),
-//     transaction_outcome: toExecutionOutcomeWithId(outcome.transaction_outcome),
-//     receipts_outcome: outcome.receipts_outcome.map(toExecutionOutcomeWithId),
-//   };
-// };
-//
-// export const toExecutionOutcomeWithId = (
-//   outcomeWithId: nearApi.providers.ExecutionOutcomeWithId
-// ): ExecutionOutcomeWithId => {
-//   const outcome: ExecutionOutcome = {
-//     logs: outcomeWithId.outcome.logs ? outcomeWithId.outcome.logs : null,
-//     receipt_ids: outcomeWithId.outcome.receipt_ids,
-//     gas_burnt: outcomeWithId.outcome.gas_burnt.toString(),
-//     status: toExecutionStatus(outcomeWithId.outcome.status),
-//   };
-//   return {
-//     id: outcomeWithId.id,
-//     outcome: outcome,
-//   };
-// };
-//
-// export const parseJsonExecutionStatus = (
-//   status: JsonExecutionStatus | string
-// ): ExecutionStatus => {
-//   if (typeof status === "string") {
-//     return { successValue: status };
-//   }
-//   return {
-//     successValue: status.SuccessValue,
-//     successReceiptId: status.SuccessReceiptId,
-//     failure: JSON.stringify(status.Failure),
-//   };
-// };

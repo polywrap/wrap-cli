@@ -74,18 +74,6 @@ export const parseJsonResponseAccessKey = (
           },
   } as AccessKey);
 
-// export const parseJsonAccountState = (
-//   state: JsonAccountState
-// ): AccountView => ({
-//   amount: state.amount,
-//   locked: state.locked,
-//   codeHash: state.code_hash,
-//   storageUsage: state.storage_usage.toString(),
-//   storagePaidAt: state.storage_paid_at.toString(),
-//   blockHash: state.block_hash.toString(),
-//   blockHeight: state.block_height.toString(),
-// });
-
 export const parseJsonExecutionStatus = (
   status: JsonExecutionStatus | string
 ): ExecutionStatus => {
