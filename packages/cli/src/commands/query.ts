@@ -142,32 +142,39 @@ export default {
         let variables: Record<string, unknown> = {};
 
         if (task.variables) {
-          const resolveConstants = (
-            vars: Record<string, unknown>
+          const resolveObjectConstants = (
+            constants: Record<string, unknown>
           ): Record<string, unknown> => {
             const output: Record<string, unknown> = {};
 
-            Object.keys(vars).forEach((key: string) => {
-              const value = vars[key];
-              if (typeof value === "string") {
-                if (value[0] === "$") {
-                  output[key] = constants[value.replace("$", "")];
-                } else {
-                  output[key] = value;
-                }
-              } else if (typeof value === "object") {
-                output[key] = resolveConstants(
-                  value as Record<string, unknown>
-                );
-              } else {
-                output[key] = value;
-              }
+            Object.keys(constants).forEach((key: string) => {
+              output[key] = resolveConstant(constants[key]);
             });
 
             return output;
           };
 
-          variables = resolveConstants(task.variables);
+          const resolveArrayConstants = (arr: unknown[]): unknown[] => {
+            return arr.map((item) => {
+              return resolveConstant(item);
+            });
+          };
+
+          const resolveConstant = (constant: unknown): unknown => {
+            if (typeof constant === "string" && constant[0] === "$") {
+              return constants[constant.replace("$", "")];
+            } else if (Array.isArray(constant)) {
+              return resolveArrayConstants(constant);
+            } else if (typeof constant === "object") {
+              return resolveObjectConstants(
+                constant as Record<string, unknown>
+              );
+            } else {
+              return constant;
+            }
+          };
+
+          variables = resolveObjectConstants(task.variables);
         }
 
         if (!uri) {

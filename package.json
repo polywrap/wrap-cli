@@ -9,7 +9,16 @@
   },
   "workspaces": {
     "packages": [
-      "./packages/**/*"
+      "./packages/apis/**",
+      "./packages/cli/**",
+      "./packages/core-interfaces/**",
+      "./packages/js/**",
+      "./packages/manifest-schemas/**",
+      "./packages/schema/**",
+      "./packages/templates/**",
+      "./packages/test-cases",
+      "./packages/test-env/**",
+      "./packages/wasm/**"
     ]
   },
   "scripts": {
