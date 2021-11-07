@@ -567,15 +567,18 @@ async function resolveExternalImports(
           (def) => def.type === importedType
         );
         const type = extTypeInfo.queryTypes[queryIdx];
-        trueType = createImportedQueryDefinition({
-          ...type,
-          type: appendNamespace(namespace, importedType),
-          required: undefined,
-          uri,
-          nativeType: type.type,
-          namespace,
-          capabilities: [],
-        });
+        trueType = {
+          ...createImportedQueryDefinition({
+            ...type,
+            type: appendNamespace(namespace, importedType),
+            required: undefined,
+            uri,
+            nativeType: type.type,
+            namespace,
+            capabilities: [],
+          }),
+          methods: type.methods,
+        };
       } else if (
         importedType.endsWith("_Query") ||
         importedType.endsWith("_Mutation")
@@ -587,43 +590,52 @@ async function resolveExternalImports(
         const objIdx = extTypeInfo.objectTypes.findIndex(
           (def) => def.type === importedType
         );
-        const impObjIdx = objIdx === -1 && extTypeInfo.importedObjectTypes.findIndex(
-          (def) => def.type === importedType
-        );
-        const enumIdx = impObjIdx === -1 && extTypeInfo.enumTypes.findIndex(
-          (def) => def.type === importedType
-        );
-        const impEnumIdx = enumIdx === -1 && extTypeInfo.importedEnumTypes.findIndex(
-          (def) => def.type === importedType
-        );
-
+        const impObjIdx =
+          objIdx === -1 &&
+          extTypeInfo.importedObjectTypes.findIndex(
+            (def) => def.type === importedType
+          );
+        const enumIdx =
+          impObjIdx === -1 &&
+          extTypeInfo.enumTypes.findIndex((def) => def.type === importedType);
+        const impEnumIdx =
+          enumIdx === -1 &&
+          extTypeInfo.importedEnumTypes.findIndex(
+            (def) => def.type === importedType
+          );
 
         if (objIdx > -1) {
           extTypes = extTypeInfo.objectTypes;
           visitorFunc = visitObjectDefinition;
           const type = extTypeInfo.objectTypes[objIdx];
-          trueType = createImportedObjectDefinition({
-            ...type,
-            type: appendNamespace(namespace, importedType),
-            name: undefined,
-            required: undefined,
-            uri,
-            nativeType: type.type,
-            namespace,
-          });
+          trueType = {
+            ...createImportedObjectDefinition({
+              ...type,
+              type: appendNamespace(namespace, importedType),
+              name: undefined,
+              required: undefined,
+              uri,
+              nativeType: type.type,
+              namespace,
+            }),
+            properties: type.properties,
+          };
         } else if (impObjIdx && impObjIdx > -1) {
           extTypes = extTypeInfo.importedObjectTypes;
           visitorFunc = visitObjectDefinition;
           const type = extTypeInfo.importedObjectTypes[impObjIdx];
-          trueType = createImportedObjectDefinition({
-            ...type,
-            type: appendNamespace(namespace, importedType),
-            name: undefined,
-            required: undefined,
-            uri,
-            nativeType: type.type,
-            namespace,
-          });
+          trueType = {
+            ...createImportedObjectDefinition({
+              ...type,
+              type: appendNamespace(namespace, importedType),
+              name: undefined,
+              required: undefined,
+              uri,
+              nativeType: type.type,
+              namespace,
+            }),
+            properties: type.properties,
+          };
         } else if (enumIdx && enumIdx > -1) {
           extTypes = extTypeInfo.enumTypes;
           visitorFunc = visitEnumDefinition;
