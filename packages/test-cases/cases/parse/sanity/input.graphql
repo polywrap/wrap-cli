@@ -24,7 +24,6 @@ directive @capability(
   type: String!
   modules: [String!]!
 ) on OBJECT
-
 """
 CustomEnum comment
 """

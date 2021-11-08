@@ -620,7 +620,7 @@ async function resolveExternalImports(
             }),
             properties: type.properties,
           };
-        } else if (impObjIdx && impObjIdx > -1) {
+        } else if (impObjIdx !== false && impObjIdx > -1) {
           extTypes = extTypeInfo.importedObjectTypes;
           visitorFunc = visitObjectDefinition;
           const type = extTypeInfo.importedObjectTypes[impObjIdx];
@@ -636,7 +636,7 @@ async function resolveExternalImports(
             }),
             properties: type.properties,
           };
-        } else if (enumIdx && enumIdx > -1) {
+        } else if (enumIdx !== false && enumIdx > -1) {
           extTypes = extTypeInfo.enumTypes;
           visitorFunc = visitEnumDefinition;
           const type = extTypeInfo.enumTypes[enumIdx];
@@ -649,7 +649,7 @@ async function resolveExternalImports(
             nativeType: type.type,
             namespace,
           });
-        } else if (impEnumIdx && impEnumIdx > -1) {
+        } else if (impEnumIdx !== false && impEnumIdx > -1) {
           extTypes = extTypeInfo.importedEnumTypes;
           visitorFunc = visitEnumDefinition;
           const type = extTypeInfo.importedEnumTypes[impEnumIdx];
