@@ -19,6 +19,7 @@ export enum DefinitionKind {
   UnresolvedObjectOrEnum = 1 << 12,
   ObjectRef = 1 << 13,
   EnumRef = 1 << 14,
+  Interface = 1 << 15,
 }
 
 export function isKind(type: GenericDefinition, kind: DefinitionKind): boolean {
@@ -381,20 +382,50 @@ export function createImportedEnumDefinition(args: {
 
 export type CapabilityType = "getImplementations";
 export type InvokableModules = "query" | "mutation";
-
-export interface QueryCapability {
-  type: CapabilityType;
+export interface Capability {
+  enabled: boolean;
   modules: InvokableModules[];
 }
+export function createCapability(args: {
+  type: CapabilityType;
+  enabled: boolean;
+  modules: InvokableModules[];
+}): CapabilityDefinition {
+  return {
+    [args.type]: {
+      enabled: args.enabled,
+      modules: args.modules,
+    },
+  };
+}
 
-export interface ImportedQueryCapabilityDefinition {
-  capabilities: QueryCapability[];
+export type CapabilityDefinition = Record<CapabilityType, Capability>;
+
+export interface InterfaceDefinition
+  extends GenericDefinition,
+    ImportedDefinition {
+  capabilities: CapabilityDefinition;
+}
+export function createInterfaceDefinition(args: {
+  type: string;
+  required?: boolean;
+  namespace: string;
+  uri: string;
+  capabilities: CapabilityDefinition;
+}): InterfaceDefinition {
+  return {
+    ...createGenericDefinition(args),
+    namespace: args.namespace,
+    uri: args.uri,
+    nativeType: "Interface",
+    capabilities: args.capabilities,
+    kind: DefinitionKind.Interface,
+  };
 }
 
 export interface ImportedQueryDefinition
   extends GenericDefinition,
     ImportedDefinition,
-    ImportedQueryCapabilityDefinition,
     WithComment {
   methods: MethodDefinition[];
 }
@@ -406,7 +437,6 @@ export function createImportedQueryDefinition(args: {
   nativeType: string;
   interfaces?: InterfaceImplementedDefinition[];
   comment?: string;
-  capabilities: QueryCapability[];
 }): ImportedQueryDefinition {
   if (!isQueryType(args.nativeType)) {
     throw Error(
@@ -421,7 +451,6 @@ export function createImportedQueryDefinition(args: {
     namespace: args.namespace,
     nativeType: args.nativeType,
     comment: args.comment,
-    capabilities: args.capabilities,
     kind: DefinitionKind.ImportedQuery,
   };
 }

@@ -40,6 +40,8 @@ import {
   createImportedObjectDefinition,
   createImportedEnumDefinition,
   createImportedQueryDefinition,
+  createInterfaceDefinition,
+  createCapability,
 } from "@web3api/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -80,14 +82,18 @@ export async function resolveUseStatements(
     }
     const module = importedQuery.nativeType.toLowerCase() as InvokableModules;
     const modules: InvokableModules[] = [module];
-    importedQuery.capabilities = [];
+    const capabilities = parsedUse.usedTypes
+      .map((type) => createCapability({ type, modules, enabled: true }))
+      .reduce((o1, o2) => ({ ...o1, ...o2 }));
 
-    for (const usedType of parsedUse.usedTypes) {
-      importedQuery.capabilities.push({
-        type: usedType,
-        modules: modules,
-      });
-    }
+    typeInfo.interfaceTypes.push(
+      createInterfaceDefinition({
+        type: importedQuery.type,
+        uri: importedQuery.uri,
+        namespace: parsedUse.namespace,
+        capabilities: capabilities,
+      })
+    );
   }
 }
 
@@ -137,6 +143,7 @@ export async function resolveImportsAndParseSchemas(
     objectTypes: [],
     queryTypes: [],
     enumTypes: [],
+    interfaceTypes: [],
     importedEnumTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
@@ -575,7 +582,6 @@ async function resolveExternalImports(
             uri,
             nativeType: type.type,
             namespace,
-            capabilities: [],
           }),
           methods: type.methods,
         };

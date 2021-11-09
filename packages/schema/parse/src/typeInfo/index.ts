@@ -6,6 +6,7 @@ import {
   GenericDefinition,
   EnumDefinition,
   ImportedEnumDefinition,
+  InterfaceDefinition,
 } from "./definitions";
 
 export * from "./definitions";
@@ -17,6 +18,7 @@ export interface TypeInfo {
   objectTypes: ObjectDefinition[];
   queryTypes: QueryDefinition[];
   enumTypes: EnumDefinition[];
+  interfaceTypes: InterfaceDefinition[];
   importedObjectTypes: ImportedObjectDefinition[];
   importedQueryTypes: ImportedQueryDefinition[];
   importedEnumTypes: ImportedEnumDefinition[];
@@ -26,6 +28,7 @@ export function createTypeInfo(): TypeInfo {
     objectTypes: [],
     enumTypes: [],
     queryTypes: [],
+    interfaceTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
     importedEnumTypes: [],
@@ -39,6 +42,7 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
     objectTypes: [],
     queryTypes: [],
     enumTypes: [],
+    interfaceTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
     importedEnumTypes: [],
@@ -64,6 +68,10 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       tryInsert(combined.queryTypes, queryType);
     }
 
+    for (const interfaceType of typeInfo.interfaceTypes) {
+      tryInsert(combined.interfaceTypes, interfaceType);
+    }
+
     for (const importedObjectType of typeInfo.importedObjectTypes) {
       tryInsert(
         combined.importedObjectTypes,
@@ -76,25 +84,7 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       tryInsert(
         combined.importedQueryTypes,
         importedQueryType,
-        compareImportedType,
-        (a: ImportedQueryDefinition, b: ImportedQueryDefinition) => {
-          // make sure a & b have the same capabilities
-          const aCapabilityTypes = new Set(a.capabilities.map((c) => c.type));
-
-          for (const capability of b.capabilities) {
-            if (!aCapabilityTypes.has(capability.type)) {
-              a.capabilities.push(capability);
-            }
-          }
-
-          const bCapabilityTypes = new Set(b.capabilities.map((c) => c.type));
-
-          for (const capability of a.capabilities) {
-            if (!bCapabilityTypes.has(capability.type)) {
-              b.capabilities.push(capability);
-            }
-          }
-        }
+        compareImportedType
       );
     }
 
