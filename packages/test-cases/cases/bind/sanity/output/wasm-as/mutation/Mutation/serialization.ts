@@ -38,7 +38,7 @@ export function deserializemutationMethodArgs(argsBuf: ArrayBuffer): Input_mutat
   let _enumArray: Array<Types.CustomEnum> = [];
   let _enumArraySet: bool = false;
   let _optEnumArray: Array<Nullable<Types.CustomEnum>> | null = null;
-  let _union: Types.CustomUnion;
+  let _union: Types.CustomUnion = null;
   let _unionSet: bool = false;
   let _optUnion: Types.CustomUnion | null = null;
   let _unionArray: Array<Types.CustomUnion> = [];
@@ -130,24 +130,24 @@ export function deserializemutationMethodArgs(argsBuf: ArrayBuffer): Input_mutat
         return value;
       });
       reader.context().pop();
-    } else if (field == "union") {
+    }
+    else if (field == "union") {
       reader.context().push(field, "Types.CustomUnion", "type found, reading property");
-
-      const value = Types.CustomUnion.read(reader);
-
-      _union = value;
+      const union = Types.CustomUnion.read(reader);
+      _union = union;
       _unionSet = true;
       reader.context().pop();
-    } else if (field == "optUnion") {
+    }
+    else if (field == "optUnion") {
       reader.context().push(field, "Types.CustomUnion | null", "type found, reading property");
-
       let union: Types.CustomUnion | null = null;
       if (!reader.isNextNil()) {
         union = Types.CustomUnion.read(reader);
       }
       _optUnion = union;
       reader.context().pop();
-    } else if (field == "unionArray") {
+    }
+    else if (field == "unionArray") {
       reader.context().push(field, "Array<Types.CustomUnion>", "type found, reading property");
       _unionArray = reader.readArray((reader: Read): Types.CustomUnion => {
         const union = Types.CustomUnion.read(reader);
@@ -155,7 +155,8 @@ export function deserializemutationMethodArgs(argsBuf: ArrayBuffer): Input_mutat
       });
       _unionArraySet = true;
       reader.context().pop();
-    } else if (field == "optUnionArray") {
+    }
+    else if (field == "optUnionArray") {
       reader.context().push(field, "Array<Types.CustomUnion | null> | null", "type found, reading property");
       _optUnionArray = reader.readNullableArray((reader: Read): Types.CustomUnion | null => {
         let union: Types.CustomUnion | null = null;
@@ -177,6 +178,12 @@ export function deserializemutationMethodArgs(argsBuf: ArrayBuffer): Input_mutat
   }
   if (!_enumArraySet) {
     throw new Error(reader.context().printWithContext("Missing required argument: 'enumArray: [CustomEnum]'"));
+  }
+  if (!_unionSet) {
+    throw new Error(reader.context().printWithContext("Missing required argument: 'union: CustomUnion'"));
+  }
+  if (!_unionArraySet) {
+    throw new Error(reader.context().printWithContext("Missing required argument: 'unionArray: [CustomUnion]'"));
   }
 
   return {

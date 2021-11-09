@@ -45,7 +45,7 @@ export function writeimportedMethodArgs(
   writer: Write,
   input: Input_importedMethod
 ): void {
-  writer.writeMapLength(13);
+  writer.writeMapLength(17);
   writer.context().push("str", "string", "writing property");
   writer.writeString("str");
   writer.writeString(input.str);
@@ -124,13 +124,11 @@ export function writeimportedMethodArgs(
   writer.context().pop();
   writer.context().push("optUnion", "Types.TestImport_Union | null", "writing property");
   writer.writeString("optUnion");
-  
-  if(input.optUnion) {
-    Types.TestImport_Union.write(writer, input.optUnion);
+  if (input.optUnion) {
+    Types.TestImport_Union.write(writer, input.optUnion as Types.TestImport_Union);
   } else {
-    writer.writeNil()
+    writer.writeNil();
   }
-
   writer.context().pop();
   writer.context().push("unionArray", "Array<Types.TestImport_Union>", "writing property");
   writer.writeString("unionArray");
@@ -141,12 +139,13 @@ export function writeimportedMethodArgs(
   writer.context().push("optUnionArray", "Array<Types.TestImport_Union | null> | null", "writing property");
   writer.writeString("optUnionArray");
   writer.writeNullableArray(input.optUnionArray, (writer: Write, item: Types.TestImport_Union | null): void => {
-    if(item) {
-      Types.TestImport_Union.write(writer, item);
+    if (item) {
+      Types.TestImport_Union.write(writer, item as Types.TestImport_Union);
     } else {
-      writer.writeNil()
+      writer.writeNil();
     }
   });
+  writer.context().pop();
 }
 
 export function deserializeimportedMethodResult(buffer: ArrayBuffer): Types.TestImport_Object | null {

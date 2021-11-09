@@ -25,7 +25,6 @@ export function serializeCustomUnion(type: CustomUnion): ArrayBuffer {
 
 export function writeCustomUnion(writer: Write, type: CustomUnion): void {
   writer.writeMapLength(2);
-
   writer.context().push("AnotherObject", "Types.AnotherObject | null", "writing property");
   writer.writeString("AnotherObject");
 
@@ -36,7 +35,6 @@ export function writeCustomUnion(writer: Write, type: CustomUnion): void {
   }
 
   writer.context().pop();
-
   writer.context().push("YetAnotherObject", "Types.YetAnotherObject | null", "writing property");
   writer.writeString("YetAnotherObject");
 
@@ -71,28 +69,28 @@ export function readCustomUnion(reader: Read): CustomUnion {
       if (!reader.isNextNil()) {
         AnotherObject = Types.AnotherObject.read(reader);
       }
-      
+
       reader.context().pop();
     }
-
-    else if(field == "YetAnotherObject") {
+    else if (field == "YetAnotherObject") {
       reader.context().push(field, "Types.YetAnotherObject | null", "type found, reading property");
 
       if (!reader.isNextNil()) {
         YetAnotherObject = Types.YetAnotherObject.read(reader);
       }
-      
+
       reader.context().pop();
     }
-
     reader.context().pop();
   }
 
-  const instance = AnotherObject || YetAnotherObject;
+  const definedMember =
+     AnotherObject
+    ||  YetAnotherObject
 
-  if(!instance) {
+  if(!definedMember) {
     throw new Error(`All serialized member types for CustomUnion are null`)
   }
 
-  return CustomUnion.create(instance)
+  return CustomUnion.create(definedMember)
 }

@@ -24,7 +24,7 @@ export function serializeTestImport_Object(type: TestImport_Object): ArrayBuffer
 }
 
 export function writeTestImport_Object(writer: Write, type: TestImport_Object): void {
-  writer.writeMapLength(8);
+  writer.writeMapLength(12);
   writer.context().push("object", "Types.TestImport_AnotherObject", "writing property");
   writer.writeString("object");
   Types.TestImport_AnotherObject.write(writer, type.object);
@@ -73,16 +73,32 @@ export function writeTestImport_Object(writer: Write, type: TestImport_Object): 
     writer.writeNullableInt32(item);
   });
   writer.context().pop();
+  writer.context().push("union", "Types.TestImport_Union", "writing property");
+  writer.writeString("union");
+  Types.TestImport_Union.write(writer, type.union);
+  writer.context().pop();
+  writer.context().push("optUnion", "Types.TestImport_Union | null", "writing property");
+  writer.writeString("optUnion");
+  if (type.optUnion) {
+    Types.TestImport_Union.write(writer, type.optUnion as Types.TestImport_Union);
+  } else {
+    writer.writeNil();
+  }
+  writer.context().pop();
   writer.context().push("unionArray", "Array<Types.TestImport_Union>", "writing property");
   writer.writeString("unionArray");
   writer.writeArray(type.unionArray, (writer: Write, item: Types.TestImport_Union): void => {
-    writer.writeInt32(item);
+    Types.TestImport_Union.write(writer, item);
   });
   writer.context().pop();
-  writer.context().push("optUnionArray", "Array<Nullable<Types.TestImport_Union>> | null", "writing property");
+  writer.context().push("optUnionArray", "Array<Types.TestImport_Union | null> | null", "writing property");
   writer.writeString("optUnionArray");
-  writer.writeNullableArray(type.optUnionArray, (writer: Write, item: Nullable<Types.TestImport_Union>): void => {
-    writer.writeNullableInt32(item);
+  writer.writeNullableArray(type.optUnionArray, (writer: Write, item: Types.TestImport_Union | null): void => {
+    if (item) {
+      Types.TestImport_Union.write(writer, item as Types.TestImport_Union);
+    } else {
+      writer.writeNil();
+    }
   });
   writer.context().pop();
 }
@@ -110,7 +126,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
   let _optEnumArray: Array<Nullable<Types.TestImport_Enum>> | null = null;
   let _union: Types.TestImport_Union = null;
   let _unionSet: bool = false;
-  let _optUnion: Types.TestImport_Union = null;
+  let _optUnion: Types.TestImport_Union | null = null;
   let _unionArray: Array<Types.TestImport_Union> = [];
   let _unionArraySet: bool = false;
   let _optUnionArray: Array<Types.TestImport_Union | null> | null = null;
@@ -228,22 +244,21 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
     }
     else if (field == "union") {
       reader.context().push(field, "Types.TestImport_Union", "type found, reading property");
-
-      const value = Types.TestImport_Union.read(reader);
-
-      _union = value;
+      const union = Types.TestImport_Union.read(reader);
+      _union = union;
       _unionSet = true;
       reader.context().pop();
-    } else if (field == "optUnion") {
+    }
+    else if (field == "optUnion") {
       reader.context().push(field, "Types.TestImport_Union | null", "type found, reading property");
-
       let union: Types.TestImport_Union | null = null;
       if (!reader.isNextNil()) {
         union = Types.TestImport_Union.read(reader);
       }
       _optUnion = union;
       reader.context().pop();
-    } else if (field == "unionArray") {
+    }
+    else if (field == "unionArray") {
       reader.context().push(field, "Array<Types.TestImport_Union>", "type found, reading property");
       _unionArray = reader.readArray((reader: Read): Types.TestImport_Union => {
         const union = Types.TestImport_Union.read(reader);
@@ -251,7 +266,8 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
       });
       _unionArraySet = true;
       reader.context().pop();
-    } else if (field == "optUnionArray") {
+    }
+    else if (field == "optUnionArray") {
       reader.context().push(field, "Array<Types.TestImport_Union | null> | null", "type found, reading property");
       _optUnionArray = reader.readNullableArray((reader: Read): Types.TestImport_Union | null => {
         let union: Types.TestImport_Union | null = null;
@@ -277,6 +293,12 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
   if (!_enumArraySet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'enumArray: [TestImport_Enum]'"));
   }
+  if (!_unionSet) {
+    throw new Error(reader.context().printWithContext("Missing required property: 'union: TestImport_Union'"));
+  }
+  if (!_unionArraySet) {
+    throw new Error(reader.context().printWithContext("Missing required property: 'unionArray: [TestImport_Union]'"));
+  }
 
   return {
     object: _object,
@@ -290,6 +312,6 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
     union: _union,
     optUnion: _optUnion,
     unionArray: _unionArray,
-    optUnionArray: _optUnionArray,
+    optUnionArray: _optUnionArray
   };
 }

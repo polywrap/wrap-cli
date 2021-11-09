@@ -123,10 +123,10 @@ export function read{{type}}(reader: Read): {{type}} {
       {{> deserialize_object }}
       _{{name}} = object;
       {{/object}}
-      {{#object}}
+      {{#union}}
       {{> deserialize_union }}
       _{{name}} = union;
-      {{/object}}
+      {{/union}}
       {{#required}}
       _{{name}}Set = true;
       {{/required}}

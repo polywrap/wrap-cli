@@ -24,7 +24,7 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
 }
 
 export function writeCustomType(writer: Write, type: CustomType): void {
-  writer.writeMapLength(35);
+  writer.writeMapLength(39);
   writer.context().push("str", "string", "writing property");
   writer.writeString("str");
   writer.writeString(type.str);
@@ -213,22 +213,30 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.context().pop();
   writer.context().push("union", "Types.CustomUnion", "writing property");
   writer.writeString("union");
-  writer.writeInt32(type.union);
+  Types.CustomUnion.write(writer, type.union);
   writer.context().pop();
-  writer.context().push("optUnion", "Nullable<Types.CustomUnion>", "writing property");
+  writer.context().push("optUnion", "Types.CustomUnion | null", "writing property");
   writer.writeString("optUnion");
-  writer.writeNullableInt32(type.optUnion);
+  if (type.optUnion) {
+    Types.CustomUnion.write(writer, type.optUnion as Types.CustomUnion);
+  } else {
+    writer.writeNil();
+  }
   writer.context().pop();
   writer.context().push("unionArray", "Array<Types.CustomUnion>", "writing property");
   writer.writeString("unionArray");
   writer.writeArray(type.unionArray, (writer: Write, item: Types.CustomUnion): void => {
-    writer.writeInt32(item);
+    Types.CustomUnion.write(writer, item);
   });
   writer.context().pop();
-  writer.context().push("optUnionArray", "Array<Nullable<Types.CustomUnion>> | null", "writing property");
+  writer.context().push("optUnionArray", "Array<Types.CustomUnion | null> | null", "writing property");
   writer.writeString("optUnionArray");
-  writer.writeNullableArray(type.optUnionArray, (writer: Write, item: Nullable<Types.CustomUnion>): void => {
-    writer.writeNullableInt32(item);
+  writer.writeNullableArray(type.optUnionArray, (writer: Write, item: Types.CustomUnion | null): void => {
+    if (item) {
+      Types.CustomUnion.write(writer, item as Types.CustomUnion);
+    } else {
+      writer.writeNil();
+    }
   });
   writer.context().pop();
 }
@@ -298,12 +306,12 @@ export function readCustomType(reader: Read): CustomType {
   let _enumArray: Array<Types.CustomEnum> = [];
   let _enumArraySet: bool = false;
   let _optEnumArray: Array<Nullable<Types.CustomEnum>> | null = null;
-  let _union: Types.CustomUnion = 0;
+  let _union: Types.CustomUnion = null;
   let _unionSet: bool = false;
-  let _optUnion: Nullable<Types.CustomUnion> = new Nullable<Types.CustomUnion>();
+  let _optUnion: Types.CustomUnion | null = null;
   let _unionArray: Array<Types.CustomUnion> = [];
   let _unionArraySet: bool = false;
-  let _optUnionArray: Array<Nullable<Types.CustomUnion>> | null = null;
+  let _optUnionArray: Array<Types.CustomUnion | null> | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -600,71 +608,37 @@ export function readCustomType(reader: Read): CustomType {
     }
     else if (field == "union") {
       reader.context().push(field, "Types.CustomUnion", "type found, reading property");
-      let value: Types.CustomUnion;
-      if (reader.isNextString()) {
-        value = Types.getCustomUnionValue(reader.readString());
-      } else {
-        value = reader.readInt32();
-        Types.sanitizeCustomUnionValue(value);
-      }
-      _union = value;
+      const union = Types.CustomUnion.read(reader);
+      _union = union;
       _unionSet = true;
       reader.context().pop();
     }
     else if (field == "optUnion") {
-      reader.context().push(field, "Nullable<Types.CustomUnion>", "type found, reading property");
-      let value: Nullable<Types.CustomUnion>;
+      reader.context().push(field, "Types.CustomUnion | null", "type found, reading property");
+      let union: Types.CustomUnion | null = null;
       if (!reader.isNextNil()) {
-        if (reader.isNextString()) {
-          value = Nullable.fromValue(
-            Types.getCustomUnionValue(reader.readString())
-          );
-        } else {
-          value = Nullable.fromValue(
-            reader.readInt32()
-          );
-          Types.sanitizeCustomUnionValue(value.value);
-        }
-      } else {
-        value = Nullable.fromNull<Types.CustomUnion>();
+        union = Types.CustomUnion.read(reader);
       }
-      _optUnion = value;
+      _optUnion = union;
       reader.context().pop();
     }
     else if (field == "unionArray") {
       reader.context().push(field, "Array<Types.CustomUnion>", "type found, reading property");
       _unionArray = reader.readArray((reader: Read): Types.CustomUnion => {
-        let value: Types.CustomUnion;
-        if (reader.isNextString()) {
-          value = Types.getCustomUnionValue(reader.readString());
-        } else {
-          value = reader.readInt32();
-          Types.sanitizeCustomUnionValue(value);
-        }
-        return value;
+        const union = Types.CustomUnion.read(reader);
+        return union;
       });
       _unionArraySet = true;
       reader.context().pop();
     }
     else if (field == "optUnionArray") {
-      reader.context().push(field, "Array<Nullable<Types.CustomUnion>> | null", "type found, reading property");
-      _optUnionArray = reader.readNullableArray((reader: Read): Nullable<Types.CustomUnion> => {
-        let value: Nullable<Types.CustomUnion>;
+      reader.context().push(field, "Array<Types.CustomUnion | null> | null", "type found, reading property");
+      _optUnionArray = reader.readNullableArray((reader: Read): Types.CustomUnion | null => {
+        let union: Types.CustomUnion | null = null;
         if (!reader.isNextNil()) {
-          if (reader.isNextString()) {
-            value = Nullable.fromValue(
-              Types.getCustomUnionValue(reader.readString())
-            );
-          } else {
-            value = Nullable.fromValue(
-              reader.readInt32()
-            );
-            Types.sanitizeCustomUnionValue(value.value);
-          }
-        } else {
-          value = Nullable.fromNull<Types.CustomUnion>();
+          union = Types.CustomUnion.read(reader);
         }
-        return value;
+        return union;
       });
       reader.context().pop();
     }
@@ -733,6 +707,12 @@ export function readCustomType(reader: Read): CustomType {
   }
   if (!_enumArraySet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'enumArray: [CustomEnum]'"));
+  }
+  if (!_unionSet) {
+    throw new Error(reader.context().printWithContext("Missing required property: 'union: CustomUnion'"));
+  }
+  if (!_unionArraySet) {
+    throw new Error(reader.context().printWithContext("Missing required property: 'unionArray: [CustomUnion]'"));
   }
 
   return {

@@ -24,7 +24,7 @@ export function serializeAnotherObject(type: AnotherObject): ArrayBuffer {
 }
 
 export function writeAnotherObject(writer: Write, type: AnotherObject): void {
-  writer.writeMapLength(2);
+  writer.writeMapLength(1);
   writer.context().push("prop", "string", "writing property");
   writer.writeString("prop");
   writer.writeString(type.prop);
@@ -40,7 +40,8 @@ export function deserializeAnotherObject(buffer: ArrayBuffer): AnotherObject {
 export function readAnotherObject(reader: Read): AnotherObject {
   let numFields = reader.readMapLength();
 
-  let _prop: string = null;
+  let _prop: string = "";
+  let _propSet: bool = false;
 
   while (numFields > 0) {
     numFields--;
@@ -50,13 +51,17 @@ export function readAnotherObject(reader: Read): AnotherObject {
     if (field == "prop") {
       reader.context().push(field, "string", "type found, reading property");
       _prop = reader.readString();
+      _propSet = true;
       reader.context().pop();
     }
     reader.context().pop();
   }
 
+  if (!_propSet) {
+    throw new Error(reader.context().printWithContext("Missing required property: 'prop: String'"));
+  }
 
   return {
-    prop: _prop,
+    prop: _prop
   };
 }

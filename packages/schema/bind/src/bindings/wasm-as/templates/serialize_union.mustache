@@ -1,0 +1,10 @@
+{{#required}}
+Types.{{type}}.write(writer, item);
+{{/required}}
+{{^required}}
+if (item) {
+  Types.{{type}}.write(writer, item as Types.{{type}});
+} else {
+  writer.writeNil();
+}
+{{/required}}

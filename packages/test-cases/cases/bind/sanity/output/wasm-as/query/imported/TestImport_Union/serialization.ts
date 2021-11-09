@@ -25,7 +25,6 @@ export function serializeTestImport_Union(type: TestImport_Union): ArrayBuffer {
 
 export function writeTestImport_Union(writer: Write, type: TestImport_Union): void {
   writer.writeMapLength(2);
-
   writer.context().push("TestImport_AnotherObject", "Types.TestImport_AnotherObject | null", "writing property");
   writer.writeString("TestImport_AnotherObject");
 
@@ -36,7 +35,6 @@ export function writeTestImport_Union(writer: Write, type: TestImport_Union): vo
   }
 
   writer.context().pop();
-
   writer.context().push("TestImport_YetAnotherObject", "Types.TestImport_YetAnotherObject | null", "writing property");
   writer.writeString("TestImport_YetAnotherObject");
 
@@ -71,28 +69,28 @@ export function readTestImport_Union(reader: Read): TestImport_Union {
       if (!reader.isNextNil()) {
         TestImport_AnotherObject = Types.TestImport_AnotherObject.read(reader);
       }
-      
+
       reader.context().pop();
     }
-
-    else if(field == "TestImport_YetAnotherObject") {
+    else if (field == "TestImport_YetAnotherObject") {
       reader.context().push(field, "Types.TestImport_YetAnotherObject | null", "type found, reading property");
 
       if (!reader.isNextNil()) {
         TestImport_YetAnotherObject = Types.TestImport_YetAnotherObject.read(reader);
       }
-      
+
       reader.context().pop();
     }
-
     reader.context().pop();
   }
 
-  const instance = TestImport_AnotherObject || TestImport_YetAnotherObject;
+  const definedMember =
+     TestImport_AnotherObject
+    ||  TestImport_YetAnotherObject
 
-  if(!instance) {
+  if(!definedMember) {
     throw new Error(`All serialized member types for TestImport_Union are null`)
   }
 
-  return TestImport_Union.create(instance)
+  return TestImport_Union.create(definedMember)
 }

@@ -14,7 +14,7 @@ import {
 import * as Types from "..";
 
 export class YetAnotherObject {
-  prop: boolean;
+  prop: bool;
 
   static toBuffer(type: YetAnotherObject): ArrayBuffer {
     return serializeYetAnotherObject(type);

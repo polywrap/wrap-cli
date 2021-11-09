@@ -24,8 +24,8 @@ export function serializeYetAnotherObject(type: YetAnotherObject): ArrayBuffer {
 }
 
 export function writeYetAnotherObject(writer: Write, type: YetAnotherObject): void {
-  writer.writeMapLength(2);
-  writer.context().push("prop", "boolean", "writing property");
+  writer.writeMapLength(1);
+  writer.context().push("prop", "bool", "writing property");
   writer.writeString("prop");
   writer.writeBool(type.prop);
   writer.context().pop();
@@ -40,7 +40,8 @@ export function deserializeYetAnotherObject(buffer: ArrayBuffer): YetAnotherObje
 export function readYetAnotherObject(reader: Read): YetAnotherObject {
   let numFields = reader.readMapLength();
 
-  let _prop: boolean = null;
+  let _prop: bool = false;
+  let _propSet: bool = false;
 
   while (numFields > 0) {
     numFields--;
@@ -48,15 +49,19 @@ export function readYetAnotherObject(reader: Read): YetAnotherObject {
 
     reader.context().push(field, "unknown", "searching for property type");
     if (field == "prop") {
-      reader.context().push(field, "boolean", "type found, reading property");
+      reader.context().push(field, "bool", "type found, reading property");
       _prop = reader.readBool();
+      _propSet = true;
       reader.context().pop();
     }
     reader.context().pop();
   }
 
+  if (!_propSet) {
+    throw new Error(reader.context().printWithContext("Missing required property: 'prop: Boolean'"));
+  }
 
   return {
-    prop: _prop,
+    prop: _prop
   };
 }

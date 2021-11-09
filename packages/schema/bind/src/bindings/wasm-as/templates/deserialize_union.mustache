@@ -1,0 +1,9 @@
+{{#required}}
+const union = Types.{{type}}.read(reader);
+{{/required}}
+{{^required}}
+let union: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = null;
+if (!reader.isNextNil()) {
+  union = Types.{{type}}.read(reader);
+}
+{{/required}}

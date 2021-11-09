@@ -17,7 +17,7 @@ export class TestImport_YetAnotherObject {
 
   public static uri: string = "testimport.uri.eth";
 
-  prop: boolean;
+  prop: bool;
 
   static toBuffer(type: TestImport_YetAnotherObject): ArrayBuffer {
     return serializeTestImport_YetAnotherObject(type);

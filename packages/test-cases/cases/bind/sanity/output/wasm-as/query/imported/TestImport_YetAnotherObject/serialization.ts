@@ -25,7 +25,7 @@ export function serializeTestImport_YetAnotherObject(type: TestImport_YetAnother
 
 export function writeTestImport_YetAnotherObject(writer: Write, type: TestImport_YetAnotherObject): void {
   writer.writeMapLength(1);
-  writer.context().push("prop", "boolean", "writing property");
+  writer.context().push("prop", "bool", "writing property");
   writer.writeString("prop");
   writer.writeBool(type.prop);
   writer.context().pop();
@@ -40,8 +40,8 @@ export function deserializeTestImport_YetAnotherObject(buffer: ArrayBuffer): Tes
 export function readTestImport_YetAnotherObject(reader: Read): TestImport_YetAnotherObject {
   let numFields = reader.readMapLength();
 
-  let _prop: boolean = null;
-  let _propSet: boolean = false;
+  let _prop: bool = false;
+  let _propSet: bool = false;
 
   while (numFields > 0) {
     numFields--;
@@ -49,7 +49,7 @@ export function readTestImport_YetAnotherObject(reader: Read): TestImport_YetAno
 
     reader.context().push(field, "unknown", "searching for property type");
     if (field == "prop") {
-      reader.context().push(field, "boolean", "type found, reading property");
+      reader.context().push(field, "bool", "type found, reading property");
       _prop = reader.readBool();
       _propSet = true;
       reader.context().pop();

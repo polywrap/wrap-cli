@@ -1,6 +1,5 @@
-import * as Types from "..";
 {{#__commonImport}}
-export { {{type}} } from "../common";
+export { {{type}} } from "../../common";
 {{/__commonImport}}
 {{^__commonImport}}
 import {
@@ -16,6 +15,7 @@ import {
   write{{type}},
   read{{type}}
 } from "./serialization";
+import * as Types from "..";
 
 export abstract class {{type}} {
 
@@ -34,9 +34,8 @@ export abstract class {{type}} {
   static read(reader: Read): {{type}} {
     return read{{type}}(reader);
   }
-  
-  {{#memberTypes}}
 
+  {{#memberTypes}}
   get is{{type}}(): boolean {
     return this instanceof UnionMember_{{type}};
   }
@@ -50,11 +49,10 @@ export abstract class {{type}} {
   }
 
   {{/memberTypes}}
-
   static create<T>(value: T): {{type}} {
     {{#memberTypes}}
-    if(value instanceof Types.{{type}}) {
-      return new UnionMember_{{type}}(value)
+    if (value instanceof Types.{{type}}) {
+      return new UnionMember_{{type}}(value);
     }
     {{/memberTypes}}
   }
@@ -63,7 +61,6 @@ export abstract class {{type}} {
 const Union_Class = {{type}};
 
   {{#memberTypes}}
-
 class UnionMember_{{type}} extends Union_Class {
   constructor(private _instance: Types.{{type}}) {
     super();
@@ -73,6 +70,5 @@ class UnionMember_{{type}} extends Union_Class {
     return this._instance;
   }
 }
-
   {{/memberTypes}}
 {{/__commonImport}}

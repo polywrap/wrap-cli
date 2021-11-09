@@ -1,0 +1,1 @@
+export { YetAnotherObject } from "../common";
