@@ -1,3 +1,12 @@
+# Web3API 0.0.1-prealpha.49
+## Features
+* `@web3api/fs-plugin-js`: Added a "File System" plugin, which implements the `uri-resolver` interface, enabling users to load Web3API packages from their local filesystem. For example, a user could specify the URI `/fs/path/to/package/directory`.
+* Upgraded the toolchain's Node.JS version to 16.13.0, which solves compatibility issues with Mac computers using the new M1 processor.
+
+## Bugs
+* `@web3api/cli`: Fixed the `w3 query ...` command's recipe variable parsing logic, better supporting arrays and objects.
+* `@web3api/schema-compose`: Improved import parsing, and added support for recursive schema imports.
+
 # Web3API 0.0.1-prealpha.48
 ## Bugs
 * `@web3api/test-env-js`: Allow the usage of this package as an npm package outside of the monorepo folder structure.

@@ -134,9 +134,7 @@ export class EthereumPlugin extends Plugin {
 
   public async signMessage(input: Mutation.Input_signMessage): Promise<string> {
     const connection = await this.getConnection(input.connection);
-    const messageHash = ethers.utils.id(input.message);
-    const messageHashBytes = ethers.utils.arrayify(messageHash);
-    return await connection.getSigner().signMessage(messageHashBytes);
+    return await connection.getSigner().signMessage(input.message);
   }
 
   public async sendRPC(input: Mutation.Input_sendRPC): Promise<string> {
