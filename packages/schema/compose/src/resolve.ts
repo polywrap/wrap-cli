@@ -42,6 +42,8 @@ import {
   createImportedQueryDefinition,
   createInterfaceDefinition,
   createCapability,
+  transformTypeInfo,
+  queryModuleCapabilities
 } from "@web3api/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -95,6 +97,10 @@ export async function resolveUseStatements(
       })
     );
   }
+
+  // Do a final pass where we transform the typeInfo, adding the
+  // capabilities property to query module definitions
+  transformTypeInfo(typeInfo, [queryModuleCapabilities()]);
 }
 
 export async function resolveImportsAndParseSchemas(

@@ -11,7 +11,10 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
     "{{type}}"{{^last}},{{/last}}
     {{/imports}}
   ]
-){{/imports.length}} {
+){{/imports.length}}{{#capabilities.length}}{{#capabilities}} @capability(
+  namespace: "{{namespace}}",
+  capability: "{{type}}"
+){{/capability}}{{/capabilities.length}} {
   {{#methods}}{{#comment}}
   """
   {{comment}}
@@ -72,10 +75,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   uri: "{{uri}}",
   namespace: "{{namespace}}",
   nativeType: "{{nativeType}}"
-){{#capabilities}} @capability(
-  type: "{{type}}",
-  modules: [{{#modules}}"{{.}}"{{^last}}, {{/last}}{{/modules}}]
-){{/capabilities}} {
+) {
   {{#methods}}{{#comment}}
   """
   {{comment}}

@@ -47,6 +47,9 @@ type Query implements Interface_Query @imports(
     "Interface_Object",
     "Interface_NestedInterfaceObject"
   ]
+) @capability(
+  namespace: "Interface",
+  capability: "getImplementations"
 ) {
   """
   method1 comment
@@ -254,9 +257,6 @@ type Namespace_Query @imported(
   uri: "test.eth",
   namespace: "Namespace",
   nativeType: "Query"
-) @capability(
-  type: "getImplementations",
-  modules: ["query"]
 ) {
   method1(
     str: String!
