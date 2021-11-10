@@ -17,6 +17,7 @@ import {
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
+  interfaceTypes: [],
   enumTypes: [],
   queryTypes: [
     {
@@ -492,10 +493,6 @@ export const typeInfo: TypeInfo = {
         nativeType: "Query",
         type: "Namespace_Query",
         comment: "Query comment",
-        capabilities: [{
-          type: "getImplementations",
-          modules: ["query"]
-        }],
       }),
       methods: [
         {
@@ -585,7 +582,6 @@ export const typeInfo: TypeInfo = {
         nativeType: "Query",
         type: "Interface_Query",
         comment: "Query comment",
-        capabilities: [],
       }),
       methods: [
         {
@@ -617,7 +613,6 @@ export const typeInfo: TypeInfo = {
         nativeType: "Mutation",
         type: "Namespace_Mutation",
         comment: "Mutation comment",
-        capabilities: [],
       }),
       methods: [
         {
@@ -760,7 +755,6 @@ export const typeInfo: TypeInfo = {
         namespace: "JustMutation",
         nativeType: "Mutation",
         type: "JustMutation_Mutation",
-        capabilities: [],
       }),
       methods: [
         {
@@ -800,7 +794,6 @@ export const typeInfo: TypeInfo = {
         nativeType: "Mutation",
         type: "Interface_Mutation",
         comment: "Mutation comment",
-        capabilities: [],
       }),
       methods: [
         {

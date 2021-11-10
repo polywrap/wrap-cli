@@ -17,6 +17,7 @@ import {
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
+  interfaceTypes: [],
   objectTypes: [
     {
       ...createObjectDefinition({ type: "CustomQueryType", comment: "CustomQueryType comment" }),
@@ -542,10 +543,6 @@ export const typeInfo: TypeInfo = {
         nativeType: "Query",
         type: "Namespace_Query",
         comment: "Query comment",
-        capabilities: [{
-          type: "getImplementations",
-          modules: ["query"]
-        }],
       }),
       methods: [
         {
@@ -635,7 +632,6 @@ export const typeInfo: TypeInfo = {
         nativeType: "Query",
         type: "Interface_Query",
         comment: "Query comment",
-        capabilities: [],
       }),
       methods: [
         {
