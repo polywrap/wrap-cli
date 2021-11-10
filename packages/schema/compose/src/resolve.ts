@@ -9,7 +9,11 @@ import {
   SchemaResolvers,
   SYNTAX_REFERENCE,
 } from "./types";
-import { parseExternalImports, parseLocalImports, parseUse } from "./parse";
+import {
+  parseExternalImports,
+  parseLocalImports,
+  parseUse
+} from "./parse";
 import { renderSchema } from "./render";
 import { addHeader } from "./templates/header.mustache";
 
@@ -42,6 +46,7 @@ import {
   createImportedQueryDefinition,
   createInterfaceDefinition,
   createCapability,
+  QueryModuleCapability,
 } from "@web3api/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -51,11 +56,12 @@ type ImplementationWithInterfaces = {
 
 const TYPE_NAME_REGEX = `[a-zA-Z0-9_]+`;
 
+// TODO: return this structured data array
 export async function resolveUseStatements(
   schema: string,
   schemaPath: string,
   typeInfo: TypeInfo
-): Promise<void> {
+): Promise<QueryModuleCapability[]> {
   const useKeywordCapture = /^[#]*["{3}]*use[ \n\t]/gm;
   const useCapture = /[#]*["{3}]*use[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*for[ \n\t]*(\w+)[ \n\t]/g;
 
@@ -163,9 +169,11 @@ export async function resolveImportsAndParseSchemas(
     resolvers
   );
 
-  await resolveUseStatements(schema, schemaPath, subTypeInfo);
-
-  // subTypeInfo.interfaceTypes && console.log(JSON.stringify(subTypeInfo.interfaceTypes));
+  const capabilities = await resolveUseStatements(
+    schema,
+    schemaPath,
+    subTypeInfo
+  );
 
   // Remove all import statements
   let newSchema = schema
@@ -178,12 +186,13 @@ export async function resolveImportsAndParseSchemas(
   // Add the @imports directive
   newSchema = addQueryImportsDirective(newSchema, externalImports, mutation);
 
-  //Combine the new schema with the subTypeInfo
+  // Add the @capability directive
+  newSchema = addCapabilityDirective(newSchema, capabilities, mutation);
+
+  // Combine the new schema with the subTypeInfo
   newSchema = header + newSchema + renderSchema(subTypeInfo, false);
 
   newSchema = resolveInterfaces(newSchema, implementationsWithInterfaces);
-
-  // console.log(newSchema);
 
   // Parse the newly formed schema
   return parseSchema(newSchema);
@@ -408,6 +417,37 @@ function addQueryImportsDirective(
   if (!externalImports.length) {
     return schema;
   }
+
+  // Append the @imports(...) directive to the query type
+  const typeCapture = mutation
+    ? /type\s+Mutation\s+([^{]*)\s*{/g
+    : /type\s+Query\s+([^{]*)\s*{/g;
+
+  const importedTypes = `${externalImports
+    .map((type) => `\"${type}\"`)
+    .join(",\n    ")}`;
+
+  const replacementQueryStr = `type ${
+    mutation ? "Mutation" : "Query"
+  } $1@imports(
+  types: [
+    ${importedTypes}
+  ]
+) {`;
+
+  return schema.replace(typeCapture, replacementQueryStr);
+}
+
+function addCapabilityDirective(
+  schema: string,
+  capabilities: QueryModuleCapability[],
+  mutation: boolean,
+): string {
+  if (!capabilities.length) {
+    return schema;
+  }
+
+  // TODO: update this code below
 
   // Append the @imports(...) directive to the query type
   const typeCapture = mutation

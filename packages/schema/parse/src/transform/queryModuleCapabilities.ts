@@ -6,14 +6,16 @@ import {
   TypeInfo
 } from "../typeInfo";
 
+export interface QueryModuleCapability {
+  type: string;
+  uri: string;
+  namespace: string;
+}
+
 export function queryModuleCapabilities(): TypeInfoTransforms {
   const queryModuleCapabilities: Record<
     InvokableModules,
-    {
-      type: string;
-      uri: string;
-      namespace: string;
-    }[]
+    QueryModuleCapability[]
   > = {
     query: [],
     mutation: [],
@@ -24,6 +26,7 @@ export function queryModuleCapabilities(): TypeInfoTransforms {
       InterfaceDefinition: (def: InterfaceDefinition) => {
         for (const type in def.capabilities) {
           const info = def.capabilities[type as keyof CapabilityDefinition];
+          console.log("HERERE", type, JSON.stringify(info, null, 2));
           if (info.enabled) {
             for (const module of info.modules) {
               queryModuleCapabilities[module as InvokableModules].push({
@@ -33,16 +36,23 @@ export function queryModuleCapabilities(): TypeInfoTransforms {
               });
             }
           }
+          console.log("AFTER", JSON.stringify(queryModuleCapabilities, null, 2));
         }
         return def;
       },
     },
     leave: {
       TypeInfo: (info: TypeInfo) => {
+        console.log("TYPEINFO", JSON.stringify(queryModuleCapabilities, null, 2));
+        console.log(info.queryTypes.length);
         for (const queryDef of info.queryTypes) {
           const module = queryDef.type.toLowerCase() as InvokableModules;
           const capabilities = queryModuleCapabilities[module];
           (queryDef as any).capabilities = capabilities;
+        }
+
+        for (const query of info.queryTypes) {
+          console.log(query.type, JSON.stringify((query as any).capabilities, null, 2));
         }
 
         return info;
