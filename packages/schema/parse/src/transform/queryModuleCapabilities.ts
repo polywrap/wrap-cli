@@ -7,12 +7,16 @@ import {
 } from "../typeInfo";
 
 export function queryModuleCapabilities(): TypeInfoTransforms {
-  const queryModuleCapabilities: Record<InvokableModules, {
-    namespace: string,
-    type: string
-  }[]> = {
-    "query": [],
-    "mutation": [],
+  const queryModuleCapabilities: Record<
+    InvokableModules,
+    {
+      type: string;
+      uri: string;
+      namespace: string;
+    }[]
+  > = {
+    query: [],
+    mutation: [],
   };
 
   return {
@@ -23,6 +27,7 @@ export function queryModuleCapabilities(): TypeInfoTransforms {
           if (info.enabled) {
             for (const module of info.modules) {
               queryModuleCapabilities[module as InvokableModules].push({
+                uri: def.uri,
                 namespace: def.namespace,
                 type,
               });

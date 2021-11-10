@@ -12,9 +12,10 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
     {{/imports}}
   ]
 ){{/imports.length}}{{#capabilities.length}}{{#capabilities}} @capability(
-  namespace: "{{namespace}}",
-  capability: "{{type}}"
-){{/capability}}{{/capabilities.length}} {
+  type: "{{type}}",
+  uri: "{{uri}}",
+  namespace: "{{namespace}}"
+){{/capabilities}}{{/capabilities.length}} {
   {{#methods}}{{#comment}}
   """
   {{comment}}

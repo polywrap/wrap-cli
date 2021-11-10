@@ -17,7 +17,7 @@ export interface State {
   currentArgument?: PropertyDefinition;
   currentReturn?: PropertyDefinition;
   nonNullType?: boolean;
-  currentInterface?: InterfaceDefinition;
+  currentInterfaces?: InterfaceDefinition[];
   currentImport?: ImportedQueryDefinition;
 }
 

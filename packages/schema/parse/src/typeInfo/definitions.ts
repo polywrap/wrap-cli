@@ -380,7 +380,8 @@ export function createImportedEnumDefinition(args: {
   };
 }
 
-export type CapabilityType = "getImplementations";
+export const capabilityTypes = ["getImplementations"] as const;
+export type CapabilityType = typeof capabilityTypes[number];
 export type InvokableModules = "query" | "mutation";
 export interface Capability {
   enabled: boolean;

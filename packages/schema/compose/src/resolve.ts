@@ -42,8 +42,6 @@ import {
   createImportedQueryDefinition,
   createInterfaceDefinition,
   createCapability,
-  transformTypeInfo,
-  queryModuleCapabilities
 } from "@web3api/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -90,17 +88,13 @@ export async function resolveUseStatements(
 
     typeInfo.interfaceTypes.push(
       createInterfaceDefinition({
-        type: importedQuery.type,
+        type: parsedUse.namespace,
         uri: importedQuery.uri,
         namespace: parsedUse.namespace,
         capabilities: capabilities,
       })
     );
   }
-
-  // Do a final pass where we transform the typeInfo, adding the
-  // capabilities property to query module definitions
-  transformTypeInfo(typeInfo, [queryModuleCapabilities()]);
 }
 
 export async function resolveImportsAndParseSchemas(
@@ -171,6 +165,8 @@ export async function resolveImportsAndParseSchemas(
 
   await resolveUseStatements(schema, schemaPath, subTypeInfo);
 
+  // subTypeInfo.interfaceTypes && console.log(JSON.stringify(subTypeInfo.interfaceTypes));
+
   // Remove all import statements
   let newSchema = schema
     .replace(externalImportCapture, "")
@@ -186,6 +182,8 @@ export async function resolveImportsAndParseSchemas(
   newSchema = header + newSchema + renderSchema(subTypeInfo, false);
 
   newSchema = resolveInterfaces(newSchema, implementationsWithInterfaces);
+
+  // console.log(newSchema);
 
   // Parse the newly formed schema
   return parseSchema(newSchema);

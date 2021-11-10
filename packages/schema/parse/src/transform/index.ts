@@ -73,6 +73,13 @@ export function transformTypeInfo(
     result = transforms.enter.TypeInfo(result);
   }
 
+  for (let i = 0; i < result.interfaceTypes.length; ++i) {
+    result.interfaceTypes[i] = visitInterfaceDefinition(
+      result.interfaceTypes[i],
+      transforms
+    );
+  }
+
   for (let i = 0; i < result.enumTypes.length; ++i) {
     result.enumTypes[i] = visitEnumDefinition(result.enumTypes[i], transforms);
   }
@@ -87,13 +94,6 @@ export function transformTypeInfo(
   for (let i = 0; i < result.queryTypes.length; ++i) {
     result.queryTypes[i] = visitQueryDefinition(
       result.queryTypes[i],
-      transforms
-    );
-  }
-
-  for (let i = 0; i < result.interfaceTypes.length; ++i) {
-    result.interfaceTypes[i] = visitInterfaceDefinition(
-      result.interfaceTypes[i],
       transforms
     );
   }

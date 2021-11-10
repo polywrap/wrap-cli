@@ -23,14 +23,14 @@ import {
 export const output: TypeInfo = {
   interfaceTypes: [
     createInterfaceDefinition({
-      type: "TestImport_Mutation",
+      type: "TestImport",
       uri: "testimport.uri.eth",
       namespace: "TestImport",
       capabilities: {
         ...createCapability({
           type: "getImplementations",
           enabled: true,
-          modules: ["mutation"]
+          modules: ["query"]
         })
       },
     })

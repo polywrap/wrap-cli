@@ -23,7 +23,8 @@ directive @imports(
 
 directive @capability(
   type: String!
-  modules: [String!]!
+  uri: String!
+  namespace: String!
 ) on OBJECT
 ### Web3API Header END ###
 `;

@@ -113,6 +113,10 @@ Query comment
 """
 type Query implements Interface_Query @imports(
   types: [ "TestImport_Query", "Interface_Query" ]
+) @capability(
+  type: "getImplementations",
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
 ) {
 """
 queryMethod comment
@@ -200,9 +204,6 @@ type TestImport_Mutation @imported(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
   nativeType: "Mutation"
-) @capability(
-  type: "getImplementations",
-  modules: [ "mutation" ]
 ) {
 """
 importedMethod comment
