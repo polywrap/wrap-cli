@@ -6,6 +6,6 @@ export class TestImport {
   uri: string = "testimport.uri.eth"
 
   public static getImplementations() {
-    w3_getImplementations(this.uri);
+    return w3_getImplementations(this.uri);
   }
 }

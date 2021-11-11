@@ -23,7 +23,8 @@ directive @imports(
 
 directive @capability(
   type: String!
-  modules: [String!]!
+  uri: String!
+  namespace: String!
 ) on OBJECT
 ### Web3API Header END ###
 
@@ -34,6 +35,10 @@ type Query @imports(
     "TestImport_AnotherObject",
     "TestImport_Enum"
   ]
+) @capability(
+  type: "getImplementations",
+  uri: "testimport.uri.eth",
+  namespace: "TestImport"
 ) {
   queryMethod(
     str: String!
@@ -132,9 +137,6 @@ type TestImport_Query @imported(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
   nativeType: "Query"
-) @capability(
-  type: "getImplementations",
-  modules: ["query"]
 ) {
   importedMethod(
     str: String!
