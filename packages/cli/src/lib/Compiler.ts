@@ -538,7 +538,7 @@ export class Compiler {
 
     const mod = await WebAssembly.compile(wasmSource);
     const memory = new WebAssembly.Memory({ initial: 1 });
-    const w3Imports: Record<keyof W3Imports, ()=>void> = {
+    const w3Imports: Record<keyof W3Imports, () => void> = {
       __w3_subinvoke: () => {},
       __w3_subinvoke_result_len: () => {},
       __w3_subinvoke_result: () => {},
