@@ -9,12 +9,12 @@ import {
 {{/capabilities}}
 
 export class {{namespace}} {
-  uri: string = "{{uri}}"
+  static uri: string = "{{uri}}"
 
   {{#capabilities}}
   {{#getImplementations}}
   {{#enabled}}
-  public static getImplementations() {
+  public static getImplementations(): string[] {
     return w3_getImplementations(this.uri);
   }
   {{/enabled}}
