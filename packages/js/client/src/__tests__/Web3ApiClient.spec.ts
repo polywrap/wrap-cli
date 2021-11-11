@@ -2123,5 +2123,51 @@ enum Logger_LogLevel @imported(
     expect(results).toContain(0);
     expect(results).not.toContain(2);
   });
+
+  it("e2e getImplementations capability", async () => {
+    let interfaceApi = await buildAndDeployApi(
+      `${GetPathToTestApis()}/implementations/test-interface`,
+      ipfsProvider,
+      ensAddress
+    );
+    const interfaceUri = `w3://ens/testnet/${interfaceApi.ensDomain}`;
+
+    const implementationApi = await buildAndDeployApi(
+      `${GetPathToTestApis()}/implementations/test-use-getImpl`,
+      ipfsProvider,
+      ensAddress
+    );
+    const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
+
+    const client = await getClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri],
+        },
+      ],
+    });
+
+    expect(client.getImplementations(interfaceUri))
+      .toEqual([implementationUri]);
+
+    const query = await client.query<{
+      queryMethod: string;
+      abstractQueryMethod: string;
+    }>({
+      uri: implementationUri,
+      query: `
+        query {
+          queryImplemetations
+        }
+      `,
+      variables: {},
+    });
+
+    expect(query.errors).toBeFalsy();
+    expect(query.data).toBeTruthy();
+    expect(query.data).toEqual([implementationUri]);
+  });
+
 });
 
