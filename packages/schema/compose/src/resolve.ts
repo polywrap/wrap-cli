@@ -9,11 +9,7 @@ import {
   SchemaResolvers,
   SYNTAX_REFERENCE,
 } from "./types";
-import {
-  parseExternalImports,
-  parseLocalImports,
-  parseUse
-} from "./parse";
+import { parseExternalImports, parseLocalImports, parseUse } from "./parse";
 import { renderSchema } from "./render";
 import { addHeader } from "./templates/header.mustache";
 
@@ -47,6 +43,7 @@ import {
   createInterfaceDefinition,
   createCapability,
   QueryModuleCapability,
+  QueryModuleCapabilityMap,
 } from "@web3api/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -61,7 +58,7 @@ export async function resolveUseStatements(
   schema: string,
   schemaPath: string,
   typeInfo: TypeInfo
-): Promise<QueryModuleCapability[]> {
+): Promise<QueryModuleCapabilityMap> {
   const useKeywordCapture = /^[#]*["{3}]*use[ \n\t]/gm;
   const useCapture = /[#]*["{3}]*use[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*for[ \n\t]*(\w+)[ \n\t]/g;
 
@@ -80,6 +77,14 @@ export async function resolveUseStatements(
     importedQueryByNamespace[value.namespace] = value;
   });
 
+  const capabilitiesByModule: Record<
+    InvokableModules,
+    QueryModuleCapability[]
+  > = {
+    query: [],
+    mutation: [],
+  };
+
   const parsedUses = parseUse(useStatements);
   for (const parsedUse of parsedUses) {
     const importedQuery = importedQueryByNamespace[parsedUse.namespace];
@@ -89,7 +94,14 @@ export async function resolveUseStatements(
     const module = importedQuery.nativeType.toLowerCase() as InvokableModules;
     const modules: InvokableModules[] = [module];
     const capabilities = parsedUse.usedTypes
-      .map((type) => createCapability({ type, modules, enabled: true }))
+      .map((type) => {
+        capabilitiesByModule[module].push({
+          type,
+          uri: importedQuery.uri,
+          namespace: parsedUse.namespace,
+        });
+        return createCapability({ type, modules, enabled: true });
+      })
       .reduce((o1, o2) => ({ ...o1, ...o2 }));
 
     typeInfo.interfaceTypes.push(
@@ -101,6 +113,7 @@ export async function resolveUseStatements(
       })
     );
   }
+  return capabilitiesByModule;
 }
 
 export async function resolveImportsAndParseSchemas(
@@ -169,7 +182,7 @@ export async function resolveImportsAndParseSchemas(
     resolvers
   );
 
-  const capabilities = await resolveUseStatements(
+  const capabilitiesByModule = await resolveUseStatements(
     schema,
     schemaPath,
     subTypeInfo
@@ -187,7 +200,7 @@ export async function resolveImportsAndParseSchemas(
   newSchema = addQueryImportsDirective(newSchema, externalImports, mutation);
 
   // Add the @capability directive
-  newSchema = addCapabilityDirective(newSchema, capabilities, mutation);
+  newSchema = addCapabilityDirective(newSchema, capabilitiesByModule);
 
   // Combine the new schema with the subTypeInfo
   newSchema = header + newSchema + renderSchema(subTypeInfo, false);
@@ -440,33 +453,34 @@ function addQueryImportsDirective(
 
 function addCapabilityDirective(
   schema: string,
-  capabilities: QueryModuleCapability[],
-  mutation: boolean,
+  capabilitiesByModule: QueryModuleCapabilityMap
 ): string {
-  if (!capabilities.length) {
+  if (
+    !capabilitiesByModule.query.length &&
+    !capabilitiesByModule.mutation.length
+  ) {
     return schema;
   }
 
-  // TODO: update this code below
+  for (const [module, capabilities] of Object.entries(capabilitiesByModule)) {
+    for (const capability of capabilities) {
+      const typeCapture =
+        module === "mutation"
+          ? /type[ \n\t]*Mutation[ \n\t]*([^{]*)[ \n\t]*{/g
+          : /type[ \n\t]*Query[ \n\t]*([^{]*)[ \n\t]*{/g;
 
-  // Append the @imports(...) directive to the query type
-  const typeCapture = mutation
-    ? /type\s+Mutation\s+([^{]*)\s*{/g
-    : /type\s+Query\s+([^{]*)\s*{/g;
-
-  const importedTypes = `${externalImports
-    .map((type) => `\"${type}\"`)
-    .join(",\n    ")}`;
-
-  const replacementQueryStr = `type ${
-    mutation ? "Mutation" : "Query"
-  } $1@imports(
-  types: [
-    ${importedTypes}
-  ]
+      const replacementQueryStr = `type ${
+        module === "mutation" ? "Mutation" : "Query"
+      } $1@capability(
+  type: "${capability.type}",
+  uri: "${capability.uri}",
+  namespace: "${capability.namespace}"
 ) {`;
 
-  return schema.replace(typeCapture, replacementQueryStr);
+      schema = schema.replace(typeCapture, replacementQueryStr);
+    }
+  }
+  return schema;
 }
 
 function parseInterfaces(

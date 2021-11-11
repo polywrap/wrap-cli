@@ -51,7 +51,7 @@ type Query implements Interface_Query @imports(
 ) @capability(
   type: "getImplementations",
   uri: "test.eth",
-  namespace: "Namespace",
+  namespace: "Namespace"
 ) {
   """
   method1 comment

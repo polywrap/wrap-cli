@@ -13,11 +13,24 @@ import {
   createImportedObjectDefinition,
   createImportedEnumDefinition,
   createInterfaceImplementedDefinition,
-  createObjectRef
+  createObjectRef,
+  createInterfaceDefinition,
+  createCapability
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
-  interfaceTypes: [],
+  interfaceTypes: [
+    createInterfaceDefinition({
+      type: "Namespace",
+      uri: "test.eth",
+      namespace: "Namespace",
+      capabilities: createCapability({
+        type: "getImplementations",
+        enabled: true,
+        modules: ["query"],
+      }),
+    })
+  ],
   enumTypes: [],
   queryTypes: [
     {
