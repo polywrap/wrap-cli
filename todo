@@ -1,0 +1,35 @@
+- go to each project
+  - modify the lint command
+  - modify (or remove) the eslint file
+  - make sure they all have an eslint file
+  - modify the tsconfig if necessary
+
+Projects:
+- [x] CLI
+- [ ] Core APIs
+- [ ] Core Interfaces
+- [ ] Client-js
+- [ ] Asyncify-js
+- [ ] Core-js
+- [ ] OS-js
+- [ ] ens-plugins
+- [ ] ethereum-plugin
+- [ ] fs-plugin
+- [ ] graph-node-plugin
+- [ ] http-plugin
+- [ ] ipfs-plugin
+- [ ] logger-plugin
+- [ ] near-plugin
+- [ ] sha3-plugin
+- [ ] uts46-plugin
+- [ ] react
+- [ ] test-env-js
+- [ ] tracing-js
+- [ ] manifest-schemas
+- [ ] schema-bind
+- [ ] schema-parse
+- [ ] schema-compose
+- [ ] templates
+- [ ] test-cases
+- [ ] test-env
+- [ ] wasm-as
