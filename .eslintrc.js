@@ -67,7 +67,33 @@ module.exports = {
           }
         ],
         "@typescript-eslint/explicit-module-boundary-types": "error",
-        "@typescript-eslint/member-ordering": "error",
+        "@typescript-eslint/member-ordering": [
+          "error", {
+            classes: {
+              order: "as-written",
+              memberTypes: [
+                // Constructors
+                "public-constructor",
+                "protected-constructor",
+                "private-constructor",
+
+                // Methods
+                "public-static-method",
+                "public-abstract-method",
+                "public-instance-method",
+                "public-decorated-method",
+                "protected-static-method",
+                "protected-abstract-method",
+                "protected-instance-method",
+                "protected-decorated-method",
+                "private-static-method",
+                "private-abstract-method",
+                "private-instance-method",
+                "private-decorated-method",
+              ],
+            },
+          },
+        ],
         "@typescript-eslint/no-explicit-any": "error",
         "@typescript-eslint/no-require-imports": "error",
         "@typescript-eslint/no-unused-vars": ["error", {

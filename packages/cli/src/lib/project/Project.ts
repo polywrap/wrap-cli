@@ -11,6 +11,24 @@ export interface ProjectConfig {
 export abstract class Project {
   constructor(protected _config: ProjectConfig) {}
 
+  /// Abstract Interface
+  public abstract reset(): void;
+
+  public abstract getRootDir(): string;
+
+  public abstract getLanguage(): Promise<TargetLanguage>;
+
+  public abstract getSchemaNamedPaths(): Promise<{
+    [name: string]: string;
+  }>;
+
+  public abstract getImportRedirects(): Promise<
+    {
+      uri: string;
+      schema: string;
+    }[]
+  >;
+
   public get quiet(): boolean {
     return !!this._config.quiet;
   }
@@ -61,22 +79,4 @@ export abstract class Project {
       });
     });
   }
-
-  /// Abstract Interface
-  public abstract reset(): void;
-
-  public abstract getRootDir(): string;
-
-  public abstract getLanguage(): Promise<TargetLanguage>;
-
-  public abstract getSchemaNamedPaths(): Promise<{
-    [name: string]: string;
-  }>;
-
-  public abstract getImportRedirects(): Promise<
-    {
-      uri: string;
-      schema: string;
-    }[]
-  >;
 }

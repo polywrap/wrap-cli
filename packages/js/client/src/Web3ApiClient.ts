@@ -124,6 +124,32 @@ export class Web3ApiClient implements Client {
     return this._config.interfaces || [];
   }
 
+  public async getSchema<TUri extends Uri | string>(
+    uri: TUri
+  ): Promise<string> {
+    const api = await this._loadWeb3Api(this._toUri(uri));
+    return await api.getSchema(this);
+  }
+
+  public async getManifest<
+    TUri extends Uri | string,
+    TManifestType extends ManifestType
+  >(
+    uri: TUri,
+    options: GetManifestOptions<TManifestType>
+  ): Promise<AnyManifest<TManifestType>> {
+    const api = await this._loadWeb3Api(this._toUri(uri));
+    return await api.getManifest(options, this);
+  }
+
+  public async getFile<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetFileOptions
+  ): Promise<string | ArrayBuffer> {
+    const api = await this._loadWeb3Api(this._toUri(uri));
+    return await api.getFile(options, this);
+  }
+
   @Tracer.traceMethod("Web3ApiClient: query")
   public async query<
     TData extends Record<string, unknown> = Record<string, unknown>,
@@ -243,9 +269,7 @@ export class Web3ApiClient implements Client {
       stop(): void {
         subscription.isActive = false;
       },
-      async *[Symbol.asyncIterator](): AsyncGenerator<
-        QueryApiResult<TData>
-      > {
+      async *[Symbol.asyncIterator](): AsyncGenerator<QueryApiResult<TData>> {
         let timeout: NodeJS.Timeout | undefined = undefined;
         subscription.isActive = true;
 
@@ -292,32 +316,6 @@ export class Web3ApiClient implements Client {
     return subscription;
   }
 
-  public async getSchema<TUri extends Uri | string>(
-    uri: TUri
-  ): Promise<string> {
-    const api = await this._loadWeb3Api(this._toUri(uri));
-    return await api.getSchema(this);
-  }
-
-  public async getManifest<
-    TUri extends Uri | string,
-    TManifestType extends ManifestType
-  >(
-    uri: TUri,
-    options: GetManifestOptions<TManifestType>
-  ): Promise<AnyManifest<TManifestType>> {
-    const api = await this._loadWeb3Api(this._toUri(uri));
-    return await api.getManifest(options, this);
-  }
-
-  public async getFile<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetFileOptions
-  ): Promise<string | ArrayBuffer> {
-    const api = await this._loadWeb3Api(this._toUri(uri));
-    return await api.getFile(options, this);
-  }
-
   @Tracer.traceMethod("Web3ApiClient: getImplementations")
   public getImplementations<TUri extends Uri | string>(
     uri: TUri,
@@ -337,6 +335,31 @@ export class Web3ApiClient implements Client {
           this.interfaces(),
           applyRedirects ? this.redirects() : undefined
         ) as TUri[]);
+  }
+
+  private _requirePluginsToUseNonInterfaceUris(): void {
+    const pluginUris = this.plugins().map((x) => x.uri.uri);
+    const interfaceUris = this.interfaces().map((x) => x.interface.uri);
+
+    const pluginsWithInterfaceUris = pluginUris.filter((plugin) =>
+      interfaceUris.includes(plugin)
+    );
+
+    if (pluginsWithInterfaceUris.length) {
+      throw Error(
+        `Plugins can't use interfaces for their URI. Invalid plugins: ${pluginsWithInterfaceUris}`
+      );
+    }
+  }
+
+  private _toUri(uri: Uri | string): Uri {
+    if (typeof uri === "string") {
+      return new Uri(uri);
+    } else if (Uri.isUri(uri)) {
+      return uri;
+    } else {
+      throw Error(`Unknown uri type, cannot convert. ${JSON.stringify(uri)}`);
+    }
   }
 
   @Tracer.traceMethod("Web3ApiClient: _loadWeb3Api")
@@ -364,30 +387,5 @@ export class Web3ApiClient implements Client {
     }
 
     return api;
-  }
-
-  private _requirePluginsToUseNonInterfaceUris(): void {
-    const pluginUris = this.plugins().map((x) => x.uri.uri);
-    const interfaceUris = this.interfaces().map((x) => x.interface.uri);
-
-    const pluginsWithInterfaceUris = pluginUris.filter((plugin) =>
-      interfaceUris.includes(plugin)
-    );
-
-    if (pluginsWithInterfaceUris.length) {
-      throw Error(
-        `Plugins can't use interfaces for their URI. Invalid plugins: ${pluginsWithInterfaceUris}`
-      );
-    }
-  }
-
-  private _toUri(uri: Uri | string): Uri {
-    if (typeof uri === "string") {
-      return new Uri(uri);
-    } else if (Uri.isUri(uri)) {
-      return uri;
-    } else {
-      throw Error(`Unknown uri type, cannot convert. ${JSON.stringify(uri)}`);
-    }
   }
 }

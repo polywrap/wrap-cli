@@ -30,6 +30,24 @@ export class PluginWeb3Api extends Api {
     Tracer.endSpan();
   }
 
+  public async getSchema(_client: Client): Promise<string> {
+    return Promise.resolve(this._plugin.manifest.schema);
+  }
+
+  public async getManifest<T extends ManifestType>(
+    _options: GetManifestOptions<T>,
+    _client: Client
+  ): Promise<AnyManifest<T>> {
+    throw Error("client.getManifest(...) is not implemented for Plugins.");
+  }
+
+  public async getFile(
+    _options: GetFileOptions,
+    _client: Client
+  ): Promise<ArrayBuffer | string> {
+    throw Error("client.getFile(...) is not implemented for Plugins.");
+  }
+
   @Tracer.traceMethod("PluginWeb3Api: invoke")
   public async invoke<TData = unknown>(
     options: InvokeApiOptions<Uri>,
@@ -120,27 +138,9 @@ export class PluginWeb3Api extends Api {
       }
     } catch (error) {
       return {
-        error
+        error,
       };
     }
-  }
-
-  public async getSchema(_client: Client): Promise<string> {
-    return Promise.resolve(this._plugin.manifest.schema);
-  }
-
-  public async getManifest<T extends ManifestType>(
-    _options: GetManifestOptions<T>,
-    _client: Client
-  ): Promise<AnyManifest<T>> {
-    throw Error("client.getManifest(...) is not implemented for Plugins.");
-  }
-
-  public async getFile(
-    _options: GetFileOptions,
-    _client: Client
-  ): Promise<ArrayBuffer | string> {
-    throw Error("client.getFile(...) is not implemented for Plugins.");
   }
 
   private _getInstance(): Plugin {
