@@ -120,7 +120,7 @@ const parseCapabilitiesDirective = (
 
     if (typeIndex === -1) {
       throw Error(
-        `@capability directive missing required argument "types". See type ${nodeName}.`
+        `@capability directive missing required argument "type". See type ${nodeName}.`
       );
     }
 
@@ -128,13 +128,13 @@ const parseCapabilitiesDirective = (
 
     if (typeArg.value.kind !== "StringValue") {
       throw Error(
-        `@capability directive's type argument must be a String type. See type ${nodeName}.`
+        `@capability directive's "type" argument must be a String type. See type ${nodeName}.`
       );
     }
 
     if (!capabilityTypes.includes(typeArg.value.value as CapabilityType)) {
       throw Error(
-        `@capability directive's type argument must be one from ${JSON.stringify(
+        `@capability directive's "type" argument must be one from ${JSON.stringify(
           capabilityTypes
         )}. See type ${nodeName}.`
       );
@@ -156,7 +156,7 @@ const parseCapabilitiesDirective = (
 
     if (uriArg.value.kind !== "StringValue") {
       throw Error(
-        `@capability directive's uri argument must be a String type. See type ${nodeName}.`
+        `@capability directive's "uri" argument must be a String type. See type ${nodeName}.`
       );
     }
 
@@ -176,7 +176,7 @@ const parseCapabilitiesDirective = (
 
     if (namespaceArg.value.kind !== "StringValue") {
       throw Error(
-        `@capability directive's namespace argument must be a String type. See type ${nodeName}.`
+        `@capability directive's "namespace" argument must be a String type. See type ${nodeName}.`
       );
     }
 
@@ -249,7 +249,7 @@ const parseImportsDirective = (
 
     if (typesArg.value.kind !== "ListValue") {
       throw Error(
-        `@imports directive's types argument must be a List type. See type ${nodeName}.`
+        `@imports directive's "types" argument must be a List type. See type ${nodeName}.`
       );
     }
 
@@ -258,7 +258,7 @@ const parseImportsDirective = (
     listValue.values.forEach((value: ValueNode) => {
       if (value.kind !== "StringValue") {
         throw Error(
-          `@imports directive's types list must only contain strings. See type ${nodeName}.`
+          `@imports directive's "types" list must only contain strings. See type ${nodeName}.`
         );
       }
 
