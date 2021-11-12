@@ -6,14 +6,19 @@ type Query implements UriResolver_Query {
     options: Options
   ): Bytes!
 
-  resolve(cid: String!, options: Options): ResolveResult
+  resolve(
+    cid: String!
+    options: Options
+  ): ResolveResult
 
   tryResolveUri(
     authority: String!
     path: String!
   ): UriResolver_MaybeUriOrManifest
 
-  getFile(path: String!): Bytes
+  getFile(
+    path: String!
+  ): Bytes
 }
 
 type Mutation {
