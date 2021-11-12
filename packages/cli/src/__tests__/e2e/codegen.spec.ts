@@ -26,8 +26,9 @@ describe("e2e tests for codegen command", () => {
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", "--help"],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -37,8 +38,9 @@ describe("e2e tests for codegen command", () => {
   test("Should throw error for invalid params - outputDir", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", "--output-dir"],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -50,8 +52,9 @@ ${HELP}`);
   test("Should throw error for invalid params - ens", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", "--ens"],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -63,8 +66,9 @@ ${HELP}`);
   test("Should throw error for invalid generation file - wrong file", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", "--custom", `web3api-invalid.gen.js`],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     const genFile = path.normalize(`${projectRoot}/web3api-invalid.gen.js`);
 
@@ -76,8 +80,9 @@ ${HELP}`);
   test("Should throw error for invalid generation file - no run() method", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", "--custom", `web3api-norun.gen.js`],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(code).toEqual(1);
     expect(error).toBe("");
@@ -89,8 +94,9 @@ ${HELP}`);
 
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen"],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(code).toEqual(0);
     expect(error).toBe("");

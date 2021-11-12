@@ -8,7 +8,7 @@ export const query = (plugin: SamplePlugin): Query.Module => ({
 });
 
 export const mutation = (plugin: SamplePlugin): Mutation.Module => ({
-  sampleMutation: (input: Mutation.Input_sampleMutation ) => {
+  sampleMutation: (input: Mutation.Input_sampleMutation) => {
     return plugin.sampleMutation(input.data);
   },
 });
