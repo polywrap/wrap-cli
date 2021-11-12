@@ -14,7 +14,7 @@
   "scripts": {
     "build": "rimraf ./build && yarn build:manifest && tsc --project tsconfig.build.json",
     "build:manifest": "node ./scripts/manifest/generateFormatTypes.js",
-    "lint": "eslint --color --ext .ts src/",
+    "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose"

@@ -31,8 +31,8 @@
     "build:plugins": "lerna run build --scope @web3api/*-plugin-js --concurrency 1",
     "build:client": "lerna run build --scope @web3api/client-js --scope @web3api/react",
     "build:cli": "lerna run build --scope @web3api/cli",
-    "lint": "lerna run lint --ignore @web3api/uts46-plugin-js --ignore @web3api/sha3-plugin-js",
-    "lint:fix": "lerna run lint --ignore @web3api/uts46-plugin-js -- --fix",
+    "lint": "lerna run lint",
+    "lint:fix": "lerna run lint -- --fix",
     "lint:ci": "yarn lint",
     "test": "lerna run test --no-private --ignore @web3api/client-js && lerna run test --scope @web3api/client-js",
     "test:ci": "lerna run test:ci --no-private --ignore @web3api/client-js && lerna run test:ci --scope @web3api/client-js",
@@ -48,7 +48,10 @@
     "eslint": "7.16.0",
     "eslint-config-prettier": "7.1.0",
     "eslint-plugin-import": "2.22.1",
-    "eslint-plugin-prettier": "3.3.0",
-    "prettier": "2.2.1"
+    "eslint-plugin-prettier": "3.4.0",
+    "prettier": "2.2.1",
+    "graphql": "15.5.0",
+    "@graphql-eslint/eslint-plugin": "1.0.1",
+    "eslint-plugin-json": "3.0.0"
   }
 }
