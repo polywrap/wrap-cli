@@ -11,7 +11,7 @@ module.exports = {
       files: ["*.ts"],
       parser: "@typescript-eslint/parser",
       parserOptions: {
-        project: ['tsconfig.json'],
+        project: ["tsconfig.json"],
       },
       plugins: [
         "eslint-plugin-import",
@@ -29,20 +29,20 @@ module.exports = {
         "prettier/prettier": ["error"],
         "@typescript-eslint/naming-convention": [
           "error",
-          {selector: "default", format: ['camelCase']},
+          {selector: "default", format: ["camelCase"]},
           {
             selector: [
               "classProperty", "parameterProperty", "objectLiteralProperty",
               "classMethod", "parameter"
             ],
-            format: ['camelCase'], leadingUnderscore: "allow"
+            format: ["camelCase"], leadingUnderscore: "allow"
           },
-          //web3 api host methods doesn't satisfy neither camel or snake
+          //web3 api host methods doesn"t satisfy neither camel or snake
           {selector: ["objectLiteralMethod", "typeMethod"], filter: {regex: "^_w3_.*", match: true}, format: null},
           //variable must be in camel or upper case
           {selector: "variable", format: ["camelCase", "UPPER_CASE"], leadingUnderscore: "allow"},
           //classes and types must be in PascalCase
-          {selector: ["typeLike", "enum"], format: ['PascalCase']},
+          {selector: ["typeLike", "enum"], format: ["PascalCase"]},
           {selector: "enumMember", format: null},
           //ignore rule for quoted stuff
           {
