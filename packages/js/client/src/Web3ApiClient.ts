@@ -124,6 +124,7 @@ export class Web3ApiClient implements Client {
     return this._config.interfaces || [];
   }
 
+  @Tracer.traceMethod("Web3ApiClient: query")
   public async query<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>,
@@ -136,71 +137,65 @@ export class Web3ApiClient implements Client {
       uri: this._toUri(options.uri),
     };
 
-    const run = Tracer.traceFunc(
-      "Web3ApiClient: query",
-      async (
-        options: QueryApiOptions<TVariables, Uri>
-      ): Promise<QueryApiResult<TData>> => {
-        const { uri, query, variables } = options;
+    try {
+      const { uri, query, variables } = typedOptions;
 
-        // Convert the query string into a query document
-        const queryDocument =
-          typeof query === "string" ? createQueryDocument(query) : query;
+      // Convert the query string into a query document
+      const queryDocument =
+        typeof query === "string" ? createQueryDocument(query) : query;
 
-        // Parse the query to understand what's being invoked
-        const queryInvocations = parseQuery(uri, queryDocument, variables);
+      // Parse the query to understand what's being invoked
+      const queryInvocations = parseQuery(uri, queryDocument, variables);
 
-        // Execute all invocations in parallel
-        const parallelInvocations: Promise<{
-          name: string;
-          result: InvokeApiResult<unknown>;
-        }>[] = [];
+      // Execute all invocations in parallel
+      const parallelInvocations: Promise<{
+        name: string;
+        result: InvokeApiResult<unknown>;
+      }>[] = [];
 
-        for (const invocationName of Object.keys(queryInvocations)) {
-          parallelInvocations.push(
-            this.invoke({
-              ...queryInvocations[invocationName],
-              uri: queryInvocations[invocationName].uri,
-              decode: true,
-            }).then((result) => ({
-              name: invocationName,
-              result,
-            }))
-          );
-        }
-
-        // Await the invocations
-        const invocationResults = await Promise.all(parallelInvocations);
-
-        Tracer.addEvent("invocationResults", invocationResults);
-
-        // Aggregate all invocation results
-        const data: Record<string, unknown> = {};
-        const errors: Error[] = [];
-
-        for (const invocation of invocationResults) {
-          data[invocation.name] = invocation.result.data;
-          if (invocation.result.error) {
-            errors.push(invocation.result.error);
-          }
-        }
-
-        return {
-          data: data as TData,
-          errors: errors.length === 0 ? undefined : errors,
-        };
+      for (const invocationName of Object.keys(queryInvocations)) {
+        parallelInvocations.push(
+          this.invoke({
+            ...queryInvocations[invocationName],
+            uri: queryInvocations[invocationName].uri,
+            decode: true,
+          }).then((result) => ({
+            name: invocationName,
+            result,
+          }))
+        );
       }
-    );
 
-    return await run(typedOptions).catch((error: Error | Error[]) => {
+      // Await the invocations
+      const invocationResults = await Promise.all(parallelInvocations);
+
+      Tracer.addEvent("invocationResults", invocationResults);
+
+      // Aggregate all invocation results
+      const data: Record<string, unknown> = {};
+      const errors: Error[] = [];
+
+      for (const invocation of invocationResults) {
+        data[invocation.name] = invocation.result.data;
+        if (invocation.result.error) {
+          errors.push(invocation.result.error);
+        }
+      }
+
+      return {
+        data: data as TData,
+        errors: errors.length === 0 ? undefined : errors,
+      };
+    } catch (error: unknown) {
       if (Array.isArray(error)) {
         return { errors: error };
       } else {
-        return { errors: [error] };
+        return { errors: [error as Error] };
       }
-    });
+    }
   }
 
+  @Tracer.traceMethod("Web3ApiClient: invoke")
   public async invoke<TData = unknown, TUri extends Uri | string = string>(
     options: InvokeApiOptions<TUri>
   ): Promise<InvokeApiResult<TData>> {
@@ -208,23 +203,13 @@ export class Web3ApiClient implements Client {
       ...options,
       uri: this._toUri(options.uri),
     };
+    const api = await this._loadWeb3Api(typedOptions.uri);
+    const result = (await api.invoke(typedOptions, this)) as TData;
 
-    const run = Tracer.traceFunc(
-      "Web3ApiClient: invoke",
-      async (
-        options: InvokeApiOptions<Uri>
-      ): Promise<InvokeApiResult<TData>> => {
-        const api = await this._loadWeb3Api(options.uri);
-
-        const result = (await api.invoke(options, this)) as TData;
-
-        return result;
-      }
-    );
-
-    return run(typedOptions);
+    return result;
   }
 
+  @Tracer.traceMethod("Web3ApiClient: subscribe")
   public subscribe<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>,
@@ -234,85 +219,77 @@ export class Web3ApiClient implements Client {
       ...options,
       uri: this._toUri(options.uri),
     };
+    const { uri, query, variables, frequency: freq } = typedOptions;
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const client: Web3ApiClient = this;
 
-    const run = Tracer.traceFunc(
-      "Web3ApiClient: subscribe",
-      (options: SubscribeOptions<TVariables, Uri>): Subscription<TData> => {
-        const { uri, query, variables, frequency: freq } = options;
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
-        const client: Web3ApiClient = this;
+    // calculate interval between queries, in milliseconds, 1 min default value
+    /* eslint-disable prettier/prettier */
+    let frequency: number;
+    if (freq && (freq.ms || freq.sec || freq.min || freq.hours)) {
+      frequency = (freq.ms ?? 0) + ((
+        (freq.hours ?? 0) * 3600 +
+        (freq.min ?? 0) * 60 +
+        (freq.sec ?? 0)
+      ) * 1000);
+    } else {
+      frequency = 60000;
+    }
+    /* eslint-enable  prettier/prettier */
 
-        // calculate interval between queries, in milliseconds, 1 min default value
-        /* eslint-disable prettier/prettier */
-        let frequency: number;
-        if (freq && (freq.ms || freq.sec || freq.min || freq.hours)) {
-          frequency = (freq.ms ?? 0) + ((
-            (freq.hours ?? 0) * 3600 +
-            (freq.min ?? 0) * 60 +
-            (freq.sec ?? 0)
-          ) * 1000);
-        } else {
-          frequency = 60000;
-        }
-        /* eslint-enable  prettier/prettier */
+    const subscription: Subscription<TData> = {
+      frequency: frequency,
+      isActive: false,
+      stop(): void {
+        subscription.isActive = false;
+      },
+      async *[Symbol.asyncIterator](): AsyncGenerator<
+        QueryApiResult<TData>
+      > {
+        let timeout: NodeJS.Timeout | undefined = undefined;
+        subscription.isActive = true;
 
-        const subscription: Subscription<TData> = {
-          frequency: frequency,
-          isActive: false,
-          stop(): void {
-            subscription.isActive = false;
-          },
-          async *[Symbol.asyncIterator](): AsyncGenerator<
-            QueryApiResult<TData>
-          > {
-            let timeout: NodeJS.Timeout | undefined = undefined;
-            subscription.isActive = true;
+        try {
+          let readyVals = 0;
+          let sleep: ((value?: unknown) => void) | undefined;
 
-            try {
-              let readyVals = 0;
-              let sleep: ((value?: unknown) => void) | undefined;
-
-              timeout = setInterval(() => {
-                readyVals++;
-                if (sleep) {
-                  sleep();
-                  sleep = undefined;
-                }
-              }, frequency);
-
-              while (subscription.isActive) {
-                if (readyVals === 0) {
-                  await new Promise((r) => (sleep = r));
-                }
-
-                for (; readyVals > 0; readyVals--) {
-                  if (!subscription.isActive) {
-                    break;
-                  }
-
-                  const result: QueryApiResult<TData> = await client.query({
-                    uri: uri,
-                    query: query,
-                    variables: variables,
-                  });
-
-                  yield result;
-                }
-              }
-            } finally {
-              if (timeout) {
-                clearInterval(timeout);
-              }
-              subscription.isActive = false;
+          timeout = setInterval(() => {
+            readyVals++;
+            if (sleep) {
+              sleep();
+              sleep = undefined;
             }
-          },
-        };
+          }, frequency);
 
-        return subscription;
-      }
-    );
+          while (subscription.isActive) {
+            if (readyVals === 0) {
+              await new Promise((r) => (sleep = r));
+            }
 
-    return run(typedOptions);
+            for (; readyVals > 0; readyVals--) {
+              if (!subscription.isActive) {
+                break;
+              }
+
+              const result: QueryApiResult<TData> = await client.query({
+                uri: uri,
+                query: query,
+                variables: variables,
+              });
+
+              yield result;
+            }
+          }
+        } finally {
+          if (timeout) {
+            clearInterval(timeout);
+          }
+          subscription.isActive = false;
+        }
+      },
+    };
+
+    return subscription;
   }
 
   public async getSchema<TUri extends Uri | string>(
@@ -341,66 +318,52 @@ export class Web3ApiClient implements Client {
     return await api.getFile(options, this);
   }
 
+  @Tracer.traceMethod("Web3ApiClient: getImplementations")
   public getImplementations<TUri extends Uri | string>(
     uri: TUri,
     options?: GetImplementationsOptions
   ): TUri[] {
     const isUriTypeString = typeof uri === "string";
+    const applyRedirects = !!options?.applyRedirects;
 
-    const run = Tracer.traceFunc(
-      "Web3ApiClient: getImplementations",
-      (): TUri[] => {
-        const applyRedirects = !!options?.applyRedirects;
-
-        return isUriTypeString
-          ? (getImplementations(
-              this._toUri(uri),
-              this.interfaces(),
-              applyRedirects ? this.redirects() : undefined
-            ).map((x: Uri) => x.uri) as TUri[])
-          : (getImplementations(
-              this._toUri(uri),
-              this.interfaces(),
-              applyRedirects ? this.redirects() : undefined
-            ) as TUri[]);
-      }
-    );
-
-    return run();
+    return isUriTypeString
+      ? (getImplementations(
+          this._toUri(uri),
+          this.interfaces(),
+          applyRedirects ? this.redirects() : undefined
+        ).map((x: Uri) => x.uri) as TUri[])
+      : (getImplementations(
+          this._toUri(uri),
+          this.interfaces(),
+          applyRedirects ? this.redirects() : undefined
+        ) as TUri[]);
   }
 
+  @Tracer.traceMethod("Web3ApiClient: _loadWeb3Api")
   private async _loadWeb3Api(uri: Uri): Promise<Api> {
     const typedUri = typeof uri === "string" ? new Uri(uri) : uri;
+    let api = this._apiCache.get(typedUri.uri);
 
-    const run = Tracer.traceFunc(
-      "Web3ApiClient: _loadWeb3Api",
-      async (uri: Uri): Promise<Api> => {
-        let api = this._apiCache.get(uri.uri);
+    if (!api) {
+      api = await resolveUri(
+        typedUri,
+        this,
+        this.redirects(),
+        this.plugins(),
+        this.interfaces(),
+        (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
+        (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
+          new WasmWeb3Api(uri, manifest, uriResolver)
+      );
 
-        if (!api) {
-          api = await resolveUri(
-            uri,
-            this,
-            this.redirects(),
-            this.plugins(),
-            this.interfaces(),
-            (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
-            (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
-              new WasmWeb3Api(uri, manifest, uriResolver)
-          );
-
-          if (!api) {
-            throw Error(`Unable to resolve Web3API at uri: ${uri}`);
-          }
-
-          this._apiCache.set(uri.uri, api);
-        }
-
-        return api;
+      if (!api) {
+        throw Error(`Unable to resolve Web3API at uri: ${typedUri}`);
       }
-    );
 
-    return run(typedUri);
+      this._apiCache.set(typedUri.uri, api);
+    }
+
+    return api;
   }
 
   private _requirePluginsToUseNonInterfaceUris(): void {
