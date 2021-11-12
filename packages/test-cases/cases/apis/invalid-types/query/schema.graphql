@@ -4,12 +4,12 @@ type Query {
   ): Boolean!
 
   intMethod(
-    arg: Int64!
-  ): Int64!
+    arg: Int32!
+  ): Int32!
 
   uIntMethod(
-    arg: UInt64!
-  ): UInt64!
+    arg: UInt32!
+  ): UInt32!
 
   bytesMethod(
     arg: Bytes!

@@ -9,12 +9,12 @@ export const parseQuery = Tracer.traceFunc(
     uri: Uri,
     doc: QueryDocument,
     variables?: Record<string, unknown>
-  ): QueryApiInvocations => {
+  ): QueryApiInvocations<Uri> => {
     if (doc.definitions.length === 0) {
       throw Error("Empty query document found.");
     }
 
-    const queryInvocations: QueryApiInvocations = {};
+    const queryInvocations: QueryApiInvocations<Uri> = {};
 
     for (const def of doc.definitions) {
       if (def.kind !== "OperationDefinition") {
@@ -107,7 +107,7 @@ const extractValue = Tracer.traceFunc(
         );
       }
 
-      if (!variables[node.name.value]) {
+      if (variables[node.name.value] === undefined) {
         throw Error(`Missing variable: ${node.name.value}`);
       }
 

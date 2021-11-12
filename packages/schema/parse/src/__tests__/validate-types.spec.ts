@@ -220,7 +220,7 @@ type B {
 describe("Web3API Schema Type Validation", () => {
   it("typeDefinitions", () => {
     const exec = (schema: string) => () => parseSchema(schema, {
-      validators: [typeValidators.typeDefinitions]
+      validators: [typeValidators.getTypeDefinitionsValidator]
     });
 
     expect(exec(typeDefinitions1)).toThrow(
@@ -246,7 +246,7 @@ describe("Web3API Schema Type Validation", () => {
 
   it("propertyTypes", () => {
     const exec = (schema: string) => () => parseSchema(schema, {
-      validators: [typeValidators.propertyTypes]
+      validators: [typeValidators.getPropertyTypesValidator]
     });
 
     expect(exec(propertyTypes1)).toThrow(
@@ -280,7 +280,7 @@ describe("Web3API Schema Type Validation", () => {
 
   it("Circular type definitions", () => {
     const exec = (schema: string) => () => parseSchema(schema, {
-      validators: [typeValidators.circularDefinitions]
+      validators: [typeValidators.getCircularDefinitionsValidator]
     })
 
     expect(exec(circularTypes1)).toThrow(

@@ -1,7 +1,7 @@
 {
   "name": "@web3api/tracing-js",
   "description": "Web3API Core Tracing",
-  "version": "0.0.1-prealpha.26",
+  "version": "0.0.1-prealpha.48",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "@opentelemetry/propagator-b3": "0.20.0",
     "@opentelemetry/tracing": "0.20.0",
     "@opentelemetry/web": "0.20.0",
-    "util-inspect": "0.1.8"
+    "browser-util-inspect": "0.2.0"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",

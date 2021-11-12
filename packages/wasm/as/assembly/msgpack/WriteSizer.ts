@@ -2,6 +2,7 @@ import { Write } from "./Write";
 import { Nullable } from "./Nullable";
 import { BigInt } from "../BigInt";
 import { Context } from "./Context";
+import { JSON } from "../JSON";
 
 export class WriteSizer extends Write {
   length: i32;
@@ -25,54 +26,42 @@ export class WriteSizer extends Write {
   }
 
   writeInt8(value: i8): void {
-    this.writeInt64(<i64>value);
+    this.writeInt32(<i32>value);
   }
 
   writeInt16(value: i16): void {
-    this.writeInt64(<i64>value);
+    this.writeInt32(<i32>value);
   }
 
   writeInt32(value: i32): void {
-    this.writeInt64(<i64>value);
-  }
-
-  writeInt64(value: i64): void {
     if (value >= -(1 << 5) && value < 1 << 7) {
       this.length++;
     } else if (value < 1 << 7 && value >= -(1 << 7)) {
       this.length += 2;
     } else if (value < 1 << 15 && value >= -(1 << 15)) {
       this.length += 3;
-    } else if (value < 1 << 31 && value >= -(1 << 31)) {
-      this.length += 5;
     } else {
-      this.length += 9;
+      this.length += 5;
     }
   }
 
   writeUInt8(value: u8): void {
-    this.writeUInt64(<u64>value);
+    this.writeUInt32(<u32>value);
   }
 
   writeUInt16(value: u16): void {
-    this.writeUInt64(<u64>value);
+    this.writeUInt32(<u32>value);
   }
 
   writeUInt32(value: u32): void {
-    this.writeUInt64(<u64>value);
-  }
-
-  writeUInt64(value: u64): void {
     if (value < 1 << 7) {
       this.length++;
     } else if (value < 1 << 8) {
       this.length += 2;
     } else if (value < 1 << 16) {
       this.length += 3;
-    } else if (value < (<u64>1) << 32) {
-      this.length += 5;
     } else {
-      this.length += 9;
+      this.length += 5;
     }
   }
 
@@ -123,6 +112,11 @@ export class WriteSizer extends Write {
 
   writeBigInt(value: BigInt): void {
     const str = value.toString();
+    this.writeString(str);
+  }
+
+  writeJSON(value: JSON.Value): void {
+    const str = value.stringify();
     this.writeString(str);
   }
 
@@ -204,15 +198,6 @@ export class WriteSizer extends Write {
     this.writeInt32(value.value);
   }
 
-  writeNullableInt64(value: Nullable<i64>): void {
-    if (value.isNull) {
-      this.writeNil();
-      return;
-    }
-
-    this.writeInt64(value.value);
-  }
-
   writeNullableUInt8(value: Nullable<u8>): void {
     if (value.isNull) {
       this.writeNil();
@@ -238,15 +223,6 @@ export class WriteSizer extends Write {
     }
 
     this.writeUInt32(value.value);
-  }
-
-  writeNullableUInt64(value: Nullable<u64>): void {
-    if (value.isNull) {
-      this.writeNil();
-      return;
-    }
-
-    this.writeUInt64(value.value);
   }
 
   writeNullableFloat32(value: Nullable<f32>): void {
@@ -292,6 +268,15 @@ export class WriteSizer extends Write {
     }
 
     this.writeBigInt(value);
+  }
+
+  writeNullableJSON(value: JSON.Value | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeJSON(value);
   }
 
   writeNullableArray<T>(

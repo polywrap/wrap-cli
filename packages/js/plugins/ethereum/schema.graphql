@@ -1,26 +1,3 @@
-### Web3API Header START ###
-scalar UInt
-scalar UInt8
-scalar UInt16
-scalar UInt32
-scalar UInt64
-scalar Int
-scalar Int8
-scalar Int16
-scalar Int32
-scalar Int64
-scalar Bytes
-scalar BigInt
-
-directive @imported(
-  uri: String!
-  namespace: String!
-  nativeType: String!
-) on OBJECT | ENUM
-
-directive @imports(types: [String!]!) on OBJECT
-### Web3API Header END ###
-
 type TxReceipt {
   to: String!
   from: String!
@@ -35,7 +12,9 @@ type TxReceipt {
   blockHash: String!
   confirmations: UInt32!
   cumulativeGasUsed: BigInt!
+  effectiveGasPrice: BigInt!
   byzantium: Boolean!
+  type: UInt32!
   status: UInt32
 }
 
@@ -45,7 +24,7 @@ type TxResponse {
   from: String!
   nonce: UInt32!
   gasLimit: BigInt!
-  gasPrice: BigInt!
+  gasPrice: BigInt
   data: String!
   value: BigInt!
   chainId: UInt32!
@@ -130,7 +109,14 @@ type Query {
 
   encodeParams(types: [String!]!, values: [String!]!): String!
 
-  getSignerAddress(connection: Connection): String!
+  encodeFunction(
+    method: String!
+    args: [String!]
+  ): String!
+
+  getSignerAddress(
+    connection: Connection
+  ): String!
 
   getSignerBalance(blockTag: BigInt, connection: Connection): BigInt!
 

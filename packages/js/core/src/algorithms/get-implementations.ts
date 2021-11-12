@@ -1,10 +1,15 @@
-import { Uri, UriRedirect } from "../types";
+import { Uri, UriRedirect, InterfaceImplementations } from "../types";
+import { applyRedirects } from "./apply-redirects";
 
 import { Tracer } from "@web3api/tracing-js";
 
 export const getImplementations = Tracer.traceFunc(
   "core: getImplementations",
-  (abstractApi: Uri, redirects: readonly UriRedirect<Uri>[]): Uri[] => {
+  (
+    apiInterfaceUri: Uri,
+    interfaces: readonly InterfaceImplementations<Uri>[],
+    redirects?: readonly UriRedirect<Uri>[]
+  ): Uri[] => {
     const result: Uri[] = [];
 
     const addUniqueResult = (uri: Uri) => {
@@ -14,24 +19,30 @@ export const getImplementations = Tracer.traceFunc(
       }
     };
 
-    for (const redirect of redirects) {
-      // Plugin implemented check
-      if (!Uri.isUri(redirect.to)) {
-        const { implemented } = redirect.to.manifest;
-        const implementedApi =
-          implemented.findIndex((uri) => Uri.equals(uri, abstractApi)) > -1;
+    const addAllImplementationsFromImplementationsArray = (
+      implementationsArray: readonly InterfaceImplementations<Uri>[],
+      apiInterfaceUri: Uri
+    ) => {
+      for (const interfaceImplementations of implementationsArray) {
+        const fullyResolvedUri = redirects
+          ? applyRedirects(interfaceImplementations.interface, redirects)
+          : interfaceImplementations.interface;
 
-        if (implementedApi) {
-          addUniqueResult(redirect.from);
+        if (Uri.equals(fullyResolvedUri, apiInterfaceUri)) {
+          for (const implementation of interfaceImplementations.implementations) {
+            addUniqueResult(implementation);
+          }
         }
       }
-      // Explicit check
-      else if (Uri.isUri(redirect.from)) {
-        if (Uri.equals(redirect.from, abstractApi)) {
-          addUniqueResult(redirect.to);
-        }
-      }
+    };
+
+    let finalUri = apiInterfaceUri;
+
+    if (redirects) {
+      finalUri = applyRedirects(apiInterfaceUri, redirects);
     }
+
+    addAllImplementationsFromImplementationsArray(interfaces, finalUri);
 
     return result;
   }

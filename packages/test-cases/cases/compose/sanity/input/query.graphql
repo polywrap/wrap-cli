@@ -1,35 +1,57 @@
 #import { Query, CustomType } into Namespace from "test.eth"
+#import { Query } into Interface from "test-interface.eth"
 #import { CommonType } from "../imports-local/common.graphql"
 
-type Query {
+"""
+Query comment
+"""
+type Query implements Interface_Query {
+
+#Testing normal comment with keyword characters: 
+#type Query {}
+#These comments should be ignored
+
+"""
+method1 comment
+"""
   method1(
     str: String!
     optStr: String
     u: UInt!
+"""
+uArrayArray comment
+"""
     uArrayArray: [[UInt]]!
   ): String!
 
+"""
+method2 comment
+"""
   method2(
     arg: [String!]!
-  ): [Int64!]!
+  ): [Int32!]!
 }
 
+"""
+CustomQueryType comment
+"""
 type CustomQueryType {
   str: String!
   optStr: String
   u: UInt!
   optU: UInt
   u8: UInt8!
-  u64: UInt64!
   i: Int!
   i8: Int8!
-  i64: Int64!
   bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optStrOptArray: [String]
-  crazyArray: [[[[UInt64!]]!]]
+  crazyArray: [[[[UInt32!]]!]]
   commonType: CommonType!
+"""
+customType comment
+"""
   customType: Namespace_CustomType!
 }
 
