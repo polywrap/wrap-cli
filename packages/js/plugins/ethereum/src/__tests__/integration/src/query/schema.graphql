@@ -21,6 +21,11 @@ type Query {
     values: [String!]!
   ): String!
 
+  encodeFunction(
+    method: String!
+    args: [String!]
+  ): String!
+
   getSignerAddress(
     connection: Ethereum_Connection
   ): String!

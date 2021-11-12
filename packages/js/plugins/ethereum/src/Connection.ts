@@ -13,7 +13,7 @@ export type Address = string;
 export type AccountIndex = number;
 export type EthereumSigner = Signer | Address | AccountIndex;
 export type EthereumProvider = string | ExternalProvider | JsonRpcProvider;
-export type EthereumClient = JsonRpcProvider;
+export type EthereumClient = Web3Provider | JsonRpcProvider;
 
 export interface ConnectionConfig {
   provider: EthereumProvider;
@@ -113,13 +113,13 @@ export class Connection {
     } else if (Signer.isSigner(signer)) {
       this._config.signer = signer;
 
-      if (signer.provider !== this._config.provider) {
+      if (!this._client) {
         throw Error(
-          `Signer's connected provider does not match the config's ` +
-            `provider. Please call "setProvider(...)" before calling ` +
-            `"setSigner(...)" if a different provider is desired.`
+          `Please call "setProvider(...)" before calling setSigner(...)`
         );
       }
+
+      this._config.signer = signer.connect(this._client);
     } else {
       this._config.signer = signer;
     }

@@ -20,7 +20,7 @@ export const filterResults = Tracer.traceFunc(
     const res: any = result;
 
     for (const key of Object.keys(filter)) {
-      if (res[key]) {
+      if (res[key] !== undefined) {
         if (typeof filter[key] === "boolean") {
           filtered[key] = res[key];
         } else {

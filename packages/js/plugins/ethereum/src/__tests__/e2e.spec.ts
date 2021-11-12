@@ -9,10 +9,11 @@ import {
   stopTestEnvironment,
   buildAndDeployApi
 } from "@web3api/test-env-js";
+import { Wallet } from "ethers";
 
 import { ethers } from "ethers";
 import { keccak256 } from "js-sha3";
-import axios from "axios"
+import axios from "axios";
 
 const { hash: namehash } = require("eth-ens-namehash");
 const contracts = {
@@ -51,7 +52,8 @@ describe("Ethereum Plugin", () => {
           plugin: ethereumPlugin({
             networks: {
               testnet: {
-                provider: ethereum
+                provider: ethereum,
+                signer: new Wallet("0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"),
               }
             },
             defaultNetwork: "testnet"
@@ -177,6 +179,23 @@ describe("Ethereum Plugin", () => {
       });
 
       expect(response.data?.encodeParams).toBe("0x000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000")
+    });
+
+    it("encodeFunction", async () => {
+      const response = await client.query<{ encodeFunction: string }>({
+        uri,
+        query: `
+          query {
+            encodeFunction(
+              method: "function increaseCount(uint256)",
+              args: ["100"]
+            )
+          }
+        `,
+      });
+
+      expect(response.errors).toBeUndefined();
+      expect(response.data?.encodeFunction).toBe("0x46d4adf20000000000000000000000000000000000000000000000000000000000000064")
     });
 
     it("getSignerAddress", async () => {
@@ -587,7 +606,7 @@ describe("Ethereum Plugin", () => {
       });
   
       expect(response.errors).toBeUndefined()
-      expect(response.data?.signMessage).toBe("0x3c7140261c7089ac1e2c22df6940945bfdece5bea5202f90644b3c0efe29b4fc454a3bcba410455bd0d539304057511a36b224fdaa95bff9d9bfc5cefd751ee300")
+      expect(response.data?.signMessage).toBe("0xa4708243bf782c6769ed04d83e7192dbcf4fc131aa54fde9d889d8633ae39dab03d7babd2392982dff6bc20177f7d887e27e50848c851320ee89c6c63d18ca761c")
     });
 
     it("sendRPC", async () => {

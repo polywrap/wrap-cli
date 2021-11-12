@@ -1,4 +1,0 @@
-type TxOverrides {
-  gasPrice: BigInt
-  gasLimit: BigInt
-}
