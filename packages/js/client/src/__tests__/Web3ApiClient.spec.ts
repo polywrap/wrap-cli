@@ -2125,12 +2125,7 @@ enum Logger_LogLevel @imported(
   });
 
   it("e2e getImplementations capability", async () => {
-    let interfaceApi = await buildAndDeployApi(
-      `${GetPathToTestApis()}/implementations/test-interface`,
-      ipfsProvider,
-      ensAddress
-    );
-    const interfaceUri = `w3://ens/testnet/${interfaceApi.ensDomain}`;
+    const interfaceUri = "w3://ens/interface.eth"
 
     const implementationApi = await buildAndDeployApi(
       `${GetPathToTestApis()}/implementations/test-use-getImpl`,
@@ -2142,9 +2137,9 @@ enum Logger_LogLevel @imported(
     const client = await getClient({
       interfaces: [
         {
-          interface: interfaceUri,
+          interface: "w3://ens/interface.eth",
           implementations: [implementationUri],
-        },
+        }
       ],
     });
 
@@ -2166,7 +2161,7 @@ enum Logger_LogLevel @imported(
 
     expect(query.errors).toBeFalsy();
     expect(query.data).toBeTruthy();
-    expect(query.data).toEqual([implementationUri]);
+    expect((query.data as any).queryImplemetations).toEqual([implementationUri]);
   });
 
 });

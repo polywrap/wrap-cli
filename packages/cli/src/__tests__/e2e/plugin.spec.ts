@@ -114,8 +114,6 @@ ${HELP}`);
 ✔ Generate types
 `);
 
-    console.log(projectRoot);
-
     const expectedTypesResult = compareSync(
       `${projectRoot}/src/w3`,
       `${projectRoot}/expected-types`,
