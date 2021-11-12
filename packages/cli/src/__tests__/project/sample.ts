@@ -27,7 +27,7 @@ directive @capability(
   type: String!
   uri: String!
   namespace: String!
-) on OBJECT
+) repeatable on OBJECT
 ### Web3API Header END ###
 
 type Query @imports(
@@ -267,7 +267,7 @@ directive @capability(
   type: String!
   uri: String!
   namespace: String!
-) on OBJECT
+) repeatable on OBJECT
 ### Web3API Header END ###
 
 type Mutation @imports(
@@ -498,7 +498,7 @@ directive @capability(
   type: String!
   uri: String!
   namespace: String!
-) on OBJECT
+) repeatable on OBJECT
 ### Web3API Header END ###
 
 type Mutation @imports(
