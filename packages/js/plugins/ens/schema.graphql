@@ -7,5 +7,7 @@ type Query implements UriResolver_Query {
     path: String!
   ): UriResolver_MaybeUriOrManifest
 
-  getFile(path: String!): Bytes
+  getFile(
+    path: String!
+  ): Bytes
 }

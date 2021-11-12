@@ -6,5 +6,8 @@ enum LogLevel {
 }
 
 type Query {
-  log(level: LogLevel!, message: String!): Boolean!
+  log(
+    level: LogLevel!
+    message: String!
+  ): Boolean!
 }
