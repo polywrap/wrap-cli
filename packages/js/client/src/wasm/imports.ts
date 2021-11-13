@@ -118,6 +118,26 @@ export const createImports = (config: {
       __w3_invoke_error: (ptr: u32, len: u32): void => {
         state.invoke.error = readString(memory.buffer, ptr, len);
       },
+      __w3_getImplementations: (uriPtr: u32, uriLen: u32): boolean => {
+        const uri = readString(memory.buffer, uriPtr, uriLen);
+        const result = client.getImplementations(uri);
+        state.getImplementationsResult = MsgPack.encode(result);
+        return result.length > 0;
+      },
+      __w3_getImplementations_result_len: (): u32 => {
+        if (!state.getImplementationsResult) {
+          abort("__w3_getImplementations_result_len: result is not set");
+          return 0;
+        }
+        return state.getImplementationsResult.byteLength;
+      },
+      __w3_getImplementations_result: (ptr: u32): void => {
+        if (!state.getImplementationsResult) {
+          abort("__w3_getImplementations_result: result is not set");
+          return;
+        }
+        writeBytes(state.getImplementationsResult, memory.buffer, ptr);
+      },
       __w3_abort: (
         msgPtr: u32,
         msgLen: u32,

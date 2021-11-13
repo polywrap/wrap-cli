@@ -15,10 +15,26 @@ import {
   createImportedEnumDefinition,
   createInterfaceImplementedDefinition,
   createObjectRef,
-  createEnumRef
+  createEnumRef,
+  createInterfaceDefinition,
+  createCapability
 } from "../../../../schema/parse/src/typeInfo";
 
 export const output: TypeInfo = {
+  interfaceTypes: [
+    createInterfaceDefinition({
+      type: "TestImport",
+      uri: "testimport.uri.eth",
+      namespace: "TestImport",
+      capabilities: {
+        ...createCapability({
+          type: "getImplementations",
+          enabled: true,
+          modules: ["query"]
+        })
+      },
+    })
+  ],
   objectTypes: [
     {
       ...createObjectDefinition({ type: "CustomType", comment: "CustomType multi-line comment\nline 2" }),
