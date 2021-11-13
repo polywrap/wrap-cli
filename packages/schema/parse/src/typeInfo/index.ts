@@ -101,17 +101,12 @@ const tryInsert = (
   value: GenericDefinition,
   compare: (a: GenericDefinition, b: GenericDefinition) => boolean = (a, b) =>
     a.type === b.type,
-  join?: (dest: GenericDefinition, source: GenericDefinition) => void
 ) => {
   const index = dest.findIndex((item: GenericDefinition) =>
     compare(item, value)
   );
 
   if (index > -1) {
-    if (join) {
-      join(dest[index], value);
-    }
-
     const destType = JSON.stringify(dest[index]);
     const valueType = JSON.stringify(value);
     if (destType !== valueType) {

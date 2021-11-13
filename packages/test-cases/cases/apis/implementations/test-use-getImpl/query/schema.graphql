@@ -2,7 +2,7 @@
 #use { getImplementations } for Interface
 
 type Query implements Interface_Query {
-  queryImplemetations: [String!]! 
+  queryImplementations: [String!]!
   queryMethod(
     arg: ImplementationType!
   ): ImplementationType!

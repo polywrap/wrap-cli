@@ -53,7 +53,6 @@ type ImplementationWithInterfaces = {
 
 const TYPE_NAME_REGEX = `[a-zA-Z0-9_]+`;
 
-// TODO: return this structured data array
 export async function resolveUseStatements(
   schema: string,
   schemaPath: string,

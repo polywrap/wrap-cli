@@ -2153,7 +2153,7 @@ enum Logger_LogLevel @imported(
       uri: implementationUri,
       query: `
         query {
-          queryImplemetations
+          queryImplementations
         }
       `,
       variables: {},
@@ -2161,7 +2161,7 @@ enum Logger_LogLevel @imported(
 
     expect(query.errors).toBeFalsy();
     expect(query.data).toBeTruthy();
-    expect((query.data as any).queryImplemetations).toEqual([implementationUri]);
+    expect((query.data as any).queryImplementations).toEqual([implementationUri]);
   });
 
 });
