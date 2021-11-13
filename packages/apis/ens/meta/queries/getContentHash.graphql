@@ -1,9 +1,0 @@
-query {
-  getContentHash(
-    domain: $domain
-    resolverAddress: $resolverAddress
-    connection: {
-      networkNameOrChainId: $network
-    }
-  )
-}

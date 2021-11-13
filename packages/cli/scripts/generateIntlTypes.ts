@@ -1,8 +1,9 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import {
   Project,
   VariableDeclarationKind,
   SyntaxKind,
-  IndentationText
+  IndentationText,
 } from "ts-morph";
 import fs from "fs";
 import path from "path";
@@ -16,12 +17,16 @@ function main(tsConfigPath: string, langPath: string, targetFilePath: string) {
   const project = new Project({
     tsConfigFilePath: tsConfigPath,
     manipulationSettings: {
-      indentationText: IndentationText.TwoSpaces
-    }
+      indentationText: IndentationText.TwoSpaces,
+    },
   });
-  const sourceFile = project.createSourceFile(targetFilePath, "", { overwrite: true });
+  const sourceFile = project.createSourceFile(targetFilePath, "", {
+    overwrite: true,
+  });
   // add lint ignore for file
-  sourceFile.addStatements("/// NOTE: This is an auto-generated file. See scripts/generateIntlTypes.ts")
+  sourceFile.addStatements(
+    "/// NOTE: This is an auto-generated file. See scripts/generateIntlTypes.ts"
+  );
   sourceFile.addStatements("/* eslint-disable */");
   // import getIntl for formatjs
   const importFormatJsIntl = sourceFile.addImportDeclaration({
@@ -89,7 +94,10 @@ function main(tsConfigPath: string, langPath: string, targetFilePath: string) {
         messageInt.addProperty({ name: arg, type: "string" });
       }
       // add to IntlMsg interface and obj -> with options argument
-      intlMsgInt.addProperty({ name: id, type: `(options: ${intName}) => string` });
+      intlMsgInt.addProperty({
+        name: id,
+        type: `(options: ${intName}) => string`,
+      });
       intlMsgObj.addPropertyAssignment({
         name: id,
         initializer: `(options: ${intName}): string => intl.formatMessage({ id: "${id}", defaultMessage: "${text}" }, options)`,
@@ -109,9 +117,7 @@ function main(tsConfigPath: string, langPath: string, targetFilePath: string) {
   // validate other lang json files to make sure they include all required messages
   const langFileName = path.basename(langPath);
   const langDir = path.dirname(langPath);
-  const langs = fs.readdirSync(langDir).filter(
-    (lang) => lang !== langFileName
-  );
+  const langs = fs.readdirSync(langDir).filter((lang) => lang !== langFileName);
 
   const langErrors: Record<string, string[]> = {};
 
@@ -136,9 +142,9 @@ function main(tsConfigPath: string, langPath: string, targetFilePath: string) {
   if (Object.keys(langErrors).length > 0) {
     throw Error(
       `Found lang files missing required commands:\n` +
-      `${Object.keys(langErrors).map((lang) =>
-        `"${lang}": ${JSON.stringify(langErrors[lang], null, 2)}\n`
-      )}`
+        `${Object.keys(langErrors).map(
+          (lang) => `"${lang}": ${JSON.stringify(langErrors[lang], null, 2)}\n`
+        )}`
     );
   }
 }

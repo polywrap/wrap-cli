@@ -9,7 +9,7 @@ import {
   SchemaResolvers,
   SYNTAX_REFERENCE,
 } from "./types";
-import { parseExternalImports, parseLocalImports } from "./parse";
+import { parseExternalImports, parseLocalImports, parseUse } from "./parse";
 import { renderSchema } from "./render";
 import { addHeader } from "./templates/header.mustache";
 
@@ -36,6 +36,14 @@ import {
   InterfaceImplementedDefinition,
   ObjectRef,
   EnumRef,
+  InvokableModules,
+  createImportedObjectDefinition,
+  createImportedEnumDefinition,
+  createImportedQueryDefinition,
+  createInterfaceDefinition,
+  createCapability,
+  QueryModuleCapability,
+  QueryModuleCapabilityMap,
 } from "@web3api/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -44,6 +52,68 @@ type ImplementationWithInterfaces = {
 };
 
 const TYPE_NAME_REGEX = `[a-zA-Z0-9_]+`;
+
+export async function resolveUseStatements(
+  schema: string,
+  schemaPath: string,
+  typeInfo: TypeInfo
+): Promise<QueryModuleCapabilityMap> {
+  const useKeywordCapture = /^[#]*["{3}]*use[ \n\t]/gm;
+  const useCapture = /[#]*["{3}]*use[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*for[ \n\t]*(\w+)[ \n\t]/g;
+
+  const keywords = [...schema.matchAll(useKeywordCapture)];
+  const useStatements = [...schema.matchAll(useCapture)];
+
+  if (keywords.length !== useStatements.length) {
+    throw Error(
+      `Invalid use statement found in file ${schemaPath}.\nPlease use one of the following syntaxes...\n${SYNTAX_REFERENCE}`
+    );
+  }
+
+  const importedQueryByNamespace: Record<string, ImportedQueryDefinition> = {};
+
+  typeInfo.importedQueryTypes.forEach((value) => {
+    importedQueryByNamespace[value.namespace] = value;
+  });
+
+  const capabilitiesByModule: Record<
+    InvokableModules,
+    QueryModuleCapability[]
+  > = {
+    query: [],
+    mutation: [],
+  };
+
+  const parsedUses = parseUse(useStatements);
+  for (const parsedUse of parsedUses) {
+    const importedQuery = importedQueryByNamespace[parsedUse.namespace];
+    if (!importedQuery) {
+      throw Error(`Invalid use statement: namespace used hasn't been imported`);
+    }
+    const module = importedQuery.nativeType.toLowerCase() as InvokableModules;
+    const modules: InvokableModules[] = [module];
+    const capabilities = parsedUse.usedTypes
+      .map((type) => {
+        capabilitiesByModule[module].push({
+          type,
+          uri: importedQuery.uri,
+          namespace: parsedUse.namespace,
+        });
+        return createCapability({ type, modules, enabled: true });
+      })
+      .reduce((o1, o2) => ({ ...o1, ...o2 }));
+
+    typeInfo.interfaceTypes.push(
+      createInterfaceDefinition({
+        type: parsedUse.namespace,
+        uri: importedQuery.uri,
+        namespace: parsedUse.namespace,
+        capabilities: capabilities,
+      })
+    );
+  }
+  return capabilitiesByModule;
+}
 
 export async function resolveImportsAndParseSchemas(
   schema: string,
@@ -91,6 +161,7 @@ export async function resolveImportsAndParseSchemas(
     objectTypes: [],
     queryTypes: [],
     enumTypes: [],
+    interfaceTypes: [],
     importedEnumTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
@@ -110,6 +181,12 @@ export async function resolveImportsAndParseSchemas(
     resolvers
   );
 
+  const capabilitiesByModule = await resolveUseStatements(
+    schema,
+    schemaPath,
+    subTypeInfo
+  );
+
   // Remove all import statements
   let newSchema = schema
     .replace(externalImportCapture, "")
@@ -121,7 +198,10 @@ export async function resolveImportsAndParseSchemas(
   // Add the @imports directive
   newSchema = addQueryImportsDirective(newSchema, externalImports, mutation);
 
-  //Combine the new schema with the subTypeInfo
+  // Add the @capability directive
+  newSchema = addCapabilityDirective(newSchema, capabilitiesByModule);
+
+  // Combine the new schema with the subTypeInfo
   newSchema = header + newSchema + renderSchema(subTypeInfo, false);
 
   newSchema = resolveInterfaces(newSchema, implementationsWithInterfaces);
@@ -370,6 +450,38 @@ function addQueryImportsDirective(
   return schema.replace(typeCapture, replacementQueryStr);
 }
 
+function addCapabilityDirective(
+  schema: string,
+  capabilitiesByModule: QueryModuleCapabilityMap
+): string {
+  if (
+    !capabilitiesByModule.query.length &&
+    !capabilitiesByModule.mutation.length
+  ) {
+    return schema;
+  }
+
+  for (const [module, capabilities] of Object.entries(capabilitiesByModule)) {
+    for (const capability of capabilities) {
+      const typeCapture =
+        module === "mutation"
+          ? /type[ \n\t]*Mutation[ \n\t]*([^{]*)[ \n\t]*{/g
+          : /type[ \n\t]*Query[ \n\t]*([^{]*)[ \n\t]*{/g;
+
+      const replacementQueryStr = `type ${
+        module === "mutation" ? "Mutation" : "Query"
+      } $1@capability(
+  type: "${capability.type}",
+  uri: "${capability.uri}",
+  namespace: "${capability.namespace}"
+) {`;
+
+      schema = schema.replace(typeCapture, replacementQueryStr);
+    }
+  }
+  return schema;
+}
+
 function parseInterfaces(
   implementInterfaceStatments: RegExpMatchArray[]
 ): ImplementationWithInterfaces[] {
@@ -504,14 +616,32 @@ async function resolveExternalImports(
         | ObjectDefinition
         | EnumDefinition
       )[] = [];
-      let visitorFunc: Function;
-      let trueTypeKind: DefinitionKind;
+      let visitorFunc: Function | undefined;
+      let trueType:
+        | ImportedQueryDefinition
+        | ImportedObjectDefinition
+        | ImportedEnumDefinition
+        | undefined;
 
       // If it's a query type
       if (importedType === "Query" || importedType === "Mutation") {
         extTypes = extTypeInfo.queryTypes;
         visitorFunc = visitQueryDefinition;
-        trueTypeKind = DefinitionKind.ImportedQuery;
+        const queryIdx = extTypeInfo.queryTypes.findIndex(
+          (def) => def.type === importedType
+        );
+        const type = extTypeInfo.queryTypes[queryIdx];
+        trueType = {
+          ...createImportedQueryDefinition({
+            ...type,
+            type: appendNamespace(namespace, importedType),
+            required: undefined,
+            uri,
+            nativeType: type.type,
+            namespace,
+          }),
+          methods: type.methods,
+        };
       } else if (
         importedType.endsWith("_Query") ||
         importedType.endsWith("_Mutation")
@@ -520,46 +650,94 @@ async function resolveExternalImports(
           `Cannot import an import's imported query type. Tried to import ${importedType} from ${uri}.`
         );
       } else {
-        if (
-          extTypeInfo.objectTypes.findIndex(
-            (def) => def.type === importedType
-          ) > -1
-        ) {
-          extTypes = extTypeInfo.objectTypes;
-          visitorFunc = visitObjectDefinition;
-          trueTypeKind = DefinitionKind.ImportedObject;
-        } else if (
+        const objIdx = extTypeInfo.objectTypes.findIndex(
+          (def) => def.type === importedType
+        );
+        const impObjIdx =
+          objIdx === -1 &&
           extTypeInfo.importedObjectTypes.findIndex(
             (def) => def.type === importedType
-          ) > -1
-        ) {
-          extTypes = extTypeInfo.importedObjectTypes;
-          visitorFunc = visitObjectDefinition;
-          trueTypeKind = DefinitionKind.ImportedObject;
-        } else if (
+          );
+        const enumIdx =
+          impObjIdx === -1 &&
+          extTypeInfo.enumTypes.findIndex((def) => def.type === importedType);
+        const impEnumIdx =
+          enumIdx === -1 &&
           extTypeInfo.importedEnumTypes.findIndex(
             (def) => def.type === importedType
-          ) > -1
-        ) {
-          extTypes = extTypeInfo.importedEnumTypes;
-          visitorFunc = visitEnumDefinition;
-          trueTypeKind = DefinitionKind.ImportedEnum;
-        } else {
+          );
+
+        if (objIdx > -1) {
+          extTypes = extTypeInfo.objectTypes;
+          visitorFunc = visitObjectDefinition;
+          const type = extTypeInfo.objectTypes[objIdx];
+          trueType = {
+            ...createImportedObjectDefinition({
+              ...type,
+              type: appendNamespace(namespace, importedType),
+              name: undefined,
+              required: undefined,
+              uri,
+              nativeType: type.type,
+              namespace,
+            }),
+            properties: type.properties,
+          };
+        } else if (impObjIdx !== false && impObjIdx > -1) {
+          extTypes = extTypeInfo.importedObjectTypes;
+          visitorFunc = visitObjectDefinition;
+          const type = extTypeInfo.importedObjectTypes[impObjIdx];
+          trueType = {
+            ...createImportedObjectDefinition({
+              ...type,
+              type: appendNamespace(namespace, importedType),
+              name: undefined,
+              required: undefined,
+              uri,
+              nativeType: type.type,
+              namespace,
+            }),
+            properties: type.properties,
+          };
+        } else if (enumIdx !== false && enumIdx > -1) {
           extTypes = extTypeInfo.enumTypes;
           visitorFunc = visitEnumDefinition;
-          trueTypeKind = DefinitionKind.ImportedEnum;
+          const type = extTypeInfo.enumTypes[enumIdx];
+          trueType = createImportedEnumDefinition({
+            ...type,
+            type: appendNamespace(namespace, importedType),
+            name: undefined,
+            required: undefined,
+            uri,
+            nativeType: type.type,
+            namespace,
+          });
+        } else if (impEnumIdx !== false && impEnumIdx > -1) {
+          extTypes = extTypeInfo.importedEnumTypes;
+          visitorFunc = visitEnumDefinition;
+          const type = extTypeInfo.importedEnumTypes[impEnumIdx];
+          trueType = createImportedEnumDefinition({
+            ...type,
+            type: appendNamespace(namespace, importedType),
+            name: undefined,
+            required: undefined,
+            uri,
+            nativeType: type.type,
+            namespace,
+          });
         }
       }
 
-      // Find the type's definition in the schema's TypeInfo
-      const type = extTypes.find((type) => type.type === importedType);
-
-      if (!type) {
+      if (!trueType) {
         throw Error(
           `Cannot find type "${importedType}" in the schema at ${uri}.\nFound: [ ${extTypes.map(
             (type) => type.type + " "
           )}]`
         );
+      }
+
+      if (!visitorFunc) {
+        throw Error(`visitorFunc has not been set, this should never happen.`);
       }
 
       const namespacedType = appendNamespace(namespace, importedType);
@@ -571,20 +749,13 @@ async function resolveExternalImports(
 
       // Append the base type to our TypeInfo
       typesToImport[namespacedType] = {
-        ...type,
-        name: null,
-        required: null,
-        type: namespacedType,
-        kind: trueTypeKind,
-        namespace,
+        ...trueType,
         __namespaced: true,
-        uri,
-        nativeType: type.type,
       };
 
       // Extract all object dependencies
       visitorFunc(
-        type,
+        trueType,
         extractObjectImportDependencies(
           typesToImport,
           extTypeInfo,

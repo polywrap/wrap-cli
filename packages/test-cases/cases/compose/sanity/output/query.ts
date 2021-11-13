@@ -13,10 +13,24 @@ import {
   createImportedObjectDefinition,
   createImportedEnumDefinition,
   createInterfaceImplementedDefinition,
-  createObjectRef
+  createObjectRef,
+  createInterfaceDefinition,
+  createCapability
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
+  interfaceTypes: [
+    createInterfaceDefinition({
+      type: "Namespace",
+      uri: "test.eth",
+      namespace: "Namespace",
+      capabilities: createCapability({
+        type: "getImplementations",
+        enabled: true,
+        modules: ["query"],
+      }),
+    })
+  ],
   objectTypes: [
     {
       ...createObjectDefinition({ type: "CustomQueryType", comment: "CustomQueryType comment" }),
@@ -541,7 +555,7 @@ export const typeInfo: TypeInfo = {
         namespace: "Namespace",
         nativeType: "Query",
         type: "Namespace_Query",
-        comment: "Query comment"
+        comment: "Query comment",
       }),
       methods: [
         {
@@ -630,7 +644,7 @@ export const typeInfo: TypeInfo = {
         namespace: "Interface",
         nativeType: "Query",
         type: "Interface_Query",
-        comment: "Query comment"
+        comment: "Query comment",
       }),
       methods: [
         {

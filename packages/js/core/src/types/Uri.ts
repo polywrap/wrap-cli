@@ -61,66 +61,60 @@ export class Uri {
     }
   }
 
-  public static parseUri(uri: string): UriConfig {
-    const run = Tracer.traceFunc(
-      "Uri: parseUri",
-      (uri: string): UriConfig => {
-        if (!uri) {
-          throw Error("The provided URI is empty");
-        }
-
-        let processed = uri;
-
-        // Trim preceding '/' characters
-        while (processed[0] === "/") {
-          processed = processed.substr(1);
-        }
-
-        // Check for the w3:// scheme, add if it isn't there
-        const w3SchemeIdx = processed.indexOf("w3://");
-
-        // If it's missing the w3:// scheme, add it
-        if (w3SchemeIdx === -1) {
-          processed = "w3://" + processed;
-        }
-
-        // If the w3:// is not in the beginning, throw an error
-        if (w3SchemeIdx > -1 && w3SchemeIdx !== 0) {
-          throw Error(
-            "The w3:// scheme must be at the beginning of the URI string"
-          );
-        }
-
-        // Extract the authoriy & path
-        let result = processed.match(/w3:\/\/([a-z][a-z0-9-_]+)\/(.*)/);
-
-        // Remove all empty strings
-        if (result) {
-          result = result.filter((str) => !!str);
-        }
-
-        if (!result || result.length !== 3) {
-          throw Error(
-            `URI is malformed, here are some examples of valid URIs:\n` +
-              `w3://ipfs/QmHASH\n` +
-              `w3://ens/domain.eth\n` +
-              `ens/domain.eth\n\n` +
-              `Invalid URI Received: ${uri}`
-          );
-        }
-
-        return {
-          uri: processed,
-          authority: result[1],
-          path: result[2],
-        };
-      }
-    );
-
-    return run(uri);
-  }
-
   public toString(): string {
     return this._config.uri;
+  }
+
+  @Tracer.traceMethod("Uri: parseUri")
+  public static parseUri(uri: string): UriConfig {
+    if (!uri) {
+      throw Error("The provided URI is empty");
+    }
+
+    let processed = uri;
+
+    // Trim preceding '/' characters
+    while (processed[0] === "/") {
+      processed = processed.substr(1);
+    }
+
+    // Check for the w3:// scheme, add if it isn't there
+    const w3SchemeIdx = processed.indexOf("w3://");
+
+    // If it's missing the w3:// scheme, add it
+    if (w3SchemeIdx === -1) {
+      processed = "w3://" + processed;
+    }
+
+    // If the w3:// is not in the beginning, throw an error
+    if (w3SchemeIdx > -1 && w3SchemeIdx !== 0) {
+      throw Error(
+        "The w3:// scheme must be at the beginning of the URI string"
+      );
+    }
+
+    // Extract the authoriy & path
+    let result = processed.match(/w3:\/\/([a-z][a-z0-9-_]+)\/(.*)/);
+
+    // Remove all empty strings
+    if (result) {
+      result = result.filter((str) => !!str);
+    }
+
+    if (!result || result.length !== 3) {
+      throw Error(
+        `URI is malformed, here are some examples of valid URIs:\n` +
+          `w3://ipfs/QmHASH\n` +
+          `w3://ens/domain.eth\n` +
+          `ens/domain.eth\n\n` +
+          `Invalid URI Received: ${uri}`
+      );
+    }
+
+    return {
+      uri: processed,
+      authority: result[1],
+      path: result[2],
+    };
   }
 }
