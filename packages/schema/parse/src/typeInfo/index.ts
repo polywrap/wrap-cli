@@ -100,7 +100,7 @@ const tryInsert = (
   dest: GenericDefinition[],
   value: GenericDefinition,
   compare: (a: GenericDefinition, b: GenericDefinition) => boolean = (a, b) =>
-    a.type === b.type,
+    a.type === b.type
 ) => {
   const index = dest.findIndex((item: GenericDefinition) =>
     compare(item, value)
