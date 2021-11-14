@@ -27,6 +27,9 @@ export interface W3Imports extends WebAssembly.Imports {
     __w3_invoke_args: (methodPtr: u32, argsPtr: u32) => void;
     __w3_invoke_result: (ptr: u32, len: u32) => void;
     __w3_invoke_error: (ptr: u32, len: u32) => void;
+    __w3_getImplementations: (uriPtr: u32, uriLen: u32) => boolean;
+    __w3_getImplementations_result_len: () => u32;
+    __w3_getImplementations_result: (ptr: u32) => void;
     __w3_abort: (
       msgPtr: u32,
       msgLen: u32,

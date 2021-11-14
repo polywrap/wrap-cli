@@ -19,6 +19,7 @@ import {
   InterfaceImplementedDefinition,
   EnumRef,
   ObjectRef,
+  InterfaceDefinition,
 } from "../typeInfo";
 
 export * from "./finalizePropertyDef";
@@ -28,6 +29,7 @@ export * from "./interfaceUris";
 export * from "./methodParentPointers";
 export * from "./toGraphQLType";
 export * from "./hasImports";
+export * from "./queryModuleCapabilities";
 
 export interface TypeInfoTransforms {
   enter?: TypeInfoTransformer;
@@ -47,6 +49,7 @@ export interface TypeInfoTransformer {
   ArrayDefinition?: (def: ArrayDefinition) => ArrayDefinition;
   MethodDefinition?: (def: MethodDefinition) => MethodDefinition;
   QueryDefinition?: (def: QueryDefinition) => QueryDefinition;
+  InterfaceDefinition?: (def: InterfaceDefinition) => InterfaceDefinition;
   ImportedEnumDefinition?: (
     def: ImportedEnumDefinition
   ) => ImportedEnumDefinition;
@@ -69,6 +72,13 @@ export function transformTypeInfo(
 
   if (transforms.enter && transforms.enter.TypeInfo) {
     result = transforms.enter.TypeInfo(result);
+  }
+
+  for (let i = 0; i < result.interfaceTypes.length; ++i) {
+    result.interfaceTypes[i] = visitInterfaceDefinition(
+      result.interfaceTypes[i],
+      transforms
+    );
   }
 
   for (let i = 0; i < result.enumTypes.length; ++i) {
@@ -278,6 +288,15 @@ export function visitQueryDefinition(
   return transformType(result, transforms.leave);
 }
 
+export function visitInterfaceDefinition(
+  def: InterfaceDefinition,
+  transforms: TypeInfoTransforms
+): InterfaceDefinition {
+  let result = Object.assign({}, def);
+  result = transformType(result, transforms.enter);
+  return transformType(result, transforms.leave);
+}
+
 export function visitImportedQueryDefinition(
   def: ImportedQueryDefinition,
   transforms: TypeInfoTransforms
@@ -327,6 +346,7 @@ export function transformType<TDefinition extends GenericDefinition>(
     PropertyDefinition,
     MethodDefinition,
     QueryDefinition,
+    InterfaceDefinition,
     ImportedEnumDefinition,
     ImportedQueryDefinition,
     ImportedObjectDefinition,
@@ -365,6 +385,9 @@ export function transformType<TDefinition extends GenericDefinition>(
   }
   if (QueryDefinition && isKind(result, DefinitionKind.Query)) {
     result = Object.assign(result, QueryDefinition(result as any));
+  }
+  if (InterfaceDefinition && isKind(result, DefinitionKind.Interface)) {
+    result = Object.assign(result, InterfaceDefinition(result as any));
   }
   if (ImportedQueryDefinition && isKind(result, DefinitionKind.ImportedQuery)) {
     result = Object.assign(result, ImportedQueryDefinition(result as any));

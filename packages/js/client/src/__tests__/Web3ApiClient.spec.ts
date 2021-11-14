@@ -2203,6 +2203,48 @@ enum Logger_LogLevel @imported(
     });
   });
 
+  it("e2e getImplementations capability", async () => {
+    const interfaceUri = "w3://ens/interface.eth"
+
+    const implementationApi = await buildAndDeployApi(
+      `${GetPathToTestApis()}/implementations/test-use-getImpl`,
+      ipfsProvider,
+      ensAddress
+    );
+    const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
+
+    const client = await getClient({
+      interfaces: [
+        {
+          interface: "w3://ens/interface.eth",
+          implementations: [implementationUri],
+        }
+      ],
+    });
+
+    expect(client.getImplementations(interfaceUri))
+      .toEqual([implementationUri]);
+
+    const query = await client.query<{
+      queryMethod: string;
+      abstractQueryMethod: string;
+    }>({
+      uri: implementationUri,
+      query: `
+        query {
+          queryImplementations
+        }
+      `,
+      variables: {},
+    });
+
+    expect(query.errors).toBeFalsy();
+    expect(query.data).toBeTruthy();
+    expect((query.data as any).queryImplementations).toEqual([implementationUri]);
+  });
+
+});
+
   describe("wasm-rs test cases", () => {
     it("asyncify", async () => {
       const api = await buildAndDeployApi(

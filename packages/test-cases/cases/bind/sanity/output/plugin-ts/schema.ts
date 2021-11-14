@@ -20,6 +20,12 @@ directive @imported(
 directive @imports(
   types: [String!]!
 ) on OBJECT
+
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
 ### Web3API Header END ###
 
 type Query @imports(
@@ -29,6 +35,10 @@ type Query @imports(
     "TestImport_AnotherObject",
     "TestImport_Enum"
   ]
+) @capability(
+  type: "getImplementations",
+  uri: "testimport.uri.eth",
+  namespace: "TestImport"
 ) {
   queryMethod(
     str: String!

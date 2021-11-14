@@ -1,9 +1,0 @@
-query {
-  getResolver(
-    domain: $domain
-    registryAddress: $registryAddress
-    connection: {
-      networkNameOrChainId: $network
-    }
-  )
-}
