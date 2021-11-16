@@ -31,7 +31,7 @@ export {
 {{/enumTypes}}
 
 {{#importedQueryTypes}}
-export { {{type}} } from "./imported/{{type}}";
+export { {{type}}, {{type}}_Factory } from "./imported/{{type}}";
 {{/importedQueryTypes}}
 {{#importedObjectTypes}}
 export { {{type}} } from "./imported/{{type}}";

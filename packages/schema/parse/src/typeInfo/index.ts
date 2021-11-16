@@ -7,8 +7,8 @@ import {
   EnumDefinition,
   ImportedEnumDefinition,
   InterfaceDefinition,
-  // CapabilityType,
-  // CapabilityDefinition,
+  CapabilityType,
+  CapabilityDefinition,
 } from "./definitions";
 
 export * from "./definitions";
@@ -74,39 +74,38 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       tryInsert(
         combined.interfaceTypes,
         interfaceType,
-        (a, b) => (false)
-        // compareImportedType,
-        // (
-        //   a: InterfaceDefinition,
-        //   b: InterfaceDefinition
-        // ): InterfaceDefinition => {
-        //   const combinedCapabilities: CapabilityDefinition = {
-        //     ...a.capabilities,
-        //     ...b.capabilities,
-        //   };
-        //   const combinedCapabilityTypes = Object.keys(
-        //     combinedCapabilities
-        //   ) as CapabilityType[];
-        //   for (const capability of combinedCapabilityTypes) {
-        //     if (b.capabilities[capability] && a.capabilities[capability]) {
-        //       const combinedModules = Array.from(
-        //         new Set([
-        //           ...a.capabilities[capability].modules,
-        //           ...b.capabilities[capability].modules,
-        //         ])
-        //       );
-        //       combinedCapabilities[capability] = {
-        //         enabled: true,
-        //         modules: combinedModules,
-        //       };
-        //     } else if (a.capabilities[capability]) {
-        //       combinedCapabilities[capability] = a.capabilities[capability];
-        //     } else if (b.capabilities[capability]) {
-        //       combinedCapabilities[capability] = b.capabilities[capability];
-        //     }
-        //   }
-        //   return { ...a, capabilities: combinedCapabilities };
-        // }
+        compareImportedType,
+        (
+          a: InterfaceDefinition,
+          b: InterfaceDefinition
+        ): InterfaceDefinition => {
+          const combinedCapabilities: CapabilityDefinition = {
+            ...a.capabilities,
+            ...b.capabilities,
+          };
+          const combinedCapabilityTypes = Object.keys(
+            combinedCapabilities
+          ) as CapabilityType[];
+          for (const capability of combinedCapabilityTypes) {
+            if (b.capabilities[capability] && a.capabilities[capability]) {
+              const combinedModules = Array.from(
+                new Set([
+                  ...a.capabilities[capability].modules,
+                  ...b.capabilities[capability].modules,
+                ])
+              );
+              combinedCapabilities[capability] = {
+                enabled: true,
+                modules: combinedModules,
+              };
+            } else if (a.capabilities[capability]) {
+              combinedCapabilities[capability] = a.capabilities[capability];
+            } else if (b.capabilities[capability]) {
+              combinedCapabilities[capability] = b.capabilities[capability];
+            }
+          }
+          return { ...a, capabilities: combinedCapabilities };
+        }
       );
     }
 
