@@ -2137,7 +2137,7 @@ enum Logger_LogLevel @imported(
     const client = await getClient({
       interfaces: [
         {
-          interface: "w3://ens/interface.eth",
+          interface: interfaceUri,
           implementations: [implementationUri],
         }
       ],
@@ -2162,6 +2162,94 @@ enum Logger_LogLevel @imported(
     expect(query.errors).toBeFalsy();
     expect(query.data).toBeTruthy();
     expect((query.data as any).queryImplementations).toEqual([implementationUri]);
+  });
+
+  it("e2e Interface invoke method ", async () => {
+    const interfaceUri = "w3://ens/interface.eth"
+
+    const implementationApi = await buildAndDeployApi(
+      `${GetPathToTestApis()}/interface-invoke/test-implementation`,
+      ipfsProvider,
+      ensAddress
+    );
+    const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
+
+    const client = await getClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri],
+        }
+      ],
+    });
+
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/interface-invoke/test-api`,
+      ipfsProvider,
+      ensAddress
+    );
+    const apiUri = `w3://ens/testnet/${api.ensDomain}`;
+
+    const query = await client.query<{
+      queryMethod: string;
+      abstractQueryMethod: string;
+    }>({
+      uri: apiUri,
+      query: `
+        query {
+          queryMethod(
+            arg: $argument1
+          )
+          abstractQueryMethod(
+            arg: $argument2
+          )
+        }
+      `,
+      variables: {
+        argument1: {
+          uint8: 1,
+          str: "Test String 1",
+        },
+        argument2: {
+          str: "Test String 2",
+        },
+      },
+    });
+
+    expect(query.errors).toBeFalsy();
+    expect(query.data).toBeTruthy();
+    expect(query.data?.queryMethod).toEqual({
+      uint8: 1,
+      str: "Test String 1",
+    });
+
+    expect(query.data?.abstractQueryMethod).toBe("Test String 2");
+
+    const mutation = await client.query<{
+      mutationMethod: string;
+      abstractMutationMethod: string;
+    }>({
+      uri: implementationUri,
+      query: `
+      mutation {
+        mutationMethod(
+          arg: $argument1
+        )
+        abstractMutationMethod(
+          arg: $argument2
+        )
+      }
+      `,
+      variables: {
+        argument1: 1,
+        argument2: 2,
+      },
+    });
+
+    expect(mutation.errors).toBeFalsy();
+    expect(mutation.data).toBeTruthy();
+    expect(mutation.data?.mutationMethod).toBe(1);
+    expect(mutation.data?.abstractMutationMethod).toBe(2);
   });
 
 });
