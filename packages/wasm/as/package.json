@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@web3api/assemblyscript-json": "1.2.0",
-    "as-bigint": "0.2.4"
+    "as-bigint": "0.3.0"
   },
   "devDependencies": {
     "@as-pect/cli": "6.2.4",
