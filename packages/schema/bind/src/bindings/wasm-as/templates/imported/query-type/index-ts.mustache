@@ -39,4 +39,29 @@ export class {{type}} {
   {{/last}}
   {{/methods}}
 }
+
+export class {{type}}_Factory {
+
+  public uri: string;
+
+  constructor(uri: string) {
+    this.uri = uri;
+  }
+
+  {{#methods}}
+  public {{name}}(input: Input_{{name}}): {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
+    const args = serialize{{name}}Args(input);
+    const result = w3_subinvoke(
+      this.uri,
+      "{{type}}",
+      "{{name}}",
+      args
+    );
+    return deserialize{{name}}Result(result);
+  }
+  {{^last}}
+
+  {{/last}}
+  {{/methods}}
+}
 {{/__commonImport}}
