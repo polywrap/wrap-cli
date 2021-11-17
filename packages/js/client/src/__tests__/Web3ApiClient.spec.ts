@@ -5,6 +5,7 @@ import {
 import {
   buildAndDeployApi,
   initTestEnvironment,
+  runCLI,
   stopTestEnvironment,
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
@@ -2166,6 +2167,8 @@ enum Logger_LogLevel @imported(
 
   it("e2e Interface invoke method", async () => {
     const interfaceUri = "w3://ens/interface.eth";
+    // Build interface polywrapper
+    await runCLI({args: ["npx", "w3", "build"], cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`})
 
     const implementationApi = await buildAndDeployApi(
       `${GetPathToTestApis()}/interface-invoke/test-implementation`,
@@ -2197,24 +2200,26 @@ enum Logger_LogLevel @imported(
       uri: apiUri,
       query: `
         query {
-          queryMethod(
-            arg: $argument1
-          )
+          # queryMethod(
+          #   arg: $argument1
+          # )
           abstractQueryMethod(
             arg: $argument2
           )
         }
       `,
       variables: {
-        argument1: {
-          uint8: 1,
-          str: "Test String 1",
-        },
+        // argument1: {
+        //   uint8: 1,
+        //   str: "Test String 1",
+        // },
         argument2: {
           str: "Test String 2",
         },
       },
     });
+
+    console.log(query)
 
     expect(query.errors).toBeFalsy();
     expect(query.data).toBeTruthy();

@@ -1,13 +1,15 @@
-import { , Input_abstractQueryMethod, ImplementationType, Interface_Query_Factory, Interface } from "./w3";
+import { Input_abstractQueryMethod, Interface_Query_Factory, Interface, Input_queryMethod, ImplementationType } from "./w3";
 
-// export function queryMethod(input: Input_queryMethod): ImplementationType {
-//   const uris = Interface.getImplementations();
-//   const impl = new Interface_Query_Factory(uris[0])
-//   return impl.queryMethod(input.arg);
-// }
-
-export function abstractQueryMethod(input: Input_abstractQueryMethod): String {
+export function abstractQueryMethod(input: Input_abstractQueryMethod): string {
   const uris = Interface.getImplementations();
   const impl = new Interface_Query_Factory(uris[0])
-  return impl.abstractQueryMethod(input.arg);
+  return impl.abstractQueryMethod({arg: {str: input.arg.str}});
+}
+
+export function queryMethod(input: Input_queryMethod): ImplementationType {
+  const result = abstractQueryMethod({arg: {str: input.arg.str}});
+  return {
+    str: result,
+    uint8: input.arg.uint8,
+  }
 }
