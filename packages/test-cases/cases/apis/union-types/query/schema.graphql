@@ -1,0 +1,25 @@
+type ArgUnionA {
+  prop: String!
+}
+
+type ArgUnionB {
+  prop: Boolean!
+}
+
+union ArgUnion = ArgUnionA | ArgUnionB
+
+type TypeUnionA {
+  propA: Int!
+}
+
+type TypeUnionB {
+  propB: Boolean!
+}
+
+union TypeUnion = TypeUnionA | TypeUnionB
+
+type Query {
+  method1(
+    arg: ArgUnion!
+  ): String!
+}

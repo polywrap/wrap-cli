@@ -306,7 +306,7 @@ export function readCustomType(reader: Read): CustomType {
   let _enumArray: Array<Types.CustomEnum> = [];
   let _enumArraySet: bool = false;
   let _optEnumArray: Array<Nullable<Types.CustomEnum>> | null = null;
-  let _union: Types.CustomUnion = null;
+  let _union: Types.CustomUnion | null = null;
   let _unionSet: bool = false;
   let _optUnion: Types.CustomUnion | null = null;
   let _unionArray: Array<Types.CustomUnion> = [];
@@ -708,7 +708,7 @@ export function readCustomType(reader: Read): CustomType {
   if (!_enumArraySet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'enumArray: [CustomEnum]'"));
   }
-  if (!_unionSet) {
+  if (!_union || !_unionSet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'union: CustomUnion'"));
   }
   if (!_unionArraySet) {

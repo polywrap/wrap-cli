@@ -26,7 +26,17 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
 
   {{#arguments}}
   {{^object}}
+  {{#union}}
+    {{#required}}
+  let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} | null = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+    {{/required}}
+    {{^required}}
   let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+    {{/required}}
+  {{/union}}
+  {{^union}}
+  let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+  {{/union}}
   {{/object}}
   {{#object}}
   {{#required}}
@@ -81,7 +91,12 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
   {{#arguments}}
   {{#required}}
   {{^object}}
+  {{#union}}
+  if (!_{{name}} || !_{{name}}Set) {
+  {{/union}}
+  {{^union}}
   if (!_{{name}}Set) {
+  {{/union}}
   {{/object}}
   {{#object}}
   if (!_{{name}} || !_{{name}}Set) {

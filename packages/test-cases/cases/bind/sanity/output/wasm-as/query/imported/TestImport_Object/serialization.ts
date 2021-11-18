@@ -124,7 +124,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
   let _enumArray: Array<Types.TestImport_Enum> = [];
   let _enumArraySet: bool = false;
   let _optEnumArray: Array<Nullable<Types.TestImport_Enum>> | null = null;
-  let _union: Types.TestImport_Union = null;
+  let _union: Types.TestImport_Union | null = null;
   let _unionSet: bool = false;
   let _optUnion: Types.TestImport_Union | null = null;
   let _unionArray: Array<Types.TestImport_Union> = [];
@@ -293,7 +293,7 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
   if (!_enumArraySet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'enumArray: [TestImport_Enum]'"));
   }
-  if (!_unionSet) {
+  if (!_union || !_unionSet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'union: TestImport_Union'"));
   }
   if (!_unionArraySet) {

@@ -279,7 +279,7 @@ export const output: TypeInfo = {
       }), createObjectRef({
         type: "TestUnionB"
       })],
-      comment: "CustomUnion comment"
+      comment: "CustomUnion comment",
     })
   ],
   importedUnionTypes: [

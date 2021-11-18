@@ -40,7 +40,7 @@ export abstract class TestImport_Union {
       return this.instance;
     }
 
-    throw new Error("Union '' is not of type 'TestImport_AnotherObject'");
+    throw new Error("Union 'TestImport_Union' is not of type 'TestImport_AnotherObject'");
   }
 
   get isTestImport_YetAnotherObject(): boolean {
@@ -52,7 +52,7 @@ export abstract class TestImport_Union {
       return this.instance;
     }
 
-    throw new Error("Union '' is not of type 'TestImport_YetAnotherObject'");
+    throw new Error("Union 'TestImport_Union' is not of type 'TestImport_YetAnotherObject'");
   }
 
   static create<T>(value: T): TestImport_Union {
@@ -62,12 +62,12 @@ export abstract class TestImport_Union {
     if (value instanceof Types.TestImport_YetAnotherObject) {
       return new UnionMember_TestImport_YetAnotherObject(value);
     }
+
+    throw new Error("Value does not correspond to any TestImport_Union member type");
   }
 }
 
-const Union_Class = TestImport_Union;
-
-class UnionMember_TestImport_AnotherObject extends Union_Class {
+class UnionMember_TestImport_AnotherObject extends TestImport_Union {
   constructor(private _instance: Types.TestImport_AnotherObject) {
     super();
   }
@@ -76,7 +76,7 @@ class UnionMember_TestImport_AnotherObject extends Union_Class {
     return this._instance;
   }
 }
-class UnionMember_TestImport_YetAnotherObject extends Union_Class {
+class UnionMember_TestImport_YetAnotherObject extends TestImport_Union {
   constructor(private _instance: Types.TestImport_YetAnotherObject) {
     super();
   }

@@ -59,38 +59,47 @@ export function readTestImport_Union(reader: Read): TestImport_Union {
   let TestImport_AnotherObject: Types.TestImport_AnotherObject | null = null;
   let TestImport_YetAnotherObject: Types.TestImport_YetAnotherObject | null = null;
 
+  let actualUnionType: string;
+
   while (numFields > 0) {
     numFields--;
     const field = reader.readString();
 
-    if (field == "TestImport_AnotherObject") {
-      reader.context().push(field, "Types.TestImport_AnotherObject | null", "type found, reading property");
-
-      if (!reader.isNextNil()) {
-        TestImport_AnotherObject = Types.TestImport_AnotherObject.read(reader);
-      }
-
+    if(field == "type") {
+      reader.context().push(field, "String", "type found, reading property");
+      actualUnionType = reader.readString();
       reader.context().pop();
     }
-    else if (field == "TestImport_YetAnotherObject") {
-      reader.context().push(field, "Types.TestImport_YetAnotherObject | null", "type found, reading property");
 
-      if (!reader.isNextNil()) {
-        TestImport_YetAnotherObject = Types.TestImport_YetAnotherObject.read(reader);
+    if(field == "value") {
+      if (actualUnionType == "TestImport_AnotherObject") {
+        reader.context().push(field, "Types.TestImport_AnotherObject | null", "type found, reading property");
+
+        if (!reader.isNextNil()) {
+          TestImport_AnotherObject = Types.TestImport_AnotherObject.read(reader);
+        }
+
+        reader.context().pop();
       }
+      else if (actualUnionType == "TestImport_YetAnotherObject") {
+        reader.context().push(field, "Types.TestImport_YetAnotherObject | null", "type found, reading property");
 
-      reader.context().pop();
+        if (!reader.isNextNil()) {
+          TestImport_YetAnotherObject = Types.TestImport_YetAnotherObject.read(reader);
+        }
+
+        reader.context().pop();
+      }
     }
-    reader.context().pop();
   }
 
-  const definedMember =
-     TestImport_AnotherObject
-    ||  TestImport_YetAnotherObject
-
-  if(!definedMember) {
+  if(!TestImport_AnotherObject && !TestImport_YetAnotherObject) {
     throw new Error(`All serialized member types for TestImport_Union are null`)
   }
 
-  return TestImport_Union.create(definedMember)
+  if(TestImport_AnotherObject) {
+    return TestImport_Union.create(TestImport_AnotherObject)
+  }
+
+  return TestImport_Union.create(TestImport_YetAnotherObject)
 }

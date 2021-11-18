@@ -53,33 +53,47 @@ export function read{{type}}(reader: Read): {{type}} {
   let {{type}}: Types.{{type}} | null = null;
   {{/memberTypes}}
 
+  let actualUnionType: string;
+
   while (numFields > 0) {
     numFields--;
     const field = reader.readString();
 
-    {{#memberTypes}}
-    {{^first}}else {{/first}}if (field == "{{type}}") {
-      reader.context().push(field, "Types.{{type}} | null", "type found, reading property");
-
-      if (!reader.isNextNil()) {
-        {{type}} = Types.{{type}}.read(reader);
-      }
-
+    if(field == "type") {
+      reader.context().push(field, "String", "type found, reading property");
+      actualUnionType = reader.readString();
       reader.context().pop();
     }
-    {{/memberTypes}}
-    reader.context().pop();
+
+    if(field == "value") {
+      {{#memberTypes}}
+      {{^first}}else {{/first}}if (actualUnionType == "{{type}}") {
+        reader.context().push(field, "Types.{{type}} | null", "type found, reading property");
+
+        if (!reader.isNextNil()) {
+          {{type}} = Types.{{type}}.read(reader);
+        }
+
+        reader.context().pop();
+      }
+      {{/memberTypes}}
+    }
   }
 
-  const definedMember =
-  {{#memberTypes}}
-    {{^first}}|| {{/first}} {{type}}
-  {{/memberTypes}}
-
-  if(!definedMember) {
+  if({{#memberTypes}}{{^first}} && {{/first}}!{{type}}{{/memberTypes}}) {
     throw new Error(`All serialized member types for {{type}} are null`)
   }
 
-  return {{type}}.create(definedMember)
+  {{#memberTypes}}
+  {{#first}}
+  if({{type}}) {
+    return {{union}}.create({{type}})
+  }
+
+  {{/first}}
+  {{^first}}
+  return {{union}}.create({{type}})
+  {{/first}}
+  {{/memberTypes}}
 }
 {{/__commonImport}}

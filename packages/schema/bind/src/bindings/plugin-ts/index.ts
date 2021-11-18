@@ -6,6 +6,7 @@ import {
   transformTypeInfo,
   extendType,
   addFirstLast,
+  setMemberTypeParentUnionNames,
   toPrefixedGraphQLType,
   methodParentPointers,
   interfaceUris,
@@ -29,6 +30,7 @@ export function generateBinding(
     toPrefixedGraphQLType,
     methodParentPointers(),
     interfaceUris(),
+    setMemberTypeParentUnionNames,
   ];
 
   for (const transform of transforms) {

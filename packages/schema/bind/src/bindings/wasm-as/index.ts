@@ -8,6 +8,7 @@ import {
   addFirstLast,
   toPrefixedGraphQLType,
   TypeInfo,
+  setMemberTypeParentUnionNames,
 } from "@web3api/schema-parse";
 import path from "path";
 import Mustache from "mustache";
@@ -20,6 +21,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
     extendType(Functions),
     addFirstLast,
     toPrefixedGraphQLType,
+    setMemberTypeParentUnionNames,
   ];
 
   for (const transform of transforms) {

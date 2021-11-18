@@ -59,38 +59,47 @@ export function readCustomUnion(reader: Read): CustomUnion {
   let AnotherObject: Types.AnotherObject | null = null;
   let YetAnotherObject: Types.YetAnotherObject | null = null;
 
+  let actualUnionType: string;
+
   while (numFields > 0) {
     numFields--;
     const field = reader.readString();
 
-    if (field == "AnotherObject") {
-      reader.context().push(field, "Types.AnotherObject | null", "type found, reading property");
-
-      if (!reader.isNextNil()) {
-        AnotherObject = Types.AnotherObject.read(reader);
-      }
-
+    if(field == "type") {
+      reader.context().push(field, "String", "type found, reading property");
+      actualUnionType = reader.readString();
       reader.context().pop();
     }
-    else if (field == "YetAnotherObject") {
-      reader.context().push(field, "Types.YetAnotherObject | null", "type found, reading property");
 
-      if (!reader.isNextNil()) {
-        YetAnotherObject = Types.YetAnotherObject.read(reader);
+    if(field == "value") {
+      if (actualUnionType == "AnotherObject") {
+        reader.context().push(field, "Types.AnotherObject | null", "type found, reading property");
+
+        if (!reader.isNextNil()) {
+          AnotherObject = Types.AnotherObject.read(reader);
+        }
+
+        reader.context().pop();
       }
+      else if (actualUnionType == "YetAnotherObject") {
+        reader.context().push(field, "Types.YetAnotherObject | null", "type found, reading property");
 
-      reader.context().pop();
+        if (!reader.isNextNil()) {
+          YetAnotherObject = Types.YetAnotherObject.read(reader);
+        }
+
+        reader.context().pop();
+      }
     }
-    reader.context().pop();
   }
 
-  const definedMember =
-     AnotherObject
-    ||  YetAnotherObject
-
-  if(!definedMember) {
+  if(!AnotherObject && !YetAnotherObject) {
     throw new Error(`All serialized member types for CustomUnion are null`)
   }
 
-  return CustomUnion.create(definedMember)
+  if(AnotherObject) {
+    return CustomUnion.create(AnotherObject)
+  }
+
+  return CustomUnion.create(YetAnotherObject)
 }

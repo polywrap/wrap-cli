@@ -45,7 +45,7 @@ export abstract class {{type}} {
       return this.instance;
     }
 
-    throw new Error("Union '{{__commonImport.type}}' is not of type '{{type}}'");
+    throw new Error("Union '{{union}}' is not of type '{{type}}'");
   }
 
   {{/memberTypes}}
@@ -55,13 +55,13 @@ export abstract class {{type}} {
       return new UnionMember_{{type}}(value);
     }
     {{/memberTypes}}
+
+    throw new Error("Value does not correspond to any {{type}} member type");
   }
 }
 
-const Union_Class = {{type}};
-
   {{#memberTypes}}
-class UnionMember_{{type}} extends Union_Class {
+class UnionMember_{{type}} extends {{union}} {
   constructor(private _instance: Types.{{type}}) {
     super();
   }

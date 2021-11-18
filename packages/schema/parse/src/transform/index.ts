@@ -30,6 +30,7 @@ export * from "./addFirstLast";
 export * from "./interfaceUris";
 export * from "./methodParentPointers";
 export * from "./toGraphQLType";
+export * from "./addUnionNameToMemberTypes";
 
 export interface TypeInfoTransforms {
   enter?: TypeInfoTransformer;

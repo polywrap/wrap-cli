@@ -40,7 +40,7 @@ export abstract class CustomUnion {
       return this.instance;
     }
 
-    throw new Error("Union '' is not of type 'AnotherObject'");
+    throw new Error("Union 'CustomUnion' is not of type 'AnotherObject'");
   }
 
   get isYetAnotherObject(): boolean {
@@ -52,7 +52,7 @@ export abstract class CustomUnion {
       return this.instance;
     }
 
-    throw new Error("Union '' is not of type 'YetAnotherObject'");
+    throw new Error("Union 'CustomUnion' is not of type 'YetAnotherObject'");
   }
 
   static create<T>(value: T): CustomUnion {
@@ -62,12 +62,12 @@ export abstract class CustomUnion {
     if (value instanceof Types.YetAnotherObject) {
       return new UnionMember_YetAnotherObject(value);
     }
+
+    throw new Error("Value does not correspond to any CustomUnion member type");
   }
 }
 
-const Union_Class = CustomUnion;
-
-class UnionMember_AnotherObject extends Union_Class {
+class UnionMember_AnotherObject extends CustomUnion {
   constructor(private _instance: Types.AnotherObject) {
     super();
   }
@@ -77,7 +77,7 @@ class UnionMember_AnotherObject extends Union_Class {
   }
 }
 
-class UnionMember_YetAnotherObject extends Union_Class {
+class UnionMember_YetAnotherObject extends CustomUnion {
   constructor(private _instance: Types.YetAnotherObject) {
     super();
   }
