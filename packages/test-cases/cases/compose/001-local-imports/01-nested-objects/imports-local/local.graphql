@@ -1,7 +1,0 @@
-type TypeA {
-  prop: TypeB
-}
-
-type TypeB {
-  prop: String
-}
