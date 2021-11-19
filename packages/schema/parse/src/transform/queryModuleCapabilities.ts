@@ -17,11 +17,15 @@ export type QueryModuleCapabilityMap = Record<
   QueryModuleCapability[]
 >;
 
+const capitalize = (str: string) => str.replace(/^\w/, (c) => c.toUpperCase());
+
 export function queryModuleCapabilities(): TypeInfoTransforms {
   const queryModuleCapabilities: QueryModuleCapabilityMap = {
     query: [],
     mutation: [],
   };
+
+  const enabledInterfaces: Set<string> = new Set();
 
   return {
     enter: {
@@ -35,6 +39,7 @@ export function queryModuleCapabilities(): TypeInfoTransforms {
                 namespace: def.namespace,
                 type,
               });
+              enabledInterfaces.add(`${def.namespace}_${capitalize(module)}`)
             }
           }
         }
@@ -48,6 +53,12 @@ export function queryModuleCapabilities(): TypeInfoTransforms {
           const capabilities = queryModuleCapabilities[module];
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (queryDef as any).capabilities = capabilities;
+        }
+
+        for (const importedQueryDef of info.importedQueryTypes) {
+          if(enabledInterfaces.has(importedQueryDef.type)) {
+            importedQueryDef.isInterface = true;
+          }
         }
 
         return info;

@@ -28,6 +28,8 @@ directive @capability(
   uri: String!
   namespace: String!
 ) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
 type Query @imports(
@@ -268,6 +270,8 @@ directive @capability(
   uri: String!
   namespace: String!
 ) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
 type Mutation @imports(
@@ -499,6 +503,8 @@ directive @capability(
   uri: String!
   namespace: String!
 ) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
 type Mutation @imports(

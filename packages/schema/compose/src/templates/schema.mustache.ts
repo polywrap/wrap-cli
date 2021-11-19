@@ -111,7 +111,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   uri: "{{uri}}",
   namespace: "{{namespace}}",
   nativeType: "{{nativeType}}"
-) {
+) {{#isInterface}}@enabled_interface {{/isInterface}}{
   {{#properties}}{{#comment}}
   """
   {{comment}}

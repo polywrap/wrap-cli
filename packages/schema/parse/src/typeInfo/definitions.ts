@@ -429,6 +429,7 @@ export interface ImportedQueryDefinition
     ImportedDefinition,
     WithComment {
   methods: MethodDefinition[];
+  isInterface?: boolean;
 }
 export function createImportedQueryDefinition(args: {
   type: string;
@@ -436,6 +437,7 @@ export function createImportedQueryDefinition(args: {
   uri: string;
   namespace: string;
   nativeType: string;
+  isInterface?:boolean;
   interfaces?: InterfaceImplementedDefinition[];
   comment?: string;
 }): ImportedQueryDefinition {
@@ -452,6 +454,7 @@ export function createImportedQueryDefinition(args: {
     namespace: args.namespace,
     nativeType: args.nativeType,
     comment: args.comment,
+    isInterface: args.isInterface,
     kind: DefinitionKind.ImportedQuery,
   };
 }
