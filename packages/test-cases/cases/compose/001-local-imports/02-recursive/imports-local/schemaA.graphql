@@ -1,0 +1,5 @@
+#import { TypeB } from "../imports-local/schemaB.graphql"
+
+type TypeA {
+  prop: TypeB
+}

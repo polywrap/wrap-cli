@@ -13,7 +13,7 @@ export enum DefinitionKind {
   Method = 1 << 6,
   Query = 1 << 7,
   ImportedQuery = 1 << 8,
-  ImportedEnum = 1 << 9,
+  ImportedEnum = (1 << 9) | DefinitionKind.Enum,
   ImportedObject = (1 << 10) | DefinitionKind.Object,
   InterfaceImplemented = 1 << 11,
   UnresolvedObjectOrEnum = 1 << 12,

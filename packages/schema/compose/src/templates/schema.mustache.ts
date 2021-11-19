@@ -11,7 +11,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
     "{{type}}"{{^last}},{{/last}}
     {{/imports}}
   ]
-){{/imports.length}} {
+){{/imports.length}}{{#methods.length}} {
   {{#methods}}{{#comment}}
   """
   {{comment}}
@@ -30,7 +30,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
 
   {{/last}}
   {{/methods}}
-}
+}{{/methods.length}}
 
 {{/queryTypes}}
 {{#objectTypes}}{{#comment}}
@@ -38,7 +38,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
 {{comment}}
 """
 {{/comment}}
-type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}} {
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}}{{#properties.length}} {
   {{#properties}}{{#comment}}
   """
   {{comment}}
@@ -46,7 +46,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   {{/comment}}
   {{name}}: {{toGraphQLType}}
   {{/properties}}
-}
+}{{/properties.length}}
 
 {{/objectTypes}}
 {{#enumTypes}}{{#comment}}
@@ -72,7 +72,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   uri: "{{uri}}",
   namespace: "{{namespace}}",
   nativeType: "{{nativeType}}"
-) {
+){{#methods.length}} {
   {{#methods}}{{#comment}}
   """
   {{comment}}
@@ -91,7 +91,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
 
   {{/last}}
   {{/methods}}
-}
+}{{/methods.length}}
 
 {{/importedQueryTypes}}
 ### Imported Queries END ###
@@ -107,7 +107,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   uri: "{{uri}}",
   namespace: "{{namespace}}",
   nativeType: "{{nativeType}}"
-) {
+){{#properties.length}} {
   {{#properties}}{{#comment}}
   """
   {{comment}}
@@ -115,7 +115,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   {{/comment}}
   {{name}}: {{toGraphQLType}}
   {{/properties}}
-}
+}{{/properties.length}}
 
 {{/importedObjectTypes}}
 
