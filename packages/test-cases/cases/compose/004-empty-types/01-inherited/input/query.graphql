@@ -1,0 +1,9 @@
+type Query {
+  method: DerivedType
+}
+
+type BaseType {
+}
+
+type DerivedType implements BaseType {
+}
