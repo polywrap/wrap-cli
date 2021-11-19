@@ -35,11 +35,15 @@ const visitorEnter = (
       return;
     }
 
+    const dir = node.directives && node.directives.find((dir) => (dir.name.value === "enabled_interface"))
+    const isInterface = dir ? true : false;
+
     const importedType = createImportedQueryDefinition({
       type: node.name.value,
       uri: imported.uri,
       namespace: imported.namespace,
       nativeType: imported.nativeType,
+      isInterface: isInterface,
       interfaces: node.interfaces?.map((x) =>
         createInterfaceImplementedDefinition({ type: x.name.value })
       ),

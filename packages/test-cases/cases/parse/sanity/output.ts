@@ -418,6 +418,7 @@ export const output: TypeInfo = {
         uri: "testimport.uri.eth",
         namespace: "TestImport",
         type: "TestImport_Query",
+        isInterface: true,
         nativeType: "Query",
         comment: "TestImport_Query comment"
       }),
@@ -547,6 +548,7 @@ export const output: TypeInfo = {
         namespace: "TestImport",
         type: "TestImport_Mutation",
         nativeType: "Mutation",
+        isInterface: false,
         comment: "TestImport_Mutation comment"
       }),
       methods: [
@@ -570,6 +572,7 @@ export const output: TypeInfo = {
         uri: "interface.uri.eth",
         namespace: "Interface",
         type: "Interface_Query",
+        isInterface: false,
         nativeType: "Query",
         comment: "Interface_Query comment"
       }),
