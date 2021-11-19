@@ -16,32 +16,7 @@ import * as Types from "../..";
 
 export class TestImport_Query {
 
-  public static uri: string = "testimport.uri.eth";
-
-  public static importedMethod(input: Input_importedMethod): Types.TestImport_Object | null {
-    const args = serializeimportedMethodArgs(input);
-    const result = w3_subinvoke(
-      "testimport.uri.eth",
-      "query",
-      "importedMethod",
-      args
-    );
-    return deserializeimportedMethodResult(result);
-  }
-
-  public static anotherMethod(input: Input_anotherMethod): i32 {
-    const args = serializeanotherMethodArgs(input);
-    const result = w3_subinvoke(
-      "testimport.uri.eth",
-      "query",
-      "anotherMethod",
-      args
-    );
-    return deserializeanotherMethodResult(result);
-  }
-}
-
-export class TestImport_Query_Factory {
+  public static interfaceUri: string = "testimport.uri.eth";
 
   public uri: string;
 
