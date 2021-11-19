@@ -10,6 +10,7 @@ import {
 import { GetPathToTestApis } from "@web3api/test-cases";
 import { PluginRegistration } from "@web3api/core-js";
 
+// eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
 import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 

@@ -20,6 +20,11 @@ directive @imports(
   types: [String!]!
 ) on OBJECT
 
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
 """
 CustomEnum comment
 """
@@ -109,6 +114,10 @@ Query comment
 """
 type Query implements Interface_Query @imports(
   types: [ "TestImport_Query", "Interface_Query" ]
+) @capability(
+  type: "getImplementations",
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
 ) {
 """
 queryMethod comment

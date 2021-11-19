@@ -152,13 +152,9 @@ type Query {
     address: String!
   ): Boolean!
 
-  toWei(
-    eth: String!
-  ): BigInt!
+  toWei(eth: String!): BigInt!
 
-  toEth(
-    wei: BigInt!
-  ): String!
+  toEth(wei: BigInt!): String!
 
   awaitTransaction(
     txHash: String!
