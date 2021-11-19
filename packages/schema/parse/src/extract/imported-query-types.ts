@@ -1,27 +1,27 @@
 import {
-  TypeInfo,
-  ImportedQueryDefinition,
   createImportedQueryDefinition,
+  createInterfaceImplementedDefinition,
   createMethodDefinition,
   createPropertyDefinition,
-  createInterfaceImplementedDefinition,
+  ImportedQueryDefinition,
+  TypeInfo,
 } from "../typeInfo";
+import { extractImportedDefinition } from "./imported-types-utils";
 import {
   extractInputValueDefinition,
   extractListType,
   extractNamedType,
   State,
 } from "./query-types-utils";
-import { extractImportedDefinition } from "./imported-types-utils";
 
 import {
-  ObjectTypeDefinitionNode,
-  NonNullTypeNode,
-  NamedTypeNode,
-  ListTypeNode,
+  ASTVisitor,
   FieldDefinitionNode,
   InputValueDefinitionNode,
-  ASTVisitor,
+  ListTypeNode,
+  NamedTypeNode,
+  NonNullTypeNode,
+  ObjectTypeDefinitionNode,
 } from "graphql";
 
 const visitorEnter = (

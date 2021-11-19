@@ -6,6 +6,7 @@ import {
   GenericDefinition,
   EnumDefinition,
   ImportedEnumDefinition,
+  InterfaceDefinition,
 } from "./definitions";
 
 export * from "./definitions";
@@ -17,6 +18,7 @@ export interface TypeInfo {
   objectTypes: ObjectDefinition[];
   queryTypes: QueryDefinition[];
   enumTypes: EnumDefinition[];
+  interfaceTypes: InterfaceDefinition[];
   importedObjectTypes: ImportedObjectDefinition[];
   importedQueryTypes: ImportedQueryDefinition[];
   importedEnumTypes: ImportedEnumDefinition[];
@@ -26,6 +28,7 @@ export function createTypeInfo(): TypeInfo {
     objectTypes: [],
     enumTypes: [],
     queryTypes: [],
+    interfaceTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
     importedEnumTypes: [],
@@ -39,6 +42,7 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
     objectTypes: [],
     queryTypes: [],
     enumTypes: [],
+    interfaceTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
     importedEnumTypes: [],
@@ -62,6 +66,10 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
 
     for (const queryType of typeInfo.queryTypes) {
       tryInsert(combined.queryTypes, queryType);
+    }
+
+    for (const interfaceType of typeInfo.interfaceTypes) {
+      tryInsert(combined.interfaceTypes, interfaceType);
     }
 
     for (const importedObjectType of typeInfo.importedObjectTypes) {
@@ -99,7 +107,6 @@ const tryInsert = (
   );
 
   if (index > -1) {
-    // See if they're the same, error if they aren't
     const destType = JSON.stringify(dest[index]);
     const valueType = JSON.stringify(value);
     if (destType !== valueType) {

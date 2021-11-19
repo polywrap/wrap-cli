@@ -1,4 +1,6 @@
 import { Query } from "./w3";
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
 const uts46 = require("idna-uts46-hx/uts46bundle.js");
 
 export const query = (): Query.Module => ({

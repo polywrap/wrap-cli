@@ -76,4 +76,5 @@ export const typeInfo: TypeInfo = {
   importedObjectTypes: [],
   importedQueryTypes: [],
   importedEnumTypes: [],
+  interfaceTypes: [],
 };

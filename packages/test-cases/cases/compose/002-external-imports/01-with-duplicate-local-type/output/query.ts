@@ -74,4 +74,5 @@ export const typeInfo: TypeInfo = {
   ],
   importedQueryTypes: [],
   importedEnumTypes: [],
+  interfaceTypes: [],
 };

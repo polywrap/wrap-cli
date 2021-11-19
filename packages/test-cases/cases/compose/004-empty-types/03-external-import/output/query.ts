@@ -37,4 +37,5 @@ export const typeInfo: TypeInfo = {
     },
   ],
   importedEnumTypes: [],
+  interfaceTypes: [],
 };

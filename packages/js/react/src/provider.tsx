@@ -1,5 +1,6 @@
-import { Web3ApiClient, ClientConfig } from "@web3api/client-js";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
+import { Web3ApiClient, ClientConfig } from "@web3api/client-js";
 
 type ClientContext = React.Context<Web3ApiClient>
 

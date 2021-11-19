@@ -21,6 +21,7 @@ import {
   MetaManifest,
 } from "@web3api/core-js";
 import { WasmWeb3Api } from "@web3api/client-js";
+import { W3Imports } from "@web3api/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@web3api/asyncify-js";
 import { bindSchema, writeDirectory } from "@web3api/schema-bind";
 import { TypeInfo } from "@web3api/schema-parse";
@@ -537,22 +538,26 @@ export class Compiler {
 
     const mod = await WebAssembly.compile(wasmSource);
     const memory = new WebAssembly.Memory({ initial: 1 });
+    const w3Imports: Record<keyof W3Imports, () => void> = {
+      __w3_subinvoke: () => {},
+      __w3_subinvoke_result_len: () => {},
+      __w3_subinvoke_result: () => {},
+      __w3_subinvoke_error_len: () => {},
+      __w3_subinvoke_error: () => {},
+      __w3_invoke_args: () => {},
+      __w3_invoke_result: () => {},
+      __w3_invoke_error: () => {},
+      __w3_getImplementations: () => {},
+      __w3_getImplementations_result_len: () => {},
+      __w3_getImplementations_result: () => {},
+      __w3_abort: () => {},
+    };
 
     const instance = await WebAssembly.instantiate(mod, {
       env: {
         memory,
       },
-      w3: {
-        __w3_subinvoke: () => {},
-        __w3_subinvoke_result_len: () => {},
-        __w3_subinvoke_result: () => {},
-        __w3_subinvoke_error_len: () => {},
-        __w3_subinvoke_error: () => {},
-        __w3_invoke_args: () => {},
-        __w3_invoke_result: () => {},
-        __w3_invoke_error: () => {},
-        __w3_abort: () => {},
-      },
+      w3: w3Imports,
     });
 
     const requiredExports = [

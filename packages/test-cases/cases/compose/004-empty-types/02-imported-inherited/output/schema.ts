@@ -115,5 +115,6 @@ export const typeInfo: TypeInfo = {
   enumTypes: [],
   importedObjectTypes: [],
   importedQueryTypes: [],
-  importedEnumTypes: [],
+  importedEnumTypes: [], 
+  interfaceTypes: [],
 };
