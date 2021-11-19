@@ -18,13 +18,15 @@ export function validateManifest(manifest: Web3ApiManifest): void {
   }
 }
 
-export function getCompilerOverrides(project: Web3ApiProject): CompilerOverrides {
+export function getCompilerOverrides(
+  project: Web3ApiProject
+): CompilerOverrides {
   return {
     getGenerationDirectory: (entryPoint: string): string => {
       const absolute = path.isAbsolute(entryPoint)
         ? entryPoint
         : path.join(project.getWeb3ApiManifestDir(), entryPoint);
       return `${path.dirname(absolute)}/src/w3`;
-    }
-  }
+    },
+  };
 }

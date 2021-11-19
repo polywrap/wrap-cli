@@ -182,7 +182,7 @@ export class Compiler {
       const module = await import(buildEnvDir);
 
       // Validate the manifest for the given build-env
-      if (module.validateManifest) { 
+      if (module.validateManifest) {
         module.validateManifest(web3ApiManifest);
       }
 
@@ -362,10 +362,12 @@ export class Compiler {
   private _getGenerationDirectory(entryPoint: string): string {
     const state = this._state;
 
-    if (state && state.compilerOverrides && state.compilerOverrides.getGenerationDirectory) {
-      return state.compilerOverrides.getGenerationDirectory(
-        entryPoint
-      );
+    if (
+      state &&
+      state.compilerOverrides &&
+      state.compilerOverrides.getGenerationDirectory
+    ) {
+      return state.compilerOverrides.getGenerationDirectory(entryPoint);
     }
 
     const { project } = this._config;

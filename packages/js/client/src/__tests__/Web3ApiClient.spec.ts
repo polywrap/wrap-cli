@@ -2207,7 +2207,7 @@ enum Logger_LogLevel @imported(
     const interfaceUri = "w3://ens/interface.eth"
 
     const implementationApi = await buildAndDeployApi(
-      `${GetPathToTestApis()}/implementations/test-use-getImpl`,
+      `${GetPathToTestApis()}/wasm-as/implementations/test-use-getImpl`,
       ipfsProvider,
       ensAddress
     );
@@ -2242,8 +2242,6 @@ enum Logger_LogLevel @imported(
     expect(query.data).toBeTruthy();
     expect((query.data as any).queryImplementations).toEqual([implementationUri]);
   });
-
-});
 
   describe("wasm-rs test cases", () => {
     it("asyncify", async () => {
@@ -2346,4 +2344,5 @@ enum Logger_LogLevel @imported(
       await runInvalidTypesTest(api);
     });
   });
+
 });

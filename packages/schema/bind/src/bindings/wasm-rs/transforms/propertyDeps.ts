@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable no-useless-escape */
 import { isBaseType, isBuiltInType } from "../types";
 
 import {

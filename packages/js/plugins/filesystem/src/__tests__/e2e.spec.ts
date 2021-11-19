@@ -76,7 +76,7 @@ describe("Filesystem plugin", () => {
 
   it("queries simple-storage api on local drive", async () => {
     const apiPath = path.resolve(
-      `${GetPathToTestApis()}/simple-storage`
+      `${GetPathToTestApis()}/wasm-as/simple-storage`
     );
     await buildAndDeployApi(apiPath, ipfsProvider, ensAddress);
     const fsPath = `${apiPath}/build`;
