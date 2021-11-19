@@ -1,5 +1,0 @@
-type ImportedBaseType {
-}
-
-type ImportedDerivedType implements ImportedBaseType {
-}

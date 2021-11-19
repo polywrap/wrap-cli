@@ -1,5 +1,0 @@
-#import { ExternalType } into Namespace from "external.eth"
-
-type LocalType {
-  prop: Namespace_ExternalType
-}

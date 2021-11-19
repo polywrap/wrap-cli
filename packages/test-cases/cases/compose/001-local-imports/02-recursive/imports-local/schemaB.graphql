@@ -1,5 +1,0 @@
-#import { TypeC } from "../imports-local/schemaC.graphql"
-
-type TypeB {
-  prop: TypeC
-}
