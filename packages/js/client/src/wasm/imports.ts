@@ -9,11 +9,11 @@ import * as MsgPack from "@msgpack/msgpack";
 
 export const createImports = (config: {
   client: Client;
-  memory: WebAssembly.Memory;
+  getMemory: () => WebAssembly.Memory;
   state: State;
   abort: (message: string) => never;
 }): W3Imports => {
-  const { memory, state, client, abort } = config;
+  const { getMemory, state, client, abort } = config;
 
   return {
     w3: {
@@ -31,6 +31,7 @@ export const createImports = (config: {
         state.subinvoke.result = undefined;
         state.subinvoke.error = undefined;
 
+        const memory = getMemory();
         const uri = readString(memory.buffer, uriPtr, uriLen);
         const moduleToInvoke = readString(memory.buffer, modulePtr, moduleLen);
         const method = readString(memory.buffer, methodPtr, methodLen);
@@ -79,6 +80,7 @@ export const createImports = (config: {
           abort("__w3_subinvoke_result: subinvoke.result is not set");
           return;
         }
+        const memory = getMemory();
         writeBytes(state.subinvoke.result, memory.buffer, ptr);
       },
       // Give WASM the size of the error
@@ -95,6 +97,7 @@ export const createImports = (config: {
           abort("__w3_subinvoke_error: subinvoke.error is not set");
           return;
         }
+        const memory = getMemory();
         writeString(state.subinvoke.error, memory.buffer, ptr);
       },
       // Copy the invocation's method & args into WASM
@@ -107,18 +110,22 @@ export const createImports = (config: {
           abort("__w3_invoke_args: args is not set");
           return;
         }
+        const memory = getMemory();
         writeString(state.method, memory.buffer, methodPtr);
         writeBytes(state.args, memory.buffer, argsPtr);
       },
       // Store the invocation's result
       __w3_invoke_result: (ptr: u32, len: u32): void => {
+        const memory = getMemory();
         state.invoke.result = readBytes(memory.buffer, ptr, len);
       },
       // Store the invocation's error
       __w3_invoke_error: (ptr: u32, len: u32): void => {
+        const memory = getMemory();
         state.invoke.error = readString(memory.buffer, ptr, len);
       },
       __w3_getImplementations: (uriPtr: u32, uriLen: u32): boolean => {
+        const memory = getMemory();
         const uri = readString(memory.buffer, uriPtr, uriLen);
         const result = client.getImplementations(uri);
         state.getImplementationsResult = MsgPack.encode(result);
@@ -136,6 +143,7 @@ export const createImports = (config: {
           abort("__w3_getImplementations_result: result is not set");
           return;
         }
+        const memory = getMemory();
         writeBytes(state.getImplementationsResult, memory.buffer, ptr);
       },
       __w3_abort: (
@@ -146,6 +154,7 @@ export const createImports = (config: {
         line: u32,
         column: u32
       ): void => {
+        const memory = getMemory();
         const msg = readString(memory.buffer, msgPtr, msgLen);
         const file = readString(memory.buffer, filePtr, fileLen);
 
@@ -153,9 +162,6 @@ export const createImports = (config: {
           `__w3_abort: ${msg}\nFile: ${file}\nLocation: [${line},${column}]`
         );
       },
-    },
-    env: {
-      memory,
     },
   };
 };

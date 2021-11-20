@@ -1,9 +1,0 @@
-* 0. Remove _w3_init
-* [DONE]   1. Remove Box for non-circular objects (only use for circular relationships)
-* 2. size
-* 3. full test coverage
-
-* [DONE]   4. Handle JSON types in MsgPack, Test-Cases, and Schema Bindings
-
-* Add logic for detecting circular object properties, add a "circular" flag if they are
-* * Remove needless boxes for non-circular object props

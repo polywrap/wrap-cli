@@ -170,13 +170,12 @@ export class WasmWeb3Api extends Api {
         );
       };
 
-      const memory = new WebAssembly.Memory({ initial: 1 });
       const instance = await AsyncWasmInstance.createInstance({
         module: wasm,
         imports: createImports({
           state,
           client,
-          memory,
+          getMemory: () => exports.memory,
           abort,
         }),
         requiredExports: WasmWeb3Api.requiredExports,
