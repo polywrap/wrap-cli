@@ -1,0 +1,24 @@
+[package]
+name = "mutation"
+version = "0.1.0"
+description = "Mutation module of Ethereum polywrapper"
+authors = [
+  "Kobby Pentangeli <kobbypentangeli@gmail.com>",
+  "Jordan Ellis <jelli@dorg.tech>"
+]
+repository = "https://github.com/polywrap/monorepo"
+license = "MIT"
+edition = "2021"
+
+[dependencies]
+ethers = "0.5.4"
+polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../wasm/rs" }
+query = { version = "0.1.0", path = "../query", default-features = false }
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+opt-level = 'z'
+lto = true
+panic = 'abort'
