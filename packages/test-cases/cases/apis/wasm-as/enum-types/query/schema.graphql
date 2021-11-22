@@ -1,16 +1,16 @@
 type Query {
   method1(
-    en: Enum!
-    optEnum: Enum
-  ): Enum!
+    en: SanityEnum!
+    optEnum: SanityEnum
+  ): SanityEnum!
 
   method2(
-    enumArray: [Enum!]!
-    optEnumArray: [Enum]
-  ): [Enum!]!
+    enumArray: [SanityEnum!]!
+    optEnumArray: [SanityEnum]
+  ): [SanityEnum!]!
 }
 
-enum Enum {
+enum SanityEnum {
   OPTION1
   OPTION2
   OPTION3
