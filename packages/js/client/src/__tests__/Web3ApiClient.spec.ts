@@ -2177,6 +2177,15 @@ enum Logger_LogLevel @imported(
     );
     const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
 
+    const client = await getClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri],
+        }
+      ],
+    });
+
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/interface-invoke/test-api`,
       ipfsProvider,
@@ -2184,78 +2193,43 @@ enum Logger_LogLevel @imported(
     );
     const apiUri = `w3://ens/testnet/${api.ensDomain}`;
 
-    const client = await getClient({
-      interfaces: [
-        {
-          interface: interfaceUri,
-          implementations: [apiUri],
-        }
-      ],
+    const query = await client.query<{
+      queryMethod: string;
+    }>({
+      uri: apiUri,
+      query: `query{
+        queryMethod(
+          arg: {
+            uint8: 1,
+            str: "Test String 1",
+          }
+        )
+      }`,
     });
 
-      // const query = await client.query<{
-      //   queryMethod: string;
-      //   abstractQueryMethod: string;
-      // }>({
-      //   uri: apiUri,
-      //   query: `
-      //     query {
-      //       # queryMethod(
-      //       #   arg: $argument1
-      //       # )
-      //       abstractQueryMethod(
-      //         arg: $argument2
-      //       )
-      //     }
-      //   `,
-      //   variables: {
-      //     // argument1: {
-      //     //   uint8: 1,
-      //     //   str: "Test String 1",
-      //     // },
-      //     argument2: {
-      //       str: "Test String 2",
-      //     },
-      //   },
-      // });
+    console.log(query)
 
-      // console.log(query)
-
-      // expect(query.errors).toBeFalsy();
-      // expect(query.data).toBeTruthy();
-      // expect(query.data?.queryMethod).toEqual({
-      //   uint8: 1,
-      //   str: "Test String 1",
-      // });
-
-      // expect(query.data?.abstractQueryMethod).toBe("Test String 2");
+    expect(query.errors).toBeFalsy();
+    expect(query.data).toBeTruthy();
+    expect(query.data?.queryMethod).toEqual({
+      uint8: 1,
+      str: "Test String 1",
+    });
 
     const mutation = await client.query<{
       mutationMethod: string;
-      abstractMutationMethod: string;
     }>({
-      uri: implementationUri,
-      query: `
-      mutation {
+      uri: apiUri,
+      query: `mutation {
         mutationMethod(
-          arg: $argument1
+          arg: 1
         )
-        abstractMutationMethod(
-          arg: $argument2
-        )
-      }
-      `,
-      variables: {
-        argument1: 1,
-        argument2: 2,
-      },
+      }`
     });
 
     expect(mutation.errors).toBeFalsy();
     expect(mutation.data).toBeTruthy();
     expect(mutation.data?.mutationMethod).toBe(1);
-    expect(mutation.data?.abstractMutationMethod).toBe(2);
   });
 
 });
-

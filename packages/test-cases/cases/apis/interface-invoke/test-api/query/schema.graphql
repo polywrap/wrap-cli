@@ -1,7 +1,7 @@
 #import { Query, InterfaceType } into Interface from "w3://ens/interface.eth"
 #use { getImplementations } for Interface
 
-type Query implements Interface_Query {
+type Query {
   queryMethod(
     arg: ImplementationType!
   ): ImplementationType!
