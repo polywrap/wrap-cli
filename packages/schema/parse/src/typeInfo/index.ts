@@ -123,7 +123,7 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
         importedQueryType,
         compareImportedType,
         (a: ImportedQueryDefinition, b: ImportedQueryDefinition) => {
-          return {...a, isInterface: a.isInterface || b.isInterface}
+          return { ...a, isInterface: a.isInterface || b.isInterface };
         }
       );
     }

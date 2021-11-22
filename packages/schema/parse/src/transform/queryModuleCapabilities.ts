@@ -39,7 +39,7 @@ export function queryModuleCapabilities(): TypeInfoTransforms {
                 namespace: def.namespace,
                 type,
               });
-              enabledInterfaces.add(`${def.namespace}_${capitalize(module)}`)
+              enabledInterfaces.add(`${def.namespace}_${capitalize(module)}`);
             }
           }
         }
@@ -56,7 +56,7 @@ export function queryModuleCapabilities(): TypeInfoTransforms {
         }
 
         for (const importedQueryDef of info.importedQueryTypes) {
-          if(enabledInterfaces.has(importedQueryDef.type)) {
+          if (enabledInterfaces.has(importedQueryDef.type)) {
             importedQueryDef.isInterface = true;
           }
         }

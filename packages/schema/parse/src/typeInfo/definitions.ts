@@ -437,7 +437,7 @@ export function createImportedQueryDefinition(args: {
   uri: string;
   namespace: string;
   nativeType: string;
-  isInterface?:boolean;
+  isInterface?: boolean;
   interfaces?: InterfaceImplementedDefinition[];
   comment?: string;
 }): ImportedQueryDefinition {
