@@ -1,0 +1,24 @@
+[package]
+name = "query"
+version = "0.1.0"
+description = "Query module of SHA3 polywrapper"
+authors = [
+  "Kobby Pentangeli <kobbypentangeli@gmail.com>",
+  "Jordan Ellis <jelli@dorg.tech>"
+]
+repository = "https://github.com/polywrap/monorepo"
+license = "MIT"
+edition = "2021"
+
+[dependencies]
+polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../wasm/rs" }
+regex = "1.5.4"
+tiny-keccak = { version = "2.0.2", default-features = false, features = ["sha3", "shake", "keccak"] }
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+opt-level = 'z'
+lto = true
+panic = 'abort'
