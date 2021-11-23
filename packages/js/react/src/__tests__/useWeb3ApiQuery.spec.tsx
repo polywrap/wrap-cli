@@ -38,7 +38,7 @@ describe("useWeb3ApiQuery hook", () => {
     } = await initTestEnvironment();
 
     const { ensDomain } = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
+      `${GetPathToTestApis()}/wasm-as/simple-storage`,
       ipfs,
       ensAddress
     );
