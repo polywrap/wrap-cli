@@ -41,14 +41,14 @@ export function w3_subinvoke(
 
   if (!success) {
     const errorLen = __w3_subinvoke_error_len();
-    const messageBuf = new ArrayBuffer(changetype<u32>(errorLen));
+    const messageBuf = new ArrayBuffer(errorLen);
     __w3_subinvoke_error(changetype<u32>(messageBuf));
     const message = String.UTF8.decode(messageBuf);
     throw new Error(message);
   }
 
   const resultLen = __w3_subinvoke_result_len();
-  const resultBuffer = new ArrayBuffer(changetype<u32>(resultLen));
+  const resultBuffer = new ArrayBuffer(resultLen);
   __w3_subinvoke_result(changetype<u32>(resultBuffer));
 
   return resultBuffer;

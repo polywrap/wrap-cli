@@ -20,6 +20,14 @@ directive @imported(
 directive @imports(
   types: [String!]!
 ) on OBJECT
+
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
 """
@@ -42,6 +50,10 @@ type Query implements Interface_Query @imports(
     "Interface_Object",
     "Interface_NestedInterfaceObject"
   ]
+) @capability(
+  type: "getImplementations",
+  uri: "test.eth",
+  namespace: "Namespace"
 ) {
   """
   method1 comment
@@ -159,6 +171,7 @@ type CommonType {
   objectArray comment
   """
   objectArray: [[ArrayObject]]!
+  anotherLocal: AnotherLocal!
 }
 
 """
@@ -172,6 +185,10 @@ type NestedType {
 ArrayObject comment
 """
 type ArrayObject {
+  prop: String!
+}
+
+type AnotherLocal {
   prop: String!
 }
 
@@ -244,7 +261,7 @@ type Namespace_Query @imported(
   uri: "test.eth",
   namespace: "Namespace",
   nativeType: "Query"
-) {
+) @enabled_interface {
   method1(
     str: String!
     optStr: String
@@ -268,7 +285,7 @@ type Namespace_Query @imported(
 Query comment
 """
 type Interface_Query @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "Query"
 ) {
@@ -328,7 +345,7 @@ type JustMutation_Mutation @imported(
 Mutation comment
 """
 type Interface_Mutation @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "Mutation"
 ) {
@@ -424,7 +441,7 @@ type Namespace_Imported_ObjectType @imported(
 QueryInterfaceArgument comment
 """
 type Interface_QueryInterfaceArgument implements Interface_NestedQueryInterfaceArgument @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "QueryInterfaceArgument"
 ) {
@@ -439,7 +456,7 @@ type Interface_QueryInterfaceArgument implements Interface_NestedQueryInterfaceA
 NestedQueryInterfaceArgument comment
 """
 type Interface_NestedQueryInterfaceArgument @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "NestedQueryInterfaceArgument"
 ) {
@@ -450,7 +467,7 @@ type Interface_NestedQueryInterfaceArgument @imported(
 InterfaceObject2 comment
 """
 type Interface_InterfaceObject2 implements Interface_NestedInterfaceObject @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "InterfaceObject2"
 ) {
@@ -462,7 +479,7 @@ type Interface_InterfaceObject2 implements Interface_NestedInterfaceObject @impo
 Object comment
 """
 type Interface_Object @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "Object"
 ) {
@@ -473,7 +490,7 @@ type Interface_Object @imported(
 NestedInterfaceObject comment
 """
 type Interface_NestedInterfaceObject @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "NestedInterfaceObject"
 ) {
@@ -487,7 +504,7 @@ type Interface_NestedInterfaceObject @imported(
 InterfaceObject1 comment
 """
 type Interface_InterfaceObject1 @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "InterfaceObject1"
 ) {

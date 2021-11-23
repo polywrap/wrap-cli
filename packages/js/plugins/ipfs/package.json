@@ -1,7 +1,7 @@
 {
   "name": "@web3api/ipfs-plugin-js",
   "description": "Web3API IPFS Javascript Plugin",
-  "version": "0.0.1-prealpha.45",
+  "version": "0.0.1-prealpha.51",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -14,15 +14,15 @@
   ],
   "scripts": {
     "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
-    "codegen": "npx -p @web3api/cli w3 plugin codegen",
-    "lint": "eslint --color --ext .ts src/",
+    "codegen": "node ../../../../dependencies/node_modules/@web3api/cli/bin/w3 plugin codegen",
+    "lint": "eslint --color -c ../../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
     "@dorgjelli-test/ipfs-http-client-lite": "0.3.1",
-    "@web3api/core-js": "0.0.1-prealpha.45",
+    "@web3api/core-js": "0.0.1-prealpha.51",
     "abort-controller": "3.0.0",
     "cids": "^1.1.4",
     "is-ipfs": "1.0.3"

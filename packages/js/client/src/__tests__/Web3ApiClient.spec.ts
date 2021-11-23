@@ -2,6 +2,7 @@ import { createWeb3ApiClient } from "../";
 import {
   buildAndDeployApi,
   initTestEnvironment,
+  runCLI,
   stopTestEnvironment,
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
@@ -108,22 +109,29 @@ describe("Web3ApiClient", () => {
     const client = new Web3ApiClient();
 
     expect(client.redirects()).toStrictEqual([]);
-    expect(client.plugins().map((x) => x.uri)).toStrictEqual([
-      new Uri("w3://ens/ipfs.web3api.eth"),
-      new Uri("w3://ens/ens.web3api.eth"),
-      new Uri("w3://ens/ethereum.web3api.eth"),
-      new Uri("w3://ens/http.web3api.eth"),
-      new Uri("w3://ens/js-logger.web3api.eth"),
-      new Uri("w3://ens/uts46.web3api.eth"),
-      new Uri("w3://ens/sha3.web3api.eth"),
-    ]);
-    expect(client.interfaces()).toStrictEqual([
+    expect(
+        client.plugins().map(x => x.uri)
+      ).toStrictEqual([
+        new Uri("w3://ens/ipfs.web3api.eth"),
+        new Uri("w3://ens/ens.web3api.eth"),
+        new Uri("w3://ens/ethereum.web3api.eth"),
+        new Uri("w3://ens/http.web3api.eth"),
+        new Uri("w3://ens/js-logger.web3api.eth"),
+        new Uri("w3://ens/uts46.web3api.eth"),
+        new Uri("w3://ens/sha3.web3api.eth"),
+        new Uri("w3://ens/graph-node.web3api.eth"),
+        new Uri("w3://ens/fs.web3api.eth")
+      ]);
+    expect(
+        client.interfaces()
+      ).toStrictEqual([
       {
         interface: coreInterfaceUris.uriResolver,
         implementations: [
           new Uri("w3://ens/ipfs.web3api.eth"),
           new Uri("w3://ens/ens.web3api.eth"),
-        ],
+          new Uri("w3://ens/fs.web3api.eth")
+        ]
       },
       {
         interface: coreInterfaceUris.logger,
@@ -272,6 +280,8 @@ describe("Web3ApiClient", () => {
       "w3://ens/js-logger.web3api.eth",
       "w3://ens/uts46.web3api.eth",
       "w3://ens/sha3.web3api.eth",
+      "w3://ens/graph-node.web3api.eth",
+      "w3://ens/fs.web3api.eth",
     ];
 
     const client = new Web3ApiClient({
@@ -2266,4 +2276,112 @@ enum Logger_LogLevel @imported(
     expect(results).toContain(0);
     expect(results).not.toContain(2);
   });
+
+  it("e2e getImplementations capability", async () => {
+    const interfaceUri = "w3://ens/interface.eth"
+
+    const implementationApi = await buildAndDeployApi(
+      `${GetPathToTestApis()}/implementations/test-use-getImpl`,
+      ipfsProvider,
+      ensAddress
+    );
+    const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
+
+    const client = await getClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri],
+        }
+      ],
+    });
+
+    expect(client.getImplementations(interfaceUri))
+      .toEqual([implementationUri]);
+
+    const query = await client.query<{
+      queryMethod: string;
+      abstractQueryMethod: string;
+    }>({
+      uri: implementationUri,
+      query: `
+        query {
+          queryImplementations
+        }
+      `,
+      variables: {},
+    });
+
+    expect(query.errors).toBeFalsy();
+    expect(query.data).toBeTruthy();
+    expect((query.data as any).queryImplementations).toEqual([implementationUri]);
+  });
+
+  it("e2e Interface invoke method", async () => {
+    const interfaceUri = "w3://ens/interface.eth";
+    // Build interface polywrapper
+    await runCLI({ args: ["build"], cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`});
+
+    const implementationApi = await buildAndDeployApi(
+      `${GetPathToTestApis()}/interface-invoke/test-implementation`,
+      ipfsProvider,
+      ensAddress
+    );
+    const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
+
+    const client = await getClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri],
+        }
+      ],
+    });
+
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/interface-invoke/test-api`,
+      ipfsProvider,
+      ensAddress
+    );
+    const apiUri = `w3://ens/testnet/${api.ensDomain}`;
+
+    const query = await client.query<{
+      queryMethod: string;
+    }>({
+      uri: apiUri,
+      query: `query{
+        queryMethod(
+          arg: {
+            uint8: 1,
+            str: "Test String 1",
+          }
+        )
+      }`,
+    });
+
+    console.log(query)
+
+    expect(query.errors).toBeFalsy();
+    expect(query.data).toBeTruthy();
+    expect(query.data?.queryMethod).toEqual({
+      uint8: 1,
+      str: "Test String 1",
+    });
+
+    const mutation = await client.query<{
+      mutationMethod: string;
+    }>({
+      uri: apiUri,
+      query: `mutation {
+        mutationMethod(
+          arg: 1
+        )
+      }`
+    });
+
+    expect(mutation.errors).toBeFalsy();
+    expect(mutation.data).toBeTruthy();
+    expect(mutation.data?.mutationMethod).toBe(1);
+  });
+
 });

@@ -4,7 +4,12 @@ import { SchemaValidator } from ".";
 import { DirectiveNode, ASTNode, ObjectTypeDefinitionNode } from "graphql";
 
 export const getSupportedDirectivesValidator = (): SchemaValidator => {
-  const supportedDirectives = ["imported", "imports"];
+  const supportedDirectives = [
+    "imported",
+    "imports",
+    "capability",
+    "enabled_interface",
+  ];
   const unsupportedUsages: string[] = [];
 
   return {

@@ -99,6 +99,45 @@ export class Tracer {
     }
   }
 
+  static traceMethod(span: string) {
+    return function (
+      target: unknown,
+      key: string | symbol,
+      descriptor: PropertyDescriptor
+    ): PropertyDescriptor {
+      const original = descriptor.value;
+
+      descriptor.value = function <TArgs extends Array<unknown>, TReturn>(
+        ...args: TArgs[]
+      ): TReturn {
+        try {
+          Tracer.startSpan(span);
+          Tracer.setAttribute("input", { ...args });
+
+          const result = original.apply(this, args);
+
+          if (isPromise(result)) {
+            return (result.then((result) => {
+              Tracer.setAttribute("output", result);
+              Tracer.endSpan();
+              return result;
+            }) as unknown) as TReturn;
+          } else {
+            Tracer.setAttribute("output", result);
+            Tracer.endSpan();
+            return result;
+          }
+        } catch (error) {
+          Tracer.recordException(error);
+          Tracer.endSpan();
+          throw error;
+        }
+      };
+
+      return descriptor;
+    };
+  }
+
   static traceFunc<TArgs extends Array<unknown>, TReturn>(
     span: string,
     func: (...args: TArgs) => TReturn

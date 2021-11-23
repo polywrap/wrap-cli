@@ -22,6 +22,14 @@ directive @imported(
 directive @imports(
   types: [String!]!
 ) on OBJECT
+
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
 type Query @imports(
@@ -67,6 +75,11 @@ type Ethereum_Query @imported(
   encodeParams(
     types: [String!]!
     values: [String!]!
+  ): String!
+
+  encodeFunction(
+    method: String!
+    args: [String!]
   ): String!
 
   getSignerAddress(
@@ -251,6 +264,14 @@ directive @imported(
 directive @imports(
   types: [String!]!
 ) on OBJECT
+
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
 type Mutation @imports(
@@ -476,6 +497,14 @@ directive @imported(
 directive @imports(
   types: [String!]!
 ) on OBJECT
+
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
 type Mutation @imports(
@@ -603,6 +632,11 @@ type Ethereum_Query @imported(
   encodeParams(
     types: [String!]!
     values: [String!]!
+  ): String!
+
+  encodeFunction(
+    method: String!
+    args: [String!]
   ): String!
 
   getSignerAddress(

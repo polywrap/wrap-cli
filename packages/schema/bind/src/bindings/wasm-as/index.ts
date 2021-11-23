@@ -96,6 +96,19 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
   }
 
   // Generate query type folders
+  for (const interfaceType of typeInfo.interfaceTypes) {
+    entries.push({
+      type: "Directory",
+      name: interfaceType.type,
+      data: generateFiles(
+        "./templates/interface-type",
+        interfaceType,
+        subTemplates
+      ),
+    });
+  }
+
+  // Generate query type folders
   for (const queryType of typeInfo.queryTypes) {
     entries.push({
       type: "Directory",
