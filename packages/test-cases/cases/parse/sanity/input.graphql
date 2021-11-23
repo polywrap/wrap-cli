@@ -25,6 +25,8 @@ directive @capability(
   uri: String!
   namespace: String!
 ) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 """
 CustomEnum comment
 """
@@ -169,7 +171,7 @@ type TestImport_Query @imported(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
   nativeType: "Query"
-) {
+) @enabled_interface {
 """
 importedMethod comment
 """

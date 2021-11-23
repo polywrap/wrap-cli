@@ -1,0 +1,5 @@
+type Mutation {
+  abstractMutationMethod(
+    arg: UInt8!
+  ): UInt8!
+}

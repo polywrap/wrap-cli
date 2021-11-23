@@ -26,6 +26,8 @@ directive @capability(
   uri: String!
   namespace: String!
 ) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
 """
@@ -259,7 +261,7 @@ type Namespace_Query @imported(
   uri: "test.eth",
   namespace: "Namespace",
   nativeType: "Query"
-) {
+) @enabled_interface {
   method1(
     str: String!
     optStr: String
