@@ -10,8 +10,12 @@ repository = "https://github.com/polywrap/monorepo"
 license = "MIT"
 edition = "2021"
 
+[features]
+w3invoke = []
+
 [dependencies]
 ethers-core = "0.5.6"
+getrandom = { version = "*", features = ["js"] }
 polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../wasm/rs" }
 
 [lib]
