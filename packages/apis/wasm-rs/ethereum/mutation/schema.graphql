@@ -37,7 +37,7 @@ type Mutation {
     connection: Connection
   ): String!
 
-  sendRPC(
+  sendRpc(
     method: String!
     params: [String!]!
     connection: Connection

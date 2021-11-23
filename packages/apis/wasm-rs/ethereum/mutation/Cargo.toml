@@ -11,7 +11,7 @@ license = "MIT"
 edition = "2021"
 
 [dependencies]
-ethers = "0.5.4"
+ethers-core = "0.5.6"
 polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../wasm/rs" }
 query = { version = "0.1.0", path = "../query", default-features = false }
 

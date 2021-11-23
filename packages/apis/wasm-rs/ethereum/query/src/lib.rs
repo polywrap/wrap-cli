@@ -1,64 +1,65 @@
 //! Query module of the Ethereum polywrapper
 
 pub mod w3;
+use polywrap_wasm_rs::BigInt;
 pub use w3::*;
 
-pub async fn call_contract_view(input: InputCallContractView) -> String {
+pub fn call_contract_view(input: InputCallContractView) -> String {
     todo!()
 }
 
-pub async fn call_contract_static(input: InputCallContractStatic) -> StaticTxResult {
+pub fn call_contract_static(input: InputCallContractStatic) -> StaticTxResult {
     todo!()
 }
 
-pub async fn encode_params(input: InputEncodeParams) -> String {
+pub fn encode_params(input: InputEncodeParams) -> String {
     todo!()
 }
 
-pub async fn encode_function(input: InputEncodeFunction) -> String {
+pub fn encode_function(input: InputEncodeFunction) -> String {
     todo!()
 }
 
-pub async fn get_signer_address(input: InputGetSignerAddress) -> String {
+pub fn get_signer_address(input: InputGetSignerAddress) -> String {
     todo!()
 }
 
-pub async fn get_signer_balance(input: InputGetSignerBalance) -> String {
+pub fn get_signer_balance(input: InputGetSignerBalance) -> BigInt {
     todo!()
 }
 
-pub async fn get_signer_transaction_count(input: InputGetSignerTransactionCount) -> String {
+pub fn get_signer_transaction_count(input: InputGetSignerTransactionCount) -> BigInt {
     todo!()
 }
 
-pub async fn get_gas_price(input: InputGetGasPrice) -> String {
+pub fn get_gas_price(input: InputGetGasPrice) -> BigInt {
     todo!()
 }
 
-pub async fn estimate_transaction_gas(input: InputEstimateTransactionGas) -> String {
+pub fn estimate_transaction_gas(input: InputEstimateTransactionGas) -> BigInt {
     todo!()
 }
 
-pub async fn estimate_contract_call_gas(input: InputEstimateContractCallGas) -> String {
+pub fn estimate_contract_call_gas(input: InputEstimateContractCallGas) -> BigInt {
     todo!()
 }
 
-pub async fn check_address(input: InputCheckAddress) -> bool {
+pub fn check_address(input: InputCheckAddress) -> bool {
     todo!()
 }
 
-pub async fn to_wei(input: InputToWei) -> String {
+pub fn to_wei(input: InputToWei) -> BigInt {
     todo!()
 }
 
-pub async fn to_eth(input: InputToEth) -> String {
+pub fn to_eth(input: InputToEth) -> String {
     todo!()
 }
 
-pub async fn wait_for_event(input: InputWaitForEvent) -> EventNotification {
+pub fn wait_for_event(input: InputWaitForEvent) -> EventNotification {
     todo!()
 }
 
-pub async fn await_transaction(input: InputAwaitTransaction) -> TxReceipt {
+pub fn await_transaction(input: InputAwaitTransaction) -> TxReceipt {
     todo!()
 }

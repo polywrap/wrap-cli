@@ -2,31 +2,32 @@
 
 pub mod w3;
 pub use w3::*;
+use query;
 
-pub async fn call_contract_method(input: InputCallContractMethod) -> TxResponse {
+pub fn call_contract_method(input: InputCallContractMethod) -> TxResponse {
     todo!()
 }
 
-pub async fn call_contract_method_and_wait(input: InputCallContractMethodAndWait) -> TxResponse {
+pub fn call_contract_method_and_wait(input: InputCallContractMethodAndWait) -> query::TxReceipt {
     todo!()
 }
 
-pub async fn send_transaction(input: InputSendTransaction) -> TxResponse {
+pub fn send_transaction(input: InputSendTransaction) -> TxResponse {
     todo!()
 }
 
-pub async fn send_transaction_and_wait(input: InputSendTransactionAndWait) -> TxReceipt {
+pub fn send_transaction_and_wait(input: InputSendTransactionAndWait) -> TxReceipt {
     todo!()
 }
 
-pub async fn deploy_contract(input: InputDeployContract) -> String {
+pub fn deploy_contract(input: InputDeployContract) -> String {
     todo!()
 }
 
-pub async fn sign_message(input: InputSignMessage) -> String {
+pub fn sign_message(input: InputSignMessage) -> String {
     todo!()
 }
 
-pub async fn send_rpc(input: InputSendRpc) -> String {
+pub fn send_rpc(input: InputSendRpc) -> Option<String> {
     todo!()
 }
