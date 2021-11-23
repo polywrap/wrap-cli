@@ -133,32 +133,6 @@ export class Web3ApiClient implements Client {
     return this._config.interfaces || [];
   }
 
-  public async getSchema<TUri extends Uri | string>(
-    uri: TUri
-  ): Promise<string> {
-    const api = await this._loadWeb3Api(this._toUri(uri));
-    return await api.getSchema(this);
-  }
-
-  public async getManifest<
-    TUri extends Uri | string,
-    TManifestType extends ManifestType
-  >(
-    uri: TUri,
-    options: GetManifestOptions<TManifestType>
-  ): Promise<AnyManifest<TManifestType>> {
-    const api = await this._loadWeb3Api(this._toUri(uri));
-    return await api.getManifest(options, this);
-  }
-
-  public async getFile<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetFileOptions
-  ): Promise<string | ArrayBuffer> {
-    const api = await this._loadWeb3Api(this._toUri(uri));
-    return await api.getFile(options, this);
-  }
-
   @Tracer.traceMethod("Web3ApiClient: query")
   public async query<
     TData extends Record<string, unknown> = Record<string, unknown>,
