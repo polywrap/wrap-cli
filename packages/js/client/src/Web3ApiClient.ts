@@ -225,19 +225,20 @@ export class Web3ApiClient implements Client {
           );
         }
 
-      // Await the invocations
-      const invocationResults = await Promise.all(parallelInvocations);
+        // Await the invocations
+        const invocationResults = await Promise.all(parallelInvocations);
 
-      Tracer.addEvent("invocationResults", invocationResults);
+        Tracer.addEvent("invocationResults", invocationResults);
 
-      // Aggregate all invocation results
-      const data: Record<string, unknown> = {};
-      const errors: Error[] = [];
+        // Aggregate all invocation results
+        const data: Record<string, unknown> = {};
+        const errors: Error[] = [];
 
-      for (const invocation of invocationResults) {
-        data[invocation.name] = invocation.result.data;
-        if (invocation.result.error) {
-          errors.push(invocation.result.error);
+        for (const invocation of invocationResults) {
+          data[invocation.name] = invocation.result.data;
+          if (invocation.result.error) {
+            errors.push(invocation.result.error);
+          }
         }
 
         result = {
@@ -246,6 +247,7 @@ export class Web3ApiClient implements Client {
         };
         return result;
       }
+    );
 
     try {
       result = await run(typedOptions);
@@ -381,40 +383,42 @@ export class Web3ApiClient implements Client {
               }
               subscription.isActive = false;
             }
-          }, frequency);
+          },
+        };
 
-          while (subscription.isActive) {
-            if (readyVals === 0) {
-              await new Promise((r) => (sleep = r));
-            }
+        return subscription;
+      }
+    );
 
-            for (; readyVals > 0; readyVals--) {
-              if (!subscription.isActive) {
-                break;
-              }
-
-              const result: QueryApiResult<TData> = await client.query({
-                uri: uri,
-                query: query,
-                variables: variables,
-              });
-
-              yield result;
-            }
-          }
-        } finally {
-          if (timeout) {
-            clearInterval(timeout);
-          }
-          subscription.isActive = false;
-        }
-      },
-    };
-
-    return subscription;
+    return run(typedOptions);
   }
 
-  @Tracer.traceMethod("Web3ApiClient: getImplementations")
+  public async getSchema<TUri extends Uri | string>(
+    uri: TUri
+  ): Promise<string> {
+    const api = await this._loadWeb3Api(this._toUri(uri));
+    return await api.getSchema(this);
+  }
+
+  public async getManifest<
+    TUri extends Uri | string,
+    TManifestType extends ManifestType
+  >(
+    uri: TUri,
+    options: GetManifestOptions<TManifestType>
+  ): Promise<AnyManifest<TManifestType>> {
+    const api = await this._loadWeb3Api(this._toUri(uri));
+    return await api.getManifest(options, this);
+  }
+
+  public async getFile<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetFileOptions
+  ): Promise<string | ArrayBuffer> {
+    const api = await this._loadWeb3Api(this._toUri(uri));
+    return await api.getFile(options, this);
+  }
+
   public getImplementations<TUri extends Uri | string>(
     uri: TUri,
     options?: GetImplementationsOptions
