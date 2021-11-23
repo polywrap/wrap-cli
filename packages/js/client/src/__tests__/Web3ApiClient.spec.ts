@@ -5,6 +5,7 @@ import {
 import {
   buildAndDeployApi,
   initTestEnvironment,
+  runCLI,
   stopTestEnvironment,
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
@@ -2137,7 +2138,7 @@ enum Logger_LogLevel @imported(
     const client = await getClient({
       interfaces: [
         {
-          interface: "w3://ens/interface.eth",
+          interface: interfaceUri,
           implementations: [implementationUri],
         }
       ],
@@ -2164,5 +2165,71 @@ enum Logger_LogLevel @imported(
     expect((query.data as any).queryImplementations).toEqual([implementationUri]);
   });
 
-});
+  it("e2e Interface invoke method", async () => {
+    const interfaceUri = "w3://ens/interface.eth";
+    // Build interface polywrapper
+    await runCLI({ args: ["build"], cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`});
 
+    const implementationApi = await buildAndDeployApi(
+      `${GetPathToTestApis()}/interface-invoke/test-implementation`,
+      ipfsProvider,
+      ensAddress
+    );
+    const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
+
+    const client = await getClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri],
+        }
+      ],
+    });
+
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/interface-invoke/test-api`,
+      ipfsProvider,
+      ensAddress
+    );
+    const apiUri = `w3://ens/testnet/${api.ensDomain}`;
+
+    const query = await client.query<{
+      queryMethod: string;
+    }>({
+      uri: apiUri,
+      query: `query{
+        queryMethod(
+          arg: {
+            uint8: 1,
+            str: "Test String 1",
+          }
+        )
+      }`,
+    });
+
+    console.log(query)
+
+    expect(query.errors).toBeFalsy();
+    expect(query.data).toBeTruthy();
+    expect(query.data?.queryMethod).toEqual({
+      uint8: 1,
+      str: "Test String 1",
+    });
+
+    const mutation = await client.query<{
+      mutationMethod: string;
+    }>({
+      uri: apiUri,
+      query: `mutation {
+        mutationMethod(
+          arg: 1
+        )
+      }`
+    });
+
+    expect(mutation.errors).toBeFalsy();
+    expect(mutation.data).toBeTruthy();
+    expect(mutation.data?.mutationMethod).toBe(1);
+  });
+
+});
