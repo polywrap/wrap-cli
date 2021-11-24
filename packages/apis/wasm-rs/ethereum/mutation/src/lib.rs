@@ -1,8 +1,8 @@
 //! Mutation module of the Ethereum polywrapper
 
 pub mod w3;
-pub use w3::*;
 use query;
+pub use w3::*;
 
 pub fn call_contract_method(input: InputCallContractMethod) -> TxResponse {
     todo!()
