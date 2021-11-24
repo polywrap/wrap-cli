@@ -16,6 +16,7 @@ w3invoke = []
 [dependencies]
 ethers-core = "0.5.6"
 getrandom = { version = "*", features = ["js"] }
+num-traits = { version = "0.2", default-features = false }
 polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../wasm/rs" }
 
 [lib]
