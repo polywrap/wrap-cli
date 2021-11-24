@@ -8,6 +8,7 @@ jobs:
     defaults:
       run:
         shell: bash
+        working-directory: ./packages/wasm/rs
     strategy:
       fail-fast: False
       matrix:
@@ -63,6 +64,10 @@ jobs:
           path: bins/
   test:
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./packages/wasm/rs
     strategy:
       fail-fast: False
       matrix:
@@ -92,6 +97,10 @@ jobs:
           command: test
   cargo-fmt:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./packages/wasm/rs
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
@@ -106,6 +115,10 @@ jobs:
           args: --all -- --check
   cargo-doc:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./packages/wasm/rs
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
