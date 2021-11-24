@@ -1,7 +1,9 @@
 use crate::{Log, TxReceipt};
 use ethers_core::abi::ethereum_types::{Address, H256, U256, U64};
-use ethers_core::types::transaction::response::TransactionReceipt;
-use ethers_core::types::{Bloom, Bytes};
+use ethers_core::types::{
+    transaction::response::{Transaction as TransactionResponse, TransactionReceipt},
+    Bloom, Bytes,
+};
 use num_traits::ToPrimitive;
 use polywrap_wasm_rs::BigInt;
 
@@ -48,6 +50,7 @@ pub fn from_tx_receipt(receipt: TxReceipt) -> TransactionReceipt {
     }
 }
 
+#[inline]
 fn to_polywrapper_logs(receipt: TransactionReceipt) -> Vec<Log> {
     let mut logs: Vec<Log> = vec![];
     for log in receipt.logs {
@@ -70,6 +73,7 @@ fn to_polywrapper_logs(receipt: TransactionReceipt) -> Vec<Log> {
     logs
 }
 
+#[inline]
 fn to_ethers_core_logs(receipt: TxReceipt) -> Vec<ethers_core::types::Log> {
     let mut logs: Vec<ethers_core::types::Log> = vec![];
     for log in receipt.logs {

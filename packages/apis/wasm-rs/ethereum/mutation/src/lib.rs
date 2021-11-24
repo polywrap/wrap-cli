@@ -1,5 +1,6 @@
 //! Mutation module of the Ethereum polywrapper
 
+mod mapping;
 pub mod w3;
 use query;
 pub use w3::*;
