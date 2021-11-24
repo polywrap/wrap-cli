@@ -133,6 +133,60 @@ export class Web3ApiClient implements Client {
     return this._config.interfaces || [];
   }
 
+  public async getSchema<TUri extends Uri | string>(
+    uri: TUri
+  ): Promise<string> {
+    const api = await this._loadWeb3Api(this._toUri(uri));
+    return await api.getSchema(this);
+  }
+
+  public async getManifest<
+    TUri extends Uri | string,
+    TManifestType extends ManifestType
+  >(
+    uri: TUri,
+    options: GetManifestOptions<TManifestType>
+  ): Promise<AnyManifest<TManifestType>> {
+    const api = await this._loadWeb3Api(this._toUri(uri));
+    return await api.getManifest(options, this);
+  }
+
+  public async getFile<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetFileOptions
+  ): Promise<string | ArrayBuffer> {
+    const api = await this._loadWeb3Api(this._toUri(uri));
+    return await api.getFile(options, this);
+  }
+
+  public getImplementations<TUri extends Uri | string>(
+    uri: TUri,
+    options?: GetImplementationsOptions
+  ): TUri[] {
+    const isUriTypeString = typeof uri === "string";
+
+    const run = Tracer.traceFunc(
+      "Web3ApiClient: getImplementations",
+      (): TUri[] => {
+        const applyRedirects = !!options?.applyRedirects;
+
+        return isUriTypeString
+          ? (getImplementations(
+              this._toUri(uri),
+              this.interfaces(),
+              applyRedirects ? this.redirects() : undefined
+            ).map((x: Uri) => x.uri) as TUri[])
+          : (getImplementations(
+              this._toUri(uri),
+              this.interfaces(),
+              applyRedirects ? this.redirects() : undefined
+            ) as TUri[]);
+      }
+    );
+
+    return run();
+  }
+
   @Tracer.traceMethod("Web3ApiClient: query")
   public async query<
     TData extends Record<string, unknown> = Record<string, unknown>,
@@ -365,60 +419,6 @@ export class Web3ApiClient implements Client {
     );
 
     return run(typedOptions);
-  }
-
-  public async getSchema<TUri extends Uri | string>(
-    uri: TUri
-  ): Promise<string> {
-    const api = await this._loadWeb3Api(this._toUri(uri));
-    return await api.getSchema(this);
-  }
-
-  public async getManifest<
-    TUri extends Uri | string,
-    TManifestType extends ManifestType
-  >(
-    uri: TUri,
-    options: GetManifestOptions<TManifestType>
-  ): Promise<AnyManifest<TManifestType>> {
-    const api = await this._loadWeb3Api(this._toUri(uri));
-    return await api.getManifest(options, this);
-  }
-
-  public async getFile<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetFileOptions
-  ): Promise<string | ArrayBuffer> {
-    const api = await this._loadWeb3Api(this._toUri(uri));
-    return await api.getFile(options, this);
-  }
-
-  public getImplementations<TUri extends Uri | string>(
-    uri: TUri,
-    options?: GetImplementationsOptions
-  ): TUri[] {
-    const isUriTypeString = typeof uri === "string";
-
-    const run = Tracer.traceFunc(
-      "Web3ApiClient: getImplementations",
-      (): TUri[] => {
-        const applyRedirects = !!options?.applyRedirects;
-
-        return isUriTypeString
-          ? (getImplementations(
-              this._toUri(uri),
-              this.interfaces(),
-              applyRedirects ? this.redirects() : undefined
-            ).map((x: Uri) => x.uri) as TUri[])
-          : (getImplementations(
-              this._toUri(uri),
-              this.interfaces(),
-              applyRedirects ? this.redirects() : undefined
-            ) as TUri[]);
-      }
-    );
-
-    return run();
   }
 
   private async _loadWeb3Api(uri: Uri, invokeContextId?: string): Promise<Api> {
