@@ -1,7 +1,7 @@
-use crate::{Log, TxReceipt};
+use crate::{Log, TxReceipt, TxRequest};
 use ethers_core::abi::ethereum_types::{Address, H256, U256, U64};
 use ethers_core::types::{
-    transaction::response::{Transaction as TransactionResponse, TransactionReceipt},
+    transaction::response::{Transaction as TransactionRequest, TransactionReceipt},
     Bloom, Bytes,
 };
 use num_traits::ToPrimitive;
@@ -47,6 +47,24 @@ pub fn from_tx_receipt(receipt: TxReceipt) -> TransactionReceipt {
         effective_gas_price: Some(
             U256::try_from(receipt.effective_gas_price.to_u64().unwrap()).unwrap(),
         ),
+    }
+}
+
+pub fn to_tx_request(request: TransactionRequest) -> TxRequest {
+    TxRequest {
+        to: request.to.map(|inner| inner.to_string()),
+        from: Some(request.from.to_string()),
+        nonce: Some(request.nonce.as_u32()),
+        gas_limit: request
+            .max_fee_per_gas
+            .map(|inner| BigInt::try_from(inner.as_u64()).unwrap()),
+        gas_price: request
+            .gas_price
+            .map(|inner| BigInt::try_from(inner.as_u64()).unwrap()),
+        data: Some(String::from_utf8(request.input.0.to_vec()).unwrap()),
+        value: Some(BigInt::try_from(request.value.as_u64()).unwrap()),
+        chain_id: request.chain_id.map(|inner| inner.as_u32()),
+        m_type: request.transaction_type.map(|inner| inner.as_u32()),
     }
 }
 

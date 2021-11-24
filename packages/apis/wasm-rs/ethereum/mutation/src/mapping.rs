@@ -9,7 +9,7 @@ pub fn to_tx_response(response: TransactionResponse) -> TxResponse {
         to: response.to.map(|inner| inner.to_string()),
         from: response.from.to_string(),
         nonce: response.nonce.as_u32(),
-        gas_limit: BigInt::try_from(response.gas.as_u64()).unwrap(),
+        gas_limit: BigInt::try_from(response.max_fee_per_gas.unwrap().as_u64()).unwrap(),
         gas_price: response
             .gas_price
             .map(|inner| BigInt::try_from(inner.as_u64()).unwrap()),
