@@ -40,8 +40,8 @@ pub fn from_tx_receipt(receipt: TxReceipt) -> TransactionReceipt {
         gas_used: Some(U256::try_from(receipt.gas_used.to_u64().unwrap()).unwrap()),
         contract_address: Some(Address::from_slice(receipt.contract_address.as_bytes())),
         logs: to_ethers_core_logs(receipt.clone()),
-        status: Some(U64::try_from(receipt.status.unwrap() as u64).unwrap()),
-        root: Some(H256::from_slice(receipt.root.unwrap().as_bytes())),
+        status: receipt.status.map(|inner| U64::try_from(inner).unwrap()),
+        root: receipt.root.map(|inner| H256::from_slice(inner.as_bytes())),
         logs_bloom: Bloom::from_slice(receipt.logs_bloom.as_bytes()),
         transaction_type: Some(U64::try_from(receipt.m_type as u64).unwrap()),
         effective_gas_price: Some(
