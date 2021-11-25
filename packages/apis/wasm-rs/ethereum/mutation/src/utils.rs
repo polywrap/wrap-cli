@@ -56,10 +56,10 @@ pub fn from_access(access: Access) -> AccessListItem {
 
 #[inline]
 fn get_access_list(response: TransactionResponse) -> Option<Vec<Access>> {
-    let mut access_list: Vec<Access> = vec![];
     match response.access_list {
         None => None,
         Some(list) => {
+            let mut access_list: Vec<Access> = vec![];
             for entry in list.0 {
                 access_list.push(Access {
                     address: entry.address.to_string(),
