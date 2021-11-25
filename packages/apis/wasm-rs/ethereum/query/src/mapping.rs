@@ -17,7 +17,7 @@ pub fn to_tx_receipt(receipt: TransactionReceipt) -> TxReceipt {
         gas_used: BigInt::try_from(receipt.gas_used.unwrap().as_u64()).unwrap(),
         logs_bloom: receipt.logs_bloom.to_string(),
         transaction_hash: receipt.transaction_hash.to_string(),
-        logs: to_polywrapper_logs(receipt.clone()),
+        logs: get_polywrapper_logs(receipt.clone()),
         block_number: BigInt::try_from(receipt.block_number.unwrap().as_u64()).unwrap(),
         block_hash: receipt.block_hash.unwrap().to_string(),
         confirmations: 0, // TODO: remove this field?
@@ -39,7 +39,7 @@ pub fn from_tx_receipt(receipt: TxReceipt) -> TransactionReceipt {
         cumulative_gas_used: U256::try_from(receipt.cumulative_gas_used.to_u64().unwrap()).unwrap(),
         gas_used: Some(U256::try_from(receipt.gas_used.to_u64().unwrap()).unwrap()),
         contract_address: Some(Address::from_slice(receipt.contract_address.as_bytes())),
-        logs: to_ethers_core_logs(receipt.clone()),
+        logs: get_ethers_core_logs(receipt.clone()),
         status: receipt.status.map(|inner| U64::try_from(inner).unwrap()),
         root: receipt.root.map(|inner| H256::from_slice(inner.as_bytes())),
         logs_bloom: Bloom::from_slice(receipt.logs_bloom.as_bytes()),
@@ -98,8 +98,48 @@ pub fn from_tx_request(request: TxRequest) -> TransactionRequest {
     }
 }
 
+pub fn to_log(log: ethers_core::types::Log) -> Log {
+    Log {
+        block_number: BigInt::try_from(log.block_number.unwrap().as_u64()).unwrap(),
+        block_hash: log.block_hash.unwrap().to_string(),
+        transaction_index: log.transaction_index.unwrap().as_u32(),
+        removed: log.removed.unwrap(),
+        address: String::from_utf8(log.address.as_bytes().to_vec()).unwrap(),
+        data: String::from_utf8(log.data.to_vec()).unwrap(),
+        topics: log
+            .topics
+            .into_iter()
+            .map(|inner| inner.to_string())
+            .collect(),
+        transaction_hash: log.transaction_hash.unwrap().to_string(),
+        log_index: log.log_index.unwrap().as_u32(),
+    }
+}
+
+pub fn from_log(log: Log) -> ethers_core::types::Log {
+    ethers_core::types::Log {
+        address: Address::from_slice(log.address.as_bytes()),
+        topics: log
+            .topics
+            .into_iter()
+            .map(|inner| H256::from_slice(inner.as_bytes()))
+            .collect(),
+        data: Bytes::try_from(log.data.as_bytes().to_vec()).unwrap(),
+        block_hash: Some(H256::from_slice(log.block_hash.as_bytes())),
+        block_number: Some(U64::try_from(log.block_number.to_u64().unwrap()).unwrap()),
+        transaction_hash: Some(H256::from_slice(log.transaction_hash.as_bytes())),
+        transaction_index: Some(U64::try_from(log.transaction_index).unwrap()),
+        log_index: Some(U256::try_from(log.log_index).unwrap()),
+        transaction_log_index: None,
+        log_type: None,
+        removed: Some(log.removed),
+    }
+}
+
+//==================== HELPERS ================================
+
 #[inline]
-fn to_polywrapper_logs(receipt: TransactionReceipt) -> Vec<Log> {
+fn get_polywrapper_logs(receipt: TransactionReceipt) -> Vec<Log> {
     let mut logs: Vec<Log> = vec![];
     for log in receipt.logs {
         logs.push(Log {
@@ -122,7 +162,7 @@ fn to_polywrapper_logs(receipt: TransactionReceipt) -> Vec<Log> {
 }
 
 #[inline]
-fn to_ethers_core_logs(receipt: TxReceipt) -> Vec<ethers_core::types::Log> {
+fn get_ethers_core_logs(receipt: TxReceipt) -> Vec<ethers_core::types::Log> {
     let mut logs: Vec<ethers_core::types::Log> = vec![];
     for log in receipt.logs {
         logs.push(ethers_core::types::Log {
