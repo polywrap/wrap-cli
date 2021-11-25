@@ -68,6 +68,36 @@ pub fn to_tx_request(request: TransactionRequest) -> TxRequest {
     }
 }
 
+pub fn from_tx_request(request: TxRequest) -> TransactionRequest {
+    TransactionRequest {
+        hash: H256::default(),
+        nonce: U256::try_from(request.nonce.unwrap()).unwrap(),
+        block_hash: None,
+        block_number: None,
+        transaction_index: None,
+        from: Address::from_slice(request.from.unwrap().as_bytes()),
+        to: request
+            .to
+            .map(|inner| Address::from_slice(inner.as_bytes())),
+        value: U256::try_from(request.value.unwrap().to_u64().unwrap()).unwrap(),
+        gas_price: request
+            .gas_price
+            .map(|inner| U256::try_from(inner.to_u64().unwrap()).unwrap()),
+        gas: U256::default(),
+        input: Bytes::try_from(request.data.unwrap().as_bytes().to_vec()).unwrap(),
+        v: U64::default(),
+        r: U256::default(),
+        s: U256::default(),
+        transaction_type: request.m_type.map(|inner| U64::try_from(inner).unwrap()),
+        access_list: None,
+        max_priority_fee_per_gas: None,
+        max_fee_per_gas: request
+            .gas_limit
+            .map(|inner| U256::try_from(inner.to_u64().unwrap()).unwrap()),
+        chain_id: request.chain_id.map(|inner| U256::try_from(inner).unwrap()),
+    }
+}
+
 #[inline]
 fn to_polywrapper_logs(receipt: TransactionReceipt) -> Vec<Log> {
     let mut logs: Vec<Log> = vec![];
