@@ -1,6 +1,7 @@
 use crate::{Access, TxResponse};
+use ethers_core::abi::ethereum_types::{Address, H256};
+use ethers_core::types::transaction::eip2930::AccessListItem;
 use ethers_core::types::transaction::response::Transaction as TransactionResponse;
-// use num_traits::ToPrimitive;
 use polywrap_wasm_rs::BigInt;
 
 pub fn to_tx_response(response: TransactionResponse) -> TxResponse {
@@ -27,12 +28,34 @@ pub fn to_tx_response(response: TransactionResponse) -> TxResponse {
         s: Some(response.s.to_string()),
         v: Some(response.v.as_u32()),
         m_type: response.transaction_type.map(|inner| inner.as_u32()),
-        access_list: to_access_list(response),
+        access_list: get_access_list(response),
+    }
+}
+
+pub fn to_access(access_list_item: AccessListItem) -> Access {
+    Access {
+        address: access_list_item.address.to_string(),
+        storage_keys: access_list_item
+            .storage_keys
+            .into_iter()
+            .map(|inner| inner.to_string())
+            .collect(),
+    }
+}
+
+pub fn from_access(access: Access) -> AccessListItem {
+    AccessListItem {
+        address: Address::from_slice(access.address.as_bytes()),
+        storage_keys: access
+            .storage_keys
+            .into_iter()
+            .map(|inner| H256::from_slice(inner.as_bytes()))
+            .collect(),
     }
 }
 
 #[inline]
-fn to_access_list(response: TransactionResponse) -> Option<Vec<Access>> {
+fn get_access_list(response: TransactionResponse) -> Option<Vec<Access>> {
     let mut access_list: Vec<Access> = vec![];
     match response.access_list {
         None => None,
