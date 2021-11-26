@@ -6,25 +6,35 @@ use polywrap_wasm_rs::BigInt;
 
 pub fn to_tx_response(response: TransactionResponse) -> TxResponse {
     TxResponse {
-        hash: todo!(),
-        nonce: todo!(),
-        block_hash: todo!(),
-        block_number: todo!(),
-        transaction_index: todo!(),
-        from: todo!(),
-        to: todo!(),
-        value: todo!(),
-        gas_price: todo!(),
-        gas: todo!(),
-        input: todo!(),
-        v: todo!(),
-        r: todo!(),
-        s: todo!(),
-        transaction_type: todo!(),
-        access_list: todo!(),
-        max_priority_fee_per_gas: todo!(),
-        max_fee_per_gas: todo!(),
-        chain_id: todo!(),
+        hash: response.hash.to_string(),
+        nonce: response.nonce.as_u32(),
+        block_hash: response.block_hash.map(|f| f.to_string()),
+        block_number: response
+            .block_number
+            .map(|f| BigInt::try_from(f.as_u64()).unwrap()),
+        transaction_index: response
+            .transaction_index
+            .map(|f| BigInt::try_from(f.as_u64()).unwrap()),
+        from: response.from.to_string(),
+        to: response.to.map(|f| f.to_string()),
+        value: BigInt::try_from(response.value.as_u64()).unwrap(),
+        gas_price: response
+            .gas_price
+            .map(|f| BigInt::try_from(f.as_u64()).unwrap()),
+        gas: BigInt::try_from(response.gas.as_u64()).unwrap(),
+        input: String::from_utf8(response.input.0.to_vec()).unwrap(),
+        v: response.v.as_u32(),
+        r: response.r.to_string(),
+        s: response.s.to_string(),
+        transaction_type: response.transaction_type.map(|f| f.as_u32()),
+        access_list: get_access_list(&response),
+        max_priority_fee_per_gas: response
+            .max_priority_fee_per_gas
+            .map(|f| BigInt::try_from(f.as_u64()).unwrap()),
+        max_fee_per_gas: response
+            .max_fee_per_gas
+            .map(|f| BigInt::try_from(f.as_u64()).unwrap()),
+        chain_id: response.chain_id.map(|f| f.as_u32()),
     }
 }
 
@@ -34,7 +44,7 @@ pub fn to_access(access_list_item: AccessListItem) -> Access {
         storage_keys: access_list_item
             .storage_keys
             .into_iter()
-            .map(|inner| inner.to_string())
+            .map(|f| f.to_string())
             .collect(),
     }
 }
@@ -45,14 +55,14 @@ pub fn from_access(access: Access) -> AccessListItem {
         storage_keys: access
             .storage_keys
             .into_iter()
-            .map(|inner| H256::from_slice(inner.as_bytes()))
+            .map(|f| H256::from_slice(f.as_bytes()))
             .collect(),
     }
 }
 
 #[inline]
-fn get_access_list(response: TransactionResponse) -> Option<Vec<Access>> {
-    match response.access_list {
+fn get_access_list(response: &TransactionResponse) -> Option<Vec<Access>> {
+    match response.access_list.clone() {
         None => None,
         Some(list) => {
             let mut access_list: Vec<Access> = vec![];
@@ -62,7 +72,7 @@ fn get_access_list(response: TransactionResponse) -> Option<Vec<Access>> {
                     storage_keys: entry
                         .storage_keys
                         .into_iter()
-                        .map(|inner| String::from_utf8(inner.as_bytes().to_vec()).unwrap())
+                        .map(|f| String::from_utf8(f.as_bytes().to_vec()).unwrap())
                         .collect(),
                 });
             }
