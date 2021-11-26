@@ -45,75 +45,71 @@ type Mutation {
 }
 
 type TxReceipt {
-  to: String!
-  from: String!
-  contractAddress: String!
-  transactionIndex: UInt32!
-  root: String
-  gasUsed: BigInt!
-  logsBloom: String!
   transactionHash: String!
-  logs: [Log!]!
-  blockNumber: BigInt!
-  blockHash: String!
-  confirmations: UInt32!
+  transactionIndex: UInt32!
+  blockHash: String
+  blockNumber: BigInt
   cumulativeGasUsed: BigInt!
-  effectiveGasPrice: BigInt!
-  byzantium: Boolean!
-  type: UInt32!
+  gasUsed: BigInt
+  contractAddress: String
+  logs: [Log!]!
   status: UInt32
+  root: String
+  logsBloom: String!
+  transactionType: UInt32
+  effectiveGasPrice: BigInt
 }
 
 type TxResponse {
   hash: String!
-  to: String
-  from: String!
   nonce: UInt32!
-  gasLimit: BigInt!
-  gasPrice: BigInt
-  data: String!
-  value: BigInt!
-  chainId: UInt32!
-  blockNumber: BigInt
   blockHash: String
-  timestamp: UInt32
-  confirmations: UInt32!
-  raw: String
-  r: String
-  s: String
-  v: UInt32
-  type: UInt32
+  blockNumber: BigInt
+  transactionIndex: BigInt
+  from: String!
+  to: String
+  value: BigInt!
+  gasPrice: BigInt
+  gas: BigInt!
+  input: String!
+  v: UInt32!
+  r: String!
+  s: String!
+  transactionType: UInt32
   accessList: [Access!]
+  maxPriorityFeePerGas: BigInt
+  maxFeePerGas: BigInt
+  chainId: UInt32
 }
 
 type TxRequest {
-  to: String
   from: String
-  nonce: UInt32
-  gasLimit: BigInt
+  to: String
+  gas: BigInt
   gasPrice: BigInt
-  data: String
   value: BigInt
-  chainId: UInt32
-  type: UInt32
+  data: String
+  nonce: UInt32
 }
 
 type TxOverrides {
-  gasLimit: BigInt
+  gas: BigInt
   gasPrice: BigInt
   value: BigInt
 }
 
 type Log {
-  blockNumber: BigInt!
-  blockHash: String!
-  transactionIndex: UInt32!
-  removed: Boolean!
   address: String!
-  data: String!
   topics: [String!]!
-  transactionHash: String!
-  logIndex: UInt32!
+  data: String!
+  blockHash: String
+  blockNumber: BigInt
+  transactionHash: String
+  transactionIndex: UInt32
+  logIndex: UInt32
+  transactionLogIndex: UInt32
+  logType: String
+  removed: Boolean
 }
 
 type Access {
