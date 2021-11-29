@@ -91,6 +91,12 @@ type Connection {
   networkNameOrChainId: String
 }
 
+type Network {
+  name: String!
+  chainId: Int!
+  ensAddress: String
+}
+
 type Query {
   callContractView(
     address: String!
@@ -170,6 +176,8 @@ type Query {
     timeout: UInt32
     connection: Connection
   ): EventNotification!
+
+  getNetwork(connection: Connection): Network!
 }
 
 type Mutation {
