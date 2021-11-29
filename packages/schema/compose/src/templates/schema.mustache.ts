@@ -76,7 +76,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   uri: "{{uri}}",
   namespace: "{{namespace}}",
   nativeType: "{{nativeType}}"
-){{#methods.length}} {
+) {{#isInterface}}@enabled_interface {{/isInterface}}{{#methods.length}}{
   {{#methods}}{{#comment}}
   """
   {{comment}}

@@ -3,6 +3,7 @@ import {
   Ethereum_EventNotification,
   Ethereum_StaticTxResult,
   Ethereum_TxReceipt,
+  Ethereum_Network,
   Input_callContractView,
   Input_callContractStatic,
   Input_encodeParams,
@@ -17,7 +18,8 @@ import {
   Input_toWei,
   Input_toEth,
   Input_awaitTransaction,
-  Input_waitForEvent
+  Input_waitForEvent,
+  Input_getNetwork
 } from "./w3";
 import { BigInt } from "@web3api/wasm-as";
 
@@ -160,6 +162,14 @@ export function waitForEvent(
     event: input.event,
     args: input.args,
     timeout: input.timeout,
+    connection: input.connection
+  });
+}
+
+export function getNetwork(
+  input: Input_getNetwork
+): Ethereum_Network {
+  return Ethereum_Query.getNetwork({
     connection: input.connection
   });
 }

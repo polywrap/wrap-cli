@@ -28,6 +28,8 @@ directive @capability(
   uri: String!
   namespace: String!
 ) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
 type Query @imports(
@@ -39,7 +41,8 @@ type Query @imports(
     "Ethereum_TxRequest",
     "Ethereum_TxReceipt",
     "Ethereum_Log",
-    "Ethereum_EventNotification"
+    "Ethereum_EventNotification",
+    "Ethereum_Network"
   ]
 ) {
   getData(
@@ -137,6 +140,10 @@ type Ethereum_Query @imported(
     timeout: UInt32
     connection: Ethereum_Connection
   ): Ethereum_EventNotification!
+
+  getNetwork(
+    connection: Ethereum_Connection
+  ): Ethereum_Network!
 }
 
 ### Imported Queries END ###
@@ -237,6 +244,16 @@ type Ethereum_EventNotification @imported(
   log: Ethereum_Log!
 }
 
+type Ethereum_Network @imported(
+  uri: "w3://ens/ethereum.web3api.eth",
+  namespace: "Ethereum",
+  nativeType: "Network"
+) {
+  name: String!
+  chainId: Int!
+  ensAddress: String
+}
+
 ### Imported Objects END ###
 `,
   mutation:
@@ -268,6 +285,8 @@ directive @capability(
   uri: String!
   namespace: String!
 ) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
 type Mutation @imports(
@@ -499,6 +518,8 @@ directive @capability(
   uri: String!
   namespace: String!
 ) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
 type Mutation @imports(
@@ -532,7 +553,8 @@ type Query @imports(
     "Ethereum_TxRequest",
     "Ethereum_TxReceipt",
     "Ethereum_Log",
-    "Ethereum_EventNotification"
+    "Ethereum_EventNotification",
+    "Ethereum_Network"
   ]
 ) {
   getData(
@@ -690,6 +712,10 @@ type Ethereum_Query @imported(
     timeout: UInt32
     connection: Ethereum_Connection
   ): Ethereum_EventNotification!
+
+  getNetwork(
+    connection: Ethereum_Connection
+  ): Ethereum_Network!
 }
 
 ### Imported Queries END ###
@@ -823,6 +849,16 @@ type Ethereum_EventNotification @imported(
   data: String!
   address: String!
   log: Ethereum_Log!
+}
+
+type Ethereum_Network @imported(
+  uri: "w3://ens/ethereum.web3api.eth",
+  namespace: "Ethereum",
+  nativeType: "Network"
+) {
+  name: String!
+  chainId: Int!
+  ensAddress: String
 }
 
 ### Imported Objects END ###
