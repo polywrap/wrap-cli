@@ -6,6 +6,7 @@ import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { graphNodePlugin } from "@web3api/graph-node-plugin-js";
 import { httpPlugin } from "@web3api/http-plugin-js";
+import { filesystemPlugin } from "@web3api/fs-plugin-js";
 import { uts46Plugin } from "@web3api/uts46-plugin-js";
 import { sha3Plugin } from "@web3api/sha3-plugin-js";
 import { loggerPlugin } from "@web3api/logger-plugin-js";
@@ -63,6 +64,10 @@ export const getDefaultClientConfig = Tracer.traceFunc(
             provider: "https://api.thegraph.com",
           }),
         },
+        {
+          uri: new Uri("w3://ens/fs.web3api.eth"),
+          plugin: filesystemPlugin(),
+        },
       ],
       interfaces: [
         {
@@ -70,6 +75,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           implementations: [
             new Uri("w3://ens/ipfs.web3api.eth"),
             new Uri("w3://ens/ens.web3api.eth"),
+            new Uri("w3://ens/fs.web3api.eth"),
           ],
         },
         {

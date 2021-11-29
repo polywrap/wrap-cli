@@ -5,6 +5,7 @@ import {
   createPropertyDefinition,
   QueryDefinition,
   createArrayDefinition,
+  InterfaceDefinition,
 } from "../typeInfo";
 import { setPropertyType } from "./property-utils";
 
@@ -16,6 +17,7 @@ export interface State {
   currentArgument?: PropertyDefinition;
   currentReturn?: PropertyDefinition;
   nonNullType?: boolean;
+  currentInterfaces?: InterfaceDefinition[];
   currentImport?: ImportedQueryDefinition;
 }
 

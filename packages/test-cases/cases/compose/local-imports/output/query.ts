@@ -14,6 +14,7 @@ import {
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
+  interfaceTypes: [],
   objectTypes: [
     {
       ...createObjectDefinition({ type: "CustomQueryType" }),

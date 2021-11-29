@@ -20,22 +20,6 @@ export class Nullable<T> {
     return new Nullable<T>();
   }
 
-  @inline
-  @operator("==")
-  protected eq(rhs: Nullable<T>): bool {
-    if (this._nil) {
-      return this._nil == rhs._nil;
-    } else {
-      return !(rhs._nil || this._value != rhs._value);
-    }
-  }
-
-  @inline
-  @operator("!=")
-  protected neq(rhs: Nullable<T>): bool {
-    return !this.eq(rhs);
-  }
-
   get value(): T {
     return this._value;
   }
@@ -51,5 +35,21 @@ export class Nullable<T> {
 
   toNull(): void {
     this._nil = true;
+  }
+
+  @inline
+  @operator("==")
+  protected eq(rhs: Nullable<T>): bool {
+    if (this._nil) {
+      return this._nil == rhs._nil;
+    } else {
+      return !(rhs._nil || this._value != rhs._value);
+    }
+  }
+
+  @inline
+  @operator("!=")
+  protected neq(rhs: Nullable<T>): bool {
+    return !this.eq(rhs);
   }
 }

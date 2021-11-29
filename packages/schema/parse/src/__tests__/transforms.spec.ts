@@ -83,6 +83,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
     const expected: TypeInfo = {
       enumTypes: [],
       importedEnumTypes: [],
+      interfaceTypes: [],
       objectTypes: [
         {
           ...createObjectDefinition({ type: "MyType" }),
@@ -268,6 +269,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
             uri: "testimport.uri.eth",
             namespace: "TestImport",
             nativeType: "Query",
+            isInterface: false,
             type: "TestImport_Query"
           }),
           methods: [
@@ -339,6 +341,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
     });
     const expected: TypeInfo = {
       enumTypes: [],
+      interfaceTypes: [],
       importedEnumTypes: [],
       objectTypes: [
         {

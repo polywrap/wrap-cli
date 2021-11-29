@@ -53,6 +53,7 @@ export async function composeSchema(
     );
   }
 
+  // Forming our output structure for the caller
   const output: ComposerOutput = {
     combined: {},
   };

@@ -15,10 +15,26 @@ import {
   createImportedEnumDefinition,
   createInterfaceImplementedDefinition,
   createObjectRef,
-  createEnumRef
+  createEnumRef,
+  createInterfaceDefinition,
+  createCapability
 } from "../../../../schema/parse/src/typeInfo";
 
 export const output: TypeInfo = {
+  interfaceTypes: [
+    createInterfaceDefinition({
+      type: "TestImport",
+      uri: "testimport.uri.eth",
+      namespace: "TestImport",
+      capabilities: {
+        ...createCapability({
+          type: "getImplementations",
+          enabled: true,
+          modules: ["query"]
+        })
+      },
+    })
+  ],
   objectTypes: [
     {
       ...createObjectDefinition({ type: "CustomType", comment: "CustomType multi-line comment\nline 2" }),
@@ -402,6 +418,7 @@ export const output: TypeInfo = {
         uri: "testimport.uri.eth",
         namespace: "TestImport",
         type: "TestImport_Query",
+        isInterface: true,
         nativeType: "Query",
         comment: "TestImport_Query comment"
       }),
@@ -531,6 +548,7 @@ export const output: TypeInfo = {
         namespace: "TestImport",
         type: "TestImport_Mutation",
         nativeType: "Mutation",
+        isInterface: false,
         comment: "TestImport_Mutation comment"
       }),
       methods: [
@@ -554,6 +572,7 @@ export const output: TypeInfo = {
         uri: "interface.uri.eth",
         namespace: "Interface",
         type: "Interface_Query",
+        isInterface: false,
         nativeType: "Query",
         comment: "Interface_Query comment"
       }),

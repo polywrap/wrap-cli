@@ -31,8 +31,7 @@ describe("e2e tests for plugin command", () => {
       {
         args: ["plugin", "--help"],
         cwd: projectRoot,
-      },
-      "../../../bin/w3"
+      }
     );
 
     expect(code).toEqual(0);
@@ -45,8 +44,7 @@ describe("e2e tests for plugin command", () => {
       {
         args: ["plugin", "--output-dir"],
         cwd: projectRoot,
-      },
-      "../../../bin/w3"
+      }
     );
 
     expect(code).toEqual(0);
@@ -60,8 +58,7 @@ ${HELP}`);
       {
         args: ["plugin", "codegen", "--output-schema-path"],
         cwd: projectRoot,
-      },
-      "../../../bin/w3"
+      }
     );
 
     expect(code).toEqual(0);
@@ -76,8 +73,7 @@ ${HELP}`);
       {
         args: ["plugin", "codegen", "--output-types-dir"],
         cwd: projectRoot,
-      },
-      "../../../bin/w3"
+      }
     );
 
     expect(code).toEqual(0);
@@ -92,8 +88,7 @@ ${HELP}`);
       {
         args: ["plugin", "codegen", "--ens"],
         cwd: projectRoot,
-      },
-      "../../../bin/w3"
+      }
     );
 
     expect(code).toEqual(0);
@@ -108,8 +103,7 @@ ${HELP}`);
       {
         args: ["plugin", "codegen"],
         cwd: projectRoot,
-      },
-      "../../../bin/w3"
+      }
     );
 
     expect(code).toEqual(0);

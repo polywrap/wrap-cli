@@ -6,6 +6,8 @@
       "es5",
       "dom"
     ],
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
     "moduleResolution": "node",
     "declaration": true,
     "preserveSymlinks": true,
