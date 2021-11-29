@@ -491,7 +491,57 @@ describe("Ethereum Plugin", () => {
       });
 
       await listenerPromise;
-    })
+    });
+
+    it("getNetwork", async () => {
+      const mainnetNetwork = await client.query<{
+        getNetwork: Schema.Network
+      }>({
+        uri,
+        query: `
+          query($networkNameOrChainId: String!) {
+            getNetwork(
+              connection: {
+                networkNameOrChainId: $networkNameOrChainId
+              }
+            )
+          }
+        `,
+        variables: {
+          networkNameOrChainId: "mainnet"
+        }
+      });
+
+      expect(mainnetNetwork.data).toBeTruthy();
+      expect(mainnetNetwork.errors).toBeFalsy();
+      expect(mainnetNetwork.data?.getNetwork.chainId).toBe(1);
+      expect(mainnetNetwork.data?.getNetwork.name).toBe("homestead");
+      expect(mainnetNetwork.data?.getNetwork.ensAddress).toBe("0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e");
+
+      const polygonNetwork = await client.query<{
+        getNetwork: Schema.Network
+      }>({
+        uri,
+        query: `
+          query($node: String!) {
+            getNetwork(
+              connection: {
+                node: $node
+              }
+            )
+          }
+        `,
+        variables: {
+          node: "https://polygon-rpc.com"
+        }
+      });
+
+      expect(polygonNetwork.data).toBeTruthy();
+      expect(polygonNetwork.errors).toBeFalsy();
+      expect(polygonNetwork.data?.getNetwork.chainId).toBe(137);
+      expect(polygonNetwork.data?.getNetwork.name).toBe("matic");
+      expect(polygonNetwork.data?.getNetwork.ensAddress).toBeFalsy();
+    });
   });
 
   describe("Mutation", () => {
