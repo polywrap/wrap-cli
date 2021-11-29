@@ -4950,10 +4950,10 @@ arrify@^2.0.1:
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-2.0.1.tgz#c9655e9331e0abcd588d2a7cad7e9956f66701fa"
   integrity sha512-3duEwti880xqi4eAMN8AyR4a0ByT90zoYdLlevfrvU43vb0YZwZVfxOgxWrLXXXpyugL0hNZc9G6BiB5B3nUug==
 
-as-bigint@0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/as-bigint/-/as-bigint-0.3.2.tgz#13826132c72171e5f819a226aef68c1b863d43ef"
-  integrity sha512-t8d7PZGPTzE2PFs4PNQpONqRb5rV97ZB2GB0WITjocwiwmGm7/FFDQ9lk9pwx4cZf574PzeLgL7gqpOOxJMZWA==
+as-bigint@0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/as-bigint/-/as-bigint-0.4.0.tgz#96f0efd549c1031df010ebd787e05fbfe140ab11"
+  integrity sha512-oPJLz1EMeMHyFt+T9951i5PLHrekV9VsK05d26d2xO3h0NQbonBUveNwLj7IICa+3n0rvM/ZpWZ0k0LSJ7CMcw==
 
 asap@^2.0.0, asap@~2.0.6:
   version "2.0.6"
