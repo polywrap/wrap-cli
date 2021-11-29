@@ -1,4 +1,4 @@
-// eslint-disable-next-line
+/* eslint-env es6 */
 const { toPrefixedGraphQLType, transformTypeInfo } = require("@web3api/schema-parse");
 const { toTypescript } = require("@web3api/schema-bind");
 
