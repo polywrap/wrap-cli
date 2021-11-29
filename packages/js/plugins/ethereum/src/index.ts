@@ -146,6 +146,12 @@ export class EthereumPlugin extends Plugin {
 
   /// Query
 
+  public async getNetwork(input: Query.Input_getNetwork): Promise<Types.Network> {
+    const connection = await this.getConnection(input.connection);
+    const provider = connection.getProvider();
+    return await provider.getNetwork();
+  }
+
   public async callContractView(
     input: Query.Input_callContractView
   ): Promise<string> {

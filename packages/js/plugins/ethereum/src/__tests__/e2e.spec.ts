@@ -491,6 +491,54 @@ describe("Ethereum Plugin", () => {
       });
 
       await listenerPromise;
+    });
+
+    it("getNetwork", async () => {
+      const mainnetNetwork = await client.query({
+        uri,
+        query: `
+          query($networkNameOrChainId: String!) {
+            getNetwork(
+              connection: {
+                node: null
+                networkNameOrChainId: $networkNameOrChainId
+              }
+            )
+          }
+        `,
+        variables: {
+          networkNameOrChainId: "MAINNET"
+        }
+      });
+
+      expect(mainnetNetwork.data).toBeTruthy();
+      expect(mainnetNetwork.errors).toBeFalsy();
+      expect(mainnetNetwork.data?.chainId).toBe(1);
+      expect(mainnetNetwork.data?.name).toBe("");
+      expect(mainnetNetwork.data?.ensAddress).toBe("");
+
+      const polygonNetwork = await client.query({
+        uri,
+        query: `
+          query($node: String!) {
+            getNetwork(
+              connection: {
+                node: $node
+                networkNameOrChainId: null
+              }
+            )
+          }
+        `,
+        variables: {
+          node: "https://polygon-rpc.com"
+        }
+      });
+
+      expect(polygonNetwork.data).toBeTruthy();
+      expect(polygonNetwork.errors).toBeFalsy();
+      expect(polygonNetwork.data?.chainId).toBe(138);
+      expect(polygonNetwork.data?.name).toBe("");
+      expect(polygonNetwork.data?.ensAddress).toBe("");
     })
   });
 
