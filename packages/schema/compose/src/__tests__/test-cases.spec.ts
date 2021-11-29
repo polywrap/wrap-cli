@@ -25,10 +25,6 @@ describe("Web3API Schema Composer Test Cases", () => {
   let cases = fetchTestCases();
 
   for (const test of cases) {
-    if (test.name !== "004-empty-types/01-inherited") {
-      continue;
-    }
-
     it(`Case: ${test.name}`, async () => {
       const testCase = await test.promise;
 

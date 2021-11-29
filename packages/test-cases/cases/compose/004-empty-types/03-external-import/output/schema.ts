@@ -42,6 +42,7 @@ export const typeInfo: TypeInfo = {
         namespace: "Namespace",
         nativeType: "Query",
         type: "Namespace_Query",
+        isInterface: false,
       }),
       methods: [
       ]
@@ -52,6 +53,7 @@ export const typeInfo: TypeInfo = {
         namespace: "Namespace",
         nativeType: "Mutation",
         type: "Namespace_Mutation",
+        isInterface: false,
       }),
       methods: [
       ]

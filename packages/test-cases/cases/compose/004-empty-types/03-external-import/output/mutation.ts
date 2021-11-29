@@ -31,6 +31,7 @@ export const typeInfo: TypeInfo = {
         namespace: "Namespace",
         nativeType: "Mutation",
         type: "Namespace_Mutation",
+        isInterface: false,
       }),
       methods: [
       ]

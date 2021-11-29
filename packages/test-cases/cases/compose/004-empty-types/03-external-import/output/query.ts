@@ -31,6 +31,7 @@ export const typeInfo: TypeInfo = {
         namespace: "Namespace",
         nativeType: "Query",
         type: "Namespace_Query",
+        isInterface: false,
       }),
       methods: [
       ]
