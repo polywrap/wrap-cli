@@ -43,10 +43,6 @@ export const mutation = (plugin: Plugin): Mutation.Module => ({
 });
 
 export const query = (plugin: Plugin): Query.Module => ({
-  getNetwork: async (input: Query.Input_getNetwork): Promise<Types.Network> => {
-    return plugin.getNetwork(input);
-  },
-
   callContractView: async (
     input: Query.Input_callContractView
   ): Promise<string> => {
@@ -125,5 +121,9 @@ export const query = (plugin: Plugin): Query.Module => ({
     input: Query.Input_awaitTransaction
   ): Promise<Types.TxReceipt> => {
     return plugin.awaitTransaction(input);
+  },
+
+  getNetwork: async (input: Query.Input_getNetwork): Promise<Types.Network> => {
+    return plugin.getNetwork(input);
   },
 });

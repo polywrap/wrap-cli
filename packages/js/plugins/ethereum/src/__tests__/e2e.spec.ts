@@ -494,37 +494,39 @@ describe("Ethereum Plugin", () => {
     });
 
     it("getNetwork", async () => {
-      const mainnetNetwork = await client.query({
+      const mainnetNetwork = await client.query<{
+        getNetwork: Schema.Network
+      }>({
         uri,
         query: `
           query($networkNameOrChainId: String!) {
             getNetwork(
               connection: {
-                node: null
                 networkNameOrChainId: $networkNameOrChainId
               }
             )
           }
         `,
         variables: {
-          networkNameOrChainId: "MAINNET"
+          networkNameOrChainId: "mainnet"
         }
       });
 
       expect(mainnetNetwork.data).toBeTruthy();
       expect(mainnetNetwork.errors).toBeFalsy();
-      expect(mainnetNetwork.data?.chainId).toBe(1);
-      expect(mainnetNetwork.data?.name).toBe("");
-      expect(mainnetNetwork.data?.ensAddress).toBe("");
+      expect(mainnetNetwork.data?.getNetwork.chainId).toBe(1);
+      expect(mainnetNetwork.data?.getNetwork.name).toBe("homestead");
+      expect(mainnetNetwork.data?.getNetwork.ensAddress).toBe("0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e");
 
-      const polygonNetwork = await client.query({
+      const polygonNetwork = await client.query<{
+        getNetwork: Schema.Network
+      }>({
         uri,
         query: `
           query($node: String!) {
             getNetwork(
               connection: {
                 node: $node
-                networkNameOrChainId: null
               }
             )
           }
@@ -536,10 +538,10 @@ describe("Ethereum Plugin", () => {
 
       expect(polygonNetwork.data).toBeTruthy();
       expect(polygonNetwork.errors).toBeFalsy();
-      expect(polygonNetwork.data?.chainId).toBe(138);
-      expect(polygonNetwork.data?.name).toBe("");
-      expect(polygonNetwork.data?.ensAddress).toBe("");
-    })
+      expect(polygonNetwork.data?.getNetwork.chainId).toBe(137);
+      expect(polygonNetwork.data?.getNetwork.name).toBe("matic");
+      expect(polygonNetwork.data?.getNetwork.ensAddress).toBeFalsy();
+    });
   });
 
   describe("Mutation", () => {
