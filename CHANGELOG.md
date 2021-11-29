@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.54
+## Features
+* `@web3api/ethereum-plugin-js`: Added `getNetwork` to the Ethereum plugin's `Query` module.
+
 # Web3API 0.0.1-prealpha.53
 ## Features
 * `as-bigint` upgraded to version `0.4.0`. Improvements made found [here](https://github.com/polywrap/monorepo/pull/552).
