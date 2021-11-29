@@ -209,7 +209,7 @@ export async function resolveImportsAndParseSchemas(
   //Replace types that have empty curly brackets with types that have no curly brackets
   //because GraphQL parser doesn't support empty curly brackets but supports no curly brackets
   newSchema = newSchema.replace(
-    new RegExp(`(type\\s+${TYPE_NAME_REGEX})[^{]*{\\s*}`, "g"),
+    new RegExp(`(type\\s+${TYPE_NAME_REGEX}[^{]*){\\s*}`, "g"),
     "$1"
   );
 
