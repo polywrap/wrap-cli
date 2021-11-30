@@ -21,9 +21,18 @@ import { Tracer } from "@web3api/tracing-js";
 export const deserializePluginManifest = Tracer.traceFunc(
   "core: deserializePluginManifest",
   (manifest: string, options?: DeserializeManifestOptions): PluginManifest => {
-    const anyPluginManifest = YAML.safeLoad(manifest) as
+    let anyPluginManifest: AnyPluginManifest | undefined;
+    if (options?.json) {
+      try {
+        anyPluginManifest = JSON.parse(manifest) as AnyPluginManifest;
+      } catch (e) {
+        anyPluginManifest = undefined;
+      }
+    } else {
+      anyPluginManifest = YAML.safeLoad(manifest) as
       | AnyPluginManifest
       | undefined;
+    }
 
     if (!anyPluginManifest) {
       throw Error(`Unable to parse PluginManifest: ${manifest}`);

@@ -138,7 +138,7 @@ const resolveUriWithUriResolvers = async (
       // meaning the URI resolver can also be used as an API resolver
       const manifest = deserializeWeb3ApiManifest(result.manifest, {
         noValidate,
-        json: manifestStr.startsWith("{"),
+        json: result.manifest.startsWith("{"),
       });
 
       return Tracer.traceFunc(

@@ -21,9 +21,18 @@ import { Tracer } from "@web3api/tracing-js";
 export const deserializeMetaManifest = Tracer.traceFunc(
   "core: deserializeMetaManifest",
   (manifest: string, options?: DeserializeManifestOptions): MetaManifest => {
-    const anyMetaManifest = YAML.safeLoad(manifest) as
+    let anyMetaManifest: AnyMetaManifest | undefined;
+    if (options?.json) {
+      try {
+        anyMetaManifest = JSON.parse(manifest) as AnyMetaManifest;
+      } catch (e) {
+        anyMetaManifest = undefined;
+      }
+    } else {
+      anyMetaManifest = YAML.safeLoad(manifest) as
       | AnyMetaManifest
       | undefined;
+    }
 
     if (!anyMetaManifest) {
       throw Error(`Unable to parse MetaManifest: ${manifest}`);
