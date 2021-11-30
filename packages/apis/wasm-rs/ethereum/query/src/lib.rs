@@ -1,8 +1,9 @@
 //! Query module of the Ethereum polywrapper
 
-mod mapping;
-mod utils;
+pub mod mapping;
+mod resolvers;
 pub mod w3;
+pub use mapping::*;
 use polywrap_wasm_rs::BigInt;
 pub use w3::*;
 
