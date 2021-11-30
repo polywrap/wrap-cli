@@ -39,7 +39,8 @@ type Query @imports(
     "Ethereum_TxRequest",
     "Ethereum_TxReceipt",
     "Ethereum_Log",
-    "Ethereum_EventNotification"
+    "Ethereum_EventNotification",
+    "Ethereum_Network"
   ]
 ) {
   method(
@@ -149,6 +150,10 @@ type Ethereum_Query @imported(
     timeout: UInt32
     connection: Ethereum_Connection
   ): Ethereum_EventNotification!
+
+  getNetwork(
+    connection: Ethereum_Connection
+  ): Ethereum_Network!
 }
 
 ### Imported Queries END ###
@@ -247,6 +252,16 @@ type Ethereum_EventNotification @imported(
   data: String!
   address: String!
   log: Ethereum_Log!
+}
+
+type Ethereum_Network @imported(
+  uri: "ens/ethereum.web3api.eth",
+  namespace: "Ethereum",
+  nativeType: "Network"
+) {
+  name: String!
+  chainId: Int!
+  ensAddress: String
 }
 
 ### Imported Objects END ###

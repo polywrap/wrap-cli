@@ -101,6 +101,13 @@ export interface Ethereum_EventNotification {
   log: Types.Ethereum_Log;
 }
 
+/* URI: "ens/ethereum.web3api.eth" */
+export interface Ethereum_Network {
+  name: String;
+  chainId: Int;
+  ensAddress?: String | null;
+}
+
 /// Imported Objects END ///
 
 /// Imported Queries START ///
@@ -200,6 +207,11 @@ interface Ethereum_Query_Input_waitForEvent extends Record<string, unknown> {
   event: String;
   args?: Array<String> | null;
   timeout?: UInt32 | null;
+  connection?: Types.Ethereum_Connection | null;
+}
+
+/* URI: "ens/ethereum.web3api.eth" */
+interface Ethereum_Query_Input_getNetwork extends Record<string, unknown> {
   connection?: Types.Ethereum_Connection | null;
 }
 
@@ -381,6 +393,18 @@ export const Ethereum_Query = {
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "waitForEvent",
+      input
+    });
+  },
+
+  getNetwork: async (
+    input: Ethereum_Query_Input_getNetwork,
+    client: Client
+  ): Promise<InvokeApiResult<Types.Ethereum_Network>> => {
+    return client.invoke<Types.Ethereum_Network>({
+      uri: "ens/ethereum.web3api.eth",
+      module: "query",
+      method: "getNetwork",
       input
     });
   }
