@@ -55,7 +55,7 @@ export const resolveUri = Tracer.traceFunc(
       finalRedirects
     );
 
-    let clientInstance = id ? wrapClient(client, id) : client;
+    const clientInstance = id ? wrapClient(client, id) : client;
 
     return await resolveUriWithUriResolvers(
       finalRedirectedUri,
