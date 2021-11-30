@@ -1,5 +1,6 @@
 import { useWeb3ApiQuery, Web3ApiProvider, useWeb3ApiClient, createWeb3ApiProvider } from "@web3api/react";
-import { UriRedirect } from "@web3api/client-js";
+import { PluginRegistration } from "@web3api/client-js";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
 
 const SimpleStorage = ({ uri }: { uri: string }) => {
@@ -65,9 +66,9 @@ const SimpleStorage = ({ uri }: { uri: string }) => {
           <div>{currentStorage?.getData} </div>
           <div>
             {
-              client1.redirects().length > client2.redirects().length 
-                ? 'Provider Redirects are correct' 
-                : 'Provider Redirects are not correct'
+              client1.plugins().length > client2.plugins().length 
+                ? 'Provider plugin counts are correct' 
+                : 'Provider plugin counts are not correct'
             }
           </div>
         </>
@@ -79,14 +80,14 @@ const SimpleStorage = ({ uri }: { uri: string }) => {
 const CustomProvider = createWeb3ApiProvider("custom");
 
 export const SimpleStorageContainer = ({
-  redirects,
+  plugins,
   ensUri,
 }: {
-  redirects: UriRedirect[];
+  plugins: PluginRegistration[];
   ensUri: string;
 }) => (
   <CustomProvider>
-    <Web3ApiProvider redirects={redirects}>
+    <Web3ApiProvider plugins={plugins}>
       <SimpleStorage uri={ensUri} />
     </Web3ApiProvider>
   </CustomProvider>

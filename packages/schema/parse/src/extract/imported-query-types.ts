@@ -1,34 +1,32 @@
 import {
-  TypeInfo,
-  ImportedQueryDefinition,
   createImportedQueryDefinition,
+  createInterfaceImplementedDefinition,
   createMethodDefinition,
   createPropertyDefinition,
+  ImportedQueryDefinition,
+  TypeInfo,
 } from "../typeInfo";
+import { extractImportedDefinition } from "./imported-types-utils";
 import {
   extractInputValueDefinition,
   extractListType,
   extractNamedType,
   State,
 } from "./query-types-utils";
-import { extractImportedDefinition } from "./imported-types-utils";
-import { Blackboard } from "./Blackboard";
 
 import {
-  DocumentNode,
-  ObjectTypeDefinitionNode,
-  NonNullTypeNode,
-  NamedTypeNode,
-  ListTypeNode,
+  ASTVisitor,
   FieldDefinitionNode,
   InputValueDefinitionNode,
-  visit,
+  ListTypeNode,
+  NamedTypeNode,
+  NonNullTypeNode,
+  ObjectTypeDefinitionNode,
 } from "graphql";
 
 const visitorEnter = (
   importedQueryTypes: ImportedQueryDefinition[],
-  state: State,
-  blackboard: Blackboard
+  state: State
 ) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const imported = extractImportedDefinition(node, true);
@@ -37,11 +35,21 @@ const visitorEnter = (
       return;
     }
 
+    const dir =
+      node.directives &&
+      node.directives.find((dir) => dir.name.value === "enabled_interface");
+    const isInterface = dir ? true : false;
+
     const importedType = createImportedQueryDefinition({
       type: node.name.value,
       uri: imported.uri,
       namespace: imported.namespace,
       nativeType: imported.nativeType,
+      isInterface: isInterface,
+      interfaces: node.interfaces?.map((x) =>
+        createInterfaceImplementedDefinition({ type: x.name.value })
+      ),
+      comment: node.description?.value,
     });
     importedQueryTypes.push(importedType);
     state.currentImport = importedType;
@@ -53,12 +61,6 @@ const visitorEnter = (
       return;
     }
 
-    if (!node.arguments || node.arguments.length === 0) {
-      throw Error(
-        `Imported Query types must only have methods. See property: ${node.name.value}`
-      );
-    }
-
     const returnType = createPropertyDefinition({
       type: "N/A",
       name: node.name.value,
@@ -68,6 +70,7 @@ const visitorEnter = (
       type: importDef.nativeType,
       name: node.name.value,
       return: returnType,
+      comment: node.description?.value,
     });
     importDef.methods.push(method);
     state.currentMethod = method;
@@ -80,7 +83,7 @@ const visitorEnter = (
     state.nonNullType = true;
   },
   NamedType: (node: NamedTypeNode) => {
-    extractNamedType(node, state, blackboard);
+    extractNamedType(node, state);
   },
   ListType: (_node: ListTypeNode) => {
     extractListType(state);
@@ -103,15 +106,13 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export function extractImportedQueryTypes(
-  astNode: DocumentNode,
-  typeInfo: TypeInfo,
-  blackboard: Blackboard
-): void {
+export const getImportedQueryTypesVisitor = (
+  typeInfo: TypeInfo
+): ASTVisitor => {
   const state: State = {};
 
-  visit(astNode, {
-    enter: visitorEnter(typeInfo.importedQueryTypes, state, blackboard),
+  return {
+    enter: visitorEnter(typeInfo.importedQueryTypes, state),
     leave: visitorLeave(state),
-  });
-}
+  };
+};

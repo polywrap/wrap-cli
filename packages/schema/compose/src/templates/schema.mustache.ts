@@ -1,16 +1,32 @@
 const template = `
 {{#typeInfo}}
-{{#queryTypes}}
-type {{type}} {{#imports.length}}@imports(
+{{#queryTypes}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}}{{#imports.length}} @imports(
   types: [
     {{#imports}}
     "{{type}}"{{^last}},{{/last}}
     {{/imports}}
   ]
-) {{/imports.length}}{
-  {{#methods}}
+){{/imports.length}}{{#capabilities.length}}{{#capabilities}} @capability(
+  type: "{{type}}",
+  uri: "{{uri}}",
+  namespace: "{{namespace}}"
+){{/capabilities}}{{/capabilities.length}}{{#methods.length}} {
+  {{#methods}}{{#comment}}
+  """
+  {{comment}}
+  """
+  {{/comment}}
   {{name}}{{#arguments.length}}(
-    {{#arguments}}
+    {{#arguments}}{{#comment}}
+    """
+    {{comment}}
+    """
+    {{/comment}}
     {{name}}: {{toGraphQLType}}
     {{/arguments}}
   ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}
@@ -18,18 +34,30 @@ type {{type}} {{#imports.length}}@imports(
 
   {{/last}}
   {{/methods}}
-}
+}{{/methods.length}}
 
 {{/queryTypes}}
-{{#objectTypes}}
-type {{type}} {
-  {{#properties}}
+{{#objectTypes}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}}{{#properties.length}} {
+  {{#properties}}{{#comment}}
+  """
+  {{comment}}
+  """
+  {{/comment}}
   {{name}}: {{toGraphQLType}}
   {{/properties}}
-}
+}{{/properties.length}}
 
 {{/objectTypes}}
-{{#enumTypes}}
+{{#enumTypes}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
 enum {{type}} {
   {{#constants}}
   {{.}}
@@ -39,46 +67,70 @@ enum {{type}} {
 {{/enumTypes}}
 ### Imported Queries START ###
 
-{{#importedQueryTypes}}
-type {{type}} @imported(
+{{#importedQueryTypes}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}} @imported(
   uri: "{{uri}}",
   namespace: "{{namespace}}",
   nativeType: "{{nativeType}}"
-) {
-  {{#methods}}
-  {{name}}(
-    {{#arguments}}
+){{#isInterface}} @enabled_interface{{/isInterface}}{{#methods.length}} {
+  {{#methods}}{{#comment}}
+  """
+  {{comment}}
+  """
+  {{/comment}}
+  {{name}}{{#arguments.length}}(
+    {{#arguments}}{{#comment}}
+    """
+    {{comment}}
+    """
+    {{/comment}}
     {{name}}: {{toGraphQLType}}
     {{/arguments}}
-  ): {{#return}}{{toGraphQLType}}{{/return}}
+  ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}
   {{^last}}
 
   {{/last}}
   {{/methods}}
-}
+}{{/methods.length}}
 
 {{/importedQueryTypes}}
 ### Imported Queries END ###
 
 ### Imported Objects START ###
 
-{{#importedObjectTypes}}
-type {{type}} @imported(
+{{#importedObjectTypes}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}} @imported(
   uri: "{{uri}}",
   namespace: "{{namespace}}",
   nativeType: "{{nativeType}}"
-) {
-  {{#properties}}
+){{#properties.length}} {
+  {{#properties}}{{#comment}}
+  """
+  {{comment}}
+  """
+  {{/comment}}
   {{name}}: {{toGraphQLType}}
   {{/properties}}
-}
+}{{/properties.length}}
 
 {{/importedObjectTypes}}
 
-{{#importedEnumTypes}}
+{{#importedEnumTypes}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
 enum {{type}} @imported(
-  namespace: "{{namespace}}",
   uri: "{{uri}}",
+  namespace: "{{namespace}}",
   nativeType: "{{nativeType}}"
 ) {
   {{#constants}}

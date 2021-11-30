@@ -5,6 +5,7 @@ import {
   WriteEncoder,
   ReadDecoder,
   BigInt,
+  JSON,
   Context
 } from "@web3api/wasm-as";
 import * as Types from "../..";
@@ -158,12 +159,12 @@ export function writeanotherMethodArgs(
   writer.context().pop();
 }
 
-export function deserializeanotherMethodResult(buffer: ArrayBuffer): i64 {
+export function deserializeanotherMethodResult(buffer: ArrayBuffer): i32 {
   const context: Context =  new Context("Deserializing imported query-type: anotherMethod");
   const reader = new ReadDecoder(buffer, context);
 
-  reader.context().push("anotherMethod", "i64", "reading function output");
-  const res: i64 = reader.readInt64();
+  reader.context().push("anotherMethod", "i32", "reading function output");
+  const res: i32 = reader.readInt32();
   reader.context().pop();
 
   return res;

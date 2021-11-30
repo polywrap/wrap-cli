@@ -1,4 +1,4 @@
-import { generateProjectTemplate } from "../lib/project-templates";
+import { generateProjectTemplate } from "../lib/templates";
 import { fixParameters } from "../lib/helpers/parameters";
 import { intlMsg } from "../lib/intl";
 
@@ -16,7 +16,7 @@ const createPluginStr = intlMsg.commands_create_options_createPlugin();
 const pathStr = intlMsg.commands_create_options_o_path();
 
 export const supportedLangs: { [key: string]: string[] } = {
-  api: ["assemblyscript"],
+  api: ["assemblyscript", "interface"],
   app: ["react"],
   plugin: ["typescript"],
 };

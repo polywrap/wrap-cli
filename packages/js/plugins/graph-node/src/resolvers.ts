@@ -1,9 +1,18 @@
 import { GraphNodePlugin } from ".";
+import { Query } from "./w3";
 
-import { PluginModule } from "@web3api/core-js";
+import { Client } from "@web3api/core-js";
 
-export const query = (graphnode: GraphNodePlugin): PluginModule => ({
-  querySubgraph: async (input: { subgraphId: string; query: string }) => {
-    return await graphnode.query(input.subgraphId, input.query);
+export const query = (
+  graphnode: GraphNodePlugin,
+  client: Client
+): Query.Module => ({
+  querySubgraph: async (input: Query.Input_querySubgraph): Promise<string> => {
+    return await graphnode.query(
+      input.subgraphAuthor,
+      input.subgraphName,
+      input.query,
+      client
+    );
   },
 });

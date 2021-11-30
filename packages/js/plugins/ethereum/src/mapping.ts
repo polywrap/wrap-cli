@@ -1,11 +1,11 @@
-import { Access, TxReceipt, TxResponse, TxRequest, Log } from "./types";
+import { Access, TxReceipt, TxResponse, TxRequest, Log } from "./w3";
 
 import { ethers } from "ethers";
 
 export const toTxReceipt = (
   receipt: ethers.providers.TransactionReceipt
 ): TxReceipt => ({
-  to: receipt.to,
+  to: receipt.to || "",
   from: receipt.from,
   contractAddress: receipt.contractAddress,
   transactionIndex: receipt.transactionIndex,
@@ -18,7 +18,9 @@ export const toTxReceipt = (
   blockHash: receipt.blockHash,
   confirmations: receipt.confirmations,
   cumulativeGasUsed: receipt.cumulativeGasUsed.toString(),
+  effectiveGasPrice: receipt.effectiveGasPrice?.toString() || "0",
   byzantium: receipt.byzantium,
+  type: receipt.type || 0,
   status: receipt.status,
 });
 
@@ -29,7 +31,7 @@ export const fromTxReceipt = (
   from: receipt.from,
   contractAddress: receipt.contractAddress,
   transactionIndex: receipt.transactionIndex,
-  root: receipt.root,
+  root: receipt.root || undefined,
   gasUsed: ethers.BigNumber.from(receipt.gasUsed),
   logsBloom: receipt.logsBloom,
   transactionHash: receipt.transactionHash,
@@ -39,7 +41,9 @@ export const fromTxReceipt = (
   confirmations: receipt.confirmations,
   cumulativeGasUsed: ethers.BigNumber.from(receipt.cumulativeGasUsed),
   byzantium: receipt.byzantium,
-  status: receipt.status,
+  status: receipt.status || undefined,
+  effectiveGasPrice: ethers.BigNumber.from(receipt.effectiveGasPrice),
+  type: receipt.type,
 });
 
 export const toTxResponse = (
@@ -50,7 +54,7 @@ export const toTxResponse = (
   from: response.from,
   nonce: response.nonce,
   gasLimit: response.gasLimit.toString(),
-  gasPrice: response.gasPrice.toString(),
+  gasPrice: response.gasPrice?.toString(),
   data: response.data,
   value: response.value.toString(),
   chainId: response.chainId,
@@ -83,15 +87,15 @@ export const toTxRequest = (
 export const fromTxRequest = (
   request: TxRequest
 ): ethers.providers.TransactionRequest => ({
-  to: request.to,
-  from: request.from,
-  nonce: request.nonce,
-  gasLimit: request.gasLimit,
-  gasPrice: request.gasPrice,
-  data: request.data,
-  value: request.value,
-  chainId: request.chainId,
-  type: request.type,
+  to: request.to || undefined,
+  from: request.from || undefined,
+  nonce: request.nonce || undefined,
+  gasLimit: request.gasLimit || undefined,
+  gasPrice: request.gasPrice || undefined,
+  data: request.data || undefined,
+  value: request.value || undefined,
+  chainId: request.chainId || undefined,
+  type: request.type || undefined,
 });
 
 export const toLog = (log: ethers.providers.Log): Log => ({

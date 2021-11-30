@@ -1,20 +1,13 @@
-# TODO: should import and "implements" the api-resolver core-api schema
-# https://github.com/Web3-API/monorepo/issues/75
+#import { Query, MaybeUriOrManifest } into UriResolver from "ens/uri-resolver.core.web3api.eth"
+#import { Query } into Ethereum from "ens/ethereum.web3api.eth"
 
-type Query {
+type Query implements UriResolver_Query {
   tryResolveUri(
     authority: String!
     path: String!
-  ): ApiResolver_MaybeUriOrManifest
+  ): UriResolver_MaybeUriOrManifest
 
   getFile(
     path: String!
   ): Bytes
-}
-
-# TODO: should get replaced with an import
-# https://github.com/Web3-API/monorepo/issues/75
-type ApiResolver_MaybeUriOrManifest {
-  uri: String
-  manifest: String
 }

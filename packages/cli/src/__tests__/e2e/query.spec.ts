@@ -18,8 +18,9 @@ describe("e2e tests for query command", () => {
   test("Should throw error for missing recipe-string", async () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["query"],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(exitCode).toEqual(0);
     expect(stderr).toBe("");
@@ -31,15 +32,17 @@ ${HELP}`);
   test("Should successfully return response", async () => {
     const { exitCode: testenvCode, stderr: testEnvUpErr } = await runCLI({
       args: ["test-env", "up"],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
     expect(testEnvUpErr).toBe("");
     expect(testenvCode).toEqual(0);
 
     const { stderr: deployErr } = await runCLI({
       args: ["./deploy-contracts.js"],
-      cwd: projectRoot
-    }, "node");
+      cwd: projectRoot,
+      cli: " "
+    });
 
     expect(deployErr).toBe("");
 
@@ -51,16 +54,18 @@ ${HELP}`);
         "--test-ens",
         "simplestorage.eth",
       ],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(buildErr).toBe("");
     expect(buildCode).toEqual(0);
 
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
       args: ["query", "./recipes/e2e.json", "--test-ens"],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(code).toEqual(0);
     expect(queryErr).toBe("");
@@ -101,7 +106,8 @@ mutation {
 
     await runCLI({
       args: ["test-env", "down"],
-      cwd: projectRoot
-    }, w3Cli);
-  }, 240000);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
+  }, 480000);
 });

@@ -42,6 +42,8 @@ export const deserializeBuildManifest = Tracer.traceFunc(
       validateBuildManifest(anyBuildManifest, options?.extSchema);
     }
 
+    anyBuildManifest.__type = "BuildManifest";
+
     const versionCompare = compare(
       anyBuildManifest.format,
       latestBuildManifestFormat
