@@ -25,16 +25,13 @@ pub async fn resolve_send_transaction(input: InputSendTransaction) -> Transactio
     let client = SignerMiddleware::new(provider, signer);
 
     let tx_request = query::mapping::from_tx_request(input.tx);
-    let future_tx = async {
-        let res = client.send_transaction(tx_request, None).await;
-        res.unwrap()
-    };
+    let future_tx = client.send_transaction(tx_request, None).await.unwrap();
 
     let pending_tx = tokio::runtime::Builder::new_current_thread()
         .build()
         .unwrap()
         .block_on(future_tx);
-    pending_tx.await.unwrap().unwrap()
+    pending_tx.unwrap().unwrap()
 }
 
 pub async fn resolve_send_transaction_and_wait(input: InputSendTransactionAndWait) -> TxReceipt {
