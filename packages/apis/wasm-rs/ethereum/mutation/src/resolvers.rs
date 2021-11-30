@@ -2,21 +2,58 @@
 //! allowing their non-async (or synchronous) counterparts (in `/mutation/src/lib.rs`) to return the desired types.
 
 use crate::w3::*;
-use ethers_core::types::TransactionReceipt;
+use ethers_contract::Contract;
+use ethers_core::{
+    abi::Abi,
+    types::{Address, TransactionReceipt, H256},
+};
 use ethers_middleware::SignerMiddleware;
 use ethers_providers::{Http, Middleware, Provider};
 use ethers_signers::LocalWallet;
+use polywrap_wasm_rs::JSON;
 use query;
 use std::convert::TryFrom;
 
-pub async fn resolve_call_contract_method(input: InputCallContractMethod) -> TxResponse {
-    todo!()
+pub async fn resolve_call_contract_method(input: InputCallContractMethod) -> TransactionReceipt {
+    let provider = Provider::<Http>::try_from(input.connection.clone().provider.as_str()).unwrap();
+    let signer: LocalWallet = input.connection.signer.as_str().parse().unwrap();
+    let client = SignerMiddleware::new(provider, signer);
+
+    let address = Address::from_slice(input.address.as_bytes());
+    let abi: Abi = JSON::from_str(stringify!(input.clone())).unwrap();
+    let contract = Contract::new(address, abi, client);
+
+    let call = contract
+        .method::<_, H256>(&input.method, input.args.unwrap())
+        .unwrap();
+    let future_tx = call.send().await.unwrap();
+    let pending_tx = tokio::runtime::Builder::new_current_thread()
+        .build()
+        .unwrap()
+        .block_on(future_tx);
+    pending_tx.unwrap().unwrap()
 }
 
 pub async fn resolve_call_contract_method_and_wait(
     input: InputCallContractMethodAndWait,
-) -> query::TxReceipt {
-    todo!()
+) -> TransactionReceipt {
+    let provider = Provider::<Http>::try_from(input.connection.clone().provider.as_str()).unwrap();
+    let signer: LocalWallet = input.connection.signer.as_str().parse().unwrap();
+    let client = SignerMiddleware::new(provider, signer);
+
+    let address = Address::from_slice(input.address.as_bytes());
+    let abi: Abi = JSON::from_str(stringify!(input.clone())).unwrap();
+    let contract = Contract::new(address, abi, client);
+
+    let call = contract
+        .method::<_, H256>(&input.method, input.args.unwrap())
+        .unwrap();
+    let future_tx = call.send().await.unwrap();
+    let pending_tx = tokio::runtime::Builder::new_current_thread()
+        .build()
+        .unwrap()
+        .block_on(future_tx);
+    pending_tx.unwrap().unwrap()
 }
 
 pub async fn resolve_send_transaction(input: InputSendTransaction) -> TransactionReceipt {
