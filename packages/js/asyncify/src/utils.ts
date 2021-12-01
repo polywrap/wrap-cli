@@ -15,10 +15,7 @@ export function proxyGet<T extends Record<string, unknown>>(
   });
 }
 
-export function indexOfArray(
-  source: Uint8Array,
-  search: Uint8Array
-): number {
+export function indexOfArray(source: Uint8Array, search: Uint8Array): number {
   let run = true;
   let start = 0;
 

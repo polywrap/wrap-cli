@@ -551,7 +551,7 @@ export class Compiler {
     };
 
     try {
-      const memory = AsyncWasmInstance.createMemory({ module: wasmSource })
+      const memory = AsyncWasmInstance.createMemory({ module: wasmSource });
       await AsyncWasmInstance.createInstance({
         module: wasmSource,
         imports: {
@@ -567,7 +567,7 @@ export class Compiler {
         intlMsg.lib_compiler_invalid_module({
           modulePath,
           moduleName,
-          error
+          error,
         })
       );
     }
