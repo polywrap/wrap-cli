@@ -11,11 +11,7 @@ license = "MIT"
 edition = "2021"
 
 [dependencies]
-ethers-core = "0.6.0"
-ethers-middleware = "0.6.0"
-ethers-contract = "0.6.0"
-ethers-providers = "0.6.0"
-ethers-signers = "0.6.0"
+ethers = "0.6.1"
 tokio = { version = "1.4.0", features = ["rt"] }
 getrandom = { version = "*", features = ["js"] }
 num-traits = { version = "0.2", default-features = false }

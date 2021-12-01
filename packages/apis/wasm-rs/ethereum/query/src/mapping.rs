@@ -1,9 +1,10 @@
 use crate::{Log, TxReceipt, TxRequest};
-use ethers_core::abi::ethereum_types::{Address, H160, H256, U256, U64};
-use ethers_core::types::NameOrAddress;
-use ethers_core::types::{
-    transaction::{request::TransactionRequest, response::TransactionReceipt},
-    Bloom, Bytes,
+use ethers::core::{
+    abi::ethereum_types::{Address, H160, H256, U256, U64},
+    types::{
+        transaction::{request::TransactionRequest, response::TransactionReceipt},
+        Bloom, Bytes, Log as EthersLog, NameOrAddress,
+    },
 };
 use num_traits::ToPrimitive;
 use polywrap_wasm_rs::BigInt;
@@ -109,7 +110,7 @@ pub fn from_tx_request(request: TxRequest) -> TransactionRequest {
     }
 }
 
-pub fn to_log(log: ethers_core::types::Log) -> Log {
+pub fn to_log(log: EthersLog) -> Log {
     Log {
         address: log.address.to_string(),
         topics: log.topics.into_iter().map(|f| f.to_string()).collect(),
@@ -127,8 +128,8 @@ pub fn to_log(log: ethers_core::types::Log) -> Log {
     }
 }
 
-pub fn from_log(log: Log) -> ethers_core::types::Log {
-    ethers_core::types::Log {
+pub fn from_log(log: Log) -> EthersLog {
+    EthersLog {
         address: H160::from_slice(log.address.as_bytes()),
         topics: log
             .topics
@@ -175,10 +176,10 @@ fn get_polywrapper_logs(receipt: &TransactionReceipt) -> Vec<Log> {
     logs
 }
 
-fn get_ethers_core_logs(receipt: &TxReceipt) -> Vec<ethers_core::types::Log> {
-    let mut logs: Vec<ethers_core::types::Log> = vec![];
+fn get_ethers_core_logs(receipt: &TxReceipt) -> Vec<EthersLog> {
+    let mut logs: Vec<EthersLog> = vec![];
     for log in receipt.logs.clone() {
-        logs.push(ethers_core::types::Log {
+        logs.push(EthersLog {
             address: H160::from_slice(log.address.as_bytes()),
             topics: log
                 .topics

@@ -2,14 +2,16 @@
 //! allowing their non-async (or synchronous) counterparts (in `/mutation/src/lib.rs`) to return the desired types.
 
 use crate::w3::*;
-use ethers_contract::Contract;
-use ethers_core::{
-    abi::Abi,
-    types::{Address, TransactionReceipt, H256},
+use ethers::{
+    contract::Contract,
+    core::{
+        abi::Abi,
+        types::{Address, TransactionReceipt, H256},
+    },
+    middleware::SignerMiddleware,
+    providers::{Http, Middleware, Provider},
+    signers::{LocalWallet, Signer},
 };
-use ethers_middleware::SignerMiddleware;
-use ethers_providers::{Http, Middleware, Provider};
-use ethers_signers::{LocalWallet, Signer};
 use polywrap_wasm_rs::JSON;
 use query;
 use std::convert::TryFrom;

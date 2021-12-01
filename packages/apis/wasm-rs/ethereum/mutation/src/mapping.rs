@@ -1,7 +1,8 @@
 use crate::{Access, TxResponse};
-use ethers_core::abi::ethereum_types::{Address, H256};
-use ethers_core::types::transaction::eip2930::AccessListItem;
-use ethers_core::types::transaction::response::Transaction as TransactionResponse;
+use ethers::core::{
+    abi::ethereum_types::{Address, H256},
+    types::transaction::{eip2930::AccessListItem, response::Transaction as TransactionResponse},
+};
 use polywrap_wasm_rs::BigInt;
 
 pub fn to_tx_response(response: TransactionResponse) -> TxResponse {
