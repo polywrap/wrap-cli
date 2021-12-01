@@ -17,3 +17,11 @@ enum CommonEnum {
   STRING
   BYTES
 }
+
+type IgnoredType1 {
+  prop: IgnoredType2
+}
+
+type IgnoredType2 {
+  prop: String
+}
