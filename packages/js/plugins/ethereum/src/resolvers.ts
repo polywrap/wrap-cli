@@ -122,4 +122,8 @@ export const query = (plugin: Plugin): Query.Module => ({
   ): Promise<Types.TxReceipt> => {
     return plugin.awaitTransaction(input);
   },
+
+  getNetwork: async (input: Query.Input_getNetwork): Promise<Types.Network> => {
+    return plugin.getNetwork(input);
+  },
 });

@@ -26,6 +26,8 @@ directive @capability(
   uri: String!
   namespace: String!
 ) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
 type Query @imports(
@@ -137,7 +139,7 @@ type TestImport_Query @imported(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
   nativeType: "Query"
-) {
+) @enabled_interface {
   importedMethod(
     str: String!
     optStr: String
