@@ -129,7 +129,7 @@
   "lib_compiler_noNodeModules": "could not locate {folder} in parent directories of web3api manifest",
   "lib_compiler_noInvoke": "WASM module is missing the _w3_invoke export. This should never happen...",
   "lib_compiler_dup_code_folder": "Duplicate code generation folder found `{directory}`. Please ensure each module file is located in a unique directory.",
-  "lib_compiler_missing_export": "{missingExport} is not exported from the WASM module `{moduleName}`",
+  "lib_compiler_invalid_module": "Invalid Wasm module found. `{moduleName}` at {modulePath} is invalid. Error: {error}",
   "lib_compiler_cannotBuildInterfaceModules": "Cannot build modules for an Interface Web3API",
   "lib_compiler_outputMetadataText": "Metadata written",
   "lib_compiler_outputMetadataError": "Failed to output metadata",
