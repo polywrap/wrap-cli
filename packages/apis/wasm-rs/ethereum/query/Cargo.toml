@@ -23,7 +23,7 @@ tokio = { version = "1.4.0", features = ["rt"] }
 getrandom = { version = "*", features = ["js"] }
 num-traits = { version = "0.2", default-features = false }
 polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../wasm/rs" }
-serde_derive = "1.0.130"
+serde = { version = "1.0", features = ["derive"] }
 
 [lib]
 crate-type = ["cdylib", "rlib"]
