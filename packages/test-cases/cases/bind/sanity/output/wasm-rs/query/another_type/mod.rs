@@ -1,3 +1,4 @@
+use serde::{Serialize, Deserialize};
 pub mod serialization;
 use polywrap_wasm_rs::{
     BigInt,
@@ -14,7 +15,7 @@ pub use serialization::{
 
 use crate::CustomType;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct AnotherType {
     pub prop: Option<String>,
     pub circular: Option<CustomType>,

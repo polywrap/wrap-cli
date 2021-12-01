@@ -1,3 +1,4 @@
+use serde::{Serialize, Deserialize};
 pub mod serialization;
 use polywrap_wasm_rs::{
     BigInt,
@@ -15,7 +16,7 @@ pub use serialization::{
 use crate::TestImportAnotherObject;
 use crate::TestImportEnum;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TestImportObject {
     pub object: TestImportAnotherObject,
     pub opt_object: Option<TestImportAnotherObject>,

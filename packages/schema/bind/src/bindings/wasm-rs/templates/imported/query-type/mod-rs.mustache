@@ -2,6 +2,7 @@
 pub use super::super::common::{{#toUpper}}{{type}}{{/toUpper}};
 {{/__commonImport}}
 {{^__commonImport}}
+use serde::{Serialize, Deserialize};
 use polywrap_wasm_rs::{
     BigInt,
     Read,
@@ -26,7 +27,7 @@ use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
 {{/propertyDeps}}
 {{/propertyDeps.length}}
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{#toUpper}}{{type}}{{/toUpper}} {}
 
 impl {{#toUpper}}{{type}}{{/toUpper}} {

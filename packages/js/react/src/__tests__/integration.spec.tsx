@@ -34,7 +34,7 @@ describe("Web3API React Integration", () => {
     plugins = createPlugins(ensAddress, ethereum, ipfs);
 
     api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
+      `${GetPathToTestApis()}/wasm-as/simple-storage`,
       ipfs,
       ensAddress
     );

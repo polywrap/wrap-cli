@@ -1,3 +1,4 @@
+use serde::{Serialize, Deserialize};
 use std::convert::TryFrom;
 use polywrap_wasm_rs::{
     BigInt,
@@ -17,7 +18,7 @@ use crate::{
 };
 use crate::AnotherType;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InputMutationMethod {
     pub str: String,
     pub opt_str: Option<String>,
@@ -163,7 +164,7 @@ pub fn write_mutation_method_result<W: Write>(result: &i32, writer: &mut W) {
     writer.context().pop();
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InputObjectMethod {
     pub object: AnotherType,
     pub opt_object: Option<AnotherType>,
