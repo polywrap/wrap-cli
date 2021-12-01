@@ -2,6 +2,7 @@
 pub use super::common::{{#toUpper}}{{type}}{{/toUpper}};
 {{/__commonImport}}
 {{^__commonImport}}
+use serde::{Serialize, Deserialize};
 pub mod serialization;
 use polywrap_wasm_rs::{
     BigInt,
@@ -20,7 +21,7 @@ pub use serialization::{
 use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
 {{/propertyDeps}}
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{#toUpper}}{{type}}{{/toUpper}} {
     {{#properties}}
     pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},

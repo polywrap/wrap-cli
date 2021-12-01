@@ -1,3 +1,4 @@
+use serde::{Serialize, Deserialize};
 use polywrap_wasm_rs::{
     BigInt,
     Read,
@@ -17,7 +18,7 @@ pub use serialization::{
 
 use crate::TestImportObject;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TestImportMutation {}
 
 impl TestImportMutation {

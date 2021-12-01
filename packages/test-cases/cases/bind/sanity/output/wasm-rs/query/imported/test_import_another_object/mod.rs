@@ -1,3 +1,4 @@
+use serde::{Serialize, Deserialize};
 pub mod serialization;
 use polywrap_wasm_rs::{
     BigInt,
@@ -12,7 +13,7 @@ pub use serialization::{
     write_test_import_another_object
 };
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TestImportAnotherObject {
     pub prop: String,
 }

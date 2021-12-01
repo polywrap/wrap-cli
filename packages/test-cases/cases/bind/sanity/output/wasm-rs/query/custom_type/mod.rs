@@ -1,3 +1,4 @@
+use serde::{Serialize, Deserialize};
 pub mod serialization;
 use polywrap_wasm_rs::{
     BigInt,
@@ -15,7 +16,7 @@ pub use serialization::{
 use crate::AnotherType;
 use crate::CustomEnum;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CustomType {
     pub str: String,
     pub opt_str: Option<String>,

@@ -1,5 +1,6 @@
 {{^__commonImport}}
 {{#methods.length}}
+use serde::{Serialize, Deserialize};
 use polywrap_wasm_rs::{
     BigInt,
     Context,
@@ -27,7 +28,7 @@ use crate::{
 {{/propertyDeps.length}}
 
 {{#methods}}
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
     {{#arguments}}
     pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},

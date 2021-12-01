@@ -1,3 +1,4 @@
+use serde::{Serialize, Deserialize};
 use polywrap_wasm_rs::{
     BigInt,
     Context,
@@ -16,7 +17,7 @@ use crate::{
     sanitize_test_import_enum_value
 };
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InputImportedMethod {
     pub str: String,
     pub opt_str: Option<String>,
@@ -136,7 +137,7 @@ pub fn deserialize_imported_method_result(result: &[u8]) -> Option<TestImportObj
     res
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InputAnotherMethod {
     pub arg: Vec<String>,
 }

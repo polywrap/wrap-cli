@@ -1,6 +1,7 @@
+use serde::{Serialize, Deserialize};
 use std::convert::TryFrom;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub enum CustomEnum {
     STRING,
     BYTES,

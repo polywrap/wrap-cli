@@ -15,6 +15,7 @@ w3invoke = []
 
 [dependencies]
 polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../../../wasm/rs" }
+serde_derive = "1.0.130"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
