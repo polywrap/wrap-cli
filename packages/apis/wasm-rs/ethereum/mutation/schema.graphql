@@ -118,6 +118,6 @@ type Access {
 }
 
 type Connection {
-  provider: String
-  signer: String
+  node: String
+  networkNameOrChainId: String
 }

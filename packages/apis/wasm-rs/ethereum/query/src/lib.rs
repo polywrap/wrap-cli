@@ -1,6 +1,6 @@
 //! Query module of the Ethereum polywrapper
 
-pub mod connection_info;
+pub mod connection_configs;
 pub mod mapping;
 pub mod resolvers;
 pub mod w3;

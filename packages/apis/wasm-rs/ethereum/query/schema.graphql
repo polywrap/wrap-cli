@@ -143,8 +143,8 @@ type EventNotification {
 }
 
 type Connection {
-  provider: String
-  signer: String
+  node: String
+  networkNameOrChainId: String
 }
 
 type Network {
