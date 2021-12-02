@@ -1,6 +1,6 @@
 {
   "name": "@web3api/test-project",
-  "version": "0.0.1-prealpha.54",
+  "version": "0.0.1-prealpha.55",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -10,8 +10,8 @@
     "test:env:down": "w3 test-env down"
   },
   "dependencies": {
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.54",
-    "@web3api/wasm-as": "0.0.1-prealpha.54"
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.55",
+    "@web3api/wasm-as": "0.0.1-prealpha.55"
   },
   "devDependencies": {
     "assemblyscript": "0.19.1",
