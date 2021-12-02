@@ -1,7 +1,8 @@
 //! Query module of the Ethereum polywrapper
 
+pub mod connection_info;
 pub mod mapping;
-mod resolvers;
+pub mod resolvers;
 pub mod w3;
 pub use mapping::*;
 use polywrap_wasm_rs::BigInt;
@@ -64,5 +65,9 @@ pub fn wait_for_event(input: InputWaitForEvent) -> EventNotification {
 }
 
 pub fn await_transaction(input: InputAwaitTransaction) -> TxReceipt {
+    todo!()
+}
+
+pub fn get_network(input: InputGetNetwork) -> Network {
     todo!()
 }

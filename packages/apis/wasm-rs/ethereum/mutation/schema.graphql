@@ -11,36 +11,36 @@ type Mutation {
     address: String!
     method: String!
     args: [String!]
-    connection: Connection!
+    connection: Connection
     txOverrides: TxOverrides
   ): TxReceipt!
 
   sendTransaction(
     tx: TxRequest!
-    connection: Connection!
+    connection: Connection
   ): TxResponse!
 
   sendTransactionAndWait(
     tx: TxRequest!
-    connection: Connection!
+    connection: Connection
   ): TxReceipt!
 
   deployContract(
     abi: String!
     bytecode: String!
     args: [String!]
-    connection: Connection!
+    connection: Connection
   ): String!
 
   signMessage(
     message: String!
-    connection: Connection!
+    connection: Connection
   ): String!
 
   sendRpc(
     method: String!
     params: [String!]!
-    connection: Connection!
+    connection: Connection
   ): String
 }
 
@@ -118,6 +118,6 @@ type Access {
 }
 
 type Connection {
-  provider: String!
-  signer: String!
+  provider: String
+  signer: String
 }

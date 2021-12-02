@@ -63,3 +63,7 @@ pub async fn resolve_wait_for_event(input: InputWaitForEvent) -> EventNotificati
 pub async fn resolve_await_transaction(input: InputAwaitTransaction) -> TxReceipt {
     todo!()
 }
+
+pub async fn resolve_get_network(input: InputGetNetwork) -> Network {
+    todo!()
+}

@@ -3,14 +3,14 @@ type Query {
     address: String!
     method: String!
     args: [String!]
-    connection: Connection!
+    connection: Connection
   ): String!
 
   callContractStatic(
     address: String!
     method: String!
     args: [String!]
-    connection: Connection!
+    connection: Connection
     txOverrides: TxOverrides
   ): StaticTxResult!
 
@@ -25,33 +25,33 @@ type Query {
   ): String!
 
   getSignerAddress(
-    connection: Connection!
+    connection: Connection
   ): String!
 
   getSignerBalance(
     blockTag: BigInt
-    connection: Connection!
+    connection: Connection
   ): BigInt!
 
   getSignerTransactionCount(
     blockTag: BigInt
-    connection: Connection!
+    connection: Connection
   ): BigInt!
 
   getGasPrice(
-    connection: Connection!
+    connection: Connection
   ): BigInt!
 
   estimateTransactionGas(
     tx: TxRequest!
-    connection: Connection!
+    connection: Connection
   ): BigInt!
 
   estimateContractCallGas(
     address: String!
     method: String!
     args: [String!]
-    connection: Connection!
+    connection: Connection
     txOverrides: TxOverrides
   ): BigInt!
 
@@ -71,7 +71,7 @@ type Query {
     txHash: String!
     confirmations: UInt32!
     timeout: UInt32!
-    connection: Connection!
+    connection: Connection
   ): TxReceipt!
 
   waitForEvent(
@@ -79,8 +79,10 @@ type Query {
     event: String!
     args: [String!]
     timeout: UInt32
-    connection: Connection!
+    connection: Connection
   ): EventNotification!
+
+  getNetwork(connection: Connection): Network!
 }
 
 type TxReceipt {
@@ -141,6 +143,12 @@ type EventNotification {
 }
 
 type Connection {
-  provider: String!
-  signer: String!
+  provider: String
+  signer: String
+}
+
+type Network {
+  name: String!
+  chainId: Int!
+  ensAddress: String
 }

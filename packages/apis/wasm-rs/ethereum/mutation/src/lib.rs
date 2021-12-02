@@ -7,6 +7,10 @@ use query;
 pub use w3::*;
 
 pub fn call_contract_method(input: InputCallContractMethod) -> TxResponse {
+    // let res = tokio::runtime::Builder::new_current_thread()
+    //     .build()
+    //     .unwrap()
+    //     .block_on(resolvers::resolve_call_contract_method(input));
     todo!()
 }
 
