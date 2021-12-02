@@ -25,19 +25,11 @@ export function serialize{{type}}(type: {{type}}): ArrayBuffer {
 }
 
 export function write{{type}}(writer: Write, type: {{type}}): void {
-  writer.writeMapLength({{memberTypes.length}});
-  {{#memberTypes}}
-  writer.context().push("{{type}}", "Types.{{type}} | null", "writing property");
-  writer.writeString("{{type}}");
-
-  if(type.is{{type}}) {
+  {{#memberTypes}}{{^first}} else {{/first}}if(type.is{{type}}) {
     Types.{{type}}.write(writer, type.{{type}})
-  } else {
+  }{{/memberTypes}} else {
     writer.writeNil();
   }
-
-  writer.context().pop();
-  {{/memberTypes}}
 }
 
 export function deserialize{{type}}(buffer: ArrayBuffer): {{type}} {
@@ -80,20 +72,10 @@ export function read{{type}}(reader: Read): {{type}} {
     }
   }
 
-  if({{#memberTypes}}{{^first}} && {{/first}}!{{type}}{{/memberTypes}}) {
+  {{#memberTypes}}{{^first}} else {{/first}}if({{type}}) {
+    return {{union}}.create({{type}})
+  }{{/memberTypes}} else {
     throw new Error(`All serialized member types for {{type}} are null`)
   }
-
-  {{#memberTypes}}
-  {{#first}}
-  if({{type}}) {
-    return {{union}}.create({{type}})
-  }
-
-  {{/first}}
-  {{^first}}
-  return {{union}}.create({{type}})
-  {{/first}}
-  {{/memberTypes}}
 }
 {{/__commonImport}}

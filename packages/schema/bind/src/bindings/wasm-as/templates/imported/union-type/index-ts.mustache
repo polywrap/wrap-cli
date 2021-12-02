@@ -42,7 +42,7 @@ export abstract class {{type}} {
 
   get {{type}}(): Types.{{type}} {
     if (this instanceof UnionMember_{{type}}) {
-      return this.instance;
+      return (this as UnionMember_{{type}}).instance;
     }
 
     throw new Error("Union '{{union}}' is not of type '{{type}}'");

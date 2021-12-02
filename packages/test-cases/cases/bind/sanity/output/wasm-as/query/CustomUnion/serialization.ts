@@ -24,27 +24,13 @@ export function serializeCustomUnion(type: CustomUnion): ArrayBuffer {
 }
 
 export function writeCustomUnion(writer: Write, type: CustomUnion): void {
-  writer.writeMapLength(2);
-  writer.context().push("AnotherObject", "Types.AnotherObject | null", "writing property");
-  writer.writeString("AnotherObject");
-
   if(type.isAnotherObject) {
     Types.AnotherObject.write(writer, type.AnotherObject)
-  } else {
-    writer.writeNil();
-  }
-
-  writer.context().pop();
-  writer.context().push("YetAnotherObject", "Types.YetAnotherObject | null", "writing property");
-  writer.writeString("YetAnotherObject");
-
-  if(type.isYetAnotherObject) {
+  } else if(type.isYetAnotherObject) {
     Types.YetAnotherObject.write(writer, type.YetAnotherObject)
   } else {
     writer.writeNil();
   }
-
-  writer.context().pop();
 }
 
 export function deserializeCustomUnion(buffer: ArrayBuffer): CustomUnion {
@@ -93,13 +79,11 @@ export function readCustomUnion(reader: Read): CustomUnion {
     }
   }
 
-  if(!AnotherObject && !YetAnotherObject) {
-    throw new Error(`All serialized member types for CustomUnion are null`)
-  }
-
   if(AnotherObject) {
     return CustomUnion.create(AnotherObject)
+  } else if(YetAnotherObject) {
+    return CustomUnion.create(YetAnotherObject)
+  } else {
+    throw new Error(`All serialized member types for CustomUnion are null`)
   }
-
-  return CustomUnion.create(YetAnotherObject)
 }

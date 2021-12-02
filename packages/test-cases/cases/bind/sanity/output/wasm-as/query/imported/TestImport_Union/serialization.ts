@@ -24,27 +24,13 @@ export function serializeTestImport_Union(type: TestImport_Union): ArrayBuffer {
 }
 
 export function writeTestImport_Union(writer: Write, type: TestImport_Union): void {
-  writer.writeMapLength(2);
-  writer.context().push("TestImport_AnotherObject", "Types.TestImport_AnotherObject | null", "writing property");
-  writer.writeString("TestImport_AnotherObject");
-
   if(type.isTestImport_AnotherObject) {
     Types.TestImport_AnotherObject.write(writer, type.TestImport_AnotherObject)
-  } else {
-    writer.writeNil();
-  }
-
-  writer.context().pop();
-  writer.context().push("TestImport_YetAnotherObject", "Types.TestImport_YetAnotherObject | null", "writing property");
-  writer.writeString("TestImport_YetAnotherObject");
-
-  if(type.isTestImport_YetAnotherObject) {
+  } else if(type.isTestImport_YetAnotherObject) {
     Types.TestImport_YetAnotherObject.write(writer, type.TestImport_YetAnotherObject)
   } else {
     writer.writeNil();
   }
-
-  writer.context().pop();
 }
 
 export function deserializeTestImport_Union(buffer: ArrayBuffer): TestImport_Union {
@@ -93,13 +79,11 @@ export function readTestImport_Union(reader: Read): TestImport_Union {
     }
   }
 
-  if(!TestImport_AnotherObject && !TestImport_YetAnotherObject) {
-    throw new Error(`All serialized member types for TestImport_Union are null`)
-  }
-
   if(TestImport_AnotherObject) {
     return TestImport_Union.create(TestImport_AnotherObject)
+  } else if(TestImport_YetAnotherObject) {
+    return TestImport_Union.create(TestImport_YetAnotherObject)
+  } else {
+    throw new Error(`All serialized member types for TestImport_Union are null`)
   }
-
-  return TestImport_Union.create(TestImport_YetAnotherObject)
 }

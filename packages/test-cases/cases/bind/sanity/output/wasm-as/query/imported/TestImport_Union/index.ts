@@ -37,7 +37,7 @@ export abstract class TestImport_Union {
 
   get TestImport_AnotherObject(): Types.TestImport_AnotherObject {
     if (this instanceof UnionMember_TestImport_AnotherObject) {
-      return this.instance;
+      return (this as UnionMember_TestImport_AnotherObject).instance;
     }
 
     throw new Error("Union 'TestImport_Union' is not of type 'TestImport_AnotherObject'");
@@ -49,7 +49,7 @@ export abstract class TestImport_Union {
 
   get TestImport_YetAnotherObject(): Types.TestImport_YetAnotherObject {
     if (this instanceof UnionMember_TestImport_YetAnotherObject) {
-      return this.instance;
+      return (this as UnionMember_TestImport_YetAnotherObject).instance;
     }
 
     throw new Error("Union 'TestImport_Union' is not of type 'TestImport_YetAnotherObject'");

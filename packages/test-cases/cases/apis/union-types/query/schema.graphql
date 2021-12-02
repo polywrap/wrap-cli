@@ -6,6 +6,14 @@ type ArgUnionB {
   prop: Boolean!
 }
 
+type ArgUnionC {
+  foo: String!
+}
+
+type ArgUnionD {
+  bar: String!
+}
+
 union ArgUnion = ArgUnionA | ArgUnionB
 
 type TypeUnionA {
@@ -18,8 +26,20 @@ type TypeUnionB {
 
 union TypeUnion = TypeUnionA | TypeUnionB
 
+union TripleUnion = ArgUnionA | ArgUnionB | ArgUnionC
+
 type Query {
-  method1(
+  argMethod(
     arg: ArgUnion!
   ): String!
+
+  returnMethod(
+    arg: Boolean!
+  ): TypeUnion!
+
+  arrayMethod(
+    arg: [TripleUnion!]!
+  ): [Int!]!
+
+  optionalMethod(arg: ArgUnion): [TypeUnion!] 
 }

@@ -37,7 +37,7 @@ export abstract class CustomUnion {
 
   get AnotherObject(): Types.AnotherObject {
     if (this instanceof UnionMember_AnotherObject) {
-      return this.instance;
+      return (this as UnionMember_AnotherObject).instance;
     }
 
     throw new Error("Union 'CustomUnion' is not of type 'AnotherObject'");
@@ -49,7 +49,7 @@ export abstract class CustomUnion {
 
   get YetAnotherObject(): Types.YetAnotherObject {
     if (this instanceof UnionMember_YetAnotherObject) {
-      return this.instance;
+      return (this as UnionMember_YetAnotherObject).instance;
     }
 
     throw new Error("Union 'CustomUnion' is not of type 'YetAnotherObject'");
