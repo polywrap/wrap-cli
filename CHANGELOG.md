@@ -1,5 +1,6 @@
 # Web3API 0.0.1-prealpha.55
 ## Bugs
+* `@web3api/schema-compose`: Properly support empty schema types.
 * `@web3api/asyncify-js`: Fixed a low-level inconsistency between Wasm modules when using imported memory. More details [here](https://github.com/polywrap/monorepo/issues/561).
 * `@web3api/schema-bind`: Fixed issue where imports were inconsistent between `serialization.ts` assemblyscript files, and some necessary imports were missing.
 
