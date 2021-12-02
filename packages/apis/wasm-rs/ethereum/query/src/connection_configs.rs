@@ -231,7 +231,7 @@ impl ConnectionInfo {
 // pub enum Networkish {
 //     Network(Network),
 //     String(String),
-//     Number(i32)
+//     Number(i32),
 // }
 
 // #[derive(Clone, Debug, Default)]
@@ -342,7 +342,9 @@ impl ConnectionInfo {
 //             let connection_info = Self::ctor(configs.networks[network].clone());
 //             let network_str = network.to_ascii_lowercase();
 
-//             let _ = connections.networks.insert(network_str.clone(), connection_info.clone());
+//             let _ = connections
+//                 .networks
+//                 .insert(network_str.clone(), connection_info.clone());
 
 //             // handle a case where `network` is a number
 //             let network_number = network_str.parse::<i32>();

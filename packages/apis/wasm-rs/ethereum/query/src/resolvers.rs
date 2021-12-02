@@ -2,68 +2,117 @@
 //! allowing their non-async (or synchronous) counterparts (in `/query/src/lib.rs`) to return the desired types.
 
 use crate::w3::*;
+use async_trait::async_trait;
+use ethers::providers::{FromErr, Middleware};
 use polywrap_wasm_rs::BigInt;
+use thiserror::Error;
 
-pub async fn resolve_call_contract_view(input: InputCallContractView) -> String {
-    todo!()
+#[derive(Debug)]
+pub struct QueryMiddleware<M>(M);
+
+#[derive(Error, Debug)]
+pub enum QueryMiddlewareError<M: Middleware> {
+    #[error("{0}")]
+    MiddlewareError(M::Error),
 }
 
-pub async fn resolve_call_contract_static(input: InputCallContractStatic) -> StaticTxResult {
-    todo!()
+impl<M: Middleware> FromErr<M::Error> for QueryMiddlewareError<M> {
+    fn from(src: M::Error) -> QueryMiddlewareError<M> {
+        QueryMiddlewareError::MiddlewareError(src)
+    }
 }
 
-pub async fn resolve_encode_params(input: InputEncodeParams) -> String {
-    todo!()
+#[async_trait]
+impl<M> Middleware for QueryMiddleware<M>
+where
+    M: Middleware,
+{
+    type Error = QueryMiddlewareError<M>;
+    type Provider = M::Provider;
+    type Inner = M;
+
+    fn inner(&self) -> &M {
+        &self.0
+    }
 }
 
-pub async fn resolve_encode_function(input: InputEncodeFunction) -> String {
-    todo!()
-}
+impl<M> QueryMiddleware<M>
+where
+    M: Middleware,
+{
+    pub async fn resolve_call_contract_view(&self, input: InputCallContractView) -> String {
+        todo!()
+    }
 
-pub async fn resolve_get_signer_address(input: InputGetSignerAddress) -> String {
-    todo!()
-}
+    pub async fn resolve_call_contract_static(
+        &self,
+        input: InputCallContractStatic,
+    ) -> StaticTxResult {
+        todo!()
+    }
 
-pub async fn resolve_get_signer_balance(input: InputGetSignerBalance) -> BigInt {
-    todo!()
-}
+    pub async fn resolve_encode_params(&self, input: InputEncodeParams) -> String {
+        todo!()
+    }
 
-pub async fn resolve_get_signer_transaction_count(input: InputGetSignerTransactionCount) -> BigInt {
-    todo!()
-}
+    pub async fn resolve_encode_function(&self, input: InputEncodeFunction) -> String {
+        todo!()
+    }
 
-pub async fn resolve_get_gas_price(input: InputGetGasPrice) -> BigInt {
-    todo!()
-}
+    pub async fn resolve_get_signer_address(&self, input: InputGetSignerAddress) -> String {
+        todo!()
+    }
 
-pub async fn resolve_estimate_transaction_gas(input: InputEstimateTransactionGas) -> BigInt {
-    todo!()
-}
+    pub async fn resolve_get_signer_balance(&self, input: InputGetSignerBalance) -> BigInt {
+        todo!()
+    }
 
-pub async fn resolve_estimate_contract_call_gas(input: InputEstimateContractCallGas) -> BigInt {
-    todo!()
-}
+    pub async fn resolve_get_signer_transaction_count(
+        &self,
+        input: InputGetSignerTransactionCount,
+    ) -> BigInt {
+        todo!()
+    }
 
-pub async fn resolve_check_address(input: InputCheckAddress) -> bool {
-    todo!()
-}
+    pub async fn resolve_get_gas_price(&self, input: InputGetGasPrice) -> BigInt {
+        todo!()
+    }
 
-pub async fn resolve_to_wei(input: InputToWei) -> BigInt {
-    todo!()
-}
+    pub async fn resolve_estimate_transaction_gas(
+        &self,
+        input: InputEstimateTransactionGas,
+    ) -> BigInt {
+        todo!()
+    }
 
-pub async fn resolve_to_eth(input: InputToEth) -> String {
-    todo!()
-}
+    pub async fn resolve_estimate_contract_call_gas(
+        &self,
+        input: InputEstimateContractCallGas,
+    ) -> BigInt {
+        todo!()
+    }
 
-pub async fn resolve_wait_for_event(input: InputWaitForEvent) -> EventNotification {
-    todo!()
-}
+    pub async fn resolve_check_address(&self, input: InputCheckAddress) -> bool {
+        todo!()
+    }
 
-pub async fn resolve_await_transaction(input: InputAwaitTransaction) -> TxReceipt {
-    todo!()
-}
+    pub async fn resolve_to_wei(&self, input: InputToWei) -> BigInt {
+        todo!()
+    }
 
-pub async fn resolve_get_network(input: InputGetNetwork) -> Network {
-    todo!()
+    pub async fn resolve_to_eth(&self, input: InputToEth) -> String {
+        todo!()
+    }
+
+    pub async fn resolve_wait_for_event(&self, input: InputWaitForEvent) -> EventNotification {
+        todo!()
+    }
+
+    pub async fn resolve_await_transaction(&self, input: InputAwaitTransaction) -> TxReceipt {
+        todo!()
+    }
+
+    pub async fn resolve_get_network(&self, input: InputGetNetwork) -> Network {
+        todo!()
+    }
 }
