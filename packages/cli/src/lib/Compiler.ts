@@ -267,12 +267,12 @@ export class Compiler {
     // Build the sources
     const dockerImageId = await this._buildSourcesInDocker();
 
-    // Validate the WASM exports
+    // Validate the Wasm modules
     await Promise.all(
       Object.keys(modulesToBuild)
         .filter((module: InvokableModules) => modulesToBuild[module])
         .map((module: InvokableModules) =>
-          this._validateExports(module, outputDir)
+          this._validateWasmModule(module, outputDir)
         )
     );
 
@@ -528,16 +528,13 @@ export class Compiler {
     }
   }
 
-  private async _validateExports(
+  private async _validateWasmModule(
     moduleName: InvokableModules,
     buildDir: string
   ): Promise<void> {
-    const wasmSource = fs.readFileSync(
-      path.join(buildDir, `${moduleName}.wasm`)
-    );
+    const modulePath = path.join(buildDir, `${moduleName}.wasm`);
+    const wasmSource = fs.readFileSync(modulePath);
 
-    const mod = await WebAssembly.compile(wasmSource);
-    const memory = new WebAssembly.Memory({ initial: 1 });
     const w3Imports: Record<keyof W3Imports, () => void> = {
       __w3_subinvoke: () => {},
       __w3_subinvoke_result_len: () => {},
@@ -553,40 +550,24 @@ export class Compiler {
       __w3_abort: () => {},
     };
 
-    const instance = await WebAssembly.instantiate(mod, {
-      env: {
-        memory,
-      },
-      w3: w3Imports,
-    });
-
-    const requiredExports = [
-      ...WasmWeb3Api.requiredExports,
-      ...AsyncWasmInstance.requiredExports,
-    ];
-    const missingExports: string[] = [];
-
-    for (const requiredExport of requiredExports) {
-      if (!instance.exports[requiredExport]) {
-        missingExports.push(requiredExport);
-      }
-    }
-
-    if (missingExports.length) {
+    try {
+      const memory = AsyncWasmInstance.createMemory({ module: wasmSource });
+      await AsyncWasmInstance.createInstance({
+        module: wasmSource,
+        imports: {
+          env: {
+            memory,
+          },
+          w3: w3Imports,
+        },
+        requiredExports: WasmWeb3Api.requiredExports,
+      });
+    } catch (error) {
       throw Error(
-        intlMsg.lib_compiler_missing_export({
-          missingExport: missingExports
-            .map((missingExport, index) => {
-              if (missingExports.length === 1) {
-                return missingExport;
-              } else if (index === missingExports.length - 1) {
-                return "& " + missingExport;
-              } else {
-                return missingExport + ", ";
-              }
-            })
-            .join(),
+        intlMsg.lib_compiler_invalid_module({
+          modulePath,
           moduleName,
+          error,
         })
       );
     }
