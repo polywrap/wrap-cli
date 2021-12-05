@@ -21,7 +21,7 @@ export interface GetFileOptions {
   encoding?: "utf-8" | string;
 }
 
-export interface ClientConfig<TUri = string> {
+export interface ClientConfig<TUri extends Uri | string = string> {
   redirects: UriRedirect<TUri>[];
   plugins: PluginRegistration<TUri>[];
   interfaces: InterfaceImplementations<TUri>[];
