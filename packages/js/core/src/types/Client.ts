@@ -22,9 +22,9 @@ export interface GetFileOptions {
 }
 
 export interface ClientConfig<TUri = string> {
-  redirects?: UriRedirect<TUri>[];
-  plugins?: PluginRegistration<TUri>[];
-  interfaces?: InterfaceImplementations<TUri>[];
+  redirects: UriRedirect<TUri>[];
+  plugins: PluginRegistration<TUri>[];
+  interfaces: InterfaceImplementations<TUri>[];
 }
 
 export interface GetImplementationsOptions {

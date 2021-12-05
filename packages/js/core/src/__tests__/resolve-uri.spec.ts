@@ -31,7 +31,9 @@ describe("resolveUri", () => {
   const client = (apis: Record<string, PluginModules>): Client => ({
     getInvokeContext: (id: string) => {
       return {
-        redirects: []
+        redirects: [],
+        interfaces: [],
+        plugins: [],
       };
     },
     query: <
@@ -236,21 +238,22 @@ describe("resolveUri", () => {
     const query = UriResolver.Query;
     const uri = new Uri("w3/some-uri");
 
-    expect(query.tryResolveUri(client(apis), api, uri)).toBeDefined();
-    expect(query.getFile(client(apis), file, path)).toBeDefined();
+    expect(query.tryResolveUri(client(apis).invoke, api, uri)).toBeDefined();
+    expect(query.getFile(client(apis).invoke, file, path)).toBeDefined();
   });
 
   it("works in the typical case", async () => {
     const result = await resolveUri(
       new Uri("ens/test.eth"),
-      client(apis),
       [],
       plugins,
       interfaces,
+      client(apis).invoke,
       createPluginApi,
       createApi,
-      "id",
-      true
+      {
+        noValidate: true
+      },
     );
 
     const apiIdentity = await result.invoke(
@@ -270,14 +273,15 @@ describe("resolveUri", () => {
   it("uses a plugin that implements uri-resolver", async () => {
     const result = await resolveUri(
       new Uri("my/something-different"),
-      client(apis),
       [],
       plugins,
       interfaces,
+      client(apis).invoke,
       createPluginApi,
       createApi,
-      "id",
-      true
+      {
+        noValidate: true
+      },
     );
 
     const apiIdentity = await result.invoke(
@@ -297,14 +301,15 @@ describe("resolveUri", () => {
   it("works when direct query a Web3API that implements the uri-resolver", async () => {
     const result = await resolveUri(
       new Uri("ens/ens"),
-      client(apis),
       [],
       plugins,
       interfaces,
+      client(apis).invoke,
       createPluginApi,
       createApi,
-      "id",
-      true
+      {
+        noValidate: true
+      },
     );
 
     const apiIdentity = await result.invoke(
@@ -325,14 +330,15 @@ describe("resolveUri", () => {
   it("works when direct query a plugin Web3API that implements the uri-resolver", async () => {
     const result = await resolveUri(
       new Uri("my/something-different"),
-      client(apis),
       [],
       plugins,
       interfaces,
+      client(apis).invoke,
       createPluginApi,
       createApi,
-      "id",
-      true
+      {
+        noValidate: true
+      },
     );
 
     const apiIdentity = await result.invoke(
@@ -365,14 +371,15 @@ describe("resolveUri", () => {
 
     return resolveUri(
       new Uri("some/api"),
-      client(apis),
       circular,
       plugins,
       interfaces,
+      client(apis).invoke,
       createPluginApi,
       createApi,
-      "id",
-      true
+      {
+        noValidate: true
+      },
     ).catch((e) =>
       expect(e.message).toMatch(/Infinite loop while resolving URI/)
     );
@@ -394,14 +401,15 @@ describe("resolveUri", () => {
 
     return resolveUri(
       new Uri("some/api"),
-      client(apis),
       missingFromProperty,
       plugins,
       interfaces,
+      client(apis).invoke,
       createPluginApi,
       createApi,
-      "id",
-      true
+      {
+        noValidate: true
+      },
     ).catch((e) =>
       expect(e.message).toMatch(
         "Redirect missing the from property.\nEncountered while resolving w3://some/api"
@@ -426,14 +434,15 @@ describe("resolveUri", () => {
 
     const result = await resolveUri(
       new Uri("some/api"),
-      client(apis),
       [],
       pluginRegistrations,
       interfaces,
+      client(apis).invoke,
       createPluginApi,
       createApi,
-      "id",
-      true
+      {
+        noValidate: true
+      },
     );
 
     const apiIdentity = await result.invoke(
@@ -464,17 +473,18 @@ describe("resolveUri", () => {
 
     await resolveUri(
       uri,
-      client({
-        ...apis,
-        "w3://ens/ipfs": faultyIpfsApi,
-      }),
       [],
       plugins,
       interfaces,
+      client({
+        ...apis,
+        "w3://ens/ipfs": faultyIpfsApi,
+      }).invoke,
       createPluginApi,
       createApi,
-      "id",
-      true
+      {
+        noValidate: true,
+      }
     ).catch((e) =>
       expect(e.message).toMatch(`No Web3API found at URI: ${uri.uri}`)
     );

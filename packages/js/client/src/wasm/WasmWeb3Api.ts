@@ -111,7 +111,9 @@ export class WasmWeb3Api extends Api {
   ): Promise<ArrayBuffer | string> {
     const { path, encoding } = options;
     const { data, error } = await UriResolver.Query.getFile(
-      client,
+      <TData = unknown, TUri extends Uri | string = string>(
+        options: InvokeApiOptions<TUri>
+      ): Promise<InvokeApiResult<TData>> => client.invoke<TData, TUri>(options),
       this._uriResolver,
       combinePaths(this._uri.path, path)
     );

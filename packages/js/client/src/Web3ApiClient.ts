@@ -39,7 +39,7 @@ import { Tracer } from "@web3api/tracing-js";
 export { WasmWeb3Api };
 
 export interface Web3ApiClientConfig<TUri = string> extends ClientConfig<TUri> {
-  tracingEnabled?: boolean;
+  tracingEnabled: boolean;
 }
 
 export class Web3ApiClient implements Client {
@@ -48,7 +48,7 @@ export class Web3ApiClient implements Client {
   // and handle cases where the are multiple jumps. For example, if
   // A => B => C, then the cache should have A => C, and B => C.
   private _apiCache: ApiCache = new Map<string, Api>();
-  private _config: Required<Web3ApiClientConfig<Uri>> = {
+  private _config: Web3ApiClientConfig<Uri> = {
     redirects: [],
     plugins: [],
     interfaces: [],
@@ -56,7 +56,7 @@ export class Web3ApiClient implements Client {
   };
   private _overrides: Map<string, ClientConfig<Uri>> = new Map();
 
-  constructor(config?: Web3ApiClientConfig) {
+  constructor(config?: Partial<Web3ApiClientConfig>) {
     try {
       this.tracingEnabled(!!config?.tracingEnabled);
 
@@ -201,7 +201,7 @@ export class Web3ApiClient implements Client {
     };
 
     let result: QueryApiResult<TData>;
-    let overwrittenConfig: ClientConfig<Uri> | undefined;
+    let overwrittenConfig: Partial<ClientConfig<Uri>> | undefined;
 
     // This will allow us to also receive custom plugins + interfaces
     if (options.overrides) {
@@ -430,16 +430,21 @@ export class Web3ApiClient implements Client {
         let api = this._apiCache.get(uri.uri);
 
         if (!api) {
+          const config = invokeContextId
+            ? this.getInvokeContext(invokeContextId)
+            : this._config;
           api = await resolveUri(
             uri,
-            this,
-            this.redirects(),
-            this.plugins(),
-            this.interfaces(),
+            config.redirects,
+            config.plugins,
+            config.interfaces,
+            <TData = unknown, TUri extends Uri | string = string>(
+              options: InvokeApiOptions<TUri>
+            ): Promise<InvokeApiResult<TData>> =>
+              this.invoke<TData, TUri>(options),
             (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
             (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
-              new WasmWeb3Api(uri, manifest, uriResolver),
-            invokeContextId
+              new WasmWeb3Api(uri, manifest, uriResolver)
           );
 
           if (!api) {
@@ -488,7 +493,7 @@ export class Web3ApiClient implements Client {
    */
   private setInvokeContext(
     id?: string,
-    config?: ClientConfig<Uri>
+    config?: Partial<ClientConfig<Uri>>
   ): {
     id: string;
     shouldClearContext: boolean;
