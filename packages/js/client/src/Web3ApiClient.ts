@@ -31,7 +31,6 @@ import {
   sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
   sanitizeUriRedirects,
-  wrapClient,
   ClientConfig,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
@@ -530,3 +529,25 @@ export class Web3ApiClient implements Client {
     this._overrides.delete(id);
   }
 }
+
+const wrapClient = (client: Client, id: string): Client => ({
+  query: (options: QueryApiOptions<Record<string, unknown>, string | Uri>) =>
+    client.query({ ...options, id }),
+  invoke: (options: InvokeApiOptions<string | Uri>) =>
+    client.invoke({ ...options, id }),
+  subscribe: (
+    options: SubscribeOptions<Record<string, unknown>, string | Uri>
+  ) => client.subscribe({ ...options, id }),
+  getInvokeContext: () => client.getInvokeContext(id),
+  getFile: (uri: string | Uri, options: GetFileOptions) =>
+    client.getFile(uri, options),
+  getSchema: (uri: string | Uri) => client.getSchema(uri),
+  getManifest: <TUri extends string | Uri, TManifestType extends ManifestType>(
+    uri: TUri,
+    options: GetManifestOptions<TManifestType>
+  ) => client.getManifest(uri, options),
+  getImplementations: <TUri extends Uri | string>(
+    uri: TUri,
+    options?: GetImplementationsOptions
+  ) => client.getImplementations(uri, options),
+});

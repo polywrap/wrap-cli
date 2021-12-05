@@ -4,13 +4,10 @@ import {
   SubscriptionHandler,
   UriRedirect,
   Uri,
-  InvokeApiOptions,
-  QueryApiOptions,
   PluginRegistration,
   InterfaceImplementations,
 } from "./";
 import { ManifestType, AnyManifest } from "../manifest";
-import { SubscribeOptions } from "./Subscription";
 
 export interface GetManifestOptions<TManifestType extends ManifestType> {
   type: TManifestType;
@@ -53,25 +50,3 @@ export interface Client
     options?: GetImplementationsOptions
   ): TUri[];
 }
-
-export const wrapClient = (client: Client, id: string): Client => ({
-  query: (options: QueryApiOptions<Record<string, unknown>, string | Uri>) =>
-    client.query({ ...options, id }),
-  invoke: (options: InvokeApiOptions<string | Uri>) =>
-    client.invoke({ ...options, id }),
-  subscribe: (
-    options: SubscribeOptions<Record<string, unknown>, string | Uri>
-  ) => client.subscribe({ ...options, id }),
-  getInvokeContext: () => client.getInvokeContext(id),
-  getFile: (uri: string | Uri, options: GetFileOptions) =>
-    client.getFile(uri, options),
-  getSchema: (uri: string | Uri) => client.getSchema(uri),
-  getManifest: <TUri extends string | Uri, TManifestType extends ManifestType>(
-    uri: TUri,
-    options: GetManifestOptions<TManifestType>
-  ) => client.getManifest(uri, options),
-  getImplementations: <TUri extends Uri | string>(
-    uri: TUri,
-    options?: GetImplementationsOptions
-  ) => client.getImplementations(uri, options),
-});
