@@ -37,9 +37,8 @@ import { Tracer } from "@web3api/tracing-js";
 
 export { WasmWeb3Api };
 
-export interface Web3ApiClientConfig<
-  TUri extends Uri | string = string
-> extends ClientConfig<TUri> {
+export interface Web3ApiClientConfig<TUri extends Uri | string = string>
+  extends ClientConfig<TUri> {
   tracingEnabled: boolean;
 }
 
