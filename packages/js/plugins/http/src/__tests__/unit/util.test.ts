@@ -24,7 +24,7 @@ describe("converting axios response", () => {
     const response = fromAxiosResponse({
       status: 200,
       statusText: "Ok",
-      data: "body-content",
+      data: Buffer.from("body-content"),
       headers: { ["Accept"]: "application-json", ["X-Header"]: "test-value" },
       config: { responseType: "arraybuffer" },
     });
