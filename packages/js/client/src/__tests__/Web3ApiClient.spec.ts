@@ -1,4 +1,4 @@
-import { createWeb3ApiClient } from "../";
+import { createWeb3ApiClient, Web3ApiClientConfig } from "../";
 import {
   buildAndDeployApi,
   initTestEnvironment,
@@ -19,7 +19,6 @@ import {
   deserializeBuildManifest,
   deserializeMetaManifest,
   coreInterfaceUris,
-  ClientConfig,
   Client,
   PluginModules,
 } from "@web3api/core-js";
@@ -43,7 +42,7 @@ describe("Web3ApiClient", () => {
     await stopTestEnvironment();
   });
 
-  const getClient = async (config?: ClientConfig) => {
+  const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
     return createWeb3ApiClient(
       {
         ethereum: {
@@ -108,9 +107,9 @@ describe("Web3ApiClient", () => {
   it("default client config", () => {
     const client = new Web3ApiClient();
 
-    expect(client.redirects()).toStrictEqual([]);
+    expect(client.getRedirects()).toStrictEqual([]);
     expect(
-        client.plugins().map(x => x.uri)
+        client.getPlugins().map(x => x.uri)
       ).toStrictEqual([
         new Uri("w3://ens/ipfs.web3api.eth"),
         new Uri("w3://ens/ens.web3api.eth"),
@@ -123,7 +122,7 @@ describe("Web3ApiClient", () => {
         new Uri("w3://ens/fs.web3api.eth")
       ]);
     expect(
-        client.interfaces()
+        client.getInterfaces()
       ).toStrictEqual([
       {
         interface: coreInterfaceUris.uriResolver,
@@ -151,8 +150,8 @@ describe("Web3ApiClient", () => {
 
     const redirects = [
       {
-        from: new Uri(ensUri),
-        to: new Uri("w3://ens/mock.web3api.eth"),
+        from: ensUri,
+        to: "w3://ens/mock.web3api.eth",
       },
     ];
 
@@ -170,7 +169,7 @@ describe("Web3ApiClient", () => {
       module: "mutation",
       method: "deployContract",
       input: {},
-      overrides: {
+      config: {
         redirects,
       },
     });
@@ -217,7 +216,7 @@ describe("Web3ApiClient", () => {
           )
         }
       `,
-      overrides: {
+      config: {
         redirects,
       },
     });
@@ -260,7 +259,7 @@ describe("Web3ApiClient", () => {
       ],
     });
 
-    const redirects = client.redirects();
+    const redirects = client.getRedirects();
 
     expect(redirects).toEqual([
       {
@@ -299,7 +298,7 @@ describe("Web3ApiClient", () => {
       ],
     });
 
-    const pluginUris = client.plugins().map((x) => x.uri.uri);
+    const pluginUris = client.getPlugins().map((x) => x.uri.uri);
 
     expect(pluginUris).toEqual([implementationUri].concat(defaultPlugins));
   });
@@ -318,7 +317,7 @@ describe("Web3ApiClient", () => {
       ],
     });
 
-    const interfaces = client.interfaces();
+    const interfaces = client.getInterfaces();
 
     const defaultClientConfig = getDefaultClientConfig();
 

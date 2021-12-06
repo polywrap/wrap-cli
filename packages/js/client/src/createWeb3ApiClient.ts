@@ -13,7 +13,7 @@ export const createWeb3ApiClient = Tracer.traceFunc(
   "createWeb3ApiClient",
   async (
     pluginConfigs: PluginConfigs,
-    config?: Web3ApiClientConfig
+    config?: Partial<Web3ApiClientConfig>
   ): Promise<Web3ApiClient> => {
     const plugins: PluginRegistration[] = [];
 

@@ -18,7 +18,8 @@ export const createQueryDocument = Tracer.traceFunc(
 /** Options required for an API query. */
 export interface QueryApiOptions<
   TVariables extends Record<string, unknown> = Record<string, unknown>,
-  TUri extends Uri | string = string
+  TUri extends Uri | string = string,
+  TClientConfig extends ClientConfig = ClientConfig
 > {
   /** The API's URI */
   uri: TUri;
@@ -35,14 +36,14 @@ export interface QueryApiOptions<
   variables?: TVariables;
 
   /**
-   * Override the client's config for all invokes within this query
+   * Override the client's config for all invokes within this query.
    */
-  overrides?: ClientConfig;
+  config?: Partial<TClientConfig>;
 
   /**
    * Query id used to track query context data set internally.
    */
-  id?: string;
+  contextId?: string;
 }
 
 /**

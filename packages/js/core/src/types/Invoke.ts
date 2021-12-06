@@ -3,7 +3,10 @@ import { ClientConfig, Uri } from ".";
 export type InvokableModules = "query" | "mutation";
 
 /** Options required for an API invocation. */
-export interface InvokeApiOptions<TUri extends Uri | string = string> {
+export interface InvokeApiOptions<
+  TUri extends Uri | string = string,
+  TClientConfig extends ClientConfig = ClientConfig
+> {
   /** The API's URI */
   uri: TUri;
 
@@ -34,14 +37,14 @@ export interface InvokeApiOptions<TUri extends Uri | string = string> {
   decode?: boolean;
 
   /**
-   * Custom redirects valid only during current invoke.
+   * Override the client's config for all invokes within this query.
    */
-  overrides?: ClientConfig<Uri>;
+  config?: Partial<TClientConfig>;
 
   /**
    * Invoke id used to track query context data set internally.
    */
-  id?: string;
+  contextId?: string;
 }
 
 /**
