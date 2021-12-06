@@ -114,15 +114,11 @@ export class Web3ApiClient implements Client {
     this._config.tracingEnabled = enable;
   }
 
-  public getRedirects(
-    contextId?: string
-  ): readonly UriRedirect<Uri>[] {
+  public getRedirects(contextId?: string): readonly UriRedirect<Uri>[] {
     return this._getConfig(contextId).redirects;
   }
 
-  public getPlugins(
-    contextId?: string
-  ): readonly PluginRegistration<Uri>[] {
+  public getPlugins(contextId?: string): readonly PluginRegistration<Uri>[] {
     return this._getConfig(contextId).plugins;
   }
 
@@ -166,7 +162,6 @@ export class Web3ApiClient implements Client {
   >(
     options: QueryApiOptions<TVariables, TUri, Web3ApiClientConfig>
   ): Promise<QueryApiResult<TData>> {
-
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
       options.config
@@ -201,7 +196,7 @@ export class Web3ApiClient implements Client {
             ...queryInvocations[invocationName],
             uri: queryInvocations[invocationName].uri,
             decode: true,
-            contextId
+            contextId,
           }).then((result) => ({
             name: invocationName,
             result,
@@ -254,7 +249,6 @@ export class Web3ApiClient implements Client {
 
     const typedOptions: InvokeApiOptions<Uri> = {
       ...options,
-      config: undefined,
       contextId: contextId,
       uri: this._toUri(options.uri),
     };
@@ -280,7 +274,6 @@ export class Web3ApiClient implements Client {
   >(
     options: SubscribeOptions<TVariables, TUri, Web3ApiClientConfig>
   ): Subscription<TData> {
-
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
       options.config
@@ -319,9 +312,7 @@ export class Web3ApiClient implements Client {
         }
         subscription.isActive = false;
       },
-      async *[Symbol.asyncIterator](): AsyncGenerator<
-        QueryApiResult<TData>
-      > {
+      async *[Symbol.asyncIterator](): AsyncGenerator<QueryApiResult<TData>> {
         let timeout: NodeJS.Timeout | undefined = undefined;
         subscription.isActive = true;
 
@@ -370,39 +361,6 @@ export class Web3ApiClient implements Client {
     };
 
     return subscription;
-  }
-
-  @Tracer.traceMethod("Web3ApiClient: _loadWeb3Api")
-  private async _loadWeb3Api(uri: Uri, invokeContextId?: string): Promise<Api> {
-    const typedUri = typeof uri === "string" ? new Uri(uri) : uri;
-    let api = this._apiCache.get(uri.uri);
-
-    if (!api) {
-      const config = invokeContextId
-        ? this._getConfig(invokeContextId)
-        : this._config;
-      api = await resolveUri(
-        typedUri,
-        config.redirects,
-        config.plugins,
-        config.interfaces,
-        <TData = unknown, TUri extends Uri | string = string>(
-          options: InvokeApiOptions<TUri>
-        ): Promise<InvokeApiResult<TData>> =>
-          this.invoke<TData, TUri>(options),
-        (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
-        (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
-          new WasmWeb3Api(uri, manifest, uriResolver)
-      );
-
-      if (!api) {
-        throw Error(`Unable to resolve Web3API at uri: ${typedUri}`);
-      }
-
-      this._apiCache.set(typedUri.uri, api);
-    }
-
-    return api;
   }
 
   @Tracer.traceMethod("Web3ApiClient: getImplementations")
@@ -510,6 +468,38 @@ export class Web3ApiClient implements Client {
   private _clearContext(contextId: string): void {
     this._contexts.delete(contextId);
   }
+
+  @Tracer.traceMethod("Web3ApiClient: _loadWeb3Api")
+  private async _loadWeb3Api(uri: Uri, invokeContextId?: string): Promise<Api> {
+    const typedUri = typeof uri === "string" ? new Uri(uri) : uri;
+    let api = this._apiCache.get(uri.uri);
+
+    if (!api) {
+      const config = invokeContextId
+        ? this._getConfig(invokeContextId)
+        : this._config;
+      api = await resolveUri(
+        typedUri,
+        config.redirects,
+        config.plugins,
+        config.interfaces,
+        <TData = unknown, TUri extends Uri | string = string>(
+          options: InvokeApiOptions<TUri>
+        ): Promise<InvokeApiResult<TData>> => this.invoke<TData, TUri>(options),
+        (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
+        (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
+          new WasmWeb3Api(uri, manifest, uriResolver)
+      );
+
+      if (!api) {
+        throw Error(`Unable to resolve Web3API at uri: ${typedUri}`);
+      }
+
+      this._apiCache.set(typedUri.uri, api);
+    }
+
+    return api;
+  }
 }
 
 const wrapClient = (client: Web3ApiClient, contextId: string): Client => ({
@@ -520,21 +510,9 @@ const wrapClient = (client: Web3ApiClient, contextId: string): Client => ({
   subscribe: (
     options: SubscribeOptions<Record<string, unknown>, string | Uri>
   ) => client.subscribe({ ...options, contextId }),
-  getRedirects: (
-    contextId?: string
-  ) => (
-    client.getRedirects(contextId)
-  ),
-  getPlugins: (
-    contextId?: string
-  ) => (
-    client.getPlugins(contextId)
-  ),
-  getInterfaces: (
-    contextId?: string
-  ) => (
-    client.getInterfaces(contextId)
-  ),
+  getRedirects: (contextId?: string) => client.getRedirects(contextId),
+  getPlugins: (contextId?: string) => client.getPlugins(contextId),
+  getInterfaces: (contextId?: string) => client.getInterfaces(contextId),
   getFile: (uri: string | Uri, options: GetFileOptions) =>
     client.getFile(uri, options),
   getSchema: (uri: string | Uri) => client.getSchema(uri),

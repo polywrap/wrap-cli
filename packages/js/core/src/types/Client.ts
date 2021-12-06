@@ -32,18 +32,11 @@ export interface Client
   extends QueryHandler,
     SubscriptionHandler,
     InvokeHandler {
+  getRedirects(contextId?: string): readonly UriRedirect<Uri>[];
 
-  getRedirects(
-    contextId?: string
-  ): readonly UriRedirect<Uri>[];
+  getPlugins(contextId?: string): readonly PluginRegistration<Uri>[];
 
-  getPlugins(
-    contextId?: string
-  ): readonly PluginRegistration<Uri>[];
-
-  getInterfaces(
-    contextId?: string
-  ): readonly InterfaceImplementations<Uri>[];
+  getInterfaces(contextId?: string): readonly InterfaceImplementations<Uri>[];
 
   getSchema<TUri extends Uri | string>(uri: TUri): Promise<string>;
 
