@@ -119,18 +119,22 @@ export class Web3ApiClient implements Client {
   }
 
   @Tracer.traceMethod("Web3ApiClient: getRedirects")
-  public getRedirects(options: GetRedirectsOptions = { }): readonly UriRedirect<Uri>[] {
+  public getRedirects(
+    options: GetRedirectsOptions = {}
+  ): readonly UriRedirect<Uri>[] {
     return this._getConfig(options.contextId).redirects;
   }
 
   @Tracer.traceMethod("Web3ApiClient: getPlugins")
-  public getPlugins(options: GetPluginsOptions = { }): readonly PluginRegistration<Uri>[] {
+  public getPlugins(
+    options: GetPluginsOptions = {}
+  ): readonly PluginRegistration<Uri>[] {
     return this._getConfig(options.contextId).plugins;
   }
 
   @Tracer.traceMethod("Web3ApiClient: getInterfaces")
   public getInterfaces(
-    options: GetInterfacesOptions = { }
+    options: GetInterfacesOptions = {}
   ): readonly InterfaceImplementations<Uri>[] {
     return this._getConfig(options.contextId).interfaces;
   }
@@ -138,13 +142,10 @@ export class Web3ApiClient implements Client {
   @Tracer.traceMethod("Web3ApiClient: getSchema")
   public async getSchema<TUri extends Uri | string>(
     uri: TUri,
-    options: GetSchemaOptions = { }
+    options: GetSchemaOptions = {}
   ): Promise<string> {
-    const api = await this._loadWeb3Api(
-      this._toUri(uri),
-      options.contextId
-    );
-    const client = contextualizeClient(this, options.contextId)
+    const api = await this._loadWeb3Api(this._toUri(uri), options.contextId);
+    const client = contextualizeClient(this, options.contextId);
     return await api.getSchema(client);
   }
 
@@ -156,10 +157,7 @@ export class Web3ApiClient implements Client {
     uri: TUri,
     options: GetManifestOptions<TManifestType>
   ): Promise<AnyManifest<TManifestType>> {
-    const api = await this._loadWeb3Api(
-      this._toUri(uri),
-      options.contextId
-    );
+    const api = await this._loadWeb3Api(this._toUri(uri), options.contextId);
     const client = contextualizeClient(this, options.contextId);
     return await api.getManifest(options, client);
   }
@@ -169,10 +167,7 @@ export class Web3ApiClient implements Client {
     uri: TUri,
     options: GetFileOptions
   ): Promise<string | ArrayBuffer> {
-    const api = await this._loadWeb3Api(
-      this._toUri(uri),
-      options.contextId
-    );
+    const api = await this._loadWeb3Api(this._toUri(uri), options.contextId);
     const client = contextualizeClient(this, options.contextId);
     return await api.getFile(options, client);
   }
@@ -180,7 +175,7 @@ export class Web3ApiClient implements Client {
   @Tracer.traceMethod("Web3ApiClient: getImplementations")
   public getImplementations<TUri extends Uri | string>(
     uri: TUri,
-    options: GetImplementationsOptions = { }
+    options: GetImplementationsOptions = {}
   ): TUri[] {
     const isUriTypeString = typeof uri === "string";
     const applyRedirects = !!options.applyRedirects;
@@ -299,17 +294,13 @@ export class Web3ApiClient implements Client {
         contextId: contextId,
         uri: this._toUri(options.uri),
       };
-  
-      const api = await this._loadWeb3Api(
-        typedOptions.uri,
-        contextId
-      );
-  
+
+      const api = await this._loadWeb3Api(typedOptions.uri, contextId);
+
       result = (await api.invoke(
         typedOptions,
         contextualizeClient(this, contextId)
       )) as TData;
-
     } catch (error) {
       result = { error };
     }
@@ -514,13 +505,11 @@ export class Web3ApiClient implements Client {
     uri: Uri,
     contextId: string | undefined
   ): Promise<Api> {
-
     const typedUri = typeof uri === "string" ? new Uri(uri) : uri;
     const ignoreCache = this._isContextualized(contextId);
     let api = ignoreCache ? undefined : this._apiCache.get(uri.uri);
 
     if (!api) {
-
       const client = contextualizeClient(this, contextId);
       const config = this._getConfig(contextId);
       api = await resolveUri(
@@ -530,7 +519,8 @@ export class Web3ApiClient implements Client {
         config.interfaces,
         <TData = unknown, TUri extends Uri | string = string>(
           options: InvokeApiOptions<TUri>
-        ): Promise<InvokeApiResult<TData>> => client.invoke<TData, TUri>(options),
+        ): Promise<InvokeApiResult<TData>> =>
+          client.invoke<TData, TUri>(options),
         (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
         (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
           new WasmWeb3Api(uri, manifest, uriResolver)
@@ -549,63 +539,70 @@ export class Web3ApiClient implements Client {
   }
 }
 
-const contextualizeClient = (client: Web3ApiClient, contextId: string | undefined): Client => (
-  contextId ? {
-  query: <
-    TData extends Record<string, unknown> = Record<string, unknown>,
-    TVariables extends Record<string, unknown> = Record<string, unknown>,
-    TUri extends Uri | string = string
-  >(
-    options: QueryApiOptions<TVariables, TUri>
-  ): Promise<QueryApiResult<TData>> => {
-    return client.query({ ...options, contextId });
-  },
-  invoke: <
-    TData = unknown, TUri extends Uri | string = string
-  >(
-    options: InvokeApiOptions<TUri>
-  ): Promise<InvokeApiResult<TData>> => {
-    return client.invoke({ ...options, contextId });
-  },
-  subscribe: <
-    TData extends Record<string, unknown> = Record<string, unknown>,
-    TVariables extends Record<string, unknown> = Record<string, unknown>,
-    TUri extends Uri | string = string
-  >(
-    options: SubscribeOptions<TVariables, TUri>
-  ): Subscription<TData> => {
-    return client.subscribe({ ...options, contextId });
-  },
-  getRedirects: (options: GetRedirectsOptions = { }) => {
-    return client.getRedirects({ ...options, contextId });
-  },
-  getPlugins: (options: GetPluginsOptions = { }) => {
-    return client.getPlugins({ ...options, contextId });
-  },
-  getInterfaces: (options: GetInterfacesOptions = { }) => {
-    return client.getInterfaces({ ...options, contextId });
-  },
-  getSchema: <TUri extends Uri | string>(
-    uri: TUri, options: GetSchemaOptions = { }
-  ) => {
-    return client.getSchema(uri, { ...options, contextId });
-  },
-  getManifest: <TUri extends Uri | string, TManifestType extends ManifestType>(
-    uri: TUri,
-    options: GetManifestOptions<TManifestType>
-  ) => {
-    return client.getManifest(uri, { ...options, contextId });
-  },
-  getFile: <TUri extends Uri | string>(
-    uri: TUri,
-    options: GetFileOptions
-  ) => {
-    return client.getFile(uri, options);
-  },
-  getImplementations: <TUri extends Uri | string>(
-    uri: TUri,
-    options: GetImplementationsOptions = { }
-  ) => {
-    return client.getImplementations(uri, { ...options, contextId });
-  },
-} : client);
+const contextualizeClient = (
+  client: Web3ApiClient,
+  contextId: string | undefined
+): Client =>
+  contextId
+    ? {
+        query: <
+          TData extends Record<string, unknown> = Record<string, unknown>,
+          TVariables extends Record<string, unknown> = Record<string, unknown>,
+          TUri extends Uri | string = string
+        >(
+          options: QueryApiOptions<TVariables, TUri>
+        ): Promise<QueryApiResult<TData>> => {
+          return client.query({ ...options, contextId });
+        },
+        invoke: <TData = unknown, TUri extends Uri | string = string>(
+          options: InvokeApiOptions<TUri>
+        ): Promise<InvokeApiResult<TData>> => {
+          return client.invoke({ ...options, contextId });
+        },
+        subscribe: <
+          TData extends Record<string, unknown> = Record<string, unknown>,
+          TVariables extends Record<string, unknown> = Record<string, unknown>,
+          TUri extends Uri | string = string
+        >(
+          options: SubscribeOptions<TVariables, TUri>
+        ): Subscription<TData> => {
+          return client.subscribe({ ...options, contextId });
+        },
+        getRedirects: (options: GetRedirectsOptions = {}) => {
+          return client.getRedirects({ ...options, contextId });
+        },
+        getPlugins: (options: GetPluginsOptions = {}) => {
+          return client.getPlugins({ ...options, contextId });
+        },
+        getInterfaces: (options: GetInterfacesOptions = {}) => {
+          return client.getInterfaces({ ...options, contextId });
+        },
+        getSchema: <TUri extends Uri | string>(
+          uri: TUri,
+          options: GetSchemaOptions = {}
+        ) => {
+          return client.getSchema(uri, { ...options, contextId });
+        },
+        getManifest: <
+          TUri extends Uri | string,
+          TManifestType extends ManifestType
+        >(
+          uri: TUri,
+          options: GetManifestOptions<TManifestType>
+        ) => {
+          return client.getManifest(uri, { ...options, contextId });
+        },
+        getFile: <TUri extends Uri | string>(
+          uri: TUri,
+          options: GetFileOptions
+        ) => {
+          return client.getFile(uri, options);
+        },
+        getImplementations: <TUri extends Uri | string>(
+          uri: TUri,
+          options: GetImplementationsOptions = {}
+        ) => {
+          return client.getImplementations(uri, { ...options, contextId });
+        },
+      }
+    : client;

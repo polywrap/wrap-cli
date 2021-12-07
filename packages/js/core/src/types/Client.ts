@@ -19,15 +19,16 @@ export interface Contextualized {
   contextId?: string;
 }
 
-export interface GetRedirectsOptions extends Contextualized { }
+export type GetRedirectsOptions = Contextualized;
 
-export interface GetPluginsOptions extends Contextualized { }
+export type GetPluginsOptions = Contextualized;
 
-export interface GetInterfacesOptions extends Contextualized { }
+export type GetInterfacesOptions = Contextualized;
 
-export interface GetSchemaOptions extends Contextualized { }
+export type GetSchemaOptions = Contextualized;
 
-export interface GetManifestOptions<TManifestType extends ManifestType> extends Contextualized {
+export interface GetManifestOptions<TManifestType extends ManifestType>
+  extends Contextualized {
   type: TManifestType;
 }
 
@@ -48,9 +49,14 @@ export interface Client
 
   getPlugins(options: GetPluginsOptions): readonly PluginRegistration<Uri>[];
 
-  getInterfaces(options: GetInterfacesOptions): readonly InterfaceImplementations<Uri>[];
+  getInterfaces(
+    options: GetInterfacesOptions
+  ): readonly InterfaceImplementations<Uri>[];
 
-  getSchema<TUri extends Uri | string>(uri: TUri, options: GetSchemaOptions): Promise<string>;
+  getSchema<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetSchemaOptions
+  ): Promise<string>;
 
   getManifest<TUri extends Uri | string, TManifestType extends ManifestType>(
     uri: TUri,
