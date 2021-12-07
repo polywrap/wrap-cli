@@ -196,6 +196,24 @@ describe("Ethereum Plugin", () => {
 
       expect(response.errors).toBeUndefined();
       expect(response.data?.encodeFunction).toBe("0x46d4adf20000000000000000000000000000000000000000000000000000000000000064")
+
+      const acceptsArrayArg = await client.query<{ encodeFunction: string }>({
+        uri,
+        query: `
+          query {
+            encodeFunction(
+              method: $method
+              args: $args
+            )
+          }
+        `,
+        variables: {
+          method: "function createArr(uint256[] memory)",
+          args: [JSON.stringify([1, 2])]
+        }
+      });
+
+      expect(acceptsArrayArg.errors).toBeUndefined();
     });
 
     it("getSignerAddress", async () => {

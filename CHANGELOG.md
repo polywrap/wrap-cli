@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.56
+## Bugs
+* `@web3api/ethereum-plugin-js`: The encodeFunction now support array & object arg types.
+
 # Web3API 0.0.1-prealpha.55
 ## Bugs
 * `@web3api/schema-compose`: Properly support empty schema types.
