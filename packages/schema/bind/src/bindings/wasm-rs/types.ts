@@ -93,10 +93,10 @@ const keywords = {
   union: "union",
 };
 
-export type KeyWords = typeof keywords;
+export type Keywords = typeof keywords;
 
-export type KeyWord = keyof KeyWords;
+export type Keyword = keyof Keywords;
 
-export function isKeyWord(keyword: string): keyword is KeyWord {
+export function isKeyword(keyword: string): keyword is Keyword {
   return keyword in keywords;
 }
