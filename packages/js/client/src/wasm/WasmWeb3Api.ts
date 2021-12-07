@@ -170,6 +170,7 @@ export class WasmWeb3Api extends Api {
         );
       };
 
+      const memory = AsyncWasmInstance.createMemory({ module: wasm });
       const instance = await AsyncWasmInstance.createInstance({
         module: wasm,
         imports: createImports({
