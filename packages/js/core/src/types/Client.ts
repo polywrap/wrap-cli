@@ -9,22 +9,34 @@ import {
 } from "./";
 import { ManifestType, AnyManifest } from "../manifest";
 
-export interface GetManifestOptions<TManifestType extends ManifestType> {
-  type: TManifestType;
-}
-
-export interface GetFileOptions {
-  path: string;
-  encoding?: "utf-8" | string;
-}
-
 export interface ClientConfig<TUri extends Uri | string = string> {
   redirects: UriRedirect<TUri>[];
   plugins: PluginRegistration<TUri>[];
   interfaces: InterfaceImplementations<TUri>[];
 }
 
-export interface GetImplementationsOptions {
+export interface Contextualized {
+  contextId?: string;
+}
+
+export interface GetRedirectsOptions extends Contextualized { }
+
+export interface GetPluginsOptions extends Contextualized { }
+
+export interface GetInterfacesOptions extends Contextualized { }
+
+export interface GetSchemaOptions extends Contextualized { }
+
+export interface GetManifestOptions<TManifestType extends ManifestType> extends Contextualized {
+  type: TManifestType;
+}
+
+export interface GetFileOptions extends Contextualized {
+  path: string;
+  encoding?: "utf-8" | string;
+}
+
+export interface GetImplementationsOptions extends Contextualized {
   applyRedirects?: boolean;
 }
 
@@ -32,13 +44,13 @@ export interface Client
   extends QueryHandler,
     SubscriptionHandler,
     InvokeHandler {
-  getRedirects(contextId?: string): readonly UriRedirect<Uri>[];
+  getRedirects(options: GetRedirectsOptions): readonly UriRedirect<Uri>[];
 
-  getPlugins(contextId?: string): readonly PluginRegistration<Uri>[];
+  getPlugins(options: GetPluginsOptions): readonly PluginRegistration<Uri>[];
 
-  getInterfaces(contextId?: string): readonly InterfaceImplementations<Uri>[];
+  getInterfaces(options: GetInterfacesOptions): readonly InterfaceImplementations<Uri>[];
 
-  getSchema<TUri extends Uri | string>(uri: TUri): Promise<string>;
+  getSchema<TUri extends Uri | string>(uri: TUri, options: GetSchemaOptions): Promise<string>;
 
   getManifest<TUri extends Uri | string, TManifestType extends ManifestType>(
     uri: TUri,
@@ -52,6 +64,6 @@ export interface Client
 
   getImplementations<TUri extends Uri | string>(
     uri: TUri,
-    options?: GetImplementationsOptions
+    options: GetImplementationsOptions
   ): TUri[];
 }

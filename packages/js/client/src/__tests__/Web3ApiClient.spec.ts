@@ -80,25 +80,7 @@ describe("Web3ApiClient", () => {
     return {
       factory: () => new MockPlugin(),
       manifest: {
-        schema: `
-          type Query {
-            getData(
-              address: String!
-              connection: Connection
-            ): Int!
-          }
-          
-          type Mutation {
-            deployContract(
-              connection: Connection
-            ): String!
-          }
-          
-          type Connection {
-            node: String
-            networkNameOrChainId: String
-          }
-        `,
+        schema: ``,
         implements: [],
       },
     };
@@ -239,11 +221,33 @@ describe("Web3ApiClient", () => {
           )
         }
       `,
+      config: {
+        redirects,
+      },
     });
 
     expect(get.errors).toBeFalsy();
     expect(get.data).toBeTruthy();
     expect(get.data?.getData).toBe(100);
+
+    const getFail = await client.query<{
+      getData: number;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          getData(
+            address: "0x10"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(getFail.errors).toBeTruthy();
+    expect(getFail.data?.getData).toBeFalsy();
   });
 
   it("redirect registration", () => {
