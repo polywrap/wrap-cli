@@ -44,7 +44,7 @@ export default {
     });
 
     if (!middlewareState.dockerPath) {
-      print.error(intlMsg.dockerVerifyMiddleware_noDocker());
+      print.error(intlMsg.middleware_dockerVerifyMiddleware_noDocker());
       return;
     }
 

@@ -98,7 +98,7 @@ export default {
 
     await middleware.run({
       name: toolbox.command?.name,
-      options: { help, manifestPath, ipfs, outputDir, ens, generationFile },
+      options: { help, manifestPath, ipfs, outputDir, ens, custom },
     });
 
     let ipfsProvider: string | undefined;
