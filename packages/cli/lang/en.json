@@ -161,5 +161,6 @@
   "lib_typescript_notInstalled": "Your project uses typescript, but it's not installed",
   "lib_typescript_tsNodeNotInstalled": "Your project uses typescript, but ts-node is not installed",
   "lib_watcher_alreadyWatching": "Watcher session is already in progress. Directory: {dir}",
-  "lib_docker_invalidImageId": "Invalid docker image ID returned: {imageId}"
+  "lib_docker_invalidImageId": "Invalid docker image ID returned: {imageId}",
+  "middleware_dockerVerifyMiddleware_noDocker": "Docker executable not found in PATH"
 }
