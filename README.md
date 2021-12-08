@@ -78,7 +78,7 @@ yarn lint
 To auto-fix lint errors:
 
 ```
-yarn lint: fix
+yarn lint:fix
 ```
 
 ---
