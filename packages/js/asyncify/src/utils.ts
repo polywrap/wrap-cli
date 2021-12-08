@@ -34,7 +34,7 @@ export function indexOfArray(source: Uint8Array, search: Uint8Array): number {
     let retry = false;
     let i = 1;
     for (; i < search.length && !retry; ++i) {
-      if (subBuff.at(i) !== search.at(i)) {
+      if (subBuff[i] !== search[i]) {
         retry = true;
       }
     }
