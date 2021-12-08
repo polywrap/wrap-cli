@@ -1,8 +1,8 @@
-# [**Polywrap**](https://polywrap.io) &middot; The Web3 Integration Standard
+![polywrap-banner](https://user-images.githubusercontent.com/12145726/140437007-d2b8c969-df29-4a43-906a-d5400b4394ac.png) 
 
 > ⚠️ _Polywrap is in pre-alpha, meaning our code and documentation are rapidly changing._
 >
-> Have questions or want to get involved? Join our community [Discord](https://discord.com/invite/Z5m88a5qWu) or [open an issue](https://github.com/polywrap/monorepo/issues) on Github.
+> Have questions or want to get involved? Join our community [Discord](https://discord.polywrap.io) or [open an issue](https://github.com/polywrap/monorepo/issues) on Github.
 
 **Polywrap** is a developer tool that enables easy integration of Web3 protocols into any application. It makes it possible for applications on any platform, written in any language, to read and write data to Web3 protocols.
 
@@ -62,12 +62,6 @@ Run the following to compile the monorepo:
 ## Test
 
 Run the following to test if the build worked:
-
-```
-yarn test:ci
-```
-
-Or, if the client test environment (`client-test-env`) is already running in the background, then simply run:
 
 ```
 yarn test
