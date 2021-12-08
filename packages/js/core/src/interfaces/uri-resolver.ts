@@ -1,5 +1,5 @@
 // TODO: https://github.com/web3-api/monorepo/issues/101
-import { Uri, Client, InvokeApiResult } from "../";
+import { Uri, InvokeHandler, InvokeApiResult } from "../";
 
 import { Tracer } from "@web3api/tracing-js";
 
@@ -13,11 +13,11 @@ export const Query = {
   tryResolveUri: Tracer.traceFunc(
     "core: uri-resolver: tryResolveUri",
     async (
-      client: Client,
+      invoke: InvokeHandler["invoke"],
       api: Uri,
       uri: Uri
     ): Promise<InvokeApiResult<MaybeUriOrManifest>> => {
-      return client.invoke<MaybeUriOrManifest>({
+      return invoke<MaybeUriOrManifest>({
         uri: api.uri,
         module: "query",
         method: `tryResolveUri`,
@@ -31,11 +31,11 @@ export const Query = {
   getFile: Tracer.traceFunc(
     "core: uri-resolver: getFile",
     async (
-      client: Client,
+      invoke: InvokeHandler["invoke"],
       api: Uri,
       path: string
     ): Promise<InvokeApiResult<ArrayBuffer>> => {
-      return client.invoke<ArrayBuffer>({
+      return invoke<ArrayBuffer>({
         uri: api.uri,
         module: "query",
         method: "getFile",

@@ -9,31 +9,49 @@
   },
   "workspaces": {
     "packages": [
-      "./packages/**/*"
+      "./packages/apis/**",
+      "./packages/cli/**",
+      "./packages/core-interfaces/**",
+      "./packages/js/**",
+      "./packages/manifest-schemas/**",
+      "./packages/schema/**",
+      "./packages/templates/**",
+      "./packages/test-cases",
+      "./packages/test-env/**",
+      "./packages/wasm/**"
     ]
   },
   "scripts": {
     "reset": "yarn clean && yarn && yarn build",
     "clean": "npx rimraf ./**/node_modules ./**/build ./**/coverage ./**/.w3",
-    "build": "lerna run build --no-private --ignore @web3api/cli* --ignore @web3api/react && lerna run build --scope @web3api/client-js --scope @web3api/react && lerna run build --scope @web3api/cli",
+    "install:dependencies": "cd dependencies && yarn",
+    "preinstall": "yarn install:dependencies",
+    "build": "yarn build:core && yarn build:plugins && yarn build:client && yarn build:cli",
+    "build:core": "lerna run build --no-private --ignore @web3api/*-plugin-js --ignore @web3api/cli* --ignore @web3api/react",
+    "build:plugins": "lerna run build --scope @web3api/*-plugin-js --concurrency 1",
+    "build:client": "lerna run build --scope @web3api/client-js --scope @web3api/react",
+    "build:cli": "lerna run build --scope @web3api/cli",
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint -- --fix",
-    "lint:ci": "lerna run lint",
-    "test": "lerna run test --no-private --ignore @web3api/client-js && lerna run test --scope @web3api/client-js",
-    "test:ci": "lerna run test:ci --no-private --ignore @web3api/client-js && lerna run test:ci --scope @web3api/client-js",
+    "lint:ci": "yarn lint",
+    "test": "lerna run test --no-private --ignore @web3api/client-js --concurrency 1 && lerna run test --scope @web3api/client-js",
+    "test:ci": "lerna run test:ci --no-private --ignore @web3api/client-js --concurrency 1 && lerna run test:ci --scope @web3api/client-js",
     "version:apply": "npx lerna version $(cat VERSION) --exact --no-git-tag-version --yes",
     "postversion:apply": "git add . && git commit -m \"build(release): migrate to `cat ./VERSION`\"",
     "publish:npm": "lerna publish from-package --no-private --yes --registry https://registry.npmjs.org/ --no-verify-access"
   },
   "devDependencies": {
-    "lerna": "3.22.1",
+    "lerna": "4.0.0",
     "rimraf": "3.0.2",
     "@typescript-eslint/eslint-plugin": "4.11.1",
     "@typescript-eslint/parser": "4.11.1",
     "eslint": "7.16.0",
     "eslint-config-prettier": "7.1.0",
     "eslint-plugin-import": "2.22.1",
-    "eslint-plugin-prettier": "3.3.0",
-    "prettier": "2.2.1"
+    "eslint-plugin-prettier": "3.4.0",
+    "prettier": "2.2.1",
+    "graphql": "15.5.0",
+    "@graphql-eslint/eslint-plugin": "1.0.1",
+    "eslint-plugin-json": "3.0.0"
   }
 }

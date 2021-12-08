@@ -1,4 +1,4 @@
-#import { Query, Connection, EventNotification, StaticTxResult, TxOverrides, TxRequest, TxReceipt } into Ethereum from "w3://ens/ethereum.web3api.eth"
+#import { Query, Connection, Network, EventNotification, StaticTxResult, TxOverrides, TxRequest, TxReceipt } into Ethereum from "w3://ens/ethereum.web3api.eth"
 
 type Query {
   callContractView(
@@ -19,6 +19,11 @@ type Query {
   encodeParams(
     types: [String!]!
     values: [String!]!
+  ): String!
+
+  encodeFunction(
+    method: String!
+    args: [String!]
   ): String!
 
   getSignerAddress(
@@ -78,4 +83,8 @@ type Query {
     timeout: UInt32
     connection: Ethereum_Connection
   ): Ethereum_EventNotification!
+
+  getNetwork(
+    connection: Ethereum_Connection
+  ): Ethereum_Network!
 }

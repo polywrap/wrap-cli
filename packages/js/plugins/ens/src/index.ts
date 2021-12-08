@@ -1,12 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { query } from "./resolvers";
-import { manifest } from "./manifest";
+import { manifest, Query, Ethereum_Query } from "./w3";
 
 import {
   Client,
   Plugin,
-  PluginManifest,
-  PluginModules,
+  PluginPackageManifest,
   PluginFactory,
 } from "@web3api/core-js";
 import { ethers } from "ethers";
@@ -36,7 +35,7 @@ export class EnsPlugin extends Plugin {
     }
   }
 
-  public static manifest(): PluginManifest {
+  public static manifest(): PluginPackageManifest {
     return manifest;
   }
 
@@ -44,9 +43,11 @@ export class EnsPlugin extends Plugin {
     return ethers.utils.isValidName(domain) && domain.indexOf(".eth") !== -1;
   }
 
-  // TODO: generated types here from the schema.graphql to ensure safety `Resolvers<TQuery, TMutation>`
-  // https://github.com/web3-api/monorepo/issues/101
-  public getModules(client: Client): PluginModules {
+  public getModules(
+    client: Client
+  ): {
+    query: Query.Module;
+  } {
     return {
       query: query(this, client),
     };
@@ -104,19 +105,8 @@ export class EnsPlugin extends Plugin {
       args: string[],
       networkNameOrChainId?: string
     ): Promise<string> => {
-      const { data, errors } = await client.query<{
-        callContractView: string;
-      }>({
-        uri: "ens/ethereum.web3api.eth",
-        query: `query {
-          callContractView(
-            address: $address,
-            method: $method,
-            args: $args,
-            connection: $connection
-          )
-        }`,
-        variables: {
+      const { data, error } = await Ethereum_Query.callContractView(
+        {
           address,
           method,
           args,
@@ -126,24 +116,25 @@ export class EnsPlugin extends Plugin {
               }
             : undefined,
         },
-      });
+        client
+      );
 
-      if (errors && errors.length) {
-        throw errors;
+      if (error) {
+        throw error;
       }
 
-      if (data && data.callContractView) {
-        if (typeof data.callContractView !== "string") {
+      if (data) {
+        if (typeof data !== "string") {
           throw Error(
-            `Malformed data returned from Ethereum.callContractView: ${data.callContractView}`
+            `Malformed data returned from Ethereum.callContractView: ${data}`
           );
         }
 
-        return data.callContractView;
+        return data;
       }
 
       throw Error(
-        `Ethereum.callContractView returned nothing.\nData: ${data}\nErrors: ${errors}`
+        `Ethereum.callContractView returned nothing.\nData: ${data}\nError: ${error}`
       );
     };
 

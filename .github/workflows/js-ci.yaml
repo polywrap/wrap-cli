@@ -1,12 +1,12 @@
 name: JS-CI
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
   JS-CI-Linux:
     name: JS-CI-Linux
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2

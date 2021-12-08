@@ -1,7 +1,7 @@
 /* eslint-disable prefer-const */
 import {
   Compiler,
-  Project,
+  Web3ApiProject,
   SchemaComposer,
   Watcher,
   WatchEvent,
@@ -175,7 +175,7 @@ export default {
       }
     }
 
-    const project = new Project({
+    const project = new Web3ApiProject({
       web3apiManifestPath: manifestPath,
       quiet: verbose ? false : true,
     });

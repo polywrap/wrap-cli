@@ -6,9 +6,7 @@ import {
 import { ZipkinExporter } from "@opentelemetry/exporter-zipkin";
 import { WebTracerProvider } from "@opentelemetry/web";
 import * as api from "@opentelemetry/api";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-const inspect = require("util-inspect");
+import inspect from "browser-util-inspect";
 
 type MaybeAsync<T> = Promise<T> | T;
 
@@ -27,9 +25,9 @@ export class Tracer {
     | null = null;
   private static _spans: Array<api.Span> = [];
 
-  static enableTracing(tracerName: string): void {
+  static enableTracing(tracerName: string, serviceName = "Polywrap"): void {
     this.traceEnabled = true;
-    this._initProvider();
+    this._initProvider(serviceName);
 
     if (this._provider) {
       this._tracer = this._provider.getTracer(tracerName) as otTracer;
@@ -101,6 +99,45 @@ export class Tracer {
     }
   }
 
+  static traceMethod(span: string) {
+    return function (
+      target: unknown,
+      key: string | symbol,
+      descriptor: PropertyDescriptor
+    ): PropertyDescriptor {
+      const original = descriptor.value;
+
+      descriptor.value = function <TArgs extends Array<unknown>, TReturn>(
+        ...args: TArgs[]
+      ): TReturn {
+        try {
+          Tracer.startSpan(span);
+          Tracer.setAttribute("input", { ...args });
+
+          const result = original.apply(this, args);
+
+          if (isPromise(result)) {
+            return (result.then((result) => {
+              Tracer.setAttribute("output", result);
+              Tracer.endSpan();
+              return result;
+            }) as unknown) as TReturn;
+          } else {
+            Tracer.setAttribute("output", result);
+            Tracer.endSpan();
+            return result;
+          }
+        } catch (error) {
+          Tracer.recordException(error);
+          Tracer.endSpan();
+          throw error;
+        }
+      };
+
+      return descriptor;
+    };
+  }
+
   static traceFunc<TArgs extends Array<unknown>, TReturn>(
     span: string,
     func: (...args: TArgs) => TReturn
@@ -131,7 +168,7 @@ export class Tracer {
     };
   }
 
-  static _initProvider(): void {
+  static _initProvider(serviceName: string): void {
     if (this._provider) return;
 
     if (typeof window === "undefined") {
@@ -142,7 +179,11 @@ export class Tracer {
 
     // Configure span processor to send spans to the exporter
     this._provider.addSpanProcessor(
-      new SimpleSpanProcessor(new ZipkinExporter())
+      new SimpleSpanProcessor(
+        new ZipkinExporter({
+          serviceName: serviceName,
+        })
+      )
     );
 
     this._provider.register();

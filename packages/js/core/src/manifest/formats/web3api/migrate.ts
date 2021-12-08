@@ -12,11 +12,17 @@ import {
 } from ".";
 
 import {
-  migrate as migrate_0_0_1_prealpha_1_to_0_0_1_prealpha_3
-} from "./migrators/0.0.1-prealpha.1_to_0.0.1-prealpha.3";
+  migrate as migrate_0_0_1_prealpha_1_to_0_0_1_prealpha_5
+} from "./migrators/0.0.1-prealpha.1_to_0.0.1-prealpha.5";
 import {
-  migrate as migrate_0_0_1_prealpha_2_to_0_0_1_prealpha_3
-} from "./migrators/0.0.1-prealpha.2_to_0.0.1-prealpha.3";
+  migrate as migrate_0_0_1_prealpha_2_to_0_0_1_prealpha_5
+} from "./migrators/0.0.1-prealpha.2_to_0.0.1-prealpha.5";
+import {
+  migrate as migrate_0_0_1_prealpha_3_to_0_0_1_prealpha_5
+} from "./migrators/0.0.1-prealpha.3_to_0.0.1-prealpha.5";
+import {
+  migrate as migrate_0_0_1_prealpha_4_to_0_0_1_prealpha_5
+} from "./migrators/0.0.1-prealpha.4_to_0.0.1-prealpha.5";
 
 import { Tracer } from "@web3api/tracing-js";
 
@@ -25,8 +31,10 @@ type Migrator = {
 };
 
 export const migrators: Migrator = {
-  "0.0.1-prealpha.1": migrate_0_0_1_prealpha_1_to_0_0_1_prealpha_3,
-  "0.0.1-prealpha.2": migrate_0_0_1_prealpha_2_to_0_0_1_prealpha_3,
+  "0.0.1-prealpha.1": migrate_0_0_1_prealpha_1_to_0_0_1_prealpha_5,
+  "0.0.1-prealpha.2": migrate_0_0_1_prealpha_2_to_0_0_1_prealpha_5,
+  "0.0.1-prealpha.3": migrate_0_0_1_prealpha_3_to_0_0_1_prealpha_5,
+  "0.0.1-prealpha.4": migrate_0_0_1_prealpha_4_to_0_0_1_prealpha_5,
 };
 
 export const migrateWeb3ApiManifest = Tracer.traceFunc(

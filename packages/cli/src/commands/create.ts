@@ -1,4 +1,4 @@
-import { generateProjectTemplate } from "../lib/project-templates";
+import { generateProjectTemplate } from "../lib/templates";
 import { fixParameters } from "../lib/helpers/parameters";
 import { intlMsg } from "../lib/intl";
 

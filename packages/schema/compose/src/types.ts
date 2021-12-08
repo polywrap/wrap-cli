@@ -1,3 +1,5 @@
+import { CapabilityType } from "@web3api/schema-parse";
+
 export type SchemaResolver = (uriOrPath: string) => Promise<string>;
 
 export interface SchemaFile {
@@ -14,6 +16,11 @@ export interface ExternalImport {
   importedTypes: string[];
   namespace: string;
   uri: string;
+}
+
+export interface Use {
+  usedTypes: CapabilityType[];
+  namespace: string;
 }
 
 export interface LocalImport {

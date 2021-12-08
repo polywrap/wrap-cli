@@ -1,9 +1,12 @@
-import { Uri } from ".";
+import { ClientConfig, Uri } from ".";
 
 export type InvokableModules = "query" | "mutation";
 
 /** Options required for an API invocation. */
-export interface InvokeApiOptions<TUri = Uri> {
+export interface InvokeApiOptions<
+  TUri extends Uri | string = string,
+  TClientConfig extends ClientConfig = ClientConfig
+> {
   /** The API's URI */
   uri: TUri;
 
@@ -32,6 +35,16 @@ export interface InvokeApiOptions<TUri = Uri> {
    * into JavaScript objects.
    */
   decode?: boolean;
+
+  /**
+   * Override the client's config for all invokes within this query.
+   */
+  config?: Partial<TClientConfig>;
+
+  /**
+   * Invoke id used to track query context data set internally.
+   */
+  contextId?: string;
 }
 
 /**
@@ -53,11 +66,7 @@ export interface InvokeApiResult<TData = unknown> {
 }
 
 export interface InvokeHandler {
-  invoke<TData = unknown>(
-    options: InvokeApiOptions<string>
-  ): Promise<InvokeApiResult<TData>>;
-
-  invoke<TData = unknown>(
-    options: InvokeApiOptions<Uri>
+  invoke<TData = unknown, TUri extends Uri | string = string>(
+    options: InvokeApiOptions<TUri>
   ): Promise<InvokeApiResult<TData>>;
 }

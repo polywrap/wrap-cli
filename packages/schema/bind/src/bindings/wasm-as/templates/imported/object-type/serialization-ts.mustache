@@ -1,14 +1,5 @@
 {{^__commonImport}}
-import {
-  Read,
-  ReadDecoder,
-  Write,
-  WriteSizer,
-  WriteEncoder,
-  Nullable,
-  BigInt,
-  Context
-} from "@web3api/wasm-as";
+{{> serialization_imports}}
 import { {{type}} } from "./";
 import * as Types from "../..";
 

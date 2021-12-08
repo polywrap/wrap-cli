@@ -2,14 +2,13 @@ scalar UInt
 scalar UInt8
 scalar UInt16
 scalar UInt32
-scalar UInt64
 scalar Int
 scalar Int8
 scalar Int16
 scalar Int32
-scalar Int64
 scalar Bytes
 scalar BigInt
+scalar JSON
 
 directive @imported(
   uri: String!
@@ -21,6 +20,13 @@ directive @imports(
   types: [String!]!
 ) on OBJECT
 
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 """
 CustomEnum comment
 """
@@ -47,23 +53,23 @@ optStr comment
   u8: UInt8!
   u16: UInt16!
   u32: UInt32!
-  u64: UInt64!
   i: Int!
   i8: Int8!
   i16: Int16!
   i32: Int32!
-  i64: Int64!
   bigint: BigInt!
   optBigint: BigInt
+  json: JSON!
+  optJson: JSON
   bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optUOptArray: [UInt]
   optStrOptArray: [String]
   uArrayArray: [[UInt!]!]!
-  uOptArrayOptArray: [[UInt64]]!
-  uArrayOptArrayArray: [[[UInt64!]!]]!
-  crazyArray: [[[[UInt64!]]!]]
+  uOptArrayOptArray: [[UInt32]]!
+  uArrayOptArrayArray: [[[UInt32!]!]]!
+  crazyArray: [[[[UInt32!]]!]]
   objectArray: [UserObject!]!
   objectArrayArray: [[UserObject!]!]!
   nestedObject: UserObject!
@@ -110,6 +116,10 @@ Query comment
 """
 type Query implements Interface_Query @imports(
   types: [ "TestImport_Query", "Interface_Query" ]
+) @capability(
+  type: "getImplementations",
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
 ) {
 """
 queryMethod comment
@@ -161,7 +171,7 @@ type TestImport_Query @imported(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
   nativeType: "Query"
-) {
+) @enabled_interface {
 """
 importedMethod comment
 """
@@ -178,7 +188,7 @@ uArrayArray comment
 
   anotherMethod(
     arg: [String!]!
-  ): [Int64]!
+  ): [Int32]!
 
   importedObjectMethod(
     importedObject: TestImport_Object!
