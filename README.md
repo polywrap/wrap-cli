@@ -33,7 +33,7 @@ Come visit our [Github issues](https://github.com/polywrap/monorepo/issues) to s
 Below are a series of steps to get started with our monorepo after you've cloned it into your local repository.
 
 ## Contributing  
-Before contributing please read the [contributor guidelines](CONTRIBUTORS.md).
+Before contributing please read the [contributor guidelines](DEV_GUIDELINES.md).
 
 ## Pre-reqs
 
