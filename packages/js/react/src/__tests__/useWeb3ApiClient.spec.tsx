@@ -61,7 +61,7 @@ describe("useWeb3ApiClient hook", () => {
     const client = getClient();
 
     expect(client).toBeTruthy();
-    expect(client.plugins().length).toBeGreaterThan(0);
+    expect(client.getPlugins().length).toBeGreaterThan(0);
   });
 
   it("Should throw error because there's no provider with expected key ", async () => {

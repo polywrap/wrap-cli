@@ -35,7 +35,7 @@ export default {
   alias: ["g"],
   description: intlMsg.commands_codegen_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { filesystem, parameters, print } = toolbox;
+    const { filesystem, parameters, print, middleware } = toolbox;
 
     const { h, c, m, i, o, e } = parameters.options;
     let {
@@ -95,6 +95,11 @@ export default {
       print.info(HELP);
       return;
     }
+
+    await middleware.run({
+      name: toolbox.command?.name,
+      options: { help, manifestPath, ipfs, outputDir, ens, custom },
+    });
 
     let ipfsProvider: string | undefined;
     let ethProvider: string | undefined;

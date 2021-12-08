@@ -14,7 +14,7 @@
     "down": "docker-compose down"
   },
   "dependencies": {
-    "axios": "0.21.1",
+    "axios": "0.21.2",
     "dotenv": "10.0.0"
   },
   "publishConfig": {

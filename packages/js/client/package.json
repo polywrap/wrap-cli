@@ -35,11 +35,13 @@
     "@web3api/tracing-js": "0.0.1-prealpha.56",
     "@web3api/uts46-plugin-js": "0.0.1-prealpha.56",
     "graphql": "15.5.0",
-    "js-yaml": "3.14.0"
+    "js-yaml": "3.14.0",
+    "uuid": "8.3.2"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
     "@types/js-yaml": "3.11.1",
+    "@types/uuid": "8.3.0",
     "@web3api/cli": "0.0.1-prealpha.56",
     "@web3api/os-js": "0.0.1-prealpha.56",
     "@web3api/test-cases": "0.0.1-prealpha.56",

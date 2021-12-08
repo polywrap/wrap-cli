@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@web3api/core-js": "0.0.1-prealpha.56",
-    "axios": "0.21.1"
+    "axios": "0.21.2"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
