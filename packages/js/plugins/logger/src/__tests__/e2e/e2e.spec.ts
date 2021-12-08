@@ -1,5 +1,4 @@
-import { Web3ApiClient } from "@web3api/client-js"
-import { LogLevel } from "../..";
+import { Web3ApiClient } from "@web3api/client-js";
 
 describe("log method", () => {
 
@@ -7,11 +6,11 @@ describe("log method", () => {
     const web3ApiClient = new Web3ApiClient()
 
     const response = await web3ApiClient.query<{ log: boolean }>({
-      uri: "w3://w3/logger",
+      uri: "w3://ens/js-logger.web3api.eth",
       query: `
         query {
           log(
-            level: ${LogLevel.DEBUG}
+            level: DEBUG
             message: "Test message"
           )
         }

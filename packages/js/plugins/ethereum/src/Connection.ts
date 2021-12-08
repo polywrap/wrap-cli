@@ -4,6 +4,8 @@ import {
   JsonRpcProvider,
   Web3Provider,
   Networkish,
+  WebSocketProvider,
+  getNetwork,
 } from "@ethersproject/providers";
 import { getAddress } from "@ethersproject/address";
 
@@ -11,7 +13,7 @@ export type Address = string;
 export type AccountIndex = number;
 export type EthereumSigner = Signer | Address | AccountIndex;
 export type EthereumProvider = string | ExternalProvider | JsonRpcProvider;
-export type EthereumClient = JsonRpcProvider;
+export type EthereumClient = Web3Provider | JsonRpcProvider;
 
 export interface ConnectionConfig {
   provider: EthereumProvider;
@@ -42,13 +44,29 @@ export class Connection {
     const connections: Connections = {};
 
     for (const network of Object.keys(configs)) {
-      connections[network] = new Connection(configs[network]);
+      // Create the connection
+      const connection = new Connection(configs[network]);
+      const networkStr = network.toLowerCase();
+
+      connections[networkStr] = connection;
+
+      // Handle the case where `network` is a number
+      const networkNumber = Number.parseInt(networkStr);
+
+      if (networkNumber) {
+        const namedNetwork = getNetwork(networkNumber);
+        connections[namedNetwork.name] = connection;
+      }
     }
 
     return connections;
   }
 
   static fromNetwork(networkish: Networkish): Connection {
+    if (typeof networkish === "string") {
+      networkish = networkish.toLowerCase();
+    }
+
     return new Connection({
       provider: (ethers.providers.getDefaultProvider(
         ethers.providers.getNetwork(networkish)
@@ -71,7 +89,7 @@ export class Connection {
     if (typeof provider === "string") {
       this._client = (ethers.providers.getDefaultProvider(
         provider
-      ) as unknown) as JsonRpcProvider;
+      ) as unknown) as JsonRpcProvider | WebSocketProvider;
     } else {
       if ((provider as JsonRpcProvider).anyNetwork !== undefined) {
         this._client = provider as JsonRpcProvider;
@@ -95,13 +113,13 @@ export class Connection {
     } else if (Signer.isSigner(signer)) {
       this._config.signer = signer;
 
-      if (signer.provider !== this._config.provider) {
+      if (!this._client) {
         throw Error(
-          `Signer's connected provider does not match the config's ` +
-            `provider. Please call "setProvider(...)" before calling ` +
-            `"setSigner(...)" if a different provider is desired.`
+          `Please call "setProvider(...)" before calling setSigner(...)`
         );
       }
+
+      this._config.signer = signer.connect(this._client);
     } else {
       this._config.signer = signer;
     }

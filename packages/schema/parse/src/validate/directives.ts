@@ -1,43 +1,46 @@
 import { ImportedDefinition } from "../typeInfo";
+import { SchemaValidator } from ".";
 
-import {
-  visit,
-  DirectiveNode,
-  DocumentNode,
-  ASTNode,
-  ObjectTypeDefinitionNode,
-} from "graphql";
+import { DirectiveNode, ASTNode, ObjectTypeDefinitionNode } from "graphql";
 
-export function supportedDirectives(astNode: DocumentNode): void {
-  const supportedDirectives = ["imported", "imports"];
+export const getSupportedDirectivesValidator = (): SchemaValidator => {
+  const supportedDirectives = [
+    "imported",
+    "imports",
+    "capability",
+    "enabled_interface",
+  ];
   const unsupportedUsages: string[] = [];
 
-  visit(astNode, {
-    enter: {
-      Directive: (node: DirectiveNode) => {
-        const name = node.name.value;
+  return {
+    visitor: {
+      enter: {
+        Directive: (node: DirectiveNode) => {
+          const name = node.name.value;
 
-        if (!supportedDirectives.includes(name)) {
-          unsupportedUsages.push(name);
-        }
+          if (!supportedDirectives.includes(name)) {
+            unsupportedUsages.push(name);
+          }
+        },
       },
     },
-  });
+    displayValidationMessagesIfExist: () => {
+      if (unsupportedUsages.length) {
+        throw new Error(
+          `Found the following usages of unsupported directives:${unsupportedUsages.map(
+            (u) => `\n@${u}`
+          )}`
+        );
+      }
+    },
+  };
+};
 
-  if (unsupportedUsages.length) {
-    throw new Error(
-      `Found the following usages of unsupported directives:${unsupportedUsages.map(
-        (u) => `\n@${u}`
-      )}`
-    );
-  }
-}
-
-export function importsDirective(astNode: DocumentNode): void {
-  let lastNodeVisited = "";
+export const getImportsDirectiveValidator = (): SchemaValidator => {
+  let isInsideObjectTypeDefinition = false;
 
   const ObjectTypeDefinition = (node: ObjectTypeDefinitionNode) => {
-    lastNodeVisited = node.kind;
+    isInsideObjectTypeDefinition = true;
     const badUsageLocations: string[] = [];
 
     const importsAllowedObjectTypes = ["Query", "Mutation"];
@@ -73,7 +76,7 @@ export function importsDirective(astNode: DocumentNode): void {
       return;
     }
 
-    if (lastNodeVisited !== "ObjectTypeDefinition") {
+    if (!isInsideObjectTypeDefinition) {
       throw new Error(
         `@imports directive should only be used on QUERY or MUTATION type definitions, ` +
           `but it is being used in the following location: ${path.join(" -> ")}`
@@ -120,28 +123,32 @@ export function importsDirective(astNode: DocumentNode): void {
     }
   };
 
-  visit(astNode, {
-    enter: (
-      node: ASTNode,
-      key: string | number | undefined,
-      parent: ASTNode | undefined,
-      path: ReadonlyArray<string | number>
-    ) => {
-      if (node.kind === "ObjectTypeDefinition") {
-        ObjectTypeDefinition(node as ObjectTypeDefinitionNode);
-      } else if (node.kind === "Directive") {
-        Directive(node as DirectiveNode, key, parent, path);
-      }
-
-      if (node.kind !== "Name") {
-        lastNodeVisited = node.kind;
-      }
+  return {
+    visitor: {
+      enter: (
+        node: ASTNode,
+        key: string | number | undefined,
+        parent: ASTNode | undefined,
+        path: ReadonlyArray<string | number>
+      ) => {
+        if (node.kind === "ObjectTypeDefinition") {
+          ObjectTypeDefinition(node as ObjectTypeDefinitionNode);
+        } else if (node.kind === "Directive") {
+          Directive(node as DirectiveNode, key, parent, path);
+        } else if (
+          node.kind !== "NamedType" &&
+          node.kind !== "Name" &&
+          node.kind !== "StringValue"
+        ) {
+          isInsideObjectTypeDefinition = false;
+        }
+      },
     },
-  });
-}
+  };
+};
 
-export function importedDirective(astNode: ASTNode): void {
-  let lastNodeVisited = "";
+export const getImportedDirectiveValidator = (): SchemaValidator => {
+  let isInsideObjectOrEnumTypeDefinition = false;
 
   const Directive = (
     node: DirectiveNode,
@@ -153,10 +160,7 @@ export function importedDirective(astNode: ASTNode): void {
       return;
     }
 
-    if (
-      lastNodeVisited !== "ObjectTypeDefinition" &&
-      lastNodeVisited !== "EnumTypeDefinition"
-    ) {
+    if (!isInsideObjectOrEnumTypeDefinition) {
       throw new Error(
         `@imported directive should only be used on object or enum type definitions, ` +
           `but it is being used in the following location: ${path.join(" -> ")}`
@@ -198,20 +202,29 @@ export function importedDirective(astNode: ASTNode): void {
     }
   };
 
-  visit(astNode, {
-    enter: (
-      node: ASTNode,
-      key: string | number | undefined,
-      parent: ASTNode | undefined,
-      path: ReadonlyArray<string | number>
-    ) => {
-      if (node.kind === "Directive") {
-        Directive(node as DirectiveNode, key, parent, path);
-      }
-
-      if (node.kind !== "Name") {
-        lastNodeVisited = node.kind;
-      }
+  return {
+    visitor: {
+      enter: (
+        node: ASTNode,
+        key: string | number | undefined,
+        parent: ASTNode | undefined,
+        path: ReadonlyArray<string | number>
+      ) => {
+        if (node.kind === "Directive") {
+          Directive(node as DirectiveNode, key, parent, path);
+        } else if (
+          node.kind === "ObjectTypeDefinition" ||
+          node.kind === "EnumTypeDefinition"
+        ) {
+          isInsideObjectOrEnumTypeDefinition = true;
+        } else if (
+          node.kind !== "NamedType" &&
+          node.kind !== "Name" &&
+          node.kind !== "StringValue"
+        ) {
+          isInsideObjectOrEnumTypeDefinition = false;
+        }
+      },
     },
-  });
-}
+  };
+};

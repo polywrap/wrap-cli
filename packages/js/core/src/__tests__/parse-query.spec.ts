@@ -36,7 +36,7 @@ describe("parseQuery", () => {
       varTwo: 55,
     });
 
-    const expected: QueryApiInvocations = {
+    const expected: QueryApiInvocations<Uri> = {
       someMethod: {
         uri: dummy,
         module: "mutation",
@@ -142,7 +142,7 @@ describe("parseQuery", () => {
       varTwo: 55,
     });
 
-    const method1: QueryApiInvocations = {
+    const method1: QueryApiInvocations<Uri> = {
       someMethod: {
         uri: dummy,
         module: "query",
@@ -167,7 +167,7 @@ describe("parseQuery", () => {
         }
       }
     };
-    const method2: QueryApiInvocations = {
+    const method2: QueryApiInvocations<Uri> = {
       anotherMethod: {
         uri: dummy,
         module: "query",
@@ -185,7 +185,7 @@ describe("parseQuery", () => {
       }
     };
 
-    const expected: QueryApiInvocations = {
+    const expected: QueryApiInvocations<Uri> = {
       ...method1,
       ...method2,
       mutationSomeMethod: {
@@ -283,6 +283,22 @@ describe("parseQuery", () => {
         arg2: "not arg1",
       })
     ).toThrowError(/Missing variable/);
+  });
+
+  it("succeeds when variables is defined by falsy", () => {
+    const doc = createQueryDocument(`
+      mutation {
+        someMethod(
+          arg1: $arg_1
+        )
+      }
+    `);
+
+    expect(() =>
+      parseQuery(dummy, doc, {
+        arg_1: 0,
+      })
+    ).not.toThrowError(/Missing variable/);
   });
 
   it("fails when duplicate input arguments are provided", () => {

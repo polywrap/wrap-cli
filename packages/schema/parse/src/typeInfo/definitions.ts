@@ -13,14 +13,22 @@ export enum DefinitionKind {
   Method = 1 << 6,
   Query = 1 << 7,
   ImportedQuery = 1 << 8,
-  ImportedEnum = 1 << 9,
+  ImportedEnum = (1 << 9) | DefinitionKind.Enum,
   ImportedObject = (1 << 10) | DefinitionKind.Object,
+  InterfaceImplemented = 1 << 11,
+  UnresolvedObjectOrEnum = 1 << 12,
+  ObjectRef = 1 << 13,
+  EnumRef = 1 << 14,
+  Interface = 1 << 15,
 }
 
 export function isKind(type: GenericDefinition, kind: DefinitionKind): boolean {
   return (type.kind & kind) === kind;
 }
 
+export type WithComment = {
+  comment?: string;
+};
 export interface GenericDefinition {
   type: string;
   name: string | null;
@@ -40,27 +48,45 @@ export function createGenericDefinition(args: {
   };
 }
 
-export interface ObjectDefinition extends GenericDefinition {
+export interface ObjectDefinition extends GenericDefinition, WithComment {
   properties: PropertyDefinition[];
+  interfaces: InterfaceImplementedDefinition[];
 }
 export function createObjectDefinition(args: {
   type: string;
   name?: string | null;
   required?: boolean;
   properties?: PropertyDefinition[];
+  interfaces?: InterfaceImplementedDefinition[];
+  comment?: string;
 }): ObjectDefinition {
   return {
     ...createGenericDefinition(args),
     properties: args.properties ? args.properties : [],
+    interfaces: args.interfaces ? args.interfaces : [],
+    comment: args.comment,
     kind: DefinitionKind.Object,
+  };
+}
+
+export type ObjectRef = GenericDefinition;
+export function createObjectRef(args: {
+  type: string;
+  name?: string | null;
+  required?: boolean;
+}): ObjectRef {
+  return {
+    ...createGenericDefinition(args),
+    kind: DefinitionKind.ObjectRef,
   };
 }
 
 export interface AnyDefinition extends GenericDefinition {
   array: ArrayDefinition | null;
   scalar: ScalarDefinition | null;
-  object: ObjectDefinition | null;
-  enum: EnumDefinition | null;
+  object: ObjectRef | null;
+  enum: EnumRef | null;
+  unresolvedObjectOrEnum: UnresolvedObjectOrEnumRef | null;
 }
 export function createAnyDefinition(args: {
   type: string;
@@ -68,8 +94,8 @@ export function createAnyDefinition(args: {
   required?: boolean;
   array?: ArrayDefinition;
   scalar?: ScalarDefinition;
-  object?: ObjectDefinition;
-  enum?: EnumDefinition;
+  object?: ObjectRef;
+  enum?: EnumRef;
 }): AnyDefinition {
   return {
     ...createGenericDefinition(args),
@@ -77,6 +103,7 @@ export function createAnyDefinition(args: {
     scalar: args.scalar ? args.scalar : null,
     object: args.object ? args.object : null,
     enum: args.enum ? args.enum : null,
+    unresolvedObjectOrEnum: null,
     kind: DefinitionKind.Any,
   };
 }
@@ -101,7 +128,7 @@ export function createScalarDefinition(args: {
   };
 }
 
-export interface EnumDefinition extends GenericDefinition {
+export interface EnumDefinition extends GenericDefinition, WithComment {
   constants: string[];
 }
 export function createEnumDefinition(args: {
@@ -109,12 +136,39 @@ export function createEnumDefinition(args: {
   name?: string | null;
   required?: boolean;
   constants?: string[];
+  comment?: string;
 }): EnumDefinition {
   return {
     ...createGenericDefinition(args),
     type: args.type,
     kind: DefinitionKind.Enum,
     constants: args.constants ? args.constants : [],
+    comment: args.comment,
+  };
+}
+
+export type EnumRef = GenericDefinition;
+export function createEnumRef(args: {
+  type: string;
+  name?: string | null;
+  required?: boolean;
+}): EnumRef {
+  return {
+    ...createGenericDefinition(args),
+    kind: DefinitionKind.EnumRef,
+  };
+}
+
+export type UnresolvedObjectOrEnumRef = GenericDefinition;
+export function createUnresolvedObjectOrEnumRef(args: {
+  type: string;
+  name?: string | null;
+  required?: boolean;
+}): UnresolvedObjectOrEnumRef {
+  return {
+    ...createGenericDefinition(args),
+    type: args.type,
+    kind: DefinitionKind.UnresolvedObjectOrEnum,
   };
 }
 
@@ -139,12 +193,12 @@ export function createArrayDefinition(args: {
           ? (args.item as ScalarDefinition)
           : undefined,
       object:
-        args.item && isKind(args.item, DefinitionKind.Object)
-          ? (args.item as ObjectDefinition)
+        args.item && isKind(args.item, DefinitionKind.ObjectRef)
+          ? (args.item as ObjectRef)
           : undefined,
       enum:
-        args.item && isKind(args.item, DefinitionKind.Enum)
-          ? (args.item as EnumDefinition)
+        args.item && isKind(args.item, DefinitionKind.EnumRef)
+          ? (args.item as EnumRef)
           : undefined,
     }),
     item: args.item ? args.item : null,
@@ -152,8 +206,26 @@ export function createArrayDefinition(args: {
   };
 }
 
-export type PropertyDefinition = AnyDefinition;
+export type PropertyDefinition = AnyDefinition & WithComment;
 export function createPropertyDefinition(args: {
+  type: string;
+  name?: string | null;
+  required?: boolean;
+  array?: ArrayDefinition;
+  scalar?: ScalarDefinition;
+  object?: ObjectRef;
+  enum?: EnumRef;
+  comment?: string;
+}): PropertyDefinition {
+  return {
+    ...createAnyDefinition(args),
+    comment: args.comment,
+    kind: DefinitionKind.Property,
+  };
+}
+
+export type InterfaceImplementedDefinition = GenericDefinition;
+export function createInterfaceImplementedDefinition(args: {
   type: string;
   name?: string | null;
   required?: boolean;
@@ -161,10 +233,10 @@ export function createPropertyDefinition(args: {
   scalar?: ScalarDefinition;
   object?: ObjectDefinition;
   enum?: EnumDefinition;
-}): PropertyDefinition {
+}): InterfaceImplementedDefinition {
   return {
     ...createAnyDefinition(args),
-    kind: DefinitionKind.Property,
+    kind: DefinitionKind.InterfaceImplemented,
   };
 }
 
@@ -173,6 +245,7 @@ export function createArrayPropertyDefinition(args: {
   name?: string | null;
   required?: boolean;
   item?: GenericDefinition;
+  comment?: string;
 }): PropertyDefinition {
   return createPropertyDefinition({
     ...args,
@@ -184,6 +257,7 @@ export function createScalarPropertyDefinition(args: {
   type: string;
   name?: string | null;
   required?: boolean;
+  comment?: string;
 }): PropertyDefinition {
   return createPropertyDefinition({
     ...args,
@@ -196,10 +270,11 @@ export function createEnumPropertyDefinition(args: {
   name?: string | null;
   required?: boolean;
   constants?: string[];
+  comment?: string;
 }): PropertyDefinition {
   return createPropertyDefinition({
     ...args,
-    enum: createEnumDefinition(args),
+    enum: createEnumRef(args),
   });
 }
 
@@ -208,14 +283,15 @@ export function createObjectPropertyDefinition(args: {
   name?: string | null;
   required?: boolean;
   properties?: PropertyDefinition[];
+  comment?: string;
 }): PropertyDefinition {
   return createPropertyDefinition({
     ...args,
-    object: createObjectDefinition(args),
+    object: createObjectRef(args),
   });
 }
 
-export interface MethodDefinition extends GenericDefinition {
+export interface MethodDefinition extends GenericDefinition, WithComment {
   type: OperationType;
   arguments: PropertyDefinition[];
   return: PropertyDefinition;
@@ -225,6 +301,7 @@ export function createMethodDefinition(args: {
   name: string;
   arguments?: PropertyDefinition[];
   return: PropertyDefinition;
+  comment?: string;
 }): MethodDefinition {
   const lowercase = args.type.toLowerCase();
   if (!isOperationType(lowercase)) {
@@ -238,19 +315,23 @@ export function createMethodDefinition(args: {
     required: true,
     arguments: args.arguments ? args.arguments : [],
     return: args.return,
+    comment: args.comment,
     kind: DefinitionKind.Method,
   };
 }
 
-export interface QueryDefinition extends GenericDefinition {
+export interface QueryDefinition extends GenericDefinition, WithComment {
   type: QueryType;
   methods: MethodDefinition[];
   imports: { type: string }[];
+  interfaces: InterfaceImplementedDefinition[];
 }
 export function createQueryDefinition(args: {
   type: string;
   imports?: { type: string }[];
+  interfaces?: InterfaceImplementedDefinition[];
   required?: boolean;
+  comment?: string;
 }): QueryDefinition {
   if (!isQueryType(args.type)) {
     throw Error(
@@ -263,6 +344,8 @@ export function createQueryDefinition(args: {
     type: args.type,
     methods: [],
     imports: args.imports ? args.imports : [],
+    interfaces: args.interfaces ? args.interfaces : [],
+    comment: args.comment,
     kind: DefinitionKind.Query,
   };
 }
@@ -275,7 +358,8 @@ export interface ImportedDefinition {
 
 export interface ImportedEnumDefinition
   extends EnumDefinition,
-    ImportedDefinition {}
+    ImportedDefinition,
+    WithComment {}
 export function createImportedEnumDefinition(args: {
   type: string;
   constants: string[];
@@ -284,20 +368,68 @@ export function createImportedEnumDefinition(args: {
   uri: string;
   namespace: string;
   nativeType: string;
+  comment?: string;
 }): ImportedEnumDefinition {
   return {
     ...createEnumDefinition(args),
     uri: args.uri,
     namespace: args.namespace,
     nativeType: args.nativeType,
+    comment: args.comment,
     kind: DefinitionKind.ImportedEnum,
+  };
+}
+
+export const capabilityTypes = ["getImplementations"] as const;
+export type CapabilityType = typeof capabilityTypes[number];
+export type InvokableModules = "query" | "mutation";
+export interface Capability {
+  enabled: boolean;
+  modules: InvokableModules[];
+}
+export function createCapability(args: {
+  type: CapabilityType;
+  enabled: boolean;
+  modules: InvokableModules[];
+}): CapabilityDefinition {
+  return {
+    [args.type]: {
+      enabled: args.enabled,
+      modules: args.modules,
+    },
+  };
+}
+
+export type CapabilityDefinition = Record<CapabilityType, Capability>;
+
+export interface InterfaceDefinition
+  extends GenericDefinition,
+    ImportedDefinition {
+  capabilities: CapabilityDefinition;
+}
+export function createInterfaceDefinition(args: {
+  type: string;
+  required?: boolean;
+  namespace: string;
+  uri: string;
+  capabilities: CapabilityDefinition;
+}): InterfaceDefinition {
+  return {
+    ...createGenericDefinition(args),
+    namespace: args.namespace,
+    uri: args.uri,
+    nativeType: "Interface",
+    capabilities: args.capabilities,
+    kind: DefinitionKind.Interface,
   };
 }
 
 export interface ImportedQueryDefinition
   extends GenericDefinition,
-    ImportedDefinition {
+    ImportedDefinition,
+    WithComment {
   methods: MethodDefinition[];
+  isInterface?: boolean;
 }
 export function createImportedQueryDefinition(args: {
   type: string;
@@ -305,6 +437,9 @@ export function createImportedQueryDefinition(args: {
   uri: string;
   namespace: string;
   nativeType: string;
+  isInterface?: boolean;
+  interfaces?: InterfaceImplementedDefinition[];
+  comment?: string;
 }): ImportedQueryDefinition {
   if (!isQueryType(args.nativeType)) {
     throw Error(
@@ -318,13 +453,16 @@ export function createImportedQueryDefinition(args: {
     uri: args.uri,
     namespace: args.namespace,
     nativeType: args.nativeType,
+    comment: args.comment,
+    isInterface: args.isInterface,
     kind: DefinitionKind.ImportedQuery,
   };
 }
 
 export interface ImportedObjectDefinition
   extends ObjectDefinition,
-    ImportedDefinition {}
+    ImportedDefinition,
+    WithComment {}
 export function createImportedObjectDefinition(args: {
   type: string;
   name?: string;
@@ -332,12 +470,15 @@ export function createImportedObjectDefinition(args: {
   uri: string;
   namespace: string;
   nativeType: string;
+  interfaces?: InterfaceImplementedDefinition[];
+  comment?: string;
 }): ImportedObjectDefinition {
   return {
     ...createObjectDefinition(args),
     uri: args.uri,
     namespace: args.namespace,
     nativeType: args.nativeType,
+    comment: args.comment,
     kind: DefinitionKind.ImportedObject,
   };
 }

@@ -1,3 +1,5 @@
+import { Tracer } from "@web3api/tracing-js";
+
 /** URI configuration */
 export interface UriConfig {
   authority: string;
@@ -59,6 +61,11 @@ export class Uri {
     }
   }
 
+  public toString(): string {
+    return this._config.uri;
+  }
+
+  @Tracer.traceMethod("Uri: parseUri")
   public static parseUri(uri: string): UriConfig {
     if (!uri) {
       throw Error("The provided URI is empty");
@@ -109,9 +116,5 @@ export class Uri {
       authority: result[1],
       path: result[2],
     };
-  }
-
-  public toString(): string {
-    return this._config.uri;
   }
 }

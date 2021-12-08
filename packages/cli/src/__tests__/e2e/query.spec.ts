@@ -1,7 +1,8 @@
 import path from "path";
-import { clearStyle } from "./utils";
+import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
+import { normalizeLineEndings } from "@web3api/os-js";
 
 const HELP = `
 w3 query [options] <recipe-script>
@@ -17,8 +18,9 @@ describe("e2e tests for query command", () => {
   test("Should throw error for missing recipe-string", async () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["query"],
-      cwd: projectRoot
-    }, "../../../bin/w3");
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(exitCode).toEqual(0);
     expect(stderr).toBe("");
@@ -30,15 +32,17 @@ ${HELP}`);
   test("Should successfully return response", async () => {
     const { exitCode: testenvCode, stderr: testEnvUpErr } = await runCLI({
       args: ["test-env", "up"],
-      cwd: projectRoot
-    }, "../../../bin/w3");
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
     expect(testEnvUpErr).toBe("");
     expect(testenvCode).toEqual(0);
 
     const { stderr: deployErr } = await runCLI({
       args: ["./deploy-contracts.js"],
-      cwd: projectRoot
-    }, "node");
+      cwd: projectRoot,
+      cli: " "
+    });
 
     expect(deployErr).toBe("");
 
@@ -50,22 +54,24 @@ ${HELP}`);
         "--test-ens",
         "simplestorage.eth",
       ],
-      cwd: projectRoot
-    }, "../../../bin/w3");
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(buildErr).toBe("");
     expect(buildCode).toEqual(0);
 
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
       args: ["query", "./recipes/e2e.json", "--test-ens"],
-      cwd: projectRoot
-    }, "../../../bin/w3");
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(code).toEqual(0);
     expect(queryErr).toBe("");
 
     const constants = require(`${projectRoot}/recipes/constants.json`);
-    expect(clearStyle(output)).toContain(`-----------------------------------
+    expect(clearStyle(normalizeLineEndings(output, "\n"))).toContain(`-----------------------------------
 mutation {
   setData(
     options: {
@@ -100,7 +106,8 @@ mutation {
 
     await runCLI({
       args: ["test-env", "down"],
-      cwd: projectRoot
-    }, "../../../bin/w3");
-  }, 240000);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
+  }, 480000);
 });

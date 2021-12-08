@@ -9,10 +9,10 @@ describe("e2e", () => {
   beforeAll(() => {
     // Add the samplePlugin to the Web3ApiClient
     client = new Web3ApiClient({
-      redirects: [
+      plugins: [
         {
-          from: uri,
-          to: samplePlugin({ defaultValue: "foo bar" })
+          uri: uri,
+          plugin: samplePlugin({ defaultValue: "foo bar" })
         }
       ]
     });

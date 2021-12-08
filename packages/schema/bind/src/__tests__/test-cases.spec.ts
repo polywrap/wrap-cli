@@ -1,6 +1,12 @@
 import { fetchTestCases } from "./index";
 import { readDirectory } from "../utils/fs";
+import { alphabeticalNamedSort } from "../utils/sort";
 import { bindSchema, OutputEntry, TargetLanguage } from "../";
+
+import { writeFileSync } from "@web3api/os-js";
+
+import fs from "fs";
+import path from "path";
 
 describe("Web3API Binding Test Suite", () => {
   const cases = fetchTestCases();
@@ -26,34 +32,24 @@ describe("Web3API Binding Test Suite", () => {
           mutation: directories.mutation
             ? readDirectory(directories.mutation)
             : undefined,
+          combined: directories.combined
+            ? readDirectory(directories.combined)
+            : undefined,
         };
 
         const output = bindSchema({
           language: language as TargetLanguage,
-          query: testCase.input.query,
-          mutation: testCase.input.mutation
+          query: expectedOutput.query ? testCase.input.query : undefined,
+          mutation: expectedOutput.mutation ? testCase.input.mutation : undefined,
+          combined: expectedOutput.combined ? testCase.input.combined : undefined,
         });
-
-        interface Named {
-          name: string;
-        }
-
-        const alphabetical = (a: Named, b: Named) => {
-          if (a.name < b.name) {
-            return -1;
-          }
-          if (a.name > b.name) {
-            return 1;
-          }
-          return 0;
-        };
 
         const sort = (array: OutputEntry[]): OutputEntry[] => {
           array.forEach((entry) => {
             if (typeof entry.data !== "string") entry.data = sort(entry.data);
           });
 
-          return array.sort(alphabetical);
+          return array.sort(alphabeticalNamedSort);
         };
 
         if (output.query) {
@@ -64,6 +60,25 @@ describe("Web3API Binding Test Suite", () => {
           output.mutation.entries = sort(output.mutation.entries);
         }
 
+        if (output.combined) {
+          output.combined.entries = sort(output.combined.entries);
+        }
+
+        const testResultDir = path.join(__dirname, "/test-results/");
+
+        if (!fs.existsSync(testResultDir)) {
+          fs.mkdirSync(testResultDir);
+        }
+
+        writeFileSync(
+          path.join(testResultDir, `${language}-output.json`),
+          JSON.stringify(output, null, 2),
+        );
+        writeFileSync(
+          path.join(testResultDir, `${language}-expected.json`),
+          JSON.stringify(expectedOutput, null, 2),
+        );
+        
         expect(output).toMatchObject(expectedOutput);
       }
     });

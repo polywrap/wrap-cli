@@ -3,13 +3,13 @@ scalar UInt
 scalar UInt8
 scalar UInt16
 scalar UInt32
-scalar UInt64
 scalar Int
 scalar Int8
 scalar Int16
 scalar Int32
-scalar Int64
 scalar Bytes
+scalar BigInt
+scalar JSON
 
 directive @imported(
   uri: String!
@@ -21,6 +21,13 @@ directive @imports(
   types: [String!]!
 ) on OBJECT
 
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
 enum CustomEnum {
@@ -28,6 +35,9 @@ enum CustomEnum {
   BYTES
 }
 
+"""
+Query comment
+"""
 type Query {
   method1(
     str: String!
@@ -37,11 +47,20 @@ type Query {
     uArrayArray: [[UInt]]!
   ): String!
 
+"""
+method2 comment
+"""
   method2(
+"""
+arg comment
+"""
     arg: [String!]!
-  ): [Int64!]!
+  ): [Int32!]!
 }
 
+"""
+Mutation comment
+"""
 type Mutation @imports(
   types: [
     "Imported_NestedObjectType",
@@ -58,7 +77,7 @@ type Mutation @imports(
 
   method2(
     arg: [String!]!
-  ): [Int64!]!
+  ): [Int32!]!
 
   localObjects(
     nestedLocalObject: NestedObjectType
@@ -71,6 +90,9 @@ type Mutation @imports(
   ): Imported_NestedObjectType
 }
 
+"""
+CustomType comment
+"""
 type CustomType {
   str: String!
   optStr: String
@@ -79,21 +101,19 @@ type CustomType {
   u8: UInt8!
   u16: UInt16!
   u32: UInt32!
-  u64: UInt64!
   i: Int!
   i8: Int8!
   i16: Int16!
   i32: Int32!
-  i64: Int64!
   bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optUOptArray: [UInt]
   optStrOptArray: [String]
   uArrayArray: [[UInt!]!]!
-  uOptArrayOptArray: [[UInt64]]!
-  uArrayOptArrayArray: [[[UInt64!]!]]!
-  crazyArray: [[[[UInt64!]]!]]
+  uOptArrayOptArray: [[UInt32]]!
+  uArrayOptArrayArray: [[[UInt32!]!]]!
+  crazyArray: [[[[UInt32!]]!]]
   object: ObjectType!
   optObject: ObjectType
   nestedObject: NestedObjectType!
@@ -104,6 +124,9 @@ type CustomType {
   enum: CustomEnum!
   optEnum: CustomEnum
   importedEnum: Imported_Enum!
+"""
+optImportedEnum comment
+"""
   optImportedEnum: Imported_Enum
 }
 
@@ -115,6 +138,9 @@ type ObjectType {
   prop: String!
 }
 
+"""
+Imported_NestedObjectType comment
+"""
 type Imported_NestedObjectType @imported(
   uri: "imported.eth",
   namespace: "Imported",
@@ -131,6 +157,9 @@ type Imported_ObjectType @imported(
   prop: String!
 }
 
+"""
+Imported_Enum comment
+"""
 enum Imported_Enum @imported(
   namespace: "Imported",
   uri: "imported.eth",

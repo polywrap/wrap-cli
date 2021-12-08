@@ -4,3 +4,5 @@ export const clearStyle = (styled: string) => {
     ""
   );
 };
+
+export const w3Cli = `${__dirname}/../../../bin/w3`;

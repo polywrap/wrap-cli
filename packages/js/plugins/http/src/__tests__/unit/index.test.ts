@@ -1,4 +1,5 @@
-import { HttpPlugin } from "../../index";
+import { HttpPlugin, } from "../../index";
+import { ResponseTypeEnum } from "../../w3";
 
 import axios, { AxiosResponse, AxiosRequestConfig } from "axios";
 
@@ -35,7 +36,7 @@ describe("test http plugin", () => {
           { key: "X-Test-Header", value: "test-header-value" },
         ],
         urlParams: [{ key: "q", value: "test-param" }],
-        responseType: "TEXT",
+        responseType: ResponseTypeEnum.TEXT,
       });
 
       expect(mockedAxios.get).lastCalledWith("/api/test", {
@@ -89,7 +90,10 @@ describe("test http plugin", () => {
       expect(response.headers).toStrictEqual([
         { key: "Content-Type", value: "application/json; charset=utf-8" },
       ]);
-      expect(Buffer.from(response.body, 'base64').toString()).toBe("{result: 1001}");
+      expect(response.body).toBeTruthy();
+      if (response.body) {
+        expect(Buffer.from(response.body, 'base64').toString()).toBe("{result: 1001}");
+      }
     });
   });
 
@@ -169,7 +173,10 @@ describe("test http plugin", () => {
       expect(response.headers).toStrictEqual([
         { key: "Content-Type", value: "application/json; charset=utf-8" },
       ]);
-      expect(Buffer.from(response.body, 'base64').toString()).toBe("{response: 1001}");
+      expect(response.body).toBeTruthy();
+      if (response.body) {
+        expect(Buffer.from(response.body, 'base64').toString()).toBe("{response: 1001}");
+      }
     });
   });
 });

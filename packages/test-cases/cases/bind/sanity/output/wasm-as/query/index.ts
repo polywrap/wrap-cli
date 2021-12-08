@@ -26,3 +26,4 @@ export {
   getTestImport_EnumValue,
   sanitizeTestImport_EnumValue
 } from "./imported/TestImport_Enum";
+export { TestImport } from "./TestImport";

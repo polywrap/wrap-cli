@@ -1,5 +1,5 @@
 import { Project as TsProject } from "ts-morph";
-import fs from "fs";
+import { writeFileSync } from "@web3api/os-js";
 import path from "path";
 
 interface PluginConfigSource {
@@ -143,7 +143,7 @@ function main(): void {
   });
 
   for (const outputFile of outputFiles) {
-    fs.writeFileSync(
+    writeFileSync(
       __dirname + "/../src/pluginConfigs/" + outputFile.fileName,
       outputFile.content
     );
