@@ -1,4 +1,4 @@
-import { Uri, InvokeApiOptions } from "./";
+import { Uri, InvokeApiOptions, ClientConfig } from "./";
 
 import { Tracer } from "@web3api/tracing-js";
 import { DocumentNode } from "graphql";
@@ -18,7 +18,8 @@ export const createQueryDocument = Tracer.traceFunc(
 /** Options required for an API query. */
 export interface QueryApiOptions<
   TVariables extends Record<string, unknown> = Record<string, unknown>,
-  TUri extends Uri | string = string
+  TUri extends Uri | string = string,
+  TClientConfig extends ClientConfig = ClientConfig
 > {
   /** The API's URI */
   uri: TUri;
@@ -33,6 +34,16 @@ export interface QueryApiOptions<
    * Variables referenced within the query string via GraphQL's '$variable' syntax.
    */
   variables?: TVariables;
+
+  /**
+   * Override the client's config for all invokes within this query.
+   */
+  config?: Partial<TClientConfig>;
+
+  /**
+   * Query id used to track query context data set internally.
+   */
+  contextId?: string;
 }
 
 /**

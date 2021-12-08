@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prefer-const */
 
-import { Web3ApiClient, ClientConfig } from "./Web3ApiClient";
+import { Web3ApiClient, Web3ApiClientConfig } from "./Web3ApiClient";
 import { PluginConfigs, modules, uris } from "./pluginConfigs";
 
 import { PluginRegistration } from "@web3api/core-js";
@@ -13,7 +13,7 @@ export const createWeb3ApiClient = Tracer.traceFunc(
   "createWeb3ApiClient",
   async (
     pluginConfigs: PluginConfigs,
-    config?: ClientConfig
+    config?: Partial<Web3ApiClientConfig>
   ): Promise<Web3ApiClient> => {
     const plugins: PluginRegistration[] = [];
 
