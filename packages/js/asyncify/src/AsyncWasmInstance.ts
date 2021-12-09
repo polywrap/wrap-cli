@@ -87,9 +87,8 @@ export class AsyncWasmInstance {
     }
 
     // Extract the initial memory page-range size
-    const memoryInitalLimits = bytecode.at(
-      sigIdx + envMemoryImportSignature.length + 1
-    );
+    const memoryInitalLimits =
+      bytecode[sigIdx + envMemoryImportSignature.length + 1];
 
     if (memoryInitalLimits === undefined) {
       throw Error(

@@ -1,3 +1,11 @@
+# Web3API 0.0.1-prealpha.57
+## Features
+* `@web3api/cli`: CLI command middleware support has been added. The first use-cases implemented are to help ensure Docker is available to the CLI instance, and not in-use by another CLI instance.
+* `@web3api/client-js`: Query-time configuration overrides have been added, allowing developers to define new configurations without having to re-create the client instance.
+
+## Bugs
+* `@web3api/asyncify-js`: Fixed issue [#570](https://github.com/polywrap/monorepo/issues/570) by using a node-version-agnostic way of indexing into the Uint8Array buffer.
+
 # Web3API 0.0.1-prealpha.56
 ## Bugs
 * `@web3api/ethereum-plugin-js`: The encodeFunction now support array & object arg types.
