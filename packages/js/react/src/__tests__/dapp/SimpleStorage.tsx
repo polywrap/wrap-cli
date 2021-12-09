@@ -66,7 +66,7 @@ const SimpleStorage = ({ uri }: { uri: string }) => {
           <div>{currentStorage?.getData} </div>
           <div>
             {
-              client1.plugins().length > client2.plugins().length 
+              client1.getPlugins().length > client2.getPlugins().length 
                 ? 'Provider plugin counts are correct' 
                 : 'Provider plugin counts are not correct'
             }

@@ -127,7 +127,7 @@ export const createImports = (config: {
       __w3_getImplementations: (uriPtr: u32, uriLen: u32): boolean => {
         const memory = getMemory();
         const uri = readString(memory.buffer, uriPtr, uriLen);
-        const result = client.getImplementations(uri);
+        const result = client.getImplementations(uri, {});
         state.getImplementationsResult = MsgPack.encode(result);
         return result.length > 0;
       },

@@ -6,7 +6,7 @@ import {
 } from "@web3api/test-env-js";
 import {
   Web3ApiClient,
-  ClientConfig,
+  Web3ApiClientConfig,
 } from "@web3api/client-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
@@ -27,7 +27,7 @@ describe("Filesystem plugin", () => {
     ipfsProvider = ipfs;
     ensAddress = ens;
 
-    const config: ClientConfig = {
+    const config: Partial<Web3ApiClientConfig> = {
       plugins: [
         {
           uri: "w3://ens/fs.web3api.eth",
