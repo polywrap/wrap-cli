@@ -1,7 +1,4 @@
-import {
-  ClientConfig,
-  createWeb3ApiClient,
-} from "../";
+import { createWeb3ApiClient, Web3ApiClientConfig } from "../";
 import {
   buildAndDeployApi,
   initTestEnvironment,
@@ -22,7 +19,9 @@ import {
   deserializeBuildManifest,
   deserializeMetaManifest,
   coreInterfaceUris,
-} from '@web3api/core-js';
+  Client,
+  PluginModules,
+} from "@web3api/core-js";
 import { readFileSync } from "fs";
 
 jest.setTimeout(200000);
@@ -43,30 +42,56 @@ describe("Web3ApiClient", () => {
     await stopTestEnvironment();
   });
 
-  const getClient = async (config?: ClientConfig) => {
-    return createWeb3ApiClient({
-      ethereum: {
-        networks: {
-          testnet: {
-            provider: ethProvider,
+  const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
+    return createWeb3ApiClient(
+      {
+        ethereum: {
+          networks: {
+            testnet: {
+              provider: ethProvider,
+            },
+          },
+        },
+        ipfs: { provider: ipfsProvider },
+        ens: {
+          addresses: {
+            testnet: ensAddress,
           },
         },
       },
-      ipfs: { provider: ipfsProvider },
-      ens: {
-        addresses: {
-          testnet: ensAddress,
-        },
+      config
+    );
+  };
+
+  const mockPlugin = () => {
+    class MockPlugin extends Plugin {
+      getModules(_client: Client): PluginModules {
+        return {
+          query: {
+            getData: async (_: unknown) => 100,
+          },
+          mutation: {
+            deployContract: (_: unknown): string => "0x100",
+          },
+        };
+      }
+    }
+
+    return {
+      factory: () => new MockPlugin(),
+      manifest: {
+        schema: ``,
+        implements: [],
       },
-    }, config);
-  }
+    };
+  };
 
   it("default client config", () => {
     const client = new Web3ApiClient();
 
-    expect(client.redirects()).toStrictEqual([]);
+    expect(client.getRedirects()).toStrictEqual([]);
     expect(
-        client.plugins().map(x => x.uri)
+        client.getPlugins().map(x => x.uri)
       ).toStrictEqual([
         new Uri("w3://ens/ipfs.web3api.eth"),
         new Uri("w3://ens/ens.web3api.eth"),
@@ -79,7 +104,7 @@ describe("Web3ApiClient", () => {
         new Uri("w3://ens/fs.web3api.eth")
       ]);
     expect(
-        client.interfaces()
+        client.getInterfaces()
       ).toStrictEqual([
       {
         interface: coreInterfaceUris.uriResolver,
@@ -91,11 +116,138 @@ describe("Web3ApiClient", () => {
       },
       {
         interface: coreInterfaceUris.logger,
-        implementations: [
-          new Uri("w3://ens/js-logger.web3api.eth")
-        ],
+        implementations: [new Uri("w3://ens/js-logger.web3api.eth")],
       },
     ]);
+  });
+
+  it("invoke simple-storage with custom redirects", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensAddress
+    );
+
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const redirects = [
+      {
+        from: ensUri,
+        to: "w3://ens/mock.web3api.eth",
+      },
+    ];
+
+    const client = await getClient({
+      plugins: [
+        {
+          uri: "w3://ens/mock.web3api.eth",
+          plugin: mockPlugin(),
+        },
+      ],
+    });
+
+    const result = await client.invoke({
+      uri: ensUri,
+      module: "mutation",
+      method: "deployContract",
+      input: {},
+      config: {
+        redirects,
+      },
+    });
+
+    expect(result.data).toBeTruthy();
+    expect(result.data).toBe("0x100");
+  });
+
+  it("simple-storage with query time redirects", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensAddress
+    );
+
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const redirects = [
+      {
+        from: ensUri,
+        to: "w3://ens/mock.web3api.eth",
+      },
+    ];
+
+    const client = await getClient({
+      plugins: [
+        {
+          uri: "w3://ens/mock.web3api.eth",
+          plugin: mockPlugin(),
+        },
+      ],
+    });
+
+    const deploy = await client.query<{
+      deployContract: string;
+    }>({
+      uri: ensUri,
+      query: `
+        mutation {
+          deployContract(
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+      config: {
+        redirects,
+      },
+    });
+
+    expect(deploy.errors).toBeFalsy();
+    expect(deploy.data).toBeTruthy();
+    expect(deploy.data?.deployContract).toBe("0x100");
+
+    const get = await client.query<{
+      getData: number;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          getData(
+            address: "0x10"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+      config: {
+        redirects,
+      },
+    });
+
+    expect(get.errors).toBeFalsy();
+    expect(get.data).toBeTruthy();
+    expect(get.data?.getData).toBe(100);
+
+    const getFail = await client.query<{
+      getData: number;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          getData(
+            address: "0x10"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(getFail.errors).toBeTruthy();
+    expect(getFail.data?.getData).toBeFalsy();
   });
 
   it("redirect registration", () => {
@@ -111,7 +263,7 @@ describe("Web3ApiClient", () => {
       ],
     });
 
-    const redirects = client.redirects();
+    const redirects = client.getRedirects();
 
     expect(redirects).toEqual([
       {
@@ -150,7 +302,7 @@ describe("Web3ApiClient", () => {
       ],
     });
 
-    const pluginUris = client.plugins().map((x) => x.uri.uri);
+    const pluginUris = client.getPlugins().map((x) => x.uri.uri);
 
     expect(pluginUris).toEqual([implementationUri].concat(defaultPlugins));
   });
@@ -169,7 +321,7 @@ describe("Web3ApiClient", () => {
       ],
     });
 
-    const interfaces = client.interfaces();
+    const interfaces = client.getInterfaces();
 
     const defaultClientConfig = getDefaultClientConfig();
 
@@ -187,10 +339,7 @@ describe("Web3ApiClient", () => {
 
     const implementations = client.getImplementations(interfaceUri);
 
-    expect(implementations).toEqual([
-      implementation1Uri,
-      implementation2Uri
-    ]);
+    expect(implementations).toEqual([implementation1Uri, implementation2Uri]);
   });
 
   it("get all implementations of interface", async () => {
@@ -233,23 +382,15 @@ describe("Web3ApiClient", () => {
       interfaces: [
         {
           interface: interface1Uri,
-          implementations: [
-            implementation1Uri,
-            implementation2Uri
-          ],
+          implementations: [implementation1Uri, implementation2Uri],
         },
         {
           interface: interface2Uri,
-          implementations: [
-            implementation3Uri
-          ],
+          implementations: [implementation3Uri],
         },
         {
           interface: interface3Uri,
-          implementations: [
-            implementation3Uri,
-            implementation4Uri
-          ],
+          implementations: [implementation3Uri, implementation4Uri],
         },
       ],
     });
@@ -313,21 +454,15 @@ describe("Web3ApiClient", () => {
         interfaces: [
           {
             interface: interface1Uri,
-            implementations: [
-              implementationUri
-            ],
+            implementations: [implementationUri],
           },
           {
             interface: interface2Uri,
-            implementations: [
-              implementationUri
-            ],
+            implementations: [implementationUri],
           },
           {
             interface: interface3Uri,
-            implementations: [
-              implementationUri
-            ],
+            implementations: [implementationUri],
           },
         ],
       });
@@ -361,9 +496,7 @@ describe("Web3ApiClient", () => {
         interfaces: [
           {
             interface: interfaceUri,
-            implementations: [
-              implementationUri
-            ],
+            implementations: [implementationUri],
           },
         ],
       });
@@ -396,21 +529,17 @@ describe("Web3ApiClient", () => {
       interfaces: [
         {
           interface: interfaceUri,
-          implementations: [
-            implementation2Uri
-          ],
+          implementations: [implementation2Uri],
         },
       ],
     });
 
     const getImplementationsResult = client.getImplementations(
-        new Uri(interfaceUri),
-        { applyRedirects: true }
-      );
+      new Uri(interfaceUri),
+      { applyRedirects: true }
+    );
 
-    expect(getImplementationsResult).toEqual([
-      new Uri(implementation2Uri)
-    ]);
+    expect(getImplementationsResult).toEqual([new Uri(implementation2Uri)]);
   });
 
   it("get implementations - return implementations for plugins which don't have interface stated in manifest", () => {
@@ -428,17 +557,14 @@ describe("Web3ApiClient", () => {
             manifest: {
               schema: "",
               implements: [],
-            }
-          }
-        }
+            },
+          },
+        },
       ],
       interfaces: [
         {
           interface: interfaceUri,
-          implementations: [
-            implementation1Uri,
-            implementation2Uri
-          ],
+          implementations: [implementation1Uri, implementation2Uri],
         },
       ],
     });
@@ -1152,8 +1278,8 @@ describe("Web3ApiClient", () => {
 
     const values = [
       JSON.stringify({ bar: "foo" }),
-      JSON.stringify({ baz: "fuz" })
-    ]
+      JSON.stringify({ baz: "fuz" }),
+    ];
     const stringifyResponse = await client.query<{
       stringify: Json;
     }>({
@@ -1631,19 +1757,19 @@ describe("Web3ApiClient", () => {
     const schemaStr = "test-schema";
 
     const client = new Web3ApiClient({
-        plugins: [
-          {
-            uri: implementationUri,
-            plugin: {
-              factory: () => ({} as Plugin),
-              manifest: {
-                schema: schemaStr,
-                implements: [],
-              }
-            }
-          }
-        ]
-      });
+      plugins: [
+        {
+          uri: implementationUri,
+          plugin: {
+            factory: () => ({} as Plugin),
+            manifest: {
+              schema: schemaStr,
+              implements: [],
+            },
+          },
+        },
+      ],
+    });
 
     const schemaWhenString = await client.getSchema(implementationUri);
     const schemaWhenUri = await client.getSchema(new Uri(implementationUri));
@@ -1681,14 +1807,21 @@ describe("Web3ApiClient", () => {
     let result = client.getImplementations(oldInterfaceUri);
     expect(result).toEqual([implementation1Uri]);
 
-    result = client.getImplementations(oldInterfaceUri, { applyRedirects: true });
+    result = client.getImplementations(oldInterfaceUri, {
+      applyRedirects: true,
+    });
     expect(result).toEqual([implementation1Uri, implementation2Uri]);
 
     let result2 = client.getImplementations(new Uri(oldInterfaceUri));
     expect(result2).toEqual([new Uri(implementation1Uri)]);
 
-    result2 = client.getImplementations(new Uri(oldInterfaceUri), { applyRedirects: true });
-    expect(result2).toEqual([new Uri(implementation1Uri), new Uri(implementation2Uri)]);
+    result2 = client.getImplementations(new Uri(oldInterfaceUri), {
+      applyRedirects: true,
+    });
+    expect(result2).toEqual([
+      new Uri(implementation1Uri),
+      new Uri(implementation2Uri),
+    ]);
   });
 
   it("e2e interface implementations", async () => {
@@ -1715,8 +1848,9 @@ describe("Web3ApiClient", () => {
       ],
     });
 
-    expect(client.getImplementations(interfaceUri))
-      .toEqual([implementationUri]);
+    expect(client.getImplementations(interfaceUri)).toEqual([
+      implementationUri,
+    ]);
 
     const query = await client.query<{
       queryMethod: string;
@@ -1789,24 +1923,39 @@ describe("Web3ApiClient", () => {
     const client = await getClient();
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
-    const actualManifestStr: string = readFileSync(`${GetPathToTestApis()}/simple-storage/build/web3api.yaml`, 'utf8');
-    const actualManifest: Web3ApiManifest = deserializeWeb3ApiManifest(actualManifestStr);
+    const actualManifestStr: string = readFileSync(
+      `${GetPathToTestApis()}/simple-storage/build/web3api.yaml`,
+      "utf8"
+    );
+    const actualManifest: Web3ApiManifest = deserializeWeb3ApiManifest(
+      actualManifestStr
+    );
     const manifest: Web3ApiManifest = await client.getManifest(ensUri, {
-      type: 'web3api'
+      type: "web3api",
     });
     expect(manifest).toStrictEqual(actualManifest);
 
-    const actualBuildManifestStr: string = readFileSync(`${GetPathToTestApis()}/simple-storage/build/web3api.build.yaml`, 'utf8');
-    const actualBuildManifest: BuildManifest = deserializeBuildManifest(actualBuildManifestStr);
+    const actualBuildManifestStr: string = readFileSync(
+      `${GetPathToTestApis()}/simple-storage/build/web3api.build.yaml`,
+      "utf8"
+    );
+    const actualBuildManifest: BuildManifest = deserializeBuildManifest(
+      actualBuildManifestStr
+    );
     const buildManifest: BuildManifest = await client.getManifest(ensUri, {
-      type: 'build'
+      type: "build",
     });
     expect(buildManifest).toStrictEqual(actualBuildManifest);
 
-    const actualMetaManifestStr: string = readFileSync(`${GetPathToTestApis()}/simple-storage/build/web3api.meta.yaml`, 'utf8');
-    const actualMetaManifest: MetaManifest = deserializeMetaManifest(actualMetaManifestStr);
+    const actualMetaManifestStr: string = readFileSync(
+      `${GetPathToTestApis()}/simple-storage/build/web3api.meta.yaml`,
+      "utf8"
+    );
+    const actualMetaManifest: MetaManifest = deserializeMetaManifest(
+      actualMetaManifestStr
+    );
     const metaManifest: MetaManifest = await client.getManifest(ensUri, {
-      type: 'meta'
+      type: "meta",
     });
     expect(metaManifest).toStrictEqual(actualMetaManifest);
   });
@@ -1818,7 +1967,7 @@ describe("Web3ApiClient", () => {
     );
 
     expect(schema).toStrictEqual(
-`### Web3API Header START ###
+      `### Web3API Header START ###
 scalar UInt
 scalar UInt8
 scalar UInt16
@@ -1883,7 +2032,8 @@ enum Logger_LogLevel @imported(
 }
 
 ### Imported Objects END ###
-`);
+`
+    );
   });
 
   it("getFile -- simple-storage web3api", async () => {
@@ -1896,23 +2046,23 @@ enum Logger_LogLevel @imported(
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const manifest: Web3ApiManifest = await client.getManifest(ensUri, {
-      type: 'web3api'
+      type: "web3api",
     });
 
-    const fileStr: string = await client.getFile(ensUri, {
+    const fileStr: string = (await client.getFile(ensUri, {
       path: manifest.modules.query?.schema as string,
-      encoding: 'utf8'
-    }) as string;
+      encoding: "utf8",
+    })) as string;
     expect(fileStr).toContain(`getData(
     address: String!
     connection: Ethereum_Connection
   ): Int!
 `);
 
-    const fileBuffer: ArrayBuffer = await client.getFile(ensUri, {
+    const fileBuffer: ArrayBuffer = (await client.getFile(ensUri, {
       path: manifest.modules.query?.schema!,
-    }) as ArrayBuffer;
-    const decoder = new TextDecoder('utf8');
+    })) as ArrayBuffer;
+    const decoder = new TextDecoder("utf8");
     const text = decoder.decode(fileBuffer);
     expect(text).toContain(`getData(
     address: String!
@@ -1920,12 +2070,18 @@ enum Logger_LogLevel @imported(
   ): Int!
 `);
 
-    await expect(() => client.getManifest(new Uri("w3://ens/ipfs.web3api.eth"), {
-      type: "web3api"
-    })).rejects.toThrow("client.getManifest(...) is not implemented for Plugins.");
-    await expect(() => client.getFile(new Uri("w3://ens/ipfs.web3api.eth"), {
-      path: "./index.js",
-    })).rejects.toThrow("client.getFile(...) is not implemented for Plugins.");
+    await expect(() =>
+      client.getManifest(new Uri("w3://ens/ipfs.web3api.eth"), {
+        type: "web3api",
+      })
+    ).rejects.toThrow(
+      "client.getManifest(...) is not implemented for Plugins."
+    );
+    await expect(() =>
+      client.getFile(new Uri("w3://ens/ipfs.web3api.eth"), {
+        path: "./index.js",
+      })
+    ).rejects.toThrow("client.getFile(...) is not implemented for Plugins.");
   });
 
   it("simple-storage: subscribe", async () => {
@@ -1963,7 +2119,7 @@ enum Logger_LogLevel @imported(
     let results: number[] = [];
     let value = 0;
 
-    const setter = setInterval(async() => {
+    const setter = setInterval(async () => {
       await client.query<{
         setData: string;
       }>({
@@ -2003,9 +2159,9 @@ enum Logger_LogLevel @imported(
         }
       `,
       variables: {
-        address
+        address,
       },
-      frequency: { ms: 4500 }
+      frequency: { ms: 4500 },
     });
 
     for await (let query of getSubscription) {
@@ -2058,7 +2214,7 @@ enum Logger_LogLevel @imported(
     let results: number[] = [];
     let value = 0;
 
-    const setter = setInterval(async() => {
+    const setter = setInterval(async () => {
       await client.query<{
         setData: string;
       }>({
@@ -2098,25 +2254,24 @@ enum Logger_LogLevel @imported(
           }
         `,
       variables: {
-        address
+        address,
       },
-      frequency: { ms: 4500 }
+      frequency: { ms: 4500 },
     });
 
     new Promise(async () => {
-        for await (let query of getSubscription) {
-          expect(query.errors).toBeFalsy();
-          const val = query.data?.getData;
-          if (val !== undefined) {
-            results.push(val);
-            if (val >= 2) {
-              break;
-            }
+      for await (let query of getSubscription) {
+        expect(query.errors).toBeFalsy();
+        const val = query.data?.getData;
+        if (val !== undefined) {
+          results.push(val);
+          if (val >= 2) {
+            break;
           }
         }
       }
-    );
-    await new Promise(r => setTimeout(r, 8000));
+    });
+    await new Promise((r) => setTimeout(r, 8000));
     getSubscription.stop();
     clearInterval(setter);
 
