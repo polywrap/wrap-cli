@@ -6,10 +6,6 @@ jobs:
   RS-CI-Linux:
     name: RS-CI-Linux
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./packages/wasm/rs
     strategy:
       fail-fast: False
     steps:
@@ -36,24 +32,29 @@ jobs:
             cargo-${{ runner.os }}-${{ github.job }}
 
       - name: Build
+        working-directory: ./packages/wasm/rs
         uses: actions-rs/cargo@v1
         with:
           command: build
 
       - name: List Artifacts
+        working-directory: ./packages/wasm/rs
         run: ls target/release
 
       - name: Test
+        working-directory: ./packages/wasm/rs
         uses: actions-rs/cargo@v1
         with:
           command: test
 
       - name: Lint
+        working-directory: ./packages/wasm/rs
         uses: actions-rs/cargo@v1
         with:
           command: clippy
 
       - name: Verify & Generate Documentation
+        working-directory: ./packages/wasm/rs
         uses: actions-rs/cargo@v1
         with:
           command: doc
