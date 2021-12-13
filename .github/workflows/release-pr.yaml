@@ -125,11 +125,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.WEB3_API_BUILD_BOT_PAT }}
 
-      - name: Apply Rust Version
+      - name: Apply Rust Version & Commit
         working-directory: ./packages/wasm/rs
         run: |
           cargo install cargo-release
-          cargo release $(cat ../../../VERSION) --execute
+          cargo release $(cat ../../../VERSION) --execute --no-confirm
 
       - name: Apply Node Version & Commit
         run: |
