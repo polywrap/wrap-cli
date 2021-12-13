@@ -33,9 +33,7 @@ jobs:
 
       - name: Build
         working-directory: ./packages/wasm/rs
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
+        run: cargo build
 
       - name: List Artifacts
         working-directory: ./packages/wasm/rs
@@ -43,22 +41,15 @@ jobs:
 
       - name: Test
         working-directory: ./packages/wasm/rs
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
+        run: cargo test
 
       - name: Lint
         working-directory: ./packages/wasm/rs
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
+        run: cargo clippy
 
       - name: Verify & Generate Documentation
         working-directory: ./packages/wasm/rs
-        uses: actions-rs/cargo@v1
-        with:
-          command: doc
-          args: --workspace --no-deps
+        run: cargo doc --workspace --no-deps
 
 # NOTE: Mac & Windows CI is not currently possible, since GitHub Actions does not
 # use "Docker Enterprise". Docker Enterprise is required when running linux based
