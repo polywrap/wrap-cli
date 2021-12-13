@@ -12,17 +12,20 @@ import {
 } from ".";
 
 import {
-  migrate as migrate_0_0_1_prealpha_1_to_0_0_1_prealpha_5
-} from "./migrators/0.0.1-prealpha.1_to_0.0.1-prealpha.5";
+  migrate as migrate_0_0_1_prealpha_1_to_0_0_1_prealpha_6
+} from "./migrators/0.0.1-prealpha.1_to_0.0.1-prealpha.6";
 import {
-  migrate as migrate_0_0_1_prealpha_2_to_0_0_1_prealpha_5
-} from "./migrators/0.0.1-prealpha.2_to_0.0.1-prealpha.5";
+  migrate as migrate_0_0_1_prealpha_2_to_0_0_1_prealpha_6
+} from "./migrators/0.0.1-prealpha.2_to_0.0.1-prealpha.6";
 import {
-  migrate as migrate_0_0_1_prealpha_3_to_0_0_1_prealpha_5
-} from "./migrators/0.0.1-prealpha.3_to_0.0.1-prealpha.5";
+  migrate as migrate_0_0_1_prealpha_3_to_0_0_1_prealpha_6
+} from "./migrators/0.0.1-prealpha.3_to_0.0.1-prealpha.6";
 import {
-  migrate as migrate_0_0_1_prealpha_4_to_0_0_1_prealpha_5
-} from "./migrators/0.0.1-prealpha.4_to_0.0.1-prealpha.5";
+  migrate as migrate_0_0_1_prealpha_4_to_0_0_1_prealpha_6
+} from "./migrators/0.0.1-prealpha.4_to_0.0.1-prealpha.6";
+import {
+  migrate as migrate_0_0_1_prealpha_5_to_0_0_1_prealpha_6
+} from "./migrators/0.0.1-prealpha.5_to_0.0.1-prealpha.6";
 
 import { Tracer } from "@web3api/tracing-js";
 
@@ -31,10 +34,11 @@ type Migrator = {
 };
 
 export const migrators: Migrator = {
-  "0.0.1-prealpha.1": migrate_0_0_1_prealpha_1_to_0_0_1_prealpha_5,
-  "0.0.1-prealpha.2": migrate_0_0_1_prealpha_2_to_0_0_1_prealpha_5,
-  "0.0.1-prealpha.3": migrate_0_0_1_prealpha_3_to_0_0_1_prealpha_5,
-  "0.0.1-prealpha.4": migrate_0_0_1_prealpha_4_to_0_0_1_prealpha_5,
+  "0.0.1-prealpha.1": migrate_0_0_1_prealpha_1_to_0_0_1_prealpha_6,
+  "0.0.1-prealpha.2": migrate_0_0_1_prealpha_2_to_0_0_1_prealpha_6,
+  "0.0.1-prealpha.3": migrate_0_0_1_prealpha_3_to_0_0_1_prealpha_6,
+  "0.0.1-prealpha.4": migrate_0_0_1_prealpha_4_to_0_0_1_prealpha_6,
+  "0.0.1-prealpha.5": migrate_0_0_1_prealpha_5_to_0_0_1_prealpha_6,
 };
 
 export const migrateWeb3ApiManifest = Tracer.traceFunc(
