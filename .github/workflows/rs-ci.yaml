@@ -3,30 +3,27 @@ name: RS-CI
 on: [pull_request]
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
+  RS-CI-Linux:
+    name: RS-CI-Linux
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
         working-directory: ./packages/wasm/rs
     strategy:
       fail-fast: False
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        profile: [release]
-        include:
-          - os: ubuntu-latest
-          - os: macos-latest
-          - os: windows-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v2
         with:
           fetch-depth: 1
-      - uses: actions-rs/toolchain@v1
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
           override: true
+
       - uses: actions/cache@v2
         with:
           path: |
@@ -37,107 +34,32 @@ jobs:
           key: cargo-${{ runner.os }}-${{ github.job }}-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             cargo-${{ runner.os }}-${{ github.job }}
-      - name: Cargo Build
+
+      - name: Build
         uses: actions-rs/cargo@v1
         with:
           command: build
-      - name: List Cargo artifacts
-        run: ls target/${{ matrix.profile }}
-      - name: Prepare Artifacts
-        run: ./.github/copy-artifacts.sh
-        env:
-          OS: ${{ matrix.os }}
-      - uses: msys2/setup-msys2@v2
-        if: matrix.os == 'windows-latest'
-        with:
-          msystem: MINGW64
-          update: true
-          install: git mingw-w64-x86_64-toolchain mingw-w64-x86_64-tools-git
-      - name: Prepare Artifacts
-        run: ./.github/copy-artifacts.sh
-        env:
-          OS: ${{ matrix.os }}
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@master
-        with:
-          name: bins-${{ runner.os }}-${{ matrix.profile }}
-          path: bins/
-  test:
-    runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./packages/wasm/rs
-    strategy:
-      fail-fast: False
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
-      - name: Install Rust
-        run: |
-          rustup update nightly
-          rustup default nightly
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/
-            ./target/
-          key: cargo-${{ runner.os }}-${{ github.job }}-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            cargo-${{ runner.os }}-${{ github.job }}
-      - name: Cargo Test
+
+      - name: List Artifacts
+        run: ls target/release
+
+      - name: Test
         uses: actions-rs/cargo@v1
         with:
           command: test
-  cargo-fmt:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./packages/wasm/rs
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v2
-      - name: Install Rust
-        run: |
-          rustup update nightly
-          rustup default nightly
-      - name: Run `cargo fmt`
+
+      - name: Lint
         uses: actions-rs/cargo@v1
         with:
-          command: fmt
-          args: --all -- --check
-  cargo-doc:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./packages/wasm/rs
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v2
-      - name: Install Rust
-        run: |
-          rustup update nightly
-          rustup default nightly
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/
-            ./target/
-          key: cargo-${{ runner.os }}-${{ github.job }}-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            cargo-${{ runner.os }}-${{ github.job }}
-      - name: Run `cargo doc`
+          command: clippy
+
+      - name: Verify & Generate Documentation
         uses: actions-rs/cargo@v1
         with:
           command: doc
           args: --workspace --no-deps
+
+# NOTE: Mac & Windows CI is not currently possible, since GitHub Actions does not
+# use "Docker Enterprise". Docker Enterprise is required when running linux based
+# containers, which is what we run within our toolchain for test-envs and build-envs.
+# In order to enable this, we can move to Circle CI, which supports Docker Enterprise.
