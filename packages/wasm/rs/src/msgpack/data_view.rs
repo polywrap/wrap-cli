@@ -1,4 +1,6 @@
 use super::{Context, BLOCK_MAX_SIZE, E_INVALID_LENGTH};
+use super::utils;
+use crate::log;
 use core::sync::atomic::{AtomicPtr, Ordering};
 
 #[derive(Clone, Debug, Default)]
@@ -37,7 +39,12 @@ impl DataView {
         })
     }
 
+    pub fn get_buffer(&self) -> Vec<u8> {
+        self.buffer.clone()
+    }
+
     pub fn get_bytes(&mut self, length: i32) -> Vec<u8> {
+        self.check_index_in_range("get_bytes", length);
         let buf = self.buffer.as_slice();
         let (b_off, b_len) = (
             self.byte_offset as usize,
@@ -49,18 +56,21 @@ impl DataView {
     }
 
     pub fn peek_u8(&mut self) -> u8 {
-        let ptr = AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u8))
+        self.check_index_in_range("peek_u8", 0);
+        let ptr = AtomicPtr::<u8>::new((self.data_start + self.byte_offset as u32) as *mut u8)
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         result.swap_bytes()
     }
 
     pub fn discard(&mut self, length: i32) {
+        self.check_index_in_range("discard", length);
         self.byte_offset += length;
     }
 
     pub fn get_f32(&mut self) -> f32 {
-        let ptr = AtomicPtr::new(&mut (self.data_start + self.byte_offset as u32))
+        self.check_index_in_range("get_f32", 4);
+        let ptr = AtomicPtr::<f32>::new((self.data_start + self.byte_offset as u32) as *mut f32)
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         self.byte_offset += 4;
@@ -68,7 +78,8 @@ impl DataView {
     }
 
     pub fn get_f64(&mut self) -> f64 {
-        let ptr = AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u64))
+        self.check_index_in_range("get_f64", 8);
+        let ptr = AtomicPtr::<f64>::new((self.data_start + self.byte_offset as u32) as *mut f64)
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         self.byte_offset += 8;
@@ -76,7 +87,8 @@ impl DataView {
     }
 
     pub fn get_i8(&mut self) -> i8 {
-        let ptr = AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i8))
+        self.check_index_in_range("get_i8", 1);
+        let ptr = AtomicPtr::<i8>::new((self.data_start + self.byte_offset as u32) as *mut i8)
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         self.byte_offset += 1;
@@ -84,7 +96,8 @@ impl DataView {
     }
 
     pub fn get_i16(&mut self) -> i16 {
-        let ptr = AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i16))
+        self.check_index_in_range("get_i16", 2);
+        let ptr = AtomicPtr::<i16>::new((self.data_start + self.byte_offset as u32) as *mut i16)
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         self.byte_offset += 2;
@@ -92,23 +105,17 @@ impl DataView {
     }
 
     pub fn get_i32(&mut self) -> i32 {
-        let ptr = AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i32))
+        self.check_index_in_range("get_i32", 4);
+        let ptr = AtomicPtr::<i32>::new((self.data_start + self.byte_offset as u32) as *mut i32)
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         self.byte_offset += 4;
         result.swap_bytes()
     }
 
-    pub fn get_i64(&mut self) -> i64 {
-        let ptr = AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i64))
-            .load(Ordering::Relaxed);
-        let result = unsafe { ptr.as_ref().unwrap() };
-        self.byte_offset += 8;
-        result.swap_bytes()
-    }
-
     pub fn get_u8(&mut self) -> u8 {
-        let ptr = AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u8))
+        self.check_index_in_range("get_u8", 1);
+        let ptr = AtomicPtr::<u8>::new((self.data_start + self.byte_offset as u32) as *mut u8)
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         self.byte_offset += 1;
@@ -116,7 +123,8 @@ impl DataView {
     }
 
     pub fn get_u16(&mut self) -> u16 {
-        let ptr = AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u16))
+        self.check_index_in_range("get_u16", 2);
+        let ptr = AtomicPtr::<u16>::new((self.data_start + self.byte_offset as u32) as *mut u16)
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         self.byte_offset += 2;
@@ -124,95 +132,97 @@ impl DataView {
     }
 
     pub fn get_u32(&mut self) -> u32 {
-        let ptr = AtomicPtr::new(&mut (self.data_start + self.byte_offset as u32))
+        self.check_index_in_range("get_u32", 4);
+        let ptr = AtomicPtr::<u32>::new((self.data_start + self.byte_offset as u32) as *mut u32)
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         self.byte_offset += 4;
         result.swap_bytes()
     }
 
-    pub fn get_u64(&mut self) -> u64 {
-        let ptr = AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u64))
+    pub fn set_bytes(&mut self, buf: &[u8]) {
+        self.copy_bytes("set_bytes", buf);
+    }
+
+    pub fn set_f32(&mut self, value: &f32) {
+        self.copy_bytes("set_f32", &value.to_be_bytes());
+    }
+
+    pub fn set_f64(&mut self, value: &f64) {
+        self.copy_bytes("set_f64", &value.to_be_bytes());
+    }
+
+    pub fn set_i8(&mut self, value: &i8) {
+        self.copy_bytes("set_i8", &value.to_be_bytes());
+    }
+
+    pub fn set_i16(&mut self, value: &i16) {
+        self.copy_bytes("set_i16", &value.to_be_bytes());
+    }
+
+    pub fn set_i32(&mut self, value: &i32) {
+        self.copy_bytes("set_i32", &value.to_be_bytes());
+    }
+
+    pub fn set_u8(&mut self, value: &u8) {
+        self.copy_bytes("set_u8", &value.to_be_bytes());
+    }
+
+    pub fn set_u16(&mut self, value: &u16) {
+        self.copy_bytes("set_u16", &value.to_be_bytes());
+    }
+
+    pub fn set_u32(&mut self, value: &u32) {
+        self.copy_bytes("set_u32", &value.to_be_bytes());
+    }
+
+    // Non-standard additions that make sense in WebAssembly, but won't work in JS:
+    pub fn get_i64(&mut self) -> i64 {
+        self.check_index_in_range("get_i64", 8);
+        let ptr = AtomicPtr::<i64>::new((self.data_start + self.byte_offset as u32) as *mut i64)
             .load(Ordering::Relaxed);
         let result = unsafe { ptr.as_ref().unwrap() };
         self.byte_offset += 8;
         result.swap_bytes()
     }
 
-    pub fn set_bytes(&mut self, buf: &[u8]) {
-        for (dst, src) in self.buffer.iter_mut().zip(buf.iter()) {
+    pub fn get_u64(&mut self) -> u64 {
+        self.check_index_in_range("get_u64", 8);
+        let ptr = AtomicPtr::<u64>::new((self.data_start + self.byte_offset as u32) as *mut u64)
+            .load(Ordering::Relaxed);
+        let result = unsafe { ptr.as_ref().unwrap() };
+        self.byte_offset += 8;
+        result.swap_bytes()
+    }
+
+    pub fn byte_length(&self) -> i32 {
+        self.byte_length
+    }
+
+    fn copy_bytes(&mut self, method: &str, buf: &[u8]) {
+        self.check_index_in_range(method, buf.len() as i32);
+        let buffer_begin = self.byte_offset as usize;
+        let buffer_itr = self.buffer[buffer_begin..(buffer_begin + buf.len())].iter_mut();
+        for (dst, src) in buffer_itr.zip(buf.iter()) {
             *dst = *src
         }
         self.byte_offset += buf.len() as i32;
     }
 
-    pub fn set_f32(&mut self, value: f32) {
-        AtomicPtr::new(&mut (self.data_start + self.byte_offset as u32))
-            .store(&mut (value as u32).swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 4;
-    }
-
-    pub fn set_f64(&mut self, value: f64) {
-        AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u64))
-            .store(&mut (value as u64).swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 8;
-    }
-
-    pub fn set_i8(&mut self, value: i8) {
-        AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i8))
-            .store(&mut value.swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 1;
-    }
-
-    pub fn set_i16(&mut self, value: i16) {
-        AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i16))
-            .store(&mut value.swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 2;
-    }
-
-    pub fn set_i32(&mut self, value: i32) {
-        AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i32))
-            .store(&mut value.swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 4;
-    }
-
-    pub fn set_i64(&mut self, value: i64) {
-        AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i64))
-            .store(&mut value.swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 8;
-    }
-
-    pub fn set_u8(&mut self, value: u8) {
-        AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u8))
-            .store(&mut value.swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 1;
-    }
-
-    pub fn set_u16(&mut self, value: u16) {
-        AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u16))
-            .store(&mut value.swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 2;
-    }
-
-    pub fn set_u32(&mut self, value: u32) {
-        AtomicPtr::new(&mut (self.data_start + self.byte_offset as u32))
-            .store(&mut value.swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 4;
-    }
-
-    pub fn set_u64(&mut self, value: u64) {
-        AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u64))
-            .store(&mut value.swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 8;
-    }
-
-    /// Get a reference to the data view's byte length.
-    pub fn byte_length(&self) -> &i32 {
-        &self.byte_length
-    }
-
     /// Get a reference to the data view's context.
     pub fn context(&mut self) -> &mut Context {
         &mut self.context
+    }
+
+    fn check_index_in_range(&self, method: &str, length: i32) {
+        if self.byte_offset + length > self.byte_length {
+            utils::throw_index_out_of_range(
+                &self.context,
+                method,
+                length,
+                self.byte_offset,
+                self.byte_length
+            );
+        }
     }
 }

@@ -10,7 +10,7 @@ import {
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
-jest.setTimeout(200000);
+jest.setTimeout(360000);
 
 describe("wasm-rs test cases", () => {
   let ipfsProvider: string;

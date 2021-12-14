@@ -8,7 +8,8 @@ use polywrap_wasm_rs::{
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON
+    JSON,
+    log
 };
 {{#propertyDeps.length}}
 
@@ -58,9 +59,15 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
     {{/required}}
     {{/arguments}}
 
+    log::w3_log("deserialize_{{#toLower}}{{name}}{{/toLower}}_args");
+    log::w3_log(format!("num_of_fields {}", num_of_fields).as_str());
+    let mut vec = unsafe { Vec::from_raw_parts(input.as_ptr() as *mut u8, input.len() as usize, input.len() as usize) };
+    log::w3_log(format!("{:?}", vec).as_str());
+
     while num_of_fields > 0 {
         num_of_fields -= 1;
         let field = reader.read_string().unwrap();
+        log::w3_log(field.as_str());
 
         match field.as_str() {
             {{#arguments}}
@@ -109,15 +116,28 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
 
 pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}&{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) -> Vec<u8> {
     let mut sizer_context = Context::new();
+    log::w3_log("1");
     sizer_context.description = "Serializing (sizing) query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
+    log::w3_log("2");
     write_{{#toLower}}{{name}}{{/toLower}}_result(result, &mut sizer);
-    let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+    log::w3_log(format!("sizer.get_length() = {}", sizer.get_length()).as_str());
+    let buffer_size = sizer.get_length() as usize;
+    let mut buffer: Vec<u8> = Vec::with_capacity(buffer_size);
+    buffer.resize(buffer_size, 0);
+    log::w3_log("4");
     let mut encoder_context = Context::new();
+    log::w3_log("5");
     encoder_context.description = "Serializing (encoding) query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
+    log::w3_log(format!("{}", (&buffer as &[u8]).len()).as_str());
+    log::w3_log("6");
     write_{{#toLower}}{{name}}{{/toLower}}_result(result, &mut encoder);
-    buffer
+    log::w3_log("7");
+    let res_buffer = encoder.get_buffer();
+    log::w3_log(format!("{}", res_buffer.len()).as_str());
+    log::w3_log(format!("{:?}", res_buffer).as_str());
+    res_buffer
 }
 
 pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return}}&{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, writer: &mut W) {

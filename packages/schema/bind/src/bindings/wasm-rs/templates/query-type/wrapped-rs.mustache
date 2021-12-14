@@ -8,18 +8,26 @@ use crate::{
     {{/methods}}
 };
 {{/methods.length}}
+use polywrap_wasm_rs::{
+    log,
+};
 
 {{#methods}}
 pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(input: &[u8]) -> Vec<u8> {
+    log::w3_log(format!("{{#toLower}}{{name}}{{/toLower}} {}", input.len()).as_str());
     {{#arguments.length}}
     let args = deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input).expect("Failed to deserialize buffer");
+    log::w3_log("{{#toLower}}{{name}}{{/toLower}} deserialize");
     {{/arguments.length}}
     let result = {{#toLower}}{{name}}{{/toLower}}(Input{{#toUpper}}{{name}}{{/toUpper}} {{#arguments.length}}{
         {{#arguments}}
         {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: args.{{#toLower}}{{name}}{{/toLower}},
         {{/arguments}}
     }{{/arguments.length}});
-    serialize_{{#toLower}}{{name}}{{/toLower}}_result({{#return}}&{{/return}}result)
+    log::w3_log("{{#toLower}}{{name}}{{/toLower}} result");
+    let ser_result = serialize_{{#toLower}}{{name}}{{/toLower}}_result({{#return}}&{{/return}}result);
+    log::w3_log(format!("{{#toLower}}{{name}}{{/toLower}} result {:?}", ser_result).as_str());
+    ser_result
 }
 {{^last}}
 

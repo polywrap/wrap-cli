@@ -10,6 +10,7 @@ use crate::{
 use polywrap_wasm_rs::{
     abort,
     invoke,
+    log,
     InvokeArgs
 };
 
@@ -23,7 +24,10 @@ use polywrap_wasm_rs::{
 {{/__commonModule}}
 #[no_mangle]
 pub extern "C" fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
+    log::w3_log("_w3_invoke: start");
     let args: InvokeArgs = invoke::w3_invoke_args(method_size, args_size);
+    log::w3_log("_w3_invoke: w3_invoke_args returned");
+    log::w3_log(format!("_w3_invoke: method = {}", args.method.as_str()).as_str());
 
     match args.method.as_str() {
         {{#queryTypes}}

@@ -1,5 +1,5 @@
 use super::{Context, DataView, Format, Write};
-use crate::{BigInt, JSON};
+use crate::{BigInt, JSON, log};
 use core::hash::Hash;
 use std::collections::BTreeMap;
 
@@ -17,18 +17,22 @@ impl WriteEncoder {
                 .expect("Error creating new data view"),
         }
     }
+
+    pub fn get_buffer(&self) -> Vec<u8> {
+        self.view.get_buffer()
+    }
 }
 
 impl Write for WriteEncoder {
     fn write_nil(&mut self) {
-        self.view.set_u8(Format::NIL);
+        self.view.set_u8(&Format::NIL);
     }
 
     fn write_bool(&mut self, value: &bool) {
         if *value {
-            self.view.set_u8(Format::TRUE);
+            self.view.set_u8(&Format::TRUE);
         } else {
-            self.view.set_u8(Format::FALSE);
+            self.view.set_u8(&Format::FALSE);
         }
     }
 
@@ -42,22 +46,22 @@ impl Write for WriteEncoder {
 
     fn write_i32(&mut self, value: &i32) {
         if *value >= 0 && *value < 1 << 7 {
-            self.view.set_u8(*value as u8);
+            self.view.set_u8(&(*value as u8));
         } else if *value < 0 && *value >= -(1 << 5) {
             if Format::is_negative_fixed_int(*value as u8) {
-                self.view.set_u8(Format::NEGATIVE_FIXINT);
+                self.view.set_u8(&Format::NEGATIVE_FIXINT);
             } else {
-                self.view.set_u8(*value as u8);
+                self.view.set_u8(&(*value as u8));
             }
         } else if (*value <= i8::MAX as i32) && (*value >= i8::MIN as i32) {
-            self.view.set_u8(Format::INT8);
-            self.view.set_i8(*value as i8);
+            self.view.set_u8(&Format::INT8);
+            self.view.set_i8(&(*value as i8));
         } else if (*value <= i16::MAX as i32) && (*value >= i16::MIN as i32) {
-            self.view.set_u8(Format::INT16);
-            self.view.set_i16(*value as i16);
+            self.view.set_u8(&Format::INT16);
+            self.view.set_i16(&(*value as i16));
         } else {
-            self.view.set_u8(Format::INT32);
-            self.view.set_i32(*value);
+            self.view.set_u8(&Format::INT32);
+            self.view.set_i32(value);
         }
     }
 
@@ -71,45 +75,48 @@ impl Write for WriteEncoder {
 
     fn write_u32(&mut self, value: &u32) {
         if *value < (1 << 7) {
-            self.view.set_u8(*value as u8);
+            self.view.set_u8(&(*value as u8));
         } else if *value <= (u8::MAX as u32) {
-            self.view.set_u8(Format::UINT8);
-            self.view.set_u8(*value as u8);
+            self.view.set_u8(&Format::UINT8);
+            self.view.set_u8(&(*value as u8));
         } else if *value <= (u16::MAX as u32) {
-            self.view.set_u8(Format::UINT16);
-            self.view.set_u16(*value as u16);
+            self.view.set_u8(&Format::UINT16);
+            self.view.set_u16(&(*value as u16));
         } else {
-            self.view.set_u8(Format::UINT32);
-            self.view.set_u32(*value);
+            self.view.set_u8(&Format::UINT32);
+            self.view.set_u32(value);
         }
     }
 
     fn write_f32(&mut self, value: &f32) {
-        self.view.set_u8(Format::FLOAT32);
-        self.view.set_f32(*value);
+        self.view.set_u8(&Format::FLOAT32);
+        self.view.set_f32(value);
     }
 
     fn write_f64(&mut self, value: &f64) {
-        self.view.set_u8(Format::FLOAT64);
-        self.view.set_f64(*value);
+        self.view.set_u8(&Format::FLOAT64);
+        self.view.set_f64(value);
     }
 
     fn write_string_length(&mut self, length: u32) {
+        log::w3_log("write_string_length");
+        log::w3_log(format!("value = {}", length).as_str());
+        log::w3_log(format!("{:?}", self.get_buffer()).as_str());
         if length < 32 {
-            if Format::is_fixed_string(length as u8) {
-                self.view.set_u8(Format::FIXSTR);
-            }
-            self.view.set_u8(length as u8);
+            self.view.set_u8(&((length as u8) | Format::FIXSTR));
         } else if length <= u8::MAX as u32 {
-            self.view.set_u8(Format::STR8);
-            self.view.set_u8(length as u8);
+            log::w3_log("set_u8");
+            self.view.set_u8(&Format::STR8);
+            log::w3_log("set_u8");
+            self.view.set_u8(&(length as u8));
         } else if length <= u16::MAX as u32 {
-            self.view.set_u8(Format::STR16);
-            self.view.set_u16(length as u16);
+            self.view.set_u8(&Format::STR16);
+            self.view.set_u16(&(length as u16));
         } else {
-            self.view.set_u8(Format::STR32);
-            self.view.set_u32(length);
+            self.view.set_u8(&Format::STR32);
+            self.view.set_u32(&length);
         }
+        log::w3_log(format!("{:?}", self.get_buffer()).as_str());
     }
 
     fn write_string(&mut self, value: &String) {
@@ -126,14 +133,14 @@ impl Write for WriteEncoder {
 
     fn write_bytes_length(&mut self, length: u32) {
         if length <= u8::MAX as u32 {
-            self.view.set_u8(Format::BIN8);
-            self.view.set_u8(length as u8);
+            self.view.set_u8(&Format::BIN8);
+            self.view.set_u8(&(length as u8));
         } else if length <= u16::MAX as u32 {
-            self.view.set_u8(Format::BIN16);
-            self.view.set_u16(length as u16);
+            self.view.set_u8(&Format::BIN16);
+            self.view.set_u16(&(length as u16));
         } else {
-            self.view.set_u8(Format::BIN32);
-            self.view.set_u32(length);
+            self.view.set_u8(&Format::BIN32);
+            self.view.set_u32(&length);
         }
     }
 
@@ -147,7 +154,12 @@ impl Write for WriteEncoder {
     }
 
     fn write_bigint(&mut self, value: &BigInt) {
+        log::w3_log("write_bigint");
+        log::w3_log((&value.to_string()).as_str());
+        log::w3_log(format!("{}", (&value.to_string()).as_bytes().len()).as_str());
+        log::w3_log(format!("{:?}", self.get_buffer()).as_str());
         self.write_string(&value.to_string());
+        log::w3_log(format!("{:?}", self.get_buffer()).as_str());
     }
 
     fn write_json(&mut self, value: &JSON::Value) {
@@ -157,15 +169,15 @@ impl Write for WriteEncoder {
     fn write_array_length(&mut self, length: u32) {
         if length < 16 {
             if Format::is_fixed_array(length as u8) {
-                self.view.set_u8(Format::FIXARRAY);
+                self.view.set_u8(&Format::FIXARRAY);
             }
-            self.view.set_u8(length as u8);
+            self.view.set_u8(&(length as u8));
         } else if length <= u16::MAX as u32 {
-            self.view.set_u8(Format::ARRAY16);
-            self.view.set_u16(length as u16);
+            self.view.set_u8(&Format::ARRAY16);
+            self.view.set_u16(&(length as u16));
         } else {
-            self.view.set_u8(Format::ARRAY32);
-            self.view.set_u32(length);
+            self.view.set_u8(&Format::ARRAY32);
+            self.view.set_u32(&length);
         }
     }
 
@@ -179,15 +191,15 @@ impl Write for WriteEncoder {
     fn write_map_length(&mut self, length: u32) {
         if length < 16 {
             if Format::is_fixed_map(length as u8) {
-                self.view.set_u8(Format::FIXMAP);
+                self.view.set_u8(&Format::FIXMAP);
             }
-            self.view.set_u8(length as u8);
+            self.view.set_u8(&(length as u8));
         } else if length <= u16::MAX as u32 {
-            self.view.set_u8(Format::MAP16);
-            self.view.set_u16(length as u16);
+            self.view.set_u8(&Format::MAP16);
+            self.view.set_u16(&(length as u16));
         } else {
-            self.view.set_u8(Format::MAP32);
-            self.view.set_u32(length);
+            self.view.set_u8(&Format::MAP32);
+            self.view.set_u32(&length);
         }
     }
 

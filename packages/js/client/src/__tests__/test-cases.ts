@@ -268,7 +268,7 @@ export const runBigIntTypeTest = async (
     });
   }
 
-  {
+  /*{
     const response = await client.query<{
       method: string;
     }>({
@@ -296,7 +296,7 @@ export const runBigIntTypeTest = async (
     expect(response.data).toMatchObject({
       method: result.toString(),
     });
-  }
+  }*/
 };
 
 export const runBytesTypeTest = async (

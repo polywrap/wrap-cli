@@ -186,12 +186,21 @@ export class WasmWeb3Api extends Api {
 
       const exports = instance.exports as W3Exports;
 
-      const result = await exports._w3_invoke(
+      let result = false;
+      try {
+      result = await exports._w3_invoke(
         state.method.length,
         state.args.byteLength
       );
+      } catch (e) {
+        console.log("CAUGHT ", e);
+      }
+
+      console.log("under exports._w3_invoke!")
 
       const invokeResult = this._processInvokeResult(state, result, abort);
+
+      console.log("under _processInvokeResult")
 
       switch (invokeResult.type) {
         case "InvokeError": {
@@ -206,6 +215,7 @@ export class WasmWeb3Api extends Api {
         case "InvokeResult": {
           if (decode) {
             try {
+              console.log("decoding: ", invokeResult.invokeResult)
               return {
                 data: MsgPack.decode(invokeResult.invokeResult as ArrayBuffer),
               };

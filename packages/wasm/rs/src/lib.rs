@@ -7,6 +7,7 @@ pub mod json;
 pub mod memory;
 pub mod msgpack;
 pub mod subinvoke;
+pub mod log;
 
 pub use big_int::BigInt;
 pub use invoke::InvokeArgs;

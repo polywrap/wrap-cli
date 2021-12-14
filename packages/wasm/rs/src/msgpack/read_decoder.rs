@@ -1,5 +1,5 @@
 use super::{Context, DataView, Format, Read};
-use crate::{BigInt, JSON};
+use crate::{BigInt, JSON, log};
 use core::hash::Hash;
 use std::{collections::BTreeMap, str::FromStr};
 
@@ -444,6 +444,9 @@ impl Read for ReadDecoder {
     }
 
     fn read_string_length(&mut self) -> Result<u32, String> {
+        if self.is_next_nil() {
+            return Ok(0);
+        }
         let lead_byte = self.view.get_u8();
         if Format::is_fixed_string(lead_byte) {
             return Ok((lead_byte & 0x1f) as u32);
@@ -510,6 +513,9 @@ impl Read for ReadDecoder {
     }
 
     fn read_array_length(&mut self) -> Result<u32, String> {
+        if self.is_next_nil() {
+            return Ok(0);
+        }
         let lead_byte = self.view.get_u8();
         if Format::is_fixed_array(lead_byte) {
             return Ok((lead_byte & Format::FOUR_LEAST_SIG_BITS_IN_BYTE) as u32);
@@ -542,14 +548,24 @@ impl Read for ReadDecoder {
     }
 
     fn read_map_length(&mut self) -> Result<u32, String> {
+        if self.is_next_nil() {
+            return Ok(0);
+        }
         let lead_byte = self.view.get_u8();
+        log::w3_log(format!("lead_byte {}", lead_byte).as_str());
+
         if Format::is_fixed_map(lead_byte) {
+            log::w3_log(format!("fixed_map {}", lead_byte & Format::FOUR_LEAST_SIG_BITS_IN_BYTE).as_str());
             return Ok((lead_byte & Format::FOUR_LEAST_SIG_BITS_IN_BYTE) as u32);
         } else if lead_byte == Format::MAP16 {
+            log::w3_log(format!("map16 {}", self.view.get_u16()).as_str());
             return Ok((self.view.get_u16()) as u32);
         } else if lead_byte == Format::MAP32 {
+            log::w3_log(format!("map32 {}", self.view.get_u32()).as_str());
             return Ok(self.view.get_u32());
         }
+        log::w3_log("property must be of type `map`");
+        log::w3_log(Self::get_error_message(lead_byte)?);
         Err(self.context.print_with_context(
             &[
                 "Property must be of type `map`",
