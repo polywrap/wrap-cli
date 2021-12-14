@@ -1,5 +1,5 @@
 import {
-  ClientConfig,
+  Web3ApiClientConfig,
   createWeb3ApiClient,
 } from "../";
 import * as TestCases from "./test-cases";
@@ -28,7 +28,7 @@ describe("wasm-rs test cases", () => {
     await stopTestEnvironment();
   });
 
-  const getClient = async (config?: ClientConfig) => {
+  const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
     return createWeb3ApiClient({
       ethereum: {
         networks: {
@@ -58,7 +58,7 @@ describe("wasm-rs test cases", () => {
     );
   });
 
-  it("bigint-type", async () => {
+  it.only("bigint-type", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/wasm-rs/bigint-type`,
       ipfsProvider,
@@ -94,7 +94,7 @@ describe("wasm-rs test cases", () => {
     );
   });
 
-  /*it("implementations - e2e", async () => {
+  it("implementations - e2e", async () => {
     let interfaceApi = await buildAndDeployApi(
       `${GetPathToTestApis()}/wasm-rs/implementations/test-interface`,
       ipfsProvider,
@@ -145,7 +145,7 @@ describe("wasm-rs test cases", () => {
     await TestCases.runGetImplementationsTest(
       client, interfaceUri, implementationUri
     );
-  });*/
+  });
 
   it("invalid type errors", async () => {
     const api = await buildAndDeployApi(

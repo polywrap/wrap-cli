@@ -47,8 +47,8 @@ RUN PACKAGE_NAME=polywrap-wasm-rs; \
 RUN rm -rf query/Cargo.lock
 
 # Build the module at query
-RUN cargo +nightly build --manifest-path ./query/Cargo.toml \
-    --release --target wasm32-unknown-unknown
+ENV RUSTFLAGS="-C link-arg=-z -C link-arg=stack-size=65536 -C link-arg=--import-memory"
+RUN cargo +nightly build --manifest-path ./query/Cargo.toml --target wasm32-unknown-unknown --release
 
 # Make the build directory
 RUN mkdir ./build

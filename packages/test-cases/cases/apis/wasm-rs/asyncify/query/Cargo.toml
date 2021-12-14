@@ -14,7 +14,7 @@ edition = "2021"
 w3invoke = []
 
 [dependencies]
-polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../../../wasm/rs" }
+polywrap-wasm-rs = { path = "../../../../../../wasm/rs" }
 serde = { version = "1.0", features = ["derive"] }
 
 [lib]
