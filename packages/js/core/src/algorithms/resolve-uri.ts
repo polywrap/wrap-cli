@@ -1,13 +1,17 @@
 import {
   Api,
-  Client,
   Uri,
   PluginPackage,
+  InvokeHandler,
   InterfaceImplementations,
   PluginRegistration,
   UriRedirect,
 } from "../types";
-import { Web3ApiManifest, deserializeWeb3ApiManifest } from "../manifest";
+import {
+  Web3ApiManifest,
+  deserializeWeb3ApiManifest,
+  DeserializeManifestOptions,
+} from "../manifest";
 import { applyRedirects } from "./apply-redirects";
 import { findPluginPackage } from "./find-plugin-package";
 import { getImplementations } from "./get-implementations";
@@ -19,16 +23,15 @@ export const resolveUri = Tracer.traceFunc(
   "core: resolveUri",
   async (
     uri: Uri,
-    client: Client,
     redirects: readonly UriRedirect<Uri>[],
     plugins: readonly PluginRegistration<Uri>[],
     interfaces: readonly InterfaceImplementations<Uri>[],
+    invoke: InvokeHandler["invoke"],
     createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
     createApi: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) => Api,
-    noValidate?: boolean
+    deserializeOptions?: DeserializeManifestOptions
   ): Promise<Api> => {
     const finalRedirectedUri = applyRedirects(uri, redirects);
-
     const plugin = findPluginPackage(finalRedirectedUri, plugins);
 
     if (plugin) {
@@ -41,16 +44,16 @@ export const resolveUri = Tracer.traceFunc(
     // The final URI has been resolved, let's now resolve the Web3API package
     const uriResolverImplementations = getImplementations(
       coreInterfaceUris.uriResolver,
-      redirects,
-      interfaces
+      interfaces,
+      redirects
     );
 
     return await resolveUriWithUriResolvers(
       finalRedirectedUri,
       uriResolverImplementations,
-      client,
+      invoke,
       createApi,
-      noValidate
+      deserializeOptions
     );
   }
 );
@@ -58,9 +61,9 @@ export const resolveUri = Tracer.traceFunc(
 const resolveUriWithUriResolvers = async (
   uri: Uri,
   uriResolverImplementationUris: Uri[],
-  client: Client,
+  invoke: InvokeHandler["invoke"],
   createApi: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) => Api,
-  noValidate?: boolean
+  deserializeOptions?: DeserializeManifestOptions
 ): Promise<Api> => {
   let resolvedUri = uri;
 
@@ -94,7 +97,7 @@ const resolveUriWithUriResolvers = async (
     uriResolver: Uri
   ): Promise<UriResolver.MaybeUriOrManifest | undefined> => {
     const { data } = await UriResolver.Query.tryResolveUri(
-      client,
+      invoke,
       uriResolver,
       uri
     );
@@ -136,9 +139,10 @@ const resolveUriWithUriResolvers = async (
     } else if (result.manifest) {
       // We've found our manifest at the current URI resolver
       // meaning the URI resolver can also be used as an API resolver
-      const manifest = deserializeWeb3ApiManifest(result.manifest, {
-        noValidate,
-      });
+      const manifest = deserializeWeb3ApiManifest(
+        result.manifest,
+        deserializeOptions
+      );
 
       return Tracer.traceFunc(
         "resolveUri: createApi",

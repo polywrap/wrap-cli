@@ -11,10 +11,10 @@
     "outDir": "build",
     "declarationDir": "build/types",
     "esModuleInterop": true,
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
   },
   "include": [
-    "./src/**/*.ts"
+    "./**/*.ts"
   ],
   "exclude": []
 }

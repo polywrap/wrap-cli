@@ -19,6 +19,7 @@ export {
 } from "./CustomEnum";
 
 export { TestImport_Query } from "./imported/TestImport_Query";
+export { TestImport_Mutation } from "./imported/TestImport_Mutation";
 export { TestImport_Object } from "./imported/TestImport_Object";
 export { TestImport_AnotherObject } from "./imported/TestImport_AnotherObject";
 export {

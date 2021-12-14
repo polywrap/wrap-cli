@@ -1,7 +1,7 @@
 {
   "name": "@web3api/schema-parse",
   "description": "Web3API Schema Parsing",
-  "version": "0.0.1-prealpha.30",
+  "version": "0.0.1-prealpha.57",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
-    "lint": "eslint --color --ext .ts src/",
+    "lint": "eslint --color src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose"
@@ -25,7 +25,7 @@
   "devDependencies": {
     "@types/deep-equal": "1.0.1",
     "@types/jest": "26.0.8",
-    "@web3api/test-cases": "0.0.1-prealpha.30",
+    "@web3api/test-cases": "0.0.1-prealpha.57",
     "jest": "26.6.3",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",

@@ -1,7 +1,8 @@
 import {
-  w3_add_invoke,
+  w3_invoke_args,
   w3_invoke,
   w3_abort,
+  InvokeArgs
 } from "@web3api/wasm-as";
 {{#queryTypes}}
 {{#methods.length}}
@@ -29,12 +30,22 @@ import {
 } from "./MutationEnv";
 {{/environment.mutation.sanitized}}
 
-export function _w3_init(): void {
+export function _w3_invoke(method_size: u32, args_size: u32): bool {
+  const args: InvokeArgs = w3_invoke_args(
+    method_size,
+    args_size
+  );
+
   {{#queryTypes}}
   {{#methods}}
-  w3_add_invoke("{{name}}", {{name}}Wrapped);
+  {{^first}}else {{/first}}if (args.method == "{{name}}") {
+    return w3_invoke(args, {{name}}Wrapped);
+  }
   {{/methods}}
   {{/queryTypes}}
+  else {
+    return w3_invoke(args, null);
+  }
 }
 
 {{#environment.query.sanitized}}
@@ -59,10 +70,6 @@ export function _w3_load_env(environment_size: u32): void {
   env = MutationEnv.fromBuffer(environmentBuf);
 }
 {{/environment.mutation.sanitized}}
-
-export function _w3_invoke(method_size: u32, args_size: u32): bool {
-  return w3_invoke(method_size, args_size);
-}
 
 export function w3Abort(
   msg: string | null,

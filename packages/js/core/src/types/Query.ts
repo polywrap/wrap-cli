@@ -1,19 +1,8 @@
-import { Uri, InvokeApiOptions } from "./";
+import { Uri, InvokeApiOptions, ClientConfig } from "./";
 
 import { Tracer } from "@web3api/tracing-js";
-import { DocumentNode, parse } from "graphql";
+import { DocumentNode } from "graphql";
 import gql from "graphql-tag";
-
-/** GraphQL SchemaDocument */
-export type SchemaDocument = DocumentNode;
-
-/** Create a GraphQL SchemaDocument by parsing a string */
-export const createSchemaDocument = Tracer.traceFunc(
-  "core: createSchemaDocument",
-  (schema: string): SchemaDocument => {
-    return parse(schema);
-  }
-);
 
 /** GraphQL QueryDocument */
 export type QueryDocument = DocumentNode;
@@ -29,7 +18,8 @@ export const createQueryDocument = Tracer.traceFunc(
 /** Options required for an API query. */
 export interface QueryApiOptions<
   TVariables extends Record<string, unknown> = Record<string, unknown>,
-  TUri = Uri
+  TUri extends Uri | string = string,
+  TClientConfig extends ClientConfig = ClientConfig
 > {
   /** The API's URI */
   uri: TUri;
@@ -44,6 +34,16 @@ export interface QueryApiOptions<
    * Variables referenced within the query string via GraphQL's '$variable' syntax.
    */
   variables?: TVariables;
+
+  /**
+   * Override the client's config for all invokes within this query.
+   */
+  config?: Partial<TClientConfig>;
+
+  /**
+   * Query id used to track query context data set internally.
+   */
+  contextId?: string;
 }
 
 /**
@@ -65,31 +65,23 @@ export interface QueryApiResult<
    * Errors should be populated with information as to what happened.
    * Null is used to represent an intentionally null result.
    */
-  // TODO: is it correct to have this optionally undefined? Should it instead be { } for "undefined" cases?
-  //       axios follows this pattern, does GraphQL/Apollo?
   data?: TData;
 
   /** Errors encountered during the query. */
   errors?: Error[];
 }
 
-export interface QueryApiInvocations {
-  [methodOrAlias: string]: InvokeApiOptions;
+export interface QueryApiInvocations<TUri extends Uri | string = string> {
+  [methodOrAlias: string]: InvokeApiOptions<TUri>;
 }
 
 /** A type that can parse & execute a given query */
 export interface QueryHandler {
   query<
     TData extends Record<string, unknown> = Record<string, unknown>,
-    TVariables extends Record<string, unknown> = Record<string, unknown>
+    TVariables extends Record<string, unknown> = Record<string, unknown>,
+    TUri extends Uri | string = string
   >(
-    options: QueryApiOptions<TVariables, string>
-  ): Promise<QueryApiResult<TData>>;
-
-  query<
-    TData extends Record<string, unknown> = Record<string, unknown>,
-    TVariables extends Record<string, unknown> = Record<string, unknown>
-  >(
-    options: QueryApiOptions<TVariables, Uri>
+    options: QueryApiOptions<TVariables, TUri>
   ): Promise<QueryApiResult<TData>>;
 }

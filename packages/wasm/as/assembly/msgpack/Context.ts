@@ -1,25 +1,25 @@
 // Context stores debug information in a stack,
 // and prints it in a clear format
 export class Context {
-  private description: string;
-  private nodes: Array<Node> = [];
+  private _description: string;
+  private _nodes: Array<Node> = [];
 
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   constructor(description: string = "context description not set") {
-    this.description = description;
+    this._description = description;
   }
 
   public isEmpty(): boolean {
-    return this.nodes.length === 0;
+    return this._nodes.length === 0;
   }
 
   get length(): i32 {
-    return this.nodes.length;
+    return this._nodes.length;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-inferrable-types
   public push(item: string, type: string = "", info: string = ""): void {
-    this.nodes.push({
+    this._nodes.push({
       item,
       type,
       info,
@@ -32,23 +32,23 @@ export class Context {
         "Null pointer exception: tried to pop an item from an empty Context stack"
       );
     }
-    const node = this.nodes.pop();
+    const node = this._nodes.pop();
     return (
       node.item + ": " + node.type + (node.info == "" ? "" : " >> " + node.info)
     );
   }
 
   public toString(): string {
-    return this.printWithTabs();
+    return this._printWithTabs();
   }
 
   public printWithContext(message: string): string {
-    return message + "\n" + this.printWithTabs(1);
+    return message + "\n" + this._printWithTabs(1);
   }
 
-  private printWithTabs(tabs: i32 = 0, size: i32 = 2): string {
+  private _printWithTabs(tabs: i32 = 0, size: i32 = 2): string {
     let result = "".padStart(size * tabs++, " ");
-    result += "Context: " + this.description;
+    result += "Context: " + this._description;
 
     if (this.isEmpty()) {
       result += "\n".padEnd(1 + size * tabs++, " ");
@@ -56,8 +56,8 @@ export class Context {
       return result;
     }
 
-    for (let i = this.nodes.length - 1; i >= 0; --i) {
-      const node = this.nodes[i];
+    for (let i = this._nodes.length - 1; i >= 0; --i) {
+      const node = this._nodes[i];
       const info: string = node.info == "" ? "" : " >> " + node.info;
 
       result += "\n".padEnd(1 + size * tabs++, " ");

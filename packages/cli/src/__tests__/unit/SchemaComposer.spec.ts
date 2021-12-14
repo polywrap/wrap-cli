@@ -1,5 +1,5 @@
 import path from "path";
-import { SchemaComposer, Project } from "../../lib";
+import { SchemaComposer, Web3ApiProject } from "../../lib";
 import { composedSchema } from "../project/sample";
 
 import { ComposerFilter } from "@web3api/schema-compose";
@@ -8,7 +8,7 @@ describe("SchemaComposer validation", () => {
   const manifestPath = path.join(__dirname, "../project", "web3api.yaml");
 
   it("Should load & compose schema properly", async () => {
-    const project = new Project({
+    const project = new Web3ApiProject({
       web3apiManifestPath: manifestPath,
     });
     const composer = new SchemaComposer({

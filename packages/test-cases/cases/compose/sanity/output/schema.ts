@@ -13,7 +13,9 @@ import {
   createImportedObjectDefinition,
   createImportedEnumDefinition,
   createInterfaceImplementedDefinition,
-  createObjectRef
+  createObjectRef,
+  createInterfaceDefinition,
+  createCapability
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
@@ -21,6 +23,18 @@ export const typeInfo: TypeInfo = {
     query: {},
     mutation: {},
   },
+  interfaceTypes: [
+    createInterfaceDefinition({
+      type: "Namespace",
+      uri: "test.eth",
+      namespace: "Namespace",
+      capabilities: createCapability({
+        type: "getImplementations",
+        enabled: true,
+        modules: ["query"],
+      }),
+    })
+  ],
   enumTypes: [],
   queryTypes: [
     {
@@ -359,7 +373,8 @@ export const typeInfo: TypeInfo = {
               required: false
             })
           })
-        })
+        }),
+        createObjectPropertyDefinition({ name: "anotherLocal", type: "AnotherLocal", required: true }),
       ],
     },
     {
@@ -387,6 +402,14 @@ export const typeInfo: TypeInfo = {
         { ...createScalarPropertyDefinition({ name: "bar", type: "Int", required: false }) },
         createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
       ]
+    },
+    {
+      ...createObjectDefinition({
+        type: "AnotherLocal",
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
+      ],
     },
     {
       ...createObjectDefinition({ type: "CustomMutationType", comment: "CustomMutationType multi-line comment\nline 2" }),
@@ -500,8 +523,9 @@ export const typeInfo: TypeInfo = {
         uri: "test.eth",
         namespace: "Namespace",
         nativeType: "Query",
+        isInterface: true,
         type: "Namespace_Query",
-        comment: "Query comment"
+        comment: "Query comment",
       }),
       methods: [
         {
@@ -586,11 +610,12 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedQueryDefinition({
-        uri: "interface.eth",
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "Query",
+        isInterface: false,
         type: "Interface_Query",
-        comment: "Query comment"
+        comment: "Query comment",
       }),
       methods: [
         {
@@ -620,8 +645,9 @@ export const typeInfo: TypeInfo = {
         uri: "test.eth",
         namespace: "Namespace",
         nativeType: "Mutation",
+        isInterface: false,
         type: "Namespace_Mutation",
-        comment: "Mutation comment"
+        comment: "Mutation comment",
       }),
       methods: [
         {
@@ -763,7 +789,8 @@ export const typeInfo: TypeInfo = {
         uri: "just.mutation.eth",
         namespace: "JustMutation",
         nativeType: "Mutation",
-        type: "JustMutation_Mutation"
+        isInterface: false,
+        type: "JustMutation_Mutation",
       }),
       methods: [
         {
@@ -798,11 +825,12 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedQueryDefinition({
-        uri: "interface.eth",
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "Mutation",
         type: "Interface_Mutation",
-        comment: "Mutation comment"
+        isInterface: false,
+        comment: "Mutation comment",
       }),
       methods: [
         {
@@ -1038,7 +1066,7 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedObjectDefinition({
-        uri: "interface.eth",
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "QueryInterfaceArgument",
         type: "Interface_QueryInterfaceArgument",
@@ -1054,7 +1082,7 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedObjectDefinition({
-        uri: "interface.eth",
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "NestedQueryInterfaceArgument",
         type: "Interface_NestedQueryInterfaceArgument",
@@ -1066,7 +1094,7 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedObjectDefinition({
-        uri: "interface.eth",
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "InterfaceObject2",
         type: "Interface_InterfaceObject2",
@@ -1082,7 +1110,7 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedObjectDefinition({
-        uri: "interface.eth",
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "Object",
         type: "Interface_Object",
@@ -1094,7 +1122,7 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedObjectDefinition({
-        uri: "interface.eth",
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "NestedInterfaceObject",
         type: "Interface_NestedInterfaceObject",
@@ -1106,7 +1134,7 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedObjectDefinition({
-        uri: "interface.eth",
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "InterfaceObject1",
         type: "Interface_InterfaceObject1",

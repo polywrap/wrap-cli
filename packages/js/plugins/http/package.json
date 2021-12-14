@@ -1,7 +1,7 @@
 {
   "name": "@web3api/http-plugin-js",
   "description": "Web3API HTTP Javascript Plugin",
-  "version": "0.0.1-prealpha.30",
+  "version": "0.0.1-prealpha.57",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,19 +13,23 @@
     "schema.graphql"
   ],
   "scripts": {
-    "build": "rimraf ./build && tsc --project tsconfig.build.json",
-    "lint": "eslint --color --ext .ts src/",
-    "lint:fix": "eslint --color --fix --ext .ts src/",
+    "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
+    "codegen": "node ../../../../dependencies/node_modules/@web3api/cli/bin/w3 plugin codegen",
+    "lint": "eslint --color -c ../../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
+    "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@web3api/core-js": "0.0.1-prealpha.30",
-    "axios": "0.21.1"
+    "@web3api/core-js": "0.0.1-prealpha.57",
+    "axios": "0.21.2"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
-    "@web3api/client-js": "0.0.1-prealpha.30",
+    "@web3api/client-js": "0.0.1-prealpha.57",
+    "@web3api/ens-plugin-js": "0.0.1-prealpha.57",
+    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.57",
+    "@web3api/test-env-js": "0.0.1-prealpha.57",
     "jest": "26.6.3",
     "nock": "13.0.7",
     "rimraf": "3.0.2",

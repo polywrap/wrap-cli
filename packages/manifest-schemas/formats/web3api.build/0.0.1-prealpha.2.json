@@ -2,9 +2,7 @@
   "id": "BuildManifest",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "format"
-  ],
+  "required": ["format"],
   "properties": {
     "format": {
       "type": "string",
@@ -30,6 +28,26 @@
     },
     "config": {
       "type": "object"
+    },
+    "linked_packages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "filter": {
+            "type": "string",
+            "format": "regexString"
+          }
+        },
+        "required": ["name", "path"]
+      }
     }
   }
 }

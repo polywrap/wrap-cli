@@ -1,14 +1,5 @@
 import { Uri, Client, InvokableModules, MaybeAsync } from ".";
 
-/** The plugin's configuration */
-export interface PluginManifest {
-  /** The API's schema */
-  schema: string;
-
-  /** All interface schemas implemented by this plugin. */
-  implements: Uri[];
-}
-
 /**
  * Invocable plugin method.
  *
@@ -49,9 +40,18 @@ export abstract class Plugin {
   public abstract getModules(client: Client): PluginModules;
 }
 
+/** The plugin package's manifest */
+export interface PluginPackageManifest {
+  /** The API's schema */
+  schema: string;
+
+  /** All interface schemas implemented by this plugin. */
+  implements: Uri[];
+}
+
 export type PluginPackage = {
   factory: () => Plugin;
-  manifest: PluginManifest;
+  manifest: PluginPackageManifest;
 };
 
 export type PluginFactory<TOpts> = (opts: TOpts) => PluginPackage;

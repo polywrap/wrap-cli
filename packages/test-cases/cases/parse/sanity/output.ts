@@ -15,10 +15,26 @@ import {
   createImportedEnumDefinition,
   createInterfaceImplementedDefinition,
   createObjectRef,
-  createEnumRef
+  createEnumRef,
+  createInterfaceDefinition,
+  createCapability
 } from "../../../../schema/parse/src/typeInfo";
 
 export const output: TypeInfo = {
+  interfaceTypes: [
+    createInterfaceDefinition({
+      type: "TestImport",
+      uri: "testimport.uri.eth",
+      namespace: "TestImport",
+      capabilities: {
+        ...createCapability({
+          type: "getImplementations",
+          enabled: true,
+          modules: ["query"]
+        })
+      },
+    })
+  ],
   environment: {
     mutation: {
       sanitized: {
@@ -66,6 +82,8 @@ export const output: TypeInfo = {
         createScalarPropertyDefinition({ name: "i32", type: "Int32", required: true }),
         createScalarPropertyDefinition({ name: "bigint", type: "BigInt", required: true }),
         createScalarPropertyDefinition({ name: "optBigint", type: "BigInt", required: false }),
+        createScalarPropertyDefinition({ name: "json", type: "JSON", required: true }),
+        createScalarPropertyDefinition({ name: "optJson", type: "JSON", required: false }),
         createScalarPropertyDefinition({ name: "bytes", type: "Bytes", required: true }),
         createArrayPropertyDefinition({
           name: "uArray",
@@ -475,6 +493,7 @@ export const output: TypeInfo = {
         uri: "testimport.uri.eth",
         namespace: "TestImport",
         type: "TestImport_Query",
+        isInterface: true,
         nativeType: "Query",
         comment: "TestImport_Query comment"
       }),
@@ -604,6 +623,7 @@ export const output: TypeInfo = {
         namespace: "TestImport",
         type: "TestImport_Mutation",
         nativeType: "Mutation",
+        isInterface: false,
         comment: "TestImport_Mutation comment"
       }),
       methods: [
@@ -627,6 +647,7 @@ export const output: TypeInfo = {
         uri: "interface.uri.eth",
         namespace: "Interface",
         type: "Interface_Query",
+        isInterface: false,
         nativeType: "Query",
         comment: "Interface_Query comment"
       }),

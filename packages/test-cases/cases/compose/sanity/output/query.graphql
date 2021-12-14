@@ -9,6 +9,7 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar JSON
 
 directive @imported(
   uri: String!
@@ -19,6 +20,14 @@ directive @imported(
 directive @imports(
   types: [String!]!
 ) on OBJECT
+
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
 """
@@ -41,23 +50,27 @@ type Query implements Interface_Query @imports(
     "Interface_Object",
     "Interface_NestedInterfaceObject"
   ]
+) @capability(
+  type: "getImplementations",
+  uri: "test.eth",
+  namespace: "Namespace"
 ) {
-"""
-method1 comment
-"""
+  """
+  method1 comment
+  """
   method1(
     str: String!
     optStr: String
     u: UInt!
-"""
-uArrayArray comment
-"""
+    """
+    uArrayArray comment
+    """
     uArrayArray: [[UInt]]!
   ): String!
 
-"""
-method2 comment
-"""
+  """
+  method2 comment
+  """
   method2(
     arg: [String!]!
   ): [Int32!]!
@@ -84,9 +97,9 @@ type CustomQueryType {
   optStrOptArray: [String]
   crazyArray: [[[[UInt32!]]!]]
   commonType: CommonType!
-"""
-customType comment
-"""
+  """
+  customType comment
+  """
   customType: Namespace_CustomType!
 }
 
@@ -105,10 +118,11 @@ CommonType comment
 type CommonType {
   prop: UInt8!
   nestedObject: NestedType!
-"""
-objectArray comment
-"""
+  """
+  objectArray comment
+  """
   objectArray: [[ArrayObject]]!
+  anotherLocal: AnotherLocal!
 }
 
 """
@@ -125,6 +139,10 @@ type ArrayObject {
   prop: String!
 }
 
+type AnotherLocal {
+  prop: String!
+}
+
 ### Imported Queries START ###
 
 """
@@ -134,7 +152,7 @@ type Namespace_Query @imported(
   uri: "test.eth",
   namespace: "Namespace",
   nativeType: "Query"
-) {
+) @enabled_interface {
   method1(
     str: String!
     optStr: String
@@ -143,13 +161,13 @@ type Namespace_Query @imported(
     uArrayArray: [[UInt]]!
   ): String!
 
-"""
-method2 comment
-"""
+  """
+  method2 comment
+  """
   method2(
-"""
-arg comment
-"""
+    """
+    arg comment
+    """
     arg: [String!]!
   ): [Int32!]!
 }
@@ -158,17 +176,17 @@ arg comment
 Query comment
 """
 type Interface_Query @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "Query"
 ) {
-"""
-abstractQueryMethod comment
-"""
+  """
+  abstractQueryMethod comment
+  """
   abstractQueryMethod(
-"""
-arg comment
-"""
+    """
+    arg comment
+    """
     arg: Interface_QueryInterfaceArgument!
   ): Interface_InterfaceObject2!
 }
@@ -215,9 +233,9 @@ type Namespace_CustomType @imported(
   enum: Namespace_CustomEnum!
   optEnum: Namespace_CustomEnum
   importedEnum: Namespace_Imported_Enum!
-"""
-optImportedEnum comment
-"""
+  """
+  optImportedEnum comment
+  """
   optImportedEnum: Namespace_Imported_Enum
 }
 
@@ -260,14 +278,14 @@ type Namespace_Imported_ObjectType @imported(
 QueryInterfaceArgument comment
 """
 type Interface_QueryInterfaceArgument implements Interface_NestedQueryInterfaceArgument @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "QueryInterfaceArgument"
 ) {
   str: String!
-"""
-uint8 comment
-"""
+  """
+  uint8 comment
+  """
   uint8: UInt8!
 }
 
@@ -275,7 +293,7 @@ uint8 comment
 NestedQueryInterfaceArgument comment
 """
 type Interface_NestedQueryInterfaceArgument @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "NestedQueryInterfaceArgument"
 ) {
@@ -286,7 +304,7 @@ type Interface_NestedQueryInterfaceArgument @imported(
 InterfaceObject2 comment
 """
 type Interface_InterfaceObject2 implements Interface_NestedInterfaceObject @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "InterfaceObject2"
 ) {
@@ -298,7 +316,7 @@ type Interface_InterfaceObject2 implements Interface_NestedInterfaceObject @impo
 Object comment
 """
 type Interface_Object @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "Object"
 ) {
@@ -309,19 +327,19 @@ type Interface_Object @imported(
 NestedInterfaceObject comment
 """
 type Interface_NestedInterfaceObject @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "NestedInterfaceObject"
 ) {
-"""
-object comment
-"""
+  """
+  object comment
+  """
   object: Interface_Object
 }
 
 enum Namespace_CustomEnum @imported(
-  namespace: "Namespace",
   uri: "test.eth",
+  namespace: "Namespace",
   nativeType: "CustomEnum"
 ) {
   STRING
@@ -332,8 +350,8 @@ enum Namespace_CustomEnum @imported(
 Imported_Enum comment
 """
 enum Namespace_Imported_Enum @imported(
-  namespace: "Namespace",
   uri: "test.eth",
+  namespace: "Namespace",
   nativeType: "Imported_Enum"
 ) {
   STRING

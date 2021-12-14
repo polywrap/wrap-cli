@@ -1,5 +1,6 @@
 import { useWeb3ApiQuery, Web3ApiProvider, useWeb3ApiClient, createWeb3ApiProvider } from "@web3api/react";
 import { PluginRegistration } from "@web3api/client-js";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
 
 const SimpleStorage = ({ uri }: { uri: string }) => {
@@ -65,7 +66,7 @@ const SimpleStorage = ({ uri }: { uri: string }) => {
           <div>{currentStorage?.getData} </div>
           <div>
             {
-              client1.plugins().length > client2.plugins().length 
+              client1.getPlugins().length > client2.getPlugins().length 
                 ? 'Provider plugin counts are correct' 
                 : 'Provider plugin counts are not correct'
             }

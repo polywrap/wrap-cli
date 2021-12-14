@@ -8,6 +8,7 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar JSON
 
 directive @imported(
   uri: String!
@@ -19,6 +20,13 @@ directive @imports(
   types: [String!]!
 ) on OBJECT
 
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 """
 CustomEnum comment
 """
@@ -51,6 +59,8 @@ optStr comment
   i32: Int32!
   bigint: BigInt!
   optBigint: BigInt
+  json: JSON!
+  optJson: JSON
   bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]
@@ -126,6 +136,10 @@ Query comment
 """
 type Query implements Interface_Query @imports(
   types: [ "TestImport_Query", "Interface_Query" ]
+) @capability(
+  type: "getImplementations",
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
 ) {
   sanitizeQueryEnv(env: QueryClientEnv!): QueryEnv!
 """
@@ -178,7 +192,7 @@ type TestImport_Query @imported(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
   nativeType: "Query"
-) {
+) @enabled_interface {
 """
 importedMethod comment
 """

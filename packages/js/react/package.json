@@ -1,7 +1,7 @@
 {
   "name": "@web3api/react",
   "description": "Web3API React Integration",
-  "version": "0.0.1-prealpha.30",
+  "version": "0.0.1-prealpha.57",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,27 +13,25 @@
   ],
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
-    "lint": "eslint --color --ext \"src/**/*.{ts|tsx}\"",
+    "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test:ci": "yarn test",
     "test": "jest --passWithNoTests --runInBand --verbose --env=./src/__tests__/env/index.ts",
-    "test:watch": "yarn test --watch",
-    "pretest": "yarn install:web3api",
-    "install:web3api": "npx web3api-worker-install ./"
+    "test:watch": "yarn test --watch"
   },
   "dependencies": {
-    "@web3api/client-js": "0.0.1-prealpha.30",
-    "@web3api/core-js": "0.0.1-prealpha.30"
+    "@web3api/client-js": "0.0.1-prealpha.57",
+    "@web3api/core-js": "0.0.1-prealpha.57"
   },
   "devDependencies": {
     "@testing-library/react": "11.2.5",
     "@testing-library/react-hooks": "5.1.0",
     "@types/jest": "26.0.8",
-    "@web3api/cli": "0.0.1-prealpha.30",
-    "@web3api/ens-plugin-js": "0.0.1-prealpha.30",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.30",
-    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.30",
-    "@web3api/test-cases": "0.0.1-prealpha.30",
-    "@web3api/test-env-js": "0.0.1-prealpha.30",
+    "@web3api/cli": "0.0.1-prealpha.57",
+    "@web3api/ens-plugin-js": "0.0.1-prealpha.57",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.57",
+    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.57",
+    "@web3api/test-cases": "0.0.1-prealpha.57",
+    "@web3api/test-env-js": "0.0.1-prealpha.57",
     "jest": "26.6.3",
     "jest-environment-jsdom": "^26.0.1",
     "rimraf": "3.0.2",

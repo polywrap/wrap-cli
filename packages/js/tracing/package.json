@@ -1,7 +1,7 @@
 {
   "name": "@web3api/tracing-js",
   "description": "Web3API Core Tracing",
-  "version": "0.0.1-prealpha.30",
+  "version": "0.0.1-prealpha.57",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
-    "lint": "eslint --color --ext .ts src/",
+    "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose"
@@ -29,7 +29,7 @@
     "@opentelemetry/propagator-b3": "0.20.0",
     "@opentelemetry/tracing": "0.20.0",
     "@opentelemetry/web": "0.20.0",
-    "util-inspect": "0.1.8"
+    "browser-util-inspect": "0.2.0"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",

@@ -1,7 +1,7 @@
 {
   "name": "@web3api/schema-bind",
   "description": "Web3API Schema Binding",
-  "version": "0.0.1-prealpha.30",
+  "version": "0.0.1-prealpha.57",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,21 +13,21 @@
   ],
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json && yarn copy:templates",
-    "lint": "eslint --color --ext .ts src/",
+    "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose",
     "copy:templates": "copyfiles -u 1 src/**/*.mustache build/"
   },
   "dependencies": {
-    "@web3api/os-js": "0.0.1-prealpha.30",
-    "@web3api/schema-parse": "0.0.1-prealpha.30",
+    "@web3api/os-js": "0.0.1-prealpha.57",
+    "@web3api/schema-parse": "0.0.1-prealpha.57",
     "mustache": "4.0.1"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
     "@types/mustache": "4.0.1",
-    "@web3api/test-cases": "0.0.1-prealpha.30",
+    "@web3api/test-cases": "0.0.1-prealpha.57",
     "copyfiles": "2.4.1",
     "jest": "26.6.3",
     "rimraf": "3.0.2",

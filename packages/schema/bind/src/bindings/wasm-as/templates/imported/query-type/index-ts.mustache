@@ -5,7 +5,8 @@ export { {{type}} } from "../../common";
 import {
   w3_subinvoke,
   Nullable,
-  BigInt
+  BigInt,
+  JSON
 } from "@web3api/wasm-as";
 {{#methods.length}}
 import {
@@ -18,6 +19,7 @@ import {
 {{/methods.length}}
 import * as Types from "../..";
 
+{{^isInterface}}
 export class {{type}} {
 
   public static uri: string = "{{uri}}";
@@ -38,4 +40,33 @@ export class {{type}} {
   {{/last}}
   {{/methods}}
 }
+{{/isInterface}}
+{{#isInterface}}
+export class {{type}} {
+
+  public static interfaceUri: string = "{{uri}}";
+
+  public uri: string;
+
+  constructor(uri: string) {
+    this.uri = uri;
+  }
+
+  {{#methods}}
+  public {{name}}(input: Input_{{name}}): {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
+    const args = serialize{{name}}Args(input);
+    const result = w3_subinvoke(
+      this.uri,
+      "{{type}}",
+      "{{name}}",
+      args
+    );
+    return deserialize{{name}}Result(result);
+  }
+  {{^last}}
+
+  {{/last}}
+  {{/methods}}
+}
+{{/isInterface}}
 {{/__commonImport}}

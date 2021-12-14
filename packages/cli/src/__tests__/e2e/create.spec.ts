@@ -28,8 +28,9 @@ describe("e2e tests for create command", () => {
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "--help"],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -39,8 +40,9 @@ describe("e2e tests for create command", () => {
   test("Should throw error for missing parameter - type", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create"],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -51,8 +53,9 @@ ${HELP}`);
   test("Should throw error for missing parameter - lang", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "type"],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -63,8 +66,9 @@ ${HELP}`);
   test("Should throw error for missing parameter - name", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "type", "lang"],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -75,8 +79,9 @@ ${HELP}`);
   test("Should throw error for invalid parameter - type", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "unknown", "app", "name"],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -87,8 +92,9 @@ ${HELP}`);
   test("Should throw error for invalid parameter - lang", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "api", "unknown", "name"],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -99,8 +105,9 @@ ${HELP}`);
   test("Should throw error for invalid parameter - output-dir", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "api", "assemblyscript", "name", "-o"],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(code).toEqual(0);
     expect(error).toBe("");
@@ -114,8 +121,9 @@ ${HELP}`);
 
     const { exitCode: code, stdout: output } = await runCLI({
       args: ["create", "api", "assemblyscript", "test", "-o", `${projectRoot}/test`],
-      cwd: projectRoot
-    }, w3Cli);
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
 
     expect(code).toEqual(0);
     expect(clearStyle(output)).toContain(

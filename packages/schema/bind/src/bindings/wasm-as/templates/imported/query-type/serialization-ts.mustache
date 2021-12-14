@@ -1,14 +1,6 @@
 {{^__commonImport}}
 {{#methods.length}}
-import {
-  Nullable,
-  Write,
-  WriteSizer,
-  WriteEncoder,
-  ReadDecoder,
-  BigInt,
-  Context
-} from "@web3api/wasm-as";
+{{> serialization_imports}}
 import * as Types from "../..";
 
 {{#methods}}

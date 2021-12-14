@@ -6,6 +6,9 @@ import {
   GenericDefinition,
   EnumDefinition,
   ImportedEnumDefinition,
+  InterfaceDefinition,
+  CapabilityType,
+  CapabilityDefinition,
 } from "./definitions";
 
 export * from "./definitions";
@@ -29,6 +32,7 @@ export interface TypeInfo {
   objectTypes: ObjectDefinition[];
   queryTypes: QueryDefinition[];
   enumTypes: EnumDefinition[];
+  interfaceTypes: InterfaceDefinition[];
   importedObjectTypes: ImportedObjectDefinition[];
   importedQueryTypes: ImportedQueryDefinition[];
   importedEnumTypes: ImportedEnumDefinition[];
@@ -43,6 +47,7 @@ export function createTypeInfo(): TypeInfo {
     objectTypes: [],
     enumTypes: [],
     queryTypes: [],
+    interfaceTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
     importedEnumTypes: [],
@@ -60,6 +65,7 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
     objectTypes: [],
     queryTypes: [],
     enumTypes: [],
+    interfaceTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
     importedEnumTypes: [],
@@ -89,6 +95,45 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       tryInsert(combined.queryTypes, queryType);
     }
 
+    for (const interfaceType of typeInfo.interfaceTypes) {
+      tryInsert(
+        combined.interfaceTypes,
+        interfaceType,
+        compareImportedType,
+        (
+          a: InterfaceDefinition,
+          b: InterfaceDefinition
+        ): InterfaceDefinition => {
+          const combinedCapabilities: CapabilityDefinition = {
+            ...a.capabilities,
+            ...b.capabilities,
+          };
+          const combinedCapabilityTypes = Object.keys(
+            combinedCapabilities
+          ) as CapabilityType[];
+          for (const capability of combinedCapabilityTypes) {
+            if (b.capabilities[capability] && a.capabilities[capability]) {
+              const combinedModules = Array.from(
+                new Set([
+                  ...a.capabilities[capability].modules,
+                  ...b.capabilities[capability].modules,
+                ])
+              );
+              combinedCapabilities[capability] = {
+                enabled: true,
+                modules: combinedModules,
+              };
+            } else if (a.capabilities[capability]) {
+              combinedCapabilities[capability] = a.capabilities[capability];
+            } else if (b.capabilities[capability]) {
+              combinedCapabilities[capability] = b.capabilities[capability];
+            }
+          }
+          return { ...a, capabilities: combinedCapabilities };
+        }
+      );
+    }
+
     for (const importedObjectType of typeInfo.importedObjectTypes) {
       tryInsert(
         combined.importedObjectTypes,
@@ -101,7 +146,10 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       tryInsert(
         combined.importedQueryTypes,
         importedQueryType,
-        compareImportedType
+        compareImportedType,
+        (a: ImportedQueryDefinition, b: ImportedQueryDefinition) => {
+          return { ...a, isInterface: a.isInterface || b.isInterface };
+        }
       );
     }
 
@@ -117,14 +165,22 @@ const tryInsert = (
   dest: GenericDefinition[],
   value: GenericDefinition,
   compare: (a: GenericDefinition, b: GenericDefinition) => boolean = (a, b) =>
-    a.type === b.type
+    a.type === b.type,
+  join?: (
+    dest: GenericDefinition,
+    source: GenericDefinition
+  ) => GenericDefinition
 ) => {
   const index = dest.findIndex((item: GenericDefinition) =>
     compare(item, value)
   );
 
   if (index > -1) {
-    // See if they're the same, error if they aren't
+    if (join) {
+      dest[index] = join(dest[index], value);
+      return;
+    }
+
     const destType = JSON.stringify(dest[index]);
     const valueType = JSON.stringify(value);
     if (destType !== valueType) {

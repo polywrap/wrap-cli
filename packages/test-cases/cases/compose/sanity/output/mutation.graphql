@@ -9,6 +9,7 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar JSON
 
 directive @imported(
   uri: String!
@@ -19,6 +20,14 @@ directive @imported(
 directive @imports(
   types: [String!]!
 ) on OBJECT
+
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
 """
@@ -43,26 +52,26 @@ type Mutation implements Interface_Mutation @imports(
     "Interface_Mutation"
   ]
 ) {
-"""
-method1 comment
-"""
+  """
+  method1 comment
+  """
   method1(
-"""
-str comment
-"""
+    """
+    str comment
+    """
     str: String!
-"""
-optStr comment
-"""
+    """
+    optStr comment
+    """
     optStr: String
     u: UInt!
-"""
-uArrayArray comment
-"""
+    """
+    uArrayArray comment
+    """
     uArrayArray: [[UInt]]!
-"""
-implObject comment
-"""
+    """
+    implObject comment
+    """
     implObject: LocalImplementationObject!
   ): String!
 
@@ -85,13 +94,13 @@ CustomMutationType multi-line comment
 line 2
 """
 type CustomMutationType {
-"""
-str comment
-"""
+  """
+  str comment
+  """
   str: String!
-"""
-optStr comment
-"""
+  """
+  optStr comment
+  """
   optStr: String
   u: UInt!
   optU: UInt
@@ -102,14 +111,14 @@ optStr comment
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optStrOptArray: [String]
-"""
-crazyArray comment
-"""
+  """
+  crazyArray comment
+  """
   crazyArray: [[[[UInt32!]]!]]
   commonType: CommonType!
-"""
-customType comment
-"""
+  """
+  customType comment
+  """
   customType: Namespace_CustomType!
 }
 
@@ -121,9 +130,9 @@ type AnotherMutationType {
 ImplementationObject comment
 """
 type ImplementationObject implements Interface_InterfaceObject1 & Interface_InterfaceObject2 {
-"""
-anotherProp comment
-"""
+  """
+  anotherProp comment
+  """
   anotherProp: String
   str: String!
   uint8: UInt8!
@@ -146,10 +155,11 @@ CommonType comment
 type CommonType {
   prop: UInt8!
   nestedObject: NestedType!
-"""
-objectArray comment
-"""
+  """
+  objectArray comment
+  """
   objectArray: [[ArrayObject]]!
+  anotherLocal: AnotherLocal!
 }
 
 """
@@ -163,6 +173,10 @@ type NestedType {
 ArrayObject comment
 """
 type ArrayObject {
+  prop: String!
+}
+
+type AnotherLocal {
   prop: String!
 }
 
@@ -184,13 +198,13 @@ type Namespace_Query @imported(
     uArrayArray: [[UInt]]!
   ): String!
 
-"""
-method2 comment
-"""
+  """
+  method2 comment
+  """
   method2(
-"""
-arg comment
-"""
+    """
+    arg comment
+    """
     arg: [String!]!
   ): [Int32!]!
 }
@@ -240,7 +254,7 @@ type JustMutation_Mutation @imported(
 Mutation comment
 """
 type Interface_Mutation @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "Mutation"
 ) {
@@ -326,9 +340,9 @@ type Namespace_CustomType @imported(
   enum: Namespace_CustomEnum!
   optEnum: Namespace_CustomEnum
   importedEnum: Namespace_Imported_Enum!
-"""
-optImportedEnum comment
-"""
+  """
+  optImportedEnum comment
+  """
   optImportedEnum: Namespace_Imported_Enum
 }
 
@@ -336,14 +350,14 @@ optImportedEnum comment
 InterfaceObject1 comment
 """
 type Interface_InterfaceObject1 @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "InterfaceObject1"
 ) {
   str: String!
-"""
-InterfaceObject1_uint8 comment
-"""
+  """
+  InterfaceObject1_uint8 comment
+  """
   uint8: UInt8!
 }
 
@@ -351,7 +365,7 @@ InterfaceObject1_uint8 comment
 InterfaceObject2 comment
 """
 type Interface_InterfaceObject2 implements Interface_NestedInterfaceObject @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "InterfaceObject2"
 ) {
@@ -363,7 +377,7 @@ type Interface_InterfaceObject2 implements Interface_NestedInterfaceObject @impo
 Object comment
 """
 type Interface_Object @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "Object"
 ) {
@@ -374,19 +388,19 @@ type Interface_Object @imported(
 NestedInterfaceObject comment
 """
 type Interface_NestedInterfaceObject @imported(
-  uri: "interface.eth",
+  uri: "test-interface.eth",
   namespace: "Interface",
   nativeType: "NestedInterfaceObject"
 ) {
-"""
-object comment
-"""
+  """
+  object comment
+  """
   object: Interface_Object
 }
 
 enum Namespace_CustomEnum @imported(
-  namespace: "Namespace",
   uri: "test.eth",
+  namespace: "Namespace",
   nativeType: "CustomEnum"
 ) {
   STRING
@@ -397,8 +411,8 @@ enum Namespace_CustomEnum @imported(
 Imported_Enum comment
 """
 enum Namespace_Imported_Enum @imported(
-  namespace: "Namespace",
   uri: "test.eth",
+  namespace: "Namespace",
   nativeType: "Imported_Enum"
 ) {
   STRING

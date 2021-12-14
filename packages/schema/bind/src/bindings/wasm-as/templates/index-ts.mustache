@@ -44,6 +44,9 @@ export {
   sanitize{{type}}Value
 } from "./imported/{{type}}";
 {{/importedEnumTypes}}
+{{#interfaceTypes}}
+export { {{namespace}} } from "./{{namespace}}";
+{{/interfaceTypes}}
 
 {{#environment.query.sanitized}}
 export { env } from "./environment";

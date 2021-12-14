@@ -4,6 +4,9 @@ import { Uri, coreInterfaceUris } from "@web3api/core-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
+import { graphNodePlugin } from "@web3api/graph-node-plugin-js";
+import { httpPlugin } from "@web3api/http-plugin-js";
+import { filesystemPlugin } from "@web3api/fs-plugin-js";
 import { uts46Plugin } from "@web3api/uts46-plugin-js";
 import { sha3Plugin } from "@web3api/sha3-plugin-js";
 import { loggerPlugin } from "@web3api/logger-plugin-js";
@@ -19,7 +22,10 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         // IPFS is required for downloading Web3API packages
         {
           uri: new Uri("w3://ens/ipfs.web3api.eth"),
-          plugin: ipfsPlugin({ provider: "https://ipfs.io" }),
+          plugin: ipfsPlugin({
+            provider: "https://ipfs.fleek.co",
+            fallbackProviders: ["https://ipfs.io", "https://ipfs.infura.io"],
+          }),
         },
         // ENS is required for resolving domain to IPFS hashes
         {
@@ -38,6 +44,10 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           }),
         },
         {
+          uri: new Uri("w3://ens/http.web3api.eth"),
+          plugin: httpPlugin(),
+        },
+        {
           uri: new Uri("w3://ens/js-logger.web3api.eth"),
           plugin: loggerPlugin(),
         },
@@ -49,6 +59,16 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           uri: new Uri("w3://ens/sha3.web3api.eth"),
           plugin: sha3Plugin(),
         },
+        {
+          uri: new Uri("w3://ens/graph-node.web3api.eth"),
+          plugin: graphNodePlugin({
+            provider: "https://api.thegraph.com",
+          }),
+        },
+        {
+          uri: new Uri("w3://ens/fs.web3api.eth"),
+          plugin: filesystemPlugin(),
+        },
       ],
       interfaces: [
         {
@@ -56,6 +76,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           implementations: [
             new Uri("w3://ens/ipfs.web3api.eth"),
             new Uri("w3://ens/ens.web3api.eth"),
+            new Uri("w3://ens/fs.web3api.eth"),
           ],
         },
         {

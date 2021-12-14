@@ -1,7 +1,7 @@
 {
   "name": "@web3api/wasm-as",
   "description": "Web3API Assemblyscript Runtime",
-  "version": "0.0.1-prealpha.30",
+  "version": "0.0.1-prealpha.57",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -16,16 +16,17 @@
   ],
   "scripts": {
     "build": "asc ./assembly/index.ts -o ./build/index.wasm -d ./build/index.d.ts",
-    "lint": "eslint --color --ext .ts assembly/",
+    "lint": "eslint --color assembly/",
     "test": "asp --verbose",
     "test:ci": "asp --summary"
   },
   "dependencies": {
-    "as-bigint": "0.2.4"
+    "@web3api/assemblyscript-json": "1.2.0",
+    "as-bigint": "0.4.0"
   },
   "devDependencies": {
-    "@as-pect/cli": "5.0.1",
-    "assemblyscript": "0.17.14"
+    "@as-pect/cli": "6.2.4",
+    "assemblyscript": "0.19.5"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {

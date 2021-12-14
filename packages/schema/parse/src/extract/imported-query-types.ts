@@ -1,27 +1,27 @@
 import {
-  TypeInfo,
-  ImportedQueryDefinition,
   createImportedQueryDefinition,
+  createInterfaceImplementedDefinition,
   createMethodDefinition,
   createPropertyDefinition,
-  createInterfaceImplementedDefinition,
+  ImportedQueryDefinition,
+  TypeInfo,
 } from "../typeInfo";
+import { extractImportedDefinition } from "./imported-types-utils";
 import {
   extractInputValueDefinition,
   extractListType,
   extractNamedType,
   State,
 } from "./query-types-utils";
-import { extractImportedDefinition } from "./imported-types-utils";
 
 import {
-  ObjectTypeDefinitionNode,
-  NonNullTypeNode,
-  NamedTypeNode,
-  ListTypeNode,
+  ASTVisitor,
   FieldDefinitionNode,
   InputValueDefinitionNode,
-  ASTVisitor,
+  ListTypeNode,
+  NamedTypeNode,
+  NonNullTypeNode,
+  ObjectTypeDefinitionNode,
 } from "graphql";
 
 const visitorEnter = (
@@ -35,11 +35,17 @@ const visitorEnter = (
       return;
     }
 
+    const dir =
+      node.directives &&
+      node.directives.find((dir) => dir.name.value === "enabled_interface");
+    const isInterface = dir ? true : false;
+
     const importedType = createImportedQueryDefinition({
       type: node.name.value,
       uri: imported.uri,
       namespace: imported.namespace,
       nativeType: imported.nativeType,
+      isInterface: isInterface,
       interfaces: node.interfaces?.map((x) =>
         createInterfaceImplementedDefinition({ type: x.name.value })
       ),
@@ -53,12 +59,6 @@ const visitorEnter = (
 
     if (!importDef) {
       return;
-    }
-
-    if (!node.arguments || node.arguments.length === 0) {
-      throw Error(
-        `Imported Query types must only have methods. See property: ${node.name.value}`
-      );
     }
 
     const returnType = createPropertyDefinition({

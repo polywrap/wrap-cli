@@ -19,8 +19,7 @@ export interface SchemaInfo {
 }
 
 export interface ComposerOutput {
-  query?: SchemaInfo;
-  mutation?: SchemaInfo;
+  [name: string]: SchemaInfo;
   combined: SchemaInfo;
 }
 
@@ -32,8 +31,7 @@ export enum ComposerFilter {
 
 export interface ComposerOptions {
   schemas: {
-    query?: SchemaFile;
-    mutation?: SchemaFile;
+    [name: string]: SchemaFile;
   };
   resolvers: SchemaResolvers;
   output: ComposerFilter;
@@ -43,43 +41,44 @@ export async function composeSchema(
   options: ComposerOptions
 ): Promise<ComposerOutput> {
   const { schemas, resolvers } = options;
-  const { query, mutation } = schemas;
   const typeInfos: {
-    query?: TypeInfo;
-    mutation?: TypeInfo;
+    [name: string]: TypeInfo;
   } = {};
-  if (query && query.schema) {
-    typeInfos.query = await resolveImportsAndParseSchemas(
-      query.schema,
-      query.absolutePath,
-      false,
+  // if (query && query.schema) {
+  //   typeInfos.query = await resolveImportsAndParseSchemas(
+  //     query.schema,
+  //     query.absolutePath,
+  //     false,
+  //     resolvers
+  //   );
+  //   resolveEnviromentTypes(
+  //     typeInfos.query,
+  //     EnvironmentType.QueryEnvType,
+  //     typeInfos.query.objectTypes.find(
+  //       (type) => type.type === EnvironmentType.QueryEnvType
+  //     )
+  //   );
+
+  if (Object.keys(schemas).length === 0) {
+    throw Error("No schema provided");
+  }
+
+  for (const name of Object.keys(schemas)) {
+    const schema = schemas[name];
+
+    typeInfos[name] = await resolveImportsAndParseSchemas(
+      schema.schema,
+      schema.absolutePath,
+      name === "mutation",
       resolvers
     );
     resolveEnviromentTypes(
-      typeInfos.query,
-      EnvironmentType.QueryEnvType,
-      typeInfos.query.objectTypes.find(
-        (type) => type.type === EnvironmentType.QueryEnvType
-      )
+      typeInfos[name],
+      name === "mutation",
     );
   }
 
-  if (mutation && mutation.schema) {
-    typeInfos.mutation = await resolveImportsAndParseSchemas(
-      mutation.schema,
-      mutation.absolutePath,
-      true,
-      resolvers
-    );
-    resolveEnviromentTypes(
-      typeInfos.mutation,
-      EnvironmentType.MutationEnvType,
-      typeInfos.mutation.objectTypes.find(
-        (type) => type.type === EnvironmentType.MutationEnvType
-      )
-    );
-  }
-
+  // Forming our output structure for the caller
   const output: ComposerOutput = {
     combined: {},
   };
@@ -89,26 +88,21 @@ export async function composeSchema(
     schema: includeSchema ? renderSchema(typeInfo, true) : undefined,
     typeInfo: includeTypeInfo ? typeInfo : undefined,
   });
+  const typeInfoNames = Object.keys(typeInfos);
 
-  if (typeInfos.query) {
-    output.query = createSchemaInfo(typeInfos.query);
+  for (const name of typeInfoNames) {
+    const typeInfo = typeInfos[name];
+    output[name] = createSchemaInfo(typeInfo);
   }
 
-  if (typeInfos.mutation) {
-    output.mutation = createSchemaInfo(typeInfos.mutation);
-  }
-
-  if (typeInfos.query && typeInfos.mutation) {
-    const combinedTypeInfo = combineTypeInfo([
-      typeInfos.query,
-      typeInfos.mutation,
-    ]);
+  if (typeInfoNames.length > 1) {
+    const combinedTypeInfo = combineTypeInfo(
+      typeInfoNames.map((name) => typeInfos[name])
+    );
 
     output.combined = createSchemaInfo(combinedTypeInfo);
-  } else if (typeInfos.query && output.query) {
-    output.combined = output.query;
-  } else if (typeInfos.mutation && output.mutation) {
-    output.combined = output.mutation;
+  } else {
+    output.combined = output[typeInfoNames[0]];
   }
 
   return output;

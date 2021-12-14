@@ -1,4 +1,5 @@
 import { fromAxiosResponse, toAxiosRequestConfig } from "../../util";
+import { ResponseTypeEnum } from "../../w3";
 
 describe("converting axios response", () => {
   test("response type: text", () => {
@@ -23,7 +24,7 @@ describe("converting axios response", () => {
     const response = fromAxiosResponse({
       status: 200,
       statusText: "Ok",
-      data: "body-content",
+      data: Buffer.from("body-content"),
       headers: { ["Accept"]: "application-json", ["X-Header"]: "test-value" },
       config: { responseType: "arraybuffer" },
     });
@@ -60,7 +61,7 @@ describe("creating axios config", () => {
   test("with url params", () => {
     const config = toAxiosRequestConfig({
       urlParams: [{ key: "tag", value: "data" }],
-      responseType: "BINARY",
+      responseType: ResponseTypeEnum.BINARY,
       body: "body-content",
     });
 
