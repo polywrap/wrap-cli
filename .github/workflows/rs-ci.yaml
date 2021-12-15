@@ -17,6 +17,9 @@ jobs:
         with:
           toolchain: nightly
           override: true
+      
+      - name: Install Clippy
+        run:  rustup component add clippy --toolchain nightly-x86_64-unknown-linux-gnu
 
       - uses: actions/cache@v2
         with:
