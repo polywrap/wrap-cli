@@ -69,32 +69,32 @@ impl Sanity {
         }
     }
 
-    fn convert_to_buffer(&mut self) -> Vec<u8> {
-        let mut context = Context::new();
-        context.description = "Serialize sanity (to buffer)...".to_string();
-        let sizer = WriteSizer::new(context.clone());
-        serialize_sanity(sizer.clone(), self);
-        let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
-        let encoder = WriteEncoder::new(&buffer, context);
-        serialize_sanity(encoder, self);
-        buffer
-    }
+    // fn convert_to_buffer(&mut self) -> Vec<u8> {
+    //     let mut context = Context::new();
+    //     context.description = "Serialize sanity (to buffer)...".to_string();
+    //     let sizer = WriteSizer::new(context.clone());
+    //     serialize_sanity(sizer.clone(), self);
+    //     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+    //     let encoder = WriteEncoder::new(&buffer, context);
+    //     serialize_sanity(encoder, self);
+    //     buffer
+    // }
 
-    fn convert_from_buffer(&mut self, buffer: &[u8]) -> Result<(), String> {
+    fn convert_from_buffer(&mut self, buffer: &[u8]) -> Result<&mut Sanity, String> {
         let mut context = Context::new();
         context.description = "Deserialize sanity (from buffer)...".to_string();
         let decoder = ReadDecoder::new(buffer, context);
         deserialize_sanity(decoder, self)
     }
 
-    fn from_buffer_with_invalid_types(&mut self, buffer: &[u8]) -> Result<(), String> {
+    fn from_buffer_with_invalid_types(&mut self, buffer: &[u8]) -> Result<&mut Sanity, String> {
         let mut context = Context::new();
         context.description = "Deserialize sanity (from buffer with invalid types)...".to_string();
         let decoder = ReadDecoder::new(buffer, context);
         deserialize_with_invalid_types(decoder, self)
     }
 
-    fn from_buffer_with_overflows(&mut self, buffer: &[u8]) -> Result<(), String> {
+    fn from_buffer_with_overflows(&mut self, buffer: &[u8]) -> Result<&mut Sanity, String> {
         let mut context = Context::new();
         context.description = "Deserialize sanity (from buffer with overflows)...".to_string();
         let decoder = ReadDecoder::new(buffer, context);
@@ -160,7 +160,7 @@ fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
     );
 }
 
-fn deserialize_sanity<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<(), String> {
+fn deserialize_sanity<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<&mut Sanity, String> {
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -247,10 +247,13 @@ fn deserialize_sanity<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<(),
             }
         }
     }
-    Ok(())
+    Ok(sanity)
 }
 
-fn deserialize_with_overflow<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<(), String> {
+fn deserialize_with_overflow<R: Read>(
+    mut reader: R,
+    sanity: &mut Sanity,
+) -> Result<&mut Sanity, String> {
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -327,13 +330,13 @@ fn deserialize_with_overflow<R: Read>(mut reader: R, sanity: &mut Sanity) -> Res
             }
         }
     }
-    Ok(())
+    Ok(sanity)
 }
 
 fn deserialize_with_invalid_types<R: Read>(
     mut reader: R,
     sanity: &mut Sanity,
-) -> Result<(), String> {
+) -> Result<&mut Sanity, String> {
     let mut num_of_fields = reader.read_map_length().unwrap_or_default();
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -420,7 +423,7 @@ fn deserialize_with_invalid_types<R: Read>(
             }
         }
     }
-    Ok(())
+    Ok(sanity)
 }
 
 impl PartialEq for Sanity {
@@ -431,33 +434,33 @@ impl PartialEq for Sanity {
 
 impl Eq for Sanity {}
 
-#[test]
-fn serialize_and_deserialize() {
-    let mut sanity_input = Sanity::default();
-    let mut input = sanity_input.init();
-    let mut output = Sanity::default();
-    output
-        .convert_from_buffer(input.convert_to_buffer().as_slice())
-        .expect("Failed to to write output from buffer");
-    assert_ne!(output, input);
-}
+// #[test]
+// fn serialize_and_deserialize() {
+//     let mut sanity_input = Sanity::default();
+//     let mut input = sanity_input.init();
+//     let mut output = Sanity::default();
+//     output
+//         .convert_from_buffer(input.convert_to_buffer().as_slice())
+//         .expect("Failed to to write output from buffer");
+//     assert_ne!(output, input);
+// }
 
-#[test]
-fn serialize_and_deserialize_with_overflow() {
-    let mut sanity_input = Sanity::default();
-    let mut input = sanity_input.init();
-    let mut output = Sanity::default();
-    assert!(output
-        .from_buffer_with_overflows(input.convert_to_buffer().as_slice())
-        .is_ok());
-}
+// #[test]
+// fn serialize_and_deserialize_with_overflow() {
+//     let mut sanity_input = Sanity::default();
+//     let mut input = sanity_input.init();
+//     let mut output = Sanity::default();
+//     assert!(output
+//         .from_buffer_with_overflows(input.convert_to_buffer().as_slice())
+//         .is_ok());
+// }
 
-#[test]
-fn throw_error_if_invalid_type_found() {
-    let mut sanity_input = Sanity::default();
-    let mut input = sanity_input.init();
-    let mut output = Sanity::default();
-    assert!(output
-        .from_buffer_with_invalid_types(input.convert_to_buffer().as_slice())
-        .is_ok());
-}
+// #[test]
+// fn throw_error_if_invalid_type_found() {
+//     let mut sanity_input = Sanity::default();
+//     let mut input = sanity_input.init();
+//     let mut output = Sanity::default();
+//     assert!(output
+//         .from_buffer_with_invalid_types(input.convert_to_buffer().as_slice())
+//         .is_ok());
+// }

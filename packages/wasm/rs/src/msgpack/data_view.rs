@@ -11,17 +11,11 @@ pub struct DataView {
 }
 
 impl DataView {
-    pub fn new(
-        buf: &[u8],
-        cxt: Option<Context>,
-        offset: Option<usize>,
-        length: Option<usize>,
-    ) -> Result<Self, String> {
-        let context = cxt.unwrap_or_default();
-        let byte_offset = offset.unwrap_or(0) as i32;
-        let byte_length = length.unwrap_or(buf.len()) as i32;
+    pub fn new(buf: &[u8], context: Context, offset: usize) -> Result<Self, String> {
+        let byte_offset = offset as i32;
+        let byte_length = buf.len() as i32;
 
-        if byte_length > BLOCK_MAX_SIZE as i32 || byte_offset + byte_length > buf.len() as i32 {
+        if byte_length > BLOCK_MAX_SIZE as i32 || byte_offset + byte_length > byte_length {
             let msg = format!(
                 "DataView::new(): {} [ byte_length: {} byte_offset: {} buffer.byte_length: {} ]",
                 E_INVALID_LENGTH, byte_length, byte_offset, byte_length
