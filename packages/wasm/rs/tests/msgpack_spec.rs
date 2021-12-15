@@ -69,16 +69,16 @@ impl Sanity {
         }
     }
 
-    // fn convert_to_buffer(&mut self) -> Vec<u8> {
-    //     let mut context = Context::new();
-    //     context.description = "Serialize sanity (to buffer)...".to_string();
-    //     let sizer = WriteSizer::new(context.clone());
-    //     serialize_sanity(sizer.clone(), self);
-    //     let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
-    //     let encoder = WriteEncoder::new(&buffer, context);
-    //     serialize_sanity(encoder, self);
-    //     buffer
-    // }
+    fn convert_to_buffer(&mut self) -> Vec<u8> {
+        let mut context = Context::new();
+        context.description = "Serialize sanity (to buffer)...".to_string();
+        let sizer = WriteSizer::new(context.clone());
+        serialize_sanity(sizer.clone(), self);
+        let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+        let encoder = WriteEncoder::new(&buffer, context);
+        serialize_sanity(encoder.clone(), self);
+        encoder.get_buffer()
+    }
 
     fn convert_from_buffer(&mut self, buffer: &[u8]) -> Result<&mut Sanity, String> {
         let mut context = Context::new();
@@ -434,33 +434,29 @@ impl PartialEq for Sanity {
 
 impl Eq for Sanity {}
 
-// #[test]
-// fn serialize_and_deserialize() {
-//     let mut sanity_input = Sanity::default();
-//     let mut input = sanity_input.init();
-//     let mut output = Sanity::default();
-//     output
-//         .convert_from_buffer(input.convert_to_buffer().as_slice())
-//         .expect("Failed to to write output from buffer");
-//     assert_ne!(output, input);
-// }
+#[test]
+fn serialize_and_deserialize() {
+    let mut sanity = Sanity::default().init();
+    let serialized_sanity = sanity.convert_to_buffer();
+    let deserialized_sanity = sanity.convert_from_buffer(serialized_sanity.as_slice()).unwrap();
+    let new_sanity = deserialized_sanity.to_owned();
+    assert_eq!(sanity, new_sanity);
+}
 
-// #[test]
-// fn serialize_and_deserialize_with_overflow() {
-//     let mut sanity_input = Sanity::default();
-//     let mut input = sanity_input.init();
-//     let mut output = Sanity::default();
-//     assert!(output
-//         .from_buffer_with_overflows(input.convert_to_buffer().as_slice())
-//         .is_ok());
-// }
+#[test]
+fn serialize_and_deserialize_with_overflow() {
+    let mut sanity = Sanity::default().init();
+    let serialized_sanity = sanity.convert_to_buffer();
+    let deserialized_sanity = sanity.from_buffer_with_overflows(serialized_sanity.as_slice()).unwrap();
+    let new_sanity = deserialized_sanity.to_owned();
+    assert_eq!(sanity, new_sanity);
+}
 
-// #[test]
-// fn throw_error_if_invalid_type_found() {
-//     let mut sanity_input = Sanity::default();
-//     let mut input = sanity_input.init();
-//     let mut output = Sanity::default();
-//     assert!(output
-//         .from_buffer_with_invalid_types(input.convert_to_buffer().as_slice())
-//         .is_ok());
-// }
+#[test]
+fn throw_error_if_invalid_type_found() {
+    let mut sanity = Sanity::default().init();
+    let serialized_sanity = sanity.convert_to_buffer();
+    let deserialized_sanity = sanity.from_buffer_with_invalid_types(serialized_sanity.as_slice()).unwrap();
+    let new_sanity = deserialized_sanity.to_owned();
+    assert_eq!(sanity, new_sanity);
+}
