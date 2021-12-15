@@ -79,7 +79,7 @@ pub fn serialize_another_method_args(input: &InputAnotherMethod) -> Vec<u8> {
     encoder_context.description = "Serializing (encoding) imported query-type: another_method".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_another_method_args(input, &mut encoder);
-    buffer
+    encoder.get_buffer()
 }
 
 pub fn write_another_method_args<W: Write>(input: &InputAnotherMethod, writer: &mut W) {
