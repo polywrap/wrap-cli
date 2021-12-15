@@ -1,5 +1,5 @@
 use super::{Context, DataView, Format, Write};
-use crate::{BigInt, JSON, log};
+use crate::{BigInt, JSON};
 use core::hash::Hash;
 use std::collections::BTreeMap;
 
@@ -99,15 +99,10 @@ impl Write for WriteEncoder {
     }
 
     fn write_string_length(&mut self, length: u32) {
-        log::w3_log("write_string_length");
-        log::w3_log(format!("value = {}", length).as_str());
-        log::w3_log(format!("{:?}", self.get_buffer()).as_str());
         if length < 32 {
             self.view.set_u8(&((length as u8) | Format::FIXSTR));
         } else if length <= u8::MAX as u32 {
-            log::w3_log("set_u8");
             self.view.set_u8(&Format::STR8);
-            log::w3_log("set_u8");
             self.view.set_u8(&(length as u8));
         } else if length <= u16::MAX as u32 {
             self.view.set_u8(&Format::STR16);
@@ -116,7 +111,6 @@ impl Write for WriteEncoder {
             self.view.set_u8(&Format::STR32);
             self.view.set_u32(&length);
         }
-        log::w3_log(format!("{:?}", self.get_buffer()).as_str());
     }
 
     fn write_string(&mut self, value: &String) {
@@ -154,12 +148,7 @@ impl Write for WriteEncoder {
     }
 
     fn write_bigint(&mut self, value: &BigInt) {
-        log::w3_log("write_bigint");
-        log::w3_log((&value.to_string()).as_str());
-        log::w3_log(format!("{}", (&value.to_string()).as_bytes().len()).as_str());
-        log::w3_log(format!("{:?}", self.get_buffer()).as_str());
         self.write_string(&value.to_string());
-        log::w3_log(format!("{:?}", self.get_buffer()).as_str());
     }
 
     fn write_json(&mut self, value: &JSON::Value) {

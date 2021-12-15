@@ -1,5 +1,4 @@
 use crate::memory::internal_alloc;
-use crate::log;
 
 #[link(wasm_import_module = "w3")]
 extern "C" {
@@ -39,6 +38,7 @@ pub fn w3_invoke_args(method_size: u32, args_size: u32) -> InvokeArgs {
 #[allow(unused_unsafe)]
 pub fn w3_invoke(options: InvokeArgs, opt_invoke_func: Option<InvokeFunction>) -> bool {
     let mut success = false;
+
     if opt_invoke_func.is_some() {
         if let Some(func) = opt_invoke_func {
             let result = func(options.args.as_slice());
@@ -46,9 +46,9 @@ pub fn w3_invoke(options: InvokeArgs, opt_invoke_func: Option<InvokeFunction>) -
             success = true;
         }
     } else {
-        log::w3_log("COULD NOT FIND INVOKE FUNCTION");
         let message = ["Could not find invoke function ", &options.method].concat();
         unsafe { __w3_invoke_error(message.as_ptr() as u32, message.len() as u32) };
     }
+
     success
 }

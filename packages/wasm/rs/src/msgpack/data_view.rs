@@ -1,6 +1,5 @@
 use super::{Context, BLOCK_MAX_SIZE, E_INVALID_LENGTH};
 use super::utils;
-use crate::log;
 use core::sync::atomic::{AtomicPtr, Ordering};
 
 #[derive(Clone, Debug, Default)]

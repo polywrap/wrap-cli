@@ -58,7 +58,7 @@ describe("wasm-as test cases", () => {
     );
   });
 
-  it.only("bigint-type", async () => {
+  it("bigint-type", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/wasm-as/bigint-type`,
       ipfsProvider,

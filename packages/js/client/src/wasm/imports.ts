@@ -112,16 +112,11 @@ export const createImports = (config: {
       },
       // Store the invocation's result
       __w3_invoke_result: (ptr: u32, len: u32): void => {
-        console.log("reading")
         state.invoke.result = readBytes(memory.buffer, ptr, len);
-        console.log("result", state.invoke.result);
-        console.log(JSON.stringify(MsgPack.decode(state.invoke.result), null, 2));
       },
       // Store the invocation's error
       __w3_invoke_error: (ptr: u32, len: u32): void => {
-        console.log("ERROR");
         state.invoke.error = readString(memory.buffer, ptr, len);
-        console.log(state.invoke.error);
       },
       __w3_getImplementations: (uriPtr: u32, uriLen: u32): boolean => {
         const uri = readString(memory.buffer, uriPtr, uriLen);
@@ -151,7 +146,6 @@ export const createImports = (config: {
         line: u32,
         column: u32
       ): void => {
-        console.log("ABORTING")
         const msg = readString(memory.buffer, msgPtr, msgLen);
         const file = readString(memory.buffer, filePtr, fileLen);
 
@@ -159,12 +153,12 @@ export const createImports = (config: {
           `__w3_abort: ${msg}\nFile: ${file}\nLocation: [${line},${column}]`
         );
       },
-      __w3_log: (
+      __w3_debug_log: (
         ptr: u32,
         len: u32
       ): void => {
         const msg = readString(memory.buffer, ptr, len);
-        console.log(`__w3_log: ${msg}`);
+        console.debug(`__w3_debug_log: ${msg}`);
       }
     },
     env: {

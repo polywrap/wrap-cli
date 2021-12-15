@@ -593,7 +593,7 @@ export class Compiler {
       __w3_getImplementations_result_len: () => {},
       __w3_getImplementations_result: () => {},
       __w3_abort: () => {},
-      __w3_log:() => {},
+      __w3_debug_log:() => {},
     };
 
     try {

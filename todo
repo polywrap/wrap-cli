@@ -1,10 +1,9 @@
-- "Runtime Unreachable: ..."
-- - Use the bigint project, see if we can build & invoke query module
-- - create-type might be the reason here?
-- - W3Invoke might be the reason?
-- - Memory might be the reason?
+x get rid of logging
+x rename __w3_log to __w3_debug_log
+- add __w3_debug_log to assemblyscript
+- get all wasm-rs client tests to work
 
 - Get rid of w3Invoke?
 - use the toml editor to manually set the crate-type of query when it's being used by mutation
-- Remove all docker files from the APIs
-- don't require rust-version in web3api.build.yaml, should be defaulted
+x Remove all docker files from the APIs
+x don't require rust-version in web3api.build.yaml, should be defaulted

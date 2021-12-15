@@ -1,13 +1,13 @@
 import {
-  Enum,
+  SanityEnum,
   Input_method1,
   Input_method2,
 } from "./w3";
 
-export function method1(input: Input_method1): Enum {
+export function method1(input: Input_method1): SanityEnum {
   return input.en;
 }
 
-export function method2(input: Input_method2): Enum[] {
+export function method2(input: Input_method2): SanityEnum[] {
   return input.enumArray;
 }
