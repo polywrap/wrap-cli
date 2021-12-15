@@ -28,7 +28,7 @@ pub fn serialize_custom_type(input: &CustomType) -> Vec<u8> {
     encoder_context.description = "Serializing (encoding) object-type: CustomType".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_custom_type(input, &mut encoder);
-    buffer
+    encoder.get_buffer()
 }
 
 pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) {

@@ -155,7 +155,7 @@ pub fn serialize_query_method_result(result: &i32) -> Vec<u8> {
     encoder_context.description = "Serializing (encoding) query-type: query_method".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_query_method_result(result, &mut encoder);
-    buffer
+    encoder.get_buffer()
 }
 
 pub fn write_query_method_result<W: Write>(result: &i32, writer: &mut W) {
@@ -254,7 +254,7 @@ pub fn serialize_object_method_result(result: &Option<AnotherType>) -> Vec<u8> {
     encoder_context.description = "Serializing (encoding) query-type: object_method".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_object_method_result(result, &mut encoder);
-    buffer
+    encoder.get_buffer()
 }
 
 pub fn write_object_method_result<W: Write>(result: &Option<AnotherType>, writer: &mut W) {

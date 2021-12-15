@@ -45,7 +45,7 @@ pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &Input{{#toUpper}}
     encoder_context.description = "Serializing (encoding) imported query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_{{#toLower}}{{name}}{{/toLower}}_args(input, &mut encoder);
-    buffer
+    encoder.get_buffer()
 }
 
 pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toUpper}}{{name}}{{/toUpper}}, writer: &mut W) {

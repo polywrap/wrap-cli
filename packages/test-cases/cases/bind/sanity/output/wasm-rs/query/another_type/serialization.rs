@@ -23,7 +23,7 @@ pub fn serialize_another_type(input: &AnotherType) -> Vec<u8> {
     encoder_context.description = "Serializing (encoding) object-type: AnotherType".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_another_type(input, &mut encoder);
-    buffer
+    encoder.get_buffer()
 }
 
 pub fn write_another_type<W: Write>(input: &AnotherType, writer: &mut W) {

@@ -21,7 +21,7 @@ pub fn serialize_test_import_another_object(input: &TestImportAnotherObject) -> 
     encoder_context.description = "Serializing (encoding) imported object-type: TestImportAnotherObject".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_test_import_another_object(input, &mut encoder);
-    buffer
+    encoder.get_buffer()
 }
 
 pub fn write_test_import_another_object<W: Write>(input: &TestImportAnotherObject, writer: &mut W) {

@@ -117,7 +117,7 @@ pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}&{{#
     encoder_context.description = "Serializing (encoding) query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_{{#toLower}}{{name}}{{/toLower}}_result(result, &mut encoder);
-    buffer
+    encoder.get_buffer()
 }
 
 pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return}}&{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, writer: &mut W) {

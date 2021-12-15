@@ -29,7 +29,7 @@ pub fn serialize_imported_method_args(input: &InputImportedMethod) -> Vec<u8> {
     encoder_context.description = "Serializing (encoding) imported query-type: imported_method".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
     write_imported_method_args(input, &mut encoder);
-    buffer
+    encoder.get_buffer()
 }
 
 pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer: &mut W) {
