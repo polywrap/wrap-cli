@@ -1,5 +1,5 @@
 import {
-  ClientConfig,
+  Web3ApiClientConfig,
   createWeb3ApiClient,
 } from "../";
 import * as TestCases from "./test-cases";
@@ -28,7 +28,7 @@ describe("wasm-as test cases", () => {
     await stopTestEnvironment();
   });
 
-  const getClient = async (config?: ClientConfig) => {
+  const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
     return createWeb3ApiClient({
       ethereum: {
         networks: {
@@ -46,7 +46,7 @@ describe("wasm-as test cases", () => {
     }, config);
   }
 
-  it.only("asyncify", async () => {
+  it("asyncify", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/wasm-as/asyncify`,
       ipfsProvider,

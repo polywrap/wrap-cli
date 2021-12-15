@@ -2,6 +2,7 @@
 
 pub mod abort;
 pub mod big_int;
+pub mod debug;
 pub mod invoke;
 pub mod json;
 pub mod memory;

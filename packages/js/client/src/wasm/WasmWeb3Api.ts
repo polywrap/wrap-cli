@@ -178,7 +178,7 @@ export class WasmWeb3Api extends Api {
         imports: createImports({
           state,
           client,
-          getMemory: () => exports.memory,
+          memory,
           abort,
         }),
         requiredExports: WasmWeb3Api.requiredExports,
