@@ -106,7 +106,7 @@ jobs:
 
       - name: Verify & Generate RS Documentation
         working-directory: ./packages/wasm/rs
-        run: cargo doc --workspace --no-deps
+        run: cargo doc --no-deps
 
       - name: Publish Node Packages To NPM
         if: ${{env.TAG_EXISTS}} == 'false'
