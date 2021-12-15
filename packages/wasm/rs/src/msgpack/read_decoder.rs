@@ -443,6 +443,9 @@ impl Read for ReadDecoder {
     }
 
     fn read_string_length(&mut self) -> Result<u32, String> {
+        if self.is_next_nil() {
+            return Ok(0);
+        }
         let lead_byte = self.view.get_u8();
         if Format::is_fixed_string(lead_byte) {
             return Ok((lead_byte & 0x1f) as u32);
@@ -509,6 +512,9 @@ impl Read for ReadDecoder {
     }
 
     fn read_array_length(&mut self) -> Result<u32, String> {
+        if self.is_next_nil() {
+            return Ok(0);
+        }
         let lead_byte = self.view.get_u8();
         if Format::is_fixed_array(lead_byte) {
             return Ok((lead_byte & Format::FOUR_LEAST_SIG_BITS_IN_BYTE) as u32);
@@ -541,6 +547,9 @@ impl Read for ReadDecoder {
     }
 
     fn read_map_length(&mut self) -> Result<u32, String> {
+        if self.is_next_nil() {
+            return Ok(0);
+        }
         let lead_byte = self.view.get_u8();
         if Format::is_fixed_map(lead_byte) {
             return Ok((lead_byte & Format::FOUR_LEAST_SIG_BITS_IN_BYTE) as u32);

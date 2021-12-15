@@ -9,7 +9,7 @@ pub const E_INVALID_LENGTH: &str = "Invalid length";
 /// Returns an error message for when the provided length plus the byte_offset
 /// is greater than the byte_length
 pub fn throw_index_out_of_range(
-    context: Context,
+    context: &Context,
     method: &str,
     length: i32,
     byte_offset: i32,

@@ -16,6 +16,10 @@ impl WriteEncoder {
             view: DataView::new(buf, context, 0).expect("Error creating new data view"),
         }
     }
+
+    pub fn get_buffer(&self) -> Vec<u8> {
+        self.view.get_buffer()
+    }
 }
 
 impl Write for WriteEncoder {
@@ -95,10 +99,7 @@ impl Write for WriteEncoder {
 
     fn write_string_length(&mut self, length: u32) {
         if length < 32 {
-            if Format::is_fixed_string(length as u8) {
-                self.view.set_u8(Format::FIXSTR);
-            }
-            self.view.set_u8(length as u8);
+            self.view.set_u8(length as u8 | Format::FIXSTR);
         } else if length <= u8::MAX as u32 {
             self.view.set_u8(Format::STR8);
             self.view.set_u8(length as u8);
