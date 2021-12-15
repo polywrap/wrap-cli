@@ -143,66 +143,66 @@ impl DataView {
     pub fn set_f32(&mut self, value: f32) {
         AtomicPtr::new(&mut (self.data_start + self.byte_offset as u32))
             .store(&mut (value as u32).swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 4;
+        self.set_bytes(&value.to_be_bytes());
     }
 
     pub fn set_f64(&mut self, value: f64) {
         AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u64))
             .store(&mut (value as u64).swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 8;
+        self.set_bytes(&value.to_be_bytes());
     }
 
     pub fn set_i8(&mut self, value: i8) {
         AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i8))
             .store(&mut value.swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 1;
+        self.set_bytes(&value.to_be_bytes());
     }
 
     pub fn set_i16(&mut self, value: i16) {
         AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i16))
             .store(&mut value.swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 2;
+        self.set_bytes(&value.to_be_bytes());
     }
 
     pub fn set_i32(&mut self, value: i32) {
         AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i32))
             .store(&mut value.swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 4;
+        self.set_bytes(&value.to_be_bytes());
     }
 
     pub fn set_i64(&mut self, value: i64) {
         AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as i64))
             .store(&mut value.swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 8;
+        self.set_bytes(&value.to_be_bytes());
     }
 
     pub fn set_u8(&mut self, value: u8) {
         AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u8))
             .store(&mut value.swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 1;
+        self.set_bytes(&value.to_be_bytes());
     }
 
     pub fn set_u16(&mut self, value: u16) {
         AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u16))
             .store(&mut value.swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 2;
+        self.set_bytes(&value.to_be_bytes());
     }
 
     pub fn set_u32(&mut self, value: u32) {
         AtomicPtr::new(&mut (self.data_start + self.byte_offset as u32))
             .store(&mut value.swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 4;
+        self.set_bytes(&value.to_be_bytes());
     }
 
     pub fn set_u64(&mut self, value: u64) {
         AtomicPtr::new(&mut ((self.data_start + self.byte_offset as u32) as u64))
             .store(&mut value.swap_bytes(), Ordering::Relaxed);
-        self.byte_offset += 8;
+        self.set_bytes(&value.to_be_bytes());
     }
 
     /// Get a reference to the data view's byte length.
-    pub fn byte_length(&self) -> &i32 {
-        &self.byte_length
+    pub fn byte_length(&self) -> i32 {
+        self.byte_length
     }
 
     /// Get a reference to the data view's context.
