@@ -186,7 +186,7 @@ export class WasmWeb3Api extends Api {
 
       const exports = instance.exports as W3Exports;
 
-      let result = await exports._w3_invoke(
+      const result = await exports._w3_invoke(
         state.method.length,
         state.args.byteLength
       );
