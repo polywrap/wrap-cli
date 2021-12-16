@@ -23,6 +23,7 @@ export function parseSchema(
   schema: string,
   options: ParserOptions = {}
 ): TypeInfo {
+  console.log(schema);
   const astNode = parse(schema);
 
   // Validate GraphQL Schema

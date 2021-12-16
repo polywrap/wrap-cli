@@ -5,11 +5,7 @@ import {
 } from "./resolve";
 import { renderSchema } from "./render";
 
-import {
-  TypeInfo,
-  combineTypeInfo,
-  EnvironmentType,
-} from "@web3api/schema-parse";
+import { TypeInfo, combineTypeInfo } from "@web3api/schema-parse";
 
 export * from "./types";
 
@@ -44,20 +40,6 @@ export async function composeSchema(
   const typeInfos: {
     [name: string]: TypeInfo;
   } = {};
-  // if (query && query.schema) {
-  //   typeInfos.query = await resolveImportsAndParseSchemas(
-  //     query.schema,
-  //     query.absolutePath,
-  //     false,
-  //     resolvers
-  //   );
-  //   resolveEnviromentTypes(
-  //     typeInfos.query,
-  //     EnvironmentType.QueryEnvType,
-  //     typeInfos.query.objectTypes.find(
-  //       (type) => type.type === EnvironmentType.QueryEnvType
-  //     )
-  //   );
 
   if (Object.keys(schemas).length === 0) {
     throw Error("No schema provided");
@@ -72,10 +54,7 @@ export async function composeSchema(
       name === "mutation",
       resolvers
     );
-    resolveEnviromentTypes(
-      typeInfos[name],
-      name === "mutation",
-    );
+    resolveEnviromentTypes(typeInfos[name], name === "mutation");
   }
 
   // Forming our output structure for the caller

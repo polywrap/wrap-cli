@@ -1028,7 +1028,7 @@ async function resolveLocalImports(
 
 export function resolveEnviromentTypes(
   typeInfo: TypeInfo,
-  mutation: boolean,
+  mutation: boolean
 ): void {
   const genericEnvType = typeInfo.objectTypes.find(
     (type) => type.type === "Env"
@@ -1036,10 +1036,12 @@ export function resolveEnviromentTypes(
   if (!genericEnvType) {
     return;
   }
-  const envTypeName = mutation ? EnvironmentType.MutationEnvType : EnvironmentType.QueryEnvType;
+  const envTypeName = mutation
+    ? EnvironmentType.MutationEnvType
+    : EnvironmentType.QueryEnvType;
   const specificEnvType = typeInfo.objectTypes.find(
     (type) => type.type === envTypeName
-  )
+  );
 
   if (!specificEnvType) {
     genericEnvType.type = envTypeName;

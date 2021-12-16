@@ -17,6 +17,7 @@ export const typeInfo: TypeInfo = {
     query: {},
     mutation: {},
   },
+  interfaceTypes: [],
   objectTypes: [
     {
       ...createObjectDefinition({

@@ -11,6 +11,7 @@ export const typeInfo: TypeInfo = {
     query: {},
     mutation: {},
   },
+  interfaceTypes: [],
   importedObjectTypes: [],
   importedEnumTypes: [],
   importedQueryTypes: [],
