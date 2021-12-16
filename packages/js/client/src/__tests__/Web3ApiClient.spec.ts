@@ -22,6 +22,7 @@ import {
   Client,
   PluginModules,
 } from "@web3api/core-js";
+import * as MsgPack from "@msgpack/msgpack";
 import { readFileSync } from "fs";
 
 jest.setTimeout(200000);
@@ -119,6 +120,56 @@ describe("Web3ApiClient", () => {
         implementations: [new Uri("w3://ens/js-logger.web3api.eth")],
       },
     ]);
+  });
+
+  it("invoke with decode false/true works as expected", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensAddress
+    );
+
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+    const client = await getClient();
+
+    // The decode option is defaulted to true
+    {
+      const result = await client.invoke<string>({
+        uri: ensUri,
+        module: "mutation",
+        method: "deployContract",
+        input: {
+          connection: {
+            networkNameOrChainId: "testnet"
+          }
+        },
+      });
+
+      expect(result.error).toBeFalsy();
+      expect(result.data).toBeTruthy();
+      expect(typeof result.data).toBe("string");
+      expect(result.data).toContain("0x");
+    }
+
+    // When decode is set to false, an ArrayBuffer is returned
+    {
+      const result = await client.invoke({
+        uri: ensUri,
+        module: "mutation",
+        method: "deployContract",
+        input: {
+          connection: {
+            networkNameOrChainId: "testnet"
+          }
+        },
+        decode: false
+      });
+
+      expect(result.error).toBeFalsy();
+      expect(result.data).toBeTruthy();
+      expect(result.data instanceof ArrayBuffer).toBeTruthy();
+      expect(MsgPack.decode(result.data as ArrayBuffer)).toContain("0x");
+    }
   });
 
   it("invoke simple-storage with custom redirects", async () => {

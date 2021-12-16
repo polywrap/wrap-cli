@@ -20,7 +20,7 @@ export interface InvokeApiOptions<
    * Input arguments for the method, structured as a map,
    * removing the chance of incorrectly ordering arguments.
    */
-  input: Record<string, unknown> | ArrayBuffer;
+  input?: Record<string, unknown> | ArrayBuffer;
 
   /**
    * Filters the [[InvokeApiResult]] data properties. The key

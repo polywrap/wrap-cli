@@ -29,13 +29,9 @@ import {
 
 describe("resolveUri", () => {
   const client = (apis: Record<string, PluginModules>): Client => ({
-    getInvokeContext: (id: string) => {
-      return {
-        redirects: [],
-        interfaces: [],
-        plugins: [],
-      };
-    },
+    getRedirects: () => [],
+    getPlugins: () => [],
+    getInterfaces: () => [],
     query: <
       TData extends Record<string, unknown> = Record<string, unknown>,
       TVariables extends Record<string, unknown> = Record<string, unknown>
