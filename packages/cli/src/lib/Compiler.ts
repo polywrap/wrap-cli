@@ -534,8 +534,6 @@ export class Compiler {
   ): Promise<void> {
     const modulePath = path.join(buildDir, `${moduleName}.wasm`);
     const wasmSource = fs.readFileSync(modulePath);
-    const mod = await WebAssembly.compile(wasmSource);
-    const memory = new WebAssembly.Memory({ initial: 1 });
     const w3Imports: Record<keyof W3Imports, () => void> = {
       __w3_subinvoke: () => {},
       __w3_subinvoke_result_len: () => {},
@@ -551,17 +549,6 @@ export class Compiler {
       __w3_abort: () => {},
       __w3_load_env: () => {},
     };
-
-    const instance = await WebAssembly.instantiate(mod, {
-      env: {
-        memory,
-      },
-      w3: w3Imports,
-    });
-
-    if (!instance.exports._w3_init) {
-      throw Error(intlMsg.lib_compiler_missing_export__w3_init({ moduleName }));
-    }
 
     try {
       const memory = AsyncWasmInstance.createMemory({ module: wasmSource });
