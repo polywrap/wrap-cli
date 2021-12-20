@@ -181,9 +181,11 @@ impl DataView {
 
     pub fn set_bytes(&mut self, buf: &[u8]) {
         self.check_index_in_range("set_bytes", buf.len());
-        let mut src = buf.to_vec();
-        src.resize(self.buffer.len(), 0);
-        self.buffer.copy_from_slice(&buf);
+        let dst_elts = self.byte_offset as usize;
+        let buf_iter_mut = self.buffer[dst_elts..(dst_elts + buf.len())].iter_mut();
+        for (dst, src) in buf_iter_mut.zip(buf.iter()) {
+            *dst = *src
+        }
         self.byte_offset += buf.len();
     }
 
