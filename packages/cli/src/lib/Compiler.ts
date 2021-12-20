@@ -531,8 +531,7 @@ export class Compiler {
   private async _validateWasmModule(
     moduleName: InvokableModules,
     buildDir: string
-    ): Promise<void> {
-
+  ): Promise<void> {
     const modulePath = path.join(buildDir, `${moduleName}.wasm`);
     const wasmSource = fs.readFileSync(modulePath);
     const mod = await WebAssembly.compile(wasmSource);

@@ -79,5 +79,8 @@ export interface Client
     options: GetImplementationsOptions
   ): TUri[];
 
-  getEnvironmentByUri<TUri extends Uri | string>(uri: TUri, options: GetEnvironmentsOptions): Environment<TUri> | undefined;
+  getEnvironmentByUri<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetEnvironmentsOptions
+  ): Environment<TUri> | undefined;
 }

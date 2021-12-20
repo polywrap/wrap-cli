@@ -127,6 +127,15 @@ export class Web3ApiClient implements Client {
     this._config.tracingEnabled = enable;
   }
 
+  public getEnvironmentByUri<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetEnvironmentsOptions
+  ): Environment<TUri> | undefined {
+    return this.getEnvironments(options).find(
+      (environment) => environment.uri.uri === this._toUri(uri).uri
+    ) as Environment<TUri> | undefined;
+  }
+
   @Tracer.traceMethod("Web3ApiClient: getRedirects")
   public getRedirects(
     options: GetRedirectsOptions = {}
@@ -149,14 +158,10 @@ export class Web3ApiClient implements Client {
   }
 
   @Tracer.traceMethod("Web3ApiClient: getEnvironments")
-  public getEnvironments(options: GetEnvironmentsOptions = {}): readonly Environment<Uri>[] {
+  public getEnvironments(
+    options: GetEnvironmentsOptions = {}
+  ): readonly Environment<Uri>[] {
     return this._getConfig(options.contextId).environments;
-  }
-
-  public getEnvironmentByUri<TUri extends Uri | string>(uri: TUri, options: GetEnvironmentsOptions): Environment<TUri> | undefined {
-    return this.getEnvironments(options).find(
-      (environment) => environment.uri.uri === this._toUri(uri).uri
-    ) as Environment<TUri> | undefined;
   }
 
   @Tracer.traceMethod("Web3ApiClient: getSchema")
@@ -505,7 +510,9 @@ export class Web3ApiClient implements Client {
       interfaces: context?.interfaces
         ? sanitizeInterfaceImplementations(context.interfaces)
         : config.interfaces,
-      environments: context?.environments ? sanitizeEnvironments(context.environments) : config.environments,
+      environments: context?.environments
+        ? sanitizeEnvironments(context.environments)
+        : config.environments,
       tracingEnabled: context?.tracingEnabled || config.tracingEnabled,
     });
 
@@ -533,7 +540,7 @@ export class Web3ApiClient implements Client {
     if (!api) {
       const client = contextualizeClient(this, contextId);
       const config = this._getConfig(contextId);
-      const environment = this.getEnvironmentByUri(typedUri, {contextId});
+      const environment = this.getEnvironmentByUri(typedUri, { contextId });
       api = await resolveUri(
         typedUri,
         config.redirects,
@@ -634,6 +641,6 @@ const contextualizeClient = (
           options: GetEnvironmentsOptions = {}
         ) => {
           return client.getEnvironmentByUri(uri, { ...options, contextId });
-        }
+        },
       }
     : client;

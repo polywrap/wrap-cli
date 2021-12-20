@@ -298,6 +298,31 @@ export class WasmWeb3Api extends Api {
     }
   }
 
+  private getModuleEnvironment(
+    module: InvokableModules,
+    environment?: Environment<Uri>
+  ): Record<string, unknown> {
+    if (!environment) {
+      return {};
+    }
+
+    const env: Record<string, unknown> = environment.common
+      ? environment.common
+      : {};
+
+    if (module === "query") {
+      return {
+        ...env,
+        ...environment.query,
+      };
+    } else {
+      return {
+        ...env,
+        ...environment.mutation,
+      };
+    }
+  }
+
   @Tracer.traceMethod("WasmWeb3Api: getWasmModule")
   private async _getWasmModule(
     module: InvokableModules,
@@ -328,30 +353,5 @@ export class WasmWeb3Api extends Api {
 
     this._wasm[module] = data;
     return data;
-  }
-
-  private getModuleEnvironment(
-    module: InvokableModules,
-    environment?: Environment<Uri>
-  ): Record<string, unknown> {
-    if (!environment) {
-      return {};
-    }
-
-    const env: Record<string, unknown> = environment.common
-      ? environment.common
-      : {};
-
-    if (module === "query") {
-      return {
-        ...env,
-        ...environment.query,
-      };
-    } else {
-      return {
-        ...env,
-        ...environment.mutation,
-      };
-    }
   }
 }
