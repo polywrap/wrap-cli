@@ -480,8 +480,8 @@ function addCapabilityDirective(
     for (const capability of capabilities) {
       const typeCapture =
         module === "mutation"
-          ? /type[ \n\t]*Mutation[ \n\t]*([^{]*)[ \n\t]*{/g
-          : /type[ \n\t]*Query[ \n\t]*([^{]*)[ \n\t]*{/g;
+          ? /type[ \n\t]+Mutation[ \n\t]+([^{]*)[ \n\t]*{/g
+          : /type[ \n\t]+Query[ \n\t]+([^{]*)[ \n\t]*{/g;
 
       const replacementQueryStr = `type ${
         module === "mutation" ? "Mutation" : "Query"

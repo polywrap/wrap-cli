@@ -193,13 +193,13 @@ type ArrayObject {
   prop: String!
 }
 
+type AnotherLocal {
+  prop: String!
+}
+
 type MutationEnv {
   bar: Int
   foo: String!
-}
-
-type AnotherLocal {
-  prop: String!
 }
 
 """

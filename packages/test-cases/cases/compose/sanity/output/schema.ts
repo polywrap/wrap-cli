@@ -396,20 +396,20 @@ export const typeInfo: TypeInfo = {
       ],
     },
     {
-
-      ...createObjectDefinition({ type: "MutationEnv" }),
-      properties: [
-        { ...createScalarPropertyDefinition({ name: "bar", type: "Int", required: false }) },
-        createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
-      ]
-    },
-    {
       ...createObjectDefinition({
         type: "AnotherLocal",
       }),
       properties: [
         createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
       ],
+    },
+    {
+
+      ...createObjectDefinition({ type: "MutationEnv" }),
+      properties: [
+        { ...createScalarPropertyDefinition({ name: "bar", type: "Int", required: false }) },
+        createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
+      ]
     },
     {
       ...createObjectDefinition({ type: "CustomMutationType", comment: "CustomMutationType multi-line comment\nline 2" }),
