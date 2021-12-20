@@ -3,6 +3,7 @@ use crate::memory::internal_alloc;
 #[link(wasm_import_module = "w3")]
 extern "C" {
     /// Subinvoke API
+    #[link_name = "__w3_subinvoke"]
     pub fn __w3_subinvoke(
         uri_ptr: u32,
         uri_len: u32,
@@ -15,11 +16,17 @@ extern "C" {
     ) -> bool;
 
     /// Subinvoke Result
+    #[link_name = "__w3_subinvoke_result_len"]
     pub fn __w3_subinvoke_result_len() -> u32;
+
+    #[link_name = "__w3_subinvoke_result"]
     pub fn __w3_subinvoke_result(ptr: u32);
 
     /// Subinvoke Error
+    #[link_name = "__w3_subinvoke_error_len"]
     pub fn __w3_subinvoke_error_len() -> u32;
+
+    #[link_name = "__w3_subinvoke_error"]
     pub fn __w3_subinvoke_error(ptr: u32);
 }
 

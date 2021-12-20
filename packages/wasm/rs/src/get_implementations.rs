@@ -1,4 +1,4 @@
-use crate::{Context, Read, ReadDecoder};
+use crate::{memory, Context, Read, ReadDecoder};
 
 #[link(wasm_import_module = "w3")]
 extern "C" {
@@ -22,7 +22,9 @@ pub fn w3_get_implementations(uri: &str) -> Vec<String> {
     }
 
     let result_len = unsafe { __w3_getImplementations_result_len() };
-    let result_buffer = result_len.to_be_bytes();
+    let result_buf_ptr = memory::internal_alloc(result_len as usize);
+    let result_buffer =
+        unsafe { Vec::from_raw_parts(result_buf_ptr, result_len as usize, result_len as usize) };
     unsafe { __w3_getImplementations_result(result_buffer.as_ptr() as u32) };
 
     // deserialize the `msgpack` buffer,
