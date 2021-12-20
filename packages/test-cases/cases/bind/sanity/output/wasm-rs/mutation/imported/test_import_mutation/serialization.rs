@@ -24,7 +24,8 @@ pub fn serialize_imported_method_args(input: &InputImportedMethod) -> Vec<u8> {
     sizer_context.description = "Serializing (sizing) imported query-type: imported_method".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
     write_imported_method_args(input, &mut sizer);
-    let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+    let mut buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+    buffer.resize(sizer.get_length() as usize, 0);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) imported query-type: imported_method".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
@@ -74,7 +75,8 @@ pub fn serialize_another_method_args(input: &InputAnotherMethod) -> Vec<u8> {
     sizer_context.description = "Serializing (sizing) imported query-type: another_method".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
     write_another_method_args(input, &mut sizer);
-    let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+    let mut buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+    buffer.resize(sizer.get_length() as usize, 0);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) imported query-type: another_method".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);

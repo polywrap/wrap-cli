@@ -11,9 +11,9 @@ pub const E_INVALID_LENGTH: &str = "Invalid length";
 pub fn throw_index_out_of_range(
     context: &Context,
     method: &str,
-    length: i32,
-    byte_offset: i32,
-    byte_length: i32,
+    length: usize,
+    byte_offset: usize,
+    byte_length: usize,
 ) -> String {
     let mut ctx = String::from(method);
     let msg = format!(

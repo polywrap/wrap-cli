@@ -3,19 +3,19 @@ use core::sync::atomic::{AtomicPtr, Ordering};
 
 #[derive(Clone, Debug, Default)]
 pub struct DataView {
-    data_start: u32,
+    data_start: usize,
     buffer: Vec<u8>,
-    byte_length: i32,
-    byte_offset: i32,
+    byte_length: usize,
+    byte_offset: usize,
     context: Context,
 }
 
 impl DataView {
     pub fn new(buf: &[u8], context: Context, offset: usize) -> Result<Self, String> {
-        let byte_offset = offset as i32;
-        let byte_length = buf.len() as i32;
+        let byte_offset = offset;
+        let byte_length = buf.len();
 
-        if byte_length > BLOCK_MAX_SIZE as i32 || byte_offset + byte_length > byte_length {
+        if byte_length > BLOCK_MAX_SIZE || byte_offset + byte_length > byte_length {
             let msg = format!(
                 "DataView::new(): {} [ byte_length: {} byte_offset: {} buffer.byte_length: {} ]",
                 E_INVALID_LENGTH, byte_length, byte_offset, byte_length
@@ -23,7 +23,7 @@ impl DataView {
             return Err(context.print_with_context(&msg));
         }
         Ok(Self {
-            data_start: buf.as_ptr() as u32,
+            data_start: buf.as_ptr() as usize,
             buffer: buf.to_vec(),
             byte_length,
             byte_offset,
@@ -31,7 +31,7 @@ impl DataView {
         })
     }
 
-    pub fn get_bytes(&mut self, length: i32) -> Vec<u8> {
+    pub fn get_bytes(&mut self, length: usize) -> Vec<u8> {
         self.check_index_in_range("get_bytes", length);
         let buf = self.buffer.as_slice();
         let (b_off, b_len) = (
@@ -46,7 +46,7 @@ impl DataView {
     pub fn peek_u8(&mut self) -> u8 {
         self.check_index_in_range("peek_u8", 0);
         let result = unsafe {
-            AtomicPtr::<u8>::new((self.data_start + self.byte_offset as u32) as *mut u8)
+            AtomicPtr::new((self.data_start + self.byte_offset) as *mut u8)
                 .load(Ordering::Relaxed)
                 .as_ref()
                 .unwrap()
@@ -54,7 +54,7 @@ impl DataView {
         result.swap_bytes()
     }
 
-    pub fn discard(&mut self, length: i32) {
+    pub fn discard(&mut self, length: usize) {
         self.check_index_in_range("discard", length);
         self.byte_offset += length;
     }
@@ -62,7 +62,7 @@ impl DataView {
     pub fn get_f32(&mut self) -> f32 {
         self.check_index_in_range("get_f32", 4);
         let result = unsafe {
-            AtomicPtr::<f32>::new((self.data_start + self.byte_offset as u32) as *mut f32)
+            AtomicPtr::new((self.data_start + self.byte_offset) as *mut f32)
                 .load(Ordering::Relaxed)
                 .as_ref()
                 .unwrap()
@@ -74,7 +74,7 @@ impl DataView {
     pub fn get_f64(&mut self) -> f64 {
         self.check_index_in_range("get_f64", 8);
         let result = unsafe {
-            AtomicPtr::<f64>::new((self.data_start + self.byte_offset as u32) as *mut f64)
+            AtomicPtr::new((self.data_start + self.byte_offset) as *mut f64)
                 .load(Ordering::Relaxed)
                 .as_ref()
                 .unwrap()
@@ -86,7 +86,7 @@ impl DataView {
     pub fn get_i8(&mut self) -> i8 {
         self.check_index_in_range("get_i8", 1);
         let result = unsafe {
-            AtomicPtr::<i8>::new((self.data_start + self.byte_offset as u32) as *mut i8)
+            AtomicPtr::new((self.data_start + self.byte_offset) as *mut i8)
                 .load(Ordering::Relaxed)
                 .as_ref()
                 .unwrap()
@@ -98,7 +98,7 @@ impl DataView {
     pub fn get_i16(&mut self) -> i16 {
         self.check_index_in_range("get_i16", 2);
         let result = unsafe {
-            AtomicPtr::<i16>::new((self.data_start + self.byte_offset as u32) as *mut i16)
+            AtomicPtr::new((self.data_start + self.byte_offset) as *mut i16)
                 .load(Ordering::Relaxed)
                 .as_ref()
                 .unwrap()
@@ -110,7 +110,7 @@ impl DataView {
     pub fn get_i32(&mut self) -> i32 {
         self.check_index_in_range("get_i32", 4);
         let result = unsafe {
-            AtomicPtr::<i32>::new((self.data_start + self.byte_offset as u32) as *mut i32)
+            AtomicPtr::new((self.data_start + self.byte_offset) as *mut i32)
                 .load(Ordering::Relaxed)
                 .as_ref()
                 .unwrap()
@@ -122,7 +122,7 @@ impl DataView {
     pub fn get_i64(&mut self) -> i64 {
         self.check_index_in_range("get_i64", 8);
         let result = unsafe {
-            AtomicPtr::<i64>::new((self.data_start + self.byte_offset as u32) as *mut i64)
+            AtomicPtr::new((self.data_start + self.byte_offset) as *mut i64)
                 .load(Ordering::Relaxed)
                 .as_ref()
                 .unwrap()
@@ -134,7 +134,7 @@ impl DataView {
     pub fn get_u8(&mut self) -> u8 {
         self.check_index_in_range("get_u8", 1);
         let result = unsafe {
-            AtomicPtr::<u8>::new((self.data_start + self.byte_offset as u32) as *mut u8)
+            AtomicPtr::new((self.data_start + self.byte_offset) as *mut u8)
                 .load(Ordering::Relaxed)
                 .as_ref()
                 .unwrap()
@@ -146,7 +146,7 @@ impl DataView {
     pub fn get_u16(&mut self) -> u16 {
         self.check_index_in_range("get_u16", 2);
         let result = unsafe {
-            AtomicPtr::<u16>::new((self.data_start + self.byte_offset as u32) as *mut u16)
+            AtomicPtr::new((self.data_start + self.byte_offset) as *mut u16)
                 .load(Ordering::Relaxed)
                 .as_ref()
                 .unwrap()
@@ -158,7 +158,7 @@ impl DataView {
     pub fn get_u32(&mut self) -> u32 {
         self.check_index_in_range("get_u32", 4);
         let result = unsafe {
-            AtomicPtr::<u32>::new((self.data_start + self.byte_offset as u32) as *mut u32)
+            AtomicPtr::new((self.data_start + self.byte_offset) as *mut u32)
                 .load(Ordering::Relaxed)
                 .as_ref()
                 .unwrap()
@@ -170,7 +170,7 @@ impl DataView {
     pub fn get_u64(&mut self) -> u64 {
         self.check_index_in_range("get_u64", 8);
         let result = unsafe {
-            AtomicPtr::<u64>::new((self.data_start + self.byte_offset as u32) as *mut u64)
+            AtomicPtr::new((self.data_start + self.byte_offset) as *mut u64)
                 .load(Ordering::Relaxed)
                 .as_ref()
                 .unwrap()
@@ -180,14 +180,11 @@ impl DataView {
     }
 
     pub fn set_bytes(&mut self, buf: &[u8]) {
-        let b_size = self.byte_offset as usize;
-        for (dst, src) in self.buffer[b_size..b_size + buf.len()]
-            .iter_mut()
-            .zip(buf.iter())
-        {
-            *dst = *src
-        }
-        self.byte_offset += buf.len() as i32;
+        self.check_index_in_range("set_bytes", buf.len());
+        let mut src = buf.to_vec();
+        src.resize(self.buffer.len(), 0);
+        self.buffer.copy_from_slice(&buf);
+        self.byte_offset += buf.len();
     }
 
     pub fn set_f32(&mut self, value: f32) {
@@ -231,7 +228,7 @@ impl DataView {
     }
 
     pub fn get_byte_length(&self) -> i32 {
-        self.byte_length
+        self.byte_length as i32
     }
 
     pub fn get_buffer(&self) -> Vec<u8> {
@@ -242,7 +239,7 @@ impl DataView {
         &mut self.context
     }
 
-    fn check_index_in_range(&self, method: &str, length: i32) {
+    fn check_index_in_range(&self, method: &str, length: usize) {
         if self.byte_offset + length > self.byte_length {
             super::utils::throw_index_out_of_range(
                 &self.context,

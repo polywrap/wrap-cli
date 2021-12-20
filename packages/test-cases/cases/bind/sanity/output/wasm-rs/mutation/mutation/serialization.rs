@@ -150,7 +150,8 @@ pub fn serialize_mutation_method_result(result: &i32) -> Vec<u8> {
     sizer_context.description = "Serializing (sizing) query-type: mutation_method".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
     write_mutation_method_result(result, &mut sizer);
-    let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+    let mut buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+    buffer.resize(sizer.get_length() as usize, 0);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) query-type: mutation_method".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);
@@ -249,7 +250,8 @@ pub fn serialize_object_method_result(result: &Option<AnotherType>) -> Vec<u8> {
     sizer_context.description = "Serializing (sizing) query-type: object_method".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
     write_object_method_result(result, &mut sizer);
-    let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+    let mut buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+    buffer.resize(sizer.get_length() as usize, 0);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) query-type: object_method".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);

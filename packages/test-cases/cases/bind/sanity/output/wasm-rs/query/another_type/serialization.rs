@@ -18,7 +18,8 @@ pub fn serialize_another_type(input: &AnotherType) -> Vec<u8> {
     sizer_context.description = "Serializing (sizing) object-type: AnotherType".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
     write_another_type(input, &mut sizer);
-    let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+    let mut buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+    buffer.resize(sizer.get_length() as usize, 0);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) object-type: AnotherType".to_string();
     let mut encoder = WriteEncoder::new(&buffer, encoder_context);

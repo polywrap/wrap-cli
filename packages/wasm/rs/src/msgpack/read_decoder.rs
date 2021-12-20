@@ -33,10 +33,10 @@ impl ReadDecoder {
         // handle for fixed values
         if Format::is_negative_fixed_int(lead_byte) || Format::is_fixed_int(lead_byte) {
             // noop, will just discard the leadbyte
-            self.view.discard(lead_byte as i32);
+            self.view.discard(lead_byte as usize);
         } else if Format::is_fixed_string(lead_byte) {
             let str_len = lead_byte & 0x1f;
-            self.view.discard(str_len as i32);
+            self.view.discard(str_len as usize);
         } else if Format::is_fixed_array(lead_byte) {
             objects_to_discard = (lead_byte & Format::FOUR_LEAST_SIG_BITS_IN_BYTE) as i32;
         } else if Format::is_fixed_map(lead_byte) {
@@ -48,15 +48,15 @@ impl ReadDecoder {
                 Format::FALSE => {}
                 Format::BIN8 => {
                     let length = self.view.get_u8();
-                    self.view.discard(length as i32);
+                    self.view.discard(length as usize);
                 }
                 Format::BIN16 => {
                     let length = self.view.get_u16();
-                    self.view.discard(length as i32);
+                    self.view.discard(length as usize);
                 }
                 Format::BIN32 => {
                     let length = self.view.get_u32();
-                    self.view.discard(length as i32);
+                    self.view.discard(length as usize);
                 }
                 Format::FLOAT32 => {
                     self.view.discard(4);
@@ -105,15 +105,15 @@ impl ReadDecoder {
                 }
                 Format::STR8 => {
                     let length = self.view.get_u8();
-                    self.view.discard(length as i32);
+                    self.view.discard(length as usize);
                 }
                 Format::STR16 => {
                     let length = self.view.get_u16();
-                    self.view.discard(length as i32);
+                    self.view.discard(length as usize);
                 }
                 Format::STR32 => {
                     let length = self.view.get_u32();
-                    self.view.discard(length as i32);
+                    self.view.discard(length as usize);
                 }
                 Format::ARRAY16 => {
                     objects_to_discard = self.view.get_u16() as i32;
@@ -469,7 +469,7 @@ impl Read for ReadDecoder {
 
     fn read_string(&mut self) -> Result<String, String> {
         let str_len = self.read_string_length()?;
-        let str_bytes = self.view.get_bytes(str_len as i32);
+        let str_bytes = self.view.get_bytes(str_len as usize);
         Ok(String::from_utf8(str_bytes).unwrap())
     }
 
@@ -500,7 +500,7 @@ impl Read for ReadDecoder {
 
     fn read_bytes(&mut self) -> Result<Vec<u8>, String> {
         let array_length = self.read_bytes_length()?;
-        Ok(self.view.get_bytes(array_length as i32))
+        Ok(self.view.get_bytes(array_length as usize))
     }
 
     fn read_bigint(&mut self) -> Result<BigInt, String> {
