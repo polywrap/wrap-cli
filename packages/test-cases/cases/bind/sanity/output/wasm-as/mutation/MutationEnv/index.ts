@@ -2,7 +2,8 @@ import {
   Read,
   Write,
   Nullable,
-  BigInt
+  BigInt,
+  JSON
 } from "@web3api/wasm-as";
 import {
   serializeMutationEnv,

@@ -85,6 +85,12 @@ type Mutation @imports(
   ): AnotherType
 }
 
+type QueryEnv {
+  queryProp: String!
+  prop: String!
+  optProp: String
+}
+
 type CustomType {
   str: String!
   optStr: String
@@ -126,6 +132,12 @@ type CustomType {
 type AnotherType {
   prop: String
   circular: CustomType
+}
+
+type MutationEnv {
+  mutProp: String!
+  prop: String!
+  optProp: String
 }
 
 enum CustomEnum {

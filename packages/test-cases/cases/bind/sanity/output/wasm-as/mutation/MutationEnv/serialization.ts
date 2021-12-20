@@ -6,6 +6,7 @@ import {
   WriteEncoder,
   Nullable,
   BigInt,
+  JSON,
   Context
 } from "@web3api/wasm-as";
 import { MutationEnv } from "./";

@@ -31,6 +31,7 @@ export function _w3_invoke(method_size: u32, args_size: u32): bool {
     return w3_invoke(args, null);
   }
 }
+
 @external("w3", "__w3_load_env")
 export declare function __w3_load_env(enviroment_ptr: u32): void;
 
