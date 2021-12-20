@@ -438,7 +438,9 @@ impl Eq for Sanity {}
 fn serialize_and_deserialize() {
     let mut sanity = Sanity::default().init();
     let serialized_sanity = sanity.convert_to_buffer();
-    let deserialized_sanity = sanity.convert_from_buffer(serialized_sanity.as_slice()).unwrap();
+    let deserialized_sanity = sanity
+        .convert_from_buffer(serialized_sanity.as_slice())
+        .unwrap();
     let new_sanity = deserialized_sanity.to_owned();
     assert_eq!(sanity, new_sanity);
 }
@@ -447,7 +449,9 @@ fn serialize_and_deserialize() {
 fn serialize_and_deserialize_with_overflow() {
     let mut sanity = Sanity::default().init();
     let serialized_sanity = sanity.convert_to_buffer();
-    let deserialized_sanity = sanity.from_buffer_with_overflows(serialized_sanity.as_slice()).unwrap();
+    let deserialized_sanity = sanity
+        .from_buffer_with_overflows(serialized_sanity.as_slice())
+        .unwrap();
     let new_sanity = deserialized_sanity.to_owned();
     assert_eq!(sanity, new_sanity);
 }
@@ -456,7 +460,9 @@ fn serialize_and_deserialize_with_overflow() {
 fn throw_error_if_invalid_type_found() {
     let mut sanity = Sanity::default().init();
     let serialized_sanity = sanity.convert_to_buffer();
-    let deserialized_sanity = sanity.from_buffer_with_invalid_types(serialized_sanity.as_slice()).unwrap();
+    let deserialized_sanity = sanity
+        .from_buffer_with_invalid_types(serialized_sanity.as_slice())
+        .unwrap();
     let new_sanity = deserialized_sanity.to_owned();
     assert_eq!(sanity, new_sanity);
 }
