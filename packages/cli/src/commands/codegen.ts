@@ -9,7 +9,7 @@ import { intlMsg } from "../lib/intl";
 
 import chalk from "chalk";
 import axios from "axios";
-import { GluegunToolbox } from "gluegun";
+import { GluegunToolbox, GluegunFilesystem, GluegunPrint } from "gluegun";
 
 export const defaultManifest = ["web3api.yaml", "web3api.yml"];
 
@@ -54,44 +54,7 @@ export default {
     outputDir = outputDir || o;
     ens = ens || e;
 
-    if (help) {
-      print.info(HELP);
-      return;
-    }
-
-    if (custom === true) {
-      const customScriptMissingPathMessage = intlMsg.commands_codegen_error_customScriptMissingPath(
-        {
-          option: "--custom",
-          argument: `<${pathStr}>`,
-        }
-      );
-      print.error(customScriptMissingPathMessage);
-      print.info(HELP);
-      return;
-    }
-
-    if (outputDir === true) {
-      const outputDirMissingPathMessage = intlMsg.commands_build_error_outputDirMissingPath(
-        {
-          option: "--output-dir",
-          argument: `<${pathStr}>`,
-        }
-      );
-      print.error(outputDirMissingPathMessage);
-      print.info(HELP);
-      return;
-    }
-
-    if (ens === true) {
-      const domStr = intlMsg.commands_codegen_error_domain();
-      const ensAddressMissingMessage = intlMsg.commands_build_error_testEnsAddressMissing(
-        {
-          option: "--ens",
-          argument: `<[${addrStr},]${domStr}>`,
-        }
-      );
-      print.error(ensAddressMissingMessage);
+    if (help || !validateCodegenParams(print, outputDir, ens, custom)) {
       print.info(HELP);
       return;
     }
@@ -101,33 +64,12 @@ export default {
       options: { help, manifestPath, ipfs, outputDir, ens, custom },
     });
 
-    let ipfsProvider: string | undefined;
-    let ethProvider: string | undefined;
-    let ensAddress: string | undefined = ens;
-
-    if (typeof ipfs === "string") {
-      // Custom IPFS provider
-      ipfsProvider = ipfs;
-    } else if (ipfs) {
-      // Dev-server IPFS provider
-      try {
-        const {
-          data: { ipfs, ethereum },
-        } = await axios.get("http://localhost:4040/providers");
-        ipfsProvider = ipfs;
-        ethProvider = ethereum;
-      } catch (e) {
-        // Dev server not found
-      }
-    }
+    const { ipfsProvider, ethProvider } = await getCodegenProviders(ipfs);
+    const ensAddress: string | undefined = ens;
 
     // Resolve generation file & output directories
     const customScript = custom && filesystem.resolve(custom);
-    manifestPath =
-      (manifestPath && filesystem.resolve(manifestPath)) ||
-      ((await filesystem.existsAsync(defaultManifest[0]))
-        ? filesystem.resolve(defaultManifest[0])
-        : filesystem.resolve(defaultManifest[1]));
+    manifestPath = await resolveManifestPath(filesystem, manifestPath);
     outputDir = outputDir && filesystem.resolve(outputDir);
 
     const project = new Web3ApiProject({
@@ -170,3 +112,82 @@ export default {
     }
   },
 };
+
+export function validateCodegenParams(
+  print: GluegunPrint,
+  outputDir: unknown,
+  ens: unknown,
+  custom: unknown
+): boolean {
+  if (outputDir === true) {
+    const outputDirMissingPathMessage = intlMsg.commands_build_error_outputDirMissingPath(
+      {
+        option: "--output-dir",
+        argument: `<${pathStr}>`,
+      }
+    );
+    print.error(outputDirMissingPathMessage);
+    return false;
+  }
+
+  if (ens === true) {
+    const domStr = intlMsg.commands_codegen_error_domain();
+    const ensAddressMissingMessage = intlMsg.commands_build_error_testEnsAddressMissing(
+      {
+        option: "--ens",
+        argument: `<[${addrStr},]${domStr}>`,
+      }
+    );
+    print.error(ensAddressMissingMessage);
+    return false;
+  }
+
+  if (custom === true) {
+    const customScriptMissingPathMessage = intlMsg.commands_codegen_error_customScriptMissingPath(
+      {
+        option: "--custom",
+        argument: `<${pathStr}>`,
+      }
+    );
+    print.error(customScriptMissingPathMessage);
+    return false;
+  }
+
+  return true;
+}
+
+export async function getCodegenProviders(
+  ipfs: unknown
+): Promise<{ ipfsProvider?: string; ethProvider?: string }> {
+  let ipfsProvider: string | undefined;
+  let ethProvider: string | undefined;
+
+  if (typeof ipfs === "string") {
+    // Custom IPFS provider
+    ipfsProvider = ipfs;
+  } else if (ipfs) {
+    // Dev-server IPFS provider
+    try {
+      const {
+        data: { ipfs, ethereum },
+      } = await axios.get("http://localhost:4040/providers");
+      ipfsProvider = ipfs;
+      ethProvider = ethereum;
+    } catch (e) {
+      // Dev server not found
+    }
+  }
+  return { ipfsProvider, ethProvider };
+}
+
+export async function resolveManifestPath(
+  filesystem: GluegunFilesystem,
+  manifestPath: string
+): Promise<string> {
+  return (
+    (manifestPath && filesystem.resolve(manifestPath)) ||
+    ((await filesystem.existsAsync(defaultManifest[0]))
+      ? filesystem.resolve(defaultManifest[0])
+      : filesystem.resolve(defaultManifest[1]))
+  );
+}

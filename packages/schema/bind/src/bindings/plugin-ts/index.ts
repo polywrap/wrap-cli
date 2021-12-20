@@ -16,6 +16,8 @@ import Mustache from "mustache";
 import { readFileSync } from "fs";
 import path from "path";
 
+export { toTypescript } from "./functions";
+
 export function generateBinding(
   typeInfo: TypeInfo,
   schema?: string
@@ -69,10 +71,16 @@ export function generateBinding(
   renderTemplate("./templates/index-ts.mustache", rootContext);
   renderTemplate("./templates/manifest-ts.mustache", rootContext);
   if (mutationContext) {
-    renderTemplate("./templates/mutation-ts.mustache", mutationContext);
+    renderTemplate("./templates/mutation-ts.mustache", {
+      ...mutationContext,
+      ...typeInfo,
+    });
   }
   if (queryContext) {
-    renderTemplate("./templates/query-ts.mustache", queryContext);
+    renderTemplate("./templates/query-ts.mustache", {
+      ...queryContext,
+      ...typeInfo,
+    });
   }
   renderTemplate("./templates/schema-ts.mustache", rootContext);
   renderTemplate("./templates/types-ts.mustache", rootContext);
