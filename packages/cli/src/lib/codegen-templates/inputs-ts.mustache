@@ -1,0 +1,17 @@
+import * as Types from "./types";
+
+{{#methods}}
+  export interface Input_{{name}} extends Record<string, unknown> {
+  {{#arguments}}
+    {{name}}{{^required}}?{{/required}}: Types.{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
+  {{/arguments}}
+  }
+  {{^last}}
+
+  {{/last}}
+{{/methods}}
+
+/// Imported Queries START ///
+
+
+/// Imported Queries END ///

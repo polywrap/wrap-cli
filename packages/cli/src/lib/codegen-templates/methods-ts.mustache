@@ -1,0 +1,27 @@
+import * as Types from "./types";
+import * as Inputs from "./inputs"
+import { Client, ExtensionInvocation, Extension } from "@web3api/core-js";
+
+class MyExtension<TUri extends Uri | string = string> extends Extension<TUri> {
+
+{{#methods}}
+  {{name}}(
+    input: Inputs.Input_{{name}},
+  ): Promise<ExtensionInvocation<Types.{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}, TUri>> {
+    const options: InvokeApiOptions<TUri> = {
+      uri: this.uri,
+      module: "{{type}}",
+      method: "{{name}}",
+      input: input,
+      decode: true,
+    };
+    return {
+      config: () => options;
+      execute: () => this.client.invoke<Types.{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>(options);
+    };
+  }
+{{^last}}
+
+{{/last}}
+{{/methods}}
+}

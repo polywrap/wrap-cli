@@ -9,3 +9,4 @@ export * from "./Uri";
 export * from "./UriRedirect";
 export * from "./InterfaceImplementations";
 export * from "./PluginRegistration";
+export * from "./Extension";
