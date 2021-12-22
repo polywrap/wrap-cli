@@ -39,6 +39,7 @@ import {
   sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
   ClientConfig,
+  InvokableModules,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -115,6 +116,7 @@ export class Web3ApiClient implements Client {
     this._config.tracingEnabled = enable;
   }
 
+  @Tracer.traceMethod("Web3ApiClient: getEnvironmentByUri")
   public getEnvironmentByUri<TUri extends Uri | string>(
     uri: TUri,
     options: GetEnvironmentsOptions
@@ -307,7 +309,11 @@ export class Web3ApiClient implements Client {
         uri: this._toUri(options.uri),
       };
 
-      const api = await this._loadWeb3Api(typedOptions.uri, contextId);
+      const api = await this._loadWeb3Api(
+        typedOptions.uri,
+        contextId,
+        typedOptions.module
+      );
 
       result = (await api.invoke(
         typedOptions,
@@ -436,10 +442,12 @@ export class Web3ApiClient implements Client {
     }
   }
 
+  @Tracer.traceMethod("Web3ApiClient: isContextualized")
   private _isContextualized(contextId: string | undefined): boolean {
     return !!contextId && this._contexts.has(contextId);
   }
 
+  @Tracer.traceMethod("Web3ApiClient: getConfig")
   private _getConfig(contextId?: string): Readonly<Web3ApiClientConfig<Uri>> {
     if (contextId) {
       const context = this._contexts.get(contextId);
@@ -453,6 +461,7 @@ export class Web3ApiClient implements Client {
     }
   }
 
+  @Tracer.traceMethod("Web3ApiClient: validateConfig")
   private _validateConfig(): void {
     // Require plugins to use non-interface URIs
     const pluginUris = this.getPlugins().map((x) => x.uri.uri);
@@ -469,6 +478,7 @@ export class Web3ApiClient implements Client {
     }
   }
 
+  @Tracer.traceMethod("Web3ApiClient: toUri")
   private _toUri(uri: Uri | string): Uri {
     if (typeof uri === "string") {
       return new Uri(uri);
@@ -486,6 +496,7 @@ export class Web3ApiClient implements Client {
    *  3. !parentId && context   -> create context ID, default config as "base", cache context
    *  4. parentId && context    -> create context ID, parent config as "base", cache context
    */
+  @Tracer.traceMethod("Web3ApiClient: setContext")
   private _setContext(
     parentId: string | undefined,
     context: Partial<Web3ApiClientConfig> | undefined
@@ -525,6 +536,7 @@ export class Web3ApiClient implements Client {
     };
   }
 
+  @Tracer.traceMethod("Web3ApiClient: clearContext")
   private _clearContext(contextId: string | undefined): void {
     if (contextId) {
       this._contexts.delete(contextId);
@@ -534,7 +546,8 @@ export class Web3ApiClient implements Client {
   @Tracer.traceMethod("Web3ApiClient: _loadWeb3Api")
   private async _loadWeb3Api(
     uri: Uri,
-    contextId: string | undefined
+    contextId: string | undefined,
+    module?: string
   ): Promise<Api> {
     const typedUri = typeof uri === "string" ? new Uri(uri) : uri;
     const ignoreCache = this._isContextualized(contextId);
@@ -555,7 +568,13 @@ export class Web3ApiClient implements Client {
           client.invoke<TData, TUri>(options),
         (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
         (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
-          new WasmWeb3Api(uri, manifest, uriResolver, environment)
+          new WasmWeb3Api(
+            uri,
+            manifest,
+            uriResolver,
+            module as InvokableModules,
+            environment
+          )
       );
 
       if (!api) {

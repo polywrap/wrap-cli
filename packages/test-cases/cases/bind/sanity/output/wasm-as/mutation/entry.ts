@@ -2,8 +2,10 @@ import {
   w3_invoke_args,
   w3_invoke,
   w3_abort,
+  w3_sanitize_env,
   InvokeArgs
 } from "@web3api/wasm-as";
+
 import {
   mutationMethodWrapped,
   objectMethodWrapped

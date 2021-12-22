@@ -144,6 +144,17 @@ export const createImports = (config: {
           writeBytes(state.environment, memory.buffer, ptr);
         }
       },
+      __w3_sanitize_env_args: (ptr: u32): void => {
+        if (!state.sanitizeEnv.args) {
+          abort("__w3_sanitize_env: args is not set");
+          return;
+        }
+  
+        writeBytes(state.sanitizeEnv.args, memory.buffer, ptr);
+      },
+      __w3_sanitize_env_result: (ptr: u32, len: u32): void => {
+        state.sanitizeEnv.result = readBytes(memory.buffer, ptr, len);
+      },
       __w3_abort: (
         msgPtr: u32,
         msgLen: u32,
