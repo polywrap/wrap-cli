@@ -181,10 +181,21 @@ impl DataView {
 
     pub fn set_bytes(&mut self, buf: &[u8]) {
         self.check_index_in_range("set_bytes", buf.len());
-        let dst_elts = self.byte_offset as usize;
-        let buf_iter_mut = self.buffer[dst_elts..(dst_elts + buf.len())].iter_mut();
-        for (dst, src) in buf_iter_mut.zip(buf.iter()) {
-            *dst = *src
+
+        let mut src = buf.to_vec();
+        let src_len = src.len();
+        let dst_len = self.buffer.len();
+
+        self.buffer.reserve(src_len);
+
+        unsafe {
+            let dst_ptr = self.buffer.as_mut_ptr().offset(dst_len as isize);
+            let src_ptr = src.as_ptr();
+
+            src.set_len(0);
+
+            std::ptr::copy_nonoverlapping(src_ptr, dst_ptr, src_len);
+            self.buffer.set_len(dst_len + src_len);
         }
         self.byte_offset += buf.len();
     }
