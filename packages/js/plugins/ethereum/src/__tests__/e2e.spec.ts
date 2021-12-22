@@ -179,6 +179,24 @@ describe("Ethereum Plugin", () => {
       });
 
       expect(response.data?.encodeParams).toBe("0x000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000")
+
+      const acceptsTupleArg = await client.query<{ encodeFunction: string }>({
+        uri,
+        query: `
+          query {
+            encodeParams(
+              types: $types
+              values: $values
+            )
+          }
+        `,
+        variables: {
+          types: ["tuple(uint256 startTime, uint256 endTime, address token)"],
+          values: [JSON.stringify({ startTime: "8", endTime: "16", token: "0x0000000000000000000000000000000000000000" })]
+        }
+      });
+
+      expect(acceptsTupleArg.errors).toBeUndefined();
     });
 
     it("encodeFunction", async () => {
