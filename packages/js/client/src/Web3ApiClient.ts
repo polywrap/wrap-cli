@@ -226,7 +226,6 @@ export class Web3ApiClient implements Client {
           this.invoke({
             ...queryInvocations[invocationName],
             uri: queryInvocations[invocationName].uri,
-            decode: true,
             contextId,
           }).then((result) => ({
             name: invocationName,
