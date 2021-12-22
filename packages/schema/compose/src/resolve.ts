@@ -1060,12 +1060,11 @@ export function checkDuplicateEnvProperties(
   envType: ObjectDefinition,
   genericEnvProperties: AnyDefinition[]
 ): void {
+  const genericEnvPropertiesSet = new Set(
+    genericEnvProperties.map((genericProperty) => genericProperty.name)
+  );
   for (const specificProperty of envType.properties) {
-    if (
-      genericEnvProperties.find(
-        (genericProperty) => genericProperty.name === specificProperty.name
-      )
-    ) {
+    if (genericEnvPropertiesSet.has(specificProperty.name)) {
       throw new Error(
         `Type '${envType.type}' contains duplicate property '${specificProperty.name}' of type 'Env'`
       );

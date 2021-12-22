@@ -10,16 +10,12 @@ import { setPropertyType } from "./property-utils";
 import { FieldDefinitionNode, NamedTypeNode } from "graphql";
 
 export function isEnviromentType(type: string): boolean {
-  if (
+  return (
     type === EnvironmentType.QueryClientEnvType ||
     type === EnvironmentType.QueryEnvType ||
     type === EnvironmentType.MutationEnvType ||
     type === EnvironmentType.MutationClientEnvType
-  ) {
-    return true;
-  }
-
-  return false;
+  );
 }
 
 export interface State {
