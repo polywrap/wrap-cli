@@ -62,7 +62,10 @@ export class Web3ApiClient implements Client {
   // Invoke specific contexts
   private _contexts: Map<string, Web3ApiClientConfig<Uri>> = new Map();
 
-  constructor(config?: Partial<Web3ApiClientConfig>, options?: { noDefaults?: boolean }) {
+  constructor(
+    config?: Partial<Web3ApiClientConfig>,
+    options?: { noDefaults?: boolean }
+  ) {
     try {
       this.setTracingEnabled(!!config?.tracingEnabled);
 
@@ -83,7 +86,7 @@ export class Web3ApiClient implements Client {
         };
       }
 
-      if(!options?.noDefaults) { 
+      if (!options?.noDefaults) {
         this._addDefaultConfig();
       }
 
@@ -95,22 +98,6 @@ export class Web3ApiClient implements Client {
       throw error;
     } finally {
       Tracer.endSpan();
-    }
-  }
-
-  private _addDefaultConfig() {
-    const defaultClientConfig = getDefaultClientConfig();
-
-    if (defaultClientConfig.redirects) {
-      this._config.redirects.push(...defaultClientConfig.redirects);
-    }
-
-    if (defaultClientConfig.plugins) {
-      this._config.plugins.push(...defaultClientConfig.plugins);
-    }
-
-    if (defaultClientConfig.interfaces) {
-      this._config.interfaces.push(...defaultClientConfig.interfaces);
     }
   }
 
@@ -411,6 +398,22 @@ export class Web3ApiClient implements Client {
     };
 
     return subscription;
+  }
+
+  private _addDefaultConfig() {
+    const defaultClientConfig = getDefaultClientConfig();
+
+    if (defaultClientConfig.redirects) {
+      this._config.redirects.push(...defaultClientConfig.redirects);
+    }
+
+    if (defaultClientConfig.plugins) {
+      this._config.plugins.push(...defaultClientConfig.plugins);
+    }
+
+    if (defaultClientConfig.interfaces) {
+      this._config.interfaces.push(...defaultClientConfig.interfaces);
+    }
   }
 
   private _isContextualized(contextId: string | undefined): boolean {
