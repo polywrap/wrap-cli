@@ -62,7 +62,7 @@ export class Web3ApiClient implements Client {
   // Invoke specific contexts
   private _contexts: Map<string, Web3ApiClientConfig<Uri>> = new Map();
 
-  constructor(config?: Partial<Web3ApiClientConfig>, options?: { noDefaults?: boolean } = {}) {
+  constructor(config?: Partial<Web3ApiClientConfig>, options?: { noDefaults?: boolean }) {
     try {
       this.setTracingEnabled(!!config?.tracingEnabled);
 
