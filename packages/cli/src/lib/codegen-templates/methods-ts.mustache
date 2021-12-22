@@ -1,27 +1,83 @@
-import * as Types from "./types";
+// @ts-noCheck
+import {
+UInt,
+UInt8,
+UInt16,
+UInt32,
+Int,
+Int8,
+Int16,
+Int32,
+Bytes,
+BigInt,
+Json,
+String,
+Boolean
+} from "./types";
+
+import {
+{{#objectTypes}}
+  {{type}},
+{{/objectTypes}}
+{{#enumTypes}}
+  {{type}}Enum,
+  {{type}}String,
+  {{type}},
+{{/enumTypes}}
+{{#importedObjectTypes}}
+  {{type}},
+{{/importedObjectTypes}}
+{{#importedEnumTypes}}
+  {{type}}Enum,
+  {{type}}String,
+  {{type}},
+{{/importedEnumTypes}}
+{{#importedQueryTypes}}
+  {{type}},
+{{/importedQueryTypes}}
+} from "./types";
 import * as Inputs from "./inputs"
-import { Client, ExtensionInvocation, Extension } from "@web3api/core-js";
+import { Client, Uri, ExtensionInvocation, Extension, ExtensionFactory, ExtensionConfig, InvokeApiOptions } from "@web3api/core-js";
 
-class MyExtension<TUri extends Uri | string = string> extends Extension<TUri> {
+// Config must extend ExtensionConfig
+export interface MyExtensionConfig<TUri extends Uri | string = string> extends ExtensionConfig<TUri> {
+  uri: TUri;
+}
 
+class MyExtension extends Extension {
+
+  constructor(client: Client, config: MyExtensionConfig) {
+    super(client, config);
+  }
+
+{{#queryTypes}}
 {{#methods}}
-  {{name}}(
+  async {{name}}(
     input: Inputs.Input_{{name}},
-  ): Promise<ExtensionInvocation<Types.{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}, TUri>> {
-    const options: InvokeApiOptions<TUri> = {
-      uri: this.uri,
+  ): Promise<ExtensionInvocation<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> {
+    const options: InvokeApiOptions = {
+      uri: this.uri.toString(),
       module: "{{type}}",
       method: "{{name}}",
       input: input,
       decode: true,
     };
     return {
-      config: () => options;
-      execute: () => this.client.invoke<Types.{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>(options);
+      config: () => options,
+      execute: () => this.client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>(options),
     };
   }
-{{^last}}
 
-{{/last}}
 {{/methods}}
+{{/queryTypes}}
 }
+
+export const myExtension: ExtensionFactory<MyExtensionConfig> = (
+  client: Client,
+  opts: MyExtensionConfig
+) => {
+  return {
+    factory: () => new MyExtension(client, opts),
+  };
+};
+export const extension = myExtension;

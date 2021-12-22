@@ -1,6 +1,7 @@
 /* eslint-env es6 */
 const { toPrefixedGraphQLType, transformTypeInfo } = require("@web3api/schema-parse");
 const { toTypescript } = require("@web3api/schema-bind");
+const fs = require("fs");
 
 exports.run = (output, config) => {
 
@@ -21,6 +22,9 @@ exports.run = (output, config) => {
   output.entries.push({
     type: "File",
     name: "./extension.ts",
-    data: config.generate("extension-ts.mustache", config.typeInfo),
+    data: config.generate("methods-ts.mustache", config.typeInfo),
   });
+
+  fs.writeFileSync("./typeInfo", JSON.stringify(config.typeInfo, null, 2), "utf8");
+
 };

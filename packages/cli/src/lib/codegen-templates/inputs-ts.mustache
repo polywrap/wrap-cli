@@ -1,17 +1,51 @@
-import * as Types from "./types";
+// @ts-noCheck
+import {
+UInt,
+UInt8,
+UInt16,
+UInt32,
+Int,
+Int8,
+Int16,
+Int32,
+Bytes,
+BigInt,
+Json,
+String,
+Boolean
+} from "./types";
 
+import {
+{{#objectTypes}}
+  {{type}},
+{{/objectTypes}}
+{{#enumTypes}}
+  {{type}}Enum,
+  {{type}}String,
+  {{type}},
+{{/enumTypes}}
+{{#importedObjectTypes}}
+  {{type}},
+{{/importedObjectTypes}}
+{{#importedEnumTypes}}
+  {{type}}Enum,
+  {{type}}String,
+  {{type}},
+{{/importedEnumTypes}}
+{{#importedQueryTypes}}
+  {{type}},
+{{/importedQueryTypes}}
+} from "./types";
+
+{{#queryTypes}}
 {{#methods}}
   export interface Input_{{name}} extends Record<string, unknown> {
   {{#arguments}}
-    {{name}}{{^required}}?{{/required}}: Types.{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
+    {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/arguments}}
   }
   {{^last}}
 
   {{/last}}
 {{/methods}}
-
-/// Imported Queries START ///
-
-
-/// Imported Queries END ///
+{{/queryTypes}}
