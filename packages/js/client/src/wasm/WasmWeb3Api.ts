@@ -203,6 +203,10 @@ export class WasmWeb3Api extends Api {
 
       const exports = instance.exports as W3Exports;
 
+      if (exports["_w3_load_env"]) {
+        await exports._w3_load_env(state.environment.byteLength);
+      }
+
       const result = await exports._w3_invoke(
         state.method.length,
         state.args.byteLength
