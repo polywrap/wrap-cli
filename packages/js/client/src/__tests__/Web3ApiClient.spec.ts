@@ -121,7 +121,7 @@ describe("Web3ApiClient", () => {
     ]);
   });
 
-  it("invoke with decode false/true works as expected", async () => {
+  it("client noDefaults flag works as expected", async () => {
     let client = new Web3ApiClient();
     expect(client.getPlugins().length !== 0).toBeTruthy();
 
