@@ -121,6 +121,20 @@ describe("Web3ApiClient", () => {
     ]);
   });
 
+  it("client noDefaults flag works as expected", async () => {
+    let client = new Web3ApiClient();
+    expect(client.getPlugins().length !== 0).toBeTruthy();
+
+    client = new Web3ApiClient({}, {});
+    expect(client.getPlugins().length !== 0).toBeTruthy();
+
+    client = new Web3ApiClient({}, { noDefaults: false });
+    expect(client.getPlugins().length !== 0).toBeTruthy();
+
+    client = new Web3ApiClient({}, { noDefaults: true });
+    expect(client.getPlugins().length === 0).toBeTruthy();
+  });
+
   it("invoke simple-storage with custom redirects", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
