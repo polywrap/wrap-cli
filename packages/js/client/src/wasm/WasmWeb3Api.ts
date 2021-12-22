@@ -149,7 +149,8 @@ export class WasmWeb3Api extends Api {
     client: Client
   ): Promise<InvokeApiResult<unknown | ArrayBuffer>> {
     try {
-      const { module: invokableModule, method, input, decode } = options;
+      const { module: invokableModule, method, noDecode } = options;
+      const input = options.input || {};
       const wasm = await this._getWasmModule(invokableModule, client);
       const state: State = {
         invoke: {},
@@ -204,20 +205,22 @@ export class WasmWeb3Api extends Api {
           );
         }
         case "InvokeResult": {
-          if (decode) {
-            try {
-              return {
-                data: MsgPack.decode(invokeResult.invokeResult as ArrayBuffer),
-              };
-            } catch (err) {
-              throw Error(
-                `WasmWeb3Api: Failed to decode query result.\nResult: ${JSON.stringify(
-                  invokeResult.invokeResult
-                )}\nError: ${err}`
-              );
-            }
-          } else {
-            return { data: invokeResult.invokeResult };
+          if (noDecode) {
+            return {
+              data: invokeResult.invokeResult,
+            } as InvokeApiResult<ArrayBuffer>;
+          }
+
+          try {
+            return {
+              data: MsgPack.decode(invokeResult.invokeResult as ArrayBuffer),
+            } as InvokeApiResult<unknown>;
+          } catch (err) {
+            throw Error(
+              `WasmWeb3Api: Failed to decode query result.\nResult: ${JSON.stringify(
+                invokeResult.invokeResult
+              )}\nError: ${err}`
+            );
           }
         }
         default: {
