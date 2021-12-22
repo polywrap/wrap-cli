@@ -162,7 +162,7 @@ describe("Web3ApiClient", () => {
             networkNameOrChainId: "testnet"
           }
         },
-        decode: false
+        noDecode: true
       });
 
       expect(result.error).toBeFalsy();

@@ -234,7 +234,6 @@ export class Web3ApiClient implements Client {
           this.invoke({
             ...queryInvocations[invocationName],
             uri: queryInvocations[invocationName].uri,
-            decode: true,
             contextId,
           }).then((result) => ({
             name: invocationName,
@@ -291,7 +290,6 @@ export class Web3ApiClient implements Client {
     try {
       const typedOptions: InvokeApiOptions<Uri> = {
         ...options,
-        decode: options.decode === undefined ? true : options.decode,
         contextId: contextId,
         uri: this._toUri(options.uri),
       };

@@ -31,10 +31,10 @@ export interface InvokeApiOptions<
   resultFilter?: Record<string, unknown>;
 
   /**
-   * If set to true, the invoke function will decode all msgpack results
-   * into JavaScript objects.
+   * If set to true, the invoke function will not decode the msgpack results
+   * into JavaScript objects, and instead return the raw ArrayBuffer.
    */
-  decode?: boolean;
+  noDecode?: boolean;
 
   /**
    * Override the client's config for all invokes within this query.
