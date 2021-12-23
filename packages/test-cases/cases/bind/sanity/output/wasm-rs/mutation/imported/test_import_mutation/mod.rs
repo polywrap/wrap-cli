@@ -32,9 +32,9 @@ impl TestImportMutation {
         let uri = TestImportMutation::URI;
         let args = serialize_imported_method_args(input);
         let result = subinvoke::w3_subinvoke(
-            uri.to_string(),
-            "mutation".to_string(),
-            "imported_method".to_string(),
+            uri,
+            "mutation",
+            "imported_method",
             args,
         ).unwrap();
         deserialize_imported_method_result(result.as_slice())
@@ -44,9 +44,9 @@ impl TestImportMutation {
         let uri = TestImportMutation::URI;
         let args = serialize_another_method_args(input);
         let result = subinvoke::w3_subinvoke(
-            uri.to_string(),
-            "mutation".to_string(),
-            "another_method".to_string(),
+            uri,
+            "mutation",
+            "another_method",
             args,
         ).unwrap();
         deserialize_another_method_result(result.as_slice())

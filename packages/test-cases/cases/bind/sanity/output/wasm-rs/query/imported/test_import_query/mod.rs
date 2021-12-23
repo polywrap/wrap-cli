@@ -33,9 +33,9 @@ impl TestImportQuery {
         let uri = TestImportQuery::URI;
         let args = serialize_imported_method_args(input);
         let result = subinvoke::w3_subinvoke(
-            uri.to_string(),
-            "query".to_string(),
-            "imported_method".to_string(),
+            uri,
+            "query",
+            "imported_method",
             args,
         ).unwrap();
         deserialize_imported_method_result(result.as_slice())
@@ -45,9 +45,9 @@ impl TestImportQuery {
         let uri = TestImportQuery::URI;
         let args = serialize_another_method_args(input);
         let result = subinvoke::w3_subinvoke(
-            uri.to_string(),
-            "query".to_string(),
-            "another_method".to_string(),
+            uri,
+            "query",
+            "another_method",
             args,
         ).unwrap();
         deserialize_another_method_result(result.as_slice())
