@@ -190,8 +190,6 @@ export class WasmWeb3Api extends Api {
             : MsgPack.encode(input, { ignoreUndefined: true }),
       };
 
-      await this._sanitizeAndLoadEnvironment(invokableModule, state);
-
       const abort = (message: string) => {
         throw new Error(
           `WasmWeb3Api: Wasm module aborted execution.\nURI: ${this._uri.uri}\n` +
@@ -213,6 +211,8 @@ export class WasmWeb3Api extends Api {
       });
 
       const exports = instance.exports as W3Exports;
+
+      await this._sanitizeAndLoadEnvironment(invokableModule, state, exports);
 
       const result = await exports._w3_invoke(
         state.method.length,
@@ -315,7 +315,8 @@ export class WasmWeb3Api extends Api {
   @Tracer.traceMethod("WasmWeb3Api: sanitizeAndLoadEnvironment")
   private async _sanitizeAndLoadEnvironment(
     module: InvokableModules,
-    state: State
+    state: State,
+    exports: W3Exports
   ): Promise<void> {
     if (hasExport("_w3_load_env", exports)) {
       if (this._sanitizedEnviroment[module] !== undefined) {
@@ -337,7 +338,7 @@ export class WasmWeb3Api extends Api {
         }
       }
 
-      exports._w3_load_env(state.environment.byteLength);
+      await exports._w3_load_env(state.environment.byteLength);
     }
   }
 
