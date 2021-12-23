@@ -48,6 +48,7 @@ export const createImports = (config: {
           module: moduleToInvoke as InvokableModules,
           method: method,
           input: input,
+          noDecode: true,
         });
 
         if (!error) {
