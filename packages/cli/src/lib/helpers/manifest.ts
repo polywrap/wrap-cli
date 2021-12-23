@@ -7,16 +7,20 @@ import {
   Web3ApiManifest,
   MetaManifest,
   PluginManifest,
+  DappManifest,
   deserializeWeb3ApiManifest,
   deserializeBuildManifest,
   deserializeMetaManifest,
   deserializePluginManifest,
+  deserializeDappManifest,
 } from "@web3api/core-js";
 import { writeFileSync, normalizePath } from "@web3api/os-js";
 import { Schema as JsonSchema } from "jsonschema";
 import YAML from "js-yaml";
 import path from "path";
 import fs from "fs";
+
+// TODO: refactor loadManifest functions to reduce redundancy
 
 export async function loadWeb3ApiManifest(
   manifestPath: string,
@@ -181,6 +185,43 @@ export async function loadPluginManifest(
         return await run();
       }
     )) as PluginManifest;
+  }
+}
+
+export async function loadDappManifest(
+  manifestPath: string,
+  quiet = false
+): Promise<DappManifest> {
+  const run = (): Promise<DappManifest> => {
+    const manifest = fs.readFileSync(manifestPath, "utf-8");
+
+    if (!manifest) {
+      const noLoadMessage = intlMsg.lib_helpers_manifest_unableToLoad({
+        path: `${manifestPath}`,
+      });
+      throw Error(noLoadMessage);
+    }
+
+    try {
+      const result = deserializeDappManifest(manifest);
+      return Promise.resolve(result);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  };
+
+  if (quiet) {
+    return await run();
+  } else {
+    manifestPath = displayPath(manifestPath);
+    return (await withSpinner(
+      intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
+      intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
+      intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
+      async (_spinner) => {
+        return await run();
+      }
+    )) as DappManifest;
   }
 }
 

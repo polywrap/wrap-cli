@@ -10,6 +10,8 @@ export function manifestLanguageToTargetLanguage(
       return "wasm-as";
     case "plugin/typescript":
       return "plugin-ts";
+    case "dapp/typescript":
+      return "plugin-ts"; // TODO: should TargetLanguage be expanded to include "dapp-ts"?
     default:
       throw Error(
         intlMsg.lib_language_unsupportedManifestLanguage({

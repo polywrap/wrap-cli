@@ -1,0 +1,39 @@
+{
+  "id": "DappManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "language",
+    "packages"
+  ],
+  "properties": {
+    "format": {
+      "type": "string",
+      "const": "0.0.1-prealpha.1"
+    },
+    "language": {
+      "type": "string",
+      "format": "dappLanguage"
+    },
+    "packages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "uri": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "uri",
+          "namespace"
+        ]
+      }
+    }
+  }
+}

@@ -1,41 +1,51 @@
 /* eslint-disable prefer-const */
-import { CodeGenerator, SchemaComposer, Web3ApiProject } from "../lib";
+import { CodeGenerator, SchemaComposer } from "../lib";
 import { intlMsg } from "../lib/intl";
 import {
   getCodegenProviders,
   resolveManifestPath,
   validateCodegenParams,
 } from "./codegen";
-import { fixParameters } from "../lib/helpers";
+import { fixParameters, loadDappManifest, manifestLanguageToTargetLanguage } from "../lib/helpers";
 
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
+import { getSimpleClient } from "../lib/helpers/client";
+import { ExternalWeb3ApiProject } from "../lib/project/ExternalWeb3ApiProject";
+import { Web3ApiClient } from "@web3api/client-js";
+import { DappManifest } from "@web3api/core-js";
 
-interface DappLang {
-  lang: string;
-  typeGenFile: string;
+interface PolywrapPackage {
+  uri: string;
+  namespace: string;
 }
 
-const langSupport: DappLang[] = [
-  {
-    lang: "typescript",
-    typeGenFile: __dirname + "/../lib/codegen-templates/types-ts.gen.js",
-  },
-];
+interface DappGenFiles {
+  types: string;
+  extension: string;
+}
 
-export const defaultManifest = ["web3api.yaml", "web3api.yml"];
+interface DappLangSupport {
+  [lang: string]: DappGenFiles
+}
+
+const langSupport: DappLangSupport = {
+  "plugin-ts": {
+    types: __dirname + "/../lib/codegen-templates/types-ts.gen.js",
+    extension: __dirname + "/../lib/codegen-templates/extension-ts.gen.js",
+  }
+};
+
+export const defaultManifest = ["web3api.dapp.yaml", "web3api.dapp.yml"];
 
 const cmdStr = intlMsg.commands_plugin_options_command();
 const optionsStr = intlMsg.commands_options_options();
 const codegenStr = intlMsg.commands_plugin_options_codegen();
+const codegenExtensionStr = "Generate code for client extension";
 const defaultManifestStr = defaultManifest.join(" | ");
 const defaultOutputTypesStr = "types/";
 const outputDirStr = `${intlMsg.commands_plugins_options_types({
   default: defaultOutputTypesStr,
-})}`;
-const codegenLang = intlMsg.commands_plugin_options_lang();
-const outputLangStr = `${intlMsg.commands_dapp_options_l({
-  default: langSupport[0].lang,
 })}`;
 const nodeStr = intlMsg.commands_codegen_options_i_node();
 const pathStr = intlMsg.commands_codegen_options_o_path();
@@ -45,15 +55,13 @@ const HELP = `
 ${chalk.bold("w3 dapp")} ${cmdStr} [${optionsStr}]
 
 Commands:
-  ${chalk.bold(
-    "codegen"
-  )}   ${codegenStr} (${intlMsg.commands_dapp_supported()}: typescript)
+  ${chalk.bold("types")}   ${codegenStr}
+  ${chalk.bold("extension")}   ${codegenExtensionStr}
 
-${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
+Options:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
   -m, --manifest-path <${pathStr}>              ${intlMsg.commands_codegen_options_m()}: ${defaultManifestStr})
   -o, --output-dir <${pathStr}>                 ${outputDirStr}
-  -l, --lang <${codegenLang}>                       ${outputLangStr}
   -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
   -e, --ens [<${addrStr}>]                   ${intlMsg.commands_codegen_options_e()}
 `;
@@ -64,13 +72,12 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
 
-    const { h, m, o, l, i, e } = parameters.options;
-    let { help, manifestPath, outputDir, lang, ipfs, ens } = parameters.options;
+    const { h, m, o, i, e } = parameters.options;
+    let { help, manifestPath, outputDir, ipfs, ens } = parameters.options;
 
     help = help || h;
     manifestPath = manifestPath || m;
     outputDir = outputDir || o;
-    lang = lang || l;
     ipfs = ipfs || i;
     ens = ens || e;
 
@@ -109,50 +116,56 @@ export default {
       return;
     }
 
-    const { ipfsProvider, ethProvider } = await getCodegenProviders(ipfs);
-    const ensAddress: string | undefined = ens;
-
-    // Resolve generation file
-    let selectedLang: DappLang | undefined;
-    if (typeof lang === "string") {
-      const requestedLang = lang.trim().toLowerCase();
-      selectedLang = langSupport.find(
-        (supported: DappLang) => requestedLang === supported.lang
-      );
-    } else if (!lang) {
-      selectedLang = langSupport[0];
-    }
-    if (!selectedLang) {
-      print.error(intlMsg.commands_dapp_error_noLang());
-      print.info(HELP);
-      return;
-    }
-    const customScript = filesystem.resolve(selectedLang.typeGenFile);
-
     // Resolve manifest and output directories
     manifestPath = await resolveManifestPath(filesystem, manifestPath);
     outputDir =
-      (outputDir && filesystem.resolve(outputDir)) || filesystem.path("types");
+      (outputDir && filesystem.resolve(outputDir)) || filesystem.path("dapp");
 
-    const project = new Web3ApiProject({
-      web3apiManifestPath: manifestPath,
-    });
+    // Dapp project
+    const dappManifest: DappManifest = await loadDappManifest(manifestPath, true);
+    const lang: string = manifestLanguageToTargetLanguage(dappManifest.language);
+    const packages: PolywrapPackage[] = dappManifest.packages;
 
-    const schemaComposer = new SchemaComposer({
-      project,
-      ipfsProvider,
-      ethProvider,
-      ensAddress,
-    });
+    // Resolve generation file
+    const genFiles: DappGenFiles = langSupport[lang];
+    const genFilePath: string = command === "extension" ? genFiles.extension : genFiles.types;
+    const customScript = filesystem.resolve(genFilePath);
 
-    const codeGenerator = new CodeGenerator({
-      project,
-      schemaComposer,
-      customScript,
-      outputDir,
-    });
+    // Get providers and client
+    const { ipfsProvider, ethProvider } = await getCodegenProviders(ipfs);
+    const ensAddress: string | undefined = ens;
+    const client: Web3ApiClient = getSimpleClient({ ensAddress, ethProvider, ipfsProvider });
 
-    if (await codeGenerator.generate()) {
+    // Generate code for each Polywrap package
+    let result: boolean = true;
+    for (const pack of packages) {
+
+      const project: ExternalWeb3ApiProject = new ExternalWeb3ApiProject({
+        uri: pack.uri,
+        namespace: pack.namespace,
+        client
+      });
+
+      const schemaComposer = new SchemaComposer({
+        project,
+        client,
+      });
+
+      const codeGenerator = new CodeGenerator({
+        project,
+        schemaComposer,
+        customScript,
+        outputDir,
+      });
+
+      if (await codeGenerator.generate()) {
+        print.success(`🔥 ${`Generated code for namespace ${pack.namespace}`} 🔥`);
+      } else {
+        result = false;
+      }
+    }
+
+    if (result) {
       print.success(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
       process.exitCode = 0;
     } else {
