@@ -3,12 +3,15 @@ use crate::memory::internal_alloc;
 #[link(wasm_import_module = "w3")]
 extern "C" {
     /// Get Invoke Arguments
+    #[link_name = "__w3_invoke_args"]
     pub fn __w3_invoke_args(method_ptr: u32, args_ptr: u32);
 
     /// Set Invoke Result
+    #[link_name = "__w3_invoke_result"]
     pub fn __w3_invoke_result(ptr: u32, len: u32);
 
     /// Set Invoke Error
+    #[link_name = "__w3_invoke_error"]
     pub fn __w3_invoke_error(ptr: u32, len: u32);
 }
 

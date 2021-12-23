@@ -1,6 +1,7 @@
 #[link(wasm_import_module = "w3")]
 extern "C" {
     /// Get Abort Arguments
+    #[link_name = "__w3_debug_log"]
     pub fn __w3_debug_log(ptr: u32, len: u32);
 }
 

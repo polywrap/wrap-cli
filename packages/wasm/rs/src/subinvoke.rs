@@ -33,9 +33,9 @@ extern "C" {
 /// Subinvoke API Helper
 #[allow(unused_unsafe)]
 pub fn w3_subinvoke(
-    uri: String,
-    module: String,
-    method: String,
+    uri: &str,
+    module: &str,
+    method: &str,
     input: Vec<u8>,
 ) -> Result<Vec<u8>, String> {
     let uri_buf = uri.as_bytes();

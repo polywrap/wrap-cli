@@ -115,13 +115,13 @@ impl Write for WriteEncoder {
     fn write_string(&mut self, value: &String) {
         let buf = value.as_bytes();
         self.write_string_length(buf.len() as u32);
-        self.view.set_bytes(buf);
+        self.view.set_bytes("write_string", buf);
     }
 
     fn write_str(&mut self, value: &str) {
         let buf = value.as_bytes();
         self.write_string_length(buf.len() as u32);
-        self.view.set_bytes(buf);
+        self.view.set_bytes("write_str", buf);
     }
 
     fn write_bytes_length(&mut self, length: u32) {
@@ -142,7 +142,7 @@ impl Write for WriteEncoder {
             self.write_nil();
         } else {
             self.write_bytes_length(buf.len() as u32);
-            self.view.set_bytes(buf);
+            self.view.set_bytes("write_bytes", buf);
         }
     }
 

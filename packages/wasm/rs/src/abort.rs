@@ -1,6 +1,7 @@
 #[link(wasm_import_module = "w3")]
 extern "C" {
     /// Get Abort Arguments
+    #[link_name = "__w3_abort"]
     pub fn __w3_abort(
         msg_ptr: u32,
         msg_len: u32,
