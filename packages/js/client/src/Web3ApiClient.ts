@@ -95,10 +95,6 @@ export class Web3ApiClient implements Client {
         this._addDefaultConfig();
       }
 
-      if (defaultClientConfig.environments) {
-        this._config.environments.push(...defaultClientConfig.environments);
-      }
-
       this._validateConfig();
 
       Tracer.setAttribute("config", this._config);
