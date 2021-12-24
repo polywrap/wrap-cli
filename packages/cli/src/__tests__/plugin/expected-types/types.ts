@@ -210,7 +210,7 @@ interface Ethereum_Query_Input_waitForEvent extends Record<string, unknown> {
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_getNetwork extends Record<string, unknown> {
-  connection?: Types.Ethereum_Connection | null;
+  connection?: Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
@@ -398,8 +398,8 @@ export const Ethereum_Query = {
   getNetwork: async (
     input: Ethereum_Query_Input_getNetwork,
     client: Client
-  ): Promise<InvokeApiResult<Types.Ethereum_Network>> => {
-    return client.invoke<Types.Ethereum_Network>({
+  ): Promise<InvokeApiResult<Ethereum_Network>> => {
+    return client.invoke<Ethereum_Network>({
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "getNetwork",

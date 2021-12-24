@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 import { CodeGenerator, PluginProject, SchemaComposer } from "../lib";
-import { fixParameters } from "../lib/helpers";
+import { fixParameters, resolveManifestPath } from "../lib/helpers";
 import { intlMsg } from "../lib/intl";
 
 import { ComposerFilter } from "@web3api/schema-compose";
@@ -34,10 +34,10 @@ Options:
   -m, --manifest-path <${pathStr}>       ${intlMsg.commands_plugin_options_m({
   default: defaultManifestStr,
 })}
-  -s, --output-schema-path <${pathStr}>  ${intlMsg.commands_plugins_options_schema(
+  -s, --output-schema-path <${pathStr}>  ${intlMsg.commands_plugin_options_s(
   { default: defaultOutputSchemaStr }
 )}
-  -t, --output-types-dir <${pathStr}>    ${intlMsg.commands_plugins_options_types(
+  -t, --output-types-dir <${pathStr}>    ${intlMsg.commands_plugin_options_t(
   { default: defaultOutputTypesStr }
 )}
   -i, --ipfs [<${nodeStr}>]              ${intlMsg.commands_plugin_options_i()}
@@ -159,11 +159,7 @@ export default {
       }
     }
 
-    manifestPath =
-      (manifestPath && filesystem.resolve(manifestPath)) ||
-      ((await filesystem.existsAsync(defaultManifest[0]))
-        ? filesystem.resolve(defaultManifest[0])
-        : filesystem.resolve(defaultManifest[1]));
+    manifestPath = await resolveManifestPath(filesystem, manifestPath, defaultManifest);
     outputSchemaPath = outputSchemaPath && filesystem.resolve(outputSchemaPath);
     outputTypesDir = outputTypesDir && filesystem.resolve(outputTypesDir);
 

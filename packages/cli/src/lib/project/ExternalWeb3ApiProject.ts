@@ -15,6 +15,7 @@ import path from "path";
 import fs from "fs";
 
 export interface ExternalWeb3ApiProjectConfig extends ProjectConfig {
+  rootPath: string;
   uri: string;
   namespace: string;
   client: Client;
@@ -25,10 +26,12 @@ export class ExternalWeb3ApiProject extends Project {
   private _buildManifest: BuildManifest | undefined;
   private _metaManifest: MetaManifest | undefined;
   private _cacheSubpath: string;
+  private _cachePath: string;
 
   constructor(protected _config: ExternalWeb3ApiProjectConfig) {
     super(_config);
     this._cacheSubpath = `ExternalProjects/${this._config.namespace}`;
+    this._cachePath = this.getCachePath(this._cacheSubpath);
   }
 
   public async getManifestPaths(absolute = false): Promise<string[]> {
@@ -62,7 +65,7 @@ export class ExternalWeb3ApiProject extends Project {
   }
 
   public getRootDir(): string {
-    return this.getWeb3ApiManifestDir();
+    return this._config.rootPath;
   }
 
   public async getLanguage(): Promise<TargetLanguage> {
@@ -105,7 +108,7 @@ export class ExternalWeb3ApiProject extends Project {
   /// Web3API Manifest (web3api.yaml)
 
   public getWeb3ApiManifestPath(): string {
-    return path.join(this._cacheSubpath, "/web3api.yaml");
+    return path.join(this._cachePath, "/web3api.yaml");
   }
 
   public getWeb3ApiManifestDir(): string {
@@ -176,7 +179,7 @@ export class ExternalWeb3ApiProject extends Project {
   /// Web3API Build Manifest (web3api.build.yaml)
 
   public getBuildManifestPath(): string {
-    return path.join(this._cacheSubpath, "/web3api.build.yaml");
+    return path.join(this._cachePath, "/web3api.build.yaml");
   }
 
   public async getBuildManifestDir(): Promise<string> {
@@ -205,7 +208,7 @@ export class ExternalWeb3ApiProject extends Project {
 
     // If the web3api.yaml manifest specifies a custom meta manifest
     if (web3apiManifest.meta) {
-      return path.join(this._cacheSubpath, "/web3api.meta.yaml");
+      return path.join(this._cachePath, "/web3api.meta.yaml");
     }
     // No meta manifest found
     else {
@@ -261,10 +264,10 @@ export class ExternalWeb3ApiProject extends Project {
       )) as string;
     }
 
-    const manifestPath = path.join(this._cacheSubpath, `/${fileTitle}.yaml`);
-    if (!fs.existsSync(this._cacheSubpath)) {
-      fs.mkdirSync(this._cacheSubpath, { recursive: true });
+    if (!fs.existsSync(this._cachePath)) {
+      fs.mkdirSync(this._cachePath, { recursive: true });
     }
+    const manifestPath = path.join(this._cachePath, `/${fileTitle}.yaml`);
     await fs.promises.writeFile(manifestPath, manifest);
   }
 

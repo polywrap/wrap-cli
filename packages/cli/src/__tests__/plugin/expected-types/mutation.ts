@@ -24,6 +24,7 @@ import {
   Ethereum_TxReceipt,
   Ethereum_Log,
   Ethereum_EventNotification,
+  Ethereum_Network,
   Ethereum_Query,
 } from "./types";
 

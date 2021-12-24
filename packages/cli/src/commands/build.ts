@@ -16,6 +16,7 @@ import chalk from "chalk";
 import axios from "axios";
 import readline from "readline";
 import { GluegunToolbox } from "gluegun";
+import { resolveManifestPath } from "../lib/helpers";
 
 const optionsStr = intlMsg.commands_build_options_options();
 const manStr = intlMsg.commands_build_options_manifest();
@@ -127,9 +128,7 @@ export default {
     }
 
     // Resolve manifest & output directories
-    manifestPath =
-      (manifestPath && filesystem.resolve(manifestPath)) ||
-      filesystem.resolve("web3api.yaml");
+    manifestPath = await resolveManifestPath(filesystem, manifestPath, ["web3api.yaml"]);
     outputDir =
       (outputDir && filesystem.resolve(outputDir)) || filesystem.path("build");
 

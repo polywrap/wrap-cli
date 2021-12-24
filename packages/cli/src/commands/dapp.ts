@@ -3,10 +3,9 @@ import { CodeGenerator, SchemaComposer } from "../lib";
 import { intlMsg } from "../lib/intl";
 import {
   getCodegenProviders,
-  resolveManifestPath,
   validateCodegenParams,
 } from "./codegen";
-import { fixParameters, loadDappManifest, manifestLanguageToTargetLanguage } from "../lib/helpers";
+import { fixParameters, loadDappManifest, manifestLanguageToTargetLanguage, resolveManifestPath } from "../lib/helpers";
 
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
@@ -14,6 +13,7 @@ import { getSimpleClient } from "../lib/helpers/client";
 import { ExternalWeb3ApiProject } from "../lib/project/ExternalWeb3ApiProject";
 import { Web3ApiClient } from "@web3api/client-js";
 import { DappManifest } from "@web3api/core-js";
+import * as path from "path";
 
 interface PolywrapPackage {
   uri: string;
@@ -36,16 +36,16 @@ const langSupport: DappLangSupport = {
   }
 };
 
-export const defaultManifest = ["web3api.dapp.yaml", "web3api.dapp.yml"];
+const defaultManifest = ["web3api.dapp.yaml", "web3api.dapp.yml"];
+const defaultOutputDir = "polywrap";
 
 const cmdStr = intlMsg.commands_plugin_options_command();
 const optionsStr = intlMsg.commands_options_options();
-const codegenStr = intlMsg.commands_plugin_options_codegen();
-const codegenExtensionStr = "Generate code for client extension";
+const typesStr = intlMsg.commands_dapp_types();
+const extensionStr = intlMsg.commands_dapp_extension();
 const defaultManifestStr = defaultManifest.join(" | ");
-const defaultOutputTypesStr = "types/";
-const outputDirStr = `${intlMsg.commands_plugins_options_types({
-  default: defaultOutputTypesStr,
+const outputDirStr = `${intlMsg.commands_dapp_options_o({
+  default: `${defaultOutputDir}/`,
 })}`;
 const nodeStr = intlMsg.commands_codegen_options_i_node();
 const pathStr = intlMsg.commands_codegen_options_o_path();
@@ -55,8 +55,8 @@ const HELP = `
 ${chalk.bold("w3 dapp")} ${cmdStr} [${optionsStr}]
 
 Commands:
-  ${chalk.bold("types")}   ${codegenStr}
-  ${chalk.bold("extension")}   ${codegenExtensionStr}
+  ${chalk.bold("types")}       ${typesStr}
+  ${chalk.bold("extension")}   ${extensionStr}
 
 Options:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
@@ -117,14 +117,24 @@ export default {
     }
 
     // Resolve manifest and output directories
-    manifestPath = await resolveManifestPath(filesystem, manifestPath);
+    manifestPath = await resolveManifestPath(filesystem, manifestPath, defaultManifest);
     outputDir =
-      (outputDir && filesystem.resolve(outputDir)) || filesystem.path("dapp");
+      (outputDir && filesystem.resolve(outputDir)) || filesystem.path(defaultOutputDir);
 
     // Dapp project
+    const manifestDir: string = path.dirname(manifestPath);
     const dappManifest: DappManifest = await loadDappManifest(manifestPath, true);
     const lang: string = manifestLanguageToTargetLanguage(dappManifest.language);
     const packages: PolywrapPackage[] = dappManifest.packages;
+
+    // Check for duplicate namespaces
+    const namespacesSinDupes: string[] = packages
+      .map(pack => pack.namespace)
+      .filter((ns, i, arr) => arr.indexOf(ns) === i);
+    if (packages.length !== namespacesSinDupes.length) {
+      print.error(intlMsg.commands_dapp_error_duplicateNs());
+      return;
+    }
 
     // Resolve generation file
     const genFiles: DappGenFiles = langSupport[lang];
@@ -138,11 +148,12 @@ export default {
 
     // Generate code for each Polywrap package
     let result: boolean = true;
-    for (const pack of packages) {
+    for (const { uri, namespace } of packages) {
 
       const project: ExternalWeb3ApiProject = new ExternalWeb3ApiProject({
-        uri: pack.uri,
-        namespace: pack.namespace,
+        rootPath: manifestDir,
+        uri,
+        namespace,
         client
       });
 
@@ -159,14 +170,19 @@ export default {
       });
 
       if (await codeGenerator.generate()) {
-        print.success(`🔥 ${`Generated code for namespace ${pack.namespace}`} 🔥`);
+        print.success(`🔥 ${intlMsg.commands_dapp_namespace_success({
+          command,
+          namespace,
+        })} 🔥`);
       } else {
         result = false;
       }
+
+      project.reset();
     }
 
     if (result) {
-      print.success(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
+      print.success(`🔥 ${intlMsg.commands_dapp_success()} 🔥`);
       process.exitCode = 0;
     } else {
       process.exitCode = 1;

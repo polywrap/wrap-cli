@@ -9,7 +9,8 @@ import { intlMsg } from "../lib/intl";
 
 import chalk from "chalk";
 import axios from "axios";
-import { GluegunToolbox, GluegunFilesystem, GluegunPrint } from "gluegun";
+import { GluegunToolbox, GluegunPrint } from "gluegun";
+import { resolveManifestPath } from "../lib/helpers";
 
 export const defaultManifest = ["web3api.yaml", "web3api.yml"];
 
@@ -69,7 +70,7 @@ export default {
 
     // Resolve generation file & output directories
     const customScript = custom && filesystem.resolve(custom);
-    manifestPath = await resolveManifestPath(filesystem, manifestPath);
+    manifestPath = await resolveManifestPath(filesystem, manifestPath, defaultManifest);
     outputDir = outputDir && filesystem.resolve(outputDir);
 
     const project = new Web3ApiProject({
@@ -178,16 +179,4 @@ export async function getCodegenProviders(
     }
   }
   return { ipfsProvider, ethProvider };
-}
-
-export async function resolveManifestPath(
-  filesystem: GluegunFilesystem,
-  manifestPath: string
-): Promise<string> {
-  return (
-    (manifestPath && filesystem.resolve(manifestPath)) ||
-    ((await filesystem.existsAsync(defaultManifest[0]))
-      ? filesystem.resolve(defaultManifest[0])
-      : filesystem.resolve(defaultManifest[1]))
-  );
 }

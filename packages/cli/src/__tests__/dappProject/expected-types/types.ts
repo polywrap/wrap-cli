@@ -128,4 +128,11 @@ export interface Ethereum_EventNotification {
   log: Ethereum_Log;
 }
 
+/* URI: "w3://ens/ethereum.web3api.eth" */
+export interface Ethereum_Network {
+  name: String;
+  chainId: Int;
+  ensAddress?: String | null;
+}
+
 /// Imported Objects END ///

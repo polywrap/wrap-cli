@@ -3,3 +3,5 @@ language: dapp/typescript
 packages:
   - uri: "w3://fs/./../project/build"
     namespace: "project"
+  - uri: "w3://ens/ethereum.web3api.eth"
+    namespace: "ethereum"
