@@ -42,7 +42,6 @@ export class PluginProject extends Project {
     const namedPaths: { [name: string]: string } = {};
 
     namedPaths["combined"] = path.join(dir, manifest.schema);
-    loadPluginManifest;
     return namedPaths;
   }
 
