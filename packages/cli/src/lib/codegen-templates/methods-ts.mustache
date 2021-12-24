@@ -40,13 +40,13 @@ import * as Inputs from "./inputs"
 import { Client, Uri, ExtensionInvocation, Extension, ExtensionFactory, ExtensionConfig, InvokeApiOptions } from "@web3api/core-js";
 
 // Config must extend ExtensionConfig
-export interface MyExtensionConfig<TUri extends Uri | string = string> extends ExtensionConfig<TUri> {
+export interface {{#title}}{{namespace}}{{/title}}ExtensionConfig<TUri extends Uri | string = string> extends ExtensionConfig<TUri> {
   uri: TUri;
 }
 
-class MyExtension extends Extension {
+class {{#title}}{{namespace}}{{/title}}Extension extends Extension {
 
-  constructor(client: Client, config: MyExtensionConfig) {
+  constructor(client: Client, config: {{#title}}{{namespace}}{{/title}}ExtensionConfig) {
     super(client, config);
   }
 
@@ -72,11 +72,11 @@ class MyExtension extends Extension {
 {{/queryTypes}}
 }
 
-export const myExtension: ExtensionFactory<MyExtensionConfig> = (
+export const {{#lowerFirst}}{{namespace}}{{/lowerFirst}}Extension: ExtensionFactory<{{#title}}{{namespace}}{{/title}}ExtensionConfig> = (
   client: Client,
-  opts: MyExtensionConfig
+  opts: {{#title}}{{namespace}}{{/title}}ExtensionConfig
 ) => {
   return {
-    factory: () => new MyExtension(client, opts),
+    factory: () => new {{#title}}{{namespace}}{{/title}}Extension(client, opts),
   };
 };

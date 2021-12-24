@@ -32,6 +32,7 @@ export interface CodeGeneratorConfig {
   project: Project;
   schemaComposer: SchemaComposer;
   customScript?: string;
+  mustacheView?: Record<string, unknown>;
 }
 
 export class CodeGenerator {
@@ -163,6 +164,7 @@ export class CodeGenerator {
     let content = Mustache.render(template.toString(), {
       ...types,
       schema: this._schema,
+      ...this._config.mustacheView,
     });
 
     content = `// ${intlMsg.lib_codeGenerator_templateNoModify()}

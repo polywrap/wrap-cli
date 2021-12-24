@@ -166,7 +166,8 @@ export default {
         project,
         schemaComposer,
         customScript,
-        outputDir,
+        outputDir: path.join(outputDir, namespace),
+        mustacheView: { namespace },
       });
 
       if (await codeGenerator.generate()) {
