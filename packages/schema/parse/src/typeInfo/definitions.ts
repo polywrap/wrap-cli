@@ -488,8 +488,7 @@ export function createImportedObjectDefinition(args: {
   };
 }
 
-export interface EnvDefinition
-  extends WithKind {
+export interface EnvDefinition extends WithKind {
   sanitized?: ObjectDefinition;
   client?: ObjectDefinition;
 }

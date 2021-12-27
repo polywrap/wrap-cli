@@ -161,7 +161,8 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
     }
 
     if (typeInfo.envTypes.mutation.sanitized) {
-      combined.envTypes.mutation.sanitized = typeInfo.envTypes.mutation.sanitized;
+      combined.envTypes.mutation.sanitized =
+        typeInfo.envTypes.mutation.sanitized;
     }
   }
 

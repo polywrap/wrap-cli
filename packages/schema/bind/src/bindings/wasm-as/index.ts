@@ -129,12 +129,13 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
 
   // Generate env type folders
   const generateEnvTypeFolder = (def: ObjectDefinition | undefined) => {
-    def && entries.push({
-      type: "Directory",
-      name: def.type,
-      data: generateFiles("./templates/object-type", def, subTemplates)
-    });
-  }
+    def &&
+      entries.push({
+        type: "Directory",
+        name: def.type,
+        data: generateFiles("./templates/object-type", def, subTemplates),
+      });
+  };
   generateEnvTypeFolder(typeInfo.envTypes.query.client);
   generateEnvTypeFolder(typeInfo.envTypes.query.sanitized);
   generateEnvTypeFolder(typeInfo.envTypes.mutation.client);

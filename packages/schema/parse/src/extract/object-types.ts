@@ -4,7 +4,7 @@ import {
   createObjectDefinition,
   createInterfaceImplementedDefinition,
   isQueryType,
-  isEnvType
+  isEnvType,
 } from "../typeInfo";
 import {
   extractFieldDefinition,

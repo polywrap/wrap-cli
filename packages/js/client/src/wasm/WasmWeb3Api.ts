@@ -161,10 +161,7 @@ export class WasmWeb3Api extends Api {
       const { module: invokableModule, method, noDecode } = options;
       const input = options.input || {};
       const wasm = await this._getWasmModule(invokableModule, client);
-      const clientEnv = this.getModuleEnv(
-        invokableModule,
-        this._clientEnv
-      );
+      const clientEnv = this.getModuleEnv(invokableModule, this._clientEnv);
       const sanitizedEnv = this._sanitizedEnv[invokableModule];
       const env = sanitizedEnv
         ? sanitizedEnv
@@ -317,9 +314,7 @@ export class WasmWeb3Api extends Api {
       return {};
     }
 
-    const commonEnv: Record<string, unknown> = env.common
-      ? env.common
-      : {};
+    const commonEnv: Record<string, unknown> = env.common ? env.common : {};
 
     if (module === "query") {
       return {

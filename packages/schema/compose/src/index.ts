@@ -1,8 +1,5 @@
 import { SchemaFile, SchemaResolvers } from "./types";
-import {
-  resolveEnvTypes,
-  resolveImportsAndParseSchemas,
-} from "./resolve";
+import { resolveEnvTypes, resolveImportsAndParseSchemas } from "./resolve";
 import { renderSchema } from "./render";
 
 import { TypeInfo, combineTypeInfo } from "@web3api/schema-parse";

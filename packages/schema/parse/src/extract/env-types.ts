@@ -33,7 +33,9 @@ const visitorEnter = (
 
     if (isEnvType(typeName)) {
       const type = createObjectDefinition({ type: typeName });
-      const envType = typeName.includes("Query") ? envTypes.query : envTypes.mutation;
+      const envType = typeName.includes("Query")
+        ? envTypes.query
+        : envTypes.mutation;
 
       if (isClientEnvType(typeName)) {
         envType.client = type;

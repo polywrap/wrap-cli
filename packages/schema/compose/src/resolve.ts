@@ -1028,10 +1028,7 @@ async function resolveLocalImports(
   }
 }
 
-export function resolveEnvTypes(
-  typeInfo: TypeInfo,
-  mutation: boolean
-): void {
+export function resolveEnvTypes(typeInfo: TypeInfo, mutation: boolean): void {
   const genericEnvType = typeInfo.objectTypes.find(
     (type) => type.type === "Env"
   );
@@ -1045,7 +1042,7 @@ export function resolveEnvTypes(
 
   if (!specificEnvType.sanitized) {
     specificEnvType.sanitized = createObjectDefinition({
-      type: mutation ? envTypes.MutationEnv : envTypes.QueryEnv
+      type: mutation ? envTypes.MutationEnv : envTypes.QueryEnv,
     });
   }
 
@@ -1053,7 +1050,10 @@ export function resolveEnvTypes(
     return type.type !== genericEnvType.type;
   });
 
-  checkDuplicateEnvProperties(specificEnvType.sanitized, genericEnvType.properties);
+  checkDuplicateEnvProperties(
+    specificEnvType.sanitized,
+    genericEnvType.properties
+  );
   specificEnvType.sanitized.properties.push(...genericEnvType.properties);
 }
 

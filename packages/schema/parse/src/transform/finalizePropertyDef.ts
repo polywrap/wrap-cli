@@ -113,15 +113,15 @@ function resolveObjectOrEnumKind(
   const envTypes = typeInfo.envTypes;
   customType = customType
     ? customType
-    : (envTypes.mutation.client?.type === unresolved.type ? envTypes.mutation.client
-      : (envTypes.query.client?.type === unresolved.type ? envTypes.query.client
-        : (envTypes.mutation.sanitized?.type === unresolved.type ? envTypes.mutation.sanitized
-          : (envTypes.query.sanitized?.type === unresolved.type ? envTypes.query.sanitized
-            : undefined
-          )
-        )
-      )
-    );
+    : envTypes.mutation.client?.type === unresolved.type
+    ? envTypes.mutation.client
+    : envTypes.query.client?.type === unresolved.type
+    ? envTypes.query.client
+    : envTypes.mutation.sanitized?.type === unresolved.type
+    ? envTypes.mutation.sanitized
+    : envTypes.query.sanitized?.type === unresolved.type
+    ? envTypes.query.sanitized
+    : undefined;
 
   if (!customType) {
     customType = typeInfo.enumTypes.find(
@@ -135,9 +135,7 @@ function resolveObjectOrEnumKind(
         );
 
     if (!customType) {
-      throw new Error(
-        `Unsupported type ${unresolved.type}`
-      );
+      throw new Error(`Unsupported type ${unresolved.type}`);
     }
 
     property.enum = createEnumRef({

@@ -78,9 +78,7 @@ export class Web3ApiClient implements Client {
           redirects: config.redirects
             ? sanitizeUriRedirects(config.redirects)
             : [],
-          envs: config.envs
-            ? sanitizeEnvs(config.envs)
-            : [],
+          envs: config.envs ? sanitizeEnvs(config.envs) : [],
           plugins: config.plugins
             ? sanitizePluginRegistrations(config.plugins)
             : [],
@@ -137,9 +135,7 @@ export class Web3ApiClient implements Client {
   }
 
   @Tracer.traceMethod("Web3ApiClient: getEnvs")
-  public getEnvs(
-    options: GetEnvsOptions = {}
-  ): readonly Env<Uri>[] {
+  public getEnvs(options: GetEnvsOptions = {}): readonly Env<Uri>[] {
     return this._getConfig(options.contextId).envs;
   }
 
@@ -150,8 +146,8 @@ export class Web3ApiClient implements Client {
   ): Env<Uri> | undefined {
     const uriUri = this._toUri(uri);
 
-    return this.getEnvs(options).find(
-      (environment) => Uri.equals(environment.uri, uriUri)
+    return this.getEnvs(options).find((environment) =>
+      Uri.equals(environment.uri, uriUri)
     );
   }
 
@@ -516,9 +512,7 @@ export class Web3ApiClient implements Client {
       interfaces: context?.interfaces
         ? sanitizeInterfaceImplementations(context.interfaces)
         : config.interfaces,
-      envs: context?.envs
-        ? sanitizeEnvs(context.envs)
-        : config.envs,
+      envs: context?.envs ? sanitizeEnvs(context.envs) : config.envs,
       tracingEnabled: context?.tracingEnabled || config.tracingEnabled,
     });
 
