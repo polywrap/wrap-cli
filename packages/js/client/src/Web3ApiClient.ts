@@ -17,7 +17,7 @@ import {
   InterfaceImplementations,
   PluginRegistration,
   Web3ApiManifest,
-  Environment,
+  Env,
   Subscription,
   SubscribeOptions,
   parseQuery,
@@ -27,7 +27,7 @@ import {
   GetRedirectsOptions,
   GetPluginsOptions,
   GetInterfacesOptions,
-  GetEnvironmentsOptions,
+  GetEnvsOptions,
   GetSchemaOptions,
   GetManifestOptions,
   GetFileOptions,
@@ -37,7 +37,7 @@ import {
   sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
   sanitizeUriRedirects,
-  sanitizeEnvironments,
+  sanitizeEnvs,
   ClientConfig,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
@@ -57,7 +57,7 @@ export class Web3ApiClient implements Client {
     redirects: [],
     plugins: [],
     interfaces: [],
-    environments: [],
+    envs: [],
     tracingEnabled: false,
   };
 
@@ -78,8 +78,8 @@ export class Web3ApiClient implements Client {
           redirects: config.redirects
             ? sanitizeUriRedirects(config.redirects)
             : [],
-          environments: config.environments
-            ? sanitizeEnvironments(config.environments)
+          envs: config.envs
+            ? sanitizeEnvs(config.envs)
             : [],
           plugins: config.plugins
             ? sanitizePluginRegistrations(config.plugins)
@@ -136,21 +136,21 @@ export class Web3ApiClient implements Client {
     return this._getConfig(options.contextId).interfaces;
   }
 
-  @Tracer.traceMethod("Web3ApiClient: getEnvironments")
-  public getEnvironments(
-    options: GetEnvironmentsOptions = {}
-  ): readonly Environment<Uri>[] {
-    return this._getConfig(options.contextId).environments;
+  @Tracer.traceMethod("Web3ApiClient: getEnvs")
+  public getEnvs(
+    options: GetEnvsOptions = {}
+  ): readonly Env<Uri>[] {
+    return this._getConfig(options.contextId).envs;
   }
 
-  @Tracer.traceMethod("Web3ApiClient: getEnvironmentByUri")
-  public getEnvironmentByUri<TUri extends Uri | string>(
+  @Tracer.traceMethod("Web3ApiClient: getEnvByUri")
+  public getEnvByUri<TUri extends Uri | string>(
     uri: TUri,
-    options: GetEnvironmentsOptions
-  ): Environment<Uri> | undefined {
+    options: GetEnvsOptions
+  ): Env<Uri> | undefined {
     const uriUri = this._toUri(uri);
 
-    return this.getEnvironments(options).find(
+    return this.getEnvs(options).find(
       (environment) => Uri.equals(environment.uri, uriUri)
     );
   }
@@ -516,9 +516,9 @@ export class Web3ApiClient implements Client {
       interfaces: context?.interfaces
         ? sanitizeInterfaceImplementations(context.interfaces)
         : config.interfaces,
-      environments: context?.environments
-        ? sanitizeEnvironments(context.environments)
-        : config.environments,
+      envs: context?.envs
+        ? sanitizeEnvs(context.envs)
+        : config.envs,
       tracingEnabled: context?.tracingEnabled || config.tracingEnabled,
     });
 
@@ -546,7 +546,7 @@ export class Web3ApiClient implements Client {
     if (!api) {
       const client = contextualizeClient(this, contextId);
       const config = this._getConfig(contextId);
-      const environment = this.getEnvironmentByUri(typedUri, { contextId });
+      const environment = this.getEnvByUri(typedUri, { contextId });
       api = await resolveUri(
         typedUri,
         config.redirects,
@@ -612,14 +612,14 @@ const contextualizeClient = (
         getInterfaces: (options: GetInterfacesOptions = {}) => {
           return client.getInterfaces({ ...options, contextId });
         },
-        getEnvironments: (options: GetEnvironmentsOptions = {}) => {
-          return client.getEnvironments({ ...options, contextId });
+        getEnvs: (options: GetEnvsOptions = {}) => {
+          return client.getEnvs({ ...options, contextId });
         },
-        getEnvironmentByUri: <TUri extends Uri | string>(
+        getEnvByUri: <TUri extends Uri | string>(
           uri: TUri,
-          options: GetEnvironmentsOptions = {}
+          options: GetEnvsOptions = {}
         ) => {
-          return client.getEnvironmentByUri(uri, { ...options, contextId });
+          return client.getEnvByUri(uri, { ...options, contextId });
         },
         getSchema: <TUri extends Uri | string>(
           uri: TUri,

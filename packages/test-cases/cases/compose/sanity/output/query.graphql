@@ -80,6 +80,11 @@ type Query implements Interface_Query @imports(
   ): Interface_InterfaceObject2!
 }
 
+type QueryEnv {
+  bar: Bytes
+  foo: String!
+}
+
 """
 CustomQueryType comment
 """
@@ -105,11 +110,6 @@ type CustomQueryType {
 
 type AnotherQueryType {
   prop: String
-}
-
-type QueryEnv {
-  bar: Bytes
-  foo: String!
 }
 
 """

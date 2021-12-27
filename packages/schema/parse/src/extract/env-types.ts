@@ -1,14 +1,14 @@
 import {
   TypeInfo,
   createObjectDefinition,
-  Environment,
-  EnvironmentType,
+  EnvDefinition,
+  isEnvType,
+  isClientEnvType,
 } from "../typeInfo";
 import {
   extractFieldDefinition,
   extractListType,
   extractNamedType,
-  isEnviromentType,
   State,
 } from "./object-types-utils";
 
@@ -22,26 +22,23 @@ import {
 } from "graphql";
 
 const visitorEnter = (
-  environment: {
-    mutation: Environment;
-    query: Environment;
+  envTypes: {
+    query: EnvDefinition;
+    mutation: EnvDefinition;
   },
   state: State
 ) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
-    if (isEnviromentType(node.name.value)) {
-      const type = createObjectDefinition({ type: node.name.value });
+    const typeName = node.name.value;
 
-      if (node.name.value.includes(EnvironmentType.QueryClientEnvType)) {
-        environment.query.client = type;
-      } else if (node.name.value.includes(EnvironmentType.QueryEnvType)) {
-        environment.query.sanitized = type;
-      } else if (
-        node.name.value.includes(EnvironmentType.MutationClientEnvType)
-      ) {
-        environment.mutation.client = type;
+    if (isEnvType(typeName)) {
+      const type = createObjectDefinition({ type: typeName });
+      const envType = typeName.includes("Query") ? envTypes.query : envTypes.mutation;
+
+      if (isClientEnvType(typeName)) {
+        envType.client = type;
       } else {
-        environment.mutation.sanitized = type;
+        envType.sanitized = type;
       }
 
       state.currentType = type;
@@ -73,11 +70,11 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export function getEnvironmentTypesVisitor(typeInfo: TypeInfo): ASTVisitor {
+export function getEnvVisitor(typeInfo: TypeInfo): ASTVisitor {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo.environment, state),
+    enter: visitorEnter(typeInfo.envTypes, state),
     leave: visitorLeave(state),
   };
 }

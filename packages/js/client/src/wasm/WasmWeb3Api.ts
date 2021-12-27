@@ -17,7 +17,7 @@ import {
   AnyManifest,
   ManifestType,
   combinePaths,
-  Environment,
+  Env,
   UriResolver,
   GetFileOptions,
 } from "@web3api/core-js";
@@ -43,7 +43,7 @@ export interface State {
   };
   invokeResult: InvokeResult;
   getImplementationsResult?: ArrayBuffer;
-  environment: ArrayBuffer;
+  env: ArrayBuffer;
 }
 
 export class WasmWeb3Api extends Api {
@@ -56,7 +56,7 @@ export class WasmWeb3Api extends Api {
     mutation: undefined,
   };
 
-  private _sanitizedEnviroment: Record<InvokableModules, ArrayBuffer | undefined> = {
+  private _sanitizedEnv: Record<InvokableModules, ArrayBuffer | undefined> = {
     query: undefined,
     mutation: undefined,
   };
@@ -65,7 +65,7 @@ export class WasmWeb3Api extends Api {
     private _uri: Uri,
     private _manifest: Web3ApiManifest,
     private _uriResolver: Uri,
-    private _clientEnvironment?: Environment<Uri>
+    private _clientEnv?: Env<Uri>
   ) {
     super();
 
@@ -73,7 +73,7 @@ export class WasmWeb3Api extends Api {
     Tracer.setAttribute("input", {
       uri: this._uri,
       manifest: this._manifest,
-      clientEnvironment: this._clientEnvironment,
+      clientEnv: this._clientEnv,
       uriResolver: this._uriResolver,
     });
     Tracer.endSpan();
@@ -161,17 +161,17 @@ export class WasmWeb3Api extends Api {
       const { module: invokableModule, method, noDecode } = options;
       const input = options.input || {};
       const wasm = await this._getWasmModule(invokableModule, client);
-      const clientEnvironment = this.getModuleEnvironment(
+      const clientEnv = this.getModuleEnv(
         invokableModule,
-        this._clientEnvironment
+        this._clientEnv
       );
-      const sanitizedEnvironment = this._sanitizedEnviroment[invokableModule];
-      const environment = sanitizedEnvironment
-        ? sanitizedEnvironment
-        : MsgPack.encode(clientEnvironment, {
+      const sanitizedEnv = this._sanitizedEnv[invokableModule];
+      const env = sanitizedEnv
+        ? sanitizedEnv
+        : MsgPack.encode(clientEnv, {
             ignoreUndefined: true,
           });
-      this._sanitizedEnviroment[invokableModule] = environment;
+      this._sanitizedEnv[invokableModule] = env;
       const state: State = {
         invoke: {},
         subinvoke: {
@@ -179,7 +179,7 @@ export class WasmWeb3Api extends Api {
         },
         invokeResult: {} as InvokeResult,
         method,
-        environment,
+        env,
         args:
           input instanceof ArrayBuffer
             ? input
@@ -209,7 +209,7 @@ export class WasmWeb3Api extends Api {
       const exports = instance.exports as W3Exports;
 
       if (exports["_w3_load_env"]) {
-        await exports._w3_load_env(state.environment.byteLength);
+        await exports._w3_load_env(state.env.byteLength);
       }
 
       const result = await exports._w3_invoke(
@@ -309,27 +309,27 @@ export class WasmWeb3Api extends Api {
     }
   }
 
-  private getModuleEnvironment(
+  private getModuleEnv(
     module: InvokableModules,
-    environment?: Environment<Uri>
+    env?: Env<Uri>
   ): Record<string, unknown> {
-    if (!environment) {
+    if (!env) {
       return {};
     }
 
-    const env: Record<string, unknown> = environment.common
-      ? environment.common
+    const commonEnv: Record<string, unknown> = env.common
+      ? env.common
       : {};
 
     if (module === "query") {
       return {
-        ...env,
-        ...environment.query,
+        ...commonEnv,
+        ...env.query,
       };
     } else {
       return {
-        ...env,
-        ...environment.mutation,
+        ...commonEnv,
+        ...env.mutation,
       };
     }
   }

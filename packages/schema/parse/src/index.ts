@@ -3,7 +3,7 @@ import { extractors, SchemaExtractorBuilder } from "./extract";
 import { TypeInfoTransforms, transformTypeInfo } from "./transform";
 import { finalizePropertyDef } from "./transform/finalizePropertyDef";
 import { validators } from "./validate";
-import { validateEnvironment } from "./validate/environment";
+import { validateEnv } from "./validate/env";
 import { SchemaValidatorBuilder } from "./validate";
 
 import { DocumentNode, parse, visit, visitInParallel } from "graphql";
@@ -46,7 +46,7 @@ export function parseSchema(
     }
   }
 
-  validateEnvironment(info);
+  validateEnv(info);
 
   return info;
 }

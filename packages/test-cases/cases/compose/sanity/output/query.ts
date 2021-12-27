@@ -7,19 +7,22 @@ import {
   createArrayDefinition,
   createObjectPropertyDefinition,
   createObjectDefinition,
-  TypeInfo,
   createEnumPropertyDefinition,
   createImportedQueryDefinition,
   createImportedObjectDefinition,
   createImportedEnumDefinition,
-  AnyDefinition
   createInterfaceImplementedDefinition,
   createObjectRef,
   createInterfaceDefinition,
-  createCapability
+  createCapability,
+  createEnvDefinition,
+  createTypeInfo,
+  AnyDefinition,
+  TypeInfo,
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
+  ...createTypeInfo(),
   interfaceTypes: [
     createInterfaceDefinition({
       type: "Namespace",
@@ -32,20 +35,25 @@ export const typeInfo: TypeInfo = {
       }),
     })
   ],
-  environment: {
-    query: {
+  envTypes: {
+    query: createEnvDefinition({
       sanitized: {
         ...createObjectDefinition({ type: "QueryEnv" }),
         properties: [
           {
             ...createScalarPropertyDefinition({ name: "bar", type: "Bytes", required: false }),
             first: true,
-            last: true
-          } as AnyDefinition
+            last: null,
+          } as AnyDefinition,
+          {
+            ...createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
+            first: null,
+            last: true,
+          } as AnyDefinition,
         ],
       }
-    },
-    mutation: {},
+    }),
+    mutation: createEnvDefinition({}),
   },
   objectTypes: [
     {
@@ -114,13 +122,6 @@ export const typeInfo: TypeInfo = {
     {
       ...createObjectDefinition({ type: "AnotherQueryType" }),
       properties: [createScalarPropertyDefinition({ name: "prop", type: "String" })],
-    },
-    {
-      ...createObjectDefinition({ type: "QueryEnv" }),
-      properties: [
-        createScalarPropertyDefinition({ name: "bar", type: "Bytes", required: false }),
-        createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
-      ],
     },
     {
       ...createObjectDefinition({ type: "CommonType", comment: "CommonType comment" }),

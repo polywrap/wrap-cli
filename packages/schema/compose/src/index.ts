@@ -1,6 +1,6 @@
 import { SchemaFile, SchemaResolvers } from "./types";
 import {
-  resolveEnviromentTypes,
+  resolveEnvTypes,
   resolveImportsAndParseSchemas,
 } from "./resolve";
 import { renderSchema } from "./render";
@@ -54,7 +54,7 @@ export async function composeSchema(
       name === "mutation",
       resolvers
     );
-    resolveEnviromentTypes(typeInfos[name], name === "mutation");
+    resolveEnvTypes(typeInfos[name], name === "mutation");
   }
 
   // Forming our output structure for the caller

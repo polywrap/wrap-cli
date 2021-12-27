@@ -14,22 +14,22 @@ import {
 } from "./{{type}}/wrapped";
 {{/methods.length}}
 {{/queryTypes}}
-{{#environment.query.sanitized}}
+{{#envTypes.query.sanitized}}
 import {
   env
-} from "./environment";
+} from "./env";
 import {
   QueryEnv
 } from "./QueryEnv";
-{{/environment.query.sanitized}}
-{{#environment.mutation.sanitized}}
+{{/envTypes.query.sanitized}}
+{{#envTypes.mutation.sanitized}}
 import {
   env
-} from "./environment";
+} from "./env";
 import {
   MutationEnv
 } from "./MutationEnv";
-{{/environment.mutation.sanitized}}
+{{/envTypes.mutation.sanitized}}
 
 export function _w3_invoke(method_size: u32, args_size: u32): bool {
   const args: InvokeArgs = w3_invoke_args(
@@ -49,18 +49,18 @@ export function _w3_invoke(method_size: u32, args_size: u32): bool {
   }
 }
 
-{{#environment.query.sanitized}}
-export function _w3_load_env(environment_size: u32): void {
-  const environmentBuf = w3_load_env(environment_size);
-  env = QueryEnv.fromBuffer(environmentBuf);
+{{#envTypes.query.sanitized}}
+export function _w3_load_env(env_size: u32): void {
+  const envBuf = w3_load_env(env_size);
+  env = QueryEnv.fromBuffer(envBuf);
 }
-{{/environment.query.sanitized}}
-{{#environment.mutation.sanitized}}
-export function _w3_load_env(environment_size: u32): void {
-  const environmentBuf = w3_load_env(environment_size);
-  env = MutationEnv.fromBuffer(environmentBuf);
+{{/envTypes.query.sanitized}}
+{{#envTypes.mutation.sanitized}}
+export function _w3_load_env(env_size: u32): void {
+  const envBuf = w3_load_env(env_size);
+  env = MutationEnv.fromBuffer(envBuf);
 }
-{{/environment.mutation.sanitized}}
+{{/envTypes.mutation.sanitized}}
 
 export function w3Abort(
   msg: string | null,

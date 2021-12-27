@@ -2,17 +2,15 @@ import {
   createMethodDefinition,
   createQueryDefinition,
   createObjectDefinition,
-  TypeInfo,
   createObjectPropertyDefinition,
   createScalarPropertyDefinition,
   createInterfaceImplementedDefinition,
+  createTypeInfo,
+  TypeInfo,
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
-  environment: {
-    query: {},
-    mutation: {},
-  },
+  ...createTypeInfo(),
   objectTypes: [
     {
       ...createObjectDefinition({ type: "BaseType1" }),
@@ -113,9 +111,4 @@ export const typeInfo: TypeInfo = {
       ],
     },
   ],
-  enumTypes: [],
-  importedObjectTypes: [],
-  importedQueryTypes: [],
-  importedEnumTypes: [],
-  interfaceTypes: [],
 };

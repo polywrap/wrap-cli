@@ -9,20 +9,14 @@ import {
   createObjectPropertyDefinition,
   createObjectDefinition,
   createEnumDefinition,
-  TypeInfo,
   createEnumPropertyDefinition,
-  createObjectRef
+  createObjectRef,
+  createTypeInfo,
+  TypeInfo,
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
-  environment: {
-    query: {},
-    mutation: {},
-  },
-  interfaceTypes: [],
-  importedObjectTypes: [],
-  importedEnumTypes: [],
-  importedQueryTypes: [],
+  ...createTypeInfo(),
   queryTypes: [
     {
       ...createQueryDefinition({ type: "Query" }),

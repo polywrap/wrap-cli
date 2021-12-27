@@ -140,8 +140,8 @@ export const createImports = (config: {
         writeBytes(state.getImplementationsResult, memory.buffer, ptr);
       },
       __w3_load_env: (ptr: u32): void => {
-        if (state.environment) {
-          writeBytes(state.environment, memory.buffer, ptr);
+        if (state.env) {
+          writeBytes(state.env, memory.buffer, ptr);
         }
       },
       __w3_abort: (

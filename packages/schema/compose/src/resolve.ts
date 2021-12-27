@@ -34,7 +34,6 @@ import {
   isKind,
   header,
   AnyDefinition,
-  EnvironmentType,
   InterfaceImplementedDefinition,
   ObjectRef,
   EnumRef,
@@ -46,6 +45,9 @@ import {
   createCapability,
   QueryModuleCapability,
   QueryModuleCapabilityMap,
+  createEnvDefinition,
+  createObjectDefinition,
+  envTypes,
 } from "@web3api/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -167,9 +169,9 @@ export async function resolveImportsAndParseSchemas(
     importedEnumTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
-    environment: {
-      mutation: {},
-      query: {},
+    envTypes: {
+      mutation: createEnvDefinition({}),
+      query: createEnvDefinition({}),
     },
   };
 
@@ -1026,7 +1028,7 @@ async function resolveLocalImports(
   }
 }
 
-export function resolveEnviromentTypes(
+export function resolveEnvTypes(
   typeInfo: TypeInfo,
   mutation: boolean
 ): void {
@@ -1036,24 +1038,23 @@ export function resolveEnviromentTypes(
   if (!genericEnvType) {
     return;
   }
-  const envTypeName = mutation
-    ? EnvironmentType.MutationEnvType
-    : EnvironmentType.QueryEnvType;
-  const specificEnvType = typeInfo.objectTypes.find(
-    (type) => type.type === envTypeName
-  );
 
-  if (!specificEnvType) {
-    genericEnvType.type = envTypeName;
-    return;
+  const specificEnvType = mutation
+    ? typeInfo.envTypes.mutation
+    : typeInfo.envTypes.query;
+
+  if (!specificEnvType.sanitized) {
+    specificEnvType.sanitized = createObjectDefinition({
+      type: mutation ? envTypes.MutationEnv : envTypes.QueryEnv
+    });
   }
 
   typeInfo.objectTypes = typeInfo.objectTypes.filter((type) => {
     return type.type !== genericEnvType.type;
   });
 
-  checkDuplicateEnvProperties(specificEnvType, genericEnvType.properties);
-  specificEnvType.properties.push(...genericEnvType.properties);
+  checkDuplicateEnvProperties(specificEnvType.sanitized, genericEnvType.properties);
+  specificEnvType.sanitized.properties.push(...genericEnvType.properties);
 }
 
 export function checkDuplicateEnvProperties(

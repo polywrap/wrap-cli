@@ -1,6 +1,7 @@
 import {
   w3_invoke_args,
   w3_invoke,
+  w3_load_env,
   w3_abort,
   InvokeArgs
 } from "@web3api/wasm-as";
@@ -10,7 +11,7 @@ import {
 } from "./Mutation/wrapped";
 import {
   env
-} from "./environment";
+} from "./env";
 import {
   MutationEnv
 } from "./MutationEnv";
@@ -32,14 +33,9 @@ export function _w3_invoke(method_size: u32, args_size: u32): bool {
   }
 }
 
-@external("w3", "__w3_load_env")
-export declare function __w3_load_env(enviroment_ptr: u32): void;
-
-export function _w3_load_env(environment_size: u32): void {
-  const environmentBuf = new ArrayBuffer(environment_size);
-  __w3_load_env(changetype<u32>(environmentBuf));
-
-  env = MutationEnv.fromBuffer(environmentBuf);
+export function _w3_load_env(env_size: u32): void {
+  const envBuf = w3_load_env(env_size);
+  env = MutationEnv.fromBuffer(envBuf);
 }
 
 export function w3Abort(

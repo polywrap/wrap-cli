@@ -1818,16 +1818,16 @@ describe("Web3ApiClient", () => {
     );
   });
 
-  it.only("environment types", async () => {
+  it("env types", async () => {
     const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/environment-types`,
+      `${GetPathToTestApis()}/env-types`,
       ipfsProvider,
       ensAddress
     );
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient({
-      environments: [
+      envs: [
         {
           uri: ensUri,
           common: {
@@ -1855,14 +1855,14 @@ describe("Web3ApiClient", () => {
       uri: ensUri,
       query: `
         query {
-          environment(
+          queryEnv(
             arg: "string"
           )
         }
       `,
     });
     expect(queryEnv.errors).toBeFalsy();
-    expect(queryEnv.data?.environment).toEqual({
+    expect(queryEnv.data?.queryEnv).toEqual({
       str: "string",
       optFilledStr: "optional string",
       optStr: null,
@@ -1884,14 +1884,14 @@ describe("Web3ApiClient", () => {
       uri: ensUri,
       query: `
         mutation {
-          mutEnvironment(
+          mutationEnv(
             arg: "string"
           )
         }
       `,
     });
     expect(mutationEnv.errors).toBeFalsy();
-    expect(mutationEnv.data?.mutEnvironment).toEqual({
+    expect(mutationEnv.data?.mutationEnv).toEqual({
       str: "string",
       optFilledStr: "optional string",
       optStr: null,

@@ -1,23 +1,23 @@
 import { ObjectDefinition, TypeInfo } from "../typeInfo";
 
-export function validateEnvironment(info: TypeInfo): void {
-  if (info.environment.query.client) {
+export function validateEnv(info: TypeInfo): void {
+  if (info.envTypes.query.client) {
     validateClientEnvironment(
       info,
       "Query",
-      info.environment.query.client,
+      info.envTypes.query.client,
       "sanitizeQueryEnv",
-      info.environment.query.sanitized
+      info.envTypes.query.sanitized
     );
   }
 
-  if (info.environment.mutation.client) {
+  if (info.envTypes.mutation.client) {
     validateClientEnvironment(
       info,
       "Mutation",
-      info.environment.mutation.client,
+      info.envTypes.mutation.client,
       "sanitizeMutationEnv",
-      info.environment.mutation.sanitized
+      info.envTypes.mutation.sanitized
     );
   }
 }
