@@ -5,5 +5,5 @@ import {
 } from "./w3";
 
 export function mutEnvironment(input: Input_mutEnvironment): MutationEnv {
-  return env as MutationEnv
+  return env as MutationEnv;
 }

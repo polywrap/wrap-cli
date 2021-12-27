@@ -59,6 +59,11 @@ export interface Client
 
   getEnvironments(options: GetEnvironmentsOptions): readonly Environment<Uri>[];
 
+  getEnvironmentByUri<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetEnvironmentsOptions
+  ): Environment<Uri> | undefined;
+
   getSchema<TUri extends Uri | string>(
     uri: TUri,
     options: GetSchemaOptions
@@ -78,9 +83,4 @@ export interface Client
     uri: TUri,
     options: GetImplementationsOptions
   ): TUri[];
-
-  getEnvironmentByUri<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetEnvironmentsOptions
-  ): Environment<TUri> | undefined;
 }

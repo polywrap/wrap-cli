@@ -17,8 +17,6 @@ import {
   InterfaceImplementations,
   PluginRegistration,
   Web3ApiManifest,
-  sanitizeUriRedirects,
-  sanitizeEnvironments,
   Environment,
   Subscription,
   SubscribeOptions,
@@ -38,6 +36,8 @@ import {
   getImplementations,
   sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
+  sanitizeUriRedirects,
+  sanitizeEnvironments,
   ClientConfig,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
@@ -115,15 +115,6 @@ export class Web3ApiClient implements Client {
     this._config.tracingEnabled = enable;
   }
 
-  public getEnvironmentByUri<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetEnvironmentsOptions
-  ): Environment<TUri> | undefined {
-    return this.getEnvironments(options).find(
-      (environment) => environment.uri.uri === this._toUri(uri).uri
-    ) as Environment<TUri> | undefined;
-  }
-
   @Tracer.traceMethod("Web3ApiClient: getRedirects")
   public getRedirects(
     options: GetRedirectsOptions = {}
@@ -150,6 +141,18 @@ export class Web3ApiClient implements Client {
     options: GetEnvironmentsOptions = {}
   ): readonly Environment<Uri>[] {
     return this._getConfig(options.contextId).environments;
+  }
+
+  @Tracer.traceMethod("Web3ApiClient: getEnvironmentByUri")
+  public getEnvironmentByUri<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetEnvironmentsOptions
+  ): Environment<Uri> | undefined {
+    const uriUri = this._toUri(uri);
+
+    return this.getEnvironments(options).find(
+      (environment) => Uri.equals(environment.uri, uriUri)
+    );
   }
 
   @Tracer.traceMethod("Web3ApiClient: getSchema")
@@ -612,6 +615,12 @@ const contextualizeClient = (
         getEnvironments: (options: GetEnvironmentsOptions = {}) => {
           return client.getEnvironments({ ...options, contextId });
         },
+        getEnvironmentByUri: <TUri extends Uri | string>(
+          uri: TUri,
+          options: GetEnvironmentsOptions = {}
+        ) => {
+          return client.getEnvironmentByUri(uri, { ...options, contextId });
+        },
         getSchema: <TUri extends Uri | string>(
           uri: TUri,
           options: GetSchemaOptions = {}
@@ -638,12 +647,6 @@ const contextualizeClient = (
           options: GetImplementationsOptions = {}
         ) => {
           return client.getImplementations(uri, { ...options, contextId });
-        },
-        getEnvironmentByUri: <TUri extends Uri | string>(
-          uri: TUri,
-          options: GetEnvironmentsOptions = {}
-        ) => {
-          return client.getEnvironmentByUri(uri, { ...options, contextId });
         },
       }
     : client;

@@ -51,12 +51,15 @@ export class WasmWeb3Api extends Api {
 
   private _schema?: string;
 
-  private _wasm: {
-    query?: ArrayBuffer;
-    mutation?: ArrayBuffer;
-  } = {};
+  private _wasm: Record<InvokableModules, ArrayBuffer | undefined> = {
+    query: undefined,
+    mutation: undefined,
+  };
 
-  private _sanitizedEnviroment?: ArrayBuffer;
+  private _sanitizedEnviroment: Record<InvokableModules, ArrayBuffer | undefined> = {
+    query: undefined,
+    mutation: undefined,
+  };
 
   constructor(
     private _uri: Uri,
@@ -70,7 +73,7 @@ export class WasmWeb3Api extends Api {
     Tracer.setAttribute("input", {
       uri: this._uri,
       manifest: this._manifest,
-      clientEnviroment: this._clientEnvironment,
+      clientEnvironment: this._clientEnvironment,
       uriResolver: this._uriResolver,
     });
     Tracer.endSpan();
@@ -162,12 +165,13 @@ export class WasmWeb3Api extends Api {
         invokableModule,
         this._clientEnvironment
       );
-      const sanitizedEnvironment = this._sanitizedEnviroment;
+      const sanitizedEnvironment = this._sanitizedEnviroment[invokableModule];
       const environment = sanitizedEnvironment
         ? sanitizedEnvironment
         : MsgPack.encode(clientEnvironment, {
             ignoreUndefined: true,
           });
+      this._sanitizedEnviroment[invokableModule] = environment;
       const state: State = {
         invoke: {},
         subinvoke: {

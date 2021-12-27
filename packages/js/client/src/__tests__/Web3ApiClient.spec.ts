@@ -1818,7 +1818,7 @@ describe("Web3ApiClient", () => {
     );
   });
 
-  it("environment types", async () => {
+  it.only("environment types", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/environment-types`,
       ipfsProvider,
@@ -1829,7 +1829,7 @@ describe("Web3ApiClient", () => {
     const client = await getClient({
       environments: [
         {
-          uri: "w3://" + (ensUri ? ensUri : "ens/helloworld.eth"),
+          uri: ensUri,
           common: {
             object: {
               prop: "object string"
@@ -1839,6 +1839,7 @@ describe("Web3ApiClient", () => {
             number: 10,
             bool: true,
             en: "FIRST",
+            array: [32, 23]
           },
           mutation: {
             mutStr: "mutation string",
@@ -1875,7 +1876,8 @@ describe("Web3ApiClient", () => {
       optObject: null,
       en: 0,
       optEnum: null,
-      queryStr: "query string"
+      queryStr: "query string",
+      array: [32, 23]
     });
 
     const mutationEnv = await client.query({
@@ -1903,7 +1905,8 @@ describe("Web3ApiClient", () => {
       en: 0,
       optEnum: null,
       optObject: null,
-      mutStr: "mutation string"
+      mutStr: "mutation string",
+      array: [32, 23]
     });
   });
 
