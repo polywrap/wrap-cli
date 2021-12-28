@@ -131,6 +131,26 @@ impl std::ops::Drop for wasm_result {
     }
 }
 
+pub fn catch_unwind_or_fail<F>(f: F) -> wasm_result
+where
+    F: FnOnce() -> wasm_result + std::panic::UnwindSafe,
+{
+    std::panic::catch_unwind(f).unwrap_or_else(|e| {
+        wasm_result::new_error(
+            format!(
+                "
+Internal Polywrap runtime failure.
+This is a bug and we'd appreciate a bug report.
+Please provide any information that was printed to stderr.
+Panic information: {:?}
+            ",
+                e
+            )
+            .as_bytes(),
+        )
+    })
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
