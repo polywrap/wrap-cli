@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.59
+## Features
+* Web3APIs can now be configured via environment variables. Documentation will be created soon. Initial details on this features specification can be found [here](https://github.com/polywrap/monorepo/issues/140).
+
 # Web3API 0.0.1-prealpha.58
 ## Features
 * `@web3api/client-js`: Added `noDecode` invocation option.
