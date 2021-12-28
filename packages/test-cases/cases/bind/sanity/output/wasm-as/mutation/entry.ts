@@ -2,8 +2,8 @@ import {
   w3_invoke_args,
   w3_invoke,
   w3_load_env,
-  w3_abort,
   w3_sanitize_env,
+  w3_abort,
   InvokeArgs
 } from "@web3api/wasm-as";
 

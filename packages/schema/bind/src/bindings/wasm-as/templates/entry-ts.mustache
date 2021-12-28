@@ -2,8 +2,8 @@ import {
   w3_invoke_args,
   w3_invoke,
   w3_load_env,
-  w3_abort,
   w3_sanitize_env,
+  w3_abort,
   InvokeArgs
 } from "@web3api/wasm-as";
 
@@ -56,23 +56,26 @@ export function _w3_load_env(env_size: u32): void {
   const envBuf = w3_load_env(env_size);
   env = QueryEnv.fromBuffer(envBuf);
 }
+
 {{/envTypes.query.sanitized}}
 {{#envTypes.mutation.sanitized}}
 export function _w3_load_env(env_size: u32): void {
   const envBuf = w3_load_env(env_size);
   env = MutationEnv.fromBuffer(envBuf);
 }
-{{/envTypes.mutation.sanitized}}
 
+{{/envTypes.mutation.sanitized}}
 {{#environment.query.client}}
 export function _w3_sanitize_env(args_size: u32): void {
   w3_sanitize_env(args_size, sanitizeQueryEnvWrapped);
 }
+
 {{/environment.query.client}}
 {{#environment.mutation.client}}
 export function _w3_sanitize_env(args_size: u32): void {
   w3_sanitize_env(args_size, sanitizeMutationEnvWrapped)
 }
+
 {{/environment.mutation.client}}
 export function w3Abort(
   msg: string | null,
