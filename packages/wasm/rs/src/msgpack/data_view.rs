@@ -177,8 +177,8 @@ impl DataView {
     }
 
     pub fn set_bytes(&mut self, buf: &[u8]) {
-        self.check_index_in_range("set_bytes", 8);
         let src_len = buf.len();
+        self.check_index_in_range("set_bytes", src_len);
         self.buffer[..src_len].copy_from_slice(buf);
         self.byte_offset += src_len;
     }
