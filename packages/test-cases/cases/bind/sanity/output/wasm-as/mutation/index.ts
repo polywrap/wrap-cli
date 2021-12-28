@@ -27,3 +27,6 @@ export {
   getTestImport_EnumValue,
   sanitizeTestImport_EnumValue
 } from "./imported/TestImport_Enum";
+
+export { env } from "./env";
+export { MutationEnv } from "./MutationEnv";

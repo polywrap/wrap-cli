@@ -37,6 +37,70 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
 }{{/methods.length}}
 
 {{/queryTypes}}
+{{#envTypes.query.client}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}}{{#properties.length}} {
+  {{#properties}}{{#comment}}
+  """
+  {{comment}}
+  """
+  {{/comment}}
+  {{name}}: {{toGraphQLType}}
+  {{/properties}}
+}{{/properties.length}}
+
+{{/envTypes.query.client}}
+{{#envTypes.query.sanitized}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}}{{#properties.length}} {
+  {{#properties}}{{#comment}}
+  """
+  {{comment}}
+  """
+  {{/comment}}
+  {{name}}: {{toGraphQLType}}
+  {{/properties}}
+}{{/properties.length}}
+
+{{/envTypes.query.sanitized}}
+{{#envTypes.mutation.client}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}}{{#properties.length}} {
+  {{#properties}}{{#comment}}
+  """
+  {{comment}}
+  """
+  {{/comment}}
+  {{name}}: {{toGraphQLType}}
+  {{/properties}}
+}{{/properties.length}}
+
+{{/envTypes.mutation.client}}
+{{#envTypes.mutation.sanitized}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}}{{#properties.length}} {
+  {{#properties}}{{#comment}}
+  """
+  {{comment}}
+  """
+  {{/comment}}
+  {{name}}: {{toGraphQLType}}
+  {{/properties}}
+}{{/properties.length}}
+
+{{/envTypes.mutation.sanitized}}
 {{#objectTypes}}{{#comment}}
 """
 {{comment}}

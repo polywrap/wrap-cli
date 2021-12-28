@@ -9,7 +9,6 @@ import {
   Web3ApiManifest,
   Uri,
   Client,
-  UriResolver,
   InvokableModules,
   GetManifestOptions,
   deserializeWeb3ApiManifest,
@@ -18,6 +17,8 @@ import {
   AnyManifest,
   ManifestType,
   combinePaths,
+  Env,
+  UriResolver,
   GetFileOptions,
 } from "@web3api/core-js";
 import * as MsgPack from "@msgpack/msgpack";
@@ -42,6 +43,7 @@ export interface State {
   };
   invokeResult: InvokeResult;
   getImplementationsResult?: ArrayBuffer;
+  env: ArrayBuffer;
 }
 
 export class WasmWeb3Api extends Api {
@@ -49,15 +51,21 @@ export class WasmWeb3Api extends Api {
 
   private _schema?: string;
 
-  private _wasm: {
-    query?: ArrayBuffer;
-    mutation?: ArrayBuffer;
-  } = {};
+  private _wasm: Record<InvokableModules, ArrayBuffer | undefined> = {
+    query: undefined,
+    mutation: undefined,
+  };
+
+  private _sanitizedEnv: Record<InvokableModules, ArrayBuffer | undefined> = {
+    query: undefined,
+    mutation: undefined,
+  };
 
   constructor(
     private _uri: Uri,
     private _manifest: Web3ApiManifest,
-    private _uriResolver: Uri
+    private _uriResolver: Uri,
+    private _clientEnv?: Env<Uri>
   ) {
     super();
 
@@ -65,6 +73,7 @@ export class WasmWeb3Api extends Api {
     Tracer.setAttribute("input", {
       uri: this._uri,
       manifest: this._manifest,
+      clientEnv: this._clientEnv,
       uriResolver: this._uriResolver,
     });
     Tracer.endSpan();
@@ -152,6 +161,14 @@ export class WasmWeb3Api extends Api {
       const { module: invokableModule, method, noDecode } = options;
       const input = options.input || {};
       const wasm = await this._getWasmModule(invokableModule, client);
+      const clientEnv = this.getModuleEnv(invokableModule, this._clientEnv);
+      const sanitizedEnv = this._sanitizedEnv[invokableModule];
+      const env = sanitizedEnv
+        ? sanitizedEnv
+        : MsgPack.encode(clientEnv, {
+            ignoreUndefined: true,
+          });
+      this._sanitizedEnv[invokableModule] = env;
       const state: State = {
         invoke: {},
         subinvoke: {
@@ -159,6 +176,7 @@ export class WasmWeb3Api extends Api {
         },
         invokeResult: {} as InvokeResult,
         method,
+        env,
         args:
           input instanceof ArrayBuffer
             ? input
@@ -186,6 +204,10 @@ export class WasmWeb3Api extends Api {
       });
 
       const exports = instance.exports as W3Exports;
+
+      if (exports["_w3_load_env"]) {
+        await exports._w3_load_env(state.env.byteLength);
+      }
 
       const result = await exports._w3_invoke(
         state.method.length,
@@ -280,6 +302,29 @@ export class WasmWeb3Api extends Api {
       return {
         type: "InvokeError",
         invokeError: state.invoke.error,
+      };
+    }
+  }
+
+  private getModuleEnv(
+    module: InvokableModules,
+    env?: Env<Uri>
+  ): Record<string, unknown> {
+    if (!env) {
+      return {};
+    }
+
+    const commonEnv: Record<string, unknown> = env.common ? env.common : {};
+
+    if (module === "query") {
+      return {
+        ...commonEnv,
+        ...env.query,
+      };
+    } else {
+      return {
+        ...commonEnv,
+        ...env.mutation,
       };
     }
   }

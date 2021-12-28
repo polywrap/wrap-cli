@@ -26,3 +26,7 @@ ArrayObject comment
 type ArrayObject {
   prop: String!
 }
+
+type Env {
+  foo: String!
+}

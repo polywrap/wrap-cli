@@ -47,3 +47,12 @@ export {
 {{#interfaceTypes}}
 export { {{namespace}} } from "./{{namespace}}";
 {{/interfaceTypes}}
+
+{{#envTypes.query.sanitized}}
+export { env } from "./env";
+export { QueryEnv } from "./QueryEnv";
+{{/envTypes.query.sanitized}}
+{{#envTypes.mutation.sanitized}}
+export { env } from "./env";
+export { MutationEnv } from "./MutationEnv";
+{{/envTypes.mutation.sanitized}}

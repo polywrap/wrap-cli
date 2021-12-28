@@ -134,6 +134,16 @@ type Mutation implements Interface_Mutation @imports(
   ): String!
 }
 
+type QueryEnv {
+  bar: Bytes
+  foo: String!
+}
+
+type MutationEnv {
+  bar: Int
+  foo: String!
+}
+
 """
 CustomQueryType comment
 """

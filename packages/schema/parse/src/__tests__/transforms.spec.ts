@@ -12,7 +12,8 @@ import {
   createMethodDefinition,
   MethodDefinition,
   createImportedQueryDefinition,
-  ImportedQueryDefinition
+  ImportedQueryDefinition,
+  createEnvDefinition
 } from "../typeInfo";
 
 const schema1 = `
@@ -81,6 +82,10 @@ describe("Web3API Schema TypeInfo Transformations", () => {
       transforms: [addFirstLast],
     });
     const expected: TypeInfo = {
+      envTypes: {
+        query: createEnvDefinition({}),
+        mutation: createEnvDefinition({}),
+      },
       enumTypes: [],
       importedEnumTypes: [],
       interfaceTypes: [],
@@ -340,6 +345,10 @@ describe("Web3API Schema TypeInfo Transformations", () => {
       ],
     });
     const expected: TypeInfo = {
+      envTypes: {
+        query: createEnvDefinition({}),
+        mutation: createEnvDefinition({}),
+      },
       enumTypes: [],
       interfaceTypes: [],
       importedEnumTypes: [],

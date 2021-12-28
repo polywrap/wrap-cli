@@ -1,3 +1,4 @@
+// Todo: check whether needed
 import {
   createArrayPropertyDefinition,
   createMethodDefinition,
@@ -10,11 +11,12 @@ import {
   createEnumDefinition,
   TypeInfo,
   createEnumPropertyDefinition,
-  createObjectRef
+  createObjectRef,
+  createTypeInfo,
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
-  interfaceTypes: [],
+  ...createTypeInfo(),
   objectTypes: [
     {
       ...createObjectDefinition({ type: "CustomQueryType" }),
@@ -205,7 +207,4 @@ export const typeInfo: TypeInfo = {
       constants: ["STRING", "BYTES"]
     })
   ],
-  importedObjectTypes: [],
-  importedQueryTypes: [],
-  importedEnumTypes: [],
 }

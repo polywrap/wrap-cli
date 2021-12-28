@@ -27,3 +27,6 @@ export {
   sanitizeTestImport_EnumValue
 } from "./imported/TestImport_Enum";
 export { TestImport } from "./TestImport";
+
+export { env } from "./env";
+export { QueryEnv } from "./QueryEnv";

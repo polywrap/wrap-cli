@@ -1,6 +1,7 @@
 import {
   w3_invoke_args,
   w3_invoke,
+  w3_load_env,
   w3_abort,
   InvokeArgs
 } from "@web3api/wasm-as";
@@ -13,6 +14,22 @@ import {
 } from "./{{type}}/wrapped";
 {{/methods.length}}
 {{/queryTypes}}
+{{#envTypes.query.sanitized}}
+import {
+  env
+} from "./env";
+import {
+  QueryEnv
+} from "./QueryEnv";
+{{/envTypes.query.sanitized}}
+{{#envTypes.mutation.sanitized}}
+import {
+  env
+} from "./env";
+import {
+  MutationEnv
+} from "./MutationEnv";
+{{/envTypes.mutation.sanitized}}
 
 export function _w3_invoke(method_size: u32, args_size: u32): bool {
   const args: InvokeArgs = w3_invoke_args(
@@ -31,6 +48,19 @@ export function _w3_invoke(method_size: u32, args_size: u32): bool {
     return w3_invoke(args, null);
   }
 }
+
+{{#envTypes.query.sanitized}}
+export function _w3_load_env(env_size: u32): void {
+  const envBuf = w3_load_env(env_size);
+  env = QueryEnv.fromBuffer(envBuf);
+}
+{{/envTypes.query.sanitized}}
+{{#envTypes.mutation.sanitized}}
+export function _w3_load_env(env_size: u32): void {
+  const envBuf = w3_load_env(env_size);
+  env = MutationEnv.fromBuffer(envBuf);
+}
+{{/envTypes.mutation.sanitized}}
 
 export function w3Abort(
   msg: string | null,
