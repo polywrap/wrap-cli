@@ -1,13 +1,13 @@
 import {
   createQueryDefinition,
-  TypeInfo,
   createInterfaceImplementedDefinition,
   createImportedQueryDefinition,
+  createTypeInfo,
+  TypeInfo,
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
-  objectTypes: [
-  ],
+  ...createTypeInfo(),
   queryTypes: [
     {
       ...createQueryDefinition({ type: "Mutation" }),
@@ -20,9 +20,6 @@ export const typeInfo: TypeInfo = {
       methods: [
       ],
     },
-  ],
-  enumTypes: [],
-  importedObjectTypes: [
   ],
   importedQueryTypes: [
     {
@@ -37,6 +34,4 @@ export const typeInfo: TypeInfo = {
       ]
     },
   ],
-  importedEnumTypes: [],
-  interfaceTypes: [],
 };

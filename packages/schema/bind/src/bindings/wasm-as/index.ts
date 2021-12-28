@@ -8,6 +8,7 @@ import {
   addFirstLast,
   toPrefixedGraphQLType,
   TypeInfo,
+  ObjectDefinition,
 } from "@web3api/schema-parse";
 import path from "path";
 import Mustache from "mustache";
@@ -95,7 +96,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
     });
   }
 
-  // Generate query type folders
+  // Generate interface type folders
   for (const interfaceType of typeInfo.interfaceTypes) {
     entries.push({
       type: "Directory",
@@ -125,6 +126,20 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
       data: generateFiles("./templates/enum-type", enumType, subTemplates),
     });
   }
+
+  // Generate env type folders
+  const generateEnvTypeFolder = (def: ObjectDefinition | undefined) => {
+    def &&
+      entries.push({
+        type: "Directory",
+        name: def.type,
+        data: generateFiles("./templates/object-type", def, subTemplates),
+      });
+  };
+  generateEnvTypeFolder(typeInfo.envTypes.query.client);
+  generateEnvTypeFolder(typeInfo.envTypes.query.sanitized);
+  generateEnvTypeFolder(typeInfo.envTypes.mutation.client);
+  generateEnvTypeFolder(typeInfo.envTypes.mutation.sanitized);
 
   // Generate root entry file
   entries.push(...generateFiles("./templates", typeInfo, subTemplates));

@@ -9,7 +9,6 @@ import {
   Web3ApiManifest,
   Uri,
   Client,
-  UriResolver,
   InvokableModules,
   GetManifestOptions,
   deserializeWeb3ApiManifest,
@@ -18,6 +17,8 @@ import {
   AnyManifest,
   ManifestType,
   combinePaths,
+  Env,
+  UriResolver,
   GetFileOptions,
 } from "@web3api/core-js";
 import * as MsgPack from "@msgpack/msgpack";
@@ -27,6 +28,14 @@ import { AsyncWasmInstance } from "@web3api/asyncify-js";
 type InvokeResult =
   | { type: "InvokeResult"; invokeResult: ArrayBuffer }
   | { type: "InvokeError"; invokeError: string };
+
+const hasExport = (name: string, exports: Record<string, unknown>): boolean => {
+  if (!exports[name]) {
+    return false;
+  }
+
+  return true;
+};
 
 export interface State {
   method: string;
@@ -42,6 +51,11 @@ export interface State {
   };
   invokeResult: InvokeResult;
   getImplementationsResult?: ArrayBuffer;
+  sanitizeEnv: {
+    args?: ArrayBuffer;
+    result?: ArrayBuffer;
+  };
+  env?: ArrayBuffer;
 }
 
 export class WasmWeb3Api extends Api {
@@ -49,15 +63,21 @@ export class WasmWeb3Api extends Api {
 
   private _schema?: string;
 
-  private _wasm: {
-    query?: ArrayBuffer;
-    mutation?: ArrayBuffer;
-  } = {};
+  private _wasm: Record<InvokableModules, ArrayBuffer | undefined> = {
+    query: undefined,
+    mutation: undefined,
+  };
+
+  private _sanitizedEnv: Record<InvokableModules, ArrayBuffer | undefined> = {
+    query: undefined,
+    mutation: undefined,
+  };
 
   constructor(
     private _uri: Uri,
     private _manifest: Web3ApiManifest,
-    private _uriResolver: Uri
+    private _uriResolver: Uri,
+    private _clientEnv?: Env<Uri>
   ) {
     super();
 
@@ -65,11 +85,13 @@ export class WasmWeb3Api extends Api {
     Tracer.setAttribute("input", {
       uri: this._uri,
       manifest: this._manifest,
+      clientEnv: this._clientEnv,
       uriResolver: this._uriResolver,
     });
     Tracer.endSpan();
   }
 
+  @Tracer.traceMethod("WasmWeb3Api: getManifest")
   public async getManifest<TManifest extends ManifestType>(
     options: GetManifestOptions<TManifest>,
     client: Client
@@ -105,6 +127,7 @@ export class WasmWeb3Api extends Api {
     }
   }
 
+  @Tracer.traceMethod("WasmWeb3Api: getFile")
   public async getFile(
     options: GetFileOptions,
     client: Client
@@ -152,6 +175,7 @@ export class WasmWeb3Api extends Api {
       const { module: invokableModule, method, noDecode } = options;
       const input = options.input || {};
       const wasm = await this._getWasmModule(invokableModule, client);
+
       const state: State = {
         invoke: {},
         subinvoke: {
@@ -159,6 +183,7 @@ export class WasmWeb3Api extends Api {
         },
         invokeResult: {} as InvokeResult,
         method,
+        sanitizeEnv: {},
         args:
           input instanceof ArrayBuffer
             ? input
@@ -186,6 +211,8 @@ export class WasmWeb3Api extends Api {
       });
 
       const exports = instance.exports as W3Exports;
+
+      await this._sanitizeAndLoadEnv(invokableModule, state, exports);
 
       const result = await exports._w3_invoke(
         state.method.length,
@@ -258,6 +285,7 @@ export class WasmWeb3Api extends Api {
     return this._schema;
   }
 
+  @Tracer.traceMethod("WasmWeb3Api: _processInvokeResult")
   private _processInvokeResult(
     state: State,
     result: boolean,
@@ -280,6 +308,60 @@ export class WasmWeb3Api extends Api {
       return {
         type: "InvokeError",
         invokeError: state.invoke.error,
+      };
+    }
+  }
+
+  @Tracer.traceMethod("WasmWeb3Api: _sanitizeAndLoadEnv")
+  private async _sanitizeAndLoadEnv(
+    module: InvokableModules,
+    state: State,
+    exports: W3Exports
+  ): Promise<void> {
+    if (hasExport("_w3_load_env", exports)) {
+      if (this._sanitizedEnv[module] !== undefined) {
+        state.env = this._sanitizedEnv[module] as ArrayBuffer;
+      } else {
+        const clientEnv = this._getModuleClientEnv(module);
+
+        if (hasExport("_w3_sanitize_env", exports)) {
+          state.sanitizeEnv.args = MsgPack.encode(
+            { env: clientEnv },
+            { ignoreUndefined: true }
+          );
+
+          await exports._w3_sanitize_env(state.sanitizeEnv.args.byteLength);
+          state.env = state.sanitizeEnv.result as ArrayBuffer;
+          this._sanitizedEnv[module] = state.env;
+        } else {
+          state.env = MsgPack.encode(clientEnv, {
+            ignoreUndefined: true,
+          });
+          this._sanitizedEnv[module] = state.env;
+        }
+      }
+
+      await exports._w3_load_env(state.env.byteLength);
+    }
+  }
+
+  @Tracer.traceMethod("WasmWeb3Api: _getModuleClientEnv")
+  private _getModuleClientEnv(
+    module: InvokableModules
+  ): Record<string, unknown> {
+    if (!this._clientEnv) {
+      return {};
+    }
+
+    if (module === "query") {
+      return {
+        ...this._clientEnv.common,
+        ...this._clientEnv.query,
+      };
+    } else {
+      return {
+        ...this._clientEnv.common,
+        ...this._clientEnv.mutation,
       };
     }
   }

@@ -19,8 +19,9 @@ describe("e2e tests for middleware", () => {
       promises.push(
         runCLI({
           args: ["build", "-v"],
-          cwd: projectRoot
-        }, w3Cli).then((result: { exitCode: number; stdout: string; stderr: string }) => {
+          cwd: projectRoot,
+          cli: w3Cli
+        }).then((result: { exitCode: number; stdout: string; stderr: string }) => {
           const { exitCode, stderr } = result;
           expect(stderr.indexOf("Conflict. The container name \"/root-build-env\" is already in use")).toBeLessThan(0);
           expect(exitCode).toEqual(0);
