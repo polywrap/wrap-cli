@@ -17,7 +17,8 @@ import {
   createObjectRef,
   createEnumRef,
   createInterfaceDefinition,
-  createCapability
+  createCapability,
+  createEnvDefinition
 } from "../../../../schema/parse/src/typeInfo";
 
 export const output: TypeInfo = {
@@ -35,22 +36,8 @@ export const output: TypeInfo = {
       },
     })
   ],
-  environment: {
-    mutation: {
-      sanitized: {
-        ...createObjectDefinition({ type: "MutationEnv" }),
-        properties: [
-          createScalarPropertyDefinition({ name: "prop", type: "Int", required: true })
-        ]
-      },
-      client: {
-        ...createObjectDefinition({ type: "MutationClientEnv" }),
-        properties: [
-          createScalarPropertyDefinition({ name: "prop", type: "String", required: false })
-        ]
-      }
-    },
-    query: {
+  envTypes: {
+    query: createEnvDefinition({
       sanitized: {
         ...createObjectDefinition({ type: "QueryEnv" }),
         properties: [
@@ -63,7 +50,21 @@ export const output: TypeInfo = {
           createScalarPropertyDefinition({ name: "prop", type: "String", required: true })
         ]
       }
-    },
+    }),
+    mutation: createEnvDefinition({
+      sanitized: {
+        ...createObjectDefinition({ type: "MutationEnv" }),
+        properties: [
+          createScalarPropertyDefinition({ name: "prop", type: "Int", required: true })
+        ]
+      },
+      client: {
+        ...createObjectDefinition({ type: "MutationClientEnv" }),
+        properties: [
+          createScalarPropertyDefinition({ name: "prop", type: "String", required: false })
+        ]
+      }
+    }),
   },
   objectTypes: [
     {
@@ -235,30 +236,6 @@ export const output: TypeInfo = {
         createScalarPropertyDefinition({ name: "fieldA", type: "String", required: false }),
         createScalarPropertyDefinition({ name: "fieldB", type: "Int", required: true }),
       ],
-    },
-    {
-      ...createObjectDefinition({ type: "QueryEnv" }),
-      properties: [
-        createScalarPropertyDefinition({ name: "prop", type: "String", required: true })
-      ]
-    },
-    {
-        ...createObjectDefinition({ type: "QueryClientEnv" }),
-        properties: [
-          createScalarPropertyDefinition({ name: "prop", type: "String", required: true })
-        ]
-    },
-    {
-        ...createObjectDefinition({ type: "MutationEnv" }),
-        properties: [
-          createScalarPropertyDefinition({ name: "prop", type: "Int", required: true })
-        ]
-    },
-    {
-        ...createObjectDefinition({ type: "MutationClientEnv" }),
-        properties: [
-          createScalarPropertyDefinition({ name: "prop", type: "String", required: false })
-        ]
     },
     {
       ...createObjectDefinition({

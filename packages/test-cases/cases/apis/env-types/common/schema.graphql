@@ -19,4 +19,5 @@ type Env {
   optEnum: EnvEnum
   object: EnvObject!
   optObject: EnvObject
+  array: [UInt32!]!
 }

@@ -26,6 +26,12 @@ export interface QueryEnv {
   optProp?: String | null;
 }
 
+export interface MutationEnv {
+  mutProp: String;
+  prop: String;
+  optProp?: String | null;
+}
+
 export interface CustomType {
   str: String;
   optStr?: String | null;
@@ -67,12 +73,6 @@ export interface CustomType {
 export interface AnotherType {
   prop?: String | null;
   circular?: Types.CustomType | null;
-}
-
-export interface MutationEnv {
-  mutProp: String;
-  prop: String;
-  optProp?: String | null;
 }
 
 export enum CustomEnumEnum {
