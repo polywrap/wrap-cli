@@ -177,10 +177,10 @@ impl DataView {
     }
 
     pub fn set_bytes(&mut self, buf: &[u8]) {
-        let src_len = buf.len();
-        self.check_index_in_range("set_bytes", src_len);
-        self.buffer[..src_len].copy_from_slice(buf);
-        self.byte_offset += src_len;
+        self.check_index_in_range("set_bytes", buf.len());
+        self.buffer.clear();
+        self.buffer.extend_from_slice(buf);
+        self.byte_offset += buf.len();
     }
 
     pub fn set_f32(&mut self, value: f32) {
@@ -278,4 +278,13 @@ impl DataView {
             );
         }
     }
+}
+
+#[test]
+fn test_set_bytes() {
+    let buffer: [u8; 4] = [1, 2, 3, 4];
+    let mut data_view = DataView::new(&buffer, Context::new(), 0).unwrap();
+    let src_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
+    data_view.set_bytes(&src_buf);
+    assert_eq!(vec![1, 2, 3, 4, 5, 6, 7, 8], data_view.buffer);
 }
