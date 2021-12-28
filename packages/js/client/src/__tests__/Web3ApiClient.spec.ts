@@ -1910,6 +1910,63 @@ describe("Web3ApiClient", () => {
     });
   });
 
+  it("env client types", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/env-client-types`,
+      ipfsProvider,
+      ensAddress
+    );
+
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+    const client = await getClient({
+      envs: [
+        {
+          uri: ensUri,
+          mutation: {
+            str: "string",
+          },
+          query: {
+            str: "string",
+          }
+        }
+      ]
+    });
+
+    const queryEnv = await client.query({
+      uri: ensUri,
+      query: `
+        query {
+          environment(
+            arg: "string"
+          )
+        }
+      `,
+    });
+    expect(queryEnv.errors).toBeFalsy();
+    expect(queryEnv.data?.environment).toEqual({
+      str: "string",
+      optStr: null,
+      defStr: "default string"
+    });
+
+    const mutationEnv = await client.query({
+      uri: ensUri,
+      query: `
+        mutation {
+          mutEnvironment(
+            arg: "string"
+          )
+        }
+      `,
+    });
+    expect(mutationEnv.errors).toBeFalsy();
+    expect(mutationEnv.data?.mutEnvironment).toEqual({
+      str: "string",
+      optStr: null,
+      defMutStr: "default mutation string"
+    });
+  });
+
   it("loadWeb3Api - pass string or Uri", async () => {
     const implementationUri = "w3://ens/some-implementation.eth";
     const schemaStr = "test-schema";
@@ -2518,8 +2575,6 @@ enum Logger_LogLevel @imported(
         )
       }`,
     });
-
-    console.log(query)
 
     expect(query.errors).toBeFalsy();
     expect(query.data).toBeTruthy();

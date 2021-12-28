@@ -5,7 +5,8 @@ export type u32 = number;
 
 export interface W3Exports extends WebAssembly.Exports {
   _w3_invoke: (nameLen: u32, argsLen: u32) => boolean;
-  _w3_load_env: (environmentLen: u32) => void;
+  _w3_load_env: (envLen: u32) => void;
+  _w3_sanitize_env: (argsLen: u32) => void;
 }
 
 export interface W3Imports extends WebAssembly.Imports {
@@ -39,6 +40,8 @@ export interface W3Imports extends WebAssembly.Imports {
       column: u32
     ) => void;
     __w3_load_env: (ptr: u32) => void;
+    __w3_sanitize_env_args: (ptr: u32) => void;
+    __w3_sanitize_env_result: (ptr: u32, len: u32) => void;
   };
 
   env: {
