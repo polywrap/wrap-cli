@@ -2,6 +2,7 @@ import path from "path";
 import { clearStyle, w3Cli } from "./utils";
 import { runCLI } from "@web3api/test-env-js";
 import { compareSync } from "dir-compare";
+import * as fs from "fs";
 
 const HELP = `
 w3 dapp command [options]
@@ -98,7 +99,7 @@ ${HELP}`);
       .toEqual("Duplicate namespace in dapp manifest\n");
   });
 
-  test("Should successfully generate types", async () => {
+  test("Should successfully generate types for wrappers", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
         args: ["dapp", "types"],
@@ -110,8 +111,6 @@ ${HELP}`);
     expect(code).toEqual(0);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`- Generate types
-- Manifest loaded from ./.w3/ExternalProjects/project/web3api.yaml
-✔ Manifest loaded from ./.w3/ExternalProjects/project/web3api.yaml
   Generating types from types-ts.mustache
 - Generate types
 ✔ Generate types
@@ -120,11 +119,93 @@ ${HELP}`);
 `);
 
     const expectedTypesResult = compareSync(
-      `${projectRoot}/polywrap`,
-      `${projectRoot}/expected-types`,
+      `${projectRoot}/polywrap/project`,
+      `${projectRoot}/expected-types/project`,
       { compareContent: true }
     );
 
     expect(expectedTypesResult.differences).toBe(0);
+  });
+
+  test("Should successfully generate types for plugins", async () => {
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+      {
+        args: ["dapp", "types", `-m ${projectRoot}/web3api.dapp.withPlugin.yaml`],
+        cwd: projectRoot,
+        cli: w3Cli,
+      },
+    );
+
+    expect(code).toEqual(0);
+    expect(error).toBe("");
+    expect(clearStyle(output)).toEqual(`- Generate types
+- Manifest loaded from ./.w3/ExternalProjects/http/web3api.plugin.yaml
+✔ Manifest loaded from ./.w3/ExternalProjects/http/web3api.plugin.yaml
+  Generating types from types-ts.mustache
+- Generate types
+✔ Generate types
+🔥 Generated types for namespace http 🔥
+🔥 Code was generated successfully 🔥
+`);
+
+    const expectedTypesResult = compareSync(
+      `${projectRoot}/polywrap/http`,
+      `${projectRoot}/expected-types/http`,
+      { compareContent: true }
+    );
+
+    expect(expectedTypesResult.differences).toBe(0);
+  });
+
+  test("Should successfully generate types for multiple packages", async () => {
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+      {
+        args: ["dapp", "types", `-m ${projectRoot}/web3api.dapp.multiPackage.yaml`],
+        cwd: projectRoot,
+        cli: w3Cli,
+      },
+    );
+
+    expect(code).toEqual(0);
+    expect(error).toBe("");
+    expect(clearStyle(output)).toEqual(`- Generate types
+  Generating types from types-ts.mustache
+- Generate types
+✔ Generate types
+🔥 Generated types for namespace erc20 🔥
+- Generate types
+  Generating types from types-ts.mustache
+- Generate types
+✔ Generate types
+🔥 Generated types for namespace console 🔥
+- Generate types
+- Manifest loaded from ./.w3/ExternalProjects/ethereum/web3api.plugin.yaml
+✔ Manifest loaded from ./.w3/ExternalProjects/ethereum/web3api.plugin.yaml
+  Generating types from types-ts.mustache
+- Generate types
+✔ Generate types
+🔥 Generated types for namespace ethereum 🔥
+🔥 Code was generated successfully 🔥
+`);
+
+    expect(fs.existsSync(`${projectRoot}/polywrap/erc20/types.ts`)).toBeTruthy();
+    expect(fs.existsSync(`${projectRoot}/polywrap/console/types.ts`)).toBeTruthy();
+    expect(fs.existsSync(`${projectRoot}/polywrap/ethereum/types.ts`)).toBeTruthy();
+  });
+
+  test("Should clear file cache before completion", async () => {
+    const { exitCode: code, stderr: error } = await runCLI(
+      {
+        args: ["dapp", "types", `-m ${projectRoot}/web3api.dapp.multiPackage.yaml`],
+        cwd: projectRoot,
+        cli: w3Cli,
+      },
+    );
+
+    expect(code).toEqual(0);
+    expect(error).toBe("");
+    expect(fs.existsSync(`${projectRoot}/.w3/ExternalProjects/erc20/`)).toBeFalsy();
+    expect(fs.existsSync(`${projectRoot}/.w3/ExternalProjects/console/`)).toBeFalsy();
+    expect(fs.existsSync(`${projectRoot}/.w3/ExternalProjects/ethereum/`)).toBeFalsy();
   });
 });

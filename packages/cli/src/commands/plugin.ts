@@ -34,12 +34,12 @@ Options:
   -m, --manifest-path <${pathStr}>       ${intlMsg.commands_plugin_options_m({
   default: defaultManifestStr,
 })}
-  -s, --output-schema-path <${pathStr}>  ${intlMsg.commands_plugin_options_s(
-  { default: defaultOutputSchemaStr }
-)}
-  -t, --output-types-dir <${pathStr}>    ${intlMsg.commands_plugin_options_t(
-  { default: defaultOutputTypesStr }
-)}
+  -s, --output-schema-path <${pathStr}>  ${intlMsg.commands_plugin_options_s({
+  default: defaultOutputSchemaStr,
+})}
+  -t, --output-types-dir <${pathStr}>    ${intlMsg.commands_plugin_options_t({
+  default: defaultOutputTypesStr,
+})}
   -i, --ipfs [<${nodeStr}>]              ${intlMsg.commands_plugin_options_i()}
   -e, --ens [<${addrStr}>]            ${intlMsg.commands_plugin_options_e()}
 `;
@@ -159,7 +159,11 @@ export default {
       }
     }
 
-    manifestPath = await resolveManifestPath(filesystem, manifestPath, defaultManifest);
+    manifestPath = await resolveManifestPath(
+      filesystem,
+      manifestPath,
+      defaultManifest
+    );
     outputSchemaPath = outputSchemaPath && filesystem.resolve(outputSchemaPath);
     outputTypesDir = outputTypesDir && filesystem.resolve(outputTypesDir);
 

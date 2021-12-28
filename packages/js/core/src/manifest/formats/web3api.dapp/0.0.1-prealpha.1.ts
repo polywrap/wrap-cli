@@ -12,6 +12,7 @@ export interface DappManifest {
   packages: {
     uri: string;
     namespace: string;
+    isPlugin?: boolean;
   }[];
   __type: "DappManifest";
 }

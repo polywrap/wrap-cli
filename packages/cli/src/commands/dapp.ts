@@ -1,16 +1,19 @@
 /* eslint-disable prefer-const */
-import { CodeGenerator, SchemaComposer } from "../lib";
+import { CodeGenerator, Project, SchemaComposer } from "../lib";
 import { intlMsg } from "../lib/intl";
+import { getCodegenProviders, validateCodegenParams } from "./codegen";
 import {
-  getCodegenProviders,
-  validateCodegenParams,
-} from "./codegen";
-import { fixParameters, loadDappManifest, manifestLanguageToTargetLanguage, resolveManifestPath } from "../lib/helpers";
+  fixParameters,
+  loadDappManifest,
+  manifestLanguageToTargetLanguage,
+  resolveManifestPath,
+} from "../lib/helpers";
+import { getSimpleClient } from "../lib/helpers/client";
+import { ExternalWeb3ApiProject } from "../lib/project/ExternalWeb3ApiProject";
+import { ExternalPluginProject } from "../lib/project/ExternalPluginProject";
 
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
-import { getSimpleClient } from "../lib/helpers/client";
-import { ExternalWeb3ApiProject } from "../lib/project/ExternalWeb3ApiProject";
 import { Web3ApiClient } from "@web3api/client-js";
 import { DappManifest } from "@web3api/core-js";
 import * as path from "path";
@@ -18,6 +21,7 @@ import * as path from "path";
 interface PolywrapPackage {
   uri: string;
   namespace: string;
+  isPlugin?: boolean;
 }
 
 interface DappGenFiles {
@@ -26,14 +30,14 @@ interface DappGenFiles {
 }
 
 interface DappLangSupport {
-  [lang: string]: DappGenFiles
+  [lang: string]: DappGenFiles;
 }
 
 const langSupport: DappLangSupport = {
   "plugin-ts": {
     types: __dirname + "/../lib/codegen-templates/types-ts.gen.js",
     extension: __dirname + "/../lib/codegen-templates/extension-ts.gen.js",
-  }
+  },
 };
 
 const defaultManifest = ["web3api.dapp.yaml", "web3api.dapp.yml"];
@@ -117,45 +121,65 @@ export default {
     }
 
     // Resolve manifest and output directories
-    manifestPath = await resolveManifestPath(filesystem, manifestPath, defaultManifest);
+    manifestPath = await resolveManifestPath(
+      filesystem,
+      manifestPath,
+      defaultManifest
+    );
     outputDir =
-      (outputDir && filesystem.resolve(outputDir)) || filesystem.path(defaultOutputDir);
+      (outputDir && filesystem.resolve(outputDir)) ||
+      filesystem.path(defaultOutputDir);
 
     // Dapp project
     const manifestDir: string = path.dirname(manifestPath);
-    const dappManifest: DappManifest = await loadDappManifest(manifestPath, true);
-    const lang: string = manifestLanguageToTargetLanguage(dappManifest.language);
+    const dappManifest: DappManifest = await loadDappManifest(
+      manifestPath,
+      true
+    );
+    const language: string = dappManifest.language;
     const packages: PolywrapPackage[] = dappManifest.packages;
 
     // Check for duplicate namespaces
-    const namespacesSinDupes: string[] = packages
-      .map(pack => pack.namespace)
+    const nsNoDupes: string[] = packages
+      .map((pack) => pack.namespace)
       .filter((ns, i, arr) => arr.indexOf(ns) === i);
-    if (packages.length !== namespacesSinDupes.length) {
+    if (packages.length !== nsNoDupes.length) {
       print.error(intlMsg.commands_dapp_error_duplicateNs());
       return;
     }
 
     // Resolve generation file
-    const genFiles: DappGenFiles = langSupport[lang];
-    const genFilePath: string = command === "extension" ? genFiles.extension : genFiles.types;
+    const targetLang: string = manifestLanguageToTargetLanguage(language);
+    const genFiles: DappGenFiles = langSupport[targetLang];
+    const genFilePath: string =
+      command === "extension" ? genFiles.extension : genFiles.types;
     const customScript = filesystem.resolve(genFilePath);
 
     // Get providers and client
     const { ipfsProvider, ethProvider } = await getCodegenProviders(ipfs);
     const ensAddress: string | undefined = ens;
-    const client: Web3ApiClient = getSimpleClient({ ensAddress, ethProvider, ipfsProvider });
+    const client: Web3ApiClient = getSimpleClient({
+      ensAddress,
+      ethProvider,
+      ipfsProvider,
+    });
 
     // Generate code for each Polywrap package
-    let result: boolean = true;
-    for (const { uri, namespace } of packages) {
-
-      const project: ExternalWeb3ApiProject = new ExternalWeb3ApiProject({
-        rootPath: manifestDir,
-        uri,
-        namespace,
-        client
-      });
+    let result = true;
+    for (const { uri, namespace, isPlugin } of packages) {
+      const project: Project = isPlugin
+        ? new ExternalPluginProject({
+            rootPath: manifestDir,
+            uri,
+            namespace,
+            language,
+          })
+        : new ExternalWeb3ApiProject({
+            rootPath: manifestDir,
+            uri,
+            namespace,
+            client,
+          });
 
       const schemaComposer = new SchemaComposer({
         project,
@@ -171,10 +195,12 @@ export default {
       });
 
       if (await codeGenerator.generate()) {
-        print.success(`🔥 ${intlMsg.commands_dapp_namespace_success({
-          command,
-          namespace,
-        })} 🔥`);
+        print.success(
+          `🔥 ${intlMsg.commands_dapp_namespace_success({
+            command,
+            namespace,
+          })} 🔥`
+        );
       } else {
         result = false;
       }

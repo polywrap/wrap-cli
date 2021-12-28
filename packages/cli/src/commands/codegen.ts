@@ -6,11 +6,11 @@ import {
   SchemaComposer,
 } from "../lib";
 import { intlMsg } from "../lib/intl";
+import { resolveManifestPath } from "../lib/helpers";
 
 import chalk from "chalk";
 import axios from "axios";
 import { GluegunToolbox, GluegunPrint } from "gluegun";
-import { resolveManifestPath } from "../lib/helpers";
 
 export const defaultManifest = ["web3api.yaml", "web3api.yml"];
 
@@ -70,7 +70,11 @@ export default {
 
     // Resolve generation file & output directories
     const customScript = custom && filesystem.resolve(custom);
-    manifestPath = await resolveManifestPath(filesystem, manifestPath, defaultManifest);
+    manifestPath = await resolveManifestPath(
+      filesystem,
+      manifestPath,
+      defaultManifest
+    );
     outputDir = outputDir && filesystem.resolve(outputDir);
 
     const project = new Web3ApiProject({

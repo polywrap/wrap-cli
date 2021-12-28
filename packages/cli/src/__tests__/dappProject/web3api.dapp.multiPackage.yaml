@@ -1,7 +1,10 @@
 format: 0.0.1-prealpha.1
 language: dapp/typescript
 packages:
-  - uri: "w3://fs/./../project/build"
-    namespace: "project"
   - uri: "w3://ipfs/QmeiPWHe2ixfitcgjRwP5AaJD5R7DbsGhQNQwT4rFNyxx8"
     namespace: "erc20"
+  - uri: "w3://ipfs/QmVGwj3FtvhiErJ1wWbmRuHpvEQ3t1BPNESvEiMJM57p2y"
+    namespace: "console"
+  - uri: "./../../../../js/plugins/ethereum/build"
+    namespace: "ethereum"
+    isPlugin: true

@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { Project, ProjectConfig } from "./Project";
-import {
-  loadWeb3ApiManifest,
-  loadBuildManifest,
-  loadMetaManifest,
-  manifestLanguageToTargetLanguage,
-} from "../helpers";
+import { manifestLanguageToTargetLanguage } from "../helpers";
 import { intlMsg } from "../intl";
 
-import { Web3ApiManifest, BuildManifest, MetaManifest, Client, ManifestType } from "@web3api/core-js";
+import {
+  Web3ApiManifest,
+  BuildManifest,
+  MetaManifest,
+  Client,
+} from "@web3api/core-js";
 import { TargetLanguage } from "@web3api/schema-bind";
 import path from "path";
 import fs from "fs";
@@ -117,14 +117,12 @@ export class ExternalWeb3ApiProject extends Project {
 
   public async getWeb3ApiManifest(): Promise<Web3ApiManifest> {
     if (!this._web3apiManifest) {
-      const manifestPath: string = this.getWeb3ApiManifestPath();
-      if(!fs.existsSync(manifestPath)) {
-        await this.fetchAndCacheManifest("web3api");
-      }
-      this._web3apiManifest = await loadWeb3ApiManifest(
-        this.getWeb3ApiManifestPath(),
-        this.quiet
-      );
+      await this.createCacheDir();
+      const client: Client = this._config.client;
+      const uri: string = this._config.uri;
+      this._web3apiManifest = await client.getManifest(uri, {
+        type: "web3api",
+      });
     }
 
     return Promise.resolve(this._web3apiManifest);
@@ -188,14 +186,10 @@ export class ExternalWeb3ApiProject extends Project {
 
   public async getBuildManifest(): Promise<BuildManifest> {
     if (!this._buildManifest) {
-      const manifestPath: string = this.getBuildManifestPath();
-      if(!fs.existsSync(manifestPath)) {
-        await this.fetchAndCacheManifest("build");
-      }
-      this._buildManifest = await loadBuildManifest(
-        manifestPath,
-        this.quiet
-      );
+      await this.createCacheDir();
+      const client: Client = this._config.client;
+      const uri: string = this._config.uri;
+      this._buildManifest = await client.getManifest(uri, { type: "build" });
     }
 
     return Promise.resolve(this._buildManifest);
@@ -230,10 +224,10 @@ export class ExternalWeb3ApiProject extends Project {
     if (!this._metaManifest) {
       const manifestPath = await this.getMetaManifestPath();
       if (manifestPath) {
-        if(!fs.existsSync(manifestPath)) {
-          await this.fetchAndCacheManifest("meta");
-        }
-        this._metaManifest = await loadMetaManifest(manifestPath, this.quiet);
+        await this.createCacheDir();
+        const client: Client = this._config.client;
+        const uri: string = this._config.uri;
+        this._metaManifest = await client.getManifest(uri, { type: "meta" });
       }
     }
     return this._metaManifest;
@@ -241,52 +235,21 @@ export class ExternalWeb3ApiProject extends Project {
 
   /// Support Functions
 
-  private async fetchAndCacheManifest(type: ManifestType): Promise<void> {
-    const client: Client = this._config.client;
-    const uri: string = this._config.uri;
-
-    let manifest: string;
-    const fileTitle: string =
-      type === "web3api" ? "web3api" : "web3api." + type;
-    try {
-      // try common yaml suffix
-      const path: string = fileTitle + ".yaml";
-      manifest = (await client.getFile(
-        uri,
-        { path, encoding: "utf8" }
-      )) as string;
-    } catch {
-      // try alternate yaml suffix
-      const path: string = fileTitle + ".yml";
-      manifest = (await client.getFile(
-        uri,
-        { path, encoding: "utf8" }
-      )) as string;
-    }
-
+  private async createCacheDir(): Promise<void> {
     if (!fs.existsSync(this._cachePath)) {
       fs.mkdirSync(this._cachePath, { recursive: true });
     }
-    const manifestPath = path.join(this._cachePath, `/${fileTitle}.yaml`);
-    await fs.promises.writeFile(manifestPath, manifest);
   }
 
   private async fetchAndCacheSchema(): Promise<void> {
     const client: Client = this._config.client;
     const uri: string = this._config.uri;
 
-    const manifest = await this.getWeb3ApiManifest();
     const dir = this.getWeb3ApiManifestDir();
-    let schemaPath: string;
-    if (manifest.modules.query) {
-      schemaPath = path.join(dir, manifest.modules.query.schema);
-    } else if (manifest.modules.mutation) {
-      schemaPath = path.join(dir, manifest.modules.mutation.schema);
-    } else {
-      schemaPath = path.join(dir, "./schema.graphql");
-    }
-
+    const schemaPath: string = path.join(dir, "./schema.graphql");
     const schema: string = await client.getSchema(uri, {});
+
+    await this.createCacheDir();
     await fs.promises.writeFile(schemaPath, schema);
   }
 }

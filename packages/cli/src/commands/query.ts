@@ -1,12 +1,12 @@
 import { fixParameters } from "../lib/helpers/parameters";
 import { intlMsg } from "../lib/intl";
+import { getSimpleClient } from "../lib/helpers/client";
 
 import axios from "axios";
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 import gql from "graphql-tag";
 import path from "path";
-import { getSimpleClient } from "../lib/helpers/client";
 
 const optionsString = intlMsg.commands_build_options_options();
 const scriptStr = intlMsg.commands_create_options_recipeScript();

@@ -11,7 +11,7 @@ export function manifestLanguageToTargetLanguage(
     case "plugin/typescript":
       return "plugin-ts";
     case "dapp/typescript":
-      return "plugin-ts"; // TODO: should TargetLanguage be expanded to include "dapp-ts"?
+      return "plugin-ts";
     default:
       throw Error(
         intlMsg.lib_language_unsupportedManifestLanguage({

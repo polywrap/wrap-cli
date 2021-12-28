@@ -1,7 +1,6 @@
 format: 0.0.1-prealpha.1
 language: dapp/typescript
 packages:
-  - uri: "w3://fs/./../project/build"
-    namespace: "project"
-  - uri: "w3://ens/ethereum.web3api.eth"
-    namespace: "ethereum"
+  - uri: "./../../../../js/plugins/http/build"
+    namespace: "http"
+    isPlugin: true

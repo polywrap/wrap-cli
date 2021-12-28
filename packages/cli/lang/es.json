@@ -165,6 +165,8 @@
   "lib_publishers_ipfsPublisher_urlMalformed": "IPFS URL Malformed",
   "lib_project_invalid_build_language": "Unrecognized build language {language}. No default manifest found at {defaultPath}",
   "lib_project_language_not_found": "Build language not found. Please include the `language` property in the manifest file.",
+  "lib_project_plugin_uri_support": "The dapp command supports only filesystem URIs for plugins. Examples:",
+  "lib_project_invalid_uri": "Invalid URI Received:",
   "lib_typescript_notInstalled": "Your project uses typescript, but it's not installed",
   "lib_typescript_tsNodeNotInstalled": "Your project uses typescript, but ts-node is not installed",
   "lib_watcher_alreadyWatching": "Watcher session is already in progress. Directory: {dir}",
