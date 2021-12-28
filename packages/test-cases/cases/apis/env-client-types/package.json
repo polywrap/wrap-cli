@@ -1,5 +1,5 @@
 {
-  "name": "test-case-environment-client-types",
+  "name": "test-case-env-client-types",
   "private": true,
   "dependencies": {
     "@web3api/wasm-as": "0.0.1-prealpha.28",

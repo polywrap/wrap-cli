@@ -9,24 +9,15 @@ import {
   InterfaceDefinition,
   CapabilityType,
   CapabilityDefinition,
+  EnvDefinition,
+  createEnvDefinition,
 } from "./definitions";
 
 export * from "./definitions";
 export * from "./scalar";
 export * from "./operation";
 export * from "./query";
-
-export enum EnvironmentType {
-  QueryClientEnvType = "QueryClientEnv",
-  QueryEnvType = "QueryEnv",
-  MutationClientEnvType = "MutationClientEnv",
-  MutationEnvType = "MutationEnv",
-}
-
-export interface Environment {
-  sanitized?: ObjectDefinition;
-  client?: ObjectDefinition;
-}
+export * from "./env";
 
 export interface TypeInfo {
   objectTypes: ObjectDefinition[];
@@ -36,9 +27,9 @@ export interface TypeInfo {
   importedObjectTypes: ImportedObjectDefinition[];
   importedQueryTypes: ImportedQueryDefinition[];
   importedEnumTypes: ImportedEnumDefinition[];
-  environment: {
-    mutation: Environment;
-    query: Environment;
+  envTypes: {
+    query: EnvDefinition;
+    mutation: EnvDefinition;
   };
 }
 
@@ -51,9 +42,9 @@ export function createTypeInfo(): TypeInfo {
     importedObjectTypes: [],
     importedQueryTypes: [],
     importedEnumTypes: [],
-    environment: {
-      mutation: {},
-      query: {},
+    envTypes: {
+      query: createEnvDefinition({}),
+      mutation: createEnvDefinition({}),
     },
   };
 }
@@ -69,9 +60,9 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
     importedObjectTypes: [],
     importedQueryTypes: [],
     importedEnumTypes: [],
-    environment: {
-      mutation: {},
-      query: {},
+    envTypes: {
+      query: createEnvDefinition({}),
+      mutation: createEnvDefinition({}),
     },
   };
 
@@ -155,6 +146,23 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
 
     for (const importedEnumType of typeInfo.importedEnumTypes) {
       tryInsert(combined.importedEnumTypes, importedEnumType);
+    }
+
+    if (typeInfo.envTypes.query.client) {
+      combined.envTypes.query.client = typeInfo.envTypes.query.client;
+    }
+
+    if (typeInfo.envTypes.query.sanitized) {
+      combined.envTypes.query.sanitized = typeInfo.envTypes.query.sanitized;
+    }
+
+    if (typeInfo.envTypes.mutation.client) {
+      combined.envTypes.mutation.client = typeInfo.envTypes.mutation.client;
+    }
+
+    if (typeInfo.envTypes.mutation.sanitized) {
+      combined.envTypes.mutation.sanitized =
+        typeInfo.envTypes.mutation.sanitized;
     }
   }
 

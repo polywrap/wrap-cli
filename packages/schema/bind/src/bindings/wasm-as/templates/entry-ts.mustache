@@ -1,6 +1,7 @@
 import {
   w3_invoke_args,
   w3_invoke,
+  w3_load_env,
   w3_abort,
   w3_sanitize_env,
   InvokeArgs
@@ -15,22 +16,22 @@ import {
 } from "./{{type}}/wrapped";
 {{/methods.length}}
 {{/queryTypes}}
-{{#environment.query.sanitized}}
+{{#envTypes.query.sanitized}}
 import {
   env
-} from "./environment";
+} from "./env";
 import {
   QueryEnv
 } from "./QueryEnv";
-{{/environment.query.sanitized}}
-{{#environment.mutation.sanitized}}
+{{/envTypes.query.sanitized}}
+{{#envTypes.mutation.sanitized}}
 import {
   env
-} from "./environment";
+} from "./env";
 import {
   MutationEnv
 } from "./MutationEnv";
-{{/environment.mutation.sanitized}}
+{{/envTypes.mutation.sanitized}}
 
 export function _w3_invoke(method_size: u32, args_size: u32): bool {
   const args: InvokeArgs = w3_invoke_args(
@@ -50,28 +51,18 @@ export function _w3_invoke(method_size: u32, args_size: u32): bool {
   }
 }
 
-{{#environment.query.sanitized}}
-@external("w3", "__w3_load_env")
-export declare function __w3_load_env(enviroment_ptr: u32): void;
-
-export function _w3_load_env(environment_size: u32): void {
-  const environmentBuf = new ArrayBuffer(environment_size);
-  __w3_load_env(changetype<u32>(environmentBuf));
-
-  env = QueryEnv.fromBuffer(environmentBuf);
+{{#envTypes.query.sanitized}}
+export function _w3_load_env(env_size: u32): void {
+  const envBuf = w3_load_env(env_size);
+  env = QueryEnv.fromBuffer(envBuf);
 }
-{{/environment.query.sanitized}}
-{{#environment.mutation.sanitized}}
-@external("w3", "__w3_load_env")
-export declare function __w3_load_env(enviroment_ptr: u32): void;
-
-export function _w3_load_env(environment_size: u32): void {
-  const environmentBuf = new ArrayBuffer(environment_size);
-  __w3_load_env(changetype<u32>(environmentBuf));
-
-  env = MutationEnv.fromBuffer(environmentBuf);
+{{/envTypes.query.sanitized}}
+{{#envTypes.mutation.sanitized}}
+export function _w3_load_env(env_size: u32): void {
+  const envBuf = w3_load_env(env_size);
+  env = MutationEnv.fromBuffer(envBuf);
 }
-{{/environment.mutation.sanitized}}
+{{/envTypes.mutation.sanitized}}
 
 {{#environment.query.client}}
 export function _w3_sanitize_env(args_size: u32): void {

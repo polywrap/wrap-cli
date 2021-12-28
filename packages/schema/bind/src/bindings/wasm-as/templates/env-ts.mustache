@@ -1,14 +1,14 @@
-{{#environment.query.sanitized}}
+{{#envTypes.query.sanitized}}
 import {
   QueryEnv
 } from "./QueryEnv";
 
 export let env: QueryEnv | null = null;
-{{/environment.query.sanitized}}
-{{#environment.mutation.sanitized}}
+{{/envTypes.query.sanitized}}
+{{#envTypes.mutation.sanitized}}
 import {
   MutationEnv
 } from "./MutationEnv";
 
 export let env: MutationEnv | null = null;
-{{/environment.mutation.sanitized}}
+{{/envTypes.mutation.sanitized}}

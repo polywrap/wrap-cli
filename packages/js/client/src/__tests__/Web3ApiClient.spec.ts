@@ -1818,18 +1818,18 @@ describe("Web3ApiClient", () => {
     );
   });
 
-  it("environment types", async () => {
+  it("env types", async () => {
     const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/environment-types`,
+      `${GetPathToTestApis()}/env-types`,
       ipfsProvider,
       ensAddress
     );
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient({
-      environments: [
+      envs: [
         {
-          uri: "w3://" + ensUri,
+          uri: ensUri,
           common: {
             object: {
               prop: "object string"
@@ -1839,6 +1839,7 @@ describe("Web3ApiClient", () => {
             number: 10,
             bool: true,
             en: "FIRST",
+            array: [32, 23]
           },
           mutation: {
             mutStr: "mutation string",
@@ -1854,14 +1855,14 @@ describe("Web3ApiClient", () => {
       uri: ensUri,
       query: `
         query {
-          environment(
+          queryEnv(
             arg: "string"
           )
         }
       `,
     });
     expect(queryEnv.errors).toBeFalsy();
-    expect(queryEnv.data?.environment).toEqual({
+    expect(queryEnv.data?.queryEnv).toEqual({
       str: "string",
       optFilledStr: "optional string",
       optStr: null,
@@ -1875,21 +1876,22 @@ describe("Web3ApiClient", () => {
       optObject: null,
       en: 0,
       optEnum: null,
-      queryStr: "query string"
+      queryStr: "query string",
+      array: [32, 23]
     });
 
     const mutationEnv = await client.query({
       uri: ensUri,
       query: `
         mutation {
-          mutEnvironment(
+          mutationEnv(
             arg: "string"
           )
         }
       `,
     });
     expect(mutationEnv.errors).toBeFalsy();
-    expect(mutationEnv.data?.mutEnvironment).toEqual({
+    expect(mutationEnv.data?.mutationEnv).toEqual({
       str: "string",
       optFilledStr: "optional string",
       optStr: null,
@@ -1903,20 +1905,21 @@ describe("Web3ApiClient", () => {
       en: 0,
       optEnum: null,
       optObject: null,
-      mutStr: "mutation string"
+      mutStr: "mutation string",
+      array: [32, 23]
     });
   });
 
-  it("environment client types", async () => {
+  it("env client types", async () => {
     const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/environment-client-types`,
+      `${GetPathToTestApis()}/env-client-types`,
       ipfsProvider,
       ensAddress
     );
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient({
-      environments: [
+      envs: [
         {
           uri: "w3://" + ensUri,
           mutation: {

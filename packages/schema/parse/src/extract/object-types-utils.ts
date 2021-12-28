@@ -1,22 +1,12 @@
 import {
   createArrayDefinition,
   createPropertyDefinition,
-  EnvironmentType,
   ObjectDefinition,
   PropertyDefinition,
 } from "../typeInfo";
 import { setPropertyType } from "./property-utils";
 
 import { FieldDefinitionNode, NamedTypeNode } from "graphql";
-
-export function isEnviromentType(type: string): boolean {
-  return (
-    type === EnvironmentType.QueryClientEnvType ||
-    type === EnvironmentType.QueryEnvType ||
-    type === EnvironmentType.MutationEnvType ||
-    type === EnvironmentType.MutationClientEnvType
-  );
-}
 
 export interface State {
   currentType?: ObjectDefinition;

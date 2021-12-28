@@ -3,18 +3,44 @@ import {
   createQueryDefinition,
   createScalarPropertyDefinition,
   createObjectDefinition,
+  createTypeInfo,
+  createEnvDefinition,
+  AnyDefinition,
   TypeInfo,
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
-  environment: {
-    query: {},
-    mutation: {},
+  ...createTypeInfo(),
+  envTypes: {
+    query: createEnvDefinition({
+      sanitized: {
+        ...createObjectDefinition({
+          type: "QueryEnv"
+        }),
+        properties: [
+          {
+            ...createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
+            first: true,
+            last: true,
+          } as AnyDefinition,
+        ],
+      },
+    }),
+    mutation: createEnvDefinition({
+      sanitized: {
+        ...createObjectDefinition({
+          type: "MutationEnv"
+        }),
+        properties: [
+          {
+            ...createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
+            first: true,
+            last: true,
+          } as AnyDefinition,
+        ],
+      },
+    }),
   },
-  interfaceTypes: [],
-  importedObjectTypes: [],
-  importedEnumTypes: [],
-  importedQueryTypes: [],
   queryTypes: [
     {
       ...createQueryDefinition({ type: "Query" }),
@@ -63,23 +89,4 @@ export const typeInfo: TypeInfo = {
       ]
     }
   ],
-  objectTypes: [
-    {
-      ...createObjectDefinition({
-        type: "QueryEnv"
-      }),
-      properties: [
-        createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
-      ],
-    },
-    {
-      ...createObjectDefinition({
-        type: "MutationEnv"
-      }),
-      properties: [
-        createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
-      ],
-    },
-  ],
-  enumTypes: []
 }

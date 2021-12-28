@@ -20,6 +20,8 @@ import {
   EnumRef,
   ObjectRef,
   InterfaceDefinition,
+  EnvDefinition,
+  WithKind,
 } from "../typeInfo";
 
 export * from "./finalizePropertyDef";
@@ -61,6 +63,7 @@ export interface TypeInfoTransformer {
   InterfaceImplementedDefinition?: (
     def: InterfaceImplementedDefinition
   ) => InterfaceImplementedDefinition;
+  EnvDefinition?: (def: EnvDefinition) => EnvDefinition;
 }
 
 export function transformTypeInfo(
@@ -119,33 +122,12 @@ export function transformTypeInfo(
     );
   }
 
-  if (result.environment.query.client) {
-    result.environment.query.client = visitObjectDefinition(
-      result.environment.query.client,
-      transforms
-    );
-  }
+  result.envTypes.query = visitEnvDefinition(result.envTypes.query, transforms);
 
-  if (result.environment.query.sanitized) {
-    result.environment.query.sanitized = visitObjectDefinition(
-      result.environment.query.sanitized,
-      transforms
-    );
-  }
-
-  if (result.environment.mutation.client) {
-    result.environment.mutation.client = visitObjectDefinition(
-      result.environment.mutation.client,
-      transforms
-    );
-  }
-
-  if (result.environment.mutation.sanitized) {
-    result.environment.mutation.sanitized = visitObjectDefinition(
-      result.environment.mutation.sanitized,
-      transforms
-    );
-  }
+  result.envTypes.mutation = visitEnvDefinition(
+    result.envTypes.mutation,
+    transforms
+  );
 
   if (transforms.leave && transforms.leave.TypeInfo) {
     result = transforms.leave.TypeInfo(result);
@@ -352,7 +334,25 @@ export function visitImportedEnumDefinition(
   return visitEnumDefinition(def, transforms) as ImportedEnumDefinition;
 }
 
-export function transformType<TDefinition extends GenericDefinition>(
+export function visitEnvDefinition(
+  def: EnvDefinition,
+  transforms: TypeInfoTransforms
+): EnvDefinition {
+  let result = Object.assign({}, def);
+  result = transformType(result, transforms.enter);
+
+  if (result.sanitized) {
+    result.sanitized = visitObjectDefinition(result.sanitized, transforms);
+  }
+
+  if (result.client) {
+    result.client = visitObjectDefinition(result.client, transforms);
+  }
+
+  return transformType(result, transforms.leave);
+}
+
+export function transformType<TDefinition extends WithKind>(
   type: TDefinition,
   transform?: TypeInfoTransformer
 ): TDefinition {
@@ -378,10 +378,11 @@ export function transformType<TDefinition extends GenericDefinition>(
     ImportedQueryDefinition,
     ImportedObjectDefinition,
     InterfaceImplementedDefinition,
+    EnvDefinition,
   } = transform;
 
   if (GenericDefinition && isKind(result, DefinitionKind.Generic)) {
-    result = Object.assign(result, GenericDefinition(result));
+    result = Object.assign(result, GenericDefinition(result as any));
   }
   if (ObjectDefinition && isKind(result, DefinitionKind.Object)) {
     result = Object.assign(result, ObjectDefinition(result as any));
@@ -436,6 +437,9 @@ export function transformType<TDefinition extends GenericDefinition>(
       result,
       InterfaceImplementedDefinition(result as any)
     );
+  }
+  if (EnvDefinition && isKind(result, DefinitionKind.Env)) {
+    result = Object.assign(result, EnvDefinition(result as any));
   }
 
   return result;
