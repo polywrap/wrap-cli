@@ -1921,7 +1921,7 @@ describe("Web3ApiClient", () => {
     const client = await getClient({
       envs: [
         {
-          uri: "w3://" + ensUri,
+          uri: ensUri,
           mutation: {
             str: "string",
           },

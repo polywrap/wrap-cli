@@ -65,18 +65,18 @@ export function _w3_load_env(env_size: u32): void {
 }
 
 {{/envTypes.mutation.sanitized}}
-{{#environment.query.client}}
+{{#envTypes.query.client}}
 export function _w3_sanitize_env(args_size: u32): void {
   w3_sanitize_env(args_size, sanitizeQueryEnvWrapped);
 }
 
-{{/environment.query.client}}
-{{#environment.mutation.client}}
+{{/envTypes.query.client}}
+{{#envTypes.mutation.client}}
 export function _w3_sanitize_env(args_size: u32): void {
   w3_sanitize_env(args_size, sanitizeMutationEnvWrapped)
 }
 
-{{/environment.mutation.client}}
+{{/envTypes.mutation.client}}
 export function w3Abort(
   msg: string | null,
   file: string | null,

@@ -212,11 +212,7 @@ export class WasmWeb3Api extends Api {
 
       const exports = instance.exports as W3Exports;
 
-      await this._sanitizeAndLoadEnv(
-        invokableModule,
-        state,
-        exports
-      );
+      await this._sanitizeAndLoadEnv(invokableModule, state, exports);
 
       const result = await exports._w3_invoke(
         state.method.length,
@@ -336,10 +332,12 @@ export class WasmWeb3Api extends Api {
 
           await exports._w3_sanitize_env(state.sanitizeEnv.args.byteLength);
           state.env = state.sanitizeEnv.result as ArrayBuffer;
+          this._sanitizedEnv[module] = state.env;
         } else {
           state.env = MsgPack.encode(clientEnv, {
             ignoreUndefined: true,
           });
+          this._sanitizedEnv[module] = state.env;
         }
       }
 

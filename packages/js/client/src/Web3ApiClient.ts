@@ -306,11 +306,7 @@ export class Web3ApiClient implements Client {
         uri: this._toUri(options.uri),
       };
 
-      const api = await this._loadWeb3Api(
-        typedOptions.uri,
-        contextId,
-        typedOptions.module
-      );
+      const api = await this._loadWeb3Api(typedOptions.uri, contextId);
 
       result = (await api.invoke(
         typedOptions,
@@ -541,8 +537,7 @@ export class Web3ApiClient implements Client {
   @Tracer.traceMethod("Web3ApiClient: _loadWeb3Api")
   private async _loadWeb3Api(
     uri: Uri,
-    contextId: string | undefined,
-    module?: string
+    contextId: string | undefined
   ): Promise<Api> {
     const typedUri = typeof uri === "string" ? new Uri(uri) : uri;
     const ignoreCache = this._isContextualized(contextId);
@@ -563,12 +558,7 @@ export class Web3ApiClient implements Client {
           client.invoke<TData, TUri>(options),
         (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
         (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
-          new WasmWeb3Api(
-            uri,
-            manifest,
-            uriResolver,
-            environment
-          )
+          new WasmWeb3Api(uri, manifest, uriResolver, environment)
       );
 
       if (!api) {
