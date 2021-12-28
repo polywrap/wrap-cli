@@ -8,9 +8,15 @@ pub mod invoke;
 pub mod json;
 pub mod memory;
 pub mod msgpack;
+pub mod result;
 pub mod subinvoke;
 
+pub use abort::*;
+pub use get_implementations::*;
+pub use invoke::*;
+pub use subinvoke::*;
+
 pub use big_int::BigInt;
-pub use invoke::InvokeArgs;
+pub use result::wasm_result;
 pub use json::JSON;
 pub use msgpack::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};

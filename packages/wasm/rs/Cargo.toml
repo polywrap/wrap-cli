@@ -14,6 +14,9 @@ keywords = ["polywrap", "wasm", "webassembly"]
 categories = ["wasm"]
 edition = "2021"
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
 [dependencies]
 num-bigint = { version = "0.4", default-features = false, features = ["serde"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
@@ -22,3 +25,4 @@ serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 opt-level = 'z'
 lto = true
 panic = 'abort'
+debug = true
