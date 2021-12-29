@@ -38,7 +38,7 @@ export class PluginWeb3Api extends Api {
     Tracer.setAttribute("input", {
       uri: this._uri,
       plugin: this._plugin,
-      _clientEnvironment: this._clientEnvironment,
+      clientEnvironment: this._clientEnvironment,
     });
     Tracer.endSpan();
   }
