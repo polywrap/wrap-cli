@@ -44,7 +44,7 @@ export abstract class Plugin {
   public abstract getModules(client: Client): PluginModules;
 
   /**
-   * Sanitize plugin environment. 
+   * Sanitize plugin environment.
    * This can optionally implemented by plugin
    *
    * @param env Module environment to be sanitized

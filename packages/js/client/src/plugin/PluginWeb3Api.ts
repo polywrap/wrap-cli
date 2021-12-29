@@ -18,10 +18,8 @@ import {
 import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
 
-function isValidEnv(env: any): boolean {
-  return (typeof env === 'object' &&
-  !Array.isArray(env) &&
-  env !== null)
+function isValidEnv(env: Record<string, unknown>): boolean {
+  return typeof env === "object" && !Array.isArray(env) && env !== null;
 }
 
 export class PluginWeb3Api extends Api {
@@ -89,7 +87,7 @@ export class PluginWeb3Api extends Api {
             client
           )) as Record<string, unknown>;
         }
-  
+
         this._getInstance().loadEnv(env, module);
       }
 
