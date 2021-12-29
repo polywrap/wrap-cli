@@ -12,20 +12,33 @@ import {
   AnyManifest,
   ManifestType,
   GetFileOptions,
+  Env,
+  InvokableModules,
 } from "@web3api/core-js";
 import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
 
+function isValidEnv(env: any): boolean {
+  return (typeof env === 'object' &&
+  !Array.isArray(env) &&
+  env !== null)
+}
+
 export class PluginWeb3Api extends Api {
   private _instance: Plugin | undefined;
 
-  constructor(private _uri: Uri, private _plugin: PluginPackage) {
+  constructor(
+    private _uri: Uri,
+    private _plugin: PluginPackage,
+    private _clientEnvironment?: Env<Uri>
+  ) {
     super();
 
     Tracer.startSpan("PluginWeb3Api: constructor");
     Tracer.setAttribute("input", {
       uri: this._uri,
       plugin: this._plugin,
+      _clientEnvironment: this._clientEnvironment,
     });
     Tracer.endSpan();
   }
@@ -65,6 +78,19 @@ export class PluginWeb3Api extends Api {
 
       if (!pluginModule[method]) {
         throw new Error(`PluginWeb3Api: method "${method}" not found.`);
+      }
+
+      let env = this._getModuleClientEnvironment(module);
+      if (isValidEnv(env)) {
+        if (pluginModule["sanitizeEnv"]) {
+          env = (await executeMaybeAsyncFunction(
+            pluginModule["sanitizeEnv"],
+            env,
+            client
+          )) as Record<string, unknown>;
+        }
+  
+        this._getInstance().loadEnv(env, module);
       }
 
       let jsInput: Record<string, unknown>;
@@ -145,6 +171,28 @@ export class PluginWeb3Api extends Api {
   }
 
   private _getInstance(): Plugin {
-    return this._instance || this._plugin.factory();
+    this._instance ||= this._plugin.factory();
+    return this._instance;
+  }
+
+  @Tracer.traceMethod("WasmWeb3Api: getModuleClientEnvironment")
+  private _getModuleClientEnvironment(
+    module: InvokableModules
+  ): Record<string, unknown> {
+    if (!this._clientEnvironment) {
+      return {};
+    }
+
+    if (module === "query") {
+      return {
+        ...this._clientEnvironment.common,
+        ...this._clientEnvironment.query,
+      };
+    } else {
+      return {
+        ...this._clientEnvironment.common,
+        ...this._clientEnvironment.mutation,
+      };
+    }
   }
 }
