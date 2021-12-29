@@ -26,7 +26,8 @@
             "type": "string"
           },
           "namespace": {
-            "type": "string"
+            "type": "string",
+            "format": "namespace"
           },
           "isPlugin": {
             "type": "boolean"

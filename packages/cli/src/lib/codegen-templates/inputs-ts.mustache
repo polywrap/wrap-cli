@@ -1,20 +1,19 @@
 // @ts-noCheck
 import {
-UInt,
-UInt8,
-UInt16,
-UInt32,
-Int,
-Int8,
-Int16,
-Int32,
-Bytes,
-BigInt,
-Json,
-String,
-Boolean
+  UInt,
+  UInt8,
+  UInt16,
+  UInt32,
+  Int,
+  Int8,
+  Int16,
+  Int32,
+  Bytes,
+  BigInt,
+  Json,
+  String,
+  Boolean
 } from "./types";
-
 import {
 {{#objectTypes}}
   {{type}},
@@ -36,16 +35,20 @@ import {
   {{type}},
 {{/importedQueryTypes}}
 } from "./types";
+import { ExtensionInvocation } from "@web3api/core-js";
 
-{{#queryTypes}}
 {{#methods}}
-  export interface Input_{{name}} extends Record<string, unknown> {
-  {{#arguments}}
-    {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
-  {{/arguments}}
-  }
-  {{^last}}
+export interface Input_{{name}} extends Record<string, unknown> {
+{{#arguments}}
+  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
+{{/arguments}}
+}
+{{^last}}
 
-  {{/last}}
+{{/last}}
 {{/methods}}
-{{/queryTypes}}
+export interface Module {
+  {{#methods}}
+  {{name}}(input: Input_{{name}}): ExtensionInvocation<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>;
+  {{/methods}}
+}

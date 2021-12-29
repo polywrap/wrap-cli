@@ -1,20 +1,19 @@
 // @ts-noCheck
 import {
-UInt,
-UInt8,
-UInt16,
-UInt32,
-Int,
-Int8,
-Int16,
-Int32,
-Bytes,
-BigInt,
-Json,
-String,
-Boolean
+  UInt,
+  UInt8,
+  UInt16,
+  UInt32,
+  Int,
+  Int8,
+  Int16,
+  Int32,
+  Bytes,
+  BigInt,
+  Json,
+  String,
+  Boolean
 } from "./types";
-
 import {
 {{#objectTypes}}
   {{type}},
@@ -36,15 +35,17 @@ import {
   {{type}},
 {{/importedQueryTypes}}
 } from "./types";
-import * as Inputs from "./inputs"
+{{#queryTypes}}
+import * as {{type}}Inputs from "./{{#lowerFirst}}{{type}}{{/lowerFirst}}";
+{{/queryTypes}}
 import { Client, Uri, ExtensionInvocation, Extension, ExtensionFactory, ExtensionConfig, InvokeApiOptions } from "@web3api/core-js";
 
 // Config must extend ExtensionConfig
-export interface {{#title}}{{namespace}}{{/title}}ExtensionConfig<TUri extends Uri | string = string> extends ExtensionConfig<TUri> {
-  uri: TUri;
+export interface {{#title}}{{namespace}}{{/title}}ExtensionConfig extends ExtensionConfig {
+  uri: Uri | string;
 }
 
-class {{#title}}{{namespace}}{{/title}}Extension extends Extension {
+class {{#title}}{{namespace}}{{/title}}Extension extends Extension implements {{#trimTrailing}}{{#queryTypes}}{{type}}Inputs.Module, {{/queryTypes}}{{/trimTrailing}} {
 
   constructor(client: Client, config: {{#title}}{{namespace}}{{/title}}ExtensionConfig) {
     super(client, config);
@@ -52,19 +53,18 @@ class {{#title}}{{namespace}}{{/title}}Extension extends Extension {
 
 {{#queryTypes}}
 {{#methods}}
-  async {{name}}(
-    input: Inputs.Input_{{name}},
-  ): Promise<ExtensionInvocation<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> {
+  {{name}}(
+    input: {{#title}}{{type}}{{/title}}Inputs.Input_{{name}},
+  ): ExtensionInvocation<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}> {
     const options: InvokeApiOptions = {
       uri: this.uri.toString(),
       module: "{{type}}",
       method: "{{name}}",
-      input: input,
-      decode: true,
+      input: input
     };
     return {
       config: () => options,
-      execute: () => this.client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>(options),
+      execute: async () => this.client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>(options),
     };
   }
 
@@ -73,10 +73,9 @@ class {{#title}}{{namespace}}{{/title}}Extension extends Extension {
 }
 
 export const {{#lowerFirst}}{{namespace}}{{/lowerFirst}}Extension: ExtensionFactory<{{#title}}{{namespace}}{{/title}}ExtensionConfig> = (
-  client: Client,
   opts: {{#title}}{{namespace}}{{/title}}ExtensionConfig
 ) => {
   return {
-    factory: () => new {{#title}}{{namespace}}{{/title}}Extension(client, opts),
+    factory: (client: Client) => new {{#title}}{{namespace}}{{/title}}Extension(client, opts),
   };
 };

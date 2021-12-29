@@ -10,15 +10,15 @@ export interface ExtensionInvocation<
   execute: () => Promise<InvokeApiResult<TData>>;
 }
 
-export interface ExtensionConfig<TUri extends Uri | string = string> {
-  uri: TUri;
+export interface ExtensionConfig {
+  uri: Uri | string;
 }
 
 export abstract class Extension {
   client: Client;
   uri: Uri;
 
-  constructor(client: Client, config: ExtensionConfig<Uri | string>) {
+  constructor(client: Client, config: ExtensionConfig) {
     this.client = client;
     if (typeof config.uri === "string") {
       this.uri = new Uri(config.uri);
@@ -29,10 +29,7 @@ export abstract class Extension {
 }
 
 export type ExtensionPackage = {
-  factory: () => Extension;
+  factory: (client: Client) => Extension;
 };
 
-export type ExtensionFactory<TOpts> = (
-  client: Client,
-  opts: TOpts
-) => ExtensionPackage;
+export type ExtensionFactory<TOpts> = (opts: TOpts) => ExtensionPackage;

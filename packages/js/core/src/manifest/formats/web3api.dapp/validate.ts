@@ -31,6 +31,7 @@ const schemas: DappManifestSchemas = {
 const validator = new Validator();
 
 Validator.prototype.customFormats.dappLanguage = Validators.dappLanguage;
+Validator.prototype.customFormats.namespace = Validators.namespace;
 
 export const validateDappManifest = Tracer.traceFunc(
   "core: validateDappManifest",

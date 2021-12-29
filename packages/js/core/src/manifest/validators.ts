@@ -105,3 +105,7 @@ export function regexString(regex: unknown): boolean {
 
   return isValid;
 }
+
+export function namespace(ns: unknown): boolean {
+  return typeof ns === "string" && !!ns.match(/^[A-Za-z]+[A-Za-z0-9]*/);
+}
