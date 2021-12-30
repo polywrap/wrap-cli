@@ -1,3 +1,15 @@
+# Web3API 0.0.1-prealpha.59
+## Features
+* Web3APIs can now be configured via environment variables. Documentation will be created soon. Initial details on this features specification can be found [here](https://github.com/polywrap/monorepo/issues/140).
+
+# Web3API 0.0.1-prealpha.58
+## Features
+* `@web3api/client-js`: Added `noDecode` invocation option.
+* `@web3api/client-js`: Added `noDefaults` constructor option.
+
+## Bugs
+* `@web3api/ethereum-plugin-js`: The `encodeParams` now properly parses arguments of type Array & Tuple.
+
 # Web3API 0.0.1-prealpha.57
 ## Features
 * `@web3api/cli`: CLI command middleware support has been added. The first use-cases implemented are to help ensure Docker is available to the CLI instance, and not in-use by another CLI instance.

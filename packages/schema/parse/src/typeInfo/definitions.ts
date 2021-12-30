@@ -20,20 +20,25 @@ export enum DefinitionKind {
   ObjectRef = 1 << 13,
   EnumRef = 1 << 14,
   Interface = 1 << 15,
+  Env = 1 << 16,
 }
 
-export function isKind(type: GenericDefinition, kind: DefinitionKind): boolean {
+export function isKind(type: WithKind, kind: DefinitionKind): boolean {
   return (type.kind & kind) === kind;
 }
 
-export type WithComment = {
+export interface WithComment {
   comment?: string;
-};
-export interface GenericDefinition {
+}
+
+export interface WithKind {
+  kind: DefinitionKind;
+}
+
+export interface GenericDefinition extends WithKind {
   type: string;
   name: string | null;
   required: boolean | null;
-  kind: DefinitionKind;
 }
 export function createGenericDefinition(args: {
   type: string;
@@ -480,5 +485,20 @@ export function createImportedObjectDefinition(args: {
     nativeType: args.nativeType,
     comment: args.comment,
     kind: DefinitionKind.ImportedObject,
+  };
+}
+
+export interface EnvDefinition extends WithKind {
+  sanitized?: ObjectDefinition;
+  client?: ObjectDefinition;
+}
+export function createEnvDefinition(args: {
+  sanitized?: ObjectDefinition;
+  client?: ObjectDefinition;
+}): EnvDefinition {
+  return {
+    kind: DefinitionKind.Env,
+    sanitized: args.sanitized,
+    client: args.client,
   };
 }

@@ -54,7 +54,8 @@ export class PluginWeb3Api extends Api {
     client: Client
   ): Promise<InvokeApiResult<TData>> {
     try {
-      const { module, method, input, resultFilter } = options;
+      const { module, method, resultFilter } = options;
+      const input = options.input || {};
       const modules = this._getInstance().getModules(client);
       const pluginModule = modules[module];
 

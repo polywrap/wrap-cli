@@ -48,6 +48,7 @@ export const createImports = (config: {
           module: moduleToInvoke as InvokableModules,
           method: method,
           input: input,
+          noDecode: true,
         });
 
         if (!error) {
@@ -137,6 +138,22 @@ export const createImports = (config: {
           return;
         }
         writeBytes(state.getImplementationsResult, memory.buffer, ptr);
+      },
+      __w3_load_env: (ptr: u32): void => {
+        if (state.env) {
+          writeBytes(state.env, memory.buffer, ptr);
+        }
+      },
+      __w3_sanitize_env_args: (ptr: u32): void => {
+        if (!state.sanitizeEnv.args) {
+          abort("__w3_sanitize_env: args is not set");
+          return;
+        }
+
+        writeBytes(state.sanitizeEnv.args, memory.buffer, ptr);
+      },
+      __w3_sanitize_env_result: (ptr: u32, len: u32): void => {
+        state.sanitizeEnv.result = readBytes(memory.buffer, ptr, len);
       },
       __w3_abort: (
         msgPtr: u32,
