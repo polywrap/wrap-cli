@@ -48,10 +48,10 @@ export async function composeSchema(
     typeInfos[name] = await resolveImportsAndParseSchemas(
       schema.schema,
       schema.absolutePath,
-      name === "mutation",
+      name !== "query",
       resolvers
     );
-    resolveEnvTypes(typeInfos[name], name === "mutation");
+    resolveEnvTypes(typeInfos[name], name !== "query");
   }
 
   // Forming our output structure for the caller
