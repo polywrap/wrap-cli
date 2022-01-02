@@ -8,7 +8,7 @@ import {
   Web3ApiManifest,
   BuildManifest,
   MetaManifest,
-  Client,
+  Client, Uri,
 } from "@web3api/core-js";
 import { TargetLanguage } from "@web3api/schema-bind";
 import path from "path";
@@ -16,7 +16,7 @@ import fs from "fs";
 
 export interface ExternalWeb3ApiProjectConfig extends ProjectConfig {
   rootPath: string;
-  uri: string;
+  uri: Uri;
   namespace: string;
   client: Client;
 }
@@ -119,7 +119,7 @@ export class ExternalWeb3ApiProject extends Project {
     if (!this._web3apiManifest) {
       await this.createCacheDir();
       const client: Client = this._config.client;
-      const uri: string = this._config.uri;
+      const uri: Uri = this._config.uri;
       this._web3apiManifest = await client.getManifest(uri, {
         type: "web3api",
       });
@@ -188,7 +188,7 @@ export class ExternalWeb3ApiProject extends Project {
     if (!this._buildManifest) {
       await this.createCacheDir();
       const client: Client = this._config.client;
-      const uri: string = this._config.uri;
+      const uri: Uri = this._config.uri;
       this._buildManifest = await client.getManifest(uri, { type: "build" });
     }
 
@@ -226,7 +226,7 @@ export class ExternalWeb3ApiProject extends Project {
       if (manifestPath) {
         await this.createCacheDir();
         const client: Client = this._config.client;
-        const uri: string = this._config.uri;
+        const uri: Uri = this._config.uri;
         this._metaManifest = await client.getManifest(uri, { type: "meta" });
       }
     }
@@ -243,7 +243,7 @@ export class ExternalWeb3ApiProject extends Project {
 
   private async fetchAndCacheSchema(): Promise<void> {
     const client: Client = this._config.client;
-    const uri: string = this._config.uri;
+    const uri: Uri = this._config.uri;
 
     const dir = this.getWeb3ApiManifestDir();
     const schemaPath: string = path.join(dir, "./schema.graphql");

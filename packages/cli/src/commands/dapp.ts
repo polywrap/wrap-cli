@@ -168,7 +168,8 @@ export default {
     // Generate code for each Polywrap package
     let result = true;
     for (const pack of packages) {
-      const { uri, namespace, isPlugin } = pack;
+      const { uri: unsanitizedUri, namespace, isPlugin } = pack;
+      const uri: Uri = sanitizeUri(unsanitizedUri, isPlugin);
 
       const project: Project = isPlugin
         ? new ExternalPluginProject({
@@ -194,7 +195,7 @@ export default {
         schemaComposer,
         customScript,
         outputDir: path.join(outputDir, namespace),
-        mustacheView: { uri: sanitizeUri(uri), namespace, packages },
+        mustacheView: { uri, namespace, packages },
       });
 
       if (await codeGenerator.generate()) {
@@ -221,18 +222,29 @@ export default {
 };
 
 
-function sanitizeUri(uri: string): Uri {
+function sanitizeUri(uri: string, isPlugin?: boolean): Uri {
   let result: Uri;
   try {
     result = new Uri(uri);
   } catch (e) {
+    // check if the uri is a filepath without a fs/ prefix
     if (!fs.existsSync(uri)) {
       throw e;
     }
-    result = new Uri(`fs/${uri}`);
+    result = new Uri(`w3://fs/${uri}`);
   }
+  // convert to absolute path
   if (result.authority === "fs") {
     result = new Uri(`w3://fs/${path.resolve(result.path)}`);
+  // plugins must use a filepath uri
+  } else if (isPlugin) {
+    throw Error(
+      `${intlMsg.lib_project_plugin_uri_support()}\n` +
+      `w3://fs/./node_modules/myPlugin/\n` +
+      `fs/./node_modules/myPlugin/\n` +
+      `./node_modules/myPlugin/\n\n` +
+      `${intlMsg.lib_project_invalid_uri()}: ${uri}`
+    );
   }
   return result;
 }

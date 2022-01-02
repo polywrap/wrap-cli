@@ -4,7 +4,7 @@ const { toTypescript } = require("@web3api/schema-bind");
 
 exports.run = (output, config) => {
 
-// Transform the TypeInfo to our liking
+  // Transform the TypeInfo to our liking
   config.typeInfo = transformTypeInfo(config.typeInfo, toPrefixedGraphQLType);
   config.typeInfo.toTypescript = toTypescript;
 

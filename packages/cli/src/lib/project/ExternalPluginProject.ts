@@ -8,11 +8,10 @@ import { PluginManifest, Uri } from "@web3api/core-js";
 import { TargetLanguage } from "@web3api/schema-bind";
 import path from "path";
 import fs from "fs";
-import { intlMsg } from "../intl";
 
 export interface ExternalPluginProjectConfig extends ProjectConfig {
   rootPath: string;
-  uri: string;
+  uri: Uri;
   namespace: string;
   language: string;
 }
@@ -96,9 +95,7 @@ export class ExternalPluginProject extends Project {
   private async createAndCachePluginManifest(): Promise<void> {
     const lang: string = this._config.language.replace("dapp/", "plugin/");
     const manifestDir: string = this.getPluginManifestDir();
-    const pluginDir: string = this.sanitizeExternalPluginUri(
-      this._config.uri
-    );
+    const pluginDir: string = this._config.uri.path;
     const manifestToSchema: string = path.relative(manifestDir, pluginDir);
     const schemaPath: string = path.join(manifestToSchema, "./schema.graphql");
     const manifest: string = `
@@ -109,28 +106,6 @@ schema: ${schemaPath}
     const manifestPath = path.join(manifestDir, "web3api.plugin.yaml");
     await this.createCacheDir();
     await fs.promises.writeFile(manifestPath, manifest);
-  }
-
-  private sanitizeExternalPluginUri(uri: string): string {
-    let result: Uri;
-    try {
-      result = new Uri(uri);
-    } catch (e) {
-      if (!fs.existsSync(uri)) {
-        throw e;
-      }
-      result = new Uri(`fs/${uri}`);
-    }
-    if (result.authority !== "fs") {
-      throw Error(
-        `${intlMsg.lib_project_plugin_uri_support()}\n` +
-        `w3://fs/./node_modules/myPlugin/\n` +
-        `fs/./node_modules/myPlugin/\n` +
-        `./node_modules/myPlugin/\n\n` +
-        `${intlMsg.lib_project_invalid_uri()}: ${uri}`
-      );
-    }
-    return path.resolve(result.path);
   }
 }
 
