@@ -3,6 +3,7 @@ import { clearStyle, w3Cli } from "./utils";
 import { runCLI } from "@web3api/test-env-js";
 import { compareSync } from "dir-compare";
 import * as fs from "fs";
+import { Web3ApiClient } from "@web3api/client-js";
 
 const HELP = `
 w3 dapp command [options]
@@ -111,7 +112,11 @@ ${HELP}`);
     expect(code).toEqual(0);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`- Generate types
-  Generating types from types-ts.mustache
+  Generating types from baseTypes-ts.mustache
+- Generate types
+  Generating types from packageTypes-ts.mustache
+- Generate types
+  Generating types from dappIndex-ts.mustache
 - Generate types
 ✔ Generate types
 🔥 Generated types for namespace project 🔥
@@ -119,8 +124,8 @@ ${HELP}`);
 `);
 
     const expectedTypesResult = compareSync(
-      `${projectRoot}/polywrap/project`,
-      `${projectRoot}/expected-types/project`,
+      `${projectRoot}/polywrap/project/types.ts`,
+      `${projectRoot}/expected-types/project/types.ts`,
       { compareContent: true }
     );
 
@@ -141,7 +146,11 @@ ${HELP}`);
     expect(clearStyle(output)).toEqual(`- Generate types
 - Manifest loaded from ./.w3/ExternalProjects/http/web3api.plugin.yaml
 ✔ Manifest loaded from ./.w3/ExternalProjects/http/web3api.plugin.yaml
-  Generating types from types-ts.mustache
+  Generating types from baseTypes-ts.mustache
+- Generate types
+  Generating types from packageTypes-ts.mustache
+- Generate types
+  Generating types from dappIndex-ts.mustache
 - Generate types
 ✔ Generate types
 🔥 Generated types for namespace http 🔥
@@ -169,19 +178,31 @@ ${HELP}`);
     expect(code).toEqual(0);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`- Generate types
-  Generating types from types-ts.mustache
+  Generating types from baseTypes-ts.mustache
+- Generate types
+  Generating types from packageTypes-ts.mustache
+- Generate types
+  Generating types from dappIndex-ts.mustache
 - Generate types
 ✔ Generate types
 🔥 Generated types for namespace erc20 🔥
 - Generate types
-  Generating types from types-ts.mustache
+  Generating types from baseTypes-ts.mustache
+- Generate types
+  Generating types from packageTypes-ts.mustache
+- Generate types
+  Generating types from dappIndex-ts.mustache
 - Generate types
 ✔ Generate types
 🔥 Generated types for namespace console 🔥
 - Generate types
 - Manifest loaded from ./.w3/ExternalProjects/ethereum/web3api.plugin.yaml
 ✔ Manifest loaded from ./.w3/ExternalProjects/ethereum/web3api.plugin.yaml
-  Generating types from types-ts.mustache
+  Generating types from baseTypes-ts.mustache
+- Generate types
+  Generating types from packageTypes-ts.mustache
+- Generate types
+  Generating types from dappIndex-ts.mustache
 - Generate types
 ✔ Generate types
 🔥 Generated types for namespace ethereum 🔥
@@ -207,5 +228,24 @@ ${HELP}`);
     expect(fs.existsSync(`${projectRoot}/.w3/ExternalProjects/erc20/`)).toBeFalsy();
     expect(fs.existsSync(`${projectRoot}/.w3/ExternalProjects/console/`)).toBeFalsy();
     expect(fs.existsSync(`${projectRoot}/.w3/ExternalProjects/ethereum/`)).toBeFalsy();
+  });
+
+  test("Should be able to read extension properties from client", async () => {
+    const { exitCode: code, stderr: error } = await runCLI(
+      {
+        args: ["dapp", "extension", `-m ${projectRoot}/web3api.dapp.yaml`],
+        cwd: projectRoot,
+        cli: w3Cli,
+      },
+    );
+    expect(code).toEqual(0);
+    expect(error).toBe("");
+
+    const proj = await import ("../dappProject/polywrap");
+    // @ts-ignore
+    const client: Web3ApiClient = new Web3ApiClient({ extensions: [proj.projectExtension({})] });
+    const expectedUri: string = path.resolve(path.join(__dirname, "../project/build"));
+    // @ts-ignore
+    expect(client.project.uri.path).toEqual(expectedUri);
   });
 });

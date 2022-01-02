@@ -13,7 +13,7 @@ import {
   Json,
   String,
   Boolean
-} from "./types";
+} from "../baseTypes";
 import {
 {{#objectTypes}}
   {{type}},
@@ -38,17 +38,30 @@ import {
 {{#queryTypes}}
 import * as {{type}}Inputs from "./{{#lowerFirst}}{{type}}{{/lowerFirst}}";
 {{/queryTypes}}
-import { Client, Uri, ExtensionInvocation, Extension, ExtensionFactory, ExtensionConfig, InvokeApiOptions } from "@web3api/core-js";
+import { Client, Uri, ExtensionInvocation, Extension, ExtensionConfig, ExtensionFactory, InvokeApiOptions } from "@web3api/core-js";
 
-// Config must extend ExtensionConfig
-export interface {{#title}}{{namespace}}{{/title}}ExtensionConfig extends ExtensionConfig {
-  uri: Uri | string;
-}
+export interface {{#title}}{{namespace}}{{/title}}ExtensionConfig extends ExtensionConfig {}
 
-class {{#title}}{{namespace}}{{/title}}Extension extends Extension implements {{#trimTrailing}}{{#queryTypes}}{{type}}Inputs.Module, {{/queryTypes}}{{/trimTrailing}} {
+export interface I{{#title}}{{namespace}}{{/title}}Extension extends Extension, {{#trimTrailing}}{{#queryTypes}}{{type}}Inputs.{{#title}}{{namespace}}{{/title}}{{type}}Module, {{/queryTypes}}{{/trimTrailing}} {}
+
+class {{#title}}{{namespace}}{{/title}}Extension implements I{{#title}}{{namespace}}{{/title}}Extension {
+
+  readonly client: Client;
+  readonly uri: Uri;
+  readonly config: {{#title}}{{namespace}}{{/title}}ExtensionConfig;
 
   constructor(client: Client, config: {{#title}}{{namespace}}{{/title}}ExtensionConfig) {
-    super(client, config);
+    this.client = client;
+    if (config.uri) {
+      if (typeof config.uri === "string") {
+        this.uri = new Uri(config.uri);
+      } else {
+        this.uri = config.uri as Uri;
+      }
+    } else {
+      this.uri = new Uri("{{uri}}");
+    }
+    this.config = config;
   }
 
 {{#queryTypes}}
@@ -77,5 +90,6 @@ export const {{#lowerFirst}}{{namespace}}{{/lowerFirst}}Extension: ExtensionFact
 ) => {
   return {
     factory: (client: Client) => new {{#title}}{{namespace}}{{/title}}Extension(client, opts),
+    namespace: `{{namespace}}`
   };
 };

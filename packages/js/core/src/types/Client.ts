@@ -6,6 +6,7 @@ import {
   Uri,
   PluginRegistration,
   InterfaceImplementations,
+  ExtensionPackage,
 } from "./";
 import { ManifestType, AnyManifest } from "../manifest";
 
@@ -13,6 +14,7 @@ export interface ClientConfig<TUri extends Uri | string = string> {
   redirects: UriRedirect<TUri>[];
   plugins: PluginRegistration<TUri>[];
   interfaces: InterfaceImplementations<TUri>[];
+  extensions: ExtensionPackage[];
 }
 
 export interface Contextualized {
@@ -24,6 +26,8 @@ export type GetRedirectsOptions = Contextualized;
 export type GetPluginsOptions = Contextualized;
 
 export type GetInterfacesOptions = Contextualized;
+
+export type GetExtensionsOptions = Contextualized;
 
 export type GetSchemaOptions = Contextualized;
 
@@ -52,6 +56,8 @@ export interface Client
   getInterfaces(
     options: GetInterfacesOptions
   ): readonly InterfaceImplementations<Uri>[];
+
+  getExtensions(options: GetExtensionsOptions): readonly ExtensionPackage[];
 
   getSchema<TUri extends Uri | string>(
     uri: TUri,

@@ -14,9 +14,10 @@ import { ExternalPluginProject } from "../lib/project/ExternalPluginProject";
 
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
-import { Web3ApiClient } from "@web3api/client-js";
+import { Uri, Web3ApiClient } from "@web3api/client-js";
 import { DappManifest } from "@web3api/core-js";
 import * as path from "path";
+import fs from "fs";
 
 interface PolywrapPackage {
   uri: string;
@@ -35,8 +36,8 @@ interface DappLangSupport {
 
 const langSupport: DappLangSupport = {
   "plugin-ts": {
-    types: __dirname + "/../lib/codegen-templates/types-ts.gen.js",
-    extension: __dirname + "/../lib/codegen-templates/extension-ts.gen.js",
+    types: __dirname + "/../lib/codegen-templates/dapp/types/types-ts.gen.js",
+    extension: __dirname + "/../lib/codegen-templates/dapp/client-extension/extension-ts.gen.js",
   },
 };
 
@@ -166,7 +167,9 @@ export default {
 
     // Generate code for each Polywrap package
     let result = true;
-    for (const { uri, namespace, isPlugin } of packages) {
+    for (const pack of packages) {
+      const { uri, namespace, isPlugin } = pack;
+
       const project: Project = isPlugin
         ? new ExternalPluginProject({
             rootPath: manifestDir,
@@ -191,7 +194,7 @@ export default {
         schemaComposer,
         customScript,
         outputDir: path.join(outputDir, namespace),
-        mustacheView: { namespace },
+        mustacheView: { uri: sanitizeUri(uri), namespace, packages },
       });
 
       if (await codeGenerator.generate()) {
@@ -216,3 +219,20 @@ export default {
     }
   },
 };
+
+
+function sanitizeUri(uri: string): Uri {
+  let result: Uri;
+  try {
+    result = new Uri(uri);
+  } catch (e) {
+    if (!fs.existsSync(uri)) {
+      throw e;
+    }
+    result = new Uri(`fs/${uri}`);
+  }
+  if (result.authority === "fs") {
+    result = new Uri(`w3://fs/${path.resolve(result.path)}`);
+  }
+  return result;
+}

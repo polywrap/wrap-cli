@@ -13,7 +13,7 @@ import {
   Json,
   String,
   Boolean
-} from "./types";
+} from "../baseTypes";
 import {
 {{#objectTypes}}
   {{type}},
@@ -47,7 +47,7 @@ export interface Input_{{name}} extends Record<string, unknown> {
 
 {{/last}}
 {{/methods}}
-export interface Module {
+export interface {{#title}}{{namespace}}{{/title}}{{#title}}{{type}}{{/title}}Module {
   {{#methods}}
   {{name}}(input: Input_{{name}}): ExtensionInvocation<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>;
   {{/methods}}
