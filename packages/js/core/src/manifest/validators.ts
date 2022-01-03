@@ -106,6 +106,7 @@ export function regexString(regex: unknown): boolean {
   return isValid;
 }
 
+// Accepts valid name for JavaScript class and property
 export function namespace(ns: unknown): boolean {
-  return typeof ns === "string" && !!ns.match(/^[A-Za-z]+[A-Za-z0-9]*/);
+  return typeof ns === "string" && !!ns.match(/^[_A-Za-z]+[\w]*$/);
 }
