@@ -19,10 +19,22 @@ import { coreInterfaceUris, UriResolver } from "../interfaces";
 
 import { Tracer } from "@web3api/tracing-js";
 
-export type MaybeUriOrApi = {
-  uri?: Uri;
-  api?: Api;
-}
+// export class UriResolverAggregator implements UriToApiResolver {
+//   constructor(private readonly uriResolvers: UriToApiResolver[]) {
+//   }
+
+//   async resolveUri(uri: Uri): Promise<MaybeUriOrApi> {
+//     for (const uriResolver of this.uriResolvers) {
+//       const uriOrApi = await uriResolver.resolveUri(uri);
+
+//       if (uriOrApi.api) {
+//         return uriOrApi;
+//       }
+//     }
+
+//     return {} as MaybeUriOrApi;
+//   };
+// }
 
 export const resolveUri = Tracer.traceFunc(
   "core: resolveUri",
@@ -35,19 +47,15 @@ export const resolveUri = Tracer.traceFunc(
     createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
     createApi: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) => Api,
     deserializeOptions?: DeserializeManifestOptions
-  ): Promise<MaybeUriOrApi> => {
+  ): Promise<Api> => {
     const finalRedirectedUri = applyRedirects(uri, redirects);
     const plugin = findPluginPackage(finalRedirectedUri, plugins);
 
     if (plugin) {
-      const api = Tracer.traceFunc(
+      return Tracer.traceFunc(
         "resolveUri: createPluginApi",
         (uri: Uri, plugin: PluginPackage) => createPluginApi(uri, plugin)
       )(finalRedirectedUri, plugin);
-      
-      return {
-        api
-      };
     }
 
     // The final URI has been resolved, let's now resolve the Web3API package
@@ -57,15 +65,13 @@ export const resolveUri = Tracer.traceFunc(
       redirects
     );
 
-    const uriOrApi = await resolveUriWithUriResolvers(
+    return await resolveUriWithUriResolvers(
       finalRedirectedUri,
       uriResolverImplementations,
       invoke,
       createApi,
       deserializeOptions
     );
-
-    return uriOrApi;
   }
 );
 
@@ -75,8 +81,33 @@ const resolveUriWithUriResolvers = async (
   invoke: InvokeHandler["invoke"],
   createApi: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) => Api,
   deserializeOptions?: DeserializeManifestOptions
-): Promise<MaybeUriOrApi> => {
+): Promise<Api> => {
   let resolvedUri = uri;
+
+  // Keep track of past URIs to avoid infinite loops
+  const uriHistory: { uri: string; source: string }[] = [
+    {
+      uri: resolvedUri.uri,
+      source: "ROOT",
+    },
+  ];
+
+  const trackUriRedirect = (uri: string, source: string) => {
+    const dupIdx = uriHistory.findIndex((item) => item.uri === uri);
+    uriHistory.push({
+      uri,
+      source,
+    });
+    if (dupIdx > -1) {
+      throw Error(
+        `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${JSON.stringify(
+          uriHistory,
+          null,
+          2
+        )}`
+      );
+    }
+  };
 
   const tryResolveUriWithUriResolver = async (
     uri: Uri,
@@ -109,12 +140,19 @@ const resolveUriWithUriResolvers = async (
     }
 
     if (result.uri) {
-      //Return the resolved URI
+      // Use the new URI, and reset our index
       const convertedUri = new Uri(result.uri);
-    
-      return {
-        uri: convertedUri
-      };
+      trackUriRedirect(convertedUri.uri, uriResolver.uri);
+
+      Tracer.addEvent("uri-resolver-redirect", {
+        from: resolvedUri.uri,
+        to: convertedUri.uri,
+      });
+
+      // Restart the iteration over again
+      i = -1;
+      resolvedUri = convertedUri;
+      continue;
     } else if (result.manifest) {
       // We've found our manifest at the current URI resolver
       // meaning the URI resolver can also be used as an API resolver
@@ -123,19 +161,18 @@ const resolveUriWithUriResolvers = async (
         deserializeOptions
       );
 
-      const api = Tracer.traceFunc(
+      return Tracer.traceFunc(
         "resolveUri: createApi",
         (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
           createApi(uri, manifest, uriResolver)
       )(resolvedUri, manifest, uriResolver);
-   
-      return {
-        api
-      };
     }
   }
 
-  return {
-    uri: resolvedUri
-  };
+  // We've failed to resolve the URI
+  throw Error(
+    `No Web3API found at URI: ${resolvedUri.uri}` +
+      `\nResolution Path: ${JSON.stringify(uriHistory, null, 2)}` +
+      `\nResolvers Used: ${uriResolverImplementationUris}`
+  );
 };

@@ -20,7 +20,6 @@ import {
   Subscription,
   SubscribeOptions,
   parseQuery,
-  resolveUri,
   AnyManifest,
   ManifestType,
   GetRedirectsOptions,
@@ -36,8 +35,14 @@ import {
   sanitizePluginRegistrations,
   sanitizeUriRedirects,
   ClientConfig,
+  PluginResolver,
+  RedirectsResolver,
+  UriResolverImplementationsResolver,
+  MaybeUriOrApi,
+  UriToApiResolver,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
+import { ResolveUriError, resolveUriWithResolvers, UriResolutionHistory } from "./uri-resolution/resolve-uri-with-resolvers";
 
 export { WasmWeb3Api };
 
@@ -400,6 +405,80 @@ export class Web3ApiClient implements Client {
     return subscription;
   }
 
+  @Tracer.traceMethod("Web3ApiClient: resolveUri")
+  public async resolveUri<TUri extends Uri | string>(
+    uri: TUri,
+    contextId?: string,
+    options?: { noCacheRead: boolean, noCacheWrite: boolean }
+  ): Promise<{
+    api?: Api;
+    uri?: Uri;
+    uriHistory: UriResolutionHistory,
+    error?: ResolveUriError
+  }> {
+    const ignoreCache = this._isContextualized(contextId);
+    const cacheRead = !ignoreCache && !options?.noCacheRead;
+    const cacheWrite = !ignoreCache && !options?.noCacheWrite;
+
+    const client = contextualizeClient(this, contextId);
+    const config = this._getConfig(contextId);
+
+    const apiCache = this._apiCache;
+    const uriCacheResolver: UriToApiResolver = {
+      name: "UriCacheResolver",
+      async resolveUri(uri: Uri): Promise<MaybeUriOrApi> {
+        if(!cacheRead) {
+          return {} as MaybeUriOrApi;
+        }
+
+        const api = apiCache.get(uri.uri);
+          
+        return Promise.resolve({
+          api,
+        });
+      }
+    };
+
+    const uriResolvers: UriToApiResolver[] = [
+      new RedirectsResolver(config.redirects),
+      uriCacheResolver,
+      new PluginResolver(
+        config.plugins, 
+        (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin)),
+      new UriResolverImplementationsResolver(
+          config.redirects, 
+          config.interfaces, 
+          <TData = unknown, TUri extends Uri | string = string>(
+            options: InvokeApiOptions<TUri>
+          ): Promise<InvokeApiResult<TData>> =>
+          client.invoke<TData, TUri>(options),
+            (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
+            new WasmWeb3Api(uri, manifest, uriResolver)
+        )
+    ];
+
+    const { 
+      api, 
+      uri: resolvedUri, 
+      uriHistory, 
+      error 
+    } = await resolveUriWithResolvers(this._toUri(uri), uriResolvers);
+
+    //Update cache for all URIs in the chain
+    if (cacheWrite && api) {
+      for(const item of uriHistory.stack) {
+        this._apiCache.set(item.uri, api);
+      }
+    }
+
+    return { 
+      api, 
+      uri: resolvedUri, 
+      uriHistory, 
+      error 
+    };
+  }
+
   private _addDefaultConfig() {
     const defaultClientConfig = getDefaultClientConfig();
 
@@ -514,106 +593,27 @@ export class Web3ApiClient implements Client {
     contextId: string | undefined,
     options?: { noCacheRead: boolean, noCacheWrite: boolean }
   ): Promise<Api> {
-    const typedUri = typeof uri === "string" ? new Uri(uri) : uri;
-    const ignoreCache = this._isContextualized(contextId);
-    let api = ignoreCache ? undefined : this._apiCache.get(uri.uri);
+    const { api, uriHistory, error } = await this.resolveUri(uri, contextId, options);
 
-    // Keep track of past URIs to avoid infinite loops
-    const uriHistory: { uri: string; source: string }[] = [
-      {
-        uri: typedUri.uri,
-        source: "ROOT",
-      },
-    ];
+    if(!api) {
+      if(error && error === ResolveUriError.InfiniteLoop) {
+        throw Error(
+          `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${JSON.stringify(
+            uriHistory,
+            null,
+            2
+          )}`
+        );
+      } 
 
-    if (!api) {
-      const cacheRead = !options?.noCacheRead;
-      const cacheWrite = !options?.noCacheWrite;
-
-      const client = contextualizeClient(this, contextId);
-      const config = this._getConfig(contextId);
-
-      const trackUriRedirect = (uri: string, source: string) => {
-        const dupIdx = uriHistory.findIndex((item) => item.uri === uri);
-        uriHistory.push({
-          uri,
-          source,
-        });
-        if (dupIdx > -1) {
-          throw Error(
-            `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${JSON.stringify(
-              uriHistory,
-              null,
-              2
-            )}`
-          );
-        }
-      };
-
-      let currentUri: Uri = typedUri;
-      
-      while(!api) {
-        if(cacheRead) {
-          api = this._apiCache.get(currentUri.uri);
-          if(api) {
-            break;
-          }
-        }
-
-        const result = await resolveUri(
-            currentUri,
-            config.redirects,
-            config.plugins,
-            config.interfaces,
-            <TData = unknown, TUri extends Uri | string = string>(
-              options: InvokeApiOptions<TUri>
-            ): Promise<InvokeApiResult<TData>> =>
-              client.invoke<TData, TUri>(options),
-            (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
-            (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
-              new WasmWeb3Api(uri, manifest, uriResolver)
-          );
-  
-        if(result.api) {
-          api = result.api;
-        } else if(result.uri) {
-          if(result.uri.uri === currentUri.uri) { 
-            break;
-          }
-
-          trackUriRedirect(result.uri.uri, "UNDEFINED");
-          
-          Tracer.addEvent("uri-resolver-redirect", {
-            from: currentUri.uri,
-            to: result.uri.uri,
-          });
-
-          currentUri = result.uri;
-        } else {
-          break;
-        }
-      }
-
-      //Update cache for all uris in the chain
-      if (api && !ignoreCache && cacheWrite) {
-        for(const uri of Object.keys(uriHistory)) {
-          this._apiCache.set(uri, api);
-        }
-      }
+      throw Error(
+        `No Web3API found at URI: ${uri.uri}` +
+          `\nResolution Path: ${JSON.stringify(uriHistory.stack, null, 2)}` +
+          `\nResolvers Used: ${uriHistory.getResolvers()}`
+      );
     }
 
-    if(api) {
-      return api;
-    } else {
-      throw Error(`Unable to resolve Web3API at uri: ${typedUri.uri}` +
-      `\n${JSON.stringify(uriHistory, null, 2)}`);
-        // We've failed to resolve the URI
-      // throw Error(
-      //   `No Web3API found at URI: ${resolvedUri.uri}` +
-      //     `\nResolution Path: ${JSON.stringify(uriHistory, null, 2)}` +
-      //     `\nResolvers Used: ${uriResolverImplementationUris}`
-      // );
-    }
+    return api;
   }
 }
 

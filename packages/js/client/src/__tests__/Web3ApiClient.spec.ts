@@ -2376,8 +2376,6 @@ enum Logger_LogLevel @imported(
       }`,
     });
 
-    console.log(query)
-
     expect(query.errors).toBeFalsy();
     expect(query.data).toBeTruthy();
     expect(query.data?.queryMethod).toEqual({
