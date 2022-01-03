@@ -4,8 +4,9 @@ import {
   createWeb3ApiProvider
 } from "..";
 import {
-  UseWeb3ApiQueryProps
-} from "../query"
+  UseWeb3ApiInvokeProps,
+  UseWeb3ApiQueryProps,
+} from "../query";
 import { createPlugins } from "./plugins";
 
 import { PluginRegistration } from "@web3api/core-js";
@@ -58,7 +59,7 @@ describe("useWeb3ApiQuery hook", () => {
   });
 
   async function sendQuery<TData extends Record<string, unknown>>(
-    options: UseWeb3ApiQueryProps
+    options: UseWeb3ApiQueryProps | UseWeb3ApiInvokeProps
   ) {
     const hook = () => useWeb3ApiQuery<TData>(options);
 
@@ -82,6 +83,28 @@ describe("useWeb3ApiQuery hook", () => {
 
     await act(async () => {
       await hookResult.current.execute(options.variables);
+    });
+
+    const result = hookResult.current;
+    cleanup();
+    return result;
+  }
+
+  async function sendInvokeWithExecVariables<TData extends Record<string, unknown>>(
+    options: UseWeb3ApiInvokeProps, emptyInput: Record<string, undefined>
+  ) {
+    const hook = () => useWeb3ApiQuery<TData>({
+      uri: options.uri,
+      module: options.module,
+      method: options.method,
+      provider: options.provider,
+      input: emptyInput
+    });
+
+    const { result: hookResult } = renderHook(hook, WrapperProvider);
+
+    await act(async () => {
+      await hookResult.current.execute(options.input as (Record<string, unknown> | undefined));
     });
 
     const result = hookResult.current;
@@ -294,5 +317,59 @@ describe("useWeb3ApiQuery hook", () => {
 
     const { data: getDataData } = await sendQueryWithExecVariables(getStorageDataQuery);
     expect(getDataData?.getData).toBe(3);
+  });
+
+  it("Should update storage data to six when using UseWeb3ApiInvokeProps", async () => {
+    const deployInvocation: UseWeb3ApiInvokeProps = {
+      uri,
+      module: "mutation",
+      method: "deployContract",
+      input: {
+        connection: {
+          networkNameOrChainId: "testnet",
+        },
+      },
+    };
+
+    const { data } = await sendQuery<{
+      deployContract: string
+    }>(deployInvocation);
+
+    const setStorageInvocation: UseWeb3ApiInvokeProps = {
+      uri,
+      module: "mutation",
+      method: "setData",
+      input: {
+        address: data?.deployContract,
+        value: 6,
+        connection: {
+          networkNameOrChainId: "testnet",
+        },
+      },
+    };
+
+    const result = await sendQuery(setStorageInvocation);
+    expect(result.errors).toBeFalsy();
+    expect(result.data?.setData).toMatch(/0x/);
+
+    const getStorageDataInvocation: UseWeb3ApiInvokeProps = {
+      uri,
+      module: "query",
+      method: "getData",
+      input: {
+        address: data?.deployContract,
+        connection: {
+          networkNameOrChainId: "testnet",
+        },
+      },
+    };
+    const emptyInput = {
+      address: undefined,
+      connection: undefined,
+    }
+
+    const { data: getDataData, errors } = await sendInvokeWithExecVariables(getStorageDataInvocation, emptyInput);
+    expect(errors).toBeFalsy();
+    expect(getDataData?.getData).toBe(6);
   });
 });
