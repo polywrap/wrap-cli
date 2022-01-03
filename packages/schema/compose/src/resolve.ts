@@ -33,6 +33,7 @@ import {
   GenericDefinition,
   isKind,
   header,
+  AnyDefinition,
   InterfaceImplementedDefinition,
   ObjectRef,
   EnumRef,
@@ -44,6 +45,9 @@ import {
   createCapability,
   QueryModuleCapability,
   QueryModuleCapabilityMap,
+  createEnvDefinition,
+  createObjectDefinition,
+  envTypes,
 } from "@web3api/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -165,6 +169,10 @@ export async function resolveImportsAndParseSchemas(
     importedEnumTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
+    envTypes: {
+      mutation: createEnvDefinition({}),
+      query: createEnvDefinition({}),
+    },
   };
 
   const externalImports = await resolveExternalImports(
@@ -474,8 +482,8 @@ function addCapabilityDirective(
     for (const capability of capabilities) {
       const typeCapture =
         module === "mutation"
-          ? /type[ \n\t]*Mutation[ \n\t]*([^{]*)[ \n\t]*{/g
-          : /type[ \n\t]*Query[ \n\t]*([^{]*)[ \n\t]*{/g;
+          ? /type[ \n\t]+Mutation[ \n\t]+([^{]*)[ \n\t]*{/g
+          : /type[ \n\t]+Query[ \n\t]+([^{]*)[ \n\t]*{/g;
 
       const replacementQueryStr = `type ${
         module === "mutation" ? "Mutation" : "Query"
@@ -1016,6 +1024,51 @@ async function resolveLocalImports(
           typeInfo.enumTypes.push(typesToImport[importType] as EnumDefinition);
         }
       }
+    }
+  }
+}
+
+export function resolveEnvTypes(typeInfo: TypeInfo, mutation: boolean): void {
+  const genericEnvType = typeInfo.objectTypes.find(
+    (type) => type.type === "Env"
+  );
+  if (!genericEnvType) {
+    return;
+  }
+
+  const specificEnvType = mutation
+    ? typeInfo.envTypes.mutation
+    : typeInfo.envTypes.query;
+
+  if (!specificEnvType.sanitized) {
+    specificEnvType.sanitized = createObjectDefinition({
+      type: mutation ? envTypes.MutationEnv : envTypes.QueryEnv,
+    });
+  }
+
+  typeInfo.objectTypes = typeInfo.objectTypes.filter((type) => {
+    return type.type !== genericEnvType.type;
+  });
+
+  checkDuplicateEnvProperties(
+    specificEnvType.sanitized,
+    genericEnvType.properties
+  );
+  specificEnvType.sanitized.properties.push(...genericEnvType.properties);
+}
+
+export function checkDuplicateEnvProperties(
+  envType: ObjectDefinition,
+  genericEnvProperties: AnyDefinition[]
+): void {
+  const genericEnvPropertiesSet = new Set(
+    genericEnvProperties.map((genericProperty) => genericProperty.name)
+  );
+  for (const specificProperty of envType.properties) {
+    if (genericEnvPropertiesSet.has(specificProperty.name)) {
+      throw new Error(
+        `Type '${envType.type}' contains duplicate property '${specificProperty.name}' of type 'Env'`
+      );
     }
   }
 }

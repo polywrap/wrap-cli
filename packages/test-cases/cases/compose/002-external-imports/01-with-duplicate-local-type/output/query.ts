@@ -2,13 +2,15 @@ import {
   createObjectDefinition,
   createMethodDefinition,
   createQueryDefinition,
-  TypeInfo,
   createObjectPropertyDefinition,
   createImportedObjectDefinition,
   createScalarPropertyDefinition,
+  createTypeInfo,
+  TypeInfo,
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
+  ...createTypeInfo(),
   objectTypes: [
     {
       ...createObjectDefinition({ type: "LocalType" }),
@@ -72,7 +74,4 @@ export const typeInfo: TypeInfo = {
       ],
     },
   ],
-  importedQueryTypes: [],
-  importedEnumTypes: [],
-  interfaceTypes: [],
 };
