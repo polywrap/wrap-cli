@@ -3,7 +3,16 @@ import { clearStyle, w3Cli } from "./utils";
 import { runCLI } from "@web3api/test-env-js";
 import { compareSync } from "dir-compare";
 import * as fs from "fs";
-import { Web3ApiClient } from "@web3api/client-js";
+import axios from "axios";
+import {
+  ExtensionInvocation,
+  ExtensionPackage, InvokeApiOptions,
+  InvokeApiResult,
+  Web3ApiClient,
+} from "@web3api/client-js";
+import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
+import { ensPlugin } from "@web3api/ens-plugin-js";
+import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 
 const HELP = `
 w3 dapp command [options]
@@ -23,6 +32,11 @@ Options:
 
 describe("e2e tests for dapp command", () => {
   const projectRoot = path.resolve(__dirname, "../dappProject/");
+  const simpleStorageProject = path.resolve(__dirname, "../project/");
+
+  afterAll(async () => {
+    await testEnvDown(simpleStorageProject);
+  });
 
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
@@ -230,7 +244,7 @@ ${HELP}`);
     expect(fs.existsSync(`${projectRoot}/.w3/ExternalProjects/ethereum/`)).toBeFalsy();
   });
 
-  test("Should be able to read extension properties from client", async () => {
+  test("Should be able to read/call extension props from client", async () => {
     const { exitCode: code, stderr: error } = await runCLI(
       {
         args: ["dapp", "extension", `-m ${projectRoot}/web3api.dapp.yaml`],
@@ -241,11 +255,123 @@ ${HELP}`);
     expect(code).toEqual(0);
     expect(error).toBe("");
 
+    // import newly generated project extension code
+    // @ts-ignore
     const proj = await import ("../dappProject/polywrap");
+
+    // build and deploy project
+    await testEnvUp(simpleStorageProject);
+    await buildAndDeployApi(simpleStorageProject, "simplestorage.eth");
+    const { ipfs, ethereum, ensAddress } = await getProviders();
+
+    // instantiate client with project extension
+    const client: Web3ApiClient = await createClient(
+      ipfs,
+      ethereum,
+      ensAddress,
+      // @ts-ignore
+      [proj.projectExtension({})]
+    );
+
+    // expect to access uri property
+    const expectedUriPath: string = path.resolve(path.join(__dirname, "../project/build"));
     // @ts-ignore
-    const client: Web3ApiClient = new Web3ApiClient({ extensions: [proj.projectExtension({})] });
-    const expectedUri: string = path.resolve(path.join(__dirname, "../project/build"));
+    expect(client.project.uri.path).toEqual(expectedUriPath);
+
+    // test ExtensionInvocation
     // @ts-ignore
-    expect(client.project.uri.path).toEqual(expectedUri);
+    const extInvoke: ExtensionInvocation<string> = client.project.deployContract({
+      connection: {
+        networkNameOrChainId: "testnet",
+      },
+    });
+
+    const exec: InvokeApiResult<string> = await extInvoke.execute();
+    expect(exec.error).toBeFalsy();
+    expect(exec.data).toBeTruthy();
+
+    const config: InvokeApiOptions = extInvoke.config();
+    expect(config).toStrictEqual({
+      uri: `w3://fs/${expectedUriPath}`,
+      module: "mutation",
+      method: "deployContract",
+      input: {
+        connection: {
+          networkNameOrChainId: "testnet",
+        },
+      },
+    });
   });
 });
+
+async function testEnvUp(cwd: string): Promise<void> {
+  const { exitCode: testenvCode, stderr: testEnvUpErr } = await runCLI({
+    args: ["test-env", "up"],
+    cwd: cwd,
+    cli: w3Cli,
+  });
+  expect(testEnvUpErr).toBe("");
+  expect(testenvCode).toEqual(0);
+}
+
+async function testEnvDown(cwd: string): Promise<void> {
+  await runCLI({
+    args: ["test-env", "down"],
+    cwd: cwd,
+    cli: w3Cli,
+  });
+}
+
+// @ts-ignore
+async function buildAndDeployApi(cwd: string, ensUri: string): Promise<void> {
+  const { exitCode: buildCode, stderr: buildErr } = await runCLI({
+    args: [
+      "build",
+      "--ipfs",
+      "http://localhost:5001",
+      "--test-ens",
+      ensUri,
+    ],
+    cwd: cwd,
+    cli: w3Cli,
+  });
+  expect(buildErr).toBe("");
+  expect(buildCode).toEqual(0);
+}
+
+async function getProviders(): Promise<{
+  ipfs: string;
+  ethereum: string;
+  ensAddress: string;
+}> {
+  const { data: { ipfs, ethereum }, } = await axios.get("http://localhost:4040/providers");
+  const { data } = await axios.get("http://localhost:4040/deploy-ens");
+  return { ipfs, ethereum, ensAddress: data.ensAddress };
+}
+
+async function createClient(ipfs: string, ethereum: string, ensAddress: string, extensions: ExtensionPackage[]): Promise<Web3ApiClient> {
+  return new Web3ApiClient({
+    extensions: extensions,
+    plugins: [
+      {
+        uri: "w3://ens/ipfs.web3api.eth",
+        plugin: ipfsPlugin({ provider: ipfs }),
+      },
+      {
+        uri: "w3://ens/ens.web3api.eth",
+        plugin: ensPlugin({ addresses: { testnet: ensAddress } }),
+      },
+      {
+        uri: "w3://ens/ethereum.web3api.eth",
+        plugin: ethereumPlugin({
+          networks: {
+            testnet: {
+              provider: ethereum
+            },
+          },
+          defaultNetwork: "testnet"
+        }),
+      },
+    ],
+  });
+}

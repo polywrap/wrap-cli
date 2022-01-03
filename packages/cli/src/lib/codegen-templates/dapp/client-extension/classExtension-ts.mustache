@@ -52,7 +52,7 @@ class {{#title}}{{namespace}}{{/title}}Extension implements I{{#title}}{{namespa
 
   constructor(client: Client, config: {{#title}}{{namespace}}{{/title}}ExtensionConfig) {
     this.client = client;
-    if (config.uri) {
+    if (config?.uri) {
       if (typeof config.uri === "string") {
         this.uri = new Uri(config.uri);
       } else {
