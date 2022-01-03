@@ -511,39 +511,109 @@ export class Web3ApiClient implements Client {
   @Tracer.traceMethod("Web3ApiClient: _loadWeb3Api")
   private async _loadWeb3Api(
     uri: Uri,
-    contextId: string | undefined
+    contextId: string | undefined,
+    options?: { noCacheRead: boolean, noCacheWrite: boolean }
   ): Promise<Api> {
     const typedUri = typeof uri === "string" ? new Uri(uri) : uri;
     const ignoreCache = this._isContextualized(contextId);
     let api = ignoreCache ? undefined : this._apiCache.get(uri.uri);
 
+    // Keep track of past URIs to avoid infinite loops
+    const uriHistory: { uri: string; source: string }[] = [
+      {
+        uri: typedUri.uri,
+        source: "ROOT",
+      },
+    ];
+
     if (!api) {
+      const cacheRead = !options?.noCacheRead;
+      const cacheWrite = !options?.noCacheWrite;
+
       const client = contextualizeClient(this, contextId);
       const config = this._getConfig(contextId);
-      api = await resolveUri(
-        typedUri,
-        config.redirects,
-        config.plugins,
-        config.interfaces,
-        <TData = unknown, TUri extends Uri | string = string>(
-          options: InvokeApiOptions<TUri>
-        ): Promise<InvokeApiResult<TData>> =>
-          client.invoke<TData, TUri>(options),
-        (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
-        (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
-          new WasmWeb3Api(uri, manifest, uriResolver)
-      );
 
-      if (!api) {
-        throw Error(`Unable to resolve Web3API at uri: ${typedUri}`);
+      const trackUriRedirect = (uri: string, source: string) => {
+        const dupIdx = uriHistory.findIndex((item) => item.uri === uri);
+        uriHistory.push({
+          uri,
+          source,
+        });
+        if (dupIdx > -1) {
+          throw Error(
+            `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${JSON.stringify(
+              uriHistory,
+              null,
+              2
+            )}`
+          );
+        }
+      };
+
+      let currentUri: Uri = typedUri;
+      
+      while(!api) {
+        if(cacheRead) {
+          api = this._apiCache.get(currentUri.uri);
+          if(api) {
+            break;
+          }
+        }
+
+        const result = await resolveUri(
+            currentUri,
+            config.redirects,
+            config.plugins,
+            config.interfaces,
+            <TData = unknown, TUri extends Uri | string = string>(
+              options: InvokeApiOptions<TUri>
+            ): Promise<InvokeApiResult<TData>> =>
+              client.invoke<TData, TUri>(options),
+            (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
+            (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
+              new WasmWeb3Api(uri, manifest, uriResolver)
+          );
+  
+        if(result.api) {
+          api = result.api;
+        } else if(result.uri) {
+          if(result.uri.uri === currentUri.uri) { 
+            break;
+          }
+
+          trackUriRedirect(result.uri.uri, "UNDEFINED");
+          
+          Tracer.addEvent("uri-resolver-redirect", {
+            from: currentUri.uri,
+            to: result.uri.uri,
+          });
+
+          currentUri = result.uri;
+        } else {
+          break;
+        }
       }
 
-      if (!ignoreCache) {
-        this._apiCache.set(typedUri.uri, api);
+      //Update cache for all uris in the chain
+      if (api && !ignoreCache && cacheWrite) {
+        for(const uri of Object.keys(uriHistory)) {
+          this._apiCache.set(uri, api);
+        }
       }
     }
 
-    return api;
+    if(api) {
+      return api;
+    } else {
+      throw Error(`Unable to resolve Web3API at uri: ${typedUri.uri}` +
+      `\n${JSON.stringify(uriHistory, null, 2)}`);
+        // We've failed to resolve the URI
+      // throw Error(
+      //   `No Web3API found at URI: ${resolvedUri.uri}` +
+      //     `\nResolution Path: ${JSON.stringify(uriHistory, null, 2)}` +
+      //     `\nResolvers Used: ${uriResolverImplementationUris}`
+      // );
+    }
   }
 }
 
