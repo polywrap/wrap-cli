@@ -1,4 +1,4 @@
-use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
+use polywrap_wasm_rs::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer, JSON};
 use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, Default)]
@@ -16,6 +16,7 @@ pub struct Sanity {
     float32: f32,
     float64: f64,
     string: String,
+    json: JSON::Value,
     large_string: String,
     bytes: Vec<u8>,
     large_bytes: Vec<u8>,
@@ -30,6 +31,8 @@ impl Sanity {
         let huge_vec = vec!["Polywrap".to_string(); 10_000];
         let huge_string = huge_vec.join(",");
         let huge_bytes = huge_string.as_bytes();
+
+        let json = JSON::json!({ "foor": "bar", "bar": "baz" });
 
         let mut large_string_array: Vec<String> = vec![];
         let mut large_bytes_array: Vec<Vec<u8>> = vec![];
@@ -59,6 +62,7 @@ impl Sanity {
             float32: 3.402_823_4,
             float64: 3_124_124_512.598_273_3,
             string: "Hello, world!".to_string(),
+            json,
             large_string,
             bytes: Vec::with_capacity(12),
             large_bytes: huge_bytes.to_vec(),
@@ -72,12 +76,12 @@ impl Sanity {
     fn convert_to_buffer(&mut self) -> Vec<u8> {
         let mut context = Context::new();
         context.description = "Serialize sanity (to buffer)...".to_string();
-        let sizer = WriteSizer::new(context.clone());
-        serialize_sanity(sizer.clone(), self);
+        let mut sizer = WriteSizer::new(context.clone());
+        serialize_sanity(&mut sizer, self);
         let mut buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
         buffer.resize(sizer.get_length() as usize, 0);
-        let encoder = WriteEncoder::new(&buffer, context);
-        serialize_sanity(encoder.clone(), self);
+        let mut encoder = WriteEncoder::new(&buffer, context);
+        serialize_sanity(&mut encoder, self);
         encoder.get_buffer()
     }
 
@@ -103,7 +107,7 @@ impl Sanity {
     }
 }
 
-fn serialize_sanity<W: Write>(mut writer: W, sanity: &mut Sanity) {
+fn serialize_sanity<W: Write>(writer: &mut W, sanity: &mut Sanity) {
     writer.write_map_length(20);
     writer.write_str("nil");
     writer.write_nullable_string(&sanity.nil);

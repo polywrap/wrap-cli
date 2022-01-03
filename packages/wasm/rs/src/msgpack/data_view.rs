@@ -178,80 +178,69 @@ impl DataView {
 
     pub fn set_bytes(&mut self, buf: &[u8]) {
         self.check_index_in_range("set_bytes", buf.len());
-        self.buffer.clear();
-        self.buffer.extend_from_slice(buf);
+        self.extend_from_slice(buf);
         self.byte_offset += buf.len();
     }
 
     pub fn set_f32(&mut self, value: f32) {
         self.check_index_in_range("set_f32", 4);
-        let mut swapped_f32 = (value as u32).swap_bytes() as f32;
-        AtomicPtr::new((self.data_start + self.byte_offset) as *mut f32)
-            .store(&mut swapped_f32, Ordering::Relaxed);
+        let swapped_f32 = (value as u32).swap_bytes() as f32;
+        self.extend_from_slice(&swapped_f32.to_be_bytes());
         self.byte_offset += 4;
     }
 
     pub fn set_f64(&mut self, value: f64) {
         self.check_index_in_range("set_f64", 8);
-        let mut swapped_f64 = (value as u64).swap_bytes() as f64;
-        AtomicPtr::new((self.data_start + self.byte_offset) as *mut f64)
-            .store(&mut swapped_f64, Ordering::Relaxed);
+        let swapped_f64 = (value as u64).swap_bytes() as f64;
+        self.extend_from_slice(&swapped_f64.to_be_bytes());
         self.byte_offset += 8;
     }
 
     pub fn set_i8(&mut self, value: i8) {
         self.check_index_in_range("set_i8", 1);
-        AtomicPtr::new((self.data_start + self.byte_offset) as *mut i8)
-            .store(&mut value.swap_bytes(), Ordering::Relaxed);
+        self.extend_from_slice(&value.swap_bytes().to_be_bytes());
         self.byte_offset += 1;
     }
 
     pub fn set_i16(&mut self, value: i16) {
         self.check_index_in_range("set_i16", 2);
-        AtomicPtr::new((self.data_start + self.byte_offset) as *mut i16)
-            .store(&mut value.swap_bytes(), Ordering::Relaxed);
+        self.extend_from_slice(&value.swap_bytes().to_be_bytes());
         self.byte_offset += 2;
     }
 
     pub fn set_i32(&mut self, value: i32) {
         self.check_index_in_range("set_i32", 4);
-        AtomicPtr::new((self.data_start + self.byte_offset) as *mut i32)
-            .store(&mut value.swap_bytes(), Ordering::Relaxed);
+        self.extend_from_slice(&value.swap_bytes().to_be_bytes());
         self.byte_offset += 4;
     }
 
     pub fn set_i64(&mut self, value: i64) {
         self.check_index_in_range("set_i64", 8);
-        AtomicPtr::new((self.data_start + self.byte_offset) as *mut i64)
-            .store(&mut value.swap_bytes(), Ordering::Relaxed);
+        self.extend_from_slice(&value.swap_bytes().to_be_bytes());
         self.byte_offset += 8;
     }
 
     pub fn set_u8(&mut self, value: u8) {
         self.check_index_in_range("set_u8", 1);
-        AtomicPtr::new((self.data_start + self.byte_offset) as *mut u8)
-            .store(&mut value.swap_bytes(), Ordering::Relaxed);
+        self.extend_from_slice(&value.swap_bytes().to_be_bytes());
         self.byte_offset += 1;
     }
 
     pub fn set_u16(&mut self, value: u16) {
         self.check_index_in_range("set_u16", 2);
-        AtomicPtr::new((self.data_start + self.byte_offset) as *mut u16)
-            .store(&mut value.swap_bytes(), Ordering::Relaxed);
+        self.extend_from_slice(&value.swap_bytes().to_be_bytes());
         self.byte_offset += 2;
     }
 
     pub fn set_u32(&mut self, value: u32) {
         self.check_index_in_range("set_u32", 4);
-        AtomicPtr::new((self.data_start + self.byte_offset) as *mut u32)
-            .store(&mut value.swap_bytes(), Ordering::Relaxed);
+        self.extend_from_slice(&value.swap_bytes().to_be_bytes());
         self.byte_offset += 4;
     }
 
     pub fn set_u64(&mut self, value: u64) {
         self.check_index_in_range("set_u64", 8);
-        AtomicPtr::new((self.data_start + self.byte_offset) as *mut u64)
-            .store(&mut value.swap_bytes(), Ordering::Relaxed);
+        self.extend_from_slice(&value.swap_bytes().to_be_bytes());
         self.byte_offset += 8;
     }
 
@@ -277,6 +266,12 @@ impl DataView {
                 self.byte_length,
             );
         }
+    }
+
+    #[inline]
+    fn extend_from_slice(&mut self, buf: &[u8]) {
+        self.buffer.clear();
+        self.buffer.extend_from_slice(buf);
     }
 }
 
