@@ -47,18 +47,14 @@ describe("Web3ApiClient - resolveUri", () => {
   };
 
   it("sanity", async () => {
-    const implementationUri = new Uri("ens/implementation.eth");
+    const uri = new Uri("ens/uri.eth");
    
     const client = await getClient();
 
-    const result = await client.resolveUri(implementationUri);
+    const result = await client.resolveUri(uri);
 
-    expect(result.uri).toEqual(implementationUri);
-
-    expect(result.uriHistory.stack.length).toEqual(1);
-
-    expect(result.uriHistory.stack[0].uri).toEqual(implementationUri.uri);
-    expect(result.uriHistory.stack[0].resolver).toEqual("ROOT");
+    expect(result.uri).toEqual(uri);
+    expect(result.uriHistory.stack).toEqual([]);
   });
 
   it("can resolve redirects", async () => {
@@ -85,13 +81,12 @@ describe("Web3ApiClient - resolveUri", () => {
     expect(result.api).toBeFalsy();
     expect(result.error).toBeFalsy();
 
-    expect(result.uriHistory.stack.length).toEqual(2);
-
-    expect(result.uriHistory.stack[0].uri).toEqual(fromUri.uri);
-    expect(result.uriHistory.stack[0].resolver).toEqual("ROOT");
-
-    expect(result.uriHistory.stack[1].uri).toEqual(toUri2.uri);
-    expect(result.uriHistory.stack[1].resolver).toEqual("RedirectsResolver");
+    expect(result.uriHistory.stack).toEqual([
+      {
+        sourceUri: fromUri.uri,
+        resolver: "RedirectsResolver"
+      }
+    ]);
   });
 
   it("can resolve plugin", async () => {
@@ -124,10 +119,12 @@ describe("Web3ApiClient - resolveUri", () => {
     expect(result.uri).toBe(pluginUri);
     expect(result.error).toBeFalsy();
 
-    expect(result.uriHistory.stack.length).toEqual(1);
-
-    expect(result.uriHistory.stack[0].uri).toEqual(pluginUri.uri);
-    expect(result.uriHistory.stack[0].resolver).toEqual("ROOT");
+    expect(result.uriHistory.stack).toEqual([
+      {
+        sourceUri: pluginUri.uri,
+        resolver: "PluginResolver"
+      }
+    ]);
   });
 
   it("can resolve api", async () => {
@@ -148,9 +145,15 @@ describe("Web3ApiClient - resolveUri", () => {
     expect(result.uri).toBeTruthy();
     expect(result.error).toBeFalsy();
 
-    expect(result.uriHistory.stack.length).toEqual(1);
-
-    expect(result.uriHistory.stack[0].uri).toEqual(apiUri);
-    expect(result.uriHistory.stack[0].resolver).toEqual("ROOT");
+    expect(result.uriHistory.stack).toEqual([
+      {
+        sourceUri: apiUri.uri,
+        resolver: "UriResolverImplementationsResolver"
+      },
+      {
+        sourceUri: "w3://ipfs/QmZsGybrGU97miDxRfNPmrfrEoHxm6EXLqYcf9QyYzUTAc",
+        resolver: "UriResolverImplementationsResolver"
+      }
+    ]);
   });
 });

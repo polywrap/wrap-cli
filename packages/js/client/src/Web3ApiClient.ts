@@ -42,7 +42,9 @@ import {
   UriToApiResolver,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
-import { ResolveUriError, resolveUriWithResolvers, UriResolutionHistory } from "./uri-resolution/resolve-uri-with-resolvers";
+import { resolveUriWithResolvers } from "./uri-resolution/resolve-uri-with-resolvers";
+import { ResolveUriError } from "./uri-resolution/ResolveUriError";
+import { UriResolutionHistory } from "./uri-resolution/UriResolutionHistory";
 
 export { WasmWeb3Api };
 
@@ -467,7 +469,7 @@ export class Web3ApiClient implements Client {
     //Update cache for all URIs in the chain
     if (cacheWrite && api) {
       for(const item of uriHistory.stack) {
-        this._apiCache.set(item.uri, api);
+        this._apiCache.set(item.sourceUri, api);
       }
     }
 
