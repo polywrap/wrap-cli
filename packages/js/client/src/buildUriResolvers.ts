@@ -1,5 +1,5 @@
-import { Web3ApiClientConfig, Uri, UriToApiResolver, MaybeUriOrApi, RedirectsResolver, PluginResolver, PluginPackage, Api, ApiResolver, coreInterfaceUris, getImplementations, InvokeApiOptions, InvokeApiResult, WasmWeb3Api, Web3ApiManifest } from "..";
-import { PluginWeb3Api } from "../plugin/PluginWeb3Api";
+import { Web3ApiClientConfig, Uri, UriToApiResolver, MaybeUriOrApi, RedirectsResolver, PluginResolver, PluginPackage, Api, ApiResolver, coreInterfaceUris, getImplementations, InvokeApiOptions, InvokeApiResult, WasmWeb3Api, Web3ApiManifest } from ".";
+import { PluginWeb3Api } from "./plugin/PluginWeb3Api";
 
 export const buildUriResolvers = (
   config: Readonly<Web3ApiClientConfig<Uri>>, 

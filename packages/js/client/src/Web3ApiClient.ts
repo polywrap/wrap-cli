@@ -35,9 +35,10 @@ import {
   ResolveUriError,
   UriResolutionHistory,
   resolveUriWithResolvers,
+  UriToApiResolver,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
-import { buildUriResolvers } from "./uri-resolution/buildUriResolvers";
+import { buildUriResolvers } from "./buildUriResolvers";
 
 export { WasmWeb3Api };
 
@@ -136,7 +137,7 @@ export class Web3ApiClient implements Client {
     uri: TUri,
     options: GetSchemaOptions = {}
   ): Promise<string> {
-    const api = await this._loadWeb3Api(this._toUri(uri), options.contextId);
+    const api = await this._loadWeb3Api(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
     return await api.getSchema(client);
   }
@@ -149,7 +150,7 @@ export class Web3ApiClient implements Client {
     uri: TUri,
     options: GetManifestOptions<TManifestType>
   ): Promise<AnyManifest<TManifestType>> {
-    const api = await this._loadWeb3Api(this._toUri(uri), options.contextId);
+    const api = await this._loadWeb3Api(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
     return await api.getManifest(options, client);
   }
@@ -159,7 +160,7 @@ export class Web3ApiClient implements Client {
     uri: TUri,
     options: GetFileOptions
   ): Promise<string | ArrayBuffer> {
-    const api = await this._loadWeb3Api(this._toUri(uri), options.contextId);
+    const api = await this._loadWeb3Api(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
     return await api.getFile(options, client);
   }
@@ -287,7 +288,7 @@ export class Web3ApiClient implements Client {
         uri: this._toUri(options.uri),
       };
 
-      const api = await this._loadWeb3Api(typedOptions.uri, contextId);
+      const api = await this._loadWeb3Api(typedOptions.uri, { contextId });
 
       result = (await api.invoke(
         typedOptions,
@@ -403,36 +404,25 @@ export class Web3ApiClient implements Client {
   @Tracer.traceMethod("Web3ApiClient: resolveUri")
   public async resolveUri<TUri extends Uri | string>(
     uri: TUri,
-    contextId?: string,
-    options?: { noCacheRead: boolean, noCacheWrite: boolean }
+    options?: { contextId?: string, noCacheRead?: boolean, noCacheWrite?: boolean },
+    uriResolvers?: UriToApiResolver[]
   ): Promise<{
     api?: Api;
     uri?: Uri;
     uriHistory: UriResolutionHistory,
     error?: ResolveUriError
   }> {
-    const ignoreCache = this._isContextualized(contextId);
-    const cacheRead = !ignoreCache && !options?.noCacheRead;
+    const ignoreCache = this._isContextualized(options?.contextId);
     const cacheWrite = !ignoreCache && !options?.noCacheWrite;
 
-    const client = contextualizeClient(this, contextId);
-    const config = this._getConfig(contextId);
-
-    const uriResolvers = buildUriResolvers(
-      config, 
-      <TData = unknown, TUri extends Uri | string = string>(
-        options: InvokeApiOptions<TUri>
-      ): Promise<InvokeApiResult<TData>> =>
-        client.invoke<TData, TUri>(options),
-      cacheRead ? this._apiCache : undefined
-    );
+    const resolvers = uriResolvers ?? this.getUriResolvers(options);
     
     const { 
       api, 
       uri: resolvedUri, 
       uriHistory, 
       error 
-    } = await resolveUriWithResolvers(this._toUri(uri), uriResolvers);
+    } = await resolveUriWithResolvers(this._toUri(uri), resolvers);
 
     //Update cache for all URIs in the chain
     if (cacheWrite && api) {
@@ -447,6 +437,28 @@ export class Web3ApiClient implements Client {
       uriHistory, 
       error 
     };
+  }
+
+  @Tracer.traceMethod("Web3ApiClient: getUriResolvers")
+  public getUriResolvers(
+    options?: { contextId?: string, noCacheRead?: boolean, noCacheWrite?: boolean }
+  ): UriToApiResolver[] {
+    const ignoreCache = this._isContextualized(options?.contextId);
+    const cacheRead = !ignoreCache && !options?.noCacheRead;
+
+    const client = contextualizeClient(this, options?.contextId);
+    const config = this._getConfig(options?.contextId);
+
+    const uriResolvers = buildUriResolvers(
+      config, 
+      <TData = unknown, TUri extends Uri | string = string>(
+        options: InvokeApiOptions<TUri>
+      ): Promise<InvokeApiResult<TData>> =>
+        client.invoke<TData, TUri>(options),
+      cacheRead ? this._apiCache : undefined
+    );
+    
+    return uriResolvers;
   }
 
   private _addDefaultConfig() {
@@ -560,10 +572,9 @@ export class Web3ApiClient implements Client {
   @Tracer.traceMethod("Web3ApiClient: _loadWeb3Api")
   private async _loadWeb3Api(
     uri: Uri,
-    contextId: string | undefined,
-    options?: { noCacheRead: boolean, noCacheWrite: boolean }
+    options?: {  contextId?: string, noCacheRead?: boolean, noCacheWrite?: boolean }
   ): Promise<Api> {
-    const { api, uriHistory, error } = await this.resolveUri(uri, contextId, options);
+    const { api, uriHistory, error } = await this.resolveUri(uri, options);
 
     if(!api) {
       if(error && error === ResolveUriError.InfiniteLoop) {
