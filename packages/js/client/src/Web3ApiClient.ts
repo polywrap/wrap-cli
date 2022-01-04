@@ -157,9 +157,11 @@ export class Web3ApiClient implements Client {
   }
 
   @Tracer.traceMethod("Web3ApiClient: getExtensions")
-  public getExtensions(options: GetExtensionsOptions = {}): readonly ExtensionPackage[] {
+  public getExtensions(
+    options: GetExtensionsOptions = {}
+  ): readonly ExtensionPackage[] {
     return this._getConfig(options.contextId).extensions;
-  };
+  }
 
   @Tracer.traceMethod("Web3ApiClient: getSchema")
   public async getSchema<TUri extends Uri | string>(
