@@ -1,24 +1,23 @@
-import { fixParameters } from "../lib/helpers/parameters";
-import { intlMsg } from "../lib/intl";
-
-import axios from "axios";
+import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 import gql from "graphql-tag";
 import path from "path";
-import { PluginRegistration, Web3ApiClient } from "@web3api/client-js";
-import { ensPlugin } from "@web3api/ens-plugin-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
+import { getDefaultClientConfig } from "../lib/helpers/default-client-config";
+import { fixParameters } from "../lib/helpers/parameters";
+import { validateConfigs } from "../lib/helpers/validate-configs";
+import { intlMsg } from "../lib/intl";
 
 const optionsString = intlMsg.commands_build_options_options();
 const scriptStr = intlMsg.commands_create_options_recipeScript();
+const configPathStr = intlMsg.commands_query_options_configPath();
 
 const HELP = `
 ${chalk.bold("w3 query")} [${optionsString}] ${chalk.bold(`<${scriptStr}>`)}
 
 ${optionsString[0].toUpperCase() + optionsString.slice(1)}:
   -t, --test-ens  ${intlMsg.commands_build_options_t()}
+  -c, --configs <${configPathStr}> ${intlMsg.commands_query_options_config()}
 `;
 
 export default {
@@ -27,9 +26,10 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print, middleware } = toolbox;
     // eslint-disable-next-line prefer-const
-    let { t, testEns } = parameters.options;
+    let { t, testEns, c, configs } = parameters.options;
 
     testEns = testEns || t;
+    configs = configs || c;
 
     let recipePath;
     try {
@@ -60,63 +60,62 @@ export default {
       return;
     }
 
+    if (configs === true) {
+      const confgisMissingPathMessage = intlMsg.commands_query_error_configsMissingPath(
+        {
+          option: "--configs",
+          argument: `<${configPathStr}>`,
+        }
+      );
+      print.error(confgisMissingPathMessage);
+      print.info(HELP);
+      return;
+    }
+
+    let importedConfigs: Partial<Web3ApiClientConfig> = {};
+
+    if (configs) {
+      const configsModule = await import(filesystem.resolve(configs));
+
+      if (!configsModule || !configsModule.configs) {
+        const configsModuleMissingExportMessage = intlMsg.commands_query_error_configsModuleMissingExport(
+          { module: configs }
+        );
+        print.error(configsModuleMissingExportMessage);
+        process.exitCode = 1;
+        return;
+      }
+
+      try {
+        validateConfigs(configsModule.configs);
+      } catch (e) {
+        print.error(e.message);
+        process.exitCode = 1;
+        return;
+      }
+
+      importedConfigs = configsModule.configs;
+    }
+
     await middleware.run({
       name: toolbox.command?.name,
       options: { testEns, recipePath },
     });
 
-    let ipfsProvider = "";
-    let ethereumProvider = "";
-    let ensAddress = "";
+    let defaultClientConfig: Partial<Web3ApiClientConfig>;
 
     try {
-      const {
-        data: { ipfs, ethereum },
-      } = await axios.get("http://localhost:4040/providers");
-      ipfsProvider = ipfs;
-      ethereumProvider = ethereum;
-      const { data } = await axios.get("http://localhost:4040/ens");
-      ensAddress = data.ensAddress;
+      defaultClientConfig = await getDefaultClientConfig();
     } catch (e) {
       print.error(intlMsg.commands_query_error_noTestEnvFound());
+      process.exitCode = 1;
       return;
     }
 
-    // TODO: move this into its own package, since it's being used everywhere?
-    // maybe have it exported from test-env.
-    const plugins: PluginRegistration[] = [
-      {
-        uri: "w3://ens/ethereum.web3api.eth",
-        plugin: ethereumPlugin({
-          networks: {
-            testnet: {
-              provider: ethereumProvider,
-            },
-            mainnet: {
-              provider:
-                "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
-            },
-          },
-        }),
-      },
-      {
-        uri: "w3://ens/ipfs.web3api.eth",
-        plugin: ipfsPlugin({
-          provider: ipfsProvider,
-          fallbackProviders: ["https://ipfs.io"],
-        }),
-      },
-      {
-        uri: "w3://ens/ens.web3api.eth",
-        plugin: ensPlugin({
-          addresses: {
-            testnet: ensAddress,
-          },
-        }),
-      },
-    ];
-
-    const client = new Web3ApiClient({ plugins });
+    const client = new Web3ApiClient({
+      ...defaultClientConfig,
+      ...importedConfigs,
+    });
 
     const recipe = JSON.parse(filesystem.read(recipePath) as string);
     const dir = path.dirname(recipePath);
