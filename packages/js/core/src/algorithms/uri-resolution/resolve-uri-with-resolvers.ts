@@ -1,7 +1,8 @@
-import { Uri, Api, UriToApiResolver } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
+import { Api, Uri } from "../../types";
 import { ResolveUriError } from "./ResolveUriError";
 import { UriResolutionHistory } from "./UriResolutionHistory";
+import { UriToApiResolver } from "./UriToApiResolver";
 
 type UriHistoryStack = { resolvedUri: string; resolver: string }[];
 

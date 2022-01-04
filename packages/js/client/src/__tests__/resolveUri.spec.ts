@@ -148,11 +148,11 @@ describe("Web3ApiClient - resolveUri", () => {
     expect(result.uriHistory.stack).toEqual([
       {
         sourceUri: apiUri.uri,
-        resolver: "UriResolverImplementationsResolver"
+        resolver: "ApiResolver: w3://ens/ens.web3api.eth"
       },
       {
         sourceUri: "w3://ipfs/QmZsGybrGU97miDxRfNPmrfrEoHxm6EXLqYcf9QyYzUTAc",
-        resolver: "UriResolverImplementationsResolver"
+        resolver: "ApiResolver: w3://ens/ipfs.web3api.eth"
       }
     ]);
   });
