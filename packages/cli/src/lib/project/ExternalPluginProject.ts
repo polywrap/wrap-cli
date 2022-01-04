@@ -108,4 +108,3 @@ schema: ${schemaPath}
     await fs.promises.writeFile(manifestPath, manifest);
   }
 }
-

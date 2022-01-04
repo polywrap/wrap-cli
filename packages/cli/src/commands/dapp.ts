@@ -37,7 +37,9 @@ interface DappLangSupport {
 const langSupport: DappLangSupport = {
   "plugin-ts": {
     types: __dirname + "/../lib/codegen-templates/dapp/types/types-ts.gen.js",
-    extension: __dirname + "/../lib/codegen-templates/dapp/client-extension/extension-ts.gen.js",
+    extension:
+      __dirname +
+      "/../lib/codegen-templates/dapp/client-extension/extension-ts.gen.js",
   },
 };
 
@@ -221,7 +223,6 @@ export default {
   },
 };
 
-
 function sanitizeUri(uri: string, isPlugin?: boolean): Uri {
   let result: Uri;
   try {
@@ -236,14 +237,14 @@ function sanitizeUri(uri: string, isPlugin?: boolean): Uri {
   // convert to absolute path
   if (result.authority === "fs") {
     result = new Uri(`w3://fs/${path.resolve(result.path)}`);
-  // plugins must use a filepath uri
+    // plugins must use a filepath uri
   } else if (isPlugin) {
     throw Error(
       `${intlMsg.lib_project_plugin_uri_support()}\n` +
-      `w3://fs/./node_modules/myPlugin/\n` +
-      `fs/./node_modules/myPlugin/\n` +
-      `./node_modules/myPlugin/\n\n` +
-      `${intlMsg.lib_project_invalid_uri()}: ${uri}`
+        `w3://fs/./node_modules/myPlugin/\n` +
+        `fs/./node_modules/myPlugin/\n` +
+        `./node_modules/myPlugin/\n\n` +
+        `${intlMsg.lib_project_invalid_uri()}: ${uri}`
     );
   }
   return result;

@@ -6,6 +6,7 @@ module.exports = {
     "**/__tests__/**/*.*",
     "**/node_modules/**/*.*",
     "**/coverage/**/*.*",
+    "**/cli/src/lib/codegen-templates/dapp/client-extension/extension-ts.gen.js"
   ],
   overrides: [
     {

@@ -8,7 +8,8 @@ import {
   Web3ApiManifest,
   BuildManifest,
   MetaManifest,
-  Client, Uri,
+  Client,
+  Uri,
 } from "@web3api/core-js";
 import { TargetLanguage } from "@web3api/schema-bind";
 import path from "path";
