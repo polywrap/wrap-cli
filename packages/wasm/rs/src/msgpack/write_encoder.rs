@@ -151,7 +151,11 @@ impl Write for WriteEncoder {
     }
 
     fn write_json(&mut self, value: &JSON::Value) {
-        self.write_str(value.as_str().unwrap());
+        let res: Result<String, JSON::Error> = JSON::from_value(value.clone());
+        match res {
+            Ok(s) => self.write_string(&s),
+            Err(_e) => {}
+        }
     }
 
     fn write_array_length(&mut self, length: u32) {
@@ -209,106 +213,93 @@ impl Write for WriteEncoder {
     }
 
     fn write_nullable_bool(&mut self, value: &Option<bool>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_bool(&value.unwrap());
+        match value {
+            None => self.write_nil(),
+            Some(v) => self.write_bool(v),
         }
     }
 
     fn write_nullable_i8(&mut self, value: &Option<i8>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_i8(&value.unwrap());
+        match value {
+            None => self.write_nil(),
+            Some(v) => self.write_i8(v),
         }
     }
 
     fn write_nullable_i16(&mut self, value: &Option<i16>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_i16(&value.unwrap());
+        match value {
+            None => self.write_nil(),
+            Some(v) => self.write_i16(v),
         }
     }
 
     fn write_nullable_i32(&mut self, value: &Option<i32>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_i32(&value.unwrap());
+        match value {
+            None => self.write_nil(),
+            Some(v) => self.write_i32(v),
         }
     }
 
     fn write_nullable_u8(&mut self, value: &Option<u8>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_u8(&value.unwrap());
+        match value {
+            None => self.write_nil(),
+            Some(v) => self.write_u8(v),
         }
     }
 
     fn write_nullable_u16(&mut self, value: &Option<u16>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_u16(&value.unwrap());
+        match value {
+            None => self.write_nil(),
+            Some(v) => self.write_u16(v),
         }
     }
 
     fn write_nullable_u32(&mut self, value: &Option<u32>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_u32(&value.unwrap());
+        match value {
+            None => self.write_nil(),
+            Some(v) => self.write_u32(v),
         }
     }
 
     fn write_nullable_f32(&mut self, value: &Option<f32>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_f32(&value.unwrap());
+        match value {
+            None => self.write_nil(),
+            Some(v) => self.write_f32(v),
         }
     }
 
     fn write_nullable_f64(&mut self, value: &Option<f64>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_f64(&value.unwrap());
+        match value {
+            None => self.write_nil(),
+            Some(v) => self.write_f64(v),
         }
     }
 
     fn write_nullable_string(&mut self, value: &Option<String>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_string(value.as_ref().unwrap());
+        match value {
+            None => self.write_nil(),
+            Some(v) => self.write_string(v),
         }
     }
 
     fn write_nullable_bytes(&mut self, value: &Option<Vec<u8>>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_bytes(value.as_ref().unwrap());
+        match value {
+            None => self.write_nil(),
+            Some(v) => self.write_bytes(v),
         }
     }
 
     fn write_nullable_bigint(&mut self, value: &Option<BigInt>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_bigint(value.as_ref().unwrap());
+        match value {
+            None => self.write_nil(),
+            Some(v) => self.write_bigint(v),
         }
     }
 
     fn write_nullable_json(&mut self, value: &Option<JSON::Value>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_json(value.as_ref().unwrap());
+        match value {
+            None => self.write_nil(),
+            Some(v) => self.write_json(v),
         }
     }
 
@@ -317,10 +308,9 @@ impl Write for WriteEncoder {
         a: &Option<Vec<T>>,
         arr_fn: impl FnMut(&mut Self, &T),
     ) {
-        if a.is_none() {
-            self.write_nil();
-        } else {
-            self.write_array(a.as_ref().unwrap(), arr_fn);
+        match a {
+            None => self.write_nil(),
+            Some(v) => self.write_array(v, arr_fn),
         }
     }
 
@@ -332,10 +322,9 @@ impl Write for WriteEncoder {
     ) where
         K: Clone + Eq + Hash + Ord,
     {
-        if map.is_none() {
-            self.write_nil();
-        } else {
-            self.write_map(map.as_ref().unwrap(), key_fn, val_fn);
+        match map {
+            None => self.write_nil(),
+            Some(v) => self.write_map(v, key_fn, val_fn),
         }
     }
 

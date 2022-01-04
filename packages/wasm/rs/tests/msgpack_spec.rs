@@ -32,7 +32,7 @@ impl Sanity {
         let huge_string = huge_vec.join(",");
         let huge_bytes = huge_string.as_bytes();
 
-        let json = JSON::json!({ "foor": "bar", "bar": "baz" });
+        let json = JSON::json!({ "foo": "bar", "bar": "baz" });
 
         let mut large_string_array: Vec<String> = vec![];
         let mut large_bytes_array: Vec<Vec<u8>> = vec![];
@@ -137,6 +137,8 @@ fn serialize_sanity<W: Write>(writer: &mut W, sanity: &mut Sanity) {
     writer.write_string(&sanity.string);
     writer.write_str("large_string");
     writer.write_string(&sanity.large_string);
+    writer.write_str("json");
+    writer.write_json(&sanity.json);
     writer.write_str("bytes");
     writer.write_bytes(&sanity.bytes);
     writer.write_str("large_bytes");
@@ -166,7 +168,7 @@ fn serialize_sanity<W: Write>(writer: &mut W, sanity: &mut Sanity) {
 }
 
 fn deserialize_sanity<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<&mut Sanity, String> {
-    let mut num_of_fields = reader.read_map_length().unwrap_or_default();
+    let mut num_of_fields = reader.read_map_length().unwrap();
     while num_of_fields > 0 {
         num_of_fields -= 1;
         let field = reader.read_string().unwrap();
@@ -210,6 +212,9 @@ fn deserialize_sanity<R: Read>(mut reader: R, sanity: &mut Sanity) -> Result<&mu
             }
             "string" => {
                 sanity.string = reader.read_string().unwrap();
+            }
+            "json" => {
+                sanity.json = reader.read_json().unwrap();
             }
             "large_string" => {
                 sanity.large_string = reader.read_string().unwrap();
@@ -259,7 +264,7 @@ fn deserialize_with_overflow<R: Read>(
     mut reader: R,
     sanity: &mut Sanity,
 ) -> Result<&mut Sanity, String> {
-    let mut num_of_fields = reader.read_map_length().unwrap_or_default();
+    let mut num_of_fields = reader.read_map_length().unwrap();
     while num_of_fields > 0 {
         num_of_fields -= 1;
         let field = reader.read_string().unwrap();
@@ -304,14 +309,11 @@ fn deserialize_with_overflow<R: Read>(
             "string" => {
                 sanity.string = reader.read_string().unwrap();
             }
-            "large_string" => {
-                sanity.large_string = reader.read_string().unwrap();
+            "json" => {
+                sanity.json = reader.read_json().unwrap();
             }
             "bytes" => {
                 sanity.bytes = reader.read_bytes().unwrap();
-            }
-            "large_bytes" => {
-                sanity.large_bytes = reader.read_bytes().unwrap();
             }
             "array" => {
                 sanity.array = reader
@@ -342,7 +344,7 @@ fn deserialize_with_invalid_types<R: Read>(
     mut reader: R,
     sanity: &mut Sanity,
 ) -> Result<&mut Sanity, String> {
-    let mut num_of_fields = reader.read_map_length().unwrap_or_default();
+    let mut num_of_fields = reader.read_map_length().unwrap();
     while num_of_fields > 0 {
         num_of_fields -= 1;
         let field = reader.read_string().unwrap();
@@ -386,6 +388,9 @@ fn deserialize_with_invalid_types<R: Read>(
             }
             "string" => {
                 sanity.string = reader.read_string().unwrap();
+            }
+            "json" => {
+                sanity.json = reader.read_json().unwrap();
             }
             "large_string" => {
                 sanity.large_string = reader.read_string().unwrap();
@@ -439,35 +444,17 @@ impl PartialEq for Sanity {
 
 impl Eq for Sanity {}
 
-// #[test]
-// fn serialize_and_deserialize() {
-//     let mut sanity = Sanity::default().init();
-//     let serialized_sanity = sanity.convert_to_buffer();
-//     let deserialized_sanity = sanity
-//         .convert_from_buffer(serialized_sanity.as_slice())
-//         .unwrap();
-//     let new_sanity = deserialized_sanity.to_owned();
-//     assert_eq!(sanity, new_sanity);
-// }
+#[test]
+fn serialize_and_deserialize() {
+    let mut default_sanity = Sanity::default();
+    assert!(!default_sanity.boolean);
+    let mut initialized_sanity = default_sanity.init();
+    assert!(initialized_sanity.boolean);
 
-// #[test]
-// fn serialize_and_deserialize_with_overflow() {
-//     let mut sanity = Sanity::default().init();
-//     let serialized_sanity = sanity.convert_to_buffer();
-//     let deserialized_sanity = sanity
-//         .from_buffer_with_overflows(serialized_sanity.as_slice())
-//         .unwrap();
-//     let new_sanity = deserialized_sanity.to_owned();
-//     assert_eq!(sanity, new_sanity);
-// }
-
-// #[test]
-// fn throw_error_if_invalid_type_found() {
-//     let mut sanity = Sanity::default().init();
-//     let serialized_sanity = sanity.convert_to_buffer();
-//     let deserialized_sanity = sanity
-//         .from_buffer_with_invalid_types(serialized_sanity.as_slice())
-//         .unwrap();
-//     let new_sanity = deserialized_sanity.to_owned();
-//     assert_eq!(sanity, new_sanity);
-// }
+    let serialized_sanity = initialized_sanity.convert_to_buffer();
+    let deserialized_sanity = initialized_sanity
+        .convert_from_buffer(&serialized_sanity)
+        .unwrap()
+        .to_owned();
+    assert_eq!(deserialized_sanity, initialized_sanity);
+}

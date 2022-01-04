@@ -499,16 +499,27 @@ impl Read for ReadDecoder {
     }
 
     fn read_bytes(&mut self) -> Result<Vec<u8>, String> {
-        let array_length = self.read_bytes_length()?;
-        Ok(self.view.get_bytes(array_length as usize))
+        let res = self.read_bytes_length();
+        match res {
+            Ok(len) => Ok(self.view.get_bytes(len as usize)),
+            Err(e) => Err(e),
+        }
     }
 
     fn read_bigint(&mut self) -> Result<BigInt, String> {
-        Ok(BigInt::from_str(&self.read_string()?).unwrap())
+        let res = self.read_string();
+        match res {
+            Ok(v) => Ok(BigInt::from_str(&v).unwrap()),
+            Err(e) => Err(e),
+        }
     }
 
     fn read_json(&mut self) -> Result<JSON::Value, String> {
-        Ok(serde_json::to_value(self.read_string()?).unwrap())
+        let res = self.read_string();
+        match res {
+            Ok(v) => Ok(JSON::to_value(v).unwrap()),
+            Err(e) => Err(e),
+        }
     }
 
     fn read_array_length(&mut self) -> Result<u32, String> {
@@ -553,18 +564,19 @@ impl Read for ReadDecoder {
         let lead_byte = self.view.get_u8();
         if Format::is_fixed_map(lead_byte) {
             return Ok((lead_byte & Format::FOUR_LEAST_SIG_BITS_IN_BYTE) as u32);
-        } else if lead_byte == Format::MAP16 {
-            return Ok((self.view.get_u16()) as u32);
-        } else if lead_byte == Format::MAP32 {
-            return Ok(self.view.get_u32());
         }
-        Err(self.context.print_with_context(
-            &[
-                "Property must be of type `map`",
-                Self::get_error_message(lead_byte)?,
-            ]
-            .concat(),
-        ))
+        match lead_byte {
+            Format::MAP16 => Ok((self.view.get_u16()) as u32),
+            Format::MAP32 => Ok(self.view.get_u32()),
+            Format::NIL => Ok(0),
+            _ => Err(self.context.print_with_context(
+                &[
+                    "Property must be of type `map`",
+                    Self::get_error_message(lead_byte)?,
+                ]
+                .concat(),
+            )),
+        }
     }
 
     fn read_map<K, V>(
