@@ -14,6 +14,7 @@ import {
   UriRedirect,
   InterfaceImplementations,
   PluginRegistration,
+  Env,
   Subscription,
   SubscribeOptions,
   parseQuery,
@@ -22,6 +23,7 @@ import {
   GetRedirectsOptions,
   GetPluginsOptions,
   GetInterfacesOptions,
+  GetEnvsOptions,
   GetSchemaOptions,
   GetManifestOptions,
   GetFileOptions,
@@ -31,6 +33,7 @@ import {
   sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
   sanitizeUriRedirects,
+  sanitizeEnvs,
   ClientConfig,
   ResolveUriError,
   UriResolutionHistory,
@@ -39,8 +42,6 @@ import {
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 import { buildUriResolvers } from "./buildUriResolvers";
-
-export { WasmWeb3Api };
 
 export interface Web3ApiClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
@@ -57,6 +58,7 @@ export class Web3ApiClient implements Client {
     redirects: [],
     plugins: [],
     interfaces: [],
+    envs: [],
     tracingEnabled: false,
   };
 
@@ -77,6 +79,7 @@ export class Web3ApiClient implements Client {
           redirects: config.redirects
             ? sanitizeUriRedirects(config.redirects)
             : [],
+          envs: config.envs ? sanitizeEnvs(config.envs) : [],
           plugins: config.plugins
             ? sanitizePluginRegistrations(config.plugins)
             : [],
@@ -130,6 +133,23 @@ export class Web3ApiClient implements Client {
     options: GetInterfacesOptions = {}
   ): readonly InterfaceImplementations<Uri>[] {
     return this._getConfig(options.contextId).interfaces;
+  }
+
+  @Tracer.traceMethod("Web3ApiClient: getEnvs")
+  public getEnvs(options: GetEnvsOptions = {}): readonly Env<Uri>[] {
+    return this._getConfig(options.contextId).envs;
+  }
+
+  @Tracer.traceMethod("Web3ApiClient: getEnvByUri")
+  public getEnvByUri<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetEnvsOptions
+  ): Env<Uri> | undefined {
+    const uriUri = this._toUri(uri);
+
+    return this.getEnvs(options).find((environment) =>
+      Uri.equals(environment.uri, uriUri)
+    );
   }
 
   @Tracer.traceMethod("Web3ApiClient: getSchema")
@@ -227,7 +247,6 @@ export class Web3ApiClient implements Client {
           this.invoke({
             ...queryInvocations[invocationName],
             uri: queryInvocations[invocationName].uri,
-            decode: true,
             contextId,
           }).then((result) => ({
             name: invocationName,
@@ -477,10 +496,12 @@ export class Web3ApiClient implements Client {
     }
   }
 
+  @Tracer.traceMethod("Web3ApiClient: isContextualized")
   private _isContextualized(contextId: string | undefined): boolean {
     return !!contextId && this._contexts.has(contextId);
   }
 
+  @Tracer.traceMethod("Web3ApiClient: getConfig")
   private _getConfig(contextId?: string): Readonly<Web3ApiClientConfig<Uri>> {
     if (contextId) {
       const context = this._contexts.get(contextId);
@@ -494,6 +515,7 @@ export class Web3ApiClient implements Client {
     }
   }
 
+  @Tracer.traceMethod("Web3ApiClient: validateConfig")
   private _validateConfig(): void {
     // Require plugins to use non-interface URIs
     const pluginUris = this.getPlugins().map((x) => x.uri.uri);
@@ -510,6 +532,7 @@ export class Web3ApiClient implements Client {
     }
   }
 
+  @Tracer.traceMethod("Web3ApiClient: toUri")
   private _toUri(uri: Uri | string): Uri {
     if (typeof uri === "string") {
       return new Uri(uri);
@@ -527,6 +550,7 @@ export class Web3ApiClient implements Client {
    *  3. !parentId && context   -> create context ID, default config as "base", cache context
    *  4. parentId && context    -> create context ID, parent config as "base", cache context
    */
+  @Tracer.traceMethod("Web3ApiClient: setContext")
   private _setContext(
     parentId: string | undefined,
     context: Partial<Web3ApiClientConfig> | undefined
@@ -554,6 +578,7 @@ export class Web3ApiClient implements Client {
       interfaces: context?.interfaces
         ? sanitizeInterfaceImplementations(context.interfaces)
         : config.interfaces,
+      envs: context?.envs ? sanitizeEnvs(context.envs) : config.envs,
       tracingEnabled: context?.tracingEnabled || config.tracingEnabled,
     });
 
@@ -563,6 +588,7 @@ export class Web3ApiClient implements Client {
     };
   }
 
+  @Tracer.traceMethod("Web3ApiClient: clearContext")
   private _clearContext(contextId: string | undefined): void {
     if (contextId) {
       this._contexts.delete(contextId);
@@ -635,6 +661,15 @@ const contextualizeClient = (
         },
         getInterfaces: (options: GetInterfacesOptions = {}) => {
           return client.getInterfaces({ ...options, contextId });
+        },
+        getEnvs: (options: GetEnvsOptions = {}) => {
+          return client.getEnvs({ ...options, contextId });
+        },
+        getEnvByUri: <TUri extends Uri | string>(
+          uri: TUri,
+          options: GetEnvsOptions = {}
+        ) => {
+          return client.getEnvByUri(uri, { ...options, contextId });
         },
         getSchema: <TUri extends Uri | string>(
           uri: TUri,

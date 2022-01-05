@@ -1,4 +1,4 @@
-#import { CustomEnum, AnotherType } from "../imports-local/common.graphql"
+#import { CustomEnum, AnotherType, Env } from "../imports-local/common.graphql"
 #import { Query, Mutation, Object, AnotherObject, Enum } into TestImport from "testimport.uri.eth"
 
 type Mutation {
@@ -17,4 +17,8 @@ type Mutation {
     objectArray: [AnotherType!]!
     optObjectArray: [AnotherType]
   ): AnotherType
+}
+
+type MutationEnv {
+  mutProp: String!
 }

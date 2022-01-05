@@ -7,7 +7,6 @@ import {
   createArrayDefinition,
   createObjectPropertyDefinition,
   createObjectDefinition,
-  TypeInfo,
   createEnumPropertyDefinition,
   createImportedQueryDefinition,
   createImportedObjectDefinition,
@@ -15,10 +14,15 @@ import {
   createInterfaceImplementedDefinition,
   createObjectRef,
   createInterfaceDefinition,
-  createCapability
+  createCapability,
+  createEnvDefinition,
+  createTypeInfo,
+  AnyDefinition,
+  TypeInfo,
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
+  ...createTypeInfo(),
   interfaceTypes: [
     createInterfaceDefinition({
       type: "Namespace",
@@ -31,6 +35,26 @@ export const typeInfo: TypeInfo = {
       }),
     })
   ],
+  envTypes: {
+    query: createEnvDefinition({
+      sanitized: {
+        ...createObjectDefinition({ type: "QueryEnv" }),
+        properties: [
+          {
+            ...createScalarPropertyDefinition({ name: "bar", type: "Bytes", required: false }),
+            first: true,
+            last: null,
+          } as AnyDefinition,
+          {
+            ...createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
+            first: null,
+            last: true,
+          } as AnyDefinition,
+        ],
+      }
+    }),
+    mutation: createEnvDefinition({}),
+  },
   objectTypes: [
     {
       ...createObjectDefinition({ type: "CustomQueryType", comment: "CustomQueryType comment" }),

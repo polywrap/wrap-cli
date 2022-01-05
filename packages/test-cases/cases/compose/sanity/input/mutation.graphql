@@ -1,7 +1,7 @@
 #import { Query, Mutation, CustomType } into Namespace from "test.eth"
 #import { Mutation } into JustMutation from "just.mutation.eth"
 #import { InterfaceObject1, InterfaceObject2, Mutation } into Interface from "test-interface.eth"
-#import { CommonType } from "../imports-local/common.graphql"
+#import { CommonType, Env } from "../imports-local/common.graphql"
 
 """
 Mutation comment
@@ -33,6 +33,10 @@ implObject comment
   method2(
     arg: [String!]!
   ): [Int32!]!
+}
+
+type MutationEnv {
+  bar: Int
 }
 
 """

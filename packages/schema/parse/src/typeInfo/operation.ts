@@ -1,4 +1,4 @@
-const operationTypes = {
+export const operationTypes = {
   mutation: "mutation",
   query: "query",
 };

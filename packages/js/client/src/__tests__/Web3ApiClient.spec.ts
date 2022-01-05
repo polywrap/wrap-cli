@@ -22,6 +22,7 @@ import {
   Client,
   PluginModules,
 } from "@web3api/core-js";
+import * as MsgPack from "@msgpack/msgpack";
 import { readFileSync } from "fs";
 
 jest.setTimeout(200000);
@@ -119,6 +120,56 @@ describe("Web3ApiClient", () => {
         implementations: [new Uri("w3://ens/js-logger.web3api.eth")],
       },
     ]);
+  });
+
+  it("invoke with decode false/true works as expected", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensAddress
+    );
+
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+    const client = await getClient();
+
+    // The decode option is defaulted to true
+    {
+      const result = await client.invoke<string>({
+        uri: ensUri,
+        module: "mutation",
+        method: "deployContract",
+        input: {
+          connection: {
+            networkNameOrChainId: "testnet"
+          }
+        },
+      });
+
+      expect(result.error).toBeFalsy();
+      expect(result.data).toBeTruthy();
+      expect(typeof result.data).toBe("string");
+      expect(result.data).toContain("0x");
+    }
+
+    // When decode is set to false, an ArrayBuffer is returned
+    {
+      const result = await client.invoke({
+        uri: ensUri,
+        module: "mutation",
+        method: "deployContract",
+        input: {
+          connection: {
+            networkNameOrChainId: "testnet"
+          }
+        },
+        noDecode: true
+      });
+
+      expect(result.error).toBeFalsy();
+      expect(result.data).toBeTruthy();
+      expect(result.data instanceof ArrayBuffer).toBeTruthy();
+      expect(MsgPack.decode(result.data as ArrayBuffer)).toContain("0x");
+    }
   });
 
   it("client noDefaults flag works as expected", async () => {
@@ -571,9 +622,9 @@ describe("Web3ApiClient", () => {
             manifest: {
               schema: "",
               implements: [],
-            },
-          },
-        },
+            }
+          }
+        }
       ],
       interfaces: [
         {
@@ -1767,6 +1818,155 @@ describe("Web3ApiClient", () => {
     );
   });
 
+  it("env types", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/env-types`,
+      ipfsProvider,
+      ensAddress
+    );
+
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+    const client = await getClient({
+      envs: [
+        {
+          uri: ensUri,
+          common: {
+            object: {
+              prop: "object string"
+            },
+            str: "string",
+            optFilledStr: "optional string",
+            number: 10,
+            bool: true,
+            en: "FIRST",
+            array: [32, 23]
+          },
+          mutation: {
+            mutStr: "mutation string",
+          },
+          query: {
+            queryStr: "query string",
+          }
+        }
+      ]
+    });
+
+    const queryEnv = await client.query({
+      uri: ensUri,
+      query: `
+        query {
+          queryEnv(
+            arg: "string"
+          )
+        }
+      `,
+    });
+    expect(queryEnv.errors).toBeFalsy();
+    expect(queryEnv.data?.queryEnv).toEqual({
+      str: "string",
+      optFilledStr: "optional string",
+      optStr: null,
+      number: 10,
+      optNumber: null,
+      bool: true,
+      optBool: null,
+      object: {
+        prop: "object string"
+      },
+      optObject: null,
+      en: 0,
+      optEnum: null,
+      queryStr: "query string",
+      array: [32, 23]
+    });
+
+    const mutationEnv = await client.query({
+      uri: ensUri,
+      query: `
+        mutation {
+          mutationEnv(
+            arg: "string"
+          )
+        }
+      `,
+    });
+    expect(mutationEnv.errors).toBeFalsy();
+    expect(mutationEnv.data?.mutationEnv).toEqual({
+      str: "string",
+      optFilledStr: "optional string",
+      optStr: null,
+      number: 10,
+      optNumber: null,
+      bool: true,
+      optBool: null,
+      object: {
+        prop: "object string"
+      },
+      en: 0,
+      optEnum: null,
+      optObject: null,
+      mutStr: "mutation string",
+      array: [32, 23]
+    });
+  });
+
+  it("env client types", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/env-client-types`,
+      ipfsProvider,
+      ensAddress
+    );
+
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+    const client = await getClient({
+      envs: [
+        {
+          uri: ensUri,
+          mutation: {
+            str: "string",
+          },
+          query: {
+            str: "string",
+          }
+        }
+      ]
+    });
+
+    const queryEnv = await client.query({
+      uri: ensUri,
+      query: `
+        query {
+          environment(
+            arg: "string"
+          )
+        }
+      `,
+    });
+    expect(queryEnv.errors).toBeFalsy();
+    expect(queryEnv.data?.environment).toEqual({
+      str: "string",
+      optStr: null,
+      defStr: "default string"
+    });
+
+    const mutationEnv = await client.query({
+      uri: ensUri,
+      query: `
+        mutation {
+          mutEnvironment(
+            arg: "string"
+          )
+        }
+      `,
+    });
+    expect(mutationEnv.errors).toBeFalsy();
+    expect(mutationEnv.data?.mutEnvironment).toEqual({
+      str: "string",
+      optStr: null,
+      defMutStr: "default mutation string"
+    });
+  });
+
   it("loadWeb3Api - pass string or Uri", async () => {
     const implementationUri = "w3://ens/some-implementation.eth";
     const schemaStr = "test-schema";
@@ -2004,6 +2204,14 @@ directive @imported(
 directive @imports(
   types: [String!]!
 ) on OBJECT
+
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
 type Query implements Logger_Query @imports(
