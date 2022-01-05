@@ -29,12 +29,10 @@ export interface ExtensionConfig {
 /**
  * Extension interface
  *
- * @param client A reference to the Client that is used for queries within the Extension
  * @param uri The uri used for queries within the Extension
  * @param config Configuration values for the extension
  */
 export interface Extension {
-  readonly client: Client;
   readonly uri: Uri;
   config: ExtensionConfig;
 }

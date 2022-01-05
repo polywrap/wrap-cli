@@ -46,7 +46,7 @@ export interface I{{#title}}{{namespace}}{{/title}}Extension extends Extension, 
 
 class {{#title}}{{namespace}}{{/title}}Extension implements I{{#title}}{{namespace}}{{/title}}Extension {
 
-  readonly client: Client;
+  private client: Client;
   readonly uri: Uri;
   readonly config: {{#title}}{{namespace}}{{/title}}ExtensionConfig;
 
