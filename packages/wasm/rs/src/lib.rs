@@ -6,7 +6,6 @@ pub mod debug;
 pub mod get_implementations;
 pub mod invoke;
 pub mod json;
-pub mod memory;
 pub mod msgpack;
 pub mod result;
 pub mod subinvoke;

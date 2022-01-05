@@ -1,5 +1,3 @@
-use crate::memory::internal_alloc;
-
 #[link(wasm_import_module = "w3")]
 extern "C" {
     /// Get Invoke Arguments
@@ -24,15 +22,16 @@ pub struct InvokeArgs {
 
 #[allow(unused_unsafe)]
 pub fn w3_invoke_args(method_size: u32, args_size: u32) -> InvokeArgs {
-    let method_buf_ptr = internal_alloc(method_size as usize);
-    let args_buf_ptr = internal_alloc(args_size as usize);
+    let method_size_ptr = method_size as *mut u8;
+    let args_size_ptr = args_size as *mut u8;
 
-    unsafe { __w3_invoke_args(method_buf_ptr as u32, args_buf_ptr as u32) };
+    unsafe { __w3_invoke_args(method_size_ptr as u32, args_size_ptr as u32) };
 
     let method = unsafe {
-        String::from_raw_parts(method_buf_ptr, method_size as usize, method_size as usize)
+        String::from_raw_parts(method_size_ptr, method_size as usize, method_size as usize)
     };
-    let args = unsafe { Vec::from_raw_parts(args_buf_ptr, args_size as usize, args_size as usize) };
+    let args =
+        unsafe { Vec::from_raw_parts(args_size_ptr, args_size as usize, args_size as usize) };
 
     InvokeArgs { method, args }
 }
