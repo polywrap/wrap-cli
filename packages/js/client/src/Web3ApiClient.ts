@@ -39,6 +39,7 @@ import {
   UriResolutionHistory,
   resolveUriWithResolvers,
   UriToApiResolver,
+  Web3ApiManifest,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 import { buildUriResolvers } from "./buildUriResolvers";
@@ -462,11 +463,12 @@ export class Web3ApiClient implements Client {
   public getUriResolvers(
     options?: { contextId?: string, noCacheRead?: boolean, noCacheWrite?: boolean }
   ): UriToApiResolver[] {
-    const ignoreCache = this._isContextualized(options?.contextId);
+    const contextId = options?.contextId;
+    const ignoreCache = this._isContextualized(contextId);
     const cacheRead = !ignoreCache && !options?.noCacheRead;
 
-    const client = contextualizeClient(this, options?.contextId);
-    const config = this._getConfig(options?.contextId);
+    const client = contextualizeClient(this, contextId);
+    const config = this._getConfig(contextId);
 
     const uriResolvers = buildUriResolvers(
       config, 
@@ -474,6 +476,10 @@ export class Web3ApiClient implements Client {
         options: InvokeApiOptions<TUri>
       ): Promise<InvokeApiResult<TData>> =>
         client.invoke<TData, TUri>(options),
+      (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) => {
+        const environment = this.getEnvByUri(uri, { contextId });
+        return new WasmWeb3Api(uri, manifest, uriResolver, environment)
+      },
       cacheRead ? this._apiCache : undefined
     );
     

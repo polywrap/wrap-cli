@@ -6,11 +6,12 @@ export const buildUriResolvers = (
   invoke: <TData = unknown, TUri extends Uri | string = string>(
     options: InvokeApiOptions<TUri>
   ) => Promise<InvokeApiResult<TData>>,
+  createWasmWeb3Api: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) => WasmWeb3Api,
   apiCache?: Map<string, Api>
 ): UriToApiResolver[] => {
   return [
     ...buildDefaultResolvers(config, apiCache),
-    ...buildApiResolvers(config, invoke),
+    ...buildApiResolvers(config, invoke, createWasmWeb3Api),
   ];
 };
 
@@ -53,7 +54,8 @@ const buildApiResolvers = (
   config: Readonly<Web3ApiClientConfig<Uri>>,
   invoke: <TData = unknown, TUri extends Uri | string = string>(
     options: InvokeApiOptions<TUri>
-  ) => Promise<InvokeApiResult<TData>>
+  ) => Promise<InvokeApiResult<TData>>,
+  createWasmWeb3Api: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) => WasmWeb3Api
 ): UriToApiResolver[] => {
   const resolvers: UriToApiResolver[] = [];
 
@@ -67,8 +69,7 @@ const buildApiResolvers = (
     const apiResolver = new ApiResolver(
       resolverUri,
       invoke,
-      (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
-        new WasmWeb3Api(uri, manifest, uriResolver)
+      createWasmWeb3Api
     );
 
     resolvers.push(apiResolver);
