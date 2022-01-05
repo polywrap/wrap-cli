@@ -31,7 +31,7 @@ Options:
 `;
 
 describe("e2e tests for dapp command", () => {
-  const projectRoot = path.resolve(__dirname, "../dappProject/");
+  const projectRoot = path.resolve(__dirname, "../dapp/");
   const simpleStorageProject = path.resolve(__dirname, "../project/");
 
   afterAll(async () => {
@@ -257,7 +257,7 @@ ${HELP}`);
 
     // import newly generated project extension code
     // @ts-ignore
-    const proj = await import ("../dappProject/polywrap");
+    const proj = await import ("../dapp/polywrap");
 
     // build and deploy project
     await testEnvUp(simpleStorageProject);
