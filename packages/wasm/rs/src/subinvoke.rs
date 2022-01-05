@@ -1,3 +1,5 @@
+use crate::malloc::malloc;
+
 #[link(wasm_import_module = "w3")]
 extern "C" {
     /// Subinvoke API
@@ -54,7 +56,7 @@ pub fn w3_subinvoke(
     };
     if !success {
         let error_len = unsafe { __w3_subinvoke_error_len() };
-        let error_len_ptr = error_len as *mut u8;
+        let error_len_ptr = malloc(error_len);
         unsafe { __w3_subinvoke_error(error_len_ptr as u32) };
         let error = unsafe {
             String::from_raw_parts(error_len_ptr, error_len as usize, error_len as usize)
@@ -62,7 +64,7 @@ pub fn w3_subinvoke(
         return Err(error);
     }
     let result_len = unsafe { __w3_subinvoke_result_len() };
-    let result_len_ptr = result_len as *mut u8;
+    let result_len_ptr = malloc(result_len);
     unsafe { __w3_subinvoke_result(result_len_ptr as u32) };
     let result_buf =
         unsafe { Vec::from_raw_parts(result_len_ptr, result_len as usize, result_len as usize) };

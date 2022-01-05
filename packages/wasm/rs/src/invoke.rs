@@ -1,3 +1,5 @@
+use crate::malloc::malloc;
+
 #[link(wasm_import_module = "w3")]
 extern "C" {
     /// Get Invoke Arguments
@@ -22,8 +24,8 @@ pub struct InvokeArgs {
 
 #[allow(unused_unsafe)]
 pub fn w3_invoke_args(method_size: u32, args_size: u32) -> InvokeArgs {
-    let method_size_ptr = method_size as *mut u8;
-    let args_size_ptr = args_size as *mut u8;
+    let method_size_ptr = malloc(method_size);
+    let args_size_ptr = malloc(args_size);
 
     unsafe { __w3_invoke_args(method_size_ptr as u32, args_size_ptr as u32) };
 

@@ -1,4 +1,4 @@
-use crate::{Context, Read, ReadDecoder};
+use crate::{malloc::malloc, Context, Read, ReadDecoder};
 
 #[link(wasm_import_module = "w3")]
 extern "C" {
@@ -13,7 +13,7 @@ extern "C" {
 }
 
 pub fn w3_get_implementations(uri: &str) -> Vec<String> {
-    let uri_buf = uri.as_bytes().to_vec();
+    let uri_buf = uri.as_bytes();
 
     let success = unsafe { __w3_getImplementations(uri_buf.as_ptr() as u32, uri_buf.len() as u32) };
 
@@ -22,7 +22,7 @@ pub fn w3_get_implementations(uri: &str) -> Vec<String> {
     }
 
     let result_len = unsafe { __w3_getImplementations_result_len() };
-    let result_len_ptr = result_len as *mut u8;
+    let result_len_ptr = malloc(result_len);
     let result_buffer =
         unsafe { Vec::from_raw_parts(result_len_ptr, result_len as usize, result_len as usize) };
     unsafe { __w3_getImplementations_result(result_buffer.as_ptr() as u32) };
