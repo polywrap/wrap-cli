@@ -20,10 +20,11 @@ impl ReadDecoder {
     #[allow(dead_code)]
     fn skip(&mut self) {
         // get_size handles discarding `msgpack header` info
-        let mut num_of_objects_to_discard = self.get_size().unwrap();
-        while num_of_objects_to_discard > 0 {
-            self.get_size().expect("Failed to get size"); // discard next object
-            num_of_objects_to_discard -= 1;
+        if let Ok(mut num_of_objects_to_discard) = self.get_size() {
+            while num_of_objects_to_discard > 0 {
+                self.get_size().expect("Failed to get size"); // discard next object
+                num_of_objects_to_discard -= 1;
+            }
         }
     }
 

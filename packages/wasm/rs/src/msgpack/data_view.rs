@@ -1,5 +1,4 @@
 use super::{Context, BLOCK_MAX_SIZE, E_INVALID_LENGTH};
-use core::sync::atomic::{AtomicPtr, Ordering};
 
 #[derive(Clone, Debug, Default)]
 pub struct DataView {
@@ -42,13 +41,8 @@ impl DataView {
 
     pub fn peek_u8(&mut self) -> u8 {
         self.check_index_in_range("peek_u8", 0);
-        let result = unsafe {
-            AtomicPtr::new((self.data_start + self.byte_offset) as *mut u8)
-                .load(Ordering::Relaxed)
-                .as_ref()
-                .unwrap()
-        };
-        u8::swap_bytes(*result)
+        let u8_ptr = (self.data_start + self.byte_offset) as *const u8;
+        u8::swap_bytes(u8_ptr as u8)
     }
 
     pub fn discard(&mut self, length: usize) {
@@ -58,122 +52,72 @@ impl DataView {
 
     pub fn get_f32(&mut self) -> f32 {
         self.check_index_in_range("get_f32", 4);
-        let result = unsafe {
-            AtomicPtr::new((self.data_start + self.byte_offset) as *mut f32)
-                .load(Ordering::Relaxed)
-                .as_ref()
-                .unwrap()
-        };
+        let f32_ptr = (self.data_start + self.byte_offset) as *const f32;
         self.byte_offset += 4;
-        u32::swap_bytes(*result as u32) as f32
+        u32::swap_bytes(f32_ptr as u32) as f32
     }
 
     pub fn get_f64(&mut self) -> f64 {
         self.check_index_in_range("get_f64", 8);
-        let result = unsafe {
-            AtomicPtr::new((self.data_start + self.byte_offset) as *mut f64)
-                .load(Ordering::Relaxed)
-                .as_ref()
-                .unwrap()
-        };
+        let f64_ptr = (self.data_start + self.byte_offset) as *const f64;
         self.byte_offset += 8;
-        u64::swap_bytes(*result as u64) as f64
+        u64::swap_bytes(f64_ptr as u64) as f64
     }
 
     pub fn get_i8(&mut self) -> i8 {
         self.check_index_in_range("get_i8", 1);
-        let result = unsafe {
-            AtomicPtr::new((self.data_start + self.byte_offset) as *mut i8)
-                .load(Ordering::Relaxed)
-                .as_ref()
-                .unwrap()
-        };
+        let i8_ptr = (self.data_start + self.byte_offset) as *const i8;
         self.byte_offset += 1;
-        i8::swap_bytes(*result as i8)
+        i8::swap_bytes(i8_ptr as i8)
     }
 
     pub fn get_i16(&mut self) -> i16 {
         self.check_index_in_range("get_i16", 2);
-        let result = unsafe {
-            AtomicPtr::new((self.data_start + self.byte_offset) as *mut i16)
-                .load(Ordering::Relaxed)
-                .as_ref()
-                .unwrap()
-        };
+        let i16_ptr = (self.data_start + self.byte_offset) as *const i16;
         self.byte_offset += 2;
-        i16::swap_bytes(*result as i16)
+        i16::swap_bytes(i16_ptr as i16)
     }
 
     pub fn get_i32(&mut self) -> i32 {
         self.check_index_in_range("get_i32", 4);
-        let result = unsafe {
-            AtomicPtr::new((self.data_start + self.byte_offset) as *mut i32)
-                .load(Ordering::Relaxed)
-                .as_ref()
-                .unwrap()
-        };
+        let i32_ptr = (self.data_start + self.byte_offset) as *const i32;
         self.byte_offset += 4;
-        i32::swap_bytes(*result as i32)
+        i32::swap_bytes(i32_ptr as i32)
     }
 
     pub fn get_i64(&mut self) -> i64 {
         self.check_index_in_range("get_i64", 8);
-        let result = unsafe {
-            AtomicPtr::new((self.data_start + self.byte_offset) as *mut i64)
-                .load(Ordering::Relaxed)
-                .as_ref()
-                .unwrap()
-        };
+        let i64_ptr = (self.data_start + self.byte_offset) as *const i64;
         self.byte_offset += 8;
-        i64::swap_bytes(*result as i64)
+        i64::swap_bytes(i64_ptr as i64)
     }
 
     pub fn get_u8(&mut self) -> u8 {
         self.check_index_in_range("get_u8", 1);
-        let result = unsafe {
-            AtomicPtr::new((self.data_start + self.byte_offset) as *mut u8)
-                .load(Ordering::Relaxed)
-                .as_ref()
-                .unwrap()
-        };
+        let u8_ptr = (self.data_start + self.byte_offset) as *const u8;
         self.byte_offset += 1;
-        u8::swap_bytes(*result as u8)
+        u8::swap_bytes(u8_ptr as u8)
     }
 
     pub fn get_u16(&mut self) -> u16 {
         self.check_index_in_range("get_u16", 2);
-        let result = unsafe {
-            AtomicPtr::new((self.data_start + self.byte_offset) as *mut u16)
-                .load(Ordering::Relaxed)
-                .as_ref()
-                .unwrap()
-        };
+        let u16_ptr = (self.data_start + self.byte_offset) as *const u16;
         self.byte_offset += 2;
-        u16::swap_bytes(*result as u16)
+        u16::swap_bytes(u16_ptr as u16)
     }
 
     pub fn get_u32(&mut self) -> u32 {
         self.check_index_in_range("get_u32", 4);
-        let result = unsafe {
-            AtomicPtr::new((self.data_start + self.byte_offset) as *mut u32)
-                .load(Ordering::Relaxed)
-                .as_ref()
-                .unwrap()
-        };
+        let u32_ptr = (self.data_start + self.byte_offset) as *const u32;
         self.byte_offset += 4;
-        u32::swap_bytes(*result as u32)
+        u32::swap_bytes(u32_ptr as u32)
     }
 
     pub fn get_u64(&mut self) -> u64 {
         self.check_index_in_range("get_u64", 8);
-        let result = unsafe {
-            AtomicPtr::new((self.data_start + self.byte_offset) as *mut u64)
-                .load(Ordering::Relaxed)
-                .as_ref()
-                .unwrap()
-        };
+        let u64_ptr = (self.data_start + self.byte_offset) as *const u64;
         self.byte_offset += 8;
-        u64::swap_bytes(*result as u64)
+        u64::swap_bytes(u64_ptr as u64)
     }
 
     pub fn set_bytes(&mut self, buf: &[u8]) {
