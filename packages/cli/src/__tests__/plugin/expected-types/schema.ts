@@ -30,7 +30,14 @@ directive @capability(
 directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
-type Query @imports(
+type Query {
+  method(
+    str: String!
+    optStr: String
+  ): Object!
+}
+
+type Mutation @imports(
   types: [
     "Ethereum_Query",
     "Ethereum_Connection",
@@ -43,13 +50,6 @@ type Query @imports(
     "Ethereum_Network"
   ]
 ) {
-  method(
-    str: String!
-    optStr: String
-  ): Object!
-}
-
-type Mutation {
   method(
     arg: UInt32!
   ): String!
