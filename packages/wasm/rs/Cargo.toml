@@ -18,7 +18,9 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+byteorder = "1.4.3"
 num-bigint = { version = "0.4", default-features = false, features = ["serde"] }
+num-traits = "0.2.14"
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 
 [profile.release]

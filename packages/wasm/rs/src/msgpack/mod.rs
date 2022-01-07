@@ -1,5 +1,6 @@
 pub mod context;
 pub mod data_view;
+pub mod error;
 pub mod format;
 pub mod read;
 pub mod read_decoder;
