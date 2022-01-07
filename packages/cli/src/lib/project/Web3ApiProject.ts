@@ -5,12 +5,11 @@ import {
   loadWeb3ApiManifest,
   loadBuildManifest,
   loadMetaManifest,
-  manifestLanguageToTargetLanguage,
+  ManifestLanguage
 } from "../helpers";
 import { intlMsg } from "../intl";
 
 import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
-import { TargetLanguage } from "@web3api/schema-bind";
 import { normalizePath } from "@web3api/os-js";
 import regexParser from "regex-parser";
 import path from "path";
@@ -67,12 +66,15 @@ export class Web3ApiProject extends Project {
     return this.getWeb3ApiManifestDir();
   }
 
-  public async getLanguage(): Promise<TargetLanguage> {
+  public async getManifestLanguage(): Promise<ManifestLanguage> {
     const language = (await this.getWeb3ApiManifest()).language;
-    if (!language) {
-      throw Error(intlMsg.lib_project_language_not_found());
-    }
-    return manifestLanguageToTargetLanguage(language);
+
+    this.validateManifestLanguage(
+      language,
+      ["wasm/", "interface"]
+    );
+
+    return language as ManifestLanguage;
   }
 
   public async getSchemaNamedPaths(): Promise<{
@@ -255,17 +257,13 @@ export class Web3ApiProject extends Project {
       return;
     }
 
-    const language = (await this.getWeb3ApiManifest()).language;
-
-    if (!language) {
-      throw Error(intlMsg.lib_project_language_not_found());
-    }
+    const language = await this.getManifestLanguage();
 
     const defaultPath = `${__dirname}/../build-envs/${language}/web3api.build.yaml`;
 
     if (!fs.existsSync(defaultPath)) {
       throw Error(
-        intlMsg.lib_project_invalid_build_language({ language, defaultPath })
+        intlMsg.lib_project_invalid_manifest_language_pathed({ language, defaultPath })
       );
     }
 

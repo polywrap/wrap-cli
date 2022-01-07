@@ -15,6 +15,7 @@ describe("SchemaComposer validation", () => {
       project,
     });
     const schema = await composer.getComposedSchemas(ComposerFilter.Schema);
+
     expect({
       query: schema.query?.schema,
       mutation: schema.mutation?.schema,

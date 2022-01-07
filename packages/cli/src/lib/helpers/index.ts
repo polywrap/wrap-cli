@@ -4,5 +4,5 @@ export * from "./metadata";
 export * from "./parameters";
 export * from "./spinner";
 export * from "./docker";
-export * from "./language";
+export * from "./languages";
 export * from "./typescript-support";

@@ -15,7 +15,7 @@ export enum ComposerFilter {
 }
 
 export interface ComposerOptions {
-  schemas: Record<SchemaKind, SchemaFile>;
+  schemas: Partial<Record<SchemaKind, SchemaFile>>;
   resolvers: SchemaResolvers;
   output: ComposerFilter;
 }
@@ -32,6 +32,10 @@ export async function composeSchema(
 
   for (const kind of schemaKinds) {
     const schema = schemas[kind];
+
+    if (schema === undefined) {
+      continue;
+    }
 
     typeInfos[kind] = await resolveImportsAndParseSchemas(
       schema.schema,
@@ -64,7 +68,7 @@ export async function composeSchema(
 
   if (typeInfoKeys.length > 1) {
     const combinedTypeInfo = combineTypeInfo(
-      Object.values(typeInfos)
+      Object.values(typeInfos).filter((x) => x !== undefined) as TypeInfo[]
     );
 
     output.combined = createSchemaInfo(combinedTypeInfo);
