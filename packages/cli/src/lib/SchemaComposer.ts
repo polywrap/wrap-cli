@@ -9,7 +9,7 @@ import {
   ComposerOutput,
   ComposerFilter,
   ComposerOptions,
-  SchemaKind
+  SchemaKind,
 } from "@web3api/schema-compose";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
@@ -112,14 +112,15 @@ export class SchemaComposer {
         throw Error(`Schema "${name}" cannot be loaded at path: ${schemaPath}`);
       }
 
-      const isPlugin = (await project.getManifestLanguage()).indexOf("plugin/") > -1;
+      const isPlugin =
+        (await project.getManifestLanguage()).indexOf("plugin/") > -1;
 
       if (isPlugin) {
         options.schemas.plugin = schemaFile;
       } else {
         // TODO: this is bad, will remove when we don't have "fixed" schema kinds,
         // and just have individual modules
-        options.schemas[name as SchemaKind] = schemaFile; 
+        options.schemas[name as SchemaKind] = schemaFile;
       }
     }
 

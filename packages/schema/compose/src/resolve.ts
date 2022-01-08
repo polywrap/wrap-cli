@@ -453,8 +453,8 @@ function addQueryImportsDirective(
   const modifySchema = (mutation: boolean) => {
     // Append the @imports(...) directive to the query type
     const typeCapture = mutation
-    ? /type\s+Mutation\s+([^{]*)\s*{/g
-    : /type\s+Query\s+([^{]*)\s*{/g;
+      ? /type\s+Mutation\s+([^{]*)\s*{/g
+      : /type\s+Query\s+([^{]*)\s*{/g;
 
     const importedTypes = `${externalImports
       .map((type) => `\"${type}\"`)
@@ -469,7 +469,7 @@ function addQueryImportsDirective(
     ) {`;
 
     return result.replace(typeCapture, replacementQueryStr);
-  }
+  };
 
   if (schemaKind === "plugin") {
     result = modifySchema(false);
@@ -1042,10 +1042,11 @@ async function resolveLocalImports(
   }
 }
 
-export function resolveEnvTypes(typeInfo: TypeInfo, schemaKind: SchemaKind): void {
-  const sharedEnvDef = typeInfo.objectTypes.find(
-    (type) => type.type === "Env"
-  );
+export function resolveEnvTypes(
+  typeInfo: TypeInfo,
+  schemaKind: SchemaKind
+): void {
+  const sharedEnvDef = typeInfo.objectTypes.find((type) => type.type === "Env");
   if (!sharedEnvDef) {
     return;
   }
@@ -1066,10 +1067,7 @@ export function resolveEnvTypes(typeInfo: TypeInfo, schemaKind: SchemaKind): voi
     return type.type !== sharedEnvDef.type;
   });
 
-  checkDuplicateEnvProperties(
-    moduleEnvDef.sanitized,
-    sharedEnvDef.properties
-  );
+  checkDuplicateEnvProperties(moduleEnvDef.sanitized, sharedEnvDef.properties);
   moduleEnvDef.sanitized.properties.push(...sharedEnvDef.properties);
 }
 

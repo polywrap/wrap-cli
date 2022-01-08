@@ -1,4 +1,10 @@
-import { SchemaKind, ExternalImport, LocalImport, SYNTAX_REFERENCE, Use } from "./types";
+import {
+  SchemaKind,
+  ExternalImport,
+  LocalImport,
+  SYNTAX_REFERENCE,
+  Use,
+} from "./types";
 import { getDuplicates } from "./utils";
 
 import Path from "path";

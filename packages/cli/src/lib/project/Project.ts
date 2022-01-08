@@ -2,7 +2,7 @@ import { intlMsg } from "../intl";
 import {
   ManifestLanguage,
   isManifestLanguage,
-  manifestLanguages
+  manifestLanguages,
 } from "../helpers";
 
 import fs from "fs";
@@ -88,16 +88,19 @@ export abstract class Project {
 
   /// Validation
 
-  protected validateManifestLanguage(language: string | undefined, validPatterns: string[]): void {
+  protected validateManifestLanguage(
+    language: string | undefined,
+    validPatterns: string[]
+  ): void {
     if (!language) {
       throw Error(intlMsg.lib_project_language_not_found());
     }
 
     const languagePatternValid = (test: string) => {
       let valid = false;
-      validPatterns.map((x) => valid = valid || test.indexOf(x) > -1);
+      validPatterns.map((x) => (valid = valid || test.indexOf(x) > -1));
       return valid;
-    }
+    };
 
     if (!isManifestLanguage(language) || !languagePatternValid(language)) {
       throw Error(
@@ -105,7 +108,7 @@ export abstract class Project {
           language,
           validTypes: Object.keys(manifestLanguages)
             .filter((x) => languagePatternValid(x))
-            .join(" | ")
+            .join(" | "),
         })
       );
     }

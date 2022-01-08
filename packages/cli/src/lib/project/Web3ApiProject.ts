@@ -5,7 +5,7 @@ import {
   loadWeb3ApiManifest,
   loadBuildManifest,
   loadMetaManifest,
-  ManifestLanguage
+  ManifestLanguage,
 } from "../helpers";
 import { intlMsg } from "../intl";
 
@@ -69,10 +69,7 @@ export class Web3ApiProject extends Project {
   public async getManifestLanguage(): Promise<ManifestLanguage> {
     const language = (await this.getWeb3ApiManifest()).language;
 
-    this.validateManifestLanguage(
-      language,
-      ["wasm/", "interface"]
-    );
+    this.validateManifestLanguage(language, ["wasm/", "interface"]);
 
     return language as ManifestLanguage;
   }
@@ -263,7 +260,10 @@ export class Web3ApiProject extends Project {
 
     if (!fs.existsSync(defaultPath)) {
       throw Error(
-        intlMsg.lib_project_invalid_manifest_language_pathed({ language, defaultPath })
+        intlMsg.lib_project_invalid_manifest_language_pathed({
+          language,
+          defaultPath,
+        })
       );
     }
 

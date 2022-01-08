@@ -1,4 +1,11 @@
-import { schemaKinds, SchemaKind, SchemaInfos, SchemaInfo, SchemaFile, SchemaResolvers } from "./types";
+import {
+  schemaKinds,
+  SchemaKind,
+  SchemaInfos,
+  SchemaInfo,
+  SchemaFile,
+  SchemaResolvers,
+} from "./types";
 import { resolveEnvTypes, resolveImportsAndParseSchemas } from "./resolve";
 import { renderSchema } from "./render";
 
@@ -6,7 +13,8 @@ import { TypeInfo, combineTypeInfo } from "@web3api/schema-parse";
 
 export * from "./types";
 
-export type ComposerOutput = Partial<SchemaInfos> & Required<{ combined: SchemaInfos["combined"] }>;
+export type ComposerOutput = Partial<SchemaInfos> &
+  Required<{ combined: SchemaInfos["combined"] }>;
 
 export enum ComposerFilter {
   Schema = 1 << 0,

@@ -1,8 +1,5 @@
 import { Project, ProjectConfig } from "./Project";
-import {
-  loadPluginManifest,
-  ManifestLanguage,
-} from "../helpers";
+import { loadPluginManifest, ManifestLanguage } from "../helpers";
 
 import { PluginManifest } from "@web3api/core-js";
 import path from "path";
@@ -31,10 +28,7 @@ export class PluginProject extends Project {
   public async getManifestLanguage(): Promise<ManifestLanguage> {
     const language = (await this.getPluginManifest()).language;
 
-    this.validateManifestLanguage(
-      language,
-      ["plugin/"]
-    );
+    this.validateManifestLanguage(language, ["plugin/"]);
 
     return language as ManifestLanguage;
   }

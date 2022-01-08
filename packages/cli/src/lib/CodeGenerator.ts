@@ -1,6 +1,12 @@
 import { SchemaComposer } from "./SchemaComposer";
 import { Project } from "./project";
-import { step, withSpinner, isTypescriptFile, loadTsNode, manifestLanguageToBindLanguage } from "./helpers";
+import {
+  step,
+  withSpinner,
+  isTypescriptFile,
+  loadTsNode,
+  manifestLanguageToBindLanguage,
+} from "./helpers";
 import { intlMsg } from "./intl";
 
 import { TypeInfo } from "@web3api/schema-parse";
