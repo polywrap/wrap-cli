@@ -93,8 +93,11 @@ export abstract class Project {
       throw Error(intlMsg.lib_project_language_not_found());
     }
 
-    const languagePatternValid = (test: string) =>
-      validPatterns.filter((x) => test.indexOf(x) > 0).length > 0;
+    const languagePatternValid = (test: string) => {
+      let valid = false;
+      validPatterns.map((x) => valid = valid || test.indexOf(x) > -1);
+      return valid;
+    }
 
     if (!isManifestLanguage(language) || !languagePatternValid(language)) {
       throw Error(
