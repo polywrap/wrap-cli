@@ -50,6 +50,11 @@ impl Write for WriteEncoder {
         writer.write_i32::<BigEndian>(value).map_err(EncodingError)
     }
 
+    fn write_i64<W: IoWrite>(&mut self, writer: &mut W, value: i64) -> Result<(), EncodingError> {
+        Format::set_u8(writer, Format::Int64)?;
+        writer.write_i64::<BigEndian>(value).map_err(EncodingError)
+    }
+
     fn write_u8<W: IoWrite>(&mut self, writer: &mut W, value: u8) -> Result<(), EncodingError> {
         Format::set_u8(writer, Format::Uint8)?;
         writer.write_u8(value).map_err(EncodingError)
@@ -63,6 +68,11 @@ impl Write for WriteEncoder {
     fn write_u32<W: IoWrite>(&mut self, writer: &mut W, value: u32) -> Result<(), EncodingError> {
         Format::set_u8(writer, Format::Uint32)?;
         writer.write_u32::<BigEndian>(value).map_err(EncodingError)
+    }
+
+    fn write_u64<W: IoWrite>(&mut self, writer: &mut W, value: u64) -> Result<(), EncodingError> {
+        Format::set_u8(writer, Format::Uint64)?;
+        writer.write_u64::<BigEndian>(value).map_err(EncodingError)
     }
 
     fn write_f32<W: IoWrite>(&mut self, writer: &mut W, value: f32) -> Result<(), EncodingError> {
@@ -295,6 +305,23 @@ impl Write for WriteEncoder {
         }
     }
 
+    fn write_nullable_i64<W: IoWrite>(
+        &mut self,
+        writer: &mut W,
+        value: &Option<i64>,
+    ) -> Result<(), EncodingError> {
+        match value {
+            None => {
+                self.write_nil(writer)?;
+                Ok(())
+            }
+            Some(v) => {
+                self.write_i64(writer, *v)?;
+                Ok(())
+            }
+        }
+    }
+
     fn write_nullable_u8<W: IoWrite>(
         &mut self,
         writer: &mut W,
@@ -341,6 +368,23 @@ impl Write for WriteEncoder {
             }
             Some(v) => {
                 self.write_u32(writer, *v)?;
+                Ok(())
+            }
+        }
+    }
+
+    fn write_nullable_u64<W: IoWrite>(
+        &mut self,
+        writer: &mut W,
+        value: &Option<u64>,
+    ) -> Result<(), EncodingError> {
+        match value {
+            None => {
+                self.write_nil(writer)?;
+                Ok(())
+            }
+            Some(v) => {
+                self.write_u64(writer, *v)?;
                 Ok(())
             }
         }

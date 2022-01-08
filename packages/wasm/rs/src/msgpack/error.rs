@@ -3,6 +3,13 @@
 /// Main error type for I/O `Write` operations
 pub struct EncodingError(pub std::io::Error);
 
+impl From<std::io::Error> for EncodingError {
+    #[cold]
+    fn from(err: std::io::Error) -> EncodingError {
+        EncodingError(err)
+    }
+}
+
 impl From<serde_json::Error> for EncodingError {
     fn from(err: serde_json::Error) -> EncodingError {
         err.into()

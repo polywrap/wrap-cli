@@ -10,9 +10,11 @@ pub trait Write: Clone {
     fn write_i8<W: IoWrite>(&mut self, writer: &mut W, value: i8) -> Result<(), EncodingError>;
     fn write_i16<W: IoWrite>(&mut self, writer: &mut W, value: i16) -> Result<(), EncodingError>;
     fn write_i32<W: IoWrite>(&mut self, writer: &mut W, value: i32) -> Result<(), EncodingError>;
+    fn write_i64<W: IoWrite>(&mut self, writer: &mut W, value: i64) -> Result<(), EncodingError>;
     fn write_u8<W: IoWrite>(&mut self, writer: &mut W, value: u8) -> Result<(), EncodingError>;
     fn write_u16<W: IoWrite>(&mut self, writer: &mut W, value: u16) -> Result<(), EncodingError>;
     fn write_u32<W: IoWrite>(&mut self, writer: &mut W, value: u32) -> Result<(), EncodingError>;
+    fn write_u64<W: IoWrite>(&mut self, writer: &mut W, value: u64) -> Result<(), EncodingError>;
     fn write_f32<W: IoWrite>(&mut self, writer: &mut W, value: f32) -> Result<(), EncodingError>;
     fn write_f64<W: IoWrite>(&mut self, writer: &mut W, value: f64) -> Result<(), EncodingError>;
     fn write_string_length<W: IoWrite>(
@@ -87,6 +89,11 @@ pub trait Write: Clone {
         writer: &mut W,
         value: &Option<i32>,
     ) -> Result<(), EncodingError>;
+    fn write_nullable_i64<W: IoWrite>(
+        &mut self,
+        writer: &mut W,
+        value: &Option<i64>,
+    ) -> Result<(), EncodingError>;
     fn write_nullable_u8<W: IoWrite>(
         &mut self,
         writer: &mut W,
@@ -101,6 +108,11 @@ pub trait Write: Clone {
         &mut self,
         writer: &mut W,
         value: &Option<u32>,
+    ) -> Result<(), EncodingError>;
+    fn write_nullable_u64<W: IoWrite>(
+        &mut self,
+        writer: &mut W,
+        value: &Option<u64>,
     ) -> Result<(), EncodingError>;
     fn write_nullable_f32<W: IoWrite>(
         &mut self,

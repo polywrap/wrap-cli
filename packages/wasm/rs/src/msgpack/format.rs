@@ -5,17 +5,16 @@ const FIX_ARRAY_SIZE: u8 = 0x0f;
 const FIX_MAP_SIZE: u8 = 0x0f;
 const FIX_STR_SIZE: u8 = 0x1f;
 
-/// MsgPack format markers
+/// Format markers in the MsgPack specification
+/// The `Reserved` variant is not used, according to the spec.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Format {
-    Error,
-    FourLeastSigBitsInByte,
-    FourSigBitsInByte,
     PositiveFixInt(u8),
     FixMap(u8),
     FixArray(u8),
     FixStr(u8),
     Nil,
+    Reserved,
     False,
     True,
     Bin8,
@@ -89,16 +88,15 @@ impl Format {
         Format::from_u8(val) == Format::Nil
     }
 
+    /// Converts a single byte to its MsgPack marker representation
     pub fn from_u8(val: u8) -> Format {
         match val {
-            0 => Format::Error,
-            0x0f => Format::FourLeastSigBitsInByte,
-            0xf0 => Format::FourSigBitsInByte,
             0x00..=0x7f => Format::PositiveFixInt(val),
             0x80..=0x8f => Format::FixMap(val & FIX_MAP_SIZE),
             0x90..=0x9f => Format::FixArray(val & FIX_ARRAY_SIZE),
             0xa0..=0xbf => Format::FixStr(val & FIX_STR_SIZE),
             0xc0 => Format::Nil,
+            0xc1 => Format::Reserved,
             0xc2 => Format::False,
             0xc3 => Format::True,
             0xc4 => Format::Bin8,
@@ -130,20 +128,18 @@ impl Format {
             0xde => Format::Map16,
             0xdf => Format::Map32,
             0xe0..=0xff => Format::NegativeFixInt(val as i8),
-            _ => Format::Error,
         }
     }
 
+    /// Converts a MsgPack marker into a single byte
     pub fn to_u8(&self) -> u8 {
         match *self {
-            Format::Error => 0,
-            Format::FourLeastSigBitsInByte => 0x0f,
-            Format::FourSigBitsInByte => 0xf0,
             Format::PositiveFixInt(val) => val,
             Format::FixMap(val) => 0x80 | (val & FIX_MAP_SIZE),
             Format::FixArray(val) => 0x90 | (val & FIX_ARRAY_SIZE),
             Format::FixStr(val) => 0xa0 | (val & FIX_STR_SIZE),
             Format::Nil => 0xc0,
+            Format::Reserved => 0xc1,
             Format::False => 0xc2,
             Format::True => 0xc3,
             Format::Bin8 => 0xc4,

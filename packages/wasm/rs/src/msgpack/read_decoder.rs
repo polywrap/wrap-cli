@@ -21,130 +21,130 @@ impl ReadDecoder {
         }
     }
 
-    #[allow(dead_code)]
-    fn skip(&mut self) {
-        // get_size handles discarding `msgpack header` info
-        if let Ok(mut num_of_objects_to_discard) = self.get_size() {
-            while num_of_objects_to_discard > 0 {
-                self.get_size().expect("Failed to get size"); // discard next object
-                num_of_objects_to_discard -= 1;
-            }
-        }
-    }
+    // #[allow(dead_code)]
+    // fn skip(&mut self) {
+    //     // get_size handles discarding `msgpack header` info
+    //     if let Ok(mut num_of_objects_to_discard) = self.get_size() {
+    //         while num_of_objects_to_discard > 0 {
+    //             self.get_size().expect("Failed to get size"); // discard next object
+    //             num_of_objects_to_discard -= 1;
+    //         }
+    //     }
+    // }
 
-    fn get_size(&mut self) -> Result<i32, String> {
-        let lead_byte = self.view.get_u8(); // will discard one
-        let mut objects_to_discard: i32 = 0;
-        // handle for fixed values
-        if Format::is_negative_fixed_int(lead_byte) || Format::is_fixed_int(lead_byte) {
-            // noop, will just discard the leadbyte
-            self.view.discard(lead_byte as usize);
-        } else if Format::is_fixed_string(lead_byte) {
-            let str_len = lead_byte & 0x1f;
-            self.view.discard(str_len as usize);
-        } else if Format::is_fixed_array(lead_byte) {
-            objects_to_discard =
-                (lead_byte & Format::to_u8(&Format::FourLeastSigBitsInByte)) as i32;
-        } else if Format::is_fixed_map(lead_byte) {
-            objects_to_discard =
-                2 * (lead_byte & Format::to_u8(&Format::FourLeastSigBitsInByte)) as i32;
-        } else {
-            match Format::from_u8(lead_byte) {
-                Format::Nil => {}
-                Format::True => {}
-                Format::False => {}
-                Format::Bin8 => {
-                    let length = self.view.get_u8();
-                    self.view.discard(length as usize);
-                }
-                Format::Bin16 => {
-                    let length = self.view.get_u16();
-                    self.view.discard(length as usize);
-                }
-                Format::Bin32 => {
-                    let length = self.view.get_u32();
-                    self.view.discard(length as usize);
-                }
-                Format::Float32 => {
-                    self.view.discard(4);
-                }
-                Format::Float64 => {
-                    self.view.discard(8);
-                }
-                Format::Uint8 => {
-                    self.view.discard(1);
-                }
-                Format::Uint16 => {
-                    self.view.discard(2);
-                }
-                Format::Uint32 => {
-                    self.view.discard(4);
-                }
-                Format::Uint64 => {
-                    self.view.discard(8);
-                }
-                Format::Int8 => {
-                    self.view.discard(1);
-                }
-                Format::Int16 => {
-                    self.view.discard(2);
-                }
-                Format::Int32 => {
-                    self.view.discard(4);
-                }
-                Format::Int64 => {
-                    self.view.discard(8);
-                }
-                Format::FixExt1 => {
-                    self.view.discard(2);
-                }
-                Format::FixExt2 => {
-                    self.view.discard(3);
-                }
-                Format::FixExt4 => {
-                    self.view.discard(5);
-                }
-                Format::FixExt8 => {
-                    self.view.discard(9);
-                }
-                Format::FixExt16 => {
-                    self.view.discard(17);
-                }
-                Format::Str8 => {
-                    let length = self.view.get_u8();
-                    self.view.discard(length as usize);
-                }
-                Format::Str16 => {
-                    let length = self.view.get_u16();
-                    self.view.discard(length as usize);
-                }
-                Format::Str32 => {
-                    let length = self.view.get_u32();
-                    self.view.discard(length as usize);
-                }
-                Format::Array16 => {
-                    objects_to_discard = self.view.get_u16() as i32;
-                }
-                Format::Array32 => {
-                    objects_to_discard = self.view.get_u32() as i32;
-                }
-                Format::Map16 => {
-                    objects_to_discard = 2 * (self.view.get_u16() as i32);
-                }
-                Format::Map32 => {
-                    objects_to_discard = 2 * (self.view.get_u32() as i32);
-                }
-                _ => {
-                    return Err([
-                        "invalid prefix, bad encoding for val: ",
-                        &lead_byte.to_string(),
-                    ]
-                    .concat())
-                }
-            }
-        }
-        Ok(objects_to_discard)
-    }
+    // fn get_size(&mut self) -> Result<i32, String> {
+    //     let lead_byte = self.view.get_u8(); // will discard one
+    //     let mut objects_to_discard: i32 = 0;
+    //     // handle for fixed values
+    //     if Format::is_negative_fixed_int(lead_byte) || Format::is_fixed_int(lead_byte) {
+    //         // noop, will just discard the leadbyte
+    //         self.view.discard(lead_byte as usize);
+    //     } else if Format::is_fixed_string(lead_byte) {
+    //         let str_len = lead_byte & 0x1f;
+    //         self.view.discard(str_len as usize);
+    //     } else if Format::is_fixed_array(lead_byte) {
+    //         objects_to_discard =
+    //             (lead_byte & Format::to_u8(&Format::FourLeastSigBitsInByte)) as i32;
+    //     } else if Format::is_fixed_map(lead_byte) {
+    //         objects_to_discard =
+    //             2 * (lead_byte & Format::to_u8(&Format::FourLeastSigBitsInByte)) as i32;
+    //     } else {
+    //         match Format::from_u8(lead_byte) {
+    //             Format::Nil => {}
+    //             Format::True => {}
+    //             Format::False => {}
+    //             Format::Bin8 => {
+    //                 let length = self.view.get_u8();
+    //                 self.view.discard(length as usize);
+    //             }
+    //             Format::Bin16 => {
+    //                 let length = self.view.get_u16();
+    //                 self.view.discard(length as usize);
+    //             }
+    //             Format::Bin32 => {
+    //                 let length = self.view.get_u32();
+    //                 self.view.discard(length as usize);
+    //             }
+    //             Format::Float32 => {
+    //                 self.view.discard(4);
+    //             }
+    //             Format::Float64 => {
+    //                 self.view.discard(8);
+    //             }
+    //             Format::Uint8 => {
+    //                 self.view.discard(1);
+    //             }
+    //             Format::Uint16 => {
+    //                 self.view.discard(2);
+    //             }
+    //             Format::Uint32 => {
+    //                 self.view.discard(4);
+    //             }
+    //             Format::Uint64 => {
+    //                 self.view.discard(8);
+    //             }
+    //             Format::Int8 => {
+    //                 self.view.discard(1);
+    //             }
+    //             Format::Int16 => {
+    //                 self.view.discard(2);
+    //             }
+    //             Format::Int32 => {
+    //                 self.view.discard(4);
+    //             }
+    //             Format::Int64 => {
+    //                 self.view.discard(8);
+    //             }
+    //             Format::FixExt1 => {
+    //                 self.view.discard(2);
+    //             }
+    //             Format::FixExt2 => {
+    //                 self.view.discard(3);
+    //             }
+    //             Format::FixExt4 => {
+    //                 self.view.discard(5);
+    //             }
+    //             Format::FixExt8 => {
+    //                 self.view.discard(9);
+    //             }
+    //             Format::FixExt16 => {
+    //                 self.view.discard(17);
+    //             }
+    //             Format::Str8 => {
+    //                 let length = self.view.get_u8();
+    //                 self.view.discard(length as usize);
+    //             }
+    //             Format::Str16 => {
+    //                 let length = self.view.get_u16();
+    //                 self.view.discard(length as usize);
+    //             }
+    //             Format::Str32 => {
+    //                 let length = self.view.get_u32();
+    //                 self.view.discard(length as usize);
+    //             }
+    //             Format::Array16 => {
+    //                 objects_to_discard = self.view.get_u16() as i32;
+    //             }
+    //             Format::Array32 => {
+    //                 objects_to_discard = self.view.get_u32() as i32;
+    //             }
+    //             Format::Map16 => {
+    //                 objects_to_discard = 2 * (self.view.get_u16() as i32);
+    //             }
+    //             Format::Map32 => {
+    //                 objects_to_discard = 2 * (self.view.get_u32() as i32);
+    //             }
+    //             _ => {
+    //                 return Err([
+    //                     "invalid prefix, bad encoding for val: ",
+    //                     &lead_byte.to_string(),
+    //                 ]
+    //                 .concat())
+    //             }
+    //         }
+    //     }
+    //     Ok(objects_to_discard)
+    // }
 
     fn get_error_message(lead_byte: u8) -> Result<&'static str, String> {
         if Format::is_negative_fixed_int(lead_byte) || Format::is_fixed_int(lead_byte) {
