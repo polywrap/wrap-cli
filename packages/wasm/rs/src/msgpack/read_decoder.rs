@@ -1,9 +1,10 @@
-use super::error::MsgPackError;
+use super::error::DecodingError;
 use super::{Context, DataView, Format, Read};
 use crate::{BigInt, JSON};
 use byteorder::{BigEndian, ReadBytesExt};
 use core::hash::Hash;
 use num_traits::cast::FromPrimitive;
+use std::io::Read as StdioRead;
 use std::{collections::BTreeMap, str::FromStr};
 
 #[derive(Clone, Debug, Default)]
@@ -202,156 +203,230 @@ impl ReadDecoder {
     }
 }
 
-impl std::io::Read for ReadDecoder {
+impl StdioRead for ReadDecoder {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
         self.view.buffer.read(buf)
     }
 }
 
 impl Read for ReadDecoder {
-    fn read_bool(&mut self) -> Result<bool, MsgPackError> {
+    fn read_nil(&mut self) -> Result<(), DecodingError> {
         match Format::get_format(self)? {
-            Format::True => Ok(true),
-            Format::False => Ok(false),
-            _ => Err(MsgPackError::FormatReadError),
+            Format::Nil => Ok(()),
+            _ => Err(DecodingError::NilReadError),
         }
     }
 
-    fn read_i8(&mut self) -> Result<i8, MsgPackError> {
+    fn read_bool(&mut self) -> Result<bool, DecodingError> {
+        match Format::get_format(self)? {
+            Format::True => Ok(true),
+            Format::False => Ok(false),
+            _ => Err(DecodingError::BooleanReadError),
+        }
+    }
+
+    fn read_i8(&mut self) -> Result<i8, DecodingError> {
+        match Format::get_format(self)? {
+            Format::Int8 => Ok(ReadBytesExt::read_i8(self)?),
+            _ => Err(DecodingError::Int8ReadError),
+        }
+    }
+
+    fn read_i16(&mut self) -> Result<i16, DecodingError> {
+        match Format::get_format(self)? {
+            Format::Int16 => Ok(ReadBytesExt::read_i16::<BigEndian>(self)?),
+            _ => Err(DecodingError::Int16ReadError),
+        }
+    }
+
+    fn read_i32(&mut self) -> Result<i32, DecodingError> {
+        match Format::get_format(self)? {
+            Format::Int32 => Ok(ReadBytesExt::read_i32::<BigEndian>(self)?),
+            _ => Err(DecodingError::Int32ReadError),
+        }
+    }
+
+    fn read_i64(&mut self) -> Result<i64, DecodingError> {
+        match Format::get_format(self)? {
+            Format::Int64 => Ok(ReadBytesExt::read_i64::<BigEndian>(self)?),
+            _ => Err(DecodingError::Int64ReadError),
+        }
+    }
+
+    fn read_u8(&mut self) -> Result<u8, DecodingError> {
+        match Format::get_format(self)? {
+            Format::Uint8 => Ok(ReadBytesExt::read_u8(self)?),
+            _ => Err(DecodingError::Uint8ReadError),
+        }
+    }
+
+    fn read_u16(&mut self) -> Result<u16, DecodingError> {
+        match Format::get_format(self)? {
+            Format::Uint16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)?),
+            _ => Err(DecodingError::Uint16ReadError),
+        }
+    }
+
+    fn read_u32(&mut self) -> Result<u32, DecodingError> {
+        match Format::get_format(self)? {
+            Format::Uint32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
+            _ => Err(DecodingError::Uint32ReadError),
+        }
+    }
+
+    fn read_u64(&mut self) -> Result<u64, DecodingError> {
+        match Format::get_format(self)? {
+            Format::Uint64 => Ok(ReadBytesExt::read_u64::<BigEndian>(self)?),
+            _ => Err(DecodingError::Uint64ReadError),
+        }
+    }
+
+    fn read_f32(&mut self) -> Result<f32, DecodingError> {
+        match Format::get_format(self)? {
+            Format::Float32 => Ok(ReadBytesExt::read_f32::<BigEndian>(self)?),
+            _ => Err(DecodingError::Float32ReadError),
+        }
+    }
+
+    fn read_f64(&mut self) -> Result<f64, DecodingError> {
+        match Format::get_format(self)? {
+            Format::Float64 => Ok(ReadBytesExt::read_f64::<BigEndian>(self)?),
+            _ => Err(DecodingError::Float64ReadError),
+        }
+    }
+
+    fn read_string_length(&mut self) -> Result<u32, DecodingError> {
+        match Format::get_format(self)? {
+            Format::FixStr(len) => Ok(len as u32),
+            Format::Str8 => Ok(ReadBytesExt::read_u8(self)? as u32),
+            Format::Str16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
+            Format::Str32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
+            _ => Err(DecodingError::StrReadError),
+        }
+    }
+
+    fn read_string(&mut self) -> Result<String, DecodingError> {
         todo!()
     }
 
-    fn read_i16(&mut self) -> Result<i16, MsgPackError> {
+    fn read_bytes_length(&mut self) -> Result<u32, DecodingError> {
+        match Format::get_format(self)? {
+            Format::Bin8 => Ok(ReadBytesExt::read_u8(self)? as u32),
+            Format::Bin16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
+            Format::Bin32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
+            _ => Err(DecodingError::BinReadError),
+        }
+    }
+
+    fn read_bytes(&mut self) -> Result<Vec<u8>, DecodingError> {
         todo!()
     }
 
-    fn read_i32(&mut self) -> Result<i32, MsgPackError> {
+    fn read_bigint(&mut self) -> Result<BigInt, DecodingError> {
         todo!()
     }
 
-    fn read_u8(&mut self) -> Result<u8, MsgPackError> {
+    fn read_json(&mut self) -> Result<JSON::Value, DecodingError> {
         todo!()
     }
 
-    fn read_u16(&mut self) -> Result<u16, MsgPackError> {
+    fn read_array_length(&mut self) -> Result<u32, DecodingError> {
+        match Format::get_format(self)? {
+            Format::FixArray(len) => Ok(len as u32),
+            Format::Array16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
+            Format::Array32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
+            _ => Err(DecodingError::ArrayReadError),
+        }
+    }
+
+    fn read_array<T>(&self, reader: impl FnMut(&mut Self) -> T) -> Result<Vec<T>, DecodingError> {
         todo!()
     }
 
-    fn read_u32(&mut self) -> Result<u32, MsgPackError> {
-        todo!()
-    }
-
-    fn read_f32(&mut self) -> Result<f32, MsgPackError> {
-        todo!()
-    }
-
-    fn read_f64(&mut self) -> Result<f64, MsgPackError> {
-        todo!()
-    }
-
-    fn read_string_length(&mut self) -> Result<u32, MsgPackError> {
-        todo!()
-    }
-
-    fn read_string(&mut self) -> Result<String, MsgPackError> {
-        todo!()
-    }
-
-    fn read_bytes_length(&mut self) -> Result<u32, MsgPackError> {
-        todo!()
-    }
-
-    fn read_bytes(&mut self) -> Result<Vec<u8>, MsgPackError> {
-        todo!()
-    }
-
-    fn read_bigint(&mut self) -> Result<BigInt, MsgPackError> {
-        todo!()
-    }
-
-    fn read_json(&mut self) -> Result<JSON::Value, MsgPackError> {
-        todo!()
-    }
-
-    fn read_array_length(&mut self) -> Result<u32, MsgPackError> {
-        todo!()
-    }
-
-    fn read_array<T>(&self, reader: impl FnMut(&mut Self) -> T) -> Result<Vec<T>, MsgPackError> {
-        todo!()
-    }
-
-    fn read_map_length(&mut self) -> Result<u32, MsgPackError> {
-        todo!()
+    fn read_map_length(&mut self) -> Result<u32, DecodingError> {
+        match Format::get_format(self)? {
+            Format::FixMap(len) => Ok(len as u32),
+            Format::Map16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
+            Format::Map32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
+            _ => Err(DecodingError::ArrayReadError),
+        }
     }
 
     fn read_map<K, V>(
         &mut self,
         key_fn: impl FnMut(&mut Self) -> K,
         val_fn: impl FnMut(&mut Self) -> V,
-    ) -> Result<BTreeMap<K, V>, MsgPackError>
+    ) -> Result<BTreeMap<K, V>, DecodingError>
     where
         K: Eq + Hash + Ord,
     {
         todo!()
     }
 
-    fn read_nullable_bool(&mut self) -> Result<Option<bool>, MsgPackError> {
+    fn read_nullable_bool(&mut self) -> Result<Option<bool>, DecodingError> {
         todo!()
     }
 
-    fn read_nullable_i8(&mut self) -> Result<Option<i8>, MsgPackError> {
+    fn read_nullable_i8(&mut self) -> Result<Option<i8>, DecodingError> {
         todo!()
     }
 
-    fn read_nullable_i16(&mut self) -> Result<Option<i16>, MsgPackError> {
+    fn read_nullable_i16(&mut self) -> Result<Option<i16>, DecodingError> {
         todo!()
     }
 
-    fn read_nullable_i32(&mut self) -> Result<Option<i32>, MsgPackError> {
+    fn read_nullable_i32(&mut self) -> Result<Option<i32>, DecodingError> {
         todo!()
     }
 
-    fn read_nullable_u8(&mut self) -> Result<Option<u8>, MsgPackError> {
+    fn read_nullable_i64(&mut self) -> Result<Option<i64>, DecodingError> {
         todo!()
     }
 
-    fn read_nullable_u16(&mut self) -> Result<Option<u16>, MsgPackError> {
+    fn read_nullable_u8(&mut self) -> Result<Option<u8>, DecodingError> {
         todo!()
     }
 
-    fn read_nullable_u32(&mut self) -> Result<Option<u32>, MsgPackError> {
+    fn read_nullable_u16(&mut self) -> Result<Option<u16>, DecodingError> {
         todo!()
     }
 
-    fn read_nullable_f32(&mut self) -> Result<Option<f32>, MsgPackError> {
+    fn read_nullable_u32(&mut self) -> Result<Option<u32>, DecodingError> {
         todo!()
     }
 
-    fn read_nullable_f64(&mut self) -> Result<Option<f64>, MsgPackError> {
+    fn read_nullable_u64(&mut self) -> Result<Option<u64>, DecodingError> {
         todo!()
     }
 
-    fn read_nullable_string(&mut self) -> Result<Option<String>, MsgPackError> {
+    fn read_nullable_f32(&mut self) -> Result<Option<f32>, DecodingError> {
         todo!()
     }
 
-    fn read_nullable_bytes(&mut self) -> Result<Option<Vec<u8>>, MsgPackError> {
+    fn read_nullable_f64(&mut self) -> Result<Option<f64>, DecodingError> {
         todo!()
     }
 
-    fn read_nullable_bigint(&mut self) -> Result<Option<BigInt>, MsgPackError> {
+    fn read_nullable_string(&mut self) -> Result<Option<String>, DecodingError> {
         todo!()
     }
 
-    fn read_nullable_json(&mut self) -> Result<Option<JSON::Value>, MsgPackError> {
+    fn read_nullable_bytes(&mut self) -> Result<Option<Vec<u8>>, DecodingError> {
+        todo!()
+    }
+
+    fn read_nullable_bigint(&mut self) -> Result<Option<BigInt>, DecodingError> {
+        todo!()
+    }
+
+    fn read_nullable_json(&mut self) -> Result<Option<JSON::Value>, DecodingError> {
         todo!()
     }
 
     fn read_nullable_array<T>(
         &mut self,
         reader: impl FnMut(&mut Self) -> T,
-    ) -> Result<Option<Vec<T>>, MsgPackError> {
+    ) -> Result<Option<Vec<T>>, DecodingError> {
         todo!()
     }
 
@@ -359,22 +434,29 @@ impl Read for ReadDecoder {
         &mut self,
         key_fn: impl FnMut(&mut Self) -> K,
         val_fn: impl FnMut(&mut Self) -> V,
-    ) -> Result<Option<BTreeMap<K, V>>, MsgPackError>
+    ) -> Result<Option<BTreeMap<K, V>>, DecodingError>
     where
         K: Eq + Hash + Ord,
     {
         todo!()
     }
 
-    fn is_next_nil(&mut self) -> bool {
+    fn is_next_nil(&mut self) -> Result<bool, DecodingError> {
         todo!()
     }
 
-    fn is_next_string(&mut self) -> bool {
-        todo!()
+    fn is_next_string(&mut self) -> Result<bool, DecodingError> {
+        if let Ok(f) = Format::get_format(self) {
+            Ok(Format::is_fixed_string(f.to_u8())
+                || f == Format::Str8
+                || f == Format::Str16
+                || f == Format::Str32)
+        } else {
+            Err(DecodingError::StrReadError)
+        }
     }
 
     fn context(&mut self) -> &mut Context {
-        todo!()
+        &mut self.context
     }
 }

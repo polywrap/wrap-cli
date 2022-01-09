@@ -1,4 +1,4 @@
-use super::error::MsgPackError;
+use super::error::{DecodingError, MsgPackError};
 use byteorder::{self, ReadBytesExt, WriteBytesExt};
 
 const FIX_ARRAY_SIZE: u8 = 0x0f;
@@ -59,10 +59,10 @@ impl Format {
         }
     }
 
-    pub fn get_format<R: std::io::Read>(reader: &mut R) -> Result<Format, MsgPackError> {
+    pub fn get_format<R: std::io::Read>(reader: &mut R) -> Result<Format, DecodingError> {
         match reader.read_u8() {
             Ok(val) => Ok(Format::from_u8(val)),
-            Err(_) => Err(MsgPackError::FormatReadError),
+            Err(_) => Err(DecodingError::FormatReadError),
         }
     }
     pub fn is_float_32(val: u8) -> bool {

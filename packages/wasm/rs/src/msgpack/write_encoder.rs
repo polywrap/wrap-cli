@@ -4,7 +4,7 @@ use crate::{BigInt, JSON};
 use byteorder::{BigEndian, WriteBytesExt};
 use core::hash::Hash;
 use std::collections::BTreeMap;
-use std::io::Write as IoWrite;
+use std::io::Write as StdioWrite;
 
 #[derive(Clone, Debug, Default)]
 pub struct WriteEncoder {
@@ -25,7 +25,7 @@ impl WriteEncoder {
     }
 }
 
-impl std::io::Write for WriteEncoder {
+impl StdioWrite for WriteEncoder {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         self.view.buffer.write(buf)
     }
@@ -216,106 +216,106 @@ impl Write for WriteEncoder {
 
     fn write_nullable_bool(&mut self, value: &Option<bool>) -> Result<(), MsgPackError> {
         match value {
-            None => Ok(self.write_nil()?),
-            Some(v) => Ok(self.write_bool(*v)?),
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_bool(self, *v)?),
         }
     }
 
     fn write_nullable_i8(&mut self, value: &Option<i8>) -> Result<(), MsgPackError> {
         match value {
-            None => Ok(self.write_nil()?),
-            Some(v) => Ok(WriteBytesExt::write_i8(self, *v)?),
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_i8(self, *v)?),
         }
     }
 
     fn write_nullable_i16(&mut self, value: &Option<i16>) -> Result<(), MsgPackError> {
         match value {
-            None => Ok(self.write_nil()?),
-            Some(v) => Ok(WriteBytesExt::write_i16::<BigEndian>(self, *v)?),
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_i16(self, *v)?),
         }
     }
 
     fn write_nullable_i32(&mut self, value: &Option<i32>) -> Result<(), MsgPackError> {
         match value {
-            None => Ok(self.write_nil()?),
-            Some(v) => Ok(WriteBytesExt::write_i32::<BigEndian>(self, *v)?),
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_i32(self, *v)?),
         }
     }
 
     fn write_nullable_i64(&mut self, value: &Option<i64>) -> Result<(), MsgPackError> {
         match value {
-            None => Ok(self.write_nil()?),
-            Some(v) => Ok(WriteBytesExt::write_i64::<BigEndian>(self, *v)?),
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_i64(self, *v)?),
         }
     }
 
     fn write_nullable_u8(&mut self, value: &Option<u8>) -> Result<(), MsgPackError> {
         match value {
-            None => Ok(self.write_nil()?),
-            Some(v) => Ok(WriteBytesExt::write_u8(self, *v)?),
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_u8(self, *v)?),
         }
     }
 
     fn write_nullable_u16(&mut self, value: &Option<u16>) -> Result<(), MsgPackError> {
         match value {
-            None => Ok(self.write_nil()?),
-            Some(v) => Ok(WriteBytesExt::write_u16::<BigEndian>(self, *v)?),
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_u16(self, *v)?),
         }
     }
 
     fn write_nullable_u32(&mut self, value: &Option<u32>) -> Result<(), MsgPackError> {
         match value {
-            None => Ok(self.write_nil()?),
-            Some(v) => Ok(WriteBytesExt::write_u32::<BigEndian>(self, *v)?),
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_u32(self, *v)?),
         }
     }
 
     fn write_nullable_u64(&mut self, value: &Option<u64>) -> Result<(), MsgPackError> {
         match value {
-            None => Ok(self.write_nil()?),
-            Some(v) => Ok(WriteBytesExt::write_u64::<BigEndian>(self, *v)?),
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_u64(self, *v)?),
         }
     }
 
     fn write_nullable_f32(&mut self, value: &Option<f32>) -> Result<(), MsgPackError> {
         match value {
-            None => Ok(self.write_nil()?),
-            Some(v) => Ok(WriteBytesExt::write_f32::<BigEndian>(self, *v)?),
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_f32(self, *v)?),
         }
     }
 
     fn write_nullable_f64(&mut self, value: &Option<f64>) -> Result<(), MsgPackError> {
         match value {
-            None => Ok(self.write_nil()?),
-            Some(v) => Ok(WriteBytesExt::write_f64::<BigEndian>(self, *v)?),
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_f64(self, *v)?),
         }
     }
 
     fn write_nullable_string(&mut self, value: &Option<String>) -> Result<(), MsgPackError> {
         match value {
-            None => Ok(self.write_nil()?),
-            Some(s) => Ok(self.write_string(s)?),
+            None => Ok(Write::write_nil(self)?),
+            Some(s) => Ok(Write::write_string(self, s)?),
         }
     }
 
     fn write_nullable_bytes(&mut self, value: &Option<Vec<u8>>) -> Result<(), MsgPackError> {
         match value {
-            None => Ok(self.write_nil()?),
-            Some(b) => Ok(self.write_bytes(b)?),
+            None => Ok(Write::write_nil(self)?),
+            Some(b) => Ok(Write::write_bytes(self, b)?),
         }
     }
 
     fn write_nullable_bigint(&mut self, value: &Option<BigInt>) -> Result<(), MsgPackError> {
         match value {
-            None => Ok(self.write_nil()?),
-            Some(val) => Ok(self.write_bigint(val.to_owned())?),
+            None => Ok(Write::write_nil(self)?),
+            Some(val) => Ok(Write::write_bigint(self, val.to_owned())?),
         }
     }
 
     fn write_nullable_json(&mut self, value: &Option<JSON::Value>) -> Result<(), MsgPackError> {
         match value {
-            None => Ok(self.write_nil()?),
-            Some(json) => Ok(self.write_json(json)?),
+            None => Ok(Write::write_nil(self)?),
+            Some(json) => Ok(Write::write_json(self, json)?),
         }
     }
 
@@ -325,8 +325,8 @@ impl Write for WriteEncoder {
         arr_fn: impl FnMut(&mut Self, &T),
     ) -> Result<(), MsgPackError> {
         match a {
-            None => Ok(self.write_nil()?),
-            Some(arr) => Ok(self.write_array(arr, arr_fn)?),
+            None => Ok(Write::write_nil(self)?),
+            Some(arr) => Ok(Write::write_array(self, arr, arr_fn)?),
         }
     }
 
@@ -340,8 +340,8 @@ impl Write for WriteEncoder {
         K: Clone + Eq + Hash + Ord,
     {
         match map {
-            None => Ok(self.write_nil()?),
-            Some(m) => Ok(self.write_map(m, key_fn, val_fn)?),
+            None => Ok(Write::write_nil(self)?),
+            Some(m) => Ok(Write::write_map(self, m, key_fn, val_fn)?),
         }
     }
 
