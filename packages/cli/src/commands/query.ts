@@ -1,13 +1,14 @@
-import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
-import chalk from "chalk";
-import { GluegunToolbox } from "gluegun";
-import gql from "graphql-tag";
-import path from "path";
 import { getDefaultClientConfig } from "../lib/helpers/default-client-config";
 import { importTs } from "../lib/helpers/import-ts";
 import { fixParameters } from "../lib/helpers/parameters";
 import { validateConfigs } from "../lib/helpers/validate-configs";
 import { intlMsg } from "../lib/intl";
+
+import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
+import chalk from "chalk";
+import { GluegunToolbox } from "gluegun";
+import gql from "graphql-tag";
+import path from "path";
 
 const optionsString = intlMsg.commands_build_options_options();
 const scriptStr = intlMsg.commands_create_options_recipeScript();
