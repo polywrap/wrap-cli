@@ -9,13 +9,13 @@ pub struct DataView {
 
 impl DataView {
     pub fn new(buf: &[u8], context: Context) -> Result<Self, String> {
-        let byte_length = buf.len();
-        if byte_length > BLOCK_MAX_SIZE {
-            return Err(context.print_with_context(&format!(
-                "DataView::new(): {} [ byte_length: {} ]",
-                E_INVALID_LENGTH, byte_length
-            )));
-        }
+        // let byte_length = buf.len();
+        // if byte_length > BLOCK_MAX_SIZE {
+        //     return Err(context.print_with_context(&format!(
+        //         "DataView::new(): {} [ byte_length: {} ]",
+        //         E_INVALID_LENGTH, byte_length
+        //     )));
+        // }
         Ok(Self {
             buffer: Cursor::new(buf.to_vec()),
             context,
@@ -192,12 +192,12 @@ impl DataView {
         &mut self.context
     }
 
-    fn check_index_in_range(&self, method: &str, length: usize) {
-        let byte_length = self.get_buffer().len();
-        if length > byte_length {
-            super::utils::throw_index_out_of_range(&self.context, method, length, byte_length);
-        }
-    }
+    // fn check_index_in_range(&self, method: &str, length: usize) {
+    //     let byte_length = self.get_buffer().len();
+    //     if length > byte_length {
+    //         super::utils::throw_index_out_of_range(&self.context, method, length, byte_length);
+    //     }
+    // }
 
     // #[inline]
     // fn extend_from_slice(&mut self, buf: &[u8]) {

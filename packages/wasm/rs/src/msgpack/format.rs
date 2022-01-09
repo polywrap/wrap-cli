@@ -1,4 +1,4 @@
-use super::error::{DecodingError, EncodingError};
+use super::error::MsgPackError;
 use byteorder::{self, ReadBytesExt, WriteBytesExt};
 
 const FIX_ARRAY_SIZE: u8 = 0x0f;
@@ -52,12 +52,18 @@ impl Format {
     pub fn set_format<W: std::io::Write>(
         writer: &mut W,
         format: Format,
-    ) -> Result<(), EncodingError> {
-        writer.write_u8(format.to_u8()).map_err(EncodingError)
+    ) -> Result<(), MsgPackError> {
+        match writer.write_u8(format.to_u8()) {
+            Ok(_) => Ok(()),
+            Err(_) => Err(MsgPackError::FormatWriteError),
+        }
     }
 
-    pub fn get_format<R: std::io::Read>(reader: &mut R) -> Result<Format, DecodingError> {
-        Ok(Format::from_u8(reader.read_u8()?))
+    pub fn get_format<R: std::io::Read>(reader: &mut R) -> Result<Format, MsgPackError> {
+        match reader.read_u8() {
+            Ok(val) => Ok(Format::from_u8(val)),
+            Err(_) => Err(MsgPackError::FormatReadError),
+        }
     }
     pub fn is_float_32(val: u8) -> bool {
         Format::from_u8(val) == Format::Float32

@@ -1,47 +1,39 @@
 //! Errors returned from I/O `Write` and `Read` operations
 
-/// Main error type for I/O `Write` operations
-pub struct EncodingError(pub std::io::Error);
+use num_derive::FromPrimitive;
+use thiserror::Error;
 
-impl From<std::io::Error> for EncodingError {
-    #[cold]
-    fn from(err: std::io::Error) -> EncodingError {
-        EncodingError(err)
+/// Error types
+#[derive(Clone, Debug, Eq, Error, FromPrimitive, PartialEq)]
+pub enum MsgPackError {
+    /// Error from decoding data
+    #[error("Error from decoding data")]
+    DecodingError,
+    /// Error from encoding data
+    #[error("Error from encoding data")]
+    EncodingError,
+    /// Error in reading MsgPack format
+    #[error("Error in reading MsgPack format")]
+    FormatReadError,
+    /// Error in writing MsgPack format
+    #[error("Error in writing MsgPack format")]
+    FormatWriteError,
+}
+
+impl From<MsgPackError> for std::io::Error {
+    fn from(e: MsgPackError) -> Self {
+        e.into()
     }
 }
 
-impl From<serde_json::Error> for EncodingError {
-    fn from(err: serde_json::Error) -> EncodingError {
-        err.into()
+impl From<std::io::Error> for MsgPackError {
+    fn from(e: std::io::Error) -> Self {
+        e.into()
     }
 }
 
-impl std::fmt::Display for EncodingError {
-    #[cold]
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
-        f.write_str("error while encoding MsgPack value")
-    }
-}
-
-/// Main error type for I/O `Read` operations
-pub struct DecodingError(pub std::io::Error);
-
-impl From<std::io::Error> for DecodingError {
-    #[cold]
-    fn from(err: std::io::Error) -> DecodingError {
-        DecodingError(err)
-    }
-}
-
-impl From<serde_json::Error> for DecodingError {
-    fn from(err: serde_json::Error) -> DecodingError {
-        err.into()
-    }
-}
-
-impl std::fmt::Display for DecodingError {
-    #[cold]
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
-        f.write_str("error while decoding MsgPack value")
+impl From<serde_json::Error> for MsgPackError {
+    fn from(e: serde_json::Error) -> MsgPackError {
+        e.into()
     }
 }
