@@ -233,6 +233,12 @@ impl Read for ReadDecoder {
     }
 
     fn read_f32<R: IoRead>(&self, reader: &mut R) -> Result<f32, DecodingError> {
+        // match Format::get_format(reader)? {
+        //     Format::Float32 => {
+        //         Ok(reader.read_f32::<BigEndian>().map_err(DecodingError)?)
+        //     }
+
+        // }
         todo!()
     }
 

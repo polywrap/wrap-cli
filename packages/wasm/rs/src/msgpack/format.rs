@@ -49,11 +49,14 @@ pub enum Format {
 }
 
 impl Format {
-    pub fn set_u8<W: std::io::Write>(writer: &mut W, format: Format) -> Result<(), EncodingError> {
+    pub fn set_format<W: std::io::Write>(
+        writer: &mut W,
+        format: Format,
+    ) -> Result<(), EncodingError> {
         writer.write_u8(format.to_u8()).map_err(EncodingError)
     }
 
-    pub fn get_u8<R: std::io::Read>(reader: &mut R) -> Result<Format, DecodingError> {
+    pub fn get_format<R: std::io::Read>(reader: &mut R) -> Result<Format, DecodingError> {
         Ok(Format::from_u8(reader.read_u8()?))
     }
     pub fn is_float_32(val: u8) -> bool {

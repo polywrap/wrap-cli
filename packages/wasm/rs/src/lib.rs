@@ -19,7 +19,7 @@
 //! polywrap-wasm-rs = "0.0.1-prealpha.57"
 //! ```
 //!
-//! Then, add the following line to your crate root:
+//! Then, import the crate into your module/file with the `use` keyword:
 //!
 //! ```rust
 //! use polywrap_wasm_rs;
