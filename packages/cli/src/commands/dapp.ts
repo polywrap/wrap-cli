@@ -18,6 +18,7 @@ import { Uri, Web3ApiClient } from "@web3api/client-js";
 import { DappManifest } from "@web3api/core-js";
 import * as path from "path";
 import fs from "fs";
+import rimraf from "rimraf";
 
 interface PolywrapPackage {
   uri: string;
@@ -214,6 +215,16 @@ export default {
       project.reset();
     }
 
+    // clear empty cache folders
+    const cacheDirRoot: string = path.join(manifestDir, ".w3");
+    const cacheDir: string = path.join(cacheDirRoot, "ExternalProjects");
+    if (await isEmptyDir(cacheDir)) {
+      rimraf.sync(cacheDir);
+    }
+    if (await isEmptyDir(cacheDirRoot)) {
+      rimraf.sync(cacheDirRoot);
+    }
+
     if (result) {
       print.success(`🔥 ${intlMsg.commands_dapp_success()} 🔥`);
       process.exitCode = 0;
@@ -248,4 +259,14 @@ function sanitizeUri(uri: string, isPlugin?: boolean): Uri {
     );
   }
   return result;
+}
+
+async function isEmptyDir(path: string): Promise<boolean> {
+  if (!fs.existsSync(path)) {
+    return false;
+  }
+  const dir = await fs.promises.opendir(path);
+  const file = await dir.read();
+  await dir.close();
+  return file === null;
 }
