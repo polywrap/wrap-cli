@@ -1,5 +1,5 @@
 use super::error::EncodingError;
-use super::{Context, Format, Write};
+use super::{Context, DataView, Format, Write};
 use crate::{BigInt, JSON};
 use byteorder::{BigEndian, WriteBytesExt};
 use core::hash::Hash;
@@ -8,30 +8,30 @@ use std::io::Write as IoWrite;
 
 #[derive(Clone, Debug, Default)]
 pub struct WriteEncoder {
-    buffer: Vec<u8>,
-    context: Context,
+    pub(crate) context: Context,
+    pub(crate) view: DataView,
 }
 
 impl WriteEncoder {
     pub fn new(buf: &[u8], context: Context) -> Self {
         Self {
-            buffer: buf.to_vec(),
-            context,
+            context: context.clone(),
+            view: DataView::new(buf, context).expect("Error creating new data view"),
         }
     }
 
     pub fn get_buffer(&self) -> Vec<u8> {
-        self.buffer.clone()
+        self.view.get_buffer()
     }
 }
 
 impl std::io::Write for WriteEncoder {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
-        self.buffer.write(buf)
+        self.view.buffer.write(buf)
     }
 
     fn flush(&mut self) -> std::io::Result<()> {
-        self.buffer.flush()
+        self.view.buffer.flush()
     }
 }
 

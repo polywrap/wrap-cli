@@ -3,12 +3,11 @@ use super::{Context, Write};
 use crate::{BigInt, JSON};
 use core::hash::Hash;
 use std::collections::BTreeMap;
-use std::io::Write as IoWrite;
 
 #[derive(Clone, Debug, Default)]
 pub struct WriteSizer {
-    length: i32,
-    context: Context,
+    pub(crate) length: i32,
+    pub(crate) context: Context,
 }
 
 impl WriteSizer {
@@ -22,7 +21,7 @@ impl WriteSizer {
     }
 }
 
-impl IoWrite for WriteSizer {
+impl std::io::Write for WriteSizer {
     fn write(&mut self, _buf: &[u8]) -> std::io::Result<usize> {
         unimplemented!()
     }
