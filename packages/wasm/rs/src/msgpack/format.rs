@@ -1,4 +1,4 @@
-use super::error::{DecodingError, MsgPackError};
+use super::error::{DecodingError, EncodingError};
 use byteorder::{self, ReadBytesExt, WriteBytesExt};
 
 const FIX_ARRAY_SIZE: u8 = 0x0f;
@@ -52,10 +52,10 @@ impl Format {
     pub fn set_format<W: std::io::Write>(
         writer: &mut W,
         format: Format,
-    ) -> Result<(), MsgPackError> {
+    ) -> Result<(), EncodingError> {
         match writer.write_u8(format.to_u8()) {
             Ok(_) => Ok(()),
-            Err(_) => Err(MsgPackError::FormatWriteError),
+            Err(_) => Err(EncodingError::FormatWriteError),
         }
     }
 
