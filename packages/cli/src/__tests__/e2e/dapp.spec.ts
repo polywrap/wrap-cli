@@ -242,6 +242,8 @@ ${HELP}`);
     expect(fs.existsSync(`${projectRoot}/.w3/ExternalProjects/erc20/`)).toBeFalsy();
     expect(fs.existsSync(`${projectRoot}/.w3/ExternalProjects/console/`)).toBeFalsy();
     expect(fs.existsSync(`${projectRoot}/.w3/ExternalProjects/ethereum/`)).toBeFalsy();
+    expect(fs.existsSync(`${projectRoot}/.w3/ExternalProjects`)).toBeFalsy();
+    expect(fs.existsSync(`${projectRoot}/.w3`)).toBeFalsy();
   });
 
   test("Should be able to read/call extension props from client", async () => {
@@ -276,11 +278,11 @@ ${HELP}`);
     // expect to access uri property
     const expectedUriPath: string = path.resolve(path.join(__dirname, "../project/build"));
     // @ts-ignore
-    expect(client.project.uri.path).toEqual(expectedUriPath);
+    expect(client.extensions.project.uri.path).toEqual(expectedUriPath);
 
     // test ExtensionInvocation
     // @ts-ignore
-    const extInvoke: ExtensionInvocation<string> = client.project.deployContract({
+    const extInvoke: ExtensionInvocation<string> = client.extensions.project.deployContract({
       connection: {
         networkNameOrChainId: "testnet",
       },

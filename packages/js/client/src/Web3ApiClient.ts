@@ -40,6 +40,7 @@ import {
   sanitizeEnvs,
   ClientConfig,
   ExtensionPackage,
+  Extension,
   GetExtensionsOptions,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
@@ -47,6 +48,11 @@ import { Tracer } from "@web3api/tracing-js";
 export interface Web3ApiClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
   tracingEnabled: boolean;
+}
+
+// this interface is re-declared and expanded by client extensions
+export interface ExtensionAccessor {
+  [p: string]: Extension;
 }
 
 export class Web3ApiClient implements Client {
@@ -66,6 +72,8 @@ export class Web3ApiClient implements Client {
 
   // Invoke specific contexts
   private _contexts: Map<string, Web3ApiClientConfig<Uri>> = new Map();
+
+  public readonly extensions: ExtensionAccessor = {};
 
   constructor(
     config?: Partial<Web3ApiClientConfig>,
@@ -594,7 +602,7 @@ export class Web3ApiClient implements Client {
   private _extendClient(): void {
     const extensions: ExtensionPackage[] = this._config.extensions;
     for (const ext of extensions) {
-      (this as Record<string, unknown>)[ext.namespace] = ext.factory(this);
+      this.extensions[ext.namespace] = ext.factory(this);
     }
   }
 }
