@@ -1,3 +1,5 @@
+import { intlMsg } from "../intl";
+
 import {
   Env,
   InterfaceImplementations,
@@ -7,11 +9,10 @@ import {
   UriRedirect,
   Web3ApiClientConfig,
 } from "@web3api/client-js";
-import { intlMsg } from "../intl";
 
 export function validateRedirects<TUri extends PluginPackage | Uri | string>(
   redirects: UriRedirect<TUri>[]
-) {
+): void {
   if (!Array.isArray(redirects)) {
     throw new Error(intlMsg.commands_query_error_redirectsExportNotArray());
   }
@@ -32,22 +33,9 @@ export function validateRedirects<TUri extends PluginPackage | Uri | string>(
           index: i.toString(),
         })
       );
-    } else if (
-      typeof redirect.to !== "string" &&
-      typeof redirect.to !== "object"
-    ) {
+    } else if (typeof redirect.to !== "string") {
       throw new Error(
         intlMsg.commands_query_error_redirectsItemToNotStringOrObject({
-          index: i.toString(),
-        })
-      );
-    } else if (
-      typeof redirect.to === "object" &&
-      (typeof redirect.to.factory !== "function" ||
-        typeof redirect.to.manifest !== "object")
-    ) {
-      throw new Error(
-        intlMsg.commands_query_error_redirectsItemToNotValidPlugin({
           index: i.toString(),
         })
       );
@@ -57,7 +45,7 @@ export function validateRedirects<TUri extends PluginPackage | Uri | string>(
 
 export function validatePlugins<TUri extends Uri | string = string>(
   plugins: PluginRegistration<TUri>[]
-) {
+): void {
   if (!Array.isArray(plugins)) {
     throw new Error(intlMsg.commands_query_error_pluginsExportNotArray());
   }
@@ -101,7 +89,7 @@ export function validatePlugins<TUri extends Uri | string = string>(
 
 export function validateInterfaces<TUri extends Uri | string = string>(
   interfaces: InterfaceImplementations<TUri>[]
-) {
+): void {
   if (!Array.isArray(interfaces)) {
     throw new Error(intlMsg.commands_query_error_interfacesExportNotArray());
   }
@@ -126,9 +114,7 @@ export function validateInterfaces<TUri extends Uri | string = string>(
           index: i.toString(),
         })
       );
-    } else if (
-      interfaceImplementations.implementations.length === 0
-    ) {
+    } else if (interfaceImplementations.implementations.length === 0) {
       throw new Error(
         intlMsg.commands_query_error_interfacesItemImplementationsEmpty({
           index: i.toString(),
@@ -139,17 +125,21 @@ export function validateInterfaces<TUri extends Uri | string = string>(
       const implementation = interfaceImplementations.implementations[j];
       if (typeof implementation !== "string") {
         throw new Error(
-          intlMsg.commands_query_error_interfacesItemImplementationsItemNotString({
-            index: i.toString(),
-            implementationIndex: j.toString(),
-          })
+          intlMsg.commands_query_error_interfacesItemImplementationsItemNotString(
+            {
+              index: i.toString(),
+              implementationIndex: j.toString(),
+            }
+          )
         );
       }
     }
   }
 }
 
-export function validateEnvs<TUri extends Uri | string = string>(envs: Env<TUri>[]) {
+export function validateEnvs<TUri extends Uri | string = string>(
+  envs: Env<TUri>[]
+): void {
   if (!Array.isArray(envs)) {
     throw new Error(intlMsg.commands_query_error_envsExportNotArray());
   }
@@ -189,12 +179,10 @@ export function validateEnvs<TUri extends Uri | string = string>(envs: Env<TUri>
   }
 }
 
-export function validateConfigs(
-  configs: Partial<Web3ApiClientConfig>
-) {
+export function validateConfigs(configs: Partial<Web3ApiClientConfig>): void {
   if (!configs || typeof configs !== "object") {
     throw new Error(intlMsg.commands_query_error_configsNotObject());
-  } 
+  }
   if (configs.plugins) validatePlugins(configs.plugins);
   if (configs.envs) validateEnvs(configs.envs);
   if (configs.interfaces) validateInterfaces(configs.interfaces);

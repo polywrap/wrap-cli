@@ -4,7 +4,9 @@ import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import axios from "axios";
 
-export async function getDefaultClientConfig(): Promise<Partial<Web3ApiClientConfig>> {
+export async function getDefaultClientConfig(): Promise<
+  Partial<Web3ApiClientConfig>
+> {
   let ipfsProvider = "";
   let ethereumProvider = "";
   let ensAddress = "";
@@ -54,5 +56,5 @@ export async function getDefaultClientConfig(): Promise<Partial<Web3ApiClientCon
 
   return {
     plugins,
-  }
+  };
 }

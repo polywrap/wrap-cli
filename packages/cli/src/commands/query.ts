@@ -4,6 +4,7 @@ import { GluegunToolbox } from "gluegun";
 import gql from "graphql-tag";
 import path from "path";
 import { getDefaultClientConfig } from "../lib/helpers/default-client-config";
+import { importTs } from "../lib/helpers/import-ts";
 import { fixParameters } from "../lib/helpers/parameters";
 import { validateConfigs } from "../lib/helpers/validate-configs";
 import { intlMsg } from "../lib/intl";
@@ -72,36 +73,7 @@ export default {
       return;
     }
 
-    let importedConfigs: Partial<Web3ApiClientConfig> = {};
-
-    if (configs) {
-      const configsModule = await import(filesystem.resolve(configs));
-
-      if (!configsModule || !configsModule.configs) {
-        const configsModuleMissingExportMessage = intlMsg.commands_query_error_configsModuleMissingExport(
-          { module: configs }
-        );
-        print.error(configsModuleMissingExportMessage);
-        process.exitCode = 1;
-        return;
-      }
-
-      try {
-        validateConfigs(configsModule.configs);
-      } catch (e) {
-        print.error(e.message);
-        process.exitCode = 1;
-        return;
-      }
-
-      importedConfigs = configsModule.configs;
-    }
-
-    await middleware.run({
-      name: toolbox.command?.name,
-      options: { testEns, recipePath },
-    });
-
+    let aggregatedConfigs: Partial<Web3ApiClientConfig> = {};
     let defaultClientConfig: Partial<Web3ApiClientConfig>;
 
     try {
@@ -112,10 +84,51 @@ export default {
       return;
     }
 
-    const client = new Web3ApiClient({
-      ...defaultClientConfig,
-      ...importedConfigs,
+    if (configs) {
+      let configsModule;
+      if (configs.endsWith(".js")) {
+        configsModule = await import(filesystem.resolve(configs));
+      } else if (configs.endsWith(".ts")) {
+        configsModule = await importTs(filesystem.resolve(configs));
+      } else {
+        const configsModuleMissingExportMessage = intlMsg.commands_query_error_configsInvalidFileExt(
+          { module: configs }
+        );
+        print.error(configsModuleMissingExportMessage);
+        process.exitCode = 1;
+        return;
+      }
+
+      console.log(configsModule);
+
+      if (!configsModule || !configsModule.getConfigs) {
+        const configsModuleMissingExportMessage = intlMsg.commands_query_error_configsModuleMissingExport(
+          { module: configs }
+        );
+        print.error(configsModuleMissingExportMessage);
+        process.exitCode = 1;
+        return;
+      }
+
+      aggregatedConfigs = configsModule.getConfigs(defaultClientConfig);
+
+      try {
+        validateConfigs(aggregatedConfigs);
+      } catch (e) {
+        print.error(e.message);
+        process.exitCode = 1;
+        return;
+      }
+    }
+
+    await middleware.run({
+      name: toolbox.command?.name,
+      options: { testEns, recipePath },
     });
+
+    const client = new Web3ApiClient(
+      aggregatedConfigs ? aggregatedConfigs : defaultClientConfig
+    );
 
     const recipe = JSON.parse(filesystem.read(recipePath) as string);
     const dir = path.dirname(recipePath);

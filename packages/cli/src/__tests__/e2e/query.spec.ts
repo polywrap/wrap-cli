@@ -15,7 +15,7 @@ Options:
 describe("e2e tests for query command", () => {
   const projectRoot = path.resolve(__dirname, "../project/");
 
-  test("Should throw error for missing recipe-string", async () => {
+  it("Should throw error for missing recipe-string", async () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["query"],
       cwd: projectRoot,
@@ -29,7 +29,87 @@ describe("e2e tests for query command", () => {
 ${HELP}`);
   });
 
-  test("Should successfully return response", async () => {
+  it("Should use custom configs for client if specified", async () => {
+    const { exitCode: testenvCode, stderr: testEnvUpErr } = await runCLI({
+      args: ["test-env", "up"],
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
+    expect(testEnvUpErr).toBe("");
+    expect(testenvCode).toEqual(0);
+
+    const { exitCode: buildCode, stderr: buildErr } = await runCLI({
+      args: [
+        "build",
+        "--ipfs",
+        "http://localhost:5001",
+        "--test-ens",
+        "simplestorage.eth",
+      ],
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
+
+    expect(buildErr).toBe("");
+    expect(buildCode).toEqual(0);
+
+    const configs = ["./custom-configs.ts", "./custom-configs.js"];
+
+    for (const config of configs) {
+      const { exitCode, stdout, stderr } = await runCLI({
+        args: ["query", "./recipes/e2e.json", "--test-ens", "--configs", config ],
+        cwd: projectRoot,
+        cli: w3Cli,
+      });
+  
+      expect(stderr).toBeFalsy();
+      expect(stdout).toBeTruthy();
+  
+      expect(exitCode).toEqual(0);
+      expect(stderr).toBe("");
+  
+      const constants = require(`${projectRoot}/recipes/constants.json`);
+      expect(clearStyle(normalizeLineEndings(stdout, "\n"))).toContain(`-----------------------------------
+mutation {
+  setData(
+    options: {
+      address: $address
+      value: $value
+    }
+    connection: {
+      networkNameOrChainId: $network
+    }
+  ) {
+    value
+    txReceipt
+  }
+}
+
+{
+  "address": "${constants.SimpleStorageAddr}",
+  "value": 569,
+  "network": "testnet"
+}
+-----------------------------------
+-----------------------------------
+{
+  "setData": {
+    "value": 569,
+    "txReceipt": "0xdone"
+  }
+}
+-----------------------------------`
+);
+    }
+
+    await runCLI({
+      args: ["test-env", "down"],
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
+  }, 48000);
+
+  it("Should successfully return response", async () => {
     const { exitCode: testenvCode, stderr: testEnvUpErr } = await runCLI({
       args: ["test-env", "up"],
       cwd: projectRoot,

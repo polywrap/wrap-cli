@@ -86,6 +86,7 @@
   "commands_query_options_config": "Add custom configs to the Web3ApiClient",
   "commands_query_error_configsMissingPath": "{option} option missing {argument} argument",
   "commands_query_error_configsModuleMissingExport": "Custom configs module missing named export 'configs' at {module}",
+  "commands_query_error_configsInvalidFileExt": "Custom configs file: {module} must be a JS/TS file",
   "commands_query_error_configsNotObject": "Custom configs must be an object",
   "commands_query_error_redirectsExportNotArray": "Exported redirects must be an array",
   "commands_query_error_redirectsItemNotValid": "Redirect at index {index} must be an object with properties 'from' and 'to'",
