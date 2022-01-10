@@ -65,37 +65,6 @@ impl Format {
             Err(_) => Err(DecodingError::FormatReadError),
         }
     }
-    pub fn is_float_32(val: u8) -> bool {
-        Format::from_u8(val) == Format::Float32
-    }
-
-    pub fn is_float_64(val: u8) -> bool {
-        Format::from_u8(val) == Format::Float64
-    }
-
-    pub fn is_fixed_int(val: u8) -> bool {
-        val >> 7 == 0
-    }
-
-    pub fn is_negative_fixed_int(val: u8) -> bool {
-        Format::from_u8(val & 0xe0) == Format::NegativeFixInt(val as i8)
-    }
-
-    pub fn is_fixed_map(val: u8) -> bool {
-        Format::from_u8(val & 0xf0) == Format::FixMap(val)
-    }
-
-    pub fn is_fixed_array(val: u8) -> bool {
-        Format::from_u8(val & 0xf0) == Format::FixArray(val)
-    }
-
-    pub fn is_fixed_string(val: u8) -> bool {
-        Format::from_u8(val & 0xe0) == Format::FixStr(val)
-    }
-
-    pub fn is_nil(val: u8) -> bool {
-        Format::from_u8(val) == Format::Nil
-    }
 
     /// Converts a single byte to its MsgPack marker representation
     pub fn from_u8(val: u8) -> Format {
