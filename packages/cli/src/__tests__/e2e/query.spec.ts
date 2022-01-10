@@ -9,12 +9,13 @@ w3 query [options] <recipe-script>
 
 Options:
   -t, --test-ens  Use the development server's ENS instance
+  -c, --configs <config-path> Add custom configs to the Web3ApiClient
 
 `;
 
-describe("e2e tests for query command", () => {
-  const projectRoot = path.resolve(__dirname, "../project/");
+const projectRoot = path.resolve(__dirname, "../project/");
 
+describe("sanity tests for query command", () => {
   test("Should throw error for missing recipe-string", async () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["query"],
@@ -29,7 +30,23 @@ describe("e2e tests for query command", () => {
 ${HELP}`);
   });
 
-  test("Should use custom configs for client if specified", async () => {
+  test("Should throw error is --configs doesn't contain arguments", async () => {
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["query", "./recipes/e2e.json", "--configs"],
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
+
+    expect(exitCode).toEqual(0);
+    expect(stderr).toBe("");
+    expect(clearStyle(stdout))
+      .toEqual(`--configs option missing <config-path> argument
+${HELP}`);
+  });
+})
+
+describe("e2e tests for query command", () => {
+  beforeAll(async () => {
     const { exitCode: testenvCode, stderr: testEnvUpErr } = await runCLI({
       args: ["test-env", "up"],
       cwd: projectRoot,
@@ -37,21 +54,17 @@ ${HELP}`);
     });
     expect(testEnvUpErr).toBe("");
     expect(testenvCode).toEqual(0);
+  })
 
-    const { exitCode: buildCode, stderr: buildErr } = await runCLI({
-      args: [
-        "build",
-        "--ipfs",
-        "http://localhost:5001",
-        "--test-ens",
-        "simplestorage.eth",
-      ],
+  afterAll(async () => {
+    await runCLI({
+      args: ["test-env", "down"],
       cwd: projectRoot,
       cli: w3Cli,
     });
+  })
 
-    expect(buildErr).toBe("");
-    expect(buildCode).toEqual(0);
+  test("Should use custom configs for client if specified", async () => {
 
     const configs = ["./custom-configs.ts", "./custom-configs.js"];
 
@@ -101,23 +114,9 @@ mutation {
 -----------------------------------`
 );
     }
-
-    await runCLI({
-      args: ["test-env", "down"],
-      cwd: projectRoot,
-      cli: w3Cli,
-    });
   }, 48000);
 
   test("Should successfully return response", async () => {
-    const { exitCode: testenvCode, stderr: testEnvUpErr } = await runCLI({
-      args: ["test-env", "up"],
-      cwd: projectRoot,
-      cli: w3Cli,
-    });
-    expect(testEnvUpErr).toBe("");
-    expect(testenvCode).toEqual(0);
-
     const { stderr: deployErr } = await runCLI({
       args: ["./deploy-contracts.js"],
       cwd: projectRoot,
@@ -146,6 +145,8 @@ mutation {
       cwd: projectRoot,
       cli: w3Cli,
     });
+
+    console.log(output);
 
     expect(code).toEqual(0);
     expect(queryErr).toBe("");
@@ -184,10 +185,5 @@ mutation {
 -----------------------------------
 `);
 
-    await runCLI({
-      args: ["test-env", "down"],
-      cwd: projectRoot,
-      cli: w3Cli,
-    });
   }, 480000);
 });

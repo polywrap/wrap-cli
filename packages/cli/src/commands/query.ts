@@ -74,11 +74,10 @@ export default {
       return;
     }
 
-    let aggregatedConfigs: Partial<Web3ApiClientConfig> = {};
-    let defaultClientConfig: Partial<Web3ApiClientConfig>;
+    let clientConfigs: Partial<Web3ApiClientConfig>;
 
     try {
-      defaultClientConfig = await getDefaultClientConfig();
+      clientConfigs = await getDefaultClientConfig();
     } catch (e) {
       print.error(intlMsg.commands_query_error_noTestEnvFound());
       process.exitCode = 1;
@@ -100,8 +99,6 @@ export default {
         return;
       }
 
-      console.log(configsModule);
-
       if (!configsModule || !configsModule.getConfigs) {
         const configsModuleMissingExportMessage = intlMsg.commands_query_error_configsModuleMissingExport(
           { module: configs }
@@ -111,10 +108,10 @@ export default {
         return;
       }
 
-      aggregatedConfigs = configsModule.getConfigs(defaultClientConfig);
+      clientConfigs = configsModule.getConfigs(clientConfigs);
 
       try {
-        validateConfigs(aggregatedConfigs);
+        validateConfigs(clientConfigs);
       } catch (e) {
         print.error(e.message);
         process.exitCode = 1;
@@ -128,7 +125,7 @@ export default {
     });
 
     const client = new Web3ApiClient(
-      aggregatedConfigs ? aggregatedConfigs : defaultClientConfig
+      clientConfigs
     );
 
     const recipe = JSON.parse(filesystem.read(recipePath) as string);
