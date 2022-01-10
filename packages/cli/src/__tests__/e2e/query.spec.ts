@@ -15,7 +15,7 @@ Options:
 describe("e2e tests for query command", () => {
   const projectRoot = path.resolve(__dirname, "../project/");
 
-  it("Should throw error for missing recipe-string", async () => {
+  test("Should throw error for missing recipe-string", async () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["query"],
       cwd: projectRoot,
@@ -29,7 +29,7 @@ describe("e2e tests for query command", () => {
 ${HELP}`);
   });
 
-  it("Should use custom configs for client if specified", async () => {
+  test("Should use custom configs for client if specified", async () => {
     const { exitCode: testenvCode, stderr: testEnvUpErr } = await runCLI({
       args: ["test-env", "up"],
       cwd: projectRoot,
@@ -109,7 +109,7 @@ mutation {
     });
   }, 48000);
 
-  it("Should successfully return response", async () => {
+  test("Should successfully return response", async () => {
     const { exitCode: testenvCode, stderr: testEnvUpErr } = await runCLI({
       args: ["test-env", "up"],
       cwd: projectRoot,
