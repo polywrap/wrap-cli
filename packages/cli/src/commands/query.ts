@@ -124,9 +124,7 @@ export default {
       options: { testEns, recipePath },
     });
 
-    const client = new Web3ApiClient(
-      clientConfigs
-    );
+    const client = new Web3ApiClient(clientConfigs);
 
     const recipe = JSON.parse(filesystem.read(recipePath) as string);
     const dir = path.dirname(recipePath);
