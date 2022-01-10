@@ -10,7 +10,7 @@ import {
   generateDockerfile,
   createBuildImage,
   copyArtifactsFromBuildImage,
-  manifestLanguageToTargetLanguage,
+  manifestLanguageToBindLanguage,
 } from "./helpers";
 import { intlMsg } from "./intl";
 
@@ -192,6 +192,7 @@ export class Compiler {
 
   private async _generateCode(state: CompilerState): Promise<string[]> {
     const { web3ApiManifest, composerOutput, modulesToBuild } = state;
+    const { project } = this._config;
 
     const queryModule = web3ApiManifest.modules.query?.module as string;
     const queryDirectory = web3ApiManifest.modules.query
@@ -221,11 +222,13 @@ export class Compiler {
       this._resetDir(mutationDirectory);
     }
 
+    const bindLanguage = manifestLanguageToBindLanguage(
+      await project.getManifestLanguage()
+    );
+
     // Generate the bindings
     const output = bindSchema({
-      language: web3ApiManifest.language
-        ? manifestLanguageToTargetLanguage(web3ApiManifest.language)
-        : "wasm-as",
+      bindLanguage,
       query: modulesToBuild.query
         ? {
             typeInfo: composerOutput.query?.typeInfo as TypeInfo,
