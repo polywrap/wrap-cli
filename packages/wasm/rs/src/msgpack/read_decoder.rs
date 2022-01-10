@@ -3,7 +3,6 @@ use super::{Context, DataView, Format, Read};
 use crate::{BigInt, JSON};
 use byteorder::{BigEndian, ReadBytesExt};
 use core::hash::Hash;
-use num_traits::cast::FromPrimitive;
 use std::io::Read as StdioRead;
 use std::{collections::BTreeMap, str::FromStr};
 
@@ -21,185 +20,12 @@ impl ReadDecoder {
         }
     }
 
-    pub fn get_bytes(&mut self, n_bytes_to_read: u64) -> Result<Vec<u8>, DecodingError> {
+    fn get_bytes(&mut self, n_bytes_to_read: u64) -> Result<Vec<u8>, DecodingError> {
         let mut buf = vec![];
         let mut chunk = self.take(n_bytes_to_read);
         match chunk.read_to_end(&mut buf) {
             Ok(_n) => Ok(buf),
             Err(_e) => Err(DecodingError::BytesReadError),
-        }
-    }
-
-    // #[allow(dead_code)]
-    // fn skip(&mut self) {
-    //     // get_size handles discarding `msgpack header` info
-    //     if let Ok(mut num_of_objects_to_discard) = self.get_size() {
-    //         while num_of_objects_to_discard > 0 {
-    //             self.get_size().expect("Failed to get size"); // discard next object
-    //             num_of_objects_to_discard -= 1;
-    //         }
-    //     }
-    // }
-
-    // fn get_size(&mut self) -> Result<i32, String> {
-    //     let lead_byte = self.view.get_u8(); // will discard one
-    //     let mut objects_to_discard: i32 = 0;
-    //     // handle for fixed values
-    //     if Format::is_negative_fixed_int(lead_byte) || Format::is_fixed_int(lead_byte) {
-    //         // noop, will just discard the leadbyte
-    //         self.view.discard(lead_byte as usize);
-    //     } else if Format::is_fixed_string(lead_byte) {
-    //         let str_len = lead_byte & 0x1f;
-    //         self.view.discard(str_len as usize);
-    //     } else if Format::is_fixed_array(lead_byte) {
-    //         objects_to_discard =
-    //             (lead_byte & Format::to_u8(&Format::FourLeastSigBitsInByte)) as i32;
-    //     } else if Format::is_fixed_map(lead_byte) {
-    //         objects_to_discard =
-    //             2 * (lead_byte & Format::to_u8(&Format::FourLeastSigBitsInByte)) as i32;
-    //     } else {
-    //         match Format::from_u8(lead_byte) {
-    //             Format::Nil => {}
-    //             Format::True => {}
-    //             Format::False => {}
-    //             Format::Bin8 => {
-    //                 let length = self.view.get_u8();
-    //                 self.view.discard(length as usize);
-    //             }
-    //             Format::Bin16 => {
-    //                 let length = self.view.get_u16();
-    //                 self.view.discard(length as usize);
-    //             }
-    //             Format::Bin32 => {
-    //                 let length = self.view.get_u32();
-    //                 self.view.discard(length as usize);
-    //             }
-    //             Format::Float32 => {
-    //                 self.view.discard(4);
-    //             }
-    //             Format::Float64 => {
-    //                 self.view.discard(8);
-    //             }
-    //             Format::Uint8 => {
-    //                 self.view.discard(1);
-    //             }
-    //             Format::Uint16 => {
-    //                 self.view.discard(2);
-    //             }
-    //             Format::Uint32 => {
-    //                 self.view.discard(4);
-    //             }
-    //             Format::Uint64 => {
-    //                 self.view.discard(8);
-    //             }
-    //             Format::Int8 => {
-    //                 self.view.discard(1);
-    //             }
-    //             Format::Int16 => {
-    //                 self.view.discard(2);
-    //             }
-    //             Format::Int32 => {
-    //                 self.view.discard(4);
-    //             }
-    //             Format::Int64 => {
-    //                 self.view.discard(8);
-    //             }
-    //             Format::FixExt1 => {
-    //                 self.view.discard(2);
-    //             }
-    //             Format::FixExt2 => {
-    //                 self.view.discard(3);
-    //             }
-    //             Format::FixExt4 => {
-    //                 self.view.discard(5);
-    //             }
-    //             Format::FixExt8 => {
-    //                 self.view.discard(9);
-    //             }
-    //             Format::FixExt16 => {
-    //                 self.view.discard(17);
-    //             }
-    //             Format::Str8 => {
-    //                 let length = self.view.get_u8();
-    //                 self.view.discard(length as usize);
-    //             }
-    //             Format::Str16 => {
-    //                 let length = self.view.get_u16();
-    //                 self.view.discard(length as usize);
-    //             }
-    //             Format::Str32 => {
-    //                 let length = self.view.get_u32();
-    //                 self.view.discard(length as usize);
-    //             }
-    //             Format::Array16 => {
-    //                 objects_to_discard = self.view.get_u16() as i32;
-    //             }
-    //             Format::Array32 => {
-    //                 objects_to_discard = self.view.get_u32() as i32;
-    //             }
-    //             Format::Map16 => {
-    //                 objects_to_discard = 2 * (self.view.get_u16() as i32);
-    //             }
-    //             Format::Map32 => {
-    //                 objects_to_discard = 2 * (self.view.get_u32() as i32);
-    //             }
-    //             _ => {
-    //                 return Err([
-    //                     "invalid prefix, bad encoding for val: ",
-    //                     &lead_byte.to_string(),
-    //                 ]
-    //                 .concat())
-    //             }
-    //         }
-    //     }
-    //     Ok(objects_to_discard)
-    // }
-
-    fn get_error_message(lead_byte: u8) -> Result<&'static str, String> {
-        if Format::is_negative_fixed_int(lead_byte) || Format::is_fixed_int(lead_byte) {
-            Ok("Found `int`")
-        } else if Format::is_fixed_string(lead_byte) {
-            Ok("Found `string`")
-        } else if Format::is_fixed_array(lead_byte) {
-            Ok("Found `array`")
-        } else if Format::is_fixed_map(lead_byte) {
-            Ok("Found `map`")
-        } else {
-            match Format::from_u8(lead_byte) {
-                Format::Nil => Ok("Found `nil`"),
-                Format::True => Ok("Found `bool`"),
-                Format::False => Ok("Found `bool`"),
-                Format::Bin8 => Ok("Found `BIN8`"),
-                Format::Bin16 => Ok("Found `BIN16`"),
-                Format::Bin32 => Ok("Found `BIN32`"),
-                Format::Float32 => Ok("Found `float32`"),
-                Format::Float64 => Ok("Found `float64`"),
-                Format::Uint8 => Ok("Found `uint8`"),
-                Format::Uint16 => Ok("Found `uint16`"),
-                Format::Uint32 => Ok("Found `uint32`"),
-                Format::Uint64 => Ok("Found `uint64`"),
-                Format::Int8 => Ok("Found `int8`"),
-                Format::Int16 => Ok("Found `int16`"),
-                Format::Int32 => Ok("Found `int32`"),
-                Format::Int64 => Ok("Found `int64`"),
-                Format::FixExt1 => Ok("Found `FIXEXT1`"),
-                Format::FixExt2 => Ok("Found `FIXEXT2`"),
-                Format::FixExt4 => Ok("Found `FIXEXT4`"),
-                Format::FixExt8 => Ok("Found `FIXEXT8`"),
-                Format::FixExt16 => Ok("Found `FIXEXT16`"),
-                Format::Str8 => Ok("Found `string`"),
-                Format::Str16 => Ok("Found `string`"),
-                Format::Str32 => Ok("Found `string`"),
-                Format::Array16 => Ok("Found `array`"),
-                Format::Array32 => Ok("Found `array`"),
-                Format::Map16 => Ok("Found `map`"),
-                Format::Map32 => Ok("Found `map`"),
-                _ => Err([
-                    "invalid prefix, bad encoding for val: {}",
-                    &lead_byte.to_string(),
-                ]
-                .concat()),
-            }
         }
     }
 }
@@ -381,7 +207,7 @@ impl Read for ReadDecoder {
             Format::FixMap(len) => Ok(len as u32),
             Format::Map16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
             Format::Map32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
-            _ => Err(DecodingError::ArrayReadError),
+            _ => Err(DecodingError::MapReadError),
         }
     }
 

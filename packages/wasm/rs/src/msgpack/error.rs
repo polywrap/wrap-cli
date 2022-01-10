@@ -6,18 +6,6 @@ use thiserror::Error;
 /// Errors from encoding data
 #[derive(Clone, Debug, Eq, Error, FromPrimitive, PartialEq)]
 pub enum EncodingError {
-    #[error("JSONWriteError")]
-    JSONWriteError,
-
-    #[error("FixMapWriteError")]
-    FixMapWriteError,
-
-    #[error("FixArrayWriteError")]
-    FixArrayWriteError,
-
-    #[error("FixStrWriteError")]
-    FixStrWriteError,
-
     #[error("NilWriteError")]
     NilWriteError,
 
@@ -63,9 +51,6 @@ pub enum EncodingError {
     #[error("Int64WriteError")]
     Int64WriteError,
 
-    #[error("FixExtWriteError")]
-    FixExtWriteError,
-
     #[error("StrWriteError")]
     StrWriteError,
 
@@ -103,9 +88,6 @@ pub enum DecodingError {
     #[error("ParseBigIntError")]
     ParseBigIntError,
 
-    #[error("FixStrReadError")]
-    FixStrReadError,
-
     #[error("NilReadError")]
     NilReadError,
 
@@ -117,9 +99,6 @@ pub enum DecodingError {
 
     #[error("BinReadError")]
     BinReadError,
-
-    #[error("ExtReadError")]
-    ExtReadError,
 
     #[error("Float32ReadError")]
     Float32ReadError,
@@ -150,9 +129,6 @@ pub enum DecodingError {
 
     #[error("Int64ReadError")]
     Int64ReadError,
-
-    #[error("FixExtReadError")]
-    FixExtReadError,
 
     #[error("StrReadError")]
     StrReadError,

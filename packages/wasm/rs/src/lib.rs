@@ -40,7 +40,6 @@ pub mod invoke;
 pub mod json;
 pub mod malloc;
 pub mod msgpack;
-pub mod result;
 pub mod subinvoke;
 
 pub use abort::*;
@@ -51,4 +50,3 @@ pub use subinvoke::*;
 pub use big_int::BigInt;
 pub use json::JSON;
 pub use msgpack::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
-pub use result::wasm_result;
