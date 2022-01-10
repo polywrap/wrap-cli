@@ -23,7 +23,10 @@ pub trait Read: Clone + Sized + std::io::Read {
     fn read_bigint(&mut self) -> Result<BigInt, DecodingError>;
     fn read_json(&mut self) -> Result<JSON::Value, DecodingError>;
     fn read_array_length(&mut self) -> Result<u32, DecodingError>;
-    fn read_array<T>(&self, reader: impl FnMut(&mut Self) -> T) -> Result<Vec<T>, DecodingError>;
+    fn read_array<T>(
+        &mut self,
+        reader: impl FnMut(&mut Self) -> T,
+    ) -> Result<Vec<T>, DecodingError>;
     fn read_map_length(&mut self) -> Result<u32, DecodingError>;
     fn read_map<K, V>(
         &mut self,

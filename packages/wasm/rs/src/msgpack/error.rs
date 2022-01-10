@@ -97,14 +97,11 @@ impl From<serde_json::Error> for EncodingError {
 /// Errors from decoding data
 #[derive(Clone, Debug, Eq, Error, FromPrimitive, PartialEq)]
 pub enum DecodingError {
-    #[error("FixIntReadError")]
-    FixIntReadError,
+    #[error("BytesReadError")]
+    BytesReadError,
 
-    #[error("FixMapReadError")]
-    FixMapReadError,
-
-    #[error("FixArrayReadError")]
-    FixArrayReadError,
+    #[error("ParseBigIntError")]
+    ParseBigIntError,
 
     #[error("FixStrReadError")]
     FixStrReadError,

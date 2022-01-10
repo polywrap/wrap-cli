@@ -182,7 +182,7 @@ impl Write for WriteEncoder {
     fn write_json(&mut self, value: &JSON::Value) -> Result<(), EncodingError> {
         match JSON::from_value(value.to_owned()) {
             Ok(s) => Ok(self.write_string(&s)?),
-            Err(_) => Err(EncodingError::JSONWriteError),
+            Err(e) => Err(EncodingError::from(e)),
         }
     }
 
