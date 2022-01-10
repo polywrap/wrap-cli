@@ -49,4 +49,4 @@ pub use subinvoke::*;
 
 pub use big_int::BigInt;
 pub use json::JSON;
-pub use msgpack::{Context, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
+pub use msgpack::{Context, Format, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
