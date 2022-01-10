@@ -146,8 +146,6 @@ mutation {
       cli: w3Cli,
     });
 
-    console.log(output);
-
     expect(code).toEqual(0);
     expect(queryErr).toBe("");
 
