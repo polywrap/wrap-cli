@@ -24,6 +24,9 @@
     "test:ci": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose",
     "test:watch": "cross-env TEST=true jest --watch --passWithNoTests --verbose"
   },
+  "resolutions": {
+    "colors": "1.4.0"
+  },
   "dependencies": {
     "@formatjs/intl": "1.8.2",
     "@web3api/asyncify-js": "0.0.1-prealpha.59",
