@@ -5,6 +5,7 @@
 * `@web3api/schema-bind`: `BindOptions` property `language` has been renamed to `bindLanguage`.
 
 ## Bugs
+* `@web3api/cli`: Properly resolve NPM dependency `colors` due to it being [corrupted](https://www.bleepingcomputer.com/news/security/dev-corrupts-npm-libs-colors-and-faker-breaking-thousands-of-apps/).
 * `@web3api/cli`: Plugin schema codegen now properly represents imports types from both Query and Mutation modules.
 * `@web3api/cli`: Properly defined the separation of the `ManifestLanguage` and `BindLanguage` (ex: wasm/assemblyscript -> wasm-as).
 * `@web3api/schema-compose`: Introduce the concept of a `SchemaKind` to help determine how schemas should be combined.
