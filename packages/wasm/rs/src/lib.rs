@@ -8,7 +8,8 @@
 //! This library is the Rust implementation of the Polywrap WASM runtime.
 //! (There's another implementation in AssemblyScript)
 //!
-//! **Warning** The library is still in rapid development and everything may change until 1.0 is shipped.
+//! **Warning** The library is still in rapid development and everything may change until 1.0 is
+//! shipped.
 //!
 //! ## Usage
 //!
@@ -40,6 +41,7 @@ pub mod invoke;
 pub mod json;
 pub mod malloc;
 pub mod msgpack;
+pub mod stack;
 pub mod subinvoke;
 
 pub use abort::*;
@@ -49,4 +51,7 @@ pub use subinvoke::*;
 
 pub use big_int::BigInt;
 pub use json::JSON;
-pub use msgpack::{Context, Format, Read, ReadDecoder, Write, WriteEncoder, WriteSizer};
+pub use msgpack::{
+	Context, DecodingError, EncodingError, Read, ReadDecoder, Write, WriteEncoder, WriteSizer,
+};
+pub use stack::spawn_thread_with_extra_stack;
