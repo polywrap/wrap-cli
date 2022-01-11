@@ -1,5 +1,4 @@
 import { getDefaultClientConfig } from "./default-client-config";
-import { WasmWeb3Api } from "./wasm";
 
 import { v4 as uuid } from "uuid";
 import {
@@ -39,10 +38,9 @@ import {
   UriResolutionHistory,
   resolveUriWithResolvers,
   UriToApiResolver,
-  Web3ApiManifest,
+  GetResolversOptions,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
-import { buildUriResolvers } from "./buildUriResolvers";
 
 export interface Web3ApiClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
@@ -60,6 +58,7 @@ export class Web3ApiClient implements Client {
     plugins: [],
     interfaces: [],
     envs: [],
+    resolvers: [],
     tracingEnabled: false,
   };
 
@@ -87,6 +86,7 @@ export class Web3ApiClient implements Client {
           interfaces: config.interfaces
             ? sanitizeInterfaceImplementations(config.interfaces)
             : [],
+          resolvers: config.resolvers ?? [],
           tracingEnabled: !!config.tracingEnabled,
         };
       }
@@ -104,6 +104,10 @@ export class Web3ApiClient implements Client {
     } finally {
       Tracer.endSpan();
     }
+  }
+
+  public getApiCache(): ApiCache {
+    return this._apiCache;
   }
 
   public setTracingEnabled(enable: boolean): void {
@@ -139,6 +143,13 @@ export class Web3ApiClient implements Client {
   @Tracer.traceMethod("Web3ApiClient: getEnvs")
   public getEnvs(options: GetEnvsOptions = {}): readonly Env<Uri>[] {
     return this._getConfig(options.contextId).envs;
+  }
+
+  @Tracer.traceMethod("Web3ApiClient: getResolvers")
+  public getResolvers(
+    options: GetResolversOptions = {}
+  ): readonly UriToApiResolver[] {
+    return this._getConfig(options.contextId).resolvers;
   }
 
   @Tracer.traceMethod("Web3ApiClient: getEnvByUri")
@@ -435,19 +446,19 @@ export class Web3ApiClient implements Client {
     const ignoreCache = this._isContextualized(options?.contextId);
     const cacheWrite = !ignoreCache && !options?.noCacheWrite;
 
-    const resolvers = uriResolvers ?? this.getUriResolvers(options);
+    const resolvers = uriResolvers ?? this.getResolvers(options);
     
     const { 
       api, 
       uri: resolvedUri, 
       uriHistory, 
       error 
-    } = await resolveUriWithResolvers(this._toUri(uri), resolvers);
+    } = await resolveUriWithResolvers(this._toUri(uri), resolvers, this, options ?? {});
 
     //Update cache for all URIs in the chain
     if (cacheWrite && api) {
       for(const item of uriHistory.stack) {
-        this._apiCache.set(item.sourceUri, api);
+        this._apiCache.set(item.sourceUri.uri, api);
       }
     }
 
@@ -457,33 +468,6 @@ export class Web3ApiClient implements Client {
       uriHistory, 
       error 
     };
-  }
-
-  @Tracer.traceMethod("Web3ApiClient: getUriResolvers")
-  public getUriResolvers(
-    options?: { contextId?: string, noCacheRead?: boolean, noCacheWrite?: boolean }
-  ): UriToApiResolver[] {
-    const contextId = options?.contextId;
-    const ignoreCache = this._isContextualized(contextId);
-    const cacheRead = !ignoreCache && !options?.noCacheRead;
-
-    const client = contextualizeClient(this, contextId);
-    const config = this._getConfig(contextId);
-
-    const uriResolvers = buildUriResolvers(
-      config, 
-      <TData = unknown, TUri extends Uri | string = string>(
-        options: InvokeApiOptions<TUri>
-      ): Promise<InvokeApiResult<TData>> =>
-        client.invoke<TData, TUri>(options),
-      (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) => {
-        const environment = this.getEnvByUri(uri, { contextId });
-        return new WasmWeb3Api(uri, manifest, uriResolver, environment)
-      },
-      cacheRead ? this._apiCache : undefined
-    );
-    
-    return uriResolvers;
   }
 
   private _addDefaultConfig() {
@@ -499,6 +483,10 @@ export class Web3ApiClient implements Client {
 
     if (defaultClientConfig.interfaces) {
       this._config.interfaces.push(...defaultClientConfig.interfaces);
+    }
+
+    if (defaultClientConfig.resolvers) {
+      this._config.resolvers.push(...defaultClientConfig.resolvers);
     }
   }
 
@@ -585,6 +573,7 @@ export class Web3ApiClient implements Client {
         ? sanitizeInterfaceImplementations(context.interfaces)
         : config.interfaces,
       envs: context?.envs ? sanitizeEnvs(context.envs) : config.envs,
+      resolvers: context?.resolvers ?? config.resolvers,
       tracingEnabled: context?.tracingEnabled || config.tracingEnabled,
     });
 
@@ -621,8 +610,7 @@ export class Web3ApiClient implements Client {
 
       throw Error(
         `No Web3API found at URI: ${uri.uri}` +
-          `\nResolution Path: ${JSON.stringify(uriHistory.stack, null, 2)}` +
-          `\nResolvers Used: ${uriHistory.getResolvers()}`
+        `\nResolution history: ${JSON.stringify(uriHistory, null, 2)}`
       );
     }
 
@@ -704,5 +692,8 @@ const contextualizeClient = (
         ) => {
           return client.getImplementations(uri, { ...options, contextId });
         },
+        getApiCache: (): ApiCache => {
+          return client.getApiCache();
+        }
       }
     : client;

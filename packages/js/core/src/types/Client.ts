@@ -7,14 +7,17 @@ import {
   PluginRegistration,
   InterfaceImplementations,
   Env,
+  ApiCache,
 } from "./";
 import { ManifestType, AnyManifest } from "../manifest";
+import { UriToApiResolver } from "../algorithms/uri-resolution";
 
 export interface ClientConfig<TUri extends Uri | string = string> {
   redirects: UriRedirect<TUri>[];
   plugins: PluginRegistration<TUri>[];
   interfaces: InterfaceImplementations<TUri>[];
   envs: Env<TUri>[];
+  resolvers: UriToApiResolver[];
 }
 
 export interface Contextualized {
@@ -30,6 +33,8 @@ export type GetInterfacesOptions = Contextualized;
 export type GetSchemaOptions = Contextualized;
 
 export type GetEnvsOptions = Contextualized;
+
+export type GetResolversOptions = Contextualized;
 
 export interface GetManifestOptions<TManifestType extends ManifestType>
   extends Contextualized {
@@ -49,6 +54,9 @@ export interface Client
   extends QueryHandler,
     SubscriptionHandler,
     InvokeHandler {
+      
+  getApiCache(): ApiCache;
+
   getRedirects(options: GetRedirectsOptions): readonly UriRedirect<Uri>[];
 
   getPlugins(options: GetPluginsOptions): readonly PluginRegistration<Uri>[];

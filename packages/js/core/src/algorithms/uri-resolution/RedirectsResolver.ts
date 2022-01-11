@@ -1,20 +1,16 @@
-import { UriRedirect, Uri } from "../../types";
+import { Uri, Client, Contextualized } from "../../types";
 import { applyRedirects } from "../apply-redirects";
-import { MaybeUriOrApi } from "./MaybeUriOrApi";
+import { UriResolutionResult } from "./UriResolutionResult";
 import { UriToApiResolver } from "./UriToApiResolver";
 
 export class RedirectsResolver implements UriToApiResolver {
-  constructor(
-    private readonly redirects: readonly UriRedirect<Uri>[],
-  ) { }
-
   name = "RedirectsResolver";
 
-  async resolveUri(uri: Uri): Promise<MaybeUriOrApi> {
-    let redirectedUri = applyRedirects(uri, this.redirects);
+  async resolveUri(uri: Uri, client: Client, options: Contextualized): Promise<UriResolutionResult> {
+    let redirectedUri = applyRedirects(uri, client.getRedirects(options));
     
     return Promise.resolve({
-      uri: redirectedUri
+      uri: redirectedUri,
     });
   };
 }

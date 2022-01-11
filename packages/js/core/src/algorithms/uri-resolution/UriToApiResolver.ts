@@ -1,7 +1,11 @@
-import { Uri } from "../../types";
-import { MaybeUriOrApi } from "./MaybeUriOrApi";
+import { Client, Contextualized, Uri } from "../../types";
+import { UriResolutionResult } from "./UriResolutionResult";
 
 export interface UriToApiResolver {
   name: string;
-  resolveUri(uri: Uri): Promise<MaybeUriOrApi>;
+  resolveUri(
+    uri: Uri, 
+    client: Client, 
+    options: Contextualized
+  ): Promise<UriResolutionResult>;
 };

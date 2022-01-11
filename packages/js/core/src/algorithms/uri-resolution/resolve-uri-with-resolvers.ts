@@ -1,72 +1,54 @@
 import { Tracer } from "@web3api/tracing-js";
-import { Api, Uri } from "../../types";
+import { Api, Client, Contextualized, Uri } from "../../types";
 import { ResolveUriError } from "./ResolveUriError";
-import { UriResolutionHistory } from "./UriResolutionHistory";
+import { UriResolutionHistory, UriResolutionStack } from "./UriResolutionHistory";
+import { UriResolutionResult } from "./UriResolutionResult";
 import { UriToApiResolver } from "./UriToApiResolver";
 
-type UriHistoryStack = { resolvedUri: string; resolver: string }[];
-
-const trackUriRedirect = (
+const trackVisitedUri = (
     uri: string, 
-    resolver: string, 
-    uriHistory: UriHistoryStack
+    visitedUriMap: Map<string, boolean>
   ) => {
   if (
-    uriHistory.some((item) => item.resolvedUri === uri)
+    visitedUriMap.has(uri)
   ) {
     return {
       infiniteLoopDetected: true
     };
   }
 
-  uriHistory.push({
-    resolvedUri: uri,
-    resolver,
-  });
+  visitedUriMap.set(uri, true);
 
   return {
     infiniteLoopDetected: false
   };
 };
 
-//Transforms the URI history array into a more readable format
-//Instead of tracking the resulting(resolved) URI for each resolver
-//We track the source URI for each resolver
-const createResolutionHistory = (uriHistory: UriHistoryStack): UriResolutionHistory => {
-  const history: UriResolutionHistory = new UriResolutionHistory();
-
-  if(!uriHistory.length) {
-    return history;
-  }
-
-  let currentUri = uriHistory[0].resolvedUri;
-
-  for(let i = 1; i < uriHistory.length; i++) {
-    history.stack.push({
-      sourceUri: currentUri,
-      resolver: uriHistory[i].resolver
-    });
-
-    currentUri = uriHistory[i].resolvedUri;
-  }
-
-  return history;
+const trackUriHistory = (sourceUri: Uri, resolver: UriToApiResolver, result: UriResolutionResult, uriResolutionStack: UriResolutionStack) => {
+  uriResolutionStack.push({
+    resolver: resolver.name,
+    sourceUri,
+    result: {
+      ...result,
+      api: !!result.api,
+    }
+  });
 };
 
-export const resolveUriWithResolvers = async (uri: Uri, uriResolvers: UriToApiResolver[]): Promise<{
+export const resolveUriWithResolvers = async (
+  uri: Uri, 
+  resolvers: readonly UriToApiResolver[], 
+  client: Client, 
+  options: Contextualized
+): Promise<{
   uri?: Uri;
   api?: Api;
   uriHistory: UriResolutionHistory,
   error?: ResolveUriError
 }> => {
   // Keep track of past URIs to avoid infinite loops
-  const uriHistory: UriHistoryStack = [];
-  uriHistory.push(
-    {
-      resolvedUri: uri.uri,
-      resolver: "ROOT",
-    },
-  );
+  const visitedUriMap: Map<string, boolean> = new Map<string, boolean>();
+  const uriResolutionStack: UriResolutionStack = [];
 
   let currentUri: Uri = uri;
   let api: Api | undefined;
@@ -76,14 +58,27 @@ export const resolveUriWithResolvers = async (uri: Uri, uriResolvers: UriToApiRe
   while(runAgain) {
     runAgain = false;
 
-    for (const uriResolver of uriResolvers) {
-      const result = await uriResolver.resolveUri(currentUri);
+    const { infiniteLoopDetected } = trackVisitedUri(currentUri.uri, visitedUriMap);
+
+    for (const resolver of resolvers) {
+      
+      if(infiniteLoopDetected) {
+        return {
+          uri: currentUri,
+          api,
+          uriHistory: new UriResolutionHistory(uriResolutionStack),
+          error: infiniteLoopDetected ? ResolveUriError.InfiniteLoop : undefined,
+        };
+      }
+
+      const result = await resolver.resolveUri(currentUri, client, options);
+
+      trackUriHistory(currentUri, resolver, result, uriResolutionStack);
 
       if(result.api) {
+        console.log("api");
         api = result.api;
 
-        trackUriRedirect("api", uriResolver.name, uriHistory);
-       
         Tracer.addEvent("uri-resolver-redirect", {
           from: currentUri.uri,
           to: "api",
@@ -92,17 +87,7 @@ export const resolveUriWithResolvers = async (uri: Uri, uriResolvers: UriToApiRe
         break;
       }
       else if(result.uri && result.uri.uri !== currentUri.uri) {
-        const { infiniteLoopDetected } = trackUriRedirect(result.uri.uri, uriResolver.name, uriHistory);
-      
-        if(infiniteLoopDetected) {
-          return {
-            uri: currentUri,
-            api,
-            uriHistory: createResolutionHistory(uriHistory),
-            error: infiniteLoopDetected ? ResolveUriError.InfiniteLoop : undefined,
-          };
-        }
-       
+        console.log("redirect");
         Tracer.addEvent("uri-resolver-redirect", {
           from: currentUri.uri,
           to: result.uri.uri,
@@ -112,12 +97,14 @@ export const resolveUriWithResolvers = async (uri: Uri, uriResolvers: UriToApiRe
         runAgain = true;
         break;
       }
+      console.log("else");
+
     }
   }
 
   return {
     uri: currentUri,
     api,
-    uriHistory: createResolutionHistory(uriHistory)
+    uriHistory: new UriResolutionHistory(uriResolutionStack)
   };
 };

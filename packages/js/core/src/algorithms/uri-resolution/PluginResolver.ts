@@ -2,23 +2,23 @@ import {
   Api,
   Uri,
   PluginPackage,
-  PluginRegistration,
+  Client,
+  Contextualized,
 } from "../../types";
 import { findPluginPackage } from "../find-plugin-package";
 import { Tracer } from "@web3api/tracing-js";
-import { MaybeUriOrApi } from "./MaybeUriOrApi";
 import { UriToApiResolver } from "./UriToApiResolver";
+import { UriResolutionResult } from "./UriResolutionResult";
 
 export class PluginResolver implements UriToApiResolver {
   constructor(
-    private readonly plugins: readonly PluginRegistration<Uri>[],
     private readonly createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
   ) { }
 
   name = "PluginResolver";
 
-  async resolveUri(uri: Uri): Promise<MaybeUriOrApi> {
-    const plugin = findPluginPackage(uri, this.plugins);
+  async resolveUri(uri: Uri, client: Client, options: Contextualized): Promise<UriResolutionResult> {
+    const plugin = findPluginPackage(uri, client.getPlugins(options));
 
     if (plugin) {
       const api = Tracer.traceFunc(
@@ -26,11 +26,14 @@ export class PluginResolver implements UriToApiResolver {
         (uri: Uri, plugin: PluginPackage) => this.createPluginApi(uri, plugin)
       )(uri, plugin);
 
-      return {
-        api
+      return { 
+        uri,
+        api,
       };
     }
 
-    return Promise.resolve({} as MaybeUriOrApi);
+    return Promise.resolve({ 
+      uri,
+    });
   };
 }

@@ -1,26 +1,30 @@
 import { Tracer } from "@web3api/tracing-js";
 import { UriResolver } from "../../interfaces";
 import { Web3ApiManifest, DeserializeManifestOptions, deserializeWeb3ApiManifest } from "../../manifest";
-import { Uri, InvokeHandler, Api } from "../../types";
-import { MaybeUriOrApi } from "./MaybeUriOrApi";
+import { Uri, InvokeHandler, Api, Client, Contextualized } from "../../types";
+import { UriResolutionResult } from "./UriResolutionResult";
 import { UriToApiResolver } from "./UriToApiResolver";
 
 export class ApiResolver implements UriToApiResolver {
   constructor(
-    private readonly resolverUri: Uri,
-    private readonly invoke: InvokeHandler["invoke"],
-    private readonly createApi: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) => Api,
+    public readonly resolverUri: Uri,
+    private readonly createApi: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri, client: Client, options: Contextualized) => Api,
     private readonly deserializeOptions?: DeserializeManifestOptions
   ) {}
 
-  name = `ApiResolver: ${this.resolverUri.uri}`;
+  name = "ApiResolver";
 
-  async resolveUri(uri: Uri): Promise<MaybeUriOrApi> {
-
-    const result = await tryResolveUriWithUriResolver(uri, this.resolverUri, this.invoke);
+  async resolveUri(uri: Uri, client: Client, options: Contextualized): Promise<UriResolutionResult> {
+    const result = await tryResolveUriWithUriResolver(
+      uri, 
+      this.resolverUri, 
+      client.invoke.bind(client)
+    );
 
     if (!result) {
-      return {} as MaybeUriOrApi;
+      return {
+        uri
+      };
     }
 
     if (result.uri) {
@@ -37,16 +41,19 @@ export class ApiResolver implements UriToApiResolver {
 
       const api = Tracer.traceFunc(
         "resolveUri: createApi",
-        (uri: Uri, manifest: Web3ApiManifest, resolverUri: Uri) =>
-          this.createApi(uri, manifest, resolverUri)
-      )(uri, manifest, this.resolverUri);
-   
+        (uri: Uri, manifest: Web3ApiManifest, resolverUri: Uri, client: Client, options: Contextualized) =>
+          this.createApi(uri, manifest, resolverUri, client, options)
+      )(uri, manifest, this.resolverUri, client, options);
+      
       return {
+        uri,
         api
       };
     }
-
-    return {} as MaybeUriOrApi;
+    
+    return {
+      uri
+    };
   }
 }
 

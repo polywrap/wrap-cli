@@ -19,23 +19,6 @@ import { coreInterfaceUris, UriResolver } from "../interfaces";
 
 import { Tracer } from "@web3api/tracing-js";
 
-// export class UriResolverAggregator implements UriToApiResolver {
-//   constructor(private readonly uriResolvers: UriToApiResolver[]) {
-//   }
-
-//   async resolveUri(uri: Uri): Promise<MaybeUriOrApi> {
-//     for (const uriResolver of this.uriResolvers) {
-//       const uriOrApi = await uriResolver.resolveUri(uri);
-
-//       if (uriOrApi.api) {
-//         return uriOrApi;
-//       }
-//     }
-
-//     return {} as MaybeUriOrApi;
-//   };
-// }
-
 export const resolveUri = Tracer.traceFunc(
   "core: resolveUri",
   async (

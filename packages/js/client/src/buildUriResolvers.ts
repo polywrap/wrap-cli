@@ -1,22 +1,18 @@
-import { Web3ApiClientConfig, Uri, UriToApiResolver, MaybeUriOrApi, RedirectsResolver, PluginResolver, PluginPackage, Api, ApiResolver, coreInterfaceUris, getImplementations, InvokeApiOptions, InvokeApiResult, WasmWeb3Api, Web3ApiManifest } from ".";
+import { UriResolutionResult } from "@web3api/core-js/build/algorithms/uri-resolution/UriResolutionResult";
+import { Web3ApiClientConfig, Uri, UriToApiResolver, RedirectsResolver, PluginResolver, PluginPackage, Api, ApiResolver, coreInterfaceUris, getImplementations, WasmWeb3Api, Web3ApiManifest, Client, Contextualized } from ".";
 import { PluginWeb3Api } from "./plugin/PluginWeb3Api";
 
 export const buildUriResolvers = (
   config: Readonly<Web3ApiClientConfig<Uri>>, 
-  invoke: <TData = unknown, TUri extends Uri | string = string>(
-    options: InvokeApiOptions<TUri>
-  ) => Promise<InvokeApiResult<TData>>,
-  createWasmWeb3Api: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) => WasmWeb3Api,
   apiCache?: Map<string, Api>
 ): UriToApiResolver[] => {
   return [
-    ...buildDefaultResolvers(config, apiCache),
-    ...buildApiResolvers(config, invoke, createWasmWeb3Api),
+    ...buildDefaultResolvers(apiCache),
+    ...buildApiResolvers(config),
   ];
 };
 
-const buildDefaultResolvers = (
-  config: Readonly<Web3ApiClientConfig<Uri>>, 
+export const buildDefaultResolvers = (
   apiCache?: Map<string, Api>
 ): UriToApiResolver[] => {
   const resolvers: UriToApiResolver[] = [];
@@ -24,17 +20,22 @@ const buildDefaultResolvers = (
   const cacheResolver: UriToApiResolver | undefined = apiCache 
     ? {
         name: "CacheResolver",
-        async resolveUri(uri: Uri): Promise<MaybeUriOrApi> {
+        async resolveUri(
+          uri: Uri, 
+          client: Client, 
+          options: Contextualized
+        ): Promise<UriResolutionResult> {
           const api = apiCache.get(uri.uri);
             
           return Promise.resolve({
-            api,
+            uri: uri,
+            api: api,
           });
         }
       }
     : undefined;
 
-  resolvers.push(new RedirectsResolver(config.redirects));
+  resolvers.push(new RedirectsResolver());
   
   if(cacheResolver) {
     resolvers.push(cacheResolver);
@@ -42,7 +43,6 @@ const buildDefaultResolvers = (
 
   resolvers.push(
     new PluginResolver(
-      config.plugins, 
       (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin)
     )
   );
@@ -52,10 +52,6 @@ const buildDefaultResolvers = (
 
 const buildApiResolvers = (
   config: Readonly<Web3ApiClientConfig<Uri>>,
-  invoke: <TData = unknown, TUri extends Uri | string = string>(
-    options: InvokeApiOptions<TUri>
-  ) => Promise<InvokeApiResult<TData>>,
-  createWasmWeb3Api: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) => WasmWeb3Api
 ): UriToApiResolver[] => {
   const resolvers: UriToApiResolver[] = [];
 
@@ -68,8 +64,10 @@ const buildApiResolvers = (
   for(const resolverUri of resolverUris) {
     const apiResolver = new ApiResolver(
       resolverUri,
-      invoke,
-      createWasmWeb3Api
+      (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri, client: Client, options: Contextualized) => {
+        const environment = client.getEnvByUri(uri, { contextId: options.contextId });
+        return new WasmWeb3Api(uri, manifest, uriResolver, environment)
+      }
     );
 
     resolvers.push(apiResolver);
