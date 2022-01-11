@@ -19,7 +19,7 @@ export const buildDefaultResolvers = (
   
   const cacheResolver: UriToApiResolver | undefined = apiCache 
     ? {
-        name: "CacheResolver",
+        name: "Cache",
         async resolveUri(
           uri: Uri, 
           client: Client, 

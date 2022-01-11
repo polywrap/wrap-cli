@@ -76,7 +76,6 @@ export const resolveUriWithResolvers = async (
       trackUriHistory(currentUri, resolver, result, uriResolutionStack);
 
       if(result.api) {
-        console.log("api");
         api = result.api;
 
         Tracer.addEvent("uri-resolver-redirect", {
@@ -87,7 +86,6 @@ export const resolveUriWithResolvers = async (
         break;
       }
       else if(result.uri && result.uri.uri !== currentUri.uri) {
-        console.log("redirect");
         Tracer.addEvent("uri-resolver-redirect", {
           from: currentUri.uri,
           to: result.uri.uri,
@@ -97,8 +95,6 @@ export const resolveUriWithResolvers = async (
         runAgain = true;
         break;
       }
-      console.log("else");
-
     }
   }
 

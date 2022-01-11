@@ -15,7 +15,7 @@ export class PluginResolver implements UriToApiResolver {
     private readonly createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
   ) { }
 
-  name = "PluginResolver";
+  name = "Plugin";
 
   async resolveUri(uri: Uri, client: Client, options: Contextualized): Promise<UriResolutionResult> {
     const plugin = findPluginPackage(uri, client.getPlugins(options));

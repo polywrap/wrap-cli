@@ -15,7 +15,7 @@ export type ApiAggregatorResolverResult = UriResolutionResult & {
 };
 
 export class ApiAggregatorResolver implements UriToApiResolver {
-  name = "ApiAggregatorResolver";
+  name = "ApiAggregator";
 
   constructor(
       private readonly createApi: CreateApiFunc 

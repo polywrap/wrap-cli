@@ -12,7 +12,7 @@ export class ApiResolver implements UriToApiResolver {
     private readonly deserializeOptions?: DeserializeManifestOptions
   ) {}
 
-  name = "ApiResolver";
+  name = "Api";
 
   async resolveUri(uri: Uri, client: Client, options: Contextualized): Promise<UriResolutionResult> {
     const result = await tryResolveUriWithUriResolver(

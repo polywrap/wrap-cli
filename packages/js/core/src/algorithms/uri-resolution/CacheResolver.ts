@@ -2,7 +2,7 @@ import { UriToApiResolver, UriResolutionResult } from ".";
 import { Uri, Client, Contextualized } from "../..";
 
 export class CacheResolver implements UriToApiResolver {
-  name = "CacheResolver";
+  name = "Cache";
 
   async resolveUri(
     uri: Uri, 

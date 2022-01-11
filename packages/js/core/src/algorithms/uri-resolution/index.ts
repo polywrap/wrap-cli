@@ -1,6 +1,7 @@
 export * from './ApiAggregatorResolver';
 export * from './ApiResolver';
 export * from './CacheResolver';
+export * from './CoreUriResolver';
 export * from './PluginResolver';
 export * from './RedirectsResolver';
 export * from './ResolveUriError';

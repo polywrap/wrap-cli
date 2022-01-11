@@ -39,6 +39,7 @@ import {
   resolveUriWithResolvers,
   UriToApiResolver,
   GetResolversOptions,
+  coreUriResolvers,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -445,9 +446,14 @@ export class Web3ApiClient implements Client {
   }> {
     const ignoreCache = this._isContextualized(options?.contextId);
     const cacheWrite = !ignoreCache && !options?.noCacheWrite;
+    const cacheRead = !ignoreCache && !options?.noCacheRead;
 
-    const resolvers = uriResolvers ?? this.getResolvers(options);
+    let resolvers = uriResolvers ?? this.getResolvers(options);
     
+    if(!cacheRead) {
+      resolvers = resolvers.filter(x => x.name !== coreUriResolvers.Cache)
+    }
+
     const { 
       api, 
       uri: resolvedUri, 
@@ -457,7 +463,7 @@ export class Web3ApiClient implements Client {
 
     //Update cache for all URIs in the chain
     if (cacheWrite && api) {
-      for(const item of uriHistory.stack) {
+      for(const item of uriHistory.getResolutionPath().stack) {
         this._apiCache.set(item.sourceUri.uri, api);
       }
     }
