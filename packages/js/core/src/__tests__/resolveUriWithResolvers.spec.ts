@@ -13,7 +13,7 @@ import {
   UriRedirect,
   resolveUri,
   AnyManifest,
-} from "../";
+} from "..";
 import { ApiAggregatorResolver, PluginResolver, RedirectsResolver, ResolveUriError, resolveUriWithResolvers, UriToApiResolver } from "../algorithms";
 import { coreInterfaceUris } from "../interfaces";
 import { ManifestType } from "../manifest";
