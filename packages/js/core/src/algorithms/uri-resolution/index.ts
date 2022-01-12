@@ -8,4 +8,4 @@ export * from './ResolveUriError';
 export * from './UriResolutionHistory';
 export * from './UriResolutionResult';
 export * from './UriToApiResolver';
-export * from './resolve-uri-with-resolvers';
+export * from './resolveUriWithResolvers';
