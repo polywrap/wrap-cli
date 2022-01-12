@@ -1,5 +1,4 @@
 import {
-  Api,
   UriResolver,
   Client,
   InvokeApiOptions,
@@ -15,9 +14,12 @@ import {
   resolveUri,
   AnyManifest,
 } from "../";
+import { ApiAggregatorResolver, PluginResolver, RedirectsResolver, ResolveUriError, resolveUriWithResolvers, UriToApiResolver } from "../algorithms";
 import { coreInterfaceUris } from "../interfaces";
 import { ManifestType } from "../manifest";
 import {
+  Api,
+  Contextualized,
   GetFileOptions,
   GetImplementationsOptions,
   GetManifestOptions,
@@ -28,10 +30,11 @@ import {
 } from "../types";
 
 describe("resolveUri", () => {
-  const client = (apis: Record<string, PluginModules>): Client => ({
-    getRedirects: () => [],
-    getPlugins: () => [],
-    getInterfaces: () => [],
+  const client = (apis: Record<string, PluginModules>, plugins: PluginRegistration<Uri>[] = [], interfaces: InterfaceImplementations<Uri>[] = [], redirects: UriRedirect<Uri>[] = []): Client => ({
+    getApiCache: () => (new Map<string, Api>()),
+    getRedirects: () => redirects,
+    getPlugins: () => plugins,
+    getInterfaces: () => interfaces,
     query: <
       TData extends Record<string, unknown> = Record<string, unknown>,
       TVariables extends Record<string, unknown> = Record<string, unknown>
@@ -227,6 +230,19 @@ describe("resolveUri", () => {
     "w3://ens/my-plugin": pluginApi,
   };
 
+  const resolvers: UriToApiResolver[] = [
+    new RedirectsResolver(),
+    new PluginResolver(
+      (uri: Uri, plugin: PluginPackage) => createPluginApi(uri, plugin)
+    ),
+    new ApiAggregatorResolver(
+      (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri, client: Client, options: Contextualized) => {
+        return createApi(uri, manifest, uriResolver);
+      }, 
+      { noValidate: true }
+    ),
+  ];
+
   it("sanity", () => {
     const api = new Uri("w3://ens/ens");
     const file = new Uri("w3/some-file");
@@ -239,20 +255,15 @@ describe("resolveUri", () => {
   });
 
   it("works in the typical case", async () => {
-    const result = await resolveUri(
+    const result = await resolveUriWithResolvers(
       new Uri("ens/test.eth"),
-      [],
-      plugins,
-      interfaces,
-      client(apis).invoke,
-      createPluginApi,
-      createApi,
-      {
-        noValidate: true
-      },
+      resolvers,
+      client(apis, plugins, interfaces)
     );
 
-    const apiIdentity = await result.invoke(
+    expect(result.api).toBeTruthy();
+    
+    const apiIdentity = await result.api!.invoke(
       {} as InvokeApiOptions<Uri>,
       {} as Client
     );
@@ -267,20 +278,15 @@ describe("resolveUri", () => {
   });
 
   it("uses a plugin that implements uri-resolver", async () => {
-    const result = await resolveUri(
+    const result = await resolveUriWithResolvers(
       new Uri("my/something-different"),
-      [],
-      plugins,
-      interfaces,
-      client(apis).invoke,
-      createPluginApi,
-      createApi,
-      {
-        noValidate: true
-      },
+      resolvers,
+      client(apis, plugins, interfaces)
     );
 
-    const apiIdentity = await result.invoke(
+    expect(result.api).toBeTruthy();
+    
+    const apiIdentity = await result.api!.invoke(
       {} as InvokeApiOptions<Uri>,
       {} as Client
     );
@@ -295,20 +301,15 @@ describe("resolveUri", () => {
   });
 
   it("works when direct query a Web3API that implements the uri-resolver", async () => {
-    const result = await resolveUri(
+    const result = await resolveUriWithResolvers(
       new Uri("ens/ens"),
-      [],
-      plugins,
-      interfaces,
-      client(apis).invoke,
-      createPluginApi,
-      createApi,
-      {
-        noValidate: true
-      },
+      resolvers,
+      client(apis, plugins, interfaces)
     );
 
-    const apiIdentity = await result.invoke(
+    expect(result.api).toBeTruthy();
+    
+    const apiIdentity = await result.api!.invoke(
       {} as InvokeApiOptions<Uri>,
       {} as Client
     );
@@ -324,20 +325,15 @@ describe("resolveUri", () => {
   });
 
   it("works when direct query a plugin Web3API that implements the uri-resolver", async () => {
-    const result = await resolveUri(
+    const result = await resolveUriWithResolvers(
       new Uri("my/something-different"),
-      [],
-      plugins,
-      interfaces,
-      client(apis).invoke,
-      createPluginApi,
-      createApi,
-      {
-        noValidate: true
-      },
+      resolvers,
+      client(apis, plugins, interfaces)
     );
 
-    const apiIdentity = await result.invoke(
+    expect(result.api).toBeTruthy();
+    
+    const apiIdentity = await result.api!.invoke(
       {} as InvokeApiOptions<Uri>,
       {} as Client
     );
@@ -351,7 +347,7 @@ describe("resolveUri", () => {
     });
   });
 
-  it("throws when circular redirect loops are found", async () => {
+  it("returns an error when circular redirect loops are found", async () => {
     const circular: UriRedirect<Uri>[] = [
       {
         from: new Uri("some/api"),
@@ -365,17 +361,10 @@ describe("resolveUri", () => {
 
     expect.assertions(1);
 
-    return resolveUri(
+    return resolveUriWithResolvers(
       new Uri("some/api"),
-      circular,
-      plugins,
-      interfaces,
-      client(apis).invoke,
-      createPluginApi,
-      createApi,
-      {
-        noValidate: true
-      },
+      resolvers,
+      client(apis, plugins, interfaces, circular)
     ).catch((e) =>
       expect(e.message).toMatch(/Infinite loop while resolving URI/)
     );
@@ -395,17 +384,10 @@ describe("resolveUri", () => {
 
     expect.assertions(1);
 
-    return resolveUri(
+    return resolveUriWithResolvers(
       new Uri("some/api"),
-      missingFromProperty,
-      plugins,
-      interfaces,
-      client(apis).invoke,
-      createPluginApi,
-      createApi,
-      {
-        noValidate: true
-      },
+      resolvers,
+      client(apis, plugins, interfaces, missingFromProperty)
     ).catch((e) =>
       expect(e.message).toMatch(
         "Redirect missing the from property.\nEncountered while resolving w3://some/api"
@@ -428,20 +410,15 @@ describe("resolveUri", () => {
       },
     ];
 
-    const result = await resolveUri(
+    const result = await resolveUriWithResolvers(
       new Uri("some/api"),
-      [],
-      pluginRegistrations,
-      interfaces,
-      client(apis).invoke,
-      createPluginApi,
-      createApi,
-      {
-        noValidate: true
-      },
+      resolvers,
+      client(apis, pluginRegistrations, interfaces)
     );
 
-    const apiIdentity = await result.invoke(
+    expect(result.api).toBeTruthy();
+    
+    const apiIdentity = await result.api!.invoke(
       {} as InvokeApiOptions<Uri>,
       {} as Client
     );
@@ -449,7 +426,7 @@ describe("resolveUri", () => {
     expect(apiIdentity.error).toBeUndefined();
   });
 
-  it("throw when URI does not resolve to an API", async () => {
+  it("returns URI when it does not resolve to an API", async () => {
     const faultyIpfsApi: PluginModules = {
       query: {
         tryResolveUri: (
@@ -465,25 +442,22 @@ describe("resolveUri", () => {
 
     const uri = new Uri("some/api");
 
-    expect.assertions(1);
-
-    await resolveUri(
+    const { uri: resolvedUri, api, error } = await resolveUriWithResolvers(
       uri,
-      [],
-      plugins,
-      interfaces,
-      client({
-        ...apis,
-        "w3://ens/ipfs": faultyIpfsApi,
-      }).invoke,
-      createPluginApi,
-      createApi,
-      {
-        noValidate: true,
-      }
-    ).catch((e) =>
-      expect(e.message).toMatch(`No Web3API found at URI: ${uri.uri}`)
+      resolvers,
+      client(
+        {
+          ...apis,
+          "w3://ens/ipfs": faultyIpfsApi
+        }, 
+        plugins, 
+        interfaces
+      )
     );
+
+    expect(resolvedUri).toEqual(uri);
+    expect(api).toBeFalsy();
+    expect(error).toBeFalsy();
   });
 });
 

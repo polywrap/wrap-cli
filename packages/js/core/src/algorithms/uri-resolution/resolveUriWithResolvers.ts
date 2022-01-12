@@ -39,7 +39,7 @@ export const resolveUriWithResolvers = async (
   uri: Uri, 
   resolvers: readonly UriToApiResolver[], 
   client: Client, 
-  options: Contextualized
+  options: Contextualized = {}
 ): Promise<{
   uri?: Uri;
   api?: Api;

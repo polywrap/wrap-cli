@@ -1,5 +1,5 @@
 import { ApiResolver, UriToApiResolver } from ".";
-import { Uri, Client, Contextualized, getImplementations, coreInterfaceUris, Api, Web3ApiManifest } from "../..";
+import { Uri, Client, Contextualized, getImplementations, coreInterfaceUris, Api, Web3ApiManifest, DeserializeManifestOptions } from "../..";
 import { UriResolutionResult } from "./UriResolutionResult";
 
 export type CreateApiFunc = (
@@ -18,12 +18,13 @@ export class ApiAggregatorResolver implements UriToApiResolver {
   name = "ApiAggregator";
 
   constructor(
-      private readonly createApi: CreateApiFunc 
+      private readonly createApi: CreateApiFunc,
+      private deserializeOptions?: DeserializeManifestOptions
     ) {
   }
 
   async resolveUri(uri: Uri, client: Client, options: Contextualized): Promise<ApiAggregatorResolverResult> {
-    const resolvers: ApiResolver[] = buildApiResolvers(client, options, this.createApi);
+    const resolvers: ApiResolver[] = this.buildApiResolvers(client, options);
 
     for (const resolver of resolvers) {
       const result = await resolver.resolveUri(uri, client, options);
@@ -40,26 +41,30 @@ export class ApiAggregatorResolver implements UriToApiResolver {
     return {
       uri,
     };
-  };
-}
-
-const buildApiResolvers = (client: Client, options: Contextualized, createApi: CreateApiFunc) => {
-  const resolvers: ApiResolver[] = [];
-
-  const resolverUris = getImplementations(
-    coreInterfaceUris.uriResolver,
-    client.getInterfaces(options),
-    client.getRedirects(options)
-  );
-
-  for(const resolverUri of resolverUris) {
-    const apiResolver = new ApiResolver(
-      resolverUri,
-      createApi
-    );
-
-    resolvers.push(apiResolver);
   }
 
-  return resolvers;
-};
+  buildApiResolvers(
+    client: Client, 
+    options: Contextualized, 
+  ): ApiResolver[] {
+    const resolvers: ApiResolver[] = [];
+  
+    const resolverUris = getImplementations(
+      coreInterfaceUris.uriResolver,
+      client.getInterfaces(options),
+      client.getRedirects(options)
+    );
+  
+    for(const resolverUri of resolverUris) {
+      const apiResolver = new ApiResolver(
+        resolverUri,
+        this.createApi,
+        this.deserializeOptions
+      );
+  
+      resolvers.push(apiResolver);
+    }
+  
+    return resolvers;
+  }
+}
