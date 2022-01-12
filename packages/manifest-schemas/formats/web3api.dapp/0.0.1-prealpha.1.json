@@ -5,6 +5,7 @@
   "required": [
     "format",
     "language",
+    "types",
     "packages"
   ],
   "properties": {
@@ -15,6 +16,22 @@
     "language": {
       "type": "string",
       "format": "dappLanguage"
+    },
+    "types": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "directory": {
+          "type": "string",
+          "format": "file"
+        },
+        "typesOnly": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "directory"
+      ]
     },
     "packages": {
       "type": "array",

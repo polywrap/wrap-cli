@@ -18,8 +18,7 @@ const HELP = `
 w3 dapp command [options]
 
 Commands:
-  types       Generate type code for wrappers
-  extension   Generate client extension code for wrappers
+  codegen   Generate code for the dApp
 
 Options:
   -h, --help                              Show usage information
@@ -70,7 +69,7 @@ ${HELP}`);
   test("Should throw error for invalid params - output-dir", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["dapp", "types", "--output-dir"],
+        args: ["dapp", "codegen", "--output-dir"],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -86,7 +85,7 @@ ${HELP}`);
   test("Should throw error for invalid params - ens", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["dapp", "types", "--ens"],
+        args: ["dapp", "codegen", "--ens"],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -102,7 +101,7 @@ ${HELP}`);
   test("Should throw error for duplicate namespace", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["dapp", "types", `-m ${projectRoot}/web3api.dapp.duplicateNamespace.yaml`],
+        args: ["dapp", "codegen", `-m ${projectRoot}/web3api.dapp.duplicateNamespace.yaml`],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -117,7 +116,7 @@ ${HELP}`);
   test("Should successfully generate types for wrappers", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["dapp", "types"],
+        args: ["dapp", "codegen", `-m ${projectRoot}/web3api.dapp.typesOnly.yaml`],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -149,7 +148,7 @@ ${HELP}`);
   test("Should successfully generate types for plugins", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["dapp", "types", `-m ${projectRoot}/web3api.dapp.withPlugin.yaml`],
+        args: ["dapp", "codegen", `-m ${projectRoot}/web3api.dapp.withPlugin.yaml`],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -183,7 +182,7 @@ ${HELP}`);
   test("Should successfully generate types for multiple packages", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["dapp", "types", `-m ${projectRoot}/web3api.dapp.multiPackage.yaml`],
+        args: ["dapp", "codegen", `-m ${projectRoot}/web3api.dapp.multiPackage.yaml`],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -231,7 +230,7 @@ ${HELP}`);
   test("Should clear file cache before completion", async () => {
     const { exitCode: code, stderr: error } = await runCLI(
       {
-        args: ["dapp", "types", `-m ${projectRoot}/web3api.dapp.multiPackage.yaml`],
+        args: ["dapp", "codegen", `-m ${projectRoot}/web3api.dapp.multiPackage.yaml`],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -249,7 +248,7 @@ ${HELP}`);
   test("Should be able to read/call extension props from client", async () => {
     const { exitCode: code, stderr: error } = await runCLI(
       {
-        args: ["dapp", "extension", `-m ${projectRoot}/web3api.dapp.yaml`],
+        args: ["dapp", "codegen", `-m ${projectRoot}/web3api.dapp.yaml`],
         cwd: projectRoot,
         cli: w3Cli,
       },

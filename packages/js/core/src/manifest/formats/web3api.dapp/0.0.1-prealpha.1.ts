@@ -9,6 +9,10 @@
 export interface DappManifest {
   format: "0.0.1-prealpha.1";
   language: string;
+  types: {
+    directory: string;
+    typesOnly?: boolean;
+  };
   packages: {
     uri: string;
     namespace: string;

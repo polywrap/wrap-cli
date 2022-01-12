@@ -1,5 +1,8 @@
 format: 0.0.1-prealpha.1
 language: dapp/typescript
+types:
+  directory: "./polywrap"
+  typesOnly: true
 packages:
   - uri: "./../../../../js/plugins/http/build"
     namespace: "http"

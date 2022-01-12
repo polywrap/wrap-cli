@@ -49,8 +49,7 @@ const defaultOutputDir = "polywrap";
 
 const cmdStr = intlMsg.commands_plugin_options_command();
 const optionsStr = intlMsg.commands_options_options();
-const typesStr = intlMsg.commands_dapp_types();
-const extensionStr = intlMsg.commands_dapp_extension();
+const codegenStr = intlMsg.commands_dapp_codegen();
 const defaultManifestStr = defaultManifest.join(" | ");
 const outputDirStr = `${intlMsg.commands_dapp_options_o({
   default: `${defaultOutputDir}/`,
@@ -63,8 +62,7 @@ const HELP = `
 ${chalk.bold("w3 dapp")} ${cmdStr} [${optionsStr}]
 
 Commands:
-  ${chalk.bold("types")}       ${typesStr}
-  ${chalk.bold("extension")}   ${extensionStr}
+  ${chalk.bold("codegen")}   ${codegenStr}
 
 Options:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
@@ -113,8 +111,12 @@ export default {
       return;
     }
 
-    if (!command || command !== "extension" && command !== "extensions" && command !== "types") {
+    if (!command) {
       print.error(intlMsg.commands_plugin_error_noCommand());
+      print.info(HELP);
+      return;
+    } else if (command !== "codegen") {
+      print.error(intlMsg.commands_dapp_error_unknownCommand({ command }));
       print.info(HELP);
       return;
     }
@@ -124,15 +126,12 @@ export default {
       return;
     }
 
-    // Resolve manifest and output directories
+    // Resolve manifest
     manifestPath = await resolveManifestPath(
       filesystem,
       manifestPath,
       defaultManifest
     );
-    outputDir =
-      (outputDir && filesystem.resolve(outputDir)) ||
-      filesystem.path(defaultOutputDir);
 
     // Dapp project
     const manifestDir: string = path.dirname(manifestPath);
@@ -142,6 +141,13 @@ export default {
     );
     const language: string = dappManifest.language;
     const packages: PolywrapPackage[] = dappManifest.packages;
+    const outputDirFromManifest: string | undefined = dappManifest.types.directory;
+    const typesOnly: boolean | undefined = dappManifest.types.typesOnly;
+
+    // Resolve output directory
+    outputDir =
+      (outputDir && filesystem.resolve(outputDir)) || outputDirFromManifest ||
+      filesystem.path(defaultOutputDir);
 
     // Check for duplicate namespaces
     const nsNoDupes: string[] = packages
@@ -155,8 +161,7 @@ export default {
     // Resolve generation file
     const targetLang: string = manifestLanguageToTargetLanguage(language);
     const genFiles: DappGenFiles = langSupport[targetLang];
-    const genFilePath: string =
-      (command === "extension" || command === "extensions") ? genFiles.extension : genFiles.types;
+    const genFilePath: string = typesOnly ? genFiles.types : genFiles.extension;
     const customScript = filesystem.resolve(genFilePath);
 
     // Get providers and client
@@ -204,7 +209,7 @@ export default {
       if (await codeGenerator.generate()) {
         print.success(
           `🔥 ${intlMsg.commands_dapp_namespace_success({
-            command,
+            content: typesOnly ? "types" : "extension",
             namespace,
           })} 🔥`
         );
