@@ -1,7 +1,7 @@
-import "@web3api/client-js/build/Web3ApiClient";
+import "@web3api/client-js";
 import { I{{#title}}{{namespace}}{{/title}}Extension } from "./classExtension";
 
-declare module "@web3api/client-js/build/Web3ApiClient" {
+declare module "@web3api/client-js" {
   export interface ExtensionAccessor {
     {{#lowerFirst}}{{namespace}}{{/lowerFirst}}: I{{#title}}{{namespace}}{{/title}}Extension;
   }

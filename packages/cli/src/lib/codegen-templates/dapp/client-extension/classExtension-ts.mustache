@@ -36,13 +36,13 @@ import {
 {{/importedQueryTypes}}
 } from "./types";
 {{#queryTypes}}
-import * as {{type}}Inputs from "./{{#lowerFirst}}{{type}}{{/lowerFirst}}";
+import * as {{type}} from "./{{#lowerFirst}}{{type}}{{/lowerFirst}}";
 {{/queryTypes}}
 import { Client, Uri, ExtensionInvocation, Extension, ExtensionConfig, ExtensionFactory, InvokeApiOptions } from "@web3api/core-js";
 
 export interface {{#title}}{{namespace}}{{/title}}ExtensionConfig extends ExtensionConfig {}
 
-export interface I{{#title}}{{namespace}}{{/title}}Extension extends Extension, {{#trimTrailing}}{{#queryTypes}}{{type}}Inputs.{{#title}}{{namespace}}{{/title}}{{type}}Module, {{/queryTypes}}{{/trimTrailing}} {}
+export interface I{{#title}}{{namespace}}{{/title}}Extension extends Extension, {{#trimTrailing}}{{#queryTypes}}{{type}}.{{#title}}{{namespace}}{{/title}}{{type}}Module, {{/queryTypes}}{{/trimTrailing}} {}
 
 class {{#title}}{{namespace}}{{/title}}Extension implements I{{#title}}{{namespace}}{{/title}}Extension {
 
@@ -67,7 +67,7 @@ class {{#title}}{{namespace}}{{/title}}Extension implements I{{#title}}{{namespa
 {{#queryTypes}}
 {{#methods}}
   {{name}}(
-    input: {{#title}}{{type}}{{/title}}Inputs.Input_{{name}},
+    input: {{#title}}{{type}}{{/title}}.Input_{{name}},
   ): ExtensionInvocation<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}> {
     const options: InvokeApiOptions = {
       uri: this.uri.toString(),

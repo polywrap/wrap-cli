@@ -113,7 +113,7 @@ export default {
       return;
     }
 
-    if (!command) {
+    if (!command || command !== "extension" && command !== "extensions" && command !== "types") {
       print.error(intlMsg.commands_plugin_error_noCommand());
       print.info(HELP);
       return;
@@ -156,7 +156,7 @@ export default {
     const targetLang: string = manifestLanguageToTargetLanguage(language);
     const genFiles: DappGenFiles = langSupport[targetLang];
     const genFilePath: string =
-      command === "extension" ? genFiles.extension : genFiles.types;
+      (command === "extension" || command === "extensions") ? genFiles.extension : genFiles.types;
     const customScript = filesystem.resolve(genFilePath);
 
     // Get providers and client
