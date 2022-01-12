@@ -1,4 +1,83 @@
-use polywrap_wasm_rs::{Context, Read, ReadDecoder};
+use polywrap_wasm_rs::{BigInt, Context, Read, ReadDecoder, JSON};
+
+#[test]
+fn test_read_bigint() {
+	let mut reader = ReadDecoder::new(&[0xa1, 0x30], Context::new());
+	assert_eq!(BigInt::default(), reader.read_bigint().unwrap());
+}
+
+#[test]
+fn test_read_json() {
+	let mut reader = ReadDecoder::new(
+		&[
+			0xb9, 0x7b, 0x22, 0x62, 0x61, 0x72, 0x22, 0x3a, 0x22, 0x62, 0x61, 0x7a, 0x22, 0x2c,
+			0x22, 0x66, 0x6f, 0x6f, 0x22, 0x3a, 0x22, 0x62, 0x61, 0x72, 0x22, 0x7d,
+		],
+		Context::new(),
+	);
+	let json = JSON::json!({ "foo": "bar", "bar": "baz" });
+	assert_eq!(json.to_string(), reader.read_json().unwrap());
+}
+
+#[test]
+fn test_read_string_length() {
+	let mut reader = ReadDecoder::new(&[0xa1], Context::new());
+	assert_eq!(1, reader.read_string_length().unwrap());
+}
+
+#[test]
+fn test_read_string() {
+	let mut reader = ReadDecoder::new(&[0xa5, 0x48, 0x65, 0x6c, 0x6c, 0x6f], Context::new());
+	assert_eq!("Hello".to_string(), reader.read_string().unwrap());
+}
+
+#[test]
+fn test_read_bytes_length() {
+	let mut reader = ReadDecoder::new(&[0xc4, 0x01], Context::new());
+	assert_eq!(1, reader.read_bytes_length().unwrap());
+}
+
+#[test]
+fn test_read_bytes() {
+	let mut reader = ReadDecoder::new(&[0xc4, 0x01, 0x01], Context::new());
+	assert_eq!(vec![0x01], reader.read_bytes().unwrap());
+}
+
+#[test]
+fn test_read_array_length() {
+	let mut reader = ReadDecoder::new(&[0x91], Context::new());
+	assert_eq!(0x01, reader.read_array_length().unwrap());
+}
+
+#[test]
+fn test_read_array() {
+	let mut reader = ReadDecoder::new(&[0x91, 0xcc, 0x01], Context::new());
+	assert_eq!(vec![0x01], reader.read_array(|reader| { reader.read_u8().unwrap() }).unwrap());
+}
+
+#[test]
+fn test_read_map_length() {
+	let mut reader = ReadDecoder::new(&[0x81], Context::new());
+	assert_eq!(0x01, reader.read_map_length().unwrap());
+}
+
+#[test]
+fn test_write_map() {
+	let mut reader = ReadDecoder::new(
+		&[
+			0x81, 0xa8, 0x50, 0x6f, 0x6c, 0x79, 0x77, 0x72, 0x61, 0x70, 0x92, 0xd2, 0x00, 0x00,
+			0x00, 0x01, 0xd2, 0x00, 0x00, 0x00, 0x02,
+		],
+		Context::new(),
+	);
+	let res = reader
+		.read_map(
+			|key_fn| key_fn.read_string().unwrap(),
+			|val_fn| val_fn.read_array(|reader| reader.read_i32().unwrap()).unwrap(),
+		)
+		.unwrap();
+	assert_eq!(res[&"Polywrap".to_string()], vec![0x01, 0x02]);
+}
 
 #[test]
 fn test_read_nil() {

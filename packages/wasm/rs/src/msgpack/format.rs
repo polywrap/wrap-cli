@@ -54,15 +54,15 @@ impl Format {
 		format: Format,
 	) -> Result<(), EncodingError> {
 		match writer.write_u8(format.to_u8()) {
-			Ok(_) => Ok(()),
-			Err(_) => Err(EncodingError::FormatWriteError),
+			Ok(_v) => Ok(()),
+			Err(_e) => Err(EncodingError::FormatWriteError),
 		}
 	}
 
 	pub fn get_format<R: std::io::Read>(reader: &mut R) -> Result<Format, DecodingError> {
 		match reader.read_u8() {
-			Ok(val) => Ok(Format::from_u8(val)),
-			Err(_) => Err(DecodingError::FormatReadError),
+			Ok(v) => Ok(Format::from_u8(v)),
+			Err(_e) => Err(DecodingError::FormatReadError),
 		}
 	}
 

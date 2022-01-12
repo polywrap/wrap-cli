@@ -178,7 +178,7 @@ impl Write for WriteEncoder {
 	}
 
 	fn write_json(&mut self, value: &JSON::Value) -> Result<(), EncodingError> {
-		match JSON::from_value(value.to_owned()) {
+		match JSON::to_string(value) {
 			Ok(s) => Ok(self.write_string(&s)?),
 			Err(e) => Err(EncodingError::from(e)),
 		}
@@ -238,12 +238,10 @@ impl Write for WriteEncoder {
 		match self.write_map_length(map.len() as u32) {
 			Ok(_) => {
 				let keys: Vec<_> = map.keys().into_iter().collect();
-				let values: Vec<_> = map.values().into_iter().collect();
 				for key in keys {
-					for value in &values {
-						key_fn(self, key);
-						val_fn(self, value);
-					}
+					let value = &map[key];
+					key_fn(self, key);
+					val_fn(self, &value);
 				}
 				Ok(())
 			},
