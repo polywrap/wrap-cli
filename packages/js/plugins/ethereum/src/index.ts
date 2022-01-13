@@ -206,7 +206,7 @@ export class EthereumPlugin extends Plugin {
   }
 
   public encodeParams(input: Query.Input_encodeParams): string {
-    return defaultAbiCoder.encode(input.types, input.values);
+    return defaultAbiCoder.encode(input.types, this.parseArgs(input.values));
   }
 
   public encodeFunction(input: Query.Input_encodeFunction): string {

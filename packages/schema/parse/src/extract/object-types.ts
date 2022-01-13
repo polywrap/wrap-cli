@@ -3,6 +3,8 @@ import {
   ObjectDefinition,
   createObjectDefinition,
   createInterfaceImplementedDefinition,
+  isQueryType,
+  isEnvType,
 } from "../typeInfo";
 import {
   extractFieldDefinition,
@@ -23,8 +25,10 @@ import {
 
 const visitorEnter = (objectTypes: ObjectDefinition[], state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
+    const typeName = node.name.value;
+
     // Skip non-custom types
-    if (node.name.value === "Query" || node.name.value === "Mutation") {
+    if (isQueryType(typeName) || isEnvType(typeName)) {
       return;
     }
 
@@ -40,7 +44,7 @@ const visitorEnter = (objectTypes: ObjectDefinition[], state: State) => ({
 
     // Create a new TypeDefinition
     const type = createObjectDefinition({
-      type: node.name.value,
+      type: typeName,
       interfaces: node.interfaces?.map((x) =>
         createInterfaceImplementedDefinition({ type: x.name.value })
       ),

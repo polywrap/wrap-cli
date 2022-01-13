@@ -10,7 +10,7 @@ import {
   generateDockerfile,
   createBuildImage,
   copyArtifactsFromBuildImage,
-  manifestLanguageToTargetLanguage,
+  manifestLanguageToBindLanguage,
 } from "./helpers";
 import { intlMsg } from "./intl";
 
@@ -192,6 +192,7 @@ export class Compiler {
 
   private async _generateCode(state: CompilerState): Promise<string[]> {
     const { web3ApiManifest, composerOutput, modulesToBuild } = state;
+    const { project } = this._config;
 
     const queryModule = web3ApiManifest.modules.query?.module as string;
     const queryDirectory = web3ApiManifest.modules.query
@@ -221,11 +222,13 @@ export class Compiler {
       this._resetDir(mutationDirectory);
     }
 
+    const bindLanguage = manifestLanguageToBindLanguage(
+      await project.getManifestLanguage()
+    );
+
     // Generate the bindings
     const output = bindSchema({
-      language: web3ApiManifest.language
-        ? manifestLanguageToTargetLanguage(web3ApiManifest.language)
-        : "wasm-as",
+      bindLanguage,
       query: modulesToBuild.query
         ? {
             typeInfo: composerOutput.query?.typeInfo as TypeInfo,
@@ -534,7 +537,6 @@ export class Compiler {
   ): Promise<void> {
     const modulePath = path.join(buildDir, `${moduleName}.wasm`);
     const wasmSource = fs.readFileSync(modulePath);
-
     const w3Imports: Record<keyof W3Imports, () => void> = {
       __w3_subinvoke: () => {},
       __w3_subinvoke_result_len: () => {},
@@ -548,6 +550,9 @@ export class Compiler {
       __w3_getImplementations_result_len: () => {},
       __w3_getImplementations_result: () => {},
       __w3_abort: () => {},
+      __w3_load_env: () => {},
+      __w3_sanitize_env_args: () => {},
+      __w3_sanitize_env_result: () => {},
     };
 
     try {

@@ -7,17 +7,40 @@ import {
   createArrayDefinition,
   createObjectPropertyDefinition,
   createObjectDefinition,
-  TypeInfo,
   createEnumPropertyDefinition,
   createImportedQueryDefinition,
   createImportedObjectDefinition,
   createImportedEnumDefinition,
   createInterfaceImplementedDefinition,
-  createObjectRef
+  createObjectRef,
+  createEnvDefinition,
+  createTypeInfo,
+  AnyDefinition,
+  TypeInfo,
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
-  interfaceTypes: [],
+  ...createTypeInfo(),
+  envTypes: {
+    query: createEnvDefinition({}),
+    mutation: createEnvDefinition({
+      sanitized: {
+        ...createObjectDefinition({ type: "MutationEnv" }),
+        properties: [
+          {
+            ...createScalarPropertyDefinition({ name: "bar", type: "Int", required: false }),
+            first: true,
+            last: null,
+          } as AnyDefinition,
+          {
+            ...createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
+            first: null,
+            last: true,
+          } as AnyDefinition,
+        ],
+      }
+    }),
+  },
   enumTypes: [],
   queryTypes: [
     {

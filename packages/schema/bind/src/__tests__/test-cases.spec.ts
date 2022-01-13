@@ -1,7 +1,7 @@
 import { fetchTestCases } from "./index";
 import { readDirectory } from "../utils/fs";
 import { alphabeticalNamedSort } from "../utils/sort";
-import { bindSchema, OutputEntry, TargetLanguage } from "../";
+import { bindSchema, OutputEntry, BindLanguage } from "../";
 
 import { writeFileSync } from "@web3api/os-js";
 
@@ -38,7 +38,7 @@ describe("Web3API Binding Test Suite", () => {
         };
 
         const output = bindSchema({
-          language: language as TargetLanguage,
+          bindLanguage: language as BindLanguage,
           query: expectedOutput.query ? testCase.input.query : undefined,
           mutation: expectedOutput.mutation ? testCase.input.mutation : undefined,
           combined: expectedOutput.combined ? testCase.input.combined : undefined,
@@ -78,7 +78,7 @@ describe("Web3API Binding Test Suite", () => {
           path.join(testResultDir, `${language}-expected.json`),
           JSON.stringify(expectedOutput, null, 2),
         );
-        
+
         expect(output).toMatchObject(expectedOutput);
       }
     });

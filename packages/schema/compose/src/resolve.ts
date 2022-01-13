@@ -5,6 +5,7 @@
 import {
   ExternalImport,
   LocalImport,
+  SchemaKind,
   SchemaResolver,
   SchemaResolvers,
   SYNTAX_REFERENCE,
@@ -33,6 +34,7 @@ import {
   GenericDefinition,
   isKind,
   header,
+  AnyDefinition,
   InterfaceImplementedDefinition,
   ObjectRef,
   EnumRef,
@@ -44,6 +46,9 @@ import {
   createCapability,
   QueryModuleCapability,
   QueryModuleCapabilityMap,
+  createEnvDefinition,
+  createObjectDefinition,
+  envTypes,
 } from "@web3api/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -118,7 +123,7 @@ export async function resolveUseStatements(
 export async function resolveImportsAndParseSchemas(
   schema: string,
   schemaPath: string,
-  mutation: boolean,
+  schemaKind: SchemaKind,
   resolvers: SchemaResolvers
 ): Promise<TypeInfo> {
   const importKeywordCapture = /^#+["{3}]*import\s/gm;
@@ -149,7 +154,7 @@ export async function resolveImportsAndParseSchemas(
 
   const externalImportsToResolve: ExternalImport[] = parseExternalImports(
     externalImportStatements,
-    mutation
+    schemaKind
   );
 
   const localImportsToResolve: LocalImport[] = parseLocalImports(
@@ -165,6 +170,10 @@ export async function resolveImportsAndParseSchemas(
     importedEnumTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
+    envTypes: {
+      mutation: createEnvDefinition({}),
+      query: createEnvDefinition({}),
+    },
   };
 
   const externalImports = await resolveExternalImports(
@@ -177,7 +186,7 @@ export async function resolveImportsAndParseSchemas(
     localImportsToResolve,
     resolvers.local,
     subTypeInfo,
-    mutation,
+    schemaKind,
     resolvers
   );
 
@@ -196,7 +205,7 @@ export async function resolveImportsAndParseSchemas(
   newSchema = newSchema.replace(/#[^\n]*\n/g, "");
 
   // Add the @imports directive
-  newSchema = addQueryImportsDirective(newSchema, externalImports, mutation);
+  newSchema = addQueryImportsDirective(newSchema, schemaKind, externalImports);
 
   // Add the @capability directive
   newSchema = addCapabilityDirective(newSchema, capabilitiesByModule);
@@ -432,31 +441,44 @@ function appendNamespace(namespace: string, str: string) {
 
 function addQueryImportsDirective(
   schema: string,
-  externalImports: string[],
-  mutation: boolean
+  schemaKind: SchemaKind,
+  externalImports: string[]
 ): string {
   if (!externalImports.length) {
     return schema;
   }
 
-  // Append the @imports(...) directive to the query type
-  const typeCapture = mutation
-    ? /type\s+Mutation\s+([^{]*)\s*{/g
-    : /type\s+Query\s+([^{]*)\s*{/g;
+  let result = schema;
 
-  const importedTypes = `${externalImports
-    .map((type) => `\"${type}\"`)
-    .join(",\n    ")}`;
+  const modifySchema = (mutation: boolean) => {
+    // Append the @imports(...) directive to the query type
+    const typeCapture = mutation
+      ? /type\s+Mutation\s+([^{]*)\s*{/g
+      : /type\s+Query\s+([^{]*)\s*{/g;
 
-  const replacementQueryStr = `type ${
-    mutation ? "Mutation" : "Query"
-  } $1@imports(
-  types: [
-    ${importedTypes}
-  ]
-) {`;
+    const importedTypes = `${externalImports
+      .map((type) => `\"${type}\"`)
+      .join(",\n    ")}`;
 
-  return schema.replace(typeCapture, replacementQueryStr);
+    const replacementQueryStr = `type ${
+      mutation ? "Mutation" : "Query"
+    } $1@imports(
+    types: [
+      ${importedTypes}
+    ]
+    ) {`;
+
+    return result.replace(typeCapture, replacementQueryStr);
+  };
+
+  if (schemaKind === "plugin") {
+    result = modifySchema(false);
+    result = modifySchema(true);
+  } else {
+    result = modifySchema(schemaKind === "mutation");
+  }
+
+  return result;
 }
 
 function addCapabilityDirective(
@@ -474,8 +496,8 @@ function addCapabilityDirective(
     for (const capability of capabilities) {
       const typeCapture =
         module === "mutation"
-          ? /type[ \n\t]*Mutation[ \n\t]*([^{]*)[ \n\t]*{/g
-          : /type[ \n\t]*Query[ \n\t]*([^{]*)[ \n\t]*{/g;
+          ? /type[ \n\t]+Mutation[ \n\t]+([^{]*)[ \n\t]*{/g
+          : /type[ \n\t]+Query[ \n\t]+([^{]*)[ \n\t]*{/g;
 
       const replacementQueryStr = `type ${
         module === "mutation" ? "Mutation" : "Query"
@@ -844,7 +866,7 @@ async function resolveLocalImports(
   importsToResolve: LocalImport[],
   resolveSchema: SchemaResolver,
   typeInfo: TypeInfo,
-  mutation: boolean,
+  schemaKind: SchemaKind,
   resolvers: SchemaResolvers
 ): Promise<void> {
   for (const importToResolve of importsToResolve) {
@@ -866,7 +888,7 @@ async function resolveLocalImports(
     const localTypeInfo = await resolveImportsAndParseSchemas(
       schema,
       path,
-      mutation,
+      schemaKind,
       resolvers
     );
 
@@ -1016,6 +1038,51 @@ async function resolveLocalImports(
           typeInfo.enumTypes.push(typesToImport[importType] as EnumDefinition);
         }
       }
+    }
+  }
+}
+
+export function resolveEnvTypes(
+  typeInfo: TypeInfo,
+  schemaKind: SchemaKind
+): void {
+  const sharedEnvDef = typeInfo.objectTypes.find((type) => type.type === "Env");
+  if (!sharedEnvDef) {
+    return;
+  }
+
+  const isMutationEnv = schemaKind === "mutation" || schemaKind === "plugin";
+
+  const moduleEnvDef = isMutationEnv
+    ? typeInfo.envTypes.mutation
+    : typeInfo.envTypes.query;
+
+  if (!moduleEnvDef.sanitized) {
+    moduleEnvDef.sanitized = createObjectDefinition({
+      type: isMutationEnv ? envTypes.MutationEnv : envTypes.QueryEnv,
+    });
+  }
+
+  typeInfo.objectTypes = typeInfo.objectTypes.filter((type) => {
+    return type.type !== sharedEnvDef.type;
+  });
+
+  checkDuplicateEnvProperties(moduleEnvDef.sanitized, sharedEnvDef.properties);
+  moduleEnvDef.sanitized.properties.push(...sharedEnvDef.properties);
+}
+
+export function checkDuplicateEnvProperties(
+  envType: ObjectDefinition,
+  envProperties: AnyDefinition[]
+): void {
+  const envPropertiesSet = new Set(
+    envProperties.map((envProperty) => envProperty.name)
+  );
+  for (const specificProperty of envType.properties) {
+    if (envPropertiesSet.has(specificProperty.name)) {
+      throw new Error(
+        `Type '${envType.type}' contains duplicate property '${specificProperty.name}' of type 'Env'`
+      );
     }
   }
 }

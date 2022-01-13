@@ -4,7 +4,8 @@ module.exports = {
     "**/w3/**/*.*",
     "**/build/**/*.*",
     "**/__tests__/**/*.*",
-    "**/node_modules/**/*.*"
+    "**/node_modules/**/*.*",
+    "**/coverage/**/*.*",
   ],
   overrides: [
     {
