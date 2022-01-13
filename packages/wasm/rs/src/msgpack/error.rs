@@ -1,7 +1,6 @@
 //! Errors returned from I/O `Write` and `Read` operations
 
 use num_derive::FromPrimitive;
-use std::convert::Infallible;
 use thiserror::Error;
 
 /// Errors from encoding data
@@ -86,12 +85,6 @@ impl From<std::io::Error> for EncodingError {
 impl From<serde_json::Error> for EncodingError {
     fn from(e: serde_json::Error) -> EncodingError {
         e.into()
-    }
-}
-
-impl From<Infallible> for EncodingError {
-    fn from(_: Infallible) -> Self {
-        unreachable!()
     }
 }
 
@@ -183,11 +176,5 @@ impl From<std::io::Error> for DecodingError {
 impl From<serde_json::Error> for DecodingError {
     fn from(e: serde_json::Error) -> DecodingError {
         e.into()
-    }
-}
-
-impl From<Infallible> for DecodingError {
-    fn from(_: Infallible) -> Self {
-        unreachable!()
     }
 }
