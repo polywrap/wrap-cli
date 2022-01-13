@@ -59,6 +59,15 @@ pub enum EncodingError {
 
     #[error("MapWriteError")]
     MapWriteError,
+
+    #[error("CustomEnumEncodingError")]
+    CustomEnumEncodingError,
+}
+
+impl From<String> for EncodingError {
+    fn from(e: String) -> Self {
+        e.into()
+    }
 }
 
 impl From<EncodingError> for std::io::Error {
@@ -141,6 +150,15 @@ pub enum DecodingError {
 
     #[error("UnknownFieldName")]
     UnknownFieldName,
+
+    #[error("CustomEnumDecodingError")]
+    CustomEnumDecodingError,
+}
+
+impl From<String> for DecodingError {
+    fn from(e: String) -> Self {
+        e.into()
+    }
 }
 
 impl From<DecodingError> for std::io::Error {
