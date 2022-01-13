@@ -20,6 +20,14 @@ directive @imported(
 directive @imports(
   types: [String!]!
 ) on OBJECT
+
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
 """
@@ -42,6 +50,10 @@ type Query implements Interface_Query @imports(
     "Interface_Object",
     "Interface_NestedInterfaceObject"
   ]
+) @capability(
+  type: "getImplementations",
+  uri: "test.eth",
+  namespace: "Namespace"
 ) {
   """
   method1 comment
@@ -120,6 +132,16 @@ type Mutation implements Interface_Mutation @imports(
   abstractMutationMethod(
     arg: UInt8!
   ): String!
+}
+
+type QueryEnv {
+  bar: Bytes
+  foo: String!
+}
+
+type MutationEnv {
+  bar: Int
+  foo: String!
 }
 
 """
@@ -249,7 +271,7 @@ type Namespace_Query @imported(
   uri: "test.eth",
   namespace: "Namespace",
   nativeType: "Query"
-) {
+) @enabled_interface {
   method1(
     str: String!
     optStr: String

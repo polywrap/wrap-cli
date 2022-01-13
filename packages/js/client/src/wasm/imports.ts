@@ -48,6 +48,7 @@ export const createImports = (config: {
           module: moduleToInvoke as InvokableModules,
           method: method,
           input: input,
+          noDecode: true,
         });
 
         if (!error) {
@@ -117,6 +118,42 @@ export const createImports = (config: {
       // Store the invocation's error
       __w3_invoke_error: (ptr: u32, len: u32): void => {
         state.invoke.error = readString(memory.buffer, ptr, len);
+      },
+      __w3_getImplementations: (uriPtr: u32, uriLen: u32): boolean => {
+        const uri = readString(memory.buffer, uriPtr, uriLen);
+        const result = client.getImplementations(uri, {});
+        state.getImplementationsResult = MsgPack.encode(result);
+        return result.length > 0;
+      },
+      __w3_getImplementations_result_len: (): u32 => {
+        if (!state.getImplementationsResult) {
+          abort("__w3_getImplementations_result_len: result is not set");
+          return 0;
+        }
+        return state.getImplementationsResult.byteLength;
+      },
+      __w3_getImplementations_result: (ptr: u32): void => {
+        if (!state.getImplementationsResult) {
+          abort("__w3_getImplementations_result: result is not set");
+          return;
+        }
+        writeBytes(state.getImplementationsResult, memory.buffer, ptr);
+      },
+      __w3_load_env: (ptr: u32): void => {
+        if (state.env) {
+          writeBytes(state.env, memory.buffer, ptr);
+        }
+      },
+      __w3_sanitize_env_args: (ptr: u32): void => {
+        if (!state.sanitizeEnv.args) {
+          abort("__w3_sanitize_env: args is not set");
+          return;
+        }
+
+        writeBytes(state.sanitizeEnv.args, memory.buffer, ptr);
+      },
+      __w3_sanitize_env_result: (ptr: u32, len: u32): void => {
+        state.sanitizeEnv.result = readBytes(memory.buffer, ptr, len);
       },
       __w3_abort: (
         msgPtr: u32,

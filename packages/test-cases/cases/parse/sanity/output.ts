@@ -15,10 +15,57 @@ import {
   createImportedEnumDefinition,
   createInterfaceImplementedDefinition,
   createObjectRef,
-  createEnumRef
+  createEnumRef,
+  createInterfaceDefinition,
+  createCapability,
+  createEnvDefinition
 } from "../../../../schema/parse/src/typeInfo";
 
 export const output: TypeInfo = {
+  interfaceTypes: [
+    createInterfaceDefinition({
+      type: "TestImport",
+      uri: "testimport.uri.eth",
+      namespace: "TestImport",
+      capabilities: {
+        ...createCapability({
+          type: "getImplementations",
+          enabled: true,
+          modules: ["query"]
+        })
+      },
+    })
+  ],
+  envTypes: {
+    query: createEnvDefinition({
+      sanitized: {
+        ...createObjectDefinition({ type: "QueryEnv" }),
+        properties: [
+          createScalarPropertyDefinition({ name: "prop", type: "String", required: true })
+        ]
+      },
+      client: {
+        ...createObjectDefinition({ type: "QueryClientEnv" }),
+        properties: [
+          createScalarPropertyDefinition({ name: "prop", type: "String", required: true })
+        ]
+      }
+    }),
+    mutation: createEnvDefinition({
+      sanitized: {
+        ...createObjectDefinition({ type: "MutationEnv" }),
+        properties: [
+          createScalarPropertyDefinition({ name: "prop", type: "Int", required: true })
+        ]
+      },
+      client: {
+        ...createObjectDefinition({ type: "MutationClientEnv" }),
+        properties: [
+          createScalarPropertyDefinition({ name: "prop", type: "String", required: false })
+        ]
+      }
+    }),
+  },
   objectTypes: [
     {
       ...createObjectDefinition({ type: "CustomType", comment: "CustomType multi-line comment\nline 2" }),
@@ -220,11 +267,24 @@ export const output: TypeInfo = {
       uri: "testimport.uri.eth",
       namespace: "TestImport",
       nativeType: "Enum",
-      constants: ["TEXT", "BYTES"], 
+      constants: ["TEXT", "BYTES"],
       comment: "TestImport_Enum comment"
     })
   ],
   queryTypes: [
+    {
+      ...createQueryDefinition({ type: "Mutation" }),
+      methods: [
+        {
+          ...createMethodDefinition({
+            type: "mutation",
+            name: "sanitizeMutationEnv",
+            return: createObjectPropertyDefinition({ name: "sanitizeMutationEnv", type: "MutationEnv", required: true }),
+            arguments: [createObjectPropertyDefinition({ name: "env", type: "MutationClientEnv", required: true })],
+          })
+        },
+      ],
+    },
     {
       ...createQueryDefinition({
         type: "Query",
@@ -235,6 +295,14 @@ export const output: TypeInfo = {
         comment: "Query comment"
       }),
       methods: [
+        {
+          ...createMethodDefinition({
+            type: "query",
+            name: "sanitizeQueryEnv",
+            return: createObjectPropertyDefinition({ name: "sanitizeQueryEnv", type: "QueryEnv", required: true }),
+            arguments: [createObjectPropertyDefinition({ name: "env", type: "QueryClientEnv", required: true })],
+          })
+        },
         {
           ...createMethodDefinition({
             type: "query",
@@ -262,8 +330,8 @@ export const output: TypeInfo = {
           }),
           arguments: [
             createObjectPropertyDefinition({ name: "userObject", type: "UserObject", comment: "userObject comment" }),
-            createArrayPropertyDefinition({ 
-              name: "arrayObject", type: "[UserObject]", required: true, comment: "arrayObject comment", 
+            createArrayPropertyDefinition({
+              name: "arrayObject", type: "[UserObject]", required: true, comment: "arrayObject comment",
               item: createObjectRef({
                 type: "UserObject",
                 name: "arrayObject",
@@ -285,8 +353,8 @@ export const output: TypeInfo = {
           }),
           arguments: [
             createEnumPropertyDefinition({ name: "enum", type: "CustomEnum", comment: "enum comment" }),
-            createArrayPropertyDefinition({ 
-              name: "arrayEnum", type: "[CustomEnum]", required: true, comment: "arrayEnum comment", 
+            createArrayPropertyDefinition({
+              name: "arrayEnum", type: "[CustomEnum]", required: true, comment: "arrayEnum comment",
               item: createEnumRef({
                 type: "CustomEnum",
                 name: "arrayEnum",
@@ -402,6 +470,7 @@ export const output: TypeInfo = {
         uri: "testimport.uri.eth",
         namespace: "TestImport",
         type: "TestImport_Query",
+        isInterface: true,
         nativeType: "Query",
         comment: "TestImport_Query comment"
       }),
@@ -531,6 +600,7 @@ export const output: TypeInfo = {
         namespace: "TestImport",
         type: "TestImport_Mutation",
         nativeType: "Mutation",
+        isInterface: false,
         comment: "TestImport_Mutation comment"
       }),
       methods: [
@@ -554,6 +624,7 @@ export const output: TypeInfo = {
         uri: "interface.uri.eth",
         namespace: "Interface",
         type: "Interface_Query",
+        isInterface: false,
         nativeType: "Query",
         comment: "Interface_Query comment"
       }),

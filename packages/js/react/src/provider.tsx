@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
-import { Web3ApiClient, ClientConfig } from "@web3api/client-js";
+import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
 
 type ClientContext = React.Context<Web3ApiClient>
 
@@ -15,7 +15,7 @@ interface Web3ApiProviderMap {
 
 export const PROVIDERS: Web3ApiProviderMap = {};
 
-interface Web3ApiProviderProps extends ClientConfig { }
+interface Web3ApiProviderProps extends Partial<Web3ApiClientConfig> { }
 
 export type Web3ApiProviderFC = React.FC<Web3ApiProviderProps>;
 

@@ -1,11 +1,52 @@
-import { ExternalImport, LocalImport, SYNTAX_REFERENCE } from "./types";
+import {
+  SchemaKind,
+  ExternalImport,
+  LocalImport,
+  SYNTAX_REFERENCE,
+  Use,
+} from "./types";
 import { getDuplicates } from "./utils";
 
 import Path from "path";
+import { CapabilityType } from "@web3api/schema-parse";
+
+export function parseUse(useStatements: RegExpMatchArray[]): Use[] {
+  const uses: Use[] = [];
+
+  for (const useStatement of useStatements) {
+    if (useStatement.length !== 3) {
+      throw Error(
+        `Invalid use statement found:\n${useStatement[0]}\n` +
+          `Please use the following syntax...\n${SYNTAX_REFERENCE}`
+      );
+    }
+
+    const usedTypes = useStatement[1]
+      .split(",")
+      .map((str) => str.replace(/\s+/g, "")) // Trim all whitespace
+      .filter(Boolean); // Remove empty strings
+
+    const useForName = useStatement[2];
+
+    // Make sure the developer does not import the same dependency more than once
+    const duplicateUsedTypes = getDuplicates(usedTypes);
+    if (duplicateUsedTypes.length > 0) {
+      throw Error(
+        `Duplicate type found: ${duplicateUsedTypes} \nIn Use: ${useForName}`
+      );
+    }
+
+    uses.push({
+      usedTypes: usedTypes as CapabilityType[],
+      namespace: useForName,
+    });
+  }
+  return uses;
+}
 
 export function parseExternalImports(
   imports: RegExpMatchArray[],
-  mutation: boolean
+  schemaKind: SchemaKind
 ): ExternalImport[] {
   const externalImports: ExternalImport[] = [];
 
@@ -43,7 +84,7 @@ export function parseExternalImports(
     const namespace = importStatement[2];
     const uri = importStatement[3];
 
-    if (!mutation && importedTypes.indexOf("Mutation") > -1) {
+    if (schemaKind === "query" && importedTypes.indexOf("Mutation") > -1) {
       throw Error(
         `Query modules cannot import Mutations, write operations are prohibited.\nSee import statement for namespace "${namespace}" at uri "${uri}"`
       );

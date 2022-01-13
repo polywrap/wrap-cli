@@ -20,6 +20,13 @@ directive @imports(
   types: [String!]!
 ) on OBJECT
 
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 """
 CustomEnum comment
 """
@@ -91,6 +98,26 @@ type UserObject {
   fieldB: Int!
 }
 
+type QueryEnv {
+  prop: String!
+}
+
+type QueryClientEnv {
+  prop: String!
+}
+
+type MutationEnv {
+  prop: Int!
+}
+
+type MutationClientEnv {
+  prop: String
+}
+
+type Mutation {
+  sanitizeMutationEnv(env: MutationClientEnv!): MutationEnv!
+}
+
 """
 ImplementationObject comment
 """
@@ -109,7 +136,12 @@ Query comment
 """
 type Query implements Interface_Query @imports(
   types: [ "TestImport_Query", "Interface_Query" ]
+) @capability(
+  type: "getImplementations",
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
 ) {
+  sanitizeQueryEnv(env: QueryClientEnv!): QueryEnv!
 """
 queryMethod comment
 """
@@ -160,7 +192,7 @@ type TestImport_Query @imported(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
   nativeType: "Query"
-) {
+) @enabled_interface {
 """
 importedMethod comment
 """

@@ -7,16 +7,54 @@ import {
   createArrayDefinition,
   createObjectPropertyDefinition,
   createObjectDefinition,
-  TypeInfo,
   createEnumPropertyDefinition,
   createImportedQueryDefinition,
   createImportedObjectDefinition,
   createImportedEnumDefinition,
   createInterfaceImplementedDefinition,
-  createObjectRef
+  createObjectRef,
+  createInterfaceDefinition,
+  createCapability,
+  createEnvDefinition,
+  createTypeInfo,
+  AnyDefinition,
+  TypeInfo,
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
+  ...createTypeInfo(),
+  interfaceTypes: [
+    createInterfaceDefinition({
+      type: "Namespace",
+      uri: "test.eth",
+      namespace: "Namespace",
+      capabilities: createCapability({
+        type: "getImplementations",
+        enabled: true,
+        modules: ["query"],
+      }),
+    })
+  ],
+  envTypes: {
+    query: createEnvDefinition({
+      sanitized: {
+        ...createObjectDefinition({ type: "QueryEnv" }),
+        properties: [
+          {
+            ...createScalarPropertyDefinition({ name: "bar", type: "Bytes", required: false }),
+            first: true,
+            last: null,
+          } as AnyDefinition,
+          {
+            ...createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
+            first: null,
+            last: true,
+          } as AnyDefinition,
+        ],
+      }
+    }),
+    mutation: createEnvDefinition({}),
+  },
   objectTypes: [
     {
       ...createObjectDefinition({ type: "CustomQueryType", comment: "CustomQueryType comment" }),
@@ -540,8 +578,9 @@ export const typeInfo: TypeInfo = {
         uri: "test.eth",
         namespace: "Namespace",
         nativeType: "Query",
+        isInterface: true,
         type: "Namespace_Query",
-        comment: "Query comment"
+        comment: "Query comment",
       }),
       methods: [
         {
@@ -629,8 +668,9 @@ export const typeInfo: TypeInfo = {
         uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "Query",
+        isInterface: false,
         type: "Interface_Query",
-        comment: "Query comment"
+        comment: "Query comment",
       }),
       methods: [
         {

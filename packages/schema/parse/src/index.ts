@@ -2,7 +2,9 @@ import { TypeInfo, createTypeInfo } from "./typeInfo";
 import { extractors, SchemaExtractorBuilder } from "./extract";
 import { TypeInfoTransforms, transformTypeInfo } from "./transform";
 import { finalizePropertyDef } from "./transform/finalizePropertyDef";
-import { SchemaValidatorBuilder, validators } from "./validate";
+import { validators } from "./validate";
+import { validateEnv } from "./validate/env";
+import { SchemaValidatorBuilder } from "./validate";
 
 import { DocumentNode, parse, visit, visitInParallel } from "graphql";
 
@@ -43,6 +45,8 @@ export function parseSchema(
       info = transformTypeInfo(info, transform);
     }
   }
+
+  validateEnv(info);
 
   return info;
 }

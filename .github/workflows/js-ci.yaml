@@ -1,6 +1,12 @@
 name: JS-CI
 
-on: [push, pull_request]
+on: 
+  push:
+    branches:
+      - master
+      - prealpha
+      - prealpha-dev
+  pull_request:
 
 jobs:
   JS-CI-Linux:

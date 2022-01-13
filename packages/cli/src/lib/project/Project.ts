@@ -1,8 +1,14 @@
+import { intlMsg } from "../intl";
+import {
+  ManifestLanguage,
+  isManifestLanguage,
+  manifestLanguages,
+} from "../helpers";
+
 import fs from "fs";
 import path from "path";
 import rimraf from "rimraf";
 import copyfiles from "copyfiles";
-import { TargetLanguage } from "@web3api/schema-bind";
 
 export interface ProjectConfig {
   quiet?: boolean;
@@ -10,6 +16,24 @@ export interface ProjectConfig {
 
 export abstract class Project {
   constructor(protected _config: ProjectConfig) {}
+
+  /// Abstract Interface
+  public abstract reset(): void;
+
+  public abstract getRootDir(): string;
+
+  public abstract getManifestLanguage(): Promise<ManifestLanguage>;
+
+  public abstract getSchemaNamedPaths(): Promise<{
+    [name: string]: string;
+  }>;
+
+  public abstract getImportRedirects(): Promise<
+    {
+      uri: string;
+      schema: string;
+    }[]
+  >;
 
   public get quiet(): boolean {
     return !!this._config.quiet;
@@ -62,21 +86,28 @@ export abstract class Project {
     });
   }
 
-  /// Abstract Interface
-  public abstract reset(): void;
+  /// Validation
 
-  public abstract getRootDir(): string;
+  protected validateManifestLanguage(
+    language: string | undefined,
+    validPatterns: string[]
+  ): void {
+    if (!language) {
+      throw Error(intlMsg.lib_project_language_not_found());
+    }
 
-  public abstract getLanguage(): Promise<TargetLanguage>;
+    const languagePatternValid = (test: string) =>
+      validPatterns.some((x) => test.indexOf(x) > -1);
 
-  public abstract getSchemaNamedPaths(): Promise<{
-    [name: string]: string;
-  }>;
-
-  public abstract getImportRedirects(): Promise<
-    {
-      uri: string;
-      schema: string;
-    }[]
-  >;
+    if (!isManifestLanguage(language) || !languagePatternValid(language)) {
+      throw Error(
+        intlMsg.lib_project_invalid_manifest_language({
+          language,
+          validTypes: Object.keys(manifestLanguages)
+            .filter((x) => languagePatternValid(x))
+            .join(" | "),
+        })
+      );
+    }
+  }
 }

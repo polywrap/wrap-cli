@@ -1,4 +1,4 @@
-const queryTypes = {
+export const queryTypes = {
   Mutation: "Mutation",
   Query: "Query",
 };

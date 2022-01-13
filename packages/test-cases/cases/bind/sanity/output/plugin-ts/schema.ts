@@ -20,6 +20,14 @@ directive @imported(
 directive @imports(
   types: [String!]!
 ) on OBJECT
+
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
 type Query @imports(
@@ -29,6 +37,10 @@ type Query @imports(
     "TestImport_AnotherObject",
     "TestImport_Enum"
   ]
+) @capability(
+  type: "getImplementations",
+  uri: "testimport.uri.eth",
+  namespace: "TestImport"
 ) {
   queryMethod(
     str: String!
@@ -71,6 +83,18 @@ type Mutation @imports(
     objectArray: [AnotherType!]!
     optObjectArray: [AnotherType]
   ): AnotherType
+}
+
+type QueryEnv {
+  queryProp: String!
+  prop: String!
+  optProp: String
+}
+
+type MutationEnv {
+  mutProp: String!
+  prop: String!
+  optProp: String
 }
 
 type CustomType {
@@ -128,7 +152,7 @@ type TestImport_Query @imported(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
   nativeType: "Query"
-) {
+) @enabled_interface {
   importedMethod(
     str: String!
     optStr: String
