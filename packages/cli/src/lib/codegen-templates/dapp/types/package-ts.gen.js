@@ -10,17 +10,7 @@ exports.run = (output, config) => {
 
   output.entries.push({
     type: "File",
-    name: "./../baseTypes.ts",
-    data: config.generate("baseTypes-ts.mustache", config.typeInfo),
-  });
-  output.entries.push({
-    type: "File",
     name: "./types.ts",
     data: config.generate("packageTypes-ts.mustache", config.typeInfo),
-  });
-  output.entries.push({
-    type: "File",
-    name: "./../index.ts",
-    data: config.generate("dappIndex-ts.mustache", config.typeInfo),
   });
 };

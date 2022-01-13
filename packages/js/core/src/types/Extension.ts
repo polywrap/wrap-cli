@@ -18,7 +18,7 @@ export interface ExtensionInvocation<
 }
 
 /**
- * Base config for Extension, to be extended by a custom config interface.
+ * Base config for Extension
  *
  * @param uri The uri used for queries within the Extension
  */
@@ -33,20 +33,40 @@ export interface ExtensionConfig {
  * @param config Configuration values for the extension
  */
 export interface Extension {
-  readonly uri: Uri;
-  config: ExtensionConfig;
+  readonly config: ExtensionConfig;
+  validate(): boolean;
 }
 
 /**
- * An ExtensionPackage holds an Extension factory and properties used to extend
- * the Client
+ * Base config for PolywrapDapp
  *
- * @param factory Produces Extension
- * @param namespace Namespace used to access Extension instance from client instance
+ * @param uri The uri used for queries within the Extension
  */
-export type ExtensionPackage = {
-  factory: (client: Client) => Extension;
-  namespace: string;
-};
+export interface BasePolywrapDappConfig {
+  [p: string]: ExtensionConfig | undefined;
+}
 
-export type ExtensionFactory<TOpts> = (opts: TOpts) => ExtensionPackage;
+/**
+ * PolywrapDapp interface
+ *
+ * @param uri The uri used for queries within the Extension
+ * @param config Configuration values for the extension
+ */
+export interface BasePolywrapDapp {
+  readonly client: Client;
+  readonly buildUri: Readonly<Record<string, Uri>>;
+}
+
+// /**
+//  * An ExtensionPackage holds an Extension factory and properties used to extend
+//  * the Client
+//  *
+//  * @param factory Produces Extension
+//  * @param namespace Namespace used to access Extension instance from client instance
+//  */
+// export type ExtensionPackage = {
+//   factory: (client: Client) => Extension;
+//   namespace: string;
+// };
+//
+// export type ExtensionFactory<TOpts> = (opts: TOpts) => ExtensionPackage;

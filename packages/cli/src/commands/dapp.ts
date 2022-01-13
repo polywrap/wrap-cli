@@ -21,26 +21,39 @@ import fs from "fs";
 import rimraf from "rimraf";
 
 interface PolywrapPackage {
-  uri: string;
+  uri: Uri;
   namespace: string;
   isPlugin?: boolean;
 }
 
 interface DappGenFiles {
-  types: string;
-  extension: string;
+  package: string;
+  dapp: string;
+}
+
+interface LangGenFiles {
+  types: DappGenFiles
+  extension: DappGenFiles
 }
 
 interface DappLangSupport {
-  [lang: string]: DappGenFiles;
+  [lang: string]: LangGenFiles;
 }
 
 const langSupport: DappLangSupport = {
   "plugin-ts": {
-    types: __dirname + "/../lib/codegen-templates/dapp/types/types-ts.gen.js",
-    extension:
-      __dirname +
-      "/../lib/codegen-templates/dapp/client-extension/extension-ts.gen.js",
+    types: {
+      package: __dirname +
+        "/../lib/codegen-templates/dapp/types/package-ts.gen.js",
+      dapp: __dirname +
+        "/../lib/codegen-templates/dapp/types/dapp-ts.gen.js",
+    },
+    extension: {
+     package: __dirname +
+        "/../lib/codegen-templates/dapp/polywrap-dapp/package-ts.gen.js",
+      dapp: __dirname +
+        "/../lib/codegen-templates/dapp/polywrap-dapp/dapp-ts.gen.js",
+    }
   },
 };
 
@@ -140,7 +153,7 @@ export default {
       true
     );
     const language: string = dappManifest.language;
-    const packages: PolywrapPackage[] = dappManifest.packages;
+    const packages: PolywrapPackage[] = dappManifest.packages.map(pack => ({ ...pack, uri: sanitizeUri(pack.uri, pack.isPlugin) }));
     const outputDirFromManifest: string | undefined = dappManifest.types.directory;
     const typesOnly: boolean | undefined = dappManifest.types.typesOnly;
 
@@ -160,9 +173,10 @@ export default {
 
     // Resolve generation file
     const targetLang: string = manifestLanguageToTargetLanguage(language);
-    const genFiles: DappGenFiles = langSupport[targetLang];
-    const genFilePath: string = typesOnly ? genFiles.types : genFiles.extension;
-    const customScript = filesystem.resolve(genFilePath);
+    const langGenFiles: LangGenFiles = langSupport[targetLang];
+    const genFiles: DappGenFiles = typesOnly ? langGenFiles.types : langGenFiles.extension;
+    const packageScript = filesystem.resolve(genFiles.package);
+    const dappScript = filesystem.resolve(genFiles.dapp);
 
     // Get providers and client
     const { ipfsProvider, ethProvider } = await getCodegenProviders(ipfs);
@@ -175,9 +189,8 @@ export default {
 
     // Generate code for each Polywrap package
     let result = true;
-    for (const pack of packages) {
-      const { uri: unsanitizedUri, namespace, isPlugin } = pack;
-      const uri: Uri = sanitizeUri(unsanitizedUri, isPlugin);
+    for (let i = 0; i < packages.length; i++) {
+      const { uri, namespace, isPlugin } = packages[i];
 
       const project: Project = isPlugin
         ? new ExternalPluginProject({
@@ -198,15 +211,15 @@ export default {
         client,
       });
 
-      const codeGenerator = new CodeGenerator({
+      const namespaceCodeGenerator = new CodeGenerator({
         project,
         schemaComposer,
-        customScript,
+        customScript: packageScript,
         outputDir: path.join(outputDir, namespace),
-        mustacheView: { uri, namespace, packages },
+        mustacheView: { uri, namespace },
       });
 
-      if (await codeGenerator.generate()) {
+      if (await namespaceCodeGenerator.generate()) {
         print.success(
           `🔥 ${intlMsg.commands_dapp_namespace_success({
             content: typesOnly ? "types" : "extension",
@@ -215,6 +228,25 @@ export default {
         );
       } else {
         result = false;
+      }
+
+      // generate shared files on final package
+      if (i === packages.length - 1) {
+        const dappCodeGenerator = new CodeGenerator({
+          project,
+          schemaComposer,
+          customScript: dappScript,
+          outputDir: path.join(outputDir, namespace),
+          mustacheView: { packages },
+        });
+
+        if (await dappCodeGenerator.generate()) {
+          print.success(
+            `🔥 ${intlMsg.commands_dapp_topLevel_success()} 🔥`
+          );
+        } else {
+          result = false;
+        }
       }
 
       project.reset();

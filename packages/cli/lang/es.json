@@ -71,6 +71,7 @@
   "commands_dapp_options_o": "Output directory for the generated code (default: {default})",
   "commands_dapp_success": "Code was generated successfully",
   "commands_dapp_namespace_success": "Generated {content} for namespace {namespace}",
+  "commands_dapp_topLevel_success": "Generated top-level code for dApp",
   "commands_dapp_error_unknownCommand": "Unrecognized command: {command}",
   "commands_dapp_error_duplicateNs": "Duplicate namespace in dapp manifest",
   "commands_plugin_description": "Build/generate types for the plugin",

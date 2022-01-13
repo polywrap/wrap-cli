@@ -35,7 +35,6 @@ import {
   {{type}},
 {{/importedQueryTypes}}
 } from "./types";
-import { ExtensionInvocation } from "@web3api/core-js";
 
 {{#methods}}
 export interface Input_{{name}} extends Record<string, unknown> {
@@ -47,8 +46,3 @@ export interface Input_{{name}} extends Record<string, unknown> {
 
 {{/last}}
 {{/methods}}
-export interface {{#title}}{{namespace}}{{/title}}{{#title}}{{type}}{{/title}}Module {
-  {{#methods}}
-  {{name}}(input: Input_{{name}}): ExtensionInvocation<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>;
-  {{/methods}}
-}

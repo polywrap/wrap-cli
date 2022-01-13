@@ -39,20 +39,12 @@ import {
   sanitizeUriRedirects,
   sanitizeEnvs,
   ClientConfig,
-  ExtensionPackage,
-  Extension,
-  GetExtensionsOptions,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
 export interface Web3ApiClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
   tracingEnabled: boolean;
-}
-
-// this interface is re-declared and expanded by client extensions
-export interface ExtensionAccessor {
-  [p: string]: Extension;
 }
 
 export class Web3ApiClient implements Client {
@@ -66,14 +58,11 @@ export class Web3ApiClient implements Client {
     plugins: [],
     interfaces: [],
     envs: [],
-    extensions: [],
     tracingEnabled: false,
   };
 
   // Invoke specific contexts
   private _contexts: Map<string, Web3ApiClientConfig<Uri>> = new Map();
-
-  public readonly extensions: ExtensionAccessor = {};
 
   constructor(
     config?: Partial<Web3ApiClientConfig>,
@@ -96,7 +85,6 @@ export class Web3ApiClient implements Client {
           interfaces: config.interfaces
             ? sanitizeInterfaceImplementations(config.interfaces)
             : [],
-          extensions: config.extensions ?? [],
           tracingEnabled: !!config.tracingEnabled,
         };
       }
@@ -106,7 +94,6 @@ export class Web3ApiClient implements Client {
       }
 
       this._validateConfig();
-      this._extendClient();
 
       Tracer.setAttribute("config", this._config);
     } catch (error) {
@@ -162,13 +149,6 @@ export class Web3ApiClient implements Client {
     return this.getEnvs(options).find((environment) =>
       Uri.equals(environment.uri, uriUri)
     );
-  }
-
-  @Tracer.traceMethod("Web3ApiClient: getExtensions")
-  public getExtensions(
-    options: GetExtensionsOptions = {}
-  ): readonly ExtensionPackage[] {
-    return this._getConfig(options.contextId).extensions;
   }
 
   @Tracer.traceMethod("Web3ApiClient: getSchema")
@@ -453,10 +433,6 @@ export class Web3ApiClient implements Client {
     if (defaultClientConfig.interfaces) {
       this._config.interfaces.push(...defaultClientConfig.interfaces);
     }
-
-    if (defaultClientConfig.extensions) {
-      this._config.extensions.push(...defaultClientConfig.extensions);
-    }
   }
 
   @Tracer.traceMethod("Web3ApiClient: isContextualized")
@@ -542,7 +518,6 @@ export class Web3ApiClient implements Client {
         ? sanitizeInterfaceImplementations(context.interfaces)
         : config.interfaces,
       envs: context?.envs ? sanitizeEnvs(context.envs) : config.envs,
-      extensions: context?.extensions ?? config.extensions,
       tracingEnabled: context?.tracingEnabled || config.tracingEnabled,
     });
 
@@ -597,14 +572,6 @@ export class Web3ApiClient implements Client {
 
     return api;
   }
-
-  @Tracer.traceMethod("Web3ApiClient: _extendClient")
-  private _extendClient(): void {
-    const extensions: ExtensionPackage[] = this._config.extensions;
-    for (const ext of extensions) {
-      this.extensions[ext.namespace] = ext.factory(this);
-    }
-  }
 }
 
 const contextualizeClient = (
@@ -653,9 +620,6 @@ const contextualizeClient = (
           options: GetEnvsOptions = {}
         ) => {
           return client.getEnvByUri(uri, { ...options, contextId });
-        },
-        getExtensions: (options: GetExtensionsOptions = {}) => {
-          return client.getExtensions({ ...options, contextId });
         },
         getSchema: <TUri extends Uri | string>(
           uri: TUri,

@@ -1,0 +1,32 @@
+{{#queryTypes}}
+import { {{#title}}{{namespace}}{{/title}}{{type}}Extension,  {{#title}}{{namespace}}{{/title}}{{type}}Module } from "./{{#lowerFirst}}{{type}}{{/lowerFirst}}";
+{{/queryTypes}}
+import { Client, Uri, Extension, ExtensionConfig } from "@web3api/core-js";
+
+export interface I{{#title}}{{namespace}}{{/title}}Extension extends Extension {
+{{#queryTypes}}
+  {{#lowerFirst}}{{type}}{{/lowerFirst}}: {{#title}}{{namespace}}{{/title}}{{type}}Module;
+{{/queryTypes}}
+}
+
+export class {{#title}}{{namespace}}{{/title}}Extension implements I{{#title}}{{namespace}}{{/title}}Extension {
+
+  private client: Client;
+  readonly config: ExtensionConfig;
+{{#queryTypes}}
+  readonly {{#lowerFirst}}{{type}}{{/lowerFirst}}: {{#title}}{{namespace}}{{/title}}{{type}}Module;
+{{/queryTypes}}
+
+  constructor(client: Client, config: ExtensionConfig) {
+    this.client = client;
+    this.config = config;
+  {{#queryTypes}}
+    this.{{#lowerFirst}}{{type}}{{/lowerFirst}} = new {{#title}}{{namespace}}{{/title}}{{type}}Extension(this.client, this.config.uri as Uri);
+  {{/queryTypes}}
+  }
+
+  validate(): boolean {
+    // Not implemented
+    return true;
+  }
+}

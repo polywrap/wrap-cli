@@ -84,7 +84,6 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           implementations: [new Uri("w3://ens/js-logger.web3api.eth")],
         },
       ],
-      extensions: [],
     };
   }
 );

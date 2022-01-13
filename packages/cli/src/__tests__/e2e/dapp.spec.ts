@@ -6,7 +6,7 @@ import * as fs from "fs";
 import axios from "axios";
 import {
   ExtensionInvocation,
-  ExtensionPackage, InvokeApiOptions,
+  InvokeApiOptions,
   InvokeApiResult,
   Web3ApiClient,
 } from "@web3api/client-js";
@@ -125,14 +125,17 @@ ${HELP}`);
     expect(code).toEqual(0);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`- Generate types
-  Generating types from baseTypes-ts.mustache
-- Generate types
   Generating types from packageTypes-ts.mustache
+- Generate types
+✔ Generate types
+🔥 Generated types for namespace project 🔥
+- Generate types
+  Generating types from baseTypes-ts.mustache
 - Generate types
   Generating types from dappIndex-ts.mustache
 - Generate types
 ✔ Generate types
-🔥 Generated types for namespace project 🔥
+🔥 Generated top-level code for dApp 🔥
 🔥 Code was generated successfully 🔥
 `);
 
@@ -159,14 +162,17 @@ ${HELP}`);
     expect(clearStyle(output)).toEqual(`- Generate types
 - Manifest loaded from ./.w3/ExternalProjects/http/web3api.plugin.yaml
 ✔ Manifest loaded from ./.w3/ExternalProjects/http/web3api.plugin.yaml
-  Generating types from baseTypes-ts.mustache
-- Generate types
   Generating types from packageTypes-ts.mustache
+- Generate types
+✔ Generate types
+🔥 Generated types for namespace http 🔥
+- Generate types
+  Generating types from baseTypes-ts.mustache
 - Generate types
   Generating types from dappIndex-ts.mustache
 - Generate types
 ✔ Generate types
-🔥 Generated types for namespace http 🔥
+🔥 Generated top-level code for dApp 🔥
 🔥 Code was generated successfully 🔥
 `);
 
@@ -191,34 +197,29 @@ ${HELP}`);
     expect(code).toEqual(0);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`- Generate types
-  Generating types from baseTypes-ts.mustache
-- Generate types
   Generating types from packageTypes-ts.mustache
-- Generate types
-  Generating types from dappIndex-ts.mustache
 - Generate types
 ✔ Generate types
 🔥 Generated types for namespace erc20 🔥
 - Generate types
-  Generating types from baseTypes-ts.mustache
-- Generate types
   Generating types from packageTypes-ts.mustache
-- Generate types
-  Generating types from dappIndex-ts.mustache
 - Generate types
 ✔ Generate types
 🔥 Generated types for namespace console 🔥
 - Generate types
 - Manifest loaded from ./.w3/ExternalProjects/ethereum/web3api.plugin.yaml
 ✔ Manifest loaded from ./.w3/ExternalProjects/ethereum/web3api.plugin.yaml
-  Generating types from baseTypes-ts.mustache
-- Generate types
   Generating types from packageTypes-ts.mustache
+- Generate types
+✔ Generate types
+🔥 Generated types for namespace ethereum 🔥
+- Generate types
+  Generating types from baseTypes-ts.mustache
 - Generate types
   Generating types from dappIndex-ts.mustache
 - Generate types
 ✔ Generate types
-🔥 Generated types for namespace ethereum 🔥
+🔥 Generated top-level code for dApp 🔥
 🔥 Code was generated successfully 🔥
 `);
 
@@ -258,30 +259,30 @@ ${HELP}`);
 
     // import newly generated project extension code
     // @ts-ignore
-    const proj = await import ("../dapp/polywrap");
+    const pw = await import ("../dapp/polywrap");
 
     // build and deploy project
     await testEnvUp(simpleStorageProject);
     await buildAndDeployApi(simpleStorageProject, "simplestorage.eth");
     const { ipfs, ethereum, ensAddress } = await getProviders();
 
-    // instantiate client with project extension
+    // instantiate Client and PolywrapDapp
     const client: Web3ApiClient = await createClient(
       ipfs,
       ethereum,
-      ensAddress,
-      // @ts-ignore
-      [proj.projectExtension({})]
+      ensAddress
     );
+    // @ts-ignore
+    const dapp: pw.PolywrapDapp = new pw.PolywrapDapp(client);
 
     // expect to access uri property
     const expectedUriPath: string = path.resolve(path.join(__dirname, "../project/build"));
     // @ts-ignore
-    expect(client.extensions.project.uri.path).toEqual(expectedUriPath);
+    expect(dapp.project?.config?.uri.path).toEqual(expectedUriPath);
 
     // test ExtensionInvocation
     // @ts-ignore
-    const extInvoke: ExtensionInvocation<string> = client.extensions.project.deployContract({
+    const extInvoke: ExtensionInvocation<string> = dapp.project.mutation.deployContract({
       connection: {
         networkNameOrChainId: "testnet",
       },
@@ -350,9 +351,8 @@ async function getProviders(): Promise<{
   return { ipfs, ethereum, ensAddress: data.ensAddress };
 }
 
-async function createClient(ipfs: string, ethereum: string, ensAddress: string, extensions: ExtensionPackage[]): Promise<Web3ApiClient> {
+async function createClient(ipfs: string, ethereum: string, ensAddress: string): Promise<Web3ApiClient> {
   return new Web3ApiClient({
-    extensions: extensions,
     plugins: [
       {
         uri: "w3://ens/ipfs.web3api.eth",

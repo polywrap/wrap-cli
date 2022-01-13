@@ -1,0 +1,75 @@
+// @ts-noCheck
+import {
+  UInt,
+  UInt8,
+  UInt16,
+  UInt32,
+  Int,
+  Int8,
+  Int16,
+  Int32,
+  Bytes,
+  BigInt,
+  Json,
+  String,
+  Boolean
+} from "../baseTypes";
+import {
+{{#objectTypes}}
+  {{type}},
+{{/objectTypes}}
+{{#enumTypes}}
+  {{type}}Enum,
+  {{type}}String,
+  {{type}},
+{{/enumTypes}}
+{{#importedObjectTypes}}
+  {{type}},
+{{/importedObjectTypes}}
+{{#importedEnumTypes}}
+  {{type}}Enum,
+  {{type}}String,
+  {{type}},
+{{/importedEnumTypes}}
+{{#importedQueryTypes}}
+  {{type}},
+{{/importedQueryTypes}}
+} from "./types";
+import { Client, Uri, ExtensionInvocation, InvokeApiOptions } from "@web3api/core-js";
+
+import * as {{type}} from "./{{#lowerFirst}}{{type}}{{/lowerFirst}}Types";
+
+export interface {{#title}}{{namespace}}{{/title}}{{#title}}{{type}}{{/title}}Module {
+{{#methods}}
+  {{name}}(input: {{#title}}{{type}}{{/title}}.Input_{{name}}): ExtensionInvocation<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>;
+{{/methods}}
+}
+
+export class {{#title}}{{namespace}}{{/title}}{{type}}Extension implements {{#title}}{{namespace}}{{/title}}{{type}}Module {
+
+  private client: Client;
+  private uri: Uri;
+
+  constructor(client: Client, uri: Uri) {
+    this.client = client;
+    this.uri = uri;
+  }
+
+{{#methods}}
+  {{name}}(
+    input: {{#title}}{{type}}{{/title}}.Input_{{name}},
+  ): ExtensionInvocation<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}> {
+    const options: InvokeApiOptions = {
+      uri: this.uri.toString(),
+      module: "{{type}}",
+      method: "{{name}}",
+      input: input
+    };
+    return {
+      config: () => options,
+      execute: async () => this.client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>(options),
+    };
+  }
+
+{{/methods}}
+}
