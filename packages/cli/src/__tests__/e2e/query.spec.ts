@@ -9,12 +9,13 @@ w3 query [options] <recipe-script>
 
 Options:
   -t, --test-ens  Use the development server's ENS instance
+  -c, --client-config <config-path> Add custom configuration to the Web3ApiClient
 
 `;
 
-describe("e2e tests for query command", () => {
-  const projectRoot = path.resolve(__dirname, "../project/");
+const projectRoot = path.resolve(__dirname, "../project/");
 
+describe("sanity tests for query command", () => {
   test("Should throw error for missing recipe-string", async () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["query"],
@@ -29,7 +30,23 @@ describe("e2e tests for query command", () => {
 ${HELP}`);
   });
 
-  test("Should successfully return response", async () => {
+  test("Should throw error is --client-config doesn't contain arguments", async () => {
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["query", "./recipes/e2e.json", "--client-config"],
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
+
+    expect(exitCode).toEqual(0);
+    expect(stderr).toBe("");
+    expect(clearStyle(stdout))
+      .toEqual(`--client-config option missing <config-path> argument
+${HELP}`);
+  });
+})
+
+describe("e2e tests for query command", () => {
+  beforeAll(async () => {
     const { exitCode: testenvCode, stderr: testEnvUpErr } = await runCLI({
       args: ["test-env", "up"],
       cwd: projectRoot,
@@ -37,7 +54,69 @@ ${HELP}`);
     });
     expect(testEnvUpErr).toBe("");
     expect(testenvCode).toEqual(0);
+  })
 
+  afterAll(async () => {
+    await runCLI({
+      args: ["test-env", "down"],
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
+  })
+
+  test("Should use custom config for client if specified", async () => {
+
+    const configs = ["./client-config.ts", "./client-config.js"];
+
+    for (const config of configs) {
+      const { exitCode, stdout, stderr } = await runCLI({
+        args: ["query", "./recipes/e2e.json", "--test-ens", "--client-config", config ],
+        cwd: projectRoot,
+        cli: w3Cli,
+      });
+  
+      expect(stderr).toBeFalsy();
+      expect(stdout).toBeTruthy();
+  
+      expect(exitCode).toEqual(0);
+      expect(stderr).toBe("");
+  
+      const constants = require(`${projectRoot}/recipes/constants.json`);
+      expect(clearStyle(normalizeLineEndings(stdout, "\n"))).toContain(`-----------------------------------
+mutation {
+  setData(
+    options: {
+      address: $address
+      value: $value
+    }
+    connection: {
+      networkNameOrChainId: $network
+    }
+  ) {
+    value
+    txReceipt
+  }
+}
+
+{
+  "address": "${constants.SimpleStorageAddr}",
+  "value": 569,
+  "network": "testnet"
+}
+-----------------------------------
+-----------------------------------
+{
+  "setData": {
+    "value": 569,
+    "txReceipt": "0xdone"
+  }
+}
+-----------------------------------`
+);
+    }
+  }, 48000);
+
+  test("Should successfully return response", async () => {
     const { stderr: deployErr } = await runCLI({
       args: ["./deploy-contracts.js"],
       cwd: projectRoot,
@@ -104,10 +183,5 @@ mutation {
 -----------------------------------
 `);
 
-    await runCLI({
-      args: ["test-env", "down"],
-      cwd: projectRoot,
-      cli: w3Cli,
-    });
   }, 480000);
 });
