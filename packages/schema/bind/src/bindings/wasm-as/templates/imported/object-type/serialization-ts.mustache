@@ -20,10 +20,10 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
   writer.writeString("{{name}}");
   {{#scalar}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{name}});
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/scalar}}
   {{#array}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{name}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
     {{> serialize_array}}
   });
   {{/array}}
