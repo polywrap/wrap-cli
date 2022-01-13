@@ -6,7 +6,7 @@ import { transformTypeInfo, TypeInfo } from "@web3api/schema-parse";
 
 export * from "./utils";
 
-export type TargetLanguage = "wasm-as" | "plugin-ts";
+export type BindLanguage = "wasm-as" | "plugin-ts";
 
 export type OutputEntry = FileEntry | DirectoryEntry | TemplateEntry;
 
@@ -45,14 +45,14 @@ export interface BindModuleOptions {
 }
 
 export interface BindOptions {
-  language: TargetLanguage;
+  bindLanguage: BindLanguage;
   combined?: BindModuleOptions;
   query?: BindModuleOptions;
   mutation?: BindModuleOptions;
 }
 
 export function bindSchema(options: BindOptions): BindOutput {
-  const { combined, query, mutation, language } = options;
+  const { combined, query, mutation, bindLanguage } = options;
 
   // If both Query & Mutation modules are present,
   // determine which types are shared between them,
@@ -83,13 +83,13 @@ export function bindSchema(options: BindOptions): BindOutput {
 
   return {
     combined: combined
-      ? generateBinding(language, combined.typeInfo, combined.schema)
+      ? generateBinding(bindLanguage, combined.typeInfo, combined.schema)
       : undefined,
     query: query
-      ? generateBinding(language, query.typeInfo, query.schema)
+      ? generateBinding(bindLanguage, query.typeInfo, query.schema)
       : undefined,
     mutation: mutation
-      ? generateBinding(language, mutation.typeInfo, mutation.schema)
+      ? generateBinding(bindLanguage, mutation.typeInfo, mutation.schema)
       : undefined,
   };
 }

@@ -1982,6 +1982,123 @@ describe("Web3ApiClient", () => {
     });
   });
 
+  it("query time env types", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/env-types`,
+      ipfsProvider,
+      ensAddress
+    );
+
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+    const client = await getClient({
+      envs: [
+        {
+          uri: ensUri,
+          common: {
+            object: {
+              prop: "object string"
+            },
+            str: "string",
+            optFilledStr: "optional string",
+            number: 10,
+            bool: true,
+            en: "FIRST",
+            array: [32, 23]
+          },
+          mutation: {
+            mutStr: "mutation string",
+          },
+          query: {
+            queryStr: "query string",
+          }
+        }
+      ]
+    });
+
+    const queryEnv = await client.query({
+      uri: ensUri,
+      query: `
+        query {
+          queryEnv(
+            arg: "string"
+          )
+        }
+      `,
+    });
+    expect(queryEnv.errors).toBeFalsy();
+    expect(queryEnv.data?.queryEnv).toEqual({
+      str: "string",
+      optFilledStr: "optional string",
+      optStr: null,
+      number: 10,
+      optNumber: null,
+      bool: true,
+      optBool: null,
+      object: {
+        prop: "object string"
+      },
+      optObject: null,
+      en: 0,
+      optEnum: null,
+      queryStr: "query string",
+      array: [32, 23]
+    });
+
+    const queryUpdatedEnv = await client.query({
+      uri: ensUri,
+      query: `
+        query {
+          queryEnv(
+            arg: "string"
+          )
+        }
+      `,
+      config: {
+        envs: [
+          {
+            uri: ensUri,
+            common: {
+              object: {
+                prop: "object another string"
+              },
+              str: "another string",
+              optFilledStr: "optional string",
+              number: 10,
+              bool: true,
+              en: "FIRST",
+              array: [32, 23]
+            },
+            mutation: {
+              mutStr: "mutation string",
+            },
+            query: {
+              queryStr: "query string",
+            }
+          }
+        ]
+      }
+    });
+    expect(queryUpdatedEnv.errors).toBeFalsy();
+    expect(queryUpdatedEnv.data?.queryEnv).toEqual({
+      str: "another string",
+      optFilledStr: "optional string",
+      optStr: null,
+      number: 10,
+      optNumber: null,
+      bool: true,
+      optBool: null,
+      object: {
+        prop: "object another string"
+      },
+      optObject: null,
+      en: 0,
+      optEnum: null,
+      queryStr: "query string",
+      array: [32, 23]
+    });
+  });
+
+
   it("env client types", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/env-client-types`,
