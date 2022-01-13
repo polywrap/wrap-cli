@@ -1,7 +1,7 @@
 {{#packages}}
-import { {{#title}}{{namespace}}{{/title}}Extension, I{{#title}}{{namespace}}{{/title}}Extension } from "./{{#lowerFirst}}{{namespace}}{{/lowerFirst}}";
+import { {{#title}}{{namespace}}{{/title}}, I{{#title}}{{namespace}}{{/title}} } from "./{{#lowerFirst}}{{namespace}}{{/lowerFirst}}";
 {{/packages}}
-import { Client, Uri, ExtensionConfig, BasePolywrapDappConfig, BasePolywrapDapp } from "@web3api/core-js";
+import { Client, ExtensionConfig, BasePolywrapDappConfig, BasePolywrapDapp } from "@web3api/core-js";
 
 export interface PolywrapDappConfig extends BasePolywrapDappConfig {
 {{#packages}}
@@ -9,53 +9,17 @@ export interface PolywrapDappConfig extends BasePolywrapDappConfig {
 {{/packages}}
 }
 
-interface SanitizedPolywrapDappConfig extends BasePolywrapDappConfig {
-{{#packages}}
-  {{#lowerFirst}}{{namespace}}{{/lowerFirst}}: Required<ExtensionConfig>
-{{/packages}}
-}
-
 export class PolywrapDapp implements BasePolywrapDapp {
 
   readonly client: Client;
-  readonly buildUri: Readonly<Record<string, Uri>> = {
   {{#packages}}
-    {{#lowerFirst}}{{namespace}}{{/lowerFirst}}: new Uri("{{uri}}"),
-  {{/packages}}
-  }
-  {{#packages}}
-  readonly {{#lowerFirst}}{{namespace}}{{/lowerFirst}}: I{{#title}}{{namespace}}{{/title}}Extension;
+  readonly {{#lowerFirst}}{{namespace}}{{/lowerFirst}}: I{{#title}}{{namespace}}{{/title}};
   {{/packages}}
 
   constructor(client: Client, config?: PolywrapDappConfig) {
     this.client = client;
-    const _config: SanitizedPolywrapDappConfig = this.sanitizeConfig(config);
   {{#packages}}
-    this.{{#lowerFirst}}{{namespace}}{{/lowerFirst}} = new {{#title}}{{namespace}}{{/title}}Extension(this.client, _config.{{#lowerFirst}}{{namespace}}{{/lowerFirst}});
+    this.{{#lowerFirst}}{{namespace}}{{/lowerFirst}} = new {{#title}}{{namespace}}{{/title}}(this.client, config?.{{#lowerFirst}}{{namespace}}{{/lowerFirst}});
   {{/packages}}
-    this.validate();
-  }
-
-  private validate(): boolean {
-    {{#packages}}
-    if (!this.{{#lowerFirst}}{{namespace}}{{/lowerFirst}}.validate()) return false;
-    {{/packages}}
-    return true;
-  }
-
-  private sanitizeConfig(userConfig?: PolywrapDappConfig): SanitizedPolywrapDappConfig {
-    const sanitized: PolywrapDappConfig = {};
-    {{#packages}}
-    sanitized.{{#lowerFirst}}{{namespace}}{{/lowerFirst}} = sanitized.{{#lowerFirst}}{{namespace}}{{/lowerFirst}} ?? {};
-    sanitized.{{#lowerFirst}}{{namespace}}{{/lowerFirst}}.uri = this.sanitizeUri(userConfig?.{{#lowerFirst}}{{namespace}}{{/lowerFirst}}?.uri) ?? this.buildUri.{{#lowerFirst}}{{namespace}}{{/lowerFirst}};
-    {{/packages}}
-    return sanitized as SanitizedPolywrapDappConfig;
-  }
-
-  private sanitizeUri(uri?: Uri | string): Uri | undefined {
-    if (uri && typeof uri === "string") {
-      uri = new Uri(uri);
-    }
-    return uri as Uri | undefined;
   }
 }

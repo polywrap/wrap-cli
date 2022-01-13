@@ -26,6 +26,10 @@ export interface ExtensionConfig {
   uri?: Uri | string;
 }
 
+export interface SanitizedExtensionConfig extends ExtensionConfig {
+  uri: Uri;
+}
+
 /**
  * Extension interface
  *
@@ -33,8 +37,8 @@ export interface ExtensionConfig {
  * @param config Configuration values for the extension
  */
 export interface Extension {
-  readonly config: ExtensionConfig;
-  validate(): boolean;
+  readonly buildUri: Uri;
+  readonly config: SanitizedExtensionConfig;
 }
 
 /**
@@ -54,19 +58,4 @@ export interface BasePolywrapDappConfig {
  */
 export interface BasePolywrapDapp {
   readonly client: Client;
-  readonly buildUri: Readonly<Record<string, Uri>>;
 }
-
-// /**
-//  * An ExtensionPackage holds an Extension factory and properties used to extend
-//  * the Client
-//  *
-//  * @param factory Produces Extension
-//  * @param namespace Namespace used to access Extension instance from client instance
-//  */
-// export type ExtensionPackage = {
-//   factory: (client: Client) => Extension;
-//   namespace: string;
-// };
-//
-// export type ExtensionFactory<TOpts> = (opts: TOpts) => ExtensionPackage;
