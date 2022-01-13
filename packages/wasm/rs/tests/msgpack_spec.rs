@@ -75,23 +75,23 @@ impl Sanity {
 }
 
 fn serialize_sanity<W: Write>(writer: &mut W, sanity: &mut Sanity) -> Result<(), EncodingError> {
-    writer.write_map_length(8)?;
+    writer.write_map_length(&8)?;
     writer.write_str("nil")?;
     writer.write_nil()?;
     writer.write_str("int8")?;
-    writer.write_i8(sanity.int8)?;
+    writer.write_i8(&sanity.int8)?;
     writer.write_str("int16")?;
-    writer.write_i16(sanity.int16)?;
+    writer.write_i16(&sanity.int16)?;
     writer.write_str("int32")?;
-    writer.write_i32(sanity.int32)?;
+    writer.write_i32(&sanity.int32)?;
     writer.write_str("uint8")?;
-    writer.write_u8(sanity.uint8)?;
+    writer.write_u8(&sanity.uint8)?;
     writer.write_str("uint16")?;
-    writer.write_u16(sanity.uint16)?;
+    writer.write_u16(&sanity.uint16)?;
     writer.write_str("uint32")?;
-    writer.write_u32(sanity.uint32)?;
+    writer.write_u32(&sanity.uint32)?;
     writer.write_str("boolean")?;
-    writer.write_bool(sanity.boolean)?;
+    writer.write_bool(&sanity.boolean)?;
     // writer.write_str("opt_uint32")?;
     // writer.write_nullable_u32(&sanity.opt_uint32)?;
     // writer.write_str("opt_bool")?;

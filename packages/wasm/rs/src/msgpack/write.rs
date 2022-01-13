@@ -5,31 +5,31 @@ use std::collections::BTreeMap;
 
 pub trait Write: Clone + std::io::Write {
     fn write_nil(&mut self) -> Result<(), EncodingError>;
-    fn write_bool(&mut self, value: bool) -> Result<(), EncodingError>;
-    fn write_i8(&mut self, value: i8) -> Result<(), EncodingError>;
-    fn write_i16(&mut self, value: i16) -> Result<(), EncodingError>;
-    fn write_i32(&mut self, value: i32) -> Result<(), EncodingError>;
-    fn write_i64(&mut self, value: i64) -> Result<(), EncodingError>;
-    fn write_u8(&mut self, value: u8) -> Result<(), EncodingError>;
-    fn write_u16(&mut self, value: u16) -> Result<(), EncodingError>;
-    fn write_u32(&mut self, value: u32) -> Result<(), EncodingError>;
-    fn write_u64(&mut self, value: u64) -> Result<(), EncodingError>;
-    fn write_f32(&mut self, value: f32) -> Result<(), EncodingError>;
-    fn write_f64(&mut self, value: f64) -> Result<(), EncodingError>;
-    fn write_string_length(&mut self, length: u32) -> Result<(), EncodingError>;
+    fn write_bool(&mut self, value: &bool) -> Result<(), EncodingError>;
+    fn write_i8(&mut self, value: &i8) -> Result<(), EncodingError>;
+    fn write_i16(&mut self, value: &i16) -> Result<(), EncodingError>;
+    fn write_i32(&mut self, value: &i32) -> Result<(), EncodingError>;
+    fn write_i64(&mut self, value: &i64) -> Result<(), EncodingError>;
+    fn write_u8(&mut self, value: &u8) -> Result<(), EncodingError>;
+    fn write_u16(&mut self, value: &u16) -> Result<(), EncodingError>;
+    fn write_u32(&mut self, value: &u32) -> Result<(), EncodingError>;
+    fn write_u64(&mut self, value: &u64) -> Result<(), EncodingError>;
+    fn write_f32(&mut self, value: &f32) -> Result<(), EncodingError>;
+    fn write_f64(&mut self, value: &f64) -> Result<(), EncodingError>;
+    fn write_string_length(&mut self, length: &u32) -> Result<(), EncodingError>;
     fn write_string(&mut self, value: &String) -> Result<(), EncodingError>;
     fn write_str(&mut self, value: &str) -> Result<(), EncodingError>;
-    fn write_bytes_length(&mut self, length: u32) -> Result<(), EncodingError>;
+    fn write_bytes_length(&mut self, length: &u32) -> Result<(), EncodingError>;
     fn write_bytes(&mut self, buf: &[u8]) -> Result<(), EncodingError>;
     fn write_bigint(&mut self, value: &BigInt) -> Result<(), EncodingError>;
     fn write_json(&mut self, value: &JSON::Value) -> Result<(), EncodingError>;
-    fn write_array_length(&mut self, length: u32) -> Result<(), EncodingError>;
+    fn write_array_length(&mut self, length: &u32) -> Result<(), EncodingError>;
     fn write_array<T: Clone>(
         &mut self,
         a: &[T],
         arr_fn: impl FnMut(&mut Self, &T),
     ) -> Result<(), EncodingError>;
-    fn write_map_length(&mut self, length: u32) -> Result<(), EncodingError>;
+    fn write_map_length(&mut self, length: &u32) -> Result<(), EncodingError>;
     fn write_map<K, V: Clone>(
         &mut self,
         map: &BTreeMap<K, V>,
