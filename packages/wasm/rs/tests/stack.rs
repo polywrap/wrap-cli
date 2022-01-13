@@ -21,44 +21,44 @@ const EXTRA_STACK: &str = "20777216"; // 20 MB
 /// be set by the RUST_MIN_STACK environment variable.
 pub fn spawn_thread_with_extra_stack<F, T>(f: F) -> T
 where
-	F: Send + 'static + FnOnce() -> T,
-	T: Send + 'static,
+    F: Send + 'static + FnOnce() -> T,
+    T: Send + 'static,
 {
-	let _tmp_env = set_stack_size_if_unset(STACK_ENV_VAR, EXTRA_STACK);
+    let _tmp_env = set_stack_size_if_unset(STACK_ENV_VAR, EXTRA_STACK);
 
-	thread::spawn(f).join().unwrap()
+    thread::spawn(f).join().unwrap()
 }
 
 fn set_stack_size_if_unset<K, V>(k: K, v: V) -> TmpEnv<K>
 where
-	K: AsRef<OsStr>,
-	V: AsRef<OsStr>,
+    K: AsRef<OsStr>,
+    V: AsRef<OsStr>,
 {
-	match env::var(&k) {
-		Ok(_) => TmpEnv::StackSizeAlreadySet,
-		Err(_) => {
-			env::set_var(&k, v);
-			TmpEnv::StackSizeNotSet(k)
-		},
-	}
+    match env::var(&k) {
+        Ok(_) => TmpEnv::StackSizeAlreadySet,
+        Err(_) => {
+            env::set_var(&k, v);
+            TmpEnv::StackSizeNotSet(k)
+        }
+    }
 }
 
 #[must_use]
 enum TmpEnv<K>
 where
-	K: AsRef<OsStr>,
+    K: AsRef<OsStr>,
 {
-	StackSizeAlreadySet,
-	StackSizeNotSet(K),
+    StackSizeAlreadySet,
+    StackSizeNotSet(K),
 }
 
 impl<K> Drop for TmpEnv<K>
 where
-	K: AsRef<OsStr>,
+    K: AsRef<OsStr>,
 {
-	fn drop(&mut self) {
-		if let TmpEnv::StackSizeNotSet(ref k) = *self {
-			env::remove_var(k);
-		}
-	}
+    fn drop(&mut self) {
+        if let TmpEnv::StackSizeNotSet(ref k) = *self {
+            env::remove_var(k);
+        }
+    }
 }

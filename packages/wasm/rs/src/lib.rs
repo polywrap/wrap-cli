@@ -41,7 +41,6 @@ pub mod invoke;
 pub mod json;
 pub mod malloc;
 pub mod msgpack;
-pub mod stack;
 pub mod subinvoke;
 
 pub use abort::*;
@@ -52,6 +51,5 @@ pub use subinvoke::*;
 pub use big_int::BigInt;
 pub use json::JSON;
 pub use msgpack::{
-	Context, DecodingError, EncodingError, Read, ReadDecoder, Write, WriteEncoder, WriteSizer,
+    Context, DecodingError, EncodingError, Read, ReadDecoder, Write, WriteEncoder, WriteSizer,
 };
-pub use stack::spawn_thread_with_extra_stack;
