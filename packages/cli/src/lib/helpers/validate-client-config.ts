@@ -179,12 +179,12 @@ export function validateEnvs<TUri extends Uri | string = string>(
   }
 }
 
-export function validateConfigs(configs: Partial<Web3ApiClientConfig>): void {
-  if (!configs || typeof configs !== "object") {
-    throw new Error(intlMsg.commands_query_error_configsNotObject());
+export function validateClientConfig(config: Partial<Web3ApiClientConfig>): void {
+  if (!config || typeof config !== "object") {
+    throw new Error(intlMsg.commands_query_error_clientConfigNotObject());
   }
-  if (configs.plugins) validatePlugins(configs.plugins);
-  if (configs.envs) validateEnvs(configs.envs);
-  if (configs.interfaces) validateInterfaces(configs.interfaces);
-  if (configs.redirects) validateRedirects(configs.redirects);
+  if (config.plugins) validatePlugins(config.plugins);
+  if (config.envs) validateEnvs(config.envs);
+  if (config.interfaces) validateInterfaces(config.interfaces);
+  if (config.redirects) validateRedirects(config.redirects);
 }

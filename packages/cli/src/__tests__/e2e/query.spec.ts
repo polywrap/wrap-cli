@@ -9,7 +9,7 @@ w3 query [options] <recipe-script>
 
 Options:
   -t, --test-ens  Use the development server's ENS instance
-  -c, --configs <config-path> Add custom configs to the Web3ApiClient
+  -c, --client-config <config-path> Add custom configuration to the Web3ApiClient
 
 `;
 
@@ -30,9 +30,9 @@ describe("sanity tests for query command", () => {
 ${HELP}`);
   });
 
-  test("Should throw error is --configs doesn't contain arguments", async () => {
+  test("Should throw error is --client-config doesn't contain arguments", async () => {
     const { exitCode, stdout, stderr } = await runCLI({
-      args: ["query", "./recipes/e2e.json", "--configs"],
+      args: ["query", "./recipes/e2e.json", "--client-config"],
       cwd: projectRoot,
       cli: w3Cli,
     });
@@ -40,7 +40,7 @@ ${HELP}`);
     expect(exitCode).toEqual(0);
     expect(stderr).toBe("");
     expect(clearStyle(stdout))
-      .toEqual(`--configs option missing <config-path> argument
+      .toEqual(`--client-config option missing <config-path> argument
 ${HELP}`);
   });
 })
@@ -64,13 +64,13 @@ describe("e2e tests for query command", () => {
     });
   })
 
-  test("Should use custom configs for client if specified", async () => {
+  test("Should use custom config for client if specified", async () => {
 
-    const configs = ["./custom-configs.ts", "./custom-configs.js"];
+    const configs = ["./client-config.ts", "./client-config.js"];
 
     for (const config of configs) {
       const { exitCode, stdout, stderr } = await runCLI({
-        args: ["query", "./recipes/e2e.json", "--test-ens", "--configs", config ],
+        args: ["query", "./recipes/e2e.json", "--test-ens", "--client-config", config ],
         cwd: projectRoot,
         cli: w3Cli,
       });

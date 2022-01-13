@@ -1,7 +1,7 @@
 import { getDefaultClientConfig } from "../lib/helpers/default-client-config";
 import { importTs } from "../lib/helpers/import-ts";
 import { fixParameters } from "../lib/helpers/parameters";
-import { validateConfigs } from "../lib/helpers/validate-configs";
+import { validateClientConfig } from "../lib/helpers/validate-client-config";
 import { intlMsg } from "../lib/intl";
 
 import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
@@ -19,7 +19,7 @@ ${chalk.bold("w3 query")} [${optionsString}] ${chalk.bold(`<${scriptStr}>`)}
 
 ${optionsString[0].toUpperCase() + optionsString.slice(1)}:
   -t, --test-ens  ${intlMsg.commands_build_options_t()}
-  -c, --configs <${configPathStr}> ${intlMsg.commands_query_options_config()}
+  -c, --client-config <${configPathStr}> ${intlMsg.commands_query_options_config()}
 `;
 
 export default {
@@ -28,10 +28,10 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print, middleware } = toolbox;
     // eslint-disable-next-line prefer-const
-    let { t, testEns, c, configs } = parameters.options;
+    let { t, testEns, c, clientConfig } = parameters.options;
 
     testEns = testEns || t;
-    configs = configs || c;
+    clientConfig = clientConfig || c;
 
     let recipePath;
     try {
@@ -62,10 +62,10 @@ export default {
       return;
     }
 
-    if (configs === true) {
-      const confgisMissingPathMessage = intlMsg.commands_query_error_configsMissingPath(
+    if (clientConfig === true) {
+      const confgisMissingPathMessage = intlMsg.commands_query_error_clientConfigMissingPath(
         {
-          option: "--configs",
+          option: "--client-config",
           argument: `<${configPathStr}>`,
         }
       );
@@ -74,44 +74,44 @@ export default {
       return;
     }
 
-    let clientConfigs: Partial<Web3ApiClientConfig>;
+    let finalClientConfig: Partial<Web3ApiClientConfig>;
 
     try {
-      clientConfigs = await getDefaultClientConfig();
+      finalClientConfig = await getDefaultClientConfig();
     } catch (e) {
       print.error(intlMsg.commands_query_error_noTestEnvFound());
       process.exitCode = 1;
       return;
     }
 
-    if (configs) {
-      let configsModule;
-      if (configs.endsWith(".js")) {
-        configsModule = await import(filesystem.resolve(configs));
-      } else if (configs.endsWith(".ts")) {
-        configsModule = await importTs(filesystem.resolve(configs));
+    if (clientConfig) {
+      let configModule;
+      if (clientConfig.endsWith(".js")) {
+        configModule = await import(filesystem.resolve(clientConfig));
+      } else if (clientConfig.endsWith(".ts")) {
+        configModule = await importTs(filesystem.resolve(clientConfig));
       } else {
-        const configsModuleMissingExportMessage = intlMsg.commands_query_error_configsInvalidFileExt(
-          { module: configs }
+        const configsModuleMissingExportMessage = intlMsg.commands_query_error_clientConfigInvalidFileExt(
+          { module: clientConfig }
         );
         print.error(configsModuleMissingExportMessage);
         process.exitCode = 1;
         return;
       }
 
-      if (!configsModule || !configsModule.getConfigs) {
-        const configsModuleMissingExportMessage = intlMsg.commands_query_error_configsModuleMissingExport(
-          { module: configs }
+      if (!configModule || !configModule.getClientConfig) {
+        const configsModuleMissingExportMessage = intlMsg.commands_query_error_clientConfigModuleMissingExport(
+          { module: configModule }
         );
         print.error(configsModuleMissingExportMessage);
         process.exitCode = 1;
         return;
       }
 
-      clientConfigs = configsModule.getConfigs(clientConfigs);
+      finalClientConfig = configModule.getClientConfig(finalClientConfig);
 
       try {
-        validateConfigs(clientConfigs);
+        validateClientConfig(finalClientConfig);
       } catch (e) {
         print.error(e.message);
         process.exitCode = 1;
@@ -124,7 +124,7 @@ export default {
       options: { testEns, recipePath },
     });
 
-    const client = new Web3ApiClient(clientConfigs);
+    const client = new Web3ApiClient(finalClientConfig);
 
     const recipe = JSON.parse(filesystem.read(recipePath) as string);
     const dir = path.dirname(recipePath);

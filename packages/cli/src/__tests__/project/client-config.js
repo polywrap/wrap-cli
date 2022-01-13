@@ -30,7 +30,7 @@ const mockPlugin = () => {
   };
 };
 
-function getConfigs(defaultConfigs) {
+function getClientConfig(defaultConfigs) {
   if (defaultConfigs.plugins) {
     defaultConfigs.plugins.push({
       uri: "w3://ens/mock.eth",
@@ -54,5 +54,5 @@ function getConfigs(defaultConfigs) {
 }
 
 module.exports = {
-  getConfigs,
+  getClientConfig,
 };

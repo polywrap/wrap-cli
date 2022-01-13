@@ -29,7 +29,7 @@ const mockPlugin = () => {
   };
 };
 
-export function getConfigs(defaultConfigs: Partial<Web3ApiClientConfig>) {
+export function getClientConfig(defaultConfigs: Partial<Web3ApiClientConfig>) {
   if (defaultConfigs.plugins) {
     defaultConfigs.plugins.push({
       uri: "w3://ens/mock.eth",
