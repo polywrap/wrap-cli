@@ -3,7 +3,6 @@ import {
   Uri,
   PluginPackage,
   Client,
-  Contextualized,
 } from "../../types";
 import { findPluginPackage } from "../find-plugin-package";
 import { Tracer } from "@web3api/tracing-js";
@@ -17,8 +16,8 @@ export class PluginResolver implements UriToApiResolver {
 
   name = "Plugin";
 
-  async resolveUri(uri: Uri, client: Client, options: Contextualized): Promise<UriResolutionResult> {
-    const plugin = findPluginPackage(uri, client.getPlugins(options));
+  async resolveUri(uri: Uri, client: Client): Promise<UriResolutionResult> {
+    const plugin = findPluginPackage(uri, client.getPlugins({}));
 
     if (plugin) {
       const api = Tracer.traceFunc(

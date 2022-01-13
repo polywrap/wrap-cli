@@ -71,7 +71,7 @@ export const resolveUriWithResolvers = async (
         };
       }
 
-      const result = await resolver.resolveUri(currentUri, client, options);
+      const result = await resolver.resolveUri(currentUri, client);
 
       trackUriHistory(currentUri, resolver, result, uriResolutionStack);
 

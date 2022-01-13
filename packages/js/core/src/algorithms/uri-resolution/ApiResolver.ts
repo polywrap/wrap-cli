@@ -1,20 +1,20 @@
 import { Tracer } from "@web3api/tracing-js";
 import { UriResolver } from "../../interfaces";
 import { Web3ApiManifest, DeserializeManifestOptions, deserializeWeb3ApiManifest } from "../../manifest";
-import { Uri, InvokeHandler, Api, Client, Contextualized } from "../../types";
+import { Uri, InvokeHandler, Api, Client } from "../../types";
 import { UriResolutionResult } from "./UriResolutionResult";
 import { UriToApiResolver } from "./UriToApiResolver";
 
 export class ApiResolver implements UriToApiResolver {
   constructor(
     public readonly resolverUri: Uri,
-    private readonly createApi: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri, client: Client, options: Contextualized) => Api,
+    private readonly createApi: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri, client: Client) => Api,
     private readonly deserializeOptions?: DeserializeManifestOptions
   ) {}
 
   name = "Api";
 
-  async resolveUri(uri: Uri, client: Client, options: Contextualized): Promise<UriResolutionResult> {
+  async resolveUri(uri: Uri, client: Client): Promise<UriResolutionResult> {
     const result = await tryResolveUriWithUriResolver(
       uri, 
       this.resolverUri, 
@@ -41,9 +41,9 @@ export class ApiResolver implements UriToApiResolver {
 
       const api = Tracer.traceFunc(
         "resolveUri: createApi",
-        (uri: Uri, manifest: Web3ApiManifest, resolverUri: Uri, client: Client, options: Contextualized) =>
-          this.createApi(uri, manifest, resolverUri, client, options)
-      )(uri, manifest, this.resolverUri, client, options);
+        (uri: Uri, manifest: Web3ApiManifest, resolverUri: Uri, client: Client) =>
+          this.createApi(uri, manifest, resolverUri, client)
+      )(uri, manifest, this.resolverUri, client);
       
       return {
         uri,

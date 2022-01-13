@@ -1,4 +1,4 @@
-import { Client, Contextualized, createWeb3ApiClient, Uri, Web3ApiClientConfig } from "..";
+import { Client, createWeb3ApiClient, Uri, Web3ApiClientConfig } from "..";
 import {
   buildAndDeployApi,
   initTestEnvironment,
