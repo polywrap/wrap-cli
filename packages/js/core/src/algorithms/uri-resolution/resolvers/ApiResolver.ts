@@ -1,20 +1,22 @@
 import { Tracer } from "@web3api/tracing-js";
-import { UriResolver } from "../../interfaces";
-import { Web3ApiManifest, DeserializeManifestOptions, deserializeWeb3ApiManifest } from "../../manifest";
-import { Uri, InvokeHandler, Api, Client } from "../../types";
+import { UriResolutionStack } from "..";
+import { UriResolver } from "../../../interfaces";
+import { DeserializeManifestOptions, deserializeWeb3ApiManifest } from "../../../manifest";
+import { Uri, InvokeHandler, Client, Env } from "../../../types";
+import { CreateApiFunc } from "./CreateApiFunc";
 import { UriResolutionResult } from "./UriResolutionResult";
 import { UriToApiResolver } from "./UriToApiResolver";
 
 export class ApiResolver implements UriToApiResolver {
   constructor(
     public readonly resolverUri: Uri,
-    private readonly createApi: (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri, client: Client) => Api,
+    private readonly createApi: CreateApiFunc,
     private readonly deserializeOptions?: DeserializeManifestOptions
   ) {}
 
   name = "Api";
 
-  async resolveUri(uri: Uri, client: Client): Promise<UriResolutionResult> {
+  async resolveUri(uri: Uri, client: Client, resolutionStack: UriResolutionStack): Promise<UriResolutionResult> {
     const result = await tryResolveUriWithUriResolver(
       uri, 
       this.resolverUri, 
@@ -39,12 +41,9 @@ export class ApiResolver implements UriToApiResolver {
         this.deserializeOptions
       );
 
-      const api = Tracer.traceFunc(
-        "resolveUri: createApi",
-        (uri: Uri, manifest: Web3ApiManifest, resolverUri: Uri, client: Client) =>
-          this.createApi(uri, manifest, resolverUri, client)
-      )(uri, manifest, this.resolverUri, client);
-      
+      const environment = getEnvironmentFromResolutionStack(client, resolutionStack);
+      const api = this.createApi(uri, manifest, this.resolverUri, environment);
+    
       return {
         uri,
         api
@@ -75,4 +74,19 @@ const tryResolveUriWithUriResolver = async (
   }
 
   return data;
+};
+
+const getEnvironmentFromResolutionStack = (
+  client: Client, 
+  resolutionStack: UriResolutionStack
+): Env<Uri> | undefined => {
+  for(const { sourceUri } of resolutionStack) {
+    const environment = client.getEnvByUri(sourceUri, {});
+    
+    if(environment) {
+      return environment;
+    }
+  }
+
+  return undefined;
 };

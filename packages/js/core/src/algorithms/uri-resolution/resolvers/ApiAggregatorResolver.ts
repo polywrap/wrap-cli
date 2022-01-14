@@ -1,13 +1,7 @@
-import { ApiResolver, UriToApiResolver } from ".";
-import { Uri, Client, getImplementations, coreInterfaceUris, Api, Web3ApiManifest, DeserializeManifestOptions } from "../..";
+import { ApiResolver, UriResolutionStack, UriToApiResolver } from "..";
+import { Uri, Client, getImplementations, coreInterfaceUris, DeserializeManifestOptions } from "../../..";
+import { CreateApiFunc } from "./CreateApiFunc";
 import { UriResolutionResult } from "./UriResolutionResult";
-
-export type CreateApiFunc = (
-  uri: Uri, 
-  manifest: Web3ApiManifest, 
-  uriResolver: Uri, 
-  client: Client
-) => Api;
 
 export type ApiAggregatorResolverResult = UriResolutionResult & {
   resolverUri?: Uri;
@@ -22,11 +16,11 @@ export class ApiAggregatorResolver implements UriToApiResolver {
     ) {
   }
 
-  async resolveUri(uri: Uri, client: Client): Promise<ApiAggregatorResolverResult> {
+  async resolveUri(uri: Uri, client: Client, resolutionStack: UriResolutionStack): Promise<ApiAggregatorResolverResult> {
     const resolvers: ApiResolver[] = this.buildApiResolvers(client);
 
     for (const resolver of resolvers) {
-      const result = await resolver.resolveUri(uri, client);
+      const result = await resolver.resolveUri(uri, client, resolutionStack);
 
       if (result.api || (result.uri && uri.uri !== result.uri.uri)) {
         return {

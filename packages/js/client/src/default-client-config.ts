@@ -1,6 +1,6 @@
 import { ClientConfig, WasmWeb3Api } from ".";
 
-import { Uri, coreInterfaceUris, RedirectsResolver, PluginResolver, PluginPackage, ApiAggregatorResolver, Client, Web3ApiManifest, CacheResolver } from "@web3api/core-js";
+import { Uri, coreInterfaceUris, RedirectsResolver, PluginResolver, PluginPackage, Web3ApiManifest, CacheResolver, Env, ApiAggregatorResolver } from "@web3api/core-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
@@ -92,8 +92,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         ),
         new CacheResolver(),
         new ApiAggregatorResolver(
-          (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri, client: Client) => {
-          const environment = client.getEnvByUri(uri, {});
+          (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri, environment: Env<Uri> | undefined) => {
           return new WasmWeb3Api(uri, manifest, uriResolver, environment);
         }),
       ]

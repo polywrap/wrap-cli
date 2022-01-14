@@ -3,11 +3,12 @@ import {
   Uri,
   PluginPackage,
   Client,
-} from "../../types";
-import { findPluginPackage } from "../find-plugin-package";
+} from "../../../types";
+import { findPluginPackage } from "../../find-plugin-package";
 import { Tracer } from "@web3api/tracing-js";
 import { UriToApiResolver } from "./UriToApiResolver";
 import { UriResolutionResult } from "./UriResolutionResult";
+import { UriResolutionStack } from "..";
 
 export class PluginResolver implements UriToApiResolver {
   constructor(
@@ -16,7 +17,7 @@ export class PluginResolver implements UriToApiResolver {
 
   name = "Plugin";
 
-  async resolveUri(uri: Uri, client: Client): Promise<UriResolutionResult> {
+  async resolveUri(uri: Uri, client: Client, resolutionStack: UriResolutionStack): Promise<UriResolutionResult> {
     const plugin = findPluginPackage(uri, client.getPlugins({}));
 
     if (plugin) {

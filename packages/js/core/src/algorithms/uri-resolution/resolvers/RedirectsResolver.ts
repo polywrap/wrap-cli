@@ -1,5 +1,5 @@
-import { Uri, Client } from "../../types";
-import { applyRedirects } from "../apply-redirects";
+import { applyRedirects } from "../..";
+import { Uri, Client } from "../../..";
 import { UriResolutionResult } from "./UriResolutionResult";
 import { UriToApiResolver } from "./UriToApiResolver";
 

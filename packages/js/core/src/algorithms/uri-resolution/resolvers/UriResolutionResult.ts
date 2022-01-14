@@ -1,4 +1,4 @@
-import { Api, Uri } from "../..";
+import { Api, Uri } from "../../..";
 
 export type UriResolutionResult = {
   uri: Uri;

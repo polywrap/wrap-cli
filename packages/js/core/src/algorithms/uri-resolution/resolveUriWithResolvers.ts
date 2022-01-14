@@ -2,8 +2,8 @@ import { Tracer } from "@web3api/tracing-js";
 import { Api, Client, Contextualized, Uri } from "../../types";
 import { ResolveUriError } from "./ResolveUriError";
 import { UriResolutionHistory, UriResolutionStack } from "./UriResolutionHistory";
-import { UriResolutionResult } from "./UriResolutionResult";
-import { UriToApiResolver } from "./UriToApiResolver";
+import { UriResolutionResult } from "./resolvers/UriResolutionResult";
+import { UriToApiResolver } from "./resolvers/UriToApiResolver";
 
 const trackVisitedUri = (
     uri: string, 
@@ -71,7 +71,7 @@ export const resolveUriWithResolvers = async (
         };
       }
 
-      const result = await resolver.resolveUri(currentUri, client);
+      const result = await resolver.resolveUri(currentUri, client, uriResolutionStack);
 
       trackUriHistory(currentUri, resolver, result, uriResolutionStack);
 

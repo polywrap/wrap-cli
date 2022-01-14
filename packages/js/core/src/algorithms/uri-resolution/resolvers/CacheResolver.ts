@@ -1,5 +1,5 @@
-import { UriToApiResolver, UriResolutionResult } from ".";
-import { Uri, Client } from "../..";
+import { UriToApiResolver, UriResolutionResult } from "..";
+import { Uri, Client } from "../../..";
 
 export class CacheResolver implements UriToApiResolver {
   name = "Cache";
