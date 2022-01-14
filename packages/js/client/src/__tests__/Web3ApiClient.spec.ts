@@ -2691,6 +2691,42 @@ enum Logger_LogLevel @imported(
     expect(results).not.toContain(2);
   });
 
+  it("queries API schemas that use reserved keywords", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/reserved-words`,
+      ipfsProvider,
+      ensAddress
+    );
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const client = await getClient();
+
+    const query = await client.query<{
+      method1: {
+        const: string;
+      }
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          method1(
+            const: {
+              const: "successfully used reserved keyword"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(query.errors).toBeFalsy();
+    expect(query.data).toBeTruthy();
+    expect(query.data).toMatchObject({
+      method1: {
+        const: "result: successfully used reserved keyword",
+      },
+    });
+  });
+
   it("e2e getImplementations capability", async () => {
     const interfaceUri = "w3://ens/interface.eth"
 

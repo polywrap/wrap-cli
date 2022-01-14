@@ -24,7 +24,7 @@ export function serializeAnotherType(type: AnotherType): ArrayBuffer {
 }
 
 export function writeAnotherType(writer: Write, type: AnotherType): void {
-  writer.writeMapLength(2);
+  writer.writeMapLength(3);
   writer.context().push("prop", "string | null", "writing property");
   writer.writeString("prop");
   writer.writeNullableString(type.prop);
@@ -36,6 +36,10 @@ export function writeAnotherType(writer: Write, type: AnotherType): void {
   } else {
     writer.writeNil();
   }
+  writer.context().pop();
+  writer.context().push("const", "string | null", "writing property");
+  writer.writeString("const");
+  writer.writeNullableString(type.m_const);
   writer.context().pop();
 }
 
@@ -50,6 +54,7 @@ export function readAnotherType(reader: Read): AnotherType {
 
   let _prop: string | null = null;
   let _circular: Types.CustomType | null = null;
+  let _const: string | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -70,12 +75,18 @@ export function readAnotherType(reader: Read): AnotherType {
       _circular = object;
       reader.context().pop();
     }
+    else if (field == "const") {
+      reader.context().push(field, "string | null", "type found, reading property");
+      _const = reader.readNullableString();
+      reader.context().pop();
+    }
     reader.context().pop();
   }
 
 
   return {
     prop: _prop,
-    circular: _circular
+    circular: _circular,
+    m_const: _const
   };
 }
