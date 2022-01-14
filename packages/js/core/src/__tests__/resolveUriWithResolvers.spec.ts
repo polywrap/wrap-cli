@@ -32,6 +32,7 @@ import {
 describe("resolveUri", () => {
   const client = (apis: Record<string, PluginModules>, plugins: PluginRegistration<Uri>[] = [], interfaces: InterfaceImplementations<Uri>[] = [], redirects: UriRedirect<Uri>[] = []): Client => ({
     getApiCache: () => (new Map<string, Api>()),
+    getEnvByUri: () => (undefined),
     getRedirects: () => redirects,
     getPlugins: () => plugins,
     getInterfaces: () => interfaces,
