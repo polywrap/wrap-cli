@@ -12,20 +12,31 @@ import {
   AnyManifest,
   ManifestType,
   GetFileOptions,
+  Env,
+  InvokableModules,
 } from "@web3api/core-js";
 import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
 
+function isValidEnv(env: Record<string, unknown>): boolean {
+  return typeof env === "object" && !Array.isArray(env) && env !== null;
+}
+
 export class PluginWeb3Api extends Api {
   private _instance: Plugin | undefined;
 
-  constructor(private _uri: Uri, private _plugin: PluginPackage) {
+  constructor(
+    private _uri: Uri,
+    private _plugin: PluginPackage,
+    private _clientEnv?: Env<Uri>
+  ) {
     super();
 
     Tracer.startSpan("PluginWeb3Api: constructor");
     Tracer.setAttribute("input", {
       uri: this._uri,
       plugin: this._plugin,
+      clientEnv: this._clientEnv,
     });
     Tracer.endSpan();
   }
@@ -65,6 +76,19 @@ export class PluginWeb3Api extends Api {
 
       if (!pluginModule[method]) {
         throw new Error(`PluginWeb3Api: method "${method}" not found.`);
+      }
+
+      let env = this._getModuleClientEnv(module);
+      if (isValidEnv(env)) {
+        if (pluginModule["sanitizeEnv"]) {
+          env = (await executeMaybeAsyncFunction(
+            pluginModule["sanitizeEnv"],
+            env,
+            client
+          )) as Record<string, unknown>;
+        }
+
+        this._getInstance().loadEnv(env, module);
       }
 
       let jsInput: Record<string, unknown>;
@@ -145,6 +169,28 @@ export class PluginWeb3Api extends Api {
   }
 
   private _getInstance(): Plugin {
-    return this._instance || this._plugin.factory();
+    this._instance ||= this._plugin.factory();
+    return this._instance;
+  }
+
+  @Tracer.traceMethod("PluginWeb3Api: getModuleClientEnv")
+  private _getModuleClientEnv(
+    module: InvokableModules
+  ): Record<string, unknown> {
+    if (!this._clientEnv) {
+      return {};
+    }
+
+    if (module === "query") {
+      return {
+        ...this._clientEnv.common,
+        ...this._clientEnv.query,
+      };
+    } else {
+      return {
+        ...this._clientEnv.common,
+        ...this._clientEnv.mutation,
+      };
+    }
   }
 }

@@ -4,6 +4,8 @@ import { Web3ApiClient } from "@web3api/client-js";
 const uri = "ens/graph-node.web3api.eth";
 const provider = "https://api.thegraph.com";
 
+jest.setTimeout(30000);
+
 describe("Graph Node Plugin", () => {
   const client = new Web3ApiClient({
     plugins: [{
