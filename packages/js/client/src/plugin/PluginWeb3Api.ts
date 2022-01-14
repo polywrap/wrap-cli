@@ -28,7 +28,7 @@ export class PluginWeb3Api extends Api {
   constructor(
     private _uri: Uri,
     private _plugin: PluginPackage,
-    private _clientEnvironment?: Env<Uri>
+    private _clientEnv?: Env<Uri>
   ) {
     super();
 
@@ -36,7 +36,7 @@ export class PluginWeb3Api extends Api {
     Tracer.setAttribute("input", {
       uri: this._uri,
       plugin: this._plugin,
-      clientEnvironment: this._clientEnvironment,
+      clientEnv: this._clientEnv,
     });
     Tracer.endSpan();
   }
@@ -78,7 +78,7 @@ export class PluginWeb3Api extends Api {
         throw new Error(`PluginWeb3Api: method "${method}" not found.`);
       }
 
-      let env = this._getModuleClientEnvironment(module);
+      let env = this._getModuleClientEnv(module);
       if (isValidEnv(env)) {
         if (pluginModule["sanitizeEnv"]) {
           env = (await executeMaybeAsyncFunction(
@@ -173,23 +173,23 @@ export class PluginWeb3Api extends Api {
     return this._instance;
   }
 
-  @Tracer.traceMethod("WasmWeb3Api: getModuleClientEnvironment")
-  private _getModuleClientEnvironment(
+  @Tracer.traceMethod("PluginWeb3Api: getModuleClientEnv")
+  private _getModuleClientEnv(
     module: InvokableModules
   ): Record<string, unknown> {
-    if (!this._clientEnvironment) {
+    if (!this._clientEnv) {
       return {};
     }
 
     if (module === "query") {
       return {
-        ...this._clientEnvironment.common,
-        ...this._clientEnvironment.query,
+        ...this._clientEnv.common,
+        ...this._clientEnv.query,
       };
     } else {
       return {
-        ...this._clientEnvironment.common,
-        ...this._clientEnvironment.mutation,
+        ...this._clientEnv.common,
+        ...this._clientEnv.mutation,
       };
     }
   }
