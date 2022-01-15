@@ -2,6 +2,7 @@
 import { CodeGenerator, PluginProject, SchemaComposer } from "../lib";
 import { fixParameters, resolveManifestPath } from "../lib/helpers";
 import { intlMsg } from "../lib/intl";
+import { getDefaultProviders } from "../lib/helpers/client";
 
 import { ComposerFilter } from "@web3api/schema-compose";
 import { writeFileSync } from "@web3api/os-js";
@@ -9,7 +10,6 @@ import { GluegunToolbox, print } from "gluegun";
 import chalk from "chalk";
 import path from "path";
 import fs from "fs";
-import { getDefaultProviders } from "../lib/helpers/client";
 
 export const defaultManifest = ["web3api.plugin.yaml", "web3api.plugin.yml"];
 

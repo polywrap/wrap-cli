@@ -17,7 +17,33 @@ export interface ProjectConfig {
 export abstract class Project {
   constructor(protected _config: ProjectConfig) {}
 
+  /// Validation
+
+  public static validateManifestLanguage(
+    language: string | undefined,
+    validPatterns: string[]
+  ): void {
+    if (!language) {
+      throw Error(intlMsg.lib_project_language_not_found());
+    }
+
+    const languagePatternValid = (test: string) =>
+      validPatterns.some((x) => test.indexOf(x) > -1);
+
+    if (!isManifestLanguage(language) || !languagePatternValid(language)) {
+      throw Error(
+        intlMsg.lib_project_invalid_manifest_language({
+          language,
+          validTypes: Object.keys(manifestLanguages)
+            .filter((x) => languagePatternValid(x))
+            .join(" | "),
+        })
+      );
+    }
+  }
+
   /// Abstract Interface
+
   public abstract reset(): void;
 
   public abstract getRootDir(): string;
@@ -84,30 +110,5 @@ export abstract class Project {
         }
       });
     });
-  }
-
-  /// Validation
-
-  public static validateManifestLanguage(
-    language: string | undefined,
-    validPatterns: string[]
-  ): void {
-    if (!language) {
-      throw Error(intlMsg.lib_project_language_not_found());
-    }
-
-    const languagePatternValid = (test: string) =>
-      validPatterns.some((x) => test.indexOf(x) > -1);
-
-    if (!isManifestLanguage(language) || !languagePatternValid(language)) {
-      throw Error(
-        intlMsg.lib_project_invalid_manifest_language({
-          language,
-          validTypes: Object.keys(manifestLanguages)
-            .filter((x) => languagePatternValid(x))
-            .join(" | "),
-        })
-      );
-    }
   }
 }

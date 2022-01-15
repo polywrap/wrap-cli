@@ -1,7 +1,5 @@
 import { Project, ProjectConfig } from "./Project";
-import {
-  loadPluginManifest, ManifestLanguage,
-} from "../helpers";
+import { loadPluginManifest, ManifestLanguage } from "../helpers";
 
 import { PluginManifest, Uri } from "@web3api/core-js";
 import path from "path";

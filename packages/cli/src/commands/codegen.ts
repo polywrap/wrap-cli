@@ -7,10 +7,10 @@ import {
 } from "../lib";
 import { intlMsg } from "../lib/intl";
 import { resolveManifestPath } from "../lib/helpers";
+import { getDefaultProviders } from "../lib/helpers/client";
 
 import chalk from "chalk";
 import { GluegunToolbox, GluegunPrint } from "gluegun";
-import { getDefaultProviders } from "../lib/helpers/client";
 
 export const defaultManifest = ["web3api.yaml", "web3api.yml"];
 

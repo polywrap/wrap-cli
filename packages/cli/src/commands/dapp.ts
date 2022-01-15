@@ -31,8 +31,8 @@ interface DappGenFiles {
 }
 
 interface LangGenFiles {
-  types: DappGenFiles
-  extension: DappGenFiles
+  types: DappGenFiles;
+  extension: DappGenFiles;
 }
 
 interface DappLangSupport {
@@ -42,17 +42,18 @@ interface DappLangSupport {
 const langSupport: DappLangSupport = {
   "dapp/typescript": {
     types: {
-      package: __dirname +
-        "/../lib/codegen-templates/dapp/types/package-ts.gen.js",
-      dapp: __dirname +
-        "/../lib/codegen-templates/dapp/types/dapp-ts.gen.js",
+      package:
+        __dirname + "/../lib/codegen-templates/dapp/types/package-ts.gen.js",
+      dapp: __dirname + "/../lib/codegen-templates/dapp/types/dapp-ts.gen.js",
     },
     extension: {
-     package: __dirname +
+      package:
+        __dirname +
         "/../lib/codegen-templates/dapp/polywrap-dapp/package-ts.gen.js",
-      dapp: __dirname +
+      dapp:
+        __dirname +
         "/../lib/codegen-templates/dapp/polywrap-dapp/dapp-ts.gen.js",
-    }
+    },
   },
 };
 
@@ -153,13 +154,18 @@ export default {
     );
     const language: string = dappManifest.language;
     Project.validateManifestLanguage(language, ["dapp/"]);
-    const packages: PolywrapPackage[] = dappManifest.packages.map(pack => ({ ...pack, uri: sanitizeUri(pack.uri, pack.isPlugin) }));
-    const outputDirFromManifest: string | undefined = dappManifest.types.directory;
+    const packages: PolywrapPackage[] = dappManifest.packages.map((pack) => ({
+      ...pack,
+      uri: sanitizeUri(pack.uri, pack.isPlugin),
+    }));
+    const outputDirFromManifest: string | undefined =
+      dappManifest.types.directory;
     const typesOnly: boolean | undefined = dappManifest.types.typesOnly;
 
     // Resolve output directory
     outputDir =
-      (outputDir && filesystem.resolve(outputDir)) || outputDirFromManifest ||
+      (outputDir && filesystem.resolve(outputDir)) ||
+      outputDirFromManifest ||
       filesystem.path(defaultOutputDir);
 
     // Check for duplicate namespaces
@@ -173,7 +179,9 @@ export default {
 
     // Resolve generation file
     const langGenFiles: LangGenFiles = langSupport[language];
-    const genFiles: DappGenFiles = typesOnly ? langGenFiles.types : langGenFiles.extension;
+    const genFiles: DappGenFiles = typesOnly
+      ? langGenFiles.types
+      : langGenFiles.extension;
     const packageScript = filesystem.resolve(genFiles.package);
     const dappScript = filesystem.resolve(genFiles.dapp);
 
@@ -240,9 +248,7 @@ export default {
         });
 
         if (await dappCodeGenerator.generate()) {
-          print.success(
-            `🔥 ${intlMsg.commands_dapp_topLevel_success()} 🔥`
-          );
+          print.success(`🔥 ${intlMsg.commands_dapp_topLevel_success()} 🔥`);
         } else {
           result = false;
         }
