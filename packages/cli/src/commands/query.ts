@@ -1,8 +1,10 @@
+import { getDefaultClientConfig } from "../lib/helpers/default-client-config";
+import { importTs } from "../lib/helpers/import-ts";
 import { fixParameters } from "../lib/helpers/parameters";
+import { validateClientConfig } from "../lib/helpers/validate-client-config";
 import { intlMsg } from "../lib/intl";
-import { getSimpleClient } from "../lib/helpers/client";
 
-import axios from "axios";
+import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 import gql from "graphql-tag";
@@ -10,12 +12,14 @@ import path from "path";
 
 const optionsString = intlMsg.commands_build_options_options();
 const scriptStr = intlMsg.commands_create_options_recipeScript();
+const configPathStr = intlMsg.commands_query_options_configPath();
 
 const HELP = `
 ${chalk.bold("w3 query")} [${optionsString}] ${chalk.bold(`<${scriptStr}>`)}
 
 ${optionsString[0].toUpperCase() + optionsString.slice(1)}:
   -t, --test-ens  ${intlMsg.commands_build_options_t()}
+  -c, --client-config <${configPathStr}> ${intlMsg.commands_query_options_config()}
 `;
 
 export default {
@@ -24,9 +28,10 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print, middleware } = toolbox;
     // eslint-disable-next-line prefer-const
-    let { t, testEns } = parameters.options;
+    let { t, testEns, c, clientConfig } = parameters.options;
 
     testEns = testEns || t;
+    clientConfig = clientConfig || c;
 
     let recipePath;
     try {
@@ -57,29 +62,69 @@ export default {
       return;
     }
 
+    if (clientConfig === true) {
+      const confgisMissingPathMessage = intlMsg.commands_query_error_clientConfigMissingPath(
+        {
+          option: "--client-config",
+          argument: `<${configPathStr}>`,
+        }
+      );
+      print.error(confgisMissingPathMessage);
+      print.info(HELP);
+      return;
+    }
+
+    let finalClientConfig: Partial<Web3ApiClientConfig>;
+
+    try {
+      finalClientConfig = await getDefaultClientConfig();
+    } catch (e) {
+      print.error(intlMsg.commands_query_error_noTestEnvFound());
+      process.exitCode = 1;
+      return;
+    }
+
+    if (clientConfig) {
+      let configModule;
+      if (clientConfig.endsWith(".js")) {
+        configModule = await import(filesystem.resolve(clientConfig));
+      } else if (clientConfig.endsWith(".ts")) {
+        configModule = await importTs(filesystem.resolve(clientConfig));
+      } else {
+        const configsModuleMissingExportMessage = intlMsg.commands_query_error_clientConfigInvalidFileExt(
+          { module: clientConfig }
+        );
+        print.error(configsModuleMissingExportMessage);
+        process.exitCode = 1;
+        return;
+      }
+
+      if (!configModule || !configModule.getClientConfig) {
+        const configsModuleMissingExportMessage = intlMsg.commands_query_error_clientConfigModuleMissingExport(
+          { module: configModule }
+        );
+        print.error(configsModuleMissingExportMessage);
+        process.exitCode = 1;
+        return;
+      }
+
+      finalClientConfig = configModule.getClientConfig(finalClientConfig);
+
+      try {
+        validateClientConfig(finalClientConfig);
+      } catch (e) {
+        print.error(e.message);
+        process.exitCode = 1;
+        return;
+      }
+    }
+
     await middleware.run({
       name: toolbox.command?.name,
       options: { testEns, recipePath },
     });
 
-    let ipfsProvider = "";
-    let ethProvider = "";
-    let ensAddress = "";
-
-    try {
-      const {
-        data: { ipfs, ethereum },
-      } = await axios.get("http://localhost:4040/providers");
-      ipfsProvider = ipfs;
-      ethProvider = ethereum;
-      const { data } = await axios.get("http://localhost:4040/ens");
-      ensAddress = data.ensAddress;
-    } catch (e) {
-      print.error(intlMsg.commands_query_error_noTestEnvFound());
-      return;
-    }
-
-    const client = getSimpleClient({ ensAddress, ethProvider, ipfsProvider });
+    const client = new Web3ApiClient(finalClientConfig);
 
     const recipe = JSON.parse(filesystem.read(recipePath) as string);
     const dir = path.dirname(recipePath);

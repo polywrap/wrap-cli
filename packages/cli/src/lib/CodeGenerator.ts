@@ -1,6 +1,12 @@
 import { SchemaComposer } from "./SchemaComposer";
 import { Project } from "./project";
-import { step, withSpinner, isTypescriptFile, loadTsNode } from "./helpers";
+import {
+  step,
+  withSpinner,
+  isTypescriptFile,
+  loadTsNode,
+  manifestLanguageToBindLanguage,
+} from "./helpers";
 import { intlMsg } from "./intl";
 
 import { TypeInfo } from "@web3api/schema-parse";
@@ -56,6 +62,10 @@ export class CodeGenerator {
     const { schemaComposer, project } = this._config;
 
     const run = async (spinner?: Ora) => {
+      const bindLanguage = manifestLanguageToBindLanguage(
+        await project.getManifestLanguage()
+      );
+
       // Make sure that the output dir exists, if not create a new one
       if (!fs.existsSync(this._config.outputDir)) {
         fs.mkdirSync(this._config.outputDir, { recursive: true });
@@ -112,7 +122,7 @@ export class CodeGenerator {
             schema: composed.combined?.schema as string,
             outputDirAbs: "",
           },
-          language: await project.getLanguage(),
+          bindLanguage,
         });
 
         writeDirectory(

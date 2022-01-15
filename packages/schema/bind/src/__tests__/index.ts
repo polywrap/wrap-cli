@@ -3,7 +3,7 @@ import { BindModuleOptions } from "../";
 import fs from "fs";
 import path from "path";
 import { TypeInfo } from "@web3api/schema-parse";
-import { composeSchema, SchemaFile, ComposerFilter } from "@web3api/schema-compose";
+import { composeSchema, SchemaFile, ComposerFilter, SchemaKind } from "@web3api/schema-compose";
 import { GetPathToBindTestFiles } from "@web3api/test-cases";
 import { normalizeLineEndings } from "@web3api/os-js";
 
@@ -87,7 +87,7 @@ export function fetchTestCases(): TestCases {
         };
       });
 
-    let schemas: Record<string, SchemaFile> = { };
+    let schemas: Partial<Record<SchemaKind, SchemaFile>> = { };
 
     if (querySchema) {
       schemas["query"] = {
