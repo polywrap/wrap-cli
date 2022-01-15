@@ -1,6 +1,8 @@
 import { OutputDirectory, OutputEntry } from "../../";
 import { readDirectory } from "../../utils/fs";
 import * as Functions from "./functions";
+import { reservedWordsAS } from "./reservedWords";
+import { fromReservedWord } from "../../utils/templateFunctions";
 
 import {
   transformTypeInfo,
@@ -169,7 +171,14 @@ function generateFiles(
 
         // file templates don't contain '_'
         if (name.indexOf("_") === -1) {
-          const data = Mustache.render(dirent.data, config, subTemplates);
+          const data = Mustache.render(
+            dirent.data,
+            {
+              ...(config as Record<string, unknown>),
+              handleKeywords: fromReservedWord(reservedWordsAS),
+            },
+            subTemplates
+          );
 
           // If the file isn't empty, add it to the output
           if (data) {
