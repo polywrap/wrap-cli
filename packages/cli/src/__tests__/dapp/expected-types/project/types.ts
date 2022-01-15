@@ -43,32 +43,22 @@ export interface Ethereum_TxOverrides {
 }
 
 /* URI: "w3://ens/ethereum.web3api.eth" */
-export interface Ethereum_TxResponse {
-  hash: String;
-  to?: String | null;
-  from: String;
-  nonce: UInt32;
-  gasLimit: BigInt;
-  gasPrice?: BigInt | null;
-  data: String;
-  value: BigInt;
-  chainId: UInt32;
-  blockNumber?: BigInt | null;
-  blockHash?: String | null;
-  timestamp?: UInt32 | null;
-  confirmations: UInt32;
-  raw?: String | null;
-  r?: String | null;
-  s?: String | null;
-  v?: UInt32 | null;
-  type?: UInt32 | null;
-  accessList?: Array<Ethereum_Access> | null;
+export interface Ethereum_StaticTxResult {
+  result: String;
+  error: Boolean;
 }
 
 /* URI: "w3://ens/ethereum.web3api.eth" */
-export interface Ethereum_Access {
-  address: String;
-  storageKeys: Array<String>;
+export interface Ethereum_TxRequest {
+  to?: String | null;
+  from?: String | null;
+  nonce?: UInt32 | null;
+  gasLimit?: BigInt | null;
+  gasPrice?: BigInt | null;
+  data?: String | null;
+  value?: BigInt | null;
+  chainId?: UInt32 | null;
+  type?: UInt32 | null;
 }
 
 /* URI: "w3://ens/ethereum.web3api.eth" */
@@ -106,25 +96,6 @@ export interface Ethereum_Log {
 }
 
 /* URI: "w3://ens/ethereum.web3api.eth" */
-export interface Ethereum_TxRequest {
-  to?: String | null;
-  from?: String | null;
-  nonce?: UInt32 | null;
-  gasLimit?: BigInt | null;
-  gasPrice?: BigInt | null;
-  data?: String | null;
-  value?: BigInt | null;
-  chainId?: UInt32 | null;
-  type?: UInt32 | null;
-}
-
-/* URI: "w3://ens/ethereum.web3api.eth" */
-export interface Ethereum_StaticTxResult {
-  result: String;
-  error: Boolean;
-}
-
-/* URI: "w3://ens/ethereum.web3api.eth" */
 export interface Ethereum_EventNotification {
   data: String;
   address: String;
@@ -136,6 +107,35 @@ export interface Ethereum_Network {
   name: String;
   chainId: Int;
   ensAddress?: String | null;
+}
+
+/* URI: "w3://ens/ethereum.web3api.eth" */
+export interface Ethereum_TxResponse {
+  hash: String;
+  to?: String | null;
+  from: String;
+  nonce: UInt32;
+  gasLimit: BigInt;
+  gasPrice?: BigInt | null;
+  data: String;
+  value: BigInt;
+  chainId: UInt32;
+  blockNumber?: BigInt | null;
+  blockHash?: String | null;
+  timestamp?: UInt32 | null;
+  confirmations: UInt32;
+  raw?: String | null;
+  r?: String | null;
+  s?: String | null;
+  v?: UInt32 | null;
+  type?: UInt32 | null;
+  accessList?: Array<Ethereum_Access> | null;
+}
+
+/* URI: "w3://ens/ethereum.web3api.eth" */
+export interface Ethereum_Access {
+  address: String;
+  storageKeys: Array<String>;
 }
 
 /// Imported Objects END ///

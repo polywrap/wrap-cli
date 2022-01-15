@@ -80,12 +80,10 @@ export class ExternalWeb3ApiProject extends Project {
     const dir = this.getWeb3ApiManifestDir();
     const namedPaths: { [name: string]: string } = {};
 
-    if (manifest.modules.mutation) {
-      namedPaths["mutation"] = path.join(dir, manifest.modules.mutation.schema);
-    }
-
     if (manifest.modules.query) {
-      namedPaths["query"] = path.join(dir, manifest.modules.query.schema);
+      namedPaths["composed"] = path.join(dir, manifest.modules.query.schema);
+    } else if (manifest.modules.mutation) {
+      namedPaths["composed"] = path.join(dir, manifest.modules.mutation.schema);
     }
 
     await this.fetchAndCacheSchema();

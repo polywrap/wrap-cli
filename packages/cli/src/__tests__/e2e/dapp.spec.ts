@@ -122,8 +122,8 @@ ${HELP}`);
       },
     );
 
-    expect(error).toBe("");
     expect(code).toEqual(0);
+    expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`- Generate types
   Generating types from packageTypes-ts.mustache
 - Generate types
@@ -157,8 +157,8 @@ ${HELP}`);
       },
     );
 
-    expect(error).toBe("");
     expect(code).toEqual(0);
+    expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`- Generate types
 - Manifest loaded from ./.w3/ExternalProjects/http/web3api.plugin.yaml
 ✔ Manifest loaded from ./.w3/ExternalProjects/http/web3api.plugin.yaml
@@ -194,8 +194,8 @@ ${HELP}`);
       },
     );
 
-    expect(error).toBe("");
     expect(code).toEqual(0);
+    expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`- Generate types
   Generating types from packageTypes-ts.mustache
 - Generate types
@@ -237,8 +237,8 @@ ${HELP}`);
       },
     );
 
-    expect(error).toBe("");
     expect(code).toEqual(0);
+    expect(error).toBe("");
     expect(fs.existsSync(`${projectRoot}/.w3/ExternalProjects/erc20/`)).toBeFalsy();
     expect(fs.existsSync(`${projectRoot}/.w3/ExternalProjects/console/`)).toBeFalsy();
     expect(fs.existsSync(`${projectRoot}/.w3/ExternalProjects/ethereum/`)).toBeFalsy();
@@ -254,8 +254,8 @@ ${HELP}`);
         cli: w3Cli,
       },
     );
-    expect(error).toBe("");
     expect(code).toEqual(0);
+    expect(error).toBe("");
 
     // import newly generated project extension code
     // @ts-ignore

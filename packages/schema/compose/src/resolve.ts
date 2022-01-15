@@ -126,6 +126,9 @@ export async function resolveImportsAndParseSchemas(
   schemaKind: SchemaKind,
   resolvers: SchemaResolvers
 ): Promise<TypeInfo> {
+  if (schemaKind === "composed") {
+    return parseSchema(schema);
+  }
   const importKeywordCapture = /^#+["{3}]*import\s/gm;
   const externalImportCapture = /#+["{3}]*import\s*{([^}]+)}\s*into\s*(\w+?)\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;
   const localImportCapture = /#+["{3}]*import\s*{([^}]+)}\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;

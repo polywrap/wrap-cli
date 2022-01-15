@@ -47,7 +47,7 @@ export class ExternalPluginProject extends Project {
     const dir = this.getPluginManifestDir();
     const namedPaths: { [name: string]: string } = {};
 
-    namedPaths["combined"] = path.join(dir, manifest.schema);
+    namedPaths["composed"] = path.join(dir, manifest.schema);
     return namedPaths;
   }
 
