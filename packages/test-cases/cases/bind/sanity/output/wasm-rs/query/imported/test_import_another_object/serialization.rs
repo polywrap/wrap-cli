@@ -16,20 +16,18 @@ pub fn serialize_test_import_another_object(input: &TestImportAnotherObject) -> 
     sizer_context.description = "Serializing (sizing) imported object-type: TestImportAnotherObject".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
     write_test_import_another_object(input, &mut sizer);
-    let mut buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
-    buffer.resize(sizer.get_length() as usize, 0);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) imported object-type: TestImportAnotherObject".to_string();
-    let mut encoder = WriteEncoder::new(&buffer, encoder_context);
+    let mut encoder = WriteEncoder::new(&[], encoder_context);
     write_test_import_another_object(input, &mut encoder);
     encoder.get_buffer()
 }
 
 pub fn write_test_import_another_object<W: Write>(input: &TestImportAnotherObject, writer: &mut W) {
-    writer.write_map_length(1);
+    writer.write_map_length(&1).unwrap();
     writer.context().push("prop", "String", "writing property");
-    writer.write_str("prop");
-    writer.write_string(&input.prop);
+    writer.write_str("prop").unwrap();
+    writer.write_string(&input.prop).unwrap();
     writer.context().pop();
 }
 

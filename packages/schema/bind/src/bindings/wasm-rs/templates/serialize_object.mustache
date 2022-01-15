@@ -5,6 +5,6 @@
 if item.is_some() {
     {{#toUpper}}{{type}}{{/toUpper}}::write(item.as_ref().as_ref().unwrap(), writer);
 } else {
-    writer.write_nil();
+    writer.write_nil().unwrap();
 }
 {{/required}}

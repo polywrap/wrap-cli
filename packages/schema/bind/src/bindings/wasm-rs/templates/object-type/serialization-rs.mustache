@@ -31,27 +31,25 @@ pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(input: &{{#toUpper}}{{type}}{{
     sizer_context.description = "Serializing (sizing) object-type: {{#toUpper}}{{type}}{{/toUpper}}".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
     write_{{#toLower}}{{type}}{{/toLower}}(input, &mut sizer);
-    let mut buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
-    buffer.resize(sizer.get_length() as usize, 0);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) object-type: {{#toUpper}}{{type}}{{/toUpper}}".to_string();
-    let mut encoder = WriteEncoder::new(&buffer, encoder_context);
+    let mut encoder = WriteEncoder::new(&[], encoder_context);
     write_{{#toLower}}{{type}}{{/toLower}}(input, &mut encoder);
     encoder.get_buffer()
 }
 
 pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(input: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) {
-    writer.write_map_length({{properties.length}});
+    writer.write_map_length(&{{properties.length}}).unwrap();
     {{#properties}}
     writer.context().push("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
-    writer.write_str("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}");
+    writer.write_str("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}").unwrap();
     {{#scalar}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}});
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}).unwrap();
     {{/scalar}}
     {{#array}}
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, |writer: &mut W, item| {
         {{> serialize_array}}
-    });
+    }).unwrap();
     {{/array}}
     {{#object}}
     {{#required}}
@@ -61,16 +59,16 @@ pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(input: &{{#toUpper}}{{ty
     if input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.is_some() {
         {{#toUpper}}{{type}}{{/toUpper}}::write(input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.as_ref().as_ref().unwrap(), writer);
     } else {
-        writer.write_nil();
+        writer.write_nil().unwrap();
     }
     {{/required}}
     {{/object}}
     {{#enum}}
     {{#required}}
-    writer.write_i32(&(input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}} as i32));
+    writer.write_i32(&(input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}} as i32)).unwrap();
     {{/required}}
     {{^required}}
-    writer.write_nullable_i32(&Some(input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.unwrap() as i32));
+    writer.write_nullable_i32(&Some(input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.unwrap() as i32)).unwrap();
     {{/required}}
     {{/enum}}
     writer.context().pop();
@@ -113,12 +111,12 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
             "{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}" => {
                 reader.context().push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property");
                 {{#scalar}}
-                _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(){{#required}}.unwrap(){{/required}};
+                _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}().unwrap();
                 {{/scalar}}
                 {{#array}}
                 _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
                     {{> deserialize_array_nobox}}
-                }){{#required}}.expect("Failed to read array"){{/required}};
+                }).unwrap();
                 {{/array}}
                 {{#enum}}
                 {{> deserialize_enum}}

@@ -1,6 +1,6 @@
 {{#required}}
-writer.write_i32(&(*item as i32));
+writer.write_i32(&(*item as i32)).unwrap();
 {{/required}}
 {{^required}}
-writer.write_nullable_i32(&Some(item.unwrap() as i32));
+writer.write_nullable_i32(&Some(item.unwrap() as i32)).unwrap();
 {{/required}}

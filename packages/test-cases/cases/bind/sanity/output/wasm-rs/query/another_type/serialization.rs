@@ -18,27 +18,25 @@ pub fn serialize_another_type(input: &AnotherType) -> Vec<u8> {
     sizer_context.description = "Serializing (sizing) object-type: AnotherType".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
     write_another_type(input, &mut sizer);
-    let mut buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
-    buffer.resize(sizer.get_length() as usize, 0);
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) object-type: AnotherType".to_string();
-    let mut encoder = WriteEncoder::new(&buffer, encoder_context);
+    let mut encoder = WriteEncoder::new(&[], encoder_context);
     write_another_type(input, &mut encoder);
     encoder.get_buffer()
 }
 
 pub fn write_another_type<W: Write>(input: &AnotherType, writer: &mut W) {
-    writer.write_map_length(2);
+    writer.write_map_length(&2).unwrap();
     writer.context().push("prop", "Option<String>", "writing property");
-    writer.write_str("prop");
-    writer.write_nullable_string(&input.prop);
+    writer.write_str("prop").unwrap();
+    writer.write_nullable_string(&input.prop).unwrap();
     writer.context().pop();
     writer.context().push("circular", "Option<CustomType>", "writing property");
-    writer.write_str("circular");
+    writer.write_str("circular").unwrap();
     if input.circular.is_some() {
         CustomType::write(input.circular.as_ref().as_ref().unwrap(), writer);
     } else {
-        writer.write_nil();
+        writer.write_nil().unwrap();
     }
     writer.context().pop();
 }
@@ -63,13 +61,13 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, String>
         match field.as_str() {
             "prop" => {
                 reader.context().push(&field, "Option<String>", "type found, reading property");
-                _prop = reader.read_nullable_string();
+                _prop = reader.read_nullable_string().unwrap();
                 reader.context().pop();
             }
             "circular" => {
                 reader.context().push(&field, "Option<CustomType>", "type found, reading property");
                 let mut object: Option<CustomType> = None;
-                if !reader.is_next_nil() {
+                if !reader.is_next_nil().unwrap() {
                     object = Some(CustomType::read(reader));
                 }
                 _circular = object;
