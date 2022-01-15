@@ -69,7 +69,7 @@ export class Web3ApiProject extends Project {
   public async getManifestLanguage(): Promise<ManifestLanguage> {
     const language = (await this.getWeb3ApiManifest()).language;
 
-    this.validateManifestLanguage(language, ["wasm/", "interface"]);
+    Project.validateManifestLanguage(language, ["wasm/", "interface"]);
 
     return language as ManifestLanguage;
   }

@@ -1,11 +1,9 @@
 import { Project, ProjectConfig } from "./Project";
 import {
-  loadPluginManifest,
-  manifestLanguageToTargetLanguage,
+  loadPluginManifest, ManifestLanguage,
 } from "../helpers";
 
 import { PluginManifest, Uri } from "@web3api/core-js";
-import { TargetLanguage } from "@web3api/schema-bind";
 import path from "path";
 import fs from "fs";
 
@@ -38,9 +36,10 @@ export class ExternalPluginProject extends Project {
     return this._config.rootPath;
   }
 
-  public async getLanguage(): Promise<TargetLanguage> {
+  public async getManifestLanguage(): Promise<ManifestLanguage> {
     const language = (await this.getPluginManifest()).language;
-    return manifestLanguageToTargetLanguage(language);
+    Project.validateManifestLanguage(language, ["plugin/"]);
+    return language as ManifestLanguage;
   }
 
   public async getSchemaNamedPaths(): Promise<{

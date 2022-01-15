@@ -6,10 +6,10 @@ import { intlMsg } from "../lib/intl";
 import { ComposerFilter } from "@web3api/schema-compose";
 import { writeFileSync } from "@web3api/os-js";
 import { GluegunToolbox, print } from "gluegun";
-import axios from "axios";
 import chalk from "chalk";
 import path from "path";
 import fs from "fs";
+import { getDefaultProviders } from "../lib/helpers/client";
 
 export const defaultManifest = ["web3api.plugin.yaml", "web3api.plugin.yml"];
 
@@ -139,25 +139,8 @@ export default {
       return;
     }
 
-    let ipfsProvider: string | undefined;
-    let ethProvider: string | undefined;
-    let ensAddress: string | undefined = ens;
-
-    if (typeof ipfs === "string") {
-      // Custom IPFS provider
-      ipfsProvider = ipfs;
-    } else if (ipfs) {
-      // Dev-server IPFS provider
-      try {
-        const {
-          data: { ipfs, ethereum },
-        } = await axios.get("http://localhost:4040/providers");
-        ipfsProvider = ipfs;
-        ethProvider = ethereum;
-      } catch (e) {
-        // Dev server not found
-      }
-    }
+    const { ipfsProvider, ethProvider } = await getDefaultProviders(ipfs);
+    const ensAddress: string | undefined = ens;
 
     manifestPath = await resolveManifestPath(
       filesystem,

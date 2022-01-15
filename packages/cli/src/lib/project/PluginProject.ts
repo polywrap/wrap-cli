@@ -28,7 +28,7 @@ export class PluginProject extends Project {
   public async getManifestLanguage(): Promise<ManifestLanguage> {
     const language = (await this.getPluginManifest()).language;
 
-    this.validateManifestLanguage(language, ["plugin/"]);
+    Project.validateManifestLanguage(language, ["plugin/"]);
 
     return language as ManifestLanguage;
   }

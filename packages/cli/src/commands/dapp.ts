@@ -1,14 +1,13 @@
 /* eslint-disable prefer-const */
 import { CodeGenerator, Project, SchemaComposer } from "../lib";
 import { intlMsg } from "../lib/intl";
-import { getCodegenProviders, validateCodegenParams } from "./codegen";
+import { validateCodegenParams } from "./codegen";
 import {
   fixParameters,
   loadDappManifest,
-  manifestLanguageToTargetLanguage,
   resolveManifestPath,
 } from "../lib/helpers";
-import { getSimpleClient } from "../lib/helpers/client";
+import { getSimpleClient, getDefaultProviders } from "../lib/helpers/client";
 import { ExternalWeb3ApiProject } from "../lib/project/ExternalWeb3ApiProject";
 import { ExternalPluginProject } from "../lib/project/ExternalPluginProject";
 
@@ -41,7 +40,7 @@ interface DappLangSupport {
 }
 
 const langSupport: DappLangSupport = {
-  "plugin-ts": {
+  "dapp/typescript": {
     types: {
       package: __dirname +
         "/../lib/codegen-templates/dapp/types/package-ts.gen.js",
@@ -153,6 +152,7 @@ export default {
       true
     );
     const language: string = dappManifest.language;
+    Project.validateManifestLanguage(language, ["dapp/"]);
     const packages: PolywrapPackage[] = dappManifest.packages.map(pack => ({ ...pack, uri: sanitizeUri(pack.uri, pack.isPlugin) }));
     const outputDirFromManifest: string | undefined = dappManifest.types.directory;
     const typesOnly: boolean | undefined = dappManifest.types.typesOnly;
@@ -172,14 +172,13 @@ export default {
     }
 
     // Resolve generation file
-    const targetLang: string = manifestLanguageToTargetLanguage(language);
-    const langGenFiles: LangGenFiles = langSupport[targetLang];
+    const langGenFiles: LangGenFiles = langSupport[language];
     const genFiles: DappGenFiles = typesOnly ? langGenFiles.types : langGenFiles.extension;
     const packageScript = filesystem.resolve(genFiles.package);
     const dappScript = filesystem.resolve(genFiles.dapp);
 
     // Get providers and client
-    const { ipfsProvider, ethProvider } = await getCodegenProviders(ipfs);
+    const { ipfsProvider, ethProvider } = await getDefaultProviders(ipfs);
     const ensAddress: string | undefined = ens;
     const client: Web3ApiClient = getSimpleClient({
       ensAddress,

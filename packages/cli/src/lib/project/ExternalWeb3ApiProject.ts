@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { Project, ProjectConfig } from "./Project";
-import { manifestLanguageToTargetLanguage } from "../helpers";
-import { intlMsg } from "../intl";
+import { ManifestLanguage } from "../helpers";
 
 import {
   Web3ApiManifest,
@@ -11,7 +10,6 @@ import {
   Client,
   Uri,
 } from "@web3api/core-js";
-import { TargetLanguage } from "@web3api/schema-bind";
 import path from "path";
 import fs from "fs";
 
@@ -69,12 +67,10 @@ export class ExternalWeb3ApiProject extends Project {
     return this._config.rootPath;
   }
 
-  public async getLanguage(): Promise<TargetLanguage> {
+  public async getManifestLanguage(): Promise<ManifestLanguage> {
     const language = (await this.getWeb3ApiManifest()).language;
-    if (!language) {
-      throw Error(intlMsg.lib_project_language_not_found());
-    }
-    return manifestLanguageToTargetLanguage(language);
+    Project.validateManifestLanguage(language, ["wasm/", "interface"]);
+    return language as ManifestLanguage;
   }
 
   public async getSchemaNamedPaths(): Promise<{

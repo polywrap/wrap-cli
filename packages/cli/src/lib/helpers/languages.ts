@@ -5,6 +5,7 @@ import { BindLanguage } from "@web3api/schema-bind";
 export const manifestLanguages = {
   "wasm/assemblyscript": "wasm/assemblyscript",
   "plugin/typescript": "plugin/typescript",
+  "dapp/typescript": "dapp/typescript",
   interface: "interface",
 };
 
@@ -25,6 +26,7 @@ export function manifestLanguageToBindLanguage(
     case "wasm/assemblyscript":
       return "wasm-as";
     case "plugin/typescript":
+    case "dapp/typescript":
       return "plugin-ts";
     case "interface":
       throw Error(intlMsg.lib_language_noInterfaceCodegen());

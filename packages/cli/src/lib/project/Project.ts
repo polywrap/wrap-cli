@@ -88,7 +88,7 @@ export abstract class Project {
 
   /// Validation
 
-  protected validateManifestLanguage(
+  public static validateManifestLanguage(
     language: string | undefined,
     validPatterns: string[]
   ): void {

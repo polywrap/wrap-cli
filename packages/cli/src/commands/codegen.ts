@@ -9,8 +9,8 @@ import { intlMsg } from "../lib/intl";
 import { resolveManifestPath } from "../lib/helpers";
 
 import chalk from "chalk";
-import axios from "axios";
 import { GluegunToolbox, GluegunPrint } from "gluegun";
+import { getDefaultProviders } from "../lib/helpers/client";
 
 export const defaultManifest = ["web3api.yaml", "web3api.yml"];
 
@@ -65,7 +65,7 @@ export default {
       options: { help, manifestPath, ipfs, outputDir, ens, custom },
     });
 
-    const { ipfsProvider, ethProvider } = await getCodegenProviders(ipfs);
+    const { ipfsProvider, ethProvider } = await getDefaultProviders(ipfs);
     const ensAddress: string | undefined = ens;
 
     // Resolve generation file & output directories
@@ -159,28 +159,4 @@ export function validateCodegenParams(
   }
 
   return true;
-}
-
-export async function getCodegenProviders(
-  ipfs: unknown
-): Promise<{ ipfsProvider?: string; ethProvider?: string }> {
-  let ipfsProvider: string | undefined;
-  let ethProvider: string | undefined;
-
-  if (typeof ipfs === "string") {
-    // Custom IPFS provider
-    ipfsProvider = ipfs;
-  } else if (ipfs) {
-    // Dev-server IPFS provider
-    try {
-      const {
-        data: { ipfs, ethereum },
-      } = await axios.get("http://localhost:4040/providers");
-      ipfsProvider = ipfs;
-      ethProvider = ethereum;
-    } catch (e) {
-      // Dev server not found
-    }
-  }
-  return { ipfsProvider, ethProvider };
 }

@@ -126,7 +126,7 @@ export interface Ethereum_TxResponse {
   s?: String | null;
   v?: UInt32 | null;
   type?: UInt32 | null;
-  accessList?: Array<Types.Ethereum_Access> | null;
+  accessList?: Array<Ethereum_Access> | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
@@ -442,8 +442,8 @@ interface Ethereum_Mutation_Input_callContractMethod extends Record<string, unkn
   address: String;
   method: String;
   args?: Array<String> | null;
-  connection?: Types.Ethereum_Connection | null;
-  txOverrides?: Types.Ethereum_TxOverrides | null;
+  connection?: Ethereum_Connection | null;
+  txOverrides?: Ethereum_TxOverrides | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
@@ -451,20 +451,20 @@ interface Ethereum_Mutation_Input_callContractMethodAndWait extends Record<strin
   address: String;
   method: String;
   args?: Array<String> | null;
-  connection?: Types.Ethereum_Connection | null;
-  txOverrides?: Types.Ethereum_TxOverrides | null;
+  connection?: Ethereum_Connection | null;
+  txOverrides?: Ethereum_TxOverrides | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Mutation_Input_sendTransaction extends Record<string, unknown> {
-  tx: Types.Ethereum_TxRequest;
-  connection?: Types.Ethereum_Connection | null;
+  tx: Ethereum_TxRequest;
+  connection?: Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Mutation_Input_sendTransactionAndWait extends Record<string, unknown> {
-  tx: Types.Ethereum_TxRequest;
-  connection?: Types.Ethereum_Connection | null;
+  tx: Ethereum_TxRequest;
+  connection?: Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
@@ -472,20 +472,20 @@ interface Ethereum_Mutation_Input_deployContract extends Record<string, unknown>
   abi: String;
   bytecode: String;
   args?: Array<String> | null;
-  connection?: Types.Ethereum_Connection | null;
+  connection?: Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Mutation_Input_signMessage extends Record<string, unknown> {
   message: String;
-  connection?: Types.Ethereum_Connection | null;
+  connection?: Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Mutation_Input_sendRPC extends Record<string, unknown> {
   method: String;
   params: Array<String>;
-  connection?: Types.Ethereum_Connection | null;
+  connection?: Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
@@ -493,8 +493,8 @@ export const Ethereum_Mutation = {
   callContractMethod: async (
     input: Ethereum_Mutation_Input_callContractMethod,
     client: Client
-  ): Promise<InvokeApiResult<Types.Ethereum_TxResponse>> => {
-    return client.invoke<Types.Ethereum_TxResponse>({
+  ): Promise<InvokeApiResult<Ethereum_TxResponse>> => {
+    return client.invoke<Ethereum_TxResponse>({
       uri: "ens/ethereum.web3api.eth",
       module: "mutation",
       method: "callContractMethod",
@@ -505,8 +505,8 @@ export const Ethereum_Mutation = {
   callContractMethodAndWait: async (
     input: Ethereum_Mutation_Input_callContractMethodAndWait,
     client: Client
-  ): Promise<InvokeApiResult<Types.Ethereum_TxReceipt>> => {
-    return client.invoke<Types.Ethereum_TxReceipt>({
+  ): Promise<InvokeApiResult<Ethereum_TxReceipt>> => {
+    return client.invoke<Ethereum_TxReceipt>({
       uri: "ens/ethereum.web3api.eth",
       module: "mutation",
       method: "callContractMethodAndWait",
@@ -517,8 +517,8 @@ export const Ethereum_Mutation = {
   sendTransaction: async (
     input: Ethereum_Mutation_Input_sendTransaction,
     client: Client
-  ): Promise<InvokeApiResult<Types.Ethereum_TxResponse>> => {
-    return client.invoke<Types.Ethereum_TxResponse>({
+  ): Promise<InvokeApiResult<Ethereum_TxResponse>> => {
+    return client.invoke<Ethereum_TxResponse>({
       uri: "ens/ethereum.web3api.eth",
       module: "mutation",
       method: "sendTransaction",
@@ -529,8 +529,8 @@ export const Ethereum_Mutation = {
   sendTransactionAndWait: async (
     input: Ethereum_Mutation_Input_sendTransactionAndWait,
     client: Client
-  ): Promise<InvokeApiResult<Types.Ethereum_TxReceipt>> => {
-    return client.invoke<Types.Ethereum_TxReceipt>({
+  ): Promise<InvokeApiResult<Ethereum_TxReceipt>> => {
+    return client.invoke<Ethereum_TxReceipt>({
       uri: "ens/ethereum.web3api.eth",
       module: "mutation",
       method: "sendTransactionAndWait",
