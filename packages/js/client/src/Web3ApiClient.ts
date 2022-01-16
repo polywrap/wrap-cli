@@ -556,7 +556,8 @@ export class Web3ApiClient implements Client {
           options: InvokeApiOptions<TUri>
         ): Promise<InvokeApiResult<TData>> =>
           client.invoke<TData, TUri>(options),
-        (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
+        (uri: Uri, plugin: PluginPackage) =>
+          new PluginWeb3Api(uri, plugin, environment),
         (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
           new WasmWeb3Api(uri, manifest, uriResolver, environment)
       );

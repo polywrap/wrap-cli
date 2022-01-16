@@ -87,6 +87,38 @@ describe("Web3ApiClient", () => {
     };
   };
 
+  const mockEnvPlugin = () => {
+    class MockEnvPlugin extends Plugin {
+      getModules(_client: Client): PluginModules {
+        return {
+          query: {
+            sanitizeEnv: async (env: {arg1: string}) => {
+              return { arg1: parseInt(env.arg1) }
+            },
+            queryEnv: () => {
+              return this.getEnv("query");
+            }
+          },
+          mutation: {
+            sanitizeEnv: async (env: {arg1: number}) => {
+              return { arg1: env.arg1.toString() }
+            },
+            mutationEnv: () => {
+              return this.getEnv("mutation");
+            }
+          },
+        };
+      }
+    }
+    return {
+      factory: () => new MockEnvPlugin(),
+      manifest: {
+        schema: ``,
+        implements: [],
+      },
+    };
+  }
+
   it("default client config", () => {
     const client = new Web3ApiClient();
 
@@ -1818,6 +1850,46 @@ describe("Web3ApiClient", () => {
     );
   });
 
+  it("plugin env types", async () => {
+    const implementationUri = "w3://ens/some-implementation.eth";
+    const envPlugin = mockEnvPlugin();
+    const client = await getClient({
+      plugins: [
+        {
+          uri: implementationUri,
+          plugin: envPlugin
+        }
+      ],
+      envs: [
+        {
+          uri: implementationUri,
+          query: {
+            arg1: "10"
+          },
+          mutation: {
+            arg1: 11
+          }
+        }
+      ]
+    });
+
+    const queryEnv = await client.query({
+      uri: implementationUri,
+      query: `
+        query {
+          queryEnv
+        }
+        mutation {
+          mutationEnv
+        }
+      `,
+    });
+    expect(queryEnv.errors).toBeFalsy();
+    expect(queryEnv.data).toBeTruthy();
+    expect(queryEnv.data?.queryEnv).toMatchObject({arg1: 10});
+    expect(queryEnv.data?.mutationEnv).toMatchObject({arg1: "11"});
+  })
+
   it("env types", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/env-types`,
@@ -2617,6 +2689,42 @@ enum Logger_LogLevel @imported(
 
     expect(results).toContain(0);
     expect(results).not.toContain(2);
+  });
+
+  it("queries API schemas that use reserved keywords", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/reserved-words`,
+      ipfsProvider,
+      ensAddress
+    );
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const client = await getClient();
+
+    const query = await client.query<{
+      method1: {
+        const: string;
+      }
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          method1(
+            const: {
+              const: "successfully used reserved keyword"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(query.errors).toBeFalsy();
+    expect(query.data).toBeTruthy();
+    expect(query.data).toMatchObject({
+      method1: {
+        const: "result: successfully used reserved keyword",
+      },
+    });
   });
 
   it("e2e getImplementations capability", async () => {

@@ -1,3 +1,11 @@
+# Web3API 0.0.1-prealpha.61
+## Features
+* `@web3api/cli`: Added the `--client-config` / `-c` option to the `w3 query` CLI command, allowing the user the define their own client configurations within a JavaScript or TypeScript module.
+* `@web3api/client-js`: Plugins can now be initialized with the client's environment registered at the plugin's URI.
+
+## Bugs
+* `@web3api/schema-bind`: Properly handle reserve words for the bind target's language. Reserved words will be prepended with `m_` in order to avoid compiler errors.
+
 # Web3API 0.0.1-prealpha.60
 ## Breaking Changes
 * `@web3api/schema-compose`: `ComposerOptions` property `schemas` is now of type `Record<SchemaKind, SchemaFile>` and not `Record<string, SchemaFile>`.
