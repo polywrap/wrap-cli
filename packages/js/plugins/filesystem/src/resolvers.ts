@@ -28,6 +28,15 @@ export const query = (): Query.Module => ({
       // TODO: logging
     }
 
+    // Try reading uri/web3api.json
+    try {
+      const manifestPath = path.resolve(input.path, "web3api.json");
+      const manifest = await fs.promises.readFile(manifestPath, "utf8");
+      return { uri: null, manifest: manifest };
+    } catch (e) {
+      // TODO: logging  
+    }
+
     // Nothing found
     return { manifest: null, uri: null };
   },
