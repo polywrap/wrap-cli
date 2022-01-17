@@ -34,7 +34,7 @@ export const query = (): Query.Module => ({
       const manifest = await fs.promises.readFile(manifestPath, "utf8");
       return { uri: null, manifest: manifest };
     } catch (e) {
-      // TODO: logging  
+      // TODO: logging
     }
 
     // Nothing found
