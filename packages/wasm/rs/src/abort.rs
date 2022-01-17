@@ -1,4 +1,5 @@
 use crate::malloc::malloc;
+use crate::debug::w3_debug_log;
 
 #[link(wasm_import_module = "w3")]
 extern "C" {
@@ -17,8 +18,11 @@ extern "C" {
 /// Helper for aborting
 #[allow(unused_unsafe)]
 pub fn w3_abort(msg: &str, file: &str, line: u32, column: u32) {
+    w3_debug_log("w3_abort: 1");
     let msg_ptr = malloc(msg.len() as u32);
+    w3_debug_log("w3_abort: 1");
     let file_ptr = malloc(file.len() as u32);
+    w3_debug_log("w3_abort: 1");
 
     unsafe {
         __w3_abort(
