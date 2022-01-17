@@ -1,6 +1,6 @@
 import { ClientConfig, WasmWeb3Api } from ".";
 
-import { Uri, coreInterfaceUris, RedirectsResolver, PluginResolver, PluginPackage, Web3ApiManifest, CacheResolver, Env, ApiAggregatorResolver } from "@web3api/core-js";
+import { Uri, coreInterfaceUris, PluginPackage, Web3ApiManifest, Env, ApiAggregatorResolver, CacheResolver, PluginResolver, RedirectsResolver } from "@web3api/core-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
