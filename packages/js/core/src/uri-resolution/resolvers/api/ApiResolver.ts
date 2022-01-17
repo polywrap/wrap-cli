@@ -1,13 +1,11 @@
 import { Tracer } from "@web3api/tracing-js";
-import { UriResolutionStack } from "..";
 import { UriResolver } from "../../../interfaces";
 import { DeserializeManifestOptions, deserializeWeb3ApiManifest } from "../../../manifest";
-import { Uri, InvokeHandler, Client, Env } from "../../../types";
-import { CreateApiFunc } from "./CreateApiFunc";
-import { UriResolutionResult } from "./UriResolutionResult";
-import { UriToApiResolver } from "./UriToApiResolver";
+import { Uri, Client, InvokeHandler, Env } from "../../../types";
+import { IUriToApiResolver, UriResolutionStack, UriResolutionResult } from "../../core";
+import { CreateApiFunc } from "./types/CreateApiFunc";
 
-export class ApiResolver implements UriToApiResolver {
+export class ApiResolver implements IUriToApiResolver {
   constructor(
     public readonly resolverUri: Uri,
     private readonly createApi: CreateApiFunc,

@@ -36,8 +36,8 @@ import {
   ClientConfig,
   ResolveUriError,
   UriResolutionHistory,
-  resolveUriWithResolvers,
-  UriToApiResolver,
+  resolveUri,
+  IUriToApiResolver,
   GetResolversOptions,
   coreUriResolvers,
   Contextualized,
@@ -151,7 +151,7 @@ export class Web3ApiClient implements Client {
   @Tracer.traceMethod("Web3ApiClient: getResolvers")
   public getResolvers(
     options: GetResolversOptions = {}
-  ): readonly UriToApiResolver[] {
+  ): readonly IUriToApiResolver[] {
     return this._getConfig(options.contextId).resolvers;
   }
 
@@ -469,7 +469,7 @@ export class Web3ApiClient implements Client {
       uri: resolvedUri, 
       uriHistory, 
       error 
-    } = await resolveUriWithResolvers(this._toUri(uri), resolvers, client);
+    } = await resolveUri(this._toUri(uri), resolvers, client);
 
     //Update cache for all URIs in the chain
     if (cacheWrite && api) {

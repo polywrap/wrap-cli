@@ -10,14 +10,14 @@ import {
   ApiCache,
 } from "./";
 import { ManifestType, AnyManifest } from "../manifest";
-import { UriToApiResolver } from "../algorithms/uri-resolution";
+import { IUriToApiResolver } from "../uri-resolution/core";
 
 export interface ClientConfig<TUri extends Uri | string = string> {
   redirects: UriRedirect<TUri>[];
   plugins: PluginRegistration<TUri>[];
   interfaces: InterfaceImplementations<TUri>[];
   envs: Env<TUri>[];
-  resolvers: UriToApiResolver[];
+  resolvers: IUriToApiResolver[];
 }
 
 export interface Contextualized {

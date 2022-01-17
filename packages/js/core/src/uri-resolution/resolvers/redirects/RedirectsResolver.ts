@@ -1,9 +1,9 @@
-import { applyRedirects } from "../..";
+import { applyRedirects } from "../../../algorithms";
 import { Uri, Client } from "../../..";
-import { UriResolutionResult } from "./UriResolutionResult";
-import { UriToApiResolver } from "./UriToApiResolver";
+import { UriResolutionResult } from "../../core/types/UriResolutionResult";
+import { IUriToApiResolver } from "../../core/types/IUriToApiResolver";
 
-export class RedirectsResolver implements UriToApiResolver {
+export class RedirectsResolver implements IUriToApiResolver {
   name = "Redirect";
 
   async resolveUri(uri: Uri, client: Client): Promise<UriResolutionResult> {

@@ -1,13 +1,5 @@
-import { Uri } from "../..";
-
-export type UriResolutionStack = { 
-  resolver: string;
-  sourceUri: Uri;
-  result: {
-    uri: Uri;
-    api: boolean;
-  }
-}[];
+import { Uri } from "../../../types";
+import { UriResolutionStack } from "./UriResolutionStack";
 
 export class UriResolutionHistory {
   constructor(public readonly stack: UriResolutionStack) {

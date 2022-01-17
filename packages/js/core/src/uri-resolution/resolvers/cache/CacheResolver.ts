@@ -1,7 +1,7 @@
-import { UriToApiResolver, UriResolutionResult } from "..";
 import { Uri, Client } from "../../..";
+import { IUriToApiResolver, UriResolutionResult } from "../../core";
 
-export class CacheResolver implements UriToApiResolver {
+export class CacheResolver implements IUriToApiResolver {
   name = "Cache";
 
   async resolveUri(

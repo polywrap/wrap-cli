@@ -4,13 +4,11 @@ import {
   PluginPackage,
   Client,
 } from "../../../types";
-import { findPluginPackage } from "../../find-plugin-package";
+import { findPluginPackage } from "../../../algorithms/find-plugin-package";
 import { Tracer } from "@web3api/tracing-js";
-import { UriToApiResolver } from "./UriToApiResolver";
-import { UriResolutionResult } from "./UriResolutionResult";
-import { UriResolutionStack } from "..";
+import { IUriToApiResolver, UriResolutionStack, UriResolutionResult } from "../../core";
 
-export class PluginResolver implements UriToApiResolver {
+export class PluginResolver implements IUriToApiResolver {
   constructor(
     private readonly createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
   ) { }

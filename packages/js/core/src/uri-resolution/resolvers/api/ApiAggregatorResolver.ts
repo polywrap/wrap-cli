@@ -1,13 +1,14 @@
-import { ApiResolver, UriResolutionStack, UriToApiResolver } from "..";
 import { Uri, Client, getImplementations, coreInterfaceUris, DeserializeManifestOptions } from "../../..";
-import { CreateApiFunc } from "./CreateApiFunc";
-import { UriResolutionResult } from "./UriResolutionResult";
+import { CreateApiFunc } from "./types/CreateApiFunc";
+import { UriResolutionResult } from "../../core/types/UriResolutionResult";
+import { IUriToApiResolver, UriResolutionStack } from "../../core";
+import { ApiResolver } from "./ApiResolver";
 
 export type ApiAggregatorResolverResult = UriResolutionResult & {
   resolverUri?: Uri;
 };
 
-export class ApiAggregatorResolver implements UriToApiResolver {
+export class ApiAggregatorResolver implements IUriToApiResolver {
   name = "ApiAggregator";
 
   constructor(

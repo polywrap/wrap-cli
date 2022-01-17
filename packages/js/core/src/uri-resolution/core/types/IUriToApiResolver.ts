@@ -1,8 +1,7 @@
-import { UriResolutionResult } from ".";
-import { UriResolutionStack } from "..";
 import { Client, Uri } from "../../../types";
+import { UriResolutionResult, UriResolutionStack } from ".";
 
-export interface UriToApiResolver {
+export interface IUriToApiResolver {
   name: string;
   resolveUri(
     uri: Uri, 

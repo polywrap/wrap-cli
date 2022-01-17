@@ -1,45 +1,15 @@
 import { Tracer } from "@web3api/tracing-js";
-import { Api, Client, Contextualized, Uri } from "../../types";
-import { ResolveUriError } from "./ResolveUriError";
-import { UriResolutionHistory, UriResolutionStack } from "./UriResolutionHistory";
-import { UriResolutionResult } from "./resolvers/UriResolutionResult";
-import { UriToApiResolver } from "./resolvers/UriToApiResolver";
+import { Api, Client, Uri } from "../../types";
+import { ResolveUriError } from "./types/ResolveUriError";
+import { UriResolutionHistory } from "./types/UriResolutionHistory";
+import { UriResolutionStack } from "./types/UriResolutionStack";
+import { UriResolutionResult } from "./types/UriResolutionResult";
+import { IUriToApiResolver } from "./types/IUriToApiResolver";
 
-const trackVisitedUri = (
-    uri: string, 
-    visitedUriMap: Map<string, boolean>
-  ) => {
-  if (
-    visitedUriMap.has(uri)
-  ) {
-    return {
-      infiniteLoopDetected: true
-    };
-  }
-
-  visitedUriMap.set(uri, true);
-
-  return {
-    infiniteLoopDetected: false
-  };
-};
-
-const trackUriHistory = (sourceUri: Uri, resolver: UriToApiResolver, result: UriResolutionResult, uriResolutionStack: UriResolutionStack) => {
-  uriResolutionStack.push({
-    resolver: resolver.name,
-    sourceUri,
-    result: {
-      ...result,
-      api: !!result.api,
-    }
-  });
-};
-
-export const resolveUriWithResolvers = async (
+export const resolveUri = async (
   uri: Uri, 
-  resolvers: readonly UriToApiResolver[], 
-  client: Client, 
-  options: Contextualized = {}
+  resolvers: readonly IUriToApiResolver[], 
+  client: Client
 ): Promise<{
   uri?: Uri;
   api?: Api;
@@ -103,4 +73,34 @@ export const resolveUriWithResolvers = async (
     api,
     uriHistory: new UriResolutionHistory(uriResolutionStack)
   };
+};
+
+const trackVisitedUri = (
+  uri: string, 
+  visitedUriMap: Map<string, boolean>
+) => {
+  if (
+    visitedUriMap.has(uri)
+  ) {
+    return {
+      infiniteLoopDetected: true
+    };
+  }
+
+  visitedUriMap.set(uri, true);
+
+  return {
+    infiniteLoopDetected: false
+  };
+};
+
+const trackUriHistory = (sourceUri: Uri, resolver: IUriToApiResolver, result: UriResolutionResult, uriResolutionStack: UriResolutionStack) => {
+  uriResolutionStack.push({
+    resolver: resolver.name,
+    sourceUri,
+    result: {
+      ...result,
+      api: !!result.api,
+    }
+  });
 };

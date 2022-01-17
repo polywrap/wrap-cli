@@ -1,4 +1,4 @@
-import { Uri, Api, Web3ApiManifest, Env } from "../../..";
+import { Uri, Api, Web3ApiManifest, Env } from "../../../..";
 
 export type CreateApiFunc = (
   uri: Uri,
