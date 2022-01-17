@@ -33,6 +33,11 @@ describe("e2e tests for dapp command", () => {
   const projectRoot = path.resolve(__dirname, "../dapp/");
   const simpleStorageProject = path.resolve(__dirname, "../project/");
 
+  beforeAll(async () => {
+    await testEnvUp(simpleStorageProject);
+    await buildAndDeployApi(simpleStorageProject, "simplestorage.eth");
+  });
+
   afterAll(async () => {
     await testEnvDown(simpleStorageProject);
   });
@@ -257,21 +262,17 @@ ${HELP}`);
     expect(code).toEqual(0);
     expect(error).toBe("");
 
-    // import newly generated project extension code
-    // @ts-ignore
-    const pw = await import ("../dapp/polywrap");
-
-    // build and deploy project
-    await testEnvUp(simpleStorageProject);
-    await buildAndDeployApi(simpleStorageProject, "simplestorage.eth");
-    const { ipfs, ethereum, ensAddress } = await getProviders();
-
     // instantiate Client and PolywrapDapp
+    const { ipfs, ethereum, ensAddress } = await getProviders();
     const client: Web3ApiClient = await createClient(
       ipfs,
       ethereum,
       ensAddress
     );
+
+    // import newly generated project extension code
+    // @ts-ignore
+    const pw = await import ("../dapp/polywrap");
     // @ts-ignore
     const dapp: pw.PolywrapDapp = new pw.PolywrapDapp(client);
 
