@@ -9,7 +9,6 @@ use crate::{
 {{/queryTypes}}
 use polywrap_wasm_rs::{
     abort,
-    debug,
     invoke,
     InvokeArgs
 };
@@ -23,56 +22,20 @@ use polywrap_wasm_rs::{
 {{/__commonPath}}
 {{/__commonModule}}
 #[no_mangle]
-pub extern "C" fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
-    debug::w3_debug_log("_w3_invoke: start");
-
+pub fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
     let args: InvokeArgs = invoke::w3_invoke_args(method_size, args_size);
-
-    debug::w3_debug_log("_w3_invoke: got args");
 
     match args.method.as_str() {
         {{#queryTypes}}
         {{#methods}}
-        "{{name}}" => {
-            debug::w3_debug_log("_w3_invoke: invoking `{{#toLower}}{{name}}{{/toLower}}_wrapped`");
-            let result = invoke::w3_invoke(args, Some({{#toLower}}{{name}}{{/toLower}}_wrapped));
-            debug::w3_debug_log("_w3_invoke: invoke finished");
-            result
-        },
+        "{{name}}" => invoke::w3_invoke(args, Some({{#toLower}}{{name}}{{/toLower}}_wrapped)),
         {{/methods}}
         {{/queryTypes}}
         _ => invoke::w3_invoke(args, None),
     }
 }
 
-pub fn w3_abort(msg: &str, file: &str, line: u32, column: u32) {
-    abort::w3_abort(msg, file, line, column);
-}
-
-macro_rules! w3_panic {
-    (info: &core::panic::PanicInfo) => {
-        let message = match info.message() {
-            Some(message) => format!("{}", message),
-            None => format!("unknown error")
-        };
-        let location = info.location();
-        let file = match location {
-            Some(location) => location.file(),
-            None => "unknown file"
-        };
-        let line = match location {
-            Some(location) => location.line(),
-            None => 0
-        };
-        let column = match location {
-            Some(location) => location.column(),
-            None => 0
-        };
-        w3::w3_abort(
-            message,
-            file,
-            line,
-            column
-        );
-    }
+#[no_mangle]
+pub fn w3_abort() {
+    abort::w3_abort();
 }

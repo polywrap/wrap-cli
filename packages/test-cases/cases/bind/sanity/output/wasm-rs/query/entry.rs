@@ -10,7 +10,7 @@ use polywrap_wasm_rs::{
 
 #[cfg(feature = "w3invoke")]
 #[no_mangle]
-pub extern "C" fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
+pub fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
     let args: InvokeArgs = invoke::w3_invoke_args(method_size, args_size);
 
     match args.method.as_str() {
@@ -20,6 +20,7 @@ pub extern "C" fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
     }
 }
 
-pub fn w3_abort(msg: &str, file: &str, line: u32, column: u32) {
-    abort::w3_abort(msg, file, line, column);
+#[no_mangle]
+pub fn w3_abort() {
+    abort::w3_abort();
 }

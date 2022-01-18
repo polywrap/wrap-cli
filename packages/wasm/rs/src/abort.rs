@@ -1,6 +1,3 @@
-use crate::malloc::malloc;
-use crate::debug::w3_debug_log;
-
 #[link(wasm_import_module = "w3")]
 extern "C" {
     /// Get Abort Arguments
@@ -16,22 +13,36 @@ extern "C" {
 }
 
 /// Helper for aborting
-#[allow(unused_unsafe)]
-pub fn w3_abort(msg: &str, file: &str, line: u32, column: u32) {
-    w3_debug_log("w3_abort: 1");
-    let msg_ptr = malloc(msg.len() as u32);
-    w3_debug_log("w3_abort: 1");
-    let file_ptr = malloc(file.len() as u32);
-    w3_debug_log("w3_abort: 1");
-
-    unsafe {
-        __w3_abort(
-            msg_ptr as u32,
-            msg.len() as u32,
-            file_ptr as u32,
-            file.len() as u32,
-            line,
-            column,
-        )
-    };
+pub fn w3_abort() {
+    std::panic::set_hook(Box::new(|panic_info| {
+        let message = match panic_info.payload().downcast_ref::<&str>() {
+            Some(msg) => format!("{}", &msg),
+            None => format!("unknown error"),
+        };
+        let msg_len = message.len() as u32;
+        let location = panic_info.location();
+        let file = match location {
+            Some(location) => location.file(),
+            None => "unknown file",
+        };
+        let file_len = file.len() as u32;
+        let line = match location {
+            Some(location) => location.line(),
+            None => 0,
+        };
+        let column = match location {
+            Some(location) => location.column(),
+            None => 0,
+        };
+        unsafe {
+            __w3_abort(
+                message.as_ptr() as u32,
+                msg_len,
+                file.as_ptr() as u32,
+                file_len,
+                line,
+                column,
+            )
+        };
+    }))
 }
