@@ -13,7 +13,7 @@ extern "C" {
 }
 
 /// Helper for aborting
-pub fn w3_abort() {
+pub fn w3_abort_setup() {
     std::panic::set_hook(Box::new(|panic_info| {
         let message = match panic_info.payload().downcast_ref::<&str>() {
             Some(msg) => format!("{}", &msg),

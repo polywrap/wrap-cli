@@ -6,13 +6,21 @@ pub use w3::*;
 
 pub fn method(input: InputMethod) -> BigInt {
     let mut result = input.arg1.mul(input.obj.prop1);
-
-    if input.arg2.is_some() {
-        result = result.mul(input.arg2.unwrap());
+    match input.arg2 {
+        Some(v) => {
+            result = result.mul(v);
+        }
+        None => {
+            panic!("No `arg2`");
+        }
     }
-    if input.obj.prop2.is_some() {
-        result = result.mul(input.obj.prop2.unwrap());
+    match input.obj.prop2 {
+        Some(v) => {
+            result = result.mul(v);
+        }
+        None => {
+            panic!("No `prop2`");
+        }
     }
-
     result
 }

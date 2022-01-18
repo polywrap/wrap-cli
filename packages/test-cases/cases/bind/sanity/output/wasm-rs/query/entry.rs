@@ -11,6 +11,10 @@ use polywrap_wasm_rs::{
 #[cfg(feature = "w3invoke")]
 #[no_mangle]
 pub fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
+
+    // Ensure the abort handler is properly setup
+    abort::w3_abort_setup();
+
     let args: InvokeArgs = invoke::w3_invoke_args(method_size, args_size);
 
     match args.method.as_str() {
@@ -18,9 +22,4 @@ pub fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
         "objectMethod" => invoke::w3_invoke(args, Some(object_method_wrapped)),
         _ => invoke::w3_invoke(args, None),
     }
-}
-
-#[no_mangle]
-pub fn w3_abort() {
-    abort::w3_abort();
 }
