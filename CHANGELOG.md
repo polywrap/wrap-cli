@@ -1,3 +1,25 @@
+# Web3API 0.0.1-prealpha.61
+## Features
+* `@web3api/cli`: Added the `--client-config` / `-c` option to the `w3 query` CLI command, allowing the user the define their own client configurations within a JavaScript or TypeScript module.
+* `@web3api/client-js`: Plugins can now be initialized with the client's environment registered at the plugin's URI.
+
+## Bugs
+* `@web3api/schema-bind`: Properly handle reserve words for the bind target's language. Reserved words will be prepended with `m_` in order to avoid compiler errors.
+
+# Web3API 0.0.1-prealpha.60
+## Breaking Changes
+* `@web3api/schema-compose`: `ComposerOptions` property `schemas` is now of type `Record<SchemaKind, SchemaFile>` and not `Record<string, SchemaFile>`.
+* `@web3api/schema-bind`: `TargetLanguage` type has been renamed to `BindLanguage`.
+* `@web3api/schema-bind`: `BindOptions` property `language` has been renamed to `bindLanguage`.
+
+## Bugs
+* `@web3api/cli`: Properly resolve NPM dependency `colors` due to it being [corrupted](https://www.bleepingcomputer.com/news/security/dev-corrupts-npm-libs-colors-and-faker-breaking-thousands-of-apps/).
+* `@web3api/cli`: Plugin schema codegen now properly represents imports types from both Query and Mutation modules.
+* `@web3api/cli`: Properly defined the separation of the `ManifestLanguage` and `BindLanguage` (ex: wasm/assemblyscript -> wasm-as).
+* `@web3api/schema-compose`: Introduce the concept of a `SchemaKind` to help determine how schemas should be combined.
+* `@web3api/schema-compose`: Allow plugins to import mutations within their schemas.
+* `@web3api/schema-bind`: Introduced the concept of `BindTarget` to represent a list of known-good bind targets (`wasm-as`, `plugin-ts`, etc).
+
 # Web3API 0.0.1-prealpha.59
 ## Features
 * Web3APIs can now be configured via environment variables. Documentation will be created soon. Initial details on this features specification can be found [here](https://github.com/polywrap/monorepo/issues/140).
