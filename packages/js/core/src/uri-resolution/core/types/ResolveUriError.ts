@@ -1,3 +1,3 @@
 export enum ResolveUriError {
-  InfiniteLoop
+  InfiniteLoop,
 }

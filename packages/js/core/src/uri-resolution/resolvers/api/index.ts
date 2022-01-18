@@ -1,3 +1,3 @@
-export * from './types/CreateApiFunc';
-export * from './ApiAggregatorResolver';
-export * from './ApiResolver';
+export * from "./types/CreateApiFunc";
+export * from "./ApiAggregatorResolver";
+export * from "./ApiResolver";

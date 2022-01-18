@@ -438,12 +438,12 @@ export class Web3ApiClient implements Client {
   @Tracer.traceMethod("Web3ApiClient: resolveUri")
   public async resolveUri<TUri extends Uri | string>(
     uri: TUri,
-    options?: ResolveUriOptions<Web3ApiClientConfig>,
+    options?: ResolveUriOptions<Web3ApiClientConfig>
   ): Promise<{
     api?: Api;
     uri?: Uri;
-    uriHistory: UriResolutionHistory,
-    error?: ResolveUriError
+    uriHistory: UriResolutionHistory;
+    error?: ResolveUriError;
   }> {
     options = options || {};
 
@@ -459,21 +459,20 @@ export class Web3ApiClient implements Client {
     const client = contextualizeClient(this, contextId);
 
     let resolvers = this.getResolvers({ contextId: contextId });
-    
-    if(!cacheRead) {
-      resolvers = resolvers.filter(x => x.name !== coreUriResolvers.Cache)
+
+    if (!cacheRead) {
+      resolvers = resolvers.filter((x) => x.name !== coreUriResolvers.cache);
     }
 
-    const { 
-      api, 
-      uri: resolvedUri, 
-      uriHistory, 
-      error 
-    } = await resolveUri(this._toUri(uri), resolvers, client);
+    const { api, uri: resolvedUri, uriHistory, error } = await resolveUri(
+      this._toUri(uri),
+      resolvers,
+      client
+    );
 
     //Update cache for all URIs in the chain
     if (cacheWrite && api) {
-      for(const item of uriHistory.getResolutionPath().stack) {
+      for (const item of uriHistory.getResolutionPath().stack) {
         this._apiCache.set(item.sourceUri.uri, api);
       }
     }
@@ -482,11 +481,11 @@ export class Web3ApiClient implements Client {
       this._clearContext(contextId);
     }
 
-    return { 
-      api, 
-      uri: resolvedUri, 
-      uriHistory, 
-      error 
+    return {
+      api,
+      uri: resolvedUri,
+      uriHistory,
+      error,
     };
   }
 
@@ -611,14 +610,13 @@ export class Web3ApiClient implements Client {
   }
 
   @Tracer.traceMethod("Web3ApiClient: _loadWeb3Api")
-  private async _loadWeb3Api(
-    uri: Uri,
-    options?: Contextualized
-  ): Promise<Api> {
-    const { api, uriHistory, error } = await this.resolveUri(uri, { contextId: options?.contextId });
+  private async _loadWeb3Api(uri: Uri, options?: Contextualized): Promise<Api> {
+    const { api, uriHistory, error } = await this.resolveUri(uri, {
+      contextId: options?.contextId,
+    });
 
-    if(!api) {
-      if(error && error === ResolveUriError.InfiniteLoop) {
+    if (!api) {
+      if (error && error === ResolveUriError.InfiniteLoop) {
         throw Error(
           `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${JSON.stringify(
             uriHistory,
@@ -626,11 +624,11 @@ export class Web3ApiClient implements Client {
             2
           )}`
         );
-      } 
+      }
 
       throw Error(
         `No Web3API found at URI: ${uri.uri}` +
-        `\nResolution history: ${JSON.stringify(uriHistory, null, 2)}`
+          `\nResolution history: ${JSON.stringify(uriHistory, null, 2)}`
       );
     }
 
@@ -714,6 +712,6 @@ const contextualizeClient = (
         },
         getApiCache: (): ApiCache => {
           return client.getApiCache();
-        }
+        },
       }
     : client;

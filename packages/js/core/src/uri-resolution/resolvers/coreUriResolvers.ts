@@ -1,6 +1,6 @@
 export const coreUriResolvers = {
-  Redirect: "Redirect",
-  Plugin: "Plugin",
-  ApiAggregator: "ApiAggregator",
-  Cache: "Cache",
+  redirect: "Redirect",
+  plugin: "Plugin",
+  apiAggregator: "ApiAggregator",
+  cache: "Cache",
 };

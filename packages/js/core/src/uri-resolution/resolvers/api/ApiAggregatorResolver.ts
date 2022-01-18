@@ -1,4 +1,10 @@
-import { Uri, Client, getImplementations, coreInterfaceUris, DeserializeManifestOptions } from "../../..";
+import {
+  Uri,
+  Client,
+  getImplementations,
+  coreInterfaceUris,
+  DeserializeManifestOptions,
+} from "../../..";
 import { CreateApiFunc } from "./types/CreateApiFunc";
 import { UriResolutionResult } from "../../core/types/UriResolutionResult";
 import { IUriToApiResolver, UriResolutionStack } from "../../core";
@@ -12,12 +18,15 @@ export class ApiAggregatorResolver implements IUriToApiResolver {
   name = "ApiAggregator";
 
   constructor(
-      private readonly createApi: CreateApiFunc,
-      private deserializeOptions?: DeserializeManifestOptions
-    ) {
-  }
+    private readonly createApi: CreateApiFunc,
+    private deserializeOptions?: DeserializeManifestOptions
+  ) {}
 
-  async resolveUri(uri: Uri, client: Client, resolutionStack: UriResolutionStack): Promise<ApiAggregatorResolverResult> {
+  async resolveUri(
+    uri: Uri,
+    client: Client,
+    resolutionStack: UriResolutionStack
+  ): Promise<ApiAggregatorResolverResult> {
     const resolvers: ApiResolver[] = this.buildApiResolvers(client);
 
     for (const resolver of resolvers) {
@@ -37,27 +46,25 @@ export class ApiAggregatorResolver implements IUriToApiResolver {
     };
   }
 
-  buildApiResolvers(
-    client: Client, 
-  ): ApiResolver[] {
+  buildApiResolvers(client: Client): ApiResolver[] {
     const resolvers: ApiResolver[] = [];
-  
+
     const resolverUris = getImplementations(
       coreInterfaceUris.uriResolver,
       client.getInterfaces({}),
       client.getRedirects({})
     );
-  
-    for(const resolverUri of resolverUris) {
+
+    for (const resolverUri of resolverUris) {
       const apiResolver = new ApiResolver(
         resolverUri,
         this.createApi,
         this.deserializeOptions
       );
-  
+
       resolvers.push(apiResolver);
     }
-  
+
     return resolvers;
   }
 }

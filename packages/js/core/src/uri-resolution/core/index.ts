@@ -1,2 +1,2 @@
-export * from './resolveUri';
-export * from './types';
+export * from "./resolveUri";
+export * from "./types";

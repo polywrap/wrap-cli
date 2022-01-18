@@ -54,7 +54,6 @@ export interface Client
   extends QueryHandler,
     SubscriptionHandler,
     InvokeHandler {
-      
   getApiCache(): ApiCache;
 
   getRedirects(options: GetRedirectsOptions): readonly UriRedirect<Uri>[];

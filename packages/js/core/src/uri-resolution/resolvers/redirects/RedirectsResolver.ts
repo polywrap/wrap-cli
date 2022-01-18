@@ -7,10 +7,10 @@ export class RedirectsResolver implements IUriToApiResolver {
   name = "Redirect";
 
   async resolveUri(uri: Uri, client: Client): Promise<UriResolutionResult> {
-    let redirectedUri = applyRedirects(uri, client.getRedirects({}));
-    
+    const redirectedUri = applyRedirects(uri, client.getRedirects({}));
+
     return Promise.resolve({
       uri: redirectedUri,
     });
-  };
+  }
 }

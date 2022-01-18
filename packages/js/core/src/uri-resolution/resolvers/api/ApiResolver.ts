@@ -1,9 +1,17 @@
-import { Tracer } from "@web3api/tracing-js";
 import { UriResolver } from "../../../interfaces";
-import { DeserializeManifestOptions, deserializeWeb3ApiManifest } from "../../../manifest";
+import {
+  DeserializeManifestOptions,
+  deserializeWeb3ApiManifest,
+} from "../../../manifest";
 import { Uri, Client, InvokeHandler, Env } from "../../../types";
-import { IUriToApiResolver, UriResolutionStack, UriResolutionResult } from "../../core";
+import {
+  IUriToApiResolver,
+  UriResolutionStack,
+  UriResolutionResult,
+} from "../../core";
 import { CreateApiFunc } from "./types/CreateApiFunc";
+
+import { Tracer } from "@web3api/tracing-js";
 
 export class ApiResolver implements IUriToApiResolver {
   constructor(
@@ -14,22 +22,26 @@ export class ApiResolver implements IUriToApiResolver {
 
   name = "Api";
 
-  async resolveUri(uri: Uri, client: Client, resolutionStack: UriResolutionStack): Promise<UriResolutionResult> {
+  async resolveUri(
+    uri: Uri,
+    client: Client,
+    resolutionStack: UriResolutionStack
+  ): Promise<UriResolutionResult> {
     const result = await tryResolveUriWithUriResolver(
-      uri, 
-      this.resolverUri, 
+      uri,
+      this.resolverUri,
       client.invoke.bind(client)
     );
 
     if (!result) {
       return {
-        uri
+        uri,
       };
     }
 
     if (result.uri) {
       return {
-        uri: new Uri(result.uri)
+        uri: new Uri(result.uri),
       };
     } else if (result.manifest) {
       // We've found our manifest at the current URI resolver
@@ -39,17 +51,20 @@ export class ApiResolver implements IUriToApiResolver {
         this.deserializeOptions
       );
 
-      const environment = getEnvironmentFromResolutionStack(client, resolutionStack);
+      const environment = getEnvironmentFromResolutionStack(
+        client,
+        resolutionStack
+      );
       const api = this.createApi(uri, manifest, this.resolverUri, environment);
-    
+
       return {
         uri,
-        api
+        api,
       };
     }
-    
+
     return {
-      uri
+      uri,
     };
   }
 }
@@ -57,7 +72,7 @@ export class ApiResolver implements IUriToApiResolver {
 const tryResolveUriWithUriResolver = async (
   uri: Uri,
   uriResolver: Uri,
-  invoke: InvokeHandler["invoke"],
+  invoke: InvokeHandler["invoke"]
 ): Promise<UriResolver.MaybeUriOrManifest | undefined> => {
   const { data } = await UriResolver.Query.tryResolveUri(
     invoke,
@@ -75,13 +90,13 @@ const tryResolveUriWithUriResolver = async (
 };
 
 const getEnvironmentFromResolutionStack = (
-  client: Client, 
+  client: Client,
   resolutionStack: UriResolutionStack
 ): Env<Uri> | undefined => {
-  for(const { sourceUri } of resolutionStack) {
+  for (const { sourceUri } of resolutionStack) {
     const environment = client.getEnvByUri(sourceUri, {});
-    
-    if(environment) {
+
+    if (environment) {
       return environment;
     }
   }
