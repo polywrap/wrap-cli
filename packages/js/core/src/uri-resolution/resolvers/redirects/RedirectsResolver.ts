@@ -1,7 +1,6 @@
 import { applyRedirects } from "../../../algorithms";
-import { Uri, Client } from "../../..";
-import { UriResolutionResult } from "../../core/types/UriResolutionResult";
-import { IUriToApiResolver } from "../../core/types/IUriToApiResolver";
+import { Uri, Client } from "../../../types";
+import { IUriToApiResolver, UriResolutionResult } from "../../core";
 
 export class RedirectsResolver implements IUriToApiResolver {
   name = "Redirect";

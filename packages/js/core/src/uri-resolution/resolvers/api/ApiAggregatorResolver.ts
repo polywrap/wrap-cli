@@ -25,12 +25,12 @@ export class ApiAggregatorResolver implements IUriToApiResolver {
   async resolveUri(
     uri: Uri,
     client: Client,
-    resolutionStack: UriResolutionStack
+    resolutionPath: UriResolutionStack
   ): Promise<ApiAggregatorResolverResult> {
     const resolvers: ApiResolver[] = this.buildApiResolvers(client);
 
     for (const resolver of resolvers) {
-      const result = await resolver.resolveUri(uri, client, resolutionStack);
+      const result = await resolver.resolveUri(uri, client, resolutionPath);
 
       if (result.api || (result.uri && uri.uri !== result.uri.uri)) {
         return {

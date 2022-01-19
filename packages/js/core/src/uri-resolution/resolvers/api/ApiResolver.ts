@@ -3,7 +3,7 @@ import {
   DeserializeManifestOptions,
   deserializeWeb3ApiManifest,
 } from "../../../manifest";
-import { Uri, Client, InvokeHandler, Env } from "../../../types";
+import { Uri, Client, InvokeHandler } from "../../../types";
 import {
   IUriToApiResolver,
   UriResolutionStack,
@@ -12,6 +12,7 @@ import {
 import { CreateApiFunc } from "./types/CreateApiFunc";
 
 import { Tracer } from "@web3api/tracing-js";
+import { getEnvFromUriOrResolutionStack } from "../getEnvFromUriOrResolutionStack";
 
 export class ApiResolver implements IUriToApiResolver {
   constructor(
@@ -25,7 +26,7 @@ export class ApiResolver implements IUriToApiResolver {
   async resolveUri(
     uri: Uri,
     client: Client,
-    resolutionStack: UriResolutionStack
+    resolutionPath: UriResolutionStack
   ): Promise<UriResolutionResult> {
     const result = await tryResolveUriWithUriResolver(
       uri,
@@ -51,9 +52,10 @@ export class ApiResolver implements IUriToApiResolver {
         this.deserializeOptions
       );
 
-      const environment = getEnvironmentFromResolutionStack(
+      const environment = getEnvFromUriOrResolutionStack(
+        uri,
+        resolutionPath,
         client,
-        resolutionStack
       );
       const api = this.createApi(uri, manifest, this.resolverUri, environment);
 
@@ -87,19 +89,4 @@ const tryResolveUriWithUriResolver = async (
   }
 
   return data;
-};
-
-const getEnvironmentFromResolutionStack = (
-  client: Client,
-  resolutionStack: UriResolutionStack
-): Env<Uri> | undefined => {
-  for (const { sourceUri } of resolutionStack) {
-    const environment = client.getEnvByUri(sourceUri, {});
-
-    if (environment) {
-      return environment;
-    }
-  }
-
-  return undefined;
 };

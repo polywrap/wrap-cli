@@ -17,7 +17,7 @@ import { coreInterfaceUris } from "../interfaces";
 import { ManifestType } from "../manifest";
 import {
   Api,
-  Contextualized,
+  Env,
   GetFileOptions,
   GetImplementationsOptions,
   GetManifestOptions,
@@ -237,7 +237,7 @@ describe("resolveUri", () => {
       (uri: Uri, plugin: PluginPackage) => createPluginApi(uri, plugin)
     ),
     new ApiAggregatorResolver(
-      (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri, client: Client, options: Contextualized) => {
+      (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri, environment: Env<Uri> | undefined) => {
         return createApi(uri, manifest, uriResolver);
       }, 
       { noValidate: true }

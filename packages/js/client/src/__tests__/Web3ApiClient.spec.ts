@@ -1884,6 +1884,7 @@ describe("Web3ApiClient", () => {
         }
       `,
     });
+
     expect(queryEnv.errors).toBeFalsy();
     expect(queryEnv.data).toBeTruthy();
     expect(queryEnv.data?.queryEnv).toMatchObject({arg1: 10});

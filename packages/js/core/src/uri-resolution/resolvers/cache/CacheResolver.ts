@@ -1,4 +1,4 @@
-import { Uri, Client } from "../../..";
+import { Uri, Client } from "../../../types";
 import { IUriToApiResolver, UriResolutionResult } from "../../core";
 
 export class CacheResolver implements IUriToApiResolver {

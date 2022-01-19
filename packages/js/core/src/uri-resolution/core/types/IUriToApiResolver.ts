@@ -6,6 +6,6 @@ export interface IUriToApiResolver {
   resolveUri(
     uri: Uri,
     client: Client,
-    resolutionStack: UriResolutionStack
+    resolutionPath: UriResolutionStack
   ): Promise<UriResolutionResult>;
 }

@@ -1,24 +1,27 @@
-import { Api, Uri, PluginPackage, Client } from "../../../types";
-import { findPluginPackage } from "../../../algorithms/find-plugin-package";
-import { IUriToApiResolver, UriResolutionResult } from "../../core";
-
-import { Tracer } from "@web3api/tracing-js";
+import { getEnvFromUriOrResolutionStack } from "../getEnvFromUriOrResolutionStack";
+import { IUriToApiResolver, UriResolutionResult, UriResolutionStack } from "../../core";
+import { Api, Client, Env, PluginPackage, Uri } from "../../../types";
+import { findPluginPackage } from "../../../algorithms";
 
 export class PluginResolver implements IUriToApiResolver {
   constructor(
-    private readonly createPluginApi: (uri: Uri, plugin: PluginPackage) => Api
+    private readonly createPluginApi: (uri: Uri, plugin: PluginPackage, environment: Env<Uri> | undefined) => Api
   ) {}
 
   name = "Plugin";
 
-  async resolveUri(uri: Uri, client: Client): Promise<UriResolutionResult> {
+  async resolveUri(uri: Uri, client: Client, resolutionPath: UriResolutionStack): Promise<UriResolutionResult> {
     const plugin = findPluginPackage(uri, client.getPlugins({}));
 
     if (plugin) {
-      const api = Tracer.traceFunc(
-        "resolveUri: createPluginApi",
-        (uri: Uri, plugin: PluginPackage) => this.createPluginApi(uri, plugin)
-      )(uri, plugin);
+
+      const environment = getEnvFromUriOrResolutionStack(
+        uri,
+        resolutionPath,
+        client,
+      );
+      
+      const api = this.createPluginApi(uri, plugin, environment);
 
       return {
         uri,
