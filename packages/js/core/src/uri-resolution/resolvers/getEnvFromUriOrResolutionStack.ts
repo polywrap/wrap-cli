@@ -4,23 +4,18 @@ import { UriResolutionStack } from "../core";
 export const getEnvFromUriOrResolutionStack = (
   uri: Uri,
   resolutionPath: UriResolutionStack,
-  client: Client,
+  client: Client
 ): Env<Uri> | undefined => {
-  console.log("env", uri.uri);
+  const env = client.getEnvByUri(uri, {});
 
-  let env = client.getEnvByUri(uri, {});
-
-  if(env) {
-    console.log("Found env")
+  if (env) {
     return env;
   }
 
   for (const { sourceUri } of resolutionPath) {
-    console.log("env", sourceUri.uri);
     const env = client.getEnvByUri(sourceUri, {});
 
     if (env) {
-      console.log("Found env")
       return env;
     }
   }

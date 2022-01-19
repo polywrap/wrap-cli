@@ -49,9 +49,7 @@ export const resolveUri = async (
       const result = await resolver.resolveUri(
         currentUri,
         client,
-        new UriResolutionHistory(uriResolutionStack)
-          .getResolutionPath()
-          .stack
+        new UriResolutionHistory(uriResolutionStack).getResolutionPath().stack
       );
 
       trackUriHistory(currentUri, resolver, result, uriResolutionStack);

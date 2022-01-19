@@ -10,9 +10,9 @@ import {
   UriResolutionResult,
 } from "../../core";
 import { CreateApiFunc } from "./types/CreateApiFunc";
+import { getEnvFromUriOrResolutionStack } from "../getEnvFromUriOrResolutionStack";
 
 import { Tracer } from "@web3api/tracing-js";
-import { getEnvFromUriOrResolutionStack } from "../getEnvFromUriOrResolutionStack";
 
 export class ApiResolver implements IUriToApiResolver {
   constructor(
@@ -55,7 +55,7 @@ export class ApiResolver implements IUriToApiResolver {
       const environment = getEnvFromUriOrResolutionStack(
         uri,
         resolutionPath,
-        client,
+        client
       );
       const api = this.createApi(uri, manifest, this.resolverUri, environment);
 
