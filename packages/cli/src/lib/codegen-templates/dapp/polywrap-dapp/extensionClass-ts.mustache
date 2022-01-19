@@ -3,13 +3,7 @@ import { {{#title}}{{namespace}}{{/title}}{{type}}Extension,  {{#title}}{{namesp
 {{/queryTypes}}
 import { Client, Uri, Extension, ExtensionConfig, SanitizedExtensionConfig } from "@web3api/core-js";
 
-export interface I{{#title}}{{namespace}}{{/title}} extends Extension {
-{{#queryTypes}}
-  {{#lowerFirst}}{{type}}{{/lowerFirst}}: {{#title}}{{namespace}}{{/title}}{{type}}Module;
-{{/queryTypes}}
-}
-
-export class {{#title}}{{namespace}}{{/title}} implements I{{#title}}{{namespace}}{{/title}} {
+export class {{#title}}{{namespace}}{{/title}} implements Extension {
 
   private client: Client;
   readonly buildUri: Uri = new Uri("{{uri}}");

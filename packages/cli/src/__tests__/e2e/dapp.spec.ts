@@ -5,9 +5,7 @@ import { compareSync } from "dir-compare";
 import * as fs from "fs";
 import axios from "axios";
 import {
-  ExtensionInvocation,
   InvokeApiOptions,
-  InvokeApiResult,
   Web3ApiClient,
 } from "@web3api/client-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
@@ -279,21 +277,23 @@ ${HELP}`);
     // expect to access uri property
     const expectedUriPath: string = path.resolve(path.join(__dirname, "../project/build"));
     // @ts-ignore
-    expect(dapp.project?.config?.uri.path).toEqual(expectedUriPath);
+    expect(dapp.project.config?.uri.path).toEqual(expectedUriPath);
 
     // test ExtensionInvocation
     // @ts-ignore
-    const extInvoke: ExtensionInvocation<string> = dapp.project.mutation.deployContract({
+    const result: string = await dapp.project.mutation.deployContract({
       connection: {
         networkNameOrChainId: "testnet",
       },
     });
+    expect(result).toBeTruthy()
 
-    const exec: InvokeApiResult<string> = await extInvoke.execute();
-    expect(exec.error).toBeFalsy();
-    expect(exec.data).toBeTruthy();
-
-    const config: InvokeApiOptions = extInvoke.config();
+    // @ts-ignore
+    const config: InvokeApiOptions = dapp.project.mutation.config.deployContract({
+      connection: {
+        networkNameOrChainId: "testnet",
+      },
+    });
     expect(config).toStrictEqual({
       uri: `w3://fs/${expectedUriPath}`,
       module: "mutation",

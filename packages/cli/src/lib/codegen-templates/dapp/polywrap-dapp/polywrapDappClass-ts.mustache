@@ -1,5 +1,5 @@
 {{#packages}}
-import { {{#title}}{{namespace}}{{/title}}, I{{#title}}{{namespace}}{{/title}} } from "./{{#lowerFirst}}{{namespace}}{{/lowerFirst}}";
+import { {{#title}}{{namespace}}{{/title}} } from "./{{#lowerFirst}}{{namespace}}{{/lowerFirst}}";
 {{/packages}}
 import { Client, ExtensionConfig, BasePolywrapDappConfig, BasePolywrapDapp } from "@web3api/core-js";
 
@@ -13,7 +13,7 @@ export class PolywrapDapp implements BasePolywrapDapp {
 
   readonly client: Client;
   {{#packages}}
-  readonly {{#lowerFirst}}{{namespace}}{{/lowerFirst}}: I{{#title}}{{namespace}}{{/title}};
+  readonly {{#lowerFirst}}{{namespace}}{{/lowerFirst}}: {{#title}}{{namespace}}{{/title}};
   {{/packages}}
 
   constructor(client: Client, config?: PolywrapDappConfig) {

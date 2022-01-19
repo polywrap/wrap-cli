@@ -1,6 +1,5 @@
 import { Client } from "./Client";
 import { Uri } from "./Uri";
-import { InvokeApiOptions, InvokeApiResult } from "./Invoke";
 
 /**
  * Executable Wrapper/Plugin Invocation
@@ -9,13 +8,13 @@ import { InvokeApiOptions, InvokeApiResult } from "./Invoke";
  * as input to the client.invoke(...) method
  * @param execute Executes client.invoke(...) and returns the result
  */
-export interface ExtensionInvocation<
-  TData = unknown,
-  TUri extends Uri | string = string
-> {
-  config: () => InvokeApiOptions<TUri>;
-  execute: () => Promise<InvokeApiResult<TData>>;
-}
+// export interface ExtensionInvocation<
+//   TData = unknown,
+//   TUri extends Uri | string = string
+// > {
+//   config: () => InvokeApiOptions<TUri>;
+//   execute: () => Promise<InvokeApiResult<TData>>;
+// }
 
 /**
  * Base config for Extension
