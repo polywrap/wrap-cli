@@ -63,10 +63,10 @@ export class {{#title}}{{namespace}}{{/title}}{{type}}Extension implements {{#ti
   readonly config = {
   {{#methods}}
     {{name}}: (input: {{#title}}{{type}}{{/title}}.Input_{{name}}): InvokeApiOptions => ({
-        uri: this.uri.toString(),
-        module: "{{type}}",
-        method: "{{name}}",
-        input: input
+      uri: this.uri.toString(),
+      module: "{{type}}",
+      method: "{{name}}",
+      input: input
     }),
   {{/methods}}
   }
