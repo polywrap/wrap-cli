@@ -26,7 +26,7 @@ num-traits = "0.2.14"
 serde_json = { version = "1.0.74", default-features = false, features = ["alloc"] }
 
 [profile.release]
-opt-level = 'z'
+opt-level = 's'
 lto = true
-panic = 'unwind'
+panic = 'abort'
 debug = true

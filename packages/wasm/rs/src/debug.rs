@@ -7,7 +7,5 @@ extern "C" {
 
 #[allow(unused_unsafe)]
 pub fn w3_debug_log(msg: &str) {
-    let msg_buf = msg.as_bytes();
-
-    unsafe { __w3_debug_log(msg_buf.as_ptr() as u32, msg_buf.len() as u32) };
+    unsafe { __w3_debug_log(msg.as_ptr() as u32, msg.len() as u32) };
 }

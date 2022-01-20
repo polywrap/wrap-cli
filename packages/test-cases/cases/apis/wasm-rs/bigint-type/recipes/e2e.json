@@ -1,8 +1,0 @@
-[
-  {
-    "api": "ens/testnet/method.eth"
-  },
-  {
-    "query": "./query.graphql"
-  }
-]

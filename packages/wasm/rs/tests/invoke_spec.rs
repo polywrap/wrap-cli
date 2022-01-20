@@ -12,10 +12,13 @@ fn w3_invoke_args(method_size: u32, args_size: u32) -> InvokeArgs {
     let args_size_ptr = malloc(args_size);
 
     let method = unsafe {
-        String::from_raw_parts(method_size_ptr, method_size as usize, method_size as usize)
+        let res = std::slice::from_raw_parts(method_size_ptr, method_size as usize);
+        String::from_utf8_lossy(res).to_string()
     };
-    let args =
-        unsafe { Vec::from_raw_parts(args_size_ptr, args_size as usize, args_size as usize) };
+    let args = unsafe {
+        let res = std::slice::from_raw_parts(args_size_ptr, args_size as usize);
+        res.to_vec()
+    };
 
     InvokeArgs { method, args }
 }
