@@ -52,10 +52,10 @@ export function generateBinding(
     });
   };
 
-  const queryContext = typeInfo.queryTypes.find((def: QueryDefinition) => {
+  const queryContext = typeInfo.moduleTypes.find((def: QueryDefinition) => {
     return def.type === "Query";
   });
-  const mutationContext = typeInfo.queryTypes.find((def: QueryDefinition) => {
+  const mutationContext = typeInfo.moduleTypes.find((def: QueryDefinition) => {
     return def.type === "Mutation";
   });
 
