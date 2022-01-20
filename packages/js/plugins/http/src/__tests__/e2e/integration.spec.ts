@@ -1,7 +1,7 @@
 import { httpPlugin } from "../..";
 import { Response } from "../../w3";
 
-import { Web3ApiClient } from "@web3api/client-js"
+import { Web3ApiClient, defaultIpfsProviders } from "@web3api/client-js"
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
@@ -55,7 +55,7 @@ describe("e2e tests for HttpPlugin", () => {
             uri: "w3://ens/ipfs.web3api.eth",
             plugin: ipfsPlugin({
               provider: ipfs,
-              fallbackProviders: ["https://ipfs.io"]
+              fallbackProviders: defaultIpfsProviders,
             })
           },
           {
