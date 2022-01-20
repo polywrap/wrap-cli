@@ -106,6 +106,9 @@ ${HELP}`);
       }
     );
 
+    console.log(output);
+    // console.log(error);
+
     expect(code).toEqual(0);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`- Generate types

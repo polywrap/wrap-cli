@@ -7,9 +7,19 @@
  */
 
 export interface PluginManifest {
-  format: "0.0.1-prealpha.3";
+  format: "0.0.1-prealpha.2";
   language: string;
-  schema: string;
+  entrypoint: string;
+  modules: {
+    mutation?: {
+      schema: string;
+      module?: string;
+    };
+    query?: {
+      schema: string;
+      module?: string;
+    };
+  };
   import_redirects?: {
     uri: string;
     schema: string;

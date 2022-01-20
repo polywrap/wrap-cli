@@ -1,5 +1,12 @@
 import { MustacheFunction } from "../types";
 
+export const toLowerCase: MustacheFunction = () => {
+  return (value: string, render: (template: string) => string) => {
+    let rendered = render(value);
+    return rendered.toLowerCase();
+  }
+}
+
 export const toTypescript: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);

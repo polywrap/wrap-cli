@@ -30,7 +30,8 @@ export interface Input_{{name}} extends Record<string, unknown> {
 }
 
 {{/methods}}
-export interface Module extends PluginModule {
+
+export interface I{{type}} {
   {{#methods}}
   {{name}}(
     input: Input_{{name}},

@@ -9,6 +9,7 @@ import fs from "fs";
 import path from "path";
 import rimraf from "rimraf";
 import copyfiles from "copyfiles";
+import { Manifest } from "@web3api/core-js";
 
 export interface ProjectConfig {
   quiet?: boolean;
@@ -34,6 +35,8 @@ export abstract class Project {
       schema: string;
     }[]
   >;
+
+  public abstract getManifest<TManifest extends Manifest>(): Promise<TManifest>;
 
   public get quiet(): boolean {
     return !!this._config.quiet;

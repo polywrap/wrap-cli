@@ -171,6 +171,8 @@ export default {
       pluginManifestPath: manifestPath,
     });
 
+    print.debug(await project.getSchemaNamedPaths());
+
     const schemaComposer = new SchemaComposer({
       project,
       ipfsProvider,
@@ -178,13 +180,18 @@ export default {
       ensAddress,
     });
 
+    print.debug("schema composer constructd")
+
+    // const composed = await schemaComposer.getComposedSchemas(print);
+
     let result = false;
 
     const codeGenerator = new CodeGenerator({
       project,
       schemaComposer,
       outputDir: outputTypesDir,
-    });
+    }, print);
+    
 
     result = await codeGenerator.generate();
 

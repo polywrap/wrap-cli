@@ -9,17 +9,22 @@ import {
 } from "./helpers";
 import { intlMsg } from "./intl";
 
-import { TypeInfo } from "@web3api/schema-parse";
+import { InvokableModules, TypeInfo } from "@web3api/schema-parse";
 import {
   OutputDirectory,
   writeDirectory,
   bindSchema,
 } from "@web3api/schema-bind";
 import path from "path";
-import fs, { readFileSync } from "fs";
+import fs, { readFileSync, existsSync, mkdirSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import Mustache from "mustache";
+import { ComposerOutput } from "@web3api/schema-compose";
+import { Manifest, PluginManifest, Web3ApiManifest } from "@web3api/core-js";
+import rimraf from "rimraf";
+
+type ModulesToBuild = Record<InvokableModules, boolean>;
 
 export interface CustomScriptConfig {
   typeInfo: TypeInfo;
@@ -33,6 +38,12 @@ export type CustomScriptRunFn = (
   config: CustomScriptConfig
 ) => void;
 
+export interface CodeGeneratorState {
+  manifest: PluginManifest | Web3ApiManifest;
+  composerOutput: ComposerOutput;
+  modulesToBuild: ModulesToBuild;
+}
+
 export interface CodeGeneratorConfig {
   outputDir: string;
   project: Project;
@@ -43,7 +54,7 @@ export interface CodeGeneratorConfig {
 export class CodeGenerator {
   private _schema: string | undefined = "";
 
-  constructor(private _config: CodeGeneratorConfig) {}
+  constructor(private _config: CodeGeneratorConfig, private print?: any) {}
 
   public async generate(): Promise<boolean> {
     try {
@@ -60,6 +71,8 @@ export class CodeGenerator {
   private async _generateCode() {
     const { schemaComposer, project } = this._config;
 
+    this.print.debug("generating code");
+
     const run = async (spinner?: Ora) => {
       const bindLanguage = manifestLanguageToBindLanguage(
         await project.getManifestLanguage()
@@ -71,7 +84,7 @@ export class CodeGenerator {
       }
 
       // Get the fully composed schema
-      const composed = await schemaComposer.getComposedSchemas();
+      const composed = await schemaComposer.getComposedSchemas(this.print);
 
       if (!composed.combined) {
         throw Error(intlMsg.lib_codeGenerator_noComposedSchema());
@@ -115,19 +128,75 @@ export class CodeGenerator {
           this._generateTemplate(templatePath, typeInfo, spinner)
         );
       } else {
+        const { project } = this._config;
+
+        // Get the Web3ApiManifest
+        const manifest = await project.getManifest<PluginManifest>();
+        const modulesToBuild = this._getModulesToBuild(manifest);
+        const entrypoint = manifest.entrypoint;
+
+        const queryModule = manifest.modules.query?.module as string;
+        const queryDirectory = manifest.modules.query
+          ? this._getGenerationDirectory(entrypoint, queryModule)
+          : undefined;
+        const mutationModule = manifest.modules.mutation?.module as string;
+        const mutationDirectory = manifest.modules.mutation
+          ? this._getGenerationDirectory(entrypoint, mutationModule)
+          : undefined;
+
+        this.print.debug("queryDirectory: " + queryDirectory);
+        this.print.debug("mutationDirectory: " + mutationDirectory);
+
+        this.print.debug("binding schema");
+
+        // Clean the code generation
+        if (queryDirectory) {
+          this._resetDir(queryDirectory);
+        }
+
+        if (mutationDirectory) {
+          this._resetDir(mutationDirectory);
+        }
+
         const content = bindSchema({
-          combined: {
-            typeInfo: composed.combined?.typeInfo as TypeInfo,
-            schema: composed.combined?.schema as string,
-            outputDirAbs: "",
-          },
+          query: modulesToBuild.query
+            ? {
+                typeInfo: composed.query?.typeInfo as TypeInfo,
+                schema: composed.combined?.schema as string,
+                outputDirAbs: queryDirectory as string,
+              }
+            : undefined,
+          mutation: modulesToBuild.mutation
+            ? {
+                typeInfo: composed.mutation?.typeInfo as TypeInfo,
+                schema: composed.combined?.schema as string,
+                outputDirAbs: mutationDirectory as string,
+              }
+            : undefined,
           bindLanguage,
         });
 
-        writeDirectory(
-          this._config.outputDir,
-          content.combined as OutputDirectory
-        );
+        this.print.debug("write dir");
+
+        // Output the bindings
+        const filesWritten: string[] = [];
+
+        if (content.query && queryDirectory) {
+          filesWritten.push(
+            ...writeDirectory(queryDirectory, content.query as OutputDirectory)
+          );
+        }
+
+        if (content.mutation && mutationDirectory) {
+          filesWritten.push(
+            ...writeDirectory(
+              mutationDirectory,
+              content.mutation as OutputDirectory
+            )
+          );
+        }
+
+        // return filesWritten;
       }
     };
 
@@ -143,6 +212,43 @@ export class CodeGenerator {
         }
       );
     }
+  }
+
+  private _getModulesToBuild(manifest: Manifest): ModulesToBuild {
+    const manifestMutation = manifest.modules.mutation;
+    const manifestQuery = manifest.modules.query;
+    const modulesToBuild: ModulesToBuild = {
+      mutation: false,
+      query: false,
+    };
+
+    if (manifestMutation) {
+      modulesToBuild.mutation = true;
+    }
+
+    if (manifestQuery) {
+      modulesToBuild.query = true;
+    }
+
+    return modulesToBuild;
+  }
+
+  private _getGenerationDirectory(
+    entrypoint: string,
+    modulePath: string
+  ): string {
+    const { project } = this._config;
+
+    const absolute = path.isAbsolute(entrypoint)
+      ? entrypoint
+      : path.join(project.getRootDir(), entrypoint, modulePath);
+
+    const genDir = `${path.dirname(absolute)}/w3`;
+
+    if (!existsSync(genDir)) {
+      mkdirSync(genDir);
+    }
+    return genDir;
   }
 
   private _generateTemplate(
@@ -181,5 +287,13 @@ ${content}
 `;
 
     return content;
+  }
+
+  private _resetDir(dir: string) {
+    if (fs.existsSync(dir)) {
+      rimraf.sync(dir);
+    }
+
+    fs.mkdirSync(dir, { recursive: true });
   }
 }

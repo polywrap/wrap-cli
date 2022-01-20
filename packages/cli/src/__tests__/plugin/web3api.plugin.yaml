@@ -1,3 +1,10 @@
-format: 0.0.1-prealpha.1
+format: 0.0.1-prealpha.2
 language: plugin/typescript
-schema: ./schema.graphql
+entrypoint: ./src
+modules: 
+  mutation:
+    schema: ./mutation/schema.graphql
+    module: ./mutation/index.ts
+  query:
+    schema: ./query/schema.graphql
+    module: ./query/index.ts

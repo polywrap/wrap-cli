@@ -1,3 +1,6 @@
+# import { Query, LogLevelEnum } into Logger from "ens/logger.core.web3api.eth"
+# import { Query, Ping } into Coingecko from "ens/coingecko.defiwrapper.eth"
+
 type TxReceipt {
   to: String!
   from: String!

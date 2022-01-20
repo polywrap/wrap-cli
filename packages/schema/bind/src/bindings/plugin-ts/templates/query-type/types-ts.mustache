@@ -20,38 +20,25 @@ export type Json = string;
 export type String = string;
 export type Boolean = boolean;
 
-{{#envTypes.query.client}}
+{{#envTypes}}
+{{#type}}
+{{#client}}
 export interface {{type}} {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
 }
-
-{{/envTypes.query.client}}
-{{#envTypes.query.sanitized}}
+{{/client}}
+{{#sanitized}}
 export interface {{type}} {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
 }
+{{/sanitized}}
+{{/type}}
+{{/envTypes}}
 
-{{/envTypes.query.sanitized}}
-{{#envTypes.mutation.client}}
-export interface {{type}} {
-  {{#properties}}
-  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
-  {{/properties}}
-}
-
-{{/envTypes.mutation.client}}
-{{#envTypes.mutation.sanitized}}
-export interface {{type}} {
-  {{#properties}}
-  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
-  {{/properties}}
-}
-
-{{/envTypes.mutation.sanitized}}
 {{#objectTypes}}
 export interface {{type}} {
   {{#properties}}

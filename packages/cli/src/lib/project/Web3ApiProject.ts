@@ -9,7 +9,7 @@ import {
 } from "../helpers";
 import { intlMsg } from "../intl";
 
-import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
+import { Web3ApiManifest, BuildManifest, MetaManifest, Manifest } from "@web3api/core-js";
 import { normalizePath } from "@web3api/os-js";
 import regexParser from "regex-parser";
 import path from "path";
@@ -121,6 +121,11 @@ export class Web3ApiProject extends Project {
     }
 
     return Promise.resolve(this._web3apiManifest);
+  }
+
+  public async getManifest<TManifest extends Manifest>(): Promise<TManifest> {
+    const manifest = await this.getWeb3ApiManifest();
+    return manifest as unknown as TManifest;
   }
 
   public async getWeb3ApiModules(): Promise<
