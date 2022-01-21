@@ -7,6 +7,7 @@ import {
 import {
   Web3ApiClient,
   Web3ApiClientConfig,
+  defaultIpfsProviders,
 } from "@web3api/client-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
@@ -38,11 +39,7 @@ describe("Filesystem plugin", () => {
           uri: "w3://ens/ipfs.web3api.eth",
           plugin: ipfsPlugin({
             provider: ipfs,
-            fallbackProviders: [
-              "https://ipfs.fleek.co",
-              "https://ipfs.io",
-              "https://ipfs.infura.io",
-            ],
+            fallbackProviders: defaultIpfsProviders,
           }),
         },
         // ENS is required for resolving domain to IPFS hashes

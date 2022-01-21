@@ -1,4 +1,4 @@
-import { getDefaultClientConfig } from "../lib/helpers/default-client-config";
+import { getTestEnvClientConfig } from "../lib/helpers/test-env-client-config";
 import { importTs } from "../lib/helpers/import-ts";
 import { fixParameters } from "../lib/helpers/parameters";
 import { validateClientConfig } from "../lib/helpers/validate-client-config";
@@ -77,7 +77,7 @@ export default {
     let finalClientConfig: Partial<Web3ApiClientConfig>;
 
     try {
-      finalClientConfig = await getDefaultClientConfig();
+      finalClientConfig = await getTestEnvClientConfig();
     } catch (e) {
       print.error(intlMsg.commands_query_error_noTestEnvFound());
       process.exitCode = 1;
