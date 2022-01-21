@@ -1,4 +1,4 @@
-use crate::malloc::malloc;
+use crate::malloc::alloc;
 
 #[link(wasm_import_module = "w3")]
 extern "C" {
@@ -25,19 +25,16 @@ pub struct InvokeArgs {
 
 /// Helper for fetching invoke args
 pub fn w3_invoke_args(method_size: u32, args_size: u32) -> InvokeArgs {
-    let method_size_ptr = malloc(method_size);
-    let args_size_ptr = malloc(args_size);
+    let method_size_ptr = alloc(method_size as usize);
+    let args_size_ptr = alloc(args_size as usize);
 
     unsafe { __w3_invoke_args(method_size_ptr as u32, args_size_ptr as u32) };
 
     let method = unsafe {
-        let res = std::slice::from_raw_parts(method_size_ptr, method_size as usize);
-        String::from_utf8_lossy(res).to_string()
+        String::from_raw_parts(method_size_ptr, method_size as usize, method_size as usize)
     };
-    let args = unsafe {
-        let res = std::slice::from_raw_parts(args_size_ptr, args_size as usize);
-        res.to_vec()
-    };
+    let args =
+        unsafe { Vec::from_raw_parts(args_size_ptr, args_size as usize, args_size as usize) };
 
     InvokeArgs { method, args }
 }
@@ -53,8 +50,9 @@ pub fn w3_invoke(args: InvokeArgs, opt_invoke_func: Option<InvokeFunction>) -> b
         }
         None => {
             let message = format!("Could not find invoke function {}", &args.method);
-            let msg_len = message.len() as u32;
-            unsafe { __w3_invoke_error(message.as_ptr() as u32, msg_len) };
+            let msg_bytes = message.as_bytes();
+            let msg_len = msg_bytes.len() as u32;
+            unsafe { __w3_invoke_error(msg_bytes.as_ptr() as u32, msg_len) };
             false
         }
     }

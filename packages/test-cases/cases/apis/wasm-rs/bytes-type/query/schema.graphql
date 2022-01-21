@@ -1,5 +1,7 @@
 type Query {
-  bytesMethod(arg: Args!): Bytes!
+  bytesMethod(
+    arg: Args!
+  ): Bytes!
 }
 
 type Args {

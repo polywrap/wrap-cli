@@ -1,4 +1,4 @@
-use crate::malloc::malloc;
+use crate::malloc::alloc;
 
 #[link(wasm_import_module = "w3")]
 extern "C" {
@@ -31,41 +31,41 @@ extern "C" {
 }
 
 /// Subinvoke API Helper
-#[allow(unused_unsafe)]
 pub fn w3_subinvoke(
     uri: &str,
     module: &str,
     method: &str,
     input: Vec<u8>,
 ) -> Result<Vec<u8>, String> {
+    let uri_buf = uri.as_bytes();
+    let module_buf = module.as_bytes();
+    let method_buf = method.as_bytes();
+
     let success = unsafe {
         __w3_subinvoke(
-            uri.as_ptr() as u32,
-            uri.len() as u32,
-            module.as_ptr() as u32,
-            module.len() as u32,
-            method.as_ptr() as u32,
-            method.len() as u32,
+            uri_buf.as_ptr() as u32,
+            uri_buf.len() as u32,
+            module_buf.as_ptr() as u32,
+            module_buf.len() as u32,
+            method_buf.as_ptr() as u32,
+            method_buf.len() as u32,
             input.as_ptr() as u32,
             input.len() as u32,
         )
     };
     if !success {
         let error_len = unsafe { __w3_subinvoke_error_len() };
-        let error_len_ptr = malloc(error_len);
+        let error_len_ptr = alloc(error_len as usize);
         unsafe { __w3_subinvoke_error(error_len_ptr as u32) };
         let error = unsafe {
-            let res = std::slice::from_raw_parts(error_len_ptr, error_len as usize);
-            String::from_utf8_lossy(res).to_string()
+            String::from_raw_parts(error_len_ptr, error_len as usize, error_len as usize)
         };
         return Err(error);
     }
     let result_len = unsafe { __w3_subinvoke_result_len() };
-    let result_len_ptr = malloc(result_len);
+    let result_len_ptr = alloc(result_len as usize);
     unsafe { __w3_subinvoke_result(result_len_ptr as u32) };
-    let result_buf = unsafe {
-        let res = std::slice::from_raw_parts(result_len_ptr, result_len as usize);
-        res.to_vec()
-    };
+    let result_buf =
+        unsafe { Vec::from_raw_parts(result_len_ptr, result_len as usize, result_len as usize) };
     Ok(result_buf)
 }

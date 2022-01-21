@@ -22,38 +22,31 @@ pub fn sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value: i32) -> Result<(),
     let max_as_i32 = {{#toUpper}}{{type}}{{/toUpper}}::_MAX_ as i32;
     let valid = value >= 0 && value < max_as_i32;
     if !valid {
-        return Err(format!(
-            "Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}",
-            value.to_string()
-        ));
+        return Err(format!("Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", value.to_string()));
     }
     Ok(())
 }
 
 pub fn get_{{#toLower}}{{type}}{{/toLower}}_value(key: &str) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, String> {
-    {{#constants}}
-    if key == "{{.}}" {
-        return Ok({{#toUpper}}{{type}}{{/toUpper}}::{{.}});
+    match key {
+        {{#constants}}
+        "{{.}}" => Ok({{#toUpper}}{{type}}{{/toUpper}}::{{.}}),
+        {{/constants}}
+        "_MAX_" => Ok({{#toUpper}}{{type}}{{/toUpper}}::_MAX_),
+        _ => Err(format!("Invalid key for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", key))
     }
-    {{/constants}}
-    Err(format!("Invalid key for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", key))
 }
 
-pub fn get_{{#toLower}}{{type}}{{/toLower}}_key(value: {{#toUpper}}{{type}}{{/toUpper}}) -> String {
+pub fn get_{{#toLower}}{{type}}{{/toLower}}_key(value: {{#toUpper}}{{type}}{{/toUpper}}) -> Result<String, String> {
     if sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value as i32).is_ok() {
-        return match value {
+        match value {
             {{#constants}}
-            {{#toUpper}}{{type}}{{/toUpper}}::{{.}} => "{{.}}".to_string(),
+            {{#toUpper}}{{type}}{{/toUpper}}::{{.}} => Ok("{{.}}".to_string()),
             {{/constants}}
-            _ => {
-                format!(
-                    "Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}",
-                    (value as i32).to_string()
-                )
-            }
-        };
+            {{#toUpper}}{{type}}{{/toUpper}}::_MAX_ => Ok("_MAX_".to_string()),
+        }
     } else {
-        format!("")
+        Err(format!("Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", (value  as i32).to_string()))
     }
 }
 
@@ -66,7 +59,7 @@ impl TryFrom<i32> for {{#toUpper}}{{type}}{{/toUpper}} {
             x if x == {{#toUpper}}{{type}}{{/toUpper}}::{{.}} as i32 => Ok({{#toUpper}}{{type}}{{/toUpper}}::{{.}}),
             {{/constants}}
             x if x == {{#toUpper}}{{type}}{{/toUpper}}::_MAX_ as i32 => Ok({{#toUpper}}{{type}}{{/toUpper}}::_MAX_),
-            _ => Err("Error converting {{#toUpper}}{{type}}{{/toUpper}} to i32"),
+            _ => Err("Error converting '{{#toUpper}}{{type}}{{/toUpper}}' to i32"),
         }
     }
 }

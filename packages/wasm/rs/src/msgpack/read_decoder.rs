@@ -363,9 +363,10 @@ impl Read for ReadDecoder {
     }
 
     fn is_next_nil(&mut self) -> Result<bool, DecodingError> {
-        match self.read_nil() {
-            Ok(_r) => Ok(true),
-            Err(e) => Err(e),
+        if let Ok(f) = Format::get_format(self) {
+            Ok(f == Format::Nil)
+        } else {
+            Err(DecodingError::NilReadError)
         }
     }
 

@@ -1,11 +1,21 @@
 type Query {
-  parse(value: String!): JSON!
+  parse(
+    value: String!
+  ): JSON!
 
-  stringify(values: [JSON!]!): String!
+  stringify(
+    values: [JSON!]!
+  ): String!
 
-  stringifyObject(object: Object!): String!
+  stringifyObject(
+    object: Object!
+  ): String!
 
-  methodJson(valueA: Int!, valueB: String!, valueC: Boolean!): JSON!
+  methodJson(
+    valueA: Int!
+    valueB: String!
+    valueC: Boolean!
+  ): JSON!
 }
 
 type Object {

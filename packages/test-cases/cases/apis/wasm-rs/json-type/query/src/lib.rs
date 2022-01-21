@@ -3,23 +3,23 @@ use polywrap_wasm_rs::JSON;
 pub use w3::*;
 
 pub fn parse(input: InputParse) -> JSON::Value {
-    JSON::to_value(input.value).unwrap()
+    JSON::to_value(input.value).expect("Failed to parse String to JSON::Value")
 }
 
 pub fn stringify(input: InputStringify) -> String {
-    let mut temp_str = String::new();
+    let mut tmp_str = String::new();
     for i in 0..input.values.len() {
         let value = &input.values[i];
-        temp_str.push_str(value.as_str().unwrap());
+        tmp_str.push_str(&value.to_string());
     }
-    temp_str
+    tmp_str
 }
 
 pub fn stringify_object(input: InputStringifyObject) -> String {
-    let mut temp_str = String::new();
-    temp_str.push_str(input.object.json_a.as_str().unwrap());
-    temp_str.push_str(input.object.json_b.as_str().unwrap());
-    temp_str
+    let mut tmp_str = String::new();
+    tmp_str.push_str(&input.object.json_a.to_string());
+    tmp_str.push_str(&input.object.json_b.to_string());
+    tmp_str
 }
 
 pub fn method_json(input: InputMethodJson) -> JSON::Value {

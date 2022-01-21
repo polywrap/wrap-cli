@@ -18,6 +18,7 @@ serde = { version = "1.0", features = ["derive"] }
 crate-type = ["cdylib"]
 
 [profile.release]
-opt-level = 'z'
+opt-level = 's'
 lto = true
 panic = 'abort'
+debug = true

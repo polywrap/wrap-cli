@@ -10,8 +10,7 @@ use polywrap_wasm_rs::{
 
 #[cfg(feature = "w3invoke")]
 #[no_mangle]
-pub fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
-
+pub extern "C" fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
     // Ensure the abort handler is properly setup
     abort::w3_abort_setup();
 
