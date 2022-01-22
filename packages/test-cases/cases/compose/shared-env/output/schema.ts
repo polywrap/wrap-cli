@@ -41,7 +41,7 @@ export const typeInfo: TypeInfo = {
       },
     }),
   },
-  queryTypes: [
+  moduleTypes: [
     {
       ...createQueryDefinition({ type: "Query" }),
       methods: [

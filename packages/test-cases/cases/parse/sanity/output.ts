@@ -271,7 +271,7 @@ export const output: TypeInfo = {
       comment: "TestImport_Enum comment"
     })
   ],
-  queryTypes: [
+  moduleTypes: [
     {
       ...createQueryDefinition({ type: "Mutation" }),
       methods: [
@@ -464,7 +464,7 @@ export const output: TypeInfo = {
       ],
     },
   ],
-  importedQueryTypes: [
+  importedmoduleTypes: [
     {
       ...createImportedQueryDefinition({
         uri: "testimport.uri.eth",

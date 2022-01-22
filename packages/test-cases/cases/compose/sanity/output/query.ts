@@ -174,7 +174,7 @@ export const typeInfo: TypeInfo = {
       ],
     },
   ],
-  queryTypes: [
+  moduleTypes: [
     {
       ...createQueryDefinition({ type: "Query", comment: "Query comment" }),
       imports: [
@@ -572,7 +572,7 @@ export const typeInfo: TypeInfo = {
       ]
     },
   ],
-  importedQueryTypes: [
+  importedmoduleTypes: [
     {
       ...createImportedQueryDefinition({
         uri: "test.eth",

@@ -8,7 +8,7 @@ import {
 
 export const typeInfo: TypeInfo = {
   ...createTypeInfo(),
-  queryTypes: [
+  moduleTypes: [
     {
       ...createQueryDefinition({ type: "Query" }),
       imports: [
@@ -32,7 +32,7 @@ export const typeInfo: TypeInfo = {
       ],
     },
   ],
-  importedQueryTypes: [
+  importedmoduleTypes: [
     {
       ...createImportedQueryDefinition({
         uri: "external.eth",

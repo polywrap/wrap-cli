@@ -132,7 +132,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
           last: true,
         } as ObjectDefinition,
       ],
-      queryTypes: [
+      moduleTypes: [
         {
           ...createQueryDefinition({ type: "Query" }),
           methods: [
@@ -268,7 +268,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
         } as QueryDefinition,
       ],
       importedObjectTypes: [],
-      importedQueryTypes: [
+      importedmoduleTypes: [
         {
           ...createImportedQueryDefinition({
             uri: "testimport.uri.eth",
@@ -390,9 +390,9 @@ describe("Web3API Schema TypeInfo Transformations", () => {
           foo: "bar",
         } as ObjectDefinition,
       ],
-      queryTypes: [],
+      moduleTypes: [],
       importedObjectTypes: [],
-      importedQueryTypes: [],
+      importedmoduleTypes: [],
     };
 
     expect(typeInfo).toMatchObject(expected);

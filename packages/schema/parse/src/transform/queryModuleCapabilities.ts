@@ -48,14 +48,14 @@ export function queryModuleCapabilities(): TypeInfoTransforms {
     },
     leave: {
       TypeInfo: (info: TypeInfo) => {
-        for (const queryDef of info.queryTypes) {
+        for (const queryDef of info.moduleTypes) {
           const module = queryDef.type.toLowerCase() as InvokableModules;
           const capabilities = queryModuleCapabilities[module];
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (queryDef as any).capabilities = capabilities;
         }
 
-        for (const importedQueryDef of info.importedQueryTypes) {
+        for (const importedQueryDef of info.importedmoduleTypes) {
           if (enabledInterfaces.has(importedQueryDef.type)) {
             importedQueryDef.isInterface = true;
           }

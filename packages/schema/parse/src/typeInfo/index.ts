@@ -21,11 +21,11 @@ export * from "./env";
 
 export interface TypeInfo {
   objectTypes: ObjectDefinition[];
-  queryTypes: QueryDefinition[];
+  moduleTypes: QueryDefinition[];
   enumTypes: EnumDefinition[];
   interfaceTypes: InterfaceDefinition[];
   importedObjectTypes: ImportedObjectDefinition[];
-  importedQueryTypes: ImportedQueryDefinition[];
+  importedmoduleTypes: ImportedQueryDefinition[];
   importedEnumTypes: ImportedEnumDefinition[];
   envTypes: {
     query: EnvDefinition;
@@ -37,10 +37,10 @@ export function createTypeInfo(): TypeInfo {
   return {
     objectTypes: [],
     enumTypes: [],
-    queryTypes: [],
+    moduleTypes: [],
     interfaceTypes: [],
     importedObjectTypes: [],
-    importedQueryTypes: [],
+    importedmoduleTypes: [],
     importedEnumTypes: [],
     envTypes: {
       query: createEnvDefinition({}),
@@ -54,11 +54,11 @@ type ImportedDefinition = ImportedObjectDefinition | ImportedQueryDefinition;
 export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
   const combined: TypeInfo = {
     objectTypes: [],
-    queryTypes: [],
+    moduleTypes: [],
     enumTypes: [],
     interfaceTypes: [],
     importedObjectTypes: [],
-    importedQueryTypes: [],
+    importedmoduleTypes: [],
     importedEnumTypes: [],
     envTypes: {
       query: createEnvDefinition({}),
@@ -82,8 +82,8 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       tryInsert(combined.objectTypes, objectType);
     }
 
-    for (const queryType of typeInfo.queryTypes) {
-      tryInsert(combined.queryTypes, queryType);
+    for (const queryType of typeInfo.moduleTypes) {
+      tryInsert(combined.moduleTypes, queryType);
     }
 
     for (const interfaceType of typeInfo.interfaceTypes) {
@@ -133,9 +133,9 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       );
     }
 
-    for (const importedQueryType of typeInfo.importedQueryTypes) {
+    for (const importedQueryType of typeInfo.importedmoduleTypes) {
       tryInsert(
-        combined.importedQueryTypes,
+        combined.importedmoduleTypes,
         importedQueryType,
         compareImportedType,
         (a: ImportedQueryDefinition, b: ImportedQueryDefinition) => {

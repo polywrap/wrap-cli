@@ -106,7 +106,7 @@ export type {{type}} = {{type}}Enum | {{type}}String;
 
 /// Imported Queries START ///
 
-{{#importedQueryTypes}}
+{{#importedmoduleTypes}}
 {{#methods}}
 /* URI: "{{parent.uri}}" */
 interface {{parent.type}}_Input_{{name}} extends Record<string, unknown> {
@@ -136,5 +136,5 @@ export const {{type}} = {
   {{/methods}}
 }
 
-{{/importedQueryTypes}}
+{{/importedmoduleTypes}}
 /// Imported Queries END ///

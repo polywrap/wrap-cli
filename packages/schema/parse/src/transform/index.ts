@@ -94,9 +94,9 @@ export function transformTypeInfo(
     );
   }
 
-  for (let i = 0; i < result.queryTypes.length; ++i) {
-    result.queryTypes[i] = visitQueryDefinition(
-      result.queryTypes[i],
+  for (let i = 0; i < result.moduleTypes.length; ++i) {
+    result.moduleTypes[i] = visitQueryDefinition(
+      result.moduleTypes[i],
       transforms
     );
   }
@@ -108,9 +108,9 @@ export function transformTypeInfo(
     );
   }
 
-  for (let i = 0; i < result.importedQueryTypes.length; ++i) {
-    result.importedQueryTypes[i] = visitImportedQueryDefinition(
-      result.importedQueryTypes[i],
+  for (let i = 0; i < result.importedmoduleTypes.length; ++i) {
+    result.importedmoduleTypes[i] = visitImportedQueryDefinition(
+      result.importedmoduleTypes[i],
       transforms
     );
   }

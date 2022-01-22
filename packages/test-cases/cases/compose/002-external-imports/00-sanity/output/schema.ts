@@ -12,7 +12,7 @@ export const typeInfo: TypeInfo = {
   ...createTypeInfo(),
   objectTypes: [
   ],
-  queryTypes: [
+  moduleTypes: [
     {
       ...createQueryDefinition({ type: "Query" }),
       imports: [

@@ -28,7 +28,7 @@ export const typeInfo: TypeInfo = {
     }),
     mutation: createEnvDefinition({}),
   },
-  queryTypes: [
+  moduleTypes: [
     {
       ...createQueryDefinition({ type: "Query" }),
       methods: [

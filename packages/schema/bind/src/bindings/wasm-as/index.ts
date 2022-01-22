@@ -44,13 +44,13 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
 
   // Generate imported folder
   if (
-    typeInfo.importedQueryTypes.length > 0 ||
+    typeInfo.importedmoduleTypes.length > 0 ||
     typeInfo.importedObjectTypes.length > 0
   ) {
     const importEntries: OutputEntry[] = [];
 
     // Generate imported query type folders
-    for (const importedQueryType of typeInfo.importedQueryTypes) {
+    for (const importedQueryType of typeInfo.importedmoduleTypes) {
       importEntries.push({
         type: "Directory",
         name: importedQueryType.type,
@@ -112,7 +112,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
   }
 
   // Generate query type folders
-  for (const queryType of typeInfo.queryTypes) {
+  for (const queryType of typeInfo.moduleTypes) {
     entries.push({
       type: "Directory",
       name: queryType.type,

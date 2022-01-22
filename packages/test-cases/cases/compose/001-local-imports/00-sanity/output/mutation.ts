@@ -16,7 +16,7 @@ import {
 
 export const typeInfo: TypeInfo = {
   ...createTypeInfo(),
-  queryTypes: [
+  moduleTypes: [
     {
       ...createQueryDefinition({ type: "Mutation" }),
       methods: [

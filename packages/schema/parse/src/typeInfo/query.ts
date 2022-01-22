@@ -1,14 +1,14 @@
-export const queryTypes = {
+export const moduleTypes = {
   Mutation: "Mutation",
   Query: "Query",
 };
 
-export type QueryTypes = typeof queryTypes;
+export type moduleTypes = typeof moduleTypes;
 
-export type QueryType = keyof QueryTypes;
+export type QueryType = keyof moduleTypes;
 
 export function isQueryType(type: string): type is QueryType {
-  return type in queryTypes;
+  return type in moduleTypes;
 }
 
-export const queryTypeNames = Object.keys(queryTypes);
+export const queryTypeNames = Object.keys(moduleTypes);

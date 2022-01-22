@@ -42,7 +42,7 @@ export const typeInfo: TypeInfo = {
     }),
   },
   enumTypes: [],
-  queryTypes: [
+  moduleTypes: [
     {
       ...createQueryDefinition({ type: "Mutation", comment: "Mutation comment" }),
       imports: [
@@ -325,7 +325,7 @@ export const typeInfo: TypeInfo = {
       ],
     },
   ],
-  importedQueryTypes: [
+  importedmoduleTypes: [
     {
       ...createImportedQueryDefinition({
         uri: "test.eth",

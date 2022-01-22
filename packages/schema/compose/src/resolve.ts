@@ -77,7 +77,7 @@ export async function resolveUseStatements(
 
   const importedQueryByNamespace: Record<string, ImportedQueryDefinition> = {};
 
-  typeInfo.importedQueryTypes.forEach((value) => {
+  typeInfo.importedmoduleTypes.forEach((value) => {
     importedQueryByNamespace[value.namespace] = value;
   });
 
@@ -164,12 +164,12 @@ export async function resolveImportsAndParseSchemas(
 
   const subTypeInfo: TypeInfo = {
     objectTypes: [],
-    queryTypes: [],
+    moduleTypes: [],
     enumTypes: [],
     interfaceTypes: [],
     importedEnumTypes: [],
     importedObjectTypes: [],
-    importedQueryTypes: [],
+    importedmoduleTypes: [],
     envTypes: {
       mutation: createEnvDefinition({}),
       query: createEnvDefinition({}),
@@ -656,12 +656,12 @@ async function resolveExternalImports(
 
       // If it's a query type
       if (importedType === "Query" || importedType === "Mutation") {
-        extTypes = extTypeInfo.queryTypes;
+        extTypes = extTypeInfo.moduleTypes;
         visitorFunc = visitQueryDefinition;
-        const queryIdx = extTypeInfo.queryTypes.findIndex(
+        const queryIdx = extTypeInfo.moduleTypes.findIndex(
           (def) => def.type === importedType
         );
-        const type = extTypeInfo.queryTypes[queryIdx];
+        const type = extTypeInfo.moduleTypes[queryIdx];
         trueType = {
           ...createImportedQueryDefinition({
             ...type,
@@ -815,11 +815,11 @@ async function resolveExternalImports(
           );
         };
       } else if (importType.kind === DefinitionKind.ImportedQuery) {
-        destArray = typeInfo.importedQueryTypes;
+        destArray = typeInfo.importedmoduleTypes;
         append = () => {
           const importDef = importType as ImportedQueryDefinition;
           // Namespace all object types
-          typeInfo.importedQueryTypes.push(
+          typeInfo.importedmoduleTypes.push(
             visitImportedQueryDefinition(importDef, namespaceTypes(namespace))
           );
         };

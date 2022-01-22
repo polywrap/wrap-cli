@@ -32,7 +32,7 @@ import {
   ASTVisitor,
 } from "graphql";
 
-const visitorEnter = (queryTypes: QueryDefinition[], state: State) => ({
+const visitorEnter = (moduleTypes: QueryDefinition[], state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const nodeName = node.name.value;
 
@@ -53,7 +53,7 @@ const visitorEnter = (queryTypes: QueryDefinition[], state: State) => ({
       ),
       comment: node.description?.value,
     });
-    queryTypes.push(query);
+    moduleTypes.push(query);
     state.currentQuery = query;
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
@@ -293,11 +293,11 @@ const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
   },
 });
 
-export const getQueryTypesVisitor = (typeInfo: TypeInfo): ASTVisitor => {
+export const getmoduleTypesVisitor = (typeInfo: TypeInfo): ASTVisitor => {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo.queryTypes, state),
+    enter: visitorEnter(typeInfo.moduleTypes, state),
     leave: visitorLeave(typeInfo, state),
   };
 };

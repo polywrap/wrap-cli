@@ -34,7 +34,7 @@ export const typeInfo: TypeInfo = {
       ],
     },
   ],
-  queryTypes: [
+  moduleTypes: [
     {
       ...createQueryDefinition({ type: "Mutation" }),
       imports: [],
