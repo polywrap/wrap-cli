@@ -268,7 +268,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
         } as QueryDefinition,
       ],
       importedObjectTypes: [],
-      importedmoduleTypes: [
+      importedModuleTypes: [
         {
           ...createImportedQueryDefinition({
             uri: "testimport.uri.eth",
@@ -392,7 +392,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
       ],
       moduleTypes: [],
       importedObjectTypes: [],
-      importedmoduleTypes: [],
+      importedModuleTypes: [],
     };
 
     expect(typeInfo).toMatchObject(expected);

@@ -43,7 +43,7 @@ type Query {
   ): [Int32!]!
 }
 
-type CustomQueryType {
+type CustomModuleType {
   str: String!
   optStr: String
   u: UInt!
@@ -59,7 +59,7 @@ type CustomQueryType {
   commonType: CommonType!
 }
 
-type AnotherQueryType {
+type AnotherModuleType {
   prop: String
 }
 

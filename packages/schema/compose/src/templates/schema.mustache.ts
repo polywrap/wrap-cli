@@ -131,7 +131,7 @@ enum {{type}} {
 {{/enumTypes}}
 ### Imported Queries START ###
 
-{{#importedmoduleTypes}}{{#comment}}
+{{#importedModuleTypes}}{{#comment}}
 """
 {{comment}}
 """
@@ -161,7 +161,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   {{/methods}}
 }{{/methods.length}}
 
-{{/importedmoduleTypes}}
+{{/importedModuleTypes}}
 ### Imported Queries END ###
 
 ### Imported Objects START ###

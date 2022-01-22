@@ -24,7 +24,7 @@ export function interfaceUris(): TypeInfoTransforms {
     leave: {
       TypeInfo: (typeInfo: TypeInfo) => {
         for (const interfaceType of Object.keys(uniqueQueryInterfaceTypes)) {
-          const importedInterface = typeInfo.importedmoduleTypes.find(
+          const importedInterface = typeInfo.importedModuleTypes.find(
             (importedQuery) => importedQuery.type === interfaceType
           );
 

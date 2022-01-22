@@ -19,7 +19,7 @@ export const typeInfo: TypeInfo = {
   ...createTypeInfo(),
   objectTypes: [
     {
-      ...createObjectDefinition({ type: "CustomQueryType" }),
+      ...createObjectDefinition({ type: "CustomModuleType" }),
       properties: [
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
         createScalarPropertyDefinition({ name: "optStr", type: "String", required: false }),
@@ -76,7 +76,7 @@ export const typeInfo: TypeInfo = {
       ],
     },
     {
-      ...createObjectDefinition({ type: "AnotherQueryType" }),
+      ...createObjectDefinition({ type: "AnotherModuleType" }),
       properties: [createScalarPropertyDefinition({ name: "prop", type: "String" })],
     },
     {

@@ -25,7 +25,7 @@ export interface TypeInfo {
   enumTypes: EnumDefinition[];
   interfaceTypes: InterfaceDefinition[];
   importedObjectTypes: ImportedObjectDefinition[];
-  importedmoduleTypes: ImportedQueryDefinition[];
+  importedModuleTypes: ImportedQueryDefinition[];
   importedEnumTypes: ImportedEnumDefinition[];
   envTypes: {
     query: EnvDefinition;
@@ -40,7 +40,7 @@ export function createTypeInfo(): TypeInfo {
     moduleTypes: [],
     interfaceTypes: [],
     importedObjectTypes: [],
-    importedmoduleTypes: [],
+    importedModuleTypes: [],
     importedEnumTypes: [],
     envTypes: {
       query: createEnvDefinition({}),
@@ -58,7 +58,7 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
     enumTypes: [],
     interfaceTypes: [],
     importedObjectTypes: [],
-    importedmoduleTypes: [],
+    importedModuleTypes: [],
     importedEnumTypes: [],
     envTypes: {
       query: createEnvDefinition({}),
@@ -82,8 +82,8 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       tryInsert(combined.objectTypes, objectType);
     }
 
-    for (const queryType of typeInfo.moduleTypes) {
-      tryInsert(combined.moduleTypes, queryType);
+    for (const ModuleType of typeInfo.moduleTypes) {
+      tryInsert(combined.moduleTypes, ModuleType);
     }
 
     for (const interfaceType of typeInfo.interfaceTypes) {
@@ -133,10 +133,10 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       );
     }
 
-    for (const importedQueryType of typeInfo.importedmoduleTypes) {
+    for (const importedModuleType of typeInfo.importedModuleTypes) {
       tryInsert(
-        combined.importedmoduleTypes,
-        importedQueryType,
+        combined.importedModuleTypes,
+        importedModuleType,
         compareImportedType,
         (a: ImportedQueryDefinition, b: ImportedQueryDefinition) => {
           return { ...a, isInterface: a.isInterface || b.isInterface };

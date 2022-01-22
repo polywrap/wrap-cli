@@ -77,7 +77,7 @@ export async function resolveUseStatements(
 
   const importedQueryByNamespace: Record<string, ImportedQueryDefinition> = {};
 
-  typeInfo.importedmoduleTypes.forEach((value) => {
+  typeInfo.importedModuleTypes.forEach((value) => {
     importedQueryByNamespace[value.namespace] = value;
   });
 
@@ -169,7 +169,7 @@ export async function resolveImportsAndParseSchemas(
     interfaceTypes: [],
     importedEnumTypes: [],
     importedObjectTypes: [],
-    importedmoduleTypes: [],
+    importedModuleTypes: [],
     envTypes: {
       mutation: createEnvDefinition({}),
       query: createEnvDefinition({}),
@@ -815,11 +815,11 @@ async function resolveExternalImports(
           );
         };
       } else if (importType.kind === DefinitionKind.ImportedQuery) {
-        destArray = typeInfo.importedmoduleTypes;
+        destArray = typeInfo.importedModuleTypes;
         append = () => {
           const importDef = importType as ImportedQueryDefinition;
           // Namespace all object types
-          typeInfo.importedmoduleTypes.push(
+          typeInfo.importedModuleTypes.push(
             visitImportedQueryDefinition(importDef, namespaceTypes(namespace))
           );
         };

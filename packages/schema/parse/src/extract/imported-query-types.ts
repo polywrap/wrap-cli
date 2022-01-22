@@ -25,7 +25,7 @@ import {
 } from "graphql";
 
 const visitorEnter = (
-  importedmoduleTypes: ImportedQueryDefinition[],
+  importedModuleTypes: ImportedQueryDefinition[],
   state: State
 ) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
@@ -51,7 +51,7 @@ const visitorEnter = (
       ),
       comment: node.description?.value,
     });
-    importedmoduleTypes.push(importedType);
+    importedModuleTypes.push(importedType);
     state.currentImport = importedType;
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
@@ -106,13 +106,13 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export const getImportedmoduleTypesVisitor = (
+export const getimportedModuleTypesVisitor = (
   typeInfo: TypeInfo
 ): ASTVisitor => {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo.importedmoduleTypes, state),
+    enter: visitorEnter(typeInfo.importedModuleTypes, state),
     leave: visitorLeave(state),
   };
 };

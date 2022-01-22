@@ -5,10 +5,10 @@ export const moduleTypes = {
 
 export type moduleTypes = typeof moduleTypes;
 
-export type QueryType = keyof moduleTypes;
+export type ModuleType = keyof moduleTypes;
 
-export function isQueryType(type: string): type is QueryType {
+export function isModuleType(type: string): type is ModuleType {
   return type in moduleTypes;
 }
 
-export const queryTypeNames = Object.keys(moduleTypes);
+export const ModuleTypeNames = Object.keys(moduleTypes);

@@ -108,9 +108,9 @@ export function transformTypeInfo(
     );
   }
 
-  for (let i = 0; i < result.importedmoduleTypes.length; ++i) {
-    result.importedmoduleTypes[i] = visitImportedQueryDefinition(
-      result.importedmoduleTypes[i],
+  for (let i = 0; i < result.importedModuleTypes.length; ++i) {
+    result.importedModuleTypes[i] = visitImportedQueryDefinition(
+      result.importedModuleTypes[i],
       transforms
     );
   }

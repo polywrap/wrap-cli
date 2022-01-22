@@ -464,7 +464,7 @@ export const output: TypeInfo = {
       ],
     },
   ],
-  importedmoduleTypes: [
+  importedModuleTypes: [
     {
       ...createImportedQueryDefinition({
         uri: "testimport.uri.eth",

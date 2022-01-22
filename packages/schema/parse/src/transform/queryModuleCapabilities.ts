@@ -55,7 +55,7 @@ export function queryModuleCapabilities(): TypeInfoTransforms {
           (queryDef as any).capabilities = capabilities;
         }
 
-        for (const importedQueryDef of info.importedmoduleTypes) {
+        for (const importedQueryDef of info.importedModuleTypes) {
           if (enabledInterfaces.has(importedQueryDef.type)) {
             importedQueryDef.isInterface = true;
           }

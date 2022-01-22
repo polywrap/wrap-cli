@@ -315,7 +315,7 @@ export const typeInfo: TypeInfo = {
   ],
   objectTypes: [
     {
-      ...createObjectDefinition({ type: "CustomQueryType", comment: "CustomQueryType comment" }),
+      ...createObjectDefinition({ type: "CustomModuleType", comment: "CustomModuleType comment" }),
       properties: [
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
         createScalarPropertyDefinition({ name: "optStr", type: "String", required: false }),
@@ -378,7 +378,7 @@ export const typeInfo: TypeInfo = {
       ],
     },
     {
-      ...createObjectDefinition({ type: "AnotherQueryType" }),
+      ...createObjectDefinition({ type: "AnotherModuleType" }),
       properties: [createScalarPropertyDefinition({ name: "prop", type: "String" })],
     },
     {
@@ -537,7 +537,7 @@ export const typeInfo: TypeInfo = {
       ]
     },
   ],
-  importedmoduleTypes: [
+  importedModuleTypes: [
     {
       ...createImportedQueryDefinition({
         uri: "test.eth",

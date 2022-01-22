@@ -1,6 +1,6 @@
 import { ScalarType, isScalarType } from "./scalar";
 import { OperationType, isOperationType } from "./operation";
-import { QueryType, isQueryType } from "./query";
+import { ModuleType, isModuleType } from "./query";
 
 export enum DefinitionKind {
   Generic = 0,
@@ -326,7 +326,7 @@ export function createMethodDefinition(args: {
 }
 
 export interface QueryDefinition extends GenericDefinition, WithComment {
-  type: QueryType;
+  type: ModuleType;
   methods: MethodDefinition[];
   imports: { type: string }[];
   interfaces: InterfaceImplementedDefinition[];
@@ -338,7 +338,7 @@ export function createQueryDefinition(args: {
   required?: boolean;
   comment?: string;
 }): QueryDefinition {
-  if (!isQueryType(args.type)) {
+  if (!isModuleType(args.type)) {
     throw Error(
       `createQueryDefinition: Unrecognized query type provided "${args.type}"`
     );
@@ -446,7 +446,7 @@ export function createImportedQueryDefinition(args: {
   interfaces?: InterfaceImplementedDefinition[];
   comment?: string;
 }): ImportedQueryDefinition {
-  if (!isQueryType(args.nativeType)) {
+  if (!isModuleType(args.nativeType)) {
     throw Error(
       `createImportedQueryDefinition: Unrecognized query type provided "${args.nativeType}"`
     );
