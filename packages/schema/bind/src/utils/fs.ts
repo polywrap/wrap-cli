@@ -47,13 +47,9 @@ export function writeDirectory(
 ): string[] {
   const paths: string[] = [];
 
-  // console.log(">>>>>>>>>>> writing to directory")
-
   const outputDirectoryEntry = (root: string, entry: OutputEntry) => {
     const entryPath = path.join(root, entry.name);
     paths.push(entryPath);
-
-    console.log(entry.type, " * ", entryPath, " * ", entry.name);
 
     switch (entry.type) {
       case "File": {
@@ -88,8 +84,6 @@ export function writeDirectory(
       }
     }
   };
-
-  // console.log(dir)
 
   for (const entry of dir.entries) {
     outputDirectoryEntry(outputDir, entry);

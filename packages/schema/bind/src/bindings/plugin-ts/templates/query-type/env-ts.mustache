@@ -1,0 +1,22 @@
+{{#envTypes.query.sanitized}}
+import {
+  QueryEnv
+} from ".";
+
+export let env: QueryEnv | null = null;
+
+export function loadEnv(_env: QueryEnv): void {
+  env = _env;
+}
+{{/envTypes.query.sanitized}}
+{{#envTypes.mutation.sanitized}}
+import {
+  MutationEnv
+} from ".";
+
+export let env: MutationEnv | null = null;
+
+export function loadEnv(_env: MutationEnv): void {
+  env = _env;
+}
+{{/envTypes.mutation.sanitized}}

@@ -1,0 +1,65 @@
+import { Plugin, PluginFactory, PluginPackageManifest, PluginModules, PluginModule } from "@web3api/core-js";
+{{#modules}}
+{{#query}}
+{{#env}}
+import { loadEnv as loadQueryEnv } from "../{{#toImportablePath}}{{module}}{{/toImportablePath}}/w3";
+{{/env}}
+import { Query, QueryConfigs } from "../{{#toImportablePath}}{{module}}{{/toImportablePath}}";
+{{/query}}
+{{#mutation}}
+{{#env}}
+import { loadEnv as loadMutationEnv } from "../{{#toImportablePath}}{{module}}{{/toImportablePath}}/w3";
+{{/env}}
+import { Mutation, MutationConfigs } from "../{{#toImportablePath}}{{module}}{{/toImportablePath}}";
+{{/mutation}}
+{{/modules}}
+import { manifest } from "./manifest";
+
+export interface PluginConfigs {
+  query: QueryConfigs;
+  mutation: MutationConfigs;
+}
+
+class {{name}}Plugin extends Plugin {
+  constructor(private _configs: PluginConfigs) {
+    super();
+  }
+
+  public static manifest(): PluginPackageManifest {
+    return manifest;
+  }
+
+  public getModules(): PluginModules {
+    return {
+      {{#modules}}
+      {{#query}}
+      query: ((new Query(this._configs.query)) as unknown) as PluginModule,
+      {{/query}}
+      {{#mutation}}
+      mutation: ((new Mutation(this._configs.mutation)) as unknown) as PluginModule,
+      {{/mutation}}
+      {{/modules}}
+    };
+  }
+
+  public loadEnvByModule(module: InvokableModule, env: Record<string, unknown> ): void {
+    switch(module) {
+      case "query":
+        return loadQueryEnv(env);
+      case "mutation":
+        return loadMutationEnv(env);
+      default:
+        throw new Error(`Unknown module: ${module}`);
+    }
+  }
+}
+
+export const {{#toLowerCase}}{{name}}{{/toLowerCase}}Plugin: PluginFactory<PluginConfigs> = (
+  opts: PluginConfigs
+) => {
+  return {
+    factory: () => new {{name}}Plugin(opts),
+    manifest: manifest,
+  };
+};
+export const plugin = {{#toLowerCase}}{{name}}{{/toLowerCase}}Plugin;

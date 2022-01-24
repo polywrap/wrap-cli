@@ -4,8 +4,21 @@ export const toLowerCase: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
     let rendered = render(value);
     return rendered.toLowerCase();
-  }
-}
+  };
+};
+
+export const toImportablePath: MustacheFunction = () => {
+  return (value: string, render: (template: string) => string) => {
+    let rendered = render(value);
+    if (rendered.startsWith("./")) {
+      rendered = rendered.substring(2);
+    }
+    if (rendered.endsWith(".ts") || rendered.endsWith(".js")) {
+      rendered = rendered.substring(0, rendered.length - 3);
+    }
+    return rendered;
+  };
+};
 
 export const toTypescript: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {

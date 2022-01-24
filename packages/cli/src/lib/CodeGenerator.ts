@@ -54,7 +54,7 @@ export interface CodeGeneratorConfig {
 export class CodeGenerator {
   private _schema: string | undefined = "";
 
-  constructor(private _config: CodeGeneratorConfig, private print?: any) {}
+  constructor(private _config: CodeGeneratorConfig) {}
 
   public async generate(): Promise<boolean> {
     try {
@@ -71,8 +71,6 @@ export class CodeGenerator {
   private async _generateCode() {
     const { schemaComposer, project } = this._config;
 
-    this.print.debug("generating code");
-
     const run = async (spinner?: Ora) => {
       const bindLanguage = manifestLanguageToBindLanguage(
         await project.getManifestLanguage()
@@ -84,7 +82,7 @@ export class CodeGenerator {
       }
 
       // Get the fully composed schema
-      const composed = await schemaComposer.getComposedSchemas(this.print);
+      const composed = await schemaComposer.getComposedSchemas();
 
       if (!composed.combined) {
         throw Error(intlMsg.lib_codeGenerator_noComposedSchema());
@@ -132,8 +130,12 @@ export class CodeGenerator {
 
         // Get the Web3ApiManifest
         const manifest = await project.getManifest<PluginManifest>();
+        const metaManifest = await project.getMetaManifest();
         const modulesToBuild = this._getModulesToBuild(manifest);
         const entrypoint = manifest.entrypoint;
+        const entrypointDirectory = manifest.entrypoint
+          ? this._getGenerationDirectory(entrypoint, "")
+          : undefined;
 
         const queryModule = manifest.modules.query?.module as string;
         const queryDirectory = manifest.modules.query
@@ -144,12 +146,11 @@ export class CodeGenerator {
           ? this._getGenerationDirectory(entrypoint, mutationModule)
           : undefined;
 
-        this.print.debug("queryDirectory: " + queryDirectory);
-        this.print.debug("mutationDirectory: " + mutationDirectory);
-
-        this.print.debug("binding schema");
-
         // Clean the code generation
+        if (entrypointDirectory) {
+          this._resetDir(entrypointDirectory);
+        }
+
         if (queryDirectory) {
           this._resetDir(queryDirectory);
         }
@@ -159,27 +160,41 @@ export class CodeGenerator {
         }
 
         const content = bindSchema({
+          entrypoint:
+            metaManifest && this._schema
+              ? {
+                  manifest,
+                  metaManifest,
+                  schema: this._schema,
+                  outputDirAbs: entrypointDirectory as string,
+                }
+              : undefined,
           query: modulesToBuild.query
             ? {
                 typeInfo: composed.query?.typeInfo as TypeInfo,
-                schema: composed.combined?.schema as string,
                 outputDirAbs: queryDirectory as string,
               }
             : undefined,
           mutation: modulesToBuild.mutation
             ? {
                 typeInfo: composed.mutation?.typeInfo as TypeInfo,
-                schema: composed.combined?.schema as string,
                 outputDirAbs: mutationDirectory as string,
               }
             : undefined,
           bindLanguage,
         });
 
-        this.print.debug("write dir");
-
         // Output the bindings
         const filesWritten: string[] = [];
+
+        if (content.entrypoint && entrypointDirectory) {
+          filesWritten.push(
+            ...writeDirectory(
+              entrypointDirectory,
+              content.entrypoint as OutputDirectory
+            )
+          );
+        }
 
         if (content.query && queryDirectory) {
           filesWritten.push(
@@ -243,7 +258,9 @@ export class CodeGenerator {
       ? entrypoint
       : path.join(project.getRootDir(), entrypoint, modulePath);
 
-    const genDir = `${path.dirname(absolute)}/w3`;
+    const genDir = !path.extname(absolute)
+      ? path.join(absolute, "w3")
+      : path.join(path.dirname(absolute), "w3");
 
     if (!existsSync(genDir)) {
       mkdirSync(genDir);

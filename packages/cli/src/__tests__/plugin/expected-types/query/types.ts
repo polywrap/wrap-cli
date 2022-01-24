@@ -20,11 +20,23 @@ export type Json = string;
 export type String = string;
 export type Boolean = boolean;
 
+/// Envs START ///
+export interface QueryEnv {
+  arg1: String;
+}
+/// Envs END ///
+
+/// Objects START ///
 export interface Object {
   u: UInt;
   array: Array<Boolean>;
   bytes?: Bytes | null;
 }
+
+/// Objects END ///
+
+/// Enums START ///
+/// Enums END ///
 
 /// Imported Objects START ///
 
@@ -106,35 +118,6 @@ export interface Ethereum_Network {
   name: String;
   chainId: Int;
   ensAddress?: String | null;
-}
-
-/* URI: "ens/ethereum.web3api.eth" */
-export interface Ethereum_TxResponse {
-  hash: String;
-  to?: String | null;
-  from: String;
-  nonce: UInt32;
-  gasLimit: BigInt;
-  gasPrice?: BigInt | null;
-  data: String;
-  value: BigInt;
-  chainId: UInt32;
-  blockNumber?: BigInt | null;
-  blockHash?: String | null;
-  timestamp?: UInt32 | null;
-  confirmations: UInt32;
-  raw?: String | null;
-  r?: String | null;
-  s?: String | null;
-  v?: UInt32 | null;
-  type?: UInt32 | null;
-  accessList?: Array<Types.Ethereum_Access> | null;
-}
-
-/* URI: "ens/ethereum.web3api.eth" */
-export interface Ethereum_Access {
-  address: String;
-  storageKeys: Array<String>;
 }
 
 /// Imported Objects END ///
@@ -434,144 +417,6 @@ export const Ethereum_Query = {
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "getNetwork",
-      input
-    });
-  }
-}
-
-/* URI: "ens/ethereum.web3api.eth" */
-interface Ethereum_Mutation_Input_callContractMethod extends Record<string, unknown> {
-  address: String;
-  method: String;
-  args?: Array<String> | null;
-  connection?: Types.Ethereum_Connection | null;
-  txOverrides?: Types.Ethereum_TxOverrides | null;
-}
-
-/* URI: "ens/ethereum.web3api.eth" */
-interface Ethereum_Mutation_Input_callContractMethodAndWait extends Record<string, unknown> {
-  address: String;
-  method: String;
-  args?: Array<String> | null;
-  connection?: Types.Ethereum_Connection | null;
-  txOverrides?: Types.Ethereum_TxOverrides | null;
-}
-
-/* URI: "ens/ethereum.web3api.eth" */
-interface Ethereum_Mutation_Input_sendTransaction extends Record<string, unknown> {
-  tx: Types.Ethereum_TxRequest;
-  connection?: Types.Ethereum_Connection | null;
-}
-
-/* URI: "ens/ethereum.web3api.eth" */
-interface Ethereum_Mutation_Input_sendTransactionAndWait extends Record<string, unknown> {
-  tx: Types.Ethereum_TxRequest;
-  connection?: Types.Ethereum_Connection | null;
-}
-
-/* URI: "ens/ethereum.web3api.eth" */
-interface Ethereum_Mutation_Input_deployContract extends Record<string, unknown> {
-  abi: String;
-  bytecode: String;
-  args?: Array<String> | null;
-  connection?: Types.Ethereum_Connection | null;
-}
-
-/* URI: "ens/ethereum.web3api.eth" */
-interface Ethereum_Mutation_Input_signMessage extends Record<string, unknown> {
-  message: String;
-  connection?: Types.Ethereum_Connection | null;
-}
-
-/* URI: "ens/ethereum.web3api.eth" */
-interface Ethereum_Mutation_Input_sendRPC extends Record<string, unknown> {
-  method: String;
-  params: Array<String>;
-  connection?: Types.Ethereum_Connection | null;
-}
-
-/* URI: "ens/ethereum.web3api.eth" */
-export const Ethereum_Mutation = {
-  callContractMethod: async (
-    input: Ethereum_Mutation_Input_callContractMethod,
-    client: Client
-  ): Promise<InvokeApiResult<Types.Ethereum_TxResponse>> => {
-    return client.invoke<Types.Ethereum_TxResponse>({
-      uri: "ens/ethereum.web3api.eth",
-      module: "mutation",
-      method: "callContractMethod",
-      input
-    });
-  },
-
-  callContractMethodAndWait: async (
-    input: Ethereum_Mutation_Input_callContractMethodAndWait,
-    client: Client
-  ): Promise<InvokeApiResult<Types.Ethereum_TxReceipt>> => {
-    return client.invoke<Types.Ethereum_TxReceipt>({
-      uri: "ens/ethereum.web3api.eth",
-      module: "mutation",
-      method: "callContractMethodAndWait",
-      input
-    });
-  },
-
-  sendTransaction: async (
-    input: Ethereum_Mutation_Input_sendTransaction,
-    client: Client
-  ): Promise<InvokeApiResult<Types.Ethereum_TxResponse>> => {
-    return client.invoke<Types.Ethereum_TxResponse>({
-      uri: "ens/ethereum.web3api.eth",
-      module: "mutation",
-      method: "sendTransaction",
-      input
-    });
-  },
-
-  sendTransactionAndWait: async (
-    input: Ethereum_Mutation_Input_sendTransactionAndWait,
-    client: Client
-  ): Promise<InvokeApiResult<Types.Ethereum_TxReceipt>> => {
-    return client.invoke<Types.Ethereum_TxReceipt>({
-      uri: "ens/ethereum.web3api.eth",
-      module: "mutation",
-      method: "sendTransactionAndWait",
-      input
-    });
-  },
-
-  deployContract: async (
-    input: Ethereum_Mutation_Input_deployContract,
-    client: Client
-  ): Promise<InvokeApiResult<String>> => {
-    return client.invoke<String>({
-      uri: "ens/ethereum.web3api.eth",
-      module: "mutation",
-      method: "deployContract",
-      input
-    });
-  },
-
-  signMessage: async (
-    input: Ethereum_Mutation_Input_signMessage,
-    client: Client
-  ): Promise<InvokeApiResult<String>> => {
-    return client.invoke<String>({
-      uri: "ens/ethereum.web3api.eth",
-      module: "mutation",
-      method: "signMessage",
-      input
-    });
-  },
-
-  sendRPC: async (
-    input: Ethereum_Mutation_Input_sendRPC,
-    client: Client
-  ): Promise<InvokeApiResult<String | null>> => {
-    return client.invoke<String | null>({
-      uri: "ens/ethereum.web3api.eth",
-      module: "mutation",
-      method: "sendRPC",
       input
     });
   }

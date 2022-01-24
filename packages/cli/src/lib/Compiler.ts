@@ -232,14 +232,12 @@ export class Compiler {
       query: modulesToBuild.query
         ? {
             typeInfo: composerOutput.query?.typeInfo as TypeInfo,
-            schema: composerOutput.combined?.schema as string,
             outputDirAbs: queryDirectory as string,
           }
         : undefined,
       mutation: modulesToBuild.mutation
         ? {
             typeInfo: composerOutput.mutation?.typeInfo as TypeInfo,
-            schema: composerOutput.combined?.schema as string,
             outputDirAbs: mutationDirectory as string,
           }
         : undefined,

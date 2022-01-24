@@ -40,10 +40,7 @@ type Query @imports(
     "Ethereum_TxReceipt",
     "Ethereum_Log",
     "Ethereum_EventNotification",
-    "Ethereum_Network",
-    "Ethereum_Mutation",
-    "Ethereum_TxResponse",
-    "Ethereum_Access"
+    "Ethereum_Network"
   ]
 ) {
   method(
@@ -54,23 +51,23 @@ type Query @imports(
 
 type Mutation @imports(
   types: [
-    "Ethereum_Query",
+    "Ethereum_Mutation",
     "Ethereum_Connection",
     "Ethereum_TxOverrides",
-    "Ethereum_StaticTxResult",
-    "Ethereum_TxRequest",
+    "Ethereum_TxResponse",
+    "Ethereum_Access",
     "Ethereum_TxReceipt",
     "Ethereum_Log",
-    "Ethereum_EventNotification",
-    "Ethereum_Network",
-    "Ethereum_Mutation",
-    "Ethereum_TxResponse",
-    "Ethereum_Access"
+    "Ethereum_TxRequest"
   ]
 ) {
   method(
     arg: UInt32!
   ): String!
+}
+
+type QueryEnv {
+  arg1: String!
 }
 
 type Object {

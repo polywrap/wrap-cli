@@ -23,13 +23,13 @@ import {
 } from "@web3api/core-js";
 
 export interface Input_method extends Record<string, unknown> {
-  str: String;
-  optStr?: String | null;
+  arg: UInt32;
 }
 
-export interface Module extends PluginModule {
+
+export interface IMutation {
   method(
     input: Input_method,
     client: Client
-  ): MaybeAsync<Types.Object>;
+  ): MaybeAsync<String>;
 }

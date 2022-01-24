@@ -20,8 +20,9 @@ export type Json = string;
 export type String = string;
 export type Boolean = boolean;
 
+/// Envs START ///
 {{#envTypes}}
-{{#type}}
+{{#query}}
 {{#client}}
 export interface {{type}} {
   {{#properties}}
@@ -36,9 +37,27 @@ export interface {{type}} {
   {{/properties}}
 }
 {{/sanitized}}
-{{/type}}
+{{/query}}
+{{#mutation}}
+{{#client}}
+export interface {{type}} {
+  {{#properties}}
+  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
+  {{/properties}}
+}
+{{/client}}
+{{#sanitized}}
+export interface {{type}} {
+  {{#properties}}
+  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
+  {{/properties}}
+}
+{{/sanitized}}
+{{/mutation}}
 {{/envTypes}}
+/// Envs END ///
 
+/// Objects START ///
 {{#objectTypes}}
 export interface {{type}} {
   {{#properties}}
@@ -47,6 +66,9 @@ export interface {{type}} {
 }
 
 {{/objectTypes}}
+/// Objects END ///
+
+/// Enums START ///
 {{#enumTypes}}
 export enum {{type}}Enum {
   {{#constants}}
@@ -62,6 +84,8 @@ export type {{type}}String =
 export type {{type}} = {{type}}Enum | {{type}}String;
 
 {{/enumTypes}}
+/// Enums END ///
+
 /// Imported Objects START ///
 
 {{#importedObjectTypes}}

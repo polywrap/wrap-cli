@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { generateBinding } from "./bindings";
+import { generateBinding, generateEntrypointBinding } from "./bindings";
 import { getRelativePath, findCommonTypes, extendCommonTypes } from "./utils";
 
+import { Manifest, MetaManifest } from "@web3api/core-js";
 import { transformTypeInfo, TypeInfo } from "@web3api/schema-parse";
 
 export * from "./utils";
@@ -33,6 +34,7 @@ export interface OutputDirectory {
 }
 
 export interface BindOutput {
+  entrypoint?: OutputDirectory;
   combined?: OutputDirectory;
   query?: OutputDirectory;
   mutation?: OutputDirectory;
@@ -40,19 +42,26 @@ export interface BindOutput {
 
 export interface BindModuleOptions {
   typeInfo: TypeInfo;
+  outputDirAbs: string;
+}
+
+export interface BindEntrypointOptions {
+  manifest: Manifest;
+  metaManifest: MetaManifest;
   schema: string;
   outputDirAbs: string;
 }
 
 export interface BindOptions {
   bindLanguage: BindLanguage;
+  entrypoint?: BindEntrypointOptions;
   combined?: BindModuleOptions;
   query?: BindModuleOptions;
   mutation?: BindModuleOptions;
 }
 
 export function bindSchema(options: BindOptions): BindOutput {
-  const { combined, query, mutation, bindLanguage } = options;
+  const { entrypoint, combined, query, mutation, bindLanguage } = options;
 
   // If both Query & Mutation modules are present,
   // determine which types are shared between them,
@@ -82,14 +91,20 @@ export function bindSchema(options: BindOptions): BindOutput {
   }
 
   return {
+    entrypoint: entrypoint
+      ? generateEntrypointBinding(
+          bindLanguage,
+          entrypoint.manifest,
+          entrypoint.metaManifest,
+          entrypoint.schema
+        )
+      : undefined,
     combined: combined
-      ? generateBinding(bindLanguage, combined.typeInfo, combined.schema)
+      ? generateBinding(bindLanguage, combined.typeInfo)
       : undefined,
-    query: query
-      ? generateBinding(bindLanguage, query.typeInfo, query.schema)
-      : undefined,
+    query: query ? generateBinding(bindLanguage, query.typeInfo) : undefined,
     mutation: mutation
-      ? generateBinding(bindLanguage, mutation.typeInfo, mutation.schema)
+      ? generateBinding(bindLanguage, mutation.typeInfo)
       : undefined,
   };
 }

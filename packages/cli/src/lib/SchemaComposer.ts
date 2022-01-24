@@ -75,7 +75,6 @@ export class SchemaComposer {
   }
 
   public async getComposedSchemas(
-    print?: any,
     output: ComposerFilter = ComposerFilter.All
   ): Promise<ComposerOutput> {
     if (this._composerOutput) {
@@ -87,17 +86,13 @@ export class SchemaComposer {
     const schemaNamedPaths = await project.getSchemaNamedPaths();
     const import_redirects = await project.getImportRedirects();
 
-    print.debug("getSchemaFile");
-
     const getSchemaFile = (schemaPath?: string): SchemaFile | undefined =>
       schemaPath
         ? {
-            schema: this._fetchLocalSchema(schemaPath, print),
+            schema: this._fetchLocalSchema(schemaPath),
             absolutePath: schemaPath,
           }
         : undefined;
-
-    print.debug("options");
 
     const options: ComposerOptions = {
       schemas: {},
@@ -109,14 +104,9 @@ export class SchemaComposer {
       output,
     };
 
-    print.debug("running loop");
-
     for (const name of Object.keys(schemaNamedPaths)) {
       const schemaPath = schemaNamedPaths[name];
-      print.debug(`get schema file: ${schemaPath}`);
       const schemaFile = getSchemaFile(schemaPath);
-
-      print.debug("schema file fetched");
 
       if (!schemaFile) {
         throw Error(`Schema "${name}" cannot be loaded at path: ${schemaPath}`);
@@ -171,8 +161,7 @@ export class SchemaComposer {
   }
 
   private _fetchLocalSchema(schemaPath: string, print?: any) {
-    print.debug(`fetching local schema: ${schemaPath}`);
-    print.debug(path.isAbsolute(schemaPath)
+    path.isAbsolute(schemaPath
     ? schemaPath
     : path.join(this._config.project.getRootDir(), schemaPath))
     return fs.readFileSync(

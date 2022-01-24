@@ -23,12 +23,14 @@ import {
 } from "@web3api/core-js";
 
 export interface Input_method extends Record<string, unknown> {
-  arg: UInt32;
+  str: String;
+  optStr?: String | null;
 }
 
-export interface Module extends PluginModule {
+
+export interface IQuery {
   method(
     input: Input_method,
     client: Client
-  ): MaybeAsync<String>;
+  ): MaybeAsync<Types.Object>;
 }

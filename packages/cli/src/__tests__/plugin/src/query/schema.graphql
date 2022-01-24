@@ -12,3 +12,7 @@ type Object {
   array: [Boolean!]!
   bytes: Bytes
 }
+
+type Env {
+  arg1: String!
+}

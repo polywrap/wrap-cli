@@ -1,6 +1,7 @@
 format: 0.0.1-prealpha.2
 language: plugin/typescript
 entrypoint: ./src
+meta: ./web3api.meta.yaml
 modules: 
   mutation:
     schema: ./mutation/schema.graphql

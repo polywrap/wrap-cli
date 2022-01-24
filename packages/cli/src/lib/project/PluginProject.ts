@@ -1,15 +1,17 @@
 import { Project, ProjectConfig } from "./Project";
-import { loadPluginManifest, ManifestLanguage } from "../helpers";
+import { loadMetaManifest, loadPluginManifest, ManifestLanguage } from "../helpers";
 
-import { Manifest, PluginManifest } from "@web3api/core-js";
+import { Manifest, MetaManifest, PluginManifest } from "@web3api/core-js";
 import path from "path";
 
 export interface PluginProjectConfig extends ProjectConfig {
   pluginManifestPath: string;
+  metaManifestPath?: string;
 }
 
 export class PluginProject extends Project {
   private _pluginManifest: PluginManifest | undefined;
+  private _metaManifest: MetaManifest | undefined;
 
   constructor(protected _config: PluginProjectConfig) {
     super(_config);
@@ -85,5 +87,37 @@ export class PluginProject extends Project {
   public async getManifest<TManifest extends Manifest>(): Promise<TManifest> {
     const manifest = await this.getPluginManifest();
     return manifest as unknown as TManifest;
+  }
+
+  public async getMetaManifest(): Promise<MetaManifest | undefined> {
+    if (!this._metaManifest) {
+      const manifestPath = await this.getMetaManifestPath();
+
+      if (manifestPath) {
+        this._metaManifest = await loadMetaManifest(manifestPath, this.quiet);
+      }
+    }
+    return this._metaManifest;
+  }
+
+  public async getMetaManifestPath(): Promise<string | undefined> {
+    const pluginManifest = await this.getPluginManifest();
+
+    // If a custom meta manifest path is configured
+    if (this._config.metaManifestPath) {
+      return this._config.metaManifestPath;
+    }
+    // If the web3api.yaml manifest specifies a custom meta manifest
+    else if (pluginManifest.meta) {
+      this._config.metaManifestPath = path.join(
+        this.getPluginManifestDir(),
+        pluginManifest.meta
+      );
+      return this._config.metaManifestPath;
+    }
+    // No meta manifest found
+    else {
+      return undefined;
+    }
   }
 }

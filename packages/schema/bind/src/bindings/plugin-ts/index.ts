@@ -2,6 +2,7 @@
 import { OutputDirectory, OutputEntry, readDirectory } from "../..";
 import * as Functions from "./functions";
 
+import { Manifest, MetaManifest } from "@web3api/core-js";
 import {
   transformTypeInfo,
   extendType,
@@ -16,11 +17,25 @@ import {
 } from "@web3api/schema-parse";
 import Mustache from "mustache";
 import path from "path";
-// import { fromReservedWord } from "../../utils/templateFunctions";
+import { readFileSync } from "fs";
+
+export function generateEntrypointBinding(
+  manifest: Manifest,
+  metaManifest: MetaManifest,
+  schema: string,
+): OutputDirectory {
+  const entries: OutputEntry[] = [];
+
+  renderTemplate("./templates/entrypoint/index-ts.mustache", {}, entries);
+  renderTemplate("./templates/entrypoint/manifest-ts.mustache", {}, entries);
+  renderTemplate("./templates/entrypoint/schema-ts.mustache", {schema}, entries);
+  renderTemplate("./templates/entrypoint/plugin-ts.mustache", {...manifest, ...metaManifest}, entries);
+
+  return { entries };
+}
 
 export function generateBinding(
   typeInfo: TypeInfo,
-  schema?: string
 ): OutputDirectory {
   const entries: OutputEntry[] = [];
 
@@ -37,23 +52,6 @@ export function generateBinding(
     typeInfo = transformTypeInfo(typeInfo, transform);
   }
 
-  // const renderTemplate = (subPath: string, context: unknown) => {
-  //   const absPath = path.join(__dirname, subPath);
-  //   const template = readFileSync(absPath, { encoding: "utf-8" });
-  //   const fileName = absPath
-  //     .replace(path.dirname(absPath), "")
-  //     .replace(".mustache", "")
-  //     .replace("/", "")
-  //     .replace("\\", "")
-  //     .replace("-", ".");
-
-  //   entries.push({
-  //     type: "File",
-  //     name: fileName,
-  //     data: Mustache.render(template, context),
-  //   });
-  // };
-
   const queryContext = typeInfo.queryTypes.find((def: QueryDefinition) => {
     return def.type === "Query";
   });
@@ -63,40 +61,15 @@ export function generateBinding(
 
   const rootContext = {
     ...typeInfo,
-    schema,
     __mutation: !!mutationContext,
     __query: !!queryContext,
   };
 
   if (queryContext) {
-    entries.push({
-      type: "Directory",
-      name: "query",
-      data: generateFiles("./templates/query-type", rootContext, "query"),
-    });
+    entries.push(...generateFiles("./templates/query-type", rootContext, "query"));
   } else if (mutationContext) {
-    entries.push({
-      type: "Directory",
-      name: "mutation",
-      data: generateFiles("./templates/query-type", rootContext, "mutation"),
-    });
+    entries.push(...generateFiles("./templates/query-type", rootContext, "mutation"));
   }
-
-  // renderTemplate("./templates/query-type/types-ts.mustache", rootContext);
-  // renderTemplate("./templates/query-type/query-ts.mustache", queryContext);
-
-  // renderTemplate("./templates/index-ts.mustache", rootContext);
-  // renderTemplate("./templates/manifest-ts.mustache", rootContext);
-  // if (mutationContext) {
-  //   renderTemplate("./templates/query-type/query-ts.mustache", mutationContext);
-  //   renderTemplate("./templates/query-type/index-ts.mustache", mutationContext);
-  // }
-  // if (queryContext) {
-  //   renderTemplate("./templates/query-type/query-ts.mustache", queryContext);
-  //   renderTemplate("./templates/query-type/index-ts.mustache", queryContext);
-  // }
-  // renderTemplate("./templates/schema-ts.mustache", rootContext);
-  // renderTemplate("./templates/types-ts.mustache", rootContext);
 
   return { entries };
 }
@@ -124,13 +97,13 @@ function generateFiles(
         if (name.indexOf("_") === -1) {
           let data: string | undefined;
 
-          if (module && name === "query-ts.mustache") {
-            name = `${module}-ts`;
-          }
           if (
             module &&
-            ["index-ts.mustache", "query-ts.mustache"].includes(name)
+            ["index-ts", "query-ts"].includes(name)
           ) {
+
+            name = name === "query-ts" ? `${module}-ts` : name;
+
             const context = module
               ? rootContext.queryTypes.find((def: QueryDefinition) => {
                   return def.type.toLowerCase() === module;
@@ -180,3 +153,20 @@ function generateFiles(
 
   return output;
 }
+
+const renderTemplate = (subPath: string, context: Record<string, unknown>, output: OutputEntry[]) => {
+  const absPath = path.join(__dirname, subPath);
+  const template = readFileSync(absPath, { encoding: "utf-8" });
+  const fileName = absPath
+    .replace(path.dirname(absPath), "")
+    .replace(".mustache", "")
+    .replace("/", "")
+    .replace("\\", "")
+    .replace("-", ".");
+
+  output.push({
+    type: "File",
+    name: fileName,
+    data: Mustache.render(template, {...context, ...Functions}),
+  });
+};

@@ -13,6 +13,10 @@
       "type": "string",
       "const": "0.0.1-prealpha.2"
     },
+    "meta": {
+      "type": "string",
+      "format": "yamlFile"
+    },
     "language": {
       "type": "string",
       "format": "pluginLanguage"

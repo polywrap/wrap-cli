@@ -8,6 +8,7 @@
 
 export interface PluginManifest {
   format: "0.0.1-prealpha.2";
+  meta?: string;
   language: string;
   entrypoint: string;
   modules: {

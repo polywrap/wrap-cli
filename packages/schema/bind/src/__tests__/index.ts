@@ -130,17 +130,14 @@ export function fetchTestCases(): TestCases {
       input: {
         query: querySchema ? {
           typeInfo: composed.query?.typeInfo as TypeInfo,
-          schema: composed.query?.schema as string,
           outputDirAbs: path.join(root, "query")
         } : undefined,
         mutation: mutationSchema ? {
           typeInfo: composed.mutation?.typeInfo as TypeInfo,
-          schema: composed.mutation?.schema as string,
           outputDirAbs: path.join(root, "mutation")
         }: undefined,
         combined: {
           typeInfo: composed.combined.typeInfo as TypeInfo,
-          schema: composed.combined.schema as string,
           outputDirAbs: ""
         }
       },

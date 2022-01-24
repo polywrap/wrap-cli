@@ -106,31 +106,43 @@ ${HELP}`);
       }
     );
 
-    console.log(output);
-    // console.log(error);
-
     expect(code).toEqual(0);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`- Generate types
 - Manifest loaded from ./web3api.plugin.yaml
 ✔ Manifest loaded from ./web3api.plugin.yaml
+- Manifest loaded from ./web3api.meta.yaml
+✔ Manifest loaded from ./web3api.meta.yaml
 ✔ Generate types
 `);
 
-    const expectedTypesResult = compareSync(
+
+    const expectedEntrypointTypesResult = compareSync(
       `${projectRoot}/src/w3`,
-      `${projectRoot}/expected-types`,
+      `${projectRoot}/expected-types/entrypoint`,
       { compareContent: true }
     );
+    expect(expectedEntrypointTypesResult.differences).toBe(0);
 
-    expect(expectedTypesResult.differences).toBe(0);
+    const expectedQueryTypesResult = compareSync(
+      `${projectRoot}/src/query/w3`,
+      `${projectRoot}/expected-types/query`,
+      { compareContent: true }
+    );
+    expect(expectedQueryTypesResult.differences).toBe(0);
+
+    const expectedMutationTypesResult = compareSync(
+      `${projectRoot}/src/mutation/w3`,
+      `${projectRoot}/expected-types/mutation`,
+      { compareContent: true }
+    );
+    expect(expectedMutationTypesResult.differences).toBe(0);
 
     const expectedSchemaResult = compareSync(
       `${projectRoot}/build`,
       `${projectRoot}/expected-schema`,
       { compareContent: true }
     );
-
     expect(expectedSchemaResult.differences).toBe(0);
   });
 });
