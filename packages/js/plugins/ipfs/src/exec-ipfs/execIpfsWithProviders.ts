@@ -170,8 +170,6 @@ const gatherSuccessPromises = async <TReturn>(
               result: result,
               provider: request.provider,
             });
-          } else {
-            reject();
           }
         }, reject);
       })
