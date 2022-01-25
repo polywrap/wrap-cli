@@ -1,5 +1,5 @@
 import { IpfsPlugin } from "./";
-import { ResolveResult, Query, Mutation } from "./w3";
+import { ResolveResult, Query, Mutation, QueryEnv } from "./w3";
 
 export const mutation = (ipfs: IpfsPlugin): Mutation.Module => ({
   addFile: async (input: Mutation.Input_addFile) => {
@@ -17,6 +17,8 @@ export const query = (ipfs: IpfsPlugin): Query.Module => ({
   },
   // uri-resolver.core.web3api.eth
   tryResolveUri: async (input: Query.Input_tryResolveUri) => {
+    const queryEnv = ipfs.getEnv("query") as QueryEnv;
+
     if (input.authority !== "ipfs") {
       return null;
     }
@@ -27,6 +29,7 @@ export const query = (ipfs: IpfsPlugin): Query.Module => ({
         return {
           manifest: await ipfs.catToString(`${input.path}/web3api.yaml`, {
             timeout: 5000,
+            disableParallelRequests: queryEnv.disableParallelRequests
           }),
           uri: null,
         };
@@ -40,6 +43,7 @@ export const query = (ipfs: IpfsPlugin): Query.Module => ({
         return {
           manifest: await ipfs.catToString(`${input.path}/web3api.yml`, {
             timeout: 5000,
+            disableParallelRequests: queryEnv.disableParallelRequests
           }),
           uri: null,
         };
@@ -53,9 +57,12 @@ export const query = (ipfs: IpfsPlugin): Query.Module => ({
     return { manifest: null, uri: null };
   },
   getFile: async (input: Query.Input_getFile) => {
+    const queryEnv = ipfs.getEnv("query") as QueryEnv;
+
     try {
       const { cid, provider } = await ipfs.resolve(input.path, {
         timeout: 5000,
+        disableParallelRequests: queryEnv.disableParallelRequests
       });
 
       return await ipfs.cat(cid, {

@@ -29,7 +29,7 @@ export const cancelableExecIpfs = <TReturn>(
     : undefined;
 
     const promise = new Promise<[error: any, result: TReturn | undefined]>(
-    async (resolve, reject) => {
+    async (resolve) => {
       try {
         const result = await func(ipfs, provider, { signal: controller.signal });
         

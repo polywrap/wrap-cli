@@ -130,7 +130,17 @@ export class IpfsPlugin extends Plugin {
       ...(this._config.fallbackProviders || []),
     ];
 
-    return await execIpfsWithProviders(operation, this._ipfs, this._config.provider, providers, timeout, func);
+    return await execIpfsWithProviders(
+      operation, 
+      this._ipfs, 
+      this._config.provider, 
+      providers, 
+      timeout, 
+      func, 
+      { 
+        parallel: !options.disableParallelRequests
+      }
+    );
   }
 }
 
