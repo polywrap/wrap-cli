@@ -1,4 +1,4 @@
-import { toImportablePath } from "./toImportablePath";
+import { toImportablePath } from "../../utils/toImportablePath";
 
 import {
   generateName,

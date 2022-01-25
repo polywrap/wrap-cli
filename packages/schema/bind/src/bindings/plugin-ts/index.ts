@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { OutputDirectory, OutputEntry, readDirectory } from "../..";
-import { createPluginContext } from "../../utils/createPluginContext";
+import { createPluginContext } from "./createPluginContext";
 import * as Functions from "./functions";
 
 import { Manifest, MetaManifest } from "@web3api/core-js";
