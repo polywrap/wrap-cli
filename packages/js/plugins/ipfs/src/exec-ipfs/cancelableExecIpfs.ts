@@ -34,13 +34,13 @@ export const cancelableExecIpfs = <TReturn>(
       }, timeout)
     : undefined;
 
-  const promise = new Promise<[error: Error, result: TReturn | undefined]>(
-    async (resolve) => {
-      try {
-        const result = await func(ipfs, provider, {
-          signal: controller.signal,
-        });
-
+  const promise = new Promise<
+    [error: Error | undefined, result: TReturn | undefined]
+  >((resolve) => {
+    func(ipfs, provider, {
+      signal: controller.signal,
+    }).then(
+      (result) => {
         //Clear timeout if exists
         timer && clearTimeout(timer);
 
@@ -56,7 +56,9 @@ export const cancelableExecIpfs = <TReturn>(
           ];
         }
         resolve([error, result]);
-      } catch (e) {
+        return;
+      },
+      (e) => {
         //Clear timeout if exists
         timer && clearTimeout(timer);
 
@@ -66,9 +68,10 @@ export const cancelableExecIpfs = <TReturn>(
 
         resolve([error, undefined]);
       }
-      return;
-    }
-  );
+    );
+
+    return;
+  });
 
   return {
     promise,

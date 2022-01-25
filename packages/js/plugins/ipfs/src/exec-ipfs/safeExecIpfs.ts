@@ -14,7 +14,7 @@ export const safeExecIpfs = async <TReturn>(
     provider: string,
     options: unknown
   ) => Promise<TReturn>
-): Promise<[error: Error, result: TReturn | undefined]> => {
+): Promise<[error: Error | undefined, result: TReturn | undefined]> => {
   const { promise } = await cancelableExecIpfs(
     operation,
     ipfs,

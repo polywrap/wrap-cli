@@ -160,19 +160,21 @@ const gatherSuccessPromises = async <TReturn>(
         success: boolean;
         result: TReturn | undefined;
         provider: string | undefined;
-      }>(
-        async (resolve) => {
-          const result = (await request.promise)[1];
+      }>((resolve, reject) => {
+        request.promise.then((response) => {
+          const [error, result] = response;
 
-          if (result !== undefined) {
+          if (!error && result !== undefined) {
             resolve({
               success: true,
               result: result,
               provider: request.provider,
             });
+          } else {
+            reject();
           }
-        }
-      )
+        }, reject);
+      })
     );
   }
 
@@ -191,25 +193,23 @@ const gatherAllPromisesAndTrackErrors = <TReturn>(
     success: boolean;
     result: TReturn | undefined;
     provider: string | undefined;
-  }>(
-    async (resolve) => {
-      await Promise.all(
-        requests.map(async (request) => {
-          const [error] = await request.promise;
+  }>((resolve, reject) => {
+    Promise.all(
+      requests.map(async (request) => {
+        const [error] = await request.promise;
 
-          if (error) {
-            errors.push(error);
-          }
-        })
-      );
-
+        if (error) {
+          errors.push(error);
+        }
+      })
+    ).then(() => {
       resolve({
         success: false,
         result: undefined,
         provider: undefined,
       });
-    }
-  );
+    }, reject);
+  });
 };
 
 const cancelAllRequests = <TReturn>(
