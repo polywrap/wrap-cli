@@ -29,7 +29,7 @@ export const query = (ipfs: IpfsPlugin): Query.Module => ({
         return {
           manifest: await ipfs.catToString(`${input.path}/web3api.yaml`, {
             timeout: 5000,
-            disableParallelRequests: queryEnv.disableParallelRequests
+            disableParallelRequests: queryEnv.disableParallelRequests,
           }),
           uri: null,
         };
@@ -43,7 +43,7 @@ export const query = (ipfs: IpfsPlugin): Query.Module => ({
         return {
           manifest: await ipfs.catToString(`${input.path}/web3api.yml`, {
             timeout: 5000,
-            disableParallelRequests: queryEnv.disableParallelRequests
+            disableParallelRequests: queryEnv.disableParallelRequests,
           }),
           uri: null,
         };
@@ -62,7 +62,7 @@ export const query = (ipfs: IpfsPlugin): Query.Module => ({
     try {
       const { cid, provider } = await ipfs.resolve(input.path, {
         timeout: 5000,
-        disableParallelRequests: queryEnv.disableParallelRequests
+        disableParallelRequests: queryEnv.disableParallelRequests,
       });
 
       return await ipfs.cat(cid, {

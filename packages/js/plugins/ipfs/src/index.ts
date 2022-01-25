@@ -1,5 +1,7 @@
 import { query, mutation } from "./resolvers";
 import { manifest, Query, Mutation, Options, ResolveResult } from "./w3";
+import { IpfsClient } from "./types/IpfsClient";
+import { execIpfs, execIpfsWithProviders } from "./exec-ipfs";
 
 import {
   Client,
@@ -7,9 +9,7 @@ import {
   PluginFactory,
   PluginPackageManifest,
 } from "@web3api/core-js";
-import { IpfsClient } from "./types/IpfsClient";
 import CID from "cids";
-import { execIpfs, execIpfsWithProviders } from "./exec-ipfs";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const isIPFS = require("is-ipfs");
@@ -111,19 +111,25 @@ export class IpfsPlugin extends Plugin {
     ) => Promise<TReturn>,
     options?: Options
   ): Promise<TReturn> {
-    if(!options) {
+    if (!options) {
       // Default behavior if no options are provided
-      return await execIpfs(operation, this._ipfs, this._config.provider, 0, func);
+      return await execIpfs(
+        operation,
+        this._ipfs,
+        this._config.provider,
+        0,
+        func
+      );
     }
 
     const timeout = options.timeout || 0;
 
-    if(options.provider) {
+    if (options.provider) {
       //Use the provider override if specified
       const ipfs = createIpfsClient(options.provider);
 
       return await execIpfs(operation, ipfs, options.provider, timeout, func);
-    } 
+    }
 
     const providers = [
       this._config.provider,
@@ -131,14 +137,14 @@ export class IpfsPlugin extends Plugin {
     ];
 
     return await execIpfsWithProviders(
-      operation, 
-      this._ipfs, 
-      this._config.provider, 
-      providers, 
-      timeout, 
-      func, 
-      { 
-        parallel: !options.disableParallelRequests
+      operation,
+      this._ipfs,
+      this._config.provider,
+      providers,
+      timeout,
+      func,
+      {
+        parallel: !options.disableParallelRequests,
       }
     );
   }
