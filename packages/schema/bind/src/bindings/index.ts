@@ -10,11 +10,16 @@ export function generateEntrypointBinding(
   typeInfo: TypeInfo,
   schema: string,
   manifest: Manifest,
-  metaManifest?: MetaManifest,
+  metaManifest?: MetaManifest
 ): OutputDirectory {
   switch (bindLanguage) {
     case "plugin-ts":
-      return PluginTs.generateEntrypointBinding(typeInfo, schema, manifest, metaManifest);
+      return PluginTs.generateEntrypointBinding(
+        typeInfo,
+        schema,
+        manifest,
+        metaManifest
+      );
     default:
       throw new Error(`Unsupported bind language: ${bindLanguage}`);
   }

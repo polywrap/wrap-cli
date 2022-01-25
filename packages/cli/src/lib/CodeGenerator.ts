@@ -160,16 +160,15 @@ export class CodeGenerator {
         }
 
         const content = bindSchema({
-          entrypoint:
-            this._schema
-              ? {
-                  manifest,
-                  metaManifest,
-                  typeInfo: composed.combined?.typeInfo as TypeInfo,
-                  schema: this._schema,
-                  outputDirAbs: entrypointDirectory as string,
-                }
-              : undefined,
+          entrypoint: this._schema
+            ? {
+                manifest,
+                metaManifest,
+                typeInfo: composed.combined?.typeInfo as TypeInfo,
+                schema: this._schema,
+                outputDirAbs: entrypointDirectory as string,
+              }
+            : undefined,
           query: modulesToBuild.query
             ? {
                 typeInfo: composed.query?.typeInfo as TypeInfo,

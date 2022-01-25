@@ -31,6 +31,10 @@ export type PluginModules = PluginModulesType;
  * The plugin instance.
  */
 export abstract class Plugin {
+  private _env: Record<InvokableModules, Record<string, unknown>> = {
+    query: {},
+    mutation: {},
+  };
   /**
    * Get an instance of this plugin's modules.
    *
@@ -39,8 +43,41 @@ export abstract class Plugin {
    */
   public abstract getModules(client: Client): PluginModules;
 
+  /**
+   * Sanitize plugin environment.
+   * This can optionally implemented by plugin
+   *
+   * @param env Module environment to be sanitized
+   */
+  public sanitizeEnv?(
+    env: Record<string, unknown>
+  ): Promise<Record<string, unknown>>;
 
-  public loadEnvByModule?(module: InvokableModules, env: Record<string, unknown>): void;
+  /**
+   * Load module enviroment to be used
+   *
+   * @param env module enviroment to be set inside plugin
+   */
+  public loadEnv(env: Record<string, unknown>, module: InvokableModules): void {
+    this._env[module] = env;
+  }
+
+  /**
+   * Get module environment
+   */
+  public getEnv(module: InvokableModules): Record<string, unknown> {
+    return this._env[module];
+  }
+
+  /**
+   *
+   * @param module module for which enviroment is to be set
+   * @param env enviroment to be set
+   */
+  public loadEnvByModule?(
+    module: InvokableModules,
+    env: Record<string, unknown>
+  ): void;
 }
 
 /** The plugin package's manifest */

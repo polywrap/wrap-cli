@@ -2,7 +2,7 @@ import { MustacheFunction } from "../types";
 
 export const toLowerCase: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
-    let rendered = render(value);
+    const rendered = render(value);
     return rendered.toLowerCase();
   };
 };

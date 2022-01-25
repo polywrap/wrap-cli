@@ -98,7 +98,7 @@ export function bindSchema(options: BindOptions): BindOutput {
           entrypoint.typeInfo,
           entrypoint.schema,
           entrypoint.manifest,
-          entrypoint.metaManifest,
+          entrypoint.metaManifest
         )
       : undefined,
     combined: combined

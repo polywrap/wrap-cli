@@ -185,7 +185,6 @@ export default {
       schemaComposer,
       outputDir: outputTypesDir,
     });
-    
 
     result = await codeGenerator.generate();
 

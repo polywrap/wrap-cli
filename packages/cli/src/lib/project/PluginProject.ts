@@ -1,5 +1,9 @@
 import { Project, ProjectConfig } from "./Project";
-import { loadMetaManifest, loadPluginManifest, ManifestLanguage } from "../helpers";
+import {
+  loadMetaManifest,
+  loadPluginManifest,
+  ManifestLanguage,
+} from "../helpers";
 
 import { Manifest, MetaManifest, PluginManifest } from "@web3api/core-js";
 import path from "path";
@@ -43,11 +47,19 @@ export class PluginProject extends Project {
     const namedPaths: { [name: string]: string } = {};
 
     if (manifest.modules.mutation) {
-      namedPaths["mutation"] = path.join(dir, manifest.entrypoint, manifest.modules.mutation.schema);
+      namedPaths["mutation"] = path.join(
+        dir,
+        manifest.entrypoint,
+        manifest.modules.mutation.schema
+      );
     }
 
     if (manifest.modules.query) {
-      namedPaths["query"] = path.join(dir, manifest.entrypoint, manifest.modules.query.schema);
+      namedPaths["query"] = path.join(
+        dir,
+        manifest.entrypoint,
+        manifest.modules.query.schema
+      );
     }
 
     return namedPaths;
@@ -86,7 +98,7 @@ export class PluginProject extends Project {
 
   public async getManifest<TManifest extends Manifest>(): Promise<TManifest> {
     const manifest = await this.getPluginManifest();
-    return manifest as unknown as TManifest;
+    return (manifest as unknown) as TManifest;
   }
 
   public async getMetaManifest(): Promise<MetaManifest | undefined> {

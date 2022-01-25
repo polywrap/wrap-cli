@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 export interface Manifest {
   format: string;
   language: string;
@@ -10,6 +11,6 @@ export interface Manifest {
       schema: string;
       module?: string;
     };
-  }
+  };
   __type: string;
 }

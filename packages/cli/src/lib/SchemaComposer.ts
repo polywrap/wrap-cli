@@ -113,7 +113,7 @@ export class SchemaComposer {
       }
 
       const isPlugin = false;
-        // (await project.getManifestLanguage()).indexOf("plugin/") > -1;
+      // (await project.getManifestLanguage()).indexOf("plugin/") > -1;
 
       if (isPlugin) {
         options.schemas.plugin = schemaFile;
@@ -160,10 +160,12 @@ export class SchemaComposer {
     }
   }
 
-  private _fetchLocalSchema(schemaPath: string, print?: any) {
-    path.isAbsolute(schemaPath
-    ? schemaPath
-    : path.join(this._config.project.getRootDir(), schemaPath))
+  private _fetchLocalSchema(schemaPath: string) {
+    path.isAbsolute(
+      schemaPath
+        ? schemaPath
+        : path.join(this._config.project.getRootDir(), schemaPath)
+    );
     return fs.readFileSync(
       path.isAbsolute(schemaPath)
         ? schemaPath

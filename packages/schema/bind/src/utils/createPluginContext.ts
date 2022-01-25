@@ -1,7 +1,13 @@
-import { generateName, InvokableModules, Manifest, MetaManifest } from "@web3api/core-js";
+import { toImportablePath } from "./toImportablePath";
+
+import {
+  generateName,
+  InvokableModules,
+  Manifest,
+  MetaManifest,
+} from "@web3api/core-js";
 import { TypeInfo } from "@web3api/schema-parse";
 import { camelCase, upperFirst } from "lodash";
-import { toImportablePath } from "./toImportablePath";
 
 export type PluginContextOptions = {
   manifest: Manifest;
@@ -33,7 +39,9 @@ export function createPluginContext(opts: PluginContextOptions): PluginContext {
   for (const [module, paths] of Object.entries(opts.manifest.modules)) {
     const invokableModule = module as InvokableModules;
     if (!paths) {
-      throw new Error(`Manifest is missing module and schema paths for ${invokableModule}`);
+      throw new Error(
+        `Manifest is missing module and schema paths for ${invokableModule}`
+      );
     }
     if (!paths.module) {
       throw new Error(
@@ -44,7 +52,7 @@ export function createPluginContext(opts: PluginContextOptions): PluginContext {
     const modulePath = toImportablePath(paths.module);
     let envModulePath: string | undefined;
     if (opts.typeInfo.envTypes[module as InvokableModules]) {
-      if (!!opts.typeInfo.envTypes[invokableModule].sanitized) {
+      if (opts.typeInfo.envTypes[invokableModule].sanitized) {
         envModulePath = `${modulePath}/w3`;
       }
     }

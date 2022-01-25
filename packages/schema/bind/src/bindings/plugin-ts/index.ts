@@ -1,4 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import { OutputDirectory, OutputEntry, readDirectory } from "../..";
+import { createPluginContext } from "../../utils/createPluginContext";
+import * as Functions from "./functions";
+
 import { Manifest, MetaManifest } from "@web3api/core-js";
 import {
   addFirstLast,
@@ -15,15 +19,12 @@ import {
 import { readFileSync } from "fs";
 import Mustache from "mustache";
 import path from "path";
-import { OutputDirectory, OutputEntry, readDirectory } from "../..";
-import { createPluginContext } from "../../utils/createPluginContext";
-import * as Functions from "./functions";
 
 export function generateEntrypointBinding(
   typeInfo: TypeInfo,
   schema: string,
   manifest: Manifest,
-  metaManifest?: MetaManifest,
+  metaManifest?: MetaManifest
 ): OutputDirectory {
   const entries: OutputEntry[] = [];
 
@@ -36,7 +37,7 @@ export function generateEntrypointBinding(
   );
   renderTemplate(
     "./templates/entrypoint/plugin-ts.mustache",
-    createPluginContext({typeInfo, manifest, metaManifest}),
+    createPluginContext({ typeInfo, manifest, metaManifest }),
     entries
   );
 
@@ -116,8 +117,13 @@ function generateFiles(
                   return def.type.toLowerCase() === module;
                 })
               : rootContext;
-            const hasEnv = rootContext.envTypes[module].sanitized ? true : false;
-            data = Mustache.render(dirent.data, {...context, __hasEnv: hasEnv});
+            const hasEnv = rootContext.envTypes[module].sanitized
+              ? true
+              : false;
+            data = Mustache.render(dirent.data, {
+              ...context,
+              __hasEnv: hasEnv,
+            });
           }
 
           if (module && name === "types-ts.mustache") {
