@@ -88,7 +88,13 @@ export class PluginWeb3Api extends Api {
           )) as Record<string, unknown>;
         }
 
-        this._getInstance().loadEnv(env, module);
+        const plugin = this._getInstance();
+        if (plugin && plugin.loadEnvByModule) {
+          plugin.loadEnvByModule(module, env);
+        } else {
+          // Deprecated function
+          plugin.loadEnv(env, module);
+        }
       }
 
       let jsInput: Record<string, unknown>;
