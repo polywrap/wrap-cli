@@ -1,5 +1,5 @@
 import { IpfsClient } from "../types/IpfsClient";
-import { CancelablePromise } from "./CancelablePromise";
+import { CancelablePromise } from "./types/CancelablePromise";
 import AbortController from "abort-controller";
 
 const abortErrorMessage = "The user aborted a request.";
@@ -21,20 +21,20 @@ export const cancelableExecIpfs = <TReturn>(
   let error: any = undefined;
   
   //If timer is not 0 then set a timeout to abort the execution
-  const timer: NodeJS.Timeout | undefined = timeout 
+  const timer = timeout 
     ? setTimeout(() => {
         error = buildExecError(operation, provider, timeout, new Error("Timeout has been reached")); 
         controller.abort()
       }, timeout)
     : undefined;
 
-    const promise = new Promise<[error: any, result: TReturn | undefined]>(
+  const promise = new Promise<[error: any, result: TReturn | undefined]>(
     async (resolve) => {
       try {
         const result = await func(ipfs, provider, { signal: controller.signal });
         
         //Clear timeout if exists
-        timeout && clearTimeout(timer as NodeJS.Timeout);
+        timer && clearTimeout(timer);
 
         if(result === undefined && !error) {
           return [
@@ -45,7 +45,7 @@ export const cancelableExecIpfs = <TReturn>(
         resolve([error, result]);
       } catch(e) {
         //Clear timeout if exists
-        timeout && clearTimeout(timer as NodeJS.Timeout);
+        timer && clearTimeout(timer);
         
         if(!e.message || e.message !== abortErrorMessage) {
           error = buildExecError(operation, provider, timeout, e); 

@@ -1,6 +1,6 @@
 import { IpfsClient } from "../types/IpfsClient";
 import { cancelableExecIpfs } from "./cancelableExecIpfs";
-import { CancelablePromise } from "./CancelablePromise";
+import { CancelablePromise } from "./types/CancelablePromise";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
