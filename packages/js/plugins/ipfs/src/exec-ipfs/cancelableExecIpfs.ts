@@ -62,7 +62,7 @@ export const cancelableExecIpfs = <TReturn>(
     provider,
     cancel: () => {
       controller.abort();
-      timeout && clearTimeout(timer as NodeJS.Timeout);
+      timer && clearTimeout();
     }
   };
 }
