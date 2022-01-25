@@ -10,7 +10,7 @@ export const cancelableExecIpfs = <TReturn>(
   ipfs: IpfsClient,
   provider: string,
   timeout: number,
-  exec: (
+  func: (
     ipfs: IpfsClient,
     provider: string,
     options: unknown
@@ -31,7 +31,7 @@ export const cancelableExecIpfs = <TReturn>(
     const promise = new Promise<[error: any, result: TReturn | undefined]>(
     async (resolve, reject) => {
       try {
-        const result = await exec(ipfs, provider, { signal: controller.signal });
+        const result = await func(ipfs, provider, { signal: controller.signal });
         
         //Clear timeout if exists
         timeout && clearTimeout(timer as NodeJS.Timeout);
