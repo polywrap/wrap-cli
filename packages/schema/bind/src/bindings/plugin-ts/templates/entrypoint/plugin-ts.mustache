@@ -1,16 +1,23 @@
-import { Plugin, PluginFactory, PluginPackageManifest, PluginModules, PluginModule } from "@web3api/core-js";
+import { 
+  Plugin, 
+  PluginFactory, 
+  PluginPackageManifest, 
+  PluginModules, 
+  PluginModule, 
+  InvokableModules 
+} from "@web3api/core-js";
 {{#modules}}
 {{#query}}
 {{#env}}
-import { loadEnv as loadQueryEnv } from "../{{#toImportablePath}}{{module}}{{/toImportablePath}}/w3";
+import { loadEnv as loadQueryEnv, QueryEnv } from "../{{modulePath}}";
 {{/env}}
-import { Query, QueryConfigs } from "../{{#toImportablePath}}{{module}}{{/toImportablePath}}";
+import { Query, QueryConfigs } from "../{{modulePath}}";
 {{/query}}
 {{#mutation}}
 {{#env}}
-import { loadEnv as loadMutationEnv } from "../{{#toImportablePath}}{{module}}{{/toImportablePath}}/w3";
+import { loadEnv as loadMutationEnv, MutationEnv } from "../{{modulePath}}";
 {{/env}}
-import { Mutation, MutationConfigs } from "../{{#toImportablePath}}{{module}}{{/toImportablePath}}";
+import { Mutation, MutationConfigs } from "../{{modulePath}}";
 {{/mutation}}
 {{/modules}}
 import { manifest } from "./manifest";
@@ -20,7 +27,7 @@ export interface PluginConfigs {
   mutation: MutationConfigs;
 }
 
-class {{name}}Plugin extends Plugin {
+class {{className}}Plugin extends Plugin {
   constructor(private _configs: PluginConfigs) {
     super();
   }
@@ -42,24 +49,34 @@ class {{name}}Plugin extends Plugin {
     };
   }
 
-  public loadEnvByModule(module: InvokableModule, env: Record<string, unknown> ): void {
+  public loadModuleEnv(module: InvokableModules, env: unknown ): void {
     switch(module) {
+      {{#modules}}
+      {{#query}}
+      {{#env}}
       case "query":
-        return loadQueryEnv(env);
+        return loadQueryEnv(env as QueryEnv);
+      {{/env}}
+      {{/query}}
+      {{#mutation}}
+      {{#env}}
       case "mutation":
-        return loadMutationEnv(env);
+        return loadMutationEnv(env as MutationEnv);
+      {{/env}}
+      {{/mutation}}
+      {{/modules}}
       default:
         throw new Error(`Unknown module: ${module}`);
     }
   }
 }
 
-export const {{#toLowerCase}}{{name}}{{/toLowerCase}}Plugin: PluginFactory<PluginConfigs> = (
+export const {{funcName}}Plugin: PluginFactory<PluginConfigs> = (
   opts: PluginConfigs
 ) => {
   return {
-    factory: () => new {{name}}Plugin(opts),
+    factory: () => new {{className}}Plugin(opts),
     manifest: manifest,
   };
 };
-export const plugin = {{#toLowerCase}}{{name}}{{/toLowerCase}}Plugin;
+export const plugin = {{funcName}}Plugin;

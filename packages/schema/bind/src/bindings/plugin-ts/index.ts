@@ -1,42 +1,49 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { OutputDirectory, OutputEntry, readDirectory } from "../..";
-import * as Functions from "./functions";
-
 import { Manifest, MetaManifest } from "@web3api/core-js";
 import {
-  transformTypeInfo,
-  extendType,
   addFirstLast,
-  toPrefixedGraphQLType,
-  methodParentPointers,
-  interfaceUris,
-  TypeInfo,
-  QueryDefinition,
-  InvokableModules,
+  extendType,
   ImportedQueryDefinition,
+  interfaceUris,
+  InvokableModules,
+  methodParentPointers,
+  QueryDefinition,
+  toPrefixedGraphQLType,
+  transformTypeInfo,
+  TypeInfo,
 } from "@web3api/schema-parse";
+import { readFileSync } from "fs";
 import Mustache from "mustache";
 import path from "path";
-import { readFileSync } from "fs";
+import { OutputDirectory, OutputEntry, readDirectory } from "../..";
+import { createPluginContext } from "../../utils/createPluginContext";
+import * as Functions from "./functions";
 
 export function generateEntrypointBinding(
-  manifest: Manifest,
-  metaManifest: MetaManifest,
+  typeInfo: TypeInfo,
   schema: string,
+  manifest: Manifest,
+  metaManifest?: MetaManifest,
 ): OutputDirectory {
   const entries: OutputEntry[] = [];
 
   renderTemplate("./templates/entrypoint/index-ts.mustache", {}, entries);
   renderTemplate("./templates/entrypoint/manifest-ts.mustache", {}, entries);
-  renderTemplate("./templates/entrypoint/schema-ts.mustache", {schema}, entries);
-  renderTemplate("./templates/entrypoint/plugin-ts.mustache", {...manifest, ...metaManifest}, entries);
+  renderTemplate(
+    "./templates/entrypoint/schema-ts.mustache",
+    { schema },
+    entries
+  );
+  renderTemplate(
+    "./templates/entrypoint/plugin-ts.mustache",
+    createPluginContext({typeInfo, manifest, metaManifest}),
+    entries
+  );
 
   return { entries };
 }
 
-export function generateBinding(
-  typeInfo: TypeInfo,
-): OutputDirectory {
+export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
   const entries: OutputEntry[] = [];
 
   // Transform the TypeInfo to our liking
@@ -66,9 +73,13 @@ export function generateBinding(
   };
 
   if (queryContext) {
-    entries.push(...generateFiles("./templates/query-type", rootContext, "query"));
+    entries.push(
+      ...generateFiles("./templates/query-type", rootContext, "query")
+    );
   } else if (mutationContext) {
-    entries.push(...generateFiles("./templates/query-type", rootContext, "mutation"));
+    entries.push(
+      ...generateFiles("./templates/query-type", rootContext, "mutation")
+    );
   }
 
   return { entries };
@@ -97,11 +108,7 @@ function generateFiles(
         if (name.indexOf("_") === -1) {
           let data: string | undefined;
 
-          if (
-            module &&
-            ["index-ts", "query-ts"].includes(name)
-          ) {
-
+          if (module && ["index-ts", "query-ts"].includes(name)) {
             name = name === "query-ts" ? `${module}-ts` : name;
 
             const context = module
@@ -109,7 +116,8 @@ function generateFiles(
                   return def.type.toLowerCase() === module;
                 })
               : rootContext;
-            data = Mustache.render(dirent.data, context);
+            const hasEnv = rootContext.envTypes[module].sanitized ? true : false;
+            data = Mustache.render(dirent.data, {...context, __hasEnv: hasEnv});
           }
 
           if (module && name === "types-ts.mustache") {
@@ -154,7 +162,11 @@ function generateFiles(
   return output;
 }
 
-const renderTemplate = (subPath: string, context: Record<string, unknown>, output: OutputEntry[]) => {
+const renderTemplate = (
+  subPath: string,
+  context: Record<string, unknown>,
+  output: OutputEntry[]
+) => {
   const absPath = path.join(__dirname, subPath);
   const template = readFileSync(absPath, { encoding: "utf-8" });
   const fileName = absPath
@@ -167,6 +179,6 @@ const renderTemplate = (subPath: string, context: Record<string, unknown>, outpu
   output.push({
     type: "File",
     name: fileName,
-    data: Mustache.render(template, {...context, ...Functions}),
+    data: Mustache.render(template, { ...context, ...Functions }),
   });
 };

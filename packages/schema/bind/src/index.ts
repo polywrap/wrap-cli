@@ -46,10 +46,11 @@ export interface BindModuleOptions {
 }
 
 export interface BindEntrypointOptions {
-  manifest: Manifest;
-  metaManifest: MetaManifest;
+  typeInfo: TypeInfo;
   schema: string;
   outputDirAbs: string;
+  manifest: Manifest;
+  metaManifest?: MetaManifest;
 }
 
 export interface BindOptions {
@@ -94,9 +95,10 @@ export function bindSchema(options: BindOptions): BindOutput {
     entrypoint: entrypoint
       ? generateEntrypointBinding(
           bindLanguage,
+          entrypoint.typeInfo,
+          entrypoint.schema,
           entrypoint.manifest,
           entrypoint.metaManifest,
-          entrypoint.schema
         )
       : undefined,
     combined: combined

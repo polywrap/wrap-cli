@@ -40,7 +40,7 @@ export abstract class Plugin {
   public abstract getModules(client: Client): PluginModules;
 
 
-  public abstract loadEnvByModule(module: InvokableModules, env: Record<string, unknown>): void;
+  public loadEnvByModule?(module: InvokableModules, env: Record<string, unknown>): void;
 }
 
 /** The plugin package's manifest */

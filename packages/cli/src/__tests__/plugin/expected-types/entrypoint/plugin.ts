@@ -1,6 +1,14 @@
-import { Plugin, PluginFactory, PluginPackageManifest, PluginModules, PluginModule } from "@web3api/core-js";
-import { Query, QueryConfigs } from "../query/index";
-import { Mutation, MutationConfigs } from "../mutation/index";
+import { 
+  Plugin, 
+  PluginFactory, 
+  PluginPackageManifest, 
+  PluginModules, 
+  PluginModule, 
+  InvokableModules 
+} from "@web3api/core-js";
+import { loadEnv as loadQueryEnv, QueryEnv } from "../query/w3";
+import { Query, QueryConfigs } from "../query";
+import { Mutation, MutationConfigs } from "../mutation";
 import { manifest } from "./manifest";
 
 export interface PluginConfigs {
@@ -19,9 +27,18 @@ class MockPlugin extends Plugin {
 
   public getModules(): PluginModules {
     return {
-      query: () => (((new Query(this._configs.query)) as unknown) as PluginModule),
-      mutation: () => (((new Mutation(this._configs.mutation)) as unknown) as PluginModule),
+      query: ((new Query(this._configs.query)) as unknown) as PluginModule,
+      mutation: ((new Mutation(this._configs.mutation)) as unknown) as PluginModule,
     };
+  }
+
+  public loadModuleEnv(module: InvokableModules, env: unknown ): void {
+    switch(module) {
+      case "query":
+        return loadQueryEnv(env as QueryEnv);
+      default:
+        throw new Error(`Unknown module: ${module}`);
+    }
   }
 }
 

@@ -161,10 +161,11 @@ export class CodeGenerator {
 
         const content = bindSchema({
           entrypoint:
-            metaManifest && this._schema
+            this._schema
               ? {
                   manifest,
                   metaManifest,
+                  typeInfo: composed.combined?.typeInfo as TypeInfo,
                   schema: this._schema,
                   outputDirAbs: entrypointDirectory as string,
                 }

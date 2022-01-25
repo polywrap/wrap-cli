@@ -7,13 +7,14 @@ import { TypeInfo } from "@web3api/schema-parse";
 
 export function generateEntrypointBinding(
   bindLanguage: BindLanguage,
+  typeInfo: TypeInfo,
+  schema: string,
   manifest: Manifest,
-  metaManifest: MetaManifest,
-  schema: string
+  metaManifest?: MetaManifest,
 ): OutputDirectory {
   switch (bindLanguage) {
     case "plugin-ts":
-      return PluginTs.generateEntrypointBinding(manifest, metaManifest, schema);
+      return PluginTs.generateEntrypointBinding(typeInfo, schema, manifest, metaManifest);
     default:
       throw new Error(`Unsupported bind language: ${bindLanguage}`);
   }
