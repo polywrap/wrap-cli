@@ -38,7 +38,8 @@ export interface Input_objectMethod extends Record<string, unknown> {
   optObjectArray?: Array<Types.AnotherType | null> | null;
 }
 
-export interface Module extends PluginModule {
+
+export interface IQuery {
   queryMethod(
     input: Input_queryMethod,
     client: Client

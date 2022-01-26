@@ -20,16 +20,19 @@ export type Json = string;
 export type String = string;
 export type Boolean = boolean;
 
-export interface QueryEnv {
-  queryProp: String;
-  prop: String;
-  optProp?: String | null;
-}
-
+/// Envs START ///
 export interface MutationEnv {
   mutProp: String;
   prop: String;
   optProp?: String | null;
+}
+/// Envs END ///
+
+/// Objects START ///
+export interface AnotherType {
+  prop?: String | null;
+  circular?: Types.CustomType | null;
+  const?: String | null;
 }
 
 export interface CustomType {
@@ -70,12 +73,9 @@ export interface CustomType {
   optEnumArray?: Array<Types.CustomEnum | null> | null;
 }
 
-export interface AnotherType {
-  prop?: String | null;
-  circular?: Types.CustomType | null;
-  const?: String | null;
-}
+/// Objects END ///
 
+/// Enums START ///
 export enum CustomEnumEnum {
   STRING,
   BYTES,
@@ -86,6 +86,8 @@ export type CustomEnumString =
   | "BYTES"
 
 export type CustomEnum = CustomEnumEnum | CustomEnumString;
+
+/// Enums END ///
 
 /// Imported Objects START ///
 

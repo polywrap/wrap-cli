@@ -26,6 +26,7 @@ describe("Web3API Binding Test Suite", () => {
 
         // Read the expected output directories
         const expectedOutput = {
+          entrypoint: directories.entrypoint ? readDirectory(directories.entrypoint) : undefined,
           query: directories.query
             ? readDirectory(directories.query)
             : undefined,
@@ -39,6 +40,7 @@ describe("Web3API Binding Test Suite", () => {
 
         const output = bindSchema({
           bindLanguage: language as BindLanguage,
+          entrypoint: expectedOutput.entrypoint ? testCase.input.entrypoint : undefined,
           query: expectedOutput.query ? testCase.input.query : undefined,
           mutation: expectedOutput.mutation ? testCase.input.mutation : undefined,
           combined: expectedOutput.combined ? testCase.input.combined : undefined,
@@ -51,6 +53,10 @@ describe("Web3API Binding Test Suite", () => {
 
           return array.sort(alphabeticalNamedSort);
         };
+
+        if (output.entrypoint) {
+          output.entrypoint.entries = sort(output.entrypoint.entries);
+        }
 
         if (output.query) {
           output.query.entries = sort(output.query.entries);
