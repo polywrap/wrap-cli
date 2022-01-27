@@ -2327,7 +2327,7 @@ describe("Web3ApiClient", () => {
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const actualManifestStr: string = readFileSync(
-      `${GetPathToTestApis()}/simple-storage/build/web3api.yaml`,
+      `${GetPathToTestApis()}/simple-storage/build/web3api.json`,
       "utf8"
     );
     const actualManifest: Web3ApiManifest = deserializeWeb3ApiManifest(
@@ -2339,7 +2339,7 @@ describe("Web3ApiClient", () => {
     expect(manifest).toStrictEqual(actualManifest);
 
     const actualBuildManifestStr: string = readFileSync(
-      `${GetPathToTestApis()}/simple-storage/build/web3api.build.yaml`,
+      `${GetPathToTestApis()}/simple-storage/build/web3api.build.json`,
       "utf8"
     );
     const actualBuildManifest: BuildManifest = deserializeBuildManifest(
@@ -2351,7 +2351,7 @@ describe("Web3ApiClient", () => {
     expect(buildManifest).toStrictEqual(actualBuildManifest);
 
     const actualMetaManifestStr: string = readFileSync(
-      `${GetPathToTestApis()}/simple-storage/build/web3api.meta.yaml`,
+      `${GetPathToTestApis()}/simple-storage/build/web3api.meta.json`,
       "utf8"
     );
     const actualMetaManifest: MetaManifest = deserializeMetaManifest(
