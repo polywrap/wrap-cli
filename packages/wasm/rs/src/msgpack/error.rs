@@ -1,8 +1,6 @@
 //! Errors returned from I/O `Write` and `Read` operations
 
 use num_derive::FromPrimitive;
-use std::convert::Infallible;
-use std::ops::FromResidual;
 use thiserror::Error;
 
 /// Errors from encoding data
@@ -66,12 +64,6 @@ pub enum EncodingError {
     CustomEnumEncodingError,
 }
 
-impl EncodingError {
-    pub fn new_custom_enum_encoding_error(_data: &[u8]) -> Self {
-        unimplemented!()
-    }
-}
-
 impl From<String> for EncodingError {
     fn from(e: String) -> Self {
         e.into()
@@ -93,15 +85,6 @@ impl From<std::io::Error> for EncodingError {
 impl From<serde_json::Error> for EncodingError {
     fn from(e: serde_json::Error) -> EncodingError {
         e.into()
-    }
-}
-
-impl<E> FromResidual<Result<Infallible, E>> for EncodingError
-where
-    E: std::error::Error,
-{
-    fn from_residual(residual: Result<Infallible, E>) -> Self {
-        EncodingError::new_custom_enum_encoding_error(residual.unwrap_err().to_string().as_bytes())
     }
 }
 
@@ -172,12 +155,6 @@ pub enum DecodingError {
     CustomEnumDecodingError,
 }
 
-impl DecodingError {
-    pub fn new_custom_enum_decoding_error(_data: &[u8]) -> Self {
-        unimplemented!()
-    }
-}
-
 impl From<String> for DecodingError {
     fn from(e: String) -> Self {
         e.into()
@@ -199,14 +176,5 @@ impl From<std::io::Error> for DecodingError {
 impl From<serde_json::Error> for DecodingError {
     fn from(e: serde_json::Error) -> DecodingError {
         e.into()
-    }
-}
-
-impl<E> FromResidual<Result<Infallible, E>> for DecodingError
-where
-    E: std::error::Error,
-{
-    fn from_residual(residual: Result<Infallible, E>) -> Self {
-        DecodingError::new_custom_enum_decoding_error(residual.unwrap_err().to_string().as_bytes())
     }
 }

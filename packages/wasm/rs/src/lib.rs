@@ -36,8 +36,6 @@
 #![deny(dead_code)]
 #![deny(unreachable_code)]
 #![deny(rustdoc::broken_intra_doc_links)]
-#![feature(ptr_as_uninit)]
-#![feature(try_trait_v2)]
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
