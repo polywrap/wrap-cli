@@ -1,7 +1,10 @@
+use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen]
 #[link(wasm_import_module = "w3")]
 extern "C" {
     /// Get Abort Arguments
-    #[link_name = "__w3_abort"]
+    #[wasm_bindgen(js_name = __w3_abort)]
     pub fn __w3_abort(
         msg_ptr: u32,
         msg_len: u32,
@@ -34,15 +37,13 @@ pub fn w3_abort_setup() {
             Some(location) => location.column(),
             None => 0,
         };
-        unsafe {
-            __w3_abort(
-                message.as_ptr() as u32,
-                msg_len,
-                file.as_ptr() as u32,
-                file_len,
-                line,
-                column,
-            )
-        };
+        __w3_abort(
+            message.as_ptr() as u32,
+            msg_len,
+            file.as_ptr() as u32,
+            file_len,
+            line,
+            column,
+        );
     }))
 }
