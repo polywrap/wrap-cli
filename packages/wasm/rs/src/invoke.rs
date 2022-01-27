@@ -26,6 +26,19 @@ pub struct InvokeArgs {
     args: Vec<u8>,
 }
 
+#[wasm_bindgen]
+impl InvokeArgs {
+    #[wasm_bindgen(getter)]
+    pub fn get_method(&self) -> String {
+        self.method.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn get_args(&self) -> Vec<u8> {
+        self.args.clone()
+    }
+}
+
 /// Helper for fetching invoke args
 pub fn w3_invoke_args(method_size: u32, args_size: u32) -> InvokeArgs {
     let method_size_ptr = alloc(method_size as usize);
