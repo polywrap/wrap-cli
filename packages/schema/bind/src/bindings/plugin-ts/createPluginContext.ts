@@ -1,7 +1,6 @@
 import { toImportablePath } from "../../utils/toImportablePath";
 
 import {
-  generateName,
   InvokableModules,
   Manifest,
   MetaManifest,
@@ -31,8 +30,9 @@ export type PluginContext = {
 };
 
 export function createPluginContext(opts: PluginContextOptions): PluginContext {
+  // Use name from manifest if specified otherwise call it NewPlugin by default
   const funcName = camelCase(
-    !opts.metaManifest ? generateName() : opts.metaManifest.name
+    !opts.metaManifest ? "new" : opts.metaManifest.name
   );
   const className = upperFirst(funcName);
   const modules: PluginContextModules = {};

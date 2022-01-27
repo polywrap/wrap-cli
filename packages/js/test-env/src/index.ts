@@ -2,7 +2,7 @@ import path from "path";
 import spawn from "spawn-command";
 import axios from "axios";
 import fs from "fs";
-import { generateName } from "@web3api/core-js";
+import { generateName } from "./generate-name";
 
 interface TestEnvironment {
   ipfs: string;
