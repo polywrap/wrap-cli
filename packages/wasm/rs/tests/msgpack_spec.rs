@@ -391,9 +391,7 @@ fn convert_to_buffer(sanity: &mut Sanity) -> Result<Vec<u8>, EncodingError> {
     context.description = "Serialize sanity (to buffer)...".to_string();
     let mut sizer = WriteSizer::new(context.clone());
     serialize_sanity(&mut sizer, sanity)?;
-    let mut buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
-    buffer.resize(sizer.get_length() as usize, 0);
-    let mut encoder = WriteEncoder::new(&buffer, context);
+    let mut encoder = WriteEncoder::new(&[], context);
     serialize_sanity(&mut encoder, sanity)?;
     Ok(encoder.get_buffer())
 }

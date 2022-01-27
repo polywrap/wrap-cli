@@ -24,6 +24,8 @@ num-bigint = { version = "0.4", default-features = false, features = ["serde"] }
 num-derive = "0.3.3"
 num-traits = "0.2.14"
 serde_json = { version = "1.0.74", default-features = false, features = ["alloc"] }
+wasm-bindgen = "0.2.79"
+wee_alloc = { version = "0.4.5", optional = true }
 
 [profile.release]
 opt-level = 's'

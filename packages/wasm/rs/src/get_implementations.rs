@@ -1,30 +1,31 @@
 use crate::{malloc::alloc, Context, Read, ReadDecoder};
+use wasm_bindgen::prelude::*;
 
+#[wasm_bindgen]
 #[link(wasm_import_module = "w3")]
 extern "C" {
-    #[link_name = "__w3_getImplementations"]
+    #[wasm_bindgen(js_name = __w3_getImplementations)]
     pub fn __w3_getImplementations(uri_ptr: u32, uri_len: u32) -> bool;
 
-    #[link_name = "__w3_getImplementations_result_len"]
+    #[wasm_bindgen(js_name = __w3_getImplementations_result_len)]
     pub fn __w3_getImplementations_result_len() -> u32;
 
-    #[link_name = "__w3_getImplementations_result"]
+    #[wasm_bindgen(js_name = __w3_getImplementations_result)]
     pub fn __w3_getImplementations_result(ptr: u32);
 }
 
 pub fn w3_get_implementations(uri: &str) -> Vec<String> {
-    let success =
-        unsafe { __w3_getImplementations(uri.as_bytes().as_ptr() as u32, uri.len() as u32) };
+    let success = __w3_getImplementations(uri.as_bytes().as_ptr() as u32, uri.len() as u32);
 
     if !success {
         return vec![];
     }
 
-    let result_len = unsafe { __w3_getImplementations_result_len() };
+    let result_len = __w3_getImplementations_result_len();
     let result_len_ptr = alloc(result_len as usize);
     let result_buffer =
         unsafe { Vec::from_raw_parts(result_len_ptr, result_len as usize, result_len as usize) };
-    unsafe { __w3_getImplementations_result(result_buffer.as_ptr() as u32) };
+    __w3_getImplementations_result(result_buffer.as_ptr() as u32);
 
     // deserialize the `msgpack` buffer,
     // which contains a `Vec<String>`
