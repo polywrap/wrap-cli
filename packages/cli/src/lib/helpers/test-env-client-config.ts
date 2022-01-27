@@ -1,10 +1,14 @@
-import { PluginRegistration, Web3ApiClientConfig } from "@web3api/client-js";
+import {
+  PluginRegistration,
+  Web3ApiClientConfig,
+  defaultIpfsProviders,
+} from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import axios from "axios";
 
-export async function getDefaultClientConfig(): Promise<
+export async function getTestEnvClientConfig(): Promise<
   Partial<Web3ApiClientConfig>
 > {
   let ipfsProvider = "";
@@ -41,7 +45,7 @@ export async function getDefaultClientConfig(): Promise<
       uri: "w3://ens/ipfs.web3api.eth",
       plugin: ipfsPlugin({
         provider: ipfsProvider,
-        fallbackProviders: ["https://ipfs.io"],
+        fallbackProviders: defaultIpfsProviders,
       }),
     },
     {
