@@ -70,6 +70,12 @@ impl From<String> for EncodingError {
     }
 }
 
+impl From<EncodingError> for String {
+    fn from(e: EncodingError) -> Self {
+        e.into()
+    }
+}
+
 impl From<EncodingError> for std::io::Error {
     fn from(e: EncodingError) -> Self {
         e.into()
@@ -84,6 +90,12 @@ impl From<std::io::Error> for EncodingError {
 
 impl From<serde_json::Error> for EncodingError {
     fn from(e: serde_json::Error) -> EncodingError {
+        e.into()
+    }
+}
+
+impl From<EncodingError> for serde_json::Error {
+    fn from(e: EncodingError) -> Self {
         e.into()
     }
 }
@@ -161,6 +173,12 @@ impl From<String> for DecodingError {
     }
 }
 
+impl From<DecodingError> for String {
+    fn from(e: DecodingError) -> Self {
+        e.into()
+    }
+}
+
 impl From<DecodingError> for std::io::Error {
     fn from(e: DecodingError) -> Self {
         e.into()
@@ -175,6 +193,12 @@ impl From<std::io::Error> for DecodingError {
 
 impl From<serde_json::Error> for DecodingError {
     fn from(e: serde_json::Error) -> DecodingError {
+        e.into()
+    }
+}
+
+impl From<DecodingError> for serde_json::Error {
+    fn from(e: DecodingError) -> Self {
         e.into()
     }
 }
