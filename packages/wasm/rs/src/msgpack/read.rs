@@ -25,13 +25,13 @@ pub trait Read: Clone + Sized + std::io::Read {
     fn read_array_length(&mut self) -> Result<u32, DecodingError>;
     fn read_array<T>(
         &mut self,
-        reader: impl FnMut(&mut Self) -> T,
+        reader: impl FnMut(&mut Self) -> Result<T, DecodingError>,
     ) -> Result<Vec<T>, DecodingError>;
     fn read_map_length(&mut self) -> Result<u32, DecodingError>;
     fn read_map<K, V>(
         &mut self,
-        key_fn: impl FnMut(&mut Self) -> K,
-        val_fn: impl FnMut(&mut Self) -> V,
+        key_fn: impl FnMut(&mut Self) -> Result<K, DecodingError>,
+        val_fn: impl FnMut(&mut Self) -> Result<V, DecodingError>,
     ) -> Result<BTreeMap<K, V>, DecodingError>
     where
         K: Eq + Hash + Ord;
@@ -52,12 +52,12 @@ pub trait Read: Clone + Sized + std::io::Read {
     fn read_nullable_json(&mut self) -> Result<Option<JSON::Value>, DecodingError>;
     fn read_nullable_array<T>(
         &mut self,
-        reader: impl FnMut(&mut Self) -> T,
+        reader: impl FnMut(&mut Self) -> Result<T, DecodingError>,
     ) -> Result<Option<Vec<T>>, DecodingError>;
     fn read_nullable_map<K, V>(
         &mut self,
-        key_fn: impl FnMut(&mut Self) -> K,
-        val_fn: impl FnMut(&mut Self) -> V,
+        key_fn: impl FnMut(&mut Self) -> Result<K, DecodingError>,
+        val_fn: impl FnMut(&mut Self) -> Result<V, DecodingError>,
     ) -> Result<Option<BTreeMap<K, V>>, DecodingError>
     where
         K: Eq + Hash + Ord;

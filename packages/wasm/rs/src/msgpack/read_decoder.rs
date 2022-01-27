@@ -183,14 +183,14 @@ impl Read for ReadDecoder {
 
     fn read_array<T>(
         &mut self,
-        mut reader: impl FnMut(&mut Self) -> T,
+        mut reader: impl FnMut(&mut Self) -> Result<T, DecodingError>,
     ) -> Result<Vec<T>, DecodingError> {
         match self.read_array_length() {
             Ok(len) => {
                 let mut array: Vec<T> = vec![];
                 for i in 0..len {
                     self.context.push("array[", &i.to_string(), "]");
-                    let item = reader(self);
+                    let item = reader(self)?;
                     array.push(item);
                     self.context.pop();
                 }
@@ -211,8 +211,8 @@ impl Read for ReadDecoder {
 
     fn read_map<K, V>(
         &mut self,
-        mut key_fn: impl FnMut(&mut Self) -> K,
-        mut val_fn: impl FnMut(&mut Self) -> V,
+        mut key_fn: impl FnMut(&mut Self) -> Result<K, DecodingError>,
+        mut val_fn: impl FnMut(&mut Self) -> Result<V, DecodingError>,
     ) -> Result<BTreeMap<K, V>, DecodingError>
     where
         K: Eq + Hash + Ord,
@@ -222,8 +222,8 @@ impl Read for ReadDecoder {
                 let mut map: BTreeMap<K, V> = BTreeMap::new();
                 for i in 0..len {
                     self.context.push("map[", &i.to_string(), "]");
-                    let key = key_fn(self);
-                    let value = val_fn(self);
+                    let key = key_fn(self)?;
+                    let value = val_fn(self)?;
                     map.insert(key, value);
                     self.context.pop();
                 }
@@ -340,7 +340,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_array<T>(
         &mut self,
-        reader: impl FnMut(&mut Self) -> T,
+        reader: impl FnMut(&mut Self) -> Result<T, DecodingError>,
     ) -> Result<Option<Vec<T>>, DecodingError> {
         if self.is_next_nil()? {
             return Ok(None);
@@ -350,8 +350,8 @@ impl Read for ReadDecoder {
 
     fn read_nullable_map<K, V>(
         &mut self,
-        key_fn: impl FnMut(&mut Self) -> K,
-        val_fn: impl FnMut(&mut Self) -> V,
+        key_fn: impl FnMut(&mut Self) -> Result<K, DecodingError>,
+        val_fn: impl FnMut(&mut Self) -> Result<V, DecodingError>,
     ) -> Result<Option<BTreeMap<K, V>>, DecodingError>
     where
         K: Eq + Hash + Ord,

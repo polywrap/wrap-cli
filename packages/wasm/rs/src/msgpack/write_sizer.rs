@@ -176,11 +176,11 @@ impl Write for WriteSizer {
     fn write_array<T: Clone>(
         &mut self,
         a: &[T],
-        mut arr_fn: impl FnMut(&mut Self, &T),
+        mut arr_fn: impl FnMut(&mut Self, &T) -> Result<(), EncodingError>,
     ) -> Result<(), EncodingError> {
         self.write_array_length(&(a.len() as u32))?;
         for element in a {
-            arr_fn(self, element);
+            arr_fn(self, element)?;
         }
         Ok(())
     }
@@ -199,8 +199,8 @@ impl Write for WriteSizer {
     fn write_map<K, V: Clone>(
         &mut self,
         map: &BTreeMap<K, V>,
-        mut key_fn: impl FnMut(&mut Self, &K),
-        mut val_fn: impl FnMut(&mut Self, &V),
+        mut key_fn: impl FnMut(&mut Self, &K) -> Result<(), EncodingError>,
+        mut val_fn: impl FnMut(&mut Self, &V) -> Result<(), EncodingError>,
     ) -> Result<(), EncodingError>
     where
         K: Clone + Eq + Hash + Ord,
@@ -210,8 +210,8 @@ impl Write for WriteSizer {
         let values: Vec<_> = map.values().into_iter().collect();
         for key in keys {
             for value in &values {
-                key_fn(self, key);
-                val_fn(self, value);
+                key_fn(self, key)?;
+                val_fn(self, value)?;
             }
         }
         Ok(())
@@ -325,7 +325,7 @@ impl Write for WriteSizer {
     fn write_nullable_array<T: Clone>(
         &mut self,
         a: &Option<Vec<T>>,
-        arr_fn: impl FnMut(&mut Self, &T),
+        arr_fn: impl FnMut(&mut Self, &T) -> Result<(), EncodingError>,
     ) -> Result<(), EncodingError> {
         match a {
             None => Ok(self.write_nil()?),
@@ -336,8 +336,8 @@ impl Write for WriteSizer {
     fn write_nullable_map<K, V: Clone>(
         &mut self,
         map: &Option<BTreeMap<K, V>>,
-        key_fn: impl FnMut(&mut Self, &K),
-        val_fn: impl FnMut(&mut Self, &V),
+        key_fn: impl FnMut(&mut Self, &K) -> Result<(), EncodingError>,
+        val_fn: impl FnMut(&mut Self, &V) -> Result<(), EncodingError>,
     ) -> Result<(), EncodingError>
     where
         K: Clone + Eq + Hash + Ord,

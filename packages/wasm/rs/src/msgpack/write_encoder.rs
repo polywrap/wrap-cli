@@ -36,86 +36,86 @@ impl StdioWrite for WriteEncoder {
 impl Write for WriteEncoder {
     fn write_nil(&mut self) -> Result<(), EncodingError> {
         match Format::set_format(self, Format::Nil) {
-            Ok(_) => Ok(()),
-            Err(_) => Err(EncodingError::NilWriteError),
+            Ok(_v) => Ok(()),
+            Err(_e) => Err(EncodingError::NilWriteError),
         }
     }
 
     fn write_bool(&mut self, value: &bool) -> Result<(), EncodingError> {
         let format = if *value { Format::True } else { Format::False };
         match Format::set_format(self, format) {
-            Ok(_) => Ok(()),
-            Err(_) => Err(EncodingError::BooleanWriteError),
+            Ok(_v) => Ok(()),
+            Err(_e) => Err(EncodingError::BooleanWriteError),
         }
     }
 
     fn write_i8(&mut self, value: &i8) -> Result<(), EncodingError> {
         match Format::set_format(self, Format::Int8) {
-            Ok(_) => Ok(WriteBytesExt::write_i8(self, *value)?),
-            Err(_) => Err(EncodingError::Int8WriteError),
+            Ok(_v) => Ok(WriteBytesExt::write_i8(self, *value)?),
+            Err(_e) => Err(EncodingError::Int8WriteError),
         }
     }
 
     fn write_i16(&mut self, value: &i16) -> Result<(), EncodingError> {
         match Format::set_format(self, Format::Int16) {
-            Ok(_) => Ok(WriteBytesExt::write_i16::<BigEndian>(self, *value)?),
-            Err(_) => Err(EncodingError::Int16WriteError),
+            Ok(_v) => Ok(WriteBytesExt::write_i16::<BigEndian>(self, *value)?),
+            Err(_e) => Err(EncodingError::Int16WriteError),
         }
     }
 
     fn write_i32(&mut self, value: &i32) -> Result<(), EncodingError> {
         match Format::set_format(self, Format::Int32) {
-            Ok(_) => Ok(WriteBytesExt::write_i32::<BigEndian>(self, *value)?),
-            Err(_) => Err(EncodingError::Int32WriteError),
+            Ok(_v) => Ok(WriteBytesExt::write_i32::<BigEndian>(self, *value)?),
+            Err(_e) => Err(EncodingError::Int32WriteError),
         }
     }
 
     fn write_i64(&mut self, value: &i64) -> Result<(), EncodingError> {
         match Format::set_format(self, Format::Int64) {
-            Ok(_) => Ok(WriteBytesExt::write_i64::<BigEndian>(self, *value)?),
-            Err(_) => Err(EncodingError::Int64WriteError),
+            Ok(_v) => Ok(WriteBytesExt::write_i64::<BigEndian>(self, *value)?),
+            Err(_e) => Err(EncodingError::Int64WriteError),
         }
     }
 
     fn write_u8(&mut self, value: &u8) -> Result<(), EncodingError> {
         match Format::set_format(self, Format::Uint8) {
-            Ok(_) => Ok(WriteBytesExt::write_u8(self, *value)?),
-            Err(_) => Err(EncodingError::Uint8WriteError),
+            Ok(_v) => Ok(WriteBytesExt::write_u8(self, *value)?),
+            Err(_e) => Err(EncodingError::Uint8WriteError),
         }
     }
 
     fn write_u16(&mut self, value: &u16) -> Result<(), EncodingError> {
         match Format::set_format(self, Format::Uint16) {
-            Ok(_) => Ok(WriteBytesExt::write_u16::<BigEndian>(self, *value)?),
-            Err(_) => Err(EncodingError::Uint16WriteError),
+            Ok(_v) => Ok(WriteBytesExt::write_u16::<BigEndian>(self, *value)?),
+            Err(_e) => Err(EncodingError::Uint16WriteError),
         }
     }
 
     fn write_u32(&mut self, value: &u32) -> Result<(), EncodingError> {
         match Format::set_format(self, Format::Uint32) {
-            Ok(_) => Ok(WriteBytesExt::write_u32::<BigEndian>(self, *value)?),
-            Err(_) => Err(EncodingError::Uint32WriteError),
+            Ok(_v) => Ok(WriteBytesExt::write_u32::<BigEndian>(self, *value)?),
+            Err(_e) => Err(EncodingError::Uint32WriteError),
         }
     }
 
     fn write_u64(&mut self, value: &u64) -> Result<(), EncodingError> {
         match Format::set_format(self, Format::Uint64) {
-            Ok(_) => Ok(WriteBytesExt::write_u64::<BigEndian>(self, *value)?),
-            Err(_) => Err(EncodingError::Uint64WriteError),
+            Ok(_v) => Ok(WriteBytesExt::write_u64::<BigEndian>(self, *value)?),
+            Err(_e) => Err(EncodingError::Uint64WriteError),
         }
     }
 
     fn write_f32(&mut self, value: &f32) -> Result<(), EncodingError> {
         match Format::set_format(self, Format::Float32) {
-            Ok(_) => Ok(WriteBytesExt::write_f32::<BigEndian>(self, *value)?),
-            Err(_) => Err(EncodingError::Float32WriteError),
+            Ok(_v) => Ok(WriteBytesExt::write_f32::<BigEndian>(self, *value)?),
+            Err(_e) => Err(EncodingError::Float32WriteError),
         }
     }
 
     fn write_f64(&mut self, value: &f64) -> Result<(), EncodingError> {
         match Format::set_format(self, Format::Float64) {
-            Ok(_) => Ok(WriteBytesExt::write_f64::<BigEndian>(self, *value)?),
-            Err(_) => Err(EncodingError::Float64WriteError),
+            Ok(_v) => Ok(WriteBytesExt::write_f64::<BigEndian>(self, *value)?),
+            Err(_e) => Err(EncodingError::Float64WriteError),
         }
     }
 
@@ -137,15 +137,15 @@ impl Write for WriteEncoder {
 
     fn write_string(&mut self, value: &String) -> Result<(), EncodingError> {
         match self.write_string_length(&(value.len() as u32)) {
-            Ok(_) => Ok(self.write_all(value.as_bytes())?),
-            Err(_) => Err(EncodingError::StrWriteError),
+            Ok(_v) => Ok(self.write_all(value.as_bytes())?),
+            Err(_e) => Err(EncodingError::StrWriteError),
         }
     }
 
     fn write_str(&mut self, value: &str) -> Result<(), EncodingError> {
         match self.write_string_length(&(value.len() as u32)) {
-            Ok(_) => Ok(self.write_all(value.as_bytes())?),
-            Err(_) => Err(EncodingError::StrWriteError),
+            Ok(_v) => Ok(self.write_all(value.as_bytes())?),
+            Err(_e) => Err(EncodingError::StrWriteError),
         }
     }
 
@@ -165,15 +165,15 @@ impl Write for WriteEncoder {
 
     fn write_bytes(&mut self, buf: &[u8]) -> Result<(), EncodingError> {
         match self.write_bytes_length(&(buf.len() as u32)) {
-            Ok(_) => Ok(self.write_all(buf)?),
-            Err(_) => Err(EncodingError::BinWriteError),
+            Ok(_v) => Ok(self.write_all(buf)?),
+            Err(_e) => Err(EncodingError::BinWriteError),
         }
     }
 
     fn write_bigint(&mut self, value: &BigInt) -> Result<(), EncodingError> {
         match self.write_string(&value.to_string()) {
-            Ok(_) => Ok(()),
-            Err(_) => Err(EncodingError::BigIntWriteError),
+            Ok(_v) => Ok(()),
+            Err(_e) => Err(EncodingError::BigIntWriteError),
         }
     }
 
@@ -200,16 +200,16 @@ impl Write for WriteEncoder {
     fn write_array<T: Clone>(
         &mut self,
         a: &[T],
-        mut arr_fn: impl FnMut(&mut Self, &T),
+        mut arr_fn: impl FnMut(&mut Self, &T) -> Result<(), EncodingError>,
     ) -> Result<(), EncodingError> {
         match self.write_array_length(&(a.len() as u32)) {
-            Ok(_) => {
+            Ok(_v) => {
                 for element in a {
-                    arr_fn(self, element);
+                    arr_fn(self, element)?;
                 }
                 Ok(())
             }
-            Err(_) => Err(EncodingError::ArrayWriteError),
+            Err(_e) => Err(EncodingError::ArrayWriteError),
         }
     }
 
@@ -229,23 +229,23 @@ impl Write for WriteEncoder {
     fn write_map<K, V: Clone>(
         &mut self,
         map: &BTreeMap<K, V>,
-        mut key_fn: impl FnMut(&mut Self, &K),
-        mut val_fn: impl FnMut(&mut Self, &V),
+        mut key_fn: impl FnMut(&mut Self, &K) -> Result<(), EncodingError>,
+        mut val_fn: impl FnMut(&mut Self, &V) -> Result<(), EncodingError>,
     ) -> Result<(), EncodingError>
     where
         K: Clone + Eq + Hash + Ord,
     {
         match self.write_map_length(&(map.len() as u32)) {
-            Ok(_) => {
+            Ok(_v) => {
                 let keys: Vec<_> = map.keys().into_iter().collect();
                 for key in keys {
                     let value = &map[key];
-                    key_fn(self, key);
-                    val_fn(self, &value);
+                    key_fn(self, key)?;
+                    val_fn(self, &value)?;
                 }
                 Ok(())
             }
-            Err(_) => Err(EncodingError::MapWriteError),
+            Err(_e) => Err(EncodingError::MapWriteError),
         }
     }
 
@@ -357,7 +357,7 @@ impl Write for WriteEncoder {
     fn write_nullable_array<T: Clone>(
         &mut self,
         a: &Option<Vec<T>>,
-        arr_fn: impl FnMut(&mut Self, &T),
+        arr_fn: impl FnMut(&mut Self, &T) -> Result<(), EncodingError>,
     ) -> Result<(), EncodingError> {
         match a {
             None => Ok(Write::write_nil(self)?),
@@ -368,8 +368,8 @@ impl Write for WriteEncoder {
     fn write_nullable_map<K, V: Clone>(
         &mut self,
         map: &Option<BTreeMap<K, V>>,
-        key_fn: impl FnMut(&mut Self, &K),
-        val_fn: impl FnMut(&mut Self, &V),
+        key_fn: impl FnMut(&mut Self, &K) -> Result<(), EncodingError>,
+        val_fn: impl FnMut(&mut Self, &V) -> Result<(), EncodingError>,
     ) -> Result<(), EncodingError>
     where
         K: Clone + Eq + Hash + Ord,

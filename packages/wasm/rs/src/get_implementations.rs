@@ -35,7 +35,5 @@ pub fn w3_get_implementations(uri: &str) -> Vec<String> {
         "Vec<String>",
         "__w3_getImplementations successful",
     );
-    decoder
-        .read_array(|reader| reader.read_string().unwrap())
-        .unwrap()
+    decoder.read_array(|reader| reader.read_string()).unwrap()
 }

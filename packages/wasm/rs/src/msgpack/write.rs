@@ -27,14 +27,14 @@ pub trait Write: Clone + std::io::Write {
     fn write_array<T: Clone>(
         &mut self,
         a: &[T],
-        arr_fn: impl FnMut(&mut Self, &T),
+        arr_fn: impl FnMut(&mut Self, &T) -> Result<(), EncodingError>,
     ) -> Result<(), EncodingError>;
     fn write_map_length(&mut self, length: &u32) -> Result<(), EncodingError>;
     fn write_map<K, V: Clone>(
         &mut self,
         map: &BTreeMap<K, V>,
-        key_fn: impl FnMut(&mut Self, &K),
-        val_fn: impl FnMut(&mut Self, &V),
+        key_fn: impl FnMut(&mut Self, &K) -> Result<(), EncodingError>,
+        val_fn: impl FnMut(&mut Self, &V) -> Result<(), EncodingError>,
     ) -> Result<(), EncodingError>
     where
         K: Clone + Eq + Hash + Ord;
@@ -56,13 +56,13 @@ pub trait Write: Clone + std::io::Write {
     fn write_nullable_array<T: Clone>(
         &mut self,
         a: &Option<Vec<T>>,
-        arr_fn: impl FnMut(&mut Self, &T),
+        arr_fn: impl FnMut(&mut Self, &T) -> Result<(), EncodingError>,
     ) -> Result<(), EncodingError>;
     fn write_nullable_map<K, V: Clone>(
         &mut self,
         map: &Option<BTreeMap<K, V>>,
-        key_fn: impl FnMut(&mut Self, &K),
-        val_fn: impl FnMut(&mut Self, &V),
+        key_fn: impl FnMut(&mut Self, &K) -> Result<(), EncodingError>,
+        val_fn: impl FnMut(&mut Self, &V) -> Result<(), EncodingError>,
     ) -> Result<(), EncodingError>
     where
         K: Clone + Eq + Hash + Ord;

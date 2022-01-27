@@ -54,9 +54,7 @@ fn test_read_array() {
     let mut reader = ReadDecoder::new(&[0x91, 0xcc, 0x01], Context::new());
     assert_eq!(
         vec![0x01],
-        reader
-            .read_array(|reader| { reader.read_u8().unwrap() })
-            .unwrap()
+        reader.read_array(|reader| { reader.read_u8() }).unwrap()
     );
 }
 
@@ -77,12 +75,8 @@ fn test_read_map() {
     );
     let res = reader
         .read_map(
-            |key_fn| key_fn.read_string().unwrap(),
-            |val_fn| {
-                val_fn
-                    .read_array(|reader| reader.read_i32().unwrap())
-                    .unwrap()
-            },
+            |key_fn| key_fn.read_string(),
+            |val_fn| val_fn.read_array(|reader| reader.read_i32()),
         )
         .unwrap();
     assert_eq!(res[&"Polywrap".to_string()], vec![0x01, 0x02]);

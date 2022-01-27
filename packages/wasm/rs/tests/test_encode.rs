@@ -74,9 +74,7 @@ fn test_write_array_length() {
 fn test_write_array() {
     let mut writer = WriteEncoder::new(&[], Context::new());
     writer
-        .write_array(&[0x01], |writer, item| {
-            writer.write_u8(item).unwrap();
-        })
+        .write_array(&[0x01], |writer, item| writer.write_u8(item))
         .unwrap();
     assert_eq!([0x91, 0xcc, 0x01], writer.get_buffer().as_slice());
 }
@@ -96,14 +94,8 @@ fn test_write_map() {
     writer
         .write_map(
             &map,
-            |writer, key| writer.write_string(key).unwrap(),
-            |writer, value| {
-                writer
-                    .write_array(value, |writer, item| {
-                        writer.write_i32(item).unwrap();
-                    })
-                    .unwrap();
-            },
+            |writer, key| writer.write_string(key),
+            |writer, value| writer.write_array(value, |writer, item| writer.write_i32(item)),
         )
         .unwrap();
     assert_eq!(
