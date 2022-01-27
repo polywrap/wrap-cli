@@ -3,7 +3,12 @@
 
 import { Project } from "./project";
 
-import { Uri, Web3ApiClient, PluginRegistration } from "@web3api/client-js";
+import {
+  Uri,
+  Web3ApiClient,
+  PluginRegistration,
+  defaultIpfsProviders,
+} from "@web3api/client-js";
 import {
   composeSchema,
   ComposerOutput,
@@ -66,7 +71,7 @@ export class SchemaComposer {
         uri: "w3://ens/ipfs.web3api.eth",
         plugin: ipfsPlugin({
           provider: ipfsProvider,
-          fallbackProviders: ["https://ipfs.io"],
+          fallbackProviders: defaultIpfsProviders,
         }),
       });
     }
