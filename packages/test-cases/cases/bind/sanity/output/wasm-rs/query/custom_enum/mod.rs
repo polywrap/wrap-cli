@@ -39,14 +39,14 @@ pub fn get_custom_enum_key(value: CustomEnum) -> Result<String, String> {
 }
 
 impl TryFrom<i32> for CustomEnum {
-    type Error = &'static str;
+    type Error = String;
 
     fn try_from(v: i32) -> Result<CustomEnum, Self::Error> {
         match v {
             x if x == CustomEnum::STRING as i32 => Ok(CustomEnum::STRING),
             x if x == CustomEnum::BYTES as i32 => Ok(CustomEnum::BYTES),
             x if x == CustomEnum::_MAX_ as i32 => Ok(CustomEnum::_MAX_),
-            _ => Err("Error converting 'CustomEnum' to i32"),
+            _ => Err(format!("Error converting 'CustomEnum' to i32")),
         }
     }
 }

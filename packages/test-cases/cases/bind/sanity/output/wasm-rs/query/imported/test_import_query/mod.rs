@@ -29,27 +29,27 @@ impl TestImportQuery {
         TestImportQuery {}
     }
 
-    pub fn imported_method(input: &InputImportedMethod) -> Option<TestImportObject> {
+    pub fn imported_method(input: &InputImportedMethod) -> Result<Option<TestImportObject>, String> {
         let uri = TestImportQuery::URI;
-        let args = serialize_imported_method_args(input);
+        let args = serialize_imported_method_args(input)?;
         let result = subinvoke::w3_subinvoke(
             uri,
             "query",
             "imported_method",
             args,
-        ).unwrap();
+        )?;
         deserialize_imported_method_result(result.as_slice())
     }
 
-    pub fn another_method(input: &InputAnotherMethod) -> i32 {
+    pub fn another_method(input: &InputAnotherMethod) -> Result<i32, String> {
         let uri = TestImportQuery::URI;
-        let args = serialize_another_method_args(input);
+        let args = serialize_another_method_args(input)?;
         let result = subinvoke::w3_subinvoke(
             uri,
             "query",
             "another_method",
             args,
-        ).unwrap();
+        )?;
         deserialize_another_method_result(result.as_slice())
     }
 }

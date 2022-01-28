@@ -2,6 +2,8 @@ use serde::{Serialize, Deserialize};
 pub mod serialization;
 use polywrap_wasm_rs::{
     BigInt,
+    DecodingError,
+    EncodingError,
     Read,
     Write,
     JSON
@@ -44,19 +46,19 @@ impl TestImportObject {
         }
     }
 
-    pub fn to_buffer(input: &TestImportObject) -> Vec<u8> {
-        serialize_test_import_object(input)
+    pub fn to_buffer(input: &TestImportObject) -> Result<Vec<u8>, EncodingError>  {
+        serialize_test_import_object(input).map_err(|e| EncodingError::from(e))
     }
 
-    pub fn from_buffer(input: &[u8]) -> TestImportObject {
-        deserialize_test_import_object(input)
+    pub fn from_buffer(input: &[u8]) -> Result<TestImportObject, DecodingError> {
+        deserialize_test_import_object(input).map_err(|e| DecodingError::from(e))
     }
 
-    pub fn write<W: Write>(input: &TestImportObject, writer: &mut W) {
-        write_test_import_object(input, writer);
+    pub fn write<W: Write>(input: &TestImportObject, writer: &mut W) -> Result<(), EncodingError> {
+        write_test_import_object(input, writer).map_err(|e| EncodingError::from(e))
     }
 
-    pub fn read<R: Read>(reader: &mut R) -> TestImportObject {
-        read_test_import_object(reader).expect("Failed to read TestImportObject")
+    pub fn read<R: Read>(reader: &mut R) -> Result<TestImportObject, DecodingError> {
+        read_test_import_object(reader).map_err(|e| DecodingError::from(e))
     }
 }

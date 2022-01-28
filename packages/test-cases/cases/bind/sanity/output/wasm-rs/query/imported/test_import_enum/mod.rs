@@ -39,14 +39,14 @@ pub fn get_test_import_enum_key(value: TestImportEnum) -> Result<String, String>
 }
 
 impl TryFrom<i32> for TestImportEnum {
-    type Error = &'static str;
+    type Error = String;
 
     fn try_from(v: i32) -> Result<TestImportEnum, Self::Error> {
         match v {
             x if x == TestImportEnum::STRING as i32 => Ok(TestImportEnum::STRING),
             x if x == TestImportEnum::BYTES as i32 => Ok(TestImportEnum::BYTES),
             x if x == TestImportEnum::_MAX_ as i32 => Ok(TestImportEnum::_MAX_),
-            _ => Err("Error converting 'TestImportEnum' to i32"),
+            _ => Err(format!("Error converting 'TestImportEnum' to i32")),
         }
     }
 }
