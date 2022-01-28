@@ -80,7 +80,7 @@ const importCase = async (basePath: string, dirent: Dirent): Promise<TestCase | 
 
   // Fetch the output schemas
   const querySchema = fetchIfExists("output/query.graphql");
-  const queryTypeInfo = await importIfExists("output/query.ts");
+  const ModuleTypeInfo = await importIfExists("output/query.ts");
   const mutationSchema = fetchIfExists("output/mutation.graphql");
   const mutationTypeInfo = await importIfExists("output/mutation.ts");
   const schemaSchema = fetchIfExists("output/schema.graphql");
@@ -129,10 +129,10 @@ const importCase = async (basePath: string, dirent: Dirent): Promise<TestCase | 
     combined: {}
   };
 
-  if (querySchema && queryTypeInfo) {
+  if (querySchema && ModuleTypeInfo) {
     output.query = {
       schema: querySchema,
-      typeInfo: queryTypeInfo
+      typeInfo: ModuleTypeInfo
     };
   }
 

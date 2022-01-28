@@ -7,7 +7,7 @@ import {
   addFirstLast,
   toGraphQLType,
   transformTypeInfo,
-  queryModuleCapabilities,
+  moduleCapabilities,
 } from "@web3api/schema-parse";
 
 // Remove mustache's built-in HTML escaping
@@ -17,7 +17,7 @@ export function renderSchema(typeInfo: TypeInfo, header: boolean): string {
   // Prepare the TypeInfo for the renderer
   typeInfo = transformTypeInfo(typeInfo, addFirstLast);
   typeInfo = transformTypeInfo(typeInfo, toGraphQLType);
-  typeInfo = transformTypeInfo(typeInfo, queryModuleCapabilities());
+  typeInfo = transformTypeInfo(typeInfo, moduleCapabilities());
 
   let schema = Mustache.render(schemaTemplate, {
     typeInfo,
