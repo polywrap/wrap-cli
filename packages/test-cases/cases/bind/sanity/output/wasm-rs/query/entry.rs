@@ -7,18 +7,16 @@ use polywrap_wasm_rs::{
     invoke,
     InvokeArgs
 };
-use wasm_bindgen::prelude::*;
 
 #[cfg(feature = "w3invoke")]
 #[no_mangle]
-#[wasm_bindgen]
 pub extern "C" fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
     // Ensure the abort handler is properly setup
     abort::w3_abort_setup();
 
     let args: InvokeArgs = invoke::w3_invoke_args(method_size, args_size);
 
-    match args.get_method().as_str() {
+    match args.method.as_str() {
         "queryMethod" => invoke::w3_invoke(args, Some(query_method_wrapped)),
         "objectMethod" => invoke::w3_invoke(args, Some(object_method_wrapped)),
         _ => invoke::w3_invoke(args, None),
