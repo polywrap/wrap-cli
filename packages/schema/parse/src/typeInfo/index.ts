@@ -1,7 +1,7 @@
 import {
   ObjectDefinition,
-  QueryDefinition,
-  ImportedQueryDefinition,
+  ModuleDefinition,
+  ImportedModuleDefinition,
   ImportedObjectDefinition,
   GenericDefinition,
   EnumDefinition,
@@ -16,16 +16,16 @@ import {
 export * from "./definitions";
 export * from "./scalar";
 export * from "./operation";
-export * from "./query";
+export * from "./module";
 export * from "./env";
 
 export interface TypeInfo {
   objectTypes: ObjectDefinition[];
-  moduleTypes: QueryDefinition[];
+  moduleTypes: ModuleDefinition[];
   enumTypes: EnumDefinition[];
   interfaceTypes: InterfaceDefinition[];
   importedObjectTypes: ImportedObjectDefinition[];
-  importedModuleTypes: ImportedQueryDefinition[];
+  importedModuleTypes: ImportedModuleDefinition[];
   importedEnumTypes: ImportedEnumDefinition[];
   envTypes: {
     query: EnvDefinition;
@@ -49,7 +49,7 @@ export function createTypeInfo(): TypeInfo {
   };
 }
 
-type ImportedDefinition = ImportedObjectDefinition | ImportedQueryDefinition;
+type ImportedDefinition = ImportedObjectDefinition | ImportedModuleDefinition;
 
 export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
   const combined: TypeInfo = {
@@ -138,7 +138,7 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
         combined.importedModuleTypes,
         importedModuleType,
         compareImportedType,
-        (a: ImportedQueryDefinition, b: ImportedQueryDefinition) => {
+        (a: ImportedModuleDefinition, b: ImportedModuleDefinition) => {
           return { ...a, isInterface: a.isInterface || b.isInterface };
         }
       );

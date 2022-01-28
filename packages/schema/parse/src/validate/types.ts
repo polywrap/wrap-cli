@@ -157,9 +157,9 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
             ? currentImportType
             : currentObject;
           if (typeName && !isModuleType(typeName)) {
-            // Arguments not supported on non-query types
+            // Arguments not supported on non-module types
             throw Error(
-              `Methods can only be defined on query types (${ModuleTypeNames.join(
+              `Methods can only be defined on module types (${ModuleTypeNames.join(
                 ", "
               )}).\n` +
                 `Found: type ${typeName} { ${currentField}(${node.name.value}) }`

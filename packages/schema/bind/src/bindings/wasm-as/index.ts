@@ -49,13 +49,13 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
   ) {
     const importEntries: OutputEntry[] = [];
 
-    // Generate imported query type folders
+    // Generate imported module type folders
     for (const importedModuleType of typeInfo.importedModuleTypes) {
       importEntries.push({
         type: "Directory",
         name: importedModuleType.type,
         data: generateFiles(
-          "./templates/imported/query-type",
+          "./templates/imported/module-type",
           importedModuleType,
           subTemplates
         ),
@@ -111,12 +111,12 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
     });
   }
 
-  // Generate query type folders
-  for (const ModuleType of typeInfo.moduleTypes) {
+  // Generate module type folders
+  for (const moduleType of typeInfo.moduleTypes) {
     entries.push({
       type: "Directory",
-      name: ModuleType.type,
-      data: generateFiles("./templates/query-type", ModuleType, subTemplates),
+      name: moduleType.type,
+      data: generateFiles("./templates/module-type", ModuleType, subTemplates),
     });
   }
 

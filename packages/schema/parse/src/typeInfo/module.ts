@@ -3,9 +3,9 @@ export const moduleTypes = {
   Query: "Query",
 };
 
-export type moduleTypes = typeof moduleTypes;
+export type ModuleTypes = typeof moduleTypes;
 
-export type ModuleType = keyof moduleTypes;
+export type ModuleType = keyof ModuleTypes;
 
 export function isModuleType(type: string): type is ModuleType {
   return type in moduleTypes;

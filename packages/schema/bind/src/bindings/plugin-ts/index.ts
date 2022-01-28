@@ -10,7 +10,7 @@ import {
   methodParentPointers,
   interfaceUris,
   TypeInfo,
-  QueryDefinition,
+  ModuleDefinition,
 } from "@web3api/schema-parse";
 import Mustache from "mustache";
 import { readFileSync } from "fs";
@@ -52,10 +52,10 @@ export function generateBinding(
     });
   };
 
-  const queryContext = typeInfo.moduleTypes.find((def: QueryDefinition) => {
+  const queryContext = typeInfo.moduleTypes.find((def: ModuleDefinition) => {
     return def.type === "Query";
   });
-  const mutationContext = typeInfo.moduleTypes.find((def: QueryDefinition) => {
+  const mutationContext = typeInfo.moduleTypes.find((def: ModuleDefinition) => {
     return def.type === "Mutation";
   });
 

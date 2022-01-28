@@ -1,9 +1,9 @@
 import {
-  createImportedQueryDefinition,
+  createImportedModuleDefinition,
   createInterfaceImplementedDefinition,
   createMethodDefinition,
   createPropertyDefinition,
-  ImportedQueryDefinition,
+  ImportedModuleDefinition,
   TypeInfo,
 } from "../typeInfo";
 import { extractImportedDefinition } from "./imported-types-utils";
@@ -12,7 +12,7 @@ import {
   extractListType,
   extractNamedType,
   State,
-} from "./query-types-utils";
+} from "./module-types-utils";
 
 import {
   ASTVisitor,
@@ -25,7 +25,7 @@ import {
 } from "graphql";
 
 const visitorEnter = (
-  importedModuleTypes: ImportedQueryDefinition[],
+  importedModuleTypes: ImportedModuleDefinition[],
   state: State
 ) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
@@ -40,7 +40,7 @@ const visitorEnter = (
       node.directives.find((dir) => dir.name.value === "enabled_interface");
     const isInterface = dir ? true : false;
 
-    const importedType = createImportedQueryDefinition({
+    const importedType = createImportedModuleDefinition({
       type: node.name.value,
       uri: imported.uri,
       namespace: imported.namespace,

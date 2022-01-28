@@ -1,7 +1,7 @@
 import {
-  createQueryDefinition,
+  createModuleDefinition,
   createInterfaceImplementedDefinition,
-  createImportedQueryDefinition,
+  createImportedModuleDefinition,
   createTypeInfo,
   TypeInfo,
 } from "@web3api/schema-parse";
@@ -10,7 +10,7 @@ export const typeInfo: TypeInfo = {
   ...createTypeInfo(),
   moduleTypes: [
     {
-      ...createQueryDefinition({ type: "Query" }),
+      ...createModuleDefinition({ type: "Query" }),
       imports: [
         { type: "Namespace_Query" },
       ],
@@ -21,7 +21,7 @@ export const typeInfo: TypeInfo = {
       ],
     },
     {
-      ...createQueryDefinition({ type: "Mutation" }),
+      ...createModuleDefinition({ type: "Mutation" }),
       imports: [
         { type: "Namespace_Mutation" },
       ],
@@ -34,7 +34,7 @@ export const typeInfo: TypeInfo = {
   ],
   importedModuleTypes: [
     {
-      ...createImportedQueryDefinition({
+      ...createImportedModuleDefinition({
         uri: "external.eth",
         namespace: "Namespace",
         nativeType: "Query",
@@ -45,7 +45,7 @@ export const typeInfo: TypeInfo = {
       ]
     },
     {
-      ...createImportedQueryDefinition({
+      ...createImportedModuleDefinition({
         uri: "external.eth",
         namespace: "Namespace",
         nativeType: "Mutation",

@@ -7,12 +7,12 @@ import {
   ObjectDefinition,
   PropertyDefinition,
   TypeInfo,
-  createQueryDefinition,
-  QueryDefinition,
+  createModuleDefinition,
+  ModuleDefinition,
   createMethodDefinition,
   MethodDefinition,
-  createImportedQueryDefinition,
-  ImportedQueryDefinition,
+  createImportedModuleDefinition,
+  ImportedModuleDefinition,
   createEnvDefinition
 } from "../typeInfo";
 
@@ -134,7 +134,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
       ],
       moduleTypes: [
         {
-          ...createQueryDefinition({ type: "Query" }),
+          ...createModuleDefinition({ type: "Query" }),
           methods: [
             {
               ...createMethodDefinition({
@@ -220,9 +220,9 @@ describe("Web3API Schema TypeInfo Transformations", () => {
           ],
           first: true,
           last: null
-        } as QueryDefinition,
+        } as ModuleDefinition,
         {
-          ...createQueryDefinition({ type: "Mutation" }),
+          ...createModuleDefinition({ type: "Mutation" }),
           methods: [
             {
               ...createMethodDefinition({
@@ -265,12 +265,12 @@ describe("Web3API Schema TypeInfo Transformations", () => {
           ],
           first: null,
           last: true
-        } as QueryDefinition,
+        } as ModuleDefinition,
       ],
       importedObjectTypes: [],
       importedModuleTypes: [
         {
-          ...createImportedQueryDefinition({
+          ...createImportedModuleDefinition({
             uri: "testimport.uri.eth",
             namespace: "TestImport",
             nativeType: "Query",
@@ -329,7 +329,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
           ],
           first: true,
           last: true
-        } as ImportedQueryDefinition,
+        } as ImportedModuleDefinition,
       ],
     };
 

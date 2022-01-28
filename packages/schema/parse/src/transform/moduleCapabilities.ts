@@ -6,21 +6,18 @@ import {
   TypeInfo,
 } from "../typeInfo";
 
-export interface QueryModuleCapability {
+export interface ModuleCapability {
   type: string;
   uri: string;
   namespace: string;
 }
 
-export type QueryModuleCapabilityMap = Record<
-  InvokableModules,
-  QueryModuleCapability[]
->;
+export type ModuleCapabilityMap = Record<InvokableModules, ModuleCapability[]>;
 
 const capitalize = (str: string) => str.replace(/^\w/, (c) => c.toUpperCase());
 
-export function queryModuleCapabilities(): TypeInfoTransforms {
-  const queryModuleCapabilities: QueryModuleCapabilityMap = {
+export function moduleCapabilities(): TypeInfoTransforms {
+  const moduleCapabilities: ModuleCapabilityMap = {
     query: [],
     mutation: [],
   };
@@ -34,7 +31,7 @@ export function queryModuleCapabilities(): TypeInfoTransforms {
           const info = def.capabilities[type as keyof CapabilityDefinition];
           if (info.enabled) {
             for (const module of info.modules) {
-              queryModuleCapabilities[module as InvokableModules].push({
+              moduleCapabilities[module as InvokableModules].push({
                 uri: def.uri,
                 namespace: def.namespace,
                 type,
@@ -48,16 +45,16 @@ export function queryModuleCapabilities(): TypeInfoTransforms {
     },
     leave: {
       TypeInfo: (info: TypeInfo) => {
-        for (const queryDef of info.moduleTypes) {
-          const module = queryDef.type.toLowerCase() as InvokableModules;
-          const capabilities = queryModuleCapabilities[module];
+        for (const moduleDef of info.moduleTypes) {
+          const module = moduleDef.type.toLowerCase() as InvokableModules;
+          const capabilities = moduleCapabilities[module];
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (queryDef as any).capabilities = capabilities;
+          (moduleDef as any).capabilities = capabilities;
         }
 
-        for (const importedQueryDef of info.importedModuleTypes) {
-          if (enabledInterfaces.has(importedQueryDef.type)) {
-            importedQueryDef.isInterface = true;
+        for (const importedModuleDef of info.importedModuleTypes) {
+          if (enabledInterfaces.has(importedModuleDef.type)) {
+            importedModuleDef.isInterface = true;
           }
         }
 
