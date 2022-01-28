@@ -6,7 +6,7 @@ import {
   ModuleDefinition,
   createArrayDefinition,
   InterfaceDefinition,
-} from "../typeInfo";
+} from "../../typeInfo";
 import { setPropertyType } from "./property-utils";
 
 import { InputValueDefinitionNode, NamedTypeNode } from "graphql";

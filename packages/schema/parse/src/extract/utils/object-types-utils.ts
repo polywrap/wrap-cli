@@ -3,7 +3,7 @@ import {
   createPropertyDefinition,
   ObjectDefinition,
   PropertyDefinition,
-} from "../typeInfo";
+} from "../../typeInfo";
 import { setPropertyType } from "./property-utils";
 
 import { FieldDefinitionNode, NamedTypeNode } from "graphql";
@@ -19,6 +19,10 @@ export function extractFieldDefinition(
   state: State
 ): void {
   const importDef = state.currentType;
+
+  if (node.name.value === "Map") {
+    console.log(node.name.value, node.directives);
+  }
 
   if (!importDef) {
     return;

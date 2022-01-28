@@ -6,13 +6,13 @@ import {
   ImportedModuleDefinition,
   TypeInfo,
 } from "../typeInfo";
-import { extractImportedDefinition } from "./imported-types-utils";
+import { extractImportedDefinition } from "./utils/imported-types-utils";
 import {
   extractInputValueDefinition,
   extractListType,
   extractNamedType,
   State,
-} from "./module-types-utils";
+} from "./utils/module-types-utils";
 
 import {
   ASTVisitor,

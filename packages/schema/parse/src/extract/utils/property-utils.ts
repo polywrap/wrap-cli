@@ -3,7 +3,7 @@ import {
   createUnresolvedObjectOrEnumRef,
   isScalarType,
   PropertyDefinition,
-} from "../typeInfo";
+} from "../../typeInfo";
 
 export function setPropertyType(
   property: PropertyDefinition,
