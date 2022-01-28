@@ -6,7 +6,7 @@ use polywrap_wasm_rs::{
     EncodingError,
     Read,
     Write,
-    JSON
+    JSON,
 };
 pub use serialization::{
     deserialize_test_import_object,
@@ -46,7 +46,7 @@ impl TestImportObject {
         }
     }
 
-    pub fn to_buffer(input: &TestImportObject) -> Result<Vec<u8>, EncodingError>  {
+    pub fn to_buffer(input: &TestImportObject) -> Result<Vec<u8>, EncodingError> {
         serialize_test_import_object(input).map_err(|e| EncodingError::from(e))
     }
 

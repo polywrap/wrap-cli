@@ -7,7 +7,7 @@ use polywrap_wasm_rs::{
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON
+    JSON,
 };
 use crate::TestImportObject;
 
@@ -130,8 +130,8 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
             "object_array" => {
                 reader.context().push(&field, "Vec<TestImportAnotherObject>", "type found, reading property");
                 _object_array = reader.read_array(|reader| {
-                    let object = TestImportAnotherObject::read(reader);
-                    return object;
+                    let object = TestImportAnotherObject::read(reader)?;
+                    return Ok(object);
                 })?;
                 _object_array_set = true;
                 reader.context().pop();
@@ -163,7 +163,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
             "opt_enum" => {
                 reader.context().push(&field, "Option<TestImportEnum>", "type found, reading property");
                 let mut value: Option<TestImportEnum> = None;
-                if !reader.is_next_nil()?{
+                if !reader.is_next_nil()? {
                     if reader.is_next_string()? {
                         value = Some(get_test_import_enum_value(&reader.read_string()?)?);
                     } else {
@@ -195,7 +195,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                 reader.context().push(&field, "Option<Vec<Option<TestImportEnum>>>", "type found, reading property");
                 _opt_enum_array = reader.read_nullable_array(|reader| {
                     let mut value: Option<TestImportEnum> = None;
-                    if !reader.is_next_nil()?{
+                    if !reader.is_next_nil()? {
                         if reader.is_next_string()? {
                             value = Some(get_test_import_enum_value(&reader.read_string()?)?);
                         } else {

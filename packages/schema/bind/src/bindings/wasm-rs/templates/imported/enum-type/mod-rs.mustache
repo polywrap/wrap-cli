@@ -51,7 +51,7 @@ pub fn get_{{#toLower}}{{type}}{{/toLower}}_key(value: {{#toUpper}}{{type}}{{/to
 }
 
 impl TryFrom<i32> for {{#toUpper}}{{type}}{{/toUpper}} {
-    type Error = &'static str;
+    type Error = String;
 
     fn try_from(v: i32) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, Self::Error> {
         match v {
@@ -59,7 +59,7 @@ impl TryFrom<i32> for {{#toUpper}}{{type}}{{/toUpper}} {
             x if x == {{#toUpper}}{{type}}{{/toUpper}}::{{.}} as i32 => Ok({{#toUpper}}{{type}}{{/toUpper}}::{{.}}),
             {{/constants}}
             x if x == {{#toUpper}}{{type}}{{/toUpper}}::_MAX_ as i32 => Ok({{#toUpper}}{{type}}{{/toUpper}}::_MAX_),
-            _ => Err("Error converting '{{#toUpper}}{{type}}{{/toUpper}}' to i32"),
+            _ => Err(format!("Error converting '{{#toUpper}}{{type}}{{/toUpper}}' to i32")),
         }
     }
 }

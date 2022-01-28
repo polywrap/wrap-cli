@@ -6,9 +6,11 @@ use serde::{Serialize, Deserialize};
 pub mod serialization;
 use polywrap_wasm_rs::{
     BigInt,
+    DecodingError,
+    EncodingError,
     Read,
     Write,
-    JSON
+    JSON,
 };
 pub use serialization::{
     deserialize_{{#toLower}}{{type}}{{/toLower}},
@@ -41,20 +43,20 @@ impl {{#toUpper}}{{type}}{{/toUpper}} {
         }
     }
 
-    pub fn to_buffer(input: &{{#toUpper}}{{type}}{{/toUpper}}) -> Vec<u8> {
-        serialize_{{#toLower}}{{type}}{{/toLower}}(input)
+    pub fn to_buffer(input: &{{#toUpper}}{{type}}{{/toUpper}}) -> Result<Vec<u8>, EncodingError> {
+        serialize_{{#toLower}}{{type}}{{/toLower}}(input).map_err(|e| EncodingError::from(e))
     }
 
-    pub fn from_buffer(input: &[u8]) -> {{#toUpper}}{{type}}{{/toUpper}} {
-        deserialize_{{#toLower}}{{type}}{{/toLower}}(input)
+    pub fn from_buffer(input: &[u8]) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, DecodingError> {
+        deserialize_{{#toLower}}{{type}}{{/toLower}}(input).map_err(|e| DecodingError::from(e))
     }
 
-    pub fn write<W: Write>(input: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) {
-        write_{{#toLower}}{{type}}{{/toLower}}(input, writer);
+    pub fn write<W: Write>(input: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) -> Result<(), EncodingError> {
+        write_{{#toLower}}{{type}}{{/toLower}}(input, writer).map_err(|e| EncodingError::from(e))
     }
 
-    pub fn read<R: Read>(reader: &mut R) -> {{#toUpper}}{{type}}{{/toUpper}} {
-        read_{{#toLower}}{{type}}{{/toLower}}(reader).expect("Failed to read {{#toUpper}}{{type}}{{/toUpper}}")
+    pub fn read<R: Read>(reader: &mut R) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, DecodingError> {
+        read_{{#toLower}}{{type}}{{/toLower}}(reader).map_err(|e| DecodingError::from(e))
     }
 }
 {{/__commonImport}}

@@ -7,7 +7,7 @@ use polywrap_wasm_rs::{
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON
+    JSON,
 };
 use crate::CustomType;
 
@@ -494,8 +494,8 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
             "object_array" => {
                 reader.context().push(&field, "Vec<AnotherType>", "type found, reading property");
                 _object_array = reader.read_array(|reader| {
-                    let object = AnotherType::read(reader);
-                    return object;
+                    let object = AnotherType::read(reader)?;
+                    return Ok(object);
                 })?;
                 _object_array_set = true;
                 reader.context().pop();

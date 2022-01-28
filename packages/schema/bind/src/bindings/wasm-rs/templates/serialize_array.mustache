@@ -1,10 +1,10 @@
 {{#scalar}}
-writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(item).unwrap();
+writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(item)
 {{/scalar}}
 {{#array}}
 writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(item, |writer: &mut W, item| {
     {{> serialize_array}}
-}).unwrap();
+})
 {{/array}}
 {{#enum}}
 {{> serialize_enum}}

@@ -8,7 +8,7 @@ use polywrap_wasm_rs::{
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON
+    JSON,
 };
 
 use crate::{
@@ -209,8 +209,8 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
             "object_array" => {
                 reader.context().push(&field, "Vec<AnotherType>", "type found, reading argument");
                 _object_array = reader.read_array(|reader| {
-                    let object = AnotherType::read(reader);
-                    return object;
+                    let object = AnotherType::read(reader)?;
+                    return Ok(object);
                 })?;
                 _object_array_set = true;
                 reader.context().pop();

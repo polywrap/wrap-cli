@@ -6,7 +6,7 @@ use polywrap_wasm_rs::{
     EncodingError,
     Read,
     Write,
-    JSON
+    JSON,
 };
 pub use serialization::{
     deserialize_custom_type,
