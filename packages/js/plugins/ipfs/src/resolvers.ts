@@ -66,7 +66,7 @@ export const query = (ipfs: IpfsPlugin): Query.Module => ({
       });
 
       return await ipfs.cat(cid, {
-        timeout: 5000,
+        timeout: 20000,
         disableParallelRequests: true,
       });
     } catch (e) {
