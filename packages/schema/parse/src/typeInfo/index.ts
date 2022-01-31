@@ -1,7 +1,7 @@
 import {
   ObjectDefinition,
-  QueryDefinition,
-  ImportedQueryDefinition,
+  ModuleDefinition,
+  ImportedModuleDefinition,
   ImportedObjectDefinition,
   GenericDefinition,
   EnumDefinition,
@@ -16,16 +16,16 @@ import {
 export * from "./definitions";
 export * from "./scalar";
 export * from "./operation";
-export * from "./query";
+export * from "./module";
 export * from "./env";
 
 export interface TypeInfo {
   objectTypes: ObjectDefinition[];
-  queryTypes: QueryDefinition[];
+  moduleTypes: ModuleDefinition[];
   enumTypes: EnumDefinition[];
   interfaceTypes: InterfaceDefinition[];
   importedObjectTypes: ImportedObjectDefinition[];
-  importedQueryTypes: ImportedQueryDefinition[];
+  importedModuleTypes: ImportedModuleDefinition[];
   importedEnumTypes: ImportedEnumDefinition[];
   envTypes: {
     query: EnvDefinition;
@@ -37,10 +37,10 @@ export function createTypeInfo(): TypeInfo {
   return {
     objectTypes: [],
     enumTypes: [],
-    queryTypes: [],
+    moduleTypes: [],
     interfaceTypes: [],
     importedObjectTypes: [],
-    importedQueryTypes: [],
+    importedModuleTypes: [],
     importedEnumTypes: [],
     envTypes: {
       query: createEnvDefinition({}),
@@ -49,16 +49,16 @@ export function createTypeInfo(): TypeInfo {
   };
 }
 
-type ImportedDefinition = ImportedObjectDefinition | ImportedQueryDefinition;
+type ImportedDefinition = ImportedObjectDefinition | ImportedModuleDefinition;
 
 export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
   const combined: TypeInfo = {
     objectTypes: [],
-    queryTypes: [],
+    moduleTypes: [],
     enumTypes: [],
     interfaceTypes: [],
     importedObjectTypes: [],
-    importedQueryTypes: [],
+    importedModuleTypes: [],
     importedEnumTypes: [],
     envTypes: {
       query: createEnvDefinition({}),
@@ -82,8 +82,8 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       tryInsert(combined.objectTypes, objectType);
     }
 
-    for (const queryType of typeInfo.queryTypes) {
-      tryInsert(combined.queryTypes, queryType);
+    for (const ModuleType of typeInfo.moduleTypes) {
+      tryInsert(combined.moduleTypes, ModuleType);
     }
 
     for (const interfaceType of typeInfo.interfaceTypes) {
@@ -133,12 +133,12 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       );
     }
 
-    for (const importedQueryType of typeInfo.importedQueryTypes) {
+    for (const importedModuleType of typeInfo.importedModuleTypes) {
       tryInsert(
-        combined.importedQueryTypes,
-        importedQueryType,
+        combined.importedModuleTypes,
+        importedModuleType,
         compareImportedType,
-        (a: ImportedQueryDefinition, b: ImportedQueryDefinition) => {
+        (a: ImportedModuleDefinition, b: ImportedModuleDefinition) => {
           return { ...a, isInterface: a.isInterface || b.isInterface };
         }
       );

@@ -274,7 +274,7 @@ describe("Web3API Schema Type Validation", () => {
     );
 
     expect(exec(propertyTypes7)).toThrow(
-      /Methods can only be defined on query types \(Mutation, Query\)\.\nFound: type Queryy { method\(prop\) }/gm
+      /Methods can only be defined on module types \(Mutation, Query\)\.\nFound: type Queryy { method\(prop\) }/gm
     );
   })
 

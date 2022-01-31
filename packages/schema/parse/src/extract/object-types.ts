@@ -3,7 +3,7 @@ import {
   ObjectDefinition,
   createObjectDefinition,
   createInterfaceImplementedDefinition,
-  isQueryType,
+  isModuleType,
   isEnvType,
 } from "../typeInfo";
 import {
@@ -28,7 +28,7 @@ const visitorEnter = (objectTypes: ObjectDefinition[], state: State) => ({
     const typeName = node.name.value;
 
     // Skip non-custom types
-    if (isQueryType(typeName) || isEnvType(typeName)) {
+    if (isModuleType(typeName) || isEnvType(typeName)) {
       return;
     }
 

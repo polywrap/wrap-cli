@@ -1,8 +1,8 @@
 import {
   isScalarType,
   scalarTypeNames,
-  isQueryType,
-  queryTypeNames,
+  isModuleType,
+  ModuleTypeNames,
 } from "../typeInfo";
 import { SchemaValidator } from "./";
 
@@ -156,10 +156,10 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
           const typeName = currentImportType
             ? currentImportType
             : currentObject;
-          if (typeName && !isQueryType(typeName)) {
-            // Arguments not supported on non-query types
+          if (typeName && !isModuleType(typeName)) {
+            // Arguments not supported on non-module types
             throw Error(
-              `Methods can only be defined on query types (${queryTypeNames.join(
+              `Methods can only be defined on module types (${ModuleTypeNames.join(
                 ", "
               )}).\n` +
                 `Found: type ${typeName} { ${currentField}(${node.name.value}) }`

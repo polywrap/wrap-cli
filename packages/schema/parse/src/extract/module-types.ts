@@ -1,7 +1,7 @@
 import {
   TypeInfo,
-  QueryDefinition,
-  createQueryDefinition,
+  ModuleDefinition,
+  createModuleDefinition,
   createMethodDefinition,
   createPropertyDefinition,
   createInterfaceImplementedDefinition,
@@ -17,7 +17,7 @@ import {
   extractListType,
   extractNamedType,
   State,
-} from "./query-types-utils";
+} from "./module-types-utils";
 
 import {
   ObjectTypeDefinitionNode,
@@ -32,7 +32,7 @@ import {
   ASTVisitor,
 } from "graphql";
 
-const visitorEnter = (queryTypes: QueryDefinition[], state: State) => ({
+const visitorEnter = (moduleTypes: ModuleDefinition[], state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const nodeName = node.name.value;
 
@@ -45,7 +45,7 @@ const visitorEnter = (queryTypes: QueryDefinition[], state: State) => ({
     const interfaces = parseCapabilitiesDirective(nodeName, node);
     state.currentInterfaces = interfaces;
 
-    const query = createQueryDefinition({
+    const module = createModuleDefinition({
       type: nodeName,
       imports,
       interfaces: node.interfaces?.map((x) =>
@@ -53,13 +53,13 @@ const visitorEnter = (queryTypes: QueryDefinition[], state: State) => ({
       ),
       comment: node.description?.value,
     });
-    queryTypes.push(query);
-    state.currentQuery = query;
+    moduleTypes.push(module);
+    state.currentModule = module;
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
-    const query = state.currentQuery;
+    const module = state.currentModule;
 
-    if (!query) {
+    if (!module) {
       return;
     }
 
@@ -69,12 +69,12 @@ const visitorEnter = (queryTypes: QueryDefinition[], state: State) => ({
     });
 
     const method = createMethodDefinition({
-      type: query.type,
+      type: module.type,
       name: node.name.value,
       return: returnType,
       comment: node.description?.value,
     });
-    query.methods.push(method);
+    module.methods.push(method);
     state.currentMethod = method;
     state.currentReturn = returnType;
   },
@@ -279,7 +279,7 @@ const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
     }
 
     state.currentInterfaces = undefined;
-    state.currentQuery = undefined;
+    state.currentModule = undefined;
   },
   FieldDefinition: (_node: FieldDefinitionNode) => {
     state.currentMethod = undefined;
@@ -293,11 +293,11 @@ const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
   },
 });
 
-export const getQueryTypesVisitor = (typeInfo: TypeInfo): ASTVisitor => {
+export const getmoduleTypesVisitor = (typeInfo: TypeInfo): ASTVisitor => {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo.queryTypes, state),
+    enter: visitorEnter(typeInfo.moduleTypes, state),
     leave: visitorLeave(typeInfo, state),
   };
 };
