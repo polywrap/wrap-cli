@@ -1,7 +1,7 @@
 import {
   createObjectDefinition,
   createMethodDefinition,
-  createQueryDefinition,
+  createModuleDefinition,
   createObjectPropertyDefinition,
   createImportedObjectDefinition,
   createScalarPropertyDefinition,
@@ -22,9 +22,9 @@ export const typeInfo: TypeInfo = {
       ],
     },
   ],
-  queryTypes: [
+  moduleTypes: [
     {
-      ...createQueryDefinition({ type: "Query" }),
+      ...createModuleDefinition({ type: "Query" }),
       imports: [
         { type: "Namespace_ExternalType" }
       ],

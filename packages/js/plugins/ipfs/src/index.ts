@@ -1,5 +1,7 @@
 import { query, mutation } from "./resolvers";
 import { manifest, Query, Mutation, Options, ResolveResult } from "./w3";
+import { IpfsClient } from "./types/IpfsClient";
+import { execSimple, execFallbacks } from "./exec";
 
 import {
   Client,
@@ -8,33 +10,11 @@ import {
   PluginPackageManifest,
 } from "@web3api/core-js";
 import CID from "cids";
-import AbortController from "abort-controller";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const isIPFS = require("is-ipfs");
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
-
-interface IpfsClient {
-  add(
-    data: Uint8Array,
-    options?: unknown
-  ): Promise<
-    {
-      name: string;
-      hash: CID;
-    }[]
-  >;
-
-  cat(cid: string, options?: unknown): Promise<Buffer>;
-
-  resolve(
-    cid: string,
-    options?: unknown
-  ): Promise<{
-    path: string;
-  }>;
-}
 
 export interface IpfsConfig {
   provider: string;
@@ -124,73 +104,51 @@ export class IpfsPlugin extends Plugin {
 
   private async _execWithOptions<TReturn>(
     operation: string,
-    exec: (
+    func: (
       ipfs: IpfsClient,
       provider: string,
       options: unknown
     ) => Promise<TReturn>,
     options?: Options
   ): Promise<TReturn> {
-    if (options) {
-      const timeout = options.timeout || 0;
-      const providerOverride = options.provider;
-
-      if (timeout > 0) {
-        let ipfs = this._ipfs;
-        let provider = providerOverride || this._config.provider;
-        let fallbackIdx = -1;
-        let complete = false;
-        let result: TReturn | undefined = undefined;
-
-        while (!complete) {
-          const controller = new AbortController();
-          const timer = setTimeout(() => controller.abort(), timeout);
-
-          try {
-            result = await exec(ipfs, provider, { signal: controller.signal });
-          } catch (e) {
-            // Handle abort logic below
-          }
-
-          clearTimeout(timer);
-
-          if (this._config.fallbackProviders && !providerOverride) {
-            // Retry with a new provider
-            fallbackIdx += 1;
-
-            if (fallbackIdx >= this._config.fallbackProviders.length) {
-              complete = true;
-            } else {
-              provider = this._config.fallbackProviders[fallbackIdx];
-              ipfs = createIpfsClient(provider);
-            }
-          } else {
-            complete = true;
-          }
-        }
-
-        if (!result) {
-          throw Error(
-            `${operation}: Timeout has been exceeded, and all providers have been exhausted.\nTimeout: ${timeout}\nProviders: ${
-              providerOverride
-                ? [providerOverride]
-                : [
-                    this._config.provider,
-                    ...(this._config.fallbackProviders || []),
-                  ]
-            }`
-          );
-        }
-
-        return result;
-      } else if (providerOverride) {
-        const ipfs = createIpfsClient(providerOverride);
-        return exec(ipfs, providerOverride, undefined);
-      }
+    if (!options) {
+      // Default behavior if no options are provided
+      return await execSimple(
+        operation,
+        this._ipfs,
+        this._config.provider,
+        0,
+        func
+      );
     }
 
-    // Default behavior
-    return exec(this._ipfs, this._config.provider, undefined);
+    const timeout = options.timeout || 0;
+
+    let providers = [
+      this._config.provider,
+      ...(this._config.fallbackProviders || []),
+    ];
+    let ipfs = this._ipfs;
+    let defaultProvider = this._config.provider;
+
+    // Use the provider defaul toverride specified
+    if (options.provider) {
+      providers = [options.provider, ...providers];
+      ipfs = createIpfsClient(options.provider);
+      defaultProvider = options.provider;
+    }
+
+    return await execFallbacks(
+      operation,
+      ipfs,
+      defaultProvider,
+      providers,
+      timeout,
+      func,
+      {
+        parallel: !options.disableParallelRequests,
+      }
+    );
   }
 }
 

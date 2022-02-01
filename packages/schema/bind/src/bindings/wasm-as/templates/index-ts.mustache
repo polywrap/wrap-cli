@@ -1,4 +1,4 @@
-{{#queryTypes}}
+{{#moduleTypes}}
 {{#methods.length}}
 import {
   {{#methods}}
@@ -6,8 +6,8 @@ import {
   {{/methods}}
 } from "./{{type}}";
 {{/methods.length}}
-{{/queryTypes}}
-{{#queryTypes}}
+{{/moduleTypes}}
+{{#moduleTypes}}
 {{#methods.length}}
 export {
   {{#methods}}
@@ -15,7 +15,7 @@ export {
   {{/methods}}
 };
 {{/methods.length}}
-{{/queryTypes}}
+{{/moduleTypes}}
 {{#objectTypes}}
 export { {{type}} } from "./{{type}}";
 {{/objectTypes}}
@@ -27,9 +27,9 @@ export {
   sanitize{{type}}Value
 } from "./{{type}}";
 {{/enumTypes}}
-{{#importedQueryTypes}}
+{{#importedModuleTypes}}
 export { {{type}} } from "./imported/{{type}}";
-{{/importedQueryTypes}}
+{{/importedModuleTypes}}
 {{#importedObjectTypes}}
 export { {{type}} } from "./imported/{{type}}";
 {{/importedObjectTypes}}
