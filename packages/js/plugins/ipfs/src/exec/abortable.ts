@@ -49,18 +49,15 @@ export const execAbortable = <TReturn>(
         timer && clearTimeout(timer);
 
         if (result === undefined && !error) {
-          return [
-            buildExecError(
-              operation,
-              provider,
-              timeout,
-              new Error("The provider returned an empty response")
-            ),
-            result,
-          ];
+          error = buildExecError(
+            operation,
+            provider,
+            timeout,
+            new Error("The provider returned an empty response")
+          );
         }
+
         resolve([error, result]);
-        return;
       },
       (e) => {
         // Clear timeout if exists
@@ -73,8 +70,6 @@ export const execAbortable = <TReturn>(
         resolve([error, undefined]);
       }
     );
-
-    return;
   });
 
   return {
