@@ -73,12 +73,13 @@ export const query = (ipfs: IpfsPlugin): Query.Module => ({
     const queryEnv = ipfs.getEnv("query") as QueryEnv;
 
     try {
-      const { cid } = await ipfs.resolve(input.path, {
+      const { cid, provider } = await ipfs.resolve(input.path, {
         timeout: 5000,
         disableParallelRequests: queryEnv.disableParallelRequests,
       });
 
       return await ipfs.cat(cid, {
+        provider,
         timeout: 20000,
         disableParallelRequests: true,
       });

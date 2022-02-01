@@ -124,22 +124,27 @@ export class IpfsPlugin extends Plugin {
 
     const timeout = options.timeout || 0;
 
-    if (options.provider) {
-      // Use the provider override if specified
-      const ipfs = createIpfsClient(options.provider);
-
-      return await execSimple(operation, ipfs, options.provider, timeout, func);
-    }
-
-    const providers = [
+    let providers = [
       this._config.provider,
       ...(this._config.fallbackProviders || []),
     ];
+    let ipfs = this._ipfs;
+    let defaultProvider = this._config.provider;
+
+    // Use the provider defaul toverride specified
+    if (options.provider) {
+      providers = [
+        options.provider,
+        ...providers
+      ];
+      ipfs = createIpfsClient(options.provider);
+      defaultProvider = options.provider;
+    }
 
     return await execFallbacks(
       operation,
-      this._ipfs,
-      this._config.provider,
+      ipfs,
+      defaultProvider,
       providers,
       timeout,
       func,
