@@ -1,19 +1,26 @@
 import { IpfsPlugin } from "./";
-import { ResolveResult, Query, Mutation, QueryEnv } from "./w3";
+import { ResolveResult, Options, Query, Mutation, QueryEnv } from "./w3";
 
-export const mutation = (ipfs: IpfsPlugin): Mutation.Module => ({
-  addFile: async (input: Mutation.Input_addFile) => {
-    const { hash } = await ipfs.add(input.data);
-    return hash.toString();
-  },
-});
+const getOptions = (input: Options | undefined | null, env: QueryEnv): Options => {
+  const options = input || { };
+
+  if (options.disableParallelRequests === undefined || options.disableParallelRequests === null) {
+    options.disableParallelRequests = env.disableParallelRequests;
+  }
+
+  return options;
+}
 
 export const query = (ipfs: IpfsPlugin): Query.Module => ({
   catFile: async (input: Query.Input_catFile) => {
-    return await ipfs.cat(input.cid, input.options || undefined);
+    const queryEnv = ipfs.getEnv("query") as QueryEnv;
+    const options = getOptions(input.options, queryEnv);
+    return await ipfs.cat(input.cid, options);
   },
   resolve: async (input: Query.Input_resolve): Promise<ResolveResult> => {
-    return await ipfs.resolve(input.cid, input.options || undefined);
+    const queryEnv = ipfs.getEnv("query") as QueryEnv;
+    const options = getOptions(input.options, queryEnv);
+    return await ipfs.resolve(input.cid, options);
   },
   // uri-resolver.core.web3api.eth
   tryResolveUri: async (input: Query.Input_tryResolveUri) => {
@@ -71,5 +78,12 @@ export const query = (ipfs: IpfsPlugin): Query.Module => ({
     } catch (e) {
       return null;
     }
+  },
+});
+
+export const mutation = (ipfs: IpfsPlugin): Mutation.Module => ({
+  addFile: async (input: Mutation.Input_addFile) => {
+    const { hash } = await ipfs.add(input.data);
+    return hash.toString();
   },
 });
