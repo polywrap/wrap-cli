@@ -828,4 +828,146 @@ describe("Web3ApiClient - resolveUri", () => {
       },
     ]);
   });
+
+  it("can resolve uri with custom resolver", async () => {
+    const ensUri = new Uri(`ens/test`);
+    const redirectUri = new Uri(`ens/redirect.eth`);
+
+    const client = await getClient({
+      resolvers: [
+        {
+          name: "CustomResolver",
+          resolveUri: async (uri: Uri) => {
+            if (uri.uri === ensUri.uri) {
+              return {
+                uri: redirectUri,
+              };
+            }
+
+            return {
+              uri: uri,
+            };
+          }
+        }
+      ]
+    });
+
+    const result = await client.resolveUri(ensUri);
+
+    expect(result.api).toBeFalsy();
+    expect(result.uri).toEqual(redirectUri);
+    expect(result.error).toBeFalsy();
+    
+    expect(result.uriHistory.getResolutionPath().getResolvers())
+      .toEqual([
+        "CustomResolver",
+      ]);
+
+    expect(result.uriHistory.stack).toEqual([
+      {
+        resolver: "CustomResolver",
+        sourceUri: ensUri,
+        result: {
+          uri: redirectUri,
+          api: false
+        }
+      },
+      {
+        resolver: "CustomResolver",
+        sourceUri: redirectUri,
+        result: {
+          uri: redirectUri,
+          api: false
+        }
+      },
+      {
+        resolver: "Redirect",
+        sourceUri: redirectUri,
+        result: {
+          uri: redirectUri,
+          api: false
+        }
+      },
+      {
+        resolver: "Plugin",
+        sourceUri: redirectUri,
+        result: {
+          uri: redirectUri,
+          api: false
+        }
+      },
+      {
+        resolver: "Cache",
+        sourceUri: redirectUri,
+        result: {
+          uri: redirectUri,
+          api: false
+        }
+      },
+      {
+        resolver: "ApiAggregator",
+        sourceUri: redirectUri,
+        result: {
+          uri: redirectUri,
+          api: false,
+        }
+      },
+    ]);
+  });
+
+  it("can resolve uri with custom resolver at query-time", async () => {
+    const ensUri = new Uri(`ens/test`);
+    const redirectUri = new Uri(`ens/redirect.eth`);
+
+    const client = await getClient();
+
+    const result = await client.resolveUri(ensUri, {
+      config: {
+        resolvers: [
+          {
+            name: "CustomResolver",
+            resolveUri: async (uri: Uri) => {
+              if (uri.uri === ensUri.uri) {
+                return {
+                  uri: redirectUri,
+                };
+              }
+  
+              return {
+                uri: uri,
+              };
+            }
+          }
+        ]
+      }
+    });
+
+    expect(result.api).toBeFalsy();
+    expect(result.uri).toEqual(redirectUri);
+    expect(result.error).toBeFalsy();
+    
+    expect(result.uriHistory.getResolutionPath().getResolvers())
+      .toEqual([
+        "CustomResolver",
+      ]);
+
+    expect(result.uriHistory.stack).toEqual([
+      {
+        resolver: "CustomResolver",
+        sourceUri: ensUri,
+        result: {
+          uri: redirectUri,
+          api: false
+        }
+      },
+      {
+        resolver: "CustomResolver",
+        sourceUri: redirectUri,
+        result: {
+          uri: redirectUri,
+          api: false
+        }
+      }
+    ]);
+  });
 });
