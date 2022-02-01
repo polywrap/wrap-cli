@@ -133,10 +133,7 @@ export class IpfsPlugin extends Plugin {
 
     // Use the provider defaul toverride specified
     if (options.provider) {
-      providers = [
-        options.provider,
-        ...providers
-      ];
+      providers = [options.provider, ...providers];
       ipfs = createIpfsClient(options.provider);
       defaultProvider = options.provider;
     }
