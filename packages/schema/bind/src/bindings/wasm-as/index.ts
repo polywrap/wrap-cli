@@ -116,7 +116,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
     entries.push({
       type: "Directory",
       name: moduleType.type,
-      data: generateFiles("./templates/module-type", ModuleType, subTemplates),
+      data: generateFiles("./templates/module-type", moduleType, subTemplates),
     });
   }
 
