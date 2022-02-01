@@ -44,19 +44,19 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
 
   // Generate imported folder
   if (
-    typeInfo.importedQueryTypes.length > 0 ||
+    typeInfo.importedModuleTypes.length > 0 ||
     typeInfo.importedObjectTypes.length > 0
   ) {
     const importEntries: OutputEntry[] = [];
 
-    // Generate imported query type folders
-    for (const importedQueryType of typeInfo.importedQueryTypes) {
+    // Generate imported module type folders
+    for (const importedModuleType of typeInfo.importedModuleTypes) {
       importEntries.push({
         type: "Directory",
-        name: importedQueryType.type,
+        name: importedModuleType.type,
         data: generateFiles(
-          "./templates/imported/query-type",
-          importedQueryType,
+          "./templates/imported/module-type",
+          importedModuleType,
           subTemplates
         ),
       });
@@ -111,12 +111,12 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
     });
   }
 
-  // Generate query type folders
-  for (const queryType of typeInfo.queryTypes) {
+  // Generate module type folders
+  for (const moduleType of typeInfo.moduleTypes) {
     entries.push({
       type: "Directory",
-      name: queryType.type,
-      data: generateFiles("./templates/query-type", queryType, subTemplates),
+      name: moduleType.type,
+      data: generateFiles("./templates/module-type", moduleType, subTemplates),
     });
   }
 
