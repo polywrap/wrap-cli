@@ -12,7 +12,7 @@ export class UriResolutionHistory {
     return this.stack.map(({ result: { uri } }) => uri);
   }
 
-  //Resolution path includes the list of resolvers that redirected to another URI or returned the API
+  // Resolution path includes the list of resolvers that redirected to another URI or returned the API
   getResolutionPath(): UriResolutionHistory {
     const path: UriResolutionHistory = new UriResolutionHistory(
       this.stack.filter(

@@ -470,7 +470,7 @@ export class Web3ApiClient implements Client {
       client
     );
 
-    //Update cache for all URIs in the chain
+    // Update cache for all URIs in the chain
     if (cacheWrite && api) {
       for (const item of uriHistory.getResolutionPath().stack) {
         this._apiCache.set(item.sourceUri.uri, api);
