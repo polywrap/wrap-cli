@@ -36,6 +36,8 @@ export function populatePropertyType(
     propertyType = property.object;
   } else if (property.enum) {
     propertyType = property.enum;
+  } else if (property.map) {
+    propertyType = property.map;
   } else {
     throw Error("Property type is undefined, this should never happen.");
   }

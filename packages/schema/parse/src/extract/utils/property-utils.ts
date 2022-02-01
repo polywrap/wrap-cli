@@ -1,5 +1,6 @@
 import {
   createScalarDefinition,
+  createMapDefinition,
   createUnresolvedObjectOrEnumRef,
   isScalarType,
   PropertyDefinition,
@@ -16,6 +17,18 @@ export function setPropertyType(
       type: type.type,
       required: type.required,
     });
+    return;
+  }
+
+  if (type.type.startsWith("Map")) {
+    property.map = {
+      ...createMapDefinition({
+        type: type.type,
+      }),
+      ...property.map,
+      name: name,
+      required: type.required ? true : null,
+    };
     return;
   }
 

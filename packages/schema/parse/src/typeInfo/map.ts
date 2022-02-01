@@ -14,8 +14,8 @@ export type MapKeyTypes = typeof mapKeyTypes;
 
 export type MapKeyType = keyof MapKeyTypes;
 
+export const mapKeyTypeNames = Object.keys(mapKeyTypes);
+
 export function isMapKeyType(type: string): type is MapKeyType {
   return type in mapKeyTypes;
 }
-
-export const mapKeyTypeNames = Object.keys(mapKeyTypes);

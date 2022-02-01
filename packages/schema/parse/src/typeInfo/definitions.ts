@@ -204,14 +204,14 @@ export function createUnresolvedObjectOrEnumRef(args: {
 }
 
 export interface MapDefinition extends AnyDefinition, WithComment {
-  key: MapKeyDefinition;
+  key: MapKeyDefinition | null;
   value: GenericDefinition | null;
 }
 export function createMapDefinition(args: {
   type: string;
   name?: string | null;
   required?: boolean;
-  key: MapKeyDefinition;
+  key?: MapKeyDefinition;
   value?: GenericDefinition | null;
 }): MapDefinition {
   return {
@@ -238,7 +238,7 @@ export function createMapDefinition(args: {
           ? (args.value as EnumRef)
           : undefined,
     }),
-    key: args.key,
+    key: args.key ? args.key : null,
     value: args.value ? args.value : null,
     kind: DefinitionKind.Map,
   };
@@ -328,6 +328,20 @@ export function createArrayPropertyDefinition(args: {
   return createPropertyDefinition({
     ...args,
     array: createArrayDefinition(args),
+  });
+}
+
+export function createMapPropertyDefinition(args: {
+  type: string;
+  name?: string | null;
+  required?: boolean;
+  key: MapKeyDefinition;
+  value?: GenericDefinition;
+  comment?: string;
+}): PropertyDefinition {
+  return createPropertyDefinition({
+    ...args,
+    map: createMapDefinition(args),
   });
 }
 
